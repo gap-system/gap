@@ -781,7 +781,7 @@ static void CompCheckBound(CVar obj, Obj name)
 {
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_BOUND( %c, \"%g\" )\n", obj, name );
+            Emit( "CHECK_BOUND( %c, \"%g\" );\n", obj, name );
         }
         SetInfoCVar( obj, W_BOUND );
     }
@@ -796,7 +796,7 @@ static void CompCheckFuncResult(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_FUNC_RESULT( %c )\n", obj );
+            Emit( "CHECK_FUNC_RESULT( %c );\n", obj );
         }
         SetInfoCVar( obj, W_BOUND );
     }
@@ -811,7 +811,7 @@ static void CompCheckIntSmall(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_INT_SMALL ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_INT_SMALL( %c )\n", obj );
+            Emit( "CHECK_INT_SMALL( %c );\n", obj );
         }
         SetInfoCVar( obj, W_INT_SMALL );
     }
@@ -827,7 +827,7 @@ static void CompCheckIntSmallPos(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_INT_SMALL_POS ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_INT_SMALL_POS( %c )\n", obj );
+            Emit( "CHECK_INT_SMALL_POS( %c );\n", obj );
         }
         SetInfoCVar( obj, W_INT_SMALL_POS );
     }
@@ -841,7 +841,7 @@ static void CompCheckIntPos(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_INT_POS ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_INT_POS( %c )\n", obj );
+            Emit( "CHECK_INT_POS( %c );\n", obj );
         }
         SetInfoCVar( obj, W_INT_POS );
     }
@@ -856,7 +856,7 @@ static void CompCheckBool(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_BOOL ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_BOOL( %c )\n", obj );
+            Emit( "CHECK_BOOL( %c );\n", obj );
         }
         SetInfoCVar( obj, W_BOOL );
     }
@@ -872,7 +872,7 @@ static void CompCheckFunc(CVar obj)
 {
     if ( ! HasInfoCVar( obj, W_FUNC ) ) {
         if ( CompCheckTypes ) {
-            Emit( "CHECK_FUNC( %c )\n", obj );
+            Emit( "CHECK_FUNC( %c );\n", obj );
         }
         SetInfoCVar( obj, W_FUNC );
     }

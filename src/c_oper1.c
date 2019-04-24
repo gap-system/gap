@@ -224,8 +224,8 @@ static Obj  HdlrFunc2 (
  
  /* if IGNORE_IMMEDIATE_METHODS then */
  t_2 = GC_IGNORE__IMMEDIATE__METHODS;
- CHECK_BOUND( t_2, "IGNORE_IMMEDIATE_METHODS" )
- CHECK_BOOL( t_2 )
+ CHECK_BOUND( t_2, "IGNORE_IMMEDIATE_METHODS" );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -239,10 +239,10 @@ static Obj  HdlrFunc2 (
  /* if IS_SUBSET_FLAGS( IMM_FLAGS, flags ) then */
  t_3 = GF_IS__SUBSET__FLAGS;
  t_4 = GC_IMM__FLAGS;
- CHECK_BOUND( t_4, "IMM_FLAGS" )
+ CHECK_BOUND( t_4, "IMM_FLAGS" );
  t_2 = CALL_2ARGS( t_3, t_4, a_flags );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -256,18 +256,18 @@ static Obj  HdlrFunc2 (
  /* flags := SUB_FLAGS( flags, IMM_FLAGS ); */
  t_2 = GF_SUB__FLAGS;
  t_3 = GC_IMM__FLAGS;
- CHECK_BOUND( t_3, "IMM_FLAGS" )
+ CHECK_BOUND( t_3, "IMM_FLAGS" );
  t_1 = CALL_2ARGS( t_2, a_flags, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  a_flags = t_1;
  
  /* flagspos := SHALLOW_COPY_OBJ( TRUES_FLAGS( flags ) ); */
  t_2 = GF_SHALLOW__COPY__OBJ;
  t_4 = GF_TRUES__FLAGS;
  t_3 = CALL_1ARGS( t_4, a_flags );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_flagspos = t_1;
  
  /* tried := [  ]; */
@@ -278,7 +278,7 @@ static Obj  HdlrFunc2 (
  /* type := TYPE_OBJ( obj ); */
  t_2 = GF_TYPE__OBJ;
  t_1 = CALL_1ARGS( t_2, a_obj );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_type = t_1;
  
  /* flags := type![2]; */
@@ -287,14 +287,14 @@ static Obj  HdlrFunc2 (
  
  /* RUN_IMMEDIATE_METHODS_RUNS := RUN_IMMEDIATE_METHODS_RUNS + 1; */
  t_2 = GC_RUN__IMMEDIATE__METHODS__RUNS;
- CHECK_BOUND( t_2, "RUN_IMMEDIATE_METHODS_RUNS" )
+ CHECK_BOUND( t_2, "RUN_IMMEDIATE_METHODS_RUNS" );
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_RUN__IMMEDIATE__METHODS__RUNS, t_1 );
  
  /* if TRACE_IMMEDIATE_METHODS then */
  t_2 = GC_TRACE__IMMEDIATE__METHODS;
- CHECK_BOUND( t_2, "TRACE_IMMEDIATE_METHODS" )
- CHECK_BOOL( t_2 )
+ CHECK_BOUND( t_2, "TRACE_IMMEDIATE_METHODS" );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -331,26 +331,26 @@ static Obj  HdlrFunc2 (
   
   /* if IsBound( IMMEDIATES[j] ) then */
   t_7 = GC_IMMEDIATES;
-  CHECK_BOUND( t_7, "IMMEDIATES" )
-  CHECK_INT_POS( l_j )
+  CHECK_BOUND( t_7, "IMMEDIATES" );
+  CHECK_INT_POS( l_j );
   t_6 = C_ISB_LIST( t_7, l_j );
   t_5 = (Obj)(UInt)(t_6 != False);
   if ( t_5 ) {
    
    /* imm := IMMEDIATES[j]; */
    t_6 = GC_IMMEDIATES;
-   CHECK_BOUND( t_6, "IMMEDIATES" )
+   CHECK_BOUND( t_6, "IMMEDIATES" );
    C_ELM_LIST_FPL( t_5, t_6, l_j )
    l_imm = t_5;
    
    /* for i in [ 0, SIZE_IMMEDIATE_METHOD_ENTRY .. LEN_LIST( imm ) - SIZE_IMMEDIATE_METHOD_ENTRY ] do */
    t_9 = GC_SIZE__IMMEDIATE__METHOD__ENTRY;
-   CHECK_BOUND( t_9, "SIZE_IMMEDIATE_METHOD_ENTRY" )
+   CHECK_BOUND( t_9, "SIZE_IMMEDIATE_METHOD_ENTRY" );
    t_12 = GF_LEN__LIST;
    t_11 = CALL_1ARGS( t_12, l_imm );
-   CHECK_FUNC_RESULT( t_11 )
+   CHECK_FUNC_RESULT( t_11 );
    t_12 = GC_SIZE__IMMEDIATE__METHOD__ENTRY;
-   CHECK_BOUND( t_12, "SIZE_IMMEDIATE_METHOD_ENTRY" )
+   CHECK_BOUND( t_12, "SIZE_IMMEDIATE_METHOD_ENTRY" );
    C_DIFF_FIA( t_10, t_11, t_12 )
    t_8 = Range3Check( INTOBJ_INT(0), t_9, t_10 );
    if ( IS_SMALL_LIST(t_8) ) {
@@ -377,21 +377,21 @@ static Obj  HdlrFunc2 (
     /* if IS_SUBSET_FLAGS( flags, imm[i + 4] ) and not IS_SUBSET_FLAGS( flags, imm[i + 3] ) and not imm[i + 6] in tried then */
     t_13 = GF_IS__SUBSET__FLAGS;
     C_SUM_FIA( t_15, l_i, INTOBJ_INT(4) )
-    CHECK_INT_POS( t_15 )
+    CHECK_INT_POS( t_15 );
     C_ELM_LIST_FPL( t_14, l_imm, t_15 )
     t_12 = CALL_2ARGS( t_13, a_flags, t_14 );
-    CHECK_FUNC_RESULT( t_12 )
-    CHECK_BOOL( t_12 )
+    CHECK_FUNC_RESULT( t_12 );
+    CHECK_BOOL( t_12 );
     t_11 = (Obj)(UInt)(t_12 != False);
     t_10 = t_11;
     if ( t_10 ) {
      t_15 = GF_IS__SUBSET__FLAGS;
      C_SUM_FIA( t_17, l_i, INTOBJ_INT(3) )
-     CHECK_INT_POS( t_17 )
+     CHECK_INT_POS( t_17 );
      C_ELM_LIST_FPL( t_16, l_imm, t_17 )
      t_14 = CALL_2ARGS( t_15, a_flags, t_16 );
-     CHECK_FUNC_RESULT( t_14 )
-     CHECK_BOOL( t_14 )
+     CHECK_FUNC_RESULT( t_14 );
+     CHECK_BOOL( t_14 );
      t_13 = (Obj)(UInt)(t_14 != False);
      t_12 = (Obj)(UInt)( ! ((Int)t_13) );
      t_10 = t_12;
@@ -399,7 +399,7 @@ static Obj  HdlrFunc2 (
     t_9 = t_10;
     if ( t_9 ) {
      C_SUM_FIA( t_14, l_i, INTOBJ_INT(6) )
-     CHECK_INT_POS( t_14 )
+     CHECK_INT_POS( t_14 );
      C_ELM_LIST_FPL( t_13, l_imm, t_14 )
      t_12 = (Obj)(UInt)(IN( t_13, l_tried ));
      t_11 = (Obj)(UInt)( ! ((Int)t_12) );
@@ -409,37 +409,37 @@ static Obj  HdlrFunc2 (
      
      /* meth := IMMEDIATE_METHODS[imm[i + 6]]; */
      t_10 = GC_IMMEDIATE__METHODS;
-     CHECK_BOUND( t_10, "IMMEDIATE_METHODS" )
+     CHECK_BOUND( t_10, "IMMEDIATE_METHODS" );
      C_SUM_FIA( t_12, l_i, INTOBJ_INT(6) )
-     CHECK_INT_POS( t_12 )
+     CHECK_INT_POS( t_12 );
      C_ELM_LIST_FPL( t_11, l_imm, t_12 )
-     CHECK_INT_POS( t_11 )
+     CHECK_INT_POS( t_11 );
      C_ELM_LIST_FPL( t_9, t_10, t_11 )
      l_meth = t_9;
      
      /* res := meth( obj ); */
-     CHECK_FUNC( l_meth )
+     CHECK_FUNC( l_meth );
      t_9 = CALL_1ARGS( l_meth, a_obj );
-     CHECK_FUNC_RESULT( t_9 )
+     CHECK_FUNC_RESULT( t_9 );
      l_res = t_9;
      
      /* ADD_LIST( tried, imm[i + 6] ); */
      t_9 = GF_ADD__LIST;
      C_SUM_FIA( t_11, l_i, INTOBJ_INT(6) )
-     CHECK_INT_POS( t_11 )
+     CHECK_INT_POS( t_11 );
      C_ELM_LIST_FPL( t_10, l_imm, t_11 )
      CALL_2ARGS( t_9, l_tried, t_10 );
      
      /* RUN_IMMEDIATE_METHODS_CHECKS := RUN_IMMEDIATE_METHODS_CHECKS + 1; */
      t_10 = GC_RUN__IMMEDIATE__METHODS__CHECKS;
-     CHECK_BOUND( t_10, "RUN_IMMEDIATE_METHODS_CHECKS" )
+     CHECK_BOUND( t_10, "RUN_IMMEDIATE_METHODS_CHECKS" );
      C_SUM_FIA( t_9, t_10, INTOBJ_INT(1) )
      AssGVar( G_RUN__IMMEDIATE__METHODS__CHECKS, t_9 );
      
      /* if TRACE_IMMEDIATE_METHODS then */
      t_10 = GC_TRACE__IMMEDIATE__METHODS;
-     CHECK_BOUND( t_10, "TRACE_IMMEDIATE_METHODS" )
-     CHECK_BOOL( t_10 )
+     CHECK_BOUND( t_10, "TRACE_IMMEDIATE_METHODS" );
+     CHECK_BOOL( t_10 );
      t_9 = (Obj)(UInt)(t_10 != False);
      if ( t_9 ) {
       
@@ -448,15 +448,15 @@ static Obj  HdlrFunc2 (
       t_10 = MakeString( "#I  immediate: " );
       t_12 = GF_NAME__FUNC;
       C_SUM_FIA( t_14, l_i, INTOBJ_INT(1) )
-      CHECK_INT_POS( t_14 )
+      CHECK_INT_POS( t_14 );
       C_ELM_LIST_FPL( t_13, l_imm, t_14 )
       t_11 = CALL_1ARGS( t_12, t_13 );
-      CHECK_FUNC_RESULT( t_11 )
+      CHECK_FUNC_RESULT( t_11 );
       CALL_2ARGS( t_9, t_10, t_11 );
       
       /* if imm[i + 7] <> false then */
       C_SUM_FIA( t_11, l_i, INTOBJ_INT(7) )
-      CHECK_INT_POS( t_11 )
+      CHECK_INT_POS( t_11 );
       C_ELM_LIST_FPL( t_10, l_imm, t_11 )
       t_11 = False;
       t_9 = (Obj)(UInt)( ! EQ( t_10, t_11 ));
@@ -466,7 +466,7 @@ static Obj  HdlrFunc2 (
        t_9 = GF_Print;
        t_10 = MakeString( ": " );
        C_SUM_FIA( t_12, l_i, INTOBJ_INT(7) )
-       CHECK_INT_POS( t_12 )
+       CHECK_INT_POS( t_12 );
        C_ELM_LIST_FPL( t_11, l_imm, t_12 )
        CALL_2ARGS( t_9, t_10, t_11 );
        
@@ -477,12 +477,12 @@ static Obj  HdlrFunc2 (
       t_9 = GF_Print;
       t_10 = MakeString( " at " );
       C_SUM_FIA( t_13, l_i, INTOBJ_INT(8) )
-      CHECK_INT_POS( t_13 )
+      CHECK_INT_POS( t_13 );
       C_ELM_LIST_FPL( t_12, l_imm, t_13 )
       C_ELM_LIST_FPL( t_11, t_12, INTOBJ_INT(1) )
       t_12 = MakeString( ":" );
       C_SUM_FIA( t_15, l_i, INTOBJ_INT(8) )
-      CHECK_INT_POS( t_15 )
+      CHECK_INT_POS( t_15 );
       C_ELM_LIST_FPL( t_14, l_imm, t_15 )
       C_ELM_LIST_FPL( t_13, t_14, INTOBJ_INT(2) )
       t_14 = MakeString( "\n" );
@@ -493,7 +493,7 @@ static Obj  HdlrFunc2 (
      
      /* if res <> TRY_NEXT_METHOD then */
      t_10 = GC_TRY__NEXT__METHOD;
-     CHECK_BOUND( t_10, "TRY_NEXT_METHOD" )
+     CHECK_BOUND( t_10, "TRY_NEXT_METHOD" );
      t_9 = (Obj)(UInt)( ! EQ( l_res, t_10 ));
      if ( t_9 ) {
       
@@ -503,9 +503,9 @@ static Obj  HdlrFunc2 (
       
       /* imm[i + 2]( obj, res ); */
       C_SUM_FIA( t_10, l_i, INTOBJ_INT(2) )
-      CHECK_INT_POS( t_10 )
+      CHECK_INT_POS( t_10 );
       C_ELM_LIST_FPL( t_9, l_imm, t_10 )
-      CHECK_FUNC( t_9 )
+      CHECK_FUNC( t_9 );
       CALL_2ARGS( t_9, a_obj, l_res );
       
       /* IGNORE_IMMEDIATE_METHODS := false; */
@@ -514,7 +514,7 @@ static Obj  HdlrFunc2 (
       
       /* RUN_IMMEDIATE_METHODS_HITS := RUN_IMMEDIATE_METHODS_HITS + 1; */
       t_10 = GC_RUN__IMMEDIATE__METHODS__HITS;
-      CHECK_BOUND( t_10, "RUN_IMMEDIATE_METHODS_HITS" )
+      CHECK_BOUND( t_10, "RUN_IMMEDIATE_METHODS_HITS" );
       C_SUM_FIA( t_9, t_10, INTOBJ_INT(1) )
       AssGVar( G_RUN__IMMEDIATE__METHODS__HITS, t_9 );
       
@@ -522,10 +522,10 @@ static Obj  HdlrFunc2 (
       t_12 = GF_IS__IDENTICAL__OBJ;
       t_14 = GF_TYPE__OBJ;
       t_13 = CALL_1ARGS( t_14, a_obj );
-      CHECK_FUNC_RESULT( t_13 )
+      CHECK_FUNC_RESULT( t_13 );
       t_11 = CALL_2ARGS( t_12, t_13, l_type );
-      CHECK_FUNC_RESULT( t_11 )
-      CHECK_BOOL( t_11 )
+      CHECK_FUNC_RESULT( t_11 );
+      CHECK_BOOL( t_11 );
       t_10 = (Obj)(UInt)(t_11 != False);
       t_9 = (Obj)(UInt)( ! ((Int)t_10) );
       if ( t_9 ) {
@@ -533,29 +533,29 @@ static Obj  HdlrFunc2 (
        /* type := TYPE_OBJ( obj ); */
        t_10 = GF_TYPE__OBJ;
        t_9 = CALL_1ARGS( t_10, a_obj );
-       CHECK_FUNC_RESULT( t_9 )
+       CHECK_FUNC_RESULT( t_9 );
        l_type = t_9;
        
        /* newflags := SUB_FLAGS( type![2], IMM_FLAGS ); */
        t_10 = GF_SUB__FLAGS;
        t_11 = ElmPosObj( l_type, 2 );
        t_12 = GC_IMM__FLAGS;
-       CHECK_BOUND( t_12, "IMM_FLAGS" )
+       CHECK_BOUND( t_12, "IMM_FLAGS" );
        t_9 = CALL_2ARGS( t_10, t_11, t_12 );
-       CHECK_FUNC_RESULT( t_9 )
+       CHECK_FUNC_RESULT( t_9 );
        l_newflags = t_9;
        
        /* newflags := SUB_FLAGS( newflags, flags ); */
        t_10 = GF_SUB__FLAGS;
        t_9 = CALL_2ARGS( t_10, l_newflags, a_flags );
-       CHECK_FUNC_RESULT( t_9 )
+       CHECK_FUNC_RESULT( t_9 );
        l_newflags = t_9;
        
        /* APPEND_LIST_INTR( flagspos, TRUES_FLAGS( newflags ) ); */
        t_9 = GF_APPEND__LIST__INTR;
        t_11 = GF_TRUES__FLAGS;
        t_10 = CALL_1ARGS( t_11, l_newflags );
-       CHECK_FUNC_RESULT( t_10 )
+       CHECK_FUNC_RESULT( t_10 );
        CALL_2ARGS( t_9, l_flagspos, t_10 );
        
        /* flags := type![2]; */
@@ -635,15 +635,15 @@ static Obj  HdlrFunc3 (
  /* if IS_FUNCTION( baserank ) then */
  t_3 = GF_IS__FUNCTION;
  t_2 = CALL_1ARGS( t_3, a_baserank );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
   /* rank := baserank(  ); */
-  CHECK_FUNC( a_baserank )
+  CHECK_FUNC( a_baserank );
   t_1 = CALL_0ARGS( a_baserank );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_rank = t_1;
   
  }
@@ -660,15 +660,15 @@ static Obj  HdlrFunc3 (
  /* if IS_CONSTRUCTOR( opr ) then */
  t_3 = GF_IS__CONSTRUCTOR;
  t_2 = CALL_1ARGS( t_3, a_opr );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
   /* if 0 = LEN_LIST( flags ) then */
   t_3 = GF_LEN__LIST;
   t_2 = CALL_1ARGS( t_3, a_flags );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(EQ( INTOBJ_INT(0), t_2 ));
   if ( t_1 ) {
    
@@ -676,7 +676,7 @@ static Obj  HdlrFunc3 (
    t_1 = GF_Error;
    t_3 = GF_NAME__FUNC;
    t_2 = CALL_1ARGS( t_3, a_opr );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    t_3 = MakeString( ": constructors must have at least one argument" );
    CALL_2ARGS( t_1, t_2, t_3 );
    
@@ -687,7 +687,7 @@ static Obj  HdlrFunc3 (
   t_3 = GF_RankFilter;
   C_ELM_LIST_FPL( t_4, a_flags, INTOBJ_INT(1) )
   t_2 = CALL_1ARGS( t_3, t_4 );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   C_DIFF_FIA( t_1, l_rank, t_2 )
   l_rank = t_1;
   
@@ -722,7 +722,7 @@ static Obj  HdlrFunc3 (
    /* rank := rank + RankFilter( i ); */
    t_7 = GF_RankFilter;
    t_6 = CALL_1ARGS( t_7, l_i );
-   CHECK_FUNC_RESULT( t_6 )
+   CHECK_FUNC_RESULT( t_6 );
    C_SUM_FIA( t_5, l_rank, t_6 )
    l_rank = t_5;
    
@@ -735,13 +735,13 @@ static Obj  HdlrFunc3 (
  /* narg := LEN_LIST( flags ); */
  t_2 = GF_LEN__LIST;
  t_1 = CALL_1ARGS( t_2, a_flags );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_narg = t_1;
  
  /* methods := METHODS_OPERATION( opr, narg ); */
  t_2 = GF_METHODS__OPERATION;
  t_1 = CALL_2ARGS( t_2, a_opr, l_narg );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_methods = t_1;
  
  /* if info = false then */
@@ -752,7 +752,7 @@ static Obj  HdlrFunc3 (
   /* info := NAME_FUNC( opr ); */
   t_2 = GF_NAME__FUNC;
   t_1 = CALL_1ARGS( t_2, a_opr );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   a_info = t_1;
   
  }
@@ -764,9 +764,9 @@ static Obj  HdlrFunc3 (
   t_2 = GF_SHALLOW__COPY__OBJ;
   t_4 = GF_NAME__FUNC;
   t_3 = CALL_1ARGS( t_4, a_opr );
-  CHECK_FUNC_RESULT( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
   t_1 = CALL_1ARGS( t_2, t_3 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_k = t_1;
   
   /* APPEND_LIST_INTR( k, ": " ); */
@@ -795,13 +795,13 @@ static Obj  HdlrFunc3 (
  while ( 1 ) {
   t_4 = GF_LEN__LIST;
   t_3 = CALL_1ARGS( t_4, l_methods );
-  CHECK_FUNC_RESULT( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
   t_2 = (Obj)(UInt)(LT( l_i, t_3 ));
   t_1 = t_2;
   if ( t_1 ) {
    C_SUM_FIA( t_6, l_narg, INTOBJ_INT(3) )
    C_SUM_FIA( t_5, l_i, t_6 )
-   CHECK_INT_POS( t_5 )
+   CHECK_INT_POS( t_5 );
    C_ELM_LIST_FPL( t_4, l_methods, t_5 )
    t_3 = (Obj)(UInt)(LT( l_rank, t_4 ));
    t_1 = t_3;
@@ -822,8 +822,8 @@ static Obj  HdlrFunc3 (
  
  /* if REREADING then */
  t_2 = GC_REREADING;
- CHECK_BOUND( t_2, "REREADING" )
- CHECK_BOOL( t_2 )
+ CHECK_BOUND( t_2, "REREADING" );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -834,13 +834,13 @@ static Obj  HdlrFunc3 (
   while ( 1 ) {
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_methods );
-   CHECK_FUNC_RESULT( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
    t_2 = (Obj)(UInt)(LT( l_k, t_3 ));
    t_1 = t_2;
    if ( t_1 ) {
     C_SUM_FIA( t_6, l_k, l_narg )
     C_SUM_FIA( t_5, t_6, INTOBJ_INT(3) )
-    CHECK_INT_POS( t_5 )
+    CHECK_INT_POS( t_5 );
     C_ELM_LIST_FPL( t_4, l_methods, t_5 )
     t_3 = (Obj)(UInt)(EQ( l_rank, t_4 ));
     t_1 = t_3;
@@ -850,7 +850,7 @@ static Obj  HdlrFunc3 (
    /* if info = methods[k + narg + 4] then */
    C_SUM_FIA( t_4, l_k, l_narg )
    C_SUM_FIA( t_3, t_4, INTOBJ_INT(4) )
-   CHECK_INT_POS( t_3 )
+   CHECK_INT_POS( t_3 );
    C_ELM_LIST_FPL( t_2, l_methods, t_3 )
    t_1 = (Obj)(UInt)(EQ( a_info, t_2 ));
    if ( t_1 ) {
@@ -860,7 +860,7 @@ static Obj  HdlrFunc3 (
     l_match = t_1;
     
     /* for j in [ 1 .. narg ] do */
-    CHECK_INT_SMALL( l_narg )
+    CHECK_INT_SMALL( l_narg );
     t_2 = l_narg;
     for ( t_1 = INTOBJ_INT(1);
           ((Int)t_1) <= ((Int)t_2);
@@ -874,7 +874,7 @@ static Obj  HdlrFunc3 (
      else if ( l_match == True ) {
       C_SUM_FIA( t_7, l_k, l_j )
       C_SUM_FIA( t_6, t_7, INTOBJ_INT(1) )
-      CHECK_INT_POS( t_6 )
+      CHECK_INT_POS( t_6 );
       C_ELM_LIST_FPL( t_5, l_methods, t_6 )
       C_ELM_LIST_FPL( t_6, a_flags, l_j )
       t_4 = (EQ( t_5, t_6 ) ? True : False);
@@ -883,7 +883,7 @@ static Obj  HdlrFunc3 (
      else if (IS_FILTER( l_match ) ) {
       C_SUM_FIA( t_8, l_k, l_j )
       C_SUM_FIA( t_7, t_8, INTOBJ_INT(1) )
-      CHECK_INT_POS( t_7 )
+      CHECK_INT_POS( t_7 );
       C_ELM_LIST_FPL( t_6, l_methods, t_7 )
       C_ELM_LIST_FPL( t_7, a_flags, l_j )
       t_5 = (EQ( t_6, t_7 ) ? True : False);
@@ -899,7 +899,7 @@ static Obj  HdlrFunc3 (
     /* od */
     
     /* if match then */
-    CHECK_BOOL( l_match )
+    CHECK_BOOL( l_match );
     t_1 = (Obj)(UInt)(l_match != False);
     if ( t_1 ) {
      
@@ -932,8 +932,8 @@ static Obj  HdlrFunc3 (
  
  /* if not REREADING or not replace then */
  t_4 = GC_REREADING;
- CHECK_BOUND( t_4, "REREADING" )
- CHECK_BOOL( t_4 )
+ CHECK_BOUND( t_4, "REREADING" );
+ CHECK_BOOL( t_4 );
  t_3 = (Obj)(UInt)(t_4 != False);
  t_2 = (Obj)(UInt)( ! ((Int)t_3) );
  t_1 = t_2;
@@ -964,7 +964,7 @@ static Obj  HdlrFunc3 (
   SET_ELM_PLIST( t_2, 6, INTOBJ_INT(1) );
   t_5 = GF_LEN__LIST;
   t_4 = CALL_1ARGS( t_5, l_methods );
-  CHECK_FUNC_RESULT( t_4 )
+  CHECK_FUNC_RESULT( t_4 );
   C_DIFF_FIA( t_3, t_4, l_i )
   SET_ELM_PLIST( t_2, 7, t_3 );
   CHANGED_BAG( t_2 );
@@ -980,7 +980,7 @@ static Obj  HdlrFunc3 (
   
   /* rel := RETURN_TRUE; */
   t_1 = GC_RETURN__TRUE;
-  CHECK_BOUND( t_1, "RETURN_TRUE" )
+  CHECK_BOUND( t_1, "RETURN_TRUE" );
   a_rel = t_1;
   
  }
@@ -993,7 +993,7 @@ static Obj  HdlrFunc3 (
    
    /* rel := RETURN_FALSE; */
    t_1 = GC_RETURN__FALSE;
-   CHECK_BOUND( t_1, "RETURN_FALSE" )
+   CHECK_BOUND( t_1, "RETURN_FALSE" );
    a_rel = t_1;
    
   }
@@ -1002,28 +1002,28 @@ static Obj  HdlrFunc3 (
   else {
    t_3 = GF_IS__FUNCTION;
    t_2 = CALL_1ARGS( t_3, a_rel );
-   CHECK_FUNC_RESULT( t_2 )
-   CHECK_BOOL( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
+   CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
     /* if CHECK_INSTALL_METHOD then */
     t_2 = GC_CHECK__INSTALL__METHOD;
-    CHECK_BOUND( t_2, "CHECK_INSTALL_METHOD" )
-    CHECK_BOOL( t_2 )
+    CHECK_BOUND( t_2, "CHECK_INSTALL_METHOD" );
+    CHECK_BOOL( t_2 );
     t_1 = (Obj)(UInt)(t_2 != False);
     if ( t_1 ) {
      
      /* tmp := NARG_FUNC( rel ); */
      t_2 = GF_NARG__FUNC;
      t_1 = CALL_1ARGS( t_2, a_rel );
-     CHECK_FUNC_RESULT( t_1 )
+     CHECK_FUNC_RESULT( t_1 );
      l_tmp = t_1;
      
      /* if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg then */
      t_5 = GF_AINV;
      t_4 = CALL_1ARGS( t_5, l_narg );
-     CHECK_FUNC_RESULT( t_4 )
+     CHECK_FUNC_RESULT( t_4 );
      C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
      t_2 = (Obj)(UInt)(LT( l_tmp, t_3 ));
      t_1 = t_2;
@@ -1042,7 +1042,7 @@ static Obj  HdlrFunc3 (
       t_1 = GF_Error;
       t_3 = GF_NAME__FUNC;
       t_2 = CALL_1ARGS( t_3, a_opr );
-      CHECK_FUNC_RESULT( t_2 )
+      CHECK_FUNC_RESULT( t_2 );
       t_3 = MakeString( ": <famrel> must accept " );
       t_4 = MakeString( " arguments" );
       CALL_4ARGS( t_1, t_2, t_3, l_narg, t_4 );
@@ -1062,7 +1062,7 @@ static Obj  HdlrFunc3 (
     t_1 = GF_Error;
     t_3 = GF_NAME__FUNC;
     t_2 = CALL_1ARGS( t_3, a_opr );
-    CHECK_FUNC_RESULT( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
     t_3 = MakeString( ": <famrel> must be a function, `true', or `false'" );
     CALL_2ARGS( t_1, t_2, t_3 );
     
@@ -1078,7 +1078,7 @@ static Obj  HdlrFunc3 (
   
   /* method := RETURN_TRUE; */
   t_1 = GC_RETURN__TRUE;
-  CHECK_BOUND( t_1, "RETURN_TRUE" )
+  CHECK_BOUND( t_1, "RETURN_TRUE" );
   a_method = t_1;
   
  }
@@ -1091,7 +1091,7 @@ static Obj  HdlrFunc3 (
    
    /* method := RETURN_FALSE; */
    t_1 = GC_RETURN__FALSE;
-   CHECK_BOUND( t_1, "RETURN_FALSE" )
+   CHECK_BOUND( t_1, "RETURN_FALSE" );
    a_method = t_1;
    
   }
@@ -1100,22 +1100,22 @@ static Obj  HdlrFunc3 (
   else {
    t_3 = GF_IS__FUNCTION;
    t_2 = CALL_1ARGS( t_3, a_method );
-   CHECK_FUNC_RESULT( t_2 )
-   CHECK_BOOL( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
+   CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
     /* if CHECK_INSTALL_METHOD and not IS_OPERATION( method ) then */
     t_3 = GC_CHECK__INSTALL__METHOD;
-    CHECK_BOUND( t_3, "CHECK_INSTALL_METHOD" )
-    CHECK_BOOL( t_3 )
+    CHECK_BOUND( t_3, "CHECK_INSTALL_METHOD" );
+    CHECK_BOOL( t_3 );
     t_2 = (Obj)(UInt)(t_3 != False);
     t_1 = t_2;
     if ( t_1 ) {
      t_6 = GF_IS__OPERATION;
      t_5 = CALL_1ARGS( t_6, a_method );
-     CHECK_FUNC_RESULT( t_5 )
-     CHECK_BOOL( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
+     CHECK_BOOL( t_5 );
      t_4 = (Obj)(UInt)(t_5 != False);
      t_3 = (Obj)(UInt)( ! ((Int)t_4) );
      t_1 = t_3;
@@ -1125,13 +1125,13 @@ static Obj  HdlrFunc3 (
      /* tmp := NARG_FUNC( method ); */
      t_2 = GF_NARG__FUNC;
      t_1 = CALL_1ARGS( t_2, a_method );
-     CHECK_FUNC_RESULT( t_1 )
+     CHECK_FUNC_RESULT( t_1 );
      l_tmp = t_1;
      
      /* if tmp < AINV( narg ) - 1 or tmp >= 0 and tmp <> narg then */
      t_5 = GF_AINV;
      t_4 = CALL_1ARGS( t_5, l_narg );
-     CHECK_FUNC_RESULT( t_4 )
+     CHECK_FUNC_RESULT( t_4 );
      C_DIFF_FIA( t_3, t_4, INTOBJ_INT(1) )
      t_2 = (Obj)(UInt)(LT( l_tmp, t_3 ));
      t_1 = t_2;
@@ -1150,7 +1150,7 @@ static Obj  HdlrFunc3 (
       t_1 = GF_Error;
       t_3 = GF_NAME__FUNC;
       t_2 = CALL_1ARGS( t_3, a_opr );
-      CHECK_FUNC_RESULT( t_2 )
+      CHECK_FUNC_RESULT( t_2 );
       t_3 = MakeString( ": <method> must accept " );
       t_4 = MakeString( " arguments" );
       CALL_4ARGS( t_1, t_2, t_3, l_narg, t_4 );
@@ -1170,7 +1170,7 @@ static Obj  HdlrFunc3 (
     t_1 = GF_Error;
     t_3 = GF_NAME__FUNC;
     t_2 = CALL_1ARGS( t_3, a_opr );
-    CHECK_FUNC_RESULT( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
     t_3 = MakeString( ": <method> must be a function, `true', or `false'" );
     CALL_2ARGS( t_1, t_2, t_3 );
     
@@ -1181,11 +1181,11 @@ static Obj  HdlrFunc3 (
  
  /* methods[i + 1] := rel; */
  C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
- CHECK_INT_POS( t_1 )
+ CHECK_INT_POS( t_1 );
  C_ASS_LIST_FPL( l_methods, t_1, a_rel )
  
  /* for k in [ 1 .. narg ] do */
- CHECK_INT_SMALL( l_narg )
+ CHECK_INT_SMALL( l_narg );
  t_2 = l_narg;
  for ( t_1 = INTOBJ_INT(1);
        ((Int)t_1) <= ((Int)t_2);
@@ -1195,7 +1195,7 @@ static Obj  HdlrFunc3 (
   /* methods[i + k + 1] := flags[k]; */
   C_SUM_FIA( t_4, l_i, l_k )
   C_SUM_FIA( t_3, t_4, INTOBJ_INT(1) )
-  CHECK_INT_POS( t_3 )
+  CHECK_INT_POS( t_3 );
   C_ELM_LIST_FPL( t_4, a_flags, l_k )
   C_ASS_LIST_FPL( l_methods, t_3, t_4 )
   
@@ -1205,22 +1205,22 @@ static Obj  HdlrFunc3 (
  /* methods[i + (narg + 2)] := method; */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(2) )
  C_SUM_FIA( t_1, l_i, t_2 )
- CHECK_INT_POS( t_1 )
+ CHECK_INT_POS( t_1 );
  C_ASS_LIST_FPL( l_methods, t_1, a_method )
  
  /* methods[i + (narg + 3)] := rank; */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(3) )
  C_SUM_FIA( t_1, l_i, t_2 )
- CHECK_INT_POS( t_1 )
+ CHECK_INT_POS( t_1 );
  C_ASS_LIST_FPL( l_methods, t_1, l_rank )
  
  /* methods[i + (narg + 4)] := IMMUTABLE_COPY_OBJ( info ); */
  C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(4) )
  C_SUM_FIA( t_1, l_i, t_2 )
- CHECK_INT_POS( t_1 )
+ CHECK_INT_POS( t_1 );
  t_3 = GF_IMMUTABLE__COPY__OBJ;
  t_2 = CALL_1ARGS( t_3, a_info );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  C_ASS_LIST_FPL( l_methods, t_1, t_2 )
  
  /* if 6 >= 5 then */
@@ -1230,26 +1230,26 @@ static Obj  HdlrFunc3 (
   /* methods[i + (narg + 5)] := MakeImmutable( [ INPUT_FILENAME(  ), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER(  ) ] ); */
   C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(5) )
   C_SUM_FIA( t_1, l_i, t_2 )
-  CHECK_INT_POS( t_1 )
+  CHECK_INT_POS( t_1 );
   t_3 = GF_MakeImmutable;
   t_4 = NEW_PLIST( T_PLIST, 3 );
   SET_LEN_PLIST( t_4, 3 );
   t_6 = GF_INPUT__FILENAME;
   t_5 = CALL_0ARGS( t_6 );
-  CHECK_FUNC_RESULT( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
   SET_ELM_PLIST( t_4, 1, t_5 );
   CHANGED_BAG( t_4 );
   t_5 = GC_READEVALCOMMAND__LINENUMBER;
-  CHECK_BOUND( t_5, "READEVALCOMMAND_LINENUMBER" )
+  CHECK_BOUND( t_5, "READEVALCOMMAND_LINENUMBER" );
   SET_ELM_PLIST( t_4, 2, t_5 );
   CHANGED_BAG( t_4 );
   t_6 = GF_INPUT__LINENUMBER;
   t_5 = CALL_0ARGS( t_6 );
-  CHECK_FUNC_RESULT( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
   SET_ELM_PLIST( t_4, 3, t_5 );
   CHANGED_BAG( t_4 );
   t_2 = CALL_1ARGS( t_3, t_4 );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   C_ASS_LIST_FPL( l_methods, t_1, t_2 )
   
  }
@@ -1262,7 +1262,7 @@ static Obj  HdlrFunc3 (
   /* methods[i + (narg + 6)] := baserank; */
   C_SUM_INTOBJS( t_2, l_narg, INTOBJ_INT(6) )
   C_SUM_FIA( t_1, l_i, t_2 )
-  CHECK_INT_POS( t_1 )
+  CHECK_INT_POS( t_1 );
   C_ASS_LIST_FPL( l_methods, t_1, a_baserank )
   
  }
@@ -1400,7 +1400,7 @@ static Obj  HdlrFunc6 (
  /* len := LEN_LIST( arglist ); */
  t_2 = GF_LEN__LIST;
  t_1 = CALL_1ARGS( t_2, a_arglist );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_len = t_1;
  
  /* if len < 3 then */
@@ -1422,8 +1422,8 @@ static Obj  HdlrFunc6 (
  /* if not IS_OPERATION( opr ) then */
  t_4 = GF_IS__OPERATION;
  t_3 = CALL_1ARGS( t_4, l_opr );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -1440,8 +1440,8 @@ static Obj  HdlrFunc6 (
  t_4 = GF_IS__STRING__REP;
  C_ELM_LIST_FPL( t_5, a_arglist, INTOBJ_INT(2) )
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = t_2;
  if ( ! t_1 ) {
@@ -1483,8 +1483,8 @@ static Obj  HdlrFunc6 (
   t_5 = GF_IS__FUNCTION;
   C_ELM_LIST_FPL( t_6, a_arglist, l_pos )
   t_4 = CALL_1ARGS( t_5, t_6 );
-  CHECK_FUNC_RESULT( t_4 )
-  CHECK_BOOL( t_4 )
+  CHECK_FUNC_RESULT( t_4 );
+  CHECK_BOOL( t_4 );
   t_3 = (Obj)(UInt)(t_4 != False);
   t_1 = t_3;
  }
@@ -1511,7 +1511,7 @@ static Obj  HdlrFunc6 (
  /* fi */
  
  /* if not IsBound( arglist[pos] ) or not IS_LIST( arglist[pos] ) then */
- CHECK_INT_POS( l_pos )
+ CHECK_INT_POS( l_pos );
  t_4 = C_ISB_LIST( a_arglist, l_pos );
  t_3 = (Obj)(UInt)(t_4 != False);
  t_2 = (Obj)(UInt)( ! ((Int)t_3) );
@@ -1520,8 +1520,8 @@ static Obj  HdlrFunc6 (
   t_6 = GF_IS__LIST;
   C_ELM_LIST_FPL( t_7, a_arglist, l_pos )
   t_5 = CALL_1ARGS( t_6, t_7 );
-  CHECK_FUNC_RESULT( t_5 )
-  CHECK_BOOL( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
+  CHECK_BOOL( t_5 );
   t_4 = (Obj)(UInt)(t_5 != False);
   t_3 = (Obj)(UInt)( ! ((Int)t_4) );
   t_1 = t_3;
@@ -1543,11 +1543,11 @@ static Obj  HdlrFunc6 (
  
  /* if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then */
  t_3 = GC_GAPInfo;
- CHECK_BOUND( t_3, "GAPInfo" )
+ CHECK_BOUND( t_3, "GAPInfo" );
  t_2 = ELM_REC( t_3, R_MaxNrArgsMethod );
  t_4 = GF_LEN__LIST;
  t_3 = CALL_1ARGS( t_4, l_filters );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_1 = (Obj)(UInt)(LT( t_2, t_3 ));
  if ( t_1 ) {
   
@@ -1555,7 +1555,7 @@ static Obj  HdlrFunc6 (
   t_1 = GF_Error;
   t_2 = MakeString( "methods can have at most " );
   t_4 = GC_GAPInfo;
-  CHECK_BOUND( t_4, "GAPInfo" )
+  CHECK_BOUND( t_4, "GAPInfo" );
   t_3 = ELM_REC( t_4, R_MaxNrArgsMethod );
   t_4 = MakeString( " arguments" );
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
@@ -1566,7 +1566,7 @@ static Obj  HdlrFunc6 (
  /* if 0 < LEN_LIST( filters ) then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, l_filters );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(LT( INTOBJ_INT(0), t_2 ));
  if ( t_1 ) {
   
@@ -1581,8 +1581,8 @@ static Obj  HdlrFunc6 (
   /* for i in [ 1 .. LEN_LIST( filters ) ] do */
   t_3 = GF_LEN__LIST;
   t_2 = CALL_1ARGS( t_3, l_filters );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_INT_SMALL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_INT_SMALL( t_2 );
   for ( t_1 = INTOBJ_INT(1);
         ((Int)t_1) <= ((Int)t_2);
         t_1 = (Obj)(((UInt)t_1)+4) ) {
@@ -1592,8 +1592,8 @@ static Obj  HdlrFunc6 (
    t_5 = GF_IS__STRING__REP;
    C_ELM_LIST_FPL( t_6, l_filters, l_i )
    t_4 = CALL_1ARGS( t_5, t_6 );
-   CHECK_FUNC_RESULT( t_4 )
-   CHECK_BOOL( t_4 )
+   CHECK_FUNC_RESULT( t_4 );
+   CHECK_BOOL( t_4 );
    t_3 = (Obj)(UInt)(t_4 != False);
    if ( t_3 ) {
     
@@ -1611,15 +1611,15 @@ static Obj  HdlrFunc6 (
     t_4 = GF_EvalString;
     C_ELM_LIST_FPL( t_5, l_filters, l_i )
     t_3 = CALL_1ARGS( t_4, t_5 );
-    CHECK_FUNC_RESULT( t_3 )
+    CHECK_FUNC_RESULT( t_3 );
     C_ASS_LIST_FPL( l_filters, l_i, t_3 )
     
     /* if not IS_FUNCTION( filters[i] ) then */
     t_6 = GF_IS__FUNCTION;
     C_ELM_LIST_FPL( t_7, l_filters, l_i )
     t_5 = CALL_1ARGS( t_6, t_7 );
-    CHECK_FUNC_RESULT( t_5 )
-    CHECK_BOOL( t_5 )
+    CHECK_FUNC_RESULT( t_5 );
+    CHECK_BOOL( t_5 );
     t_4 = (Obj)(UInt)(t_5 != False);
     t_3 = (Obj)(UInt)( ! ((Int)t_4) );
     if ( t_3 ) {
@@ -1663,17 +1663,17 @@ static Obj  HdlrFunc6 (
    /* info1[LEN_LIST( info1 ) - 1] := ' '; */
    t_3 = GF_LEN__LIST;
    t_2 = CALL_1ARGS( t_3, l_info1 );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    C_DIFF_FIA( t_1, t_2, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_1 )
+   CHECK_INT_POS( t_1 );
    t_2 = ObjsChar[32];
    C_ASS_LIST_FPL( l_info1, t_1, t_2 )
    
    /* info1[LEN_LIST( info1 )] := ']'; */
    t_2 = GF_LEN__LIST;
    t_1 = CALL_1ARGS( t_2, l_info1 );
-   CHECK_FUNC_RESULT( t_1 )
-   CHECK_INT_POS( t_1 )
+   CHECK_FUNC_RESULT( t_1 );
+   CHECK_INT_POS( t_1 );
    t_2 = ObjsChar[93];
    C_ASS_LIST_FPL( l_info1, t_1, t_2 )
    
@@ -1722,14 +1722,14 @@ static Obj  HdlrFunc6 (
   t_5 = GF_ADD__LIST;
   t_7 = GF_FLAGS__FILTER;
   t_6 = CALL_1ARGS( t_7, l_i );
-  CHECK_FUNC_RESULT( t_6 )
+  CHECK_FUNC_RESULT( t_6 );
   CALL_2ARGS( t_5, l_flags, t_6 );
   
  }
  /* od */
  
  /* if not IsBound( arglist[pos] ) then */
- CHECK_INT_POS( l_pos )
+ CHECK_INT_POS( l_pos );
  t_3 = C_ISB_LIST( a_arglist, l_pos );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
@@ -1747,23 +1747,23 @@ static Obj  HdlrFunc6 (
   t_4 = GF_IS__INT;
   C_ELM_LIST_FPL( t_5, a_arglist, l_pos )
   t_3 = CALL_1ARGS( t_4, t_5 );
-  CHECK_FUNC_RESULT( t_3 )
-  CHECK_BOOL( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
+  CHECK_BOOL( t_3 );
   t_2 = (Obj)(UInt)(t_3 != False);
   t_1 = t_2;
   if ( ! t_1 ) {
    t_7 = GF_IS__FUNCTION;
    C_ELM_LIST_FPL( t_8, a_arglist, l_pos )
    t_6 = CALL_1ARGS( t_7, t_8 );
-   CHECK_FUNC_RESULT( t_6 )
-   CHECK_BOOL( t_6 )
+   CHECK_FUNC_RESULT( t_6 );
+   CHECK_BOOL( t_6 );
    t_5 = (Obj)(UInt)(t_6 != False);
    t_4 = t_5;
    if ( t_4 ) {
     t_8 = GF_NARG__FUNC;
     C_ELM_LIST_FPL( t_9, a_arglist, l_pos )
     t_7 = CALL_1ARGS( t_8, t_9 );
-    CHECK_FUNC_RESULT( t_7 )
+    CHECK_FUNC_RESULT( t_7 );
     t_6 = (Obj)(UInt)(EQ( t_7, INTOBJ_INT(0) ));
     t_4 = t_6;
    }
@@ -1771,7 +1771,7 @@ static Obj  HdlrFunc6 (
    if ( t_3 ) {
     t_7 = GF_LEN__LIST;
     t_6 = CALL_1ARGS( t_7, a_arglist );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     t_5 = (Obj)(UInt)(LT( l_pos, t_6 ));
     t_3 = t_5;
    }
@@ -1800,7 +1800,7 @@ static Obj  HdlrFunc6 (
  /* fi */
  
  /* if not IsBound( arglist[pos] ) then */
- CHECK_INT_POS( l_pos )
+ CHECK_INT_POS( l_pos );
  t_3 = C_ISB_LIST( a_arglist, l_pos );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
@@ -1821,7 +1821,7 @@ static Obj  HdlrFunc6 (
  /* if FLAG1_FILTER( opr ) <> 0 and (rel = true or rel = RETURN_TRUE) and LEN_LIST( filters ) = 1 and (method = true or method = RETURN_TRUE) then */
  t_6 = GF_FLAG1__FILTER;
  t_5 = CALL_1ARGS( t_6, l_opr );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_4 = (Obj)(UInt)( ! EQ( t_5, INTOBJ_INT(0) ));
  t_3 = t_4;
  if ( t_3 ) {
@@ -1830,7 +1830,7 @@ static Obj  HdlrFunc6 (
   t_5 = t_6;
   if ( ! t_5 ) {
    t_8 = GC_RETURN__TRUE;
-   CHECK_BOUND( t_8, "RETURN_TRUE" )
+   CHECK_BOUND( t_8, "RETURN_TRUE" );
    t_7 = (Obj)(UInt)(EQ( l_rel, t_8 ));
    t_5 = t_7;
   }
@@ -1840,7 +1840,7 @@ static Obj  HdlrFunc6 (
  if ( t_2 ) {
   t_6 = GF_LEN__LIST;
   t_5 = CALL_1ARGS( t_6, l_filters );
-  CHECK_FUNC_RESULT( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
   t_4 = (Obj)(UInt)(EQ( t_5, INTOBJ_INT(1) ));
   t_2 = t_4;
  }
@@ -1851,7 +1851,7 @@ static Obj  HdlrFunc6 (
   t_3 = t_4;
   if ( ! t_3 ) {
    t_6 = GC_RETURN__TRUE;
-   CHECK_BOUND( t_6, "RETURN_TRUE" )
+   CHECK_BOUND( t_6, "RETURN_TRUE" );
    t_5 = (Obj)(UInt)(EQ( l_method, t_6 ));
    t_3 = t_5;
   }
@@ -1863,7 +1863,7 @@ static Obj  HdlrFunc6 (
   t_1 = GF_Error;
   t_3 = GF_NAME__FUNC;
   t_2 = CALL_1ARGS( t_3, l_opr );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   t_3 = MakeString( ": use `InstallTrueMethod' for <opr>" );
   CALL_2ARGS( t_1, t_2, t_3 );
   
@@ -1872,12 +1872,12 @@ static Obj  HdlrFunc6 (
  
  /* if CHECK_INSTALL_METHOD and check then */
  t_3 = GC_CHECK__INSTALL__METHOD;
- CHECK_BOUND( t_3, "CHECK_INSTALL_METHOD" )
- CHECK_BOOL( t_3 )
+ CHECK_BOUND( t_3, "CHECK_INSTALL_METHOD" );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = t_2;
  if ( t_1 ) {
-  CHECK_BOOL( a_check )
+  CHECK_BOOL( a_check );
   t_3 = (Obj)(UInt)(a_check != False);
   t_1 = t_3;
  }
@@ -1885,7 +1885,7 @@ static Obj  HdlrFunc6 (
   
   /* if opr in WRAPPER_OPERATIONS then */
   t_2 = GC_WRAPPER__OPERATIONS;
-  CHECK_BOUND( t_2, "WRAPPER_OPERATIONS" )
+  CHECK_BOUND( t_2, "WRAPPER_OPERATIONS" );
   t_1 = (Obj)(UInt)(IN( l_opr, t_2 ));
   if ( t_1 ) {
    
@@ -1894,7 +1894,7 @@ static Obj  HdlrFunc6 (
    t_2 = MakeString( "a method is installed for the wrapper operation " );
    t_4 = GF_NAME__FUNC;
    t_3 = CALL_1ARGS( t_4, l_opr );
-   CHECK_FUNC_RESULT( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
    t_4 = MakeString( "\n" );
    t_5 = MakeString( "#I  probably it should be installed for (one of) its\n" );
    t_6 = MakeString( "#I  underlying operation(s)" );
@@ -1906,12 +1906,12 @@ static Obj  HdlrFunc6 (
   /* req := GET_OPER_FLAGS( opr ); */
   t_2 = GF_GET__OPER__FLAGS;
   t_1 = CALL_1ARGS( t_2, l_opr );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_req = t_1;
   
   /* if req = fail then */
   t_2 = GC_fail;
-  CHECK_BOUND( t_2, "fail" )
+  CHECK_BOUND( t_2, "fail" );
   t_1 = (Obj)(UInt)(EQ( l_req, t_2 ));
   if ( t_1 ) {
    
@@ -1920,7 +1920,7 @@ static Obj  HdlrFunc6 (
    t_2 = MakeString( "unknown operation " );
    t_4 = GF_NAME__FUNC;
    t_3 = CALL_1ARGS( t_4, l_opr );
-   CHECK_FUNC_RESULT( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
    CALL_2ARGS( t_1, t_2, t_3 );
    
   }
@@ -1956,10 +1956,10 @@ static Obj  HdlrFunc6 (
    
    /* if not GAPInfo.CommandLineOptions.N then */
    t_9 = GC_GAPInfo;
-   CHECK_BOUND( t_9, "GAPInfo" )
+   CHECK_BOUND( t_9, "GAPInfo" );
    t_8 = ELM_REC( t_9, R_CommandLineOptions );
    t_7 = ELM_REC( t_8, R_N );
-   CHECK_BOOL( t_7 )
+   CHECK_BOOL( t_7 );
    t_6 = (Obj)(UInt)(t_7 != False);
    t_5 = (Obj)(UInt)( ! ((Int)t_6) );
    if ( t_5 ) {
@@ -1968,7 +1968,7 @@ static Obj  HdlrFunc6 (
     t_5 = GF_ADD__LIST;
     t_7 = GF_WITH__HIDDEN__IMPS__FLAGS;
     t_6 = CALL_1ARGS( t_7, l_i );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     CALL_2ARGS( t_5, l_imp, t_6 );
     
    }
@@ -1980,7 +1980,7 @@ static Obj  HdlrFunc6 (
     t_5 = GF_ADD__LIST;
     t_7 = GF_WITH__IMPS__FLAGS;
     t_6 = CALL_1ARGS( t_7, l_i );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     CALL_2ARGS( t_5, l_imp, t_6 );
     
    }
@@ -2003,7 +2003,7 @@ static Obj  HdlrFunc6 (
   while ( 1 ) {
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_req );
-   CHECK_FUNC_RESULT( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
    t_2 = (Obj)(UInt)(LT( l_j, t_3 ));
    t_1 = t_2;
    if ( t_1 ) {
@@ -2018,17 +2018,17 @@ static Obj  HdlrFunc6 (
    l_j = t_1;
    
    /* reqs := req[j]; */
-   CHECK_INT_POS( l_j )
+   CHECK_INT_POS( l_j );
    C_ELM_LIST_FPL( t_1, l_req, l_j )
    l_reqs = t_1;
    
    /* if LEN_LIST( reqs ) = LEN_LIST( imp ) then */
    t_3 = GF_LEN__LIST;
    t_2 = CALL_1ARGS( t_3, l_reqs );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_imp );
-   CHECK_FUNC_RESULT( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
    t_1 = (Obj)(UInt)(EQ( t_2, t_3 ));
    if ( t_1 ) {
     
@@ -2039,8 +2039,8 @@ static Obj  HdlrFunc6 (
     /* for i in [ 1 .. LEN_LIST( reqs ) ] do */
     t_3 = GF_LEN__LIST;
     t_2 = CALL_1ARGS( t_3, l_reqs );
-    CHECK_FUNC_RESULT( t_2 )
-    CHECK_INT_SMALL( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
+    CHECK_INT_SMALL( t_2 );
     for ( t_1 = INTOBJ_INT(1);
           ((Int)t_1) <= ((Int)t_2);
           t_1 = (Obj)(((UInt)t_1)+4) ) {
@@ -2051,8 +2051,8 @@ static Obj  HdlrFunc6 (
      C_ELM_LIST_FPL( t_7, l_imp, l_i )
      C_ELM_LIST_FPL( t_8, l_reqs, l_i )
      t_5 = CALL_2ARGS( t_6, t_7, t_8 );
-     CHECK_FUNC_RESULT( t_5 )
-     CHECK_BOOL( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
+     CHECK_BOOL( t_5 );
      t_4 = (Obj)(UInt)(t_5 != False);
      t_3 = (Obj)(UInt)( ! ((Int)t_4) );
      if ( t_3 ) {
@@ -2100,10 +2100,10 @@ static Obj  HdlrFunc6 (
     
     /* if not GAPInfo.CommandLineOptions.N then */
     t_5 = GC_GAPInfo;
-    CHECK_BOUND( t_5, "GAPInfo" )
+    CHECK_BOUND( t_5, "GAPInfo" );
     t_4 = ELM_REC( t_5, R_CommandLineOptions );
     t_3 = ELM_REC( t_4, R_N );
-    CHECK_BOOL( t_3 )
+    CHECK_BOOL( t_3 );
     t_2 = (Obj)(UInt)(t_3 != False);
     t_1 = (Obj)(UInt)( ! ((Int)t_2) );
     if ( t_1 ) {
@@ -2113,7 +2113,7 @@ static Obj  HdlrFunc6 (
      t_2 = MakeString( "the number of arguments does not match a declaration of " );
      t_4 = GF_NAME__FUNC;
      t_3 = CALL_1ARGS( t_4, l_opr );
-     CHECK_FUNC_RESULT( t_3 )
+     CHECK_FUNC_RESULT( t_3 );
      CALL_2ARGS( t_1, t_2, t_3 );
      
     }
@@ -2127,7 +2127,7 @@ static Obj  HdlrFunc6 (
      t_3 = MakeString( "match a declaration of " );
      t_5 = GF_NAME__FUNC;
      t_4 = CALL_1ARGS( t_5, l_opr );
-     CHECK_FUNC_RESULT( t_4 )
+     CHECK_FUNC_RESULT( t_4 );
      t_5 = MakeString( "\n" );
      CALL_4ARGS( t_1, t_2, t_3, t_4, t_5 );
      
@@ -2141,10 +2141,10 @@ static Obj  HdlrFunc6 (
     
     /* if not GAPInfo.CommandLineOptions.N then */
     t_5 = GC_GAPInfo;
-    CHECK_BOUND( t_5, "GAPInfo" )
+    CHECK_BOUND( t_5, "GAPInfo" );
     t_4 = ELM_REC( t_5, R_CommandLineOptions );
     t_3 = ELM_REC( t_4, R_N );
-    CHECK_BOOL( t_3 )
+    CHECK_BOOL( t_3 );
     t_2 = (Obj)(UInt)(t_3 != False);
     t_1 = (Obj)(UInt)( ! ((Int)t_2) );
     if ( t_1 ) {
@@ -2153,18 +2153,18 @@ static Obj  HdlrFunc6 (
      t_1 = GF_Error;
      t_2 = MakeString( "required filters " );
      t_4 = GF_NamesFilter;
-     CHECK_INT_POS( l_notmatch )
+     CHECK_INT_POS( l_notmatch );
      C_ELM_LIST_FPL( t_5, l_imp, l_notmatch )
      t_3 = CALL_1ARGS( t_4, t_5 );
-     CHECK_FUNC_RESULT( t_3 )
+     CHECK_FUNC_RESULT( t_3 );
      t_4 = MakeString( "\nfor " );
      t_6 = GF_Ordinal;
      t_5 = CALL_1ARGS( t_6, l_notmatch );
-     CHECK_FUNC_RESULT( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
      t_6 = MakeString( " argument do not match a declaration of " );
      t_8 = GF_NAME__FUNC;
      t_7 = CALL_1ARGS( t_8, l_opr );
-     CHECK_FUNC_RESULT( t_7 )
+     CHECK_FUNC_RESULT( t_7 );
      CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, t_6, t_7 );
      
     }
@@ -2181,7 +2181,7 @@ static Obj  HdlrFunc6 (
      CHANGED_BAG( t_2 );
      t_4 = GF_NAME__FUNC;
      t_3 = CALL_1ARGS( t_4, l_opr );
-     CHECK_FUNC_RESULT( t_3 )
+     CHECK_FUNC_RESULT( t_3 );
      SET_ELM_PLIST( t_2, 2, t_3 );
      CHANGED_BAG( t_2 );
      t_3 = MakeString( "(\03" );
@@ -2189,7 +2189,7 @@ static Obj  HdlrFunc6 (
      CHANGED_BAG( t_2 );
      t_4 = GF_INPUT__FILENAME;
      t_3 = CALL_0ARGS( t_4 );
-     CHECK_FUNC_RESULT( t_3 )
+     CHECK_FUNC_RESULT( t_3 );
      SET_ELM_PLIST( t_2, 4, t_3 );
      CHANGED_BAG( t_2 );
      t_3 = MakeString( "\03 +" );
@@ -2197,7 +2197,7 @@ static Obj  HdlrFunc6 (
      CHANGED_BAG( t_2 );
      t_4 = GF_INPUT__LINENUMBER;
      t_3 = CALL_0ARGS( t_4 );
-     CHECK_FUNC_RESULT( t_3 )
+     CHECK_FUNC_RESULT( t_3 );
      SET_ELM_PLIST( t_2, 6, t_3 );
      CHANGED_BAG( t_2 );
      t_3 = MakeString( ") \03" );
@@ -2210,10 +2210,10 @@ static Obj  HdlrFunc6 (
      
      /* for j in NamesFilter( imp[notmatch] ) do */
      t_5 = GF_NamesFilter;
-     CHECK_INT_POS( l_notmatch )
+     CHECK_INT_POS( l_notmatch );
      C_ELM_LIST_FPL( t_6, l_imp, l_notmatch )
      t_4 = CALL_1ARGS( t_5, t_6 );
-     CHECK_FUNC_RESULT( t_4 )
+     CHECK_FUNC_RESULT( t_4 );
      if ( IS_SMALL_LIST(t_4) ) {
       t_3 = (Obj)(UInt)1;
       t_1 = INTOBJ_INT(1);
@@ -2248,7 +2248,7 @@ static Obj  HdlrFunc6 (
      t_2 = MakeString( " for " );
      t_4 = GF_Ordinal;
      t_3 = CALL_1ARGS( t_4, l_notmatch );
-     CHECK_FUNC_RESULT( t_3 )
+     CHECK_FUNC_RESULT( t_3 );
      t_4 = MakeString( " argument do not match \03a " );
      t_5 = MakeString( "declaration\n" );
      CALL_4ARGS( t_1, t_2, t_3, t_4, t_5 );
@@ -2269,28 +2269,28 @@ static Obj  HdlrFunc6 (
    
    /* for k in [ j + 1 .. LEN_LIST( req ) ] do */
    C_SUM_FIA( t_2, l_j, INTOBJ_INT(1) )
-   CHECK_INT_SMALL( t_2 )
+   CHECK_INT_SMALL( t_2 );
    t_4 = GF_LEN__LIST;
    t_3 = CALL_1ARGS( t_4, l_req );
-   CHECK_FUNC_RESULT( t_3 )
-   CHECK_INT_SMALL( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
+   CHECK_INT_SMALL( t_3 );
    for ( t_1 = t_2;
          ((Int)t_1) <= ((Int)t_3);
          t_1 = (Obj)(((UInt)t_1)+4) ) {
     l_k = t_1;
     
     /* reqs := req[k]; */
-    CHECK_INT_POS( l_k )
+    CHECK_INT_POS( l_k );
     C_ELM_LIST_FPL( t_4, l_req, l_k )
     l_reqs = t_4;
     
     /* if LEN_LIST( reqs ) = LEN_LIST( imp ) then */
     t_6 = GF_LEN__LIST;
     t_5 = CALL_1ARGS( t_6, l_reqs );
-    CHECK_FUNC_RESULT( t_5 )
+    CHECK_FUNC_RESULT( t_5 );
     t_7 = GF_LEN__LIST;
     t_6 = CALL_1ARGS( t_7, l_imp );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     t_4 = (Obj)(UInt)(EQ( t_5, t_6 ));
     if ( t_4 ) {
      
@@ -2301,8 +2301,8 @@ static Obj  HdlrFunc6 (
      /* for i in [ 1 .. LEN_LIST( reqs ) ] do */
      t_6 = GF_LEN__LIST;
      t_5 = CALL_1ARGS( t_6, l_reqs );
-     CHECK_FUNC_RESULT( t_5 )
-     CHECK_INT_SMALL( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
+     CHECK_INT_SMALL( t_5 );
      for ( t_4 = INTOBJ_INT(1);
            ((Int)t_4) <= ((Int)t_5);
            t_4 = (Obj)(((UInt)t_4)+4) ) {
@@ -2313,8 +2313,8 @@ static Obj  HdlrFunc6 (
       C_ELM_LIST_FPL( t_10, l_imp, l_i )
       C_ELM_LIST_FPL( t_11, l_reqs, l_i )
       t_8 = CALL_2ARGS( t_9, t_10, t_11 );
-      CHECK_FUNC_RESULT( t_8 )
-      CHECK_BOOL( t_8 )
+      CHECK_FUNC_RESULT( t_8 );
+      CHECK_BOOL( t_8 );
       t_7 = (Obj)(UInt)(t_8 != False);
       t_6 = (Obj)(UInt)( ! ((Int)t_7) );
       if ( t_6 ) {
@@ -2346,7 +2346,7 @@ static Obj  HdlrFunc6 (
       t_5 = MakeString( "method installed for " );
       t_7 = GF_NAME__FUNC;
       t_6 = CALL_1ARGS( t_7, l_opr );
-      CHECK_FUNC_RESULT( t_6 )
+      CHECK_FUNC_RESULT( t_6 );
       t_7 = MakeString( " matches more than one declaration" );
       CALL_4ARGS( t_4, INTOBJ_INT(1), t_5, t_6, t_7 );
       
@@ -2367,7 +2367,7 @@ static Obj  HdlrFunc6 (
  
  /* INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method ); */
  t_1 = GF_INSTALL__METHOD__FLAGS;
- CHECK_BOUND( l_rank, "rank" )
+ CHECK_BOUND( l_rank, "rank" );
  CALL_6ARGS( t_1, l_opr, l_info, l_rel, l_flags, l_rank, l_method );
  
  /* return; */
@@ -2410,7 +2410,7 @@ static Obj  HdlrFunc8 (
  
  /* for prop in props do */
  t_4 = OBJ_HVAR( (1 << 16) | 2 );
- CHECK_BOUND( t_4, "props" )
+ CHECK_BOUND( t_4, "props" );
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
   t_1 = INTOBJ_INT(1);
@@ -2435,11 +2435,11 @@ static Obj  HdlrFunc8 (
   /* if not Tester( prop )( obj ) then */
   t_9 = GF_Tester;
   t_8 = CALL_1ARGS( t_9, l_prop );
-  CHECK_FUNC_RESULT( t_8 )
-  CHECK_FUNC( t_8 )
+  CHECK_FUNC_RESULT( t_8 );
+  CHECK_FUNC( t_8 );
   t_7 = CALL_1ARGS( t_8, a_obj );
-  CHECK_FUNC_RESULT( t_7 )
-  CHECK_BOOL( t_7 )
+  CHECK_FUNC_RESULT( t_7 );
+  CHECK_BOOL( t_7 );
   t_6 = (Obj)(UInt)(t_7 != False);
   t_5 = (Obj)(UInt)( ! ((Int)t_6) );
   if ( t_5 ) {
@@ -2449,20 +2449,20 @@ static Obj  HdlrFunc8 (
    l_found = t_5;
    
    /* if not (prop( obj ) and Tester( prop )( obj )) then */
-   CHECK_FUNC( l_prop )
+   CHECK_FUNC( l_prop );
    t_8 = CALL_1ARGS( l_prop, a_obj );
-   CHECK_FUNC_RESULT( t_8 )
-   CHECK_BOOL( t_8 )
+   CHECK_FUNC_RESULT( t_8 );
+   CHECK_BOOL( t_8 );
    t_7 = (Obj)(UInt)(t_8 != False);
    t_6 = t_7;
    if ( t_6 ) {
     t_11 = GF_Tester;
     t_10 = CALL_1ARGS( t_11, l_prop );
-    CHECK_FUNC_RESULT( t_10 )
-    CHECK_FUNC( t_10 )
+    CHECK_FUNC_RESULT( t_10 );
+    CHECK_FUNC( t_10 );
     t_9 = CALL_1ARGS( t_10, a_obj );
-    CHECK_FUNC_RESULT( t_9 )
-    CHECK_BOOL( t_9 )
+    CHECK_FUNC_RESULT( t_9 );
+    CHECK_BOOL( t_9 );
     t_8 = (Obj)(UInt)(t_9 != False);
     t_6 = t_8;
    }
@@ -2471,7 +2471,7 @@ static Obj  HdlrFunc8 (
     
     /* TryNextMethod(); */
     t_5 = GC_TRY__NEXT__METHOD;
-    CHECK_BOUND( t_5, "TRY_NEXT_METHOD" )
+    CHECK_BOUND( t_5, "TRY_NEXT_METHOD" );
     SWITCH_TO_OLD_FRAME(oldFrame);
     return t_5;
     
@@ -2490,10 +2490,10 @@ static Obj  HdlrFunc8 (
   
   /* return getter( obj ); */
   t_2 = OBJ_HVAR( (1 << 16) | 1 );
-  CHECK_BOUND( t_2, "getter" )
-  CHECK_FUNC( t_2 )
+  CHECK_BOUND( t_2, "getter" );
+  CHECK_FUNC( t_2 );
   t_1 = CALL_1ARGS( t_2, a_obj );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -2504,7 +2504,7 @@ static Obj  HdlrFunc8 (
   
   /* TryNextMethod(); */
   t_1 = GC_TRY__NEXT__METHOD;
-  CHECK_BOUND( t_1, "TRY_NEXT_METHOD" )
+  CHECK_BOUND( t_1, "TRY_NEXT_METHOD" );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -2559,10 +2559,10 @@ static Obj  HdlrFunc7 (
  /* if not IS_IDENTICAL_OBJ( filter, IS_OBJECT ) then */
  t_4 = GF_IS__IDENTICAL__OBJ;
  t_5 = GC_IS__OBJECT;
- CHECK_BOUND( t_5, "IS_OBJECT" )
+ CHECK_BOUND( t_5, "IS_OBJECT" );
  t_3 = CALL_2ARGS( t_4, a_filter, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -2570,7 +2570,7 @@ static Obj  HdlrFunc7 (
   /* flags := FLAGS_FILTER( filter ); */
   t_2 = GF_FLAGS__FILTER;
   t_1 = CALL_1ARGS( t_2, a_filter );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_flags = t_1;
   
   /* rank := 0; */
@@ -2578,7 +2578,7 @@ static Obj  HdlrFunc7 (
   
   /* cats := IS_OBJECT; */
   t_1 = GC_IS__OBJECT;
-  CHECK_BOUND( t_1, "IS_OBJECT" )
+  CHECK_BOUND( t_1, "IS_OBJECT" );
   l_cats = t_1;
   
   /* props := [  ]; */
@@ -2589,7 +2589,7 @@ static Obj  HdlrFunc7 (
   /* for i in TRUES_FLAGS( flags ) do */
   t_5 = GF_TRUES__FLAGS;
   t_4 = CALL_1ARGS( t_5, l_flags );
-  CHECK_FUNC_RESULT( t_4 )
+  CHECK_FUNC_RESULT( t_4 );
   if ( IS_SMALL_LIST(t_4) ) {
    t_3 = (Obj)(UInt)1;
    t_1 = INTOBJ_INT(1);
@@ -2613,11 +2613,11 @@ static Obj  HdlrFunc7 (
    
    /* if INFO_FILTERS[i] in FNUM_CATS_AND_REPS then */
    t_7 = GC_INFO__FILTERS;
-   CHECK_BOUND( t_7, "INFO_FILTERS" )
-   CHECK_INT_POS( l_i )
+   CHECK_BOUND( t_7, "INFO_FILTERS" );
+   CHECK_INT_POS( l_i );
    C_ELM_LIST_FPL( t_6, t_7, l_i )
    t_7 = GC_FNUM__CATS__AND__REPS;
-   CHECK_BOUND( t_7, "FNUM_CATS_AND_REPS" )
+   CHECK_BOUND( t_7, "FNUM_CATS_AND_REPS" );
    t_5 = (Obj)(UInt)(IN( t_6, t_7 ));
    if ( t_5 ) {
     
@@ -2627,14 +2627,14 @@ static Obj  HdlrFunc7 (
     }
     else if ( l_cats == True ) {
      t_7 = GC_FILTERS;
-     CHECK_BOUND( t_7, "FILTERS" )
+     CHECK_BOUND( t_7, "FILTERS" );
      C_ELM_LIST_FPL( t_6, t_7, l_i )
-     CHECK_BOOL( t_6 )
+     CHECK_BOOL( t_6 );
      t_5 = t_6;
     }
     else if (IS_FILTER( l_cats ) ) {
      t_8 = GC_FILTERS;
-     CHECK_BOUND( t_8, "FILTERS" )
+     CHECK_BOUND( t_8, "FILTERS" );
      C_ELM_LIST_FPL( t_7, t_8, l_i )
      t_5 = NewAndFilter( l_cats, t_7 );
     }
@@ -2647,10 +2647,10 @@ static Obj  HdlrFunc7 (
     /* rank := rank - RankFilter( FILTERS[i] ); */
     t_7 = GF_RankFilter;
     t_9 = GC_FILTERS;
-    CHECK_BOUND( t_9, "FILTERS" )
+    CHECK_BOUND( t_9, "FILTERS" );
     C_ELM_LIST_FPL( t_8, t_9, l_i )
     t_6 = CALL_1ARGS( t_7, t_8 );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     C_DIFF_FIA( t_5, l_rank, t_6 )
     l_rank = t_5;
     
@@ -2659,19 +2659,19 @@ static Obj  HdlrFunc7 (
    /* elif INFO_FILTERS[i] in FNUM_PROS then */
    else {
     t_7 = GC_INFO__FILTERS;
-    CHECK_BOUND( t_7, "INFO_FILTERS" )
+    CHECK_BOUND( t_7, "INFO_FILTERS" );
     C_ELM_LIST_FPL( t_6, t_7, l_i )
     t_7 = GC_FNUM__PROS;
-    CHECK_BOUND( t_7, "FNUM_PROS" )
+    CHECK_BOUND( t_7, "FNUM_PROS" );
     t_5 = (Obj)(UInt)(IN( t_6, t_7 ));
     if ( t_5 ) {
      
      /* ADD_LIST( props, FILTERS[i] ); */
      t_5 = GF_ADD__LIST;
      t_6 = OBJ_LVAR( 2 );
-     CHECK_BOUND( t_6, "props" )
+     CHECK_BOUND( t_6, "props" );
      t_8 = GC_FILTERS;
-     CHECK_BOUND( t_8, "FILTERS" )
+     CHECK_BOUND( t_8, "FILTERS" );
      C_ELM_LIST_FPL( t_7, t_8, l_i )
      CALL_2ARGS( t_5, t_6, t_7 );
      
@@ -2685,15 +2685,15 @@ static Obj  HdlrFunc7 (
   /* MakeImmutable( props ); */
   t_1 = GF_MakeImmutable;
   t_2 = OBJ_LVAR( 2 );
-  CHECK_BOUND( t_2, "props" )
+  CHECK_BOUND( t_2, "props" );
   CALL_1ARGS( t_1, t_2 );
   
   /* if 0 < LEN_LIST( props ) then */
   t_3 = GF_LEN__LIST;
   t_4 = OBJ_LVAR( 2 );
-  CHECK_BOUND( t_4, "props" )
+  CHECK_BOUND( t_4, "props" );
   t_2 = CALL_1ARGS( t_3, t_4 );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(LT( INTOBJ_INT(0), t_2 ));
   if ( t_1 ) {
    
@@ -2717,7 +2717,7 @@ static Obj  HdlrFunc7 (
   end ); */
    t_1 = GF_InstallOtherMethod;
    t_2 = OBJ_LVAR( 1 );
-   CHECK_BOUND( t_2, "getter" )
+   CHECK_BOUND( t_2, "getter" );
    t_3 = MakeString( "default method requiring categories and checking properties" );
    t_4 = True;
    t_5 = NEW_PLIST( T_PLIST, 1 );
@@ -2775,15 +2775,15 @@ static Obj  HdlrFunc9 (
  t_4 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_4, 2 );
  t_5 = GC_IS__OBJECT;
- CHECK_BOUND( t_5, "IS_OBJECT" )
+ CHECK_BOUND( t_5, "IS_OBJECT" );
  SET_ELM_PLIST( t_4, 1, t_5 );
  CHANGED_BAG( t_4 );
  t_5 = GC_IS__OBJECT;
- CHECK_BOUND( t_5, "IS_OBJECT" )
+ CHECK_BOUND( t_5, "IS_OBJECT" );
  SET_ELM_PLIST( t_4, 2, t_5 );
  CHANGED_BAG( t_4 );
  t_5 = GC_DO__NOTHING__SETTER;
- CHECK_BOUND( t_5, "DO_NOTHING_SETTER" )
+ CHECK_BOUND( t_5, "DO_NOTHING_SETTER" );
  CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
  
  /* return; */
@@ -2821,7 +2821,7 @@ static Obj  HdlrFunc10 (
  /* k := LEN_LIST( list ) + 1; */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_list );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  l_k = t_1;
  
@@ -2851,13 +2851,13 @@ static Obj  HdlrFunc10 (
   C_SUM_FIA( t_6, l_i, l_k )
   C_SUM_FIA( t_5, t_6, INTOBJ_INT(2) )
   t_3 = CALL_2ARGS( t_4, t_5, INTOBJ_INT(4) );
-  CHECK_FUNC_RESULT( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
   C_PROD_FIA( t_2, INTOBJ_INT(2), t_3 )
   C_DIFF_FIA( t_1, t_2, INTOBJ_INT(1) )
   l_j = t_1;
   
   /* if list[j] < elm then */
-  CHECK_INT_POS( l_j )
+  CHECK_INT_POS( l_j );
   C_ELM_LIST_FPL( t_2, a_list, l_j )
   t_1 = (Obj)(UInt)(LT( t_2, a_elm ));
   if ( t_1 ) {
@@ -2905,8 +2905,8 @@ static Obj  HdlrFunc12 (
  /* if not IsPrimeInt( key ) then */
  t_4 = GF_IsPrimeInt;
  t_3 = CALL_1ARGS( t_4, a_key );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -2914,7 +2914,7 @@ static Obj  HdlrFunc12 (
   /* Error( name, ": <p> must be a prime" ); */
   t_1 = GF_Error;
   t_2 = OBJ_HVAR( (1 << 16) | 1 );
-  CHECK_BOUND( t_2, "name" )
+  CHECK_BOUND( t_2, "name" );
   t_3 = MakeString( ": <p> must be a prime" );
   CALL_2ARGS( t_1, t_2, t_3 );
   
@@ -2976,32 +2976,32 @@ static Obj  HdlrFunc14 (
  
  /* keytest( key ); */
  t_1 = OBJ_HVAR( (1 << 16) | 2 );
- CHECK_BOUND( t_1, "keytest" )
- CHECK_FUNC( t_1 )
+ CHECK_BOUND( t_1, "keytest" );
+ CHECK_FUNC( t_1 );
  CALL_1ARGS( t_1, a_key );
  
  /* known := attr( D ); */
  t_2 = OBJ_HVAR( (1 << 16) | 4 );
- CHECK_BOUND( t_2, "attr" )
- CHECK_FUNC( t_2 )
+ CHECK_BOUND( t_2, "attr" );
+ CHECK_FUNC( t_2 );
  t_1 = CALL_1ARGS( t_2, a_D );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_known = t_1;
  
  /* i := PositionSortedOddPositions( known, key ); */
  t_2 = GF_PositionSortedOddPositions;
  t_1 = CALL_2ARGS( t_2, l_known, a_key );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_i = t_1;
  
  /* if LEN_LIST( known ) < i or known[i] <> key then */
  t_4 = GF_LEN__LIST;
  t_3 = CALL_1ARGS( t_4, l_known );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_2 = (Obj)(UInt)(LT( t_3, l_i ));
  t_1 = t_2;
  if ( ! t_1 ) {
-  CHECK_INT_POS( l_i )
+  CHECK_INT_POS( l_i );
   C_ELM_LIST_FPL( t_4, l_known, l_i )
   t_3 = (Obj)(UInt)( ! EQ( t_4, a_key ));
   t_1 = t_3;
@@ -3010,26 +3010,26 @@ static Obj  HdlrFunc14 (
   
   /* erg := oper( D, key ); */
   t_2 = OBJ_HVAR( (1 << 16) | 3 );
-  CHECK_BOUND( t_2, "oper" )
-  CHECK_FUNC( t_2 )
+  CHECK_BOUND( t_2, "oper" );
+  CHECK_FUNC( t_2 );
   t_1 = CALL_2ARGS( t_2, a_D, a_key );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_erg = t_1;
   
   /* i := PositionSortedOddPositions( known, key ); */
   t_2 = GF_PositionSortedOddPositions;
   t_1 = CALL_2ARGS( t_2, l_known, a_key );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_i = t_1;
   
   /* if LEN_LIST( known ) < i or known[i] <> key then */
   t_4 = GF_LEN__LIST;
   t_3 = CALL_1ARGS( t_4, l_known );
-  CHECK_FUNC_RESULT( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
   t_2 = (Obj)(UInt)(LT( t_3, l_i ));
   t_1 = t_2;
   if ( ! t_1 ) {
-   CHECK_INT_POS( l_i )
+   CHECK_INT_POS( l_i );
    C_ELM_LIST_FPL( t_4, l_known, l_i )
    t_3 = (Obj)(UInt)( ! EQ( t_4, a_key ));
    t_1 = t_3;
@@ -3040,29 +3040,29 @@ static Obj  HdlrFunc14 (
    C_SUM_FIA( t_2, l_i, INTOBJ_INT(2) )
    t_5 = GF_LEN__LIST;
    t_4 = CALL_1ARGS( t_5, l_known );
-   CHECK_FUNC_RESULT( t_4 )
+   CHECK_FUNC_RESULT( t_4 );
    C_SUM_FIA( t_3, t_4, INTOBJ_INT(2) )
    t_1 = Range2Check( t_2, t_3 );
    t_5 = GF_LEN__LIST;
    t_4 = CALL_1ARGS( t_5, l_known );
-   CHECK_FUNC_RESULT( t_4 )
+   CHECK_FUNC_RESULT( t_4 );
    t_3 = Range2Check( l_i, t_4 );
    t_2 = ElmsListCheck( l_known, t_3 );
    AsssListCheck( l_known, t_1, t_2 );
    
    /* known[i] := IMMUTABLE_COPY_OBJ( key ); */
-   CHECK_INT_POS( l_i )
+   CHECK_INT_POS( l_i );
    t_2 = GF_IMMUTABLE__COPY__OBJ;
    t_1 = CALL_1ARGS( t_2, a_key );
-   CHECK_FUNC_RESULT( t_1 )
+   CHECK_FUNC_RESULT( t_1 );
    C_ASS_LIST_FPL( l_known, l_i, t_1 )
    
    /* known[i + 1] := IMMUTABLE_COPY_OBJ( erg ); */
    C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_1 )
+   CHECK_INT_POS( t_1 );
    t_3 = GF_IMMUTABLE__COPY__OBJ;
    t_2 = CALL_1ARGS( t_3, l_erg );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    C_ASS_LIST_FPL( l_known, t_1, t_2 )
    
   }
@@ -3073,7 +3073,7 @@ static Obj  HdlrFunc14 (
  
  /* return known[i + 1]; */
  C_SUM_FIA( t_2, l_i, INTOBJ_INT(1) )
- CHECK_INT_POS( t_2 )
+ CHECK_INT_POS( t_2 );
  C_ELM_LIST_FPL( t_1, l_known, t_2 )
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
@@ -3105,34 +3105,34 @@ static Obj  HdlrFunc15 (
  
  /* keytest( key ); */
  t_1 = OBJ_HVAR( (1 << 16) | 2 );
- CHECK_BOUND( t_1, "keytest" )
- CHECK_FUNC( t_1 )
+ CHECK_BOUND( t_1, "keytest" );
+ CHECK_FUNC( t_1 );
  CALL_1ARGS( t_1, a_key );
  
  /* known := attr( D ); */
  t_2 = OBJ_HVAR( (1 << 16) | 4 );
- CHECK_BOUND( t_2, "attr" )
- CHECK_FUNC( t_2 )
+ CHECK_BOUND( t_2, "attr" );
+ CHECK_FUNC( t_2 );
  t_1 = CALL_1ARGS( t_2, a_D );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_known = t_1;
  
  /* i := PositionSortedOddPositions( known, key ); */
  t_2 = GF_PositionSortedOddPositions;
  t_1 = CALL_2ARGS( t_2, l_known, a_key );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_i = t_1;
  
  /* return i <= LEN_LIST( known ) and known[i] = key; */
  t_4 = GF_LEN__LIST;
  t_3 = CALL_1ARGS( t_4, l_known );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_2 = (LT( t_3, l_i ) ?  False : True);
  if ( t_2 == False ) {
   t_1 = t_2;
  }
  else if ( t_2 == True ) {
-  CHECK_INT_POS( l_i )
+  CHECK_INT_POS( l_i );
   C_ELM_LIST_FPL( t_4, l_known, l_i )
   t_3 = (EQ( t_4, a_key ) ? True : False);
   t_1 = t_3;
@@ -3177,32 +3177,32 @@ static Obj  HdlrFunc16 (
  
  /* keytest( key ); */
  t_1 = OBJ_HVAR( (1 << 16) | 2 );
- CHECK_BOUND( t_1, "keytest" )
- CHECK_FUNC( t_1 )
+ CHECK_BOUND( t_1, "keytest" );
+ CHECK_FUNC( t_1 );
  CALL_1ARGS( t_1, a_key );
  
  /* known := attr( D ); */
  t_2 = OBJ_HVAR( (1 << 16) | 4 );
- CHECK_BOUND( t_2, "attr" )
- CHECK_FUNC( t_2 )
+ CHECK_BOUND( t_2, "attr" );
+ CHECK_FUNC( t_2 );
  t_1 = CALL_1ARGS( t_2, a_D );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_known = t_1;
  
  /* i := PositionSortedOddPositions( known, key ); */
  t_2 = GF_PositionSortedOddPositions;
  t_1 = CALL_2ARGS( t_2, l_known, a_key );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_i = t_1;
  
  /* if LEN_LIST( known ) < i or known[i] <> key then */
  t_4 = GF_LEN__LIST;
  t_3 = CALL_1ARGS( t_4, l_known );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_2 = (Obj)(UInt)(LT( t_3, l_i ));
  t_1 = t_2;
  if ( ! t_1 ) {
-  CHECK_INT_POS( l_i )
+  CHECK_INT_POS( l_i );
   C_ELM_LIST_FPL( t_4, l_known, l_i )
   t_3 = (Obj)(UInt)( ! EQ( t_4, a_key ));
   t_1 = t_3;
@@ -3213,29 +3213,29 @@ static Obj  HdlrFunc16 (
   C_SUM_FIA( t_2, l_i, INTOBJ_INT(2) )
   t_5 = GF_LEN__LIST;
   t_4 = CALL_1ARGS( t_5, l_known );
-  CHECK_FUNC_RESULT( t_4 )
+  CHECK_FUNC_RESULT( t_4 );
   C_SUM_FIA( t_3, t_4, INTOBJ_INT(2) )
   t_1 = Range2Check( t_2, t_3 );
   t_5 = GF_LEN__LIST;
   t_4 = CALL_1ARGS( t_5, l_known );
-  CHECK_FUNC_RESULT( t_4 )
+  CHECK_FUNC_RESULT( t_4 );
   t_3 = Range2Check( l_i, t_4 );
   t_2 = ElmsListCheck( l_known, t_3 );
   AsssListCheck( l_known, t_1, t_2 );
   
   /* known[i] := IMMUTABLE_COPY_OBJ( key ); */
-  CHECK_INT_POS( l_i )
+  CHECK_INT_POS( l_i );
   t_2 = GF_IMMUTABLE__COPY__OBJ;
   t_1 = CALL_1ARGS( t_2, a_key );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   C_ASS_LIST_FPL( l_known, l_i, t_1 )
   
   /* known[i + 1] := IMMUTABLE_COPY_OBJ( obj ); */
   C_SUM_FIA( t_1, l_i, INTOBJ_INT(1) )
-  CHECK_INT_POS( t_1 )
+  CHECK_INT_POS( t_1 );
   t_3 = GF_IMMUTABLE__COPY__OBJ;
   t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   C_ASS_LIST_FPL( l_known, t_1, t_2 )
   
  }
@@ -3279,7 +3279,7 @@ static Obj  HdlrFunc11 (
  
  /* if keytest = "prime" then */
  t_2 = OBJ_LVAR( 2 );
- CHECK_BOUND( t_2, "keytest" )
+ CHECK_BOUND( t_2, "keytest" );
  t_3 = MakeString( "prime" );
  t_1 = (Obj)(UInt)(EQ( t_2, t_3 ));
  if ( t_1 ) {
@@ -3305,9 +3305,9 @@ static Obj  HdlrFunc11 (
  /* str := SHALLOW_COPY_OBJ( name ); */
  t_2 = GF_SHALLOW__COPY__OBJ;
  t_3 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_3, "name" )
+ CHECK_BOUND( t_3, "name" );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_str = t_1;
  
  /* APPEND_LIST_INTR( str, "Op" ); */
@@ -3328,7 +3328,7 @@ static Obj  HdlrFunc11 (
  /* oper := VALUE_GLOBAL( str ); */
  t_2 = GF_VALUE__GLOBAL;
  t_1 = CALL_1ARGS( t_2, l_str );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  ASS_LVAR( 3, t_1 );
  
  /* str := "Computed"; */
@@ -3338,7 +3338,7 @@ static Obj  HdlrFunc11 (
  /* APPEND_LIST_INTR( str, name ); */
  t_1 = GF_APPEND__LIST__INTR;
  t_2 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_2, "name" )
+ CHECK_BOUND( t_2, "name" );
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* APPEND_LIST_INTR( str, "s" ); */
@@ -3354,7 +3354,7 @@ static Obj  HdlrFunc11 (
  /* attr := VALUE_GLOBAL( str ); */
  t_2 = GF_VALUE__GLOBAL;
  t_1 = CALL_1ARGS( t_2, l_str );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  ASS_LVAR( 4, t_1 );
  
  /* InstallMethod( attr, "default method", true, [ domreq ], 0, function ( D )
@@ -3362,7 +3362,7 @@ static Obj  HdlrFunc11 (
   end ); */
  t_1 = GF_InstallMethod;
  t_2 = OBJ_LVAR( 4 );
- CHECK_BOUND( t_2, "attr" )
+ CHECK_BOUND( t_2, "attr" );
  t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 1 );
@@ -3381,7 +3381,7 @@ static Obj  HdlrFunc11 (
  /* DeclareOperation( name, [ domreq, keyreq ] ); */
  t_1 = GF_DeclareOperation;
  t_2 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_2, "name" )
+ CHECK_BOUND( t_2, "name" );
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  SET_ELM_PLIST( t_3, 1, a_domreq );
@@ -3393,12 +3393,12 @@ static Obj  HdlrFunc11 (
  /* ADD_LIST( WRAPPER_OPERATIONS, VALUE_GLOBAL( name ) ); */
  t_1 = GF_ADD__LIST;
  t_2 = GC_WRAPPER__OPERATIONS;
- CHECK_BOUND( t_2, "WRAPPER_OPERATIONS" )
+ CHECK_BOUND( t_2, "WRAPPER_OPERATIONS" );
  t_4 = GF_VALUE__GLOBAL;
  t_5 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_5, "name" )
+ CHECK_BOUND( t_5, "name" );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* InstallOtherMethod( VALUE_GLOBAL( name ), "default method", true, [ domreq, keyreq ], 0, function ( D, key )
@@ -3420,9 +3420,9 @@ static Obj  HdlrFunc11 (
  t_1 = GF_InstallOtherMethod;
  t_3 = GF_VALUE__GLOBAL;
  t_4 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_4, "name" )
+ CHECK_BOUND( t_4, "name" );
  t_2 = CALL_1ARGS( t_3, t_4 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 2 );
@@ -3447,7 +3447,7 @@ static Obj  HdlrFunc11 (
  /* APPEND_LIST_INTR( str, name ); */
  t_1 = GF_APPEND__LIST__INTR;
  t_2 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_2, "name" )
+ CHECK_BOUND( t_2, "name" );
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* DeclareOperation( str, [ domreq, keyreq ] ); */
@@ -3470,7 +3470,7 @@ static Obj  HdlrFunc11 (
  t_1 = GF_InstallOtherMethod;
  t_3 = GF_VALUE__GLOBAL;
  t_2 = CALL_1ARGS( t_3, l_str );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 2 );
@@ -3495,7 +3495,7 @@ static Obj  HdlrFunc11 (
  /* APPEND_LIST_INTR( str, name ); */
  t_1 = GF_APPEND__LIST__INTR;
  t_2 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_2, "name" )
+ CHECK_BOUND( t_2, "name" );
  CALL_2ARGS( t_1, l_str, t_2 );
  
  /* DeclareOperation( str, [ domreq, keyreq, IS_OBJECT ] ); */
@@ -3507,7 +3507,7 @@ static Obj  HdlrFunc11 (
  SET_ELM_PLIST( t_2, 2, a_keyreq );
  CHANGED_BAG( t_2 );
  t_3 = GC_IS__OBJECT;
- CHECK_BOUND( t_3, "IS_OBJECT" )
+ CHECK_BOUND( t_3, "IS_OBJECT" );
  SET_ELM_PLIST( t_2, 3, t_3 );
  CHANGED_BAG( t_2 );
  CALL_2ARGS( t_1, l_str, t_2 );
@@ -3527,7 +3527,7 @@ static Obj  HdlrFunc11 (
  t_1 = GF_InstallOtherMethod;
  t_3 = GF_VALUE__GLOBAL;
  t_2 = CALL_1ARGS( t_3, l_str );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "default method" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 3 );
@@ -3537,7 +3537,7 @@ static Obj  HdlrFunc11 (
  SET_ELM_PLIST( t_5, 2, a_keyreq );
  CHANGED_BAG( t_5 );
  t_6 = GC_IS__OBJECT;
- CHECK_BOUND( t_6, "IS_OBJECT" )
+ CHECK_BOUND( t_6, "IS_OBJECT" );
  SET_ELM_PLIST( t_5, 3, t_6 );
  CHANGED_BAG( t_5 );
  t_6 = NewFunction( NameFunc[16], 3, ArgStringToList("D,key,obj"), HdlrFunc16 );
@@ -3593,9 +3593,9 @@ static Obj  HdlrFunc18 (
  /* for i in [ 1 .. LEN_LIST( reqs ) ] do */
  t_6 = GF_LEN__LIST;
  t_7 = OBJ_HVAR( (1 << 16) | 2 );
- CHECK_BOUND( t_7, "reqs" )
+ CHECK_BOUND( t_7, "reqs" );
  t_5 = CALL_1ARGS( t_6, t_7 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_4 = Range2Check( INTOBJ_INT(1), t_5 );
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
@@ -3620,37 +3620,37 @@ static Obj  HdlrFunc18 (
   
   /* re := re or IsBound( cond[i] ) and not Tester( cond[i] )( arg[i] ) and cond[i]( arg[i] ) and Tester( cond[i] )( arg[i] ); */
   t_7 = OBJ_HVAR( (1 << 16) | 4 );
-  CHECK_BOUND( t_7, "re" )
-  CHECK_BOOL( t_7 )
+  CHECK_BOUND( t_7, "re" );
+  CHECK_BOOL( t_7 );
   t_6 = (Obj)(UInt)(t_7 != False);
   t_5 = (t_6 ? True : False);
   if ( t_5 == False ) {
    t_12 = OBJ_HVAR( (1 << 16) | 3 );
-   CHECK_BOUND( t_12, "cond" )
+   CHECK_BOUND( t_12, "cond" );
    t_13 = OBJ_HVAR( (1 << 16) | 5 );
-   CHECK_BOUND( t_13, "i" )
-   CHECK_INT_POS( t_13 )
+   CHECK_BOUND( t_13, "i" );
+   CHECK_INT_POS( t_13 );
    t_11 = C_ISB_LIST( t_12, t_13 );
    t_10 = (Obj)(UInt)(t_11 != False);
    t_9 = t_10;
    if ( t_9 ) {
     t_15 = GF_Tester;
     t_17 = OBJ_HVAR( (1 << 16) | 3 );
-    CHECK_BOUND( t_17, "cond" )
+    CHECK_BOUND( t_17, "cond" );
     t_18 = OBJ_HVAR( (1 << 16) | 5 );
-    CHECK_BOUND( t_18, "i" )
-    CHECK_INT_POS( t_18 )
+    CHECK_BOUND( t_18, "i" );
+    CHECK_INT_POS( t_18 );
     C_ELM_LIST_FPL( t_16, t_17, t_18 )
     t_14 = CALL_1ARGS( t_15, t_16 );
-    CHECK_FUNC_RESULT( t_14 )
-    CHECK_FUNC( t_14 )
+    CHECK_FUNC_RESULT( t_14 );
+    CHECK_FUNC( t_14 );
     t_16 = OBJ_HVAR( (1 << 16) | 5 );
-    CHECK_BOUND( t_16, "i" )
-    CHECK_INT_POS( t_16 )
+    CHECK_BOUND( t_16, "i" );
+    CHECK_INT_POS( t_16 );
     C_ELM_LIST_FPL( t_15, a_arg, t_16 )
     t_13 = CALL_1ARGS( t_14, t_15 );
-    CHECK_FUNC_RESULT( t_13 )
-    CHECK_BOOL( t_13 )
+    CHECK_FUNC_RESULT( t_13 );
+    CHECK_BOOL( t_13 );
     t_12 = (Obj)(UInt)(t_13 != False);
     t_11 = (Obj)(UInt)( ! ((Int)t_12) );
     t_9 = t_11;
@@ -3658,19 +3658,19 @@ static Obj  HdlrFunc18 (
    t_8 = t_9;
    if ( t_8 ) {
     t_13 = OBJ_HVAR( (1 << 16) | 3 );
-    CHECK_BOUND( t_13, "cond" )
+    CHECK_BOUND( t_13, "cond" );
     t_14 = OBJ_HVAR( (1 << 16) | 5 );
-    CHECK_BOUND( t_14, "i" )
-    CHECK_INT_POS( t_14 )
+    CHECK_BOUND( t_14, "i" );
+    CHECK_INT_POS( t_14 );
     C_ELM_LIST_FPL( t_12, t_13, t_14 )
-    CHECK_FUNC( t_12 )
+    CHECK_FUNC( t_12 );
     t_14 = OBJ_HVAR( (1 << 16) | 5 );
-    CHECK_BOUND( t_14, "i" )
-    CHECK_INT_POS( t_14 )
+    CHECK_BOUND( t_14, "i" );
+    CHECK_INT_POS( t_14 );
     C_ELM_LIST_FPL( t_13, a_arg, t_14 )
     t_11 = CALL_1ARGS( t_12, t_13 );
-    CHECK_FUNC_RESULT( t_11 )
-    CHECK_BOOL( t_11 )
+    CHECK_FUNC_RESULT( t_11 );
+    CHECK_BOOL( t_11 );
     t_10 = (Obj)(UInt)(t_11 != False);
     t_8 = t_10;
    }
@@ -3678,21 +3678,21 @@ static Obj  HdlrFunc18 (
    if ( t_7 ) {
     t_12 = GF_Tester;
     t_14 = OBJ_HVAR( (1 << 16) | 3 );
-    CHECK_BOUND( t_14, "cond" )
+    CHECK_BOUND( t_14, "cond" );
     t_15 = OBJ_HVAR( (1 << 16) | 5 );
-    CHECK_BOUND( t_15, "i" )
-    CHECK_INT_POS( t_15 )
+    CHECK_BOUND( t_15, "i" );
+    CHECK_INT_POS( t_15 );
     C_ELM_LIST_FPL( t_13, t_14, t_15 )
     t_11 = CALL_1ARGS( t_12, t_13 );
-    CHECK_FUNC_RESULT( t_11 )
-    CHECK_FUNC( t_11 )
+    CHECK_FUNC_RESULT( t_11 );
+    CHECK_FUNC( t_11 );
     t_13 = OBJ_HVAR( (1 << 16) | 5 );
-    CHECK_BOUND( t_13, "i" )
-    CHECK_INT_POS( t_13 )
+    CHECK_BOUND( t_13, "i" );
+    CHECK_INT_POS( t_13 );
     C_ELM_LIST_FPL( t_12, a_arg, t_13 )
     t_10 = CALL_1ARGS( t_11, t_12 );
-    CHECK_FUNC_RESULT( t_10 )
-    CHECK_BOOL( t_10 )
+    CHECK_FUNC_RESULT( t_10 );
+    CHECK_BOOL( t_10 );
     t_9 = (Obj)(UInt)(t_10 != False);
     t_7 = t_9;
    }
@@ -3705,17 +3705,17 @@ static Obj  HdlrFunc18 (
  
  /* if re then */
  t_2 = OBJ_HVAR( (1 << 16) | 4 );
- CHECK_BOUND( t_2, "re" )
- CHECK_BOOL( t_2 )
+ CHECK_BOUND( t_2, "re" );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
   /* return CallFuncList( oper, arg ); */
   t_2 = GF_CallFuncList;
   t_3 = OBJ_HVAR( (1 << 16) | 1 );
-  CHECK_BOUND( t_3, "oper" )
+  CHECK_BOUND( t_3, "oper" );
   t_1 = CALL_2ARGS( t_2, t_3, a_arg );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -3726,7 +3726,7 @@ static Obj  HdlrFunc18 (
   
   /* TryNextMethod(); */
   t_1 = GC_TRY__NEXT__METHOD;
-  CHECK_BOUND( t_1, "TRY_NEXT_METHOD" )
+  CHECK_BOUND( t_1, "TRY_NEXT_METHOD" );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -3770,7 +3770,7 @@ static Obj  HdlrFunc17 (
  /* if LEN_LIST( arg ) = 5 then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_arg );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(5) ));
  if ( t_1 ) {
   
@@ -3804,7 +3804,7 @@ static Obj  HdlrFunc17 (
  else {
   t_3 = GF_LEN__LIST;
   t_2 = CALL_1ARGS( t_3, a_arg );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(6) ));
   if ( t_1 ) {
    
@@ -3848,7 +3848,7 @@ static Obj  HdlrFunc17 (
  
  /* for i in reqs do */
  t_4 = OBJ_LVAR( 2 );
- CHECK_BOUND( t_4, "reqs" )
+ CHECK_BOUND( t_4, "reqs" );
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
   t_1 = INTOBJ_INT(1);
@@ -3871,12 +3871,12 @@ static Obj  HdlrFunc17 (
   ASS_LVAR( 5, t_2 );
   
   /* val := val - RankFilter( i ); */
-  CHECK_BOUND( l_val, "val" )
+  CHECK_BOUND( l_val, "val" );
   t_7 = GF_RankFilter;
   t_8 = OBJ_LVAR( 5 );
-  CHECK_BOUND( t_8, "i" )
+  CHECK_BOUND( t_8, "i" );
   t_6 = CALL_1ARGS( t_7, t_8 );
-  CHECK_FUNC_RESULT( t_6 )
+  CHECK_FUNC_RESULT( t_6 );
   C_DIFF_FIA( t_5, l_val, t_6 )
   l_val = t_5;
   
@@ -3897,11 +3897,11 @@ static Obj  HdlrFunc17 (
   end ); */
  t_1 = GF_InstallOtherMethod;
  t_2 = OBJ_LVAR( 1 );
- CHECK_BOUND( t_2, "oper" )
- CHECK_BOUND( l_info, "info" )
- CHECK_BOUND( l_fampred, "fampred" )
+ CHECK_BOUND( t_2, "oper" );
+ CHECK_BOUND( l_info, "info" );
+ CHECK_BOUND( l_fampred, "fampred" );
  t_3 = OBJ_LVAR( 2 );
- CHECK_BOUND( t_3, "reqs" )
+ CHECK_BOUND( t_3, "reqs" );
  t_4 = NewFunction( NameFunc[18], -1, ArgStringToList("arg"), HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();
@@ -4318,7 +4318,7 @@ static Obj  HdlrFunc1 (
  
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (6 + 2); */
  t_2 = GC_LENGTH__SETTER__METHODS__2;
- CHECK_BOUND( t_2, "LENGTH_SETTER_METHODS_2" )
+ CHECK_BOUND( t_2, "LENGTH_SETTER_METHODS_2" );
  C_SUM_INTOBJS( t_3, INTOBJ_INT(6), INTOBJ_INT(2) )
  C_SUM_FIA( t_1, t_2, t_3 )
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
@@ -4554,17 +4554,17 @@ static Obj  HdlrFunc1 (
  /* InstallMethod( ViewObj, "default method using `PrintObj'", true, [ IS_OBJECT ], 0, PRINT_OBJ ); */
  t_1 = GF_InstallMethod;
  t_2 = GC_ViewObj;
- CHECK_BOUND( t_2, "ViewObj" )
+ CHECK_BOUND( t_2, "ViewObj" );
  t_3 = MakeString( "default method using `PrintObj'" );
  t_4 = True;
  t_5 = NEW_PLIST( T_PLIST, 1 );
  SET_LEN_PLIST( t_5, 1 );
  t_6 = GC_IS__OBJECT;
- CHECK_BOUND( t_6, "IS_OBJECT" )
+ CHECK_BOUND( t_6, "IS_OBJECT" );
  SET_ELM_PLIST( t_5, 1, t_6 );
  CHANGED_BAG( t_5 );
  t_6 = GC_PRINT__OBJ;
- CHECK_BOUND( t_6, "PRINT_OBJ" )
+ CHECK_BOUND( t_6, "PRINT_OBJ" );
  CALL_6ARGS( t_1, t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 );
  
  /* return; */

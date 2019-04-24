@@ -36,15 +36,15 @@ static Obj  HdlrFunc2 (
  t_1 = GF_Print;
  t_3 = GF_InfoLevel;
  t_4 = GC_InfoDebug;
- CHECK_BOUND( t_4, "InfoDebug" )
+ CHECK_BOUND( t_4, "InfoDebug" );
  t_2 = CALL_1ARGS( t_3, t_4 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;
- CHECK_BOUND( t_1, "InfoDebug" )
+ CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(2) );
  if ( t_3 == True ) {
   t_2 = NEW_PLIST( T_PLIST, 1 );
@@ -57,7 +57,7 @@ static Obj  HdlrFunc2 (
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;
- CHECK_BOUND( t_1, "InfoDebug" )
+ CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(1) );
  if ( t_3 == True ) {
   t_2 = NEW_PLIST( T_PLIST, 1 );
@@ -71,22 +71,22 @@ static Obj  HdlrFunc2 (
  /* SetInfoLevel( InfoDebug, 2 ); */
  t_1 = GF_SetInfoLevel;
  t_2 = GC_InfoDebug;
- CHECK_BOUND( t_2, "InfoDebug" )
+ CHECK_BOUND( t_2, "InfoDebug" );
  CALL_2ARGS( t_1, t_2, INTOBJ_INT(2) );
  
  /* Print( InfoLevel( InfoDebug ), "\n" ); */
  t_1 = GF_Print;
  t_3 = GF_InfoLevel;
  t_4 = GC_InfoDebug;
- CHECK_BOUND( t_4, "InfoDebug" )
+ CHECK_BOUND( t_4, "InfoDebug" );
  t_2 = CALL_1ARGS( t_3, t_4 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;
- CHECK_BOUND( t_1, "InfoDebug" )
+ CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(3) );
  if ( t_3 == True ) {
   t_2 = NEW_PLIST( T_PLIST, 1 );
@@ -99,7 +99,7 @@ static Obj  HdlrFunc2 (
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;
- CHECK_BOUND( t_1, "InfoDebug" )
+ CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(2) );
  if ( t_3 == True ) {
   t_2 = NEW_PLIST( T_PLIST, 1 );
@@ -112,7 +112,7 @@ static Obj  HdlrFunc2 (
  
  /* Info( ... ); */
  t_1 = GC_InfoDebug;
- CHECK_BOUND( t_1, "InfoDebug" )
+ CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(1) );
  if ( t_3 == True ) {
   t_2 = NEW_PLIST( T_PLIST, 1 );

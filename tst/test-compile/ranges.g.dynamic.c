@@ -86,7 +86,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range2, [ 1, 2 ^ 80 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range2;
- CHECK_BOUND( t_2, "range2" )
+ CHECK_BOUND( t_2, "range2" );
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(1) );
@@ -98,7 +98,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range2, [ - 2 ^ 80, 0 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range2;
- CHECK_BOUND( t_2, "range2" )
+ CHECK_BOUND( t_2, "range2" );
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  t_5 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
@@ -111,7 +111,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range3, [ 1, 2, 2 ^ 80 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range3;
- CHECK_BOUND( t_2, "range3" )
+ CHECK_BOUND( t_2, "range3" );
  t_3 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_3, 3 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(1) );
@@ -124,7 +124,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range3, [ - 2 ^ 80, 0, 1 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range3;
- CHECK_BOUND( t_2, "range3" )
+ CHECK_BOUND( t_2, "range3" );
  t_3 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_3, 3 );
  t_5 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
@@ -138,7 +138,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range3, [ 0, 2 ^ 80, 2 ^ 81 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range3;
- CHECK_BOUND( t_2, "range3" )
+ CHECK_BOUND( t_2, "range3" );
  t_3 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_3, 3 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(0) );
@@ -158,7 +158,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range3, [ 2, 2, 2 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range3;
- CHECK_BOUND( t_2, "range3" )
+ CHECK_BOUND( t_2, "range3" );
  t_3 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_3, 3 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(2) );
@@ -174,7 +174,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range3, [ 2, 4, 7 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range3;
- CHECK_BOUND( t_2, "range3" )
+ CHECK_BOUND( t_2, "range3" );
  t_3 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_3, 3 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(2) );
@@ -195,7 +195,7 @@ static Obj  HdlrFunc4 (
  /* CALL_WITH_CATCH( range3, [ 4, 2, 1 ] ); */
  t_1 = GF_CALL__WITH__CATCH;
  t_2 = GC_range3;
- CHECK_BOUND( t_2, "range3" )
+ CHECK_BOUND( t_2, "range3" );
  t_3 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_3, 3 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(4) );

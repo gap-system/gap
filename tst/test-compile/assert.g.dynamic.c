@@ -33,7 +33,7 @@ static Obj  HdlrFunc2 (
  t_1 = GF_Print;
  t_3 = GF_AssertionLevel;
  t_2 = CALL_0ARGS( t_3 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -93,7 +93,7 @@ static Obj  HdlrFunc2 (
  t_1 = GF_Print;
  t_3 = GF_AssertionLevel;
  t_2 = CALL_0ARGS( t_3 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
