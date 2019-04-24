@@ -5,3 +5,5 @@ true
 <Property "IsAssociative">
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 Error, <oper2> must be a filter (not a function)
+Error, <expr> must be 'true' or 'false' or a filter (not the integer 1)
+Error, <expr> must be 'true' or 'false' (not the integer 1)
