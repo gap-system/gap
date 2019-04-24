@@ -216,49 +216,49 @@ static Obj  HdlrFunc3 (
  /* Print( vararg_fun(  ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_0ARGS( l_vararg__fun );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( vararg_fun( 1 ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_1ARGS( l_vararg__fun, INTOBJ_INT(1) );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( vararg_fun( 1, 2 ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_2ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2) );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( vararg_fun( 1, 2, 3 ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_3ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( vararg_fun( 1, 2, 3, 4 ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_4ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( vararg_fun( 1, 2, 3, 4, 5 ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_5ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( vararg_fun( 1, 2, 3, 4, 5, 6 ), "\n" ); */
  t_1 = GF_Print;
  t_2 = CALL_6ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -274,7 +274,7 @@ static Obj  HdlrFunc3 (
  SET_ELM_PLIST( t_3, 6, INTOBJ_INT(6) );
  SET_ELM_PLIST( t_3, 7, INTOBJ_INT(7) );
  t_2 = CALL_XARGS( l_vararg__fun, t_3 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -295,7 +295,7 @@ static Obj  HdlrFunc3 (
  SET_ELM_PLIST( t_3, 6, INTOBJ_INT(6) );
  SET_ELM_PLIST( t_3, 7, INTOBJ_INT(7) );
  t_2 = CALL_XARGS( l_vararg__fun, t_3 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -308,7 +308,7 @@ static Obj  HdlrFunc3 (
  SortPRecRNam( t_2, 0 );
  CALL_1ARGS( GF_PushOptions, t_2 );
  t_2 = CALL_0ARGS( l_vararg__fun );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  CALL_0ARGS( GF_PopOptions );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -322,7 +322,7 @@ static Obj  HdlrFunc3 (
  SortPRecRNam( t_2, 0 );
  CALL_1ARGS( GF_PushOptions, t_2 );
  t_2 = CALL_0ARGS( l_vararg__fun );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  CALL_0ARGS( GF_PopOptions );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
@@ -988,7 +988,7 @@ static Obj  HdlrFunc9 (
  
  /* l[1 + 1] := 2; */
  C_SUM_INTOBJS( t_1, INTOBJ_INT(1), INTOBJ_INT(1) )
- CHECK_INT_POS( t_1 )
+ CHECK_INT_POS( t_1 );
  C_ASS_LIST_FPL_INTOBJ( l_l, t_1, INTOBJ_INT(2) )
  
  /* l![3] := 3; */
@@ -996,7 +996,7 @@ static Obj  HdlrFunc9 (
  
  /* l![2 + 2] := 4; */
  C_SUM_INTOBJS( t_1, INTOBJ_INT(2), INTOBJ_INT(2) )
- CHECK_INT_SMALL_POS( t_1 )
+ CHECK_INT_SMALL_POS( t_1 );
  AssPosObj( l_l, INT_INTOBJ(t_1), INTOBJ_INT(4) );
  
  /* Display( l ); */
@@ -1014,7 +1014,7 @@ static Obj  HdlrFunc9 (
  t_1 = GF_Print;
  t_2 = MakeString( "l[2] = " );
  C_SUM_INTOBJS( t_4, INTOBJ_INT(1), INTOBJ_INT(1) )
- CHECK_INT_POS( t_4 )
+ CHECK_INT_POS( t_4 );
  C_ELM_LIST_FPL( t_3, l_l, t_4 )
  t_4 = MakeString( "\n" );
  CALL_3ARGS( t_1, t_2, t_3, t_4 );
@@ -1030,7 +1030,7 @@ static Obj  HdlrFunc9 (
  t_1 = GF_Print;
  t_2 = MakeString( "l[4] = " );
  C_SUM_INTOBJS( t_4, INTOBJ_INT(2), INTOBJ_INT(2) )
- CHECK_INT_SMALL_POS( t_4 )
+ CHECK_INT_SMALL_POS( t_4 );
  t_3 = ElmPosObj( l_l, INT_INTOBJ(t_4) );
  t_4 = MakeString( "\n" );
  CALL_3ARGS( t_1, t_2, t_3, t_4 );

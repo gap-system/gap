@@ -95,7 +95,7 @@ static Obj  HdlrFunc2 (
  CHANGED_BAG( t_5 );
  t_4 = Array2Perm( t_6 );
  t_2 = CALL_1ARGS( t_3, t_4 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  

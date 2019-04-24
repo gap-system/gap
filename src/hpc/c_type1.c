@@ -255,12 +255,12 @@ static Obj  HdlrFunc2 (
  t_4 = NEW_PLIST( T_PLIST, 1 );
  SET_LEN_PLIST( t_4, 1 );
  t_6 = GC_IsAttributeStoringRep;
- CHECK_BOUND( t_6, "IsAttributeStoringRep" )
+ CHECK_BOUND( t_6, "IsAttributeStoringRep" );
  if ( t_6 == False ) {
   t_5 = t_6;
  }
  else if ( t_6 == True ) {
-  CHECK_BOOL( a_tester )
+  CHECK_BOOL( a_tester );
   t_5 = a_tester;
  }
  else if (IS_FILTER( t_6 ) ) {
@@ -273,10 +273,10 @@ static Obj  HdlrFunc2 (
  SET_ELM_PLIST( t_4, 1, t_5 );
  CHANGED_BAG( t_4 );
  t_5 = GC_GETTER__FLAGS;
- CHECK_BOUND( t_5, "GETTER_FLAGS" )
+ CHECK_BOUND( t_5, "GETTER_FLAGS" );
  t_7 = GF_GETTER__FUNCTION;
  t_6 = CALL_1ARGS( t_7, a_name );
- CHECK_FUNC_RESULT( t_6 )
+ CHECK_FUNC_RESULT( t_6 );
  CALL_6ARGS( t_1, a_getter, t_2, t_3, t_4, t_5, t_6 );
  
  /* return; */
@@ -303,13 +303,13 @@ static Obj  HdlrFunc4 (
  
  /* obj!.(name) := val; */
  t_1 = OBJ_HVAR( (1 << 16) | 1 );
- CHECK_BOUND( t_1, "name" )
+ CHECK_BOUND( t_1, "name" );
  AssComObj( a_obj, RNamObj(t_1), a_val );
  
  /* SetFilterObj( obj, tester ); */
  t_1 = GF_SetFilterObj;
  t_2 = OBJ_HVAR( (1 << 16) | 2 );
- CHECK_BOUND( t_2, "tester" )
+ CHECK_BOUND( t_2, "tester" );
  CALL_2ARGS( t_1, a_obj, t_2 );
  
  /* return; */
@@ -348,7 +348,7 @@ static Obj  HdlrFunc3 (
  ASS_LVAR( 2, a_tester );
  
  /* if mutflag then */
- CHECK_BOOL( a_mutflag )
+ CHECK_BOOL( a_mutflag );
  t_1 = (Obj)(UInt)(a_mutflag != False);
  if ( t_1 ) {
   
@@ -363,11 +363,11 @@ static Obj  HdlrFunc3 (
   t_4 = NEW_PLIST( T_PLIST, 2 );
   SET_LEN_PLIST( t_4, 2 );
   t_5 = GC_IsAttributeStoringRep;
-  CHECK_BOUND( t_5, "IsAttributeStoringRep" )
+  CHECK_BOUND( t_5, "IsAttributeStoringRep" );
   SET_ELM_PLIST( t_4, 1, t_5 );
   CHANGED_BAG( t_4 );
   t_5 = GC_IS__OBJECT;
-  CHECK_BOUND( t_5, "IS_OBJECT" )
+  CHECK_BOUND( t_5, "IS_OBJECT" );
   SET_ELM_PLIST( t_4, 2, t_5 );
   CHANGED_BAG( t_4 );
   t_5 = NewFunction( NameFunc[4], 2, ArgStringToList("obj,val"), HdlrFunc4 );
@@ -391,20 +391,20 @@ static Obj  HdlrFunc3 (
   t_4 = NEW_PLIST( T_PLIST, 2 );
   SET_LEN_PLIST( t_4, 2 );
   t_5 = GC_IsAttributeStoringRep;
-  CHECK_BOUND( t_5, "IsAttributeStoringRep" )
+  CHECK_BOUND( t_5, "IsAttributeStoringRep" );
   SET_ELM_PLIST( t_4, 1, t_5 );
   CHANGED_BAG( t_4 );
   t_5 = GC_IS__OBJECT;
-  CHECK_BOUND( t_5, "IS_OBJECT" )
+  CHECK_BOUND( t_5, "IS_OBJECT" );
   SET_ELM_PLIST( t_4, 2, t_5 );
   CHANGED_BAG( t_4 );
   t_6 = GF_SETTER__FUNCTION;
   t_7 = OBJ_LVAR( 1 );
-  CHECK_BOUND( t_7, "name" )
+  CHECK_BOUND( t_7, "name" );
   t_8 = OBJ_LVAR( 2 );
-  CHECK_BOUND( t_8, "tester" )
+  CHECK_BOUND( t_8, "tester" );
   t_5 = CALL_2ARGS( t_6, t_7, t_8 );
-  CHECK_FUNC_RESULT( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
   CALL_6ARGS( t_1, a_setter, t_2, t_3, t_4, INTOBJ_INT(0), t_5 );
   
  }
@@ -452,30 +452,30 @@ static Obj  HdlrFunc5 (
  t_2 = GF_WITH__IMPS__FLAGS;
  t_4 = GF_AND__FLAGS;
  t_3 = CALL_2ARGS( t_4, a_imp__filter, a_req__filter );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  a_imp__filter = t_1;
  
  /* type := Subtype( typeOfFamilies, IsAttributeStoringRep ); */
  t_2 = GF_Subtype;
  t_3 = GC_IsAttributeStoringRep;
- CHECK_BOUND( t_3, "IsAttributeStoringRep" )
+ CHECK_BOUND( t_3, "IsAttributeStoringRep" );
  t_1 = CALL_2ARGS( t_2, a_typeOfFamilies, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_type = t_1;
  
  /* lock := READ_LOCK( CATEGORIES_FAMILY ); */
  t_2 = GF_READ__LOCK;
  t_3 = GC_CATEGORIES__FAMILY;
- CHECK_BOUND( t_3, "CATEGORIES_FAMILY" )
+ CHECK_BOUND( t_3, "CATEGORIES_FAMILY" );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_lock = t_1;
  
  /* for pair in CATEGORIES_FAMILY do */
  t_4 = GC_CATEGORIES__FAMILY;
- CHECK_BOUND( t_4, "CATEGORIES_FAMILY" )
+ CHECK_BOUND( t_4, "CATEGORIES_FAMILY" );
  if ( IS_SMALL_LIST(t_4) ) {
   t_3 = (Obj)(UInt)1;
   t_1 = INTOBJ_INT(1);
@@ -501,8 +501,8 @@ static Obj  HdlrFunc5 (
   t_7 = GF_IS__SUBSET__FLAGS;
   C_ELM_LIST_FPL( t_8, l_pair, INTOBJ_INT(1) )
   t_6 = CALL_2ARGS( t_7, a_imp__filter, t_8 );
-  CHECK_FUNC_RESULT( t_6 )
-  CHECK_BOOL( t_6 )
+  CHECK_FUNC_RESULT( t_6 );
+  CHECK_BOOL( t_6 );
   t_5 = (Obj)(UInt)(t_6 != False);
   if ( t_5 ) {
    
@@ -510,7 +510,7 @@ static Obj  HdlrFunc5 (
    t_6 = GF_Subtype;
    C_ELM_LIST_FPL( t_7, l_pair, INTOBJ_INT(2) )
    t_5 = CALL_2ARGS( t_6, l_type, t_7 );
-   CHECK_FUNC_RESULT( t_5 )
+   CHECK_FUNC_RESULT( t_5 );
    l_type = t_5;
    
   }
@@ -526,7 +526,7 @@ static Obj  HdlrFunc5 (
  /* family := AtomicRecord(  ); */
  t_2 = GF_AtomicRecord;
  t_1 = CALL_0ARGS( t_2 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_family = t_1;
  
  /* SET_TYPE_COMOBJ( family, type ); */
@@ -536,7 +536,7 @@ static Obj  HdlrFunc5 (
  /* family!.NAME := IMMUTABLE_COPY_OBJ( name ); */
  t_2 = GF_IMMUTABLE__COPY__OBJ;
  t_1 = CALL_1ARGS( t_2, a_name );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  AssComObj( l_family, R_NAME, t_1 );
  
  /* family!.REQ_FLAGS := req_filter; */
@@ -554,9 +554,9 @@ static Obj  HdlrFunc5 (
  /* lock := WRITE_LOCK( DS_TYPE_CACHE ); */
  t_2 = GF_WRITE__LOCK;
  t_3 = GC_DS__TYPE__CACHE;
- CHECK_BOUND( t_3, "DS_TYPE_CACHE" )
+ CHECK_BOUND( t_3, "DS_TYPE_CACHE" );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_lock = t_1;
  
  /* family!.TYPES := MIGRATE_RAW( [  ], DS_TYPE_CACHE ); */
@@ -564,9 +564,9 @@ static Obj  HdlrFunc5 (
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  t_4 = GC_DS__TYPE__CACHE;
- CHECK_BOUND( t_4, "DS_TYPE_CACHE" )
+ CHECK_BOUND( t_4, "DS_TYPE_CACHE" );
  t_1 = CALL_2ARGS( t_2, t_3, t_4 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  AssComObj( l_family, R_TYPES, t_1 );
  
  /* UNLOCK( lock ); */
@@ -577,9 +577,9 @@ static Obj  HdlrFunc5 (
  t_2 = GF_MakeWriteOnceAtomic;
  t_4 = GF_AtomicList;
  t_3 = CALL_1ARGS( t_4, INTOBJ_INT(27) );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  AssComObj( l_family, R_TYPES__LIST__FAM, t_1 );
  
  /* return family; */
@@ -609,11 +609,11 @@ static Obj  HdlrFunc6 (
  /* return NEW_FAMILY( typeOfFamilies, name, EMPTY_FLAGS, EMPTY_FLAGS ); */
  t_2 = GF_NEW__FAMILY;
  t_3 = GC_EMPTY__FLAGS;
- CHECK_BOUND( t_3, "EMPTY_FLAGS" )
+ CHECK_BOUND( t_3, "EMPTY_FLAGS" );
  t_4 = GC_EMPTY__FLAGS;
- CHECK_BOUND( t_4, "EMPTY_FLAGS" )
+ CHECK_BOUND( t_4, "EMPTY_FLAGS" );
  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -642,11 +642,11 @@ static Obj  HdlrFunc7 (
  t_2 = GF_NEW__FAMILY;
  t_4 = GF_FLAGS__FILTER;
  t_3 = CALL_1ARGS( t_4, a_req );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_4 = GC_EMPTY__FLAGS;
- CHECK_BOUND( t_4, "EMPTY_FLAGS" )
+ CHECK_BOUND( t_4, "EMPTY_FLAGS" );
  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -677,12 +677,12 @@ static Obj  HdlrFunc8 (
  t_2 = GF_NEW__FAMILY;
  t_4 = GF_FLAGS__FILTER;
  t_3 = CALL_1ARGS( t_4, a_req );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_5 = GF_FLAGS__FILTER;
  t_4 = CALL_1ARGS( t_5, a_imp );
- CHECK_FUNC_RESULT( t_4 )
+ CHECK_FUNC_RESULT( t_4 );
  t_1 = CALL_4ARGS( t_2, a_typeOfFamilies, a_name, t_3, t_4 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -715,15 +715,15 @@ static Obj  HdlrFunc9 (
  t_2 = GF_NEW__FAMILY;
  t_4 = GF_Subtype;
  t_3 = CALL_2ARGS( t_4, a_typeOfFamilies, a_filter );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_5 = GF_FLAGS__FILTER;
  t_4 = CALL_1ARGS( t_5, a_req );
- CHECK_FUNC_RESULT( t_4 )
+ CHECK_FUNC_RESULT( t_4 );
  t_6 = GF_FLAGS__FILTER;
  t_5 = CALL_1ARGS( t_6, a_imp );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_1 = CALL_4ARGS( t_2, t_3, a_name, t_4, t_5 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -752,17 +752,17 @@ static Obj  HdlrFunc10 (
  /* if LEN_LIST( arg ) = 1 then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_arg );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(1) ));
  if ( t_1 ) {
   
   /* return NewFamily2( TypeOfFamilies, arg[1] ); */
   t_2 = GF_NewFamily2;
   t_3 = GC_TypeOfFamilies;
-  CHECK_BOUND( t_3, "TypeOfFamilies" )
+  CHECK_BOUND( t_3, "TypeOfFamilies" );
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -772,18 +772,18 @@ static Obj  HdlrFunc10 (
  else {
   t_3 = GF_LEN__LIST;
   t_2 = CALL_1ARGS( t_3, a_arg );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
   if ( t_1 ) {
    
    /* return NewFamily3( TypeOfFamilies, arg[1], arg[2] ); */
    t_2 = GF_NewFamily3;
    t_3 = GC_TypeOfFamilies;
-   CHECK_BOUND( t_3, "TypeOfFamilies" )
+   CHECK_BOUND( t_3, "TypeOfFamilies" );
    C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
    t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-   CHECK_FUNC_RESULT( t_1 )
+   CHECK_FUNC_RESULT( t_1 );
    SWITCH_TO_OLD_FRAME(oldFrame);
    return t_1;
    
@@ -793,19 +793,19 @@ static Obj  HdlrFunc10 (
   else {
    t_3 = GF_LEN__LIST;
    t_2 = CALL_1ARGS( t_3, a_arg );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
    if ( t_1 ) {
     
     /* return NewFamily4( TypeOfFamilies, arg[1], arg[2], arg[3] ); */
     t_2 = GF_NewFamily4;
     t_3 = GC_TypeOfFamilies;
-    CHECK_BOUND( t_3, "TypeOfFamilies" )
+    CHECK_BOUND( t_3, "TypeOfFamilies" );
     C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
     C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
     C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
     t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
-    CHECK_FUNC_RESULT( t_1 )
+    CHECK_FUNC_RESULT( t_1 );
     SWITCH_TO_OLD_FRAME(oldFrame);
     return t_1;
     
@@ -815,20 +815,20 @@ static Obj  HdlrFunc10 (
    else {
     t_3 = GF_LEN__LIST;
     t_2 = CALL_1ARGS( t_3, a_arg );
-    CHECK_FUNC_RESULT( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
     t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(4) ));
     if ( t_1 ) {
      
      /* return NewFamily5( TypeOfFamilies, arg[1], arg[2], arg[3], arg[4] ); */
      t_2 = GF_NewFamily5;
      t_3 = GC_TypeOfFamilies;
-     CHECK_BOUND( t_3, "TypeOfFamilies" )
+     CHECK_BOUND( t_3, "TypeOfFamilies" );
      C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
      C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
      C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
      C_ELM_LIST_FPL( t_7, a_arg, INTOBJ_INT(4) )
      t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, t_7 );
-     CHECK_FUNC_RESULT( t_1 )
+     CHECK_FUNC_RESULT( t_1 );
      SWITCH_TO_OLD_FRAME(oldFrame);
      return t_1;
      
@@ -904,9 +904,9 @@ static Obj  HdlrFunc11 (
  /* lock := WRITE_LOCK( DS_TYPE_CACHE ); */
  t_2 = GF_WRITE__LOCK;
  t_3 = GC_DS__TYPE__CACHE;
- CHECK_BOUND( t_3, "DS_TYPE_CACHE" )
+ CHECK_BOUND( t_3, "DS_TYPE_CACHE" );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_lock = t_1;
  
  /* cache := family!.TYPES; */
@@ -916,14 +916,14 @@ static Obj  HdlrFunc11 (
  /* hash := HASH_FLAGS( flags ) mod family!.HASH_SIZE + 1; */
  t_4 = GF_HASH__FLAGS;
  t_3 = CALL_1ARGS( t_4, a_flags );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_4 = ElmComObj( a_family, R_HASH__SIZE );
  t_2 = MOD( t_3, t_4 );
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  l_hash = t_1;
  
  /* if IsBound( cache[hash] ) then */
- CHECK_INT_POS( l_hash )
+ CHECK_INT_POS( l_hash );
  t_2 = C_ISB_LIST( l_cache, l_hash );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
@@ -936,8 +936,8 @@ static Obj  HdlrFunc11 (
   t_3 = GF_IS__EQUAL__FLAGS;
   t_4 = ElmPosObj( l_cached, 2 );
   t_2 = CALL_2ARGS( t_3, a_flags, t_4 );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
@@ -949,18 +949,18 @@ static Obj  HdlrFunc11 (
    t_4 = GF_IS__IDENTICAL__OBJ;
    t_5 = ElmPosObj( l_cached, 3 );
    t_3 = CALL_2ARGS( t_4, a_data, t_5 );
-   CHECK_FUNC_RESULT( t_3 )
-   CHECK_BOOL( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
+   CHECK_BOOL( t_3 );
    t_2 = (Obj)(UInt)(t_3 != False);
    t_1 = t_2;
    if ( t_1 ) {
     t_5 = GF_IS__IDENTICAL__OBJ;
     t_7 = GF_TYPE__OBJ;
     t_6 = CALL_1ARGS( t_7, l_cached );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     t_4 = CALL_2ARGS( t_5, a_typeOfTypes, t_6 );
-    CHECK_FUNC_RESULT( t_4 )
-    CHECK_BOOL( t_4 )
+    CHECK_FUNC_RESULT( t_4 );
+    CHECK_BOOL( t_4 );
     t_3 = (Obj)(UInt)(t_4 != False);
     t_1 = t_3;
    }
@@ -969,10 +969,10 @@ static Obj  HdlrFunc11 (
     /* if IS_IDENTICAL_OBJ( parent, fail ) then */
     t_3 = GF_IS__IDENTICAL__OBJ;
     t_4 = GC_fail;
-    CHECK_BOUND( t_4, "fail" )
+    CHECK_BOUND( t_4, "fail" );
     t_2 = CALL_2ARGS( t_3, a_parent, t_4 );
-    CHECK_FUNC_RESULT( t_2 )
-    CHECK_BOOL( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
+    CHECK_BOOL( t_2 );
     t_1 = (Obj)(UInt)(t_2 != False);
     if ( t_1 ) {
      
@@ -983,8 +983,8 @@ static Obj  HdlrFunc11 (
      /* for i in [ 5 .. LEN_POSOBJ( cached ) ] do */
      t_3 = GF_LEN__POSOBJ;
      t_2 = CALL_1ARGS( t_3, l_cached );
-     CHECK_FUNC_RESULT( t_2 )
-     CHECK_INT_SMALL( t_2 )
+     CHECK_FUNC_RESULT( t_2 );
+     CHECK_INT_SMALL( t_2 );
      for ( t_1 = INTOBJ_INT(5);
            ((Int)t_1) <= ((Int)t_2);
            t_1 = (Obj)(((UInt)t_1)+4) ) {
@@ -1014,7 +1014,7 @@ static Obj  HdlrFunc11 (
       
       /* NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1; */
       t_2 = GC_NEW__TYPE__CACHE__HIT;
-      CHECK_BOUND( t_2, "NEW_TYPE_CACHE_HIT" )
+      CHECK_BOUND( t_2, "NEW_TYPE_CACHE_HIT" );
       C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
       AssGVar( G_NEW__TYPE__CACHE__HIT, t_1 );
       
@@ -1035,10 +1035,10 @@ static Obj  HdlrFunc11 (
     /* if LEN_POSOBJ( parent ) = LEN_POSOBJ( cached ) then */
     t_3 = GF_LEN__POSOBJ;
     t_2 = CALL_1ARGS( t_3, a_parent );
-    CHECK_FUNC_RESULT( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
     t_4 = GF_LEN__POSOBJ;
     t_3 = CALL_1ARGS( t_4, l_cached );
-    CHECK_FUNC_RESULT( t_3 )
+    CHECK_FUNC_RESULT( t_3 );
     t_1 = (Obj)(UInt)(EQ( t_2, t_3 ));
     if ( t_1 ) {
      
@@ -1049,8 +1049,8 @@ static Obj  HdlrFunc11 (
      /* for i in [ 5 .. LEN_POSOBJ( parent ) ] do */
      t_3 = GF_LEN__POSOBJ;
      t_2 = CALL_1ARGS( t_3, a_parent );
-     CHECK_FUNC_RESULT( t_2 )
-     CHECK_INT_SMALL( t_2 )
+     CHECK_FUNC_RESULT( t_2 );
+     CHECK_INT_SMALL( t_2 );
      for ( t_1 = INTOBJ_INT(5);
            ((Int)t_1) <= ((Int)t_2);
            t_1 = (Obj)(((UInt)t_1)+4) ) {
@@ -1087,8 +1087,8 @@ static Obj  HdlrFunc11 (
        t_9 = ElmPosObj( a_parent, INT_INTOBJ(l_i) );
        t_10 = ElmPosObj( l_cached, INT_INTOBJ(l_i) );
        t_7 = CALL_2ARGS( t_8, t_9, t_10 );
-       CHECK_FUNC_RESULT( t_7 )
-       CHECK_BOOL( t_7 )
+       CHECK_FUNC_RESULT( t_7 );
+       CHECK_BOOL( t_7 );
        t_6 = (Obj)(UInt)(t_7 != False);
        t_5 = (Obj)(UInt)( ! ((Int)t_6) );
        t_3 = t_5;
@@ -1114,7 +1114,7 @@ static Obj  HdlrFunc11 (
       
       /* NEW_TYPE_CACHE_HIT := NEW_TYPE_CACHE_HIT + 1; */
       t_2 = GC_NEW__TYPE__CACHE__HIT;
-      CHECK_BOUND( t_2, "NEW_TYPE_CACHE_HIT" )
+      CHECK_BOUND( t_2, "NEW_TYPE_CACHE_HIT" );
       C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
       AssGVar( G_NEW__TYPE__CACHE__HIT, t_1 );
       
@@ -1140,7 +1140,7 @@ static Obj  HdlrFunc11 (
   
   /* NEW_TYPE_CACHE_MISS := NEW_TYPE_CACHE_MISS + 1; */
   t_2 = GC_NEW__TYPE__CACHE__MISS;
-  CHECK_BOUND( t_2, "NEW_TYPE_CACHE_MISS" )
+  CHECK_BOUND( t_2, "NEW_TYPE_CACHE_MISS" );
   C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
   AssGVar( G_NEW__TYPE__CACHE__MISS, t_1 );
   
@@ -1149,15 +1149,15 @@ static Obj  HdlrFunc11 (
  
  /* NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID + 1; */
  t_2 = GC_NEW__TYPE__NEXT__ID;
- CHECK_BOUND( t_2, "NEW_TYPE_NEXT_ID" )
+ CHECK_BOUND( t_2, "NEW_TYPE_NEXT_ID" );
  C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
  AssGVar( G_NEW__TYPE__NEXT__ID, t_1 );
  
  /* if NEW_TYPE_NEXT_ID >= NEW_TYPE_ID_LIMIT then */
  t_2 = GC_NEW__TYPE__NEXT__ID;
- CHECK_BOUND( t_2, "NEW_TYPE_NEXT_ID" )
+ CHECK_BOUND( t_2, "NEW_TYPE_NEXT_ID" );
  t_3 = GC_NEW__TYPE__ID__LIMIT;
- CHECK_BOUND( t_3, "NEW_TYPE_ID_LIMIT" )
+ CHECK_BOUND( t_3, "NEW_TYPE_ID_LIMIT" );
  t_1 = (Obj)(UInt)(! LT( t_2, t_3 ));
  if ( t_1 ) {
   
@@ -1173,7 +1173,7 @@ static Obj  HdlrFunc11 (
   /* NEW_TYPE_NEXT_ID := COMPACT_TYPE_IDS(  ); */
   t_2 = GF_COMPACT__TYPE__IDS;
   t_1 = CALL_0ARGS( t_2 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   AssGVar( G_NEW__TYPE__NEXT__ID, t_1 );
   
  }
@@ -1191,7 +1191,7 @@ static Obj  HdlrFunc11 (
  /* data := MakeReadOnlyObj( data ); */
  t_2 = GF_MakeReadOnlyObj;
  t_1 = CALL_1ARGS( t_2, a_data );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  a_data = t_1;
  
  /* type[3] := data; */
@@ -1199,16 +1199,16 @@ static Obj  HdlrFunc11 (
  
  /* type[4] := NEW_TYPE_NEXT_ID; */
  t_1 = GC_NEW__TYPE__NEXT__ID;
- CHECK_BOUND( t_1, "NEW_TYPE_NEXT_ID" )
+ CHECK_BOUND( t_1, "NEW_TYPE_NEXT_ID" );
  C_ASS_LIST_FPL( l_type, INTOBJ_INT(4), t_1 )
  
  /* if not IS_IDENTICAL_OBJ( parent, fail ) then */
  t_4 = GF_IS__IDENTICAL__OBJ;
  t_5 = GC_fail;
- CHECK_BOUND( t_5, "fail" )
+ CHECK_BOUND( t_5, "fail" );
  t_3 = CALL_2ARGS( t_4, a_parent, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -1216,8 +1216,8 @@ static Obj  HdlrFunc11 (
   /* for i in [ 5 .. LEN_POSOBJ( parent ) ] do */
   t_3 = GF_LEN__POSOBJ;
   t_2 = CALL_1ARGS( t_3, a_parent );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_INT_SMALL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_INT_SMALL( t_2 );
   for ( t_1 = INTOBJ_INT(5);
         ((Int)t_1) <= ((Int)t_2);
         t_1 = (Obj)(((UInt)t_1)+4) ) {
@@ -1267,7 +1267,7 @@ static Obj  HdlrFunc11 (
   /* MIGRATE_RAW( ncache, DS_TYPE_CACHE ); */
   t_1 = GF_MIGRATE__RAW;
   t_2 = GC_DS__TYPE__CACHE;
-  CHECK_BOUND( t_2, "DS_TYPE_CACHE" )
+  CHECK_BOUND( t_2, "DS_TYPE_CACHE" );
   CALL_2ARGS( t_1, l_ncache, t_2 );
   
   /* ncl := 3 * family!.HASH_SIZE + 1; */
@@ -1303,10 +1303,10 @@ static Obj  HdlrFunc11 (
    t_8 = GF_HASH__FLAGS;
    t_9 = ElmPosObj( l_t, 2 );
    t_7 = CALL_1ARGS( t_8, t_9 );
-   CHECK_FUNC_RESULT( t_7 )
+   CHECK_FUNC_RESULT( t_7 );
    t_6 = MOD( t_7, l_ncl );
    C_SUM_FIA( t_5, t_6, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_5 )
+   CHECK_INT_POS( t_5 );
    C_ASS_LIST_FPL( l_ncache, t_5, l_t )
    
   }
@@ -1321,10 +1321,10 @@ static Obj  HdlrFunc11 (
   /* ncache[HASH_FLAGS( flags ) mod ncl + 1] := type; */
   t_4 = GF_HASH__FLAGS;
   t_3 = CALL_1ARGS( t_4, a_flags );
-  CHECK_FUNC_RESULT( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
   t_2 = MOD( t_3, l_ncl );
   C_SUM_FIA( t_1, t_2, INTOBJ_INT(1) )
-  CHECK_INT_POS( t_1 )
+  CHECK_INT_POS( t_1 );
   C_ASS_LIST_FPL( l_ncache, t_1, l_type )
   
  }
@@ -1388,17 +1388,17 @@ static Obj  HdlrFunc12 (
  t_7 = ElmComObj( a_family, R_IMP__FLAGS );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
- CHECK_FUNC_RESULT( t_8 )
+ CHECK_FUNC_RESULT( t_8 );
  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_4 = GC_fail;
- CHECK_BOUND( t_4, "fail" )
+ CHECK_BOUND( t_4, "fail" );
  t_5 = GC_fail;
- CHECK_BOUND( t_5, "fail" )
+ CHECK_BOUND( t_5, "fail" );
  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, t_4, t_5 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -1436,15 +1436,15 @@ static Obj  HdlrFunc13 (
  t_7 = ElmComObj( a_family, R_IMP__FLAGS );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
- CHECK_FUNC_RESULT( t_8 )
+ CHECK_FUNC_RESULT( t_8 );
  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_4 = GC_fail;
- CHECK_BOUND( t_4, "fail" )
+ CHECK_BOUND( t_4, "fail" );
  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, a_data, t_4 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -1475,8 +1475,8 @@ static Obj  HdlrFunc14 (
  t_4 = GF_IsFamily;
  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -1492,18 +1492,18 @@ static Obj  HdlrFunc14 (
  /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_arg );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
   
   /* type := NewType3( TypeOfTypes, arg[1], arg[2] ); */
   t_2 = GF_NewType3;
   t_3 = GC_TypeOfTypes;
-  CHECK_BOUND( t_3, "TypeOfTypes" )
+  CHECK_BOUND( t_3, "TypeOfTypes" );
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_type = t_1;
   
  }
@@ -1512,19 +1512,19 @@ static Obj  HdlrFunc14 (
  else {
   t_3 = GF_LEN__LIST;
   t_2 = CALL_1ARGS( t_3, a_arg );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
   if ( t_1 ) {
    
    /* type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] ); */
    t_2 = GF_NewType4;
    t_3 = GC_TypeOfTypes;
-   CHECK_BOUND( t_3, "TypeOfTypes" )
+   CHECK_BOUND( t_3, "TypeOfTypes" );
    C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
    C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
    C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
    t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
-   CHECK_FUNC_RESULT( t_1 )
+   CHECK_FUNC_RESULT( t_1 );
    l_type = t_1;
    
   }
@@ -1542,7 +1542,7 @@ static Obj  HdlrFunc14 (
  /* fi */
  
  /* return type; */
- CHECK_BOUND( l_type, "type" )
+ CHECK_BOUND( l_type, "type" );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return l_type;
  
@@ -1576,21 +1576,21 @@ static Obj  HdlrFunc15 (
  /* return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type ); */
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" )
+ CHECK_BOUND( t_3, "TypeOfTypes" );
  t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_WITH__IMPS__FLAGS;
  t_8 = GF_AND__FLAGS;
  t_9 = ElmPosObj( a_type, 2 );
  t_11 = GF_FLAGS__FILTER;
  t_10 = CALL_1ARGS( t_11, a_filter );
- CHECK_FUNC_RESULT( t_10 )
+ CHECK_FUNC_RESULT( t_10 );
  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
- CHECK_FUNC_RESULT( t_7 )
+ CHECK_FUNC_RESULT( t_7 );
  t_5 = CALL_1ARGS( t_6, t_7 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_6 = ElmPosObj( a_type, 3 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -1625,20 +1625,20 @@ static Obj  HdlrFunc16 (
  /* return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), data, type ); */
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" )
+ CHECK_BOUND( t_3, "TypeOfTypes" );
  t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_WITH__IMPS__FLAGS;
  t_8 = GF_AND__FLAGS;
  t_9 = ElmPosObj( a_type, 2 );
  t_11 = GF_FLAGS__FILTER;
  t_10 = CALL_1ARGS( t_11, a_filter );
- CHECK_FUNC_RESULT( t_10 )
+ CHECK_FUNC_RESULT( t_10 );
  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
- CHECK_FUNC_RESULT( t_7 )
+ CHECK_FUNC_RESULT( t_7 );
  t_5 = CALL_1ARGS( t_6, t_7 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -1669,15 +1669,15 @@ static Obj  HdlrFunc17 (
  /* p := READ_LOCK( arg ); */
  t_2 = GF_READ__LOCK;
  t_1 = CALL_1ARGS( t_2, a_arg );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_p = t_1;
  
  /* if not IsType( arg[1] ) then */
  t_4 = GF_IsType;
  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -1693,7 +1693,7 @@ static Obj  HdlrFunc17 (
  /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_arg );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
   
@@ -1702,7 +1702,7 @@ static Obj  HdlrFunc17 (
   C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_type = t_1;
   
  }
@@ -1716,7 +1716,7 @@ static Obj  HdlrFunc17 (
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   l_type = t_1;
   
  }
@@ -1758,18 +1758,18 @@ static Obj  HdlrFunc18 (
  /* return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type ); */
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" )
+ CHECK_BOUND( t_3, "TypeOfTypes" );
  t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_SUB__FLAGS;
  t_7 = ElmPosObj( a_type, 2 );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
- CHECK_FUNC_RESULT( t_8 )
+ CHECK_FUNC_RESULT( t_8 );
  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_6 = ElmPosObj( a_type, 3 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -1802,17 +1802,17 @@ static Obj  HdlrFunc19 (
  /* return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), data, type ); */
  t_2 = GF_NEW__TYPE;
  t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" )
+ CHECK_BOUND( t_3, "TypeOfTypes" );
  t_4 = ElmPosObj( a_type, 1 );
  t_6 = GF_SUB__FLAGS;
  t_7 = ElmPosObj( a_type, 2 );
  t_9 = GF_FLAGS__FILTER;
  t_8 = CALL_1ARGS( t_9, a_filter );
- CHECK_FUNC_RESULT( t_8 )
+ CHECK_FUNC_RESULT( t_8 );
  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- CHECK_FUNC_RESULT( t_5 )
+ CHECK_FUNC_RESULT( t_5 );
  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -1840,8 +1840,8 @@ static Obj  HdlrFunc20 (
  t_4 = GF_IsType;
  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -1857,7 +1857,7 @@ static Obj  HdlrFunc20 (
  /* if LEN_LIST( arg ) = 2 then */
  t_3 = GF_LEN__LIST;
  t_2 = CALL_1ARGS( t_3, a_arg );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
  if ( t_1 ) {
   
@@ -1866,7 +1866,7 @@ static Obj  HdlrFunc20 (
   C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -1881,7 +1881,7 @@ static Obj  HdlrFunc20 (
   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-  CHECK_FUNC_RESULT( t_1 )
+  CHECK_FUNC_RESULT( t_1 );
   SWITCH_TO_OLD_FRAME(oldFrame);
   return t_1;
   
@@ -1978,7 +1978,7 @@ static Obj  HdlrFunc24 (
  t_1 = GF_StrictBindOnce;
  t_3 = GF_MakeImmutable;
  t_2 = CALL_1ARGS( t_3, a_data );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  CALL_3ARGS( t_1, a_K, INTOBJ_INT(3), t_2 );
  
  /* return; */
@@ -2008,9 +2008,9 @@ static Obj  HdlrFunc25 (
  t_2 = GF_FlagsType;
  t_4 = GF_TypeObj;
  t_3 = CALL_1ARGS( t_4, a_obj );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -2037,9 +2037,9 @@ static Obj  HdlrFunc26 (
  t_2 = GF_DataType;
  t_4 = GF_TypeObj;
  t_3 = CALL_1ARGS( t_4, a_obj );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -2069,8 +2069,8 @@ static Obj  HdlrFunc27 (
  /* if not IsType( type ) then */
  t_4 = GF_IsType;
  t_3 = CALL_1ARGS( t_4, a_type );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -2086,24 +2086,24 @@ static Obj  HdlrFunc27 (
  /* flags := FlagsType( type ); */
  t_2 = GF_FlagsType;
  t_1 = CALL_1ARGS( t_2, a_type );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_flags = t_1;
  
  /* if IS_LIST( obj ) then */
  t_3 = GF_IS__LIST;
  t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
   /* if IS_SUBSET_FLAGS( flags, IsAtomicPositionalObjectRepFlags ) then */
   t_3 = GF_IS__SUBSET__FLAGS;
   t_4 = GC_IsAtomicPositionalObjectRepFlags;
-  CHECK_BOUND( t_4, "IsAtomicPositionalObjectRepFlags" )
+  CHECK_BOUND( t_4, "IsAtomicPositionalObjectRepFlags" );
   t_2 = CALL_2ARGS( t_3, l_flags, t_4 );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
@@ -2111,7 +2111,7 @@ static Obj  HdlrFunc27 (
    t_1 = GF_FORCE__SWITCH__OBJ;
    t_3 = GF_FixedAtomicList;
    t_2 = CALL_1ARGS( t_3, a_obj );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    CALL_2ARGS( t_1, a_obj, t_2 );
    
   }
@@ -2123,26 +2123,26 @@ static Obj  HdlrFunc27 (
  else {
   t_3 = GF_IS__REC;
   t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
    /* if IS_ATOMIC_RECORD( obj ) then */
    t_3 = GF_IS__ATOMIC__RECORD;
    t_2 = CALL_1ARGS( t_3, a_obj );
-   CHECK_FUNC_RESULT( t_2 )
-   CHECK_BOOL( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
+   CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
     /* if IS_SUBSET_FLAGS( flags, IsNonAtomicComponentObjectRepFlags ) then */
     t_3 = GF_IS__SUBSET__FLAGS;
     t_4 = GC_IsNonAtomicComponentObjectRepFlags;
-    CHECK_BOUND( t_4, "IsNonAtomicComponentObjectRepFlags" )
+    CHECK_BOUND( t_4, "IsNonAtomicComponentObjectRepFlags" );
     t_2 = CALL_2ARGS( t_3, l_flags, t_4 );
-    CHECK_FUNC_RESULT( t_2 )
-    CHECK_BOOL( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
+    CHECK_BOOL( t_2 );
     t_1 = (Obj)(UInt)(t_2 != False);
     if ( t_1 ) {
      
@@ -2150,7 +2150,7 @@ static Obj  HdlrFunc27 (
      t_1 = GF_FORCE__SWITCH__OBJ;
      t_3 = GF_FromAtomicRecord;
      t_2 = CALL_1ARGS( t_3, a_obj );
-     CHECK_FUNC_RESULT( t_2 )
+     CHECK_FUNC_RESULT( t_2 );
      CALL_2ARGS( t_1, a_obj, t_2 );
      
     }
@@ -2162,10 +2162,10 @@ static Obj  HdlrFunc27 (
    else {
     t_4 = GF_IS__SUBSET__FLAGS;
     t_5 = GC_IsNonAtomicComponentObjectRepFlags;
-    CHECK_BOUND( t_5, "IsNonAtomicComponentObjectRepFlags" )
+    CHECK_BOUND( t_5, "IsNonAtomicComponentObjectRepFlags" );
     t_3 = CALL_2ARGS( t_4, l_flags, t_5 );
-    CHECK_FUNC_RESULT( t_3 )
-    CHECK_BOOL( t_3 )
+    CHECK_FUNC_RESULT( t_3 );
+    CHECK_BOOL( t_3 );
     t_2 = (Obj)(UInt)(t_3 != False);
     t_1 = (Obj)(UInt)( ! ((Int)t_2) );
     if ( t_1 ) {
@@ -2174,7 +2174,7 @@ static Obj  HdlrFunc27 (
      t_1 = GF_FORCE__SWITCH__OBJ;
      t_3 = GF_AtomicRecord;
      t_2 = CALL_1ARGS( t_3, a_obj );
-     CHECK_FUNC_RESULT( t_2 )
+     CHECK_FUNC_RESULT( t_2 );
      CALL_2ARGS( t_1, a_obj, t_2 );
      
     }
@@ -2188,8 +2188,8 @@ static Obj  HdlrFunc27 (
  /* if IS_LIST( obj ) then */
  t_3 = GF_IS__LIST;
  t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -2203,8 +2203,8 @@ static Obj  HdlrFunc27 (
  else {
   t_3 = GF_IS__REC;
   t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
@@ -2219,8 +2219,8 @@ static Obj  HdlrFunc27 (
  /* if not IsNoImmediateMethodsObject( obj ) then */
  t_4 = GF_IsNoImmediateMethodsObject;
  t_3 = CALL_1ARGS( t_4, a_obj );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -2236,8 +2236,8 @@ static Obj  HdlrFunc27 (
  /* if IsReadOnlyPositionalObjectRep( obj ) then */
  t_3 = GF_IsReadOnlyPositionalObjectRep;
  t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -2281,20 +2281,20 @@ static Obj  HdlrFunc28 (
  /* type := TYPE_OBJ( obj ); */
  t_2 = GF_TYPE__OBJ;
  t_1 = CALL_1ARGS( t_2, a_obj );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_type = t_1;
  
  /* newtype := Subtype2( type, filter ); */
  t_2 = GF_Subtype2;
  t_1 = CALL_2ARGS( t_2, l_type, a_filter );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_newtype = t_1;
  
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
  t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -2308,8 +2308,8 @@ static Obj  HdlrFunc28 (
  else {
   t_3 = GF_IS__COMOBJ;
   t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
@@ -2323,8 +2323,8 @@ static Obj  HdlrFunc28 (
   else {
    t_3 = GF_IS__DATOBJ;
    t_2 = CALL_1ARGS( t_3, a_obj );
-   CHECK_FUNC_RESULT( t_2 )
-   CHECK_BOOL( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
+   CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
@@ -2349,15 +2349,15 @@ static Obj  HdlrFunc28 (
  
  /* if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then */
  t_4 = GC_IGNORE__IMMEDIATE__METHODS;
- CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" )
- CHECK_BOOL( t_4 )
+ CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" );
+ CHECK_BOOL( t_4 );
  t_3 = (Obj)(UInt)(t_4 != False);
  t_2 = t_3;
  if ( ! t_2 ) {
   t_6 = GF_IsNoImmediateMethodsObject;
   t_5 = CALL_1ARGS( t_6, a_obj );
-  CHECK_FUNC_RESULT( t_5 )
-  CHECK_BOOL( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
+  CHECK_BOOL( t_5 );
   t_4 = (Obj)(UInt)(t_5 != False);
   t_2 = t_4;
  }
@@ -2370,7 +2370,7 @@ static Obj  HdlrFunc28 (
   t_4 = ElmPosObj( l_newtype, 2 );
   t_5 = ElmPosObj( l_type, 2 );
   t_2 = CALL_2ARGS( t_3, t_4, t_5 );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   CALL_2ARGS( t_1, a_obj, t_2 );
   
  }
@@ -2404,8 +2404,8 @@ static Obj  HdlrFunc29 (
  /* if IS_AND_FILTER( filter ) then */
  t_3 = GF_IS__AND__FILTER;
  t_2 = CALL_1ARGS( t_3, a_filter );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -2420,8 +2420,8 @@ static Obj  HdlrFunc29 (
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
  t_2 = CALL_1ARGS( t_3, a_obj );
- CHECK_FUNC_RESULT( t_2 )
- CHECK_BOOL( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
@@ -2430,9 +2430,9 @@ static Obj  HdlrFunc29 (
   t_3 = GF_SupType2;
   t_5 = GF_TYPE__OBJ;
   t_4 = CALL_1ARGS( t_5, a_obj );
-  CHECK_FUNC_RESULT( t_4 )
+  CHECK_FUNC_RESULT( t_4 );
   t_2 = CALL_2ARGS( t_3, t_4, a_filter );
-  CHECK_FUNC_RESULT( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
   CALL_2ARGS( t_1, a_obj, t_2 );
   
  }
@@ -2441,8 +2441,8 @@ static Obj  HdlrFunc29 (
  else {
   t_3 = GF_IS__COMOBJ;
   t_2 = CALL_1ARGS( t_3, a_obj );
-  CHECK_FUNC_RESULT( t_2 )
-  CHECK_BOOL( t_2 )
+  CHECK_FUNC_RESULT( t_2 );
+  CHECK_BOOL( t_2 );
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
@@ -2451,9 +2451,9 @@ static Obj  HdlrFunc29 (
    t_3 = GF_SupType2;
    t_5 = GF_TYPE__OBJ;
    t_4 = CALL_1ARGS( t_5, a_obj );
-   CHECK_FUNC_RESULT( t_4 )
+   CHECK_FUNC_RESULT( t_4 );
    t_2 = CALL_2ARGS( t_3, t_4, a_filter );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    CALL_2ARGS( t_1, a_obj, t_2 );
    
   }
@@ -2462,8 +2462,8 @@ static Obj  HdlrFunc29 (
   else {
    t_3 = GF_IS__DATOBJ;
    t_2 = CALL_1ARGS( t_3, a_obj );
-   CHECK_FUNC_RESULT( t_2 )
-   CHECK_BOOL( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
+   CHECK_BOOL( t_2 );
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
@@ -2472,9 +2472,9 @@ static Obj  HdlrFunc29 (
     t_3 = GF_SupType2;
     t_5 = GF_TYPE__OBJ;
     t_4 = CALL_1ARGS( t_5, a_obj );
-    CHECK_FUNC_RESULT( t_4 )
+    CHECK_FUNC_RESULT( t_4 );
     t_2 = CALL_2ARGS( t_3, t_4, a_filter );
-    CHECK_FUNC_RESULT( t_2 )
+    CHECK_FUNC_RESULT( t_2 );
     CALL_2ARGS( t_1, a_obj, t_2 );
     
    }
@@ -2549,7 +2549,7 @@ static Obj  HdlrFunc30 (
  /* flags := FlagsType( type ); */
  t_2 = GF_FlagsType;
  t_1 = CALL_1ARGS( t_2, l_type );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  l_flags = t_1;
  
  /* extra := [  ]; */
@@ -2560,10 +2560,10 @@ static Obj  HdlrFunc30 (
  /* if not IS_SUBSET_FLAGS( flags, IsAttributeStoringRepFlags ) then */
  t_4 = GF_IS__SUBSET__FLAGS;
  t_5 = GC_IsAttributeStoringRepFlags;
- CHECK_BOUND( t_5, "IsAttributeStoringRepFlags" )
+ CHECK_BOUND( t_5, "IsAttributeStoringRepFlags" );
  t_3 = CALL_2ARGS( t_4, l_flags, t_5 );
- CHECK_FUNC_RESULT( t_3 )
- CHECK_BOOL( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
@@ -2571,7 +2571,7 @@ static Obj  HdlrFunc30 (
   /* extra := arg{[ 3 .. LEN_LIST( arg ) ]}; */
   t_4 = GF_LEN__LIST;
   t_3 = CALL_1ARGS( t_4, a_arg );
-  CHECK_FUNC_RESULT( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
   t_2 = Range2Check( INTOBJ_INT(3), t_3 );
   t_1 = ElmsListCheck( a_arg, t_2 );
   l_extra = t_1;
@@ -2593,13 +2593,13 @@ static Obj  HdlrFunc30 (
   
   /* nflags := EMPTY_FLAGS; */
   t_1 = GC_EMPTY__FLAGS;
-  CHECK_BOUND( t_1, "EMPTY_FLAGS" )
+  CHECK_BOUND( t_1, "EMPTY_FLAGS" );
   l_nflags = t_1;
   
   /* for i in [ 3, 5 .. LEN_LIST( arg ) - 1 ] do */
   t_7 = GF_LEN__LIST;
   t_6 = CALL_1ARGS( t_7, a_arg );
-  CHECK_FUNC_RESULT( t_6 )
+  CHECK_FUNC_RESULT( t_6 );
   C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
   t_4 = Range3Check( INTOBJ_INT(3), INTOBJ_INT(5), t_5 );
   if ( IS_SMALL_LIST(t_4) ) {
@@ -2624,25 +2624,25 @@ static Obj  HdlrFunc30 (
    l_i = t_2;
    
    /* attr := arg[i]; */
-   CHECK_INT_POS( l_i )
+   CHECK_INT_POS( l_i );
    C_ELM_LIST_FPL( t_5, a_arg, l_i )
    l_attr = t_5;
    
    /* val := arg[i + 1]; */
    C_SUM_FIA( t_6, l_i, INTOBJ_INT(1) )
-   CHECK_INT_POS( t_6 )
+   CHECK_INT_POS( t_6 );
    C_ELM_LIST_FPL( t_5, a_arg, t_6 )
    l_val = t_5;
    
    /* if 0 <> FLAG1_FILTER( attr ) then */
    t_7 = GF_FLAG1__FILTER;
    t_6 = CALL_1ARGS( t_7, l_attr );
-   CHECK_FUNC_RESULT( t_6 )
+   CHECK_FUNC_RESULT( t_6 );
    t_5 = (Obj)(UInt)( ! EQ( INTOBJ_INT(0), t_6 ));
    if ( t_5 ) {
     
     /* if val then */
-    CHECK_BOOL( l_val )
+    CHECK_BOOL( l_val );
     t_5 = (Obj)(UInt)(l_val != False);
     if ( t_5 ) {
      
@@ -2650,9 +2650,9 @@ static Obj  HdlrFunc30 (
      t_6 = GF_AND__FLAGS;
      t_8 = GF_FLAGS__FILTER;
      t_7 = CALL_1ARGS( t_8, l_attr );
-     CHECK_FUNC_RESULT( t_7 )
+     CHECK_FUNC_RESULT( t_7 );
      t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
-     CHECK_FUNC_RESULT( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
      l_nflags = t_5;
      
     }
@@ -2665,11 +2665,11 @@ static Obj  HdlrFunc30 (
      t_8 = GF_FLAGS__FILTER;
      t_10 = GF_Tester;
      t_9 = CALL_1ARGS( t_10, l_attr );
-     CHECK_FUNC_RESULT( t_9 )
+     CHECK_FUNC_RESULT( t_9 );
      t_7 = CALL_1ARGS( t_8, t_9 );
-     CHECK_FUNC_RESULT( t_7 )
+     CHECK_FUNC_RESULT( t_7 );
      t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
-     CHECK_FUNC_RESULT( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
      l_nflags = t_5;
      
     }
@@ -2683,13 +2683,13 @@ static Obj  HdlrFunc30 (
     t_9 = GF_METHODS__OPERATION;
     t_11 = GF_Setter;
     t_10 = CALL_1ARGS( t_11, l_attr );
-    CHECK_FUNC_RESULT( t_10 )
+    CHECK_FUNC_RESULT( t_10 );
     t_8 = CALL_2ARGS( t_9, t_10, INTOBJ_INT(2) );
-    CHECK_FUNC_RESULT( t_8 )
+    CHECK_FUNC_RESULT( t_8 );
     t_6 = CALL_1ARGS( t_7, t_8 );
-    CHECK_FUNC_RESULT( t_6 )
+    CHECK_FUNC_RESULT( t_6 );
     t_7 = GC_LENGTH__SETTER__METHODS__2;
-    CHECK_BOUND( t_7, "LENGTH_SETTER_METHODS_2" )
+    CHECK_BOUND( t_7, "LENGTH_SETTER_METHODS_2" );
     t_5 = (Obj)(UInt)( ! EQ( t_6, t_7 ));
     if ( t_5 ) {
      
@@ -2709,10 +2709,10 @@ static Obj  HdlrFunc30 (
      /* obj.(NAME_FUNC( attr )) := IMMUTABLE_COPY_OBJ( val ); */
      t_6 = GF_NAME__FUNC;
      t_5 = CALL_1ARGS( t_6, l_attr );
-     CHECK_FUNC_RESULT( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
      t_7 = GF_IMMUTABLE__COPY__OBJ;
      t_6 = CALL_1ARGS( t_7, l_val );
-     CHECK_FUNC_RESULT( t_6 )
+     CHECK_FUNC_RESULT( t_6 );
      ASS_REC( l_obj, RNamObj(t_5), t_6 );
      
      /* nflags := AND_FLAGS( nflags, FLAGS_FILTER( Tester( attr ) ) ); */
@@ -2720,11 +2720,11 @@ static Obj  HdlrFunc30 (
      t_8 = GF_FLAGS__FILTER;
      t_10 = GF_Tester;
      t_9 = CALL_1ARGS( t_10, l_attr );
-     CHECK_FUNC_RESULT( t_9 )
+     CHECK_FUNC_RESULT( t_9 );
      t_7 = CALL_1ARGS( t_8, t_9 );
-     CHECK_FUNC_RESULT( t_7 )
+     CHECK_FUNC_RESULT( t_7 );
      t_5 = CALL_2ARGS( t_6, l_nflags, t_7 );
-     CHECK_FUNC_RESULT( t_5 )
+     CHECK_FUNC_RESULT( t_5 );
      l_nflags = t_5;
      
     }
@@ -2737,8 +2737,8 @@ static Obj  HdlrFunc30 (
   /* if not IS_SUBSET_FLAGS( flags, nflags ) then */
   t_4 = GF_IS__SUBSET__FLAGS;
   t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
-  CHECK_FUNC_RESULT( t_3 )
-  CHECK_BOOL( t_3 )
+  CHECK_FUNC_RESULT( t_3 );
+  CHECK_BOOL( t_3 );
   t_2 = (Obj)(UInt)(t_3 != False);
   t_1 = (Obj)(UInt)( ! ((Int)t_2) );
   if ( t_1 ) {
@@ -2747,26 +2747,26 @@ static Obj  HdlrFunc30 (
    t_2 = GF_WITH__IMPS__FLAGS;
    t_4 = GF_AND__FLAGS;
    t_3 = CALL_2ARGS( t_4, l_flags, l_nflags );
-   CHECK_FUNC_RESULT( t_3 )
+   CHECK_FUNC_RESULT( t_3 );
    t_1 = CALL_1ARGS( t_2, t_3 );
-   CHECK_FUNC_RESULT( t_1 )
+   CHECK_FUNC_RESULT( t_1 );
    l_flags = t_1;
    
    /* Objectify( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ), fail ), obj ); */
    t_1 = GF_Objectify;
    t_3 = GF_NEW__TYPE;
    t_4 = GC_TypeOfTypes;
-   CHECK_BOUND( t_4, "TypeOfTypes" )
+   CHECK_BOUND( t_4, "TypeOfTypes" );
    t_6 = GF_FamilyType;
    t_5 = CALL_1ARGS( t_6, l_type );
-   CHECK_FUNC_RESULT( t_5 )
+   CHECK_FUNC_RESULT( t_5 );
    t_7 = GF_DataType;
    t_6 = CALL_1ARGS( t_7, l_type );
-   CHECK_FUNC_RESULT( t_6 )
+   CHECK_FUNC_RESULT( t_6 );
    t_7 = GC_fail;
-   CHECK_BOUND( t_7, "fail" )
+   CHECK_BOUND( t_7, "fail" );
    t_2 = CALL_5ARGS( t_3, t_4, t_5, l_flags, t_6, t_7 );
-   CHECK_FUNC_RESULT( t_2 )
+   CHECK_FUNC_RESULT( t_2 );
    CALL_2ARGS( t_1, t_2, l_obj );
    
   }
@@ -2787,7 +2787,7 @@ static Obj  HdlrFunc30 (
  /* for i in [ 1, 3 .. LEN_LIST( extra ) - 1 ] do */
  t_7 = GF_LEN__LIST;
  t_6 = CALL_1ARGS( t_7, l_extra );
- CHECK_FUNC_RESULT( t_6 )
+ CHECK_FUNC_RESULT( t_6 );
  C_DIFF_FIA( t_5, t_6, INTOBJ_INT(1) )
  t_4 = Range3Check( INTOBJ_INT(1), INTOBJ_INT(3), t_5 );
  if ( IS_SMALL_LIST(t_4) ) {
@@ -2813,14 +2813,14 @@ static Obj  HdlrFunc30 (
   
   /* if Tester( extra[i] )( obj ) then */
   t_8 = GF_Tester;
-  CHECK_INT_POS( l_i )
+  CHECK_INT_POS( l_i );
   C_ELM_LIST_FPL( t_9, l_extra, l_i )
   t_7 = CALL_1ARGS( t_8, t_9 );
-  CHECK_FUNC_RESULT( t_7 )
-  CHECK_FUNC( t_7 )
+  CHECK_FUNC_RESULT( t_7 );
+  CHECK_FUNC( t_7 );
   t_6 = CALL_1ARGS( t_7, l_obj );
-  CHECK_FUNC_RESULT( t_6 )
-  CHECK_BOOL( t_6 )
+  CHECK_FUNC_RESULT( t_6 );
+  CHECK_BOOL( t_6 );
   t_5 = (Obj)(UInt)(t_6 != False);
   if ( t_5 ) {
    
@@ -2830,7 +2830,7 @@ static Obj  HdlrFunc30 (
    t_8 = GF_NAME__FUNC;
    C_ELM_LIST_FPL( t_9, l_extra, l_i )
    t_7 = CALL_1ARGS( t_8, t_9 );
-   CHECK_FUNC_RESULT( t_7 )
+   CHECK_FUNC_RESULT( t_7 );
    t_8 = MakeString( "with non-standard setter\n" );
    CALL_3ARGS( t_5, t_6, t_7, t_8 );
    
@@ -2839,7 +2839,7 @@ static Obj  HdlrFunc30 (
    t_7 = GF_Tester;
    C_ELM_LIST_FPL( t_8, l_extra, l_i )
    t_6 = CALL_1ARGS( t_7, t_8 );
-   CHECK_FUNC_RESULT( t_6 )
+   CHECK_FUNC_RESULT( t_6 );
    CALL_2ARGS( t_5, l_obj, t_6 );
    
   }
@@ -2849,10 +2849,10 @@ static Obj  HdlrFunc30 (
   t_6 = GF_Setter;
   C_ELM_LIST_FPL( t_7, l_extra, l_i )
   t_5 = CALL_1ARGS( t_6, t_7 );
-  CHECK_FUNC_RESULT( t_5 )
-  CHECK_FUNC( t_5 )
+  CHECK_FUNC_RESULT( t_5 );
+  CHECK_FUNC( t_5 );
   C_SUM_FIA( t_7, l_i, INTOBJ_INT(1) )
-  CHECK_INT_POS( t_7 )
+  CHECK_INT_POS( t_7 );
   C_ELM_LIST_FPL( t_6, l_extra, t_7 )
   CALL_2ARGS( t_5, l_obj, t_6 );
   
@@ -2898,7 +2898,7 @@ static Obj  HdlrFunc1 (
  
  /* LENGTH_SETTER_METHODS_2 := LENGTH_SETTER_METHODS_2 + (6 + 2); */
  t_2 = GC_LENGTH__SETTER__METHODS__2;
- CHECK_BOUND( t_2, "LENGTH_SETTER_METHODS_2" )
+ CHECK_BOUND( t_2, "LENGTH_SETTER_METHODS_2" );
  C_SUM_INTOBJS( t_3, INTOBJ_INT(6), INTOBJ_INT(2) )
  C_SUM_FIA( t_1, t_2, t_3 )
  AssGVar( G_LENGTH__SETTER__METHODS__2, t_1 );
@@ -2934,7 +2934,7 @@ static Obj  HdlrFunc1 (
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  t_1 = CALL_1ARGS( t_2, t_3 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  AssGVar( G_DS__TYPE__CACHE, t_1 );
  
  /* BIND_GLOBAL( "NEW_FAMILY", function ( typeOfFamilies, name, req_filter, imp_filter )
@@ -3372,14 +3372,14 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "TypeObj" );
  t_3 = GC_TYPE__OBJ;
- CHECK_BOUND( t_3, "TYPE_OBJ" )
+ CHECK_BOUND( t_3, "TYPE_OBJ" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "FamilyObj", FAMILY_OBJ ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FamilyObj" );
  t_3 = GC_FAMILY__OBJ;
- CHECK_BOUND( t_3, "FAMILY_OBJ" )
+ CHECK_BOUND( t_3, "FAMILY_OBJ" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "FlagsObj", function ( obj )
@@ -3415,9 +3415,9 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "IsNonAtomicComponentObjectRepFlags" );
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsNonAtomicComponentObjectRep;
- CHECK_BOUND( t_5, "IsNonAtomicComponentObjectRep" )
+ CHECK_BOUND( t_5, "IsNonAtomicComponentObjectRep" );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags", FLAGS_FILTER( IsAtomicPositionalObjectRep ) ); */
@@ -3425,9 +3425,9 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "IsAtomicPositionalObjectRepFlags" );
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsAtomicPositionalObjectRep;
- CHECK_BOUND( t_5, "IsAtomicPositionalObjectRep" )
+ CHECK_BOUND( t_5, "IsAtomicPositionalObjectRep" );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags", FLAGS_FILTER( IsReadOnlyPositionalObjectRep ) ); */
@@ -3435,9 +3435,9 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "IsReadOnlyPositionalObjectRepFlags" );
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsReadOnlyPositionalObjectRep;
- CHECK_BOUND( t_5, "IsReadOnlyPositionalObjectRep" )
+ CHECK_BOUND( t_5, "IsReadOnlyPositionalObjectRep" );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "Objectify", function ( type, obj )
@@ -3519,7 +3519,7 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SET_FILTER_OBJ" );
  t_3 = GC_SetFilterObj;
- CHECK_BOUND( t_3, "SetFilterObj" )
+ CHECK_BOUND( t_3, "SetFilterObj" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
@@ -3552,7 +3552,7 @@ static Obj  HdlrFunc1 (
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "RESET_FILTER_OBJ" );
  t_3 = GC_ResetFilterObj;
- CHECK_BOUND( t_3, "ResetFilterObj" )
+ CHECK_BOUND( t_3, "ResetFilterObj" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "IsAttributeStoringRepFlags", FLAGS_FILTER( IsAttributeStoringRep ) ); */
@@ -3560,16 +3560,16 @@ static Obj  HdlrFunc1 (
  t_2 = MakeString( "IsAttributeStoringRepFlags" );
  t_4 = GF_FLAGS__FILTER;
  t_5 = GC_IsAttributeStoringRep;
- CHECK_BOUND( t_5, "IsAttributeStoringRep" )
+ CHECK_BOUND( t_5, "IsAttributeStoringRep" );
  t_3 = CALL_1ARGS( t_4, t_5 );
- CHECK_FUNC_RESULT( t_3 )
+ CHECK_FUNC_RESULT( t_3 );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* BIND_GLOBAL( "INFO_OWA", Ignore ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "INFO_OWA" );
  t_3 = GC_Ignore;
- CHECK_BOUND( t_3, "Ignore" )
+ CHECK_BOUND( t_3, "Ignore" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* MAKE_READ_WRITE_GLOBAL( "INFO_OWA" ); */

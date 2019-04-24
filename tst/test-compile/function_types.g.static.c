@@ -161,7 +161,7 @@ static Obj  HdlrFunc7 (
  /* return f1(  ); */
  t_2 = GF_f1;
  t_1 = CALL_0ARGS( t_2 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -184,7 +184,7 @@ static Obj  HdlrFunc8 (
  /* return f1( 1, 2 ); */
  t_2 = GF_f1;
  t_1 = CALL_2ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2) );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -207,7 +207,7 @@ static Obj  HdlrFunc9 (
  /* return f2( 1, 2, 3 ); */
  t_2 = GF_f2;
  t_1 = CALL_3ARGS( t_2, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  
@@ -230,7 +230,7 @@ static Obj  HdlrFunc10 (
  /* return f4(  ); */
  t_2 = GF_f4;
  t_1 = CALL_0ARGS( t_2 );
- CHECK_FUNC_RESULT( t_1 )
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
  

@@ -37,7 +37,7 @@ static Obj  HdlrFunc3 (
   t_1 = t_2;
  }
  else if ( t_2 == True ) {
-  CHECK_BOOL( INTOBJ_INT(1) )
+  CHECK_BOOL( INTOBJ_INT(1) );
   t_1 = INTOBJ_INT(1);
  }
  else if (IS_FILTER( t_2 ) ) {
@@ -72,7 +72,7 @@ static Obj  HdlrFunc4 (
  t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (t_2 ? True : False);
  if ( t_1 == False ) {
-  CHECK_BOOL( INTOBJ_INT(1) )
+  CHECK_BOOL( INTOBJ_INT(1) );
   t_3 = (Obj)(UInt)(INTOBJ_INT(1) != False);
   t_1 = (t_3 ? True : False);
  }
@@ -99,19 +99,19 @@ static Obj  HdlrFunc5 (
  
  /* return Center and IsAssociative; */
  t_2 = GC_Center;
- CHECK_BOUND( t_2, "Center" )
+ CHECK_BOUND( t_2, "Center" );
  if ( t_2 == False ) {
   t_1 = t_2;
  }
  else if ( t_2 == True ) {
   t_3 = GC_IsAssociative;
-  CHECK_BOUND( t_3, "IsAssociative" )
-  CHECK_BOOL( t_3 )
+  CHECK_BOUND( t_3, "IsAssociative" );
+  CHECK_BOOL( t_3 );
   t_1 = t_3;
  }
  else if (IS_FILTER( t_2 ) ) {
   t_4 = GC_IsAssociative;
-  CHECK_BOUND( t_4, "IsAssociative" )
+  CHECK_BOUND( t_4, "IsAssociative" );
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
@@ -141,19 +141,19 @@ static Obj  HdlrFunc6 (
  
  /* return IsAssociative and Center; */
  t_2 = GC_IsAssociative;
- CHECK_BOUND( t_2, "IsAssociative" )
+ CHECK_BOUND( t_2, "IsAssociative" );
  if ( t_2 == False ) {
   t_1 = t_2;
  }
  else if ( t_2 == True ) {
   t_3 = GC_Center;
-  CHECK_BOUND( t_3, "Center" )
-  CHECK_BOOL( t_3 )
+  CHECK_BOUND( t_3, "Center" );
+  CHECK_BOOL( t_3 );
   t_1 = t_3;
  }
  else if (IS_FILTER( t_2 ) ) {
   t_4 = GC_Center;
-  CHECK_BOUND( t_4, "Center" )
+  CHECK_BOUND( t_4, "Center" );
   t_1 = NewAndFilter( t_2, t_4 );
  }
  else {
@@ -189,7 +189,7 @@ static Obj  HdlrFunc2 (
   t_2 = t_3;
  }
  else if ( t_3 == True ) {
-  CHECK_BOOL( INTOBJ_INT(1) )
+  CHECK_BOOL( INTOBJ_INT(1) );
   t_2 = INTOBJ_INT(1);
  }
  else if (IS_FILTER( t_3 ) ) {
@@ -208,7 +208,7 @@ static Obj  HdlrFunc2 (
  t_3 = (Obj)(UInt)(t_4 != False);
  t_2 = (t_3 ? True : False);
  if ( t_2 == False ) {
-  CHECK_BOOL( INTOBJ_INT(1) )
+  CHECK_BOOL( INTOBJ_INT(1) );
   t_4 = (Obj)(UInt)(INTOBJ_INT(1) != False);
   t_2 = (t_4 ? True : False);
  }
@@ -227,7 +227,7 @@ static Obj  HdlrFunc2 (
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  t_2 = CALL_0ARGS( t_3 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
@@ -243,26 +243,26 @@ static Obj  HdlrFunc2 (
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  t_2 = CALL_0ARGS( t_3 );
- CHECK_FUNC_RESULT( t_2 )
+ CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
  CALL_2ARGS( t_1, t_2, t_3 );
  
  /* Print( IsAssociative and IsAssociative, "\n" ); */
  t_1 = GF_Print;
  t_3 = GC_IsAssociative;
- CHECK_BOUND( t_3, "IsAssociative" )
+ CHECK_BOUND( t_3, "IsAssociative" );
  if ( t_3 == False ) {
   t_2 = t_3;
  }
  else if ( t_3 == True ) {
   t_4 = GC_IsAssociative;
-  CHECK_BOUND( t_4, "IsAssociative" )
-  CHECK_BOOL( t_4 )
+  CHECK_BOUND( t_4, "IsAssociative" );
+  CHECK_BOOL( t_4 );
   t_2 = t_4;
  }
  else if (IS_FILTER( t_3 ) ) {
   t_5 = GC_IsAssociative;
-  CHECK_BOUND( t_5, "IsAssociative" )
+  CHECK_BOUND( t_5, "IsAssociative" );
   t_2 = NewAndFilter( t_3, t_5 );
  }
  else {
