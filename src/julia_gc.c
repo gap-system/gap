@@ -28,8 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "julia.h"
-#include "julia_gcext.h"
+#include <julia.h>
+#include <julia_gcext.h>
 
 
 /****************************************************************************
@@ -93,6 +93,7 @@ static inline Bag * DATA(BagHeader * bag)
 
 
 static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+
 void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
 {
     ExtraMarkFuncBags = func;
@@ -531,7 +532,7 @@ static void TryMarkRangeReverse(void * start, void * end)
 #ifdef MARKING_STRESS_TEST
             for (int j = 0; j < 1000; ++j) {
                 UInt val = (UInt)addr + rand() - rand();
-                TryMark((void*)val);
+                TryMark((void *)val);
             }
 #endif
         }
@@ -553,7 +554,7 @@ static void TryMarkRange(void * start, void * end)
 #ifdef MARKING_STRESS_TEST
             for (int j = 0; j < 1000; ++j) {
                 UInt val = (UInt)addr + rand() - rand();
-                TryMark((void*)val);
+                TryMark((void *)val);
             }
 #endif
         }
@@ -659,7 +660,7 @@ static void PreGCHook(int full)
     /* information at the beginning of garbage collections                 */
     SyMsgsBags(full, 0, 0);
 #ifndef REQUIRE_PRECISE_MARKING
-   memset(MarkCache, 0, sizeof(MarkCache));
+    memset(MarkCache, 0, sizeof(MarkCache));
 #ifdef STAT_MARK_CACHE
     MarkCacheHits = MarkCacheAttempts = MarkCacheCollisions = 0;
 #endif
@@ -708,8 +709,9 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 {
     // HOOK: initialization happens here.
     GapStackBottom = stack_bottom;
-    for (UInt i = 0; i < NUM_TYPES; i++)
+    for (UInt i = 0; i < NUM_TYPES; i++) {
         TabMarkFuncBags[i] = MarkAllSubBags;
+    }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
 #if !defined(DISABLE_BIGVAL_TRACKING)
@@ -800,7 +802,7 @@ void RetypeBag(Bag bag, UInt new_type)
         // different type is something better to be avoided anyway. So instead
         // of supporting a feature nobody uses right now, we error out and
         // wait to see if somebody complains.
-        Panic("cannot change bag type to one which requires a 'free' callback");
+        Panic("cannot change bag type to one requiring a 'free' callback");
     }
     header->type = new_type;
 }
