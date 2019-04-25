@@ -811,22 +811,52 @@ static Obj EvalPermExpr(Expr expr)
 **
 **  'EvalListExpr'  evaluates the list   expression, i.e., not  yet evaluated
 **  list, <expr> to a list value.
-**
-**  'EvalListExpr'  just  calls 'ListExpr1'  and  'ListExpr2' to evaluate the
-**  list expression.
 */
-static Obj  ListExpr1(Expr expr, Int tildeInUse);
-static void ListExpr2(Obj list, Expr expr, Int tildeInUse);
-
 static Obj EvalListExpr(Expr expr)
 {
-    Obj                 list;         /* list value, result                */
+    Obj                 list;           /* list value, result              */
+    Obj                 sub;            /* value of a subexpression        */
+    Int                 len;            /* logical length of the list      */
+    Int                 i;              /* loop variable                   */
+    Int                 dense;          /* track whether list is dense     */
 
-    /* evaluate the list expression                                         */
-    list = ListExpr1(expr, 0);
-    ListExpr2(list, expr, 0);
+    // get the length of the list
+    len = SIZE_EXPR(expr) / sizeof(Expr);
 
-    /* return the result                                                   */
+    // handle empty list
+    if (len == 0) {
+        return NewEmptyPlist();
+    }
+
+    // allocate the list value
+    list = NEW_PLIST(T_PLIST, len);
+
+    // set the final list length
+    SET_LEN_PLIST(list, len);
+
+    // initially assume list is dense
+    dense = 1;
+
+    // handle the subexpressions
+    for (i = 1; i <= len; i++) {
+        Expr subExpr = READ_EXPR(expr, i - 1);
+
+        // skip holes
+        if (subExpr == 0) {
+            // there is a hole, hence the list is not dense (note that list
+            // expressions never contain holes at the end, so we do not have
+            // to check if any bound entries follow)
+            dense = 0;
+            continue;
+        }
+
+        sub = EVAL_EXPR(subExpr);
+        SET_ELM_PLIST(list, i, sub);
+        CHANGED_BAG(list);
+    }
+
+    SET_FILT_LIST(list, dense ? FN_IS_DENSE : FN_IS_NDENSE);
+
     return list;
 }
 
@@ -837,139 +867,56 @@ static Obj EvalListExpr(Expr expr)
 **
 **  'EvalListTildeExpr' evaluates the     list  expression, i.e., not     yet
 **  evaluated list, <expr> to a list value.  The difference to 'EvalListExpr'
-**  is that  in <expr> there are   occurrences of '~'  referring to  this list
+**  is that  in <expr> there are  occurrences of '~'  referring to  this list
 **  value.
 **
-**  'EvalListTildeExpr' just  calls 'ListExpr1' to  create  the list, assigns
-**  the list to  the variable '~', and  finally calls 'ListExpr2' to evaluate
-**  the   subexpressions into  the  list.   Thus subexpressions  in  the list
-**  expression can  refer to   this  variable and  its subobjects  to  create
-**  objects that are not trees.
+**  Note that we do not track here whether the list is dense, as this can be
+**  changed by code involving a tilde expression, as in this example:
+**      x := [1,,3,function(x) x[2]:=2; return 4; end(~)];
+**
+**  For similar reasons, we must deal with the possibility that the list we
+**  are creating changes its representation, and thus must use ASS_LIST
+**  instead of SET_ELM_PLIST.
 */
 static Obj EvalListTildeExpr(Expr expr)
 {
     Obj                 list;           /* list value, result              */
     Obj                 tilde;          /* old value of tilde              */
-
-    /* remember the old value of '~'                                       */
-    tilde = STATE(Tilde);
-
-    /* create the list value                                               */
-    list = ListExpr1(expr, 1);
-
-    /* assign the list to '~'                                              */
-    STATE(Tilde) = list;
-
-    /* evaluate the subexpressions into the list value                     */
-    ListExpr2(list, expr, 1);
-
-    /* restore old value of '~'                                            */
-    STATE(Tilde) = tilde;
-
-    /* return the list value                                               */
-    return list;
-}
-
-
-/****************************************************************************
-**
-*F  ListExpr1(<expr>,<tildeInUse>) . . . .  make a list for a list expression
-*F  ListExpr2(<list>,<expr>,<tildeInUse>)  enter the sublists for a list expr
-**
-**  'ListExpr1' and 'ListExpr2'  together evaluate the list expression <expr>
-**  into the list <list>.
-**
-**  'ListExpr1'  allocates a new  plain  list of the  same  size as  the list
-**  expression <expr> and returns this list.
-**
-**  'ListExpr2' evaluates  the  subexpression of <expr>   and puts the values
-**  into the list  <list> (which should be a  plain list of  the same size as
-**  the list expression <expr>, e.g., the one allocated by 'ListExpr1').
-**
-**  This two step allocation  is necessary, because  list expressions such as
-**  '[ [1], ~[1] ]'  requires that the value of  one subexpression is entered
-**  into the list value before the next subexpression is evaluated.
-**
-**  'tildeInUse' is 1 when this list is part of the value of ~.
-**
-**  When 'tildeInUse' is 1, use a slower code path which ensures the list is
-**  in a valid state after each element is added and handles the elements
-**  and TNUM of the list changing whenever a new element is constructed.
-**
-*/
-static ALWAYS_INLINE Obj ListExpr1(Expr expr, Int tildeInUse)
-{
-    Obj                 list;           /* list value, result              */
-    Int                 len;            /* logical length of the list      */
-
-    /* get the length of the list                                          */
-    len = SIZE_EXPR(expr) / sizeof(Expr);
-
-    /* allocate the list value                                             */
-    if ( 0 == len ) {
-        list = NEW_PLIST( T_PLIST_EMPTY, len );
-    }
-    else {
-        list = NEW_PLIST( T_PLIST, len );
-    }
-
-    SET_LEN_PLIST(list, tildeInUse ? 0 : len);
-
-    /* return the list                                                     */
-    return list;
-}
-
-static ALWAYS_INLINE void ListExpr2(Obj list, Expr expr, Int tildeInUse)
-{
     Obj                 sub;            /* value of a subexpression        */
     Int                 len;            /* logical length of the list      */
     Int                 i;              /* loop variable                   */
-    Int                 posshole;       /* initially 0, set to 1 at
-                                           first empty position, then
-                                           next full position causes
-                                           the list to be made
-                                           non-dense */
 
-    /* get the length of the list                                          */
+    // get the length of the list
     len = SIZE_EXPR(expr) / sizeof(Expr);
 
-    /* initially we have not seen a hole                                   */
-    posshole = 0;
+    // list expressions with tilde cannot be empty
+    GAP_ASSERT(len > 0);
 
-    /* handle the subexpressions                                           */
-    for ( i = 1; i <= len; i++ ) {
+    // allocate the list value
+    list = NEW_PLIST(T_PLIST, len);
 
-        /* if the subexpression is empty                                   */
-        if ( READ_EXPR(expr, i-1) == 0 ) {
-          if (!posshole)
-            posshole = 1;
-          continue;
-        }
-        else 
-          {
-            if (posshole == 1)
-              {
-                if (!tildeInUse) {
-                    SET_FILT_LIST(list, FN_IS_NDENSE);
-                }
-                posshole = 2;
-              }
-            sub = EVAL_EXPR( READ_EXPR(expr, i-1) );
-            if (tildeInUse) {
-                ASS_LIST(list, i, sub);
-            }
-            else {
-                SET_ELM_PLIST(list, i, sub);
-            }
-            CHANGED_BAG( list );
-          }
+    // remember the old value of '~'
+    tilde = STATE(Tilde);
 
+    // assign the list to '~'
+    STATE(Tilde) = list;
+
+    // handle the subexpressions
+    for (i = 1; i <= len; i++) {
+        Expr subExpr = READ_EXPR(expr, i - 1);
+
+        // skip holes
+        if (subExpr == 0)
+            continue;
+
+        sub = EVAL_EXPR(subExpr);
+        ASS_LIST(list, i, sub);
     }
 
-    // If tildeInUse = 1, elements of 'list' may have been removed
-    if (!posshole && !tildeInUse) {
-        SET_FILT_LIST(list, FN_IS_DENSE);
-    }
+    // restore old value of '~'
+    STATE(Tilde) = tilde;
+
+    return list;
 }
 
 
