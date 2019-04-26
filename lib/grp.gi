@@ -2404,7 +2404,9 @@ local G,obj,close;
     fi;
 
     if close and not IsIdenticalObj( Parent( G ), obj ) then
-      Assert(2,IsSubset(Parent(G),obj));
+      if ValueOption("noassert")<>true then
+        Assert(2,IsSubset(Parent(G),obj));
+      fi;
       SetParent( obj, Parent( G ) );
     fi;
     return obj;
