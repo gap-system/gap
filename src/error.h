@@ -250,6 +250,14 @@ Obj RequireArgumentEx(const char * funcname,
 
 /****************************************************************************
 **
+*F  RequirePlainRec
+*/
+#define RequirePlainRec(funcname, op)                                        \
+    RequireArgumentCondition(funcname, op, IS_PREC(op),                      \
+                             "must be a plain record")
+
+/****************************************************************************
+**
 *F  GetSmallIntEx, GetSmallInt
 */
 EXPORT_INLINE Int
