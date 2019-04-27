@@ -406,31 +406,56 @@ AC_ARG_WITH([readline],
 dnl Now check if we can find GNU readline. We go to some extra efforts to
 dnl ensure it is GNU readline, and not e.g. BSD editline wrappers for
 dnl readline, which do not suffice for GAP.
+dnl
+dnl note that OpenBSD installs modern (v6+) GNU readline into /usr/local under name libereadline
+dnl and its headers into /usr/local/include/ereadline.
+dnl
 AS_IF([test "x$with_readline" != xno],[
-  READLINE_LIBS="-lreadline"
-  AS_CASE([x"$with_readline"],
-    [xyes|x],[
-      READLINE_CPPFLAGS=
-      READLINE_LDFLAGS=
-    ],
-    [*],[
-      READLINE_CPPFLAGS="-I$with_readline/include"
-      READLINE_LDFLAGS="-L$with_readline/lib"
-    ]
-  )
-
-  dnl We check for the symbol rl_ding to distinguish GNU readline
-  dnl from other readline implementation.
-  AX_CHECK_LIBRARY([READLINE], [readline/readline.h], [readline], [rl_ding], [], [], [])
-
-  AS_IF([test $ax_cv_have_READLINE = yes],[
-    AC_DEFINE([HAVE_LIBREADLINE], [1], [Define if you have libreadline])
-  ],[
-    AS_CASE([x"$with_readline"],
+ dnl Checking for rl_bind_keyseq rules out very old readline
+ dnl ereadline is the name of GNU readline library on OpenBSD
+ AS_CASE([x"$with_readline"],dnl set up needed -L flags
+    [xyes|x], [READLINE_LDFLAGS=],
+    [*], [READLINE_LDFLAGS="-L$with_readline/lib"])
+ save_LDFLAGS="$LDFLAGS"
+ LDFLAGS="$LDFLAGS $READLINE_LDFLAGS"
+ save_LIBS="$LIBS"
+ AC_SEARCH_LIBS([rl_bind_keyseq], [readline ereadline], [
+   AS_IF([test x$ac_cv_search_rl_bind_keyseq != "xnone required"],
+    [READLINE_LIBS=$ac_cv_search_rl_bind_keyseq], [READLINE_LIBS=])
+   AS_CASE([x"$with_readline"],dnl libereadline is a special case
+    [xyes|x], [
+      AS_IF([test x$ac_cv_search_rl_bind_keyseq = "x-lereadline"], [
+	READLINE_CPPFLAGS="-I/usr/local/include/ereadline"
+	], [
+	READLINE_CPPFLAGS=])
+    ], [*],[
+      AS_IF([test x$ac_cv_search_rl_bind_keyseq = "x-lereadline"], [
+	READLINE_CPPFLAGS="-I$with_readline/include/ereadline"
+	], [
+	READLINE_CPPFLAGS="-I$with_readline/include"])
+      ]
+   )
+  dnl We check that the corresponding header is present
+   save_CPPFLAGS="$CPPFLAGS"
+   CPPFLAGS="$READLINE_CPPFLAGS $CPPFLAGS"
+   AC_CHECK_HEADERS([readline/readline.h], [
+        AC_DEFINE([HAVE_LIBREADLINE], [1], [Define if you have lib(e)readline])
+	], [
+	AS_CASE([x"$with_readline"],
+            [x], [READLINE_CPPFLAGS= READLINE_LDFLAGS= READLINE_LIBS=],
+            [*], [AC_MSG_FAILURE([--with-readline was given, but further tests for readline failed])])
+        ]
+   )
+   CPPFLAGS="$save_CPPFLAGS"
+   break
+   ],[
+   AS_CASE([x"$with_readline"],
       [x], [READLINE_CPPFLAGS= READLINE_LDFLAGS= READLINE_LIBS=],
       [*], [AC_MSG_FAILURE([--with-readline was given, but test for readline failed])]
-    )
-  ])
+   )
+ ])dnl AC_SEARCH_LIBS([rl_bind_keyseq] ...) ends here
+ LDFLAGS="$save_LDFLAGS"
+ LIBS="$save_LIBS"
 ])
 
 AC_SUBST([READLINE_CPPFLAGS])
