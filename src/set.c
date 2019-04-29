@@ -523,7 +523,7 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
     if ( pos <= len && EQ( ELM_PLIST(set,pos), obj ) ) {
 
         Obj * ptr = ADDR_OBJ(set) + pos;
-        SyMemmove(ptr, ptr + 1, sizeof(Obj) * (len - pos + 1));
+        SyMemmove(ptr, ptr + 1, sizeof(Obj) * (len - pos));
         SET_ELM_PLIST( set, len, 0 );
         SET_LEN_PLIST( set, len-1 );
 
