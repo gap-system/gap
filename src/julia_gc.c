@@ -25,6 +25,7 @@
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"
+#include "gap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -660,7 +661,18 @@ static void GapRootScanner(int full)
     // current_task != root_task.
     char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
     stackend += size;
-    if (JuliaTLS->tid == 0 && JuliaTLS->root_task == task) {
+    // The following test overrides the stackend if the following two
+    // conditions hold:
+    //
+    // 1. GAP is not being used as a library, but is the main program
+    //    and in charge of the main() function.
+    // 2. The stack of the current task is that of the main task of the
+    //    main thread.
+    //
+    // The reason is that if Julia is being initialized from GAP, it
+    // cannot always reliably find the top of the stack for that task,
+    // so we have to fall back to GAP for that.
+    if (!IsUsingLibGap() && JuliaTLS->tid == 0 && JuliaTLS->root_task == task) {
         stackend = (char *)GapStackBottom;
     }
 
