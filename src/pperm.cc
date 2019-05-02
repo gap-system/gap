@@ -278,7 +278,7 @@ static UInt INIT_PPERM(Obj f)
     deg = DEG_PPERM<T>(f);
 
     if (deg == 0) {
-        dom = ImmutableEmptyPlist;
+        dom = NewImmutableEmptyPlist();
         SET_DOM_PPERM(f, dom);
         SET_IMG_PPERM(f, dom);
         CHANGED_BAG(f);
@@ -549,7 +549,7 @@ static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 
     UInt rank = RANK_PPERM(f);
     if (rank == 0) {
-        return ImmutableEmptyPlist;
+        return NewImmutableEmptyPlist();
     }
 
     Obj dom = DOM_PPERM(f);

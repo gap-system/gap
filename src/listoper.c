@@ -446,7 +446,7 @@ static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
   Obj res;
   len = LEN_LIST(mat);
   if (len == 0)
-    return ImmutableEmptyPlist;
+    return NewImmutableEmptyPlist();
   zrow = ZERO(ELM_LIST(mat,1));
   CheckedMakeImmutable(zrow);
   res = NEW_PLIST_IMM(T_PLIST_TAB_RECT, len);

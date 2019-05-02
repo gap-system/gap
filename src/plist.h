@@ -289,18 +289,23 @@ EXPORT_INLINE Obj PopPlist(Obj list)
 
 /****************************************************************************
 **
-*F  NewEmptyPlist() . . . . . . . . . . . . . . create a new empty plain list
-*V  ImmutableEmptyPlist . . . . . . . . . . . . an immutable empty plain list
-**
-**  ImmutableEmptyPlist is a variable rather than a function, as we can
-**  reuse the same immutable empty plist.
+*F  NewEmptyPlist() . . . . . . . . . .  create a new mutable empty plain list
 */
 EXPORT_INLINE Obj NewEmptyPlist(void)
 {
     return NEW_PLIST(T_PLIST_EMPTY, 0);
 }
 
-extern Obj ImmutableEmptyPlist;
+
+/****************************************************************************
+**
+*F  NewImmutableEmptyPlist() . . . . . create a new immutable empty plain list
+*/
+EXPORT_INLINE Obj NewImmutableEmptyPlist(void)
+{
+    return NEW_PLIST_IMM(T_PLIST_EMPTY, 0);
+}
+
 
 /****************************************************************************
 **

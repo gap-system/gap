@@ -1205,7 +1205,7 @@ static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 
     if (retval == 0)
     {
-        retlist = ImmutableEmptyPlist;
+        retlist = NewImmutableEmptyPlist();
     }
     else
     {
