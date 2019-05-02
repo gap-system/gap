@@ -31,6 +31,13 @@
 #include "streams.h"
 #include "stringobj.h"
 
+static int UsingLibGap = 0;
+
+int IsUsingLibGap(void)
+{
+    return UsingLibGap;
+}
+
 
 //
 // Setup and initialisation
@@ -41,6 +48,8 @@ void GAP_Initialize(int              argc,
                     GAP_CallbackFunc errorCallback,
                     int              handleSignals)
 {
+    UsingLibGap = 1;
+
     InitializeGap(&argc, argv, handleSignals);
     SetExtraMarkFuncBags(markBagsCallback);
     STATE(JumpToCatchCallback) = errorCallback;
