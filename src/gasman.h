@@ -553,6 +553,18 @@ EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
 }
 
 
+#if defined(SYS_IS_CYGWIN32) && defined(SYS_IS_64_BIT)
+EXPORT_INLINE void ENSURE_BAG(Bag bag)
+{
+    memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
+}
+#else
+EXPORT_INLINE void ENSURE_BAG(Bag bag)
+{
+}
+#endif
+
+
 /****************************************************************************
 **
 *F  CollectBags(<size>,<full>)  . . . . . . . . . . . . . . collect dead bags

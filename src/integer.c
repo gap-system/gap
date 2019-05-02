@@ -274,6 +274,7 @@ static void NEW_FAKEMPZ( fake_mpz_t fake, UInt size )
   }
   else {
     fake->obj = NewBag( T_INTPOS, size * sizeof(mp_limb_t) );
+    ENSURE_BAG(fake->obj);
   }
 }
 
@@ -1789,9 +1790,11 @@ Obj ModInt(Obj opL, Obj opR)
     }
     
     mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
+    ENSURE_BAG(mod);
 
     quo = NewBag( T_INTPOS,
                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
+    ENSURE_BAG(quo);
 
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo), (mp_ptr)ADDR_INT(mod), 0,
@@ -1888,6 +1891,8 @@ Obj QuoInt(Obj opL, Obj opR)
       quo = NewBag( T_INTPOS, SIZE_OBJ(opL) );
     else
       quo = NewBag( T_INTNEG, SIZE_OBJ(opL) );
+
+    ENSURE_BAG(quo);
     
     if ( k < 0 ) k = -k;
 
@@ -1906,6 +1911,7 @@ Obj QuoInt(Obj opL, Obj opR)
     
     /* create a new bag for the remainder                                  */
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
+    ENSURE_BAG(rem);
 
     /* allocate a bag for the quotient                                     */
     if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
@@ -1914,6 +1920,7 @@ Obj QuoInt(Obj opL, Obj opR)
     else
       quo = NewBag( T_INTNEG,
                     (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
+    ENSURE_BAG(quo);
 
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo), (mp_ptr)ADDR_INT(rem), 0,
                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
@@ -2035,9 +2042,11 @@ Obj RemInt(Obj opL, Obj opR)
       return opL;
     
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
+    ENSURE_BAG(rem);
     
     quo = NewBag( T_INTPOS,
                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
+    ENSURE_BAG(quo);
     
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo),  (mp_ptr)ADDR_INT(rem), 0,
