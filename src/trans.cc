@@ -258,7 +258,7 @@ static UInt INIT_TRANS2(Obj f)
 
     if (deg == 0) {
         // special case for degree 0
-        img = ImmutableEmptyPlist;
+        img = NewImmutableEmptyPlist();
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
@@ -310,7 +310,7 @@ static UInt INIT_TRANS4(Obj f)
         // T_TRANS4 and that does not have (internal) degree 65537 or greater
         // is ID_TRANS4.
 
-        img = ImmutableEmptyPlist;
+        img = NewImmutableEmptyPlist();
         SET_IMG_TRANS(f, img);
         SET_KER_TRANS(f, img);
         CHANGED_BAG(f);
@@ -1167,7 +1167,7 @@ static Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
         return FuncIMAGE_SET_TRANS(self, f);
     }
     else if (m == 0) {
-        return ImmutableEmptyPlist;
+        return NewImmutableEmptyPlist();
     }
     else if (m < deg) {
         newObj = NEW_PLIST_IMM(T_PLIST_CYC, m);
@@ -1237,7 +1237,7 @@ static Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
     m = INT_INTOBJ(n);
 
     if (m == 0) {
-        out = ImmutableEmptyPlist;
+        out = NewImmutableEmptyPlist();
         return out;
     }
 
@@ -1680,7 +1680,7 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
     }
 
     if (len == 0) {
-        out = ImmutableEmptyPlist;
+        out = NewImmutableEmptyPlist();
         return out;
     }
     out = NEW_PLIST_IMM(T_PLIST_CYC, len);
