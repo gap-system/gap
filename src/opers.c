@@ -3877,8 +3877,8 @@ static Int InitKernel (
     ImportFuncFromLibrary("VMETHOD_PRINT_INFO", &VMETHOD_PRINT_INFO);
     ImportFuncFromLibrary("NEXT_VMETHOD_PRINT_INFO", &NEXT_VMETHOD_PRINT_INFO);
 
-    ImportFuncFromLibrary( "SET_FILTER_OBJ",   &SET_FILTER_OBJ );
-    ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
+    ImportFuncFromLibrary( "SetFilterObj",   &SET_FILTER_OBJ );
+    ImportFuncFromLibrary( "ResetFilterObj", &RESET_FILTER_OBJ );
 
     ImportFuncFromLibrary("HANDLE_METHOD_NOT_FOUND",
                           &HANDLE_METHOD_NOT_FOUND);
