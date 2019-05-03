@@ -168,29 +168,28 @@ static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end)
 */
 static void ReadFuncCallOption(ScannerState * s, TypSymbolSet follow)
 {
-  volatile UInt       rnam;           /* record component name           */
-  if ( s->Symbol == S_IDENT ) {
-    rnam = RNamName( s->Value );
-    Match(s, S_IDENT, "identifier", S_COMMA | follow);
-    TRY_IF_NO_ERROR { IntrFuncCallOptionsBeginElmName( rnam ); }
-  }
-  else if ( s->Symbol == S_LPAREN ) {
-    Match(s, S_LPAREN, "(", S_COMMA | follow);
-    ReadExpr(s, follow, 'r');
-    Match(s, S_RPAREN, ")", S_COMMA | follow);
-    TRY_IF_NO_ERROR { IntrFuncCallOptionsBeginElmExpr(); }
-  }
-  else {
-    SyntaxError(s, "Identifier expected");
-  }
-  if (s->Symbol == S_ASSIGN) {
-      Match(s, S_ASSIGN, ":=", S_COMMA | follow);
-      ReadExpr(s, S_COMMA | S_RPAREN|follow, 'r');
-      TRY_IF_NO_ERROR { IntrFuncCallOptionsEndElm(); }
+    volatile UInt rnam; // record component name
+    if (s->Symbol == S_IDENT) {
+        rnam = RNamName(s->Value);
+        Match(s, S_IDENT, "identifier", S_COMMA | follow);
+        TRY_IF_NO_ERROR { IntrFuncCallOptionsBeginElmName(rnam); }
     }
-  else
-    {
-      TRY_IF_NO_ERROR { IntrFuncCallOptionsEndElmEmpty(); }
+    else if (s->Symbol == S_LPAREN) {
+        Match(s, S_LPAREN, "(", S_COMMA | follow);
+        ReadExpr(s, follow, 'r');
+        Match(s, S_RPAREN, ")", S_COMMA | follow);
+        TRY_IF_NO_ERROR { IntrFuncCallOptionsBeginElmExpr(); }
+    }
+    else {
+        SyntaxError(s, "Identifier expected");
+    }
+    if (s->Symbol == S_ASSIGN) {
+        Match(s, S_ASSIGN, ":=", S_COMMA | follow);
+        ReadExpr(s, S_COMMA | S_RPAREN | follow, 'r');
+        TRY_IF_NO_ERROR { IntrFuncCallOptionsEndElm(); }
+    }
+    else {
+        TRY_IF_NO_ERROR { IntrFuncCallOptionsEndElmEmpty(); }
     }
 }
 
