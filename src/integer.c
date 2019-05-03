@@ -142,6 +142,23 @@ static Obj ObjInt_UIntInv( UInt i );
 GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(UInt), "gmp limb size incompatible with GAP word size");
 
 
+/* This ensures that all memory underlying a bag is actually committed
+** to physical memory and can be written to.
+** This is a workaround to a bug specific to Cygwin 64-bit and bad
+** interaction with GMP, so this is only needed specifically for new
+** bags created in this module to hold the outputs of GMP routines.
+**
+** Thus, any time NewBag is called, it is also necessary to call
+** ENSURE_BAG(bag) on the newly created bag if some GMP function will be
+** the first place that bag's data is written to.
+**
+** To give a counter-example, ENSURE_BAG is *not* needed in ObjInt_Int,
+** because it just creates a bag to hold a single mp_limb_t, and
+** immediately assigns it a value.
+**
+** The bug this works around is explained more in
+** https://github.com/gap-system/gap/issues/3434
+*/
 static inline void ENSURE_BAG(Bag bag)
 {
 #if defined(SYS_IS_CYGWIN32) && defined(SYS_IS_64_BIT)
