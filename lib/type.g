@@ -426,11 +426,13 @@ BIND_GLOBAL( "TypeOfFamilyOfTypes",  [
     false,
     NEW_TYPE_NEXT_ID ] );
 
-SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
-SET_TYPE_POSOBJ( TypeOfFamilies,   TypeOfTypes            );
+SET_TYPE_POSOBJ( TypeOfTypes,            TypeOfTypes );
+SET_TYPE_POSOBJ( TypeOfFamilies,         TypeOfTypes );
+SET_TYPE_POSOBJ( TypeOfFamilyOfTypes,    TypeOfTypes );
+SET_TYPE_POSOBJ( TypeOfFamilyOfFamilies, TypeOfTypes );
 
+SET_TYPE_COMOBJ( FamilyOfFamilies, TypeOfFamilyOfFamilies );
 SET_TYPE_COMOBJ( FamilyOfTypes,    TypeOfFamilyOfTypes    );
-SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
 
 if IsHPCGAP then
     MakeReadOnlyObj(TypeOfFamilyOfFamilies);
