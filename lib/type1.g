@@ -143,61 +143,34 @@ BIND_GLOBAL( "NEW_FAMILY",
 end );
 
 
-BIND_GLOBAL( "NewFamily2", function ( typeOfFamilies, name )
-    return NEW_FAMILY( typeOfFamilies,
-                       name,
-                       EMPTY_FLAGS,
-                       EMPTY_FLAGS );
-end );
-
-
-BIND_GLOBAL( "NewFamily3", function ( typeOfFamilies, name, req )
-    return NEW_FAMILY( typeOfFamilies,
-                       name,
-                       FLAGS_FILTER( req ),
-                       EMPTY_FLAGS );
-end );
-
-
-BIND_GLOBAL( "NewFamily4", function ( typeOfFamilies, name, req, imp )
-    return NEW_FAMILY( typeOfFamilies,
-                       name,
-                       FLAGS_FILTER( req ),
-                       FLAGS_FILTER( imp ) );
-end );
-
-
-BIND_GLOBAL( "NewFamily5",
-    function ( typeOfFamilies, name, req, imp, filter )
-    return NEW_FAMILY( Subtype( typeOfFamilies, filter ),
-                       name,
-                       FLAGS_FILTER( req ),
-                       FLAGS_FILTER( imp ) );
-end );
-
-
 BIND_GLOBAL( "NewFamily", function ( arg )
+    local typeOfFamilies, name, req, imp, filter;
 
-    # NewFamily( <name> )
-    if LEN_LIST(arg) = 1  then
-        return NewFamily2( TypeOfFamilies, arg[1] );
-
-    # NewFamily( <name>, <req-filter> )
-    elif LEN_LIST(arg) = 2 then
-        return NewFamily3( TypeOfFamilies, arg[1], arg[2] );
-
-    # NewFamily( <name>, <req-filter>, <imp-filter> )
-    elif LEN_LIST(arg) = 3  then
-        return NewFamily4( TypeOfFamilies, arg[1], arg[2], arg[3] );
-
-    # NewFamily( <name>, <req-filter>, <imp-filter>, <family-filter> )
-    elif LEN_LIST(arg) = 4  then
-        return NewFamily5( TypeOfFamilies, arg[1], arg[2], arg[3], arg[4] );
-
-    # signal error
-    else
+    if not LEN_LIST(arg) in [1..4] then
         Error( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" );
     fi;
+
+    name := arg[1];
+
+    if LEN_LIST(arg) >= 2 then
+        req := FLAGS_FILTER( arg[2] );
+    else
+        req := EMPTY_FLAGS;
+    fi;
+
+    if LEN_LIST(arg) >= 3  then
+        imp := FLAGS_FILTER( arg[3] );
+    else
+        imp := EMPTY_FLAGS;
+    fi;
+
+    if LEN_LIST(arg) = 4  then
+        typeOfFamilies := Subtype( TypeOfFamilies, arg[4] );
+    else
+        typeOfFamilies := TypeOfFamilies;
+    fi;
+
+    return NEW_FAMILY( typeOfFamilies, name, req, imp );
 
 end );
 
