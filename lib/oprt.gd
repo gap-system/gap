@@ -1446,6 +1446,7 @@ OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false, false );
 #############################################################################
 ##
 #O  OrbitLengths( <G>, <seeds>[, <gens>, <acts>][, <act>] )
+#A  OrbitLengths( <G> )
 #A  OrbitLengths( <xset> )
 ##
 ##  <#GAPDoc Label="OrbitLengths">
@@ -1453,11 +1454,18 @@ OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false, false );
 ##  <Heading>OrbitLengths</Heading>
 ##  <Oper Name="OrbitLengths" Arg='G, seeds[, gens, acts][, act]'
 ##   Label="for a group, a set of seeds, etc."/>
+##  <Attr Name="OrbitLengths" Arg='G' Label="for a permutation group"/>
 ##  <Attr Name="OrbitLengths" Arg='xset' Label="for an external set"/>
 ##
 ##  <Description>
 ##  computes the lengths of all the orbits of the elements in <A>seeds</A>
 ##  under the action <A>act</A> of <A>G</A>.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>OrbitLengths(<A>G</A>)</C>, which returns the length of all the
+##  orbits of its natural action on the points moved by it.
+##  For example the group <M>\langle (1,2,3), (5,6) \rangle</M>
+##  has the orbit lengths 2 and 3.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1468,6 +1476,7 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 #############################################################################
 ##
 #O  OrbitLengthsDomain( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#A  OrbitLengthsDomain( <G> )
 #A  OrbitLengthsDomain( <xset> )
 ##
 ##  <#GAPDoc Label="OrbitLengthsDomain">
@@ -1475,6 +1484,8 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 ##  <Heading>OrbitLengthsDomain</Heading>
 ##  <Oper Name="OrbitLengthsDomain" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group and a set of seeds"/>
+##  <Attr Name="OrbitLengthsDomain" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Attr Name="OrbitLengthsDomain" Arg='xset' Label="of an external set"/>
 ##
 ##  <Description>
@@ -1484,12 +1495,21 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 ##  <Ref Oper="OrbitLengths" Label="for a group, a set of seeds, etc."/>.
 ##  The domain <A>Omega</A> must be closed under the action of <A>G</A>,
 ##  otherwise an error can occur.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>OrbitLengthsDomain(<A>G</A>)</C>, which returns the length of all
+##  the orbits of its natural action on the points moved by it.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
 ##  gap> OrbitLength(g,[1,2,3,4],OnTuples);
 ##  12
 ##  gap> OrbitLengths(g,Arrangements([1..4],4),OnTuples);
 ##  [ 12, 12 ]
+##  gap> g:=Group((1,2,3),(5,6,7));;
+##  gap> OrbitLengthsDomain(g,[1,2,3]);
+##  [ 3 ]
+##  gap> OrbitLengthsDomain(g);
+##  [ 3, 3 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1500,11 +1520,11 @@ OrbitsishOperation( "OrbitLengthsDomain", OrbitsishReq, false, NewAttribute );
 
 #############################################################################
 ##
-#O  OrbitStabilizer( <G>, [<Omega>,] <pnt>, [<gens>,<acts>,] <act> )
+#O  OrbitStabilizer( <G>[, <Omega>], <pnt>[, <gens>,<acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="OrbitStabilizer">
 ##  <ManSection>
-##  <Oper Name="OrbitStabilizer" Arg='G[, Omega], pnt[, gens, acts,] act'/>
+##  <Oper Name="OrbitStabilizer" Arg='G[, Omega], pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  computes the orbit and the stabilizer of <A>pnt</A> simultaneously in a
