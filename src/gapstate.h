@@ -17,6 +17,8 @@
 
 #include "system.h"
 
+#include "scanner.h"
+
 #if defined(HPCGAP)
 #include "hpc/tls.h"
 #endif
@@ -56,15 +58,13 @@ typedef struct GAPState {
     Obj       StackNams;
 
     /* From scanner.c */
-    Obj    ValueObj;
-    Char   Value[MAX_VALUE_LEN];
+    // TODO: eventually, ScannerState should be removed from GAPState
+    // (and then also #include "scanner.h" at the top), and instead code
+    // using a caller should dynamically allocate a ScannerState on the stack.
+    // But for now, we can't really do that.
+    ScannerState Scanner;
     UInt   NrError;
     UInt   NrErrLine;
-    UInt   Symbol;
-
-    // Track the last 3 symbols, for 'Unbound global' warnings
-    UInt   SymbolStartPos[3];
-    UInt   SymbolStartLine[3];
 
     // Used for recording the first line of the fragment of code currently
     // begin interpreted, so the current line is outputted when profiling

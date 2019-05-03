@@ -192,22 +192,43 @@ typedef UInt            TypSymbolSet;
 
 /****************************************************************************
 **
-*V  Value . . . . . . . . . . . . , value of the identifier, float or integer
+*T  ScannerState
+**
+**  The struct 'ScannerState' encapsulates the state of the scanner.
+**
+**  In the future, it is planned to allow use of multiple instances of the
+**  scanner simultaneously within a single thread. However, this is not yet
+**  ready, and currently only once instance of 'ScannerState' is used, which
+**  is stored inside the global instance of struct 'GAPState'.
+*/
+typedef struct {
+
+/****************************************************************************
+**
+*V  Value . . . . . . . . . . . . . value of the identifier, float or integer
 *V  ValueObj . . . . . . . . . . . . . . . . . . . . . .  value of the string
 **
-**  If 'STATE(Symbol)' is 'S_IDENT', 'S_INT' or 'S_FLOAT' then normally the
-**  variable 'STATE(Value)' holds the name of the identifier, the digits of
+**  If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_FLOAT' then normally the
+**  variable 'Value' holds the name of the identifier, the digits of
 **  the integer or float literal as a C string. For large integer or float
-**  literals that do not fit into 'STATE(Value)', instead 'STATE(ValueObj)'
+**  literals that do not fit into 'Value', instead 'ValueObj'
 **  holds the the literal as a GAP string object. If the symbol is 'S_STRING'
 **  or 'S_HELP', the string literal or help text is always stored in
-**  'STATE(ValueObj)' as a GAP string object.
+**  'ValueObj' as a GAP string object.
 **
 **  Note that the size of identifiers in GAP is limited to 1023 characters,
-**  hence identifiers are always stored in 'STATE(Value)'. For this reason,
+**  hence identifiers are always stored in 'Value'. For this reason,
 **  'GetIdent' truncates an identifier after that many characters.
 */
+    Obj    ValueObj;
+    Char   Value[1024];
 
+    enum SCANNER_SYMBOLS Symbol;
+
+    // Track the last three symbols, for 'Unbound global' warnings
+    UInt   SymbolStartPos[3];
+    UInt   SymbolStartLine[3];
+} ScannerState;
 
 /****************************************************************************
 **
@@ -285,18 +306,22 @@ int IsKeyword(const char * str);
 **  does not know if a variable is unbound until another 2 tokens are read.
 **
 */
-void SyntaxErrorWithOffset(const Char * msg, Int tokenoffset);
+void SyntaxErrorWithOffset(ScannerState * s,
+                           const Char *   msg,
+                           Int            tokenoffset);
 
-void SyntaxWarningWithOffset(const Char * msg, Int tokenoffset);
+void SyntaxWarningWithOffset(ScannerState * s,
+                             const Char *   msg,
+                             Int            tokenoffset);
 
-EXPORT_INLINE void SyntaxError(const Char * msg)
+EXPORT_INLINE void SyntaxError(ScannerState * s, const Char * msg)
 {
-    SyntaxErrorWithOffset(msg, 0);
+    SyntaxErrorWithOffset(s, msg, 0);
 }
 
-EXPORT_INLINE void SyntaxWarning(const Char * msg)
+EXPORT_INLINE void SyntaxWarning(ScannerState * s, const Char * msg)
 {
-    SyntaxWarningWithOffset(msg, 0);
+    SyntaxWarningWithOffset(s, msg, 0);
 }
 
 
@@ -343,7 +368,10 @@ EXPORT_INLINE void SyntaxWarning(const Char * msg)
 **  If 'Match' needs to  read a  new line from  '*stdin*' or '*errin*' to get
 **  the next symbol it prints the string pointed to by 'Prompt'.
 */
-void Match(UInt symbol, const Char * msg, TypSymbolSet skipto);
+void Match(ScannerState * s,
+           UInt           symbol,
+           const Char *   msg,
+           TypSymbolSet   skipto);
 
 
 /****************************************************************************
@@ -356,7 +384,8 @@ void Match(UInt symbol, const Char * msg, TypSymbolSet skipto);
 **  cannot detect this without being context aware, we must provide this
 **  function to allow the reader to signal to the scanner about this.
 */
-void ScanForFloatAfterDotHACK(void);
+void ScanForFloatAfterDotHACK(ScannerState * s);
+
 
 /****************************************************************************
 **
