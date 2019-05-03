@@ -106,20 +106,19 @@ static UInt ExecProccallOpts(Stat call)
 
 /****************************************************************************
 **
-*F  ExecProccall0args(<call>)  .  execute a procedure call with 0    arguments
-*F  ExecProccall1args(<call>)  .  execute a procedure call with 1    arguments
-*F  ExecProccall2args(<call>)  .  execute a procedure call with 2    arguments
-*F  ExecProccall3args(<call>)  .  execute a procedure call with 3    arguments
-*F  ExecProccall4args(<call>)  .  execute a procedure call with 4    arguments
-*F  ExecProccall5args(<call>)  .  execute a procedure call with 5    arguments
-*F  ExecProccall6args(<call>)  .  execute a procedure call with 6    arguments
-*F  ExecProccallXargs(<call>)  .  execute a procedure call with more arguments
+*F  ExecProccall0args(<call>) .  execute a procedure call with 0    arguments
+*F  ExecProccall1args(<call>) .  execute a procedure call with 1    arguments
+*F  ExecProccall2args(<call>) .  execute a procedure call with 2    arguments
+*F  ExecProccall3args(<call>) .  execute a procedure call with 3    arguments
+*F  ExecProccall4args(<call>) .  execute a procedure call with 4    arguments
+*F  ExecProccall5args(<call>) .  execute a procedure call with 5    arguments
+*F  ExecProccall6args(<call>) .  execute a procedure call with 6    arguments
+*F  ExecProccallXargs(<call>) .  execute a procedure call with more arguments
 **
-**  'ExecProccall<i>args'  executes  a  procedure   call   to the    function
-**  'FUNC_CALL(<call>)'   with   the   arguments   'ARGI_CALL(<call>,1)'   to
-**  'ARGI_CALL(<call>,<i>)'.  It discards the value returned by the function
-**  and returns the statement execution status (as per EXEC_STAT, q.v.)
-**  resulting from the procedure call, which in fact is always 0.
+**  'ExecProccall<i>args'  executes  a procedure  call  to  a  GAP  function.
+**  It discards the value returned by the function and returns the statement
+**  execution status (as per EXEC_STAT, q.v.) resulting from the procedure
+**  call, which in fact is always 0.
 */
 
 static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
@@ -130,20 +129,20 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
     Obj result;
 
     // evaluate the function
-    func = EVAL_EXPR( FUNC_CALL( call ) );
- 
+    func = EVAL_EXPR(READ_EXPR(call, 0));
+
     // evaluate the arguments
     if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
         for (UInt i = 1; i <= nr; i++) {
-            a[i - 1] = EVAL_EXPR(ARGI_CALL(call, i));
+            a[i - 1] = EVAL_EXPR(READ_EXPR(call, i));
         }
     }
     else {
-        UInt realNr = NARG_SIZE_CALL(SIZE_STAT(call));
+        UInt realNr = SIZE_STAT(call) / sizeof(Expr) - 1;
         args = NEW_PLIST(T_PLIST, realNr);
         SET_LEN_PLIST(args, realNr);
         for (UInt i = 1; i <= realNr; i++) {
-            Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
+            Obj argi = EVAL_EXPR(READ_EXPR(call, i));
             SET_ELM_PLIST(args, i, argi);
             CHANGED_BAG(args);
         }
@@ -256,7 +255,7 @@ static UInt ExecProccall6args(Stat call)
 
 static UInt ExecProccallXargs(Stat call)
 {
-    // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
+    // pass in 7 instead of the actual number of arguments,
     // to allow the compiler to perform better optimizations
     // (as we know that the number of arguments is >= 7 here)
     EvalOrExecCall(1, 7, call);
@@ -292,18 +291,17 @@ static Obj EvalFunccallOpts(Expr call)
 
 /****************************************************************************
 **
-*F  EvalFunccall0args(<call>)  . . execute a function call with 0    arguments
-*F  EvalFunccall1args(<call>)  . . execute a function call with 1    arguments
-*F  EvalFunccall2args(<call>)  . . execute a function call with 2    arguments
-*F  EvalFunccall3args(<call>)  . . execute a function call with 3    arguments
-*F  EvalFunccall4args(<call>)  . . execute a function call with 4    arguments
-*F  EvalFunccall5args(<call>)  . . execute a function call with 5    arguments
-*F  EvalFunccall6args(<call>)  . . execute a function call with 6    arguments
-*F  EvalFunccallXargs(<call>)  . . execute a function call with more arguments
+*F  EvalFunccall0args(<call>) . . execute a function call with 0    arguments
+*F  EvalFunccall1args(<call>) . . execute a function call with 1    arguments
+*F  EvalFunccall2args(<call>) . . execute a function call with 2    arguments
+*F  EvalFunccall3args(<call>) . . execute a function call with 3    arguments
+*F  EvalFunccall4args(<call>) . . execute a function call with 4    arguments
+*F  EvalFunccall5args(<call>) . . execute a function call with 5    arguments
+*F  EvalFunccall6args(<call>) . . execute a function call with 6    arguments
+*F  EvalFunccallXargs(<call>) . . execute a function call with more arguments
 **
-**  'EvalFunccall<i>args'  executes  a     function call   to   the  function
-**  'FUNC_CALL(<call>)'    with  the   arguments    'ARGI_CALL(<call>,1)'  to
-**  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
+**  'EvalFunccall<i>args'  executes  a  function  call  to  a  GAP  function.
+**  It returns the value returned by the function.
 */
 
 static Obj EvalFunccall0args(Expr call)
@@ -343,7 +341,7 @@ static Obj EvalFunccall6args(Expr call)
 
 static Obj EvalFunccallXargs(Expr call)
 {
-    // pass in 7 (instead of NARG_SIZE_CALL(SIZE_EXPR(call)))
+    // pass in 7 instead of the actual number of arguments,
     // to allow the compiler to perform better optimizations
     // (as we know that the number of arguments is >= 7 here)
     return EvalOrExecCall(0, 7, call);
@@ -730,15 +728,16 @@ static void            PrintFunccall1 (
 
     /* print the expression that should evaluate to a function             */
     Pr("%2>",0L,0L);
-    PrintExpr( FUNC_CALL(call) );
+    PrintExpr(READ_EXPR(call, 0));
 
     /* print the opening parenthesis                                       */
     Pr("%<( %>",0L,0L);
 
     /* print the expressions that evaluate to the actual arguments         */
-    for ( i = 1; i <= NARG_SIZE_CALL( SIZE_EXPR(call) ); i++ ) {
-        PrintExpr( ARGI_CALL(call,i) );
-        if ( i != NARG_SIZE_CALL( SIZE_EXPR(call) ) ) {
+    const UInt nr = SIZE_EXPR(call) / sizeof(Expr) - 1;
+    for (i = 1; i <= nr; i++) {
+        PrintExpr(READ_EXPR(call, i));
+        if (i != nr) {
             Pr("%<, %>",0L,0L);
         }
     }

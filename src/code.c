@@ -155,10 +155,6 @@ void SET_VISITED_STAT(Stat stat)
 }
 
 
-#define SET_FUNC_CALL(call,x)   WRITE_EXPR(call, 0, x)
-#define SET_ARGI_CALL(call,i,x) WRITE_EXPR(call, i, x)
-
-
 static inline void PushOffsBody( void ) {
     GAP_ASSERT(CS(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
     CS(OffsBodyStack)[CS(OffsBodyCount)++] = CS(OffsBody);
@@ -720,19 +716,21 @@ void CodeFuncCallEnd (
     UInt                i;              /* loop variable                   */
     Expr                opts = 0;       /* record literal for the options  */
     Expr                wrapper;        /* wrapper for calls with options  */
+    UInt                size;
 
     /* allocate the function call                                          */
+    size = (nr + 1) * sizeof(Expr);
     if ( funccall && nr <= 6 ) {
-        call = NewExpr( EXPR_FUNCCALL_0ARGS+nr, SIZE_NARG_CALL(nr) );
+        call = NewExpr(EXPR_FUNCCALL_0ARGS + nr, size);
     }
     else if ( funccall /* && 6 < nr */ ) {
-        call = NewExpr( EXPR_FUNCCALL_XARGS,    SIZE_NARG_CALL(nr) );
+        call = NewExpr(EXPR_FUNCCALL_XARGS, size);
     }
     else if ( /* ! funccall && */ nr <=6 ) {
-        call = NewExpr( STAT_PROCCALL_0ARGS+nr, SIZE_NARG_CALL(nr) );
+        call = NewExpr(STAT_PROCCALL_0ARGS + nr, size);
     }
     else /* if ( ! funccall && 6 < nr ) */ {
-        call = NewExpr( STAT_PROCCALL_XARGS,    SIZE_NARG_CALL(nr) );
+        call = NewExpr(STAT_PROCCALL_XARGS, size);
     }
 
     /* get the options record if any */
@@ -742,12 +740,12 @@ void CodeFuncCallEnd (
     /* enter the argument expressions                                      */
     for ( i = nr; 1 <= i; i-- ) {
         arg = PopExpr();
-        SET_ARGI_CALL(call, i, arg);
+        WRITE_EXPR(call, i, arg);
     }
 
     /* enter the function expression                                       */
     func = PopExpr();
-    SET_FUNC_CALL(call, func);
+    WRITE_EXPR(call, 0, func);
 
     /* wrap up the call with the options */
     if (options)
