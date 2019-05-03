@@ -52,13 +52,13 @@ struct ReaderState {
 *V  ReadTop . . . . . . . . . . . . . . . . . . . . . .  top level expression
 *V  ReadTilde . . . . . . . . . . . . . . . . . . . . . . . . . .  tilde read
 **
-**  'ReadTop' is 0  if the reader is   currently not reading  a  list or record
-**  expression.  'ReadTop'  is 1 if the  reader is currently reading an outmost
-**  list or record expression.   'ReadTop' is larger than   1 if the  reader is
+**  'ReadTop' is 0 if the reader is currently not reading a list or record
+**  expression. 'ReadTop' is 1 if the reader is currently reading an outmost
+**  list or record expression. 'ReadTop' is larger than 1 if the reader is
 **  currently reading a nested list or record expression.
 **
-**  'ReadTilde' is 1 if the reader has read a  reference to the global variable
-**  '~' within the current outmost list or record expression.
+**  'ReadTilde' is 1 if the reader has read a reference to a '~' symbol
+**  within the current outmost list or record expression.
 */
 UInt ReadTop;
 UInt ReadTilde;
@@ -228,7 +228,7 @@ static UInt WarnOnUnboundGlobalsRNam;
 **  R_ELM_REC_EXPR      record access r.(expr)
 **  R_ELM_COMOBJ_NAME:  com obj access obj.<rnam>
 **  R_ELM_COMOBJ_EXPR:  com obj access obj.(expr)
-**  R_FUNCCALL          function call without options and with <narg> arguments
+**  R_FUNCCALL          function call without options & with <narg> arguments
 **  R_FUNCCALL_OPTS     function call with options and with <narg> arguments
 */
 enum REFTYPE {
@@ -1309,9 +1309,9 @@ static void ReadFuncExpr(ScannerState * s, TypSymbolSet follow, Char mode)
     if (s->Symbol == S_ATOMIC) {
         Match(s, S_ATOMIC, "atomic", follow);
         is_atomic = 1;
-    } else if (mode == 'a') { /* in this case the atomic keyword
-                                 was matched away by ReadAtomic before
-                                 we realised we were reading an atomic function */
+    } else if (mode == 'a') {
+        // in this case the atomic keyword was matched away by ReadAtomic
+        // before we realised we were reading an atomic function
         is_atomic = 1;
     }
     Match(s, S_FUNCTION, "function", follow);
@@ -1495,7 +1495,7 @@ static void ReadLiteral(ScannerState * s, TypSymbolSet follow, Char mode)
 **
 *F  ReadAtom( <follow>, <mode> )  . . . . . . . . . . . . . . .  read an atom
 **
-**  'ReadAtom' reads an atom.  In case  of an error it skips  all symbols up to
+**  'ReadAtom' reads an atom. In case of an error it skips all symbols up to
 **  one contained in <follow>.
 **
 **   <Atom> := <Var>
@@ -1760,7 +1760,7 @@ static void ReadAnd(ScannerState * s, TypSymbolSet follow, Char mode)
 **
 **  <QualifiedExpr> := ['readonly' | 'readwrite' ] <Expr>
 **
-**  These functions only do something meaningful inside HPC-GAP; in plain GAP,
+**  These functions only do something meaningful inside HPC-GAP; in plain GAP
 **  they are simply placeholders.
 */
 static void
@@ -1793,12 +1793,13 @@ ReadQualifiedExpr(ScannerState * s, TypSymbolSet follow, Char mode)
 **
 **  <Expr> := <And> { 'or' <And> }
 **
-**  The <mode> is either 'r' indicating that the expression should be 
-**  evaluated as usual, 'x' indicating that it may be the left-hand-side of an
-**  assignment or 'a' indicating that it is a function expression following
-**  an "atomic" keyword and that the function should be made atomic.
+**  The <mode> is either 'r' indicating that the expression should be
+**  evaluated as usual, 'x' indicating that it may be the left-hand-side of
+**  an assignment or 'a' indicating that it is a function expression
+**  following an "atomic" keyword and that the function should be made
+**  atomic.
 **
-**  This last case exists because when reading "atomic function" in statement 
+**  This last case exists because when reading "atomic function" in statement
 **  context the atomic has been matched away before we can see that it is an
 **  atomic function literal, not an atomic statement.
 **
@@ -1861,7 +1862,7 @@ static void ReadEmpty(ScannerState * s, TypSymbolSet follow)
 */
 static void ReadInfo(ScannerState * s, TypSymbolSet follow)
 {
-    volatile UInt       narg;     /* number of arguments to print (or not)  */
+    volatile UInt narg;     // number of arguments to print (or not)
 
     TRY_IF_NO_ERROR { IntrInfoBegin(); }
     Match(s, S_INFO, "Info", follow);
@@ -1930,7 +1931,7 @@ static void ReadIf(ScannerState * s, TypSymbolSet follow)
     volatile UInt       nrb;            /* number of branches              */
     volatile UInt       nrs;            /* number of statements in a body  */
 
-    /* 'if' <Expr>  'then' <Statements>                                     */
+    /* 'if' <Expr> 'then' <Statements>                                     */
     nrb = 0;
     TRY_IF_NO_ERROR { IntrIfBegin(); }
     Match(s, S_IF, "if", follow);
@@ -1940,7 +1941,7 @@ static void ReadIf(ScannerState * s, TypSymbolSet follow)
     nrs = ReadStats(s, S_ELIF|S_ELSE|S_FI|follow);
     TRY_IF_NO_ERROR { nrb += IntrIfEndBody( nrs ); }
 
-    /* { 'elif' <Expr>  'then' <Statements> }                               */
+    /* { 'elif' <Expr> 'then' <Statements> }                               */
     while (s->Symbol == S_ELIF) {
         TRY_IF_NO_ERROR { IntrIfElif(); }
         Match(s, S_ELIF, "elif", follow);
@@ -1951,7 +1952,7 @@ static void ReadIf(ScannerState * s, TypSymbolSet follow)
         TRY_IF_NO_ERROR { nrb += IntrIfEndBody( nrs ); }
     }
 
-    /* [ 'else' <Statements> ]                                              */
+    /* [ 'else' <Statements> ]                                             */
     if (s->Symbol == S_ELSE) {
         TRY_IF_NO_ERROR { IntrIfElse(); }
         Match(s, S_ELSE, "else", follow);
@@ -1982,8 +1983,8 @@ static void ReadIf(ScannerState * s, TypSymbolSet follow)
 static void ReadFor(ScannerState * s, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>               */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
@@ -2001,7 +2002,7 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
     TRY_IF_NO_ERROR { IntrForIn(); }
     ReadExpr(s, S_DO|S_OD|follow, 'r');
 
-    /* 'do' <Statements>                                                    */
+    /* 'do' <Statements>                                                   */
     Match(s, S_DO, "do", STATBEGIN|S_OD|follow);
     ReaderState()->LoopNesting++;
     TRY_IF_NO_ERROR { IntrForBeginBody(); }
@@ -2039,8 +2040,8 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
 static void ReadWhile(ScannerState * s, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>             */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 
     /* remember the current variables in case of an error                  */
     currLVars = STATE(CurrLVars);
@@ -2078,8 +2079,8 @@ static void ReadWhile(ScannerState * s, TypSymbolSet follow)
 **
 *F  ReadAtomic( <follow> ) . . . . . . . . . . . . . .  read an atomic block
 **
-**  'ReadAtomic' reads an atomic block.  In case of an error it skips all symbols
-**  up to one contained in <follow>.
+**  'ReadAtomic' reads an atomic block. In case of an error it skips all
+**  symbols up to one contained in <follow>.
 **
 **  <Statement> := 'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
 **
@@ -2090,8 +2091,8 @@ static void ReadAtomic(ScannerState * s, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nexprs;         /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>          */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>        */
+    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 #ifdef HPCGAP
     volatile int        lockSP;         /* lock stack */
 #endif
@@ -2227,10 +2228,10 @@ static void ReadBreak(ScannerState * s, TypSymbolSet follow)
 
 /****************************************************************************
 **
-*F  ReadContinue(<follow>) . . . . . . . . . . . . . . .  read a continue statement
+*F  ReadContinue(<follow>) . . . . . . . . . . . .  read a continue statement
 **
-**  'ReadContinue' reads a  continue-statement.  In case  of an error  it skips all
-**  symbols up to one contained in <follow>.
+**  'ReadContinue' reads a continue-statement. In case of an error it skips
+**  all symbols up to one contained in <follow>.
 **
 **  <Statement> := 'continue' ';'
 */
@@ -2239,10 +2240,10 @@ static void ReadContinue(ScannerState * s, TypSymbolSet follow)
     if (!ReaderState()->LoopNesting)
         SyntaxError(s, "'continue' statement not enclosed in a loop");
 
-    /* skip the continue symbol                                               */
+    // skip the continue symbol
     Match(s, S_CONTINUE, "continue", follow);
 
-    /* interpret the continue statement                                       */
+    // interpret the continue statement
     TRY_IF_NO_ERROR { IntrContinue(); }
 }
 
@@ -2429,7 +2430,7 @@ static UInt ReadStats(ScannerState * s, TypSymbolSet follow)
 **
 **  'ReadEvalCommand' reads one command and interprets it immediately.
 **
-**  It does not expect the  first symbol of its input  already read and  won't
+**  It does not expect the first symbol of its input already read and won't
 **  read the  first symbol of the  next  input.
 **
 */
@@ -2713,9 +2714,10 @@ void ReadEvalError(void)
 
 /****************************************************************************
 **
-**   Reader state -- the next group of functions are used to "push" the current
-**  interpreter state allowing GAP code to be interpreted in the middle of other
-**  code. This is used, for instance, in the command-line editor.
+**  Reader state -- the next group of functions are used to "push" the
+**  current interpreter state allowing GAP code to be interpreted in the
+**  middle of other code. This is used, for instance, in the command-line
+**  editor.
 */
 
 
