@@ -32,19 +32,23 @@ true
 # test overloading CallFuncList
 gap> fam := NewFamily("CustomFunctionFamily");;
 gap> cat := NewCategory("IsCustomFunction", IsFunction);;
-gap> type := NewType(fam, cat and IsPositionalObjectRep);;
+gap> type := NewType(fam, cat and IsAttributeStoringRep);;
 gap> result := fail;;
 gap> InstallMethod(CallFuncList,[cat,IsList],function(func,args) result:=args; return args; end);
-gap> InstallMethod(NameFunction, [cat], f -> f![1]);
+gap> InstallMethod(NameFunction, [cat], f -> "myName");
 gap> InstallMethod(NamesLocalVariablesFunction, [cat], f -> ["arg"]);
 gap> InstallMethod(NumberArgumentsFunction, [cat], f -> -1);
 
 #
-gap> o := Objectify(type,["myName"]);;
+gap> o := Objectify(type, rec());;
 gap> Display(o);
 <object>
+gap> HasNameFunction(o);
+false
 gap> NameFunction(o);
 "myName"
+gap> HasNameFunction(o);
+true
 gap> NamesLocalVariablesFunction(o);
 [ "arg" ]
 gap> NumberArgumentsFunction(o);

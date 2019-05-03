@@ -965,12 +965,16 @@ Obj ArgStringToList(const Char *nams_c) {
 */
 static Obj TYPE_FUNCTION;
 static Obj TYPE_OPERATION;
+static Obj TYPE_FUNCTION_WITH_NAME;
+static Obj TYPE_OPERATION_WITH_NAME;
 
 static Obj TypeFunction(Obj func)
 {
-    return ( IS_OPERATION(func) ? TYPE_OPERATION : TYPE_FUNCTION );
+    if (NAME_FUNC(func) == 0)
+        return (IS_OPERATION(func) ? TYPE_OPERATION : TYPE_FUNCTION);
+    else
+        return (IS_OPERATION(func) ? TYPE_OPERATION_WITH_NAME : TYPE_FUNCTION_WITH_NAME);
 }
-
 
 
 /****************************************************************************
@@ -1224,12 +1228,12 @@ static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 
 /****************************************************************************
 **
-*F  FuncNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
+*F  AttrNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
-static Obj NAME_FUNC_Oper;
+static Obj NameFuncAttr;
 static Obj SET_NAME_FUNC_Oper;
 
-static Obj FuncNAME_FUNC(Obj self, Obj func)
+static Obj AttrNAME_FUNC(Obj self, Obj func)
 {
     Obj                 name;
 
@@ -1243,7 +1247,7 @@ static Obj FuncNAME_FUNC(Obj self, Obj func)
         return name;
     }
     else {
-        return DoOperation1Args( self, func );
+        return DoAttribute( self, func );
     }
 }
 
@@ -1661,13 +1665,24 @@ static StructGVarFilt GVarFilts [] = {
 
 /****************************************************************************
 **
+*V  GVarAttrs . . . . . . . . . . . . . . . . .  list of attributes to export
+*/
+static StructGVarAttr GVarAttrs [] = {
+
+    GVAR_ATTR(NAME_FUNC, "func", &NameFuncAttr),
+    { 0, 0, 0, 0, 0 }
+
+};
+
+
+/****************************************************************************
+**
 *V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
 */
 static StructGVarOper GVarOpers [] = {
 
     GVAR_OPER(CALL_FUNC_LIST, 2, "func, list", &CallFuncListOper),
     GVAR_OPER(CALL_FUNC_LIST_WRAP, 2, "func, list", &CallFuncListWrapOper),
-    GVAR_OPER(NAME_FUNC, 1, "func", &NAME_FUNC_Oper),
     GVAR_OPER(SET_NAME_FUNC, 2, "func, name", &SET_NAME_FUNC_Oper),
     GVAR_OPER(NARG_FUNC, 1, "func", &NARG_FUNC_Oper),
     GVAR_OPER(NAMS_FUNC, 1, "func", &NAMS_FUNC_Oper),
@@ -1722,10 +1737,13 @@ static Int InitKernel (
     /* install the type functions                                          */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
+    ImportGVarFromLibrary( "TYPE_FUNCTION_WITH_NAME",  &TYPE_FUNCTION_WITH_NAME  );
+    ImportGVarFromLibrary( "TYPE_OPERATION_WITH_NAME", &TYPE_OPERATION_WITH_NAME );
     TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrAttrsFromTable( GVarAttrs );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -1777,10 +1795,11 @@ static Int InitKernel (
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary (
-    StructInitInfo *    module ){
+static Int InitLibrary(StructInitInfo * module)
+{
     /* init filters and functions                                          */
     InitGVarFiltsFromTable( GVarFilts );
+    InitGVarAttrsFromTable( GVarAttrs );
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
