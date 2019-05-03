@@ -157,7 +157,6 @@ void SET_VISITED_STAT(Stat stat)
 
 #define SET_FUNC_CALL(call,x)   WRITE_EXPR(call, 0, x)
 #define SET_ARGI_CALL(call,i,x) WRITE_EXPR(call, i, x)
-#define SET_ARGI_INFO(info,i,x) WRITE_STAT(info, (i) - 1, x)
 
 
 static inline void PushOffsBody( void ) {
@@ -3088,12 +3087,12 @@ void CodeInfoEnd   (
     UInt                i;              /* loop variable                   */
 
     /* allocate the new statement                                          */
-    stat = NewStat( STAT_INFO, SIZE_NARG_INFO(2+narg) );
+    stat = NewStat(STAT_INFO, (2 + narg) * sizeof(Expr));
 
     /* narg only counts the printable arguments                            */
     for ( i = narg + 2; 0 < i; i-- ) {
         expr = PopExpr();
-        SET_ARGI_INFO(stat, i, expr);
+        WRITE_STAT(stat, i - 1, expr);
     }
 
     /* push the statement                                                  */
