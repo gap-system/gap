@@ -503,7 +503,7 @@ UInt OpenInput (
     if (IO()->InputStackPointer > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
-        IO()->Input->symbol = STATE(Symbol);
+        IO()->Input->symbol = STATE(Scanner).Symbol;
         IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
@@ -525,7 +525,7 @@ UInt OpenInput (
     /* start with an empty line and no symbol                              */
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
-    STATE(Symbol) = S_ILLEGAL;
+    STATE(Scanner).Symbol = S_ILLEGAL;
     STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
@@ -550,7 +550,7 @@ UInt OpenInputStream(Obj stream, UInt echo)
     if (IO()->InputStackPointer > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
-        IO()->Input->symbol = STATE(Symbol);
+        IO()->Input->symbol = STATE(Scanner).Symbol;
         IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
@@ -575,7 +575,7 @@ UInt OpenInputStream(Obj stream, UInt echo)
     /* start with an empty line and no symbol                              */
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
-    STATE(Symbol) = S_ILLEGAL;
+    STATE(Scanner).Symbol = S_ILLEGAL;
     STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
@@ -617,7 +617,7 @@ UInt CloseInput ( void )
     const int sp = --IO()->InputStackPointer;
     IO()->Input = IO()->InputStack[sp - 1];
     STATE(In) = IO()->Input->ptr;
-    STATE(Symbol) = IO()->Input->symbol;
+    STATE(Scanner).Symbol = IO()->Input->symbol;
     STATE(InterpreterStartLine) = IO()->Input->interpreterStartLine;
 
     /* indicate success                                                    */
@@ -633,7 +633,7 @@ void FlushRestOfInputLine( void )
 {
   STATE(In)[0] = STATE(In)[1] = '\0';
   /* IO()->Input->number = 1; */
-  STATE(Symbol) = S_ILLEGAL;
+  STATE(Scanner).Symbol = S_ILLEGAL;
 }
 
 /****************************************************************************
