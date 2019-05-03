@@ -141,7 +141,15 @@ static Obj ObjInt_UIntInv( UInt i );
 
 GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(UInt), "gmp limb size incompatible with GAP word size");
 
-    
+
+static inline void ENSURE_BAG(Bag bag)
+{
+#if defined(SYS_IS_CYGWIN32) && defined(SYS_IS_64_BIT)
+    memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
+#endif
+}
+
+
 /* for fallbacks to library */
 static Obj String;
 static Obj OneAttr;
