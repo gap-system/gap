@@ -1,11 +1,15 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-128698492"
+#define FILE_CRC  "-22939181"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
 static Obj  GF_NAME__FUNC;
+static GVar G_SetFilterObj;
+static Obj  GF_SetFilterObj;
+static GVar G_ResetFilterObj;
+static Obj  GF_ResetFilterObj;
 static GVar G_IS__REC;
 static Obj  GF_IS__REC;
 static GVar G_IS__LIST;
@@ -81,9 +85,6 @@ static GVar G_GETTER__FLAGS;
 static Obj  GC_GETTER__FLAGS;
 static GVar G_LENGTH__SETTER__METHODS__2;
 static Obj  GC_LENGTH__SETTER__METHODS__2;
-static GVar G_SetFilterObj;
-static Obj  GC_SetFilterObj;
-static Obj  GF_SetFilterObj;
 static GVar G_Subtype;
 static Obj  GF_Subtype;
 static GVar G_BIND__GLOBAL;
@@ -108,32 +109,20 @@ static GVar G_NEW__TYPE__CACHE__MISS;
 static Obj  GC_NEW__TYPE__CACHE__MISS;
 static GVar G_NEW__TYPE__CACHE__HIT;
 static Obj  GC_NEW__TYPE__CACHE__HIT;
+static GVar G_TypeOfTypes;
+static Obj  GC_TypeOfTypes;
 static GVar G_NEW__TYPE__NEXT__ID;
 static Obj  GC_NEW__TYPE__NEXT__ID;
 static GVar G_NEW__TYPE__ID__LIMIT;
 static Obj  GC_NEW__TYPE__ID__LIMIT;
 static GVar G_FLUSH__ALL__METHOD__CACHES;
 static Obj  GF_FLUSH__ALL__METHOD__CACHES;
-static GVar G_NEW__TYPE;
-static Obj  GF_NEW__TYPE;
 static GVar G_IsFamily;
 static Obj  GF_IsFamily;
-static GVar G_NewType3;
-static Obj  GF_NewType3;
-static GVar G_TypeOfTypes;
-static Obj  GC_TypeOfTypes;
-static GVar G_NewType4;
-static Obj  GF_NewType4;
+static GVar G_NEW__TYPE;
+static Obj  GF_NEW__TYPE;
 static GVar G_IsType;
 static Obj  GF_IsType;
-static GVar G_Subtype2;
-static Obj  GF_Subtype2;
-static GVar G_Subtype3;
-static Obj  GF_Subtype3;
-static GVar G_SupType2;
-static Obj  GF_SupType2;
-static GVar G_SupType3;
-static Obj  GF_SupType3;
 static GVar G_FlagsType;
 static Obj  GF_FlagsType;
 static GVar G_TypeObj;
@@ -154,9 +143,8 @@ static GVar G_ErrorNoReturn;
 static Obj  GF_ErrorNoReturn;
 static GVar G_IGNORE__IMMEDIATE__METHODS;
 static Obj  GC_IGNORE__IMMEDIATE__METHODS;
-static GVar G_ResetFilterObj;
-static Obj  GC_ResetFilterObj;
-static Obj  GF_ResetFilterObj;
+static GVar G_SupType;
+static Obj  GF_SupType;
 static GVar G_Ignore;
 static Obj  GC_Ignore;
 static GVar G_MAKE__READ__WRITE__GLOBAL;
@@ -184,7 +172,7 @@ static RNam R_HASH__SIZE;
 static RNam R_TYPES;
 
 /* information for the functions */
-static Obj  NameFunc[31];
+static Obj  NameFunc[25];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -952,7 +940,6 @@ static Obj  HdlrFunc10 (
 /* handler for function 11 */
 static Obj  HdlrFunc11 (
  Obj  self,
- Obj  a_typeOfTypes,
  Obj  a_family,
  Obj  a_flags,
  Obj  a_data,
@@ -1039,7 +1026,7 @@ static Obj  HdlrFunc11 (
    t_1 = ElmPosObj( l_cached, 2 );
    a_flags = t_1;
    
-   /* if IS_IDENTICAL_OBJ( data, cached![3] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) ) then */
+   /* if IS_IDENTICAL_OBJ( data, cached![3] ) and IS_IDENTICAL_OBJ( TypeOfTypes, TYPE_OBJ( cached ) ) then */
    t_4 = GF_IS__IDENTICAL__OBJ;
    t_5 = ElmPosObj( l_cached, 3 );
    if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
@@ -1054,19 +1041,21 @@ static Obj  HdlrFunc11 (
    t_1 = t_2;
    if ( t_1 ) {
     t_5 = GF_IS__IDENTICAL__OBJ;
-    t_7 = GF_TYPE__OBJ;
-    if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
-     t_6 = CALL_1ARGS( t_7, l_cached );
+    t_6 = GC_TypeOfTypes;
+    CHECK_BOUND( t_6, "TypeOfTypes" );
+    t_8 = GF_TYPE__OBJ;
+    if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+     t_7 = CALL_1ARGS( t_8, l_cached );
     }
     else {
-     t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_cached ) );
+     t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( l_cached ) );
     }
-    CHECK_FUNC_RESULT( t_6 );
+    CHECK_FUNC_RESULT( t_7 );
     if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
-     t_4 = CALL_2ARGS( t_5, a_typeOfTypes, t_6 );
+     t_4 = CALL_2ARGS( t_5, t_6, t_7 );
     }
     else {
-     t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_typeOfTypes, t_6 ) );
+     t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( t_6, t_7 ) );
     }
     CHECK_FUNC_RESULT( t_4 );
     CHECK_BOOL( t_4 );
@@ -1398,13 +1387,15 @@ static Obj  HdlrFunc11 (
  }
  /* fi */
  
- /* SET_TYPE_POSOBJ( type, typeOfTypes ); */
+ /* SET_TYPE_POSOBJ( type, TypeOfTypes ); */
  t_1 = GF_SET__TYPE__POSOBJ;
+ t_2 = GC_TypeOfTypes;
+ CHECK_BOUND( t_2, "TypeOfTypes" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, l_type, a_typeOfTypes );
+  CALL_2ARGS( t_1, l_type, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, a_typeOfTypes ) );
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, t_2 ) );
  }
  
  /* if 3 * family!.nTYPES > family!.HASH_SIZE then */
@@ -1514,10 +1505,11 @@ static Obj  HdlrFunc11 (
 /* handler for function 12 */
 static Obj  HdlrFunc12 (
  Obj  self,
- Obj  a_typeOfTypes,
- Obj  a_family,
- Obj  a_filter )
+ Obj  args )
 {
+ Obj  a_family;
+ Obj  a_filter;
+ Obj  a_data;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
@@ -1528,148 +1520,22 @@ static Obj  HdlrFunc12 (
  Obj t_8 = 0;
  Obj t_9 = 0;
  Bag oldFrame;
+ CHECK_NR_AT_LEAST_ARGS( 3, args )
+ a_family = ELM_PLIST( args, 1 );
+ a_filter = ELM_PLIST( args, 2 );
+ Obj x_temp_range = Range2Check(INTOBJ_INT(3), INTOBJ_INT(LEN_PLIST(args)));
+ a_data = ELMS_LIST(args , x_temp_range);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
  
- /* return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), fail, fail ); */
- t_2 = GF_NEW__TYPE;
- t_4 = GF_WITH__IMPS__FLAGS;
- t_6 = GF_AND__FLAGS;
- t_7 = ElmComObj( a_family, R_IMP__FLAGS );
- t_9 = GF_FLAGS__FILTER;
- if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
-  t_8 = CALL_1ARGS( t_9, a_filter );
- }
- else {
-  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
- }
- CHECK_FUNC_RESULT( t_8 );
- if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- }
- else {
-  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
- }
- CHECK_FUNC_RESULT( t_5 );
- if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
-  t_3 = CALL_1ARGS( t_4, t_5 );
- }
- else {
-  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
- }
- CHECK_FUNC_RESULT( t_3 );
- t_4 = GC_fail;
- CHECK_BOUND( t_4, "fail" );
- t_5 = GC_fail;
- CHECK_BOUND( t_5, "fail" );
- if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, t_4, t_5 );
- }
- else {
-  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfTypes, a_family, t_3, t_4, t_5 ) );
- }
- CHECK_FUNC_RESULT( t_1 );
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 13 */
-static Obj  HdlrFunc13 (
- Obj  self,
- Obj  a_typeOfTypes,
- Obj  a_family,
- Obj  a_filter,
- Obj  a_data )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data, fail ); */
- t_2 = GF_NEW__TYPE;
- t_4 = GF_WITH__IMPS__FLAGS;
- t_6 = GF_AND__FLAGS;
- t_7 = ElmComObj( a_family, R_IMP__FLAGS );
- t_9 = GF_FLAGS__FILTER;
- if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
-  t_8 = CALL_1ARGS( t_9, a_filter );
- }
- else {
-  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
- }
- CHECK_FUNC_RESULT( t_8 );
- if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- }
- else {
-  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
- }
- CHECK_FUNC_RESULT( t_5 );
- if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
-  t_3 = CALL_1ARGS( t_4, t_5 );
- }
- else {
-  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
- }
- CHECK_FUNC_RESULT( t_3 );
- t_4 = GC_fail;
- CHECK_BOUND( t_4, "fail" );
- if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-  t_1 = CALL_5ARGS( t_2, a_typeOfTypes, a_family, t_3, a_data, t_4 );
- }
- else {
-  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_typeOfTypes, a_family, t_3, a_data, t_4 ) );
- }
- CHECK_FUNC_RESULT( t_1 );
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 14 */
-static Obj  HdlrFunc14 (
- Obj  self,
- Obj  a_arg )
-{
- Obj l_type = 0;
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- (void)l_type;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* if not IsFamily( arg[1] ) then */
+ /* if not IsFamily( family ) then */
  t_4 = GF_IsFamily;
- C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
  if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
-  t_3 = CALL_1ARGS( t_4, t_5 );
+  t_3 = CALL_1ARGS( t_4, a_family );
  }
  else {
-  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_family ) );
  }
  CHECK_FUNC_RESULT( t_3 );
  CHECK_BOOL( t_3 );
@@ -1690,63 +1556,41 @@ static Obj  HdlrFunc14 (
  }
  /* fi */
  
- /* if LEN_LIST( arg ) = 2 then */
+ /* if LEN_LIST( data ) = 0 then */
  t_3 = GF_LEN__LIST;
  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-  t_2 = CALL_1ARGS( t_3, a_arg );
+  t_2 = CALL_1ARGS( t_3, a_data );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_data ) );
  }
  CHECK_FUNC_RESULT( t_2 );
- t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
+ t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(0) ));
  if ( t_1 ) {
   
-  /* type := NewType3( TypeOfTypes, arg[1], arg[2] ); */
-  t_2 = GF_NewType3;
-  t_3 = GC_TypeOfTypes;
-  CHECK_BOUND( t_3, "TypeOfTypes" );
-  C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
-  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-  }
-  else {
-   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
-  }
-  CHECK_FUNC_RESULT( t_1 );
-  l_type = t_1;
+  /* data := fail; */
+  t_1 = GC_fail;
+  CHECK_BOUND( t_1, "fail" );
+  a_data = t_1;
   
  }
  
- /* elif LEN_LIST( arg ) = 3 then */
+ /* elif LEN_LIST( data ) = 1 then */
  else {
   t_3 = GF_LEN__LIST;
   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-   t_2 = CALL_1ARGS( t_3, a_arg );
+   t_2 = CALL_1ARGS( t_3, a_data );
   }
   else {
-   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
+   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_data ) );
   }
   CHECK_FUNC_RESULT( t_2 );
-  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(3) ));
+  t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(1) ));
   if ( t_1 ) {
    
-   /* type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] ); */
-   t_2 = GF_NewType4;
-   t_3 = GC_TypeOfTypes;
-   CHECK_BOUND( t_3, "TypeOfTypes" );
-   C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(1) )
-   C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(2) )
-   C_ELM_LIST_FPL( t_6, a_arg, INTOBJ_INT(3) )
-   if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-    t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, t_6 );
-   }
-   else {
-    t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6 ) );
-   }
-   CHECK_FUNC_RESULT( t_1 );
-   l_type = t_1;
+   /* data := data[1]; */
+   C_ELM_LIST_FPL( t_1, a_data, INTOBJ_INT(1) )
+   a_data = t_1;
    
   }
   
@@ -1767,10 +1611,218 @@ static Obj  HdlrFunc14 (
  }
  /* fi */
  
- /* return type; */
- CHECK_BOUND( l_type, "type" );
+ /* return NEW_TYPE( family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data, fail ); */
+ t_2 = GF_NEW__TYPE;
+ t_4 = GF_WITH__IMPS__FLAGS;
+ t_6 = GF_AND__FLAGS;
+ t_7 = ElmComObj( a_family, R_IMP__FLAGS );
+ t_9 = GF_FLAGS__FILTER;
+ if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
+  t_8 = CALL_1ARGS( t_9, a_filter );
+ }
+ else {
+  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
+ }
+ CHECK_FUNC_RESULT( t_8 );
+ if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
+ }
+ else {
+  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
+ }
+ CHECK_FUNC_RESULT( t_5 );
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, t_5 );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
+ }
+ CHECK_FUNC_RESULT( t_3 );
+ t_4 = GC_fail;
+ CHECK_BOUND( t_4, "fail" );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, a_family, t_3, a_data, t_4 );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_family, t_3, a_data, t_4 ) );
+ }
+ CHECK_FUNC_RESULT( t_1 );
  SWITCH_TO_OLD_FRAME(oldFrame);
- return l_type;
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 13 */
+static Obj  HdlrFunc13 (
+ Obj  self,
+ Obj  a_type,
+ Obj  a_filter )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Obj t_4 = 0;
+ Obj t_5 = 0;
+ Obj t_6 = 0;
+ Obj t_7 = 0;
+ Obj t_8 = 0;
+ Obj t_9 = 0;
+ Obj t_10 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* if not IsType( type ) then */
+ t_4 = GF_IsType;
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_type );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_type ) );
+ }
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
+ t_2 = (Obj)(UInt)(t_3 != False);
+ t_1 = (Obj)(UInt)( ! ((Int)t_2) );
+ if ( t_1 ) {
+  
+  /* Error( "<type> must be a type" ); */
+  t_1 = GF_Error;
+  t_2 = MakeString( "<type> must be a type" );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
+  
+ }
+ /* fi */
+ 
+ /* return NEW_TYPE( type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type ); */
+ t_2 = GF_NEW__TYPE;
+ t_3 = ElmPosObj( a_type, 1 );
+ t_5 = GF_WITH__IMPS__FLAGS;
+ t_7 = GF_AND__FLAGS;
+ t_8 = ElmPosObj( a_type, 2 );
+ t_10 = GF_FLAGS__FILTER;
+ if ( TNUM_OBJ( t_10 ) == T_FUNCTION ) {
+  t_9 = CALL_1ARGS( t_10, a_filter );
+ }
+ else {
+  t_9 = DoOperation2Args( CallFuncListOper, t_10, NewPlistFromArgs( a_filter ) );
+ }
+ CHECK_FUNC_RESULT( t_9 );
+ if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
+  t_6 = CALL_2ARGS( t_7, t_8, t_9 );
+ }
+ else {
+  t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( t_8, t_9 ) );
+ }
+ CHECK_FUNC_RESULT( t_6 );
+ if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+  t_4 = CALL_1ARGS( t_5, t_6 );
+ }
+ else {
+  t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( t_6 ) );
+ }
+ CHECK_FUNC_RESULT( t_4 );
+ t_5 = ElmPosObj( a_type, 3 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, a_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, a_type ) );
+ }
+ CHECK_FUNC_RESULT( t_1 );
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 14 */
+static Obj  HdlrFunc14 (
+ Obj  self,
+ Obj  a_type,
+ Obj  a_filter )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Obj t_4 = 0;
+ Obj t_5 = 0;
+ Obj t_6 = 0;
+ Obj t_7 = 0;
+ Obj t_8 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* if not IsType( type ) then */
+ t_4 = GF_IsType;
+ if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+  t_3 = CALL_1ARGS( t_4, a_type );
+ }
+ else {
+  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_type ) );
+ }
+ CHECK_FUNC_RESULT( t_3 );
+ CHECK_BOOL( t_3 );
+ t_2 = (Obj)(UInt)(t_3 != False);
+ t_1 = (Obj)(UInt)( ! ((Int)t_2) );
+ if ( t_1 ) {
+  
+  /* Error( "<type> must be a type" ); */
+  t_1 = GF_Error;
+  t_2 = MakeString( "<type> must be a type" );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
+  
+ }
+ /* fi */
+ 
+ /* return NEW_TYPE( type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type ); */
+ t_2 = GF_NEW__TYPE;
+ t_3 = ElmPosObj( a_type, 1 );
+ t_5 = GF_SUB__FLAGS;
+ t_6 = ElmPosObj( a_type, 2 );
+ t_8 = GF_FLAGS__FILTER;
+ if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
+  t_7 = CALL_1ARGS( t_8, a_filter );
+ }
+ else {
+  t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( a_filter ) );
+ }
+ CHECK_FUNC_RESULT( t_7 );
+ if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+  t_4 = CALL_2ARGS( t_5, t_6, t_7 );
+ }
+ else {
+  t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( t_6, t_7 ) );
+ }
+ CHECK_FUNC_RESULT( t_4 );
+ t_5 = ElmPosObj( a_type, 3 );
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_4ARGS( t_2, t_3, t_4, t_5, a_type );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, a_type ) );
+ }
+ CHECK_FUNC_RESULT( t_1 );
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return t_1;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -1779,462 +1831,6 @@ static Obj  HdlrFunc14 (
 
 /* handler for function 15 */
 static Obj  HdlrFunc15 (
- Obj  self,
- Obj  a_type,
- Obj  a_filter )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Obj t_10 = 0;
- Obj t_11 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type ); */
- t_2 = GF_NEW__TYPE;
- t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" );
- t_4 = ElmPosObj( a_type, 1 );
- t_6 = GF_WITH__IMPS__FLAGS;
- t_8 = GF_AND__FLAGS;
- t_9 = ElmPosObj( a_type, 2 );
- t_11 = GF_FLAGS__FILTER;
- if ( TNUM_OBJ( t_11 ) == T_FUNCTION ) {
-  t_10 = CALL_1ARGS( t_11, a_filter );
- }
- else {
-  t_10 = DoOperation2Args( CallFuncListOper, t_11, NewPlistFromArgs( a_filter ) );
- }
- CHECK_FUNC_RESULT( t_10 );
- if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
-  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
- }
- else {
-  t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9, t_10 ) );
- }
- CHECK_FUNC_RESULT( t_7 );
- if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-  t_5 = CALL_1ARGS( t_6, t_7 );
- }
- else {
-  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7 ) );
- }
- CHECK_FUNC_RESULT( t_5 );
- t_6 = ElmPosObj( a_type, 3 );
- if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
- }
- else {
-  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6, a_type ) );
- }
- CHECK_FUNC_RESULT( t_1 );
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 16 */
-static Obj  HdlrFunc16 (
- Obj  self,
- Obj  a_type,
- Obj  a_filter,
- Obj  a_data )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Obj t_10 = 0;
- Obj t_11 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), data, type ); */
- t_2 = GF_NEW__TYPE;
- t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" );
- t_4 = ElmPosObj( a_type, 1 );
- t_6 = GF_WITH__IMPS__FLAGS;
- t_8 = GF_AND__FLAGS;
- t_9 = ElmPosObj( a_type, 2 );
- t_11 = GF_FLAGS__FILTER;
- if ( TNUM_OBJ( t_11 ) == T_FUNCTION ) {
-  t_10 = CALL_1ARGS( t_11, a_filter );
- }
- else {
-  t_10 = DoOperation2Args( CallFuncListOper, t_11, NewPlistFromArgs( a_filter ) );
- }
- CHECK_FUNC_RESULT( t_10 );
- if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
-  t_7 = CALL_2ARGS( t_8, t_9, t_10 );
- }
- else {
-  t_7 = DoOperation2Args( CallFuncListOper, t_8, NewPlistFromArgs( t_9, t_10 ) );
- }
- CHECK_FUNC_RESULT( t_7 );
- if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-  t_5 = CALL_1ARGS( t_6, t_7 );
- }
- else {
-  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7 ) );
- }
- CHECK_FUNC_RESULT( t_5 );
- if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
- }
- else {
-  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, a_data, a_type ) );
- }
- CHECK_FUNC_RESULT( t_1 );
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 17 */
-static Obj  HdlrFunc17 (
- Obj  self,
- Obj  a_arg )
-{
- Obj l_p = 0;
- Obj l_type = 0;
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- (void)l_p;
- (void)l_type;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* if not IsType( arg[1] ) then */
- t_4 = GF_IsType;
- C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
- if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
-  t_3 = CALL_1ARGS( t_4, t_5 );
- }
- else {
-  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
- }
- CHECK_FUNC_RESULT( t_3 );
- CHECK_BOOL( t_3 );
- t_2 = (Obj)(UInt)(t_3 != False);
- t_1 = (Obj)(UInt)( ! ((Int)t_2) );
- if ( t_1 ) {
-  
-  /* Error( "<type> must be a type" ); */
-  t_1 = GF_Error;
-  t_2 = MakeString( "<type> must be a type" );
-  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-   CALL_1ARGS( t_1, t_2 );
-  }
-  else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
-  }
-  
- }
- /* fi */
- 
- /* if LEN_LIST( arg ) = 2 then */
- t_3 = GF_LEN__LIST;
- if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-  t_2 = CALL_1ARGS( t_3, a_arg );
- }
- else {
-  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
- }
- CHECK_FUNC_RESULT( t_2 );
- t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
- if ( t_1 ) {
-  
-  /* type := Subtype2( arg[1], arg[2] ); */
-  t_2 = GF_Subtype2;
-  C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
-  C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
-  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
-  }
-  else {
-   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4 ) );
-  }
-  CHECK_FUNC_RESULT( t_1 );
-  l_type = t_1;
-  
- }
- 
- /* else */
- else {
-  
-  /* type := Subtype3( arg[1], arg[2], arg[3] ); */
-  t_2 = GF_Subtype3;
-  C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
-  C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
-  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
-  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-  }
-  else {
-   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
-  }
-  CHECK_FUNC_RESULT( t_1 );
-  l_type = t_1;
-  
- }
- /* fi */
- 
- /* return type; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return l_type;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 18 */
-static Obj  HdlrFunc18 (
- Obj  self,
- Obj  a_type,
- Obj  a_filter )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type ); */
- t_2 = GF_NEW__TYPE;
- t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" );
- t_4 = ElmPosObj( a_type, 1 );
- t_6 = GF_SUB__FLAGS;
- t_7 = ElmPosObj( a_type, 2 );
- t_9 = GF_FLAGS__FILTER;
- if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
-  t_8 = CALL_1ARGS( t_9, a_filter );
- }
- else {
-  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
- }
- CHECK_FUNC_RESULT( t_8 );
- if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- }
- else {
-  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
- }
- CHECK_FUNC_RESULT( t_5 );
- t_6 = ElmPosObj( a_type, 3 );
- if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, t_6, a_type );
- }
- else {
-  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, t_6, a_type ) );
- }
- CHECK_FUNC_RESULT( t_1 );
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 19 */
-static Obj  HdlrFunc19 (
- Obj  self,
- Obj  a_type,
- Obj  a_filter,
- Obj  a_data )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Obj t_6 = 0;
- Obj t_7 = 0;
- Obj t_8 = 0;
- Obj t_9 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), data, type ); */
- t_2 = GF_NEW__TYPE;
- t_3 = GC_TypeOfTypes;
- CHECK_BOUND( t_3, "TypeOfTypes" );
- t_4 = ElmPosObj( a_type, 1 );
- t_6 = GF_SUB__FLAGS;
- t_7 = ElmPosObj( a_type, 2 );
- t_9 = GF_FLAGS__FILTER;
- if ( TNUM_OBJ( t_9 ) == T_FUNCTION ) {
-  t_8 = CALL_1ARGS( t_9, a_filter );
- }
- else {
-  t_8 = DoOperation2Args( CallFuncListOper, t_9, NewPlistFromArgs( a_filter ) );
- }
- CHECK_FUNC_RESULT( t_8 );
- if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-  t_5 = CALL_2ARGS( t_6, t_7, t_8 );
- }
- else {
-  t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( t_7, t_8 ) );
- }
- CHECK_FUNC_RESULT( t_5 );
- if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-  t_1 = CALL_5ARGS( t_2, t_3, t_4, t_5, a_data, a_type );
- }
- else {
-  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5, a_data, a_type ) );
- }
- CHECK_FUNC_RESULT( t_1 );
- SWITCH_TO_OLD_FRAME(oldFrame);
- return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 20 */
-static Obj  HdlrFunc20 (
- Obj  self,
- Obj  a_arg )
-{
- Obj t_1 = 0;
- Obj t_2 = 0;
- Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
- Bag oldFrame;
- 
- /* allocate new stack frame */
- SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
- 
- /* if not IsType( arg[1] ) then */
- t_4 = GF_IsType;
- C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(1) )
- if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
-  t_3 = CALL_1ARGS( t_4, t_5 );
- }
- else {
-  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
- }
- CHECK_FUNC_RESULT( t_3 );
- CHECK_BOOL( t_3 );
- t_2 = (Obj)(UInt)(t_3 != False);
- t_1 = (Obj)(UInt)( ! ((Int)t_2) );
- if ( t_1 ) {
-  
-  /* Error( "<type> must be a type" ); */
-  t_1 = GF_Error;
-  t_2 = MakeString( "<type> must be a type" );
-  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-   CALL_1ARGS( t_1, t_2 );
-  }
-  else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
-  }
-  
- }
- /* fi */
- 
- /* if LEN_LIST( arg ) = 2 then */
- t_3 = GF_LEN__LIST;
- if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-  t_2 = CALL_1ARGS( t_3, a_arg );
- }
- else {
-  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_arg ) );
- }
- CHECK_FUNC_RESULT( t_2 );
- t_1 = (Obj)(UInt)(EQ( t_2, INTOBJ_INT(2) ));
- if ( t_1 ) {
-  
-  /* return SupType2( arg[1], arg[2] ); */
-  t_2 = GF_SupType2;
-  C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
-  C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
-  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-   t_1 = CALL_2ARGS( t_2, t_3, t_4 );
-  }
-  else {
-   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4 ) );
-  }
-  CHECK_FUNC_RESULT( t_1 );
-  SWITCH_TO_OLD_FRAME(oldFrame);
-  return t_1;
-  
- }
- 
- /* else */
- else {
-  
-  /* return SupType3( arg[1], arg[2], arg[3] ); */
-  t_2 = GF_SupType3;
-  C_ELM_LIST_FPL( t_3, a_arg, INTOBJ_INT(1) )
-  C_ELM_LIST_FPL( t_4, a_arg, INTOBJ_INT(2) )
-  C_ELM_LIST_FPL( t_5, a_arg, INTOBJ_INT(3) )
-  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
-   t_1 = CALL_3ARGS( t_2, t_3, t_4, t_5 );
-  }
-  else {
-   t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, t_4, t_5 ) );
-  }
-  CHECK_FUNC_RESULT( t_1 );
-  SWITCH_TO_OLD_FRAME(oldFrame);
-  return t_1;
-  
- }
- /* fi */
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
-}
-
-/* handler for function 21 */
-static Obj  HdlrFunc21 (
  Obj  self,
  Obj  a_K )
 {
@@ -2254,8 +1850,8 @@ static Obj  HdlrFunc21 (
  return 0;
 }
 
-/* handler for function 22 */
-static Obj  HdlrFunc22 (
+/* handler for function 16 */
+static Obj  HdlrFunc16 (
  Obj  self,
  Obj  a_K )
 {
@@ -2275,8 +1871,8 @@ static Obj  HdlrFunc22 (
  return 0;
 }
 
-/* handler for function 23 */
-static Obj  HdlrFunc23 (
+/* handler for function 17 */
+static Obj  HdlrFunc17 (
  Obj  self,
  Obj  a_K )
 {
@@ -2296,8 +1892,8 @@ static Obj  HdlrFunc23 (
  return 0;
 }
 
-/* handler for function 24 */
-static Obj  HdlrFunc24 (
+/* handler for function 18 */
+static Obj  HdlrFunc18 (
  Obj  self,
  Obj  a_K,
  Obj  a_data )
@@ -2319,8 +1915,8 @@ static Obj  HdlrFunc24 (
  return 0;
 }
 
-/* handler for function 25 */
-static Obj  HdlrFunc25 (
+/* handler for function 19 */
+static Obj  HdlrFunc19 (
  Obj  self,
  Obj  a_obj )
 {
@@ -2358,8 +1954,8 @@ static Obj  HdlrFunc25 (
  return 0;
 }
 
-/* handler for function 26 */
-static Obj  HdlrFunc26 (
+/* handler for function 20 */
+static Obj  HdlrFunc20 (
  Obj  self,
  Obj  a_obj )
 {
@@ -2397,8 +1993,8 @@ static Obj  HdlrFunc26 (
  return 0;
 }
 
-/* handler for function 27 */
-static Obj  HdlrFunc27 (
+/* handler for function 21 */
+static Obj  HdlrFunc21 (
  Obj  self,
  Obj  a_type,
  Obj  a_obj )
@@ -2528,8 +2124,8 @@ static Obj  HdlrFunc27 (
  return 0;
 }
 
-/* handler for function 28 */
-static Obj  HdlrFunc28 (
+/* handler for function 22 */
+static Obj  HdlrFunc22 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
@@ -2560,8 +2156,8 @@ static Obj  HdlrFunc28 (
  CHECK_FUNC_RESULT( t_1 );
  l_type = t_1;
  
- /* newtype := Subtype2( type, filter ); */
- t_2 = GF_Subtype2;
+ /* newtype := Subtype( type, filter ); */
+ t_2 = GF_Subtype;
  if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
   t_1 = CALL_2ARGS( t_2, l_type, a_filter );
  }
@@ -2716,17 +2312,19 @@ static Obj  HdlrFunc28 (
  return 0;
 }
 
-/* handler for function 29 */
-static Obj  HdlrFunc29 (
+/* handler for function 23 */
+static Obj  HdlrFunc23 (
  Obj  self,
  Obj  a_obj,
  Obj  a_filter )
 {
+ Obj l_type = 0;
+ Obj l_newtype = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
- Obj t_4 = 0;
- Obj t_5 = 0;
+ (void)l_type;
+ (void)l_newtype;
  Bag oldFrame;
  
  /* allocate new stack frame */
@@ -2758,6 +2356,28 @@ static Obj  HdlrFunc29 (
  }
  /* fi */
  
+ /* type := TYPE_OBJ( obj ); */
+ t_2 = GF_TYPE__OBJ;
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_1ARGS( t_2, a_obj );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( a_obj ) );
+ }
+ CHECK_FUNC_RESULT( t_1 );
+ l_type = t_1;
+ 
+ /* newtype := SupType( type, filter ); */
+ t_2 = GF_SupType;
+ if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+  t_1 = CALL_2ARGS( t_2, l_type, a_filter );
+ }
+ else {
+  t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( l_type, a_filter ) );
+ }
+ CHECK_FUNC_RESULT( t_1 );
+ l_newtype = t_1;
+ 
  /* if IS_POSOBJ( obj ) then */
  t_3 = GF_IS__POSOBJ;
  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
@@ -2771,29 +2391,13 @@ static Obj  HdlrFunc29 (
  t_1 = (Obj)(UInt)(t_2 != False);
  if ( t_1 ) {
   
-  /* SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) ); */
+  /* SET_TYPE_POSOBJ( obj, newtype ); */
   t_1 = GF_SET__TYPE__POSOBJ;
-  t_3 = GF_SupType2;
-  t_5 = GF_TYPE__OBJ;
-  if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
-   t_4 = CALL_1ARGS( t_5, a_obj );
-  }
-  else {
-   t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_obj ) );
-  }
-  CHECK_FUNC_RESULT( t_4 );
-  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-   t_2 = CALL_2ARGS( t_3, t_4, a_filter );
-  }
-  else {
-   t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, a_filter ) );
-  }
-  CHECK_FUNC_RESULT( t_2 );
   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-   CALL_2ARGS( t_1, a_obj, t_2 );
+   CALL_2ARGS( t_1, a_obj, l_newtype );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, l_newtype ) );
   }
   
  }
@@ -2812,29 +2416,13 @@ static Obj  HdlrFunc29 (
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( t_1 ) {
    
-   /* SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) ); */
+   /* SET_TYPE_COMOBJ( obj, newtype ); */
    t_1 = GF_SET__TYPE__COMOBJ;
-   t_3 = GF_SupType2;
-   t_5 = GF_TYPE__OBJ;
-   if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
-    t_4 = CALL_1ARGS( t_5, a_obj );
-   }
-   else {
-    t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_obj ) );
-   }
-   CHECK_FUNC_RESULT( t_4 );
-   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-    t_2 = CALL_2ARGS( t_3, t_4, a_filter );
-   }
-   else {
-    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, a_filter ) );
-   }
-   CHECK_FUNC_RESULT( t_2 );
    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-    CALL_2ARGS( t_1, a_obj, t_2 );
+    CALL_2ARGS( t_1, a_obj, l_newtype );
    }
    else {
-    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, l_newtype ) );
    }
    
   }
@@ -2853,29 +2441,13 @@ static Obj  HdlrFunc29 (
    t_1 = (Obj)(UInt)(t_2 != False);
    if ( t_1 ) {
     
-    /* SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) ); */
+    /* SET_TYPE_DATOBJ( obj, newtype ); */
     t_1 = GF_SET__TYPE__DATOBJ;
-    t_3 = GF_SupType2;
-    t_5 = GF_TYPE__OBJ;
-    if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
-     t_4 = CALL_1ARGS( t_5, a_obj );
-    }
-    else {
-     t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( a_obj ) );
-    }
-    CHECK_FUNC_RESULT( t_4 );
-    if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-     t_2 = CALL_2ARGS( t_3, t_4, a_filter );
-    }
-    else {
-     t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, a_filter ) );
-    }
-    CHECK_FUNC_RESULT( t_2 );
     if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-     CALL_2ARGS( t_1, a_obj, t_2 );
+     CALL_2ARGS( t_1, a_obj, l_newtype );
     }
     else {
-     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, t_2 ) );
+     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( a_obj, l_newtype ) );
     }
     
    }
@@ -2907,8 +2479,8 @@ static Obj  HdlrFunc29 (
  return 0;
 }
 
-/* handler for function 30 */
-static Obj  HdlrFunc30 (
+/* handler for function 24 */
+static Obj  HdlrFunc24 (
  Obj  self,
  Obj  a_arg )
 {
@@ -3283,59 +2855,46 @@ static Obj  HdlrFunc30 (
    CHECK_FUNC_RESULT( t_1 );
    l_flags = t_1;
    
-   /* Objectify( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ), fail ), obj ); */
-   t_1 = GF_Objectify;
-   t_3 = GF_NEW__TYPE;
-   t_4 = GC_TypeOfTypes;
-   CHECK_BOUND( t_4, "TypeOfTypes" );
-   t_6 = GF_FamilyType;
-   if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
-    t_5 = CALL_1ARGS( t_6, l_type );
+   /* type := NEW_TYPE( FamilyType( type ), flags, DataType( type ), fail ); */
+   t_2 = GF_NEW__TYPE;
+   t_4 = GF_FamilyType;
+   if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+    t_3 = CALL_1ARGS( t_4, l_type );
    }
    else {
-    t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( l_type ) );
+    t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_type ) );
    }
-   CHECK_FUNC_RESULT( t_5 );
-   t_7 = GF_DataType;
-   if ( TNUM_OBJ( t_7 ) == T_FUNCTION ) {
-    t_6 = CALL_1ARGS( t_7, l_type );
-   }
-   else {
-    t_6 = DoOperation2Args( CallFuncListOper, t_7, NewPlistFromArgs( l_type ) );
-   }
-   CHECK_FUNC_RESULT( t_6 );
-   t_7 = GC_fail;
-   CHECK_BOUND( t_7, "fail" );
-   if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
-    t_2 = CALL_5ARGS( t_3, t_4, t_5, l_flags, t_6, t_7 );
+   CHECK_FUNC_RESULT( t_3 );
+   t_5 = GF_DataType;
+   if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
+    t_4 = CALL_1ARGS( t_5, l_type );
    }
    else {
-    t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( t_4, t_5, l_flags, t_6, t_7 ) );
+    t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( l_type ) );
    }
-   CHECK_FUNC_RESULT( t_2 );
-   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-    CALL_2ARGS( t_1, t_2, l_obj );
-   }
-   else {
-    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, l_obj ) );
-   }
-   
-  }
-  
-  /* else */
-  else {
-   
-   /* Objectify( type, obj ); */
-   t_1 = GF_Objectify;
-   if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-    CALL_2ARGS( t_1, l_type, l_obj );
+   CHECK_FUNC_RESULT( t_4 );
+   t_5 = GC_fail;
+   CHECK_BOUND( t_5, "fail" );
+   if ( TNUM_OBJ( t_2 ) == T_FUNCTION ) {
+    t_1 = CALL_4ARGS( t_2, t_3, l_flags, t_4, t_5 );
    }
    else {
-    DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, l_obj ) );
+    t_1 = DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( t_3, l_flags, t_4, t_5 ) );
    }
+   CHECK_FUNC_RESULT( t_1 );
+   l_type = t_1;
    
   }
   /* fi */
+  
+  /* Objectify( type, obj ); */
+  t_1 = GF_Objectify;
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_2ARGS( t_1, l_type, l_obj );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_type, l_obj ) );
+  }
   
  }
  /* fi */
@@ -3690,7 +3249,7 @@ static Obj  HdlrFunc1 (
  /* NEW_TYPE_CACHE_HIT := 0; */
  AssGVar( G_NEW__TYPE__CACHE__HIT, INTOBJ_INT(0) );
  
- /* BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
+ /* BIND_GLOBAL( "NEW_TYPE", function ( family, flags, data, parent )
       local lock, hash, cache, cached, type, ncache, ncl, t, i, match;
       ;
       cache := family!.TYPES;
@@ -3699,7 +3258,7 @@ static Obj  HdlrFunc1 (
           cached := cache[hash];
           if IS_EQUAL_FLAGS( flags, cached![2] ) then
               flags := cached![2];
-              if IS_IDENTICAL_OBJ( data, cached![3] ) and IS_IDENTICAL_OBJ( typeOfTypes, TYPE_OBJ( cached ) ) then
+              if IS_IDENTICAL_OBJ( data, cached![3] ) and IS_IDENTICAL_OBJ( TypeOfTypes, TYPE_OBJ( cached ) ) then
                   if IS_IDENTICAL_OBJ( parent, fail ) then
                       match := true;
                       for i in [ 5 .. LEN_POSOBJ( cached ) ] do
@@ -3753,7 +3312,7 @@ static Obj  HdlrFunc1 (
               fi;
           od;
       fi;
-      SET_TYPE_POSOBJ( type, typeOfTypes );
+      SET_TYPE_POSOBJ( type, TypeOfTypes );
       if 3 * family!.nTYPES > family!.HASH_SIZE then
           ncache := [  ];
           ;
@@ -3773,7 +3332,7 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NEW_TYPE" );
- t_3 = NewFunction( NameFunc[11], 5, ArgStringToList("typeOfTypes,family,flags,data,parent"), HdlrFunc11 );
+ t_3 = NewFunction( NameFunc[11], 4, ArgStringToList("family,flags,data,parent"), HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 230);
@@ -3787,103 +3346,26 @@ static Obj  HdlrFunc1 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
- /* BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
-      return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), fail, fail );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "NewType3" );
- t_3 = NewFunction( NameFunc[12], 3, ArgStringToList("typeOfTypes,family,filter"), HdlrFunc12 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 351);
- SET_ENDLINE_BODY(t_4, 358);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
-      return NEW_TYPE( typeOfTypes, family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data, fail );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "NewType4" );
- t_3 = NewFunction( NameFunc[13], 4, ArgStringToList("typeOfTypes,family,filter,data"), HdlrFunc13 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 361);
- SET_ENDLINE_BODY(t_4, 368);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "NewType", function ( arg... )
-      local type;
-      if not IsFamily( arg[1] ) then
+ /* BIND_GLOBAL( "NewType", function ( family, filter, data... )
+      if not IsFamily( family ) then
           Error( "<family> must be a family" );
       fi;
-      if LEN_LIST( arg ) = 2 then
-          type := NewType3( TypeOfTypes, arg[1], arg[2] );
-      elif LEN_LIST( arg ) = 3 then
-          type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
+      if LEN_LIST( data ) = 0 then
+          data := fail;
+      elif LEN_LIST( data ) = 1 then
+          data := data[1];
       else
           Error( "usage: NewType( <family>, <filter> [, <data> ] )" );
       fi;
-      return type;
+      return NEW_TYPE( family, WITH_IMPS_FLAGS( AND_FLAGS( family!.IMP_FLAGS, FLAGS_FILTER( filter ) ) ), data, fail );
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "NewType" );
- t_3 = NewFunction( NameFunc[14], -1, ArgStringToList("arg"), HdlrFunc14 );
+ t_3 = NewFunction( NameFunc[12], -3, ArgStringToList("family,filter,data"), HdlrFunc12 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 371);
- SET_ENDLINE_BODY(t_4, 395);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "Subtype2", function ( type, filter )
-      return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "Subtype2" );
- t_3 = NewFunction( NameFunc[15], 2, ArgStringToList("type,filter"), HdlrFunc15 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 408);
- SET_ENDLINE_BODY(t_4, 415);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "Subtype3", function ( type, filter, data )
-      return NEW_TYPE( TypeOfTypes, type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), data, type );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "Subtype3" );
- t_3 = NewFunction( NameFunc[16], 3, ArgStringToList("type,filter,data"), HdlrFunc16 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 418);
- SET_ENDLINE_BODY(t_4, 425);
+ SET_STARTLINE_BODY(t_4, 350);
+ SET_ENDLINE_BODY(t_4, 377);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3896,27 +3378,19 @@ static Obj  HdlrFunc1 (
  /* Unbind( Subtype ); */
  AssGVar( G_Subtype, 0 );
  
- /* BIND_GLOBAL( "Subtype", function ( arg... )
-      local p, type;
-      ;
-      if not IsType( arg[1] ) then
+ /* BIND_GLOBAL( "Subtype", function ( type, filter )
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
-      if LEN_LIST( arg ) = 2 then
-          type := Subtype2( arg[1], arg[2] );
-      else
-          type := Subtype3( arg[1], arg[2], arg[3] );
-      fi;
-      ;
-      return type;
+      return NEW_TYPE( type![1], WITH_IMPS_FLAGS( AND_FLAGS( type![2], FLAGS_FILTER( filter ) ) ), type![3], type );
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Subtype" );
- t_3 = NewFunction( NameFunc[17], -1, ArgStringToList("arg"), HdlrFunc17 );
+ t_3 = NewFunction( NameFunc[13], 2, ArgStringToList("type,filter"), HdlrFunc13 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 429);
- SET_ENDLINE_BODY(t_4, 451);
+ SET_STARTLINE_BODY(t_4, 391);
+ SET_ENDLINE_BODY(t_4, 404);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3926,62 +3400,19 @@ static Obj  HdlrFunc1 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
- /* BIND_GLOBAL( "SupType2", function ( type, filter )
-      return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "SupType2" );
- t_3 = NewFunction( NameFunc[18], 2, ArgStringToList("type,filter"), HdlrFunc18 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 465);
- SET_ENDLINE_BODY(t_4, 472);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "SupType3", function ( type, filter, data )
-      return NEW_TYPE( TypeOfTypes, type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), data, type );
-  end ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "SupType3" );
- t_3 = NewFunction( NameFunc[19], 3, ArgStringToList("type,filter,data"), HdlrFunc19 );
- SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
- t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 475);
- SET_ENDLINE_BODY(t_4, 482);
- SET_FILENAME_BODY(t_4, FileName);
- SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "SupType", function ( arg... )
-      if not IsType( arg[1] ) then
+ /* BIND_GLOBAL( "SupType", function ( type, filter )
+      if not IsType( type ) then
           Error( "<type> must be a type" );
       fi;
-      if LEN_LIST( arg ) = 2 then
-          return SupType2( arg[1], arg[2] );
-      else
-          return SupType3( arg[1], arg[2], arg[3] );
-      fi;
-      return;
+      return NEW_TYPE( type![1], SUB_FLAGS( type![2], FLAGS_FILTER( filter ) ), type![3], type );
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SupType" );
- t_3 = NewFunction( NameFunc[20], -1, ArgStringToList("arg"), HdlrFunc20 );
+ t_3 = NewFunction( NameFunc[14], 2, ArgStringToList("type,filter"), HdlrFunc14 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 485);
- SET_ENDLINE_BODY(t_4, 499);
+ SET_STARTLINE_BODY(t_4, 418);
+ SET_ENDLINE_BODY(t_4, 431);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3996,11 +3427,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FamilyType" );
- t_3 = NewFunction( NameFunc[21], 1, ArgStringToList("K"), HdlrFunc21 );
+ t_3 = NewFunction( NameFunc[15], 1, ArgStringToList("K"), HdlrFunc15 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 513);
- SET_ENDLINE_BODY(t_4, 513);
+ SET_STARTLINE_BODY(t_4, 445);
+ SET_ENDLINE_BODY(t_4, 445);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4015,11 +3446,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsType" );
- t_3 = NewFunction( NameFunc[22], 1, ArgStringToList("K"), HdlrFunc22 );
+ t_3 = NewFunction( NameFunc[16], 1, ArgStringToList("K"), HdlrFunc16 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 527);
- SET_ENDLINE_BODY(t_4, 527);
+ SET_STARTLINE_BODY(t_4, 459);
+ SET_ENDLINE_BODY(t_4, 459);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4034,11 +3465,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataType" );
- t_3 = NewFunction( NameFunc[23], 1, ArgStringToList("K"), HdlrFunc23 );
+ t_3 = NewFunction( NameFunc[17], 1, ArgStringToList("K"), HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 543);
- SET_ENDLINE_BODY(t_4, 543);
+ SET_STARTLINE_BODY(t_4, 475);
+ SET_ENDLINE_BODY(t_4, 475);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4054,11 +3485,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetDataType" );
- t_3 = NewFunction( NameFunc[24], 2, ArgStringToList("K,data"), HdlrFunc24 );
+ t_3 = NewFunction( NameFunc[18], 2, ArgStringToList("K,data"), HdlrFunc18 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 545);
- SET_ENDLINE_BODY(t_4, 551);
+ SET_STARTLINE_BODY(t_4, 477);
+ SET_ENDLINE_BODY(t_4, 483);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4097,11 +3528,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "FlagsObj" );
- t_3 = NewFunction( NameFunc[25], 1, ArgStringToList("obj"), HdlrFunc25 );
+ t_3 = NewFunction( NameFunc[19], 1, ArgStringToList("obj"), HdlrFunc19 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 650);
- SET_ENDLINE_BODY(t_4, 650);
+ SET_STARTLINE_BODY(t_4, 582);
+ SET_ENDLINE_BODY(t_4, 582);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4116,11 +3547,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "DataObj" );
- t_3 = NewFunction( NameFunc[26], 1, ArgStringToList("obj"), HdlrFunc26 );
+ t_3 = NewFunction( NameFunc[20], 1, ArgStringToList("obj"), HdlrFunc20 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 664);
- SET_ENDLINE_BODY(t_4, 664);
+ SET_STARTLINE_BODY(t_4, 596);
+ SET_ENDLINE_BODY(t_4, 596);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4209,11 +3640,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "Objectify" );
- t_3 = NewFunction( NameFunc[27], 2, ArgStringToList("type,obj"), HdlrFunc27 );
+ t_3 = NewFunction( NameFunc[21], 2, ArgStringToList("type,obj"), HdlrFunc21 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 685);
- SET_ENDLINE_BODY(t_4, 720);
+ SET_STARTLINE_BODY(t_4, 617);
+ SET_ENDLINE_BODY(t_4, 652);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4229,7 +3660,7 @@ static Obj  HdlrFunc1 (
  /* BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
       local type, newtype;
       type := TYPE_OBJ( obj );
-      newtype := Subtype2( type, filter );
+      newtype := Subtype( type, filter );
       if IS_POSOBJ( obj ) then
           SET_TYPE_POSOBJ( obj, newtype );
       elif IS_COMOBJ( obj ) then
@@ -4246,25 +3677,13 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "SetFilterObj" );
- t_3 = NewFunction( NameFunc[28], 2, ArgStringToList("obj,filter"), HdlrFunc28 );
+ t_3 = NewFunction( NameFunc[22], 2, ArgStringToList("obj,filter"), HdlrFunc22 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 742);
- SET_ENDLINE_BODY(t_4, 762);
+ SET_STARTLINE_BODY(t_4, 674);
+ SET_ENDLINE_BODY(t_4, 694);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "SET_FILTER_OBJ" );
- t_3 = GC_SetFilterObj;
- CHECK_BOUND( t_3, "SetFilterObj" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
  }
@@ -4273,15 +3692,18 @@ static Obj  HdlrFunc1 (
  }
  
  /* BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
+      local type, newtype;
       if IS_AND_FILTER( filter ) then
           Error( "You can't reset an \"and-filter\". Reset components individually." );
       fi;
+      type := TYPE_OBJ( obj );
+      newtype := SupType( type, filter );
       if IS_POSOBJ( obj ) then
-          SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
+          SET_TYPE_POSOBJ( obj, newtype );
       elif IS_COMOBJ( obj ) then
-          SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
+          SET_TYPE_COMOBJ( obj, newtype );
       elif IS_DATOBJ( obj ) then
-          SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ( obj ), filter ) );
+          SET_TYPE_DATOBJ( obj, newtype );
       else
           Error( "cannot reset filter for internal object" );
       fi;
@@ -4289,25 +3711,13 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ResetFilterObj" );
- t_3 = NewFunction( NameFunc[29], 2, ArgStringToList("obj,filter"), HdlrFunc29 );
+ t_3 = NewFunction( NameFunc[23], 2, ArgStringToList("obj,filter"), HdlrFunc23 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 784);
- SET_ENDLINE_BODY(t_4, 798);
+ SET_STARTLINE_BODY(t_4, 714);
+ SET_ENDLINE_BODY(t_4, 732);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
- if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-  CALL_2ARGS( t_1, t_2, t_3 );
- }
- else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
- }
- 
- /* BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj ); */
- t_1 = GF_BIND__GLOBAL;
- t_2 = MakeString( "RESET_FILTER_OBJ" );
- t_3 = GC_ResetFilterObj;
- CHECK_BOUND( t_3, "ResetFilterObj" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
  }
@@ -4388,10 +3798,9 @@ static Obj  HdlrFunc1 (
           od;
           if not IS_SUBSET_FLAGS( flags, nflags ) then
               flags := WITH_IMPS_FLAGS( AND_FLAGS( flags, nflags ) );
-              Objectify( NEW_TYPE( TypeOfTypes, FamilyType( type ), flags, DataType( type ), fail ), obj );
-          else
-              Objectify( type, obj );
+              type := NEW_TYPE( FamilyType( type ), flags, DataType( type ), fail );
           fi;
+          Objectify( type, obj );
       fi;
       for i in [ 1, 3 .. LEN_LIST( extra ) - 1 ] do
           if Tester( extra[i] )( obj ) then
@@ -4404,11 +3813,11 @@ static Obj  HdlrFunc1 (
   end ); */
  t_1 = GF_BIND__GLOBAL;
  t_2 = MakeString( "ObjectifyWithAttributes" );
- t_3 = NewFunction( NameFunc[30], -1, ArgStringToList("arg"), HdlrFunc30 );
+ t_3 = NewFunction( NameFunc[24], -1, ArgStringToList("arg"), HdlrFunc24 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 848);
- SET_ENDLINE_BODY(t_4, 914);
+ SET_STARTLINE_BODY(t_4, 780);
+ SET_ENDLINE_BODY(t_4, 842);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4433,6 +3842,8 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_NAME__FUNC = GVarName( "NAME_FUNC" );
+ G_SetFilterObj = GVarName( "SetFilterObj" );
+ G_ResetFilterObj = GVarName( "ResetFilterObj" );
  G_IS__REC = GVarName( "IS_REC" );
  G_IS__LIST = GVarName( "IS_LIST" );
  G_ADD__LIST = GVarName( "ADD_LIST" );
@@ -4470,7 +3881,6 @@ static Int PostRestore ( StructInitInfo * module )
  G_IsAttributeStoringRep = GVarName( "IsAttributeStoringRep" );
  G_GETTER__FLAGS = GVarName( "GETTER_FLAGS" );
  G_LENGTH__SETTER__METHODS__2 = GVarName( "LENGTH_SETTER_METHODS_2" );
- G_SetFilterObj = GVarName( "SetFilterObj" );
  G_Subtype = GVarName( "Subtype" );
  G_BIND__GLOBAL = GVarName( "BIND_GLOBAL" );
  G_CATEGORIES__FAMILY = GVarName( "CATEGORIES_FAMILY" );
@@ -4483,19 +3893,13 @@ static Int PostRestore ( StructInitInfo * module )
  G_NewFamily5 = GVarName( "NewFamily5" );
  G_NEW__TYPE__CACHE__MISS = GVarName( "NEW_TYPE_CACHE_MISS" );
  G_NEW__TYPE__CACHE__HIT = GVarName( "NEW_TYPE_CACHE_HIT" );
+ G_TypeOfTypes = GVarName( "TypeOfTypes" );
  G_NEW__TYPE__NEXT__ID = GVarName( "NEW_TYPE_NEXT_ID" );
  G_NEW__TYPE__ID__LIMIT = GVarName( "NEW_TYPE_ID_LIMIT" );
  G_FLUSH__ALL__METHOD__CACHES = GVarName( "FLUSH_ALL_METHOD_CACHES" );
- G_NEW__TYPE = GVarName( "NEW_TYPE" );
  G_IsFamily = GVarName( "IsFamily" );
- G_NewType3 = GVarName( "NewType3" );
- G_TypeOfTypes = GVarName( "TypeOfTypes" );
- G_NewType4 = GVarName( "NewType4" );
+ G_NEW__TYPE = GVarName( "NEW_TYPE" );
  G_IsType = GVarName( "IsType" );
- G_Subtype2 = GVarName( "Subtype2" );
- G_Subtype3 = GVarName( "Subtype3" );
- G_SupType2 = GVarName( "SupType2" );
- G_SupType3 = GVarName( "SupType3" );
  G_FlagsType = GVarName( "FlagsType" );
  G_TypeObj = GVarName( "TypeObj" );
  G_DataType = GVarName( "DataType" );
@@ -4506,7 +3910,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_RunImmediateMethods = GVarName( "RunImmediateMethods" );
  G_ErrorNoReturn = GVarName( "ErrorNoReturn" );
  G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
- G_ResetFilterObj = GVarName( "ResetFilterObj" );
+ G_SupType = GVarName( "SupType" );
  G_Ignore = GVarName( "Ignore" );
  G_MAKE__READ__WRITE__GLOBAL = GVarName( "MAKE_READ_WRITE_GLOBAL" );
  G_IsAttributeStoringRepFlags = GVarName( "IsAttributeStoringRepFlags" );
@@ -4550,12 +3954,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[22] = 0;
  NameFunc[23] = 0;
  NameFunc[24] = 0;
- NameFunc[25] = 0;
- NameFunc[26] = 0;
- NameFunc[27] = 0;
- NameFunc[28] = 0;
- NameFunc[29] = 0;
- NameFunc[30] = 0;
  
  /* return success */
  return 0;
@@ -4569,6 +3967,8 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* global variables used in handlers */
  InitFopyGVar( "NAME_FUNC", &GF_NAME__FUNC );
+ InitFopyGVar( "SetFilterObj", &GF_SetFilterObj );
+ InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
  InitFopyGVar( "IS_REC", &GF_IS__REC );
  InitFopyGVar( "IS_LIST", &GF_IS__LIST );
  InitFopyGVar( "ADD_LIST", &GF_ADD__LIST );
@@ -4607,8 +4007,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "IsAttributeStoringRep", &GC_IsAttributeStoringRep );
  InitCopyGVar( "GETTER_FLAGS", &GC_GETTER__FLAGS );
  InitCopyGVar( "LENGTH_SETTER_METHODS_2", &GC_LENGTH__SETTER__METHODS__2 );
- InitCopyGVar( "SetFilterObj", &GC_SetFilterObj );
- InitFopyGVar( "SetFilterObj", &GF_SetFilterObj );
  InitFopyGVar( "Subtype", &GF_Subtype );
  InitFopyGVar( "BIND_GLOBAL", &GF_BIND__GLOBAL );
  InitCopyGVar( "CATEGORIES_FAMILY", &GC_CATEGORIES__FAMILY );
@@ -4621,19 +4019,13 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "NewFamily5", &GF_NewFamily5 );
  InitCopyGVar( "NEW_TYPE_CACHE_MISS", &GC_NEW__TYPE__CACHE__MISS );
  InitCopyGVar( "NEW_TYPE_CACHE_HIT", &GC_NEW__TYPE__CACHE__HIT );
+ InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
  InitCopyGVar( "NEW_TYPE_NEXT_ID", &GC_NEW__TYPE__NEXT__ID );
  InitCopyGVar( "NEW_TYPE_ID_LIMIT", &GC_NEW__TYPE__ID__LIMIT );
  InitFopyGVar( "FLUSH_ALL_METHOD_CACHES", &GF_FLUSH__ALL__METHOD__CACHES );
- InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
  InitFopyGVar( "IsFamily", &GF_IsFamily );
- InitFopyGVar( "NewType3", &GF_NewType3 );
- InitCopyGVar( "TypeOfTypes", &GC_TypeOfTypes );
- InitFopyGVar( "NewType4", &GF_NewType4 );
+ InitFopyGVar( "NEW_TYPE", &GF_NEW__TYPE );
  InitFopyGVar( "IsType", &GF_IsType );
- InitFopyGVar( "Subtype2", &GF_Subtype2 );
- InitFopyGVar( "Subtype3", &GF_Subtype3 );
- InitFopyGVar( "SupType2", &GF_SupType2 );
- InitFopyGVar( "SupType3", &GF_SupType3 );
  InitFopyGVar( "FlagsType", &GF_FlagsType );
  InitFopyGVar( "TypeObj", &GF_TypeObj );
  InitFopyGVar( "DataType", &GF_DataType );
@@ -4644,8 +4036,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
  InitFopyGVar( "ErrorNoReturn", &GF_ErrorNoReturn );
  InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
- InitCopyGVar( "ResetFilterObj", &GC_ResetFilterObj );
- InitFopyGVar( "ResetFilterObj", &GF_ResetFilterObj );
+ InitFopyGVar( "SupType", &GF_SupType );
  InitCopyGVar( "Ignore", &GC_Ignore );
  InitFopyGVar( "MAKE_READ_WRITE_GLOBAL", &GF_MAKE__READ__WRITE__GLOBAL );
  InitCopyGVar( "IsAttributeStoringRepFlags", &GC_IsAttributeStoringRepFlags );
@@ -4705,18 +4096,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[23]), "GAPROOT/lib/type1.g:NameFunc[23]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc24, "GAPROOT/lib/type1.g:HdlrFunc24("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[24]), "GAPROOT/lib/type1.g:NameFunc[24]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc25, "GAPROOT/lib/type1.g:HdlrFunc25("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[25]), "GAPROOT/lib/type1.g:NameFunc[25]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc26, "GAPROOT/lib/type1.g:HdlrFunc26("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[26]), "GAPROOT/lib/type1.g:NameFunc[26]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc27, "GAPROOT/lib/type1.g:HdlrFunc27("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[27]), "GAPROOT/lib/type1.g:NameFunc[27]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc28, "GAPROOT/lib/type1.g:HdlrFunc28("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[28]), "GAPROOT/lib/type1.g:NameFunc[28]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc29, "GAPROOT/lib/type1.g:HdlrFunc29("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[29]), "GAPROOT/lib/type1.g:NameFunc[29]("FILE_CRC")" );
- InitHandlerFunc( HdlrFunc30, "GAPROOT/lib/type1.g:HdlrFunc30("FILE_CRC")" );
- InitGlobalBag( &(NameFunc[30]), "GAPROOT/lib/type1.g:NameFunc[30]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -4751,7 +4130,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -128698492,
+ .crc         = -22939181,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

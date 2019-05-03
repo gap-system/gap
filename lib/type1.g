@@ -227,7 +227,7 @@ end );
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
-BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
+BIND_GLOBAL( "NEW_TYPE", function ( family, flags, data, parent )
     local   lock, hash,  cache,  cached,  type, ncache, ncl, t, i, match;
 
     # maybe it is in the type cache
@@ -243,7 +243,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         if IS_EQUAL_FLAGS( flags, cached![POS_FLAGS_TYPE] )  then
             flags := cached![POS_FLAGS_TYPE];
             if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_TYPE ] )
-              and IS_IDENTICAL_OBJ(  typeOfTypes, TYPE_OBJ(cached) )
+              and IS_IDENTICAL_OBJ(  TypeOfTypes, TYPE_OBJ(cached) )
             then
                 # if there is no parent type, ensure that all non-standard entries
                 # of <cached> are not set; this is necessary because lots of types
@@ -318,7 +318,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
         od;
     fi;
 
-    SET_TYPE_POSOBJ( type, typeOfTypes );
+    SET_TYPE_POSOBJ( type, TypeOfTypes );
     
     # check the size of the cache before storing this type
     if 3*family!.nTYPES > family!.HASH_SIZE then
@@ -347,42 +347,20 @@ BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data, parent )
 end );
 
 
-
-BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
-    return NEW_TYPE( typeOfTypes,
-                     family,
-                     WITH_IMPS_FLAGS( AND_FLAGS(
-                        family!.IMP_FLAGS,
-                        FLAGS_FILTER(filter) ) ),
-                     fail, fail );
-end );
-
-
-BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
-    return NEW_TYPE( typeOfTypes,
-                     family,
-                     WITH_IMPS_FLAGS( AND_FLAGS(
-                        family!.IMP_FLAGS,
-                        FLAGS_FILTER(filter) ) ),
-                     data, fail );
-end );
-
-
-BIND_GLOBAL( "NewType", function ( arg )
-    local   type;
+BIND_GLOBAL( "NewType", function ( family, filter, data... )
 
     # check the argument
-    if not IsFamily( arg[1] )  then
+    if not IsFamily( family )  then
         Error("<family> must be a family");
     fi;
 
     # NewType( <family>, <filter> )
-    if LEN_LIST(arg) = 2  then
-        type := NewType3( TypeOfTypes, arg[1], arg[2] );
+    if LEN_LIST(data) = 0  then
+        data := fail;
 
     # NewType( <family>, <filter>, <data> )
-    elif LEN_LIST(arg) = 3  then
-        type := NewType4( TypeOfTypes, arg[1], arg[2], arg[3] );
+    elif LEN_LIST(data) = 1  then
+        data := data[1];
 
     # otherwise signal an error
     else
@@ -390,8 +368,12 @@ BIND_GLOBAL( "NewType", function ( arg )
 
     fi;
 
-    # return the new type
-    return type;
+    # create and return the new type
+    return NEW_TYPE( family,
+                     WITH_IMPS_FLAGS( AND_FLAGS(
+                        family!.IMP_FLAGS,
+                        FLAGS_FILTER(filter) ) ),
+                     data, fail );
 end );
 
 #############################################################################
@@ -405,49 +387,20 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "Subtype2", function ( type, filter )
-    return NEW_TYPE( TypeOfTypes,
-                     type![POS_FAMILY_TYPE],
+Unbind( Subtype );
+BIND_GLOBAL( "Subtype", function ( type, filter )
+
+    # check argument
+    if not IsType( type )  then
+        Error("<type> must be a type");
+    fi;
+
+    return NEW_TYPE( type![POS_FAMILY_TYPE],
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         type![POS_FLAGS_TYPE],
                         FLAGS_FILTER( filter ) ) ),
                      type![ POS_DATA_TYPE ], type );
-end );
 
-
-BIND_GLOBAL( "Subtype3", function ( type, filter, data )
-    return NEW_TYPE( TypeOfTypes,
-                     type![POS_FAMILY_TYPE],
-                     WITH_IMPS_FLAGS( AND_FLAGS(
-                        type![POS_FLAGS_TYPE],
-                        FLAGS_FILTER( filter ) ) ),
-                     data, type );
-end );
-
-
-Unbind( Subtype );
-BIND_GLOBAL( "Subtype", function ( arg )
-    local p, type;
-    if IsHPCGAP then
-        # TODO: once the GAP compiler supports 'atomic', use that
-        # to replace the explicit locking and unlocking here.
-        p := READ_LOCK(arg);
-    fi;
-    # check argument
-    if not IsType( arg[1] )  then
-        Error("<type> must be a type");
-    fi;
-
-    # delegate
-    if LEN_LIST(arg) = 2  then
-        type := Subtype2( arg[1], arg[2] );
-    else
-        type := Subtype3( arg[1], arg[2], arg[3] );
-    fi;
-    if IsHPCGAP then
-        UNLOCK(p);
-    fi;
-    return type;
 end );
 
 
@@ -462,39 +415,18 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "SupType2", function ( type, filter )
-    return NEW_TYPE( TypeOfTypes,
-                     type![POS_FAMILY_TYPE],
+BIND_GLOBAL( "SupType", function ( type, filter )
+
+    # check argument
+    if not IsType( type )  then
+        Error("<type> must be a type");
+    fi;
+
+    return NEW_TYPE( type![POS_FAMILY_TYPE],
                      SUB_FLAGS(
                         type![POS_FLAGS_TYPE],
                         FLAGS_FILTER( filter ) ),
                      type![ POS_DATA_TYPE ], type );
-end );
-
-
-BIND_GLOBAL( "SupType3", function ( type, filter, data )
-    return NEW_TYPE( TypeOfTypes,
-                     type![POS_FAMILY_TYPE],
-                     SUB_FLAGS(
-                        type![POS_FLAGS_TYPE],
-                        FLAGS_FILTER( filter ) ),
-                     data, type );
-end );
-
-
-BIND_GLOBAL( "SupType", function ( arg )
-
-    # check argument
-    if not IsType( arg[1] )  then
-        Error("<type> must be a type");
-    fi;
-
-    # delegate
-    if LEN_LIST(arg) = 2  then
-        return SupType2( arg[1], arg[2] );
-    else
-        return SupType3( arg[1], arg[2], arg[3] );
-    fi;
 
 end );
 
@@ -743,7 +675,7 @@ BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
 local type, newtype;
 
     type:= TYPE_OBJ( obj );
-    newtype:= Subtype2( type, filter );
+    newtype:= Subtype( type, filter );
     if IS_POSOBJ( obj ) then
       SET_TYPE_POSOBJ( obj, newtype );
     elif IS_COMOBJ( obj ) then
@@ -760,8 +692,6 @@ local type, newtype;
       RunImmediateMethods( obj, SUB_FLAGS( newtype![POS_FLAGS_TYPE], type![POS_FLAGS_TYPE] ) );
     fi;
 end );
-
-BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj );
 
 
 #############################################################################
@@ -782,22 +712,24 @@ BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
-    
+    local type, newtype;
+
     if IS_AND_FILTER( filter ) then
         Error("You can't reset an \"and-filter\". Reset components individually.");
-              fi;
+    fi;
+
+    type:= TYPE_OBJ( obj );
+    newtype:= SupType( type, filter );
     if IS_POSOBJ( obj ) then
-        SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
+        SET_TYPE_POSOBJ( obj, newtype );
     elif IS_COMOBJ( obj ) then
-        SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
+        SET_TYPE_COMOBJ( obj, newtype );
     elif IS_DATOBJ( obj ) then
-        SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
+        SET_TYPE_DATOBJ( obj, newtype );
     else
         Error("cannot reset filter for internal object");
     fi;
 end );
-
-BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj );
 
 
 #############################################################################
@@ -890,13 +822,9 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
         od;
         if not IS_SUBSET_FLAGS(flags,nflags) then 
             flags := WITH_IMPS_FLAGS(AND_FLAGS(flags, nflags));
-            Objectify( NEW_TYPE(TypeOfTypes, 
-                    FamilyType(type), 
-                    flags , 
-                    DataType(type), fail), obj);
-        else
-            Objectify( type, obj );
+            type := NEW_TYPE( FamilyType(type), flags, DataType(type), fail );
         fi;
+        Objectify( type, obj );
     fi;
     for i in [1,3..LEN_LIST(extra)-1] do
         if (Tester(extra[i])(obj)) then
