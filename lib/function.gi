@@ -112,3 +112,5 @@ InstallMethod( ViewString,
 function(op)
     return VIEW_STRING_OPERATION(op);
 end);
+
+InstallMethod( SetNameFunction, [IsFunction and IsInternalRep, IS_STRING], SET_NAME_FUNC );
