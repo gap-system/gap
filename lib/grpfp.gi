@@ -4182,6 +4182,8 @@ local s, a, hom;
   hom:=EpimorphismSolvableQuotient(G,s);
   if Size(Image(hom))<>s then
     Error("group is not solvable");
+  else
+    SetIsInjective(hom, true);
   fi;
   if a<>fail then
     hom:=a*hom;
