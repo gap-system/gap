@@ -138,6 +138,7 @@ void operations(void)
 void globalvars(void)
 {
     Obj a;
+    int x;
 
     a = GAP_ValueGlobalVariable("yaddayaddayadda");
     assert(a == 0);
@@ -145,6 +146,16 @@ void globalvars(void)
     // Hopefully this always exists.
     a = GAP_ValueGlobalVariable("GAPInfo");
     assert(GAP_IsRecord(a) != 0);
+
+    x = GAP_CanAssignGlobalVariable("GAPInfo");
+    assert(x == 0);
+
+    x = GAP_CanAssignGlobalVariable("GAPInfo_copy");
+    assert(x != 0);
+
+    GAP_AssignGlobalVariable("GAPInfo_copy", a);
+    a = GAP_ValueGlobalVariable("GAPInfo_copy");
+    assert(a != 0);
 }
 
 int main(int argc, char ** argv)

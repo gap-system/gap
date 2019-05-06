@@ -163,7 +163,7 @@ void GAP_Initialize(int              argc,
 //// program evaluation and execution
 ////
 
-// Evaluate a string of GAP commands
+// Evaluate a string of GAP commands.
 //
 // To see an example of how to use this function see tst/testlibgap/basic.c
 //
@@ -175,10 +175,17 @@ Obj GAP_EvalString(const char * cmd);
 //// variables
 ////
 
-// Combines GVarName and ValGVar. For a given string, it returns the value
-// of the gvar with name <name>, or NULL if the global variable is not
-// defined.
+// Returns the value of the global GAP variable with name <name>, or NULL if
+// no global variable with this this name is defined.
 Obj GAP_ValueGlobalVariable(const char * name);
+
+// Checks if assigning to the global GAP variable <name> is possible, by
+// verifying that <name> is not the name of a read-only or constant variable.
+int GAP_CanAssignGlobalVariable(const char * name);
+
+// Assign <value> to the global GAP variable <name>. If <name> is the name of
+// a readonly or constant variable, an error is raised.
+void GAP_AssignGlobalVariable(const char * name, Obj value);
 
 
 ////
@@ -278,7 +285,7 @@ int GAP_IsLargeInt(Obj obj);
 // `integer.c`). The absolute value of <size> determines the number of limbs.
 // If <size> is zero, then `INTOBJ_INT(0)` is returned. Otherwise, the sign
 // of the returned integer object is determined by the sign of <size>.
-// //
+//
 // Note that GAP automatically reduces and normalized the integer object,
 // i.e., it will discard any leading zeros; and if the integer fits into a
 // small integer, it will be returned as such.

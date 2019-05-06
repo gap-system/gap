@@ -95,6 +95,17 @@ Obj GAP_ValueGlobalVariable(const char * name)
     }
 }
 
+int GAP_CanAssignGlobalVariable(const char * name)
+{
+    UInt gvar = GVarName(name);
+    return !(IsReadOnlyGVar(gvar) || IsConstantGVar(gvar));
+}
+
+void GAP_AssignGlobalVariable(const char * name, Obj value)
+{
+    UInt gvar = GVarName(name);
+    AssGVar(gvar, value);
+}
 
 ////
 //// arithmetic
