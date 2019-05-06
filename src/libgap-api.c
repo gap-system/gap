@@ -423,8 +423,7 @@ void GAP_LeaveStack_(void)
 
 void GAP_EnterDebugMessage_(char * message, char * file, int line)
 {
-    fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file,
-            line);
+    fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file, line);
 }
 
 int GAP_Error_Prejmp_(const char * file, int line)
@@ -437,7 +436,8 @@ int GAP_Error_Prejmp_(const char * file, int line)
 }
 
 /* Helper function for GAP_Error_Postjmp_ (see libgap-api.h) which manipulates
- * EnterStackCount in the (generally unlikely) case of returning from a longjmp
+ * EnterStackCount in the (generally unlikely) case of returning from a
+ * longjmp
  */
 void GAP_Error_Postjmp_Returning_(void)
 {
