@@ -305,8 +305,7 @@ void            AssGVar (
     Obj                 val )
 {
     /* make certain that the variable is not read only                     */
-    if ((REREADING != True) &&
-        (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0))) {
+    if ((REREADING != True) && IsReadOnlyGVar(gvar)) {
         ErrorMayQuit("Variable: '%g' is read only", (Int)NameGVar(gvar), 0);
     }
 
@@ -683,7 +682,7 @@ UInt GVarName (
 void MakeReadOnlyGVar (
     UInt                gvar )
 {
-    if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
+    if (IsConstantGVar(gvar)) {
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
@@ -781,7 +780,7 @@ static Obj FuncMakeConstantGVar(Obj self, Obj name)
 void MakeReadWriteGVar (
     UInt                gvar )
 {
-    if (ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1)) {
+    if (IsConstantGVar(gvar)) {
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
     SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
@@ -845,7 +844,7 @@ static Obj FuncIsReadOnlyGVar (
 */
 Int IsConstantGVar(UInt gvar)
 {
-    return INT_INTOBJ(ELM_GVAR_LIST(WriteGVars, gvar)) == -1;
+    return ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1);
 }
 
 /****************************************************************************
