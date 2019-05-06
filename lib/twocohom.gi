@@ -1408,8 +1408,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim;
   SetSize(fp,Size(r.group)*Size(r.module.field)^r.module.dimension);
 
   if Length(arg)>2 and arg[3]=true then
-    #sim:=IsomorphismSimplifiedFpGroup(fp);
-    sim:=IdentityMapping(fp);
+    sim:=IsomorphismSimplifiedFpGroup(fp);
 
     g:=r.group;
     quot:=InverseGeneralMapping(sim)*GroupHomomorphismByImages(fp,g,GeneratorsOfGroup(fp),
