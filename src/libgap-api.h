@@ -184,17 +184,40 @@ Obj GAP_ValueGlobalVariable(const char * name);
 //// arithmetic
 ////
 
+// Returns a nonzero value if the object <a> is equal to the object <b>, and
+// zero otherwise.
 int GAP_EQ(Obj a, Obj b);
+
+// Returns a nonzero value if the object <a> is less than the object <b>, and
+// zero otherwise.
 int GAP_LT(Obj a, Obj b);
+
+// Returns a nonzero value if the object <a> is a member of the object <b>,
+// and zero otherwise.
 int GAP_IN(Obj a, Obj b);
 
+// Returns the sum of the two objects <a> and <b>.
 Obj GAP_SUM(Obj a, Obj b);
+
+// Returns the difference of the two objects <a> and <b>.
 Obj GAP_DIFF(Obj a, Obj b);
+
+// Returns the product of the two objects <a> and <b>.
 Obj GAP_PROD(Obj a, Obj b);
+
+// Returns the quotient of the object <a> by the object <b>.
 Obj GAP_QUO(Obj a, Obj b);
+
+// Returns the left quotient of the object <a> by the object <b>.
 Obj GAP_LQUO(Obj a, Obj b);
+
+// Returns the power of the object <a> by the object <a>.
 Obj GAP_POW(Obj a, Obj b);
+
+// Returns the commutator of the two objects <a> and <b>.
 Obj GAP_COMM(Obj a, Obj b);
+
+// Returns the remainder of the object <a> by the object <b>.
 Obj GAP_MOD(Obj a, Obj b);
 
 
