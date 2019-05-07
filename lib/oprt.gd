@@ -2242,8 +2242,10 @@ DeclareOperation( "RepresentativeActionOp",
 ##  The stabilizer will have <A>G</A> as its parent.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
-##  gap> Stabilizer(g,4);
+##  gap> stab:=Stabilizer(g,4);
 ##  Group([ (1,3,2) ])
+##  gap> Parent(stab);
+##  Group([ (1,3,2), (2,4,3) ])
 ##  ]]></Example>
 ##  <P/>
 ##  The stabilizer of a set or tuple of points can be computed by specifying
@@ -2253,10 +2255,12 @@ DeclareOperation( "RepresentativeActionOp",
 ##  Group([ (1,2)(3,4) ])
 ##  gap> Stabilizer(g,[1,2],OnTuples);
 ##  Group(())
-##  gap> OrbitStabilizer(g,[1,2],OnSets);
+##  gap> orbstab:=OrbitStabilizer(g,[1,2],OnSets);
 ##  rec( 
 ##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], 
 ##        [ 2, 4 ] ], stabilizer := Group([ (1,2)(3,4) ]) )
+##  gap> Parent(orbstab.stabilizer);
+##  Group([ (1,3,2), (2,4,3) ])
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
