@@ -31,8 +31,8 @@ gap> mat:=
 >      (1,6)(2,5)(3,4), 0, 0, 0, 0, 0 ] ];;
 gap> R:=ReesZeroMatrixSemigroup(Group([ (1,2)(3,5)(4,6), (1,3)(2,4)(5,6) ]), 
 > mat);
-<Rees 0-matrix semigroup 25x10 over Group([ (1,2)(3,5)(4,6), (1,3)(2,4)
-(5,6) ])>
+<Rees 0-matrix semigroup 25x10 over Group([ (1,2)(3,5)(4,6), (1,3)(2,4)(5,6) 
+  ])>
 gap> Size(R);
 1501
 gap> ForAll(R, x-> x in R);
@@ -294,8 +294,8 @@ Group([ (1,2,3) ])
 gap> HasIsSimpleSemigroup(g);
 true
 gap> R;
-<Rees 0-matrix semigroup 25x10 over Group([ (1,2)(3,5)(4,6), (1,3)(2,4)
-(5,6) ])>
+<Rees 0-matrix semigroup 25x10 over Group([ (1,2)(3,5)(4,6), (1,3)(2,4)(5,6) 
+  ])>
 gap> mat:=[[0,0,0], [(1,2), 0, (3,4)]];
 [ [ 0, 0, 0 ], [ (1,2), 0, (3,4) ] ]
 gap> R:=ReesZeroMatrixSemigroup(SymmetricGroup(4), mat);                    
@@ -383,8 +383,8 @@ gap> mat:=
 >       (1,3,5,7)(2,4,6,8), (1,4,7,2,5,8,3,6), (1,3,5,7)(2,4,6,8), 
 >       (1,8,7,6,5,4,3,2), (1,4,7,2,5,8,3,6), (1,2,3,4,5,6,7,8) ] ];;
 gap> R:=ReesMatrixSemigroup(DihedralGroup(IsPermGroup, 16), mat); 
-<Rees matrix semigroup 9x11 over Group([ (1,2,3,4,5,6,7,8), (2,8)(3,7)
-(4,6) ])>
+<Rees matrix semigroup 9x11 over Group([ (1,2,3,4,5,6,7,8), (2,8)(3,7)(4,6) 
+  ])>
 gap> Size(R);
 1584
 gap> Representative(R);

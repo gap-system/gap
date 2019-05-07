@@ -1742,7 +1742,9 @@ Obj             TYPES_LIST_FAM (
 *F  PrintListDefault(<list>)  . . . . . . . . . . . . . . . . .  print a list
 *F  PrintPathList(<list>,<indx>)  . . . . . . . . . . . . . print a list path
 **
-**  'PrintList' simply prints the list.
+**  'PrintListDefault' simply prints the elements in the given list.
+**  The line break hints are consistent with those
+**  that appear in the 'ViewObj' and 'ViewString' methods for finite lists.
 */
 static void PrintListDefault(Obj list)
 {
