@@ -363,14 +363,21 @@ local   str,ls, i;
     fi;
   od;
 
-  str := "[ ";
+  # The line break hints are consistent with those
+  # that appear in the kernel function 'PrintListDefault'
+  # and in the 'ViewObj' method for finite lists.
+  str:= "\>\>[ \>\>";
   for i in [ 1 .. Length( list ) ]  do
-    Append(str,ls[i]);
-    if i<>Length(list)  then
-      Append(str,",\<\> ");
+    if ls[i] <> "" then
+      if 1 < i then
+        Append( str, "\<,\< \>\>" );
+      fi;
+      Append( str, ls[i] );
+    elif 1 < i then
+      Append( str, "\<,\<\>\>" );
     fi;
   od;
-  Append( str, " ]" );
+  Append( str, " \<\<\<\<]" );
   ConvertToStringRep( str );
   return str;
 end );
@@ -3787,6 +3794,10 @@ LIST_WITH_IDENTICAL_ENTRIES );
 ##  This is  a very naive  method which will view   the sub-objects. A better
 ##  method is needed eventually looking out for long list or homogeneous list
 ##  or dense list, etc.
+##
+##  The line break hints are consistent with those
+##  that appear in the kernel function 'PrintListDefault'
+##  and in the 'ViewString' method for finite lists.
 ##
 InstallMethod( ViewObj,
     "for finite lists",

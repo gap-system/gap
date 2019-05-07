@@ -114,7 +114,7 @@ gap> PrintString(x);
 gap> String(x);
 "[ ]"
 
-# List
+# Dense list
 gap> x:=[1,2,3];
 [ 1, 2, 3 ]
 gap> Display(x);
@@ -126,11 +126,29 @@ gap> PrintObj(x);Print("\n");
 gap> DisplayString(x);
 "<object>\n"
 gap> ViewString(x);
-"[ 1,\<\> 2,\<\> 3 ]"
+"\>\>[ \>\>1\<,\< \>\>2\<,\< \>\>3 \<\<\<\<]"
 gap> PrintString(x);
 "[ 1, 2, 3 ]"
 gap> String(x);
 "[ 1, 2, 3 ]"
+
+# Non-dense list
+gap> x:= [ 1,, 3 ];
+[ 1,, 3 ]
+gap> Display( x );
+[ 1,, 3 ]
+gap> ViewObj( x ); Print( "\n" );
+[ 1,, 3 ]
+gap> PrintObj( x ); Print( "\n" );
+[ 1,, 3 ]
+gap> DisplayString( x );
+"<object>\n"
+gap> ViewString( x );
+"\>\>[ \>\>1\<,\<\>\>\<,\< \>\>3 \<\<\<\<]"
+gap> PrintString( x );
+"[ 1, , 3 ]"
+gap> String( x );
+"[ 1, , 3 ]"
 
 # Character
 gap> x:='a';
