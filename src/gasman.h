@@ -383,8 +383,6 @@ int IsGapObj(void *);
 **  understand GAP's memory manager. Enabling GAP_MEMORY_CANARY will make an
 **  executable where valgrind will detect memory issues.
 **
-**  At the moment the detection is limited to only writing off the last
-**  allocated block.
 */
 
 void CHANGED_BAG(Bag b);
