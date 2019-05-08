@@ -115,7 +115,7 @@ Obj NewFunctionBody(void)
 **  expression <expr>.
 **
 **  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
-**  'T_REFLVAR' or 'T_INTEXPR'.
+**  'EXPR_REF_LVAR' or 'EXPR_INT'.
 */
 static Expr * ADDR_EXPR(Expr expr)
 {
@@ -370,7 +370,7 @@ static Stat PopSeqStat (
     UInt                i;              /* loop variable                   */
 
     if (nr == 0 ) {
-      body = NewStat(T_EMPTY, 0);
+      body = NewStat(STAT_EMPTY, 0);
     }
     /* special case for a single statement                                 */
     else if ( nr == 1 ) {
@@ -382,10 +382,10 @@ static Stat PopSeqStat (
 
         /* allocate the sequence                                           */
         if ( 2 <= nr && nr <= 7 ) {
-            body = NewStat( T_SEQ_STAT+(nr-1), nr * sizeof(Stat) );
+            body = NewStat( STAT_SEQ_STAT+(nr-1), nr * sizeof(Stat) );
         }
         else {
-            body = NewStat( T_SEQ_STAT,        nr * sizeof(Stat) );
+            body = NewStat( STAT_SEQ_STAT,        nr * sizeof(Stat) );
         }
 
         /* enter the statements into the sequence                          */
@@ -403,7 +403,7 @@ static inline Stat PopLoopStat(UInt baseType, UInt extra, UInt nr)
 {
     // fix up the case of no statements
     if (0 == nr) {
-        PushStat(NewStat(T_EMPTY, 0));
+        PushStat(NewStat(STAT_EMPTY, 0));
         nr = 1;
     }
 
@@ -492,7 +492,7 @@ static Expr PopExpr(void)
 *F  PushUnaryOp( <type> ) . . . . . . . . . . . . . . . . push unary operator
 **
 **  'PushUnaryOp' pushes a   unary  operator expression onto the   expression
-**  stack.  <type> is the type of the operator (currently only 'T_NOT').
+**  stack.  <type> is the type of the operator (currently only 'EXPR_NOT').
 */
 static void PushUnaryOp(UInt type)
 {
@@ -599,7 +599,7 @@ void            CodeFuncCallOptionsEndElm ( void )
 void            CodeFuncCallOptionsEndElmEmpty ( void )
 {
   /* The default value is true */
-      PushExpr( NewExpr( T_TRUE_EXPR, 0L ) );
+      PushExpr( NewExpr( EXPR_TRUE, 0L ) );
 }
 
 void            CodeFuncCallOptionsEnd ( UInt nr )
@@ -610,7 +610,7 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
     UInt                i;              /* loop variable                   */
 
     /* allocate the record expression                                      */
-    record = NewExpr( T_REC_EXPR,      nr * 2 * sizeof(Expr) );
+    record = NewExpr( EXPR_REC,      nr * 2 * sizeof(Expr) );
     
 
     /* enter the entries                                                   */
@@ -724,16 +724,16 @@ void CodeFuncCallEnd (
 
     /* allocate the function call                                          */
     if ( funccall && nr <= 6 ) {
-        call = NewExpr( T_FUNCCALL_0ARGS+nr, SIZE_NARG_CALL(nr) );
+        call = NewExpr( EXPR_FUNCCALL_0ARGS+nr, SIZE_NARG_CALL(nr) );
     }
     else if ( funccall /* && 6 < nr */ ) {
-        call = NewExpr( T_FUNCCALL_XARGS,    SIZE_NARG_CALL(nr) );
+        call = NewExpr( EXPR_FUNCCALL_XARGS,    SIZE_NARG_CALL(nr) );
     }
     else if ( /* ! funccall && */ nr <=6 ) {
-        call = NewExpr( T_PROCCALL_0ARGS+nr, SIZE_NARG_CALL(nr) );
+        call = NewExpr( STAT_PROCCALL_0ARGS+nr, SIZE_NARG_CALL(nr) );
     }
     else /* if ( ! funccall && 6 < nr ) */ {
-        call = NewExpr( T_PROCCALL_XARGS,    SIZE_NARG_CALL(nr) );
+        call = NewExpr( STAT_PROCCALL_XARGS,    SIZE_NARG_CALL(nr) );
     }
 
     /* get the options record if any */
@@ -753,7 +753,7 @@ void CodeFuncCallEnd (
     /* wrap up the call with the options */
     if (options)
       {
-        wrapper = NewExpr( funccall ? T_FUNCCALL_OPTS : T_PROCCALL_OPTS, 
+        wrapper = NewExpr( funccall ? EXPR_FUNCCALL_OPTS : STAT_PROCCALL_OPTS, 
                            2*sizeof(Expr));
         WRITE_EXPR(wrapper, 0, opts);
         WRITE_EXPR(wrapper, 1, call);
@@ -829,7 +829,7 @@ void CodeFuncExprBegin (
     (void) old; /* please picky compilers. */
 
     /* allocate the top level statement sequence                           */
-    stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
+    stat1 = NewStat( STAT_SEQ_STAT, 8*sizeof(Stat) );
     assert( stat1 == OFFSET_FIRST_STAT );
 }
 
@@ -858,13 +858,13 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
         //  sequence statements, e.g., from reading in a syntax tree, we need
         //  to find the last `real` statement of the last innermost sequence
         //  statement to determine if there is already a return or not.
-        while (T_SEQ_STAT <= TNUM_STAT(stat1) &&
-               TNUM_STAT(stat1) <= T_SEQ_STAT7) {
+        while (STAT_SEQ_STAT <= TNUM_STAT(stat1) &&
+               TNUM_STAT(stat1) <= STAT_SEQ_STAT7) {
             UInt size = SIZE_STAT(stat1) / sizeof(Stat);
             stat1 = READ_STAT(stat1, size - 1);
         }
-        if (TNUM_STAT(stat1) != T_RETURN_VOID &&
-            TNUM_STAT(stat1) != T_RETURN_OBJ) {
+        if (TNUM_STAT(stat1) != STAT_RETURN_VOID &&
+            TNUM_STAT(stat1) != STAT_RETURN_OBJ) {
             CodeReturnVoidWhichIsNotProfiled();
             nr++;
         }
@@ -881,7 +881,7 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
     /* Making sure to preserve the line number and file name              */
     STAT_HEADER(OFFSET_FIRST_STAT)->line = LINE_STAT(OFFSET_FIRST_STAT);
     STAT_HEADER(OFFSET_FIRST_STAT)->size = nr*sizeof(Stat);
-    STAT_HEADER(OFFSET_FIRST_STAT)->type = T_SEQ_STAT+nr-1;
+    STAT_HEADER(OFFSET_FIRST_STAT)->type = STAT_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         WRITE_STAT(OFFSET_FIRST_STAT, nr - i, stat1);
@@ -906,7 +906,7 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
     /* and store it in the function expression list of the outer function  */
     if (STATE(CurrLVars) != CS(CodeLVars)) {
         len = AddValueToBody(fexp);
-        expr = NewExpr( T_FUNC_EXPR, sizeof(Expr) );
+        expr = NewExpr( EXPR_FUNC, sizeof(Expr) );
         WRITE_EXPR(expr, 0, len);
         if (pushExpr) {
             PushExpr(expr);
@@ -972,7 +972,7 @@ Int CodeIfBeginBody ( void )
     Expr cond = PopExpr();
 
     // if the condition is 'false', ignore the body
-    if (TNUM_EXPR(cond) == T_FALSE_EXPR) {
+    if (TNUM_EXPR(cond) == EXPR_FALSE) {
         return 1; // signal interpreter to set IntrIgnoring to 1
     }
     else {
@@ -994,7 +994,7 @@ Int CodeIfEndBody (
 
     // if the condition is 'true', signal interpreter to set IntrIgnoring to
     // 1, so that other branches of the if-statement are ignored
-    return TNUM_EXPR(cond) == T_TRUE_EXPR;
+    return TNUM_EXPR(cond) == EXPR_TRUE;
 }
 
 void CodeIfEnd (
@@ -1007,13 +1007,13 @@ void CodeIfEnd (
 
     // if all conditions were false, the if-statement is an empty statement
     if (nr == 0) {
-        PushStat(NewStat(T_EMPTY, 0));
+        PushStat(NewStat(STAT_EMPTY, 0));
         return;
     }
 
     // peek at the last condition
     cond = PopExpr();
-    hase = (TNUM_EXPR(cond) == T_TRUE_EXPR);
+    hase = (TNUM_EXPR(cond) == EXPR_TRUE);
     PushExpr(cond);
 
     // optimize 'if true then BODY; fi;' to just 'BODY;'
@@ -1025,16 +1025,16 @@ void CodeIfEnd (
 
     /* allocate the if-statement                                           */
     if      ( nr == 1 ) {
-        stat = NewStat( T_IF,            nr * (sizeof(Expr)+sizeof(Stat)) );
+        stat = NewStat( STAT_IF,            nr * (sizeof(Expr)+sizeof(Stat)) );
     }
     else if ( nr == 2 && hase ) {
-        stat = NewStat( T_IF_ELSE,       nr * (sizeof(Expr)+sizeof(Stat)) );
+        stat = NewStat( STAT_IF_ELSE,       nr * (sizeof(Expr)+sizeof(Stat)) );
     }
     else if ( ! hase ) {
-        stat = NewStat( T_IF_ELIF,       nr * (sizeof(Expr)+sizeof(Stat)) );
+        stat = NewStat( STAT_IF_ELIF,       nr * (sizeof(Expr)+sizeof(Stat)) );
     }
     else {
-        stat = NewStat( T_IF_ELIF_ELSE,  nr * (sizeof(Expr)+sizeof(Stat)) );
+        stat = NewStat( STAT_IF_ELIF_ELSE,  nr * (sizeof(Expr)+sizeof(Stat)) );
     }
 
     /* enter the branches                                                  */
@@ -1084,7 +1084,7 @@ void CodeForBegin ( void )
 void CodeForIn ( void )
 {
   Expr var = PopExpr();
-  if (TNUM_EXPR(var) == T_REF_GVAR)
+  if (TNUM_EXPR(var) == EXPR_REF_GVAR)
     {
       PushGlobalForLoopVariable(READ_EXPR(var, 0));
     }
@@ -1109,16 +1109,16 @@ void CodeForEndBody (
     /* get the variable reference                                          */
     var = PopExpr();
 
-    if (TNUM_EXPR(var) == T_REF_GVAR)
+    if (TNUM_EXPR(var) == EXPR_REF_GVAR)
       PopGlobalForLoopVariable();
     
     /* select the type of the for-statement                                */
-    if ( TNUM_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
-      && IS_REFLVAR(var) ) {
-        type = T_FOR_RANGE;
+    if ( TNUM_EXPR(list) == EXPR_RANGE && SIZE_EXPR(list) == 2*sizeof(Expr)
+      && IS_REF_LVAR(var) ) {
+        type = STAT_FOR_RANGE;
     }
     else {
-        type = T_FOR;
+        type = STAT_FOR;
     }
 
     /* allocate the for-statement                                          */
@@ -1187,7 +1187,7 @@ void CodeAtomicEndBody (
     nrexprs = INT_INTEXPR(PopExpr());
     
     /* allocate the atomic-statement                                       */
-    stat = NewStat( T_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
+    stat = NewStat( STAT_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
     
     /* enter the statement sequence */
     WRITE_STAT(stat, 0, stat1);
@@ -1273,7 +1273,7 @@ void CodeWhileEndBody (
     Expr                cond;           /* condition                       */
 
     /* allocate the while-statement                                        */
-    stat = PopLoopStat(T_WHILE, 1, nr);
+    stat = PopLoopStat(STAT_WHILE, 1, nr);
 
     /* enter the condition                                                 */
     cond = PopExpr();
@@ -1342,7 +1342,7 @@ void CodeRepeatEnd ( void )
     nr = INT_INTEXPR( tmp );
 
     /* allocate the repeat-statement                                       */
-    stat = PopLoopStat(T_REPEAT, 1, nr);
+    stat = PopLoopStat(STAT_REPEAT, 1, nr);
 
     /* enter the condition                                                 */
     WRITE_STAT(stat, 0, cond);
@@ -1364,7 +1364,7 @@ void            CodeBreak ( void )
     Stat                stat;           /* break-statement, result         */
 
     /* allocate the break-statement                                        */
-    stat = NewStat( T_BREAK, 0 * sizeof(Expr) );
+    stat = NewStat( STAT_BREAK, 0 * sizeof(Expr) );
 
     /* push the break-statement                                            */
     PushStat( stat );
@@ -1382,7 +1382,7 @@ void            CodeContinue ( void )
     Stat                stat;           /* continue-statement, result      */
 
     /* allocate the continue-statement                                     */
-    stat = NewStat( T_CONTINUE, 0 * sizeof(Expr) );
+    stat = NewStat( STAT_CONTINUE, 0 * sizeof(Expr) );
 
     /* push the continue-statement                                         */
     PushStat( stat );
@@ -1403,7 +1403,7 @@ void CodeReturnObj ( void )
     Expr                expr;           /* expression                      */
 
     /* allocate the return-statement                                       */
-    stat = NewStat( T_RETURN_OBJ, sizeof(Expr) );
+    stat = NewStat( STAT_RETURN_OBJ, sizeof(Expr) );
 
     /* enter the expression                                                */
     expr = PopExpr();
@@ -1430,7 +1430,7 @@ void CodeReturnVoid ( void )
     Stat                stat;           /* return-statement, result        */
 
     /* allocate the return-statement                                       */
-    stat = NewStat( T_RETURN_VOID, 0 * sizeof(Expr) );
+    stat = NewStat( STAT_RETURN_VOID, 0 * sizeof(Expr) );
 
     /* push the return-statement                                           */
     PushStat( stat );
@@ -1442,7 +1442,7 @@ void CodeReturnVoidWhichIsNotProfiled ( void )
 
     /* allocate the return-statement, without profile information          */
 
-    stat = NewStatOrExpr( T_RETURN_VOID, 0 * sizeof(Expr), 0 );
+    stat = NewStatOrExpr( STAT_RETURN_VOID, 0 * sizeof(Expr), 0 );
 
     /* push the return-statement                                           */
     PushStat( stat );
@@ -1480,7 +1480,7 @@ void CodeOrL ( void )
 
 void CodeOr ( void )
 {
-    PushBinaryOp( T_OR );
+    PushBinaryOp( EXPR_OR );
 }
 
 void CodeAndL ( void )
@@ -1489,63 +1489,63 @@ void CodeAndL ( void )
 
 void CodeAnd ( void )
 {
-    PushBinaryOp( T_AND );
+    PushBinaryOp( EXPR_AND );
 }
 
 void CodeNot ( void )
 {
     // peek at expression
     Expr expr = PopExpr();
-    if ( TNUM_EXPR(expr) == T_TRUE_EXPR ) {
+    if ( TNUM_EXPR(expr) == EXPR_TRUE ) {
         CodeFalseExpr();
     }
-    else if ( TNUM_EXPR(expr) == T_FALSE_EXPR ) {
+    else if ( TNUM_EXPR(expr) == EXPR_FALSE ) {
         CodeTrueExpr();
     }
     else {
         PushExpr( expr );
-        PushUnaryOp( T_NOT );
+        PushUnaryOp( EXPR_NOT );
     }
 }
 
 void CodeEq ( void )
 {
-    PushBinaryOp( T_EQ );
+    PushBinaryOp( EXPR_EQ );
 }
 
 void CodeNe ( void )
 {
-    PushBinaryOp( T_NE );
+    PushBinaryOp( EXPR_NE );
 }
 
 void CodeLt ( void )
 {
-    PushBinaryOp( T_LT );
+    PushBinaryOp( EXPR_LT );
 }
 
 void CodeGe ( void )
 {
-    PushBinaryOp( T_GE );
+    PushBinaryOp( EXPR_GE );
 }
 
 void CodeGt ( void )
 {
-    PushBinaryOp( T_GT );
+    PushBinaryOp( EXPR_GT );
 }
 
 void CodeLe ( void )
 {
-    PushBinaryOp( T_LE );
+    PushBinaryOp( EXPR_LE );
 }
 
 void CodeIn ( void )
 {
-    PushBinaryOp( T_IN );
+    PushBinaryOp( EXPR_IN );
 }
 
 void CodeSum ( void )
 {
-    PushBinaryOp( T_SUM );
+    PushBinaryOp( EXPR_SUM );
 }
 
 void CodeAInv ( void )
@@ -1560,33 +1560,33 @@ void CodeAInv ( void )
     }
     else {
         PushExpr( expr );
-        PushUnaryOp( T_AINV );
+        PushUnaryOp( EXPR_AINV );
     }
 }
 
 void CodeDiff ( void )
 {
-    PushBinaryOp( T_DIFF );
+    PushBinaryOp( EXPR_DIFF );
 }
 
 void CodeProd ( void )
 {
-    PushBinaryOp( T_PROD );
+    PushBinaryOp( EXPR_PROD );
 }
 
 void CodeQuo ( void )
 {
-    PushBinaryOp( T_QUO );
+    PushBinaryOp( EXPR_QUO );
 }
 
 void CodeMod ( void )
 {
-    PushBinaryOp( T_MOD );
+    PushBinaryOp( EXPR_MOD );
 }
 
 void CodePow ( void )
 {
-    PushBinaryOp( T_POW );
+    PushBinaryOp( EXPR_POW );
 }
 
 
@@ -1609,7 +1609,7 @@ void CodeIntExpr(Obj val)
     /* otherwise stuff the value into the values list                      */
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
-        expr = NewExpr( T_INT_EXPR, sizeof(UInt) );
+        expr = NewExpr( EXPR_INTPOS, sizeof(UInt) );
         Int ix = AddValueToBody(val);
         WRITE_EXPR(expr, 0, ix);
     }
@@ -1626,7 +1626,7 @@ void CodeIntExpr(Obj val)
 */
 void CodeTildeExpr ( void )
 {
-    PushExpr( NewExpr( T_TILDE_EXPR, 0L ) );
+    PushExpr( NewExpr( EXPR_TILDE, 0L ) );
 }
 
 /****************************************************************************
@@ -1637,7 +1637,7 @@ void CodeTildeExpr ( void )
 */
 void CodeTrueExpr ( void )
 {
-    PushExpr( NewExpr( T_TRUE_EXPR, 0L ) );
+    PushExpr( NewExpr( EXPR_TRUE, 0L ) );
 }
 
 
@@ -1649,7 +1649,7 @@ void CodeTrueExpr ( void )
 */
 void CodeFalseExpr ( void )
 {
-    PushExpr( NewExpr( T_FALSE_EXPR, 0L ) );
+    PushExpr( NewExpr( EXPR_FALSE, 0L ) );
 }
 
 
@@ -1666,7 +1666,7 @@ void CodeCharExpr (
     Expr                litr;           /* literal expression, result      */
 
     /* allocate the character expression                                   */
-    litr = NewExpr( T_CHAR_EXPR, sizeof(UChar) );
+    litr = NewExpr( EXPR_CHAR, sizeof(UChar) );
     WRITE_EXPR(litr, 0, chr);
 
     /* push the literal expression                                         */
@@ -1697,7 +1697,7 @@ void CodePermCycle (
     UInt                j;              /* loop variable                   */
 
     /* allocate the new cycle                                              */
-    cycle = NewExpr( T_PERM_CYCLE, nrx * sizeof(Expr) );
+    cycle = NewExpr( EXPR_PERM_CYCLE, nrx * sizeof(Expr) );
 
     /* enter the entries                                                   */
     for ( j = nrx; 1 <= j; j-- ) {
@@ -1717,7 +1717,7 @@ void CodePerm (
     UInt                i;              /* loop variable                   */
 
     /* allocate the new permutation                                        */
-    perm = NewExpr( T_PERM_EXPR, nrc * sizeof(Expr) );
+    perm = NewExpr( EXPR_PERM, nrc * sizeof(Expr) );
 
     /* enter the cycles                                                    */
     for ( i = nrc; 1 <= i; i-- ) {
@@ -1778,13 +1778,13 @@ void CodeListExprEnd (
 
     /* allocate the list expression                                        */
     if ( ! range && ! (top && tilde) ) {
-        list = NewExpr( T_LIST_EXPR,      INT_INTEXPR(pos) * sizeof(Expr) );
+        list = NewExpr( EXPR_LIST,      INT_INTEXPR(pos) * sizeof(Expr) );
     }
     else if ( ! range && (top && tilde) ) {
-        list = NewExpr( T_LIST_TILDE_EXPR, INT_INTEXPR(pos) * sizeof(Expr) );
+        list = NewExpr( EXPR_LIST_TILDE, INT_INTEXPR(pos) * sizeof(Expr) );
     }
     else /* if ( range && ! (top && tilde) ) */ {
-        list = NewExpr( T_RANGE_EXPR,     INT_INTEXPR(pos) * sizeof(Expr) );
+        list = NewExpr( EXPR_RANGE,     INT_INTEXPR(pos) * sizeof(Expr) );
     }
 
     /* enter the entries                                                   */
@@ -1808,7 +1808,7 @@ void CodeStringExpr (
 {
     GAP_ASSERT(IS_STRING_REP(str));
 
-    Expr string = NewExpr( T_STRING_EXPR, sizeof(UInt) );
+    Expr string = NewExpr( EXPR_STRING, sizeof(UInt) );
     Int ix = AddValueToBody(str);
     WRITE_EXPR(string, 0, ix);
     PushExpr( string );
@@ -1903,7 +1903,7 @@ Expr CodeLazyFloatExpr(Obj str, UInt pushExpr)
     UInt ix;
 
     /* Lazy case, store the string for conversion at run time */
-    Expr fl = NewExpr(T_FLOAT_EXPR_LAZY, 2 * sizeof(UInt));
+    Expr fl = NewExpr(EXPR_FLOAT_LAZY, 2 * sizeof(UInt));
 
     ix = CheckForCommonFloat(CONST_CSTR_STRING(str));
     if (!ix)
@@ -1921,7 +1921,7 @@ Expr CodeLazyFloatExpr(Obj str, UInt pushExpr)
 static void CodeEagerFloatExpr(Obj str, Char mark)
 {
     /* Eager case, do the conversion now */
-    Expr fl = NewExpr(T_FLOAT_EXPR_EAGER, sizeof(UInt) * 3);
+    Expr fl = NewExpr(EXPR_FLOAT_EAGER, sizeof(UInt) * 3);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
     WRITE_EXPR(fl, 0, AddValueToBody(v));
     WRITE_EXPR(fl, 1, AddValueToBody(str));  // store for printing
@@ -2005,10 +2005,10 @@ void CodeRecExprEnd (
 
     /* allocate the record expression                                      */
     if ( ! (top && tilde) ) {
-        record = NewExpr( T_REC_EXPR,      nr * 2 * sizeof(Expr) );
+        record = NewExpr( EXPR_REC,      nr * 2 * sizeof(Expr) );
     }
     else /* if ( (top && tilde) ) */ {
-        record = NewExpr( T_REC_TILDE_EXPR, nr * 2 * sizeof(Expr) );
+        record = NewExpr( EXPR_REC_TILDE, nr * 2 * sizeof(Expr) );
     }
 
     /* enter the entries                                                   */
@@ -2043,7 +2043,7 @@ void CodeAssLVar (
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    ass = NewStat( T_ASS_LVAR,        2 * sizeof(Stat) );
+    ass = NewStat( STAT_ASS_LVAR,        2 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2067,7 +2067,7 @@ void CodeUnbLVar (
     Stat                ass;            /* unbind, result                  */
 
     /* allocate the unbind                                                 */
-    ass = NewStat( T_UNB_LVAR, sizeof(Stat) );
+    ass = NewStat( STAT_UNB_LVAR, sizeof(Stat) );
 
     /* enter the local variable                                            */
     WRITE_STAT(ass, 0, lvar);
@@ -2086,7 +2086,7 @@ void CodeUnbLVar (
 **  encounters a local variable.
 **
 **  A   reference to   a local  variable    is represented immediately   (see
-**  'REFLVAR_LVAR').
+**  'REF_LVAR_LVAR').
 */
 void CodeRefLVar (
     UInt                lvar )
@@ -2094,7 +2094,7 @@ void CodeRefLVar (
     Expr                ref;            /* reference, result               */
 
     /* make the reference                                                  */
-    ref = REFLVAR_LVAR(lvar);
+    ref = REF_LVAR_LVAR(lvar);
 
     /* push the reference                                                  */
     PushExpr( ref );
@@ -2111,7 +2111,7 @@ void CodeIsbLVar (
     Expr                ref;            /* isbound, result                 */
 
     /* allocate the isbound                                                */
-    ref = NewExpr( T_ISB_LVAR, sizeof(Expr) );
+    ref = NewExpr( EXPR_ISB_LVAR, sizeof(Expr) );
 
     /* enter the local variable                                            */
     WRITE_EXPR(ref, 0, lvar);
@@ -2140,7 +2140,7 @@ void CodeAssHVar (
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    ass = NewStat( T_ASS_HVAR, 2 * sizeof(Stat) );
+    ass = NewStat( STAT_ASS_HVAR, 2 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2164,7 +2164,7 @@ void CodeUnbHVar (
     Stat                ass;            /* unbind, result                  */
 
     /* allocate the unbind                                                 */
-    ass = NewStat( T_UNB_HVAR, sizeof(Stat) );
+    ass = NewStat( STAT_UNB_HVAR, sizeof(Stat) );
 
     /* enter the higher variable                                           */
     WRITE_STAT(ass, 0, hvar);
@@ -2191,7 +2191,7 @@ void CodeRefHVar (
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference                                              */
-    ref = NewExpr( T_REF_HVAR, sizeof(Expr) );
+    ref = NewExpr( EXPR_REF_HVAR, sizeof(Expr) );
 
     /* enter the higher variable                                           */
     WRITE_EXPR(ref, 0, hvar);
@@ -2211,7 +2211,7 @@ void CodeIsbHVar (
     Expr                ref;            /* isbound, result                 */
 
     /* allocate the isbound                                                */
-    ref = NewExpr( T_ISB_HVAR, sizeof(Expr) );
+    ref = NewExpr( EXPR_ISB_HVAR, sizeof(Expr) );
 
     /* enter the higher variable                                           */
     WRITE_EXPR(ref, 0, hvar);
@@ -2240,7 +2240,7 @@ void CodeAssGVar (
     Expr                rhsx;           /* right hand side expression      */
 
     /*  allocate the assignment                                            */
-    ass = NewStat( T_ASS_GVAR, 2 * sizeof(Stat) );
+    ass = NewStat( STAT_ASS_GVAR, 2 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2264,7 +2264,7 @@ void CodeUnbGVar (
     Stat                ass;            /* unbind, result                  */
 
     /* allocate the unbind                                                 */
-    ass = NewStat( T_UNB_GVAR, sizeof(Stat) );
+    ass = NewStat( STAT_UNB_GVAR, sizeof(Stat) );
 
     /* enter the global variable                                           */
     WRITE_STAT(ass, 0, gvar);
@@ -2290,7 +2290,7 @@ void CodeRefGVar (
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference                                              */
-    ref = NewExpr( T_REF_GVAR, sizeof(Expr) );
+    ref = NewExpr( EXPR_REF_GVAR, sizeof(Expr) );
 
     /* enter the global variable                                           */
     WRITE_EXPR(ref, 0, gvar);
@@ -2310,7 +2310,7 @@ void CodeIsbGVar (
     Expr                ref;            /* isbound, result                 */
 
     /* allocate the isbound                                                */
-    ref = NewExpr( T_ISB_GVAR, sizeof(Expr) );
+    ref = NewExpr( EXPR_ISB_GVAR, sizeof(Expr) );
 
     /* enter the global variable                                           */
     WRITE_EXPR(ref, 0, gvar);
@@ -2360,9 +2360,9 @@ void CodeAssList ( Int narg )
 
     /* allocate the assignment                                             */
     if (narg == 1)
-      ass = NewStat( T_ASS_LIST, 3 * sizeof(Stat) );
+      ass = NewStat( STAT_ASS_LIST, 3 * sizeof(Stat) );
     else /* if (narg == 2) */
-      ass = NewStat( T_ASS2_LIST, 4 * sizeof(Stat));
+      ass = NewStat( STAT_ASS2_LIST, 4 * sizeof(Stat));
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, narg );
@@ -2373,7 +2373,7 @@ void CodeAsssList ( void )
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment                                             */
-    ass = NewStat( T_ASSS_LIST, 3 * sizeof(Stat) );
+    ass = NewStat( STAT_ASSS_LIST, 3 * sizeof(Stat) );
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, 1 );
@@ -2385,7 +2385,7 @@ void CodeAssListLevel ( Int narg,
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment and enter the level                         */
-    ass = NewStat( T_ASS_LIST_LEV, (narg + 3) * sizeof(Stat) );
+    ass = NewStat( STAT_ASS_LIST_LEV, (narg + 3) * sizeof(Stat) );
     WRITE_STAT(ass, narg + 2, level);
 
     /* let 'CodeAssListUniv' do the rest                                   */
@@ -2398,7 +2398,7 @@ void CodeAsssListLevel (
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment and enter the level                         */
-    ass = NewStat( T_ASSS_LIST_LEV, 4 * sizeof(Stat) );
+    ass = NewStat( STAT_ASSS_LIST_LEV, 4 * sizeof(Stat) );
     WRITE_STAT(ass, 3, level);
 
     /* let 'CodeAssListUniv' do the rest                                   */
@@ -2418,7 +2418,7 @@ void CodeUnbList ( Int narg )
     Int i;
 
     /* allocate the unbind                                                 */
-    ass = NewStat( T_UNB_LIST, (narg+1) * sizeof(Stat) );
+    ass = NewStat( STAT_UNB_LIST, (narg+1) * sizeof(Stat) );
 
     /* enter the position expressions                                       */
     for (i = narg; i > 0; i--) {
@@ -2473,9 +2473,9 @@ void CodeElmList ( Int narg )
 
     /* allocate the reference                                              */
     if (narg == 1)
-      ref = NewExpr( T_ELM_LIST, 2 * sizeof(Expr) );
+      ref = NewExpr( EXPR_ELM_LIST, 2 * sizeof(Expr) );
     else /* if (narg == 2) */
-      ref = NewExpr( T_ELM2_LIST, 3 * sizeof(Expr) );
+      ref = NewExpr( EXPR_ELM2_LIST, 3 * sizeof(Expr) );
       
     /* let 'CodeElmListUniv' to the rest                                   */
     CodeElmListUniv( ref, narg );
@@ -2486,7 +2486,7 @@ void CodeElmsList ( void )
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference                                              */
-    ref = NewExpr( T_ELMS_LIST, 2 * sizeof(Expr) );
+    ref = NewExpr( EXPR_ELMS_LIST, 2 * sizeof(Expr) );
 
     /* let 'CodeElmListUniv' to the rest                                   */
     CodeElmListUniv( ref, 1 );
@@ -2498,7 +2498,7 @@ void CodeElmListLevel ( Int narg,
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference and enter the level                          */
-    ref = NewExpr( T_ELM_LIST_LEV, (narg + 2) * sizeof(Expr));
+    ref = NewExpr( EXPR_ELM_LIST_LEV, (narg + 2) * sizeof(Expr));
     WRITE_EXPR(ref, narg + 1, level);
 
     /* let 'CodeElmListUniv' do the rest                                   */
@@ -2511,7 +2511,7 @@ void CodeElmsListLevel (
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference and enter the level                          */
-    ref = NewExpr( T_ELMS_LIST_LEV, 3 * sizeof(Expr) );
+    ref = NewExpr( EXPR_ELMS_LIST_LEV, 3 * sizeof(Expr) );
     WRITE_EXPR(ref, 2, level);
 
     /* let 'CodeElmListUniv' do the rest                                   */
@@ -2531,7 +2531,7 @@ void CodeIsbList ( Int narg )
     Int i;
 
     /* allocate the isbound                                                */
-    ref = NewExpr( T_ISB_LIST, (narg + 1) * sizeof(Expr) );
+    ref = NewExpr( EXPR_ISB_LIST, (narg + 1) * sizeof(Expr) );
 
     /* enter the position expression                                       */
     for (i = narg; i > 0; i--) {
@@ -2561,7 +2561,7 @@ void            CodeAssRecName (
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    stat = NewStat( T_ASS_REC_NAME, 3 * sizeof(Stat) );
+    stat = NewStat( STAT_ASS_REC_NAME, 3 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2586,7 +2586,7 @@ void            CodeAssRecExpr ( void )
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    stat = NewStat( T_ASS_REC_EXPR, 3 * sizeof(Stat) );
+    stat = NewStat( STAT_ASS_REC_EXPR, 3 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2611,7 +2611,7 @@ void            CodeUnbRecName (
     Expr                rec;            /* record expression               */
 
     /* allocate the unbind                                                 */
-    stat = NewStat( T_UNB_REC_NAME, 2 * sizeof(Stat) );
+    stat = NewStat( STAT_UNB_REC_NAME, 2 * sizeof(Stat) );
 
     /* enter the name                                                      */
     WRITE_STAT(stat, 1, rnam);
@@ -2631,7 +2631,7 @@ void            CodeUnbRecExpr ( void )
     Expr                rnam;           /* name expression                 */
 
     /* allocate the unbind                                                 */
-    stat = NewStat( T_UNB_REC_EXPR, 2 * sizeof(Stat) );
+    stat = NewStat( STAT_UNB_REC_EXPR, 2 * sizeof(Stat) );
 
     /* enter the name expression                                           */
     rnam = PopExpr();
@@ -2658,7 +2658,7 @@ void CodeElmRecName (
     Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
-    expr = NewExpr( T_ELM_REC_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ELM_REC_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     WRITE_EXPR(expr, 1, rnam);
@@ -2678,7 +2678,7 @@ void CodeElmRecExpr ( void )
     Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
-    expr = NewExpr( T_ELM_REC_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ELM_REC_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -2704,7 +2704,7 @@ void CodeIsbRecName (
     Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
-    expr = NewExpr( T_ISB_REC_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ISB_REC_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     WRITE_EXPR(expr, 1, rnam);
@@ -2729,7 +2729,7 @@ void CodeIsbRecExpr ( void )
     Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
-    expr = NewExpr( T_ISB_REC_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ISB_REC_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -2756,7 +2756,7 @@ void CodeAssPosObj ( void )
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    ass = NewStat( T_ASS_POSOBJ, 3 * sizeof(Stat) );
+    ass = NewStat( STAT_ASS_POSOBJ, 3 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2786,7 +2786,7 @@ void CodeUnbPosObj ( void )
     Stat                ass;            /* unbind, result                  */
 
     /* allocate the unbind                                                 */
-    ass = NewStat( T_UNB_POSOBJ, 2 * sizeof(Stat) );
+    ass = NewStat( STAT_UNB_POSOBJ, 2 * sizeof(Stat) );
 
     /* enter the position expression                                       */
     pos = PopExpr();
@@ -2812,7 +2812,7 @@ void CodeElmPosObj ( void )
     Expr                pos;            /* position expression             */
 
     /* allocate the reference                                              */
-    ref = NewExpr( T_ELM_POSOBJ, 2 * sizeof(Expr) );
+    ref = NewExpr( EXPR_ELM_POSOBJ, 2 * sizeof(Expr) );
 
     /* enter the position expression                                       */
     pos = PopExpr();
@@ -2838,7 +2838,7 @@ void CodeIsbPosObj ( void )
     Expr                pos;            /* position expression             */
 
     /* allocate the isbound                                                */
-    ref = NewExpr( T_ISB_POSOBJ, 2 * sizeof(Expr) );
+    ref = NewExpr( EXPR_ISB_POSOBJ, 2 * sizeof(Expr) );
 
     /* enter the position expression                                       */
     pos = PopExpr();
@@ -2866,7 +2866,7 @@ void            CodeAssComObjName (
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    stat = NewStat( T_ASS_COMOBJ_NAME, 3 * sizeof(Stat) );
+    stat = NewStat( STAT_ASS_COMOBJ_NAME, 3 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2891,7 +2891,7 @@ void            CodeAssComObjExpr ( void )
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
-    stat = NewStat( T_ASS_COMOBJ_EXPR, 3 * sizeof(Stat) );
+    stat = NewStat( STAT_ASS_COMOBJ_EXPR, 3 * sizeof(Stat) );
 
     /* enter the right hand side expression                                */
     rhsx = PopExpr();
@@ -2916,7 +2916,7 @@ void            CodeUnbComObjName (
     Expr                rec;            /* record expression               */
 
     /* allocate the unbind                                                 */
-    stat = NewStat( T_UNB_COMOBJ_NAME, 2 * sizeof(Stat) );
+    stat = NewStat( STAT_UNB_COMOBJ_NAME, 2 * sizeof(Stat) );
 
     /* enter the name                                                      */
     WRITE_STAT(stat, 1, rnam);
@@ -2936,7 +2936,7 @@ void            CodeUnbComObjExpr ( void )
     Expr                rnam;           /* name expression                 */
 
     /* allocate the unbind                                                 */
-    stat = NewStat( T_UNB_COMOBJ_EXPR, 2 * sizeof(Stat) );
+    stat = NewStat( STAT_UNB_COMOBJ_EXPR, 2 * sizeof(Stat) );
 
     /* enter the name expression                                           */
     rnam = PopExpr();
@@ -2963,7 +2963,7 @@ void CodeElmComObjName (
     Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
-    expr = NewExpr( T_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     WRITE_EXPR(expr, 1, rnam);
@@ -2983,7 +2983,7 @@ void CodeElmComObjExpr ( void )
     Expr                rec;            /* record expression               */
 
     /* allocate the reference                                              */
-    expr = NewExpr( T_ELM_COMOBJ_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ELM_COMOBJ_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -3009,7 +3009,7 @@ void CodeIsbComObjName (
     Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
-    expr = NewExpr( T_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     WRITE_EXPR(expr, 1, rnam);
@@ -3033,7 +3033,7 @@ void CodeIsbComObjExpr ( void )
     Expr                rec;            /* record expression               */
 
     /* allocate the isbound                                                */
-    expr = NewExpr( T_ISB_COMOBJ_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( EXPR_ISB_COMOBJ_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -3057,7 +3057,7 @@ void CodeIsbComObjExpr ( void )
 void CodeEmpty(void)
 {
   Stat stat;
-  stat = NewStat(T_EMPTY, 0);
+  stat = NewStat(STAT_EMPTY, 0);
   PushStat( stat );
 }
 
@@ -3088,7 +3088,7 @@ void CodeInfoEnd   (
     UInt                i;              /* loop variable                   */
 
     /* allocate the new statement                                          */
-    stat = NewStat( T_INFO, SIZE_NARG_INFO(2+narg) );
+    stat = NewStat( STAT_INFO, SIZE_NARG_INFO(2+narg) );
 
     /* narg only counts the printable arguments                            */
     for ( i = narg + 2; 0 < i; i-- ) {
@@ -3127,7 +3127,7 @@ void CodeAssertEnd2Args ( void )
 {
     Stat                stat;           /* we build the statement here     */
 
-    stat = NewStat( T_ASSERT_2ARGS, 2*sizeof(Expr) );
+    stat = NewStat( STAT_ASSERT_2ARGS, 2*sizeof(Expr) );
 
     WRITE_STAT(stat, 1, PopExpr()); /* condition */
     WRITE_STAT(stat, 0, PopExpr()); /* level */
@@ -3139,7 +3139,7 @@ void CodeAssertEnd3Args ( void )
 {
     Stat                stat;           /* we build the statement here     */
 
-    stat = NewStat( T_ASSERT_3ARGS, 3*sizeof(Expr) );
+    stat = NewStat( STAT_ASSERT_3ARGS, 3*sizeof(Expr) );
 
     WRITE_STAT(stat, 2, PopExpr()); /* message */
     WRITE_STAT(stat, 1, PopExpr()); /* condition */

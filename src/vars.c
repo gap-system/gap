@@ -221,7 +221,7 @@ static void PrintUnbLVar(Stat stat)
 */
 static void PrintRefLVar(Expr expr)
 {
-    Pr( "%H", (Int)NAME_LVAR( LVAR_REFLVAR(expr) ), 0L );
+    Pr( "%H", (Int)NAME_LVAR( LVAR_REF_LVAR(expr) ), 0L );
 }
 
 static void PrintIsbLVar(Expr expr)
@@ -2193,110 +2193,110 @@ static Int InitKernel (
     PrintObjFuncs[ T_HVARS ] = PrintLVars;
 
     /* install executors, evaluators, and printers for local variables     */
-    InstallExecStatFunc( T_ASS_LVAR       , ExecAssLVar);
-    InstallExecStatFunc( T_UNB_LVAR       , ExecUnbLVar);
-    // no EvalExprFunc for T_REFLVAR, it is handled immediately by EVAL_EXPR
-    InstallEvalExprFunc( T_ISB_LVAR       , EvalIsbLVar);
+    InstallExecStatFunc( STAT_ASS_LVAR       , ExecAssLVar);
+    InstallExecStatFunc( STAT_UNB_LVAR       , ExecUnbLVar);
+    // no EvalExprFunc for EXPR_REF_LVAR, it is handled immediately by EVAL_EXPR
+    InstallEvalExprFunc( EXPR_ISB_LVAR       , EvalIsbLVar);
 
-    InstallPrintStatFunc( T_ASS_LVAR       , PrintAssLVar);
-    InstallPrintStatFunc( T_UNB_LVAR       , PrintUnbLVar);
-    InstallPrintExprFunc( T_REFLVAR        , PrintRefLVar);
-    InstallPrintExprFunc( T_ISB_LVAR       , PrintIsbLVar);
+    InstallPrintStatFunc( STAT_ASS_LVAR       , PrintAssLVar);
+    InstallPrintStatFunc( STAT_UNB_LVAR       , PrintUnbLVar);
+    InstallPrintExprFunc( EXPR_REF_LVAR        , PrintRefLVar);
+    InstallPrintExprFunc( EXPR_ISB_LVAR       , PrintIsbLVar);
 
     /* install executors, evaluators, and printers for higher variables    */
-    InstallExecStatFunc( T_ASS_HVAR       , ExecAssHVar);
-    InstallExecStatFunc( T_UNB_HVAR       , ExecUnbHVar);
-    InstallEvalExprFunc( T_REF_HVAR       , EvalRefHVar);
-    InstallEvalExprFunc( T_ISB_HVAR       , EvalIsbHVar);
-    InstallPrintStatFunc( T_ASS_HVAR       , PrintAssHVar);
-    InstallPrintStatFunc( T_UNB_HVAR       , PrintUnbHVar);
-    InstallPrintExprFunc( T_REF_HVAR       , PrintRefHVar);
-    InstallPrintExprFunc( T_ISB_HVAR       , PrintIsbHVar);
+    InstallExecStatFunc( STAT_ASS_HVAR       , ExecAssHVar);
+    InstallExecStatFunc( STAT_UNB_HVAR       , ExecUnbHVar);
+    InstallEvalExprFunc( EXPR_REF_HVAR       , EvalRefHVar);
+    InstallEvalExprFunc( EXPR_ISB_HVAR       , EvalIsbHVar);
+    InstallPrintStatFunc( STAT_ASS_HVAR       , PrintAssHVar);
+    InstallPrintStatFunc( STAT_UNB_HVAR       , PrintUnbHVar);
+    InstallPrintExprFunc( EXPR_REF_HVAR       , PrintRefHVar);
+    InstallPrintExprFunc( EXPR_ISB_HVAR       , PrintIsbHVar);
 
     /* install executors, evaluators, and printers for global variables    */
-    InstallExecStatFunc( T_ASS_GVAR       , ExecAssGVar);
-    InstallExecStatFunc( T_UNB_GVAR       , ExecUnbGVar);
-    InstallEvalExprFunc( T_REF_GVAR       , EvalRefGVar);
-    InstallEvalExprFunc( T_ISB_GVAR       , EvalIsbGVar);
-    InstallPrintStatFunc( T_ASS_GVAR       , PrintAssGVar);
-    InstallPrintStatFunc( T_UNB_GVAR       , PrintUnbGVar);
-    InstallPrintExprFunc( T_REF_GVAR       , PrintRefGVar);
-    InstallPrintExprFunc( T_ISB_GVAR       , PrintIsbGVar);
+    InstallExecStatFunc( STAT_ASS_GVAR       , ExecAssGVar);
+    InstallExecStatFunc( STAT_UNB_GVAR       , ExecUnbGVar);
+    InstallEvalExprFunc( EXPR_REF_GVAR       , EvalRefGVar);
+    InstallEvalExprFunc( EXPR_ISB_GVAR       , EvalIsbGVar);
+    InstallPrintStatFunc( STAT_ASS_GVAR       , PrintAssGVar);
+    InstallPrintStatFunc( STAT_UNB_GVAR       , PrintUnbGVar);
+    InstallPrintExprFunc( EXPR_REF_GVAR       , PrintRefGVar);
+    InstallPrintExprFunc( EXPR_ISB_GVAR       , PrintIsbGVar);
 
     /* install executors, evaluators, and printers for list elements       */
-    InstallExecStatFunc( T_ASS_LIST       , ExecAssList);
-    InstallExecStatFunc( T_ASSS_LIST      , ExecAsssList);
-    InstallExecStatFunc( T_ASS_LIST_LEV   , ExecAssListLevel);
-    InstallExecStatFunc( T_ASSS_LIST_LEV  , ExecAsssListLevel);
-    InstallExecStatFunc( T_ASS2_LIST  , ExecAss2List);
-    InstallPrintStatFunc( T_ASS2_LIST  , PrintAss2List);
+    InstallExecStatFunc( STAT_ASS_LIST       , ExecAssList);
+    InstallExecStatFunc( STAT_ASSS_LIST      , ExecAsssList);
+    InstallExecStatFunc( STAT_ASS_LIST_LEV   , ExecAssListLevel);
+    InstallExecStatFunc( STAT_ASSS_LIST_LEV  , ExecAsssListLevel);
+    InstallExecStatFunc( STAT_ASS2_LIST  , ExecAss2List);
+    InstallPrintStatFunc( STAT_ASS2_LIST  , PrintAss2List);
     
-    InstallExecStatFunc( T_UNB_LIST       , ExecUnbList);
-    InstallEvalExprFunc( T_ELM_LIST       , EvalElmList);
-    InstallEvalExprFunc( T_ELMS_LIST      , EvalElmsList);
-    InstallEvalExprFunc( T_ELM_LIST_LEV   , EvalElmListLevel);
-    InstallEvalExprFunc( T_ELMS_LIST_LEV  , EvalElmsListLevel);
-    InstallEvalExprFunc( T_ISB_LIST       , EvalIsbList);
-    InstallEvalExprFunc( T_ELM2_LIST      , EvalElm2List);
-    InstallPrintExprFunc( T_ELM2_LIST     , PrintElm2List);
+    InstallExecStatFunc( STAT_UNB_LIST       , ExecUnbList);
+    InstallEvalExprFunc( EXPR_ELM_LIST       , EvalElmList);
+    InstallEvalExprFunc( EXPR_ELMS_LIST      , EvalElmsList);
+    InstallEvalExprFunc( EXPR_ELM_LIST_LEV   , EvalElmListLevel);
+    InstallEvalExprFunc( EXPR_ELMS_LIST_LEV  , EvalElmsListLevel);
+    InstallEvalExprFunc( EXPR_ISB_LIST       , EvalIsbList);
+    InstallEvalExprFunc( EXPR_ELM2_LIST      , EvalElm2List);
+    InstallPrintExprFunc( EXPR_ELM2_LIST     , PrintElm2List);
     
-    InstallPrintStatFunc( T_ASS_LIST       , PrintAssList);
-    InstallPrintStatFunc( T_ASSS_LIST      , PrintAsssList);
-    InstallPrintStatFunc( T_ASS_LIST_LEV   , PrintAssList);
-    InstallPrintStatFunc( T_ASSS_LIST_LEV  , PrintAsssList);
-    InstallPrintStatFunc( T_UNB_LIST       , PrintUnbList);
-    InstallPrintExprFunc( T_ELM_LIST       , PrintElmList);
-    InstallPrintExprFunc( T_ELMS_LIST      , PrintElmsList);
-    InstallPrintExprFunc( T_ELM_LIST_LEV   , PrintElmListLevel);
-    InstallPrintExprFunc( T_ELMS_LIST_LEV  , PrintElmsList);
-    InstallPrintExprFunc( T_ISB_LIST       , PrintIsbList);
+    InstallPrintStatFunc( STAT_ASS_LIST       , PrintAssList);
+    InstallPrintStatFunc( STAT_ASSS_LIST      , PrintAsssList);
+    InstallPrintStatFunc( STAT_ASS_LIST_LEV   , PrintAssList);
+    InstallPrintStatFunc( STAT_ASSS_LIST_LEV  , PrintAsssList);
+    InstallPrintStatFunc( STAT_UNB_LIST       , PrintUnbList);
+    InstallPrintExprFunc( EXPR_ELM_LIST       , PrintElmList);
+    InstallPrintExprFunc( EXPR_ELMS_LIST      , PrintElmsList);
+    InstallPrintExprFunc( EXPR_ELM_LIST_LEV   , PrintElmListLevel);
+    InstallPrintExprFunc( EXPR_ELMS_LIST_LEV  , PrintElmsList);
+    InstallPrintExprFunc( EXPR_ISB_LIST       , PrintIsbList);
 
 
     /* install executors, evaluators, and printers for record elements     */
-    InstallExecStatFunc( T_ASS_REC_NAME   , ExecAssRecName);
-    InstallExecStatFunc( T_ASS_REC_EXPR   , ExecAssRecExpr);
-    InstallExecStatFunc( T_UNB_REC_NAME   , ExecUnbRecName);
-    InstallExecStatFunc( T_UNB_REC_EXPR   , ExecUnbRecExpr);
-    InstallEvalExprFunc( T_ELM_REC_NAME   , EvalElmRecName);
-    InstallEvalExprFunc( T_ELM_REC_EXPR   , EvalElmRecExpr);
-    InstallEvalExprFunc( T_ISB_REC_NAME   , EvalIsbRecName);
-    InstallEvalExprFunc( T_ISB_REC_EXPR   , EvalIsbRecExpr);
-    InstallPrintStatFunc( T_ASS_REC_NAME   , PrintAssRecName);
-    InstallPrintStatFunc( T_ASS_REC_EXPR   , PrintAssRecExpr);
-    InstallPrintStatFunc( T_UNB_REC_NAME   , PrintUnbRecName);
-    InstallPrintStatFunc( T_UNB_REC_EXPR   , PrintUnbRecExpr);
-    InstallPrintExprFunc( T_ELM_REC_NAME   , PrintElmRecName);
-    InstallPrintExprFunc( T_ELM_REC_EXPR   , PrintElmRecExpr);
-    InstallPrintExprFunc( T_ISB_REC_NAME   , PrintIsbRecName);
-    InstallPrintExprFunc( T_ISB_REC_EXPR   , PrintIsbRecExpr);
+    InstallExecStatFunc( STAT_ASS_REC_NAME   , ExecAssRecName);
+    InstallExecStatFunc( STAT_ASS_REC_EXPR   , ExecAssRecExpr);
+    InstallExecStatFunc( STAT_UNB_REC_NAME   , ExecUnbRecName);
+    InstallExecStatFunc( STAT_UNB_REC_EXPR   , ExecUnbRecExpr);
+    InstallEvalExprFunc( EXPR_ELM_REC_NAME   , EvalElmRecName);
+    InstallEvalExprFunc( EXPR_ELM_REC_EXPR   , EvalElmRecExpr);
+    InstallEvalExprFunc( EXPR_ISB_REC_NAME   , EvalIsbRecName);
+    InstallEvalExprFunc( EXPR_ISB_REC_EXPR   , EvalIsbRecExpr);
+    InstallPrintStatFunc( STAT_ASS_REC_NAME   , PrintAssRecName);
+    InstallPrintStatFunc( STAT_ASS_REC_EXPR   , PrintAssRecExpr);
+    InstallPrintStatFunc( STAT_UNB_REC_NAME   , PrintUnbRecName);
+    InstallPrintStatFunc( STAT_UNB_REC_EXPR   , PrintUnbRecExpr);
+    InstallPrintExprFunc( EXPR_ELM_REC_NAME   , PrintElmRecName);
+    InstallPrintExprFunc( EXPR_ELM_REC_EXPR   , PrintElmRecExpr);
+    InstallPrintExprFunc( EXPR_ISB_REC_NAME   , PrintIsbRecName);
+    InstallPrintExprFunc( EXPR_ISB_REC_EXPR   , PrintIsbRecExpr);
 
     /* install executors, evaluators, and printers for list elements       */
-    InstallExecStatFunc( T_ASS_POSOBJ       , ExecAssPosObj);
-    InstallExecStatFunc( T_UNB_POSOBJ       , ExecUnbPosObj);
-    InstallEvalExprFunc( T_ELM_POSOBJ       , EvalElmPosObj);
-    InstallEvalExprFunc( T_ISB_POSOBJ       , EvalIsbPosObj);
-    InstallPrintStatFunc( T_ASS_POSOBJ       , PrintAssPosObj);
-    InstallPrintStatFunc( T_UNB_POSOBJ       , PrintUnbPosObj);
-    InstallPrintExprFunc( T_ELM_POSOBJ       , PrintElmPosObj);
-    InstallPrintExprFunc( T_ISB_POSOBJ       , PrintIsbPosObj);
+    InstallExecStatFunc( STAT_ASS_POSOBJ       , ExecAssPosObj);
+    InstallExecStatFunc( STAT_UNB_POSOBJ       , ExecUnbPosObj);
+    InstallEvalExprFunc( EXPR_ELM_POSOBJ       , EvalElmPosObj);
+    InstallEvalExprFunc( EXPR_ISB_POSOBJ       , EvalIsbPosObj);
+    InstallPrintStatFunc( STAT_ASS_POSOBJ       , PrintAssPosObj);
+    InstallPrintStatFunc( STAT_UNB_POSOBJ       , PrintUnbPosObj);
+    InstallPrintExprFunc( EXPR_ELM_POSOBJ       , PrintElmPosObj);
+    InstallPrintExprFunc( EXPR_ISB_POSOBJ       , PrintIsbPosObj);
 
     /* install executors, evaluators, and printers for record elements     */
-    InstallExecStatFunc( T_ASS_COMOBJ_NAME  , ExecAssComObjName);
-    InstallExecStatFunc( T_ASS_COMOBJ_EXPR  , ExecAssComObjExpr);
-    InstallExecStatFunc( T_UNB_COMOBJ_NAME  , ExecUnbComObjName);
-    InstallExecStatFunc( T_UNB_COMOBJ_EXPR  , ExecUnbComObjExpr);
-    InstallEvalExprFunc( T_ELM_COMOBJ_NAME  , EvalElmComObjName);
-    InstallEvalExprFunc( T_ELM_COMOBJ_EXPR  , EvalElmComObjExpr);
-    InstallEvalExprFunc( T_ISB_COMOBJ_NAME  , EvalIsbComObjName);
-    InstallEvalExprFunc( T_ISB_COMOBJ_EXPR  , EvalIsbComObjExpr);
-    InstallPrintStatFunc( T_ASS_COMOBJ_NAME  , PrintAssComObjName);
-    InstallPrintStatFunc( T_ASS_COMOBJ_EXPR  , PrintAssComObjExpr);
-    InstallPrintStatFunc( T_UNB_COMOBJ_NAME  , PrintUnbComObjName);
-    InstallPrintStatFunc( T_UNB_COMOBJ_EXPR  , PrintUnbComObjExpr);
-    InstallPrintExprFunc( T_ELM_COMOBJ_NAME  , PrintElmComObjName);
-    InstallPrintExprFunc( T_ELM_COMOBJ_EXPR  , PrintElmComObjExpr);
-    InstallPrintExprFunc( T_ISB_COMOBJ_NAME  , PrintIsbComObjName);
-    InstallPrintExprFunc( T_ISB_COMOBJ_EXPR  , PrintIsbComObjExpr);
+    InstallExecStatFunc( STAT_ASS_COMOBJ_NAME  , ExecAssComObjName);
+    InstallExecStatFunc( STAT_ASS_COMOBJ_EXPR  , ExecAssComObjExpr);
+    InstallExecStatFunc( STAT_UNB_COMOBJ_NAME  , ExecUnbComObjName);
+    InstallExecStatFunc( STAT_UNB_COMOBJ_EXPR  , ExecUnbComObjExpr);
+    InstallEvalExprFunc( EXPR_ELM_COMOBJ_NAME  , EvalElmComObjName);
+    InstallEvalExprFunc( EXPR_ELM_COMOBJ_EXPR  , EvalElmComObjExpr);
+    InstallEvalExprFunc( EXPR_ISB_COMOBJ_NAME  , EvalIsbComObjName);
+    InstallEvalExprFunc( EXPR_ISB_COMOBJ_EXPR  , EvalIsbComObjExpr);
+    InstallPrintStatFunc( STAT_ASS_COMOBJ_NAME  , PrintAssComObjName);
+    InstallPrintStatFunc( STAT_ASS_COMOBJ_EXPR  , PrintAssComObjExpr);
+    InstallPrintStatFunc( STAT_UNB_COMOBJ_NAME  , PrintUnbComObjName);
+    InstallPrintStatFunc( STAT_UNB_COMOBJ_EXPR  , PrintUnbComObjExpr);
+    InstallPrintExprFunc( EXPR_ELM_COMOBJ_NAME  , PrintElmComObjName);
+    InstallPrintExprFunc( EXPR_ELM_COMOBJ_EXPR  , PrintElmComObjExpr);
+    InstallPrintExprFunc( EXPR_ISB_COMOBJ_NAME  , PrintIsbComObjName);
+    InstallPrintExprFunc( EXPR_ISB_COMOBJ_EXPR  , PrintIsbComObjExpr);
 
 #ifdef USE_GASMAN
     /* install before and after actions for garbage collections            */

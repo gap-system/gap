@@ -118,11 +118,11 @@ static Obj ProfileEvalBoolPassthrough(Expr stat)
 {
     /* There are two cases we must pass through without touching */
     /* From TNUM_EXPR */
-    if (IS_REFLVAR(stat)) {
-        return OriginalEvalBoolFuncsForHook[T_REFLVAR](stat);
+    if (IS_REF_LVAR(stat)) {
+        return OriginalEvalBoolFuncsForHook[EXPR_REF_LVAR](stat);
     }
     if (IS_INTEXPR(stat)) {
-        return OriginalEvalBoolFuncsForHook[T_INTEXPR](stat);
+        return OriginalEvalBoolFuncsForHook[EXPR_INT](stat);
     }
     GAP_HOOK_LOOP(visitStat, stat);
     return OriginalEvalBoolFuncsForHook[TNUM_STAT(stat)](stat);

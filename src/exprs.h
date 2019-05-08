@@ -22,14 +22,14 @@
 
 /****************************************************************************
 **
-*F  OBJ_REFLVAR(<expr>) . . . . . . . . . . . value of a reference to a local
+*F  OBJ_REF_LVAR(<expr>) . . . . . . . . . . . value of a reference to a local
 **
-**  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
+**  'OBJ_REF_LVAR'  returns  the value of  the reference  to a  local variable
 **  <expr>.
 */
-EXPORT_INLINE Obj OBJ_REFLVAR(Expr expr)
+EXPORT_INLINE Obj OBJ_REF_LVAR(Expr expr)
 {
-    Int lvar = LVAR_REFLVAR(expr);
+    Int lvar = LVAR_REF_LVAR(expr);
     if (OBJ_LVAR(lvar) != 0) {
         return OBJ_LVAR(lvar);
     }
@@ -88,8 +88,8 @@ extern Obj (*EvalExprFuncs[256])(Expr expr);
 
 EXPORT_INLINE Obj EVAL_EXPR(Expr expr)
 {
-    if (IS_REFLVAR(expr)) {
-        return OBJ_REFLVAR(expr);
+    if (IS_REF_LVAR(expr)) {
+        return OBJ_REF_LVAR(expr);
     }
     else if (IS_INTEXPR(expr)) {
         return OBJ_INTEXPR(expr);

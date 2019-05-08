@@ -873,47 +873,47 @@ static Int InitKernel (
     InitHandlerFunc( DoPartialUnWrapFunc, "pUW");
 
     /* install the evaluators and executors                                */
-    InstallExecStatFunc( T_PROCCALL_0ARGS , ExecProccall0args);
-    InstallExecStatFunc( T_PROCCALL_1ARGS , ExecProccall1args);
-    InstallExecStatFunc( T_PROCCALL_2ARGS , ExecProccall2args);
-    InstallExecStatFunc( T_PROCCALL_3ARGS , ExecProccall3args);
-    InstallExecStatFunc( T_PROCCALL_4ARGS , ExecProccall4args);
-    InstallExecStatFunc( T_PROCCALL_5ARGS , ExecProccall5args);
-    InstallExecStatFunc( T_PROCCALL_6ARGS , ExecProccall6args);
-    InstallExecStatFunc( T_PROCCALL_XARGS , ExecProccallXargs);
-    InstallExecStatFunc( T_PROCCALL_OPTS  , ExecProccallOpts);
+    InstallExecStatFunc( STAT_PROCCALL_0ARGS , ExecProccall0args);
+    InstallExecStatFunc( STAT_PROCCALL_1ARGS , ExecProccall1args);
+    InstallExecStatFunc( STAT_PROCCALL_2ARGS , ExecProccall2args);
+    InstallExecStatFunc( STAT_PROCCALL_3ARGS , ExecProccall3args);
+    InstallExecStatFunc( STAT_PROCCALL_4ARGS , ExecProccall4args);
+    InstallExecStatFunc( STAT_PROCCALL_5ARGS , ExecProccall5args);
+    InstallExecStatFunc( STAT_PROCCALL_6ARGS , ExecProccall6args);
+    InstallExecStatFunc( STAT_PROCCALL_XARGS , ExecProccallXargs);
+    InstallExecStatFunc( STAT_PROCCALL_OPTS  , ExecProccallOpts);
 
-    InstallEvalExprFunc( T_FUNCCALL_0ARGS , EvalFunccall0args);
-    InstallEvalExprFunc( T_FUNCCALL_1ARGS , EvalFunccall1args);
-    InstallEvalExprFunc( T_FUNCCALL_2ARGS , EvalFunccall2args);
-    InstallEvalExprFunc( T_FUNCCALL_3ARGS , EvalFunccall3args);
-    InstallEvalExprFunc( T_FUNCCALL_4ARGS , EvalFunccall4args);
-    InstallEvalExprFunc( T_FUNCCALL_5ARGS , EvalFunccall5args);
-    InstallEvalExprFunc( T_FUNCCALL_6ARGS , EvalFunccall6args);
-    InstallEvalExprFunc( T_FUNCCALL_XARGS , EvalFunccallXargs);
-    InstallEvalExprFunc( T_FUNCCALL_OPTS  , EvalFunccallOpts);
-    InstallEvalExprFunc( T_FUNC_EXPR      , EvalFuncExpr);
+    InstallEvalExprFunc( EXPR_FUNCCALL_0ARGS , EvalFunccall0args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_1ARGS , EvalFunccall1args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_2ARGS , EvalFunccall2args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_3ARGS , EvalFunccall3args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_4ARGS , EvalFunccall4args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_5ARGS , EvalFunccall5args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_6ARGS , EvalFunccall6args);
+    InstallEvalExprFunc( EXPR_FUNCCALL_XARGS , EvalFunccallXargs);
+    InstallEvalExprFunc( EXPR_FUNCCALL_OPTS  , EvalFunccallOpts);
+    InstallEvalExprFunc( EXPR_FUNC      , EvalFuncExpr);
 
     /* install the printers                                                */
-    InstallPrintStatFunc( T_PROCCALL_0ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_1ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_2ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_3ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_4ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_5ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_6ARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_XARGS , PrintProccall);
-    InstallPrintStatFunc( T_PROCCALL_OPTS  , PrintProccallOpts);
-    InstallPrintExprFunc( T_FUNCCALL_0ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_1ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_2ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_3ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_4ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_5ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_6ARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_XARGS , PrintFunccall);
-    InstallPrintExprFunc( T_FUNCCALL_OPTS  , PrintFunccallOpts);
-    InstallPrintExprFunc( T_FUNC_EXPR      , PrintFuncExpr);
+    InstallPrintStatFunc( STAT_PROCCALL_0ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_1ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_2ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_3ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_4ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_5ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_6ARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_XARGS , PrintProccall);
+    InstallPrintStatFunc( STAT_PROCCALL_OPTS  , PrintProccallOpts);
+    InstallPrintExprFunc( EXPR_FUNCCALL_0ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_1ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_2ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_3ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_4ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_5ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_6ARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_XARGS , PrintFunccall);
+    InstallPrintExprFunc( EXPR_FUNCCALL_OPTS  , PrintFunccallOpts);
+    InstallPrintExprFunc( EXPR_FUNC      , PrintFuncExpr);
 
     /* return success                                                      */
     return 0;
