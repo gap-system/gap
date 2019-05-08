@@ -51,7 +51,7 @@ gap> testit := function(f)
 >   return test_tree( f );
 > end;;
 
-# T_PROCCALL_0ARGS
+# STAT_PROCCALL_0ARGS
 gap> testit(function(x) x(); end);
 rec(
   nams := [ "x" ],
@@ -62,15 +62,15 @@ rec(
               args := [  ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_0ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_0ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_1ARGS
+# STAT_PROCCALL_1ARGS
 gap> testit(function(x) x(1); end);
 rec(
   nams := [ "x" ],
@@ -79,19 +79,19 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_1ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_1ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_2ARGS
+# STAT_PROCCALL_2ARGS
 gap> testit(function(x) x(1,2); end);
 rec(
   nams := [ "x" ],
@@ -100,21 +100,21 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_2ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_2ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_3ARGS
+# STAT_PROCCALL_3ARGS
 gap> testit(function(x) x(1,2,3); end);
 rec(
   nams := [ "x" ],
@@ -123,23 +123,23 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 3 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_3ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_3ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_4ARGS
+# STAT_PROCCALL_4ARGS
 gap> testit(function(x) x(1,2,3,4); end);
 rec(
   nams := [ "x" ],
@@ -148,25 +148,25 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 3 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 4 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_4ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_4ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_5ARGS
+# STAT_PROCCALL_5ARGS
 gap> testit(function(x) x(1,2,3,4,5); end);
 rec(
   nams := [ "x" ],
@@ -175,27 +175,27 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 3 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 4 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 5 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_5ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_5ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_6ARGS
+# STAT_PROCCALL_6ARGS
 gap> testit(function(x) x(1,2,3,4,5,6); end);
 rec(
   nams := [ "x" ],
@@ -204,29 +204,29 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 3 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 4 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 5 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 6 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_6ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_6ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_XARGS
+# STAT_PROCCALL_XARGS
 gap> testit(function(x) x(1,2,3,4,5,6,7); end);
 rec(
   nams := [ "x" ],
@@ -235,31 +235,31 @@ rec(
   stats := rec(
       statements := [ rec(
               args := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 3 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 4 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 5 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 6 ), rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 7 ) ],
               funcref := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_PROCCALL_XARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_PROCCALL_XARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROCCALL_OPTS
+# STAT_PROCCALL_OPTS
 gap> testit(function(x) x(1 : opt); end);
 rec(
   nams := [ "x" ],
@@ -269,22 +269,22 @@ rec(
       statements := [ rec(
               call := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_PROCCALL_1ARGS" ),
+                      type := "EXPR_REF_LVAR" ),
+                  type := "STAT_PROCCALL_1ARGS" ),
               opts := rec(
                   keyvalue := [ rec(
                           key := "opt",
                           value := rec(
-                              type := "T_TRUE_EXPR" ) ) ],
-                  type := "T_REC_EXPR" ),
-              type := "T_PROCCALL_OPTS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                              type := "EXPR_TRUE" ) ) ],
+                  type := "EXPR_REC" ),
+              type := "STAT_PROCCALL_OPTS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) x(1 : opt := 42); end);
@@ -296,27 +296,27 @@ rec(
       statements := [ rec(
               call := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_PROCCALL_1ARGS" ),
+                      type := "EXPR_REF_LVAR" ),
+                  type := "STAT_PROCCALL_1ARGS" ),
               opts := rec(
                   keyvalue := [ rec(
                           key := "opt",
                           value := rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 42 ) ) ],
-                  type := "T_REC_EXPR" ),
-              type := "T_PROCCALL_OPTS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REC" ),
+              type := "STAT_PROCCALL_OPTS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_EMPTY
+# STAT_EMPTY
 gap> testit(function(x) ; end);
 rec(
   nams := [ "x" ],
@@ -324,14 +324,14 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_EMPTY" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_EMPTY" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT
+# STAT_SEQ_STAT
 gap> testit(function(x) return; end);
 rec(
   nams := [ "x" ],
@@ -339,9 +339,9 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) if x then return; return; return; return; return; return; return; return; fi; end);
@@ -354,26 +354,26 @@ rec(
               branches := [ rec(
                       body := rec(
                           statements := [ rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ), rec(
-                                  type := "T_RETURN_VOID" ) ],
-                          type := "T_SEQ_STAT" ),
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ), rec(
+                                  type := "STAT_RETURN_VOID" ) ],
+                          type := "STAT_SEQ_STAT" ),
                       condition := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ) ) ],
-              type := "T_IF" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_REF_LVAR" ) ) ],
+              type := "STAT_IF" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT2
+# STAT_SEQ_STAT2
 gap> testit(function(x) return; return; end);
 rec(
   nams := [ "x" ],
@@ -381,14 +381,14 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT3
+# STAT_SEQ_STAT3
 gap> testit(function(x) return; return; return; end);
 rec(
   nams := [ "x" ],
@@ -396,15 +396,15 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT3" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT3" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT4
+# STAT_SEQ_STAT4
 gap> testit(function(x) return; return; return; return; end);
 rec(
   nams := [ "x" ],
@@ -412,16 +412,16 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT4" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT4" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT5
+# STAT_SEQ_STAT5
 gap> testit(function(x) return; return; return; return; return; end);
 rec(
   nams := [ "x" ],
@@ -429,17 +429,17 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT5" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT5" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT6
+# STAT_SEQ_STAT6
 gap> testit(function(x) return; return; return; return; return; return; end);
 rec(
   nams := [ "x" ],
@@ -447,18 +447,18 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT6" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT6" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SEQ_STAT7
+# STAT_SEQ_STAT7
 gap> testit(function(x) return; return; return; return; return; return; return; end);
 rec(
   nams := [ "x" ],
@@ -466,23 +466,23 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT7" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT7" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
 # 
-# T_IF
-# T_IF_ELSE
-# T_IF_ELIF
-# T_IF_ELIF_ELSE
+# STAT_IF
+# STAT_IF_ELSE
+# STAT_IF_ELIF
+# STAT_IF_ELIF_ELSE
 gap> testit(function(x) if x then fi; end);
 rec(
   nams := [ "x" ],
@@ -492,14 +492,14 @@ rec(
       statements := [ rec(
               branches := [ rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ) ) ],
-              type := "T_IF" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_REF_LVAR" ) ) ],
+              type := "STAT_IF" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) if x then else fi; end);
@@ -511,18 +511,18 @@ rec(
       statements := [ rec(
               branches := [ rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
-                          type := "T_TRUE_EXPR" ) ) ],
-              type := "T_IF_ELSE" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_TRUE" ) ) ],
+              type := "STAT_IF_ELSE" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x,y) if x then elif y then fi; end);
@@ -534,19 +534,19 @@ rec(
       statements := [ rec(
               branches := [ rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 2,
-                          type := "T_REFLVAR" ) ) ],
-              type := "T_IF_ELIF" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_REF_LVAR" ) ) ],
+              type := "STAT_IF_ELIF" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x,y) if x then elif y then else fi; end);
@@ -558,23 +558,23 @@ rec(
       statements := [ rec(
               branches := [ rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 2,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
-                          type := "T_TRUE_EXPR" ) ) ],
-              type := "T_IF_ELIF_ELSE" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_TRUE" ) ) ],
+              type := "STAT_IF_ELIF_ELSE" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x,y,z) if x then elif y then elif z then else fi; end);
@@ -586,34 +586,34 @@ rec(
       statements := [ rec(
               branches := [ rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 2,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
                           lvar := 3,
-                          type := "T_REFLVAR" ) ), rec(
+                          type := "EXPR_REF_LVAR" ) ), rec(
                       body := rec(
-                          type := "T_EMPTY" ),
+                          type := "STAT_EMPTY" ),
                       condition := rec(
-                          type := "T_TRUE_EXPR" ) ) ],
-              type := "T_IF_ELIF_ELSE" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_TRUE" ) ) ],
+              type := "STAT_IF_ELIF_ELSE" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FOR
-# T_FOR2
-# T_FOR3
+# STAT_FOR
+# STAT_FOR2
+# STAT_FOR3
 gap> testit(function(x) for x in x do od; end);
 rec(
   nams := [ "x" ],
@@ -622,17 +622,17 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_EMPTY" ) ],
+                      type := "STAT_EMPTY" ) ],
               collection := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_FOR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_FOR",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in x do return; od; end);
@@ -643,17 +643,17 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ) ],
               collection := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_FOR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_FOR",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in x do return; return; od; end);
@@ -664,18 +664,18 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               collection := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_FOR2",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_FOR2",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in x do return; return; return; od; end);
@@ -686,19 +686,19 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               collection := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_FOR3",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_FOR3",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in x do return; return; return; return; od; end);
@@ -710,27 +710,27 @@ rec(
       statements := [ rec(
               body := [ rec(
                       statements := [ rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ) ],
-                      type := "T_SEQ_STAT4" ) ],
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ) ],
+                      type := "STAT_SEQ_STAT4" ) ],
               collection := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_FOR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_FOR",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FOR_RANGE
-# T_FOR_RANGE2
-# T_FOR_RANGE3
+# STAT_FOR_RANGE
+# STAT_FOR_RANGE2
+# STAT_FOR_RANGE3
 gap> testit(function(x) for x in [1..2] do od; end);
 rec(
   nams := [ "x" ],
@@ -739,22 +739,22 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_EMPTY" ) ],
+                      type := "STAT_EMPTY" ) ],
               collection := rec(
                   first := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   last := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ),
-                  type := "T_RANGE_EXPR" ),
-              type := "T_FOR_RANGE",
+                  type := "EXPR_RANGE" ),
+              type := "STAT_FOR_RANGE",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in [1..2] do return; od; end);
@@ -765,22 +765,22 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ) ],
               collection := rec(
                   first := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   last := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ),
-                  type := "T_RANGE_EXPR" ),
-              type := "T_FOR_RANGE",
+                  type := "EXPR_RANGE" ),
+              type := "STAT_FOR_RANGE",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in [1..2] do return; return; od; end);
@@ -791,23 +791,23 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               collection := rec(
                   first := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   last := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ),
-                  type := "T_RANGE_EXPR" ),
-              type := "T_FOR_RANGE2",
+                  type := "EXPR_RANGE" ),
+              type := "STAT_FOR_RANGE2",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in [1..2] do return; return; return; od; end);
@@ -818,24 +818,24 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               collection := rec(
                   first := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   last := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ),
-                  type := "T_RANGE_EXPR" ),
-              type := "T_FOR_RANGE3",
+                  type := "EXPR_RANGE" ),
+              type := "STAT_FOR_RANGE3",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) for x in [1..2] do return; return; return; return; od; end);
@@ -847,32 +847,32 @@ rec(
       statements := [ rec(
               body := [ rec(
                       statements := [ rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ) ],
-                      type := "T_SEQ_STAT4" ) ],
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ) ],
+                      type := "STAT_SEQ_STAT4" ) ],
               collection := rec(
                   first := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   last := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 2 ),
-                  type := "T_RANGE_EXPR" ),
-              type := "T_FOR_RANGE",
+                  type := "EXPR_RANGE" ),
+              type := "STAT_FOR_RANGE",
               variable := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ) ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ) ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_WHILE
-# T_WHILE2
-# T_WHILE3
+# STAT_WHILE
+# STAT_WHILE2
+# STAT_WHILE3
 gap> testit(function(x) while true do od; end);
 rec(
   nams := [ "x" ],
@@ -881,13 +881,13 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_EMPTY" ) ],
+                      type := "STAT_EMPTY" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_WHILE" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_WHILE" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) while true do return; od; end);
@@ -898,13 +898,13 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_WHILE" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_WHILE" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) while true do return; return; od; end);
@@ -915,14 +915,14 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_WHILE2" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_WHILE2" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) while true do return; return; return; od; end);
@@ -933,15 +933,15 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_WHILE3" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_WHILE3" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) while true do return; return; return; return; od; end);
@@ -953,23 +953,23 @@ rec(
       statements := [ rec(
               body := [ rec(
                       statements := [ rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ) ],
-                      type := "T_SEQ_STAT4" ) ],
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ) ],
+                      type := "STAT_SEQ_STAT4" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_WHILE" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_WHILE" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_REPEAT
-# T_REPEAT2
-# T_REPEAT3
+# STAT_REPEAT
+# STAT_REPEAT2
+# STAT_REPEAT3
 gap> testit(function(x) repeat until true; end);
 rec(
   nams := [ "x" ],
@@ -978,13 +978,13 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_EMPTY" ) ],
+                      type := "STAT_EMPTY" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) repeat return; until true; end);
@@ -995,13 +995,13 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) repeat return; return; until true; end);
@@ -1012,14 +1012,14 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT2" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT2" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) repeat return; return; return; until true; end);
@@ -1030,15 +1030,15 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ), rec(
-                      type := "T_RETURN_VOID" ) ],
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ), rec(
+                      type := "STAT_RETURN_VOID" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT3" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT3" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) repeat return; return; return; return; until true; end);
@@ -1050,21 +1050,21 @@ rec(
       statements := [ rec(
               body := [ rec(
                       statements := [ rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ), rec(
-                              type := "T_RETURN_VOID" ) ],
-                      type := "T_SEQ_STAT4" ) ],
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ), rec(
+                              type := "STAT_RETURN_VOID" ) ],
+                      type := "STAT_SEQ_STAT4" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ATOMIC
+# STAT_ATOMIC
 #@if IsHPCGAP
 gap> testit(function(x) atomic x do od; end);
 rec(
@@ -1074,21 +1074,21 @@ rec(
   stats := rec(
       statements := [ rec(
               body := rec(
-                  type := "T_EMPTY" ),
+                  type := "STAT_EMPTY" ),
               locks := [ rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 0 ), rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ) ],
-              type := "T_ATOMIC" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ) ],
+              type := "STAT_ATOMIC" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 #@fi
 
-# T_BREAK
+# STAT_BREAK
 gap> testit(function(x) repeat break; until true; end);
 rec(
   nams := [ "x" ],
@@ -1097,17 +1097,17 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_BREAK" ) ],
+                      type := "STAT_BREAK" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_CONTINUE
+# STAT_CONTINUE
 gap> testit(function(x) repeat continue; until true; end);
 rec(
   nams := [ "x" ],
@@ -1116,17 +1116,17 @@ rec(
   stats := rec(
       statements := [ rec(
               body := [ rec(
-                      type := "T_CONTINUE" ) ],
+                      type := "STAT_CONTINUE" ) ],
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_REPEAT" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_REPEAT" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_RETURN_OBJ
+# STAT_RETURN_OBJ
 gap> testit(function(x) return 42; end);
 rec(
   nams := [ "x" ],
@@ -1135,15 +1135,15 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 42 ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_RETURN_VOID
+# STAT_RETURN_VOID
 gap> testit(function(x) return; end);
 rec(
   nams := [ "x" ],
@@ -1151,13 +1151,13 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_LVAR
+# STAT_ASS_LVAR
 gap> testit(function(x) x := 1; end);
 rec(
   nams := [ "x" ],
@@ -1167,16 +1167,16 @@ rec(
       statements := [ rec(
               lvar := 1,
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_LVAR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_LVAR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_LVAR
+# STAT_UNB_LVAR
 gap> testit(function(x) Unbind(x); end);
 rec(
   nams := [ "x" ],
@@ -1185,14 +1185,14 @@ rec(
   stats := rec(
       statements := [ rec(
               lvar := 1,
-              type := "T_UNB_LVAR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_LVAR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_HVAR
+# STAT_ASS_HVAR
 gap> testit(x -> function(y) x := 1; end);
 rec(
   nams := [ "x" ],
@@ -1208,20 +1208,20 @@ rec(
                       statements := [ rec(
                               hvar := 65537,
                               rhs := rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 1 ),
-                              type := "T_ASS_HVAR" ), rec(
-                              type := "T_RETURN_VOID" ) ],
-                      type := "T_SEQ_STAT2" ),
-                  type := "T_FUNC_EXPR",
+                              type := "STAT_ASS_HVAR" ), rec(
+                              type := "STAT_RETURN_VOID" ) ],
+                      type := "STAT_SEQ_STAT2" ),
+                  type := "EXPR_FUNC",
                   variadic := false ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_HVAR
+# STAT_UNB_HVAR
 gap> testit(x -> function(y) Unbind(x); end);
 rec(
   nams := [ "x" ],
@@ -1236,18 +1236,18 @@ rec(
                   stats := rec(
                       statements := [ rec(
                               hvar := 65537,
-                              type := "T_UNB_HVAR" ), rec(
-                              type := "T_RETURN_VOID" ) ],
-                      type := "T_SEQ_STAT2" ),
-                  type := "T_FUNC_EXPR",
+                              type := "STAT_UNB_HVAR" ), rec(
+                              type := "STAT_RETURN_VOID" ) ],
+                      type := "STAT_SEQ_STAT2" ),
+                  type := "EXPR_FUNC",
                   variadic := false ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_GVAR
+# STAT_ASS_GVAR
 gap> testit(function(x) testit := 1; end);
 rec(
   nams := [ "x" ],
@@ -1257,16 +1257,16 @@ rec(
       statements := [ rec(
               gvar := "testit",
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_GVAR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_GVAR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_GVAR
+# STAT_UNB_GVAR
 gap> testit(function(x) Unbind(testit); end);
 rec(
   nams := [ "x" ],
@@ -1275,14 +1275,14 @@ rec(
   stats := rec(
       statements := [ rec(
               gvar := "testit",
-              type := "T_UNB_GVAR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_GVAR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_LIST
+# STAT_ASS_LIST
 gap> testit(function(x) x[42] := 1; end);
 rec(
   nams := [ "x" ],
@@ -1292,21 +1292,21 @@ rec(
       statements := [ rec(
               list := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               pos := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 42 ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_LIST" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_LIST" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS2_LIST
+# STAT_ASS2_LIST
 gap> testit(function(x) x[42,23] := 1; end);
 rec(
   nams := [ "x" ],
@@ -1316,21 +1316,21 @@ rec(
       statements := [ rec(
               list := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               pos := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 42 ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 23 ),
-              type := "T_ASS2_LIST" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS2_LIST" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASSS_LIST
+# STAT_ASSS_LIST
 gap> testit(function(x) x{[42]} := 1; end);
 rec(
   nams := [ "x" ],
@@ -1340,23 +1340,23 @@ rec(
       statements := [ rec(
               list := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               poss := rec(
                   list := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 42 ) ],
-                  type := "T_LIST_EXPR" ),
+                  type := "EXPR_LIST" ),
               rhss := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASSS_LIST" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASSS_LIST" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_LIST_LEV
+# STAT_ASS_LIST_LEV
 gap> testit(function(x) x{[42]}[23] := 1; end);
 rec(
   nams := [ "x" ],
@@ -1368,27 +1368,27 @@ rec(
               lists := rec(
                   list := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   poss := rec(
                       list := [ rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 42 ) ],
-                      type := "T_LIST_EXPR" ),
-                  type := "T_ELMS_LIST" ),
+                      type := "EXPR_LIST" ),
+                  type := "EXPR_ELMS_LIST" ),
               pos := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 23 ),
               rhss := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_LIST_LEV" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_LIST_LEV" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASSS_LIST_LEV
+# STAT_ASSS_LIST_LEV
 gap> testit(function(x) x{[42]}{[23]} := 1; end);
 rec(
   nams := [ "x" ],
@@ -1400,29 +1400,29 @@ rec(
               lists := rec(
                   list := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   poss := rec(
                       list := [ rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 42 ) ],
-                      type := "T_LIST_EXPR" ),
-                  type := "T_ELMS_LIST" ),
+                      type := "EXPR_LIST" ),
+                  type := "EXPR_ELMS_LIST" ),
               poss := rec(
                   list := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 23 ) ],
-                  type := "T_LIST_EXPR" ),
+                  type := "EXPR_LIST" ),
               rhss := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASSS_LIST_LEV" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASSS_LIST_LEV" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_LIST
+# STAT_UNB_LIST
 gap> testit(function(x) Unbind(x[42]); end);
 rec(
   nams := [ "x" ],
@@ -1432,18 +1432,18 @@ rec(
       statements := [ rec(
               list := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               pos := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 42 ),
-              type := "T_UNB_LIST" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_LIST" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_REC_NAME
+# STAT_ASS_REC_NAME
 gap> testit(function(x) x.abc := 1; end);
 rec(
   nams := [ "x" ],
@@ -1453,19 +1453,19 @@ rec(
       statements := [ rec(
               record := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
               rnam := "abc",
-              type := "T_ASS_REC_NAME" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_REC_NAME" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_REC_EXPR
+# STAT_ASS_REC_EXPR
 gap> testit(function(x) x.("x") := 1; end);
 rec(
   nams := [ "x" ],
@@ -1474,18 +1474,18 @@ rec(
   stats := rec(
       statements := [ rec(
               expression := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "x" ),
               record := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_REC_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_REC_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) x.(1) := 1; end);
@@ -1496,22 +1496,22 @@ rec(
   stats := rec(
       statements := [ rec(
               expression := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
               record := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_REC_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_REC_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_REC_NAME
+# STAT_UNB_REC_NAME
 gap> testit(function(x) Unbind(x.abc); end);
 rec(
   nams := [ "x" ],
@@ -1521,16 +1521,16 @@ rec(
       statements := [ rec(
               record := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rnam := "abc",
-              type := "T_UNB_REC_NAME" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_REC_NAME" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_REC_EXPR
+# STAT_UNB_REC_EXPR
 gap> testit(function(x) Unbind(x.("x")); end);
 rec(
   nams := [ "x" ],
@@ -1539,15 +1539,15 @@ rec(
   stats := rec(
       statements := [ rec(
               expression := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "x" ),
               record := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_UNB_REC_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_UNB_REC_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) Unbind(x.(1)); end);
@@ -1558,19 +1558,19 @@ rec(
   stats := rec(
       statements := [ rec(
               expression := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
               record := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_UNB_REC_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_UNB_REC_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_POSOBJ
+# STAT_ASS_POSOBJ
 gap> testit(function(x) x![42] := 1; end);
 rec(
   nams := [ "x" ],
@@ -1579,22 +1579,22 @@ rec(
   stats := rec(
       statements := [ rec(
               pos := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 42 ),
               posobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_POSOBJ" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_POSOBJ" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_POSOBJ
+# STAT_UNB_POSOBJ
 gap> testit(function(x) Unbind(x![42]); end);
 rec(
   nams := [ "x" ],
@@ -1603,19 +1603,19 @@ rec(
   stats := rec(
       statements := [ rec(
               pos := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 42 ),
               posobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_UNB_POSOBJ" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_UNB_POSOBJ" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_COMOBJ_NAME
+# STAT_ASS_COMOBJ_NAME
 gap> testit(function(x) x!.abc := 1; end);
 rec(
   nams := [ "x" ],
@@ -1625,19 +1625,19 @@ rec(
       statements := [ rec(
               comobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
               rnam := "abc",
-              type := "T_ASS_COMOBJ_NAME" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_COMOBJ_NAME" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASS_COMOBJ_EXPR
+# STAT_ASS_COMOBJ_EXPR
 gap> testit(function(x) x!.("x") := 1; end);
 rec(
   nams := [ "x" ],
@@ -1647,17 +1647,17 @@ rec(
       statements := [ rec(
               comobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               expression := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "x" ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_COMOBJ_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_COMOBJ_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) x!.(1) := 1; end);
@@ -1669,21 +1669,21 @@ rec(
       statements := [ rec(
               comobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               expression := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
               rhs := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_ASS_COMOBJ_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASS_COMOBJ_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_COMOBJ_NAME
+# STAT_UNB_COMOBJ_NAME
 gap> testit(function(x) Unbind(x!.abc); end);
 rec(
   nams := [ "x" ],
@@ -1693,16 +1693,16 @@ rec(
       statements := [ rec(
               comobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               rnam := "abc",
-              type := "T_UNB_COMOBJ_NAME" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_COMOBJ_NAME" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_UNB_COMOBJ_EXPR
+# STAT_UNB_COMOBJ_EXPR
 gap> testit(function(x) Unbind(x!.("x")); end);
 rec(
   nams := [ "x" ],
@@ -1712,14 +1712,14 @@ rec(
       statements := [ rec(
               comobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               expression := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "x" ),
-              type := "T_UNB_COMOBJ_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_COMOBJ_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(x) Unbind(x!.(1)); end);
@@ -1731,18 +1731,18 @@ rec(
       statements := [ rec(
               comobj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
+                  type := "EXPR_REF_LVAR" ),
               expression := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_UNB_COMOBJ_EXPR" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_UNB_COMOBJ_EXPR" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_INFO
+# STAT_INFO
 gap> testit(function(x) Info(1, "test"); end);
 rec(
   nams := [ "x" ],
@@ -1752,19 +1752,19 @@ rec(
       statements := [ rec(
               args := [  ],
               lev := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "test" ),
               sel := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_INFO" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_INFO" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASSERT_2ARGS
+# STAT_ASSERT_2ARGS
 gap> testit(function(x) Assert(0, true); end);
 rec(
   nams := [ "x" ],
@@ -1773,18 +1773,18 @@ rec(
   stats := rec(
       statements := [ rec(
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
+                  type := "EXPR_TRUE" ),
               level := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 0 ),
-              type := "T_ASSERT_2ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASSERT_2ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ASSERT_3ARGS
+# STAT_ASSERT_3ARGS
 gap> testit(function(x) Assert(0, true, "message"); end);
 rec(
   nams := [ "x" ],
@@ -1793,17 +1793,17 @@ rec(
   stats := rec(
       statements := [ rec(
               condition := rec(
-                  type := "T_TRUE_EXPR" ),
+                  type := "EXPR_TRUE" ),
               level := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 0 ),
               message := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "message" ),
-              type := "T_ASSERT_3ARGS" ), rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT2" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_ASSERT_3ARGS" ), rec(
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT2" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
@@ -1812,7 +1812,7 @@ true
 #
 
 #
-# T_FUNCCALL_0ARGS
+# EXPR_FUNCCALL_0ARGS
 gap> testit(x -> x());
 rec(
   nams := [ "x" ],
@@ -1824,15 +1824,15 @@ rec(
                   args := [  ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_0ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_0ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_1ARGS
+# EXPR_FUNCCALL_1ARGS
 gap> testit(x -> x(1));
 rec(
   nams := [ "x" ],
@@ -1842,19 +1842,19 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_1ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_1ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_2ARGS
+# EXPR_FUNCCALL_2ARGS
 gap> testit(x -> x(1,2));
 rec(
   nams := [ "x" ],
@@ -1864,21 +1864,21 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_2ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_2ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_3ARGS
+# EXPR_FUNCCALL_3ARGS
 gap> testit(x -> x(1,2,3));
 rec(
   nams := [ "x" ],
@@ -1888,23 +1888,23 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 3 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_3ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_3ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_4ARGS
+# EXPR_FUNCCALL_4ARGS
 gap> testit(x -> x(1,2,3,4));
 rec(
   nams := [ "x" ],
@@ -1914,25 +1914,25 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 3 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 4 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_4ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_4ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_5ARGS
+# EXPR_FUNCCALL_5ARGS
 gap> testit(x -> x(1,2,3,4,5));
 rec(
   nams := [ "x" ],
@@ -1942,27 +1942,27 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 3 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 4 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 5 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_5ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_5ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_6ARGS
+# EXPR_FUNCCALL_6ARGS
 gap> testit(x -> x(1,2,3,4,5,6));
 rec(
   nams := [ "x" ],
@@ -1972,29 +1972,29 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 3 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 4 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 5 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 6 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_6ARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_6ARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_XARGS
+# EXPR_FUNCCALL_XARGS
 gap> testit(x -> x(1,2,3,4,5,6,7));
 rec(
   nams := [ "x" ],
@@ -2004,31 +2004,31 @@ rec(
       statements := [ rec(
               obj := rec(
                   args := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 3 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 4 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 5 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 6 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 7 ) ],
                   funcref := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_FUNCCALL_XARGS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_FUNCCALL_XARGS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNC_EXPR
+# EXPR_FUNC
 gap> testit(function(x) local y, z; end);
 rec(
   nams := [ "x", "y", "z" ],
@@ -2036,9 +2036,9 @@ rec(
   nloc := 2,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(function(arg) end);
@@ -2048,9 +2048,9 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := true )
 true
 gap> testit(function(x,y...) end);
@@ -2060,9 +2060,9 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := true )
 true
 gap> testit(function(x1,x2,x3,x4,x5,x6,x7,x8,x9) end);
@@ -2072,9 +2072,9 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
-              type := "T_RETURN_VOID" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_VOID" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> y -> [x,y]); # nested functions
@@ -2093,21 +2093,21 @@ rec(
                               obj := rec(
                                   list := [ rec(
                                           hvar := 65537,
-                                          type := "T_REF_HVAR" ), rec(
+                                          type := "EXPR_REF_HVAR" ), rec(
                                           lvar := 1,
-                                          type := "T_REFLVAR" ) ],
-                                  type := "T_LIST_EXPR" ),
-                              type := "T_RETURN_OBJ" ) ],
-                      type := "T_SEQ_STAT" ),
-                  type := "T_FUNC_EXPR",
+                                          type := "EXPR_REF_LVAR" ) ],
+                                  type := "EXPR_LIST" ),
+                              type := "STAT_RETURN_OBJ" ) ],
+                      type := "STAT_SEQ_STAT" ),
+                  type := "EXPR_FUNC",
                   variadic := false ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FUNCCALL_OPTS
+# EXPR_FUNCCALL_OPTS
 gap> testit(x -> x(1 : opt));
 rec(
   nams := [ "x" ],
@@ -2118,22 +2118,22 @@ rec(
               obj := rec(
                   call := rec(
                       args := [ rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 1 ) ],
                       funcref := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ),
-                      type := "T_FUNCCALL_1ARGS" ),
+                          type := "EXPR_REF_LVAR" ),
+                      type := "EXPR_FUNCCALL_1ARGS" ),
                   opts := rec(
                       keyvalue := [ rec(
                               key := "opt",
                               value := rec(
-                                  type := "T_TRUE_EXPR" ) ) ],
-                      type := "T_REC_EXPR" ),
-                  type := "T_FUNCCALL_OPTS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                                  type := "EXPR_TRUE" ) ) ],
+                      type := "EXPR_REC" ),
+                  type := "EXPR_FUNCCALL_OPTS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> x(1 : opt := 42));
@@ -2146,27 +2146,27 @@ rec(
               obj := rec(
                   call := rec(
                       args := [ rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 1 ) ],
                       funcref := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ),
-                      type := "T_FUNCCALL_1ARGS" ),
+                          type := "EXPR_REF_LVAR" ),
+                      type := "EXPR_FUNCCALL_1ARGS" ),
                   opts := rec(
                       keyvalue := [ rec(
                               key := "opt",
                               value := rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 42 ) ) ],
-                      type := "T_REC_EXPR" ),
-                  type := "T_FUNCCALL_OPTS" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REC" ),
+                  type := "EXPR_FUNCCALL_OPTS" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_OR
+# EXPR_OR
 gap> testit({x,y} -> x or y);
 rec(
   nams := [ "x", "y" ],
@@ -2177,18 +2177,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_OR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_OR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_AND
+# EXPR_AND
 gap> testit({x,y} -> x and y);
 rec(
   nams := [ "x", "y" ],
@@ -2199,18 +2199,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_AND" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_AND" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_NOT
+# EXPR_NOT
 gap> testit(x -> not x);
 rec(
   nams := [ "x" ],
@@ -2221,15 +2221,15 @@ rec(
               obj := rec(
                   op := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_NOT" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_NOT" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_EQ
+# EXPR_EQ
 gap> testit({x,y} -> x = y);
 rec(
   nams := [ "x", "y" ],
@@ -2240,18 +2240,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_EQ" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_EQ" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_NE
+# EXPR_NE
 gap> testit({x,y} -> x <> y);
 rec(
   nams := [ "x", "y" ],
@@ -2262,18 +2262,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_NE" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_NE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_LT
+# EXPR_LT
 gap> testit({x,y} -> x < y);
 rec(
   nams := [ "x", "y" ],
@@ -2284,18 +2284,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_LT" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_LT" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_GE
+# EXPR_GE
 gap> testit({x,y} -> x >= y);
 rec(
   nams := [ "x", "y" ],
@@ -2306,18 +2306,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_GE" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_GE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_GT
+# EXPR_GT
 gap> testit({x,y} -> x > y);
 rec(
   nams := [ "x", "y" ],
@@ -2328,18 +2328,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_GT" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_GT" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_LE
+# EXPR_LE
 gap> testit({x,y} -> x <= y);
 rec(
   nams := [ "x", "y" ],
@@ -2350,18 +2350,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_LE" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_LE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_IN
+# EXPR_IN
 gap> testit({x,y} -> x in y);
 rec(
   nams := [ "x", "y" ],
@@ -2372,18 +2372,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_IN" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_IN" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_SUM
+# EXPR_SUM
 gap> testit({x,y} -> x + y);
 rec(
   nams := [ "x", "y" ],
@@ -2394,18 +2394,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_SUM" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_SUM" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_AINV
+# EXPR_AINV
 gap> testit(x -> -x);
 rec(
   nams := [ "x" ],
@@ -2416,15 +2416,15 @@ rec(
               obj := rec(
                   op := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_AINV" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_AINV" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_DIFF
+# EXPR_DIFF
 gap> testit({x,y} -> x - y);
 rec(
   nams := [ "x", "y" ],
@@ -2435,18 +2435,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_DIFF" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_DIFF" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PROD
+# EXPR_PROD
 gap> testit({x,y} -> x * y);
 rec(
   nams := [ "x", "y" ],
@@ -2457,18 +2457,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_PROD" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_PROD" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_QUO
+# EXPR_QUO
 gap> testit({x,y} -> x / y);
 rec(
   nams := [ "x", "y" ],
@@ -2479,18 +2479,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_QUO" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_QUO" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_MOD
+# EXPR_MOD
 gap> testit({x,y} -> x mod y);
 rec(
   nams := [ "x", "y" ],
@@ -2501,18 +2501,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_MOD" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_MOD" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_POW
+# EXPR_POW
 gap> testit({x,y} -> x ^ y);
 rec(
   nams := [ "x", "y" ],
@@ -2523,18 +2523,18 @@ rec(
               obj := rec(
                   left := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   right := rec(
                       lvar := 2,
-                      type := "T_REFLVAR" ),
-                  type := "T_POW" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_POW" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_INTEXPR
+# EXPR_INT
 gap> testit(x -> 1);
 rec(
   nams := [ "x" ],
@@ -2543,15 +2543,15 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_INTEXPR",
+                  type := "EXPR_INT",
                   value := 1 ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_INT_EXPR
+# EXPR_INTPOS
 gap> testit(x -> 12345678901234567890);
 rec(
   nams := [ "x" ],
@@ -2560,15 +2560,15 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_INT_EXPR",
+                  type := "EXPR_INTPOS",
                   value := 12345678901234567890 ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_TRUE_EXPR
+# EXPR_TRUE
 gap> testit(x -> true);
 rec(
   nams := [ "x" ],
@@ -2577,14 +2577,14 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_TRUE_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TRUE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FALSE_EXPR
+# EXPR_FALSE
 gap> testit(x -> false);
 rec(
   nams := [ "x" ],
@@ -2593,14 +2593,14 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_FALSE_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_FALSE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_TILDE_EXPR
+# EXPR_TILDE
 gap> [ testit(x -> ~) ];
 rec(
   nams := [ "x" ],
@@ -2609,14 +2609,14 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_TILDE_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_TILDE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 [ true ]
 
-# T_CHAR_EXPR
+# EXPR_CHAR
 gap> testit(x -> 'a');
 rec(
   nams := [ "x" ],
@@ -2625,16 +2625,16 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_CHAR_EXPR",
+                  type := "EXPR_CHAR",
                   value := 'a' ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_PERM_EXPR
-# T_PERM_CYCLE
+# EXPR_PERM
+# EXPR_PERM_CYCLE
 gap> testit(x -> (1,2)(3,4,5));
 rec(
   nams := [ "x" ],
@@ -2645,27 +2645,27 @@ rec(
               obj := rec(
                   cycles := [ rec(
                           points := [ rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 1 ), rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 2 ) ],
-                          type := "T_PERM_CYCLE" ), rec(
+                          type := "EXPR_PERM_CYCLE" ), rec(
                           points := [ rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 3 ), rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 4 ), rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 5 ) ],
-                          type := "T_PERM_CYCLE" ) ],
-                  type := "T_PERM_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_PERM_CYCLE" ) ],
+                  type := "EXPR_PERM" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_LIST_EXPR
+# EXPR_LIST
 gap> testit(x -> []);
 rec(
   nams := [ "x" ],
@@ -2675,10 +2675,10 @@ rec(
       statements := [ rec(
               obj := rec(
                   list := [  ],
-                  type := "T_LIST_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> [1,2]);
@@ -2690,14 +2690,14 @@ rec(
       statements := [ rec(
               obj := rec(
                   list := [ rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 1 ), rec(
-                          type := "T_INTEXPR",
+                          type := "EXPR_INT",
                           value := 2 ) ],
-                  type := "T_LIST_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit( x -> [, [] ] );
@@ -2710,15 +2710,15 @@ rec(
               obj := rec(
                   list := [ , rec(
                           list := [  ],
-                          type := "T_LIST_EXPR" ) ],
-                  type := "T_LIST_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_LIST" ) ],
+                  type := "EXPR_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_LIST_TILDE_EXPR
+# EXPR_LIST_TILDE
 gap> testit(x -> [~]);
 rec(
   nams := [ "x" ],
@@ -2728,15 +2728,15 @@ rec(
       statements := [ rec(
               obj := rec(
                   list := [ rec(
-                          type := "T_TILDE_EXPR" ) ],
-                  type := "T_LIST_TILDE_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_TILDE" ) ],
+                  type := "EXPR_LIST_TILDE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_RANGE_EXPR
+# EXPR_RANGE
 gap> testit(x -> [1..x]);
 rec(
   nams := [ "x" ],
@@ -2746,19 +2746,19 @@ rec(
       statements := [ rec(
               obj := rec(
                   first := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   last := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_RANGE_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_RANGE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_STRING_EXPR
+# EXPR_STRING
 gap> testit(x -> "abc");
 rec(
   nams := [ "x" ],
@@ -2767,15 +2767,15 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_STRING_EXPR",
+                  type := "EXPR_STRING",
                   value := "abc" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_REC_EXPR
+# EXPR_REC
 gap> testit(x -> rec( abc := 1 ));
 rec(
   nams := [ "x" ],
@@ -2787,12 +2787,12 @@ rec(
                   keyvalue := [ rec(
                           key := "abc",
                           value := rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 1 ) ) ],
-                  type := "T_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REC" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> rec( (x) := 1 ));
@@ -2806,14 +2806,14 @@ rec(
                   keyvalue := [ rec(
                           key := rec(
                               lvar := 1,
-                              type := "T_REFLVAR" ),
+                              type := "EXPR_REF_LVAR" ),
                           value := rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 1 ) ) ],
-                  type := "T_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REC" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> rec( ("abc") := 1 ));
@@ -2826,15 +2826,15 @@ rec(
               obj := rec(
                   keyvalue := [ rec(
                           key := rec(
-                              type := "T_STRING_EXPR",
+                              type := "EXPR_STRING",
                               value := "abc" ),
                           value := rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 1 ) ) ],
-                  type := "T_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REC" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> rec( (1) := 1 )); # this gets optimized
@@ -2848,16 +2848,16 @@ rec(
                   keyvalue := [ rec(
                           key := "1",
                           value := rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 1 ) ) ],
-                  type := "T_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REC" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_REC_TILDE_EXPR
+# EXPR_REC_TILDE
 gap> testit(x -> [~]);
 rec(
   nams := [ "x" ],
@@ -2867,15 +2867,15 @@ rec(
       statements := [ rec(
               obj := rec(
                   list := [ rec(
-                          type := "T_TILDE_EXPR" ) ],
-                  type := "T_LIST_TILDE_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                          type := "EXPR_TILDE" ) ],
+                  type := "EXPR_LIST_TILDE" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FLOAT_EXPR_EAGER
+# EXPR_FLOAT_EAGER
 gap> testit(x -> 1.0_);
 rec(
   nams := [ "x" ],
@@ -2886,15 +2886,15 @@ rec(
               obj := rec(
                   mark := '\000',
                   string := "1.0",
-                  type := "T_FLOAT_EXPR_EAGER",
+                  type := "EXPR_FLOAT_EAGER",
                   value := 1. ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_FLOAT_EXPR_LAZY
+# EXPR_FLOAT_LAZY
 gap> testit(x -> 1.0);
 rec(
   nams := [ "x" ],
@@ -2903,15 +2903,15 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  type := "T_FLOAT_EXPR_LAZY",
+                  type := "EXPR_FLOAT_LAZY",
                   value := "1.0" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_REFLVAR
+# EXPR_REF_LVAR
 gap> testit(x -> x);
 rec(
   nams := [ "x" ],
@@ -2921,14 +2921,14 @@ rec(
       statements := [ rec(
               obj := rec(
                   lvar := 1,
-                  type := "T_REFLVAR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_LVAR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_LVAR
+# EXPR_ISB_LVAR
 gap> testit(x -> IsBound(x));
 rec(
   nams := [ "x" ],
@@ -2938,14 +2938,14 @@ rec(
       statements := [ rec(
               obj := rec(
                   lvar := 1,
-                  type := "T_ISB_LVAR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ISB_LVAR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_REF_HVAR
+# EXPR_REF_HVAR
 gap> testit(x -> y -> x);
 rec(
   nams := [ "x" ],
@@ -2961,18 +2961,18 @@ rec(
                       statements := [ rec(
                               obj := rec(
                                   hvar := 65537,
-                                  type := "T_REF_HVAR" ),
-                              type := "T_RETURN_OBJ" ) ],
-                      type := "T_SEQ_STAT" ),
-                  type := "T_FUNC_EXPR",
+                                  type := "EXPR_REF_HVAR" ),
+                              type := "STAT_RETURN_OBJ" ) ],
+                      type := "STAT_SEQ_STAT" ),
+                  type := "EXPR_FUNC",
                   variadic := false ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_HVAR
+# EXPR_ISB_HVAR
 gap> testit(x -> y -> IsBound(x));
 rec(
   nams := [ "x" ],
@@ -2988,18 +2988,18 @@ rec(
                       statements := [ rec(
                               obj := rec(
                                   hvar := 65537,
-                                  type := "T_ISB_HVAR" ),
-                              type := "T_RETURN_OBJ" ) ],
-                      type := "T_SEQ_STAT" ),
-                  type := "T_FUNC_EXPR",
+                                  type := "EXPR_ISB_HVAR" ),
+                              type := "STAT_RETURN_OBJ" ) ],
+                      type := "STAT_SEQ_STAT" ),
+                  type := "EXPR_FUNC",
                   variadic := false ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_REF_GVAR
+# EXPR_REF_GVAR
 gap> testit(x -> testit);
 rec(
   nams := [ "x" ],
@@ -3009,14 +3009,14 @@ rec(
       statements := [ rec(
               obj := rec(
                   gvar := "testit",
-                  type := "T_REF_GVAR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_REF_GVAR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_GVAR
+# EXPR_ISB_GVAR
 gap> testit(x -> IsBound(testit));
 rec(
   nams := [ "x" ],
@@ -3026,14 +3026,14 @@ rec(
       statements := [ rec(
               obj := rec(
                   gvar := "testit",
-                  type := "T_ISB_GVAR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ISB_GVAR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_LIST
+# EXPR_ELM_LIST
 gap> testit(x -> x[42]);
 rec(
   nams := [ "x" ],
@@ -3044,18 +3044,18 @@ rec(
               obj := rec(
                   list := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   pos := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 42 ),
-                  type := "T_ELM_LIST" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ELM_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM2_LIST
+# EXPR_ELM2_LIST
 gap> testit(x -> x[42,23]);
 rec(
   nams := [ "x" ],
@@ -3066,21 +3066,21 @@ rec(
               obj := rec(
                   list := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   pos1 := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 42 ),
                   pos2 := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 23 ),
-                  type := "T_ELM2_LIST" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ELM2_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELMS_LIST
+# EXPR_ELMS_LIST
 gap> testit(x -> x{[42]});
 rec(
   nams := [ "x" ],
@@ -3091,20 +3091,20 @@ rec(
               obj := rec(
                   list := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   poss := rec(
                       list := [ rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 42 ) ],
-                      type := "T_LIST_EXPR" ),
-                  type := "T_ELMS_LIST" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_LIST" ),
+                  type := "EXPR_ELMS_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_LIST_LEV
+# EXPR_ELM_LIST_LEV
 gap> testit(x -> x{[42]}[23]);
 rec(
   nams := [ "x" ],
@@ -3114,29 +3114,29 @@ rec(
       statements := [ rec(
               obj := rec(
                   level := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 0 ),
                   lists := rec(
                       list := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ),
+                          type := "EXPR_REF_LVAR" ),
                       poss := rec(
                           list := [ rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 42 ) ],
-                          type := "T_LIST_EXPR" ),
-                      type := "T_ELMS_LIST" ),
+                          type := "EXPR_LIST" ),
+                      type := "EXPR_ELMS_LIST" ),
                   pos := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 23 ),
-                  type := "T_ELM_LIST_LEV" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ELM_LIST_LEV" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELMS_LIST_LEV
+# EXPR_ELMS_LIST_LEV
 gap> testit(x -> x{[42]}{[23]});
 rec(
   nams := [ "x" ],
@@ -3146,31 +3146,31 @@ rec(
       statements := [ rec(
               obj := rec(
                   level := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 0 ),
                   lists := rec(
                       list := rec(
                           lvar := 1,
-                          type := "T_REFLVAR" ),
+                          type := "EXPR_REF_LVAR" ),
                       poss := rec(
                           list := [ rec(
-                                  type := "T_INTEXPR",
+                                  type := "EXPR_INT",
                                   value := 42 ) ],
-                          type := "T_LIST_EXPR" ),
-                      type := "T_ELMS_LIST" ),
+                          type := "EXPR_LIST" ),
+                      type := "EXPR_ELMS_LIST" ),
                   poss := rec(
                       list := [ rec(
-                              type := "T_INTEXPR",
+                              type := "EXPR_INT",
                               value := 23 ) ],
-                      type := "T_LIST_EXPR" ),
-                  type := "T_ELMS_LIST_LEV" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_LIST" ),
+                  type := "EXPR_ELMS_LIST_LEV" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_LIST
+# EXPR_ISB_LIST
 gap> testit(x -> IsBound(x[42]));
 rec(
   nams := [ "x" ],
@@ -3181,18 +3181,18 @@ rec(
               obj := rec(
                   list := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   pos := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 42 ),
-                  type := "T_ISB_LIST" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ISB_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_REC_NAME
+# EXPR_ELM_REC_NAME
 gap> testit(x -> x.abc);
 rec(
   nams := [ "x" ],
@@ -3204,15 +3204,15 @@ rec(
                   name := "abc",
                   record := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ELM_REC_NAME" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ELM_REC_NAME" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_REC_EXPR
+# EXPR_ELM_REC_EXPR
 gap> testit(x -> x.("x"));
 rec(
   nams := [ "x" ],
@@ -3222,15 +3222,15 @@ rec(
       statements := [ rec(
               obj := rec(
                   expression := rec(
-                      type := "T_STRING_EXPR",
+                      type := "EXPR_STRING",
                       value := "x" ),
                   record := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ELM_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ELM_REC_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> x.(1));
@@ -3242,19 +3242,19 @@ rec(
       statements := [ rec(
               obj := rec(
                   expression := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   record := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ELM_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ELM_REC_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_REC_NAME
+# EXPR_ISB_REC_NAME
 gap> testit(x -> IsBound(x.abc));
 rec(
   nams := [ "x" ],
@@ -3266,15 +3266,15 @@ rec(
                   name := "abc",
                   record := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ISB_REC_NAME" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ISB_REC_NAME" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_REC_EXPR
+# EXPR_ISB_REC_EXPR
 gap> testit(x -> IsBound(x.("x")));
 rec(
   nams := [ "x" ],
@@ -3284,15 +3284,15 @@ rec(
       statements := [ rec(
               obj := rec(
                   expression := rec(
-                      type := "T_STRING_EXPR",
+                      type := "EXPR_STRING",
                       value := "x" ),
                   record := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ISB_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ISB_REC_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> IsBound(x.(1)));
@@ -3304,19 +3304,19 @@ rec(
       statements := [ rec(
               obj := rec(
                   expression := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
                   record := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ISB_REC_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ISB_REC_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_POSOBJ
+# EXPR_ELM_POSOBJ
 gap> testit(x -> x![42]);
 rec(
   nams := [ "x" ],
@@ -3326,19 +3326,19 @@ rec(
       statements := [ rec(
               obj := rec(
                   pos := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 42 ),
                   posobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ELM_POSOBJ" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ELM_POSOBJ" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_POSOBJ
+# EXPR_ISB_POSOBJ
 gap> testit(x -> IsBound(x![42]));
 rec(
   nams := [ "x" ],
@@ -3348,19 +3348,19 @@ rec(
       statements := [ rec(
               obj := rec(
                   pos := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 42 ),
                   posobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
-                  type := "T_ISB_POSOBJ" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                      type := "EXPR_REF_LVAR" ),
+                  type := "EXPR_ISB_POSOBJ" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_COMOBJ_NAME
+# EXPR_ELM_COMOBJ_NAME
 gap> testit(x -> x!.abc);
 rec(
   nams := [ "x" ],
@@ -3371,16 +3371,16 @@ rec(
               obj := rec(
                   comobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   name := "abc",
-                  type := "T_ELM_COMOBJ_NAME" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ELM_COMOBJ_NAME" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ELM_COMOBJ_EXPR
+# EXPR_ELM_COMOBJ_EXPR
 gap> testit(x -> x!.("x"));
 rec(
   nams := [ "x" ],
@@ -3391,14 +3391,14 @@ rec(
               obj := rec(
                   comobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   expression := rec(
-                      type := "T_STRING_EXPR",
+                      type := "EXPR_STRING",
                       value := "x" ),
-                  type := "T_ELM_COMOBJ_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ELM_COMOBJ_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> x!.(1));
@@ -3411,18 +3411,18 @@ rec(
               obj := rec(
                   comobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   expression := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
-                  type := "T_ELM_COMOBJ_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ELM_COMOBJ_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_COMOBJ_NAME
+# EXPR_ISB_COMOBJ_NAME
 gap> testit(x -> IsBound(x!.abc));
 rec(
   nams := [ "x" ],
@@ -3433,16 +3433,16 @@ rec(
               obj := rec(
                   comobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   name := "abc",
-                  type := "T_ISB_COMOBJ_NAME" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ISB_COMOBJ_NAME" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 
-# T_ISB_COMOBJ_EXPR
+# EXPR_ISB_COMOBJ_EXPR
 gap> testit(x -> IsBound(x!.("x")));
 rec(
   nams := [ "x" ],
@@ -3453,14 +3453,14 @@ rec(
               obj := rec(
                   comobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   expression := rec(
-                      type := "T_STRING_EXPR",
+                      type := "EXPR_STRING",
                       value := "x" ),
-                  type := "T_ISB_COMOBJ_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ISB_COMOBJ_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true
 gap> testit(x -> IsBound(x!.(1)));
@@ -3473,13 +3473,13 @@ rec(
               obj := rec(
                   comobj := rec(
                       lvar := 1,
-                      type := "T_REFLVAR" ),
+                      type := "EXPR_REF_LVAR" ),
                   expression := rec(
-                      type := "T_INTEXPR",
+                      type := "EXPR_INT",
                       value := 1 ),
-                  type := "T_ISB_COMOBJ_EXPR" ),
-              type := "T_RETURN_OBJ" ) ],
-      type := "T_SEQ_STAT" ),
-  type := "T_FUNC_EXPR",
+                  type := "EXPR_ISB_COMOBJ_EXPR" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
   variadic := false )
 true

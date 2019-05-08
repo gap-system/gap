@@ -105,10 +105,10 @@ static const CompilerT Compilers[];
 #define ARGS_STAT(name) ARG(name, 0, 0, 1)
 
 // plain list mapping statement tnums to strings
-// like "T_INTEXPR"
+// like "EXPR_INT"
 static Obj typeStrings;
 
-// plain record mapping strings like "T_INTEXPR" to the
+// plain record mapping strings like "EXPR_INT" to the
 // corresponding statement tnum
 static Obj typeRec;
 
@@ -208,7 +208,7 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
             compiled = NEW_PLIST(T_PLIST, nr - offset);
             for (; i < nr; i++) {
                 Expr subexpr = READ_EXPR(expr, i);
-                // handle 0 to properly deal with T_LIST_EXPR
+                // handle 0 to properly deal with EXPR_LIST
                 Obj obj = subexpr ? SyntaxTreeCompiler(subexpr) : 0;
                 PushPlist(compiled, obj);
             }
@@ -310,16 +310,16 @@ static Expr SyntaxTreeCodeGVar(Obj name)
 
 static Obj SyntaxTreeRefLVar(Obj result, Expr expr)
 {
-    AssPRec(result, RNamName("lvar"), INTOBJ_INT(LVAR_REFLVAR(expr)));
+    AssPRec(result, RNamName("lvar"), INTOBJ_INT(LVAR_REF_LVAR(expr)));
     return result;
 }
 
 static Expr SyntaxTreeCodeRefLVar(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeRefLVar", node);
-    Obj lvar = ElmRecST(T_REFLVAR, node, "lvar");
+    Obj lvar = ElmRecST(EXPR_REF_LVAR, node, "lvar");
     RequireSmallInt("SyntaxTreeCodeRefLVar", lvar, "<lvar>");
-    return REFLVAR_LVAR(INT_INTOBJ(lvar));
+    return REF_LVAR_LVAR(INT_INTOBJ(lvar));
 }
 
 static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
@@ -368,17 +368,17 @@ static Expr SyntaxTreeCodeRangeExpr(Obj node)
     RequirePlainRec("SyntaxTreeCodeRangeExpr", node);
     UInt hassecond = ISB_REC(node, RNamName("second"));
     UInt size = hassecond ? 3 : 2;
-    Expr result = NewStatOrExpr(T_RANGE_EXPR, size * sizeof(Expr), 0);
+    Expr result = NewStatOrExpr(EXPR_RANGE, size * sizeof(Expr), 0);
     WRITE_EXPR(
         result, 0,
-        SyntaxTreeDefaultExprCoder(ElmRecST(T_RANGE_EXPR, node, "first")));
+        SyntaxTreeDefaultExprCoder(ElmRecST(EXPR_RANGE, node, "first")));
     WRITE_EXPR(
         result, size - 1,
-        SyntaxTreeDefaultExprCoder(ElmRecST(T_RANGE_EXPR, node, "last")));
+        SyntaxTreeDefaultExprCoder(ElmRecST(EXPR_RANGE, node, "last")));
     if (hassecond) {
         WRITE_EXPR(result, 1,
                    SyntaxTreeDefaultExprCoder(
-                       ElmRecST(T_RANGE_EXPR, node, "second")));
+                       ElmRecST(EXPR_RANGE, node, "second")));
     }
     return result;
 }
@@ -465,17 +465,17 @@ static Obj SyntaxTreeFloatEager(Obj result, Expr expr)
 static Expr SyntaxTreeCodeFloatLazy(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFloatLazy", node);
-    Obj value = ElmRecST(T_FLOAT_EXPR_LAZY, node, "value");
+    Obj value = ElmRecST(EXPR_FLOAT_LAZY, node, "value");
     return CodeLazyFloatExpr(value, 0);
 }
 
 static Expr SyntaxTreeCodeFloatEager(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFloatEager", node);
-    Obj  value = ElmRecST(T_FLOAT_EXPR_EAGER, node, "value");
-    Obj  string = ElmRecST(T_FLOAT_EXPR_EAGER, node, "string");
-    Obj  mark = ElmRecST(T_FLOAT_EXPR_EAGER, node, "mark");
-    Expr fl = NewStatOrExpr(T_FLOAT_EXPR_EAGER, 3 * sizeof(UInt), 0);
+    Obj  value = ElmRecST(EXPR_FLOAT_EAGER, node, "value");
+    Obj  string = ElmRecST(EXPR_FLOAT_EAGER, node, "string");
+    Obj  mark = ElmRecST(EXPR_FLOAT_EAGER, node, "mark");
+    Expr fl = NewStatOrExpr(EXPR_FLOAT_EAGER, 3 * sizeof(UInt), 0);
     WRITE_EXPR(fl, 0, AddValueToBody(value));
     WRITE_EXPR(fl, 1, AddValueToBody(string));
     WRITE_EXPR(fl, 2, (UInt)CHAR_VALUE(mark));
@@ -538,7 +538,7 @@ static Expr SyntaxTreeCodeIf(Obj node)
 static Expr SyntaxTreeCodeImmediateInteger(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeImmediateInteger", node);
-    Obj value = ElmRecST(T_INTEXPR, node, "value");
+    Obj value = ElmRecST(EXPR_INT, node, "value");
     RequireSmallInt("SyntaxTreeCodeImmediateInteger", value, "<node>.value");
     return INTEXPR_INT(INT_INTOBJ(value));
 }
@@ -557,9 +557,9 @@ static Expr SyntaxTreeCodeValue(Obj node)
 static Expr SyntaxTreeCodeChar(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeChar", node);
-    Obj  chr = ElmRecST(T_CHAR_EXPR, node, "value");
+    Obj  chr = ElmRecST(EXPR_CHAR, node, "value");
     Char currchar = CHAR_VALUE(chr);
-    Expr lit = NewStatOrExpr(T_CHAR_EXPR, sizeof(UChar), 0);
+    Expr lit = NewStatOrExpr(EXPR_CHAR, sizeof(UChar), 0);
     WRITE_EXPR(lit, 0, currchar);
     return lit;
 }
@@ -604,16 +604,16 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
 static UInt SyntaxTreeCodeFunc_Internal(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFunc_Internal", node);
-    Int narg = INT_INTOBJ(ElmRecST(T_FUNC_EXPR, node, "narg"));
-    Int nloc = INT_INTOBJ(ElmRecST(T_FUNC_EXPR, node, "nloc"));
-    Obj nams = ElmRecST(T_FUNC_EXPR, node, "nams");
-    Obj variadic = ElmRecST(T_FUNC_EXPR, node, "variadic");
+    Int narg = INT_INTOBJ(ElmRecST(EXPR_FUNC, node, "narg"));
+    Int nloc = INT_INTOBJ(ElmRecST(EXPR_FUNC, node, "nloc"));
+    Obj nams = ElmRecST(EXPR_FUNC, node, "nams");
+    Obj variadic = ElmRecST(EXPR_FUNC, node, "variadic");
     if (variadic == True) {
         narg = -narg;
     }
     CodeFuncExprBegin(narg, nloc, nams, 0);
-    Obj  stat_rec = ElmRecST(T_FUNC_EXPR, node, "stats");
-    Obj  body_stats = ElmRecST(T_FUNC_EXPR, stat_rec, "statements");
+    Obj  stat_rec = ElmRecST(EXPR_FUNC, node, "stats");
+    Obj  body_stats = ElmRecST(EXPR_FUNC, stat_rec, "statements");
     UInt nr_stats = LEN_LIST(body_stats);
     for (int i = 1; i <= nr_stats; i++) {
         Expr current = SyntaxTreeDefaultStatCoder(ELM_LIST(body_stats, i));
@@ -645,146 +645,146 @@ Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
 }
 
 static const CompilerT Compilers[] = {
-    COMPILER_(T_PROCCALL_0ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_1ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_2ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_3ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_4ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_5ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_6ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_PROCCALL_XARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_0ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_1ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_2ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_3ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_4ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_5ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_6ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(STAT_PROCCALL_XARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
 
-    COMPILER_(T_PROCCALL_OPTS, ARG_EXPR_("opts"), ARG_STAT_("call")),
+    COMPILER_(STAT_PROCCALL_OPTS, ARG_EXPR_("opts"), ARG_STAT_("call")),
 
-    COMPILER_(T_EMPTY),
+    COMPILER_(STAT_EMPTY),
 
-    COMPILER_(T_SEQ_STAT, ARGS_STAT("statements")),
-    COMPILER_(T_SEQ_STAT2, ARGS_STAT("statements")),
-    COMPILER_(T_SEQ_STAT3, ARGS_STAT("statements")),
-    COMPILER_(T_SEQ_STAT4, ARGS_STAT("statements")),
-    COMPILER_(T_SEQ_STAT5, ARGS_STAT("statements")),
-    COMPILER_(T_SEQ_STAT6, ARGS_STAT("statements")),
-    COMPILER_(T_SEQ_STAT7, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT2, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT3, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT4, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT5, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT6, ARGS_STAT("statements")),
+    COMPILER_(STAT_SEQ_STAT7, ARGS_STAT("statements")),
 
-    COMPILER(T_IF, SyntaxTreeIf, SyntaxTreeCodeIf),
-    COMPILER(T_IF_ELSE, SyntaxTreeIf, SyntaxTreeCodeIf),
-    COMPILER(T_IF_ELIF, SyntaxTreeIf, SyntaxTreeCodeIf),
-    COMPILER(T_IF_ELIF_ELSE, SyntaxTreeIf, SyntaxTreeCodeIf),
+    COMPILER(STAT_IF, SyntaxTreeIf, SyntaxTreeCodeIf),
+    COMPILER(STAT_IF_ELSE, SyntaxTreeIf, SyntaxTreeCodeIf),
+    COMPILER(STAT_IF_ELIF, SyntaxTreeIf, SyntaxTreeCodeIf),
+    COMPILER(STAT_IF_ELIF_ELSE, SyntaxTreeIf, SyntaxTreeCodeIf),
 
-    COMPILER_(T_FOR,
+    COMPILER_(STAT_FOR,
               ARG_EXPR_("variable"),
               ARG_EXPR_("collection"),
               ARGS_STAT("body")),
-    COMPILER_(T_FOR2,
+    COMPILER_(STAT_FOR2,
               ARG_EXPR_("variable"),
               ARG_EXPR_("collection"),
               ARGS_STAT("body")),
-    COMPILER_(T_FOR3,
-              ARG_EXPR_("variable"),
-              ARG_EXPR_("collection"),
-              ARGS_STAT("body")),
-
-    COMPILER_(T_FOR_RANGE,
-              ARG_EXPR_("variable"),
-              ARG_EXPR_("collection"),
-              ARGS_STAT("body")),
-    COMPILER_(T_FOR_RANGE2,
-              ARG_EXPR_("variable"),
-              ARG_EXPR_("collection"),
-              ARGS_STAT("body")),
-    COMPILER_(T_FOR_RANGE3,
+    COMPILER_(STAT_FOR3,
               ARG_EXPR_("variable"),
               ARG_EXPR_("collection"),
               ARGS_STAT("body")),
 
-    COMPILER_(T_WHILE, ARG_EXPR_("condition"), ARGS_STAT("body")),
-    COMPILER_(T_WHILE2, ARG_EXPR_("condition"), ARGS_STAT("body")),
-    COMPILER_(T_WHILE3, ARG_EXPR_("condition"), ARGS_STAT("body")),
+    COMPILER_(STAT_FOR_RANGE,
+              ARG_EXPR_("variable"),
+              ARG_EXPR_("collection"),
+              ARGS_STAT("body")),
+    COMPILER_(STAT_FOR_RANGE2,
+              ARG_EXPR_("variable"),
+              ARG_EXPR_("collection"),
+              ARGS_STAT("body")),
+    COMPILER_(STAT_FOR_RANGE3,
+              ARG_EXPR_("variable"),
+              ARG_EXPR_("collection"),
+              ARGS_STAT("body")),
 
-    COMPILER_(T_REPEAT, ARG_EXPR_("condition"), ARGS_STAT("body")),
-    COMPILER_(T_REPEAT2, ARG_EXPR_("condition"), ARGS_STAT("body")),
-    COMPILER_(T_REPEAT3, ARG_EXPR_("condition"), ARGS_STAT("body")),
+    COMPILER_(STAT_WHILE, ARG_EXPR_("condition"), ARGS_STAT("body")),
+    COMPILER_(STAT_WHILE2, ARG_EXPR_("condition"), ARGS_STAT("body")),
+    COMPILER_(STAT_WHILE3, ARG_EXPR_("condition"), ARGS_STAT("body")),
+
+    COMPILER_(STAT_REPEAT, ARG_EXPR_("condition"), ARGS_STAT("body")),
+    COMPILER_(STAT_REPEAT2, ARG_EXPR_("condition"), ARGS_STAT("body")),
+    COMPILER_(STAT_REPEAT3, ARG_EXPR_("condition"), ARGS_STAT("body")),
 
 #ifdef HPCGAP
-    COMPILER_(T_ATOMIC,
+    COMPILER_(STAT_ATOMIC,
               ARG_STAT_("body"),
               ARGS_EXPR("locks")),    // TODO: better output
 #endif
 
-    COMPILER_(T_BREAK),
-    COMPILER_(T_CONTINUE),
-    COMPILER_(T_RETURN_OBJ, ARG_EXPR_("obj")),
-    COMPILER_(T_RETURN_VOID),
+    COMPILER_(STAT_BREAK),
+    COMPILER_(STAT_CONTINUE),
+    COMPILER_(STAT_RETURN_OBJ, ARG_EXPR_("obj")),
+    COMPILER_(STAT_RETURN_VOID),
 
-    COMPILER_(T_ASS_LVAR,
+    COMPILER_(STAT_ASS_LVAR,
               ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_UNB_LVAR, ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(STAT_UNB_LVAR, ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt)),
 
-    COMPILER_(T_ASS_HVAR,
+    COMPILER_(STAT_ASS_HVAR,
               ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_UNB_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(STAT_UNB_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
 
-    COMPILER_(T_ASS_GVAR,
+    COMPILER_(STAT_ASS_GVAR,
               ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_UNB_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
+    COMPILER_(STAT_UNB_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
 
     COMPILER_(
-        T_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
+        STAT_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
     COMPILER_(
-        T_ASS2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
+        STAT_ASS2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
     COMPILER_(
-        T_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
-    COMPILER_(T_ASS_LIST_LEV,
+        STAT_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
+    COMPILER_(STAT_ASS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("pos"),
               ARG_EXPR_("rhss"),
               ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
-    COMPILER_(T_ASSS_LIST_LEV,
+    COMPILER_(STAT_ASSS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
               ARG_EXPR_("rhss"),
               ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
-    COMPILER_(T_UNB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
+    COMPILER_(STAT_UNB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
 
-    COMPILER_(T_ASS_REC_NAME,
+    COMPILER_(STAT_ASS_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_ASS_REC_EXPR,
+    COMPILER_(STAT_ASS_REC_EXPR,
               ARG_EXPR_("record"),
               ARG_EXPR_("expression"),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_UNB_REC_NAME,
+    COMPILER_(STAT_UNB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(T_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
 
-    COMPILER_(T_ASS_POSOBJ,
+    COMPILER_(STAT_ASS_POSOBJ,
               ARG_EXPR_("posobj"),
               ARG_EXPR_("pos"),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_UNB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
+    COMPILER_(STAT_UNB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
 
-    COMPILER_(T_ASS_COMOBJ_NAME,
+    COMPILER_(STAT_ASS_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_ASS_COMOBJ_EXPR,
+    COMPILER_(STAT_ASS_COMOBJ_EXPR,
               ARG_EXPR_("comobj"),
               ARG_EXPR_("expression"),
               ARG_EXPR_("rhs")),
-    COMPILER_(T_UNB_COMOBJ_NAME,
+    COMPILER_(STAT_UNB_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
     COMPILER_(
-        T_UNB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
+        STAT_UNB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 
-    COMPILER_(T_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
-    COMPILER_(T_ASSERT_2ARGS, ARG_EXPR_("level"), ARG_EXPR_("condition")),
-    COMPILER_(T_ASSERT_3ARGS,
+    COMPILER_(STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
+    COMPILER_(STAT_ASSERT_2ARGS, ARG_EXPR_("level"), ARG_EXPR_("condition")),
+    COMPILER_(STAT_ASSERT_3ARGS,
               ARG_EXPR_("level"),
               ARG_EXPR_("condition"),
               ARG_EXPR_("message")),
@@ -792,104 +792,104 @@ static const CompilerT Compilers[] = {
 
 
     /* Statements */
-    COMPILER_(T_FUNCCALL_0ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_1ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_2ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_3ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_4ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_5ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_6ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
-    COMPILER_(T_FUNCCALL_XARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_0ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_1ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_2ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_3ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_4ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_5ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_6ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
+    COMPILER_(EXPR_FUNCCALL_XARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
 
-    COMPILER(T_FUNC_EXPR, SyntaxTreeFuncExpr, SyntaxTreeCodeFunc),
+    COMPILER(EXPR_FUNC, SyntaxTreeFuncExpr, SyntaxTreeCodeFunc),
 
-    COMPILER_(T_FUNCCALL_OPTS, ARG_EXPR_("opts"), ARG_EXPR_("call")),
+    COMPILER_(EXPR_FUNCCALL_OPTS, ARG_EXPR_("opts"), ARG_EXPR_("call")),
 
 
-    COMPILER_(T_OR, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_AND, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_NOT, ARG_EXPR_("op")),
-    COMPILER_(T_EQ, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_NE, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_LT, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_GE, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_GT, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_LE, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_IN, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_SUM, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_AINV, ARG_EXPR_("op")),
-    COMPILER_(T_DIFF, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_PROD, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_QUO, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_MOD, ARG_EXPR_("left"), ARG_EXPR_("right")),
-    COMPILER_(T_POW, ARG_EXPR_("left"), ARG_EXPR_("right")),
-
-    COMPILER(
-        T_INTEXPR, SyntaxTreeEvalCompiler, SyntaxTreeCodeImmediateInteger),
-    COMPILER(T_INT_EXPR, SyntaxTreeEvalCompiler, SyntaxTreeCodeValue),
-    COMPILER_(T_TRUE_EXPR),
-    COMPILER_(T_FALSE_EXPR),
-    COMPILER_(T_TILDE_EXPR),
-    COMPILER(T_CHAR_EXPR, SyntaxTreeEvalCompiler, SyntaxTreeCodeChar),
-    COMPILER_(T_PERM_EXPR, ARGS_EXPR("cycles")),
-    COMPILER_(T_PERM_CYCLE, ARGS_EXPR("points")),
-    COMPILER_(T_LIST_EXPR, ARGS_EXPR("list")),
-    COMPILER_(T_LIST_TILDE_EXPR, ARGS_EXPR("list")),
-    COMPILER(T_RANGE_EXPR, SyntaxTreeRangeExpr, SyntaxTreeCodeRangeExpr),
-    COMPILER(T_STRING_EXPR, SyntaxTreeEvalCompiler, SyntaxTreeCodeValue),
-    COMPILER(T_REC_EXPR, SyntaxTreeRecExpr, SyntaxTreeCodeRecExpr),
-    COMPILER_(T_REC_TILDE_EXPR),
+    COMPILER_(EXPR_OR, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_AND, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_NOT, ARG_EXPR_("op")),
+    COMPILER_(EXPR_EQ, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_NE, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_LT, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_GE, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_GT, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_LE, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_IN, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_SUM, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_AINV, ARG_EXPR_("op")),
+    COMPILER_(EXPR_DIFF, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_PROD, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_QUO, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_MOD, ARG_EXPR_("left"), ARG_EXPR_("right")),
+    COMPILER_(EXPR_POW, ARG_EXPR_("left"), ARG_EXPR_("right")),
 
     COMPILER(
-        T_FLOAT_EXPR_EAGER, SyntaxTreeFloatEager, SyntaxTreeCodeFloatEager),
-    COMPILER(T_FLOAT_EXPR_LAZY, SyntaxTreeFloatLazy, SyntaxTreeCodeFloatLazy),
+        EXPR_INT, SyntaxTreeEvalCompiler, SyntaxTreeCodeImmediateInteger),
+    COMPILER(EXPR_INTPOS, SyntaxTreeEvalCompiler, SyntaxTreeCodeValue),
+    COMPILER_(EXPR_TRUE),
+    COMPILER_(EXPR_FALSE),
+    COMPILER_(EXPR_TILDE),
+    COMPILER(EXPR_CHAR, SyntaxTreeEvalCompiler, SyntaxTreeCodeChar),
+    COMPILER_(EXPR_PERM, ARGS_EXPR("cycles")),
+    COMPILER_(EXPR_PERM_CYCLE, ARGS_EXPR("points")),
+    COMPILER_(EXPR_LIST, ARGS_EXPR("list")),
+    COMPILER_(EXPR_LIST_TILDE, ARGS_EXPR("list")),
+    COMPILER(EXPR_RANGE, SyntaxTreeRangeExpr, SyntaxTreeCodeRangeExpr),
+    COMPILER(EXPR_STRING, SyntaxTreeEvalCompiler, SyntaxTreeCodeValue),
+    COMPILER(EXPR_REC, SyntaxTreeRecExpr, SyntaxTreeCodeRecExpr),
+    COMPILER_(EXPR_REC_TILDE),
 
-    // T_REFLVAR is encoded differently from all other
+    COMPILER(
+        EXPR_FLOAT_EAGER, SyntaxTreeFloatEager, SyntaxTreeCodeFloatEager),
+    COMPILER(EXPR_FLOAT_LAZY, SyntaxTreeFloatLazy, SyntaxTreeCodeFloatLazy),
+
+    // EXPR_REF_LVAR is encoded differently from all other
     //           references to LVARs, so we have to treat
     //           them specially here
-    COMPILER(T_REFLVAR, SyntaxTreeRefLVar, SyntaxTreeCodeRefLVar),
-    COMPILER_(T_ISB_LVAR, ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER(EXPR_REF_LVAR, SyntaxTreeRefLVar, SyntaxTreeCodeRefLVar),
+    COMPILER_(EXPR_ISB_LVAR, ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt)),
 
-    COMPILER_(T_REF_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
-    COMPILER_(T_ISB_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(EXPR_REF_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(EXPR_ISB_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
 
-    COMPILER_(T_REF_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
-    COMPILER_(T_ISB_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
+    COMPILER_(EXPR_REF_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
+    COMPILER_(EXPR_ISB_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
 
     // TODO: can this be unified?
-    COMPILER_(T_ELM_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
+    COMPILER_(EXPR_ELM_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
     COMPILER_(
-        T_ELM2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos1"), ARG_EXPR_("pos2")),
-    COMPILER_(T_ELMS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss")),
-    COMPILER_(T_ELM_LIST_LEV,
+        EXPR_ELM2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos1"), ARG_EXPR_("pos2")),
+    COMPILER_(EXPR_ELMS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss")),
+    COMPILER_(EXPR_ELM_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("pos"),
               ARG_EXPR_("level")),
-    COMPILER_(T_ELMS_LIST_LEV,
+    COMPILER_(EXPR_ELMS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
               ARG_EXPR_("level")),
-    COMPILER_(T_ISB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
-    COMPILER_(T_ELM_REC_NAME,
+    COMPILER_(EXPR_ISB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
+    COMPILER_(EXPR_ELM_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(T_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
-    COMPILER_(T_ISB_REC_NAME,
+    COMPILER_(EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(EXPR_ISB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(T_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
-    COMPILER_(T_ELM_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
-    COMPILER_(T_ISB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
-    COMPILER_(T_ELM_COMOBJ_NAME,
+    COMPILER_(EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(EXPR_ELM_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
+    COMPILER_(EXPR_ISB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
+    COMPILER_(EXPR_ELM_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
     COMPILER_(
-        T_ELM_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
-    COMPILER_(T_ISB_COMOBJ_NAME,
+        EXPR_ELM_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
+    COMPILER_(EXPR_ISB_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
     COMPILER_(
-        T_ISB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
+        EXPR_ISB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 };
 
 static Obj FuncSYNTAX_TREE(Obj self, Obj func)
@@ -900,7 +900,7 @@ static Obj FuncSYNTAX_TREE(Obj self, Obj func)
         RequireArgument("SYNTAX_TREE", func, "must be a plain GAP function");
     }
 
-    result = NewSyntaxTreeNode(T_FUNC_EXPR);
+    result = NewSyntaxTreeNode(EXPR_FUNC);
     return SyntaxTreeFunc(result, func);
 }
 

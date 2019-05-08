@@ -117,7 +117,7 @@ static Obj EvalUnknownBool(Expr expr)
 **  'EvalOr' evaluates the or-expression <expr> and  returns its value, i.e.,
 **  'true'  if  either of  the operands  is  'true',  and 'false'  otherwise.
 **  'EvalOr'  is   called from  'EVAL_EXPR' to  evaluate  expressions of type
-**  'T_OR'.
+**  'EXPR_OR'.
 **
 **  If '<expr>.left'  is   already  'true' 'EvalOr'  returns  'true'  without
 **  evaluating '<expr>.right'.  This allows constructs like
@@ -149,7 +149,7 @@ static Obj EvalOr(Expr expr)
 **  'EvalAnd'  evaluates  the and-expression <expr>   and  returns its value,
 **  i.e.,   'true'  if both  operands  are   'true',  and  'false' otherwise.
 **  'EvalAnd' is called from   'EVAL_EXPR' to  evaluate expressions  of  type
-**  'T_AND'.
+**  'EXPR_AND'.
 **
 **  If '<expr>.left' is  already  'false' 'EvalAnd' returns 'false'   without
 **  evaluating '<expr>.right'.  This allows constructs like
@@ -199,7 +199,7 @@ static Obj EvalAnd(Expr expr)
 **
 **  'EvalNot'  evaluates the  not-expression  <expr>  and returns its  value,
 **  i.e., 'true' if the operand is 'false', and 'false' otherwise.  'EvalNot'
-**  is called from 'EVAL_EXPR' to evaluate expressions of type 'T_NOT'.
+**  is called from 'EVAL_EXPR' to evaluate expressions of type 'EXPR_NOT'.
 */
 static Obj EvalNot(Expr expr)
 {
@@ -226,7 +226,7 @@ static Obj EvalNot(Expr expr)
 **  'EvalEq' evaluates the  equality-expression <expr> and returns its value,
 **  i.e.,  'true' if  the  operand '<expr>.left'   is equal  to  the  operand
 **  '<expr>.right'   and   'false'  otherwise.   'EvalEq'  is   called   from
-**  'EVAL_EXPR' to evaluate expressions of type 'T_EQ'.
+**  'EVAL_EXPR' to evaluate expressions of type 'EXPR_EQ'.
 **
 **  'EvalEq' evaluates the operands and then calls the 'EQ' macro.
 */
@@ -259,7 +259,7 @@ static Obj EvalEq(Expr expr)
 **  'EvalNe'   evaluates the  comparison-expression  <expr>  and  returns its
 **  value, i.e.,  'true'  if the operand   '<expr>.left' is not equal  to the
 **  operand  '<expr>.right' and  'false' otherwise.  'EvalNe'  is called from
-**  'EVAL_EXPR' to evaluate expressions of type 'T_LT'.
+**  'EVAL_EXPR' to evaluate expressions of type 'EXPR_LT'.
 **
 **  'EvalNe' is simply implemented as 'not <objL> = <objR>'.
 */
@@ -292,7 +292,7 @@ static Obj EvalNe(Expr expr)
 **  'EvalLt' evaluates  the  comparison-expression   <expr> and  returns  its
 **  value, i.e., 'true' if the operand '<expr>.left' is less than the operand
 **  '<expr>.right'  and  'false'   otherwise.    'EvalLt'  is   called   from
-**  'EVAL_EXPR' to evaluate expressions of type 'T_LT'.
+**  'EVAL_EXPR' to evaluate expressions of type 'EXPR_LT'.
 **
 **  'EvalLt' evaluates the operands and then calls the 'LT' macro.
 */
@@ -325,7 +325,7 @@ static Obj EvalLt(Expr expr)
 **  'EvalGe'  evaluates  the comparison-expression   <expr>  and returns  its
 **  value, i.e., 'true' if the operand '<expr>.left' is greater than or equal
 **  to the operand '<expr>.right' and 'false'  otherwise.  'EvalGe' is called
-**  from 'EVAL_EXPR' to evaluate expressions of type 'T_GE'.
+**  from 'EVAL_EXPR' to evaluate expressions of type 'EXPR_GE'.
 **
 **  'EvalGe' is simply implemented as 'not <objL> < <objR>'.
 */
@@ -358,7 +358,7 @@ static Obj EvalGe(Expr expr)
 **  'EvalGt'  evaluates  the  comparison-expression <expr>   and  returns its
 **  value, i.e.,  'true' if the  operand  '<expr>.left' is  greater than  the
 **  operand '<expr>.right' and 'false' otherwise.    'EvalGt' is called  from
-**  'EVAL_EXPR' to evaluate expressions of type 'T_GT'.
+**  'EVAL_EXPR' to evaluate expressions of type 'EXPR_GT'.
 **
 **  'EvalGt' is simply implemented as '<objR> < <objL>'.
 */
@@ -391,7 +391,7 @@ static Obj EvalGt(Expr expr)
 **  'EvalLe' evaluates   the comparison-expression   <expr> and  returns  its
 **  value, i.e., 'true' if the operand '<expr>.left' is  less or equal to the
 **  operand '<expr>.right' and 'false'   otherwise.  'EvalLe' is  called from
-**  'EVAL_EXPR' to evaluate expressions of type 'T_LE'.
+**  'EVAL_EXPR' to evaluate expressions of type 'EXPR_LE'.
 **
 **  'EvalLe' is simply implemented as 'not <objR> < <objR>'.
 */
@@ -424,7 +424,7 @@ static Obj EvalLe(Expr expr)
 **  'EvalIn' evaluates the in-expression <expr>  and returns its value, i.e.,
 **  'true' if  the  operand '<expr>.left'  is a  member of '<expr>.right' and
 **  'false' otherwise.    'EvalIn' is  called  from  'EVAL_EXPR'  to evaluate
-**  expressions of type 'T_IN'.
+**  expressions of type 'EXPR_IN'.
 */
 static Obj EvalIn(Expr expr)
 {
@@ -457,7 +457,7 @@ static Obj EvalIn(Expr expr)
 **  'EvalSum'  evaluates the  sum-expression  <expr> and  returns its  value,
 **  i.e., the sum of   the  two operands '<expr>.left'   and  '<expr>.right'.
 **  'EvalSum'   is called from 'EVAL_EXPR'   to  evaluate expressions of type
-**  'T_SUM'.
+**  'EXPR_SUM'.
 **
 **  'EvalSum' evaluates the operands and then calls the 'SUM' macro.
 */
@@ -494,7 +494,7 @@ static Obj EvalSum(Expr expr)
 **
 **  'EvalAInv' evaluates  the additive  inverse-expression  and  returns  its
 **  value, i.e., the  additive inverse of  the operand.  'EvalAInv' is called
-**  from 'EVAL_EXPR' to evaluate expressions of type 'T_AINV'.
+**  from 'EVAL_EXPR' to evaluate expressions of type 'EXPR_AINV'.
 **
 **  'EvalAInv' evaluates the operand and then calls the 'AINV' macro.
 */
@@ -524,7 +524,7 @@ static Obj EvalAInv(Expr expr)
 **  'EvalDiff'  evaluates  the difference-expression <expr>   and returns its
 **  value, i.e.,   the   difference of  the two  operands   '<expr>.left' and
 **  '<expr>.right'.  'EvalDiff'    is  called from   'EVAL_EXPR'  to evaluate
-**  expressions of type 'T_DIFF'.
+**  expressions of type 'EXPR_DIFF'.
 **
 **  'EvalDiff' evaluates the operands and then calls the 'DIFF' macro.
 */
@@ -562,7 +562,7 @@ static Obj EvalDiff(Expr expr)
 **  'EvalProd' evaluates the product-expression <expr>  and returns it value,
 **  i.e., the product of  the two operands '<expr>.left'  and '<expr>.right'.
 **  'EvalProd'  is called from   'EVAL_EXPR' to evaluate  expressions of type
-**  'T_PROD'.
+**  'EXPR_PROD'.
 **
 **  'EvalProd' evaluates the operands and then calls the 'PROD' macro.
 */
@@ -600,7 +600,7 @@ static Obj EvalProd(Expr expr)
 **  'EvalQuo' evaluates the quotient-expression <expr> and returns its value,
 **  i.e., the quotient of the  two operands '<expr>.left' and '<expr>.right'.
 **  'EvalQuo' is  called  from 'EVAL_EXPR' to   evaluate expressions  of type
-**  'T_QUO'.
+**  'EXPR_QUO'.
 **
 **  'EvalQuo' evaluates the operands and then calls the 'QUO' macro.
 */
@@ -633,7 +633,7 @@ static Obj EvalQuo(Expr expr)
 **  'EvalMod' evaluates the  remainder-expression   <expr> and returns    its
 **  value, i.e.,  the  remainder  of   the two  operands   '<expr>.left'  and
 **  '<expr>.right'.  'EvalMod'  is   called   from  'EVAL_EXPR'  to  evaluate
-**  expressions of type 'T_MOD'.
+**  expressions of type 'EXPR_MOD'.
 **
 **  'EvalMod' evaluates the operands and then calls the 'MOD' macro.
 */
@@ -666,7 +666,7 @@ static Obj EvalMod(Expr expr)
 **  'EvalPow'  evaluates the power-expression  <expr>  and returns its value,
 **  i.e.,   the power of the  two  operands '<expr>.left' and '<expr>.right'.
 **  'EvalPow' is called  from  'EVAL_EXPR'  to evaluate expressions  of  type
-**  'T_POW'.
+**  'EXPR_POW'.
 **
 **  'EvalPow' evaluates the operands and then calls the 'POW' macro.
 */
@@ -1337,21 +1337,21 @@ static void PrintBinop(Expr expr)
 
     /* select the new precedence level                                    */
     switch ( TNUM_EXPR(expr) ) {
-    case T_OR:     op = "or";   PrintPrecedence =  2;  break;
-    case T_AND:    op = "and";  PrintPrecedence =  4;  break;
-    case T_EQ:     op = "=";    PrintPrecedence =  8;  break;
-    case T_LT:     op = "<";    PrintPrecedence =  8;  break;
-    case T_GT:     op = ">";    PrintPrecedence =  8;  break;
-    case T_NE:     op = "<>";   PrintPrecedence =  8;  break;
-    case T_LE:     op = "<=";   PrintPrecedence =  8;  break;
-    case T_GE:     op = ">=";   PrintPrecedence =  8;  break;
-    case T_IN:     op = "in";   PrintPrecedence =  8;  break;
-    case T_SUM:    op = "+";    PrintPrecedence = 10;  break;
-    case T_DIFF:   op = "-";    PrintPrecedence = 10;  break;
-    case T_PROD:   op = "*";    PrintPrecedence = 12;  break;
-    case T_QUO:    op = "/";    PrintPrecedence = 12;  break;
-    case T_MOD:    op = "mod";  PrintPrecedence = 12;  break;
-    case T_POW:    op = "^";    PrintPrecedence = 16;  break;
+    case EXPR_OR:     op = "or";   PrintPrecedence =  2;  break;
+    case EXPR_AND:    op = "and";  PrintPrecedence =  4;  break;
+    case EXPR_EQ:     op = "=";    PrintPrecedence =  8;  break;
+    case EXPR_LT:     op = "<";    PrintPrecedence =  8;  break;
+    case EXPR_GT:     op = ">";    PrintPrecedence =  8;  break;
+    case EXPR_NE:     op = "<>";   PrintPrecedence =  8;  break;
+    case EXPR_LE:     op = "<=";   PrintPrecedence =  8;  break;
+    case EXPR_GE:     op = ">=";   PrintPrecedence =  8;  break;
+    case EXPR_IN:     op = "in";   PrintPrecedence =  8;  break;
+    case EXPR_SUM:    op = "+";    PrintPrecedence = 10;  break;
+    case EXPR_DIFF:   op = "-";    PrintPrecedence = 10;  break;
+    case EXPR_PROD:   op = "*";    PrintPrecedence = 12;  break;
+    case EXPR_QUO:    op = "/";    PrintPrecedence = 12;  break;
+    case EXPR_MOD:    op = "mod";  PrintPrecedence = 12;  break;
+    case EXPR_POW:    op = "^";    PrintPrecedence = 16;  break;
     default:       op = "<bogus-operator>";   break;
     }
 
@@ -1360,11 +1360,11 @@ static void PrintBinop(Expr expr)
     else Pr("%2>",0L,0L);
 
     /* print the left operand                                              */
-    if ( TNUM_EXPR(expr) == T_POW
+    if ( TNUM_EXPR(expr) == EXPR_POW
          && ((  (IS_INTEXPR(READ_EXPR(expr, 0))
                  && INT_INTEXPR(READ_EXPR(expr, 0)) < 0)
                 || TNUM_EXPR(READ_EXPR(expr, 0)) == T_INTNEG)
-             || TNUM_EXPR(READ_EXPR(expr, 0)) == T_POW) ) {
+             || TNUM_EXPR(READ_EXPR(expr, 0)) == EXPR_POW) ) {
         Pr( "(", 0L, 0L );
         PrintExpr(READ_EXPR(expr, 0));
         Pr( ")", 0L, 0L );
@@ -1682,59 +1682,59 @@ static Int InitKernel (
     }
 
     /* install the evaluators for logical operations                       */
-    InstallEvalExprFunc( T_OR             , EvalOr);   
-    InstallEvalExprFunc( T_AND            , EvalAnd);  
-    InstallEvalExprFunc( T_NOT            , EvalNot);  
+    InstallEvalExprFunc( EXPR_OR             , EvalOr);   
+    InstallEvalExprFunc( EXPR_AND            , EvalAnd);  
+    InstallEvalExprFunc( EXPR_NOT            , EvalNot);  
 
     /* the logical operations are guaranteed to return booleans            */
-    InstallEvalBoolFunc( T_OR             , EvalOr);
-    InstallEvalBoolFunc( T_AND            , EvalAnd);
-    InstallEvalBoolFunc( T_NOT            , EvalNot);
+    InstallEvalBoolFunc( EXPR_OR             , EvalOr);
+    InstallEvalBoolFunc( EXPR_AND            , EvalAnd);
+    InstallEvalBoolFunc( EXPR_NOT            , EvalNot);
 
     /* install the evaluators for comparison operations                    */
-    InstallEvalExprFunc( T_EQ             , EvalEq);   
-    InstallEvalExprFunc( T_NE             , EvalNe);   
-    InstallEvalExprFunc( T_LT             , EvalLt);   
-    InstallEvalExprFunc( T_GE             , EvalGe);   
-    InstallEvalExprFunc( T_GT             , EvalGt);   
-    InstallEvalExprFunc( T_LE             , EvalLe);   
-    InstallEvalExprFunc( T_IN             , EvalIn);     
+    InstallEvalExprFunc( EXPR_EQ             , EvalEq);   
+    InstallEvalExprFunc( EXPR_NE             , EvalNe);   
+    InstallEvalExprFunc( EXPR_LT             , EvalLt);   
+    InstallEvalExprFunc( EXPR_GE             , EvalGe);   
+    InstallEvalExprFunc( EXPR_GT             , EvalGt);   
+    InstallEvalExprFunc( EXPR_LE             , EvalLe);   
+    InstallEvalExprFunc( EXPR_IN             , EvalIn);     
 
     /* the comparison operations are guaranteed to return booleans         */
-    InstallEvalBoolFunc( T_EQ             , EvalEq);
-    InstallEvalBoolFunc( T_NE             , EvalNe);
-    InstallEvalBoolFunc( T_LT             , EvalLt);
-    InstallEvalBoolFunc( T_GE             , EvalGe);
-    InstallEvalBoolFunc( T_GT             , EvalGt);
-    InstallEvalBoolFunc( T_LE             , EvalLe);
-    InstallEvalBoolFunc( T_IN             , EvalIn);
+    InstallEvalBoolFunc( EXPR_EQ             , EvalEq);
+    InstallEvalBoolFunc( EXPR_NE             , EvalNe);
+    InstallEvalBoolFunc( EXPR_LT             , EvalLt);
+    InstallEvalBoolFunc( EXPR_GE             , EvalGe);
+    InstallEvalBoolFunc( EXPR_GT             , EvalGt);
+    InstallEvalBoolFunc( EXPR_LE             , EvalLe);
+    InstallEvalBoolFunc( EXPR_IN             , EvalIn);
 
     /* install the evaluators for binary operations                        */
-    InstallEvalExprFunc( T_SUM            , EvalSum);
-    InstallEvalExprFunc( T_AINV           , EvalAInv);
-    InstallEvalExprFunc( T_DIFF           , EvalDiff);
-    InstallEvalExprFunc( T_PROD           , EvalProd);
-    InstallEvalExprFunc( T_QUO            , EvalQuo);
-    InstallEvalExprFunc( T_MOD            , EvalMod);
-    InstallEvalExprFunc( T_POW            , EvalPow);
+    InstallEvalExprFunc( EXPR_SUM            , EvalSum);
+    InstallEvalExprFunc( EXPR_AINV           , EvalAInv);
+    InstallEvalExprFunc( EXPR_DIFF           , EvalDiff);
+    InstallEvalExprFunc( EXPR_PROD           , EvalProd);
+    InstallEvalExprFunc( EXPR_QUO            , EvalQuo);
+    InstallEvalExprFunc( EXPR_MOD            , EvalMod);
+    InstallEvalExprFunc( EXPR_POW            , EvalPow);
 
     /* install the evaluators for literal expressions                      */
-    InstallEvalExprFunc( T_INT_EXPR       , EvalIntExpr);
-    InstallEvalExprFunc( T_TRUE_EXPR      , EvalTrueExpr);
-    InstallEvalExprFunc( T_FALSE_EXPR     , EvalFalseExpr);
-    InstallEvalExprFunc( T_TILDE_EXPR     , EvalTildeExpr);
-    InstallEvalExprFunc( T_CHAR_EXPR      , EvalCharExpr);
-    InstallEvalExprFunc( T_PERM_EXPR      , EvalPermExpr);
-    InstallEvalExprFunc( T_FLOAT_EXPR_LAZY  , EvalFloatExprLazy);
-    InstallEvalExprFunc( T_FLOAT_EXPR_EAGER , EvalFloatExprEager);
+    InstallEvalExprFunc( EXPR_INTPOS       , EvalIntExpr);
+    InstallEvalExprFunc( EXPR_TRUE      , EvalTrueExpr);
+    InstallEvalExprFunc( EXPR_FALSE     , EvalFalseExpr);
+    InstallEvalExprFunc( EXPR_TILDE     , EvalTildeExpr);
+    InstallEvalExprFunc( EXPR_CHAR      , EvalCharExpr);
+    InstallEvalExprFunc( EXPR_PERM      , EvalPermExpr);
+    InstallEvalExprFunc( EXPR_FLOAT_LAZY  , EvalFloatExprLazy);
+    InstallEvalExprFunc( EXPR_FLOAT_EAGER , EvalFloatExprEager);
 
     /* install the evaluators for list and record expressions              */
-    InstallEvalExprFunc( T_LIST_EXPR      , EvalListExpr);
-    InstallEvalExprFunc( T_LIST_TILDE_EXPR, EvalListTildeExpr);
-    InstallEvalExprFunc( T_RANGE_EXPR     , EvalRangeExpr);
-    InstallEvalExprFunc( T_STRING_EXPR    , EvalStringExpr);
-    InstallEvalExprFunc( T_REC_EXPR       , EvalRecExpr);
-    InstallEvalExprFunc( T_REC_TILDE_EXPR , EvalRecTildeExpr);
+    InstallEvalExprFunc( EXPR_LIST      , EvalListExpr);
+    InstallEvalExprFunc( EXPR_LIST_TILDE, EvalListTildeExpr);
+    InstallEvalExprFunc( EXPR_RANGE     , EvalRangeExpr);
+    InstallEvalExprFunc( EXPR_STRING    , EvalStringExpr);
+    InstallEvalExprFunc( EXPR_REC       , EvalRecExpr);
+    InstallEvalExprFunc( EXPR_REC_TILDE , EvalRecTildeExpr);
 
     /* clear the tables for the printing dispatching                       */
     for ( type = 0; type < 256; type++ ) {
@@ -1742,46 +1742,46 @@ static Int InitKernel (
     }
 
     /* install the printers for logical operations                         */
-    InstallPrintExprFunc( T_OR             , PrintBinop);
-    InstallPrintExprFunc( T_AND            , PrintBinop);
-    InstallPrintExprFunc( T_NOT            , PrintNot);
+    InstallPrintExprFunc( EXPR_OR             , PrintBinop);
+    InstallPrintExprFunc( EXPR_AND            , PrintBinop);
+    InstallPrintExprFunc( EXPR_NOT            , PrintNot);
 
     /* install the printers for comparison operations                      */
-    InstallPrintExprFunc( T_EQ             , PrintBinop);
-    InstallPrintExprFunc( T_LT             , PrintBinop);
-    InstallPrintExprFunc( T_NE             , PrintBinop);
-    InstallPrintExprFunc( T_GE             , PrintBinop);
-    InstallPrintExprFunc( T_GT             , PrintBinop);
-    InstallPrintExprFunc( T_LE             , PrintBinop);
-    InstallPrintExprFunc( T_IN             , PrintBinop);
+    InstallPrintExprFunc( EXPR_EQ             , PrintBinop);
+    InstallPrintExprFunc( EXPR_LT             , PrintBinop);
+    InstallPrintExprFunc( EXPR_NE             , PrintBinop);
+    InstallPrintExprFunc( EXPR_GE             , PrintBinop);
+    InstallPrintExprFunc( EXPR_GT             , PrintBinop);
+    InstallPrintExprFunc( EXPR_LE             , PrintBinop);
+    InstallPrintExprFunc( EXPR_IN             , PrintBinop);
 
     /* install the printers for binary operations                          */
-    InstallPrintExprFunc( T_SUM            , PrintBinop);
-    InstallPrintExprFunc( T_AINV           , PrintAInv);
-    InstallPrintExprFunc( T_DIFF           , PrintBinop);
-    InstallPrintExprFunc( T_PROD           , PrintBinop);
-    InstallPrintExprFunc( T_QUO            , PrintBinop);
-    InstallPrintExprFunc( T_MOD            , PrintBinop);
-    InstallPrintExprFunc( T_POW            , PrintBinop);
+    InstallPrintExprFunc( EXPR_SUM            , PrintBinop);
+    InstallPrintExprFunc( EXPR_AINV           , PrintAInv);
+    InstallPrintExprFunc( EXPR_DIFF           , PrintBinop);
+    InstallPrintExprFunc( EXPR_PROD           , PrintBinop);
+    InstallPrintExprFunc( EXPR_QUO            , PrintBinop);
+    InstallPrintExprFunc( EXPR_MOD            , PrintBinop);
+    InstallPrintExprFunc( EXPR_POW            , PrintBinop);
 
     /* install the printers for literal expressions                        */
-    InstallPrintExprFunc( T_INTEXPR        , PrintIntExpr);
-    InstallPrintExprFunc( T_INT_EXPR       , PrintIntExpr);
-    InstallPrintExprFunc( T_TRUE_EXPR      , PrintTrueExpr);
-    InstallPrintExprFunc( T_FALSE_EXPR     , PrintFalseExpr);
-    InstallPrintExprFunc( T_TILDE_EXPR     , PrintTildeExpr);
-    InstallPrintExprFunc( T_CHAR_EXPR      , PrintCharExpr);
-    InstallPrintExprFunc( T_PERM_EXPR      , PrintPermExpr);
-    InstallPrintExprFunc( T_FLOAT_EXPR_LAZY  , PrintFloatExprLazy);
-    InstallPrintExprFunc( T_FLOAT_EXPR_EAGER , PrintFloatExprEager);
+    InstallPrintExprFunc( EXPR_INT        , PrintIntExpr);
+    InstallPrintExprFunc( EXPR_INTPOS       , PrintIntExpr);
+    InstallPrintExprFunc( EXPR_TRUE      , PrintTrueExpr);
+    InstallPrintExprFunc( EXPR_FALSE     , PrintFalseExpr);
+    InstallPrintExprFunc( EXPR_TILDE     , PrintTildeExpr);
+    InstallPrintExprFunc( EXPR_CHAR      , PrintCharExpr);
+    InstallPrintExprFunc( EXPR_PERM      , PrintPermExpr);
+    InstallPrintExprFunc( EXPR_FLOAT_LAZY  , PrintFloatExprLazy);
+    InstallPrintExprFunc( EXPR_FLOAT_EAGER , PrintFloatExprEager);
 
     /* install the printers for list and record expressions                */
-    InstallPrintExprFunc( T_LIST_EXPR      , PrintListExpr);
-    InstallPrintExprFunc( T_LIST_TILDE_EXPR, PrintListExpr);
-    InstallPrintExprFunc( T_RANGE_EXPR     , PrintRangeExpr);
-    InstallPrintExprFunc( T_STRING_EXPR    , PrintStringExpr);
-    InstallPrintExprFunc( T_REC_EXPR       , PrintRecExpr);
-    InstallPrintExprFunc( T_REC_TILDE_EXPR , PrintRecExpr);
+    InstallPrintExprFunc( EXPR_LIST      , PrintListExpr);
+    InstallPrintExprFunc( EXPR_LIST_TILDE, PrintListExpr);
+    InstallPrintExprFunc( EXPR_RANGE     , PrintRangeExpr);
+    InstallPrintExprFunc( EXPR_STRING    , PrintStringExpr);
+    InstallPrintExprFunc( EXPR_REC       , PrintRecExpr);
+    InstallPrintExprFunc( EXPR_REC_TILDE , PrintRecExpr);
 
     /* return success                                                      */
     return 0;

@@ -162,21 +162,21 @@ void WRITE_EXPR(Expr expr, UInt idx, UInt val);
 enum STAT_TNUM {
     START_ENUM_RANGE(FIRST_STAT_TNUM),
 
-        T_PROCCALL_0ARGS,
-        T_PROCCALL_1ARGS,
-        T_PROCCALL_2ARGS,
-        T_PROCCALL_3ARGS,
-        T_PROCCALL_4ARGS,
-        T_PROCCALL_5ARGS,
-        T_PROCCALL_6ARGS,
-        T_PROCCALL_XARGS,
+        STAT_PROCCALL_0ARGS,
+        STAT_PROCCALL_1ARGS,
+        STAT_PROCCALL_2ARGS,
+        STAT_PROCCALL_3ARGS,
+        STAT_PROCCALL_4ARGS,
+        STAT_PROCCALL_5ARGS,
+        STAT_PROCCALL_6ARGS,
+        STAT_PROCCALL_XARGS,
 
-        T_PROCCALL_OPTS,
+        STAT_PROCCALL_OPTS,
 
-        // T_EMPTY could also be considered to be "T_SEQ_STAT0", but it
+        // STAT_EMPTY could also be considered to be "T_SEQ_STAT0", but it
         // must be an interruptible statement, so that loops with empty
         // body can be interrupted.
-        T_EMPTY,
+        STAT_EMPTY,
 
         // The statement types between FIRST_NON_INTERRUPT_STAT and
         // LAST_NON_INTERRUPT_STAT will not be interrupted (which may happen
@@ -190,37 +190,37 @@ enum STAT_TNUM {
 
             START_ENUM_RANGE(FIRST_COMPOUND_STAT),
 
-            T_SEQ_STAT,
-            T_SEQ_STAT2,
-            T_SEQ_STAT3,
-            T_SEQ_STAT4,
-            T_SEQ_STAT5,
-            T_SEQ_STAT6,
-            T_SEQ_STAT7,
+            STAT_SEQ_STAT,
+            STAT_SEQ_STAT2,
+            STAT_SEQ_STAT3,
+            STAT_SEQ_STAT4,
+            STAT_SEQ_STAT5,
+            STAT_SEQ_STAT6,
+            STAT_SEQ_STAT7,
 
-            T_IF,
-            T_IF_ELSE,
-            T_IF_ELIF,
-            T_IF_ELIF_ELSE,
+            STAT_IF,
+            STAT_IF_ELSE,
+            STAT_IF_ELIF,
+            STAT_IF_ELIF_ELSE,
 
-            T_FOR,
-            T_FOR2,
-            T_FOR3,
+            STAT_FOR,
+            STAT_FOR2,
+            STAT_FOR3,
 
-            T_FOR_RANGE,
-            T_FOR_RANGE2,
-            T_FOR_RANGE3,
+            STAT_FOR_RANGE,
+            STAT_FOR_RANGE2,
+            STAT_FOR_RANGE3,
 
-            T_WHILE,
-            T_WHILE2,
-            T_WHILE3,
+            STAT_WHILE,
+            STAT_WHILE2,
+            STAT_WHILE3,
 
-            T_REPEAT,
-            T_REPEAT2,
-            T_REPEAT3,
+            STAT_REPEAT,
+            STAT_REPEAT2,
+            STAT_REPEAT3,
 
 #ifdef HPCGAP
-            T_ATOMIC,
+            STAT_ATOMIC,
 #endif
 
             END_ENUM_RANGE(LAST_COMPOUND_STAT),
@@ -229,45 +229,45 @@ enum STAT_TNUM {
 
         START_ENUM_RANGE(FIRST_CONTROL_FLOW_STAT),
 
-            T_BREAK,
-            T_CONTINUE,
-            T_RETURN_OBJ,
-            T_RETURN_VOID,
+            STAT_BREAK,
+            STAT_CONTINUE,
+            STAT_RETURN_OBJ,
+            STAT_RETURN_VOID,
 
         END_ENUM_RANGE(LAST_CONTROL_FLOW_STAT),
 
-        T_ASS_LVAR,
-        T_UNB_LVAR,
+        STAT_ASS_LVAR,
+        STAT_UNB_LVAR,
 
-        T_ASS_HVAR,
-        T_UNB_HVAR,
+        STAT_ASS_HVAR,
+        STAT_UNB_HVAR,
 
-        T_ASS_GVAR,
-        T_UNB_GVAR,
+        STAT_ASS_GVAR,
+        STAT_UNB_GVAR,
 
-        T_ASS_LIST,
-        T_ASS2_LIST,
-        T_ASSS_LIST,
-        T_ASS_LIST_LEV,
-        T_ASSS_LIST_LEV,
-        T_UNB_LIST,
+        STAT_ASS_LIST,
+        STAT_ASS2_LIST,
+        STAT_ASSS_LIST,
+        STAT_ASS_LIST_LEV,
+        STAT_ASSS_LIST_LEV,
+        STAT_UNB_LIST,
 
-        T_ASS_REC_NAME,
-        T_ASS_REC_EXPR,
-        T_UNB_REC_NAME,
-        T_UNB_REC_EXPR,
+        STAT_ASS_REC_NAME,
+        STAT_ASS_REC_EXPR,
+        STAT_UNB_REC_NAME,
+        STAT_UNB_REC_EXPR,
 
-        T_ASS_POSOBJ,
-        T_UNB_POSOBJ,
+        STAT_ASS_POSOBJ,
+        STAT_UNB_POSOBJ,
 
-        T_ASS_COMOBJ_NAME,
-        T_ASS_COMOBJ_EXPR,
-        T_UNB_COMOBJ_NAME,
-        T_UNB_COMOBJ_EXPR,
+        STAT_ASS_COMOBJ_NAME,
+        STAT_ASS_COMOBJ_EXPR,
+        STAT_UNB_COMOBJ_NAME,
+        STAT_UNB_COMOBJ_EXPR,
 
-        T_INFO,
-        T_ASSERT_2ARGS,
-        T_ASSERT_3ARGS,
+        STAT_INFO,
+        STAT_ASSERT_2ARGS,
+        STAT_ASSERT_3ARGS,
         T_PRAGMA,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
@@ -368,30 +368,30 @@ void SET_VISITED_STAT(Stat stat);
 
 /****************************************************************************
 **
-*F  IS_REFLVAR(<expr>). . . . test if an expression is a reference to a local
-*F  REFLVAR_LVAR(<lvar>)  . . . . . convert a local to a reference to a local
-*F  LVAR_REFLVAR(<expr>)  . . . . . convert a reference to a local to a local
+*F  IS_REF_LVAR(<expr>). . . . test if an expression is a reference to a local
+*F  REF_LVAR_LVAR(<lvar>)  . . . . . convert a local to a reference to a local
+*F  LVAR_REF_LVAR(<expr>)  . . . . . convert a reference to a local to a local
 **
-**  'IS_REFLVAR'  returns  1  if  the  expression <expr>  is  an  (immediate)
+**  'IS_REF_LVAR'  returns  1  if  the  expression <expr>  is  an  (immediate)
 **  reference to a local variable, and 0 otherwise.
 **
-**  'REFLVAR_LVAR'  returns  a (immediate) reference  to   the local variable
+**  'REF_LVAR_LVAR'  returns  a (immediate) reference  to   the local variable
 **  <lvar> (given by its index).
 **
-**  'LVAR_REFLVAR' returns the local variable (by  its index) to which <expr>
+**  'LVAR_REF_LVAR' returns the local variable (by  its index) to which <expr>
 **  is a (immediate) reference.
 */
-EXPORT_INLINE Int IS_REFLVAR(Expr expr)
+EXPORT_INLINE Int IS_REF_LVAR(Expr expr)
 {
     return ((Int)expr & 0x03) == 0x03;
 }
 
-EXPORT_INLINE Expr REFLVAR_LVAR(Int lvar)
+EXPORT_INLINE Expr REF_LVAR_LVAR(Int lvar)
 {
     return (Expr)((lvar << 2) + 0x03);
 }
 
-EXPORT_INLINE Int LVAR_REFLVAR(Expr expr)
+EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr)
 {
     return (Int)expr >> 2;
 }
@@ -440,82 +440,82 @@ EXPORT_INLINE Int INT_INTEXPR(Expr expr)
 enum EXPR_TNUM {
     START_ENUM_RANGE_INIT(FIRST_EXPR_TNUM, 128),
 
-    T_FUNCCALL_0ARGS,
-    T_FUNCCALL_1ARGS,
-    T_FUNCCALL_2ARGS,
-    T_FUNCCALL_3ARGS,
-    T_FUNCCALL_4ARGS,
-    T_FUNCCALL_5ARGS,
-    T_FUNCCALL_6ARGS,
-    T_FUNCCALL_XARGS,
-    T_FUNC_EXPR,
+    EXPR_FUNCCALL_0ARGS,
+    EXPR_FUNCCALL_1ARGS,
+    EXPR_FUNCCALL_2ARGS,
+    EXPR_FUNCCALL_3ARGS,
+    EXPR_FUNCCALL_4ARGS,
+    EXPR_FUNCCALL_5ARGS,
+    EXPR_FUNCCALL_6ARGS,
+    EXPR_FUNCCALL_XARGS,
+    EXPR_FUNC,
 
-    T_FUNCCALL_OPTS,
+    EXPR_FUNCCALL_OPTS,
 
-    T_OR,
-    T_AND,
-    T_NOT,
-    T_EQ,
-    T_NE,
-    T_LT,
-    T_GE,
-    T_GT,
-    T_LE,
-    T_IN,
-    T_SUM,
-    T_AINV,
-    T_DIFF,
-    T_PROD,
-    T_QUO,
-    T_MOD,
-    T_POW,
+    EXPR_OR,
+    EXPR_AND,
+    EXPR_NOT,
+    EXPR_EQ,
+    EXPR_NE,
+    EXPR_LT,
+    EXPR_GE,
+    EXPR_GT,
+    EXPR_LE,
+    EXPR_IN,
+    EXPR_SUM,
+    EXPR_AINV,
+    EXPR_DIFF,
+    EXPR_PROD,
+    EXPR_QUO,
+    EXPR_MOD,
+    EXPR_POW,
 
-    T_INTEXPR,
-    T_INT_EXPR,
-    T_TRUE_EXPR,
-    T_FALSE_EXPR,
-    T_TILDE_EXPR,
-    T_CHAR_EXPR,
-    T_PERM_EXPR,
-    T_PERM_CYCLE,
-    T_LIST_EXPR,
-    T_LIST_TILDE_EXPR,
-    T_RANGE_EXPR,
-    T_STRING_EXPR,
-    T_REC_EXPR,
-    T_REC_TILDE_EXPR,
+    EXPR_INT,
+    EXPR_INTPOS,
+    EXPR_TRUE,
+    EXPR_FALSE,
+    EXPR_TILDE,
+    EXPR_CHAR,
+    EXPR_PERM,
+    EXPR_PERM_CYCLE,
+    EXPR_LIST,
+    EXPR_LIST_TILDE,
+    EXPR_RANGE,
+    EXPR_STRING,
+    EXPR_REC,
+    EXPR_REC_TILDE,
 
-    T_FLOAT_EXPR_EAGER,
-    T_FLOAT_EXPR_LAZY,
+    EXPR_FLOAT_EAGER,
+    EXPR_FLOAT_LAZY,
 
-    T_REFLVAR,
-    T_ISB_LVAR,
+    EXPR_REF_LVAR,
+    EXPR_ISB_LVAR,
 
-    T_REF_HVAR,
-    T_ISB_HVAR,
+    EXPR_REF_HVAR,
+    EXPR_ISB_HVAR,
 
-    T_REF_GVAR,
-    T_ISB_GVAR,
+    EXPR_REF_GVAR,
+    EXPR_ISB_GVAR,
 
-    T_ELM_LIST,
-    T_ELM2_LIST,
-    T_ELMS_LIST,
-    T_ELM_LIST_LEV,
-    T_ELMS_LIST_LEV,
-    T_ISB_LIST,
+    EXPR_ELM_LIST,
+    EXPR_ELM2_LIST,
+    EXPR_ELMS_LIST,
+    EXPR_ELM_LIST_LEV,
+    EXPR_ELMS_LIST_LEV,
+    EXPR_ISB_LIST,
 
-    T_ELM_REC_NAME,
-    T_ELM_REC_EXPR,
-    T_ISB_REC_NAME,
-    T_ISB_REC_EXPR,
+    EXPR_ELM_REC_NAME,
+    EXPR_ELM_REC_EXPR,
+    EXPR_ISB_REC_NAME,
+    EXPR_ISB_REC_EXPR,
 
-    T_ELM_POSOBJ,
-    T_ISB_POSOBJ,
+    EXPR_ELM_POSOBJ,
+    EXPR_ISB_POSOBJ,
 
-    T_ELM_COMOBJ_NAME,
-    T_ELM_COMOBJ_EXPR,
-    T_ISB_COMOBJ_NAME,
-    T_ISB_COMOBJ_EXPR,
+    EXPR_ELM_COMOBJ_NAME,
+    EXPR_ELM_COMOBJ_EXPR,
+    EXPR_ISB_COMOBJ_NAME,
+    EXPR_ISB_COMOBJ_EXPR,
 
     END_ENUM_RANGE(LAST_EXPR_TNUM)
 };
@@ -529,10 +529,10 @@ enum EXPR_TNUM {
 */
 EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 {
-    if (IS_REFLVAR(expr))
-        return T_REFLVAR;
+    if (IS_REF_LVAR(expr))
+        return EXPR_REF_LVAR;
     if (IS_INTEXPR(expr))
-        return T_INTEXPR;
+        return EXPR_INT;
     return TNUM_STAT(expr);
 }
 
@@ -544,7 +544,7 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 **  'SIZE_EXPR' returns the size of the expression <expr>.
 **
 **  Note  that  it is *fatal*  to apply  'SIZE_EXPR'   to expressions of type
-**  'T_REFLVAR' or 'T_INTEXPR'.
+**  'EXPR_REF_LVAR' or 'EXPR_INT'.
 */
 #define SIZE_EXPR(expr) SIZE_STAT(expr)
 
@@ -557,7 +557,7 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 **  expression <expr>.
 **
 **  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
-**  'T_REFLVAR' or 'T_INTEXPR'.
+**  'EXPR_REF_LVAR' or 'EXPR_INT'.
 */
 #define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
@@ -1163,7 +1163,7 @@ void CodeUnbLVar(UInt lvar);
 **  encounters a local variable.
 **
 **  A   reference to   a local  variable    is represented immediately   (see
-**  'REFLVAR_LVAR').
+**  'REF_LVAR_LVAR').
 */
 void CodeRefLVar(UInt lvar);
 

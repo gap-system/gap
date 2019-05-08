@@ -92,7 +92,7 @@
 **  ever evaluated and it appears to never be executed. We special case this
 **  if ForRange, by marking the range as evaluated.
 **
-**  We purposesfully ignore T_TRUE_EXPR and T_FALSE_EXPR, which represent the
+**  We purposesfully ignore EXPR_TRUE and EXPR_FALSE, which represent the
 **  constants 'true' and 'false', as they are often read but not 'executed'.
 **  We already ignored all integer and float constants anyway.
 **  However, the main reason this was added is that GAP represents 'else'
@@ -482,7 +482,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
     // Explicitly skip these two cases, as they are often specially handled
     // and also aren't really interesting statements (something else will
     // be executed whenever they are).
-    if (TNUM_STAT(stat) == T_TRUE_EXPR || TNUM_STAT(stat) == T_FALSE_EXPR) {
+    if (TNUM_STAT(stat) == EXPR_TRUE || TNUM_STAT(stat) == EXPR_FALSE) {
         return;
     }
 
@@ -830,10 +830,10 @@ static void ProfilePrintExprPassthrough(Expr stat)
   Int SavedColour = -1;
   /* There are two cases we must pass through without touching */
   /* From TNUM_EXPR */
-  if(IS_REFLVAR(stat)) {
-    OriginalPrintExprFuncsForHook[T_REFLVAR](stat);
+  if(IS_REF_LVAR(stat)) {
+    OriginalPrintExprFuncsForHook[EXPR_REF_LVAR](stat);
   } else if(IS_INTEXPR(stat)) {
-    OriginalPrintExprFuncsForHook[T_INTEXPR](stat);
+    OriginalPrintExprFuncsForHook[EXPR_INT](stat);
   } else {
     SavedColour = CurrentColour;
     if(VISITED_STAT(stat)) {
