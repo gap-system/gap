@@ -2076,9 +2076,10 @@ static void SaveLVars(Obj lvars)
 {
   UInt len,i;
   const Obj *ptr;
-  SaveSubObj(FUNC_LVARS(lvars));
-  SaveUInt(STAT_LVARS(lvars));
-  SaveSubObj(PARENT_LVARS(lvars));
+  const LVarsHeader * hdr = (const LVarsHeader *)CONST_ADDR_OBJ(lvars);
+  SaveSubObj(hdr->func);
+  SaveUInt(hdr->stat);
+  SaveSubObj(hdr->parent);
   len = (SIZE_OBJ(lvars) - (2*sizeof(Obj)+sizeof(UInt)))/sizeof(Obj);
   ptr = CONST_ADDR_OBJ(lvars)+3;
   for (i = 0; i < len; i++)

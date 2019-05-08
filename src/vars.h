@@ -87,14 +87,14 @@ typedef struct {
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
-EXPORT_INLINE Obj FUNC_LVARS_PTR(void * lvars_ptr)
+EXPORT_INLINE Obj FUNC_LVARS_PTR(const void * lvars_ptr)
 {
-    return ((LVarsHeader *)lvars_ptr)->func;
+    return ((const LVarsHeader *)lvars_ptr)->func;
 }
 
 EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj)
 {
-    return FUNC_LVARS_PTR(ADDR_OBJ(lvars_obj));
+    return FUNC_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
 
 
@@ -103,14 +103,14 @@ EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj)
 *F  STAT_LVARS . . . . . . . current statement in function of the given lvars
 **
 */
-EXPORT_INLINE Expr STAT_LVARS_PTR(void * lvars_ptr)
+EXPORT_INLINE Expr STAT_LVARS_PTR(const void * lvars_ptr)
 {
-    return ((LVarsHeader *)lvars_ptr)->stat;
+    return ((const LVarsHeader *)lvars_ptr)->stat;
 }
 
 EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj)
 {
-    return STAT_LVARS_PTR(ADDR_OBJ(lvars_obj));
+    return STAT_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
 
 
@@ -119,14 +119,14 @@ EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj)
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
-EXPORT_INLINE Obj PARENT_LVARS_PTR(void * lvars_ptr)
+EXPORT_INLINE Obj PARENT_LVARS_PTR(const void * lvars_ptr)
 {
-    return ((LVarsHeader *)lvars_ptr)->parent;
+    return ((const LVarsHeader *)lvars_ptr)->parent;
 }
 
 EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj)
 {
-    return PARENT_LVARS_PTR(ADDR_OBJ(lvars_obj));
+    return PARENT_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
 
 
