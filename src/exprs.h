@@ -22,9 +22,9 @@
 
 /****************************************************************************
 **
-*F  OBJ_REF_LVAR(<expr>) . . . . . . . . . . . value of a reference to a local
+*F  OBJ_REF_LVAR(<expr>) . . . . . . . . . . .value of a reference to a local
 **
-**  'OBJ_REF_LVAR'  returns  the value of  the reference  to a  local variable
+**  'OBJ_REF_LVAR' returns the value of the reference to a local variable
 **  <expr>.
 */
 EXPORT_INLINE Obj OBJ_REF_LVAR(Expr expr)

@@ -184,8 +184,8 @@ enum STAT_TNUM {
         // run full). We don't want to compound statements to be interrupted,
         // relying instead on their sub-statements being interruptible. This
         // results in a slightly better user experience in break loops, where
-        // the interrupted statement is printed, which works better for single
-        // statements than for compound statements.
+        // the interrupted statement is printed, which works better for
+        // single statements than for compound statements.
         START_ENUM_RANGE(FIRST_NON_INTERRUPT_STAT),
 
             START_ENUM_RANGE(FIRST_COMPOUND_STAT),
@@ -368,17 +368,17 @@ void SET_VISITED_STAT(Stat stat);
 
 /****************************************************************************
 **
-*F  IS_REF_LVAR(<expr>). . . . test if an expression is a reference to a local
-*F  REF_LVAR_LVAR(<lvar>)  . . . . . convert a local to a reference to a local
-*F  LVAR_REF_LVAR(<expr>)  . . . . . convert a reference to a local to a local
+*F  IS_REF_LVAR(<expr>) . . . test if an expression is a reference to a local
+*F  REF_LVAR_LVAR(<lvar>) . . . . . convert a local to a reference to a local
+*F  LVAR_REF_LVAR(<expr>) . . . . . convert a reference to a local to a local
 **
-**  'IS_REF_LVAR'  returns  1  if  the  expression <expr>  is  an  (immediate)
+**  'IS_REF_LVAR' returns 1 if the expression <expr> is an (immediate)
 **  reference to a local variable, and 0 otherwise.
 **
-**  'REF_LVAR_LVAR'  returns  a (immediate) reference  to   the local variable
+**  'REF_LVAR_LVAR' returns a (immediate) reference to the local variable
 **  <lvar> (given by its index).
 **
-**  'LVAR_REF_LVAR' returns the local variable (by  its index) to which <expr>
+**  'LVAR_REF_LVAR' returns the local variable (by its index) to which <expr>
 **  is a (immediate) reference.
 */
 EXPORT_INLINE Int IS_REF_LVAR(Expr expr)
@@ -682,9 +682,8 @@ void CodeFuncCallEnd(UInt funccall, UInt options, UInt nr);
 **
 **  'CodeFuncExprEnd'  is an action to  code  a function  expression.  It  is
 **  called when the reader encounters the end of a function expression.  <nr>
-**  is the number of statements in the body of the function. If <pushExpr>
-**  is set, the current function expression is pushed on the expression stack.
-**
+**  is the number of statements in the body of the function. If <pushExpr> is
+**  set, the current function expression is pushed on the expression stack.
 */
 void CodeFuncExprBegin(Int narg, Int nloc, Obj nams, Int startLine);
 
@@ -709,9 +708,9 @@ Int AddValueToBody(Obj val);
 *F  CodeFuncCallOptionsEndElmEmpty() .. .  . . . . .code options, end element
 *F  CodeFuncCallOptionsEnd(<nr>)  . . . . . . . . . . . . . code options, end
 **
-**  The net effect of all of these is to leave a record expression on the stack
-**  containing the options record. It will be picked up by
-**  CodeFuncCallEnd()
+**  The net effect of all of these is to leave a record expression on the
+**  stack containing the options record. It will be picked up by
+**  CodeFuncCallEnd().
 **
 */
 void CodeFuncCallOptionsBegin(void);
@@ -811,26 +810,26 @@ void CodeForEnd(void);
 
 /****************************************************************************
 **
-*F  CodeAtomicBegin()  . . . . . . .  code atomic-statement, begin of statement
-*F  CodeAtomicBeginBody()  . . . . . . . . code atomic-statement, begin of body
-*F  CodeAtomicEndBody( <nr> )  . . . . . . . code atomic-statement, end of body
-*F  CodeAtomicEnd()  . . . . . . . . .  code atomic-statement, end of statement
+*F  CodeAtomicBegin() . . . . . . . code atomic-statement, begin of statement
+*F  CodeAtomicBeginBody() . . . . . . .  code atomic-statement, begin of body
+*F  CodeAtomicEndBody(<nr>) . . . . . . .  code atomic-statement, end of body
+*F  CodeAtomicEnd() . . . . . . . . . code atomic-statement, end of statement
 **
-**  'CodeAtomicBegin'  is an action to  code a atomic-statement.   It is called
-**  when the  reader encounters the 'atomic',  i.e., *before* the condition is
+**  'CodeAtomicBegin' is an action to code an atomic-statement. It is called
+**  when the reader encounters the 'atomic', i.e., *before* the condition is
 **  read.
 **
-**  'CodeAtomicBeginBody'  is  an action   to code a  atomic-statement.   It is
-**  called when  the reader encounters  the beginning  of the statement body,
+**  'CodeAtomicBeginBody' is an action to code a atomic-statement. It is
+**  called when the reader encounters the beginning of the statement body,
 **  i.e., *after* the condition is read.
 **
-**  'CodeAtomicEndBody' is an action to  code a atomic-statement.  It is called
-**  when the reader encounters  the end of  the statement body.  <nr> is  the
+**  'CodeAtomicEndBody' is an action to code a atomic-statement. It is called
+**  when the reader encounters the end of the statement body. <nr> is the
 **  number of statements in the body.
 **
-**  'CodeAtomicEnd' is an action to code a atomic-statement.  It is called when
-**  the reader encounters  the end  of the  statement, i.e., immediate  after
-**  'CodeAtomicEndBody'.
+**  'CodeAtomicEnd' is an action to code a atomic-statement. It is called
+**  when the reader encounters the end of the statement, i.e., immediately
+**  after 'CodeAtomicEndBody'.
 */
 
 void CodeAtomicBegin(void);
