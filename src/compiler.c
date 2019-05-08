@@ -62,7 +62,7 @@ static Int CompFastListFuncs;
 
 /****************************************************************************
 **
-*V  CompCheckTypes  . . . . option to emit code that assumes all types are ok.
+*V  CompCheckTypes . . . . option to emit code that assumes all types are ok.
 */
 static Int CompCheckTypes;
 
@@ -1030,7 +1030,7 @@ static CVar CompFunccall0to6Args(Expr expr)
 
 /****************************************************************************
 **
-*F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  EXPR_FUNCCALL_XARGS
+*F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . EXPR_FUNCCALL_XARGS
 */
 static CVar CompFunccallXArgs(Expr expr)
 {
@@ -1087,7 +1087,7 @@ static CVar CompFunccallXArgs(Expr expr)
 
 /****************************************************************************
 **
-*F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . .  EXPR_FUNCCALL_OPTS
+*F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . .  EXPR_FUNCCALL_OPTS
 */
 static CVar CompFunccallOpts(Expr expr)
 {
@@ -1109,7 +1109,7 @@ static CVar CompFunccallOpts(Expr expr)
 
 /****************************************************************************
 **
-*F  CompFuncExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_FUNC
+*F  CompFuncExpr( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_FUNC
 */
 static CVar CompFuncExpr(Expr expr)
 {
@@ -1165,7 +1165,7 @@ static CVar CompFuncExpr(Expr expr)
 
 /****************************************************************************
 **
-*F  CompOr( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
+*F  CompOr( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
 */
 static CVar CompOr(Expr expr)
 {
@@ -1204,7 +1204,7 @@ static CVar CompOr(Expr expr)
 
 /****************************************************************************
 **
-*F  CompOrBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
+*F  CompOrBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
 */
 static CVar CompOrBool(Expr expr)
 {
@@ -1243,7 +1243,7 @@ static CVar CompOrBool(Expr expr)
 
 /****************************************************************************
 **
-*F  CompAnd( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_AND
+*F  CompAnd( <expr> ) . . . . . . . . . . . . . . . . . . . . . . .  EXPR_AND
 */
 static CVar CompAnd(Expr expr)
 {
@@ -1301,7 +1301,7 @@ static CVar CompAnd(Expr expr)
 
 /****************************************************************************
 **
-*F  CompAndBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . EXPR_AND
+*F  CompAndBool( <expr> ) . . . . . . . . . . . . . . . . . . . . .  EXPR_AND
 */
 static CVar CompAndBool(Expr expr)
 {
@@ -1340,7 +1340,7 @@ static CVar CompAndBool(Expr expr)
 
 /****************************************************************************
 **
-*F  CompNot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_NOT
+*F  CompNot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NOT
 */
 static CVar CompNot(Expr expr)
 {
@@ -1369,7 +1369,7 @@ static CVar CompNot(Expr expr)
 
 /****************************************************************************
 **
-*F  CompNotBoot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . EXPR_NOT
+*F  CompNotBoot( <expr> ) . . . . . . . . . . . . . . . . . . . . .  EXPR_NOT
 */
 static CVar CompNotBool(Expr expr)
 {
@@ -1398,7 +1398,7 @@ static CVar CompNotBool(Expr expr)
 
 /****************************************************************************
 **
-*F  CompEq( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
+*F  CompEq( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
 */
 static CVar CompEq(Expr expr)
 {
@@ -1435,7 +1435,7 @@ static CVar CompEq(Expr expr)
 
 /****************************************************************************
 **
-*F  CompEqBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
+*F  CompEqBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
 */
 static CVar CompEqBool(Expr expr)
 {
@@ -1472,7 +1472,7 @@ static CVar CompEqBool(Expr expr)
 
 /****************************************************************************
 **
-*F  CompNe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NE
+*F  CompNe( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NE
 */
 static CVar CompNe(Expr expr)
 {
