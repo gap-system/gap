@@ -549,7 +549,7 @@ static Expr SyntaxTreeCodeValue(Obj node)
     UInt1 tnum = GetTypeTNum(node);
     Obj   value = ElmRecST(tnum, node, "value");
     Expr  expr = NewStatOrExpr(tnum, sizeof(UInt), 0);
-    Int   ix = AddValueToBody(value);
+    Int   ix = AddValueToBody(CopyObj(value, 0));
     WRITE_EXPR(expr, 0, ix);
     return expr;
 }
@@ -733,10 +733,14 @@ static const CompilerT Compilers[] = {
 
     COMPILER_(
         STAT_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
-    COMPILER_(
-        STAT_ASS2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
-    COMPILER_(
-        STAT_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
+    COMPILER_(STAT_ASS2_LIST,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("pos"),
+              ARG_EXPR_("rhs")),
+    COMPILER_(STAT_ASSS_LIST,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("poss"),
+              ARG_EXPR_("rhss")),
     COMPILER_(STAT_ASS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("pos"),
@@ -760,7 +764,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(STAT_UNB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(
+        STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
 
     COMPILER_(STAT_ASS_POSOBJ,
               ARG_EXPR_("posobj"),
@@ -782,7 +787,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(
         STAT_UNB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 
-    COMPILER_(STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
+    COMPILER_(
+        STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
     COMPILER_(STAT_ASSERT_2ARGS, ARG_EXPR_("level"), ARG_EXPR_("condition")),
     COMPILER_(STAT_ASSERT_3ARGS,
               ARG_EXPR_("level"),
@@ -843,6 +849,7 @@ static const CompilerT Compilers[] = {
     COMPILER(
         EXPR_FLOAT_EAGER, SyntaxTreeFloatEager, SyntaxTreeCodeFloatEager),
     COMPILER(EXPR_FLOAT_LAZY, SyntaxTreeFloatLazy, SyntaxTreeCodeFloatLazy),
+    COMPILER(EXPR_VALUE, SyntaxTreeEvalCompiler, SyntaxTreeCodeValue),
 
     // EXPR_REF_LVAR is encoded differently from all other
     //           references to LVARs, so we have to treat
@@ -858,8 +865,10 @@ static const CompilerT Compilers[] = {
 
     // TODO: can this be unified?
     COMPILER_(EXPR_ELM_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
-    COMPILER_(
-        EXPR_ELM2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos1"), ARG_EXPR_("pos2")),
+    COMPILER_(EXPR_ELM2_LIST,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("pos1"),
+              ARG_EXPR_("pos2")),
     COMPILER_(EXPR_ELMS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss")),
     COMPILER_(EXPR_ELM_LIST_LEV,
               ARG_EXPR_("lists"),
@@ -873,11 +882,13 @@ static const CompilerT Compilers[] = {
     COMPILER_(EXPR_ELM_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(
+        EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ISB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(
+        EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ELM_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ISB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ELM_COMOBJ_NAME,

@@ -3483,3 +3483,15 @@ rec(
   type := "EXPR_FUNC",
   variadic := false )
 true
+
+# T_VALUE
+gap> func := x -> x + 1;;
+gap> st := SYNTAX_TREE( func );;
+gap> st.stats.statements[1].obj.right := rec( type := "EXPR_VALUE", value := SymmetricGroup(3) );;
+gap> Display( SYNTAX_TREE_CODE( st ) );
+function ( x )
+    return x + SymmetricGroup( [ 1 .. 3 ] );
+end
+gap> st.stats.statements[1].obj.right := rec( type := "EXPR_VALUE", value := 2^100 );;
+gap> SYNTAX_TREE_CODE( st )( 1 );
+1267650600228229401496703205377

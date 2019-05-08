@@ -1065,6 +1065,20 @@ static Obj EvalFloatExprEager(Expr expr)
 
 /****************************************************************************
 **
+*F  EvalValueExpr(<expr>) . . . . . . . . eval value expressions to its value
+**
+**  'EvalValueExpr' evaluates the value expression <expr> to its value.
+*/
+static Obj EvalValueExpr(Expr expr)
+{
+    UInt ix = READ_EXPR(expr, 0);
+    Obj  obj = GET_VALUE_FROM_CURRENT_BODY(ix);
+    return obj;
+}
+
+
+/****************************************************************************
+**
 *F  EvalRecExpr(<expr>) . . . . . .  eval record expression to a record value
 **
 **  'EvalRecExpr' evaluates the record expression,   i.e., not yet  evaluated
@@ -1585,6 +1599,19 @@ static void PrintFloatExprEager(Expr expr)
     }
 }
 
+/****************************************************************************
+**
+*F  PrintValueExpr(<expr>) . . . . . . . . . . . . . print a value expression
+**
+**  'PrintValueExpr' prints the value expression <expr>.
+*/
+static void PrintValueExpr(Expr expr)
+{
+    UInt ix = READ_EXPR(expr, 0);
+    Obj  obj = GET_VALUE_FROM_CURRENT_BODY(ix);
+    PrintObj(obj);
+}
+
 
 /****************************************************************************
 **
@@ -1727,6 +1754,7 @@ static Int InitKernel (
     InstallEvalExprFunc( EXPR_PERM      , EvalPermExpr);
     InstallEvalExprFunc( EXPR_FLOAT_LAZY  , EvalFloatExprLazy);
     InstallEvalExprFunc( EXPR_FLOAT_EAGER , EvalFloatExprEager);
+    InstallEvalExprFunc( EXPR_VALUE       , EvalValueExpr);
 
     /* install the evaluators for list and record expressions              */
     InstallEvalExprFunc( EXPR_LIST      , EvalListExpr);
@@ -1774,6 +1802,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_PERM      , PrintPermExpr);
     InstallPrintExprFunc( EXPR_FLOAT_LAZY  , PrintFloatExprLazy);
     InstallPrintExprFunc( EXPR_FLOAT_EAGER , PrintFloatExprEager);
+    InstallPrintExprFunc( EXPR_VALUE       , PrintValueExpr);
 
     /* install the printers for list and record expressions                */
     InstallPrintExprFunc( EXPR_LIST      , PrintListExpr);
