@@ -54,9 +54,9 @@
 // immediate objects or NULL pointers, but not on any other random data
 // #define REQUIRE_PRECISE_MARKING
 
-// if STAT_MARK_CACHE is defined, we track some statistics about the
+// if COLLECT_MARK_CACHE_STATS is defined, we track some statistics about the
 // usage of the MarkCache
-// #define STAT_MARK_CACHE
+// #define COLLECT_MARK_CACHE_STATS
 
 // if MARKING_STRESS_TEST is defined, we stress test the TryMark code
 // #define MARKING_STRESS_TEST
@@ -93,7 +93,7 @@
 // expensive call to the Julia runtime.
 
 static Bag MarkCache[MARK_CACHE_SIZE];
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
 static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
@@ -748,7 +748,7 @@ static void PreGCHook(int full)
     SyMsgsBags(full, 0, 0);
 #ifndef REQUIRE_PRECISE_MARKING
     memset(MarkCache, 0, sizeof(MarkCache));
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
     MarkCacheHits = MarkCacheAttempts = MarkCacheCollisions = 0;
 #endif
 #endif
@@ -760,7 +760,7 @@ static void PostGCHook(int full)
     /* information at the end of garbage collections                 */
     UInt totalAlloc = 0;    // FIXME -- is this data even available?
     SyMsgsBags(full, 6, totalAlloc);
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
       (long) MarkCacheAttempts,
       (double) MarkCacheHits/(double)MarkCacheAttempts,
@@ -1014,7 +1014,7 @@ inline void MarkBag(Bag bag)
 
     jl_value_t * p = (jl_value_t *)bag;
 #ifndef REQUIRE_PRECISE_MARKING
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
     MarkCacheAttempts++;
 #endif
     UInt hash = MARK_HASH((UInt)bag);
@@ -1024,14 +1024,14 @@ inline void MarkBag(Bag bag)
             // not a valid object
             return;
         }
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
         if (MarkCache[hash])
             MarkCacheCollisions++;
 #endif
         MarkCache[hash] = bag;
     }
     else {
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
         MarkCacheHits++;
 #endif
     }
