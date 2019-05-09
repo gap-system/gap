@@ -268,7 +268,7 @@ UInt COUNT_TRUES_BLOCK(UInt block);
 **  bits in the array of UInt values starting at <ptr> and including a total
 **  of <nblocks> UInts. The only reason this function is really needed is
 **  that, owing to hardware bugs and compiler peculiarities current in 2017,
-**  (see http://danluu.com/assembly-intrinsics/ or
+**  (see https://danluu.com/assembly-intrinsics/ or
 **  https://stackoverflow.com/questions/25078285?) manually unrolling this
 **  loop makes the code substantially faster on almost all CPUS.
 **

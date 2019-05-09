@@ -127,7 +127,7 @@ If everything goes well, you should be able to start GAP by executing
     sh bin/gap.sh
 
 You can also find development versions of some of the GAP packages on
-<https://github.com/gap-packages> resp. on <http://gap-packages.github.io>.
+<https://github.com/gap-packages> resp. on <https://gap-packages.github.io>.
 
 
 # We welcome contributions
@@ -159,4 +159,4 @@ of the GNU General Public License as published by the Free Software
 Foundation; either version 2 of the License, or (at your option) any later
 version. For details, please refer to the GAP reference manual, as well as the
 file `LICENSE` in the root directory of the GAP distribution or see
-<http://www.gnu.org/licenses/gpl.html>.
+<https://www.gnu.org/licenses/gpl.html>.

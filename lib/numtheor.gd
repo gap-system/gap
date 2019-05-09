@@ -616,7 +616,7 @@ DeclareGlobalFunction( "DoLogModRho" );
 ##  9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091,
 ##  756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917,
 ##  20996011, 24036583 and 25964951. Please find more up to date information
-##  about Mersenne primes at <URL>http://www.mersenne.org</URL>.
+##  about Mersenne primes at <URL>https://www.mersenne.org</URL>.
 ##  It is not known whether odd perfect integers exist,
 ##  however&nbsp;<Cite Key="BC89"/> show that any such integer must have
 ##  at least 300 decimal digits.

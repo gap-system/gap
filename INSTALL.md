@@ -162,7 +162,7 @@ description of each is also available via
 GMP
 ---
 
-GAP 4 uses the external library GMP (see <http://www.gmplib.org>) for large
+GAP 4 uses the external library GMP (see <https://www.gmplib.org>) for large
 integer arithmetic, replacing the built-in code used in previous versions
 and achieving a significant speed-up in related computations. There is a
 version of GMP included with the GAP archive you downloaded and this will
@@ -187,7 +187,7 @@ Readline
 --------
 
 GAP optionally also uses the external library GNU Readline (see
-<http://www.gnu.org/software/readline>) for better command line
+<https://www.gnu.org/software/readline>) for better command line
 editing. GAP will use this library by default if it is available on
 your system. You can configure Readline use as follows:
 
@@ -403,8 +403,8 @@ files are included in the directory `gap-4.X.Y/doc` in the subdirectories
 
 If you want to use these manual files with the help system from your GAP
 session you may check (or make sure) that your system provides some
-additional software like [xpdf](http://www.foolabs.com/xpdf/) or
-[acroread](http://www.adobe.com/products/acrobat/readstep.html).
+additional software like [xpdf](https://www.foolabs.com/xpdf/) or
+[acroread](https://www.adobe.com/products/acrobat/readstep.html).
 
 To complete beginners, we suggest you read (parts of) the tutorial first
 for an introduction to GAP 4. Then start to use the system with extensive

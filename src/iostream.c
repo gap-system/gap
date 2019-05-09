@@ -141,7 +141,7 @@ static UInt OpenPty(int * master, int * slave)
     /* openpty is available on OpenBSD, NetBSD and FreeBSD, Mac OS X,
        Cygwin, Interix, OSF/1 4 and 5, and glibc (since 1998), and hence
        on most modern Linux systems. See also:
-       http://www.gnu.org/software/gnulib/manual/html_node/openpty.html */
+       https://www.gnu.org/software/gnulib/manual/html_node/openpty.html */
     return (openpty(master, slave, NULL, NULL, NULL) < 0);
 }
 

@@ -104,7 +104,7 @@ git clone https://github.com/gap-system/Mixer
 an build the <Package>Mixer</Package> as described in the <F>mixer.README</F> 
 file (see Section <Ref Sect="WPMixer"/> for further details). For this step, 
 you will need a C compiler (for compiling parts of the <Package>Mixer</Package>) 
-and a <URL Text="Python">http://www.python.org/</URL> interpreter (for 
+and a <URL Text="Python">https://www.python.org/</URL> interpreter (for
 running the <Package>Mixer</Package>). 
 <P/>
 
@@ -197,7 +197,7 @@ makes it much easier to parse such documents automatically and check
 for <Q>well-formedness</Q>. Here, the term <Q>well-formed</Q> means
 that the document fulfils a set of syntactic rules. That is, a document
 might be well-formed and at the same time not make any sense.
-See <URL Text="this page">http://www.w3.org/TR/xhtml1/</URL> for details.
+See <URL Text="this page">https://www.w3.org/TR/xhtml1/</URL> for details.
 A short introduction to the XML standard can be found in
 Section <Ref Sect="XML" BookName="GAPDoc"/>  in the &GAPDoc; manual.
 <P/>
@@ -241,14 +241,14 @@ formating rules in the style sheet.
     and <Q><C>&amp;gt;</C></Q>
     respectively. There are quite a few such <Q>entities</Q> which are
     defined to enter special characters. See
-    <URL Text="this page">http://www.w3.org/TR/xhtml1/Overview.html#h-A2</URL>
+    <URL Text="this page">https://www.w3.org/TR/xhtml1/Overview.html#h-A2</URL>
     for details.
 </Item>
 </Enum>
 
-Using the <URL Text="W3C">http://www.w3.org/TR/html401/</URL> 
+Using the <URL Text="W3C">https://www.w3.org/TR/html401/</URL>
 specification
-<URL Text="HTML 4.01">http://www.w3.org/TR/html401/</URL> - this includes 
+<URL Text="HTML 4.01">https://www.w3.org/TR/html401/</URL> - this includes
 a nice <E>elements</E> overview - together with the above rules and 
 the general rule to avoid complicated looking constructs when possible,
 we found it not too difficult to produce sets of valid web pages.

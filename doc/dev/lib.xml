@@ -65,7 +65,7 @@ memory checking is enabled.
 <P/>
 
 <C>--enable-valgrind</C> makes changes to GASMAN so it is compatible with the
-<URL Text="valgrind">http://valgrind.org</URL> memory checking program.
+<URL Text="valgrind">https://valgrind.org</URL> memory checking program.
 Without this, Valgrind will report many incorrect warnings relating to GASMAN
 and no useful warnings.
 <P/>

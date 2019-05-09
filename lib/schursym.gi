@@ -16,7 +16,7 @@
 ##
 ##  Faithful, irreducible representations of minimal degree of the double
 ##  covers of symmetric groups can be constructed inductively using the 
-##  methods of http://arxiv.org/abs/0911.3794
+##  methods of https://arxiv.org/abs/0911.3794
 ##
 ##  The inductive formulation uses a number of helper routines which are
 ##  wrapped inside a function call to keep from declaring a large number
