@@ -451,7 +451,7 @@ To produce the <F>-win.zip</F> archive with binaries for &GAP; and some
 packages, you need the <F>-nobin-win.zip</F> archive with Windows-style 
 line breaks from the &GAP; source distribution produced as described
 above, and a Windows computer with <Package>Cygwin</Package> 
-(<URL>http://www.cygwin.com/</URL>) installed.
+(<URL>https://www.cygwin.com/</URL>) installed.
 <P/>
 
 Unpack the archive, start <Package>Cygwin</Package> shell, change to the

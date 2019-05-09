@@ -287,7 +287,7 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
   printed on the screen.
   None of the help viewers seems to be capable of 
   opening a pdf at a given named destination (i. e., jump to precisely the place where the information can be found).
-  The pdf viewer <C>"Skim"</C> is open source software, it can be downloaded from <F>http://skim-app.sourceforge.net/</F>.
+  The pdf viewer <C>"Skim"</C> is open source software, it can be downloaded from <F>https://skim-app.sourceforge.io/</F>.
 </Item>
 <Mark><C>"less"</C> or <C>"more"</C></Mark>
 <Item>

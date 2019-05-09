@@ -3,7 +3,7 @@
 # of the GAP kernel.
 #
 # For information on the settings in this file, please consult
-# <http://clang.llvm.org/docs/ClangFormatStyleOptions.html>
+# <https://clang.llvm.org/docs/ClangFormatStyleOptions.html>
 # See also <https://clangformat.com/>
 
 AlignConsecutiveDeclarations: true

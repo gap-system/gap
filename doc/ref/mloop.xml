@@ -1292,7 +1292,7 @@ we provide some setup files for the editors <C>vim</C> and
 <P/>
 <C>vim</C> is a powerful editor that understands the basic <C>vi</C> commands
 but provides much more functionality. You can find more information about it
-(and download it) from <URL>http://www.vim.org</URL>.
+(and download it) from <URL>https://www.vim.org</URL>.
 <P/>
 To get support for &GAP; syntax in vim, create in your home directory a
 directory <F>.vim</F> with  subdirectories  <F>.vim/syntax</F> and

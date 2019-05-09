@@ -29,7 +29,7 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version. For details, see 
 the file <F>LICENSE</F> in the root directory of the &GAP; distribution or see
-<URL>http://www.gnu.org/licenses/gpl.html</URL>.
+<URL>https://www.gnu.org/licenses/gpl.html</URL>.
 <P/>
 If you obtain &GAP; please send us a short notice to that effect, e.g.,
 an e-mail message to the address <Email>support@gap-system.org</Email>. 
@@ -68,7 +68,7 @@ the following terms apply to the versions of &GAP; for Windows.
 <P/>
 The executable of &GAP; for Windows that we distribute was compiled with
 the <C>gcc</C> compiler supplied with <Package>Cygwin</Package> installation
-(<URL>http://cygwin.com/</URL>).
+(<URL>https://cygwin.com/</URL>).
 <P/>
 The GNU C compiler is
 <P/>
@@ -87,7 +87,7 @@ The <F>cyggcc_s-1.dll</F>, <F>cygncurses-10.dll</F>, <F>cygncursesw-10.dll</F>,
 and <F>regtool.exe</F> are taken unmodified from the 
 <Package>Cygwin</Package> distribution. They are copyright by RedHat Software
 and released under the GPL. For more information on <Package>Cygwin</Package>,
-see <URL>http://www.cygwin.com</URL>. 
+see <URL>https://www.cygwin.com</URL>.
 <P/>
 Please contact <Email>support@gap-system.org</Email> if you need further information.
 

@@ -51,7 +51,7 @@ GAP development follows a straightforward branching model. We prefer using
 the GitHub infrastructure. If you would like to contribute, but do not want
 to create a GitHub account, see below for an alternative.
 
-* Make sure you are familiar with [Git](http://git-scm.com/book)
+* Make sure you are familiar with [Git](https://git-scm.com/book)
   * see for example the [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
     for an excellent introduction to Git.
 * Make sure you have a [GitHub account](https://github.com/signup/free).
@@ -140,7 +140,7 @@ repository like so:
     git clone https://github.com/gap-system/gap.git
 
 Make your changes and commits, create a patch containing the commits you
-want to send, and use git's [`send-email` feature](http://git-scm.com/docs/git-send-email)
+want to send, and use git's [`send-email` feature](https://git-scm.com/docs/git-send-email)
 to email the patch to <gap@gap-system.org>.  You can refer to
 [this tutorial](https://burzalodowa.wordpress.com/2013/10/05/how-to-send-patches-with-git-send-email/)
 on how to do this.

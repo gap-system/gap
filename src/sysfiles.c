@@ -399,7 +399,7 @@ static Obj FuncCrcString(Obj self, Obj str)
 
 /****************************************************************************
 ** The function 'find_yourself' is based on code (C) 2015 Mark Whitis, under
-** the MIT License : http://stackoverflow.com/a/34271901/928031
+** the MIT License : https://stackoverflow.com/a/34271901/928031
 */
 
 static void

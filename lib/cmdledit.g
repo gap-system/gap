@@ -33,7 +33,7 @@ GAPInfo.UseReadline := true;
 ##  
 ##  You        can        use        all       the        features        of
 ##  <C>readline</C>,         as         for        example         explained
-##  in   <URL>http://tiswww.case.edu/php/chet/readline/rluserman.html</URL>.
+##  in  <URL>https://tiswww.case.edu/php/chet/readline/rluserman.html</URL>.
 ##  Therefore  the  command  line  editing   in  &GAP;  is  similar  to  the
 ##  <C>bash</C> shell  and many other  programs. On a Unix/Linux  system you
 ##  may also have a manpage, try <C>man readline</C>. <P/>
@@ -75,8 +75,8 @@ GAPInfo.UseReadline := true;
 ##  on Unix/Linux) to  customize key bindings. If you want  settings be used
 ##  only within  &GAP; you  can write them  between lines  containing <C>$if
 ##  GAP</C> and <C>$endif</C>. For a detailed documentation of the available
-##  settings and functions see <URL
-##  Text="here">http://tiswww.case.edu/php/chet/readline/rluserman.html</URL>.
+##  settings and functions see <URL Text="here">
+##  https://tiswww.case.edu/php/chet/readline/rluserman.html</URL>.
 ##  
 ##  <Listing Type="From readline init file">
 ##  $if GAP

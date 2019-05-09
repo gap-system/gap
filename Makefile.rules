@@ -283,7 +283,7 @@ endif
 # Finally, to let make track the header dependencies, we include the *.d files.
 #
 # For a more detailed explanation of a very similar scheme, read this:
-# http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
+# https://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
 #
 ########################################################################
 

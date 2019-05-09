@@ -538,7 +538,7 @@ but if you use the &GAPDoc; package you should have no trouble in producing one.
 <P/>
 Moreover, using the 
 &GAPDoc; package, it is also possible to produce HTML version of the
-documentation supporting MathJax (<URL>http://www.mathjax.org/</URL>) 
+documentation supporting MathJax (<URL>https://www.mathjax.org/</URL>)
 for the high quality rendering of mathematical symbols while viewing 
 it online. For example, if you are viewing the HTML version of the manual, 
 compare how this formula will look with MathJax turned on/off:
@@ -1451,7 +1451,7 @@ the changes between versions "4.4.12", "4.5.1" and "4.5.2" than between
 versions "2008.12.17", "2011.04.15" and "2011.09.14". The concept of
 using version numbers to convey the meaning of the status of the code
 and the way it has been modified is known as <Q>Semantic Versioning</Q>,
-see <URL>http://semver.org/</URL> for further recommendations on its use.
+see <URL>https://semver.org/</URL> for further recommendations on its use.
 <P/>
 Since version information is duplicated in several places throughout the 
 package documentation, for &GAPDoc;-based manuals you may define the 
@@ -1775,7 +1775,7 @@ you to consider the GPL license for your packages, but you might wish to be more
 restrictive (for instance forbidding redistribution for profit) or less 
 restrictive (allowing your software to be incorporated into commercial 
 software). See <Q>Choosing a License for the Distribution of Your Package</Q>
-from <URL>http://www.gap-system.org/Packages/Authors/authors.html</URL> and also
+from <URL>https://www.gap-system.org/Packages/Authors/authors.html</URL> and also
 <URL>https://choosealicense.com/</URL> for further details. 
 <P/>
 
@@ -1787,7 +1787,7 @@ more explicit by making the exact reference to the GPL license, for example:
 <E>
 <Package>packagename</Package> is free software; you can redistribute it 
 and/or modify it under the terms of the 
-<URL Text="GNU General Public License">http://www.fsf.org/licenses/gpl.html</URL> 
+<URL Text="GNU General Public License">https://www.fsf.org/licenses/gpl.html</URL>
 as published by the Free Software Foundation; either version 2 of the License, 
 or (at your option) any later version.
 </E>
@@ -1937,7 +1937,7 @@ version of your archive and we produce also a <C>.tar.bz2</C>, <C>.zip</C>
 and a <C>-win.zip</C> version from it). 
 <P/>
 Please also consider submitting your package to the &GAP; package refereeing 
-process (see <URL>http://www.gap-system.org/Contacts/submit.html</URL> for
+process (see <URL>https://www.gap-system.org/Contacts/submit.html</URL> for
 further information).
 <P/>
 For packages hosted on GitHub publishing package release and establishing its
