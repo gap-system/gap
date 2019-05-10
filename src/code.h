@@ -268,7 +268,7 @@ enum STAT_TNUM {
         STAT_INFO,
         STAT_ASSERT_2ARGS,
         STAT_ASSERT_3ARGS,
-        T_PRAGMA,
+        STAT_PRAGMA,
 
     END_ENUM_RANGE(LAST_STAT_TNUM),
 };

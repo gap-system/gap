@@ -1818,7 +1818,7 @@ void CodePragma(Obj pragma)
 {
     GAP_ASSERT(IS_STRING_REP(pragma));
 
-    Expr pragmaexpr = NewStat(T_PRAGMA, sizeof(UInt));
+    Expr pragmaexpr = NewStat(STAT_PRAGMA, sizeof(UInt));
     Int  ix = AddValueToBody(pragma);
     WRITE_EXPR(pragmaexpr, 0, ix);
     PushStat(pragmaexpr);

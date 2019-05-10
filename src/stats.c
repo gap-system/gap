@@ -1372,6 +1372,7 @@ static void PrintBreak(Stat stat)
     Pr( "break;", 0L, 0L );
 }
 
+
 /****************************************************************************
 **
 *F  PrintContinue(<stat>)  . . . . . . . . . . . . . . . print a continue-statement
@@ -1383,6 +1384,7 @@ static void PrintContinue(Stat stat)
     Pr( "continue;", 0L, 0L );
 }
 
+
 /****************************************************************************
 **
 *F  PrintEmpty(<stat>)
@@ -1393,13 +1395,13 @@ static void PrintEmpty(Stat stat)
   Pr( ";", 0L, 0L);
 }
 
+
 /****************************************************************************
 **
 *F  PrintInfo(<stat>)  . . . . . . . . . . . . . . . print an info-statement
 **
 **  'PrintInfo' prints the info-statement <stat>.
 */
-
 static void PrintInfo(Stat stat)
 {
     UInt                i;              /* loop variable                   */
@@ -1422,16 +1424,15 @@ static void PrintInfo(Stat stat)
     Pr(" %2<);",0L,0L);
 }
 
+
 /****************************************************************************
 **
 *F  PrintAssert2Args(<stat>)  . . . . . . . . . . . . print an info-statement
 **
 **  'PrintAssert2Args' prints the 2 argument assert-statement <stat>.
 */
-
 static void PrintAssert2Args(Stat stat)
 {
-
     /* print the keyword                                                   */
     Pr("%2>Assert",0L,0L);
 
@@ -1446,17 +1447,16 @@ static void PrintAssert2Args(Stat stat)
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
 }
-  
+
+
 /****************************************************************************
 **
 *F  PrintAssert3Args(<stat>)  . . . . . . . . . . . . print an info-statement
 **
 **  'PrintAssert3Args' prints the 3 argument assert-statement <stat>.
 */
-
 static void PrintAssert3Args(Stat stat)
 {
-
     /* print the keyword                                                   */
     Pr("%2>Assert",0L,0L);
 
@@ -1473,7 +1473,6 @@ static void PrintAssert3Args(Stat stat)
     /* print the closing parenthesis                                       */
     Pr(" %2<);",0L,0L);
 }
-  
 
 
 /****************************************************************************
@@ -1508,13 +1507,19 @@ static void PrintReturnVoid(Stat stat)
     Pr( "return;", 0L, 0L );
 }
 
-static void PrintPragma(Expr expr)
+
+/****************************************************************************
+**
+*F  PrintPragma(<stat>) . . . . . . . . . . . . . .  print a pragma-statement
+*/
+static void PrintPragma(Stat stat)
 {
-    UInt ix = READ_EXPR(expr, 0);
+    UInt ix = READ_STAT(stat, 0);
     Obj string = GET_VALUE_FROM_CURRENT_BODY(ix);
 
     Pr("#%g", (Int)string, 0);
 }
+
 
 /****************************************************************************
 **
@@ -1577,7 +1582,7 @@ static Int InitKernel (
     InstallExecStatFunc( STAT_RETURN_OBJ     , ExecReturnObj);
     InstallExecStatFunc( STAT_RETURN_VOID    , ExecReturnVoid);
     InstallExecStatFunc( STAT_EMPTY          , ExecEmpty);
-    InstallExecStatFunc( T_PRAGMA         , ExecEmpty);
+    InstallExecStatFunc( STAT_PRAGMA         , ExecEmpty);
 #ifdef HPCGAP
     InstallExecStatFunc( STAT_ATOMIC         , ExecAtomic);
 #endif
@@ -1618,7 +1623,7 @@ static Int InitKernel (
     InstallPrintStatFunc( STAT_RETURN_OBJ     , PrintReturnObj);
     InstallPrintStatFunc( STAT_RETURN_VOID    , PrintReturnVoid);
     InstallPrintStatFunc( STAT_EMPTY          , PrintEmpty);
-    InstallPrintStatFunc( T_PRAGMA         , PrintPragma);
+    InstallPrintStatFunc( STAT_PRAGMA         , PrintPragma);
 #ifdef HPCGAP
     InstallPrintStatFunc( STAT_ATOMIC         , PrintAtomic);
 #endif
