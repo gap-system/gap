@@ -788,7 +788,7 @@ static const CompilerT Compilers[] = {
               ARG_EXPR_("level"),
               ARG_EXPR_("condition"),
               ARG_EXPR_("message")),
-    COMPILER(T_PRAGMA, SyntaxTreeCompilePragma, SyntaxTreeCodeValue),
+    COMPILER(STAT_PRAGMA, SyntaxTreeCompilePragma, SyntaxTreeCodeValue),
 
 
     /* Statements */
