@@ -272,15 +272,39 @@ function ( G )
     return classes;
 end);
 
+BindGlobal("CheapIsomSymAlt",function(a,b)
+local hom;
+  if IsPermGroup(a) then
+    hom:=SmallerDegreePermutationRepresentation(a);
+    if Image(hom)=b then return hom;
+    elif NrMovedPoints(Range(hom))<NrMovedPoints(a) then
+      return hom*IsomorphismGroups(Image(hom),b);
+    else
+      return IsomorphismGroups(a,b);
+    fi;
+  fi;
+end);
+
 InstallMethod( IsomorphismFpGroup, "alternating group", true,
-    [ IsNaturalAlternatingGroup ], 10, # override `IsSimpleGroup' method
+    [ IsAlternatingGroup ], 
+    40, # override `IsSimple...' and `IsNatural...' method
 function(G)
   if Size(G)=1 then TryNextMethod();fi;
   return IsomorphismFpGroup(G,
-           Concatenation("A_",String(Length(MovedPoints(G))),".") );
+           Concatenation("A_",String(AlternatingDegree(G)),".") );
 end);
 
 InstallOtherMethod( IsomorphismFpGroup, "alternating group,name",
+    true,
+    [ IsAlternatingGroup, IsString ],
+    35, # override `IsSimple...' and `IsNatural...' method
+function(G,str)
+local H;
+  H:=AlternatingGroup(AlternatingDegree(G));
+  return CheapIsomSymAlt(G,H)*IsomorphismFpGroup(H,str);
+end);
+
+InstallOtherMethod( IsomorphismFpGroup, "natural alternating group,name",
     true,
     [ IsNaturalAlternatingGroup, IsString ],
     10, # override `IsSimpleGroup' method
@@ -1744,10 +1768,21 @@ function ( G )
 end);
 
 InstallMethod( IsomorphismFpGroup, "symmetric group", true,
-    [ IsNaturalSymmetricGroup ], 0,
+    [ IsSymmetricGroup ], 
+    30, # override `IsNatural...' method
 function(G)
   return IsomorphismFpGroup(G,
-           Concatenation("S_",String(Length(MovedPoints(G))),".") );
+           Concatenation("S_",String(SymmetricDegree(G)),".") );
+end);
+
+InstallOtherMethod( IsomorphismFpGroup, "symmetric group,name",
+    true,
+    [ IsSymmetricGroup, IsString ],
+    25, # override `IsNatural...' method
+function(G,str)
+local H;
+  H:=SymmetricGroup(SymmetricDegree(G));
+  return CheapIsomSymAlt(G,H)*IsomorphismFpGroup(H,str);
 end);
 
 InstallOtherMethod( IsomorphismFpGroup, "symmetric group,name", true,
