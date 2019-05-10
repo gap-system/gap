@@ -80,4 +80,14 @@ gap> Length(MinimalGeneratingSet(G));
 2
 gap> IsomorphismPermGroup(G) = IdentityMapping(G);
 true
+gap> g:=SymmetricGroup(6);;
+gap> h:=Action(g,Combinations([1..6],2),OnSets);;
+gap> IsSymmetricGroup(h);
+true
+gap> IsomorphismFpGroup(h);
+[ (4,5)(8,9)(11,12)(13,14), (1,7,8,9,6)(2,3,13,15,12)(4,14,11,5,10),
+  (1,3,13,15,9)(2,10,11,12,6)(4,14,8,5,7) ] -> [ S_6.1, S_6.2, S_6.3 ]
+gap> IsomorphismFpGroup(DerivedSubgroup(h));
+[ (1,7,8,9,6)(2,3,13,15,12)(4,14,11,5,10), (1,3,13,15,9)(2,10,11,12,6)(4,14,8,
+    5,7) ] -> [ A_6.1, A_6.2 ]
 gap> STOP_TEST( "grpperm.tst", 1);

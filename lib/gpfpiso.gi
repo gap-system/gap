@@ -51,7 +51,13 @@ end );
 InstallOtherMethod(IsomorphismFpGroup,"for perm groups",true,
   [IsPermGroup,IsString],0,
 function( G,nam )
-    return IsomorphismFpGroupByChiefSeries( G, nam );
+  # test frequent, special cases
+  if (not HasIsSymmetricGroup(G) and IsSymmetricGroup(G)) or
+     (not HasIsAlternatingGroup(G) and IsAlternatingGroup(G)) then
+    return IsomorphismFpGroup(G,nam);
+  fi;
+
+  return IsomorphismFpGroupByChiefSeries( G, nam );
 end );
 
 InstallOtherMethod( IsomorphismFpGroup,"for simple solvable permutation groups",

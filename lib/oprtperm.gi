@@ -1403,6 +1403,25 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
         rep := RepOpSetsPermGroup( G, d, e );
       fi;
 
+    # action on tuples of sets
+    elif act = OnTuplesSets
+      and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) 
+      and IsList(e) and ForAll(e,i->ForAll(i,IsInt)) then
+      
+      if List(d,Length)<>List(e,Length) then return fail;fi;
+
+      # conjugate one by one
+      rep:=One(G);
+      S:=G;
+      for i in [1..Length(d)] do
+        rep2:=RepresentativeAction(S,d[i],e[i],OnSets);
+        if rep2=fail then return fail;fi;
+        d:=List(d,x->OnSets(x,rep2));
+        S:=Stabilizer(S,e[i],OnSets);
+        rep:=rep*rep2;
+      od;
+      return rep;
+
     # other action, fall back on default representative
     else
         TryNextMethod();
@@ -1477,7 +1496,7 @@ PermGroupStabilizerOp:=function(arg)
          and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) then
         K := PartitionStabilizerPermGroup( G, d );
 
-    #T OnSetTuples?
+    #T OnSetTuples? is hard
 
     # action on tuples of sets
     elif act = OnTuplesSets
