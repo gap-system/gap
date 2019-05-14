@@ -646,6 +646,12 @@ InstallOtherMethod(AsSSortedList,
      [ IsList ],
      l -> AsSSortedListList( AsPlist( l ) ) );
 
+InstallMethod( AsSSortedList,
+    "for a strictly sorted list",
+    [ IsSSortedList ],
+    SUM_FLAGS,
+    Immutable );
+
 
 #############################################################################
 ##

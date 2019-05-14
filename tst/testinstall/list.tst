@@ -472,5 +472,26 @@ gap> PositionsBound( [ 1,, 2 ] );
 gap> HasIsSSortedList( PositionsBound( [ 1,, 2 ] ) );
 true
 
+# AsSet
+gap> l := ["a", "b", "c"];
+[ "a", "b", "c" ]
+gap> MakeImmutable(l);;
+gap> IsSet(l);
+true
+gap> IsIdenticalObj(AsSet(l), l);
+true
+gap> l := [true, false];
+[ true, false ]
+gap> MakeImmutable(l);;
+gap> IsSet(l);
+true
+gap> IsIdenticalObj(AsSet(l), l);
+true
+gap> l := [1..3];
+[ 1 .. 3 ]
+gap> MakeImmutable(l);;
+gap> IsIdenticalObj(AsSet(l), l);
+true
+
 #
 gap> STOP_TEST("list.tst");
