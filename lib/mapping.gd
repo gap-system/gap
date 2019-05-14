@@ -1204,11 +1204,13 @@ DeclareGlobalFunction("CompositionMapping2General");
 ##  <Ref Func="CompositionMapping"/> allows one to compose arbitrarily many
 ##  general mappings,
 ##  and delegates each step to <Ref Oper="CompositionMapping2"/>.
+##  The result is a map that maps an element first under the last argument,
+##  then under the penultimate argument and so forth.
 ##  <P/>
 ##  Additionally, the properties <Ref Prop="IsInjective"/> and
-##  <Ref Prop="IsSingleValued"/> are maintained;
-##  if the source of the <M>i+1</M>-th general mapping is identical to
-##  the range of the <M>i</M>-th general mapping,
+##  <Ref Prop="IsSingleValued"/> are maintained.
+##  If the range of the <M>i+1</M>-th argument is identical to
+##  the range of the <M>i</M>-th argument,
 ##  also <Ref Prop="IsTotal"/> and <Ref Prop="IsSurjective"/> are maintained.
 ##  (So one should not call <Ref Oper="CompositionMapping2"/> directly
 ##  if one wants to maintain these properties.)
@@ -1220,6 +1222,20 @@ DeclareGlobalFunction("CompositionMapping2General");
 ##  decompose elements of the source of <A>map2</A> into generators) or as an
 ##  (iterated) composition
 ##  (see&nbsp;<Ref Filt="IsCompositionMappingRep"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> f := GroupHomomorphismByImages(CyclicGroup(IsPermGroup, 2),
+##  >                                   CyclicGroup(IsPermGroup, 1));
+##  [ (1,2) ] -> [ () ]
+##  gap> g := GroupHomomorphismByImages(CyclicGroup(IsPermGroup, 6),
+##  >                                   CyclicGroup(IsPermGroup, 2));
+##  [ (1,2,3,4,5,6) ] -> [ (1,2) ]
+##  gap> CompositionMapping(f, g);
+##  [ (1,2,3,4,5,6) ] -> [ () ]
+##  gap> CompositionMapping(g, f);
+##  [ (1,2) ] -> [ () ]
+##  ]]></Example>
+##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
