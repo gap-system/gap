@@ -338,6 +338,8 @@ gap> res:=List([AsList,AsSortedList,AsSet], f -> f(Magma(1)));
 [ [ 1 ], [ 1 ], [ 1 ] ]
 gap> List(res,IsMutable);
 [ false, false, false ]
+gap> AsSet([1..5]);
+[ 1 .. 5 ]
 
 #############################################################################
 #
