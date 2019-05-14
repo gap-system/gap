@@ -158,7 +158,7 @@ local  hom,fg,fpi,fpg,nt,fam;
       fi;
       fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
       ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),
-		      List(MappingGeneratorsImages(fpi)[2],
+		      List(GeneratorsOfGroup(Range(fpi)),
 			    i->PreImagesRepresentative(fpi,i))];
       if not IsBound(ocr.generators) then
 	ocr.generators:=List(ocr.factorpres[3],i->PreImagesRepresentative(hom,i));

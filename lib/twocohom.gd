@@ -237,12 +237,16 @@ DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
 ##    < immutable compressed vector length 44 over GF(3) > ]
 ##  gap> coh.cohomology;
 ##  [ < immutable compressed vector length 44 over GF(3) > ]
-##  gap> g1:=FpGroupCocycle(coh,coh.zero);
+##  gap> g1:=FpGroupCocycle(coh,coh.zero,true);
 ##  <fp group of size 4860 on the generators [ F1, F2, F3, m1, m2, m3, m4 ]>
-##  gap> g2:=FpGroupCocycle(coh,coh.cohomology[1]);
+##  gap> g2:=FpGroupCocycle(coh,coh.cohomology[1],true);
 ##  <fp group of size 4860 on the generators [ F1, F2, F3, m1, m2, m3, m4 ]>
+##  gap> g1:=Image(IsomorphismPermGroup(g1));
+##  <permutation group with 7 generators>
 ##  gap> Length(ComplementClassesRepresentatives(g1,RadicalGroup(g1)));
 ##  3
+##  gap> g2:=Image(IsomorphismPermGroup(g2));
+##  <permutation group with 7 generators>
 ##  gap> Length(ComplementClassesRepresentatives(g2,RadicalGroup(g2)));
 ##  0
 ##  ]]></Example>
@@ -294,11 +298,11 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##  gap> g2:=Image(IsomorphismPermGroup(p));
 ##  <permutation group with 10 generators>
 ##  gap> NrMovedPoints(g2);
-##  69
+##  54
 ##  gap> List(MaximalSubgroupClassReps(g1),Size);
 ##  [ 480, 480, 480, 19440, 3888, 7776, 6480 ]
 ##  gap> List(MaximalSubgroupClassReps(g2),Size);
-##  [ 19440, 3888, 7776, 6480 ]
+##  [ 19440, 7776, 6480, 3888 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

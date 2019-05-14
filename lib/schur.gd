@@ -42,7 +42,7 @@ DeclareInfoClass( "InfoSchur" );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> epi:=EpimorphismSchurCover(g);
-##  [ F1, F2, F3 ] -> [ (3,4), (2,4,3), (1,3)(2,4) ]
+##  [ F1, F2, F3 ] -> [ (1,2), (2,3), (3,4) ]
 ##  gap> Size(Source(epi));
 ##  48
 ##  gap> f:=FreeGroup("a","b");;

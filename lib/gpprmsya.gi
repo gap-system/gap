@@ -279,39 +279,29 @@ local hom;
     if Image(hom)=b then return hom;
     elif NrMovedPoints(Range(hom))<NrMovedPoints(a) then
       return hom*IsomorphismGroups(Image(hom),b);
-    else
-      return IsomorphismGroups(a,b);
     fi;
   fi;
+  return IsomorphismGroups(a,b);
 end);
 
-InstallMethod( IsomorphismFpGroup, "alternating group", true,
+InstallMethod( IsomorphismFpGroup, "alternating group, supply name", true,
     [ IsAlternatingGroup ], 
-    40, # override `IsSimple...' and `IsNatural...' method
+    40, # override `IsSimple...' method
 function(G)
   if Size(G)=1 then TryNextMethod();fi;
   return IsomorphismFpGroup(G,
            Concatenation("A_",String(AlternatingDegree(G)),".") );
 end);
 
-InstallOtherMethod( IsomorphismFpGroup, "alternating group,name",
+InstallOtherMethod( IsomorphismFpGroup, "alternating perm group,name",
     true,
-    [ IsAlternatingGroup, IsString ],
-    35, # override `IsSimple...' and `IsNatural...' method
-function(G,str)
-local H;
-  H:=AlternatingGroup(AlternatingDegree(G));
-  return CheapIsomSymAlt(G,H)*IsomorphismFpGroup(H,str);
-end);
-
-InstallOtherMethod( IsomorphismFpGroup, "natural alternating group,name",
-    true,
-    [ IsNaturalAlternatingGroup, IsString ],
-    10, # override `IsSimpleGroup' method
+    [ IsAlternatingGroup and IsPermGroup, IsString ],
+    35, # override `IsSimpleGroup' method
 function ( G,str )
 local   F,      # free group
         gens,   #generators of F
         imgs,
+        premap, # map to apply first
         hom,    # bijection
         mov,deg,# moved pts, degree
         m,      #[n/2]
@@ -325,6 +315,15 @@ local   F,      # free group
     if (HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep)) or Size(G)=1 then
       TryNextMethod();
+    fi;
+
+    #are we natural?
+    if not IsNaturalAlternatingGroup(G) then
+      F:=G;
+      G:=AlternatingGroup(AlternatingDegree(G));
+      premap:=CheapIsomSymAlt(F,G);
+    else
+      premap:=fail;
     fi;
 
     mov:=MovedPoints(G);
@@ -369,6 +368,7 @@ local   F,      # free group
 
     # return the isomorphism to the finitely presented group
     hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
+    if premap<>fail then hom:=premap*hom;fi;
     SetIsBijective( hom, true );
     ProcessEpimorphismToNewFpGroup(hom);
     return hom;
@@ -1767,7 +1767,7 @@ function ( G )
     return classes;
 end);
 
-InstallMethod( IsomorphismFpGroup, "symmetric group", true,
+InstallMethod( IsomorphismFpGroup, "symmetric group, supply name", true,
     [ IsSymmetricGroup ], 
     30, # override `IsNatural...' method
 function(G)
@@ -1775,22 +1775,13 @@ function(G)
            Concatenation("S_",String(SymmetricDegree(G)),".") );
 end);
 
-InstallOtherMethod( IsomorphismFpGroup, "symmetric group,name",
-    true,
-    [ IsSymmetricGroup, IsString ],
-    25, # override `IsNatural...' method
-function(G,str)
-local H;
-  H:=SymmetricGroup(SymmetricDegree(G));
-  return CheapIsomSymAlt(G,H)*IsomorphismFpGroup(H,str);
-end);
-
-InstallOtherMethod( IsomorphismFpGroup, "symmetric group,name", true,
-    [ IsNaturalSymmetricGroup,IsString ], 0,
+InstallOtherMethod( IsomorphismFpGroup, "symmetric perm group,name", true,
+    [ IsSymmetricGroup and IsPermGroup,IsString ], 0,
 function ( G,nam )
 local   F,      # free group
         gens,   #generators of F
         imgs,
+        premap, # map to apply first
         hom,    # bijection
         mov,deg,
         relators,
@@ -1805,6 +1796,16 @@ local   F,      # free group
     if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
       TryNextMethod();
+    fi;
+
+
+    #are we natural?
+    if not IsNaturalSymmetricGroup(G) then
+      F:=G;
+      G:=SymmetricGroup(SymmetricDegree(G));
+      premap:=CheapIsomSymAlt(F,G);
+    else
+      premap:=fail;
     fi;
 
     mov:=MovedPoints(G);
@@ -1839,6 +1840,7 @@ local   F,      # free group
 
     # return the isomorphism to the finitely presented group
     hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
+    if premap<>fail then hom:=premap*hom;fi;
     SetIsBijective( hom, true );
     ProcessEpimorphismToNewFpGroup(hom);
     return hom;
