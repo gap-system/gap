@@ -1876,8 +1876,8 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), Group([ (1,4)(2,3), (1,3)
-##    (2,4) ]), Group(()) ]
+##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
+##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  <P/>
 ##  The algorithm for the computation of normal subgroups is described in
@@ -4206,12 +4206,12 @@ DeclareAttribute("IsomorphismPermGroup",IsSemigroup);
 ##  <Example><![CDATA[
 ##  gap> g := Group( (2,3,4,5), (1,2,5) );;
 ##  gap> iso := IsomorphismFpGroup( g );
-##  [ (4,5), (1,2,3,4,5), (1,3,2,4,5) ] -> [ F1, F2, F3 ]
+##  [ (1,2), (2,3), (3,4), (4,5) ] -> [ F1, F2, F3, F4 ]
 ##  gap> fp := Image( iso );
-##  <fp group on the generators [ F1, F2, F3 ]>
+##  <fp group of size 120 on the generators [ F1, F2, F3, F4 ]>
 ##  gap> RelatorsOfFpGroup( fp );
-##  [ F1^2, F1^-1*F2*F1*F2^-1*F3*F2^-2, F1^-1*F3*F1*F2*F3^-1*F2*F3*F2^-1, 
-##    F2^5*F3^-5, F2^5*(F3^-1*F2^-1)^2, (F2^-2*F3^2)^2 ]
+##  [ F1^2, F2^2, F3^2, F4^2, (F1*F2)^3, (F1*F3)^2, (F1*F4)^2, (F2*F3)^3,
+##    (F2*F4)^2, (F3*F4)^3 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -4243,14 +4243,14 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> SetInfoLevel( InfoFpGroup, 1 );
 ##  gap> iso := IsomorphismFpGroupByGenerators( g, [ (1,2), (1,2,3,4,5) ] );
-##  #I  the image group has 2 gens and 4 rels of total length 50
+##  #I  the image group has 2 gens and 5 rels of total length 52
 ##  [ (1,2), (1,2,3,4,5) ] -> [ F1, F2 ]
 ##  gap> fp := Image( iso );
 ##  <fp group of size 120 on the generators [ F1, F2 ]>
 ##  gap> RelatorsOfFpGroup( fp );
-##  [ F1^2, (F2*F1*F2^-2*F1)^3, 
-##    F2*F1*F2^-1*(F1*F2)^2*F2^2*(F1*F2^-1)^2*F2^-1*F1, 
-##    (F2*F1*F2^-1*F1)^2*F2^-1*F1*F2^2*F1*F2^-2*F1*F2*F1 ]
+##  [ F1^2, (F1*F2^-1)^4, (F2^-2*F1*F2^-3)^2,
+##    F2^-1*(F2^-1*F1)^2*F2^2*(F1*F2^-1)^2*F2^-1*F1*F2*F1,
+##    (F1*F2^-2)^2*F2^-1*F1*F2^3*F1*F2^-3 ]
 ##  ]]></Example>
 ##  <P/>
 ##  The main task of the function
@@ -4277,9 +4277,9 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
 ##  gap> gens := GeneratorsOfGroup( M12 );;
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 20 rels of total length 554
+##  #I  the image group has 3 gens and 21 rels of total length 559
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 19 rels of total length 427
+##  #I  the image group has 3 gens and 21 rels of total length 548
 ##  ]]></Example>
 ##  <P/>
 ##  Also in the case of a permutation group <A>G</A>, the function
@@ -4328,7 +4328,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 136 rels of total length 3215
+##  #I  the image group has 3 gens and 176 rels of total length 3821
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4350,7 +4350,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 10 rels of total length 126
+##  #I  the image group has 2 gens and 8 rels of total length 86
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
