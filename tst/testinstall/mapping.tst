@@ -1,6 +1,8 @@
-#@local A,B,C,M,anticomp,com,comp,conj,d,g,g2,i,i2,inv,j,map,map1,map2,nice
-#@local res,t,t1,t2,tuples
+#@local A,B,C,M,anticomp,com,comp,conj,d,g,g2,i,i2,inv,j,map,map1,map2
+#@local mapBijective,nice,res,t,t1,t2,tuples
 gap> START_TEST("mapping.tst");
+
+# Init
 gap> M:= GF(3);
 GF(3)
 gap> tuples:= List( Tuples( AsList( M ), 2 ), DirectProductElement );;
@@ -11,6 +13,9 @@ gap> Print(tuples,"\n");
     Z(3)^0 ] ), DirectProductElement( [ Z(3)^0, Z(3) ] ), 
   DirectProductElement( [ Z(3), 0*Z(3) ] ), DirectProductElement( [ Z(3),
     Z(3)^0 ] ), DirectProductElement( [ Z(3), Z(3) ] ) ]
+
+# General Mappings
+# Empty map
 gap> map:= GeneralMappingByElements( M, M, [] );
 <general mapping: GF(3) -> GF(3) >
 gap> IsInjective( map );
@@ -21,6 +26,9 @@ gap> IsSurjective( map );
 false
 gap> IsTotal( map );
 false
+
+# InverseGeneralMapping and CompositionMapping for
+# IsTotal but not IsSingleValued
 gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 2, 4, 7 ] } );
 <general mapping: GF(3) -> GF(3) >
 gap> IsInjective( map );
@@ -79,6 +87,9 @@ gap> IsSurjective( anticomp );
 false
 gap> IsTotal( anticomp );
 false
+
+# InverseGeneralMapping and CompositionMapping for
+# General mappings of groups which actually are mappings
 gap> t1:= DirectProductElement( [ (), () ] );;  t2:= DirectProductElement( [ (1,2), (1,2) ] );;
 gap> g:= Group( (1,2) );;
 gap> t:= TrivialSubgroup( g );;
@@ -101,6 +112,9 @@ gap> IsSingleValued( com );
 true
 gap> IsInjective( com );
 true
+
+# =, <, and IdentityMapping for
+# IsSingleValued but not IsTotal
 gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 4 ] } );
 <general mapping: GF(3) -> GF(3) >
 gap> IsInjective( map );
@@ -169,6 +183,32 @@ gap> One( map );
 IdentityMapping( GF(3) )
 gap> Z(3) / IdentityMapping( GF(3) );
 Z(3)
+
+# Image, Image(s)Elm, ImagesSet for neither IsSingleValued nor IsTotal
+gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 4 ] } );
+<general mapping: GF(3) -> GF(3) >
+gap> IsInjective( map );
+false
+gap> IsSingleValued( map );
+true
+gap> IsSurjective( map );
+false
+gap> IsTotal( map );
+false
+gap> Image( map, [ Z(3) ] );
+[  ]
+gap> ImagesElm( map, Z(3) );
+[  ]
+gap> ImagesSet( map, [ 0*Z(3), Z(3) ] );
+[ 0*Z(3) ]
+gap> ImagesSet( map, GF(3) );
+[ 0*Z(3) ]
+gap> ImagesRepresentative( map, 0*Z(3) );
+0*Z(3)
+gap> ImagesRepresentative( map, Z(3) );
+fail
+
+# Image(s)Elm, ImagesSet for IsMapping
 gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 4, 8 ] } );
 <general mapping: GF(3) -> GF(3) >
 gap> IsInjective( map );
@@ -191,6 +231,9 @@ gap> ImagesRepresentative( map, Z(3) );
 Z(3)^0
 gap> (0*Z(3)) ^ map;
 0*Z(3)
+
+# PreImage(s)Elm, PreImagesSet for
+# bijective but neither IsSingleValued nor IsTotal
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
@@ -214,6 +257,8 @@ gap> PreImagesSet( map, GF(3) );
 [ 0*Z(3), Z(3)^0 ]
 gap> PreImagesRepresentative( map, Z(3) );
 Z(3)^0
+
+# ImageElm, ImagesSet for IsMapping
 gap> map:= GeneralMappingByElements( M, M, tuples{ [ 2, 6, 7 ] } );
 <general mapping: GF(3) -> GF(3) >
 gap> IsInjective( map );
@@ -224,8 +269,12 @@ gap> IsSurjective( map );
 true
 gap> IsTotal( map );
 true
+gap> Image( map, Z(3) );
+0*Z(3)
 gap> ImageElm( map, Z(3) );
 0*Z(3)
+gap> Image( map, [ Z(3) ] );
+[ 0*Z(3) ]
 gap> ImagesElm( map, Z(3) );
 [ 0*Z(3) ]
 gap> ImagesSet( map, [ 0*Z(3), Z(3) ] );
@@ -234,6 +283,8 @@ gap> ImagesSet( map, GF(3) );
 [ 0*Z(3), Z(3)^0, Z(3) ]
 gap> ImagesRepresentative( map, Z(3) );
 0*Z(3)
+
+# PreImagesElm, PreImagesSet, etc for IsMapping
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
 gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
@@ -261,6 +312,79 @@ gap> ImagesSource( map );
 [ 0*Z(3), Z(3)^0, Z(3) ]
 gap> PreImagesRange( map );
 [ 0*Z(3), Z(3)^0, Z(3) ]
+
+# Test error handling
+# Define mappings
+gap> tuples{[1,2,6]};
+[ DirectProductElement( [ 0*Z(3), 0*Z(3) ] ), 
+  DirectProductElement( [ 0*Z(3), Z(3)^0 ] ), 
+  DirectProductElement( [ Z(3)^0, Z(3) ] ) ]
+gap> map:= GeneralMappingByElements( M, M, tuples{ [ 1, 2, 5 ] } );
+<general mapping: GF(3) -> GF(3) >
+gap> IsSingleValued(map) or IsTotal(map);
+false
+gap> mapBijective := GeneralMappingByElements( M, M, tuples{ [ 1, 5, 9] } );
+<general mapping: GF(3) -> GF(3) >
+gap> IsSingleValued(mapBijective) or IsTotal(mapBijective);
+true
+gap> IsBijective(mapBijective);
+true
+
+# Image
+gap> Image(x -> x, 1);
+Error, <map> must be a general mapping
+gap> Image(map, 0*Z(3));
+Error, <map> must be single-valued and total
+gap> 0*Z(3) ^ map;
+Error, <map> must be single-valued and total
+gap> Image(mapBijective, Z(5));
+Error, the families of the element or collection <elm> and Source(<map>) don't\
+ match, maybe <elm> is not contained in Source(<map>) or is not a homogeneous \
+list or collection
+gap> Image(mapBijective, Z(9));
+Error, <elm> must be an element of Source(<map>)
+gap> Image(map, [Z(3), Z(9)]);
+Error, the collection <elm> must be contained in Source(<map>)
+
+# Images
+gap> Images(x -> x, 1);
+Error, <map> must be a general mapping
+gap> Images(mapBijective, Z(9));
+Error, <elm> must be an element of Source(<map>)
+gap> Images(map, [Z(3), Z(9)]);
+Error, the collection <elm> must be contained in Source(<map>)
+gap> Image(mapBijective, Z(5));
+Error, the families of the element or collection <elm> and Source(<map>) don't\
+ match, maybe <elm> is not contained in Source(<map>) or is not a homogeneous \
+list or collection
+
+# PreImage
+gap> PreImage(x -> x, 1);
+Error, <map> must be a general mapping
+gap> PreImage(map, Z(3));
+Error, <map> must be an injective and surjective mapping
+gap> PreImage(mapBijective, Z(9));
+Error, <elm> must be an element of Range(<map>)
+gap> PreImage(mapBijective, [Z(3), Z(9)]);
+Error, the collection <elm> must be contained in Range(<map>)
+gap> PreImage(mapBijective, Z(5));
+Error, the families of the element or collection <elm> and Range(<map>) don't \
+match, maybe <elm> is not contained in Range(<map>) or is not a homogeneous li\
+st or collection
+
+# PreImages
+gap> PreImages(x -> x, 1);
+Error, <map> must be a general mapping
+gap> PreImages(mapBijective, Z(9));
+Error, <elm> must be an element of Range(<map>)
+gap> PreImages(mapBijective, [Z(3), Z(9)]);
+Error, the collection <elm> must be contained in Range(<map>)
+gap> PreImages(mapBijective, Z(5));
+Error, the families of the element or collection <elm> and Range(<map>) don't \
+match, maybe <elm> is not contained in Range(<map>) or is not a homogeneous li\
+st or collection
+
+# NiceMonomorphism, RestrictedMapping for matrix groups
 gap> g := Group((1,2),(3,4));;
 gap> i := IdentityMapping( g );;
 gap> i2 := AsGroupGeneralMappingByImages(i);;
@@ -278,4 +402,6 @@ gap> IsGroupHomomorphism(res);
 true
 gap> IsInjective(res);        
 true
+
+#
 gap> STOP_TEST( "mapping.tst", 1);

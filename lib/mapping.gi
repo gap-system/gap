@@ -155,8 +155,12 @@ InstallGlobalFunction( Image, function ( arg )
     local   map,        # mapping <map>, first argument
             elm;        # element <elm>, second argument
 
+    if Length(arg) > 0 and not IsGeneralMapping( arg[1] ) then
+      ErrorNoReturn( "<map> must be a general mapping" );
+    fi;
+
     # image of the source under <map>, which may be multi valued in this case
-    if   Length( arg ) = 1 and IsGeneralMapping(arg[1]) then
+    if Length( arg ) = 1 then
 
         return ImagesSource( arg[1] );
 
@@ -165,17 +169,21 @@ InstallGlobalFunction( Image, function ( arg )
       map := arg[1];
       elm := arg[2];
 
+      # image of a single element <elm> under the mapping <map>
       if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) ) then
-
         if not IsMapping( map ) then
-          Error( "<map> must be a mapping" );
-        elif elm in Source( map ) then
-          return ImageElm( map, elm );
+          ErrorNoReturn( "<map> must be single-valued and total" );
+        elif not elm in Source( map ) then
+          ErrorNoReturn( "<elm> must be an element of Source(<map>)" );
         fi;
+        return ImageElm( map, elm );
 
-      # image of a set or list of elments <elm> under the mapping <map>
-      elif     CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) )
-           and IsSubset( Source( map ), elm ) then
+      # image of a collection of elments <elm> under the mapping <map>
+      elif CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) ) then
+        if not IsSubset( Source( map ), elm ) then
+          ErrorNoReturn( "the collection <elm> must be contained in ",
+                         "Source(<map>)" );
+        fi;
 
         if IsDomain( elm ) or IsSSortedList( elm ) then
           if HasSource(map) and IsIdenticalObj(Source(map),elm) then
@@ -192,9 +200,15 @@ InstallGlobalFunction( Image, function ( arg )
 
         return [];
 
+      else
+        ErrorNoReturn( "the families of the element or collection <elm> ",
+                       "and Source(<map>) don't match, ",
+                       "maybe <elm> is not contained in Source(<map>) or ",
+                       "is not a homogeneous list or collection" );
       fi;
     fi;
-    Error( "usage: Image(<map>), Image(<map>,<elm>), Image(<map>,<coll>)" );
+    ErrorNoReturn( "usage: Image(<map>), Image(<map>,<elm>), ",
+                   "Image(<map>,<coll>)" );
 end );
 
 
@@ -209,6 +223,10 @@ InstallGlobalFunction( Images, function ( arg )
     local   map,        # mapping <map>, first argument
             elm;        # element <elm>, second argument
 
+    if Length(arg) > 0 and not IsGeneralMapping( arg[1] ) then
+      ErrorNoReturn( "<map> must be a general mapping" );
+    fi;
+
     # image of the source under <map>
     if Length( arg ) = 1  then
 
@@ -219,19 +237,19 @@ InstallGlobalFunction( Images, function ( arg )
         map := arg[1];
         elm := arg[2];
 
-        if not IsGeneralMapping( map ) then
-          Error( "<map> must be a general mapping" );
-        fi;
-
         # image of a single element <elm> under the mapping <map>
-        if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) )
-           and elm in Source( map ) then
-
+        if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) ) then
+          if not elm in Source( map ) then
+            ErrorNoReturn( "<elm> must be an element of Source(<map>)" );
+          fi;
           return ImagesElm( map, elm );
 
-        # image of a set or list of elments <elm> under the mapping <map>
-        elif     CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) )
-             and IsSubset( Source( map ), elm ) then
+        # image of a collection of elments <elm> under the mapping <map>
+        elif CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) ) then
+          if not IsSubset( Source( map ), elm ) then
+            ErrorNoReturn( "the collection <elm> must be contained in ",
+                           "Source(<map>)" );
+          fi;
 
           if IsDomain( elm ) or IsSSortedList( elm ) then
             return ImagesSet( map, elm );
@@ -244,9 +262,15 @@ InstallGlobalFunction( Images, function ( arg )
 
           return [];
 
+        else
+          ErrorNoReturn( "the families of the element or collection <elm> ",
+                         "and Source(<map>) don't match, ",
+                         "maybe <elm> is not contained in Source(<map>) or ",
+                         "is not a homogeneous list or collection" );
         fi;
     fi;
-    Error("usage: Images(<map>), Images(<map>,<elm>), Images(<map>,<coll>)");
+    ErrorNoReturn( "usage: Images(<map>), Images(<map>,<elm>), ",
+                   "Images(<map>,<coll>)" );
 end );
 
 
@@ -261,6 +285,10 @@ InstallGlobalFunction( PreImage, function ( arg )
     local   map,        # gen. mapping <map>, first argument
             img;        # element <img>, second argument
 
+    if Length( arg ) > 0 and not IsGeneralMapping( arg[1] ) then
+      ErrorNoReturn( "<map> must be a general mapping" );
+    fi;
+
     # preimage of the range under <map>, which may be a general mapping
     if Length( arg ) = 1  then
 
@@ -273,16 +301,20 @@ InstallGlobalFunction( PreImage, function ( arg )
 
         # preimage of a single element <img> under <map>
         if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
-          if not (     IsGeneralMapping( map ) and IsInjective( map )
-                   and IsSurjective( map ) ) then
-            Error( "<map> must be an inj. and surj. mapping" );
-          elif img in Range( map ) then
-            return PreImageElm( map, img );
+          if not ( IsInjective( map ) and IsSurjective( map ) ) then
+            ErrorNoReturn( "<map> must be an injective and surjective ",
+                           "mapping" );
+          elif not img in Range( map ) then
+            ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
           fi;
+          return PreImageElm( map, img );
 
-        # preimage of a set or list of elments <img> under <map>
-        elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )
-             and IsSubset( Range( map ), img ) then
+        # preimage of a collection of elments <img> under <map>
+        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
+          if not IsSubset( Range( map ), img ) then
+            ErrorNoReturn( "the collection <elm> must be contained in ",
+                           "Range(<map>)" );
+          fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
             return PreImagesSet( map, img );
@@ -295,10 +327,15 @@ InstallGlobalFunction( PreImage, function ( arg )
 
           return [];
 
+        else
+          ErrorNoReturn( "the families of the element or collection <elm> ",
+                         "and Range(<map>) don't match, ",
+                         "maybe <elm> is not contained in Range(<map>) or ",
+                         "is not a homogeneous list or collection" );
         fi;
     fi;
-    Error( "usage: PreImage(<map>), PreImage(<map>,<img>), ",
-           "PreImage(<map>,<coll>)" );
+    ErrorNoReturn( "usage: PreImage(<map>), PreImage(<map>,<img>), ",
+                   "PreImage(<map>,<coll>)" );
 end );
 
 
@@ -324,18 +361,22 @@ InstallGlobalFunction( PreImages, function ( arg )
         img := arg[2];
 
         if not IsGeneralMapping( map ) then
-          Error( "<map> must be a general mapping" );
+          ErrorNoReturn( "<map> must be a general mapping" );
         fi;
 
         # preimage of a single element <img> under <map>
-        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) )
-           and img in Range( map ) then
-
+        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
+            if not img in Range( map ) then
+                ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
+            fi;
             return PreImagesElm( map, img );
 
-        # preimage of a set or list of elements <img> under <map>
-        elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )
-             and IsSubset( Range( map ), img ) then
+        # preimage of a collection of elements <img> under <map>
+        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
+          if not IsSubset( Range( map ), img ) then
+            ErrorNoReturn( "the collection <elm> must be contained in ",
+                           "Range(<map>)" );
+          fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
             return PreImagesSet( map, img );
@@ -348,10 +389,15 @@ InstallGlobalFunction( PreImages, function ( arg )
 
           return [];
 
+        else
+          ErrorNoReturn( "the families of the element or collection <elm> ",
+                         "and Range(<map>) don't match, ",
+                         "maybe <elm> is not contained in Range(<map>) or ",
+                         "is not a homogeneous list or collection" );
         fi;
     fi;
-    Error( "usage: PreImages(<map>), PreImages(<map>,<img>), ",
-           "PreImages(<map>,<coll>)" );
+    ErrorNoReturn( "usage: PreImages(<map>), PreImages(<map>,<img>), ",
+                   "PreImages(<map>,<coll>)" );
 end );
 
 
