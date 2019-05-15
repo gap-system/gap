@@ -37,10 +37,11 @@ section&nbsp;<Ref Sect="General Mappings"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="sect:IsDirectProductElement">
-<Heading>IsDirectProductElement (Filter)</Heading>
+<Section Label="sect:Direct Products and their Elements">
+<Heading>Direct Products and their Elements</Heading>
 
 <#Include Label="IsDirectProductElement">
+<#Include Label="DirectProductFamily">
 
 </Section>
 

@@ -1262,12 +1262,11 @@ InstallMethod( UnderlyingRelation,
     true,
     [ IsGeneralMapping ], 0,
     function( map )
-    local rel;
-    rel:= Objectify( NewType( CollectionsFamily(
-          DirectProductElementsFamily( [ ElementsFamily( FamilyObj( Source( map ) ) ),
-                          ElementsFamily( FamilyObj( Range( map  ) ) ) ] ) ),
-                              IsDomain and IsAttributeStoringRep ),
-                     rec() );
+    local type, rel;
+    type:= NewType( DirectProductFamily( [ FamilyObj( Source( map ) ),
+                                           FamilyObj( Range( map ) ) ] ),
+                    IsDomain and IsAttributeStoringRep );
+    rel:= Objectify( type, rec() );
     SetUnderlyingGeneralMapping( rel, map );
     return rel;
     end );
