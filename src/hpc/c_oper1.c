@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "72241890"
+#define FILE_CRC  "-114334241"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -2848,10 +2848,11 @@ static Obj  HdlrFunc6 (
     /* else */
     else {
      
-     /* Print( "InstallMethod warning: ", NAME_FUNC( opr ), "(\c", INPUT_FILENAME(  ), "\c +", INPUT_LINENUMBER(  ), ") \c", "required filters \c" ); */
+     /* Print( "InstallMethod warning: ", NAME_FUNC( opr ), " at \c", INPUT_FILENAME(  ), ":", INPUT_LINENUMBER(  ), " \c", "required filter \c", NAME_FUNC( filters[notmatch] ), " for ", Ordinal( notmatch ), " argument does not match any ", 
+ "declaration\n" ); */
      t_1 = GF_Print;
-     t_2 = NEW_PLIST( T_PLIST, 8 );
-     SET_LEN_PLIST( t_2, 8 );
+     t_2 = NEW_PLIST( T_PLIST, 13 );
+     SET_LEN_PLIST( t_2, 13 );
      t_3 = MakeString( "InstallMethod warning: " );
      SET_ELM_PLIST( t_2, 1, t_3 );
      CHANGED_BAG( t_2 );
@@ -2865,7 +2866,7 @@ static Obj  HdlrFunc6 (
      CHECK_FUNC_RESULT( t_3 );
      SET_ELM_PLIST( t_2, 2, t_3 );
      CHANGED_BAG( t_2 );
-     t_3 = MakeString( "(\03" );
+     t_3 = MakeString( " at \03" );
      SET_ELM_PLIST( t_2, 3, t_3 );
      CHANGED_BAG( t_2 );
      t_4 = GF_INPUT__FILENAME;
@@ -2878,7 +2879,7 @@ static Obj  HdlrFunc6 (
      CHECK_FUNC_RESULT( t_3 );
      SET_ELM_PLIST( t_2, 4, t_3 );
      CHANGED_BAG( t_2 );
-     t_3 = MakeString( "\03 +" );
+     t_3 = MakeString( ":" );
      SET_ELM_PLIST( t_2, 5, t_3 );
      CHANGED_BAG( t_2 );
      t_4 = GF_INPUT__LINENUMBER;
@@ -2891,67 +2892,27 @@ static Obj  HdlrFunc6 (
      CHECK_FUNC_RESULT( t_3 );
      SET_ELM_PLIST( t_2, 6, t_3 );
      CHANGED_BAG( t_2 );
-     t_3 = MakeString( ") \03" );
+     t_3 = MakeString( " \03" );
      SET_ELM_PLIST( t_2, 7, t_3 );
      CHANGED_BAG( t_2 );
-     t_3 = MakeString( "required filters \03" );
+     t_3 = MakeString( "required filter \03" );
      SET_ELM_PLIST( t_2, 8, t_3 );
      CHANGED_BAG( t_2 );
-     if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-      CALL_XARGS( t_1, t_2 );
-     }
-     else {
-      DoOperation2Args( CallFuncListOper, t_1, t_2 );
-     }
-     
-     /* for j in NamesFilter( imp[notmatch] ) do */
-     t_5 = GF_NamesFilter;
+     t_4 = GF_NAME__FUNC;
      CHECK_INT_POS( l_notmatch );
-     C_ELM_LIST_FPL( t_6, l_imp, l_notmatch )
-     if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
-      t_4 = CALL_1ARGS( t_5, t_6 );
+     C_ELM_LIST_FPL( t_5, l_filters, l_notmatch )
+     if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
+      t_3 = CALL_1ARGS( t_4, t_5 );
      }
      else {
-      t_4 = DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( t_6 ) );
+      t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( t_5 ) );
      }
-     CHECK_FUNC_RESULT( t_4 );
-     if ( IS_SMALL_LIST(t_4) ) {
-      t_3 = (Obj)(UInt)1;
-      t_1 = INTOBJ_INT(1);
-     }
-     else {
-      t_3 = (Obj)(UInt)0;
-      t_1 = CALL_1ARGS( GF_ITERATOR, t_4 );
-     }
-     while ( 1 ) {
-      if ( t_3 ) {
-       if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-       t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
-       t_1 = (Obj)(((UInt)t_1)+4);
-       if ( t_2 == 0 )  continue;
-      }
-      else {
-       if ( CALL_1ARGS( GF_IS_DONE_ITER, t_1 ) != False )  break;
-       t_2 = CALL_1ARGS( GF_NEXT_ITER, t_1 );
-      }
-      l_j = t_2;
-      
-      /* Print( j, "/\c" ); */
-      t_5 = GF_Print;
-      t_6 = MakeString( "/\03" );
-      if ( TNUM_OBJ( t_5 ) == T_FUNCTION ) {
-       CALL_2ARGS( t_5, l_j, t_6 );
-      }
-      else {
-       DoOperation2Args( CallFuncListOper, t_5, NewPlistFromArgs( l_j, t_6 ) );
-      }
-      
-     }
-     /* od */
-     
-     /* Print( " for ", Ordinal( notmatch ), " argument do not match \ca ", "declaration\n" ); */
-     t_1 = GF_Print;
-     t_2 = MakeString( " for " );
+     CHECK_FUNC_RESULT( t_3 );
+     SET_ELM_PLIST( t_2, 9, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( " for " );
+     SET_ELM_PLIST( t_2, 10, t_3 );
+     CHANGED_BAG( t_2 );
      t_4 = GF_Ordinal;
      if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
       t_3 = CALL_1ARGS( t_4, l_notmatch );
@@ -2960,13 +2921,19 @@ static Obj  HdlrFunc6 (
       t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( l_notmatch ) );
      }
      CHECK_FUNC_RESULT( t_3 );
-     t_4 = MakeString( " argument do not match \03a " );
-     t_5 = MakeString( "declaration\n" );
+     SET_ELM_PLIST( t_2, 11, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( " argument does not match any " );
+     SET_ELM_PLIST( t_2, 12, t_3 );
+     CHANGED_BAG( t_2 );
+     t_3 = MakeString( "declaration\n" );
+     SET_ELM_PLIST( t_2, 13, t_3 );
+     CHANGED_BAG( t_2 );
      if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
-      CALL_4ARGS( t_1, t_2, t_3, t_4, t_5 );
+      CALL_XARGS( t_1, t_2 );
      }
      else {
-      DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4, t_5 ) );
+      DoOperation2Args( CallFuncListOper, t_1, t_2 );
      }
      
     }
@@ -3822,8 +3789,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, ArgStringToList("obj"), HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewFunctionBody();
-   SET_STARTLINE_BODY(t_7, 696);
-   SET_ENDLINE_BODY(t_7, 714);
+   SET_STARTLINE_BODY(t_7, 694);
+   SET_ENDLINE_BODY(t_7, 712);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4526,8 +4493,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, ArgStringToList("key"), HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewFunctionBody();
-  SET_STARTLINE_BODY(t_2, 893);
-  SET_ENDLINE_BODY(t_2, 897);
+  SET_STARTLINE_BODY(t_2, 891);
+  SET_ENDLINE_BODY(t_2, 895);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   ASS_LVAR( 2, t_1 );
@@ -4645,8 +4612,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, ArgStringToList("D"), HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 914);
- SET_ENDLINE_BODY(t_7, 914);
+ SET_STARTLINE_BODY(t_7, 912);
+ SET_ENDLINE_BODY(t_7, 912);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4754,8 +4721,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, ArgStringToList("D,key"), HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 936);
- SET_ENDLINE_BODY(t_7, 959);
+ SET_STARTLINE_BODY(t_7, 934);
+ SET_ENDLINE_BODY(t_7, 957);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4822,8 +4789,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, ArgStringToList("D,key"), HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 969);
- SET_ENDLINE_BODY(t_7, 977);
+ SET_STARTLINE_BODY(t_7, 967);
+ SET_ENDLINE_BODY(t_7, 975);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4903,8 +4870,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, ArgStringToList("D,key,obj"), HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 986);
- SET_ENDLINE_BODY(t_7, 999);
+ SET_STARTLINE_BODY(t_7, 984);
+ SET_ENDLINE_BODY(t_7, 997);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5322,8 +5289,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, ArgStringToList("arg"), HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();
- SET_STARTLINE_BODY(t_5, 1065);
- SET_ENDLINE_BODY(t_5, 1081);
+ SET_STARTLINE_BODY(t_5, 1063);
+ SET_ENDLINE_BODY(t_5, 1079);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5742,11 +5709,8 @@ static Obj  HdlrFunc1 (
                   if not GAPInfo.CommandLineOptions.N then
                       Error( "required filters ", NamesFilter( imp[notmatch] ), "\nfor ", Ordinal( notmatch ), " argument do not match a declaration of ", NAME_FUNC( opr ) );
                   else
-                      Print( "InstallMethod warning: ", NAME_FUNC( opr ), "(\c", INPUT_FILENAME(  ), "\c +", INPUT_LINENUMBER(  ), ") \c", "required filters \c" );
-                      for j in NamesFilter( imp[notmatch] ) do
-                          Print( j, "/\c" );
-                      od;
-                      Print( " for ", Ordinal( notmatch ), " argument do not match \ca ", "declaration\n" );
+                      Print( "InstallMethod warning: ", NAME_FUNC( opr ), " at \c", INPUT_FILENAME(  ), ":", INPUT_LINENUMBER(  ), " \c", "required filter \c", NAME_FUNC( filters[notmatch] ), " for ", Ordinal( notmatch ), " argument does not match any "
+                        , "declaration\n" );
                   fi;
               fi;
           else
@@ -5797,7 +5761,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 378);
- SET_ENDLINE_BODY(t_4, 635);
+ SET_ENDLINE_BODY(t_4, 633);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5859,8 +5823,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 654);
- SET_ENDLINE_BODY(t_3, 718);
+ SET_STARTLINE_BODY(t_3, 652);
+ SET_ENDLINE_BODY(t_3, 716);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5878,8 +5842,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 721);
- SET_ENDLINE_BODY(t_3, 727);
+ SET_STARTLINE_BODY(t_3, 719);
+ SET_ENDLINE_BODY(t_3, 725);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5911,8 +5875,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, ArgStringToList("list,elm"), HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 740);
- SET_ENDLINE_BODY(t_4, 764);
+ SET_STARTLINE_BODY(t_4, 738);
+ SET_ENDLINE_BODY(t_4, 762);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -6000,8 +5964,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, ArgStringToList("name,domreq,keyreq,keytest"), HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 889);
- SET_ENDLINE_BODY(t_4, 1000);
+ SET_STARTLINE_BODY(t_4, 887);
+ SET_ENDLINE_BODY(t_4, 998);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -6056,8 +6020,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, ArgStringToList("arg"), HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 1035);
- SET_ENDLINE_BODY(t_4, 1082);
+ SET_STARTLINE_BODY(t_4, 1033);
+ SET_ENDLINE_BODY(t_4, 1080);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -6398,7 +6362,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = 72241890,
+ .crc         = -114334241,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

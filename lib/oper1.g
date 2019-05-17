@@ -564,12 +564,10 @@ BIND_GLOBAL( "INSTALL_METHOD",
                   Ordinal(notmatch)," argument do not match a declaration of ",
                   NAME_FUNC(opr) );
           else
-            Print("InstallMethod warning: ",  NAME_FUNC(opr), "(\c",INPUT_FILENAME(),"\c +",
-                  INPUT_LINENUMBER(),") \c","required filters \c");
-            for j in NamesFilter(imp[notmatch]) do
-              Print(j,"/\c");
-            od;
-            Print(" for ",Ordinal(notmatch)," argument do not match \ca ",
+            Print("InstallMethod warning: ",  NAME_FUNC(opr), " at \c",INPUT_FILENAME(),":",
+                  INPUT_LINENUMBER()," \c","required filter \c",
+                  NAME_FUNC(filters[notmatch]),
+                  " for ",Ordinal(notmatch)," argument does not match any ",
                   "declaration\n");
           fi;
         fi;
