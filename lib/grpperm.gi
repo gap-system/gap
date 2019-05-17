@@ -1244,6 +1244,7 @@ BindGlobal("QuickUnsolvabilityTestPerm",function(G)
 local som,elvth,fct,gens,new,l,i,j,a,b,bound;
   # a few moved points
   som:=MovedPoints(G);
+  if Length(som) = 0 then SetIsTrivial(G,true); return true; fi;
   bound:=Int(LogInt(Length(som)^5,3)/2); #Dixon Bound
   if Length(som)>100 then
     som:=som{List([1..100],x->Random(1, Length(som)))};
