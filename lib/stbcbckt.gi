@@ -692,26 +692,30 @@ local  dom,  # operation domain for the group
 	
 	# Map the suborbit <sub> with each old representative.
 	for o  in old  do
-	  if subs.reps[ o ] = true  then
-	    subs.reps[ o ] := InverseRepresentative( subs.stabChainTop,
-		SuboTruePos(ran, subs.blists[ o ] ) ) ^ -1;
-	  fi;
-	  for img  in OnTuples( sub, subs.reps[ o ] )  do
-	    
-	    # Find the suborbit <i> of the image.
-	    i := subs.which[ img ];
-	    
-	    # If this suborbit is encountered for the first time, add
-	    # it to <new> and store its distance <len>.
-	    if key[ i ] = 0  then
-	      Add( new, i );
-	      key[ i ] := len;
-	    fi;
-	    
-	    # Store the arrow which starts at suborbit <o>.
-	    key[ o ] := key[ o ] + d *
-			Length( sub ) ^ ( key[ i ] mod d );
-	  od;
+          if subs.reps[o]<>false then
+            if subs.reps[ o ] = true  then
+              subs.reps[ o ] := InverseRepresentative( subs.stabChainTop,
+                  SuboTruePos(ran, subs.blists[ o ] ) ) ^ -1;
+            fi;
+            for img  in OnTuples( sub, subs.reps[ o ] )  do
+              
+              # Find the suborbit <i> of the image.
+              i := subs.which[ img ];
+              
+              # If this suborbit is encountered for the first time, add
+              # it to <new> and store its distance <len>.
+              if key[ i ] = 0  then
+                Add( new, i );
+                key[ i ] := len;
+              fi;
+              
+              # Store the arrow which starts at suborbit <o>.
+              key[ o ] := key[ o ] + d *
+                          Length( sub ) ^ ( key[ i ] mod d );
+            od;
+          else
+            Info(InfoWarning,1,"suborbits variant triggered, check!");
+          fi;
 	od;
       od;
 
