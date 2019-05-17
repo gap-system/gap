@@ -242,3 +242,9 @@ DeclareOperation( "IntersectSet", [ IsList and IsMutable, IsList ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SubtractSet", [ IsList and IsMutable, IsList ] );
+
+#############################################################################
+##
+# MOVE THIS TO domain.gd
+DeclareSynonym("IsSetAsDomain", IsDomain);
+DeclareSynonym("SetAsDomain", Domain);

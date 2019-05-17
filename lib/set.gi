@@ -222,3 +222,50 @@ InstallMethod( SubtractSet,
       RemoveSet( set, obj );
     od;
     end );
+
+
+#############################################################################
+##
+InstallMethod(SetAsDomain,
+"for a set & collection",
+[IsSet and IsCollection],
+function(set)
+    local copy, type, domain;
+    copy := Immutable(set);
+    type := NewType(FamilyObj(copy),
+                    IsSetAsDomain and IsAttributeStoringRep);
+    return ObjectifyWithAttributes(rec(), type,
+                                   GeneratorsOfDomain, copy,
+                                   AsList, copy,
+                                   AsSet, copy);
+end);
+
+# Provide family of objects `fam`. Then the resulting domain lives in the same
+# family as a domain created from a non-empty set of objects of `fam`.
+InstallOtherMethod(SetAsDomain,
+"for a family and an empty list",
+[IsFamily, IsEmpty and IsList],
+function(family, set)
+    local copy, type;
+    copy := Immutable([]);
+    type := NewType(CollectionsFamily(family),
+                    IsSetAsDomain and IsAttributeStoringRep);
+    return ObjectifyWithAttributes(rec(), type,
+                                   GeneratorsOfDomain, copy,
+                                   AsList, copy,
+                                   AsSet, copy);
+end);
+
+InstallMethod(\in,
+"for an IsSetAsDomain",
+[IsObject, IsSetAsDomain],
+function(elm, set)
+    return elm in AsList(set);
+end);
+
+InstallMethod(PrintObj,
+"for an IsSetAsDomain",
+[IsSetAsDomain],
+function( setAsDomain )
+    Print("SetAsDomain(", AsList(setAsDomain), ")");
+end);
