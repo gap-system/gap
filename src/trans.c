@@ -424,8 +424,12 @@ Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
             ptf2[i] = i;
         }
         for (i = LEN_LIST(src); 1 <= i; i--) {
-            ptf2[INT_INTOBJ(ELM_LIST(src, i)) - 1] =
-                INT_INTOBJ(ELM_LIST(ran, i)) - 1;
+            s = INT_INTOBJ(ELM_LIST(src, i));
+            r = INT_INTOBJ(ELM_LIST(ran, i));
+            // deg may be smaller than s if s = r
+            if (s != r) {
+                ptf2[s - 1] = r - 1;
+            }
         }
     }
     else {
@@ -435,8 +439,11 @@ Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
             ptf4[i] = i;
         }
         for (i = LEN_LIST(src); 1 <= i; i--) {
-            ptf4[INT_INTOBJ(ELM_LIST(src, i)) - 1] =
-                INT_INTOBJ(ELM_LIST(ran, i)) - 1;
+            s = INT_INTOBJ(ELM_LIST(src, i));
+            r = INT_INTOBJ(ELM_LIST(ran, i));
+            if (s != r) {
+                ptf4[s - 1] = r - 1;
+            }
         }
     }
     return f;

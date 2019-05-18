@@ -60,6 +60,12 @@ Error, TransformationListListNC: <ran> must be a list (not a permutation (smal\
 l))
 gap> TransformationListListNC([], []);
 IdentityTransformation
+gap> TransformationListListNC([1..100000], [1..100000]);
+IdentityTransformation
+gap> TransformationListList([1..1000000], Concatenation([100000], [2..1000000]));
+<transformation on 100000 pts with rank 99999>
+gap> TransformationListList([1..1000000], Concatenation([2], [2..1000000]));
+Transformation( [ 2, 2 ] )
 
 # Test DegreeOfTransformation
 gap> f := TransformationListListNC([1, 2], [1, 1]) ^ (3, 4);;
