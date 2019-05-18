@@ -125,6 +125,22 @@ matrix:
           - g++-4.7
           - valgrind
 
+    # The following two configurations are temporary, to try to track down
+    # a GAP crash in the previous test.
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="CC=gcc-4.7 CXX=g++-4.7"
+      addons:
+        apt_packages:
+          - gcc-4.7
+          - g++-4.7
+          - valgrind
+
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-valgrind"
+      addons:
+        apt_packages:
+          - gcc-4.7
+          - g++-4.7
+          - valgrind
+
     # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation).
     - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
