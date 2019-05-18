@@ -127,7 +127,7 @@ matrix:
 
     # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation).
-    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build
+    - env: TEST_SUITES="docomp testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
