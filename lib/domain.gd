@@ -136,6 +136,7 @@ InstallTrueMethod( IsDuplicateFree, IsDomain );
 ##  <#GAPDoc Label="GeneratorsOfDomain">
 ##  <ManSection>
 ##  <Attr Name="GeneratorsOfDomain" Arg='D'/>
+##  <Attr Name="GeneratorsOfSetAsDomain" Arg='D'/>
 ##
 ##  <Description>
 ##  For a domain <A>D</A>, <Ref Attr="GeneratorsOfDomain"/> returns a list
@@ -158,6 +159,9 @@ InstallTrueMethod( IsDuplicateFree, IsDomain );
 ##  <A>D</A>, <C><A>D</A>.i</C> returns the <M>i</M>-th generator if 
 ##  <M>i</M> is a positive integer, and if <C>name</C> is the name of a 
 ##  generator of <A>D</A> then <C><A>D</A>.name</C> returns this generator. 
+##  <P/>
+##  <Ref Attr="GeneratorsOfSetAsDomain"/> is a synonym for
+##  <Ref Attr="GeneratorsOfDomain"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
