@@ -1520,7 +1520,7 @@ local a,b,	# lines of slp
 #    Assert(1,not
 #    ForAny([1..Length(l)],i->ForAny([1..i-1],j->PositionSublist(l[i],l[j])<>fail)));
     
-    Assert(1,Length(Set(l))=Length(l));
+    Assert(3,Length(Set(l))=Length(l));
     l:=StraightLineProgElm(seed,StraightLineProgramNC(l,seen));
     Assert(2,EvalStraightLineProgElm(aob)*EvalStraightLineProgElm(bob)=
              EvalStraightLineProgElm(l));
