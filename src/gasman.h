@@ -43,8 +43,6 @@
 **
 *T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 **
-**  'Bag'
-**
 **  Each bag is identified by its  *bag identifier*.  That  is each bag has a
 **  bag identifier and no  two live bags have the  same identifier.  'Bag' is
 **  the type of bag identifiers.
@@ -207,8 +205,6 @@ EXPORT_INLINE Int IS_BAG_REF(Obj bag)
 **
 *F  SIZE_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . . size of a bag
 **
-**  'SIZE_BAG( <bag> )'
-**
 **  'SIZE_BAG' returns  the  size of the bag   with the identifier  <bag> in
 **  bytes.
 **
@@ -254,8 +250,6 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) {
 /****************************************************************************
 **
 *F  PTR_BAG(<bag>)  . . . . . . . . . . . . . . . . . . . .  pointer to a bag
-**
-**  'PTR_BAG( <bag> )'
 **
 **  'PTR_BAG' returns the address of the data area of the bag with identifier
 **  <bag>.  Using  this pointer the application  can then  read data from the
@@ -326,8 +320,6 @@ EXPORT_INLINE void SET_PTR_BAG(Bag bag, Bag *val)
 /****************************************************************************
 **
 *F  CHANGED_BAG(<bag>)  . . . . . . . .  notify Gasman that a bag has changed
-**
-**  'CHANGED_BAG( <bag> )'
 **
 **  'CHANGED_BAG'  informs {\Gasman} that the bag   with identifier <bag> has
 **  been changed by an assignment of another bag identifier.
@@ -410,8 +402,6 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 **
 *F  NewBag(<type>,<size>) . . . . . . . . . . . . . . . .  allocate a new bag
 **
-**  'NewBag( <type>, <size> )'
-**
 **  'NewBag' allocates a new bag  of type <type> and  <size> bytes.  'NewBag'
 **  returns the  identifier  of the new  bag,  which must be  passed as first
 **  argument to all other {\Gasman} functions.
@@ -466,8 +456,6 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 **
 *F  RetypeBag(<bag>,<new>)  . . . . . . . . . . . .  change the type of a bag
 **
-**  'RetypeBag( <bag>, <new> )'
-**
 **  'RetypeBag' changes the type of the bag with identifier <bag>  to the new
 **  type <new>.  The identifier, the size,  and also the  address of the data
 **  area of the bag do not change.
@@ -515,8 +503,6 @@ void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 **
 *F  ResizeBag(<bag>,<new>)  . . . . . . . . . . . .  change the size of a bag
 **
-**  'ResizeBag( <bag>, <new> )'
-**
 **  'ResizeBag' changes the size of the bag with  identifier <bag> to the new
 **  size <new>.  The identifier  of the bag  does not change, but the address
 **  of the data area  of the bag  may change.  If  the new size <new> is less
@@ -560,8 +546,6 @@ EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
 **
 *F  CollectBags(<size>,<full>)  . . . . . . . . . . . . . . collect dead bags
 **
-**  'CollectBags( <size>, <full> )'
-**
 **  'CollectBags' performs a  garbage collection.  This means  it deallocates
 **  the dead   bags and  compacts the  live   bags at the  beginning   of the
 **  workspace.   If    <full>  is 0, then   only   the  dead young  bags  are
@@ -602,8 +586,6 @@ extern UInt8 SizeAllBags;
 **
 *V  InfoBags[<type>]  . . . . . . . . . . . . . . . . .  information for bags
 **
-**  'InfoBags[<type>]'
-**
 **  'InfoBags[<type>]'  is a structure containing information for bags of the
 **  type <type>.
 **
@@ -643,8 +625,6 @@ Bag  MakeBagReadOnly(Bag bag);
 /****************************************************************************
 **
 *F  InitMsgsFuncBags(<msgs-func>) . . . . . . . . .  install message function
-**
-**  'InitMsgsFuncBags( <msgs-func> )'
 **
 **  'InitMsgsFuncBags' installs the function <msgs-func> as function used  by
 **  {\Gasman} to print messages during garbage collections.  <msgs-func> must
@@ -775,8 +755,6 @@ void MarkFourSubBags(Bag bag);
 **
 *F  MarkAllSubBags(<bag>) . . . . . .  marking function that marks everything
 **
-**  'MarkAllSubBags( <bag> )'
-**
 **  'MarkAllSubBags'  is  the marking function  for  types whose bags contain
 **  only identifier of other bags.  It marks every entry of such a bag.  Note
 **  that 'MarkAllSubBags' assumes that  all  identifiers are at offsets  from
@@ -829,9 +807,7 @@ extern void MarkArrayOfBags(const Bag array[], UInt count);
 
 /****************************************************************************
 **
-*F  InitGlobalBag(<addr>) . . . . . inform Gasman about global bag identifier
-**
-**  'InitGlobalBag( <addr>, <cookie> )'
+*F  InitGlobalBag(<addr>,<cookie>)  inform Gasman about global bag identifier
 **
 **  'InitGlobalBag'  informs {\Gasman} that there is  a bag identifier at the
 **  address <addr>, which must be of  type '(Bag\*)'.  {\Gasman} will look at
@@ -859,8 +835,6 @@ void InitGlobalBag(Bag * addr, const Char * cookie);
 **
 *F  InitFreeFuncBag(<type>,<free-func>) . . . . . .  install freeing function
 **
-**  'InitFreeFuncBag( <type>, <free-func> )'
-**
 **  'InitFreeFuncBag' installs  the function <free-func>  as freeing function
 **  for bags of type <type>.
 **
@@ -885,8 +859,6 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags free_func);
 /****************************************************************************
 **
 *F  InitCollectFuncBags(<bfr-func>,<aft-func>) . install collection functions
-**
-**  'InitCollectFuncBags( <before-func>, <after-func> )'
 **
 **  'InitCollectFuncBags' installs       the   functions  <before-func>   and
 **  <after-func> as collection functions.
@@ -916,9 +888,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 
 /****************************************************************************
 **
-*F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
-**
-**  InitBags( <initialSize>, <stackStart>, <stackAlign> )
+*F  InitBags(<initialSize>,<stackStart>,<stackAlign>) . . . initialize Gasman
 **
 **  'InitBags'  initializes {\Gasman}.  It  must be called from a application
 **  using {\Gasman} before any bags can be allocated.
@@ -942,11 +912,11 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 */
 void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
 
+
 /****************************************************************************
 **
 *F  FinishBags() end GASMAN and free memory
 */
-
 void FinishBags(void);
 
 #if !defined(USE_GASMAN)
