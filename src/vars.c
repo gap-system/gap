@@ -2061,7 +2061,6 @@ static void VarsAfterCollectBags(void)
       STATE(PtrLVars) = PTR_BAG( STATE(CurrLVars) );
       STATE(PtrBody)  = PTR_BAG( BODY_FUNC( CURR_FUNC() ) );
     }
-  GVarsAfterCollectBags();
 }
 
 #endif
@@ -2300,7 +2299,8 @@ static Int InitKernel (
 
 #ifdef USE_GASMAN
     /* install before and after actions for garbage collections            */
-    InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );
+    RegisterBeforeCollectFuncBags(VarsBeforeCollectBags);
+    RegisterAfterCollectFuncBags(VarsAfterCollectBags);
 #endif
 
     /* init filters and functions                                          */

@@ -239,13 +239,6 @@ void UpdateCopyFopyInfo(void);
 
 /****************************************************************************
 **
-*F  GVarsAfterCollectBags()
-*/
-void GVarsAfterCollectBags(void);
-
-
-/****************************************************************************
-**
 *F  DeclareGVar(<gvar>, <name>) . . . . . .  declare global variable by name
 *F  GVarValue(<gvar>) . . . . . . . . . return value of <gvar>, 0 if unbound
 *F  GVarObj(<gvar>) . . . . . . . . return value of <gvar>, error if unbound

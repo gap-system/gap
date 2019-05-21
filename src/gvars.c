@@ -1355,7 +1355,7 @@ static void RemoveCopyFopyInfo( void )
 /****************************************************************************
 **
 */
-void GVarsAfterCollectBags(void)
+static void GVarsAfterCollectBags(void)
 {
 #ifdef USE_GVAR_BUCKETS
   for (int i = 0; i < GVAR_BUCKETS; i++) {
@@ -1562,6 +1562,11 @@ static Int InitKernel (
                      "src/gvars.c:ErrorMustEvalToFuncHandler" );
     InitHandlerFunc( ErrorMustHaveAssObjHandler,
                      "src/gvars.c:ErrorMustHaveAssObjHandler" );
+
+#ifdef USE_GASMAN
+    // install post-GC callback
+    RegisterAfterCollectFuncBags(GVarsAfterCollectBags);
+#endif
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
