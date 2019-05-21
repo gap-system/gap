@@ -168,6 +168,8 @@ gap> PrintFormattingStatus(sstream) = false;
 true
 gap> PrintFormattingStatus(fstream) = true;
 true
+gap> CloseStream(sstream);
+gap> CloseStream(fstream);
 
 # Long Strings
 # All these strings are 2000 or 3000 characters long, to make sure we fill the string buffer at least once or twice
