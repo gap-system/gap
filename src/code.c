@@ -136,11 +136,17 @@ static Stat * ADDR_STAT(Stat stat)
 
 void WRITE_EXPR(Expr expr, UInt idx, UInt val)
 {
+    GAP_ASSERT(expr / sizeof(Expr) + idx <
+               SIZE_BAG(BODY_FUNC(CURR_FUNC())) / sizeof(Expr));
+
     ADDR_EXPR(expr)[idx] = val;
 }
 
 static void WRITE_STAT(Stat stat, UInt idx, UInt val)
 {
+    GAP_ASSERT(stat / sizeof(Stat) + idx <
+               SIZE_BAG(BODY_FUNC(CURR_FUNC())) / sizeof(Stat));
+
     ADDR_STAT(stat)[idx] = val;
 }
 
