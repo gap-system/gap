@@ -984,21 +984,31 @@ void            InitFreeFuncBag (
 
 /****************************************************************************
 **
-*F  InitCollectFuncBags(<bfr-func>,<aft-func>) . install collection functions
-**
-**  'InitCollectFuncBags' is really too simple for an explanation.
 */
-static TNumCollectFuncBags BeforeCollectFuncBags;
+static struct {
+    UInt nrBefore;
+    UInt nrAfter;
 
-static TNumCollectFuncBags AfterCollectFuncBags;
+    TNumCollectFuncBags before[16];
+    TNumCollectFuncBags after[16];
+} CollectFuncBags = { 0, 0, { 0 }, { 0 } };
 
-void            InitCollectFuncBags (
-    TNumCollectFuncBags before_func,
-    TNumCollectFuncBags after_func )
+int RegisterBeforeCollectFuncBags(TNumCollectFuncBags func)
 {
-    BeforeCollectFuncBags = before_func;
-    AfterCollectFuncBags  = after_func;
+    if (CollectFuncBags.nrBefore >= ARRAY_SIZE(CollectFuncBags.before))
+        return 1;
+    CollectFuncBags.before[CollectFuncBags.nrBefore++] = func;
+    return 0;
 }
+
+int RegisterAfterCollectFuncBags(TNumCollectFuncBags func)
+{
+    if (CollectFuncBags.nrAfter >= ARRAY_SIZE(CollectFuncBags.after))
+        return 1;
+    CollectFuncBags.after[CollectFuncBags.nrAfter++] = func;
+    return 0;
+}
+
 
 /***************************************************************
  * GAP_MEM_CHECK
@@ -1084,9 +1094,10 @@ static void MaybeMoveBags(void)
     if (newBase >= GetMembufCount())
         newBase = 1;
 
-    // call the before function (if any)
-    if (BeforeCollectFuncBags != 0)
-        (*BeforeCollectFuncBags)();
+    // call the before functions (if any)
+    UInt i;
+    for (i = 0; i < CollectFuncBags.nrBefore; ++i)
+        CollectFuncBags.before[i]();
 
     MoveBagMemory(GetMembuf(oldBase), GetMembuf(newBase));
 
@@ -1098,10 +1109,9 @@ static void MaybeMoveBags(void)
         mprotect(GetMembuf(oldBase), GetMembufSize(), PROT_NONE);
     }
 
-    // call the after function (if any)
-    if (AfterCollectFuncBags != 0)
-        (*AfterCollectFuncBags)();
-
+    // call the after functions (if any)
+    for (i = 0; i < CollectFuncBags.nrAfter; ++i)
+        CollectFuncBags.after[i]();
 
     oldBase = newBase;
 }
@@ -1874,9 +1884,9 @@ UInt CollectBags (
 #endif
 
 
-    /* call the before function (if any)                                   */
-    if ( BeforeCollectFuncBags != 0 )
-        (*BeforeCollectFuncBags)();
+    // call the before functions (if any)
+    for (i = 0; i < CollectFuncBags.nrBefore; ++i)
+        CollectFuncBags.before[i]();
 
     /* copy 'full' into a global variable, to avoid warning from GNU C     */
     FullBags = full;
@@ -2305,9 +2315,9 @@ again:
         goto again;
     }
 
-    /* call the after function (if any)                                    */
-    if ( AfterCollectFuncBags != 0 )
-        (*AfterCollectFuncBags)();
+    // call the after functions (if any)
+    for (i = 0; i < CollectFuncBags.nrAfter; ++i)
+        CollectFuncBags.after[i]();
 
 
 #ifdef DEBUG_MASTERPOINTERS

@@ -858,24 +858,28 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags free_func);
 
 /****************************************************************************
 **
-*F  InitCollectFuncBags(<bfr-func>,<aft-func>) . install collection functions
+*F  RegisterBeforeCollectFuncBags(<func>)  install before-collection function
+*F  RegisterAfterCollectFuncBags(<func>) .  install after-collection function
 **
-**  'InitCollectFuncBags' installs       the   functions  <before-func>   and
-**  <after-func> as collection functions.
+**  Register a callback to be called before respectively after each garbage
+**  collection.
 **
-**  The  <before-func> will be  called   before each garbage collection,  the
-**  <after-func>  will be called after each  garbage  collection.  One use of
-**  the   <before-func> is to  call 'CHANGED_BAG'  for bags  that change very
-**  often, so you do not have to call 'CHANGED_BAG'  for them every time they
-**  change.  One use of the <after-func> is to update a pointer for a bag, so
-**  you do not have to update that pointer after every operation that might
-**  cause a garbage collection.
+**  One use of a <before-func> is to call 'CHANGED_BAG' for bags that change
+**  very often, so you do not have to call 'CHANGED_BAG' for them every time
+**  they change.
+**
+**  One use of after-collection callbacks is to update a pointer for a bag,
+**  so you do not have to update that pointer after every operation that
+**  might cause a garbage collection.
+**
+**  The number of callbacks which can be registered is limited. If the
+**  callback was successfully registered, 0 is returned, otherwise 1.
 */
 #ifdef USE_GASMAN
 typedef void            (* TNumCollectFuncBags) ( void );
 
-void InitCollectFuncBags(TNumCollectFuncBags before_func,
-                         TNumCollectFuncBags after_func);
+int RegisterBeforeCollectFuncBags(TNumCollectFuncBags func);
+int RegisterAfterCollectFuncBags(TNumCollectFuncBags func);
 #endif
 
 
