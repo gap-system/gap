@@ -388,6 +388,52 @@ BIND_GLOBAL("ShowImpliedFilters",function(filter)
   fi;
 end);
 
+
+#############################################################################
+##
+#F  ShowDeclarationsOfOperation( <oper> )
+##
+##  <#GAPDoc Label="ShowDeclarationsOfOperation">
+##  <ManSection>
+##  <Func Name="ShowDeclarationsOfOperation" Arg='oper'/>
+##
+##  <Description>
+##  Displays information about all declarations of the operation <A>oper</A>,
+##  including the location of each declaration and the argument filters.
+##  <Log><![CDATA[
+##  gap> ShowDeclarationsOfOperation(IsFinite);
+##  Available declarations for operation <Property "IsFinite">:
+##    1: GAPROOT/lib/coll.gd:1451 with 1 arguments, and filters [ IsListOrCollection ]
+##    2: GAPROOT/lib/float.gd:212 with 1 arguments, and filters [ IsFloat ]
+##    3: GAPROOT/lib/ctbl.gd:1195 with 1 arguments, and filters [ IsNearlyCharacterTable ]
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("ShowDeclarationsOfOperation",function(oper)
+    local locs, reqs, i, r;
+    if not IsOperation(oper) then
+        Error("<oper> must be an operation");
+    fi;
+    Print("Available declarations for operation ", oper, ":\n");
+    locs := GET_DECLARATION_LOCATIONS(oper);
+    if locs = fail then
+        return;
+    fi;
+    reqs := GET_OPER_FLAGS(oper);
+    for i in [1.. Length(locs)] do
+        r := List(reqs[i], r -> JoinStringsWithSeparator(NamesFilter(r), " and \c"));
+        Print(String(i, 3), ": ", locs[i][1], "\c:", locs[i][2], "\c",
+              " with ", Length(reqs[i]), "\c",
+              " arguments, and filters [ ", "\c",
+              JoinStringsWithSeparator(r, ", "),
+              " ]\n"
+              );
+    od;
+end);
+
+
 #############################################################################
 ##
 #F  PageSource( func ) . . . . . . . . . . . . . . . show source code in pager
