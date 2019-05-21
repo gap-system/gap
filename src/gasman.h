@@ -79,11 +79,6 @@ typedef UInt * *        Bag;
 **
 */
 typedef struct {
-#if defined(GAP_MEMORY_CANARY)
-    // The following variable is marked as not readable or writable
-    // in valgrind, to check for code reading before the start of the header.
-    uint64_t memory_canary_padding1[8];
-#endif
     uint8_t type : 8;
     uint8_t flags : 8;
     // the following unnamed field ensures that on 32 bit systems,
@@ -96,7 +91,7 @@ typedef struct {
 #if defined(GAP_MEMORY_CANARY)
     // The following variable is marked as not readable or writable
     // in valgrind, to check for code reading before the start of a Bag.
-    uint64_t memory_canary_padding2[8];
+    uint64_t memory_canary_padding[8];
 #endif
 } BagHeader;
 

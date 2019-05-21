@@ -472,9 +472,7 @@ static void CANARY_ALLOW_ACCESS_BAG(Bag bag)
 
     BagHeader * header = BAG_HEADER(bag);
     VALGRIND_MAKE_MEM_DEFINED(
-        (char *)header + sizeof(header->memory_canary_padding1),
-        sizeof(*header) - sizeof(header->memory_canary_padding1) -
-            sizeof(header->memory_canary_padding2));
+        header, sizeof(*header) - sizeof(header->memory_canary_padding));
 }
 
 // Reverse CANARY_ALL_ACCESS_BAG, making the masterpointer, bag contents and
@@ -488,9 +486,7 @@ static void CANARY_FORBID_ACCESS_BAG(Bag bag)
 
     BagHeader * header = BAG_HEADER(bag);
     VALGRIND_MAKE_MEM_NOACCESS(
-        (char *)header + sizeof(header->memory_canary_padding1),
-        sizeof(*header) - sizeof(header->memory_canary_padding1) -
-            sizeof(header->memory_canary_padding2));
+        header, sizeof(*header) - sizeof(header->memory_canary_padding));
 }
 
 // Mark all bags as accessible
