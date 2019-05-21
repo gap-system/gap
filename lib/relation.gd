@@ -144,7 +144,7 @@ DeclareGlobalFunction("RandomBinaryRelationOnPoints");
 ##  <A>domain</A>.
 ##  <Example><![CDATA[
 ##  gap> IdentityBinaryRelation(5);
-##  <equivalence relation on <object> >
+##  <equivalence relation on Domain([ 1 .. 5 ]) >
 ##  gap> s4:=SymmetricGroup(4);
 ##  Sym( [ 1 .. 4 ] )
 ##  gap> IdentityBinaryRelation(s4);
@@ -171,7 +171,7 @@ DeclareGlobalFunction("IdentityBinaryRelation");
 ##  where the source and range are the same set.
 ##  <Example><![CDATA[
 ##  gap> r:=BinaryRelationByElements(Domain([1..3]),[Tuple([1,2]),Tuple([1,3])]);
-##  <general mapping: <object> -> <object> >
+##  <general mapping: Domain([ 1 .. 3 ]) -> Domain([ 1 .. 3 ]) >
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -794,7 +794,7 @@ DeclareAttribute("GeneratorsOfEquivalenceRelationPartition",
 ##  they contain only elements of the domain.
 ##  <Example><![CDATA[
 ##  gap> er:=EquivalenceRelationByPartition(Domain([1..10]),[[1,3,5,7,9],[2,4,6,8,10]]);
-##  <equivalence relation on <object> >
+##  <equivalence relation on Domain([ 1 .. 10 ]) >
 ##  gap> IsEquivalenceRelation(er);
 ##  true
 ##  ]]></Example>
@@ -932,7 +932,7 @@ DeclareAttribute("EquivalenceClassRelation", IsEquivalenceClass);
 ##  </M><C>EquivalenceClasses</C><M>( c2 )</M>.
 ##  <Example><![CDATA[
 ##  gap> er:=EquivalenceRelationByPartition(Domain([1..10]),[[1,3,5,7,9],[2,4,6,8,10]]);
-##  <equivalence relation on <object> >
+##  <equivalence relation on Domain([ 1 .. 10 ]) >
 ##  gap> classes := EquivalenceClasses(er);
 ##  [ {1}, {2} ]
 ##  ]]></Example>
