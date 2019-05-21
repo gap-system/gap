@@ -83,7 +83,7 @@ end);
 InstallMethod( AlternatingGroupCons,
     "perm group with degree",
     true,
-    [ IsPermGroup and IsFinite,
+    [ IsNaturalAlternatingGroup and IsPermGroup and IsFinite,
       IsInt],
     0,
 
@@ -97,18 +97,28 @@ end );
 ##
 #M  AlternatingGroupCons( <IsPermGroup>, <dom> )
 ##
-InstallOtherMethod( AlternatingGroupCons,
+
+BindGlobal("ALTERNATING_GROUP_CACHE",[]);
+
+
+InstallMethod( AlternatingGroupCons,
     "perm group with domain",
     true,
-    [ IsPermGroup and IsFinite,
+    [ IsPermGroup and IsNaturalAlternatingGroup and IsFinite,
       IsDenseList ],
     0,
 
 function( filter, dom )
-    local   alt,  dl,  g,  l;
+    local   alt,  dl,  g,  l, cachable;
 
     dom := Set(dom);
-    IsRange( dom );
+    cachable := -1;
+    if IsRange( dom ) and dom[1] = 1 and (Length(dom) = 1 or  dom[2] = 2) then
+        cachable := Length(dom);
+        if IsBound(ALTERNATING_GROUP_CACHE[cachable]) then
+            return ALTERNATING_GROUP_CACHE[cachable];
+        fi;
+    fi;
     if Length(dom) < 3  then
         alt := GroupByGenerators( [], () );
         SetSize(           alt, 1 );
@@ -143,6 +153,10 @@ function( filter, dom )
     fi;
     SetIsAlternatingGroup( alt, true );
     SetIsNaturalAlternatingGroup( alt, true );
+    if cachable > -1 then
+        ALTERNATING_GROUP_CACHE[cachable] := alt;
+    fi;
+    
     return alt;
 end );
 
@@ -155,7 +169,7 @@ InstallMethod( AlternatingGroupCons,
     true,
     [ IsPermGroup and IsRegular and IsFinite,
       IsInt],
-    0,
+    -RankFilter(IsRegular)-1,
 
 function( filter, deg )
     if deg<0 then TryNextMethod();fi;
@@ -173,12 +187,12 @@ InstallOtherMethod( AlternatingGroupCons,
     true,
     [ IsPermGroup and IsRegular and IsFinite,
       IsDenseList ],
-    0,
+    -RankFilter(IsRegular)-1,
 
 function( filter, dom )
     local   alt;
 
-    alt := AlternatingGroupCons( IsPermGroup, dom );
+    alt := AlternatingGroupCons( IsNaturalAlternatingGroup, dom );
     alt := Action( alt, AsList(alt), OnRight );
     SetIsAlternatingGroup( alt, true );
     return alt;
@@ -359,7 +373,7 @@ InstallMethod( SymmetricGroupCons,
 
 function( filter, deg )
     if deg<0 then TryNextMethod();fi;
-    return SymmetricGroupCons( IsPermGroup, [ 1 .. deg ] );
+    return SymmetricGroupCons( IsPermGroup and IsNaturalSymmetricGroup, [ 1 .. deg ] );
 end );
 
 
@@ -367,18 +381,29 @@ end );
 ##
 #M  SymmetricGroupCons( <IsPermGroup>, <dom> )
 ##
+
+BindGlobal("SYMMETRIC_GROUP_CACHE", []);
+
+
 InstallOtherMethod( SymmetricGroupCons,
     "perm group with domain",
     true,
-    [ IsPermGroup and IsFinite,
+    [ IsPermGroup and IsFinite and IsNaturalSymmetricGroup,
       IsDenseList ],
     0,
 
 function( filters, dom )
-    local   sym,  g;
+    local  cachable, sym, g;
     
     dom := Set(dom);
-    IsRange( dom );
+    cachable := -1;
+    if IsRange( dom ) and dom[1] = 1 and (Length(dom) = 1 or dom[2] = 2) then
+        cachable := Length(dom);
+        if IsBound(SYMMETRIC_GROUP_CACHE[cachable]) then
+            return SYMMETRIC_GROUP_CACHE[cachable];
+        fi;
+    fi;
+
     if Length(dom) < 2  then
         sym := GroupByGenerators( [], () );
         SetSize(           sym, 1 );
@@ -402,6 +427,9 @@ function( filters, dom )
     SetIsPrimitiveAffine( sym, Length( dom ) < 5 );
     SetIsSymmetricGroup( sym, true );
     SetIsNaturalSymmetricGroup( sym, true );
+    if cachable > -1 then
+        SYMMETRIC_GROUP_CACHE[cachable] := sym;
+    fi;
     return sym;
 end );
 
@@ -415,7 +443,7 @@ InstallMethod( SymmetricGroupCons,
     true,
     [ IsPermGroup and IsRegular and IsFinite,
       IsInt],
-    0,
+    -RankFilter(IsRegular)-1,
 
 function( filter, deg )
     if deg<0 then TryNextMethod();fi;
@@ -433,12 +461,13 @@ InstallOtherMethod( SymmetricGroupCons,
     true,
     [ IsPermGroup and IsRegular and IsFinite,
       IsDenseList ],
-    0,
+    -RankFilter(IsRegular)-1,
+    
 
 function( filter, dom )
     local   alt;
 
-    alt := SymmetricGroupCons( IsPermGroup, dom );
+    alt := SymmetricGroupCons( IsPermGroup and IsNaturalSymmetricGroup, dom );
     alt := Action( alt, AsList(alt), OnRight );
     SetIsSymmetricGroup( alt, true );
     return alt;
