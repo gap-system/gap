@@ -21,5 +21,11 @@ false
 gap> M = J;
 Error, no method found for comparing two infinite domains
 
+# PrintObj method
+gap> Domain([1..5]);
+Domain([ 1 .. 5 ])
+gap> Domain(FamilyObj(1), []);
+Domain([  ])
+
 #
 gap> STOP_TEST("domain.tst");

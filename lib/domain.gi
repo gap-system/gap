@@ -207,6 +207,18 @@ InstallMethod( GeneratorsOfDomain,
 
 #############################################################################
 ##
+##  PrintObj
+##
+InstallMethod( PrintObj,
+    "for a domain with GeneratorsOfDomain",
+    [ HasGeneratorsOfDomain and IsDomain ],
+    function( dom )
+    Print( "Domain(", GeneratorsOfDomain( dom ), ")" );
+    end );
+
+
+#############################################################################
+##
 #M  AsList( <D> ) . . . . . . . . . . . . . . .  list of elements of a domain
 #M  Enumerator( <D> ) . . . . . . . . . . . . .  list of elements of a domain
 ##
