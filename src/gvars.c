@@ -87,7 +87,7 @@ static Obj * PtrGVars[GVAR_BUCKETS];
 **  access global variables.
 **
 **  Since a   garbage  collection may move   this  bag around,    the pointer
-**  'PtrGVars' must be  revalculated afterwards.   This is done in function
+**  'PtrGVars' must be  recalculated afterwards.   This is done in function
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
 static Obj   ValGVars;
