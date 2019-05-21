@@ -21,18 +21,16 @@
 /****************************************************************************
 **
 *V  NrAllBags . . . . . . . . . . . . . . . . .  number of all bags allocated
-*V  SizeAllBags . . . . . . . . . . . . . .  total size of all bags allocated
-*V  NrLiveBags  . . . . . . . . . .  number of bags that survived the last gc
-*V  SizeLiveBags  . . . . . . .  total size of bags that survived the last gc
-*V  NrDeadBags  . . . . . . . number of bags that died since the last full gc
-*V  SizeDeadBags  . . . . total size of bags that died since the last full gc
-**
-**  'NrAllBags'
 **
 **  'NrAllBags' is the number of bags allocated since Gasman was initialized.
 **  It is incremented for each 'NewBag' call.
+*/
+extern  UInt                    NrAllBags;
+
+
+/****************************************************************************
 **
-**  'NrLiveBags'
+*V  NrLiveBags  . . . . . . . . . .  number of bags that survived the last gc
 **
 **  'NrLiveBags' is the number of bags that were  live after the last garbage
 **  collection.  So after a full  garbage collection it is simply  the number
@@ -43,8 +41,13 @@
 **  which is  the number of live   young  bags.   This  value  is used in the
 **  information messages,  and to find  out  how  many  free  identifiers are
 **  available.
+*/
+extern  UInt                    NrLiveBags;
+
+
+/****************************************************************************
 **
-**  'SizeLiveBags'
+*V  SizeLiveBags  . . . . . . .  total size of bags that survived the last gc
 **
 **  'SizeLiveBags' is  the total size of bags  that were  live after the last
 **  garbage collection.  So after a full garbage  collection it is simply the
@@ -54,16 +57,26 @@
 **  bags, and the total size of bags that have been found to be still live by
 **  this garbage  collection,  which is  the  total size of  live young bags.
 **  This value is used in the information messages.
+*/
+extern  UInt                    SizeLiveBags;
+
+
+/****************************************************************************
 **
-**  'NrDeadBags'
+*V  NrDeadBags  . . . . . . . number of bags that died since the last full gc
 **
 **  'NrDeadBags' is  the number of bags that died since the last full garbage
 **  collection.   So after a  full garbage  collection this is zero.  After a
 **  partial  garbage  collection it  is  the  sum  of the  previous value  of
 **  'NrDeadBags' and the  number of bags that  have been found to be dead  by
 **  this garbage collection.  This value is used in the information messages.
+*/
+extern  UInt                    NrDeadBags;
+
+
+/****************************************************************************
 **
-**  'SizeDeadBags'
+*V  SizeDeadBags  . . . . total size of bags that died since the last full gc
 **
 **  'SizeDeadBags' is  the total size  of bags that  died since the last full
 **  garbage collection.  So  after a full   garbage collection this  is zero.
@@ -71,20 +84,19 @@
 **  'SizeDeadBags' and the total size of bags that have been found to be dead
 **  by  this garbage  collection.   This  value  is used  in the  information
 **  message.
+*/
+extern  UInt8                   SizeDeadBags;
+
+
+/****************************************************************************
 **
-**  'NrHalfDeadBags'
+*V  NrDeadBags . . . . . . . . . . number of bags only reachable by weak ptrs
 **
 **  'NrHalfDeadBags'  is  the number of  bags  that  have  been  found to  be
 **  reachable only by way of weak pointers since the last garbage collection.
 **  The bodies of these bags are deleted, but their identifiers are marked so
 **  that weak pointer objects can recognize this situation.
 */
-
-extern  UInt                    NrAllBags;
-extern  UInt                    NrLiveBags;
-extern  UInt                    SizeLiveBags;
-extern  UInt                    NrDeadBags;
-extern  UInt8                   SizeDeadBags;
 extern  UInt                    NrHalfDeadBags;
 
 
@@ -114,6 +126,8 @@ Int IsWeakDeadBag(Bag bag);
 
 /****************************************************************************
 **
+**  Internal variables exported for the sake of the code in saveload.c
+**
 */
 extern  Bag *                   MptrBags;
 extern  Bag *                   MptrEndBags;
@@ -123,8 +137,6 @@ extern  Bag *                   AllocBags;
 /****************************************************************************
 **
 *F  InitSweepFuncBags(<type>,<sweep-func>)  . . . . install sweeping function
-**
-**  'InitSweepFuncBags( <type>, <sweep-func> )'
 **
 **  'InitSweepFuncBags' installs the function <sweep-func> as sweeping
 **  function for bags of type <type>.
