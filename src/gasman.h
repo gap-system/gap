@@ -907,10 +907,6 @@ void InitCollectFuncBags(TNumCollectFuncBags before_func,
 #endif
 
 
-#ifdef USE_GASMAN
-extern void SetStackBottomBags(void * StackBottom);
-#endif
-
 // ExtraMarkFuncBags, if not NULL, is called during garbage collection
 // This is used for integrating GAP (possibly linked as a shared library) with
 // other code bases which use their own form of garbage collection. For
@@ -955,11 +951,6 @@ void FinishBags(void);
 
 #if !defined(USE_GASMAN)
 void * AllocateMemoryBlock(UInt size);
-#endif
-
-
-#ifdef GAP_MEM_CHECK
-Int enableMemCheck(Char ** argv, void * dummy);
 #endif
 
 #endif // GAP_GASMAN_H

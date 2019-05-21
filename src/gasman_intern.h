@@ -214,8 +214,23 @@ void CheckMasterPointers(void);
 void CallbackForAllBags(void (*func)(Bag));
 
 
+/****************************************************************************
+**
+*/
 #ifdef GAP_MEM_CHECK
+Int enableMemCheck(Char ** argv, void * dummy);
 extern Int EnableMemCheck;
 #endif
+
+
+/****************************************************************************
+**
+*F  SetStackBottomBags(<stackBottom>)
+**
+**  Helper for the libgap API.
+**
+*/
+void SetStackBottomBags(void * stackBottom);
+
 
 #endif

@@ -20,6 +20,9 @@
 #include "gap.h"
 #include "gapstate.h"
 #include "gasman.h"
+#ifdef USE_GASMAN
+#include "gasman_intern.h"
+#endif
 #include "gvars.h"
 #include "integer.h"
 #include "lists.h"
