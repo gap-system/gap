@@ -320,6 +320,7 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
     Obj o = NEW_PLIST(T_PLIST, length);
     SET_LEN_PLIST(o, length);
     memcpy(BASE_PTR_PLIST(o), list, length * sizeof(Obj));
+    CHANGED_BAG(o);
     return o;
 }
 
