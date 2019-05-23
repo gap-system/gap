@@ -285,14 +285,23 @@ end );
 ##
 #f  DeclareCategoryCollections( <name> )
 ##
-##  binds the collections category of the category that is bound to the
-##  global variable with name <name> to the global variable associated to the
-##  name <nname>.
-##  If <name> is of the form `<initname>Collection' then <nname> is equal to
-##  `<initname>CollColl',
-##  if <name> is of the form `<initname>Coll' then <nname> is equal to
-##  `<initname>CollColl',
-##  otherwise we have <nname> equal to `<name>Collection'.
+##  <#GAPDoc Label="DeclareCategoryCollections">
+##  <ManSection>
+##  <Func Name="DeclareCategoryCollections" Arg='filter'/>
+##
+##  <Description>
+##  Calls <Ref Func="CategoryCollections"/> on the category that is bound to
+##  the global variable with name <A>name</A> to obtain its collections
+##  category, and binds the latter to the global variable with name
+##  <C>nname</C>. This name is defined as follows: If <A>name</A> is of the
+##  form <C><A>Something</A>Collection</C> then <C>nname</C> is set to
+##  <C><A>Something</A>CollColl</C>, if <A>name</A> is of the form
+##  <C><A>Something</A>Coll</C> then <C>nname</C> is set to
+##  <C><A>Something</A>CollColl</C>, otherwise we set <C>nname</C> to
+##  <C><A>name</A>Collection</C>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "DeclareCategoryCollections", function( name )
     local len, coll_name;

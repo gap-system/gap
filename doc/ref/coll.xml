@@ -30,6 +30,7 @@
 <#Include Label="IsCollectionFamily">
 <#Include Label="ElementsFamily">
 <#Include Label="CategoryCollections">
+<#Include Label="DeclareCategoryCollections">
 
 </Section>
 
