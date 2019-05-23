@@ -786,7 +786,7 @@ end);
 ##  course of a &GAP; session,
 ##  whenever a newly-computed Sylow subgroup is put into the list.
 ##  Therefore, this is a <E>mutable attribute</E>
-##  (see <Ref Sect="Creating Attributes and Properties"/>).
+##  (see <Ref Sect="Attributes"/>).
 ##  The list contains primes in each bound odd position and a corresponding
 ##  Sylow subgroup in the following even position.
 ##  More precisely, if

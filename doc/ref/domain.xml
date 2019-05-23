@@ -605,8 +605,8 @@ The functions <Ref Func="InstallSubsetMaintenance"/>,
 <Ref Func="InstallFactorMaintenance"/> are used to tell &GAP;
 under what conditions an attribute is maintained under taking subsets,
 or forming factor structures or isomorphic domains.
-This is used only when a new attribute is created,
-see&nbsp;<Ref Sect="Creating Attributes and Properties"/>.
+This is used only when a new attribute or property is created,
+see&nbsp;<Ref Func="NewAttribute"/> and <Ref Func="NewProperty"/>.
 For the attributes already available,
 such as <Ref Prop="IsFinite"/> and <Ref Prop="IsCommutative"/>,
 the maintenances are already notified.
@@ -680,8 +680,7 @@ and <Ref Filt="IsLieMatrix"/>.
 
 The following categories of elements are to be understood mainly as
 categories for all objects in a family,
-they are usually used as third argument of <C>NewFamily</C>
-(see&nbsp;<Ref Sect="Creating Families"/>).
+they are usually used as third argument of <Ref Func="NewFamily"/>.
 The purpose of each of the following categories is then to guarantee that
 each collection of its elements automatically lies in its collections
 category (see&nbsp;<Ref Func="CategoryCollections"/>).

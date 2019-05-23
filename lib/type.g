@@ -455,7 +455,7 @@ fi;
 ##  of <A>cat</A>.
 ##  This is a category in which all families lie that know from their
 ##  creation that all their elements are in the category <A>cat</A>,
-##  see&nbsp;<Ref Sect="Creating Families"/>.
+##  see&nbsp;<Ref Sect="Families"/>.
 ##  <P/>
 ##  For example, a family of associative words is in the category
 ##  <C>CategoryFamily( IsAssocWord )</C>,
