@@ -364,8 +364,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  <Ref Oper="Index" Label="for a group and its subgroup"/> 
 ##  and <C>IndexOp</C> methods
 ##  for a number of arguments different from two,
-##  with <Ref Func="InstallOtherMethod"/>,
-##  see <Ref Sect="Creating Attributes and Properties"/>).
+##  with <Ref Func="InstallOtherMethod"/>, see <Ref Sect="Attributes"/>).
 ##  <P/>
 ##  The call of <Ref Func="InParentFOA"/> declares the operations and the
 ##  attribute as described above,

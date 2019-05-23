@@ -13,12 +13,7 @@
 This chapter is divided into three parts.
 <P/>
 In the first part, it is explained how to create
-filters (see&nbsp;<Ref Sect="Creating Categories"/>, <Ref Sect="Creating Representations"/>,
-<Ref Sect="Creating Attributes and Properties"/>, <Ref Sect="Creating Other Filters"/>),
-operations (see&nbsp;<Ref Sect="Creating Operations"/>),
-families (see&nbsp;<Ref Sect="Creating Families"/>),
-types (see&nbsp;<Ref Sect="Creating Types"/>),
-and objects with given type (see&nbsp;<Ref Sect="Creating Objects"/>).
+objects with given type (see&nbsp;<Ref Sect="Creating Objects"/>).
 <P/>
 In the second part, first a few small examples are given,
 for dealing with the usual cases of
@@ -42,213 +37,6 @@ of &GAP; packages is outlined (see&nbsp;<Ref Sect="Declaration and Implementatio
 See also Chapter&nbsp;<Ref Chap="An Example -- Residue Class Rings"/> for examples
 how the functions from the first part are used,
 and why it is useful to have a declaration part and an implementation part.
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Categories">
-<Heading>Creating Categories</Heading>
-
-<#Include Label="NewCategory">
-<#Include Label="DeclareCategory">
-<#Include Label="CategoryFamily">
-
-<P/>
-
-See also <Ref Func="CategoryCollections"/>.
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Representations">
-<Heading>Creating Representations</Heading>
-
-<#Include Label="NewRepresentation">
-<#Include Label="DeclareRepresentation">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Attributes and Properties">
-<Heading>Creating Attributes and Properties</Heading>
-
-Each method that is installed for an attribute or a property
-via <Ref Func="InstallMethod"/> must require exactly one argument,
-and this must lie in the filter <A>filter</A> that was entered as second
-argument of <Ref Func="NewAttribute"/> resp. <Ref Func="NewProperty"/>.
-<P/>
-As for any operation (see&nbsp;<Ref Sect="Creating Operations"/>),
-for attributes and properties one can install a method taking an argument
-that does not lie in <A>filt</A> via <Ref Func="InstallOtherMethod"/>,
-or a method for more than one argument;
-in the latter case,
-clearly the result value is <E>not</E> stored in any of the arguments.
-
-<#Include Label="NewAttribute">
-<#Include Label="NewProperty">
-<#Include Label="DeclareAttribute">
-<#Include Label="DeclareProperty">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Other Filters">
-<Heading>Creating Other Filters</Heading>
-
-In order to change the value of <A>filt</A> for an object <A>obj</A>,
-one can use logical implications
-(see&nbsp;<Ref Sect="Logical Implications"/>) or
-<Ref Func="SetFilterObj"/>, <Ref Func="ResetFilterObj"/>.
-
-<#Include Label="NewFilter">
-<#Include Label="DeclareFilter">
-<#Include Label="SetFilterObj">
-<#Include Label="ResetFilterObj">
-
-<!-- %T Categories and representations should not be operations, -->
-<!-- %T the same for filters made by <C>NewFilter</C>! -->
-<!-- %AK Now everything is displayed properly -->
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Operations">
-<Heading>Creating Operations</Heading>
-
-<#Include Label="NewOperation">
-<#Include Label="DeclareOperation">
-
-</Section>
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Constructors">
-<Heading>Creating Constructors</Heading>
-
-<#Include Label="NewConstructor">
-<#Include Label="DeclareConstructor">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Families">
-<Heading>Creating Families</Heading>
-
-Families are probably the least obvious part of the &GAP; type system,
-so some remarks about the role of families are necessary.
-When one uses &GAP; as it is, one will (better: should) not meet
-families at all.
-The two situations where families come into play are the following.
-<P/>
-First, since families are used to describe relations between arguments of
-operations in the method selection mechanism
-(see Chapter&nbsp;<Ref Chap="Method Selection"/>,
-and also Chapter&nbsp;<Ref Chap="Types of Objects"/>),
-one has to prescribe such a relation in each method installation
-(see&nbsp;<Ref Sect="Method Installation"/>);
-usual relations are <Ref Func="ReturnTrue"/>
-(which means that any relation of the actual arguments is admissible),
-<Ref Func="IsIdenticalObj"/> (which means that
-there are two arguments that lie in the same family),
-and <C>IsCollsElms</C>
-(which means that there are two arguments,
-the first being a collection of elements that lie in the same family
-as the second argument).
-<P/>
-Second &ndash;and this is the more complicated situation&ndash;
-whenever one creates a new kind of objects,
-one has to decide what its family shall be.
-If the new object shall be equal to existing objects,
-for example if it is just represented in a different way,
-there is no choice:
-The new object must lie in the same family as all objects
-that shall be equal to it.
-So only if the new object is different
-(w.r.t.&nbsp;the equality <Q><C>=</C></Q>)
-from all other &GAP; objects, we are likely to create a new family
-for it.
-Note that enlarging an existing family by such new objects
-may be problematic because of implications that have been
-installed for all  objects of the family in question.
-The choice of families depends on the applications one has in mind.
-For example, if the new objects in question are not likely to be
-arguments of operations for which family relations are relevant
-(for example binary arithmetic operations),
-one could create one family for all such objects,
-and regard it as <Q>the family of all those &GAP; objects that would
-in fact not need a family</Q>.
-On the other extreme, if one wants to create domains of the new objects
-then one has to choose the family in such a way that all intended
-elements of a domain do in fact lie in the same family.
-(Remember that a domain is a collection,
-see Chapter&nbsp;<Ref Sect="Domains"/>,
-and that a collection consists of elements in the same family,
-see Chapter&nbsp;<Ref Chap="Collections"/>
-and Section&nbsp;<Ref Sect="Families"/>.)
-<P/>
-Let us look at an example.
-Suppose that no permutations are available in &GAP;,
-and that we want to implement permutations.
-Clearly we want to support permutation groups,
-but it is not a priori clear how to distribute the new permutations
-into families.
-We can put all permutations into one family;
-this is how in fact permutations are implemented in &GAP;.
-But it would also be possible to put all permutations of a given degree
-into a family of their own;
-this would for example mean that for each degree,
-there would be distinguished trivial permutations,
-and that the stabilizer of the point <C>5</C> in the symmetric group on the
-points <C>1</C>, <C>2</C>, <M>\ldots</M>, <C>5</C> is not regarded as equal to the
-symmetric group on <C>1</C>, <C>2</C>, <C>3</C>, <C>4</C>.
-Note that the latter approach would have the advantage that it is
-no problem to construct permutations and permutation groups acting on
-arbitrary (finite) sets,
-for example by constructing first the symmetric group on the set
-and then generating any desired permutation group as a subgroup of this
-symmetric group.
-<P/>
-So one aspect concerning a reasonable choice of families is
-to make the families large enough for being able to form interesting
-domains of elements in the family.
-But on the other hand,
-it is useful to choose the families small enough for admitting
-meaningful relations between objects.
-For example, the elements of different free groups in &GAP;
-lie in different families;
-the multiplication of free group elements is installed only for the
-case that the two operands lie in the same family,
-with the effect that one cannot erroneously form the product of
-elements from different free groups.
-In this case, families appear as a tool for providing useful
-restrictions.
-<P/>
-As another example, note that an element and a collection containing
-this element never lie in the same family,
-by the general implementation of collections;
-namely, the family of a collection of elements in the family <A>Fam</A>
-is the collections family of <A>Fam</A> (see&nbsp;<Ref Attr="CollectionsFamily"/>).
-This means that for a collection, we need not (because we cannot)
-decide about its family.
-<P/>
-A few functions in &GAP; return families,
-see <Ref Attr="CollectionsFamily"/> and <Ref Attr="ElementsFamily"/>.
-
-<#Include Label="NewFamily">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Creating Types">
-<Heading>Creating Types</Heading>
-
-<#Include Label="NewType">
-
-</Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -307,7 +95,7 @@ in order to keep the information stored in <A>cobj</A> consistent.
 <P/>
 First of all, in the access or assignment to a component as shown above,
 <A>name</A> must be among the admissible component names
-for the representation of <A>cobj</A>, see&nbsp;<Ref Sect="Creating Representations"/>.
+for the representation of <A>cobj</A>, see&nbsp;<Ref Func="NewRepresentation"/>.
 Second, preferably only few low level functions should use <C>!.</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
@@ -415,7 +203,7 @@ in order to keep the information stored in <A>pobj</A> consistent.
 <P/>
 First of all, in the access or assignment to a position as shown above,
 <A>pos</A> must be among the admissible positions
-for the representation of <A>pobj</A>, see&nbsp;<Ref Sect="Creating Representations"/>.
+for the representation of <A>pobj</A>, see&nbsp;<Ref Func="NewRepresentation"/>.
 Second, preferably only few low level functions should use <C>![]</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>

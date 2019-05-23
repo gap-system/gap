@@ -71,6 +71,8 @@ and then set the attribute tester for the object to <K>true</K>.
 <#Include Label="IsOperation">
 <#Include Label="TypeOfOperation">
 <#Include Label="ShowDeclarationsOfOperation">
+<#Include Label="NewOperation">
+<#Include Label="DeclareOperation">
 
 </Section>
 
@@ -143,6 +145,9 @@ Note that in both these cases there are methods that actually produce results
 of the required types, but they have not been installed with this information,
 so are not selected.
 
+<#Include Label="NewConstructor">
+<#Include Label="DeclareConstructor">
+
 </Section>
 
 
@@ -211,7 +216,7 @@ relative to other methods for <A>opr</A>.
 <P/>
 Note that for operations which are constructors special rules with respect
 to applicability and rank of the corresponding methods apply
-(see section <Ref Func="NewConstructor"/>).
+(see <Ref Func="NewConstructor"/>).
 <P/>
 Note that from the applicable methods
 an efficient one shall be selected.

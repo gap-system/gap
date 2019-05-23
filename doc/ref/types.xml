@@ -74,9 +74,108 @@ equal to a densely represented matrix.  Similarly, each domain is
 equal w.r.t. <C>=</C> to the sorted list of its elements, but a domain
 is not a list, and a list is not a domain.
 <P/>
-For information on how to create families, see <Ref Sect="Creating Families"/>.
+Families are probably the least obvious part of the &GAP; type system,
+so some remarks about the role of families are necessary.
+When one uses &GAP; as it is, one will (better: should) not meet
+families at all.
+The two situations where families come into play are the following.
+<P/>
+First, since families are used to describe relations between arguments of
+operations in the method selection mechanism
+(see Chapter&nbsp;<Ref Chap="Method Selection"/>,
+and also Chapter&nbsp;<Ref Chap="Types of Objects"/>),
+one has to prescribe such a relation in each method installation
+(see&nbsp;<Ref Sect="Method Installation"/>);
+usual relations are <Ref Func="ReturnTrue"/>
+(which means that any relation of the actual arguments is admissible),
+<Ref Func="IsIdenticalObj"/> (which means that
+there are two arguments that lie in the same family),
+and <C>IsCollsElms</C>
+(which means that there are two arguments,
+the first being a collection of elements that lie in the same family
+as the second argument).
+<P/>
+Second &ndash;and this is the more complicated situation&ndash;
+whenever one creates a new kind of objects,
+one has to decide what its family shall be.
+If the new object shall be equal to existing objects,
+for example if it is just represented in a different way,
+there is no choice:
+The new object must lie in the same family as all objects
+that shall be equal to it.
+So only if the new object is different
+(w.r.t.&nbsp;the equality <Q><C>=</C></Q>)
+from all other &GAP; objects, we are likely to create a new family
+for it.
+Note that enlarging an existing family by such new objects
+may be problematic because of implications that have been
+installed for all  objects of the family in question.
+The choice of families depends on the applications one has in mind.
+For example, if the new objects in question are not likely to be
+arguments of operations for which family relations are relevant
+(for example binary arithmetic operations),
+one could create one family for all such objects,
+and regard it as <Q>the family of all those &GAP; objects that would
+in fact not need a family</Q>.
+On the other extreme, if one wants to create domains of the new objects
+then one has to choose the family in such a way that all intended
+elements of a domain do in fact lie in the same family.
+(Remember that a domain is a collection,
+see Chapter&nbsp;<Ref Sect="Domains"/>,
+and that a collection consists of elements in the same family,
+see Chapter&nbsp;<Ref Chap="Collections"/>
+and Section&nbsp;<Ref Sect="Families"/>.)
+<P/>
+Let us look at an example.
+Suppose that no permutations are available in &GAP;,
+and that we want to implement permutations.
+Clearly we want to support permutation groups,
+but it is not a priori clear how to distribute the new permutations
+into families.
+We can put all permutations into one family;
+this is how in fact permutations are implemented in &GAP;.
+But it would also be possible to put all permutations of a given degree
+into a family of their own;
+this would for example mean that for each degree,
+there would be distinguished trivial permutations,
+and that the stabilizer of the point <C>5</C> in the symmetric group on the
+points <C>1</C>, <C>2</C>, <M>\ldots</M>, <C>5</C> is not regarded as equal to the
+symmetric group on <C>1</C>, <C>2</C>, <C>3</C>, <C>4</C>.
+Note that the latter approach would have the advantage that it is
+no problem to construct permutations and permutation groups acting on
+arbitrary (finite) sets,
+for example by constructing first the symmetric group on the set
+and then generating any desired permutation group as a subgroup of this
+symmetric group.
+<P/>
+So one aspect concerning a reasonable choice of families is
+to make the families large enough for being able to form interesting
+domains of elements in the family.
+But on the other hand,
+it is useful to choose the families small enough for admitting
+meaningful relations between objects.
+For example, the elements of different free groups in &GAP;
+lie in different families;
+the multiplication of free group elements is installed only for the
+case that the two operands lie in the same family,
+with the effect that one cannot erroneously form the product of
+elements from different free groups.
+In this case, families appear as a tool for providing useful
+restrictions.
+<P/>
+As another example, note that an element and a collection containing
+this element never lie in the same family,
+by the general implementation of collections;
+namely, the family of a collection of elements in the family <A>Fam</A>
+is the collections family of <A>Fam</A> (see&nbsp;<Ref Attr="CollectionsFamily"/>).
+This means that for a collection, we need not (because we cannot)
+decide about its family.
+<P/>
+A few functions in &GAP; return families,
+see <Ref Attr="CollectionsFamily"/> and <Ref Attr="ElementsFamily"/>.
 
 <#Include Label="FamilyObj">
+<#Include Label="NewFamily">
 
 </Section>
 
@@ -130,10 +229,11 @@ The rank of a filter can be accessed with <Ref Func="RankFilter"/>.
 <Description>
 For simple filters, an <E>incremental rank</E> is defined when the filter is
 created, see the sections about the creation of filters:
-<Ref Sect="Creating Categories"/>,
-<Ref Sect="Creating Representations"/>,
-<Ref Sect="Creating Attributes and Properties"/>,
-<Ref Sect="Creating Other Filters"/>.
+<Ref Func="NewCategory"/>,
+<Ref Func="NewRepresentation"/>,
+<Ref Func="NewAttribute"/>,
+<Ref Func="NewProperty"/>,
+<Ref Func="NewFilter"/>.
 For an arbitrary filter, its rank is given by the sum of the incremental
 ranks of the <E>involved</E> simple filters;
 in addition to the implied filters, these are also the required filters
@@ -155,9 +255,10 @@ these are all those simple filters <C>imp</C> such that every object in
 <A>filt</A> also lies in <C>imp</C>.
 For implications between filters, see <Ref Func="ShowImpliedFilters"/>
 as well as sections&nbsp;<Ref Sect="Logical Implications"/>,
-<Ref Sect="Creating Categories"/>,
-<Ref Sect="Creating Representations"/>,
-<Ref Sect="Creating Attributes and Properties"/>.
+<Ref Func="NewCategory"/>,
+<Ref Func="NewRepresentation"/>,
+<Ref Func="NewAttribute"/>,
+<Ref Func="NewProperty"/>.
 </Description>
 </ManSection>
 
@@ -200,7 +301,6 @@ in is fixed.
 <P/>
 All categories in the library are created during initialization, in
 particular they are not created dynamically at runtime.
-For information on how to create categories, see <Ref Sect="Creating Categories"/>.
 <P/>
 The following list gives an overview of important categories of
 arithmetic objects.  Indented categories are to be understood as
@@ -291,6 +391,14 @@ inverses.
 <#Include Label="CategoriesOfObject">
 <#Include Label="CategoryByName">
 
+<#Include Label="NewCategory">
+<#Include Label="DeclareCategory">
+<#Include Label="CategoryFamily">
+
+<P/>
+
+See also <Ref Func="CategoryCollections"/>.
+
 </Section>
 
 
@@ -339,7 +447,6 @@ of characters can be converted into a string.
 <P/>
 All representations in the library are created during initialization,
 in particular they are not created dynamically at runtime.
-For information on how to create representations, see <Ref Sect="Creating Representations"/>.
 <P/>
 Examples of subrepresentations of <C>IsPositionalObjectRep</C> are
 <C>IsModulusRep</C>, which is used for residue classes in the ring of
@@ -353,6 +460,8 @@ below).
 
 <#Include Label="IsRepresentation">
 <#Include Label="RepresentationsOfObject">
+<#Include Label="NewRepresentation">
+<#Include Label="DeclareRepresentation">
 
 </Section>
 
@@ -393,7 +502,14 @@ attribute value, and just removing the value might leave the data
 structures in an inconsistent state. If necessary, a new object can be
 constructed.
 <P/>
-Several attributes have methods for more than one argument.  For example
+Each method that is installed for an attribute via <Ref Func="InstallMethod"/>
+must require exactly one argument, and this must lie in the filter
+<A>filter</A> that was entered as second argument of <Ref Func="NewAttribute"/>
+resp. <Ref Func="NewProperty"/>.
+<P/>
+As for any operation, for attributes one can install a method taking an
+argument that does not lie in <A>filt</A> via <Ref Func="InstallOtherMethod"/>,
+or a method for more than one argument. For example,
 <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>
 is an attribute for a <M>G</M>-set that
 can also be called for the two arguments, being a group <M>G</M> and its action
@@ -402,9 +518,6 @@ return value is not stored in any of the arguments.
 <P/>
 Properties are a special form of attributes that have the value <K>true</K>
 or <K>false</K>, see section&nbsp;<Ref Sect="Properties"/>.
-<P/>
-For information on how to create attributes and properties, see
-<Ref Sect="Creating Attributes and Properties"/>.
 <P/>
 Examples of attributes for multiplicative elements are
 <Ref Attr="Inverse"/>, <Ref Attr="One"/>,
@@ -415,6 +528,8 @@ and <Ref Attr="DerivedSubgroup"/> is an attribute for groups.
 
 <#Include Label="IsAttribute">
 <#Include Label="KnownAttributesOfObject">
+<#Include Label="NewAttribute">
+<#Include Label="DeclareAttribute">
 
 </Section>
 
@@ -583,6 +698,8 @@ for all <M>a</M>, <M>b</M>, <M>c</M> in the domain.
 <#Include Label="IsProperty">
 <#Include Label="KnownPropertiesOfObject">
 <#Include Label="KnownTruePropertiesOfObject">
+<#Include Label="NewProperty">
+<#Include Label="DeclareProperty">
 
 </Section>
 
@@ -631,6 +748,19 @@ the only difference is that <A>filt</A> does not refer to an attribute value;
 note that <A>filt</A> is also used in the same way as an attribute tester;
 namely, the <K>true</K> value may be required for certain methods to be
 applicable.
+<P/>
+In order to change the value of <A>filt</A> for an object <A>obj</A>,
+one can use logical implications
+(see&nbsp;<Ref Sect="Logical Implications"/>) or
+<Ref Func="SetFilterObj"/>, <Ref Func="ResetFilterObj"/>.
+
+<#Include Label="NewFilter">
+<#Include Label="DeclareFilter">
+<#Include Label="SetFilterObj">
+<#Include Label="ResetFilterObj">
+
+<!-- %T Categories and representations should not be operations, -->
+<!-- %T the same for filters made by <C>NewFilter</C>! -->
 
 </Section>
 
@@ -661,6 +791,8 @@ The defining data of the type <A>type</A> can be accessed via
 <Ref Func="DataType"/>.
 </Description>
 </ManSection>
+
+<#Include Label="NewType">
 
 </Section>
 </Chapter>
