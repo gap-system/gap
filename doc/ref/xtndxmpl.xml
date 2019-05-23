@@ -245,8 +245,7 @@ Note that the only difference between <Ref Func="DeclareCategory"/> and
 <Ref Func="NewCategory"/>
 is that in a call to <Ref Func="DeclareCategory"/>,
 a variable corresponding to the
-first argument is set to the new category, and this variable is read-only
-(see&nbsp;<Ref Sect="Global Variables in the Library"/>).
+first argument is set to the new category, and this variable is read-only.
 The same holds for <Ref Func="DeclareRepresentation"/> and
 <Ref Func="NewRepresentation"/> etc.
 <P/>

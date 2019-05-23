@@ -73,6 +73,8 @@ representations.  For example, a sparsely represented matrix can be
 equal to a densely represented matrix.  Similarly, each domain is
 equal w.r.t. <C>=</C> to the sorted list of its elements, but a domain
 is not a list, and a list is not a domain.
+<P/>
+For information on how to create families, see <Ref Sect="Creating Families"/>.
 
 <#Include Label="FamilyObj">
 
@@ -159,6 +161,7 @@ as well as sections&nbsp;<Ref Sect="Logical Implications"/>,
 </Description>
 </ManSection>
 
+<#Include Label="FilterByName">
 <#Include Label="ShowImpliedFilters">
 <#Include Label="FiltersType">
 
@@ -197,6 +200,7 @@ in is fixed.
 <P/>
 All categories in the library are created during initialization, in
 particular they are not created dynamically at runtime.
+For information on how to create categories, see <Ref Sect="Creating Categories"/>.
 <P/>
 The following list gives an overview of important categories of
 arithmetic objects.  Indented categories are to be understood as
@@ -283,7 +287,9 @@ inverses by some elements, but to generate it as a magma with one it
 may be necessary to take the union of these generators and their
 inverses.
 
+<#Include Label="IsCategory">
 <#Include Label="CategoriesOfObject">
+<#Include Label="CategoryByName">
 
 </Section>
 
@@ -333,6 +339,7 @@ of characters can be converted into a string.
 <P/>
 All representations in the library are created during initialization,
 in particular they are not created dynamically at runtime.
+For information on how to create representations, see <Ref Sect="Creating Representations"/>.
 <P/>
 Examples of subrepresentations of <C>IsPositionalObjectRep</C> are
 <C>IsModulusRep</C>, which is used for residue classes in the ring of
@@ -344,6 +351,7 @@ An important subrepresentation of <C>IsComponentObjectRep</C> is
 objects.  It provides automatic storing of all attribute values (see
 below).
 
+<#Include Label="IsRepresentation">
 <#Include Label="RepresentationsOfObject">
 
 </Section>
@@ -395,6 +403,9 @@ return value is not stored in any of the arguments.
 Properties are a special form of attributes that have the value <K>true</K>
 or <K>false</K>, see section&nbsp;<Ref Sect="Properties"/>.
 <P/>
+For information on how to create attributes and properties, see
+<Ref Sect="Creating Attributes and Properties"/>.
+<P/>
 Examples of attributes for multiplicative elements are
 <Ref Attr="Inverse"/>, <Ref Attr="One"/>,
 and <Ref Attr="Order"/>.
@@ -402,6 +413,7 @@ and <Ref Attr="Order"/>.
 <Ref Attr="Centre"/> is an attribute for magmas,
 and <Ref Attr="DerivedSubgroup"/> is an attribute for groups.
 
+<#Include Label="IsAttribute">
 <#Include Label="KnownAttributesOfObject">
 
 </Section>
@@ -448,9 +460,7 @@ sets <A>val</A> as size of the
 object <A>obj</A> if the size was not yet known.
 <P/>
 For each attribute <A>attr</A> that is declared with
-<Ref Func="DeclareAttribute"/>
-resp.&nbsp;<Ref Func="DeclareProperty"/>
-(see&nbsp;<Ref Sect="Global Variables in the Library"/>),
+<Ref Func="DeclareAttribute"/> resp.&nbsp;<Ref Func="DeclareProperty"/>,
 tester and setter are automatically made accessible by the names
 <C>Has<A>attr</A></C> and <C>Set<A>attr</A></C>, respectively.
 For example, the tester for <Ref Attr="Size"/> is called <C>HasSize</C>,
@@ -570,6 +580,7 @@ which mean that the multiplication of elements in the domain satisfies
 and <M>( a + b ) * c = a * c + b * c</M>, respectively,
 for all <M>a</M>, <M>b</M>, <M>c</M> in the domain.
 <P/>
+<#Include Label="IsProperty">
 <#Include Label="KnownPropertiesOfObject">
 <#Include Label="KnownTruePropertiesOfObject">
 

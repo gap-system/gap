@@ -77,7 +77,6 @@ So <Ref Func="ReturnTrue"/> is often used as family predicate in
 Functions are &GAP; objects and thus have categories and a family.
 
 <#Include Label="IsFunction">
-<#Include Label="IsOperation">
 <#Include Label="FunctionsFamily">
 
 </Section>
