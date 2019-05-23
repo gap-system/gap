@@ -3335,3 +3335,57 @@ local c,n,deg,ind,core,i,j,sum;
 
 end);
 
+# utility function
+# iterate through subgroup class reps, roughly
+# descending order: First low layer, then all classes. Does not guarantee
+# conjugate-free
+InstallGlobalFunction(DescSubgroupIterator,function(G)
+local done,lev,mode,max,l,pos;
+  done:=[];
+  lev:=0;
+  mode:=1;
+  max:=1;
+  l:=[];
+  pos:=1;
+  return IteratorByFunctions(rec(NextIterator:=function(iter)
+             local a;
+              if pos>Length(l) then
+                if mode=2 then return fail;
+                elif mode=1 and max^2>Size(G) then
+                  mode:=2;
+                  l:=List(ConjugacyClassesSubgroups(G),Representative);
+                  l:=Filtered(l,x->not x in done);
+                  done:=[];
+                else
+                  l:=LowLayerSubgroups(G,lev);
+                  l:=Filtered(l,x->not x in done);
+                  while Length(l)=0 or ForAll(l,x->Size(G)/Size(x)>5*max) do
+                    lev:=lev+1;
+                    max:=2*max;
+                    l:=LowLayerSubgroups(G,lev);
+                    l:=Filtered(l,x->not x in done);
+                  od;
+                  repeat
+                    a:=Filtered(l,x->Size(G)/Size(x)<=5*max);
+                  until Length(a)>0;
+                  l:=a;
+                  max:=Size(G)/Minimum(List(l,Size));
+                fi;
+                SortBy(l,x->-Size(x));
+                pos:=1;
+              fi;
+              pos:=pos+1;
+              if mode=1 then Add(done,l[pos-1]);fi;
+              return l[pos-1];
+             end,
+             IsDoneIterator:=function(iter)
+               return mode=2 and pos>Length(l);
+             end,
+             ShallowCopy:=function(iter)
+               Error("not implemented");
+             end,
+             PrintObj:=function(iter)
+               Print("<stabilizing subgroups iterator>");
+             end));
+end);
+

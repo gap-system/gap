@@ -290,19 +290,15 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##  [ F1, F2, F3, F4, F5, F6, m1, m2, m3, m4 ]>
 ##  gap> g1:=Image(IsomorphismPermGroup(p));
 ##  <permutation group with 10 generators>
-##  gap> NrMovedPoints(g1);
-##  39
 ##  gap> p:=FpGroupCocycle(coh,coh.cohomology[1],true);
 ##  <fp group of size 38880 on the generators
 ##  [ F1, F2, F3, F4, F5, F6, m1, m2, m3, m4 ]>
 ##  gap> g2:=Image(IsomorphismPermGroup(p));
 ##  <permutation group with 10 generators>
-##  gap> NrMovedPoints(g2);
-##  54
 ##  gap> List(MaximalSubgroupClassReps(g1),Size);
 ##  [ 480, 480, 480, 19440, 3888, 7776, 6480 ]
-##  gap> List(MaximalSubgroupClassReps(g2),Size);
-##  [ 19440, 7776, 6480, 3888 ]
+##  gap> Collected(List(MaximalSubgroupClassReps(g2),Size));
+##  [ [ 3888, 1 ], [ 6480, 1 ], [ 7776, 1 ], [ 19440, 1 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
