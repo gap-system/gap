@@ -1183,7 +1183,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
           Append(new,v1-v2);
         od;
         new:=ImmutableVector(field,new);
-        Assert(1,SolutionMat(eqs,new)<>fail);
+        Assert(0,SolutionMat(eqs,new)<>fail);
         Add(bds,new);
       od;
     fi;
@@ -1371,8 +1371,171 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   return r;
 end);
 
+MatricesStabilizerOneDim:=function(field,mats)
+local e,one,m,r,a,c,is,i;
+    e:=[];
+    one:=One(mats[1]);
+    for m in mats do
+      r:=Set(RootsOfUPol(field,CharacteristicPolynomial(m)));
+      a:=List(r,x->NullspaceMat(m-x*one));
+      if Length(a)=0 then return false;fi;
+      Add(e,a);
+    od;
+    for c in Cartesian(e) do
+      is:=c[1];
+      for i in [2..Length(c)] do
+        is:=SumIntersectionMat(is,c[i])[2];
+      od;
+      if Length(is)>0 then
+        return is;
+      fi;
+    od;
+  return false;
+end;
+
+BindGlobal("WreathElm",function(b,l,m)
+local n,ran,r,d,p,i,j;
+  n:=Length(l);
+  ran:=[1..b];
+  r:=0;
+  d:=[];
+  p:=[];
+  # base bit
+  for i in [1..n] do
+    for j in ran do
+      p[r+j]:=r+j^l[i];
+    od;
+    Add(d,ran+r);
+    r:=r+b;
+  od;
+  # permuter bit
+  p:=PermList(p)/PermList(Concatenation(Permuted(d,m)));
+  return p;
+end);
+
+BindGlobal("PermrepSemidirectModule",function(G,module)
+local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
+  if not MTX.IsIrreducible(module) then Error("reducible");fi;
+  p:=Size(module.field);
+  if not IsPrime(p) then Error("must be over prime field");fi;
+  k:=Length(module.generators);
+  hom:=GroupHomomorphismByImagesNC(G,Group(module.generators),
+    GeneratorsOfGroup(G),module.generators);
+  it:=DescSubgroupIterator(G);
+  repeat
+    m:=NextIterator(it);
+
+    if Index(G,m)*p>NrMovedPoints(G)+p^module.dimension then
+      Info(InfoExtReps,2,"Index reached ",Index(G,m),
+        ", write out module action");
+      # alternative, boring version
+      mo:=AbelianGroup(ListWithIdenticalEntries(module.dimension,p));
+      bas:=Pcgs(mo);
+      act:=List(module.generators,m->
+        GroupHomomorphismByImagesNC(mo,mo,bas,
+          List(m,x->PcElementByExponents(bas,x)):noassert));
+      Assert(3,ForAll(act,IsBijective));
+      a:=Group(act);
+      SetIsGroupOfAutomorphismsFiniteGroup(a,true);
+      gi:=SemidirectProduct(G,GroupHomomorphismByImages(G,a,
+        GeneratorsOfGroup(G),act),mo);
+      r:=rec(group:=gi,
+                  ggens:=List(GeneratorsOfGroup(G),x->
+                    ImagesRepresentative(Embedding(gi,1),x)),
+                  #vector:=ImagesRepresentative(Embedding(gi,2),bas[1]),
+        basis:=List(bas,x->ImagesRepresentative(Embedding(gi,2),x)));
+      Assert(0,Size(gi)=Size(G)*p^module.dimension);
+      return r;
+
+    elif Size(Core(G,m))>1 then
+      Info(InfoExtReps,3,"Index ",Index(G,m)," has nontrivial core");
+    else
+      Info(InfoExtReps,2,"Trying index ",Index(G,m));
+
+      mats:=List(GeneratorsOfGroup(m),
+        x->TransposedMat(ImagesRepresentative(hom,x)));
+      a:=MatricesStabilizerOneDim(module.field,mats);
+      if a<>false then
+        # quotient module
+        # basis: supplemental vector and submodule basis 
+        bas:=BaseSteinitzVectors(IdentityMat(module.dimension,GF(p)),
+          NullspaceMat(TransposedMat(a{[1]})));
+        bas:=Concatenation(bas.factorspace,bas.subspace);
+
+        # assume we have a generating set for the SDP consisting of the
+        # complement gens, and one element of the module. 
+        cy:=CyclicGroup(IsPermGroup,p).1; # p-cycle
+        ugens:=[];
+
+        # also transversal chosen in complement
+        r:=RightTransversal(G,m);
+        act:=ActionHomomorphism(G,r,OnRight);
+        act:=List(GeneratorsOfGroup(G),x->ImagesRepresentative(act,x));
+        #l:=ListWithIdenticalEntries(Index(G,m),());
+        for gi in [1..k] do
+          l:=[];
+          for j in [1..Length(r)] do
+            # matrix for Schreier gen
+            a:=ImagesRepresentative(hom,
+              r[j]*G.(gi)/r[PositionCanonical(r,r[j]*G.(gi))]);
+            # how does it act on bas[1]-span, get factor
+            a:=Int(SolutionMat(bas,bas[1]*a)[1]);
+            # write down permutation that acts as mult by a
+            if IsZero(a) then
+              l[j]:=();
+            else
+              l[j]:=MappingPermListList([1..p],Cycle(cy^a,1));
+            fi;
+          od;
+          Add(ugens,WreathElm(p,l,act[gi]) );
+        od;
+
+        # module generator
+        for j in [1..Length(r)] do
+          #r[j]*g/r[j^g]); Note j^g=j here as kernel of permrep
+          l[j]:=
+            cy^Int(SolutionMat(bas,bas[1]/ImagesRepresentative(hom,r[j]))[1]);
+        od;
+        Add(ugens,WreathElm(p,l,()) );
+        gi:=Group(ugens);
+        Assert(0,Size(gi)=p^module.dimension*Size(G));
+        if ValueOption("cheap")<>true then
+          a:=SmallerDegreePermutationRepresentation(gi);
+          if NrMovedPoints(Range(a))<NrMovedPoints(gi) then
+            gi:=Image(a,gi);
+            ugens:=List(ugens,x->ImagesRepresentative(a,x));
+          fi;
+        fi;
+
+        r:=rec(group:=gi,ggens:=ugens{[1..k]});
+
+        # compute basis
+        bas:=bas{[1]};
+        gi:=ugens{[1..k]};
+        ugens:=ugens{[k+1]};
+        i:=1;
+        while Length(bas)<module.dimension do
+          for j in [1..k] do
+            a:=bas[i]*module.generators[j];
+            if SolutionMat(bas,a)=fail then
+              Add(bas,a);
+              Add(ugens,ugens[i]^gi[j]);
+            fi;
+          od;
+          i:=i+1;
+        od;
+        # convert back to standard basis
+        r.basis:=List(Inverse(bas),x->LinearCombinationPcgs(ugens,x));
+
+        return r;
+      fi;
+    fi;
+  until false;
+end);
+
 InstallGlobalFunction(FpGroupCocycle,function(arg)
-local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim;
+local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
+      it,hom;
   r:=arg[1];
   z:=arg[2];
   ogens:=GeneratorsOfGroup(r.presentation.group);
@@ -1408,48 +1571,54 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim;
   SetSize(fp,Size(r.group)*Size(r.module.field)^r.module.dimension);
 
   if Length(arg)>2 and arg[3]=true then
-    sim:=IsomorphismSimplifiedFpGroup(fp);
+    if IsZero(z) and MTX.IsIrreducible(r.module) then
+      # make SDP directly
+      m:=PermrepSemidirectModule(r.group,r.module:cheap);
+      p:=m.group;
+      # test is cheap here, thus no NC
+      new:=GroupHomomorphismByImages(fp,p,GeneratorsOfGroup(fp),
+        Concatenation(m.ggens,m.basis));
+    else
 
-    g:=r.group;
-    quot:=InverseGeneralMapping(sim)*GroupHomomorphismByImages(fp,g,GeneratorsOfGroup(fp),
-      Concatenation(GeneratorsOfGroup(g),
-        ListWithIdenticalEntries(r.module.dimension,One(g))));
-    p:=Image(quot);
-    old:=[];
-    while Size(p)<Size(fp) do
-      lay:=0;
-      repeat
-        if lay=0 then
-          if IsPermGroup(p) then
-            m:=List(Orbits(p,MovedPoints(p)),x->Stabilizer(p,x[1]));
-          else
-            m:=[];
-          fi;
-        else
-          m:=ShallowCopy(LowLayerSubgroups(p,lay));
-        fi;
-        # no repetition
-        m:=Filtered(m,x->not ForAny(old,y->Size(x)=Size(y) and x=y));
-        Append(old,m);
+      sim:=IsomorphismSimplifiedFpGroup(fp);
 
-        SortBy(m,x->-Size(x));
-        i:=1;
-        e:=fail;
-        while i<=Length(m) and e=fail do
-          e:=LargerQuotientBySubgroupAbelianization(quot,m[i]);
-          i:=i+1;
-        od;
-        lay:=lay+1;
-      until e<>fail;
-
-      quot:=DefiningQuotientHomomorphism(Intersection(e,
-        KernelOfMultiplicativeGeneralMapping(quot)));
+      g:=r.group;
+      quot:=InverseGeneralMapping(sim)
+        *GroupHomomorphismByImages(fp,g,GeneratorsOfGroup(fp),
+        Concatenation(GeneratorsOfGroup(g),
+          ListWithIdenticalEntries(r.module.dimension,One(g))));
+      hom:=GroupHomomorphismByImages(r.group,Group(r.module.generators),
+        GeneratorsOfGroup(r.group),r.module.generators);
       p:=Image(quot);
-    od;
-    quot:=sim*quot;
-    new:=GroupHomomorphismByImages(fp,p,GeneratorsOfGroup(fp),
-      List(GeneratorsOfGroup(fp),x->ImagesRepresentative(quot,x)));
-    new:=new*SmallerDegreePermutationRepresentation(p);
+      while Size(p)<Size(fp) do
+        it:=DescSubgroupIterator(p);
+        repeat
+          m:=NextIterator(it);
+          e:=fail;
+          if hom=false or Size(m)=1 or
+            false<>MatricesStabilizerOneDim(r.module.field,
+              List(GeneratorsOfGroup(m),
+              x->TransposedMat(ImagesRepresentative(hom,x)))) then
+            Info(InfoExtReps,2,"Attempt index ",Index(p,m));
+            e:=LargerQuotientBySubgroupAbelianization(quot,m);
+          fi;
+        until e<>fail;
+        i:=p;
+
+        quot:=DefiningQuotientHomomorphism(Intersection(e,
+          KernelOfMultiplicativeGeneralMapping(quot)));
+        p:=Image(quot);
+        Info(InfoExtReps,1,"index ",Index(i,m)," increases factor by ",
+             Size(p)/Size(i)," at degree ",NrMovedPoints(p));
+        hom:=false; # we don't have hom cheaply any longer as group changed.
+        # this is not an issue if module is irreducible
+      od;
+      quot:=sim*quot;
+      new:=GroupHomomorphismByImages(fp,p,GeneratorsOfGroup(fp),
+        List(GeneratorsOfGroup(fp),x->ImagesRepresentative(quot,x)));
+
+    fi;
+    new:=new*SmallerDegreePermutationRepresentation(p:cheap);
     SetIsomorphismPermGroup(fp,new);
   fi;
 

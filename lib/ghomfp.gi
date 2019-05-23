@@ -431,26 +431,6 @@ local so,fp,isofp,rels,mapi;
   return NormalClosure(Range(map),SubgroupNC(Range(map),rels));
 end);
 
-BindGlobal("WreathElm",function(b,l,m)
-local n,ran,r,d,p,i,j;
-  n:=Length(l);
-  ran:=[1..b];
-  r:=0;
-  d:=[];
-  p:=[];
-  # base bit
-  for i in [1..n] do
-    for j in ran do
-      p[r+j]:=r+j^l[i];
-    od;
-    Add(d,ran+r);
-    r:=r+b;
-  od;
-  # permuter bit
-  p:=PermList(p)/PermList(Concatenation(Permuted(d,m)));
-  return p;
-end);
-
 InstallGlobalFunction(KuKGenerators,
 function(G,beta,alpha)
 local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;

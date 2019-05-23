@@ -519,3 +519,22 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
+
+#############################################################################
+##
+#F  DescSubgroupIterator( <G> )
+##
+##  <#GAPDoc Label="DescSubgroupIterator">
+##  <ManSection>
+##  <Func Name="DescSubgroupIterator" Arg='G'/>
+##
+##  <Description>
+##  Iterator to
+##  descend through (representatives of) conjugacy classes of subgroups,
+##  roughly by increasing index. Does not guaranrtee duplicate free, index
+##  might jump back.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("DescSubgroupIterator");
