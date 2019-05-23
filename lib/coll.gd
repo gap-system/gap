@@ -303,7 +303,7 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "DeclareCategoryCollections", function( name )
+BIND_GLOBAL( "NameOfCategoryCollections", function( name )
     local len, coll_name;
 
     len:= LEN_LIST( name );
@@ -317,7 +317,12 @@ BIND_GLOBAL( "DeclareCategoryCollections", function( name )
       coll_name:= SHALLOW_COPY_OBJ( name );
       APPEND_LIST_INTR( coll_name, "Collection" );
     fi;
+    return coll_name;
+end );
 
+BIND_GLOBAL( "DeclareCategoryCollections", function( name )
+    local coll_name;
+    coll_name := NameOfCategoryCollections( name );
     BIND_GLOBAL( coll_name, CategoryCollections( VALUE_GLOBAL( name ) ) );
 end );
 
