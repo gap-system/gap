@@ -76,6 +76,77 @@ and then set the attribute tester for the object to <K>true</K>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Constructors">
+<Heading>Constructors</Heading>
+
+Constructors are a special type of operation used to make new objects. The key
+difference compared to regular operations is that method selection works
+slightly differently for them: The first argument in a call to a constructor
+must always be a filter <Ref Sect="Filters"/>. The result of a method is
+expected to lie in that filter. Moreover, while normally method selection
+matches on the type of each argument, for a constructor the first argument is
+treated differently: instead of matching its type, the argument itself (which
+is a filter) must be a subset of the filter specified by the method which is
+being tested for match. In other words, the argument filter must imply the
+method filter.
+<P/>
+
+Also, method ranking works differently: instead of the sum of the ranks of the
+types of all arguments, only the rank of the filter given as first argument is
+considered; and for it, the normal ranking order is reversed. This ensures
+that if multiple constructor methods match, the <Q>>most general</Q> method is
+selected.
+
+<Example><![CDATA[
+gap> DeclareConstructor("XCons",[IsMagma,IsInt]);
+gap> InstallMethod(XCons, [IsGroup, IsInt], function(t,x) return CyclicGroup(x); end);
+gap> InstallMethod(XCons, [IsPermGroup, IsInt], function(t,x) return SymmetricGroup(x); end);
+gap> InstallMethod(XCons, [IsSemigroup, IsInt], function(t,x) return FullTransformationMonoid(x); end);
+gap> XCons(IsGroup,3);
+<pc group of size 3 with 1 generators>
+gap> XCons(IsPermGroup,3);
+Sym( [ 1 .. 3 ] )
+gap> XCons(IsSemigroup,4);
+<full transformation monoid of degree 4>
+gap> # if multiple methods match, the most general is selected:
+gap> XCons(IsMagma,3);
+<full transformation monoid of degree 3>
+]]></Example>
+
+The example above shows some basic examples (usually a constructor will
+produce isomorphic objects in different representations, not different objects
+as in this case).
+<P/>
+
+If no method has been installed which guarantees to produce a suitable
+objecty, a "No Method Found" error will be returned.
+<Log><![CDATA[
+gap> XCons(IsFullTransformationMonoid,4);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `XCons' on 2 arguments called from
+<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
+ called from read-eval loop at line 8 of *stdin*
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+gap> XCons(IsNilpotentGroup,4);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `XCons' on 2 arguments called from
+<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
+ called from read-eval loop at line 9 of *stdin*
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk>
+]]></Log>
+
+Note that in both these cases there are methods that actually produce results
+of the required types, but they have not been installed with this information,
+so are not selected.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Method Installation">
 <Heading>Method Installation</Heading>
 
