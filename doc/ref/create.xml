@@ -1212,43 +1212,28 @@ Values for these functions can be installed in the implementation part
 via <Ref Func="InstallGlobalFunction"/>.
 <P/>
 Calls to the following functions belong to the declaration part.
-<P/>
-<Ref Func="DeclareAttribute"/>,
-<P/>
-<Ref Func="DeclareCategory"/>,
-<P/>
-<Ref Func="DeclareFilter"/>,
-<P/>
-<Ref Func="DeclareOperation"/>,
-<P/>
-<Ref Func="DeclareGlobalFunction"/>,
-<P/>
-<Ref Func="DeclareSynonym"/>,
-<P/>
-<Ref Func="DeclareSynonymAttr"/>,
-<P/>
-<Ref Func="DeclareProperty"/>,
-<P/>
-<Ref Func="InstallTrueMethod"/>.
-<P/>
+<List>
+<Item><Ref Func="DeclareAttribute"/>,</Item>
+<Item><Ref Func="DeclareCategory"/>,</Item>
+<Item><Ref Func="DeclareFilter"/>,</Item>
+<Item><Ref Func="DeclareOperation"/>,</Item>
+<Item><Ref Func="DeclareGlobalFunction"/>,</Item>
+<Item><Ref Func="DeclareSynonym"/>,</Item>
+<Item><Ref Func="DeclareSynonymAttr"/>,</Item>
+<Item><Ref Func="DeclareProperty"/>,</Item>
+<Item><Ref Func="InstallTrueMethod"/>.</Item>
+</List>
 Calls to the following functions belong to the implementation part.
-<P/>
-<Ref Func="DeclareRepresentation"/>,
-<P/>
-<Ref Func="InstallGlobalFunction"/>,
-<P/>
-<Ref Func="InstallMethod"/>,
-<P/>
-<Ref Func="InstallImmediateMethod"/>,
-<P/>
-<Ref Func="InstallOtherMethod"/>,
-<P/>
-<Ref Func="NewFamily"/>,
-<P/>
-<Ref Func="NewType"/>,
-<P/>
-<Ref Func="Objectify"/>.
-<P/>
+<List>
+<Item><Ref Func="DeclareRepresentation"/>,</Item>
+<Item><Ref Func="InstallGlobalFunction"/>,</Item>
+<Item><Ref Func="InstallMethod"/>,</Item>
+<Item><Ref Func="InstallImmediateMethod"/>,</Item>
+<Item><Ref Func="InstallOtherMethod"/>,</Item>
+<Item><Ref Func="NewFamily"/>,</Item>
+<Item><Ref Func="NewType"/>,</Item>
+<Item><Ref Func="Objectify"/>.</Item>
+</List>
 <Index Key="DeclareRepresentation" Subkey="belongs to implementation part">
 <C>DeclareRepresentation</C></Index>
 Whenever both a <C>New</C><A>Something</A> and a
