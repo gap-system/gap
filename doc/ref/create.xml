@@ -49,6 +49,7 @@ and why it is useful to have a declaration part and an implementation part.
 <Heading>Creating Categories</Heading>
 
 <#Include Label="NewCategory">
+<#Include Label="DeclareCategory">
 <#Include Label="CategoryFamily">
 
 <P/>
@@ -63,6 +64,7 @@ See also <Ref Func="CategoryCollections"/>.
 <Heading>Creating Representations</Heading>
 
 <#Include Label="NewRepresentation">
+<#Include Label="DeclareRepresentation">
 
 </Section>
 
@@ -85,6 +87,8 @@ clearly the result value is <E>not</E> stored in any of the arguments.
 
 <#Include Label="NewAttribute">
 <#Include Label="NewProperty">
+<#Include Label="DeclareAttribute">
+<#Include Label="DeclareProperty">
 
 </Section>
 
@@ -99,6 +103,7 @@ one can use logical implications
 <Ref Func="SetFilterObj"/>, <Ref Func="ResetFilterObj"/>.
 
 <#Include Label="NewFilter">
+<#Include Label="DeclareFilter">
 <#Include Label="SetFilterObj">
 <#Include Label="ResetFilterObj">
 
@@ -114,6 +119,7 @@ one can use logical implications
 <Heading>Creating Operations</Heading>
 
 <#Include Label="NewOperation">
+<#Include Label="DeclareOperation">
 
 </Section>
 
@@ -122,6 +128,7 @@ one can use logical implications
 <Heading>Creating Constructors</Heading>
 
 <#Include Label="NewConstructor">
+<#Include Label="DeclareConstructor">
 
 </Section>
 
@@ -1176,26 +1183,11 @@ avoid their being overwritten accidentally.
 
 See also Section <Ref Sect="More About Global Variables"/>.
 
-<#Include Label="DeclareCategory">
-<#Include Label="TypeOfOperation">
-<#Include Label="IsCategory">
-<#Include Label="IsRepresentation">
-<#Include Label="IsProperty">
-<#Include Label="IsAttribute">
-<#Include Label="CategoryByName">
-<#Include Label="DeclareRepresentation">
-<#Include Label="DeclareAttribute">
-<#Include Label="DeclareProperty">
-<#Include Label="DeclareFilter">
-<#Include Label="DeclareOperation">
-<#Include Label="DeclareConstructor">
-<#Include Label="DeclareGlobalFunction">
 <#Include Label="DeclareGlobalVariable">
 <#Include Label="InstallValue">
-<#Include Label="DeclareSynonym">
 <#Include Label="FlushCaches">
-<#Include Label="FilterByName">
-<#Include Label="ShowDeclarationsOfOperation">
+<#Include Label="DeclareGlobalFunction">
+<#Include Label="DeclareSynonym">
 
 </Section>
 
