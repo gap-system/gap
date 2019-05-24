@@ -27,5 +27,21 @@ Domain([ 1 .. 5 ])
 gap> Domain(FamilyObj(1), []);
 Domain([  ])
 
+# AsList and Enumerator for domains which know their GeneratorsOfDomain
+gap> r := Immutable([1..3]);;
+gap> d := Domain(r);;
+gap> IsIdenticalObj(AsList(d), r);
+true
+gap> IsIdenticalObj(Enumerator(d), r);
+true
+gap> r := Immutable([1,2,3,1]);;
+gap> d := Domain(r);;
+gap> IsIdenticalObj(GeneratorsOfDomain(d), r);
+true
+gap> IsIdenticalObj(AsList(d), r);
+false
+gap> IsIdenticalObj(Enumerator(d), r);
+false
+
 #
 gap> STOP_TEST("domain.tst");
