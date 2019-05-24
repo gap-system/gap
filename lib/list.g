@@ -345,10 +345,11 @@ InstallMethod( ASS_LIST,
 ##  tests if the object <A>obj</A> is a range, i.e. is a dense list of
 ##  integers that is also a range
 ##  (see&nbsp;<Ref Sect="Ranges"/> for a definition of <Q>range</Q>).
-##  <!-- shouldn't this better be a property?-->
 ##  <Example><![CDATA[
 ##  gap> IsRange( [1,2,3] );  IsRange( [7,5,3,1] );
 ##  true
+##  true
+##  gap> IsRange( [1 .. 3] );
 ##  true
 ##  gap> IsRange( [1,2,4,5] );  IsRange( [1,,3,,5,,7] );
 ##  false
@@ -369,14 +370,40 @@ DeclareCategoryKernel( "IsRange",
 ##
 #R  IsRangeRep( <obj> )
 ##
+##  <#GAPDoc Label="IsRangeRep">
 ##  <ManSection>
 ##  <Filt Name="IsRangeRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
-##  For internally represented ranges, there is a special representation
-##  which requires only a small amount of memory.
+##  Tests whether <A>obj</A> is represented as a range,
+##  that is by internally storing only the first value, the in- or decrement,
+##  and the last value of the range.
+##  <P/>
+##  To test whether a list is a range in the mathematical sense see <Ref
+##  Filt="IsRange"/>.
+##  <P/>
+##  Lists created by the syntactic construct
+##  <C>[ <A>first</A>, <A>second</A>  .. <A>last</A> ]</C>,
+##  see <Ref Sect="Ranges"/>, are in <Ref Filt="IsRangeRep"/>.
+##  <P/>
+#   Note that if you modify an <Ref Filt="IsRangeRep"/> object by assigning to
+#   one of its entries, or by using <Ref Oper="Add"/> or <Ref Oper="Append"/>,
+##  then the range may be converted into a plain list, even
+##  though the resulting list may still be a range, mathematically.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsRangeRep( [1 .. 3] );
+##  true
+##  gap> IsRangeRep( [1, 2, 3] );
+##  false
+##  gap> l := [1..3];;
+##  gap> l[1] := 1;;
+##  gap> l;
+##  [ 1, 2, 3 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsRangeRep",                                   
     IsInternalRep, [], IS_OBJECT, IS_RANGE_REP );
@@ -392,47 +419,15 @@ DeclareRepresentationKernel( "IsRangeRep",
 ##
 ##  <Description>
 ##  For some lists the &GAP; kernel knows that they are in fact ranges.
-##  Those lists are represented internally in a compact way instead of the
-##  ordinary way.
+##  Those lists are represented internally in a compact way,
+##  namely in <Ref Filt="IsRangeRep"/>, instead of as plain lists.
+##  A list that is represented as a plain list might still be a
+##  range but &GAP; may not know this.
 ##  <P/>
 ##  If <A>list</A> is a range then <Ref Func="ConvertToRangeRep"/> changes
-##  the representation of <A>list</A> to this compact representation.
-##  <P/>
-##  This is important since this representation needs only 12 bytes for
-##  the entire range while the ordinary representation needs <M>4 length</M>
-##  bytes.
-##  <P/>
-##  Note that a list that is represented in the ordinary way might still be a
-##  range.
-##  It is just that &GAP; does not know this.
-##  The following rules tell you under which circumstances a range is
-##  represented  in the compact way,
-##  so you can write your program in such a way that you make best use of
-##  this compact representation for ranges.
-##  <P/>
-##  Lists created by the syntactic construct
-##  <C>[ <A>first</A>, <A>second</A>  .. <A>last</A> ]</C> are of course
-##  known to be ranges and are represented in the compact way.
-##  <P/>
-##  If you call <Ref Func="ConvertToRangeRep"/> for a list represented the
-##  ordinary way that is indeed a range,
-##  the representation is changed from the ordinary to the compact
-##  representation.
+##  the representation of <A>list</A> to <Ref Filt="IsRangeRep"/>.
 ##  A call of <Ref Func="ConvertToRangeRep"/> for a list that is not a range
 ##  is ignored.
-##  <P/>
-##  If you change a mutable range that is represented in the compact way,
-##  by assignment, <Ref Oper="Add"/> or <Ref Oper="Append"/>,
-##  the range will be converted to the ordinary representation, even if the
-##  change is such that the resulting list is still a proper range.
-##  <P/>
-##  Suppose you have built a proper range in such a way that it is
-##  represented in the ordinary way and that you now want to convert it to
-##  the compact representation to save space.
-##  Then you should call <Ref Func="ConvertToRangeRep"/> with that list as an
-##  argument.
-##  You can think of the call to <Ref Func="ConvertToRangeRep"/> as a hint
-##  to &GAP; that this list is a proper range.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> r:= [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
