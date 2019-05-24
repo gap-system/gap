@@ -244,12 +244,19 @@ InstallImmediateMethod( Enumerator,
 InstallMethod( AsList,
     "for a domain with stored domain generators",
     [ IsDomain and HasGeneratorsOfDomain ],
-    D -> DuplicateFreeList( GeneratorsOfDomain( D ) ) );
+    function( D )
+        if HasIsDuplicateFreeList( GeneratorsOfDomain( D ) )
+                and IsDuplicateFreeList( GeneratorsOfDomain( D ) ) then
+            return GeneratorsOfDomain( D );
+        else
+            return DuplicateFreeList( GeneratorsOfDomain( D ) );
+        fi;
+    end );
 
 InstallMethod( Enumerator,
     "for a domain with stored domain generators",
     [ IsDomain and HasGeneratorsOfDomain ],
-    D -> DuplicateFreeList( GeneratorsOfDomain( D ) ) );
+    AsList );
 
 
 #############################################################################
