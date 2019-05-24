@@ -716,7 +716,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
       Info(InfoFactor,4,"Index ",Index(G,nu));
       u:=nu;
 
-    until 
+    until totalcnt>300 or
       # und die Gruppe ist nicht zuviel schlechter als der
       # beste bekannte Index. Daf"ur brauchen wir aber wom"oglich mehrfache
       # Erweiterungen.

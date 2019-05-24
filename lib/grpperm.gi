@@ -2010,6 +2010,7 @@ local  i, j, U, gens,o,v,a,sel,min,orb,orp,ok;
   if Length(gens)>2 then
   # minimal: AbelianInvariants
     min:=Maximum(List(Collected(Factors(Size(G)/Size(DerivedSubgroup(G)))),x->x[2]));
+    min:=Maximum(min,2);
     if min=Length(GeneratorsOfGroup(G)) then return GeneratorsOfGroup(G);fi;
     i:=Maximum(2,min);
     while i<=min+1 and i<Length(gens) do
@@ -2052,15 +2053,12 @@ local  i, j, U, gens,o,v,a,sel,min,orb,orp,ok;
     fi;
 
     StabChainOptions(U).random:=100; # randomized size
-#Print("B:",i," ",Size(G)/Size(U),"\n");
     if Size(U)<Size(G) then
       i:=i+1;
     else
       gens:=Set(GeneratorsOfGroup(U));
     fi;
   od;
-#U:=Group(gens);
-#Assert(1,ForAll(GeneratorsOfGroup(G),x->x in U));
   return gens;
 end);
 
