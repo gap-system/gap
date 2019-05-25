@@ -1141,6 +1141,58 @@ static Obj FuncINT_STRING(Obj self, Obj string)
 
 /****************************************************************************
 **
+*F  CmpInt( <opL>, <opR> ) . . . . . . . . . . . . . . . compare two integers
+**
+**  'CmpInt' return a negative, zero or positive integer according as
+**  <opL> is less than, equal to, or greater than <opR>.
+**
+**  It is used to implement EqInt and LtInt. Inlining and optimisation
+**  can reasonably be expected to take care of any minor inefficiencies
+**  resulting from this code sharing.
+*/
+static Int CmpInt(Obj opL, Obj opR)
+{
+    CHECK_INT(opL);
+    CHECK_INT(opR);
+
+    /* compare two small integers */
+    if (ARE_INTOBJS(opL, opR))
+        return (Int)opL - (Int)opR;
+
+    /* Distinct types */
+    if (TNUM_OBJ(opL) != TNUM_OBJ(opR)) {
+
+        /* There are just three possible types here and we know we
+           have two distinct ones, so there are six
+           possibilities. Nevertheless the code below which appears to
+           look at just four conditions, is correct, as if
+           IS_INTNEG(opL) is true (for instance) it doesn't matter
+           whether opR is immediate or large and positive */
+        if (IS_INTNEG(opL) || IS_INTPOS(opR))
+            return -1;
+        if (IS_INTNEG(opR) || IS_INTPOS(opL))
+            return 1;
+
+        /* should never get here */
+        GAP_ASSERT(0);
+    }
+
+    Int  ucmp; /* comparison of unsigned values */
+    UInt sl = SIZE_INT(opL);
+    UInt sr = SIZE_INT(opR);
+    if (sl < sr)
+        ucmp = -1;
+    else if (sr < sl)
+        ucmp = 1;
+    else
+        ucmp = mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
+                       (mp_srcptr)CONST_ADDR_INT(opR), sl);
+
+    return IS_INTNEG(opL) ? -ucmp : ucmp;
+}
+
+/****************************************************************************
+**
 *F  EqInt( <opL>, <opR> ) . . . . . . . . . .  test if two integers are equal
 **
 **  'EqInt' returns 1 if the two integer arguments <opL> and <opR> are equal
@@ -1148,26 +1200,7 @@ static Obj FuncINT_STRING(Obj self, Obj string)
 */
 Int EqInt(Obj opL, Obj opR)
 {
-    CHECK_INT(opL);
-    CHECK_INT(opR);
-
-    /* compare two small integers */
-    if (ARE_INTOBJS(opL, opR))
-        return opL == opR;
-
-    /* a small int cannot equal a large int */
-    if (IS_INTOBJ(opL) != IS_INTOBJ(opR))
-        return 0;
-
-    /* compare the sign and size */
-    if (TNUM_OBJ(opL) != TNUM_OBJ(opR) || SIZE_INT(opL) != SIZE_INT(opR))
-        return 0;
-
-    if (mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
-                (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL)) == 0)
-        return 1;
-    else
-        return 0;
+    return CmpInt(opL, opR) == 0 ? 1 : 0;
 }
 
 /****************************************************************************
@@ -1179,40 +1212,8 @@ Int EqInt(Obj opL, Obj opR)
 */
 Int LtInt(Obj opL, Obj opR)
 {
-    Int res;
-
-    CHECK_INT(opL);
-    CHECK_INT(opR);
-
-    /* compare two small integers */
-    if (ARE_INTOBJS(opL, opR))
-        return (Int)opL < (Int)opR;
-
-    /* a small int is always less than a positive large int */
-    if (IS_INTOBJ(opL) != IS_INTOBJ(opR))
-        return (IS_INTOBJ(opL) && IS_INTPOS(opR)) ||
-               (IS_INTNEG(opL) && IS_INTOBJ(opR));
-
-    /* compare two large integers */
-    if (TNUM_OBJ(opL) != TNUM_OBJ(opR)) /* different signs? */
-        return IS_INTNEG(opL);
-
-    /* signs are equal; compare sizes and absolute values */
-    if (SIZE_INT(opL) < SIZE_INT(opR))
-        res = 1;
-    else if (SIZE_INT(opL) > SIZE_INT(opR))
-        res = 0;
-    else
-        res = mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
-                      (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL)) < 0;
-
-    /* if both arguments are negative, flip the result */
-    if (IS_INTNEG(opL))
-        res = !res;
-
-    return res;
+    return CmpInt(opL, opR) < 0 ? 1 : 0;
 }
-
 
 /****************************************************************************
 **
