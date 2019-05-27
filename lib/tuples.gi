@@ -506,17 +506,3 @@ InstallOtherMethod( \*,
     fi;
     return DirectProductElement( List( dpelm, entry -> nonlist * entry ) );
     end );
-
-
-#############################################################################
-##
-##
-InstallGlobalFunction( DirectProductFamily,
-    function( args )
-    if not IsDenseList(args) or not ForAll(args, IsCollectionFamily) then
-        ErrorNoReturn("<args> must be a dense list of collection families");
-    fi;
-    return CollectionsFamily(
-        DirectProductElementsFamily( List( args, ElementsFamily ) )
-    );
-    end );

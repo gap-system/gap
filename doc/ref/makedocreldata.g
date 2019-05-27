@@ -148,6 +148,8 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/pquot.gd",
     "../../lib/primality.gd",
     "../../lib/process.gd",
+    "../../lib/productdomain.gd",
+    "../../lib/productdomain.gi",
     "../../lib/profile.g",
     "../../lib/proto.gd",
     "../../lib/randiso.gd",

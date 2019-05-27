@@ -27,6 +27,7 @@ ReadLib( "bitfields.gd" );
 ReadLib( "mapping.gd"  );
 ReadLib( "mapphomo.gd" );
 ReadLib( "relation.gd");
+ReadLib( "productdomain.gd"   );
 
 ReadLib( "magma.gd"    );
 ReadLib( "mgmideal.gd" );
