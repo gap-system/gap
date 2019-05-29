@@ -1199,18 +1199,18 @@ Int LtInt(Obj opL, Obj opR)
 
     /* signs are equal; compare sizes and absolute values */
     if (SIZE_INT(opL) < SIZE_INT(opR))
-        res = 1;
+        res = -1;
     else if (SIZE_INT(opL) > SIZE_INT(opR))
-        res = 0;
+        res = +1;
     else
         res = mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
-                      (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL)) < 0;
+                      (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL));
 
     /* if both arguments are negative, flip the result */
     if (IS_INTNEG(opL))
-        res = !res;
+        res = -res;
 
-    return res;
+    return res < 0;
 }
 
 

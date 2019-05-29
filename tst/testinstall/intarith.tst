@@ -1,6 +1,6 @@
 #@local POWERMODINT_GAP,b,bigPos,bigNeg,checkPValuationInt,data,dataHex
 #@local dataInv,dataNonZero,e,f,g,i,k,m,mysource,pow,r,smlNeg,smlPos,x,y
-#@local naivQM,ps,checkROOT_INT,P,a,n,p
+#@local naivQM,ps,checkROOT_INT,P,a,n,p,x1,x2
 gap> START_TEST("intarith.tst");
 gap> 1 + 1;
 2
@@ -69,6 +69,18 @@ gap> List(data, x -> smlPos = x);
 [ false, false, false, false, false, false, true, false, false ]
 gap> List(data, x -> bigPos = x);
 [ false, false, false, false, false, false, false, true, false ]
+
+# Check for < on equal, but not identical large numbers
+# See issue #3474
+gap> x1 := 2^80;; x2 := 2^80;;
+gap> x1 < x2;
+false
+gap> x1 = x2;
+true
+gap> -x1 < -x2;
+false
+gap> -x1 = -x2;
+true
 
 # check symmetry
 gap> ForAll(data, x -> ForAll(data, y -> (x=y) = (y=x)));
