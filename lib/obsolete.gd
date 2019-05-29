@@ -594,17 +594,6 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 
 #############################################################################
 ##
-#O  PositionFirstComponent( <list>, <obj> )
-##
-## Removed due to being incompletely documented and its available methods
-## behaving inconsistently. Use PositionSorted or Position instead.
-##
-## Deprecated in GAP >= 4.8
-## Not used in any redistributed packages (11/2017)
-#DeclareOperation( "PositionFirstComponent", [IsList,IsObject] );
-
-#############################################################################
-##
 #O  MultRowVector( <list1>, <poss1>, <list2>, <poss2>, <mul> )
 ##
 ##  <#GAPDoc Label="MultRowVector_Obsolete">

@@ -455,33 +455,6 @@ FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
 }
 
 
-static Obj FuncPOSITION_FIRST_COMPONENT_SORTED(Obj self, Obj list, Obj obj)
-{
-  UInt top, bottom,middle;
-  Obj x;
-  Obj l;
-  bottom = 1;
-  top = LEN_PLIST(list);
-  while (bottom <= top) {
-    middle = (top + bottom)/2;
-    l = ELM_PLIST(list,middle);
-    if (!IS_PLIST(l))
-      return TRY_NEXT_METHOD;
-    x = ELM_PLIST(l,1);
-    if (LT(x,obj)) {
-      bottom = middle+1;
-    } else if (LT(obj,x)) {
-      top = middle -1;
-    } else {
-      return INTOBJ_INT(middle);
-    }
-  }
-  return INTOBJ_INT(bottom);
-}
-      
-
-
-
 /****************************************************************************
 **
 *F  SORT_LIST( <list> )  . . . . . . . . . . . . . . . . . . . .  sort a list
@@ -1556,7 +1529,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(APPEND_LIST_INTR, 2, "list1, list2"),
     GVAR_FUNC(POSITION_SORTED_LIST, 2, "list, obj"),
     GVAR_FUNC(POSITION_SORTED_LIST_COMP, 3, "list, obj, func"),
-    GVAR_FUNC(POSITION_FIRST_COMPONENT_SORTED, 2, "list, obj"),
     GVAR_FUNC(SORT_LIST, 1, "list"),
     GVAR_FUNC(STABLE_SORT_LIST, 1, "list"),
     GVAR_FUNC(SORT_LIST_COMP, 2, "list, func"),
