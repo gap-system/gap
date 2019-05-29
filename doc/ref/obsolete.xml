@@ -183,7 +183,8 @@ Here are some further name changes.
 
 <Index Key="PositionFirstComponent"><C>PositionFirstComponent</C></Index>
 The operation <C>PositionFirstComponent</C> has been deprecated in GAP
-4.8 and later due to issues with its documentation and implementation.
+4.8 due to issues with its documentation and implementation, and was
+removed in GAP 4.10.
 Instead of <C>PositionFirstComponent(list,obj)</C>, you may use
 <C>PositionSorted(list,[obj])</C> or
 <C>PositionProperty(list,x->x[1]=obj)</C> as a replacement, depending on
