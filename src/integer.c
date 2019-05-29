@@ -1179,17 +1179,18 @@ Int LtInt ( Obj gmpL, Obj gmpR )
 
   /* signs are equal; compare sizes and absolute values */
   if ( SIZE_INT(gmpL) < SIZE_INT(gmpR) )
-    res = 1;
+    res = -1;
   else if ( SIZE_INT(gmpL) > SIZE_INT(gmpR) )
-    res = 0;
+    res = +1;
   else
-    res = mpn_cmp( (mp_srcptr)CONST_ADDR_INT(gmpL), (mp_srcptr)CONST_ADDR_INT(gmpR), SIZE_INT(gmpL) ) < 0;
+    res = mpn_cmp((mp_srcptr)CONST_ADDR_INT(gmpL),
+                  (mp_srcptr)CONST_ADDR_INT(gmpR), SIZE_INT(gmpL));
 
   /* if both arguments are negative, flip the result */
   if ( IS_INTNEG(gmpL) )
-    res = !res;
+    res = -res;
 
-  return res;
+  return res < 0;
 }
 
 

@@ -72,6 +72,18 @@ gap> List(data, x -> smlPos = x);
 gap> List(data, x -> bigPos = x);
 [ false, false, false, false, false, false, false, true, false ]
 
+# Check for < on equal, but not identical large numbers
+# See issue #3474
+gap> x1 := 2^80;; x2 := 2^80;;
+gap> x1 < x2;
+false
+gap> x1 = x2;
+true
+gap> -x1 < -x2;
+false
+gap> -x1 = -x2;
+true
+
 # check symmetry
 gap> ForAll(data, x -> ForAll(data, y -> (x=y) = (y=x)));
 true
