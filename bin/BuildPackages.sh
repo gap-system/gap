@@ -168,7 +168,10 @@ run_configure_and_make() {
     if grep Autoconf ./configure > /dev/null
     then
       echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS
+      echo_run "$MAKE" clean
     else
+      echo_run ./configure "$GAPROOT"
+      echo_run "$MAKE" clean
       echo_run ./configure "$GAPROOT"
     fi
     echo_run "$MAKE"
