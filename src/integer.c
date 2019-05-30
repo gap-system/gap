@@ -1151,23 +1151,18 @@ Int EqInt(Obj opL, Obj opR)
     CHECK_INT(opL);
     CHECK_INT(opR);
 
-    /* compare two small integers */
-    if (ARE_INTOBJS(opL, opR))
+    // if at least one input is a small int, a naive equality test suffices
+    if (IS_INTOBJ(opL) || IS_INTOBJ(opR))
         return opL == opR;
 
-    /* a small int cannot equal a large int */
-    if (IS_INTOBJ(opL) != IS_INTOBJ(opR))
+    // compare the sign and size
+    // note: at this point we know that opL and opR are proper bags, so
+    // we can use TNUM_BAG instead of TNUM_OBJ
+    if (TNUM_BAG(opL) != TNUM_BAG(opR) || SIZE_INT(opL) != SIZE_INT(opR))
         return 0;
 
-    /* compare the sign and size */
-    if (TNUM_OBJ(opL) != TNUM_OBJ(opR) || SIZE_INT(opL) != SIZE_INT(opR))
-        return 0;
-
-    if (mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
-                (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL)) == 0)
-        return 1;
-    else
-        return 0;
+    return !mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
+                (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL));
 }
 
 /****************************************************************************
@@ -1188,13 +1183,16 @@ Int LtInt(Obj opL, Obj opR)
     if (ARE_INTOBJS(opL, opR))
         return (Int)opL < (Int)opR;
 
-    /* a small int is always less than a positive large int */
-    if (IS_INTOBJ(opL) != IS_INTOBJ(opR))
-        return (IS_INTOBJ(opL) && IS_INTPOS(opR)) ||
-               (IS_INTNEG(opL) && IS_INTOBJ(opR));
+    // a small int is always less than a positive large int,
+    // and always more than a negative large int
+    if (IS_INTOBJ(opL))
+        return IS_INTPOS(opR);
+    if (IS_INTOBJ(opR))
+        return IS_INTNEG(opL);
 
-    /* compare two large integers */
-    if (TNUM_OBJ(opL) != TNUM_OBJ(opR)) /* different signs? */
+    // at this point, both inputs are large integers, and we compare their
+    // signs first
+    if (TNUM_OBJ(opL) != TNUM_OBJ(opR))
         return IS_INTNEG(opL);
 
     /* signs are equal; compare sizes and absolute values */
