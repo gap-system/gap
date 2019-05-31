@@ -943,12 +943,14 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
 end);
 
 InstallGlobalFunction(PrintCSV,function(arg)
-  local stream,l,printEntry, rf, r, i, j, oldStreamFormattingStatus;
+  local stream,l,printEntry, rf, r, i, j, oldStreamFormattingStatus, close;
 
   if IsString(arg[1]) then
     stream:=OutputTextFile(arg[1],false);
+    close:=true;
   elif IsOutputStream(arg[1]) then
     stream:=arg[1];
+    close:=false;
   else
     Error("PrintCSV: filename must be a string or an output stream");
   fi;
@@ -1045,6 +1047,9 @@ InstallGlobalFunction(PrintCSV,function(arg)
     AppendTo(stream,"\n");
   od;
   SetPrintFormattingStatus(stream,oldStreamFormattingStatus);
+  if close then
+    CloseStream(stream);
+  fi;
 end);
 
 

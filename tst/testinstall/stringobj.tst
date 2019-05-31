@@ -3,7 +3,7 @@
 ##  This file tests various aspects of strings in IsStringRep
 ##
 #@local OldCopyToStringRep,a2000,a3000,at2000,at3000,cp1,cp2,cp3
-#@local ret2000,ret3000,s,tmp,tmpdir,fname,dir,filename,sstream,fstream,t,u
+#@local ret2000,ret3000,s,tmp,tmpdir,fname,dir,filename,sstream,fstream,t,u,i
 gap> START_TEST("stringobj.tst");
 
 # RemoveCharacters
@@ -119,10 +119,13 @@ gap> s := ReadCSV( filename{[1..Length(filename)-4]}, ";" );
 [ rec( f := 2, f1 := 1, f_2 := 3 ), rec( f1 := 4, f_2 := 6 ), rec( f1 := 7 ), 
   rec( f := 11, f_2 := 12 ), rec( f := "yy", f1 := "x", f_2 := "zzz" ) ]
 gap> tmpdir := DirectoryTemporary();;
-gap> fname := Filename(tmpdir, "output.csv");;
-gap> PrintCSV( fname, s );
-gap> s = ReadCSV( fname );
-true
+
+# Output many CSVs, to check we correctly close streams
+gap> for i in [1..1000] do
+>   fname := Filename(tmpdir, "output.csv");;
+>   PrintCSV( fname, s );
+>   if s <> ReadCSV( fname ) then Print("failed loop", i,"\n"); fi;
+> od;
 gap> s[2].emil:="\"Alas, poor Yorick\", the call went";;
 gap> s[3].empty:="";;
 gap> PrintCSV(fname,s);
