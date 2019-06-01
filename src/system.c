@@ -1063,6 +1063,14 @@ void InitSystem (
 #ifdef SYS_IS_64_BIT
     SyStorMin = 128 * 1024L;
     SyStorMax = 2048*1024L;          /* This is in kB! */
+#if defined(HAVE_SYSCONF)
+#if defined(_SC_PAGESIZE) && defined(_SC_PHYS_PAGES)
+    // Set to 3/4 of memory size (in kB), if this is larger
+    Int SyStorMaxFromMem =
+        (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3L) / 4 / 1024;
+    SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+#endif
+#endif
     SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
 #else
     SyStorMin = 64 * 1024L;
