@@ -12,8 +12,9 @@ gfile="$2"
 # 2) Combine stderr and stdout
 # 3) Rewrite the root of gap with the string GAPROOT,
 #    so the output is usable on other machines
+# 4) Set lower and upper memory limits, for consistency
 GAPROOT=$(cd ../..; pwd)
 ( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
-    "$gap" -r -A -b -x 800 2>/dev/null >/dev/null
+    "$gap" -r -A -b -m 256m -o 512m -x 800 2>/dev/null >/dev/null
 sed "s:${GAPROOT//:/\\:}:GAPROOT:g" < "${outfile}.tmp"
 rm "${outfile}.tmp"
