@@ -540,6 +540,11 @@ local gc,hc,S,info;
   fi;
   gh:=InverseGeneralMapping(gc)*gh;
   hh:=InverseGeneralMapping(hc)*hh;
+  # the ...Op is installed for `IsGroupHomomorphism'. So we have to enforce
+  # the filter to be set.
+  if not IsGroupHomomorphism(gh) or not IsGroupHomomorphism(hh) then
+    Error("mappings are not homomorphisms");
+  fi;
   S:=SubdirectProductOp(Image(gc,G),Image(hc,H),gh,hh);
   info:=rec(groups:=[G,H],
 	    homomorphisms:=[gh,hh],
