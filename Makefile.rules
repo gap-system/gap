@@ -1010,10 +1010,23 @@ testbugfix: all
 check:
 	$(TESTGAP) tst/testinstall.g
 
-testlibgap: libgap.la obj/tst/testlibgap/basic.lo 
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) obj/tst/testlibgap/basic.lo libgap.la -o test-libgap
-	./test-libgap -A -l $(top_srcdir) -m 32m -q -T --nointeract > basic.out
-	diff $(top_srcdir)/tst/testlibgap/basic.expect basic.out
+LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload)
+
+# run a test in tst/testlibgap
+tst/testlibgap/%: obj/tst/testlibgap/%.lo obj/tst/testlibgap/common.lo libgap.la
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $^ $(GAP_LIBS) -o $@
+
+clean: clean-testlibgap
+clean-testlibgap:
+	rm -f ${LIBGAPTESTS}
+
+# run all the tests in tst/testlibgap
+testlibgap: ${LIBGAPTESTS}
+	$(foreach v,$^, \
+		echo "Running $(v) ..." && \
+		$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
+		diff $(top_srcdir)/$(v).expect $(v).out && ) :
+
 .PHONY: testlibgap
 
 coverage:

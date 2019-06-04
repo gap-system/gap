@@ -88,4 +88,10 @@ doc/gapmacrodoc.idx
 /builds/
 
 /libgap.la
-/.libs
+.libs
+
+/tst/testlibgap/api
+/tst/testlibgap/basic
+/tst/testlibgap/wscreate
+/tst/testlibgap/wsload
+/tst/testlibgap/*.out
