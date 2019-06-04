@@ -141,11 +141,6 @@ matrix:
     # test Julia integration
     - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
 
-  allow_failures:
-    # allow Julia integration to fail for now, until random GC crashes are resolved
-    # note that this must match the entry for Julia above exactly
-    - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
-
 script:
   - set -e
   - etc/travis_fastfail.sh
