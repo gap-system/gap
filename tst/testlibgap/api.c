@@ -183,7 +183,7 @@ int main(int argc, char ** argv)
     operations();
     printf("success\n");
 
-    printf("# Testing global variables...");
+    printf("# Testing global variables... ");
     globalvars();
     printf("success\n");
 

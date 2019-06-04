@@ -1086,9 +1086,9 @@ clean-testlibgap:
 # run all the tests in tst/testlibgap
 testlibgap: ${LIBGAPTESTS}
 	$(foreach v,$^, \
-		echo "Running $(v) ..." ; \
-		$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out ; \
-		diff $(top_srcdir)/$(v).expect $(v).out ; )
+		echo "Running $(v) ..." && \
+		$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
+		diff $(top_srcdir)/$(v).expect $(v).out && ) :
 
 .PHONY: testlibgap
 
