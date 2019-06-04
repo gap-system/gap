@@ -3351,7 +3351,7 @@ local done,lev,mode,max,l,pos;
              local a;
               if pos>Length(l) then
                 if mode=2 then return fail;
-                elif mode=1 and max^2>Size(G) then
+                elif mode=1 and max^2>Size(G) and lev>=3 then
                   mode:=2;
                   l:=List(ConjugacyClassesSubgroups(G),Representative);
                   l:=Filtered(l,x->not x in done);
