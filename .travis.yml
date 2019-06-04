@@ -119,11 +119,11 @@ matrix:
           #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
           - libreadline-dev:i386
 
-    # test error reporting and compiling
-    - env: TEST_SUITES="testspecial test-compile"
+    # test error reporting and compiling as well as libgap
+    - env: TEST_SUITES="testspecial test-compile testlibgap"
 
-    # test libgap
-    - env: TEST_SUITES="testlibgap"
+    # test Julia integration
+    - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
 
 script:
   - set -e

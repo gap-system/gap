@@ -9,6 +9,8 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
+#include "julia_gc.h"
+
 #include "fibhash.h"
 #include "funcs.h"
 #include "gapstate.h"
@@ -18,13 +20,14 @@
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"
+#include "gap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "julia.h"
-#include "julia_gcext.h"
+#include <julia.h>
+#include <julia_gcext.h>
 
 
 /****************************************************************************
@@ -32,22 +35,32 @@
 **  Various options controlling special features of the Julia GC code follow
 */
 
-// if DISABLE_BIGVAL_TRACKING is defined, we don't track the location of
-// large bags; this speeds up some things, but may expose bugs in GAP code
-// which incorrectly holds pointers into bags over a GC.
-// #define DISABLE_BIGVAL_TRACKING
+// if SCAN_STACK_FOR_MPTRS_ONLY is defined, stack scanning will only
+// look for references to master pointers, but not bags themselves. This
+// should be safe, as GASMAN uses the same mechanism. It is also faster
+// and avoids certain complicated issues that can lead to crashes, and
+// is therefore the default. The option to scan for all pointers remains
+// available for the time being and should be considered to be
+// deprecated.
+#define SCAN_STACK_FOR_MPTRS_ONLY
 
 // if REQUIRE_PRECISE_MARKING is defined, we assume that all marking
 // functions are precise, i.e., they only invoke MarkBag on valid bags,
 // immediate objects or NULL pointers, but not on any other random data
 // #define REQUIRE_PRECISE_MARKING
 
-// if STAT_MARK_CACHE is defined, we track some statistics about the
+// if COLLECT_MARK_CACHE_STATS is defined, we track some statistics about the
 // usage of the MarkCache
-// #define STAT_MARK_CACHE
+// #define COLLECT_MARK_CACHE_STATS
 
 // if MARKING_STRESS_TEST is defined, we stress test the TryMark code
 // #define MARKING_STRESS_TEST
+
+// if VALIDATE_MARKING is defined, the program is aborted if we ever
+// encounter a reference during marking that does not meet additional
+// validation criteria. These tests are compararively expensive and
+// should not be enabled by default.
+// #define VALIDATE_MARKING
 
 
 /****************************************************************************
@@ -75,7 +88,7 @@
 // expensive call to the Julia runtime.
 
 static Bag MarkCache[MARK_CACHE_SIZE];
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
 static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
@@ -92,6 +105,7 @@ static inline Bag * DATA(BagHeader * bag)
 
 
 static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+
 void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
 {
     ExtraMarkFuncBags = func;
@@ -123,7 +137,7 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 
 /****************************************************************************
 **
@@ -195,7 +209,7 @@ static inline void * align_ptr(void * p)
     return (void *)u;
 }
 
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 
 typedef struct treap_t {
     struct treap_t *left, *right;
@@ -402,10 +416,10 @@ static UInt            StackAlignBags;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static size_t          max_pool_obj_size;
-#if !defined(DISABLE_BIGVAL_TRACKING)
-static size_t          bigval_startoffset;
-#endif
 static UInt            YoungRef;
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
+static size_t bigval_startoffset;
+#endif
 
 
 #ifndef NR_GLOBAL_BAGS
@@ -447,10 +461,54 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
     TabMarkFuncBags[type] = mark_func;
 }
 
-static inline int JMark(void * obj)
+static inline int JMarkTyped(void * obj, jl_datatype_t * ty)
 {
+    // only traverse objects internally used by GAP
+    if (!jl_typeis(obj, ty))
+        return 0;
     return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
 }
+
+static inline int JMark(void * obj)
+{
+#ifdef VALIDATE_MARKING
+    // Validate that `obj` is still allocated and not on a
+    // free list already. We verify this by checking that the
+    // type is a pool object of type `jl_datatype_type`.
+    jl_value_t * ty = jl_typeof(obj);
+    if (jl_gc_internal_obj_base_ptr(ty) != ty)
+        abort();
+    if (!jl_typeis(ty, jl_datatype_type))
+        abort();
+#endif
+    return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
+}
+
+void MarkJuliaObjSafe(void * obj)
+{
+    if (!obj)
+        return;
+    // Validate that `obj` is still allocated and not on a
+    // free list already. We verify this by checking that the
+    // type is a pool object of type `jl_datatype_type`.
+    jl_value_t * ty = jl_typeof(obj);
+    if (jl_gc_internal_obj_base_ptr(ty) != ty)
+        return;
+    if (!jl_typeis(ty, jl_datatype_type))
+        return;
+    if (jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj))
+        YoungRef++;
+}
+
+
+void MarkJuliaObj(void * obj)
+{
+    if (!obj)
+        return;
+    if (JMark(obj))
+        YoungRef++;
+}
+
 
 // Overview of conservative stack scanning
 //
@@ -476,12 +534,19 @@ static inline int JMark(void * obj)
 // the stack (including Julia task stacks) that points to a master pointer
 // or the contents of a bag (including a location after the start of the
 // bag) indicates a valid reference that needs to be marked.
+//
+// One additional concern is that Julia may opportunistically free a subset
+// of unreachable objects. Thus, with conservative stack scanning, it is
+// possible for a pointer to resurrect a previously unreachable object,
+// from which freed objects are then marked. Hence, we add additional checks
+// when traversing GAP master pointer and bag objects that this happens
+// only for live objects.
 
 static void TryMark(void * p)
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
     if (!p2) {
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
         // It is possible for p to point past the end of
         // the object, so we subtract one word from the
         // address. This is safe, as the object is preceded
@@ -512,7 +577,16 @@ static void TryMark(void * p)
 #endif
     }
     if (p2) {
+#ifdef SCAN_STACK_FOR_MPTRS_ONLY
+        if (jl_typeis(p2, datatype_mptr))
+            JMark(p2);
+#else
+        void * ty = jl_typeof(p2);
+        if (ty != datatype_mptr && ty != datatype_bag &&
+            ty != datatype_largebag && ty != jl_weakref_type)
+            return;
         JMark(p2);
+#endif
     }
 }
 
@@ -525,8 +599,15 @@ static void TryMarkRangeReverse(void * start, void * end)
     char * q = (char *)end - sizeof(void *);
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
-        if (addr)
+        if (addr) {
             TryMark(addr);
+#ifdef MARKING_STRESS_TEST
+            for (int j = 0; j < 1000; ++j) {
+                UInt val = (UInt)addr + rand() - rand();
+                TryMark((void *)val);
+            }
+#endif
+        }
         q -= StackAlignBags;
     }
 }
@@ -540,8 +621,15 @@ static void TryMarkRange(void * start, void * end)
     char * q = (char *)end - sizeof(void *) + StackAlignBags;
     while (lt_ptr(p, q)) {
         void * addr = *(void **)p;
-        if (addr)
+        if (addr) {
             TryMark(addr);
+#ifdef MARKING_STRESS_TEST
+            for (int j = 0; j < 1000; ++j) {
+                UInt val = (UInt)addr + rand() - rand();
+                TryMark((void *)val);
+            }
+#endif
+        }
         p += StackAlignBags;
     }
 }
@@ -558,9 +646,12 @@ void CHANGED_BAG(Bag bag)
 
 static void GapRootScanner(int full)
 {
-    // mark our Julia module (this contains references to our custom data
-    // types, which thus also will not be collected prematurely)
-    JMark(Module);
+    // Mark our Julia module (this contains references to our custom data
+    // types, which thus also will not be collected prematurely).
+    // We call jl_gc_mark_queue_obj() directly here, because we know that
+    // Module is a valid Julia object at this point, so further checks
+    // in JMark() can be skipped.
+    jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)Module);
     jl_task_t * task = JuliaTLS->current_task;
     size_t      size;
     int         tid;
@@ -569,7 +660,18 @@ static void GapRootScanner(int full)
     // current_task != root_task.
     char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
     stackend += size;
-    if (JuliaTLS->tid == 0 && JuliaTLS->root_task == task) {
+    // The following test overrides the stackend if the following two
+    // conditions hold:
+    //
+    // 1. GAP is not being used as a library, but is the main program
+    //    and in charge of the main() function.
+    // 2. The stack of the current task is that of the main task of the
+    //    main thread.
+    //
+    // The reason is that if Julia is being initialized from GAP, it
+    // cannot always reliably find the top of the stack for that task,
+    // so we have to fall back to GAP for that.
+    if (!IsUsingLibGap() && JuliaTLS->tid == 0 && JuliaTLS->root_task == task) {
         stackend = (char *)GapStackBottom;
     }
 
@@ -644,8 +746,8 @@ static void PreGCHook(int full)
     /* information at the beginning of garbage collections                 */
     SyMsgsBags(full, 0, 0);
 #ifndef REQUIRE_PRECISE_MARKING
-   memset(MarkCache, 0, sizeof(MarkCache));
-#ifdef STAT_MARK_CACHE
+    memset(MarkCache, 0, sizeof(MarkCache));
+#ifdef COLLECT_MARK_CACHE_STATS
     MarkCacheHits = MarkCacheAttempts = MarkCacheCollisions = 0;
 #endif
 #endif
@@ -657,7 +759,7 @@ static void PostGCHook(int full)
     /* information at the end of garbage collections                 */
     UInt totalAlloc = 0;    // FIXME -- is this data even available?
     SyMsgsBags(full, 6, totalAlloc);
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
       (long) MarkCacheAttempts,
       (double) MarkCacheHits/(double)MarkCacheAttempts,
@@ -668,24 +770,26 @@ static void PostGCHook(int full)
 
 // the Julia marking function for master pointer objects (i.e., this function
 // is called by the Julia GC whenever it marks a GAP master pointer object)
-static uintptr_t JMarkMPtr(jl_ptls_t ptls, jl_value_t * obj)
+static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 {
     if (!*(void **)obj)
         return 0;
-#ifdef MARKING_STRESS_TEST
-    for (int j = 0; j < 1000; ++j) {
-        UInt val = (UInt)obj + rand() - rand();
-        TryMark((void*)val);
-    }
-#endif
-    if (JMark(BAG_HEADER((Bag)obj)))
+    void * header = BAG_HEADER((Bag)obj);
+    // The following check ensures that the master pointer does
+    // indeed reference a bag that has not yet been freed. See
+    // the comments on conservative stack scanning for an in-depth
+    // explanation.
+    void * ty = jl_typeof(header);
+    if (ty != datatype_bag && ty != datatype_largebag)
+        return 0;
+    if (JMark(header))
         return 1;
     return 0;
 }
 
 // the Julia marking function for bags (i.e., this function is called by the
 // Julia GC whenever it marks a GAP bag object)
-static uintptr_t JMarkBag(jl_ptls_t ptls, jl_value_t * obj)
+static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
@@ -699,11 +803,12 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 {
     // HOOK: initialization happens here.
     GapStackBottom = stack_bottom;
-    for (UInt i = 0; i < NUM_TYPES; i++)
+    for (UInt i = 0; i < NUM_TYPES; i++) {
         TabMarkFuncBags[i] = MarkAllSubBags;
+    }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
     jl_gc_set_cb_notify_external_alloc(alloc_bigval, 1);
     jl_gc_set_cb_notify_external_free(free_bigval, 1);
     bigval_startoffset = jl_gc_external_obj_hdr_size();
@@ -724,13 +829,13 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     Module->parent = jl_main_module;
     jl_set_const(jl_main_module, jl_symbol("ForeignGAP"),
                  (jl_value_t *)Module);
-    datatype_mptr = jl_new_foreign_type(jl_symbol("MPtr"), Module,
-                                        jl_any_type, JMarkMPtr, NULL, 1, 0);
+    datatype_mptr = jl_new_foreign_type(
+        jl_symbol("MPtr"), Module, jl_any_type, MPtrMarkFunc, NULL, 1, 0);
     datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, jl_any_type,
-                                       JMarkBag, JFinalizer, 1, 0);
+                                       BagMarkFunc, JFinalizer, 1, 0);
     datatype_largebag =
         jl_new_foreign_type(jl_symbol("LargeBag"), Module, jl_any_type,
-                            JMarkBag, JFinalizer, 1, 1);
+                            BagMarkFunc, JFinalizer, 1, 1);
 
     // export datatypes to Julia level
     jl_set_const(Module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
@@ -791,7 +896,7 @@ void RetypeBag(Bag bag, UInt new_type)
         // different type is something better to be avoided anyway. So instead
         // of supporting a feature nobody uses right now, we error out and
         // wait to see if somebody complains.
-        Panic("cannot change bag type to one which requires a 'free' callback");
+        Panic("cannot change bag type to one requiring a 'free' callback");
     }
     header->type = new_type;
 }
@@ -816,7 +921,7 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
-#if defined(DISABLE_BIGVAL_TRACKING)
+#if defined(SCAN_STACK_FOR_MPTRS_ONLY)
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, 0);
 #endif
@@ -828,7 +933,7 @@ Bag NewBag(UInt type, UInt size)
     header->size = size;
 
 
-#if !defined(DISABLE_BIGVAL_TRACKING)
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
     // allocate the new masterpointer
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, DATA(header));
@@ -908,7 +1013,7 @@ inline void MarkBag(Bag bag)
 
     jl_value_t * p = (jl_value_t *)bag;
 #ifndef REQUIRE_PRECISE_MARKING
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
     MarkCacheAttempts++;
 #endif
     UInt hash = MARK_HASH((UInt)bag);
@@ -918,14 +1023,14 @@ inline void MarkBag(Bag bag)
             // not a valid object
             return;
         }
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
         if (MarkCache[hash])
             MarkCacheCollisions++;
 #endif
         MarkCache[hash] = bag;
     }
     else {
-#ifdef STAT_MARK_CACHE
+#ifdef COLLECT_MARK_CACHE_STATS
         MarkCacheHits++;
 #endif
     }
@@ -934,21 +1039,31 @@ inline void MarkBag(Bag bag)
     // relies on Julia internals. It is functionally equivalent
     // to:
     //
-    //     if (JMark(p)) YoungRef++;
+    //     if (JMarkTyped(p, datatype_mptr)) YoungRef++;
     //
     switch (jl_astaggedvalue(p)->bits.gc) {
     case 0:
-        if (JMark(p))
+        if (JMarkTyped(p, datatype_mptr))
             YoungRef++;
         break;
     case 1:
         YoungRef++;
         break;
     case 2:
-        JMark(p);
+        JMarkTyped(p, datatype_mptr);
+        break;
     case 3:
         break;
     }
+}
+
+void MarkJuliaWeakRef(void * p)
+{
+    // If `jl_nothing` gets passed in as an argument, it will not
+    // be marked. This is harmless, because `jl_nothing` will always
+    // be live regardless.
+    if (JMarkTyped(p, jl_weakref_type))
+        YoungRef++;
 }
 
 inline void MarkArrayOfBags(const Bag array[], UInt count)

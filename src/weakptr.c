@@ -42,7 +42,13 @@
 
 #ifdef USE_JULIA_GC
 #include "julia.h"
+#include "julia_gc.h"
 #endif
+
+#define RequireWPObj(funcname, op)                                           \
+    RequireArgumentCondition(funcname, op, TNUM_OBJ(op) == T_WPOBJ,          \
+                             "must be a weak pointer object")
+
 
 /****************************************************************************
 **
@@ -192,7 +198,9 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
     UInt i;
     for (i = 1; i <= STORED_LEN_WPOBJ(wp); i++) {
       volatile Obj tmp = ELM_WPOBJ(wp, i);
+#ifdef HPCGAP
       MEMBAR_READ();
+#endif
       if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, i)) {
         FORGET_WP(wp, i);
         REGISTER_WP(copy, i, tmp);
@@ -350,7 +358,9 @@ Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
     }
 #ifdef USE_BOEHM_GC
   volatile Obj tmp = ELM_WPOBJ(wp, ipos);
+#ifdef HPCGAP
   MEMBAR_READ();
+#endif
   if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, ipos))
     FORGET_WP(wp, ipos);
   SET_ELM_WPOBJ(wp, ipos, val2);
@@ -393,7 +403,7 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
       ErrorMayQuit("IsBoundElmWPObj: Position must be a positive integer",0L,0L);
     }
 
-#ifdef USE_BOEHM_GC
+#ifdef HPCGAP
   volatile
 #endif
   Obj elm;
@@ -402,7 +412,7 @@ Int IsBoundElmWPObj( Obj wp, Obj pos)
       return 0;
     }
   elm = ELM_WPOBJ(wp,ipos);
-#ifdef USE_BOEHM_GC
+#ifdef HPCGAP
   MEMBAR_READ();
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
       return 0;
@@ -460,7 +470,9 @@ Obj FuncUnbindElmWPObj( Obj self, Obj wp, Obj pos)
      * collection happens after the read.
      */
     volatile Obj tmp = ELM_WPOBJ(wp, ipos);
+#ifdef HPCGAP
     MEMBAR_READ();
+#endif
     if (ELM_WPOBJ(wp, ipos)) {
       if (IS_BAG_REF(tmp))
         FORGET_WP(wp, ipos);
@@ -497,7 +509,7 @@ Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
   volatile
 #endif
   Obj elm = ELM_WPOBJ(wp,ipos);
-#ifdef USE_BOEHM_GC
+#ifdef HPCGAP
   MEMBAR_READ();
   if (elm == 0 || ELM_WPOBJ(wp, ipos) == 0)
       return def;
@@ -612,6 +624,22 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 #endif
 
+#ifdef USE_JULIA_GC
+
+static void MarkWeakPointerObj(Obj wp)
+{
+    // can't use the stored length here, in case we are in the middle of
+    // copying
+    const UInt len = SIZE_BAG(wp) / sizeof(Obj) - 1;
+    for (UInt i = 1; i <= len; i++) {
+        Bag elm = CONST_ADDR_OBJ(wp)[i];
+        if (IS_BAG_REF(elm))
+            MarkJuliaWeakRef(elm);
+    }
+}
+
+#endif
+
 
 #ifdef USE_THREADSAFE_COPYING
 void TraverseWPObj(Obj obj)
@@ -720,6 +748,7 @@ void MakeImmutableWPObj( Obj obj )
   UInt len = 0;
   Obj copy = NewBag(T_PLIST, SIZE_BAG(obj));
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
+#ifdef HPCGAP
     volatile Obj tmp = ELM_WPOBJ(obj, i);
     MEMBAR_READ();
     if (tmp) {
@@ -728,6 +757,15 @@ void MakeImmutableWPObj( Obj obj )
       }
       len = i;
     }
+#else
+    Obj tmp = ELM_WPOBJ(obj, i);
+    if (tmp) {
+      if (IS_BAG_REF(tmp)) {
+        FORGET_WP(obj, i);
+      }
+      len = i;
+    }
+#endif
     SET_ELM_PLIST(copy, i, tmp);
   }
   SET_LEN_PLIST(copy, len);
@@ -922,9 +960,9 @@ static Int InitKernel (
     InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
   #endif
 #elif defined(USE_JULIA_GC)
-    InitMarkFuncBags ( T_WPOBJ,          MarkAllButFirstSubBags   );
+    InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
   #if !defined(USE_THREADSAFE_COPYING)
-    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkAllSubBags   );
+    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
   #endif
 #else
 #error Unknown garbage collector implementation, no weak pointer object implemention available
