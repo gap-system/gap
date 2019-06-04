@@ -248,7 +248,7 @@ Obj GAP_CallFuncList(Obj func, Obj args);
 
 // Call the GAP object <func> as a function with arguments given
 // as an array <args> with <narg> entries.
-extern Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
+Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
 
 
 ////
