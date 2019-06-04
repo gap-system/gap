@@ -119,6 +119,12 @@ enum {
 
 /****************************************************************************
 **
+*F  IsUsingLibGap()  . . . . . . . . 1 if GAP is being used a library, else 0
+*/
+int IsUsingLibGap(void);
+
+/****************************************************************************
+**
 *F  InitializeGap( <argc>, <argv>, <handleSignals> )  . . . . . . .  init GAP
 */
 void InitializeGap(int * pargc, char * argv[], UInt handleSignals);

@@ -16,6 +16,8 @@
 #include "macfloat.h"
 #include "opers.h"
 #include "plist.h"
+#include "precord.h"
+#include "records.h"
 #include "streams.h"
 #include "stringobj.h"
 
@@ -34,6 +36,14 @@ static inline Obj NewPlistFromArray(const Obj * list, Int length)
 }
 
 
+static int UsingLibGap = 0;
+
+int IsUsingLibGap(void)
+{
+    return UsingLibGap;
+}
+
+
 //
 // Setup and initialisation
 //
@@ -43,6 +53,8 @@ void GAP_Initialize(int              argc,
                     GAP_CallbackFunc errorCallback,
                     int              handleSignals)
 {
+    UsingLibGap = 1;
+
     InitializeGap(&argc, argv, handleSignals);
     SetExtraMarkFuncBags(markBagsCallback);
     STATE(JumpToCatchCallback) = errorCallback;
@@ -88,6 +100,17 @@ Obj GAP_ValueGlobalVariable(const char * name)
     }
 }
 
+int GAP_CanAssignGlobalVariable(const char * name)
+{
+    UInt gvar = GVarName(name);
+    return !(IsReadOnlyGVar(gvar) || IsConstantGVar(gvar));
+}
+
+void GAP_AssignGlobalVariable(const char * name, Obj value)
+{
+    UInt gvar = GVarName(name);
+    AssGVar(gvar, value);
+}
 
 ////
 //// arithmetic
@@ -314,6 +337,33 @@ Obj GAP_NewPlist(Int capacity)
     return NEW_PLIST(T_PLIST_EMPTY, capacity);
 }
 
+////
+//// records
+////
+
+int GAP_IsRecord(Obj obj)
+{
+    return obj && IS_REC(obj);
+}
+
+void GAP_AssRecord(Obj rec, Obj name, Obj val)
+{
+    UInt rnam = RNamObj(name);
+    ASS_REC(rec, rnam, val);
+}
+
+Obj GAP_ElmRecord(Obj rec, Obj name)
+{
+    UInt rnam = RNamObj(name);
+    if (ISB_REC(rec, rnam))
+        return ELM_REC(rec, rnam);
+    return 0;
+}
+
+Obj GAP_NewPrecord(Int capacity)
+{
+    return NEW_PREC(capacity);
+}
 
 ////
 //// strings
@@ -390,10 +440,9 @@ void GAP_LeaveStack_(void)
     EnterStackCount--;
 }
 
-void GAP_EnterDebugMessage(char * message, char * file, int line)
+void GAP_EnterDebugMessage_(char * message, char * file, int line)
 {
-    fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file,
-            line);
+    fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file, line);
 }
 
 int GAP_Error_Prejmp_(const char * file, int line)
@@ -406,7 +455,8 @@ int GAP_Error_Prejmp_(const char * file, int line)
 }
 
 /* Helper function for GAP_Error_Postjmp_ (see libgap-api.h) which manipulates
- * EnterStackCount in the (generally unlikely) case of returning from a longjmp
+ * EnterStackCount in the (generally unlikely) case of returning from a
+ * longjmp
  */
 void GAP_Error_Postjmp_Returning_(void)
 {
