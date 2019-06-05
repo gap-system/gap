@@ -376,21 +376,6 @@ EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
 
 /****************************************************************************
 **
-*F  C_NEW_STRING_DYN( <string>, <cstring> ) . . . . . . . . create GAP string
-**
-**  The cstring is assumed to be allocated on the heap, hence its length
-**  is dynamic and must be computed during runtime using strlen.
-**
-**  This macro is provided for backwards compatibility of packages.
-**  'MakeString' and 'MakeImmString' are as efficient and should be used
-**  instead.
-*/
-#define C_NEW_STRING_DYN(string,cstr) \
-  C_NEW_STRING(string, strlen(cstr), cstr)
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
