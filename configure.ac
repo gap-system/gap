@@ -613,7 +613,7 @@ dnl
 
 
 gap_kernel_major_version=3
-gap_kernel_minor_version=0
+gap_kernel_minor_version=1
 AC_SUBST([gap_kernel_major_version])
 AC_SUBST([gap_kernel_minor_version])
 
