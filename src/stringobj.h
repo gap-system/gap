@@ -325,16 +325,6 @@ void ConvString(Obj string);
 Int IsStringConv(Obj obj);
 
 
-/****************************************************************************
-**
-*F  MakeImmutableString( <str> ) . . . . . . make a string immutable in place
-*/
-EXPORT_INLINE void MakeImmutableString(Obj str)
-{
-    MakeImmutableNoRecurse(str);
-}
-
-
 // Functions to create mutable and immutable GAP strings from C strings.
 // MakeString and MakeImmString are inlineable so 'strlen' can be optimised
 // away for constant strings.
@@ -354,14 +344,14 @@ EXPORT_INLINE Obj MakeString(const char * cstr)
 EXPORT_INLINE Obj MakeImmString(const char * cstr)
 {
     Obj result = MakeString(cstr);
-    MakeImmutableString(result);
+    MakeImmutableNoRecurse(result);
     return result;
 }
 
 EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
 {
     Obj result = MakeStringWithLen(buf, len);
-    MakeImmutableString(result);
+    MakeImmutableNoRecurse(result);
     return result;
 }
 

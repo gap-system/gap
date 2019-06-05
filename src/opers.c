@@ -2605,7 +2605,7 @@ static Obj WRAP_NAME(Obj name, const char *addon)
     ptr += name_len;
     *ptr++ = ')';
     *ptr = 0;
-    MakeImmutableString(fname);
+    MakeImmutable(fname);
     return fname;
 }
 
@@ -2622,7 +2622,7 @@ static Obj PREFIX_NAME(Obj name, const char *prefix)
     memcpy( ptr, CONST_CSTR_STRING(name), name_len );
     ptr += name_len;
     *ptr = 0;
-    MakeImmutableString(fname);
+    MakeImmutable(fname);
     return fname;
 }
 

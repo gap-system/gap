@@ -1197,7 +1197,7 @@ Obj ImmutableString(Obj string)
 {
     if (!IS_STRING_REP(string) || IS_MUTABLE_OBJ(string)) {
         string = CopyToStringRep(string);
-        MakeImmutableString(string);
+        MakeImmutableNoRecurse(string);
     }
     return string;
 }
@@ -2116,9 +2116,9 @@ static Int InitKernel (
            UnbListFuncs    [ t1            ] = UnbString;
     }
 
-    MakeImmutableObjFuncs[ T_STRING       ] = MakeImmutableString;
-    MakeImmutableObjFuncs[ T_STRING_SSORT ] = MakeImmutableString;
-    MakeImmutableObjFuncs[ T_STRING_NSORT ] = MakeImmutableString;
+    MakeImmutableObjFuncs[ T_STRING       ] = MakeImmutableNoRecurse;
+    MakeImmutableObjFuncs[ T_STRING_SSORT ] = MakeImmutableNoRecurse;
+    MakeImmutableObjFuncs[ T_STRING_NSORT ] = MakeImmutableNoRecurse;
 
     /* return success                                                      */
     return 0;
