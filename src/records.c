@@ -33,6 +33,17 @@ static Obj HashRNam;
 
 static Obj NamesRNam;
 
+/****************************************************************************
+**
+*F  IS_VALID_RNAM(<rnam>) . . . . . . . . . . . . .  check if <rnam> is valid
+**
+**  'IS_VALID_RNAM' returns if <rnam> is a valid record name.
+*/
+static Int IS_VALID_RNAM(UInt rnam)
+{
+    return rnam != 0 && rnam <= LEN_PLIST(NamesRNam);
+}
+
 extern inline Obj NAME_RNAM(UInt rnam)
 {
     return ELM_PLIST(NamesRNam, rnam);
@@ -274,6 +285,19 @@ static Obj FuncRNamObj(Obj self, Obj obj)
 
 /****************************************************************************
 **
+*F  GetValidRNam( <funcname>, <rnam> ) . check if <rnam> is a valid prec rnam
+*/
+UInt GetValidRNam(const char * funcname, Obj rnam)
+{
+    UInt val = GetPositiveSmallInt(funcname, rnam);
+    RequireArgumentCondition(funcname, rnam, IS_VALID_RNAM(val),
+                             "must be a valid rnam");
+    return val;
+}
+
+
+/****************************************************************************
+**
 *F  FuncNameRNam(<self>,<rnam>)  . . . . convert a record name to a string
 **
 **  'FuncNameRNam' implements the internal function 'NameRName'.
@@ -334,7 +358,7 @@ static Obj ElmRecOper;
 
 static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
 {
-    return ELM_REC( rec, INT_INTOBJ(rnam) );
+    return ELM_REC(rec, GetValidRNam("Record Element", rnam));
 }
 
 static Obj ElmRecError(Obj rec, UInt rnam)
@@ -368,7 +392,8 @@ static Obj IsbRecOper;
 
 static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
 {
-    return (ISB_REC( rec, INT_INTOBJ(rnam) ) ? True : False);
+    return (ISB_REC(rec, GetValidRNam("Record IsBound", rnam)) ? True
+                                                               : False);
 }
 
 static Int IsbRecError(Obj rec, UInt rnam)
@@ -397,7 +422,7 @@ static Obj AssRecOper;
 
 static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
 {
-    ASS_REC( rec, INT_INTOBJ(rnam), obj );
+    ASS_REC(rec, GetValidRNam("Record Assignment", rnam), obj);
     return 0;
 }
 
@@ -426,7 +451,7 @@ static Obj UnbRecOper;
 
 static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
 {
-    UNB_REC( rec, INT_INTOBJ(rnam) );
+    UNB_REC(rec, GetValidRNam("Record Unbind", rnam));
     return 0;
 }
 
