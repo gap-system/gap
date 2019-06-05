@@ -394,7 +394,7 @@ void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
 #endif
     if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
         onam = CopyToStringRep(NameGVar(gvar));
-        MakeImmutableString(onam);
+        MakeImmutable(onam);
         SET_NAME_FUNC(val, onam);
         CHANGED_BAG(val);
     }

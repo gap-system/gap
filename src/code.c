@@ -192,7 +192,7 @@ Obj GET_FILENAME_BODY(Obj body)
 void SET_FILENAME_BODY(Obj body, Obj val)
 {
     GAP_ASSERT(IS_STRING_REP(val));
-    MakeImmutableString(val);
+    MakeImmutable(val);
     BODY_HEADER(body)->filename_or_id = val;
 }
 
@@ -220,7 +220,7 @@ Obj GET_LOCATION_BODY(Obj body)
 void SET_LOCATION_BODY(Obj body, Obj val)
 {
     GAP_ASSERT(IS_STRING_REP(val));
-    MakeImmutableString(val);
+    MakeImmutable(val);
     BODY_HEADER(body)->startline_or_location = val;
 }
 
