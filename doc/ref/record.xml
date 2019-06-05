@@ -429,7 +429,9 @@ permits objects to simulate record behavior.
 <P/>
 To save memory, records do not store a list of all component names, but only
 numbers identifying the components. There numbers are called <E>RNams</E>.
-&GAP; keeps a global list of all RNams that are used and provides functions
+&GAP; keeps a global list of all RNams that are used and provides
+the functions <Ref Func="NameRNam"/> and
+<Ref Func="RNamObj" Label="for a string"/>
 to translate RNams to strings that give the component names and vice versa.
 
 <ManSection>
@@ -492,6 +494,30 @@ component assignment and removal of the component represented by the RNam
 <P/>
 The component identifier <A>rnam</A> is always required to be in
 <Ref Filt="IsPosInt"/>.
+<P/>
+<Example><![CDATA[
+gap> r:= rec( a:= 1 );;
+gap> IsBound\.( r, RNamObj( "a" ) );
+true
+gap> \.( r, RNamObj( "a" ) );
+1
+gap> IsBound\.( r, RNamObj( "b" ) );
+false
+gap> \.\:\=( r, RNamObj( "b" ), 2 );
+gap> r;
+rec( a := 1, b := 2 )
+gap> Unbind\.( r, RNamObj( "b" ) );
+gap> r;
+rec( a := 1 )
+gap> G:= SymmetricGroup( 4 );;
+gap> G.1;
+(1,2,3,4)
+gap> \.( G, RNamObj( 1 ) );
+(1,2,3,4)
+gap> meth:= ApplicableMethod( \., [ G, 4711 ] );;
+gap> meth( G, RNamObj( 1 ) );
+(1,2,3,4)
+]]></Example>
 </Description>
 </ManSection>
 
