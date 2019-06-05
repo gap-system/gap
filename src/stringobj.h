@@ -369,6 +369,10 @@ EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
 /****************************************************************************
 **
 *F  C_NEW_STRING( <string>, <len>, <cstring> )  . . . . . . create GAP string
+**
+**  This macro is deprecated and only provided for backwards compatibility
+**  with some package kernel extensions. Use 'MakeStringWithLen' and
+**  'MakeImmStringWithLen' instead.
 */
 #define C_NEW_STRING(string,len,cstr) \
     string = MakeStringWithLen( (cstr), (len) )
