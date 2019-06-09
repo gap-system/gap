@@ -300,24 +300,17 @@ UInt GetValidRNam(const char * funcname, Obj rnam)
 **
 *F  FuncNameRNam(<self>,<rnam>)  . . . . convert a record name to a string
 **
-**  'FuncNameRNam' implements the internal function 'NameRName'.
+**  'FuncNameRNam' implements the internal function 'NameRNam'.
 **
-**  'NameRName( <rnam> )'
+**  'NameRNam( <rnam> )'
 **
-**  'NameRName' returns the string corresponding to the record name <rnam>.
+**  'NameRNam' returns the string corresponding to the record name <rnam>.
 */
 static Obj FuncNameRNam(Obj self, Obj rnam)
 {
-    Obj                 name;
-    Obj                 oname;
-    const UInt          countRNam = LEN_PLIST(NamesRNam);
-    Int                 inam = GetPositiveSmallInt("NameRName", rnam);
-    if (countRNam < inam) {
-        ErrorMayQuit("NameRName: <rnam> is not a valid record name", 0, 0);
-    }
-    oname = NAME_RNAM(inam);
-    name = CopyToStringRep(oname);
-    return name;
+    Int inam = GetValidRNam("NameRNam", rnam);
+    Obj oname = NAME_RNAM(inam);
+    return CopyToStringRep(oname);
 }
 
 
