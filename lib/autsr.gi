@@ -62,8 +62,33 @@ local ocr, fphom, fpg, free, len, dim, tmp, L0, S, R, rels, mat, r, RS, i, g, v;
       od;
     od;
   od;
-  ocr.matrix:=mat;
+  ocr.matrix:=ImmutableMatrix(ocr.field,mat);
+  ocr.semiech:=ShallowCopy(SemiEchelonMatTransformation(ocr.matrix));
+  ocr.semiech.numrows:=NrRows(ocr.matrix);
   return ocr;
+end);
+
+# solve using the stored LR decomposition
+BindGlobal("AGSRSolMat",function(sem,vec)
+local i,vno,x,z,sol;
+  z := ZeroOfBaseDomain(sem.vectors);
+  sol := ListWithIdenticalEntries(sem.numrows,z);
+  ConvertToVectorRepNC(sol);
+  for i in [1..Length(vec)] do
+    vno := sem.heads[i];
+    if vno <> 0 then
+      x := vec[i];
+      if x <> z then
+        AddRowVector(vec, sem.vectors[vno], -x);
+        AddRowVector(sol, sem.coeffs[vno], x);
+      fi;
+    fi;
+  od;
+  if IsZero(vec) then
+    return sol;
+  else
+    return fail;
+  fi;
 end);
 
 #############################################################################
@@ -114,7 +139,8 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     psim:=e*miso;
 	psim:=psim^-1;
     w:=-List(v,i->i*psim);
-    s:=SolutionMat(ocr.matrix,Concatenation(w));
+    #s:=SolutionMat(ocr.matrix,Concatenation(w));
+    s:=AGSRSolMat(ocr.semiech,Concatenation(w));
     if s<>fail then
       psim:=psim^-1;
       t:=[];
@@ -141,6 +167,47 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
 
 end);
 
+
+# step through intermediate subgroups to find subgroup that satisfies
+# condition
+BindGlobal("SubgroupConditionAbove",function(G,cond,S)
+local c,hom,q,a,t,int,bad,have,ups,up,new,u;
+
+  if ForAll(GeneratorsOfGroup(G),cond) then return G;fi;
+
+  # make sure its not the whole group
+  c:=Core(G,S);
+  hom:=NaturalHomomorphismByNormalSubgroup(G,c);
+  q:=Image(hom);
+  t:=Image(hom,S);
+  int:=IntermediateSubgroups(q,t);
+  bad:=[Length(int.subgroups)+1]; # so we don't access the full group
+  have:=0;
+  ups:=Difference(List(Filtered(int.inclusions,x->x[1]=have),x->x[2]),bad);
+  while Length(ups)>0 do
+    u:=ups[1];
+    a:=First(GeneratorsOfGroup(int.subgroups[u]),x->not x in t);
+    if cond(PreImagesRepresentative(hom,a)) then
+      have:=u;
+      t:=int.subgroups[u];
+    else
+      AddSet(bad,u);
+      up:=Difference(List(Filtered(int.inclusions,x->x[1]=u),x->x[2]),bad);
+      repeat
+        bad:=Union(bad,up);
+        new:=[];
+        for u in up do
+          new:=Union(new,Difference(List(Filtered(int.inclusions,x->x[1]=u),
+            x->x[2]),bad));
+        od;
+        up:=new;
+      until Length(new)=0;
+    fi;
+    ups:=Difference(List(Filtered(int.inclusions,x->x[1]=have),x->x[2]),bad);
+  od;
+  return PreImage(hom,t);
+end);
+
 # main automorphism method -- currently still using factor groups, but
 # nevertheless faster..
 
@@ -151,7 +218,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
       comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim,
-      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma;
+      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma,condcnt;
 
   # criterion for when to force degree reduction
   isBadPermrep:=function(g)
@@ -164,6 +231,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
   makeaqiso:=function()
   local a,b;
+    Info(InfoMorph,3,"enter makeaqiso");
     if HasIsomorphismPermGroup(AQ) then
       AQiso:=IsomorphismPermGroup(AQ);
     elif HasNiceMonomorphism(AQ) and IsPermGroup(Range(NiceMonomorphism(AQ))) then
@@ -173,8 +241,10 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     else
       AQiso:=IsomorphismPermGroup(AQ);
     fi;
-    Info(InfoMorph,3,"Permrep of AQ ",Size(AQ));
+    #AQP:=Image(AQiso,AQ);
+    #AQiso:=AQiso*SmallerDegreePermutationRepresentation(AQP);
     AQP:=Image(AQiso,AQ);
+    Info(InfoMorph,3,"Permrep of AQ ",Size(AQ),", deg:",NrMovedPoints(AQP));
     # force degree down
     a:=Size(AQP);
     AQP:=Group(SmallGeneratingSet(AQP),One(AQP));
@@ -270,11 +340,16 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	until Size(v)=1;
 	j:=1;
 	repeat
-	  v:=Omega(u,i,j);
-	  if Size(v)<Size(u) then
-	    d:=RefinedSubnormalSeries(d,v);
-	  fi;
-	  j:=j+1;
+          if Size(u)>=2^24 then
+            v:=u; # bail out as method for `Omega` will do so.
+          else
+            v:=Omega(u,i,j);
+            if Size(v)<Size(u) then
+              d:=RefinedSubnormalSeries(d,v);
+            fi;
+            j:=j+1;
+          fi;
+
 	until Size(v)=Size(u);
       fi;
 
@@ -310,7 +385,6 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   rada:=fail;
 
   ser:=Reversed(ser);
-  i:=1;
   hom:=ff.factorhom;
   Q:=Image(hom,G);
   if IsPermGroup(Q) and NrMovedPoints(Q)/Size(Q)*Size(Socle(Q))
@@ -328,6 +402,12 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   AQ:=AutomorphismGroupFittingFree(Q:someCharacteristics:=fail);
   AQI:=InnerAutomorphismsAutomorphismGroup(AQ);
   lastperm:=fail;
+  # preseed natural homs in ascending form (as the largest one might help
+  # for smaller ones)
+  for i in [Length(ser),Length(ser)-1..2] do
+    NaturalHomomorphismByNormalSubgroup(G,ser[i]);
+  od;
+  i:=1;
   while i<Length(ser) do
     Assert(2,ForAll(GeneratorsOfGroup(AQ),x->Size(Source(x))=Size(Q)));
     # ensure that the step is OK
@@ -339,6 +419,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       M:=ser[i];
       N:=ser[i+1];
       hom:=NaturalHomomorphismByNormalSubgroup(G,N);
+
       Q:=Image(hom,G);
       # degree reduction called for?
       if Size(N)>1 and isBadPermrep(Q) then
@@ -524,6 +605,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
         if perm in Aperm then
 	  return true;
 	fi;
+#condcnt:=condcnt+1;
+#Print("test:",condcnt,"\n");
         aut:=PreImagesRepresentative(AQiso,perm);
 	newgens:=List(GeneratorsOfGroup(Q),
 	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
@@ -578,7 +661,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     #stablim(sub,cond,10000)=false then
 
     #if Size(sub)/Size(Aperm)>1000000 then Error("Million"); fi;
+condcnt:=0;
+    j:=Size(sub);
+    Info(InfoMorph,2,"start search ",IndexNC(sub,Aperm));
+    #if IsNormal(sub,Aperm) and IndexNC(sub,Aperm)<=50000 then
+    #  sub:=SubgroupConditionAbove(sub,cond,Aperm);
+    #else
     sub:=SubgroupProperty(sub,cond,Aperm);
+    #fi;
+    Info(InfoMorph,2,"end search ",j/Size(sub));
 
     Aperm:=Group(Apa,());
     j:=1;
