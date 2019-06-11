@@ -24,7 +24,7 @@ gap> func1 := function()
 >  end;;
 gap>  for i in [1..1000] do func1(); od;
 
-# Here we might only get part of the line
+# Here we might only get part of the line, or fail
 # This is mainly to check we kill the process when it still has output
 gap> func2 := function()
 >    local line,s;
@@ -35,7 +35,9 @@ gap> func2 := function()
 >      fi;
 >      SetPrintFormattingStatus(s,false);
 >      AppendTo(s,"The cat sat on the mat\n");
->      if not StartsWith("The cat sat on the mat\n", ReadLine(s)) then
+>      AppendTo(s,"The cat sat on the mat\n");
+>      line := ReadLine(s);
+>      if line <> fail and not StartsWith("The cat sat on the mat\n", line) then
 >        Print( "There is a problem concerning a cat on a mat.\n" );
 >      fi;
 >      CloseStream(s);
