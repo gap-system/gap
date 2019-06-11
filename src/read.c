@@ -1186,6 +1186,60 @@ static ArgList ReadFuncArgList(ScannerState * s,
 }
 
 
+void StartFakeFuncExpr(Int startLine)
+{
+    assert(STATE(IntrCoding) == 0);
+
+    // switch to coding mode now
+    CodeBegin();
+
+    // code a function expression (with no arguments and locals)
+    Obj nams = NEW_PLIST(T_PLIST, 0);
+
+    // If we are in the break loop, then a local variable context may well
+    // exist, and we have to create an empty local variable names list to
+    // match the function expression that we are creating.
+    //
+    // Without this, access to variables defined in the existing local
+    // variable context will be coded as LVAR accesses; but when we then
+    // execute this code, they will not actually be available in the current
+    // context, but rather one level up, i.e., they really should have been
+    // coded as HVARs.
+    //
+    // If we are not in a break loop, then this would be a waste of time and
+    // effort
+    if (LEN_PLIST(STATE(StackNams)) > 0) {
+        PushPlist(STATE(StackNams), nams);
+    }
+
+    CodeFuncExprBegin(0, 0, nams, startLine);
+}
+
+
+void FinishAndCallFakeFuncExpr(void)
+{
+    assert(STATE(IntrCoding) == 0);
+
+    // code a function expression (with one statement in the body)
+    CodeFuncExprEnd(1, 1);
+
+    // switch back to immediate mode and get the function
+    Obj func = CodeEnd(0);
+
+    // If we are in a break loop, then we will have created a "dummy" local
+    // variable names list to get the counts right. Remove it.
+    const UInt len = LEN_PLIST(STATE(StackNams));
+    if (len > 0)
+        PopPlist(STATE(StackNams));
+
+    // call the function
+    CALL_0ARGS(func);
+
+    // push void
+    PushVoidObj();
+}
+
+
 static void ReadFuncExprBody(ScannerState * s,
                              TypSymbolSet   follow,
                              Int            isAbbrev,
