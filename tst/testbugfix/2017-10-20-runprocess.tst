@@ -2,7 +2,7 @@
 # We want to check two cases:
 # Firstly we ensure we read a whole line, by using a while loop
 gap> d := DirectoryCurrent();;
-gap> f := Filename(DirectoriesSystemPrograms(), "rev");;
+gap> f := Filename(DirectoriesSystemPrograms(), "cat");;
 gap> func1 := function()
 >    local line,s;
 >    if f <> fail then
@@ -16,7 +16,7 @@ gap> func1 := function()
 >      while line[Length(line)] <> '\n' do
 >        line := Concatenation(line, ReadLine(s));
 >      od;
->      if line <> "tam eht no tas tac ehT\n" then
+>      if line <> "The cat sat on the mat\n" then
 >        Print( "There is a problem concerning a cat on a mat.\n" );
 >      fi;
 >      CloseStream(s);
@@ -35,7 +35,7 @@ gap> func2 := function()
 >      fi;
 >      SetPrintFormattingStatus(s,false);
 >      AppendTo(s,"The cat sat on the mat\n");
->      if not StartsWith("tam eht no tas tac ehT\n", ReadLine(s)) then
+>      if not StartsWith("The cat sat on the mat\n", ReadLine(s)) then
 >        Print( "There is a problem concerning a cat on a mat.\n" );
 >      fi;
 >      CloseStream(s);
