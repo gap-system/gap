@@ -108,16 +108,6 @@ UInt ReadEvalFile(Obj * evalResult);
 */
 void ReadEvalError(void) NORETURN;
 
-/****************************************************************************
-**
-*V  StackNams . . . . . . . . . . . .  stack of lists of local variable names
-**
-**  This is exported to support a rather nasty hack in intrprtr.c related to
-**  while loops and the break loop
-*/
-
-/* TL: extern Obj StackNams; */
-
 
 /****************************************************************************
 **
