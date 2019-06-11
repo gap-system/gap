@@ -119,6 +119,16 @@ void ReadEvalError(void) NORETURN;
 /* TL: extern Obj StackNams; */
 
 
+/****************************************************************************
+**
+*/
+void StartFakeFuncExpr(Int startLine);
+void FinishAndCallFakeFuncExpr(void);
+
+
+/****************************************************************************
+**
+*/
 void PushGlobalForLoopVariable(UInt var);
 
 void PopGlobalForLoopVariable(void);
