@@ -55,7 +55,6 @@ typedef struct GAPState {
 
     /* From read.c */
     syJmp_buf ReadJmpError;
-    Obj       StackNams;
 
     /* From scanner.c */
     // TODO: eventually, ScannerState should be removed from GAPState

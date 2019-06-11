@@ -33,6 +33,9 @@
 #include "hpc/thread.h"
 #endif
 
+
+struct ReaderState {
+
 /****************************************************************************
 **
 *V  StackNams . . . . . . . . . . . . .  stack of local variables names lists
@@ -43,9 +46,7 @@
 **  list), and popped again when the reader has finished reading the function
 **  expression (after reading the 'end').
 */
-/* TL: Obj             StackNams; */
-
-struct ReaderState {
+Obj  StackNams;
 
 /****************************************************************************
 **
@@ -623,7 +624,7 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
     }
 
     // try to look up the variable on the stack of local variables
-    const UInt countNams = LEN_PLIST(STATE(StackNams));
+    const UInt countNams = LEN_PLIST(ReaderState()->StackNams);
     for (nest = 0; nest < countNams; nest++) {
 #ifndef SYS_IS_64_BIT
         if (nest >= MAX_FUNC_EXPR_NESTING) {
@@ -632,7 +633,7 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
             break;
         }
 #endif
-        nams = ELM_PLIST(STATE(StackNams), countNams - nest);
+        nams = ELM_PLIST(ReaderState()->StackNams, countNams - nest);
         indx = findValueInNams(nams, s->Value, 1, LEN_PLIST(nams));
         if (indx != 0) {
             ref.type = (nest == 0) ? R_LVAR : R_HVAR;
@@ -759,7 +760,7 @@ static void ReadCallVarAss(ScannerState * s, TypSymbolSet follow, Char mode)
 
     if ( ref.type == R_GVAR            // Reading a global variable
       && mode != 'i'                // Not inside 'IsBound'
-      && LEN_PLIST(STATE(StackNams)) != 0   // Inside a function
+      && LEN_PLIST(ReaderState()->StackNams) != 0   // Inside a function
       && ref.var != ReaderState()->CurrLHSGVar  // Not LHS of assignment
       && ValGVar(ref.var) == 0          // Not an existing global var
       && ExprGVar(ref.var) == 0         // Or an auto var
@@ -798,7 +799,7 @@ static void ReadCallVarAss(ScannerState * s, TypSymbolSet follow, Char mode)
         else {
             Match(s, S_ASSIGN, ":=", follow);
             UInt currLHSGVar = ReaderState()->CurrLHSGVar;
-            if ( LEN_PLIST(STATE(StackNams)) == 0 || !STATE(IntrCoding) ) {
+            if ( LEN_PLIST(ReaderState()->StackNams) == 0 || !STATE(IntrCoding) ) {
                 ReaderState()->CurrLHSGVar = (ref.type == R_GVAR ? ref.var : 0);
             }
             ReadExpr(s, follow, 'r');
@@ -1208,8 +1209,8 @@ void StartFakeFuncExpr(Int startLine)
     //
     // If we are not in a break loop, then this would be a waste of time and
     // effort
-    if (LEN_PLIST(STATE(StackNams)) > 0) {
-        PushPlist(STATE(StackNams), nams);
+    if (LEN_PLIST(ReaderState()->StackNams) > 0) {
+        PushPlist(ReaderState()->StackNams, nams);
     }
 
     CodeFuncExprBegin(0, 0, nams, startLine);
@@ -1228,9 +1229,9 @@ void FinishAndCallFakeFuncExpr(void)
 
     // If we are in a break loop, then we will have created a "dummy" local
     // variable names list to get the counts right. Remove it.
-    const UInt len = LEN_PLIST(STATE(StackNams));
+    const UInt len = LEN_PLIST(ReaderState()->StackNams);
     if (len > 0)
-        PopPlist(STATE(StackNams));
+        PopPlist(ReaderState()->StackNams);
 
     // call the function
     CALL_0ARGS(func);
@@ -1256,7 +1257,7 @@ static void ReadFuncExprBody(ScannerState * s,
     nrError = STATE(NrError);
 
     // push the new local variables list
-    PushPlist(STATE(StackNams), args.nams);
+    PushPlist(ReaderState()->StackNams, args.nams);
 
     // begin interpreting the function expression
     TRY_IF_NO_ERROR {
@@ -1296,7 +1297,7 @@ static void ReadFuncExprBody(ScannerState * s,
     }
 
     // pop the new local variables list
-    PopPlist(STATE(StackNams));
+    PopPlist(ReaderState()->StackNams);
 }
 
 
@@ -2491,23 +2492,24 @@ static UInt ReadStats(ScannerState * s, TypSymbolSet follow)
 
 static void RecreateStackNams( Obj context )
 {
+    Obj stackNams = ReaderState()->StackNams;
     Obj lvars = context;
     while (lvars != STATE(BottomLVars) && lvars != (Obj)0)  {
         Obj nams = NAMS_FUNC(FUNC_LVARS(lvars));
         if (nams != (Obj) 0) {
-            PushPlist( STATE(StackNams), nams);
+            PushPlist(stackNams, nams);
         }
         lvars = ENVI_FUNC(FUNC_LVARS(lvars));
     }
 
     // At this point we have the stack upside down, so invert it
-    const UInt countNams = LEN_PLIST(STATE(StackNams));
+    const UInt countNams = LEN_PLIST(stackNams);
     for (UInt i = 1; i <= countNams/2; i++) {
         const UInt j = countNams + 1 -i;
-        Obj tmpA = ELM_PLIST(STATE(StackNams), i);
-        Obj tmpB = ELM_PLIST(STATE(StackNams), j);
-        SET_ELM_PLIST(STATE(StackNams), i, tmpB);
-        SET_ELM_PLIST(STATE(StackNams), j, tmpA);
+        Obj tmpA = ELM_PLIST(stackNams, i);
+        Obj tmpB = ELM_PLIST(stackNams, j);
+        SET_ELM_PLIST(stackNams, i, tmpB);
+        SET_ELM_PLIST(stackNams, j, tmpA);
     }
 }
 
@@ -2546,7 +2548,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     STATE(Prompt) = SyQuiet ? "" : "> ";
 
     /* remember the old reader context                                     */
-    stackNams   = STATE(StackNams);
+    stackNams   = rs->StackNams;
     readTop     = rs->ReadTop;
     readTilde   = rs->ReadTilde;
     tilde       = STATE(Tilde);
@@ -2555,7 +2557,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     // initialize everything and begin an interpreter
-    STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+    rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
     rs->ReadTop        = 0;
     rs->ReadTilde      = 0;
     STATE(Tilde)       = 0;
@@ -2618,7 +2620,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
-    STATE(StackNams)   = stackNams;
+    rs->StackNams      = stackNams;
     rs->ReadTop        = readTop;
     rs->ReadTilde      = readTilde;
     STATE(Tilde)       = tilde;
@@ -2671,7 +2673,7 @@ UInt ReadEvalFile(Obj *evalResult)
     STATE(Prompt) = SyQuiet ? "" : "> ";
 
     /* remember the old reader context                                     */
-    stackNams   = STATE(StackNams);
+    stackNams   = rs->StackNams;
     readTop     = rs->ReadTop;
     readTilde   = rs->ReadTilde;
     tilde       = STATE(Tilde);
@@ -2682,7 +2684,7 @@ UInt ReadEvalFile(Obj *evalResult)
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 
     // initialize everything and begin an interpreter
-    STATE(StackNams) = NEW_PLIST( T_PLIST, 16 );
+    rs->StackNams    = NEW_PLIST( T_PLIST, 16 );
     rs->ReadTop      = 0;
     rs->ReadTilde    = 0;
     STATE(Tilde)     = 0;
@@ -2693,7 +2695,7 @@ UInt ReadEvalFile(Obj *evalResult)
 
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
-    PushPlist( STATE(StackNams), nams );
+    PushPlist(rs->StackNams, nams);
     nloc = 0;
     if (s->Symbol == S_LOCAL) {
         nloc = ReadLocals(s, 0, nams);
@@ -2743,7 +2745,7 @@ UInt ReadEvalFile(Obj *evalResult)
     if (TLS(CurrentHashLock))
       HashUnlock(TLS(CurrentHashLock));
 #endif
-    STATE(StackNams) = stackNams;
+    rs->StackNams    = stackNams;
     rs->ReadTop      = readTop;
     rs->ReadTilde    = readTilde;
     STATE(Tilde)     = tilde;
@@ -2789,7 +2791,7 @@ struct SavedReaderState {
 };
 
 static void SaveReaderState(struct SavedReaderState *s) {
-  s->stackNams   = STATE(StackNams);
+  s->stackNams   = ReaderState()->StackNams;
   s->readTop     = ReaderState()->ReadTop;
   s->readTilde   = ReaderState()->ReadTilde;
   s->currLHSGVar = ReaderState()->CurrLHSGVar;
@@ -2802,7 +2804,7 @@ static void SaveReaderState(struct SavedReaderState *s) {
 }
 
 static void ClearReaderState(void ) {
-  STATE(StackNams)   = NEW_PLIST( T_PLIST, 16 );
+  ReaderState()->StackNams   = NEW_PLIST( T_PLIST, 16 );
   ReaderState()->ReadTop     = 0;
   ReaderState()->ReadTilde   = 0;
   ReaderState()->CurrLHSGVar = 0;
@@ -2816,7 +2818,7 @@ static void ClearReaderState(void ) {
 static void RestoreReaderState(const struct SavedReaderState *s) {
   memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
   STATE(UserHasQuit) = s->userHasQuit;
-  STATE(StackNams)   = s->stackNams;
+  ReaderState()->StackNams   = s->stackNams;
   ReaderState()->ReadTop     = s->readTop;
   ReaderState()->ReadTilde   = s->readTilde;
   ReaderState()->CurrLHSGVar = s->currLHSGVar;
@@ -2918,7 +2920,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
 #if !defined(HPCGAP)
-    InitGlobalBag( &STATE(StackNams),      "src/read.c:StackNams"      );
+    InitGlobalBag(&ReaderState()->StackNams, "src/read.c:StackNams");
 #endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
     /* return success                                                      */
@@ -2929,7 +2931,7 @@ static Int InitKernel (
 static Int InitModuleState(void)
 {
     STATE(ErrorLVars) = (UInt **)0;
-    STATE(StackNams) = NEW_PLIST(T_PLIST, 16);
+    ReaderState()->StackNams = NEW_PLIST(T_PLIST, 16);
     ReaderState()->ReadTop = 0;
     ReaderState()->ReadTilde = 0;
     ReaderState()->CurrLHSGVar = 0;
