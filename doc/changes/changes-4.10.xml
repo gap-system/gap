@@ -668,6 +668,11 @@ Specify the Julia binary instead of the Julia prefix
 Export Julia <C>CFLAGS</C>, <C>LDFLAGS</C>, and <C>LIBS</C> to <C>sysinfo.gap</C>
 (<URL><LinkText>&Hash;3248</LinkText><Link>https://github.com/gap-system/gap/pull/3248</Link></URL>).
 </Item>
+<Item>
+Change <C>MPtr</C> Julia type of &GAP; objects to be a subtype of the abstract Julia <C>GapObj</C> type
+provided by the Julia package <C>GAPTypes.jl</C>
+(<URL><LinkText>&Hash;3497</LinkText><Link>https://github.com/gap-system/gap/pull/3497</Link></URL>).
+</Item>
 </List>
 
 Improved and extended functionality:
