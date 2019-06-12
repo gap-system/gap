@@ -548,7 +548,7 @@ end);
 
 InstallMethod(MaxesAlmostSimple,"table of marks and linear",true,[IsGroup],0,
 function(G)
-local m,id,epi;
+local m,id,epi,H;
 
   # does the table of marks have it?
   m:=TomDataMaxesAlmostSimple(G);
@@ -559,6 +559,11 @@ local m,id,epi;
     id:=DataAboutSimpleGroup(G);
     if id.idSimple.series="A" then
       Info(InfoPerformance,1,"Alternating recognition needed!");
+      H:=AlternatingGroup(id.idSimple.parameter);
+      m:=MaximalSubgroupClassReps(H); # library, natural
+      epi:=IsomorphismGroups(G,H);
+      m:=List(m,x->PreImage(epi,x));
+      return m;
     elif id.idSimple.series="L" then
       m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
       if m<>fail then

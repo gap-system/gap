@@ -3149,7 +3149,7 @@ local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
     new:=[];
     for j in m do
       if dosub(j) then
-	m:=MaximalSubgroupClassReps(j);
+	m:=MaximalSubgroupClassReps(j:cheap:=false);
 	Append(new,m);
       fi;
     od;
