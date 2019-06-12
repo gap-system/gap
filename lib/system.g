@@ -397,16 +397,6 @@ CallAndInstallPostRestore( function()
     MakeImmutable( CommandLineOptions );
     MakeImmutable( InitFiles );
 
-    if CommandLineOptions.L = "" or CommandLineOptions.R then
-      # start without a workspace
-      GAPInfo.CommandLineOptionsPrev:= [];
-      GAPInfo.InitFilesPrev:= [];
-    else
-      # start with a workspace
-      ADD_LIST_DEFAULT( GAPInfo.CommandLineOptionsPrev,
-                        GAPInfo.CommandLineOptions );
-      ADD_LIST_DEFAULT( GAPInfo.InitFilesPrev, GAPInfo.InitFiles );
-    fi;
     GAPInfo.CommandLineOptions:= CommandLineOptions;
     GAPInfo.InitFiles:= InitFiles;
 
