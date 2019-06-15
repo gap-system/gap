@@ -804,4 +804,120 @@ includes a database of classical and skew braces of small orders.
 
 </Section>
 
+<Section Label="GAP4.10.2">
+<Heading>&GAP; 4.10.2 (June 2019)</Heading>
+
+<Subsection Label="Changes in the core GAP system introduced in GAP 4.10.2">
+<Heading>Changes in the core &GAP; system introduced in &GAP; 4.10.21</Heading>
+
+Improvements in the experimental way to allow 3rd party code to link &GAP; as a library:
+<List>
+<Item>
+Add <C>GAP_AssignGlobalVariable</C> and <C>GAP_IsNameOfWritableGlobalVariable</C>
+to the <Package>libGAP</Package> API
+(<URL><LinkText>&Hash;3438</LinkText><Link>https://github.com/gap-system/gap/pull/3438</Link></URL>).
+</Item>
+</List>
+
+Fixes in the experimental support for using the <Package>Julia</Package>
+garbage collector:
+<List>
+<Item>
+Fix of a problem where the Julia GC during a partial sweep frees some,
+but not all objects of an unreachable data structure, and also may
+erroneously try to mark the deallocated objects
+(<URL><LinkText>&Hash;3412</LinkText><Link>https://github.com/gap-system/gap/pull/3412</Link></URL>).
+</Item>
+<Item>
+Fix stack scanning for the Julia GC when GAP is used as a library
+(<URL><LinkText>&Hash;3432</LinkText><Link>https://github.com/gap-system/gap/pull/3432</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to crashes:
+<List>
+<Item>
+Fix a bug in <Ref BookName="ref" Oper="TransformationListList" />
+which could cause a crash
+(<URL><LinkText>&Hash;3463</LinkText><Link>https://github.com/gap-system/gap/pull/3463</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to incorrect results:
+<List>
+<Item>
+Fix a bug in <Ref BookName="ref" Attr="ClassPositionsOfLowerCentralSeries" />. [Reported by Frieder Ladisch]
+(<URL><LinkText>&Hash;3321</LinkText><Link>https://github.com/gap-system/gap/pull/3321</Link></URL>).
+</Item>
+<Item>
+Fix a dangerous bug in the comparison of large negative integers,
+introduced in GAP 4.10.1: if <C>x</C> and <C>y</C> were equal,
+but not identical, large negative numbers then <C>x &lt; y</C>
+returned <K>true</K> instead of <K>false</K>.
+(<URL><LinkText>&Hash;3478</LinkText><Link>https://github.com/gap-system/gap/pull/3478</Link></URL>).
+</Item>
+</List>
+
+Fixed bugs that could lead to break loops:
+<List>
+<Item>
+If the group has been obtained as subgroup from a Fitting free/solvable radical computation,
+the data is inherited and might not guarantee that the factor group really is Fitting free.
+Added a check and an assertion to catch this situation
+(<URL><LinkText>&Hash;3154</LinkText><Link>https://github.com/gap-system/gap/pull/3154</Link></URL>).
+</Item>
+<Item>
+Fix declaration of sparse action homomorphisms
+(<URL><LinkText>&Hash;3281</LinkText><Link>https://github.com/gap-system/gap/pull/3281</Link></URL>).
+</Item>
+<Item>
+<C>LatticeViaRadical</C> called <Ref BookName="ref" Func="ClosureSubgroupNC" />
+assuming that the parent contained all generators. It now calls
+<Ref BookName="ref" Oper="ClosureSubgroup" /> instead, since this can
+not be always guaranteed (this could happen, for example, in perfect
+subgroup computation). Also added an assertion to
+<Ref BookName="ref" Func="ClosureSubgroupNC" />
+to catch this situation in other cases. [Reported by Serge Bouc]
+(<URL><LinkText>&Hash;3397</LinkText><Link>https://github.com/gap-system/gap/pull/3397</Link></URL>).
+</Item>
+<Item>
+Fix a "method not found" error in
+<Ref BookName="ref" Func="SubdirectProduct" />
+(<URL><LinkText>&Hash;3485</LinkText><Link>https://github.com/gap-system/gap/pull/3485</Link></URL>).
+</Item>
+</List>
+
+Other fixed bugs:
+<List>
+<Item>
+Fix corner case in modified Todd-Coxeter algorithm when relator is trivial
+(<URL><LinkText>&Hash;3311</LinkText><Link>https://github.com/gap-system/gap/pull/3311</Link></URL>).
+</Item>
+</List>
+
+</Subsection>
+
+<Subsection Label="New and updated packages since GAP 4.10.1">
+<Heading>New and updated packages since &GAP; 4.10.1</Heading>
+
+&GAP; 4.10.1 distribution contains 145 packages, including updated
+versions of 55 packages from &GAP; 4.10.1 distribution,
+<P/>
+
+A new package <Package>MonoidalCategories</Package> by Mohamed Barakat,
+Sebastian Gutsche and Sebastian Posur have been added to the distribution.
+It is based on the <Package>CAP</Package> package and implements monoidal
+structures for <Package>CAP</Package>.
+<P/>
+
+Unfortunately we had to withdraw the <Package>QaoS</Package>
+package from distribution of GAP, as the servers it crucially
+relies on for its functionality have been permanently retired
+some time ago and are not coming back
+(see <URL>https://github.com/gap-packages/qaos/issues/13</URL> for details).
+
+</Subsection>
+
+</Section>
+
 </Chapter>
