@@ -264,8 +264,8 @@ gap> p:=List(e,x->FpGroupCocycle(coh,x,true));;
 gap> Length(p);
 4
 gap> p:=List(p,x->Image(IsomorphismPermGroup(x)));
-[ <permutation group with 13 generators>,
-  <permutation group with 13 generators>,
-  <permutation group with 13 generators>,
+[ <permutation group with 13 generators>, 
+  <permutation group with 13 generators>, 
+  <permutation group with 13 generators>, 
   <permutation group with 13 generators> ]
 gap> STOP_TEST( "grpperm.tst", 1);
