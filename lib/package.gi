@@ -2278,14 +2278,6 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     fi;
     return true;
     end;
-    
-    TestOption( record, "HasSubpackage", IsBool, "a bool" );
-
-    hasSubpackage := IsBound( record.HasSubpackage ) and record.HasSubpackage;
-
-    TestOption( record, "SubpackageOf", IsString, "a string" );
-
-    isSubpackage := IsBound( record.SubpackageOf );
 
     TestMandat( record, "PackageName",
         x -> IsString(x) and 0 < Length(x),
@@ -2298,6 +2290,13 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         x -> IsString(x) and Length(x) = 10 and x{ [3,6] } = "//"
                  and ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar ),
         "a string of the form `dd/mm/yyyy'" );
+
+    TestOption( record, "HasSubpackage", IsBool, "a bool" );
+    hasSubpackage := IsBound( record.HasSubpackage ) and record.HasSubpackage;
+
+    TestOption( record, "SubpackageOf", IsString, "a string" );
+    isSubpackage := IsBound( record.SubpackageOf );
+
     if not isSubpackage then
       TestOption( record, "License",
           x -> IsString(x) and 0 < Length(x),
@@ -2306,13 +2305,13 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       TestMandat( record, "ArchiveFormats", IsString, "a string" );
       TestOption( record, "TextFiles", IsStringList, "a list of strings" );
       TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
-      TestOption( record, "TextBinaryFilesPatterns", 
-          x -> IsStringList(x) and 
+      TestOption( record, "TextBinaryFilesPatterns",
+          x -> IsStringList(x) and
               ForAll( x, i -> Length(i) > 0 ) and
-              ForAll( x, i -> i[1] in ['T','B'] ),  
+              ForAll( x, i -> i[1] in ['T','B'] ),
           "a list of strings, each started with 'T' or 'B'" );
-      if Number( [ IsBound(record.TextFiles), 
-                  IsBound(record.BinaryFiles), 
+      if Number( [ IsBound(record.TextFiles),
+                  IsBound(record.BinaryFiles),
                   IsBound(record.TextBinaryFilesPatterns) ],
                 a -> a=true ) > 1 then
         Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
@@ -2386,32 +2385,33 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     if hasSubpackage then
       # for metapackages, documentation is optional, hence so is PackageDoc;
       # but if it exists, we should of course still validate it
-      docTester := {record, name, type, typename} -> IsBound( record.(name) ) and TestOption(record, name, type, typename);
+      docTester := TestOption;
     else
       docTester := TestMandat;
     fi;
-    if docTester( record, "PackageDoc",
+    docTester( record, "PackageDoc",
           x -> IsRecord( x ) or IsRecordList( x ),
-          "a record or a list of records" ) then
+          "a record or a list of records" );
+    if IsBound( record.PackageDoc ) then
       if IsRecord( record.PackageDoc ) then
         list:= [ record.PackageDoc ];
       else
         list:= record.PackageDoc;
       fi;
       for subrec in list do
-        docTester( subrec, "BookName", IsString, "a string" );
+        TestMandat( subrec, "BookName", IsString, "a string" );
         if IsBound(subrec.Archive) then
           Print("#W  PackageDoc.Archive is withdrawn, use PackageDoc.ArchiveURLSubset instead\n");
         fi;
-        docTester( subrec, "ArchiveURLSubset", IsFilenameList,
+        TestMandat( subrec, "ArchiveURLSubset", IsFilenameList,
             "a list of strings denoting relative paths to readable files or directories" );
-        docTester( subrec, "HTMLStart", IsFilename,
+        TestMandat( subrec, "HTMLStart", IsFilename,
                     "a string denoting a relative path to a readable file" );
-        docTester( subrec, "PDFFile", IsFilename,
+        TestMandat( subrec, "PDFFile", IsFilename,
                     "a string denoting a relative path to a readable file" );
-        docTester( subrec, "SixFile", IsFilename,
+        TestMandat( subrec, "SixFile", IsFilename,
                     "a string denoting a relative path to a readable file" );
-        docTester( subrec, "LongTitle", IsString, "a string" );
+        TestMandat( subrec, "LongTitle", IsString, "a string" );
       od;
     fi;
     if     TestOption( record, "Dependencies", IsRecord, "a record" )
