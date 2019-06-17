@@ -1105,13 +1105,13 @@ PKG_BRANCH = master
 PKG_BOOTSTRAP_URL = https://www.gap-system.org/pub/gap/gap4pkgs/
 PKG_MINIMAL = packages-required-$(PKG_BRANCH).tar.gz
 PKG_FULL = packages-$(PKG_BRANCH).tar.gz
-WGET = wget -N
+DOWNLOAD = $(abs_srcdir)/etc/download.sh
 
 bootstrap-pkg-minimal:
 	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed."; \
     else \
-        $(WGET) $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) && \
+        $(DOWNLOAD) $(PKG_BOOTSTRAP_URL)$(PKG_MINIMAL) && \
         mkdir pkg && \
         cd pkg && \
         tar xzf ../$(PKG_MINIMAL) ; \
@@ -1121,7 +1121,7 @@ bootstrap-pkg-full:
 	@if test -e pkg; then \
         echo "The pkg directory already exists. Please move or remove it to proceed" ; \
     else \
-        $(WGET) $(PKG_BOOTSTRAP_URL)$(PKG_FULL) && \
+        $(DOWNLOAD) $(PKG_BOOTSTRAP_URL)$(PKG_FULL) && \
         mkdir pkg && \
         cd pkg && \
         tar xzf ../$(PKG_FULL) ; \
