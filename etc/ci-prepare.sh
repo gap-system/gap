@@ -46,15 +46,15 @@ time make V=1 -j4
 
 # download packages; instruct wget to retry several times if the
 # connection is refused, to work around intermittent failures
-WGET="wget -N --no-check-certificate --tries=5 --waitretry=5 --retry-connrefused"
+WGET="wget --tries=5 --waitretry=5 --retry-connrefused"
 if [[ $(uname) == Darwin ]]
 then
     # Travis OSX builders seem to have very small download bandwidth,
     # so as a workaround, we only test the minimal set of packages there.
     # On the upside, it's good to test that, too!
-    make bootstrap-pkg-minimal WGET="$WGET"
+    make bootstrap-pkg-minimal DOWNLOAD="$WGET"
 else
-    make bootstrap-pkg-full WGET="$WGET"
+    make bootstrap-pkg-full DOWNLOAD="$WGET"
 fi
 
 # check that GAP is at least able to start
