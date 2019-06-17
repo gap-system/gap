@@ -425,13 +425,14 @@ void PrepareCopy(Obj obj, Obj copy)
     // between original and copy (e.g. for objects, they point to the type;
     // if making an immutable copy of a mutable object, the types will
     // differ).
+    // Store in a DATOBJ, as CONST_ADDR_OBJ(obj)[0] could be anything,
+    // including an arbitary C integer.
     // Likewise, the TNUM of the copy and the original can and will differ;
     // e.g. for a weak pointer list, the copy can be a plist.
-    Obj tmp = NEW_PLIST(T_PLIST, 3);
-    SET_LEN_PLIST(tmp, 3);
-    SET_ELM_PLIST(tmp, 1, CONST_ADDR_OBJ(obj)[0]);
-    SET_ELM_PLIST(tmp, 2, copy);
-    SET_ELM_PLIST(tmp, 3, INTOBJ_INT(TNUM_OBJ(obj)));
+    Obj tmp = NewBag(T_DATOBJ, 4 * sizeof(Obj *));
+    ADDR_OBJ(tmp)[1] = CONST_ADDR_OBJ(obj)[0];
+    ADDR_OBJ(tmp)[2] = copy;
+    ADDR_OBJ(tmp)[3] = INTOBJ_INT(TNUM_OBJ(obj));
 
     // insert the forwarding pointer
     GAP_ASSERT(SIZE_OBJ(obj) >= sizeof(Obj));
@@ -460,7 +461,7 @@ Obj COPY_OBJ(Obj obj, Int mut)
         Obj fpl = CONST_ADDR_OBJ(obj)[0];
 
         // return pointer to the copy
-        copy = ELM_PLIST(fpl, 2);
+        copy = ADDR_OBJ(fpl)[2];
     }
     else if (!IS_MUTABLE_OBJ(obj)) {
         copy = obj;
@@ -488,11 +489,11 @@ void CLEAN_OBJ(Obj obj)
     Obj fpl = CONST_ADDR_OBJ(obj)[0];
 
     // remove the forwarding pointer
-    ADDR_OBJ(obj)[0] = ELM_PLIST(fpl, 1);
+    ADDR_OBJ(obj)[0] = ADDR_OBJ(fpl)[1];
     CHANGED_BAG(obj);
 
     // restore the tnum
-    UInt tnum = INT_INTOBJ(ELM_PLIST(fpl, 3));
+    UInt tnum = INT_INTOBJ(ADDR_OBJ(fpl)[3]);
     RetypeBag(obj, tnum);
 
     // invoke type specific cleanup, if any
@@ -509,8 +510,12 @@ static void MarkCopyingSubBags(Obj obj)
     // mark the forwarding pointer
     MarkBag(fpl);
 
+    // Mark stored subobjects
+    MarkBag(ADDR_OBJ(fpl)[1]);
+    MarkBag(ADDR_OBJ(fpl)[2]);
+
     // mark the rest as in the non-copied case
-    UInt tnum = INT_INTOBJ(ELM_PLIST(fpl, 3));
+    UInt tnum = INT_INTOBJ(ADDR_OBJ(fpl)[3]);
     TabMarkFuncBags[tnum](obj);
 }
 
