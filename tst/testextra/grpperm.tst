@@ -263,9 +263,7 @@ gap> e:=Elements(VectorSpace(GF(2),coh.cohomology));;
 gap> p:=List(e,x->FpGroupCocycle(coh,x,true));;
 gap> Length(p);
 4
-gap> p:=List(p,x->Image(IsomorphismPermGroup(x)));
-[ <permutation group with 13 generators>, 
-  <permutation group with 13 generators>, 
-  <permutation group with 13 generators>, 
-  <permutation group with 13 generators> ]
+gap> p:=List(p,x->Image(IsomorphismPermGroup(x)));;
+gap> List(p,Size);
+[ 61440, 61440, 61440, 61440 ]
 gap> STOP_TEST( "grpperm.tst", 1);
