@@ -12,6 +12,7 @@ gap> runChild := function(ms, ignoresignals)
 >    return InputOutputLocalProcess(d, checkpl, [ String(time), signal]);
 >  end;;
 gap> reps:=200;;
+gap> if ARCH_IS_WINDOWS() then reps:=0; fi;  # FIXME: this test is too slow under windows
 gap> if IsHPCGAP then reps:=0; fi;  # FIXME: this test is broken in HPC-GAP
 gap> for i in [1..reps] do
 > children := List([1..20], x -> runChild(Random([1..2000]), Random([false,true])));;
