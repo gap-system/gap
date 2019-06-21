@@ -299,7 +299,7 @@ DeclareOperation( "ReadAsFunction", [ IsString ] );
 ##  the directory <A>dir</A>. The argument <A>dir</A> can either be given as 
 ##  a string indicating the name of the directory or as a directory object
 ##  (see <Ref Filt="IsDirectory"/>).
-##  It is an error, if such a directory does not exist. 
+##  If the specified directory does not exist, <K>fail</K> is returned.
 ##  <P/>
 ##  The ordering of the list entries can depend on the operating system.
 ##  <P/>
