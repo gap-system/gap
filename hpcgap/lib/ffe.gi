@@ -185,13 +185,9 @@ InstallGlobalFunction( FFEFamily, function( p )
 
     if MAXSIZE_GF_INTERNAL < p then
 
-        # large characteristic
-        atomic readonly FAMS_FFE_LARGE do
-            if p in FAMS_FFE_LARGE[1] then
-                return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
-            fi;
-        od;
-        
+      # large characteristic
+      F:= GET_FROM_SORTED_CACHE( FAMS_FFE_LARGE, p, function()
+
         F:= NewFamily( "FFEFamily", IsFFE, 
                        CanEasilySortElements,
                        CanEasilySortElements );
@@ -207,19 +203,10 @@ InstallGlobalFunction( FFEFamily, function( p )
 
         # The whole family is a unique factorisation domain.
         SetIsUFDFamily( F, true );
-        
-        atomic readwrite FAMS_FFE_LARGE do 
-            if p in FAMS_FFE_LARGE[1] then                
-                return FAMS_FFE_LARGE[2][ PositionSorted( FAMS_FFE_LARGE[1], p ) ];
-            fi;
-            
-            Add( FAMS_FFE_LARGE[1], p );
-            Add( FAMS_FFE_LARGE[2], F );
-            SortParallel( FAMS_FFE_LARGE[1], FAMS_FFE_LARGE[2] );
-            MakeWriteOnceAtomic(F);
-            return F;
-        od;
 
+        return F;
+
+      end );
 
     else
 
@@ -235,7 +222,8 @@ InstallGlobalFunction( FFEFamily, function( p )
       fi;
 
     fi;
-    MakeWriteOnceAtomic(F);
+
+    MakeWriteOnceAtomic(F); # needed for HPC-GAP, does nothing in plain GAP
     return F;
 end );
 
