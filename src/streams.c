@@ -1264,46 +1264,35 @@ static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
 
 /****************************************************************************
 **
-*F  FuncSTRING_LIST_DIR( <self>, <dirname> ) . . . read names of files in dir
+*F  FuncLIST_DIR( <self>, <dirname> ) . . . read names of files in dir
 **
-**  This function returns a GAP string which contains the names of all files
-**  contained in a directory <dirname>. The file names are separated by zero 
-**  characters (which are not allowed in file names). 
+**  This function returns a GAP list which contains the names of all files
+**  contained in a directory <dirname>.
 **
 **  If <dirname> could not be opened as a directory 'fail' is returned. The
 **  reason for the error can be found with 'LastSystemError();' in GAP.
 **
 */
-static Obj FuncSTRING_LIST_DIR(Obj self, Obj dirname)
+static Obj FuncLIST_DIR(Obj self, Obj dirname)
 {
     DIR *dir;
     struct dirent *entry;
     Obj res;
-    Int len, sl;
 
     // check the argument
-    RequireStringRep("STRING_LIST_DIR", dirname);
+    RequireStringRep("LIST_DIR", dirname);
     
     SyClearErrorNo();
     dir = opendir(CONST_CSTR_STRING(dirname));
     if (dir == NULL) {
-      SySetErrorNo();
-      return Fail;
+        SySetErrorNo();
+        return Fail;
     }
-    res = NEW_STRING(256);
-    len = 0;
-    entry = readdir(dir);
-    while (entry != NULL) {
-      sl = strlen(entry->d_name);
-      GROW_STRING(res, len + sl + 1);
-      memcpy(CHARS_STRING(res) + len, entry->d_name, sl + 1);
-      len = len + sl + 1;
-      entry = readdir(dir);
+    res = NEW_PLIST(T_PLIST, 16);
+    while ((entry = readdir(dir))) {
+        PushPlist(res, MakeImmString(entry->d_name));
     }
     closedir(dir);
-    /* tell the result string its length and terminate by 0 char */
-    SET_LEN_STRING(res, len);
-    *(CHARS_STRING(res) + len) = 0;
     return res;
 }
 
@@ -1857,7 +1846,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(IsWritableFile, 1, "filename"),
     GVAR_FUNC(IsExecutableFile, 1, "filename"),
     GVAR_FUNC(IsDirectoryPathString, 1, "filename"),
-    GVAR_FUNC(STRING_LIST_DIR, 1, "dirname"),
+    GVAR_FUNC(LIST_DIR, 1, "dirname"),
     GVAR_FUNC(CLOSE_FILE, 1, "fid"),
     GVAR_FUNC(INPUT_TEXT_FILE, 1, "filename"),
     GVAR_FUNC(OUTPUT_TEXT_FILE, 2, "filename, append"),

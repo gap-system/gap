@@ -174,19 +174,18 @@ InstallMethod( ExternalFilename, "for a directory list and a string",
 #F  DirectoryContents(<name>)
 ## 
 InstallGlobalFunction(DirectoryContents, function(dirname)
-  local str;
+  local list;
   if IsDirectory(dirname) then
     dirname := dirname![1];
   else
     # to make ~/mydir work
     dirname := UserHomeExpand(dirname);
   fi;
-  str := STRING_LIST_DIR(dirname);
-  if str = fail then
+  list := LIST_DIR(dirname);
+  if list = fail then
     Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");
   fi;
-  # Why is this file read before string.gd ???
-  return SplitStringInternal(str, "", "\000");
+  return list;
 end);
 
 

@@ -744,3 +744,12 @@ DeclareGlobalFunction("HideGlobalVariables");
 ##
 ##  Still used in anupq (04/2019)
 DeclareGlobalFunction("UnhideGlobalVariables");
+
+
+#############################################################################
+##
+##
+##  Still used in Browse (06/2019)
+BindGlobal("STRING_LIST_DIR", function(dirname)
+    return JoinStringsWithSeparator(LIST_DIR(dirname), "\000");
+end);

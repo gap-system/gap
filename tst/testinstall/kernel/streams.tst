@@ -108,8 +108,8 @@ Error, IsExecutableFile: <filename> must be a string (not the value 'fail')
 gap> IsDirectoryPathString(fail);
 Error, IsDirectoryPathString: <filename> must be a string (not the value 'fail\
 ')
-gap> STRING_LIST_DIR(fail);
-Error, STRING_LIST_DIR: <dirname> must be a string (not the value 'fail')
+gap> LIST_DIR(fail);
+Error, LIST_DIR: <dirname> must be a string (not the value 'fail')
 
 #
 gap> CLOSE_FILE(fail);
