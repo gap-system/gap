@@ -1299,7 +1299,7 @@ function( G, d, e, opr )
     fi;
 end );
 
-BIND_GLOBAL( "CYCLICACHE", []);
+BIND_GLOBAL( "CYCLICACHE", [ [], [] ]);
 if IsHPCGAP then
   ShareSpecialObj(CYCLICACHE);
 fi;
@@ -1309,28 +1309,14 @@ local r,i,p,A,f,a;
   r:=RelativeOrders(pcgs);
   if Length(r)<=1 then
     p:=Product(r);
-    i:=1;
-    while i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])<p do
-      i:=i+1;
-    od;
-    # do we have it?
-    if i<=Length(CYCLICACHE) and Size(CYCLICACHE[i])=p then
-      return CYCLICACHE[i];
-    fi;
-
-    # make space
-    p:=i;
-    for i in [Length(CYCLICACHE),Length(CYCLICACHE)-1..p] do
-      CYCLICACHE[i+1]:=CYCLICACHE[i];
-    od;
-    A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
-    CYCLICACHE[p]:=A;
-    return A;
+    return GET_FROM_SORTED_CACHE(CYCLICACHE, p,
+        {} -> PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag ));
   fi;
 
   # is the group in the mappings families cache?
   f:=FamiliesOfGeneralMappingsAndRanges(FamilyObj(OneOfPcgs(pcgs)));
   i:=1;
+  atomic readonly GENERAL_MAPPING_REGION do # for HPC-GAP; does nothing in plain GAP
   while i<=Length(f) do
     a:=ElmWPObj(f,i);
     if a<>fail and IsBound(a!.DefiningPcgs) 
@@ -1356,6 +1342,7 @@ local r,i,p,A,f,a;
     fi;
     i:=i+2;
   od;
+  od; # end of atomic
   A := PermpcgsPcGroupPcgs( pcgs, IndicesEANormalSteps(pcgs), flag );
   return A;
 end);
