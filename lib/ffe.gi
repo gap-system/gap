@@ -27,10 +27,12 @@
 ##
 #V  GALOIS_FIELDS
 ##
-##  global list of finite fields `GF( <p>^<d> )',
-##  the field of size $p^d$ is stored in `GALOIS_FIELDS[<p>][<d>]'.
+##  global cache of finite fields `GF( <p>^<d> )', consisting of a pair of
+##  lists of equal size, the first list being a set of field sizes;
+##  the field of size $p^d$ is stored in `GALOIS_FIELDS[2][<pos>]' if and
+##  and only if `GALOIS_FIELDS[1][<pos>]' is equal to $p^d$
 ##
-InstallFlushableValue( GALOIS_FIELDS, [] );
+InstallFlushableValue( GALOIS_FIELDS, [ [], [] ] );
 if IsHPCGAP then
   ShareSpecialObj( GALOIS_FIELDS );
 fi;
@@ -316,6 +318,7 @@ end );
 # in Finite field calculations we often ask again and again for the same GF.
 # Therefore cache the last entry.
 GFCACHE:=[0,0];
+MakeThreadLocal("GFCACHE");
 
 InstallGlobalFunction( GaloisField, function ( arg )
     local F,         # the field, result
@@ -324,6 +327,7 @@ InstallGlobalFunction( GaloisField, function ( arg )
           d1,        # degree of subfield over prime field
           q,         # size of field to be constructed
           subfield,  # left acting domain of the field under construction
+          new,
           B;         # basis of the extension
 
     # if necessary split the arguments
@@ -472,25 +476,23 @@ InstallGlobalFunction( GaloisField, function ( arg )
     if IsInt( subfield ) then
 
       # The standard field is required.  Look whether it is already stored.
-      if not IsBound( GALOIS_FIELDS[p] ) then
-        GALOIS_FIELDS[p]:= [];
-      elif IsBound( GALOIS_FIELDS[p][d] ) then
-        if Length(arg)=1 then
-          GFCACHE:=[arg[1],GALOIS_FIELDS[p][d]];
+
+      new := false;
+      F := GET_FROM_SORTED_CACHE(GALOIS_FIELDS, p^d, function()
+        new := true;
+        # Construct the finite field object.
+        if d = 1 then
+          F:= FieldOverItselfByGenerators( [ Z(p) ] );
+        else
+          F:= FieldByGenerators( FieldOverItselfByGenerators( [ Z(p) ] ),
+                                 [ Z(p^d) ] );
         fi;
-        return GALOIS_FIELDS[p][d];
-      fi;
+        return F;
+      end );
 
-      # Construct the finite field object.
-      if d = 1 then
-        F:= FieldOverItselfByGenerators( [ Z(p) ] );
-      else
-        F:= FieldByGenerators( FieldOverItselfByGenerators( [ Z(p) ] ),
-                               [ Z(p^d) ] );
+      if Length(arg)=1 and not new then
+        GFCACHE:=[arg[1],F];
       fi;
-
-      # Store the standard field.
-      GALOIS_FIELDS[p][d]:= F;
 
     else
 
