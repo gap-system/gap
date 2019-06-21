@@ -79,8 +79,8 @@ function(cache, key, maker)
 
     # Check whether this has been stored already.
     atomic readonly cache do
-      pos:= Position( cache[1], key );
-      if pos <> fail then
+      pos:= POSITION_SORTED_LIST( cache[1], key );
+      if pos <= Length( cache[1] ) and cache[1][pos] = key then
         return cache[2][ pos ];
       fi;
     od;
@@ -90,15 +90,14 @@ function(cache, key, maker)
 
     # Store the value.
     atomic readwrite cache do
-      pos:= Position( cache[1], key );
-      if pos <> fail then
+      pos:= POSITION_SORTED_LIST( cache[1], key );
+      if pos <= Length( cache[1] ) and cache[1][pos] = key then
         # oops, another thread computed the value in the meantime;
         # so use that instead
         val:= cache[2][ pos ];
       else
-        Add( cache[1], key );
-        Add( cache[2], val );
-        SortParallel( cache[1], cache[2] );
+        Add( cache[1], key, pos );
+        Add( cache[2], val, pos );
       fi;
     od;
 
@@ -113,8 +112,8 @@ function(cache, key, maker)
     local pos, val;
 
     # Check whether this has been stored already.
-    pos:= Position( cache[1], key );
-    if pos <> fail then
+    pos:= POSITION_SORTED_LIST( cache[1], key );
+    if pos <= Length( cache[1] ) and cache[1][pos] = key then
       return cache[2][ pos ];
     fi;
 
@@ -122,9 +121,8 @@ function(cache, key, maker)
     val := maker();
 
     # Store the value.
-    Add( cache[1], key );
-    Add( cache[2], val );
-    SortParallel( cache[1], cache[2] );
+    Add( cache[1], key, pos );
+    Add( cache[2], val, pos );
 
     # Return the value.
     return val;
