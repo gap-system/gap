@@ -174,18 +174,14 @@ InstallMethod( ExternalFilename, "for a directory list and a string",
 #F  DirectoryContents(<name>)
 ## 
 InstallGlobalFunction(DirectoryContents, function(dirname)
-  local list;
+  local str;
   if IsDirectory(dirname) then
     dirname := dirname![1];
   else
     # to make ~/mydir work
     dirname := UserHomeExpand(dirname);
   fi;
-  list := LIST_DIR(dirname);
-  if list = fail then
-    Error("Could not open ", dirname, " as directory,\nsee LastSystemError();");
-  fi;
-  return list;
+  return LIST_DIR(dirname);
 end);
 
 
