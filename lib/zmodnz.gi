@@ -954,33 +954,20 @@ InstallGlobalFunction( ZmodpZ, function( p )
     return ZmodpZNC( AbsInt( p ) );
 end );
 
-InstallGlobalFunction( ZmodpZNC, function( p )
-    local pos, F;
+InstallGlobalFunction( ZmodpZNC, p -> GET_FROM_SORTED_CACHE( Z_MOD_NZ, p, function( )
+    local F;
 
-    # Check whether this has been stored already.
-    pos:= Position( Z_MOD_NZ[1], p );
-    if pos = fail then
+    # Get the family of element objects of our ring.
+    F:= FFEFamily( p );
 
-      # Get the family of element objects of our ring.
-      F:= FFEFamily( p );
-
-      # Make the domain.
-      F:= FieldOverItselfByGenerators( [ ZmodnZObj( F, 1 ) ] );
-      SetIsPrimeField( F, true );
-      SetIsWholeFamily( F, false );
-
-      # Store the field.
-      Add( Z_MOD_NZ[1], p );
-      Add( Z_MOD_NZ[2], F );
-      SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
-
-    else
-      F:= Z_MOD_NZ[2][ pos ];
-    fi;
+    # Make the domain.
+    F:= FieldOverItselfByGenerators( [ ZmodnZObj( F, 1 ) ] );
+    SetIsPrimeField( F, true );
+    SetIsWholeFamily( F, false );
 
     # Return the field.
     return F;
-end );
+end ) );
 
 
 #############################################################################
@@ -1003,45 +990,35 @@ InstallGlobalFunction( ZmodnZ, function( n )
       return ZmodpZNC( n );
     fi;
 
-    # Check whether this has been stored already.
-    pos:= Position( Z_MOD_NZ[1], n );
-    if pos = fail then
+    return GET_FROM_SORTED_CACHE( Z_MOD_NZ, n, function( )
 
-      # Construct the family of element objects of our ring.
-      F:= NewFamily( Concatenation( "Zmod", String( n ) ),
-                     IsZmodnZObj,
-                     IsZmodnZObjNonprime and CanEasilySortElements
-                                         and IsNoImmediateMethodsObject,
-                     CanEasilySortElements);
+    # Construct the family of element objects of our ring.
+    F:= NewFamily( Concatenation( "Zmod", String( n ) ),
+                   IsZmodnZObj,
+                   IsZmodnZObjNonprime and CanEasilySortElements
+                                       and IsNoImmediateMethodsObject,
+                   CanEasilySortElements);
 
-      # Install the data.
-      SetCharacteristic(F,n);
+    # Install the data.
+    SetCharacteristic(F,n);
 
-      # Store the objects type.
-      F!.typeOfZmodnZObj:= NewType( F,     IsZmodnZObjNonprime
-                                       and IsModulusRep );
+    # Store the objects type.
+    F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
 
-      # as n is no prime, the family is no UFD
-      SetIsUFDFamily(F,false);
+    # as n is no prime, the family is no UFD
+    SetIsUFDFamily(F,false);
 
-      # Make the domain.
-      R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
-      SetIsWholeFamily( R, true );
-      SetZero(F,Zero(R));
-      SetOne(F,One(R));
-      SetSize(R,n);
-
-      # Store the ring.
-      Add( Z_MOD_NZ[1], n );
-      Add( Z_MOD_NZ[2], R );
-      SortParallel( Z_MOD_NZ[1], Z_MOD_NZ[2] );
-
-    else
-      R:= Z_MOD_NZ[2][ pos ];
-    fi;
+    # Make the domain.
+    R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
+    SetIsWholeFamily( R, true );
+    SetZero(F,Zero(R));
+    SetOne(F,One(R));
+    SetSize(R,n);
 
     # Return the ring.
     return R;
+
+    end );
 end );
 
 
