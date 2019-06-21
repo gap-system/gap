@@ -70,3 +70,64 @@ function(func, extra...)
         return v;
     end;
 end);
+
+if IsHPCGAP then
+
+InstallGlobalFunction(GET_FROM_SORTED_CACHE,
+function(cache, key, maker)
+    local pos, val;
+
+    # Check whether this has been stored already.
+    atomic readonly cache do
+      pos:= Position( cache[1], key );
+      if pos <> fail then
+        return cache[2][ pos ];
+      fi;
+    od;
+
+    # Compute new value.
+    val := maker();
+
+    # Store the value.
+    atomic readwrite cache do
+      pos:= Position( cache[1], key );
+      if pos <> fail then
+        # oops, another thread computed the value in the meantime;
+        # so use that instead
+        val:= cache[2][ pos ];
+      else
+        Add( cache[1], key );
+        Add( cache[2], val );
+        SortParallel( cache[1], cache[2] );
+      fi;
+    od;
+
+    # Return the value.
+    return val;
+end);
+
+else
+
+InstallGlobalFunction(GET_FROM_SORTED_CACHE,
+function(cache, key, maker)
+    local pos, val;
+
+    # Check whether this has been stored already.
+    pos:= Position( cache[1], key );
+    if pos <> fail then
+      return cache[2][ pos ];
+    fi;
+
+    # Compute new value.
+    val := maker();
+
+    # Store the value.
+    Add( cache[1], key );
+    Add( cache[2], val );
+    SortParallel( cache[1], cache[2] );
+
+    # Return the value.
+    return val;
+end);
+
+fi;

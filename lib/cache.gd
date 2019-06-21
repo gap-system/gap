@@ -84,3 +84,9 @@
 ##
 
 DeclareGlobalFunction("MemoizePosIntFunction");
+
+#############################################################################
+##
+#F  GET_FROM_SORTED_CACHE(<cache>, <key>, <maker>)
+##
+DeclareGlobalFunction("GET_FROM_SORTED_CACHE");
