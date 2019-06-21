@@ -335,15 +335,18 @@ fi;
 ##  <Var Name="GALOIS_FIELDS"/>
 ##
 ##  <Description>
-##  global list of finite fields <C>GF( <A>p</A>^<A>d</A> )</C>,
-##  the field of size <M>p^d</M> is stored in <C>GALOIS_FIELDS[<A>p</A>][<A>d</A>]</C>, provided 
-##  p^d < MAXSIZE_GF_INTERNAL. Larger fields are stored in the FFEFamily of the
-##  appropriate characteristic
+##  global cache of finite fields <C>GF( <A>p</A>^<A>d</A> )</C> whose order
+##  satisfies <M>p^d < MAXSIZE_GF_INTERNAL</M>.  Larger fields are stored in
+##  the FFEFamily of the appropriate characteristic.
+##
+##  <C>GALOIS_FIELDS</C> contains a pair of lists; the first being a sorted
+##  list of field sizes, the second a list of fields. The field of size
+##  <M>p^d</M> is stored in <C>GALOIS_FIELDS[2][pos]</C>, if and only if
+##  <C>GALOIS_FIELDS[1][pos]</C> is equal to <M>p^d</M>.
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "GALOIS_FIELDS",
-    "list of lists, GALOIS_FIELDS[p][n] = GF(p^n) if bound" );
+DeclareGlobalVariable( "GALOIS_FIELDS" );
 
 
 #############################################################################
