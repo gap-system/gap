@@ -374,10 +374,10 @@ static pthread_mutex_t KeepAliveLock;
 
 Obj KeepAlive(Obj obj)
 {
-    Obj newKeepAlive = NewBag(T_PLIST, 4 * sizeof(Obj));
+    Obj newKeepAlive = NEW_PLIST(T_PLIST, 4);
     SET_REGION(newKeepAlive, NULL);    // public region
     pthread_mutex_lock(&KeepAliveLock);
-    ADDR_OBJ(newKeepAlive)[0] = (Obj)3; /* Length 3 */
+    SET_LEN_PLIST(newKeepAlive, 3);
     KEPTALIVE(newKeepAlive) = obj;
     PREV_KEPT(newKeepAlive) = LastKeepAlive;
     NEXT_KEPT(newKeepAlive) = (Obj)0;

@@ -636,7 +636,7 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
         ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     }
     else {
-        copy = NewBag( T_PLIST+IMMUTABLE, SIZE_OBJ(obj) );
+        copy = NEW_PLIST( T_PLIST+IMMUTABLE, LengthWPObj(obj) );
         SET_LEN_PLIST(copy,LengthWPObj(obj));
     }
 
@@ -674,7 +674,7 @@ static void MakeImmutableWPObj(Obj obj)
 #ifdef USE_BOEHM_GC
   UInt i;
   UInt len = 0;
-  Obj copy = NewBag(T_PLIST, SIZE_BAG(obj));
+  Obj copy = NEW_PLIST(T_PLIST, STORED_LEN_WPOBJ(obj));
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
 #ifdef HPCGAP
     volatile Obj tmp = ELM_WPOBJ(obj, i);
