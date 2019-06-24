@@ -1500,7 +1500,7 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
         gi:=Group(ugens);
         Assert(0,Size(gi)=p^module.dimension*Size(G));
         if ValueOption("cheap")<>true then
-          a:=SmallerDegreePermutationRepresentation(gi);
+          a:=SmallerDegreePermutationRepresentation(gi:cheap);
           if NrMovedPoints(Range(a))<NrMovedPoints(gi) then
             gi:=Image(a,gi);
             ugens:=List(ugens,x->ImagesRepresentative(a,x));

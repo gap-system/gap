@@ -389,7 +389,7 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
       if HasBaseOfGroup(agp) then
         opt.knownBase:=BaseOfGroup(agp);
       fi;
-      #p1iso:=p1iso*SmallerDegreePermutationRepresentation(agp);
+      #p1iso:=p1iso*SmallerDegreePermutationRepresentation(agp:cheap);
       EraseNaturalHomomorphismsPool(agp);
       if s>1 then
         repeat

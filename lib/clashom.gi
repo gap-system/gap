@@ -1266,7 +1266,7 @@ local cs,	# chief series of G
 	T1:=Image(Thom,T[1]);
 	if IsPermGroup(T1) and
 	  NrMovedPoints(T1)>SufficientlySmallDegreeSimpleGroupOrder(Size(T1)) then
-	  Thom:=Thom*SmallerDegreePermutationRepresentation(T1);
+	  Thom:=Thom*SmallerDegreePermutationRepresentation(T1:cheap);
 	  Info(InfoHomClass,1,"reduced simple degree ",NrMovedPoints(T1),
 	    " ",NrMovedPoints(Image(Thom)));
 	  T1:=Image(Thom,T[1]);
@@ -2410,7 +2410,7 @@ local r,	#radical
       fants:=Filtered(NormalSubgroups(f),x->Size(x)>1 and Size(x)<Size(f));
     else
       if IsPermGroup(G) then
-	hom:=SmallerDegreePermutationRepresentation(G);
+	hom:=SmallerDegreePermutationRepresentation(G:cheap);
 	ntrihom:=not IsOne(hom);;
       else
         hom:=IdentityMapping(G);
@@ -2850,7 +2850,7 @@ local r,	#radical
       #fants:=Filtered(NormalSubgroups(f),x->Size(x)>1 and Size(x)<Size(f));
     else
       if IsPermGroup(G) then
-	hom:=SmallerDegreePermutationRepresentation(G);
+	hom:=SmallerDegreePermutationRepresentation(G:cheap);
 	ntrihom:=not IsOne(hom);;
       else
         hom:=IdentityMapping(G);

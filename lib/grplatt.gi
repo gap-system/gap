@@ -2652,7 +2652,7 @@ local l,mark,i,b,M,no,cnt,j,q,As,a,hom,c,p,ap,prea,prestab,new,sz,k,h;
 	  prestab:=PreImage(q,Stabilizer(a));
 	  hom:=NaturalHomomorphismByNormalSubgroup(prea,b);
 	  if IsPermGroup(Range(hom)) and NrMovedPoints(Range(hom))>Index(prea,b)/LogInt(Index(prea,b),2)^2 then
-	    hom:=hom*SmallerDegreePermutationRepresentation(Image(hom));
+	    hom:=hom*SmallerDegreePermutationRepresentation(Image(hom):cheap);
 	    Info(InfoLattice,3,"Reducedegee!!");
 	  fi;
 

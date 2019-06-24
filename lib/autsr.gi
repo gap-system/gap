@@ -390,7 +390,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   if IsPermGroup(Q) and NrMovedPoints(Q)/Size(Q)*Size(Socle(Q))
 	>SufficientlySmallDegreeSimpleGroupOrder(Size(Q)) then
     # just in case the radical factor hom is inherited.
-    Q:=SmallerDegreePermutationRepresentation(Q);
+    Q:=SmallerDegreePermutationRepresentation(Q:cheap);
     Info(InfoMorph,3,"Radical factor degree reduced ",NrMovedPoints(Range(hom)),
 	      " -> ",NrMovedPoints(Range(Q)));
     hom:=hom*Q;
@@ -423,8 +423,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       Q:=Image(hom,G);
       # degree reduction called for?
       if Size(N)>1 and isBadPermrep(Q) then
-	#if NrMovedPoints(Q)>15000 then Error("egad!");fi;
-	q:=SmallerDegreePermutationRepresentation(Q);
+        q:=SmallerDegreePermutationRepresentation(Q:cheap);
 	Info(InfoMorph,3,"reduced permrep Q ",NrMovedPoints(Q)," -> ",
 	     NrMovedPoints(Range(q)));
 	hom:=hom*q;

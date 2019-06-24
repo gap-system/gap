@@ -347,7 +347,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     #if Size(no)/Size(syno)<>Length(orb) then
     #  Error("wreath embedding failed");
     #fi;
-    sm:=SmallerDegreePermutationRepresentation(ClosureGroup(ge,no));
+    sm:=SmallerDegreePermutationRepresentation(ClosureGroup(ge,no):cheap);
     no:=Image(sm,no);
     if IsIdenticalObj(emb,oemb) then
       emb:=emb*sm;
@@ -2009,7 +2009,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   aup:=Normalizer(d,Image(emb,g));
 
   #reduce degree
-  s:=SmallerDegreePermutationRepresentation(aup);
+  s:=SmallerDegreePermutationRepresentation(aup:cheap);
   emb:=emb*s;
   aup:=Image(s,aup);
   ge:=Image(emb,g);

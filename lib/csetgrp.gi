@@ -213,7 +213,7 @@ local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
     Length(SmallGeneratingSet(b))>2 then
     gens:=SmallGeneratingSet(b);
   elif IsPermGroup(b) and Size(b)<RootInt(NrMovedPoints(b)^3,2) then
-    r:=SmallerDegreePermutationRepresentation(b);
+    r:=SmallerDegreePermutationRepresentation(b:cheap);
     k:=Image(r,b);
     gens:=MorFindGeneratingSystem(k,MorMaxFusClasses(MorRatClasses(k)));
     gens:=List(gens,x->PreImagesRepresentative(r,x));

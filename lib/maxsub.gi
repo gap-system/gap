@@ -599,7 +599,7 @@ local m,epi,cnt,h;
       SufficientlySmallDegreeSimpleGroupOrder(Size(PerfectResiduum(G))) then
     h:=G;
     for cnt in [1..5] do
-      epi:=SmallerDegreePermutationRepresentation(h);
+      epi:=SmallerDegreePermutationRepresentation(h:cheap);
       if NrMovedPoints(Range(epi))<NrMovedPoints(h) then
         m:=MaxesAlmostSimple(Image(epi,G));
         m:=List(m,x->PreImage(epi,x));
