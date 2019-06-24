@@ -41,7 +41,9 @@ EXPORT_INLINE Obj NEW_PLIST(UInt type, Int plen)
     GAP_ASSERT(plen >= 0);
     GAP_ASSERT(plen <= INT_INTOBJ_MAX);
     GAP_ASSERT(FIRST_PLIST_TNUM <= type && type <= LAST_PLIST_TNUM);
-    return NewBag(type, (plen + 1) * sizeof(Obj));
+    Obj bag = NewBag(type, (plen + 1) * sizeof(Obj));
+    ADDR_OBJ(bag)[0] = INTOBJ_INT(0);
+    return bag;
 }
 
 EXPORT_INLINE Obj NEW_PLIST_IMM(UInt type, Int plen)
@@ -147,7 +149,7 @@ EXPORT_INLINE void SET_LEN_PLIST(Obj list, Int len)
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(len >= 0);
     GAP_ASSERT(len <= CAPACITY_PLIST(list));
-    ADDR_OBJ(list)[0] = (Obj)len;
+    ADDR_OBJ(list)[0] = INTOBJ_INT(len);
 }
 
 
@@ -161,7 +163,7 @@ EXPORT_INLINE void SET_LEN_PLIST(Obj list, Int len)
 EXPORT_INLINE Int LEN_PLIST(Obj list)
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
-    return ((Int)(CONST_ADDR_OBJ(list)[0]));
+    return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
 }
 
 
