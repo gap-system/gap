@@ -1,0 +1,32 @@
+gap> # This test is in 'testspecial' as it allocates large objects
+gap> # so can cause a memory overflow in normal testing
+gap> 
+gap> f := function(l)
+>     l := List([1..l], x -> List([1..x], x -> x*x));
+>     return WeakPointerObj(l);
+> end;
+function( l ) ... end
+gap> 
+gap> tryImmutable := function(len)
+>     local w,l;
+>     GASMAN("collect");
+>     w := f(len);
+>     # Hope a GC occurs during this call
+>     l := Immutable(w);
+>     if Size(l) < len then
+>         # Caught mid-GC
+>         if ForAny([1..len], i -> IsBound(l[i]) and IsBound(w[i]) and l[i]<>w[i]) then
+>             Print("Invalid copy!\n");
+>         fi;
+>         # Exit test early
+>         QUIT_GAP();
+>     fi;
+> end;
+function( len ) ... end
+gap> 
+gap> len := 1000;
+1000
+gap> for loop in [1..10] do
+>     tryImmutable(len);
+>     len := len * 3;
+> od;

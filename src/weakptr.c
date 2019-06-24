@@ -80,7 +80,7 @@ static inline void FORGET_WP(Obj wp, UInt pos)
 */
 static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
 {
-    ADDR_OBJ(wp)[0] = (Obj)len;
+    ADDR_OBJ(wp)[0] = INTOBJ_INT(len);
 }
 
 
@@ -96,7 +96,7 @@ static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
 */
 static inline Int STORED_LEN_WPOBJ(Obj wp)
 {
-    return (Int)(CONST_ADDR_OBJ(wp)[0]);
+    return INT_INTOBJ(CONST_ADDR_OBJ(wp)[0]);
 }
 
 
@@ -179,6 +179,9 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
     if (need < SIZE_OBJ(wp)/sizeof(Obj))
         return;
 
+    if (need > INT_INTOBJ_MAX)
+        ErrorMayQuit("GrowWPObj: List size too large", 0, 0);
+
     // find out how large the object should become at least (we grow by
     // at least 25%, like plain lists)
     /* find out how large the plain list should become                     */
@@ -187,6 +190,9 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
     /* but maybe we need more                                              */
     if ( need < good ) { plen = good; }
     else               { plen = need; }
+
+    if (plen > INT_INTOBJ_MAX)
+        plen = INT_INTOBJ_MAX;
 
 #ifdef USE_BOEHM_GC
     Obj copy = NewBag(T_WPOBJ, (plen+1) * sizeof(Obj));
@@ -237,6 +243,9 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
   volatile Obj list2 = list;
 #endif
   len = LEN_LIST(list);
+  if (len > INT_INTOBJ_MAX)
+      ErrorMayQuit("WeakPointerObj: List size too large", 0, 0);
+
   wp = (Obj) NewBag(T_WPOBJ, (len+1)*sizeof(Obj));
   STORE_LEN_WPOBJ(wp,len); 
   for (i = 1; i <= len ; i++) 
@@ -630,28 +639,33 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
+    // This may get smaller if a GC occurs during copying
+    UInt len = LengthWPObj(obj);
+
     /* make a copy                                                         */
     if ( mut ) {
         copy = NewBag( T_WPOBJ, SIZE_OBJ(obj) );
         ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     }
     else {
-        copy = NEW_PLIST( T_PLIST+IMMUTABLE, LengthWPObj(obj) );
-        SET_LEN_PLIST(copy,LengthWPObj(obj));
+        copy = NEW_PLIST_IMM(T_PLIST, len);
+        // Set length as plist is constructed
     }
 
     /* leave a forwarding pointer                                          */
     PrepareCopy(obj, copy);
 
-    /* copy the subvalues                                                  */
-    for ( i =  SIZE_OBJ(obj)/sizeof(Obj)-1; i > 0; i-- ) {
+    // copy the subvalues. Loop goes up so length of PLIST is set correctly
+    for (i = 1; i <= len; i++) {
         elm = ELM_WPOBJ(obj, i);
         if (elm) {
             tmp = COPY_OBJ(elm, mut);
             if (mut)
                 SET_ELM_WPOBJ(copy, i, tmp);
-            else
+            else {
                 SET_ELM_PLIST(copy, i, tmp);
+                SET_LEN_PLIST(copy, i);
+            }
             CHANGED_BAG( copy );
         }
     }
@@ -674,7 +688,7 @@ static void MakeImmutableWPObj(Obj obj)
 #ifdef USE_BOEHM_GC
   UInt i;
   UInt len = 0;
-  Obj copy = NEW_PLIST(T_PLIST, STORED_LEN_WPOBJ(obj));
+  Obj  copy = NEW_PLIST(T_PLIST, STORED_LEN_WPOBJ(obj));
   for (i = 1; i <= STORED_LEN_WPOBJ(obj); i++) {
 #ifdef HPCGAP
     volatile Obj tmp = ELM_WPOBJ(obj, i);
