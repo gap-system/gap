@@ -62,6 +62,13 @@ gap> s:=IrreducibleModules(g,GF(2),0);;
 gap> Collected(List(s[2],x->x.dimension));
 [ [ 1, 1 ], [ 3, 2 ], [ 8, 1 ] ]
 
+# Condition test
+gap> g:=SymmetricGroup(10);;
+gap> s:=Group((1,3,2)(5,8)(6,9)(7,10), (2,3)(4,10,5)(6,9,8));;
+gap> u:=SubgroupConditionAbove(g,x->OnSets([1,2,3],x)=[1,2,3],s);;
+gap> Size(u);
+30240
+
 # Unbind variables so we can GC memory
 gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);
 gap> STOP_TEST( "permgrp.tst", 1);
