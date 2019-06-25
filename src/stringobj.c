@@ -415,10 +415,14 @@ static Obj FuncREVNEG_STRING(Obj self, Obj val)
 Obj NEW_STRING ( Int len )
 {
   Obj res;
-  if (len < 0)
-       ErrorQuit(
-           "NEW_STRING: Cannot create string of negative length %d",
-           (Int)len, 0L);
+  if (len < 0) {
+      ErrorQuit("NEW_STRING: cannot create string of negative length %d",
+                (Int)len, 0L);
+  }
+  if (len > INT_INTOBJ_MAX) {
+      ErrorQuit("NEW_STRING: length must be a small integer", 0L, 0L);
+  }
+
   res = NewBag( T_STRING, SIZEBAG_STRINGLEN(len)  ); 
   SET_LEN_STRING(res, len);
   /* it may be sometimes useful to have trailing zero characters */
@@ -441,8 +445,13 @@ Int             GrowString (
     UInt                len;            /* new physical length             */
     UInt                good;           /* good new physical length        */
 
+    if (need > INT_INTOBJ_MAX)
+        ErrorMayQuit("GrowString: string length too large", 0, 0);
+
     /* find out how large the data area  should become                     */
     good = 5 * (GET_LEN_STRING(list)+3) / 4 + 1;
+    if (good > INT_INTOBJ_MAX)
+        good = INT_INTOBJ_MAX;
 
     /* but maybe we need more                                              */
     if ( need < good ) { len = good; }
