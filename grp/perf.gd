@@ -300,7 +300,7 @@ DeclareGlobalFunction("DisplayInformationPerfectGroups");
 ##  <A>factor1</A>, <A>factor2</A>, ...
 ##  among their composition factors.
 ##  <P/>
-##  Each argument must either be the name of a simple group or an integer
+##  Each argument must either be the name of a nonabelian simple group or an integer
 ##  which stands for the product of the sizes of one or more cyclic factors.
 ##  (In fact, the function replaces all integers among the arguments
 ##  by their product.)
