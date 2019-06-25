@@ -199,19 +199,19 @@ typedef UInt4           LVar;
 
 #define INFO_FEXP(fexp)         PROF_FUNC(fexp)
 #define SET_INFO_FEXP(fexp,x)   SET_PROF_FUNC(fexp,x)
-#define NEXT_INFO(info)         PTR_BAG(info)[0]
-#define NR_INFO(info)           (*((Int*)(PTR_BAG(info)+1)))
-#define NLVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+2)))
-#define NHVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+3)))
-#define NTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+4)))
-#define NLOOP_INFO(info)        (*((Int*)(PTR_BAG(info)+5)))
-#define CTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+6)))
-#define TNUM_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+7+(i))))
+#define NEXT_INFO(info)         PTR_BAG(info)[1]
+#define NR_INFO(info)           (*((Int*)(PTR_BAG(info)+2)))
+#define NLVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+3)))
+#define NHVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+4)))
+#define NTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+5)))
+#define NLOOP_INFO(info)        (*((Int*)(PTR_BAG(info)+6)))
+#define CTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+7)))
+#define TNUM_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+8+(i))))
 
 #define TNUM_TEMP_INFO(info,i)  \
-    (*((Int*)(PTR_BAG(info)+7+NLVAR_INFO(info)+(i))))
+    (*((Int*)(PTR_BAG(info)+8+NLVAR_INFO(info)+(i))))
 
-#define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (8 + (nlvar) + (ntemp)))
+#define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (1 + 8 + (nlvar) + (ntemp)))
 
 #define W_UNUSED                0       /* TEMP is currently unused        */
 #define W_HIGHER                (1L<<0) /* LVAR is used as higher variable */
@@ -5094,7 +5094,7 @@ static void CompFunc(Obj func)
 
         UInt nr = PushPlist( CompFunctions, func );
 
-        info = NewBag( T_STRING, SIZE_INFO(narg+nloc,8) );
+        info = NewKernelBuffer(SIZE_INFO(narg+nloc,8));
         NEXT_INFO(info)  = INFO_FEXP( CURR_FUNC() );
         NR_INFO(info)    = nr;
         NLVAR_INFO(info) = narg + nloc;
