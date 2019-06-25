@@ -161,7 +161,7 @@ EXPORT_INLINE const UChar * CONST_CHARS_STRING(Obj list)
 EXPORT_INLINE UInt GET_LEN_STRING(Obj list)
 {
     GAP_ASSERT(IS_STRING_REP(list));
-    return *((const UInt *)CONST_ADDR_OBJ(list));
+    return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
 }
 
 /****************************************************************************
@@ -176,7 +176,7 @@ EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len)
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(len >= 0);
     GAP_ASSERT(SIZEBAG_STRINGLEN(len) <= SIZE_OBJ(list));
-    (*((UInt *)ADDR_OBJ(list)) = (UInt)(len));
+    ADDR_OBJ(list)[0] = INTOBJ_INT(len);
 }
 
 /****************************************************************************
