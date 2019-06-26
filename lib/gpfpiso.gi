@@ -286,10 +286,10 @@ function(g,str,N)
             AlternatingGroup(DataAboutSimpleGroup(f).idSimple.parameter));
 	elif IsPermGroup(f) and
 	  NrMovedPoints(f)>SufficientlySmallDegreeSimpleGroupOrder(Size(f)) then
-	  hom:=hom*SmallerDegreePermutationRepresentation(f);
+	  hom:=hom*SmallerDegreePermutationRepresentation(f:cheap);
 	fi;
       elif IsPermGroup(f) then
-	hom:=hom*SmallerDegreePermutationRepresentation(f);
+	hom:=hom*SmallerDegreePermutationRepresentation(f:cheap);
       fi;
 
       # the range is elementary. Use this for the fp group isomorphism

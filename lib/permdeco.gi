@@ -27,7 +27,7 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
   A:=Image(hom);
   if IsPermGroup(A) and NrMovedPoints(A)/Size(A)*Size(Socle(A))
       >SufficientlySmallDegreeSimpleGroupOrder(Size(A)) then
-    A:=SmallerDegreePermutationRepresentation(A);
+    A:=SmallerDegreePermutationRepresentation(A:cheap);
     Info(InfoGroup,3,"Radical factor degree reduced ",NrMovedPoints(Image(hom)),
          " -> ",NrMovedPoints(Image(A)));
     hom:=hom*A;
@@ -201,7 +201,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   # first try given rep
   if NrMovedPoints(G)^3>Size(G) then
     # likely too high degree. Try to reduce first
-    a:=SmallerDegreePermutationRepresentation(G);
+    a:=SmallerDegreePermutationRepresentation(G:cheap);
     a:=tryrep(a,4*NrMovedPoints(Image(a)));
   elif not IsSubset(MovedPoints(G),[1..LargestMovedPoint(G)]) then
     a:=tryrep(ActionHomomorphism(G,MovedPoints(G),"surjective"),
@@ -209,7 +209,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   else
     a:=tryrep(IdentityMapping(G),4*NrMovedPoints(G));
     if a=fail and ForAll(autos,x->IsConjugatorAutomorphism(x:cheap)) then
-      a:=tryrep(SmallerDegreePermutationRepresentation(G),4*NrMovedPoints(G));
+      a:=tryrep(SmallerDegreePermutationRepresentation(G:cheap),4*NrMovedPoints(G));
     fi;
   fi;
   if a<>fail then return a;fi;
@@ -491,7 +491,7 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
   # try to improve the representation of G/r
   hom:=NaturalHomomorphismByNormalSubgroup(G,r);
   if IsPermGroup(Range(hom)) then
-    hom:=hom*SmallerDegreePermutationRepresentation(Range(hom));
+    hom:=hom*SmallerDegreePermutationRepresentation(Range(hom):cheap);
   fi;
   AddNaturalHomomorphismsPool(G,r,hom);
 

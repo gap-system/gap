@@ -92,7 +92,7 @@ local G, N, op, pool, p, c, perm, ch, diff, nch, nd, involved, i;
     c:=arg[4];
   else
     if IsGroup(op) then
-      c:=Index(G,op);
+      c:=IndexNC(G,op);
     elif IsMapping(op) then
       c:=Image(op);
       if IsPcGroup(c) then
@@ -104,7 +104,7 @@ local G, N, op, pool, p, c, perm, ch, diff, nch, nd, involved, i;
       fi;
     fi;
   fi;
-
+  
   # check whether we have already a better operation (or whether this normal
   # subgroup is locked)
 
@@ -121,7 +121,7 @@ local G, N, op, pool, p, c, perm, ch, diff, nch, nd, involved, i;
     # first add at the end
     p:=Length(pool.ker)+1;
     pool.ker[p]:=N;
-    Info(InfoFactor,2,"Added price ",c," for size ",Index(G,N),
+    Info(InfoFactor,2,"Added price ",c," for size ",IndexNC(G,N),
          " in group of size ",Size(G));
   elif c>=pool.cost[p] then
     Info(InfoFactor,4,"bad price");
@@ -129,7 +129,7 @@ local G, N, op, pool, p, c, perm, ch, diff, nch, nd, involved, i;
   elif pool.lock[p]=true then
     return fail; # nothing added
   else
-    Info(InfoFactor,2,"Changed price ",c," for size ",Index(G,N));
+    Info(InfoFactor,2,"Changed price ",c," for size ",IndexNC(G,N));
     perm:=();
     # update dependent costs
     ch:=[p];
@@ -308,94 +308,161 @@ end);
 ##         operation kernels, don't continue anything which is smaller than N
 ##
 InstallGlobalFunction(CloseNaturalHomomorphismsPool,function(arg)
-local G,pool,p,comb,i,c,perm,l,isi,N,discard,ab;
+local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
+
   G:=arg[1];
   pool:=NaturalHomomorphismsPool(G);
   p:=[1..Length(pool.ker)];
 
+  Npos:=fail;
   if Length(arg)>1 then
+    # get those p that lie above N
     N:=arg[2];
     p:=Filtered(p,i->IsSubset(pool.ker[i],N));
     if Length(p)=0 then
       return;
     fi;
     SortParallel(List(pool.ker{p},Size),p);
-    if Size(pool.ker[p[1]])=Size(N) and Length(p)>3 then
+    if Size(pool.ker[p[1]])=Size(N) then
       # N in pool
-      c:=pool.cost[p[1]];
+      Npos:=p[1];
+      c:=pool.cost[Npos];
       p:=Filtered(p,x->pool.cost[x]<c);
     fi;
   else
+    SortParallel(List(pool.ker{p},Size),p);
     N:=fail;
   fi;
 
-  # minimal ones
-  c:=Filtered([1..Length(p)],
-      x->not ForAny([1..x-1],y->IsSubset(pool.ker[p[x]],pool.ker[p[y]])));
-  c:=p{c};
-  if Size(Intersection(pool.ker{c}))>Size(N) then
+  if Size(Intersection(pool.ker{p}))>Size(N) then
     # cannot reach N
     return; 
-  elif Length(p)>20 or Size(N)=1 then
-    p:=c; # use only minimal ones if there is lots
   fi;
 
-  # do the abelians extra.
-  p:=Filtered(p,x->not HasAbelianFactorGroup(G,pool.ker[x]));
-  
+  # determine inclusion, derived
+  psub:=List(pool.ker,x->0);
+  pder:=List(pool.ker,x->0);
   discard:=[];
+  for i in [1..Length(p)] do
+    c:=Filtered(p{[1..i-1]},x->IsSubset(pool.ker[p[i]],pool.ker[x]));
+    psub[p[i]]:=Set(c);
+    if ForAny(c,x->pool.cost[x]<=pool.cost[p[i]]) then
+      AddSet(discard,p[i]);
+    fi;
+    c:=DerivedSubgroup(pool.ker[p[i]]);
+    if N<>fail then c:=ClosureGroup(N,c);fi;
+    pder[p[i]]:=Position(pool.ker,c);
+  od;
+#if Length(discard)>0 then Error(discard);fi;
+#discard:=[];
+  p:=Filtered(p,x->not x in discard);
+  for i in discard do psub[i]:=0;od;
+
+  new:=p;
   repeat
-    # obviously it is sufficient to consider only pairs iteratively
-    p:=Set(p);
-    comb:=Combinations(p,2);
-    comb:=Filtered(comb,i->not (i in pool.intersects or i in discard));
-    l:=Length(pool.ker);
+    # now intersect, staring from top
+    if new=p then
+      comb:=Combinations(new,2);
+    else
+      comb:=List(Cartesian(p,new),Set);
+    fi;
+    comb:=Filtered(comb,i->not i in pool.intersects and Length(i)>1);
     Info(InfoFactor,2,"CloseNaturalHomomorphismsPool: ",Length(comb));
-    for i in comb do
-      Info(InfoFactor,3,"Intersect ",i,": ",
-           Size(pool.ker[i[1]]),Size(pool.ker[i[2]]));
-      if N=fail or not ForAny(pool.ker{p},j->Size(j)>Size(N) and
-	      IsSubset(pool.ker[i[1]],j) and IsSubset(pool.ker[i[2]],j)) then
-	c:=Intersection(pool.ker[i[1]],pool.ker[i[2]]);
-	Info(InfoFactor,3,"yields ",Size(c));
-	isi:=ShallowCopy(i);
+    new:=[];
+    discard:=[];
+    i:=1;
+    while i<=Length(comb) do
+      co:=comb[i];
+      # unless they contained in each other
+      if not (co[1] in psub[co[2]] or co[2] in psub[co[1]]
+        # or there a subgroup below both that is already at least as cheap
+        or ForAny(Intersection(psub[co[1]],psub[co[2]]),
+          x->pool.cost[x]<=pool.cost[co[1]]+pool.cost[co[2]])
+        # or both intersect in an abelian factor?
+        or (N<>fail and pder[co[1]]<>fail and pder[co[1]]=pder[co[2]] 
+            and pder[co[1]]<>Npos)) then
+        c:=Intersection(pool.ker[co[1]],pool.ker[co[2]]);
 
-	# unpack 'iterated' lists
-	if IsList(pool.ops[i[2]]) and IsInt(pool.ops[i[2]][1]) then
-	  isi:=Concatenation(isi{[1]},pool.ops[i[2]]);
-	fi;
-	if IsList(pool.ops[i[1]]) and IsInt(pool.ops[i[1]][1]) then
-	  isi:=Concatenation(isi{[2..Length(isi)]},pool.ops[i[1]]);
-	fi;
-	isi:=Set(isi);
+        pos:=Position(pool.ker,c);
+        if pos=fail or pool.cost[pos]>pool.cost[co[1]]+pool.cost[co[2]] then
+          Info(InfoFactor,3,"Intersect ",co,": ",
+              Size(pool.ker[co[1]])," ",Size(pool.ker[co[2]]),
+                " yields ",Size(c));
+          isi:=ShallowCopy(co);
 
-	perm:=AddNaturalHomomorphismsPool(G,c,isi,Sum(pool.cost{i}));
-	if perm<>fail then
-	  # note that we got the intersections
-	  if perm<>false then
-	    AddSet(pool.intersects,List(i,j->j^perm));
-	  else
-	    AddSet(pool.intersects,i);
-	  fi;
-	fi;
+          # unpack 'iterated' lists
+          if IsList(pool.ops[co[2]]) and IsInt(pool.ops[co[2]][1]) then
+            isi:=Concatenation(isi{[1]},pool.ops[co[2]]);
+          fi;
+          if IsList(pool.ops[co[1]]) and IsInt(pool.ops[co[1]][1]) then
+            isi:=Concatenation(isi{[2..Length(isi)]},pool.ops[co[1]]);
+          fi;
+          isi:=Set(isi);
 
-	# note index shifts
-	if IsPerm(perm) then
-	  p:=List(p,i->i^perm);
-	  Apply(comb,j->OnSets(j,perm));
-	fi;
+          perm:=AddNaturalHomomorphismsPool(G,c,isi,Sum(pool.cost{co}));
+          if pos=fail then 
+            pos:=Position(pool.ker,c);
+            p:=List(p,i->i^perm);
+            new:=List(new,i->i^perm);
+            discard:=OnSets(discard,perm);
+            #pder:=Permuted(List(pder,x->x^perm),perm);
+            for k in [1..Length(pder)] do
+              if IsPosInt(pder[k]) then pder[k]:=pder[k]^perm;fi;
+            od;
+            Add(pder,0);
+            pder:=Permuted(pder,perm);
+            #psub:=Permuted(List(psub,x->OnTuples(x,perm)));
+            for k in [1..Length(psub)] do
+              if IsList(psub[k]) then psub[k]:=OnSets(psub[k],perm);fi;
+            od;
+            Add(psub,0);
+            psub:=Permuted(psub,perm);
 
-	if Length(arg)=1 or IsSubgroup(c,arg[2]) then
-	  AddSet(p,
-	    PositionSet(pool.ker,c)); # to allow iterated intersections
-	fi;
-      else
-	Add(discard,i);
-	Info(InfoFactor,4," not done");
+            Apply(comb,j->OnSets(j,perm));
+
+            # add new c if needed
+            for j in p do
+              if IsSubset(pool.ker[j],c) then 
+                AddSet(psub[j],pos);
+                if pool.cost[j]>=pool.cost[pos] then
+                  AddSet(discard,j);
+                fi;
+              fi;
+            od;
+            psub[pos]:=Set(Filtered(p,x->IsSubset(c,pool.ker[x])));
+            pder[pos]:=fail;
+
+          else
+            if perm<>() then Error("why perm here?");fi;
+            psub[pos]:=Set(Filtered(p,x->IsSubset(c,pool.ker[x])));
+
+          fi;
+          AddSet(new,pos);
+          if ForAny(psub[pos],x->pool.cost[x]<=pool.cost[pos]) then
+            AddSet(discard,pos);
+          fi;
+          pder[pos]:=fail;
+          if c=N and pool.cost[pos]^3<=IndexNC(G,N) then
+            return; # we found something plausible
+          fi;
+
+        else
+          Info(InfoFactor,5,"Intersect ",co,": ",
+              Size(pool.ker[co[1]])," ",Size(pool.ker[co[2]]),
+                " yields ",Size(c));
+        fi;
+        
       fi;
+      i:=i+1;
     od;
-  until Length(comb)=0; # nothing new was added
-  
+#discard:=[];
+    for i in discard do psub[i]:=0;od;
+    p:=Difference(Union(p,new),discard);
+    new:=Difference(new,discard);
+    SortParallel(List(pool.ker{p},Size),p);
+    SortParallel(List(pool.ker{new},Size),new);
+  until Length(new)=0;
+
 end);
 
 
@@ -427,7 +494,7 @@ local G,u,op,h,N,rt;
   fi;
   h:=ActionHomomorphism(G,rt,OnRight,"surjective");
   op:=Image(h,G);
-  SetSize(op,Index(G,N));
+  SetSize(op,IndexNC(G,N));
 
   # and note our knowledge
   SetKernelOfMultiplicativeGeneralMapping(h,N);
@@ -591,7 +658,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
   if Length(arg)>2 then
     knowi:=arg[3];
   else
-    knowi:=Index(G,N);
+    knowi:=IndexNC(G,N);
   fi;
 
   # special treatment for solvable groups. This will never be triggered for
@@ -615,13 +682,13 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
   bigperm:=IsPermGroup(G) and NrMovedPoints(G)>10000;
 
   # what is a good degree:
-  goodi:=Minimum(Int(knowi*9/10),LogInt(Index(G,N),2)^2);
+  goodi:=Minimum(Int(knowi*9/10),LogInt(IndexNC(G,N),2)^2);
 
   simple:=HasIsSimpleGroup(G) and IsSimpleGroup(G) and Size(N)=2;
   uc:=TrivialSubgroup(G);
   # look if it is worth to look at action on N
   # if not abelian: later replace by abelian Normal subgroup
-  if IsAbelian(N) and (Size(N)>50 or Index(G,N)<Factorial(Size(N)))
+  if IsAbelian(N) and (Size(N)>50 or IndexNC(G,N)<Factorial(Size(N)))
       and Size(N)<50000 then
     zen:=Centralizer(G,N);
     if Size(zen)=Size(N) then
@@ -630,12 +697,12 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 	cnt:=cnt+1;
 	zen:=Centralizer(G,Random(N));
 	if (simple or Size(Core(G,zen))=Size(N)) and
-	    Index(G,zen)<Index(G,uc) then
+	    IndexNC(G,zen)<IndexNC(G,uc) then
 	  uc:=zen;
 	fi;
       # until enough searched or just one orbit
-      until cnt=9 or (Index(G,zen)+1=Size(N));
-      AddNaturalHomomorphismsPool(G,N,uc,Index(G,uc));
+      until cnt=9 or (IndexNC(G,zen)+1=Size(N));
+      AddNaturalHomomorphismsPool(G,N,uc,IndexNC(G,uc));
     else
       Info(InfoFactor,3,"centralizer too big");
     fi;
@@ -696,8 +763,8 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 	fi;
 	totalcnt:=totalcnt+1;
 	if KnownNaturalHomomorphismsPool(G,N) and
-	  Minimum(Index(G,v),knowi)<100000 
-	     and 5*totalcnt>Minimum(Index(G,v),knowi,1000) then
+	  Minimum(IndexNC(G,v),knowi)<100000 
+	     and 5*totalcnt>Minimum(IndexNC(G,v),knowi,1000) then
 	  # interupt if we're already quite good
 	  interupt:=true;
 	fi;
@@ -710,21 +777,21 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
         # der Index ist nicht so klein, da"s wir keine Chance haben
 	not ForAny(badcores,x->IsSubset(nu,x)) and (((not bigperm or
 	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and 
-	(Index(G,nu)>50 or Factorial(Index(G,nu))>=Index(G,N)) and
+	(IndexNC(G,nu)>50 or Factorial(IndexNC(G,nu))>=IndexNC(G,N)) and
 	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt);
 
-      Info(InfoFactor,4,"Index ",Index(G,nu));
+      Info(InfoFactor,4,"Index ",IndexNC(G,nu));
       u:=nu;
 
     until totalcnt>300 or
       # und die Gruppe ist nicht zuviel schlechter als der
       # beste bekannte Index. Daf"ur brauchen wir aber wom"oglich mehrfache
       # Erweiterungen.
-      interupt or (((Length(arg)=2 or Index(G,u)<knowi)));
+      interupt or (((Length(arg)=2 or IndexNC(G,u)<knowi)));
 
-    if Index(G,u)<knowi then
+    if IndexNC(G,u)<knowi then
 
-      #Print("Index:",Index(G,u),"\n");    
+      #Print("Index:",IndexNC(G,u),"\n");    
 
       if simple and u<>G then
 	cor:=TrivialSubgroup(G);
@@ -737,7 +804,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
       # store known information(we do't act, just store the subgroup).
       # Thus this is fairly cheap
       pool.dotriv:=true;
-      zzz:=AddNaturalHomomorphismsPool(G,cor,u,Index(G,u));
+      zzz:=AddNaturalHomomorphismsPool(G,cor,u,IndexNC(G,u));
 
       if IsPerm(zzz) and zzz<>() then
 	CloseNaturalHomomorphismsPool(G,N);
@@ -746,8 +813,9 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 
       zzz:=DegreeNaturalHomomorphismsPool(G,N);
 
-      Info(InfoFactor,3,"  ext ",cnt,": ",Index(G,u)," best degree:",zzz);
-      if cnt<10 and Size(cor)>Size(N) and Index(G,u)*2<knowi and
+      Info(InfoFactor,3,"  ext ",cnt,": ",IndexNC(G,u)," best degree:",zzz);
+
+      if cnt<10 and Size(cor)>Size(N) and IndexNC(G,u)*2<knowi and
 	ValueOption("inmax")=fail then
 	if IsSubset(RadicalGroup(u),N) and Size(N)<Size(RadicalGroup(u)) then
 	  # only affine ones are needed, rest will have wrong kernel
@@ -758,7 +826,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
         max:=Filtered(max,x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
         for i in max do
 	  cor:=Core(G,i);
-	  AddNaturalHomomorphismsPool(G,cor,i,Index(G,i));
+	  AddNaturalHomomorphismsPool(G,cor,i,IndexNC(G,i));
 	od;
 	zzz:=DegreeNaturalHomomorphismsPool(G,N);
 	Info(InfoFactor,3,"  Maxes: ",Length(max)," best degree:",zzz);
@@ -773,13 +841,16 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
     cnt:=cnt-1;
 
     if cnt=0 and zzz>badi then
-      Info(InfoWarning,2,"index unreasonably large, iterating");
       badi:=Int(badi*12/10);
+      Info(InfoWarning+InfoFactor,2,
+        "index unreasonably large, iterating ",badi);
       cnt:=20;
+      totalcnt:=0;
+      interupt:=false;
       v:=N; # all new
     fi;
   until interupt or cnt<=0 or zzz<=goodi;
-#Print(goodi," vs ",badi,"\n");
+  Info(InfoFactor,1,zzz," vs ",badi);
 
   return GetNaturalHomomorphismsPool(G,N);
 
@@ -792,7 +863,6 @@ end;
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
 local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
   i,cheap,first,k2;
-#if not HasSize(G) then Error("SZ");fi;
   Info(InfoFactor,1,"Smaller degree for order ",Size(G),", deg: ",NrMovedPoints(G));
   cheap:=ValueOption("cheap");
   if cheap="skip" then
@@ -1059,7 +1129,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 		fi;
 	      else
 		k:=KernelOfMultiplicativeGeneralMapping(op);
-		SetSize(Range(op),Index(gimg,k));
+		SetSize(Range(op),IndexNC(gimg,k));
 		op:=oh*op;
 		SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
 		AddNaturalHomomorphismsPool(G,
@@ -1113,7 +1183,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	    fi;
 	  else
 	    k:=KernelOfMultiplicativeGeneralMapping(op);
-	    SetSize(Range(op),Index(gimg,k));
+	    SetSize(Range(op),IndexNC(gimg,k));
 	    # keep action knowledge
 	    op:=oh*op;
 	    SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
@@ -1160,6 +1230,86 @@ function(G,N)
   return fail;
 end);
 
+BindGlobal("FactPermRepMaxDesc",function(g,n,maxlev)
+local lim,deg,all,c,recurse,use;
+  if ValueOption("infactorpermrep")=true then return false;fi;
+  lim:=RootInt(IndexNC(g,n),3);
+  deg:=DegreeNaturalHomomorphismsPool(g,n);
+  if deg=fail then deg:=infinity;fi;
+  all:=[];
+  c:=g;
+  Info(InfoFactor,1,"Try maximals for limit ",lim," from ",deg);
+
+  recurse:=function(a,lev)
+  local m,ma,nm,i,j,co,wait,use;
+    Info(InfoFactor,3,"pop in ",lev);
+    m:=[a];
+    while Length(m)>0 do
+      wait:=[];
+      ma:=[];
+      for i in m do
+        if ForAll(all,y->RepresentativeAction(g,i,y)=fail) then
+          Add(all,i);
+          Info(InfoFactor,2,"Maximals of index ",IndexNC(g,i));
+          nm:=TryMaximalSubgroupClassReps(i:inmax,infactorpermrep,cheap);
+          nm:=Filtered(nm,x->IndexNC(g,x)<=lim and IsSubset(x,n));
+          for j in nm do
+            if IsSubset(j,c) then
+              use:=ClosureGroup(n,DerivedSubgroup(j));
+              if not IsSubset(use,c) then
+                j:=use;
+                use:=true;
+              else
+                Add(wait,j);
+                use:=false;
+              fi;
+            else
+              use:=true;
+            fi;
+            if use then
+              co:=Core(g,j);
+              AddNaturalHomomorphismsPool(g,co,j,IndexNC(g,j));
+              c:=Intersection(co,c);
+              Add(ma,j);
+            fi;
+          od;
+        else
+          Info(InfoFactor,2,"discard conjugate");
+        fi;
+      od;
+      if Length(ma)>0 then
+        CloseNaturalHomomorphismsPool(g,n);
+        i:=DegreeNaturalHomomorphismsPool(g,n);
+        if i<deg then
+          deg:=i;
+          Info(InfoFactor,1,"Itmax improves to degree ",deg);
+          if lev>1 or deg<lim then return true;fi;
+        fi;
+        m:=ma;
+        SortBy(m,x->-Size(x));
+      elif lev<maxlev then
+        # no improvement. Go down
+        wait:=Filtered(wait,x->IndexNC(g,x)*10<=lim);
+        for i in wait do
+          if recurse(i,lev+1) then return true;fi;
+        od;
+        m:=[];
+      else
+        m:=[];
+      fi;
+    od;
+    if Size(c)>Size(n) then
+      Info(InfoFactor,3,"pop up failure ",Size(c));
+    else
+      Info(InfoFactor,3,"pop up found ",Size(c));
+    fi;
+    return false;
+  end;
+
+  return recurse(g,1);
+
+end);
+
 
 #############################################################################
 ##
@@ -1169,20 +1319,56 @@ InstallMethod(FindActionKernel,"perm",IsIdenticalObj,
   [IsPermGroup,IsPermGroup],0,
 function(G,N)
 local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
-      badcomb, idx, i, comb,act,k;
+      badcomb, idx, i, comb,act,k,j;
 
-  if Index(G,N)<50 then
+  if IndexNC(G,N)<50 then
     # small index, anything is OK
     return GenericFindActionKernel(G,N);
   else
     # get the known ones, including blocks &c. which might be of use
     DoCheapActionImages(G);
 
+    # find smallish layer actions
+    oo:=ClosureGroup(RadicalGroup(G),N);
+    dom:=ChiefSeriesThrough(G,[oo,N]);
+    dom:=Filtered(dom,x->IsSubset(oo,x) and IsSubset(x,N));
+
+    i:=2;
+    while i<=Length(dom) do
+      j:=i;
+      while j<Length(dom)
+        #and HasElementaryAbelianFactorGroup(dom[i-1],dom[j+1]) 
+        and IndexNC(dom[i-1],dom[j+1])<=2000 do
+        j:=j+1;
+      od;
+      if IndexNC(dom[i-1],dom[j])<=2000 then
+        v:=RightTransversal(dom[i-1],dom[j]);
+        oo:=OrbitsDomain(G,v,function(rep,g)
+          return v[PositionCanonical(v,rep^g)];
+          end);
+        for k in oo do
+          if Length(k)>1 then
+            u:=Stabilizer(G,k[1],function(x,g)
+              return v[PositionCanonical(v,x^g)];
+            end);
+            repeat
+              if not IsNormal(G,u) then
+                AddNaturalHomomorphismsPool(G,Core(G,u),u,IndexNC(G,u));
+              fi;
+              m:=u;
+              u:=ClosureGroup(N,DerivedSubgroup(u));
+            until m=u;
+          fi;
+        od;
+      fi;
+      i:=j+1;
+    od;
+
     pool:=NaturalHomomorphismsPool(G);
     dom:=MovedPoints(G);
 
     # store regular to have one anyway
-    bestdeg:=Index(G,N);
+    bestdeg:=IndexNC(G,N);
     AddNaturalHomomorphismsPool(G,N,N,bestdeg);
 
     # check if there are multiple orbits
@@ -1227,17 +1413,17 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
     o:=BaseOfGroup(N);
     s:=Stabilizer(G,o,OnTuples);
     badnormals:=Filtered(pool.ker,i->IsSubset(i,N) and Size(i)>Size(N));
-    if Size(s)>1 and Index(G,s)/Size(N)<2000 and bestdeg>Index(G,s) then
+    if Size(s)>1 and IndexNC(G,s)/Size(N)<2000 and bestdeg>IndexNC(G,s) then
       cnt:=Filtered(OrbitsDomain(s,dom),i->Length(i)>1);
       for i in cnt do
 	v:=ClosureGroup(N,Stabilizer(s,i[1]));
-	if Size(v)>Size(N) and Index(G,v)<2000 
+	if Size(v)>Size(N) and IndexNC(G,v)<2000 
 	  and not ForAny(badnormals,j->IsSubset(v,j)) then
 	  u:=Core(G,v);
 	  if Size(u)>Size(N) and IsSubset(u,N) and not u in badnormals then
 	    Add(badnormals,u);
 	  fi;
-	  AddNaturalHomomorphismsPool(G,u,v,Index(G,v));
+	  AddNaturalHomomorphismsPool(G,u,v,IndexNC(G,v));
 	fi;
       od;
 
@@ -1248,7 +1434,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
 
       Info(InfoFactor,1,"Base Stabilizer and known, best Index ",bestdeg);
 
-      if bestdeg<500 and bestdeg<Index(G,N) then
+      if bestdeg<500 and bestdeg<IndexNC(G,N) then
 	# should be better...
 	bestdeg:=ImproveActionDegreeByBlocks(G,N,
 	  GetNaturalHomomorphismsPool(G,N));
@@ -1266,25 +1452,25 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
     for i in oo do
       s:=StabilizerOfBlockNC(s,i[1]);
     od;
-    Info(InfoFactor,2,"stabilizer of index ",Index(G,s));
+    Info(InfoFactor,2,"stabilizer of index ",IndexNC(G,s));
 
     if not ForAny(badnormals,j->IsSubset(s,j)) then
       m:=Core(G,s); # the normal subgroup we get this way.
       if Size(m)>Size(N) and IsSubset(m,N) and not m in badnormals then
 	Add(badnormals,m);
       fi;
-      AddNaturalHomomorphismsPool(G,m,s,Index(G,s));
+      AddNaturalHomomorphismsPool(G,m,s,IndexNC(G,s));
     else
       m:=G; # guaranteed fail
     fi;
 
-    if Size(m)=Size(N) and Index(G,s)<bestdeg then
-      bestdeg:=Index(G,s);
+    if Size(m)=Size(N) and IndexNC(G,s)<bestdeg then
+      bestdeg:=IndexNC(G,s);
       blocksdone:=false;
       Info(InfoFactor,2,"Orbits Stabilizer improves to index ",bestdeg);
     elif Size(m)>Size(N) then
       # no hard work for trivial cases
-      if 2*Index(G,N)>Length(o) then
+      if 2*IndexNC(G,N)>Length(o) then
 	# try to find a subgroup, which does not contain any part of m
 	# For wreath products (the initial aim), the following method works
 	# fairly well
@@ -1332,7 +1518,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
 
     Info(InfoFactor,2,"Orbits Stabilizer, Best Index ",bestdeg);
     # first force blocks
-    if (not blocksdone) and bestdeg<200 and bestdeg<Index(G,N) then
+    if (not blocksdone) and bestdeg<200 and bestdeg<IndexNC(G,N) then
       Info(InfoFactor,3,"force blocks");
       bestdeg:=ImproveActionDegreeByBlocks(G,N,
 	GetNaturalHomomorphismsPool(G,N));
@@ -1340,18 +1526,21 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
       Info(InfoFactor,2,"Blocks improve to ",bestdeg);
     fi;
 
-    if bestdeg=Index(G,N) or 
+    if bestdeg=IndexNC(G,N) or 
       (bestdeg>400 and not(bestdeg<=2*NrMovedPoints(G))) then
       if GenericFindActionKernel(G,N,bestdeg,s)<>fail then
 	blocksdone:=true;
       fi;
-      Info(InfoFactor,1,"  Random search found ",
-           DegreeNaturalHomomorphismsPool(G,N));
-    #if (bestdeg>500 and Index(G,o)<5000) or Index(G,o)<bestdeg then
-    #  # tell 'IODBB' not to doo too much blocksearch
-    #  o:=ImproveActionDegreeByBlocks(G,o,N,bestdeg<Index(G,o));
-    #  Info(InfoFactor,1,"  Blocks improve to ",Index(G,o),"\n");
-    #fi;
+      bestdeg:=DegreeNaturalHomomorphismsPool(G,N);
+      Info(InfoFactor,1,"  Random search found ",bestdeg);
+    fi;
+
+    if bestdeg>10000 and bestdeg^2>IndexNC(G,N) then
+      cnt:=bestdeg;
+      FactPermRepMaxDesc(G,N,5);
+      bestdeg:=DegreeNaturalHomomorphismsPool(G,N);
+      if bestdeg<cnt then blocksdone:=false;fi;
+      Info(InfoFactor,1,"Iterated maximals found ",bestdeg);
     fi;
 
     if not blocksdone then
@@ -1396,7 +1585,7 @@ function(G,N)
 local h;
 
   # catch the trivial case N=G 
-  if CanComputeIndex(G,N) and Index(G,N)=1 then
+  if CanComputeIndex(G,N) and IndexNC(G,N)=1 then
     h:=FACTGRP_TRIV;  # a new group is created
     h:=GroupHomomorphismByImagesNC( G, h, GeneratorsOfGroup( G ),
            List( GeneratorsOfGroup( G ), i -> () ));  # a new group is created
@@ -1412,14 +1601,18 @@ local h;
 
   # check, whether we already know a factormap
   DoCheapActionImages(G);
-  h:=GetNaturalHomomorphismsPool(G,N);
-  if h=fail and HasIsSolvableGroup(N) and HasIsSolvableGroup(G) and
-    IsSolvableGroup(N) and not IsSolvableGroup(G) and HasRadicalGroup(G) 
-    and N=RadicalGroup(G)
-    then
-    # did we just compute it?
+  if HasRadicalGroup(G) and N=RadicalGroup(G) then
     h:=GetNaturalHomomorphismsPool(G,N);
   fi;
+
+
+  h:=DegreeNaturalHomomorphismsPool(G,N);
+  if h<>fail and RootInt(h^3,2)<IndexNC(G,N) then
+    h:=GetNaturalHomomorphismsPool(G,N);
+  else 
+    h:=fail;
+  fi;
+
   if h=fail then
     # now we try to find a suitable operation
 
@@ -1474,8 +1667,8 @@ local   map,  pcgs, A, filter,p,i;
     fi;
   fi;
 
-  if Index(G,N)=1 or Size(N)=1
-    or Minimum(Index(G,N),NrMovedPoints(G))>NH_TRYPCGS_LIMIT then
+  if IndexNC(G,N)=1 or Size(N)=1
+    or Minimum(IndexNC(G,N),NrMovedPoints(G))>NH_TRYPCGS_LIMIT then
     TryNextMethod();
   fi;
 

@@ -16,10 +16,14 @@ gap> h:=FpGroupCocycle(coh,reps[1],true);;
 gap> h:=Image(IsomorphismPermGroup(h));;
 gap> Collected(List(MaximalSubgroupClassReps(h),Size));
 [ [ 1344, 7 ], [ 1536, 2 ] ]
-gap> h:=FpGroupCocycle(coh,reps[2],true);;
-gap> h:=Image(IsomorphismPermGroup(h));;
-gap> Collected(List(MaximalSubgroupClassReps(h),Size));
+gap> a:=FpGroupCocycle(coh,reps[2],true);;
+gap> a:=Image(IsomorphismPermGroup(a));;
+gap> Collected(List(MaximalSubgroupClassReps(a),Size));
 [ [ 1344, 3 ], [ 1536, 2 ] ]
+gap> IsomorphismGroups(a,h);
+fail
+gap> IsomorphismGroups(h,PerfectGroup(IsPermGroup,10752,1))<>fail;
+true
 
 # that's all, folks
 gap> STOP_TEST( "twocohom.tst", 1);

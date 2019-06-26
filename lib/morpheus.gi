@@ -178,7 +178,8 @@ InstallMethod( IsGroupOfAutomorphismsFiniteGroup,"default",true,
 # Try to embed automorphisms into wreath product.
 BindGlobal("AutomorphismWreathEmbedding",function(au,g)
 local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
-      img, j, conj, sm, cen, n, w, emb, ge, no,reps,synom,ginn,oemb;
+      img, j, conj, sm, cen, n, w, emb, ge, no,reps,synom,ginn,oemb,act,
+      imgs,ogens,genimgs,oo,op;
 
   gens:=GeneratorsOfGroup(g);
   if Size(Centre(g))>1 then
@@ -244,6 +245,9 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     #   Error("WR5");
     # fi;
   fi;
+  if Length(GeneratorsOfGroup(syno))>5 then
+    syno:=Group(SmallGeneratingSet(syno));
+  fi;
 
   cen:=Centralizer(syno,g);
   Info(InfoMorph,2,"|syno|=",Size(syno)," |cen|=",Size(cen));
@@ -268,15 +272,55 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     Info(InfoMorph,2,List(rep,i->MappedWord(i,GeneratorsOfGroup(free),perms)));
     n:=Length(orb);
     w:=WreathProduct(syno,SymmetricGroup(n));
-    emb:=List(GeneratorsOfGroup(g),
+    no:=KernelOfMultiplicativeGeneralMapping(Projection(w));
+    gens:=SmallGeneratingSet(g);
+    emb:=List(gens,
 	  i->Product(List([1..n],j->Image(Embedding(w,j),Image(synom,Image(orbi[j],i))))));
-    ge:=Subgroup(w,emb);
-    emb:=GroupHomomorphismByImagesNC(g,ge,GeneratorsOfGroup(g),emb);
-    reps:=List(out,i->RepresentativeAction(w,GeneratorsOfGroup(ge),
-      List(GeneratorsOfGroup(g),j->Image(emb,Image(i,j))),OnTuples));
-    if not ForAll(reps,IsPerm) then
-      return fail;
-    fi;
+    ge:=SubgroupNC(w,emb);
+    emb:=GroupHomomorphismByImagesNC(g,ge,gens,emb);
+    reps:=[];
+    oo:=List(Orbits(no,MovedPoints(no)),Set);
+    ForAll(oo,IsRange);
+    act:=[];
+    for i in out do
+
+      # how does it permute the components?
+      conj:=List(orb,x->x*i);
+      conj:=List(conj,x->PositionProperty(orb,
+        y->IsConjugatorAutomorphism(x/y)));
+      conj:=PermList(conj);
+      if conj=fail then return fail;fi;
+      conj:=ImagesRepresentative(Embedding(w,n+1),conj);
+
+      #gen:=RepresentativeAction(no,GeneratorsOfGroup(ge),
+      #  List(gens,j->Image(emb,ImagesRepresentative(i,j))^(conj^-1)),OnTuples);
+      ogens:=GeneratorsOfGroup(ge);
+      genimgs:=List(gens,j->Image(emb,ImagesRepresentative(i,j))^(conj^-1));
+      gen:=One(no);
+      for op in [1..Length(oo)] do
+        if not IsBound(act[op]) then
+          Info(InfoMorph,2,"oo=",op,oo[op]);
+          act[op]:=Group(List(GeneratorsOfGroup(no),x->RestrictedPerm(x,oo[op])));
+          SetSize(act,Size(syno));
+        fi;
+      
+        sm:=RepresentativeAction(act[op],
+          List(ogens,x->RestrictedPerm(x,oo[op])),
+          List(genimgs,x->RestrictedPerm(x,oo[op])),OnTuples);
+        if not IsPerm(sm) then return fail;fi;
+        #ogens:=List(ogens,x->x^sm);
+        gen:=gen*sm;
+      od;
+
+      if not OnTuples(ogens,gen)=genimgs then
+        Error("conjugation error!");
+      fi;
+
+      #if not IsPerm(gen) then return fail;fi;
+      gen:=gen*conj;
+      Add(reps,gen);
+    od;
+
     #no:=Normalizer(w,ge);
     #no:=ClosureGroup(ge,reps);
     ginn:=List(inn,ConjugatorOfConjugatorIsomorphism);
@@ -303,7 +347,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
     #if Size(no)/Size(syno)<>Length(orb) then
     #  Error("wreath embedding failed");
     #fi;
-    sm:=SmallerDegreePermutationRepresentation(ClosureGroup(ge,no));
+    sm:=SmallerDegreePermutationRepresentation(ClosureGroup(ge,no):cheap);
     no:=Image(sm,no);
     if IsIdenticalObj(emb,oemb) then
       emb:=emb*sm;
@@ -324,7 +368,7 @@ end);
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
 local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt, br, bv,
-v, val, o, i, comb, best,actbase;
+v, val, o, i, comb, best,actbase,action;
 
   hom:=fail;
   allinner:=HasIsAutomorphismGroup(au) and IsAutomorphismGroup(au);
@@ -397,9 +441,34 @@ v, val, o, i, comb, best,actbase;
 	SetIsBijective(hom,true);
       fi;
     else
-      # permrep does not extend. Try larger permrep.
-      img:=AutomorphismWreathEmbedding(au,g);
-      if img<>fail then
+      # permrep does not extend. Try whether one can blow up
+      orbs:=List(Orbits(g,MovedPoints(g)),Set);
+      SortBy(orbs,Length);
+      best:=true;
+      action:=function(sub,hom) return Image(hom,sub);end;
+      for o in orbs do
+        r:=Stabilizer(g,o,OnTuples);
+        if hom=fail and #have not yet found any
+          not ForAll(GeneratorsOfGroup(au),x->Image(x,r)=r or
+          Difference(MovedPoints(g),MovedPoints(Image(x,r))) in orbs) then
+          best:=false; # automs do not play nicely with permrep
+          r:=Orbit(au,r,action);
+          u:=Stabilizer(g,o[1]);
+          if Size(Intersection(r))=1 and
+            # this orbit and automorphism images representa ll of g, so can
+            # be used to represent automorphisms
+            u=Normalizer(g,u) then
+            # point stabilizer is self-normalizing, so action on
+            # cosets=action by conjugation
+            u:=Orbit(au,u,action);
+            hom:=ActionHomomorphism(au,u,action,"surjective");
+          fi;
+        fi;
+      od;
+
+      # action is orbit-nice, try to embed in wreath
+      if best then img:=AutomorphismWreathEmbedding(au,g); fi;
+      if best and img<>fail then
 	Info(InfoMorph,1,"AWE succeeds");
 	# make a hom from auts to perm group
 	ran:=img[4];
@@ -421,8 +490,9 @@ v, val, o, i, comb, best,actbase;
 	    return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
 	             List(r,i->PreImagesRepresentative(img[3],i^perm)));
 	  end);
+      fi;
 
-      elif not IsAbelian(Socle(g)) and IsSimpleGroup(Socle(g)) then
+      if hom=fail and not IsAbelian(Socle(g)) and IsSimpleGroup(Socle(g)) then
 	Info(InfoMorph,1,"Try ARG");
 	img:=AutomorphismRepresentingGroup(g,GeneratorsOfGroup(au));
 	# make a hom from auts to perm group
@@ -1939,7 +2009,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   aup:=Normalizer(d,Image(emb,g));
 
   #reduce degree
-  s:=SmallerDegreePermutationRepresentation(aup);
+  s:=SmallerDegreePermutationRepresentation(aup:cheap);
   emb:=emb*s;
   aup:=Image(s,aup);
   ge:=Image(emb,g);

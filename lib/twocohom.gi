@@ -1500,7 +1500,7 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
         gi:=Group(ugens);
         Assert(0,Size(gi)=p^module.dimension*Size(G));
         if ValueOption("cheap")<>true then
-          a:=SmallerDegreePermutationRepresentation(gi);
+          a:=SmallerDegreePermutationRepresentation(gi:cheap);
           if NrMovedPoints(Range(a))<NrMovedPoints(gi) then
             gi:=Image(a,gi);
             ugens:=List(ugens,x->ImagesRepresentative(a,x));
@@ -1599,8 +1599,9 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
             false<>MatricesStabilizerOneDim(r.module.field,
               List(GeneratorsOfGroup(m),
               x->TransposedMat(ImagesRepresentative(hom,x)))) then
-            Info(InfoExtReps,2,"Attempt index ",Index(p,m));
+            Info(InfoExtReps,3,"Attempt index ",Index(p,m));
             e:=LargerQuotientBySubgroupAbelianization(quot,m);
+          else Info(InfoExtReps,3,"Don't index ",Index(p,m));
           fi;
         until e<>fail;
         i:=p;

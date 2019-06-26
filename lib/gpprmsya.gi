@@ -275,7 +275,7 @@ end);
 BindGlobal("CheapIsomSymAlt",function(a,b)
 local hom;
   if IsPermGroup(a) then
-    hom:=SmallerDegreePermutationRepresentation(a);
+    hom:=SmallerDegreePermutationRepresentation(a:cheap);
     if Image(hom)=b then return hom;
     elif NrMovedPoints(Range(hom))<NrMovedPoints(a) then
       return hom*IsomorphismGroups(Image(hom),b);
@@ -2335,7 +2335,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
             gps[j]:=DerivedSubgroup(gps[j]);
           od;
         od;
-        gps:=List(gps,i->Image(SmallerDegreePermutationRepresentation(i)));
+        gps:=List(gps,i->Image(SmallerDegreePermutationRepresentation(i:cheap)));
       fi;
       for j in gps do
         m:=DiagonalSocleAction(j,i[2]+1);

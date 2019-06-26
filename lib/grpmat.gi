@@ -477,7 +477,7 @@ local   nice,img,module,b;
     else
       nice:= SparseActionHomomorphism( grp,
                  RowsOfMatrix( One( grp ) ) );
-      nice:=nice*SmallerDegreePermutationRepresentation(Image(nice));
+      nice:=nice*SmallerDegreePermutationRepresentation(Image(nice):cheap);
     fi;
   elif IsFinite(grp) and ( (HasIsNaturalGL(grp) and IsNaturalGL(grp)) or
              (HasIsNaturalSL(grp) and IsNaturalSL(grp)) ) then
@@ -507,9 +507,9 @@ local   nice,img,module,b;
     if module<>fail and not (NrMovedPoints(img)>=
       Size( DefaultFieldOfMatrixGroup( grp ) )^( NumberRows( One( grp ) )-2 )
       and MTX.IsAbsolutelyIrreducible(module)) then
-	nice:=nice*SmallerDegreePermutationRepresentation(img);
+	nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
     else
-      nice:=nice*SmallerDegreePermutationRepresentation(img:cheap:=true);
+      nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
     fi;
   fi;
   SetIsInjective( nice, true );

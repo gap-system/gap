@@ -1799,4 +1799,10 @@ true
 gap> CompositionSeries( h );
 [ <permutation group of size 3600 with 4 generators>, 
   <permutation group of size 60 with 2 generators>, Group(()) ]
+gap> g:=PerfectGroup(IsPermGroup,10752,3);;
+gap> g:=Group(GeneratorsOfGroup(g));;
+gap> iso:=IsomorphismFpGroupByCompositionSeries(g);;
+gap> iso:=IsomorphismFpGroup(g);;
+gap> ImagesRepresentative(iso,Product(GeneratorsOfGroup(g)));
+F3*F4*F5*F1*F2
 gap> STOP_TEST( "grpprmcs.tst", 1);

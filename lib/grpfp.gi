@@ -2014,7 +2014,7 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   # reduce
   if HasSize(s) and IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)
     or NrMovedPoints(s)>1000) then
-    d:=SmallerDegreePermutationRepresentation(s);
+    d:=SmallerDegreePermutationRepresentation(s:cheap);
     A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));
     if NrMovedPoints(A)<NrMovedPoints(s) then
       Info(InfoFpGroup,3,"reduced degree from ",NrMovedPoints(s)," to ",
@@ -4116,7 +4116,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
 
   fi;
 
-  p:=SmallerDegreePermutationRepresentation(H);
+  p:=SmallerDegreePermutationRepresentation(H:cheap);
   # tell the family that we can now compare elements
   SetCanEasilyCompareElements(FamilyObj(One(G)),true);
   SetCanEasilySortElements(FamilyObj(One(G)),true);
