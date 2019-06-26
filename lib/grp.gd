@@ -636,23 +636,29 @@ InstallIsomorphismMaintenance( IsSporadicSimpleGroup,
 #############################################################################
 ##
 #P  IsSimpleGroup( <G> )
+#P  IsNonabelianSimpleGroup( <G> )
 ##
 ##  <#GAPDoc Label="IsSimpleGroup">
 ##  <ManSection>
 ##  <Prop Name="IsSimpleGroup" Arg='G'/>
+##  <Prop Name="IsNonabelianSimpleGroup" Arg='G'/>
 ##
 ##  <Description>
 ##  A group is <E>simple</E> if it is nontrivial and has no nontrivial normal
-##  subgroups.
+##  subgroups. A <E>nonabelian simple</E> group is simple and not abelian.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSimpleGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsSimpleGroup );
+DeclareSynonymAttr( "IsNonabelianSimpleGroup", IsSimpleGroup and IsPerfectGroup );
+InstallTrueMethod( IsSimpleGroup, IsNonabelianSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup,
     IsGroup and IsSimpleGroup, IsGroup );
+
+InstallIsomorphismMaintenance( IsPerfectGroup, IsGroup, IsGroup );
 
 InstallTrueMethod( IsSimpleGroup, IsSporadicSimpleGroup );
 
@@ -710,7 +716,7 @@ DeclareProperty( "IsAlmostSimpleGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsAlmostSimpleGroup );
 
 # a simple group is almost simple
-InstallTrueMethod( IsAlmostSimpleGroup, IsSimpleGroup );
+InstallTrueMethod( IsAlmostSimpleGroup, IsNonabelianSimpleGroup );
 
 
 #############################################################################
@@ -1877,7 +1883,7 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
 ##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
-##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  <P/>
 ##  The algorithm for the computation of normal subgroups is described in

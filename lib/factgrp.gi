@@ -684,7 +684,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
   # what is a good degree:
   goodi:=Minimum(Int(knowi*9/10),LogInt(IndexNC(G,N),2)^2);
 
-  simple:=HasIsSimpleGroup(G) and IsSimpleGroup(G) and Size(N)=2;
+  simple:=HasIsNonabelianSimpleGroup(G) and IsNonabelianSimpleGroup(G) and Size(N)=2;
   uc:=TrivialSubgroup(G);
   # look if it is worth to look at action on N
   # if not abelian: later replace by abelian Normal subgroup

@@ -22,7 +22,7 @@ local H,hom,d,cl;
     IsNaturalSymmetricGroup(G)) then
     return ConjugacyClasses(G); # there is a method for this
   fi;
-  if not IsSimpleGroup(PerfectResiduum(G)) then
+  if not IsNonabelianSimpleGroup(PerfectResiduum(G)) then
     return fail;
   fi;
   d:=DataAboutSimpleGroup(PerfectResiduum(G));
@@ -3077,7 +3077,7 @@ local cl;
     return cl;
   elif IsSolvableGroup( G ) and CanEasilyComputePcgs(G) then
     return ConjugacyClassesForSolvableGroup(G);
-  elif IsSimpleGroup( G ) then
+  elif IsNonabelianSimpleGroup( G ) then
     cl:=ClassesFromClassical(G);
     if cl=fail then
       cl:=ConjugacyClassesByRandomSearch( G );

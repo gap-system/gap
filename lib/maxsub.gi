@@ -554,7 +554,7 @@ local m,id,epi,H;
   m:=TomDataMaxesAlmostSimple(G);
   if m<>fail then return m;fi;
 
-  if IsSimpleGroup(G) then 
+  if IsNonabelianSimpleGroup(G) then 
     # following is stopgap for L
     id:=DataAboutSimpleGroup(G);
     if id.idSimple.series="A" then
