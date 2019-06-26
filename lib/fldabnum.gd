@@ -81,8 +81,7 @@ InstallTrueMethod( IsField, IsNumberField );
 InstallSubsetMaintenance( IsNumberField,
     IsField and IsNumberField, IsField );
 
-InstallIsomorphismMaintenance( IsNumberField,
-    IsField and IsNumberField, IsField );
+InstallIsomorphismMaintenance( IsNumberField, IsField, IsField );
 
 
 #############################################################################
@@ -110,8 +109,7 @@ InstallTrueMethod( IsNumberField, IsAbelianNumberField );
 InstallSubsetMaintenance( IsAbelianNumberField,
     IsField and IsAbelianNumberField, IsField );
 
-InstallIsomorphismMaintenance( IsAbelianNumberField,
-    IsField and IsAbelianNumberField, IsField );
+InstallIsomorphismMaintenance( IsAbelianNumberField, IsField, IsField );
 
 
 #############################################################################
@@ -120,8 +118,7 @@ InstallIsomorphismMaintenance( IsAbelianNumberField,
 ##
 ##  The attribute is defined in `cyclotom.g'.
 ##
-InstallIsomorphismMaintenance( Conductor,
-    IsField and IsAbelianNumberField, IsField );
+InstallIsomorphismMaintenance( Conductor, IsField, IsField );
 
 
 #############################################################################
@@ -172,8 +169,7 @@ DeclareProperty( "IsCyclotomicField", IsField );
 
 InstallTrueMethod( IsAbelianNumberField, IsCyclotomicField );
 
-InstallIsomorphismMaintenance( IsCyclotomicField,
-    IsField and IsCyclotomicField, IsField );
+InstallIsomorphismMaintenance( IsCyclotomicField, IsField, IsField );
 
 
 #############################################################################

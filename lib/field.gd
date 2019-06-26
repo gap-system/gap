@@ -124,8 +124,7 @@ DeclareAttribute( "PrimeField", IsDivisionRing );
 DeclareProperty( "IsPrimeField", IsDivisionRing );
 InstallTrueMethod( IsField, IsPrimeField );
 
-InstallIsomorphismMaintenance( IsPrimeField,
-    IsField and IsPrimeField, IsField );
+InstallIsomorphismMaintenance( IsPrimeField, IsField, IsField );
 
 
 #############################################################################

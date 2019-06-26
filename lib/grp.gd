@@ -599,6 +599,8 @@ InstallTrueMethod( IsNilpotentGroup, IsGroup and IsPGroup and IsFinite );
 DeclareProperty( "IsPerfectGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsPerfectGroup );
 
+InstallIsomorphismMaintenance( IsPerfectGroup, IsGroup, IsGroup );
+
 InstallFactorMaintenance( IsPerfectGroup,
     IsGroup and IsPerfectGroup, IsObject, IsGroup );
 
@@ -630,8 +632,7 @@ InstallTrueMethod( IsPerfectGroup, IsGroup and IsTrivial );
 DeclareProperty( "IsSporadicSimpleGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsSporadicSimpleGroup );
 
-InstallIsomorphismMaintenance( IsSporadicSimpleGroup,
-    IsGroup and IsSporadicSimpleGroup, IsGroup );
+InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
 
 #############################################################################
 ##
@@ -655,10 +656,7 @@ InstallTrueMethod( IsGroup, IsSimpleGroup );
 DeclareSynonymAttr( "IsNonabelianSimpleGroup", IsSimpleGroup and IsPerfectGroup );
 InstallTrueMethod( IsSimpleGroup, IsNonabelianSimpleGroup );
 
-InstallIsomorphismMaintenance( IsSimpleGroup,
-    IsGroup and IsSimpleGroup, IsGroup );
-
-InstallIsomorphismMaintenance( IsPerfectGroup, IsGroup, IsGroup );
+InstallIsomorphismMaintenance( IsSimpleGroup, IsGroup, IsGroup );
 
 InstallTrueMethod( IsSimpleGroup, IsSporadicSimpleGroup );
 
@@ -1451,9 +1449,7 @@ DeclareAttribute( "DerivedLength", IsGroup );
 ##  </ManSection>
 ##
 DeclareAttribute( "HirschLength", IsGroup );
-InstallIsomorphismMaintenance( HirschLength, 
-                               IsGroup and HasHirschLength,
-                               IsGroup );
+InstallIsomorphismMaintenance( HirschLength, IsGroup, IsGroup );
 
 
 #############################################################################
@@ -1637,7 +1633,7 @@ DeclareAttribute( "ElementaryAbelianSeriesLargeSteps", IsGroup );
 ##
 DeclareAttribute( "Exponent", IsGroup );
 
-InstallIsomorphismMaintenance( Exponent, IsGroup and HasExponent, IsGroup );
+InstallIsomorphismMaintenance( Exponent, IsGroup, IsGroup );
 
 
 #############################################################################
