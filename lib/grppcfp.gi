@@ -878,8 +878,8 @@ local g, sq, hom;
   g:=arg[1];
   sq:=CallFuncList(SQ,arg);
   hom:=GroupHomomorphismByImages(g,sq.image,GeneratorsOfGroup(g),sq.imgs);
-  if HasSize(g) and Size(g)=Size(sq.image) then
-    SetIsInjective(hom,true);
+  if HasSize(g) then
+    SetIsInjective(hom, Size(g)=Size(sq.image));
   fi;
   return hom;
 end);
