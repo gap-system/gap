@@ -88,6 +88,13 @@ gap> Size(u);
 gap> Size(g)/Length(Orbit(g,part,OnTuplesSets));
 4608
 
+# simplicity
+gap> g:=PerfectGroup(IsPermGroup,360,1);;
+gap> IsSimpleGroup(g);
+true
+gap> IsNonabelianSimpleGroup(g);
+true
+
 # Unbind variables so we can GC memory
 gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);
 gap> STOP_TEST( "permgrp.tst", 1);

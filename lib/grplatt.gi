@@ -901,7 +901,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       or Size(G)<=cefastersize then
       # in the simple case we cannot go back into trivial fitting case
       # or cyclic extension is faster as group is small
-      if IsSimpleGroup(G) then
+      if IsNonabelianSimpleGroup(G) then
 	c:=TomDataSubgroupsAlmostSimple(G);
 	if c<>fail then
 	  c:=makesubgroupclasses(G,c);
@@ -923,7 +923,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       HN:=Image(hom,H);
       c:=LatticeByCyclicExtension(f,
 	  [u->IsSubset(HN,u),u->IsSubset(HN,u)])!.conjugacyClassesSubgroups;
-    elif select<>fail and (select=IsPerfectGroup  or select=IsSimpleGroup) then
+    elif select=IsPerfectGroup or select=IsNonabelianSimpleGroup then
       c:=ConjugacyClassesPerfectSubgroups(f);
       c:=Filtered(c,x->Size(Representative(x))>1);
       fselect:=U->not IsSolvableGroup(U);
@@ -1003,7 +1003,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 	# by setting up `act' as fail, we force a different selection later
 	act:=[nts,fail];
 
-      elif select=IsSimpleGroup then
+      elif select=IsNonabelianSimpleGroup then
 	# simple -> no extensions, only the trivial subgroup is valid.
 	act:=[[ser[i]],GroupHomomorphismByImagesNC(G,Group(()),
 	    GeneratorsOfGroup(G),
@@ -1341,7 +1341,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
     D:=LatticeViaRadical(G,IsPerfectGroup);
     D:=List(D!.conjugacyClassesSubgroups,Representative);
     if simple then
-      D:=Filtered(D,IsSimpleGroup);
+      D:=Filtered(D,IsNonabelianSimpleGroup);
     else
       D:=Filtered(D,IsPerfectGroup);
     fi;
@@ -1360,7 +1360,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 		 and i<n/4);
 
     # if D is simple, we can limit indices further
-    if IsSimpleGroup(D) then
+    if IsNonabelianSimpleGroup(D) then
       k:=4;
       l:=120;
       while l<n do
@@ -1406,7 +1406,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 	  Info(InfoLattice,1,"trying group ",i,",",j,": ",u);
 
 	  # test whether there is a chance to embed
-	  might:=simple=false or IsSimpleGroup(u);
+	  might:=simple=false or IsNonabelianSimpleGroup(u);
 	  cnt:=0;
 	  while might and cnt<20 do
 	    bg:=Order(Random(u));
@@ -1502,7 +1502,7 @@ InstallMethod(RepresentativesSimpleSubgroups,"using Holt/Plesken library",
 
 InstallMethod(RepresentativesSimpleSubgroups,"if perfect subs are known",
   true,[IsGroup and HasRepresentativesPerfectSubgroups],0,
-  G->Filtered(RepresentativesPerfectSubgroups(G),IsSimpleGroup));
+  G->Filtered(RepresentativesPerfectSubgroups(G),IsNonabelianSimpleGroup));
 
 #############################################################################
 ##
@@ -2865,7 +2865,7 @@ InstallGlobalFunction("SubgroupsTrivialFitting",function(G)
   for i in n do
     if not IsSubgroup(a,i) then
       a:=ClosureGroup(a,i);
-      if not IsSimpleGroup(i) then
+      if not IsNonabelianSimpleGroup(i) then
 	TryNextMethod();
       fi;
       t:=ClassicalIsomorphismTypeFiniteSimpleGroup(i);

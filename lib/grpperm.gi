@@ -2223,7 +2223,7 @@ local dom,s,cs,t,ts,o,m,stb;
   s:=Socle(G);
   if IsAbelian(s) then
     return "1";
-  elif IsSimpleGroup(s) then
+  elif IsNonabelianSimpleGroup(s) then
     return "2";
   elif Length(dom)=Size(s) then
     return "5";

@@ -67,8 +67,8 @@ function(G,str)
   return IsomorphismFpGroupByPcgs( Pcgs(G), str );
 end);
 
-InstallOtherMethod( IsomorphismFpGroup,"for simple permutation groups",true,
-  [IsPermGroup and IsSimpleGroup,IsString],0,
+InstallOtherMethod( IsomorphismFpGroup,"for nonabelian simple permutation groups",
+  true, [IsPermGroup and IsNonabelianSimpleGroup,IsString],0,
 function(G,str)
 local l,iso,fp,stbc,gens;
   # use the perfect groups library
@@ -131,7 +131,7 @@ function( G, str )
     #     gensH := Filtered( gensH, x -> x <> One(H) );
     # fi;
 
-    IsSimpleGroup(H); #ensure H knows to be simple, thus the call to
+    IsNonabelianSimpleGroup(H); #ensure H knows to be simple, thus the call to
     # `IsomorphismFpGroup' will not yield an infinite recursion.
     IsNaturalAlternatingGroup(H); # We have quite often a factor A_n for
     # which GAP knows better presentations. Thus this test is worth doing.
@@ -162,7 +162,7 @@ function( G, str )
         # fi;
 
 	# compute presentation of H
-	IsSimpleGroup(H);
+	IsNonabelianSimpleGroup(H);
 	IsNaturalAlternatingGroup(H);
 	new:=IsomorphismFpGroup(H,"@");
 	gensH:=List(GeneratorsOfGroup(Image(new)),
@@ -278,7 +278,7 @@ function(g,str,N)
       IsOne(hom);
       f:=Image(hom);
       # knowing simplicity makes it easy to test whether a map is faithful
-      if IsSimpleGroup(f) then
+      if IsNonabelianSimpleGroup(f) then
         if DataAboutSimpleGroup(f).idSimple.series="A" and
           not IsNaturalAlternatingGroup(f) then
           # force natural alternating 
@@ -320,7 +320,7 @@ function(g,str,N)
       od;
 
       # we know sf is simple
-      SetIsSimpleGroup(sf,true);
+      SetIsNonabelianSimpleGroup(sf,true);
       IsNaturalAlternatingGroup(sf);
       if ValueOption("rewrite")=true then
         a:=IsomorphismFpGroupForRewriting(sf:noassert);

@@ -492,7 +492,7 @@ v, val, o, i, comb, best,actbase,action;
 	  end);
       fi;
 
-      if hom=fail and not IsAbelian(Socle(g)) and IsSimpleGroup(Socle(g)) then
+      if hom=fail and IsNonabelianSimpleGroup(Socle(g)) then
 	Info(InfoMorph,1,"Try ARG");
 	img:=AutomorphismRepresentingGroup(g,GeneratorsOfGroup(au));
 	# make a hom from auts to perm group
@@ -1527,7 +1527,7 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
 
     # catch case of simple groups to get outer automorphism orders
     # automorphism suffices.
-    if IsSimpleGroup(H) then
+    if IsNonabelianSimpleGroup(H) then
       dat:=DataAboutSimpleGroup(H);
       if IsBound(dat.fullAutGroup) then
 	if dat.fullAutGroup[1]=1 then
@@ -1709,7 +1709,7 @@ end);
 
 BindGlobal("OuterAutomorphismGeneratorsSimple",function(G)
 local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
-  if not IsSimpleGroup(G) then
+  if not IsNonabelianSimpleGroup(G) then
     return fail;
   fi;
   gens:=GeneratorsOfGroup(G);
@@ -1831,7 +1831,7 @@ end);
 
 BindGlobal("AutomorphismGroupMorpheus",function(G)
 local a,b,c,p;
-  if IsSimpleGroup(G) then
+  if IsNonabelianSimpleGroup(G) then
     c:=DataAboutSimpleGroup(G);
     b:=List(GeneratorsOfGroup(G),x->InnerAutomorphism(G,x));
     a:=OuterAutomorphismGeneratorsSimple(G);
@@ -1902,7 +1902,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   #write g in a nice form
   count:=ValueOption("count");if count=fail then count:=0;fi;
   s:=Socle(g);
-  if IsSimpleGroup(s) then
+  if IsNonabelianSimpleGroup(s) then
     return AutomorphismGroupMorpheus(g);
   fi;
   c:=ChiefSeriesThrough(g,[s]);

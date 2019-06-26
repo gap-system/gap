@@ -899,7 +899,7 @@ local s,o,a,n,d,f,fn,j,b,i;
 
   d:=[];
   for i in f do
-    if IsSimpleGroup(i) then
+    if IsNonabelianSimpleGroup(i) then
       Add(d,i);
     else
       n:=Filtered(NormalSubgroups(i),x->Size(x)>1);
@@ -908,7 +908,7 @@ local s,o,a,n,d,f,fn,j,b,i;
       if ForAny(n,x->IsPrimePowerInt(Size(x))) then
 	return fail;
       fi;
-      n:=Filtered(n,IsSimpleGroup);
+      n:=Filtered(n,IsNonabelianSimpleGroup);
       Append(d,n);
     fi;
   od;

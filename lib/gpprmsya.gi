@@ -2393,7 +2393,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
     k:=Factorial(n)/2;
     l:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
               [DegreeOperation,n,
-                          i->Size(i)<k and IsSimpleGroup(Socle(i))
+                          i->Size(i)<k and IsNonabelianSimpleGroup(Socle(i))
                           and not IsAbelian(Socle(i)),true,
                           SignPermGroup,SignPermGroup(G)]);
 
