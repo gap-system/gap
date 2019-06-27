@@ -671,11 +671,6 @@ function(r,n)
   type := IsFunctionField and IsAttributeStoringRep and IsLeftModule 
           and IsAlgebraWithOne;
 
-  # If the coefficients form an integral ring, then the function field is also a field
-  if HasIsIntegralRing(r) and IsIntegralRing(r) then
-    type:= type and IsField;
-  fi;
-
   fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());;
 
   # The function field is commutative if and only if the coefficient ring is.
