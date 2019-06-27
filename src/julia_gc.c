@@ -456,6 +456,25 @@ static void MarkFromList(PtrArray * arr)
 
 static TaskInfoTree * task_stacks = NULL;
 
+static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
+{
+    volatile jl_jmp_buf * old_safe_restore =
+        (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
+    jl_jmp_buf exc_buf;
+    if (!jl_setjmp(exc_buf, 0)) {
+        // The bottom of the stack may be protected with
+        // guard pages; accessing these results in segmentation
+        // faults. Julia catches those segmentation faults and
+        // longjmps to JuliaTLS->safe_restore; we use this
+        // mechamism to abort stack scanning when a protected
+        // page is hit. For this to work, we must scan the stack
+        // from top to bottom, so we see any guard pages last.
+        JuliaTLS->safe_restore = &exc_buf;
+        FindLiveRangeReverse(stack, start, end);
+    }
+    JuliaTLS->safe_restore = (jl_jmp_buf *)old_safe_restore;
+}
+
 static void
 ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
 {
@@ -475,24 +494,8 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
         stack = tmp.stack;
         TaskInfoTreeInsert(task_stacks, tmp);
     }
-    volatile jl_jmp_buf * old_safe_restore =
-        (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
-    jl_jmp_buf exc_buf;
-    if (!jl_setjmp(exc_buf, 0)) {
-        // The bottom of the stack may be protected with
-        // guard pages; accessing these results in segmentation
-        // faults. Julia catches those segmentation faults and
-        // longjmps to JuliaTLS->safe_restore; we use this
-        // mechamism to abort stack scanning when a protected
-        // page is hit. For this to work, we must scan the stack
-        // from top to bottom, so we see any guard pages last.
-        JuliaTLS->safe_restore = &exc_buf;
-        if (rescan) {
-            FindLiveRangeReverse(stack, start, end);
-        }
-    }
-    JuliaTLS->safe_restore = (jl_jmp_buf *)old_safe_restore;
     if (rescan) {
+        SafeScanTaskStack(stack, start, end);
         // Remove duplicates
         if (stack->len > 0) {
             PtrArraySort(stack);
