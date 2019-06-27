@@ -18,6 +18,7 @@
 
 #include "fibhash.h"
 #include "funcs.h"
+#include "gap.h"
 #include "gapstate.h"
 #include "gasman.h"
 #include "objects.h"
@@ -25,11 +26,11 @@
 #include "sysmem.h"
 #include "system.h"
 #include "vars.h"
-#include "gap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <julia.h>
 #include <julia_gcext.h>
@@ -68,10 +69,58 @@
 // #define VALIDATE_MARKING
 
 
-/****************************************************************************
-**
-**
-*/
+// Comparing pointers in C without triggering undefined behavior
+// can be difficult. As the GC already assumes that the memory
+// range goes from 0 to 2^k-1 (region tables), we simply convert
+// to uintptr_t and compare those.
+
+static inline int cmp_ptr(void * p, void * q)
+{
+    uintptr_t paddr = (uintptr_t)p;
+    uintptr_t qaddr = (uintptr_t)q;
+    if (paddr < qaddr)
+        return -1;
+    else if (paddr > qaddr)
+        return 1;
+    else
+        return 0;
+}
+
+static inline int lt_ptr(void * a, void * b)
+{
+    return (uintptr_t)a < (uintptr_t)b;
+}
+
+#if 0
+static inline int gt_ptr(void * a, void * b)
+{
+    return (uintptr_t)a > (uintptr_t)b;
+}
+
+static inline void *max_ptr(void *a, void *b)
+{
+    if ((uintptr_t) a > (uintptr_t) b)
+        return a;
+    else
+        return b;
+}
+
+static inline void *min_ptr(void *a, void *b)
+{
+    if ((uintptr_t) a < (uintptr_t) b)
+        return a;
+    else
+        return b;
+}
+#endif
+
+/* align pointer to full word if mis-aligned */
+static inline void * align_ptr(void * p)
+{
+    uintptr_t u = (uintptr_t)p;
+    u &= ~(sizeof(p) - 1);
+    return (void *)u;
+}
 
 #ifndef REQUIRE_PRECISE_MARKING
 
@@ -138,277 +187,6 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-
-/****************************************************************************
-**
-**  Treap functionality
-**
-**  Treaps are probabilistically balanced binary trees. We use them for
-**  range queries on pointers for conservative scans. Unlike red-black
-**  trees, they're simple to implement, and unlike AVL trees, insertions
-**  take an expected O(1) number of mutations to the tree, making them
-**  more cache-friendly for an insertion-heavy workload.
-**
-**  Their downside is that they are probabilistic and that hypothetically,
-**  degenerate cases can occur. However, these are very unlikely, and if
-**  that turns out to be a problem, we can replace them with alternate
-**  balanced trees (B-trees being a likely suitable candidate).
-*/
-
-// Comparing pointers in C without triggering undefined behavior
-// can be difficult. As the GC already assumes that the memory
-// range goes from 0 to 2^k-1 (region tables), we simply convert
-// to uintptr_t and compare those.
-
-static inline int cmp_ptr(void * p, void * q)
-{
-    uintptr_t paddr = (uintptr_t)p;
-    uintptr_t qaddr = (uintptr_t)q;
-    if (paddr < qaddr)
-        return -1;
-    else if (paddr > qaddr)
-        return 1;
-    else
-        return 0;
-}
-#endif
-
-static inline int lt_ptr(void * a, void * b)
-{
-    return (uintptr_t)a < (uintptr_t)b;
-}
-
-#if 0
-static inline int gt_ptr(void * a, void * b)
-{
-    return (uintptr_t)a > (uintptr_t)b;
-}
-
-static inline void *max_ptr(void *a, void *b)
-{
-    if ((uintptr_t) a > (uintptr_t) b)
-        return a;
-    else
-        return b;
-}
-
-static inline void *min_ptr(void *a, void *b)
-{
-    if ((uintptr_t) a < (uintptr_t) b)
-        return a;
-    else
-        return b;
-}
-#endif
-
-/* align pointer to full word if mis-aligned */
-static inline void * align_ptr(void * p)
-{
-    uintptr_t u = (uintptr_t)p;
-    u &= ~(sizeof(p) - 1);
-    return (void *)u;
-}
-
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-
-typedef struct treap_t {
-    struct treap_t *left, *right;
-    size_t          prio;
-    void *          addr;
-    size_t          size;
-} treap_t;
-
-static treap_t * treap_free_list;
-
-treap_t * alloc_treap(void)
-{
-    treap_t * result;
-    if (treap_free_list) {
-        result = treap_free_list;
-        treap_free_list = treap_free_list->right;
-    }
-    else
-        result = malloc(sizeof(treap_t));
-    result->left = NULL;
-    result->right = NULL;
-    result->addr = NULL;
-    result->size = 0;
-    return result;
-}
-
-static void free_treap(treap_t * t)
-{
-    t->right = treap_free_list;
-    treap_free_list = t;
-}
-
-static inline int test_bigval_range(treap_t * node, void * p)
-{
-    char * l = node->addr;
-    char * r = l + node->size;
-    if (lt_ptr(p, l))
-        return -1;
-    if (!lt_ptr(p, r))
-        return 1;
-    return 0;
-}
-
-
-#define L(t) ((t)->left)
-#define R(t) ((t)->right)
-
-static inline void treap_rot_right(treap_t ** treap)
-{
-    /*       t                 l       */
-    /*     /   \             /   \     */
-    /*    l     r    -->    a     t    */
-    /*   / \                     / \   */
-    /*  a   b                   b   r  */
-    treap_t * t = *treap;
-    treap_t * l = L(t);
-    treap_t * a = L(l);
-    treap_t * b = R(l);
-    L(l) = a;
-    R(l) = t;
-    L(t) = b;
-    *treap = l;
-}
-
-static inline void treap_rot_left(treap_t ** treap)
-{
-    /*     t                   r       */
-    /*   /   \               /   \     */
-    /*  l     r    -->      t     b    */
-    /*       / \           / \         */
-    /*      a   b         l   a        */
-    treap_t * t = *treap;
-    treap_t * r = R(t);
-    treap_t * a = L(r);
-    treap_t * b = R(r);
-    L(r) = t;
-    R(r) = b;
-    R(t) = a;
-    *treap = r;
-}
-
-static void * treap_find(treap_t * treap, void * p)
-{
-    while (treap) {
-        int c = test_bigval_range(treap, p);
-        if (c == 0)
-            return treap->addr;
-        else if (c < 0)
-            treap = L(treap);
-        else
-            treap = R(treap);
-    }
-    return NULL;
-}
-
-static void treap_insert(treap_t ** treap, treap_t * val)
-{
-    treap_t * t = *treap;
-    if (t == NULL) {
-        L(val) = NULL;
-        R(val) = NULL;
-        *treap = val;
-    }
-    else {
-        int c = cmp_ptr(val->addr, t->addr);
-        if (c < 0) {
-            treap_insert(&L(t), val);
-            if (L(t)->prio > t->prio) {
-                treap_rot_right(treap);
-            }
-        }
-        else if (c > 0) {
-            treap_insert(&R(t), val);
-            if (R(t)->prio > t->prio) {
-                treap_rot_left(treap);
-            }
-        }
-    }
-}
-
-static void treap_delete_node(treap_t ** treap)
-{
-    for (;;) {
-        treap_t * t = *treap;
-        if (L(t) == NULL) {
-            *treap = R(t);
-            free_treap(t);
-            break;
-        }
-        else if (R(t) == NULL) {
-            *treap = L(t);
-            free_treap(t);
-            break;
-        }
-        else {
-            if (L(t)->prio > R(t)->prio) {
-                treap_rot_right(treap);
-                treap = &R(*treap);
-            }
-            else {
-                treap_rot_left(treap);
-                treap = &L(*treap);
-            }
-        }
-    }
-}
-
-static int treap_delete(treap_t ** treap, void * addr)
-{
-    while (*treap != NULL) {
-        int c = cmp_ptr(addr, (*treap)->addr);
-        if (c == 0) {
-            treap_delete_node(treap);
-            return 1;
-        }
-        else if (c < 0) {
-            treap = &L(*treap);
-        }
-        else {
-            treap = &R(*treap);
-        }
-    }
-    return 0;
-}
-
-static uint64_t xorshift_rng_state = 1;
-
-static uint64_t xorshift_rng(void)
-{
-    uint64_t x = xorshift_rng_state;
-    x = x ^ (x >> 12);
-    x = x ^ (x << 25);
-    x = x ^ (x >> 27);
-    xorshift_rng_state = x;
-    return x * (uint64_t)0x2545F4914F6CDD1DUL;
-}
-
-
-static treap_t * bigvals;
-
-static void alloc_bigval(void * addr, size_t size)
-{
-    treap_t * node = alloc_treap();
-    node->addr = addr;
-    node->size = size;
-    node->prio = xorshift_rng();
-    treap_insert(&bigvals, node);
-}
-
-static void free_bigval(void * p)
-{
-    if (p) {
-        treap_delete(&bigvals, p);
-    }
-}
-
-#endif
-
 static jl_module_t *   Module;
 static jl_datatype_t * datatype_mptr;
 static jl_datatype_t * datatype_bag;
@@ -418,10 +196,54 @@ static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static size_t          max_pool_obj_size;
 static UInt            YoungRef;
+static int             FullGC;
+
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-static size_t bigval_startoffset;
+typedef struct {
+    void * addr;
+    size_t size;
+} MemBlock;
+
+static inline int CmpMemBlock(MemBlock m1, MemBlock m2)
+{
+    char * l1 = (char *)m1.addr;
+    char * r1 = l1 + m1.size;
+    char * l2 = (char *)m2.addr;
+    char * r2 = l2 + m2.size;
+    if (lt_ptr(r1, l1))
+        return -1;
+    if (!lt_ptr(l2, r2))
+        return 1;
+    return 0;
+}
+
+#define ELEM_TYPE MemBlock
+#define COMPARE CmpMemBlock
+
+#include "baltree.h"
+
+static size_t         bigval_startoffset;
+static MemBlockTree * bigvals;
+
+void alloc_bigval(void * addr, size_t size)
+{
+    MemBlock mem = { addr, size };
+    MemBlockTreeInsert(bigvals, mem);
+}
+
+void free_bigval(void * addr)
+{
+    MemBlock mem = { addr, 0 };
+    MemBlockTreeRemove(bigvals, mem);
+}
 #endif
 
+typedef void * Ptr;
+
+#define ELEM_TYPE Ptr
+#define COMPARE cmp_ptr
+
+#include "dynarray.h"
 
 #ifndef NR_GLOBAL_BAGS
 #define NR_GLOBAL_BAGS 20000L
@@ -552,8 +374,10 @@ static void TryMark(void * p)
         // the object, so we subtract one word from the
         // address. This is safe, as the object is preceded
         // by a larger header.
-        p2 = treap_find(bigvals, (char *)p - 1);
-        if (p2) {
+        MemBlock   tmp = { (char *)p - 1, 0 };
+        MemBlock * found = MemBlockTreeFind(bigvals, tmp);
+        if (found) {
+            p2 = (jl_value_t *)found->addr;
             // It is possible for types to not be valid objects.
             // Objects with such types are not normally made visible
             // to the mark loop, so we need to avoid marking them
@@ -591,7 +415,7 @@ static void TryMark(void * p)
     }
 }
 
-static void TryMarkRangeReverse(void * start, void * end)
+static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
@@ -600,17 +424,89 @@ static void TryMarkRangeReverse(void * start, void * end)
     char * q = (char *)end - sizeof(void *);
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
-        if (addr) {
-            TryMark(addr);
-#ifdef MARKING_STRESS_TEST
-            for (int j = 0; j < 1000; ++j) {
-                UInt val = (UInt)addr + rand() - rand();
-                TryMark((void *)val);
-            }
-#endif
+        if (addr && jl_gc_internal_obj_base_ptr(addr) == addr &&
+            jl_typeis(addr, datatype_mptr)) {
+            PtrArrayAdd(arr, addr);
         }
         q -= StackAlignBags;
     }
+}
+
+typedef struct {
+    jl_task_t * task;
+    PtrArray *  stack;
+} TaskInfo;
+
+static int CmpTaskInfo(TaskInfo i1, TaskInfo i2)
+{
+    return cmp_ptr(i1.task, i2.task);
+}
+
+static void MarkFromList(PtrArray * arr)
+{
+    for (Int i = 0; i < arr->len; i++) {
+        JMark(arr->items[i]);
+    }
+}
+
+#define ELEM_TYPE TaskInfo
+#define COMPARE CmpTaskInfo
+
+#include "baltree.h"
+
+static TaskInfoTree * task_stacks = NULL;
+
+static void
+ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
+{
+    if (!task_stacks) {
+        task_stacks = TaskInfoTreeMake();
+    }
+    TaskInfo   tmp = { task, NULL };
+    TaskInfo * taskinfo = TaskInfoTreeFind(task_stacks, tmp);
+    PtrArray * stack;
+    if (taskinfo != NULL) {
+        stack = taskinfo->stack;
+        if (rescan)
+            PtrArraySetLen(stack, 0);
+    }
+    else {
+        tmp.stack = PtrArrayMake(1024);
+        stack = tmp.stack;
+        TaskInfoTreeInsert(task_stacks, tmp);
+    }
+    volatile jl_jmp_buf * old_safe_restore =
+        (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
+    jl_jmp_buf exc_buf;
+    if (!jl_setjmp(exc_buf, 0)) {
+        // The bottom of the stack may be protected with
+        // guard pages; accessing these results in segmentation
+        // faults. Julia catches those segmentation faults and
+        // longjmps to JuliaTLS->safe_restore; we use this
+        // mechamism to abort stack scanning when a protected
+        // page is hit. For this to work, we must scan the stack
+        // from top to bottom, so we see any guard pages last.
+        JuliaTLS->safe_restore = &exc_buf;
+        if (rescan) {
+            FindLiveRangeReverse(stack, start, end);
+        }
+    }
+    JuliaTLS->safe_restore = (jl_jmp_buf *)old_safe_restore;
+    if (rescan) {
+        // Remove duplicates
+        if (stack->len > 0) {
+            PtrArraySort(stack);
+            Int p = 0;
+            for (Int i = 1; i < stack->len; i++) {
+                if (stack->items[i] != stack->items[p]) {
+                    p++;
+                    stack->items[p] = stack->items[i];
+                }
+            }
+            PtrArraySetLen(stack, p + 1);
+        }
+    }
+    MarkFromList(stack);
 }
 
 static void TryMarkRange(void * start, void * end)
@@ -672,7 +568,8 @@ static void GapRootScanner(int full)
     // The reason is that if Julia is being initialized from GAP, it
     // cannot always reliably find the top of the stack for that task,
     // so we have to fall back to GAP for that.
-    if (!IsUsingLibGap() && JuliaTLS->tid == 0 && JuliaTLS->root_task == task) {
+    if (!IsUsingLibGap() && JuliaTLS->tid == 0 &&
+        JuliaTLS->root_task == task) {
         stackend = (char *)GapStackBottom;
     }
 
@@ -703,6 +600,26 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     size_t size;
     int    tid;
     char * stack = (char *)jl_task_stack_buffer(task, &size, &tid);
+    // If it is the current task, it has been scanned by GapRootScanner()
+    // already.
+    if (task == JuliaTLS->current_task)
+        return;
+    int rescan = 1;
+    if (!FullGC) {
+        // This is a temp hack to work around a problem with the
+        // generational GC. Basically, task stacks are treated as roots
+        // and are therefore being scanned regardless of whether they
+        // are old or new, which can be expensive in the conservative
+        // case. In order to avoid that, we're manually checking whether
+        // the old flag is set for a task.
+        //
+        // This works specifically for task stacks as the current task
+        // is being scanned regardless and a write barrier will flip the
+        // age bit back to new if tasks are being switched.
+        jl_taggedvalue_t * tag = jl_astaggedvalue(task);
+        if (tag->bits.gc & 2)
+            rescan = 0;
+    }
     if (stack && tid < 0) {
         if (task->copy_stack) {
             // We know which part of the task stack is actually used,
@@ -710,21 +627,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
             stack = stack + size - task->copy_stack;
             size = task->copy_stack;
         }
-        volatile jl_jmp_buf * old_safe_restore =
-            (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
-        jl_jmp_buf exc_buf;
-        if (!jl_setjmp(exc_buf, 0)) {
-            // The bottom of the stack may be protected with
-            // guard pages; accessing these results in segmentation
-            // faults. Julia catches those segmentation faults and
-            // longjmps to JuliaTLS->safe_restore; we use this
-            // mechamism to abort stack scanning when a protected
-            // page is hit. For this to work, we must scan the stack
-            // from top to bottom, so we see any guard pages last.
-            JuliaTLS->safe_restore = &exc_buf;
-            TryMarkRangeReverse(stack, stack + size);
-        }
-        JuliaTLS->safe_restore = (jl_jmp_buf *)old_safe_restore;
+        ScanTaskStack(rescan, task, stack, stack + size);
     }
 }
 
@@ -735,6 +638,7 @@ static void PreGCHook(int full)
     // GAP. So we save the TLS pointer temporarily and restore it
     // afterwards. In the long run, JuliaTLS needs to simply become
     // a thread-local variable.
+    FullGC = full;
     SaveTLS = JuliaTLS;
     JuliaTLS = jl_get_ptls_states();
     // This is the same code as in VarsBeforeCollectBags() for GASMAN.
@@ -810,6 +714,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
+    bigvals = MemBlockTreeMake();
     jl_gc_set_cb_notify_external_alloc(alloc_bigval, 1);
     jl_gc_set_cb_notify_external_free(free_bigval, 1);
     bigval_startoffset = jl_gc_external_obj_hdr_size();
@@ -1089,3 +994,116 @@ void MarkJuliaWeakRef(void * p)
     if (JMarkTyped(p, jl_weakref_type))
         YoungRef++;
 }
+
+
+#ifdef TEST_JULIA_GC_INTERNALS
+
+static int int_cmp(int a, int b)
+{
+    return a - b;
+}
+
+#define ELEM_TYPE int
+#define COMPARE int_cmp
+
+#include "baltree.h"
+
+void TestScapegoatTrees(void)
+{
+    const Int N = 1024 * 1024;
+    intTree * btree = intTreeMake();
+    for (int i = 0; i < N; i++) {
+        intTreeInsert(btree, i);
+    }
+    if (intTreeCount(btree) != N)
+        abort();
+    if (height_to_size[intTreeDepth(btree) - 1] > intTreeCount(btree))
+        abort();
+    for (int i = 0; i < N; i++) {
+        if (!intTreeFind(btree, i))
+            abort();
+    }
+    for (int i = 1; i < N; i += 2) {
+        intTreeRemove(btree, i);
+    }
+    for (int i = 0; i < N; i += 2) {
+        if (!intTreeFind(btree, i))
+            abort();
+        if (intTreeFind(btree, i + 1))
+            abort();
+    }
+    for (int i = 1; i < N; i++) {
+        intTreeRemove(btree, i);
+    }
+    if (intTreeCount(btree) != 1 || intTreeDepth(btree) != 1)
+        abort();
+    intTreeClear(btree);
+    for (int i = 0, j = 0; i < N; i++, j = (5 * j + 1) & (N - 1)) {
+        intTreeInsert(btree, j);
+    }
+    if (intTreeCount(btree) != N)
+        abort();
+    if (height_to_size[intTreeDepth(btree) - 1] > intTreeCount(btree))
+        abort();
+    for (int i = 0; i < N; i++) {
+        if (!intTreeFind(btree, i))
+            abort();
+    }
+    for (int i = 0, j = 0; i < N; i++, j = (j + 7) & (N - 1)) {
+        if (i == N / 2 && intTreeCount(btree) != N / 2)
+            abort();
+        intTreeRemove(btree, i);
+    }
+    if (intTreeCount(btree) != 0 || intTreeDepth(btree) != 0)
+        abort();
+    intTreeDelete(btree);
+    printf("Scapegoat tree tests passed.\n");
+}
+
+#define ELEM_TYPE int
+#define COMPARE int_cmp
+
+#include "dynarray.h"
+
+static void TestDynArrays(void)
+{
+    const Int  N = 1024 * 1024;
+    intArray * arr = intArrayMake(1);
+    for (Int i = 0; i < N; i++) {
+        intArrayAdd(arr, N - i);
+    }
+    for (Int i = 0; i < N; i++) {
+        if (intArrayGet(arr, i) != N - i)
+            abort();
+    }
+    intArraySort(arr);
+    for (Int i = 0; i < N; i++) {
+        if (intArrayGet(arr, i) != i + 1)
+            abort();
+    }
+    intArraySetLen(arr, N / 2);
+    for (Int i = 0; i < N / 2; i++) {
+        intArrayAdd(arr, arr->items[i]);
+    }
+    if (intArrayLen(arr) != N)
+        abort();
+    intArray * arr2 = intArrayClone(arr);
+    for (Int i = 0; i < N / 2; i++) {
+        if (intArrayGet(arr2, i) != i + 1)
+            abort();
+        if (intArrayGet(arr2, i + N / 2) != i + 1)
+            abort();
+    }
+    intArrayDelete(arr);
+    intArrayDelete(arr2);
+    printf("Dynamic array tests passed.\n");
+}
+
+__attribute__((constructor)) static void RunTests(void)
+{
+    TestScapegoatTrees();
+    TestDynArrays();
+    exit(0);
+}
+
+#endif
