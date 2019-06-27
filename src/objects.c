@@ -1565,6 +1565,20 @@ static Obj FuncSET_TYPE_DATOBJ(Obj self, Obj obj, Obj type)
 
 /****************************************************************************
 **
+*F  NewKernelBuffer( <size> )  . . . . . . . . . . return a new kernel buffer
+*/
+static Obj TYPE_KERNEL_OBJECT;
+
+Obj NewKernelBuffer(UInt size)
+{
+    Obj obj = NewBag(T_DATOBJ, size);
+    SET_TYPE_DATOBJ(obj, TYPE_KERNEL_OBJECT);
+    return obj;
+}
+
+
+/****************************************************************************
+**
 *F  FuncIS_IDENTICAL_OBJ( <self>, <obj1>, <obj2> )  . . . . .  handler for '=='
 **
 **  'FuncIS_IDENTICAL_OBJ' implements 'IsIdentical'
@@ -2079,6 +2093,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
     ImportFuncFromLibrary( "PostMakeImmutable", &PostMakeImmutableOp );
     ImportGVarFromLibrary( "REREADING", &REREADING );
+    ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );

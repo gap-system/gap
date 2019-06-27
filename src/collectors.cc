@@ -70,8 +70,6 @@ extern inline struct CollectorsState_ * CollectorsState(void)
 *F * * * * * * * * * * * * local defines and typedefs * * * * * * * * * * * *
 */
 
-static Obj TYPE_KERNEL_OBJECT;
-
 
 /****************************************************************************
 **
@@ -1736,8 +1734,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
-
     /* return success                                                      */
     return 0;
 }
@@ -1802,17 +1798,11 @@ static Int InitModuleState(void)
 
     const UInt maxStackSize = 256;
     const UInt desiredStackSize = sizeof(Obj) * (maxStackSize + 2);
-    CollectorsState()->SC_NW_STACK = NewBag(T_DATOBJ, desiredStackSize);
-    CollectorsState()->SC_LW_STACK = NewBag(T_DATOBJ, desiredStackSize);
-    CollectorsState()->SC_PW_STACK = NewBag(T_DATOBJ, desiredStackSize);
-    CollectorsState()->SC_EW_STACK = NewBag(T_DATOBJ, desiredStackSize);
-    CollectorsState()->SC_GE_STACK = NewBag(T_DATOBJ, desiredStackSize);
-
-    SET_TYPE_DATOBJ(CollectorsState()->SC_NW_STACK, TYPE_KERNEL_OBJECT);
-    SET_TYPE_DATOBJ(CollectorsState()->SC_LW_STACK, TYPE_KERNEL_OBJECT);
-    SET_TYPE_DATOBJ(CollectorsState()->SC_PW_STACK, TYPE_KERNEL_OBJECT);
-    SET_TYPE_DATOBJ(CollectorsState()->SC_EW_STACK, TYPE_KERNEL_OBJECT);
-    SET_TYPE_DATOBJ(CollectorsState()->SC_GE_STACK, TYPE_KERNEL_OBJECT);
+    CollectorsState()->SC_NW_STACK = NewKernelBuffer(desiredStackSize);
+    CollectorsState()->SC_LW_STACK = NewKernelBuffer(desiredStackSize);
+    CollectorsState()->SC_PW_STACK = NewKernelBuffer(desiredStackSize);
+    CollectorsState()->SC_EW_STACK = NewKernelBuffer(desiredStackSize);
+    CollectorsState()->SC_GE_STACK = NewKernelBuffer(desiredStackSize);
 
     CollectorsState()->SC_CW_VECTOR = NEW_STRING(0);
     CollectorsState()->SC_CW2_VECTOR = NEW_STRING(0);

@@ -44,9 +44,6 @@
 GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 
 
-static Obj TYPE_KERNEL_OBJECT;
-
-
 /****************************************************************************
 **
 *V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
@@ -3246,8 +3243,6 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
-    ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
-
     /* return success                                                      */
     return 0;
 }
@@ -3293,10 +3288,8 @@ static Int InitModuleState(void)
     CS(OffsBodyCount) = 0;
 
     // allocate the statements and expressions stacks
-    CS(StackStat) = NewBag(T_DATOBJ, sizeof(Obj) + 64 * sizeof(Stat));
-    CS(StackExpr) = NewBag(T_DATOBJ, sizeof(Obj) + 64 * sizeof(Expr));
-    SET_TYPE_DATOBJ(CS(StackStat), TYPE_KERNEL_OBJECT);
-    SET_TYPE_DATOBJ(CS(StackExpr), TYPE_KERNEL_OBJECT);
+    CS(StackStat) = NewKernelBuffer(sizeof(Obj) + 64 * sizeof(Stat));
+    CS(StackExpr) = NewKernelBuffer(sizeof(Obj) + 64 * sizeof(Expr));
 
 #ifdef HPCGAP
     CS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
