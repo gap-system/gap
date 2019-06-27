@@ -71,6 +71,14 @@
                              TNUM_OBJ(op) == T_RAT || IS_INT(op),            \
                              "must be a rational")
 
+static inline Obj MakeRat(Obj num, Obj den)
+{
+    Obj rat = NewBag(T_RAT, 2 * sizeof(Obj));
+    SET_NUM_RAT(rat, num);
+    SET_DEN_RAT(rat, den);
+    return rat;
+}
+
 
 /****************************************************************************
 **
@@ -238,10 +246,7 @@ static Obj SumRat(Obj opL, Obj opR)
 
     /* make the fraction or, if possible, the integer                      */
     if ( denS != INTOBJ_INT( 1L ) ) {
-        sum  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        SET_NUM_RAT(sum, numS);
-        SET_DEN_RAT(sum, denS);
-        /* 'CHANGED_BAG' not needed, 'sum' is the youngest bag             */
+        sum = MakeRat(numS, denS);
     }
     else {
         sum = numS;
@@ -272,11 +277,8 @@ static Obj AInvRat(Obj op)
     Obj                 res;
     Obj                 tmp;
     CHECK_RAT(op);
-    res = NewBag( T_RAT, 2 * sizeof(Obj) );
     tmp = AInvInt( NUM_RAT(op) );
-    SET_NUM_RAT(res, tmp);
-    SET_DEN_RAT(res, DEN_RAT(op));
-    CHANGED_BAG(res);
+    res = MakeRat(tmp, DEN_RAT(op));
     CHECK_RAT(res);
     return res;
 }
@@ -295,10 +297,7 @@ static Obj AbsRat(Obj op)
     if ( tmp == NUM_RAT(op))
         return op;
 
-    res = NewBag( T_RAT, 2 * sizeof(Obj) );
-    SET_NUM_RAT(res, tmp);
-    SET_DEN_RAT(res, DEN_RAT(op));
-    CHANGED_BAG(res);
+    res = MakeRat(tmp, DEN_RAT(op));
     CHECK_RAT(res);
     return res;
 
@@ -382,10 +381,7 @@ static Obj DiffRat(Obj opL, Obj opR)
 
     /* make the fraction or, if possible, the integer                      */
     if ( denD != INTOBJ_INT( 1L ) ) {
-        dif  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        SET_NUM_RAT(dif, numD);
-        SET_DEN_RAT(dif, denD);
-        /* 'CHANGED_BAG' not needed, 'dif' is the youngest bag             */
+        dif = MakeRat(numD, denD);
     }
     else {
         dif = numD;
@@ -450,10 +446,7 @@ static Obj ProdRat(Obj opL, Obj opR)
 
     /* make the fraction or, if possible, the integer                      */
     if ( denP != INTOBJ_INT( 1L ) ) {
-        prd = NewBag( T_RAT, 2 * sizeof(Obj) );
-        SET_NUM_RAT(prd, numP);
-        SET_DEN_RAT(prd, denP);
-        /* 'CHANGED_BAG' not needed, 'prd' is the youngest bag             */
+        prd = MakeRat(numP, denP);
     }
     else {
         prd = numP;
@@ -558,10 +551,7 @@ static Obj QuoRat(Obj opL, Obj opR)
 
     /* make the fraction or, if possible, the integer                      */
     if ( denQ != INTOBJ_INT( 1L ) ) {
-        quo = NewBag( T_RAT, 2 * sizeof(Obj) );
-        SET_NUM_RAT(quo, numQ);
-        SET_DEN_RAT(quo, denQ);
-        /* 'CHANGED_BAG' not needed, 'quo' is the youngest bag             */
+        quo = MakeRat(numQ, denQ);
     }
     else {
         quo = numQ;
@@ -643,10 +633,7 @@ static Obj PowRat(Obj opL, Obj opR)
     else if ( IS_POS_INT(opR) ) {
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );
-        pow = NewBag( T_RAT, 2 * sizeof(Obj) );
-        SET_NUM_RAT(pow, numP);
-        SET_DEN_RAT(pow, denP);
-        /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
+        pow = MakeRat(numP, denP);
     }
 
     /* if <opR> is negative and numerator is 1 just power the denominator  */
@@ -665,16 +652,11 @@ static Obj PowRat(Obj opL, Obj opR)
     else {
         numP = PowInt( DEN_RAT(opL), AInvInt( opR ) );
         denP = PowInt( NUM_RAT(opL), AInvInt( opR ) );
-        pow  = NewBag( T_RAT, 2 * sizeof(Obj) );
-        if ( IS_POS_INT(denP) ) {
-            SET_NUM_RAT(pow, numP);
-            SET_DEN_RAT(pow, denP);
+        if (IS_NEG_INT(denP)) {
+            numP = AInvInt(numP);
+            denP = AInvInt(denP);
         }
-        else {
-            SET_NUM_RAT(pow, AInvInt( numP ));
-            SET_DEN_RAT(pow, AInvInt( denP ));
-        }
-        /* 'CHANGED_BAG' not needed, 'pow' is the youngest bag             */
+        pow = MakeRat(numP, denP);
     }
 
     /* return the result                                                   */
