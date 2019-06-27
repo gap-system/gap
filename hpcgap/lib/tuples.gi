@@ -46,7 +46,8 @@ InstallMethod( DirectProductElementsFamily,
     n := Length(famlist);
     if not IsBound(DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]) then
       tupfams:= WeakPointerObj( [] );
-      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= MigrateObj( tupfams, DIRECT_PRODUCT_ELEMENT_FAMILIES );
+      tupfams:= MigrateObj( tupfams, DIRECT_PRODUCT_ELEMENT_FAMILIES );
+      DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1]:= tupfams;
       freepos:= 1;
     else
       tupfams:= DIRECT_PRODUCT_ELEMENT_FAMILIES[n+1];
@@ -477,7 +478,7 @@ InstallOtherMethod( \+,
     "for a direct product element, and a non-list",
     [ IsDirectProductElement, IsObject ],
     function( dpelm, nonlist )
-    if IsList( nonlist ) then
+    if IsListOrCollection( nonlist ) then
       TryNextMethod();
     fi;
     return DirectProductElement( List( dpelm, entry -> entry + nonlist ) );
@@ -487,7 +488,7 @@ InstallOtherMethod( \+,
     "for a non-list, and a direct product element",
     [ IsObject, IsDirectProductElement ],
     function( nonlist, dpelm )
-    if IsList( nonlist ) then
+    if IsListOrCollection( nonlist ) then
       TryNextMethod();
     fi;
     return DirectProductElement( List( dpelm, entry -> nonlist + entry ) );
@@ -497,7 +498,7 @@ InstallOtherMethod( \*,
     "for a direct product element, and a non-list",
     [ IsDirectProductElement, IsObject ],
     function( dpelm, nonlist )
-    if IsList( nonlist ) then
+    if IsListOrCollection( nonlist ) then
       TryNextMethod();
     fi;
     return DirectProductElement( List( dpelm, entry -> entry * nonlist ) );
@@ -507,7 +508,7 @@ InstallOtherMethod( \*,
     "for a non-list, and a direct product element",
     [ IsObject, IsDirectProductElement ],
     function( nonlist, dpelm )
-    if IsList( nonlist ) then
+    if IsListOrCollection( nonlist ) then
       TryNextMethod();
     fi;
     return DirectProductElement( List( dpelm, entry -> nonlist * entry ) );

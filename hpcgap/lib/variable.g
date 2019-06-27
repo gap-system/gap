@@ -70,13 +70,13 @@ end );
 ##  <Oper Name="FlushCaches" Arg=""/>
 ##
 ##  <Description>
-##  <Ref Func="FlushCaches"/> resets the value of each global variable that
+##  <Ref Oper="FlushCaches"/> resets the value of each global variable that
 ##  has been declared with <Ref Func="DeclareGlobalVariable"/> and for which
 ##  the initial value has been set with <Ref Func="InstallFlushableValue"/>
 ##  or <Ref Func="InstallFlushableValueFromFunction"/>
 ##  to this initial value.
 ##  <P/>
-##  <Ref Func="FlushCaches"/> should be used only for debugging purposes,
+##  <Ref Oper="FlushCaches"/> should be used only for debugging purposes,
 ##  since the involved global variables include for example lists that store
 ##  finite fields and cyclotomic fields used in the current &GAP; session,
 ##  in order to avoid that these fields are constructed anew in each call
@@ -140,11 +140,11 @@ end );
 ##  <Ref Func="InstallValue"/> assigns the value <A>value</A> to the global
 ##  variable <A>gvar</A>.
 ##  <Ref Func="InstallFlushableValue"/> does the same but additionally
-##  provides that each call of <Ref Func="FlushCaches"/>
+##  provides that each call of <Ref Oper="FlushCaches"/>
 ##  will assign a structural copy of <A>value</A> to <A>gvar</A>.
 ##  <Ref Func="InstallFlushableValueFromFunction"/> instead assigns
 ##  the result of <A>func</A> to <A>gvar</A> (<A>func</A> is re-evaluated
-##  for each invocation of <Ref Func="FlushCaches"/>
+##  for each invocation of <Ref Oper="FlushCaches"/>
 ##  <P/>
 ##  <Ref Func="InstallValue"/> does <E>not</E> work if <A>value</A> is an
 ##  <Q>immediate object</Q>, i.e., an internally represented small integer or
