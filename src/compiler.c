@@ -5254,8 +5254,8 @@ Int CompileFunc (
     compilerMagic2 = magic2;
 
     /* create 'CompInfoGVar' and 'CompInfoRNam'                            */
-    CompInfoGVar = NewBag( T_STRING, sizeof(UInt) * 1024 );
-    CompInfoRNam = NewBag( T_STRING, sizeof(UInt) * 1024 );
+    CompInfoGVar = NewKernelBuffer(sizeof(UInt) * 1024);
+    CompInfoRNam = NewKernelBuffer(sizeof(UInt) * 1024);
 
     /* create the list to collection the function expressions              */
     CompFunctions = NEW_PLIST( T_PLIST, 8 );
