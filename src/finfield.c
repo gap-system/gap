@@ -52,14 +52,11 @@ static Obj TypeFF0;
 **
 *V  TYPE_FFE  . . . . . kernel copy of GAP function TYPE_FFE
 *V  TYPE_FFE0 . . . . . kernel copy of GAP function TYPE_FFE0
-*V  TYPE_KERNEL_OBJECT .local copy of GAP variable TYPE_KERNEL_OBJECT used to
-**                      type successor bags
 **
 **  These GAP functions are called to compute types of finite field elemnents
 */
 static Obj TYPE_FFE;
 static Obj TYPE_FFE0;
-static Obj TYPE_KERNEL_OBJECT;
 
 /****************************************************************************
 **
@@ -163,11 +160,8 @@ FF FiniteFieldBySize(UInt q)
     p = CHAR_FF(ff);
 
     /* allocate a bag for the successor table and one for a temporary */
-    tmp = NewBag(T_DATOBJ, sizeof(Obj) + q * sizeof(FFV));
-    SET_TYPE_DATOBJ(tmp, TYPE_KERNEL_OBJECT);
-
-    succBag = NewBag(T_DATOBJ, sizeof(Obj) + q * sizeof(FFV));
-    SET_TYPE_DATOBJ(succBag, TYPE_KERNEL_OBJECT);
+    tmp = NewKernelBuffer(sizeof(Obj) + q * sizeof(FFV));
+    succBag = NewKernelBuffer(sizeof(Obj) + q * sizeof(FFV));
 
     indx = (FFV *)(1 + ADDR_OBJ(tmp));
     succ = (FFV *)(1 + ADDR_OBJ(succBag));
@@ -1568,8 +1562,6 @@ static Int InitKernel (
     ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
     ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
 
-    ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
-    
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );

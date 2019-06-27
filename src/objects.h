@@ -920,6 +920,19 @@ void SetTypeDatObj(Obj obj, Obj type);
 
 /****************************************************************************
 **
+*F  NewKernelBuffer( <size> )  . . . . . . . . . . return a new kernel buffer
+**
+**  Return a new T_DATOBJ of the specified <size>, with its type set to the
+**  special value TYPE_KERNEL_OBJECT.
+**
+**  Note that <size> must include storage for the the first slot of the bag,
+**  which points to the type object.
+*/
+Obj NewKernelBuffer(UInt size);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
