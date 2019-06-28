@@ -1817,8 +1817,8 @@ DeclareAttribute( "NilpotencyClassOfGroup", IsGroup );
 ##  abelian or solvable, then these should be computed before computing the
 ##  maximal normal subgroups.
 ##  <Example><![CDATA[
-##  gap> MaximalNormalSubgroups( g );
-##  [ Group([ (1,2,3), (2,3,4) ]) ]
+##  gap> g:=SymmetricGroup(4);; MaximalNormalSubgroups( g );
+##  [ Alt( [ 1 .. 4 ] ) ]
 ##  gap> f := FreeGroup("x", "y");; x := f.1;; y := f.2;;
 ##  gap> List(MaximalNormalSubgroups(f/[x^2, y^2]), GeneratorsOfGroup);
 ##  [ [ x, y*x*y^-1 ], [ y, x*y*x^-1 ], [ y*x^-1 ] ]
@@ -1856,7 +1856,7 @@ DeclareAttribute( "NormalMaximalSubgroups", IsGroup );
 ##  is a list containing those nontrivial normal subgroups of the group <A>G</A>
 ##  that are minimal among the nontrivial normal subgroups.
 ##  <Example><![CDATA[
-##  gap> MinimalNormalSubgroups( g );
+##  gap> g:=SymmetricGroup(4);; MinimalNormalSubgroups( g );
 ##  [ Group([ (1,4)(2,3), (1,3)(2,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1877,9 +1877,12 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Description>
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
-##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
+##  gap> g:=SymmetricGroup(4);; NormalSubgroups(g);
 ##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##  gap> g:=AbelianGroup([2,2]);; NormalSubgroups(g);
+##  [ <pc group of size 4 with 2 generators>, Group([ f2 ]),
+##    Group([ f1*f2 ]), Group([ f1 ]), Group([  ]) ]
 ##  ]]></Example>
 ##  <P/>
 ##  The algorithm for the computation of normal subgroups is described in
@@ -1902,9 +1905,11 @@ DeclareAttribute( "NormalSubgroups", IsGroup );
 ##  returns a list of all characteristic subgroups of <A>G</A>, that is
 ##  subgroups that are invariant under all automorphisms.
 ##  <Example><![CDATA[
-##  gap> g:=SymmetricGroup(4);;NormalSubgroups(g);
+##  gap> g:=SymmetricGroup(4);; CharacteristicSubgroups(g);
 ##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##  gap> g:=AbelianGroup([2,2]);; CharacteristicSubgroups(g);
+##  [ <pc group of size 4 with 2 generators>, Group([  ]) ]
 ##  ]]></Example>
 ##  <P/>
 ##  </Description>
