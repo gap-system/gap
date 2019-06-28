@@ -624,11 +624,17 @@ InstallTrueMethod( IsPerfectGroup, IsGroup and IsTrivial );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsSimpleGroup", IsGroup );
-InstallTrueMethod( IsGroup, IsSimpleGroup );
+InstallTrueMethod( IsGroup and IsNonTrivial, IsSimpleGroup );
 DeclareSynonymAttr( "IsNonabelianSimpleGroup", IsSimpleGroup and IsPerfectGroup );
-InstallTrueMethod( IsSimpleGroup, IsNonabelianSimpleGroup );
+InstallTrueMethod( HasIsAbelian, IsNonabelianSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup, IsGroup, IsGroup );
+
+# abelian simple groups are cyclic p-groups and not perfect
+InstallTrueMethod( IsCyclic, IsSimpleGroup and IsAbelian );
+InstallTrueMethod( IsPGroup, IsSimpleGroup and IsAbelian );
+InstallTrueMethod( HasIsPerfectGroup, IsSimpleGroup and IsAbelian );
+InstallTrueMethod( HasIsNonabelianSimpleGroup, IsSimpleGroup and IsAbelian );
 
 #############################################################################
 ##
@@ -654,7 +660,7 @@ InstallIsomorphismMaintenance( IsSimpleGroup, IsGroup, IsGroup );
 ##  </ManSection>
 ##
 DeclareProperty( "IsSporadicSimpleGroup", IsGroup );
-InstallTrueMethod( IsSimpleGroup, IsSporadicSimpleGroup );
+InstallTrueMethod( IsNonabelianSimpleGroup, IsSporadicSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
 
@@ -709,11 +715,10 @@ InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsAlmostSimpleGroup", IsGroup );
-InstallTrueMethod( IsGroup, IsAlmostSimpleGroup );
+InstallTrueMethod( IsGroup and IsNonTrivial, IsAlmostSimpleGroup );
 
-# a simple group is almost simple
+# nonabelian simple groups are almost simple
 InstallTrueMethod( IsAlmostSimpleGroup, IsNonabelianSimpleGroup );
-
 
 #############################################################################
 ##
