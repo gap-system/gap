@@ -608,34 +608,6 @@ InstallTrueMethod( IsPerfectGroup, IsGroup and IsTrivial );
 
 #############################################################################
 ##
-#P  IsSporadicSimpleGroup( <G> )
-##
-##  <ManSection>
-##  <Prop Name="IsSporadicSimpleGroup" Arg='G'/>
-##
-##  <Description>
-##  A group is <E>sporadic simple</E> if it is one of the
-##  <M>26</M> sporadic simple groups;
-##  these are (in &ATLAS; notation, see&nbsp;<Cite Key="CCN85"/>)
-##  <M>M_{11}</M>, <M>M_{12}</M>, <M>J_1</M>, <M>M_{22}</M>, <M>J_2</M>,
-##  <M>M_{23}</M>, <M>HS</M>, <M>J_3</M>, <M>M_{24}</M>, <M>M^cL</M>,
-##  <M>He</M>, <M>Ru</M>, <M>Suz</M>, <M>O'N</M>, <M>Co_3</M>, <M>Co_2</M>,
-##  <M>Fi_{22}</M>, <M>HN</M>, <M>Ly</M>, <M>Th</M>, <M>Fi_{23}</M>,
-##  <M>Co_1</M>, <M>J_4</M>, <M>Fi_{24}'</M>, <M>B</M>, and <M>M</M>.
-##  <P/>
-##  This property can be used for example for selecting the character tables
-##  of the sporadic simple groups,
-##  see the documentation of the &GAP; package <Package>CTblLib</Package>.
-##  </Description>
-##  </ManSection>
-##
-DeclareProperty( "IsSporadicSimpleGroup", IsGroup );
-InstallTrueMethod( IsGroup, IsSporadicSimpleGroup );
-
-InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
-
-#############################################################################
-##
 #P  IsSimpleGroup( <G> )
 #P  IsNonabelianSimpleGroup( <G> )
 ##
@@ -658,7 +630,33 @@ InstallTrueMethod( IsSimpleGroup, IsNonabelianSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup, IsGroup, IsGroup );
 
+#############################################################################
+##
+#P  IsSporadicSimpleGroup( <G> )
+##
+##  <ManSection>
+##  <Prop Name="IsSporadicSimpleGroup" Arg='G'/>
+##
+##  <Description>
+##  A group is <E>sporadic simple</E> if it is one of the
+##  <M>26</M> sporadic simple groups;
+##  these are (in &ATLAS; notation, see&nbsp;<Cite Key="CCN85"/>)
+##  <M>M_{11}</M>, <M>M_{12}</M>, <M>J_1</M>, <M>M_{22}</M>, <M>J_2</M>,
+##  <M>M_{23}</M>, <M>HS</M>, <M>J_3</M>, <M>M_{24}</M>, <M>M^cL</M>,
+##  <M>He</M>, <M>Ru</M>, <M>Suz</M>, <M>O'N</M>, <M>Co_3</M>, <M>Co_2</M>,
+##  <M>Fi_{22}</M>, <M>HN</M>, <M>Ly</M>, <M>Th</M>, <M>Fi_{23}</M>,
+##  <M>Co_1</M>, <M>J_4</M>, <M>Fi_{24}'</M>, <M>B</M>, and <M>M</M>.
+##  <P/>
+##  This property can be used for example for selecting the character tables
+##  of the sporadic simple groups,
+##  see the documentation of the &GAP; package <Package>CTblLib</Package>.
+##  </Description>
+##  </ManSection>
+##
+DeclareProperty( "IsSporadicSimpleGroup", IsGroup );
 InstallTrueMethod( IsSimpleGroup, IsSporadicSimpleGroup );
+
+InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
 
 #############################################################################
 ##
