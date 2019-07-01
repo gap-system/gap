@@ -412,24 +412,15 @@ static Obj FuncREVNEG_STRING(Obj self, Obj val)
 **  character and "first behind last" set to zero
 **
 */
-Obj NEW_STRING ( Int len )
+Obj NEW_STRING(Int len)
 {
-  Obj res;
-  if (len < 0) {
-      ErrorQuit("NEW_STRING: cannot create string of negative length %d",
-                (Int)len, 0L);
-  }
-  if (len > INT_INTOBJ_MAX) {
-      ErrorQuit("NEW_STRING: length must be a small integer", 0L, 0L);
-  }
-
-  res = NewBag( T_STRING, SIZEBAG_STRINGLEN(len)  ); 
-  SET_LEN_STRING(res, len);
-  /* it may be sometimes useful to have trailing zero characters */
-  Char *p = CSTR_STRING(res);
-  p[0] = '\0';
-  p[len] = '\0';
-  return res;
+    GAP_ASSERT(len >= 0);
+    if (len > INT_INTOBJ_MAX) {
+        ErrorQuit("NEW_STRING: length must be a small integer", 0, 0);
+    }
+    Obj res = NewBag(T_STRING, SIZEBAG_STRINGLEN(len));
+    SET_LEN_STRING(res, len);
+    return res;
 }
 
 /****************************************************************************
