@@ -115,8 +115,12 @@ struct StatementLocation
 
 typedef enum { Tick_WallTime, Tick_CPUTime, Tick_Mem } TickMethod;
 
+typedef enum { Profile_Disabled = 0, Profile_Active = 1, Profile_Paused = 2} ProfileActiveEnum;
+
 static struct ProfileState
 {
+  // Is profiling currently active
+  ProfileActiveEnum status;
   // C steam we are writing to
   FILE* Stream;
   // Filename we are writing to
@@ -162,9 +166,22 @@ static struct ProfileState
   Obj visitedDepths;
 } profileState;
 
-/* We keep this seperate as it is exported for use in other files */
-static UInt profileState_Active;
+// Some GAP functionality (such as syntaxtree) evaluates expressions, which makes
+// them appear executed in profiles. The functions pauseProfiling and unpauseProfiling
+// temporarily enable and disable profiling to avoid this problem.
+void pauseProfiling(void)
+{
+    if (profileState.status == Profile_Active) {
+        profileState.status = Profile_Paused;
+    }
+}
 
+void unpauseProfiling(void)
+{
+    if (profileState.status == Profile_Paused) {
+        profileState.status = Profile_Active;
+    }
+}
 
 // Output information about how this profile was configured
 static void outputVersionInfo(void)
@@ -242,7 +259,7 @@ static inline UInt getFilenameIdOfCurrentFunction(void)
 static void HookedLineOutput(Obj func, char type)
 {
   HashLock(&profileState);
-  if(profileState_Active && profileState.OutputRepeats)
+  if (profileState.status == Profile_Active && profileState.OutputRepeats)
   {
     Obj body = BODY_FUNC(func);
     UInt startline = GET_STARTLINE_BODY(body);
@@ -363,7 +380,7 @@ static void fcloseMaybeCompressed(struct ProfileState* ps)
 void InformProfilingThatThisIsAForkedGAP(void)
 {
     HashLock(&profileState);
-    if (profileState_Active) {
+    if (profileState.status == Profile_Active) {
         char filenamecpy[GAP_PATH_MAX];
         // Allow 20 chracters to allow space for .%d.gz
         const int SUPPORTED_PATH_LEN = GAP_PATH_MAX - 20;
@@ -489,7 +506,7 @@ static inline void outputStat(Stat stat, int exec, int visited)
     CheckLeaveFunctionsAfterLongjmp();
 
     // Catch the case we arrive here and profiling is already disabled
-    if (!profileState_Active) {
+    if (profileState.status != Profile_Active) {
         return;
     }
 
@@ -510,7 +527,7 @@ static inline void outputInterpretedStat(Int file, Int line, Int exec)
     CheckLeaveFunctionsAfterLongjmp();
 
     // Catch the case we arrive here and profiling is already disabled
-    if (!profileState_Active) {
+    if (profileState.status != Profile_Active) {
         return;
     }
 
@@ -567,10 +584,8 @@ static void visitInterpretedStat(Int file, Int line)
 
 static void registerStat(Stat stat)
 {
-    int active;
     HashLock(&profileState);
-    active = profileState_Active;
-    if (active) {
+    if (profileState.status == Profile_Active) {
       outputStat(stat, 0, 0);
     }
     HashUnlock(&profileState);
@@ -578,10 +593,8 @@ static void registerStat(Stat stat)
 
 static void registerInterpretedStat(Int file, Int line)
 {
-    int active;
     HashLock(&profileState);
-    active = profileState_Active;
-    if (active) {
+    if (profileState.status == Profile_Active) {
         outputInterpretedStat(file, line, 0);
     }
     HashUnlock(&profileState);
@@ -600,7 +613,7 @@ static struct InterpreterHooks profileHooks = { visitStat,
 static void
 enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 {
-    if(profileState_Active) {
+    if (profileState.status == Profile_Active) {
         Panic("-P or -C can only be passed once\n");
     }
     
@@ -615,7 +628,7 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 
     ActivateHooks(&profileHooks);
 
-    profileState_Active = 1;
+    profileState.status = Profile_Active;
     RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
@@ -667,7 +680,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
                                   Obj recordMem,
                                   Obj resolution)
 {
-    if(profileState_Active) {
+    if (profileState.status != Profile_Disabled) {
       return Fail;
     }
 
@@ -718,7 +731,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
     HashLock(&profileState);
 
     // Recheck inside lock
-    if(profileState_Active) {
+    if (profileState.status == Profile_Active) {
       HashUnlock(&profileState);
       return Fail;
     }
@@ -742,7 +755,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
       return Fail;
     }
 
-    profileState_Active = 1;
+    profileState.status = Profile_Active;
     RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
@@ -763,13 +776,13 @@ static Obj FuncDEACTIVATE_PROFILING(Obj self)
 {
   HashLock(&profileState);
 
-  if(!profileState_Active) {
+  if (profileState.status == Profile_Disabled) {
     HashUnlock(&profileState);
     return Fail;
   }
 
   fcloseMaybeCompressed(&profileState);
-  profileState_Active = 0;
+  profileState.status = Profile_Disabled;
   HashUnlock(&profileState);
 
   // This must be after the hash unlock, as it also takes a lock
@@ -780,7 +793,7 @@ static Obj FuncDEACTIVATE_PROFILING(Obj self)
 
 static Obj FuncIsLineByLineProfileActive(Obj self)
 {
-  if(profileState_Active) {
+  if (profileState.status == Profile_Active) {
     return True;
   } else {
     return False;

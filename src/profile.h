@@ -19,7 +19,8 @@
 Int enableProfilingAtStartup(Char ** argv, void * dummy);
 Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy);
 Int enableCodeCoverageAtStartup(Char ** argv, void * dummy);
-
+void pauseProfiling(void);
+void unpauseProfiling(void);
 
 // When a child is forked off, we force profile information to be stored
 // in a new file for the child, to avoid corruption.
