@@ -168,12 +168,83 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
 end);
 
 
-# step through intermediate subgroups to find subgroup that satisfies
-# condition
-BindGlobal("SubgroupConditionAbove",function(G,cond,S)
-local c,hom,q,a,t,int,bad,have,ups,up,new,u;
+# Find a larger subgroup that satisfies a condition, when testing
+# the condition can become expensive.
+# First try `SubgroupProperty`, but when it stalls attempt to find
+# minimal supergroups and prove that none of them satisfies.
+InstallGlobalFunction(SubgroupConditionAbove,function(G,cond,S)
+local c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort;
 
-  if ForAll(GeneratorsOfGroup(G),cond) then return G;fi;
+  Info(InfoMorph,2,"SubgroupAbove ",IndexNC(G,S));
+
+  # first try, how far `SubgroupProperty` goes
+  good:=[];
+  bad:=[];
+  b:=0;
+  abort:=false;
+  c:=SubgroupProperty(G,
+    function(elm)
+      if abort then
+        return true; # are we bailing out since it behaves too badly?
+      elif cond(elm) then
+        Add(good,elm);
+        S:=ClosureGroup(S,elm); # remember
+        Info(InfoMorph,3,"New element ",IndexNC(G,S));
+        b:=0;
+        return true;
+      else
+        Add(bad,elm);
+        b:=b+1;
+        # if less than 1/20 percent of elements succeed, assume close
+        # to the subgroup has been found, and rather aim to prove there
+        # will not be more.
+        if b*2000>IndexNC(G,S) then
+          abort:=true;
+        fi;
+        return false;
+      fi;
+    end,S);
+
+  if abort=false then 
+    # we actually found the subgroup
+    Info(InfoMorph,2,"SubgroupProperty finds ",IndexNC(G,c));
+    return c;
+  fi; 
+
+  Info(InfoMorph,2,"intermediate improvement ",IndexNC(G,S));
+
+  good:=false;
+  # avoid writing down a permutation representation on more 
+  # than 10^5 cosets, as it gets too memory expensive
+  if IndexNC(G,S)<=10^5 then
+    # try to prove no supergroup works
+
+    t:=RightTransversal(G,S:noascendingchain); # don't try to be clever in
+    # decomposing transversal, as this could be hard
+    a:=Action(G,t,OnRight); # coset action, don't need homomorphism
+    b:=RepresentativesMinimalBlocks(a,MovedPoints(a));
+    Info(InfoMorph,3,"Above are ",Length(b)," blocks");
+    for i in [1..Length(b)] do
+      CompletionBar(InfoMorph,3,"SubgroupsAboveBlocks ",i/Length(b));
+      c:=First(b[i],x->x>1);
+      if cond(t[c]) then 
+        S:=ClosureGroup(S,t[c]);
+        good:=true;
+      fi;
+    od;
+    CompletionBar(InfoMorph,3,"SubgroupsAboveBlocks ",false);
+
+    if  good then 
+      # actually found something. Recurse to restart. (As index decreased
+      # by a factor, not much loss.)
+      S:=SubgroupConditionAbove(G,cond,S);
+    fi;
+    Info(InfoMorph,2,"SubgroupConditionAbove finds ",IndexNC(G,S));
+    return S; # proved no larger group works
+
+  fi;
+
+  Info(InfoWarning,1,"require intermediate subgroups");
 
   # make sure its not the whole group
   c:=Core(G,S);
@@ -218,7 +289,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
       comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim,
-      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma,condcnt;
+      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma;
 
   # criterion for when to force degree reduction
   isBadPermrep:=function(g)
@@ -604,8 +675,6 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
         if perm in Aperm then
 	  return true;
 	fi;
-#condcnt:=condcnt+1;
-#Print("test:",condcnt,"\n");
         aut:=PreImagesRepresentative(AQiso,perm);
 	newgens:=List(GeneratorsOfGroup(Q),
 	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
@@ -660,14 +729,9 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     #stablim(sub,cond,10000)=false then
 
     #if Size(sub)/Size(Aperm)>1000000 then Error("Million"); fi;
-condcnt:=0;
     j:=Size(sub);
     Info(InfoMorph,2,"start search ",IndexNC(sub,Aperm));
-    #if IsNormal(sub,Aperm) and IndexNC(sub,Aperm)<=50000 then
-    #  sub:=SubgroupConditionAbove(sub,cond,Aperm);
-    #else
-    sub:=SubgroupProperty(sub,cond,Aperm);
-    #fi;
+    sub:=SubgroupConditionAbove(sub,cond,Aperm);
     Info(InfoMorph,2,"end search ",j/Size(sub));
 
     Aperm:=Group(Apa,());
