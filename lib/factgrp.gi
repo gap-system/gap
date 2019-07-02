@@ -1231,13 +1231,14 @@ function(G,N)
 end);
 
 BindGlobal("FactPermRepMaxDesc",function(g,n,maxlev)
-local lim,deg,all,c,recurse,use;
+local lim,deg,all,c,recurse,use,start;
   if ValueOption("infactorpermrep")=true then return false;fi;
-  lim:=RootInt(IndexNC(g,n),3);
   deg:=DegreeNaturalHomomorphismsPool(g,n);
   if deg=fail then deg:=infinity;fi;
   all:=[];
-  c:=g;
+  start:=ClosureGroup(DerivedSubgroup(g),n);
+  lim:=RootInt(IndexNC(g,n),3)*Maximum(1,LogInt(IndexNC(g,start),2));
+  c:=start;
   Info(InfoFactor,1,"Try maximals for limit ",lim," from ",deg);
 
   recurse:=function(a,lev)
@@ -1252,7 +1253,8 @@ local lim,deg,all,c,recurse,use;
           Add(all,i);
           Info(InfoFactor,2,"Maximals of index ",IndexNC(g,i));
           nm:=TryMaximalSubgroupClassReps(i:inmax,infactorpermrep,cheap);
-          nm:=Filtered(nm,x->IndexNC(g,x)<=lim and IsSubset(x,n));
+          nm:=Filtered(nm,x->IndexNC(g,x)<=lim and IsSubset(x,n) and not
+          IsNormal(g,x));
           for j in nm do
             if IsSubset(j,c) then
               use:=ClosureGroup(n,DerivedSubgroup(j));
@@ -1306,7 +1308,7 @@ local lim,deg,all,c,recurse,use;
     return false;
   end;
 
-  return recurse(g,1);
+  return recurse(start,1);
 
 end);
 
