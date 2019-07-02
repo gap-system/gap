@@ -171,8 +171,7 @@ typedef UInt           CVar;
 **  With each function we  associate a C  variables information bag.  In this
 **  bag we store  the number of the  function, the number of local variables,
 **  the  number of local  variables that  are used  as higher variables,  the
-**  number  of temporaries  used,  the number of  loop  variables needed, the
-**  current  number  of used temporaries.
+**  number  of temporaries  used,  the current  number  of used temporaries.
 **
 **  Furthermore for  each local variable and  temporary we store what we know
 **  about this local variable or temporary, i.e., whether the variable has an
@@ -204,14 +203,13 @@ typedef UInt4           LVar;
 #define NLVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+3)))
 #define NHVAR_INFO(info)        (*((Int*)(PTR_BAG(info)+4)))
 #define NTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+5)))
-#define NLOOP_INFO(info)        (*((Int*)(PTR_BAG(info)+6)))
-#define CTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+7)))
-#define TNUM_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+8+(i))))
+#define CTEMP_INFO(info)        (*((Int*)(PTR_BAG(info)+6)))
+#define TNUM_LVAR_INFO(info,i)  (*((Int*)(PTR_BAG(info)+7+(i))))
 
 #define TNUM_TEMP_INFO(info,i)  \
-    (*((Int*)(PTR_BAG(info)+8+NLVAR_INFO(info)+(i))))
+    (*((Int*)(PTR_BAG(info)+7+NLVAR_INFO(info)+(i))))
 
-#define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (1 + 8 + (nlvar) + (ntemp)))
+#define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (1 + 7 + (nlvar) + (ntemp)))
 
 #define W_UNUSED                0       /* TEMP is currently unused        */
 #define W_HIGHER                (1L<<0) /* LVAR is used as higher variable */
@@ -298,7 +296,6 @@ static void CopyInfoCVars(Bag dst, Bag src)
     NLVAR_INFO(dst) = NLVAR_INFO(src);
     NHVAR_INFO(dst) = NHVAR_INFO(src);
     NTEMP_INFO(dst) = NTEMP_INFO(src);
-    NLOOP_INFO(dst) = NLOOP_INFO(src);
     CTEMP_INFO(dst) = CTEMP_INFO(src);
     for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
         TNUM_LVAR_INFO(dst,i) = TNUM_LVAR_INFO(src,i);
@@ -5100,7 +5097,6 @@ static void CompFunc(Obj func)
         NLVAR_INFO(info) = narg + nloc;
         NHVAR_INFO(info) = 0;
         NTEMP_INFO(info) = 0;
-        NLOOP_INFO(info) = 0;
 
         SET_INFO_FEXP(func, info);
         CHANGED_BAG(func);
@@ -5160,9 +5156,6 @@ static void CompFunc(Obj func)
     /* emit the code for the temporaries                                   */
     for ( i = 1; i <= NTEMP_INFO(info); i++ ) {
         Emit( "Obj %c = 0;\n", CVAR_TEMP(i) );
-    }
-    for ( i = 1; i <= NLOOP_INFO(info); i++ ) {
-        Emit( "Int l_%d = 0;\n", i );
     }
 
     for ( i = 1; i <= nloc; i++ ) {
