@@ -538,3 +538,5 @@ DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("DescSubgroupIterator");
+
+DeclareGlobalFunction("SubgroupConditionAbove");
