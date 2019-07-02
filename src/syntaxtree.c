@@ -22,6 +22,7 @@
 #include "opers.h"
 #include "plist.h"
 #include "precord.h"
+#include "profile.h"
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
@@ -324,7 +325,10 @@ static Expr SyntaxTreeCodeRefLVar(Obj node)
 
 static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
 {
-    AssPRec(result, RNamName("value"), EVAL_EXPR(expr));
+    pauseProfiling();
+    Obj o = EVAL_EXPR(expr);
+    unpauseProfiling();
+    AssPRec(result, RNamName("value"), o);
     return result;
 }
 
