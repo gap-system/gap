@@ -95,6 +95,15 @@ true
 gap> IsNonabelianSimpleGroup(g);
 true
 
+# small double coset
+gap> g:=TransitiveGroup(12,291);;
+gap> s:=SylowSubgroup(g,3);;
+gap> Length(DoubleCosets(g,s,s));
+24
+gap> iso:=IsomorphismPcGroup(g);;
+gap> Length(DoubleCosets(Image(iso,g),Image(iso,s),Image(iso,s)));
+24
+
 # Unbind variables so we can GC memory
 gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);
 gap> STOP_TEST( "permgrp.tst", 1);
