@@ -51,6 +51,7 @@ while [[ "$#" -ge 1 ]]; do
 
     --no-strict)      STRICT=no ;;
     --strict)         STRICT=yes ;;
+    --add-package-config-*)   typeset PACKAGE_CONFIG_ARGS_${option:21}="$1"; shift ;;
 
     -*)               echo "ERROR: unsupported argument $option" ; exit 1;;
     *)                PACKAGES+=("$option") ;;
@@ -167,7 +168,13 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS
+      local PKG_NAME=$($GAPROOT/gap -q -T <<GAPInput
+Read("PackageInfo.g");
+Print(GAPInfo.PackageInfoCurrent.PackageName);
+GAPInput
+)
+      local CONFIG_ARGS_FLAG_NAME="PACKAGE_CONFIG_ARGS_${PKG_NAME}"
+      echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS ${!CONFIG_ARGS_FLAG_NAME}
       echo_run "$MAKE" clean
     else
       echo_run ./configure "$GAPROOT"
