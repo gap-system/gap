@@ -786,8 +786,8 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  and <K>false</K> otherwise.
 ##  <P/>
 ##  <Ref Func="PositionSorted"/> returns <A>pos</A> such that
-##  <M><A>list</A>[<A>pos</A>-1] &lt; <A>elm</A></M> and
-##  <M><A>elm</A> \leq <A>list</A>[<A>pos</A>]</M>.
+##  <M><A>list</A>[<A>pos</A>-1] &lt; <A>elm</A> \leq
+##  <A>list</A>[<A>pos</A>]</M> holds.
 ##  That means, if <A>elm</A> appears once in <A>list</A>,
 ##  its position is returned.
 ##  If <A>elm</A> appears several times in <A>list</A>,
@@ -831,6 +831,63 @@ DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );
 #T DeclareOperation( "PositionSorted", [ IsHomogeneousList, IsObject ] );
 #T note the problem with inhomogeneous lists that may be sorted
 #T (although they cannot store this and claim that they are not sorted)
+
+
+#############################################################################
+##
+#F  PositionSortedBy( <list>, <val>, <func> )
+##
+##  <#GAPDoc Label="PositionSortedBy">
+##  <ManSection>
+##  <Func Name="PositionSortedBy" Arg='list, val, func'/>
+##
+##  <Description>
+##  <Index Key="PositionSortedByOp"><C>PositionSortedByOp</C></Index>
+##  This function returns the same value that would be returned by
+##  <C>PositionSorted(List(list, func), val)</C>, but computes it in
+##  a more efficient way.
+##  <P/>
+##  To be more precise, <A>func</A> must be a function on one argument which
+##  returns values that can be compared to <A>val</A>, and <A>list</A>
+##  must be a list for which <C>func(list[i]) &lt;= func(list[i+1])</C> holds
+##  for all relevant <A>i</A>. This property is not verified, and if the
+##  input violates it, then the result is undefined.
+##  <P/>
+##  <Ref Func="PositionSortedBy"/> returns <A>pos</A> such that
+##  <M><A>func</A>(<A>list</A>[<A>pos</A>-1]) &lt; <A>val</A>
+##  \leq <A>func</A>(<A>list</A>[<A>pos</A>])</M> holds.
+##  That means, if there are elements <C>elm</C> in <A>list</A>
+##  for which <M><A>func</A>(elm) = <A>val</A></M> holds, then
+##  the position of the first such element is returned.
+##  If no element of <A>list</A> satisfies this condition, then
+##  the lowest index where an element <A>elm</A> satisfying
+##  <M><A>func</A>(elm) = <A>val</A></M> must be inserted to preserve
+##  the property <C>func(list[i]) &lt;= func(list[i+1])</C> is returned.
+##  <P/>
+##  <Ref Func="PositionSortedBy"/> uses binary search.
+##  Each <C>func(list[i])</C> is computed at most once.
+##  <P/>
+##  Specialized functions for certain kinds of lists must be installed
+##  as methods for the operation <C>PositionSortedByOp</C>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PositionSortedBy( [ "", "ab", ], -1, Length );
+##  1
+##  gap> PositionSortedBy( [ "", "ab", ], 0, Length );
+##  1
+##  gap> PositionSortedBy( [ "", "ab", ], 1, Length );
+##  2
+##  gap> PositionSortedBy( [ "", "ab", ], 2, Length );
+##  2
+##  gap> PositionSortedBy( [ "", "ab", ], 3, Length );
+##  3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PositionSortedBy" );
+DeclareOperation("PositionSortedByOp", [ IsList, IsObject, IsFunction ]);
 
 
 #############################################################################

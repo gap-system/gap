@@ -1405,6 +1405,7 @@ The latter can be done also using <Ref Func="ListWithIdenticalEntries"/>.
 <#Include Label="PositionCanonical">
 <#Include Label="PositionNthOccurrence">
 <#Include Label="PositionSorted">
+<#Include Label="PositionSortedBy">
 <#Include Label="PositionSet">
 <#Include Label="PositionMaximum">
 <#Include Label="PositionProperty">

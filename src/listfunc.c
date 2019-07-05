@@ -457,6 +457,34 @@ FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
 
 /****************************************************************************
 **
+**  Low-level implementations of PositionSortedBy for dense Plists and lists.
+*/
+static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
+{
+    RequirePlainList("POSITION_SORTED_BY", list);
+    RequireFunction("POSITION_SORTED_BY", func);
+
+    // perform the binary search to find the position
+    UInt l = 0;
+    UInt h = LEN_PLIST(list) + 1;
+    while (l + 1 < h) {       // list[l] < val && val <= list[h]
+        UInt m = (l + h) / 2; // l < m < h
+        Obj  v = CALL_1ARGS(func, ELM_PLIST(list, m));
+        if (LT(v, val)) {
+            l = m;
+        }
+        else {
+            h = m;
+        }
+    }
+
+    // return the result
+    return INTOBJ_INT(h);
+}
+
+
+/****************************************************************************
+**
 *F  SORT_LIST( <list> )  . . . . . . . . . . . . . . . . . . . .  sort a list
 *F  SortDensePlist( <list> ) . . . . . . . . . . . . . . . . . .  sort a list
 **
@@ -1529,6 +1557,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(APPEND_LIST_INTR, 2, "list1, list2"),
     GVAR_FUNC(POSITION_SORTED_LIST, 2, "list, obj"),
     GVAR_FUNC(POSITION_SORTED_LIST_COMP, 3, "list, obj, func"),
+    GVAR_FUNC(POSITION_SORTED_BY, 3, "list, val, func"),
     GVAR_FUNC(SORT_LIST, 1, "list"),
     GVAR_FUNC(STABLE_SORT_LIST, 1, "list"),
     GVAR_FUNC(SORT_LIST_COMP, 2, "list, func"),

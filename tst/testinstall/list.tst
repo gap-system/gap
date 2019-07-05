@@ -416,6 +416,48 @@ gap> Positions( ll, 4 );
 gap> HasIsSSortedList( Positions( ll, 2 ) );
 true
 
+# PositionSortedBy on plist
+gap> ll := [ 1, 3 ];;
+gap> PositionSortedBy(ll, 0, x -> x);
+1
+gap> PositionSortedBy(ll, 1, x -> x);
+1
+gap> PositionSortedBy(ll, 2, x -> x);
+2
+gap> PositionSortedBy(ll, 3, x -> x);
+2
+gap> PositionSortedBy(ll, 4, x -> x);
+3
+gap> PositionSortedBy([], 0, x -> x);
+1
+gap> for ll in [ [1], [1,2], [1,2,3], [1,2,3,4], [1,4] ] do
+>   for a in [0..5] do
+>     p := PositionSortedBy(ll, a, x -> x);
+>     Assert(0, p = 1 or ll[p-1] < a);
+>     Assert(0, p = Length(ll) + 1 or a <= ll[p]);
+>   od;
+> od;
+
+# PositionSortedBy on range
+gap> ll := [ 1, 3 .. 3 ];;
+gap> PositionSortedBy(ll, 0, x -> x);
+1
+gap> PositionSortedBy(ll, 1, x -> x);
+1
+gap> PositionSortedBy(ll, 2, x -> x);
+2
+gap> PositionSortedBy(ll, 3, x -> x);
+2
+gap> PositionSortedBy(ll, 4, x -> x);
+3
+gap> for ll in [ [1..2], [1..3], [1..4], [1,4..4] ] do
+>   for a in [0..5] do
+>     p := PositionSortedBy(ll, a, x -> x);
+>     Assert(0, p = 1 or ll[p-1] < a);
+>     Assert(0, p = Length(ll) + 1 or a <= ll[p]);
+>   od;
+> od;
+
 # PositionsProperty
 gap> ll := [ 1, , "s" ];;
 gap> PositionsProperty( ll, ReturnTrue );
