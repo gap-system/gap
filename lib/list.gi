@@ -1488,6 +1488,42 @@ InstallMethod( PositionSortedOp,
     fi;
     end );
 
+#############################################################################
+##
+#F  PositionSortedBy( <list>, <val>, <func> )
+#F  PositionSortedByOp( <list>, <val>, <func> )
+##
+InstallGlobalFunction( PositionSortedBy, function( list, val, func )
+  if IsPlistRep(list) then
+    return POSITION_SORTED_BY(list, val, func);
+  else
+    return PositionSortedByOp(list, val, func);
+  fi;
+end);
+
+InstallMethod( PositionSortedByOp,
+    "for a dense plain list, an object and a function",
+    [ IsDenseList and IsPlistRep, IsObject, IsFunction ],
+    POSITION_SORTED_BY);
+
+InstallMethod( PositionSortedByOp,
+    "for a dense list, an object and a function",
+    [ IsDenseList, IsObject, IsFunction ],
+function ( list, val, func )
+local l, h, m;
+  # simple binary search. The entry is in the range [l..h]
+  l := 0;
+  h := Length(list) + 1;
+  while l + 1 < h do        # list[l] < val && val <= list[h]
+    m := QuoInt(l + h, 2);  # l < m < h
+    if func(list[m]) < val then
+      l := m;      # it's not in [lo..m], so take the upper part.
+    else
+      h := m;      # So val<=list[m][1], so the new range is [1..m].
+    fi;
+  od;
+  return h;
+end );
 
 #############################################################################
 ##
