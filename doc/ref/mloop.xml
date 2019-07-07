@@ -739,14 +739,16 @@ is an example in the &GAP; code where the idea is actually used.
 <P/>
 <ManSection>
 <Func Name="Where" Arg='nr'/>
-
+<Func Name="WhereWithVars" Arg='nr'/>
 <Description>
 <Index Subkey="GAP3 name for Where">Backtrace</Index>
 <Index>Stack trace</Index>
 shows the last <A>nr</A> commands on the execution stack during whose execution
 the error occurred. If not given, <A>nr</A> defaults to 5. (Assume, for the
 following example, that after the last example <Ref Func="OnBreak"/>
-has been set back to its default value.)
+has been set back to its default value.). <Ref Func="WhereWithVars"/> acts the
+same as <Ref Func="Where"/> while also showing the arguments and local
+variables of each function.
 <P/>
 <Log><![CDATA[
 gap> StabChain(SymmetricGroup(100)); # After this we typed ^C  

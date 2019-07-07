@@ -59,8 +59,49 @@ end);
 
 ErrorLVars := fail;
 
-BIND_GLOBAL("WHERE", function( context, depth, outercontext)
-    local   bottom,  lastcontext,  f;
+# In this method the line hint changes in every PrintTo are balanced, because at the moment
+# PrintTo(ERROR_OUTPUT,...) resets the indentation level every time it is called.
+# If/when this is fixed, the indendation in this function could be simplified
+BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
+    local vars, i, argcount, val;
+    vars := ContentsLVars(context);
+    if not IsRecord(vars) then
+        return;
+    fi;
+
+    argcount := ABS_RAT(NumberArgumentsFunction(vars.func));
+    PrintTo(ERROR_OUTPUT, "\>\>\n\<\<arguments:");
+    if argcount = 0 then
+        PrintTo(ERROR_OUTPUT, " <none>");
+    else
+        for i in [1..argcount] do
+            if IsBound(vars.values[i]) then
+                val := vars.values[i];
+            else
+                val := "<unassigned>";
+            fi;
+            PrintTo(ERROR_OUTPUT, "\>\>\>\>\n", vars.names[i], " :=\>\> ", val, "\<\<\<\<\<\<");
+        od;
+    fi;
+
+    PrintTo(ERROR_OUTPUT, "\>\>\n\<\<local variables:");
+    if argcount = Length(vars.names) then
+        PrintTo(ERROR_OUTPUT, " <none>");
+    else
+        for i in [argcount+1..Length(vars.names)] do
+            if IsBound(vars.values[i]) then
+                val := vars.values[i];
+            else
+                val := "<unassigned>";
+            fi;
+            PrintTo(ERROR_OUTPUT, "\>\>\>\>\n", vars.names[i], " :=\>\> ", val, "\<\<\<\<\<\<");
+        od;
+    fi;
+    PrintTo(ERROR_OUTPUT,"\n");
+end);
+
+BIND_GLOBAL("WHERE", function(context, depth, outercontext, showlocals)
+    local bottom, lastcontext, f, args;
     if depth <= 0 then
         return;
     fi;
@@ -68,6 +109,10 @@ BIND_GLOBAL("WHERE", function( context, depth, outercontext)
     lastcontext := outercontext;
     while depth > 0  and context <> bottom do
         PRINT_CURRENT_STATEMENT(ERROR_OUTPUT, context);
+        if showlocals then
+            PRETTY_PRINT_VARS(context);
+        fi;
+
         PrintTo(ERROR_OUTPUT, " called from\n");
         lastcontext := context;
         context := ParentLVars(context);
@@ -83,6 +128,26 @@ BIND_GLOBAL("WHERE", function( context, depth, outercontext)
 end);
 
 
+BIND_GLOBAL("WHERE_INTERNAL", function(depth, showlocals)
+    if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
+        PrintTo(ERROR_OUTPUT, "not in any function ");
+    else
+        WHERE(ParentLVars(ErrorLVars), depth, ErrorLVars, showlocals);
+    fi;
+    PrintTo(ERROR_OUTPUT, "at ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
+end);
+
+BIND_GLOBAL("WhereWithVars", function(arg)
+    local   depth;
+    if LEN_LIST(arg) = 0 then
+        depth := 5;
+    else
+        depth := arg[1];
+    fi;
+
+    WHERE_INTERNAL(depth, true);
+end);
+
 BIND_GLOBAL("Where", function(arg)
     local   depth;
     if LEN_LIST(arg) = 0 then
@@ -90,14 +155,10 @@ BIND_GLOBAL("Where", function(arg)
     else
         depth := arg[1];
     fi;
-    
-    if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
-        PrintTo(ERROR_OUTPUT, "not in any function ");
-    else
-        WHERE(ParentLVars(ErrorLVars),depth, ErrorLVars);
-    fi;
-    PrintTo(ERROR_OUTPUT, "at ",INPUT_FILENAME(),":",INPUT_LINENUMBER(),"\n");
+
+    WHERE_INTERNAL(depth, false);
 end);
+
 
 OnBreak := Where;
 
