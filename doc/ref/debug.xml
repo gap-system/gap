@@ -19,7 +19,8 @@ Probably the most important debugging tool in &GAP; is the break loop
 an <Ref Func="Error"/> statement into your code or by hitting Control-C.
 In the break loop one can inspect variables, stack traces and issue 
 commands as usual in an interactive &GAP; session. See also the
-<Ref Func="DownEnv"/>, <Ref Func="UpEnv"/> and <Ref Func="Where"/>
+<Ref Func="DownEnv"/>, <Ref Func="UpEnv"/>, <Ref Func="Where"/> and
+<Ref Func="WhereWithVars"/>
 functions.
 <P/>
 Sections&nbsp;<Ref Sect="sect:ApplicableMethod"/>
