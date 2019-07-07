@@ -95,3 +95,8 @@ doc/gapmacrodoc.idx
 /tst/testlibgap/wscreate
 /tst/testlibgap/wsload
 /tst/testlibgap/*.out
+
+# emacs backup and lock files
+*~
+\#*\#
+.\#*
