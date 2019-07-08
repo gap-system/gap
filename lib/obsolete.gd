@@ -751,5 +751,12 @@ DeclareGlobalFunction("UnhideGlobalVariables");
 ##
 ##  Still used in Browse (06/2019)
 BindGlobal("STRING_LIST_DIR", function(dirname)
-    return JoinStringsWithSeparator(LIST_DIR(dirname), "\000");
+    local list;
+
+    list:= LIST_DIR( dirname );
+    if list = fail then
+      return fail;
+    else
+      return JoinStringsWithSeparator( list, "\000" );
+    fi;
 end);
