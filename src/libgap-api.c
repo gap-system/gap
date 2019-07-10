@@ -13,6 +13,7 @@
 #include <signal.h>
 
 #include "libgap-api.h"
+#include "libgap_intern.h"
 
 #include "ariths.h"
 #include "bool.h"
@@ -27,6 +28,7 @@
 #include "integer.h"
 #include "lists.h"
 #include "macfloat.h"
+#include "modules.h"
 #include "opers.h"
 #include "plist.h"
 #include "precord.h"
@@ -332,6 +334,59 @@ Obj GAP_NewPlist(Int capacity)
     return NEW_PLIST(T_PLIST_EMPTY, capacity);
 }
 
+
+////
+//// matrix obj
+////
+
+static Obj IsMatrixObjFilt;
+static Obj NrRowsAttr;
+static Obj NrColsAttr;
+
+// Returns 1 if <obj> is a GAP matrix obj, 0 if not.
+int GAP_IsMatrixObj(Obj obj)
+{
+    return obj && DoFilter(IsMatrixObjFilt, obj) == True;
+}
+
+// Returns the number of rows of the given GAP matrix obj.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+UInt GAP_NrRows(Obj mat)
+{
+    Obj nrows = CALL_1ARGS(NrRowsAttr, mat);
+    return UInt_ObjInt(nrows);
+}
+
+// Returns the number of columns of the given GAP matrix obj.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+UInt GAP_NrCols(Obj mat)
+{
+    Obj ncols = CALL_1ARGS(NrColsAttr, mat);
+    return UInt_ObjInt(ncols);
+}
+
+// Assign <val> at position <pos> into the GAP matrix obj <mat>.
+// If <val> is zero, then this unbinds the list entry.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val)
+{
+    Obj r = ObjInt_UInt(row);
+    Obj c = ObjInt_UInt(col);
+    ASS_MAT(mat, r, c, val);
+}
+
+// Returns the element at the <row>, <col> in the GAP matrix obj <mat>.
+// Returns 0 if <row> or <col> are out of bounds, i.e., if either
+// is zero, or larger than the number of rows respectively columns of the list.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+Obj GAP_ElmMat(Obj mat, UInt row, UInt col)
+{
+    Obj r = ObjInt_UInt(row);
+    Obj c = ObjInt_UInt(col);
+    return ELM_MAT(mat, r, c);
+}
+
+
 ////
 //// records
 ////
@@ -464,4 +519,35 @@ void GAP_Error_Postjmp_Returning_(void)
     if (EnterStackCount > 0) {
         EnterStackCount = -EnterStackCount;
     }
+}
+
+
+/****************************************************************************
+**
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel(StructInitInfo * module)
+{
+    ImportFuncFromLibrary("IsMatrixObj", &IsMatrixObjFilt);
+    ImportFuncFromLibrary("NrRows", &NrRowsAttr);
+    ImportFuncFromLibrary("NrCols", &NrColsAttr);
+
+    return 0;
+}
+
+/****************************************************************************
+**
+*F  InitInfoLibGapApi() . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    // init struct using C99 designated initializers; for a full list of
+    // fields, please refer to the definition of StructInitInfo
+    .type = MODULE_BUILTIN,
+    .name = "libgap",
+    .initKernel = InitKernel,
+};
+
+StructInitInfo * InitInfoLibGapApi ( void )
+{
+    return &module;
 }
