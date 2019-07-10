@@ -1306,7 +1306,7 @@ rec(
   variadic := false )
 true
 
-# STAT_ASS2_LIST
+# STAT_ASS_MAT
 gap> testit(function(x) x[42,23] := 1; end);
 rec(
   nams := [ "x" ],
@@ -1314,16 +1314,19 @@ rec(
   nloc := 0,
   stats := rec(
       statements := [ rec(
+              col := rec(
+                  type := "EXPR_INT",
+                  value := 23 ),
               list := rec(
                   lvar := 1,
                   type := "EXPR_REF_LVAR" ),
-              pos := rec(
-                  type := "EXPR_INT",
-                  value := 42 ),
               rhs := rec(
                   type := "EXPR_INT",
-                  value := 23 ),
-              type := "STAT_ASS2_LIST" ), rec(
+                  value := 1 ),
+              row := rec(
+                  type := "EXPR_INT",
+                  value := 42 ),
+              type := "STAT_ASS_MAT" ), rec(
               type := "STAT_RETURN_VOID" ) ],
       type := "STAT_SEQ_STAT2" ),
   type := "EXPR_FUNC",
@@ -3055,7 +3058,7 @@ rec(
   variadic := false )
 true
 
-# EXPR_ELM2_LIST
+# EXPR_ELM_MAT
 gap> testit(x -> x[42,23]);
 rec(
   nams := [ "x" ],
@@ -3064,16 +3067,16 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
+                  col := rec(
+                      type := "EXPR_INT",
+                      value := 23 ),
                   list := rec(
                       lvar := 1,
                       type := "EXPR_REF_LVAR" ),
-                  pos1 := rec(
+                  row := rec(
                       type := "EXPR_INT",
                       value := 42 ),
-                  pos2 := rec(
-                      type := "EXPR_INT",
-                      value := 23 ),
-                  type := "EXPR_ELM2_LIST" ),
+                  type := "EXPR_ELM_MAT" ),
               type := "STAT_RETURN_OBJ" ) ],
       type := "STAT_SEQ_STAT" ),
   type := "EXPR_FUNC",

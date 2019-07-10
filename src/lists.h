@@ -197,7 +197,7 @@ EXPORT_INLINE Int ISB_LIST(Obj list, Int pos)
 
 Int ISBB_LIST(Obj list, Obj pos);
 
-Int ISB2_LIST(Obj list, Obj pos1, Obj pos2);
+Int ISB_MAT(Obj list, Obj row, Obj col);
 
 
 /****************************************************************************
@@ -324,14 +324,14 @@ EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
 
 /****************************************************************************
 **
-*F  ELM2_LIST( <list>, <pos1>, <pos2> ) . . . . select an element from a list
+*F  ELM_MAT( <list>, <row>, <col> ) . . . . select an element from a list
 **
-**  'ELM2_LIST' implements 'list[pos1,pos2]', which for lists of lists is
-**  defined as 'list[pos1][pos2]', and for other kind of objects is handled
-**  by method dispatch through the GAP attribute 'ELM_LIST' with three
+**  'ELM_MAT' implements 'list[row,col]', which for lists of lists is
+**  defined as 'list[row][col]', and for other kind of objects is handled
+**  by method dispatch through the GAP operation 'ELM_LIST' with three
 **  arguments.
 */
-Obj ELM2_LIST(Obj list, Obj pos1, Obj pos2);
+Obj ELM_MAT(Obj list, Obj row, Obj col);
 
 
 /****************************************************************************
@@ -481,7 +481,7 @@ EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
     (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-void UNB2_LIST(Obj list, Obj pos1, Obj pos2);
+void UNB_MAT(Obj list, Obj row, Obj col);
 
 
 /****************************************************************************
@@ -521,14 +521,14 @@ EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
 
 /****************************************************************************
 **
-*F  ASS2_LIST( <list>, <pos1>, <pos2>, <obj> )
+*F  ASS_MAT( <mat>, <row>, <col>, <obj> )
 **
-**  'ASS2_LIST' implements 'list[pos1,pos2]:=obj', which for lists of lists
-**  is defined as 'list[pos1][pos2]:=obj', and for other kind of objects is
-**  handled by method dispatch through the GAP attribute 'ASS_LIST' with
+**  'ASS_MAT' implements 'mat[row,col]:=obj', which for lists of lists
+**  is defined as 'mat[row][col]:=obj', and for other kind of objects is
+**  handled by method dispatch through the GAP operation 'ASS_LIST' with
 **  three arguments.
 */
-void ASS2_LIST(Obj list, Obj pos1, Obj pos2, Obj obj);
+void ASS_MAT(Obj list, Obj row, Obj col, Obj obj);
 
 
 /****************************************************************************

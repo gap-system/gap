@@ -738,7 +738,7 @@ static const CompilerT Compilers[] = {
     COMPILER_(
         STAT_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
     COMPILER_(
-        STAT_ASS2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
+        STAT_ASS_MAT, ARG_EXPR_("list"), ARG_EXPR_("row"), ARG_EXPR_("col"), ARG_EXPR_("rhs")),
     COMPILER_(
         STAT_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
     COMPILER_(STAT_ASS_LIST_LEV,
@@ -863,7 +863,7 @@ static const CompilerT Compilers[] = {
     // TODO: can this be unified?
     COMPILER_(EXPR_ELM_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
     COMPILER_(
-        EXPR_ELM2_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos1"), ARG_EXPR_("pos2")),
+        EXPR_ELM_MAT, ARG_EXPR_("list"), ARG_EXPR_("row"), ARG_EXPR_("col")),
     COMPILER_(EXPR_ELMS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss")),
     COMPILER_(EXPR_ELM_LIST_LEV,
               ARG_EXPR_("lists"),

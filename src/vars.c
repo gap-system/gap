@@ -557,31 +557,26 @@ static UInt ExecAssList(Expr stat)
 }
 /****************************************************************************
 **
-*F  ExecAss2List(<ass>)  . . . . . . . . . . .  assign to an element of a list
+*F  ExecAssMat(<ass>) . . . . . . . . . . .  assign to an element of a matrix
 **
-**  'ExecAss2List'  executes the list  assignment statement <stat> of the form
-**  '<list>[<position>,<position>] := <rhs>;'.
+**  'ExecAssMat' executes the matrix assignment statement <stat> of the form
+**  '<mat>[<row>,<col>] := <rhs>;'.
 */
-static UInt ExecAss2List(Expr stat)
+static UInt ExecAssMat(Expr stat)
 {
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos1;           /* position, left operand          */
-    Obj                 pos2;           /* position, left operand          */
-    Obj                 rhs;            /* right hand side, right operand  */
+    // evaluate the matrix (checking is done by 'ASS_MAT')
+    Obj mat = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate the list (checking is done by 'ASS_LIST')                  */
-    list = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate and check the row and column
+    Obj row = EVAL_EXPR(READ_STAT(stat, 1));
+    Obj col = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* evaluate the position                                               */
-    pos1 = EVAL_EXPR(READ_STAT(stat, 1));
-    pos2 = EVAL_EXPR(READ_STAT(stat, 2));
+    // evaluate the right hand side
+    Obj rhs = EVAL_EXPR(READ_STAT(stat, 3));
 
-    /* evaluate the right hand side                                        */
-    rhs = EVAL_EXPR(READ_STAT(stat, 3));
+    ASS_MAT(mat, row, col, rhs);
 
-    ASS2_LIST( list, pos1, pos2, rhs );
-
-    /* return 0 (to indicate that no leave-statement was executed)         */
+    // return 0 (to indicate that no leave-statement was executed)
     return 0;
 }
 
@@ -802,29 +797,22 @@ static Obj EvalElmList(Expr expr)
 
 /****************************************************************************
 **
-*F  EvalElm2List(<expr>) . . . . . . . . . . . . select an element of a list
+*F  EvalElmMat(<expr>) . . . . . . . . . . . .  select an element of a matrix
 **
-**  'EvalElm2List' evaluates the list  element expression  <expr> of the  form
-**  '<list>[<pos1>,<pos2>]'.
+**  'EvalElmMat' evaluates the matrix element expression <expr> of the form
+**  '<mat>[<row>,<col>]'.
 */
-static Obj EvalElm2List(Expr expr)
+static Obj EvalElmMat(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos1;           /* position, right operand         */
-    Obj                 pos2;           /* position, right operand         */
+    // evaluate the matrix (checking is done by 'ELM_MAT')
+    Obj mat = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate the list (checking is done by 'ELM2_LIST')                 */
-    list = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate and check the row and column
+    Obj row = EVAL_EXPR(READ_EXPR(expr, 1));
+    Obj col = EVAL_EXPR(READ_EXPR(expr, 2));
 
-    /* evaluate and check the positions                                    */
-    pos1 = EVAL_EXPR(READ_EXPR(expr, 1));
-    pos2 = EVAL_EXPR(READ_EXPR(expr, 2));
-
-    elm = ELM2_LIST(list, pos1, pos2);
-
-    /* return the element                                                  */
-    return elm;
+    // return the element
+    return ELM_MAT(mat, row, col);
 }
 
 
@@ -999,7 +987,7 @@ static void PrintAssList(Stat stat)
     Pr("%2<;",0L,0L);
 }
 
-static void PrintAss2List(Stat stat)
+static void PrintAssMat(Stat stat)
 {
     Pr("%4>",0L,0L);
     PrintExpr(READ_EXPR(stat, 0));
@@ -1071,7 +1059,7 @@ static void PrintElmList(Expr expr)
     Pr("%<]",0L,0L);
 }
 
-static void PrintElm2List(Expr expr)
+static void PrintElmMat(Expr expr)
 {
     Pr("%2>",0L,0L);
     PrintExpr(READ_EXPR(expr, 0));
@@ -2222,23 +2210,18 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_REF_GVAR       , PrintRefGVar);
     InstallPrintExprFunc( EXPR_ISB_GVAR       , PrintIsbGVar);
 
-    /* install executors, evaluators, and printers for list elements       */
+    // install executors, evaluators, and printers for list elements
     InstallExecStatFunc( STAT_ASS_LIST       , ExecAssList);
     InstallExecStatFunc( STAT_ASSS_LIST      , ExecAsssList);
     InstallExecStatFunc( STAT_ASS_LIST_LEV   , ExecAssListLevel);
     InstallExecStatFunc( STAT_ASSS_LIST_LEV  , ExecAsssListLevel);
-    InstallExecStatFunc( STAT_ASS2_LIST  , ExecAss2List);
-    InstallPrintStatFunc( STAT_ASS2_LIST  , PrintAss2List);
-    
     InstallExecStatFunc( STAT_UNB_LIST       , ExecUnbList);
     InstallEvalExprFunc( EXPR_ELM_LIST       , EvalElmList);
     InstallEvalExprFunc( EXPR_ELMS_LIST      , EvalElmsList);
     InstallEvalExprFunc( EXPR_ELM_LIST_LEV   , EvalElmListLevel);
     InstallEvalExprFunc( EXPR_ELMS_LIST_LEV  , EvalElmsListLevel);
     InstallEvalExprFunc( EXPR_ISB_LIST       , EvalIsbList);
-    InstallEvalExprFunc( EXPR_ELM2_LIST      , EvalElm2List);
-    InstallPrintExprFunc( EXPR_ELM2_LIST     , PrintElm2List);
-    
+
     InstallPrintStatFunc( STAT_ASS_LIST       , PrintAssList);
     InstallPrintStatFunc( STAT_ASSS_LIST      , PrintAsssList);
     InstallPrintStatFunc( STAT_ASS_LIST_LEV   , PrintAssList);
@@ -2250,8 +2233,13 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_ELMS_LIST_LEV  , PrintElmsList);
     InstallPrintExprFunc( EXPR_ISB_LIST       , PrintIsbList);
 
+    // install executors, evaluators, and printers for matrix elements
+    InstallExecStatFunc(STAT_ASS_MAT, ExecAssMat);
+    InstallEvalExprFunc(EXPR_ELM_MAT, EvalElmMat);
+    InstallPrintStatFunc(STAT_ASS_MAT, PrintAssMat);
+    InstallPrintExprFunc(EXPR_ELM_MAT, PrintElmMat);
 
-    /* install executors, evaluators, and printers for record elements     */
+    // install executors, evaluators, and printers for record elements
     InstallExecStatFunc( STAT_ASS_REC_NAME   , ExecAssRecName);
     InstallExecStatFunc( STAT_ASS_REC_EXPR   , ExecAssRecExpr);
     InstallExecStatFunc( STAT_UNB_REC_NAME   , ExecUnbRecName);
@@ -2269,7 +2257,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_ISB_REC_NAME   , PrintIsbRecName);
     InstallPrintExprFunc( EXPR_ISB_REC_EXPR   , PrintIsbRecExpr);
 
-    /* install executors, evaluators, and printers for list elements       */
+    // install executors, evaluators, and printers for positional objects
     InstallExecStatFunc( STAT_ASS_POSOBJ       , ExecAssPosObj);
     InstallExecStatFunc( STAT_UNB_POSOBJ       , ExecUnbPosObj);
     InstallEvalExprFunc( EXPR_ELM_POSOBJ       , EvalElmPosObj);
@@ -2279,7 +2267,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_ELM_POSOBJ       , PrintElmPosObj);
     InstallPrintExprFunc( EXPR_ISB_POSOBJ       , PrintIsbPosObj);
 
-    /* install executors, evaluators, and printers for record elements     */
+    // install executors, evaluators, and printers for component objects
     InstallExecStatFunc( STAT_ASS_COMOBJ_NAME  , ExecAssComObjName);
     InstallExecStatFunc( STAT_ASS_COMOBJ_EXPR  , ExecAssComObjExpr);
     InstallExecStatFunc( STAT_UNB_COMOBJ_NAME  , ExecUnbComObjName);

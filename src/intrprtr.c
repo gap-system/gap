@@ -2826,11 +2826,11 @@ void            IntrAssList ( Int narg )
       }
     }
     else if (narg == 2) {
-      Obj pos2 = PopObj();
-      Obj pos1 = PopObj();
+      Obj col = PopObj();
+      Obj row = PopObj();
       list = PopObj();
 
-      ASS2_LIST(list, pos1, pos2, rhs);
+      ASS_MAT(list, row, col, rhs);
     }
 
     /* push the right hand side again                                      */
@@ -2966,11 +2966,11 @@ void            IntrUnbList ( Int narg )
       }
     }
     else if (narg == 2) {
-      Obj pos2 = PopObj();
-      Obj pos1 = PopObj();
+      Obj col = PopObj();
+      Obj row = PopObj();
       list = PopObj();
 
-      UNB2_LIST(list, pos1, pos2);
+      UNB_MAT(list, row, col);
     }
 
     /* push void                                                           */
@@ -3014,11 +3014,11 @@ void            IntrElmList ( Int narg )
       }
     }
     else /*if (narg == 2)*/ {
-      Obj pos2 = PopObj();
-      Obj pos1 = PopObj();
+      Obj col = PopObj();
+      Obj row = PopObj();
       list = PopObj();
 
-      elm = ELM2_LIST(list, pos1, pos2);
+      elm = ELM_MAT(list, row, col);
     }
 
     /* push the element                                                    */
@@ -3140,11 +3140,11 @@ void            IntrIsbList ( Int narg )
       }
     }
     else /*if (narg == 2)*/ {
-      Obj pos2 = PopObj();
-      Obj pos1 = PopObj();
+      Obj col = PopObj();
+      Obj row = PopObj();
       list = PopObj();
 
-      isb = ISB2_LIST(list, pos1, pos2) ? True : False;
+      isb = ISB_MAT(list, row, col) ? True : False;
     }
 
     /* push the result                                                     */

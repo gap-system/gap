@@ -2365,7 +2365,7 @@ void CodeAssList ( Int narg )
     if (narg == 1)
       ass = NewStat( STAT_ASS_LIST, 3 * sizeof(Stat) );
     else /* if (narg == 2) */
-      ass = NewStat( STAT_ASS2_LIST, 4 * sizeof(Stat));
+      ass = NewStat( STAT_ASS_MAT, 4 * sizeof(Stat));
 
     /* let 'CodeAssListUniv' do the rest                                   */
     CodeAssListUniv( ass, narg );
@@ -2478,7 +2478,7 @@ void CodeElmList ( Int narg )
     if (narg == 1)
       ref = NewExpr( EXPR_ELM_LIST, 2 * sizeof(Expr) );
     else /* if (narg == 2) */
-      ref = NewExpr( EXPR_ELM2_LIST, 3 * sizeof(Expr) );
+      ref = NewExpr( EXPR_ELM_MAT, 3 * sizeof(Expr) );
       
     /* let 'CodeElmListUniv' to the rest                                   */
     CodeElmListUniv( ref, narg );
