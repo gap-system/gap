@@ -246,7 +246,7 @@ enum STAT_TNUM {
         STAT_UNB_GVAR,
 
         STAT_ASS_LIST,
-        STAT_ASS2_LIST,
+        STAT_ASS_MAT,
         STAT_ASSS_LIST,
         STAT_ASS_LIST_LEV,
         STAT_ASSS_LIST_LEV,
@@ -498,7 +498,7 @@ enum EXPR_TNUM {
     EXPR_ISB_GVAR,
 
     EXPR_ELM_LIST,
-    EXPR_ELM2_LIST,
+    EXPR_ELM_MAT,
     EXPR_ELMS_LIST,
     EXPR_ELM_LIST_LEV,
     EXPR_ELMS_LIST_LEV,
