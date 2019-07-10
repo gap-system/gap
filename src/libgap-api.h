@@ -325,7 +325,7 @@ UInt GAP_LenList(Obj list);
 // If <list> is not a GAP list, an error may be raised.
 void GAP_AssList(Obj list, UInt pos, Obj val);
 
-// Returns the element at the position <pos> in the list <list>.
+// Returns the element at the position <pos> in the GAP list <list>.
 // Returns 0 if there is no entry at the given position.
 // Also returns 0 if <pos> is out of bounds, i.e., if <pos> is zero,
 // or larger than the length of the list.
@@ -334,6 +334,33 @@ Obj GAP_ElmList(Obj list, UInt pos);
 
 // Returns a new empty plain list with capacity <capacity>
 Obj GAP_NewPlist(Int capacity);
+
+
+////
+//// matrix obj
+////
+
+// Returns 1 if <obj> is a GAP matrix obj, 0 if not.
+int GAP_IsMatrixObj(Obj obj);
+
+// Returns the number of rows of the given GAP matrix obj.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+UInt GAP_NrRows(Obj mat);
+
+// Returns the number of columns of the given GAP matrix obj.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+UInt GAP_NrCols(Obj mat);
+
+// Assign <val> at position <pos> into the GAP matrix obj <mat>.
+// If <val> is zero, then this unbinds the list entry.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val);
+
+// Returns the element at the <row>, <col> in the GAP matrix obj <mat>.
+// Returns 0 if <row> or <col> are out of bounds, i.e., if either
+// is zero, or larger than the number of rows respectively columns of the list.
+// If <mat> is not a GAP matrix obj, an error may be raised.
+Obj GAP_ElmMat(Obj mat, UInt row, UInt col);
 
 
 ////

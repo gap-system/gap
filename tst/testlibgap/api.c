@@ -9,7 +9,10 @@
  * TODO: Test error handling
  *
  */
+
 #include "common.h"
+
+#include <intobj.h>
 
 
 void records(void)
@@ -54,6 +57,29 @@ void lists(void)
     GAP_AssList(r, 1, 0);
     ret = GAP_ElmList(r, 1);
     assert(ret == 0);
+}
+
+void matrices(void)
+{
+    Obj mat, val, row, ret;
+
+    mat = GAP_NewPlist(1);
+    val = INTOBJ_INT(42);
+
+    assert(!GAP_IsMatrixObj(mat));   // empty list, not yet a matrix
+    assert(!GAP_IsMatrixObj(0));
+    assert(!GAP_IsMatrixObj(val));
+
+    row = GAP_NewPlist(2);
+    GAP_AssList(row, 1, INTOBJ_INT(1));
+    GAP_AssList(row, 2, INTOBJ_INT(2));
+    GAP_AssList(mat, 1, row);
+    assert(!GAP_IsMatrixObj(row));
+    assert(GAP_IsMatrixObj(mat));
+
+    GAP_AssMat(mat, 1, 1, val);
+    ret = GAP_ElmMat(mat, 1, 1);
+    assert(ret == val);
 }
 
 void strings(void)
@@ -173,6 +199,10 @@ int main(int argc, char ** argv)
 
     printf("# Testing lists... ");
     lists();
+    printf("success\n");
+
+    printf("# Testing matrices... ");
+    matrices();
     printf("success\n");
 
     printf("# Testing integers... ");

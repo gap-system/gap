@@ -16,6 +16,7 @@
 #include "info.h"
 #include "intfuncs.h"
 #include "iostream.h"
+#include "libgap_intern.h"
 #include "objccoll.h"
 #include "objset.h"
 #include "profile.h"
@@ -139,6 +140,9 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoThreadAPI,
     InitInfoAObjects,
     InitInfoSerialize,
+#else
+    // libgap API
+    InitInfoLibGapApi,
 #endif
 
     0
