@@ -141,6 +141,26 @@ InstallOtherMethod( Length,
 
 #############################################################################
 ##
+#M  NrRows( <blockmat> )  . . . . . . . . . . . . . . . .  for a block matrix
+##
+InstallMethod( NrRows,
+    "for an ordinary block matrix",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
+    blockmat -> blockmat!.nrb * blockmat!.rpb );
+
+
+#############################################################################
+##
+#M  NrCols( <blockmat> )  . . . . . . . . . . . . . . . .  for a block matrix
+##
+InstallMethod( NrCols,
+    "for an ordinary block matrix",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
+    blockmat -> blockmat!.ncb * blockmat!.cpb );
+
+
+#############################################################################
+##
 #M  \[\]( <blockmat>, <n> ) . . . . . . . . . . . . . . .  for a block matrix
 ##
 InstallOtherMethod( \[\],
@@ -663,13 +683,3 @@ InstallMethod( PrintObj,
     Print( "BlockMatrix( ", m!.blocks, ",", m!.nrb, ",", m!.ncb,
            ",", m!.rpb, ",", m!.cpb, ",", m!.zero, " )" );
     end );
-
-
-#############################################################################
-##
-#M  DimensionsMat( <blockmat> ) . . . . . . . . . . . . .  for a block matrix
-##
-InstallOtherMethod( DimensionsMat,
-    "for an ordinary block matrix",
-    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
-    m -> [ m!.nrb * m!.rpb, m!.ncb * m!.cpb ] );
