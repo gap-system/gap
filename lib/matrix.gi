@@ -160,12 +160,11 @@ InstallMethod( IsGeneralizedCartanMatrix,
 ##
 #M  IsDiagonalMat(<mat>)
 ##
-InstallOtherMethod( IsDiagonalMat,
+InstallMethod( IsDiagonalMat,
     "for a matrix",
-    [ IsMatrix ],
+    [ IsMatrixObj ],
     function( mat )
-   local  i, j,z;
-    if IsEmpty(mat) then return true;fi;
+    local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
     for i  in [ 1 .. NrRows( mat ) ]  do
         for j  in [ 1 .. NrCols( mat ) ]  do
@@ -184,12 +183,11 @@ InstallOtherMethod( IsDiagonalMat, [ IsEmpty ], ReturnTrue );
 ##
 #M  IsUpperTriangularMat(<mat>)
 ##
-InstallOtherMethod( IsUpperTriangularMat,
+InstallMethod( IsUpperTriangularMat,
     "for a matrix",
-    [ IsMatrix ],
+    [ IsMatrixObj ],
     function( mat )
-    local  i, j,z;
-    if IsEmpty(mat) then return true;fi;
+    local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
     for i  in [ 1 .. NrRows( mat ) ]  do
         for j  in [ 1 .. i-1]  do
@@ -201,16 +199,16 @@ InstallOtherMethod( IsUpperTriangularMat,
     return true;
     end);
 
+
 #############################################################################
 ##
 #M  IsLowerTriangularMat(<mat>)
 ##
-InstallOtherMethod( IsLowerTriangularMat,
+InstallMethod( IsLowerTriangularMat,
     "for a matrix",
-    [ IsMatrix ],
+    [ IsMatrixObj ],
     function( mat )
-    local  i, j,z;
-    if IsEmpty(mat) then return true;fi;
+    local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
     for i  in [ 1 .. NrRows( mat ) ]  do
         for j  in [ i+1 .. NrCols( mat ) ]  do
@@ -221,6 +219,7 @@ InstallOtherMethod( IsLowerTriangularMat,
     od;
     return true;
     end);
+
 
 #############################################################################
 ##
@@ -4326,7 +4325,7 @@ end);
 # for compact matrices (FL)
 BindGlobal("POW_MAT_INT", function(mat, n)
   local d, addb, trafo, value, t, ti, mm, pol, ind;
-  d := Length(mat);
+  d := NrRows(mat);
   # finding a better break even point probably also depends on q
   if n < 2^QuoInt(3*d,4) then
     return POW_OBJ_INT(mat, n);
@@ -4399,13 +4398,13 @@ BindGlobal("POW_MAT_INT", function(mat, n)
       val := MutableCopyMat(val);
     fi;
     i := i-1;
-    for j in [1..Length(mat)] do
+    for j in [1..NrRows(mat)] do
       val[j,j] := val[j,j]+c[i];
     od;
     while 1 < i  do
       val := mat * val;
       i := i - 1;
-      for j in [1..Length(mat)] do
+      for j in [1..NrRows(mat)] do
         val[j,j] := val[j,j]+c[i];
       od;
     od;
@@ -4426,7 +4425,7 @@ end);
 
 InstallMethod( \^,
     "for matrices, use char. poly. for large exponents",
-    [ IsMatrix, IsPosInt ], POW_MAT_INT );
+    [ IsMatrixObj, IsPosInt ], POW_MAT_INT );
 
 InstallGlobalFunction(RationalCanonicalFormTransform,function(mat)
 local cr,R,x,com,nf,matt,p,i,j,di,d,v;
