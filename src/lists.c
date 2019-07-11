@@ -285,9 +285,9 @@ Int             ISBB_LIST (
     return DoOperation2Args( IsbListOper, list, pos ) == True;
 }
 
-Int ISB_MAT(Obj list, Obj row, Obj col)
+Int ISB_MAT(Obj mat, Obj row, Obj col)
 {
-    return DoOperation3Args(IsbListOper, list, row, col) == True;
+    return DoOperation3Args(IsbListOper, mat, row, col) == True;
 }
 
 
@@ -500,12 +500,24 @@ Obj ELMB_LIST(Obj list, Obj pos)
     return elm;
 }
 
-Obj ELM_MAT(Obj list, Obj row, Obj col)
+
+/****************************************************************************
+**
+*F  FuncELM_MAT( <self>, <mat>, <row>, <col> ) . . . . .  operation `ELM_MAT'
+*/
+static Obj FuncELM_MAT(Obj self, Obj mat, Obj row, Obj col)
 {
-    if (IS_POS_INTOBJ(row) && IS_POS_INTOBJ(col) && IS_PLIST(list)) {
+    return ELM_MAT(mat, row, col);
+}
+
+static Obj ElmMatOper;
+
+Obj ELM_MAT(Obj mat, Obj row, Obj col)
+{
+    if (IS_POS_INTOBJ(row) && IS_POS_INTOBJ(col) && IS_PLIST(mat)) {
         Int r = INT_INTOBJ(row);
-        if (r <= LEN_PLIST(list)) {
-            Obj rowlist = ELM_PLIST(list, r);
+        if (r <= LEN_PLIST(mat)) {
+            Obj rowlist = ELM_PLIST(mat, r);
             Int c = INT_INTOBJ(col);
 
             if (IS_PLIST(rowlist) && c <= LEN_PLIST(rowlist)) {
@@ -518,9 +530,9 @@ Obj ELM_MAT(Obj list, Obj row, Obj col)
         }
     }
 
-    Obj elm = DoOperation3Args(ElmListOper, list, row, col);
+    Obj elm = DoOperation3Args(ElmMatOper, mat, row, col);
     if (elm == 0) {
-        ErrorMayQuit("List access method must return a value", 0, 0);
+        ErrorMayQuit("Matrix access method must return a value", 0, 0);
     }
     return elm;
 }
@@ -800,9 +812,9 @@ void            UNBB_LIST (
     DoOperation2Args( UnbListOper, list, pos );
 }
 
-void UNB_MAT(Obj list, Obj row, Obj col)
+void UNB_MAT(Obj mat, Obj row, Obj col)
 {
-    DoOperation3Args(UnbListOper, list, row, col);
+    DoOperation3Args(UnbListOper, mat, row, col);
 }
 
 
@@ -864,6 +876,14 @@ void ASSB_LIST (
     DoOperation3Args( AssListOper, list, pos, obj );
 }
 
+static Obj AssMatOper;
+
+static Obj FuncASS_MAT(Obj self, Obj mat, Obj row, Obj col, Obj obj)
+{
+    ASS_MAT(mat, row, col, obj);
+    return 0;
+}
+
 void ASS_MAT(Obj mat, Obj row, Obj col, Obj obj)
 {
     RequireMutable("Matrix Assignment", mat, "matrix");
@@ -878,7 +898,7 @@ void ASS_MAT(Obj mat, Obj row, Obj col, Obj obj)
         }
     }
 
-    DoOperation4Args(AssListOper, mat, row, col, obj);
+    DoOperation4Args(AssMatOper, mat, row, col, obj);
 }
 
 
@@ -1958,6 +1978,10 @@ static StructGVarOper GVarOpers[] = {
     GVAR_OPER(UNB_LIST, 2, "list, pos", &UnbListOper),
     GVAR_OPER(ASS_LIST, 3, "list, pos, obj", &AssListOper),
     GVAR_OPER(ASSS_LIST, 3, "list, poss, objs", &AsssListOper),
+
+    GVAR_OPER(ASS_MAT, 4, "mat, row, col, obj", &AssMatOper),
+    GVAR_OPER(ELM_MAT, 3, "mat, row, col", &ElmMatOper),
+
     { 0, 0, 0, 0, 0, 0 }
 
 };

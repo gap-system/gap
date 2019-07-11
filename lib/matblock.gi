@@ -190,9 +190,9 @@ InstallOtherMethod( \[\],
 
 #############################################################################
 ##
-#M  \[\]( <blockmat>, <row>, <col> ) . . . . . . . . . . . for a block matrix
+#M  \[\,\]( <blockmat>, <row>, <col> ) . . . . . . . . . . for a block matrix
 ##
-InstallOtherMethod( \[\],
+InstallMethod( \[\,\],
     "for an ordinary block matrix and two positive integers",
     [ IsOrdinaryMatrix and IsBlockMatrixRep, IsPosInt, IsPosInt ],
     function( blockmat, row, col )

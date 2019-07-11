@@ -30,10 +30,10 @@ gap> InstallOtherMethod(GetWithDefault, [r and IsMutable, IsInt, IsObject], func
 > end);
 
 #
-gap> InstallOtherMethod(\[\],[r,IsPosInt,IsPosInt],function(l,i,j) 
+gap> InstallOtherMethod(\[\,\],[r,IsPosInt,IsPosInt],function(l,i,j)
 >     return [i,j];
 > end);
-gap> InstallOtherMethod(\[\]\:\=,[r and IsMutable,IsPosInt,IsPosInt, IsObject],function(l,i,j,x) 
+gap> InstallOtherMethod(\[\,\]\:\=,[r and IsMutable,IsPosInt,IsPosInt, IsObject],function(l,i,j,x)
 >     Print ("Assign [",i,"][",j,"] := ",x,"\n");
 > end);
 gap> InstallOtherMethod(Unbind\[\],[r and IsMutable,IsPosInt,IsPosInt],function(l,i,j) 

@@ -15,21 +15,23 @@
 #
 
 
-# Install fallback methods for m[i,j] which delegate MatElm resp. SetMatElm,
-# for old MatrixObj implementation which don't provide them. We lower the rank
-# so that these are only used as a last resort.
-InstallMethod( \[\], "for a matrix object and two positions",
+# Install fallback methods for m[i,j] which delegate to ASS_LIST / ELM_LIST
+# for code using an intermediate version of the (unfinished) MatrixObj
+# specification (any package installing methods for MatElm resp. SetMatElm
+# should be fine without these). We lower the rank so that these are only
+# used as a last resort.
+InstallMethod( \[\,\], "for a matrix object and two positions",
   [ IsMatrixObj, IsPosInt, IsPosInt ],
   {} -> -RankFilter(IsMatrixObj),
   function( m, row, col )
-    return MatElm( m, row, col );
+    return ELM_LIST( m, row, col );
   end );
 
-InstallMethod( \[\]\:\=, "for a matrix object, two positions, and an object",
+InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
   [ IsMatrixObj and IsMutable, IsPosInt, IsPosInt, IsObject ],
   {} -> -RankFilter(IsMatrixObj),
   function( m, row, col, obj )
-    SetMatElm( m, row, col, obj );
+    ASS_LIST( m, row, col, obj );
   end );
 
 
