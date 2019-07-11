@@ -1626,6 +1626,13 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  <P/>
 ##  An action is <E><M>k</M>-transitive</E> if every <M>k</M>-tuple of points
 ##  can be mapped simultaneously to every other <M>k</M>-tuple.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>Transitivity(<A>G</A>)</C>, which returns the degree of transitivity
+##  of the group with respect to its natural action on the points moved by
+##  it.
+##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
+##  is 3-transitive on the three points 2, 3, 4.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
 ##  gap> IsTransitive(g,[1..5]);
