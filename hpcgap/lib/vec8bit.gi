@@ -1074,7 +1074,7 @@ InstallMethod( MatElm, "for an 8bit matrix and two integers",
   [ Is8BitMatrixRep, IsPosInt, IsPosInt ],
   MAT_ELM_MAT8BIT );
 InstallMethod( SetMatElm, "for an 8bit matrix, two integers, and a ffe",
-  [ Is8BitMatrixRep, IsPosInt, IsPosInt, IsFFE ],
+  [ Is8BitMatrixRep and IsMutable, IsPosInt, IsPosInt, IsFFE ],
   SET_MAT_ELM_MAT8BIT );
 InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
   [IsList, IsInt, Is8BitMatrixRep],

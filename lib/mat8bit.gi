@@ -88,7 +88,7 @@ InstallOtherMethod( \[\],  "For a compressed MatFFE",
 #M  <mat> [ <pos1>, <pos2> ]
 ##
 
-InstallMethod( \[\],  "For a compressed MatFFE",
+InstallMethod( \[\,\],  "For a compressed MatFFE",
         [Is8BitMatrixRep, IsPosInt, IsPosInt],
         MAT_ELM_MAT8BIT
         );
@@ -111,7 +111,7 @@ InstallOtherMethod( \[\]\:\=,  "For a compressed MatFE",
 #M  <mat> [ <pos1>, <pos2> ] := <val>
 ##
 
-InstallMethod( \[\]\:\=,  "For a compressed MatFE",
+InstallMethod( \[\,\]\:\=,  "For a compressed MatFE",
         [IsMutable and Is8BitMatrixRep, IsPosInt, IsPosInt, IsObject],
         SET_MAT_ELM_MAT8BIT
         );

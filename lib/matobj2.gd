@@ -812,14 +812,36 @@ DeclareOperation( "CopySubMatrix", [IsMatrixObj,IsMatrixObj,
 # New element access for matrices
 ############################################################################
 
-DeclareOperation( "MatElm", [IsMatrixObj,IsPosInt,IsPosInt] );
+#############################################################################
+##
+#o  <mat>[<row>,<col>] . . . . . . . . . . .  select an element from a matrix
+##
+DeclareOperationKernel( "[,]",
+    [ IsMatrixObj, IS_INT, IS_INT ],
+    ELM_MAT );
+DeclareSynonym( "MatElm", ELM_MAT );
+
+# TODO: the following is deprecated, and to be removed once packages needing
+# it are updated (specifically, cvec )
 DeclareOperation( "[]", [IsMatrixObj,IsPosInt,IsPosInt] );
-# second and third arguments are row and column index
 
-DeclareOperation( "SetMatElm", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
+#############################################################################
+##
+#o  <mat>[<row>,<col>] := <obj>
+##
+##  TODO: the first argument filter should be 'IsMatrixObj and IsMutable',
+##  but there is legacy code in packages which does not specify this filter
+##  for its 'SetMatElm' methods and would thus run into an error with this
+##  more restrictive filter. We therefore omit it for now, at least until
+##  all deposited packages providing such methods are fixed.
+DeclareOperationKernel( "[,]:=",
+    [ IsMatrixObj, IS_INT, IS_INT, IsObject ],
+    ASS_MAT );
+DeclareSynonym( "SetMatElm", ASS_MAT );
+
+# TODO: the following is deprecated, and to be removed once packages needing
+# it are updated (specifically, cvec)
 DeclareOperation( "[]:=", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
-# second and third arguments are row and column index
-
 
 ############################################################################
 # Standard operations for all objects:

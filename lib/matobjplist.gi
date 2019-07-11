@@ -826,19 +826,6 @@ InstallMethod( SetMatElm, "for a plist matrix, two positions, and an object",
     m![ROWSPOS][row]![ELSPOS][col] := ob;
   end );
 
-InstallMethod( \[\], "for a plist matrix and two positions",
-  [ IsPlistMatrixRep, IsPosInt, IsPosInt ],
-  function( m, row, col )
-    return m![ROWSPOS][row]![ELSPOS][col];
-  end );
-
-InstallMethod( \[\]\:\=, "for a plist matrix, two positions, and an object",
-  [ IsPlistMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
-  function( m, row, col, ob )
-    m![ROWSPOS][row]![ELSPOS][col] := ob;
-  end );
-
-
 
 ############################################################################
 # Printing and viewing methods:

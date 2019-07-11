@@ -176,11 +176,13 @@ gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
 Error, List Element: <list>[2] must have an assigned value in
   return m[i][j]; at GAPROOT/lib/matrix.gi:26 called from 
+ELM_LIST( m, row, col ) at GAPROOT/lib/matobj.gi:27 called from
 return l[2, 1]; at *stdin*:39 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:40
 type 'quit;' to quit to outer loop
 brk> Where();
+ELM_LIST( m, row, col ) at GAPROOT/lib/matobj.gi:27 called from
 return l[2, 1]; at *stdin*:39 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
