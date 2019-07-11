@@ -1971,10 +1971,10 @@ InstallOtherMethod( MutableTransposedMat,
     "for arbitrary lists of lists",
     [ IsList ],
     function( t )
-  local   res,  m,  i,  j;
+  local res, m, i, j, row;
   res := [];
   if Length(t)>0 and IsDenseList(t) and ForAll(t, IsDenseList) then
-        # special case with dense list of dense lists
+      # special case with dense list of dense lists
       m := Maximum(List(t, Length));
       for i in [m,m-1..1] do
           res[i] := [];
@@ -1983,16 +1983,17 @@ InstallOtherMethod( MutableTransposedMat,
           res{[1..Length(t[i])]}[i] := t[i];
       od;
   else
-        # general case, non dense lists allowed
+      # general case, non dense lists allowed
       for i in [1..Length(t)] do
           if IsBound(t[i]) then
-              if IsList(t[i]) then
-                  for j in [1..Length(t[i])] do
-                      if IsBound(t[i,j]) then
+              row := t[i];
+              if IsList(row) then
+                  for j in [1..Length(row)] do
+                      if IsBound(row[j]) then
                           if not IsBound(res[j]) then
                               res[j] := [];
                           fi;
-                          res[j,i] := t[i,j];
+                          res[j,i] := row[j];
                       fi;
                   od;
               else
