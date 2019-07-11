@@ -5661,7 +5661,7 @@ IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup := function( G )
 end;
 
 InstallMethod( IndependentGeneratorsOfAbelianGroup,
-  "For abelian fpgroup, use Smith normal form",
+  "for abelian fpgroup, use Smith normal form",
   [ IsFpGroup and IsAbelian ],
   IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 

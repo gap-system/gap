@@ -200,7 +200,7 @@ end);
 ## output methods
 ##
 
-InstallMethod(String,"For large finite field elements",
+InstallMethod(String,"for large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
         function(x)
     local   started,  coeffs,  fam,  s,  str,  i;
@@ -281,17 +281,17 @@ BindGlobal( "DisplayStringForLargeFiniteFieldElements",
     return s;
   end );
 
-InstallMethod(DisplayString,"For large finite field elements",
+InstallMethod(DisplayString,"for large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
         DisplayStringForLargeFiniteFieldElements );
 
-InstallMethod(Display,"For large finite field elements",
+InstallMethod(Display,"for large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
         function(x)
     Print(DisplayString(x));
 end);
 
-InstallMethod(ViewString,"For large finite field elements",
+InstallMethod(ViewString,"for large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
         function(x)
     local   s;
@@ -306,7 +306,7 @@ InstallMethod(ViewString,"For large finite field elements",
     fi;
 end);
 
-InstallMethod(ViewObj, "For large finite field elements",
+InstallMethod(ViewObj, "for large finite field elements",
         [IsFFE and IsCoeffsModConwayPolRep], 
         function(x)
     Print(ViewString(x));
@@ -1469,7 +1469,7 @@ end);
 #M Coefficients of an element wrt the canonical basis -- are stored in the 
 ##                                                       element
 InstallMethod(Coefficients,
-        "For a FFE in Conway polynomial represntation wrt the canonical basis of its natural field",
+        "for a FFE in Conway polynomial represntation wrt the canonical basis of its natural field",
         IsCollsElms,
         [IsCanonicalBasis and IsBasisFiniteFieldRep, IsFFE and IsCoeffsModConwayPolRep],
         function(cb,x)

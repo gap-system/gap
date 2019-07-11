@@ -70,7 +70,7 @@ end);
 #M  Length( <mat> )
 ##
 
-InstallOtherMethod( Length, "For a compressed MatFFE",
+InstallOtherMethod( Length, "for a compressed MatFFE",
         true, [IsList and Is8BitMatrixRep], 0, m->m![1]);
 
 #############################################################################
@@ -78,7 +78,7 @@ InstallOtherMethod( Length, "For a compressed MatFFE",
 #M  <mat> [ <pos> ]
 ##
 
-InstallOtherMethod( \[\],  "For a compressed MatFFE",
+InstallOtherMethod( \[\],  "for a compressed MatFFE",
         [IsList and Is8BitMatrixRep, IsPosInt],
         ELM_MAT8BIT
         );
@@ -88,7 +88,7 @@ InstallOtherMethod( \[\],  "For a compressed MatFFE",
 #M  <mat> [ <pos1>, <pos2> ]
 ##
 
-InstallMethod( \[\,\],  "For a compressed MatFFE",
+InstallMethod( \[\,\],  "for a compressed MatFFE",
         [Is8BitMatrixRep, IsPosInt, IsPosInt],
         MAT_ELM_MAT8BIT
         );
@@ -101,7 +101,7 @@ InstallMethod( \[\,\],  "For a compressed MatFFE",
 ##  not lie in the appropriate field.
 ##
 
-InstallOtherMethod( \[\]\:\=,  "For a compressed MatFFE",
+InstallOtherMethod( \[\]\:\=,  "for a compressed MatFFE",
         [IsMutable and IsList and Is8BitMatrixRep, IsPosInt, IsObject],
         ASS_MAT8BIT
         );
@@ -111,7 +111,7 @@ InstallOtherMethod( \[\]\:\=,  "For a compressed MatFFE",
 #M  <mat> [ <pos1>, <pos2> ] := <val>
 ##
 
-InstallMethod( \[\,\]\:\=,  "For a compressed MatFFE",
+InstallMethod( \[\,\]\:\=,  "for a compressed MatFFE",
         [IsMutable and Is8BitMatrixRep, IsPosInt, IsPosInt, IsObject],
         SET_MAT_ELM_MAT8BIT
         );
@@ -124,7 +124,7 @@ InstallMethod( \[\,\]\:\=,  "For a compressed MatFFE",
 ##  turning into a plain list
 ##
 
-InstallOtherMethod( Unbind\[\], "For a compressed MatFFE",
+InstallOtherMethod( Unbind\[\], "for a compressed MatFFE",
         true, [IsMutable and IsList and Is8BitMatrixRep, IsPosInt],
         0, function(m,p)
     if p = 1 or  p <> m![1] then
@@ -144,7 +144,7 @@ end);
 ##  description is printed
 ##
 
-InstallMethod( ViewObj, "For a compressed MatFFE",
+InstallMethod( ViewObj, "for a compressed MatFFE",
         true, [Is8BitMatrixRep and IsSmallList], 0,
         function( m )
     local r,c;
@@ -168,7 +168,7 @@ end);
 ##  Same method as for lists in internal rep. 
 ##
 
-InstallMethod( PrintObj, "For a compressed MatFFE",
+InstallMethod( PrintObj, "for a compressed MatFFE",
         true, [Is8BitMatrixRep and IsSmallList], 0,
         function( mat )
     local i,l;
@@ -190,7 +190,7 @@ end);
 ##
 ##
 
-InstallMethod(ShallowCopy, "For a compressed MatFFE", 
+InstallMethod(ShallowCopy, "for a compressed MatFFE", 
         true, [Is8BitMatrixRep and IsSmallList], 0, 
         function(m) 
     local c,i,l; 
@@ -223,7 +223,7 @@ end );
 #M  <mat1> + <mat2>
 ##
 
-InstallMethod( \+, "For two 8 bit matrices in same characteristic",
+InstallMethod( \+, "for two 8 bit matrices in same characteristic",
         IsIdenticalObj, [IsMatrix and Is8BitMatrixRep,
                 IsMatrix and Is8BitMatrixRep], 0,
         SUM_MAT8BIT_MAT8BIT
@@ -234,7 +234,7 @@ InstallMethod( \+, "For two 8 bit matrices in same characteristic",
 #M  <mat1> - <mat2>
 ##
 
-InstallMethod( \-, "For two 8 bit matrices in same characteristic",
+InstallMethod( \-, "for two 8 bit matrices in same characteristic",
         IsIdenticalObj, [IsMatrix and Is8BitMatrixRep,
                 IsMatrix and Is8BitMatrixRep], 0,
         DIFF_MAT8BIT_MAT8BIT
@@ -248,7 +248,7 @@ InstallMethod( \-, "For two 8 bit matrices in same characteristic",
 ##  Make the matrix into a plain list 
 ##
 
-InstallMethod( PlainListCopyOp, "For an 8 bit vector",
+InstallMethod( PlainListCopyOp, "for an 8 bit vector",
         true, [IsSmallList and Is8BitMatrixRep], 0,
         function (m)
     PLAIN_MAT8BIT(m);
@@ -263,7 +263,7 @@ end);
 ##  alternative element access interface, returns fail when unbound
 ##
 
-InstallMethod(ELM0_LIST, "For an 8 bit matrix",
+InstallMethod(ELM0_LIST, "for an 8 bit matrix",
         true, [IsList and Is8BitMatrixRep, IsPosInt], 0,
         function(m,p)
     if p > m![1] then 
