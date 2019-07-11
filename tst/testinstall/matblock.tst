@@ -13,16 +13,20 @@ gap> m3 := AsBlockMatrix( m2, 2, 2 );
 <block matrix of dimensions (2*3)x(2*3)>
 gap> z  := BlockMatrix( [], 3, 3, 2, 2, 0 );
 <block matrix of dimensions (3*2)x(3*2)>
-gap> Length( m1 ); DimensionsMat( m1 );
+gap> NrRows( m1 ); NrCols( m1 ); DimensionsMat( m1 );
 6
+8
 [ 6, 8 ]
-gap> Length( m2 ); DimensionsMat( m2 );
+gap> NrRows( m2 ); NrCols( m2 ); DimensionsMat( m2 );
+6
 6
 [ 6, 6 ]
-gap> Length( m3 ); DimensionsMat( m3 );
+gap> NrRows( m3 ); NrCols( m3 ); DimensionsMat( m3 );
+6
 6
 [ 6, 6 ]
-gap> Length( z );  DimensionsMat( z );
+gap> NrRows( z ); NrCols( z );  DimensionsMat( z );
+6
 6
 [ 6, 6 ]
 gap> m1[3];
