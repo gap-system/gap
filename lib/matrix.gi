@@ -189,8 +189,8 @@ InstallMethod( IsUpperTriangularMat,
     function( mat )
     local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
-    for i  in [ 1 .. NrRows( mat ) ]  do
-        for j  in [ 1 .. i-1]  do
+    for j  in [ 1 .. NrCols( mat ) ]  do
+        for i  in [ j+1 .. NrRows( mat ) ]  do
             if mat[i,j] <> z  then
                 return false;
             fi;
