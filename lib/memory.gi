@@ -382,6 +382,12 @@ InstallOtherMethod( ELM_LIST, "for a matrix with memory",
     return M!.el[i];
   end);
 
+InstallOtherMethod( MatElm, "for a matrix with memory",
+  [ IsMatrix and IsObjWithMemory, IsPosInt, IsPosInt ],
+  function(M,i,j)
+    return M!.el[i,j];
+  end);
+
 InstallOtherMethod( \*, "for a row vector and a matrix with memory",true,
   [ IsListDefault and IsSmallList, IsMatrix and IsObjWithMemory ], 0,
   function(v,M)
