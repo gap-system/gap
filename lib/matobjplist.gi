@@ -1192,68 +1192,6 @@ InstallMethod( Randomize, "for a mutable plist matrix",
     od;
   end );
 
-InstallMethod( IsDiagonalMat, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,j,l,n;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        ErrorNoReturn("IsDiagonalMat: Matrix not square");
-    fi;
-    n := m![RLPOS];
-    for i in [1..n] do
-        l := m![ROWSPOS][i]![ELSPOS];
-        for j in [1..i-1] do
-            if not IsZero(l[j]) then
-                return false;
-            fi;
-        od;
-        for j in [i+1..n] do
-            if not IsZero(l[j]) then
-                return false;
-            fi;
-        od;
-    od;
-    return true;
-  end );
-
-InstallMethod( IsLowerTriangularMat, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,j,l,n;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        ErrorNoReturn("IsLowerTriangularMat: Matrix not square");
-    fi;
-    n := m![RLPOS];
-    for i in [1..n] do
-        l := m![ROWSPOS][i]![ELSPOS];
-        for j in [i+1..n] do
-            if not IsZero(l[j]) then
-                return false;
-            fi;
-        od;
-    od;
-    return true;
-  end );
-
-InstallMethod( IsUpperTriangularMat, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local i,j,l,n;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        ErrorNoReturn("IsUpperTriangularMat: Matrix not square");
-    fi;
-    n := m![RLPOS];
-    for i in [1..n] do
-        l := m![ROWSPOS][i]![ELSPOS];
-        for j in [1..i-1] do
-            if not IsZero(l[j]) then
-                return false;
-            fi;
-        od;
-    od;
-    return true;
-  end );
-
 InstallMethod( TransposedMatMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
