@@ -1136,7 +1136,7 @@ InstallMethod( \*,
 ##                    of compressed GF2 vectors, otherwise falls through
 ##
 
-InstallMethod(\*, "For a GF2 vector and a compatible matrix",
+InstallMethod(\*, "for a GF2 vector and a compatible matrix",
         IsElmsColls, [IsRowVector and IsGF2VectorRep and IsSmallList
                 and IsRingElementList,
                 IsRingElementTable and IsPlistRep], 0,
