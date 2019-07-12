@@ -45,3 +45,9 @@ gap> IsLowerTriangularMat([[1,0],[1,1]]);
 true
 gap> IsLowerTriangularMat([[1,1],[0,1]]);
 false
+
+#
+gap> m := Z(5)^0 * [[0, 1], [1, 0]];;
+gap> m := GeneratorsWithMemory([m])[1];;
+gap> BaseDomain(m) = GF(5);
+true

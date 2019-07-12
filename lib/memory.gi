@@ -406,6 +406,10 @@ InstallOtherMethod( \*, "for a matrix with memory and a scalar",true,
     return M!.el * s;
   end);
 
+InstallOtherMethod( BaseDomain, "for a matrix with memory", true,
+  [ IsMatrix and IsObjWithMemory ], 0,
+  M -> BaseDomain(M!.el) );
+
 InstallOtherMethod(ProjectiveOrder,"object with memory",true, 
   [IsObjWithMemory],0,
   function(a)
