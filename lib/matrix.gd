@@ -2001,24 +2001,6 @@ DeclareOperation("DefaultScalarDomainOfMatrixList",[IsListOrCollection]);
 
 #############################################################################
 ##
-#O  BaseField( <matrixorvector> )
-##
-##  <ManSection>
-##  <Oper Name="BaseField" Arg='matrixorvector'/>
-##
-##  <Description>
-##  returns the base field of a matrix or a vector. This is only defined
-##  for wrapped matrices and vectors, not for plain lists. That is, for
-##  a plain list the operation returns fail. It is guaranteed
-##  that a call to this operation is only a very fast lookup.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation("BaseField",[IsObject]);
-
-
-#############################################################################
-##
 #O  ZeroVector( <len>, <vector> )
 ##
 ##  <ManSection>
