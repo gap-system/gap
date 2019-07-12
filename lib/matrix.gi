@@ -2679,7 +2679,7 @@ end );
 
 #############################################################################
 ##
-#M  ExteriorPower( <mat1>, <mat2> )
+#M  ExteriorPower( <mat>, <m> )
 ##
 InstallOtherMethod(ExteriorPower,
   "for matrices", true,[IsMatrix,IsPosInt],
@@ -2691,7 +2691,7 @@ end);
 
 #############################################################################
 ##
-#M  SymmetricPower( <mat1>, <mat2> )
+#M  SymmetricPower( <mat>, <m> )
 ##
 InstallOtherMethod(SymmetricPower,
   "for matrices", true,[IsMatrix,IsPosInt],
@@ -2700,6 +2700,7 @@ local  basis, f;
   f := j->Product( List( Collected( j ), x->x[2]), Factorial );
   basis := UnorderedTuples( [ 1 .. NrRows( A ) ], m );
   return List( basis, i-> List( basis, j->Permanent( A{i}{j}) / f( i )));
+#T This code makes sense only in characteristic zero.
 end);
 
 
@@ -3013,22 +3014,10 @@ mat -> []);
 #M  UpperSubdiagonal( <mat>, <pos> )
 ##
 InstallMethod( UpperSubdiagonal,
-    [ IsMatrix,
-      IsPosInt ],
+    [ IsMatrixObj, IsPosInt ],
 function( mat, l )
-    local   dim,  exp,  i;
-
-    # collect exponents in <e>
-    dim := NrRows(mat);
-    exp := [];
-
-    # run through the diagonal
-    for i  in [ 1 .. dim-l ]  do
-        Add( exp, mat[i,l+i] );
-    od;
-
-    # and return
-    return exp;
+    return List( [ 1 .. Minimum( NrRows( mat ), NrCols( mat ) - l ) ],
+                 i -> mat[ i, l+i ] );
 end );
 
 

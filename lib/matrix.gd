@@ -64,77 +64,120 @@ DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrix );
 
 #############################################################################
 ##
+#O  IsDiagonalMatrix( <mat> )
 #O  IsDiagonalMat( <mat> )
 ##
 ##  <#GAPDoc Label="IsDiagonalMat">
 ##  <ManSection>
+##  <Oper Name="IsDiagonalMatrix" Arg='mat'/>
 ##  <Oper Name="IsDiagonalMat" Arg='mat'/>
 ##
 ##  <Description>
-##  returns true if mat has only zero entries off the main diagonal, false
-##  otherwise.
+##  return <K>true</K> if the matrix <A>mat</A> has only zero entries
+##  off the main diagonal, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsDiagonalMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsDiagonalMatrix( [ [ 1, 0, 0 ], [ 0, 1, 0 ] ] );
+##  true
+##  gap> IsDiagonalMatrix( [ [ 0, 1 ], [ 1, 0 ] ] );
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation("IsDiagonalMat",[IsMatrix]);
+DeclareOperation( "IsDiagonalMatrix", [ IsMatrixObj ] );
+
+DeclareSynonym( "IsDiagonalMat", IsDiagonalMatrix );
+
 
 #############################################################################
 ##
+#O  IsUpperTriangularMatrix( <mat> )
 #O  IsUpperTriangularMat( <mat> )
 ##
 ##  <#GAPDoc Label="IsUpperTriangularMat">
 ##  <ManSection>
+##  <Oper Name="IsUpperTriangularMatrix" Arg='mat'/>
 ##  <Oper Name="IsUpperTriangularMat" Arg='mat'/>
 ##
 ##  <Description>
-##  returns true if mat has only zero entries below the main diagonal, false
-##  otherwise.
+##  return <K>true</K> if the matrix <A>mat</A> has only zero entries below
+##  the main diagonal, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsUpperTriangularMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsUpperTriangularMatrix( [ [ 1, 2, 3 ], [ 0, 5, 6 ] ] );
+##  true
+##  gap> IsUpperTriangularMatrix( [ [ 0, 1 ], [ 1, 0 ] ] );
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation("IsUpperTriangularMat",[IsMatrix]);
+DeclareOperation( "IsUpperTriangularMatrix", [ IsMatrixObj ] );
+
+DeclareSynonym( "IsUpperTriangularMat", IsUpperTriangularMatrix );
+
 
 #############################################################################
 ##
+#O  IsLowerTriangularMatrix( <mat> )
 #O  IsLowerTriangularMat( <mat> )
 ##
 ##  <#GAPDoc Label="IsLowerTriangularMat">
 ##  <ManSection>
+##  <Oper Name="IsLowerTriangularMatrix" Arg='mat'/>
 ##  <Oper Name="IsLowerTriangularMat" Arg='mat'/>
 ##
 ##  <Description>
-##  returns true if mat has only zero entries below the main diagonal, false
-##  otherwise.
+##  return <K>true</K> if the matrix <A>mat</A> has only zero entries above
+##  the main diagonal, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsLowerTriangularMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsLowerTriangularMatrix( [ [ 1, 0, 0 ], [ 2, 3, 0 ] ] );
+##  true
+##  gap> IsLowerTriangularMatrix( [ [ 0, 1 ], [ 1, 0 ] ] );
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation("IsLowerTriangularMat",[IsMatrix]);
+DeclareOperation( "IsLowerTriangularMatrix", [ IsMatrixObj ] );
+
+DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
+
 
 #############################################################################
 ##
-#O  DiagonalOfMat( <mat> )
+#F  DiagonalOfMatrix( <mat> )
+#F  DiagonalOfMat( <mat> )
 ##
 ##  <#GAPDoc Label="DiagonalOfMat">
 ##  <ManSection>
+##  <Func Name="DiagonalOfMatrix" Arg='mat'/>
 ##  <Func Name="DiagonalOfMat" Arg='mat'/>
 ##
 ##  <Description>
-##  returns the diagonal of the matrix <A>mat</A>. If <A>mat</A> is not a
+##  return the diagonal of the matrix <A>mat</A>. If <A>mat</A> is not a
 ##  square matrix, then the result has the same length as the rows of
 ##  <A>mat</A>, and is padded with zeros if <A>mat</A> has fewer rows than
 ##  columns.
 ##  <Example><![CDATA[
-##  gap> DiagonalOfMat([[1,2,3],[4,5,6]]);
+##  gap> DiagonalOfMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
 ##  [ 1, 5, 0 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "DiagonalOfMat" );
+DeclareGlobalFunction( "DiagonalOfMatrix" );
+
+DeclareSynonym( "DiagonalOfMat", DiagonalOfMatrix );
 
 
 #############################################################################
@@ -1221,16 +1264,20 @@ DeclareOperation( "TriangulizeMat", [ IsMatrix and IsMutable ] );
 ##
 ##  <Description>
 ##  returns a mutable list containing the entries of the <A>pos</A>th upper
-##  subdiagonal of <A>mat</A>.
+##  subdiagonal of the matrix <A>mat</A>.
 ##  <Example><![CDATA[
-##  gap> UpperSubdiagonal(mat,1);
+##  gap> UpperSubdiagonal( [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ], 1 );
 ##  [ 2, 6 ]
+##  gap> UpperSubdiagonal( [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ] ], 1 );
+##  [ 2 ]
+##  gap> UpperSubdiagonal( [ [ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ] ], 1 );
+##  [ 2, 7 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "UpperSubdiagonal", [ IsMatrix, IsPosInt ] );
+DeclareOperation( "UpperSubdiagonal", [ IsMatrixObj, IsPosInt ] );
 
 
 #############################################################################
