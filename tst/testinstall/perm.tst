@@ -174,6 +174,8 @@ gap> ForAll(permAll, x -> IsOne(x^(30^13)));
 true
 gap> ForAll(permAll, x -> IsOne(x^(-30^13)));
 true
+gap> ForAll([-5..5], i -> IsOne(()^i));
+true
 
 #
 gap> ForAll(permAll, x -> x^-1 * x = ());

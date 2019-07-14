@@ -161,9 +161,13 @@ static Obj TypePerm4(Obj perm)
     return TYPE_PERM4;
 }
 
-// Forward declaration for PrintPerm
+// Forward declarations
 template <typename T>
 static inline UInt LargestMovedPointPerm_(Obj perm);
+
+template <typename T>
+static Obj InvPerm(Obj perm);
+
 
 /****************************************************************************
 **
@@ -353,9 +357,18 @@ static Obj ProdPerm(Obj opL, Obj opR)
     const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
-    /* compute the size of the result and allocate a bag                   */
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
+
+    // handle trivial cases
+    if (degL == 0) {
+        return opR;
+    }
+    if (degR == 0) {
+        return opL;
+    }
+
+    // compute the size of the result and allocate a bag
     degP = degL < degR ? degR : degL;
     prd  = NEW_PERM<Res>( degP );
 
@@ -422,9 +435,18 @@ static Obj LQuoPerm(Obj opL, Obj opR)
     const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
-    /* compute the size of the result and allocate a bag                   */
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
+
+    // handle trivial cases
+    if (degL == 0) {
+        return opR;
+    }
+    if (degR == 0) {
+        return InvPerm<TL>(opL);
+    }
+
+    // compute the size of the result and allocate a bag
     degM = degL < degR ? degR : degL;
     mod = NEW_PERM<Res>( degM );
 
@@ -519,8 +541,14 @@ static Obj PowPermInt(Obj opL, Obj opR)
     if (opR == INTOBJ_INT(-1))
         return InvPerm<T>(opL);
 
-    /* get the operands and allocate a result bag                          */
     deg = DEG_PERM<T>(opL);
+
+    // handle trivial permutations
+    if (deg == 0) {
+        return IdentityPerm;
+    }
+
+    // allocate a result bag
     pow = NEW_PERM<T>(deg);
 
     /* compute the power by repeated mapping for small positive exponents  */
@@ -858,9 +886,19 @@ static Obj PowPerm(Obj opL, Obj opR)
     const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
-    /* compute the size of the result and allocate a bag                   */
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
+
+    // handle trivial cases
+    if (degL == 0) {
+        return IdentityPerm;
+    }
+
+    if (degR == 0) {
+        return opL;
+    }
+
+    // compute the size of the result and allocate a bag
     degC = degL < degR ? degR : degL;
     cnj = NEW_PERM<Res>( degC );
 
@@ -907,9 +945,15 @@ static Obj CommPerm(Obj opL, Obj opR)
     const TR *          ptR;            /* pointer to the right operand    */
     UInt                p;              /* loop variable                   */
 
-    /* compute the size of the result and allocate a bag                   */
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
+
+    // handle trivial cases
+    if (degL == 0 || degR == 0) {
+        return IdentityPerm;
+    }
+
+    // compute the size of the result and allocate a bag
     degC = degL < degR ? degR : degL;
     com = NEW_PERM<Res>( degC );
 
