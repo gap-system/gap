@@ -383,15 +383,25 @@ InstallOtherMethod(CycleStructurePerm,
   [ IsPerm and IsObjWithMemory ], 0,
   p->CycleStructurePerm(p!.el));
 
-# Matrix methods:
+# MatrixObj methods:
+
+InstallOtherMethod( BaseDomain, "for a matrix with memory",
+  [ IsMatrixObj and IsObjWithMemory ],
+  M -> BaseDomain(M!.el) );
 
 InstallOtherMethod( NumberRows, "for a matrix with memory",
-  [ IsMatrix and IsObjWithMemory ],
+  [ IsMatrixObj and IsObjWithMemory ],
   M -> NumberRows(M!.el) );
 
 InstallOtherMethod( NumberColumns, "for a matrix with memory",
-  [ IsMatrix and IsObjWithMemory ],
+  [ IsMatrixObj and IsObjWithMemory ],
   M -> NumberColumns(M!.el) );
+
+InstallOtherMethod( MatElm, "for a matrix with memory",
+  [ IsMatrixObj and IsObjWithMemory, IsPosInt, IsPosInt ],
+  { M, i, j } -> M!.el[i,j] );
+
+# legacy matrix methods
 
 InstallOtherMethod( Length, "for a matrix with memory",
   [ IsMatrix and IsObjWithMemory ], M -> Length(M!.el) ) ;
@@ -402,35 +412,21 @@ InstallOtherMethod( ELM_LIST, "for a matrix with memory",
     return M!.el[i];
   end);
 
-InstallOtherMethod( MatElm, "for a matrix with memory",
-  [ IsMatrix and IsObjWithMemory, IsPosInt, IsPosInt ],
-  function(M,i,j)
-    return M!.el[i,j];
-  end);
-
-InstallOtherMethod( \*, "for a row vector and a matrix with memory",true,
+InstallOtherMethod( \*, "for a row vector and a matrix with memory",
   [ IsListDefault and IsSmallList, IsMatrix and IsObjWithMemory ], 0,
   function(v,M)
     return v * M!.el;
   end);
 
-InstallOtherMethod( \*, "for a scalar and a matrix with memory",true,
-  [ IsScalar, IsMatrix and IsObjWithMemory ], 0,
-  function(s,M)
-    return s * M!.el;
-  end);
+InstallOtherMethod( \*, "for a scalar and a matrix with memory",
+  [ IsScalar, IsMatrixObj and IsObjWithMemory ], 0,
+  { s, M } ->  s * M!.el );
 
-InstallOtherMethod( \*, "for a matrix with memory and a scalar",true,
-  [ IsMatrix and IsObjWithMemory, IsScalar ], 0,
-  function(M,s)
-    return M!.el * s;
-  end);
+InstallOtherMethod( \*, "for a matrix with memory and a scalar",
+  [ IsMatrixObj and IsObjWithMemory, IsScalar ], 0,
+  { M , s} ->  M!.el * s );
 
-InstallOtherMethod( BaseDomain, "for a matrix with memory", true,
-  [ IsMatrix and IsObjWithMemory ], 0,
-  M -> BaseDomain(M!.el) );
-
-InstallOtherMethod(ProjectiveOrder,"object with memory",true, 
+InstallOtherMethod(ProjectiveOrder,"object with memory", 
   [IsObjWithMemory],0,
   function(a)
     return ProjectiveOrder(a!.el);
