@@ -2295,8 +2295,10 @@ gap> (f * (1, 2)) * (1, 2, 3);
 Transformation( [ 3, 2, 1 ] )
 gap> (1, 2, 3) * (f * (1, 2));
 Transformation( [ 1, 3, 2 ] )
-gap> p := AS_PERM_TRANS(f) * (1,2);;
-gap> IsPerm4Rep(p);
+
+# We need a permutation which is in Perm4Rep, for testing
+gap> p := (1,2) * (2^16,2^16+1) * (2^16,2^16+1);;
+gap> IsPerm4Rep(p) and p = (1,2);
 true
 gap> p * Transformation([2, 1, 4, 4, 5]);
 Transformation( [ 1, 2, 4, 4 ] )
@@ -2385,8 +2387,10 @@ Transformation( [ 2, 2 ] )
 gap> f := ID_TRANS4;;
 gap> IsTrans4Rep(f);
 true
-gap> p := AS_PERM_TRANS(f) * (1,2);;
-gap> IsPerm4Rep(p);
+
+# We need a permutation which is in Perm4Rep, for testing
+gap> p := (1,2) * (2^16,2^16+1) * (2^16,2^16+1);;
+gap> IsPerm4Rep(p) and p = (1,2);
 true
 gap> Transformation([2, 1]) ^ p;
 Transformation( [ 2, 1 ] )
