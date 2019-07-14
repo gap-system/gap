@@ -66,6 +66,20 @@ extern Int SyStorMin;
 /****************************************************************************
 **
 *V  SyAllocPool
+**
+**  'SyAllocPool' is the size of the OS memory block which Gasman is using
+**  to store its workspace.
+**
+**  Gasman's workspace must be a single continuous block, and can only be
+**  extended. Extending this memory block after GAP has been running for a
+**  while requires the OS does not allocate any memory immediately after the
+**  current location of the workspace. On 64-bit systems using mmap this is
+**  usually possible as GAP's workspace starts at memory location 16TB. On
+**  32-bit systems it may not be possible to extend so this acts as the
+**  maximum workspace size. The main reason extending the workspace on 32-bit
+**  fails is if code calls malloc (or new in C++), which many packages do.
+**
+**  This option can be changed with -s.
 */
 extern UInt SyAllocPool;
 
