@@ -528,9 +528,9 @@ void GAP_Error_Postjmp_Returning_(void)
 */
 static Int InitKernel(StructInitInfo * module)
 {
-    ImportFuncFromLibrary("IsMatrixObj", &IsMatrixObjFilt);
-    ImportFuncFromLibrary("NrRows", &NrRowsAttr);
-    ImportFuncFromLibrary("NrCols", &NrColsAttr);
+    InitFopyGVar("IsMatrixObj", &IsMatrixObjFilt);
+    InitFopyGVar("NrRows", &NrRowsAttr);
+    InitFopyGVar("NrCols", &NrColsAttr);
 
     return 0;
 }
