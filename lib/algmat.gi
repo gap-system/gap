@@ -1474,23 +1474,23 @@ InstallGlobalFunction( EmptyMatrix, function( char )
     fi;
 
     # Construct the matrix.
-    mat:= Objectify( NewType( Fam,
-                                  IsList
-                              and IsEmpty
-                              and IsOrdinaryMatrix
-                              and IsZero
-                              and IsAssociativeElement
-                              and IsCommutativeElement
-                              and IsJacobianElement
-                              and IsAttributeStoringRep ),
-                     rec() );
-
-    SetName( mat, Concatenation( "EmptyMatrix( ", String( char ), " )" ) );
+    mat := ObjectifyWithAttributes( rec(),
+             NewType( Fam,
+                          IsList
+                      and IsEmpty
+                      and IsOrdinaryMatrix
+                      and IsZero
+                      and IsAssociativeElement
+                      and IsCommutativeElement
+                      and IsJacobianElement
+                      and IsAttributeStoringRep ),
+             Name,          Concatenation("EmptyMatrix( ", String(char), " )" ),
+             DimensionsMat, [ 0, 0 ],
+             Length,        0,
+             NrRows,        0,
+             NrCols,        0) ;
     SetInverse( mat, mat );
     SetAdditiveInverse( mat, mat );
-    SetDimensionsMat( mat, [ 0, 0 ] );
-    SetLength( mat, 0 );
-
     return mat;
 end );
 
