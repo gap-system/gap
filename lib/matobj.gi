@@ -629,10 +629,16 @@ InstallMethod( RowsOfMatrix,
     Immutable );
 
 
-InstallOtherMethod( NumberRows, "for a plist matrix",
+InstallOtherMethod( NumberRows, "for a matrix",
   [ IsMatrix ], Length);
-InstallOtherMethod( NumberColumns, "for a plist matrix",
-  [ IsMatrix ], m -> Length(m[1]) );
+InstallOtherMethod( NumberColumns, "for a matrix",
+  [ IsMatrix ],
+  function(m)
+    if Length(m) = 0 then
+      return 0;
+    fi;
+    return Length(m[1]);
+  end );
 
 #
 # Compatibility code: Generic methods for IsMatrixObj
