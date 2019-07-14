@@ -51,3 +51,11 @@ gap> m := Z(5)^0 * [[0, 1], [1, 0]];;
 gap> m := GeneratorsWithMemory([m])[1];;
 gap> BaseDomain(m) = GF(5);
 true
+gap> NrRows(m);
+2
+gap> NumberRows(m);
+2
+gap> NrCols(m);
+2
+gap> NumberColumns(m);
+2

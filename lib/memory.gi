@@ -373,6 +373,14 @@ InstallOtherMethod( DimensionsMat, "for a matrix with memory",
     return DimensionsMat(M!.el);
   end);
 
+InstallOtherMethod( NumberRows, "for a matrix with memory",
+  [ IsMatrix and IsObjWithMemory ],
+  M -> NumberRows(M!.el) );
+
+InstallOtherMethod( NumberColumns, "for a matrix with memory",
+  [ IsMatrix and IsObjWithMemory ],
+  M -> NumberColumns(M!.el) );
+
 InstallOtherMethod( Length, "for a matrix with memory",
   [ IsMatrix and IsObjWithMemory ], M -> Length(M!.el) ) ;
 
