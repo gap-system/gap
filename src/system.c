@@ -1188,10 +1188,6 @@ void InitSystem (
                             SyAllocPool > 1024 * SyStorKill ) {
         SyAllocPool = SyStorKill * 1024;
     }
-    /* fix pool size if it is given and lower than SyStorMax */
-    if ( SyAllocPool != 0 && SyAllocPool < SyStorMax * 1024) {
-        SyAllocPool = SyStorMax * 1024;
-    }
 
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
