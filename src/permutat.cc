@@ -161,6 +161,9 @@ static Obj TypePerm4(Obj perm)
     return TYPE_PERM4;
 }
 
+// Forward declaration for PrintPerm
+template <typename T>
+static inline UInt LargestMovedPointPerm_(Obj perm);
 
 /****************************************************************************
 **
@@ -186,7 +189,8 @@ static void PrintPerm(Obj perm)
     const char *        fmt2;           /* common formats to print points  */
 
     /* set up the formats used, so all points are printed with equal width */
-    degPerm = DEG_PERM<T>(perm);
+    // Use LargestMovedPoint so printing is consistent
+    degPerm = LargestMovedPointPerm_<T>(perm);
     if      ( degPerm <    10 ) { fmt1 = "%>(%>%1d%<"; fmt2 = ",%>%1d%<"; }
     else if ( degPerm <   100 ) { fmt1 = "%>(%>%2d%<"; fmt2 = ",%>%2d%<"; }
     else if ( degPerm <  1000 ) { fmt1 = "%>(%>%3d%<"; fmt2 = ",%>%3d%<"; }
