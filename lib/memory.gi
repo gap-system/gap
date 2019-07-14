@@ -367,12 +367,6 @@ InstallOtherMethod(CycleStructurePerm,
 
 # Matrix methods:
 
-InstallOtherMethod( DimensionsMat, "for a matrix with memory",
-  [ IsMatrix and IsObjWithMemory ],
-  function(M)
-    return DimensionsMat(M!.el);
-  end);
-
 InstallOtherMethod( NumberRows, "for a matrix with memory",
   [ IsMatrix and IsObjWithMemory ],
   M -> NumberRows(M!.el) );

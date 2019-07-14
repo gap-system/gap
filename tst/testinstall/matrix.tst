@@ -59,3 +59,5 @@ gap> NrCols(m);
 2
 gap> NumberColumns(m);
 2
+gap> DimensionsMat(m);
+[ 2, 2 ]
