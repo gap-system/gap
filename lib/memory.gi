@@ -31,6 +31,9 @@ InstallGlobalFunction( GeneratorsWithMemory,
       if IsMatrix(o) then
           SetFilterObj(r,IsMatrix);
       fi;
+      if IsMatrixObj(o) then
+          SetFilterObj(r,IsMatrixObj);
+      fi;
       Add(ll,r);
     od;
     return ll;
@@ -194,6 +197,9 @@ InstallMethod( \*, "objects with memory", true,
     if IsMatrix(a) then
         SetFilterObj(r,IsMatrix);
     fi;
+    if IsMatrixObj(a) then
+        SetFilterObj(r,IsMatrixObj);
+    fi;
     return r;
   end);
 
@@ -206,6 +212,9 @@ InstallMethod( One, "objects with memory", true,
     if IsMatrix(a) then
         SetFilterObj(r,IsMatrix);
     fi;
+    if IsMatrixObj(a) then
+        SetFilterObj(r,IsMatrixObj);
+    fi;
     return r;
   end);
 
@@ -217,6 +226,9 @@ InstallMethod( OneOp, "objects with memory", true,
     Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
     if IsMatrix(a) then
         SetFilterObj(r,IsMatrix);
+    fi;
+    if IsMatrixObj(a) then
+        SetFilterObj(r,IsMatrixObj);
     fi;
     return r;
   end);
@@ -237,6 +249,9 @@ InstallMethod( InverseOp, "objects with memory", true,
     if IsMatrix(a) then
         SetFilterObj(r,IsMatrix);
     fi;
+    if IsMatrixObj(a) then
+        SetFilterObj(r,IsMatrixObj);
+    fi;
     return r;
   end);
 
@@ -254,6 +269,9 @@ InstallMethod( \^, "objects with memory", true,
     Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
     if IsMatrix(a) then
         SetFilterObj(r,IsMatrix);
+    fi;
+    if IsMatrixObj(a) then
+        SetFilterObj(r,IsMatrixObj);
     fi;
     return r;
   end);
