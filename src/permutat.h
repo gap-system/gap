@@ -76,7 +76,12 @@ EXPORT_INLINE const UInt4 * CONST_ADDR_PERM4(Obj perm)
 
 EXPORT_INLINE Obj STOREDINV_PERM(Obj perm)
 {
-    return ADDR_OBJ(perm)[0];
+    Obj inv = ADDR_OBJ(perm)[0];
+    /* Check inv has the same TNAM as perm
+      This is checked below in SET_STOREDINV_PERM, but could
+      be invalidated if either perm or inv is changed in-place */
+    GAP_ASSERT(!inv || (TNUM_OBJ(perm) == TNUM_OBJ(inv)));
+    return inv;
 }
 
 /* SET_STOREDINV_PERM should only be used in neither perm, nor inv has
@@ -95,6 +100,18 @@ EXPORT_INLINE void SET_STOREDINV_PERM(Obj perm, Obj inv)
         CHANGED_BAG(perm);
         ADDR_OBJ(inv)[0] = perm;
         CHANGED_BAG(inv);
+    }
+}
+
+/* Clear the stored inverse. This is required if 'perm' changes TNUM.
+   Also clears the stored inverse of the stored inverse (which should be
+   perm). */
+EXPORT_INLINE void CLEAR_STOREDINV_PERM(Obj perm)
+{
+    Obj inv = ADDR_OBJ(perm)[0];
+    if (inv) {
+        ADDR_OBJ(inv)[0] = 0;
+        ADDR_OBJ(perm)[0] = 0;
     }
 }
 
