@@ -2238,6 +2238,7 @@ Obj Array2Perm (
 
 void TrimPerm(Obj perm, UInt m)
 {
+    CLEAR_STOREDINV_PERM(perm);
     if (TNUM_OBJ(perm) == T_PERM2) {
         GAP_ASSERT(m <= DEG_PERM2(perm));
         ResizeBag(perm, SIZEBAG_PERM2(m));
