@@ -136,7 +136,7 @@ matrix:
           - libreadline-dev:i386
 
     # test error reporting and compiling as well as libgap
-    - env: TEST_SUITES="testspecial test-compile testlibgap"
+    - env: TEST_SUITES="testspecial test-compile testlibgap testkernel"
 
     # test Julia integration
     - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
