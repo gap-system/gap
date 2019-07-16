@@ -773,7 +773,6 @@ void MakeReadOnlyGVar (
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
     SetGVarWriteState(gvar, GVarReadOnly);
-    CHANGED_GVAR_LIST( FlagsGVars, gvar );
 }
 
 /****************************************************************************
@@ -789,7 +788,6 @@ void MakeConstantGVar(UInt gvar)
             (Int)NameGVar(gvar), 0L);
     }
     SetGVarWriteState(gvar, GVarConstant);
-    CHANGED_GVAR_LIST(FlagsGVars, gvar);
 }
 
 
