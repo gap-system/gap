@@ -51,9 +51,10 @@ extern inline struct FuncsModuleState *FuncsState(void)
     return (struct FuncsModuleState *)StateSlotsAtOffset(FuncsStateOffset);
 }
 
-void IncRecursionDepth(void)
+Int IncRecursionDepth(void)
 {
-    FuncsState()->RecursionDepth++;
+    int depth = ++(FuncsState()->RecursionDepth);
+    return depth;
 }
 
 void DecRecursionDepth(void)

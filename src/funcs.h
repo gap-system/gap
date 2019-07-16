@@ -45,7 +45,7 @@ void ExecEnd(UInt error);
 **  to protect against stack overflows and the resulting crashes.
 */
 
-void IncRecursionDepth(void);
+Int IncRecursionDepth(void);
 void DecRecursionDepth(void);
 Int  GetRecursionDepth(void);
 void SetRecursionDepth(Int depth);
@@ -55,9 +55,9 @@ void        RecursionDepthTrap(void);
 
 EXPORT_INLINE void CheckRecursionBefore( void )
 {
-    IncRecursionDepth();
+    Int depth = IncRecursionDepth();
     if ( RecursionTrapInterval &&
-         0 == (GetRecursionDepth() % RecursionTrapInterval) )
+         0 == (depth % RecursionTrapInterval) )
       RecursionDepthTrap();
 }
 
