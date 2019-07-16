@@ -1090,7 +1090,24 @@ testlibgap: ${LIBGAPTESTS}
 		$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
 		diff $(top_srcdir)/$(v).expect $(v).out && ) :
 
-.PHONY: testlibgap
+KERNELTESTS := $(addprefix tst/testkernel/,dstruct)
+
+# run a test in tst/testkernel
+tst/testkernel/%: obj/tst/testkernel/%.lo libgap.la
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $^ $(GAP_LIBS) -o $@
+
+clean: clean-testkernel
+clean-testkernel:
+	rm -f ${KERNELTESTS}
+
+# run all the tests in tst/testkernel
+testkernel: ${KERNELTESTS}
+	$(foreach v,$^, \
+		echo "Running $(v) ..." && \
+		$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
+		diff $(top_srcdir)/$(v).expect $(v).out && ) :
+
+.PHONY: testlibgap testkernel
 
 .PHONY: testinstall testmanuals testobsoletes teststandard testbugfix
 .PHONY: testpackage testpackages testpackagesload testpackagesvars

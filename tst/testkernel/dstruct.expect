@@ -1,0 +1,27 @@
+# Testing balanced trees.
+Tree state: 1048576 nodes, 33 depth.
+Missing nodes: 0
+# Removing half of all nodes.
+Tree state: 524288 nodes, 20 depth.
+Missing/wrong nodes: 0
+# Removing all but one node.
+Tree state: 1 nodes, 1 depth.
+# Creating tree from out of order insertions.
+Tree state: 1048576 nodes, 34 depth.
+Missing nodes: 0
+# Deleting half nodes out of order.
+Tree state: 524288 nodes, 20 depth.
+# Deleting other nodes out of order.
+Tree state: 0 nodes, 0 depth.
+# Balanced tree tests finished.
+# Testing dynamic arrays.
+Array state: length = 50000, sum = 1250025000
+Wrong entries: 0
+# Sorting array.
+Wrong entries: 0
+# Splitting and duplicating array.
+Array state: length = 50000, sum = 625025000
+# Cloning array.
+Wrong entries: 0
+Array state: length = 50000, sum = 625025000
+# Dynamic array tests finished.

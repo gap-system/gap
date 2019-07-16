@@ -81,6 +81,7 @@ static void FN(ExpandTo)(Array * arr, Int minlen)
     arr->cap = cap;
 }
 
+#if 0
 static void FN(Shrink)(Array * arr)
 {
     if (arr->cap > arr->len) {
@@ -91,6 +92,7 @@ static void FN(Shrink)(Array * arr)
         arr->cap = arr->len;
     }
 }
+#endif
 
 static Array * FN(Clone)(Array * arr)
 {

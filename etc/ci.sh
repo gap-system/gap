@@ -167,6 +167,10 @@ GAPInput
     make testlibgap
     ;;
 
+  testkernel)
+    make testkernel
+    ;;
+
   *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
