@@ -73,7 +73,7 @@ InstallMethod( IsCyclic,
 
 InstallMethod( Size,
     "for a cyclic group",
-    [ IsGroup and IsCyclic and HasGeneratorsOfGroup ],
+    [ IsGroup and IsCyclic and HasGeneratorsOfGroup and CanEasilyCompareElements ],
     {} -> -RankFilter(HasGeneratorsOfGroup),
 function(G)
   local gens;
