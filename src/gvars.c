@@ -186,14 +186,14 @@ inline Obj ValGVar(UInt gvar) {
 /****************************************************************************
 **
 *V  NameGVars . . . . . . . . . . . . . . . . . . . names of global variables
-*V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
+*V  FlagsGVars  . . . . . . . . . . . . flags of global variables (see below)
 *V  ExprGVars . . . . . . . . . .  expressions for automatic global variables
 *V  CopiesGVars . . . . . . . . . . . . . internal copies of global variables
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
 */
 #ifdef USE_GVAR_BUCKETS
 static Obj             NameGVars[GVAR_BUCKETS];
-static Obj             WriteGVars[GVAR_BUCKETS];
+static Obj             FlagsGVars[GVAR_BUCKETS];
 static Obj             ExprGVars[GVAR_BUCKETS];
 static Obj             CopiesGVars[GVAR_BUCKETS];
 static Obj             FopiesGVars[GVAR_BUCKETS];
@@ -210,7 +210,7 @@ static Obj             FopiesGVars[GVAR_BUCKETS];
 #else   // USE_GVAR_BUCKETS
 
 static Obj             NameGVars;
-static Obj             WriteGVars;
+static Obj             FlagsGVars;
 static Obj             ExprGVars;
 static Obj             CopiesGVars;
 static Obj             FopiesGVars;
@@ -225,6 +225,75 @@ static Obj             FopiesGVars;
     CHANGED_BAG( list );
 
 #endif
+
+// FlagsGVars contains information about global variables.
+// Once cast to a GVarFlagInfo struct, this information is:
+//
+// gvarWriteFlag: A value of type GVarWriteFlag which denotes if the variable
+// is Assignable, ReadOnly, or Constant.
+// hasExprCopiesFopies: If the variable has ever had a non-default value
+// assigned to ExprGVars, CopiesGVars or FopiesGVars. Note that this value is
+// never cleared at present, so it can be set to 1 while these three arrays
+// all have their default value, but if it is 0 these arrays definitely have
+// their default values.
+
+typedef enum {
+    GVarAssignable = 0,
+    GVarReadOnly = 1,
+    GVarConstant = 2,
+} GVarWriteFlag;
+
+typedef struct {
+    unsigned char gvarWriteFlag : 2;
+    unsigned char hasExprCopiesFopies : 1;
+} GVarFlagInfo;
+
+// If this size increases, the type used in GetGVarFlags and
+// SetGVarFlags below must be changed
+GAP_STATIC_ASSERT(sizeof(GVarFlagInfo) == sizeof(unsigned char),
+                  "GVarFlagInfo size mismatch");
+
+static GVarFlagInfo GetGVarFlagInfo(Int gvar)
+{
+    unsigned char val = INT_INTOBJ(ELM_GVAR_LIST(FlagsGVars, gvar));
+    GVarFlagInfo  info;
+    // This is technically the safest way of converting a struct to an integer
+    // and is optimised away by the compiler
+    memcpy(&info, &val, sizeof(GVarFlagInfo));
+    return info;
+}
+
+static void SetGVarFlagInfo(Int gvar, GVarFlagInfo info)
+{
+    unsigned char val;
+    // This is technically the safest way of converting an integer into a
+    // struct and is optimised away by the compiler
+    memcpy(&val, &info, sizeof(GVarFlagInfo));
+    SET_ELM_GVAR_LIST(FlagsGVars, gvar, INTOBJ_INT(val));
+}
+
+static void InitGVarFlagInfo(Int gvar)
+{
+    // This is equal to setting all members of GVarFlagInfo to 0
+    SET_ELM_GVAR_LIST(FlagsGVars, gvar, INTOBJ_INT(0));
+}
+
+
+// Helper functions to more easily set members of GVarFlagInfo
+static void SetGVarWriteState(Int gvar, GVarWriteFlag w)
+{
+    GVarFlagInfo info = GetGVarFlagInfo(gvar);
+    info.gvarWriteFlag = w;
+    SetGVarFlagInfo(gvar, info);
+}
+
+static void SetHasExprCopiesFopies(Int gvar, Int set)
+{
+    GVarFlagInfo info = GetGVarFlagInfo(gvar);
+    info.hasExprCopiesFopies = set;
+    SetGVarFlagInfo(gvar, info);
+}
+
 
 /****************************************************************************
 **
@@ -300,36 +369,12 @@ static Obj * ELM_COPS_PLIST(Obj cops, UInt i)
     return (Obj *)val;
 }
 
-void            AssGVar (
-    UInt                gvar,
-    Obj                 val )
-{
-    /* make certain that the variable is not read only                     */
-    if ((REREADING != True) && IsReadOnlyGVar(gvar)) {
-        ErrorMayQuit("Variable: '%g' is read only", (Int)NameGVar(gvar), 0);
-    }
-
-    AssGVarWithoutReadOnlyCheck(gvar, val);
-}
-
-// This is a kernel-only variant of AssGVar which will change read-only
-// variables, which is used for constants like:
-// Time, MemoryAllocated, last, last2, last3
-void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
+static void AssGVarInternal(UInt gvar, Obj val, Int hasExprCopiesFopies)
 {
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
     Obj                 onam;           /* object of <name>                */
-
-    Obj writeval;
-
-    writeval = ELM_GVAR_LIST(WriteGVars, gvar);
-
-    // Make certain variable is not constant
-    if (writeval == INTOBJ_INT(-1)) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
-    }
 
     /* assign the value to the global variable                             */
 #ifdef HPCGAP
@@ -344,6 +389,26 @@ void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
 #endif
     VAL_GVAR_INTERN(gvar) = val;
     CHANGED_GVAR_LIST( ValGVars, gvar );
+
+    /* assign name to a function                                           */
+#ifdef HPCGAP
+    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
+#endif
+        if (val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0) {
+            onam = CopyToStringRep(NameGVar(gvar));
+            MakeImmutable(onam);
+            SET_NAME_FUNC(val, onam);
+            CHANGED_BAG(val);
+        }
+#ifdef HPCGAP
+    }
+#endif
+
+
+    if (!hasExprCopiesFopies) {
+        // No need to perform any of the remaining checks
+        return;
+    }
 
     /* if the global variable was automatic, convert it to normal          */
     SET_ELM_GVAR_LIST( ExprGVars, gvar, 0 );
@@ -387,20 +452,42 @@ void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
             *copy = ErrorMustHaveAssObjFunc;
         }
     }
+}
 
-    /* assign name to a function                                           */
-#ifdef HPCGAP
-    if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
-#endif
-    if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
-        onam = CopyToStringRep(NameGVar(gvar));
-        MakeImmutable(onam);
-        SET_NAME_FUNC(val, onam);
-        CHANGED_BAG(val);
+void AssGVar(UInt gvar, Obj val)
+{
+    GVarFlagInfo info = GetGVarFlagInfo(gvar);
+
+    if (info.gvarWriteFlag != GVarAssignable) {
+        /* make certain that the variable is not read only */
+        if ((REREADING != True) && info.gvarWriteFlag == GVarReadOnly) {
+            ErrorMayQuit("Variable: '%g' is read only", (Int)NameGVar(gvar),
+                         0);
+        }
+
+        // Make certain variable is not constant
+        if (info.gvarWriteFlag == GVarConstant) {
+            ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar),
+                         0L);
+        }
     }
-#ifdef HPCGAP
+
+    AssGVarInternal(gvar, val, info.hasExprCopiesFopies);
+}
+
+// This is a kernel-only variant of AssGVar which will change read-only
+// variables, which is used for constants like:
+// Time, MemoryAllocated, last, last2, last3
+void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
+{
+    GVarFlagInfo info = GetGVarFlagInfo(gvar);
+
+    // Make certain variable is not constant
+    if (info.gvarWriteFlag == GVarConstant) {
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
-#endif
+
+    AssGVarInternal(gvar, val, info.hasExprCopiesFopies);
 }
 
 
@@ -616,7 +703,7 @@ UInt GVarName (
            ValGVars[gvar_bucket] = NewGVarBucket();
            PtrGVars[gvar_bucket] = ADDR_OBJ(ValGVars[gvar_bucket])+1;
            NameGVars[gvar_bucket] = NewGVarBucket();
-           WriteGVars[gvar_bucket] = NewGVarBucket();
+           FlagsGVars[gvar_bucket] = NewGVarBucket();
            ExprGVars[gvar_bucket] = NewGVarBucket();
            CopiesGVars[gvar_bucket] = NewGVarBucket();
            FopiesGVars[gvar_bucket] = NewGVarBucket();
@@ -626,8 +713,8 @@ UInt GVarName (
         SET_LEN_PLIST( ValGVars,    numGVars );
         GROW_PLIST(    NameGVars,   numGVars );
         SET_LEN_PLIST( NameGVars,   numGVars );
-        GROW_PLIST(    WriteGVars,  numGVars );
-        SET_LEN_PLIST( WriteGVars,  numGVars );
+        GROW_PLIST(FlagsGVars, numGVars);
+        SET_LEN_PLIST(FlagsGVars, numGVars);
         GROW_PLIST(    ExprGVars,   numGVars );
         SET_LEN_PLIST( ExprGVars,   numGVars );
         GROW_PLIST(    CopiesGVars, numGVars );
@@ -639,7 +726,7 @@ UInt GVarName (
         SET_ELM_GVAR_LIST( ValGVars,    numGVars, 0 );
         SET_ELM_GVAR_LIST( NameGVars,   numGVars, string );
         CHANGED_GVAR_LIST( NameGVars,   numGVars );
-        SET_ELM_GVAR_LIST( WriteGVars,  numGVars, INTOBJ_INT(1) );
+        InitGVarFlagInfo( numGVars );
         SET_ELM_GVAR_LIST( ExprGVars,   numGVars, 0 );
         SET_ELM_GVAR_LIST( CopiesGVars, numGVars, 0 );
         SET_ELM_GVAR_LIST( FopiesGVars, numGVars, 0 );
@@ -685,8 +772,8 @@ void MakeReadOnlyGVar (
     if (IsConstantGVar(gvar)) {
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
-    SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(0) );
-    CHANGED_GVAR_LIST( WriteGVars, gvar );
+    SetGVarWriteState(gvar, GVarReadOnly);
+    CHANGED_GVAR_LIST( FlagsGVars, gvar );
 }
 
 /****************************************************************************
@@ -701,8 +788,8 @@ void MakeConstantGVar(UInt gvar)
             "Variable: '%g' must be assigned a small integer, true or false",
             (Int)NameGVar(gvar), 0L);
     }
-    SET_ELM_GVAR_LIST(WriteGVars, gvar, INTOBJ_INT(-1));
-    CHANGED_GVAR_LIST(WriteGVars, gvar);
+    SetGVarWriteState(gvar, GVarConstant);
+    CHANGED_GVAR_LIST(FlagsGVars, gvar);
 }
 
 
@@ -720,6 +807,7 @@ void MakeThreadLocalVar (
     if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
     SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
+    SetHasExprCopiesFopies(gvar, 1);
     CHANGED_GVAR_LIST( ExprGVars, gvar );
     if (value && TLVars)
         SetTLDefault(TLVars, rnam, value);
@@ -783,8 +871,7 @@ void MakeReadWriteGVar (
     if (IsConstantGVar(gvar)) {
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
     }
-    SET_ELM_GVAR_LIST( WriteGVars, gvar, INTOBJ_INT(1) );
-    CHANGED_GVAR_LIST( WriteGVars, gvar );
+    SetGVarWriteState(gvar, GVarAssignable);
 }
 
 
@@ -818,7 +905,7 @@ static Obj FuncMakeReadWriteGVar(Obj self, Obj name)
 Int IsReadOnlyGVar (
     UInt                gvar )
 {
-    return ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(0);
+    return GetGVarFlagInfo(gvar).gvarWriteFlag == GVarReadOnly;
 }
 
 /****************************************************************************
@@ -844,7 +931,7 @@ static Obj FuncIsReadOnlyGVar (
 */
 Int IsConstantGVar(UInt gvar)
 {
-    return ELM_GVAR_LIST(WriteGVars, gvar) == INTOBJ_INT(-1);
+    return GetGVarFlagInfo(gvar).gvarWriteFlag == GVarConstant;
 }
 
 /****************************************************************************
@@ -904,6 +991,7 @@ static Obj FuncAUTO(Obj self, Obj args)
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
+        SetHasExprCopiesFopies(gvar, 1);
         CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
@@ -1258,6 +1346,7 @@ void UpdateCopyFopyInfo ( void )
                 MakeBagPublic(cops);
 #endif
                 SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
+                SetHasExprCopiesFopies(gvar, 1);
                 CHANGED_GVAR_LIST( FopiesGVars, gvar );
             }
         }
@@ -1269,6 +1358,7 @@ void UpdateCopyFopyInfo ( void )
                 MakeBagPublic(cops);
 #endif
                 SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
+                SetHasExprCopiesFopies(gvar, 1);
                 CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
         }
@@ -1526,7 +1616,7 @@ static Int InitKernel (
       sprintf((cookies[5][i]), "Fgv%d", i);
       InitGlobalBag( ValGVars+i, (cookies[0][i]) );
       InitGlobalBag( NameGVars+i, (cookies[1][i]) );
-      InitGlobalBag( WriteGVars+i, (cookies[2][i]) );
+      InitGlobalBag(FlagsGVars + i, (cookies[2][i]));
       InitGlobalBag( ExprGVars+i, (cookies[3][i]) );
       InitGlobalBag( CopiesGVars+i, (cookies[4][i]) );
       InitGlobalBag( FopiesGVars+i, (cookies[5][i])  );
@@ -1536,8 +1626,7 @@ static Int InitKernel (
                    "src/gvars.c:ValGVars" );
     InitGlobalBag( &NameGVars,
                    "src/gvars.c:NameGVars" );
-    InitGlobalBag( &WriteGVars,
-                   "src/gvars.c:WriteGVars" );
+    InitGlobalBag(&FlagsGVars, "src/gvars.c:FlagsGVars");
     InitGlobalBag( &ExprGVars,
                    "src/gvars.c:ExprGVars" );
     InitGlobalBag( &CopiesGVars,
@@ -1649,7 +1738,7 @@ static Int InitLibrary (
     /* make the lists for global variables                                 */
     ValGVars = NEW_PLIST( T_PLIST, 0 );
     NameGVars = NEW_PLIST( T_PLIST, 0 );
-    WriteGVars = NEW_PLIST( T_PLIST, 0 );
+    FlagsGVars = NEW_PLIST(T_PLIST, 0);
     ExprGVars = NEW_PLIST( T_PLIST, 0 );
     CopiesGVars = NEW_PLIST( T_PLIST, 0 );
     FopiesGVars = NEW_PLIST( T_PLIST, 0 );
