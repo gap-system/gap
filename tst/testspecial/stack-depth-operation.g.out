@@ -1,7 +1,0 @@
-gap> DeclareAttribute("XXX",IsGroup);
-gap> InstallMethod(XXX,[IsGroup],XXX);
-gap> XXX(SymmetricGroup(5));
-Error, recursion depth trap (5000)
-not in any function at *stdin*:4
-you may 'return;'
-brk> QUIT;
