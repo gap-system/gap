@@ -5997,7 +5997,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
     "for an ordinary character table and two lists of class positions",
     [ IsOrdinaryTable, IsObject, IsObject ],
     function( tbl, nsg, center )
-    local size, classes, r;
+    local size, classes, orders, max, r;
 
     size:= Size( tbl );
     classes:= SizesConjugacyClasses( tbl );
@@ -6011,9 +6011,9 @@ InstallOtherMethod( CharacterTableIsoclinic,
 
     if IsList( center ) then
       # find an element of largest order
-      center:= ShallowCopy( center );
-      SortParallel( OrdersClassRepresentatives( tbl ){ center }, center );
-      center:= center[ Length( center ) ];
+      orders:= OrdersClassRepresentatives( tbl );
+      max:= Maximum( orders{ center } );
+      center:= First( center, i -> orders[i] = max );
     fi;
 
     r:= rec();
@@ -6354,9 +6354,12 @@ InstallMethod( CharacterTableIsoclinic,
         irreducibles:= List( Irr( modtbl ), ValuesOfClassFunction );
       else
         factorfusion:= GetFusionMap( reg, ordiso );
-        xpos:= source.centralElement;
+        xpos:= Position( factorfusion, source.centralElement );
         centre:= [ xpos ];
-        outer:= source.outerClasses;
+        outer:= List( source.outerClasses,
+                      l -> Filtered( List( l,
+                                           i -> Position( factorfusion, i ) ),
+                                     IsInt ) );
         irreducibles:= IrreducibleCharactersOfIsoclinicGroup( Irr( modtbl ),
                           centre, outer, xpos, source.p, source.k ).all;
       fi;
