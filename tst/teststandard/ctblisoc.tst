@@ -1,4 +1,4 @@
-#@local g, t, iso, t3, iso3, orders, n, iso2, filt, c
+#@local g, t, iso, t3, iso3, orders, n, iso2, filt, outer, c
 gap> START_TEST( "ctblisoc.tst" );
 
 # one argument
@@ -100,6 +100,20 @@ gap> Length( filt );
 1
 gap> IdGroup( filt[1] ) = IdGroup( g );
 false
+gap> if TestPackageAvailability( "ctbllib" ) <> fail and
+>       LoadPackage( "ctbllib", false ) <> fail then
+>      t:= CharacterTable( "4_1.L3(4).2_3" );
+>      iso:= CharacterTableIsoclinic( t, [ 1 .. 4 ] );
+>      outer:= Difference( [ 1 .. NrConjugacyClasses( t ) ],
+>                          ClassPositionsOfDerivedSubgroup( t ) );
+>      if PowerMap( iso, 2 ){ outer{ [ 1 .. 4 ] } } <> [ 2, 4, 2, 4 ] then
+>        # If the power map is [ ..., 4, 2, 4, 2, ... ] then
+>        # the table can be correct, but we want
+>        # --for example for the library table "4_1.L3(4).2_3*"--
+>        # that the *first* generator of the centre appears first.
+>        Error( "wrong ordering of classes for isoclinic table" );
+>      fi;
+>    fi;
 
 # optional arguments:
 # normal subgroup specified, ...
