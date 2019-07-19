@@ -2,6 +2,7 @@
 ##
 ##  Some tests for permutation groups and friends(takes a few seconds to run)
 ##
+#@local g, dc, ac, p, s, dc1, u, part, iso
 gap> START_TEST("permgrp.tst");
 gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));
 1209600
@@ -104,6 +105,5 @@ gap> iso:=IsomorphismPcGroup(g);;
 gap> Length(DoubleCosets(Image(iso,g),Image(iso,s),Image(iso,s)));
 24
 
-# Unbind variables so we can GC memory
-gap> Unbind(g); Unbind(dc); Unbind(ac); Unbind(g); Unbind(p); Unbind(s);
+#
 gap> STOP_TEST( "permgrp.tst", 1);
