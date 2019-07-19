@@ -685,9 +685,10 @@ AC_CHECK_HEADERS([signal.h])
 AC_CHECK_FUNCS([select])
 
 dnl various functions to deal with child processes
+AC_CHECK_HEADERS([spawn.h])
 AC_HEADER_SYS_WAIT
 AC_FUNC_FORK
-AC_CHECK_FUNCS([popen])
+AC_CHECK_FUNCS([popen posix_spawn])
 
 dnl signal handling
 AC_CHECK_TYPE([sig_atomic_t], [],

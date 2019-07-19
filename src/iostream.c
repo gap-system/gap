@@ -31,6 +31,7 @@
 #include "lists.h"
 #include "modules.h"
 #include "stringobj.h"
+#include "sysenv.h"
 
 #include "hpc/thread.h"
 
@@ -39,6 +40,10 @@
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
+
+#ifdef HAVE_SPAWN_H
+#include <spawn.h>
+#endif
 
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
@@ -60,7 +65,7 @@
 // the IOStream related variables, including FreeptyIOStreams
 
 typedef struct {
-  int childPID;   /* Also used as a link to make a linked free list */
+  pid_t childPID;   /* Also used as a link to make a linked free list */
   int ptyFD;      /* GAP reading from external prog */
   int inuse;      /* we need to scan all the "live" structures when we have
                      had SIGCHLD so, for now, we just walk the array for
@@ -131,6 +136,12 @@ static void KillChild(UInt stream)
 
 /****************************************************************************
 **
+*/
+#define PErr(msg)                                                            \
+    Pr(msg ": %s (errnor %d)\n", (Int)strerror(errno), (Int)errno);
+
+/****************************************************************************
+**
 *F  OpenPty( <master>, <slave> ) . . . . . . . . open a pty master/slave pair
 */
 
@@ -174,23 +185,23 @@ static UInt OpenPty(int * master, int * slave)
        */
     *master = posix_openpt(O_RDWR | O_NOCTTY);
     if (*master < 0) {
-        Pr("OpenPty: posix_openpt failed\n", 0L, 0L);
+        PErr("OpenPty: posix_openpt failed");
         return 1;
     }
 
     if (grantpt(*master)) {
-        Pr("OpenPty: grantpt failed\n", 0L, 0L);
+        PErr("OpenPty: grantpt failed");
         goto error;
     }
     if (unlockpt(*master)) {
         close(*master);
-        Pr("OpenPty: unlockpt failed\n", 0L, 0L);
+        PErr("OpenPty: unlockpt failed");
         goto error;
     }
 
     *slave = open(ptsname(*master), O_RDWR, 0);
     if (*slave < 0) {
-        Pr("OpenPty: opening slave tty failed\n", 0L, 0L);
+        PErr("OpenPty: opening slave tty failed");
         goto error;
     }
     return 0;
@@ -281,12 +292,22 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
     ChildStatusChanged(SIGCHLD);
     return (Obj)0;
 }
+
+
+// HACK: since we can't use posix_spawn in a thread-safe manner, disable
+// it for HPC-GAP
+#undef HAVE_POSIX_SPAWN
+
 #endif
 
-static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
+static Int
+StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 {
     int slave; /* pipe to child                   */
     Int stream;
+#ifdef HAVE_POSIX_SPAWN
+    int oldwd = -1;
+#endif
 
     struct termios tst; /* old and new terminal state      */
 
@@ -301,7 +322,7 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
 
     /* open pseudo terminal for communication with gap */
     if (OpenPty(&PtyIOStreams[stream].ptyFD, &slave)) {
-        Pr("open pseudo tty failed (errno %d)\n", errno, 0);
+        PErr("StartChildProcess: open pseudo tty failed");
         FreeStream(stream);
         HashUnlock(PtyIOStreams);
         return -1;
@@ -309,7 +330,7 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
 
     /* Now fiddle with the terminal sessions on the pty */
     if (tcgetattr(slave, &tst) == -1) {
-        Pr("tcgetattr on slave pty failed (errno %d)\n", errno, 0);
+        PErr("StartChildProcess: tcgetattr on slave pty failed");
         goto cleanup;
     }
     tst.c_cc[VINTR] = 0377;
@@ -320,7 +341,7 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
     tst.c_lflag    &= ~(ECHO|ICANON);
     tst.c_oflag    &= ~(ONLCR);
     if (tcsetattr(slave, TCSANOW, &tst) == -1) {
-        Pr("tcsetattr on slave pty failed (errno %d)\n", errno, 0);
+        PErr("StartChildProcess: tcsetattr on slave pty failed");
         goto cleanup;
     }
 
@@ -332,6 +353,81 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
     PtyIOStreams[stream].blocked = 0;
     PtyIOStreams[stream].changed = 0;
     /* fork */
+#ifdef HAVE_POSIX_SPAWN
+    posix_spawn_file_actions_t file_actions;
+
+    // setup file actions
+    if (posix_spawn_file_actions_init(&file_actions)) {
+        PErr("StartChildProcess: posix_spawn_file_actions_init failed");
+        goto cleanup;
+    }
+
+    if (posix_spawn_file_actions_addclose(&file_actions,
+                                          PtyIOStreams[stream].ptyFD)) {
+        PErr("StartChildProcess: posix_spawn_file_actions_addclose failed");
+        posix_spawn_file_actions_destroy(&file_actions);
+        goto cleanup;
+    }
+
+    if (posix_spawn_file_actions_adddup2(&file_actions, slave, 0)) {
+        PErr("StartChildProcess: "
+             "posix_spawn_file_actions_adddup2(slave, 0) failed");
+        posix_spawn_file_actions_destroy(&file_actions);
+        goto cleanup;
+    }
+
+    if (posix_spawn_file_actions_adddup2(&file_actions, slave, 1)) {
+        PErr("StartChildProcess: "
+             "posix_spawn_file_actions_adddup2(slave, 1) failed");
+        posix_spawn_file_actions_destroy(&file_actions);
+        goto cleanup;
+    }
+
+    // temporarily change the working directory
+    //
+    // WARNING: This is not thread safe! Unfortunately, there is no portable
+    // way to do this race free, without using an external shim executable
+    // which sets the wd and then calls the actually target executable. But at
+    // least this well-known deficiency has finally been realized as a problem
+    // by POSIX in 2018, just about 14 years after posix_spawn was first put
+    // into the standard), and so we might see a proper fix for this soon,
+    // i.e., possibly even within the next decade!
+    // See also <http://austingroupbugs.net/view.php?id=1208>
+    oldwd = open(".", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (oldwd == -1) {
+        PErr("StartChildProcess: cannot open current working "
+             "directory");
+        posix_spawn_file_actions_destroy(&file_actions);
+        goto cleanup;
+    }
+    if (chdir(dir) == -1) {
+        PErr("StartChildProcess: cannot change working "
+             "directory for subprocess");
+        posix_spawn_file_actions_destroy(&file_actions);
+        goto cleanup;
+    }
+
+    // spawn subprocess
+    if (posix_spawn(&PtyIOStreams[stream].childPID, prg, &file_actions, 0,
+                    args, environ)) {
+        PErr("StartChildProcess: posix_spawn failed");
+        goto cleanup;
+    }
+
+    // restore working directory
+    if (fchdir(oldwd)) {
+        PErr("StartChildProcess: failed to restore working dir after "
+             "spawning");
+    }
+    close(oldwd);    // ignore error
+    oldwd = -1;
+
+    // cleanup
+    if (posix_spawn_file_actions_destroy(&file_actions)) {
+        PErr("StartChildProcess: posix_spawn_file_actions_destroy failed");
+        goto cleanup;
+    }
+#else
     PtyIOStreams[stream].childPID = fork();
     if (PtyIOStreams[stream].childPID == 0) {
         /* Set up the child */
@@ -358,11 +454,12 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
         close(slave);
         _exit(1);
     }
+#endif
 
     /* Now we're back in the master */
     /* check if the fork was successful */
     if (PtyIOStreams[stream].childPID == -1) {
-        Pr("Panic: cannot fork to subprocess (errno %d).\n", errno, 0);
+        PErr("StartChildProcess: cannot fork to subprocess");
         goto cleanup;
     }
     close(slave);
@@ -372,6 +469,16 @@ static Int StartChildProcess(Char * dir, Char * prg, Char * args[])
     return stream;
 
 cleanup:
+#ifdef HAVE_POSIX_SPAWN
+    if (oldwd >= 0) {
+        // restore working directory
+        if (fchdir(oldwd)) {
+            PErr("StartChildProcess: failed to restore working dir during "
+                 "cleanup");
+        }
+        close(oldwd);
+    }
+#endif
     close(slave);
     close(PtyIOStreams[stream].ptyFD);
     PtyIOStreams[stream].inuse = 0;
@@ -429,7 +536,8 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
         argv[i] = CSTR_STRING(allargs[i]);
     }
     argv[i] = (Char *)0;
-    pty = StartChildProcess(CSTR_STRING(dir), CSTR_STRING(prog), argv);
+    pty = StartChildProcess(CONST_CSTR_STRING(dir), CONST_CSTR_STRING(prog),
+                            argv);
     if (pty < 0)
         return Fail;
     else
