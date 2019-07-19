@@ -20,11 +20,6 @@
 // #define ALLOC allocation function (optional)
 // #define DEALLOC deallocation function (optional)
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-#endif
-
 #define Array JOIN(ELEM_TYPE, Array)
 
 #define FN(sym) JOIN(Array, sym)
@@ -45,7 +40,7 @@ typedef struct {
     ELEM_TYPE * items;
 } Array;
 
-static Array * FN(Make)(Int cap)
+static inline Array * FN(Make)(Int cap)
 {
     Array * arr;
     GAP_ASSERT(cap >= 0);
@@ -58,13 +53,13 @@ static Array * FN(Make)(Int cap)
     return arr;
 }
 
-static void FN(Delete)(Array * arr)
+static inline void FN(Delete)(Array * arr)
 {
     DEALLOC(arr->items);
     DEALLOC(arr);
 }
 
-static void FN(ExpandTo)(Array * arr, Int minlen)
+static inline void FN(ExpandTo)(Array * arr, Int minlen)
 {
     Int cap = arr->cap;
     GAP_ASSERT(minlen >= 0);
@@ -81,8 +76,7 @@ static void FN(ExpandTo)(Array * arr, Int minlen)
     arr->cap = cap;
 }
 
-#if 0
-static void FN(Shrink)(Array * arr)
+static inline void FN(Shrink)(Array * arr)
 {
     if (arr->cap > arr->len) {
         ELEM_TYPE * items = ALLOC(ELEM_TYPE, arr->len);
@@ -92,9 +86,8 @@ static void FN(Shrink)(Array * arr)
         arr->cap = arr->len;
     }
 }
-#endif
 
-static Array * FN(Clone)(Array * arr)
+static inline Array * FN(Clone)(Array * arr)
 {
     Array * clone = FN(Make)(arr->len);
     clone->len = arr->len;
@@ -102,38 +95,38 @@ static Array * FN(Clone)(Array * arr)
     return clone;
 }
 
-static void FN(SetLen)(Array * arr, Int len)
+static inline void FN(SetLen)(Array * arr, Int len)
 {
     GAP_ASSERT(len <= arr->len);
     if (len < arr->len)
         arr->len = len;
 }
 
-static inline Int FN(Len)(Array * arr)
+static inline inline Int FN(Len)(Array * arr)
 {
     return arr->len;
 }
 
-static inline ELEM_TYPE FN(Get)(Array * arr, Int i)
+static inline inline ELEM_TYPE FN(Get)(Array * arr, Int i)
 {
     GAP_ASSERT(i >= 0 && i < arr->len);
     return arr->items[i];
 }
 
-static inline void FN(Put)(Array * arr, Int i, ELEM_TYPE item)
+static inline inline void FN(Put)(Array * arr, Int i, ELEM_TYPE item)
 {
     GAP_ASSERT(i >= 0 && i < arr->len);
     arr->items[i] = item;
 }
 
-static inline void FN(Add)(Array * arr, ELEM_TYPE item)
+static inline inline void FN(Add)(Array * arr, ELEM_TYPE item)
 {
     FN(ExpandTo)(arr, arr->len + 1);
     arr->items[arr->len++] = item;
 }
 
 #ifdef COMPARE
-static void FN(Sort)(Array * arr)
+static inline void FN(Sort)(Array * arr)
 {
     Int len = arr->len;
     if (len <= 1)
@@ -188,7 +181,3 @@ static void FN(Sort)(Array * arr)
 #undef COMPARE
 #undef ALLOC
 #undef DEALLOC
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
