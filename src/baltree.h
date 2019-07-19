@@ -26,11 +26,6 @@
 // #define ALLOC allocation function (optional)
 // #define DEALLOC deallocation function (optional)
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-#endif
-
 #define Tree JOIN(ELEM_TYPE, Tree)
 #define Node JOIN(ELEM_TYPE, Node)
 
@@ -61,7 +56,7 @@ static Int height_to_size[MaxTreeDepth];
 static const Int alpha_hi = 3;
 static const Int alpha_lo = 2;
 
-static void InitBalancedTrees(void)
+static inline void InitBalancedTrees(void)
 {
     if (!height_to_size_init) {
         height_to_size_init = 1;
@@ -86,7 +81,7 @@ typedef struct {
     Node * root;
 } Tree;
 
-static void FN(DeleteNodes)(Node * node)
+static inline void FN(DeleteNodes)(Node * node)
 {
     if (node != NULL) {
         FN(DeleteNodes)(node->left);
@@ -96,7 +91,7 @@ static void FN(DeleteNodes)(Node * node)
 }
 
 // Linearize subtree starting at node
-static Node ** FN(Linearize)(Node ** buf, Node * node)
+static inline Node ** FN(Linearize)(Node ** buf, Node * node)
 {
     if (node->left)
         buf = FN(Linearize)(buf, node->left);
@@ -106,7 +101,7 @@ static Node ** FN(Linearize)(Node ** buf, Node * node)
     return buf;
 }
 
-static Node * FN(Treeify)(Node ** buf, Int size)
+static inline Node * FN(Treeify)(Node ** buf, Int size)
 {
     Int mid;
     switch (size) {
@@ -124,7 +119,7 @@ static Node * FN(Treeify)(Node ** buf, Int size)
     }
 }
 
-static void FN(Rebalance)(Node ** nodeaddr, Int size)
+static inline void FN(Rebalance)(Node ** nodeaddr, Int size)
 {
     const Int N = 1024;
     Node *    node = *nodeaddr;
@@ -136,7 +131,7 @@ static void FN(Rebalance)(Node ** nodeaddr, Int size)
         DEALLOC(buf);
 }
 
-static Int FN(CountAux)(Node * node)
+static inline Int FN(CountAux)(Node * node)
 {
     if (node == NULL)
         return 0;
@@ -144,12 +139,12 @@ static Int FN(CountAux)(Node * node)
         return 1 + FN(CountAux)(node->left) + FN(CountAux)(node->right);
 }
 
-static Int FN(Count)(Tree * tree)
+static inline Int FN(Count)(Tree * tree)
 {
     return FN(CountAux)(tree->root);
 }
 
-static ELEM_TYPE * FN(FindAux)(Node * node, ELEM_TYPE item)
+static inline ELEM_TYPE * FN(FindAux)(Node * node, ELEM_TYPE item)
 {
     if (node == NULL)
         return NULL;
@@ -162,7 +157,7 @@ static ELEM_TYPE * FN(FindAux)(Node * node, ELEM_TYPE item)
         return &node->item;
 }
 
-static Int FN(InsertAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item, int d)
+static inline Int FN(InsertAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item, int d)
 {
     Node * node = *nodeaddr;
     if (node == NULL) {
@@ -208,7 +203,7 @@ static Int FN(InsertAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item, int d)
     return 0;
 }
 
-static void FN(RemoveNode)(Tree * tree, Node ** nodeaddr)
+static inline void FN(RemoveNode)(Tree * tree, Node ** nodeaddr)
 {
     Node * node = *nodeaddr;
     Node * del = node;
@@ -238,7 +233,7 @@ static void FN(RemoveNode)(Tree * tree, Node ** nodeaddr)
     }
 }
 
-static void FN(RemoveAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item)
+static inline void FN(RemoveAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item)
 {
     Node * node = *nodeaddr;
     if (!node)
@@ -253,7 +248,7 @@ static void FN(RemoveAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item)
     }
 }
 
-static Tree * FN(Make)(void)
+static inline Tree * FN(Make)(void)
 {
     Tree * tree = ALLOC(Tree, 1);
     tree->nodes = tree->maxnodes = 0;
@@ -262,38 +257,38 @@ static Tree * FN(Make)(void)
     return tree;
 }
 
-static void FN(Delete)(Tree * tree)
+static inline void FN(Delete)(Tree * tree)
 {
     FN(DeleteNodes)(tree->root);
     DEALLOC(tree);
 }
 
 
-static void FN(Insert)(Tree * tree, ELEM_TYPE item)
+static inline void FN(Insert)(Tree * tree, ELEM_TYPE item)
 {
     FN(InsertAux)(tree, &tree->root, item, 0);
     if (tree->nodes > tree->maxnodes)
         tree->maxnodes = tree->nodes;
 }
 
-static ELEM_TYPE * FN(Find)(Tree * tree, ELEM_TYPE item)
+static inline ELEM_TYPE * FN(Find)(Tree * tree, ELEM_TYPE item)
 {
     return FN(FindAux)(tree->root, item);
 }
 
-static void FN(Remove)(Tree * tree, ELEM_TYPE item)
+static inline void FN(Remove)(Tree * tree, ELEM_TYPE item)
 {
     FN(RemoveAux)(tree, &tree->root, item);
 }
 
-static void FN(Clear)(Tree * tree)
+static inline void FN(Clear)(Tree * tree)
 {
     FN(DeleteNodes)(tree->root);
     tree->root = NULL;
     tree->nodes = tree->maxnodes = 0;
 }
 
-static Int FN(DepthAux)(Node * node)
+static inline Int FN(DepthAux)(Node * node)
 {
     if (node == NULL)
         return 0;
@@ -302,7 +297,7 @@ static Int FN(DepthAux)(Node * node)
     return (m1 < m2 ? m2 : m1) + 1;
 }
 
-static Int FN(Depth)(Tree * tree)
+static inline Int FN(Depth)(Tree * tree)
 {
     return FN(DepthAux)(tree->root);
 }
@@ -319,7 +314,3 @@ static Int FN(Depth)(Tree * tree)
 #undef COMPARE
 #undef ALLOC
 #undef DEALLOC
-
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
