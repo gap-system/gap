@@ -1,3 +1,5 @@
+#@local len, y, list1, list2, list3, i
+#@local captureLocal, deepCaptureLocal, changeCaptureLocal
 gap> START_TEST("innerfunc.tst");
 gap> len := 100000;;
 gap> captureLocal := function(val)
@@ -62,6 +64,5 @@ gap> y := List(list2, z -> z()());;
 gap> y = [len+1..len*2];
 true
 
-# Unbind variables so we can GC memory
-gap> Unbind(list1); Unbind(list2); Unbind(list3); Unbind(y);
+#
 gap> STOP_TEST("info.tst", 1);

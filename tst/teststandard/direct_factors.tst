@@ -1,3 +1,4 @@
+#@local D, Df, U, V, G, N, n, C, Q, F, x, y
 gap> START_TEST("direct_factors.tst");
 gap> D := DihedralGroup(12);; Df := DirectFactorsOfGroup(D);; IsSet(Df); List(Df, IdGroup); 
 true
@@ -122,6 +123,5 @@ gap> G := DirectProduct(DihedralGroup(12), SymmetricGroup(4));;
 gap> SortedList(List(DirectFactorsOfGroup(G),IdGroup));
 [ [ 2, 1 ], [ 6, 1 ], [ 24, 12 ] ]
 
-# Unbind variables so we can GC memory
-gap> Unbind(G); Unbind(F); Unbind(Q); Unbind(D); Unbind(Df); Unbind(U); Unbind(V);
+#
 gap> STOP_TEST("direct_factors.tst", 1);

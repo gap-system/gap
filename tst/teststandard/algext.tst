@@ -2,6 +2,7 @@
 ##
 ##  Test of algebraic extensions.
 ##
+#@local t, f0, p1, f1, p2, f2, p3, f3, p4, f4, x, l, a, ll, b
 gap> START_TEST("algext.tst");
 gap> t := Runtime();;
 gap> f0 := GF(3);;
@@ -24,8 +25,5 @@ gap> b := RootOfDefiningPolynomial(ll);;
 gap> (a+b)^5-(a-b)^5;
 20*alpha^2*beta^3+(10*alpha^2-10)*beta+!4
 
-# Unbind variables so we can GC memory
-gap> Unbind(f0); Unbind(p1); Unbind(f1); Unbind(p2); Unbind(f2);
-gap> Unbind(p3); Unbind(f3); Unbind(p4); Unbind(f4);
-gap> Unbind(x); Unbind(l); Unbind(a); Unbind(ll); Unbind(b);
+#
 gap> STOP_TEST("algext.tst",1);

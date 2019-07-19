@@ -5,6 +5,7 @@
 ##     SL
 ##  Exclude from testinstall.g as it takes considerable time.
 ##
+#@local G, S, it, it2, a, b, l, m
 gap> START_TEST("stabchain.tst");
 
 #
@@ -47,6 +48,5 @@ gap> SCRSift(S,(1,2));
 gap> SCRSift(S,GeneratorsOfGroup(m)[1]);
 ()
 
-# Unbind variables so we can GC memory
-gap> Unbind(G); Unbind(S); Unbind(it); Unbind(it2); Unbind(l); Unbind(m);
+#
 gap> STOP_TEST( "stabchain.tst", 1);
