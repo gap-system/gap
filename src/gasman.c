@@ -527,21 +527,6 @@ void CHANGED_BAG(Bag bag)
 #define CANARY_FORBID_ACCESS_ALL_BAGS()
 #endif
 
-/****************************************************************************
-**
-*F  InitMsgsFuncBags(<msgs-func>) . . . . . . . . .  install message function
-**
-**  'InitMsgsFuncBags'  simply  stores  the  printing  function  in a  global
-**  variable.
-*/
-static TNumMsgsFuncBags MsgsFuncBags;
-
-void            InitMsgsFuncBags (
-    TNumMsgsFuncBags    msgs_func )
-{
-    MsgsFuncBags = msgs_func;
-}
-
 
 /****************************************************************************
 **
@@ -1910,8 +1895,7 @@ again:
     }
 
     /* information at the beginning of garbage collections                 */
-    if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 0, 0 );
+    SyMsgsBags(FullBags, 0, 0);
 
     /* * * * * * * * * * * * * * *  mark phase * * * * * * * * * * * * * * */
 
@@ -2002,11 +1986,9 @@ again:
 
     /* information after the mark phase                                    */
     NrLiveBags += nrLiveBags;
-    if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 1, nrLiveBags );
+    SyMsgsBags(FullBags, 1, nrLiveBags);
     SizeLiveBags += sizeLiveBags;
-    if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 2, sizeLiveBags/1024 );
+    SyMsgsBags(FullBags, 2, sizeLiveBags / 1024);
 
     /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
 
@@ -2147,15 +2129,11 @@ again:
     /* information after the sweep phase                                   */
     NrDeadBags += nrDeadBags;
     NrHalfDeadBags += nrHalfDeadBags;
-    if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 3,
-                         (FullBags ? NrDeadBags:nrDeadBags) );
+    SyMsgsBags(FullBags, 3, (FullBags ? NrDeadBags : nrDeadBags));
     if ( FullBags )
         NrDeadBags = 0;
     SizeDeadBags += sizeDeadBags;
-    if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 4,
-                         (FullBags ? SizeDeadBags:sizeDeadBags)/1024 );
+    SyMsgsBags(FullBags, 4, (FullBags ? SizeDeadBags : sizeDeadBags) / 1024);
     if ( FullBags )
         SizeDeadBags = 0;
 
@@ -2298,12 +2276,8 @@ again:
     }
 
     /* information after the check phase                                   */
-    if ( MsgsFuncBags )
-      (*MsgsFuncBags)( FullBags, 5,
-                       (EndBags - stopBags)/(1024/sizeof(Bag)));
-    if ( MsgsFuncBags )
-        (*MsgsFuncBags)( FullBags, 6,
-                         SizeWorkspace/(1024/sizeof(Bag)));
+    SyMsgsBags(FullBags, 5, (EndBags - stopBags) / (1024 / sizeof(Bag)));
+    SyMsgsBags(FullBags, 6, SizeWorkspace / (1024 / sizeof(Bag)));
 
     // if we are not done, then try again
     if ( ! done ) {
