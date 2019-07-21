@@ -1638,9 +1638,6 @@ void InitializeGap (
     InitBags(SyStorMin,
              (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN),
              C_STACK_ALIGN);
-#ifdef USE_GASMAN
-    InitMsgsFuncBags( SyMsgsBags );
-#endif
 
     STATE(NrError)      = 0;
     STATE(ThrownObject) = 0;
