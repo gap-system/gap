@@ -38,7 +38,9 @@ Int SyStorOverrun;
 Int SyStorKill;
 Int SyStorMin;
 
+#if defined(USE_GASMAN)
 UInt SyAllocPool;
+#endif
 
 
 /****************************************************************************
@@ -158,6 +160,7 @@ void SyMsgsBags (
 }
 
 
+#if defined(USE_GASMAN)
 
 /****************************************************************************
 **
@@ -278,9 +281,8 @@ int SyTryToIncreasePool(void)
     return -1;
 }
 
-#else
+#elif defined(HAVE_MADVISE)
 
-#ifdef HAVE_MADVISE
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -332,8 +334,7 @@ void SyMAdviseFree(void) {
      * Maybe we do want to do this until it breaks to avoid questions
      * by users...
      */
-#ifndef NO_DIRTY_OSX_MMAP_TRICK
-#ifdef SYS_IS_DARWIN
+#if !defined(NO_DIRTY_OSX_MMAP_TRICK) && defined(SYS_IS_DARWIN)
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
         Panic("OS X trick to free pages did not work!");
@@ -342,7 +343,6 @@ void SyMAdviseFree(void) {
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
         Panic("OS X trick to free pages did not work!!");
     }
-#endif
 #endif
 }
 
@@ -405,8 +405,8 @@ static int SyTryToIncreasePool(void)
     return -1;   /* Refuse */
 }
 
-#endif
-#endif
+#endif // defined(GAP_MEM_CHECK)
+
 
 static int halvingsdone = 0;
 
@@ -678,3 +678,6 @@ UInt * * * SyAllocBags (
 }
 
 #endif
+
+
+#endif // defined(USE_GASMAN)

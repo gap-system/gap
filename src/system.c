@@ -934,12 +934,14 @@ static Int storeString( Char **argv, void *Where )
   return 1;
 }
 
+#ifdef USE_GASMAN
 static Int storeMemory( Char **argv, void *Where )
 {
   UInt *where = (UInt *)Where;
   *where = ParseMemory(argv[0]);
   return 1;
 }
+#endif
 
 static Int storeMemory2( Char **argv, void *Where )
 {
@@ -995,7 +997,7 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 
 /* These options must be kept in sync with those in system.g, so the help output
    is correct */
-static struct optInfo options[] = {
+static const struct optInfo options[] = {
   { 'B',  "architecture", storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
                                                                   to library. Might be needed for autoload of compiled files */
   { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */
@@ -1010,9 +1012,13 @@ static struct optInfo options[] = {
   { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
   { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
   { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
+#ifdef USE_GASMAN
   { 's', "", storeMemory, &SyAllocPool, 1 }, /* kernel */
+#endif
   { 'n', "", forceLineEditing, 0, 0}, /* prob library */
+#ifdef USE_GASMAN
   { 'o', "", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
+#endif
   { 'p', "", toggle, &SyWindow, 0 }, /* ?? */
   { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
 #ifdef HPCGAP
@@ -1060,25 +1066,27 @@ void InitSystem (
     SyNrRowsLocked = 0;
     SyQuiet = 0;
     SyInitializing = 0;
+
+    SyStorMin = 16 * sizeof(Obj) * 1024;    // in kB
+    SyStorMax = 256 * sizeof(Obj) * 1024;   // in kB
 #ifdef SYS_IS_64_BIT
-    SyStorMin = 128 * 1024L;
-    SyStorMax = 2048*1024L;          /* This is in kB! */
-#if defined(HAVE_SYSCONF)
-#if defined(_SC_PAGESIZE) && defined(_SC_PHYS_PAGES)
+  #if defined(HAVE_SYSCONF) && defined(_SC_PAGESIZE) && defined(_SC_PHYS_PAGES)
     // Set to 3/4 of memory size (in kB), if this is larger
     Int SyStorMaxFromMem =
         (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3L) / 4 / 1024;
     SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
-#endif
-#endif
+  #endif
+#endif // defined(SYS_IS_64_BIT)
+
+#ifdef USE_GASMAN
+#ifdef SYS_IS_64_BIT
     SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
 #else
-    SyStorMin = 64 * 1024L;
-    SyStorMax = 1024*1024L;          /* This is in kB! */
     SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
-#endif
+#endif // defined(SYS_IS_64_BIT)
     SyStorOverrun = 0;
     SyStorKill = 0;
+#endif // defined(USE_GASMAN)
     SyUseModule = 1;
     SyWindow = 0;
 
@@ -1183,11 +1191,13 @@ void InitSystem (
         SyStorMax = SyStorMin;
     }
 
+#ifdef USE_GASMAN
     /* fix pool size if larger than SyStorKill */
     if ( SyStorKill != 0 && SyAllocPool != 0 &&
                             SyAllocPool > 1024 * SyStorKill ) {
         SyAllocPool = SyStorKill * 1024;
     }
+#endif
 
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
