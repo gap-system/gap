@@ -33,7 +33,9 @@
 #include "records.h"
 #include "stringobj.h"
 #include "sysfiles.h"
+#ifdef USE_GASMAN
 #include "sysmem.h"
+#endif
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -1070,15 +1072,16 @@ static UInt ExecIntrStat(Stat stat)
     HaveInterrupt();
 
     /* and now for something completely different                          */
+#ifdef USE_GASMAN
     if ( SyStorOverrun != 0 ) {
       SyStorOverrun = 0; /* reset */
       ErrorReturnVoid(
   "reached the pre-set memory limit\n(change it with the -o command line option)",
         0L, 0L, "you can 'return;'" );
     }
-    else {
+    else
+#endif
       ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
-    }
 #endif
 
     /* continue at the interrupted statement                               */
@@ -1123,12 +1126,14 @@ void ClearError ( void )
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
               0L, 0L);
         }
+#ifdef USE_GASMAN
         /* and check if maximal memory was overrun */
         if ( SyStorOverrun != 0 ) {
           SyStorOverrun = 0; /* reset */
           Pr("GAP has exceeded the permitted memory (-o option),\n", 0L, 0L);
           Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
         }
+#endif
     }
 
     /* reset <STATE(NrError)>                                                */
