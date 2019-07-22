@@ -917,6 +917,21 @@ DeclareRepresentation( "IsPresentationDefaultRep",
 
 #############################################################################
 ##
+#M  One( <pres> )  . . . . . . . . . . . . . . . . . . . . for a presentation
+##
+InstallOtherMethod(One, [IsPresentationDefaultRep],
+        T -> T!.identity);
+
+#############################################################################
+##
+#M  PrimaryGeneratorWords( <pres> )  . . . . . . . . . . . for a presentation
+##
+InstallOtherMethod(PrimaryGeneratorWords, [IsPresentationDefaultRep],
+        T -> T!.primaryGeneratorWords);
+
+
+#############################################################################
+##
 #M  \.( <pres>, <nam> )  . . . . . . . . . . . . . . . . . for a presentation
 ##
 InstallMethod( \.,
@@ -1069,7 +1084,6 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     T!.components := comps;
     T!.nextFree := numgens + 1;
     T!.identity := One( fgens[1] );
-    SetOne(T,One( fgens[1] ));
 
     # save the tree as component of the Tietze record.
     tree[TR_TREENUMS] := treeNums;
@@ -1079,8 +1093,8 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
 
     # save the definitions of the primary generators as words in the original
     # group generators.
-    SetPrimaryGeneratorWords(T,aug.primaryGeneratorWords);
-
+    T!.primaryGeneratorWords := aug.primaryGeneratorWords;
+    
     # handle relators of length 1 or 2, but do not eliminate any primary
     # generators.
     TzOptions(T).protected := tree[TR_PRIMARY];
