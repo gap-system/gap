@@ -3371,36 +3371,41 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
     int                 atomic = 0;
 #endif
 
+    /* System setter does not store attribute values in mutable objects */
+    if (IS_MUTABLE_OBJ(obj)) {
+        return 0;
+    }
+
     switch (TNUM_OBJ(obj)) {
 #ifdef HPCGAP
-      case T_ACOMOBJ:
+    case T_ACOMOBJ:
         atomic = 1;
 #endif
-      case T_COMOBJ:
+    case T_COMOBJ:
         break;
-      default:
-        ErrorQuit( "<obj> must be a component object", 0L, 0L );
+    default:
+        ErrorQuit("<obj> must be a component object", 0L, 0L);
         return 0L;
     }
 
     /* if the attribute is already there *do not* chage it                 */
     tmp = ENVI_FUNC(self);
-    tester = ELM_PLIST( tmp, 2 );
-    flag2  = INT_INTOBJ( FLAG2_FILT(tester) );
-    type   = TYPE_OBJ_FEO(obj);
-    flags  = FLAGS_TYPE(type);
-    if ( SAFE_C_ELM_FLAGS(flags,flag2) ) {
+    tester = ELM_PLIST(tmp, 2);
+    flag2 = INT_INTOBJ(FLAG2_FILT(tester));
+    type = TYPE_OBJ_FEO(obj);
+    flags = FLAGS_TYPE(type);
+    if (SAFE_C_ELM_FLAGS(flags, flag2)) {
         return 0;
     }
 
     /* set the value                                                       */
-    UInt rnam = (UInt)INT_INTOBJ(ELM_PLIST(tmp,1));
+    UInt rnam = (UInt)INT_INTOBJ(ELM_PLIST(tmp, 1));
 #ifdef HPCGAP
     if (atomic)
-      SetARecordField( obj, rnam, CopyObj(value,0) );
+        SetARecordField(obj, rnam, CopyObj(value, 0));
     else
 #endif
-      AssPRec( obj, rnam, CopyObj(value,0) );
+        AssPRec(obj, rnam, CopyObj(value, 0));
     CALL_2ARGS( SET_FILTER_OBJ, obj, tester );
     return 0;
 }
