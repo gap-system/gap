@@ -1794,12 +1794,12 @@ end );
 
 #############################################################################
 ##
-#F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
+#F  DeclareGlobalFunction( <name> ) . . . . . .  create a new global function
 #F  InstallGlobalFunction( <oper>, <func> )
 ##
 ##  <#GAPDoc Label="DeclareGlobalFunction">
 ##  <ManSection>
-##  <Func Name="DeclareGlobalFunction" Arg='name, info'/>
+##  <Func Name="DeclareGlobalFunction" Arg='name'/>
 ##  <Func Name="InstallGlobalFunction" Arg='oper, func'/>
 ##
 ##  <Description>
