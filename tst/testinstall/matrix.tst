@@ -13,6 +13,14 @@ gap> IsDiagonalMat([[1,0],[1,1]]);
 false
 gap> IsDiagonalMat([[1,1],[0,1]]);
 false
+gap> IsDiagonalMat([[1,0],[0,1],[0,1]]);
+false
+gap> IsDiagonalMat([[1,0],[0,1],[0,0]]);
+true
+gap> IsDiagonalMat([[1,0,0],[0,1,1]]);
+false
+gap> IsDiagonalMat([[1,0,0],[0,1,0]]);
+true
 
 #
 gap> IsUpperTriangularMat(NullMat(3, 3));
@@ -28,6 +36,12 @@ false
 gap> IsUpperTriangularMat([[1,0],[1,1]]);
 false
 gap> IsUpperTriangularMat([[1,1],[0,1]]);
+true
+gap> IsUpperTriangularMat([[1,1],[0,1],[0,1]]);
+false
+gap> IsUpperTriangularMat([[1,1],[0,1],[0,0]]);
+true
+gap> IsUpperTriangularMat([[1,1,1],[0,1,1]]);
 true
 
 #
@@ -45,6 +59,12 @@ gap> IsLowerTriangularMat([[1,0],[1,1]]);
 true
 gap> IsLowerTriangularMat([[1,1],[0,1]]);
 false
+gap> IsLowerTriangularMat([[1,0,0],[1,1,1]]);
+false
+gap> IsLowerTriangularMat([[1,0,0],[1,1,0]]);
+true
+gap> IsLowerTriangularMat([[1,0],[1,1],[1,1]]);
+true
 
 #
 gap> m := Z(5)^0 * [[0, 1], [1, 0]];;
