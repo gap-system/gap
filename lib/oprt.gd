@@ -1900,6 +1900,7 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 #############################################################################
 ##
 #O  IsSemiRegular( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#P  IsSemiRegular( <G> )
 #P  IsSemiRegular( <xset> )
 ##
 ##  <#GAPDoc Label="IsSemiRegular">
@@ -1907,6 +1908,8 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 ##  <Heading>IsSemiRegular</Heading>
 ##  <Oper Name="IsSemiRegular" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
+##  <Prop Name="IsSemiRegular" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Prop Name="IsSemiRegular" Arg='xset'
 ##   Label="for an external set"/>
 ##
@@ -1915,8 +1918,14 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 ##  semiregular, or <K>false</K> otherwise.
 ##  <P/>
 ##  <Index>semiregular</Index>
-##  An action is <E>semiregular</E> is the stabilizer of each point is the
+##  An action is <E>semiregular</E> if the stabilizer of each point is the
 ##  identity.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>IsSemiRegular(<A>G</A>)</C>, which tests whether the group is
+##  semiregular with respect to its natural action on the points moved by it.
+##  For example the group <M>\langle (2,3,4) (5,6,7) \rangle</M>
+##  is semiregular on the six points 2, 3, 4, 5, 6, 7.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1927,6 +1936,7 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 #############################################################################
 ##
 #O  IsRegular( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#P  IsRegular( <G> )
 #P  IsRegular( <xset> )
 ##
 ##  <#GAPDoc Label="IsRegular">
@@ -1934,6 +1944,8 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  <Heading>IsRegular</Heading>
 ##  <Oper Name="IsRegular" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
+##  <Prop Name="IsRegular" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Prop Name="IsRegular" Arg='xset'
 ##   Label="for an external set"/>
 ##
@@ -1948,6 +1960,13 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  (see&nbsp;<Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>).
 ##  In this case every point <A>pnt</A> of <A>Omega</A> defines a one-to-one
 ##  correspondence between <A>G</A> and <A>Omega</A>.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>IsRegular(<A>G</A>)</C>, which tests whether the group is
+##  regular with respect to its natural action on the points moved by it.
+##  For example the group <M>\langle (2,3,4) \rangle</M>
+##  is regular on the three points 2, 3, 4.
+##
 ##  <Example><![CDATA[
 ##  gap> IsSemiRegular(g,Arrangements([1..4],3),OnTuples);
 ##  true
