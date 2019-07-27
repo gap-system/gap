@@ -1090,3 +1090,7 @@ InstallMethod( ViewObj,
     [ IS_OBJECT ],
     0,
     PRINT_OBJ );
+
+# A dummy version of this function is installed here, the full version
+# is defined in attr.gi, after Info-related functionality is set up.
+CHECK_REPEATED_ATTRIBUTE_SET := function(obj, name, val) end;

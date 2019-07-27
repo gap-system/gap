@@ -1385,6 +1385,7 @@ static UInt RNamIsVerbose;
 static UInt RNamIsConstructor;
 static UInt RNamPrecedence;
 static Obj  HANDLE_METHOD_NOT_FOUND;
+static Obj  CHECK_REPEATED_ATTRIBUTE_SET;
 
 static void HandleMethodNotFound(Obj   oper,
                                  Int   nargs,
@@ -3283,12 +3284,15 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
     flag2  = INT_INTOBJ( FLAG2_FILT(tester) );
     type   = TYPE_OBJ_FEO(obj);
     flags  = FLAGS_TYPE(type);
+
+    UInt rnam = (UInt)INT_INTOBJ(ELM_PLIST(tmp, 1));
+
     if ( SAFE_C_ELM_FLAGS(flags,flag2) ) {
+        CALL_3ARGS(CHECK_REPEATED_ATTRIBUTE_SET, obj, NAME_RNAM(rnam), value);
         return 0;
     }
 
     /* set the value                                                       */
-    UInt rnam = (UInt)INT_INTOBJ(ELM_PLIST(tmp,1));
 #ifdef HPCGAP
     if (atomic)
       SetARecordField( obj, rnam, CopyObj(value,0) );
@@ -3771,6 +3775,9 @@ static Int InitKernel (
 
     ImportFuncFromLibrary("HANDLE_METHOD_NOT_FOUND",
                           &HANDLE_METHOD_NOT_FOUND);
+
+    ImportFuncFromLibrary("CHECK_REPEATED_ATTRIBUTE_SET",
+                          &CHECK_REPEATED_ATTRIBUTE_SET);
 
 #ifdef GASMAN
     ImportGVarFromLibrary( "IsType", &IsType );

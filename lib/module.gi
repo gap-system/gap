@@ -415,7 +415,7 @@ InstallOtherMethod(SetDimension,true,[IsObject and IsAttributeStoringRep,IsObjec
 function(obj,dim)
 local filt;
   if HasDimension(obj) and IsBound(obj!.Dimension) then
-    Assert(2, Dimension(obj) = dim);
+    CHECK_REPEATED_ATTRIBUTE_SET(obj, "Dimension", dim);
     return;
   fi;
   if dim=0 then

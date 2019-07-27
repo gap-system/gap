@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-77878372"
+#define FILE_CRC  "-76837766"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -24,6 +24,7 @@ static GVar G_SET__NAME__FUNC;
 static Obj  GF_SET__NAME__FUNC;
 static GVar G_NARG__FUNC;
 static Obj  GF_NARG__FUNC;
+static GVar G_CHECK__REPEATED__ATTRIBUTE__SET;
 static GVar G_IS__OPERATION;
 static Obj  GF_IS__OPERATION;
 static GVar G_AINV;
@@ -197,7 +198,7 @@ static RNam R_CommandLineOptions;
 static RNam R_N;
 
 /* information for the functions */
-static Obj  NameFunc[19];
+static Obj  NameFunc[20];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -5309,6 +5310,27 @@ static Obj  HdlrFunc17 (
  return 0;
 }
 
+/* handler for function 19 */
+static Obj  HdlrFunc19 (
+ Obj  self,
+ Obj  a_obj,
+ Obj  a_name,
+ Obj  a_val )
+{
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
 /* handler for function 1 */
 static Obj  HdlrFunc1 (
  Obj  self )
@@ -6052,6 +6074,18 @@ static Obj  HdlrFunc1 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4, t_5, INTOBJ_INT(0), t_6 ) );
  }
  
+ /* CHECK_REPEATED_ATTRIBUTE_SET := function ( obj, name, val )
+      return;
+  end; */
+ t_1 = NewFunction( NameFunc[19], 3, ArgStringToList("obj,name,val"), HdlrFunc19 );
+ SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
+ t_2 = NewFunctionBody();
+ SET_STARTLINE_BODY(t_2, 1096);
+ SET_ENDLINE_BODY(t_2, 1096);
+ SET_FILENAME_BODY(t_2, FileName);
+ SET_BODY_FUNC(t_1, t_2);
+ AssGVar( G_CHECK__REPEATED__ATTRIBUTE__SET, t_1 );
+ 
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
@@ -6076,6 +6110,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_NAME__FUNC = GVarName( "NAME_FUNC" );
  G_SET__NAME__FUNC = GVarName( "SET_NAME_FUNC" );
  G_NARG__FUNC = GVarName( "NARG_FUNC" );
+ G_CHECK__REPEATED__ATTRIBUTE__SET = GVarName( "CHECK_REPEATED_ATTRIBUTE_SET" );
  G_IS__OPERATION = GVarName( "IS_OPERATION" );
  G_AINV = GVarName( "AINV" );
  G_IS__INT = GVarName( "IS_INT" );
@@ -6184,6 +6219,7 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[16] = 0;
  NameFunc[17] = 0;
  NameFunc[18] = 0;
+ NameFunc[19] = 0;
  
  /* return success */
  return 0;
@@ -6328,6 +6364,8 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[17]), "GAPROOT/lib/oper1.g:NameFunc[17]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc18, "GAPROOT/lib/oper1.g:HdlrFunc18("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[18]), "GAPROOT/lib/oper1.g:NameFunc[18]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc19, "GAPROOT/lib/oper1.g:HdlrFunc19("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[19]), "GAPROOT/lib/oper1.g:NameFunc[19]("FILE_CRC")" );
  
  /* return success */
  return 0;
@@ -6362,7 +6400,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -77878372,
+ .crc         = -76837766,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

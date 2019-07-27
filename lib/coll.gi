@@ -3105,13 +3105,7 @@ InstallOtherMethod(SetSize,true,[IsObject and IsAttributeStoringRep,IsObject],
 function(obj,sz)
 local filt;
   if HasSize(obj) and Size(obj)<>sz then
-    if AssertionLevel()>2 then
-      # Make this an ordinary error (not ErrorNoReturn as suggested) to
-      # preserve all debugging options -- even use `return` to investigate
-      # what would have happened before this methods was introduced.
-      Error("size of ",obj," already set to ",Size(obj),
-        ", cannot be changed to ",sz);
-    fi;
+    CHECK_REPEATED_ATTRIBUTE_SET(obj, "Size", sz);
     return;
   fi;
   if sz=0 then filt:=IsEmpty;

@@ -1,4 +1,6 @@
 gap> START_TEST("attribute.tst");
+gap> attributeinfo := InfoLevel(InfoAttributes);;
+gap> SetInfoLevel(InfoAttributes, 3);
 gap> DeclareAttribute();
 Error, Function: number of arguments must be at least 2 (not 0)
 gap> DeclareAttribute("banana");
@@ -60,6 +62,19 @@ gap> HasSize(foo);
 true
 gap> Size(foo);
 17
+gap> SetSize(foo, 16);
+#I  Attribute Size of <object> already set to 17, cannot be changed to 16
+gap> Size(foo);
+17
+gap> HasDimension(foo);
+false
+gap> SetDimension(foo, 3);
+gap> HasDimension(foo);
+true
+gap> SetDimension(foo, 4);
+#I  Attribute Dimension of <object> already set to 3, cannot be changed to 4
+gap> Dimension(foo);
+3
 gap> InstallMethod(FavouriteFruit, [HasSize], x-> "pear");
 gap> FavouriteFruit(foo);
 "pear"
@@ -70,5 +85,22 @@ gap> FavouriteFruit(foo);
 "pear"
 gap> HasFavouriteFruit(foo);
 true
+gap> SetFavouriteFruit(foo, "apple");
+#I  Attribute FavouriteFruit of <object> already set to pear, cannot be changed to apple
+gap> FavouriteFruit(foo);
+"pear"
+gap> Unbind(foo!.FavouriteFruit);
+gap> SetFavouriteFruit(foo, "apple");
+#I  Attribute FavouriteFruit of <object> is marked as assigned, but it has no value
 #@fi
+
+# Check a mutable attribute
+gap> grp := Group(());;
+gap> SetStabChainMutable(grp, [1,2]);
+gap> StabChainMutable(grp);
+[ 1, 2 ]
+gap> SetStabChainMutable(grp, [3,4]);
+gap> StabChainMutable(grp);
+[ 3, 4 ]
+gap> SetInfoLevel(InfoAttributes, attributeinfo);
 gap> STOP_TEST("attribute.tst", 1);
