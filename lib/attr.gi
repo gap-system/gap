@@ -37,3 +37,13 @@ InstallGlobalFunction(DisableAttributeValueStoring, function( attr )
     Info(InfoAttributes + InfoWarning, 2, "Disabling value storing for ",NAME_FUNC(attr));
     SET_ATTRIBUTE_STORING( attr, false);
 end);
+
+CHECK_REPEATED_ATTRIBUTE_SET := function(obj, name, val)
+    if InfoLevel(InfoAttributes) >= 3 then
+        if not IsBound(obj!.(name)) then
+            Info(InfoAttributes, 3, "Attribute ", name, " of ", obj, " is marked as assigned, but it has no value");
+        elif obj!.(name) <> val then
+            Info(InfoAttributes, 3, "Attribute ", name, " of ", obj, " already set to ", obj!.(name), ", cannot be changed to ", val);
+        fi;
+    fi;
+end;

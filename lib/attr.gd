@@ -36,10 +36,14 @@
 ##  <InfoClass Name="InfoAttributes"/>
 ##
 ##  <Description>
-##  This info class (together with <Ref InfoClass="InfoWarning"/> is used
-##  for messages about attribute storing  being  disabled  (at  level  2)  or
-##  enabled (level 3). It may be  used  in  the  future  for  other  messages
-##  concerning changes to attribute behaviour.
+##  This info class (together with <Ref InfoClass="InfoWarning"/>) is used
+##  for messages about attributes. Messages are shown under the following circumstances:
+##  <List>
+##    <Item> <Ref Func="EnableAttributeValueStoring"/> is used (level 2).</Item>
+##    <Item> <Ref Func="DisableAttributeValueStoring"/> is used (level 3).</Item>
+##    <Item> When trying to assign to non-mutable attribute which already is set to a different value (level 3).</Item>
+##    <Item> When the test filter for an attribute (i.e., <C>HasFOO</C>) is set, but no value is assigned (level 3).</Item>
+##  </List>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
