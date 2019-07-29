@@ -381,6 +381,9 @@ InstallGlobalFunction( PresentationFpGroup, function ( arg )
     SetOne(T,Identity( F ));
     T!.identity:=Identity( F );
 
+    # since T is mutable, we must set this attribute "manually"
+    SetTzOptions(T,TzOptions(T));    
+
     # initialize some Tietze options
     TzOptions(T).protected := 0;
     TzOptions(T).printLevel:=printlevel;
