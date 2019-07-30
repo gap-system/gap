@@ -63,10 +63,12 @@ gap> Size(foo);
 gap> InstallMethod(FavouriteFruit, [HasSize], x-> "pear");
 gap> FavouriteFruit(foo);
 "pear"
+#@if not IsHPCGAP
 gap> MakeImmutable(foo);
 <object>
 gap> FavouriteFruit(foo);
 "pear"
 gap> HasFavouriteFruit(foo);
 true
+#@fi
 gap> STOP_TEST("attribute.tst", 1);
