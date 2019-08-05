@@ -1632,7 +1632,7 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  of the group with respect to its natural action on the points moved by
 ##  it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is 3-transitive on the three points 2, 3, 4.
+##  is 3-transitive on the set <M>\{2, 3, 4\}</M>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
 ##  gap> IsTransitive(g,[1..5]);
@@ -1821,7 +1821,7 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  <C>IsTransitive(<A>G</A>)</C>, which tests whether the group is
 ##  transitive with respect to its natural action on the points moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is transitive on the three points 2, 3, 4.
+##  is transitive on the set <M>\{2, 3, 4\}</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1858,7 +1858,7 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  <C>IsPrimitive(<A>G</A>)</C>, which tests whether the group is
 ##  primitive with respect to its natural action on the points moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is primitive on the three points 2, 3, 4.
+##  is primitive on the set <M>\{2, 3, 4\}</M>.
 ##  <P/>
 ##  For an explanation of the meaning of all the inputs, please refer to
 ##  &nbsp;<Ref Sect="About Group Actions"/>.
@@ -1925,7 +1925,7 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 ##  <C>IsSemiRegular(<A>G</A>)</C>, which tests whether the group is
 ##  semiregular with respect to its natural action on the points moved by it.
 ##  For example the group <M>\langle (2,3,4) (5,6,7) \rangle</M>
-##  is semiregular on the six points 2, 3, 4, 5, 6, 7.
+##  is semiregular on the set <M>\{2, 3, 4, 5, 6, 7\}</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1965,7 +1965,7 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  <C>IsRegular(<A>G</A>)</C>, which tests whether the group is
 ##  regular with respect to its natural action on the points moved by it.
 ##  For example the group <M>\langle (2,3,4) \rangle</M>
-##  is regular on the three points 2, 3, 4.
+##  is regular on the set <M>\{2, 3, 4\}</M>.
 ##
 ##  <Example><![CDATA[
 ##  gap> IsSemiRegular(g,Arrangements([1..4],3),OnTuples);
