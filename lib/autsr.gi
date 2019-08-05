@@ -134,6 +134,8 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
 
   #for ep in Enumerator(ocr.moduleauts) do
   phom:=IsomorphismPermGroup(ocr.moduleauts);
+  Info(InfoMorph,5,"Search through module automorphisms of size ",
+    Size(Image(phom)));
   for ep in Enumerator(Image(phom)) do
     e:=PreImagesRepresentative(phom,ep);
     psim:=e*miso;
@@ -195,10 +197,10 @@ local c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort;
       else
         Add(bad,elm);
         b:=b+1;
-        # if less than 1/20 percent of elements succeed, assume close
+        # if less than 1/50 percent of elements succeed, assume close
         # to the subgroup has been found, and rather aim to prove there
         # will not be more.
-        if b*2000>IndexNC(G,S) then
+        if b*5000>IndexNC(G,S) then
           abort:=true;
         fi;
         return false;
@@ -216,7 +218,7 @@ local c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort;
   good:=false;
   # avoid writing down a permutation representation on more 
   # than 10^5 cosets, as it gets too memory expensive
-  if IndexNC(G,S)<=10^5 then
+  if IndexNC(G,S)<=15/10*10^5 then
     # try to prove no supergroup works
 
     t:=RightTransversal(G,S:noascendingchain); # don't try to be clever in
@@ -224,6 +226,10 @@ local c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort;
     a:=Action(G,t,OnRight); # coset action, don't need homomorphism
     b:=RepresentativesMinimalBlocks(a,MovedPoints(a));
     Info(InfoMorph,3,"Above are ",Length(b)," blocks");
+    if Length(b)>IndexNC(G,S) then
+      # there are too many blocks. Direct test is cheaper!
+      return SubgroupProperty(G,cond,S);
+    fi;
     for i in [1..Length(b)] do
       CompletionBar(InfoMorph,3,"SubgroupsAboveBlocks ",i/Length(b));
       c:=First(b[i],x->x>1);
@@ -939,6 +945,198 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
 end);
 
+
+BindGlobal("AGSRModuleLayerSeries",function(g)
+local s,l,r,i,j,sy,hom,p,pcgs;
+  s:=ShallowCopy(DerivedSeriesOfGroup(g));
+  l:=s[Length(s)];
+  r:=RadicalGroup(s[Length(s)]);
+  if Size(r)>1 then # cannot be last, as solvable
+    Append(s,DerivedSeriesOfGroup(r));
+  fi;
+  i:=2;
+  while i<=Length(s) do
+    if HasAbelianFactorGroup(s[i-1],s[i]) then
+      p:=Factors(IndexNC(s[i-1],s[i]))[1];
+      # is it a single prime?
+      if not IsPrimePowerInt(IndexNC(s[i-1],s[i])) then
+        hom:=NaturalHomomorphismByNormalSubgroupNC(s[i-1],s[i]);
+        sy:=SylowSystem(Image(hom));
+        l:=[sy[1]];
+        for j in [2..Length(sy)-1] do
+          Add(l,ClosureGroup(l[Length(l)],sy[j]));
+        od;
+        l:=Reversed(l);
+        l:=List(l,x->PreImage(hom,x));
+        Info(InfoMorph,6,"insert prime @",i);
+        s:=Concatenation(s{[1..i-1]},l,s{[i..Length(s)]});
+      elif not HasElementaryAbelianFactorGroup(s[i-1],s[i]) then
+        # not elementary abelian -- pth powers suffice as abelian
+        l:=s[i];
+        for j in GeneratorsOfGroup(s[i-1]) do
+          l:=ClosureGroup(l,j^p);
+        od;
+        Info(InfoMorph,6,"insert ppower @",i);
+        s:=Concatenation(s{[1..i-1]},[l],s{[i..Length(s)]});
+      else
+        # make module
+        pcgs:=ModuloPcgs(s[i-1],s[i]);
+        l:=LinearActionLayer(g,pcgs);
+        l:=GModuleByMats(l,GF(p));
+        # check for characteristic submodules
+        r:=MTX.BasisRadical(l);
+        if Length(r)=0 then
+          r:=MTX.BasisSocle(l);
+          if Length(r)=l.dimension then
+            # semisimple -- use homogeneous
+            r:=List(MTX.CollectedFactors(l),x->x[1]);
+            if Length(r)>1 then
+              r:=MTX.Homomorphisms(l,r[1]);
+              Error("hom");
+            else
+              r:=fail;
+            fi;
+          fi;
+        fi;
+
+        if r=fail then
+          i:=i+1;
+        else
+          l:=s[i];
+          for j in r do;
+            l:=ClosureGroup(l,PcElementByExponents(pcgs,j));
+          od;
+          if Size(l)<Size(s[i-1]) and Size(l)>Size(s[i]) then
+            Info(InfoMorph,6,"insert module @",i);
+            s:=Concatenation(s{[1..i-1]},[l],s{[i..Length(s)]});
+          else
+            i:=i+1;
+          fi;
+        fi;
+      fi;
+    else
+      i:=i+1;
+    fi;
+  od;
+  return s;
+end);
+
+BindGlobal("AGSRMatchedCharacteristics",function(g,h)
+local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
+  props:=function(a,chars)
+  local p,b,i,r,der;
+    der:=function(u)
+      if u in chars then
+        Add(p,-Position(chars,u));
+      else
+        Add(p,Size(u));
+      fi;
+    end;
+
+    if ID_AVAILABLE(Size(a))<>fail then
+      p:=ShallowCopy(-IdGroup(a)); # negative avoids clash with others
+    else
+      p:=[Size(a)];
+      b:=ShallowCopy(AbelianInvariants(a));
+      Sort(b);
+      Add(p,b);
+      Add(p,List(DerivedSeriesOfGroup(a),Size));
+    fi;
+#    # intersections
+#    for i in [1..Length(chars)] do
+#      for j in AGSRModuleLayerSeries(chars[i]) do
+#        der(Intersection(j,a));
+#        der(ClosureGroup(j,a));
+#      od;
+#    od;
+    return p;
+  end;
+
+  coinc:=function(i,j)
+  local a,b,sa,sb,sel,p,q;
+    a:=cg[i];
+    b:=ch[j];
+    Add(ng,a);
+    Add(nh,b);
+    sel:=Difference([1..Length(cg)],[i]);
+    cg:=cg{sel};
+    pg:=pg{sel};
+    sel:=Difference([1..Length(ch)],[j]);
+    ch:=ch{sel};
+    ph:=ph{sel};
+    sa:=AGSRModuleLayerSeries(a);
+    sb:=AGSRModuleLayerSeries(b);
+    if List(sa,Size)<>List(sb,Size) then return true;fi;
+    for i in [1..Length(sa)] do
+      p:=Position(cg,sa[i]);
+      q:=Position(ch,sb[i]);
+      if p=fail then
+        if q<>fail then return true;fi;
+      elif q=fail then return true;
+      else
+        if coinc(p,q) then return true;fi;
+      fi;
+    od;
+    return false;
+  end;
+
+  ng:=[];
+  nh:=[];
+
+  cg:=ShallowCopy(CharacteristicSubgroups(g));
+  ch:=ShallowCopy(CharacteristicSubgroups(h));
+  SortBy(cg,x->-Size(x));
+  SortBy(ch,x->-Size(x));
+
+  pg:=List(cg,x->props(x,ng));
+  ph:=List(ch,x->props(x,nh));
+  if Collected(pg)<>Collected(ph) then return fail;fi;
+
+  while Length(cg)>0 do
+    i:=First([1..Length(pg)],x->Number(pg,y->y=pg[x])=1);
+    if i<>fail then
+      # found a unique one -- process
+      j:=Position(ph,pg[i]);
+      if coinc(i,j) then return fail;fi;
+    else
+      stop:=true; # give up, for the moment
+      # try clusters
+      j:=Set(pg);
+      clg:=List(j,x->cg{Filtered([1..Length(cg)],y->pg[y]=x)});
+      clh:=List(j,x->ch{Filtered([1..Length(ch)],y->ph[y]=x)});
+      # also use classes of size 1 for compare
+      Append(clg,List(ng,x->[x])); 
+      Append(clh,List(nh,x->[x]));
+      # sort larger first
+      SortParallel(clg,clh,function(a,b) return Size(a[1])>Size(b[1]);end);
+      i:=1;
+      while i<=Length(clg) do
+        if Length(clg[i])>1 then
+          j:=i+1;
+          while j<=Length(clg) do
+            coug:=List(clg[i],x->Number(clg[j],y->IsSubset(x,y)));
+            couh:=List(clh[i],x->Number(clh[j],y->IsSubset(x,y)));
+            if Collected(coug)<>Collected(couh) then return fail;fi;
+            a:=First(Collected(coug),x->x[2]=1);
+            if a<>fail then
+              # unique number -- split
+              a:=a[1];
+              if coinc(Position(cg,clg[i][Position(coug,a)]),
+                    Position(ch,clh[i][Position(couh,a)])) then return fail;fi;
+              i:=Length(clg); j:=Length(clg); # break out of loops
+              stop:=false;
+            fi;
+            j:=j+1;
+          od;
+        fi;
+        i:=i+1;
+      od;
+    fi;
+  od;
+end);
+
+
+
 # pathetic isomorphism test, based on the automorphism group of GxH. This is
 # only of use as long as we don't yet have a Cannon/Holt version of
 # isomorphism available and there are many generators
@@ -991,46 +1189,24 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   # go through factors of characteristic series to keep orbits short.
   AutomorphismGroup(G:someCharacteristics:=fail);
   AutomorphismGroup(H:someCharacteristics:=fail);
-  cG:=CharacteristicSubgroups(G);
-  nG:=[];
-  cH:=ShallowCopy(CharacteristicSubgroups(H));
-  if Length(cG)<>Length(cH) then
-    return fail;
-  fi;
-  SortBy(cH,Size);
-  nH:=[];
-  i:=1;
-  good:=[1..Length(cH)];
-  while i<=Length(cH) do
-    if i in good and Size(cH[i])>1 and Size(cH[i])<Size(H) then
-      sel:=Filtered([1..Length(cG)],x->possibly(cG[x],cH[i]));
-      if Length(sel)=0 then
-	return fail;
-      elif Length(sel)=1 then
-	Add(nG,cG[sel[1]]);
-	Add(nH,cH[i]);
-      else
-	u:=TrivialSubgroup(G);
-	for j in sel do
-	  u:=ClosureGroup(u,cG[j]);
-	od;
-	sel:=Concatenation([i],Filtered([i+1..Length(cH)],
-                                 x->possibly(cH[i],cH[x])));
-	v:=TrivialSubgroup(H);
-	for j in sel do
-	  v:=ClosureGroup(v,cH[j]);
-	od;
-	if Size(u)<>Size(v) then
-	  return fail;
-	fi;
-	good:=Difference(good,sel);
-	if Size(u)<Size(G) then
-	  Add(nG,u);
-	  Add(nH,v);
-	fi;
-      fi;
+
+  d:=AGSRMatchedCharacteristics(G,H);
+  if d=fail then return fail;fi; # characteristics do not match
+  nG:=d.ng;
+  nH:=d.nh;
+  for i in [1..Length(d.cg)] do
+    u:=TrivialSubgroup(G);
+    for j in d.cg[i] do
+      u:=ClosureGroup(u,j);
+    od;
+    if not u in nG then
+      Add(nG,u);
+      u:=TrivialSubgroup(H);
+      for j in d.ch[i] do
+        u:=ClosureGroup(u,j);
+      od;
+      Add(nH,u);
     fi;
-    i:=i+1;
   od;
 
   d:=DirectProduct(G,H);
@@ -1045,6 +1221,8 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   od;
   nG:=Concatenation([TrivialSubgroup(G)],nG);
   nH:=Concatenation([TrivialSubgroup(H)],nH);
+  SortParallel(nG,nH,function(a,b) return Size(a)<Size(b);end);
+  if List(nG,Size)<>List(nH,Size) then return fail;fi;
 
   for i in [2..Length(nG)] do
     K:=Filtered([1..Length(nG)],x->Size(nG[x])*2=Size(nG[i]) 
