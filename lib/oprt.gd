@@ -1351,7 +1351,7 @@ OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false, false );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>Orbits(<A>G</A>)</C>, which returns all the orbits of its natural
-##  action on the points moved by it.
+##  action on the set of points moved by it.
 ##  For example the group <M>\langle (1,2,3), (4,5) \rangle</M>
 ##  has the orbits <M>\{1,2,3\}</M> and <M>\{4,5\}</M>.
 ##  <P/>
@@ -1392,7 +1392,7 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>OrbitsDomain(<A>G</A>)</C>, which returns all the orbits of its natural
-##  action on the points moved by it.
+##  action on the set of points moved by it.
 ##  <P/>
 ##  (Note that the arrangement of orbits or of points within one orbit is
 ##  not defined by the operation.)
@@ -1462,8 +1462,8 @@ OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false, false );
 ##  under the action <A>act</A> of <A>G</A>.
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
-##  <C>OrbitLengths(<A>G</A>)</C>, which returns the length of all the
-##  orbits of its natural action on the points moved by it.
+##  <C>OrbitLengths(<A>G</A>)</C>, which returns the lengths of all the
+##  orbits of its natural action on the set of points moved by it.
 ##  For example the group <M>\langle (1,2,3), (5,6) \rangle</M>
 ##  has the orbit lengths 2 and 3.
 ##  </Description>
@@ -1498,7 +1498,7 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>OrbitLengthsDomain(<A>G</A>)</C>, which returns the length of all
-##  the orbits of its natural action on the points moved by it.
+##  the orbits of its natural action on the set of points moved by it.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
 ##  gap> OrbitLength(g,[1,2,3,4],OnTuples);
@@ -1629,8 +1629,8 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>Transitivity(<A>G</A>)</C>, which returns the degree of transitivity
-##  of the group with respect to its natural action on the points moved by
-##  it.
+##  of the group with respect to its natural action on the set of points
+##  moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
 ##  is 3-transitive on the set <M>\{2, 3, 4\}</M>.
 ##  <Example><![CDATA[
@@ -1819,7 +1819,8 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>IsTransitive(<A>G</A>)</C>, which tests whether the group is
-##  transitive with respect to its natural action on the points moved by it.
+##  transitive with respect to its natural action on the set of points
+##  moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
 ##  is transitive on the set <M>\{2, 3, 4\}</M>.
 ##  </Description>
@@ -1856,7 +1857,8 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>IsPrimitive(<A>G</A>)</C>, which tests whether the group is
-##  primitive with respect to its natural action on the points moved by it.
+##  primitive with respect to its natural action on the set of points
+##  moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
 ##  is primitive on the set <M>\{2, 3, 4\}</M>.
 ##  <P/>
@@ -1923,7 +1925,8 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>IsSemiRegular(<A>G</A>)</C>, which tests whether the group is
-##  semiregular with respect to its natural action on the points moved by it.
+##  semiregular with respect to its natural action on the set of points
+##  moved by it.
 ##  For example the group <M>\langle (2,3,4) (5,6,7) \rangle</M>
 ##  is semiregular on the set <M>\{2, 3, 4, 5, 6, 7\}</M>.
 ##  </Description>
@@ -1963,7 +1966,7 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>IsRegular(<A>G</A>)</C>, which tests whether the group is
-##  regular with respect to its natural action on the points moved by it.
+##  regular with respect to its natural action on the set of points moved by it.
 ##  For example the group <M>\langle (2,3,4) \rangle</M>
 ##  is regular on the set <M>\{2, 3, 4\}</M>.
 ##
