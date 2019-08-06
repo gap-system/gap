@@ -613,7 +613,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
           gens:= GeneratorsOfGroup( G );
         fi;
         if IsDomain( D ) then
-	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
+          if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, gens, OnPoints );
         end );
@@ -649,7 +649,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
           gens:= GeneratorsOfGroup( G );
         fi;
         if IsDomain( D ) then
-	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
+          if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, gens, act );
         end );
@@ -679,7 +679,7 @@ BindGlobal( "OrbitsishOperation", function( name, reqs, usetype, NewAorP )
         [ IsGroup, IsObject, IsList, IsList ], 0,
         function( G, D, gens, acts )
         if IsDomain( D ) then
-	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
+          if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
         fi;
         return op( G, D, gens, acts, OnPoints );
         end );
@@ -1334,17 +1334,26 @@ OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false, false );
 #############################################################################
 ##
 #O  Orbits( <G>, <seeds>[, <gens>, <acts>][, <act>] )
+#A  Orbits( <G> )
 #A  Orbits( <xset> )
 ##
 ##  <#GAPDoc Label="Orbits">
 ##  <ManSection>
 ##  <Oper Name="Orbits" Arg='G, seeds[, gens, acts][, act]' Label="operation"/>
+##  <Attr Name="Orbits" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Attr Name="Orbits" Arg='xset' Label="attribute"/>
 ##
 ##  <Description>
 ##  returns a duplicate-free list of the orbits of the elements in
 ##  <A>seeds</A> under the action <A>act</A> of <A>G</A> or under
 ##  <Ref Func="OnPoints"/> if no action function is given.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>Orbits(<A>G</A>)</C>, which returns all the orbits of its natural
+##  action on the set of points moved by it.
+##  For example the group <M>\langle (1,2,3), (4,5) \rangle</M>
+##  has the orbits <M>\{1,2,3\}</M> and <M>\{4,5\}</M>.
 ##  <P/>
 ##  (Note that the arrangement of orbits or of points within one orbit is
 ##  not defined by the operation.)
@@ -1358,6 +1367,7 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 #############################################################################
 ##
 #O  OrbitsDomain( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#A  OrbitsDomain( <G> )
 #A  OrbitsDomain( <xset> )
 ##
 ##  <#GAPDoc Label="OrbitsDomain">
@@ -1365,6 +1375,8 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##  <Heading>OrbitsDomain</Heading>
 ##  <Oper Name="OrbitsDomain" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group and an action domain"/>
+##  <Attr Name="OrbitsDomain" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Attr Name="OrbitsDomain" Arg='xset'
 ##   Label="of an external set"/>
 ##
@@ -1377,6 +1389,10 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##  <Ref Oper="Orbits" Label="operation"/>.
 ##  The domain <A>Omega</A> must be closed under the action of <A>G</A>,
 ##  otherwise an error can occur.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>OrbitsDomain(<A>G</A>)</C>, which returns all the orbits of its natural
+##  action on the set of points moved by it.
 ##  <P/>
 ##  (Note that the arrangement of orbits or of points within one orbit is
 ##  not defined by the operation.)
@@ -1410,11 +1426,11 @@ OrbitsishOperation( "OrbitsDomain", OrbitsishReq, false, NewAttribute );
 
 #############################################################################
 ##
-#O  OrbitLength( <G>, <Omega>, <pnt> [, <gens>, <acts>][, <act>] )
+#O  OrbitLength( <G>[, <Omega>], <pnt> [, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="OrbitLength">
 ##  <ManSection>
-##  <Oper Name="OrbitLength" Arg='G, Omega, pnt[, gens, acts][, act]'/>
+##  <Oper Name="OrbitLength" Arg='G[, Omega], pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  computes the length of the orbit of <A>pnt</A> under 
@@ -1430,6 +1446,7 @@ OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false, false );
 #############################################################################
 ##
 #O  OrbitLengths( <G>, <seeds>[, <gens>, <acts>][, <act>] )
+#A  OrbitLengths( <G> )
 #A  OrbitLengths( <xset> )
 ##
 ##  <#GAPDoc Label="OrbitLengths">
@@ -1437,11 +1454,18 @@ OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false, false );
 ##  <Heading>OrbitLengths</Heading>
 ##  <Oper Name="OrbitLengths" Arg='G, seeds[, gens, acts][, act]'
 ##   Label="for a group, a set of seeds, etc."/>
+##  <Attr Name="OrbitLengths" Arg='G' Label="for a permutation group"/>
 ##  <Attr Name="OrbitLengths" Arg='xset' Label="for an external set"/>
 ##
 ##  <Description>
 ##  computes the lengths of all the orbits of the elements in <A>seeds</A>
 ##  under the action <A>act</A> of <A>G</A>.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>OrbitLengths(<A>G</A>)</C>, which returns the lengths of all the
+##  orbits of its natural action on the set of points moved by it.
+##  For example the group <M>\langle (1,2,3), (5,6) \rangle</M>
+##  has the orbit lengths 2 and 3.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1452,6 +1476,7 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 #############################################################################
 ##
 #O  OrbitLengthsDomain( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#A  OrbitLengthsDomain( <G> )
 #A  OrbitLengthsDomain( <xset> )
 ##
 ##  <#GAPDoc Label="OrbitLengthsDomain">
@@ -1459,6 +1484,8 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 ##  <Heading>OrbitLengthsDomain</Heading>
 ##  <Oper Name="OrbitLengthsDomain" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group and a set of seeds"/>
+##  <Attr Name="OrbitLengthsDomain" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Attr Name="OrbitLengthsDomain" Arg='xset' Label="of an external set"/>
 ##
 ##  <Description>
@@ -1468,12 +1495,21 @@ OrbitsishOperation( "OrbitLengths", OrbitsishReq, false, NewAttribute );
 ##  <Ref Oper="OrbitLengths" Label="for a group, a set of seeds, etc."/>.
 ##  The domain <A>Omega</A> must be closed under the action of <A>G</A>,
 ##  otherwise an error can occur.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>OrbitLengthsDomain(<A>G</A>)</C>, which returns the length of all
+##  the orbits of its natural action on the set of points moved by it.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
 ##  gap> OrbitLength(g,[1,2,3,4],OnTuples);
 ##  12
 ##  gap> OrbitLengths(g,Arrangements([1..4],4),OnTuples);
 ##  [ 12, 12 ]
+##  gap> g:=Group((1,2,3),(5,6,7));;
+##  gap> OrbitLengthsDomain(g,[1,2,3]);
+##  [ 3 ]
+##  gap> OrbitLengthsDomain(g);
+##  [ 3, 3 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1484,11 +1520,11 @@ OrbitsishOperation( "OrbitLengthsDomain", OrbitsishReq, false, NewAttribute );
 
 #############################################################################
 ##
-#O  OrbitStabilizer( <G>, [<Omega>,] <pnt>, [<gens>,<acts>,] <act> )
+#O  OrbitStabilizer( <G>[, <Omega>], <pnt>[, <gens>,<acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="OrbitStabilizer">
 ##  <ManSection>
-##  <Oper Name="OrbitStabilizer" Arg='G[, Omega], pnt[, gens, acts,] act'/>
+##  <Oper Name="OrbitStabilizer" Arg='G[, Omega], pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  computes the orbit and the stabilizer of <A>pnt</A> simultaneously in a
@@ -1569,6 +1605,7 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 #############################################################################
 ##
 #O  Transitivity( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#A  Transitivity( <G> )
 #A  Transitivity( <xset> )
 ##
 ##  <#GAPDoc Label="Transitivity:oprt">
@@ -1576,6 +1613,8 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  <Heading>Transitivity</Heading>
 ##  <Oper Name="Transitivity" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group and an action domain"/>
+##  <Attr Name="Transitivity" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Attr Name="Transitivity" Arg='xset' Label="for an external set"/>
 ##
 ##  <Description>
@@ -1587,11 +1626,20 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  <P/>
 ##  An action is <E><M>k</M>-transitive</E> if every <M>k</M>-tuple of points
 ##  can be mapped simultaneously to every other <M>k</M>-tuple.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>Transitivity(<A>G</A>)</C>, which returns the degree of transitivity
+##  of the group with respect to its natural action on the set of points
+##  moved by it.
+##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
+##  is 3-transitive on the set <M>\{2, 3, 4\}</M>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
 ##  gap> IsTransitive(g,[1..5]);
 ##  false
 ##  gap> Transitivity(g,[1..4]);
+##  2
+##  gap> Transitivity(g);
 ##  2
 ##  ]]></Example>
 ##  </Description>
@@ -1747,7 +1795,7 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 #############################################################################
 ##
 #O  IsTransitive( <G>, <Omega>[, <gens>, <acts>][, <act>] )
-#O  IsTransitive( <permgroup> )
+#P  IsTransitive( <permgroup> )
 #P  IsTransitive( <xset> )
 ##
 ##  <#GAPDoc Label="IsTransitive:oprt">
@@ -1769,11 +1817,12 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  <M>D</M> if and only if for every pair of points <M>d, e \in D</M>
 ##  there is an element <M>g</M> in <A>G</A> such that <M>d^g = e</M>.
 ##  <P/>
-##  For a permutation groups <A>G</A>, one may also invoke this as
+##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>IsTransitive(<A>G</A>)</C>, which tests whether the group is
-##  transitive with respect to its natural action on the points moved by it.
+##  transitive with respect to its natural action on the set of points
+##  moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is transitive on the three points 2, 3, 4.
+##  is transitive on the set <M>\{2, 3, 4\}</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1806,11 +1855,12 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  no nontrivial block systems. See&nbsp;<Ref Sect="Block Systems"/> for
 ##  the definition of block systems.
 ##  <P/>
-##  For a permutation groups <A>G</A>, one may also invoke this as
+##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>IsPrimitive(<A>G</A>)</C>, which tests whether the group is
-##  primitive with respect to its natural action on the points moved by it.
+##  primitive with respect to its natural action on the set of points
+##  moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
-##  is primitive on the three points 2, 3, 4.
+##  is primitive on the set <M>\{2, 3, 4\}</M>.
 ##  <P/>
 ##  For an explanation of the meaning of all the inputs, please refer to
 ##  &nbsp;<Ref Sect="About Group Actions"/>.
@@ -1852,6 +1902,7 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 #############################################################################
 ##
 #O  IsSemiRegular( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#P  IsSemiRegular( <G> )
 #P  IsSemiRegular( <xset> )
 ##
 ##  <#GAPDoc Label="IsSemiRegular">
@@ -1859,6 +1910,8 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 ##  <Heading>IsSemiRegular</Heading>
 ##  <Oper Name="IsSemiRegular" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
+##  <Prop Name="IsSemiRegular" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Prop Name="IsSemiRegular" Arg='xset'
 ##   Label="for an external set"/>
 ##
@@ -1867,8 +1920,15 @@ OrbitsishOperation( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
 ##  semiregular, or <K>false</K> otherwise.
 ##  <P/>
 ##  <Index>semiregular</Index>
-##  An action is <E>semiregular</E> is the stabilizer of each point is the
+##  An action is <E>semiregular</E> if the stabilizer of each point is the
 ##  identity.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>IsSemiRegular(<A>G</A>)</C>, which tests whether the group is
+##  semiregular with respect to its natural action on the set of points
+##  moved by it.
+##  For example the group <M>\langle (2,3,4) (5,6,7) \rangle</M>
+##  is semiregular on the set <M>\{2, 3, 4, 5, 6, 7\}</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1879,6 +1939,7 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 #############################################################################
 ##
 #O  IsRegular( <G>, <Omega>[, <gens>, <acts>][, <act>] )
+#P  IsRegular( <G> )
 #P  IsRegular( <xset> )
 ##
 ##  <#GAPDoc Label="IsRegular">
@@ -1886,6 +1947,8 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  <Heading>IsRegular</Heading>
 ##  <Oper Name="IsRegular" Arg='G, Omega[, gens, acts][, act]'
 ##   Label="for a group, an action domain, etc."/>
+##  <Prop Name="IsRegular" Arg='G'
+##   Label="for a permutation group"/>
 ##  <Prop Name="IsRegular" Arg='xset'
 ##   Label="for an external set"/>
 ##
@@ -1900,6 +1963,13 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  (see&nbsp;<Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>).
 ##  In this case every point <A>pnt</A> of <A>Omega</A> defines a one-to-one
 ##  correspondence between <A>G</A> and <A>Omega</A>.
+##  <P/>
+##  For a permutation group <A>G</A>, one may also invoke this as
+##  <C>IsRegular(<A>G</A>)</C>, which tests whether the group is
+##  regular with respect to its natural action on the set of points moved by it.
+##  For example the group <M>\langle (2,3,4) \rangle</M>
+##  is regular on the set <M>\{2, 3, 4\}</M>.
+##
 ##  <Example><![CDATA[
 ##  gap> IsSemiRegular(g,Arrangements([1..4],3),OnTuples);
 ##  true
@@ -2201,8 +2271,10 @@ DeclareOperation( "RepresentativeActionOp",
 ##  The stabilizer will have <A>G</A> as its parent.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,3,2),(2,4,3));;
-##  gap> Stabilizer(g,4);
+##  gap> stab:=Stabilizer(g,4);
 ##  Group([ (1,3,2) ])
+##  gap> Parent(stab);
+##  Group([ (1,3,2), (2,4,3) ])
 ##  ]]></Example>
 ##  <P/>
 ##  The stabilizer of a set or tuple of points can be computed by specifying
@@ -2212,10 +2284,12 @@ DeclareOperation( "RepresentativeActionOp",
 ##  Group([ (1,2)(3,4) ])
 ##  gap> Stabilizer(g,[1,2],OnTuples);
 ##  Group(())
-##  gap> OrbitStabilizer(g,[1,2],OnSets);
+##  gap> orbstab:=OrbitStabilizer(g,[1,2],OnSets);
 ##  rec( 
 ##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], 
 ##        [ 2, 4 ] ], stabilizer := Group([ (1,2)(3,4) ]) )
+##  gap> Parent(orbstab.stabilizer);
+##  Group([ (1,3,2), (2,4,3) ])
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
