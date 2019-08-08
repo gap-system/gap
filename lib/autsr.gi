@@ -9,7 +9,50 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This  file  contains an implementation of the Cannon/Holt automorphism
-##  group algorithm.
+##  group algorithm:
+##    Automorphism group computation and isomorphism testing in finite groups.
+##    J. Symb. Comput. 35, No. 3, 241-267 (2003)
+
+# If M<=Frat(C_G(M)), try to find relators for C/M that in G evaluate to
+# generators of M and for which exponent sums are multiples of p. In this
+# case the values of the relators on pre-images in G do not depend on choice
+# of representatives and can be used to deduce the module automorphism
+# belonging to a factor group automorphism.
+BindGlobal("AGSRFindRels",function(nat)
+local C,M,p,all,gens,sub,q,hom,fp,rels,new,pre,sel,i,free,cnt;
+  M:=KernelOfMultiplicativeGeneralMapping(nat);
+  C:=Centralizer(Source(nat),M);
+  if not IsSubset(FrattiniSubgroup(C),M) then
+    return fail;
+  fi;
+  p:=SmallestPrimeDivisor(Size(M));
+  all:=[];
+  gens:=SmallGeneratingSet(Image(nat));
+  free:=FreeGroup(Length(gens));
+  sub:=TrivialSubgroup(M);
+  cnt:=0;
+  while Size(sub)<Size(M) do
+    q:=Group(gens);
+    SetSize(q,Size(Image(nat)));
+    # use `ByGenerators` to force more random relators
+    hom:=IsomorphismFpGroupByGenerators(q,gens);
+    fp:=Range(hom);
+    rels:=Filtered(RelatorsOfFpGroup(fp),x->ForAll(ExponentSums(x),x->x mod p=0));
+    rels:=List(rels,x->ElementOfFpGroup(FamilyObj(One(fp)),x));
+    new:=RestrictedMapping(nat,C)*hom;
+    pre:=List(rels,x->PreImagesRepresentative(new,x));
+    for i in [1..Length(rels)] do
+      if not pre[i] in sub then
+        Add(all,MappedWord(rels[i],
+          GeneratorsOfGroup(fp),GeneratorsOfGroup(free)));
+        sub:=ClosureGroup(sub,pre[i]);
+      fi;
+    od;
+    cnt:=cnt+1;
+    if cnt>5 then return fail;fi;
+  od;
+  return rec(gens:=gens,free:=free,rels:=all);
+end);
 
 BindGlobal("AGSRPrepareAutomLift",function(G,pcgs,nat)
 local ocr, fphom, fpg, free, len, dim, tmp, L0, S, R, rels, mat, r, RS, i, g, v;
@@ -29,6 +72,16 @@ local ocr, fphom, fpg, free, len, dim, tmp, L0, S, R, rels, mat, r, RS, i, g, v;
   ocr.module:=GModuleByMats(
     LinearActionLayer(G,ocr.generators,ocr.modulePcgs),ocr.field);
   ocr.moduleauts:=MTX.ModuleAutomorphisms(ocr.module);
+  if Size(ocr.moduleauts)>
+      # Finding the relations comes at a cost that needs to be plausible
+      # with searching multiple times through the automorphism group. This
+      # order bound is a heuristic that seems to be OK by magnitude.
+      321
+    then
+    ocr.trickrels:=AGSRFindRels(nat);
+  else
+    ocr.trickrels:=fail;
+  fi;
 
   ocr.factorgens:=List(ocr.generators,i->Image(nat,i));
   free:=FreeGroup(Length(ocr.generators),"f");
@@ -119,7 +172,7 @@ local n,i;
 end);
 
 BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
-  local v, rels, genimages, v1, psim, w, s, t, l, hom, i, e, j,ep,phom;
+  local v, rels, genimages, v1, psim, w, s, t, l, hom, i, e, j,ep,phom,enum;
 
   v:=[];
   rels:=ocr.relators;
@@ -133,13 +186,34 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
   od;
 
   #for ep in Enumerator(ocr.moduleauts) do
-  phom:=IsomorphismPermGroup(ocr.moduleauts);
-  Info(InfoMorph,5,"Search through module automorphisms of size ",
-    Size(Image(phom)));
-  for ep in Enumerator(Image(phom)) do
+  if ocr.trickrels<>fail then
+    # special case for M<=Frat(C_G(M)). Use special relators for factor that
+    # allow to deduce corresponding module aut.
+    t:=ocr.trickrels;
+    phom:=IdentityMapping(ocr.moduleauts);
+    s:=List(t.gens,x->PreImagesRepresentative(nat,x));
+    l:=List(t.gens,x->PreImagesRepresentative(nat,ImagesRepresentative(fhom,x)));
+    s:=List(t.rels,x->MappedWord(x,GeneratorsOfGroup(t.free),s));
+    l:=List(t.rels,x->MappedWord(x,GeneratorsOfGroup(t.free),l));
+
+    s:=List(s,x->ExponentsOfPcElement(ocr.modulePcgs,x))*One(ocr.field);
+    l:=List(l,x->ExponentsOfPcElement(ocr.modulePcgs,x))*One(ocr.field);
+    Info(InfoMorph,5,"Deduced corresponding module automorphism");
+    if RankMat(l)<Length(l) then
+      return fail;
+    fi;
+    enum:=[s^-1*l];
+
+  else
+    phom:=IsomorphismPermGroup(ocr.moduleauts);
+    enum:=Enumerator(Image(phom));
+    Info(InfoMorph,5,"Search through module automorphisms of size ",
+      Size(Image(phom)));
+  fi;
+  for ep in enum do
     e:=PreImagesRepresentative(phom,ep);
     psim:=e*miso;
-	psim:=psim^-1;
+    psim:=psim^-1;
     w:=-List(v,i->i*psim);
     #s:=SolutionMat(ocr.matrix,Concatenation(w));
     s:=AGSRSolMat(ocr.semiech,Concatenation(w));
@@ -216,11 +290,13 @@ local c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort;
   Info(InfoMorph,2,"intermediate improvement ",IndexNC(G,S));
 
   good:=false;
-  # avoid writing down a permutation representation on more 
-  # than 10^5 cosets, as it gets too memory expensive
-  if IndexNC(G,S)<=15/10*10^5 then
-    # try to prove no supergroup works
+  if IndexNC(G,S)<=
+      # avoid writing down a permutation representation on more than 
+      150000
+      #cosets, as it gets too memory expensive.
+    then
 
+    # try to prove no supergroup works
     t:=RightTransversal(G,S:noascendingchain); # don't try to be clever in
     # decomposing transversal, as this could be hard
     a:=Action(G,t,OnRight); # coset action, don't need homomorphism
@@ -782,7 +858,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      Size(A)>10^8 and (IsAbelian(r) or AbelianRank(r)<10)
+      Size(A)>10^8 and AbelianRank(r)<10
       #(
       ## potentially large GL
       #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
@@ -945,11 +1021,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
 end);
 
-
+# find characteristic subgroups by splitting into elementary abelian,
+# homogeneous layers
 BindGlobal("AGSRModuleLayerSeries",function(g)
 local s,l,r,i,j,sy,hom,p,pcgs;
   s:=ShallowCopy(DerivedSeriesOfGroup(g));
-  l:=s[Length(s)];
   r:=RadicalGroup(s[Length(s)]);
   if Size(r)>1 then # cannot be last, as solvable
     Append(s,DerivedSeriesOfGroup(r));
@@ -989,10 +1065,16 @@ local s,l,r,i,j,sy,hom,p,pcgs;
           r:=MTX.BasisSocle(l);
           if Length(r)=l.dimension then
             # semisimple -- use homogeneous
-            r:=List(MTX.CollectedFactors(l),x->x[1]);
-            if Length(r)>1 then
-              r:=MTX.Homomorphisms(l,r[1]);
-              Error("hom");
+            sy:=List(MTX.CollectedFactors(l),x->x[1]);
+            if Length(sy)>1 then
+              r:=Minimum(List(sy,x->x.dimension));
+              sy:=Filtered(sy,x->x.dimension=r);
+              r:=[];
+              for j in sy do
+                Append(r,MTX.Homomorphisms(j,l));
+              od;
+              r:=Concatenation(r);
+              r:=Filtered(TriangulizedMat(r),x->not IsZero(x));
             else
               r:=fail;
             fi;
@@ -1021,6 +1103,7 @@ local s,l,r,i,j,sy,hom,p,pcgs;
   return s;
 end);
 
+# find corresponding characteristic subgroups
 BindGlobal("AGSRMatchedCharacteristics",function(g,h)
 local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
   props:=function(a,chars)
@@ -1092,7 +1175,8 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
   ph:=List(ch,x->props(x,nh));
   if Collected(pg)<>Collected(ph) then return fail;fi;
 
-  while Length(cg)>0 do
+  stop:=false;
+  while Length(cg)>0 and not stop do
     i:=First([1..Length(pg)],x->Number(pg,y->y=pg[x])=1);
     if i<>fail then
       # found a unique one -- process
@@ -1133,6 +1217,13 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
       od;
     fi;
   od;
+
+  j:=Set(pg);
+  return rec(
+    ng:=ng,nh:=nh,
+    cg:=List(j,x->cg{Filtered([1..Length(cg)],y->pg[y]=x)}),
+    ch:=List(j,x->ch{Filtered([1..Length(ch)],y->ph[y]=x)})
+    );
 end);
 
 
