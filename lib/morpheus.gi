@@ -2264,7 +2264,8 @@ local m;
     return fail;
   fi;
 
-  if (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2) and Size(RadicalGroup(G))>1 then
+  if (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
+    or ValueOption("forcetest")=true) and Size(RadicalGroup(G))>1 then
     # In place until a proper implementation of Cannon/Holt isomorphism is
     # made available.
     return PatheticIsomorphism(G,H);

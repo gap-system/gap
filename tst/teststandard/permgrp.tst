@@ -105,5 +105,9 @@ gap> iso:=IsomorphismPcGroup(g);;
 gap> Length(DoubleCosets(Image(iso,g),Image(iso,s),Image(iso,s)));
 24
 
+# some lattice and deductions
+gap> MinimalFaithfulPermutationDegree(PerfectGroup(IsPermGroup,7680,1));
+76
+
 #
 gap> STOP_TEST( "permgrp.tst", 1);

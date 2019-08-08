@@ -1,4 +1,9 @@
 gap> START_TEST("AutomorphismGroup.tst");
+
+# Assertions at level 2 kill runtime of automorphism group computations
+gap> SetAssertionLevel(0);
+
+#
 gap> SimpleAutTest:=function(from,to)
 > local it,g,a,p;
 >   it:=SimpleGroupsIterator(from);
