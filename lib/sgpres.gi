@@ -1081,6 +1081,9 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     # group generators.
     SetPrimaryGeneratorWords(T,aug.primaryGeneratorWords);
 
+    # Since T is mutable, we must set this attribite "manually"
+    SetTzOptions(T, TzOptions(T));
+    
     # handle relators of length 1 or 2, but do not eliminate any primary
     # generators.
     TzOptions(T).protected := tree[TR_PRIMARY];

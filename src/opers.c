@@ -2420,7 +2420,7 @@ Obj DoAttribute (
     val = CopyObj( val, 0 );
     
     /* set the value (but not for internal objects)                        */
-    if ( ENABLED_ATTR( self ) == 1 ) {
+    if ( ENABLED_ATTR( self ) == 1 && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
         case T_POSOBJ:
@@ -2471,7 +2471,7 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     val = CopyObj( val, 0 );
     
     /* set the value (but not for internal objects)                        */
-    if ( ENABLED_ATTR( self ) == 1 ) {
+    if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
         case T_POSOBJ:
@@ -2516,7 +2516,7 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     val = DoOperation1Args( self, obj );
     
     /* set the value (but not for internal objects)                        */
-    if ( ENABLED_ATTR( self ) == 1 ) {
+    if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
         case T_POSOBJ:
@@ -2561,7 +2561,7 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     val = DoVerboseOperation1Args( self, obj );
     
     /* set the value (but not for internal objects)                        */
-    if ( ENABLED_ATTR( self ) == 1 ) {
+    if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
         case T_POSOBJ:

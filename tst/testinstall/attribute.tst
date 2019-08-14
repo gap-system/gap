@@ -44,6 +44,31 @@ gap> NewAttribute("IsBanana", IsGroup, true, 15);
 <Attribute "IsBanana">
 gap> NewAttribute("IsBanana", IsGroup, "mutable", 15, "Hello, world");
 Error, Usage: NewAttribute( <name>, <filter>[, <mutable>][, <rank>] )
-
-#
+gap> DeclareAttribute("FavouriteFruit", IsObject);
+gap> foo := rec();;
+gap> fam := NewFamily("FruitFamily");
+<Family: "FruitFamily">
+gap> Objectify(NewType(fam, IsMutable and IsAttributeStoringRep), foo);
+<object>
+gap> InstallMethod(FavouriteFruit, [IsObject], x-> "apple");
+gap> FavouriteFruit(foo);
+"apple"
+gap> HasFavouriteFruit(foo);
+false
+gap> SetSize(foo, 17);
+gap> HasSize(foo);
+true
+gap> Size(foo);
+17
+gap> InstallMethod(FavouriteFruit, [HasSize], x-> "pear");
+gap> FavouriteFruit(foo);
+"pear"
+#@if not IsHPCGAP
+gap> MakeImmutable(foo);
+<object>
+gap> FavouriteFruit(foo);
+"pear"
+gap> HasFavouriteFruit(foo);
+true
+#@fi
 gap> STOP_TEST("attribute.tst", 1);

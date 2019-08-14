@@ -485,7 +485,7 @@ except if the attribute had been specially constructed as
 <Q>mutable attribute</Q>.
 <P/>
 It depends on the representation of an object (see&nbsp;<Ref Sect="Representation"/>)
-which attribute values it stores.  An object in the representation
+which attribute values it stores.  An immutable object in the representation
 <C>IsAttributeStoringRep</C> stores <E>all</E> attribute values once they are
 computed.  Moreover, for an object in this representation, subsequent
 calls to an attribute will return the <E>same</E> object; this is achieved
@@ -495,6 +495,13 @@ method for the attribute itself that fetches the stored attribute
 value.  (These methods are called the <Q>system setter</Q> and the
 <Q>system getter</Q> of the attribute, respectively.)<Index>system
 getter</Index><Index>system setter</Index>
+<P/>
+Mutable objects in <C>IsAttributeStoringRep</C> are allowed, but
+attribute values are not automatically stored in them. Such objects
+are useful because values can be stored by explicitly calling the
+relevant setter, and because they may later be made immutable using
+<Ref Func="MakeImmutable"/>, at which point they will start storing
+all attribute values.
 <P/>
 Note also that it is impossible to get rid of a stored attribute
 value because the system may have drawn conclusions from the old
@@ -568,7 +575,8 @@ of the object <A>obj</A> is known.
 <Description>
 For an attribute <A>attr</A>, <C>Setter(<A>attr</A>)</C> 
 is called automatically when the attribute value has been
-computed for the first time.
+computed for an immutable object which does not already have a
+value stored for <A>attr</A>.
 One can also call the setter explicitly,
 for example, <C>Setter( Size )( <A>obj</A>, <A>val</A> )</C> 
 sets <A>val</A> as size of the
