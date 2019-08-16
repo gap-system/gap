@@ -1289,6 +1289,24 @@ DeclareOperation( "^", [ IsVectorObj, IsMatrixObj ] );
 # AddCoeffs
 
 
+#############################################################################
+##
+##  IsEmptyMatrix( <matobj> )
+##
+##  <#GAPDoc Label="MatObj_IsEmptyMatrix">
+##  <ManSection>
+##    <Prop Name="IsEmptyMatrix" Arg='M' Label="for matrices"/>
+##    <Returns>A boolean</Returns>
+##    <Description>
+##      Is <K>true</K> if <A>M</A> either has zero columns or zero rows and 
+##      <K>false</K> otherwise.
+##      In other words, a matrix is empty if it has no entries.
+##    </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsEmptyMatrix", IsMatrixObj );
+
 
 # while we are at it also make the naming of following more uniform ???
 

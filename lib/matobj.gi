@@ -645,3 +645,12 @@ InstallOtherMethod( NumberColumns, "for a matrix",
 #
 InstallOtherMethod( DimensionsMat, "for a matrix in IsMatrixObj",
   [ IsMatrixObj ], m -> [ NumberRows( m ), NumberColumns( m ) ] );
+
+############################################################################
+##
+#M  IsEmptyMatrix( <matobj> )
+##
+InstallMethod( IsEmptyMatrix,
+  [ IsMatrixObj ],
+  mat -> NrRows(mat) = 0 or NrCols(mat) = 0
+);
