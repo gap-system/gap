@@ -305,6 +305,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <#Include Label="DeterminantMat">
 <#Include Label="DeterminantMatDestructive">
 <#Include Label="DeterminantMatDivFree">
+<#Include Label="MatObj_IsEmptyMatrix">
 <#Include Label="IsMonomialMatrix">
 <#Include Label="IsDiagonalMat">
 <#Include Label="IsUpperTriangularMat">
