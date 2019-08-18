@@ -58,10 +58,16 @@ gap> Sum(ConjugacyClasses(g),Size);
 1384120320
 
 # Construct modules
-gap> g:=PerfectGroup(IsPermGroup,5376,1);;
-gap> s:=IrreducibleModules(g,GF(2),0);;
+gap> g:=PerfectGroup(IsPermGroup,7500,1);;
+gap> s:=IrreducibleModules(g,GF(2));;
 gap> Collected(List(s[2],x->x.dimension));
-[ [ 1, 1 ], [ 3, 2 ], [ 8, 1 ] ]
+[ [ 1, 1 ], [ 4, 2 ], [ 24, 5 ], [ 40, 1 ], [ 60, 1 ], [ 80, 1 ] ]
+gap> Collected(List(s[2],MTX.IsAbsolutelyIrreducible));
+[ [ true, 2 ], [ false, 9 ] ]
+gap> s:=First(s[2],x->x.dimension=24);;
+gap> p:=PermrepSemidirectModule(g,s).group;;
+gap> Size(p);
+125829120000
 
 # Condition test
 gap> g:=SymmetricGroup(10);;
