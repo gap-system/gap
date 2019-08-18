@@ -1,4 +1,4 @@
-#@local checkStandardAssociate
+#@local checkStandardAssociate, A, x, R
 gap> START_TEST("associate.tst");
 
 # test StandardAssociate, StandardAssociateUnit, IsAssociated
@@ -47,6 +47,14 @@ gap> checkStandardAssociate(Integers mod ((2*3*5*7)^2));
 true
 gap> checkStandardAssociate(Integers mod ((2*3*5*7)^3));
 true
+
+# polynomial rings
+gap> for A in [ GF(5), Integers, Rationals ] do
+>      for x in [1,3] do
+>        R:=PolynomialRing(A, x);
+>        checkStandardAssociate(R, List([1..30],i->PseudoRandom(R)));
+>      od;
+>    od;
 
 #
 gap> STOP_TEST("associate.tst", 1);

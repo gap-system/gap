@@ -1031,7 +1031,7 @@ InstallMethod(StandardAssociateUnit,"laurent",
   IsCollsElms,[IsPolynomialRing, IsLaurentPolynomial],0,
 function(R,f)
   # get standard associate of leading term
-  return StandardAssociateUnit(CoefficientsRing(R), LeadingCoefficient(f));
+  return StandardAssociateUnit(CoefficientsRing(R), LeadingCoefficient(f)) * One(R);
 end);
 
 #############################################################################
