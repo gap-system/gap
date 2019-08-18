@@ -658,6 +658,45 @@ end);
 
 #############################################################################
 ##
+#M  EuclideanDegree( <R>, <n> )
+##
+##  For an overview on the theory of euclidean rings which are not domains,
+##  see Pierre Samuel, "About Euclidean rings", J. Algebra, 1971 vol. 19 pp. 282-301.
+##  http://dx.doi.org/10.1016/0021-8693(71)90110-4
+
+InstallMethod( EuclideanDegree,
+    "for Z/nZ and an element in Z/nZ",
+    IsCollsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
+    function ( R, n )
+      return GcdInt( n![1], Characteristic( n ) );
+    end );
+
+
+#############################################################################
+##
+#M  QuotientRemainder( <R>, <n>, <m> )
+##
+InstallMethod( QuotientRemainder,
+    "for Z/nZ and two elements in Z/nZ",
+    IsCollsElmsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing,
+      IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
+    function ( R, n, m )
+    local u, s, q, r;
+    #Error("TODO");
+    # HACK / WIP
+    u := StandardAssociateUnit(R, m);
+    s := u * m; # the standard associate of m
+    q := QuoInt(n![1], s![1]);
+    r := n![1] - q * s![1];
+    return [ ZmodnZObj( FamilyObj( n ), (q * u![1]) mod Characteristic(R) ),
+             ZmodnZObj( FamilyObj( n ), r ) ];
+    end );
+
+
+#############################################################################
+##
 #M  StandardAssociate( <r> )
 ##
 InstallMethod( StandardAssociate,

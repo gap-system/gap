@@ -129,6 +129,13 @@ InstallTrueMethod( IsFinite,
 
 #############################################################################
 ##
+#M  IsEuclideanRing( <R> ) . . . . . . . . . . . .  method for full ring Z/nZ
+##
+InstallTrueMethod(IsEuclideanRing, IsZmodnZObjNonprimeCollection and
+    IsWholeFamily and IsRing);
+
+#############################################################################
+##
 #V  Z_MOD_NZ
 ##
 ##  <ManSection>

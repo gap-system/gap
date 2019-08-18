@@ -44,5 +44,17 @@ true
 gap> ForAll(Filtered([2..50], IsPrimePowerInt), q->checkEuclideanRing(GF(q)));
 true
 
+# ZmodnZ
+gap> ForAll([1..50], m -> checkEuclideanRing(Integers mod m));
+true
+gap> checkEuclideanRing(Integers mod ((2*3*5)^2));
+true
+gap> checkEuclideanRing(Integers mod ((2*3*5)^3));
+true
+gap> checkEuclideanRing(Integers mod ((2*3*5*7)^2));
+true
+gap> checkEuclideanRing(Integers mod ((2*3*5*7)^3));
+true
+
 #
 gap> STOP_TEST( "euclidean.tst", 1);
