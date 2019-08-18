@@ -40,5 +40,9 @@ true
 gap> checkEuclideanRing(GaussianRationals);
 true
 
+# finite fields
+gap> ForAll(Filtered([2..50], IsPrimePowerInt), q->checkEuclideanRing(GF(q)));
+true
+
 #
 gap> STOP_TEST( "euclidean.tst", 1);

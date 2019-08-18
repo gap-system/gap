@@ -1114,7 +1114,7 @@ InstallMethod( QuotientRemainder,
     if not r in F then
       TryNextMethod(); # FIXME: or error?
     fi;
-    return [ r/s, 0 ];
+    return [ r/s, Zero(F) ];
     end );
 
 #############################################################################
