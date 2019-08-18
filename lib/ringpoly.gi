@@ -633,7 +633,7 @@ InstallMethod(StandardAssociateUnit,
 function(R,f)
   local c;
   c:=LeadingCoefficient(f);
-  return StandardAssociateUnit(CoefficientsRing(R),c);
+  return StandardAssociateUnit(CoefficientsRing(R),c) * One(R);
 end);
 
 InstallMethod(FunctionField,"indetlist",true,[IsRing,IsList],
