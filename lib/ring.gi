@@ -552,8 +552,8 @@ InstallMethod( IsAssociated,
     # or check if the quotient is a unit
     else
       q:= Quotient( R, r, s );
-#T allowed?
-      return q <> fail and IsUnit( R, q );
+      if q <> fail then return IsUnit( R, q ); fi;
+      TryNextMethod();
     fi;
     end );
 
@@ -840,11 +840,12 @@ InstallMethod( Quotient,
     function( R, r, s )
     local quo;
     quo:= Inverse( s );
-    if quo <> fail then
-      quo:= r * quo;
-      if not quo in R then
-        quo:= fail;
-      fi;
+    if quo = fail then
+      TryNextMethod();
+    fi;
+    quo:= r * quo;
+    if not quo in R then
+      quo:= fail;
     fi;
     return quo;
     end );
