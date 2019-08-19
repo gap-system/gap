@@ -684,8 +684,6 @@ InstallMethod( QuotientRemainder,
       IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function ( R, n, m )
     local u, s, q, r;
-    #Error("TODO");
-    # HACK / WIP
     u := StandardAssociateUnit(R, m);
     s := u * m; # the standard associate of m
     q := QuoInt(n![1], s![1]);
