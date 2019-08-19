@@ -36,5 +36,17 @@ true
 gap> ForAll(Filtered([2..50], IsPrimePowerInt), q->checkStandardAssociate(GF(q)));
 true
 
+# ZmodnZ
+gap> ForAll([1..100], m -> checkStandardAssociate(Integers mod m));
+true
+gap> checkStandardAssociate(Integers mod ((2*3*5)^2));
+true
+gap> checkStandardAssociate(Integers mod ((2*3*5)^3));
+true
+gap> checkStandardAssociate(Integers mod ((2*3*5*7)^2));
+true
+gap> checkStandardAssociate(Integers mod ((2*3*5*7)^3));
+true
+
 #
 gap> STOP_TEST("associate.tst", 1);
