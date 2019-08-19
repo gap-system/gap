@@ -695,6 +695,27 @@ InstallMethod( QuotientRemainder,
 
 #############################################################################
 ##
+#M  Quotient( <R>, <n>, <m> ) . . . . . . . . . . . . . . . for `IsZmodnZObj'
+##
+InstallMethod( Quotient,
+    "for Z/nZ and two elements in Z/nZ",
+    IsCollsElmsElms,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing,
+      IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
+    function ( R, x, y )
+    local Fam, q;
+    Fam := FamilyObj( x );
+    q := QuotientMod( Integers, x![1], y![1],
+                 Fam!.Characteristic );
+    if q = fail then
+        return fail;
+    fi;
+    return ZmodnZObj( Fam, q );
+    end );
+
+
+#############################################################################
+##
 #M  StandardAssociate( <r> )
 ##
 InstallMethod( StandardAssociate,
@@ -730,6 +751,19 @@ InstallMethod( StandardAssociateUnit,
 
 #############################################################################
 ##
+#M  IsAssociated( <R>, <n>, <m> )
+##
+InstallMethod( IsAssociated,
+    "for Z/nZ and two elements in Z/nZ",
+    IsCollsElmsElms,
+    [ IsZmodnZRing,
+      IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
+    function ( R, n, m )
+      R := Characteristic( n );
+      return GcdInt( n![1], R ) = GcdInt( m![1], R );
+    end );
+
+
 ##  2. The collections
 ##
 

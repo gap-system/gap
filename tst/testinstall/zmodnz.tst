@@ -301,6 +301,42 @@ gap> DefaultRingByGenerators( [ z1 ] );
 (Integers mod 8)
 
 #
+# quotients in rings with zero divisors
+#
+gap> R:=Integers mod 6;
+(Integers mod 6)
+
+#
+gap> ZmodnZObj(2,6) / ZmodnZObj(4,6);
+ZmodnZObj( 2, 6 )
+gap> Quotient(R, ZmodnZObj(2,6), ZmodnZObj(4,6));
+ZmodnZObj( 2, 6 )
+gap> ZmodnZObj(4,6) / ZmodnZObj(2,6);
+ZmodnZObj( 2, 6 )
+gap> Quotient(R, ZmodnZObj(4,6), ZmodnZObj(2,6));
+ZmodnZObj( 2, 6 )
+
+#
+gap> ZmodnZObj(2,6) / ZmodnZObj(5,6);
+ZmodnZObj( 4, 6 )
+gap> Quotient(R, ZmodnZObj(2,6), ZmodnZObj(5,6));
+ZmodnZObj( 4, 6 )
+gap> ZmodnZObj(5,6) / ZmodnZObj(2,6);
+fail
+gap> Quotient(R, ZmodnZObj(5,6), ZmodnZObj(2,6));
+fail
+
+#
+gap> ZmodnZObj(4,6) / ZmodnZObj(2,6);
+ZmodnZObj( 2, 6 )
+gap> Quotient(R, ZmodnZObj(0,6), ZmodnZObj(2,6));
+ZmodnZObj( 0, 6 )
+gap> ZmodnZObj(2,6) / ZmodnZObj(0,6);
+fail
+gap> Quotient(R, ZmodnZObj(2,6), ZmodnZObj(0,6));
+fail
+
+#
 # enumerator
 #
 gap> enum:= Enumerator( Integers mod 9 );
