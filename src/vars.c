@@ -2008,13 +2008,16 @@ static Obj FuncParentLVars(Obj self, Obj lvars)
 
 static Obj FuncContentsLVars(Obj self, Obj lvars)
 {
+  if (!IS_LVARS_OR_HVARS(lvars)) {
+      RequireArgument("ContentsLVars", lvars, "must be an lvars");
+  }
   Obj contents = NEW_PREC(0);
   Obj func = FUNC_LVARS(lvars);
   Obj nams = NAMS_FUNC(func);
   UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
   Obj values = NEW_PLIST_IMM(T_PLIST, len);
   if (lvars == STATE(BottomLVars))
-    return False;
+    return Fail;
   AssPRec(contents, RNamName("func"), func);
   AssPRec(contents, RNamName("names"), nams);
   memcpy(1+ADDR_OBJ(values), 3+CONST_ADDR_OBJ(lvars), len*sizeof(Obj));
@@ -2025,6 +2028,13 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
   if (ENVI_FUNC(func) != STATE(BottomLVars))
     AssPRec(contents, RNamName("higher"), ENVI_FUNC(func));
   return contents;
+}
+
+static Obj FuncENVI_FUNC(Obj self, Obj func)
+{
+    RequireFunction("ENVI_FUNC", func);
+    Obj envi = ENVI_FUNC(func);
+    return (envi && IS_LVARS_OR_HVARS(envi)) ? envi : Fail;
 }
 
 /****************************************************************************
@@ -2130,6 +2140,7 @@ static StructGVarFunc GVarFuncs [] = {
   GVAR_FUNC(GetBottomLVars, 0, ""),
   GVAR_FUNC(ParentLVars, 1, "lvars"),
   GVAR_FUNC(ContentsLVars, 1, "lvars"),
+  GVAR_FUNC(ENVI_FUNC, 1, "func"),
   { 0, 0, 0, 0, 0 }
 };
 

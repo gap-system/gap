@@ -1,7 +1,7 @@
 gap> GetCurrentLVars();
 <lvars bag>
 gap> ContentsLVars(GetCurrentLVars());
-false
+fail
 gap> f := function() return ContentsLVars(GetCurrentLVars()); end;
 function(  ) ... end
 gap> f();

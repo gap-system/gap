@@ -114,3 +114,23 @@ function(op)
 end);
 
 InstallMethod( SetNameFunction, [IsFunction and IsInternalRep, IS_STRING], SET_NAME_FUNC );
+
+BIND_GLOBAL( "BindingsOfClosure",
+function(f)
+    local x, r, i;
+    x := ENVI_FUNC(f);
+    if x = fail then return fail; fi;
+    r := rec();
+    while x <> GetBottomLVars() do
+        x := ContentsLVars(x);
+        if x = false then break; fi;
+        for i in [1..Length(x.names)] do
+            # respect the lookup order
+            if not IsBound(r.(x.names[i])) then
+                r.(x.names[i]) := x.values[i];
+            fi;
+        od;
+        x := ENVI_FUNC(x.func);
+    od;
+    return r;
+end);
