@@ -536,7 +536,7 @@ end );
 #M  IsAssociated( <R>, <r>, <s> ) .  test if two ring elements are associated
 ##
 InstallMethod( IsAssociated,
-    "for ring and two ring elements",
+    "for a ring and two ring elements",
     IsCollsElmsElms,
     [ IsRing, IsRingElement, IsRingElement ], 0,
     function( R, r, s )
@@ -809,7 +809,7 @@ InstallMethod( ClosureRing,
 #M  ClosureRing( <R>, <C> ) . . . . . . . . . . . . . . . . . closure of ring
 ##
 InstallMethod( ClosureRing,
-    "for ring and collection of elements",
+    "for a ring and a collection of elements",
     IsIdenticalObj,
     [ IsRing, IsCollection ], 0,
     function( R, list )
