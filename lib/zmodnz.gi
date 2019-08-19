@@ -414,7 +414,7 @@ InstallMethod( \/,
     q := QuotientMod( Integers, x![1], y![1],
                  Fam!.Characteristic );
     if q = fail then
-        return fail;
+        Error("invalid division");
     fi;
     return ZmodnZObj( Fam, q );
     end );
@@ -428,7 +428,7 @@ InstallMethod( \/,
     q := QuotientMod( Integers, x![1], y,
                  Fam!.Characteristic );
     if q = fail then
-        return fail;
+        Error("invalid division");
     fi;
     return ZmodnZObj( Fam, q );
     end );
@@ -442,7 +442,7 @@ InstallMethod( \/,
     q := QuotientMod( Integers, x, y![1],
                  Fam!.Characteristic );
     if q = fail then
-        return fail;
+        Error("invalid division");
     fi;
     return ZmodnZObj( Fam, q );
     end );

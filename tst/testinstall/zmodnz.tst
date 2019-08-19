@@ -322,7 +322,7 @@ ZmodnZObj( 4, 6 )
 gap> Quotient(R, ZmodnZObj(2,6), ZmodnZObj(5,6));
 ZmodnZObj( 4, 6 )
 gap> ZmodnZObj(5,6) / ZmodnZObj(2,6);
-fail
+Error, invalid division
 gap> Quotient(R, ZmodnZObj(5,6), ZmodnZObj(2,6));
 fail
 
@@ -332,7 +332,7 @@ ZmodnZObj( 2, 6 )
 gap> Quotient(R, ZmodnZObj(0,6), ZmodnZObj(2,6));
 ZmodnZObj( 0, 6 )
 gap> ZmodnZObj(2,6) / ZmodnZObj(0,6);
-fail
+Error, invalid division
 gap> Quotient(R, ZmodnZObj(2,6), ZmodnZObj(0,6));
 fail
 
@@ -482,21 +482,21 @@ ZmodnZObj( 2, 10 )
 gap> y := ZmodnZObj(0,10);
 ZmodnZObj( 0, 10 )
 gap> x/y;
-fail
+Error, invalid division
 gap> y/x;
 ZmodnZObj( 0, 10 )
 gap> 0/x;
 ZmodnZObj( 0, 10 )
 gap> x/0;
-fail
+Error, invalid division
 gap> x/3;
 ZmodnZObj( 4, 10 )
 gap> 3/x;
-fail
+Error, invalid division
 gap> y/3;
 ZmodnZObj( 0, 10 )
 gap> 3/y;
-fail
+Error, invalid division
 
 #
 gap> R := Integers mod 4;;
