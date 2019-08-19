@@ -522,6 +522,12 @@ end);
 ##
 #M  SubdirectProduct( <G1>, <G2>, <phi1>, <phi2> )
 ##
+
+RedispatchOnCondition(SubdirectProductOp, "check mappings", true, 
+        [IsGroup, IsGroup, IsGeneralMapping, IsGeneralMapping],
+        [IsObject, IsObject, IsGroupHomomorphism, IsGroupHomomorphism],
+        10);
+   
 InstallMethod( SubdirectProductOp,"groups", true,
   [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ], 0,
 function( G, H, gh, hh )
