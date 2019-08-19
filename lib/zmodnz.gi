@@ -724,7 +724,7 @@ InstallMethod( StandardAssociate,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
     function ( R, r )
       local m, n;
-      m := ModulusOfZmodnZObj( r );
+      m := Characteristic( r );
       n := GcdInt( r![1], m );
       return ZmodnZObj( FamilyObj( r ), n );
     end );
@@ -738,14 +738,46 @@ InstallMethod( StandardAssociateUnit,
     IsCollsElms,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
     function ( R, r )
-      local m, n;
-      m := ModulusOfZmodnZObj( r );
+      local m, n, u, pd, p, d, e, x, residues, moduli;
+      # zero is associated to itself, so return identity
       if r![1] = 0 then
-        n := 1;
-      else
-        n := QuotientMod(GcdInt( r![1], m ), r![1], m);
+        return ZmodnZObj( FamilyObj( r ), 1 );
       fi;
-      return ZmodnZObj( FamilyObj( r ), n );
+      m := Characteristic( r );
+      # divide input by its standard associate
+      n := r![1] / GcdInt( r![1], m );
+      # we really need the "inverse" of n, i.e., a unit u such that r*u is
+      # equal to the standard associate. If n is a unit (i.e., coprime to the
+      # modulus m), we can invert it and use that as u:
+      if GcdInt( n, m ) = 1 then
+        u := (1 / n) mod m;
+        return ZmodnZObj( FamilyObj( r ), u );
+      fi;
+      # otherwise, first factor the modulus m into a product of prime powers,
+      # m = p_1^{d_1} \cdots p_k^{d_k}. Then compute the StandardAssociateUnit
+      # modulo each p_i^{d_i}; then finally use the Chinese Remainder Theorem
+      # to combine these back together.
+      residues := [];
+      moduli := [];
+      for pd in Collected(Factors(Integers, m)) do
+        p := pd[1];
+        d := pd[2];
+        pd := p^d;
+        if n mod p = 0 then
+            # if n is divisible by p, then in fact r![1] is divisible by p^d,
+            # i.e., it is 0 mod p^d, and we can choose 1 as the
+            # StandardAssociateUnit (mod p^d)
+            x := 1;
+        else
+            # if n is not divisible by p, we can invert it modulo p^d to get
+            # the StandardAssociateUnit (mod p^d)
+            x := 1 / n mod pd;
+        fi;
+        Add( residues, x );
+        Add( moduli, pd );
+      od;
+      u := ChineseRem( moduli, residues );
+      return ZmodnZObj( FamilyObj( r ), u );
     end );
 
 
@@ -756,7 +788,7 @@ InstallMethod( StandardAssociateUnit,
 InstallMethod( IsAssociated,
     "for Z/nZ and two elements in Z/nZ",
     IsCollsElmsElms,
-    [ IsZmodnZRing,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing,
       IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
     function ( R, n, m )
       R := Characteristic( n );
