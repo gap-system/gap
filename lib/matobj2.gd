@@ -537,6 +537,7 @@ DeclareOperation( "ChangedBaseDomain", [IsVectorObj,IsSemiring] );
 # Changes the base domain. A copy of the row vector in the first argument is
 # created, which comes in a "similar" representation but over the new
 # base domain that is given in the second argument.
+# The result is mutable if and only if the given vector is mutable.
 # example: given a vector over GF(2),  create a new vector over GF(4) with "identical" content
 #  so it's kind of a type conversion / coercion
 # TODO: better name, e.g. VectorWithChangedBasedDomain
@@ -1123,14 +1124,6 @@ DeclareOperation( "TransposedMatMutable", [IsMatrixObj] );
 #  its transpose "by accident", and then gets modified later on
 #
 
-
-DeclareOperation( "IsDiagonalMat", [IsMatrixObj] );
-DeclareOperation( "IsUpperTriangularMat", [IsMatrixObj] );
-DeclareOperation( "IsLowerTriangularMat", [IsMatrixObj] );
-# TODO: if we allow attributes, we might just as well do the above to be
-# declared as properties, so that this information is stored; but once
-# again, we would only want to allow this for immutable matrix objects.
-# ...
 
 # TODO: what about the following (and also note the names...):
 #   - IsScalarMat, IsSquareMat, ... ?
