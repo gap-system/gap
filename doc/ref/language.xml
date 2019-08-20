@@ -12,7 +12,7 @@
 <Heading>The Programming Language</Heading>
 
 This chapter describes the &GAP; programming language.  It should allow
-you in principle to predict the result of each and every input. In order
+you, in principle, to predict the result of each and every input. In order
 to know what we are talking about, we first have to look more closely at
 the process of interpretation and the various representations of data
 involved.
@@ -140,7 +140,7 @@ Digits, uppercase and lowercase letters, <B>Space</B>, <B>Tab</B>,
 ]]></Listing>
 <P/>
 It is possible to use other characters in identifiers by escaping
-them with backslashes, but we do not recommend to use this feature.
+them with backslashes, but we do not recommend the use of this feature.
 Inside strings
 (see section&nbsp;<Ref Sect="Symbols"/> and
 chapter&nbsp;<Ref Chap="Strings and Characters"/>)
