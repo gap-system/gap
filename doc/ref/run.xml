@@ -18,11 +18,11 @@
 <Heading>Running GAP</Heading>
 
 <Index>options</Index>
-This chapter informs about command line options for &GAP; 
+This chapter contains information about the command line options for &GAP; 
 (see&nbsp;<Ref Sect="Command Line Options"/>),
-some files in user specific &GAP; root  directory
+about some files in user specific &GAP; root  directory
 (see&nbsp;<Ref Sect="sect:gap.ini"/>) 
-and saving and loading a &GAP; workspace
+and about saving and loading a &GAP; workspace
 (see&nbsp;<Ref Sect="Saving and Loading a Workspace"/>).
 
 
