@@ -303,7 +303,7 @@ We now describe the above files and directories in more details:
 <Mark>
 <F>README</F></Mark>
 <Item>
-<Index Key="README" Subkey="for a GAP package"><C>README</C></Index>
+<Index Key="README" Subkey="for a GAP package"><F>README</F></Index>
 
 The filename may optionally have an extension, e.g. <F>.txt</F> or <F>.md</F>.
 <P/>
