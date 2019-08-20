@@ -296,7 +296,8 @@ Relevant pull requests:
       Finite groups whose order is known and not divisible by 4 are immediately marked as solvable
 </Item>
 <Item><URL><LinkText>&Hash;2509</LinkText><Link>https://github.com/gap-system/gap/pull/2509</Link></URL>
-      Rewrite support for <File>.gz</File> compressed files to use <Package>zlib</Package>, now works on Windows
+      Rewrite support for <F>.gz</F> compressed files to use <Package>zlib</Package>,
+      now works on Windows
 </Item>
 <Item><URL><LinkText>&Hash;2519</LinkText><Link>https://github.com/gap-system/gap/pull/2519</Link></URL>,
       <URL><LinkText>&Hash;2524</LinkText><Link>https://github.com/gap-system/gap/pull/2524</Link></URL>,

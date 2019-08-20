@@ -1163,9 +1163,9 @@ Improved functionality:
 <List>              
 <Item>
 <Ref Func="WriteGapIniFile" BookName="ref"/> on Windows now produces the
-<File>gap.ini</File> file with Windows style line breaks. Also, an info 
-message is now printed if an existing <File>gap.ini</File> file was moved 
-to a backup file <File>gap.ini.bak</File>.
+<F>gap.ini</F> file with Windows style line breaks. Also, an info 
+message is now printed if an existing <F>gap.ini</F> file was moved 
+to a backup file <F>gap.ini.bak</F>.
 </Item>
 <Item>
 The <Package>CTblLib</Package> and <Package>TomLib</Package> packages are 
@@ -1179,8 +1179,8 @@ The conjugacy test in <M>S_n</M> for intransitive subgroups was improved.
 This deals with inefficiency issue in the case reported by Stefan Kohl.
 </Item>
 <Item>
-Added <C>InstallAndCallPostRestore</C> to <File>lib/system.g</File> and call
-it in <File>lib/init.g</File> instead of <C>CallAndInstallPostRestore</C> for 
+Added <C>InstallAndCallPostRestore</C> to <F>lib/system.g</F> and call
+it in <F>lib/init.g</F> instead of <C>CallAndInstallPostRestore</C> for 
 the function that reads the files listed in &GAP; command line. This fixes 
 the problem reported by Yevgen Muntyan when 
 <Ref Func="SaveWorkspace" BookName="ref"/> was used in a file listed in &GAP; 

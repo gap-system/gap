@@ -26,7 +26,7 @@ Merged &HPCGAP; into &GAP;. For details, please refer to Subsection
 old system, and will be easier to maintain. For regular users, the usual 
 <C>./configure &amp;&amp; make</C> should work fine as before.
 If you are interested in technical details on the new build system,
-take a look at <File>README.buildsys.md</File>.
+take a look at <F>README.buildsys.md</F>.
 </Item>
 <Item>
 The guidelines for developing &GAP; packages were revised and moved from the
@@ -242,7 +242,7 @@ mostly for nilpotent groups.
 (<URL><LinkText>&Hash;535</LinkText><Link>https://github.com/gap-system/gap/pull/535</Link></URL>)
 </Item>
 <Item>
-Remove <File>.zoo</File> archive related tools
+Remove <F>.zoo</F> archive related tools
 (<URL><LinkText>&Hash;540</LinkText><Link>https://github.com/gap-system/gap/pull/540</Link></URL>)
 </Item>
 <Item>
@@ -523,7 +523,7 @@ word for cache and memory efficiency
 (<URL><LinkText>&Hash;1616</LinkText><Link>https://github.com/gap-system/gap/pull/1616</Link></URL>)
 </Item>
 <Item>
-Improved <File>bin/BuildPackages.sh</File>, in particular
+Improved <F>bin/BuildPackages.sh</F>, in particular
     added option to abort upon failure
     (<URL><LinkText>&Hash;2022</LinkText><Link>https://github.com/gap-system/gap/pull/2022</Link></URL>) 
 </Item>
@@ -1073,7 +1073,7 @@ Remove unused and undocumented <C>Randomizer</C> and <C>CheapRandomizer</C>
 (<URL><LinkText>&Hash;1113</LinkText><Link>https://github.com/gap-system/gap/pull/1113</Link></URL>)
 </Item>
 <Item>
-Remove <File>install-tools.sh</File> script and documentation mentioning it
+Remove <F>install-tools.sh</F> script and documentation mentioning it
 (<URL><LinkText>&Hash;1305</LinkText><Link>https://github.com/gap-system/gap/pull/1305</Link></URL>)
 </Item>
 <Item>
@@ -1090,7 +1090,7 @@ Remove undocumented <C>SuPeRfail</C> and <C>READ_COMMAND</C>
 (<URL><LinkText>&Hash;1374</LinkText><Link>https://github.com/gap-system/gap/pull/1374</Link></URL>)
 </Item>
 <Item>
-Remove unused <File>oldmatint.gi</File> (old methods for functions
+Remove unused <F>oldmatint.gi</F> (old methods for functions
 that compute Hermite and Smith normal forms of integer matrices)
 (<URL><LinkText>&Hash;1765</LinkText><Link>https://github.com/gap-system/gap/pull/1765</Link></URL>)
 </Item>
@@ -1251,12 +1251,12 @@ profiles using version 2.0.1 of the <Package>Profiling</Package> package
 (<URL><LinkText>&Hash;2444</LinkText><Link>https://github.com/gap-system/gap/pull/2444</Link></URL>).
 </Item>
 <Item>
-The <File>bin/gap.sh</File> script now respects the <C>GAP_DIR</C> environment variable
+The <F>bin/gap.sh</F> script now respects the <C>GAP_DIR</C> environment variable
 (<URL><LinkText>&Hash;2465</LinkText><Link>https://github.com/gap-system/gap/pull/2465</Link></URL>).
 [Contributed by RussWoodroofe]
 </Item>
 <Item>
-The <File>bin/BuildPackages.sh</File> script now properly builds binaries for
+The <F>bin/BuildPackages.sh</F> script now properly builds binaries for
 the <Package>simpcomp</Package> package
 (<URL><LinkText>&Hash;2475</LinkText><Link>https://github.com/gap-system/gap/pull/2475</Link></URL>).
 </Item>

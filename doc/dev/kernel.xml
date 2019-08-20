@@ -71,10 +71,10 @@ perform three basic steps:
 <Enum>
 
 <Item>
-Create the &C; handler, adding to the file <File>string.c</File>
+Create the &C; handler, adding to the file <F>string.c</F>
 (this file contains the functions which mainly deal with strings)
 the &C; code doing the actual job (see the function <C>Pr</C> to print
-formatted output in the file <File>scanner.c</File> ):
+formatted output in the file <F>scanner.c</F> ):
 <Listing>
 <![CDATA[
 Obj FuncHELLO_WORLD( Obj self ) {
@@ -83,12 +83,12 @@ Obj FuncHELLO_WORLD( Obj self ) {
   }
 ]]>
 </Listing>
-This code should be placed somewhere in the file <File>string.c</File>
+This code should be placed somewhere in the file <F>string.c</F>
 before specifying <C>GvarFuncs</C>.
 </Item>
 
 <Item>
-In the same file <File>string.c</File> find the list of functions to export
+In the same file <F>string.c</F> find the list of functions to export
 called <C>GvarFuncs</C> and add to this list a table entry for <C>HELLO_WORLD</C>
 <Listing>
 <![CDATA[
@@ -99,7 +99,7 @@ containing respectively the string specifying the name of the function at the &G
 level, the number of arguments, the string with the description of arguments, 
 corresponding &C; handler and the string (<Q>cookie</Q>) specifying the location 
 of this handler (see definition of the structure <C>StructGVarFunc</C>
-in the file <File>system.h</File> ).
+in the file <F>system.h</F> ).
 </Item>
 
 <Item>
@@ -189,7 +189,7 @@ pass control back from that level:
 &GASMAN; is the &GAP; memory manager. 
 It provides an API dealing with <E>Bags</E> which are
 areas of memory, each with a size and a <C>TNUM</C> (type number) 
-in the range 0--253 (type numbers are defined in the file <File>objects.h</File>; 
+in the range 0--253 (type numbers are defined in the file <F>objects.h</F>; 
 there are some spare numbers reserved for further extensions; types 254 and 255 
 are reserved for &GASMAN;. See Section 
 <Ref Label="Sect-Objects" /> for more details). 
@@ -213,7 +213,7 @@ To get the type of the bag with the identifier <C>b</C>, call <C>TNUM_BAG(b)</C>
 
 The application specifies the type of a bag when it allocates it with <C>NewBag</C>
 and may later  change it with <C>RetypeBag</C> (see  <C>NewBag</C> and <C>RetypeBag</C>
-in <File>gasman.h</File>).
+in <F>gasman.h</F>).
 <P/>
 
 &GASMAN; needs to know the type of a bag so that it knows which function to  
@@ -295,7 +295,7 @@ extends the bag. Note that <C>ResizeBag</C> will  perform a garbage collection
 if no free storage is available.  During the garbage collection the addresses 
 of the data areas of all bags may change.  So you must not keep  any pointers to
 or into the data areas of bags over calls to <C>ResizeBag</C> (see <C>PTR_BAG</C>
-in <File>gasman.h</File>).
+in <F>gasman.h</F>).
 </Item>
 <Item>
 <C>InitMarkFuncBags( type, mark-func )</C>(optional) installs the function <C>mark-func</C> 
@@ -324,7 +324,7 @@ remains, marked      in   a    way    which   can     be   detected    by
 using such an identifier.
 <P/>
 &GASMAN; already provides the following standard 
-marking functions defined in <File>gasman.c</File>: 
+marking functions defined in <F>gasman.c</F>: 
 <List>
 <Item>
 <C>MarkNoSubBags( bag )</C> is a marking function   for types whose  bags contain no
@@ -381,7 +381,7 @@ The modules at the bottom of the picture from the section
 provide interfaces intended for use in the kernel.
 <P/>
 
-For example <File>ariths.h</File> provides macros like 
+For example <F>ariths.h</F> provides macros like 
 <C>SUM</C>, <C>PROD</C>, <C>AINV</C>, 
 corresponding to the GAP operations <C>+</C>, <C>*</C> and unary <C>-</C>.
 These macros can be applied to any values (objects) to 
@@ -435,12 +435,12 @@ object, its square and its cube:
 <Heading>Objects and API</Heading>
 
 The kernel representation of every &GAP; object is an object of &C; type <C>Obj</C>.
-Objects are defined in the file <File>objects.h</File>.
+Objects are defined in the file <F>objects.h</F>.
 Objects are actually <E>bags</E> (represented by their handles),
 small integers and small finite field elements (represented by values 
 that could not be valid handles). 
 
-<C>Bag</C> is the type of bag identifiers, defined in the file <File>system.h</File>:
+<C>Bag</C> is the type of bag identifiers, defined in the file <F>system.h</F>:
 <Example>
 <![CDATA[
 typedef UInt * *        Bag;
@@ -496,7 +496,7 @@ but if you know what objects you will have it will be a bit faster to call
 the multiplication directly.
 <P/>
 Typical implementation is a table of functions indexed by <C>TNUM_OBJ</C>.
-For example, this is the definition of <C>PROD</C> in the file <File>ariths.h</File>:
+For example, this is the definition of <C>PROD</C> in the file <F>ariths.h</F>:
 
 <Example>
 <![CDATA[
@@ -504,7 +504,7 @@ For example, this is the definition of <C>PROD</C> in the file <File>ariths.h</F
 ]]>
 </Example>
 
-Additionally, <File>objects.h</File> also defines symbolic names for TNUMs.
+Additionally, <F>objects.h</F> also defines symbolic names for TNUMs.
 <P/>
 There are lots of other API functions for strings, general lists, calling
 functions, etc.
@@ -551,7 +551,7 @@ object to a &C; integer. These macros do NOT check for overflows.
 
 The other two integer types are <C>T_INTPOS</C> and <C>T_INTNEG</C> for 
 positive (respectively, negative) integer values  that  can  not  be  
-represented  by  immediate  integers. See comments in <File>integer.c</File>
+represented  by  immediate  integers. See comments in <F>integer.c</F>
 for details.
 <P/>
 
@@ -607,7 +607,7 @@ future.
 <Heading>Arithmetics</Heading>
 
 Arithmetic operations package is implemented in files 
-<File>ariths.h</File> and <File>ariths.c</File>. In particular,
+<F>ariths.h</F> and <F>ariths.c</F>. In particular,
 it defines macros like <C>SUM(obj1, obj2)</C>, <C>DIFF</C>, <C>PROD</C> etc.,
 which accept (and may return) objects of any kind, including immediate objects.
 Selection of the appropriate method is handled via calling <C>TNUM_OBJ</C> for
@@ -619,7 +619,7 @@ for example:
 ]]>
 </Listing>
 The default entry of the table of functions just calls back to the &GAP; level 
-to look for the installed methods (see e.g. <C>SumObject</C> in <File>ariths.c</File>),
+to look for the installed methods (see e.g. <C>SumObject</C> in <F>ariths.c</F>),
 but note that kernel methods installed in tables <E>OVERRIDE</E> &GAP;
 installed methods.
 <P/>
@@ -644,8 +644,8 @@ are used mainly by the compiler.
 <Subsection Label="Subsect-Functions">
 <Heading>Functions</Heading>
 
-The function call mechanism package is implemented in files <File>calls.h</File> 
-and <File>calls.c</File>. A function object in &GAP; is represented by a bag of 
+The function call mechanism package is implemented in files <F>calls.h</F> 
+and <F>calls.c</F>. A function object in &GAP; is represented by a bag of 
 the type <C>T_FUNCTION</C>. The bag for the function <C>f</C> contains eight 
 pointers fo &C; functions - its handlers. These eight functions are for 
 0,1,2,...,6 arguments and X arguments respectively, and the <M>i</M>-th handler 
@@ -684,7 +684,7 @@ handler.
 <P/>
 To create a function object, there are three functions
 <C>NewFunction</C>, <C>NewFunctionC</C>, and <C>NewFunctionT</C>,
-defined in the file <File>calls.c</File>.
+defined in the file <F>calls.c</F>.
 <P/>
 <C>NewFunction( name, narg, nams, hdlr )</C>
 creates and returns a new function.  <A>name</A> must be  a  &GAP;
@@ -725,7 +725,7 @@ macros like
 (returns 0 if &lt;list> has no assigned  object at position &lt;pos>)
 and 
 <C>ASS_LIST</C>,
-defined in the file <File>lists.h</File>
+defined in the file <F>lists.h</F>
 Implementation of these macros is done via tables of functions indexed by TNUM.
 <P/> 
 Nevertheless, it will be not much faster to write your &C; code using such macros,
@@ -846,7 +846,7 @@ and will be not significant if code spends most of its time in the kernel
 or elsewhere in library.
 <P/>
 
-In the following example we compile the file <File>foo.g</File> and then
+In the following example we compile the file <F>foo.g</F> and then
 load it during the subsequent &GAP; session:
 
 <Log>
@@ -1016,7 +1016,7 @@ and always reads code from the library.
 <Heading>Global variables</Heading>
 
 The part of the kernel that  manages global variables, i.e., the global 
-namespace, is contained in the files <File>gvars.h</File> and <File>gvars.c</File>.
+namespace, is contained in the files <F>gvars.h</F> and <F>gvars.c</F>.
 Global variables have an internal form, of type <C>GVar</C> 
 (actually an index into a hash table). 
 They may be obtained with <C>GVar gv = GVarName(&lt;string>);</C>. 
