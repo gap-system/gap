@@ -158,9 +158,9 @@ InstallMethod( IsGeneralizedCartanMatrix,
 
 #############################################################################
 ##
-#M  IsDiagonalMat(<mat>)
+#M  IsDiagonalMatrix(<mat>)
 ##
-InstallMethod( IsDiagonalMat,
+InstallMethod( IsDiagonalMatrix,
     "for a matrix",
     [ IsMatrixObj ],
     function( mat )
@@ -176,14 +176,14 @@ InstallMethod( IsDiagonalMat,
     return true;
     end);
 
-InstallOtherMethod( IsDiagonalMat, [ IsEmpty ], ReturnTrue );
+InstallTrueMethod( IsDiagonalMatrix, IsMatrixObj and IsEmptyMatrix );
 
 
 #############################################################################
 ##
-#M  IsUpperTriangularMat(<mat>)
+#M  IsUpperTriangularMatrix(<mat>)
 ##
-InstallMethod( IsUpperTriangularMat,
+InstallMethod( IsUpperTriangularMatrix,
     "for a matrix",
     [ IsMatrixObj ],
     function( mat )
@@ -202,9 +202,9 @@ InstallMethod( IsUpperTriangularMat,
 
 #############################################################################
 ##
-#M  IsLowerTriangularMat(<mat>)
+#M  IsLowerTriangularMatrix(<mat>)
 ##
-InstallMethod( IsLowerTriangularMat,
+InstallMethod( IsLowerTriangularMatrix,
     "for a matrix",
     [ IsMatrixObj ],
     function( mat )
@@ -223,9 +223,9 @@ InstallMethod( IsLowerTriangularMat,
 
 #############################################################################
 ##
-#M  DiagonalOfMat(<mat>)  . . . . . . . . . . . . . . . .  diagonal of matrix
+#M  DiagonalOfMatrix(<mat>) . . . . . . . . . . . . . . .  diagonal of matrix
 ##
-InstallGlobalFunction( DiagonalOfMat, function ( mat )
+InstallGlobalFunction( DiagonalOfMatrix, function ( mat )
     local   diag, i;
 
     diag := [];
@@ -3271,6 +3271,12 @@ InstallGlobalFunction( NullMat, function ( arg )
         Error("usage: NullMat( <m>, <n> [, <R>] )");
     fi;
     zero := Zero(f);
+
+#    # special treatment for 0-dimensional spaces
+#    if m = 0 or n = 0 then
+#      return NullMapMatrix;
+#    fi;
+#T Adding this would break a test.
 
     # make an empty row
     row := ListWithIdenticalEntries(n,zero);

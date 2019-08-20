@@ -64,13 +64,13 @@ DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrix );
 
 #############################################################################
 ##
-#O  IsDiagonalMatrix( <mat> )
-#O  IsDiagonalMat( <mat> )
+#P  IsDiagonalMatrix( <mat> )
+#P  IsDiagonalMat( <mat> )
 ##
 ##  <#GAPDoc Label="IsDiagonalMat">
 ##  <ManSection>
-##  <Oper Name="IsDiagonalMatrix" Arg='mat'/>
-##  <Oper Name="IsDiagonalMat" Arg='mat'/>
+##  <Prop Name="IsDiagonalMatrix" Arg='mat'/>
+##  <Prop Name="IsDiagonalMat" Arg='mat'/>
 ##
 ##  <Description>
 ##  return <K>true</K> if the matrix <A>mat</A> has only zero entries
@@ -87,20 +87,20 @@ DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "IsDiagonalMatrix", [ IsMatrixObj ] );
+DeclareProperty( "IsDiagonalMatrix", IsMatrixObj );
 
 DeclareSynonym( "IsDiagonalMat", IsDiagonalMatrix );
 
 
 #############################################################################
 ##
-#O  IsUpperTriangularMatrix( <mat> )
-#O  IsUpperTriangularMat( <mat> )
+#P  IsUpperTriangularMatrix( <mat> )
+#P  IsUpperTriangularMat( <mat> )
 ##
 ##  <#GAPDoc Label="IsUpperTriangularMat">
 ##  <ManSection>
-##  <Oper Name="IsUpperTriangularMatrix" Arg='mat'/>
-##  <Oper Name="IsUpperTriangularMat" Arg='mat'/>
+##  <Prop Name="IsUpperTriangularMatrix" Arg='mat'/>
+##  <Prop Name="IsUpperTriangularMat" Arg='mat'/>
 ##
 ##  <Description>
 ##  return <K>true</K> if the matrix <A>mat</A> has only zero entries below
@@ -117,20 +117,20 @@ DeclareSynonym( "IsDiagonalMat", IsDiagonalMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "IsUpperTriangularMatrix", [ IsMatrixObj ] );
+DeclareProperty( "IsUpperTriangularMatrix", IsMatrixObj );
 
 DeclareSynonym( "IsUpperTriangularMat", IsUpperTriangularMatrix );
 
 
 #############################################################################
 ##
-#O  IsLowerTriangularMatrix( <mat> )
-#O  IsLowerTriangularMat( <mat> )
+#P  IsLowerTriangularMatrix( <mat> )
+#P  IsLowerTriangularMat( <mat> )
 ##
 ##  <#GAPDoc Label="IsLowerTriangularMat">
 ##  <ManSection>
-##  <Oper Name="IsLowerTriangularMatrix" Arg='mat'/>
-##  <Oper Name="IsLowerTriangularMat" Arg='mat'/>
+##  <Prop Name="IsLowerTriangularMatrix" Arg='mat'/>
+##  <Prop Name="IsLowerTriangularMat" Arg='mat'/>
 ##
 ##  <Description>
 ##  return <K>true</K> if the matrix <A>mat</A> has only zero entries above
@@ -147,7 +147,7 @@ DeclareSynonym( "IsUpperTriangularMat", IsUpperTriangularMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "IsLowerTriangularMatrix", [ IsMatrixObj ] );
+DeclareProperty( "IsLowerTriangularMatrix", IsMatrixObj );
 
 DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 
