@@ -32,7 +32,7 @@ sets (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>),<Index>Sets</Index>
 strings (see&nbsp;<Ref Chap="Strings and Characters"/>),
 row vectors (see&nbsp;<Ref Chap="Row Vectors"/>),
 and matrices (see&nbsp;<Ref Chap="Matrices"/>);
-Boolean lists (see&nbsp;<Ref Chap="Boolean Lists"/>) are a further
+boolean lists (see&nbsp;<Ref Chap="Boolean Lists"/>) are a further
 special kind of lists.
 <P/>
 Several operations for lists,
