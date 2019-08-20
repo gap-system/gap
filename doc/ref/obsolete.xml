@@ -274,7 +274,7 @@ systems) in the directory <C>GAPInfo.UserGapRoot</C>.
   <P/>
 
   From Version 4.8 onwards, <C>IsMonoidAsSemigroup</C> returns
-  <C>true</C> for semigroups in the category <Ref Filt = "IsMonoid"/>,
+  <K>true</K> for semigroups in the category <Ref Filt = "IsMonoid"/>,
   and <C>IsSemilatticeAsSemigroup</C> has been moved to the
   <Package>Semigroups</Package> under the new name
   <Ref Prop="IsSemilattice" BookName = "Semigroups"/>.

@@ -336,7 +336,7 @@ The following situations may be expected.
     worse methods being used than before.
 
     If the prescribed and the actual value are essentially different
-    (e.g., <C>true</C> vs. <C>false</C> or different numerical values)
+    (e.g., <K>true</K> vs. <K>false</K> or different numerical values)
     then probably we have a serious problem n the sense that (at least)
     one of the two values is wrong.
   </Item>
