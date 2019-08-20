@@ -104,9 +104,9 @@ representations and removed some duplicated code.
 <!-- https://github.com/gap-system/gap/issues/7 -->
 Package authors may optionally specify the source code repository,
 issue tracker and support email address for their package using new
-components in the <File>PackageInfo.g</File> file, which will be used
+components in the <F>PackageInfo.g</F> file, which will be used
 to create hyperlinks from the package overview page (see 
-<File>PackageInfo.g</File> from the Example package which you may use
+<F>PackageInfo.g</F> from the Example package which you may use
 as a template).
 </Item>
 </List>

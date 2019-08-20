@@ -142,7 +142,7 @@ modules, call it with the <C>-d</C> option, for example:
 $ gap4/bin/i386-ibm-linux-gcc2/gac -d test.c
 ]]></Log>
 <P/>
-This will produce a file <File>test.so</File>, which then can be loaded into &GAP;
+This will produce a file <F>test.so</F>, which then can be loaded into &GAP;
 with <Ref Func="LoadDynamicModule"/>.
 
 </Subsection>
@@ -315,7 +315,7 @@ instructions should be repeated or referenced from the package's
 documentation, which  should be in the <F>doc</F> directory
 (see <Ref Sect="Writing Documentation and Tools Needed"/>).
 Authors' names and addresses should be repeated both in the package's 
-documentation and in the <File>PackageInfo.g</File> (see below).
+documentation and in the <F>PackageInfo.g</F> (see below).
 </Item>
 
 <Mark>
@@ -474,7 +474,7 @@ It is highly recommended that a package should have test files, which then
 should go in the <F>tst</F> directory. For a deposited package, a test file 
 with a basic test of the package (for example, to check that it works as 
 expected and/or that the manual examples are correct) may be specified in the 
-<File>PackageInfo.g</File> to be included in the &GAP; standard test suite
+<F>PackageInfo.g</F> to be included in the &GAP; standard test suite
 and run as a part of the &GAP; release preparation.
 More specific and time consuming tests are not supposed to be a part of the 
 &GAP; standard test suite but may be placed in the <F>tst</F> directory
@@ -487,7 +487,7 @@ to the test files formats and further recommendations.
 
 All other files can be organised as you like. But we suggest that you
 have a look at existing packages and use a similar scheme, for
-example, put examples in the <File>examples</File> subdirectory, data 
+example, put examples in the <F>examples</F> subdirectory, data 
 libraries in extra subdirectories, and so on.
 <P/>
 Sometimes there may be a need to include an empty directory in the
@@ -954,7 +954,7 @@ of the packages in question are read.
 <P/>
 
 All package dependencies must be documented explicitly in the 
-<File>PackageInfo.g</File> file. It is important to properly
+<F>PackageInfo.g</F> file. It is important to properly
 identify package dependencies and make the right decision
 whether the other package should be <Q>needed</Q> or <Q>suggested</Q>.
 For example, declaring package as <Q>needed</Q> when <Q>suggested</Q> 
@@ -1865,9 +1865,9 @@ in the package).
 
 To use the conversion and repackaging service, you can provide any of 
 the four archive formats or even more than one, however you should 
-adhere to the following rule: text files in <File>.tar.gz</File> 
-and <File>.tar.bz2</File> archives must have UNIX style line breaks, 
-while text files in <File>-win.zip</File> archives must have 
+adhere to the following rule: text files in <F>.tar.gz</F> 
+and <F>.tar.bz2</F> archives must have UNIX style line breaks, 
+while text files in <F>-win.zip</F> archives must have 
 DOS/Windows line breaks. 
 <P/>
 
@@ -1892,7 +1892,7 @@ before &GAP; defaults will be applied;
 </List>     
 <P/>
 
-Utility functions from the <File>lib/lbutil.g</File> file in &GAP;, namely
+Utility functions from the <F>lib/lbutil.g</F> file in &GAP;, namely
 <C>DosUnixLinebreaks</C>, <C>UnixDosLinebreaks</C>, <C>MacUnixLinebreaks</C>
 may be helpful. They are described in the comments to their source code.
 <P/>
@@ -1973,14 +1973,14 @@ now <Q>needs</Q> certain packages (for instance &GAPDoc;) and <Q>suggests</Q> ot
 (typically the packages that were autoloaded). The decisions 
 which packages &GAP; should need or suggest are made by developers based on 
 technical criteria. They can be easily overridden by a user 
-using the new <File>gap.ini</File> 
+using the new <F>gap.ini</F> 
 (see <Ref Sect="sect:gap.ini"/>). 
 The default file ensures that all formerly autoloaded packages are 
 still loaded if present.
 </Item>
 
 <Item>
-Optional <File>~/.gap</File> directory for user's customisations which may
+Optional <F>~/.gap</F> directory for user's customisations which may
 contain e.g. locally installed packages (see <Ref Sect="GAP Root Directories"/>). 
 If package installation instructions explain how to install the package in a 
 non-standard location, they should mention this.
@@ -2020,7 +2020,7 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
     Test that the package:
     <List>
     <Item>
-    does not break <File>testinstall.g</File> and <File>teststandard.g</File>, 
+    does not break <F>testinstall.g</F> and <F>teststandard.g</F>, 
     and does not slow them down noticeably
     (see <Ref Label="Testing a GAP package with the GAP standard test suite"/>);
     </Item>    
@@ -2036,7 +2036,7 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
 </Item>	
 
 <Item>
-    <File>PackageInfo.g</File> file:
+    <F>PackageInfo.g</F> file:
     <List>
     <Item>
         correctly specifies package version, release date, and package authors;
@@ -2067,7 +2067,7 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
     </Item>
     <Item>
         has the same version, release date and package authors 
-        details as stated in the <File>PackageInfo.g</File> file;
+        details as stated in the <F>PackageInfo.g</F> file;
     </Item>
     <Item>
         is searchable using the &GAP; help system in all formats
@@ -2096,8 +2096,8 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
     </Item>
     <Item>
         contain no hidden system files and directories that are not supposed 
-        to be included in the package, e.g. <File>.gitignore</File>, 
-        <File>.git</File> etc.;
+        to be included in the package, e.g. <F>.gitignore</F>, 
+        <F>.git</F> etc.;
     </Item>
     </List>
 </Item>	
@@ -2107,7 +2107,7 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
     <List>
     <Item>
         not only the package archive(s), but also the 
-        <File>PackageInfo.g</File> and <File>README</File> files
+        <F>PackageInfo.g</F> and <F>README</F> files
         are available online;
     </Item>
     </List>

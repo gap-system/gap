@@ -21,7 +21,7 @@
     <Date>2015</Date>
     <Copyright> 2005-2015, The &GAP; Group</Copyright>
 <Abstract>
-In this <Emph>development manual</Emph> we collect documentation 
+In this <E>development manual</E> we collect documentation 
 of various tasks needed for the further development, maintenance and
 distribution of &GAP;.
 <P/>
@@ -32,8 +32,8 @@ Other sections document certain conventions which are followed by the
 active members of The &GAP; Group. Some examples: there are several
 mailing lists which are used for different purposes; there is a mechanism
 how larger changes to the &GAP; system should be announced and discussed
-among the developers before they are commited, called <Emph>proposals</Emph>;
-there is a concept of <Emph>modules</Emph> where  parts of the
+among the developers before they are commited, called <E>proposals</E>;
+there is a concept of <E>modules</E> where  parts of the
 &GAP; system are assigned to specified maintainers.
 </Abstract>
 

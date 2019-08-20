@@ -139,7 +139,7 @@ Fixed a bug in <Ref Func="ReadCSV" BookName="ref"/> that caused some
 No longer supported:
 <List>  
 <Item>
-The file <File>lib/consistency.g</File>, which contained three undocumented
+The file <F>lib/consistency.g</F>, which contained three undocumented
 auxiliary functions, has been removed from the library. In addition, the 
 global record <C>Revision</C> is now deprecated, so there is no need to
 bind its components in &GAP; packages.
