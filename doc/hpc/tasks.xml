@@ -392,7 +392,7 @@ gap> AchieveMilestone(m);
       <Func Name="IsMilestoneAchieved" Arg='milestone'/>
       <Description>
         <Ref Func="IsMilestoneAchieved"/> tests explicitly if a milestone has been achieved. It returns
-        <C>true</C> on success, <C>false</C> otherwise.
+        <K>true</K> on success, <K>false</K> otherwise.
 <Example><![CDATA[
 gap> m := NewMilestone([1,2]);;
 gap> ContributeToMilestone(m, 1);

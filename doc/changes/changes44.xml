@@ -478,7 +478,7 @@ when it was called with an empty list of generators.
 When computing preimages under an embedding into a direct product
 of permutation groups, if the element was not in the image of the 
 embedding then a permutation had been returned instead 
-of <C>fail</C>.
+of <K>fail</K>.
 </Item>
 <Item>
 Two problems with <Ref BookName="ref" Func="PowerMod"/> 
@@ -497,7 +497,7 @@ erroneously ignored leading non-digit characters.
 <P/>
 A new feature in the corrected version is an optional third argument
 <C>"equal"</C>, which causes the function to return
-<C>true</C> only if the first two arguments describe
+<K>true</K> only if the first two arguments describe
 equal version numbers; documentation is available in the ext-manual.
 This new feature is used in <Ref BookName="ref" Func="LoadPackage"/>,
 now one can require a specific version of a package.
@@ -844,7 +844,7 @@ program elements gave a wrong result.
 
 <Item>
 <Ref BookName="ref" Func="PrimePGroup"/> is defined to return 
-<C>fail</C> for trivial groups, but if the group was constructed 
+<K>fail</K> for trivial groups, but if the group was constructed 
 as a factor or subgroup of a known <M>p</M>-group, the value of 
 <M>p</M> was retained.
 </Item>
@@ -991,14 +991,14 @@ destroyed the <C>TNUM</C> of the next &GAP; object in memory.
 </Item>
 
 <Item>
-<Ref BookName="ref" Func="PermutationCycle"/> returned <C>fail</C> 
+<Ref BookName="ref" Func="PermutationCycle"/> returned <K>fail</K> 
 if the cycle was not a contiguous subset of the specified domain. 
 [Reported by Luc Teirlinck]
 </Item>
 
 <Item>
 Now <Ref BookName="ref" Func="Inverse"/> correctly returns 
-<C>fail</C> for zeros in finite fields (and does no longer 
+<K>fail</K> for zeros in finite fields (and does no longer 
 enter a break loop).
 </Item>
 
@@ -1306,7 +1306,7 @@ object in the workspace. Thanks to Jack Schmidt for narrowing down the problem.
 Given a class function object of value zero, an 
 <Ref BookName="ref" Func="Arithmetic Operations for Class Functions"/> 
 method for a class function
-erroneously did not return <C>fail</C>. 
+erroneously did not return <K>fail</K>. 
 [Reported by Jack Schmidt]
 </Item>
 
@@ -1543,7 +1543,7 @@ of all positions at which a given object appears in a given list.
 
 <Item>
 <Ref BookName="ref" Func="LogFFE"/> 
-now returns  <C>fail</C> 
+now returns  <K>fail</K> 
 when the element is not a power of the base.
 </Item>
 
@@ -1903,7 +1903,7 @@ The function
 <Ref BookName="ref" Func="QuaternionAlgebra"/>
 now accepts also a list of field elements instead of a field.
 Also, now the comparison of return values (w.r.t. equality, containment)
-yields <C>true</C> if the parameters coincide and the
+yields <K>true</K> if the parameters coincide and the
 ground fields fit.
 </Item>
 
@@ -2263,7 +2263,7 @@ For the argument 1, however, it ran into an infinite loop.
 
 <Item>
 A lookup in an empty dictionary entered a break loop. 
-Now returns <C>fail</C>. [Reported by Laurent Bartholdi]
+Now returns <K>fail</K>. [Reported by Laurent Bartholdi]
 </Item>
 
 <Item>
@@ -2337,12 +2337,12 @@ etc. with the return value of the function
 
 <Item>
 The function <Ref BookName="ref" Func="FrobeniusCharacterValue"/>
-returned <C>fail</C> for results that require
+returned <K>fail</K> for results that require
 a finite field with more than 65536 elements.
 Meanwhile &GAP; can handle larger finite fields,
 so this restriction was removed.
 (It is still possible that
-<Ref BookName="ref" Func="FrobeniusCharacterValue"/> returns <C>fail</C>.)
+<Ref BookName="ref" Func="FrobeniusCharacterValue"/> returns <K>fail</K>.)
 </Item>
 
 <Item>
@@ -2357,7 +2357,7 @@ been added. Further, a default method for
 <Ref BookName="ref" Func="IsRowModule"/>
 has been
 added, which returns 
-<C>false</C> for objects
+<K>false</K> for objects
 which are not free left modules.
 </Item>
 

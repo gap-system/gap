@@ -457,15 +457,15 @@ and <C>Resolution</C>.
 <C>Method</C> is a string describing the method used to obtain timer
 values. This will usually contain the name of the syscall used.
 <P/>
-<C>Monotonic</C> is a boolean. If it is <C>true</C>, then the values
+<C>Monotonic</C> is a boolean. If it is <K>true</K>, then the values
 returned by <Ref Func="NanosecondsSinceEpoch"/> are guaranteed to be
-strictly monotonically increasing between two calls, if it is <C>false</C>
+strictly monotonically increasing between two calls, if it is <K>false</K>
 then there is no such guarantee.
 <P/>
 <C>Resolution</C> is an integer reflecting the resolution of the timer
 used in nanoseconds.
 <P/>
-<C>Reliable</C> is a boolean. If it is <C>true</C> then the
+<C>Reliable</C> is a boolean. If it is <K>true</K> then the
 value <C>Resolution</C> is deemed reliable in the sense that it was
 obtained by querying the operating system, otherwise <C>Resolution</C>
 should be treated as an estimate.
