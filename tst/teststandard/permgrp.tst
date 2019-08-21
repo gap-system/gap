@@ -2,7 +2,7 @@
 ##
 ##  Some tests for permutation groups and friends(takes a few seconds to run)
 ##
-#@local g, dc, ac, p, s, dc1, u, part, iso
+#@local g, dc, ac, p, s, dc1, u, part, iso,l,it,i
 gap> START_TEST("permgrp.tst");
 gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));
 1209600
