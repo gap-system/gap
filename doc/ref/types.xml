@@ -413,51 +413,8 @@ densely; all dense polynomials form a representation. An object which
 claims to lie in a certain representation is accepting the requirement
 that certain fields in the data structure be present and have
 specified meanings.
-<P/>
-&GAP; distinguishes four essentially different ways to represent
-objects.  First there are the representations <C>IsInternalRep</C> for
-internal objects such as integers and permutations, and
-<C>IsDataObjectRep</C> for other objects that are created and whose data
-are accessible only by kernel functions. The data structures
-underlying such objects cannot be manipulated at the &GAP; level.
-<P/>
-All other objects are either in the representation
-<C>IsComponentObjectRep</C> or in the representation
-<C>IsPositionalObjectRep</C>,
-see&nbsp;<Ref Sect="Component Objects"/>
-and&nbsp;<Ref Sect="Positional Objects"/>.
-<P/>
-An object can belong to several representations in the sense that it
-lies in several subrepresentations of <C>IsComponentObjectRep</C> or of
-<C>IsPositionalObjectRep</C>.  The representations to which an object
-belongs should form a chain and either two representations are disjoint
-or one is contained in the other.  So the subrepresentations of
-<C>IsComponentObjectRep</C> and <C>IsPositionalObjectRep</C> each form
-trees. In the language of Object Oriented Programming, we support only
-single inheritance for representations.
-<P/>
-These trees are typically rather shallow, since for one representation
-to be contained in another implies that all the components of the data
-structure implied by the containing representation, are present in,
-and have the same meaning in, the smaller representation (whose data
-structure presumably contains some additional components).
-<P/>
-Objects may change their representation, for example a mutable list
-of characters can be converted into a string.
-<P/>
-All representations in the library are created during initialization,
-in particular they are not created dynamically at runtime.
-<P/>
-Examples of subrepresentations of <C>IsPositionalObjectRep</C> are
-<C>IsModulusRep</C>, which is used for residue classes in the ring of
-integers, and <C>IsDenseCoeffVectorRep</C>, which is used for elements of
-algebras that are defined by structure constants.
-<P/>
-An important subrepresentation of <C>IsComponentObjectRep</C> is
-<C>IsAttributeStoringRep</C>, which is used for many domains and some other
-objects.  It provides automatic storing of all attribute values (see
-below).
 
+<#Include Label="BasicRepresentations">
 <#Include Label="IsRepresentation">
 <#Include Label="RepresentationsOfObject">
 <#Include Label="NewRepresentation">
@@ -485,25 +442,11 @@ except if the attribute had been specially constructed as
 <Q>mutable attribute</Q>.
 <P/>
 It depends on the representation of an object (see&nbsp;<Ref Sect="Representation"/>)
-which attribute values it stores.  An immutable object in the representation
-<C>IsAttributeStoringRep</C> stores <E>all</E> attribute values once they are
-computed.  Moreover, for an object in this representation, subsequent
-calls to an attribute will return the <E>same</E> object; this is achieved
-via a special method for each attribute setter that stores the
-attribute value in an object in <C>IsAttributeStoringRep</C>, and a special
-method for the attribute itself that fetches the stored attribute
-value.  (These methods are called the <Q>system setter</Q> and the
-<Q>system getter</Q> of the attribute, respectively.)<Index>system
-getter</Index><Index>system setter</Index>
+which attribute values it stores.
+An immutable object in the representation <Ref Filt="IsAttributeStoringRep"/>
+stores <E>all</E> attribute values once they are computed.
 <P/>
-Mutable objects in <C>IsAttributeStoringRep</C> are allowed, but
-attribute values are not automatically stored in them. Such objects
-are useful because values can be stored by explicitly calling the
-relevant setter, and because they may later be made immutable using
-<Ref Func="MakeImmutable"/>, at which point they will start storing
-all attribute values.
-<P/>
-Note also that it is impossible to get rid of a stored attribute
+Note that it is impossible to get rid of a stored attribute
 value because the system may have drawn conclusions from the old
 attribute value, and just removing the value might leave the data
 structures in an inconsistent state. If necessary, a new object can be
@@ -537,6 +480,7 @@ and <Ref Attr="DerivedSubgroup"/> is an attribute for groups.
 <#Include Label="KnownAttributesOfObject">
 <#Include Label="NewAttribute">
 <#Include Label="DeclareAttribute">
+<#Include Label="IsAttributeStoringRep">
 
 </Section>
 
@@ -639,7 +583,7 @@ brk>
 
 <Description>
 If the value of the attribute <A>attr</A> is already stored for <A>obj</A>,
-<C>AttributeValueNotSet</C> simply returns this value.
+<Ref Func="AttributeValueNotSet"/> simply returns this value.
 Otherwise the value of <C><A>attr</A>( <A>obj</A> )</C> is computed and returned
 <E>without storing it</E> in <A>obj</A>.
 This can be useful when <Q>large</Q> attribute values (such as element lists)

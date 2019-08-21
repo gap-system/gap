@@ -81,7 +81,7 @@ Chapter&nbsp;<Ref Chap="An Example -- Residue Class Rings"/>.
 <Heading>Component Objects</Heading>
 
 A <E>component object</E> is an object in the representation
-<C>IsComponentObjectRep</C> or a subrepresentation of it.
+<Ref Filt="IsComponentObjectRep"/> or a subrepresentation of it.
 Such an object <A>cobj</A> is built from subobjects that can be accessed via
 <C><A>cobj</A>!.<A>name</A></C>, similar to components of a record.
 Also analogously to records, values can be assigned to components of
@@ -124,7 +124,7 @@ IsIntegersIteratorCompRep := NewRepresentation( "IsIntegersIteratorRep",
 <P/>
 The above command creates a new representation (see&nbsp;<Ref Func="NewRepresentation"/>)
 <C>IsIntegersIteratorCompRep</C>,
-as a subrepresentation of <C>IsComponentObjectRep</C>,
+as a subrepresentation of <Ref Filt="IsComponentObjectRep"/>,
 and with one admissible component <C>counter</C>.
 So no other components than <C>counter</C> will be needed.
 <P/>
@@ -189,7 +189,7 @@ InstallMethod( NextIterator,
 <Heading>Positional Objects</Heading>
 
 A <E>positional object</E> is an object in the representation
-<C>IsPositionalObjectRep</C> or a subrepresentation of it.
+<Ref Filt="IsPositionalObjectRep"/> or a subrepresentation of it.
 Such an object <A>pobj</A> is built from subobjects that can be accessed via
 <C><A>pobj</A>![<A>pos</A>]</C>, similar to positions in a list.
 Also analogously to lists, values can be assigned to positions of
@@ -226,7 +226,7 @@ IsIntegersIteratorPosRep := NewRepresentation( "IsIntegersIteratorRep",
 <P/>
 The above command creates a new representation (see&nbsp;<Ref Func="NewRepresentation"/>)
 <C>IsIntegersIteratorPosRep</C>,
-as a subrepresentation of <C>IsComponentObjectRep</C>,
+as a subrepresentation of <Ref Filt="IsPositionalObjectRep"/>,
 and with only the first position being admissible for storing data.
 <P/>
 <Log><![CDATA[
@@ -681,7 +681,7 @@ or less natural behaviour.
 <P/>
 If a list in the filter <Ref Filt="IsGeneralizedRowVector"/>
 (<Ref Filt="IsMultiplicativeGeneralizedRowVector"/>)
-lies in <C>IsAttributeStoringRep</C>,
+lies in <Ref Filt="IsAttributeStoringRep"/>,
 the values of additive (multiplicative) nesting depth is stored in
 the list and need not be calculated for each arithmetic operation.
 One can then store the value(s) already upon creation of the lists,

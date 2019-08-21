@@ -141,7 +141,7 @@ DeclareRepresentationKernel( "IsStringRep",
 ##  <Ref Func="ConvertToStringRep"/> changes the representation to
 ##  <Ref Filt="IsStringRep"/>.
 ##  This is useful in particular for converting the empty list <C>[]</C>,
-##  which usually is in <C>IsPlistRep</C>,
+##  which usually is in <Ref Filt="IsPlistRep"/>,
 ##  to <Ref Filt="IsStringRep"/>.
 ##  If <A>obj</A> is not a string then <Ref Func="ConvertToStringRep"/>
 ##  signals an error.

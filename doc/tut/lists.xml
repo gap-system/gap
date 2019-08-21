@@ -1024,7 +1024,10 @@ some known fields in &GAP; are described in Chapters&nbsp;<Ref Chap="Rational Nu
 <Ref Chap="Abelian Number Fields" BookName="ref"/>,
 and&nbsp;<Ref Chap="Finite Fields" BookName="ref"/>.
 Row vectors and matrices are described in more detail in Chapters&nbsp;<Ref Chap="Row Vectors" BookName="ref"/>
-and&nbsp;<Ref Chap="Matrices" BookName="ref"/>.
+and&nbsp;<Ref Chap="Matrices" BookName="ref"/>;
+note that &GAP; supports also linear algebra for objects which are
+<E>not</E> lists,
+see Chapter <Ref Chap="Vector and Matrix Objects" BookName="ref"/>.
 Vector spaces are described in Chapter&nbsp;<Ref Chap="Vector Spaces" BookName="ref"/>,
 further matrix related structures are described in Chapters&nbsp;<Ref Chap="Matrix Groups" BookName="ref"/>,
 <Ref Chap="Algebras" BookName="ref"/>,

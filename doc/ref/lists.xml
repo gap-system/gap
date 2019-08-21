@@ -30,8 +30,10 @@ and more about lists as <E>arithmetic objects</E> can be found in the chapters
 Lists are used to implement ranges (see&nbsp;<Ref Sect="Ranges"/>),
 sets (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>),<Index>Sets</Index>
 strings (see&nbsp;<Ref Chap="Strings and Characters"/>),
-row vectors (see&nbsp;<Ref Chap="Row Vectors"/>),
-and matrices (see&nbsp;<Ref Chap="Matrices"/>);
+row vectors and matrices
+(see&nbsp;<Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>,
+but note that &GAP; supports also linear algebra for objects which are
+<E>not</E> lists, see <Ref Chap="Vector and Matrix Objects"/>);
 boolean lists (see&nbsp;<Ref Chap="Boolean Lists"/>) are a further
 special kind of lists.
 <P/>
@@ -1848,6 +1850,29 @@ for a discussion,
 see&nbsp;<Ref Sect="Example -- Constructing Enumerators"/>.
 
 <#Include Label="IsQuickPositionList">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Plain Lists">
+<Heading>Plain Lists</Heading>
+
+Plain lists are the default kind of lists in &GAP;,
+in the sense that &GAP; stores the list entries and does not know how to do
+better (as opposed to ranges or strings, which are also lists).
+Often it is not necessary to know how a given list is represented
+internally, the operations defined for lists apply to all lists.
+
+<P/>
+
+Typical situations where the representation matters are when one wants to
+make sure that the given list is <E>not</E> a plain list and thus will be
+handled more efficiently,
+for example when one installs a method for a particular operation,
+where an argument is required to be a list in a particular representation.
+
+<#Include Label="IsPlistRep">
 
 </Section>
 </Chapter>

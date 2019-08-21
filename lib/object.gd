@@ -639,7 +639,7 @@ DeclareOperation( "IsInternallyConsistent", [ IsObject ] );
 ##  For example, if a matrix is in the two fiters <C>IsOrdinaryMatrix</C> and
 ##  <C>IsLieMatrix</C> then apparently something went wrong.
 ##  Since we can install these immediate methods only for attributes
-##  (and not for the operation <C>IsInternallyConsistent</C>),
+##  (and not for the operation <Ref Oper="IsInternallyConsistent"/>),
 ##  we need such an attribute.
 ##  </Description>
 ##  </ManSection>
