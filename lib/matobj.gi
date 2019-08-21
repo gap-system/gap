@@ -538,26 +538,30 @@ InstallMethod( CopySubVector,
     CopySubVector(dst,dcols,src,scols);
 end );
 
-InstallMethod( Randomize,
-  "generic method for a vector",
-  [ IsVectorObj and IsMutable ],
-  function(vec)
-    local basedomain, i;
-    basedomain := BaseDomain( vec );
-    for i in [ 1 .. Length( vec ) ] do
-        vec[ i ] := Random( basedomain );
-    od;
-end );
-
-InstallMethod( Randomize,
-  "generic method for a vector and a random source",
-  [ IsVectorObj and IsMutable, IsRandomSource ],
-  function(vec, rs)
+InstallMethodWithRandomSource( Randomize,
+  "for a random source and a vector object",
+  [ IsRandomSource, IsVectorObj and IsMutable ],
+  function( rs, vec )
     local basedomain, i;
     basedomain := BaseDomain( vec );
     for i in [ 1 .. Length( vec ) ] do
         vec[ i ] := Random( rs, basedomain );
     od;
+    return vec;
+end );
+
+InstallMethodWithRandomSource( Randomize,
+  "for a random source and a matrix object",
+  [ IsRandomSource, IsMatrixObj and IsMutable ],
+  function( rs, mat )
+    local basedomain, i, j;
+    basedomain := BaseDomain( mat );
+    for i in [ 1 .. NrRows( mat ) ] do
+      for j in [ 1 .. NrCols( mat ) ] do
+        mat[i][j]:= Random( rs, basedomain );
+      od;
+    od;
+    return mat;
 end );
 
 ############################################################################
@@ -654,3 +658,14 @@ InstallMethod( IsEmptyMatrix,
   [ IsMatrixObj ],
   mat -> NrRows(mat) = 0 or NrCols(mat) = 0
 );
+
+
+#
+# Compatibility code: old variants of arguments (to become obsolete)
+#
+
+InstallOtherMethod( Randomize,
+    "backwards compatibility: swap arguments",
+    [ IsObject and IsMutable, IsRandomSource ],
+    { obj, rs } -> Randomize( rs, obj ) );
+

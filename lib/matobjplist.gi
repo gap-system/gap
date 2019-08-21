@@ -529,14 +529,16 @@ InstallMethod( IsZero, "for a plist vector", [ IsPlistVectorRep ],
     return IsZero( v![ELSPOS] );
   end );
 
-InstallMethod( Randomize, "for a mutable plist vector",
-  [ IsPlistVectorRep and IsMutable ],
-  function( v )
+InstallMethodWithRandomSource( Randomize,
+  "for a random source and a mutable plist vector",
+  [ IsRandomSource, IsPlistVectorRep and IsMutable ],
+  function( rs, v )
     local bd,i;
     bd := v![BDPOS];
     for i in [1..Length(v![ELSPOS])] do
-        v![ELSPOS][i] := Random(bd);
+        v![ELSPOS][i] := Random( rs, bd );
     od;
+    return v;
   end );
 
 InstallMethod( CopySubVector, "for two plist vectors and two lists",
@@ -1170,13 +1172,15 @@ InstallMethod( RankMat, "for a plist matrix",
   end);
 
 
-InstallMethod( Randomize, "for a mutable plist matrix",
-  [ IsPlistMatrixRep and IsMutable ],
-  function( m )
+InstallMethodWithRandomSource( Randomize,
+  "for a random source and a mutable plist matrix",
+  [ IsRandomSource, IsPlistMatrixRep and IsMutable ],
+  function( rs, m )
     local v;
     for v in m![ROWSPOS] do
-        Randomize(v);
+        Randomize( rs, v );
     od;
+    return m;
   end );
 
 InstallMethod( TransposedMatMutable, "for a plist matrix",
