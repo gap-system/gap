@@ -562,28 +562,38 @@ DeclareGlobalFunction( "MakeVector" );
 # Some things that fit nowhere else:
 ############################################################################
 
+############################################################################
+##
 ##  <#GAPDoc Label="MatObj_Randomize_Vectors">
 ##  <ManSection>
-##    <Oper Arg="V" Name="Randomize" Label="for IsVectorObj"/>
-##    <Oper Arg="V,Rs" Name="Randomize" Label="for IsVectorObj,IsRandomSources"/>
+##    <Heading>Randomize</Heading>
+##    <Oper Arg="[Rs,]v" Name="Randomize" Label="for a vector object"/>
+##    <Oper Arg="[Rs,]m" Name="Randomize" Label="for a matrix object"/>
 ##    <Description>
-##      Replaces every entry in <A>V</A> with a random one from the base
-##      domain. If given, the random source <A>Rs</A> is used to compute the
-##      random elements. Note that in this case, the random function for the
-##      base domain must support the random source argument.
+##      Replaces every entry in the mutable vector object <A>v</A>
+##      or matrix object <A>m</A>, respectively, with
+##      a random one from the base domain of <A>v</A> or <A>m</A>,
+##      respectively, and returns the argument.
+##      <P/>
+##      If given, the random source <A>Rs</A> is used to compute the
+##      random elements.
+##      Note that in this case,
+##      a <Ref Oper="Random" Label="for random source and collection"/>
+##      method must be available that takes a random source as its first
+##      argument and the base domain as its second argument.
 ##    </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-DeclareOperation( "Randomize", [IsVectorObj and IsMutable] );
-DeclareOperation( "Randomize", [IsVectorObj and IsMutable,IsRandomSource] );
-# Changes the mutable argument in place, every entry is replaced
-# by a random element from BaseDomain.
-# The second argument is used to provide "randomness".
-# The vector argument is also returned by the function.
+DeclareOperation( "Randomize", [ IsVectorObj and IsMutable ] );
+DeclareOperation( "Randomize", [ IsRandomSource, IsVectorObj and IsMutable ] );
 
-# TODO: change this to use InstallMethodWithRandomSource; for this, we'll have
-# to change the argument order (a method for the old order, to ensure backwards
-# compatibility, could remain).
+DeclareOperation( "Randomize", [ IsMatrixObj and IsMutable ] );
+DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixObj and IsMutable ] );
+
+# for backwards compatibility with the cvec package
+DeclareOperation( "Randomize", [ IsVectorObj and IsMutable, IsRandomSource ] );
+DeclareOperation( "Randomize", [ IsMatrixObj and IsMutable, IsRandomSource ] );
+
 
 #############################################################################
 ##
@@ -1106,15 +1116,6 @@ DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsSemiring] );
 ############################################################################
 # Some things that fit nowhere else:
 ############################################################################
-
-DeclareOperation( "Randomize", [IsMatrixObj and IsMutable] );
-DeclareOperation( "Randomize", [IsMatrixObj and IsMutable,IsRandomSource] );
-# Changes the mutable argument in place, every entry is replaced
-# by a random element from BaseDomain.
-# The second version will come when we have random sources.
-
-# TODO: only keep the first operation and suggest using InstallMethodWithRandomSource
-
 
 DeclareAttribute( "TransposedMatImmutable", IsMatrixObj );
 DeclareOperation( "TransposedMatMutable", [IsMatrixObj] );

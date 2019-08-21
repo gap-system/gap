@@ -52,13 +52,16 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##  <#GAPDoc Label="Random">
 ##  <ManSection>
 ##  <Oper Name="Random" Arg='rs, list' Label="for random source and list"/>
+##  <Oper Name="Random" Arg='rs, coll'
+##   Label="for random source and collection"/>
 ##  <Oper Name="Random" Arg='rs, low, high' 
 ##                      Label="for random source and two integers"/>
 ##
 ##  <Description>
-##  This operation returns a random element from list <A>list</A>, or an integer 
-##  in the range from the given (possibly large) integers <A>low</A> to <A>high</A>,
-##  respectively. 
+##  This operation returns a random element from the list <A>list</A>
+##  or the collection <A>coll</A>,
+##  or an integer in the range from the given (possibly large) integers
+##  <A>low</A> to <A>high</A>, respectively.
 ##  <P/>
 ##  The choice should only depend on the random source <A>rs</A> and have no 
 ##  effect on other random sources.
@@ -245,9 +248,10 @@ DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 ##
 ##  <Description>
 ##  These functions are designed to simplify adding new methods for
-##  <Ref Oper="Random" Label="for a list or collection"/> and
-##  <Ref Oper="PseudoRandom"/> to GAP which can
-##  be called both with, and without, a random source.
+##  <Ref Oper="Random" Label="for a list or collection"/>,
+##  <Ref Oper="PseudoRandom"/>,
+##  and <Ref Oper="Randomize" Label="for a vector object"/> to &GAP;
+##  which can be called both with, and without, a random source.
 ##  <P/>
 ##  They accept the same arguments as <Ref Func="InstallMethod"/> and
 ##  <Ref Func="InstallOtherMethod"/>, with
