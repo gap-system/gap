@@ -53,12 +53,34 @@ BIND_GLOBAL( "ListsFamily", NewFamily( "ListsFamily", IsList ) );
 ##
 #R  IsPlistRep  . . . . . . . . . . . . . . . . representation of plain lists
 ##
+##  <#GAPDoc Label="IsPlistRep">
 ##  <ManSection>
-##  <Filt Name="IsPlistRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsPlistRep" Arg='obj' Type='representation'/>
 ##
 ##  <Description>
+##  &GAP; lists created by entering comma separated values in square brackets
+##  are represented internally as so-called <E>plain lists</E>,
+##  see <Ref Filt="IsPlistRep"/>.
+##  Other representations of lists are <Ref Filt="IsBlistRep"/>,
+##  <Ref Filt="IsRangeRep"/>, <Ref Filt="IsStringRep"/>,
+##  or the ones that are chosen for implementing enumerators,
+##  see Section <Ref Sect="Enumerators"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsPlistRep( [ 1, 2, 3 ] );
+##  true
+##  gap> IsPlistRep( "abc" );
+##  false
+##  gap> IsPlistRep( [ 1 .. 5 ] );
+##  false
+##  gap> IsPlistRep( BlistList( [ 1 .. 5 ], [ 1 ] ) );
+##  false
+##  gap> IsPlistRep( 0 );
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsPlistRep",
     IsInternalRep, [], IS_OBJECT, IS_PLIST_REP );
@@ -358,8 +380,8 @@ DeclareSynonym( "AsSSortedListList", AS_LIST_SORTED_LIST );
 ##  <Attr Name="AsPlist" Arg='l'/>
 ##
 ##  <Description>
-##  <C>AsPlist</C> returns a list in the representation <C>IsPlistRep</C>
-##  that is equal to the list <A>l</A>.
+##  <Ref Attr="AsPlist"/> returns a list in the representation
+##  <Ref Filt="IsPlistRep"/> that is equal to the list <A>l</A>.
 ##  It is used before calling kernel functions to sort plists.
 ##  </Description>
 ##  </ManSection>

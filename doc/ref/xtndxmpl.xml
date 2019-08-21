@@ -995,7 +995,7 @@ To be more precise,
 elements of finite fields in &GAP; lie in the category
 <Ref Filt="IsFFE"/>,
 and there is already a representation,
-<C>IsInternalRep</C>, of these elements
+<Ref Filt="IsInternalRep"/>, of these elements
 via discrete logarithms.
 The aim of this section is to make <C>IsMyModulusRep</C> an alternative
 representation of elements in finite prime fields.
@@ -1238,7 +1238,8 @@ We have to be careful, however, with the methods for
 <Ref Oper="InverseOp"/>,
 <Ref Oper="\/"/>, and <Ref Oper="\^"/>.
 These methods and the missing methods for arithmetic operations with
-one argument in <C>IsMyModulusRep</C> and the other in <C>IsInternalRep</C>
+one argument in <C>IsMyModulusRep</C> and the other in
+<Ref Filt="IsInternalRep"/>
 are given below.
 <P/>
 <Log><![CDATA[

@@ -180,8 +180,9 @@ end );
 ##  We say also that <A>super</A> is an implied filter of <A>rep</A>.
 ##  <P/>
 ##  Each representation in &GAP; is a subrepresentation of exactly one
-##  of the four representations <C>IsInternalRep</C>, <C>IsDataObjectRep</C>,
-##  <C>IsComponentObjectRep</C>, <C>IsPositionalObjectRep</C>.
+##  of the four representations <Ref Filt="IsInternalRep"/>,
+##  <Ref Filt="IsDataObjectRep"/>,
+##  <Ref Filt="IsComponentObjectRep"/>, <Ref Filt="IsPositionalObjectRep"/>.
 ##  The data describing objects in the former two can be accessed only via
 ##  &GAP; kernel functions, the data describing objects in the latter two
 ##  is accessible also in library functions,
@@ -190,10 +191,12 @@ end );
 ##  <P/>
 ##  The third argument <A>slots</A> is a list either of integers or of
 ##  strings.
-##  In the former case, <A>rep</A> must be <C>IsPositionalObjectRep</C> or a
+##  In the former case,
+##  <A>rep</A> must be <Ref Filt="IsPositionalObjectRep"/> or a
 ##  subrepresentation of it, and <A>slots</A> tells what positions of the
 ##  objects in the representation <A>rep</A> may be bound.
-##  In the latter case, <A>rep</A> must be <C>IsComponentObjectRep</C> or a
+##  In the latter case,
+##  <A>rep</A> must be <Ref Filt="IsComponentObjectRep"/> or a
 ##  subrepresentation of, and <A>slots</A> lists the admissible names of
 ##  components that objects in the representation <A>rep</A> may have.
 ##  The admissible positions resp. component names of <A>super</A> need not
@@ -280,16 +283,66 @@ end );
 #R  IsComponentObjectRep
 #R  IsDataObjectRep
 ##
+##  <#GAPDoc Label="BasicRepresentations">
 ##  <ManSection>
-##  <Filt Name="IsInternalRep" Arg='obj' Type='Representation'/>
-##  <Filt Name="IsPositionalObjectRep" Arg='obj' Type='Representation'/>
-##  <Filt Name="IsComponentObjectRep" Arg='obj' Type='Representation'/>
-##  <Filt Name="IsDataObjectRep" Arg='obj' Type='Representation'/>
+##  <Heading>Basic Representations of Objects</Heading>
+##  <Filt Name="IsInternalRep" Arg='obj' Type='representation'/>
+##  <Filt Name="IsDataObjectRep" Arg='obj' Type='representation'/>
+##  <Filt Name="IsPositionalObjectRep" Arg='obj' Type='representation'/>
+##  <Filt Name="IsComponentObjectRep" Arg='obj' Type='representation'/>
 ##
 ##  <Description>
-##  the four basic representations in &GAP;
+##  &GAP; distinguishes four essentially different ways to represent
+##  objects.
+##  First there are the representations <Ref Filt="IsInternalRep"/> for
+##  internal objects such as integers and permutations,
+##  and <Ref Filt="IsDataObjectRep"/> for other objects that are created
+##  and whose data are accessible only by kernel functions.
+##  The data structures underlying such objects cannot be manipulated
+##  at the &GAP; level.
+##  <P/>
+##  All other objects are either in the representation
+##  <Ref Filt="IsComponentObjectRep"/> or in the representation
+##  <Ref Filt="IsPositionalObjectRep"/>,
+##  see&nbsp;<Ref Sect="Component Objects"/>
+##  and&nbsp;<Ref Sect="Positional Objects"/>.
+##  <P/>
+##  An object can belong to several representations in the sense that it
+##  lies in several subrepresentations of <Ref Filt="IsComponentObjectRep"/>
+##  or of <Ref Filt="IsPositionalObjectRep"/>.
+##  The representations to which an object belongs should form a chain
+##  and either two representations are disjoint
+##  or one is contained in the other.
+##  So the subrepresentations of <Ref Filt="IsComponentObjectRep"/> and
+##  <Ref Filt="IsPositionalObjectRep"/> each form trees.
+##  In the language of Object Oriented Programming,
+##  we support only single inheritance for representations.
+##  <P/>
+##  These trees are typically rather shallow, since for one representation
+##  to be contained in another implies that all the components of the data
+##  structure implied by the containing representation, are present in,
+##  and have the same meaning in, the smaller representation (whose data
+##  structure presumably contains some additional components).
+##  <P/>
+##  Objects may change their representation, for example a mutable list
+##  of characters can be converted into a string.
+##  <P/>
+##  All representations in the library are created during initialization,
+##  in particular they are not created dynamically at runtime.
+##  <P/>
+##  Examples of subrepresentations of <Ref Filt="IsPositionalObjectRep"/> are
+##  <C>IsModulusRep</C>, which is used for residue classes in the ring of
+##  integers, and <C>IsDenseCoeffVectorRep</C>, which is used for elements of
+##  algebras that are defined by structure constants.
+##  <P/>
+##  An important subrepresentation of <Ref Filt="IsComponentObjectRep"/> is
+##  <Ref Filt="IsAttributeStoringRep"/>,
+##  which is used for many domains and some other objects.
+##  It provides automatic storing of all attribute values
+##  (see Section <Ref Sect="Attributes"/>).
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsInternalRep", IS_OBJECT, [], IS_OBJECT );
 DeclareRepresentation( "IsPositionalObjectRep", IS_OBJECT, [], IS_OBJECT );
@@ -314,14 +367,52 @@ DeclareRepresentation( "IsAtomicPositionalObjectRep",
 ##  <Filt Name="IsAttributeStoringRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
-##  Objects in this representation have default  methods to get the values of
-##  stored  attributes  and -if they  are immutable-  to store the  values of
-##  attributes after their computation.
+##  Objects in this representation have default methods to get stored values
+##  of attributes and &ndash;if they are immutable&ndash; to store attribute
+##  values automatically once they have been computed.
+##  <Index>system getter</Index>
+##  <Index>system setter</Index>
+##  (These methods are called the <Q>system getter</Q> and the
+##  <Q>system setter</Q> of the attribute, respectively.)
 ##  <P/>
+##  As a consequence,
+##  for immutable objects in <Ref Filt="IsAttributeStoringRep"/>,
+##  subsequent calls to an attribute will return the <E>same</E> object.
+##  <P/>
+##  <E>Mutable</E> objects in <Ref Filt="IsAttributeStoringRep"/>
+##  are allowed, but attribute values are not stored automatically in them.
+##  Such objects are useful because they may later be made immutable using
+##  <Ref Func="MakeImmutable"/>, at which point they will start storing
+##  all attribute values.
+##  <P/>
+##  Note that one can force an attribute value to be stored in a mutable
+##  object in <Ref Filt="IsAttributeStoringRep"/>,
+##  by explicitly calling the attribute setter.
+##  This feature should be used with care.
+##  For example, think of a mutable matrix whose rank or trace gets stored,
+##  and the values later become wrong when somebody changes the matrix
+##  entries.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:= Group( (1,2)(3,4), (1,3)(2,4) );;
+##  gap> IsAttributeStoringRep( g );
+##  true
+##  gap> HasSize( g );  Size( g );  HasSize( g );
+##  false
+##  4
+##  true
+##  gap> r:= 7/4;;
+##  gap> IsAttributeStoringRep( r );
+##  false
+##  gap> Int( r );  HasInt( r );
+##  1
+##  false
+##  ]]></Example>
+##  <!--
 ##  The name of the  component that holds  the value of  an attribute is  the
 ##  name of the attribute, with the first letter turned to lower case.
-##  <!-- This will be changed eventually, in order to avoid conflicts between-->
-##  <!-- ordinary components and components corresponding to attributes.-->
+##  This will be changed eventually, in order to avoid conflicts between
+##  ordinary components and components corresponding to attributes.-->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

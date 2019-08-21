@@ -339,11 +339,10 @@ function(G)
 end);
 ]]></Log>
 <P/>
-<Index Key="IsAttributeStoringRep"><C>IsAttributeStoringRep</C></Index>
 The function installed <E>must</E> always return a value (or call
 <Ref Func="TryNextMethod"/>).
-If the object is in the representation
-<C>IsAttributeStoringRep</C> this return value once computed will be automatically
+If the object is in the representation <Ref Filt="IsAttributeStoringRep"/>
+this return value once computed will be automatically
 stored and retrieved if the attribute is called a second time. We don't have
 to call setter or tester ourselves. (This storage happens by &GAP;
 internally calling the attribute setter with the return value of the
@@ -360,8 +359,6 @@ when the attribute was declared.)
 
 <Index Key="NewRepresentation" Subkey="example"><C>NewRepresentation</C></Index>
 <Index Key="DeclareRepresentation" Subkey="example"><C>DeclareRepresentation</C></Index>
-<Index Key="IsComponentObjectRep"><C>IsComponentObjectRep</C></Index>
-<Index Key="IsAttributeStoringRep"><C>IsAttributeStoringRep</C></Index>
 Next, we look at the implementation of a new representation of existing
 objects. In most cases we want to implement this representation only for
 efficiency reasons while keeping all the existing functionality.
@@ -371,8 +368,9 @@ to implement permutation groups defined by relations.
 <P/>
 Next, we have to decide a few basics about the representation. All existing
 permutation groups in the library are attribute storing and we probably want
-to keep this for our new objects. Thus the representation must be a
-subrepresentation of <C>IsComponentObjectRep and IsAttributeStoringRep</C>.
+to keep this for our new objects.
+Thus the representation must be a subrepresentation of
+<Ref Filt="IsComponentObjectRep"/> and <Ref Filt="IsAttributeStoringRep"/>.
 Furthermore we want each object to be a permutation group and we can imply
 this directly in the representation.
 <P/>
