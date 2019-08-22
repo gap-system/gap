@@ -329,7 +329,7 @@ InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
     ll[n] := l;
     for i in [1..n-1] do
         ll[i] := ZeroMutable(l);
-        ll[i][i+1] := one;
+        ll[i,i+1] := one;
     od;
     return Matrix(ll,n,m);
   end );
@@ -355,7 +355,7 @@ InstallMethod( KroneckerProduct, "for two matrices",
 
     for i in [1..rowsA] do
       for j in [1..colsA] do
-        CopySubMatrix( A[i][j] * B, AxB,
+        CopySubMatrix( A[i,j] * B, AxB,
                 [ 1 .. rowsB ], [ rowsB * (i-1) + 1 .. rowsB * i ],
                 [ 1 .. colsB ], [ (j-1) * colsB + 1 .. j * colsB ] );
       od;
@@ -558,7 +558,7 @@ InstallMethodWithRandomSource( Randomize,
     basedomain := BaseDomain( mat );
     for i in [ 1 .. NrRows( mat ) ] do
       for j in [ 1 .. NrCols( mat ) ] do
-        mat[i][j]:= Random( rs, basedomain );
+        mat[i,j]:= Random( rs, basedomain );
       od;
     od;
     return mat;

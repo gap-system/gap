@@ -1046,17 +1046,11 @@ InstallMethod( Vector, "for a plist of finite field elements and an 8bitvector",
     ConvertToVectorRep(r,Q_VEC8BIT(v));
     return r;
   end );
-InstallMethod( Randomize, "for a mutable 8bit vector",
-  [ Is8BitVectorRep and IsMutable ],
-  function( v ) 
-    local f,i;
-    f := GF(Q_VEC8BIT(v));
-    for i in [1..Length(v)] do v[i] := Random(f); od;
-    return v;
-  end );
-InstallMethod( Randomize, "for a mutable 8bit vector and a random source",
-  [ Is8BitVectorRep and IsMutable, IsRandomSource ],
-  function( v, rs )
+
+InstallMethodWithRandomSource( Randomize,
+    "for a random source and a mutable 8bit vector",
+    [ IsRandomSource, Is8BitVectorRep and IsMutable ],
+  function( rs, v )
     local l,i;
     l := AsSSortedList(GF(Q_VEC8BIT(v)));
     for i in [1..Length(v)] do v[i] := Random(rs,l); od;
@@ -1116,19 +1110,12 @@ InstallMethod( CopySubMatrix, "for two 8bit matrices, and four lists",
     b{trows}{tcols} := a{frows}{fcols};
   end );
 
-InstallMethod( Randomize, "for a mutable 8bit matrix",
-  [Is8BitMatrixRep and IsMutable],
-  function( m )
+InstallMethodWithRandomSource( Randomize,
+    "for a random source and a mutable 8bit matrix",
+  [ IsRandomSource, Is8BitMatrixRep and IsMutable ],
+  function( rs, m )
     local v;
-    for v in m do Randomize(v); od;
-    return m;
-  end );
-
-InstallMethod( Randomize, "for a mutable 8bit matrix, and a random source",
-  [Is8BitMatrixRep and IsMutable, IsRandomSource],
-  function( m, rs )
-    local v;
-    for v in m do Randomize(v,rs); od;
+    for v in m do Randomize( rs, v ); od;
     return m;
   end );
 
