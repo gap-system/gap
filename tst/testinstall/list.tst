@@ -100,6 +100,8 @@ Unbind(a[1,1,1]);
 #
 gap> 1{1};
 Error, List Elements: <poss> must be a dense list of positive integers
+gap> 1{[1]};
+Error, List Elements: <list> must be a list (not the integer 1)
 
 # ... for blists
 gap> list := [true,false,true];;
