@@ -517,6 +517,30 @@ static Obj ElmsBlist(Obj list, Obj poss)
 
 /****************************************************************************
 **
+*F  UnbBlist( <blist>, <pos> ) . . . .  unbind an element from a boolean list
+**
+**  This is to avoid unpacking of the boolean list to a plain list when <pos>
+**  is larger or equal to the length of <blist>.
+*/
+static void UnbBlist(Obj blist, Int pos)
+{
+    GAP_ASSERT(IS_MUTABLE_OBJ(blist));
+    const Int len = LEN_BLIST(blist);
+    if (len == pos) {
+        // maybe the list becomes sorted
+        CLEAR_FILTS_LIST(blist);
+        CLEAR_BIT_BLIST(blist, pos);
+        SET_LEN_BLIST(blist, len - 1);
+    }
+    else if (pos < len) {
+        PLAIN_LIST(blist);
+        UNB_LIST(blist, pos);
+    }
+}
+
+
+/****************************************************************************
+**
 *F  AssBlist( <list>, <pos>, <val> )  . . . . . . .  assign to a boolean list
 **
 **  'AssBlist' assigns the   value <val> to  the  boolean list <list> at  the
@@ -1945,6 +1969,7 @@ static Int InitKernel (
         ElmwListFuncs   [ t1 +IMMUTABLE ] = ElmvBlist;
         ElmsListFuncs   [ t1            ] = ElmsBlist;
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsBlist;
+        UnbListFuncs    [ t1            ] = UnbBlist;
         AssListFuncs    [ t1            ] = AssBlist;
         AsssListFuncs   [ t1            ] = AsssListDefault;
         IsDenseListFuncs[ t1            ] = AlwaysYes;

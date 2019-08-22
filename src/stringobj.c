@@ -1710,34 +1710,28 @@ static Obj FuncSMALLINT_STR(Obj self, Obj str)
   return INTOBJ_INT(sign*x);
 }
 
+
 /****************************************************************************
 **
-*F  UnbString( <string>, <pos> ) . . . . . Unbind function for strings
-**  
-**  This is to avoid unpacking of string to plain list when <pos> is 
+*F  UnbString( <string>, <pos> ) . . . . . .  unbind an element from a string
+**
+**  This is to avoid unpacking of the string to a plain list when <pos> is
 **  larger or equal to the length of <string>.
-**  
 */
 static void UnbString(Obj string, Int pos)
 {
     GAP_ASSERT(IS_MUTABLE_OBJ(string));
-
-    Int len;
-    len = GET_LEN_STRING(string);
-
-    // only do something special if last character is to be, and can be,
-    // unbound
-    if (len < pos)
-        return;
-    if (len != pos) {
-        UnbListDefault(string, pos);
-        return;
+    const Int len = GET_LEN_STRING(string);
+    if (len == pos) {
+        // maybe the string becomes sorted
+        CLEAR_FILTS_LIST(string);
+        CHARS_STRING(string)[pos - 1] = (UInt1)0;
+        SET_LEN_STRING(string, len - 1);
     }
-
-    // maybe the string becomes sorted
-    CLEAR_FILTS_LIST(string);
-    CHARS_STRING(string)[pos - 1] = (UInt1)0;
-    SET_LEN_STRING(string, len - 1);
+    else if (pos < len) {
+        PLAIN_LIST(string);
+        UNB_LIST(string, pos);
+    }
 }
 
 
@@ -2064,6 +2058,7 @@ static Int InitKernel (
         ElmwListFuncs   [ t1 +IMMUTABLE ] = ElmwString;
         ElmsListFuncs   [ t1            ] = ElmsString;
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsString;
+        UnbListFuncs    [ t1            ] = UnbString;
         AssListFuncs    [ t1            ] = AssString;
         AsssListFuncs   [ t1            ] = AsssString;
         IsDenseListFuncs[ t1            ] = AlwaysYes;
@@ -2111,11 +2106,6 @@ static Int InitKernel (
 
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringObject;
-    }
-
-    /* install the list unbind methods  */
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT+IMMUTABLE; t1++ ) {
-           UnbListFuncs    [ t1            ] = UnbString;
     }
 
     MakeImmutableObjFuncs[ T_STRING       ] = MakeImmutableNoRecurse;

@@ -792,14 +792,6 @@ static void UnbListError(Obj list, Int pos)
     RequireArgument("Unbind", list, "must be a list");
 }
 
-void            UnbListDefault (
-    Obj                 list,
-    Int                 pos )
-{
-    PLAIN_LIST( list );
-    UNB_LIST( list, pos );
-}
-
 static void UnbListObject(Obj list, Int pos)
 {
     DoOperation2Args( UnbListOper, list, INTOBJ_INT(pos) );
@@ -2036,7 +2028,7 @@ static Int InitKernel (
         UnbListFuncs[ type ] = UnbListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        UnbListFuncs[ type ] = UnbListDefault;
+        UnbListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbListFuncs[ type ] = UnbListObject;
@@ -2252,6 +2244,7 @@ static Int CheckInit (
     }
 
     for (i = FIRST_LIST_TNUM; i <= LAST_LIST_TNUM; i += 2) {
+        GAP_ASSERT(UnbListFuncs[i]);
         GAP_ASSERT(AssListFuncs[i]);
     }
     for (i = FIRST_LIST_TNUM; i <= LAST_LIST_TNUM; i++) {

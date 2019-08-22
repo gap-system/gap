@@ -1,8 +1,54 @@
 #
-# Tests for functions defined in src/set.c
+# Tests for functions defined in src/range.c
 #
-gap> START_TEST("kernel/set.tst");
+gap> START_TEST("kernel/range.tst");
 
+#
+# UnbRange
+#
+
+# UnbRange on T_RANGE_SSORT with increment 1
+gap> a := [1..5];
+[ 1 .. 5 ]
+gap> Unbind(a[6]); a;
+[ 1 .. 5 ]
+gap> Unbind(a[5]); a;
+[ 1 .. 4 ]
+gap> Unbind(a[1]); a;
+[ , 2, 3, 4 ]
+
+# UnbRange on T_RANGE_SSORT with increment 2
+gap> a := [1,3..7];
+[ 1, 3 .. 7 ]
+gap> Unbind(a[6]); a;
+[ 1, 3 .. 7 ]
+gap> Unbind(a[5]); a;
+[ 1, 3 .. 7 ]
+gap> Unbind(a[1]); a;
+[ , 3, 5, 7 ]
+
+# UnbRange on T_RANGE_NSORT with increment 1
+gap> a := [5,4..1];
+[ 5, 4 .. 1 ]
+gap> Unbind(a[6]); a;
+[ 5, 4 .. 1 ]
+gap> Unbind(a[5]); a;
+[ 5, 4 .. 2 ]
+gap> Unbind(a[1]); a;
+[ , 4, 3, 2 ]
+
+# UnbRange on T_RANGE_NSORT with increment 2
+gap> a := [7,5..1];
+[ 7, 5 .. 1 ]
+gap> Unbind(a[6]); a;
+[ 7, 5 .. 1 ]
+gap> Unbind(a[5]); a;
+[ 7, 5 .. 1 ]
+gap> Unbind(a[1]); a;
+[ , 5, 3, 1 ]
+
+#
+# INTER_RANGE
 #
 gap> a := [-10..10];; INTER_RANGE(a,[-10..10]); a;
 [ -10 .. 10 ]
@@ -51,4 +97,4 @@ gap> r;
 [ 0 .. 9 ]
 
 #
-gap> STOP_TEST("kernel/set.tst", 1);
+gap> STOP_TEST("kernel/range.tst", 1);
