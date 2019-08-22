@@ -408,14 +408,14 @@ DeclareRepresentation( "IsAtomicPositionalObjectRep",
 ##  1
 ##  false
 ##  ]]></Example>
-##  <!--
-##  The name of the  component that holds  the value of  an attribute is  the
-##  name of the attribute, with the first letter turned to lower case.
-##  This will be changed eventually, in order to avoid conflicts between
-##  ordinary components and components corresponding to attributes.-->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
+##
+##  Note that we do not promise anything about
+##  the component names used for storing attribute values.
+##  (In earlier versions of GAP, a rule had been stated in a code file,
+##  but this rule was not part of the manuals.)
 ##
 DeclareRepresentation( "IsAttributeStoringRep",
     IsComponentObjectRep, [], IS_OBJECT );

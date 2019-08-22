@@ -59,8 +59,7 @@ BIND_GLOBAL( "ListsFamily", NewFamily( "ListsFamily", IsList ) );
 ##
 ##  <Description>
 ##  &GAP; lists created by entering comma separated values in square brackets
-##  are represented internally as so-called <E>plain lists</E>,
-##  see <Ref Filt="IsPlistRep"/>.
+##  are usually represented internally as so-called <E>plain lists</E>.
 ##  Other representations of lists are <Ref Filt="IsBlistRep"/>,
 ##  <Ref Filt="IsRangeRep"/>, <Ref Filt="IsStringRep"/>,
 ##  or the ones that are chosen for implementing enumerators,
