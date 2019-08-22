@@ -2381,7 +2381,6 @@ static Obj PosPlistHomSort(Obj list, Obj val, Obj start)
 */
 static void PlainPlist(Obj list)
 {
-    return;
 }
 
 /****************************************************************************
@@ -2396,7 +2395,6 @@ static void SavePlist(Obj list)
   SaveUInt(LEN_PLIST(list));
   for (i = 1; i <= LEN_PLIST(list); i++)
     SaveSubObj(ELM_PLIST(list,i));
-  return;
 }
 
 /****************************************************************************
@@ -2411,7 +2409,6 @@ static void LoadPlist(Obj list)
   SET_LEN_PLIST(list, LoadUInt());
   for (i = 1; i <= LEN_PLIST(list); i++)
     SET_ELM_PLIST(list,i, LoadSubObj());
-  return;
 }
 
 

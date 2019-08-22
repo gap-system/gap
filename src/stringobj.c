@@ -1021,9 +1021,7 @@ static Int IsSSortString(Obj list)
 **
 *F  IsPossString(<list>)  . . . . .  positions list test function for strings
 **
-**  'IsPossString' returns 0, since every string contains no integers.
-**
-**  'IsPossString' is the function in 'TabIsPossList' for strings.
+**  'IsPossString' is the function in 'IsPossListFuncs' for strings.
 */
 static Int IsPossString(Obj list)
 {
