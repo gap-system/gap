@@ -848,12 +848,6 @@ static void AssListError(Obj list, Int pos, Obj obj)
     RequireArgument("List Assignments", list, "must be a list");
 }
 
-static void AssListDefault(Obj list, Int pos, Obj obj)
-{
-    PLAIN_LIST( list );
-    ASS_LIST( list, pos, obj );
-}
-
 
 /****************************************************************************
 **
@@ -1024,31 +1018,6 @@ static Obj FiltIS_DENSE_LIST(Obj self, Obj obj)
     return (IS_DENSE_LIST( obj ) ? True : False);
 }
 
-Int             IsDenseListDefault (
-    Obj                 list )
-{
-    Int                 lenList;        /* length of <list>                */
-    Int                 i;              /* loop variable                   */
-
-    /* get the length of the list                                          */
-    lenList = LEN_LIST( list );
-
-    /* special case for the empty list                                     */
-    if ( lenList == 0 ) {
-        return 1L;
-    }
-
-    /* loop over the entries of the list                                   */
-    for ( i = 1; i <= lenList; i++ ) {
-        if ( ! ISB_LIST( list, i ) ) {
-            return 0L;
-        }
-    }
-
-    /* the list is dense                                                   */
-    return 1L;
-}
-
 static Int IsDenseListObject(Obj obj)
 {
     return (DoFilter( IsDenseListFilt, obj ) == True);
@@ -1075,41 +1044,6 @@ static Obj FiltIS_HOMOG_LIST(Obj self, Obj obj)
     return (IS_HOMOG_LIST( obj ) ? True : False);
 }
 
-Int             IsHomogListDefault (
-    Obj                 list )
-{
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
-    Obj                 fam;            /* family of elements of <list>    */
-    Int                 i;              /* loop variable                   */
-
-    /* get the length of the list                                          */
-    lenList = LEN_LIST( list );
-
-    /* special case for the empty list                                     */
-    if ( lenList == 0 ) {
-        return 0L;
-    }
-
-    /* get the family                                                      */
-    elm = ELMV0_LIST( list, 1 );
-    if ( elm == 0 ) {
-        return 0L;
-    }
-    fam = FAMILY_OBJ( elm );
-
-    /* loop over the entries of the list                                   */
-    for ( i = 2; i <= lenList; i++ ) {
-        elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || fam != FAMILY_OBJ( elm ) ) {
-            return 0L;
-        }
-    }
-
-    /* the list is homogeneous                                             */
-    return 1L;
-}
-
 static Int IsHomogListObject(Obj obj)
 {
     return (DoFilter( IsHomogListFilt, obj ) == True);
@@ -1133,49 +1067,6 @@ static Obj IsTableListFilt;
 static Obj FiltIS_TABLE_LIST(Obj self, Obj obj)
 {
     return (IS_TABLE_LIST( obj ) ? True : False);
-}
-
-Int             IsTableListDefault (
-    Obj                 list )
-{
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
-    Obj                 fam;            /* family of elements of <list>    */
-/*  Int                 len;            / length of elements              */
-    Int                 i;              /* loop variable                   */
-
-    /* get the length of the list                                          */
-    lenList = LEN_LIST( list );
-
-    /* special case for the empty list                                     */
-    if ( lenList == 0 ) {
-        return 0L;
-    }
-
-    /* get the family                                                      */
-    elm = ELMV0_LIST( list, 1 );
-    if ( elm == 0 ) {
-        return 0L;
-    }
-    if ( ! IS_HOMOG_LIST( elm ) ) {
-        return 0L;
-    }
-    fam = FAMILY_OBJ( elm );
-    /*     len = LEN_LIST( elm ); */
-
-    /* loop over the entries of the list                                   */
-    for ( i = 2; i <= lenList; i++ ) {
-        elm = ELMV0_LIST( list, i );
-        if ( elm == 0 || fam != FAMILY_OBJ( elm ) ) {
-            return 0L;
-        }
-        /*        if ( ! IS_LIST( elm ) || LEN_LIST( elm ) != len ) {
-            return 0L;
-            } */
-    }
-
-    /* the list is equal length                                            */
-    return 1L;
 }
 
 static Int IsTableListObject(Obj obj)
@@ -1204,7 +1095,7 @@ static Obj PropIS_SSORT_LIST(Obj self, Obj obj)
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
 
-Int IsSSortListDefault (
+static Int IsSSortListDefault (
     Obj                 list )
 {
     Int                 lenList;
@@ -1273,8 +1164,7 @@ static Obj PropIS_POSS_LIST(Obj self, Obj obj)
     return (IS_POSS_LIST(obj) ? True : False);
 }
 
-Int             IsPossListDefault (
-    Obj                 list )
+static Int IsPossListDefault(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
@@ -1351,7 +1241,7 @@ static Obj PosListError(Obj list, Obj obj, Obj start)
     RequireArgument("Position", list, "must be a list");
 }
 
-Obj             PosListDefault (
+static Obj PosListDefault (
     Obj                 list,
     Obj                 obj,
     Obj                 start )
@@ -2159,7 +2049,7 @@ static Int InitKernel (
         AssListFuncs[ type ] = AssListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        AssListFuncs[ type ] = AssListDefault;
+        AssListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AssListFuncs[ type ] = AssListObject;
@@ -2185,7 +2075,7 @@ static Int InitKernel (
         IsDenseListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsDenseListFuncs[ type ] = IsDenseListDefault;
+        IsDenseListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsDenseListFuncs[ type ] = IsDenseListObject;
@@ -2198,7 +2088,7 @@ static Int InitKernel (
         IsHomogListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsHomogListFuncs[ type ] = IsHomogListDefault;
+        IsHomogListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsHomogListFuncs[ type ] = IsHomogListObject;
@@ -2211,7 +2101,7 @@ static Int InitKernel (
         IsTableListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsTableListFuncs[ type ] = IsTableListDefault;
+        IsTableListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsTableListFuncs[ type ] = IsTableListObject;
@@ -2224,7 +2114,7 @@ static Int InitKernel (
         IsSSortListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsSSortListFuncs[ type ] = IsSSortListDefault;
+        IsSSortListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListObject;
@@ -2237,7 +2127,7 @@ static Int InitKernel (
         IsPossListFuncs[ type ] = AlwaysNo;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        IsPossListFuncs[ type ] = IsPossListDefault;
+        IsPossListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsPossListFuncs[ type ] = IsPossListObject;
@@ -2250,7 +2140,7 @@ static Int InitKernel (
         PosListFuncs[ type ] = PosListError;
     }
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
-        PosListFuncs[ type ] = PosListDefault;
+        PosListFuncs[ type ] = 0;
     }
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         PosListFuncs[ type ] = PosListObject;
@@ -2359,6 +2249,20 @@ static Int CheckInit (
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i +=2 ) {
         GAP_ASSERT( TNAM_TNUM(i) );
         GAP_ASSERT( TNAM_TNUM(i + IMMUTABLE) );
+    }
+
+    for (i = FIRST_LIST_TNUM; i <= LAST_LIST_TNUM; i += 2) {
+        GAP_ASSERT(AssListFuncs[i]);
+    }
+    for (i = FIRST_LIST_TNUM; i <= LAST_LIST_TNUM; i++) {
+        GAP_ASSERT(IsDenseListFuncs[i]);
+        GAP_ASSERT(IsHomogListFuncs[i]);
+        GAP_ASSERT(IsTableListFuncs[i]);
+        GAP_ASSERT(IsSSortListFuncs[i]);
+        GAP_ASSERT(IsPossListFuncs[i]);
+        GAP_ASSERT(PosListFuncs[i]);
+        GAP_ASSERT(IsSSortListFuncs[i]);
+        GAP_ASSERT(IsSSortListFuncs[i]);
     }
 
     /* check that all relevant `ClearFiltListTNums' are installed          */
