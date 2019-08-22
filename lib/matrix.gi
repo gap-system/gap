@@ -3384,7 +3384,7 @@ end );
 #F  BasisNullspaceModN( <M>, <n> ) . . . . . . .  .  nullspace of <E> mod <n>
 ##
 ##  <M> must be a matrix of integers modulo <n> and <n> a positive integer.
-##  Then 'NullspaceModQ' returns a set <B> of vectors such that every <v>
+##  Then 'BasisNullspaceModN' returns a set <B> of vectors such that every <v>
 ##  such that <v> <M> = 0 modulo <n> can be expressed by a Z-linear combination
 ##  of elements of <M>.
 ##

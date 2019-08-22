@@ -155,12 +155,12 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 **  record name usually resides,  and copies all the  entries.  If the record
 **  has alread been copied, it returns the value of the forwarding pointer.
 **
-**  'CopyPRec' is the function in 'TabCopyObj' for records.
+**  'CopyPRec' is the function in 'CopyObjFuncs' for records.
 **
 **  'CleanPRec' removes the  mark and the forwarding  pointer from the record
 **  <rec>.
 **
-**  'CleanPRec' is the function in 'TabCleanObj' for records.
+**  'CleanPRec' is the function in 'CleanObjFuncs' for records.
 */
 static Obj CopyPRec(Obj rec, Int mut)
 {
