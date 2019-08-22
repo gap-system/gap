@@ -3,13 +3,6 @@
 #
 gap> START_TEST("kernel/lists.tst");
 
-# IsHomogListDefault
-# TODO: need to create custom list type to test this
-
-# IsTableListDefault
-gap> IsTable([true,false,true]);
-false
-
 # IsPossListDefault
 # TODO: need to create custom list type to test this
 

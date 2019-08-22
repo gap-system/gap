@@ -1190,6 +1190,10 @@ static Int InitKernel (
     IsHomogListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysYes;
     IsHomogListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
     IsHomogListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
+    IsTableListFuncs[ T_RANGE_NSORT            ] = AlwaysNo;
+    IsTableListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysNo;
+    IsTableListFuncs[ T_RANGE_SSORT            ] = AlwaysNo;
+    IsTableListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_RANGE_NSORT            ] = AlwaysNo;
     IsSSortListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;

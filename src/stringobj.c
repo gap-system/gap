@@ -2070,6 +2070,8 @@ static Int InitKernel (
         IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = AlwaysYes;
         IsHomogListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
+        IsTableListFuncs[ t1            ] = AlwaysNo;
+        IsTableListFuncs[ t1 +IMMUTABLE ] = AlwaysNo;
         IsSSortListFuncs[ t1            ] = IsSSortString;
         IsSSortListFuncs[ t1 +IMMUTABLE ] = IsSSortString;
         IsPossListFuncs [ t1            ] = IsPossString;

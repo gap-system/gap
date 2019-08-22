@@ -1951,8 +1951,8 @@ static Int InitKernel (
         IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = IsHomogBlist;
         IsHomogListFuncs[ t1 +IMMUTABLE ] = IsHomogBlist;
-        IsSSortListFuncs[ t1            ] = IsSSortBlist;
-        IsSSortListFuncs[ t1 +IMMUTABLE ] = IsSSortBlist;
+        IsTableListFuncs[ t1            ] = AlwaysNo;
+        IsTableListFuncs[ t1 +IMMUTABLE ] = AlwaysNo;
         IsPossListFuncs [ t1            ] = IsPossBlist;
         IsPossListFuncs [ t1 +IMMUTABLE ] = IsPossBlist;
         PosListFuncs    [ t1            ] = PosBlist;
@@ -1961,6 +1961,8 @@ static Int InitKernel (
         PlainListFuncs  [ t1 +IMMUTABLE ] = PlainBlist;
         MakeImmutableObjFuncs [ t1      ] = MakeImmutableBlist;
     }
+    IsSSortListFuncs[ T_BLIST            ] = IsSSortBlist;
+    IsSSortListFuncs[ T_BLIST +IMMUTABLE ] = IsSSortBlist;
     IsSSortListFuncs[ T_BLIST_NSORT            ] = AlwaysNo;
     IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_BLIST_SSORT            ] = AlwaysYes;

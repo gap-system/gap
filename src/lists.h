@@ -80,8 +80,6 @@ EXPORT_INLINE Int IS_SMALL_LIST(Obj obj)
 
 extern Int (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-Int IsDenseListDefault(Obj list);
-
 EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
 {
     return (*IsDenseListFuncs[TNUM_OBJ(list)])(list);
@@ -104,8 +102,6 @@ EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
 */
 
 extern Int (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
-
-Int IsHomogListDefault(Obj list);
 
 EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
 {
@@ -130,8 +126,6 @@ EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
 */
 
 extern Int (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
-
-Int IsPossListDefault(Obj list);
 
 EXPORT_INLINE Int IS_POSS_LIST(Obj list)
 {
@@ -468,8 +462,6 @@ extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 void UNBB_LIST(Obj list, Obj pos);
 
-void UnbListDefault(Obj list, Int pos);
-
 EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
 {
     GAP_ASSERT(pos > 0);
@@ -590,8 +582,6 @@ void AssListObject(Obj list, Int pos, Obj obj);
 
 extern  Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Int IsTableListDefault(Obj list);
-
 EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 {
     return (*IsTableListFuncs[TNUM_OBJ(list)])(list);
@@ -614,8 +604,6 @@ EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 
 extern  Int             (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-Int IsSSortListDefault(Obj list);
-
 EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
 {
     return (*IsSSortListFuncs[TNUM_OBJ(list)])(list);
@@ -637,8 +625,6 @@ EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
 */
 
 extern  Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj obj, Obj start);
-
-Obj PosListDefault(Obj list, Obj obj, Obj start);
 
 EXPORT_INLINE Obj POS_LIST(Obj list, Obj obj, Obj start)
 {
