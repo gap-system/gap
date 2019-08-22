@@ -406,6 +406,27 @@ static Obj ElmsRange(Obj list, Obj poss)
 
 /****************************************************************************
 **
+*F  UnbRange( <list>, <pos> ) . . . .  unbind an element from a range
+**
+**  This is to avoid unpacking of the range to a plain list when <pos> is
+**  larger or equal to the length of <list>.
+*/
+static void UnbRange(Obj list, Int pos)
+{
+    GAP_ASSERT(IS_MUTABLE_OBJ(list));
+    const Int len = GET_LEN_RANGE(list);
+    if (len == pos && len > 2) {
+        SET_LEN_RANGE(list, len - 1);
+    }
+    else if (pos <= len) {
+        PLAIN_LIST(list);
+        UNB_LIST(list, pos);
+    }
+}
+
+
+/****************************************************************************
+**
 *F  AssRange(<list>,<pos>,<val>)  . . . . . . . . . . . . . assign to a range
 **
 **  'AssRange' assigns the value  <val> to the range  <list> at the  position
@@ -1178,6 +1199,8 @@ static Int InitKernel (
     ElmsListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = ElmsRange;
     ElmsListFuncs   [ T_RANGE_SSORT            ] = ElmsRange;
     ElmsListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = ElmsRange;
+    UnbListFuncs    [ T_RANGE_NSORT            ] = UnbRange;
+    UnbListFuncs    [ T_RANGE_SSORT            ] = UnbRange;
     AssListFuncs    [ T_RANGE_NSORT            ] = AssRange;
     AssListFuncs    [ T_RANGE_SSORT            ] = AssRange;
     AsssListFuncs   [ T_RANGE_NSORT            ] = AsssRange;

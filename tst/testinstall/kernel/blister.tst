@@ -4,13 +4,13 @@
 gap> START_TEST("kernel/blister.tst");
 
 #
-gap> a:=[true,false];; IsBlist(a);
+gap> a:=[true,false];; IsBlistRep(a);
 true
-gap> b:=[true,false];; IsBlist(b);
+gap> b:=[true,false];; IsBlistRep(b);
 true
-gap> c:=[true,true];; IsBlist(c);
+gap> c:=[true,true];; IsBlistRep(c);
 true
-gap> d:=[true,false,false,false,false,false,false];; IsBlist(d);
+gap> d:=[true,false,false,false,false,false,false];; IsBlistRep(d);
 true
 gap> l:=[a,b,c,d];;
 
@@ -49,29 +49,69 @@ Error, List Elements: <list>[3] must have an assigned value
 gap> a{[3..5]};
 Error, List Elements: <list>[3] must have an assigned value
 
-#
-gap> d[1] := false;; d; IsBlist(d); Length(d);
+# UnbBlist
+gap> x := [ true, false, false, true ]; TNAM_OBJ(x);
+[ true, false, false, true ]
+"list (boolean)"
+gap> IsSet(x); TNAM_OBJ(x);
+false
+"list (boolean,nsort)"
+
+# removing unbound position has no effect at all
+gap> Unbind(x[5]); x; TNAM_OBJ(x);
+[ true, false, false, true ]
+"list (boolean,nsort)"
+gap> IsSet(x); TNAM_OBJ(x);
+false
+"list (boolean,nsort)"
+
+# removing last bound position keeps it as a blist, resets filters
+gap> Unbind(x[4]); x; TNAM_OBJ(x);
+[ true, false, false ]
+"list (boolean)"
+gap> IsSet(x); TNAM_OBJ(x); # still unsorted
+false
+"list (boolean,nsort)"
+
+# removing last bound position keeps it as a blist, resets filters
+gap> Unbind(x[3]); x; TNAM_OBJ(x);
+[ true, false ]
+"list (boolean)"
+gap> IsSet(x); TNAM_OBJ(x); # now it is sorted
+true
+"list (boolean,ssort)"
+
+# removing any element but the last converts to a plain list
+gap> Unbind(x[1]); x; TNAM_OBJ(x);
+[ , false ]
+"non-dense plain list"
+gap> IsSet(x); TNAM_OBJ(x);
+false
+"non-dense plain list"
+
+# AssBlist
+gap> d[1] := false;; d; IsBlistRep(d); Length(d);
 [ false, false, false, false, false, false, false ]
 true
 7
-gap> d[1] := true;; d; IsBlist(d); Length(d);
+gap> d[1] := true;; d; IsBlistRep(d); Length(d);
 [ true, false, false, false, false, false, false ]
 true
 7
-gap> d[8] := false;; d; IsBlist(d); Length(d);
+gap> d[8] := false;; d; IsBlistRep(d); Length(d);
 [ true, false, false, false, false, false, false, false ]
 true
 8
-gap> d[8] := true;; d; IsBlist(d); Length(d);
+gap> d[8] := true;; d; IsBlistRep(d); Length(d);
 [ true, false, false, false, false, false, false, true ]
 true
 8
-gap> d2:=ShallowCopy(d);; IsBlist(d2);
+gap> d2:=ShallowCopy(d);; IsBlistRep(d2);
 true
-gap> d2[1]:=0;; IsBlist(d2); d2;
+gap> d2[1]:=0;; IsBlistRep(d2); d2;
 false
 [ 0, false, false, false, false, false, false, true ]
-gap> IsBlist(d); d;
+gap> IsBlistRep(d); d;
 true
 [ true, false, false, false, false, false, false, true ]
 
