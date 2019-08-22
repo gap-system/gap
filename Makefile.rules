@@ -783,6 +783,9 @@ manuals: doc
 doc: gap$(EXEEXT) doc/make_doc
 	doc/make_doc
 
+html: gap$(EXEEXT) doc/make_doc
+	doc/make_doc nopdf
+
 clean-doc:
 	rm -f doc/*/chap*.html doc/*/chap*.txt doc/*/*.css doc/*/*.js
 	rm -f doc/*/chooser.html doc/*/manual*.pdf
