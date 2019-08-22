@@ -2338,19 +2338,11 @@ InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
     ConvertToVectorRep(r,2);
     return r;
   end );
-InstallMethod( Randomize, "for a mutable gf2 vector",
-  [ IsGF2VectorRep and IsMutable ],
-  function( v ) 
-    local i;
-    MultVector(v,0);
-    for i in [1..Length(v)] do 
-        if Random(0,1) = 1 then v[i] := Z(2); fi;
-    od;
-    return v;
-  end );
-InstallMethod( Randomize, "for a mutable gf2 vector and a random source",
-  [ IsGF2VectorRep and IsMutable, IsRandomSource ],
-  function( v, rs ) 
+
+InstallMethodWithRandomSource( Randomize,
+    "for a random source and a mutable gf2 vector",
+    [ IsRandomSource, IsGF2VectorRep and IsMutable ],
+  function( rs, v )
     local i;
     MultVector(v,0);
     for i in [1..Length(v)] do 
@@ -2358,6 +2350,7 @@ InstallMethod( Randomize, "for a mutable gf2 vector and a random source",
     od;
     return v;
   end );
+
 InstallMethod( MutableCopyMat, "for a gf2 matrix",
   [ IsGF2MatrixRep ],
   function( m )
@@ -2457,19 +2450,12 @@ end );
 
 
 
-InstallMethod( Randomize, "for a mutable gf2 matrix",
-  [IsGF2MatrixRep and IsMutable],
-  function( m )
+InstallMethodWithRandomSource( Randomize,
+    "for a random source and a mutable gf2 matrix",
+    [ IsRandomSource, IsGF2MatrixRep and IsMutable ],
+  function( rs, m )
     local v;
-    for v in m do Randomize(v); od;
-    return m;
-  end );
-
-InstallMethod( Randomize, "for a mutable gf2 matrix, and a random source",
-  [IsGF2MatrixRep and IsMutable, IsRandomSource],
-  function( m, rs )
-    local v;
-    for v in m do Randomize(v,rs); od;
+    for v in m do Randomize( rs, v ); od;
     return m;
   end );
 
