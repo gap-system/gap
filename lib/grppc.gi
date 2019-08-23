@@ -1852,6 +1852,96 @@ InstallGlobalFunction( GapInputPcGroup, function(U,name)
 
 end );
 
+#############################################################################
+##
+#F  PrintPcPresentation( <grp>, <commBool> )
+##
+##  Display the pc relations of a pc group.
+##  If <commBool> is true, then the commutator presentation is printed,
+##  otherwise the power presentation.
+##  Trivial commutators / powers are not printed.
+##  The generators are named "g<i>".
+##  The returned boolean indicates if there are commutating generators.
+##
+InstallGlobalFunction( PrintPcPresentation, function(G, commBool)
+    local pcgs, n, F, gens, i, pis, exp, t, h, rel, commPower, j, trivialCommutators;
+
+    pcgs:=Pcgs(G);
+    n:=Length(pcgs);
+    F    := FreeGroup( n, "g" );
+    gens := GeneratorsOfGroup( F );
+    pis  := RelativeOrders( pcgs );
+
+    # compute the orders of the pc-generators
+    for i in [1..n] do
+        exp := ExponentsOfRelativePower( pcgs, i ){[i+1..n]};
+        t   := One( F );
+        for h in [i+1..n] do
+            t := t * gens[h]^exp[h-i];
+        od;
+        if IsOne( t ) then
+            t := "id";
+        fi;
+        Print(gens[i], "^", pis[i], " = ", t, "\n");
+    od;
+
+    # compute the commutators / conjugation
+    # of all pairs of pc-generators
+    trivialCommutators := false;
+    for i in [1..n] do
+        for j in [i+1..n] do
+            if pcgs[j] * pcgs[i] = pcgs[i] * pcgs[j] then
+                trivialCommutators := true;
+                continue;
+            fi;
+            if commBool then
+                commPower := Comm( pcgs[j], pcgs[i] );
+            else
+                commPower := pcgs[j]^pcgs[i];
+            fi;
+            exp := ExponentsOfPcElement( pcgs, commPower ){[i+1..n]};
+            t   := One( F );
+            for h in [i+1..n] do
+                t := t * gens[h]^exp[h-i];
+            od;
+            if commBool then
+                Print("[", gens[j], ",", gens[i] , "]");
+            else
+                Print(gens[j], "^", gens[i]);
+            fi;
+            Print(" = ", t, "\n");
+        od;
+    od;
+
+    return trivialCommutators;
+end );
+
+#############################################################################
+##
+#M  Display( <grp> )
+##
+InstallMethod( Display,
+    "for a pc group",
+    [ IsPcGroup ],
+    function( G )
+        local n, trivialCommutators;
+        if IsTrivial(G) then
+            Print("trivial pc-group\n");
+            return;
+        fi;
+        n := Size(Pcgs(G));
+        if IsOne(n) then
+            Print("cyclic pc-group with 1 pc-generator and the relation:\n");
+        else
+            Print("pc-group with ", Size(Pcgs(G)), " pc-generators and relations:\n");
+        fi;
+        trivialCommutators := PrintPcPresentation( G, false );
+        if IsAbelian(G) then
+          Print("all generators commute, the groups is abelian\n");
+        elif trivialCommutators then
+          Print("all other pairs of generators commute\n");
+        fi;
+    end );
 
 #############################################################################
 ##
