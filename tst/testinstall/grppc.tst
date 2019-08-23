@@ -1,16 +1,83 @@
 #@local F,G,S,c,cl,f,g,g1,g10,g3,gens,h,hh,i,m,n,pcgs,r,rws,sys,u,v,x,y
 gap> START_TEST("grppc.tst");
+gap> Display(TrivialGroup(IsPcGroup));
+trivial pc-group
+gap> Display(CyclicGroup(IsPcGroup, 10));
+pc-group with 2 pc-generators and relations:
+g1^2 = g2
+g2^5 = id
+all generators commute, the groups is abelian
+gap> Display(SymmetricGroup(IsPcGroup, 3));
+pc-group with 2 pc-generators and relations:
+g1^2 = id
+g2^3 = id
+g2^g1 = g2^2
 gap> h:=Group((1,2,3,4),(1,2));;
 gap> m:=IsomorphismPcGroup(h);;
 gap> hh:=Image(m,h);;
+gap> Display(hh);
+pc-group with 4 pc-generators and relations:
+g1^2 = id
+g2^3 = id
+g3^2 = id
+g4^2 = id
+g2^g1 = g2^2
+g3^g1 = g4
+g4^g1 = g3
+g3^g2 = g4
+g4^g2 = g3*g4
+all other pairs of generators commute
 gap> pcgs:=Pcgs(hh);;
 gap> ForAll(pcgs,i->PreImagesRepresentative(m,i) in h);
 true
 gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4,5,6,7)));;
 gap> i:=IsomorphismPcGroup(g);;
 gap> g:=Range(i);;
+gap> Display(g);
+pc-group with 15 pc-generators and relations:
+g1^7 = id
+g2^2 = id
+g3^2 = id
+g4^2 = id
+g5^2 = id
+g6^2 = id
+g7^2 = id
+g8^2 = id
+g9^3 = id
+g10^3 = id
+g11^3 = id
+g12^3 = id
+g13^3 = id
+g14^3 = id
+g15^3 = id
+g2^g1 = g8
+g3^g1 = g2
+g4^g1 = g3
+g5^g1 = g4
+g6^g1 = g5
+g7^g1 = g6
+g8^g1 = g7
+g9^g1 = g15
+g10^g1 = g9
+g11^g1 = g10
+g12^g1 = g11
+g13^g1 = g12
+g14^g1 = g13
+g15^g1 = g14
+g9^g2 = g9^2
+g10^g3 = g10^2
+g11^g4 = g11^2
+g12^g5 = g12^2
+g13^g6 = g13^2
+g14^g7 = g14^2
+g15^g8 = g15^2
+all other pairs of generators commute
 gap> u:=Subgroup(g,GeneratorsOfGroup(g){[2..15]});;
 gap> n:=Subgroup(g,[g.1]);;
+gap> Display(n);
+cyclic pc-group with 1 pc-generator and the relation:
+g1^7 = id
+all generators commute, the groups is abelian
 gap> v:=Normalizer(u,n);;
 gap> IsSubgroup(u,v);
 true
@@ -42,6 +109,27 @@ gap> g:=Group((1,15,8,4,14,9)(2,16,7,3,13,10)(5,18,12)(6,17,11),
 > (1,3,6)(2,4,5)(7,9,12)(8,10,11)(13,15,18)(14,16,17),
 > (5,6)(7,8)(9,10)(13,14)(15,16),(1,2)(7,8)(13,14),(1,2)(3,4)(5,6),
 > (7,8)(9,10)(11,12),(13,14)(15,16)(17,18));;
+gap> Display(Image(IsomorphismPcGroup(g)));
+pc-group with 8 pc-generators and relations:
+g1^2 = id
+g2^2 = id
+g3^3 = id
+g4^2 = id
+g5^2 = id
+g6^3 = id
+g7^2 = id
+g8^2 = id
+g6^g1 = g6*g8
+g3^g2 = g3^2
+g4^g2 = g5
+g5^g2 = g4
+g4^g3 = g4*g5*g7*g8
+g5^g3 = g4
+g6^g4 = g6*g8
+g6^g5 = g6*g8
+g7^g6 = g8
+g8^g6 = g7*g8
+all other pairs of generators commute
 gap> cl:=ConjugacyClasses(Image(IsomorphismPcGroup(g),g));;
 gap> G := Group( ( 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14), (15,16) );;
 gap> sys := SylowSystem( G );;
@@ -52,6 +140,11 @@ gap> List(sys,i->Length(AsList(i)));
 gap> G := SmallGroup( 144, 183 );;
 gap> F := FittingSubgroup( G );;
 gap> S := SylowSubgroup( F, 2 );;
+gap> Display(Image(IsomorphismPcGroup(S)));
+pc-group with 2 pc-generators and relations:
+g1^2 = id
+g2^2 = id
+all generators commute, the groups is abelian
 gap> Length(ComplementClassesRepresentatives( G, S ));
 1
 gap> c:=111738634087016687677581080419779823937672962105281999064930026947977838341505382863502660652163271927890657789545865354105698690880491419382732505129685548945886493976382779091529311779061982182942409366242406420035526825355893426176;

@@ -521,6 +521,12 @@ DeclareGlobalFunction( "GapInputPcGroup" );
 
 #############################################################################
 ##
+#F  PrintPcPresentation( <grp>, <commBool> )
+##
+DeclareGlobalFunction( "PrintPcPresentation" );
+
+#############################################################################
+##
 #O  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
 ##
 ##  <ManSection>
