@@ -1141,11 +1141,13 @@ end);
 # u must be a subgroup of the image of home
 InstallGlobalFunction(
 LargerQuotientBySubgroupAbelianization,function(hom,u)
-local v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
+local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
   v:=PreImage(hom,u);
-  aiv:=AbelianInvariants(v);
   aiu:=AbelianInvariants(u);
-  if aiu=aiv then
+  
+  G:= FamilyObj(v)!.wholeGroup;
+  aiv:=AbelianInvariantsSubgroupFpGroup( G, v );
+  if aiv=fail or aiu=aiv then
     return fail;
   fi;
   # are there irrelevant primes?
