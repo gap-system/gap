@@ -4909,6 +4909,12 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
     if not IsBound( cletter ) then
       cletter:= "X";
     fi;
+    for record in options do
+      if IsBound( record.charnames ) and IsList( record.charnames ) then
+        charnames:= record.charnames;
+        break;
+      fi;
+    od;
     if not IsBound( charnames ) then
       charnames:= List( cnr,
           i -> Concatenation( cletter, ".", String( i ) ) );
@@ -4982,6 +4988,12 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       nam:= ClassNames( tbl, "ATLAS" );
     else
       nam:= ClassNames( tbl );
+      for record in options do
+        if IsBound( record.classnames ) and IsList( record.classnames ) then
+          nam:= record.classnames;
+          break;
+        fi;
+      od;
     fi;
 
     # prepare indicator

@@ -3422,12 +3422,23 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##    an integer or a list of integers to select a sublist of the
 ##    irreducible characters of <A>tbl</A>,
 ##    or a list of characters of <A>tbl</A>
-##    (in this case the letter <C>"X"</C> is replaced by <C>"Y"</C>),
+##    (in the latter case, the default letter <C>"X"</C> in the character
+##    names is replaced by <C>"Y"</C>),
+##  </Item>
+##  <Mark><C>charnames</C></Mark>
+##  <Item>
+##    a list of strings of length equal to the number of characters
+##    that shall be shown; they are used as labels for the characters,
 ##  </Item>
 ##  <Mark><C>classes</C></Mark>
 ##  <Item>
 ##    an integer or a list of integers to select a sublist of the
 ##    classes of <A>tbl</A>,
+##  </Item>
+##  <Mark><C>classnames</C></Mark>
+##  <Item>
+##    a list of strings of length equal to the number of classes
+##    that shall be shown; they are used as labels for the classes,
 ##  </Item>
 ##  <Mark><C>indicator</C></Mark>
 ##  <Item>
@@ -3447,7 +3458,10 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##    <K>false</K> to suppress the printing of power maps,
 ##    or the string <C>"ATLAS"</C> to force a printing of class names and
 ##    power maps in a style similar to that used in the
-##    &ATLAS; of Finite Groups&nbsp;<Cite Key="CCN85"/>,
+##    &ATLAS; of Finite Groups&nbsp;<Cite Key="CCN85"/>
+##    (the <C>"ATLAS"</C> variant works only if the function
+##    <Ref Func="CambridgeMaps" BookName="ctbllib"/> is available,
+##    which belongs to the <Package>CTblLib</Package> package),
 ##  </Item>
 ##  <Mark><C>Display</C></Mark>
 ##  <Item>
