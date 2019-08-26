@@ -64,15 +64,19 @@ InstallMethod( NewMatrix,
   [ IsPlistMatrixRep, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
     local nd, filterVectors, m, e, filter2, i;
-    # check if l is flat list
+
+    # If applicable then replace a flat list 'l' by a nested list
+    # of lists of length 'rl'.
     if Length(l) > 0 and not IsVectorObj(l[1]) then
       nd := NestingDepthA(l);
       if nd < 2 or nd mod 2 = 1 then
+        if Length(l) mod rl <> 0 then
+          Error( "NewMatrix: Length of l is not a multiple of rl" );
+        fi;
         l := List([0,rl..Length(l)-rl], i -> l{[i+1..i+rl]});
-      elif Length(l) mod rl <> 0 then
-        Error( "NewMatrix: Length of l is not a multiple of rl" );
       fi;
     fi;
+
     filterVectors := IsPlistVectorRep;
     m := 0*[1..Length(l)];
     for i in [1..Length(l)] do
@@ -291,11 +295,7 @@ InstallMethod( PositionLastNonZero, "for a plist vector", [ IsPlistVectorRep ],
     els := v![ELSPOS];
     i := Length(els);
     while i > 0 and IsZero(els[i]) do i := i - 1; od;
-    if i > 0 then
-        return i;
-    else
-        return fail;
-    fi;
+    return i;
   end );
 
 InstallMethod( ListOp, "for a plist vector", [ IsPlistVectorRep ],
@@ -657,7 +657,9 @@ InstallMethod( Matrix, "for a list and a plist matrix",
 # A selection of list operations:
 ############################################################################
 
-InstallMethod( \[\], "for a plist matrix and a positive integer",
+InstallOtherMethod( \[\], "for a plist matrix and a positive integer",
+#T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
+#T we can use 'InstallMethod'.
   [ IsPlistMatrixRep, IsPosInt ],
   function( m, p )
     return m![ROWSPOS][p];
@@ -692,15 +694,14 @@ InstallMethod( Add, "for a plist matrix, a plist vector, and a pos. int",
 
 InstallMethod( Remove, "for a plist matrix",
   [ IsPlistMatrixRep and IsMutable ],
-  function( m )
-    Remove( m![ROWSPOS] );
-  end );
+  m -> Remove( m![ROWSPOS] ) );
 
 InstallMethod( Remove, "for a plist matrix, and a position",
   [ IsPlistMatrixRep and IsMutable, IsPosInt ],
   function( m, p )
     Remove( m![ROWSPOS],p );
   end );
+#T must return the removed row if it was bound
 
 InstallMethod( IsBound\[\], "for a plist matrix, and a position",
   [ IsPlistMatrixRep, IsPosInt ],
@@ -739,6 +740,8 @@ InstallMethod( ShallowCopy, "for a plist matrix",
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
     fi;
+#T 'ShallowCopy' MUST return a mutable object
+#T if such an object exists at all!
     return res;
   end );
 

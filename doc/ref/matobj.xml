@@ -7,65 +7,284 @@
 <Chapter Label="Vector and Matrix Objects">
 <Heading>Vector and Matrix Objects</Heading>
 
-This chapter is work in progress. It will eventually describe the new
-interface to vector and matrix objects.
-<P/>
-Traditionally, vectors in &GAP; have been lists and matrices have been 
-lists of lists (of equal length). Unfortunately, such lists cannot
-store their type and so it is impossible to use the full advantages of
-&GAP;'s method selection on them. This situation is unsustainable in the
-long run since more special representations (compressed,
-sparse, etc.) have already been and even more will be implemented. 
-To eventually solve 
-this problem, this chapter describes a new programming interface to
-vectors and matrices.
+This chapter describes an interface to vector and matrix objects
+which are not represented by plain lists (of plain lists),
+cf. Chapters <Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>.
 
-<Section Label="Fundamental Ideas and Rules">
-    <Heading>Fundamental Ideas and Rules</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Concepts and Rules for Vector and Matrix Objects">
+<Heading>Concepts and Rules for Vector and Matrix Objects</Heading>
 
 <#Include Label="MatObj_Overview">
 
 </Section>
 
-<Section Label="Categories of Vectors and Matrices">
-    <Heading>Categories of Vectors and Matrices</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Categories of Vector and Matrix Objects">
+<Heading>Categories of Vector and Matrix Objects</Heading>
+
+Currently the following categories of vector and matrix objects
+are supported in &GAP;.
+More can be added as soon as there is need for them.
+<!-- For example, flat matrices? -->
+
+<#Include Label="IsVectorObj">
+<#Include Label="IsMatrixObj">
+<#Include Label="IsRowListMatrix">
 
 </Section>
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Defining Attributes of Vector and Matrix Objects">
+<Heading>Defining Attributes of Vector and Matrix Objects</Heading>
+
+<#Include Label="BaseDomain">
+<#Include Label="ConstructingFilter">
+<#Include Label="CompatibleVectorFilter">
+<#Include Label="Length_IsVectorObj">
+<#Include Label="NumberRowsNumberColumns">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Constructing Vector and Matrix Objects">
-    <Heading>Constructing Vector and Matrix Objects</Heading>
+<Heading>Constructing Vector and Matrix Objects</Heading>
+
+<#Include Label="NewVector">
+<#Include Label="Vector">
+<#Include Label="VectorObj_ZeroVector">
+<#Include Label="NewMatrix">
+<#Include Label="MatObj_Matrix">
+<#Include Label="MatObj_ZeroMatrix">
+<#Include Label="MatObj_IdentityMatrix">
+
 </Section>
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Base Domains of Vector and Matrix Objects">
+<Heading>Operations for Base Domains of Vector and Matrix Objects</Heading>
+
+<#Include Label="OneOfBaseDomain">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Vector and Matrix Objects">
+<Heading>Operations for Vector and Matrix Objects</Heading>
+
+<#Include Label="MatrixObjCompare">
+<#Include Label="Unpack">
+<#Include Label="ChangedBaseDomain">
+<#Include Label="Randomize">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="List Like Operations for Vector Objects">
+<Heading>List Like Operations for Vector Objects</Heading>
+
+The following operations that are defined for lists are useful
+also for vector objects.
+(More such operations can be added if this is appropriate.)
+
+<#Include Label="ElementAccessVectorObj">
+<#Include Label="MatObj_PositionNonZero">
+<#Include Label="MatObj_PositionLastNonZero">
+<#Include Label="MatObj_ListOp">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Arithmetical Operations for Vector Objects">
+<Heading>Arithmetical Operations for Vector Objects</Heading>
+
+<#Include Label="VectorObj_UnaryArithmetics">
+<#Include Label="VectorObj_BinaryArithmetics">
+<#Include Label="MatObj_AddVector">
+<#Include Label="MatObj_MultVectorLeft">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Operations for Vector Objects">
-    <Heading>Operations for Vector Objects</Heading>
+<Heading>Operations for Vector Objects</Heading>
 
-    <#Include Label="MatObj_PositionNonZero">
-    <#Include Label="MatObj_PositionLastNonZero">
-    <#Include Label="MatObj_ListOp">
-    <#Include Label="MatObj_UnpackVector">
-    <#Include Label="MatObj_ConcatenationOfVectors">
-    <#Include Label="MatObj_ExtractSubVector">
-    <#Include Label="MatObj_ZeroVector">
-    <#Include Label="MatObj_ConstructingFilter_Vector">
-    <#Include Label="MatObj_Randomize_Vectors">
-    <#Include Label="MatObj_WeightOfVector">
-    <#Include Label="MatObj_DistanceOfVectors">
+<#Include Label="MatObj_ConcatenationOfVectors">
+<#Include Label="MatObj_ExtractSubVector">
+<#Include Label="CopySubVector">
+<#Include Label="MatObj_WeightOfVector">
+<#Include Label="MatObj_DistanceOfVectors">
 
 </Section>
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Arithmetical Operations for Matrix Objects">
+<Heading>Arithmetical Operations for Matrix Objects</Heading>
+
+<#Include Label="MatrixObj_UnaryArithmetics">
+<#Include Label="MatrixObj_BinaryArithmetics">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Matrix Objects">
+<Heading>Operations for Matrix Objects</Heading>
+
+<#Include Label="MatObj_MatElm">
+<#Include Label="MatObj_SetMatElm">
+<#Include Label="ExtractSubMatrix">
+<#Include Label="MutableCopyMatrix">
+<#Include Label="CopySubMatrix">
+<#Include Label="CompatibleVector">
+<#Include Label="RowsOfMatrix">
+<#Include Label="MatObj_CompanionMatrix">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Operations for Row List Matrix Objects">
-    <Heading>Operations for Row List Matrix Objects</Heading>
+<Heading>Operations for Row List Matrix Objects</Heading>
+
+In general, matrix objects are not lists in the sense of <Ref Filt="IsList"/>,
+and they need not behave like lists,
+that is, they need not obey all the rules for lists that are stated in
+Chapter <Ref Chap="Lists"/>.
+There are situations where one wants to have matrix objects
+that can on the one hand benefit from &GAP;'s method selection,
+as is explained in
+Section <Ref Sect="Concepts and Rules for Vector and Matrix Objects"/>,
+and do on the other hands support access to &GAP; objects that represent
+their rows (which are suitable vector objects),
+such that the operations described in this section are supported
+for these matrix objects.
+
+<P/>
+
+One implementation of such matrices is given by the
+<Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
+<Ref Filt="IsPlistMatrixRep"/>,
+and any row of these matrices is a vector object in
+<Ref Filt="IsPlistVectorRep"/>.
+Note that these objects do <E>not</E> lie in <Ref Filt="IsList"/>
+(and in particular not in <Ref Filt="IsPlistRep"/>),
+thus we are allowed to define the above operations only restrictively,
+as follows.
+
+<P/>
+
+Unbinding an entry in a row or unbinding a row in a matrix is allowed only
+in the last position,
+that is, the vector and matrix objects insist on being dense.
+All rows of a matrix must have the same length and the same base domain.
+
+<#Include Label="IsPlistVectorRep">
+<#Include Label="IsPlistMatrixRep">
+<#Include Label="RowListMatObj_[]">
+<#Include Label="RowListMatObj_[]_ASS">
+<#Include Label="RowListMatObj_{}">
+<#Include Label="RowListMatObj_{}_ASS">
+<#Include Label="RowListMatObj_IsBound">
+<#Include Label="RowListMatObj_Unbind">
+<#Include Label="RowListMatObj_Add">
+<#Include Label="RowListMatObj_Remove">
+<#Include Label="RowListMatObj_Append">
+<#Include Label="RowListMatObj_ShallowCopy">
+<#Include Label="RowListMatObj_ListOp">
 
 </Section>
 
-<Section Label="Operations for Flat Matrix Objects">
-    <Heading>Operations for Flat Matrix Objects</Heading>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Operations for Vector and Matrix Objects, without Defaults">
+<Heading>Operations for Vector and Matrix Objects, without Defaults</Heading>
+
+Here we list those operations for vector and matrix objects
+for which no default methods can be installed.
+When one implements a new type of vector or matrix objects
+then one has to install specific methods at least for these operations,
+in order to make the objects behave as described in this chapter.
+(Of course, it is advisable to install specific methods also for other
+operations, for performance reasons.
+The installations of default methods can be found in the file
+<F>lib/matobj.gi</F> of the &GAP; distribution,
+just check for which operations it makes sense to overload them
+for your new type of vector or matrix objects.)
+
+<P/>
+
+<E>Vector objects</E>
+
+<List>
+<Item>
+  <Ref Attr="BaseDomain" Label="for a vector object"/>,
+</Item>
+<Item>
+  <Ref Attr="Length" Label="for a vector object"/>,
+</Item>
+<Item>
+  <Ref Oper="[]" Label="for a vector object and an integer"/>,
+</Item>
+<Item>
+  <Ref Oper="[]:=" Label="for a vector object and an integer"/>,
+</Item>
+<Item>
+  <Ref Oper="\&lt;"/> (see <Ref Oper="\&lt;" Label="for two vector objects"/>),
+</Item>
+<Item>
+  <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
+</Item>
+<Item>
+  <Ref Oper="NewVector"/>.
+</Item>
+</List>
+
+<P/>
+
+<E>Matrix objects</E>
+
+<List>
+<Item>
+  <Ref Attr="BaseDomain" Label="for a matrix object"/>,
+</Item>
+<Item>
+  <Ref Attr="NumberRows" Label="for a matrix object"/>,
+</Item>
+<Item>
+  <Ref Attr="NumberColumns" Label="for a matrix object"/>,
+</Item>
+<Item>
+  <Ref Oper="MatElm"/>,
+</Item>
+<Item>
+  <Ref Oper="SetMatElm"/>,
+</Item>
+<Item>
+  <Ref Oper="\&lt;"/> (see <Ref Oper="\&lt;" Label="for two matrix objects"/>),
+</Item>
+<Item>
+  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>,
+</Item>
+<Item>
+  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/>,
+</Item>
+<Item>
+  <Ref Oper="NewMatrix"/>.
+</Item>
+</List>
 
 </Section>
 
 </Chapter>
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
-<!-- %E -->
 

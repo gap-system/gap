@@ -8,31 +8,58 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-############################################################################
-#
-# This file contains some generic methods for the vector/matrix interface
-# defined in matobj1.gd and matobj2.gd.
-#
+
+#############################################################################
+##
+##  This file contains some generic methods for the vector/matrix object
+##  interface defined in 'matobj1.gd' and 'matobj2.gd'.
+##
 
 
-# Install fallback methods for m[i,j] which delegate to ASS_LIST / ELM_LIST
-# for code using an intermediate version of the (unfinished) MatrixObj
-# specification (any package installing methods for MatElm resp. SetMatElm
-# should be fine without these). We lower the rank so that these are only
-# used as a last resort.
-InstallMethod( \[\,\], "for a matrix object and two positions",
-  [ IsMatrixObj, IsPosInt, IsPosInt ],
-  {} -> -RankFilter(IsMatrixObj),
-  function( m, row, col )
-    return ELM_LIST( m, row, col );
-  end );
+#############################################################################
+##
+##  <#GAPDoc Label="MatrixObjCompare">
+##  <ManSection>
+##  <Heading>Comparison of Vector and Matrix Objects</Heading>
+##  <Oper Name="\=" Arg='v1, v2' Label="for two vector objects"/>
+##  <Oper Name="\=" Arg='M1, M2' Label="for two matrix objects"/>
+##  <Oper Name="\&lt;" Arg='v1, v2' Label="for two vector objects"/>
+##  <Oper Name="\&lt;" Arg='M1, M2' Label="for two matrix objects"/>
+##
+##  <Description>
+##  Two vector objects are equal with respect to <Ref Oper="\="/>
+##  if they have the same length and the same entries.
+##  Two matrix  objects are equal with respect to <Ref Oper="\="/>
+##  if they have the same dimensions and the same entries.
+##  It is <Q>not</Q> necessary that the objects have the same base domain.
+##  <P/>
+##  We do <E>not</E> state a general rule how vector and matrix objects
+##  shall behave w.r.t. the comparison by <Ref Oper="\&lt;"/>.
+##  Note that a <Q>row lexicographic order</Q> would be quite unnatural
+##  for matrices that are internally represented via a list of columns.
+##  <P/>
+##  Note that the operations <Ref Oper="\="/> and <Ref Oper="\&lt;"/>
+##  are used to form sorted lists and sets of objects,
+##  see for example <Ref Oper="Sort"/> and <Ref Oper="Set"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+InstallMethod( \=,
+    "for two vector objects",
+    [ IsVectorObj, IsVectorObj ],
+    { v1, v2 } -> Length( v1 ) = Length( v2 ) and
+                  ForAll( [ 1 .. Length( v1 ) ],
+                          i -> v1[i] = v2[i] ) );
 
-InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
-  [ IsMatrixObj and IsMutable, IsPosInt, IsPosInt, IsObject ],
-  {} -> -RankFilter(IsMatrixObj),
-  function( m, row, col, obj )
-    ASS_LIST( m, row, col, obj );
-  end );
+InstallMethod( \=,
+    "for two matrix objects",
+    [ IsMatrixObj, IsMatrixObj ],
+    { M1, M2 } -> NumberRows( M1 ) = NumberRows( M2 ) and
+                  NumberColumns( M1 ) = NumberColumns( M2 ) and
+                  ForAll( [ 1 .. NumberRows( M1 ) ],
+                          i -> ForAll( [ 1 .. NumberColumns( M1 ) ],
+                                       j -> M1[i,j] = M2[i,j] ) ) );
 
 
 InstallMethod( OneOfBaseDomain,
@@ -56,8 +83,9 @@ InstallMethod( ZeroOfBaseDomain,
     M -> Zero( BaseDomain( M ) ) );
 
 
-InstallMethod( WeightOfVector, "generic method",
-  [IsVectorObj],
+InstallMethod( WeightOfVector,
+    "generic method for vector objects",
+    [ IsVectorObj ],
   function(v)
     local i,n;
     n := 0;
@@ -69,7 +97,8 @@ InstallMethod( WeightOfVector, "generic method",
     return n;
   end );
 
-InstallMethod( DistanceOfVectors, "generic method",
+InstallMethod( DistanceOfVectors,
+    "generic method for two vector objects",
   [IsVectorObj, IsVectorObj],
   function( v, w)
     local i,n;
@@ -110,101 +139,154 @@ end);
 
 
 
-# methods to create vectors
+# methods to create vector objects
 
 InstallMethod( Vector,
-  [IsOperation, IsSemiring,  IsList],
-function(rep, base, l)
-  return NewVector(rep, base, l);
-end);
+    [ IsOperation, IsSemiring, IsList ],
+    NewVector );
 
 InstallMethod( Vector,
-  [IsOperation, IsSemiring,  IsVectorObj],
-function(rep, base, v)
-  return NewVector(rep, base, Unpack(v));
-end);
+    [ IsOperation, IsSemiring, IsVectorObj ],
+    function( rep, R, v )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return NewVector( rep, R, Unpack( v ) );
+    end );
 
 InstallMethod( Vector,
-  [IsSemiring,  IsList],
-function(base, l)
-  return NewVector(DefaultVectorRepForBaseDomain(base), base, l);
-end);
+    [ IsSemiring, IsList ],
+    { R, l } -> NewVector( DefaultVectorRepForBaseDomain( R ), R, l ) );
 
 InstallMethod( Vector,
-  [IsSemiring,  IsVectorObj],
-function(base, v)
-  return NewVector(DefaultVectorRepForBaseDomain(base), base, Unpack(v));
-end);
+    [ IsSemiring, IsVectorObj ],
+    function( R, v )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return NewVector( DefaultVectorRepForBaseDomain( R ),
+                          R, Unpack( v ) );
+    end );
 
 InstallMethod( Vector,
-  [IsList, IsVectorObj],
-function(l, example)
-  return NewVector(ConstructingFilter(example), BaseDomain(example), l);
-end);
+    [ IsList, IsVectorObj ],
+    { l, example } -> NewVector( ConstructingFilter( example ),
+                                 BaseDomain( example ), l ) );
 
 InstallMethod( Vector,
-  [IsVectorObj, IsVectorObj],
-function(v, example)
-  return NewVector(ConstructingFilter(example), BaseDomain(example), Unpack(v));
-end);
+    [ IsVectorObj, IsVectorObj ],
+    function( v, example )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return NewVector( ConstructingFilter( example ),
+                      BaseDomain( example ), Unpack( v ) );
+    end );
 
 InstallMethod( Vector,
-  [IsList],
+    [ IsList ],
 function(l)
   local dom;
   dom := DefaultScalarDomainOfMatrixList([[l]]);
   return NewVector(DefaultVectorRepForBaseDomain(dom), dom, l);
 end);
-#
-#
-#
+
+
+#############################################################################
+##
+#M  NewZeroVector( <filt>, <R>, <n> )
+##
+InstallMethod( NewZeroVector,
+    "for filter, semiring, integer",
+    [ IsVectorObj, IsSemiring, IsInt ],
+    { filt, R, n } -> NewVector( filt, R, ListWithIdenticalEntries( n,
+                                              Zero( R ) ) ) );
+
+
+#############################################################################
+##
+#M  ZeroVector( <len>, <v> )
+#M  ZeroVector( <len>, <M> )
+##
+InstallMethod( ZeroVector,
+    "for length and vector object",
+    [ IsInt, IsVectorObj ],
+    { len, v } -> NewZeroVector( ConstructingFilter( v ),
+                                 BaseDomain( v ), len ) );
+
+InstallMethod( ZeroVector,
+    "for length and matrix object",
+    [ IsInt, IsMatrixObj ],
+    { len, M } -> NewZeroVector( CompatibleVectorFilter( M ),
+                                 BaseDomain( M ), len ) );
+
+
+#############################################################################
+##
+#M  Matrix( <filt>, <R>, <list>, <ncols> )
+#M  Matrix( <filt>, <R>, <list> )
+#M  Matrix( <filt>, <R>, <M> )
+#M  Matrix( <R>, <list>, <ncols> )
+#M  Matrix( <R>, <list> )
+#M  Matrix( <R>, <M> )
+#M  Matrix( <list>, <ncols>, <M> )
+#M  Matrix( <list>, <M> )
+#M  Matrix( <M1>, <M2> )
+#M  Matrix( <list>, <ncols> )
+#M  Matrix( <list> )
+##
 InstallMethod( Matrix,
-  [IsOperation, IsSemiring, IsList, IsInt],
-  function( rep, basedomain, list, nrCols )
-    # TODO: adjust NewMatrix to use same arg order as Matrix (or vice-versa)
-    return NewMatrix( rep, basedomain, nrCols, list );
+  [ IsOperation, IsSemiring, IsList, IsInt ],
+  { filt, R, list, nrCols } -> NewMatrix( filt, R, nrCols, list ) );
+
+InstallMethod( Matrix,
+    [ IsOperation, IsSemiring, IsList ],
+    function( filt, R, list )
+    if Length( list ) = 0 then
+      Error( "<list> must be not empty; ",
+             "to create empty matrices, please specify nrCols");
+    fi;
+    return NewMatrix( filt, R, Length( list[1] ), list );
   end );
 
 InstallMethod( Matrix,
-  [IsOperation, IsSemiring, IsList],
-  function( rep, basedomain, list )
-    if Length(list) = 0 then Error("list must be not empty; to create empty matrices, please specify nrCols"); fi;
-    return NewMatrix( rep, basedomain, Length(list[1]), list );
-  end );
+    [ IsOperation, IsSemiring, IsMatrixObj ],
+    function( filt, R, mat )
+    if IsPlistRep( mat ) then
+      TryNextMethod();
+    fi;
+    return NewMatrix( filt, R, NrCols( mat ), Unpack( mat ) );
+    end );
+# TODO: can we do better? encourage MatrixObj implementors to overload this?
 
 InstallMethod( Matrix,
-  [IsOperation, IsSemiring, IsMatrixObj],
-  function( rep, basedomain, mat )
-    # TODO: can we do better? encourage MatrixObj implementors to overload this?
-    return NewMatrix( rep, basedomain, NrCols(mat), Unpack(mat) );
-  end );
-
-#
-#
-#
-InstallMethod( Matrix,
-  [IsSemiring, IsList, IsInt],
-  function( basedomain, list, nrCols )
-    local rep;
-    rep := DefaultMatrixRepForBaseDomain(basedomain);
-    return NewMatrix( rep, basedomain, nrCols, list );
-  end );
+    [ IsSemiring, IsList, IsInt ],
+    { R, list, nrCols } -> NewMatrix( DefaultMatrixRepForBaseDomain( R ),
+                                      R, nrCols, list ) );
 
 InstallMethod( Matrix,
-  [IsSemiring, IsList],
-  function( basedomain, list )
-    local rep;
-    if Length(list) = 0 then Error("list must be not empty"); fi;
-    rep := DefaultMatrixRepForBaseDomain(basedomain);
-    return NewMatrix( rep, basedomain, Length(list[1]), list );
-  end );
+    [ IsSemiring, IsList ],
+    function( R, list )
+    if Length(list) = 0 then
+      Error( "list must be not empty" );
+    fi;
+    return NewMatrix( DefaultMatrixRepForBaseDomain( R ),
+                      R, Length( list[1] ), list );
+    end );
 
 InstallMethod( Matrix,
-  [IsSemiring, IsMatrixObj],
-  function( basedomain, mat )
-    # TODO: can we do better? encourage MatrixObj implementors to overload this?
-    return NewMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, NrCols(mat), Unpack(mat) );
-  end );
+    [ IsSemiring, IsMatrixObj ],
+  # FIXME: Remove this downranking, it was introduced to prevent
+  #        Semigroups from breaking ahead of the 4.10 release
+  -SUM_FLAGS,
+    function( R, M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return NewMatrix( DefaultMatrixRepForBaseDomain( R ),
+                      R, NrCols( M ), Unpack( M ) );
+    end );
+# TODO: can we do better? encourage MatrixObj implementors to overload this?
 
 #
 #
@@ -223,12 +305,16 @@ InstallMethod( Matrix,
 InstallMethod( Matrix,
   [IsList],
   function( list )
-    local rep, basedomain;
-    if Length(list) = 0 then Error("list must be not empty"); fi;
-    if Length(list[1]) = 0 then Error("list[1] must be not empty, please specify base domain explicitly"); fi;
-    basedomain := DefaultScalarDomainOfMatrixList([list]);
-    rep := DefaultMatrixRepForBaseDomain(basedomain);
-    return NewMatrix( rep, basedomain, Length(list[1]), list );
+    local rep, R;
+    if Length( list ) = 0 then
+      Error( "<list> must be not empty" );
+    elif Length( list[1] ) = 0 then
+      Error( "<list>[1] must be not empty, ",
+             "please specify base domain explicitly" );
+    fi;
+    R:= DefaultScalarDomainOfMatrixList( [ list ] );
+    rep := DefaultMatrixRepForBaseDomain( R );
+    return NewMatrix( rep, R , Length( list[1] ), list );
   end );
 
 #
@@ -254,7 +340,10 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
 
 InstallMethod( Matrix,
   [IsMatrixObj, IsMatrixObj],
-  function( mat, example )
+    function( mat, example )
+    if IsPlistRep( mat ) then
+      TryNextMethod();
+    fi;
     # TODO: can we avoid using Unpack? resp. make this more efficient
     # perhaps adjust NewMatrix to take an IsMatrixObj?
     return NewMatrix( ConstructingFilter(example), BaseDomain(example), NrCols(mat), Unpack(mat) );
@@ -304,7 +393,8 @@ InstallMethod( IdentityMatrix,
     return NewMatrix( rep, basedomain, dim, IdentityMat( dim, basedomain ) );
   end );
 
-InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
+InstallMethod( CompanionMatrix,
+    "for a polynomial and a matrix",
   [ IsUnivariatePolynomial, IsMatrixObj ],
   function( po, m )
     local l, n, q, ll, i, one;
@@ -312,10 +402,10 @@ InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
     if not IsOne(l[n+1]) then
-        Error("CompanionMatrix: polynomial is not monic");
-        return fail;
+        Error("CompanionMatrix: polynomial <po> is not monic");
     fi;
     l := Vector(-l{[1..n]},CompatibleVector(m));
+#T not good for a default: a compatible vector need not exist
     ll := 0*[1..n];
     ll[n] := l;
     for i in [1..n-1] do
@@ -324,6 +414,30 @@ InstallMethod( CompanionMatrix, "for a polynomial and a matrix",
     od;
     return Matrix(ll,n,m);
   end );
+
+InstallMethod( CompanionMatrix,
+    "for a filter, a polynomial, and a semiring",
+    [ IsOperation, IsUnivariatePolynomial, IsSemiring ],
+    function( filt, pol, R )
+    local l, n, one, mat, i;
+
+    l:= CoefficientsOfUnivariatePolynomial( pol );
+    n:= Length( l )-1;
+    if not IsOne( l[ n+1 ] ) then
+      Error( "CompanionMatrix: polynomial <pol> is not monic" );
+    fi;
+    one:= One( R );
+    mat:= NewZeroMatrix( filt, R, n, n );
+    for i in [ 1 .. n-1 ] do
+      mat[ i, i+1 ]:= one;
+    od;
+    for i in [ 1 .. n ] do
+      mat[ n, i ]:= - l[i];
+    od;
+
+    return mat;
+    end );
+
 
 InstallMethod( KroneckerProduct, "for two matrices",
   [ IsMatrixObj, IsMatrixObj ],
@@ -380,87 +494,72 @@ InstallGlobalFunction( ConcatenationOfVectors,
   end );
 
 InstallGlobalFunction( MakeVector,
-  function( arg )
-    local bd,l,ty;
-    if Length(arg) = 1 then
-        l := arg[1];
-        bd := DefaultField(l);
-    elif Length(arg) <> 2 then
-        Error("usage: MakeVector( <list> [,<basedomain>] )");
-        return fail;
-    else
-        l := arg[1];
-        bd := arg[2];
-    fi;
-    if IsFinite(bd) and IsField(bd) and Size(bd) = 2 then
-        ty := IsGF2VectorRep;
-    elif IsFinite(bd) and IsField(bd) and Size(bd) <= 256 then
-        ty := Is8BitVectorRep;
-    else
-        ty := IsPlistVectorRep;
-    fi;
-    return NewVector(ty,bd,l);
-  end );
+    function( list, R... )
+    local filt;
 
-InstallMethod( ExtractSubVector, "generic method",
-  [ IsVectorObj, IsList ],
-  function( v, l )
-    return v{l};
-  end );
-
-InstallOtherMethod( ScalarProduct, "generic method",
-  [ IsVectorObj, IsVectorObj ],
-  function( v, w )
-    local i,s;
-    if Length(v) <> Length(w) then
-        Error("vectors must have equal length");
-        return fail;
+    if Length( R ) = 0 then
+      R:= DefaultField( list );
+    elif Length( R ) <> 1 then
+      Error( "usage: MakeVector( <list>[, <basedomain>] )" );
+      return fail;
+    else
+      R:= R[1];
     fi;
-    s:= ZeroOfBaseDomain( v );
-    for i in [1..Length(v)] do
-        s := s + v[i]*w[i];
+
+    if IsFinite( R ) and IsField( R ) and Size( R ) = 2 then
+      filt:= IsGF2VectorRep;
+    elif IsFinite( R ) and IsField( R ) and Size( R ) <= 256 then
+      filt:= Is8BitVectorRep;
+    else
+      filt:= IsPlistVectorRep;
+    fi;
+
+    return NewVector( filt, R, list );
+    end );
+
+InstallMethod( TraceMat,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    function( M )
+    local s, i;
+
+    if NumberRows( M ) <> NumberColumns( M ) then
+      Error( "matrix <M> must be square" );
+    fi;
+    s:= ZeroOfBaseDomain( M );
+    for i in [ 1 .. NumberRows( M ) ] do
+      s:= s + M[ i, i ];
     od;
+
     return s;
   end );
 
-InstallMethod( TraceMat, "generic method",
-  [ IsMatrixObj ],
-  function( m )
-    local i,s;
-    if NumberRows(m) <> NumberColumns(m) then
-        Error("matrix must be square");
-        return fail;
-    fi;
-    s := ZeroOfBaseDomain( m );
-    for i in [1..NumberRows(m)] do
-        s := s + m[ i, i ];
+InstallMethod( PositionNonZero,
+    "generic method for a vector object",
+    [ IsVectorObj ],
+    function( v )
+    local i;
+
+    for i in [ 1 .. Length( v ) ] do
+      if not IsZero( v[i] ) then
+        return i;
+      fi;
     od;
-    return s;
-  end );
+    return i+1;
+    end );
 
-InstallMethod(PositionNonZero,
-  "generic method for a row vector",
-  [IsRowVector],
-  function(vec)
-  local i;
-  for i in [1..Length(vec)] do
-    if not IsZero(vec[i]) then return i; fi;
-  od;
-  return i+1;
-end);
-#T superfluous?
+InstallMethod( PositionLastNonZero,
+    "generic method for a vector object",
+    [ IsVectorObj ],
+    function( v )
+    local i;
 
-
-InstallMethod(PositionNonZero,
-  "generic method for a vector object",
-  [ IsVectorObj ],
-  function(vec)
-  local i;
-  for i in [1..Length(vec)] do
-    if not IsZero(vec[i]) then return i; fi;
-  od;
-  return i+1;
-end);
+    i:= Length( v );
+    while i > 0 and IsZero( v[i] ) do
+      i:= i-1;
+    od;
+    return i;
+    end );
 
 InstallMethod( ListOp,
   "generic method for a vector object",
@@ -475,6 +574,7 @@ InstallMethod( ListOp,
   od;
   return result;
 end );
+#T delegation question -- use {}? or Unpack?
 
 InstallMethod( ListOp,
   "generic method for a vector object and a function",
@@ -500,15 +600,30 @@ InstallMethod( Unpack,
 InstallMethod( \{\},
   "generic method for a vector object and a list",
   [ IsVectorObj, IsList ],
-  function(vec,poss)
-    local vec_list;
-    vec_list := ListOp(vec);
-    vec_list := vec_list{poss};
-    return Vector(vec_list,vec);
-end );
+    function( v, poss )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return Vector( Unpack( v ){ poss }, v );
+    end );
+
+InstallMethod( ExtractSubVector,
+    "generic method for a vector object and a list",
+    [ IsVectorObj, IsList ],
+    { v, l } -> v{ l } );
+
+InstallMethod( ExtractSubMatrix,
+    "generic method for a matrix object and two lists",
+    [ IsMatrixObj, IsList, IsList ],
+    function( M, rowpos, colpos )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M ){ rowpos }{ colpos }, M );
+    end );
 
 InstallMethod( CopySubVector,
-  "generic method for vectors",
+    "generic method for vector objects",
   [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList ],
   function(dst, dcols, src, scols)
     local i;
@@ -521,14 +636,28 @@ InstallMethod( CopySubVector,
     od;
 end );
 
-## Backwards compatible version
-InstallMethod( CopySubVector,
-  "generic method for vectors",
-  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
-  function(src, dst, scols, dcols)
-    CopySubVector(dst,dcols,src,scols);
-end );
 
+#############################################################################
+##
+#M  ChangedBaseDomain( <v>, <R> )
+#M  ChangedBaseDomain( <M>, <R> )
+##
+InstallMethod( ChangedBaseDomain,
+    "for a vector object and a semiring",
+    [ IsVectorObj, IsSemiring ],
+    { v, R } -> Vector( R, v ) );
+
+InstallMethod( ChangedBaseDomain,
+    "for a matrix object and a semiring",
+    [ IsMatrixObj, IsSemiring ],
+    { M, R } -> Matrix( R, M ) );
+
+
+############################################################################
+##
+#M  Randomize( [Rs, ]v )
+#M  Randomize( [Rs, ]M )
+##
 InstallMethodWithRandomSource( Randomize,
   "for a random source and a vector object",
   [ IsRandomSource, IsVectorObj and IsMutable ],
@@ -555,91 +684,406 @@ InstallMethodWithRandomSource( Randomize,
     return mat;
 end );
 
-############################################################################
-# Arithmetical operations:
-############################################################################
-InstallMethod( MultVectorLeft,
-  "generic method for a mutable vector, and an object",
-  [ IsVectorObj and IsMutable, IsObject ],
-  function( v, s )
-    local i;
-    for i in [1 .. Length(v)] do
-      v[i] := s * v[i];
-    od;
-  end );
 
-InstallMethod( MultVectorRight,
-  "generic method for a mutable vector, and an object",
-  [ IsVectorObj and IsMutable, IsObject ],
-  function( v, s )
-    local i;
-    for i in [1 .. Length(v)] do
-      v[i] := v[i] * s;
-    od;
-  end );
-
-InstallMethod( MultVectorLeft,
-  "generic method for a mutable vector, an object, an int, \
-and an int",
-  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
-  function( v, s, from, to )
-    local i;
-    for i in [from .. to] do
-      v[i] := s * v[i];
-    od;
-  end );
-
-InstallMethod( MultVectorRight,
-  "generic method for a mutable vector, an object, an int, \
-and an int",
-  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
-  function( v, s, from, to )
-    local i;
-    for i in [from .. to] do
-      v[i] := v[i] * s;
-    od;
-  end );
-
-
-############################################################################
+#############################################################################
 ##
-#M  \^( <vecobj>, <matobj> )
+##  Arithmetical operations for vector objects
 ##
-InstallMethod( \^,
-    [ IsVectorObj, IsMatrixObj ],
+
+
+#############################################################################
+##
+#M  <v1> + <v2>
+#M  <v1> - <v2>
+#M  <s> * <v>
+#M  <v> * <s>
+#M  <v1> * <v2>
+#M  <v> / <s>
+##
+##  <#GAPDoc Label="VectorObj_BinaryArithmetics">
+##  <ManSection>
+##  <Heading>Binary Arithmetical Operations for Vector Objects</Heading>
+##  <Meth Name="\+" Arg="v1, v2" Label="for two vector objects"/>
+##  <Meth Name="\-" Arg="v1, v2" Label="for two vector objects"/>
+##  <Meth Name="\*" Arg="s, v" Label="for scalar and vector object"/>
+##  <Meth Name="\*" Arg="v, s" Label="for vector object and scalar"/>
+##  <Meth Name="\*" Arg="v1, v2" Label="for two vector objects"/>
+##  <Meth Name="ScalarProduct" Arg="v1, v2" Label="for two vector objects"/>
+##  <Meth Name="\/" Arg="v, s" Label="for vector object and scalar"/>
+##
+##  <Description>
+##  The sum and the difference, respectively,
+##  of two vector objects <A>v1</A> and <A>v2</A>
+##  is a new mutable vector object whose entries are the sums and the
+##  differences of the entries of the arguments.
+##  <P/>
+##  The product of a scalar <A>s</A> and a vector object <A>v</A> (from the
+##  left or from the right) is a new mutable vector object whose entries
+##  are the corresponding products.
+##  <P/>
+##  The quotient of a vector object <A>v</A> and a scalar <A>s</A>
+##  is a new mutable vector object whose entries are the corresponding
+##  quotients.
+##  <P/>
+##  The product of two vector objects <A>v1</A> and <A>v2</A> as well as the
+##  result of <Ref Oper="ScalarProduct" Label="for two vector objects"/> is
+##  the standard scalar product of the two arguments
+##  (an element of the base domain of the vector objects).
+##  <P/>
+##  All this is defined only if the vector objects have the same length and
+##  are defined over the same base domain and have the same representation,
+##  and if the products with the given scalar belong to the base domain;
+##  otherwise it is not specified what happens.
+##  If the result is a vector object then it has the same representation and
+##  the same base domain as the given vector object(s).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+InstallMethod( \+,
+    "for two vector objects",
+    [ IsVectorObj, IsVectorObj ],
+    function( v1, v2 )
+    if IsPlistRep( v1 ) then
+      TryNextMethod();
+    fi;
+    return Vector( Unpack( v1 ) + Unpack( v2 ), v1 );
+    end );
+
+InstallMethod( \-,
+    "for two vector objects",
+    [ IsVectorObj, IsVectorObj ],
+    function( v1, v2 )
+    if IsPlistRep( v1 ) then
+      TryNextMethod();
+    fi;
+    return Vector( Unpack( v1 ) - Unpack( v2 ), v1 );
+    end );
+
+InstallMethod( \*,
+    "for two vector objects (standard scalar product)",
+    [ IsVectorObj, IsVectorObj ],
+    { v1, v2 } -> Sum( [ 1 .. Length( v1 ) ],
+                       i -> v1[i] * v2[i],
+                       ZeroOfBaseDomain( v1 ) ) );
+
+InstallMethod( \*,
+    "for vector object and scalar",
+    [ IsVectorObj, IsScalar ],
+    function( v, s )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return Vector( Unpack( v ) * s, v );
+    end );
+
+InstallMethod( \*,
+    "for scalar and vector object",
+    [ IsScalar, IsVectorObj ],
+    function( s, v )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return Vector( s * Unpack( v ), v );
+    end );
+
+InstallMethod( \/,
+    "for vector object and scalar",
+    [ IsVectorObj, IsScalar ],
+    function( v, s )
+    if IsPlistRep( v ) then
+      TryNextMethod();
+    fi;
+    return Vector( Unpack( v ) / s, v );
+    end );
+
+InstallOtherMethod( ScalarProduct,
+    "for two vector objects",
+    [ IsVectorObj, IsVectorObj ],
     \* );
 
 
-#
-# Compatibility code: Install MatrixObj methods for IsMatrix.
-#
+#############################################################################
+##
+#M  AddVector( <dst>, <src>[, <mul>[, <from>, <to>]] )
+#M  AddVector( <dst>, <mul>, <src>[, <from>, <to>] )
+##
+InstallMethod( AddVector,
+    "for two vector objects",
+    [ IsVectorObj and IsMutable, IsVectorObj ],
+    function( dst, src )
+    local i;
+
+    for i in [ 1 .. Length( dst ) ] do
+      dst[i]:= dst[i] + src[i];
+    od;
+    end );
+
+InstallMethod( AddVector,
+    "for two vector objects and an object",
+    [ IsVectorObj and IsMutable, IsVectorObj, IsObject ],
+    function( dst, src, c )
+    local i;
+
+    for i in [ 1 .. Length( dst ) ] do
+      dst[i]:= dst[i] + src[i] * c;
+    od;
+    end );
+
+InstallMethod( AddVector,
+    "for a vector object, an object, a vector object",
+    [ IsVectorObj and IsMutable, IsObject, IsVectorObj ],
+    function( dst, c, src )
+    local i;
+
+    for i in [ 1 .. Length( dst ) ] do
+      dst[i]:= dst[i] + c * src[i];
+    od;
+    end );
+
+InstallMethod( AddVector,
+    "for two vector objects, an object, two pos. integers",
+    [ IsVectorObj and IsMutable, IsVectorObj, IsObject, IsPosInt, IsPosInt ],
+    function( dst, src, c, from, to )
+    local i;
+
+    for i in [ from .. to ] do
+      dst[i]:= dst[i] + src[i] * c;
+    od;
+    end );
+
+InstallMethod( AddVector,
+    "for a vector object, an object, a vector object, two pos. integers",
+    [ IsVectorObj and IsMutable, IsObject, IsVectorObj, IsPosInt, IsPosInt ],
+    function( dst, c, src, from, to )
+    local i;
+
+    for i in [ from .. to ] do
+      dst[i]:= dst[i] + c * src[i];
+    od;
+    end );
+
+
+#############################################################################
+##
+#M  MultVectorLeft( <vec>, <mul>[, <from>, <to>] )
+#M  MultVectorRight( <vec>, <mul>[, <from>, <to>] )
+##
+##  Note that 'MultVector' is declared as a synonym for 'MultVectorLeft' in
+##  'lib/listcoef.gd'.
+##
+InstallMethod( MultVectorLeft,
+  "generic method for a mutable vector object, and an object",
+  [ IsVectorObj and IsMutable, IsObject ],
+  function( v, s )
+    local i;
+    for i in [1 .. Length(v)] do
+      v[i] := s * v[i];
+    od;
+  end );
+
+InstallMethod( MultVectorRight,
+  "generic method for a mutable vector object, and an object",
+  [ IsVectorObj and IsMutable, IsObject ],
+  function( v, s )
+    local i;
+    for i in [1 .. Length(v)] do
+      v[i] := v[i] * s;
+    od;
+  end );
+
+InstallMethod( MultVectorLeft,
+  "generic method for a mutable vector object, an object, an int, and an int",
+  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
+  function( v, s, from, to )
+    local i;
+    for i in [from .. to] do
+      v[i] := s * v[i];
+    od;
+  end );
+
+InstallMethod( MultVectorRight,
+  "generic method for a mutable vector object, an object, an int, and an int",
+  [ IsVectorObj and IsMutable, IsObject, IsInt, IsInt ],
+  function( v, s, from, to )
+    local i;
+    for i in [from .. to] do
+      v[i] := v[i] * s;
+    od;
+  end );
+
+
+#############################################################################
+##
+##  Arithmetical operations for matrix objects
+##
+
+
+#############################################################################
+##
+#M  <M1> + <M2>
+#M  <M1> - <M2>
+#M  <s> * <M>
+#M  <M> * <s>
+#M  <M1> * <M2>
+#M  <M> / <s>
+#M  <M> ^ <n>
+##
+##  <#GAPDoc Label="MatrixObj_BinaryArithmetics">
+##  <ManSection>
+##  <Heading>Binary Arithmetical Operations for Matrix Objects</Heading>
+##  <Meth Name="\+" Arg="M1, M2" Label="for two matrix objects"/>
+##  <Meth Name="\-" Arg="M1, M2" Label="for two matrix objects"/>
+##  <Meth Name="\*" Arg="s, M" Label="for scalar and matrix object"/>
+##  <Meth Name="\*" Arg="M, s" Label="for Matrix object and scalar"/>
+##  <Meth Name="\*" Arg="M1, M2" Label="for two matrix objects"/>
+##  <Meth Name="\/" Arg="M, s" Label="for matrix object and scalar"/>
+##  <Meth Name="\^" Arg="M, n" Label="for matrix object and integer"/>
+##
+##  <Description>
+##  The sum and the difference, respectively,
+##  of two matrix objects <A>M1</A> and <A>M2</A>
+##  is a new fully mutable matrix object whose entries are the sums and the
+##  differences of the entries of the arguments.
+##  <P/>
+##  The product of a scalar <A>s</A> and a matrix object <A>M</A> (from the
+##  left or from the right) is a new fully mutable matrix object whose entries
+##  are the corresponding products.
+##  <P/>
+##  The product of two matrix objects <A>M1</A> and <A>M2</A> is a new fully
+##  mutable matrix object; if both <A>M1</A> and <A>M2</A> are in the filter
+##  <Ref Filt="IsOrdinaryMatrix"/> then the entries of the result are those
+##  of the ordinary matrix product.
+##  <P/>
+##  The quotient of a matrix object <A>M</A> and a scalar <A>s</A>
+##  is a new fully mutable matrix object whose entries are the corresponding
+##  quotients.
+##  <P/>
+##  For a nonempty square matrix object <A>M</A> over an associative
+##  base domain, and a positive integer <A>n</A>,
+##  <A>M</A><C>^</C><A>n</A> is a fully mutable matrix object whose entries
+##  are those of the <A>n</A>-th power of <A>M</A>.
+##  If <A>n</A> is zero then <A>M</A><C>^</C><A>n</A> is an identity matrix,
+##  and if <A>n</A> is a negative integer and <A>M</A> is invertible then
+##  <A>M</A><C>^</C><A>n</A> is the <C>-</C><A>n</A>-th power of the
+##  inverse of <A>M</A>.
+##  <P/>
+##  All this is defined only if the matrix objects have the same dimensions and
+##  are defined over the same base domain and have the same representation,
+##  and if the products with the given scalar belong to the base domain;
+##  otherwise it is not specified what happens.
+##  If the result is a matrix object then it has the same representation and
+##  the same base domain as the given matrix object(s).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+InstallMethod( \+,
+    "for two matrix objects",
+    [ IsMatrixObj, IsMatrixObj ],
+    function( M1, M2 )
+    if IsPlistRep( M1 ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M1 ) + Unpack( M2 ), M1 );
+    end );
+
+InstallMethod( \-,
+    "for two matrix objects",
+    [ IsMatrixObj, IsMatrixObj ],
+    function( M1, M2 )
+    if IsPlistRep( M1 ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M1 ) - Unpack( M2 ), M1 );
+    end );
+
+InstallMethod( \*,
+    "for two ordinary matrix objects (ordinary matrix product)",
+    [ IsMatrixObj and IsOrdinaryMatrix, IsMatrixObj and IsOrdinaryMatrix ],
+    function( M1, M2 )
+    if IsPlistRep( M1 ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M1 ) * Unpack( M2 ), M1 );
+    end );
+
+InstallMethod( \*,
+    "for matrix object and scalar",
+    [ IsMatrixObj, IsScalar ],
+    function( M, s )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M ) * s, M );
+    end );
+
+InstallMethod( \*,
+    "for scalar and matrix object",
+    [ IsScalar, IsMatrixObj ],
+    function( s, M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Matrix( s * Unpack( M ), M );
+    end );
+
+InstallMethod( \/,
+    "for matrix object and scalar",
+    [ IsMatrixObj, IsScalar ],
+    function( M, s )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M ) / s, M );
+    end );
+
+#T no default methods should be needed for M^n, n an integer!
 
 
 ############################################################################
 ##
-#M  RowsOfMatrix( <matobj> )
+#M  \*( <vecobj>, <matobj> )
+#M  \*( <matobj>, <vecobj> )
+#M  \^( <vecobj>, <matobj> )
 ##
-InstallMethod( RowsOfMatrix,
-    [ IsMatrix ],
-    Immutable );
-
-
-InstallOtherMethod( NumberRows, "for a matrix",
-  [ IsMatrix ], Length);
-InstallOtherMethod( NumberColumns, "for a matrix",
-  [ IsMatrix ],
-  function(m)
-    if Length(m) = 0 then
-      return 0;
+##  One of &GAP;'s strategies to study (small) matrix groups is
+##  to compute a faithful permutation representations of the action on
+##  orbits of row vectors, via right multiplication,
+##  see <Ref Sect="Nice Monomorphisms"/>.
+##  The code in question uses <Ref Func="OnPoints"/> as the default action,
+##  which means that the operation <Ref Oper="\^"/> gets called.
+##  Therefore, we declare this operation for the case that the two arguments
+##  are in <Ref Cat="IsVectorObj"/> and <Ref Cat="IsMatrixObj"/>,
+##  and install the multiplication as a method for this situation;
+##  thus one need not install individual <Ref Oper="\^"/> methods
+##  in special cases.
+##  <P/>
+##  For other code dealing with the multiplication of vectors and matrices,
+##  it is recommended to use the multiplication <Ref Oper="\*"/> directly.
+##
+InstallMethod( \*,
+    [ IsVectorObj, IsMatrixObj ],
+    function( v, M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
     fi;
-    return Length(m[1]);
-  end );
+    return Vector( Unpack( v ) * Unpack( M ), v );
+    end );
 
-#
-# Compatibility code: Generic methods for IsMatrixObj
-#
-InstallOtherMethod( DimensionsMat, "for a matrix in IsMatrixObj",
-  [ IsMatrixObj ], m -> [ NumberRows( m ), NumberColumns( m ) ] );
+InstallMethod( \*,
+    [ IsMatrixObj, IsVectorObj ],
+    function( M, v )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Vector( Unpack( M ) * Unpack( v ), v );
+    end );
+
+InstallOtherMethod( \^,
+    [ IsVectorObj, IsMatrixObj ],
+    \* );
+
 
 ############################################################################
 ##
@@ -651,12 +1095,500 @@ InstallMethod( IsEmptyMatrix,
 );
 
 
-#
-# Compatibility code: old variants of arguments (to become obsolete)
-#
+#############################################################################
+##
+#M  ShallowCopy( <vec> )
+##
+InstallMethod( ShallowCopy,
+    [ IsVectorObj ],
+    v -> Vector( Unpack( v ), v ) );
+
+
+#############################################################################
+##
+#M  MutableCopyMatrix( <M> )
+##
+InstallMethod( MutableCopyMatrix,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Matrix( Unpack( M ), M );
+    end );
+
+
+#############################################################################
+##
+#M  CopySubMatrix( <src>, <dst>, <srcrows>, <dstrows>, <srccols>, <dstcols> )
+##
+InstallMethod( CopySubMatrix,
+    [ IsMatrixObj and IsMutable, IsMatrixObj, IsList, IsList, IsList, IsList ],
+    function( src, dst, srcrows, dstrows, srccols, dstcols )
+    local i, j;
+
+    for i in [ 1 .. Length( srcrows ) ] do
+      for j in [ 1 .. Length( srccols ) ] do
+        dst[ dstrows[i], dstcols[j] ]:= src[ srcrows[i], srccols[j] ];
+      od;
+    od;
+    end );
+
+
+#############################################################################
+##
+#M  AdditiveInverseImmutable( <v> )
+#M  AdditiveInverseMutable( <v> )
+#M  AdditiveInverseSameMutability( <v> )
+#M  ZeroImmutable( <v> )
+#M  ZeroMutable( <v> )
+#M  ZeroSameMutability( <v> )
+#M  IsZero( <v> )
+#M  Characteristic( <v> )
+##
+##  <#GAPDoc Label="VectorObj_UnaryArithmetics">
+##  <ManSection>
+##  <Heading>Unary Arithmetical Operations for Vector Objects</Heading>
+##  <Attr Name="AdditiveInverseImmutable" Arg="v"
+##   Label="for vector object"/>
+##  <Oper Name="AdditiveInverseMutable" Arg="v"
+##   Label="for vector object"/>
+##  <Oper Name="AdditiveInverseSameMutability" Arg="v"
+##   Label="for vector object"/>
+##  <Attr Name="ZeroImmutable" Arg="v" Label="for vector object"/>
+##  <Oper Name="ZeroMutable" Arg="v" Label="for vector object"/>
+##  <Oper Name="ZeroSameMutability" Arg="v" Label="for vector object"/>
+##  <Prop Name="IsZero" Arg="v" Label="for vector object"/>
+##  <Attr Name="Characteristic" Arg="v" Label="for vector object"/>
+##
+##  <Returns>a vector object</Returns>
+##  <Description>
+##  For a vector object <A>v</A>,
+##  the operations for computing the additive inverse with prescribed
+##  mutability return a vector object with the same
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
+##  such that the sum with <A>v</A> is a zero vector.
+##  It is not specified what happens if the base domain does not admit
+##  the additive inverses of the entries.
+##  <P/>
+##  Analogously, the operations for computing a zero vector with
+##  prescribed mutability return a vector object compatible with <A>v</A>.
+##  <P/>
+##  <Ref Prop="IsZero" Label="for vector object"/> returns <K>true</K> if
+##  all entries in <A>v</A> are zero, and <K>false</K> otherwise.
+##  <P/>
+##  <Ref Attr="Characteristic" Label="for vector object"/> returns
+##  the corresponding value of the
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> value of <A>v</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+# InstallMethod( AdditiveInverseImmutable,
+#     [ IsVectorObj ],
+#     v -> MakeImmutable(
+#              Vector( AdditiveInverseImmutable( Unpack( v ) ), v ) ) );
+#T should be superfluous
+
+InstallMethod( AdditiveInverseMutable,
+    [ IsVectorObj ],
+    v -> Vector( AdditiveInverseMutable( Unpack( v ) ), v ) );
+
+InstallMethod( AdditiveInverseSameMutability,
+    [ IsVectorObj ],
+    function( v )
+    if IsMutable( v ) then
+      return AdditiveInverseMutable( v );
+    else
+      return AdditiveInverseImmutable( v );
+    fi;
+    end );
+
+# InstallMethod( ZeroImmutable,
+#     [ IsVectorObj ],
+#     v -> MakeImmutable( Vector( ZeroImmutable( Unpack( v ) ), v ) ) );
+#T should be superfluous
+
+InstallMethod( ZeroMutable,
+    [ IsVectorObj ],
+    v -> Vector( ZeroMutable( Unpack( v ) ), v ) );
+
+InstallMethod( ZeroSameMutability,
+    [ IsVectorObj ],
+    function( v )
+    if IsMutable( v ) then
+      return ZeroMutable( v );
+    else
+      return ZeroImmutable( v );
+    fi;
+    end );
+
+InstallMethod( IsZero,
+    [ IsVectorObj ],
+    v -> IsZero( Unpack( v ) ) );
+
+InstallMethod( Characteristic,
+    [ IsVectorObj ],
+    v -> Characteristic( BaseDomain( v ) ) );
+
+
+#############################################################################
+##
+#M  AdditiveInverseImmutable( <M> )
+#M  AdditiveInverseMutable( <M> )
+#M  AdditiveInverseSameMutability( <M> )
+#M  ZeroImmutable( <M> )
+#M  ZeroMutable( <M> )
+#M  ZeroSameMutability( <M> )
+#M  IsZero( <M> )
+#M  Characteristic( <M> )
+##
+##  <#GAPDoc Label="MatrixObj_UnaryArithmetics">
+##  <ManSection>
+##  <Heading>Unary Arithmetical Operations for Matrix Objects</Heading>
+##  <Attr Name="AdditiveInverseImmutable" Arg="M"
+##   Label="for matrix object"/>
+##  <Oper Name="AdditiveInverseMutable" Arg="M"
+##   Label="for matrix object"/>
+##  <Oper Name="AdditiveInverseSameMutability" Arg="M"
+##   Label="for matrix object"/>
+##  <Attr Name="ZeroImmutable" Arg="M" Label="for matrix object"/>
+##  <Oper Name="ZeroMutable" Arg="M" Label="for matrix object"/>
+##  <Oper Name="ZeroSameMutability" Arg="M" Label="for matrix object"/>
+##  <Attr Name="OneImmutable" Arg="M" Label="for matrix object"/>
+##  <Oper Name="OneMutable" Arg="M" Label="for matrix object"/>
+##  <Oper Name="OneSameMutability" Arg="M" Label="for matrix object"/>
+##  <Attr Name="InverseImmutable" Arg="M" Label="for matrix object"/>
+##  <Oper Name="InverseMutable" Arg="M" Label="for matrix object"/>
+##  <Oper Name="InverseSameMutability" Arg="M" Label="for matrix object"/>
+##  <Prop Name="IsZero" Arg="M" Label="for matrix object"/>
+##  <Prop Name="IsOne" Arg="M" Label="for matrix object"/>
+##  <Attr Name="Characteristic" Arg="M" Label="for matrix object"/>
+##
+##  <Returns>a matrix object</Returns>
+##  <Description>
+##  For a vector object <A>M</A>,
+##  the operations for computing the additive inverse with prescribed
+##  mutability return a matrix object with the same
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values,
+##  such that the sum with <A>M</A> is a zero matrix.
+##  It is not specified what happens if the base domain does not admit
+##  the additive inverses of the entries.
+##  <P/>
+##  Analogously, the operations for computing a zero matrix with
+##  prescribed mutability return a matrix object compatible with <A>M</A>.
+##  <P/>
+##  The operations for computing an identity matrix with
+##  prescribed mutability return a matrix object compatible with <A>M</A>,
+##  provided that the base domain admits this and <A>M</A> is square and
+##  nonempty.
+##  <P/>
+##  Analogously, the operations for computing an inverse matrix with
+##  prescribed mutability return a matrix object compatible with <A>M</A>,
+##  provided that <A>M</A> is invertible.
+##  <!-- over its base domain? -->
+##  (If <A>M</A> is not invertible the the operations return <K>fail</K>.)
+##  <P/>
+##  <Ref Prop="IsZero" Label="for matrix object"/> returns <K>true</K> if
+##  all entries in <A>M</A> are zero, and <K>false</K> otherwise.
+##  <Ref Prop="IsOne" Label="for matrix object"/> returns <K>true</K> if
+##  <A>M</A> is nonempty and square and contains the identity of the
+##  base domain in the diagonal, and zero in all other places.
+##  <P/>
+##  <Ref Attr="Characteristic" Label="for matrix object"/> returns
+##  the corresponding value of the
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value of <A>M</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+InstallMethod( AdditiveInverseImmutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return MakeImmutable(
+                 Matrix( AdditiveInverseImmutable( Unpack( M ) ), M ) );
+    fi;
+    end );
+#T should be superfluous
+
+InstallMethod( AdditiveInverseMutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return Matrix( AdditiveInverseMutable( Unpack( M ) ), M );
+    fi;
+    end );
+
+InstallMethod( AdditiveInverseSameMutability,
+    [ IsMatrixObj ],
+    function( M )
+    if IsMutable( M ) then
+      return AdditiveInverseMutable( M );
+    else
+      return AdditiveInverseImmutable( M );
+    fi;
+    end );
+
+InstallMethod( ZeroImmutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return MakeImmutable( Matrix( ZeroImmutable( Unpack( M ) ), M ) );
+    fi;
+    end );
+#T should be superfluous
+
+InstallMethod( ZeroMutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return Matrix( ZeroMutable( Unpack( M ) ), M );
+    fi;
+    end );
+
+InstallMethod( ZeroSameMutability,
+    [ IsMatrixObj ],
+    function( M )
+    if IsMutable( M ) then
+      return ZeroMutable( M );
+    else
+      return ZeroImmutable( M );
+    fi;
+    end );
+
+InstallMethod( OneImmutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return MakeImmutable( Matrix( OneImmutable( Unpack( M ) ), M ) );
+    fi;
+    end );
+#T should be superfluous
+
+InstallMethod( OneMutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return Matrix( OneMutable( Unpack( M ) ), M );
+    fi;
+    end );
+
+InstallMethod( OneSameMutability,
+    [ IsMatrixObj ],
+    function( M )
+    if IsMutable( M ) then
+      return OneMutable( M );
+    else
+      return OneImmutable( M );
+    fi;
+    end );
+
+InstallMethod( InverseImmutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return MakeImmutable( Matrix( InverseImmutable( Unpack( M ) ), M ) );
+    fi;
+    end );
+#T should be superfluous
+
+InstallMethod( InverseMutable,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    else
+      return Matrix( InverseMutable( Unpack( M ) ), M );
+    fi;
+    end );
+
+InstallMethod( InverseSameMutability,
+    [ IsMatrixObj ],
+    function( M )
+    if IsMutable( M ) then
+      return InverseMutable( M );
+    else
+      return InverseImmutable( M );
+    fi;
+    end );
+
+InstallMethod( IsZero,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return IsZero( Unpack( M ) );
+    end );
+
+InstallMethod( IsOne,
+    [ IsMatrixObj ],
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return IsOne( Unpack( M ) );
+    end );
+
+InstallMethod( Characteristic,
+    [ IsMatrixObj ],
+    M -> Characteristic( BaseDomain( M ) ) );
+
+
+#############################################################################
+##
+#M  Display( <obj> )
+#M  ViewObj( <obj> )
+#M  PrintObj( <obj> )
+#M  DisplayString( <obj> )
+#M  ViewString( <obj> )
+#M  PrintString( <obj> )
+#M  String( <obj> )
+##
+##  According to the Section "View and Print" in the GAP Reference Manual,
+##  we need methods (only) for
+##  'String' (which then covers 'PrintString' and 'PrintObj'),
+##  'ViewString' (which then covers 'ViewObj'),
+##  and 'DisplayString' (which then covers 'Display').
+##
+##  By default, we *view* and *display* vector objects and matrix objects as
+##  '<vector object of length ... over ...>' and
+##  '<matrix object of dimensions ... over ...>', respectively,
+##  and to *print* them as 'NewVector( ... )' and 'NewMatrix( ... )',
+##  respectively.
+##  (Most likely, this will be overloaded for any type of such objects.)
+##
+BindGlobal( "ViewStringForVectorObj",
+    v -> Concatenation( "<vector object of length ", String( Length( v ) ),
+             " over ", String( BaseDomain( v ) ), ">" ) );
+
+InstallMethod( ViewString,
+    [ IsVectorObj ],
+    ViewStringForVectorObj );
+
+InstallMethod( DisplayString,
+    [ IsVectorObj ],
+    ViewStringForVectorObj );
+
+InstallMethod( String,
+    [ IsVectorObj ],
+    v -> Concatenation( "NewVector( ",
+             NameFunction( ConstructingFilter( v ) ), ", ",
+             String( BaseDomain( v ) ), ", ",
+             String( Unpack( v ) ), " )" ) );
+
+BindGlobal( "ViewStringForMatrixObj",
+    M -> Concatenation( "<matrix object of dimensions ",
+             String( NumberRows( M ) ), "x", String( NumberColumns( M ) ),
+             " over ", String( BaseDomain( M ) ), ">" ) );
+
+InstallMethod( ViewString,
+    [ IsMatrixObj ],
+    ViewStringForMatrixObj );
+
+InstallMethod( DisplayString,
+    [ IsMatrixObj ],
+    ViewStringForMatrixObj );
+
+InstallMethod( String,
+    [ IsMatrixObj ],
+    M -> Concatenation( "NewMatrix( ",
+             NameFunction( ConstructingFilter( M ) ), ", ",
+             String( BaseDomain( M ) ), ", ",
+             String( NumberColumns( M ) ), ", ",
+             String( Unpack( M ) ), " )" ) );
+
+
+############################################################################
+##
+#M  CompatibleVector( <M> )
+##
+InstallMethod( CompatibleVector,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    M -> NewZeroVector( CompatibleVectorFilter( M ), BaseDomain( M ),
+                        NumberRows( M ) ) );
+
+
+############################################################################
+##
+#M  RowsOfMatrix( <M> )
+##
+InstallMethod( RowsOfMatrix,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    function( M )
+    local R, f;
+
+    R:= BaseDomain( M );
+    f:= CompatibleVectorFilter( M );
+    return List( Unpack( M ), row -> Vector( f, R, row ) );
+    end );
+
+
+############################################################################
+##
+##  Backwards compatibility
+##
+##  We should remove the methods as soon as they are not used anymore.
+##
+
+InstallMethod( DimensionsMat,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    M -> [ NumberRows( M ), NumberColumns( M ) ] );
+
+InstallMethod( CopySubVector,
+    "generic method for vector objects",
+    [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
+    function( src, dst, scols, dcols )
+    CopySubVector( dst, dcols, src, scols );
+    end );
 
 InstallOtherMethod( Randomize,
-    "backwards compatibility: swap arguments",
+    "for random source as 2nd argument: switch arguments",
     [ IsObject and IsMutable, IsRandomSource ],
     { obj, rs } -> Randomize( rs, obj ) );
+
+InstallMethod( Length,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    NumberRows );
+
+# Install fallback methods for m[i,j] which delegate to ASS_LIST / ELM_LIST
+# for code using an intermediate version of the MatrixObj specification
+# (any package installing methods for MatElm resp. SetMatElm
+# should be fine without these). We lower the rank so that these are only
+# used as a last resort.
+InstallMethod( \[\,\], "for a matrix object and two positions",
+  [ IsMatrixObj, IsPosInt, IsPosInt ],
+  {} -> -RankFilter(IsMatrixObj),
+  function( m, row, col )
+    return ELM_LIST( m, row, col );
+  end );
+
+InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
+  [ IsMatrixObj and IsMutable, IsPosInt, IsPosInt, IsObject ],
+  {} -> -RankFilter(IsMatrixObj),
+  function( m, row, col, obj )
+    ASS_LIST( m, row, col, obj );
+  end );
+
 
