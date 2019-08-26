@@ -492,11 +492,11 @@ extern Obj RESET_FILTER_OBJ;
 
 /****************************************************************************
 **
-*F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
+*F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
 */
 Obj DoFilter(Obj self, Obj obj);
 
-Obj NewFilter(Obj name, Int narg, Obj nams, ObjFunc hdlr);
+Obj NewFilter(Obj name, Obj nams, ObjFunc hdlr);
 
 Obj DoTestAttribute(Obj self, Obj obj);
 
@@ -570,7 +570,7 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 */
 Obj DoAttribute(Obj self, Obj obj);
 
-Obj NewAttribute(Obj name, Int narg, Obj nams, ObjFunc hdlr);
+Obj NewAttribute(Obj name, Obj nams, ObjFunc hdlr);
 
 /****************************************************************************
 **
@@ -578,7 +578,7 @@ Obj NewAttribute(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 */
 Obj DoProperty(Obj self, Obj obj);
 
-Obj NewProperty(Obj name, Int narg, Obj nams, ObjFunc hdlr);
+Obj NewProperty(Obj name, Obj nams, ObjFunc hdlr);
 
 /****************************************************************************
 **

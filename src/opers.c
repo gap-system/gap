@@ -1027,7 +1027,7 @@ static Obj TesterAndFilter(Obj getter)
 
 /****************************************************************************
 **
-*F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
+*F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
 */
 static Obj DoSetFilter(Obj self, Obj obj, Obj val)
 {
@@ -1091,7 +1091,6 @@ Obj DoFilter (
 
 Obj NewFilter (
     Obj                 name,
-    Int                 narg,
     Obj                 nams,
     ObjFunc             hdlr )
 {
@@ -1285,7 +1284,7 @@ static Obj FuncNEW_FILTER(Obj self, Obj name)
     }
 
     /* make the new operation                                              */
-    return NewFilter( name, 1L, (Obj)0, (ObjFunc)0 );
+    return NewFilter(name, 0, 0);
 }
 
 
@@ -2581,7 +2580,7 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F  NewAttribute( <name>, <narg>, <nams>, <hdlr> )
+*F  NewAttribute( <name>, <nams>, <hdlr> )
 **
 ** MakeSetter, MakeTester and SetupAttribute are support functions
 */
@@ -2677,7 +2676,6 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
 
 Obj NewAttribute (
     Obj                 name,
-    Int                 narg,
     Obj                 nams,
     ObjFunc             hdlr )
 {
@@ -2903,11 +2901,10 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F  NewProperty( <name>, <narg>, <nams>, <hdlr> )
+*F  NewProperty( <name>, <nams>, <hdlr> )
 */
 Obj NewProperty (
     Obj                 name,
-    Int                 narg,
     Obj                 nams,
     ObjFunc             hdlr )
 {
@@ -3131,7 +3128,7 @@ static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name)
     }
 
     /* make the new operation                                              */
-    return NewAttribute( name, -1L, (Obj)0, DoAttribute );
+    return NewAttribute(name, 0, DoAttribute);
 }
 /****************************************************************************
 **
@@ -3178,7 +3175,7 @@ static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
     }
 
     /* make the new operation                                              */
-    return NewAttribute( name, -1L, (Obj)0, DoMutableAttribute );
+    return NewAttribute(name, 0, DoMutableAttribute);
 }
 
 
@@ -3194,7 +3191,7 @@ static Obj FuncNEW_PROPERTY(Obj self, Obj name)
     }
 
     /* make the new operation                                              */
-    return NewProperty( name, -1L, (Obj)0, DoProperty );
+    return NewProperty(name, 0, DoProperty);
 }
 
 

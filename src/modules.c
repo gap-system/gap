@@ -527,7 +527,7 @@ void InitGVarFiltsFromTable(const StructGVarFilt * tab)
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar(gvar, NewFilter(name, 1, args, tab[i].handler));
+        AssReadOnlyGVar(gvar, NewFilter(name, args, tab[i].handler));
     }
 }
 
@@ -544,7 +544,7 @@ void InitGVarAttrsFromTable(const StructGVarAttr * tab)
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar(gvar, NewAttribute(name, 1, args, tab[i].handler));
+        AssReadOnlyGVar(gvar, NewAttribute(name, args, tab[i].handler));
     }
 }
 
@@ -560,7 +560,7 @@ void InitGVarPropsFromTable(const StructGVarProp * tab)
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar(gvar, NewProperty(name, 1, args, tab[i].handler));
+        AssReadOnlyGVar(gvar, NewProperty(name, args, tab[i].handler));
     }
 }
 
