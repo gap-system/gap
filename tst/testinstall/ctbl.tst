@@ -44,6 +44,202 @@ CT1
 
 X.1     1
 
+# Display with unusual parameters
+gap> t:= CharacterTable( SymmetricGroup( 3 ) );;  Irr( t );;
+gap> Display( t, rec( centralizers:= false ) );
+CT2
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+X.1     1 -1  1
+X.2     2  . -1
+X.3     1  1  1
+gap> Display( t, rec( centralizers:= "ATLAS" ) );
+CT2
+
+        6  2  3
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+X.1     1 -1  1
+X.2     2  . -1
+X.3     1  1  1
+gap> Display( t, rec( chars:= 1 ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+X.1     1 -1  1
+gap> Display( t, rec( chars:= [ 2, 3 ] ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+X.2     2  . -1
+X.3     1  1  1
+gap> Display( t, rec( chars:= PermChars( t ) ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+Y.1     1  1  1
+Y.2     2  .  2
+Y.3     3  1  .
+Y.4     6  .  .
+gap> Display( t, rec( chars:= PermChars( t ), letter:= "P" ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+P.1     1  1  1
+P.2     2  .  2
+P.3     3  1  .
+P.4     6  .  .
+gap> Display( t, rec( classes:= 1 ) );
+CT2
+
+     2  1
+     3  1
+
+       1a
+    2P 1a
+    3P 1a
+
+X.1     1
+X.2     2
+X.3     1
+gap> Display( t, rec( classes:= [ 2, 3 ] ) );
+CT2
+
+     2  1  .
+     3  .  1
+
+       2a 3a
+    2P 1a 3a
+    3P 2a 1a
+
+X.1    -1  1
+X.2     . -1
+X.3     1  1
+gap> Display( t, rec( indicator:= true ) );
+CT2
+
+        2  1  1  .
+        3  1  .  1
+
+          1a 2a 3a
+       2P 1a 1a 3a
+       3P 1a 2a 1a
+       2
+X.1    +   1 -1  1
+X.2    +   2  . -1
+X.3    +   1  1  1
+gap> Display( t, rec( indicator:= [ 2, 3 ] ) );
+CT2
+
+          2  1  1  .
+          3  1  .  1
+
+            1a 2a 3a
+         2P 1a 1a 3a
+         3P 1a 2a 1a
+       2 3
+X.1    + 0   1 -1  1
+X.2    + 1   2  . -1
+X.3    + 1   1  1  1
+gap> Display( t, rec( powermap:= false ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+
+X.1     1 -1  1
+X.2     2  . -1
+X.3     1  1  1
+gap> Display( t, rec( powermap:= 2 ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+    2P 1a 1a 3a
+
+X.1     1 -1  1
+X.2     2  . -1
+X.3     1  1  1
+gap> Display( t, rec( powermap:= [ 2, 3 ] ) );
+CT2
+
+     2  1  1  .
+     3  1  .  1
+
+       1a 2a 3a
+    2P 1a 1a 3a
+    3P 1a 2a 1a
+
+X.1     1 -1  1
+X.2     2  . -1
+X.3     1  1  1
+gap> # Note that the 'ATLAS' option for power maps has the desired effect
+gap> # only if the function 'CambridgeMaps' is bound during the tests,
+gap> # which depends on the loaded packages; we omit this test.
+gap> # Display( t, rec( powermap:= "ATLAS" ) );
+gap> Display( t,
+>        rec( charnames:= List( CharacterParameters( t ), String ) ) );
+CT2
+
+                    2  1  1  .
+                    3  1  .  1
+
+                      1a 2a 3a
+                   2P 1a 1a 3a
+                   3P 1a 2a 1a
+
+[ 1, [ 1, 1, 1 ] ]     1 -1  1
+[ 1, [ 2, 1 ] ]        2  . -1
+[ 1, [ 3 ] ]           1  1  1
+gap> Display( t,
+>        rec( classnames:= List( ClassParameters( t ), String ) ) );
+CT2
+
+     2                  1                  1                  .
+     3                  1                  .                  1
+
+       [ 1, [ 1, 1, 1 ] ]    [ 1, [ 2, 1 ] ]       [ 1, [ 3 ] ]
+    2P [ 1, [ 1, 1, 1 ] ] [ 1, [ 1, 1, 1 ] ]       [ 1, [ 3 ] ]
+    3P [ 1, [ 1, 1, 1 ] ]    [ 1, [ 2, 1 ] ] [ 1, [ 1, 1, 1 ] ]
+
+X.1                     1                 -1                  1
+X.2                     2                  .                 -1
+X.3                     1                  1                  1
+
 # viewing and printing of character tables with stored groups
 gap> t:= CharacterTable( DihedralGroup( 8 ) );;
 gap> View( t ); Print( "\n" );
