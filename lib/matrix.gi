@@ -1176,9 +1176,7 @@ InstallMethod( BaseMatDestructive,
 InstallMethod( BaseMat,
     "generic method for matrices",
     [ IsMatrix ],
-    function ( mat )
-    return BaseMatDestructive( MutableCopyMat( mat ) );
-    end );
+    mat -> BaseMatDestructive( MutableCopyMatrix( mat ) ) );
 
 
 #############################################################################
@@ -1232,14 +1230,20 @@ end );
 #M  BaseDomain( <v> )
 #M  OneOfBaseDomain( <v> )
 #M  ZeroOfBaseDomain( <v> )
+#M  ConstructingFilter( <v> )
 #M  BaseDomain( <mat> )
 #M  OneOfBaseDomain( <mat> )
 #M  ZeroOfBaseDomain( <mat> )
+#M  RowsOfMatrix( <mat> )
+#M  NumberRows( <mat> ) 
+#M  NumberColumns( <mat> )
+#M  ConstructingFilter( <mat> )
 ##
-##  Note that a matrix that is a plain list is necessarily nonempty
-##  and dense, hence it is safe to access the first row.
-##  Since the rows are homogeneous and nonempty,
-##  one can also access the first entry in the first row.
+##  Note that a row vector or a matrix that is a plain list
+##  is necessarily nonempty and dense,
+##  hence it is safe to access the first entry.
+##  Since the rows of a matrix that is a plain list are homogeneous and
+##  nonempty, one can also access the first entry in the first row.
 ##
 InstallOtherMethod( BaseDomain,
     "generic method for a row vector",
@@ -1256,6 +1260,11 @@ InstallOtherMethod( ZeroOfBaseDomain,
     [ IsRowVector ],
     v -> Zero( v[1] ) );
 
+InstallOtherMethod( ConstructingFilter,
+    "generic method for a row vector",
+    [ IsRowVector ],
+    v -> IsPlistRep );
+
 InstallOtherMethod( BaseDomain,
     "generic method for a matrix that is a plain list",
     [ IsMatrix and IsPlistRep ],
@@ -1270,6 +1279,32 @@ InstallOtherMethod( ZeroOfBaseDomain,
     "generic method for a matrix that is a plain list",
     [ IsMatrix and IsPlistRep ],
     mat -> Zero( mat[1,1] ) );
+
+InstallMethod( RowsOfMatrix,
+    "generic method for a matrix that is a plain list",
+    [ IsMatrix and IsPlistRep ],
+    Immutable );
+
+InstallMethod( NumberRows,
+    "generic method for a (perhaps empty) matrix",
+    [ IsMatrix ],
+    Length );
+
+InstallMethod( NumberColumns,
+    "generic method for a (perhaps empty) matrix",
+    [ IsMatrix ],
+    function( mat )
+    if Length( mat ) = 0 then
+      return 0;
+    fi;
+    return Length( mat[1] );
+    end );
+
+InstallOtherMethod( ConstructingFilter,
+    "generic method for a matrix that is a plain list",
+    [ IsMatrix and IsPlistRep ],
+    M -> IsPlistRep );
+
 
 #############################################################################
 ##
@@ -1297,7 +1332,7 @@ end);
 InstallOtherMethod( SumIntersectionMat,
     [ IsEmpty, IsMatrix ],
 function(a,b)
-  b:=MutableCopyMat(b);
+  b:=MutableCopyMatrix(b);
   TriangulizeMat(b);
   b:=Filtered(b,i->not IsZero(i));
   return [b,a];
@@ -1306,7 +1341,7 @@ end);
 InstallOtherMethod( SumIntersectionMat,
     [ IsMatrix, IsEmpty ],
 function(a,b)
-  a:=MutableCopyMat(a);
+  a:=MutableCopyMatrix(a);
   TriangulizeMat(a);
   a:=Filtered(a,i->not IsZero(i));
   return [a,b];
@@ -1484,7 +1519,7 @@ InstallMethod( DeterminantMat,
     "for matrices",
     [ IsMatrix ],
     function( mat )
-    return DeterminantMatDestructive( MutableCopyMat( mat ) );
+    return DeterminantMatDestructive( MutableCopyMatrix( mat ) );
     end );
 
 InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
@@ -1886,7 +1921,7 @@ InstallMethod( ElementaryDivisorsMat,
     [ IsEuclideanRing,IsMatrix ],
 function ( ring,mat )
   # make a copy to avoid changing the original argument
-  mat := MutableCopyMat( mat );
+  mat := MutableCopyMatrix( mat );
   if IsIdenticalObj(ring,Integers) then
     DiagonalizeMat(Integers,mat);
     return DiagonalOfMat(mat);
@@ -1926,7 +1961,7 @@ InstallMethod( ElementaryDivisorsTransformationsMat,
     [ IsEuclideanRing,IsMatrix ],
 function ( ring,mat )
   # make a copy to avoid changing the original argument
-  mat := MutableCopyMat( mat );
+  mat := MutableCopyMatrix( mat );
   return ElementaryDivisorsTransformationsMatDestructive(ring,mat);
 end);
 
@@ -1944,9 +1979,9 @@ end);
 
 #############################################################################
 ##
-#M  MutableCopyMat( <mat> )
+#M  MutableCopyMatrix( <mat> )
 ##
-InstallMethod( MutableCopyMat, "generic method", [IsList],
+InstallOtherMethod( MutableCopyMatrix, "generic method", [ IsMatrix ],
   mat -> List( mat, ShallowCopy ) );
 
 
@@ -2099,7 +2134,7 @@ InstallMethod( NullspaceMatDestructive,
 InstallMethod( TriangulizedNullspaceMat,
     "generic method for ordinary matrices",
     [ IsOrdinaryMatrix ],
-    mat -> TriangulizedNullspaceMatDestructive( MutableCopyMat( mat ) ) );
+    mat -> TriangulizedNullspaceMatDestructive( MutableCopyMatrix( mat ) ) );
 
 InstallMethod( TriangulizedNullspaceMatDestructive,
     "generic method for ordinary matrices",
@@ -2279,7 +2314,7 @@ InstallOtherMethod( RankMatDestructive,
 InstallOtherMethod( RankMat,
     "generic method for matrices",
     [ IsMatrix ],
-    mat -> RankMatDestructive( MutableCopyMat( mat ) ) );
+    mat -> RankMatDestructive( MutableCopyMatrix( mat ) ) );
 
 
 #############################################################################
@@ -2538,17 +2573,12 @@ end );
 InstallMethod( SemiEchelonMats,
         "for list of matrices",
         [ IsList ],
-        function( mats )
-    return SemiEchelonMatsNoCo( List( mats, x -> MutableCopyMat(x) ) );
-end );
+    mats -> SemiEchelonMatsNoCo( List( mats, MutableCopyMatrix ) ) );
 
 InstallMethod( SemiEchelonMatsDestructive,
         "for list of matrices",
         [ IsList ],
-        function( mats )
-    return SemiEchelonMatsNoCo( mats );
-end );
-
+    SemiEchelonMatsNoCo );
 
 
 #############################################################################
@@ -2839,7 +2869,8 @@ InstallMethod( SolutionMat,
     [ IsOrdinaryMatrix,
       IsRowVector ],
         function ( mat, vec )
-          return SolutionMatDestructive( MutableCopyMat( mat ), ShallowCopy(vec) );
+          return SolutionMatDestructive( MutableCopyMatrix( mat ),
+                                         ShallowCopy( vec ) );
 end );
 
 #InstallMethod( SolutionMatDestructive,
@@ -3092,10 +3123,10 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
   z:=Zero(bas[1][1]);
   zv:=Zero(bas[1]);
   if Length(mat)>0 then
-    mat:=MutableCopyMat(mat);
+    mat:=MutableCopyMatrix(mat);
     TriangulizeMat(mat);
   fi;
-  bas:=MutableCopyMat(bas);
+  bas:=MutableCopyMatrix(bas);
   dim:=Length(bas[1]);
   l:=Length(bas)-Length(mat); # missing dimension
   b:=[];
@@ -3816,31 +3847,6 @@ end );
 
 #############################################################################
 ##
-#F  TraceMat( <mat> ) . . . . . . . . . . . . . . . . . . . trace of a matrix
-##
-InstallMethod( TraceMat, "method for lists", [ IsList ],
-    function ( mat )
-    local   trc, m, i;
-
-    # check that the element is a square matrix
-    m := Length(mat);
-    if m <> NrCols(mat)  then
-        Error("TraceMat: <mat> must be a square matrix");
-    fi;
-
-    # sum all the diagonal entries
-    trc := mat[1,1];
-    for i  in [2..m]  do
-        trc := trc + mat[i,i];
-    od;
-
-    # return the trace
-    return trc;
-end );
-
-
-#############################################################################
-##
 #M  Trace( <mat> )  . . . . . . . . . . . . . . . . . . . . . .  for a matrix
 ##
 InstallOtherMethod( Trace,
@@ -3851,7 +3857,7 @@ InstallOtherMethod( Trace,
 
 #############################################################################
 ##
-#M JordanDecomposition( <mat> )
+#M  JordanDecomposition( <mat> )
 ##
 InstallMethod( JordanDecomposition,
            "method for matrices",
@@ -3908,7 +3914,7 @@ InstallGlobalFunction(OnSubspacesByCanonicalBasis,function( mat, obj )
     local row;
     mat:=mat*obj;
     if not IsMutable(mat) then
-        mat := MutableCopyMat(mat);
+        mat := MutableCopyMatrix(mat);
     else
         for row in [1..Length(mat)] do
             if not IsMutable(mat[row]) then
@@ -4331,7 +4337,7 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     fi;
     val := c[i] * mat;
     if not IsMutable(val[1]) then
-      val := MutableCopyMat(val);
+      val := MutableCopyMatrix(val);
     fi;
     i := i-1;
     for j in [1..NrRows(mat)] do

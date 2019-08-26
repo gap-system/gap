@@ -187,20 +187,27 @@ DeclareOperation( "IsPrimitivePolynomial", [ IsField, IsRationalFunction ] );
 
 #############################################################################
 ##
-#F  CompanionMat( <poly> )
+#O  CompanionMatrix( <poly> )
+#O  CompanionMat( <poly> )
 ##
 ##  <#GAPDoc Label="CompanionMat">
 ##  <ManSection>
-##  <Func Name="CompanionMat" Arg='poly'/>
+##  <Oper Name="CompanionMatrix" Arg='poly'/>
+##  <Oper Name="CompanionMat" Arg='poly'/>
 ##
 ##  <Description>
-##  computes a companion matrix of the polynomial <A>poly</A>. This matrix has
+##  compute a companion matrix of the polynomial <A>poly</A>. This matrix has
 ##  <A>poly</A> as its minimal polynomial.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "CompanionMat" );
+##  We do not declare this as an attribute because the global function
+##  'CompanionMat' from earlier GAP versions returned a mutable result.
+##
+DeclareOperation( "CompanionMatrix", [ IsObject ] );
+DeclareSynonym( "CompanionMat", CompanionMatrix );
+
 
 #############################################################################
 ##

@@ -28,10 +28,11 @@
 
 #############################################################################
 ##
-#O  AddRowVector( <dst>, <src>[, <mul>[, <from>, <to>]] )
+#O  AddVector( <dst>, <src>[, <mul>[, <from>, <to>]] )
 ##
 ##  <#GAPDoc Label="AddRowVector">
 ##  <ManSection>
+##  <Oper Name="AddVector" Arg='dst, src[, mul[, from, to]]'/>
 ##  <Oper Name="AddRowVector" Arg='dst, src[, mul[, from, to]]'/>
 ##
 ##  <Description>
@@ -49,10 +50,11 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation(
-    "AddRowVector",
+DeclareOperation( "AddVector",
     [ IsMutable and IsList, IsList, IsMultiplicativeElement, IsPosInt,
       IsPosInt ] );
+
+DeclareSynonym( "AddRowVector", AddVector );
 
 
 #############################################################################

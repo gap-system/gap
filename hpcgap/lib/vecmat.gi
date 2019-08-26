@@ -2383,15 +2383,6 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
     return li;
   end );
 
-InstallMethod( PositionLastNonZero, "for a row vector obj",
-  [IsVectorObj],
-  function(l)
-    local i;
-    i := Length(l);
-    while i >= 1 and IsZero(l[i]) do i := i - 1; od;
-    return i;
-  end );
-
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
   [IsGF2MatrixRep, IsList, IsList],
   function( m, rows, cols )

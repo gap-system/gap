@@ -17,19 +17,74 @@
 #
 
 
-DeclareRepresentation( "IsPlistVectorRep", 
+#############################################################################
+##
+##  <#GAPDoc Label="IsPlistVectorRep">
+##  <ManSection>
+##  <Filt Name="IsPlistVectorRep" Arg='obj' Type="representation"/>
+##
+##  <Description>
+##  An object <A>obj</A> in <Ref Filt="IsPlistVectorRep"/> describes
+##  a vector object (see <Ref Filt="IsVectorObj"/>) that can occur as a row
+##  in a row list matrix
+##  (see Section <Ref Subsect="Operations for Row List Matrix Objects"/>).
+##  It is internally represented as a positional object
+##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 2 entries:
+##  <Enum>
+##  <Item>
+##    its base domain
+##    (see <Ref Attr="BaseDomain" Label="for a vector object"/>)
+##    and
+##  </Item>
+##  <Item>
+##    a plain list (see <Ref Filt="IsPlistRep"/> of its entries.
+##  </Item>
+##  </Enum>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareRepresentation( "IsPlistVectorRep",
    IsVectorObj and IsPositionalObjectRep, [] );
-# 2 positions used:
-# ![1] : BaseDomain
-# ![2] : the elements as plain list
 
-DeclareRepresentation( "IsPlistMatrixRep", 
+
+#############################################################################
+##
+##  <#GAPDoc Label="IsPlistMatrixRep">
+##  <ManSection>
+##  <Filt Name="IsPlistMatrixRep" Arg='obj' Type="representation"/>
+##
+##  <Description>
+##  An object <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> describes
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
+##  a list of its rows, in the sense defined in
+##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
+##  It is internally represented as a positional object
+##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 4 entries:
+##  <Enum>
+##  <Item>
+##    its base domain
+##    (see <Ref Attr="BaseDomain" Label="for a matrix object"/>),
+##  </Item>
+##  <Item>
+##    an empty vector in the representation of each row,,
+##  </Item>
+##  <Item>
+##    the number of columns
+##    (see <Ref Attr="NumberColumns" Label="for a matrix object"/>), and
+##  </Item>
+##  <Item>
+##    a plain list (see <Ref Filt="IsPlistRep"/> of its rows,
+##    each of them being an object in <Ref Filt="IsPlistVectorRep"/>.
+##  </Item>
+##  </Enum>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareRepresentation( "IsPlistMatrixRep",
    IsRowListMatrix and IsPositionalObjectRep, [] );
-# 4 positions used:
-# ![1] : BaseDomain
-# ![2] : empty vector of corresponding vector representation
-# ![3] : row length
-# ![4] : the rows as plain list of vectors in the filter IsPlistVectorRep
+
 
 # Some constants for matrix access:
 BindGlobal( "BDPOS", 1 );
@@ -49,5 +104,7 @@ DeclareFilter( "IsFFEVector" );
 # Constructors:
 ############################################################################
 
+#T Should this be documented?
+#T It seems to be just an auxiliary function for the documented constructors.
 DeclareGlobalFunction( "MakePlistVectorType" );
 

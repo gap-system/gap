@@ -84,15 +84,17 @@ end;
 
 #############################################################################
 ##
-#F CompanionMat( <poly>
+#M  CompanionMatrix( <poly> )
+#M  CompanionMatrix( <coeffs> )
 ##
-InstallGlobalFunction( CompanionMat, function ( arg )
-
+InstallMethod( CompanionMatrix,
+    [ IsObject ],
+    function( obj )
     local c, l, res, i, F, c1;
 
     # for the moment allow coefficients as well
-    if not IsList( arg[1] ) then
-        c := CoefficientsOfLaurentPolynomial( arg[1] );
+    if not IsList( obj ) then
+        c := CoefficientsOfLaurentPolynomial( obj );
         if c[2] < 0 then
            Error( "This polynomial does not have a companion matrix" );
         fi;
@@ -101,7 +103,7 @@ InstallGlobalFunction( CompanionMat, function ( arg )
         Append( c1, c[1] );
         c:= c1;
     else
-        c := arg[1];
+        c := obj;
         F:= DefaultField( c );    
     fi;
     
@@ -117,6 +119,7 @@ InstallGlobalFunction( CompanionMat, function ( arg )
     od;
     return res;
 end );
+
  
 #############################################################################
 ##
