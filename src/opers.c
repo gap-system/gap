@@ -1279,12 +1279,7 @@ static Obj NewReturnTrueFilter(void)
 */
 static Obj FuncNEW_FILTER(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewFilter( <name> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
+    RequireStringRep("NewFilter", name);
     return NewFilter(name, 0, DoFilter);
 }
 
@@ -3090,13 +3085,8 @@ void LoadOperationExtras (
 */
 static Obj FuncNEW_OPERATION(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewOperation( <name> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
-    return NewOperation( name, -1L, (Obj)0, DoOperationXArgs );
+    RequireStringRep("NewOperation", name);
+    return NewOperation(name, -1, 0, DoOperationXArgs);
 }
 
 
@@ -3106,12 +3096,7 @@ static Obj FuncNEW_OPERATION(Obj self, Obj name)
 */
 static Obj FuncNEW_CONSTRUCTOR(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewConstructor( <name> )",0L,0L);
-    }
-
-    /* make the new constructor                                            */
+    RequireStringRep("NewConstructor", name);
     return NewConstructor( name );
 }
 
@@ -3126,12 +3111,7 @@ static Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
 */
 static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewAttribute( <name> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
+    RequireStringRep("NewAttribute", name);
     return NewAttribute(name, 0, DoAttribute);
 }
 /****************************************************************************
@@ -3140,12 +3120,7 @@ static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name)
 */
 static Obj FuncOPER_TO_ATTRIBUTE(Obj self, Obj oper)
 {
-    /* check the argument                                                  */
-  if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("usage: OPER_TO_ATTRIBUTE( <oper> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
+    RequireOperation(oper);
     ConvertOperationIntoAttribute(oper, DoAttribute);
     return 0;
 }
@@ -3156,14 +3131,9 @@ static Obj FuncOPER_TO_ATTRIBUTE(Obj self, Obj oper)
 */
 static Obj FuncOPER_TO_MUTABLE_ATTRIBUTE(Obj self, Obj oper)
 {
-    /* check the argument                                                  */
-  if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("usage: OPER_TO_MUTABLE_ATTRIBUTE( <oper> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
-  ConvertOperationIntoAttribute( oper, DoMutableAttribute );
-  return (Obj) 0L;
+    RequireOperation(oper);
+    ConvertOperationIntoAttribute(oper, DoMutableAttribute);
+    return 0;
 }
 
 
@@ -3173,12 +3143,7 @@ static Obj FuncOPER_TO_MUTABLE_ATTRIBUTE(Obj self, Obj oper)
 */
 static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewMutableAttribute( <name> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
+    RequireStringRep("NewMutableAttribute", name);
     return NewAttribute(name, 0, DoMutableAttribute);
 }
 
@@ -3189,12 +3154,7 @@ static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
 */
 static Obj FuncNEW_PROPERTY(Obj self, Obj name)
 {
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewProperty( <name> )",0L,0L);
-    }
-
-    /* make the new operation                                              */
+    RequireStringRep("NewProperty", name);
     return NewProperty(name, 0, DoProperty);
 }
 
@@ -3208,12 +3168,8 @@ static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
     Obj                 args;           
     Obj                 list;
 
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit( "usage: NewGlobalFunction( <name> )", 0L, 0L );
-    }
+    RequireStringRep("NewGlobalFunction", name);
 
-    /* make the new operation                                              */
     args = MakeImmString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
