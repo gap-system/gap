@@ -32,6 +32,7 @@ forget to commit the resulting changes):
    4. consider adding any of the labels `build system`, `documentation`, `kernel`, `library`, `tests`
 
 - [ ] runnable tests
+- [ ] appropriate code coverage for commit diffs
 - [ ] adequate pull request title
 - [ ] well formulated text for release notes
 - [ ] relevant documentation updates
