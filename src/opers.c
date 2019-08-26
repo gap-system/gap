@@ -1101,7 +1101,8 @@ Obj NewFilter (
     
     flag1 = ++CountFlags;
 
-    getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
+    GAP_ASSERT(hdlr);
+    getter = NewOperation(name, 1, nams, hdlr);
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     flags = NEW_FLAGS( flag1 );
@@ -1284,7 +1285,7 @@ static Obj FuncNEW_FILTER(Obj self, Obj name)
     }
 
     /* make the new operation                                              */
-    return NewFilter(name, 0, 0);
+    return NewFilter(name, 0, DoFilter);
 }
 
 
@@ -2689,8 +2690,9 @@ Obj NewAttribute (
     setter = MakeSetter(name, 0, flag2, DoSetAttribute);
     tester = MakeTester(name, 0, flag2);
 
-    getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
-    
+    GAP_ASSERT(hdlr);
+    getter = NewOperation(name, 1, nams, hdlr);
+
     SetupAttribute(getter, setter, tester, flag2);
 
     return getter;    
@@ -2719,7 +2721,8 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc hdlr)
     tester = MakeTester(name, 0, flag2);
 
     /* Change the handlers */
-    SET_HDLR_FUNC(oper, 1, hdlr ? hdlr : DoAttribute);
+    GAP_ASSERT(hdlr);
+    SET_HDLR_FUNC(oper, 1, hdlr);
 
     SetupAttribute( oper, setter, tester, flag2);
 }
@@ -2921,7 +2924,8 @@ Obj NewProperty (
     setter = MakeSetter(name, flag1, flag2, DoSetProperty);
     tester = MakeTester(name, flag1, flag2);
 
-    getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
+    GAP_ASSERT(hdlr);
+    getter = NewOperation(name, 1, nams, hdlr);
 
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
@@ -3142,8 +3146,8 @@ static Obj FuncOPER_TO_ATTRIBUTE(Obj self, Obj oper)
     }
 
     /* make the new operation                                              */
-  ConvertOperationIntoAttribute( oper, (ObjFunc) 0L );
-    return (Obj) 0L;
+    ConvertOperationIntoAttribute(oper, DoAttribute);
+    return 0;
 }
 
 /****************************************************************************
