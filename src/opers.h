@@ -492,13 +492,16 @@ extern Obj RESET_FILTER_OBJ;
 
 /****************************************************************************
 **
-*F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
+*F  DoFilter( <self>, <obj> ) . . . . . . . . . . default handler for filters
 */
 Obj DoFilter(Obj self, Obj obj);
 
-Obj NewFilter(Obj name, Obj nams, ObjFunc hdlr);
 
-Obj DoTestAttribute(Obj self, Obj obj);
+/****************************************************************************
+**
+*F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
+*/
+Obj NewFilter(Obj name, Obj nams, ObjFunc hdlr);
 
 
 /****************************************************************************
@@ -523,7 +526,7 @@ extern Obj ReturnTrueFilter;
 
 /****************************************************************************
 **
-*F  NewOperation( <name> )  . . . . . . . . . . . . . .  make a new operation
+**  Default handlers for operations
 */
 Obj DoOperation0Args(Obj oper);
 
@@ -543,6 +546,11 @@ Obj DoOperation6Args(
 
 Obj DoOperationXArgs(Obj self, Obj args);
 
+
+/****************************************************************************
+**
+**  Default handlers for verbose operations
+*/
 Obj DoVerboseOperation0Args(Obj oper);
 
 Obj DoVerboseOperation1Args(Obj oper, Obj arg1);
@@ -561,24 +569,48 @@ Obj DoVerboseOperation6Args(
 
 Obj DoVerboseOperationXArgs(Obj self, Obj args);
 
+
+/****************************************************************************
+**
+*F  NewOperation( <name> ) . . . . . . . . . . . . . . . make a new operation
+*/
 Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr);
 
 
 /****************************************************************************
 **
-*F  NewAttribute( <name> )  . . . . . . . . . . . . . .  make a new attribute
+*F  DoAttribute( <self>, <obj> ) . . . . . . . default handler for attributes
 */
 Obj DoAttribute(Obj self, Obj obj);
 
+
+/****************************************************************************
+**
+*F  DoTestAttribute( <self>, <obj> ) .  default handler for attribute testers
+*/
+Obj DoTestAttribute(Obj self, Obj obj);
+
+
+/****************************************************************************
+**
+*F  NewAttribute( <name> ) . . . . . . . . . . . . . . . make a new attribute
+*/
 Obj NewAttribute(Obj name, Obj nams, ObjFunc hdlr);
+
+
+/****************************************************************************
+**
+*F  DoProperty( <self>, <obj> ) . . . . . . .  default handler for properties
+*/
+Obj DoProperty(Obj self, Obj obj);
+
 
 /****************************************************************************
 **
 *F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
 */
-Obj DoProperty(Obj self, Obj obj);
-
 Obj NewProperty(Obj name, Obj nams, ObjFunc hdlr);
+
 
 /****************************************************************************
 **
@@ -597,6 +629,7 @@ void InstallMethodArgs(Obj oper, Obj func);
 */
 void ChangeDoOperations(Obj oper, Int verb);
 
+
 /****************************************************************************
 **
 *F  SaveOperationExtras( <oper> ) . . .  additional savng for functions which
@@ -606,8 +639,8 @@ void ChangeDoOperations(Obj oper, Int verb);
 **  a simple function, and so must be an operation
 **
 */
-
 void SaveOperationExtras(Obj oper);
+
 
 /****************************************************************************
 **
@@ -618,7 +651,6 @@ void SaveOperationExtras(Obj oper);
 **  a simple function, and so must be an operation
 **
 */
-
 void LoadOperationExtras(Obj oper);
 
 
