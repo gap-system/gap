@@ -72,7 +72,8 @@ InstallGlobalFunction( AbelianInvariantsSubgroupFpGroupRrs,
 function ( G, H )
 local M;
   M:=RelatorMatrixAbelianizedSubgroupRrs( G, H );
-  if Length(M)=0 then
+  if M=fail then return fail;
+  elif Length(M)=0 then
     return [];
   else
     DiagonalizeMat( Integers, M );
@@ -292,7 +293,9 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     app2[2] := deductions[ded][2];
     app2[3] := -1;
     app2[4] := app2[2];
-    ApplyRel2( app2, triple[2], triple[1] );
+    if not ApplyRel2( app2, triple[2], triple[1] ) then
+      return fail; # rewriting failed b/c too large exponent
+    fi;
     factors := app2[7];
 #if Length(factors)>0 then Print(Length(factors)," ",Maximum(factors)," ",Minimum(factors),"\n");fi;
 
@@ -1399,7 +1402,7 @@ RelatorMatrixAbelianizedNormalClosure :=
 ##
 InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
 
-    local aug, table;
+    local aug, table,i,j,vec,pres;
 
     # check G to be a finitely presented group.
     if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
@@ -1434,6 +1437,31 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
                              aug.groupRelators);
+    if aug.subgroupRelators=fail then
+      if ValueOption("cheap")=true then 
+        return fail;
+      fi;
+      # the abelianized rewriting in the kernel failed because the
+      # coefficients were to large.
+      Info(InfoWarning,1,
+        "exponent too large, abelianized coset enumeration aborted");
+      Info(InfoWarning,1,"calculation will be slow");
+
+      # do nonabelian rewriting and do it by hand, accumulating entries.
+      aug := AugmentedCosetTableRrs( G, table, 2, "_x" );
+      aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
+      table:=[];
+      for i in aug.subgroupRelators do
+        vec:=ListWithIdenticalEntries(aug.numberOfSubgroupGenerators,0);
+        for j in i do
+          if j>0 then vec[j]:=vec[j]+1;
+          elif j<0 then vec[-j]:=vec[-j]+1;
+          fi;
+        od;
+        Add(table,vec);
+      od;
+      return table;
+    fi;
 
     return aug.subgroupRelators;
 
@@ -1631,7 +1659,9 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
             app2[2] := i;
             app2[3] := 2 * length - 1;
             app2[4] := i;
-            ApplyRel2( app2, cols, nums );
+            if not ApplyRel2( app2, cols, nums ) then
+              return fail;
+            fi;
 
             # add the resulting subgroup relator to rels.
             numrels := AddAbelianRelator( rels, numrels );
@@ -1703,7 +1733,9 @@ InstallGlobalFunction( RewriteAbelianizedSubgroupRelators,
         app2[2] := 1;
         app2[3] := 2 * length - 1;
         app2[4] := 1;
-        ApplyRel2( app2, cols, nums );
+        if not ApplyRel2( app2, cols, nums ) then
+          return fail;
+        fi;
 
       else
         # trivial generator

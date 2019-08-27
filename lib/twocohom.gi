@@ -1600,7 +1600,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
               List(GeneratorsOfGroup(m),
               x->TransposedMat(ImagesRepresentative(hom,x)))) then
             Info(InfoExtReps,3,"Attempt index ",Index(p,m));
-            e:=LargerQuotientBySubgroupAbelianization(quot,m);
+            e:=LargerQuotientBySubgroupAbelianization(quot,m:cheap);
           else Info(InfoExtReps,3,"Don't index ",Index(p,m));
           fi;
         until e<>fail;

@@ -1008,8 +1008,10 @@ static Int TreeEntryC ( void )
 **  variables, and 'treeType' is assumed to be either 0 or 2,
 **
 **  Warning: 'factor' is not checked for being zero.
+**
+**  it returns 0 if everything worked, and 1 if a problem arose.
 */
-static void AddCosetFactor2 (
+static Int AddCosetFactor2 (
     Int                factor )
 {
     Obj *               ptFac;          /* pointer to the factor           */
@@ -1028,9 +1030,11 @@ static void AddCosetFactor2 (
             leng  = LEN_PLIST(tmp);
             for ( i = 1;  i <= leng;  i++ ) {
                 if ( ! SUM_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
+                    return 1;
+                    /* used to be unrecoverable error message: 
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
-                        0L, 0L );
+                        0L, 0L ); */
                 }
                 ptWord[i] = sum;
             }
@@ -1042,9 +1046,11 @@ static void AddCosetFactor2 (
             leng  = LEN_PLIST(tmp);
             for ( i = 1;  i <= leng;  i++ ) {
                 if ( ! DIFF_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
+                    return 1;
+                    /* used to be unrecoverable error message: 
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
-                        0L, 0L );
+                        0L, 0L ); */
                 }
                 ptWord[i] = sum;
             }
@@ -1063,8 +1069,11 @@ static void AddCosetFactor2 (
     }
     else {
         wordList[0] = ( wordList[1] = TreeEntryC( ) == 0 ) ? 0 : 1;
-        AddCosetFactor2(factor);
+        if (AddCosetFactor2(factor)==1) {
+          return 1;
+        }
     }
+    return 0;
 }
 
 
@@ -1080,6 +1089,9 @@ static void AddCosetFactor2 (
 **  returns the corresponding factors in "word"
 **
 **  ...more about ApplyRel2...
+**
+**  function returns `true` if everything worked, and `false` if there was a
+**  problem (e.g. exponents).
 */
 static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 {
@@ -1203,7 +1215,9 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 objRep = ELM_PLIST(objRep,lc);
                 rep    = INT_INTOBJ(objRep);
                 if ( rep != 0 ) {
-                    AddCosetFactor2(-rep);
+                    if (AddCosetFactor2(-rep)==1) {;
+                        return False;
+                    }
                 }
                 lc = tc;
                 lp = lp + 2;
@@ -1218,7 +1232,9 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 objRep = ELM_PLIST(objRep,rc);
                 rep    = INT_INTOBJ(objRep);
                 if ( rep != 0 ) {
-                    AddCosetFactor2(rep);
+                    if (AddCosetFactor2(rep)==1) {
+                        return False;
+                    }
                 }
                 rc = tc;
                 rp = rp - 2;
@@ -1317,8 +1333,8 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
     SET_ELM_PLIST( app, 3, INTOBJ_INT( rp ) );
     SET_ELM_PLIST( app, 4, INTOBJ_INT( rc ) );
 
-    /* return nothing                                                      */
-    return 0;
+    /* return true                                                      */
+    return True;
 }
 
 
