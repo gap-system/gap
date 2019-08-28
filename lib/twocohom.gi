@@ -1598,10 +1598,11 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
           if hom=false or Size(m)=1 or
             false<>MatricesStabilizerOneDim(r.module.field,
               List(GeneratorsOfGroup(m),
-              x->TransposedMat(ImagesRepresentative(hom,x)))) then
-            Info(InfoExtReps,3,"Attempt index ",Index(p,m));
-            e:=LargerQuotientBySubgroupAbelianization(quot,m:cheap);
-          else Info(InfoExtReps,3,"Don't index ",Index(p,m));
+              x->TransposedMat(ImagesRepresentative(hom,x))^-1)) then
+            Info(InfoExtReps,2,"Attempt index ",Index(p,m));
+            e:=LargerQuotientBySubgroupAbelianization(quot,m);
+
+          else Info(InfoExtReps,4,"Don't index ",Index(p,m));
           fi;
         until e<>fail;
         i:=p;

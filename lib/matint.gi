@@ -1000,3 +1000,133 @@ InstallOtherMethod( AbelianInvariantsOfList,
     [ IsList and IsEmpty ],
     list -> [] );
 
+
+# Reduce a list of abelianized relations: Heuristic reduction without
+# making big vectors, iterate three times. Does not aim to do full HNF
+InstallGlobalFunction(ReducedRelationMat,function(mat)
+local n,zero,nv,new,pip,piv,i,v,p,w,g,nov,pin,now,rat,extra,clean,assign,try;
+
+  nv:=v->v*SignInt(v[PositionNonZero(v)]);
+  assign:=function(p,v)
+  local a,i,w,wn;
+    a:=v[p];
+    for i in [1..Length(pip)] do
+      if i<>p and IsInt(pip[i]) and mat[pip[i]][p]<>0 then
+        w:=mat[pip[i]]-QuoInt(mat[pip[i]][p],a)*v;
+        wn:=w*w;
+        if wn<=rat*pin[i] then
+          mat[pip[i]]:=nv(w);
+          pin[i]:=wn;
+        fi;
+      fi;
+    od;
+    mat[pip[p]]:=v;
+    # also try to reduce extra vectors
+    for i in [1..Length(extra)] do
+      w:=extra[i];
+      if not IsZero(extra[i]) then
+        wn:=w*w;
+        w:=w-QuoInt(w[p],a)*v;
+        if w*w<=rat*wn then
+          extra[i]:=w;
+        fi;
+      fi;
+    od;
+  end;
+
+  n:=NrCols(mat);
+  rat:=2; # growth ratio
+  zero:=ListWithIdenticalEntries(n,0);
+  mat:=Filtered(mat,x->not IsZero(x));
+  new:=Set(mat,nv); # kill duplicates
+  Info(InfoMatInt,1,"Reduce ",Length(mat)," to ",Length(new));
+  pip:=ListWithIdenticalEntries(n,fail);
+  piv:=[];
+  pin:=[];
+  mat:=[];
+  extra:=[];
+
+  # we once reduce and then go over the remainders again in case they were
+  # nice and short
+  for try in [1..3] do
+    SortBy(new, x -> - x*x); # reversed norm sort
+    i:=Length(new);
+    while i>0 do
+      v:=ShallowCopy(new[i]);
+      Info(InfoMatInt,3,"Process ",i);#" Norm:",v*v,"\n");
+      Unbind(new[i]); # take off stack
+      i:=i-1;
+      clean:=true;
+      p:=PositionNonZero(v);
+      while p<=n and pip[p]<>fail do
+        if v[p] mod piv[p]=0 then
+          # divides, reduce
+          #v:=v-QuoInt(v[p],piv[p])*mat[pip[p]];
+          AddRowVector(v,mat[pip[p]],-QuoInt(v[p],piv[p]));
+          p:=PositionNonZero(v,p);
+        elif clean and piv[p] mod v[p]=0 then
+          # swap and clean out
+          v:=nv(v);
+          Info(InfoMatInt,2,"Replace pivot ",piv[p],"@",p," to ",v[p]);
+          w:=mat[pip[p]];
+          #mat[pip[p]]:=v;
+          assign(p,v);
+          pin[p]:=v*v;
+          piv[p]:=v[p];
+          v:=w;
+          #v:=v-QuoInt(v[p],piv[p])*mat[pip[p]];
+          AddRowVector(v,mat[pip[p]],-QuoInt(v[p],piv[p]));
+          p:=PositionNonZero(v,p);
+        else
+          g:=Gcdex(v[p],piv[p]);
+          # form new pivot with gcd 
+          #w:=g.coeff2*mat[pip[p]]+g.coeff1*v; # automatically normed by Gcdex
+          w:=g.coeff2*mat[pip[p]];
+          AddRowVector(w,v,g.coeff1); # automatically normed by Gcdex
+          now:=w*w;
+          if (not clean) or now>rat*pin[p] then 
+            # only reduce a bit, not full gcd
+            #v:=v-QuoInt(v[p],piv[p])*mat[pip[p]];
+            AddRowVector(v,mat[pip[p]],-QuoInt(v[p],piv[p]));
+            p:=PositionNonZero(v,p);
+            clean:=false;
+          else
+            # replace with cgd pivot
+            Info(InfoMatInt,2,"Reduce pivot ",piv[p],"@",p," to ",g.gcd);
+            new[i+1]:=v; # keep old vectors to process
+            new[i+2]:=mat[pip[p]];
+            i:=i+2;
+            #mat[pip[p]]:=w;
+            assign(p,w);
+            piv[p]:=w[p];
+            pin[p]:=now;
+            p:=fail; # to bail out while loop
+          fi;
+
+        fi;
+      od;
+      if not clean then
+        # only reduced, did not do gcd
+        Add(extra,v);
+      elif p<=n then
+        # new pivot position
+        v:=nv(v); # norm (so we can compare with <)
+        pip[p]:=Length(mat)+1;
+        #Add(mat,v);
+        assign(p,v);
+        Info(InfoMatInt,1,"Added @",Length(mat));
+        piv[p]:=v[p];
+        pin[p]:=v*v;
+      fi;
+    od;
+    # now we've processed all. Clean out extra
+    new:=List(Filtered(Set(extra),x->not IsZero(x)),nv);
+    Info(InfoMatInt,1,"After ",try,": ",Length(extra)," to ",Length(new),
+      " new ones");
+    extra:=[];
+
+  od;
+
+  return Filtered(Concatenation(mat,new),x->not IsZero(x));
+
+end);

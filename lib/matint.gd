@@ -559,3 +559,24 @@ DeclareGlobalFunction("DeterminantIntMat");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("SNFofREF");
+
+#############################################################################
+##
+#O  ReducedRelationMat(<mat>)
+##
+##  <#GAPDoc Label="ReducedRelationMat">
+##  <ManSection>
+##  <Func Name="ReducedRelationMat" Arg='mat'/>
+##
+##  <Description>
+##  Let <A>mat</A> be a matrix that has been obtained as abelianized
+##  relations. Such matrices tend to have a particular form with some short
+##  vectors. This function runs a (quick) heuristic row reduction, 
+##  resulting in a matrix with the same Z-row space but fewer/shorter vectors,
+##  thus speeding up a subsequent SNF. It does not do a full HNF but should be
+##  much quicker.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("ReducedRelationMat");

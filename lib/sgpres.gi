@@ -29,6 +29,7 @@ local M;
   if Length(M)=0 then
     return [];
   else
+    M:=ReducedRelationMat(M);
     DiagonalizeMat( Integers, M );
     return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
@@ -50,6 +51,7 @@ local M;
   if Length(M)=0 then
     return [];
   else
+    M:=ReducedRelationMat(M);
     DiagonalizeMat( Integers, M );
     return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
@@ -72,10 +74,17 @@ InstallGlobalFunction( AbelianInvariantsSubgroupFpGroupRrs,
 function ( G, H )
 local M;
   M:=RelatorMatrixAbelianizedSubgroupRrs( G, H );
-  if M=fail then return fail;
+  if M=fail then 
+    if ValueOption("cheap")=true then return fail;fi;
+    Info(InfoWarning,1,
+      "exponent too large, abelianized coset enumeration aborted");
+    Info(InfoWarning,1,"calculation will be slow");
+    M:=MaximalAbelianQuotient(H); # this is in the library, so no overflow
+    return AbelianInvariants(Range(M));
   elif Length(M)=0 then
     return [];
   else
+    M:=ReducedRelationMat(M);
     DiagonalizeMat( Integers, M );
     return AbelianInvariantsOfList(DiagonalOfMat(M));
   fi;
@@ -1438,29 +1447,10 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
                              aug.groupRelators);
     if aug.subgroupRelators=fail then
-      if ValueOption("cheap")=true then 
-        return fail;
-      fi;
       # the abelianized rewriting in the kernel failed because the
       # coefficients were to large.
-      Info(InfoWarning,1,
-        "exponent too large, abelianized coset enumeration aborted");
-      Info(InfoWarning,1,"calculation will be slow");
+      return fail;
 
-      # do nonabelian rewriting and do it by hand, accumulating entries.
-      aug := AugmentedCosetTableRrs( G, table, 2, "_x" );
-      aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
-      table:=[];
-      for i in aug.subgroupRelators do
-        vec:=ListWithIdenticalEntries(aug.numberOfSubgroupGenerators,0);
-        for j in i do
-          if j>0 then vec[j]:=vec[j]+1;
-          elif j<0 then vec[-j]:=vec[-j]+1;
-          fi;
-        od;
-        Add(table,vec);
-      od;
-      return table;
     fi;
 
     return aug.subgroupRelators;

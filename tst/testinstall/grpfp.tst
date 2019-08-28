@@ -18,6 +18,8 @@ gap> Print( Collected( List( LowIndexSubgroupsFpGroup( c2, 11 ),
 # Prescribe the index and a subgroup.
 gap> e:= GQuotients( c2, PSL(2,11) );;
 gap> e:= e[1];;
+gap> Collected(AbelianInvariants(Kernel(e)));
+[ [ 0, 52 ], [ 2, 1 ], [ 5, 1 ] ]
 gap> iter:= LowIndexSubgroupsFpGroupIterator( c2, Kernel( e ), 11 );;
 gap> l:= [];;
 gap> while not IsDoneIterator( iter ) do
