@@ -800,7 +800,7 @@ local aug,w,p,pres,f,fam,opt;
   fi;
 
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
-  if ValueOption("quick")=true then
+  if ValueOption("cheap")=true then
     TzGo(pres);
   else
     TzEliminateRareOcurrences(pres,50);
@@ -1079,6 +1079,7 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
   od;
 
   if Length(m)>0 then  
+    m:=ReducedRelationMat(m);
     s:=NormalFormIntMat(m,25); # 9+16: SNF with transforms, destructive
     SetAbelianInvariants(f,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
    
@@ -1124,30 +1125,129 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
 end);
 
 InstallMethod(MaximalAbelianQuotient,
-        "for subgroups of finitely presented groups",
-        true, [IsSubgroupFpGroup], 0,
+        "for subgroups of finitely presented groups, fallback",
+        true, [IsSubgroupFpGroup], -1,
 function(U)
 local phi,m;
   # do cheaper Tietze (and thus do not store)
   phi:=AttributeValueNotSet(IsomorphismFpGroup,U:
     eliminationsLimit:=50,
     generatorsLimit:=Length(GeneratorsOfGroup(Parent(U)))*LogInt(IndexInWholeGroup(U),2),
-    quick); 
+    cheap); 
   m:=MaximalAbelianQuotient(Image(phi));
   SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
   return phi*MaximalAbelianQuotient(Image(phi));
 end);
 
+InstallMethod(MaximalAbelianQuotient,
+        "subgroups of fp. abelian rewriting", true, [IsSubgroupFpGroup], 0,
+function(u)
+local aug,r,sec,t,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
+  if (HasIsWholeFamily(u) and IsWholeFamily(u))
+  # catch trivial case of rank 0 group
+   or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
+    TryNextMethod();
+  fi;
+
+  # get an augmented coset table from the group. Since we don't care about
+  # any particular generating set, we let the function chose.
+  aug:=AugmentedCosetTableInWholeGroup(u);
+
+  aug:=CopiedAugmentedCosetTable(aug);
+
+  r:=Length(aug.primaryGeneratorWords);
+  Info( InfoFpGroup, 1, "Abelian presentation with ",
+    Length(aug.subgroupGenerators), " generators");
+
+  # make vectors 
+  expwrd:=function(l)
+  local v,i;
+    v:=ListWithIdenticalEntries(r,0);
+    for i in l do
+      if i>0 then v:=v+sec[i];
+      else v:=v-sec[-i];fi;
+    od;
+    return v;
+  end;
+
+#  sec:=ShallowCopy(IdentityMat(r,1)); # initialize so next command works
+#
+#  sec:=List(GeneratorTranslationAugmentedCosetTable(aug),
+#    x->expwrd(LetterRepAssocWord(x)));
+#
+#  m:=sec;
+  # do GeneratorTranslation abelianized
+  sec:=ShallowCopy(IdentityMat(r,1)); # initialize so next command works
+
+  t1:=aug.tree[1];
+  t2:=aug.tree[2];
+  tn:=aug.treeNumbers;
+  if Length(tn)>0 then
+    for i in [Length(sec)+1..Maximum(tn)] do
+      sec[i]:=sec[AbsInt(t1[i])]*SignInt(t1[i])
+            +sec[AbsInt(t2[i])]*SignInt(t2[i]);
+    od;
+  fi;
+#  if sec<>m then Error("ZZZ");fi;
+
+  sec:=sec{aug.treeNumbers};
+
+  # now make relators abelian
+  rels:=[];
+  rels:=RewriteSubgroupRelators( aug, aug.groupRelators);
+  rels:=List(rels,expwrd);
+
+  if Length(rels)=0 then
+    Add(rels,ListWithIdenticalEntries(r,0));
+  fi;
+  rels:=ReducedRelationMat(rels);
+  s:=NormalFormIntMat(rels,25); # 9+16: SNF with transforms, destructive
+  SetAbelianInvariants(u,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
+  if r>s.rank then
+    # TODO: Reproduce creation of infinite abelian group
+    TryNextMethod();
+  else
+    ab:=AbelianGroup(DiagonalOfMat(s.normal));
+  fi;
+  gen:=GeneratorsOfGroup(ab);
+  s:=s.coltrans;
+  img:=[];
+  for i in [1..Length(s)] do
+    m:=One(ab);
+    for j in [1..Length(gen)] do
+      m:=m*gen[j]^s[i][j];
+    od;
+    Add(img,m);
+  od;
+  aug.primaryImages:=img;
+  sec:=List(sec,x->LinearCombinationPcgs(img,x));
+  aug.secondaryImages:=sec;
+
+  m:=List(aug.primaryGeneratorWords,x->ElementOfFpGroup(FamilyObj(One(u)),x));
+  m:=GroupHomomorphismByImagesNC(u,ab,m,img:noassert);
+
+  # but give it `aug' as coset table, so we will use rewriting for images
+  SetCosetTableFpHom(m,aug);
+
+  SetIsSurjective(m,true);
+
+  return m;
+end);
+
 # u must be a subgroup of the image of home
 InstallGlobalFunction(
 LargerQuotientBySubgroupAbelianization,function(hom,u)
-local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
+local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel,pcgs,ind,i,tst;
   v:=PreImage(hom,u);
   aiu:=AbelianInvariants(u);
   
   G:= FamilyObj(v)!.wholeGroup;
-  aiv:=AbelianInvariantsSubgroupFpGroup( G, v );
-  if aiv=fail or aiu=aiv then
+  aiv:=AbelianInvariantsSubgroupFpGroup( G, v:cheap:=false );
+  if aiv=fail then
+    ma:=MaximalAbelianQuotient(v);
+    aiv:=AbelianInvariants(Image(ma,v));
+  fi;
+  if aiu=aiv then
     return fail;
   fi;
   # are there irrelevant primes?
@@ -1177,14 +1277,18 @@ local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel;
   imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentative(ma,x))));
   q:=GroupHomomorphismByImages(a,Image(mau),gens,imgs);
   k:=KernelOfMultiplicativeGeneralMapping(q);
-  co:=ComplementClassesRepresentatives(a,k);
-  if Length(co)=0 then
-    co:=List(ConjugacyClassesSubgroups(a),Representative);
-    co:=Filtered(co,x->Size(Intersection(k,x))=1);
-    Sort(co,function(a,b) return Size(a)>Size(b);end);
-  fi;
-  Info(InfoFpGroup,2,"Degree larger ",Index(a,co[1]),"\n");
-  return PreImage(ma,co[1]);
+  # try to use indices
+  pcgs:=Pcgs(a);
+  ind:=List(InducedPcgs(pcgs,k),x->DepthOfPcElement(pcgs,x));
+  co:=TrivialSubgroup(a);
+  for i in Reversed(Difference([1..Length(pcgs)],ind)) do
+    tst:=ClosureSubgroup(co,pcgs[i]);
+    if Size(Intersection(tst,k))=1 then
+      co:=tst;
+    fi;
+  od;
+  Info(InfoFpGroup,2,"Degree larger ",Index(a,co));
+  return PreImage(ma,co);
 end);
 
 DeclareRepresentation("IsModuloPcgsFpGroupRep",
