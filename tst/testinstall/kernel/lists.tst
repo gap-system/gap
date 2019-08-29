@@ -3,9 +3,6 @@
 #
 gap> START_TEST("kernel/lists.tst");
 
-# IsPossListDefault
-# TODO: need to create custom list type to test this
-
 #
 gap> enum:=Enumerator(Integers);
 <enumerator of Integers>
@@ -113,6 +110,28 @@ gap> ASSS_LIST_DEFAULT(1,[1],[1]);
 Error, List Assignments: <list> must be a list (not the integer 1)
 gap> l:=[];; ASSS_LIST_DEFAULT(l,[1],[1]); l;
 [ 1 ]
+
+# IS_POSS_LIST_DEFAULT and IS_POSS_LIST / IsPositionsList
+gap> enum := Enumerator(CyclicGroup(IsPermGroup, 2));
+<enumerator of perm group>
+gap> IsPositionsList(enum);
+false
+
+# POS_LIST_DEFAULT/ PosListDefault and POS_LIST / Position
+gap> Position(enum, (1,2), 1);
+2
+gap> Position(enum, (1,2), 5);
+fail
+gap> Position(enum, (1,2), 2^100);
+fail
+
+# PlainListError
+gap> r:=NewCategory("ListTestObject",IsSmallList);;
+gap> InstallMethod(Length,[r],l->5);
+gap> t:=NewType(ListsFamily, r and IsMutable and IsPositionalObjectRep);;
+gap> l:=Objectify(t,[]);;
+gap> OnTuples(l, (1,3));
+Error, Panic: cannot convert <list> (is a object (positional)) to a plain list
 
 #
 gap> STOP_TEST("kernel/lists.tst", 1);

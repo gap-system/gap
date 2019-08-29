@@ -7,21 +7,26 @@
 ##
 #@local foo,l,o,r,res,s,t,x
 gap> START_TEST("listindex.tst");
+
+# custom list implementation, pretending to have infinite length
 gap> r := NewCategory("ListTestObject",IsList and HasLength and HasIsFinite);
 <Category "ListTestObject">
+gap> InstallMethod(Length,[r],l->infinity);
+gap> InstallMethod(IsFinite,[r],ReturnFalse);
 
 #
-gap> InstallOtherMethod(\[\],[r,IsObject],function(l,ix) 
+gap> InstallOtherMethod(\[\],[r,IsObject],function(l,ix)
+>     if ix = 123456789 then return; fi;
 >     return ix;
 > end);
 gap> InstallOtherMethod(\[\]\:\=,[r and IsMutable,IsObject, IsObject],function(l,ix,x) 
->     Print ("Assign ",ix," ",x,"\n");
+>     Print("Assign ",ix," ",x,"\n");
 > end);
 gap> InstallOtherMethod(Unbind\[\],[r and IsMutable,IsObject],function(l,ix) 
->     Print ("Unbind ",ix,"\n");
+>     Print("Unbind ",ix,"\n");
 > end);
 gap> InstallOtherMethod(IsBound\[\],[r and IsMutable,IsObject],function(l,ix) 
->     Print ("IsBound ",ix,"\n");
+>     Print("IsBound ",ix,"\n");
 >     return false;
 > end);
 gap> InstallOtherMethod(GetWithDefault, [r and IsMutable, IsInt, IsObject], function(a,ix,d)
@@ -31,22 +36,22 @@ gap> InstallOtherMethod(GetWithDefault, [r and IsMutable, IsInt, IsObject], func
 
 #
 gap> InstallOtherMethod(\[\,\],[r,IsPosInt,IsPosInt],function(l,i,j)
+>     Print("ELM_MAT [",i,",",j,"]\n");
+>     if i = 123456789 then return; fi;
 >     return [i,j];
 > end);
 gap> InstallOtherMethod(\[\,\]\:\=,[r and IsMutable,IsPosInt,IsPosInt, IsObject],function(l,i,j,x)
->     Print ("Assign [",i,"][",j,"] := ",x,"\n");
+>     Print("ASS_MAT [",i,",",j,"] := ",x,"\n");
 > end);
 gap> InstallOtherMethod(Unbind\[\],[r and IsMutable,IsPosInt,IsPosInt],function(l,i,j) 
->     Print ("Unbind [",i,"][",j,"]\n");
+>     Print("Unbind [",i,",",j,"]\n");
 > end);
 gap> InstallOtherMethod(IsBound\[\],[r and IsMutable,IsPosInt,IsPosInt],function(l,i,j) 
->     Print ("IsBound [",i,"][",j,"]\n");
+>     Print("IsBound [",i,",",j,"]\n");
 >     return false;
 > end);
 
 #
-gap> InstallMethod(Length,[r],l->infinity);
-gap> InstallMethod(IsFinite,[r],ReturnFalse);
 gap> t := NewType(ListsFamily, r and IsMutable and IsPositionalObjectRep);;
 gap> o := Objectify(t,[]);;
 gap> o[1];
@@ -55,12 +60,24 @@ gap> o[-17];
 -17
 gap> o[Z(3)];
 Z(3)
+gap> o["abc"];
+"abc"
 gap> o[[1,2]];
 [ 1, 2 ]
 gap> o[3,4];
+ELM_MAT [3,4]
 [ 3, 4 ]
-gap> o["abc"];
-"abc"
+gap> MatElm(o, 5, 6);
+ELM_MAT [5,6]
+[ 5, 6 ]
+gap> o[123456789];
+Error, List access method must return a value
+gap> o[123456789,4];
+ELM_MAT [123456789,4]
+Error, Matrix access method must return a value
+gap> MatElm(o, 123456789, 6);
+ELM_MAT [123456789,6]
+Error, Matrix access method must return a value
 gap> o[2] := 3;
 Assign 2 3
 3
@@ -73,6 +90,11 @@ Assign E(4) i
 gap> o[[12,34,56]] := 99;
 Assign [ 12, 34, 56 ] 99
 99
+gap> o[3,4] := 42;
+ASS_MAT [3,4] := 42
+42
+gap> SetMatElm(o, 5, 6, 23);
+ASS_MAT [5,6] := 23
 gap> Unbind(o[1]);
 Unbind 1
 gap> Unbind(o[-17]);
@@ -82,7 +104,7 @@ Unbind Z(3)
 gap> Unbind(o[[1,2]]);
 Unbind [ 1, 2 ]
 gap> Unbind(o[3,4]);
-Unbind [3][4]
+Unbind [3,4]
 gap> Unbind(o["abc"]);
 Unbind abc
 gap> IsBound(o[1]);
@@ -98,7 +120,7 @@ gap> IsBound(o[[1,2]]);
 IsBound [ 1, 2 ]
 false
 gap> IsBound(o[3,4]);
-IsBound [3][4]
+IsBound [3,4]
 false
 gap> IsBound(o["abc"]);
 IsBound abc
@@ -107,23 +129,27 @@ gap> GetWithDefault(o, 2, "abc");
 GetWithDefault 2:abc
 "abc"
 gap> foo := function(a)
->     return[ a[4,5],
+>     return[ a[2,3],
 >             o[4,5],
 >             function()
->         return [a[6,7], o[4,5]];
+>         return [a[6,7], o[8,9]];
 >     end];
 > end;
 function( a ) ... end
 gap> Print(foo,"\n");
 function ( a )
-    return [ a[4, 5], o[4, 5], function (  )
-          return [ a[6, 7], o[4, 5] ];
+    return [ a[2, 3], o[4, 5], function (  )
+          return [ a[6, 7], o[8, 9] ];
   end ];
 end
 gap> res := foo(o);
-[ [ 4, 5 ], [ 4, 5 ], function(  ) ... end ]
+ELM_MAT [2,3]
+ELM_MAT [4,5]
+[ [ 2, 3 ], [ 4, 5 ], function(  ) ... end ]
 gap> res[3]();
-[ [ 6, 7 ], [ 4, 5 ] ]
+ELM_MAT [6,7]
+ELM_MAT [8,9]
+[ [ 6, 7 ], [ 8, 9 ] ]
 gap> s := [];; Add(s, 1); s;
 [ 1 ]
 gap> Add(s, 4); s;
