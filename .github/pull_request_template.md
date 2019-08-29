@@ -22,7 +22,7 @@ If your code contains kernel C code, run `clang-format` on it; the
 simplest way is to use `git clang-format`, e.g. like this (don't
 forget to commit the resulting changes):
 
-    git clang-format $(git merge-base master)
+    git clang-format $(git merge-base HEAD master)
 
 - [ ] usage of relevant labels
 
