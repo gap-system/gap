@@ -118,7 +118,7 @@ gap>
 gap> 
 gap> f:=function() local i; for i in 1 do return 1; od; return 2; end;;
 gap> f();
-Error, You cannot loop over the integer 1 did you mean the range [1..1] at GAPROOT/lib/integer.gi:1737 called from
+Error, You cannot loop over the integer 1 did you mean the range [1..1] at GAPROOT/lib/integer.gi:1740 called from
 for i in 1 do
     return 1;
 od; at *stdin*:24 called from
