@@ -119,6 +119,9 @@ InstallMethod( Quotient,
     [ IsGaussianIntegers, IsCyc, IsCyc ],
     function ( GaussianIntegers, x, y )
     local   q;
+    if y = 0 then
+        return fail;
+    fi;
     q := x / y;
     if not IsCycInt( q )  then
         q := fail;

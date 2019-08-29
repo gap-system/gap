@@ -1506,6 +1506,9 @@ InstallMethod( Quotient,
     [ IsIntegers, IsInt, IsInt ], 0,
     function ( Integers, n, m )
     local   q;
+    if m = 0 then
+        return fail;
+    fi;
     q := QuoInt( n, m );
     if n <> q * m  then
         q := fail;

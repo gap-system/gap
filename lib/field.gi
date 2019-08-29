@@ -1033,6 +1033,9 @@ InstallMethod( Quotient,
     IsCollsElmsElms,
     [ IsDivisionRing, IsRingElement, IsRingElement ],
     function ( F, r, s )
+    if IsZero(s) then
+        return fail;
+    fi;
     return r/s;
     end );
 

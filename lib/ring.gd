@@ -917,12 +917,15 @@ DeclareOperation( "InterpolatedPolynomial",
 ##  <Oper Name="Quotient" Arg='[R, ]r, s'/>
 ##
 ##  <Description>
-##  <Ref Oper="Quotient"/> returns the quotient of the two ring elements
+##  <Ref Oper="Quotient"/> returns a (right) quotient of the two ring elements
 ##  <A>r</A> and <A>s</A> in the ring <A>R</A>, if given,
 ##  and otherwise in their default ring
 ##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
-##  It returns <K>fail</K> if the quotient does not exist in the respective
-##  ring.
+##  More specifically, it returns a ring element <M>q</M> such that
+##  <M>r = q * s</M> holds, or <K>fail</K> if no such elements exists in the
+##  respective ring.
+##  <P/>
+##  The result may not be unique if the ring contains zero divisors.
 ##  <P/>
 ##  (To perform the division in the quotient field of a ring, use the
 ##  quotient operator <C>/</C>.)
