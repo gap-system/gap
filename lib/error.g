@@ -179,28 +179,24 @@ end);
 
 
 #
-# ErrorInner(context, justQuit, mayReturnVoid, mayReturnObj, lateMessage, .....)
-# 
 #
-
+#
 Unbind(ErrorInner);
-
-BIND_GLOBAL("ErrorInner",
-        function( arg )
-    local   context, mayReturnVoid,  mayReturnObj,  lateMessage,  earlyMessage,  
+BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
+    local   context, mayReturnVoid,  mayReturnObj,  lateMessage,
             x,  prompt,  res, errorLVars, justQuit, printThisStatement,
             printEarlyMessage, printEarlyTraceback, lastErrorStream,
             shellOut, shellIn;
 
-    context := arg[1].context;
+    context := options.context;
     if not IsLVarsBag(context) then
         PrintTo(ERROR_OUTPUT, "ErrorInner:   option context must be a local variables bag\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi; 
         
-    if IsBound(arg[1].justQuit) then
-        justQuit := arg[1].justQuit;
+    if IsBound(options.justQuit) then
+        justQuit := options.justQuit;
         if not justQuit in [false, true] then
             PrintTo(ERROR_OUTPUT, "ErrorInner: option justQuit must be true or false\n");
             LEAVE_ALL_NAMESPACES();
@@ -210,8 +206,8 @@ BIND_GLOBAL("ErrorInner",
         justQuit := false;
     fi;
         
-    if IsBound(arg[1].mayReturnVoid) then
-        mayReturnVoid := arg[1].mayReturnVoid;
+    if IsBound(options.mayReturnVoid) then
+        mayReturnVoid := options.mayReturnVoid;
         if not mayReturnVoid in [false, true] then
             PrintTo(ERROR_OUTPUT, "ErrorInner: option mayReturnVoid must be true or false\n");
             LEAVE_ALL_NAMESPACES();
@@ -221,8 +217,8 @@ BIND_GLOBAL("ErrorInner",
         mayReturnVoid := false;
     fi;
         
-    if IsBound(arg[1].mayReturnObj) then
-        mayReturnObj := arg[1].mayReturnObj;
+    if IsBound(options.mayReturnObj) then
+        mayReturnObj := options.mayReturnObj;
         if not mayReturnObj in [false, true] then
             PrintTo(ERROR_OUTPUT, "ErrorInner: option mayReturnObj must be true or false\n");
             LEAVE_ALL_NAMESPACES();
@@ -232,8 +228,8 @@ BIND_GLOBAL("ErrorInner",
         mayReturnObj := false;
     fi;
      
-    if IsBound(arg[1].printThisStatement) then
-        printThisStatement := arg[1].printThisStatement;
+    if IsBound(options.printThisStatement) then
+        printThisStatement := options.printThisStatement;
         if not printThisStatement in [false, true] then
             PrintTo(ERROR_OUTPUT, "ErrorInner: option printThisStatement must be true or false\n");
             LEAVE_ALL_NAMESPACES();
@@ -243,8 +239,8 @@ BIND_GLOBAL("ErrorInner",
         printThisStatement := true;
     fi;
         
-    if IsBound(arg[1].lateMessage) then
-        lateMessage := arg[1].lateMessage;
+    if IsBound(options.lateMessage) then
+        lateMessage := options.lateMessage;
         if not lateMessage in [false, true] and not IsString(lateMessage) then
             PrintTo(ERROR_OUTPUT, "ErrorInner: option lateMessage must be a string or false\n");
             LEAVE_ALL_NAMESPACES();
@@ -254,13 +250,6 @@ BIND_GLOBAL("ErrorInner",
         lateMessage := "";
     fi;
         
-    earlyMessage := arg[2];
-    if Length(arg) <> 2 then
-        PrintTo(ERROR_OUTPUT, "ErrorInner: new format takes exactly two arguments\n");
-        LEAVE_ALL_NAMESPACES();
-        JUMP_TO_CATCH(1);
-    fi;
-
     # Local functions that print the user feedback.
     printEarlyMessage := function(stream)
         PrintTo(stream, "Error, ");
