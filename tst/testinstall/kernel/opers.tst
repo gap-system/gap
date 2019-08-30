@@ -135,40 +135,30 @@ gap> FLAG1_FILTER(fail);
 Error, FLAG1_FILTER: <oper> must be an operation (not the value 'fail')
 gap> FLAG1_FILTER(Normalizer);
 0
-gap> SET_FLAG1_FILTER(fail, 1);
-Error, SET_FLAG1_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> FLAG2_FILTER(fail);
 Error, FLAG2_FILTER: <oper> must be an operation (not the value 'fail')
 gap> FLAG2_FILTER(Normalizer);
 0
-gap> SET_FLAG2_FILTER(fail, 1);
-Error, SET_FLAG2_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> FLAGS_FILTER(fail);
 Error, FLAGS_FILTER: <oper> must be an operation (not the value 'fail')
 gap> FLAGS_FILTER(Normalizer);
 false
-gap> SET_FLAGS_FILTER(fail, 1);
-Error, SET_FLAGS_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> SETTER_FILTER(fail);
 Error, SETTER_FILTER: <oper> must be an operation (not the value 'fail')
 gap> SETTER_FILTER(Normalizer);
 false
-gap> SET_SETTER_FILTER(fail, 1);
-Error, SET_SETTER_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 gap> TESTER_FILTER(fail);
 Error, TESTER_FILTER: <oper> must be an operation (not the value 'fail')
 gap> TESTER_FILTER(Normalizer);
 false
-gap> SET_TESTER_FILTER(fail, 1);
-Error, SET_TESTER_FILTER: <oper> must be an operation (not the value 'fail')
 
 #
 #

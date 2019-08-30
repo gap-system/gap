@@ -1302,18 +1302,6 @@ static Obj FuncFLAG1_FILTER(Obj self, Obj oper)
 
 /****************************************************************************
 **
-*F  FuncSET_FLAG1_FILTER( <self>, <oper>, <flag1> ) . . . .  set `FLAG1_FILT'
-*/
-static Obj FuncSET_FLAG1_FILTER(Obj self, Obj oper, Obj flag1)
-{
-    RequireOperation(oper);
-    SET_FLAG1_FILT(oper, flag1);
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  FuncFLAG2_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG2_FILT'
 */
 static Obj FuncFLAG2_FILTER(Obj self, Obj oper)
@@ -1325,18 +1313,6 @@ static Obj FuncFLAG2_FILTER(Obj self, Obj oper)
     if ( flag2 == 0 )
         flag2 = INTOBJ_INT(0);
     return flag2;
-}
-
-
-/****************************************************************************
-**
-*F  FuncSET_FLAG2_FILTER( <self>, <oper>, <flag2> ) . . . .  set `FLAG2_FILT'
-*/
-static Obj FuncSET_FLAG2_FILTER(Obj self, Obj oper, Obj flag2)
-{
-    RequireOperation(oper);
-    SET_FLAG2_FILT(oper, flag2);
-    return 0;
 }
 
 
@@ -1358,18 +1334,6 @@ static Obj FuncFLAGS_FILTER(Obj self, Obj oper)
 
 /****************************************************************************
 **
-*F  FuncSET_FLAGS_FILTER( <self>, <oper>, <flags> ) . . . .  set `FLAGS_FILT'
-*/
-static Obj FuncSET_FLAGS_FILTER(Obj self, Obj oper, Obj flags)
-{
-    RequireOperation(oper);
-    SET_FLAGS_FILT(oper, flags);
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  FuncSETTER_FILTER( <self>, <oper> ) . . . . . . . . .  setter of a filter
 */
 static Obj FuncSETTER_FILTER(Obj self, Obj oper)
@@ -1385,18 +1349,6 @@ static Obj FuncSETTER_FILTER(Obj self, Obj oper)
 
 /****************************************************************************
 **
-*F  FuncSET_SETTER_FILTER( <self>, <oper>, <setter> )  set setter of a filter
-*/
-static Obj FuncSET_SETTER_FILTER(Obj self, Obj oper, Obj setter)
-{
-    RequireOperation(oper);
-    SET_SETTR_FILT(oper, setter);
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  FuncTESTER_FILTER( <self>, <oper> ) . . . . . . . . .  tester of a filter
 */
 static Obj FuncTESTER_FILTER(Obj self, Obj oper)
@@ -1407,21 +1359,6 @@ static Obj FuncTESTER_FILTER(Obj self, Obj oper)
     tester = TesterFilter( oper );
     if ( tester == 0 )  tester = False;
     return tester;
-}
-
-
-/****************************************************************************
-**
-*F  FuncSET_TESTER_FILTER( <self>, <oper>, <tester> )  set tester of a filter
-*/
-static Obj FuncSET_TESTER_FILTER(Obj self, Obj oper, Obj tester)
-{
-    RequireOperation(oper);
-    if ( SIZE_OBJ(oper) != sizeof(OperBag) ) {
-        ResizeBag( oper, sizeof(OperBag) );
-    }
-    SET_TESTR_FILT(oper, tester);
-    return 0;
 }
 
 
@@ -3679,15 +3616,10 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC(TRUES_FLAGS, 1, "flags"),
     GVAR_FUNC(SIZE_FLAGS, 1, "flags"),
     GVAR_FUNC(FLAG1_FILTER, 1, "oper"),
-    GVAR_FUNC(SET_FLAG1_FILTER, 2, "oper, flag1"),
     GVAR_FUNC(FLAG2_FILTER, 1, "oper"),
-    GVAR_FUNC(SET_FLAG2_FILTER, 2, "oper, flag2"),
     GVAR_FUNC(FLAGS_FILTER, 1, "oper"),
-    GVAR_FUNC(SET_FLAGS_FILTER, 2, "oper, flags"),
     GVAR_FUNC(SETTER_FILTER, 1, "oper"),
-    GVAR_FUNC(SET_SETTER_FILTER, 2, "oper, other"),
     GVAR_FUNC(TESTER_FILTER, 1, "oper"),
-    GVAR_FUNC(SET_TESTER_FILTER, 2, "oper, other"),
     GVAR_FUNC(METHODS_OPERATION, 2, "oper, narg"),
     GVAR_FUNC(SET_METHODS_OPERATION, 3, "oper, narg, meths"),
     GVAR_FUNC(CHANGED_METHODS_OPERATION, 2, "oper, narg"),
