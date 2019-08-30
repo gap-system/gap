@@ -27,11 +27,10 @@ ERROR_OUTPUT := "*errout*";
 
 #############################################################################
 ##
-#F  OnQuit( )                                   currently removes all options
+#F  OnQuit( )
 ##
-Unbind(OnQuit);         # OnQuit is called from the kernel so we take great
-BIND_GLOBAL( "OnQuit",  # care to ensure it always has a definition. - GG
-        function()
+Unbind(OnQuit);
+BIND_GLOBAL( "OnQuit", function()
     if not IsEmpty(OptionsStack) then
       repeat
         PopOptions();
@@ -163,17 +162,6 @@ end);
 
 OnBreak := Where;
 
-#OnBreak := function() 
-#    if IsLVarsBag(ErrorLVars) then
-#        if ErrorLVars <> BottomLVars then
-#            WHERE(ParentLVars(ErrorLVars),5); 
-#        else
-#            Print("<function><argume
-#    else
-#        WHERE(ParentLVars(GetCurrentLVars()),5);
-#   fi;
-#end;
-
 BIND_GLOBAL("ErrorCount", function()
     return ERROR_COUNT;
 end);
@@ -194,7 +182,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         PrintTo(ERROR_OUTPUT, "ErrorInner:   option context must be a local variables bag\n");
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
-    fi; 
+    fi;
         
     if IsBound(options.justQuit) then
         justQuit := options.justQuit;
@@ -396,22 +384,27 @@ end);
 
 Unbind(Error);
 
-BIND_GLOBAL("Error",
-        function(arg)
-    ErrorInner(rec( context := ParentLVars(GetCurrentLVars()),
-                               mayReturnVoid := true,
-                               lateMessage := true,
-                               printThisStatement := false),
-                               arg);
+BIND_GLOBAL("Error", function(arg)
+    ErrorInner(
+        rec(
+            context := ParentLVars(GetCurrentLVars()),
+            mayReturnVoid := true,
+            lateMessage := true,
+            printThisStatement := false,
+        ),
+        arg);
 end);
 
 Unbind(ErrorNoReturn);
 
-BIND_GLOBAL("ErrorNoReturn",
-       function ( arg )
-    ErrorInner( rec(
-         context := ParentLVars( GetCurrentLVars(  ) ),
-         mayReturnVoid := false, mayReturnObj := false,
-         lateMessage := "type 'quit;' to quit to outer loop",
-         printThisStatement := false), arg);
+BIND_GLOBAL("ErrorNoReturn", function(arg)
+    ErrorInner(
+        rec(
+            context := ParentLVars(GetCurrentLVars()),
+            mayReturnVoid := false,
+            mayReturnObj := false,
+            lateMessage := "type 'quit;' to quit to outer loop",
+            printThisStatement := false,
+        ),
+        arg);
 end);
