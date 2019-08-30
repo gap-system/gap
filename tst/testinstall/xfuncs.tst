@@ -2,7 +2,6 @@
 gap> START_TEST("xfuncs.tst");
 gap> testXfuncs := function(list, args...)
 >      local set, sum, prod;
->      list := CallFuncList(ListX, args);
 >      set := Set(list);
 >      if IsEmpty(list) then
 >        sum := fail; prod := fail;
@@ -20,10 +19,15 @@ gap> testXfuncs([2], [2], x -> x);
 true
 gap> testXfuncs([2,3], [2,3], x -> x);
 true
+gap> testXfuncs([2,3], [2,,3], x -> x); # holes are supported
+true
 gap> testXfuncs([2,3,2], [2,3,2], x -> x);
 true
 gap> testXfuncs([ [1,1], [1,2], [1,3], [2,1], [2,2], [2,3] ],
 >   [1,2], [1,2,3], function(x,y) return [x,y]; end);
+true
+gap> testXfuncs([ [1,1], [1,2], [1,3], [2,1], [2,2], [2,3] ],
+>   [1,,2], [1,,2,,3], function(x,y) return [x,y]; end); # holes really are supported
 true
 gap> testXfuncs([ [ 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ], [ 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] ], [1..2],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10], function(x...) return x; end);
 true
