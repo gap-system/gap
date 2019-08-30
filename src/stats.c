@@ -340,7 +340,7 @@ static UInt ExecIfElifElse(Stat stat)
 Obj ITERATOR;
 Obj IS_DONE_ITER;
 Obj NEXT_ITER;
-static Obj STD_ITER;
+Obj STD_ITER;
 
 static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
 {

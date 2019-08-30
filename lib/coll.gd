@@ -2453,6 +2453,52 @@ DeclareGlobalFunction( "Elements" );
 
 #############################################################################
 ##
+#O  FoldLeft( <C>, <func>[, <init>] )
+##
+##  <ManSection>
+##  <Func Name="FoldLeft" Arg='C, func[, init]'/>
+##
+##  <Description>
+##  TODO
+##  </Description>
+##  </ManSection>
+##
+##  TODO: explain in docs that to imitate the behavior of
+##    x := Sum(list, func, init);
+##  one can do this:
+##    x := FoldLeft(list, {x,y} -> x + func(y), func(init));
+##  or of course also this (but requires more memory)
+##    x := FoldLeft(List(list, func), \+);
+##
+##  There is no good way to imitate `Sum(list, func)` without
+##  an initial value.
+##
+DeclareGlobalFunction( "FoldLeft" );
+DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction, IsObject ] );
+
+
+#############################################################################
+##
+#O  FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+##
+##  <#GAPDoc Label="FoldLeftX">
+##  <ManSection>
+##  <Func Name="FoldLeftX" Arg='gens, func, init[, abortValue]'/>
+##
+##  <Description>
+##  TODO
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  TODO: document FoldLeftX (based on ListX documentation?)
+##
+DeclareGlobalFunction( "FoldLeftX" );
+
+
+#############################################################################
+##
 #F  Sum( <list>[, <init>] ) . . . . . . . . . . sum of the elements of a list
 #F  Sum( <C>[, <init>] )  . . . . . . . . sum of the elements of a collection
 #F  Sum( <list>, <func>[, <init>] ) . . . . .  sum of images under a function
