@@ -1838,6 +1838,77 @@ end );
 
 #############################################################################
 ##
+#M  ForAllX(<obj>,...)
+##
+InstallGlobalFunction( ForAllX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg, {acc,x} -> CallFuncList(f, x), true, false);
+end );
+
+
+#############################################################################
+##
+#M  ForAnyX(<obj>,...)
+##
+InstallGlobalFunction( ForAnyX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg, {acc,x} -> CallFuncList(f, x), false, true);
+end );
+
+
+#############################################################################
+##
+#M  FilteredX(<obj>,...)
+##
+InstallGlobalFunction( FilteredX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    Add(acc, ShallowCopy(x));
+                fi;
+                return acc;
+            end, []);
+end);
+
+
+#############################################################################
+##
+#M  NumberX(<obj>,...)
+##
+InstallGlobalFunction( NumberX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    return acc + 1;
+                fi;
+                return acc;
+            end, 0);
+end);
+
+
+#############################################################################
+##
+#M  PerformX(<obj>,...)
+##
+InstallGlobalFunction( PerformX, function ( arg )
+    local f;
+    f := Remove(arg);
+    FoldLeftX(arg,
+            function(acc, x)
+                CallFuncList(f, x);
+                return 0;
+            end, 0);
+end);
+
+
+#############################################################################
+##
 #F  Perform( <list>, <func> )
 ##
 InstallGlobalFunction( Perform, function(l, f)

@@ -332,6 +332,65 @@ gap> FoldLeft([1..3], \-, 0);
 
 #############################################################################
 #
+# ForAllX
+#
+gap> ForAllX([1..2], [3..4], function(i,j) Display([i,j]); return true; end);
+[ 1, 3 ]
+[ 1, 4 ]
+[ 2, 3 ]
+[ 2, 4 ]
+true
+gap> # verify short circuit works
+gap> ForAllX([1..2], [3..4], function(i,j) Display([i,j]); return false; end);
+[ 1, 3 ]
+false
+
+#############################################################################
+#
+# ForAnyX
+#
+gap> ForAnyX([1..2], [3..4], function(i,j) Display([i,j]); return false; end);
+[ 1, 3 ]
+[ 1, 4 ]
+[ 2, 3 ]
+[ 2, 4 ]
+false
+gap> # verify short circuit works
+gap> ForAnyX([1..2], [3..4], function(i,j) Display([i,j]); return true; end);
+[ 1, 3 ]
+true
+
+#############################################################################
+#
+# FilteredX
+#
+gap> FilteredX([1..4], IsEvenInt);
+[ [ 2 ], [ 4 ] ]
+gap> FilteredX([1..4], [1..4], \=);
+[ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ], [ 4, 4 ] ]
+gap> FilteredX([1..6],[1..6],[1..6], {a,b,c} -> a+b+c<=4);
+[ [ 1, 1, 1 ], [ 1, 1, 2 ], [ 1, 2, 1 ], [ 2, 1, 1 ] ]
+
+#############################################################################
+#
+# NumberX
+#
+gap> NumberX([1..4], IsEvenInt);
+2
+gap> NumberX([1..4], [1..4], \=);
+4
+gap> NumberX([1..6],[1..6],[1..6], {a,b,c} -> a+b+c<=4);
+4
+
+#############################################################################
+#
+# PerformX
+#
+gap> PerformX([1..2], [3..4], Print); Print("\n");
+13142324
+
+#############################################################################
+#
 # List
 # SortedList
 # SSortedList = Set
