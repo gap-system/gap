@@ -1794,6 +1794,102 @@ end );
 
 #############################################################################
 ##
+#F  FoldLeft( <coll>, <func> )
+#F  FoldLeft( <coll>, <func>, <init> )
+##
+InstallGlobalFunction( FoldLeft,
+    function( arg )
+    local tnum, C, func, result, i, l;
+    l := Length( arg );
+    if l < 2 or l > 3 or not IsFunction(arg[2]) then
+      Error( "usage: FoldLeft( <C>, <func>[, <init>] )" );
+    fi;
+    tnum:= TNUM_OBJ( arg[1] );
+    # handle built-in lists directly, to avoid method dispatch overhead
+    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
+      C:= arg[1];
+      func:= arg[2];
+      if l = 2 then
+        if IsEmpty( C ) then
+          Error("folding an empty collection without initial value is not supported");
+        else
+          result:= C[1];
+          for i in [ 2 .. Length( C ) ] do
+            result:= func( result, C[i] );
+          od;
+        fi;
+      else
+        result:= arg[3];
+        for i in C do
+          result:= func( result, i );
+        od;
+      fi;
+      return result;
+    else
+      return CallFuncList( FoldLeftOp, arg );
+    fi;
+end );
+
+
+#############################################################################
+##
+#M  FoldLeftOp( <C>, <func> )  . . . . . . . for a list/collection, and a function
+##
+InstallMethod( FoldLeftOp,
+    "for a list/collection, and a function",
+    [ IsListOrCollection, IsFunction ],
+    function ( C, func )
+    local iter, result, x;
+    iter := Iterator( C );
+    if IsDoneIterator( iter ) then
+      Error("folding an empty collection without initial value is not supported");
+    fi;
+    result := NextIterator( iter );
+    for x in iter do
+      result := func( result, x );
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  FoldLeftOp( <C>, <func>, <init> )  . for a list/coll., a func., and init. val.
+##
+InstallMethod( FoldLeftOp,
+    "for a list/collection, and a function, and an initial value",
+    [ IsListOrCollection, IsFunction, IsObject ],
+    function ( C, func, init )
+    local result, x;
+    result := init;
+    for x in C do
+      result := func( result, x );
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  FoldLeftX(<obj>,...)
+##
+InstallGlobalFunction( FoldLeftX, function ( gens, f, init, extra... )
+    local abortValue;
+
+    if Length(extra) > 0 then
+        abortValue := extra[1];
+    else
+        # assign a globally unique bag: here, we take a new empty
+        # string, which is guaranteed to be different from any
+        # other string object
+        abortValue := "";
+    fi;
+    return FOLD_LEFT_X(gens, f, init, abortValue);
+end );
+
+
+#############################################################################
+##
 #M  SetX(<obj>,...)
 ##
 DeclareGlobalName("SetXHelp");
