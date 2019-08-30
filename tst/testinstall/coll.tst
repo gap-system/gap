@@ -529,6 +529,24 @@ gap> ListX([1..3], [1..3], \<, {a,b}->[a,b]);
 [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ]
 
 #
+gap> args:=[ [], Identity ];;
+gap> CallFuncList(SetX, args);
+[  ]
+gap> CallFuncList(SumX, args);
+fail
+gap> CallFuncList(ProductX, args);
+fail
+
+#
+gap> args:=[ [1..3], Identity ];;
+gap> CallFuncList(SetX, args) = Set(CallFuncList(ListX, args));
+true
+gap> CallFuncList(SumX, args) = Sum(CallFuncList(ListX, args));
+true
+gap> CallFuncList(ProductX, args) = Product(CallFuncList(ListX, args));
+true
+
+#
 gap> args:=[ [1..3], [1..3], \+ ];;
 gap> CallFuncList(SetX, args) = Set(CallFuncList(ListX, args));
 true
