@@ -100,13 +100,14 @@ BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
     PrintTo(ERROR_OUTPUT,"\n");
 end);
 
-BIND_GLOBAL("WHERE", function(context, depth, outercontext, showlocals)
+BIND_GLOBAL("WHERE", function(depth, context, showlocals)
     local bottom, lastcontext, f, args;
     if depth <= 0 then
         return;
     fi;
     bottom := GetBottomLVars();
-    lastcontext := outercontext;
+    lastcontext := context;
+    context := ParentLVars(context);
     while depth > 0  and context <> bottom do
         PRINT_CURRENT_STATEMENT(ERROR_OUTPUT, context);
         if showlocals then
@@ -118,7 +119,7 @@ BIND_GLOBAL("WHERE", function(context, depth, outercontext, showlocals)
         context := ParentLVars(context);
         depth := depth-1;
     od;
-    if depth = 0 then 
+    if depth = 0 then
         PrintTo(ERROR_OUTPUT, "...  ");
     else
         f := ContentsLVars(lastcontext).func;
@@ -132,7 +133,7 @@ BIND_GLOBAL("WHERE_INTERNAL", function(depth, showlocals)
     if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
         PrintTo(ERROR_OUTPUT, "not in any function ");
     else
-        WHERE(ParentLVars(ErrorLVars), depth, ErrorLVars, showlocals);
+        WHERE(depth, ErrorLVars, showlocals);
     fi;
     PrintTo(ERROR_OUTPUT, "at ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
 end);
