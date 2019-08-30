@@ -2499,6 +2499,17 @@ DeclareGlobalFunction( "FoldLeftX" );
 
 #############################################################################
 ##
+##  TODO: document the following
+##
+DeclareGlobalFunction( "ForAllX" );
+DeclareGlobalFunction( "ForAnyX" );
+DeclareGlobalFunction( "FilteredX" );
+DeclareGlobalFunction( "NumberX" );
+DeclareGlobalFunction( "PerformX" );
+
+
+#############################################################################
+##
 #F  Sum( <list>[, <init>] ) . . . . . . . . . . sum of the elements of a list
 #F  Sum( <C>[, <init>] )  . . . . . . . . sum of the elements of a collection
 #F  Sum( <list>, <func>[, <init>] ) . . . . .  sum of images under a function
