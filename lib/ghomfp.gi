@@ -1090,11 +1090,11 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
         Add(rel,g.(i)^s.normal[i][i]);
       od;
       Append(img,ListWithIdenticalEntries(Length(gen)-s.rank,0));
-      SetAbelianInvariants(f,img);
       g:=g/rel;
       fin:=false;
     else  
-      SetAbelianInvariants(f,DiagonalOfMat(s.normal));
+      # Not `AbelianInvariantsOfList' as the structure of the group is as
+      # given by the normal form
       g:=AbelianGroup(DiagonalOfMat(s.normal));
       fin:=true;
     fi;
@@ -1207,6 +1207,8 @@ local aug,r,sec,t,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
     # TODO: Reproduce creation of infinite abelian group
     TryNextMethod();
   else
+      # Not `AbelianInvariantsOfList' as the structure of the group is as
+      # given by the normal form
     ab:=AbelianGroup(DiagonalOfMat(s.normal));
   fi;
   gen:=GeneratorsOfGroup(ab);
