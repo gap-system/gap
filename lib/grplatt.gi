@@ -3296,12 +3296,7 @@ local c,n,deg,ind,core,i,j,sum;
   for i in [2..Length(c)-1] do # exclude trivial subgroup and whole group
     ind:=IndexNC(G,c[i]);
 
-    if ind<deg[Length(n)][1] then # otherwise degree too big for new optimal
-      core:=First([2..Length(n)],x->IsSubset(c[i],n[x])); # position of core
-      if ind<deg[core][1] then # new smaller degree from subgroups
-        deg[core]:=[ind,[i]];
-      fi;
-    elif IsNormal(G,c[i]) then # subgroup normal, must be in other case
+    if IsNormal(G,c[i]) then # subgroup normal, must be in other case
       core:=Position(n,c[i]);
       for j in [2..core-1] do # Intersect with all prior normals
         sum:=deg[core][1]+deg[j][1];
@@ -3312,6 +3307,11 @@ local c,n,deg,ind,core,i,j,sum;
           fi;
         fi;
       od;
+    elif ind<deg[Length(n)][1] then # otherwise degree too big for new optimal
+      core:=First([2..Length(n)],x->IsSubset(c[i],n[x])); # position of core
+      if ind<deg[core][1] then # new smaller degree from subgroups
+        deg[core]:=[ind,[i]];
+      fi;
     fi;
 
   od;
