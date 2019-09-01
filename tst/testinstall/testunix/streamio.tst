@@ -25,6 +25,8 @@ gap> checkPartialRead := function(prog, readfunc, firstread, secondread)
 >   return true;
 > fi;
 > end;;
+
+#@if ARCH_IS_UNIX()
 gap> ForAny([1..10], x -> checkPartialRead(write, ReadLine, "aaa", "aaa\n"));
 true
 gap> ForAny([1..10], x -> checkPartialRead(write, ReadLine, "aaa", "aaa"));
@@ -50,4 +52,5 @@ gap> c := ReadByte(process);
 gap> c := ReadByte(process);
 fail
 gap> CloseStream(process);
+#@fi
 gap> STOP_TEST("streamio.tst", 1);
