@@ -22,7 +22,13 @@ dirs := [
   DirectoriesLibrary( "tst/teststandard" ),
   DirectoriesLibrary( "tst/testinstall" ),
 ];
-TestDirectory( dirs, rec(exitGAP := true) );
+
+if ARCH_IS_WINDOWS() then
+  donottest := [ "processes/streamio.tst" ];
+else
+  donottest := [ ];
+fi;
+TestDirectory( dirs, rec(exitGAP := true, exclude := donottest ));
   
 # Should never get here
 FORCE_QUIT_GAP(1);
