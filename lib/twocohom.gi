@@ -1421,7 +1421,9 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
   k:=Length(module.generators);
   hom:=GroupHomomorphismByImagesNC(G,Group(module.generators),
     GeneratorsOfGroup(G),module.generators);
-  it:=DescSubgroupIterator(G);
+  # we allow do go immediately to normal subgroup of index up to 4.
+  # This reduces search space
+  it:=DescSubgroupIterator(G:skip:=4);
   repeat
     m:=NextIterator(it);
 
@@ -1590,8 +1592,18 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
       hom:=GroupHomomorphismByImages(r.group,Group(r.module.generators),
         GeneratorsOfGroup(r.group),r.module.generators);
       p:=Image(quot);
+      trysy:=Maximum(1000,IndexNC(p,SylowSubgroup(p,prime)));
+      # allow to enforce test coverage
+      if ValueOption("forcetest")=true then trysy:=2;fi;
+
+      mindeg:=2;
+      if IsPermGroup(p) then
+        mindeg:=Minimum(List(Orbits(p,MovedPoints(p)),Length));
+      fi;
       while Size(p)<Size(fp) do
-        it:=DescSubgroupIterator(p);
+        # we allow do go immediately to normal subgroup of index up to 4.
+        # This reduces search space
+        it:=DescSubgroupIterator(p:skip:=4);
         repeat
           m:=NextIterator(it);
           e:=fail;
