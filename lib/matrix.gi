@@ -181,6 +181,24 @@ InstallTrueMethod( IsDiagonalMatrix, IsMatrixObj and IsEmptyMatrix );
 
 #############################################################################
 ##
+##  Note that an empty list is not a matrix,
+##  but 'IsDiagonalMat(rix)' used to return 'true' for it.
+##
+##  Note also that there was no such hack for other operations such as
+##  'IsUpperTriangularMat(rix)' or 'IsLowerTriangularMat(rix)'.
+##
+##  And note that installing an implication from 'IsList and IsEmpty' to
+##  'IsDiagonalMatrix' does not work because the type of an empty plain list
+##  cannot store the information.
+##  Furthermore, we cannot simply install 'ReturnTrue' as a method because
+##  then the method installation would complain that one should just install
+##  an implication.
+##
+InstallOtherMethod( IsDiagonalMatrix, [ IsList and IsEmpty ], x -> true );
+
+
+#############################################################################
+##
 #M  IsUpperTriangularMatrix(<mat>)
 ##
 InstallMethod( IsUpperTriangularMatrix,
