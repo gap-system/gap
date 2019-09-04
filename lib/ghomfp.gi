@@ -1239,7 +1239,7 @@ end);
 # u must be a subgroup of the image of home
 InstallGlobalFunction(
 LargerQuotientBySubgroupAbelianization,function(hom,u)
-local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel,pcgs,ind,i,tst;
+local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   v:=PreImage(hom,u);
   aiu:=AbelianInvariants(u);
   
@@ -1257,7 +1257,7 @@ local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel,pcgs,ind,i,tst;
   irrel:=Filtered(primes,x->Filtered(aiv,z->IsInt(z/x))=
                             Filtered(aiu,z->IsInt(z/x)));
 
-  Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu),"\n");
+  Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu));
   ma:=MaximalAbelianQuotient(v);
   mau:=MaximalAbelianQuotient(u);
   a:=Image(ma);
@@ -1279,16 +1279,34 @@ local G,v,ma,mau,a,gens,imgs,q,k,co,aiu,aiv,primes,irrel,pcgs,ind,i,tst;
   imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentative(ma,x))));
   q:=GroupHomomorphismByImages(a,Image(mau),gens,imgs);
   k:=KernelOfMultiplicativeGeneralMapping(q);
-  # try to use indices
-  pcgs:=Pcgs(a);
-  ind:=List(InducedPcgs(pcgs,k),x->DepthOfPcElement(pcgs,x));
-  co:=TrivialSubgroup(a);
-  for i in Reversed(Difference([1..Length(pcgs)],ind)) do
-    tst:=ClosureSubgroup(co,pcgs[i]);
-    if Size(Intersection(tst,k))=1 then
-      co:=tst;
-    fi;
-  od;
+
+  # generators of prime power orders but larger powers first (to have pivots
+  # on larger order elements)
+  gens:=Reversed(IndependentGeneratorsOfAbelianGroup(a));
+  aiv:=List(gens,Order);
+  dec:=EpimorphismFromFreeGroup(Group(gens));
+  deco:=function(x)
+    local i;
+    x:=ExponentSums(PreImagesRepresentative(dec,x));
+    for i in [1..Length(aiv)] do
+      x[i]:=x[i] mod aiv[i];
+    od;
+    return x;
+  end;
+
+  k:=Filtered(HermiteNormalFormIntegerMat(List(GeneratorsOfGroup(k),deco)),
+    x->not IsZero(x));
+
+  piv:=List(k,PositionNonZero);
+
+  # k is the kernel we have. We want to find a subgroup intersecting
+  # trivially with k. This is given by the non-pivot positions (and we
+  # cannot do better).
+  co:=SubgroupNC(a,gens{Difference([1..Length(gens)],piv)});
+  if ValueOption("cheap")=true then
+    # take also all pivots but last (larger order ones)
+    co:=ClosureSubgroup(co,gens{piv{[1..Length(piv)-1]}});
+  fi;
   Info(InfoFpGroup,2,"Degree larger ",Index(a,co));
   return PreImage(ma,co);
 end);
