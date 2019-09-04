@@ -992,7 +992,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
     x->PreImagesRepresentative(fp,x));
 
-  hom:=GroupHomomorphismByImages(G,Group(mo.generators),GeneratorsOfGroup(G),mo.generators);
+  hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),GeneratorsOfGroup(G),mo.generators);
   mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),mo.field); # new gens
 
   #rules:=ShallowCopy(kb!.tzrules);
@@ -1221,6 +1221,57 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   r.presentation:=rec(group:=FreeGroupOfFpGroup(fpg),relators:=new,
     prewords:=List(ogens,x->UnderlyingElement(ImagesRepresentative(fp,x))));
 
+  # normalform word and collect the tails
+  r.tailforword:=function(wrd,zy)
+  local v,i,j,s,p,mm,w,tail;
+    v:=zerovec;
+
+    # collect from left
+    i:=1;
+    while i<=Length(wrd) do
+
+      # does a rule apply at position i?
+      j:=0;
+      s:=0;
+      mm:=Minimum(mal,Length(wrd)-i+1);
+      while j<mm do
+        s:=s*max+wrd[i+j];
+        p:=LookupDictionary(dict,s);
+        if p<>fail and rulpos[p]<>fail then break; fi;
+        j:=j+1;
+      od;
+
+      if p<>fail and rulpos[p]<>fail then
+        p:=rulpos[p];
+        tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
+        wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
+
+        if p in hastail then
+          w:=zy{dim*(htpos[p]-1)+[1..dim]};
+          for j in tail do
+            w:=w*mats[j];
+          od;
+          v:=v+w;
+        fi;
+
+        i:=Maximum(0,i-mal); # earliest which could be affected
+      fi;
+      i:=i+1;
+    od;
+    return [wrd,v];
+  end;
+
+  r.fphom:=fp;
+  r.monhom:=fm;
+  r.colltz:=colltz;
+
+  # inverses of generators
+  r.myinvers:=function(wrd,zy)
+    return [colltz(formalinverse{Reversed(wrd)}),
+    -r.tailforword(Concatenation(wrd,colltz(formalinverse{Reversed(wrd)})),zy)
+      [2]];
+  end;
+
   r.pairact:=function(zy,pair)
   local autom,mat,i,imagemonwords,imgwrd,left,right,extim,prdout,myinvers,v;
 
@@ -1423,11 +1474,11 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
     GeneratorsOfGroup(G),module.generators);
   # we allow do go immediately to normal subgroup of index up to 4.
   # This reduces search space
-  it:=DescSubgroupIterator(G:skip:=4);
+  it:=DescSubgroupIterator(G:skip:=LogInt(Size(G),2));
   repeat
     m:=NextIterator(it);
 
-    if Index(G,m)*p>NrMovedPoints(G)+p^module.dimension then
+    if Index(G,m)*p>p^module.dimension then
       Info(InfoExtReps,2,"Index reached ",Index(G,m),
         ", write out module action");
       # alternative, boring version
@@ -1450,12 +1501,12 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
       return r;
 
     elif Size(Core(G,m))>1 then
-      Info(InfoExtReps,3,"Index ",Index(G,m)," has nontrivial core");
+      Info(InfoExtReps,4,"Index ",Index(G,m)," has nontrivial core");
     else
       Info(InfoExtReps,2,"Trying index ",Index(G,m));
 
       mats:=List(GeneratorsOfGroup(m),
-        x->TransposedMat(ImagesRepresentative(hom,x)));
+        x->TransposedMat(ImagesRepresentative(hom,x^-1)));
       a:=MatricesStabilizerOneDim(module.field,mats);
       if a<>false then
         # quotient module
@@ -1535,15 +1586,67 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
   until false;
 end);
 
+BindGlobal("RandomSubgroupNotIncluding",function(g,n,time)
+local best,i,u,v,start,cnt,runtime;
+  runtime:=GET_TIMER_FROM_ReproducibleBehaviour();
+  start:=runtime();
+  best:=TrivialSubgroup(g);
+  cnt:=0;
+  while runtime()-start<time or cnt<100 do
+    cnt:=cnt+1;
+    u:=TrivialSubgroup(g);
+    repeat
+      v:=u;
+      u:=ClosureGroup(u,Random(g));
+    until IsSubset(u,n);
+    if IndexNC(g,v)<IndexNC(g,best) then best:=v;fi;
+  od;
+  return best;
+end);
+
 InstallGlobalFunction(FpGroupCocycle,function(arg)
-local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
-      it,hom;
+local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
+      it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step;
+
+  # function to evaluate product (as integer list) in gens (and their
+  # inverses invs) with corresponding action mats
+  evalprod:=function(w,gens,invs,mats)
+  local new,i,a;
+    new:=[[],zerob];
+    for i in w do
+      if i>0 then
+        collect:=r.tailforword(Concatenation(new[1],gens[i][1]),z);
+        new:=[collect[1],collect[2]+new[2]*mats[i]+gens[i][2]];
+      else
+        collect:=r.tailforword(Concatenation(new[1],invs[-i][1]),z);
+        new:=[collect[1],collect[2]+new[2]/mats[-i]+invs[-i][2]];
+      fi;
+    od;
+    return new;
+
+  end;
+
+
+
   r:=arg[1];
   z:=arg[2];
   ogens:=GeneratorsOfGroup(r.presentation.group);
-  n:=Length(ogens);
+
   str:=List(ogens,String);
   dim:=r.module.dimension;
+  zerob:=ImmutableVector(r.module.field,
+    ListWithIdenticalEntries(dim,Zero(r.module.field)));
+  n:=Length(ogens);
+
+  gensmrep:=List(GeneratorsOfGroup(r.presentation.group),
+   x->[LetterRepAssocWord(UnderlyingElement(ImagesRepresentative(r.monhom,
+     ElementOfFpGroup(FamilyObj(One(Range(r.fphom))),x)))),zerob]);
+  # module generators
+  Append(gensmrep,List(IdentityMat(r.module.dimension,r.module.field),
+    x->[[],x]));
+  invsmrep:=List(gensmrep,x->r.myinvers(x[1],z));
+
   for i in [1..dim] do
     Add(str,Concatenation("m",String(i)));
   od;
@@ -1570,7 +1673,8 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
     od;
   od;
   fp:=f/rels;
-  SetSize(fp,Size(r.group)*Size(r.module.field)^r.module.dimension);
+  prime:=Size(r.module.field);
+  SetSize(fp,Size(r.group)*prime^r.module.dimension);
 
   if Length(arg)>2 and arg[3]=true then
     if IsZero(z) and MTX.IsIrreducible(r.module) then
@@ -1582,7 +1686,9 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
         Concatenation(m.ggens,m.basis));
     else
 
-      sim:=IsomorphismSimplifiedFpGroup(fp);
+      #sim:=IsomorphismSimplifiedFpGroup(fp);
+      sim:=IdentityMapping(fp);
+      fps:=Image(sim,fp);
 
       g:=r.group;
       quot:=InverseGeneralMapping(sim)
@@ -1592,7 +1698,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
       hom:=GroupHomomorphismByImages(r.group,Group(r.module.generators),
         GeneratorsOfGroup(r.group),r.module.generators);
       p:=Image(quot);
-      trysy:=Maximum(1000,IndexNC(p,SylowSubgroup(p,prime)));
+      trysy:=Maximum(1000,50*IndexNC(p,SylowSubgroup(p,prime)));
       # allow to enforce test coverage
       if ValueOption("forcetest")=true then trysy:=2;fi;
 
@@ -1603,19 +1709,210 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,lay,m,e,fp,old,sim,
       while Size(p)<Size(fp) do
         # we allow do go immediately to normal subgroup of index up to 4.
         # This reduces search space
-        it:=DescSubgroupIterator(p:skip:=4);
+        it:=DescSubgroupIterator(p:skip:=LogInt(Size(p),2));
         repeat
           m:=NextIterator(it);
           e:=fail;
-          if hom=false or Size(m)=1 or
+          if Index(p,m)>=mindeg and (hom=false or Size(m)=1 or
             false<>MatricesStabilizerOneDim(r.module.field,
               List(GeneratorsOfGroup(m),
-              x->TransposedMat(ImagesRepresentative(hom,x))^-1)) then
+              x->TransposedMat(ImagesRepresentative(hom,x))^-1))) then
             Info(InfoExtReps,2,"Attempt index ",Index(p,m));
-            e:=LargerQuotientBySubgroupAbelianization(quot,m);
+            if hom=false then Info(InfoExtReps,2,"hom is false");fi;
+
+            if hom<>false and Index(p,m)>
+              # up to index
+              50
+              # the rewriting seems to be sufficiently spiffy that we don't
+              # need to worry about this more involved process.
+              then
+
+              # Rewriting produces a bad presentation. Rather rebuild a new
+              # fp group using rewriting rules, finds its abelianization,
+              # and then lift that quotient
+              sub:=PreImage(quot,m);
+              tab0:=AugmentedCosetTableInWholeGroup(sub);
+
+              # primary generators
+              mwrd:=List(tab0!.primaryGeneratorWords,
+                x->ElementOfFpGroup(FamilyObj(One(fps)),x));
+              Info(InfoExtReps,4,"mwrd=",mwrd);
+              mgens:=List(mwrd,x->ImagesRepresentative(quot,x));
+              nn:=Length(mgens);
+              mfpi:=IsomorphismFpGroupByGenerators(m,mgens);
+              mmats:=List(mgens,x->ImagesRepresentative(hom,x));
+
+              i:=Concatenation(r.module.generators,
+                ListWithIdenticalEntries(r.module.dimension,
+                  IdentityMat(r.module.dimension,r.module.field)));
+              e:=List(mwrd,
+                x->evalprod(LetterRepAssocWord(UnderlyingElement(x)),
+                gensmrep,invsmrep,i));
+              ei:=List(e,function(x)
+                  local i;
+                    i:=r.myinvers(x[1],z);
+                    return [i[1],i[2]-x[2]];
+                  end);
+
+              newfree:=FreeGroup(nn+dim);
+              gens:=GeneratorsOfGroup(newfree);
+              rels:=[];
+
+              # module relations
+              for i in [1..dim] do
+                Add(rels,gens[nn+i]^prime);
+                for j in [1..i-1] do
+                  Add(rels,Comm(gens[nn+i],gens[nn+j]));
+                od;
+                for j in [1..Length(mgens)] do
+                  Add(rels,gens[nn+i]^gens[j]/
+                     LinearCombinationPcgs(gens{[nn+1..nn+dim]},mmats[j][i]));
+                od;
+              od;       
+
+              #extended presentation
+
+              for i in RelatorsOfFpGroup(Range(mfpi)) do
+                i:=LetterRepAssocWord(i);
+                str:=evalprod(i,e,ei,mmats);
+                if Length(str[1])>0 then Error("inconsistent");fi;
+                Add(rels,AssocWordByLetterRep(FamilyObj(One(newfree)),i)
+                         /LinearCombinationPcgs(gens{[nn+1..nn+dim]},str[2]));
+              od;
+              newfree:=newfree/rels; # new extension
+              Assert(2,
+                AbelianInvariants(newfree)=AbelianInvariants(PreImage(quot,m)));
+              mfpi:=GroupHomomorphismByImagesNC(newfree,m,
+                GeneratorsOfGroup(newfree),Concatenation(mgens,
+                  ListWithIdenticalEntries(dim,One(m))));
+
+              # first just try a bit, and see whether this gets all (e.g. if
+              # module is irreducible).
+              e:=LargerQuotientBySubgroupAbelianization(mfpi,m:cheap);
+              if e<>fail then
+                step:=0;
+                while step<=1 do
+                  # Now write down the combined representation in wreath
+
+                  e:=DefiningQuotientHomomorphism(e);
+                  # define map on subgroup.
+                  tab:=CopiedAugmentedCosetTable(tab0);
+                  tab.primaryImages:=Immutable(
+                    List(GeneratorsOfGroup(newfree){[1..nn]},
+                      x->ImagesRepresentative(e,x)));
+                  TrySecondaryImages(tab);
+
+                  i:=GroupHomomorphismByImagesNC(sub,Range(e),mwrd,
+                    List(GeneratorsOfGroup(newfree){[1..nn]},
+                      x->ImagesRepresentative(e,x)):noassert);
+                  SetCosetTableFpHom(i,tab);
+                  e:=PreImage(i,TrivialSubgroup(Range(e)));
+                  e:=Intersection(e,
+                      KernelOfMultiplicativeGeneralMapping(quot));
+
+                  # this check is very cheap, in comparison. So just be safe
+                  Assert(0,ForAll(RelatorsOfFpGroup(fps),
+                    x->IsOne(MappedWord(x,FreeGeneratorsOfFpGroup(fps),
+                      GeneratorsOfGroup(e!.quot)))));
+
+                  if step=0 then
+                    i:=GroupHomomorphismByImagesNC(e!.quot,p,
+                      GeneratorsOfGroup(e!.quot),
+                      GeneratorsOfGroup(p));
+                    j:=PreImage(i,m);
+                    if AbelianInvariants(j)=AbelianInvariants(newfree) then
+                      step:=2;
+                      Info(InfoExtReps,2,"Small bit did good");
+                    else
+                      Info(InfoExtReps,2,"Need expensive version");
+                      e:=LargerQuotientBySubgroupAbelianization(mfpi,m:
+                        cheap:=false);
+                      e:=Intersection(e,
+                        KernelOfMultiplicativeGeneralMapping(quot));
+                    fi;
+                  fi;
+                  
+
+                  step:=step+1;
+                od;
+
+              fi;
+
+            else
+              e:=LargerQuotientBySubgroupAbelianization(quot,m);
+              if e<>fail then
+                e:=Intersection(e,KernelOfMultiplicativeGeneralMapping(quot));
+              fi;
+            fi;
+
+
+            if e<>fail then
+              # can we do better degree -- greedy block reduction?
+              nn:=e!.quot;
+              if IsTransitive(nn,MovedPoints(nn)) then
+                repeat
+                  ei:=ShallowCopy(RepresentativesMinimalBlocks(nn,
+                    MovedPoints(nn)));
+                  SortBy(ei,x->-Length(x)); # long ones first
+                  j:=false;
+                  i:=1;
+                  while i<=Length(ei) and j=false do
+                    str:=Stabilizer(nn,ei[i],OnSets);
+                    if Size(Core(nn,str))=1 then
+                      j:=ei[i];
+                    fi;
+                    i:=i+1;
+                  od;
+                  if j<>false then
+                    Info(InfoExtReps,4,"deg. improved by blocks ",Size(j));
+                    # action on blocks
+                    i:=ActionHomomorphism(nn,Orbit(nn,j,OnSets),OnSets);
+                    j:=Size(nn);
+                    # make new group to not cahe anything about old.
+                    nn:=Group(List(GeneratorsOfGroup(nn),
+                      x->ImagesRepresentative(i,x)),());
+                    SetSize(nn,j);
+                  fi;
+                until j=false;
+
+              fi;
+              if not IsIdenticalObj(nn,e!.quot) then
+                Info(InfoExtReps,2,"Degree improved by factor ",
+                  NrMovedPoints(e!.quot)/NrMovedPoints(nn));
+
+                e:=SubgroupOfWholeGroupByQuotientSubgroup(FamilyObj(fps),nn,
+                  Stabilizer(nn,1));
+              fi;
+            elif e=fail and IndexNC(p,m)>trysy then
+              trysy:=Size(fp); # never try again
+              # can the Sylow subgroup get us something?
+              m:=SylowSubgroup(p,prime);
+              e:=PreImage(quot,m);
+              Info(InfoExtReps,2,"Sylow test for index ",IndexNC(p,m));
+              i:=IsomorphismFpGroup(e:cheap); # only one TzGo
+              e:=EpimorphismPGroup(Range(i),prime,PClassPGroup(m)+1);
+              e:=i*e; # map onto pgroup
+              j:=KernelOfMultiplicativeGeneralMapping(
+                  InverseGeneralMapping(e)*quot);
+              i:=RandomSubgroupNotIncluding(Range(e),j,20000); # 20 seconds
+              Info(InfoExtReps,2,"Sylow found ",IndexNC(p,m)," * ",
+                IndexNC(Range(e),i));
+              if IndexNC(Range(e),i)*IndexNC(p,m)<
+                  # consider permdegree up to
+                  100000 
+                  # as manageable
+                then
+                e:=PreImage(e,i);
+                #e:=KernelOfMultiplicativeGeneralMapping(
+                #  DefiningQuotientHomomorphism(i));
+              else
+                e:=fail; # not good
+              fi;
+            fi;
 
           else Info(InfoExtReps,4,"Don't index ",Index(p,m));
           fi;
+
         until e<>fail;
         i:=p;
 

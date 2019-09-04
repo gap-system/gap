@@ -114,6 +114,12 @@ gap> Length(DoubleCosets(Image(iso,g),Image(iso,s),Image(iso,s)));
 # some lattice and deductions
 gap> MinimalFaithfulPermutationDegree(PerfectGroup(IsPermGroup,7680,1));
 76
+gap> g:=SymmetricGroup(6);;
+gap> it:=DescSubgroupIterator(g);;
+gap> l:=[];;for i in it do Add(l,i);od;Length(l);
+56
+gap> it:=DescSubgroupIterator(g:skip:=20);;
+gap> l:=[];;for i in it do Add(l,i);od;
 
 #
 gap> STOP_TEST( "permgrp.tst", 1);
