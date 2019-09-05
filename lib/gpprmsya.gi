@@ -329,36 +329,44 @@ local   F,      # free group
     mov:=MovedPoints(G);
     deg:=Length(mov);
 
-    # create the finitely presented group with <G>.degree-1 generators
-    F := FreeGroup( 2, str);
-    gens:=GeneratorsOfGroup(F);
+    #special case for degree 3, cyclic
+    if deg=3 then
+      F := FreeGroup( 1, str);
+      imgs:=[(mov[1],mov[2],mov[3])];
+      relators:=[F.1^3];
 
-    # add the relations according to the presentation by Coxeter
-    # (see Coxeter/Moser)
-    r:=F.1;
-    s:=F.2;
-    if IsOddInt(deg) then
-      m:=(deg-1)/2;
-      relators:=[r^deg/s^deg,r^deg/(r*s)^m];
-      for j in [2..m] do
-        Add(relators,(r^-j*s^j)^2);
-      od;
-      #(1,2,3,..deg) and (1,3,2,4,5,..deg)
-      p:=MappingPermListList(mov,Concatenation(mov{[2..deg]},[mov[1]]));
-      imgs:=[p,p^(mov[2],mov[3])];
     else
-      m:=deg/2;
-      relators:=[r^(deg-1)/s^(deg-1),r^(deg-1)/(r*s)^m];
-      for j in [1..m-1] do
-        Add(relators,(r^-j*s^-1*r*s^j)^2);
-      od;
-      # (1,2,3,4..,deg-2,deg),(1,2,3,4,deg-3,deg-1,deg);
-      d:=Concatenation(mov{[1..deg-2]},[mov[deg]]);
-      p:=MappingPermListList(d,Concatenation(d{[2..deg-1]},[d[1]]));
-      imgs:=[p];
-      d:=Concatenation(mov{[1..deg-3]},mov{[deg-1,deg]});
-      p:=MappingPermListList(d,Concatenation(d{[2..deg-1]},[d[1]]));
-      Add(imgs,p);
+      # create the finitely presented group with <G>.degree-1 generators
+      F := FreeGroup( 2, str);
+      gens:=GeneratorsOfGroup(F);
+
+      # add the relations according to the presentation by Coxeter
+      # (see Coxeter/Moser)
+      r:=F.1;
+      s:=F.2;
+      if IsOddInt(deg) then
+        m:=(deg-1)/2;
+        relators:=[r^deg/s^deg,r^deg/(r*s)^m];
+        for j in [2..m] do
+          Add(relators,(r^-j*s^j)^2);
+        od;
+        #(1,2,3,..deg) and (1,3,2,4,5,..deg)
+        p:=MappingPermListList(mov,Concatenation(mov{[2..deg]},[mov[1]]));
+        imgs:=[p,p^(mov[2],mov[3])];
+      else
+        m:=deg/2;
+        relators:=[r^(deg-1)/s^(deg-1),r^(deg-1)/(r*s)^m];
+        for j in [1..m-1] do
+          Add(relators,(r^-j*s^-1*r*s^j)^2);
+        od;
+        # (1,2,3,4..,deg-2,deg),(1,2,3,4,deg-3,deg-1,deg);
+        d:=Concatenation(mov{[1..deg-2]},[mov[deg]]);
+        p:=MappingPermListList(d,Concatenation(d{[2..deg-1]},[d[1]]));
+        imgs:=[p];
+        d:=Concatenation(mov{[1..deg-3]},mov{[deg-1,deg]});
+        p:=MappingPermListList(d,Concatenation(d{[2..deg-1]},[d[1]]));
+        Add(imgs,p);
+      fi;
     fi;
 
     F:=F/relators;
