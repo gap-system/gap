@@ -86,6 +86,10 @@ gap> IsSymmetricGroup(h);
 true
 gap> IsomorphismFpGroup(h);;
 gap> IsomorphismFpGroup(DerivedSubgroup(h));;
+gap> IsomorphismFpGroup(Group((1,2,3)));
+[ (1,2,3) ] -> [ F1 ]
+gap> IsomorphismFpGroup(Group((4,7,3)));
+[ (3,4,7) ] -> [ F1 ]
 gap> sym:=SymmetricGroup(13);;
 gap> a:=Stabilizer(sym,[[1,2,3],[4,5,6,7]],OnTuplesSets);;Index(sym,a);
 60060

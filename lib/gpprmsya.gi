@@ -329,6 +329,9 @@ local   F,      # free group
     mov:=MovedPoints(G);
     deg:=Length(mov);
 
+    # special case for degree 3, cyclic
+    if deg = 3 then TryNextMethod(); fi;
+
     # create the finitely presented group with <G>.degree-1 generators
     F := FreeGroup( 2, str);
     gens:=GeneratorsOfGroup(F);
