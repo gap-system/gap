@@ -130,11 +130,8 @@ Obj NewWord(Obj type, UInt npairs)
 **
 *F  FuncNBits_Equal( <self>, <l>, <r> )
 */
-#define Func8Bits_Equal FuncNBits_Equal<UInt1>
-#define Func16Bits_Equal FuncNBits_Equal<UInt2>
-#define Func32Bits_Equal FuncNBits_Equal<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_Equal(Obj self, Obj l, Obj r)
+static Obj NBits_Equal(Obj l, Obj r)
 {
     Int         nl;             /* number of pairs to consider in <l>      */
     Int         nr;             /* number of pairs in <r>                  */
@@ -159,16 +156,28 @@ static Obj FuncNBits_Equal(Obj self, Obj l, Obj r)
     return True;
 }
 
+static Obj Func8Bits_Equal(Obj self, Obj l, Obj r)
+{
+    return NBits_Equal<UInt1>(l, r);
+}
+
+static Obj Func16Bits_Equal(Obj self, Obj l, Obj r)
+{
+    return NBits_Equal<UInt2>(l, r);
+}
+
+static Obj Func32Bits_Equal(Obj self, Obj l, Obj r)
+{
+    return NBits_Equal<UInt4>(l, r);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_ExponentSums3( <self>, <obj>, <start>, <end> )
 */
-#define Func8Bits_ExponentSums3 FuncNBits_ExponentSums3<UInt1>
-#define Func16Bits_ExponentSums3 FuncNBits_ExponentSums3<UInt2>
-#define Func32Bits_ExponentSums3 FuncNBits_ExponentSums3<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+static Obj NBits_ExponentSums3(Obj obj, Obj vstart, Obj vend)
 {
     Int         start;          /* the lowest generator number             */
     Int         end;            /* the highest generator number            */
@@ -237,19 +246,39 @@ static Obj FuncNBits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
     return sums;
 }
 
+static Obj Func8Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+{
+    return NBits_ExponentSums3<UInt1>(obj, vstart, vend);
+}
+
+static Obj Func16Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+{
+    return NBits_ExponentSums3<UInt2>(obj, vstart, vend);
+}
+
+static Obj Func32Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+{
+    return NBits_ExponentSums3<UInt4>(obj, vstart, vend);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_ExponentSums1( <self>, <obj> )
 */
-#define Func8Bits_ExponentSums1 FuncNBits_ExponentSums1<UInt1>
-#define Func16Bits_ExponentSums1 FuncNBits_ExponentSums1<UInt2>
-#define Func32Bits_ExponentSums1 FuncNBits_ExponentSums1<UInt4>
-template <typename UIntN>
-static Obj FuncNBits_ExponentSums1(Obj self, Obj obj)
+static Obj Func8Bits_ExponentSums1(Obj self, Obj obj)
 {
-    return FuncNBits_ExponentSums3<UIntN>( self, obj,
-        INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)) );
+    return NBits_ExponentSums3<UInt1>(obj, INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)));
+}
+
+static Obj Func16Bits_ExponentSums1(Obj self, Obj obj)
+{
+    return NBits_ExponentSums3<UInt2>(obj, INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)));
+}
+
+static Obj Func32Bits_ExponentSums1(Obj self, Obj obj)
+{
+    return NBits_ExponentSums3<UInt4>(obj, INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)));
 }
 
 
@@ -257,11 +286,8 @@ static Obj FuncNBits_ExponentSums1(Obj self, Obj obj)
 **
 *F  FuncNBits_ExponentSyllable( <self>, <w>, <i> )
 */
-#define Func8Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt1>
-#define Func16Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt2>
-#define Func32Bits_ExponentSyllable FuncNBits_ExponentSyllable<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj pos)
+static Obj NBits_ExponentSyllable(Obj w, Obj pos)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -291,16 +317,28 @@ static Obj FuncNBits_ExponentSyllable(Obj self, Obj w, Obj pos)
         return INTOBJ_INT(p&expm);
 }
 
+static Obj Func8Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
+{
+    return NBits_ExponentSyllable<UInt1>(w, pos);
+}
+
+static Obj Func16Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
+{
+    return NBits_ExponentSyllable<UInt2>(w, pos);
+}
+
+static Obj Func32Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
+{
+    return NBits_ExponentSyllable<UInt4>(w, pos);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_ExtRepOfObj( <self>, <obj> )
 */
-#define Func8Bits_ExtRepOfObj FuncNBits_ExtRepOfObj<UInt1>
-#define Func16Bits_ExtRepOfObj FuncNBits_ExtRepOfObj<UInt2>
-#define Func32Bits_ExtRepOfObj FuncNBits_ExtRepOfObj<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_ExtRepOfObj(Obj self, Obj obj)
+static Obj NBits_ExtRepOfObj(Obj obj)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -346,16 +384,28 @@ static Obj FuncNBits_ExtRepOfObj(Obj self, Obj obj)
     return lst;
 }
 
+static Obj Func8Bits_ExtRepOfObj(Obj self, Obj obj)
+{
+    return NBits_ExtRepOfObj<UInt1>(obj);
+}
+
+static Obj Func16Bits_ExtRepOfObj(Obj self, Obj obj)
+{
+    return NBits_ExtRepOfObj<UInt2>(obj);
+}
+
+static Obj Func32Bits_ExtRepOfObj(Obj self, Obj obj)
+{
+    return NBits_ExtRepOfObj<UInt4>(obj);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_GeneratorSyllable( <self>, <w>, <i> )
 */
-#define Func8Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt1>
-#define Func16Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt2>
-#define Func32Bits_GeneratorSyllable FuncNBits_GeneratorSyllable<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+static Obj NBits_GeneratorSyllable(Obj w, Obj pos)
 {
     Int         ebits;          /* number of bits in the exponent          */
     Int         num;            /* number of gen/exp pairs in <data>       */
@@ -376,16 +426,28 @@ static Obj FuncNBits_GeneratorSyllable(Obj self, Obj w, Obj pos)
     return INTOBJ_INT((p >> ebits)+1);
 }
 
+static Obj Func8Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+{
+    return NBits_GeneratorSyllable<UInt1>(w, pos);
+}
+
+static Obj Func16Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+{
+    return NBits_GeneratorSyllable<UInt2>(w, pos);
+}
+
+static Obj Func32Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+{
+    return NBits_GeneratorSyllable<UInt4>(w, pos);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_HeadByNumber( <self>, <l>, <gen> )
 */
-#define Func8Bits_HeadByNumber FuncNBits_HeadByNumber<UInt1>
-#define Func16Bits_HeadByNumber FuncNBits_HeadByNumber<UInt2>
-#define Func32Bits_HeadByNumber FuncNBits_HeadByNumber<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_HeadByNumber(Obj self, Obj l, Obj r)
+static Obj NBits_HeadByNumber(Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        genm;           /* generator mask                          */
@@ -430,6 +492,21 @@ static Obj FuncNBits_HeadByNumber(Obj self, Obj l, Obj r)
     return obj;
 }
 
+static Obj Func8Bits_HeadByNumber(Obj self, Obj l, Obj r)
+{
+    return NBits_HeadByNumber<UInt1>(l, r);
+}
+
+static Obj Func16Bits_HeadByNumber(Obj self, Obj l, Obj r)
+{
+    return NBits_HeadByNumber<UInt2>(l, r);
+}
+
+static Obj Func32Bits_HeadByNumber(Obj self, Obj l, Obj r)
+{
+    return NBits_HeadByNumber<UInt4>(l, r);
+}
+
 
 /****************************************************************************
 **
@@ -459,11 +536,8 @@ static Obj FuncNBits_HeadByNumber(Obj self, Obj l, Obj r)
 **  Examples: y^3 x < y^2 z, y^3 x > y^2 x z,  x^2 < x y^-1,  x^2 < x^3.
 **
 */
-#define Func8Bits_Less FuncNBits_Less<UInt1>
-#define Func16Bits_Less FuncNBits_Less<UInt2>
-#define Func32Bits_Less FuncNBits_Less<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_Less(Obj self, Obj l, Obj r)
+static Obj NBits_Less(Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -554,16 +628,28 @@ static Obj FuncNBits_Less(Obj self, Obj l, Obj r)
     return LT( ll, lr ) ? True : False;
 }
 
+static Obj Func8Bits_Less(Obj self, Obj l, Obj r)
+{
+    return NBits_Less<UInt1>(l, r);
+}
+
+static Obj Func16Bits_Less(Obj self, Obj l, Obj r)
+{
+    return NBits_Less<UInt2>(l, r);
+}
+
+static Obj Func32Bits_Less(Obj self, Obj l, Obj r)
+{
+    return NBits_Less<UInt4>(l, r);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_AssocWord( <self>, <type>, <data> )
 */
-#define Func8Bits_AssocWord FuncNBits_AssocWord<UInt1>
-#define Func16Bits_AssocWord FuncNBits_AssocWord<UInt2>
-#define Func32Bits_AssocWord FuncNBits_AssocWord<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_AssocWord(Obj self, Obj type, Obj data)
+static Obj NBits_AssocWord(Obj type, Obj data)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -605,16 +691,28 @@ static Obj FuncNBits_AssocWord(Obj self, Obj type, Obj data)
     return obj;
 }
 
+static Obj Func8Bits_AssocWord(Obj self, Obj type, Obj data)
+{
+    return NBits_AssocWord<UInt1>(type, data);
+}
+
+static Obj Func16Bits_AssocWord(Obj self, Obj type, Obj data)
+{
+    return NBits_AssocWord<UInt2>(type, data);
+}
+
+static Obj Func32Bits_AssocWord(Obj self, Obj type, Obj data)
+{
+    return NBits_AssocWord<UInt4>(type, data);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_ObjByVector( <self>, <type>, <data> )
 */
-#define Func8Bits_ObjByVector FuncNBits_ObjByVector<UInt1>
-#define Func16Bits_ObjByVector FuncNBits_ObjByVector<UInt2>
-#define Func32Bits_ObjByVector FuncNBits_ObjByVector<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_ObjByVector(Obj self, Obj type, Obj data)
+static Obj NBits_ObjByVector(Obj type, Obj data)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* unsigned exponent mask                  */
@@ -661,16 +759,28 @@ static Obj FuncNBits_ObjByVector(Obj self, Obj type, Obj data)
     return obj;
 }
 
+static Obj Func8Bits_ObjByVector(Obj self, Obj type, Obj data)
+{
+    return NBits_ObjByVector<UInt1>(type, data);
+}
+
+static Obj Func16Bits_ObjByVector(Obj self, Obj type, Obj data)
+{
+    return NBits_ObjByVector<UInt2>(type, data);
+}
+
+static Obj Func32Bits_ObjByVector(Obj self, Obj type, Obj data)
+{
+    return NBits_ObjByVector<UInt4>(type, data);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_Power( <self>, <l>, <r> )
 */
-#define Func8Bits_Power FuncNBits_Power<UInt1>
-#define Func16Bits_Power FuncNBits_Power<UInt2>
-#define Func32Bits_Power FuncNBits_Power<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_Power(Obj self, Obj l, Obj r)
+static Obj NBits_Power(Obj l, Obj r)
 {
     typedef typename OverflowType<UIntN>::type OInt;
 
@@ -894,16 +1004,28 @@ static Obj FuncNBits_Power(Obj self, Obj l, Obj r)
     }
 }
 
+static Obj Func8Bits_Power(Obj self, Obj l, Obj r)
+{
+    return NBits_Power<UInt1>(l, r);
+}
+
+static Obj Func16Bits_Power(Obj self, Obj l, Obj r)
+{
+    return NBits_Power<UInt2>(l, r);
+}
+
+static Obj Func32Bits_Power(Obj self, Obj l, Obj r)
+{
+    return NBits_Power<UInt4>(l, r);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_Product( <self>, <l>, <r> )
 */
-#define Func8Bits_Product FuncNBits_Product<UInt1>
-#define Func16Bits_Product FuncNBits_Product<UInt2>
-#define Func32Bits_Product FuncNBits_Product<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_Product(Obj self, Obj l, Obj r)
+static Obj NBits_Product(Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -979,16 +1101,28 @@ static Obj FuncNBits_Product(Obj self, Obj l, Obj r)
     return obj;
 }
 
+static Obj Func8Bits_Product(Obj self, Obj l, Obj r)
+{
+    return NBits_Product<UInt1>(l, r);
+}
+
+static Obj Func16Bits_Product(Obj self, Obj l, Obj r)
+{
+    return NBits_Product<UInt2>(l, r);
+}
+
+static Obj Func32Bits_Product(Obj self, Obj l, Obj r)
+{
+    return NBits_Product<UInt4>(l, r);
+}
+
 
 /****************************************************************************
 **
 *F  FuncNBits_Quotient( <self>, <l>, <r> )
 */
-#define Func8Bits_Quotient FuncNBits_Quotient<UInt1>
-#define Func16Bits_Quotient FuncNBits_Quotient<UInt2>
-#define Func32Bits_Quotient FuncNBits_Quotient<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_Quotient(Obj self, Obj l, Obj r)
+static Obj NBits_Quotient(Obj l, Obj r)
 {
     Int         ebits;          /* number of bits in the exponent          */
     UInt        expm;           /* signed exponent mask                    */
@@ -1065,16 +1199,28 @@ static Obj FuncNBits_Quotient(Obj self, Obj l, Obj r)
     return obj;
 }
 
+static Obj Func8Bits_Quotient(Obj self, Obj l, Obj r)
+{
+    return NBits_Quotient<UInt1>(l, r);
+}
+
+static Obj Func16Bits_Quotient(Obj self, Obj l, Obj r)
+{
+    return NBits_Quotient<UInt2>(l, r);
+}
+
+static Obj Func32Bits_Quotient(Obj self, Obj l, Obj r)
+{
+    return NBits_Quotient<UInt4>(l, r);
+}
+
+
 /****************************************************************************
 **
 *F  FuncNBits_LengthWord( <self>, <w> )
 */
-
-#define Func8Bits_LengthWord FuncNBits_LengthWord<UInt1>
-#define Func16Bits_LengthWord FuncNBits_LengthWord<UInt2>
-#define Func32Bits_LengthWord FuncNBits_LengthWord<UInt4>
 template <typename UIntN>
-static Obj FuncNBits_LengthWord(Obj self, Obj w)
+static Obj NBits_LengthWord(Obj w)
 {
   UInt npairs,i,ebits,exps,expm;
   Obj len, uexp;
@@ -1100,6 +1246,21 @@ static Obj FuncNBits_LengthWord(Obj self, Obj w)
       C_SUM_FIA(len,len,uexp);
     }
   return len;
+}
+
+static Obj Func8Bits_LengthWord(Obj self, Obj w)
+{
+    return NBits_LengthWord<UInt1>(w);
+}
+
+static Obj Func16Bits_LengthWord(Obj self, Obj w)
+{
+    return NBits_LengthWord<UInt2>(w);
+}
+
+static Obj Func32Bits_LengthWord(Obj self, Obj w)
+{
+    return NBits_LengthWord<UInt4>(w);
 }
 
 
