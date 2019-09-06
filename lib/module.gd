@@ -662,6 +662,7 @@ DeclareGlobalFunction( "SubmoduleNC" );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsRowModule", IsFreeLeftModule );
+InstallTrueMethod( IsFreeLeftModule, IsRowModule );
 
 InstallTrueMethod( IsRowModule, IsFullRowModule );
 
