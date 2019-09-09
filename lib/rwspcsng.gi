@@ -1,14 +1,14 @@
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
-##  This files's authors include Frank Celler.
+##  This file's authors include Frank Celler.
 ##
 ##  Copyright of GAP belongs to its developers, whose names are too numerous
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This files implement a single collector as representation of a polycyclic
+##  This file implement a single collector as representation of a polycyclic
 ##  collector with power/conjugate presentation.
 ##
 ##  As the  collector  needs access to  the  information as fast as  possible
