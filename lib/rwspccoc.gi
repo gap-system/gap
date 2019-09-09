@@ -1,14 +1,14 @@
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
-##  This files's authors include Werner Nickel.
+##  This file's authors include Werner Nickel.
 ##
 ##  Copyright of GAP belongs to its developers, whose names are too numerous
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This files implements a combinatorial collector as an extension of the
+##  This file implements a combinatorial collector as an extension of the
 ##  representation of a single collector as defined in rwspcsng.gi.
 ##
 

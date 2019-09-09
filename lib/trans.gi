@@ -1,7 +1,7 @@
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
-##  This files's authors include James D. Mitchell.
+##  This file's authors include James D. Mitchell.
 ##
 ##  Copyright of GAP belongs to its developers, whose names are too numerous
 ##  to list here. Please refer to the COPYRIGHT file for details.

@@ -1,7 +1,7 @@
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
-##  This files's authors include Thomas Breuer, Frank Celler, Bettina Eick,
+##  This file's authors include Thomas Breuer, Frank Celler, Bettina Eick,
 ##  Heiko Theißen.
 ##
 ##  Copyright of GAP belongs to its developers, whose names are too numerous

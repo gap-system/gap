@@ -7,7 +7,7 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This files implements APIs for GAP modules, including builtin modules,
+**  This file implements APIs for GAP modules, including builtin modules,
 **  or static and dynamic modules used by packages and end users to provide
 **  kernel extensions.
 */
