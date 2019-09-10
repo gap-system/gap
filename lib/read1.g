@@ -22,7 +22,6 @@ ReadLib( "type1.g"     );
 ReadLib( "methsel.g"   );
 ReadLib( "methsel2.g"  );
 
-ReadLib( "random.g"    );
 ReadLib( "function.g"  );
 
 ReadLib( "cache.gd"    );

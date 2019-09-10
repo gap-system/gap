@@ -20,7 +20,7 @@
 InstallMethod(RandomSource, [IsOperation, IsObject], function(rep, seed)
   local res;
   res := Objectify(NewType(RandomSourcesFamily, rep), rec());
-  return Init (res, seed);
+  return Init(res, seed);
 end);
 InstallMethod(RandomSource, [IsOperation], function(rep)
   return RandomSource(rep, 1);
@@ -67,52 +67,20 @@ InstallMethod(PrintObj, [IsRandomSource], function(rs)
   Print("<RandomSource in ", JoinStringsWithSeparator(cat, " and "), ">");
 end);
 
-############################################################################
-##  We provide the "classical" GAP random generator via a random source.
-##
-if IsHPCGAP then
-BindThreadLocalConstructor("GlobalRandomSource", {} ->
-    Objectify(NewType(RandomSourcesFamily, IsGlobalRandomSource), rec()));
-else
-InstallValue(GlobalRandomSource,
-    Objectify(NewType(RandomSourcesFamily, IsGlobalRandomSource), rec()));
-fi;
-
-InstallMethod(Init, [IsGlobalRandomSource, IsObject], function(rs, seed)
-  if IsInt(seed) then
-    RANDOM_SEED(seed);
-  else
-    R_N := seed[1];
-    R_X := ShallowCopy(seed[2]);
-  fi;
-  return GlobalRandomSource;
-end);
-Init(GlobalRandomSource, 1);
-
-InstallMethod(State, [IsGlobalRandomSource], function(rs)
-  return [R_N, ShallowCopy(R_X)];
-end);
-
-InstallMethod(Reset, [IsGlobalRandomSource, IsObject], function(rs, seed)
-  local old;
-  old := State(GlobalRandomSource);
-  Init(rs, seed);
-  return old;
-end);
-
-InstallMethod(Random, [IsGlobalRandomSource, IsList], function(rs, l)
-  if Length(l) < 2^28 then
-    return RANDOM_LIST(l);
-  else
-    return l[Random(rs, 1, Length(l))];
-  fi;
-end);
 
 ############################################################################
 ##  The classical GAP random generator as independent random sources.
-##  
+##
+
+# We need to compute modulo 2^28 repeatedly. If we just write 2^28 into the
+# code, though, GAP needs to evaluate it to 268435456 each time it executes
+# the function. To avoid this, we put it into a constant. As an additional
+# trick, we actually store -2^28, which gives identical results, but has the
+# benefit of being an immediate integer even on 32 bit systems.
+BIND_CONSTANT("R_228", -2^28);
+
 InstallMethod(Init, [IsGAPRandomSource, IsObject], function(rs, seed)
-  local old;
+  local R_N, R_X, i;
   if seed = 1 then
     rs!.R_N := 45;
     rs!.R_X  :=   [  66318732,  86395905,  22233618,   21989103,  237245480,
@@ -125,10 +93,17 @@ InstallMethod(Init, [IsGAPRandomSource, IsObject], function(rs, seed)
     184547675,  20423483, 75041763,  235736203,  54265107, 49075195,  100648387,
     114539755 ];
   elif IsInt(seed) then
-    old := Reset(GlobalRandomSource, seed);
+    R_N := 1;
+    R_X := [ seed mod R_228 ];
+    for i in [2..55] do
+        R_X[i] := (1664525 * R_X[i-1] + 1) mod R_228;
+    od;
+    for i in [1..99] do
+        R_N := R_N mod 55 + 1;
+        R_X[R_N] := (R_X[R_N] + R_X[(R_N+30) mod 55+1]) mod R_228;
+    od;
     rs!.R_N := R_N;
-    rs!.R_X := ShallowCopy(R_X);
-    Reset(GlobalRandomSource, old);
+    rs!.R_X := R_X;
   else
     rs!.R_N := seed[1];
     rs!.R_X := ShallowCopy(seed[2]);
@@ -150,7 +125,6 @@ end);
 InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
   local rx, rn;
   if Length(list) < 2^28 then
-    # we need to repeat the code of RANDOM_LIST
     rx := rs!.R_X;
     rn := rs!.R_N mod 55 + 1;
     rs!.R_N := rn;
@@ -162,9 +136,31 @@ InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
 end);
 
 
+############################################################################
+##  We provide the "classical" GAP random generator via a random source.
+##
+if IsHPCGAP then
+    BIND_GLOBAL("RANDOM_SEED_COUNTER", FixedAtomicList(1, 0));
+    BIND_GLOBAL("GET_RANDOM_SEED_COUNTER", {} ->
+      ATOMIC_ADDITION(RANDOM_SEED_COUNTER, 1, 1) );
+
+    # HACK to enforce backwards compatibility: when reading this file,
+    # we are on the main thread, and want to initialize GlobalRandomSource
+    # with seed 1, without modifying the RANDOM_SEED_COUNTER, to get
+    # behavior identical with that of prior GAP versions, and also identical
+    # with regular GAP (on a single thread).
+    BIND_GLOBAL("GlobalRandomSource", RandomSource(IsGAPRandomSource, 1));
+
+    BindThreadLocalConstructor("GlobalRandomSource", {} ->
+       RandomSource(IsGAPRandomSource, GET_RANDOM_SEED_COUNTER()));
+else
+    InstallValue(GlobalRandomSource, RandomSource(IsGAPRandomSource, 1));
+fi;
+
+
 ##############################################################################
 ##  Random source using the Mersenne twister kernel functions.
-##  
+##
 InstallMethod(Init, [IsMersenneTwister, IsObject], function(rs, seed)
   local st, endianseed, endiansys, perm, tmp, i;
   if IsPlistRep(seed) and IsString(seed[1]) and Length(seed[1]) = 2504 then
