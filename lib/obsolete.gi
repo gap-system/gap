@@ -1003,3 +1003,28 @@ local p,str,all,l,which;
     HIDDEN_GVARS:=[];
   fi;
 end);
+
+#############################################################################
+##
+#F  RANDOM_SEED( <list> )
+##
+##  Moved to obsoletes in August 2019 for GAP 4.11.
+##
+##  Still used in gbnp, recog -- but only in the package tests (08/2019)
+BindGlobal("RANDOM_SEED", function ( n )
+    Init(GlobalRandomSource, n);
+end );
+
+##
+##  The variables R_N and R_X used to part of the state of GAP's random number
+##  generator, and even were mentioned in the documentation of GAP 4.4, albeit
+##  only in a parenthesis, and as an alternative to StateRandom /
+##  RestoreStateRandom, which in turn were made obsolete in GAP 4.5.
+##
+##  No code is known to use these, anywhere. But hypothetically, somebody might
+##  have ancient GAP code sitting somewhere which tries to access these two
+##  in some way. We thus try hard to make sure this leads to an error, instead
+##  of possibly working silently, and leading to an erroneous computations.
+##
+BindGlobal("R_N", fail);
+BindGlobal("R_X", fail);
