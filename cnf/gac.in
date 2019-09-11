@@ -67,26 +67,25 @@ libdir="@libdir@"
 # path to the GAP executable
 gap_compiler="${abs_top_builddir}/gap"
 
-libtool="$SHELL $abs_top_builddir/libtool"
-CC="@CC@"
+libtool="$SHELL ${abs_top_builddir}/libtool"
 
-# These three should be filled in by the standard autoconf procedures 
-c_compiler="$libtool --mode=compile $CC"
-c_linker="$libtool --mode=link $CC"
-
-# read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, GAP_LDFLAGS, GAP_LIBS
+# read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, etc.
 . "${abs_top_builddir}/sysinfo.gap"
 
+# These three should be filled in by the standard autoconf procedures
+c_compiler="$libtool --mode=compile $GAP_CC"
+cxx_compiler="$libtool --mode=compile $GAP_CXX"
+c_linker="$libtool --mode=link $GAP_CXX"
+
 # These will need special care
-c_dyn_linker="$libtool --mode=link $CC -module -avoid-version -rpath $libdir"
+c_dyn_linker="$libtool --mode=link $GAP_CXX -module -avoid-version -rpath $libdir"
 c_addlibs=""
 
-GAPARCH=@GAPARCH@
 SYS_IS_CYGWIN32=@SYS_IS_CYGWIN32@
 if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
     c_dyn_linker="$c_dyn_linker -no-undefined -version-info 0:0:0"
     # FIXME: use correct DLL path (also after "make install")
-    c_dyn_linker="$c_dyn_linker -Wl,${abs_top_builddir}/bin/${GAPARCH}/gap.dll"
+    c_dyn_linker="$c_dyn_linker -Wl,${abs_top_builddir}/bin/${GAParch}/gap.dll"
 fi
 
 
@@ -112,6 +111,16 @@ c_compile () {
 
 #############################################################################
 ##
+#F  cxx_compile <output> <input> <options>
+##
+cxx_compile () {
+    echo ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
+    ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
+}
+
+
+#############################################################################
+##
 #F  c_link_dyn <output> <input>
 ##
 c_link_dyn () {
@@ -121,7 +130,7 @@ c_link_dyn () {
     ${c_dyn_linker} ${GAP_LDFLAGS} -o "$output_la" $2 ${c_addlibs} || exit 1
     if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
         # GAP assumes shared libraries end in .so
-        for dllfile in `cd $output_dir/.libs; ls *.dll`; do
+        for dllfile in $(cd $output_dir/.libs; ls *.dll); do
             cp $output_dir/.libs/$dllfile $output_dir/${dllfile%.dll}.so
         done
     else
@@ -174,20 +183,44 @@ process_o_file () {
 process_c_file () {
     name=$1
     c_file=$2
-    extra_cflags=$3
 
     if [ $comp_howfar != "object" ]; then
        o_file=${gactmp}/$$_${name}.lo
-        temps_o="${temps_o} ${o_file}"
+       temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
     else 
        o_file=${name}.lo
     fi
-    c_compile $o_file $c_file "$GAP_CFLAGS $extra_cflags"
+    c_compile $o_file $c_file "$GAP_CFLAGS"
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
     fi 
+}
+
+#############################################################################
+##
+#F process_cxx_file <basename> <filename>
+##
+## Similar to process_c_file, just for C++ files.
+##
+
+process_cxx_file () {
+  name=$1
+  cxx_file=$2
+
+  if [ $comp_howfar != "object" ]; then
+    o_file=${gactmp}/$$_${name}.lo
+    temps_o="${temps_o} ${o_file}"
+  elif [ "X$output" != "X" ]; then
+    o_file=$output
+  else
+    o_file=${name}.lo
+  fi
+  cxx_compile $o_file $cxx_file "$GAP_CXXFLAGS"
+  if [ $comp_howfar = "link" ]; then
+    process_o_file $name $o_file
+  fi
 }
 
 #############################################################################
@@ -285,7 +318,10 @@ while [ $# -gt 0 ]; do
 
     -k|--gap-compiler)    shift; gap_compiler="$1";;
 
-    -p)                   shift; GAP_CFLAGS="${GAP_CFLAGS} $1";;
+    -p)                   shift;
+                          GAP_CFLAGS="${GAP_CFLAGS} $1"
+                          GAP_CXXFLAGS="${GAP_CXXFLAGS} $1"
+                          ;;
 
     -P)                   shift; GAP_LDFLAGS="${GAP_LDFLAGS} $1";;
 
@@ -387,11 +423,15 @@ for input in ${inputs}; do
 
         *.cc) # compile '.cc' source files (C++)
             name=$(basename ${input} .cc)
-            process_c_file $name $input "-x c++";;
+            process_cxx_file $name $input;;
 
         *.cpp) # compile '.cpp' source files (also C++)
             name=$(basename ${input} .cpp)
-            process_c_file $name $input "-x c++";;
+            process_cxx_file $name $input;;
+
+        *.cxx) # compile '.cxx' source files (also C++)
+            name=$(basename ${input} .cxx)
+            process_cxx_file $name $input;;
 
         *.o) # look over '.o' source files
             name=$(basename ${input} .o)
