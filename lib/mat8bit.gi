@@ -384,7 +384,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
         fi;
         
         if givenq and q1 <> q then
-            Error("ConvertTo8BitMatrixRep( <mat>, <q> ): not all entries of <mat> written over <q>");
+            Error("ConvertToMatrixRep( <mat>, <q> ): not all entries of <mat> written over <q>");
         fi;
         
         #

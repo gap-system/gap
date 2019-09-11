@@ -2572,6 +2572,11 @@ InstallMethod( CompatibleVector, "for a gf2 matrix",
     return ShallowCopy(m[1]);
   end );
 
+InstallMethod( CompatibleVectorFilter,
+  "for a gf2 matrix",
+  [ IsGF2MatrixRep ],
+  M -> IsGF2VectorRep );
+
 InstallMethod( WeightOfVector, "for a gf2 vector",
   [ IsGF2VectorRep ],
   function( v )
