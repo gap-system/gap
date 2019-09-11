@@ -358,7 +358,7 @@ obj/%.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 # Linker rules for gap executable
 ########################################################################
 
-LINK=$(LIBTOOL) --mode=link $(CC) -export-dynamic
+LINK=$(LIBTOOL) --mode=link $(CXX) -export-dynamic
 
 libgap.la: $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) -no-undefined -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
@@ -391,8 +391,8 @@ GAP_LDFLAGS += -Wl,--allow-multiple-definition
 all: bin/$(GAPARCH)/gap.dll
 bin/$(GAPARCH)/gap.dll: symlinks libgap.la
 	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
-gap$(EXEEXT): libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
+gap$(EXEEXT): obj/src/gapw95.lo libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) obj/src/gapw95.lo $(GAP_LIBS) libgap.la -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
 
 else
@@ -694,6 +694,9 @@ endif # BUILD_BOEHM_GC
 # ensure subprojects are built and "installed" before compiling and linking GAP
 gap$(EXEEXT): $(EXTERN_FILES)
 $(OBJS): $(EXTERN_FILES)
+ifeq ($(SYS_IS_CYGWIN32),yes)
+obj/src/gapw95.lo: $(EXTERN_FILES)
+endif
 ifeq ($(HPCGAP),yes)
 $(SOURCES): $(EXTERN_FILES)
 endif
