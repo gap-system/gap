@@ -28,9 +28,14 @@ InstallOtherMethod( \[\]\:\=, [ IsMatrix and IsMutable, IsPosInt, IsPosInt, IsOb
     1-RankFilter(IsMatrix),
     function (m,i,j,o) m[i][j]:=o; end );
 
+# Note that installing 'ShallowCopy' is not allowed here, for several reasons.
+# Firstly, the result has to be independent of the input, and fully mutable.
+# Secondly, a shallow copy of an 8bit matrix would be again an 8bit matrix.
+# Also installing 'M -> List( M, ShallowCopy )' is not allowed
+# because the entries of 'M' can be proper vector objects.
 InstallOtherMethod( Unpack,
     [ IsMatrix ],
-    ShallowCopy );
+    M -> List( M, Unpack ) );
 
 
 #############################################################################

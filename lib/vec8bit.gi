@@ -1211,6 +1211,11 @@ InstallMethod( CompatibleVector, "for an 8bit matrix",
     return ShallowCopy(m[1]);
   end );
 
+InstallMethod( CompatibleVectorFilter,
+    "for an 8bit matrix",
+    [ Is8BitMatrixRep ],
+    M -> Is8BitVectorRep );
+
 InstallMethod( WeightOfVector, "for an 8bit vector",
   [ Is8BitVectorRep ],
   function( v )

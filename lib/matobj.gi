@@ -27,10 +27,25 @@
 ##  <Oper Name="\&lt;" Arg='M1, M2' Label="for two matrix objects"/>
 ##
 ##  <Description>
-##  Two vector objects are equal with respect to <Ref Oper="\="/>
-##  if they have the same length and the same entries.
-##  Two matrix  objects are equal with respect to <Ref Oper="\="/>
-##  if they have the same dimensions and the same entries.
+##  Two vector objects in <Ref Filt="IsList"/> are equal if they are equal as
+##  lists.
+##  Two matrix objects in <Ref Filt="IsList"/> are equal if they are equal as
+##  lists.
+##  <P/>
+##  Two vector objects of which at least one is not in <Ref Filt="IsList"/>
+##  are equal with respect to <Ref Oper="\="/> if they have the same
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value,
+##  the same <Ref Attr="BaseDomain" Label="for a vector object"/> value,
+##  the same dimensions,
+##  the same length,
+##  and the same entries.
+##  <P/>
+##  Two matrix objects of which at least one is not in <Ref Filt="IsList"/>
+##  are equal with respect to <Ref Oper="\="/> if they have the same
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value,
+##  the same <Ref Attr="BaseDomain" Label="for a matrix object"/> value,
+##  the same dimensions,
+##  and the same entries.
 ##  It is <Q>not</Q> necessary that the objects have the same base domain.
 ##  <P/>
 ##  We do <E>not</E> state a general rule how vector and matrix objects
@@ -48,18 +63,31 @@
 InstallMethod( \=,
     "for two vector objects",
     [ IsVectorObj, IsVectorObj ],
-    { v1, v2 } -> Length( v1 ) = Length( v2 ) and
-                  ForAll( [ 1 .. Length( v1 ) ],
-                          i -> v1[i] = v2[i] ) );
+    function( v1, v2 )
+    if IsList( v1 ) and IsList( v2 ) then
+      TryNextMethod();
+    fi;
+    return ConstructingFilter( v1 ) = ConstructingFilter( v2 ) and
+           BaseDomain( v1 ) = BaseDomain( v2 ) and
+           Length( v1 ) = Length( v2 ) and
+           ForAll( [ 1 .. Length( v1 ) ], i -> v1[i] = v2[i] );
+    end );
 
 InstallMethod( \=,
     "for two matrix objects",
     [ IsMatrixObj, IsMatrixObj ],
-    { M1, M2 } -> NumberRows( M1 ) = NumberRows( M2 ) and
-                  NumberColumns( M1 ) = NumberColumns( M2 ) and
-                  ForAll( [ 1 .. NumberRows( M1 ) ],
-                          i -> ForAll( [ 1 .. NumberColumns( M1 ) ],
-                                       j -> M1[i,j] = M2[i,j] ) ) );
+    function( M1, M2 )
+    if IsList( M1 ) and IsList( M2 ) then
+      TryNextMethod();
+    fi;
+    return ConstructingFilter( M1 ) = ConstructingFilter( M2 ) and
+           BaseDomain( M1 ) = BaseDomain( M2 ) and
+           NumberRows( M1 ) = NumberRows( M2 ) and
+           NumberColumns( M1 ) = NumberColumns( M2 ) and
+           ForAll( [ 1 .. NumberRows( M1 ) ],
+                   i -> ForAll( [ 1 .. NumberColumns( M1 ) ],
+                                j -> M1[i,j] = M2[i,j] ) );
+    end );
 
 
 InstallMethod( OneOfBaseDomain,
@@ -771,7 +799,7 @@ InstallMethod( \*,
     "for vector object and scalar",
     [ IsVectorObj, IsScalar ],
     function( v, s )
-    if IsPlistRep( v ) then
+    if IsList( v ) then
       TryNextMethod();
     fi;
     return Vector( Unpack( v ) * s, v );
@@ -781,7 +809,7 @@ InstallMethod( \*,
     "for scalar and vector object",
     [ IsScalar, IsVectorObj ],
     function( s, v )
-    if IsPlistRep( v ) then
+    if IsList( v ) then
       TryNextMethod();
     fi;
     return Vector( s * Unpack( v ), v );
@@ -1002,7 +1030,7 @@ InstallMethod( \*,
     "for two ordinary matrix objects (ordinary matrix product)",
     [ IsMatrixObj and IsOrdinaryMatrix, IsMatrixObj and IsOrdinaryMatrix ],
     function( M1, M2 )
-    if IsPlistRep( M1 ) then
+    if IsList( M1 ) or IsList( M2 ) then
       TryNextMethod();
     fi;
     return Matrix( Unpack( M1 ) * Unpack( M2 ), M1 );
@@ -1012,7 +1040,7 @@ InstallMethod( \*,
     "for matrix object and scalar",
     [ IsMatrixObj, IsScalar ],
     function( M, s )
-    if IsPlistRep( M ) then
+    if IsList( M ) then
       TryNextMethod();
     fi;
     return Matrix( Unpack( M ) * s, M );
@@ -1022,7 +1050,7 @@ InstallMethod( \*,
     "for scalar and matrix object",
     [ IsScalar, IsMatrixObj ],
     function( s, M )
-    if IsPlistRep( M ) then
+    if IsList( M ) then
       TryNextMethod();
     fi;
     return Matrix( s * Unpack( M ), M );
@@ -1032,7 +1060,7 @@ InstallMethod( \/,
     "for matrix object and scalar",
     [ IsMatrixObj, IsScalar ],
     function( M, s )
-    if IsPlistRep( M ) then
+    if IsList( M ) then
       TryNextMethod();
     fi;
     return Matrix( Unpack( M ) / s, M );
@@ -1137,10 +1165,8 @@ InstallMethod( CopySubMatrix,
 
 #############################################################################
 ##
-#M  AdditiveInverseImmutable( <v> )
 #M  AdditiveInverseMutable( <v> )
 #M  AdditiveInverseSameMutability( <v> )
-#M  ZeroImmutable( <v> )
 #M  ZeroMutable( <v> )
 #M  ZeroSameMutability( <v> )
 #M  IsZero( <v> )
@@ -1149,13 +1175,10 @@ InstallMethod( CopySubMatrix,
 ##  <#GAPDoc Label="VectorObj_UnaryArithmetics">
 ##  <ManSection>
 ##  <Heading>Unary Arithmetical Operations for Vector Objects</Heading>
-##  <Attr Name="AdditiveInverseImmutable" Arg="v"
-##   Label="for vector object"/>
 ##  <Oper Name="AdditiveInverseMutable" Arg="v"
 ##   Label="for vector object"/>
 ##  <Oper Name="AdditiveInverseSameMutability" Arg="v"
 ##   Label="for vector object"/>
-##  <Attr Name="ZeroImmutable" Arg="v" Label="for vector object"/>
 ##  <Oper Name="ZeroMutable" Arg="v" Label="for vector object"/>
 ##  <Oper Name="ZeroSameMutability" Arg="v" Label="for vector object"/>
 ##  <Prop Name="IsZero" Arg="v" Label="for vector object"/>
@@ -1185,12 +1208,11 @@ InstallMethod( CopySubMatrix,
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-# InstallMethod( AdditiveInverseImmutable,
-#     [ IsVectorObj ],
-#     v -> MakeImmutable(
-#              Vector( AdditiveInverseImmutable( Unpack( v ) ), v ) ) );
-#T should be superfluous
-
+##  We do not need default methods for 'AdditiveInverseImmutable' and
+##  'ZeroImmutable' for vector objects because these methods
+##  (create a mutable version and make it immutable)
+##  are already installed more generally.
+##
 InstallMethod( AdditiveInverseMutable,
     [ IsVectorObj ],
     v -> Vector( AdditiveInverseMutable( Unpack( v ) ), v ) );
@@ -1204,11 +1226,6 @@ InstallMethod( AdditiveInverseSameMutability,
       return AdditiveInverseImmutable( v );
     fi;
     end );
-
-# InstallMethod( ZeroImmutable,
-#     [ IsVectorObj ],
-#     v -> MakeImmutable( Vector( ZeroImmutable( Unpack( v ) ), v ) ) );
-#T should be superfluous
 
 InstallMethod( ZeroMutable,
     [ IsVectorObj ],
@@ -1235,31 +1252,28 @@ InstallMethod( Characteristic,
 
 #############################################################################
 ##
-#M  AdditiveInverseImmutable( <M> )
 #M  AdditiveInverseMutable( <M> )
 #M  AdditiveInverseSameMutability( <M> )
-#M  ZeroImmutable( <M> )
 #M  ZeroMutable( <M> )
 #M  ZeroSameMutability( <M> )
+#M  OneMutable( <M> )
+#M  OneSameMutability( <M> )
+#M  InverseMutable( <M> )
+#M  InverseSameMutability( <M> )
 #M  IsZero( <M> )
 #M  Characteristic( <M> )
 ##
 ##  <#GAPDoc Label="MatrixObj_UnaryArithmetics">
 ##  <ManSection>
 ##  <Heading>Unary Arithmetical Operations for Matrix Objects</Heading>
-##  <Attr Name="AdditiveInverseImmutable" Arg="M"
-##   Label="for matrix object"/>
 ##  <Oper Name="AdditiveInverseMutable" Arg="M"
 ##   Label="for matrix object"/>
 ##  <Oper Name="AdditiveInverseSameMutability" Arg="M"
 ##   Label="for matrix object"/>
-##  <Attr Name="ZeroImmutable" Arg="M" Label="for matrix object"/>
 ##  <Oper Name="ZeroMutable" Arg="M" Label="for matrix object"/>
 ##  <Oper Name="ZeroSameMutability" Arg="M" Label="for matrix object"/>
-##  <Attr Name="OneImmutable" Arg="M" Label="for matrix object"/>
 ##  <Oper Name="OneMutable" Arg="M" Label="for matrix object"/>
 ##  <Oper Name="OneSameMutability" Arg="M" Label="for matrix object"/>
-##  <Attr Name="InverseImmutable" Arg="M" Label="for matrix object"/>
 ##  <Oper Name="InverseMutable" Arg="M" Label="for matrix object"/>
 ##  <Oper Name="InverseSameMutability" Arg="M" Label="for matrix object"/>
 ##  <Prop Name="IsZero" Arg="M" Label="for matrix object"/>
@@ -1304,18 +1318,12 @@ InstallMethod( Characteristic,
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-InstallMethod( AdditiveInverseImmutable,
-    [ IsMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return MakeImmutable(
-                 Matrix( AdditiveInverseImmutable( Unpack( M ) ), M ) );
-    fi;
-    end );
-#T should be superfluous
-
+##  We do not need default methods for 'AdditiveInverseImmutable',
+##  'ZeroImmutable', 'OneImmutable', 'InverseImmutable',
+##  for matrix objects because these methods
+##  (create a mutable version and make it immutable)
+##  are already installed more generally.
+##
 InstallMethod( AdditiveInverseMutable,
     [ IsMatrixObj ],
     function( M )
@@ -1335,17 +1343,6 @@ InstallMethod( AdditiveInverseSameMutability,
       return AdditiveInverseImmutable( M );
     fi;
     end );
-
-InstallMethod( ZeroImmutable,
-    [ IsMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return MakeImmutable( Matrix( ZeroImmutable( Unpack( M ) ), M ) );
-    fi;
-    end );
-#T should be superfluous
 
 InstallMethod( ZeroMutable,
     [ IsMatrixObj ],
@@ -1367,17 +1364,6 @@ InstallMethod( ZeroSameMutability,
     fi;
     end );
 
-InstallMethod( OneImmutable,
-    [ IsMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return MakeImmutable( Matrix( OneImmutable( Unpack( M ) ), M ) );
-    fi;
-    end );
-#T should be superfluous
-
 InstallMethod( OneMutable,
     [ IsMatrixObj ],
     function( M )
@@ -1397,17 +1383,6 @@ InstallMethod( OneSameMutability,
       return OneImmutable( M );
     fi;
     end );
-
-InstallMethod( InverseImmutable,
-    [ IsMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return MakeImmutable( Matrix( InverseImmutable( Unpack( M ) ), M ) );
-    fi;
-    end );
-#T should be superfluous
 
 InstallMethod( InverseMutable,
     [ IsMatrixObj ],
@@ -1509,11 +1484,16 @@ InstallMethod( DisplayString,
 
 InstallMethod( String,
     [ IsMatrixObj ],
-    M -> Concatenation( "NewMatrix( ",
-             NameFunction( ConstructingFilter( M ) ), ", ",
-             String( BaseDomain( M ) ), ", ",
-             String( NumberColumns( M ) ), ", ",
-             String( Unpack( M ) ), " )" ) );
+    function( M )
+    if IsPlistRep( M ) then
+      TryNextMethod();
+    fi;
+    return Concatenation( "NewMatrix( ",
+               NameFunction( ConstructingFilter( M ) ), ", ",
+               String( BaseDomain( M ) ), ", ",
+               String( NumberColumns( M ) ), ", ",
+               String( Unpack( M ) ), " )" );
+    end );
 
 
 ############################################################################

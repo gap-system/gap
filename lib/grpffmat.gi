@@ -454,6 +454,8 @@ function( G, flag )
   od;
   # obey general rule in GAP to put class of identity first
   i := First([1..Length(cl)], c-> Representative(cl[c]) = One(G));
+#T note that One(G) is in Is8BitMatrixRep,
+#T but the class representatives are in IsPlistRep
   if i <> 1 then
     a := cl[i];
     cl[i] := cl[1];
