@@ -140,6 +140,7 @@ matrix:
 
     # test Julia integration
     - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
+      dist: bionic # need GCC 6 to avoid linker error
 
 script:
   - set -e
