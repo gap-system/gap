@@ -1414,7 +1414,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
     for i in [2..Length(l)-1] do
       ipcgs:=InducedPcgsByPcSequenceNC(home,pcgs{[l[i]..Length(pcgs)]});
       h:=SubgroupByPcgs(p,ipcgs);
-      SetInducedPcgs(home,p,ipcgs);
+      SetInducedPcgs(home,h,ipcgs);
       Add(g,h);
     od;
     Add(g,TrivialSubgroup(p));
