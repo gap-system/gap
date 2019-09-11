@@ -688,7 +688,7 @@ function( group )
     if HasPcgs(group)  then
         spec := SpecialPcgs( Pcgs( group ) );
     else
-        spec := SpecialPcgs( Pcgs( group ) );
+        spec := SpecialPcgs( AttributeValueNotSet( Pcgs, group ) );
         SetPcgs( group, spec );
     fi;
     SetGroupOfPcgs (spec, group);
