@@ -424,7 +424,9 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     if whole  then
         SetIsSolvableGroup( grp, true );
         SetPcgs( grp, pcgs );
-        SetHomePcgs( grp, pcgs );
+        if not HasHomePcgs( grp ) then
+          SetHomePcgs( grp, pcgs );
+        fi;
         SetGroupOfPcgs (pcgs, grp);
         if cent  then
             SetIsNilpotentGroup( grp, true );
