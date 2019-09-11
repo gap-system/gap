@@ -168,7 +168,7 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      local PKG_NAME=$($GAPROOT/gap -q -T <<GAPInput
+      local PKG_NAME=$($GAPROOT/gap -q -T -A <<GAPInput
 Read("PackageInfo.g");
 Print(GAPInfo.PackageInfoCurrent.PackageName);
 GAPInput
