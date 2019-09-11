@@ -1694,29 +1694,26 @@ InstallMethod( IsSurjective,
 
 #############################################################################
 ##
-#M  GeneralRestrictedMapping( <map>, <source>,<range> ) 
+#M  GeneralRestrictedMapping( <map>, <source>, <range> ) 
 ##
 InstallGlobalFunction(GeneralRestrictedMapping,
 function( map, s,r )
-local res, prop;      
+local filter, res, prop;      
 
   # Make the general mapping.
   if IsSPGeneralMapping( map )  then
-    res:= Objectify( TypeOfDefaultGeneralMapping( s,r,
-		      IsGeneralRestrictedMappingRep and IsSPGeneralMapping ),
-		    rec() );
+    filter := IsSPGeneralMapping;
   else
-    res:= Objectify( TypeOfDefaultGeneralMapping( s,r,
-		      IsGeneralRestrictedMappingRep and IsNonSPGeneralMapping ),
-		    rec() );
+    filter := IsNonSPGeneralMapping;
   fi;
+  res:= Objectify( TypeOfDefaultGeneralMapping( s,r,
+            IsGeneralRestrictedMappingRep and filter ),
+          rec() );
 
   # Enter the identifying information.
   res!.map:= map;
-  SetSource(res,s);
-  SetRange(res,r);
 
-  for prop in [IsSingleValued, IsTotal, IsInjective, RespectsMultiplication, , RespectsInverses,
+  for prop in [IsSingleValued, IsTotal, IsInjective, RespectsMultiplication, RespectsInverses,
 	  RespectsAddition, RespectsAdditiveInverses, RespectsScalarMultiplication] do
 	if Tester(prop)(map) and prop(map) then
 		Setter(prop)(res, true);
