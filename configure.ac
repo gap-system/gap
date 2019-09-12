@@ -48,11 +48,11 @@ fi
 AC_MSG_RESULT([$ABI_CFLAGS])
 AC_SUBST([ABI_CFLAGS])
 
-dnl Add ABI_CFLAGS to CFLAGS *now*, so that all config tests we
+dnl Start using ABI_CFLAGS *now*, so that all configure tests we
 dnl run from here on use it.
 AS_IF([test -n $ABI_CFLAGS],[
-  CFLAGS="$CFLAGS $ABI_CFLAGS"
-  LDFLAGS="$LDFLAGS $ABI_CFLAGS"
+  CC="$CC $ABI_CFLAGS"
+  CXX="$CXX $ABI_CFLAGS"
 
   dnl Verify that the ABI_CFLAGS didn't break anything
     AC_LINK_IFELSE(
