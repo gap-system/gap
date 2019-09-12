@@ -721,6 +721,7 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "GAP_LIB_DIR=\"$(abs_srcdir)\"" >> $@
 	@echo "" >> $@
 	@echo "GAP_CC=\"$(CC)\"" >> $@
+	@echo "GAP_CXX=\"$(CXX)\"" >> $@
 	@echo "GAP_CFLAGS=\"$(GAP_CFLAGS)\"" >> $@
 	@echo "GAP_CXXFLAGS=\"$(GAP_CXXFLAGS)\"" >> $@
 	@echo "GAP_CPPFLAGS=\"$(GAP_PKG_CPPFLAGS)\"" >> $@
