@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "127577812"
+#define FILE_CRC  "-52605173"
 
 /* global variables used in handlers */
 static GVar G_PushOptions;
@@ -96,6 +96,45 @@ static Obj  HdlrFunc2 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
+ /* x := - 10 ^ 5; */
+ t_2 = POW( INTOBJ_INT(10), INTOBJ_INT(5) );
+ C_AINV_FIA( t_1, t_2 )
+ l_x = t_1;
+ 
+ /* Print( x, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_x, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+ }
+ 
+ /* y := -100000; */
+ l_y = INTOBJ_INT(-100000);
+ 
+ /* Print( y, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_y, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+ }
+ 
+ /* Print( x = y, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = (EQ( l_x, l_y ) ? True : False);
+ t_3 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
+ 
  /* x := 10 ^ 10; */
  t_1 = POW( INTOBJ_INT(10), INTOBJ_INT(10) );
  l_x = t_1;
@@ -112,6 +151,45 @@ static Obj  HdlrFunc2 (
  
  /* y := 10000000000; */
  l_y = ObjInt_Int8(10000000000);
+ 
+ /* Print( y, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_y, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+ }
+ 
+ /* Print( x = y, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = (EQ( l_x, l_y ) ? True : False);
+ t_3 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
+ 
+ /* x := - 10 ^ 10; */
+ t_2 = POW( INTOBJ_INT(10), INTOBJ_INT(10) );
+ C_AINV_FIA( t_1, t_2 )
+ l_x = t_1;
+ 
+ /* Print( x, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_x, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+ }
+ 
+ /* y := -10000000000; */
+ l_y = ObjInt_Int8(-10000000000);
  
  /* Print( y, "\n" ); */
  t_1 = GF_Print;
@@ -152,6 +230,49 @@ static Obj  HdlrFunc2 (
  t_1 = NewWordSizedBag(T_INTPOS, 16);
  C_SET_LIMB8( t_1, 0, 7766279631452241920LL);
  C_SET_LIMB8( t_1, 1, 5LL);
+ l_y = t_1;
+ 
+ /* Print( y, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_y, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+ }
+ 
+ /* Print( x = y, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = (EQ( l_x, l_y ) ? True : False);
+ t_3 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, t_2, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+ }
+ 
+ /* x := - 10 ^ 20; */
+ t_2 = POW( INTOBJ_INT(10), INTOBJ_INT(20) );
+ C_AINV_FIA( t_1, t_2 )
+ l_x = t_1;
+ 
+ /* Print( x, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_2ARGS( t_1, l_x, t_2 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+ }
+ 
+ /* y := - 100000000000000000000; */
+ t_2 = NewWordSizedBag(T_INTPOS, 16);
+ C_SET_LIMB8( t_2, 0, 7766279631452241920LL);
+ C_SET_LIMB8( t_2, 1, 5LL);
+ C_AINV_FIA( t_1, t_2 )
  l_y = t_1;
  
  /* Print( y, "\n" ); */
@@ -257,8 +378,8 @@ static Obj  HdlrFunc3 (
  t_1 = NewFunction( NameFunc[4], -1, ArgStringToList("args"), HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 40);
- SET_ENDLINE_BODY(t_2, 42);
+ SET_STARTLINE_BODY(t_2, 58);
+ SET_ENDLINE_BODY(t_2, 60);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  l_vararg__fun = t_1;
@@ -494,8 +615,8 @@ static Obj  HdlrFunc3 (
  t_1 = NewFunction( NameFunc[5], -1, ArgStringToList("args"), HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 71);
- SET_ENDLINE_BODY(t_2, 73);
+ SET_STARTLINE_BODY(t_2, 89);
+ SET_ENDLINE_BODY(t_2, 91);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  l_vararg__fun = t_1;
@@ -2294,14 +2415,29 @@ static Obj  HdlrFunc1 (
       y := 100000;
       Print( y, "\n" );
       Print( x = y, "\n" );
+      x := - 10 ^ 5;
+      Print( x, "\n" );
+      y := -100000;
+      Print( y, "\n" );
+      Print( x = y, "\n" );
       x := 10 ^ 10;
       Print( x, "\n" );
       y := 10000000000;
       Print( y, "\n" );
       Print( x = y, "\n" );
+      x := - 10 ^ 10;
+      Print( x, "\n" );
+      y := -10000000000;
+      Print( y, "\n" );
+      Print( x = y, "\n" );
       x := 10 ^ 20;
       Print( x, "\n" );
       y := 100000000000000000000;
+      Print( y, "\n" );
+      Print( x = y, "\n" );
+      x := - 10 ^ 20;
+      Print( x, "\n" );
+      y := - 100000000000000000000;
       Print( y, "\n" );
       Print( x = y, "\n" );
       return;
@@ -2310,7 +2446,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 7);
- SET_ENDLINE_BODY(t_2, 30);
+ SET_ENDLINE_BODY(t_2, 48);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__int__constants, t_1 );
@@ -2351,8 +2487,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[3], 0, 0, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 36);
- SET_ENDLINE_BODY(t_2, 94);
+ SET_STARTLINE_BODY(t_2, 54);
+ SET_ENDLINE_BODY(t_2, 112);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__func__calls, t_1 );
@@ -2450,8 +2586,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[6], 0, 0, HdlrFunc6 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 104);
- SET_ENDLINE_BODY(t_2, 145);
+ SET_STARTLINE_BODY(t_2, 122);
+ SET_ENDLINE_BODY(t_2, 163);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__cmp__ops, t_1 );
@@ -2467,8 +2603,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[7], 0, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 151);
- SET_ENDLINE_BODY(t_2, 159);
+ SET_STARTLINE_BODY(t_2, 169);
+ SET_ENDLINE_BODY(t_2, 177);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__arith, t_1 );
@@ -2480,8 +2616,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[8], 0, 0, HdlrFunc8 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 165);
- SET_ENDLINE_BODY(t_2, 181);
+ SET_STARTLINE_BODY(t_2, 183);
+ SET_ENDLINE_BODY(t_2, 199);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__tilde, t_1 );
@@ -2519,8 +2655,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[9], 0, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 187);
- SET_ENDLINE_BODY(t_2, 215);
+ SET_STARTLINE_BODY(t_2, 205);
+ SET_ENDLINE_BODY(t_2, 233);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__list__rec__exprs, t_1 );
@@ -2579,8 +2715,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[10], 0, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 222);
- SET_ENDLINE_BODY(t_2, 281);
+ SET_STARTLINE_BODY(t_2, 240);
+ SET_ENDLINE_BODY(t_2, 299);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__IsBound__Unbind, t_1 );
@@ -2626,8 +2762,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[11], 0, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 287);
- SET_ENDLINE_BODY(t_2, 328);
+ SET_STARTLINE_BODY(t_2, 305);
+ SET_ENDLINE_BODY(t_2, 346);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_test__loops, t_1 );
@@ -2647,8 +2783,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[12], 0, 0, HdlrFunc12 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 334);
- SET_ENDLINE_BODY(t_2, 346);
+ SET_STARTLINE_BODY(t_2, 352);
+ SET_ENDLINE_BODY(t_2, 364);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
@@ -2788,7 +2924,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "basics.g",
- .crc         = 127577812,
+ .crc         = -52605173,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
