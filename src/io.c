@@ -45,51 +45,61 @@
 **
 *T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
 **
-**  'TypInputFile' describes the  information stored  for  open input  files:
-**
-**  'isstream' is 'true' if input come from a stream.
-**
-**  'file'  holds the  file identifier  which  is received from 'SyFopen' and
-**  which is passed to 'SyFgets' and 'SyFclose' to identify this file.
-**
-**  'name' is the name of the file, this is only used in error messages.
-**
-**  'line' is a  buffer that holds the  current input  line.  This is  always
-**  terminated by the character '\0'.  Because 'line' holds  only part of the
-**  line for very long lines the last character need not be a <newline>.
-**
-**  'stream' is non-zero if the input points to a stream.
-**
-**  'sline' contains the next line from the stream as GAP string.
-**
-**  The following variables are used to store the state of the interpreter
-**  and stream when another input file is opened:
-**
-**  'ptr' points to the current character within that line.  This is not used
-**  for the current input file, where 'In' points to the  current  character.
-**
-**  'number' is the number of the current line, is used in error messages.
-**
-**  'interpreterStartLine' is the number of the line where the fragment of
-**  code currently being interpreted started. This is used for profiling
-**
-**
+**  'TypInputFile' describes the information stored for open input files.
 */
 typedef struct {
-    UInt   isstream;
-    Int    file;
-    Char   name[256];
-    UInt   gapnameid;
-    Char   line[32768];
+    // non-zero if input comes from a stream
+    UInt isstream;
+
+    // non-zero if input come from a string stream
+    UInt isstringstream;
+
+    // if input comes from a stream, this points to a GAP IsInputStream object
+    Obj stream;
+
+    // holds the file identifier received from 'SyFopen' and which is passed
+    // to 'SyFgets' and 'SyFclose' to identify this file
+    Int file;
+
+    // the name of the file; this is only used in error messages
+    Char name[256];
+
+    //
+    UInt gapnameid;
+
+    // a buffer that holds the current input line; always terminated
+    // by the character '\0'. Because 'line' holds only part of the line for
+    // very long lines the last character need not be a <newline>.
+    Char line[32768];
+
+    // the next line from the stream as GAP string
+    Obj sline;
+
+    //
+    Int spos;
+
+    //
+    UInt echo;
+
+
+    // The following variables are used to store the state of the interpreter
+    // and stream when another input file is opened:
+
+    // pointer to the current character within the current line. This is not
+    // used for the current input file, where 'In' points to the current
+    // character
     Char * ptr;
-    UInt   symbol;
-    Int    interpreterStartLine;
-    Int    number;
-    Obj    stream;
-    UInt   isstringstream;
-    Obj    sline;
-    Int    spos;
-    UInt   echo;
+
+    //
+    UInt symbol;
+
+    // the number of the line where the fragment of code currently being
+    // interpreted started; used for profiling
+    Int interpreterStartLine;
+
+    // the number of the current line; used in error messages
+    Int number;
+
 } TypInputFile;
 
 
@@ -108,7 +118,9 @@ typedef struct {
 typedef struct {
     UInt isstream;
     UInt isstringstream;
+    Obj  stream;
     Int  file;
+
     Char line[MAXLENOUTPUTLINE];
     Int  pos;
     Int  format;
@@ -116,7 +128,6 @@ typedef struct {
 
     /* each hint is a tripel (position, value, indent) */
     Int hints[3 * MAXHINTS + 1];
-    Obj stream;
 } TypOutputFile;
 
 
