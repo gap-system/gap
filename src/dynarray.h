@@ -102,24 +102,24 @@ static inline void FN(SetLen)(Array * arr, Int len)
         arr->len = len;
 }
 
-static inline inline Int FN(Len)(Array * arr)
+static inline Int FN(Len)(Array * arr)
 {
     return arr->len;
 }
 
-static inline inline ELEM_TYPE FN(Get)(Array * arr, Int i)
+static inline ELEM_TYPE FN(Get)(Array * arr, Int i)
 {
     GAP_ASSERT(i >= 0 && i < arr->len);
     return arr->items[i];
 }
 
-static inline inline void FN(Put)(Array * arr, Int i, ELEM_TYPE item)
+static inline void FN(Put)(Array * arr, Int i, ELEM_TYPE item)
 {
     GAP_ASSERT(i >= 0 && i < arr->len);
     arr->items[i] = item;
 }
 
-static inline inline void FN(Add)(Array * arr, ELEM_TYPE item)
+static inline void FN(Add)(Array * arr, ELEM_TYPE item)
 {
     FN(ExpandTo)(arr, arr->len + 1);
     arr->items[arr->len++] = item;
