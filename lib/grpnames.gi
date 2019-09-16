@@ -81,16 +81,12 @@ InstallMethod( IsTrivialNormalIntersection,
 InstallGlobalFunction( UnionIfCanEasilySortElements,
 
   function( arg )
-    local i, N;
 
-    for i in [1..Length(arg)] do
-      for N in arg[i] do
-        if not CanEasilySortElements(N) then
-          return Concatenation(arg);
-        fi;
-      od;
-    od;
-    return Union(arg);
+    if ForAll(arg, CanEasilySortElements) then
+      return Union(arg);
+    else
+      return Concatenation(arg);
+    fi;
   end);
 
 #############################################################################
