@@ -42,11 +42,11 @@ true
 gap> G:=SmallGroup(16,7);; C := Center(G);; NormalComplement(G,C);
 fail
 gap> G := DirectProduct(D, D, D);;
-gap> List(DirectFactorsOfGroup(G), IdGroup);
-[ [ 6, 1 ], [ 6, 1 ], [ 6, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ] ]
+gap> SortedList(List(DirectFactorsOfGroup(G), IdGroup));
+[ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 6, 1 ], [ 6, 1 ], [ 6, 1 ] ]
 gap> G := DirectProduct(D, D);; NormalSubgroups(G);;
-gap> List(DirectFactorsOfGroup(G), IdGroup);
-[ [ 6, 1 ], [ 6, 1 ], [ 2, 1 ], [ 2, 1 ] ]
+gap> SortedList(List(DirectFactorsOfGroup(G), IdGroup));
+[ [ 2, 1 ], [ 2, 1 ], [ 6, 1 ], [ 6, 1 ] ]
 gap> D := DihedralGroup(8);; G := DirectProduct(D, D);; NormalSubgroups(G);;
 gap> List(DirectFactorsOfGroup(G), IdGroup);
 [ [ 8, 3 ], [ 8, 3 ] ]
