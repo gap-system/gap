@@ -30,7 +30,7 @@ fi
 if [[ $JULIA = yes ]]
 then
   pushd extern
-  wget https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-linux-x86_64.tar.gz
+  wget https://julialang-s3.julialang.org/bin/linux/x64/1.2/julia-1.2.0-linux-x86_64.tar.gz
   tar xvf julia-*.tar.gz
   rm julia-*.tar.gz
   cd julia-*
