@@ -10,7 +10,7 @@ gap> Length(CharacteristicSubgroups(g));
 5
 gap> Length(CharacteristicSubgroups(h));
 5
-gap> IsomorphismGroups(g,h:forcetest)<>fail;
+gap> IsomorphismGroups(g,h)<>fail;
 true
 
 #

@@ -205,26 +205,78 @@ InstallMethod(IrreducibleModules,
   "permutation group, finite field, Burnside-Brauer",
     true, [ IsPermGroup, IsField and IsFinite, IsInt ], 2,
 function(G,field,dim)
-local n,mats,mo,moduln,i,j,k,t;
+local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo;
   if dim=1 then TryNextMethod();fi; # special abelian case
+
+  p:=Characteristic(field);
+  # Is there a pcore? If so take the quotient
+  k:=PCore(G,p);
+  if Size(k)>1 then
+    n:=NaturalHomomorphismByNormalSubgroup(G,k);
+    t:=List(GeneratorsOfGroup(G),x->ImagesRepresentative(n,x));
+    i:=IrreducibleModules(Group(t),field,dim);
+    if i[1]=t then return [GeneratorsOfGroup(G),i[2]];fi;
+  fi;
+
+
+  # how many should we expect
+  t:=List(ConjugacyClasses(G),Representative);
+  t:=Filtered(t,x->Order(x) mod p<>0);
+  cnt:=Length(t);
+  Info(InfoMeatAxe,1,"Expect ",cnt," absolute irreps");
+
+
   n:=LargestMovedPoint(G);
   mats:=List(GeneratorsOfGroup(G),x->PermutationMat(x,n,field));
   n:=Length(mats);
   mo:=GModuleByMats(mats,field);
   moduln:=List(MTX.CollectedFactors(mo),x->x[1]);
+  for k in moduln do
+    if MTX.IsAbsolutelyIrreducible(k) then
+      cnt:=cnt-1;
+    else
+      ext:=GF(p^(LogInt(Size(field),p)*MTX.DegreeSplittingField(k)));
+      emo:=GModuleByMats(k.generators,ext);
+      emo:=MTX.CollectedFactors(emo);
+      cnt:=cnt-Length(emo);
+    fi;
+  od;
   i:=1;
-  while i<=Length(moduln) do
+  while i<=Length(moduln) and cnt>0 do
     j:=1;
-    while j<=i do
+    while j<=i and cnt>0 do
       t:=GModuleByMats(List([1..n],x->KroneckerProduct(moduln[i].generators[x],
         moduln[j].generators[x])),field);
+      if i=j and t.dimension>100 then
+        # try to split in the obvious way
+        k:=ShallowCopy(Zero(t.generators[1][1]));
+        # the vector [1,0,...,0,-1] lies in antisymmetric tensors
+        k[1]:=One(t.field); k[Length(k)]:=-One(t.field);
+        k:=MTX.SpinnedBasis(k,t.generators,t.field);
+        if Length(k)<t.dimension then
+          MTX.SetSubbasis(t,k);
+          MTX.SetIsIrreducible(t,false);
+        else
+          Info(InfoWarning,1,
+            "Given vector not in submodule. See https://xkcd.com/2200/");
+        fi;
+      fi;
       t:=List(MTX.CollectedFactors(t),x->x[1]);
-      Info(InfoMeatAxe,i," ",j," ",List(t,x->x.dimension));
+      Info(InfoMeatAxe,1,i," ",j," yields  ",List(t,x->x.dimension));
       for k in t do
         MTX.IsIrreducible(k);
         if ForAll(moduln,x->MTX.Isomorphism(k,x)=fail) then 
           Add(moduln,k);
+          if MTX.IsAbsolutelyIrreducible(k) then
+            cnt:=cnt-1;
+          else
+            ext:=GF(p^(LogInt(Size(field),p)*MTX.DegreeSplittingField(k)));
+            emo:=GModuleByMats(k.generators,ext);
+            emo:=MTX.CollectedFactors(emo);
+            cnt:=cnt-Length(emo);
+          fi;
         fi;
+        Info(InfoMeatAxe,1,"left are ",cnt," irreps");
       od;
       j:=j+1;
     od;
@@ -235,6 +287,11 @@ local n,mats,mo,moduln,i,j,k,t;
   return [GeneratorsOfGroup(G),moduln];
 end);
 
+InstallOtherMethod(IrreducibleModules,"Supply no dimension limit",
+    true, [ IsGroup, IsField and IsFinite ], 0,
+function(G,F)
+  return IrreducibleModules(G,F,0);
+end);
 
 #############################################################################
 ##

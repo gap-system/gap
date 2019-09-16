@@ -374,7 +374,7 @@ DeclareGlobalFunction("CloseNaturalHomomorphismsPool");
 
 #############################################################################
 ##
-#F  PullBackNaturalHomomorphismsPool(<hom>]) . . transfer nathoms of image
+#F  PullBackNaturalHomomorphismsPool(<hom>) . . transfer nathoms of image
 ##
 ##  <ManSection>
 ##  <Func Name="PullBackNaturalHomomorphismsPool" Arg='hom'/>
@@ -386,6 +386,23 @@ DeclareGlobalFunction("CloseNaturalHomomorphismsPool");
 ##  </ManSection>
 ##
 DeclareGlobalFunction("PullBackNaturalHomomorphismsPool");
+
+#############################################################################
+##
+#F  TryQuotientsFromFactorSubgroups(<hom>,<ker>,<bound>) 
+##
+##  <ManSection>
+##  <Func Name="TryQuotientsFromFactorSubgroups" Arg='hom,ker,bound'/>
+##
+##  <Description>
+##  For a homomorphism <A>hom</A>, this command iterates through subgroups
+##  of the image, up to index <A>bound</A>,
+##  trying to find derived subgroups that expose more of the
+##  factor modulo <A>ker</A>.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalFunction("TryQuotientsFromFactorSubgroups");
 
 #############################################################################
 ##

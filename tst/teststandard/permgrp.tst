@@ -2,7 +2,7 @@
 ##
 ##  Some tests for permutation groups and friends(takes a few seconds to run)
 ##
-#@local g, dc, ac, p, s, dc1, u, part, iso
+#@local g, dc, ac, p, s, dc1, u, part, iso,l,it,i
 gap> START_TEST("permgrp.tst");
 gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));
 1209600
@@ -58,10 +58,16 @@ gap> Sum(ConjugacyClasses(g),Size);
 1384120320
 
 # Construct modules
-gap> g:=PerfectGroup(IsPermGroup,5376,1);;
-gap> s:=IrreducibleModules(g,GF(2),0);;
+gap> g:=PerfectGroup(IsPermGroup,7500,1);;
+gap> s:=IrreducibleModules(g,GF(2));;
 gap> Collected(List(s[2],x->x.dimension));
-[ [ 1, 1 ], [ 3, 2 ], [ 8, 1 ] ]
+[ [ 1, 1 ], [ 4, 2 ], [ 24, 5 ], [ 40, 1 ], [ 60, 1 ], [ 80, 1 ] ]
+gap> Collected(List(s[2],MTX.IsAbsolutelyIrreducible));
+[ [ true, 2 ], [ false, 9 ] ]
+gap> s:=First(s[2],x->x.dimension=24);;
+gap> p:=PermrepSemidirectModule(g,s).group;;
+gap> Size(p);
+125829120000
 
 # Condition test
 gap> g:=SymmetricGroup(10);;
@@ -108,6 +114,12 @@ gap> Length(DoubleCosets(Image(iso,g),Image(iso,s),Image(iso,s)));
 # some lattice and deductions
 gap> MinimalFaithfulPermutationDegree(PerfectGroup(IsPermGroup,7680,1));
 76
+gap> g:=SymmetricGroup(6);;
+gap> it:=DescSubgroupIterator(g);;
+gap> l:=[];;for i in it do Add(l,i);od;Length(l);
+56
+gap> it:=DescSubgroupIterator(g:skip:=20);;
+gap> l:=[];;for i in it do Add(l,i);od;
 
 #
 gap> STOP_TEST( "permgrp.tst", 1);
