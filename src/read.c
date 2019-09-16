@@ -628,7 +628,7 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
     for (nest = 0; nest < countNams; nest++) {
 #ifndef SYS_IS_64_BIT
         if (nest >= MAX_FUNC_EXPR_NESTING) {
-            Pr("Warning: abandoning search for %g at %dth higher frame\n",
+            Pr("Warning: abandoning search for %s at %dth higher frame\n",
                (Int)s->Value, MAX_FUNC_EXPR_NESTING);
             break;
         }
@@ -665,7 +665,7 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
             nest++;
 #ifndef SYS_IS_64_BIT
             if (nest >= MAX_FUNC_EXPR_NESTING) {
-                Pr("Warning: abandoning search for %g at %dth higher "
+                Pr("Warning: abandoning search for %s at %dth higher "
                    "frame\n",
                    (Int)s->Value, MAX_FUNC_EXPR_NESTING);
                 break;
