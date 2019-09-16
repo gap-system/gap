@@ -3335,57 +3335,252 @@ local c,n,deg,ind,core,i,j,sum;
 
 end);
 
+
+# utility function: Find a subgroup $S$ of $G\le P$, with $G'\le S\le G$ such
+# that $[G:S]<=limit$ and that $S\lhd N_P(G)$.
+BindGlobal("BoundedIndexAbelianized",function(P,G,limit)
+local d,ind,i,ma,ab,a,p,b,c,e,n;
+  d:=DerivedSubgroup(G);
+  ind:=IndexNC(G,d);
+  if ind=1 then return G;
+  # derived index small enough
+  elif ind<=limit then return d;
+  elif IsPrimeInt(ind) then return d;fi;
+
+  # make a p-group
+  ind:=List(Collected(Factors(ind)),x->x[1]^x[2]);
+  Sort(ind);
+  if Length(ind)>1 then 
+    i:=Minimum(PositionSorted(ind,limit),Length(ind));
+    RemoveSet(ind,i);
+    ind:=List(ind,SmallestPrimeDivisor);
+    for i in ind do
+      d:=ClosureSubgroup(d,SylowSubgroup(G,i));
+    od;
+    ind:=IndexNC(G,d);
+    if ind<=limit then return d;
+    elif IsPrimeInt(ind) then return d;fi;
+  fi;
+
+  # make elementary
+  p:=SmallestPrimeDivisor(IndexNC(G,d));
+  ma:=NaturalHomomorphismByNormalSubgroup(G,d);
+  a:=Image(ma,G);
+  ab:=AbelianInvariants(a);
+  if Length(Set(ab))>1 then
+    e:=LogInt(Exponent(a),p);
+    b:=fail;
+    i:=1;
+    while i<e and
+      (b=fail or IndexNC(a,Omega(a,p,e-i))<=limit) do
+      b:=Omega(a,p,e-i);
+      i:=i+1;
+    od;
+    c:=fail;
+    i:=1;
+    while i<e and
+     (c=fail or IndexNC(a,Agemo(a,p,i))<=limit) do
+      c:=Agemo(a,p,i);
+      i:=i+1;
+    od;
+    if Size(c)>Size(b) then
+      b:=c;
+    fi;
+    d:=PreImage(ma,b);
+    ind:=IndexNC(G,d);
+    if ind<=limit then return d;
+    elif IsPrimeInt(ind) then return d;fi;
+  fi;
+  n:=Normalizer(P,G);
+  ab:=ModuloPcgs(G,d);
+  a:=GModuleByMats(LinearActionLayer(n,ab),GF(p));
+  if not MTX.IsIrreducible(a) then
+    b:=ShallowCopy(MTX.BasesMaximalSubmodules(a));
+    SortBy(b,Length);
+    i:=Length(b)+1;
+    while i>1 and p^(a.dimension-Length(b[i-1]))<=limit do
+      i:=i-1;
+    od;
+    if i<=Length(b) then
+      b:=b[i];
+      for i in b do
+        d:=ClosureSubgroup(d,PcElementByExponents(ab,i));
+      od;
+      ind:=IndexNC(G,d);
+      if ind<=limit then return d;
+      elif IsPrimeInt(ind) then return d;fi;
+    fi;
+  fi;
+  return G;
+end);
+
 # utility function
 # iterate through subgroup class reps, roughly
 # descending order: First low layer, then all classes. Does not guarantee
 # conjugate-free
 InstallGlobalFunction(DescSubgroupIterator,function(G)
-local done,lev,mode,max,l,pos;
-  done:=[];
-  lev:=0;
+local divs,limit,mode,l,process,done,bound,maxer,prime;
+  divs:=ShallowCopy(DivisorsInt(Size(G)));
+  prime:=Maximum(Factors(Size(G)));
+  Add(divs,Size(G)+1); # to trigger new size indication
   mode:=1;
-  max:=1;
-  l:=[];
-  pos:=1;
-  return IteratorByFunctions(rec(NextIterator:=function(iter)
-             local a;
-              if pos>Length(l) then
-                if mode=2 then return fail;
-                elif mode=1 and max^2>Size(G) and lev>=3 then
-                  mode:=2;
-                  l:=List(ConjugacyClassesSubgroups(G),Representative);
-                  l:=Filtered(l,x->not x in done);
-                  done:=[];
-                else
-                  l:=LowLayerSubgroups(G,lev);
-                  l:=Filtered(l,x->not x in done);
-                  while Length(l)=0 or ForAll(l,x->Size(G)/Size(x)>5*max) do
-                    lev:=lev+1;
-                    max:=2*max;
-                    l:=LowLayerSubgroups(G,lev);
-                    l:=Filtered(l,x->not x in done);
+  l:=[G]; # the groups we will return from
+  process:=[]; # the groups to do maxes from
+  bound:=ValueOption("skip");
+  if bound=fail then bound:=1;fi;
+  limit:=QuoInt(RootInt(Size(G)^2,5),bound);
+  if limit<20 then limit:=1;fi;
+  maxer:=function(sub)
+  local m,a,b,len,sz,i,j,k,r,tb;
+    #Print("call maxer for ",Size(sub)," |l|=",Length(l)," |process|=",Length(process),"\n");
+    if bound>1 and 2^(Length(AbelianInvariants(sub))-3)>bound then
+      i:=0;
+      repeat
+        m:=BoundedIndexAbelianized(G,sub,bound*prime^i);
+        i:=i+1;
+      until Size(m)<Size(sub);
+      if Size(m)^2<Size(sub) then
+        m:=MaximalSubgroupClassReps(sub:cheap:=false);
+      else
+        m:=[m];
+      fi;
+    else
+      m:=MaximalSubgroupClassReps(sub:cheap:=false);
+    fi;
+
+    # remove duplicates 
+    m:=Filtered(m,x->ForAll(l,y->Size(x)<>Size(y) or
+        ForAny(GeneratorsOfGroup(x),z->not z in y)));
+
+    if bound>1 then
+      if not IsPerfectGroup(sub) then
+        a:=BoundedIndexAbelianized(G,sub,bound);
+        if Size(a)<Size(sub) then
+          len:=Length(m);
+          m:=Filtered(m,x->not IsSubset(x,a));
+#         Print("Dropped ",len-Length(m)," by abelian\n");
+          Add(m,a);
+        fi;
+      fi;
+      # do we already have a bit smaller?
+      m:=Filtered(m,x->ForAll(l,y->Size(x)>=bound*Size(y) or
+          ForAny(GeneratorsOfGroup(y),z->not z in x)));
+
+      sz:=List(Filtered(Collected(List(m,Size)),x->x[2]>1),x->x[1]);
+      for i in sz do
+        len:=Length(m);
+        a:=Filtered(m,x->Size(x)=i);
+        m:=Filtered(m,x->Size(x)<>i);
+        # now try intersections
+        tb:=infinity;
+        while tb=infinity do
+          for j in [1..Length(a)] do
+            for k in [1..j-1] do
+              if IsBound(a[j]) and IsBound(a[k]) 
+                and Size(a[j])*bound>=2*i and Size(a[k])*bound>=2*i then
+                b:=Intersection(a[j],a[k]);
+                if Size(b)*bound>=i then
+                  Unbind(a[j]);
+                  for r in [1..Length(a)] do
+                    if IsBound(a[r]) and IsSubset(a[r],b) then
+                      Unbind(a[r]);
+                    fi;
                   od;
-                  repeat
-                    a:=Filtered(l,x->Size(G)/Size(x)<=5*max);
-                  until Length(a)>0;
-                  l:=a;
-                  max:=Size(G)/Minimum(List(l,Size));
+                  a[k]:=b;
                 fi;
-                SortBy(l,x->-Size(x));
-                pos:=1;
+                tb:=Minimum(tb,i/Size(b));
               fi;
-              pos:=pos+1;
-              if mode=1 then Add(done,l[pos-1]);fi;
-              return l[pos-1];
+            od;
+          od;
+          a:=Filtered(a,x->IsBound(x));
+          if tb>bound and Length(a)>5*10^(1+LogInt((1+QuoInt(tb,bound)),prime)) then
+            bound:=bound*prime;
+            tb:=infinity;
+          fi;
+        od;
+
+        m:=Concatenation(m,a);
+#        Print("Dropped ",len-Length(m)," to ",Length(a)," by size ",i,"\n");
+      od;
+    fi;
+    return m;
+  end;
+
+  return IteratorByFunctions(rec(NextIterator:=function(iter)
+             local a,b,m,i,j;
+              
+              if Length(l)=0 then
+                # no groups there. Start getting new ones
+                a:=Filtered(process,x->Size(x)>=divs[Length(divs)]);
+                process:=Filtered(process,x->Size(x)<divs[Length(divs)]);
+                for j in a do
+                  m:=maxer(j);
+                  Append(l,m);
+                od;
+                SortBy(l,Size);
+              fi;
+
+              if Size(l[Length(l)])<divs[Length(divs)] then
+                # new size. 
+
+                if Length(process)>0 
+                 and Size(process[Length(process)])<=limit then
+                  # switch to lattice
+                  a:=Size(l[Length(l)]);
+                  Info(InfoLattice,1,"get full lattice @size ",a);
+                  l:=List(ConjugacyClassesSubgroups(G),Representative);
+                  l:=Filtered(l,x->Size(x)<=a and
+                    ForAll(done,y->RepresentativeAction(G,y,x)=fail));
+                  SortBy(l,Size);
+                  process:=[];
+                  mode:=2;
+                fi;
+
+                while Length(process)>0
+                 and Size(process[Length(process)])>=Maximum(List(l,Size)) do
+                  # need to process those that could give next size (or
+                  # larger)
+                  a:=process[Length(process)];
+                  Unbind(process[Length(process)]);
+                  m:=maxer(a);
+                  Append(l,m);
+                od;
+                SortBy(l,Size);
+
+                # delete the orders not used any more
+                while Length(l)>0 and Size(l[Length(l)])<divs[Length(divs)] do
+                  Unbind(divs[Length(divs)]); # sizes still in play
+                od;
+                done:=[]; # can ignore anything larger
+
+                if mode=1 then
+                  a:=Filtered(l,x->Size(x)=divs[Length(divs)]);
+                  l:=Filtered(l,x->Size(x)<divs[Length(divs)]);
+                  a:=List(SubgroupsOrbitsAndNormalizers(G,a,false),
+                    x->x.representative);
+                  Append(l,a);
+                  # and note that these are to be processed
+                  Append(process,a);
+                  SortBy(process,Size);
+                fi;
+
+              fi;
+
+              # get next group
+              a:=l[Length(l)];
+              Unbind(l[Length(l)]);
+              Add(done,a);
+              if Size(a)=1 then mode:=2;fi;
+              return a;
              end,
              IsDoneIterator:=function(iter)
-               return mode=2 and pos>Length(l);
+               return mode=2 and Length(l)=0;
              end,
              ShallowCopy:=function(iter)
                Error("not implemented");
              end,
              PrintObj:=function(iter)
-               Print("<stabilizing subgroups iterator>");
+               Print("<descending subgroups iterator>");
              end));
 end);
 

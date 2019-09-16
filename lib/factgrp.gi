@@ -1584,7 +1584,7 @@ BindGlobal("FACTGRP_TRIV",Group([],()));
 InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "search for operation",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,N)
-local h;
+local h,pool;
 
   # catch the trivial case N=G 
   if CanComputeIndex(G,N) and IndexNC(G,N)=1 then
@@ -1602,11 +1602,17 @@ local h;
   fi;
 
   # check, whether we already know a factormap
+  pool:=NaturalHomomorphismsPool(G);
+  h:=PositionSet(pool.ker,N);
+  if h<>fail and IsGeneralMapping(pool.ops[h]) then
+    return GetNaturalHomomorphismsPool(G,N);
+  fi;
+
+
   DoCheapActionImages(G);
   if HasRadicalGroup(G) and N=RadicalGroup(G) then
     h:=GetNaturalHomomorphismsPool(G,N);
   fi;
-
 
   h:=DegreeNaturalHomomorphismsPool(G,N);
   if h<>fail and RootInt(h^3,2)<IndexNC(G,N) then
@@ -1729,6 +1735,45 @@ end);
 
 #############################################################################
 ##
+#F  TryQuotientsFromFactorSubgroups(<hom>,<ker>,<bound>) 
+##
+InstallGlobalFunction(TryQuotientsFromFactorSubgroups,function(hom,ker,bound)
+local s,p,k,it,u,v,d,ma,mak,lev,sub,low;
+  s:=Source(hom);
+  p:=Image(hom);
+  k:=KernelOfMultiplicativeGeneralMapping(hom);
+  it:=DescSubgroupIterator(p:skip:=4);
+  repeat
+    u:=NextIterator(it);
+    Info(InfoExtReps,2,"Factor subgroup index ",Index(p,u));
+    v:=PreImage(hom,u);
+    d:=DerivedSubgroup(v);
+    if not IsSubset(d,k) then
+      d:=ClosureGroup(ker,d);
+      if not IsSubset(d,k) then
+        ma:=NaturalHomomorphismByNormalSubgroup(v,d);
+        mak:=Image(ma,k);
+        lev:=0;
+        sub:=fail;
+        while sub=fail do
+          lev:=lev+1;
+          low:=ShallowCopy(LowLayerSubgroups(Range(ma),lev));
+          SortBy(low,x->-Size(x));
+          sub:=First(low,x->not IsSubset(x,mak));
+        od;
+        sub:=PreImage(ma,sub);
+        Info(InfoExtReps,2,"Found factor permrep ",IndexNC(s,sub));
+        d:=Core(s,sub);
+        AddNaturalHomomorphismsPool(s,d,sub);
+        k:=Intersection(k,d);
+        if Size(k)=Size(ker) then return;fi;
+      fi;
+    fi;
+  until IndexNC(p,u)>=bound;
+end);
+
+#############################################################################
+##
 #M  UseFactorRelation( <num>, <den>, <fac> )  . . . .  for perm group factors
 ##
 InstallMethod( UseFactorRelation,
@@ -1748,3 +1793,4 @@ InstallMethod( UseFactorRelation,
    fi;
    TryNextMethod();
    end );
+

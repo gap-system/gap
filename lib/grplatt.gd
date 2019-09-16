@@ -531,8 +531,9 @@ DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
 ##  <Description>
 ##  Iterator to
 ##  descend through (representatives of) conjugacy classes of subgroups,
-##  roughly by increasing index. Does not guaranrtee duplicate free, index
-##  might jump back.
+##  by increasing index. If the option <C>skip</C> is set to an integer, the
+##  iterator will jump to subgroups containing $U'$ if their index is at most
+##  skip and they are "nice" (In this case not all subgroups will be found.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
