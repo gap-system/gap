@@ -75,20 +75,6 @@ extern "C" {
 
 /****************************************************************************
 **
-*F  IMAGE(<i>,<pt>,<dg>)  . . . . . .  image of <i> under <pt> of degree <dg>
-**
-**  'IMAGE'  returns the  image of the   point <i> under  the permutation  of
-**  degree <dg> pointed to  by <pt>.   If the  point  <i> is greater  than or
-**  equal to <dg> the image is <i> itself.
-**
-**  'IMAGE' is  implemented as a macro so  do not use  it with arguments that
-**  have side effects.
-*/
-#define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
-
-
-/****************************************************************************
-**
 *V  IdentityPerm  . . . . . . . . . . . . . . . . . . .  identity permutation
 **
 **  'IdentityPerm' is an identity permutation.
