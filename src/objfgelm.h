@@ -16,16 +16,33 @@
 /****************************************************************************
 **
 *D  AWP_SOMETHING
+**
+**  The following enum constants are positions of non-defining data in the
+**  types of associative words (AWP = Associative Word Position).
 */
-#define AWP_FIRST_ENTRY          5
-#define AWP_PURE_TYPE            (AWP_FIRST_ENTRY+0)
-#define AWP_NR_BITS_EXP          (AWP_FIRST_ENTRY+1)
-#define AWP_NR_GENS              (AWP_FIRST_ENTRY+2)
-#define AWP_NR_BITS_PAIR         (AWP_FIRST_ENTRY+3)
-#define AWP_FUN_OBJ_BY_VECTOR    (AWP_FIRST_ENTRY+4)
-#define AWP_FUN_ASSOC_WORD       (AWP_FIRST_ENTRY+5)
-#define AWP_FIRST_FREE           (AWP_FIRST_ENTRY+6)
+enum {
+    START_ENUM_RANGE_INIT(AWP_FIRST_ENTRY, POS_FIRST_FREE_TYPE),
 
+        // the pure type of the object itself, without knowledge features
+        AWP_PURE_TYPE,
+
+        // the number of bits available for each exponent
+        AWP_NR_BITS_EXP,
+
+        // the number of generators
+        AWP_NR_GENS,
+
+        // the number of bits available for each generator/exponent pair
+        AWP_NR_BITS_PAIR,
+
+        // the construction function to be called by `ObjByVector'
+        AWP_FUN_OBJ_BY_VECTOR,
+
+        // the construction function to be called by `AssocWord'
+        AWP_FUN_ASSOC_WORD,
+
+    END_ENUM_RANGE(AWP_LAST_ENTRY),
+};
 
 /****************************************************************************
 **

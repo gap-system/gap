@@ -1575,7 +1575,7 @@ static Int InitLibrary (
     ExportAsConstantGVar(AWP_NR_BITS_PAIR);
     ExportAsConstantGVar(AWP_FUN_OBJ_BY_VECTOR);
     ExportAsConstantGVar(AWP_FUN_ASSOC_WORD);
-    ExportAsConstantGVar(AWP_FIRST_FREE);
+    ExportAsConstantGVar(AWP_LAST_ENTRY);
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
