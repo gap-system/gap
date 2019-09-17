@@ -273,7 +273,9 @@ InstallMethod( Comm,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
-    NBitsPcWord_Comm );
+function( left, right )
+    return FinPowConjCol_ReducedComm( TypeObj(left)![PCWP_COLLECTOR], left, right );
+end );
 
 
 #############################################################################
@@ -288,7 +290,9 @@ InstallMethod( LeftQuotient,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
-    NBitsPcWord_LeftQuotient );
+function( left, right )
+    return FinPowConjCol_ReducedLeftQuotient( TypeObj(left)![PCWP_COLLECTOR], left, right );
+end );
 
 
 #############################################################################
@@ -303,7 +307,9 @@ InstallMethod( \/,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
-    NBitsPcWord_Quotient );
+function( left, right )
+    return FinPowConjCol_ReducedQuotient( TypeObj(left)![PCWP_COLLECTOR], left, right );
+end );
 
 
 #############################################################################
@@ -318,7 +324,9 @@ InstallMethod( \*,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
-    NBitsPcWord_Product );
+function( left, right )
+    return FinPowConjCol_ReducedProduct( TypeObj(left)![PCWP_COLLECTOR], left, right );
+end );
 
 
 #############################################################################
@@ -333,7 +341,12 @@ InstallMethod( \^,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
-    NBitsPcWord_Conjugate );
+function( left, right )
+    left := FinPowConjCol_ReducedProduct(
+                TypeObj(left)![PCWP_COLLECTOR], left, right );
+    return FinPowConjCol_ReducedLeftQuotient(
+                TypeObj(left)![PCWP_COLLECTOR], right, left );
+end );
 
 
 #############################################################################
@@ -347,7 +360,10 @@ InstallMethod( \^,
         and IsNBitsPcWordRep, 
       IsInt and IsSmallIntRep ],
     0,
-    NBitsPcWord_PowerSmallInt );
+function( left, right )
+    return FinPowConjCol_ReducedPowerSmallInt(
+                TypeObj(left)![PCWP_COLLECTOR], left, right );
+end );
 
 
 #############################################################################
