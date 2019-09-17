@@ -14,33 +14,28 @@
 #include "system.h"
 #include "objfgelm.h"
 
+
+// PCWP is a subrep of AWP
 /****************************************************************************
 **
-*V  PCWP_FIRST_ENTRY  . . . . . . . . . . . . . . first entry in subrep of AW
-*/
-#define PCWP_FIRST_ENTRY        AWP_FIRST_FREE
-
-
-/****************************************************************************
+*D  PCWP_SOMETHING
 **
-*V  PCWP_NAMES  . . . . . . . . . . . . . . . . . . . . . . . . list of names
+**  The following enum constants are positions of non-defining data in the
+**  types of pc words (PCWP = PC Word Position). Such words are a special
+**  case of associative words, so we make sure the positions defined here
+**  follow after the AWP_* positions.
 */
-#define PCWP_NAMES              (PCWP_FIRST_ENTRY+1)
+enum {
+    START_ENUM_RANGE_INIT(PCWP_FIRST_ENTRY, AWP_LAST_ENTRY + 1),
 
+        // list of names
+        PCWP_NAMES,
 
-/****************************************************************************
-**
-*V  PCWP_COLLECTOR  . . . . . . . . . . . . . . . . . . . .  collector to use
-*/
-#define PCWP_COLLECTOR          (PCWP_FIRST_ENTRY+2)
+        // collector to use
+        PCWP_COLLECTOR,
 
-
-/****************************************************************************
-**
-*V  PCWP_FIRST_FREE . . . . . . . . . . . . .  first free position for subrep
-*/
-#define PCWP_FIRST_FREE         (PCWP_FIRST_ENTRY+3)
-
+    END_ENUM_RANGE(PCWP_LAST_ENTRY),
+};
 
 /****************************************************************************
 **

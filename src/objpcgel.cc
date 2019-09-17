@@ -355,7 +355,7 @@ static Int InitLibrary (
     ExportAsConstantGVar(PCWP_FIRST_ENTRY);
     ExportAsConstantGVar(PCWP_NAMES);
     ExportAsConstantGVar(PCWP_COLLECTOR);
-    ExportAsConstantGVar(PCWP_FIRST_FREE);
+    ExportAsConstantGVar(PCWP_LAST_ENTRY);
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );

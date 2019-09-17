@@ -416,7 +416,7 @@ function( sc )
     fam!.8BitsType := NewType( fam, Is8BitsPcWordRep );
 
     # copy the assoc word type
-    for i  in [ AWP_FIRST_ENTRY+1 .. AWP_FIRST_FREE-1 ]  do
+    for i in [ AWP_FIRST_ENTRY+1 .. AWP_LAST_ENTRY ] do
       StrictBindOnce( fam!.8BitsType, i, sc![SCP_DEFAULT_TYPE]![i] );
     od;
 
@@ -586,7 +586,7 @@ function( sc )
     fam!.16BitsType := NewType( fam, Is16BitsPcWordRep );
 
     # copy the assoc word type
-    for i  in [ AWP_FIRST_ENTRY+1 .. AWP_FIRST_FREE-1 ]  do
+    for i in [ AWP_FIRST_ENTRY+1 .. AWP_LAST_ENTRY ] do
 	  StrictBindOnce( fam!.16BitsType, i, sc![SCP_DEFAULT_TYPE]![i] );
     od;
 
@@ -756,7 +756,7 @@ function( sc )
     fam!.32BitsType := NewType( fam, Is32BitsPcWordRep );
 
     # copy the assoc word type
-    for i  in [ AWP_FIRST_ENTRY+1 .. AWP_FIRST_FREE-1 ]  do
+    for i in [ AWP_FIRST_ENTRY+1 .. AWP_LAST_ENTRY ] do
       StrictBindOnce( fam!.32BitsType, i, sc![SCP_DEFAULT_TYPE]![i] );
     od;
 
