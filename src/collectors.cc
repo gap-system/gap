@@ -1621,7 +1621,7 @@ static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 **
 *F  FuncFinPowConjCol_CollectWordOrFail( <self>, <sc>, <vv>, <w> )
 */
-Obj FuncFinPowConjCol_CollectWordOrFail ( Obj self, Obj sc, Obj vv, Obj w )
+static Obj FuncFinPowConjCol_CollectWordOrFail(Obj self, Obj sc, Obj vv, Obj w)
 {
     return CollectWordOrFail( SC_COLLECTOR(sc), sc, vv, w );
 }
@@ -1631,7 +1631,7 @@ Obj FuncFinPowConjCol_CollectWordOrFail ( Obj self, Obj sc, Obj vv, Obj w )
 **
 *F  FuncFinPowConjCol_ReducedComm( <self>, <sc>, <w>, <u> )
 */
-Obj FuncFinPowConjCol_ReducedComm ( Obj self, Obj sc, Obj w, Obj u )
+static Obj FuncFinPowConjCol_ReducedComm ( Obj self, Obj sc, Obj w, Obj u )
 {
     return ReducedComm( SC_COLLECTOR(sc), sc, w, u );
 }
@@ -1641,7 +1641,7 @@ Obj FuncFinPowConjCol_ReducedComm ( Obj self, Obj sc, Obj w, Obj u )
 **
 *F  FuncFinPowConjCol_ReducedForm( <self>, <sc>, <w> )
 */
-Obj FuncFinPowConjCol_ReducedForm ( Obj self, Obj sc, Obj w )
+static Obj FuncFinPowConjCol_ReducedForm ( Obj self, Obj sc, Obj w )
 {
     return ReducedForm( SC_COLLECTOR(sc), sc, w );
 }
@@ -1651,7 +1651,7 @@ Obj FuncFinPowConjCol_ReducedForm ( Obj self, Obj sc, Obj w )
 **
 *F  FuncFinPowConjCol_ReducedLeftQuotient( <self>, <sc>, <w>, <u> )
 */
-Obj FuncFinPowConjCol_ReducedLeftQuotient ( Obj self, Obj sc, Obj w, Obj u )
+static Obj FuncFinPowConjCol_ReducedLeftQuotient ( Obj self, Obj sc, Obj w, Obj u )
 {
     return ReducedLeftQuotient( SC_COLLECTOR(sc), sc, w, u );
 }
@@ -1661,7 +1661,7 @@ Obj FuncFinPowConjCol_ReducedLeftQuotient ( Obj self, Obj sc, Obj w, Obj u )
 **
 *F  FuncFinPowConjCol_ReducedProduct( <self>, <sc>, <w>, <u> )
 */
-Obj FuncFinPowConjCol_ReducedProduct ( Obj self, Obj sc, Obj w, Obj u )
+static Obj FuncFinPowConjCol_ReducedProduct ( Obj self, Obj sc, Obj w, Obj u )
 {
     return ReducedProduct( SC_COLLECTOR(sc), sc, w, u );
 }
@@ -1671,7 +1671,7 @@ Obj FuncFinPowConjCol_ReducedProduct ( Obj self, Obj sc, Obj w, Obj u )
 **
 *F  FuncFinPowConjCol_ReducedPowerSmallInt( <self>, <sc>, <w>, <pow> )
 */
-Obj FuncFinPowConjCol_ReducedPowerSmallInt (Obj self,Obj sc,Obj w,Obj vpow)
+static Obj FuncFinPowConjCol_ReducedPowerSmallInt (Obj self,Obj sc,Obj w,Obj vpow)
 {
     return ReducedPowerSmallInt( SC_COLLECTOR(sc), sc, w, vpow );
 }
@@ -1681,7 +1681,7 @@ Obj FuncFinPowConjCol_ReducedPowerSmallInt (Obj self,Obj sc,Obj w,Obj vpow)
 **
 *F  FuncFinPowConjCol_ReducedQuotient( <self>, <sc>, <w>, <u> )
 */
-Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
+static Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 {
     return ReducedQuotient( SC_COLLECTOR(sc), sc, w, u );
 }

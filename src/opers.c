@@ -368,7 +368,7 @@ static Int IsSubsetFlagsCalls;
 **
 *F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) . subset test with no safety check
 */
-static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
+Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 {
     Int    len1;
     Int    len2;
@@ -410,10 +410,7 @@ static Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 **
 *F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
 */
-Obj FuncIS_SUBSET_FLAGS (
-    Obj                 self,
-    Obj                 flags1,
-    Obj                 flags2 )
+static Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2)
 {
     /* do some correctness checks                                            */
     RequireFlags("IS_SUBSET_FLAGS", flags1);
@@ -663,7 +660,7 @@ static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
   for(i = 1; i < HIDDEN_IMPS_CACHE_LENGTH * 2 - 1; i += 2)
   {
     if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
-       FuncIS_SUBSET_FLAGS(0, ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags) == True)
+       IS_SUBSET_FLAGS(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags))
     {
         SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i, 0);
         SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i + 1, 0);
