@@ -1244,9 +1244,6 @@ end );
 InstallOtherMethod( BaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
-    # FIXME: Remove this downranking, it was introduced to prevent
-    #        Semigroups from breaking ahead of the 4.10 release
-    -SUM_FLAGS,
     DefaultRing );
 
 InstallOtherMethod( OneOfBaseDomain,
