@@ -180,16 +180,11 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     S:=ff.radical;
     pcgs := ff.pcgs;
 
-    # move the special pcgs computation in the isomorphic pc group, as this
-    # is likely to be faster
-    pcgrppcgs:=PcgsByPcSequence(FamilyObj(One(Range(ff.pcisom))),
-		List(ff.pcgs,x->ImageElm(ff.pcisom,x)));
-    spec := SpecialPcgs(pcgrppcgs);
+    spec:=SpecialPcgs(S);
     first := LGFirst( spec );
     weights := LGWeights( spec );
     m := Length( spec );
-    spec:=PcgsByPcgs(List(spec,x->PreImagesRepresentative(ff.pcisom,x)),
-	             ff.pcgs, pcgrppcgs,spec);
+
     max := [];
     f:=ff.factorhom;
     mgi:=MappingGeneratorsImages(ff.factorhom);
@@ -261,7 +256,6 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
 	      #SetSize( cl, 1 );
 	      #Add( max, cl );
 	      L!.classsize:=1;
-#if Length(IntermediateSubgroups(G,L).subgroups)>0 then Error("he");fi;
 	      Add(max,L);
 	    od;
 	  elif w[1] = 1 then
