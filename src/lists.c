@@ -1743,7 +1743,7 @@ Obj SET_FILTER_LIST(Obj list, Obj filter)
     Obj             flags;
 
     flags = FLAGS_FILT(filter);
-    if (FuncIS_SUBSET_FLAGS(0,flags,FLAGS_FILT(IsSSortListProp))==True) {
+    if (IS_SUBSET_FLAGS(flags, FLAGS_FILT(IsSSortListProp))) {
         new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_DENSE];
         if ( new < 0 )  goto error;
         new = SetFiltListTNums[TNUM_OBJ(list)][FN_IS_SSORT];

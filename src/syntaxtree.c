@@ -634,7 +634,7 @@ static Expr SyntaxTreeCodeFunc(Obj node)
     return funcexpr;
 }
 
-Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
+static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
 {
     RequirePlainRec("SYNTAX_TREE_CODE", tree);
     CodeBegin();

@@ -465,10 +465,10 @@ EXPORT_INLINE void SET_ELM_FLAGS(Obj list, UInt pos)
 
 /****************************************************************************
 **
-*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
+*F  IS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . . . subset test
 */
+Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2);
 
-Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2);
 
 /****************************************************************************
 **

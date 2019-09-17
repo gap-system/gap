@@ -40,7 +40,7 @@ static Obj ResetShowUsedInfoClassesHandler;
 static Obj ShowUsedInfoClassesHandler;
 
 
-Obj FuncShowUsedInfoClasses(Obj self, Obj choice)
+static Obj FuncShowUsedInfoClasses(Obj self, Obj choice)
 {
     RequireTrueOrFalse("ShowUsedInfoClasses", choice);
 
