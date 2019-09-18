@@ -3110,58 +3110,60 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
 
     localBindGlobal:= BindGlobal;
 
-    for rule in rules do
-      GAPInfo.data.( rule[1] ):= [ ValueGlobal( rule[1] ), [] ];
+    Perform( rules, function(rule)
+      local orig_func, usage_locations;
+      orig_func:= ValueGlobal( rule[1] );
+      usage_locations:= [];
+      GAPInfo.data.( rule[1] ):= [ orig_func, usage_locations ];
       MakeReadWriteGlobal( rule[1] );
       UnbindGlobal( rule[1] );
-      localBindGlobal( rule[1], EvalString( Concatenation(
-          "function( arg ) ",
-          "local infile, path; ",
-          "infile:= INPUT_FILENAME(); ",
-          "path:= GAPInfo.data.pkgpath; ",
-          "if Length( path ) <= Length( infile ) and ",
-          "   infile{ [ 1 .. Length( path ) ] } = path then ",
-          "  Add( GAPInfo.data.( \"", rule[1], "\" )[2], ",
-          "       [ StructuralCopy( arg ), infile, INPUT_LINENUMBER() ] ); ",
-          "fi; ",
-          "CallFuncList( GAPInfo.data.( \"", rule[1], "\" )[1], arg ); ",
-          "end" ) ) );
-    od;
+      localBindGlobal( rule[1], function( arg )
+        local infile, path;
+        infile:= INPUT_FILENAME();
+        path:= GAPInfo.data.pkgpath;
+        if Length( path ) <= Length( infile ) and
+           infile{ [ 1 .. Length( path ) ] } = path then
+          Add( usage_locations,
+               [ StructuralCopy( arg ), infile, INPUT_LINENUMBER() ] );
+        fi;
+        CallFuncList( orig_func, arg );
+      end );
+    end );
 
     # Redirect `ReadPackage'.
     GAPInfo.data.ReadPackage:= ReadPackage;
     MakeReadWriteGlobal( "ReadPackage" );
     UnbindGlobal( "ReadPackage" );
-    localBindGlobal( "ReadPackage", EvalString( Concatenation(
-        "function( arg ) ",
-        "local pos, pkgname, before, cbefore, res, after, cafter; ",
-        "if Length( arg ) = 1 then ",
-        "  pos:= Position( arg[1], '/' ); ",
-        "  pkgname:= LowercaseString( arg[1]{[ 1 .. pos - 1 ]} ); ",
-        "elif Length( arg ) = 2 then ",
-        "  pkgname:= LowercaseString( arg[1] ); ",
-        "else ",
-        "  pkgname:= fail; ",
-        "fi; ",
-        "if pkgname = GAPInfo.data.pkgname then ",
-        "  before:= NamesUserGVars(); ",
-        "  if IsBoundGlobal( \"Revision\" ) then ",
-        "    cbefore:= RecNames( ValueGlobal( \"Revision\" ) ); ",
-        "  fi; ",
-        "fi; ",
-        "res:= CallFuncList( GAPInfo.data.ReadPackage, arg ); ",
-        "if pkgname = GAPInfo.data.pkgname then ",
-        "  after:= NamesUserGVars(); ",
-        "  UniteSet( GAPInfo.data.varsThisPackage, ",
-        "    Filtered( Difference( after, before ), IsBoundGlobal ) ); ",
-        "  if IsBoundGlobal( \"Revision\" ) then ",
-        "    cafter:= RecNames( ValueGlobal( \"Revision\" ) ); ",
-        "    UniteSet( GAPInfo.data.revision_components, ",
-        "      Difference( cafter, cbefore ) ); ",
-        "  fi; ",
-        "fi; ",
-        "return res; ",
-        "end" ) ) );
+    localBindGlobal( "ReadPackage",
+        function( arg )
+        local pos, pkgname, before, cbefore, res, after, cafter;
+        if Length( arg ) = 1 then
+          pos:= Position( arg[1], '/' );
+          pkgname:= LowercaseString( arg[1]{[ 1 .. pos - 1 ]} );
+        elif Length( arg ) = 2 then
+          pkgname:= LowercaseString( arg[1] );
+        else
+          pkgname:= fail;
+        fi;
+        if pkgname = GAPInfo.data.pkgname then
+          before:= NamesUserGVars();
+          if IsBoundGlobal( "Revision" ) then
+            cbefore:= RecNames( ValueGlobal( "Revision" ) );
+          fi;
+        fi;
+        res:= CallFuncList( GAPInfo.data.ReadPackage, arg );
+        if pkgname = GAPInfo.data.pkgname then
+          after:= NamesUserGVars();
+          UniteSet( GAPInfo.data.varsThisPackage,
+            Filtered( Difference( after, before ), IsBoundGlobal ) );
+          if IsBoundGlobal( "Revision" ) then
+            cafter:= RecNames( ValueGlobal( "Revision" ) );
+            UniteSet( GAPInfo.data.revision_components,
+              Difference( cafter, cbefore ) );
+          fi;
+        fi;
+        return res;
+        end );
 
     # Load the package `pkgname'.
     loaded:= LoadPackage( pkgname );

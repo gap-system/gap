@@ -99,7 +99,7 @@ BIND_GLOBAL( "DeclareObsoleteSynonym", function( name_obsolete, name_current, le
         level := level_arg[1];
     fi;
 
-    value := EvalString( name_current );
+    value := ValueGlobal( name_current );
     if IsFunction( value ) then
         orig_value := value;
         printed_warning := false;
