@@ -728,20 +728,61 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 
     // Import GAPTypes module to have access to GapObj abstract type.
     // Needs to be done before setting any GC states
-    jl_eval_string("import GAPTypes");
-    if (jl_exception_occurred()) {
-        Panic("could not import GAPTypes module into Julia");
+    UInt            gapjl_already_loaded = 1;
+    jl_module_t *   gapjl_module;
+    jl_module_t *   gaptypes_module;
+    jl_datatype_t * gapobj_type;
+    // Check if we can get the GAP.jl module
+    if (jl_boundp(jl_main_module, jl_symbol("__JULIAGAPMODULE"))) {
+        jl_value_t * gapjl_value =
+            jl_get_global(jl_main_module, jl_symbol("__JULIAGAPMODULE"));
+        if (!jl_is_module(gapjl_value)) {
+            Panic("__JULIAGAPMODULE is set in julia main module, but does "
+                  "not point to a module");
+        }
+        gapjl_module = (jl_module_t *)gapjl_value;
     }
-    // Get GapObj abstract julia type
-    jl_module_t * gaptypes_module =
-        (jl_module_t *)jl_get_global(jl_main_module, jl_symbol("GAPTypes"));
-    if (jl_exception_occurred()) {
-        Panic("Could not read global GAPTypes variable from Julia");
+    else {
+        gapjl_already_loaded = 0;
     }
-    jl_datatype_t * gapobj_type =
-        (jl_datatype_t *)jl_get_global(gaptypes_module, jl_symbol("GapObj"));
-    if (jl_exception_occurred()) {
-        Panic("could not read GapObj variable from Julia");
+
+    if (gapjl_already_loaded) {
+        if (!jl_boundp(gapjl_module, jl_symbol("GAPTypes"))) {
+            Panic("GAPTypes is not available in already loaded GAP.jl Julia "
+                  "module");
+        }
+        jl_value_t * gaptypes_module_value =
+            jl_get_global(gapjl_module, jl_symbol("GAPTypes"));
+        if (!jl_is_module(gaptypes_module_value)) {
+            Panic("GAPTypes global in GAP.jl does not point to a module");
+        }
+        gaptypes_module = (jl_module_t *)gaptypes_module_value;
+        if (!jl_boundp(gaptypes_module, jl_symbol("GapObj"))) {
+            Panic("GapObj type is not bound in GAPTypes module");
+        }
+        jl_value_t * gapobj_type_value =
+            jl_get_global(gaptypes_module, jl_symbol("GapObj"));
+        if (!jl_is_datatype(gapobj_type_value)) {
+            Panic("GapObj in the GAPTypes module is not a datatype");
+        }
+        gapobj_type = (jl_datatype_t *)gapobj_type_value;
+    }
+    else {
+        jl_eval_string("import GAPTypes");
+        if (jl_exception_occurred()) {
+            Panic("could not import GAPTypes module into Julia");
+        }
+        // Get GapObj abstract julia type
+        gaptypes_module = (jl_module_t *)jl_get_global(jl_main_module,
+                                                       jl_symbol("GAPTypes"));
+        if (jl_exception_occurred()) {
+            Panic("Could not read global GAPTypes variable from Julia");
+        }
+        gapobj_type = (jl_datatype_t *)jl_get_global(gaptypes_module,
+                                                     jl_symbol("GapObj"));
+        if (jl_exception_occurred()) {
+            Panic("could not read GapObj variable from Julia");
+        }
     }
 
     JuliaTLS = jl_get_ptls_states();
