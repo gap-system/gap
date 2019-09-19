@@ -225,36 +225,30 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
         NormalizeWhitespace( pkgname );
         version:= record.Version;
 
-        # If we have this version already then leave it out.
-        if ForAll( GAPInfo.PackagesInfo,
-                    r ->    r.PackageName <> record.PackageName
-                        or r.Version <> version ) then
-
-          # Check whether GAP wants to reset loadability.
-          if     IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
-              and GAPInfo.PackagesRestrictions.( pkgname ).OnInitialization(
-                      record ) = false then
-            Add( GAPInfo.PackagesInfoRefuseLoad, record );
-          elif pkgname in ignore then
-            LogPackageLoadingMessage( PACKAGE_DEBUG,
-                Concatenation( "ignore package ", record.PackageName,
-                " (user preference PackagesToIgnore)" ), "GAP" );
-          else
-            record.InstallationPath:= Filename( [ pkgdir ], file[2] );
-            if not IsBound( record.PackageDoc ) then
-              record.PackageDoc:= [];
-            elif IsRecord( record.PackageDoc ) then
-              record.PackageDoc:= [ record.PackageDoc ];
-            fi;
-            if IsHPCGAP then
-              # FIXME: we make the package info record immutable, to
-              # allow access from multiple threads; but that in turn
-              # can break packages, which rely on their package info
-              # record being readable (see issue #2568)
-              MakeImmutable(record);
-            fi;
-            Add( GAPInfo.PackagesInfo, record );
+        # Check whether GAP wants to reset loadability.
+        if     IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
+            and GAPInfo.PackagesRestrictions.( pkgname ).OnInitialization(
+                    record ) = false then
+          Add( GAPInfo.PackagesInfoRefuseLoad, record );
+        elif pkgname in ignore then
+          LogPackageLoadingMessage( PACKAGE_DEBUG,
+              Concatenation( "ignore package ", record.PackageName,
+              " (user preference PackagesToIgnore)" ), "GAP" );
+        else
+          record.InstallationPath:= Filename( [ pkgdir ], file[2] );
+          if not IsBound( record.PackageDoc ) then
+            record.PackageDoc:= [];
+          elif IsRecord( record.PackageDoc ) then
+            record.PackageDoc:= [ record.PackageDoc ];
           fi;
+          if IsHPCGAP then
+            # FIXME: we make the package info record immutable, to
+            # allow access from multiple threads; but that in turn
+            # can break packages, which rely on their package info
+            # record being readable (see issue #2568)
+            MakeImmutable(record);
+          fi;
+          Add( GAPInfo.PackagesInfo, record );
         fi;
       fi;
     od;
@@ -330,9 +324,14 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     od;
 
     # Sort the available info records by their version numbers.
-    SortParallel( List( GAPInfo.PackagesInfo, r -> r.Version ),
+    # (Sort stably in order to make sure that an instance from the first
+    # possible root path gets chosen if the same version of a package
+    # is available in several root paths.
+    # Note that 'CompareVersionNumbers' returns 'true'
+    # if the two arguments are equal.)
+    StableSortParallel( List( GAPInfo.PackagesInfo, r -> r.Version ),
                   GAPInfo.PackagesInfo,
-                  CompareVersionNumbers );
+                  { a, b } -> a <> b and CompareVersionNumbers( a, b ) );
 
     # Turn the lists into records.
     record:= rec();
@@ -1190,30 +1189,27 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
 #F  DirectoriesPackagePrograms( <name> )
 ##
 InstallGlobalFunction( DirectoriesPackagePrograms, function( name )
-    local arch, dirs, info, version, r, path;
+    local info, ppath;
 
-    arch := GAPInfo.Architecture;
-    dirs := [];
     # We are not allowed to call
     # `InstalledPackageVersion', `TestPackageAvailability' etc.
     info:= PackageInfo( name );
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
-      version:= GAPInfo.PackagesLoaded.( name )[2];
+      ppath:= GAPInfo.PackagesLoaded.( name )[1];
     elif IsBound( GAPInfo.PackageCurrent ) then
       # The package is currently going to be loaded.
-      version:= GAPInfo.PackageCurrent.Version;
+      ppath:= GAPInfo.PackageCurrent.InstallationPath;
     elif 0 < Length( info ) then
-      # Take the installed package with the highest version.
-      version:= info[1].Version;
+      # Take the installed package with the highest version
+      # that has been found first in the root paths.
+      ppath:= info[1].InstallationPath;
+    else
+      # This package is not known.
+      return [];
     fi;
-    for r in info do
-      if r.Version = version then
-        path:= Concatenation( r.InstallationPath, "/bin/", arch, "/" );
-        Add( dirs, Directory( path ) );
-      fi;
-    od;
-    return dirs;
+    return [ Directory( Concatenation( ppath, "/bin/",
+                            GAPInfo.Architecture, "/" ) ) ];
 end );
 
 
@@ -1222,12 +1218,12 @@ end );
 #F  DirectoriesPackageLibrary( <name>[, <path>] )
 ##
 InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
-    local name, path, dirs, info, version, r, tmp;
+    local name, path, info, ppath, tmp;
 
     if IsEmpty(arg) or 2 < Length(arg) then
-        Error( "usage: DirectoriesPackageLibrary( <name>[, <path>] )\n" );
+        Error( "usage: DirectoriesPackageLibrary( <name>[, <path>] )" );
     elif not ForAll(arg, IsString) then
-        Error( "string argument(s) expected\n" );
+        Error( "string argument(s) expected" );
     fi;
 
     name:= LowercaseString( arg[1] );
@@ -1239,29 +1235,28 @@ InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
         path := arg[2];
     fi;
 
-    dirs := [];
     # We are not allowed to call
     # `InstalledPackageVersion', `TestPackageAvailability' etc.
     info:= PackageInfo( name );
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
-      version:= GAPInfo.PackagesLoaded.( name )[2];
+      ppath:= GAPInfo.PackagesLoaded.( name )[1];
     elif IsBound( GAPInfo.PackageCurrent ) then
       # The package is currently going to be loaded.
-      version:= GAPInfo.PackageCurrent.Version;
+      ppath:= GAPInfo.PackageCurrent.InstallationPath;
     elif 0 < Length( info ) then
-      # Take the installed package with the highest version.
-      version:= info[1].Version;
+      # Take the installed package with the highest version
+      # that has been found first in the root paths.
+      ppath:= info[1].InstallationPath;
+    else
+      # This package is not known.
+      return [];
     fi;
-    for r in info do
-      if r.Version = version then
-        tmp:= Concatenation( r.InstallationPath, "/", path );
-        if IsDirectoryPath( tmp ) = true then
-          Add( dirs, Directory( tmp ) );
-        fi;
-      fi;
-    od;
-    return dirs;
+    tmp:= Concatenation( ppath, "/", path );
+    if IsDirectoryPath( tmp ) = true then
+      return [ Directory( tmp ) ];
+    fi;
+    return [];
 end );
 
 
