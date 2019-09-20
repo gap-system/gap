@@ -1343,7 +1343,11 @@ InstallMethod( PreImagesRepresentative,
 InstallMethod( ViewObj,
     "for identity mapping",
     true,
-    [ IsGeneralMapping and IsOne ], SUM_FLAGS,
+    [ IsGeneralMapping and IsOne ],
+    # rank up, but just to exactly SUM_FLAGS, so that mappings in a special
+    # representation with a custom printing method still get that, even if
+    # the rank of IsGeneralMapping and IsOne happens to be increased a lot
+    {} -> SUM_FLAGS - RankFilter( IsGeneralMapping and IsOne ),
   function ( id )
     Print( "IdentityMapping( " );
     View( Source( id ) );
@@ -1353,7 +1357,11 @@ InstallMethod( ViewObj,
 InstallMethod( PrintObj,
     "for identity mapping",
     true,
-    [ IsGeneralMapping and IsOne ], SUM_FLAGS,
+    [ IsGeneralMapping and IsOne ],
+    # rank up, but just to exactly SUM_FLAGS, so that mappings in a special
+    # representation with a custom printing method still get that, even if
+    # the rank of IsGeneralMapping and IsOne happens to be increased a lot
+    {} -> SUM_FLAGS - RankFilter( IsGeneralMapping and IsOne ),
     function ( id )
     Print( "IdentityMapping( ", Source( id ), " )" );
     end );
@@ -1366,7 +1374,7 @@ InstallMethod( PrintObj,
 InstallMethod( CompositionMapping2,
   "for general mapping and identity mapping", FamSource1EqFamRange2,
   [ IsGeneralMapping, IsGeneralMapping and IsOne ],
-  SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
+  {} -> SUM_FLAGS + RankFilter( IsGeneralMapping and IsZero ),  # should be higher than the rank for a zero mapping
 function ( map, id )
   if not IsSubset(Range(id),Source(map)) then
     # if the identity is defined on something smaller, we need to take a
@@ -1384,7 +1392,7 @@ end );
 InstallMethod( CompositionMapping2,
   "for identity mapping and general mapping",FamSource1EqFamRange2,
   [ IsGeneralMapping and IsOne, IsGeneralMapping ],
-  SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
+  {} -> SUM_FLAGS + RankFilter( IsGeneralMapping and IsZero ),  # should be higher than the rank for a zero mapping
 function( id, map )
   if not IsSubset(Source(id),Range(map)) then
     # if the identity is defined on something smaller, we need to take a
@@ -1620,7 +1628,11 @@ InstallMethod( PreImagesRepresentative,
 InstallMethod( ViewObj,
     "for zero mapping",
     true,
-    [ IsGeneralMapping and IsZero ], SUM_FLAGS,
+    [ IsGeneralMapping and IsZero ],
+    # rank up, but just to exactly SUM_FLAGS, so that mappings in a special
+    # representation with a custom printing method still get that, even if
+    # the rank of IsGeneralMapping and IsZero happens to be increased a lot
+    {} -> SUM_FLAGS - RankFilter( IsGeneralMapping and IsZero ),
     function( zero )
     Print( "ZeroMapping( " );
     View( Source( zero ) );
@@ -1632,7 +1644,11 @@ InstallMethod( ViewObj,
 InstallMethod( PrintObj,
     "for zero mapping",
     true,
-    [ IsGeneralMapping and IsZero ], SUM_FLAGS,
+    [ IsGeneralMapping and IsZero ],
+    # rank up, but just to exactly SUM_FLAGS, so that mappings in a special
+    # representation with a custom printing method still get that, even if
+    # the rank of IsGeneralMapping and IsZero happens to be increased a lot
+    {} -> SUM_FLAGS - RankFilter( IsGeneralMapping and IsZero ),
     function( zero )
     Print( "ZeroMapping( ", Source( zero ), ", ", Range( zero ), " )" );
     end );
