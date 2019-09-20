@@ -1757,7 +1757,14 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
               Info(InfoExtReps,4,"mwrd=",mwrd);
               mgens:=List(mwrd,x->ImagesRepresentative(quot,x));
               nn:=Length(mgens);
-              mfpi:=IsomorphismFpGroupByGenerators(m,mgens);
+              if IsPermGroup(m) then
+                e:=SmallerDegreePermutationRepresentation(m);
+                mfpi:=IsomorphismFpGroupByGenerators(Image(e,m),
+                  List(mgens,x->ImagesRepresentative(e,x)):cheap);
+                mfpi:=e*mfpi;
+              else
+                mfpi:=IsomorphismFpGroupByGenerators(m,mgens:cheap);
+              fi;
               mmats:=List(mgens,x->ImagesRepresentative(hom,x));
 
               i:=Concatenation(r.module.generators,

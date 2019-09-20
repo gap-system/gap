@@ -266,7 +266,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
           index, inv0, iso, j, map, ndefs, next, ngens, ngens2, ni, orbit,
           order, P, perm, perms, range, regular, rel, rel2, rels, relsG,
           relsGen, relsH, relsP, S, sizeS, stabG, stabS, table, tail, tail1,
-          tail2, tietze, tzword, undefined,
+          tail2, tietze, tzword, undefined,w,
           wordsH,allnums,fam,NewRelators,newrels,chunk, one;
 
     chunk:=ValueOption("chunk");
@@ -560,7 +560,9 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     fi;
 
     # reduce the resulting presentation
-    TzGoGo( P );
+    if ValueOption("cheap")<>true then
+      TzGoGo( P );
+    fi;
 
     # reconvert the reduced relators and return them
     relsP := tietze[TZ_RELATORS];
@@ -568,9 +570,12 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
     for tzword in relsP do
       if tzword <> [ ] then
         if allnums then
-          Add( relsG, AssocWordByLetterRep(fam,tzword ));
+          w:=AssocWordByLetterRep(fam,tzword);
         else
-          Add( relsG, AbstractWordTietzeWord( tzword, gensF ) );
+          w:=AbstractWordTietzeWord( tzword, gensF );
+        fi;
+        if not w in relsG and not w^-1 in relsG then
+          Add( relsG, w);
         fi;
       fi;
     od;
