@@ -37,6 +37,11 @@ InstallOtherMethod( Unpack,
     [ IsMatrix ],
     M -> List( M, Unpack ) );
 
+# generic unpack method for row list matrices
+InstallMethod( Unpack,
+    [ IsRowListMatrix ],
+    M -> List( M, Unpack ) );
+
 
 #############################################################################
 ##
@@ -1987,7 +1992,11 @@ end);
 #M  MutableCopyMatrix( <mat> )
 ##
 InstallOtherMethod( MutableCopyMatrix, "generic method", [ IsMatrix ],
+    -SUM_FLAGS,
   mat -> List( mat, ShallowCopy ) );
+
+InstallOtherMethod( MutableCopyMatrix, "for empty lists", [ IsList and IsEmpty ],
+  mat -> [ ] );
 
 
 #############################################################################
