@@ -538,33 +538,31 @@ DeclareGlobalFunction( "DefaultPackageBannerString" );
 ##
 ##  <Description>
 ##  <Index Key="GAPInfo.Architecture"><C>GAPInfo.Architecture</C></Index>
-##  returns a list of the <C>bin/</C><A>architecture</A> subdirectories
-##  of all packages <A>name</A> where <A>architecture</A> is the architecture
-##  on which &GAP; has been compiled
-##  (this can be accessed as <C>GAPInfo.Architecture</C>,
-##  see <Ref Var="GAPInfo"/>)
-##  and the version of the installed package coincides with
-##  the version of the package <A>name</A> that is already loaded
+##  returns a list that is either empty or contains one directory object
+##  <C>dir</C>, say, that describes the place where external binaries of the
+##  &GAP; package <A>name</A> should be located.
+##  <P/>
+##  In the latter case,
+##  <C>dir</C> is the <C>bin/</C><A>architecture</A> subdirectory of a
+##  directory where the package <A>name</A> is installed,
+##  where <A>architecture</A> is the architecture on which &GAP; has been
+##  compiled (this can be accessed as <C>GAPInfo.Architecture</C>,
+##  see <Ref Var="GAPInfo"/>),
+##  and where the package directory belongs to the version of <A>name</A>
+##  that is already loaded
 ##  or is currently going to be loaded
 ##  or would be the first version &GAP; would try to load if no other version
 ##  is explicitly prescribed.
 ##  (If the package <A>name</A> is not yet loaded then we cannot guarantee
-##  that the returned directories belong to a version that really can be
-##  loaded.)
+##  that the directory belongs to a version that really can be loaded.)
 ##  <P/>
 ##  Note that <Ref Func="DirectoriesPackagePrograms"/> is likely to be called
 ##  in the <C>AvailabilityTest</C> function in the package's
 ##  <F>PackageInfo.g</F> file (see <Ref Sect="The PackageInfo.g File"/>).
 ##  <P/>
-##  The directories returned by <Ref Func="DirectoriesPackagePrograms"/>
-##  are the place where external binaries of the &GAP; package <A>name</A>
-##  for the current package version and the current architecture
-##  should be located.
-##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DirectoriesPackagePrograms( "nq" );
-##  [ dir("/home/gap/4.0/pkg/nq/bin/x86_64-unknown-linux-gnu-gcc/64-bit/"),
-##    dir("/home/gap/4.0/pkg/nq/bin/x86_64-unknown-linux-gnu-gcc/") ]
+##  [ dir("/home/gap/4.0/pkg/nq/bin/x86_64-pc-linux-gnu-default64-kv3/") ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -583,21 +581,21 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##
 ##  <Description>
 ##  takes the string <A>name</A>, a name of a &GAP; package,
-##  and returns a list of directory objects for those sub-directory/ies
-##  containing the library functions of this &GAP; package,
-##  for the version that is already loaded
+##  and returns a list that is either empty or contains one directory object
+##  <C>dir</C>, say, that describes the place where the library functions of
+##  this &GAP; package should be located.
+##  <P/>
+##  In the latter case,
+##  <C>dir</C> is the <A>path</A> subdirectory of a
+##  directory where the package <A>name</A> is installed,
+##  where the default for <A>path</A> is <C>"lib"</C>,
+##  and where the package directory belongs to the version of <A>name</A>
+##  that is already loaded
 ##  or is currently going to be loaded
 ##  or would be the first version &GAP; would try to load if no other version
 ##  is explicitly prescribed.
 ##  (If the package <A>name</A> is not yet loaded then we cannot guarantee
-##  that the returned directories belong to a version that really can be
-##  loaded.)
-##  <P/>
-##  The default is that the library functions are in the subdirectory
-##  <F>lib</F> of the &GAP; package's home directory.
-##  If this is not the case, then the second argument <A>path</A> needs to be
-##  present and must be a string that is a path name relative to the home
-##  directory  of the &GAP; package with name <A>name</A>.
+##  that the directory belongs to a version that really can be loaded.)
 ##  <P/>
 ##  Note that <Ref Func="DirectoriesPackageLibrary"/> is likely to be called
 ##  in the <C>AvailabilityTest</C> function in the package's

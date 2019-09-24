@@ -1189,26 +1189,26 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
 #F  DirectoriesPackagePrograms( <name> )
 ##
 InstallGlobalFunction( DirectoriesPackagePrograms, function( name )
-    local info, ppath;
+    local info, installationpath;
 
     # We are not allowed to call
     # `InstalledPackageVersion', `TestPackageAvailability' etc.
     info:= PackageInfo( name );
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
-      ppath:= GAPInfo.PackagesLoaded.( name )[1];
+      installationpath:= GAPInfo.PackagesLoaded.( name )[1];
     elif IsBound( GAPInfo.PackageCurrent ) then
       # The package is currently going to be loaded.
-      ppath:= GAPInfo.PackageCurrent.InstallationPath;
+      installationpath:= GAPInfo.PackageCurrent.InstallationPath;
     elif 0 < Length( info ) then
       # Take the installed package with the highest version
       # that has been found first in the root paths.
-      ppath:= info[1].InstallationPath;
+      installationpath:= info[1].InstallationPath;
     else
       # This package is not known.
       return [];
     fi;
-    return [ Directory( Concatenation( ppath, "/bin/",
+    return [ Directory( Concatenation( installationpath, "/bin/",
                             GAPInfo.Architecture, "/" ) ) ];
 end );
 
@@ -1218,7 +1218,7 @@ end );
 #F  DirectoriesPackageLibrary( <name>[, <path>] )
 ##
 InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
-    local name, path, info, ppath, tmp;
+    local name, path, info, installationpath, tmp;
 
     if IsEmpty(arg) or 2 < Length(arg) then
         Error( "usage: DirectoriesPackageLibrary( <name>[, <path>] )" );
@@ -1240,19 +1240,19 @@ InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
     info:= PackageInfo( name );
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
-      ppath:= GAPInfo.PackagesLoaded.( name )[1];
+      installationpath:= GAPInfo.PackagesLoaded.( name )[1];
     elif IsBound( GAPInfo.PackageCurrent ) then
       # The package is currently going to be loaded.
-      ppath:= GAPInfo.PackageCurrent.InstallationPath;
+      installationpath:= GAPInfo.PackageCurrent.InstallationPath;
     elif 0 < Length( info ) then
       # Take the installed package with the highest version
       # that has been found first in the root paths.
-      ppath:= info[1].InstallationPath;
+      installationpath:= info[1].InstallationPath;
     else
       # This package is not known.
       return [];
     fi;
-    tmp:= Concatenation( ppath, "/", path );
+    tmp:= Concatenation( installationpath, "/", path );
     if IsDirectoryPath( tmp ) = true then
       return [ Directory( tmp ) ];
     fi;
