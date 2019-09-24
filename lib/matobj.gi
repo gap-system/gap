@@ -624,6 +624,10 @@ InstallMethod( Unpack,
   ListOp ); ## Potentially slower than a direct implementation,
             ## but avoids code duplication.
 
+InstallOtherMethod( Unpack,
+  "generic method for plain lists",
+  [ IsRowVector and IsPlistRep ],
+  ShallowCopy );
 
 InstallMethod( \{\},
   "generic method for a vector object and a list",
@@ -1138,6 +1142,7 @@ InstallMethod( ShallowCopy,
 ##
 InstallMethod( MutableCopyMatrix,
     [ IsMatrixObj ],
+    -SUM_FLAGS,
     function( M )
     if IsPlistRep( M ) then
       TryNextMethod();
