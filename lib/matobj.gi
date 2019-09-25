@@ -1013,6 +1013,7 @@ InstallMethod( MultVectorRight,
 InstallMethod( \+,
     "for two matrix objects",
     [ IsMatrixObj, IsMatrixObj ],
+    -SUM_FLAGS,
     function( M1, M2 )
     if IsPlistRep( M1 ) then
       TryNextMethod();
@@ -1023,6 +1024,7 @@ InstallMethod( \+,
 InstallMethod( \-,
     "for two matrix objects",
     [ IsMatrixObj, IsMatrixObj ],
+    -SUM_FLAGS,
     function( M1, M2 )
     if IsPlistRep( M1 ) then
       TryNextMethod();
@@ -1033,6 +1035,7 @@ InstallMethod( \-,
 InstallMethod( \*,
     "for two ordinary matrix objects (ordinary matrix product)",
     [ IsMatrixObj and IsOrdinaryMatrix, IsMatrixObj and IsOrdinaryMatrix ],
+    -SUM_FLAGS,
     function( M1, M2 )
     if IsList( M1 ) or IsList( M2 ) then
       TryNextMethod();
@@ -1043,6 +1046,7 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for matrix object and scalar",
     [ IsMatrixObj, IsScalar ],
+    -SUM_FLAGS,
     function( M, s )
     if IsList( M ) then
       TryNextMethod();
@@ -1053,6 +1057,7 @@ InstallMethod( \*,
 InstallMethod( \*,
     "for scalar and matrix object",
     [ IsScalar, IsMatrixObj ],
+    -SUM_FLAGS,
     function( s, M )
     if IsList( M ) then
       TryNextMethod();
@@ -1063,6 +1068,7 @@ InstallMethod( \*,
 InstallMethod( \/,
     "for matrix object and scalar",
     [ IsMatrixObj, IsScalar ],
+    -SUM_FLAGS,
     function( M, s )
     if IsList( M ) then
       TryNextMethod();
@@ -1133,6 +1139,7 @@ InstallMethod( IsEmptyMatrix,
 ##
 InstallMethod( ShallowCopy,
     [ IsVectorObj ],
+    -SUM_FLAGS,
     v -> Vector( Unpack( v ), v ) );
 
 
@@ -1252,6 +1259,7 @@ InstallMethod( IsZero,
 
 InstallMethod( Characteristic,
     [ IsVectorObj ],
+    -SUM_FLAGS,
     v -> Characteristic( BaseDomain( v ) ) );
 
 
@@ -1555,6 +1563,7 @@ InstallOtherMethod( Randomize,
 InstallMethod( Length,
     "for a matrix object",
     [ IsMatrixObj ],
+    -SUM_FLAGS,
     NumberRows );
 
 # Install fallback methods for m[i,j] which delegate to ASS_LIST / ELM_LIST

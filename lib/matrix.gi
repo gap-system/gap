@@ -1263,16 +1263,19 @@ InstallOtherMethod( BaseDomain,
 InstallOtherMethod( OneOfBaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
+    -SUM_FLAGS,
     v -> One( v[1] ) );
 
 InstallOtherMethod( ZeroOfBaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
+    -SUM_FLAGS,
     v -> Zero( v[1] ) );
 
 InstallOtherMethod( ConstructingFilter,
     "generic method for a row vector",
     [ IsRowVector ],
+    -SUM_FLAGS,
     v -> IsPlistRep );
 
 InstallOtherMethod( BaseDomain,
