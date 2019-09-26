@@ -353,25 +353,38 @@ InversePcgs := function( hom )
       
         # add it
         hom!.rangePcgs := InducedPcgsByPcSequenceNC( pcgs, gensInv ); 
-        hom!.rangePcgsPreimages := imgsInv;
-#T better MakeImmutable
+        hom!.rangePcgsPreimages := Immutable(imgsInv);
         
-        # we have the kernel also
-        SetKernelOfMultiplicativeGeneralMapping( hom, SubgroupNC(Source(hom),
-                                                          gensKer ) );
-  
+        # we have the kernel also, if needed (or we check).
+        if not HasKernelOfMultiplicativeGeneralMapping(hom)
+          or InfoLevel(InfoAttributes)>1 then
+          #Check whether the Pcgs is for the whole group.
+          # Otherwise there is a kernel that will not be visible in
+          # the modulo pcgs that the homomorphism uses
+          tmp:=DenominatorOfModuloPcgs(hom!.sourcePcgs);
+          if tmp=fail then
+            gensKer:=AsSubgroup(Source(hom),
+              ClosureGroup(hom!.sourcePcgs!.denominator,gensKer));
+          elif Length(tmp)>0 then
+            gensKer:=SubgroupNC(Source(hom),Concatenation(tmp,gensKer));
+          else
+            gensKer:=SubgroupNC(Source(hom),gensKer);
+          fi;
+          SetKernelOfMultiplicativeGeneralMapping( hom, gensKer );
+        fi;
+
         # and return
         return;
-    fi;
-    
-    # otherwise we have to do some work
-    pcgs := Pcgs( Image( hom ) );
-    new:=MappingGeneratorsImages(hom);
-    new  := CanonicalPcgsByGeneratorsWithImages( pcgs, new[2],
-                                                       new[1] );
-    hom!.rangePcgs := new[1];
-    hom!.rangePcgsPreimages := new[2];
-end;
+      fi;
+      
+      # otherwise we have to do some work
+      pcgs := Pcgs( Image( hom ) );
+      new:=MappingGeneratorsImages(hom);
+      new  := CanonicalPcgsByGeneratorsWithImages( pcgs, new[2],
+                                                        new[1] );
+      hom!.rangePcgs := new[1];
+      hom!.rangePcgsPreimages := new[2];
+  end;
 
 #############################################################################
 ##
