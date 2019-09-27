@@ -1,0 +1,33 @@
+gap> filt:=NewFilter("BreakPrint");;
+gap> InstallMethod(ViewObj, [filt], SUM_FLAGS, x -> 0/0);;
+gap> badgroup := Group(());
+Group(())
+gap> SetFilterObj(badgroup, filt);
+gap> old_OnBreak:=OnBreak;;
+gap> OnBreak:=fail;; # prevent backtrace with line numbers that keep chaning
+gap> View([[badgroup]]); # <- trigger break loop
+Error, Rational operations: <divisor> must not be zero in
+  0 / 0 at *stdin*:3 called from 
+type 'quit;' to quit to outer loop
+brk> quit;
+[ [ 
+gap> OnBreak:=old_OnBreak;;
+gap> l := [1,2,3];
+[ 1, 2, 3 ]
+gap> l;
+[ 1, 2, 3 ]
+gap> Print(l,"\n");
+[ 1, 2, 3 ]
+gap> l;
+[ 1, 2, 3 ]
+gap> Print(l,"\n");
+[ 1, 2, 3 ]
+gap> Print(l,"\n");
+[ 1, 2, 3 ]
+gap> 2;
+2
+gap> Print(l,"\n");
+[ 1, 2, 3 ]
+gap> Print(l,"\n");
+[ 1, 2, 3 ]
+gap> QUIT;
