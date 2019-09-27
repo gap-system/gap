@@ -839,8 +839,8 @@ static inline UInt IS_ON_PRINT_STACK(const ObjectsModuleState * os, Obj obj)
   if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj)
         && TNUM_OBJ(obj) <= LAST_LIST_TNUM))
     return 0;
-  for (i = 0; i < os->PrintObjDepth-1; i++)
-    if (os->PrintObjThiss[i] == obj)
+  for (i = 1; i < os->PrintObjDepth; i++)
+    if (os->PrintObjThiss[i-1] == obj)
       return 1;
   return 0;
 }
