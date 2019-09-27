@@ -40,7 +40,7 @@
 
 
 enum {
-    MAXPRINTDEPTH = 1024,
+    MAXPRINTDEPTH = 64,
 };
 
 static ModuleStateOffset ObjectsStateOffset = -1;
