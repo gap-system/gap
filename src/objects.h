@@ -792,15 +792,18 @@ void ViewObj(Obj obj);
 **
 **  'PrintPathFuncs'  is   the   dispatch table  that     contains for  every
 **  appropriate type of objects a pointer to  the path printer for objects of
-**  that type.  The path  printer is the function '<func>(<obj>,<indx>)' that
-**  should be  called  to print  the  selector   that selects  the  <indx>-th
+**  that type.  The path  printer is the function '<func>(<obj>,<idx>)' that
+**  should be  called  to print  the  selector   that selects  the  <idx>-th
 **  subobject of the object <obj> of this type.
 **
 **  These are also used for viewing
 */
-extern void (* PrintPathFuncs[LAST_REAL_TNUM+1]) (
-    Obj                 obj,
-    Int                 indx );
+extern void (*PrintPathFuncs[LAST_REAL_TNUM + 1])(Obj obj, Int idx);
+EXPORT_INLINE void PRINT_PATH(Obj obj, Int idx)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    (PrintPathFuncs[tnum])(obj, idx);
+}
 
 
 /****************************************************************************
