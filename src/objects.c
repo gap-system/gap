@@ -946,8 +946,7 @@ void            PrintObj (
     else {
         Pr( "~", 0L, 0L );
         for ( i = 0; obj != os->PrintObjThiss[i]; i++ ) {
-            (*PrintPathFuncs[ TNUM_OBJ(os->PrintObjThiss[i])])
-                ( os->PrintObjThiss[i], os->PrintObjIndices[i] );
+            PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
         }
     }
 
@@ -1085,8 +1084,7 @@ void            ViewObj (
     else {
         Pr( "~", 0L, 0L );
         for ( i = 0; obj != os->PrintObjThiss[i]; i++ ) {
-            (*PrintPathFuncs[ TNUM_OBJ(os->PrintObjThiss[i]) ])
-                ( os->PrintObjThiss[i], os->PrintObjIndices[i] );
+            PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
         }
     }
 
