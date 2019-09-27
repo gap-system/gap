@@ -196,8 +196,7 @@ static Obj Shell(Obj    context,
       ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
-  oldPrintDepth = STATE(PrintObjDepth);
-  STATE(PrintObjDepth) = 0;
+  oldPrintDepth = SetPrintObjState(0);
 
   while ( 1 ) {
 
@@ -210,7 +209,7 @@ static Obj Shell(Obj    context,
     /* read and evaluate one command                                   */
     STATE(Prompt) = prompt;
     ClearError();
-    STATE(PrintObjDepth) = 0;
+    SetPrintObjState(0);
     ResetOutputIndent();
     SetRecursionDepth(0);
       
@@ -291,7 +290,7 @@ static Obj Shell(Obj    context,
 
   }
   
-  STATE(PrintObjDepth) = oldPrintDepth;
+  SetPrintObjState(oldPrintDepth);
   CloseInput();
   CloseOutput();
   STATE(BaseShellContext) = oldBaseShellContext;

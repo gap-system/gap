@@ -99,9 +99,6 @@ typedef struct GAPState {
                                    // this is not used by GAP itself but by programs
                                    // that use GAP as a library to handle errors
 
-    /* From objects.c */
-    Int PrintObjDepth;
-
     /* From info.c */
     Int ShowUsedInfoClassesActive;
 

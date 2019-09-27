@@ -757,6 +757,11 @@ void PrintObj(Obj obj);
 
 extern Obj PrintObjOper;
 
+/****************************************************************************
+**
+**
+*/
+UInt SetPrintObjState(UInt state); // returns the old state
 void SetPrintObjIndex(Int index);
 
 
