@@ -837,8 +837,8 @@ static inline UInt IS_ON_PRINT_STACK(const ObjectsModuleState * os, Obj obj)
   if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj)
         && TNUM_OBJ(obj) <= LAST_LIST_TNUM))
     return 0;
-  for (i = 1; i < os->PrintObjDepth; i++)
-    if (os->PrintObjThiss[i-1] == obj)
+  for (i = 0; i < os->PrintObjDepth; i++)
+    if (os->PrintObjThiss[i] == obj)
       return 1;
   return 0;
 }
@@ -887,13 +887,8 @@ static void InitPrintObjStack(ObjectsModuleState * os)
 **
 **  'PrintObj' prints the object <obj>.
 */
-void            PrintObj (
-    Obj                 obj )
+void PrintObj(Obj obj)
 {
-    UInt                lastPV;        /* save LastPV */
-    UInt                fromview;      /* non-zero when we were called
-                                        from viewObj of the SAME object */
-
 #if defined(HPCGAP) && !defined(WARD_ENABLED)
     if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
         PrintInaccessibleObject(obj);
@@ -907,43 +902,43 @@ void            PrintObj (
     InitPrintObjStack(os);
 #endif
 
-    lastPV = os->LastPV;
-    os->LastPV = 1;
-
-    /* First check if <obj> is actually the current object being Viewed
-       Since ViewObj(<obj>) may result in a call to PrintObj(<obj>) */
-    fromview = (os->PrintObjDepth > 0) && (lastPV == 2) && (obj == os->PrintObjThiss[os->PrintObjDepth-1]);
-
-    if (!fromview) {
-        os->PrintObjThiss[os->PrintObjDepth]   = obj;
-        os->PrintObjIndices[os->PrintObjDepth] = 0;
-        os->PrintObjDepth++;
-    }
-
-    /* dispatch to the appropriate printing function                       */
-    if (!IS_ON_PRINT_STACK(os, obj)) {
-      if (os->PrintObjDepth < MAXPRINTDEPTH) {
+    // First check if <obj> is actually the current object being viewed, since
+    // ViewObj(<obj>) may result in a call to PrintObj(<obj>); in that case,
+    // we should not put <obj> on the print stack
+    if ((os->PrintObjDepth > 0) && (os->LastPV == 2) &&
+        (obj == os->PrintObjThiss[os->PrintObjDepth - 1])) {
+        os->LastPV = 1;
         (*PrintObjFuncs[ TNUM_OBJ(obj) ])( obj );
-      }
-      else {
-        /* don't recurse if depth too high */
-        Pr("\nprinting stopped, too many recursion levels!\n", 0L, 0L);
-      }
+        os->LastPV = 2;
     }
 
-    /* or print the path                                                   */
-    else {
-        Pr( "~", 0L, 0L );
+    // print the path if <obj> is on the stack
+    else if (IS_ON_PRINT_STACK(os, obj)) {
+        Pr("~", 0, 0);
         for (int i = 0; obj != os->PrintObjThiss[i]; i++) {
             PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
         }
     }
 
-    /* done with <obj>                                                     */
-    if (!fromview) {
+    // dispatch to the appropriate printing function
+    else if (os->PrintObjDepth < MAXPRINTDEPTH) {
+
+        // push obj on the stack
+        os->PrintObjThiss[os->PrintObjDepth] = obj;
+        os->PrintObjIndices[os->PrintObjDepth] = 0;
+        os->PrintObjDepth++;
+
+        UInt lastPV = os->LastPV;
+        os->LastPV = 1;
+        (*PrintObjFuncs[ TNUM_OBJ(obj) ])( obj );
+        os->LastPV = lastPV;
+
+        // pop <obj> from the stack
         os->PrintObjDepth--;
     }
-    os->LastPV = lastPV;
+    else {
+        Pr("\nprinting stopped, too many recursion levels!\n", 0, 0);
+    }
 }
 
 
@@ -1017,11 +1012,8 @@ static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
 
 static Obj ViewObjOper;
 
-void            ViewObj (
-    Obj                 obj )
+void ViewObj(Obj obj)
 {
-    UInt                lastPV;
-
 #if defined(HPCGAP) && !defined(WARD_ENABLED)
     if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
         PrintInaccessibleObject(obj);
@@ -1035,36 +1027,33 @@ void            ViewObj (
     InitPrintObjStack(os);
 #endif
 
-    lastPV = os->LastPV;
-    os->LastPV = 2;
-
-    os->PrintObjThiss[os->PrintObjDepth]   = obj;
-    os->PrintObjIndices[os->PrintObjDepth] = 0;
-    os->PrintObjDepth++;
-
-    /* dispatch to the appropriate viewing function                       */
-    if (!IS_ON_PRINT_STACK(os, obj)) {
-      if (os->PrintObjDepth < MAXPRINTDEPTH) {
-        DoOperation1Args( ViewObjOper, obj );
-      }
-      else {
-        /* don't recurse any more */
-        Pr("\nviewing stopped, too many recursion levels!\n", 0L, 0L);
-      }
-    }
-
-    /* or print the path                                                   */
-    else {
-        Pr( "~", 0L, 0L );
+    // print the path if <obj> is on the stack
+    if (IS_ON_PRINT_STACK(os, obj)) {
+        Pr("~", 0, 0);
         for (int i = 0; obj != os->PrintObjThiss[i]; i++) {
             PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
         }
     }
 
-    /* done with <obj>                                                     */
-    os->PrintObjDepth--;
+    // dispatch to the appropriate viewing function
+    else if (os->PrintObjDepth < MAXPRINTDEPTH) {
 
-    os->LastPV = lastPV;
+        // push obj on the stack
+        os->PrintObjThiss[os->PrintObjDepth] = obj;
+        os->PrintObjIndices[os->PrintObjDepth] = 0;
+        os->PrintObjDepth++;
+
+        UInt lastPV = os->LastPV;
+        os->LastPV = 2;
+        DoOperation1Args(ViewObjOper, obj);
+        os->LastPV = lastPV;
+
+        // pop <obj> from the stack
+        os->PrintObjDepth--;
+    }
+    else {
+        Pr("\nviewing stopped, too many recursion levels!\n", 0, 0);
+    }
 }
 
 
