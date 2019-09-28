@@ -47,8 +47,6 @@ static ModuleStateOffset ObjectsStateOffset = -1;
 
 typedef struct {
     UInt  PrintObjDepth;
-    Obj   PrintObjThis;
-    Int   PrintObjIndex;
 #if defined(HPCGAP)
     Obj   PrintObjThissObj;
     Obj * PrintObjThiss;
@@ -892,7 +890,6 @@ static void InitPrintObjStack(ObjectsModuleState * os)
 void            PrintObj (
     Obj                 obj )
 {
-    Int                 i;              /* loop variable                   */
     UInt                lastPV;        /* save LastPV */
     UInt                fromview;      /* non-zero when we were called
                                         from viewObj of the SAME object */
@@ -910,29 +907,21 @@ void            PrintObj (
     InitPrintObjStack(os);
 #endif
 
-    /* First check if <obj> is actually the current object being Viewed
-       Since ViewObj(<obj>) may result in a call to PrintObj(<obj>) */
-
     lastPV = os->LastPV;
     os->LastPV = 1;
-    fromview = (lastPV == 2) && (obj == os->PrintObjThis);
 
-    /* if <obj> is a subobject, then mark and remember the superobject
-       unless ViewObj has done that job already */
-    if ( !fromview  && 0 < os->PrintObjDepth ) {
-        os->PrintObjThiss[os->PrintObjDepth-1]   = os->PrintObjThis;
-        os->PrintObjIndices[os->PrintObjDepth-1] = os->PrintObjIndex;
-    }
+    /* First check if <obj> is actually the current object being Viewed
+       Since ViewObj(<obj>) may result in a call to PrintObj(<obj>) */
+    fromview = (os->PrintObjDepth > 0) && (lastPV == 2) && (obj == os->PrintObjThiss[os->PrintObjDepth-1]);
 
-    /* handle the <obj>                                                    */
     if (!fromview) {
-        os->PrintObjDepth += 1;
-        os->PrintObjThis   = obj;
-        os->PrintObjIndex  = 0;
+        os->PrintObjThiss[os->PrintObjDepth]   = obj;
+        os->PrintObjIndices[os->PrintObjDepth] = 0;
+        os->PrintObjDepth++;
     }
 
     /* dispatch to the appropriate printing function                       */
-    if ( (! IS_ON_PRINT_STACK(os, obj)) ) {
+    if (!IS_ON_PRINT_STACK(os, obj)) {
       if (os->PrintObjDepth < MAXPRINTDEPTH) {
         (*PrintObjFuncs[ TNUM_OBJ(obj) ])( obj );
       }
@@ -945,21 +934,14 @@ void            PrintObj (
     /* or print the path                                                   */
     else {
         Pr( "~", 0L, 0L );
-        for ( i = 0; obj != os->PrintObjThiss[i]; i++ ) {
+        for (int i = 0; obj != os->PrintObjThiss[i]; i++) {
             PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
         }
     }
 
-
     /* done with <obj>                                                     */
     if (!fromview) {
-        os->PrintObjDepth -= 1;
-        
-        /* if <obj> is a subobject, then restore and unmark the superobject*/
-        if ( 0 < os->PrintObjDepth ) {
-            os->PrintObjThis  = os->PrintObjThiss[os->PrintObjDepth-1];
-            os->PrintObjIndex = os->PrintObjIndices[os->PrintObjDepth-1];
-        }
+        os->PrintObjDepth--;
     }
     os->LastPV = lastPV;
 }
@@ -1010,7 +992,10 @@ UInt SetPrintObjState(UInt state)
 
 void SetPrintObjIndex(Int index)
 {
-    MODULE_STATE(Objects).PrintObjIndex = index;
+    UInt depth = MODULE_STATE(Objects).PrintObjDepth;
+    if (depth == 0)
+        ErrorQuit("SetPrintObjIndex: bad state, PrintObjDepth is 0", 0, 0);
+    MODULE_STATE(Objects).PrintObjIndices[depth - 1] = index;
 }
 
 static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
@@ -1035,16 +1020,12 @@ static Obj ViewObjOper;
 void            ViewObj (
     Obj                 obj )
 {
-    Int                 i;              /* loop variable                   */
     UInt                lastPV;
-
-    /* No check for interrupts here, viewing should not take so long that
-       it is necessary */
 
 #if defined(HPCGAP) && !defined(WARD_ENABLED)
     if (IS_BAG_REF(obj) && !CheckReadAccess(obj)) {
-         PrintInaccessibleObject(obj);
-         return;
+        PrintInaccessibleObject(obj);
+        return;
     }
 #endif
 
@@ -1057,20 +1038,12 @@ void            ViewObj (
     lastPV = os->LastPV;
     os->LastPV = 2;
 
-    /* if <obj> is a subobject, then mark and remember the superobject     */
-    if ( 0 < os->PrintObjDepth ) {
-        os->PrintObjThiss[os->PrintObjDepth-1]   = os->PrintObjThis;
-        os->PrintObjIndices[os->PrintObjDepth-1] = os->PrintObjIndex;
-    }
-
-    /* handle the <obj>                                                    */
-    os->PrintObjDepth += 1;
-    os->PrintObjThis   = obj;
-    os->PrintObjIndex  = 0;
+    os->PrintObjThiss[os->PrintObjDepth]   = obj;
+    os->PrintObjIndices[os->PrintObjDepth] = 0;
+    os->PrintObjDepth++;
 
     /* dispatch to the appropriate viewing function                       */
-
-    if ( ! IS_ON_PRINT_STACK(os, obj) ) {
+    if (!IS_ON_PRINT_STACK(os, obj)) {
       if (os->PrintObjDepth < MAXPRINTDEPTH) {
         DoOperation1Args( ViewObjOper, obj );
       }
@@ -1080,22 +1053,16 @@ void            ViewObj (
       }
     }
 
-    /* or view the path                                                   */
+    /* or print the path                                                   */
     else {
         Pr( "~", 0L, 0L );
-        for ( i = 0; obj != os->PrintObjThiss[i]; i++ ) {
+        for (int i = 0; obj != os->PrintObjThiss[i]; i++) {
             PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
         }
     }
 
     /* done with <obj>                                                     */
-    os->PrintObjDepth -= 1;
-
-    /* if <obj> is a subobject, then restore and unmark the superobject    */
-    if ( 0 < os->PrintObjDepth ) {
-        os->PrintObjThis  = os->PrintObjThiss[os->PrintObjDepth-1];
-        os->PrintObjIndex = os->PrintObjIndices[os->PrintObjDepth-1];
-    }
+    os->PrintObjDepth--;
 
     os->LastPV = lastPV;
 }
