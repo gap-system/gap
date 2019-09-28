@@ -775,6 +775,11 @@ void SetPrintObjIndex(Int index);
 **  <obj> of this type.
 */
 extern void (* PrintObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+EXPORT_INLINE void PRINT_OBJ(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    (PrintObjFuncs[tnum])(obj);
+}
 
 
 /****************************************************************************
