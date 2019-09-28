@@ -908,7 +908,7 @@ void PrintObj(Obj obj)
     if ((os->PrintObjDepth > 0) && (os->LastPV == 2) &&
         (obj == os->PrintObjThiss[os->PrintObjDepth - 1])) {
         os->LastPV = 1;
-        (*PrintObjFuncs[ TNUM_OBJ(obj) ])( obj );
+        PRINT_OBJ(obj);
         os->LastPV = 2;
     }
 
@@ -930,7 +930,7 @@ void PrintObj(Obj obj)
 
         UInt lastPV = os->LastPV;
         os->LastPV = 1;
-        (*PrintObjFuncs[ TNUM_OBJ(obj) ])( obj );
+        PRINT_OBJ(obj);
         os->LastPV = lastPV;
 
         // pop <obj> from the stack
