@@ -833,14 +833,13 @@ static Obj FuncMakeImmutable(Obj self, Obj obj)
 // being printed or viewed to trigger the use of ~ when needed.
 static inline UInt IS_ON_PRINT_STACK(const ObjectsModuleState * os, Obj obj)
 {
-  UInt i;
-  if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj)
-        && TNUM_OBJ(obj) <= LAST_LIST_TNUM))
+    if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj) &&
+          TNUM_OBJ(obj) <= LAST_LIST_TNUM))
+        return 0;
+    for (UInt i = 0; i < os->PrintObjDepth; i++)
+        if (os->PrintObjThiss[i] == obj)
+            return 1;
     return 0;
-  for (i = 0; i < os->PrintObjDepth; i++)
-    if (os->PrintObjThiss[i] == obj)
-      return 1;
-  return 0;
 }
 
 #ifdef HPCGAP
