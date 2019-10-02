@@ -2466,6 +2466,13 @@ local G,chi,reps,r,i,gensp;
     Error("second argument must be ordinary character or character list");
   fi;
 
+  # Special case of trivial group
+  if Size(G)=1 then
+    r:=Group([[1]]);
+    r:=GroupHomomorphismByImagesNC(G,r,[One(G)],[One(r)]);
+    return List(chi,x->r);
+  fi;
+
   gensp:=fail;
   reps:=[];
   for i in chi do
