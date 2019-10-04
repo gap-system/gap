@@ -209,6 +209,14 @@ typedef Bag Obj;
 typedef Obj (* ObjFunc) (/*arguments*/);
 #pragma GCC diagnostic pop
 
+typedef Obj (* ObjFunc_0ARGS) (Obj self);
+typedef Obj (* ObjFunc_1ARGS) (Obj self, Obj a1);
+typedef Obj (* ObjFunc_2ARGS) (Obj self, Obj a1, Obj a2);
+typedef Obj (* ObjFunc_3ARGS) (Obj self, Obj a1, Obj a2, Obj a3);
+typedef Obj (* ObjFunc_4ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4);
+typedef Obj (* ObjFunc_5ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5);
+typedef Obj (* ObjFunc_6ARGS) (Obj self, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6);
+
 
 /****************************************************************************
 **
