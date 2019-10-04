@@ -1079,8 +1079,8 @@ static Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string)
 
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(SERIALIZE_TO_NATIVE_STRING, 1, "obj"),
-    GVAR_FUNC(DESERIALIZE_NATIVE_STRING, 1, "string"),
+    GVAR_FUNC_1ARGS(SERIALIZE_TO_NATIVE_STRING, obj),
+    GVAR_FUNC_1ARGS(DESERIALIZE_NATIVE_STRING, string),
     { 0, 0, 0, 0, 0 }
 
 };

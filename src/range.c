@@ -1069,7 +1069,7 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(INTER_RANGE, 2, "range1, range2"),
+    GVAR_FUNC_2ARGS(INTER_RANGE, range1, range2),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -2069,8 +2069,8 @@ static StructGVarOper GVarOpers [] = {
 *V  GVarFuncs . . . . . . . . . . . . . . . . .  list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-  GVAR_FUNC(SetCyclotomicsLimit, 1, "newlimit"),
-  GVAR_FUNC(GetCyclotomicsLimit, 0, ""),
+  GVAR_FUNC_1ARGS(SetCyclotomicsLimit, newlimit),
+  GVAR_FUNC_0ARGS(GetCyclotomicsLimit),
   { 0, 0, 0, 0, 0 }
 };
 

@@ -1077,12 +1077,12 @@ void ModulesPostRestore(void)
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(GAP_CRC, 1, "filename"),
-    GVAR_FUNC(LOAD_DYN, 2, "filename, crc"),
-    GVAR_FUNC(LOAD_STAT, 2, "filename, crc"),
-    GVAR_FUNC(SHOW_STAT, 0, ""),
-    GVAR_FUNC(LoadedModules, 0, ""),
-    GVAR_FUNC(ExportToKernelFinished, 0, ""),
+    GVAR_FUNC_1ARGS(GAP_CRC, filename),
+    GVAR_FUNC_2ARGS(LOAD_DYN, filename, crc),
+    GVAR_FUNC_2ARGS(LOAD_STAT, filename, crc),
+    GVAR_FUNC_0ARGS(SHOW_STAT),
+    GVAR_FUNC_0ARGS(LoadedModules),
+    GVAR_FUNC_0ARGS(ExportToKernelFinished),
     { 0, 0, 0, 0, 0 }
 };
 

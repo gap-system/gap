@@ -964,13 +964,13 @@ static Obj FuncSMALLEST_FIELD_VECFFE(Obj self, Obj vec)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-  GVAR_FUNC(ADD_ROWVECTOR_VECFFES_3, 3, "vecl, vecr, mult"),
-  GVAR_FUNC(ADD_ROWVECTOR_VECFFES_2, 2, "vecl, vecr"),
-  GVAR_FUNC(MULT_VECTOR_VECFFES, 2, "vec, mult"),
-  GVAR_FUNC(IS_VECFFE, 1, "vec"),
-  GVAR_FUNC(COMMON_FIELD_VECFFE, 1, "vec"),
-  GVAR_FUNC(SMALLEST_FIELD_VECFFE, 1, "vec"),
-  { 0, 0, 0, 0, 0 }
+    GVAR_FUNC_3ARGS(ADD_ROWVECTOR_VECFFES_3, vecl, vecr, mult),
+    GVAR_FUNC_2ARGS(ADD_ROWVECTOR_VECFFES_2, vecl, vecr),
+    GVAR_FUNC_2ARGS(MULT_VECTOR_VECFFES, vec, mult),
+    GVAR_FUNC_1ARGS(IS_VECFFE, vec),
+    GVAR_FUNC_1ARGS(COMMON_FIELD_VECFFE, vec),
+    GVAR_FUNC_1ARGS(SMALLEST_FIELD_VECFFE, vec),
+    { 0, 0, 0, 0, 0 }
 
 };
 

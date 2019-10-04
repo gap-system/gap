@@ -1048,19 +1048,19 @@ static StructBagNames BagNames[] = {
 static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(OBJ_SET, -1, "[list]"),
-    GVAR_FUNC(ADD_OBJ_SET, 2, "set, obj"),
-    GVAR_FUNC(REMOVE_OBJ_SET, 2, "set, obj"),
-    GVAR_FUNC(FIND_OBJ_SET, 2, "set, obj"),
-    GVAR_FUNC(CLEAR_OBJ_SET, 1, "set"),
-    GVAR_FUNC(OBJ_SET_VALUES, 1, "set"),
+    GVAR_FUNC_2ARGS(ADD_OBJ_SET, set, obj),
+    GVAR_FUNC_2ARGS(REMOVE_OBJ_SET, set, obj),
+    GVAR_FUNC_2ARGS(FIND_OBJ_SET, set, obj),
+    GVAR_FUNC_1ARGS(CLEAR_OBJ_SET, set),
+    GVAR_FUNC_1ARGS(OBJ_SET_VALUES, set),
     GVAR_FUNC(OBJ_MAP, -1, "[list]"),
-    GVAR_FUNC(ADD_OBJ_MAP, 3, "map, key, value"),
-    GVAR_FUNC(REMOVE_OBJ_MAP, 2, "map, obj"),
-    GVAR_FUNC(FIND_OBJ_MAP, 3, "map, obj, default"),
-    GVAR_FUNC(CONTAINS_OBJ_MAP, 2, "map, obj"),
-    GVAR_FUNC(CLEAR_OBJ_MAP, 1, "map"),
-    GVAR_FUNC(OBJ_MAP_VALUES, 1, "map"),
-    GVAR_FUNC(OBJ_MAP_KEYS, 1, "map"),
+    GVAR_FUNC_3ARGS(ADD_OBJ_MAP, map, key, value),
+    GVAR_FUNC_2ARGS(REMOVE_OBJ_MAP, map, obj),
+    GVAR_FUNC_3ARGS(FIND_OBJ_MAP, map, obj, default),
+    GVAR_FUNC_2ARGS(CONTAINS_OBJ_MAP, map, obj),
+    GVAR_FUNC_1ARGS(CLEAR_OBJ_MAP, map),
+    GVAR_FUNC_1ARGS(OBJ_MAP_VALUES, map),
+    GVAR_FUNC_1ARGS(OBJ_MAP_KEYS, map),
     { 0, 0, 0, 0, 0 }
 
 };

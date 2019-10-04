@@ -312,18 +312,19 @@ static Obj Func32Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(8Bits_DepthOfPcElement, 2, "8_bits_pcgs, 8_bits_pcword"),
-    GVAR_FUNC(8Bits_ExponentOfPcElement, 3, "8_bits_pcgs, 8_bits_pcword, int"),
-    GVAR_FUNC(8Bits_LeadingExponentOfPcElement, 2, "8_bits_pcgs, 8_bits_word"),
-    GVAR_FUNC(8Bits_ExponentsOfPcElement, 2, "8_bits_pcgs, 8_bits_pcword"),
-    GVAR_FUNC(16Bits_DepthOfPcElement, 2, "16_bits_pcgs, 16_bits_pcword"),
-    GVAR_FUNC(16Bits_ExponentOfPcElement, 3, "16_bits_pcgs, 16_bits_pcword, int"),
-    GVAR_FUNC(16Bits_LeadingExponentOfPcElement, 2, "16_bits_pcgs, 16_bits_word"),
-    GVAR_FUNC(16Bits_ExponentsOfPcElement, 2, "16_bits_pcgs, 16_bits_pcword"),
-    GVAR_FUNC(32Bits_DepthOfPcElement, 2, "32_bits_pcgs, 32_bits_pcword"),
-    GVAR_FUNC(32Bits_ExponentOfPcElement, 3, "32_bits_pcgs, 32_bits_pcword, int"),
-    GVAR_FUNC(32Bits_LeadingExponentOfPcElement, 2, "32_bits_pcgs, 32_bits_word"),
-    GVAR_FUNC(32Bits_ExponentsOfPcElement, 2, "32_bits_pcgs, 32_bits_pcword"),
+    GVAR_FUNC_2ARGS(8Bits_DepthOfPcElement, 8_bits_pcgs, 8_bits_pcword),
+    GVAR_FUNC_3ARGS(8Bits_ExponentOfPcElement, 8_bits_pcgs, 8_bits_pcword, int),
+    GVAR_FUNC_2ARGS(8Bits_LeadingExponentOfPcElement, 8_bits_pcgs, 8_bits_word),
+    GVAR_FUNC_2ARGS(8Bits_ExponentsOfPcElement, 8_bits_pcgs, 8_bits_pcword),
+    GVAR_FUNC_2ARGS(16Bits_DepthOfPcElement, 16_bits_pcgs, 16_bits_pcword),
+    GVAR_FUNC_3ARGS(16Bits_ExponentOfPcElement, 16_bits_pcgs, 16_bits_pcword, int),
+    GVAR_FUNC_2ARGS(16Bits_LeadingExponentOfPcElement, 16_bits_pcgs, 16_bits_word),
+    GVAR_FUNC_2ARGS(16Bits_ExponentsOfPcElement, 16_bits_pcgs, 16_bits_pcword),
+    GVAR_FUNC_2ARGS(32Bits_DepthOfPcElement, 32_bits_pcgs, 32_bits_pcword),
+    GVAR_FUNC_3ARGS(32Bits_ExponentOfPcElement, 32_bits_pcgs, 32_bits_pcword, int),
+    GVAR_FUNC_2ARGS(32Bits_LeadingExponentOfPcElement, 32_bits_pcgs, 32_bits_word),
+    GVAR_FUNC_2ARGS(32Bits_ExponentsOfPcElement, 32_bits_pcgs, 32_bits_pcword),
+
     { 0, 0, 0, 0, 0 }
 
 };

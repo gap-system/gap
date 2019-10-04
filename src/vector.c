@@ -684,7 +684,7 @@ static Obj ZeroMutVector(Obj vec)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-  GVAR_FUNC(PROD_VECTOR_MATRIX, 2, "vec, mat"),
+  GVAR_FUNC_2ARGS(PROD_VECTOR_MATRIX, vec, mat),
   { 0, 0, 0, 0, 0 }
 };
 

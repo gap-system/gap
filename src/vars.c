@@ -2136,11 +2136,11 @@ static StructBagNames BagNames[] = {
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-  GVAR_FUNC(GetCurrentLVars, 0, ""),
-  GVAR_FUNC(GetBottomLVars, 0, ""),
-  GVAR_FUNC(ParentLVars, 1, "lvars"),
-  GVAR_FUNC(ContentsLVars, 1, "lvars"),
-  GVAR_FUNC(ENVI_FUNC, 1, "func"),
+  GVAR_FUNC_0ARGS(GetCurrentLVars),
+  GVAR_FUNC_0ARGS(GetBottomLVars),
+  GVAR_FUNC_1ARGS(ParentLVars, lvars),
+  GVAR_FUNC_1ARGS(ContentsLVars, lvars),
+  GVAR_FUNC_1ARGS(ENVI_FUNC, func),
   { 0, 0, 0, 0, 0 }
 };
 

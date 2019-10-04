@@ -1093,7 +1093,7 @@ static Obj FuncALL_KEYWORDS(Obj self)
 
 
 static StructGVarFunc GVarFuncs [] = {
-    GVAR_FUNC(ALL_KEYWORDS, 0, ""),
+    GVAR_FUNC_0ARGS(ALL_KEYWORDS),
     { 0, 0, 0, 0, 0 }
 
 };

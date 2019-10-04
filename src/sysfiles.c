@@ -3634,11 +3634,11 @@ void * SyMemmove(void * dst, const void * src, UInt size)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(CrcString, 1, "string"),
+    GVAR_FUNC_1ARGS(CrcString, string),
 #ifdef HAVE_LIBREADLINE
-    GVAR_FUNC(BINDKEYSTOGAPHANDLER, 1, "keyseq"),
-    GVAR_FUNC(BINDKEYSTOMACRO, 2, "keyseq, macro"),
-    GVAR_FUNC(READLINEINITLINE, 1, "line"),
+    GVAR_FUNC_1ARGS(BINDKEYSTOGAPHANDLER, keyseq),
+    GVAR_FUNC_2ARGS(BINDKEYSTOMACRO, keyseq, macro),
+    GVAR_FUNC_1ARGS(READLINEINITLINE, line),
 #endif
 
     { 0, 0, 0, 0, 0 }

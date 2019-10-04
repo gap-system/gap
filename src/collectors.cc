@@ -1711,14 +1711,14 @@ static Obj FuncSET_SCOBJ_MAX_STACK_SIZE(Obj self, Obj size)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(FinPowConjCol_CollectWordOrFail, 3, "sc, list, word"),
-    GVAR_FUNC(FinPowConjCol_ReducedComm, 3, "sc, word, word"),
-    GVAR_FUNC(FinPowConjCol_ReducedForm, 2, "sc, word"),
-    GVAR_FUNC(FinPowConjCol_ReducedLeftQuotient, 3, "sc, word, word"),
-    GVAR_FUNC(FinPowConjCol_ReducedPowerSmallInt, 3, "sc, word, int"),
-    GVAR_FUNC(FinPowConjCol_ReducedProduct, 3, "sc, word, word"),
-    GVAR_FUNC(FinPowConjCol_ReducedQuotient, 3, "sc, word, word"),
-    GVAR_FUNC(SET_SCOBJ_MAX_STACK_SIZE, 1, "size"),
+    GVAR_FUNC_3ARGS(FinPowConjCol_CollectWordOrFail, sc, list, word),
+    GVAR_FUNC_3ARGS(FinPowConjCol_ReducedComm, sc, word, word),
+    GVAR_FUNC_2ARGS(FinPowConjCol_ReducedForm, sc, word),
+    GVAR_FUNC_3ARGS(FinPowConjCol_ReducedLeftQuotient, sc, word, word),
+    GVAR_FUNC_3ARGS(FinPowConjCol_ReducedPowerSmallInt, sc, word, int),
+    GVAR_FUNC_3ARGS(FinPowConjCol_ReducedProduct, sc, word, word),
+    GVAR_FUNC_3ARGS(FinPowConjCol_ReducedQuotient, sc, word, word),
+    GVAR_FUNC_1ARGS(SET_SCOBJ_MAX_STACK_SIZE, size),
     { 0, 0, 0, 0, 0 }
 
 };

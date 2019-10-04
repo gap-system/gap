@@ -612,13 +612,13 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(DownEnv, -1, "args"),
     GVAR_FUNC(UpEnv, -1, "args"),
 
-    GVAR_FUNC(CALL_WITH_CATCH, 2, "func, args"),
-    GVAR_FUNC(JUMP_TO_CATCH, 1, "payload"),
+    GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
+    GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),
 
-    GVAR_FUNC(PRINT_CURRENT_STATEMENT, 2, "stream, context"),
-    GVAR_FUNC(CURRENT_STATEMENT_LOCATION, 1, "context"),
+    GVAR_FUNC_2ARGS(PRINT_CURRENT_STATEMENT, stream, context),
+    GVAR_FUNC_1ARGS(CURRENT_STATEMENT_LOCATION, context),
 
-    GVAR_FUNC(SetUserHasQuit, 1, "value"),
+    GVAR_FUNC_1ARGS(SetUserHasQuit, value),
 
     { 0, 0, 0, 0, 0 }
 

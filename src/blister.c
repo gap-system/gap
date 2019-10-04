@@ -1862,20 +1862,20 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(IS_BLIST_CONV, 1, "obj"),
-    GVAR_FUNC(BLIST_LIST, 2, "list, sub"),
-    GVAR_FUNC(LIST_BLIST, 2, "list, blist"),
-    GVAR_FUNC(SIZE_BLIST, 1, "blist"),
-    GVAR_FUNC(IS_SUB_BLIST, 2, "blist1, blist2"),
-    GVAR_FUNC(UNITE_BLIST, 2, "blist1, blist2"),
-    GVAR_FUNC(UNITE_BLIST_LIST, 3, "list, blist, sub"),
-    GVAR_FUNC(INTER_BLIST, 2, "blist1, blist2"),
-    GVAR_FUNC(SUBTR_BLIST, 2, "blist1, blist2"),
-    GVAR_FUNC(MEET_BLIST, 2, "blist1, blist2"),
-    GVAR_FUNC(FLIP_BLIST, 1, "blist"),
-    GVAR_FUNC(CLEAR_ALL_BLIST, 1, "blist"),
-    GVAR_FUNC(SET_ALL_BLIST, 1, "blist"),
-    GVAR_FUNC(PositionNthTrueBlist, 2, "blist, nth"),
+    GVAR_FUNC_1ARGS(IS_BLIST_CONV, obj),
+    GVAR_FUNC_2ARGS(BLIST_LIST, list, sub),
+    GVAR_FUNC_2ARGS(LIST_BLIST, list, blist),
+    GVAR_FUNC_1ARGS(SIZE_BLIST, blist),
+    GVAR_FUNC_2ARGS(IS_SUB_BLIST, blist1, blist2),
+    GVAR_FUNC_2ARGS(UNITE_BLIST, blist1, blist2),
+    GVAR_FUNC_3ARGS(UNITE_BLIST_LIST, list, blist, sub),
+    GVAR_FUNC_2ARGS(INTER_BLIST, blist1, blist2),
+    GVAR_FUNC_2ARGS(SUBTR_BLIST, blist1, blist2),
+    GVAR_FUNC_2ARGS(MEET_BLIST, blist1, blist2),
+    GVAR_FUNC_1ARGS(FLIP_BLIST, blist),
+    GVAR_FUNC_1ARGS(CLEAR_ALL_BLIST, blist),
+    GVAR_FUNC_1ARGS(SET_ALL_BLIST, blist),
+    GVAR_FUNC_2ARGS(PositionNthTrueBlist, blist, nth),
     { 0, 0, 0, 0, 0 }
 
 };

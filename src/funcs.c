@@ -826,8 +826,8 @@ static Obj FuncGetRecursionDepth(Obj self)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(SetRecursionTrapInterval, 1, "interval"),
-    GVAR_FUNC(GetRecursionDepth, 0, ""),
+    GVAR_FUNC_1ARGS(SetRecursionTrapInterval, interval),
+    GVAR_FUNC_0ARGS(GetRecursionDepth),
     { 0, 0, 0, 0, 0 }
 
 

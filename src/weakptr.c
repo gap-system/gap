@@ -834,12 +834,12 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(WeakPointerObj, 1, "list"),
-    GVAR_FUNC(LengthWPObj, 1, "wp"),
-    GVAR_FUNC(SetElmWPObj, 3, "wp, pos, val"),
-    GVAR_FUNC(IsBoundElmWPObj, 2, "wp, pos"),
-    GVAR_FUNC(UnbindElmWPObj, 2, "wp, pos"),
-    GVAR_FUNC(ElmWPObj, 2, "wp, pos"),
+    GVAR_FUNC_1ARGS(WeakPointerObj, list),
+    GVAR_FUNC_1ARGS(LengthWPObj, wp),
+    GVAR_FUNC_3ARGS(SetElmWPObj, wp, pos, val),
+    GVAR_FUNC_2ARGS(IsBoundElmWPObj, wp, pos),
+    GVAR_FUNC_2ARGS(UnbindElmWPObj, wp, pos),
+    GVAR_FUNC_2ARGS(ElmWPObj, wp, pos),
     { 0, 0, 0, 0, 0 }
 
 };

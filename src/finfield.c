@@ -1522,11 +1522,11 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(CHAR_FFE_DEFAULT, 1, "z"),
-    GVAR_FUNC(DEGREE_FFE_DEFAULT, 1, "z"),
-    GVAR_FUNC(LOG_FFE_DEFAULT, 2, "z, root"),
-    GVAR_FUNC(INT_FFE_DEFAULT, 1, "z"),
-    GVAR_FUNC(Z, 1, "q"),
+    GVAR_FUNC_1ARGS(CHAR_FFE_DEFAULT, z),
+    GVAR_FUNC_1ARGS(DEGREE_FFE_DEFAULT, z),
+    GVAR_FUNC_2ARGS(LOG_FFE_DEFAULT, z, root),
+    GVAR_FUNC_1ARGS(INT_FFE_DEFAULT, z),
+    GVAR_FUNC_1ARGS(Z, q),
     { 0, 0, 0, 0, 0 }
 
 };

@@ -791,8 +791,8 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(REC_NAMES, 1, "rec"),
-    GVAR_FUNC(REC_NAMES_COMOBJ, 1, "rec"),
+    GVAR_FUNC_1ARGS(REC_NAMES, rec),
+    GVAR_FUNC_1ARGS(REC_NAMES_COMOBJ, rec),
     { 0, 0, 0, 0, 0 }
 
 };
