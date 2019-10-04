@@ -2054,11 +2054,11 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    GVAR_OPER(E, 1, "n", &EOper),
-    GVAR_OPER(IS_CYC_INT, 1, "obj", &IsCycIntOper),
-    GVAR_OPER(COEFFS_CYC, 1, "cyc", &CoeffsCycOper),
-    GVAR_OPER(GALOIS_CYC, 2, "cyc, n", &GaloisCycOper),
-    GVAR_OPER(CycList, 1, "list", &CycListOper),
+    GVAR_OPER_1ARGS(E, n, &EOper),
+    GVAR_OPER_1ARGS(IS_CYC_INT, obj, &IsCycIntOper),
+    GVAR_OPER_1ARGS(COEFFS_CYC, cyc, &CoeffsCycOper),
+    GVAR_OPER_2ARGS(GALOIS_CYC, cyc, n, &GaloisCycOper),
+    GVAR_OPER_1ARGS(CycList, list, &CycListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };
