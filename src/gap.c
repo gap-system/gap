@@ -1419,7 +1419,7 @@ void UpdateLast(Obj newLast, Int lastDepth)
 // code which wants to look like iteractive usage of GAP. Using this
 // function will not stop GAP automatically changing these variables as
 // usual.
-static void FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
+static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
 {
     RequireStringRep("UPDATE_STAT", name);
 
@@ -1442,6 +1442,7 @@ static void FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
     else {
         ErrorMayQuit("UPDATE_STAT: unsupported <name> value '%g'", (Int)name, 0);
     }
+    return 0;
 }
 
 
