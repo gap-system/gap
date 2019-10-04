@@ -1541,8 +1541,8 @@ static StructGVarOper GVarOpers [] = {
     { "ADD_LIST", -1, "list, obj[, pos]", &AddListOper,
       DoOperation0Args, "src/listfunc.c:ADD_LIST" },
 
-    GVAR_OPER(REM_LIST, 1, "list", &RemListOper),
-    GVAR_OPER(APPEND_LIST, 2, "list, val", &AppendListOper),
+    GVAR_OPER_1ARGS(REM_LIST, list, &RemListOper),
+    GVAR_OPER_2ARGS(APPEND_LIST, list, val, &AppendListOper),
     { 0, 0, 0, 0, 0, 0 }
 
 };

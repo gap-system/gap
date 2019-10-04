@@ -1681,13 +1681,13 @@ static StructGVarAttr GVarAttrs [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    GVAR_OPER(CALL_FUNC_LIST, 2, "func, list", &CallFuncListOper),
-    GVAR_OPER(CALL_FUNC_LIST_WRAP, 2, "func, list", &CallFuncListWrapOper),
-    GVAR_OPER(SET_NAME_FUNC, 2, "func, name", &SET_NAME_FUNC_Oper),
-    GVAR_OPER(NARG_FUNC, 1, "func", &NARG_FUNC_Oper),
-    GVAR_OPER(NAMS_FUNC, 1, "func", &NAMS_FUNC_Oper),
-    GVAR_OPER(LOCKS_FUNC, 1, "func", &LOCKS_FUNC_Oper),
-    GVAR_OPER(PROF_FUNC, 1, "func", &PROF_FUNC_Oper),
+    GVAR_OPER_2ARGS(CALL_FUNC_LIST, func, list, &CallFuncListOper),
+    GVAR_OPER_2ARGS(CALL_FUNC_LIST_WRAP, func, list, &CallFuncListWrapOper),
+    GVAR_OPER_2ARGS(SET_NAME_FUNC, func, name, &SET_NAME_FUNC_Oper),
+    GVAR_OPER_1ARGS(NARG_FUNC, func, &NARG_FUNC_Oper),
+    GVAR_OPER_1ARGS(NAMS_FUNC, func, &NAMS_FUNC_Oper),
+    GVAR_OPER_1ARGS(LOCKS_FUNC, func, &LOCKS_FUNC_Oper),
+    GVAR_OPER_1ARGS(PROF_FUNC, func, &PROF_FUNC_Oper),
     { 0, 0, 0, 0, 0, 0 }
 
 };

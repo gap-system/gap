@@ -1852,17 +1852,17 @@ static StructGVarOper GVarOpers[] = {
     { "POS_LIST", -1, "list, obj[, start]", &PosListOper, DoOperation0Args,
       "src/lists.c:POS_LIST" },
 
-    GVAR_OPER(ISB_LIST, 2, "list, pos", &IsbListOper),
-    GVAR_OPER(ELM0_LIST, 2, "list, pos", &Elm0ListOper),
-    GVAR_OPER(ELM_DEFAULT_LIST, 3, "list, pos, default", &ElmDefListOper),
-    GVAR_OPER(ELM_LIST, 2, "list, pos", &ElmListOper),
-    GVAR_OPER(ELMS_LIST, 2, "list, poss", &ElmsListOper),
-    GVAR_OPER(UNB_LIST, 2, "list, pos", &UnbListOper),
-    GVAR_OPER(ASS_LIST, 3, "list, pos, obj", &AssListOper),
-    GVAR_OPER(ASSS_LIST, 3, "list, poss, objs", &AsssListOper),
+    GVAR_OPER_2ARGS(ISB_LIST, list, pos, &IsbListOper),
+    GVAR_OPER_2ARGS(ELM0_LIST, list, pos, &Elm0ListOper),
+    GVAR_OPER_3ARGS(ELM_DEFAULT_LIST, list, pos, default, &ElmDefListOper),
+    GVAR_OPER_2ARGS(ELM_LIST, list, pos, &ElmListOper),
+    GVAR_OPER_2ARGS(ELMS_LIST, list, poss, &ElmsListOper),
+    GVAR_OPER_2ARGS(UNB_LIST, list, pos, &UnbListOper),
+    GVAR_OPER_3ARGS(ASS_LIST, list, pos, obj, &AssListOper),
+    GVAR_OPER_3ARGS(ASSS_LIST, list, poss, objs, &AsssListOper),
 
-    GVAR_OPER(ASS_MAT, 4, "mat, row, col, obj", &AssMatOper),
-    GVAR_OPER(ELM_MAT, 3, "mat, row, col", &ElmMatOper),
+    GVAR_OPER_4ARGS(ASS_MAT, mat, row, col, obj, &AssMatOper),
+    GVAR_OPER_3ARGS(ELM_MAT, mat, row, col, &ElmMatOper),
 
     { 0, 0, 0, 0, 0, 0 }
 
