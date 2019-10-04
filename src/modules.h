@@ -136,6 +136,62 @@ struct init_info {
 
 /****************************************************************************
 **
+**  Some helper functions and macros used for validation in GVAR_FUNC_2ARGS
+**  and its likes.
+**
+**  The trick is that VALIDATE_FUNC_nARGS(func) produces code that the
+**  compiler can trivially prove to be equivalent to just inserting 'func';
+**  and the "call" to VALIDATE_FUNC_HELPER_n can never ever be executed;
+**  but since it is still there in the input, the compiler has to check
+**  that its argument has the correct type.
+*/
+static inline ObjFunc VALIDATE_FUNC_HELPER_0(ObjFunc_0ARGS f)
+{
+    return 0;
+}
+static inline ObjFunc VALIDATE_FUNC_HELPER_1(ObjFunc_1ARGS f)
+{
+    return 0;
+}
+static inline ObjFunc VALIDATE_FUNC_HELPER_2(ObjFunc_2ARGS f)
+{
+    return 0;
+}
+static inline ObjFunc VALIDATE_FUNC_HELPER_3(ObjFunc_3ARGS f)
+{
+    return 0;
+}
+static inline ObjFunc VALIDATE_FUNC_HELPER_4(ObjFunc_4ARGS f)
+{
+    return 0;
+}
+static inline ObjFunc VALIDATE_FUNC_HELPER_5(ObjFunc_5ARGS f)
+{
+    return 0;
+}
+static inline ObjFunc VALIDATE_FUNC_HELPER_6(ObjFunc_6ARGS f)
+{
+    return 0;
+}
+
+#define VALIDATE_FUNC_0ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_0(func) : (ObjFunc)func)
+#define VALIDATE_FUNC_1ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_1(func) : (ObjFunc)func)
+#define VALIDATE_FUNC_2ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_2(func) : (ObjFunc)func)
+#define VALIDATE_FUNC_3ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_3(func) : (ObjFunc)func)
+#define VALIDATE_FUNC_4ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_4(func) : (ObjFunc)func)
+#define VALIDATE_FUNC_5ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_5(func) : (ObjFunc)func)
+#define VALIDATE_FUNC_6ARGS(func)                                            \
+    (0 ? VALIDATE_FUNC_HELPER_6(func) : (ObjFunc)func)
+
+
+/****************************************************************************
+**
 *T  StructBagNames  . . . . . . . . . . . . . . . . . . . . . tnums and names
 */
 typedef struct {
@@ -216,11 +272,58 @@ typedef struct {
     const Char * cookie;
 } StructGVarOper;
 
+
 // GVAR_OPER is a helper macro for quickly creating table entries in
 // StructGVarOper arrays
 #define GVAR_OPER(name, nargs, args, operation)                              \
     {                                                                        \
         #name, nargs, args, operation, Func##name, __FILE__ ":" #name        \
+    }
+
+// The following helper macros are similar to GVAR_FUNC, but perform stricter
+// validation of the function passed in; in particular, it is checked that it
+// has the correct return and argument types, and the correct number of
+// arguments.
+#define GVAR_OPER_0ARGS(name, operation)                                     \
+    {                                                                        \
+        #name, 0, "", operation,                                             \
+            VALIDATE_FUNC_0ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_OPER_1ARGS(name, a1, operation)                                 \
+    {                                                                        \
+        #name, 1, #a1, operation,                                            \
+            VALIDATE_FUNC_1ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_OPER_2ARGS(name, a1, a2, operation)                             \
+    {                                                                        \
+        #name, 2, #a1 "," #a2, operation,                                    \
+            VALIDATE_FUNC_2ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_OPER_3ARGS(name, a1, a2, a3, operation)                         \
+    {                                                                        \
+        #name, 3, #a1 "," #a2 "," #a3, operation,                            \
+            VALIDATE_FUNC_3ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_OPER_4ARGS(name, a1, a2, a3, a4, operation)                     \
+    {                                                                        \
+        #name, 4, #a1 "," #a2 "," #a3 "," #a4, operation,                    \
+            VALIDATE_FUNC_4ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_OPER_5ARGS(name, a1, a2, a3, a4, a5, operation)                 \
+    {                                                                        \
+        #name, 5, #a1 "," #a2 "," #a3 "," #a4 "," #a5, operation,            \
+            VALIDATE_FUNC_5ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_OPER_6ARGS(name, a1, a2, a3, a4, a5, a6, operation)             \
+    {                                                                        \
+        #name, 6, #a1 "," #a2 "," #a3 "," #a4 "," #a5 "," #a6, operation,    \
+            VALIDATE_FUNC_6ARGS(Func##name), __FILE__ ":" #name              \
     }
 
 
@@ -241,6 +344,58 @@ typedef struct {
 #define GVAR_FUNC(name, nargs, args)                                         \
     {                                                                        \
         #name, nargs, args, (ObjFunc)Func##name, __FILE__ ":" #name   \
+    }
+
+// The following helper macros are similar to GVAR_FUNC, but perform stricter
+// validation of the function passed in; in particular, it is checked that it
+// has the correct return and argument types, and the correct number of
+// arguments.
+#define GVAR_FUNC_0ARGS(name)                                                \
+    {                                                                        \
+        #name, 0, "",                                                        \
+            VALIDATE_FUNC_0ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_1ARGS(name, a1)                                            \
+    {                                                                        \
+        #name, 1, #a1,                                                       \
+            VALIDATE_FUNC_1ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_2ARGS(name, a1, a2)                                        \
+    {                                                                        \
+        #name, 2, #a1 "," #a2,                                               \
+            VALIDATE_FUNC_2ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_3ARGS(name, a1, a2, a3)                                    \
+    {                                                                        \
+        #name, 3, #a1 "," #a2 "," #a3,                                       \
+            VALIDATE_FUNC_3ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_4ARGS(name, a1, a2, a3, a4)                                \
+    {                                                                        \
+        #name, 4, #a1 "," #a2 "," #a3 "," #a4,                               \
+            VALIDATE_FUNC_4ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_5ARGS(name, a1, a2, a3, a4, a5)                            \
+    {                                                                        \
+        #name, 5, #a1 "," #a2 "," #a3 "," #a4 "," #a5,                       \
+            VALIDATE_FUNC_5ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_6ARGS(name, a1, a2, a3, a4, a5, a6)                        \
+    {                                                                        \
+        #name, 6, #a1 "," #a2 "," #a3 "," #a4 "," #a5 "," #a6,               \
+            VALIDATE_FUNC_6ARGS(Func##name), __FILE__ ":" #name              \
+    }
+
+#define GVAR_FUNC_XARGS(name, nargs, args)                                   \
+    {                                                                        \
+        #name, nargs, args,                                                  \
+            VALIDATE_FUNC_1ARGS(Func##name), __FILE__ ":" #name              \
     }
 
 
