@@ -1699,17 +1699,17 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(CLEAR_PROFILE_FUNC, 1, "func"),
-    GVAR_FUNC(IS_PROFILED_FUNC, 1, "func"),
-    GVAR_FUNC(PROFILE_FUNC, 1, "func"),
-    GVAR_FUNC(UNPROFILE_FUNC, 1, "func"),
-    GVAR_FUNC(IsKernelFunction, 1, "func"),
-    GVAR_FUNC(FILENAME_FUNC, 1, "func"),
-    GVAR_FUNC(LOCATION_FUNC, 1, "func"),
-    GVAR_FUNC(STARTLINE_FUNC, 1, "func"),
-    GVAR_FUNC(ENDLINE_FUNC, 1, "func"),
+    GVAR_FUNC_1ARGS(CLEAR_PROFILE_FUNC, func),
+    GVAR_FUNC_1ARGS(IS_PROFILED_FUNC, func),
+    GVAR_FUNC_1ARGS(PROFILE_FUNC, func),
+    GVAR_FUNC_1ARGS(UNPROFILE_FUNC, func),
+    GVAR_FUNC_1ARGS(IsKernelFunction, func),
+    GVAR_FUNC_1ARGS(FILENAME_FUNC, func),
+    GVAR_FUNC_1ARGS(LOCATION_FUNC, func),
+    GVAR_FUNC_1ARGS(STARTLINE_FUNC, func),
+    GVAR_FUNC_1ARGS(ENDLINE_FUNC, func),
 
-    GVAR_FUNC(FUNC_BODY_SIZE, 1, "func"),
+    GVAR_FUNC_1ARGS(FUNC_BODY_SIZE, func),
 
     { 0, 0, 0, 0, 0 }
 

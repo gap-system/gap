@@ -1690,11 +1690,12 @@ static Obj FuncDT_evaluation(Obj self, Obj vector)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(MakeFormulaVector, 2, "tree, presentation"),
-    GVAR_FUNC(FindNewReps, 4, "tree, representatives, presentation, maximum"),
-    GVAR_FUNC(UnmarkTree, 1, "tree"),
-    GVAR_FUNC(GetPols, 3, "list, presentation, polynomial"),
-    GVAR_FUNC(DT_evaluation, 1, "vector"),
+    GVAR_FUNC_2ARGS(MakeFormulaVector, tree, presentation),
+    GVAR_FUNC_4ARGS(
+        FindNewReps, tree, representatives, presentation, maximum),
+    GVAR_FUNC_1ARGS(UnmarkTree, tree),
+    GVAR_FUNC_3ARGS(GetPols, list, presentation, polynomial),
+    GVAR_FUNC_1ARGS(DT_evaluation, vector),
     { 0, 0, 0, 0, 0 }
 
 };

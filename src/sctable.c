@@ -306,8 +306,8 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(SC_TABLE_ENTRY, 4, "table, i, j, k"),
-    GVAR_FUNC(SC_TABLE_PRODUCT, 3, "table, list1, list2"),
+    GVAR_FUNC_4ARGS(SC_TABLE_ENTRY, table, i, j, k),
+    GVAR_FUNC_3ARGS(SC_TABLE_PRODUCT, table, list1, list2),
     { 0, 0, 0, 0, 0 }
 
 };

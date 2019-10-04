@@ -721,8 +721,8 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 static StructGVarFunc GVarFuncs[] = {
 
 
-    GVAR_FUNC(HASHKEY_BAG, 4, "obj, seed, offset, maxlen"),
-    GVAR_FUNC(InitRandomMT, 1, "initstr"),
+    GVAR_FUNC_4ARGS(HASHKEY_BAG, obj, seed, offset, maxlen),
+    GVAR_FUNC_1ARGS(InitRandomMT, initstr),
     GVAR_FUNC(MAKE_BITFIELDS, -1, "widths"),
     GVAR_FUNC(BUILD_BITFIELDS, -2, "widths, vals"),
     { 0, 0, 0, 0, 0 }

@@ -3275,11 +3275,11 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(ASS_PLIST_DEFAULT, 3, "list, pos, val"),
-    GVAR_FUNC(IsRectangularTablePlist, 1, "plist"),
-    GVAR_FUNC(SET_IS_SSORTED_PLIST, 1, "list"),
-    GVAR_FUNC(EmptyPlist, 1, "len"),
-    GVAR_FUNC(ShrinkAllocationPlist, 1, "plist"),
+    GVAR_FUNC_3ARGS(ASS_PLIST_DEFAULT, list, pos, val),
+    GVAR_FUNC_1ARGS(IsRectangularTablePlist, plist),
+    GVAR_FUNC_1ARGS(SET_IS_SSORTED_PLIST, list),
+    GVAR_FUNC_1ARGS(EmptyPlist, len),
+    GVAR_FUNC_1ARGS(ShrinkAllocationPlist, plist),
     { 0, 0, 0, 0, 0 }
 
 };

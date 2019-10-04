@@ -828,11 +828,11 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(SaveWorkspace, 1, "fname"),
-    GVAR_FUNC(DumpWorkspace, 1, "fname"),
+    GVAR_FUNC_1ARGS(SaveWorkspace, fname),
+    GVAR_FUNC_1ARGS(DumpWorkspace, fname),
 #ifdef USE_GASMAN
-    GVAR_FUNC(FindBag, 3, "minsize, maxsize, tnum"),
-    GVAR_FUNC(BagStats, 1, "filename"),
+    GVAR_FUNC_3ARGS(FindBag, minsize, maxsize, tnum),
+    GVAR_FUNC_1ARGS(BagStats, filename),
 #endif
     { 0, 0, 0, 0, 0 }
 

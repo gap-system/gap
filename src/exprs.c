@@ -1653,7 +1653,7 @@ static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
  */
 static StructGVarFunc GVarFuncs [] = {
 
-  GVAR_FUNC(FLUSH_FLOAT_LITERAL_CACHE, 0, ""),
+  GVAR_FUNC_0ARGS(FLUSH_FLOAT_LITERAL_CACHE),
   { 0, 0, 0, 0, 0 }
 
 };

@@ -105,7 +105,7 @@ Obj InfoCheckLevel(Obj selectors, Obj level)
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(ShowUsedInfoClasses, 1, "choice"), { 0, 0, 0, 0, 0 }
+    GVAR_FUNC_1ARGS(ShowUsedInfoClasses, choice), { 0, 0, 0, 0, 0 }
 };
 
 

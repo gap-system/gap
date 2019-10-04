@@ -1563,25 +1563,25 @@ void SetGVar(GVarDescriptor *gvar, Obj obj)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(MakeReadOnlyGVar, 1, "name"),
-    GVAR_FUNC(MakeReadWriteGVar, 1, "name"),
-    GVAR_FUNC(MakeConstantGVar, 1, "name"),
-    GVAR_FUNC(IsReadOnlyGVar, 1, "name"),
-    GVAR_FUNC(IsConstantGVar, 1, "name"),
+    GVAR_FUNC_1ARGS(MakeReadOnlyGVar, name),
+    GVAR_FUNC_1ARGS(MakeReadWriteGVar, name),
+    GVAR_FUNC_1ARGS(MakeConstantGVar, name),
+    GVAR_FUNC_1ARGS(IsReadOnlyGVar, name),
+    GVAR_FUNC_1ARGS(IsConstantGVar, name),
     GVAR_FUNC(AUTO, -3, "func, arg, names..."),
 
 
-    GVAR_FUNC(IDENTS_GVAR, 0, ""),
-    GVAR_FUNC(IDENTS_BOUND_GVARS, 0, ""),
-    GVAR_FUNC(ISB_GVAR, 1, "gvar"),
-    GVAR_FUNC(IS_AUTO_GVAR, 1, "gvar"),
-    GVAR_FUNC(ASS_GVAR, 2, "gvar, value"),
-    GVAR_FUNC(VAL_GVAR, 1, "gvar"),
-    GVAR_FUNC(UNB_GVAR, 1, "gvar"),
-    GVAR_FUNC(SET_NAMESPACE, 1, "str"),
-    GVAR_FUNC(GET_NAMESPACE, 0, ""),
+    GVAR_FUNC_0ARGS(IDENTS_GVAR),
+    GVAR_FUNC_0ARGS(IDENTS_BOUND_GVARS),
+    GVAR_FUNC_1ARGS(ISB_GVAR, gvar),
+    GVAR_FUNC_1ARGS(IS_AUTO_GVAR, gvar),
+    GVAR_FUNC_2ARGS(ASS_GVAR, gvar, value),
+    GVAR_FUNC_1ARGS(VAL_GVAR, gvar),
+    GVAR_FUNC_1ARGS(UNB_GVAR, gvar),
+    GVAR_FUNC_1ARGS(SET_NAMESPACE, str),
+    GVAR_FUNC_0ARGS(GET_NAMESPACE),
 #ifdef HPCGAP
-    GVAR_FUNC(IsThreadLocalGVar, 1, "name"),
+    GVAR_FUNC_1ARGS(IsThreadLocalGVar, name),
 #endif
 
     { 0, 0, 0, 0, 0 }

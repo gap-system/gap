@@ -339,7 +339,7 @@ static Obj FuncCollectPolycyclic(Obj self, Obj pcp, Obj list, Obj word)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(CollectPolycyclic, 3, "pcp, list, word"),
+    GVAR_FUNC_3ARGS(CollectPolycyclic, pcp, list, word),
     { 0, 0, 0, 0, 0 }
 
 };

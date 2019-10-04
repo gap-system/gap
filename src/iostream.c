@@ -758,17 +758,17 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(CREATE_PTY_IOSTREAM, 3, "dir, prog, args"),
-    GVAR_FUNC(WRITE_IOSTREAM, 3, "stream, string, len"),
-    GVAR_FUNC(READ_IOSTREAM, 2, "stream, len"),
-    GVAR_FUNC(READ_IOSTREAM_NOWAIT, 2, "stream, len"),
-    GVAR_FUNC(KILL_CHILD_IOSTREAM, 1, "stream"),
-    GVAR_FUNC(CLOSE_PTY_IOSTREAM, 1, "stream"),
-    GVAR_FUNC(SIGNAL_CHILD_IOSTREAM, 2, "stream, signal"),
-    GVAR_FUNC(IS_BLOCKED_IOSTREAM, 1, "stream"),
-    GVAR_FUNC(FD_OF_IOSTREAM, 1, "stream"),
+    GVAR_FUNC_3ARGS(CREATE_PTY_IOSTREAM, dir, prog, args),
+    GVAR_FUNC_3ARGS(WRITE_IOSTREAM, stream, string, len),
+    GVAR_FUNC_2ARGS(READ_IOSTREAM, stream, len),
+    GVAR_FUNC_2ARGS(READ_IOSTREAM_NOWAIT, stream, len),
+    GVAR_FUNC_1ARGS(KILL_CHILD_IOSTREAM, stream),
+    GVAR_FUNC_1ARGS(CLOSE_PTY_IOSTREAM, stream),
+    GVAR_FUNC_2ARGS(SIGNAL_CHILD_IOSTREAM, stream, signal),
+    GVAR_FUNC_1ARGS(IS_BLOCKED_IOSTREAM, stream),
+    GVAR_FUNC_1ARGS(FD_OF_IOSTREAM, stream),
 #ifdef HPCGAP
-    GVAR_FUNC(DEFAULT_SIGCHLD_HANDLER, 0, ""),
+    GVAR_FUNC_0ARGS(DEFAULT_SIGCHLD_HANDLER),
 #endif
 
     { 0, 0, 0, 0, 0 }

@@ -499,52 +499,52 @@ static StructBagNames BagNames[] = {
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-  GVAR_FUNC(MACFLOAT_INT, 1, "int"),
-  GVAR_FUNC(MACFLOAT_STRING, 1, "string"),
-  GVAR_FUNC(SIN_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(COS_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(TAN_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(ASIN_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(ACOS_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(ATAN_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(MACFLOAT_INT, int),
+    GVAR_FUNC_1ARGS(MACFLOAT_STRING, string),
+    GVAR_FUNC_1ARGS(SIN_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(COS_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(TAN_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(ASIN_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(ACOS_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(ATAN_MACFLOAT, macfloat),
 
-  GVAR_FUNC(ATAN2_MACFLOAT, 2, "real, imag"),
-  GVAR_FUNC(HYPOT_MACFLOAT, 2, "real, imag"),
-  GVAR_FUNC(LOG_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(EXP_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_2ARGS(ATAN2_MACFLOAT, real, imag),
+    GVAR_FUNC_2ARGS(HYPOT_MACFLOAT, real, imag),
+    GVAR_FUNC_1ARGS(LOG_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(EXP_MACFLOAT, macfloat),
 #ifdef HAVE_LOG2
-  GVAR_FUNC(LOG2_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(LOG2_MACFLOAT, macfloat),
 #endif
 #ifdef HAVE_LOG10
-  GVAR_FUNC(LOG10_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(LOG10_MACFLOAT, macfloat),
 #endif  
 #ifdef HAVE_LOG1P
-  GVAR_FUNC(LOG1P_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(LOG1P_MACFLOAT, macfloat),
 #endif  
 #ifdef HAVE_EXP2
-  GVAR_FUNC(EXP2_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(EXP2_MACFLOAT, macfloat),
 #endif  
 #ifdef HAVE_EXPM1
-  GVAR_FUNC(EXPM1_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(EXPM1_MACFLOAT, macfloat),
 #endif
 #ifdef HAVE_EXP10
-  GVAR_FUNC(EXP10_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_1ARGS(EXP10_MACFLOAT, macfloat),
 #endif
 
-  GVAR_FUNC(LDEXP_MACFLOAT, 2, "macfloat, int"),
-  GVAR_FUNC(FREXP_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(SQRT_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(RINT_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(INTFLOOR_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(FLOOR_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(CEIL_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(ABS_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(SIGN_MACFLOAT, 1, "macfloat"),
-  GVAR_FUNC(SIGNBIT_MACFLOAT, 1, "macfloat"),
+    GVAR_FUNC_2ARGS(LDEXP_MACFLOAT, macfloat, int),
+    GVAR_FUNC_1ARGS(FREXP_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(SQRT_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(RINT_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(INTFLOOR_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(FLOOR_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(CEIL_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(ABS_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(SIGN_MACFLOAT, macfloat),
+    GVAR_FUNC_1ARGS(SIGNBIT_MACFLOAT, macfloat),
 
-  GVAR_FUNC(STRING_DIGITS_MACFLOAT, 2, "digits, macfloat"),
-  GVAR_FUNC(EQ_MACFLOAT, 2, "x, y"),
-  { 0, 0, 0, 0, 0 }
+    GVAR_FUNC_2ARGS(STRING_DIGITS_MACFLOAT, digits, macfloat),
+    GVAR_FUNC_2ARGS(EQ_MACFLOAT, x, y),
+    { 0, 0, 0, 0, 0 }
 };
 
 

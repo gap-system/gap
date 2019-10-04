@@ -574,9 +574,9 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(RNamObj, 1, "obj"),
-    GVAR_FUNC(NameRNam, 1, "rnam"),
-    GVAR_FUNC(ALL_RNAMES, 0, ""),
+    GVAR_FUNC_1ARGS(RNamObj, obj),
+    GVAR_FUNC_1ARGS(NameRNam, rnam),
+    GVAR_FUNC_0ARGS(ALL_RNAMES),
     { 0, 0, 0, 0, 0 }
 
 };

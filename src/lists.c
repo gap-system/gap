@@ -1875,12 +1875,12 @@ static StructGVarOper GVarOpers[] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(LEN_LIST, 1, "list"),
-    GVAR_FUNC(ELMS_LIST_DEFAULT, 2, "list, poss"),
-    GVAR_FUNC(ASSS_LIST_DEFAULT, 3, "list, poss, objs"),
-    GVAR_FUNC(IS_SSORT_LIST_DEFAULT, 1, "list"),
-    GVAR_FUNC(IS_POSS_LIST_DEFAULT, 1, "list"),
-    GVAR_FUNC(POS_LIST_DEFAULT, 3, "list, obj, start"),
+    GVAR_FUNC_1ARGS(LEN_LIST, list),
+    GVAR_FUNC_2ARGS(ELMS_LIST_DEFAULT, list, poss),
+    GVAR_FUNC_3ARGS(ASSS_LIST_DEFAULT, list, poss, objs),
+    GVAR_FUNC_1ARGS(IS_SSORT_LIST_DEFAULT, list),
+    GVAR_FUNC_1ARGS(IS_POSS_LIST_DEFAULT, list),
+    GVAR_FUNC_3ARGS(POS_LIST_DEFAULT, list, obj, start),
     { 0, 0, 0, 0, 0 }
 
 };

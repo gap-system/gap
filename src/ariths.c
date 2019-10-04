@@ -1440,11 +1440,11 @@ static StructGVarOper GVarOpers [] = {
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(COMM_DEFAULT, 2, "opL, opR"),
-    GVAR_FUNC(POW_DEFAULT, 2, "opL, opR"),
-    GVAR_FUNC(LQUO_DEFAULT, 2, "opL, opR"),
-    GVAR_FUNC(QUO_DEFAULT, 2, "opL, opR"),
-    GVAR_FUNC(DIFF_DEFAULT, 2, "opL, opR"),
+    GVAR_FUNC_2ARGS(COMM_DEFAULT, opL, opR),
+    GVAR_FUNC_2ARGS(POW_DEFAULT, opL, opR),
+    GVAR_FUNC_2ARGS(LQUO_DEFAULT, opL, opR),
+    GVAR_FUNC_2ARGS(QUO_DEFAULT, opL, opR),
+    GVAR_FUNC_2ARGS(DIFF_DEFAULT, opL, opR),
     { 0, 0, 0, 0, 0 }
 
 };

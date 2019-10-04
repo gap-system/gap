@@ -936,9 +936,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(ACTIVATE_PROFILING,
               5,
               "filename,coverage,wallTime,recordMem,resolution"),
-    GVAR_FUNC(DEACTIVATE_PROFILING, 0, ""),
-    GVAR_FUNC(IsLineByLineProfileActive, 0, ""),
-    GVAR_FUNC(ACTIVATE_COLOR_PROFILING, 1, "arg"),
+    GVAR_FUNC_0ARGS(DEACTIVATE_PROFILING),
+    GVAR_FUNC_0ARGS(IsLineByLineProfileActive),
+    GVAR_FUNC_1ARGS(ACTIVATE_COLOR_PROFILING, arg),
     { 0, 0, 0, 0, 0 }
 };
 

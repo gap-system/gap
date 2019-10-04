@@ -939,13 +939,13 @@ static Obj FuncDTQuotient(Obj self, Obj x, Obj y, Obj pcp)
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(DTCompress, 1, "list"),
-    GVAR_FUNC(DTMultiply, 3, "lword, rword, rws"),
-    GVAR_FUNC(DTPower, 3, "word, exponent, rws"),
-    GVAR_FUNC(DTSolution, 3, "lword, rword, rws"),
-    GVAR_FUNC(DTCommutator, 3, "lword, rword, rws"),
-    GVAR_FUNC(DTQuotient, 3, "lword, rword, rws"),
-    GVAR_FUNC(DTConjugate, 3, "lword, rword, rws"),
+    GVAR_FUNC_1ARGS(DTCompress, list),
+    GVAR_FUNC_3ARGS(DTMultiply, lword, rword, rws),
+    GVAR_FUNC_3ARGS(DTPower, word, exponent, rws),
+    GVAR_FUNC_3ARGS(DTSolution, lword, rword, rws),
+    GVAR_FUNC_3ARGS(DTCommutator, lword, rword, rws),
+    GVAR_FUNC_3ARGS(DTQuotient, lword, rword, rws),
+    GVAR_FUNC_3ARGS(DTConjugate, lword, rword, rws),
     { 0, 0, 0, 0, 0 }
 
 };

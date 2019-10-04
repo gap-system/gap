@@ -789,10 +789,10 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(NUMERATOR_RAT, 1, "rat"),
-    GVAR_FUNC(DENOMINATOR_RAT, 1, "rat"),
-    GVAR_FUNC(ABS_RAT, 1, "op"),
-    GVAR_FUNC(SIGN_RAT, 1, "op"),
+    GVAR_FUNC_1ARGS(NUMERATOR_RAT, rat),
+    GVAR_FUNC_1ARGS(DENOMINATOR_RAT, rat),
+    GVAR_FUNC_1ARGS(ABS_RAT, op),
+    GVAR_FUNC_1ARGS(SIGN_RAT, op),
     { 0, 0, 0, 0, 0 }
 
 };
