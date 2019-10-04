@@ -15,6 +15,7 @@ addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
+    - zlib1g-dev
     - python
     - python-pip
     - perl
@@ -38,45 +39,47 @@ matrix:
           - g++-multilib
           - libgmp-dev:i386
           - libreadline-dev:i386
+          - zlib1g-dev:i386
 
     # HPC-GAP builds (for efficiency, we don't build all combinations)
     - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
 
-    # compiler packages and run package tests
-    # don't use --coverage in CFLAGS, it causes the weird `atexit` bug in
-    # digraphs and other kernel extensions using C++ code (due to GCC's
-    # `profiler_trace.h` calling `atexit`; but that fails in loadable modules
-    # for technical reasons)
-    # also don't use --enable-debug to prevent the tests from taking too long
-    - env: TEST_SUITES="testpackages testinstall-loadall" ABI=64 CFLAGS=-O2 CXXFLAGS=-O2 LDFLAGS=
+    # compile packages and run GAP tests
+    # don't use --enable-debug to prevent the tests from taking too long
+    - env: TEST_SUITES="testpackages testinstall-loadall" ABI=64
+      dist: bionic # avoid 'atexit' linker error in packages using C++ code
       addons:
         apt_packages:
           - gcc-multilib
           - g++-multilib
           - libgmp-dev
-          - libgmp-dev:i386         # for anupq
           - libreadline-dev
+          - zlib1g-dev
           - libboost-dev            # for NormalizInterface
           - libmpfr-dev             # for float
-          - libmpfi0-dev            # for float
+          - libmpfi-dev             # for float
           - libmpc-dev              # for float
           #- libfplll-dev           # for float
           - pari-gp                 # for alnuth
           - libzmq3-dev             # for ZeroMQInterface
 
-    # compiler packages and run package tests in 32 bit mode
-    - env: TEST_SUITES=testpackages ABI=32 CFLAGS=-O2 CXXFLAGS=-O2 LDFLAGS=
+    # compile packages and run GAP tests in 32 bit mode
+    # it seems profiling is having trouble collecting the coverage data here, so we
+    # use NO_COVERAGE=1
+    - env: TEST_SUITES="testpackages testinstall-loadall" ABI=32 NO_COVERAGE=1 
+      dist: bionic # avoid 'atexit' linker error in packages using C++ code
       addons:
         apt_packages:
           - gcc-multilib
           - g++-multilib
           - libgmp-dev:i386
           - libreadline-dev:i386
+          - zlib1g-dev:i386
           - libncurses5-dev:i386    # for Browse
           - libcurl4-openssl-dev:i386 # for curlInterface
           - libboost-dev:i386       # for NormalizInterface
           - libmpfr-dev:i386        # for float
-          - libmpfi0-dev:i386       # for float
+          - libmpfi-dev:i386        # for float
           - libmpc-dev:i386         # for float
           #- libfplll-dev:i386      # for float
           - pari-gp:i386            # for alnuth
@@ -133,7 +136,8 @@ matrix:
           - gcc-multilib
           - g++-multilib
           #- libgmp-dev:i386    # do not install GMP, to test that GAP can build its own
-          - libreadline-dev:i386
+          #- libreadline-dev:i386  # do not install readline, to test that GAP can be compiled and run without it
+          #- zlib1g-dev::i386   # do not install zlib, to test that GAP can build its own
 
     # test error reporting and compiling as well as libgap
     - env: TEST_SUITES="testspecial test-compile testlibgap testkernel"
