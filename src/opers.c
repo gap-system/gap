@@ -18,6 +18,7 @@
 #include "blister.h"
 #include "bool.h"
 #include "calls.h"
+#include "code.h"
 #include "error.h"
 #include "gapstate.h"
 #ifdef USE_GASMAN
@@ -2918,8 +2919,26 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     SET_HDLR_FUNC(func, 7, DoUninstalledGlobalFunction);
 
     /* added the name                                                      */
-    namobj = CopyObj( name, 0 );
+    namobj = ImmutableString(name);
     SET_NAME_FUNC(func, namobj);
+    CHANGED_BAG(func);
+
+    // We set the location to a description, to make clear the function
+    // hasn't been defined yet
+    const char label[] = "the global function \"%s\" is not yet defined";
+
+    // As the '%s' in 'label' will be replaced with 'namobj', there is
+    // no need for an extra character to store the end-of-string null.
+    Obj    filename = NEW_STRING(strlen(label) + GET_LEN_STRING(namobj));
+    char * buf = CSTR_STRING(filename);
+    Int    len = sprintf(buf, label, CONST_CSTR_STRING(namobj));
+    SET_LEN_STRING(filename, len);
+
+    Obj body_bag = NewFunctionBody();
+    SET_FILENAME_BODY(body_bag, filename);
+    SET_LOCATION_BODY(body_bag, MakeImmString(""));
+    SET_BODY_FUNC(func, body_bag);
+    CHANGED_BAG(body_bag);
     CHANGED_BAG(func);
 
     /* and return                                                          */
