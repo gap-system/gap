@@ -175,6 +175,11 @@ gap> BlistList([0..3], [2..6]);
 gap> BlistList([0..3], [4..6]);
 [ false, false, false, false ]
 
+# non-internal list
+gap> vec:=ImmutableVector(GF(2),[Z(2),0*Z(2),Z(2),0*Z(2)]);;
+gap> BlistList(vec, [Z(2)]);
+[ true, false, true, false ]
+
 #
 # FuncLIST_BLIST
 #
@@ -188,7 +193,9 @@ nd 3)
 gap> ListBlist([1,2,3], [true,false,true]);
 [ 1, 3 ]
 
+#
 # FuncIS_SUB_BLIST
+#
 gap> IsSubsetBlist(fail, fail);
 Error, IsSubsetBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> IsSubsetBlist([true,false], fail);
@@ -201,7 +208,9 @@ true
 gap> IsSubsetBlist([true,false,true], [true,true,false]);
 false
 
+#
 # FuncUNITE_BLIST
+#
 gap> UniteBlist(fail, fail);
 Error, UniteBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> UniteBlist([true,false], fail);
@@ -219,7 +228,9 @@ gap> UniteBlist(x, [true,true,false,false]);
 gap> x;
 [ true, true, true, false ]
 
+#
 # FuncUNITE_BLIST_LIST
+#
 gap> UniteBlistList(fail, fail, fail);
 Error, UniteBlistList: <list> must be a small list (not the value 'fail')
 gap> UniteBlistList([1,2], fail, fail);
@@ -239,7 +250,20 @@ gap> UniteBlistList([1,2,3], x, [2,3]);
 gap> x;
 [ true, true, true ]
 
+# non-internal list
+gap> vec:=ImmutableVector(GF(2),[Z(2),0*Z(2),Z(2),0*Z(2)]);;
+gap> IsGF2VectorRep(vec);
+true
+gap> x:=[false,false,true,true];;
+gap> UniteBlistList(vec, x, [Z(2)]);
+gap> x;
+[ true, false, true, true ]
+gap> IsGF2VectorRep(vec); # representation was *not* changed
+true
+
+#
 # FuncINTER_BLIST
+#
 gap> IntersectBlist(fail, fail);
 Error, IntersectBlist: <blist1> must be a boolean list (not the value 'fail')
 gap> IntersectBlist([true,false], fail);

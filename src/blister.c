@@ -1341,7 +1341,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
 
         /* loop over <sub> and set the corresponding entries to 'true'     */
         s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
-        for ( l = 1; l <= LEN_LIST(sub); l++ ) {
+        for (l = 1; l <= lenSub; l++) {
             if ( ptrSub[l] != 0 ) {
 
                 /* if <sub>[<l>] is an integer it is very easy             */
@@ -1352,52 +1352,46 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
                 }
             }
         }
-
     }
 
     /* if <list> is a set we have two possibilities                        */
     else if ( IsSet( list ) ) {
 
-        /* get the length of <list> and its logarithm                      */
-        lenList = LEN_PLIST( list );
+        // compute the logarithm of the length of <list>
         for ( i = lenList, l = 0; i != 0; i >>= 1, l++ ) ;
-        PLAIN_LIST( sub );
 
         /* if <sub> is small, we loop over <sub> and use binary search     */
         if ( l * lenSub < 2 * lenList ) {
 
-            /* allocate the boolean list and get pointer                   */
-
             /* run over the elements of <sub> and search for the elements  */
-            for ( l = 1; l <= LEN_LIST(sub); l++ ) {
-                if ( CONST_ADDR_OBJ(sub)[l] != 0 ) {
+            for (l = 1; l <= lenSub; l++) {
+                Obj elm = ELMV0_LIST(sub, l);
+                if (elm != 0) {
 
                     /* perform the binary search to find the position      */
                     i = 0;  k = lenList+1;
                     while ( i+1 < k ) {
                         j = (i + k) / 2;
-                        if ( LT(CONST_ADDR_OBJ(list)[j],CONST_ADDR_OBJ(sub)[l]) )
+                        if (LT(ELM_PLIST(list, j), elm))
                             i = j;
                         else
                             k = j;
                     }
 
                     /* set bit if <sub>[<l>] was found at position k       */
-                    if ( k <= lenList
-                      && EQ( CONST_ADDR_OBJ(list)[k], CONST_ADDR_OBJ(sub)[l] ) )
+                    if (k <= lenList && EQ(ELM_PLIST(list, k), elm))
                         SET_BIT_BLIST(blist, k);
                 }
             }
-
         }
 
         /* if <sub> is large, run over both list in parallel               */
         else {
 
-            /* turn the <sub> into a set for faster searching              */
-            if ( ! IsSet( sub ) ) {
-                sub = SetList( sub );
-                lenSub = LEN_LIST( sub );
+            // turn <sub> into a set (and hence a plist) for faster searching
+            if (!IsSet(sub)) {
+                sub = SetList(sub);
+                lenSub = LEN_PLIST(sub);
             }
 
             /* run over the elements of <list>                             */
@@ -1405,15 +1399,14 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
             block = 0;
             bit   = 1;
             for ( l = 1; l <= lenList; l++ ) {
+                Obj elm = ELM_LIST(list, l);
 
                 /* test if <list>[<l>] is in <sub>                         */
-                while ( k <= lenSub
-                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
+                while (k <= lenSub && LT(ELM_PLIST(sub, k), elm))
                     k++;
 
                 /* if <list>[<k>] is in <sub> set the current bit in block */
-                if ( k <= lenSub
-                  && EQ(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) ) {
+                if (k <= lenSub && EQ(ELM_PLIST(sub, k), elm)) {
                     block |= bit;
                     k++;
                 }
@@ -1434,31 +1427,31 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     /* if <list> is not a set, we have to use brute force                  */
     else {
 
-        /* convert left argument to an ordinary list, ignore return value  */
-        PLAIN_LIST( list );
-
-        /* turn <sub> into a set for faster searching                      */
-        if ( ! IsSet( sub ) )  sub = SetList( sub );
-
-        lenSub   = LEN_PLIST( sub );
+        // turn <sub> into a set (and hence a plist) for faster searching
+        if (!IsSet(sub)) {
+            sub = SetList(sub);
+            lenSub = LEN_PLIST(sub);
+        }
 
         /* run over the elements of <list>                                 */
         k = 1;
         block = 0;
         bit   = 1;
+        Obj elm = 0, prev;
         for ( l = 1; l <= lenList; l++ ) {
-
+            prev = elm;
+            elm = ELM_LIST(list, l);
             /* test if <list>[<l>] is in <sub>                             */
-            if ( l == 1 || LT(CONST_ADDR_OBJ(list)[l-1],CONST_ADDR_OBJ(list)[l]) ){
-                while ( k <= lenSub
-                     && LT(CONST_ADDR_OBJ(sub)[k],CONST_ADDR_OBJ(list)[l]) )
+            if (l == 1 || LT(prev, elm)) {
+                while (k <= lenSub && LT(ELM_PLIST(sub, k), elm))
                     k++;
             }
             else {
-                i = 0;  k = LEN_PLIST(sub) + 1;
+                i = 0;
+                k = lenSub + 1;
                 while ( i+1 < k ) {
                     j = (i + k) / 2;
-                    if ( LT( CONST_ADDR_OBJ(sub)[j], CONST_ADDR_OBJ(list)[l] ) )
+                    if (LT(ELM_PLIST(sub, j), elm))
                         i = j;
                     else
                         k = j;
@@ -1466,8 +1459,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
             }
 
             /* if <list>[<k>] is in <sub> set the current bit in the block */
-            if ( k <= lenSub
-              && EQ( CONST_ADDR_OBJ(sub)[k], CONST_ADDR_OBJ(list)[l] ) ) {
+            if (k <= lenSub && EQ(ELM_PLIST(sub, k), elm)) {
                 block |= bit;
                 k++;
             }
