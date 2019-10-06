@@ -1614,6 +1614,23 @@ static void PlainListError(Obj list)
         (Int)TNAM_OBJ(list), 0L );
 }
 
+Obj PLAIN_LIST_COPY(Obj list)
+{
+    if (IS_PLIST(list)) {
+        return SHALLOW_COPY_OBJ(list);
+    }
+    const Int len = LEN_LIST(list);
+    if (len == 0)
+        return NewEmptyPlist();
+    Obj res = NEW_PLIST(T_PLIST, len);
+    SET_LEN_PLIST(res, len);
+    for (Int i = 1; i <= len; i++) {
+        SET_ELM_PLIST(res, i, ELMV0_LIST(list, i));
+        CHANGED_BAG(res);
+    }
+    return res;
+}
+
 
 /****************************************************************************
 **

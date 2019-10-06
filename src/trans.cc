@@ -513,15 +513,8 @@ static Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
     UInt4 * ptf4;
     UInt    i, pos, deg;
 
-    copy_img = SHALLOW_COPY_OBJ(img);
-    copy_ker = SHALLOW_COPY_OBJ(ker);
-
-    if (!IS_PLIST(copy_img)) {
-        PLAIN_LIST(copy_img);
-    }
-    if (!IS_PLIST(copy_ker)) {
-        PLAIN_LIST(copy_ker);
-    }
+    copy_img = PLAIN_LIST_COPY(img);
+    copy_ker = PLAIN_LIST_COPY(ker);
     MakeImmutableNoRecurse(copy_img);
     MakeImmutableNoRecurse(copy_ker);
 
@@ -567,15 +560,8 @@ static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
     UInt4 * ptf4, *pttmp;
     UInt    i, j, deg, rank;
 
-    copy_img = SHALLOW_COPY_OBJ(img);
-    copy_ker = SHALLOW_COPY_OBJ(ker);
-
-    if (!IS_PLIST(copy_img)) {
-        PLAIN_LIST(copy_img);
-    }
-    if (!IS_PLIST(copy_ker)) {
-        PLAIN_LIST(copy_ker);
-    }
+    copy_img = PLAIN_LIST_COPY(img);
+    copy_ker = PLAIN_LIST_COPY(ker);
     MakeImmutableNoRecurse(copy_img);
     MakeImmutableNoRecurse(copy_ker);
 
@@ -3619,20 +3605,28 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
     Obj *   ptres, res;
     UInt    i, k;
 
-    if (LEN_LIST(set) == 0) {
+    const UInt len = LEN_LIST(set);
+
+    if (len == 0) {
         return set;
     }
 
-    if (LEN_LIST(set) == 1 && INT_INTOBJ(ELM_LIST(set, 1)) == 0) {
+    if (len == 1 && INT_INTOBJ(ELM_LIST(set, 1)) == 0) {
         return FuncIMAGE_SET_TRANS_INT(self, f, n);
     }
 
-    PLAIN_LIST(set);
-
-    const UInt len = LEN_PLIST(set);
-
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT, len);
-    SET_LEN_PLIST(res, len);
+    if (IS_PLIST(set)) {
+        res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT, len);
+        SET_LEN_PLIST(res, len);
+    }
+    else {
+        // input is not a plain list, so we make a copy of it, and then also reuse
+        // that copy for our output
+        res = PLAIN_LIST_COPY(set);
+        if (!IS_MUTABLE_OBJ(set))
+            MakeImmutableNoRecurse(res);
+        set = res;
+    }
 
     ptset = CONST_ADDR_OBJ(set) + len;
     ptres = ADDR_OBJ(res) + len;
@@ -3649,6 +3643,7 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
         }
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
         return res;
     }
     else if (TNUM_OBJ(f) == T_TRANS4) {
@@ -3663,6 +3658,7 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
         }
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
         return res;
     }
     RequireTransformation("OnPosIntSetsTrans", f);
