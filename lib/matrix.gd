@@ -1524,43 +1524,56 @@ DeclareGlobalFunction( "NullMat" );
 
 #############################################################################
 ##
-#F  NullspaceModQ( <E>, <q> ) . . . . . . . . . . . .nullspace of <E> mod <q>
+#F  NullspaceModN( <M>, <n> ) . . . . . . . . . . . .nullspace of <M> mod <n>
 ##
-##  <#GAPDoc Label="NullspaceModQ">
+##  <#GAPDoc Label="NullspaceModN">
 ##  <ManSection>
-##  <Func Name="NullspaceModQ" Arg='E, q'/>
+##  <Func Name="NullspaceModQ" Arg='M, q'/>
+##  <Func Name="NullspaceModN" Arg='M, n'/>
 ##
 ##  <Description>
-##  <A>E</A> must be a matrix of integers and <A>q</A> a prime power.
-##  Then <Ref Func="NullspaceModQ"/> returns the set of all vectors of integers modulo
-##  <A>q</A>, which solve the homogeneous equation system given by <A>E</A> modulo <A>q</A>.
+##  <A>M</A> must be a matrix of integers and <A>n</A> a positive integer.
+##  Then <Ref Func="NullspaceModN"/> returns the set of all vectors of
+##  integers modulo <A>n</A>, which solve the homogeneous equation system
+##  <A>v</A> <A>M</A> = 0 modulo <A>n</A>.
+##  <P/>
+##  <Ref Func="NullspaceModQ"/> is a synonym for <Ref Func="NullspaceModN"/>.
 ##  <Example><![CDATA[
-##  gap> mat:= [ [ 1, 3 ], [ 1, 2 ], [ 1, 1 ] ];;  NullspaceModQ( mat, 5 );
-##  [ [ 0, 0, 0 ], [ 1, 3, 1 ], [ 2, 1, 2 ], [ 4, 2, 4 ], [ 3, 4, 3 ] ]
+##  gap> NullspaceModN( [ [ 2 ] ], 8 );
+##  [ [ 0 ], [ 4 ] ]
+##  gap> NullspaceModN( [ [ 2, 1 ], [ 0, 2 ] ], 6 );
+##  [ [ 0, 0 ], [ 0, 3 ] ]
+##  gap> mat:= [ [ 1, 3 ], [ 1, 2 ], [ 1, 1 ] ];;
+##  gap> NullspaceModN( mat, 5 );
+##  [ [ 0, 0, 0 ], [ 1, 3, 1 ], [ 2, 1, 2 ], [ 3, 4, 3 ], [ 4, 2, 4 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "NullspaceModQ" );
+DeclareGlobalFunction( "NullspaceModN" );
+DeclareSynonym( "NullspaceModQ", NullspaceModN );
 
 
 #############################################################################
 ##
-#F  BasisNullspaceModN( <M>, <n> ) . . . . . . .  .  nullspace of <E> mod <n>
+#F  BasisNullspaceModN( <M>, <n> ) . .  basis of the nullspace of <M> mod <n>
 ##
+##  <#GAPDoc Label="BasisNullspaceModN">
 ##  <ManSection>
 ##  <Func Name="BasisNullspaceModN" Arg='M, n'/>
 ##
 ##  <Description>
-##  <A>M</A> must be a matrix of integers modulo <A>n</A> and <A>n</A> a positive integer.  
-##  Then 'NullspaceModQ' returns a set <A>B</A> of vectors such that every <A>v</A> 
-##  such that <A>v</A> <A>M</A> = 0 modulo <A>n</A> can be expressed by a Z-linear combination
-##  of elements of <A>M</A>.
+##  <A>M</A> must be a matrix of integers and <A>n</A> a positive integer.
+##  Then <Ref Func="BasisNullspaceModN"/> returns a set <A>B</A> of vectors
+##  such that every vector <A>v</A> of integer modulo <A>n</A> satisfying
+##  <A>v</A> <A>M</A> = 0 modulo <A>n</A> can be expressed by a Z-linear
+##  combination of elements of <A>B</A>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
-DeclareGlobalFunction ("BasisNullspaceModN");
+DeclareGlobalFunction( "BasisNullspaceModN" );
 
 
 #############################################################################

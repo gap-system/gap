@@ -549,14 +549,15 @@ written over finite fields.
 <Section Label="Inverse and Nullspace of an Integer Matrix Modulo an Ideal">
 <Heading>Inverse and Nullspace of an Integer Matrix Modulo an Ideal</Heading>
 
-The following two operations deal with matrices over a ring,
+The following operations deal with matrices over a ring,
 but only care about the residues of their entries modulo some ring element.
 In the case of the integers and a prime number <M>p</M>, say,
 this is effectively computation in a matrix over the prime field
 in characteristic <M>p</M>.
 
 <#Include Label="InverseMatMod">
-<#Include Label="NullspaceModQ">
+<#Include Label="BasisNullspaceModN">
+<#Include Label="NullspaceModN">
 
 </Section>
 
