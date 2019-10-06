@@ -345,7 +345,7 @@ local   str,ls, i;
   fi;
 
   if IsString( list ) then
-    return Concatenation("\"", list, "\"");
+    return Concatenation(CHUNK_ESCAPE_STRING(list));
   fi;
 
   # make strings for objects in l
