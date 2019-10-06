@@ -3313,97 +3313,22 @@ end );
 
 #############################################################################
 ##
-#F  NullspaceModQ( <E>, <q> ) . . . . . . . . . . .  nullspace of <E> mod <q>
+#F  NullspaceModN( <M>, <n> ) . . . . . . . . . . .  nullspace of <M> mod <n>
 ##
-##  <E> must be a matrix of integers modulo <q> and <q>  a prime power.  Then
-##  'NullspaceModQ' returns  the set of  all vectors of  integers modulo <q>,
-##  which solve the homogeneous equation system given by <E> modulo <q>.
-##
-InstallGlobalFunction( NullspaceModQ, function( E, q )
-    local  facs,         # factors of <q>
-           p,            # prime of facs
-           pex,          # p-power
-           n,            # <q> = p^n
-           field,        # field with p elements
-           B,            # E over GF(p)
-           null,         # basis of nullspace of B
-           elem,         # all elements solving E mod p^i-1
-           e,            # one elem
-           r,            # inhomogenous part mod p^i-1
-           newelem,      # all elements solving E mod p^i
-           sol,          # solution of E * x = r mod p^i
-           ran,
-           new, o,
-           j, i,k;
+InstallGlobalFunction( NullspaceModN, function( M, n )
+    local B, coeffs;
 
-    # factorize q
-    facs  := Factors(Integers, q );
-    p     := facs[1];
-    n     := Length( facs );
-    field := GF(p);
-
-    # solve homogeneous system mod p
-    B    := One( field ) * E;
-    null := NullspaceMat( B );
-    if null = []  then
-        return [ListWithIdenticalEntries (NrRows(E),0)];
-    fi;
-
-    # set up
-    elem := List( AsList( FreeLeftModule(field,null,"basis") ),
-            x -> List( x, IntFFE ) );
-#T !
-    newelem := [ ];
-    o := One( field );
-
-    ran:=[1..Length(null[1])];
-    # run trough powers
-    for i  in [ 2..n ]  do
-        pex:=p^(i-1);
-        for e  in elem  do
-            #r   := o * ( - (e * E) / (p ^ ( i - 1 ) ) );
-            r   := o * ( - (e * E) / pex );
-            sol := SolutionMat( B, r );
-            if sol <> fail then
-
-                # accessing the elements of the compact vector `sol'
-                # frequently would be very expensive
-                sol:=List(sol,IntFFE);
-
-                for j  in [ 1..Length( elem ) ]  do
-                    #new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
-                    new:=ShallowCopy(e);
-                    for k in ran do
-                      #new[k]:=new[k]+pex * IntFFE(o*elem[j,k]+ sol[k]);
-                      new[k]:=new[k]+pex * ((elem[j,k]+ sol[k]) mod p);
-                    od;
-#T !
-                    MakeImmutable(new); # otherwise newelem does not remember
-                                        # it is sorted!
-                    AddSet( newelem, new );
-                od;
-            fi;
-        od;
-        if Length( newelem ) = 0  then
-            return [];
-        fi;
-        elem    := newelem;
-        newelem := [ ];
-    od;
-    return elem;
+    B := BasisNullspaceModN(M, n);
+    coeffs := Cartesian(ListWithIdenticalEntries(Length(B), [0..n-1]));
+    return Set(coeffs, c -> c * B mod n);
 end );
 
 
 #############################################################################
 ##
-#F  BasisNullspaceModN( <M>, <n> ) . . . . . . .  .  nullspace of <E> mod <n>
+#F  BasisNullspaceModN( <M>, <n> ) . .  basis of the nullspace of <M> mod <n>
 ##
-##  <M> must be a matrix of integers modulo <n> and <n> a positive integer.
-##  Then 'BasisNullspaceModN' returns a set <B> of vectors such that every <v>
-##  such that <v> <M> = 0 modulo <n> can be expressed by a Z-linear combination
-##  of elements of <M>.
-##
-InstallGlobalFunction (BasisNullspaceModN, function (M, n)
+InstallGlobalFunction( BasisNullspaceModN, function( M, n )
     local snf, null, nullM, i, gcdex;
 
     # if n is a  prime, Gaussian elimination is fastest
