@@ -2,7 +2,7 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-#@local x
+#@local x, str
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -42,10 +42,28 @@ gap> String(x);
 "abc"
 gap> x:="\0xFF";
 "\377"
+gap> PrintString(x);
+"\377"
+gap> ViewString(x);
+"\"\\377\""
 gap> x:="\0x42\0x23\0x10\0x10\0x10";
 "B#\020\020\020"
+gap> PrintString(x);
+"B#\020\020\020"
+gap> ViewString(x);
+"\"B#\\020\\020\\020\""
 gap> x:="A string with \0xFF Hex stuff \0x42 in it";
 "A string with \377 Hex stuff B in it"
+gap> PrintString(x);
+"A string with \377 Hex stuff B in it"
+gap> ViewString(x);
+"\"A string with \\377 Hex stuff B in it\""
+gap> x := "\n\t\c\\\"'";
+"\n\t\c\\\"'"
+gap> PrintString(x);
+"\n\t\c\\\"'"
+gap> ViewString(x);
+"\"\\n\\t\\c\\\\\\\"'\""
 gap> "\0yab";
 Syntax error: Expecting hexadecimal escape, or two more octal digits in stream\
 :1
@@ -173,6 +191,13 @@ gap> x:='\0xFF';
 '\377'
 gap> x:='\0xab';
 '\253'
+
+# Huge strings
+gap> for len in [10,100,1000,10000,100000] do
+> str := List([1..len], x -> 'a');
+> Assert(0, Concatenation("\"",str,"\"") = ViewString(str));
+> Assert(0, Concatenation(str,"\n") = DisplayString(str));
+> od;;
 
 #
 gap> STOP_TEST( "strings.tst", 1);
