@@ -1286,9 +1286,9 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     UInt                bit;            /* one bit of block                */
     Int                 lenList;        /* logical length of the list      */
     const Obj *         ptrSub;         /* pointer to the sublist          */
-    UInt                lenSub;         /* logical length of sublist       */
-    UInt                i, j, k = 0, l;     /* loop variables                  */
-    long                s, t;           /* elements of a range             */
+    Int                 lenSub;         /* logical length of sublist       */
+    Int                 i, j, k, l;     /* loop variables                  */
+    Int                 s, t;           /* elements of a range             */
 
     RequireSmallList("UniteBlistList", list);
     RequireBlist("UniteBlistList", blist);
@@ -1313,19 +1313,22 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
         /* get the bounds of the subset with respect to the boolean list   */
         s = INT_INTOBJ( GET_ELM_RANGE( list, 1 ) );
         t = INT_INTOBJ( GET_ELM_RANGE( sub, 1 ) );
-        if ( s <= t )  i = t - s + 1;
-        else           i = 1;
 
-        if ( i + lenSub - 1 <= lenList )  j = i + lenSub - 1;
-        else                              j = lenList;
+        // compute bounds
+        i = t - s;
+        j = lenSub + i;
+        if (i < 0)
+            i = 0;
+        if (j > lenList)
+            j = lenList;
 
         /* set the corresponding entries to 'true'                         */
-        for ( k = i; k <= j && (k-1)%BIPEB != 0; k++ )
-            ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
-        for ( ; k+BIPEB <= j; k += BIPEB )
-            ptrBlist[(k-1)/BIPEB] = ~(UInt)0;
-        for ( ; k <= j; k++ )
-            ptrBlist[(k-1)/BIPEB] |= (1UL << (k-1)%BIPEB);
+        for ( k = i; k < j && k%BIPEB != 0; k++ )
+            ptrBlist[k/BIPEB] |= (1UL << k%BIPEB);
+        for ( ; k+BIPEB < j; k += BIPEB )
+            ptrBlist[k/BIPEB] = ~(UInt)0;
+        for ( ; k < j; k++ )
+            ptrBlist[k/BIPEB] |= (1UL << k%BIPEB);
 
     }
 

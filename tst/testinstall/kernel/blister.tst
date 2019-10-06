@@ -149,7 +149,9 @@ gap> List(l, IsSSortedList);
 gap> List(l, SizeBlist);
 [ 1, 1, 2, 2 ]
 
+#
 # FuncBLIST_LIST
+#
 gap> BlistList(fail, fail);
 Error, BlistList: <list> must be a small list (not the value 'fail')
 gap> BlistList([1,2,3], fail);
@@ -157,7 +159,25 @@ Error, BlistList: <sub> must be a small list (not the value 'fail')
 gap> BlistList([1,2,3], [1,3]);
 [ true, false, true ]
 
+# ranges with increment 1
+gap> BlistList([0..3], [-3..-1]);
+[ false, false, false, false ]
+gap> BlistList([0..3], [-3..1]);
+[ true, true, false, false ]
+gap> BlistList([0..3], [-3..6]);
+[ true, true, true, true ]
+gap> BlistList([0..3], [0..1]);
+[ true, true, false, false ]
+gap> BlistList([0..3], [0..6]);
+[ true, true, true, true ]
+gap> BlistList([0..3], [2..6]);
+[ false, false, true, true ]
+gap> BlistList([0..3], [4..6]);
+[ false, false, false, false ]
+
+#
 # FuncLIST_BLIST
+#
 gap> ListBlist(fail, fail);
 Error, ListBlist: <list> must be a small list (not the value 'fail')
 gap> ListBlist([1,2,3], fail);
