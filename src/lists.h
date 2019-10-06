@@ -749,6 +749,13 @@ EXPORT_INLINE void PLAIN_LIST(Obj list)
 
 /****************************************************************************
 **
+*F  PLAIN_LIST_COPY(<list>) . . . . . . . copy a list to a mutable plain list
+*/
+Obj PLAIN_LIST_COPY(Obj list);
+
+
+/****************************************************************************
+**
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
 Obj TYPES_LIST_FAM(Obj fam);

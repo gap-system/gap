@@ -269,8 +269,7 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
         RequireArgument("CALL_WITH_CATCH", args, "must be a list");
 #ifdef HPCGAP
     if (!IS_PLIST(args)) {
-        args = SHALLOW_COPY_OBJ(args);
-        PLAIN_LIST(args);
+        args = PLAIN_LIST_COPY(args);
     }
 #endif
 
