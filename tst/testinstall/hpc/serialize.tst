@@ -161,7 +161,7 @@ gap> CheckSerialization(OBJ_SET([false, 0, true, 1]));
 #
 gap> x := ZmodnZObj(1,6);;
 gap> TNAM_OBJ(x);
-"object (positional)"
+"positional object"
 gap> SerializeToNativeString(x);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
