@@ -1983,9 +1983,9 @@ static Obj FuncDEBUG_TNUM_NAMES(Obj self)
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
-  { T_COMOBJ,                         "object (component)"             },
-  { T_POSOBJ,                         "object (positional)"            },
-  { T_DATOBJ,                         "object (data)"                  },
+  { T_COMOBJ,                         "component object"               },
+  { T_POSOBJ,                         "positional object"              },
+  { T_DATOBJ,                         "data object"                    },
 #if !defined(USE_THREADSAFE_COPYING)
   { T_COPYING,                        "copy in progress"               },
 #endif

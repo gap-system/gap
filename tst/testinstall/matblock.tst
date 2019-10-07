@@ -120,8 +120,8 @@ Error, Matrix Assignment: <mat> must be a mutable matrix (not a atomic compone\
 nt object)
 #@else
 gap> m1[1,2] := 5;
-Error, Matrix Assignment: <mat> must be a mutable matrix (not a object (compon\
-ent))
+Error, Matrix Assignment: <mat> must be a mutable matrix (not a component obje\
+ct)
 #@fi
 
 #

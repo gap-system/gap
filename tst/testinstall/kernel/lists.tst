@@ -131,7 +131,7 @@ gap> InstallMethod(Length,[r],l->5);
 gap> t:=NewType(ListsFamily, r and IsMutable and IsPositionalObjectRep);;
 gap> l:=Objectify(t,[]);;
 gap> OnTuples(l, (1,3));
-Error, Panic: cannot convert <list> (is a object (positional)) to a plain list
+Error, Panic: cannot convert <list> (is a positional object) to a plain list
 
 #
 gap> STOP_TEST("kernel/lists.tst", 1);
