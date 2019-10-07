@@ -632,6 +632,12 @@ InstallGlobalFunction("Test", function(arg)
       od; 
       if PositionSublist(pf.inp[i], "STOP_TEST") <> 1 then
         Append(new[pf.pos[i]], pf.cmp[i]);
+        if pf.cmp[i] <> "" and Last(pf.cmp[i]) <> '\n' then
+            Info(InfoWarning, 1, "An output in the .tst file does not end with a newline. GAP does not support this.");
+            Info(InfoWarning, 1, "A newline will be inserted to make the file valid, but the test will fail.");
+            Info(InfoWarning, 1, "The location of this problem is marked with '# Newline inserted here'.");
+            Append(new[pf.pos[i]], "# Newline inserted here by 'rewriteToFile'\n");
+        fi;
       fi;
     od;
     new := Concatenation(Compacted(new));
