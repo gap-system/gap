@@ -1856,6 +1856,10 @@ BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
     local   name;
 
     name := arg[1];
+    if LEN_LIST(arg) > 1 then
+        INFO_DEBUG(1, "DeclareGlobalFunction: too many arguments in ",
+            INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
+    fi;
     atomic GLOBAL_FUNCTION_NAMES do
     ADD_SET( GLOBAL_FUNCTION_NAMES, IMMUTABLE_COPY_OBJ(name) );
     od;
@@ -1865,6 +1869,10 @@ end );
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     local   oper,  info,  func;
 
+    if LEN_LIST(arg) > 2  then
+        INFO_DEBUG(1, "InstallGlobalFunction: too many arguments in ",
+            INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
+    fi;
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
         info := arg[2];

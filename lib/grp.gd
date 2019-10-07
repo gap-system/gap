@@ -3462,7 +3462,7 @@ KeyDependentOperation( "HallSubgroup", IsGroup, IsList, ReturnTrue );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "NormalHallSubgroupsFromSylows", [ IsGroup ] );
+DeclareGlobalFunction( "NormalHallSubgroupsFromSylows" );
 
 
 #############################################################################

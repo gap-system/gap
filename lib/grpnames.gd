@@ -56,8 +56,7 @@ DeclareOperation( "IsTrivialNormalIntersection",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
-                  [ IsList, IsGroup, IsGroup ] );
+DeclareGlobalFunction( "IsTrivialNormalIntersectionInList" );
 
 #############################################################################
 ##
@@ -74,7 +73,7 @@ DeclareGlobalFunction( "IsTrivialNormalIntersectionInList",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
+DeclareGlobalFunction( "UnionIfCanEasilySortElements" );
 
 #############################################################################
 ##
@@ -92,7 +91,7 @@ DeclareGlobalFunction( "UnionIfCanEasilySortElements", IsList );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "AddSetIfCanEasilySortElements", IsList );
+DeclareGlobalFunction( "AddSetIfCanEasilySortElements" );
 
 #############################################################################
 ##
@@ -283,8 +282,7 @@ DeclareAttribute( "CharacteristicFactorsOfGroup", IsGroup );
 ##   and where it is in the b-sequence if any. Then the
 ##   linear algorithm above may be used.
 ##
-DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
-                        [ IsGroup, IsList, IsList ] );
+DeclareGlobalFunction( "DirectFactorsOfGroupFromList" );
 
 #############################################################################
 ##
@@ -305,7 +303,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupFromList",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "DirectFactorsOfGroupByKN", IsGroup );
+DeclareGlobalFunction( "DirectFactorsOfGroupByKN" );
 
 #############################################################################
 ##
@@ -346,7 +344,7 @@ DeclareGlobalFunction( "DirectFactorsOfGroupByKN", IsGroup );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "SemidirectDecompositionsOfFiniteGroup", IsGroup );
+DeclareGlobalFunction( "SemidirectDecompositionsOfFiniteGroup" );
 
 #############################################################################
 ##
