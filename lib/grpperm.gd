@@ -301,9 +301,9 @@ DeclareGlobalFunction( "TransitiveGroupsAvailable" );
 
 # dummy declarations to satisfy library references to transitive groups
 # library
-DeclareGlobalFunction( "NrTransitiveGroups", "placeholder for transgrp package" );
-DeclareGlobalFunction( "TransitiveGroup", "placeholder for transgrp package" );
-DeclareGlobalFunction( "TRANSProperties", "placeholder for transgrp package" );
+DeclareGlobalFunction( "NrTransitiveGroups" );
+DeclareGlobalFunction( "TransitiveGroup" );
+DeclareGlobalFunction( "TRANSProperties" );
 
 #############################################################################
 ##

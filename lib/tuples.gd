@@ -225,5 +225,4 @@ DeclareOperation( "DirectProductElementNC",
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-DeclareGlobalFunction( "DirectProductFamily",
-                       "for a dense list of collection families" );
+DeclareGlobalFunction( "DirectProductFamily" );

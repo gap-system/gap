@@ -334,7 +334,7 @@ DeclareOperation( "ExtractSubVector", [IsVectorObj,IsList] );
 
 # DeclareOperation( "ShallowCopy", [IsVectorObj] );
 
-# DeclareGlobalFunction( "StructuralCopy", [IsVectorObj] );
+# DeclareGlobalFunction( "StructuralCopy" );
 
 # DeclareOperation( "ViewObj", [IsVectorObj] );
 
@@ -870,7 +870,7 @@ DeclareOperation( "[]:=", [IsMatrixObj,IsPosInt,IsPosInt,IsObject] );
 # then StructuralCopy will return a new list of vectors, which again contains the
 # same (identical) immutable vectors, and mutable copies of the other vectors.
 # Whereas with MutableCopyMat, all new rows will be mutable
-# DeclareGlobalFunction( "StructuralCopy", [IsMatrixObj] );
+# DeclareGlobalFunction( "StructuralCopy" );
 
 # DeclareOperation( "ViewObj", [IsMatrixObj] );
 

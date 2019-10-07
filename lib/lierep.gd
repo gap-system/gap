@@ -203,7 +203,7 @@ DeclareGlobalFunction( "ValueCochain" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "LieCoboundaryOperator", "Lie coboundary operator" );
+DeclareGlobalFunction( "LieCoboundaryOperator" );
 
 #############################################################################
 ##

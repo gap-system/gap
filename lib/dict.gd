@@ -467,7 +467,7 @@ DeclareRepresentation( "IsDenseHashRep",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "DenseHashTable", [] );
+DeclareGlobalFunction( "DenseHashTable" );
 
 
 #############################################################################
@@ -530,7 +530,7 @@ BindGlobal("DefaultSparseHashWithIKRepType",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "SparseHashTable", [] );
+DeclareGlobalFunction( "SparseHashTable" );
 
 #############################################################################
 ##
@@ -547,7 +547,7 @@ DeclareGlobalFunction( "SparseHashTable", [] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "DoubleHashDictSize", [ IsSparseHashRep ] );
+DeclareGlobalFunction( "DoubleHashDictSize" );
 DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 
 # almost duplicate without any extras - thus faster
@@ -575,7 +575,7 @@ DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "IntegerHashFunction", [ IsInt, IsInt, IsInt ] );
+DeclareGlobalFunction( "IntegerHashFunction" );
 DeclareSynonym( "HashFunct", IntegerHashFunction);
 
 #############################################################################

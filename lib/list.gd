@@ -1097,7 +1097,7 @@ DeclareOperation( "PositionBound", [ IsList ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "PositionsBound", [IsList] );
+DeclareGlobalFunction( "PositionsBound" );
 
 
 #############################################################################
@@ -1566,7 +1566,7 @@ DeclareOperation( "Flat", [ IsList ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "Reversed", [ IsDenseList ] );
+DeclareGlobalFunction( "Reversed" );
 
 
 #############################################################################
