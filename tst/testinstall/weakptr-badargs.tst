@@ -17,30 +17,30 @@ gap> UnbindElmWPObj(w, 0);
 Error, UnbindElmWPObj: <pos> must be a positive small integer (not the integer\
  0)
 gap> UnbindElmWPObj(w, []);
-Error, UnbindElmWPObj: <pos> must be a positive small integer (not a empty pla\
-in list)
+Error, UnbindElmWPObj: <pos> must be a positive small integer (not an empty pl\
+ain list)
 gap> UnbindElmWPObj([], 2);
-Error, UnbindElmWPObj: <wp> must be a weak pointer object (not a empty plain l\
-ist)
+Error, UnbindElmWPObj: <wp> must be a weak pointer object (not an empty plain \
+list)
 gap> ElmWPObj(w, 0);
 Error, ElmWPObj: <pos> must be a positive small integer (not the integer 0)
 gap> ElmWPObj(w, []);
-Error, ElmWPObj: <pos> must be a positive small integer (not a empty plain lis\
-t)
+Error, ElmWPObj: <pos> must be a positive small integer (not an empty plain li\
+st)
 gap> ElmWPObj([], 1);
-Error, ElmWPObj: <wp> must be a weak pointer object (not a empty plain list)
+Error, ElmWPObj: <wp> must be a weak pointer object (not an empty plain list)
 gap> IsBoundElmWPObj(w, 0);
 Error, IsBoundElmWPObj: <pos> must be a positive small integer (not the intege\
 r 0)
 gap> IsBoundElmWPObj(w, []);
-Error, IsBoundElmWPObj: <pos> must be a positive small integer (not a empty pl\
-ain list)
+Error, IsBoundElmWPObj: <pos> must be a positive small integer (not an empty p\
+lain list)
 gap> IsBoundElmWPObj([], 1);
-Error, IsBoundElmWPObj: <wp> must be a weak pointer object (not a empty plain \
-list)
+Error, IsBoundElmWPObj: <wp> must be a weak pointer object (not an empty plain\
+ list)
 gap> LengthWPObj([]);
-Error, LengthWPObj: <wp> must be a weak pointer object (not a empty plain list\
-)
+Error, LengthWPObj: <wp> must be a weak pointer object (not an empty plain lis\
+t)
 gap> LengthWPObj(0);
 Error, LengthWPObj: <wp> must be a weak pointer object (not the integer 0)
 gap> STOP_TEST( "weakptr-badargs.tst", 1);
