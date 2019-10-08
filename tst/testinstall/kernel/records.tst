@@ -18,7 +18,7 @@ gap> ForAll([1,-1,"abc"], x -> IsInt(RNamObj(x)));
 true
 gap> RNamObj(fail);
 Error, Record: '<rec>.(<obj>)' <obj> must be a string or a small integer (not \
-a boolean or fail)
+the value 'fail')
 
 # NameRNam
 gap> ForAll([1,-1,"abc"], x -> NameRNam(RNamObj(x)) = String(x));
@@ -39,7 +39,7 @@ Error, Record Element: '<rec>.2' must have an assigned value
 
 # ElmRecError
 gap> fail.1;
-Error, Record Element: <rec> must be a record (not a boolean or fail)
+Error, Record Element: <rec> must be a record (not the value 'fail')
 
 # ElmRecObject
 gap> InstallMethod(\., [cat, IsPosInt], function(x,i) end);
@@ -57,7 +57,7 @@ false
 
 # IsbRecError
 gap> IsBound(fail.1);
-Error, Record IsBound: <rec> must be a record (not a boolean or fail)
+Error, Record IsBound: <rec> must be a record (not the value 'fail')
 
 # IsbRecObject
 gap> InstallMethod(IsBound\., [cat, IsPosInt], {x,i} -> (i = RNamObj(1)));
@@ -73,7 +73,7 @@ rec( 1 := 2, 3 := 42 )
 
 # AssRecError
 gap> fail.1 := 2;
-Error, Record Assignment: <rec> must be a record (not a boolean or fail)
+Error, Record Assignment: <rec> must be a record (not the value 'fail')
 
 # AssRecObject
 gap> InstallMethod(\.\:\=, [cat, IsPosInt, IsObject], function(x,i,v) end);
@@ -86,7 +86,7 @@ gap> UNB_REC(r, RNamObj(2));
 
 # UnbRecError
 gap> Unbind(fail.1);
-Error, Record Unbind: <rec> must be a record (not a boolean or fail)
+Error, Record Unbind: <rec> must be a record (not the value 'fail')
 
 # UnbRecObject
 gap> InstallMethod(Unbind\., [cat, IsPosInt], function(x,i) end);

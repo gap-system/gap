@@ -577,8 +577,7 @@ static Obj FuncREC_NAMES(Obj self, Obj rec)
         return InnerRecNames(FromAtomicRecord(rec));
     }
 #endif
-    ErrorMayQuit("RecNames: <rec> must be a record (not a %s)",
-                 (Int)TNAM_OBJ(rec), 0L);
+    RequireArgument("RecNames", rec, "must be a record");
     return Fail;
 }
 
@@ -599,8 +598,7 @@ static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
         return InnerRecNames(FromAtomicRecord(rec));
 #endif
     }
-    ErrorMayQuit("RecNames: <rec> must be a component object (not a %s)",
-                 (Int)TNAM_OBJ(rec), 0L);
+    RequireArgument("RecNames", rec, "must be a component object");
     return Fail;
 }
 
