@@ -259,9 +259,7 @@ UInt            RNamObj (
 
     /* otherwise fail                                                      */
     else {
-        ErrorMayQuit("Record: '<rec>.(<obj>)' <obj> must be a string or a "
-                     "small integer (not a %s)",
-                     (Int)TNAM_OBJ(obj), 0);
+        RequireArgumentEx("Record", obj, 0, "'<rec>.(<obj>)' <obj> must be a string or a small integer");
     }
 }
 
@@ -356,8 +354,7 @@ static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
 
 static Obj ElmRecError(Obj rec, UInt rnam)
 {
-    ErrorMayQuit("Record Element: <rec> must be a record (not a %s)",
-                 (Int)TNAM_OBJ(rec), 0);
+    RequireArgument("Record Element", rec, "must be a record");
 }
 
 static Obj ElmRecObject(Obj obj, UInt rnam)
@@ -391,8 +388,7 @@ static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
 
 static Int IsbRecError(Obj rec, UInt rnam)
 {
-    ErrorMayQuit("Record IsBound: <rec> must be a record (not a %s)",
-                 (Int)TNAM_OBJ(rec), 0);
+    RequireArgument("Record IsBound", rec, "must be a record");
 }
 
 static Int IsbRecObject(Obj obj, UInt rnam)
@@ -421,8 +417,7 @@ static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
 
 static void AssRecError(Obj rec, UInt rnam, Obj obj)
 {
-    ErrorMayQuit("Record Assignment: <rec> must be a record (not a %s)",
-                 (Int)TNAM_OBJ(rec), 0);
+    RequireArgument("Record Assignment", rec, "must be a record");
 }
 
 static void AssRecObject(Obj obj, UInt rnam, Obj val)
@@ -450,8 +445,7 @@ static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
 
 static void UnbRecError(Obj rec, UInt rnam)
 {
-    ErrorMayQuit("Record Unbind: <rec> must be a record (not a %s)",
-                 (Int)TNAM_OBJ(rec), 0);
+    RequireArgument("Record Unbind", rec, "must be a record");
 }
 
 static void UnbRecObject(Obj obj, UInt rnam)

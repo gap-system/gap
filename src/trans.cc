@@ -811,11 +811,7 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
     UInt4 * pttmp;
     Obj     pt;
 
-    if (!IS_LIST(list)) {
-        ErrorQuit("RANK_TRANS_LIST: the second argument must be a list "
-                  "(not a %s)",
-                  (Int)TNAM_OBJ(list), 0L);
-    }
+    RequireSmallList("RANK_TRANS_LIST", list);
 
     len = LEN_LIST(list);
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -1487,9 +1483,9 @@ static Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
 *******************************************************************************/
 
 // Returns True if the transformation or list <t> is injective on the list
-// <l>.
+// <list>.
 
-static Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
+static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj t)
 {
     UInt    n, i, j;
     const UInt2 * ptt2;
@@ -1497,14 +1493,9 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
     UInt4 * pttmp = 0L;
     Obj     val;
 
-    if (!IS_LIST(l)) {
-        ErrorQuit("the first argument must be a list (not a %s)",
-                  (Int)TNAM_OBJ(l), 0L);
-    }
-    else if (!IS_TRANS(t) && !IS_LIST(t)) {
-        ErrorQuit("the second argument must be a transformation or a list "
-                  "(not a %s)",
-                  (Int)TNAM_OBJ(t), 0L);
+    RequireSmallList("IsInjectiveListTrans", list);
+    if (!IS_TRANS(t) && !IS_LIST(t)) {
+        RequireArgument("IsInjectiveListTrans", t, "must be a transformation or a list");
     }
     // init buffer
     n = (IS_TRANS(t) ? DEG_TRANS(t) : LEN_LIST(t));
@@ -1512,12 +1503,11 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
 
     if (TNUM_OBJ(t) == T_TRANS2) {
         ptt2 = CONST_ADDR_TRANS2(t);
-        for (i = LEN_LIST(l); i >= 1; i--) {
-            val = ELM_LIST(l, i);
+        for (i = LEN_LIST(list); i >= 1; i--) {
+            val = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(val)) {
                 ErrorQuit(
-                    "the entries of the first argument must be positive "
-                    "integers (not a %s)",
+                    "<list> must be a list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(val), 0L);
             }
             j = INT_INTOBJ(val);
@@ -1531,12 +1521,11 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
     }
     else if (TNUM_OBJ(t) == T_TRANS4) {
         ptt4 = CONST_ADDR_TRANS4(t);
-        for (i = LEN_LIST(l); i >= 1; i--) {
-            val = ELM_LIST(l, i);
+        for (i = LEN_LIST(list); i >= 1; i--) {
+            val = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(val)) {
                 ErrorQuit(
-                    "the entries of the first argument must be positive "
-                    "integers (not a %s)",
+                    "<list> must be a list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(val), 0L);
             }
             j = INT_INTOBJ(val);
@@ -1554,23 +1543,21 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj l, Obj t)
             val = ELM_LIST(t, i);
             if (!IS_POS_INTOBJ(val)) {
                 ErrorQuit(
-                    "the second argument must consist of positive integers "
-                    "(not a %s)",
+                    "<t> must be a list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(val), 0L);
             }
             else if (INT_INTOBJ(val) > n) {
                 ErrorQuit(
-                    "the second argument must consist of positive integers "
+                    "<t> must be a list of positive small integers "
                     "in the range [1 .. %d]",
                     (Int)n, 0L);
             }
         }
-        for (i = LEN_LIST(l); i >= 1; i--) {
-            val = ELM_LIST(l, i);
+        for (i = LEN_LIST(list); i >= 1; i--) {
+            val = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(val)) {
                 ErrorQuit(
-                    "the entries of the first argument must be positive "
-                    "integers (not a %s)",
+                    "<list> must be a list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(val), 0L);
             }
             j = INT_INTOBJ(val);
@@ -1654,15 +1641,14 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
     UInt    deg, i, j, rank, len;
     Obj     out;
 
-    assert(IS_LIST(ker));
-    assert(IS_INTOBJ(n));
+    RequireSmallList("ON_KERNEL_ANTI_ACTION", ker);
+    RequireTransformation("ON_KERNEL_ANTI_ACTION", f);
+    RequireNonnegativeSmallInt("ON_KERNEL_ANTI_ACTION", n);
 
     len = LEN_LIST(ker);
     if (len == 1 && INT_INTOBJ(ELM_LIST(ker, 1)) == 0) {
         return FuncFLAT_KERNEL_TRANS_INT(self, f, n);
     }
-
-    RequireTransformation("ON_KERNEL_ANTI_ACTION", f);
 
     rank = 1;
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
@@ -2084,12 +2070,7 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
     UInt4 *ptg4;
     Obj    g, j;
 
-    if (!IS_LIST(list)) {
-        ErrorQuit(
-            "RestrictedTransformation: the second argument must be a list "
-            "(not a %s)",
-            (Int)TNAM_OBJ(list), 0L);
-    }
+    RequireSmallList("RestrictedTransformation", list);
 
     len = LEN_LIST(list);
 
@@ -3072,10 +3053,7 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     Obj     out, comp, list_i;
 
     RequireTransformation("CYCLES_TRANS_LIST", f);
-    if (!IS_LIST(list)) {
-        ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a list (not a %s)",
-                  (Int)TNAM_OBJ(f), 0L);
-    }
+    RequireSmallList("CYCLES_TRANS_LIST", list);
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
@@ -3094,7 +3072,7 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
             list_i = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(list_i)) {
-                ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
+                ErrorQuit("CYCLES_TRANS_LIST: <list> must be a "
                           "list of positive integer (not a %s)",
                           (Int)TNAM_OBJ(list_i), 0L);
             }
@@ -3141,8 +3119,8 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
             list_i = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(list_i)) {
-                ErrorQuit("CYCLES_TRANS_LIST: the second argument must be a "
-                          "list of positive integers (not a %s)",
+                ErrorQuit("CYCLES_TRANS_LIST: <list> must be a "
+                          "list of positive small integers (not a %s)",
                           (Int)TNAM_OBJ(list_i), 0L);
             }
             j = INT_INTOBJ(list_i) - 1;
@@ -4423,7 +4401,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(RestrictedTransformation, f, list),
     GVAR_FUNC_2ARGS(AS_TRANS_TRANS, f, m),
     GVAR_FUNC_2ARGS(TRIM_TRANS, f, m),
-    GVAR_FUNC_2ARGS(IsInjectiveListTrans, t, l),
+    GVAR_FUNC_2ARGS(IsInjectiveListTrans, list, t),
     GVAR_FUNC_2ARGS(PermLeftQuoTransformationNC, f, g),
     GVAR_FUNC_2ARGS(TRANS_IMG_KER_NC, img, ker),
     GVAR_FUNC_2ARGS(IDEM_IMG_KER_NC, img, ker),

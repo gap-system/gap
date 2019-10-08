@@ -50,7 +50,7 @@ gap> f(1,2);
 rec( 1 := 2 )
 gap> f(fail,2);
 Error, Record: '<rec>.(<obj>)' <obj> must be a string or a small integer (not \
-a boolean or fail)
+the value 'fail')
 
 # PrintBinop
 gap> Display(x-> (-2)^x);

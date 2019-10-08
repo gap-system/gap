@@ -197,10 +197,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
     Int                 i, j;           /* loop variables                  */
 
     /* check the arguments a bit                                           */
-    if ( ! IS_SMALL_LIST(table) ) {
-        ErrorMayQuit("SCTableProduct: <table> must be a list (not a %s)",
-                     (Int)TNAM_OBJ(table), 0);
-    }
+    RequireSmallList("SCTableProduct", table);
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
         ErrorMayQuit(
