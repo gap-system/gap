@@ -1127,7 +1127,7 @@ true
 gap> POW_KER_PERM([1, 2], 1);
 Error, POW_KER_TRANS: <p> must be a permutation (not the integer 1)
 gap> POW_KER_PERM(1, 2);
-Error, Length: <list> must be a list (not the integer 1)
+Error, POW_KER_TRANS: <p> must be a permutation (not the integer 2)
 gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 1, 2], p)); 
 [ [ 1, 1, 2 ], [ 1, 2, 1 ], [ 1, 2, 2 ] ]
 gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 2, 3], p)); 
@@ -2724,9 +2724,9 @@ gap> OnPosIntSetsTrans([0],
 gap> OnPosIntSetsTrans([1], "a", 20);
 Error, OnPosIntSetsTrans: <f> must be a transformation (not a list (string))
 gap> OnPosIntSetsTrans([0], "a", 20);
-Error, IMAGE_SET_TRANS_INT: <f> must be a transformation (not a list (string))
+Error, OnPosIntSetsTrans: <f> must be a transformation (not a list (string))
 gap> OnPosIntSetsTrans(1, "a", 20);
-Error, Length: <list> must be a list (not the integer 1)
+Error, OnPosIntSetsTrans: <f> must be a transformation (not a list (string))
 
 # MarkSubbags2
 gap> f := Transformation([2, 2, 4, 2, 8, 5, 10, 10, 4, 3, 9, 9]);;
