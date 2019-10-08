@@ -751,15 +751,15 @@ true
 gap> IsInjectiveListTrans(1, f);
 Error, IsInjectiveListTrans: <list> must be a small list (not the integer 1)
 gap> IsInjectiveListTrans([1], 1);
-Error, IsInjectiveListTrans: <t> must be a transformation or a list (not the i\
-nteger 1)
+Error, IsInjectiveListTrans: <obj> must be a transformation or a list (not the\
+ integer 1)
 gap> IsInjectiveListTrans([1, 2], "def");
-Error, <t> must be a list of positive small integers (not a character)
+Error, <obj> must be a list of positive small integers (not a character)
 gap> IsInjectiveListTrans(ID_TRANS4, "def");
 Error, IsInjectiveListTrans: <list> must be a small list (not a transformation\
  (large))
 gap> IsInjectiveListTrans([1, 2], [2,3]);
-Error, <t> must be a list of positive small integers in the range [1 .. 2]
+Error, <obj> must be a list of positive small integers in the range [1 .. 2]
 gap> IsInjectiveListTrans([1, []], f);
 Error, <list> must be a list of positive small integers (not a empty plain lis\
 t)
