@@ -1482,10 +1482,10 @@ static Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
 ** GAP level functions for regularity of transformations
 *******************************************************************************/
 
-// Returns True if the transformation or list <t> is injective on the list
+// Returns True if the transformation or list <obj> is injective on the list
 // <list>.
 
-static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj t)
+static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
 {
     UInt    n, i, j;
     const UInt2 * ptt2;
@@ -1494,15 +1494,15 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj t)
     Obj     val;
 
     RequireSmallList("IsInjectiveListTrans", list);
-    if (!IS_TRANS(t) && !IS_LIST(t)) {
-        RequireArgument("IsInjectiveListTrans", t, "must be a transformation or a list");
+    if (!IS_TRANS(obj) && !IS_LIST(obj)) {
+        RequireArgument("IsInjectiveListTrans", obj, "must be a transformation or a list");
     }
     // init buffer
-    n = (IS_TRANS(t) ? DEG_TRANS(t) : LEN_LIST(t));
+    n = (IS_TRANS(obj) ? DEG_TRANS(obj) : LEN_LIST(obj));
     pttmp = ResizeInitTmpTrans(n);
 
-    if (TNUM_OBJ(t) == T_TRANS2) {
-        ptt2 = CONST_ADDR_TRANS2(t);
+    if (TNUM_OBJ(obj) == T_TRANS2) {
+        ptt2 = CONST_ADDR_TRANS2(obj);
         for (i = LEN_LIST(list); i >= 1; i--) {
             val = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(val)) {
@@ -1519,8 +1519,8 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj t)
             }
         }
     }
-    else if (TNUM_OBJ(t) == T_TRANS4) {
-        ptt4 = CONST_ADDR_TRANS4(t);
+    else if (TNUM_OBJ(obj) == T_TRANS4) {
+        ptt4 = CONST_ADDR_TRANS4(obj);
         for (i = LEN_LIST(list); i >= 1; i--) {
             val = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(val)) {
@@ -1538,17 +1538,17 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj t)
         }
     }
     else {
-        // t is a list, first we check it describes a transformation
+        // obj is a list, first we check it describes a transformation
         for (i = 1; i <= n; i++) {
-            val = ELM_LIST(t, i);
+            val = ELM_LIST(obj, i);
             if (!IS_POS_INTOBJ(val)) {
                 ErrorQuit(
-                    "<t> must be a list of positive small integers (not a %s)",
+                    "<obj> must be a list of positive small integers (not a %s)",
                     (Int)TNAM_OBJ(val), 0L);
             }
             else if (INT_INTOBJ(val) > n) {
                 ErrorQuit(
-                    "<t> must be a list of positive small integers "
+                    "<obj> must be a list of positive small integers "
                     "in the range [1 .. %d]",
                     (Int)n, 0L);
             }
@@ -1562,10 +1562,10 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj t)
             }
             j = INT_INTOBJ(val);
             if (j <= n) {
-                if (pttmp[INT_INTOBJ(ELM_LIST(t, j)) - 1] != 0) {
+                if (pttmp[INT_INTOBJ(ELM_LIST(obj, j)) - 1] != 0) {
                     return False;
                 }
-                pttmp[INT_INTOBJ(ELM_LIST(t, j)) - 1] = 1;
+                pttmp[INT_INTOBJ(ELM_LIST(obj, j)) - 1] = 1;
             }
         }
     }
@@ -4401,7 +4401,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(RestrictedTransformation, f, list),
     GVAR_FUNC_2ARGS(AS_TRANS_TRANS, f, m),
     GVAR_FUNC_2ARGS(TRIM_TRANS, f, m),
-    GVAR_FUNC_2ARGS(IsInjectiveListTrans, list, t),
+    GVAR_FUNC_2ARGS(IsInjectiveListTrans, list, obj),
     GVAR_FUNC_2ARGS(PermLeftQuoTransformationNC, f, g),
     GVAR_FUNC_2ARGS(TRANS_IMG_KER_NC, img, ker),
     GVAR_FUNC_2ARGS(IDEM_IMG_KER_NC, img, ker),
