@@ -343,6 +343,13 @@ static UInt INIT_TRANS4(Obj f)
     return rank;
 }
 
+static UInt INIT_TRANS(Obj f)
+{
+   return (TNUM_OBJ(f) == T_TRANS2) ? INIT_TRANS2(f) : INIT_TRANS4(f);
+
+}
+
+
 UInt RANK_TRANS2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_TRANS2);
@@ -435,8 +442,7 @@ static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
     for (i = LEN_LIST(src); 1 <= i; i--) {
         if (!IS_INTOBJ(ELM_LIST(src, i))) {
             ErrorQuit("TransformationListListNC: <src>[%d] must be a small "
-                      "integer (not a "
-                      "%s)",
+                      "integer (not a %s)",
                       (Int)i, (Int)TNAM_OBJ(ELM_LIST(src, i)));
         }
         s = INT_INTOBJ(ELM_LIST(src, i));
@@ -448,8 +454,7 @@ static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
 
         if (!IS_INTOBJ(ELM_LIST(ran, i))) {
             ErrorQuit("TransformationListListNC: <ran>[%d] must be a small "
-                      "integer (not a "
-                      "%s)",
+                      "integer (not a %s)",
                       (Int)i, (Int)TNAM_OBJ(ELM_LIST(ran, i)));
         }
         r = INT_INTOBJ(ELM_LIST(ran, i));
@@ -608,19 +613,10 @@ static Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
     Obj  ker, img;
     UInt rank, n, i;
 
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        rank = RANK_TRANS2(f);
-        ker = KER_TRANS(f);
-    }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        rank = RANK_TRANS4(f);
-        ker = KER_TRANS(f);
-    }
-    else {
-        RequireTransformation("LEFT_ONE_TRANS", f);
-        return 0L;
-    }
+    RequireTransformation("LEFT_ONE_TRANS", f);
 
+    rank = RANK_TRANS(f);
+    ker = KER_TRANS(f);
     img = NEW_PLIST(T_PLIST_CYC, rank);
     n = 1;
 
@@ -642,17 +638,9 @@ static Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
     Obj  ker, img;
     UInt deg, len, i, j, n;
 
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        deg = DEG_TRANS2(f);
-    }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        deg = DEG_TRANS4(f);
-    }
-    else {
-        RequireTransformation("RIGHT_ONE_TRANS", f);
-        return 0L;
-    }
+    RequireTransformation("RIGHT_ONE_TRANS", f);
 
+    deg = DEG_TRANS(f);
     img = FuncIMAGE_SET_TRANS(self, f);
     ker = NEW_PLIST(T_PLIST_CYC, deg);
     SET_LEN_PLIST(ker, deg);
@@ -682,9 +670,11 @@ static Obj FuncDegreeOfTransformation(Obj self, Obj f)
     const UInt2 * ptf2;
     const UInt4 * ptf4;
 
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        if (EXT_TRANS(f) == NULL) {
-            n = DEG_TRANS2(f);
+    RequireTransformation("DegreeOfTransformation", f);
+
+    if (EXT_TRANS(f) == NULL) {
+        n = DEG_TRANS(f);
+        if (TNUM_OBJ(f) == T_TRANS2) {
             ptf2 = CONST_ADDR_TRANS2(f);
             if (ptf2[n - 1] != n - 1) {
                 SET_EXT_TRANS(f, INTOBJ_INT(n));
@@ -702,11 +692,7 @@ static Obj FuncDegreeOfTransformation(Obj self, Obj f)
                 SET_EXT_TRANS(f, INTOBJ_INT(deg));
             }
         }
-        return EXT_TRANS(f);
-    }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        if (EXT_TRANS(f) == NULL) {
-            n = DEG_TRANS4(f);
+        else {
             ptf4 = CONST_ADDR_TRANS4(f);
             if (ptf4[n - 1] != n - 1) {
                 SET_EXT_TRANS(f, INTOBJ_INT(n));
@@ -724,10 +710,8 @@ static Obj FuncDegreeOfTransformation(Obj self, Obj f)
                 SET_EXT_TRANS(f, INTOBJ_INT(deg));
             }
         }
-        return EXT_TRANS(f);
     }
-    RequireTransformation("DegreeOfTransformation", f);
-    return 0L;
+    return EXT_TRANS(f);
 }
 
 // Returns the rank of transformation, i.e. number of distinct values in
@@ -735,16 +719,9 @@ static Obj FuncDegreeOfTransformation(Obj self, Obj f)
 
 static Obj FuncRANK_TRANS(Obj self, Obj f)
 {
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        return SumInt(INTOBJ_INT(RANK_TRANS2(f) - DEG_TRANS2(f)),
-                      FuncDegreeOfTransformation(self, f));
-    }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        return SumInt(INTOBJ_INT(RANK_TRANS4(f) - DEG_TRANS4(f)),
-                      FuncDegreeOfTransformation(self, f));
-    }
     RequireTransformation("RANK_TRANS", f);
-    return 0L;
+    return SumInt(INTOBJ_INT(RANK_TRANS(f) - DEG_TRANS(f)),
+                  FuncDegreeOfTransformation(self, f));
 }
 
 // Returns the rank of the transformation <f> on [1 .. n], i.e. the number of
@@ -752,50 +729,42 @@ static Obj FuncRANK_TRANS(Obj self, Obj f)
 
 static Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
 {
-    UInt    rank, i, m;
+    UInt    rank, i, m, deg;
     const UInt2 * ptf2;
     const UInt4 * ptf4;
     UInt4 * pttmp;
 
+    RequireTransformation("RANK_TRANS_INT", f);
     RequireNonnegativeSmallInt("RANK_TRANS_INT", n);
 
     m = INT_INTOBJ(n);
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        if (m >= DEG_TRANS2(f)) {
-            return INTOBJ_INT(RANK_TRANS2(f) - DEG_TRANS2(f) + m);
-        }
-        else {
-            pttmp = ResizeInitTmpTrans(DEG_TRANS2(f));
-            ptf2 = CONST_ADDR_TRANS2(f);
-            rank = 0;
-            for (i = 0; i < m; i++) {
-                if (pttmp[ptf2[i]] == 0) {
-                    rank++;
-                    pttmp[ptf2[i]] = 1;
-                }
+    deg = DEG_TRANS(f);
+    if (m >= deg) {
+        rank = RANK_TRANS(f) - deg + m;
+    }
+    else if (TNUM_OBJ(f) == T_TRANS2) {
+        pttmp = ResizeInitTmpTrans(deg);
+        ptf2 = CONST_ADDR_TRANS2(f);
+        rank = 0;
+        for (i = 0; i < m; i++) {
+            if (pttmp[ptf2[i]] == 0) {
+                rank++;
+                pttmp[ptf2[i]] = 1;
             }
-            return INTOBJ_INT(rank);
         }
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        if (m >= DEG_TRANS4(f)) {
-            return INTOBJ_INT(RANK_TRANS4(f) - DEG_TRANS4(f) + m);
-        }
-        else {
-            pttmp = ResizeInitTmpTrans(DEG_TRANS4(f));
-            ptf4 = CONST_ADDR_TRANS4(f);
-            rank = 0;
-            for (i = 0; i < m; i++) {
-                if (pttmp[ptf4[i]] == 0) {
-                    rank++;
-                    pttmp[ptf4[i]] = 1;
-                }
+    else {
+        pttmp = ResizeInitTmpTrans(deg);
+        ptf4 = CONST_ADDR_TRANS4(f);
+        rank = 0;
+        for (i = 0; i < m; i++) {
+            if (pttmp[ptf4[i]] == 0) {
+                rank++;
+                pttmp[ptf4[i]] = 1;
             }
-            return INTOBJ_INT(rank);
         }
     }
-    RequireTransformation("RANK_TRANS_INT", f);
-    return 0L;
+    return INTOBJ_INT(rank);
 }
 
 // Returns the rank of the transformation <f> on the <list>, i.e. the number
@@ -811,14 +780,15 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
     UInt4 * pttmp;
     Obj     pt;
 
+    RequireTransformation("RANK_TRANS_LIST", f);
     RequireSmallList("RANK_TRANS_LIST", list);
 
     len = LEN_LIST(list);
+    rank = 0;
     if (TNUM_OBJ(f) == T_TRANS2) {
         def = DEG_TRANS2(f);
         pttmp = ResizeInitTmpTrans(def);
         ptf2 = CONST_ADDR_TRANS2(f);
-        rank = 0;
         for (i = 1; i <= len; i++) {
             pt = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(pt)) {
@@ -839,13 +809,11 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
                 rank++;
             }
         }
-        return INTOBJ_INT(rank);
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         def = DEG_TRANS4(f);
         pttmp = ResizeInitTmpTrans(def);
         ptf4 = CONST_ADDR_TRANS4(f);
-        rank = 0;
         for (i = 1; i <= len; i++) {
             pt = ELM_LIST(list, i);
             if (!IS_POS_INTOBJ(pt)) {
@@ -866,11 +834,9 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
                 rank++;
             }
         }
-        return INTOBJ_INT(rank);
     }
 
-    RequireTransformation("RANK_TRANS_LIST", f);
-    return 0L;
+    return INTOBJ_INT(rank);
 }
 
 /*******************************************************************************
@@ -882,22 +848,12 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
 
 static Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
 {
-
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        if (KER_TRANS(f) == NULL) {
-            INIT_TRANS2(f);
-        }
-        return KER_TRANS(f);
-    }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        if (KER_TRANS(f) == NULL) {
-            INIT_TRANS4(f);
-        }
-        return KER_TRANS(f);
-    }
-
     RequireTransformation("FLAT_KERNEL_TRANS", f);
-    return 0L;
+
+    if (KER_TRANS(f) == NULL) {
+        INIT_TRANS(f);
+    }
+    return KER_TRANS(f);
 }
 
 // Returns the flat kernel of the transformation <f> on [1 .. n].
@@ -908,88 +864,44 @@ static Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
     const Obj *ptker;
     UInt deg, m, i;
 
+    RequireTransformation("FLAT_KERNEL_TRANS_INT", f);
     RequireNonnegativeSmallInt("FLAT_KERNEL_TRANS_INT", n);
 
     m = INT_INTOBJ(n);
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        if (KER_TRANS(f) == NULL) {
-            INIT_TRANS2(f);
-        }
-        deg = DEG_TRANS2(f);
-        if (m == deg) {
-            return KER_TRANS(f);
-        }
-        else if (m == 0) {
-            return NewEmptyPlist();
-        }
-        else {
-            newObj = NEW_PLIST(T_PLIST_CYC_NSORT, m);
-            SET_LEN_PLIST(newObj, m);
+    if (m == 0) {
+        return NewEmptyPlist();
+    }
+    if (KER_TRANS(f) == NULL) {
+        INIT_TRANS(f);
+    }
+    deg = DEG_TRANS(f);
+    if (m == deg) {
+        return KER_TRANS(f);
+    }
 
-            ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
-            ptnew = ADDR_OBJ(newObj) + 1;
+    newObj = NEW_PLIST(T_PLIST_CYC_NSORT, m);
+    SET_LEN_PLIST(newObj, m);
+    ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
+    ptnew = ADDR_OBJ(newObj) + 1;
 
-            // copy the kernel set up to minimum of m, deg
-            if (m < deg) {
-                for (i = 0; i < m; i++) {
-                    *ptnew++ = *ptker++;
-                }
-            }
-            else {
-                // m > deg
-                for (i = 0; i < deg; i++) {
-                    *ptnew++ = *ptker++;
-                }
-                // we must now add another (m - deg) points,
-                // starting with the class number (rank + 1)
-                for (i = 1; i <= m - deg; i++) {
-                    *ptnew++ = INTOBJ_INT(i + RANK_TRANS2(f));
-                }
-            }
-            return newObj;
+    // copy the kernel set up to minimum of m, deg
+    if (m < deg) {
+        for (i = 0; i < m; i++) {
+            *ptnew++ = *ptker++;
         }
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-
-        if (KER_TRANS(f) == NULL) {
-            INIT_TRANS4(f);
+    else {
+        // m > deg
+        for (i = 0; i < deg; i++) {
+            *ptnew++ = *ptker++;
         }
-        deg = DEG_TRANS4(f);
-        if (m == deg) {
-            return KER_TRANS(f);
-        }
-        else if (m == 0) {
-            return NewEmptyPlist();
-        }
-        else {
-            newObj = NEW_PLIST(T_PLIST_CYC_NSORT, m);
-            SET_LEN_PLIST(newObj, m);
-
-            ptker = CONST_ADDR_OBJ(KER_TRANS(f)) + 1;
-            ptnew = ADDR_OBJ(newObj) + 1;
-
-            // copy the kernel set up to minimum of m, deg
-            if (m < deg) {
-                for (i = 0; i < m; i++) {
-                    *ptnew++ = *ptker++;
-                }
-            }
-            else {
-                // m > deg
-                for (i = 0; i < deg; i++) {
-                    *ptnew++ = *ptker++;
-                }
-                // we must now add another (m - deg) points,
-                // starting with the class number (rank + 1)
-                for (i = 1; i <= m - deg; i++) {
-                    *ptnew++ = INTOBJ_INT(i + RANK_TRANS4(f));
-                }
-            }
-            return newObj;
+        // we must now add another (m - deg) points,
+        // starting with the class number (rank + 1)
+        for (i = 1; i <= m - deg; i++) {
+            *ptnew++ = INTOBJ_INT(i + RANK_TRANS(f));
         }
     }
-    RequireTransformation("FLAT_KERNEL_TRANS_INT", f);
-    return 0L;
+    return newObj;
 }
 
 // Returns the kernel of a transformation <f> as a partition of [1 .. n].
@@ -1007,8 +919,7 @@ static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
 
     // special case for the identity
     if (m == 0) {
-        ker = NewEmptyPlist();
-        return ker;
+        return NewEmptyPlist();
     }
 
     deg = DEG_TRANS(f);
@@ -1101,21 +1012,12 @@ static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
 
 static Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f)
 {
-
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        if (IMG_TRANS(f) == NULL) {
-            INIT_TRANS2(f);
-        }
-        return IMG_TRANS(f);
-    }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        if (IMG_TRANS(f) == NULL) {
-            INIT_TRANS4(f);
-        }
-        return IMG_TRANS(f);
-    }
     RequireTransformation("UNSORTED_IMAGE_SET_TRANS", f);
-    return 0L;
+
+    if (IMG_TRANS(f) == NULL) {
+        INIT_TRANS(f);
+    }
+    return IMG_TRANS(f);
 }
 
 // Returns the image set of the transformation f on [1 .. n] where n =
@@ -1264,6 +1166,8 @@ static Obj FuncIS_ID_TRANS(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt    deg, i;
 
+    RequireTransformation("IS_ID_TRANS", f);
+
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
@@ -1272,9 +1176,8 @@ static Obj FuncIS_ID_TRANS(Obj self, Obj f)
                 return False;
             }
         }
-        return True;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = 0; i < deg; i++) {
@@ -1282,10 +1185,8 @@ static Obj FuncIS_ID_TRANS(Obj self, Obj f)
                 return False;
             }
         }
-        return True;
     }
-    RequireTransformation("IS_ID_TRANS", f);
-    return 0L;
+    return True;
 }
 
 // Returns true if the transformation <f> is an idempotent and false if it is
@@ -1297,6 +1198,8 @@ static Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt    deg, i;
 
+    RequireTransformation("IS_IDEM_TRANS", f);
+
     if (TNUM_OBJ(f) == T_TRANS2) {
         deg = DEG_TRANS2(f);
         ptf2 = CONST_ADDR_TRANS2(f);
@@ -1305,9 +1208,8 @@ static Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
                 return False;
             }
         }
-        return True;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         deg = DEG_TRANS4(f);
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
@@ -1315,10 +1217,8 @@ static Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
                 return False;
             }
         }
-        return True;
     }
-    RequireTransformation("IS_IDEM_TRANS", f);
-    return 0L;
+    return True;
 }
 
 /*******************************************************************************
@@ -1677,7 +1577,7 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
             SET_ELM_PLIST(out, i + 1, INTOBJ_INT(pttmp[j]));
         }
     }
-    else /* if (TNUM_OBJ(f) == T_TRANS4) */ {
+    else {
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 0; i < deg; i++) {
             // <f> then <g> with ker(<g>) = <ker>
@@ -1843,12 +1743,13 @@ static Obj FuncAS_PERM_TRANS(Obj self, Obj f)
     UInt   deg, i;
     Obj    p;
 
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        deg = DEG_TRANS2(f);
-        if (RANK_TRANS2(f) != deg) {
-            return Fail;
-        }
+    RequireTransformation("AS_PERM_TRANS", f);
 
+    deg = DEG_TRANS(f);
+    if (RANK_TRANS(f) != deg) {
+        return Fail;
+    }
+    if (TNUM_OBJ(f) == T_TRANS2) {
         p = NEW_PERM2(deg);
         ptp2 = ADDR_PERM2(p);
         ptf2 = CONST_ADDR_TRANS2(f);
@@ -1856,14 +1757,8 @@ static Obj FuncAS_PERM_TRANS(Obj self, Obj f)
         for (i = 0; i < deg; i++) {
             ptp2[i] = ptf2[i];
         }
-        return p;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        deg = DEG_TRANS4(f);
-        if (RANK_TRANS4(f) != deg) {
-            return Fail;
-        }
-
+    else {
         p = NEW_PERM4(deg);
         ptp4 = ADDR_PERM4(p);
         ptf4 = CONST_ADDR_TRANS4(f);
@@ -1871,10 +1766,8 @@ static Obj FuncAS_PERM_TRANS(Obj self, Obj f)
         for (i = 0; i < deg; i++) {
             ptp4[i] = ptf4[i];
         }
-        return p;
     }
-    RequireTransformation("AS_PERM_TRANS", f);
-    return 0L;
+    return p;
 }
 
 // Returns the permutation of the image of the transformation <f> induced by
@@ -1889,10 +1782,11 @@ static Obj FuncPermutationOfImage(Obj self, Obj f)
     UInt   deg, rank, i, j;
     Obj    p, img;
 
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        rank = RANK_TRANS2(f);
-        deg = DEG_TRANS2(f);
+    RequireTransformation("PermutationOfImage", f);
 
+    rank = RANK_TRANS(f);
+    deg = DEG_TRANS(f);
+    if (TNUM_OBJ(f) == T_TRANS2) {
         p = NEW_PERM2(deg);
         ResizeTmpTrans(deg);
 
@@ -1915,12 +1809,8 @@ static Obj FuncPermutationOfImage(Obj self, Obj f)
             pttmp[ptf2[j]] = 1;
             ptp2[j] = ptf2[j];
         }
-        return p;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        rank = RANK_TRANS4(f);
-        deg = DEG_TRANS4(f);
-
+    else {
         p = NEW_PERM4(deg);
         ResizeTmpTrans(deg);
 
@@ -1943,10 +1833,8 @@ static Obj FuncPermutationOfImage(Obj self, Obj f)
             pttmp[ptf4[j]] = 1;
             ptp4[j] = ptf4[j];
         }
-        return p;
     }
-    RequireTransformation("PermutationOfImage", f);
-    return 0L;
+    return p;
 }
 
 // Returns the permutation of the im(f) induced by f ^ -1 * g under the
@@ -2070,6 +1958,7 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
     UInt4 *ptg4;
     Obj    g, j;
 
+    RequireTransformation("RestrictedTransformation", f);
     RequireSmallList("RestrictedTransformation", list);
 
     len = LEN_LIST(list);
@@ -2100,9 +1989,8 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
                 ptg2[k] = ptf2[k];
             }
         }
-        return g;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         deg = DEG_TRANS4(f);
         g = NEW_TRANS4(deg);
 
@@ -2128,10 +2016,8 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
                 ptg4[k] = ptf4[k];
             }
         }
-        return g;
     }
-    RequireTransformation("RestrictedTransformation", f);
-    return 0L;
+    return g;
 }
 
 // AsTransformation for a transformation <f> and a pos int <m> either
@@ -2151,16 +2037,17 @@ static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
     UInt   i, n, def;
     Obj    g;
 
+    RequireTransformation("AS_TRANS_TRANS", f);
     RequireNonnegativeSmallInt("AS_TRANS_TRANS", m);
 
     n = INT_INTOBJ(m);
 
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        def = DEG_TRANS2(f);
-        if (def <= n) {
-            return f;
-        }
+    def = DEG_TRANS(f);
+    if (def <= n) {
+        return f;
+    }
 
+    if (TNUM_OBJ(f) == T_TRANS2) {
         g = NEW_TRANS2(n);
         ptf2 = CONST_ADDR_TRANS2(f);
         ptg2 = ADDR_TRANS2(g);
@@ -2170,14 +2057,8 @@ static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
             }
             ptg2[i] = ptf2[i];
         }
-        return g;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
-        def = DEG_TRANS4(f);
-        if (def <= n) {
-            return f;
-        }
-
+    else {
         if (n > 65536) {
             // g is T_TRANS4
             g = NEW_TRANS4(n);
@@ -2203,10 +2084,8 @@ static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
                 ptg2[i] = (UInt2)ptf4[i];
             }
         }
-        return g;
     }
-    RequireTransformation("AS_TRANS_TRANS", f);
-    return 0L;
+    return g;
 }
 
 // Changes the transformation <f> in-place to reduce the degree to <m>.  It is
@@ -2218,6 +2097,7 @@ static Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
     UInt    deg, i;
     UInt4 * ptf;
 
+    RequireTransformation("TRIM_TRANS", f);
     RequireNonnegativeSmallInt("TRIM_TRANS", m);
 
     deg = INT_INTOBJ(m);
@@ -2225,18 +2105,13 @@ static Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
     if (TNUM_OBJ(f) == T_TRANS2) {
         // output is T_TRANS2
         if (deg > DEG_TRANS2(f)) {
-            return (Obj)0;
+            return 0;
         }
         ResizeBag(f, deg * sizeof(UInt2) + 3 * sizeof(Obj));
-        SET_IMG_TRANS(f, NULL);
-        SET_KER_TRANS(f, NULL);
-        SET_EXT_TRANS(f, NULL);
-        CHANGED_BAG(f);
-        return (Obj)0;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         if (deg > DEG_TRANS4(f)) {
-            return (Obj)0;
+            return 0;
         }
         if (deg > 65536UL) {
             // output is T_TRANS4
@@ -2251,15 +2126,14 @@ static Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
             RetypeBag(f, T_TRANS2);
             ResizeBag(f, deg * sizeof(UInt2) + 3 * sizeof(Obj));
         }
-        SET_IMG_TRANS(f, NULL);
-        SET_KER_TRANS(f, NULL);
-        SET_EXT_TRANS(f, NULL);
-        CHANGED_BAG(f);
-        return (Obj)0;
     }
 
-    RequireTransformation("TRIM_TRANS", f);
-    return 0L;
+    SET_IMG_TRANS(f, NULL);
+    SET_KER_TRANS(f, NULL);
+    SET_EXT_TRANS(f, NULL);
+    CHANGED_BAG(f);
+
+    return 0;
 }
 
 /*******************************************************************************
@@ -2305,6 +2179,8 @@ static Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt    i;
 
+    RequireTransformation("LARGEST_MOVED_PT_TRANS", f);
+
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         for (i = DEG_TRANS2(f); 1 <= i; i--) {
@@ -2312,19 +2188,16 @@ static Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
                 break;
             }
         }
-        return INTOBJ_INT(i);
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = DEG_TRANS4(f); 1 <= i; i--) {
             if (ptf4[i - 1] != i - 1) {
                 break;
             }
         }
-        return INTOBJ_INT(i);
     }
-    RequireTransformation("LARGEST_MOVED_PT_TRANS", f);
-    return 0L;
+    return INTOBJ_INT(i);
 }
 
 // Returns the largest value in [(1)f .. (n)f] where n = LargestMovedPoint(f).
@@ -2335,6 +2208,7 @@ static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt    i, max, def;
 
+    RequireTransformation("LARGEST_IMAGE_PT", f);
     max = 0;
     if (TNUM_OBJ(f) == T_TRANS2) {
         def = DEG_TRANS2(f);
@@ -2352,9 +2226,8 @@ static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
                 }
             }
         }
-        return INTOBJ_INT(max);
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         def = DEG_TRANS4(f);
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = DEG_TRANS4(f); 1 <= i; i--) {
@@ -2369,10 +2242,8 @@ static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
                     break;
             }
         }
-        return INTOBJ_INT(max);
     }
-    RequireTransformation("LARGEST_IMAGE_PT", f);
-    return 0L;
+    return INTOBJ_INT(max);
 }
 
 // Returns the smallest value <i> such that (i)f <> i if it exists, and Fail
@@ -2461,6 +2332,8 @@ static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
     const UInt2 * ptf2;
     const UInt4 * ptf4;
 
+    RequireTransformation("NR_MOVED_PTS_TRANS", f);
+
     nr = 0;
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
@@ -2470,9 +2343,8 @@ static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
                 nr++;
             }
         }
-        return INTOBJ_INT(nr);
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = 0; i < deg; i++) {
@@ -2480,10 +2352,8 @@ static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
                 nr++;
             }
         }
-        return INTOBJ_INT(nr);
     }
-    RequireTransformation("NR_MOVED_PTS_TRANS", f);
-    return 0L;
+    return INTOBJ_INT(nr);
 }
 
 // Returns the set of values <i> in [1 .. n] such that (i)f <> i, where n =
@@ -3206,9 +3076,8 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
                 ptg2[ptf2[i]] = i;
             }
         }
-        return g;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         deg = DEG_TRANS4(f);
         g = NEW_TRANS4(deg);
         ptf4 = CONST_ADDR_TRANS4(f);
@@ -3231,9 +3100,8 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
                 ptg4[ptf4[i]] = i;
             }
         }
-        return g;
     }
-    return 0L;
+    return g;
 }
 
 // If ker(f) = ker(g), then TRANS_IMG_CONJ returns the permutation p
@@ -3407,6 +3275,8 @@ static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
     const UInt4 * ptp4;
     const UInt2 * ptp2;
 
+    RequirePermutation("POW_KER_TRANS", p);
+
     len = LEN_LIST(ker);
 
     if (len == 0) {
@@ -3451,17 +3321,8 @@ static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
                 ptlkp[i] = 0;
             }
         }
-
-        // form the flat kernel
-        for (i = 0; i < len; i++) {
-            if (ptlkp[ptcnj[i]] == 0) {
-                ptlkp[ptcnj[i]] = rank++;
-            }
-            SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptlkp[ptcnj[i]]));
-        }
-        return out;
     }
-    else if (TNUM_OBJ(p) == T_PERM4) {
+    else {
         dep = DEG_PERM4(p);
         ptp4 = CONST_ADDR_PERM4(p);
 
@@ -3488,18 +3349,16 @@ static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
                 ptlkp[i] = 0;
             }
         }
-
-        // form the flat kernel
-        for (i = 0; i < len; i++) {
-            if (ptlkp[ptcnj[i]] == 0) {
-                ptlkp[ptcnj[i]] = rank++;
-            }
-            SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptlkp[ptcnj[i]]));
-        }
-        return out;
     }
-    RequirePermutation("POW_KER_TRANS", p);
-    return 0L;
+
+    // form the flat kernel
+    for (i = 0; i < len; i++) {
+        if (ptlkp[ptcnj[i]] == 0) {
+            ptlkp[ptcnj[i]] = rank++;
+        }
+        SET_ELM_PLIST(out, i + 1, INTOBJ_INT(ptlkp[ptcnj[i]]));
+    }
+    return out;
 }
 
 // If <f> is a transformation and <X> is a flat kernel of a transformation,
@@ -3547,6 +3406,7 @@ static Obj INV_KER_TRANS(Obj X, Obj f)
 
 static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
 {
+    RequireTransformation("INV_KER_TRANS", f);
     UInt len = LEN_LIST(X);
 
     if (TNUM_OBJ(f) == T_TRANS2) {
@@ -3557,7 +3417,7 @@ static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             return INV_KER_TRANS<UInt2, UInt4>(X, f);
         }
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         if (len <= 65536) {
             return INV_KER_TRANS<UInt4, UInt2>(X, f);
         }
@@ -3565,8 +3425,6 @@ static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
             return INV_KER_TRANS<UInt4, UInt4>(X, f);
         }
     }
-    RequireTransformation("INV_KER_TRANS", f);
-    return 0L;
 }
 
 // Returns the same value as OnSets(set, f) except if set = [0], when the
@@ -3582,6 +3440,8 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
     UInt    deg;
     Obj *   ptres, res;
     UInt    i, k;
+
+    RequireTransformation("OnPosIntSetsTrans", f);
 
     const UInt len = LEN_LIST(set);
 
@@ -3619,12 +3479,8 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
             }
             *ptres = INTOBJ_INT(k);
         }
-        SortPlistByRawObj(res);
-        REMOVE_DUPS_PLIST_INTOBJ(res);
-        RetypeBagSM(res, T_PLIST_CYC_SSORT);
-        return res;
     }
-    else if (TNUM_OBJ(f) == T_TRANS4) {
+    else {
         ptf4 = CONST_ADDR_TRANS4(f);
         deg = DEG_TRANS4(f);
         for (i = len; 1 <= i; i--, ptset--, ptres--) {
@@ -3634,13 +3490,11 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
             }
             *ptres = INTOBJ_INT(k);
         }
-        SortPlistByRawObj(res);
-        REMOVE_DUPS_PLIST_INTOBJ(res);
-        RetypeBagSM(res, T_PLIST_CYC_SSORT);
-        return res;
     }
-    RequireTransformation("OnPosIntSetsTrans", f);
-    return 0L;
+    SortPlistByRawObj(res);
+    REMOVE_DUPS_PLIST_INTOBJ(res);
+    RetypeBagSM(res, T_PLIST_CYC_SSORT);
+    return res;
 }
 
 /*******************************************************************************
