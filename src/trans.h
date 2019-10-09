@@ -120,6 +120,14 @@ Obj OnSetsTrans(Obj set, Obj f);
 */
 Int HashFuncForTrans(Obj f);
 
+/****************************************************************************
+**
+*F  IMAGE_SET_TRANS_INT( <f>, <n>) . . .
+**
+**  Returns the image set of the transformation f on [1 .. n].
+*/
+
+Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n);
 
 /****************************************************************************
 **

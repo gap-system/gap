@@ -1038,7 +1038,7 @@ static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
 
 // Returns the image set of the transformation f on [1 .. n].
 
-static Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
+Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 {
     Obj     im, newObj;
     UInt    deg, m, len, i, j, rank;
@@ -3427,76 +3427,6 @@ static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
     }
 }
 
-// Returns the same value as OnSets(set, f) except if set = [0], when the
-// image
-// set of <f> on [1 .. n] is returned instead. If the argument <set> is not
-// [0], then the third argument is ignored.
-
-static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
-{
-    const UInt2 * ptf2;
-    const UInt4 * ptf4;
-    const Obj * ptset;
-    UInt    deg;
-    Obj *   ptres, res;
-    UInt    i, k;
-
-    RequireTransformation("OnPosIntSetsTrans", f);
-
-    const UInt len = LEN_LIST(set);
-
-    if (len == 0) {
-        return set;
-    }
-
-    if (len == 1 && INT_INTOBJ(ELM_LIST(set, 1)) == 0) {
-        return FuncIMAGE_SET_TRANS_INT(self, f, n);
-    }
-
-    if (IS_PLIST(set)) {
-        res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT, len);
-        SET_LEN_PLIST(res, len);
-    }
-    else {
-        // input is not a plain list, so we make a copy of it, and then also reuse
-        // that copy for our output
-        res = PLAIN_LIST_COPY(set);
-        if (!IS_MUTABLE_OBJ(set))
-            MakeImmutableNoRecurse(res);
-        set = res;
-    }
-
-    ptset = CONST_ADDR_OBJ(set) + len;
-    ptres = ADDR_OBJ(res) + len;
-
-    if (TNUM_OBJ(f) == T_TRANS2) {
-        ptf2 = CONST_ADDR_TRANS2(f);
-        deg = DEG_TRANS2(f);
-        for (i = len; 1 <= i; i--, ptset--, ptres--) {
-            k = INT_INTOBJ(*ptset);
-            if (k <= deg) {
-                k = ptf2[k - 1] + 1;
-            }
-            *ptres = INTOBJ_INT(k);
-        }
-    }
-    else {
-        ptf4 = CONST_ADDR_TRANS4(f);
-        deg = DEG_TRANS4(f);
-        for (i = len; 1 <= i; i--, ptset--, ptres--) {
-            k = INT_INTOBJ(*ptset);
-            if (k <= deg) {
-                k = ptf4[k - 1] + 1;
-            }
-            *ptres = INTOBJ_INT(k);
-        }
-    }
-    SortPlistByRawObj(res);
-    REMOVE_DUPS_PLIST_INTOBJ(res);
-    RetypeBagSM(res, T_PLIST_CYC_SSORT);
-    return res;
-}
-
 /*******************************************************************************
  *******************************************************************************
  * GAP kernel functions for transformations
@@ -4278,7 +4208,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(CYCLES_TRANS_LIST, f, pt),
     GVAR_FUNC_1ARGS(LEFT_ONE_TRANS, f),
     GVAR_FUNC_1ARGS(RIGHT_ONE_TRANS, f),
-    GVAR_FUNC_3ARGS(OnPosIntSetsTrans, set, f, n),
     { 0, 0, 0, 0, 0 }
 
 };
