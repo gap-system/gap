@@ -1004,9 +1004,10 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
     Obj                 tmp;            /* temporary                       */
 
     /* check the type of the first argument                                */
-    if (!IS_SMALL_LIST(pair) || LEN_LIST(pair) != 2) {
-        ErrorMayQuit("OnPairs: <pair> must be a list of length 2 (not a %s)",
-                     (Int)TNAM_OBJ(pair), 0);
+    RequireSmallList("OnPairs", pair);
+    if (LEN_LIST(pair) != 2) {
+        ErrorMayQuit("OnPairs: <pair> must have length 2, not length %d",
+                     LEN_LIST(pair), 0);
     }
 
     /* create a new bag for the result                                     */

@@ -3249,8 +3249,8 @@ static Obj PowIntPPerm2(Obj i, Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
-    if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
-        ErrorQuit("usage: the first argument must be a positive integer,",
+    if (!IS_POS_INTOBJ(i)) {
+        ErrorQuit("usage: the first argument must be a positive small integer,",
                   0L, 0L);
     }
     return INTOBJ_INT(
@@ -3261,8 +3261,8 @@ static Obj PowIntPPerm4(Obj i, Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
-    if (!IS_INTOBJ(i) || INT_INTOBJ(i) <= 0) {
-        ErrorQuit("usage: the first argument must be a positive integer,",
+    if (!IS_POS_INTOBJ(i)) {
+        ErrorQuit("usage: the first argument must be a positive small integer,",
                   0L, 0L);
     }
     return INTOBJ_INT(

@@ -89,15 +89,37 @@ ngths are 0 and 1)
 
 #
 gap> OnPairs(fail,fail);
-Error, OnPairs: <pair> must be a list of length 2 (not a boolean or fail)
+Error, OnPairs: <pair> must be a small list (not the value 'fail')
+gap> OnPairs([1],fail);
+Error, OnPairs: <pair> must have length 2, not length 1
+gap> OnPairs([1,2], true);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+gap> OnPairs([1,2],(2,3));
+[ 1, 3 ]
 
 #
 gap> OnTuples(fail,fail);
 Error, OnTuples: <tuple> must be a small list (not the value 'fail')
+gap> OnTuples([],fail);
+[  ]
+gap> OnTuples([1,2], true);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+gap> OnTuples([1,2],(2,3));
+[ 1, 3 ]
 
 #
 gap> OnSets(fail,fail);
 Error, OnSets: <set> must be a set (not the value 'fail')
+gap> OnSets([2,1],fail);
+Error, OnSets: <set> must be a set (not a non-strictly-sorted plain list of cy\
+clotomics)
+gap> OnSets([1,2], true);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `^' on 2 arguments
+gap> OnSets([1,2],(2,3));
+[ 1, 3 ]
 gap> empty:=[];;
 gap> IsIdenticalObj(empty, OnSets(empty, ()));
 false

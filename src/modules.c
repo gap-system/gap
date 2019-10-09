@@ -217,9 +217,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     /* check the argument                                                  */
     RequireStringRep("LOAD_DYN", filename);
     if (!IS_INTOBJ(crc) && crc != False) {
-        ErrorMayQuit(
-            "LOAD_DYN: <crc> must be a small integer or 'false' (not a %s)",
-            (Int)TNAM_OBJ(crc), 0);
+        RequireArgument("LOAD_DYN", crc, "must be a small integer or 'false'");
     }
 
     /* try to read the module                                              */
@@ -293,9 +291,7 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     /* check the argument                                                  */
     RequireStringRep("LOAD_STAT", filename);
     if (!IS_INTOBJ(crc) && crc != False) {
-        ErrorMayQuit(
-            "LOAD_STAT: <crc> must be a small integer or 'false' (not a %s)",
-            (Int)TNAM_OBJ(crc), 0);
+        RequireArgument("LOAD_STAT", crc, "must be a small integer or 'false'");
     }
 
     /* try to find the module                                              */

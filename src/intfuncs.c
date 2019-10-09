@@ -602,9 +602,7 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
     GAP_ASSERT(IS_PLIST(args));
     GAP_ASSERT(LEN_PLIST(args) >= 1 && ELM_PLIST(args, 1));
     Obj widths = ELM_PLIST(args, 1);
-    if (!IS_LIST(widths))
-        ErrorMayQuit("Fields builder: first argument must be list of widths",
-                     0, 0);
+    RequireSmallList("MAKE_BITFIELDS", widths);
     UInt nfields = LEN_LIST(widths);
     if (LEN_PLIST(args) != nfields + 1)
         ErrorMayQuit(
@@ -618,8 +616,8 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
         x <<= INT_INTOBJ(y);
         GAP_ASSERT(ELM_PLIST(args, i + 1));
         Obj z = ELM_PLIST(args, i + 1);
-        if (!IS_INTOBJ(z))
-            ErrorMayQuit("Fields builder: values must be small integers", 0,
+        if (!IS_NONNEG_INTOBJ(z))
+            ErrorMayQuit("Fields builder: values must be non-negative small integers", 0,
                          0);
         GAP_ASSERT(INT_INTOBJ(z) < (1 << INT_INTOBJ(y)));
         x |= INT_INTOBJ(z);
@@ -630,15 +628,14 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
 
 static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 {
-    if (!IS_LIST(widths))
-        ErrorMayQuit("MAKE_BITFIELDS: widths must be a list", 0, 0);
+    RequireSmallList("MAKE_BITFIELDS", widths);
     UInt nfields = LEN_LIST(widths);
     UInt starts[nfields + 1];
     starts[0] = 0;
     for (UInt i = 1; i <= nfields; i++) {
         Obj o = ELM_LIST(widths, i);
-        if (!IS_INTOBJ(o))
-            ErrorMayQuit("MAKE_BITFIELDS: widths must be small integers", 0,
+        if (!IS_NONNEG_INTOBJ(o))
+            ErrorMayQuit("MAKE_BITFIELDS: widths must be non-negative small integers", 0,
                          0);
         UInt width = INT_INTOBJ(o);
         starts[i] = starts[i - 1] + width;

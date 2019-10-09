@@ -706,8 +706,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
   RequireSmallList("WindowCmd", args);
   tmp = ELM_LIST(args, 1);
   if (!IsStringConv(tmp)) {
-      ErrorMayQuit("WindowCmd: <cmd> must be a string (not a %s)",
-                   (Int)TNAM_OBJ(tmp), 0);
+      RequireArgumentEx("WindowCmd", tmp, "<cmd>", "must be a string");
   }
     if ( 3 != LEN_LIST(tmp) ) {
         ErrorMayQuit("WindowCmd: <cmd> must be a string of length 3", 0, 0);
