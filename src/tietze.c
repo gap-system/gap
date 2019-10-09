@@ -316,7 +316,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
         altered = 0;
 
         /* don't change a square relator defining a valid involution       */
-        if ( INT_INTOBJ( ptFlags[i] ) == 3 && leng == 2 &&
+        if (ptFlags[i] == INTOBJ_INT(3) && leng == 2 &&
             ptRel[1] == ptInvs[-INT_INTOBJ(ptRel[1])] ) {
             continue;  /*  loop over i  */
         }

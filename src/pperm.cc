@@ -398,7 +398,7 @@ static Obj FuncDensePartialPermNC(Obj self, Obj img)
 
     // remove trailing 0s
     deg = LEN_LIST(img);
-    while (deg > 0 && INT_INTOBJ(ELM_LIST(img, deg)) == 0)
+    while (deg > 0 && ELM_LIST(img, deg) == INTOBJ_INT(0))
         deg--;
 
     if (deg == 0)
@@ -3667,7 +3667,7 @@ static Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     if (LEN_LIST(set) == 0)
         return set;
 
-    if (LEN_LIST(set) == 1 && INT_INTOBJ(ELM_LIST(set, 1)) == 0) {
+    if (LEN_LIST(set) == 1 && ELM_LIST(set, 1) == INTOBJ_INT(0)) {
         return FuncIMAGE_SET_PPERM(self, f);
     }
 
