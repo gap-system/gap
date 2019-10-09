@@ -146,6 +146,33 @@ static inline UInt DEG_TRANS(Obj f)
                              "must be a transformation")
 
 
+/****************************************************************************
+**
+*F  GetPositiveListEntryEx, GetPositiveListEntry
+**
+**  Extract list[idx] and check that it is a positive small integer; if so,
+**  return that integer; otherwise raise an error.
+*/
+static Int GetPositiveListEntryEx(const char * funcname,
+                           Obj          list,
+                           Int          idx,
+                           const char * argname)
+{
+    Obj value = ELM_LIST(list, idx);
+    if (!IS_POS_INTOBJ(value)) {
+        char buf[1024];
+        snprintf(buf, sizeof(buf), "%s[%d]", argname, (int)idx);
+        buf[sizeof(buf) - 1] = '\0';
+        RequireArgumentEx(funcname, value, buf,
+                          "must be a positive small integer");
+    }
+    return INT_INTOBJ(value);
+}
+
+#define GetPositiveListEntry(funcname, list, idx)                            \
+    GetPositiveListEntryEx(funcname, list, idx, NICE_ARGNAME(list))
+
+
 static ModuleStateOffset TransStateOffset = -1;
 
 typedef struct {
@@ -440,29 +467,8 @@ static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
 
     deg = 0;
     for (i = LEN_LIST(src); 1 <= i; i--) {
-        if (!IS_INTOBJ(ELM_LIST(src, i))) {
-            ErrorQuit("TransformationListListNC: <src>[%d] must be a small "
-                      "integer (not a %s)",
-                      (Int)i, (Int)TNAM_OBJ(ELM_LIST(src, i)));
-        }
-        s = INT_INTOBJ(ELM_LIST(src, i));
-        if (s < 1) {
-            ErrorQuit(
-                "TransformationListListNC: <src>[%d] must be greater than 0",
-                (Int)i, 0L);
-        }
-
-        if (!IS_INTOBJ(ELM_LIST(ran, i))) {
-            ErrorQuit("TransformationListListNC: <ran>[%d] must be a small "
-                      "integer (not a %s)",
-                      (Int)i, (Int)TNAM_OBJ(ELM_LIST(ran, i)));
-        }
-        r = INT_INTOBJ(ELM_LIST(ran, i));
-        if (r < 1) {
-            ErrorQuit(
-                "TransformationListListNC: <ran>[%d] must be greater than 0",
-                (Int)i, 0L);
-        }
+        s = GetPositiveListEntry("TransformationListListNC", src, i);
+        r = GetPositiveListEntry("TransformationListListNC", ran, i);
 
         if (s != r) {
             if (s > deg) {
@@ -778,7 +784,6 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
     const UInt2 * ptf2;
     const UInt4 * ptf4;
     UInt4 * pttmp;
-    Obj     pt;
 
     RequireTransformation("RANK_TRANS_LIST", f);
     RequireSmallList("RANK_TRANS_LIST", list);
@@ -790,14 +795,7 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
         pttmp = ResizeInitTmpTrans(def);
         ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 1; i <= len; i++) {
-            pt = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(pt)) {
-                ErrorQuit(
-                    "RANK_TRANS_LIST: <list> must be a "
-                    "list of positive small integers (not a %s)",
-                    (Int)TNAM_OBJ(pt), 0L);
-            }
-            j = INT_INTOBJ(pt) - 1;
+            j = GetPositiveListEntry("RANK_TRANS_LIST", list, i) - 1;
             if (j < def) {
                 j = ptf2[j];
                 if (pttmp[j] == 0) {
@@ -815,14 +813,7 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
         pttmp = ResizeInitTmpTrans(def);
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 1; i <= len; i++) {
-            pt = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(pt)) {
-                ErrorQuit(
-                    "RANK_TRANS_LIST: <list> must be a "
-                    "list of positive small integers (not a %s)",
-                    (Int)TNAM_OBJ(pt), 0L);
-            }
-            j = INT_INTOBJ(pt) - 1;
+            j = GetPositiveListEntry("RANK_TRANS_LIST", list, i) - 1;
             if (j < def) {
                 j = ptf4[j];
                 if (pttmp[j] == 0) {
@@ -1391,7 +1382,6 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
     const UInt2 * ptt2;
     const UInt4 * ptt4;
     UInt4 * pttmp = 0L;
-    Obj     val;
 
     RequireSmallList("IsInjectiveListTrans", list);
     if (!IS_TRANS(obj) && !IS_LIST(obj)) {
@@ -1404,13 +1394,7 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
     if (TNUM_OBJ(obj) == T_TRANS2) {
         ptt2 = CONST_ADDR_TRANS2(obj);
         for (i = LEN_LIST(list); i >= 1; i--) {
-            val = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(val)) {
-                ErrorQuit(
-                    "<list> must be a list of positive small integers (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L);
-            }
-            j = INT_INTOBJ(val);
+            j = GetPositiveListEntry("IsInjectiveListTrans", list, i);
             if (j <= n) {
                 if (pttmp[ptt2[j - 1]] != 0) {
                     return False;
@@ -1422,13 +1406,7 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
     else if (TNUM_OBJ(obj) == T_TRANS4) {
         ptt4 = CONST_ADDR_TRANS4(obj);
         for (i = LEN_LIST(list); i >= 1; i--) {
-            val = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(val)) {
-                ErrorQuit(
-                    "<list> must be a list of positive small integers (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L);
-            }
-            j = INT_INTOBJ(val);
+            j = GetPositiveListEntry("IsInjectiveListTrans", list, i);
             if (j <= n) {
                 if (pttmp[ptt4[j - 1]] != 0) {
                     return False;
@@ -1440,13 +1418,8 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
     else {
         // obj is a list, first we check it describes a transformation
         for (i = 1; i <= n; i++) {
-            val = ELM_LIST(obj, i);
-            if (!IS_POS_INTOBJ(val)) {
-                ErrorQuit(
-                    "<obj> must be a list of positive small integers (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L);
-            }
-            else if (INT_INTOBJ(val) > n) {
+            j = GetPositiveListEntry("IsInjectiveListTrans", obj, i);
+            if (j > n) {
                 ErrorQuit(
                     "<obj> must be a list of positive small integers "
                     "in the range [1 .. %d]",
@@ -1454,13 +1427,7 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
             }
         }
         for (i = LEN_LIST(list); i >= 1; i--) {
-            val = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(val)) {
-                ErrorQuit(
-                    "<list> must be a list of positive small integers (not a %s)",
-                    (Int)TNAM_OBJ(val), 0L);
-            }
-            j = INT_INTOBJ(val);
+            j = GetPositiveListEntry("IsInjectiveListTrans", list, i);
             if (j <= n) {
                 if (pttmp[INT_INTOBJ(ELM_LIST(obj, j)) - 1] != 0) {
                     return False;
@@ -1956,7 +1923,7 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
     const UInt4 *ptf4;
     UInt2 *ptg2;
     UInt4 *ptg4;
-    Obj    g, j;
+    Obj    g;
 
     RequireTransformation("RestrictedTransformation", f);
     RequireSmallList("RestrictedTransformation", list);
@@ -1977,14 +1944,7 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 
         // g acts like f on list * /
         for (i = 0; i < len; i++) {
-            j = ELM_LIST(list, i + 1);
-            if (!IS_INTOBJ(j) || INT_INTOBJ(j) < 1) {
-                ErrorQuit(
-                    "RestrictedTransformation: <list>[%d] must be a positive "
-                    " integer (not a %s)",
-                    (Int)i + 1, (Int)TNAM_OBJ(j));
-            }
-            k = INT_INTOBJ(j) - 1;
+            k = GetPositiveListEntry("RestrictedTransformation", list, i + 1) - 1;
             if (k < deg) {
                 ptg2[k] = ptf2[k];
             }
@@ -2004,14 +1964,7 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 
         // g acts like f on list
         for (i = 0; i < len; i++) {
-            j = ELM_LIST(list, i + 1);
-            if (!IS_INTOBJ(j) || INT_INTOBJ(j) < 1) {
-                ErrorQuit(
-                    "RestrictedTransformation: <list>[%d] must be a positive "
-                    " integer (not a %s)",
-                    (Int)i + 1, (Int)TNAM_OBJ(j));
-            }
-            k = INT_INTOBJ(j) - 1;
+            k = GetPositiveListEntry("RestrictedTransformation", list, i + 1) - 1;
             if (k < deg) {
                 ptg4[k] = ptf4[k];
             }
@@ -2920,7 +2873,7 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     const UInt4 * ptf4;
     UInt4 * seen;
     UInt    deg, i, j, pt, nr;
-    Obj     out, comp, list_i;
+    Obj     out, comp;
 
     RequireTransformation("CYCLES_TRANS_LIST", f);
     RequireSmallList("CYCLES_TRANS_LIST", list);
@@ -2940,17 +2893,11 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
-            list_i = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(list_i)) {
-                ErrorQuit("CYCLES_TRANS_LIST: <list> must be a "
-                          "list of positive integer (not a %s)",
-                          (Int)TNAM_OBJ(list_i), 0L);
-            }
-            j = INT_INTOBJ(list_i) - 1;
+            j = GetPositiveListEntry("CYCLES_TRANS_LIST", list, i) - 1;
             if (j >= deg) {
                 comp = NEW_PLIST(T_PLIST_CYC, 1);
                 SET_LEN_PLIST(comp, 1);
-                SET_ELM_PLIST(comp, 1, list_i);
+                SET_ELM_PLIST(comp, 1, INTOBJ_INT(j + 1));
                 AssPlist(out, ++nr, comp);
                 seen = AddrTmpTrans();
                 ptf2 = CONST_ADDR_TRANS2(f);
@@ -2987,17 +2934,11 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
     else {
         ptf4 = CONST_ADDR_TRANS4(f);
         for (i = 1; i <= (UInt)LEN_LIST(list); i++) {
-            list_i = ELM_LIST(list, i);
-            if (!IS_POS_INTOBJ(list_i)) {
-                ErrorQuit("CYCLES_TRANS_LIST: <list> must be a "
-                          "list of positive small integers (not a %s)",
-                          (Int)TNAM_OBJ(list_i), 0L);
-            }
-            j = INT_INTOBJ(list_i) - 1;
+            j = GetPositiveListEntry("CYCLES_TRANS_LIST", list, i) - 1;
             if (j >= deg) {
                 comp = NEW_PLIST(T_PLIST_CYC, 1);
                 SET_LEN_PLIST(comp, 1);
-                SET_ELM_PLIST(comp, 1, list_i);
+                SET_ELM_PLIST(comp, 1, INTOBJ_INT(j + 1));
                 AssPlist(out, ++nr, comp);
                 seen = AddrTmpTrans();
                 ptf4 = CONST_ADDR_TRANS4(f);
@@ -3049,7 +2990,7 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
     UInt2 *ptg2;
     UInt4 *ptg4;
     UInt   deg, i, j;
-    Obj    g, k;
+    Obj    g;
 
     RequireDenseList("INV_LIST_TRANS", list);
     RequireTransformation("INV_LIST_TRANS", f);
@@ -3064,14 +3005,7 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
             ptg2[j] = j;
         }
         for (j = 1; j <= (UInt)LEN_LIST(list); j++) {
-            k = ELM_LIST(list, j);
-            if (!IS_POS_INTOBJ(k)) {
-                ErrorQuit(
-                    "INV_LIST_TRANS: <list>[%d] must be a positive small integer "
-                    "(not a %s)",
-                    (Int)j, (Int)TNAM_OBJ(k));
-            }
-            i = INT_INTOBJ(k) - 1;
+            i = GetPositiveListEntry("INV_LIST_TRANS", list, j) - 1;
             if (i < deg) {
                 ptg2[ptf2[i]] = i;
             }
@@ -3088,14 +3022,7 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
             ptg4[j] = j;
         }
         for (j = 1; j <= (UInt)LEN_LIST(list); j++) {
-            k = ELM_LIST(list, j);
-            if (!IS_POS_INTOBJ(k)) {
-                ErrorQuit(
-                    "INV_LIST_TRANS: <list>[%d] must be a positive small integer "
-                    "(not a %s)",
-                    (Int)j, (Int)TNAM_OBJ(k));
-            }
-            i = INT_INTOBJ(k) - 1;
+            i = GetPositiveListEntry("INV_LIST_TRANS", list, j) - 1;
             if (i < deg) {
                 ptg4[ptf4[i]] = i;
             }
