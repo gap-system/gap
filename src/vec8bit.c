@@ -2313,8 +2313,8 @@ static Obj FuncA_CLOSEST_VEC8BIT(
     UInt len;
     UInt q;
 
-    RequireSmallInt("A_CLOSEST_VEC8BIT", cnt, NICE_ARGNAME(cnt));
-    RequireSmallInt("A_CLOSEST_VEC8BIT", stop, NICE_ARGNAME(stop));
+    RequireNonnegativeSmallInt("A_CLOSEST_VEC8BIT", cnt);
+    RequireNonnegativeSmallInt("A_CLOSEST_VEC8BIT", stop);
 
     q = FIELD_VEC8BIT(vec);
     len = LEN_VEC8BIT(vec);
@@ -2353,8 +2353,8 @@ static Obj FuncA_CLOSEST_VEC8BIT_COORDS(
     Obj  res;
 
 
-    RequireSmallInt("A_CLOSEST_VEC8BIT_COORDS", cnt, NICE_ARGNAME(cnt));
-    RequireSmallInt("A_CLOSEST_VEC8BIT_COORDS", stop, NICE_ARGNAME(stop));
+    RequireNonnegativeSmallInt("A_CLOSEST_VEC8BIT_COORDS", cnt);
+    RequireNonnegativeSmallInt("A_CLOSEST_VEC8BIT_COORDS", stop);
 
     q = FIELD_VEC8BIT(vec);
     len = LEN_VEC8BIT(vec);
