@@ -32,15 +32,17 @@ gap> TransformationListListNC([1], [1, 2, 3]);
 Error, TransformationListListNC: <src> must have the same length as <ran> (len\
 gths are 1 and 3)
 gap> TransformationListListNC("abc", [1, 2, 3]);
-Error, TransformationListListNC: <src>[3] must be a small integer (not a chara\
-cter)
+Error, TransformationListListNC: <src>[3] must be a positive small integer (no\
+t a character)
 gap> TransformationListListNC([1, 2, 3], "abc");
-Error, TransformationListListNC: <ran>[3] must be a small integer (not a chara\
-cter)
+Error, TransformationListListNC: <ran>[3] must be a positive small integer (no\
+t a character)
 gap> TransformationListListNC([-1, 2, 3], [4, 5, 6]);
-Error, TransformationListListNC: <src>[1] must be greater than 0
+Error, TransformationListListNC: <src>[1] must be a positive small integer (no\
+t the integer -1)
 gap> TransformationListListNC([1, 2, 3], [4, -5, 6]);
-Error, TransformationListListNC: <ran>[2] must be greater than 0
+Error, TransformationListListNC: <ran>[2] must be a positive small integer (no\
+t the integer -5)
 gap> TransformationListListNC([1, 2, 3], [4, 5, 6]);
 Transformation( [ 4, 5, 6, 4, 5, 6 ] )
 gap> TransformationListListNC([1, 2, 3], [65536, 65536, 65536]);
@@ -109,11 +111,11 @@ gap> RANK_TRANS_INT(Transformation([65537], [1]), 10);
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), 2);
 Error, RANK_TRANS_LIST: <list> must be a small list (not the integer 2)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), "a");
-Error, RANK_TRANS_LIST: <list> must be a list of positive small integers (not \
-a character)
+Error, RANK_TRANS_LIST: <list>[1] must be a positive small integer (not a char\
+acter)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]) ^ (1, 65537), "a");
-Error, RANK_TRANS_LIST: <list> must be a list of positive small integers (not \
-a character)
+Error, RANK_TRANS_LIST: <list>[1] must be a positive small integer (not a char\
+acter)
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1]), [1, 3]);
 1
 gap> RANK_TRANS_LIST(Transformation([1, 2, 1, 5, 5]), [1 .. 10]);
@@ -582,18 +584,18 @@ Error, PermutationOfImage: <f> must be a transformation (not the integer 1)
 
 # Test RestrictedTransformation
 gap> RestrictedTransformation(IdentityTransformation, [1, -1]);
-Error, RestrictedTransformation: <list>[2] must be a positive  integer (not a \
-integer)
+Error, RestrictedTransformation: <list>[2] must be a positive small integer (n\
+ot the integer -1)
 gap> RestrictedTransformation(IdentityTransformation, "a");
-Error, RestrictedTransformation: <list>[1] must be a positive  integer (not a \
-character)
+Error, RestrictedTransformation: <list>[1] must be a positive small integer (n\
+ot a character)
 gap> RestrictedTransformation(IdentityTransformation, [1,, 3]);
 Error, List Element: <list>[2] must have an assigned value
 gap> RestrictedTransformation(IdentityTransformation, [1 .. 10]);
 IdentityTransformation
 gap> RestrictedTransformation(IdentityTransformation, [0]);
-Error, RestrictedTransformation: <list>[1] must be a positive  integer (not a \
-integer)
+Error, RestrictedTransformation: <list>[1] must be a positive small integer (n\
+ot the integer 0)
 gap> RestrictedTransformation(Transformation([1, 2, 1, 4, 5]), [1, 3, 5]);
 Transformation( [ 1, 2, 1 ] )
 gap> RestrictedTransformation(Transformation([2, 1, 1, 4, 5]), [1 .. 3]);
@@ -613,8 +615,8 @@ gap> RestrictedTransformation(Transformation([65537 .. 70000],
 <transformation on 65555 pts with rank 65536>
 gap> RestrictedTransformation(Transformation([65537 .. 70000], 
 >                                    [65537 .. 70000] * 0 + 1), [1, -1]);
-Error, RestrictedTransformation: <list>[2] must be a positive  integer (not a \
-integer)
+Error, RestrictedTransformation: <list>[2] must be a positive small integer (n\
+ot the integer -1)
 gap> RestrictedTransformation("a", [1 .. 10]);
 Error, RestrictedTransformation: <f> must be a transformation (not a list (str\
 ing))
@@ -754,21 +756,22 @@ gap> IsInjectiveListTrans([1], 1);
 Error, IsInjectiveListTrans: <obj> must be a transformation or a list (not the\
  integer 1)
 gap> IsInjectiveListTrans([1, 2], "def");
-Error, <obj> must be a list of positive small integers (not a character)
+Error, IsInjectiveListTrans: <obj>[1] must be a positive small integer (not a \
+character)
 gap> IsInjectiveListTrans(ID_TRANS4, "def");
 Error, IsInjectiveListTrans: <list> must be a small list (not a transformation\
  (large))
 gap> IsInjectiveListTrans([1, 2], [2,3]);
 Error, <obj> must be a list of positive small integers in the range [1 .. 2]
 gap> IsInjectiveListTrans([1, []], f);
-Error, <list> must be a list of positive small integers (not a empty plain lis\
-t)
+Error, IsInjectiveListTrans: <list>[2] must be a positive small integer (not a\
+n empty plain list)
 gap> IsInjectiveListTrans([1, []], [1, 2, 3]);
-Error, <list> must be a list of positive small integers (not a empty plain lis\
-t)
+Error, IsInjectiveListTrans: <list>[2] must be a positive small integer (not a\
+n empty plain list)
 gap> IsInjectiveListTrans([1, []], ID_TRANS4);
-Error, <list> must be a list of positive small integers (not a empty plain lis\
-t)
+Error, IsInjectiveListTrans: <list>[2] must be a positive small integer (not a\
+n empty plain list)
 
 # Test PermLeftQuoTransformationNC
 gap> f := Transformation([3, 8, 1, 9, 9, 4, 10, 5, 10, 6]);;
@@ -960,8 +963,8 @@ true
 gap> g := INV_LIST_TRANS([65536], f);
 IdentityTransformation
 gap> INV_LIST_TRANS([1, -1], f);
-Error, INV_LIST_TRANS: <list>[2] must be a positive small integer (not a integ\
-er)
+Error, INV_LIST_TRANS: <list>[2] must be a positive small integer (not the int\
+eger -1)
 gap> INV_LIST_TRANS("a", f);
 Error, INV_LIST_TRANS: <list>[1] must be a positive small integer (not a chara\
 cter)
@@ -970,8 +973,8 @@ Error, INV_LIST_TRANS: <list> must be a dense list (not the integer 0)
 gap> INV_LIST_TRANS([1, 2], "a");
 Error, INV_LIST_TRANS: <f> must be a transformation (not a list (string))
 gap> INV_LIST_TRANS([1, -1], Transformation([1], [65537]));
-Error, INV_LIST_TRANS: <list>[2] must be a positive small integer (not a integ\
-er)
+Error, INV_LIST_TRANS: <list>[2] must be a positive small integer (not the int\
+eger -1)
 
 # IndexPeriodOfTransformation
 gap> f := Transformation([4, 3, 8, 9, 3, 5, 8, 10, 5, 6, 2, 8]);;
@@ -1705,19 +1708,19 @@ gap> CYCLES_TRANS_LIST(f, [65535 .. 70001]);
 gap> CYCLES_TRANS_LIST(f, [1, , 3]);
 Error, List Element: <list>[2] must have an assigned value
 gap> CYCLES_TRANS_LIST(f, [-1]);
-Error, CYCLES_TRANS_LIST: <list> must be a list of positive small integers (no\
-t a integer)
+Error, CYCLES_TRANS_LIST: <list>[1] must be a positive small integer (not the \
+integer -1)
 gap> CYCLES_TRANS_LIST(0, [1 .. 10]);
 Error, CYCLES_TRANS_LIST: <f> must be a transformation (not the integer 0)
 gap> CYCLES_TRANS_LIST(IdentityTransformation, "a");
-Error, CYCLES_TRANS_LIST: <list> must be a list of positive integer (not a cha\
-racter)
+Error, CYCLES_TRANS_LIST: <list>[1] must be a positive small integer (not a ch\
+aracter)
 gap> CYCLES_TRANS_LIST(IdentityTransformation, ());
 Error, CYCLES_TRANS_LIST: <list> must be a small list (not a permutation (smal\
 l))
 gap> CYCLES_TRANS_LIST(IdentityTransformation, [0, -1]);
-Error, CYCLES_TRANS_LIST: <list> must be a list of positive integer (not a int\
-eger)
+Error, CYCLES_TRANS_LIST: <list>[1] must be a positive small integer (not the \
+integer 0)
 
 # LEFT_ONE_TRANS
 gap> f := Transformation([7, 7, 7, 9, 5, 3, 9, 7, 5, 6]);;
