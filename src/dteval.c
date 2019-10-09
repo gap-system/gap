@@ -120,7 +120,7 @@ static Obj Evaluation(Obj vec, Obj xk, Obj power)
     UInt i, len;
     Obj  prod, help;
 
-    if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) > 0  &&  
+    if ( IS_POS_INTOBJ(power) &&  
          power < ELM_PLIST(vec, 6)     )
         return INTOBJ_INT(0);
     prod = BinomialInt(power, ELM_PLIST(vec, 6) );

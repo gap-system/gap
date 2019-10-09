@@ -1513,7 +1513,7 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
     RequireNonnegativeSmallInt("ON_KERNEL_ANTI_ACTION", n);
 
     len = LEN_LIST(ker);
-    if (len == 1 && INT_INTOBJ(ELM_LIST(ker, 1)) == 0) {
+    if (len == 1 && ELM_LIST(ker, 1) == INTOBJ_INT(0)) {
         return FuncFLAT_KERNEL_TRANS_INT(self, f, n);
     }
 
@@ -3376,7 +3376,7 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
         return set;
     }
 
-    if (len == 1 && INT_INTOBJ(ELM_LIST(set, 1)) == 0) {
+    if (len == 1 && ELM_LIST(set, 1) == INTOBJ_INT(0)) {
         return FuncIMAGE_SET_TRANS_INT(self, f, n);
     }
 

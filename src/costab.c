@@ -684,7 +684,7 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
                 (Int)TNAM_OBJ(ptTable[j]) );
         }
     }
-    if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
+    if (stan == INTOBJ_INT(1)) {
        /* use semilenlex standard                                          */
        nloop = nrgen;
     }
@@ -1828,7 +1828,7 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
     }
     objTable2 = table2;
     ptTabl2 = BASE_PTR_PLIST(objTable2) - 1;
-    if ( IS_INTOBJ(stan) && INT_INTOBJ(stan) == 1 ) {
+    if (stan == INTOBJ_INT(1)) {
        /* use semilenlex standard                                          */
        nloop = nrgen;
     }
