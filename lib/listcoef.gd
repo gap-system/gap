@@ -619,20 +619,20 @@ DeclareOperation("DistancesDistributionMatFFEVecFFE",
 
 #############################################################################
 ##
-#O  AClosestVectorCombinationsMatFFEVecFFE(<mat>,<f>,<vec>,<l>,<stop>)
-#O  AClosestVectorCombinationsMatFFEVecFFECoords(<mat>,<f>,<vec>,<l>,<stop>)
+#O  AClosestVectorCombinationsMatFFEVecFFE(<mat>,<f>,<vec>,<cnt>,<stop>)
+#O  AClosestVectorCombinationsMatFFEVecFFECoords(<mat>,<f>,<vec>,<cnt>,<stop>)
 ##
 ##  <#GAPDoc Label="AClosestVectorCombinationsMatFFEVecFFE">
 ##  <ManSection>
 ##  <Oper Name="AClosestVectorCombinationsMatFFEVecFFE"
-##   Arg='mat, f, vec, l, stop'/>
+##   Arg='mat, f, vec, cnt, stop'/>
 ##  <Oper Name="AClosestVectorCombinationsMatFFEVecFFECoords"
-##   Arg='mat, f, vec, l, stop'/>
+##   Arg='mat, f, vec, cnt, stop'/>
 ##
 ##  <Description>
 ##  These functions run through the <A>f</A>-linear combinations of the
 ##  vectors in the rows of the matrix <A>mat</A> that can be written as
-##  linear combinations of exactly <A>l</A> rows (that is without using
+##  linear combinations of exactly <A>cnt</A> rows (that is without using
 ##  zero as a coefficient). The length of the rows of <A>mat</A> and the
 ##  length of <A>vec</A> must be equal, and all elements must lie in the
 ##  field <A>f</A>.
@@ -645,7 +645,7 @@ DeclareOperation("DistancesDistributionMatFFEVecFFE",
 ##  <P/>
 ##  <Ref Oper="AClosestVectorCombinationsMatFFEVecFFECoords"/> returns a
 ##  length 2 list containing the same closest vector and also a vector
-##  <A>v</A> with exactly <A>l</A> non-zero entries,
+##  <A>v</A> with exactly <A>cnt</A> non-zero entries,
 ##  such that <A>v</A> times <A>mat</A> is the closest vector.
 ##  </Description>
 ##  </ManSection>

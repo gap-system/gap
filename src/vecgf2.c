@@ -3091,8 +3091,8 @@ static Obj FuncA_CLOS_VEC(
 
     len = LEN_GF2VEC(vec);
 
-    RequireSmallInt("A_CLOS_VEC", cnt, NICE_ARGNAME(cnt));
-    RequireSmallInt("A_CLOS_VEC", stop, NICE_ARGNAME(stop));
+    RequireNonnegativeSmallInt("A_CLOS_VEC", cnt);
+    RequireNonnegativeSmallInt("A_CLOS_VEC", stop);
 
     // get space for sum vector and zero out
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
@@ -3124,8 +3124,8 @@ static Obj FuncA_CLOS_VEC_COORDS(
     len = LEN_GF2VEC(vec);
     len2 = LEN_PLIST(veclis);
 
-    RequireSmallInt("A_CLOS_VEC_COORDS", cnt, NICE_ARGNAME(cnt));
-    RequireSmallInt("A_CLOS_VEC_COORDS", stop, NICE_ARGNAME(stop));
+    RequireNonnegativeSmallInt("A_CLOS_VEC_COORDS", cnt);
+    RequireNonnegativeSmallInt("A_CLOS_VEC_COORDS", stop);
 
     // get space for sum vector and zero out
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
