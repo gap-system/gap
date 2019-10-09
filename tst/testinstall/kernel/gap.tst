@@ -59,7 +59,7 @@ Error, WindowCmd: <args> must be a small list (not the value 'fail')
 gap> WindowCmd([]);
 Error, List Element: <list>[1] must have an assigned value
 gap> WindowCmd([fail]);
-Error, WindowCmd: <cmd> must be a string (not a boolean or fail)
+Error, WindowCmd: <cmd> must be a string (not the value 'fail')
 gap> WindowCmd([""]);
 Error, WindowCmd: <cmd> must be a string of length 3
 gap> WindowCmd(["abc",fail]);
@@ -118,15 +118,15 @@ gap> GAP_CRC("foobar");
 gap> LOAD_DYN(fail, fail);
 Error, LOAD_DYN: <filename> must be a string (not the value 'fail')
 gap> LOAD_DYN("foobar", fail);
-Error, LOAD_DYN: <crc> must be a small integer or 'false' (not a boolean or fa\
-il)
+Error, LOAD_DYN: <crc> must be a small integer or 'false' (not the value 'fail\
+')
 
 #
 gap> LOAD_STAT(fail, fail);
 Error, LOAD_STAT: <filename> must be a string (not the value 'fail')
 gap> LOAD_STAT("foobar", fail);
-Error, LOAD_STAT: <crc> must be a small integer or 'false' (not a boolean or f\
-ail)
+Error, LOAD_STAT: <crc> must be a small integer or 'false' (not the value 'fai\
+l')
 gap> LOAD_STAT("foobar", false);
 false
 

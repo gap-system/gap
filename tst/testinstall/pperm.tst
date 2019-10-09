@@ -3639,7 +3639,7 @@ gap> EMPTY_PPERM4 * PartialPermNC([1]);
 
 # PowIntPPerm2
 gap> (-1) ^ PartialPerm([1]);
-Error, usage: the first argument must be a positive integer,
+Error, usage: the first argument must be a positive small integer,
 gap> "a" ^ PartialPerm([1]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `^' on 2 arguments
@@ -3649,7 +3649,7 @@ Error, no 1st choice method found for `^' on 2 arguments
 
 # PowIntPPerm2
 gap> (-1) ^ PPerm4([1]);
-Error, usage: the first argument must be a positive integer,
+Error, usage: the first argument must be a positive small integer,
 gap> "a" ^ PPerm4([1]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `^' on 2 arguments

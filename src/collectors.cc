@@ -198,11 +198,8 @@ static Int VectorWord(Obj vv, Obj v, Int num)
     const UIntN * ptr;          /* pointer into the data area of <obj>     */
 
     /* <vv> must be a string                                               */
-    if ( TNUM_OBJ(vv) != T_STRING ) {
-        ErrorQuit( "collect vector must be a mutable string not a %s",
-                   (Int)TNAM_OBJ(vv), 0L );
-        return -1;
-    }
+    RequireStringRep("VectorWord", vv);
+    RequireMutable("VectorWord", vv, "string");
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(vv) != num*sizeof(Int)+sizeof(Obj)+1 ) {
@@ -624,11 +621,12 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
     rod = SC_RELATIVE_ORDERS(sc);
 
     /* <ww> must be a string                                               */
-    if ( TNUM_OBJ(ww) != T_STRING ) {
-        ErrorQuit( "collect vector must be a mutable string not a %s",
-                   (Int)TNAM_OBJ(ww), 0L );
-        return -1;
-    }
+    RequireStringRep("Solution", ww);
+    RequireMutable("Solution", ww, "string");
+
+    /* <uu> must be a string                                               */
+    RequireStringRep("Solution", uu);
+    RequireMutable("Solution", uu, "string");
 
     /* fix the length                                                      */
     if ( SIZE_OBJ(ww) != num*sizeof(Int)+sizeof(Obj)+1 ) {
@@ -637,13 +635,6 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
         qtr = (Int*)(ADDR_OBJ(ww)+1);
         for ( i = i+1;  i < num;  i++ )
             qtr[i] = 0;
-    }
-
-    /* <uu> must be a string                                               */
-    if ( TNUM_OBJ(uu) != T_STRING ) {
-        ErrorQuit( "collect vector must be a mutable string not a %s",
-                   (Int)TNAM_OBJ(uu), 0L );
-        return -1;
     }
 
     /* fix the length                                                      */

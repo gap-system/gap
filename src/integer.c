@@ -612,10 +612,9 @@ Int Int_ObjInt(Obj i)
     else if (TNUM_OBJ(i) == T_INTNEG)
         sign = 1;
     else
-        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
-                     (Int)TNAM_OBJ(i), 0);
+        RequireArgument("Conversion error", i, "must be an integer");
     if (SIZE_BAG(i) != sizeof(mp_limb_t))
-        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
 
     // now check if val is small enough to fit in the signed Int type
     // that has a range from -2^N to 2^N-1 so we need to check both ends
@@ -627,23 +626,22 @@ Int Int_ObjInt(Obj i)
 #else
     if ((!sign && (val > INT32_MAX)) || (sign && (val > (UInt)INT32_MIN)))
 #endif
-        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
     return sign ? -(Int)val : (Int)val;
 }
 
 UInt UInt_ObjInt(Obj i)
 {
     if (IS_NEG_INT(i))
-        ErrorMayQuit("Conversion error, cannot convert negative integer to unsigned type", 0, 0);
+        ErrorMayQuit("Conversion error: cannot convert negative integer to unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt)INT_INTOBJ(i);
     if (TNUM_OBJ(i) != T_INTPOS)
-        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
-                     (Int)TNAM_OBJ(i), 0);
+        RequireArgument("Conversion error", i, "must be a non-negative integer");
 
     // must be a single limb
     if (SIZE_INT(i) != 1)
-        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
     return VAL_LIMB0(i);
 }
 
@@ -662,12 +660,11 @@ Int8 Int8_ObjInt(Obj i)
     else if (TNUM_OBJ(i) == T_INTNEG)
         sign = 1;
     else
-        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
-                     (Int)TNAM_OBJ(i), 0);
+        RequireArgument("Conversion error", i, "must be an integer");
 
     // must be at most two limbs
     if (SIZE_INT(i) > 2)
-        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
     UInt  vall = VAL_LIMB0(i);
     UInt  valh = (SIZE_INT(i) == 1) ? 0 : CONST_ADDR_INT(i)[1];
     UInt8 val = (UInt8)vall + ((UInt8)valh << 32);
@@ -676,7 +673,7 @@ Int8 Int8_ObjInt(Obj i)
     // Since -2^63 is the same bit pattern as the UInt8 2^63 we can do it
     // this way which avoids some compiler warnings
     if ((!sign && (val > INT64_MAX)) || (sign && (val > (UInt8)INT64_MIN)))
-        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
     return sign ? -(Int8)val : (Int8)val;
 #endif
 }
@@ -688,14 +685,13 @@ UInt8 UInt8_ObjInt(Obj i)
     return UInt_ObjInt(i);
 #else
     if (IS_NEG_INT(i))
-        ErrorMayQuit("Conversion error, cannot convert negative integer to unsigned type", 0, 0);
+        ErrorMayQuit("Conversion error: cannot convert negative integer to unsigned type", 0, 0);
     if (IS_INTOBJ(i))
         return (UInt8)INT_INTOBJ(i);
     if (TNUM_OBJ(i) != T_INTPOS)
-        ErrorMayQuit("Conversion error, expecting an integer, not a %s",
-                     (Int)TNAM_OBJ(i), 0);
+        RequireArgument("Conversion error", i, "must be a non-negative integer");
     if (SIZE_INT(i) > 2)
-        ErrorMayQuit("Conversion error, integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
     UInt vall = VAL_LIMB0(i);
     UInt valh = (SIZE_INT(i) == 1) ? 0 : CONST_ADDR_INT(i)[1];
     return (UInt8)vall + ((UInt8)valh << 32);

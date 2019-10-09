@@ -1001,9 +1001,7 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
 {
     // check whether <list> is an 8bit vector
     if (!IS_VEC8BIT_REP(list)) {
-        ErrorMayQuit(
-            "PLAIN_VEC8BIT: <list> must be an 8bit vector (not a %s)",
-            (Int)TNAM_OBJ(list), 0);
+        RequireArgument("PLAIN_VEC8BIT", list, "must be an 8bit vector");
     }
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
         ErrorMayQuit("You cannot convert a locked vector compressed over "
@@ -2315,11 +2313,8 @@ static Obj FuncA_CLOSEST_VEC8BIT(
     UInt len;
     UInt q;
 
-    if (!ARE_INTOBJS(cnt, stop))
-        ErrorQuit("A_CLOSEST_VEC8BIT: cnt and stop must be small integers, "
-                  "not a %s and a %s",
-                  (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
-
+    RequireSmallInt("A_CLOSEST_VEC8BIT", cnt, NICE_ARGNAME(cnt));
+    RequireSmallInt("A_CLOSEST_VEC8BIT", stop, NICE_ARGNAME(stop));
 
     q = FIELD_VEC8BIT(vec);
     len = LEN_VEC8BIT(vec);
@@ -2357,11 +2352,9 @@ static Obj FuncA_CLOSEST_VEC8BIT_COORDS(
     Obj  bcoords;
     Obj  res;
 
-    if (!ARE_INTOBJS(cnt, stop))
-        ErrorQuit("A_CLOSEST_VEC8BIT: cnt and stop must be small integers, "
-                  "not a %s and a %s",
-                  (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
 
+    RequireSmallInt("A_CLOSEST_VEC8BIT_COORDS", cnt, NICE_ARGNAME(cnt));
+    RequireSmallInt("A_CLOSEST_VEC8BIT_COORDS", stop, NICE_ARGNAME(stop));
 
     q = FIELD_VEC8BIT(vec);
     len = LEN_VEC8BIT(vec);
@@ -2578,10 +2571,10 @@ static Obj FuncCOSET_LEADERS_INNER_8BITS(
 {
     Obj  v, w;
     UInt lenv, lenw, q;
-    if (!ARE_INTOBJS(weight, tofind))
-        ErrorQuit("COSET_LEADERS_INNER_8BITS: weight and tofind must be "
-                  "small integers, not a %s and a %s",
-                  (Int)TNAM_OBJ(weight), (Int)TNAM_OBJ(tofind));
+
+    RequireSmallInt("COSET_LEADERS_INNER_8BITS", weight, NICE_ARGNAME(weight));
+    RequireSmallInt("COSET_LEADERS_INNER_8BITS", tofind, NICE_ARGNAME(tofind));
+
     lenv = LEN_PLIST(veclis);
     q = LEN_PLIST(felts);
     v = ZeroVec8Bit(q, lenv, 1);
@@ -2760,14 +2753,10 @@ static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss)
     byte = 0;
     for (i = 1; i <= len; i++) {
         pos = ELM_PLIST(poss, i);
-        if (!IS_INTOBJ(pos))
+        if (!IS_POS_INTOBJ(pos))
             ErrorQuit("ELMS_VEC8BIT: positions list includes a %s, should "
-                      "all be small integers",
+                      "all be positive small integers",
                       (Int)TNAM_OBJ(pos), 0L);
-        if (pos <= INTOBJ_INT(0))
-            ErrorQuit(
-                "ELMS_VEC8BIT: positions list includes a non-positive number",
-                0L, 0L);
         p = INT_INTOBJ(pos);
         if (p > len2)
             ErrorQuit("ELMS_VEC8BIT: positions list includes index %d in a "
@@ -4686,10 +4675,9 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
         RewriteVec8Bit(vr, q0);
         q = q0;
     }
-    if (!ARE_INTOBJS(ll, lr))
-        ErrorQuit("PROD_COEFFS_VEC8BIT: both lengths must be small integers, "
-                  "not a %s and a %s",
-                  (Int)TNAM_OBJ(ll), (Int)TNAM_OBJ(lr));
+
+    RequireNonnegativeSmallInt("PROD_COEFFS_VEC8BIT", ll);
+    RequireNonnegativeSmallInt("PROD_COEFFS_VEC8BIT", lr);
     ll1 = INT_INTOBJ(ll);
     lr1 = INT_INTOBJ(lr);
     if (0 > ll1 || ll1 > LEN_VEC8BIT(vl))
@@ -4894,13 +4882,10 @@ static void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
 
 static Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT(Obj self, Obj vr, Obj lr)
 {
-    if (!IS_INTOBJ(lr))
-        ErrorQuit("ReduceCoeffs: Length of right argument must be a small "
-                  "integer, not a %s",
-                  (Int)TNAM_OBJ(lr), 0L);
-    if (INT_INTOBJ(lr) < 0 || INT_INTOBJ(lr) > LEN_VEC8BIT(vr)) {
+    RequireNonnegativeSmallInt("ReduceCoeffs", lr);
+    if (INT_INTOBJ(lr) > LEN_VEC8BIT(vr)) {
         ErrorQuit("ReduceCoeffs: given length <lr> of right argt (%d)\n is "
-                  "negative or longer than the argt (%d)",
+                  "longer than the argt (%d)",
                   INT_INTOBJ(lr), LEN_VEC8BIT(vr));
     }
     return MakeShiftedVecs(vr, INT_INTOBJ(lr));
@@ -4914,13 +4899,10 @@ static Obj FuncREDUCE_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
     q = FIELD_VEC8BIT(vl);
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
-    if (!IS_INTOBJ(ll))
-        ErrorQuit("ReduceCoeffs: Length of left argument must be a small "
-                  "integer, not a %s",
-                  (Int)TNAM_OBJ(ll), 0L);
-    if (0 > INT_INTOBJ(ll) || INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
+    RequireNonnegativeSmallInt("ReduceCoeffs", ll);
+    if (INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
         ErrorQuit("ReduceCoeffs: given length <ll> of left argt (%d)\n is "
-                  "negative or longer than the argt (%d)",
+                  "longer than the argt (%d)",
                   INT_INTOBJ(ll), LEN_VEC8BIT(vl));
     }
     ResizeVec8Bit(vl, INT_INTOBJ(ll), 0);
@@ -4941,13 +4923,10 @@ static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
     q = FIELD_VEC8BIT(vl);
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
-    if (!IS_INTOBJ(ll))
-        ErrorQuit("QuotRemCoeffs: Length of left argument must be a small "
-                  "integer, not a %s",
-                  (Int)TNAM_OBJ(ll), 0L);
-    if (0 > INT_INTOBJ(ll) || INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
+    RequireNonnegativeSmallInt("QuotRemCoeffs", ll);
+    if (INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
         ErrorQuit("QuotRemCoeffs: given length <ll> of left argt (%d)\n is "
-                  "negative or longer than the argt (%d)",
+                  "longer than the argt (%d)",
                   INT_INTOBJ(ll), LEN_VEC8BIT(vl));
     }
     ill = INT_INTOBJ(ll);

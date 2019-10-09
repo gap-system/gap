@@ -567,9 +567,7 @@ Obj             ValGVarTL (
 
 static Obj FuncIsThreadLocalGVar(Obj self, Obj name)
 {
-  if (!IsStringConv(name))
-    ErrorMayQuit("IsThreadLocalGVar: argument must be a string (not a %s)",
-                 (Int)TNAM_OBJ(name), 0L);
+    RequireStringRep("IsThreadLocalGVar", name);
 
   UInt gvar = GVarName(CONST_CSTR_STRING(name));
   return (VAL_GVAR_INTERN(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?

@@ -1928,13 +1928,9 @@ static Obj FuncAddAbelianRelator(Obj self,
     /* check the arguments                                                 */
     RequirePlainList(0, rels);
     ptRels = BASE_PTR_PLIST(rels) - 1;
-    if ( !IS_INTOBJ(number) ) {
-        ErrorQuit( "<number> must be a small integer (not a %s)",
-            (Int)TNAM_OBJ(number), 0L );
-    }
 
     /* get the length of the given relators list                           */
-    numrows = INT_INTOBJ(number);
+    numrows = GetPositiveSmallInt("AddAbelianRelator", number);
     if ( numrows < 1 || LEN_PLIST(rels) < numrows ) {
         ErrorQuit( "inconsistent relator number", 0L, 0L );
     }

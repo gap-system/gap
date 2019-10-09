@@ -2066,12 +2066,7 @@ static Obj FuncZERO_GF2VEC(Obj self, Obj mat)
 static Obj FuncZERO_GF2VEC_2(Obj self, Obj len)
 {
     Obj zero;
-
-    // create a new GF2 vector
-    if (!IS_INTOBJ(len))
-        ErrorMayQuit("ZERO_GF2VEC2: length must be a small integer, not a %s",
-                     (Int)TNAM_OBJ(len), 0L);
-
+    RequireNonnegativeSmallInt("ZERO_GF2VEC_2", len);
     NEW_GF2VEC(zero, TYPE_LIST_GF2VEC, INT_INTOBJ(len));
     return zero;
 }
@@ -3096,11 +3091,8 @@ static Obj FuncA_CLOS_VEC(
 
     len = LEN_GF2VEC(vec);
 
-    if (!ARE_INTOBJS(cnt, stop))
-        ErrorMayQuit("AClosVec: cnt and stop must be small integers, not a "
-                     "%s and a %s",
-                     (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
-
+    RequireSmallInt("A_CLOS_VEC", cnt, NICE_ARGNAME(cnt));
+    RequireSmallInt("A_CLOS_VEC", stop, NICE_ARGNAME(stop));
 
     // get space for sum vector and zero out
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
@@ -3132,11 +3124,8 @@ static Obj FuncA_CLOS_VEC_COORDS(
     len = LEN_GF2VEC(vec);
     len2 = LEN_PLIST(veclis);
 
-    if (!ARE_INTOBJS(cnt, stop))
-        ErrorMayQuit("AClosVec: cnt and stop must be small integers, not a "
-                     "%s and a %s",
-                     (Int)TNAM_OBJ(cnt), (Int)TNAM_OBJ(stop));
-
+    RequireSmallInt("A_CLOS_VEC_COORDS", cnt, NICE_ARGNAME(cnt));
+    RequireSmallInt("A_CLOS_VEC_COORDS", stop, NICE_ARGNAME(stop));
 
     // get space for sum vector and zero out
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
@@ -3239,10 +3228,8 @@ static Obj FuncCOSET_LEADERS_INNER_GF2(
     Obj  v, w;
     UInt lenv, lenw;
 
-    if (!ARE_INTOBJS(weight, tofind))
-        ErrorMayQuit("COSET_LEADERS_INNER_GF2: weight and tofind must be "
-                     "smal integers, not a %s and a %s",
-                     (Int)TNAM_OBJ(weight), (Int)TNAM_OBJ(tofind));
+    RequireSmallInt("COSET_LEADERS_INNER_GF2", weight, NICE_ARGNAME(weight));
+    RequireSmallInt("COSET_LEADERS_INNER_GF2", tofind, NICE_ARGNAME(tofind));
 
     lenv = LEN_PLIST(veclis);
     NEW_GF2VEC(v, TYPE_LIST_GF2VEC, lenv);
@@ -3611,10 +3598,9 @@ FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
     UInt len1a, len2a;
     Obj  prod;
     UInt last;
-    if (!ARE_INTOBJS(len1, len2))
-        ErrorMayQuit("PROD_COEFFS_GF2VEC: vector lengths must be small "
-                     "integers, not a %s and a %s",
-                     (Int)TNAM_OBJ(len1), (Int)TNAM_OBJ(len2));
+
+    RequireSmallInt("PROD_COEFFS_GF2VEC", len1, NICE_ARGNAME(len1));
+    RequireSmallInt("PROD_COEFFS_GF2VEC", len2, NICE_ARGNAME(len2));
     len2a = INT_INTOBJ(len2);
     if (len2a > LEN_GF2VEC(vec2))
         ErrorMayQuit("PROD_COEFFS_GF2VEC: <len2> must not be more than the "
@@ -4087,9 +4073,7 @@ FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
         BLOCK_ELM_GF2VEC(vec, c) &= ~MASK_POS_GF2VEC(c);
     }
     else {
-        ErrorMayQuit("SET_MAT_ELM_GF2MAT: assigned element must be a GF(2) "
-                     "element, not a %s",
-                     (Int)TNAM_OBJ(elm), 0L);
+        RequireArgumentEx("SET_MAT_ELM_GF2MAT", elm, 0, "assigned element must be a GF(2) element");
     }
 
     return 0;

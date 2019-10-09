@@ -76,7 +76,7 @@ DeclareGlobalFunction( "MakeBitfields" );
 ##  <Func Name="BuildBitfields" Arg='widths, vals...'/>
 ##  <Description>
 ##
-##  This function takes one or more argument. It's first argument is a list
+##  This function takes one or more argument. Its first argument is a list
 ##  of field widths, as found in the <C>widths</C> entry of a record returned
 ##  by <C>MakeBitfields</C>. The remaining arguments are unsigned integer
 ##  values, equal in number to the entries of the list of field widths. It returns
