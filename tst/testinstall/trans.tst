@@ -1174,8 +1174,7 @@ gap> h := f * g ^ 3 * f * g * f ^ 10;
 <transformation on 65537 pts with rank 65522>
 gap> ON_KERNEL_ANTI_ACTION(FlatKernelOfTransformation(g), h, 0)
 > = FlatKernelOfTransformation(h * g);
-Error, ON_KERNEL_ANTI_ACTION: the length of the first argument must be at leas\
-t 65537
+Error, ON_KERNEL_ANTI_ACTION: the length of <ker> must be at least 65537
 gap> ON_KERNEL_ANTI_ACTION([1 .. 10], 
 >                          Transformation([7, 1, 4, 3, 2, 7, 7, 6, 6, 5]), 0);
 [ 1, 2, 3, 4, 5, 1, 1, 6, 6, 7 ]
@@ -1193,8 +1192,7 @@ gap> ON_KERNEL_ANTI_ACTION([1 .. 15],
 [ 1, 2, 3, 4, 5, 1, 1, 6, 6, 7, 8, 9, 10, 11, 12 ]
 gap> ON_KERNEL_ANTI_ACTION([1 .. 5], 
 >                          Transformation([5, 1, 5, 3, 2, 7, 7, 6, 6, 5]), 0);
-Error, ON_KERNEL_ANTI_ACTION: the length of the first argument must be at leas\
-t 10
+Error, ON_KERNEL_ANTI_ACTION: the length of <ker> must be at least 10
 gap> ON_KERNEL_ANTI_ACTION([1 .. 5], IdentityTransformation, 0); 
 [ 1, 2, 3, 4, 5 ]
 gap> ON_KERNEL_ANTI_ACTION([1 .. 5], (), 0);

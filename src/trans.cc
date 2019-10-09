@@ -1520,8 +1520,8 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
     rank = 1;
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
     if (len < deg) {
-        ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of the first "
-                  "argument must be at least %d",
+        ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of <ker> "
+                  "must be at least %d",
                   (Int)deg, 0L);
     }
 

@@ -208,7 +208,7 @@ static Int LenListObject(Obj obj)
     len = AttrLENGTH( LengthAttr, obj );
     if (!IS_NONNEG_INTOBJ(len)) {
         RequireArgumentEx("Length", len, 0,
-                          "method must return a non-negative value");
+                          "method must return a non-negative small integer");
     }
     return INT_INTOBJ( len );
 }
