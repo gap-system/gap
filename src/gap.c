@@ -943,9 +943,9 @@ static Obj FuncGASMAN(Obj self, Obj args)
 
         /* otherwise complain                                              */
         else {
-            ErrorMayQuit("GASMAN: <cmd> must be %s or %s",
-                         (Int) "\"display\" or \"clear\" or \"global\" or ",
-                         (Int) "\"collect\" or \"partial\" or \"message\"");
+            ErrorMayQuit("GASMAN: <cmd> must be "
+                         "\"display\" or \"clear\" or \"global\" or "
+                         "\"collect\" or \"partial\" or \"message\"", 0, 0);
         }
 #endif // USE_GASMAN
     }
