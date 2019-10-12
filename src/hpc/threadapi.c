@@ -363,6 +363,28 @@ static Obj ArgumentError(const char * message)
     return 0;
 }
 
+
+static int GetThreadID(const char * funcname, Obj thread)
+{
+    if (IS_INTOBJ(thread)) {
+        Int id = INT_INTOBJ(thread);
+        if (0 <= id && id < MAX_THREADS)
+            return id;
+    }
+    else if (TNUM_OBJ(thread) == T_THREAD) {
+        return ThreadID(thread);
+    }
+
+
+#define AS_STRING(s) #s
+    const char *msg = "must be thread object or an integer between 0 and "
+                AS_STRING(MAX_THREADS-1);
+#undef AS_STRING
+    RequireArgumentEx(funcname, thread, NICE_ARGNAME(thread), msg);
+}
+
+
+
 /* TODO: register globals */
 static Obj             FirstKeepAlive;
 static Obj             LastKeepAlive;
@@ -538,17 +560,7 @@ static Obj FuncThreadID(Obj self, Obj thread)
 
 static Obj FuncKillThread(Obj self, Obj thread)
 {
-    int id;
-    if (IS_INTOBJ(thread)) {
-        id = INT_INTOBJ(thread);
-        if (id < 0 || id >= MAX_THREADS)
-            return ArgumentError("KillThread: Thread ID out of range");
-    }
-    else if (TNUM_OBJ(thread) == T_THREAD) {
-        id = ThreadID(thread);
-    }
-    else
-        return ArgumentError("KillThread: Argument must be a thread object");
+    int id = GetThreadID("KillThread", thread);
     KillThread(id);
     return (Obj)0;
 }
@@ -560,28 +572,10 @@ static Obj FuncKillThread(Obj self, Obj thread)
 **
 */
 
-#define AS_STRING(s) #s
-
-
 static Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
 {
-    int id;
-    if (IS_INTOBJ(thread)) {
-        id = INT_INTOBJ(thread);
-        if (id < 0 || id >= MAX_THREADS)
-            return ArgumentError("InterruptThread: Thread ID out of range");
-    }
-    else if (TNUM_OBJ(thread) == T_THREAD) {
-        id = ThreadID(thread);
-    }
-    else
-        return ArgumentError(
-            "InterruptThread: First argument must identify a thread");
-    if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 0 ||
-        INT_INTOBJ(handler) > MAX_INTERRUPT)
-        return ArgumentError(
-            "InterruptThread: Second argument must be an integer "
-            "between 0 and " AS_STRING(MAX_INTERRUPT));
+    int id = GetThreadID("InterruptThread", thread);
+    RequireBoundedInt("InterruptThread", handler, 0, MAX_INTERRUPT);
     InterruptThread(id, (int)(INT_INTOBJ(handler)));
     return (Obj)0;
 }
@@ -594,11 +588,7 @@ static Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
 
 static Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
 {
-    if (!IS_INTOBJ(handler) || INT_INTOBJ(handler) < 1 ||
-        INT_INTOBJ(handler) > MAX_INTERRUPT)
-        return ArgumentError(
-            "SetInterruptHandler: First argument must be an integer "
-            "between 1 and " AS_STRING(MAX_INTERRUPT));
+    RequireBoundedInt("SetInterruptHandler", handler, 0, MAX_INTERRUPT);
     if (func == Fail) {
         SetInterruptHandler((int)(INT_INTOBJ(handler)), (Obj)0);
         return (Obj)0;
@@ -611,8 +601,6 @@ static Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
     return (Obj)0;
 }
 
-#undef AS_STRING
-
 
 /****************************************************************************
 **
@@ -623,17 +611,7 @@ static Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
 
 static Obj FuncPauseThread(Obj self, Obj thread)
 {
-    int id;
-    if (IS_INTOBJ(thread)) {
-        id = INT_INTOBJ(thread);
-        if (id < 0 || id >= MAX_THREADS)
-            return ArgumentError("PauseThread: Thread ID out of range");
-    }
-    else if (TNUM_OBJ(thread) == T_THREAD) {
-        id = ThreadID(thread);
-    }
-    else
-        return ArgumentError("PauseThread: Argument must be a thread object");
+    int id = GetThreadID("PauseThread", thread);
     PauseThread(id);
     return (Obj)0;
 }
@@ -648,18 +626,7 @@ static Obj FuncPauseThread(Obj self, Obj thread)
 
 static Obj FuncResumeThread(Obj self, Obj thread)
 {
-    int id;
-    if (IS_INTOBJ(thread)) {
-        id = INT_INTOBJ(thread);
-        if (id < 0 || id >= MAX_THREADS)
-            return ArgumentError("ResumeThread: Thread ID out of range");
-    }
-    else if (TNUM_OBJ(thread) == T_THREAD) {
-        id = ThreadID(thread);
-    }
-    else
-        return ArgumentError(
-            "ResumeThread: Argument must be a thread object");
+    int id = GetThreadID("ResumeThread", thread);
     ResumeThread(id);
     return (Obj)0;
 }
@@ -692,10 +659,9 @@ static Obj FuncSetRegionName(Obj self, Obj obj, Obj name)
 {
     Region * region = GetRegionOf(obj);
     if (!region)
-        return ArgumentError(
+        ArgumentError(
             "SetRegionName: Cannot change name of the public region");
-    if (!IsStringConv(name))
-        return ArgumentError("SetRegionName: Region name must be a string");
+    RequireStringRep("SetRegionName", name);
     SetRegionName(region, name);
     return (Obj)0;
 }
@@ -704,7 +670,7 @@ static Obj FuncClearRegionName(Obj self, Obj obj)
 {
     Region * region = GetRegionOf(obj);
     if (!region)
-        return ArgumentError(
+        ArgumentError(
             "ClearRegionName: Cannot change name of the public region");
     SetRegionName(region, (Obj)0);
     return (Obj)0;
@@ -1373,7 +1339,7 @@ static Obj FuncCreateChannel(Obj self, Obj args)
             "CreateChannel: Argument must be capacity of the channel");
     default:
         return ArgumentError(
-            "CreateChannel: Function takes up to two arguments");
+            "CreateChannel: Function takes up to one argument");
     }
     return CreateChannel(capacity);
 }
@@ -1387,7 +1353,7 @@ static Obj FuncDestroyChannel(Obj self, Obj channel)
 {
     RequireChannel("DestroyChannel", channel);
     if (!DestroyChannel(ObjPtr(channel)))
-        return ArgumentError("DestroyChannel: Channel is in use");
+        ErrorQuit("DestroyChannel: Channel is in use", 0, 0);
     return (Obj)0;
 }
 
