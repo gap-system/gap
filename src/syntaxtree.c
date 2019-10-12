@@ -319,7 +319,7 @@ static Expr SyntaxTreeCodeRefLVar(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeRefLVar", node);
     Obj lvar = ElmRecST(EXPR_REF_LVAR, node, "lvar");
-    RequireSmallInt("SyntaxTreeCodeRefLVar", lvar, "<lvar>");
+    RequireSmallInt("SyntaxTreeCodeRefLVar", lvar);
     return REF_LVAR_LVAR(INT_INTOBJ(lvar));
 }
 
@@ -543,7 +543,8 @@ static Expr SyntaxTreeCodeImmediateInteger(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeImmediateInteger", node);
     Obj value = ElmRecST(EXPR_INT, node, "value");
-    RequireSmallInt("SyntaxTreeCodeImmediateInteger", value, "<node>.value");
+    RequireSmallIntEx("SyntaxTreeCodeImmediateInteger", value,
+                      "<node>.value");
     return INTEXPR_INT(INT_INTOBJ(value));
 }
 

@@ -71,12 +71,12 @@ static Obj TesterAndFilter(Obj getter);
     RequireArgumentCondition(funcname, op, TNUM_OBJ(op) == T_FLAGS,          \
                              "must be a flags list")
 
-#define RequireFilter(funcname, op, argname)                                                 \
-    RequireArgumentConditionEx(funcname, op, argname,          \
-                             IS_FILTER(op), "must be a filter")
+#define RequireFilter(funcname, op, argname)                                 \
+    RequireArgumentConditionEx(funcname, op, argname, IS_FILTER(op),         \
+                               "must be a filter")
 
 #define RequireOperation(op)                                                 \
-    RequireArgumentCondition(CSTR_STRING(NAME_FUNC(self)), op,               \
+    RequireArgumentCondition(CONST_CSTR_STRING(NAME_FUNC(self)), op,         \
                              IS_OPERATION(op), "must be an operation")
 
 

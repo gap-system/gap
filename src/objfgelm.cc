@@ -733,7 +733,7 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
     /* count the number of non-zero entries                                */
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
         vexp = ELMW_LIST(data,i);
-        RequireSmallInt("NBits_ObjByVector", vexp, "<vexp>");
+        RequireSmallInt("NBits_ObjByVector", vexp);
         if ( vexp != INTOBJ_INT(0) ) {
             j = i;
             num++;
