@@ -72,7 +72,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <i>                                                           */
-    RequirePositiveSmallInt("SCTableEntry", i, NICE_ARGNAME(i));
+    RequirePositiveSmallInt("SCTableEntry", i);
     if (dim < INT_INTOBJ(i)) {
         ErrorMayQuit(
             "SCTableEntry: <i> must be an integer between 1 and %d but is %d",
@@ -88,7 +88,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <j>                                                           */
-    RequirePositiveSmallInt("SCTableEntry", j, NICE_ARGNAME(j));
+    RequirePositiveSmallInt("SCTableEntry", j);
     if (dim < INT_INTOBJ(j)) {
         ErrorMayQuit(
             "SCTableEntry: <j> must be an integer between 1 and %d but is %d",
@@ -126,7 +126,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <k>                                                           */
-    RequirePositiveSmallInt("SCTableEntry", k, NICE_ARGNAME(k));
+    RequirePositiveSmallInt("SCTableEntry", k);
     if (dim < INT_INTOBJ(k)) {
         ErrorMayQuit(
             "SCTableEntry: <k> must be an integer between 1 and %d but is %d",

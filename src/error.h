@@ -144,20 +144,26 @@ Obj RequireArgumentEx(const char * funcname,
 
 /****************************************************************************
 **
-*F  RequireSmallInt
+*F  RequireSmallIntEx, RequireSmallInt
 */
-#define RequireSmallInt(funcname, op, argname)                               \
+#define RequireSmallIntEx(funcname, op, argname)                             \
     RequireArgumentConditionEx(funcname, op, argname, IS_INTOBJ(op),         \
                                "must be a small integer")
+
+#define RequireSmallInt(funcname, op)                                        \
+    RequireSmallIntEx(funcname, op, NICE_ARGNAME(op))
 
 
 /****************************************************************************
 **
-*F  RequirePositiveSmallInt
+*F  RequirePositiveSmallIntEx, RequirePositiveSmallInt
 */
-#define RequirePositiveSmallInt(funcname, op, argname)                       \
+#define RequirePositiveSmallIntEx(funcname, op, argname)                     \
     RequireArgumentConditionEx(funcname, op, argname, IS_POS_INTOBJ(op),     \
                                "must be a positive small integer")
+
+#define RequirePositiveSmallInt(funcname, op)                                \
+    RequirePositiveSmallIntEx(funcname, op, NICE_ARGNAME(op))
 
 
 /****************************************************************************
@@ -263,7 +269,7 @@ Obj RequireArgumentEx(const char * funcname,
 EXPORT_INLINE Int
 GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 {
-    RequireSmallInt(funcname, op, argname);
+    RequireSmallIntEx(funcname, op, argname);
     return INT_INTOBJ(op);
 }
 
@@ -278,7 +284,7 @@ GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 EXPORT_INLINE Int
 GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 {
-    RequirePositiveSmallInt(funcname, op, argname);
+    RequirePositiveSmallIntEx(funcname, op, argname);
     return INT_INTOBJ(op);
 }
 

@@ -592,7 +592,7 @@ static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 {
     RequirePartialPerm("PREIMAGE_PPERM_INT", f);
-    RequireSmallInt("PREIMAGE_PPERM_INT", pt, "<pt>");
+    RequireSmallInt("PREIMAGE_PPERM_INT", pt);
     if (TNUM_OBJ(f) == T_PPERM2)
         return PreImagePPermInt<UInt2>(pt, f);
     else

@@ -5441,7 +5441,7 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     RequireStringRep("CompileFunc", output);
     RequireFunction("CompileFunc", func);
     RequireStringRep("CompileFunc", name);
-    RequireSmallInt("CompileFunc", magic1, "<magic1>");
+    RequireSmallInt("CompileFunc", magic1);
     RequireStringRep("CompileFunc", magic2);
 
     /* possible optimiser flags                                            */
