@@ -58,12 +58,15 @@ gap> a := FixedAtomicList(5);;
 gap> EqualLists(a, []);
 true
 gap> ATOMIC_UNBIND(a, 10, 2);
-Error, COMPARE_AND_SWAP: Index out of range
+Error, ATOMIC_UNBIND: <index> must be an integer between 1 and 5 (not the inte\
+ger 10)
 gap> ATOMIC_BIND(a, 10, 2);
-Error, COMPARE_AND_SWAP: Index out of range
+Error, ATOMIC_BIND: <index> must be an integer between 1 and 5 (not the intege\
+r 10)
 gap> a := FixedAtomicList(5);;
 gap> COMPARE_AND_SWAP(a, 10, 1, 2);
-Error, COMPARE_AND_SWAP: Index out of range
+Error, COMPARE_AND_SWAP: <index> must be an integer between 1 and 5 (not the i\
+nteger 10)
 gap> Add(l, 7);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Add' on 2 arguments
