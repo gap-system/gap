@@ -229,10 +229,7 @@ static Obj FuncCHAR_INT(Obj self, Obj val)
     Int             chr;
 
     /* get and check the integer value                                     */
-    chr = GetSmallInt("CHAR_INT", val);
-    if ( 255 < chr || chr < 0 ) {
-        ErrorMayQuit("<val> must be an integer between 0 and 255", 0, 0);
-    }
+    chr = GetBoundedInt("CHAR_INT", val, 0, 255);
 
     /* return the character                                                */
     return ObjsChar[chr];
@@ -263,10 +260,7 @@ static Obj FuncCHAR_SINT(Obj self, Obj val)
     Int chr;
 
     /* get and check the integer value                                     */
-    chr = GetSmallInt("CHAR_SINT", val);
-    if (127 < chr || chr < -128) {
-        ErrorMayQuit("<val> must be an integer between -128 and 127", 0, 0);
-    }
+    chr = GetBoundedInt("CHAR_SINT", val, -128, 127);
 
     /* return the character                                                */
     return ObjsChar[CHAR_SINT(chr)];

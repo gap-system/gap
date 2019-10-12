@@ -3204,10 +3204,7 @@ static Obj FuncMETHODS_OPERATION(Obj self, Obj oper, Obj narg)
     Obj                 meth;
 
     RequireOperation(oper);
-    n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
-    if (n < 0 || n > MAX_OPER_ARGS)
-        RequireArgument("METHODS_OPERATION", narg,
-                        "must be an integer between 0 and 6");
+    n = GetBoundedInt("METHODS_OPERATION", narg, 0, MAX_OPER_ARGS);
     meth = MethsOper( oper, (UInt)n );
 #ifdef HPCGAP
     MEMBAR_READ();
@@ -3228,10 +3225,7 @@ static Obj FuncCHANGED_METHODS_OPERATION(Obj self, Obj oper, Obj narg)
     Int                 i;
 
     RequireOperation(oper);
-    n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
-    if (n < 0 || n > MAX_OPER_ARGS)
-        RequireArgument("CHANGED_METHODS_OPERATION", narg,
-                        "must be an integer between 0 and 6");
+    n = GetBoundedInt("CHANGED_METHODS_OPERATION", narg, 0, MAX_OPER_ARGS);
 #ifdef HPCGAP
     if (!PreThreadCreation) {
         ErrorQuit("Methods may only be changed before thread creation",0L,0L);
@@ -3255,10 +3249,7 @@ static Obj FuncSET_METHODS_OPERATION(Obj self, Obj oper, Obj narg, Obj meths)
     Int                 n;
 
     RequireOperation(oper);
-    n = IS_INTOBJ(narg) ? INT_INTOBJ(narg) : -1;
-    if (n < 0 || n > MAX_OPER_ARGS)
-        RequireArgument("SET_METHODS_OPERATION", narg,
-                        "must be an integer between 0 and 6");
+    n = GetBoundedInt("SET_METHODS_OPERATION", narg, 0, MAX_OPER_ARGS);
 #ifdef HPCGAP
     MEMBAR_WRITE();
 #endif

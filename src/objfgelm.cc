@@ -298,9 +298,7 @@ static Obj NBits_ExponentSyllable(Obj w, Obj pos)
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
-    i = GetPositiveSmallInt("NBits_ExponentSyllable", pos);
-    if (num < i)
-        ErrorMayQuit("<pos> must be an integer between 1 and %d", num, 0);
+    i = GetBoundedInt("NBits_ExponentSyllable", pos, 1, num);
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORD(w);
@@ -414,9 +412,7 @@ static Obj NBits_GeneratorSyllable(Obj w, Obj pos)
 
     /* check <i>                                                           */
     num = NPAIRS_WORD(w);
-    i = GetPositiveSmallInt("NBits_GeneratorSyllable", pos);
-    if (num < i)
-        ErrorMayQuit("<pos> must be an integer between 1 and %d", num, 0);
+    i = GetBoundedInt("NBits_GeneratorSyllable", pos, 1, num);
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORD(w);
