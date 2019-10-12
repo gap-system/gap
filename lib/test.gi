@@ -473,7 +473,7 @@ end);
 ##  <#/GAPDoc>
 ##  
 InstallGlobalFunction("Test", function(arg)
-  local fnam, nopts, opts, size, full, pf, failures, lines, ign, new, n,
+  local fnam, nopts, opts, size, full, pf, failures, lines, ign, new,
         cT, ok, oldtimes, thr, delta, len, c, i, j, d, localdef, line;
   
   # get arguments and set options
@@ -625,7 +625,6 @@ InstallGlobalFunction("Test", function(arg)
       Add(new[i], '\n');
     od;
     for i in [1..Length(pf.inp)] do
-      n := Number(pf.inp[i], c-> c = '\n'); 
       new[pf.pos[i]] := "";
       for j in [1..Number(pf.inp[i], c-> c = '\n')] do
         Append(new[pf.pos[i]], lines[pf.pos[i]+j-1]);
