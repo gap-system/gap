@@ -14,20 +14,23 @@ Error, SCTableEntry: <table> must be a small list (not the value 'false')
 gap> SCTableEntry([], false, false, false);
 Error, SCTableEntry: <table> must be a list with at least 3 elements
 gap> SCTableEntry(T, false, false, false);
-Error, SCTableEntry: <i> must be a positive small integer (not the value 'fals\
-e')
+Error, SCTableEntry: <i> must be an integer between 1 and 2 (not the value 'fa\
+lse')
 gap> SCTableEntry(T, 10, false, false);
-Error, SCTableEntry: <i> must be an integer between 1 and 2 but is 10
+Error, SCTableEntry: <i> must be an integer between 1 and 2 (not the integer 1\
+0)
 gap> SCTableEntry(T, 1, false, false);
-Error, SCTableEntry: <j> must be a positive small integer (not the value 'fals\
-e')
+Error, SCTableEntry: <j> must be an integer between 1 and 2 (not the value 'fa\
+lse')
 gap> SCTableEntry(T, 1, 10, false);
-Error, SCTableEntry: <j> must be an integer between 1 and 2 but is 10
+Error, SCTableEntry: <j> must be an integer between 1 and 2 (not the integer 1\
+0)
 gap> SCTableEntry(T, 1, 1, false);
-Error, SCTableEntry: <k> must be a positive small integer (not the value 'fals\
-e')
+Error, SCTableEntry: <k> must be an integer between 1 and 2 (not the value 'fa\
+lse')
 gap> SCTableEntry(T, 1, 1, 10);
-Error, SCTableEntry: <k> must be an integer between 1 and 2 but is 10
+Error, SCTableEntry: <k> must be an integer between 1 and 2 (not the integer 1\
+0)
 gap> SCTableEntry(T, 1, 1, 1);
 0*Z(2)
 gap> SCTableEntry([], 1, 1, 1);

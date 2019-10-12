@@ -560,10 +560,10 @@ void CheckSameLength(const Char * desc,
 **
 *F  RequireArgumentEx
 */
-Obj RequireArgumentEx(const char * funcname,
-                      Obj          op,
-                      const char * argname,
-                      const char * msg)
+void RequireArgumentEx(const char * funcname,
+                       Obj          op,
+                       const char * argname,
+                       const char * msg)
 {
     char msgbuf[1024] = { 0 };
     Int  arg1 = 0;
@@ -602,6 +602,23 @@ Obj RequireArgumentEx(const char * funcname,
 
     ErrorMayQuit(msgbuf, arg1, 0);
 }
+
+
+void ErrorBoundedInt(
+    const char * funcname, Obj op, const char * argname, int min, int max)
+{
+#define BOUNDED_INT_FORMAT "must be an integer between %d and %d"
+    // The maximal number of decimal digits in a signed 64 bit value is 20, so
+    // reserve space for that (actually, we would need a bit less because the
+    // `%d` in the format string of course also adds to the length, but a
+    // few bytes more or less don't matter).
+    // Also note that in practice, `int` will be a 32 bit type anyway...
+    char msg[sizeof(BOUNDED_INT_FORMAT) + 2 * 20];
+    snprintf(msg, sizeof(msg), BOUNDED_INT_FORMAT, min, max);
+    RequireArgumentEx(funcname, op, argname, msg);
+#undef BOUNDED_INT_FORMAT
+}
+
 
 void AssertionFailure(void)
 {

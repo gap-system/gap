@@ -98,19 +98,25 @@ true
 
 #
 gap> 8Bits_ExponentSyllable(w8, 4);
-Error, <pos> must be an integer between 1 and 3
+Error, NBits_ExponentSyllable: <pos> must be an integer between 1 and 3 (not t\
+he integer 4)
 gap> 16Bits_ExponentSyllable(w16, 4);
-Error, <pos> must be an integer between 1 and 3
+Error, NBits_ExponentSyllable: <pos> must be an integer between 1 and 3 (not t\
+he integer 4)
 gap> 32Bits_ExponentSyllable(w32, 4);
-Error, <pos> must be an integer between 1 and 3
+Error, NBits_ExponentSyllable: <pos> must be an integer between 1 and 3 (not t\
+he integer 4)
 
 #
 gap> 8Bits_GeneratorSyllable(w8, 4);
-Error, <pos> must be an integer between 1 and 3
+Error, NBits_GeneratorSyllable: <pos> must be an integer between 1 and 3 (not \
+the integer 4)
 gap> 16Bits_GeneratorSyllable(w16, 4);
-Error, <pos> must be an integer between 1 and 3
+Error, NBits_GeneratorSyllable: <pos> must be an integer between 1 and 3 (not \
+the integer 4)
 gap> 32Bits_GeneratorSyllable(w32, 4);
-Error, <pos> must be an integer between 1 and 3
+Error, NBits_GeneratorSyllable: <pos> must be an integer between 1 and 3 (not \
+the integer 4)
 
 #
 # test powering (esp. 8Bits_Power), with various shapes

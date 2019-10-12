@@ -72,12 +72,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <i>                                                           */
-    RequirePositiveSmallInt("SCTableEntry", i);
-    if (dim < INT_INTOBJ(i)) {
-        ErrorMayQuit(
-            "SCTableEntry: <i> must be an integer between 1 and %d but is %d",
-            dim, INT_INTOBJ(i));
-    }
+    RequireBoundedInt("SCTableEntry", i, 1, dim);
 
     /* get and check the relevant row                                      */
     tmp = ELM_LIST( table, INT_INTOBJ(i) );
@@ -88,12 +83,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <j>                                                           */
-    RequirePositiveSmallInt("SCTableEntry", j);
-    if (dim < INT_INTOBJ(j)) {
-        ErrorMayQuit(
-            "SCTableEntry: <j> must be an integer between 1 and %d but is %d",
-            dim, INT_INTOBJ(j));
-    }
+    RequireBoundedInt("SCTableEntry", j, 1, dim);
 
     /* get and check the basis and coefficients list                       */
     tmp = ELM_LIST( tmp, INT_INTOBJ(j) );
@@ -126,12 +116,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <k>                                                           */
-    RequirePositiveSmallInt("SCTableEntry", k);
-    if (dim < INT_INTOBJ(k)) {
-        ErrorMayQuit(
-            "SCTableEntry: <k> must be an integer between 1 and %d but is %d",
-            dim, INT_INTOBJ(k));
-    }
+    RequireBoundedInt("SCTableEntry", k, 1, dim);
 
     /* look for the (i,j,k) entry                                          */
     for ( l = 1; l <= len; l++ ) {

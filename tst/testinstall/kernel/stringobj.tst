@@ -17,9 +17,11 @@ Error, ShrinkAllocationString: <str> must be a string (not the integer 1)
 
 #
 gap> CHAR_INT(fail);
-Error, CHAR_INT: <val> must be a small integer (not the value 'fail')
+Error, CHAR_INT: <val> must be an integer between 0 and 255 (not the value 'fa\
+il')
 gap> CHAR_INT(-1);
-Error, <val> must be an integer between 0 and 255
+Error, CHAR_INT: <val> must be an integer between 0 and 255 (not the integer -\
+1)
 gap> CHAR_INT(65);
 'A'
 
@@ -31,9 +33,11 @@ gap> INT_CHAR('A');
 
 #
 gap> CHAR_SINT(fail);
-Error, CHAR_SINT: <val> must be a small integer (not the value 'fail')
+Error, CHAR_SINT: <val> must be an integer between -128 and 127 (not the value\
+ 'fail')
 gap> CHAR_SINT(255);
-Error, <val> must be an integer between -128 and 127
+Error, CHAR_SINT: <val> must be an integer between -128 and 127 (not the integ\
+er 255)
 gap> CHAR_SINT(65);
 'A'
 
