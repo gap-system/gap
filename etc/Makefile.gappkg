@@ -1,0 +1,146 @@
+########################################################################
+#
+# The build rules in this file are intended for use by GAP packages that
+# want to build a simple GAP kernel extensions. They are based on the
+# GAP build system, and require GNU make. To use this in your GAP
+# package, `include` this from your primary Makefile. You must also set
+# several variables beforehand:
+#
+# - GAPPATH must be set to the location of the GAP installation against
+#   which to build your package.
+# - KEXT_NAME should be the name of your kernel extension (without
+#   file extensions like .so or .dll)
+# - KEXT_SOURCES must contain a list of .c or .cc files to be linked
+#   into your kernel extension
+# - optionally, you can set KEXT_CFLAGS, KEXT_CXXFLAGS, KEXT_LDFLAGS
+#
+#
+# Only GAP >= 4.11 ships with this file. In order to keep your package
+# compatible with older GAP versions, we recommend to bundle a copy of
+# it with your package, but only as a fallback. So, your configure
+# scripts should check if GAP ships with this file, and use it then, and
+# only fall back to your own copy as a last resort. This way, you will
+# benefit from any fixes and improvements made by the GAP team.
+#
+# The contents of this file are released into the public domain; hence
+# you may edit this file as you wish, bundle and distribute it with your
+# package, etc.
+#
+# If you bundle this file with your package, please try not to edit it,
+# so that we can keep it identical across all GAP packages. If you still
+# find that you must edit it, please consider submitting your changes
+# back to the GAP team, so that a future version of this file can be
+# adjusted to cover your usecase without modifications.
+#
+########################################################################
+
+# read GAP's build settings
+include $(GAPPATH)/sysinfo.gap
+
+# various derived settings
+KEXT_BINARCHDIR = bin/$(GAParch)
+KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
+
+GAP = $(GAPPATH)/gap
+GAC = $(GAPPATH)/gac
+
+# override KEXT_RECONF if your package needs a different invocation
+# for reconfiguring (e.g. `./config.status --recheck` for autoconf)
+KEXT_RECONF ?= ./configure "$(GAPPATH)"
+
+# default target
+all: $(KEXT_SO)
+.PHONY: all
+
+########################################################################
+# Object files
+# For each file FOO.c in SOURCES, add gen/FOO.lo to KEXT_OBJS; similar
+# for .cc files
+########################################################################
+KEXT_OBJS = $(patsubst %.cc,gen/%.lo,$(patsubst %.c,gen/%.lo,$(KEXT_SOURCES)))
+
+########################################################################
+# Quiet rules.
+#
+# Replace regular output with quiet messages, unless V is set,
+# e.g. "make V=1"
+########################################################################
+ifneq ($(findstring $(MAKEFLAGS),s),s)
+ifndef V
+QUIET_GAC     = @echo "   GAC     $< => $@";
+endif
+endif
+
+########################################################################
+# Rules for automatic header dependency tracking.
+# This is based on the GAP build system.
+########################################################################
+
+# List of all (potential) dependency directories, derived from KEXT_OBJS
+# and KEXT_SOURCES (the latter for generated sources, which may also
+# involve dependency tracking)
+KEXT_DEPDIRS = $(sort $(dir $(KEXT_SOURCES) $(KEXT_OBJS)))
+KEXT_DEPFILES = $(wildcard $(addsuffix /*.d,$(KEXT_DEPDIRS)))
+
+# Include the dependency tracking files.
+-include $(KEXT_DEPFILES)
+
+# Mark *.d files as PHONY. This stops make from trying to recreate them
+# (which it can't), and in particular from looking for potential source
+# files. This can save quite a bit of disk access time.
+.PHONY: $(KEXT_DEPFILES)
+
+# The following flags instruct the compiler to enable advanced
+# dependency tracking. Supported by GCC 3 and newer; clang; Intel C
+# compiler; and more.
+KEXT_DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
+
+# build rule for C code
+# The dependency on Makefile ensures that re-running configure recompiles everything
+gen/%.lo: %.c Makefile
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
+
+# build rule for C++ code
+# The dependency on Makefile ensures that re-running configure recompiles everything
+gen/%.lo: %.cc Makefile
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -c $< -o $@
+
+# build rule for linking all object files together into a kernel extension
+$(KEXT_SO): $(KEXT_OBJS)
+	@mkdir -p $(KEXT_BINARCHDIR)
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -P "$(KEXT_LDFLAGS)" $(KEXT_OBJS) -o $@
+
+# hook into `make clean`
+clean: clean-kext
+clean-kext:
+	rm -rf $(KEXT_BINARCHDIR) gen
+
+# hook into `make distclean`
+distclean: clean-kext
+distclean-kext:
+	rm -rf bin gen Makefile
+	(cd doc && ./clean)
+
+# hook into `make doc`
+doc: doc-kext
+doc-kext:
+	$(GAP) makedoc.g
+
+# hook into `make check`
+check: check-kext
+check-kext:
+	$(GAP) tst/testall.g
+
+# re-run configure if configure, Makefile.in or GAP itself changed
+Makefile: configure Makefile.in $(GAPPATH)/sysinfo.gap
+	$(KEXT_RECONF)
+
+.PHONY: check clean distclean doc
+.PHONY: check-kext clean-kext distclean-kext doc-kext
+
+########################################################################
+# Makefile debugging trick:
+# call print-VARIABLE to see the runtime value of any variable
+########################################################################
+print-%:
+	@echo '$*=$($*)'
