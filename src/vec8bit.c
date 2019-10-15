@@ -2572,8 +2572,8 @@ static Obj FuncCOSET_LEADERS_INNER_8BITS(
     Obj  v, w;
     UInt lenv, lenw, q;
 
-    RequireSmallInt("COSET_LEADERS_INNER_8BITS", weight, NICE_ARGNAME(weight));
-    RequireSmallInt("COSET_LEADERS_INNER_8BITS", tofind, NICE_ARGNAME(tofind));
+    RequireSmallInt("COSET_LEADERS_INNER_8BITS", weight);
+    RequireSmallInt("COSET_LEADERS_INNER_8BITS", tofind);
 
     lenv = LEN_PLIST(veclis);
     q = LEN_PLIST(felts);

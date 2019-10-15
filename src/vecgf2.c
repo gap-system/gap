@@ -3228,8 +3228,8 @@ static Obj FuncCOSET_LEADERS_INNER_GF2(
     Obj  v, w;
     UInt lenv, lenw;
 
-    RequireSmallInt("COSET_LEADERS_INNER_GF2", weight, NICE_ARGNAME(weight));
-    RequireSmallInt("COSET_LEADERS_INNER_GF2", tofind, NICE_ARGNAME(tofind));
+    RequireSmallInt("COSET_LEADERS_INNER_GF2", weight);
+    RequireSmallInt("COSET_LEADERS_INNER_GF2", tofind);
 
     lenv = LEN_PLIST(veclis);
     NEW_GF2VEC(v, TYPE_LIST_GF2VEC, lenv);
@@ -3599,8 +3599,8 @@ FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
     Obj  prod;
     UInt last;
 
-    RequireSmallInt("PROD_COEFFS_GF2VEC", len1, NICE_ARGNAME(len1));
-    RequireSmallInt("PROD_COEFFS_GF2VEC", len2, NICE_ARGNAME(len2));
+    RequireSmallInt("PROD_COEFFS_GF2VEC", len1);
+    RequireSmallInt("PROD_COEFFS_GF2VEC", len2);
     len2a = INT_INTOBJ(len2);
     if (len2a > LEN_GF2VEC(vec2))
         ErrorMayQuit("PROD_COEFFS_GF2VEC: <len2> must not be more than the "
