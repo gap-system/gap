@@ -643,24 +643,18 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   }
   else {
     elm = ELMW_LIST(size,1);
-    if (!IS_INTOBJ(elm)) {
-        ErrorMayQuit("SizeScreen: <x> must be an integer", 0, 0);
-    }
-    len = INT_INTOBJ( elm );
+    len = GetSmallIntEx("SizeScreen", elm, "<x>");
     if ( len < 20  )  len = 20;
     if ( MAXLENOUTPUTLINE < len )  len = MAXLENOUTPUTLINE;
   }
 
   /* extract the number                                                  */
-  if ( LEN_LIST(size) < 2 || ELM0_LIST(size,2) == 0 ) {
+  elm = ELM0_LIST(size, 2);
+  if ( elm == 0 ) {
     nr = 0;
   }
   else {
-    elm = ELMW_LIST(size,2);
-    if (!IS_INTOBJ(elm)) {
-        ErrorMayQuit("SizeScreen: <y> must be an integer", 0, 0);
-    }
-    nr = INT_INTOBJ( elm );
+    nr = GetSmallIntEx("SizeScreen", elm, "<y>");
     if ( nr < 10 )  nr = 10;
   }
 

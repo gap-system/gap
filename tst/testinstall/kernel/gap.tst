@@ -49,9 +49,9 @@ Error, SizeScreen: number of arguments must be 0 or 1 (not 2)
 gap> SizeScreen(100);
 Error, SizeScreen: <size> must be a list of length at most 2
 gap> SizeScreen([fail,fail]);
-Error, SizeScreen: <x> must be an integer
+Error, SizeScreen: <x> must be a small integer (not the value 'fail')
 gap> SizeScreen([100,fail]);
-Error, SizeScreen: <y> must be an integer
+Error, SizeScreen: <y> must be a small integer (not the value 'fail')
 
 #
 gap> WindowCmd(fail);
