@@ -634,9 +634,6 @@ static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
 *F  FuncADD_ROWVECTOR_VECFFES_3( <self>, <vecL>, <vecR>, <mult> )
 **
 */
-
-static Obj AddRowVectorOp;   /* BH changed to static */
-
 static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
 {
     Obj *ptrL;
@@ -662,16 +659,9 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
     if (!IsVecFFE(vecR))
         return TRY_NEXT_METHOD;
 
-
     /* check the lengths                                                   */
+    CheckSameLength("AddRowVector", "dst", "src", vecL, vecR);
     len = LEN_PLIST(vecL);
-    if (len != LEN_PLIST(vecR)) {
-        vecR = ErrorReturnObj(
-            "AddRowVector: vector lengths differ <left> %d,  <right> %d",
-            (Int)len, (Int)LEN_PLIST(vecR),
-            "you can replace vector <right> via 'return <right>;'");
-        return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
-    }
 
     /* check the fields                                                    */
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
@@ -680,22 +670,14 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return TRY_NEXT_METHOD;
 
-        vecR = ErrorReturnObj(
-            "AddRowVector: vectors have different fields",
-            0L, 0L,
-            "you can replace vector <right> via 'return <right>;'");
-        return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
+        ErrorMayQuit("AddRowVector: vectors have different fields", 0, 0);
     }
 
     /* Now check the multiplier field */
     if (FLD_FFE(mult) != fld) {
         /* check the characteristic                                        */
         if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
-            mult = ErrorReturnObj(
-                "AddRowVector: <multiplier> has different field",
-                0L, 0L,
-                "you can replace <multiplier> via 'return <multiplier>;'");
-            return CALL_3ARGS(AddRowVectorOp, vecL, vecR, mult);
+            ErrorMayQuit("AddRowVector: <multiplier> has different field", 0, 0);
         }
 
         /* if the multiplier is over a non subfield then redispatch */
@@ -738,8 +720,6 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
 **
 */
 
-static Obj MultVectorLeftOp; /* BH changed to static */
-
 static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
 {
     Obj *ptr;
@@ -768,11 +748,7 @@ static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
     if (FLD_FFE(mult) != fld) {
         /* check the characteristic                                        */
         if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
-            mult = ErrorReturnObj(
-                "MultVector: <multiplier> has different field",
-                0L, 0L,
-                "you can replace <multiplier> via 'return <multiplier>;'");
-            return CALL_2ARGS(MultVectorLeftOp, vec, mult);
+            ErrorMayQuit("MultVector: <multiplier> has different field", 0, 0);
         }
 
         /* if the multiplier is over a non subfield then redispatch */
@@ -830,14 +806,8 @@ static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
         return TRY_NEXT_METHOD;
 
     /* check the lengths                                                   */
+    CheckSameLength("AddRowVector", "dst", "src", vecL, vecR);
     len = LEN_PLIST(vecL);
-    if (len != LEN_PLIST(vecR)) {
-        vecR = ErrorReturnObj(
-            "Vector *: vector lengths differ <left> %d,  <right> %d",
-            (Int)len, (Int)LEN_PLIST(vecR),
-            "you can replace vector <right> via 'return <right>;'");
-        return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
-    }
 
     /* check the fields                                                    */
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
@@ -846,11 +816,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return TRY_NEXT_METHOD;
 
-        vecR = ErrorReturnObj(
-            "AddRowVector: vectors have different fields",
-            0L, 0L,
-            "you can replace vector <right> via 'return <right>;'");
-        return CALL_2ARGS(AddRowVectorOp, vecL, vecR);
+        ErrorMayQuit("AddRowVector: vectors have different fields", 0, 0);
     }
 
     succ = SUCC_FF(fld);
@@ -929,8 +895,11 @@ static Obj FuncSMALLEST_FIELD_VECFFE(Obj self, Obj vec)
 {
     Obj elm;
     UInt deg, deg1, deg2, i, len, p, q;
-    UInt isVecFFE = IsVecFFE(vec);
-    len  = LEN_PLIST(vec);
+    UInt isVecFFE;
+    if (!IS_PLIST(vec))
+        return Fail;
+    isVecFFE = IsVecFFE(vec);
+    len = LEN_PLIST(vec);
     if (len == 0)
         return Fail;
     elm = ELM_PLIST(vec, 1);
@@ -1008,7 +977,6 @@ static Int InitKernel (
 
     InitHdlrFuncsFromTable(GVarFuncs);
 
-    InitFopyGVar("AddRowVector", &AddRowVectorOp);
     /* return success                                                      */
     return 0;
 }
