@@ -100,6 +100,7 @@ static int SeenDuringTraversal(TraversalState * traversal, Obj obj)
         TraversalRehash(traversal);
     hash = FibHash((UInt)obj, traversal->hashBits);
     hashTable = ADDR_OBJ(traversal->hashTable) + 1;
+    const UInt mask = traversal->hashCapacity - 1;
     for (;;) {
         if (hashTable[hash] == NULL) {
             hashTable[hash] = obj;
@@ -108,7 +109,7 @@ static int SeenDuringTraversal(TraversalState * traversal, Obj obj)
         }
         if (hashTable[hash] == obj)
             return 0;
-        hash = (hash + 1) & (traversal->hashCapacity - 1);
+        hash = (hash + 1) & mask;
     }
 }
 
@@ -120,12 +121,13 @@ static UInt FindTraversedObj(TraversalState * traversal, Obj obj)
         return 0;
     hash = FibHash((UInt)obj, traversal->hashBits);
     hashTable = ADDR_OBJ(traversal->hashTable) + 1;
+    const UInt mask = traversal->hashCapacity - 1;
     for (;;) {
         if (hashTable[hash] == obj)
             return (int)hash + 1;
         if (hashTable[hash] == NULL)
             return 0;
-        hash = (hash + 1) & (traversal->hashCapacity - 1);
+        hash = (hash + 1) & mask;
     }
 }
 
