@@ -801,11 +801,9 @@ void ExecEnd(UInt error)
 
 static Obj FuncSetRecursionTrapInterval(Obj self, Obj interval)
 {
-    while (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
-        interval = ErrorReturnObj(
-            "SetRecursionTrapInterval( <interval> ): "
-            "<interval> must be a small integer greater than 5",
-            0L, 0L, "you can replace <interval> via 'return <interval>;'");
+    if (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
+        RequireArgument("SetRecursionTrapInterval", interval,
+            "must be a small integer greater than 5");
     RecursionTrapInterval = INT_INTOBJ(interval);
     return 0;
 }
