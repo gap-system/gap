@@ -27,9 +27,7 @@
 
 struct TraversalState {
     Obj                     list;
-    UInt                    listSize;
     UInt                    listCurrent;
-    UInt                    listCapacity;
     Obj                     hashTable;
     Obj                     copyMap;
     UInt                    hashSize;
@@ -86,9 +84,7 @@ static void BeginTraversal(TraversalState * traversal)
     traversal->hashCapacity = 1 << traversal->hashBits;
     traversal->hashTable = NewList(traversal->hashCapacity);
 
-    traversal->list = NewList(10);
-    traversal->listSize = 0;
-    traversal->listCapacity = 10;
+    traversal->list = NEW_PLIST(T_PLIST, 10);
     traversal->listCurrent = 0;
 }
 
@@ -156,17 +152,7 @@ void QueueForTraversal(TraversalState * traversal, Obj obj)
         return;
     if (!SeenDuringTraversal(traversal, obj))
         return; /* don't revisit objects that we've already seen */
-    if (traversal->listSize == traversal->listCapacity) {
-        unsigned oldcapacity = traversal->listCapacity;
-        unsigned newcapacity =
-            oldcapacity * 25 / 16; /* 25/16 < golden ratio */
-        Obj oldlist = traversal->list;
-        Obj list = NewList(newcapacity);
-        memcpy(ADDR_OBJ(list), CONST_ADDR_OBJ(oldlist), oldcapacity * sizeof(Obj));
-        traversal->list = list;
-        traversal->listCapacity = newcapacity;
-    }
-    ADDR_OBJ(traversal->list)[++traversal->listSize] = obj;
+    PushPlist(traversal->list, obj);
 }
 
 static void TraverseRegionFrom(TraversalState * traversal,
@@ -176,14 +162,14 @@ static void TraverseRegionFrom(TraversalState * traversal,
     GAP_ASSERT(IS_BAG_REF(obj));
     GAP_ASSERT(REGION(obj) != NULL);
     if (!CheckReadAccess(obj)) {
-        traversal->list = NewList(0);
+        traversal->list = NewEmptyPlist();
         return;
     }
     traversal->traversalCheck = traversalCheck;
     traversal->region = REGION(obj);
     QueueForTraversal(traversal, obj);
-    while (traversal->listCurrent < traversal->listSize) {
-        Obj current = ADDR_OBJ(traversal->list)[++traversal->listCurrent];
+    while (traversal->listCurrent < LEN_PLIST(traversal->list)) {
+        Obj current = ELM_PLIST(traversal->list, ++traversal->listCurrent);
         int tnum = TNUM_BAG(current);
         const TraversalMethodEnum method = TraversalMethod[tnum];
         int                       size;
@@ -210,7 +196,6 @@ static void TraverseRegionFrom(TraversalState * traversal,
             break;
         }
     }
-    SET_LEN_PLIST(traversal->list, traversal->listSize);
 }
 
 // static int IsReadable(Obj obj) {
