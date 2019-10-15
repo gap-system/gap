@@ -1,3 +1,3 @@
 gap> SetRecursionTrapInterval(fail);
-Error, SetRecursionTrapInterval( <interval> ): <interval> must be a small inte\
-ger greater than 5
+Error, SetRecursionTrapInterval: <interval> must be a small integer greater th\
+an 5 (not the value 'fail')

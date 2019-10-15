@@ -1007,8 +1007,8 @@ brk> GetRecursionDepth();
 0
 brk> return;
 gap> SetRecursionTrapInterval(-1);
-SetRecursionTrapInterval( <interval> ): <interval> must be a non-negative smal\
-l integer
+Error, SetRecursionTrapInterval: <interval> must be a small integer greater than 5 (n\
+ot the integer -1)
 not in any function
 Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
