@@ -1054,7 +1054,7 @@ local clT,	# classes T
     Info(InfoHomClass,1,"fused to ",Length(newreps)," classes");
   od;
   
-  Assert(2,Sum(clout,i->Index(F,i[2]))=Size(F)-Size(M));
+  if Sum(clout,i->Index(F,i[2]))<>Size(F)-Size(M) then return fail;fi;
 
   Info(InfoHomClass,2,Length(clin)," inner classes, total size =",
         Sum(clin,i->Index(F,i[2])));
