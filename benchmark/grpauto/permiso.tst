@@ -2,6 +2,8 @@
 ##
 ## Warning: most of the later tests need more than the default memory allocation
 
+gap> SetAssertionLevel(0);;
+
 #
 # Too hard work for permiso
 #
