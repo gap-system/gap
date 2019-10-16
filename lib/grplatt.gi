@@ -3367,7 +3367,7 @@ local d,ind,i,ma,ab,a,p,b,c,e,n;
   ma:=NaturalHomomorphismByNormalSubgroup(G,d);
   a:=Image(ma,G);
   ab:=AbelianInvariants(a);
-  if Length(Set(ab))>1 then
+  if ForAny(ab,x->not IsPrimeInt(x)) then
     e:=LogInt(Exponent(a),p);
     b:=fail;
     i:=1;
@@ -3393,7 +3393,8 @@ local d,ind,i,ma,ab,a,p,b,c,e,n;
   fi;
   n:=Normalizer(P,G);
   ab:=ModuloPcgs(G,d);
-  a:=GModuleByMats(LinearActionLayer(n,ab),GF(p));
+  a:=LinearActionLayer(n,ab);
+  a:=GModuleByMats(a,GF(p));
   if not MTX.IsIrreducible(a) then
     b:=ShallowCopy(MTX.BasesMaximalSubmodules(a));
     SortBy(b,Length);
