@@ -811,8 +811,8 @@ static void LoadWPObj(Obj wpobj)
 *V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
 static StructBagNames BagNames[] = {
-  { T_WPOBJ,                          "object (weakptr)"               },
-  { -1,                               ""                               }
+  { T_WPOBJ, "weak pointer object" },
+  { -1,      ""                    }
 };
 
 
