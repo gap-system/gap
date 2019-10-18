@@ -1127,6 +1127,11 @@ local n,zero,nv,new,pip,piv,i,v,p,w,g,nov,pin,now,rat,extra,clean,assign,try;
 
   od;
 
-  return Filtered(Concatenation(mat,new),x->not IsZero(x));
+  mat:=Filtered(Concatenation(mat,new),x->not IsZero(x));
+
+  # need to keep one line.
+  if Length(mat)=0 then mat:=[zero];fi;
+
+  return mat;
 
 end);
