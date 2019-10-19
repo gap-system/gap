@@ -256,7 +256,8 @@ gap> g:=PerfectGroup(IsPermGroup,3840,1);;
 gap> cf:=IrreducibleModules(g,GF(2),0)[2];;
 gap> List(cf,x->x.dimension);
 [ 1, 4, 4 ]
-gap> coh:=TwoCohomologyGeneric(g,cf[2]);;
+gap> pos:=PositionProperty(cf,x->Size(MTX.ModuleAutomorphisms(x))=3);;
+gap> coh:=TwoCohomologyGeneric(g,cf[pos]);;
 gap> Length(coh.cohomology);
 2
 gap> e:=Elements(VectorSpace(GF(2),coh.cohomology));;
