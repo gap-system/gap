@@ -78,6 +78,7 @@ extern "C" {
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"
+#include "hpc/guards.h"
 #include "hpc/serialize.h"
 #include "hpc/threadapi.h"
 #include "hpc/traverse.h"
