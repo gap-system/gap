@@ -524,11 +524,11 @@ static Obj CopyString(Obj list, Int mut)
 /****************************************************************************
 **
 *F  PrintString(<list>) . . . . . . . . . . . . . . . . . . .  print a string
-*F  FuncCHUNK_ESCAPE_STRING(<list>) . . . . . . . escape a string as a string
+*F  FuncVIEW_STRING_FOR_STRING(<list>) . . . . . .  view a string as a string
 **
 **  'PrintString' prints the string with the handle <list>.
-**  'CHUNK_ESCAPE_STRING' returns a list of strings which, when concatenated,
-**  produce a String containing what PrintString outputs.
+**  'VIEW_STRING_FOR_STRING' returns a string containing what PrintString
+**  outputs.
 **
 **  No linebreaks are  allowed, if one must be inserted  anyhow, it must
 **  be escaped by a backslash '\', which is done in 'Pr'.
@@ -551,14 +551,16 @@ void ToPrOutputter(void * data, char * strbuf, UInt len)
     Pr("%s", (Int)strbuf, 0L);
 }
 
-// Output to a list of Strings
-void ToStringOutputter(void * data, char * strbuf, UInt len)
+// Output to a string
+void ToStringOutputter(void * data, char * buf, UInt lenbuf)
 {
-    Obj list = (Obj)data;
-
-    strbuf[len++] = '\0';
-    AddPlist(list, MakeImmString(strbuf));
-    CHANGED_BAG(list);
+    Obj str = (Obj)data;
+    UInt lenstr = GET_LEN_STRING(str);
+    UInt newlen = lenstr + lenbuf;
+    GROW_STRING(str, newlen);
+    memcpy(CHARS_STRING(str) + lenstr, buf, lenbuf);
+    CHARS_STRING(str)[newlen] = '\0';
+    SET_LEN_STRING(str, newlen);
 }
 
 void OutputStringGeneric(Obj list, StringOutputterType func, void * data)
@@ -638,19 +640,19 @@ void PrintString(Obj list)
     OutputStringGeneric(list, ToPrOutputter, (void *)0);
 }
 
-Obj FuncCHUNK_ESCAPE_STRING(Obj self, Obj string)
+Obj FuncVIEW_STRING_FOR_STRING(Obj self, Obj string)
 {
     if (!IS_STRING(string)) {
-        RequireArgument("ConvString", string, "must be a string");
+        RequireArgument("VIEW_STRING_FOR_STRING", string, "must be a string");
     }
 
     if (!IS_STRING_REP(string)) {
         string = CopyToStringRep(string);
     }
 
-    Obj list = NEW_PLIST(T_PLIST, 1);
-    OutputStringGeneric(string, ToStringOutputter, list);
-    return list;
+    Obj output = NEW_STRING(0);
+    OutputStringGeneric(string, ToStringOutputter, output);
+    return output;
 }
 
 /****************************************************************************
@@ -1945,7 +1947,7 @@ static StructGVarFilt GVarFilts [] = {
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs [] = {
-    GVAR_FUNC_1ARGS(CHUNK_ESCAPE_STRING, string),
+    GVAR_FUNC_1ARGS(VIEW_STRING_FOR_STRING, string),
     GVAR_FUNC_1ARGS(IS_STRING_CONV, string),
     GVAR_FUNC_1ARGS(CONV_STRING, string),
     GVAR_FUNC_1ARGS(COPY_TO_STRING_REP, string),
