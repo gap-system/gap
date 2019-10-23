@@ -16,7 +16,7 @@
 #include "error.h"
 #include "modules.h"
 #include "opers.h"
-
+#include "tracing.h"
 
 #define RequireValue(funcname, val)                                          \
     do {                                                                     \
@@ -1357,6 +1357,44 @@ static void InstallModObject ( Int verb )
     }
 }
 
+DEFINE_OP_WRAPPER1(ZeroFuncs);
+DEFINE_OP_WRAPPER1(ZeroMutFuncs);
+DEFINE_OP_WRAPPER1(AInvFuncs);
+DEFINE_OP_WRAPPER1(AInvMutFuncs);
+DEFINE_OP_WRAPPER1(OneFuncs);
+DEFINE_OP_WRAPPER1(OneMutFuncs);
+DEFINE_OP_WRAPPER1(InvFuncs);
+DEFINE_OP_WRAPPER1(InvMutFuncs);
+
+DEFINE_OP_WRAPPER2(SumFuncs);
+DEFINE_OP_WRAPPER2(DiffFuncs);
+DEFINE_OP_WRAPPER2(ProdFuncs);
+DEFINE_OP_WRAPPER2(QuoFuncs);
+DEFINE_OP_WRAPPER2(LQuoFuncs);
+DEFINE_OP_WRAPPER2(PowFuncs);
+DEFINE_OP_WRAPPER2(CommFuncs);
+DEFINE_OP_WRAPPER2(ModFuncs);
+
+static void InstallArithWrappers(void)
+{
+    INSTALL_OP_WRAPPER(ZeroFuncs);
+    INSTALL_OP_WRAPPER(ZeroMutFuncs);
+    INSTALL_OP_WRAPPER(AInvFuncs);
+    INSTALL_OP_WRAPPER(AInvMutFuncs);
+    INSTALL_OP_WRAPPER(OneFuncs);
+    INSTALL_OP_WRAPPER(InvFuncs);
+    INSTALL_OP_WRAPPER(OneMutFuncs);
+    INSTALL_OP_WRAPPER(InvMutFuncs);
+
+    INSTALL_OP_WRAPPER(SumFuncs);
+    INSTALL_OP_WRAPPER(DiffFuncs);
+    INSTALL_OP_WRAPPER(ProdFuncs);
+    INSTALL_OP_WRAPPER(QuoFuncs);
+    INSTALL_OP_WRAPPER(LQuoFuncs);
+    INSTALL_OP_WRAPPER(PowFuncs);
+    INSTALL_OP_WRAPPER(CommFuncs);
+    INSTALL_OP_WRAPPER(ModFuncs);
+}
 
 /****************************************************************************
 **
@@ -1463,6 +1501,8 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    InstallArithWrappers();
 
     /* make and install the 'ZERO' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
