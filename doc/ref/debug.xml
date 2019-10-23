@@ -87,6 +87,7 @@ afterwards.
 <#Include Label="UntraceMethods">
 <#Include Label="UntraceAllMethods">
 <#Include Label="TraceImmediateMethods">
+<#Include Label="TraceInternalMethods">
 
 </Section>
 

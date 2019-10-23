@@ -173,6 +173,7 @@ extern ArithMethod1 OneFuncs[LAST_REAL_TNUM + 1];
 EXPORT_INLINE Obj ONE(Obj op)
 {
     UInt tnum = TNUM_OBJ(op);
+
     return (*OneFuncs[tnum])(op);
 }
 

@@ -615,6 +615,93 @@ BIND_GLOBAL( "TraceImmediateMethods", function( arg )
     fi;
 end );
 
+#############################################################################
+##
+##
+##  <#GAPDoc Label="TraceInternalMethods">
+##  <ManSection>
+##  <Func Name="TraceInternalMethods" Arg=''/>
+##  <Func Name="UntraceInternalMethods" Arg=''/>
+##  <Func Name="GetTraceInternalMethodsCounts" Arg=''/>
+##  <Func Name="ClearTraceInternalMethodsCounts" Arg=''/>
+##
+##  <Description>
+##  <Ref Func="TraceInternalMethods"/> enables tracing for all internal methods.
+##  Internal methods are methods which implement many fundamental operations in GAP.
+##  In this version of GAP, the internal methods which can be traced are:
+##  <List>
+##  <Mark>Zero, ZeroMut</Mark><Item>Mutable and Immutable <Ref Attr="Zero"/></Item>
+##  <Mark>AInv, AInvMut</Mark><Item>Mutable and Immutable <Ref Attr="AdditiveInverse"/></Item>
+##  <Mark>One, OneMut</Mark><Item>Mutable and Immutable <Ref Attr="One"/></Item>
+##  <Mark>Inv, InvMut</Mark><Item>Mutable and Immutable <Ref Attr="Inverse"/></Item>
+##  <Mark>Sum</Mark><Item>The operator <Ref Oper="\+"/></Item>
+##  <Mark>Diff</Mark><Item>The operator <C>-</C> operator</Item>
+##  <Mark>Prod</Mark><Item>The operator <Ref Oper="\*"/></Item>
+##  <Mark>Quo</Mark><Item>The operator <Ref Oper="\/"/></Item>
+##  <Mark>LQuo</Mark><Item>The left-quotient operator</Item>
+##  <Mark>Pow</Mark><Item>The operator <Ref Oper="\^"/></Item>
+##  <Mark>Comm</Mark><Item>The operator <Ref Oper="Comm"/></Item>
+##  <Mark>Mod</Mark><Item>The operator <Ref Oper="\mod"/></Item>
+##  </List>
+##  <P/>
+##  <Ref Func="UntraceInternalMethods"/> turns tracing off.
+##  As these methods can be called hundreds of thousands of times in simple GAP
+##  code, there isn't a statement printed each time one is called. Instead, the
+##  method <Ref Func="GetTraceInternalMethodsCounts"/> returns how many times
+##  each operation has been applied to each type of variable (the type of a
+##  variable can be found with the <C>TNAM_OBJ</C> method).
+##  The return value for two argument operators is a record of records <C>r</C>, where
+##  <C>r.op</C> stores information about operator <C>op</C>. For one argument operators
+##  <C>r.op.i</C> stores how many times <C>op</C> was called with an argument of type
+##  <C>i</C>, while for two argument operators <C>r.op.i.j</C> stores how many times
+##  <C>op</C> was called with arguments of type <C>i</C> and <C>j</C>.
+##  <Log><![CDATA[
+## gap> TraceInternalMethods();
+## true
+## gap> 2+3+4+5+6;;
+## gap> 2.0+2.0;;
+## gap> 3^(1,2,3);;
+## gap> GetTraceInternalMethodsCounts();
+## rec( Pow := rec( integer := rec( ("permutation (small)") := 1 ) ),
+##  Sum := rec( integer := rec( integer := 4 ),
+##      macfloat := rec( macfloat := 1 ) ) )
+## # 'macfloat' is a floating point number
+## gap> UntraceInternalMethods();
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+
+# The return type here is stored as a record, as 0 is a valid TNUM.
+BIND_GLOBAL("GetTraceInternalMethodsCounts", function()
+    local ret, type, i, j, counts,member, nicename;
+    counts := GET_TRACED_INTERNAL_METHODS_COUNTS();
+    ret := rec();
+    for type in REC_NAMES(counts) do
+        # Drop the 'Funcs' part
+        nicename := type{[1..LENGTH(type)-5]};
+        ret.(nicename) := rec();
+        member := counts.(type);
+        for i in [1..LENGTH(member)] do
+            if IsBound(member[i]) then
+                if IS_LIST(member[LENGTH(member)]) then
+                    # Is a 2D array
+                    ret.(nicename).(GET_TNAM_FROM_TNUM(i-1)) := rec();
+                    for j in [1..LENGTH(member[i])] do
+                        if IsBound(member[i][j]) then
+                            ret.(nicename).(GET_TNAM_FROM_TNUM(i-1)).(GET_TNAM_FROM_TNUM(j-1)) := member[i][j];
+                        fi;
+                    od;
+                else
+                    # Is a 1D array
+                    ret.(nicename).(GET_TNAM_FROM_TNUM(i-1)) := member[i];
+                fi;
+            fi;
+        od;
+    od;
+    return ret;
+end);
 
 #############################################################################
 ##
@@ -2068,3 +2155,4 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
 
     Assert(2, CHECK_ALL_METHOD_RANKS());
 end );
+
