@@ -1619,7 +1619,6 @@ InstallMethod( GroupByQuotientSystem,
 
     coll![ SCP_NUMBER_RWS_GENERATORS ] := n;
 
-    # truncate the collector to the correct number of generators.
     for i in 
       [ SCP_RWS_GENERATORS,
         SCP_POWERS, 
@@ -1630,8 +1629,19 @@ InstallMethod( GroupByQuotientSystem,
         SCP_RELATIVE_ORDERS,
         SCP_WEIGHTS ] do
 
-        if IsBound( coll![ i ] ) and Length( coll![ i ] ) > n then
+        if not IsBound( coll![ i ] ) then
+            continue;
+        fi;
+        if Length( coll![ i ] ) > n then
+            # truncate the collector to the correct number of generators
             coll![ i ] := coll![ i ]{[1..n]};
+        else
+            # make a shallow copy, so that modifications made to coll do not
+            # modify qs!.collector (e.g. in HPC-GAP, GroupByRwsNC makes all
+            # members of the given collector readonly; if it shares e.g. its
+            # SCP_WEIGHTS with qs!.collector, then this would cause errors
+            # later on when extending the quotient system.
+            coll![ i ] := ShallowCopy( coll![ i ] );
         fi;
     od;
     return GroupByRwsNC( coll );
