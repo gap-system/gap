@@ -1855,6 +1855,12 @@ local   F,      # free group
 end);
 
 
+# use this presentation also for rewriting
+InstallMethod(IsomorphismFpGroupForRewriting,"symmetric",
+  [IsNaturalSymmetricGroup],0,
+  IsomorphismFpGroup);
+
+
 #############################################################################
 ##
 #M  ViewObj( <nat-sym-grp> )
