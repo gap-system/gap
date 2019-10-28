@@ -90,36 +90,6 @@ static Obj TypeTLRecord(Obj obj)
   return TYPE_TLREC;
 }
 
-static void SetTypeAList(Obj obj, Obj kind)
-{
-  switch (TNUM_OBJ(obj)) {
-    case T_ALIST:
-    case T_FIXALIST:
-      HashLock(obj);
-      ADDR_OBJ(obj)[1] = kind;
-      CHANGED_BAG(obj);
-      RetypeBag(obj, T_APOSOBJ);
-      HashUnlock(obj);
-      break;
-    case T_APOSOBJ:
-      HashLock(obj);
-      ADDR_OBJ(obj)[1] = kind;
-      CHANGED_BAG(obj);
-      HashUnlock(obj);
-      break;
-  }
-  MEMBAR_WRITE();
-}
-
-static void SetTypeARecord(Obj obj, Obj kind)
-{
-  ADDR_OBJ(obj)[0] = kind;
-  CHANGED_BAG(obj);
-  RetypeBag(obj, T_ACOMOBJ);
-  MEMBAR_WRITE();
-}
-
-
 static void ArgumentError(const char *message)
 {
     ErrorQuit(message, 0, 0);
@@ -1856,11 +1826,6 @@ static Int InitKernel (
   TypeObjFuncs[ T_AREC ] = TypeARecord;
   TypeObjFuncs[ T_ACOMOBJ ] = TypeARecord;
   TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
-  SetTypeObjFuncs[ T_ALIST ] = SetTypeAList;
-  SetTypeObjFuncs[ T_FIXALIST ] = SetTypeAList;
-  SetTypeObjFuncs[ T_APOSOBJ ] = SetTypeAList;
-  SetTypeObjFuncs[ T_AREC ] = SetTypeARecord;
-  SetTypeObjFuncs[ T_ACOMOBJ ] = SetTypeARecord;
   /* install global variables */
   InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
   InitCopyGVar("TYPE_AREC", &TYPE_AREC);

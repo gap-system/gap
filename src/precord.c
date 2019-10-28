@@ -68,17 +68,6 @@ static Obj TypePRec(Obj prec)
     return IS_MUTABLE_OBJ(prec) ? TYPE_PREC_MUTABLE : TYPE_PREC_IMMUTABLE;
 }
 
-/****************************************************************************
-**
-*F  SetTypePRecToComObj( <rec>, <kind> )  convert record to component object
-**
-*/
-static void SetTypePRecToComObj(Obj rec, Obj kind)
-{
-    RetypeBag(rec, T_COMOBJ);
-    SET_TYPE_COMOBJ(rec, kind);
-    CHANGED_BAG(rec);
-}
 
 /****************************************************************************
 **
@@ -868,8 +857,6 @@ static Int InitKernel (
 
     TypeObjFuncs[ T_PREC            ] = TypePRec;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRec;
-
-    SetTypeObjFuncs[ T_PREC ] = SetTypePRecToComObj;
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 
