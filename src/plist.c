@@ -766,18 +766,6 @@ static Obj TypePlistFfe(Obj list)
 
 /****************************************************************************
 **
-*F  SetTypePlistToPosObj(<list>, <kind>) .  convert list to positional object
-**
-*/
-static void SetTypePlistToPosObj(Obj list, Obj kind)
-{
-    RetypeBag(list, T_POSOBJ);
-    SET_TYPE_POSOBJ(list, kind);
-    CHANGED_BAG(list);
-}
-
-/****************************************************************************
-**
 *F  ShallowCopyPlist( <list> )  . . . . . . . .  shallow copy of a plain list
 **
 **  'ShallowCopyPlist' makes a copy of a plain list.
@@ -3363,10 +3351,6 @@ static Int InitKernel (
     TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = TypePlistDenseNHomNSort;
     TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmpty;
     TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmpty;
-
-    for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
-        SetTypeObjFuncs[ t1 ] = SetTypePlistToPosObj;
-    }
 
     for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_TAB_RECT_SSORT; t1 += 2 ) {
         TypeObjFuncs[ t1            ] = TypePlistHom;

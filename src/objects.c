@@ -162,17 +162,70 @@ static Obj TypeObjError(Obj obj)
 
 /****************************************************************************
 **
-*F  SET_TYPE_OBJ( <obj> )  . . . . . . . . . . . . . . set type of an object
+*F  SET_TYPE_OBJ( <obj>, <type> ) . . . . . . . . . . . set type of an object
 **
-**  'SET_TYPE_OBJ' sets the type of the object <obj>.
+**  'SET_TYPE_OBJ' sets the type of the object <obj> to <type>; if <obj>
+**  is not a posobj/comobj/datobj, attempts to first convert it to one; if
+**  that fails, an error is raised.
 */
+static void SetTypeComObj(Obj obj, Obj type);
+static void SetTypePosObj(Obj obj, Obj type);
+//static void SetTypeDatObj(Obj obj, Obj type);
 
-void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj type );
-
-static void SetTypeObjError(Obj obj, Obj type)
+void SET_TYPE_OBJ(Obj obj, Obj type)
 {
-    ErrorQuit( "Panic: cannot change type of object of type '%s'",
-               (Int)TNAM_OBJ(obj), 0L );
+    switch (TNUM_OBJ(obj)) {
+#ifdef HPCGAP
+    case T_ALIST:
+    case T_FIXALIST:
+        HashLock(obj);
+        ADDR_OBJ(obj)[1] = type;
+        CHANGED_BAG(obj);
+        RetypeBag(obj, T_APOSOBJ);
+        HashUnlock(obj);
+        MEMBAR_WRITE();
+        break;
+    case T_APOSOBJ:
+        HashLock(obj);
+        ADDR_OBJ(obj)[1] = type;
+        CHANGED_BAG(obj);
+        HashUnlock(obj);
+        MEMBAR_WRITE();
+        break;
+    case T_AREC:
+    case T_ACOMOBJ:
+        ADDR_OBJ(obj)[0] = type;
+        CHANGED_BAG(obj);
+        RetypeBag(obj, T_ACOMOBJ);
+        MEMBAR_WRITE();
+        break;
+#endif
+    case T_PREC:
+        RetypeBag(obj, T_COMOBJ);
+        SET_TYPE_COMOBJ(obj, type);
+        CHANGED_BAG(obj);
+        break;
+    case T_COMOBJ:
+        SetTypeComObj(obj, type);
+        break;
+    case T_POSOBJ:
+        SetTypePosObj(obj, type);
+        break;
+    case T_DATOBJ:
+        SetTypeDatObj(obj, type);
+        break;
+
+    default:
+        if (IS_PLIST(obj)) {
+            RetypeBag(obj, T_POSOBJ);
+            SET_TYPE_POSOBJ(obj, type);
+            CHANGED_BAG(obj);
+        }
+        else {
+            ErrorQuit("cannot change type of a %s", (Int)TNAM_OBJ(obj), 0);
+        }
+        break;
+    }
 }
 
 
@@ -2036,16 +2089,11 @@ static Int InitKernel (
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(TypeObjFuncs[ t ] == 0);
         TypeObjFuncs[ t ] = TypeObjError;
-        SetTypeObjFuncs [ t] = SetTypeObjError;
     }
 
     TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
     TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
     TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
-
-    SetTypeObjFuncs [ T_COMOBJ ] = SetTypeComObj;
-    SetTypeObjFuncs [ T_POSOBJ ] = SetTypePosObj;
-    SetTypeObjFuncs [ T_DATOBJ ] = SetTypeDatObj;
 
     /* functions for 'to-be-defined' objects                               */
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );

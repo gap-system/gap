@@ -491,16 +491,13 @@ EXPORT_INLINE Obj TYPE_OBJ(Obj obj)
 
 /****************************************************************************
 **
-*F  SET_TYPE_OBJ( <obj>, <kind> ) . . . . . . . . . . . set kind of an object
+*F  SET_TYPE_OBJ( <obj>, <type> ) . . . . . . . . . . . set type of an object
 **
-**  'SET_TYPE_OBJ' sets the kind <kind>of the object <obj>.
+**  'SET_TYPE_OBJ' sets the type of the object <obj> to <type>; if <obj>
+**  is not a posobj/comobj/datobj, attempts to first convert it to one; if
+**  that fails, an error is raised.
 */
-extern void (*SetTypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj, Obj kind );
-EXPORT_INLINE void SET_TYPE_OBJ(Obj obj, Obj type)
-{
-    UInt tnum = TNUM_OBJ(obj);
-    (*SetTypeObjFuncs[tnum])(obj, type);
-}
+void SET_TYPE_OBJ(Obj obj, Obj type);
 
 
 /****************************************************************************
