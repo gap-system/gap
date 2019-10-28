@@ -674,123 +674,137 @@ end );
 BindGlobal("ConfluentMonoidPresentationForGroup",function(G)
 local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept;
-  iso:=IsomorphismFpGroupByChiefSeries(G:rewrite);
-  fp:=Range(iso);
-  gens:=GeneratorsOfGroup(fp);
-  n:=Length(gens);
-  dec:=iso!.decompinfo;
-
-  fmgens:=[];
-  mgens:=[];
-  for i in gens do
-    Add(fmgens,i);
-    Add(fmgens,i^-1);
-    Add(mgens,String(i));
-    Add(mgens,String(i^-1));
-  od;
-  nums:=List(fmgens,x->LetterRepAssocWord(UnderlyingElement(x))[1]);
-  fm:=FreeMonoid(mgens);
-  mgens:=GeneratorsOfMonoid(fm);
-  rules:=[];
-  reduce:=function(w)
-  local red,i,p;
-    w:=LetterRepAssocWord(w);
-    repeat
-      i:=1;
-      red:=false;
-      while i<=Length(rules) and red=false do
-        p:=PositionSublist(w,LetterRepAssocWord(rules[i][1]));
-        if p<>fail then
-          #Print("Apply ",rules[i],p,w,"\n");
-          w:=Concatenation(w{[1..p-1]},LetterRepAssocWord(rules[i][2]),
-            w{[p+Length(rules[i][1])..Length(w)]});
-          red:=true;
-        else
-          i:=i+1;
-        fi;
-      od;
-    until red=false;
-    return AssocWordByLetterRep(FamilyObj(One(fm)),w);
-  end;
-
-
-  homs:=ShallowCopy(dec.homs);
-  mos:=[];
-  off:=Length(mgens);
-  dept:=[];
-  # go up so we may reduce tails
-  for i in [Length(homs),Length(homs)-1..1] do
-    Add(dept,off);
-    if IsPcgs(homs[i]) then
-      ffp:=AbelianGroup(IsFpGroup,RelativeOrders(homs[i]));
-    else
-      ffp:=Range(dec.homs[i]);
-    fi;
-    imo:=IsomorphismFpMonoid(ffp);
-    Add(mos,imo);
-    m:=Range(imo);
-    loff:=off-Length(GeneratorsOfMonoid(m));
-    monreps:=fmgens{[loff+1..off]};
-    monreal:=mgens{[loff+1..off]};
-    if IsBound(m!.rewritingSystem) then
-      k:=m!.rewritingSystem;
-    else
-      k:=KnuthBendixRewritingSystem(m);
-    fi;
+  if IsSymmetricGroup(G) then
+    i:=SymmetricGroup(SymmetricDegree(G));
+    iso:=CheapIsomSymAlt(G,i)*IsomorphismFpGroup(i);
+    fp:=Range(iso);
+    hom:=IsomorphismFpMonoid(fp);
+    m:=Range(hom);
+    fm:=FreeMonoidOfFpMonoid(m);
+    k:=KnuthBendixRewritingSystem(m);
     MakeConfluent(k);
-    # convert rules
-    for r in Rules(k) do
-      left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreps);
-      right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreps);
-      diff:=LeftQuotient(PreImagesRepresentative(iso,right),
-              PreImagesRepresentative(iso,left));
-      diff:=ImagesRepresentative(iso,diff);
+    rules:=Rules(k);
+    dept:=fail;
+  else
+    iso:=IsomorphismFpGroupByChiefSeries(G:rewrite);
 
-      left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreal);
-      right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreal);
-      if not IsOne(diff) then 
-        right:=right*Product(List(LetterRepAssocWord(UnderlyingElement(diff)),
-          x->mgens[Position(nums,x)]));
-      fi;
-      right:=reduce(right); # monoid word might change
-      Add(rules,[left,right]);
+    fp:=Range(iso);
+    gens:=GeneratorsOfGroup(fp);
+    n:=Length(gens);
+    dec:=iso!.decompinfo;
+
+    fmgens:=[];
+    mgens:=[];
+    for i in gens do
+      Add(fmgens,i);
+      Add(fmgens,i^-1);
+      Add(mgens,String(i));
+      Add(mgens,String(i^-1));
     od;
-    for j in [loff+1..off] do
-      # if the generator gets reduced away, won't need to use it
-      if reduce(mgens[j])=mgens[j] then
-        for k in [off+1..Length(mgens)] do
-          if reduce(mgens[k])=mgens[k] then
-            right:=fmgens[j]^-1*fmgens[k]*fmgens[j];
-            #collect
-            right:=ImagesRepresentative(iso,PreImagesRepresentative(iso,right));
-            right:=Product(List(LetterRepAssocWord(UnderlyingElement(right)),
-              x->mgens[Position(nums,x)]));
-            right:=reduce(mgens[j]*right);
-            Add(rules,[mgens[k]*mgens[j],right]);
+    nums:=List(fmgens,x->LetterRepAssocWord(UnderlyingElement(x))[1]);
+    fm:=FreeMonoid(mgens);
+    mgens:=GeneratorsOfMonoid(fm);
+    rules:=[];
+    reduce:=function(w)
+    local red,i,p;
+      w:=LetterRepAssocWord(w);
+      repeat
+        i:=1;
+        red:=false;
+        while i<=Length(rules) and red=false do
+          p:=PositionSublist(w,LetterRepAssocWord(rules[i][1]));
+          if p<>fail then
+            #Print("Apply ",rules[i],p,w,"\n");
+            w:=Concatenation(w{[1..p-1]},LetterRepAssocWord(rules[i][2]),
+              w{[p+Length(rules[i][1])..Length(w)]});
+            red:=true;
+          else
+            i:=i+1;
           fi;
         od;
+      until red=false;
+      return AssocWordByLetterRep(FamilyObj(One(fm)),w);
+    end;
+
+
+    homs:=ShallowCopy(dec.homs);
+    mos:=[];
+    off:=Length(mgens);
+    dept:=[];
+    # go up so we may reduce tails
+    for i in [Length(homs),Length(homs)-1..1] do
+      Add(dept,off);
+      if IsPcgs(homs[i]) then
+        ffp:=AbelianGroup(IsFpGroup,RelativeOrders(homs[i]));
+      else
+        ffp:=Range(dec.homs[i]);
       fi;
+      imo:=IsomorphismFpMonoid(ffp);
+      Add(mos,imo);
+      m:=Range(imo);
+      loff:=off-Length(GeneratorsOfMonoid(m));
+      monreps:=fmgens{[loff+1..off]};
+      monreal:=mgens{[loff+1..off]};
+      if IsBound(m!.rewritingSystem) then
+        k:=m!.rewritingSystem;
+      else
+        k:=KnuthBendixRewritingSystem(m);
+      fi;
+      MakeConfluent(k);
+      # convert rules
+      for r in Rules(k) do
+        left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreps);
+        right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreps);
+        diff:=LeftQuotient(PreImagesRepresentative(iso,right),
+                PreImagesRepresentative(iso,left));
+        diff:=ImagesRepresentative(iso,diff);
+
+        left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreal);
+        right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreal);
+        if not IsOne(diff) then 
+          right:=right*Product(List(LetterRepAssocWord(UnderlyingElement(diff)),
+            x->mgens[Position(nums,x)]));
+        fi;
+        right:=reduce(right); # monoid word might change
+        Add(rules,[left,right]);
+      od;
+      for j in [loff+1..off] do
+        # if the generator gets reduced away, won't need to use it
+        if reduce(mgens[j])=mgens[j] then
+          for k in [off+1..Length(mgens)] do
+            if reduce(mgens[k])=mgens[k] then
+              right:=fmgens[j]^-1*fmgens[k]*fmgens[j];
+              #collect
+              right:=ImagesRepresentative(iso,PreImagesRepresentative(iso,right));
+              right:=Product(List(LetterRepAssocWord(UnderlyingElement(right)),
+                x->mgens[Position(nums,x)]));
+              right:=reduce(mgens[j]*right);
+              Add(rules,[mgens[k]*mgens[j],right]);
+            fi;
+          od;
+        fi;
+      od;
+      #if i<Length(homs) then Error("ZU");fi;
+      off:=loff;
     od;
-    #if i<Length(homs) then Error("ZU");fi;
-    off:=loff;
-  od;
-  Add(dept,off);
-  # calculate levels for ordering
-  dept:=dept+1;
-  dept:=List([1..Length(mgens)],
-    x->PositionProperty(dept,y->x>=y)-1);
+    Add(dept,off);
+    # calculate levels for ordering
+    dept:=dept+1;
+    dept:=List([1..Length(mgens)],
+      x->PositionProperty(dept,y->x>=y)-1);
 
-  if ForAny(rules,x->x[2]<>reduce(x[2])) then Error("irreduced right");fi;
+    if ForAny(rules,x->x[2]<>reduce(x[2])) then Error("irreduced right");fi;
 
-  # inverses are true inverses, also for extension
-  for i in [1..Length(gens)] do
-    left:=mgens[2*i-1]*mgens[2*i];
-    left:=reduce(left);
-    if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
-    left:=mgens[2*i]*mgens[2*i-1];
-    left:=reduce(left);
-    if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
-  od;
+    # inverses are true inverses, also for extension
+    for i in [1..Length(gens)] do
+      left:=mgens[2*i-1]*mgens[2*i];
+      left:=reduce(left);
+      if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+      left:=mgens[2*i]*mgens[2*i-1];
+      left:=reduce(left);
+      if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+    od;
+  fi;
 
   # finally create 
   m:=FactorFreeMonoidByRelations(fm,rules);
@@ -826,7 +840,11 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
   if not HasIsomorphismFpMonoid(G) then
     SetIsomorphismFpMonoid(G,hom);
   fi;
-  return [iso,hom,WreathProductOrdering(fm,dept)];
+  if dept=fail then
+    return [iso,hom,k!.ordering];
+  else
+    return [iso,hom,WreathProductOrdering(fm,dept)];
+  fi;
 end);
 
 #############################################################################
