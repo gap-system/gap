@@ -18,7 +18,6 @@ environment:
       CYG_ROOT: C:\cygwin64
       PACKAGES: "-P libgmp-devel,zlib-devel,python27,python27-pip"
       CFLAGS: "--coverage"
-      CXXFLAGS: "--coverage"
       LDFLAGS: "--coverage"
 # FIXME: HPC-GAP build on AppVeyor disabled for now, as it crashes
 #    - CYG_ARCH: x86_64
