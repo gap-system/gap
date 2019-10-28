@@ -6,5 +6,5 @@ runtest := function()
     Print(InfoLevel(InfoDebug),"\n");
     Info(InfoDebug, 3, "Do not print");
     Info(InfoDebug, 2, "print this B");
-    Info(InfoDebug, 1, "print this C");
+    Info(InfoDebug, 1, "print ", "this ", "C");
 end;

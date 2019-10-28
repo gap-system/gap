@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "58141340"
+#define FILE_CRC  "121059807"
 
 /* global variables used in handlers */
 static GVar G_Print;
@@ -140,10 +140,16 @@ static Obj  HdlrFunc2 (
  CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(1) );
  if ( t_3 == True ) {
-  t_2 = NEW_PLIST( T_PLIST, 1 );
-  SET_LEN_PLIST( t_2, 1 );
-  t_3 = MakeString( "print this C" );
+  t_2 = NEW_PLIST( T_PLIST, 3 );
+  SET_LEN_PLIST( t_2, 3 );
+  t_3 = MakeString( "print " );
   SET_ELM_PLIST( t_2, 1, t_3 );
+  CHANGED_BAG(t_2);
+  t_3 = MakeString( "this " );
+  SET_ELM_PLIST( t_2, 2, t_3 );
+  CHANGED_BAG(t_2);
+  t_3 = MakeString( "C" );
+  SET_ELM_PLIST( t_2, 3, t_3 );
   CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(1), t_2 );
  }
@@ -176,7 +182,7 @@ static Obj  HdlrFunc1 (
       Print( InfoLevel( InfoDebug ), "\n" );
       Info( InfoDebug, 3, "Do not print" );
       Info( InfoDebug, 2, "print this B" );
-      Info( InfoDebug, 1, "print this C" );
+      Info( InfoDebug, 1, "print ", "this ", "C" );
       return;
   end; */
  t_1 = NewFunction( NameFunc[2], 0, 0, HdlrFunc2 );
@@ -270,7 +276,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "info.g",
- .crc         = 58141340,
+ .crc         = 121059807,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
