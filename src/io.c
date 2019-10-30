@@ -613,8 +613,16 @@ UInt OpenInputStream(Obj stream, UInt echo)
 UInt CloseInput ( void )
 {
     /* refuse to close the initial input file                              */
+#ifdef HPCGAP
+    // In HPC-GAP, only for the main thread.
+    if (TLS(threadID) != 0) {
+        if (IO()->InputStackPointer <= 0)
+            return 0;
+    } else
+#else
     if (IO()->InputStackPointer <= 1)
         return 0;
+#endif
 
     /* close the input file                                                */
     if (!IO()->Input->isstream) {
@@ -626,6 +634,12 @@ UInt CloseInput ( void )
 
     /* revert to last file                                                 */
     const int sp = --IO()->InputStackPointer;
+#ifdef HPCGAP
+    if (sp == 0) {
+        IO()->Input = NULL;
+        return 1;
+    }
+#endif
     IO()->Input = IO()->InputStack[sp - 1];
     STATE(In) = IO()->Input->ptr;
     STATE(Scanner).Symbol = IO()->Input->symbol;
