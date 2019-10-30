@@ -303,9 +303,7 @@ static Obj Shell(Obj    context,
       if (catchQUIT)
         {
           STATE(UserHasQUIT) = 0;
-          MakeReadWriteGVar(QUITTINGGVar);
-          AssGVar(QUITTINGGVar, True);
-          MakeReadOnlyGVar(QUITTINGGVar);
+          AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
           return Fail;
         }
       else
