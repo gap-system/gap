@@ -649,6 +649,12 @@ InstallMethod( SmallestMovedPoint,
 end );
 
 
+InstallMethod( SmallestMovedPoint,
+    "for an internal permutation",
+    [ IsPerm and IsInternalRep ],
+    SMALLEST_MOVED_POINT_PERM );
+
+
 #############################################################################
 ##
 #m  LargestMovedPoint( <perm> ) . . . . . . . .  for internal permutation

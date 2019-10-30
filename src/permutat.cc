@@ -1125,6 +1125,40 @@ UInt LargestMovedPointPerm(Obj perm)
         return LargestMovedPointPerm_<UInt4>(perm);
 }
 
+/****************************************************************************
+**
+*F  SmallestMovedPointPerm( <perm> ) smallest point moved by perm
+**
+**  'SmallestMovedPointPerm' implements 'SmallestMovedPoint' for internal
+**  permutations.
+*/
+
+// Import 'Infinity', as a return value for the identity permutation
+static Obj Infinity;
+
+template <typename T>
+static inline Obj SmallestMovedPointPerm_(Obj perm)
+{
+    const T * ptPerm = CONST_ADDR_PERM<T>(perm);
+    UInt      deg = DEG_PERM<T>(perm);
+
+    for (UInt i = 1; i <= deg; i++) {
+        if (ptPerm[i - 1] != i - 1)
+            return INTOBJ_INT(i);
+    }
+    return Infinity;
+}
+
+static Obj SmallestMovedPointPerm(Obj perm)
+{
+    GAP_ASSERT(TNUM_OBJ(perm) == T_PERM2 || TNUM_OBJ(perm) == T_PERM4);
+
+    if (TNUM_OBJ(perm) == T_PERM2)
+        return SmallestMovedPointPerm_<UInt2>(perm);
+    else
+        return SmallestMovedPointPerm_<UInt4>(perm);
+}
+
 
 /****************************************************************************
 **
@@ -1141,6 +1175,18 @@ static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
     return INTOBJ_INT(LargestMovedPointPerm(perm));
 }
 
+/****************************************************************************
+**
+*F  FuncSMALLEST_MOVED_POINT_PERM( <self>, <perm> )
+**
+**  GAP-level wrapper for 'SmallestMovedPointPerm'.
+*/
+static Obj FuncSMALLEST_MOVED_POINT_PERM(Obj self, Obj perm)
+{
+    RequirePermutation("SmallestMovedPointPerm", perm);
+
+    return SmallestMovedPointPerm(perm);
+}
 
 /****************************************************************************
 **
@@ -2736,6 +2782,7 @@ static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC_1ARGS(PermList, list),
     GVAR_FUNC_1ARGS(LARGEST_MOVED_POINT_PERM, perm),
+    GVAR_FUNC_1ARGS(SMALLEST_MOVED_POINT_PERM, perm),
     GVAR_FUNC_2ARGS(CYCLE_LENGTH_PERM_INT, perm, point),
     GVAR_FUNC_2ARGS(CYCLE_PERM_INT, perm, point),
     GVAR_FUNC_1ARGS(CYCLE_STRUCT_PERM, perm),
@@ -2783,6 +2830,9 @@ static Int InitKernel (
 #endif
 
     ImportGVarFromLibrary("PERM_INVERSE_THRESHOLD", &PERM_INVERSE_THRESHOLD);
+
+    /* needed for SmallestMovedPoint                                       */
+    ImportGVarFromLibrary("infinity", &Infinity);
 
     /* install the type functions                                           */
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
