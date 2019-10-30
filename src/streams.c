@@ -279,7 +279,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
 
 static UInt LastReadValueGVar;
 
-static Int READ_INNER ( UInt UseUHQ )
+static void READ_INNER(void)
 {
     if (STATE(UserHasQuit))
       {
@@ -291,9 +291,7 @@ static Int READ_INNER ( UInt UseUHQ )
         Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
         STATE(UserHasQUIT) = 0;
       }
-    MakeReadWriteGVar(LastReadValueGVar);
-    AssGVar( LastReadValueGVar, 0);
-    MakeReadOnlyGVar(LastReadValueGVar);
+    AssGVarWithoutReadOnlyCheck( LastReadValueGVar, 0);
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
@@ -323,9 +321,7 @@ static Int READ_INNER ( UInt UseUHQ )
         }
         if (evalResult)
           {
-            MakeReadWriteGVar(LastReadValueGVar);
-            AssGVar( LastReadValueGVar, evalResult);
-            MakeReadOnlyGVar(LastReadValueGVar);
+            AssGVarWithoutReadOnlyCheck( LastReadValueGVar, evalResult);
           }
         
     }
@@ -338,23 +334,8 @@ static Int READ_INNER ( UInt UseUHQ )
             0L, 0L );
     }
     ClearError();
-
-    if (!UseUHQ && STATE(UserHasQuit)) {
-      STATE(UserHasQuit) = 0; /* stop recovery here */
-      return 2;
-    }
-
-    return 1;
 }
 
-
-static Int READ( void ) {
-  return READ_INNER(1);
-}
-
-static Int READ_NORECOVERY( void ) {
-  return READ_INNER(0);
-}
 
 /****************************************************************************
 **
@@ -894,7 +875,8 @@ static Obj FuncREAD(Obj self, Obj filename)
     }
 
     /* read the test file                                                  */
-    return READ() ? True : False;
+    READ_INNER();
+    return True;
 }
 
 /****************************************************************************
@@ -923,12 +905,12 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
     }
 
     /* read the file */
-    switch (READ_NORECOVERY()) {
-    case 0: return False;
-    case 1: return True;
-    case 2: return Fail;
-    default: return Fail;
+    READ_INNER();
+    if (STATE(UserHasQuit)) {
+        STATE(UserHasQuit) = 0;    // stop recovery here
+        return Fail;
     }
+    return True;
 }
 
 
@@ -946,7 +928,8 @@ static Obj FuncREAD_STREAM(Obj self, Obj stream)
     }
 
     /* read the test file                                                  */
-    return READ() ? True : False;
+    READ_INNER();
+    return True;
 }
 
 /****************************************************************************
