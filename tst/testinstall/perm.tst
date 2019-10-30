@@ -1,4 +1,4 @@
-#@local checklens,n,permAll,permBig,permSml,x,y
+#@local checklens,n,permAll,permBig,permSml,x,y, moved
 gap> START_TEST("perm.tst");
 
 # Permutations come in two flavors in GAP, with two TNUMs: T_PERM2 for
@@ -314,12 +314,38 @@ gap> PermList(Concatenation([1..70000],[70001,1,70003]));
 fail
 
 #
-# LARGEST_MOVED_POINT_PERM
+# SmallestMovedPoint, LargestMovedPoint, MovedPoints, NrMovedPoints
 #
-gap> LARGEST_MOVED_POINT_PERM((2,3));
-3
-gap> LARGEST_MOVED_POINT_PERM((2,70000));
-70000
+gap> moved := {p} -> [SmallestMovedPoint(p), LargestMovedPoint(p), MovedPoints(p), NrMovedPoints(p)];;
+gap> moved((2,3));
+[ 2, 3, [ 2, 3 ], 2 ]
+gap> moved((2,70000));
+[ 2, 70000, [ 2, 70000 ], 2 ]
+gap> moved((70000, 70001));
+[ 70000, 70001, [ 70000, 70001 ], 2 ]
+gap> moved((1,2,3,4));
+[ 1, 4, [ 1, 2, 3, 4 ], 4 ]
+gap> moved(());
+[ infinity, 0, [  ], 0 ]
+gap> moved((1,2,3,4)^4);
+[ infinity, 0, [  ], 0 ]
+gap> moved([]);
+[ infinity, 0, [  ], 0 ]
+gap> moved([()]);
+[ infinity, 0, [  ], 0 ]
+gap> moved([(1,2),(5,6)]);
+[ 1, 6, [ 1, 2, 5, 6 ], 4 ]
+gap> moved(SymmetricGroup([5,7,9]));
+[ 5, 9, [ 5, 7 .. 9 ], 3 ]
+gap> moved(SymmetricGroup([5,7,9,70000]));
+[ 5, 70000, [ 5, 7, 9, 70000 ], 4 ]
+gap> moved(SymmetricGroup(1));
+[ infinity, 0, [  ], 0 ]
+gap> moved(Group((8,9,10),(13,15,19)));
+[ 8, 19, [ 8, 9, 10, 13, 15, 19 ], 6 ]
+gap> SMALLEST_MOVED_POINT_PERM(fail);
+Error, SmallestMovedPointPerm: <perm> must be a permutation (not the value 'fa\
+il')
 gap> LARGEST_MOVED_POINT_PERM(fail);
 Error, LargestMovedPointPerm: <perm> must be a permutation (not the value 'fai\
 l')
