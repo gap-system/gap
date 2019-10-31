@@ -342,9 +342,15 @@ $(srcdir)/src/pperm.c:
 $(srcdir)/src/trans.c:
 
 # Build rule for C++ source files
+#
+# We disable support for exceptions and RTTI as we don't use them and they
+# cause compiler/linker issues in some build configurations; but we are
+# careful to not put these into GAP_CXXFLAGS, as kernel extensions may want to
+# use GAP_CXXFLAGS but also may have a  need to interface with C++ code in
+# libraries that use exceptions.
 obj/%.lo: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool
 	@$(MKDIR_P) $(@D)/$(DEPDIRNAME)
-	$(QUIET_CXX)$(LIBTOOL) --mode=compile --tag CXX $(CXX) $(DEPFLAGS) $(GAP_CXXFLAGS) $(WARN_CXXFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
+	$(QUIET_CXX)$(LIBTOOL) --mode=compile --tag CXX $(CXX) $(DEPFLAGS) $(GAP_CXXFLAGS) -fno-exceptions -fno-rtti $(WARN_CXXFLAGS) $(GAP_CPPFLAGS) -c $< -o $@
 	@echo "$<:" >> $(DEPFILE)
 
 # Build rule for C source files
