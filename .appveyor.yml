@@ -42,6 +42,7 @@ build_script:
         throw "There are newer queued builds for this pull request, failing early." }
   - SET "PATH=%CYG_ROOT%\bin;%PATH%"
   - python -m pip install gcovr # for coverage reporting later on
+  - bash -lc "gcc --version"
   - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./etc/ci-prepare.sh"
 
 test_script:
