@@ -333,43 +333,32 @@ static Obj Shell(Obj    context,
 
 static Obj FuncSHELL(Obj self, Obj args)
 {
-  Obj context = 0;
-  UInt canReturnVoid = 0;
-  UInt canReturnObj = 0;
-  Int lastDepth = 0;
-  UInt setTime = 0;
-  Obj prompt = 0;
-  Obj preCommandHook = 0;
+  Obj context;
+  Obj canReturnVoid;
+  Obj canReturnObj;
+  Int lastDepth;
+  Obj setTime;
+  Obj prompt;
+  Char promptBuffer[81];
+  Obj preCommandHook;
   Obj infile;
   Obj outfile;
+  Obj catchQUIT;
   Obj res;
-  Char promptBuffer[81];
-  UInt catchQUIT = 0;
-  
-  if (!IS_PLIST(args) || LEN_PLIST(args) != 10)
-    ErrorMayQuit("SHELL takes 10 arguments",0,0);
+
+  GAP_ASSERT(LEN_PLIST(args) == 10);
   
   context = ELM_PLIST(args,1);
   if (!IS_LVARS_OR_HVARS(context))
-    ErrorMayQuit("SHELL: 1st argument should be a local variables bag",0,0);
+    RequireArgument("SHELL", context, "must be a local variables bag");
   
-  if (ELM_PLIST(args,2) == True)
-    canReturnVoid = 1;
-  else if (ELM_PLIST(args,2) == False)
-    canReturnVoid = 0;
-  else
-    ErrorMayQuit("SHELL: 2nd argument (can return void) should be true or false",0,0);
+  canReturnVoid = ELM_PLIST(args, 2);
+  RequireTrueOrFalse("SHELL", canReturnVoid);
 
-  if (ELM_PLIST(args,3) == True)
-    canReturnObj = 1;
-  else if (ELM_PLIST(args,3) == False)
-    canReturnObj = 0;
-  else
-    ErrorMayQuit("SHELL: 3rd argument (can return object) should be true or false",0,0);
-  
-  if (!IS_INTOBJ(ELM_PLIST(args,4)))
-    ErrorMayQuit("SHELL: 4th argument (last depth) should be a small integer",0,0);
-  lastDepth = INT_INTOBJ(ELM_PLIST(args,4));
+  canReturnObj = ELM_PLIST(args, 3);
+  RequireTrueOrFalse("SHELL", canReturnObj);
+
+  lastDepth = GetSmallIntEx("SHELL", ELM_PLIST(args,4), "lastDepth");
   if (lastDepth < 0 )
     {
       Pr("#W SHELL: negative last depth treated as zero\n",0,0);
@@ -381,16 +370,13 @@ static Obj FuncSHELL(Obj self, Obj args)
       lastDepth = 3;
     }
 
-  if (ELM_PLIST(args,5) == True)
-    setTime = 1;
-  else if (ELM_PLIST(args,5) == False)
-    setTime = 0;
-  else
-    ErrorMayQuit("SHELL: 5th argument (set time) should be true or false",0,0);
-  
+  setTime = ELM_PLIST(args, 5);
+  RequireTrueOrFalse("SHELL", setTime);
+
   prompt = ELM_PLIST(args,6);
-  if (!IsStringConv(prompt) || GET_LEN_STRING(prompt) > 80)
-    ErrorMayQuit("SHELL: 6th argument (prompt) must be a string of length at most 80 characters",0,0);
+  RequireStringRep("SHELL", prompt);
+  if (GET_LEN_STRING(prompt) > 80)
+    ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
   promptBuffer[0] = '\0';
   strlcat(promptBuffer, CONST_CSTR_STRING(prompt), sizeof(promptBuffer));
 
@@ -399,26 +385,20 @@ static Obj FuncSHELL(Obj self, Obj args)
   if (preCommandHook == False)
     preCommandHook = 0;
   else if (!IS_FUNC(preCommandHook))
-    ErrorMayQuit("SHELL: 7th argument (preCommandHook) must be function or false",0,0);
-
+    RequireArgument("SHELL", preCommandHook, "must be function or false");
   
   infile = ELM_PLIST(args,8);
-  if (!IsStringConv(infile))
-    ErrorMayQuit("SHELL: 8th argument (infile) must be a string",0,0);
+  RequireStringRep("SHELL", infile);
 
   outfile = ELM_PLIST(args,9);
-  if (!IsStringConv(outfile))
-    ErrorMayQuit("SHELL: 9th argument (outfile) must be a string",0,0);
+  RequireStringRep("SHELL", outfile);
 
-  if (ELM_PLIST(args,10) == True)
-    catchQUIT = 1;
-  else if (ELM_PLIST(args,10) == False)
-    catchQUIT = 0;
-  else
-    ErrorMayQuit("SHELL: 10th argument (catch QUIT) should be true or false",0,0);
+  catchQUIT = ELM_PLIST(args, 10);
+  RequireTrueOrFalse("SHELL", catchQUIT);
 
-  res =  Shell(context, canReturnVoid, canReturnObj, lastDepth, setTime, promptBuffer, preCommandHook, catchQUIT,
-               CSTR_STRING(infile), CSTR_STRING(outfile));
+  res = Shell(context, canReturnVoid == True, canReturnObj == True,
+              lastDepth, setTime == True, promptBuffer, preCommandHook,
+              catchQUIT == True, CSTR_STRING(infile), CSTR_STRING(outfile));
 
   STATE(UserHasQuit) = 0;
   return res;
@@ -1482,9 +1462,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
     GVAR_FUNC_0ARGS(SHOULD_QUIT_ON_BREAK),
     GVAR_FUNC(SHELL,
-              -1,
+              10,
               "context, canReturnVoid, canReturnObj, lastDepth, "
-              "setTime, prompt, promptHook, infile, outfile"),
+              "setTime, prompt, promptHook, preCommandHook, infile, outfile"),
     GVAR_FUNC_0ARGS(KERNEL_INFO),
 #ifdef HPCGAP
     GVAR_FUNC_0ARGS(THREAD_UI),

@@ -1,35 +1,34 @@
 #
 gap> SHELL();
-Error, SHELL takes 10 arguments
+Error, Function: number of arguments must be 10 (not 0)
 gap> SHELL(1,2,3,4,5,6,7,8,9,10);
-Error, SHELL: 1st argument should be a local variables bag
+Error, SHELL: <context> must be a local variables bag (not the integer 1)
 gap> lvars:=GetCurrentLVars();
 <lvars bag>
 gap> SHELL(lvars,2,3,4,5,6,7,8,9,10);
-Error, SHELL: 2nd argument (can return void) should be true or false
+Error, SHELL: <canReturnVoid> must be 'true' or 'false' (not the integer 2)
 gap> SHELL(lvars,true,3,4,5,6,7,8,9,10);
-Error, SHELL: 3rd argument (can return object) should be true or false
+Error, SHELL: <canReturnObj> must be 'true' or 'false' (not the integer 3)
 gap> SHELL(lvars,true,true,fail,5,6,7,8,9,10);
-Error, SHELL: 4th argument (last depth) should be a small integer
+Error, SHELL: lastDepth must be a small integer (not the value 'fail')
 gap> SHELL(lvars,true,true,-1,5,6,7,8,9,10);
 #W SHELL: negative last depth treated as zero
-Error, SHELL: 5th argument (set time) should be true or false
+Error, SHELL: <setTime> must be 'true' or 'false' (not the integer 5)
 gap> SHELL(lvars,true,true,4,5,6,7,8,9,10);
 #W SHELL: last depth greater than 3 treated as 3
-Error, SHELL: 5th argument (set time) should be true or false
+Error, SHELL: <setTime> must be 'true' or 'false' (not the integer 5)
 gap> SHELL(lvars,true,true,0,5,6,7,8,9,10);
-Error, SHELL: 5th argument (set time) should be true or false
+Error, SHELL: <setTime> must be 'true' or 'false' (not the integer 5)
 gap> SHELL(lvars,true,true,0,false,6,7,8,9,10);
-Error, SHELL: 6th argument (prompt) must be a string of length at most 80 char\
-acters
+Error, SHELL: <prompt> must be a string (not the integer 6)
 gap> SHELL(lvars,true,true,0,false,"abc",7,8,9,10);
-Error, SHELL: 7th argument (preCommandHook) must be function or false
+Error, SHELL: <preCommandHook> must be function or false (not the integer 7)
 gap> SHELL(lvars,true,true,0,false,"abc",false,8,9,10);
-Error, SHELL: 8th argument (infile) must be a string
+Error, SHELL: <infile> must be a string (not the integer 8)
 gap> SHELL(lvars,true,true,0,false,"abc",false,"",9,10);
-Error, SHELL: 9th argument (outfile) must be a string
+Error, SHELL: <outfile> must be a string (not the integer 9)
 gap> SHELL(lvars,true,true,0,false,"abc",false,"","",10);
-Error, SHELL: 10th argument (catch QUIT) should be true or false
+Error, SHELL: <catchQUIT> must be 'true' or 'false' (not the integer 10)
 gap> SHELL(lvars,true,true,0,false,"abc",false,"","",false);
 Error, SHELL: can't open outfile 
 
