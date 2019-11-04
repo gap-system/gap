@@ -113,6 +113,10 @@ gap> if TestPackageAvailability( "ctbllib" ) <> fail and
 >        # that the *first* generator of the centre appears first.
 >        Error( "wrong ordering of classes for isoclinic table" );
 >      fi;
+>      if ForAny( PrimeDivisors( Size( iso ) ),
+>           p -> not PowerMap( iso, p ) in PossiblePowerMaps( iso, p ) ) then
+>        Error( "wrong power map for isoclinic table" );
+>      fi;
 >    fi;
 
 # optional arguments:

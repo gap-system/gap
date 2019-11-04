@@ -6226,7 +6226,7 @@ InstallMethod( CharacterTableIsoclinic,
 
         for i in [ 1 .. p-1 ] do
           # Deal with the classes in the 'i'-th coset.
-          ypos:= PowerMap( tbl, ( k * QuoInt( i * q, p ) ) mod p, xpos );
+          ypos:= PowerMap( tbl, ( k * QuoInt( i * q, p ) ), xpos );
           for class in outer[i] do
             old:= map[ class ];
             images:= invfusion[ factorfusion[ old ] ];
