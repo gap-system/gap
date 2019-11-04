@@ -1398,9 +1398,19 @@ static Obj FuncBREAKPOINT(Obj self, Obj arg)
 
 static Obj FuncTHREAD_UI(Obj self)
 {
-  return ThreadUI ? True : False;
+    return (ThreadUI && !SingleThreadStartup) ? True : False;
 }
 
+/****************************************************************************
+**
+*F  FuncSINGLE_THREAD_STARTUP . . whether to start up in single-threaded mode
+**
+*/
+
+static Obj FuncSINGLE_THREAD_STARTUP(Obj self)
+{
+    return SingleThreadStartup ? True : False;
+}
 
 #endif
 
@@ -1486,6 +1496,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(KERNEL_INFO, 0, ""),
 #ifdef HPCGAP
     GVAR_FUNC(THREAD_UI, 0, ""),
+    GVAR_FUNC(SINGLE_THREAD_STARTUP, 0, ""),
 #endif
     GVAR_FUNC(MASTER_POINTER_NUMBER, 1, "ob"),
     GVAR_FUNC(BREAKPOINT, 1, "integer"),

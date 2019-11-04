@@ -47,6 +47,13 @@ extern UInt SyNumGCThreads;
 
 /****************************************************************************
 **
+*V  SingleThreadStartup . . . . . . . . .  start HPC-GAP with just one thread
+**
+*/
+extern UInt SingleThreadStartup;
+
+/****************************************************************************
+**
 *F  MergeSort() . . . . . . . . . . . . . . . sort an array using mergesort.
 **
 **  MergeSort() sorts an array of 'count' elements of individual size 'width'

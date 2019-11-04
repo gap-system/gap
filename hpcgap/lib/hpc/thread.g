@@ -83,18 +83,26 @@ BindGlobal("NewInterruptID", function()
   od;
 end);
 
-CreateThread(function()
-  local handlers;
-  handlers := rec(
-    SIGINT := DEFAULT_SIGINT_HANDLER,
-    SIGCHLD := DEFAULT_SIGCHLD_HANDLER,
-    SIGVTALRM := DEFAULT_SIGVTALRM_HANDLER,
-    SIGWINCH := DEFAULT_SIGWINCH_HANDLER
-  );
-  while true do
-    SIGWAIT(handlers);
-  od;
+BindGlobal("InstallHPCGAPSignalHandling", function()
+  if not IsBound(SignalHandlerThread) then
+    BindGlobal("SignalHandlerThread", CreateThread(function()
+      local handlers;
+      handlers := rec(
+        SIGINT := DEFAULT_SIGINT_HANDLER,
+        SIGCHLD := DEFAULT_SIGCHLD_HANDLER,
+        SIGVTALRM := DEFAULT_SIGVTALRM_HANDLER,
+        SIGWINCH := DEFAULT_SIGWINCH_HANDLER
+      );
+      while true do
+        SIGWAIT(handlers);
+      od;
+    end));
+  fi;
 end);
+
+if IsHPCGAP and not SINGLE_THREAD_STARTUP() then
+  InstallHPCGAPSignalHandling();
+fi;
 
 #
 # LockCounters are per region and per thread counters

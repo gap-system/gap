@@ -300,6 +300,7 @@ void InitBags(UInt              initial_size,
     }
 #endif
     GC_set_all_interior_pointers(0);
+    GC_set_handle_fork(1);
     GC_init();
     GC_set_free_space_divisor(1);
     TLAllocatorInit();
