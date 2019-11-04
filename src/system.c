@@ -1024,9 +1024,10 @@ static const struct optInfo options[] = {
   { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
 #ifdef HPCGAP
   { 'S', "", toggle, &ThreadUI, 0 }, /* Thread UI */
-  { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Thread UI */
-  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* Thread UI */
-  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* Thread UI */
+  { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Deadlock prevention */
+  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* number of CPUs */
+  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* number of GC threads */
+  { 0  , "single-thread", toggle, &SingleThreadStartup, 0 }, /* startup with one thread only */
 #endif
   /* The following options must be handled in the kernel so they are set up before loading the library */
   { 0  , "prof", enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */

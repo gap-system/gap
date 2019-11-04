@@ -44,6 +44,12 @@ UInt SyNumProcessors = 4;
 */
 UInt SyNumGCThreads = 0;
 
+/****************************************************************************
+**
+*V  SingleThreadStartup . . . . . . . . .  start HPC-GAP with just one thread
+**
+*/
+UInt SingleThreadStartup = 0;
 
 /****************************************************************************
 **
