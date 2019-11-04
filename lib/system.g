@@ -192,6 +192,8 @@ if IsHPCGAP then
         rec( short:= "P", default := "0", arg := "<num>", help := ["set number of logical processors"] ),
         rec( short:= "G", default := "0", arg := "<num>", help := ["set number of GC threads"] ),
         rec( short:= "Z", default := false, help := ["enforce ordering of region locks"] ),
+        rec( long := "single-thread", default := false,
+             help := [ "enable/disable single-threaded startup" ]),
       ]);
 
     MakeImmutable(GAPInfo.CommandLineOptionData);
