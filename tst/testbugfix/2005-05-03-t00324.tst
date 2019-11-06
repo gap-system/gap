@@ -1,4 +1,6 @@
 # 2005/05/03 (BH)
+gap> INFO_DEBUG_CURRENT := InfoLevel(InfoDebug);;
+gap> SetInfoLevel(InfoDebug,0);
 gap> if TestPackageAvailability("crisp") <> fail and
 >       LoadPackage("crisp", false) <> fail then
 >      F:=FreeGroup("a","b","c");;
@@ -34,3 +36,4 @@ gap> if TestPackageAvailability("crisp") <> fail and
 >        Print( "problem with crisp (6)\n" );
 >      fi;
 >    fi;
+gap> SetInfoLevel(InfoDebug, INFO_DEBUG_CURRENT);
