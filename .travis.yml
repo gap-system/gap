@@ -144,7 +144,7 @@ matrix:
 script:
   - set -e
   - etc/travis_fastfail.sh
-  - pip install --user gcovr
+  - pip install --user gcovr==4.1
   - bash etc/ci-prepare.sh
   - bash etc/ci.sh
 
