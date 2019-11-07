@@ -1900,7 +1900,7 @@ local G,	# group
 	  Info(InfoLattice,2,"factorsize=",Index(j,N),"/",Index(M,N));
 
 	  # reasons not to go complements
-	  if (HasAbelianFactorGroup(j,N) and
+	  if (HasElementaryAbelianFactorGroup(j,N) and
 	    p^(Length(mpcgs)*LogInt(Index(j,M),p))>100)
 	    then
             Info(InfoLattice,3,"Set l to fail");
@@ -2068,6 +2068,23 @@ local G,	# group
 	    if onlysimple then
 	      # all groups obtained will have a solvable factor
 	      l:=[];
+            elif HasElementaryAbelianFactorGroup(j,N) then
+              #Error("invar");
+              r:=ModuloPcgs(j,N);
+              jg:=RelativeOrders(r)[1];
+              l:=MTX.BasesSubmodules(GModuleByMats(LinearActionLayer(G,r),
+                GF(jg)));
+	      Info(InfoLattice,2,"found ",Length(l)," submodules");
+	      idx:=LogInt(Index(j,M),jg);
+              C:=List(GeneratorsOfGroup(M),x->ExponentsOfPcElement(r,x))*Z(jg)^0;
+              C:=Filtered(TriangulizedMat(C),x->not IsZero(x));
+              l:=Filtered(l,x->Length(x)=idx 
+                and RankMat(Concatenation(x,C))=Length(r));
+              l:=List(l,x->ClosureGroup(N,List(x,
+                y->PcElementByExponents(r,y))));
+	      l:=Filtered(l,i->IsNormal(G,i));
+	      Info(InfoLattice,1,Length(l)," of these normal");
+	      Append(nnt,l);
 	    else
 	      Info(InfoLattice,1,"using invariant subgroups");
 	      idx:=Index(j,M);
