@@ -56,6 +56,12 @@ void GAP_Initialize(int              argc,
                     int              handleSignals)
 {
     UsingLibGap = TRUE;
+#ifdef HPCGAP
+#if !defined(USE_NATIVE_TLS) && !defined(USE_PTHREAD_TLS)
+    Panic("The HPC-GAP version of libgap requires --enable-native-tls");
+#endif
+    InitializeTLS();
+#endif
 
     InitializeGap(&argc, argv, handleSignals);
     SetExtraMarkFuncBags(markBagsCallback);
@@ -65,6 +71,16 @@ void GAP_Initialize(int              argc,
     GAP_False = False;
     GAP_Fail = Fail;
 }
+
+#ifdef HPCGAP
+void GAP_InitializeThread(void)
+{
+    if (!TLS(threadInit)) {
+        TLS(threadInit) = 1;
+        InitializeTLS();
+    }
+}
+#endif
 
 
 ////

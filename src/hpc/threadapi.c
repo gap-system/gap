@@ -483,6 +483,7 @@ static void ThreadedInterpreter(void * funcargs)
 
 static Obj FuncCreateThread(Obj self, Obj funcargs)
 {
+#ifndef USE_JULIA_GC
     Int  i, n;
     Obj  thread;
     Obj  templist;
@@ -502,6 +503,10 @@ static Obj FuncCreateThread(Obj self, Obj funcargs)
     if (!thread)
         return Fail;
     return thread;
+#else
+    ErrorMayQuit("CreateThread: disabled with Julia GC", 0, 0);
+    return 0; // flow control hint
+#endif
 }
 
 /****************************************************************************
@@ -2353,7 +2358,7 @@ void InitSignals(void)
     timer.it_interval.tv_usec = 10000;
     timer.it_value.tv_sec = 0;
     timer.it_value.tv_usec = 10000;
-    setitimer(ITIMER_VIRTUAL, &timer, NULL);
+    // setitimer(ITIMER_VIRTUAL, &timer, NULL);
 }
 
 static Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)

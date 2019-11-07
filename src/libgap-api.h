@@ -159,6 +159,9 @@ void GAP_Initialize(int              argc,
                     GAP_CallbackFunc errorCallback,
                     int              handleSignals);
 
+#ifdef HPCGAP
+void GAP_InitializeThread(void);
+#endif
 
 ////
 //// program evaluation and execution

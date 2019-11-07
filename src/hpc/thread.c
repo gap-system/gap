@@ -37,6 +37,10 @@
 #  define GC_THREADS
 # endif
 # include <gc/gc.h>
+#elif USE_JULIA_GC
+# ifdef HPCGAP
+#  include "julia_gc.h"
+# endif
 #endif
 
 

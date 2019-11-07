@@ -16,7 +16,6 @@
 
 #include "common.h"
 
-
 /* check if we are on a 64 bit machine                                     */
 #if SIZEOF_VOID_P == 8
 # define SYS_IS_64_BIT          1

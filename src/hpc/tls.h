@@ -69,6 +69,7 @@ typedef struct Region Region;
 typedef struct ThreadLocalStorage
 {
   int threadID;
+  int threadInit;
   void *threadLock;
   void *threadSignal;
   void *acquiredMonitor;

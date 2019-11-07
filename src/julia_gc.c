@@ -37,6 +37,10 @@
 #include <julia.h>
 #include <julia_gcext.h>
 
+#ifdef HPCGAP
+#include "hpc/thread.h"
+#endif
+
 
 /****************************************************************************
 **
@@ -200,7 +204,6 @@ static size_t          max_pool_obj_size;
 static UInt            YoungRef;
 static int             FullGC;
 
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 typedef struct {
     void * addr;
     size_t size;
@@ -224,6 +227,9 @@ static inline int CmpMemBlock(MemBlock m1, MemBlock m2)
 
 #include "baltree.h"
 
+static MemBlockTree * gc_roots;
+
+#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 static size_t         bigval_startoffset;
 static MemBlockTree * bigvals;
 
@@ -564,6 +570,20 @@ void CHANGED_BAG(Bag bag)
     jl_gc_wb_back(BAG_HEADER(bag));
 }
 
+#ifdef HPCGAP
+static void ScanExtraRoots(MemBlockNode * node)
+{
+    if (node) {
+        ScanExtraRoots(node->left);
+        MemBlock mem = node->item;
+        char *start = mem.addr;
+        char *end = start + mem.size;
+        TryMarkRange(start, end);
+        ScanExtraRoots(node->right);
+    }
+}
+#endif
+
 static void GapRootScanner(int full)
 {
     // Mark our Julia module (this contains references to our custom data
@@ -591,6 +611,10 @@ static void GapRootScanner(int full)
     // The reason is that if Julia is being initialized from GAP, it
     // cannot always reliably find the top of the stack for that task,
     // so we have to fall back to GAP for that.
+#ifdef HPCGAP
+#define IsUsingLibGap() 0
+    ScanExtraRoots(gc_roots->root);
+#endif
     if (!IsUsingLibGap() && JuliaTLS->tid == 0 &&
         JuliaTLS->root_task == task) {
         stackend = (char *)GapStackBottom;
@@ -752,6 +776,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
+    gc_roots = MemBlockTreeMake();
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
     bigvals = MemBlockTreeMake();
     jl_gc_set_cb_notify_external_alloc(alloc_bigval, 1);
@@ -761,6 +786,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     max_pool_obj_size = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
     jl_init();
+    jl_gc_enable(0);
 
     Module = jl_new_module(jl_symbol("ForeignGAP"));
     Module->parent = jl_main_module;
@@ -827,6 +853,10 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     GAP_ASSERT(jl_is_datatype(datatype_bag));
     GAP_ASSERT(jl_is_datatype(datatype_largebag));
     StackAlignBags = stack_align;
+#ifdef HPCGAP
+    CreateMainRegion();
+    AddGCRoots();
+#endif
 }
 
 UInt CollectBags(UInt size, UInt full)
@@ -835,6 +865,25 @@ UInt CollectBags(UInt size, UInt full)
     jl_gc_collect(full);
     return 1;
 }
+
+/****************************************************************************
+**
+*V  DSInfoBags[<type>]  . . . .  . . . . . . . . . .  region info for bags
+*/
+
+#ifdef HPCGAP
+
+static char DSInfoBags[NUM_TYPES];
+
+#define DSI_TL 0
+#define DSI_PUBLIC 1
+
+void MakeBagTypePublic(int type)
+{
+    DSInfoBags[type] = DSI_PUBLIC;
+}
+
+#endif // HPCGAP
 
 void RetypeBagIntern(Bag bag, UInt new_type)
 {
@@ -883,6 +932,13 @@ void RetypeBagIntern(Bag bag, UInt new_type)
         Panic("cannot change bag type to one requiring a 'free' callback");
     }
     header->type = new_type;
+#ifdef HPCGAP
+    switch (DSInfoBags[new_type]) {
+    case DSI_PUBLIC:
+        SET_REGION(bag, NULL);
+        break;
+    }
+#endif // HPCGAP
 }
 
 Bag NewBag(UInt type, UInt size)
@@ -906,7 +962,11 @@ Bag NewBag(UInt type, UInt size)
         alloc_size++;
 
 #if defined(SCAN_STACK_FOR_MPTRS_ONLY)
+#ifdef HPCGAP
+    bag = jl_gc_alloc_typed(JuliaTLS, 2 * sizeof(void *), datatype_mptr);
+#else
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
+#endif
     SET_PTR_BAG(bag, 0);
 #endif
 
@@ -917,6 +977,16 @@ Bag NewBag(UInt type, UInt size)
     header->size = size;
 
 
+#ifdef HPCGAP
+    switch (DSInfoBags[type]) {
+    case DSI_TL:
+        SET_REGION(bag, CurrentRegion());
+        break;
+    case DSI_PUBLIC:
+        SET_REGION(bag, NULL);
+        break;
+    }
+#endif
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
     // allocate the new masterpointer
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
@@ -1047,4 +1117,22 @@ void MarkJuliaWeakRef(void * p)
     // be live regardless.
     if (JMarkTyped(p, jl_weakref_type))
         YoungRef++;
+}
+
+void *AllocateMemoryBlock(UInt size)
+{
+    return calloc(1, size);
+}
+
+
+void GC_add_roots(void *start, void *end)
+{
+    MemBlock mem = { start, (char *) end - (char *) start };
+    MemBlockTreeInsert(gc_roots, mem);
+}
+
+void GC_remove_roots(void *start, void *end)
+{
+    MemBlock mem = { start, (char *) end - (char *) start };
+    MemBlockTreeRemove(gc_roots, mem);
 }

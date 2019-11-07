@@ -45,4 +45,15 @@ void MarkJuliaObjSafe(void * obj);
 
 void MarkJuliaWeakRef(void * obj);
 
+/****************************************************************************
+**
+*F  GC_add_roots(<start>, <end>)  . . . . . . . . . . . . . . .  add GC roots
+*F  GC_remove_roots(<start>, <end>) . . . . . . . . . . . . . remove GC roots
+**
+**  Add or remove additional roots for the Julia GC.
+*/
+
+void GC_add_roots(void * start, void * end);
+void GC_remove_roots(void * start, void * end);
+
 #endif
