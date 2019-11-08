@@ -18,7 +18,7 @@
 #endif
 
 
-#ifndef HAVE_NATIVE_TLS
+#ifndef USE_NATIVE_TLS
 
 enum {
     TLS_SIZE = (sizeof(UInt) == 8) ? (1L << 20) : (1L << 18),
@@ -28,6 +28,6 @@ enum {
 GAP_STATIC_ASSERT((TLS_SIZE & (TLS_SIZE - 1)) == 0,
                   "TLS_SIZE must be a power of 2");
 
-#endif // HAVE_NATIVE_TLS
+#endif // USE_NATIVE_TLS
 
 #endif // GAP_TLSCONFIG_H

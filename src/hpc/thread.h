@@ -34,7 +34,7 @@
 
 extern int PreThreadCreation;
 
-#ifndef HAVE_NATIVE_TLS
+#ifndef USE_NATIVE_TLS
 void *AllocateTLS(void);
 void FreeTLS(void *address);
 #endif
