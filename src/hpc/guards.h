@@ -104,7 +104,6 @@ static ALWAYS_INLINE Bag ImpliedReadGuard(Bag bag)
   return bag;
 }
 
-
 static ALWAYS_INLINE int CheckReadAccess(Bag bag)
 {
   Region *region;

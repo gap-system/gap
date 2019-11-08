@@ -9,8 +9,9 @@
 */
 
 #include "gapstate.h"
+#include "hpc/thread.h"
 
-#ifdef HAVE_NATIVE_TLS
+#ifdef USE_NATIVE_TLS
 
 __thread GAPState TLSGAPtate;
 __thread ThreadLocalStorage *TLSInstance;
@@ -19,9 +20,12 @@ __thread ThreadLocalStorage *TLSInstance;
 
 void InitializeTLS(void)
 {
-#ifdef HAVE_NATIVE_TLS
+#ifdef USE_NATIVE_TLS
     // FIXME: is this the right place to do this?
     TLSInstance = &(TLSGAPtate.tls);
+#endif
+#ifdef USE_PTHREAD_TLS
+    AllocateTLS();
 #endif
     memset(ActiveGAPState(), 0, sizeof(GAPState));
 }

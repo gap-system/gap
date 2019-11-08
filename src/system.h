@@ -119,6 +119,19 @@ enum {
 #define NORETURN
 #endif
 
+#ifdef HAVE_FUNC_ATTRIBUTE_PURE
+#define PURE_FUNC __attribute__((pure))
+#else
+#define PURE_FUNC
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+#define CONSTRUCTOR_FUNC __attribute__((constructor))
+#else
+#define CONSTRUCTOR_FUNC
+#endif
+
+
 /****************************************************************************
 **
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
