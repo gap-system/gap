@@ -1393,8 +1393,13 @@ DeclareAttribute( "ClassPositionsOfCentre", IsHomogeneousList );
 ##  <Attr Name="ConstituentsOfCharacter" Arg='[tbl, ]chi'/>
 ##
 ##  <Description>
-##  is the set of irreducible characters that occur in the decomposition of
-##  the (virtual) character <A>chi</A> with nonzero coefficient.
+##  Let <A>chi</A> be an ordinary or modular (virtual) character.
+##  If an ordinary or modular character table <A>tbl</A> is given then
+##  <A>chi</A> may also be a list of character values.
+##  <P/>
+##  <Ref Attr="ConstituentsOfCharacter"/> returns
+##  the set of those irreducible characters that occur in the decomposition
+##  of <A>chi</A> with nonzero coefficient.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> nat:= NaturalCharacter( S4 );
