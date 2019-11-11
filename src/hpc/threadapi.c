@@ -1992,9 +1992,7 @@ static Obj FuncREACHABLE(Obj self, Obj obj)
 {
     Obj result = ReachableObjectsFrom(obj);
     if (result == NULL) {
-        result = NEW_PLIST(T_PLIST, 1);
-        SET_LEN_PLIST(result, 1);
-        SET_ELM_PLIST(result, 1, obj);
+        result = NewPlistFromArgs(obj);
     }
     return result;
 }
@@ -2163,13 +2161,13 @@ static Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
     Obj      reachable;
     if (!target_region ||
         IsLocked(target_region) != LOCK_STATUS_READWRITE_LOCKED)
-        return ArgumentError("MIGRATE: Thread does not have exclusive access "
+        return ArgumentError("MIGRATE_RAW: Thread does not have exclusive access "
                              "to target region");
     reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1,
                         target_region, 0))
         return ArgumentError(
-            "MIGRATE: Thread does not have exclusive access to objects");
+            "MIGRATE_RAW: Thread does not have exclusive access to objects");
     return obj;
 }
 
@@ -2274,6 +2272,7 @@ static Obj FuncIsReadOnlyObj(Obj self, Obj obj)
 
 static Obj FuncENABLE_AUTO_RETYPING(Obj self)
 {
+    // FIXME: but how does one turn off AutoRetyping again???
     AutoRetyping = 1;
     return (Obj)0;
 }
