@@ -1980,106 +1980,11 @@ static Obj FuncCURRENT_LOCKS(Obj self)
     return result;
 }
 
-static int AutoRetyping = 0;
-
-static int
-MigrateObjects(int count, Obj * objects, Region * target, int retype)
-{
-    int i;
-    if (count && retype && IS_BAG_REF(objects[0]) &&
-        REGION(objects[0])->owner == GetTLS() && AutoRetyping) {
-        for (i = 0; i < count; i++)
-            if (REGION(objects[i])->owner == GetTLS())
-                CLEAR_OBJ_FLAG(objects[i], TESTED);
-        for (i = 0; i < count; i++) {
-            if (REGION(objects[i])->owner == GetTLS() &&
-                IS_PLIST(objects[i])) {
-                if (!TEST_OBJ_FLAG(objects[i], TESTED))
-                    TYPE_OBJ(objects[i]);
-                if (retype >= 2)
-                    IsSet(objects[i]);
-            }
-        }
-    }
-    for (i = 0; i < count; i++) {
-        Region * region;
-        if (IS_BAG_REF(objects[i])) {
-            region = REGION(objects[i]);
-            if (!region || region->owner != GetTLS())
-                return 0;
-        }
-    }
-    // If we are migrating records to a region where they become immutable,
-    // they need to be sorted, as sorting upon access may prove impossible.
-    for (i = 0; i < count; i++) {
-        Obj obj = objects[i];
-        if (TNUM_OBJ(obj) == T_PREC) {
-            SortPRecRNam(obj, 0);
-        }
-        SET_REGION(obj, target);
-    }
-    return 1;
-}
-
 static Obj FuncREFINE_TYPE(Obj self, Obj obj)
 {
     if (IS_BAG_REF(obj) && CheckExclusiveWriteAccess(obj)) {
         TYPE_OBJ(obj);
     }
-    return obj;
-}
-
-static Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
-{
-    if (!MigrateObjects(1, &obj, NULL, 0))
-        return ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have "
-                             "exclusive access to objects");
-    return obj;
-}
-
-static Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
-{
-    if (!IS_BAG_REF(obj))
-        return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a small integer "
-                             "or finite-field element");
-    MakeBagPublic(obj);
-    return obj;
-}
-
-static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
-{
-    if (name != Fail && !IsStringConv(name))
-        return ArgumentError(
-            "SHARE_NORECURSE: Second argument must be a string or fail");
-    Int p = GetSmallInt("SHARE_NORECURSE", prec);
-    Region * region = NewRegion();
-    region->prec = p;
-    if (!MigrateObjects(1, &obj, region, 0))
-        return ArgumentError("SHARE_NORECURSE: Thread does not have "
-                             "exclusive access to objects");
-    if (name != Fail)
-        SetRegionName(region, name);
-    return obj;
-}
-
-static Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
-{
-    Region * target_region = GetRegionOf(target);
-    if (!target_region ||
-        IsLocked(target_region) != LOCK_STATUS_READWRITE_LOCKED)
-        return ArgumentError("MIGRATE_NORECURSE: Thread does not have "
-                             "exclusive access to target region");
-    if (!MigrateObjects(1, &obj, target_region, 0))
-        return ArgumentError("MIGRATE_NORECURSE: Thread does not have "
-                             "exclusive access to object");
-    return obj;
-}
-
-static Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
-{
-    if (!MigrateObjects(1, &obj, TLS(threadRegion), 0))
-        return ArgumentError("ADOPT_NORECURSE: Thread does not have "
-                             "exclusive access to objects");
     return obj;
 }
 
@@ -2123,6 +2028,47 @@ static Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj)
     return region == NULL ? INTOBJ_INT(0) : INTOBJ_INT(region->prec);
 }
 
+static int AutoRetyping = 0;
+
+static int
+MigrateObjects(int count, Obj * objects, Region * target, int retype)
+{
+    int i;
+    if (count && retype && IS_BAG_REF(objects[0]) &&
+        REGION(objects[0])->owner == GetTLS() && AutoRetyping) {
+        for (i = 0; i < count; i++)
+            if (REGION(objects[i])->owner == GetTLS())
+                CLEAR_OBJ_FLAG(objects[i], TESTED);
+        for (i = 0; i < count; i++) {
+            if (REGION(objects[i])->owner == GetTLS() &&
+                IS_PLIST(objects[i])) {
+                if (!TEST_OBJ_FLAG(objects[i], TESTED))
+                    TYPE_OBJ(objects[i]);
+                if (retype >= 2)
+                    IsSet(objects[i]);
+            }
+        }
+    }
+    for (i = 0; i < count; i++) {
+        Region * region;
+        if (IS_BAG_REF(objects[i])) {
+            region = REGION(objects[i]);
+            if (!region || region->owner != GetTLS())
+                return 0;
+        }
+    }
+    // If we are migrating records to a region where they become immutable,
+    // they need to be sorted, as sorting upon access may prove impossible.
+    for (i = 0; i < count; i++) {
+        Obj obj = objects[i];
+        if (TNUM_OBJ(obj) == T_PREC) {
+            SortPRecRNam(obj, 0);
+        }
+        SET_REGION(obj, target);
+    }
+    return 1;
+}
+
 static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
@@ -2161,6 +2107,22 @@ static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
     return obj;
 }
 
+static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
+{
+    if (name != Fail && !IsStringConv(name))
+        return ArgumentError(
+            "SHARE_NORECURSE: Second argument must be a string or fail");
+    Int p = GetSmallInt("SHARE_NORECURSE", prec);
+    Region * region = NewRegion();
+    region->prec = p;
+    if (!MigrateObjects(1, &obj, region, 0))
+        return ArgumentError("SHARE_NORECURSE: Thread does not have "
+                             "exclusive access to objects");
+    if (name != Fail)
+        SetRegionName(region, name);
+    return obj;
+}
+
 static Obj FuncADOPT(Obj self, Obj obj)
 {
     Obj reachable = ReachableObjectsFrom(obj);
@@ -2171,13 +2133,11 @@ static Obj FuncADOPT(Obj self, Obj obj)
     return obj;
 }
 
-static Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
+static Obj FuncADOPT_NORECURSE(Obj self, Obj obj)
 {
-    Obj reachable = ReachableObjectsFrom(obj);
-    if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, NULL,
-                        0))
-        return ArgumentError(
-            "MAKE_PUBLIC: Thread does not have exclusive access to objects");
+    if (!MigrateObjects(1, &obj, TLS(threadRegion), 0))
+        return ArgumentError("ADOPT_NORECURSE: Thread does not have "
+                             "exclusive access to objects");
     return obj;
 }
 
@@ -2210,6 +2170,46 @@ static Obj FuncMIGRATE_RAW(Obj self, Obj obj, Obj target)
                         target_region, 0))
         return ArgumentError(
             "MIGRATE: Thread does not have exclusive access to objects");
+    return obj;
+}
+
+static Obj FuncMIGRATE_NORECURSE(Obj self, Obj obj, Obj target)
+{
+    Region * target_region = GetRegionOf(target);
+    if (!target_region ||
+        IsLocked(target_region) != LOCK_STATUS_READWRITE_LOCKED)
+        return ArgumentError("MIGRATE_NORECURSE: Thread does not have "
+                             "exclusive access to target region");
+    if (!MigrateObjects(1, &obj, target_region, 0))
+        return ArgumentError("MIGRATE_NORECURSE: Thread does not have "
+                             "exclusive access to object");
+    return obj;
+}
+
+static Obj FuncMAKE_PUBLIC(Obj self, Obj obj)
+{
+    Obj reachable = ReachableObjectsFrom(obj);
+    if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, NULL,
+                        0))
+        return ArgumentError(
+            "MAKE_PUBLIC: Thread does not have exclusive access to objects");
+    return obj;
+}
+
+static Obj FuncMAKE_PUBLIC_NORECURSE(Obj self, Obj obj)
+{
+    if (!MigrateObjects(1, &obj, NULL, 0))
+        return ArgumentError("MAKE_PUBLIC_NORECURSE: Thread does not have "
+                             "exclusive access to objects");
+    return obj;
+}
+
+static Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
+{
+    if (!IS_BAG_REF(obj))
+        return ArgumentError("FORCE_MAKE_PUBLIC: Argument is a small integer "
+                             "or finite-field element");
+    MakeBagPublic(obj);
     return obj;
 }
 
@@ -2590,18 +2590,18 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(UNLOCK, sp),
     GVAR_FUNC_0ARGS(CURRENT_LOCKS),
     GVAR_FUNC_1ARGS(REFINE_TYPE, obj),
-    GVAR_FUNC_3ARGS(SHARE_NORECURSE, obj, string, integer),
-    GVAR_FUNC_1ARGS(ADOPT_NORECURSE, obj),
-    GVAR_FUNC_2ARGS(MIGRATE_NORECURSE, obj, target),
     GVAR_FUNC_2ARGS(NEW_REGION, string, integer),
     GVAR_FUNC_1ARGS(REGION_PRECEDENCE, obj),
     GVAR_FUNC_3ARGS(SHARE, obj, string, integer),
     GVAR_FUNC_3ARGS(SHARE_RAW, obj, string, integer),
+    GVAR_FUNC_3ARGS(SHARE_NORECURSE, obj, string, integer),
     GVAR_FUNC_1ARGS(ADOPT, obj),
+    GVAR_FUNC_1ARGS(ADOPT_NORECURSE, obj),
     GVAR_FUNC_2ARGS(MIGRATE, obj, target),
     GVAR_FUNC_2ARGS(MIGRATE_RAW, obj, target),
-    GVAR_FUNC_1ARGS(MAKE_PUBLIC_NORECURSE, obj),
+    GVAR_FUNC_2ARGS(MIGRATE_NORECURSE, obj, target),
     GVAR_FUNC_1ARGS(MAKE_PUBLIC, obj),
+    GVAR_FUNC_1ARGS(MAKE_PUBLIC_NORECURSE, obj),
     GVAR_FUNC_1ARGS(FORCE_MAKE_PUBLIC, obj),
     GVAR_FUNC_1ARGS(REACHABLE, obj),
     GVAR_FUNC_1ARGS(CLONE_REACHABLE, obj),
