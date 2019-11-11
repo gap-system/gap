@@ -1483,7 +1483,7 @@ InstallMethod( OrbitsDomain, "for quick position domains", true,
 InstallMethod( OrbitsDomain, "for arbitrary domains", true,
     OrbitsishReq, 0,
 function( G, D, gens, acts, act )
-local   orbs, orb,sort,plist,pos,use,o;
+local   orbs, orb,sort,plist,pos,use,o,i,p;
   
   if Length(D)>0 and not IsMutable(D) and HasIsSSortedList(D) and IsSSortedList(D) 
     and CanEasilySortElements(D[1]) then
@@ -1501,14 +1501,22 @@ local   orbs, orb,sort,plist,pos,use,o;
   orbs := [  ];
   pos:=1;
   while Length(D)>0  and pos<=Length(D) do
+
     orb := OrbitOp( G,D, D[pos], gens, acts, act );
-    Add( orbs, orb );
     if plist then
+      orb:=ShallowCopy(orb);
+      use:=[1..Length(D)];
+      for i in [1..Length(orb)] do
+        p:=Position(D,orb[i]);
+        if p<>fail then # catch if domain is not closed
+          orb[i]:=D[p];
+          RemoveSet(use,p);
+        fi;
+      od;
+      D:=D{use};
       if sort then
-	D:=Difference(D,orb);
 	MakeImmutable(D); # to remember sortedness
-      else
-	D:=Filtered(D,i-> not i in orb);
+        IsSSortedList(D);
       fi;
     else
       for o in orb do
@@ -1520,6 +1528,7 @@ local   orbs, orb,sort,plist,pos,use,o;
 	pos:=pos+1;
       od;
     fi;
+    Add( orbs, orb );
   od;
   return Immutable( orbs );
 end );

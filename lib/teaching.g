@@ -197,9 +197,9 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3)); 
-##  [ [ (1,2,3), (2,4) ] -> [ (), () ],
-##    [ (1,2,3), (2,4) ] -> [ (), (1,2) ],
-##    [ (1,2,3), (2,4) ] -> [ (1,2,3), (1,2) ] ]
+##  [ [ (1,3,2), (2,4) ] -> [ (), () ],
+##    [ (1,3,2), (2,4) ] -> [ (), (1,2) ],
+##    [ (1,3,2), (2,4) ] -> [ (1,2,3), (1,2) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

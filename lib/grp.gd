@@ -1882,7 +1882,7 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);; NormalSubgroups(g);
 ##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
 ##  gap> g:=AbelianGroup([2,2]);; NormalSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([ f2 ]),
 ##    Group([ f1*f2 ]), Group([ f1 ]), Group([  ]) ]
@@ -3330,7 +3330,7 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  of characteristic subgroups which goes throught the derived series of
 ##  the solvable radical of $G$, refined into elementary abelian factors, as
 ##  well as the socle and the <A>Pker</A> (kernel of the action on socle
-##  compoents) of the radical factor
+##  components) of the radical factor
 ##  <Example><![CDATA[
 ##  gap> gp:=WreathProduct(SymmetricGroup(5),SymmetricGroup(3));;
 ##  gap> gp:=WreathProduct(Group((1,2,3,4,5,6)),gp);;
