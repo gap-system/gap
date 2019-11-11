@@ -375,13 +375,9 @@ static int GetThreadID(const char * funcname, Obj thread)
     else if (TNUM_OBJ(thread) == T_THREAD) {
         return ThreadID(thread);
     }
-
-
-#define AS_STRING(s) #s
-    const char *msg = "must be thread object or an integer between 0 and "
-                AS_STRING(MAX_THREADS-1);
-#undef AS_STRING
-    RequireArgumentEx(funcname, thread, NICE_ARGNAME(thread), msg);
+    RequireArgumentEx(funcname, thread, NICE_ARGNAME(thread),
+                      "must be a thread object or an integer between 0 and "
+                      "MAX_THREADS - 1");
 }
 
 
@@ -596,8 +592,8 @@ static Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
     }
     if (TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) != 0 ||
         !BODY_FUNC(func))
-        return ArgumentError("SetInterruptHandler: Second argument must be a "
-                             "parameterless function or 'fail'");
+        RequireArgument("SetInterruptHandler", func,
+                        "must be a parameterless function or 'fail'");
     SetInterruptHandler((int)(INT_INTOBJ(handler)), func);
     return (Obj)0;
 }
@@ -877,8 +873,8 @@ static Obj FuncDISABLE_GUARDS(Obj self, Obj flag)
     else if (IS_INTOBJ(flag))
         TLS(DisableGuards) = (int)(INT_INTOBJ(flag));
     else
-        ErrorQuit("DISABLE_GUARDS: Argument must be boolean or integer", 0L,
-                  0L);
+        RequireArgument("DISABLE_GUARDS", flag,
+                        "must be a boolean or a small integer");
     return (Obj)0;
 }
 
@@ -1462,7 +1458,7 @@ static Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
             return ReceiveAnyChannel(ELM_PLIST(args, 1), 1);
         else
             return ArgumentError(
-                "ReceiveAnyChannel: Argument list must be channels");
+                "ReceiveAnyChannelWithIndex: Argument list must be channels");
     }
 }
 
@@ -2010,8 +2006,7 @@ static Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 static Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        return ArgumentError(
-            "NEW_REGION: Second argument must be a string or fail");
+        RequireArgument("NEW_REGION", name, "must be a string or fail");
     Int p = GetSmallInt("NEW_REGION", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2070,8 +2065,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
 static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        return ArgumentError(
-            "SHARE: Second argument must be a string or fail");
+        RequireArgument("SHARE", name, "must be a string or fail");
     Int p = GetSmallInt("SHARE", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2089,8 +2083,7 @@ static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        return ArgumentError(
-            "SHARE_RAW: Second argument must be a string or fail");
+        RequireArgument("SHARE_RAW", name, "must be a string or fail");
     Int p = GetSmallInt("SHARE_RAW", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2108,8 +2101,7 @@ static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        return ArgumentError(
-            "SHARE_NORECURSE: Second argument must be a string or fail");
+        RequireArgument("SHARE_NORECURSE", name, "must be a string or fail");
     Int p = GetSmallInt("SHARE_NORECURSE", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2216,8 +2208,7 @@ static Obj FuncMakeThreadLocal(Obj self, Obj var)
     char * name;
     UInt   gvar;
     if (!IsStringConv(var) || GET_LEN_STRING(var) == 0)
-        return ArgumentError(
-            "MakeThreadLocal: Argument must be a variable name");
+        RequireArgument("MakeThreadLocal", var, "must be a variable name");
     name = CSTR_STRING(var);
     gvar = GVarName(name);
     name = CSTR_STRING(NameGVar(gvar)); /* to apply namespace scopes where needed. */
