@@ -2048,11 +2048,11 @@ static Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 
 static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
-    Region * region = NewRegion();
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_NORECURSE: Second argument must be a string or fail");
     Int p = GetSmallInt("SHARE_NORECURSE", prec);
+    Region * region = NewRegion();
     region->prec = p;
     if (!MigrateObjects(1, &obj, region, 0))
         return ArgumentError("SHARE_NORECURSE: Thread does not have "
@@ -2106,11 +2106,11 @@ static Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 
 static Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
-    Region * region = NewRegion();
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "NEW_REGION: Second argument must be a string or fail");
     Int p = GetSmallInt("NEW_REGION", prec);
+    Region * region = NewRegion();
     region->prec = p;
     if (name != Fail)
         SetRegionName(region, name);
@@ -2125,14 +2125,14 @@ static Obj FuncREGION_PRECEDENCE(Obj self, Obj regobj)
 
 static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
-    Region * region = NewRegion();
-    Obj      reachable;
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE: Second argument must be a string or fail");
     Int p = GetSmallInt("SHARE", prec);
+    Region * region = NewRegion();
     region->prec = p;
-    reachable = ReachableObjectsFrom(obj);
+
+    Obj reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
                         1))
         return ArgumentError(
@@ -2144,14 +2144,14 @@ static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 
 static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 {
-    Region * region = NewRegion();
-    Obj      reachable;
     if (name != Fail && !IsStringConv(name))
         return ArgumentError(
             "SHARE_RAW: Second argument must be a string or fail");
     Int p = GetSmallInt("SHARE_RAW", prec);
+    Region * region = NewRegion();
     region->prec = p;
-    reachable = ReachableObjectsFrom(obj);
+
+    Obj reachable = ReachableObjectsFrom(obj);
     if (!MigrateObjects(LEN_PLIST(reachable), ADDR_OBJ(reachable) + 1, region,
                         0))
         return ArgumentError(
