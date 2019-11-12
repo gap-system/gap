@@ -742,24 +742,24 @@ local   str,  i,  j;
   else
       str := "";
       for i  in [ 1 .. LargestMovedPoint( perm ) ]  do
-	  j := i ^ perm;
-	  while j > i  do j := j ^ perm;  od;
-	  if j = i and i ^ perm <> i  then
-	      Append( str, "(" );
-	      Append( str, String( i ) );
-	      j := i ^ perm;
-	      while j > i do
-		  Append( str, "," );
-		  if hint then Append(str,"\<\>"); fi;
-		  Append( str, String( j ) );
-		  j := j ^ perm;
-	      od;
-	      Append( str, ")" );
-	      if hint then Append(str,"\<\<\>\>"); fi;
-	  fi;
+      j := i ^ perm;
+      while j > i  do j := j ^ perm;  od;
+      if j = i and i ^ perm <> i  then
+          Append( str, "(" );
+          Append( str, String( i ) );
+          j := i ^ perm;
+          while j > i do
+          Append( str, "," );
+          if hint then Append(str,"\<\>"); fi;
+          Append( str, String( j ) );
+          j := j ^ perm;
+          od;
+          Append( str, ")" );
+          if hint then Append(str,"\<\<\>\>"); fi;
+      fi;
       od;
       if Length(str)>4 and str{[Length(str)-3..Length(str)]}="\<\<\>\>" then
-	str:=str{[1..Length(str)-4]}; # remove tailing line breaker
+          str:=str{[1..Length(str)-4]}; # remove tailing line breaker
       fi;
       ConvertToStringRep( str );
   fi;
