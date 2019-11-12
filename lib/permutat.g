@@ -735,20 +735,22 @@ end );
 #m  String( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
 ##
 BIND_GLOBAL("DoStringPerm",function( perm,hint )
-local   str,  i,  j;
+local   str,  i,  j, maxpnt, blist;
 
   if IsOne( perm ) then
       str := "()";
   else
       str := "";
+      maxpnt := LargestMovedPoint( perm );
+      blist := BlistList([1..maxpnt], []);
       for i  in [ 1 .. LargestMovedPoint( perm ) ]  do
-      j := i ^ perm;
-      while j > i  do j := j ^ perm;  od;
-      if j = i and i ^ perm <> i  then
+      if not blist[i] and i ^ perm <> i  then
+          blist[i] := true;
           Append( str, "(" );
           Append( str, String( i ) );
           j := i ^ perm;
           while j > i do
+          blist[j] := true;
           Append( str, "," );
           if hint then Append(str,"\<\>"); fi;
           Append( str, String( j ) );
