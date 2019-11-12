@@ -2659,8 +2659,7 @@ end);
 
 # Omega_Search is a brute force search for Omega.
 # One can search by coset if Omega(G) = { g in G : g^(p^e) = 1 }
-# This is the case in regular p-groups, and if nilclass(G) < p
-# then G is regular.
+# This is the case in regular p groups.
 # Assumed: G is a p-group, e is a positive integer
 BindGlobal("Omega_Search",
 function(G,p,e)

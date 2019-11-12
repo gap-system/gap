@@ -1972,7 +1972,6 @@ DeclareAttribute( "NrConjugacyClasses", IsGroup );
 ##  \{ g \in <A>G</A> \mid g^{{<A>p</A>^{<A>n</A>}}} = 1 \}</M>.
 ##  The default value for <A>n</A> is <C>1</C>.
 ##  <P/>
-##  <E>@At the moment methods exist only for abelian <A>G</A> and <A>n</A>=1.@</E>
 ##  <Example><![CDATA[
 ##  gap> h:=SmallGroup(16,10);
 ##  <pc group of size 16 with 4 generators>
