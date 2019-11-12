@@ -1343,7 +1343,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
     return D;
   else
     PerfGrpLoad(0);
-    badsizes := Union(PERFRec.notAvailable,PERFRec.notKnown);
+    badsizes := PERFRec.notKnown;
     D:=G;
     D:=PerfectResiduum(D);
     n:=Size(D);
