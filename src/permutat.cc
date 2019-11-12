@@ -163,10 +163,8 @@ static Obj InvPerm(Obj perm);
 **  uses the degree to print all points with same width, which  looks  nicer.
 **  Linebreaks are prefered most after cycles and  next  most  after  commas.
 **
-**  It does not remember which points have already  been  printed.  To  avoid
-**  printing a cycle twice each is printed with the smallest  element  first.
-**  This may in the worst case, for (1,2,..,n), take n^2/2 steps, but is fast
-**  enough to keep a terminal at 9600 baud busy for all but the extrem cases.
+**  It remembers which points have already  been  printed, to avoid O(n^2)
+**  behaviour.
 */
 template <typename T>
 static void PrintPerm(Obj perm)
@@ -187,29 +185,34 @@ static void PrintPerm(Obj perm)
     else if ( degPerm < 10000 ) { fmt1 = "%>(%>%4d%<"; fmt2 = ",%>%4d%<"; }
     else                        { fmt1 = "%>(%>%5d%<"; fmt2 = ",%>%5d%<"; }
 
+    UseTmpPerm(SIZE_OBJ(perm));
+    T * ptSeen = ADDR_TMP_PERM<T>();
+
+    // clear the buffer bag
+    for (p = 0; p < DEG_PERM<T>(perm); p++)
+        ptSeen[p] = 0;
+
     /* run through all points                                              */
     isId = 1;
     ptPerm = CONST_ADDR_PERM<T>(perm);
     for ( p = 0; p < degPerm; p++ ) {
-
-        /* find the smallest element in this cycle                         */
-        q = ptPerm[p];
-        while ( p < q )  q = ptPerm[q];
-
         /* if the smallest is the one we started with lets print the cycle */
-        if ( p == q && ptPerm[p] != p ) {
+        if (!ptSeen[p] && ptPerm[p] != p) {
+            ptSeen[p] = 1;
             isId = 0;
             Pr(fmt1,(Int)(p+1),0L);
             ptPerm = CONST_ADDR_PERM<T>(perm);
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
+                ptSeen[q] = 1;
                 Pr(fmt2,(Int)(q+1),0L);
                 ptPerm = CONST_ADDR_PERM<T>(perm);
+                ptSeen = ADDR_TMP_PERM<T>();
             }
             Pr("%<)",0L,0L);
             /* restore pointer, in case Pr caused a garbage collection */
             ptPerm = CONST_ADDR_PERM<T>(perm);
+            ptSeen = ADDR_TMP_PERM<T>();
         }
-
     }
 
     /* special case for the identity                                       */
