@@ -1,4 +1,4 @@
-#@local checklens,n,permAll,permBig,permSml,x,y, moved
+#@local checklens,n,permAll,permBig,permSml,x,y,moved,p
 gap> START_TEST("perm.tst");
 
 # Permutations come in two flavors in GAP, with two TNUMs: T_PERM2 for
@@ -86,6 +86,17 @@ gap> Print(permBig * (5,999999), "\n");
 [ (    5,999999), (    2,    3)(    5,999999), (    1,    2)(    5,999999), 
   (    1,    2,    3)(    5,999999), (    1,    3,    2)(    5,999999), 
   (    1,    3)(    5,999999) ]
+
+# Check String of large permutation
+# Check length, beginning and end, as the string is too long to include in
+# a test file
+gap> p := String(PermList(Concatenation([2..2^20], [1])));;
+gap> Length(p) = 7277505;
+true
+gap> p{[1..40]};
+"(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,"
+gap> p{[Length(p)-40..Length(p)]};
+",1048572,1048573,1048574,1048575,1048576)"
 
 #
 # EqPerm
