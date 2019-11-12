@@ -1372,14 +1372,14 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
     max = 0;
     for (pnt = 0; pnt < deg; pnt++) {
         if (clr[pnt] == 0) {
-            len = 1;
+            len = 0;
             clr[pnt] = 1;
             for (p = ptPerm[pnt]; p != pnt; p = ptPerm[p]) {
                 clr[p] = 1;
                 len++;
             }
 
-            if (len > 1) {
+            if (len > 0) {
                 offset[cnt] = (T)len;
                 cnt++;
                 if (len > max) {
@@ -1392,27 +1392,21 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
     ende = cnt;
 
     /* create the list */
-    list = NEW_PLIST(T_PLIST, max - 1);
-    SET_LEN_PLIST(list, max - 1);
+    list = NEW_PLIST(T_PLIST, max);
+    SET_LEN_PLIST(list, max);
     ptList = ADDR_OBJ(list);
 
     /* Recalculate after possible GC */
     scratch = ADDR_TMP_PERM<T>();
     offset = (T *)((UInt)scratch + (bytes));
 
-    for (pnt = 1; pnt < max; pnt++) {
-        ptList[pnt] = 0;
-    } /* clean out */
-
     for (cnt = 0; cnt < ende; cnt++) {
         pnt = (UInt)offset[cnt];
-        pnt--;
-        ptList[pnt] = (Obj)((UInt)ptList[pnt] + 1);
-    }
-
-    for (pnt = 1; pnt < max; pnt++) {
-        if (ptList[pnt] != 0) {
-            ptList[pnt] = INTOBJ_INT((UInt)ptList[pnt]);
+        if (ptList[pnt] == 0) {
+            ptList[pnt] = INTOBJ_INT(1);
+        }
+        else {
+            ptList[pnt] = INTOBJ_INT(INT_INTOBJ(ptList[pnt]) + 1);
         }
     }
 
