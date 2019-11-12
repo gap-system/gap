@@ -1428,6 +1428,8 @@ static int IsChannelList(Obj list)
 {
     int len = LEN_PLIST(list);
     int i;
+    if (len == 0)
+        return 0;
     for (i = 1; i <= len; i++)
         if (!IsChannel(ELM_PLIST(list, i)))
             return 0;
