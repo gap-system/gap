@@ -491,6 +491,9 @@ static Obj FuncCreateThread(Obj self, Obj funcargs)
     if (n == 0 || !IS_FUNC(ELM_PLIST(funcargs, 1)))
         return ArgumentError(
             "CreateThread: Needs at least one function argument");
+    Obj func = ELM_PLIST(funcargs, 1);
+    if (NARG_FUNC(func) != n - 1)
+        ErrorMayQuit("CreateThread: <func> expects %d arguments, but got %d", NARG_FUNC(func), n-1);
     templist = NEW_PLIST(T_PLIST, n);
     SET_LEN_PLIST(templist, n);
     SET_REGION(templist, NULL); /* make it public */
