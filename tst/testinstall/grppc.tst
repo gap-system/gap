@@ -166,6 +166,11 @@ gap> RepresentativeAction(G,x,x^2)<>fail;
 true
 gap> RepresentativeAction(G,x,x^2);
 f1*f2
+gap> g := SmallGroup(243,27);;
+gap> AsSet(Omega(g,3,1)) = Set(Filtered(g, g -> IsOne(g^3)));
+true
+gap> AsSet(Omega(g,3,2)) = Set(Filtered(g, g -> IsOne(g^9)));
+true
 
 # that's all, folks
 gap> STOP_TEST( "grppc.tst", 1);
