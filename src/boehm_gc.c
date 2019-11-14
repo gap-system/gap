@@ -31,6 +31,8 @@
 #include "hpc/thread.h"
 #endif
 
+#ifndef WARD_ENABLED
+
 static inline Bag * DATA(BagHeader * bag)
 {
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
@@ -83,8 +85,6 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
     TabFreeFuncBags[type] = finalizer_func;
 }
 
-#ifndef WARD_ENABLED
-
 static void StandardFinalizer(void * bagContents, void * data)
 {
     Bag    bag;
@@ -93,9 +93,6 @@ static void StandardFinalizer(void * bagContents, void * data)
     bag = (Bag)&bagContents2;
     TabFreeFuncBags[TNUM_BAG(bag)](bag);
 }
-
-#endif
-
 
 static GC_descr GCDesc[MAX_GC_PREFIX_DESC + 1];
 static unsigned GCKind[MAX_GC_PREFIX_DESC + 1];
@@ -551,3 +548,5 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
     SET_PTR_BAG(bag1, ptr2);
     SET_PTR_BAG(bag2, ptr1);
 }
+
+#endif // WARD_ENABLED
