@@ -2729,6 +2729,8 @@ static Int InitLibrary(StructInitInfo * module)
     /* synchronization */
     pthread_mutex_init(&KeepAliveLock, NULL);
 
+    ExportAsConstantGVar(MAX_THREADS);
+
     /* return success                                                      */
     return 0;
 }
