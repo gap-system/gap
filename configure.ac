@@ -893,6 +893,10 @@ AS_IF([test "x$enable_hpcgap" = xyes],[
   AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
   ])
 
+AS_IF([test "x$enable_macos_tls_asm" = xno],[
+  AS_BOX([WARNING: macOS fast thread-local storage not available])
+])
+
 dnl
 dnl Output everything
 dnl
