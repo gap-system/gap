@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-88497608"
+#define FILE_CRC  "128042584"
 
 /* global variables used in handlers */
 static GVar G_NAME__FUNC;
@@ -127,14 +127,14 @@ static GVar G_IsAtomicPositionalObjectRep;
 static Obj  GC_IsAtomicPositionalObjectRep;
 static GVar G_IsReadOnlyPositionalObjectRep;
 static Obj  GC_IsReadOnlyPositionalObjectRep;
+static GVar G_IGNORE__IMMEDIATE__METHODS;
+static Obj  GC_IGNORE__IMMEDIATE__METHODS;
 static GVar G_IsNoImmediateMethodsObject;
 static Obj  GF_IsNoImmediateMethodsObject;
 static GVar G_RunImmediateMethods;
 static Obj  GF_RunImmediateMethods;
 static GVar G_ErrorNoReturn;
 static Obj  GF_ErrorNoReturn;
-static GVar G_IGNORE__IMMEDIATE__METHODS;
-static Obj  GC_IGNORE__IMMEDIATE__METHODS;
 static GVar G_SupType;
 static Obj  GF_SupType;
 static GVar G_Ignore;
@@ -1820,6 +1820,8 @@ static Obj  HdlrFunc17 (
  Obj t_2 = 0;
  Obj t_3 = 0;
  Obj t_4 = 0;
+ Obj t_5 = 0;
+ Obj t_6 = 0;
  (void)l_flags;
  Bag oldFrame;
  
@@ -1904,17 +1906,25 @@ static Obj  HdlrFunc17 (
  }
  /* fi */
  
- /* if not IsNoImmediateMethodsObject( obj ) then */
- t_4 = GF_IsNoImmediateMethodsObject;
- if ( TNUM_OBJ( t_4 ) == T_FUNCTION ) {
-  t_3 = CALL_1ARGS( t_4, a_obj );
+ /* if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then */
+ t_4 = GC_IGNORE__IMMEDIATE__METHODS;
+ CHECK_BOUND( t_4, "IGNORE_IMMEDIATE_METHODS" );
+ CHECK_BOOL( t_4 );
+ t_3 = (Obj)(UInt)(t_4 != False);
+ t_2 = t_3;
+ if ( ! t_2 ) {
+  t_6 = GF_IsNoImmediateMethodsObject;
+  if ( TNUM_OBJ( t_6 ) == T_FUNCTION ) {
+   t_5 = CALL_1ARGS( t_6, a_obj );
+  }
+  else {
+   t_5 = DoOperation2Args( CallFuncListOper, t_6, NewPlistFromArgs( a_obj ) );
+  }
+  CHECK_FUNC_RESULT( t_5 );
+  CHECK_BOOL( t_5 );
+  t_4 = (Obj)(UInt)(t_5 != False);
+  t_2 = t_4;
  }
- else {
-  t_3 = DoOperation2Args( CallFuncListOper, t_4, NewPlistFromArgs( a_obj ) );
- }
- CHECK_FUNC_RESULT( t_3 );
- CHECK_BOOL( t_3 );
- t_2 = (Obj)(UInt)(t_3 != False);
  t_1 = (Obj)(UInt)( ! ((Int)t_2) );
  if ( t_1 ) {
   
@@ -3381,7 +3391,7 @@ static Obj  HdlrFunc1 (
       elif IS_REC( obj ) then
           SET_TYPE_COMOBJ( obj, type );
       fi;
-      if not IsNoImmediateMethodsObject( obj ) then
+      if not (IGNORE_IMMEDIATE_METHODS or IsNoImmediateMethodsObject( obj )) then
           RunImmediateMethods( obj, type![2] );
       fi;
       ;
@@ -3393,7 +3403,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 590);
- SET_ENDLINE_BODY(t_4, 625);
+ SET_ENDLINE_BODY(t_4, 626);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3429,8 +3439,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[18], 2, ArgStringToList("obj,filter"), HdlrFunc18 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 647);
- SET_ENDLINE_BODY(t_4, 667);
+ SET_STARTLINE_BODY(t_4, 648);
+ SET_ENDLINE_BODY(t_4, 668);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3463,8 +3473,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[19], 2, ArgStringToList("obj,filter"), HdlrFunc19 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 687);
- SET_ENDLINE_BODY(t_4, 705);
+ SET_STARTLINE_BODY(t_4, 688);
+ SET_ENDLINE_BODY(t_4, 706);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3565,8 +3575,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[20], -1, ArgStringToList("arg"), HdlrFunc20 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 753);
- SET_ENDLINE_BODY(t_4, 815);
+ SET_STARTLINE_BODY(t_4, 754);
+ SET_ENDLINE_BODY(t_4, 816);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -3651,10 +3661,10 @@ static Int PostRestore ( StructInitInfo * module )
  G_IsNonAtomicComponentObjectRep = GVarName( "IsNonAtomicComponentObjectRep" );
  G_IsAtomicPositionalObjectRep = GVarName( "IsAtomicPositionalObjectRep" );
  G_IsReadOnlyPositionalObjectRep = GVarName( "IsReadOnlyPositionalObjectRep" );
+ G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
  G_IsNoImmediateMethodsObject = GVarName( "IsNoImmediateMethodsObject" );
  G_RunImmediateMethods = GVarName( "RunImmediateMethods" );
  G_ErrorNoReturn = GVarName( "ErrorNoReturn" );
- G_IGNORE__IMMEDIATE__METHODS = GVarName( "IGNORE_IMMEDIATE_METHODS" );
  G_SupType = GVarName( "SupType" );
  G_Ignore = GVarName( "Ignore" );
  G_MAKE__READ__WRITE__GLOBAL = GVarName( "MAKE_READ_WRITE_GLOBAL" );
@@ -3769,10 +3779,10 @@ static Int InitKernel ( StructInitInfo * module )
  InitCopyGVar( "IsNonAtomicComponentObjectRep", &GC_IsNonAtomicComponentObjectRep );
  InitCopyGVar( "IsAtomicPositionalObjectRep", &GC_IsAtomicPositionalObjectRep );
  InitCopyGVar( "IsReadOnlyPositionalObjectRep", &GC_IsReadOnlyPositionalObjectRep );
+ InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
  InitFopyGVar( "IsNoImmediateMethodsObject", &GF_IsNoImmediateMethodsObject );
  InitFopyGVar( "RunImmediateMethods", &GF_RunImmediateMethods );
  InitFopyGVar( "ErrorNoReturn", &GF_ErrorNoReturn );
- InitCopyGVar( "IGNORE_IMMEDIATE_METHODS", &GC_IGNORE__IMMEDIATE__METHODS );
  InitFopyGVar( "SupType", &GF_SupType );
  InitCopyGVar( "Ignore", &GC_Ignore );
  InitFopyGVar( "MAKE_READ_WRITE_GLOBAL", &GF_MAKE__READ__WRITE__GLOBAL );
@@ -3859,7 +3869,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/type1.g",
- .crc         = -88497608,
+ .crc         = 128042584,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
