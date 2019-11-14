@@ -613,7 +613,8 @@ BIND_GLOBAL( "Objectify", function ( type, obj )
     elif IS_REC( obj )  then
         SET_TYPE_COMOBJ( obj, type );
     fi;
-    if not IsNoImmediateMethodsObject(obj) then
+    if not ( IGNORE_IMMEDIATE_METHODS
+             or IsNoImmediateMethodsObject(obj) ) then
       RunImmediateMethods( obj, type![POS_FLAGS_TYPE] );
     fi;
     if IsHPCGAP then
