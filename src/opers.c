@@ -1582,6 +1582,7 @@ static inline Obj CacheOper(Obj oper, UInt i)
         cache = NEW_PLIST(T_PLIST, len);
         SET_LEN_PLIST(cache, len);
 #ifdef HPCGAP
+        MakeBagPublic(cache);
         SET_ELM_PLIST(STATE(MethodCache), cacheIndex, cache);
         CHANGED_BAG(STATE(MethodCache));
 #else
@@ -1599,6 +1600,7 @@ static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
 #endif
 
 
+#ifndef WARD_ENABLED
 // This function actually searches the cache. Normally it should be
 // called with n a compile-time constant to allow the optimiser to tidy
 // things up.
@@ -1684,6 +1686,7 @@ CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
         cache[2 + i] = ids[i];
     CHANGED_BAG(cacheBag);
 }
+#endif // WARD_ENABLED
 
 static Obj ReturnTrue;
 static Obj VMETHOD_PRINT_INFO;
