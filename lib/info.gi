@@ -327,7 +327,7 @@ end );
 SHOWN_USED_INFO_CLASSES := [];
 
 if IsHPCGAP then
-    ShareInternalObj(INFO_CLASSES);
+    ShareInternalObj(SHOWN_USED_INFO_CLASSES);
 fi;
 
 
