@@ -25,6 +25,7 @@
 #include "modules.h"
 #include "objects.h"
 #include "plist.h"
+#include "precord.h"
 #include "read.h"
 #include "records.h"
 #include "set.h"
@@ -2008,8 +2009,15 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
                 return 0;
         }
     }
-    for (i = 0; i < count; i++)
-        SET_REGION(objects[i], target);
+    // If we are migrating records to a region where they become immutable,
+    // they need to be sorted, as sorting upon access may prove impossible.
+    for (i = 0; i < count; i++) {
+        Obj obj = objects[i];
+        if (TNUM_OBJ(obj) == T_PREC) {
+            SortPRecRNam(obj, 0);
+        }
+        SET_REGION(obj, target);
+    }
     return 1;
 }
 
