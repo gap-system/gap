@@ -56,20 +56,6 @@ void MakeBagTypePublic(int type)
     DSInfoBags[type] = DSI_PUBLIC;
 }
 
-Bag MakeBagPublic(Bag bag)
-{
-    MEMBAR_WRITE();
-    SET_REGION(bag, 0);
-    return bag;
-}
-
-Bag MakeBagReadOnly(Bag bag)
-{
-    MEMBAR_WRITE();
-    SET_REGION(bag, ReadOnlyRegion);
-    return bag;
-}
-
 #endif // HPCGAP
 
 
@@ -331,14 +317,6 @@ UInt CollectBags(UInt size, UInt full)
 #endif
     return 1;
 }
-
-#ifdef HPCGAP
-void RetypeBagIfWritable(Obj obj, UInt new_type)
-{
-    if (CheckWriteAccess(obj))
-        RetypeBag(obj, new_type);
-}
-#endif
 
 void RetypeBag(Bag bag, UInt new_type)
 {
