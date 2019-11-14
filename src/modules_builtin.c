@@ -10,7 +10,7 @@
 
 #include "modules_builtin.h"
 
-#include "compiled.h"
+#include "gap_all.h"
 #include "gap.h"
 #include "hookintrprtr.h"
 #include "info.h"
@@ -24,13 +24,6 @@
 #include "vec8bit.h"
 #include "vecffe.h"
 #include "vecgf2.h"
-
-#ifdef HPCGAP
-#include "hpc/aobjects.h"
-#include "hpc/serialize.h"
-#include "hpc/threadapi.h"
-#include "hpc/traverse.h"
-#endif
 
 /****************************************************************************
 **
