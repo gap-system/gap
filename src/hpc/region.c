@@ -18,7 +18,7 @@
 
 // #include "hpc/misc.h"
 #include "hpc/thread.h"
-// #include "hpc/guards.h"
+#include "hpc/guards.h"
 
 
 #include <pthread.h>
@@ -58,4 +58,24 @@ Region * RegionBag(Bag bag)
     Region * result = REGION(bag);
     MEMBAR_READ();
     return result;
+}
+
+Bag MakeBagPublic(Bag bag)
+{
+    MEMBAR_WRITE();
+    SET_REGION(bag, 0);
+    return bag;
+}
+
+Bag MakeBagReadOnly(Bag bag)
+{
+    MEMBAR_WRITE();
+    SET_REGION(bag, ReadOnlyRegion);
+    return bag;
+}
+
+void RetypeBagIfWritable(Obj obj, UInt new_type)
+{
+    if (CheckWriteAccess(obj))
+        RetypeBag(obj, new_type);
 }
