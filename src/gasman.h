@@ -38,6 +38,11 @@
 
 #include "common.h"
 
+#ifdef HPCGAP
+#include "hpc/region.h"
+#include "hpc/tls.h"
+#endif
+
 
 /****************************************************************************
 **
@@ -305,17 +310,70 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
 **  the application  must inform {\Gasman}  that it  has changed  the bag, by
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
 */
+#ifdef HPCGAP
+EXPORT_INLINE int ReadCheck(Bag bag)
+{
+    Region *region;
+    region = REGION(bag);
+    if (!region)
+        return 1;
+    if (region->owner == GetTLS())
+        return 1;
+    if (region->readers[TLS(threadID)])
+        return 1;
+    return 0;
+}
+
+EXPORT_INLINE int WriteCheck(Bag bag)
+{
+    Region *region;
+    region = REGION(bag);
+    return !region || region->owner == GetTLS();
+}
+
+extern void HandleReadGuardError(Bag);
+extern void HandleWriteGuardError(Bag);
+#endif // HPCGAP
+
 EXPORT_INLINE Bag *PTR_BAG(Bag bag)
+{
+    GAP_ASSERT(bag != 0);
+#ifdef USE_HPC_GUARDS
+    if (!WriteCheck(bag))
+      HandleWriteGuardError(bag);
+#endif
+    return *(Bag**)bag;
+}
+
+#ifdef USE_HPC_GUARDS
+EXPORT_INLINE Bag *UNSAFE_PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
     return *(Bag**)bag;
 }
+#else
+#define UNSAFE_PTR_BAG PTR_BAG
+#endif
 
 EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
+#ifdef USE_HPC_GUARDS
+    if (!ReadCheck(bag))
+      HandleReadGuardError(bag);
+#endif
     return *(const Bag * const *)bag;
 }
+
+#ifdef USE_HPC_GUARDS
+EXPORT_INLINE const Bag *UNSAFE_CONST_PTR_BAG(Bag bag)
+{
+    GAP_ASSERT(bag != 0);
+    return *(const Bag * const *)bag;
+}
+#else
+#define UNSAFE_CONST_PTR_BAG CONST_PTR_BAG
+#endif
 
 EXPORT_INLINE void SET_PTR_BAG(Bag bag, Bag *val)
 {
