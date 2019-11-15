@@ -957,6 +957,9 @@ static void PrintRegion(Obj);
 
 GVarDescriptor LastInaccessibleGVar;
 static GVarDescriptor MAX_INTERRUPTGVar;
+#ifdef DEBUG_GUARDS
+GVarDescriptor GUARD_ERROR_STACK;
+#endif
 
 static UInt RNAM_SIGINT;
 static UInt RNAM_SIGCHLD;
@@ -2645,6 +2648,9 @@ static Int InitKernel(StructInitInfo * module)
 
     DeclareGVar(&LastInaccessibleGVar, "LastInaccessible");
     DeclareGVar(&MAX_INTERRUPTGVar, "MAX_INTERRUPT");
+#ifdef DEBUG_GUARDS
+    DeclareGVar(&GUARD_ERROR_STACK, "GUARD_ERROR_STACK");
+#endif
 
     // install mark functions
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);

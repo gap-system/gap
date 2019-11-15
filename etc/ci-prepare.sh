@@ -23,7 +23,7 @@ BUILDDIR=$PWD
 
 if [[ $HPCGAP = yes ]]
 then
-  CONFIGFLAGS="--enable-hpcgap $CONFIGFLAGS"
+  CONFIGFLAGS="--enable-hpcgap --enable-guards $CONFIGFLAGS"
 fi
 
 
@@ -40,8 +40,22 @@ then
 fi
 
 
-# configure and make GAP
+# configure
 time "$SRCDIR/configure" --enable-Werror $CONFIGFLAGS
+
+if [[ $HPCGAP = yes ]]
+then
+  git clone https://github.com/rbehrends/unward
+  cd unward
+  ./configure CC=gcc CXX=g++ CFLAGS=-O2 CXXFLAGS=-O2
+  make
+  cd ..
+  unward/bin/unward --inplace src
+  # commit the result to prevent the docomp test from triggering
+  git commit -m "Unward" src
+fi
+
+# build GAP
 time make V=1 -j4
 
 # download packages; instruct wget to retry several times if the

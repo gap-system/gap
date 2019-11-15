@@ -25,6 +25,12 @@
 #endif
 
 
+// If we are not running HPC-GAP, disable read and write guards.
+
+#ifndef HPCGAP
+#undef USE_HPC_GUARDS
+#endif
+
 /****************************************************************************
 **
 *S  GAP_PATH_MAX . . . . . . . . . . . .  size for buffers storing file paths
