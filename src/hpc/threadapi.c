@@ -1780,22 +1780,17 @@ static void PrintSemaphore(Obj obj)
 {
     Semaphore * sem = ObjPtr(obj);
     Int         count;
-    char        buffer[100];
     LockMonitor(ObjPtr(sem->monitor));
     count = sem->count;
     UnlockMonitor(ObjPtr(sem->monitor));
-    sprintf(buffer, "<semaphore %p: count = %ld>", (void *)sem, (long)count);
-    Pr("%s", (Int)buffer, 0L);
+    Pr("<semaphore with count = %d>", (Int)count, 0);
 }
 
 static void PrintChannel(Obj obj)
 {
     Channel * channel = ObjPtr(obj);
     Int       size, waiting, capacity;
-    char      buffer[20];
-    Pr("<channel ", 0L, 0L);
-    sprintf(buffer, "%p: ", (void *)channel);
-    Pr(buffer, 0L, 0L);
+    Pr("<channel with ", 0, 0);
     LockChannel(channel);
     size = channel->size;
     waiting = channel->waiting;
@@ -1816,31 +1811,24 @@ static void PrintBarrier(Obj obj)
 {
     Barrier * barrier = ObjPtr(obj);
     Int       count, waiting;
-    char      buffer[20];
-    Pr("<barrier ", 0L, 0L);
-    sprintf(buffer, "%p: ", (void *)barrier);
-    Pr(buffer, 0L, 0L);
     LockBarrier(barrier);
     count = barrier->count;
     waiting = barrier->waiting;
     UnlockBarrier(barrier);
-    Pr("%d of %d threads arrived>", waiting, count);
+    Pr("<barrier with %d of %d threads arrived>", waiting, waiting+count);
 }
 
 static void PrintSyncVar(Obj obj)
 {
     SyncVar * syncvar = ObjPtr(obj);
-    char      buffer[20];
     int       written;
     LockMonitor(ObjPtr(syncvar->monitor));
     written = syncvar->written;
     UnlockMonitor(ObjPtr(syncvar->monitor));
     if (written)
-        Pr("<initialized syncvar ", 0L, 0L);
+        Pr("<initialized syncvar>", 0, 0);
     else
-        Pr("<uninitialized syncvar ", 0L, 0L);
-    sprintf(buffer, "%p>", (void *)syncvar);
-    Pr(buffer, 0L, 0L);
+        Pr("<uninitialized syncvar>", 0, 0);
 }
 
 static void PrintRegion(Obj obj)
