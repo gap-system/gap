@@ -14,6 +14,8 @@ gap> HASH_FLAGS(fail);
 Error, HASH_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> HASH_FLAGS(flags);
 2
+gap> HASH_FLAGS(flags2);
+20971042
 
 #
 gap> TRUES_FLAGS(fail);
