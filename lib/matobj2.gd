@@ -1040,7 +1040,7 @@ DeclareOperation( "Matrix", [IsSemiring,    IsMatrixObj]);
 
 # the following two operations use DefaultFieldOfMatrix to "guess" the base domain
 DeclareOperation( "Matrix", [IsList, IsInt]);
-DeclareAttribute( "Matrix", IsList, "mutable"); # HACK: because there already is an attribute Matrix
+DeclareOperation( "Matrix", [IsList]);
 
 # variant with example object at end (input is first)
 DeclareOperation( "Matrix", [IsList, IsInt, IsMatrixObj]);
