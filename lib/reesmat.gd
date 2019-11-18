@@ -81,10 +81,8 @@ DeclareOperation( "ReesZeroMatrixSubsemigroup",
   [IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
 DeclareGlobalFunction("ReesZeroMatrixSubsemigroupNC");
 
-DeclareAttribute("Matrix", IsReesMatrixSubsemigroup);
-DeclareAttribute("Matrix", IsReesZeroMatrixSubsemigroup);
-DeclareSynonymAttr("MatrixOfReesMatrixSemigroup", Matrix);
-DeclareSynonymAttr("MatrixOfReesZeroMatrixSemigroup", Matrix);
+DeclareAttribute("MatrixOfReesMatrixSemigroup", IsReesMatrixSubsemigroup);
+DeclareAttribute("MatrixOfReesZeroMatrixSemigroup", IsReesZeroMatrixSubsemigroup);
 
 DeclareAttribute("Rows", IsReesMatrixSubsemigroup);
 DeclareAttribute("Rows", IsReesZeroMatrixSubsemigroup);
