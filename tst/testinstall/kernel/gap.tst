@@ -79,8 +79,8 @@ Error, WindowCmd: <cmd> must be a string (not the value 'fail')
 gap> WindowCmd([""]);
 Error, WindowCmd: <cmd> must be a string of length 3
 gap> WindowCmd(["abc",fail]);
-Error, WindowCmd: 2. argument must be a string or integer (not a boolean or fa\
-il)
+Error, WindowCmd: the argument in position 2 must be a string or integer (not \
+a boolean or fail)
 gap> WindowCmd(["abc"]);
 Error, window system: No Window Handler Present
 gap> WindowCmd(["abc",1,"foo"]);
