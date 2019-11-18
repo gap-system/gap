@@ -590,8 +590,8 @@ static Obj FuncWindowCmd(Obj self, Obj args)
     {
       tmp = ELM_LIST( args, i );
       if (!IS_INTOBJ(tmp) && !IsStringConv(tmp)) {
-          ErrorMayQuit("WindowCmd: %d. argument must be a string or integer "
-                       "(not a %s)",
+          ErrorMayQuit("WindowCmd: the argument in position %d must be a "
+                       "string or integer (not a %s)",
                        i, (Int)TNAM_OBJ(tmp));
           SET_ELM_PLIST(args, i, tmp);
       }
