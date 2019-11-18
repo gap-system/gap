@@ -360,7 +360,7 @@ false]]></Example>
 </ManSection>
 
   <ManSection>
-    <Oper Name="Matrix" Arg="R"/>
+    <Oper Name="Matrix" Arg="R" Label="for Rees matrix semigroups"/>
     <Attr Name="MatrixOfReesMatrixSemigroup" Arg="R"/>
     <Attr Name="MatrixOfReesZeroMatrixSemigroup" Arg="R"/>
     <Returns>A matrix.</Returns>
@@ -369,11 +369,11 @@ false]]></Example>
       <Ref Attr="MatrixOfReesMatrixSemigroup"/> respectively <Ref Attr="MatrixOfReesZeroMatrixSemigroup"/>
       return the matrix used to define multiplication in
       <A>R</A>. For convenience, one may also abbreviate either to
-      <Ref Oper="Matrix"/>. <P/>
+      <Ref Oper="Matrix" Label="for Rees matrix semigroups"/>. <P/>
 
       More specifically, if <A>R</A> is a Rees matrix or 0-matrix semigroup,
       which is a proper subsemigroup of another such semigroup, then 
-      <Ref Oper="Matrix"/> returns the matrix used to define the Rees matrix (or
+      <Ref Oper="Matrix" Label="for Rees matrix semigroups"/> returns the matrix used to define the Rees matrix (or
       0-matrix) semigroup consisting of the whole family to which the elements
       of <A>R</A> belong. Thus, for example, a <C>1</C> by <C>1</C> Rees matrix
       semigroup can have a <C>65</C> by <C>15</C> matrix. <P/>
