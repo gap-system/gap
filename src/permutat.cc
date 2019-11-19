@@ -189,8 +189,7 @@ static void PrintPerm(Obj perm)
     T * ptSeen = ADDR_TMP_PERM<T>();
 
     // clear the buffer bag
-    for (p = 0; p < DEG_PERM<T>(perm); p++)
-        ptSeen[p] = 0;
+    memset(ptSeen, 0, DEG_PERM<T>(perm) * sizeof(T));
 
     /* run through all points                                              */
     isId = 1;
@@ -1045,16 +1044,12 @@ static inline Obj PermList(Obj list)
     ptTmp   = ADDR_TMP_PERM<T>();
 
     /* make the buffer bag clean                                       */
-    for ( i = 1; i <= degPerm; i++ )
-        ptTmp[i-1] = 0;
+    memset(ptTmp, 0, degPerm * sizeof(T));
 
     /* run through all entries of the list                             */
     for ( i = 1; i <= degPerm; i++ ) {
 
         /* get the <i>th entry of the list                             */
-        if ( ptList[i] == 0 ) {
-            return Fail;
-        }
         if ( !IS_INTOBJ(ptList[i]) ) {
             return Fail;
         }
@@ -1111,11 +1106,12 @@ static inline UInt LargestMovedPointPerm_(Obj perm)
     const T * ptPerm;
 
     ptPerm = CONST_ADDR_PERM<T>(perm);
-    for (sup = DEG_PERM<T>(perm); 1 <= sup; sup--) {
-        if (ptPerm[sup - 1] != sup - 1)
-            break;
+    sup = DEG_PERM<T>(perm);
+    while (sup-- > 0) {
+        if (ptPerm[sup] != sup)
+            return sup + 1;
     }
-    return sup;
+    return 0;
 }
 
 UInt LargestMovedPointPerm(Obj perm)
@@ -1145,9 +1141,9 @@ static inline Obj SmallestMovedPointPerm_(Obj perm)
     const T * ptPerm = CONST_ADDR_PERM<T>(perm);
     UInt      deg = DEG_PERM<T>(perm);
 
-    for (UInt i = 1; i <= deg; i++) {
-        if (ptPerm[i - 1] != i - 1)
-            return INTOBJ_INT(i);
+    for (UInt i = 0; i < deg; i++) {
+        if (ptPerm[i] != i)
+            return INTOBJ_INT(i + 1);
     }
     return Infinity;
 }
@@ -1344,15 +1340,10 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
     UseTmpPerm(SIZE_OBJ(perm) + 8);
 
     /* find the largest moved point                                    */
-    ptPerm = CONST_ADDR_PERM<T>(perm);
-    for (deg = DEG_PERM<T>(perm); 1 <= deg; deg--) {
-        if (ptPerm[deg - 1] != deg - 1)
-            break;
-    }
+    deg = LargestMovedPointPerm_<T>(perm);
     if (deg == 0) {
         /* special treatment of identity */
-        list = NEW_PLIST(T_PLIST, 0);
-        return list;
+        return NewEmptyPlist();
     }
 
     scratch = ADDR_TMP_PERM<T>();
@@ -1363,16 +1354,14 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
      * at least 2 points, this is guaranteed to fit. */
     bytes = ((deg / sizeof(T)) + 1) * sizeof(T); // ensure alignment
     offset = (T *)((UInt)scratch + (bytes));
-    clr = (UInt1 *)scratch;
 
     /* clear out the bits */
-    for (cnt = 0; cnt < bytes; cnt++) {
-        clr[cnt] = (UInt1)0;
-    }
+    memset(scratch, 0, bytes);
 
     cnt = 0;
     clr = (UInt1 *)scratch;
     max = 0;
+    ptPerm = CONST_ADDR_PERM<T>(perm);
     for (pnt = 0; pnt < deg; pnt++) {
         if (clr[pnt] == 0) {
             len = 0;
@@ -2276,8 +2265,8 @@ void TrimPerm(Obj perm, UInt m)
         GAP_ASSERT(m <= DEG_PERM4(perm));
         UInt2 *       ptr2 = ADDR_PERM2(perm);
         const UInt4 * ptr4 = CONST_ADDR_PERM4(perm);
-        for (UInt k = 1; k <= m; k++) {
-            ptr2[k - 1] = ptr4[k - 1];
+        for (UInt k = 0; k < m; k++) {
+            ptr2[k] = ptr4[k];
         };
         RetypeBag(perm, T_PERM2);
         ResizeBag(perm, SIZEBAG_PERM2(m));
@@ -2294,7 +2283,7 @@ UInt ScanPermCycle(
     UInt4 * ptr4;    /* pointer into perm               */
     Obj     val;     /* one entry as value              */
     UInt    c, p, l; /* entries in permutation          */
-    UInt    j, k;    /* loop variable                   */
+    UInt    j;       /* loop variable                   */
 
     GAP_ASSERT(len >= 1);
 
@@ -2314,8 +2303,8 @@ UInt ScanPermCycle(
         if (DEG_PERM4(perm) < c) {
             ResizeBag(perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024));
             ptr4 = ADDR_PERM4(perm);
-            for (k = m + 1; k <= DEG_PERM4(perm); k++) {
-                ptr4[k - 1] = k - 1;
+            for (UInt k = m; k < DEG_PERM4(perm); k++) {
+                ptr4[k] = k;
             }
         }
         else {
