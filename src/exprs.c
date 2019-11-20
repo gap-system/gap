@@ -714,7 +714,7 @@ static Obj EvalIntExpr(Expr expr)
 static Obj EvalTildeExpr(Expr expr)
 {
     if( ! (STATE(Tilde)) ) {
-        ErrorQuit("'~' does not have a value here",0L,0L);
+        ErrorQuit("'~' does not have a value here", 0, 0);
     }
     return STATE(Tilde);
 }

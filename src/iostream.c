@@ -498,11 +498,11 @@ static void HandleChildStatusChanges(UInt pty)
         PtyIOStreams[pty].changed = 0;
         PtyIOStreams[pty].blocked = 0;
         HashUnlock(PtyIOStreams);
-        ErrorQuit("Child Process is unexpectedly dead", (Int)0L, (Int)0L);
+        ErrorQuit("Child Process is unexpectedly dead", 0, 0);
     }
     else if (PtyIOStreams[pty].blocked) {
         HashUnlock(PtyIOStreams);
-        ErrorQuit("Child Process is still dead", (Int)0L, (Int)0L);
+        ErrorQuit("Child Process is still dead", 0, 0);
     }
     else if (PtyIOStreams[pty].changed) {
         PtyIOStreams[pty].blocked = 1;
@@ -626,7 +626,7 @@ static UInt HashLockStreamIfAvailable(Obj stream)
     HashLock(PtyIOStreams);
     if (!PtyIOStreams[pty].inuse) {
         HashUnlock(PtyIOStreams);
-        ErrorMayQuit("IOSTREAM %d is not in use", pty, 0L);
+        ErrorMayQuit("IOSTREAM %d is not in use", pty, 0);
     }
     return pty;
 }

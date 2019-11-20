@@ -309,7 +309,7 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
             // FIXME: honor asList
             return GetRegionOf(obj)->obj;
         }
-        ErrorQuit("Object not in a readable region", 0L, 0L);
+        ErrorQuit("Object not in a readable region", 0, 0);
     }
 
     const Obj * traversed = CONST_ADDR_OBJ(traversal.list);

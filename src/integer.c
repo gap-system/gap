@@ -614,7 +614,7 @@ Int Int_ObjInt(Obj i)
     else
         RequireArgument("Conversion error", i, "must be an integer");
     if (SIZE_BAG(i) != sizeof(mp_limb_t))
-        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0, 0);
 
     // now check if val is small enough to fit in the signed Int type
     // that has a range from -2^N to 2^N-1 so we need to check both ends
@@ -626,7 +626,7 @@ Int Int_ObjInt(Obj i)
 #else
     if ((!sign && (val > INT32_MAX)) || (sign && (val > (UInt)INT32_MIN)))
 #endif
-        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0, 0);
     return sign ? -(Int)val : (Int)val;
 }
 
@@ -641,7 +641,7 @@ UInt UInt_ObjInt(Obj i)
 
     // must be a single limb
     if (SIZE_INT(i) != 1)
-        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0, 0);
     return VAL_LIMB0(i);
 }
 
@@ -664,7 +664,7 @@ Int8 Int8_ObjInt(Obj i)
 
     // must be at most two limbs
     if (SIZE_INT(i) > 2)
-        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0, 0);
     UInt  vall = VAL_LIMB0(i);
     UInt  valh = (SIZE_INT(i) == 1) ? 0 : CONST_ADDR_INT(i)[1];
     UInt8 val = (UInt8)vall + ((UInt8)valh << 32);
@@ -673,7 +673,7 @@ Int8 Int8_ObjInt(Obj i)
     // Since -2^63 is the same bit pattern as the UInt8 2^63 we can do it
     // this way which avoids some compiler warnings
     if ((!sign && (val > INT64_MAX)) || (sign && (val > (UInt8)INT64_MIN)))
-        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0, 0);
     return sign ? -(Int8)val : (Int8)val;
 #endif
 }
@@ -691,7 +691,7 @@ UInt8 UInt8_ObjInt(Obj i)
     if (TNUM_OBJ(i) != T_INTPOS)
         RequireArgument("Conversion error", i, "must be a non-negative integer");
     if (SIZE_INT(i) > 2)
-        ErrorMayQuit("Conversion error: integer too large", 0L, 0L);
+        ErrorMayQuit("Conversion error: integer too large", 0, 0);
     UInt vall = VAL_LIMB0(i);
     UInt valh = (SIZE_INT(i) == 1) ? 0 : CONST_ADDR_INT(i)[1];
     return (UInt8)vall + ((UInt8)valh << 32);
@@ -868,7 +868,7 @@ static mp_limb_t hexstr2int( const UInt1 *p, UInt len )
     else
       a -= '0';
     if (a > 15)
-      ErrorMayQuit("IntHexString: invalid character in hex-string", 0L, 0L);
+      ErrorMayQuit("IntHexString: invalid character in hex-string", 0, 0);
     n = (n << 4) + a;
   }
   return n;
@@ -2568,7 +2568,7 @@ static Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
   if ( IS_NEG_INT(exp) ) {
     base = InverseModInt( base, mod );
     if (base == Fail)
-      ErrorMayQuit( "PowerModInt: negative <exp> but <base> is not invertible modulo <mod>", 0L, 0L  );
+      ErrorMayQuit("PowerModInt: negative <exp> but <base> is not invertible modulo <mod>", 0, 0);
     exp = AInvInt(exp);
   }
 

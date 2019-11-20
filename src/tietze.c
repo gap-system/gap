@@ -63,7 +63,7 @@ CheckTietzeRelators(Obj * ptTietze, Obj * rels, Obj ** ptRels, Int * numrels)
     *rels    = ptTietze[TZ_RELATORS];
     *numrels = INT_INTOBJ(ptTietze[TZ_NUMRELS]);
     if ( *rels == 0 || ! IS_PLIST(*rels) || LEN_PLIST(*rels) != *numrels ) {
-        ErrorQuit( "invalid Tietze relators list", 0L, 0L );
+        ErrorQuit("invalid Tietze relators list", 0, 0);
     }
     *ptRels = ADDR_OBJ(*rels);
 }
@@ -80,7 +80,7 @@ CheckTietzeInverses(Obj * ptTietze, Obj * invs, Obj ** ptInvs, Int * numgens)
     *invs    = ptTietze[TZ_INVERSES];
     *numgens = INT_INTOBJ(ptTietze[TZ_NUMGENS]);
     if ( *invs==0 || !IS_PLIST(*invs) || LEN_PLIST(*invs)!=2*(*numgens)+1 ) {
-        ErrorQuit( "invalid Tietze inverses list", 0L, 0L );
+        ErrorQuit("invalid Tietze inverses list", 0, 0);
     }
     *ptInvs = ADDR_OBJ(*invs) + (*numgens+1);
 }
@@ -96,7 +96,7 @@ CheckTietzeLengths(Obj * ptTietze, Int numrels, Obj * lens, Obj ** ptLens)
     /*  Get and check the Tietze lengths list                              */
     *lens = ptTietze[TZ_LENGTHS];
     if ( *lens == 0 || ! IS_PLIST(*lens) || LEN_PLIST(*lens) != numrels ) {
-        ErrorQuit( "invalid Tietze lengths list", 0L, 0L );
+        ErrorQuit("invalid Tietze lengths list", 0, 0);
     }
     *ptLens = ADDR_OBJ(*lens);
 }
@@ -112,7 +112,7 @@ CheckTietzeFlags(Obj * ptTietze, Int numrels, Obj * flags, Obj ** ptFlags)
     /* get and check the Tietze flags list                                 */
     *flags = ptTietze[TZ_FLAGS];
     if ( *flags==0 || ! IS_PLIST(*flags) || LEN_PLIST(*flags)!=numrels ) {
-        ErrorQuit( "invalid Tietze flags list", 0L, 0L );
+        ErrorQuit("invalid Tietze flags list", 0, 0);
     }
     *ptFlags = ADDR_OBJ(*flags);
 }
@@ -134,12 +134,12 @@ static void CheckTietzeRelLengths(
           || ! IS_PLIST(ptRels[i])
           || INT_INTOBJ(ptLens[i]) != LEN_PLIST(ptRels[i]) )
         {
-            ErrorQuit( "inconsistent Tietze lengths list", 0L, 0L );
+            ErrorQuit("inconsistent Tietze lengths list", 0, 0);
         }
         *total += INT_INTOBJ(ptLens[i]);
     }
     if ( *total != INT_INTOBJ(ptTietze[TZ_TOTAL]) ) {
-        ErrorQuit( "inconsistent total length", 0L, 0L );
+        ErrorQuit("inconsistent total length", 0, 0);
     }
 }
 
@@ -441,26 +441,25 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 
     /* check the second argument (generator number)                        */
     if ( ! IS_INTOBJ(gennum) ) {
-        ErrorQuit( "<gennum> must be an integer", 0L, 0L );
+        ErrorQuit("<gennum> must be an integer", 0, 0);
     }
     given = INT_INTOBJ(gennum);
     gen   = ( given > 0 ) ? given : -given;
     if ( gen <= 0 || numgens < gen ) {
-        ErrorQuit( "generator number %d out of range", (Int)gen, 0L );
+        ErrorQuit("generator number %d out of range", (Int)gen, 0);
     }
     ginv = INT_INTOBJ(ptInvs[gen]);
 
     /* check the third argument (replacing word)                           */
     if ( ! IS_PLIST(word) ) {
-        ErrorQuit( "invalid replacing word", 0L, 0L );
+        ErrorQuit("invalid replacing word", 0, 0);
     }
     ptWrd = ADDR_OBJ(word);
     wleng = LEN_PLIST(word);
     for ( i = 1;  i <= wleng;  i++ ) {
         next = INT_INTOBJ( ptWrd[i] );
         if ( next < -numgens || next == 0 || next > numgens ) {
-            ErrorQuit( "entry [%d] of <Tietze word> out of range",
-                       (Int)i, 0L );
+            ErrorQuit("entry [%d] of <Tietze word> out of range", (Int)i, 0);
         }
     }
 
@@ -636,7 +635,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
     /* get and check arguments                                             */
     if ( ! IS_SMALL_LIST(args) || 2 < LEN_LIST(args) || LEN_LIST(args) < 1 ) {
         ErrorQuit( "usage: TzOccurrences( <Tietze stack>[, <gen no.> ] )",
-                   0L, 0L );
+                   0, 0);
     }
 
     /* check the first argument (Tietze stack)                             */
@@ -651,7 +650,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
     if ( LEN_LIST(args) == 2 ) {
         num = INT_INTOBJ( ELM_LIST(args,2) );
         if ( num <= 0 || numgens < num ) {
-            ErrorQuit( "given generator number out of range", 0L, 0L );
+            ErrorQuit("given generator number out of range", 0, 0);
         }
         numgens = 1;
     }
@@ -703,8 +702,8 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         for ( i = 1;  i <= numrels;  i++ ) {
             rel = ptRels[i];
             if ( rel == 0 || ! IS_PLIST(rel) ) {
-                ErrorQuit( "invalid entry [%d] in Tietze relators list",
-                           (Int)i, 0L );
+                ErrorQuit("invalid entry [%d] in Tietze relators list",
+                          (Int)i, 0);
             }
             ptRel = ADDR_OBJ(rel);
             leng  = LEN_PLIST(rel);
@@ -747,8 +746,8 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         for ( i = 1;  i <= numrels;  i++ ) {
             rel = ptRels[i];
             if ( rel == 0 || ! IS_PLIST(rel) ) {
-                ErrorQuit( "invalid entry [%d] in Tietze relators list",
-                           (Int)i, 0L );
+                ErrorQuit("invalid entry [%d] in Tietze relators list",
+                          (Int)i, 0);
             }
             ptRel = ADDR_OBJ(rel);
             leng  = LEN_PLIST(rel);
@@ -771,7 +770,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
                     continue;
                 ptAux[k] = 0;
                 if ( ! SUM_INTOBJS( ptCnts[k], ptCnts[k], INTOBJ_INT(c) ) ) {
-                    ErrorQuit( "integer overflow", 0L, 0L );
+                    ErrorQuit("integer overflow", 0, 0);
                 }
                 if ( 0 < c ) {
                     if ( ptLens[k] == 0 || c < INT_INTOBJ(ptLens[k])
@@ -827,7 +826,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
     if ( ! IS_SMALL_LIST(args) || 3 < LEN_LIST(args) || LEN_LIST(args) < 2 ) {
         ErrorQuit(
           "usage: TzOccurrencesPairs( <Tietze stack>, <gen>[, <list>] )",
-          0L, 0L );
+          0, 0);
     }
 
     /* check the first argument (Tietze stack)                             */
@@ -843,11 +842,11 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
     /* get and check the Tietze generator number                           */
     numObj = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(numObj) ) {
-        ErrorQuit( "<gen> must be a Tietze generator number", 0L, 0L );
+        ErrorQuit("<gen> must be a Tietze generator number", 0, 0);
     }
     num = INT_INTOBJ(numObj);
     if ( num <= 0 || num > numgens ) {
-        ErrorQuit( "given generator number is out of range", 0L, 0L );
+        ErrorQuit("given generator number is out of range", 0, 0);
     }
 
     /*  Get and check the list for the results, if specified               */
@@ -859,7 +858,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         res = ELM_LIST( args, 3 );
         if ( res == 0 || ! IS_PLIST(res) || LEN_PLIST(res) != 4*numgens ) {
             ErrorQuit( "<list> must be a list of length %d",
-                       (Int)4*numgens, 0L );
+                       (Int)4*numgens, 0);
         }
     }
 
@@ -890,7 +889,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
     for ( r = 1; r <= numrels; r++ ) {
         rel = ptRels[r];
         if ( rel == 0 || ! IS_PLIST(rel) ) {
-            ErrorQuit( "invalid Tietze relator [%d]", (Int)r, 0L );
+            ErrorQuit("invalid Tietze relator [%d]", (Int)r, 0);
         }
         ptRel = ADDR_OBJ(rel) + 1;
 
@@ -921,7 +920,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                 if ( ptRel[j1] != numObj )
                     i = i + 2 * numgens;
                 if ( ! SUM_INTOBJS( ptRes[i], ptRes[i], INTOBJ_INT(1) ) ) {
-                    ErrorQuit( "integer overflow", 0L, 0L );
+                    ErrorQuit("integer overflow", 0, 0);
                 }
             }
 
@@ -949,7 +948,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                     if ( ptRel[j2] != invObj )
                         ii = ii + 2 * numgens;
                     if ( !SUM_INTOBJS(ptRes[ii],ptRes[ii],INTOBJ_INT(1)) ) {
-                        ErrorQuit( "integer overflow", 0L, 0L );
+                        ErrorQuit("integer overflow", 0, 0);
                     }
                 }
             }
@@ -1017,8 +1016,8 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     /* get and check arguments                                             */
     if ( ! IS_SMALL_LIST(args) || 4 < LEN_LIST(args) || LEN_LIST(args) < 3 ) {
         ErrorQuit(
-          "usage: TzSearchC( <Tietze stack>, <pos1>, <pos2>[, <equal>] )",
-          0L, 0L );
+            "usage: TzSearchC( <Tietze stack>, <pos1>, <pos2>[, <equal>] )",
+            0, 0);
     }
 
     /* check the first argument (Tietze stack)                             */
@@ -1043,21 +1042,21 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     /* check the second argument                                           */
     tmp = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(tmp) ) {
-        ErrorQuit( "<pos1> must be a positive int", 0L ,0L );
+        ErrorQuit("<pos1> must be a positive int", 0, 0);
     }
     pos1 = INT_INTOBJ(tmp);
     if ( pos1 > numrels ) {
-        ErrorQuit( "<pos1> out of range: %d", (Int)pos1, 0L );
+        ErrorQuit("<pos1> out of range: %d", (Int)pos1, 0);
     }
 
     /* check the third argument                                            */
     tmp = ELM_LIST( args, 3 );
     if ( ! IS_INTOBJ(tmp) ) {
-        ErrorQuit( "<pos2> must be a positive int", 0L ,0L );
+        ErrorQuit("<pos2> must be a positive int", 0, 0);
     }
     pos2 = INT_INTOBJ(tmp);
     if ( pos2 > numrels ) {
-        ErrorQuit( "<pos2> out of range: %d", (Int)pos2, 0L );
+        ErrorQuit("<pos2> out of range: %d", (Int)pos2, 0);
     }
 
     /* check the fourth argument                                           */
@@ -1067,7 +1066,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     else {
         equ = ELM_LIST( args, 4 );
         if ( equ != False && equ != True ) {
-            ErrorQuit( "<equal> must be false or true", 0L, 0L );
+            ErrorQuit("<equal> must be false or true", 0, 0);
         }
     }
     equal = ( equ == True );

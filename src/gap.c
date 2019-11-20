@@ -808,7 +808,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
     if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
         ErrorMayQuit(
             "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
-            0L, 0L);
+            0, 0);
     }
 
     /* loop over the arguments                                             */
@@ -1083,7 +1083,7 @@ static Obj FuncSleep(Obj self, Obj secs)
     /* either we used up the time, or we were interrupted. */
     if (HaveInterrupt()) {
         ClearError(); /* The interrupt may still be pending */
-        ErrorReturnVoid("user interrupt in sleep", 0L, 0L,
+        ErrorReturnVoid("user interrupt in sleep", 0, 0,
                         "you can 'return;' as if the sleep was finished");
     }
 
@@ -1108,7 +1108,7 @@ static Obj FuncMicroSleep(Obj self, Obj msecs)
     if (HaveInterrupt()) {
         ClearError(); /* The interrupt may still be pending */
         ErrorReturnVoid(
-            "user interrupt in microsleep", 0L, 0L,
+            "user interrupt in microsleep", 0, 0,
             "you can 'return;' as if the microsleep was finished");
     }
 
@@ -1139,7 +1139,7 @@ static int SetExitValue(Obj code)
 static Obj FuncGAP_EXIT_CODE(Obj self, Obj code)
 {
   if (!SetExitValue(code))
-    ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0L, 0L);
+    ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0, 0);
   return (Obj) 0;
 }
 
@@ -1157,7 +1157,7 @@ static Obj FuncQUIT_GAP(Obj self, Obj args)
   }
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
-    ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0L, 0L );
+    ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0, 0);
   }
   STATE(UserHasQUIT) = 1;
   ReadEvalError();
@@ -1178,7 +1178,7 @@ static Obj FuncFORCE_QUIT_GAP(Obj self, Obj args)
   }
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
-    ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0L, 0L );
+    ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0, 0);
   }
   SyExit(SystemErrorCode);
 }

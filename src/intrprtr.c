@@ -178,9 +178,7 @@ static Obj PopObj(void)
     Obj val = PopPlist( STATE(StackObj) );
 
     if (val == (Obj)&VoidReturnMarker) {
-        ErrorQuit(
-            "Function call: <func> must return a value",
-            0L, 0L );
+        ErrorQuit("Function call: <func> must return a value", 0, 0);
     }
 
     // return the popped value (which must be non-void)
@@ -1847,7 +1845,7 @@ void            IntrTildeExpr ( void )
     if ( STATE(IntrCoding)    > 0 ) { CodeTildeExpr(); return; }
 
     if(! (STATE(Tilde)) ) {
-        ErrorQuit("'~' does not have a value here", 0L, 0L);
+        ErrorQuit("'~' does not have a value here", 0, 0);
     }
 
     /* push the value                                                      */
@@ -2070,9 +2068,8 @@ void            IntrListExprEnd (
             val = ELM_LIST( list, 2 );
             Int v = GetSmallIntEx("Range", val, "<second>");
             if ( v == low ) {
-                ErrorQuit(
-                      "Range: <second> must not be equal to <first> (%d)",
-                      (Int)low, 0L );
+                ErrorQuit("Range: <second> must not be equal to <first> (%d)",
+                          (Int)low, 0);
             }
             inc = v - low;
         }
@@ -2759,9 +2756,7 @@ void            IntrRefGVar (
 
     /* get and check the value                                             */
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
-        ErrorQuit(
-            "Variable: '%g' must have a value",
-            (Int)NameGVar(gvar), 0L );
+        ErrorQuit("Variable: '%g' must have a value", (Int)NameGVar(gvar), 0);
     }
 
     /* push the value                                                      */

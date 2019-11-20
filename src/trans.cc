@@ -1423,7 +1423,7 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
                 ErrorQuit(
                     "<obj> must be a list of positive small integers "
                     "in the range [1 .. %d]",
-                    (Int)n, 0L);
+                    (Int)n, 0);
             }
         }
         for (i = LEN_LIST(list); i >= 1; i--) {
@@ -1522,7 +1522,7 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
     if (len < deg) {
         ErrorQuit("ON_KERNEL_ANTI_ACTION: the length of <ker> "
                   "must be at least %d",
-                  (Int)deg, 0L);
+                  (Int)deg, 0);
     }
 
     if (len == 0) {
@@ -4003,7 +4003,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
                 if (*pttup == NULL) {
                     ErrorQuit("OnTuples for transformation: list must not "
                               "contain holes",
-                              0L, 0L);
+                              0, 0);
                 }
                 tmp = POW(*pttup, f);
                 pttup = CONST_ADDR_OBJ(tup) + i;
@@ -4031,7 +4031,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
                 if (*pttup == NULL) {
                     ErrorQuit("OnTuples for transformation: list must not "
                               "contain holes",
-                              0L, 0L);
+                              0, 0);
                 }
                 tmp = POW(*pttup, f);
                 pttup = CONST_ADDR_OBJ(tup) + i;

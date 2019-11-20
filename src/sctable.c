@@ -154,12 +154,12 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
     coeffs = ELM_LIST( basis_coeffs, 2 );
     len = LEN_LIST( basis );
     if ( LEN_LIST( coeffs ) != len ) {
-        ErrorQuit("SCTableProduct: corrupted <table>",0L,0L);
+        ErrorQuit("SCTableProduct: corrupted <table>", 0, 0);
     }
     for ( l = 1; l <= len; l++ ) {
         k = ELM_LIST( basis, l );
         if ( ! IS_INTOBJ(k) || INT_INTOBJ(k) <= 0 || dim < INT_INTOBJ(k) ) {
-            ErrorQuit("SCTableProduct: corrupted <table>",0L,0L);
+            ErrorQuit("SCTableProduct: corrupted <table>", 0, 0);
         }
         c1 = ELM_LIST( coeffs, l );
         c1 = PROD( coeff, c1 );

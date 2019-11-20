@@ -2057,8 +2057,8 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
         }
         else {
             if (*ptTup == NULL) {
-              ErrorQuit("OnTuples for perm: list must not contain holes",
-                        0L, 0L);
+                ErrorQuit("OnTuples for perm: list must not contain holes", 0,
+                          0);
             }
             tmp = POW( *ptTup, perm );
             ptTup = CONST_ADDR_OBJ(tup) + i;
@@ -2500,7 +2500,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     for (i = 1;i <= l;i++) {
         obj = ELM_LIST(src, i);
         if (!IS_POS_INTOBJ(obj)) {
-            ErrorMayQuit("<src> must be a dense list of positive small integers", 0L, 0L);
+            ErrorMayQuit("<src> must be a dense list of positive small integers", 0, 0);
         }
         x = INT_INTOBJ(obj);
         if (x > d) d = x;
@@ -2508,7 +2508,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     for (i = 1;i <= l;i++) {
         obj = ELM_LIST(dst, i);
         if (!IS_POS_INTOBJ(obj)) {
-            ErrorMayQuit("<dst> must be a dense list of positive small integers", 0L, 0L);
+            ErrorMayQuit("<dst> must be a dense list of positive small integers", 0, 0);
         }
         x = INT_INTOBJ(obj);
         if (x > d) d = x;

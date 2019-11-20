@@ -679,9 +679,9 @@ static void ConvVec8Bit(Obj list, UInt q)
     Obj     type;
 
     if (q > 256)
-        ErrorQuit("Field size %d is too much for 8 bits\n", q, 0L);
+        ErrorQuit("Field size %d is too much for 8 bits\n", q, 0);
     if (q == 2)
-        ErrorQuit("GF2 has its own representation\n", 0L, 0L);
+        ErrorQuit("GF2 has its own representation\n", 0, 0);
 
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
@@ -830,9 +830,9 @@ static Obj NewVec8Bit(Obj list, UInt q)
 
 
     if (q > 256)
-        ErrorQuit("Field size %d is too much for 8 bits\n", q, 0L);
+        ErrorQuit("Field size %d is too much for 8 bits\n", q, 0);
     if (q == 2)
-        ErrorQuit("GF2 has its own representation\n", 0L, 0L);
+        ErrorQuit("GF2 has its own representation\n", 0, 0);
 
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
@@ -1981,8 +1981,7 @@ static Int CmpVec8BitVec8Bit(Obj vl, Obj vr)
                         return 1;
                 }
             }
-            ErrorQuit("panic: bytes differed but all entries the same", 0L,
-                      0L);
+            ErrorQuit("panic: bytes differed but all entries the same", 0, 0);
         }
     }
     // now the final byte
@@ -2756,7 +2755,7 @@ static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss)
         if (!IS_POS_INTOBJ(pos))
             ErrorQuit("ELMS_VEC8BIT: positions list includes a %s, should "
                       "all be positive small integers",
-                      (Int)TNAM_OBJ(pos), 0L);
+                      (Int)TNAM_OBJ(pos), 0);
         p = INT_INTOBJ(pos);
         if (p > len2)
             ErrorQuit("ELMS_VEC8BIT: positions list includes index %d in a "
@@ -2814,12 +2813,12 @@ static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
         if (low > lenl || low + inc * (len - 1) < 1)
             ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are "
                       "too high or too low",
-                      0L, 0L);
+                      0, 0);
     }
     else if (low < 1 || low + inc * (len - 1) > lenl)
         ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too "
                   "high or too low",
-                  0L, 0L);
+                  0, 0);
     res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SetTypeDatObj(res, TYPE_DATOBJ(list));
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));

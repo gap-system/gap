@@ -523,9 +523,9 @@ static Obj FuncWaitThread(Obj self, Obj obj)
     thread->status |= THREAD_JOINED;
     UnlockThreadControl();
     if (error)
-        ErrorQuit("WaitThread: %s", (UInt)error, 0L);
+        ErrorQuit("WaitThread: %s", (UInt)error, 0);
     if (!JoinThread(thread->id))
-        ErrorQuit("WaitThread: Invalid thread id", 0L, 0L);
+        ErrorQuit("WaitThread: Invalid thread id", 0, 0);
     return (Obj)0;
 }
 
@@ -1897,7 +1897,7 @@ static Obj FuncDO_LOCK(Obj self, Obj args)
 {
     Obj result = FuncLOCK(self, args);
     if (result == Fail)
-        ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+        ErrorMayQuit("Cannot lock required regions", 0, 0);
     return result;
 }
 
@@ -1906,7 +1906,7 @@ static Obj FuncWRITE_LOCK(Obj self, Obj obj)
     const LockMode modes[] = { LOCK_MODE_READWRITE };
     int result = LockObjects(1, &obj, modes);
     if (result < 0)
-      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+      ErrorMayQuit("Cannot lock required regions", 0, 0);
     return INTOBJ_INT(result);
 }
 
@@ -1915,7 +1915,7 @@ static Obj FuncREAD_LOCK(Obj self, Obj obj)
     const LockMode modes[] = { LOCK_MODE_READONLY };
     int result = LockObjects(1, &obj, modes);
     if (result < 0)
-      ErrorMayQuit("Cannot lock required regions", 0L, 0L);
+      ErrorMayQuit("Cannot lock required regions", 0, 0);
     return INTOBJ_INT(result);
 }
 

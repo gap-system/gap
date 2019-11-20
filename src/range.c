@@ -774,9 +774,8 @@ Obj Range3Check (
 {
     Obj                 range;
     if ( first == second ) {
-        ErrorQuit(
-            "Range: <second> must not be equal to <first> (%d)",
-            (Int)INT_INTOBJ(first), 0L );
+        ErrorQuit("Range: <second> must not be equal to <first> (%d)",
+                  (Int)INT_INTOBJ(first), 0);
     }
     Int f = GetSmallInt("Range", first);
     Int i = GetSmallInt("Range", second) - f;

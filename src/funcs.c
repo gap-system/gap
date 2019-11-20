@@ -396,9 +396,8 @@ void RecursionDepthTrap( void )
     if (GetRecursionDepth() > 0) {
         recursionDepth = GetRecursionDepth();
         SetRecursionDepth(0);
-        ErrorReturnVoid( "recursion depth trap (%d)",
-                         (Int)recursionDepth, 0L,
-                         "you may 'return;'" );
+        ErrorReturnVoid("recursion depth trap (%d)", (Int)recursionDepth, 0,
+                        "you may 'return;'");
         SetRecursionDepth(recursionDepth);
     }
 }
@@ -451,7 +450,7 @@ static void LockFuncArgs(Obj func, Int narg, const Obj * args)
       }
     }
     if (count && LockObjects(count, objects, mode) < 0)
-      ErrorMayQuit("Cannot lock arguments of atomic function", 0L, 0L );
+      ErrorMayQuit("Cannot lock arguments of atomic function", 0, 0);
     /* Push at least one region so that we can tell that we are inside
      * an atomic function. */
     if (!count)

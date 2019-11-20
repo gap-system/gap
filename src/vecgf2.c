@@ -215,7 +215,7 @@ static Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
     // both operands lie in the same field
     len = LEN_GF2VEC(vl);
     if (len != LEN_GF2VEC(vr)) {
-        ErrorMayQuit("Vector +: vectors must have the same length", 0L, 0L);
+        ErrorMayQuit("Vector +: vectors must have the same length", 0, 0);
     }
 
 
@@ -1363,7 +1363,7 @@ static void ConvGF2Vec(Obj list)
             else if (!EQ(x, GF2Zero))
                 ErrorMayQuit(
                     "COPY_GF2VEC: argument must be a list of GF2 elements",
-                    0L, 0L);
+                    0, 0);
         }
 
         bit = bit << 1;
@@ -1426,7 +1426,7 @@ static Obj NewGF2Vec(Obj list)
 
     if (!IS_LIST(list)) {
         ErrorMayQuit("COPY_GF2VEC: argument must be a list of GF2 elements",
-                     0L, 0L);
+                     0, 0);
     }
     if (!IS_PLIST(list)) {
         list = SHALLOW_COPY_OBJ(list);
@@ -1454,7 +1454,7 @@ static Obj NewGF2Vec(Obj list)
             else if (!EQ(x, GF2Zero))
                 ErrorMayQuit(
                     "COPY_GF2VEC: argument must be a list of GF2 elements",
-                    0L, 0L);
+                    0, 0);
         }
 
         bit = bit << 1;
@@ -1517,7 +1517,7 @@ static Obj FuncCONV_GF2MAT(Obj self, Obj list)
             }
             ErrorMayQuit("CONV_GF2MAT: argument must be a list of compressed "
                          "GF2 vectors",
-                         0L, 0L);
+                         0, 0);
         }
         SetTypeDatObj(tmp, IS_MUTABLE_OBJ(tmp) ? TYPE_LIST_GF2VEC_LOCKED
                                                : TYPE_LIST_GF2VEC_IMM_LOCKED);
@@ -1777,11 +1777,11 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
             if (!apos || !IS_INTOBJ(apos))
                 ErrorMayQuit("ELMS_GF2VEC: error at position %d in positions "
                              "list, entry must be bound to a small integer",
-                             i, 0L);
+                             i, 0);
             pos = INT_INTOBJ(apos);
             if (lenList < pos) {
                 ErrorMayQuit("List Elements: <list>[%d] must have a value",
-                             pos, 0L);
+                             pos, 0);
             }
 
             // assign the element into <elms>
@@ -1802,11 +1802,11 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
         // check that no <position> is larger than <lenList>
         if (lenList < pos) {
             ErrorMayQuit("List Elements: <list>[%d] must have a value", pos,
-                         0L);
+                         0);
         }
         if (lenList < pos + (lenPoss - 1) * inc) {
             ErrorMayQuit("List Elements: <list>[%d] must have a value",
-                         pos + (lenPoss - 1) * inc, 0L);
+                         pos + (lenPoss - 1) * inc, 0);
         }
 
         // make the result vector
@@ -2894,7 +2894,7 @@ static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 
     if (len != LEN_GF2VEC(vr)) {
         ErrorMayQuit("DIST_GF2VEC_GF2VEC: vectors must have the same length",
-                     0L, 0L);
+                     0, 0);
     }
 
     // calculate the offsets

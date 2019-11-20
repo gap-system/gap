@@ -757,7 +757,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg)
     case 1:
       list = ELM_PLIST(arg, 1);
       if (!IS_LIST(list))
-        ErrorQuit("OBJ_SET: Argument must be a list", 0L, 0L);
+        ErrorQuit("OBJ_SET: Argument must be a list", 0, 0);
       result = NewObjSet();
       len = LEN_LIST(list);
       for (i = 1; i <= len; i++) {
@@ -768,7 +768,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg)
       CHANGED_BAG(result);
       return result;
     default:
-      ErrorQuit("OBJ_SET: Too many arguments", 0L, 0L);
+      ErrorQuit("OBJ_SET: Too many arguments", 0, 0);
       return (Obj) 0; /* flow control hint */
   }
 }
@@ -880,7 +880,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg)
     case 1:
       list = ELM_PLIST(arg, 1);
       if (!IS_LIST(list) || LEN_LIST(list) % 2 != 0)
-        ErrorQuit("OBJ_MAP: Argument must be a list with even length", 0L, 0L);
+        ErrorQuit("OBJ_MAP: Argument must be a list with even length", 0, 0);
       result = NewObjMap();
       len = LEN_LIST(list);
       for (i = 1; i <= len; i += 2) {
@@ -891,7 +891,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg)
       }
       return result;
     default:
-      ErrorQuit("OBJ_MAP: Too many arguments", 0L, 0L);
+      ErrorQuit("OBJ_MAP: Too many arguments", 0, 0);
       return (Obj) 0; /* flow control hint */
   }
 }

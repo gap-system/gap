@@ -34,11 +34,11 @@ typedef UInt    RNam;
 
 #define CHECK_BOUND(obj, name)                                               \
     if (obj == 0)                                                            \
-        ErrorQuit("variable '%s' must have an assigned value", (Int)name, 0L);
+        ErrorQuit("variable '%s' must have an assigned value", (Int)name, 0);
 
 #define CHECK_FUNC_RESULT(obj)                                               \
     if (obj == 0)                                                            \
-        ErrorQuit("function must return a value", 0L, 0L);
+        ErrorQuit("function must return a value", 0, 0);
 
 static inline void CHECK_INT_SMALL(Obj obj)
 {

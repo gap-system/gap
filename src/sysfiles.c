@@ -156,7 +156,7 @@ static ssize_t echoandcheck(int fid, const char *buf, size_t count)
       if (ret < 0) {
           ErrorQuit(
               "Could not write to compressed file, see 'LastSystemError();'\n",
-              0L, 0L);
+              0, 0);
       }
   }
   else {
@@ -167,7 +167,7 @@ static ssize_t echoandcheck(int fid, const char *buf, size_t count)
           } else {
               ErrorQuit("Could not write to file descriptor %d, see "
                         "'LastSystemError();'\n",
-                        syBuf[fid].fp, 0L);
+                        syBuf[fid].fp, 0);
           }
       }
   }
@@ -1547,7 +1547,7 @@ static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
         if (ret < 0) {
             ErrorQuit(
                 "Cannot write to compressed file, see 'LastSystemError();'\n",
-                0L, 0L);
+                0, 0);
         }
     }
     else {
@@ -1558,7 +1558,7 @@ static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count)
             } else {
                 ErrorQuit("Cannot write to file descriptor %d, see "
                           "'LastSystemError();'\n",
-                          syBuf[fid].fp, 0L);
+                          syBuf[fid].fp, 0);
             }
         }
     }

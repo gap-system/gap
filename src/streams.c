@@ -329,9 +329,8 @@ static void READ_INNER(void)
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: READ cannot close input, this should not happen",
-            0L, 0L );
+        ErrorQuit("Panic: READ cannot close input, this should not happen", 0,
+                  0);
     }
     ClearError();
 }
@@ -357,7 +356,7 @@ Obj READ_AS_FUNC ( void )
     if ( ! CloseInput() ) {
         ErrorQuit(
             "Panic: READ_AS_FUNC cannot close input, this should not happen",
-            0L, 0L );
+            0, 0);
     }
     ClearError();
 
@@ -496,7 +495,7 @@ Int READ_GAP_ROOT ( const Char * filename )
 
     /* don't know                                                          */
     else {
-        ErrorQuit( "unknown result code %d from 'SyFindGapRoot'", res, 0L );
+        ErrorQuit("unknown result code %d from 'SyFindGapRoot'", res, 0);
     }
     return 0;
 }
@@ -517,7 +516,7 @@ Int READ_GAP_ROOT ( const Char * filename )
 static Obj FuncCLOSE_LOG_TO(Obj self)
 {
     if ( ! CloseLog() ) {
-        ErrorQuit("LogTo: can not close the logfile",0L,0L);
+        ErrorQuit("LogTo: can not close the logfile", 0, 0);
     }
     return True;
 }
@@ -540,9 +539,8 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 {
     RequireStringRep("LogTo", filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid( "LogTo: cannot log to %g",
-                         (Int)filename, 0L,
-                         "you can 'return;'" );
+        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0,
+                        "you can 'return;'");
         return False;
     }
     return True;
@@ -557,8 +555,8 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream("LogTo", stream);
     if ( ! OpenLogStream(stream) ) {
-        ErrorReturnVoid( "LogTo: cannot log to stream", 0L, 0L,
-                         "you can 'return;'" );
+        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0,
+                        "you can 'return;'");
         return False;
     }
     return True;
@@ -580,7 +578,7 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
 {
     if ( ! CloseInputLog() ) {
-        ErrorQuit("InputLogTo: can not close the logfile",0L,0L);
+        ErrorQuit("InputLogTo: can not close the logfile", 0, 0);
     }
     return True;
 }
@@ -602,9 +600,8 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep("InputLogTo", filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid( "InputLogTo: cannot log to %g",
-                         (Int)filename, 0L,
-                         "you can 'return;'" );
+        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0,
+                        "you can 'return;'");
         return False;
     }
     return True;
@@ -619,8 +616,8 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream("InputLogTo", stream);
     if ( ! OpenInputLogStream(stream) ) {
-        ErrorReturnVoid( "InputLogTo: cannot log to stream", 0L, 0L,
-                         "you can 'return;'" );
+        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0,
+                        "you can 'return;'");
         return False;
     }
     return True;
@@ -642,7 +639,7 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
 {
     if ( ! CloseOutputLog() ) {
-        ErrorQuit("OutputLogTo: can not close the logfile",0L,0L);
+        ErrorQuit("OutputLogTo: can not close the logfile", 0, 0);
     }
     return True;
 }
@@ -664,9 +661,8 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep("OutputLogTo", filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid( "OutputLogTo: cannot log to %g",
-                         (Int)filename, 0L,
-                         "you can 'return;'" );
+        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0,
+                        "you can 'return;'");
         return False;
     }
     return True;
@@ -681,8 +677,8 @@ static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream("OutputLogTo", stream);
     if ( ! OpenOutputLogStream(stream) ) {
-        ErrorReturnVoid( "OutputLogTo: cannot log to stream", 0L, 0L,
-                         "you can 'return;'" );
+        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0,
+                        "you can 'return;'");
         return False;
     }
     return True;
@@ -756,11 +752,11 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     else {
         if (CALL_1ARGS(IsOutputStream, destination) != True) {
             ErrorQuit("%s: <outstream> must be an output stream",
-                      (Int)funcname, 0L);
+                      (Int)funcname, 0);
         }
         i = OpenOutputStream(destination);
         if (!i) {
-            ErrorQuit("%s: cannot open stream for output", (Int)funcname, 0L);
+            ErrorQuit("%s: cannot open stream for output", (Int)funcname, 0);
         }
     }
 
@@ -796,7 +792,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
 
     /* close the output file again, and return nothing                     */
     if ( ! CloseOutput() ) {
-        ErrorQuit( "%s: cannot close output", (Int)funcname, 0L );
+        ErrorQuit("%s: cannot close output", (Int)funcname, 0);
     }
 
     return 0;

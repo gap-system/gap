@@ -436,7 +436,7 @@ static Obj ElmsBlist(Obj list, Obj poss)
             if (!IS_INTOBJ(p)) {
                 ErrorMayQuit("List Elements: position is too large for "
                              "this type of list",
-                             0L, 0L);
+                             0, 0);
             }
             pos = INT_INTOBJ(p);
 
@@ -444,7 +444,7 @@ static Obj ElmsBlist(Obj list, Obj poss)
             if ( lenList < pos ) {
                 ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
-                    pos, 0L);
+                    pos, 0);
             }
 
             /* assign the element into <elms>                              */
