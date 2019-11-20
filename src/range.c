@@ -923,7 +923,7 @@ static Obj FuncINTER_RANGE(Obj self, Obj r1, Obj r2)
  empty_range:
   RetypeBag(r1, T_PLIST_EMPTY);
   ResizeBag(r1,sizeof(Obj));
-  SET_LEN_PLIST(r1, 0L);
+  SET_LEN_PLIST(r1, 0);
   return (Obj) 0;
 }
 

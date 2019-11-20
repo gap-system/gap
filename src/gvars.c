@@ -1721,10 +1721,10 @@ static Int InitLibrary (
 
     /* make the error functions for 'AssGVar'                              */
     ErrorMustEvalToFuncFunc = NewFunctionC(
-        "ErrorMustEvalToFunc", -1,"args", ErrorMustEvalToFuncHandler );
+        "ErrorMustEvalToFunc", -1, "args", ErrorMustEvalToFuncHandler);
     
     ErrorMustHaveAssObjFunc = NewFunctionC(
-        "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
+        "ErrorMustHaveAssObj", -1, "args", ErrorMustHaveAssObjHandler);
 
 #if !defined(USE_GVAR_BUCKETS)
     /* make the lists for global variables                                 */

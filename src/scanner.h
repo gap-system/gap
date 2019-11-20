@@ -341,7 +341,7 @@ EXPORT_INLINE void SyntaxWarning(ScannerState * s, const Char * msg)
 **
 **  One kind of typical 'Match' call has the form
 **
-**      'Match( Symbol, "", 0L );'.
+**      'Match( Symbol, "", 0 );'.
 **
 **  This is used if the parser knows that the current  symbol is correct, for
 **  example in 'ReadReturn'  the  first symbol must be 'S_RETURN',  otherwise

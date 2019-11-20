@@ -57,7 +57,7 @@ extern inline Obj EXEC_CURR_FUNC(void)
     Obj result;
     EXEC_STAT(OFFSET_FIRST_STAT);
     result = STATE(ReturnObjStat);
-    STATE(ReturnObjStat) = 0L;
+    STATE(ReturnObjStat) = 0;
     return result;
 }
 

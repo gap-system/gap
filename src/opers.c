@@ -2565,7 +2565,7 @@ static Obj MakeSetter(Obj name, Int flag1, Int flag2, Obj (*setFunc)(Obj, Obj, O
     Obj fname;
     Obj setter;
     fname = PREFIX_NAME(name, "Set");
-    setter = NewOperation( fname, 2L, 0L, setFunc );
+    setter = NewOperation(fname, 2, 0, setFunc);
     SET_FLAG1_FILT(setter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(setter, INTOBJ_INT(flag2));
     CHANGED_BAG(setter);
@@ -2578,8 +2578,8 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     Obj tester;
     Obj flags;
     fname = PREFIX_NAME(name, "Has");
-    tester = NewFunctionT( T_FUNCTION, sizeof(OperBag), fname, 1L, 0L,
-                           DoTestAttribute );
+    tester = NewFunctionT(T_FUNCTION, sizeof(OperBag), fname, 1, 0,
+                          DoTestAttribute);
     SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
     flags = NEW_FLAGS( flag2 );
@@ -2604,7 +2604,7 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
 
     SET_SETTR_FILT(attr, setter);
     SET_TESTR_FILT(attr, tester);
-    SET_ENABLED_ATTR(attr,1);
+    SET_ENABLED_ATTR(attr, 1);
     CHANGED_BAG(attr);
 }
   
@@ -3566,8 +3566,8 @@ static Obj FuncUNTRACE_METHODS(Obj self, Obj oper)
 */
 static Obj FuncSET_ATTRIBUTE_STORING(Obj self, Obj attr, Obj val)
 {
-  SET_ENABLED_ATTR(attr, (val == True) ? 1L : 0L);
-  return 0;
+    SET_ENABLED_ATTR(attr, val == True);
+    return 0;
 }
 
 /****************************************************************************

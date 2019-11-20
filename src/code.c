@@ -602,7 +602,7 @@ void            CodeFuncCallOptionsEndElm ( void )
 void            CodeFuncCallOptionsEndElmEmpty ( void )
 {
   /* The default value is true */
-      PushExpr( NewExpr( EXPR_TRUE, 0L ) );
+      PushExpr( NewExpr( EXPR_TRUE, 0 ) );
 }
 
 void            CodeFuncCallOptionsEnd ( UInt nr )
@@ -1629,7 +1629,7 @@ void CodeIntExpr(Obj val)
 */
 void CodeTildeExpr ( void )
 {
-    PushExpr( NewExpr( EXPR_TILDE, 0L ) );
+    PushExpr( NewExpr( EXPR_TILDE, 0 ) );
 }
 
 /****************************************************************************
@@ -1640,7 +1640,7 @@ void CodeTildeExpr ( void )
 */
 void CodeTrueExpr ( void )
 {
-    PushExpr( NewExpr( EXPR_TRUE, 0L ) );
+    PushExpr( NewExpr( EXPR_TRUE, 0 ) );
 }
 
 
@@ -1652,7 +1652,7 @@ void CodeTrueExpr ( void )
 */
 void CodeFalseExpr ( void )
 {
-    PushExpr( NewExpr( EXPR_FALSE, 0L ) );
+    PushExpr( NewExpr( EXPR_FALSE, 0 ) );
 }
 
 

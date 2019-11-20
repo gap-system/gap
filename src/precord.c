@@ -355,7 +355,7 @@ void UnbPRec (
             SET_ELM_PREC(  rec, i, GET_ELM_PREC(  rec, i+1 ) );
         }
         SET_RNAM_PREC( rec, len, 0 );
-        SET_ELM_PREC( rec, len, 0L );
+        SET_ELM_PREC( rec, len, 0 );
 
 
         /* resize the record                                               */
@@ -605,8 +605,8 @@ static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
 **
 *F  EqPRec( <self>, <left>, <right> ) . . . . . . . comparison of two records
 **
-**  'EqPRec' returns '1L'  if the two  operands <left> and <right> are equal
-**  and '0L' otherwise.  At least one operand must be a plain record.
+**  'EqPRec' returns '1'  if the two  operands <left> and <right> are equal
+**  and '0' otherwise.  At least one operand must be a plain record.
 */
 static Int EqPRec(Obj left, Obj right)
 {
@@ -652,8 +652,8 @@ static Int EqPRec(Obj left, Obj right)
 **
 *F  LtPRec( <self>, <left>, <right> ) . . . . . . . comparison of two records
 **
-**  'LtPRec' returns '1L'  if the operand  <left> is  less than the  operand
-**  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
+**  'LtPRec' returns '1'  if the operand  <left> is  less than the  operand
+**  <right>, and '0'  otherwise.  At least  one operand  must be a  plain
 **  record.
 */
 static Int LtPRec(Obj left, Obj right)

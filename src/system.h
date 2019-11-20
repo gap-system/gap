@@ -264,7 +264,7 @@ typedef Stat Expr;
 **  'LBIPEB' is the log to the base 2 of BIPEB
 **
 */
-enum { BIPEB = sizeof(UInt) * 8L, LBIPEB = (BIPEB == 64) ? 6L : 5L };
+enum { BIPEB = sizeof(UInt) * 8, LBIPEB = (BIPEB == 64) ? 6 : 5 };
 
 
 /****************************************************************************

@@ -148,7 +148,7 @@ static Obj RemList(Obj list)
     Int                 pos; 
     Obj result;
     pos = LEN_LIST( list ) ;
-    if ( pos == 0L ) {
+    if ( pos == 0 ) {
         ErrorMayQuit("Remove: <list> must not be empty", 0, 0);
     }
     result = ELM_LIST(list, pos);
@@ -165,11 +165,11 @@ static Obj RemPlist(Obj list)
         ErrorMayQuit("Remove: <list> must be a mutable list", 0, 0);
     }
     pos = LEN_PLIST( list );
-    if ( pos == 0L ) {
+    if ( pos == 0 ) {
         ErrorMayQuit("Remove: <list> must not be empty", 0, 0);
     }
     removed = ELM_PLIST(list, pos);
-    SET_ELM_PLIST(list, pos, (Obj)0L);
+    SET_ELM_PLIST(list, pos, 0);
     pos--;
     while ( 1 <= pos && ELM_PLIST( list, pos ) == 0 ) { pos--; }
     SET_LEN_PLIST(list, pos);

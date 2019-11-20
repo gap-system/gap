@@ -737,8 +737,8 @@ static void ClearGlobalBags(void)
   UInt i;
   for (i = 0; i < GlobalBags.nr; i++)
     {
-      GlobalBags.addr[i] = 0L;
-      GlobalBags.cookie[i] = 0L;
+      GlobalBags.addr[i] = 0;
+      GlobalBags.cookie[i] = 0;
     }
   GlobalBags.nr = 0;
   GlobalSortingStatus = 0;
@@ -780,11 +780,11 @@ static Int IsLessGlobal (
     {
       Panic("can only sort globals by cookie");
     }
-  if (cookie1 == 0L && cookie2 == 0L)
+  if (cookie1 == 0 && cookie2 == 0)
     return 0;
-  if (cookie1 == 0L)
+  if (cookie1 == 0)
     return -1;
-  if (cookie2 == 0L)
+  if (cookie2 == 0)
     return 1;
   return strcmp(cookie1, cookie2) < 0;
 }
@@ -843,7 +843,7 @@ Bag * GlobalByCookie(
           if (strcmp(cookie, GlobalBags.cookie[i]) == 0)
             return GlobalBags.addr[i];
         }
-      return (Bag *)0L;
+      return (Bag *)0;
     }
   else
     {
@@ -859,7 +859,7 @@ Bag * GlobalByCookie(
         else
           return GlobalBags.addr[middle];
       }
-      return (Bag *)0L;
+      return (Bag *)0;
     }
 }
 
@@ -1835,8 +1835,8 @@ not look like valid pointers, and should be congruent to 1 mod sizeof(Bag),
 to ensure that IsWeakDeadBag works correctly.
 */
 
-static Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1L);
-static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1L);
+static Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1);
+static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1);
 
 
 
@@ -2191,7 +2191,7 @@ again:
       /* Clean up old half-dead bags
          also reorder the free masterpointer linked list
          to get more locality */
-      FreeMptrBags = (Bag)0L;
+      FreeMptrBags = 0;
       for (p = MptrBags; p < MptrEndBags; p+= SIZE_MPTR_BAGS)
         {
           Bag *mptr = (Bag *)*p;

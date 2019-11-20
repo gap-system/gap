@@ -2169,7 +2169,7 @@ static Int InitLibrary (
 
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
-        ObjsChar[i] = NewBag( T_CHAR, 1L );
+        ObjsChar[i] = NewBag(T_CHAR, 1);
         SET_CHAR_VALUE(ObjsChar[i], (UChar)i);
     }
 

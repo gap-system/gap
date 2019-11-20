@@ -1929,7 +1929,7 @@ static void ReadInfo(ScannerState * s, TypSymbolSet follow)
     narg = 0;
     while (s->Symbol == S_COMMA) {
         narg++;
-        Match(s, S_COMMA, "", 0L);
+        Match(s, S_COMMA, "", 0);
         ReadExpr(s, S_RPAREN | S_COMMA | follow, 'r');
     }
     Match(s, S_RPAREN, ")", follow);
@@ -1957,7 +1957,7 @@ static void ReadAssert(ScannerState * s, TypSymbolSet follow)
     ReadExpr(s, S_RPAREN | S_COMMA | follow, 'r');
     TRY_IF_NO_ERROR { IntrAssertAfterCondition(); }
     if (s->Symbol == S_COMMA) {
-        Match(s, S_COMMA, "", 0L);
+        Match(s, S_COMMA, "", 0);
         ReadExpr(s, S_RPAREN |  follow, 'r');
         Match(s, S_RPAREN, ")", follow);
         TRY_IF_NO_ERROR { IntrAssertEnd3Args(); }
@@ -2857,7 +2857,7 @@ Obj Call0ArgsInNewReader(Obj f)
     IntrEnd(0, NULL);
   }
   CATCH_ERROR {
-    result = (Obj) 0L;
+    result = 0;
     IntrEnd(1, NULL);
     ClearError();
   }
@@ -2896,7 +2896,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
     IntrEnd(0, NULL);
   }
   CATCH_ERROR {
-    result = (Obj) 0L;
+    result = 0;
     IntrEnd(1, NULL);
     ClearError();
   }

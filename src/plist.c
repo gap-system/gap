@@ -1003,11 +1003,11 @@ static Int LtPlist(Obj left, Obj right)
         elmL = ELM_PLIST( left, i );
         elmR = ELM_PLIST( right, i );
         if ( elmL == 0 && elmR != 0 ) {
-            res = 1L;
+            res = 1;
             break;
         }
         else if ( elmR == 0 && elmL != 0 ) {
-            res = 0L;
+            res = 0;
             break;
         }
         else if ( ! EQ( elmL, elmR ) ) {

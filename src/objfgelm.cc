@@ -116,7 +116,7 @@ Obj NewWord(Obj type, UInt npairs)
     ReadGuard(type);
 #endif
     word =
-        NewBag(T_DATOBJ, 2 * sizeof(Obj) + npairs * BITS_WORDTYPE(type) / 8L);
+        NewBag(T_DATOBJ, 2 * sizeof(Obj) + npairs * BITS_WORDTYPE(type) / 8);
     ADDR_OBJ(word)[1] = INTOBJ_INT(npairs);
     SetTypeDatObj(word, type);
 #ifdef HPCGAP
