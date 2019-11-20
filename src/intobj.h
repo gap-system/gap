@@ -38,11 +38,11 @@
 
 enum {
     NR_SMALL_INT_BITS = sizeof(UInt) * 8 - 4,
-
-    // the minimal / maximal possible values of an immediate integer object:
-    INT_INTOBJ_MIN = -(1L << NR_SMALL_INT_BITS),
-    INT_INTOBJ_MAX =  (1L << NR_SMALL_INT_BITS) - 1,
 };
+
+// the minimal / maximal possible values of an immediate integer object:
+#define INT_INTOBJ_MIN  (-((Int)1 << NR_SMALL_INT_BITS))
+#define INT_INTOBJ_MAX  ( ((Int)1 << NR_SMALL_INT_BITS) - 1)
 
 // the minimal / maximal possible immediate integer objects:
 #define INTOBJ_MIN  (Obj)(((UInt)INT_INTOBJ_MIN << 2) + 0x01)
