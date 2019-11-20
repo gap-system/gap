@@ -715,13 +715,13 @@ static void PrintFunccallOpts(Expr call);
 static void PrintProccall(Stat call)
 {
     PrintFunccall( call );
-    Pr( ";", 0L, 0L );
+    Pr(";", 0, 0);
 }
 
 static void PrintProccallOpts(Stat call)
 {
     PrintFunccallOpts( call );
-    Pr( ";", 0L, 0L );
+    Pr(";", 0, 0);
 }
 
 
@@ -737,17 +737,17 @@ static void            PrintFunccall1 (
     UInt                i;              /* loop variable                   */
 
     /* print the expression that should evaluate to a function             */
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr( FUNC_CALL(call) );
 
     /* print the opening parenthesis                                       */
-    Pr("%<( %>",0L,0L);
+    Pr("%<( %>", 0, 0);
 
     /* print the expressions that evaluate to the actual arguments         */
     for ( i = 1; i <= NARG_SIZE_CALL( SIZE_EXPR(call) ); i++ ) {
         PrintExpr( ARGI_CALL(call,i) );
         if ( i != NARG_SIZE_CALL( SIZE_EXPR(call) ) ) {
-            Pr("%<, %>",0L,0L);
+            Pr("%<, %>", 0, 0);
         }
     }
 }
@@ -757,16 +757,16 @@ static void PrintFunccall(Expr call)
   PrintFunccall1( call );
   
   /* print the closing parenthesis                                       */
-  Pr(" %2<)",0L,0L);
+  Pr(" %2<)", 0, 0);
 }
 
 
 static void PrintFunccallOpts(Expr call)
 {
     PrintFunccall1(READ_STAT(call, 1));
-    Pr(" :%2> ", 0L, 0L);
+    Pr(" :%2> ", 0, 0);
     PrintRecExpr1(READ_STAT(call, 0));
-    Pr(" %4<)", 0L, 0L);
+    Pr(" %4<)", 0, 0);
 }
 
   

@@ -1091,7 +1091,7 @@ UInt CloseOutput ( void )
 #endif
 
     /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0L );
+    Pr("%c", (Int)'\03', 0);
     if (!IO()->Output->isstream) {
         SyFclose(IO()->Output->file);
     }
@@ -1253,17 +1253,17 @@ static Char GetLine(void)
         if (IO()->Input->file == 0) {
             if ( ! SyQuiet ) {
                 if (IO()->Output->pos > 0)
-                    Pr("\n", 0L, 0L);
+                    Pr("\n", 0, 0);
                 if ( PrintPromptHook )
                      Call0ArgsInNewReader( PrintPromptHook );
                 else
                      Pr( "%s%c", (Int)STATE(Prompt), (Int)'\03' );
             } else
-                Pr( "%c", (Int)'\03', 0L );
+                Pr("%c", (Int)'\03', 0);
         }
         else if (IO()->Input->file == 2) {
             if (IO()->Output->pos > 0)
-                Pr("\n", 0L, 0L);
+                Pr("\n", 0, 0);
             if ( PrintPromptHook )
                  Call0ArgsInNewReader( PrintPromptHook );
             else

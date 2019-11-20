@@ -194,7 +194,7 @@ static void CompressDeductionList ( void )
     /* check if we have at least one free position                         */
     if ( dedlst == dedSize ) {
         if ( dedprint == 0 ) {
-            Pr( "#I  WARNING: deductions being discarded\n", 0L, 0L );
+            Pr("#I  WARNING: deductions being discarded\n", 0, 0);
             dedprint = 1;
         }
         dedlst--;

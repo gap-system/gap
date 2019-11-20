@@ -79,7 +79,7 @@ static Int READ_COMMAND(Obj *evalResult)
     
     /* handle return-value or return-void command                          */
     if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-        Pr( "'return' must not be used in file read-eval loop\n", 0L, 0L );
+        Pr("'return' must not be used in file read-eval loop\n", 0, 0);
     }
 
     /* handle quit command                                 */
@@ -200,7 +200,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             // Capture output
             if (capture == True) {
                 // Flush output
-                Pr("\03", 0L, 0L);
+                Pr("\03", 0, 0);
                 copy = CopyToStringRep(outstreamString);
                 SET_LEN_STRING(outstreamString, 0);
                 AssPlist(result, 5, copy);
@@ -302,9 +302,7 @@ static void READ_INNER(void)
 
         /* handle return-value or return-void command                      */
         if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-            Pr(
-                "'return' must not be used in file read-eval loop\n",
-                0L, 0L );
+            Pr("'return' must not be used in file read-eval loop\n", 0, 0);
         }
 
         /* handle quit command or <end-of-file>                            */
@@ -401,8 +399,7 @@ static void READ_TEST_OR_LOOP(Obj context)
 
         /* handle return-value or return-void command                      */
         else if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-            Pr( "'return' must not be used in file read-eval loop\n",
-                0L, 0L );
+            Pr("'return' must not be used in file read-eval loop\n", 0, 0);
         }
 
         /* handle quit command or <end-of-file>                            */
@@ -460,18 +457,18 @@ Int READ_GAP_ROOT ( const Char * filename )
     else if (SyRestoring) {
         if ( res == 3 ) {
             Pr("Can't find compiled module '%s' needed by saved workspace\n",
-               (Int) filename, 0L);
+               (Int)filename, 0);
             return 0;
         }
-        Pr("unknown result code %d from 'SyFindGapRoot'", res, 0L );
+        Pr("unknown result code %d from 'SyFindGapRoot'", res, 0);
         SyExit(1);
     }
     
     /* ordinary gap file                                                   */
     else if ( res == 3 ) {
         if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
-                (Int)filename, 0L );
+            Pr("#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
+               (Int)filename, 0);
         }
         if ( OpenInput(result.path) ) {
             while ( 1 ) {
@@ -481,7 +478,7 @@ Int READ_GAP_ROOT ( const Char * filename )
                 if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                   break;
                 if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-                    Pr( "'return' must not be used in file", 0L, 0L );
+                    Pr("'return' must not be used in file", 0, 0);
                 }
                 else if ( type & (STATUS_QUIT | STATUS_EOF) ) {
                     break;

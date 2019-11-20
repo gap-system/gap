@@ -161,7 +161,7 @@ void ActivateModule(StructInitInfo * info)
     }
 
     if (res) {
-        Pr("#W  init functions returned non-zero exit code\n", 0L, 0L);
+        Pr("#W  init functions returned non-zero exit code\n", 0, 0);
     }
 
     if (info->initModuleState)
@@ -230,7 +230,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 #else
     /* no dynamic library support                                          */
     if (SyDebugLoading) {
-        Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0L, 0L);
+        Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0, 0);
     }
     return False;
 #endif
@@ -261,11 +261,11 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
         crc1 = ObjInt_Int(info->crc);
         if (!EQ(crc, crc1)) {
             if (SyDebugLoading) {
-                Pr("#I  LOAD_DYN: crc values do not match, gap ", 0L, 0L);
+                Pr("#I  LOAD_DYN: crc values do not match, gap ", 0, 0);
                 PrintInt(crc);
-                Pr(", dyn ", 0L, 0L);
+                Pr(", dyn ", 0, 0);
                 PrintInt(crc1);
-                Pr("\n", 0L, 0L);
+                Pr("\n", 0, 0);
             }
             return False;
         }
@@ -304,7 +304,7 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     if (CompInitFuncs[k] == 0) {
         if (SyDebugLoading) {
             Pr("#I  LOAD_STAT: no module named '%g' found\n", (Int)filename,
-               0L);
+               0);
         }
         return False;
     }
@@ -314,11 +314,11 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
         crc1 = ObjInt_Int(info->crc);
         if (!EQ(crc, crc1)) {
             if (SyDebugLoading) {
-                Pr("#I  LOAD_STAT: crc values do not match, gap ", 0L, 0L);
+                Pr("#I  LOAD_STAT: crc values do not match, gap ", 0, 0);
                 PrintInt(crc);
-                Pr(", stat ", 0L, 0L);
+                Pr(", stat ", 0, 0);
                 PrintInt(crc1);
-                Pr("\n", 0L, 0L);
+                Pr("\n", 0, 0);
             }
             return False;
         }
@@ -714,7 +714,7 @@ void InitHdlrFuncsFromTable(const StructGVarFunc * tab)
 void ImportGVarFromLibrary(const Char * name, Obj * address)
 {
     if (NrImportedGVars == 1024) {
-        Pr("#W  warning: too many imported GVars\n", 0L, 0L);
+        Pr("#W  warning: too many imported GVars\n", 0, 0);
     }
     else {
         ImportedGVars[NrImportedGVars].name = name;
@@ -736,7 +736,7 @@ void ImportGVarFromLibrary(const Char * name, Obj * address)
 void ImportFuncFromLibrary(const Char * name, Obj * address)
 {
     if (NrImportedFuncs == 1024) {
-        Pr("#W  warning: too many imported Funcs\n", 0L, 0L);
+        Pr("#W  warning: too many imported Funcs\n", 0, 0);
     }
     else {
         ImportedFuncs[NrImportedFuncs].name = name;
@@ -767,7 +767,7 @@ static Obj FuncExportToKernelFinished(Obj self)
                 errs++;
                 if (!SyQuiet) {
                     Pr("#W  global variable '%s' has not been defined\n",
-                       (Int)ImportedFuncs[i].name, 0L);
+                       (Int)ImportedFuncs[i].name, 0);
                 }
             }
         }
@@ -775,7 +775,7 @@ static Obj FuncExportToKernelFinished(Obj self)
             errs++;
             if (!SyQuiet) {
                 Pr("#W  global variable '%s' has not been defined\n",
-                   (Int)ImportedGVars[i].name, 0L);
+                   (Int)ImportedGVars[i].name, 0);
             }
         }
         else {
@@ -790,7 +790,7 @@ static Obj FuncExportToKernelFinished(Obj self)
                 errs++;
                 if (!SyQuiet) {
                     Pr("#W  global function '%s' has not been defined\n",
-                       (Int)ImportedFuncs[i].name, 0L);
+                       (Int)ImportedFuncs[i].name, 0);
                 }
             }
         }
@@ -799,7 +799,7 @@ static Obj FuncExportToKernelFinished(Obj self)
             errs++;
             if (!SyQuiet) {
                 Pr("#W  global function '%s' has not been defined\n",
-                   (Int)ImportedFuncs[i].name, 0L);
+                   (Int)ImportedFuncs[i].name, 0);
             }
         }
         else {
@@ -875,7 +875,7 @@ void LoadModules(void)
                 }
                 if (CompInitFuncs[k] == 0) {
                     Pr("Static module %s not found in loading kernel\n",
-                       (Int)buf, 0L);
+                       (Int)buf, 0);
                     SyExit(1);
                 }
             }
@@ -1028,7 +1028,7 @@ Int ModulesPreSave(void)
         StructInitInfo * info = Modules[i].info;
         if (info->preSave != NULL && info->preSave(info)) {
             Pr("Failed to save workspace -- problem reported in %s\n",
-               (Int)info->name, 0L);
+               (Int)info->name, 0);
             // roll back all save preparations
             while (i--) {
                 info = Modules[i].info;

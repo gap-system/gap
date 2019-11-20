@@ -88,16 +88,16 @@ static Obj TypeBool(Obj val)
 static void PrintBool(Obj bool)
 {
     if ( bool == True ) {
-        Pr( "true", 0L, 0L );
+        Pr("true", 0, 0);
     }
     else if ( bool == False ) {
-        Pr( "false", 0L, 0L );
+        Pr("false", 0, 0);
     }
     else if ( bool == Fail ) {
-        Pr( "fail", 0L, 0L );
+        Pr("fail", 0, 0);
     }
     else {
-        Pr( "<<very strange boolean value>>", 0L, 0L );
+        Pr("<<very strange boolean value>>", 0, 0);
     }
 }
 

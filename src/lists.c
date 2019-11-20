@@ -1675,26 +1675,26 @@ static void PrintListDefault(Obj list)
         return;
     }
 
-    Pr("%2>[ %2>",0L,0L);
+    Pr("%2>[ %2>", 0, 0);
     for (UInt i = 1; i <= LEN_LIST(list); i++) {
         elm = ELMV0_LIST(list, i);
         if ( elm != 0 ) {
             if (1 < i)
-                Pr("%<,%< %2>", 0L, 0L);
+                Pr("%<,%< %2>", 0, 0);
             SetPrintObjIndex(i);
             PrintObj( elm );
         }
         else {
             if (1 < i)
-                Pr("%2<,%2>", 0L, 0L);
+                Pr("%2<,%2>", 0, 0);
         }
     }
-    Pr(" %4<]",0L,0L);
+    Pr(" %4<]", 0, 0);
 }
 
 static void PrintPathList(Obj list, Int indx)
 {
-    Pr( "[%d]", indx, 0L );
+    Pr("[%d]", indx, 0);
 }
 
 
@@ -2278,7 +2278,7 @@ static Int CheckInit (
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         if ( ClearFiltsTNums[i] == 0 ) {
             Pr( "#W  ClearFiltsListTNums [%s] missing\n",
-                    (Int)TNAM_TNUM(i), 0L );
+                    (Int)TNAM_TNUM(i), 0);
             success = 0;
         }
     }
@@ -2395,43 +2395,43 @@ static Int CheckInit (
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> dense ] missing\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + ndense ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> homog ] missing\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + nhomog ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_SSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> ssort ] missing\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + nsort ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + table ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }
@@ -2440,7 +2440,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ dense + ndense ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }
@@ -2449,13 +2449,13 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ndense + homog ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ndense + table ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }
@@ -2464,19 +2464,19 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog + nhomog ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog -> dense ] missing\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog + ndense ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }
@@ -2485,7 +2485,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ nhomog + table ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }
@@ -2494,13 +2494,13 @@ static Int CheckInit (
             if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ table -> homog ] missing\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ table -> dense ] missing\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }
@@ -2509,7 +2509,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ssort + nsort ] illegal\n",
-                 (Int)TNAM_TNUM(i), 0L );
+                 (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
         }           

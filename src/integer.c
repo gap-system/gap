@@ -750,7 +750,7 @@ void PrintInt ( Obj op )
 {
   /* print a small integer                                                 */
   if ( IS_INTOBJ(op) ) {
-    Pr( "%>%d%<", INT_INTOBJ(op), 0L );
+    Pr("%>%d%<", INT_INTOBJ(op), 0);
   }
   
   /* print a large integer                                                 */
@@ -780,7 +780,7 @@ void PrintInt ( Obj op )
     Pr("%<", 0, 0);
     /* for a long time Print of large ints did not follow the general idea
      * that Print should produce something that can be read back into GAP:
-       Pr("<<an integer too large to be printed>>",0L,0L); */
+       Pr("<<an integer too large to be printed>>", 0, 0); */
   }
 }
 

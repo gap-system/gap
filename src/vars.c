@@ -198,18 +198,18 @@ static Obj EvalIsbLVar(Expr expr)
 */
 static void PrintAssLVar(Stat stat)
 {
-    Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0L);
-    Pr( "%< %>:= ", 0L, 0L );
+    Pr("%2>", 0, 0);
+    Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr( "%2<;", 0L, 0L );
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbLVar(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0L);
-    Pr( " );", 0L, 0L );
+    Pr("Unbind( ", 0, 0);
+    Pr("%H", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -221,14 +221,14 @@ static void PrintUnbLVar(Stat stat)
 */
 static void PrintRefLVar(Expr expr)
 {
-    Pr( "%H", (Int)NAME_LVAR( LVAR_REF_LVAR(expr) ), 0L );
+    Pr("%H", (Int)NAME_LVAR(LVAR_REF_LVAR(expr)), 0);
 }
 
 static void PrintIsbLVar(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NAME_LVAR(READ_EXPR(expr, 0)), 0L);
-    Pr( " )", 0L, 0L );
+    Pr("IsBound( ", 0, 0);
+    Pr("%H", (Int)NAME_LVAR(READ_EXPR(expr, 0)), 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -369,18 +369,18 @@ static Obj EvalIsbHVar(Expr expr)
 */
 static void PrintAssHVar(Stat stat)
 {
-    Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0L);
-    Pr( "%< %>:= ", 0L, 0L );
+    Pr("%2>", 0, 0);
+    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr( "%2<;", 0L, 0L );
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbHVar(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0L);
-    Pr( " );", 0L, 0L );
+    Pr("Unbind( ", 0, 0);
+    Pr("%H", (Int)NAME_HVAR(READ_STAT(stat, 0)), 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -392,14 +392,14 @@ static void PrintUnbHVar(Stat stat)
 */
 static void PrintRefHVar(Expr expr)
 {
-    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
+    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0);
 }
 
 static void PrintIsbHVar(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0L);
-    Pr( " )", 0L, 0L );
+    Pr("IsBound( ", 0, 0);
+    Pr("%H", (Int)NAME_HVAR(READ_EXPR(expr, 0)), 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -474,18 +474,18 @@ static Obj EvalIsbGVar(Expr expr)
 */
 static void PrintAssGVar(Stat stat)
 {
-    Pr( "%2>", 0L, 0L );
-    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0L);
-    Pr( "%< %>:= ", 0L, 0L );
+    Pr("%2>", 0, 0);
+    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr( "%2<;", 0L, 0L );
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbGVar(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0L);
-    Pr( " );", 0L, 0L );
+    Pr("Unbind( ", 0, 0);
+    Pr("%H", (Int)NameGVar(READ_STAT(stat, 0)), 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -497,14 +497,14 @@ static void PrintUnbGVar(Stat stat)
 */
 static void PrintRefGVar(Expr expr)
 {
-    Pr("%H", (Int)NameGVar(READ_STAT(expr, 0)), 0L);
+    Pr("%H", (Int)NameGVar(READ_STAT(expr, 0)), 0);
 }
 
 static void PrintIsbGVar(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%H", (Int)NameGVar(READ_EXPR(expr, 0)), 0L);
-    Pr( " )", 0L, 0L );
+    Pr("IsBound( ", 0, 0);
+    Pr("%H", (Int)NameGVar(READ_EXPR(expr, 0)), 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -977,45 +977,45 @@ static Obj EvalIsbList(Expr expr)
 */
 static void PrintAssList(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr("%<]",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr("%<]", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintAssMat(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr("%<, %>",0L,0L);
+    Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%<]",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr("%<]", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 3));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbList(Stat stat)
 {
-  Int narg = SIZE_STAT(stat)/sizeof(Stat) -1;
-  Int i;
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Int narg = SIZE_STAT(stat)/sizeof(Stat) -1;
+    Int i;
+    Pr("Unbind( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
     for (i = 2; i <= narg; i++) {
-      Pr("%<, %>",0L,0L);
-      PrintExpr(READ_EXPR(stat, i));
+        Pr("%<, %>", 0, 0);
+        PrintExpr(READ_EXPR(stat, i));
     }
-    Pr("%<]",0L,0L);
-    Pr( " );", 0L, 0L );
+    Pr("%<]", 0, 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -1030,14 +1030,14 @@ static void PrintUnbList(Stat stat)
 */
 static void PrintAsssList(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<{",0L,0L);
+    Pr("%<{", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr("%<}",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr("%<}", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 
@@ -1052,55 +1052,55 @@ static void PrintAsssList(Stat stat)
 */
 static void PrintElmList(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr("%<]",0L,0L);
+    Pr("%<]", 0, 0);
 }
 
 static void PrintElmMat(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr("%<, %<",0L,0L);
+    Pr("%<, %<", 0, 0);
     PrintExpr(READ_EXPR(expr, 2));
-    Pr("%<]",0L,0L);
+    Pr("%<]", 0, 0);
 }
 
 static void PrintElmListLevel(Expr expr)
 {
-  Int i;
-  Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
-    Pr("%2>",0L,0L);
+    Int i;
+    Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
     for (i = 2; i <= narg; i++) {
-      Pr("%<, %<",0L,0L);
-      PrintExpr(READ_EXPR(expr, i));
+        Pr("%<, %<", 0, 0);
+        PrintExpr(READ_EXPR(expr, i));
     }
-    Pr("%<]",0L,0L);
+    Pr("%<]", 0, 0);
 }
 
 
 static void PrintIsbList(Expr expr)
 {
-  Int narg = SIZE_EXPR(expr)/sizeof(Expr) - 1;
-  Int i;
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Int narg = SIZE_EXPR(expr)/sizeof(Expr) - 1;
+    Int i;
+    Pr("IsBound( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<[",0L,0L);
+    Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
     for (i = 2; i <= narg; i++) {
-      Pr("%<, %>", 0L, 0L);
-      PrintExpr(READ_EXPR(expr, i));
+        Pr("%<, %>", 0, 0);
+        PrintExpr(READ_EXPR(expr, i));
     }
-    Pr("%<]",0L,0L);
-    Pr( " )", 0L, 0L );
+    Pr("%<]", 0, 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -1115,11 +1115,11 @@ static void PrintIsbList(Expr expr)
 */
 static void PrintElmsList(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<{",0L,0L);
+    Pr("%<{", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr("%<}",0L,0L);
+    Pr("%<}", 0, 0);
 }
 
 
@@ -1344,25 +1344,25 @@ static Obj EvalIsbRecExpr(Expr expr)
 */
 static void PrintAssRecName(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
-    Pr("%<",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr("%<.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0);
+    Pr("%<", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbRecName(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("Unbind( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
-    Pr("%<",0L,0L);
-    Pr( " );", 0L, 0L );
+    Pr("%<.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0);
+    Pr("%<", 0, 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -1375,25 +1375,25 @@ static void PrintUnbRecName(Stat stat)
 */
 static void PrintAssRecExpr(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<.(",0L,0L);
+    Pr("%<.(", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr(")%<",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr(")%<", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbRecExpr(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("Unbind( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<.(",0L,0L);
+    Pr("%<.(", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr(")%<",0L,0L);
-    Pr( " );", 0L, 0L );
+    Pr(")%<", 0, 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -1406,22 +1406,22 @@ static void PrintUnbRecExpr(Stat stat)
 */
 static void PrintElmRecName(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
-    Pr("%<",0L,0L);
+    Pr("%<.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0);
+    Pr("%<", 0, 0);
 }
 
 static void PrintIsbRecName(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("IsBound( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
-    Pr("%<",0L,0L);
-    Pr( " )", 0L, 0L );
+    Pr("%<.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0);
+    Pr("%<", 0, 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -1434,22 +1434,22 @@ static void PrintIsbRecName(Expr expr)
 */
 static void PrintElmRecExpr(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<.(",0L,0L);
+    Pr("%<.(", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr(")%<",0L,0L);
+    Pr(")%<", 0, 0);
 }
 
 static void PrintIsbRecExpr(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("IsBound( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<.(",0L,0L);
+    Pr("%<.(", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr(")%<",0L,0L);
-    Pr( " )", 0L, 0L );
+    Pr(")%<", 0, 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -1582,25 +1582,25 @@ static Obj EvalIsbPosObj(Expr expr)
 */
 static void PrintAssPosObj(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<![",0L,0L);
+    Pr("%<![", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr("%<]",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr("%<]", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbPosObj(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("Unbind( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<![",0L,0L);
+    Pr("%<![", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr("%<]",0L,0L);
-    Pr( " );", 0L, 0L );
+    Pr("%<]", 0, 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -1615,22 +1615,22 @@ static void PrintUnbPosObj(Stat stat)
 */
 static void PrintElmPosObj(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<![",0L,0L);
+    Pr("%<![", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr("%<]",0L,0L);
+    Pr("%<]", 0, 0);
 }
 
 static void PrintIsbPosObj(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("IsBound( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<![",0L,0L);
+    Pr("%<![", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr("%<]",0L,0L);
-    Pr( " )", 0L, 0L );
+    Pr("%<]", 0, 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -1863,25 +1863,25 @@ static Obj EvalIsbComObjExpr(Expr expr)
 */
 static void PrintAssComObjName(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
-    Pr("%<",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr("%<!.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0);
+    Pr("%<", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbComObjName(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("Unbind( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0L);
-    Pr("%<",0L,0L);
-    Pr( " );", 0L, 0L );
+    Pr("%<!.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_STAT(stat, 1)), 0);
+    Pr("%<", 0, 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -1894,25 +1894,25 @@ static void PrintUnbComObjName(Stat stat)
 */
 static void PrintAssComObjExpr(Stat stat)
 {
-    Pr("%4>",0L,0L);
+    Pr("%4>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<!.(",0L,0L);
+    Pr("%<!.(", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr(")%<",0L,0L);
-    Pr("%< %>:= ",0L,0L);
+    Pr(")%<", 0, 0);
+    Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
-    Pr("%2<;",0L,0L);
+    Pr("%2<;", 0, 0);
 }
 
 static void PrintUnbComObjExpr(Stat stat)
 {
-    Pr( "Unbind( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("Unbind( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<!.(",0L,0L);
+    Pr("%<!.(", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr(")%<",0L,0L);
-    Pr( " );", 0L, 0L );
+    Pr(")%<", 0, 0);
+    Pr(" );", 0, 0);
 }
 
 
@@ -1925,22 +1925,22 @@ static void PrintUnbComObjExpr(Stat stat)
 */
 static void PrintElmComObjName(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
-    Pr("%<",0L,0L);
+    Pr("%<!.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0);
+    Pr("%<", 0, 0);
 }
 
 static void PrintIsbComObjName(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("IsBound( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<!.",0L,0L);
-    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0L);
-    Pr("%<",0L,0L);
-    Pr( " )", 0L, 0L );
+    Pr("%<!.", 0, 0);
+    Pr("%H", (Int)NAME_RNAM(READ_EXPR(expr, 1)), 0);
+    Pr("%<", 0, 0);
+    Pr(" )", 0, 0);
 }
 
 
@@ -1953,22 +1953,22 @@ static void PrintIsbComObjName(Expr expr)
 */
 static void PrintElmComObjExpr(Expr expr)
 {
-    Pr("%2>",0L,0L);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<!.(",0L,0L);
+    Pr("%<!.(", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr(")%<",0L,0L);
+    Pr(")%<", 0, 0);
 }
 
 static void PrintIsbComObjExpr(Expr expr)
 {
-    Pr( "IsBound( ", 0L, 0L );
-    Pr("%2>",0L,0L);
+    Pr("IsBound( ", 0, 0);
+    Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
-    Pr("%<!.(",0L,0L);
+    Pr("%<!.(", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr(")%<",0L,0L);
-    Pr( " )", 0L, 0L );
+    Pr(")%<", 0, 0);
+    Pr(" )", 0, 0);
 }
 
 

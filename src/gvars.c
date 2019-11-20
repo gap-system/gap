@@ -1765,7 +1765,7 @@ static Int CheckInit (
 
     if ( NCopyAndFopyGVars != NCopyAndFopyDone ) {
         success = 0;
-        Pr( "#W  failed to updated copies and fopies\n", 0L, 0L );
+        Pr("#W  failed to updated copies and fopies\n", 0, 0);
     }
 
     /* return success                                                      */

@@ -86,7 +86,7 @@ static Obj TesterAndFilter(Obj getter);
 */
 static void PrintFlags(Obj flags)
 {
-    Pr( "<flag list>", 0L, 0L );
+    Pr("<flag list>", 0, 0);
 }
 
 

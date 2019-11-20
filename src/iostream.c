@@ -215,7 +215,7 @@ error:
 
 static UInt OpenPty(int * master, int * slave)
 {
-    Pr("no pseudo tty support available\n", 0L, 0L);
+    Pr("no pseudo tty support available\n", 0, 0);
     return 1;
 }
 

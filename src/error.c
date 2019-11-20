@@ -129,7 +129,7 @@ static Obj FuncDownEnv(Obj self, Obj args)
         ErrorQuit("usage: DownEnv( [ <depth> ] )", 0, 0);
     }
     if (STATE(ErrorLVars) == STATE(BottomLVars)) {
-        Pr("not in any function\n", 0L, 0L);
+        Pr("not in any function\n", 0, 0);
         return (Obj)0;
     }
 
@@ -150,7 +150,7 @@ static Obj FuncUpEnv(Obj self, Obj args)
         ErrorQuit("usage: UpEnv( [ <depth> ] )", 0, 0);
     }
     if (STATE(ErrorLVars) == STATE(BottomLVars)) {
-        Pr("not in any function\n", 0L, 0L);
+        Pr("not in any function\n", 0, 0);
         return (Obj)0;
     }
 
@@ -221,7 +221,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     }
     else if (call < OFFSET_FIRST_STAT ||
              call > SIZE_BAG(body) - sizeof(StatHeader)) {
-        Pr("<corrupted statement> ", 0L, 0L);
+        Pr("<corrupted statement> ", 0, 0);
     }
     else {
         Obj currLVars = STATE(CurrLVars);

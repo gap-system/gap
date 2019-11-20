@@ -646,7 +646,7 @@ static void Emit(const char * fmt, ...)
         /* print an indent, except for preprocessor commands               */
         if ( *fmt != '#' ) {
             if ( 0 < EmitIndent2 && *p == '}' ) EmitIndent2--;
-            while ( 0 < EmitIndent2-- )  Pr( " ", 0L, 0L );
+            while ( 0 < EmitIndent2-- )  Pr(" ", 0, 0);
         }
 
         /* format an argument                                              */
@@ -656,21 +656,21 @@ static void Emit(const char * fmt, ...)
             /* emit an integer                                             */
             if ( *p == 'd' ) {
                 dint = va_arg( ap, Int );
-                Pr( "%d", dint, 0L );
+                Pr("%d", dint, 0);
             }
 
             // emit a C string
             else if ( *p == 's' || *p == 'S' ) {
                 const Char f[] = { '%', *p, 0 };
                 string = va_arg( ap, Char* );
-                Pr( f, (Int)string, 0L );
+                Pr(f, (Int)string, 0);
             }
 
             // emit a GAP string
             else if ( *p == 'g' || *p == 'G' || *p == 'C' ) { 
                 const Char f[] = { '%', *p, 0 };
                 Obj str = va_arg( ap, Obj );
-                Pr( f, (Int)str, 0L );
+                Pr(f, (Int)str, 0);
             }
 
             /* emit a name                                                 */
@@ -680,10 +680,10 @@ static void Emit(const char * fmt, ...)
                 Char c;
                 while ((c = CONST_CSTR_STRING(str)[i++])) {
                     if ( IsAlpha(c) || IsDigit(c) ) {
-                        Pr( "%c", (Int)c, 0L );
+                        Pr("%c", (Int)c, 0);
                     }
                     else if ( c == '_' ) {
-                        Pr( "__", 0L, 0L );
+                        Pr("__", 0, 0);
                     }
                     else {
                         Pr("_%c%c",hex[((UInt)c)/16],hex[((UInt)c)%16]);
@@ -697,12 +697,12 @@ static void Emit(const char * fmt, ...)
                 if ( IS_INTG_CVAR(cvar) ) {
                     Int x = INTG_CVAR(cvar);
                     if (x >= -(1L <<28) && x < (1L << 28))
-                        Pr( "INTOBJ_INT(%d)", x, 0L );
+                        Pr("INTOBJ_INT(%d)", x, 0);
                     else
-                        Pr( "ObjInt_Int8(%d)", x, 0L );
+                        Pr("ObjInt_Int8(%d)", x, 0);
                 }
                 else if ( IS_TEMP_CVAR(cvar) ) {
-                    Pr( "t_%d", TEMP_CVAR(cvar), 0L );
+                    Pr("t_%d", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
                     Emit( "a_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
@@ -716,10 +716,10 @@ static void Emit(const char * fmt, ...)
             else if ( *p == 'i' ) {
                 cvar = va_arg( ap, CVar );
                 if ( IS_INTG_CVAR(cvar) ) {
-                    Pr( "%d", INTG_CVAR(cvar), 0L );
+                    Pr("%d", INTG_CVAR(cvar), 0);
                 }
                 else if ( IS_TEMP_CVAR(cvar) ) {
-                    Pr( "INT_INTOBJ(t_%d)", TEMP_CVAR(cvar), 0L );
+                    Pr("INT_INTOBJ(t_%d)", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
                     Emit( "INT_INTOBJ(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
@@ -731,31 +731,31 @@ static void Emit(const char * fmt, ...)
 
             /* emit a '%'                                                  */
             else if ( *p == '%' ) {
-                Pr( "%%", 0L, 0L );
+                Pr("%%", 0, 0);
             }
 
             /* what                                                        */
             else {
-                Pr( "%%illegal format statement", 0L, 0L );
+                Pr("%%illegal format statement", 0, 0);
             }
 
         }
 
         else if ( *p == '{' ) {
-            Pr( "{", 0L, 0L );
+            Pr("{", 0, 0);
             EmitIndent++;
         }
         else if ( *p == '}' ) {
-            Pr( "}", 0L, 0L );
+            Pr("}", 0, 0);
             EmitIndent--;
         }
         else if ( *p == '\n' ) {
-            Pr( "\n", 0L, 0L );
+            Pr("\n", 0, 0);
             EmitIndent2 = EmitIndent;
         }
 
         else {
-            Pr( "%c", (Int)(*p), 0L );
+            Pr("%c", (Int)(*p), 0);
         }
 
     }

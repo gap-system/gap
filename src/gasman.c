@@ -757,9 +757,9 @@ void InitGlobalBag (
         for (UInt i = 0; i < GlobalBags.nr; i++) {
             if (0 == strcmp(GlobalBags.cookie[i], cookie)) {
                 if (GlobalBags.addr[i] == addr)
-                    Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
+                    Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
                 else
-                    Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
+                    Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
             }
         }
     }

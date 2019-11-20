@@ -643,7 +643,7 @@ void InitHandlerFunc (
 
     for (UInt i = 0; i < NHandlerFuncs; i++)
         if (!strcmp(HandlerFuncs[i].cookie, cookie))
-            Pr("Duplicate cookie %s\n", (Int)cookie, 0L);
+            Pr("Duplicate cookie %s\n", (Int)cookie, 0);
 
     HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
     HandlerFuncs[NHandlerFuncs].cookie = cookie;
@@ -677,9 +677,9 @@ static void CheckHandlersBag(
                         break;
                 }
                 if ( i == NHandlerFuncs ) {
-                    Pr("Unregistered Handler %d args  ", j, 0L);
+                    Pr("Unregistered Handler %d args  ", j, 0);
                     PrintObj(NAME_FUNC(bag));
-                    Pr("\n",0L,0L);
+                    Pr("\n", 0, 0);
                 }
             }
         }
@@ -1003,12 +1003,12 @@ void PrintFunction (
 #ifdef HPCGAP
     /* print 'function (' or 'atomic function ('                          */
     if (LCKS_FUNC(func)) {
-      Pr("%5>atomic function%< ( %>",0L,0L);
+      Pr("%5>atomic function%< ( %>", 0, 0);
     } else
-      Pr("%5>function%< ( %>",0L,0L);
+      Pr("%5>function%< ( %>", 0, 0);
 #else
     /* print 'function ('                                                  */
-    Pr("%5>function%< ( %>",0L,0L);
+    Pr("%5>function%< ( %>", 0, 0);
 #endif
 
     /* print the arguments                                                 */
@@ -1024,24 +1024,25 @@ void PrintFunction (
             const Char * locks = CONST_CSTR_STRING(LCKS_FUNC(func));
             switch(locks[i-1]) {
             case LOCK_QUAL_READONLY:
-                Pr("%>readonly %<", 0L, 0L);
+                Pr("%>readonly %<", 0, 0);
                 break;
             case LOCK_QUAL_READWRITE:
-                Pr("%>readwrite %<", 0L, 0L);
+                Pr("%>readwrite %<", 0, 0);
                 break;
             }
         }
 #endif
         if ( NAMS_FUNC(func) != 0 )
-            Pr( "%H", (Int)NAMI_FUNC( func, (Int)i ), 0L );
+            Pr("%H", (Int)NAMI_FUNC(func, (Int)i), 0);
         else
-            Pr( "<<arg-%d>>", (Int)i, 0L );
+            Pr("<<arg-%d>>", (Int)i, 0);
         if(isvarg && i == narg) {
-            Pr("...", 0L, 0L);
+            Pr("...", 0, 0);
         }
-        if ( i != narg )  Pr("%<, %>",0L,0L);
+        if (i != narg)
+            Pr("%<, %>", 0, 0);
     }
-    Pr(" %<)\n",0L,0L);
+    Pr(" %<)\n", 0, 0);
 
     // print the body
     if (IsKernelFunction(func)) {
@@ -1051,15 +1052,16 @@ void PrintFunction (
         /* print the locals                                                */
         nloc = NLOC_FUNC(func);
         if ( nloc >= 1 ) {
-            Pr("%>local ",0L,0L);
+            Pr("%>local ", 0, 0);
             for ( i = 1; i <= nloc; i++ ) {
                 if ( NAMS_FUNC(func) != 0 )
-                    Pr( "%H", (Int)NAMI_FUNC( func, (Int)(narg+i) ), 0L );
+                    Pr("%H", (Int)NAMI_FUNC(func, (Int)(narg + i)), 0);
                 else
-                    Pr( "<<loc-%d>>", (Int)i, 0L );
-                if ( i != nloc )  Pr("%<, %>",0L,0L);
+                    Pr("<<loc-%d>>", (Int)i, 0);
+                if (i != nloc)
+                    Pr("%<, %>", 0, 0);
             }
-            Pr("%<;\n",0L,0L);
+            Pr("%<;\n", 0, 0);
         }
 
         // print the code
@@ -1068,10 +1070,10 @@ void PrintFunction (
         PrintStat( OFFSET_FIRST_STAT );
         SWITCH_TO_OLD_LVARS( oldLVars );
     }
-    Pr("%4<\n",0L,0L);
-    
+    Pr("%4<\n", 0, 0);
+
     /* print 'end'                                                         */
-    Pr("end",0L,0L);
+    Pr("end", 0, 0);
 }
 
 void PrintKernelFunction(Obj func)
