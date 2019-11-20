@@ -96,6 +96,7 @@ extern "C" {
 Obj             IdentityPerm;
 
 
+static const UInt MAX_DEG_PERM4 = ((Int)1 << (sizeof(UInt) == 8 ? 32 : 28)) - 1;
 
 static ModuleStateOffset PermutatStateOffset = -1;
 

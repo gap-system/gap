@@ -854,7 +854,7 @@ static Obj FuncSetCyclotomicsLimit(Obj self, Obj newlimit)
                      CyclotomicsLimit, 0);
     }
 #ifdef SYS_IS_64_BIT
-    if (ulimit >= (1L << 32)) {
+    if (ulimit >= ((UInt)1 << 32)) {
         ErrorMayQuit("Cyclotomic field size limit must be less than 2^32", 0,
                      0);
     }

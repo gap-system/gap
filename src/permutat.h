@@ -118,10 +118,6 @@ EXPORT_INLINE void CLEAR_STOREDINV_PERM(Obj perm)
 
 #define IMAGE(i,pt,dg)  (((i) < (dg)) ? (pt)[(i)] : (i))
 
-enum {
-    MAX_DEG_PERM4 = (1L << (sizeof(UInt) == 8 ? 32 : 28)) - 1
-};
-
 #define IS_PERM2(perm)  (TNUM_OBJ(perm) == T_PERM2)
 #define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
 

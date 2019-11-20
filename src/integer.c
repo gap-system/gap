@@ -1528,7 +1528,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
   /* <res> = 0 means that <res> is the neutral element                     */
   else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   1 ) {
     res = 0;
-    k = 1L << NR_SMALL_INT_BITS;
+    k = (Int)1 << NR_SMALL_INT_BITS;
     l = INT_INTOBJ(n);
     while ( 0 < k ) {
       res = (res == 0 ? res : SUM( res, res ));
@@ -1678,7 +1678,7 @@ static Obj PowObjInt(Obj op, Obj n)
   /* <res> = 0 means that <res> is the neutral element                   */
   else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   0 ) {
     res = 0;
-    k = 1L << NR_SMALL_INT_BITS;
+    k = (Int)1 << NR_SMALL_INT_BITS;
     l = INT_INTOBJ(n);
     while ( 0 < k ) {
       res = (res == 0 ? res : PROD( res, res ));

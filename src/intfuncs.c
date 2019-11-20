@@ -659,7 +659,7 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     UInt bslen = 0;
     Obj  bgetters = NEW_PLIST_IMM(T_PLIST, nfields);
     for (UInt i = 1; i <= nfields; i++) {
-        UInt mask = (1L << starts[i]) - (1L << starts[i - 1]);
+        UInt mask = ((UInt)1 << starts[i]) - ((UInt)1 << starts[i - 1]);
         Obj  s = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameSetter,
                              2, dataValArgs, DoFieldSetter);
         SET_MASK_BITFIELD_FUNC(s, mask);
