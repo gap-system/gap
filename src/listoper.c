@@ -55,7 +55,7 @@ Int             EqListList (
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     if ( lenL != lenR ) {
-        return 0L;
+        return 0;
     }
 
     /* loop over the elements and compare them                             */
@@ -63,18 +63,18 @@ Int             EqListList (
         elmL = ELMV0_LIST( listL, i );
         elmR = ELMV0_LIST( listR, i );
         if ( elmL == 0 && elmR != 0 ) {
-            return 0L;
+            return 0;
         }
         else if ( elmR == 0 && elmL != 0 ) {
-            return 0L;
+            return 0;
         }
         else if ( ! EQ( elmL, elmR ) ) {
-            return 0L;
+            return 0;
         }
     }
 
     /* no differences found, the lists are equal                           */
-    return 1L;
+    return 1;
 }
 
 static Obj FuncEQ_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
@@ -110,10 +110,10 @@ Int             LtListList (
         elmL = ELMV0_LIST( listL, i );
         elmR = ELMV0_LIST( listR, i );
         if ( elmL == 0 && elmR != 0 ) {
-            return 1L;
+            return 1;
         }
         else if ( elmR == 0 && elmL != 0 ) {
-            return 0L;
+            return 0;
         }
         else if ( ! EQ( elmL, elmR ) ) {
             return LT( elmL, elmR );

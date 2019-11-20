@@ -2401,26 +2401,26 @@ static Int EqPPerm(Obj f, Obj g)
     Obj     dom;
 
     if (deg != DEG_PPERM<TG>(g) || CODEG_PPERM<TF>(f) != CODEG_PPERM<TG>(g))
-        return 0L;
+        return 0;
 
     if (DOM_PPERM(f) == NULL || DOM_PPERM(g) == NULL) {
         for (i = 0; i < deg; i++)
             if (*ptf++ != *ptg++)
-                return 0L;
-        return 1L;
+                return 0;
+        return 1;
     }
 
     if (RANK_PPERM<TF>(f) != RANK_PPERM<TG>(g))
-        return 0L;
+        return 0;
     dom = DOM_PPERM(f);
     rank = RANK_PPERM<TF>(f);
 
     for (i = 1; i <= rank; i++) {
         j = INT_INTOBJ(ELM_PLIST(dom, i)) - 1;
         if (ptf[j] != ptg[j])
-            return 0L;
+            return 0;
     }
-    return 1L;
+    return 1;
 }
 
 /* less than for partial perms */
@@ -2437,22 +2437,22 @@ static Int LtPPerm(Obj f, Obj g)
     deg = DEG_PPERM<TF>(f);
     if (deg != DEG_PPERM<TG>(g)) {
         if (deg < DEG_PPERM<TG>(g)) {
-            return 1L;
+            return 1;
         }
         else {
-            return 0L;
+            return 0;
         }
     }
 
     for (i = 0; i < deg; i++) {
         if (*(ptf++) != *(ptg++)) {
             if (*(--ptf) < *(--ptg))
-                return 1L;
+                return 1;
             else
-                return 0L;
+                return 0;
         }
     }
-    return 0L;
+    return 0;
 }
 
 /* product of partial perm and partial perm */

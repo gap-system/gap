@@ -3285,7 +3285,7 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
         break;
       default:
         ErrorQuit( "<obj> must be a component object", 0L, 0L );
-        return 0L;
+        return 0;
     }
 
     /* if the attribute is already there *do not* chage it                 */
@@ -3348,7 +3348,7 @@ static Obj DoGetterFunction(Obj self, Obj obj)
 #endif
       default:
         ErrorQuit( "<obj> must be a component object", 0L, 0L );
-        return 0L;
+        return 0;
     }
 }
 

@@ -96,7 +96,8 @@ static Int GrowPRec(Obj rec, UInt need)
 
     /* check if big enough */
     want = (2*need+2)*sizeof(Obj);
-    if (SIZE_OBJ(rec) >= want) return 0L;
+    if (SIZE_OBJ(rec) >= want)
+        return 0;
 
 
     /* find out how large the bag should become at least                   */
@@ -108,7 +109,7 @@ static Int GrowPRec(Obj rec, UInt need)
     /* resize the plain list                                               */
     ResizeBag( rec, newsize );
 
-    return 1L;
+    return 1;
 }
 
 

@@ -1125,7 +1125,7 @@ static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
     RequireStringRep("ASS_GVAR", gvar);
 
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
-    return 0L;
+    return 0;
 }
 
 

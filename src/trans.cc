@@ -3458,12 +3458,12 @@ static Int EqTrans22(Obj opL, Obj opR)
     if (degL != degR) {
         if (degL < degR) {
             if (*(ptRstart + degR - 1) != (degR - 1)) {
-                return 0L;
+                return 0;
             }
         }
         else {
             if (*(ptLstart + degL - 1) != (degL - 1)) {
-                return 0L;
+                return 0;
             }
         }
     }
@@ -3473,27 +3473,27 @@ static Int EqTrans22(Obj opL, Obj opR)
         ptR = ptRstart + degL;
         for (p = degL; p < degR; p++) {
             if (*(ptR++) != p) {
-                return 0L;
+                return 0;
             }
         }
         if (memcmp(ptLstart, ptRstart, degL * sizeof(UInt2)) != 0) {
-            return 0L;
+            return 0;
         }
     }
     else {
         ptL = ptLstart + degR;
         for (p = degR; p < degL; p++) {
             if (*(ptL++) != p) {
-                return 0L;
+                return 0;
             }
         }
         if (memcmp(ptLstart, ptRstart, degR * sizeof(UInt2)) != 0) {
-            return 0L;
+            return 0;
         }
     }
 
     // otherwise they must be equal
-    return 1L;
+    return 1;
 }
 
 static Int EqTrans44(Obj opL, Obj opR)
@@ -3513,12 +3513,12 @@ static Int EqTrans44(Obj opL, Obj opR)
     if (degL != degR) {
         if (degL < degR) {
             if (*(ptRstart + degR - 1) != (degR - 1)) {
-                return 0L;
+                return 0;
             }
         }
         else {
             if (*(ptLstart + degL - 1) != (degL - 1)) {
-                return 0L;
+                return 0;
             }
         }
     }
@@ -3528,27 +3528,27 @@ static Int EqTrans44(Obj opL, Obj opR)
         ptR = ptRstart + degL;
         for (p = degL; p < degR; p++) {
             if (*(ptR++) != p) {
-                return 0L;
+                return 0;
             }
         }
         if (memcmp(ptLstart, ptRstart, degL * sizeof(UInt4)) != 0) {
-            return 0L;
+            return 0;
         }
     }
     else {
         ptL = ptLstart + degR;
         for (p = degR; p < degL; p++) {
             if (*(ptL++) != p) {
-                return 0L;
+                return 0;
             }
         }
         if (memcmp(ptLstart, ptRstart, degR * sizeof(UInt4)) != 0) {
-            return 0L;
+            return 0;
         }
     }
 
     // otherwise they must be equal
-    return 1L;
+    return 1;
 }
 
 static Int EqTrans24(Obj f, Obj g)
@@ -3565,12 +3565,12 @@ static Int EqTrans24(Obj f, Obj g)
     if (def <= deg) {
         for (i = 0; i < def; i++) {
             if (*(ptf++) != *(ptg++)) {
-                return 0L;
+                return 0;
             }
         }
         for (; i < deg; i++) {
             if (*(ptg++) != i) {
-                return 0L;
+                return 0;
             }
         }
     }
@@ -3581,17 +3581,17 @@ static Int EqTrans24(Obj f, Obj g)
 
         for (i = 0; i < deg; i++) {
             if (*(ptf++) != *(ptg++)) {
-                return 0L;
+                return 0;
             }
         }
         for (; i < def; i++) {
             if (*(ptf++) != i) {
-                return 0L;
+                return 0;
             }
         }
     }
 
-    return 1L;
+    return 1;
 }
 
 static Int EqTrans42(Obj f, Obj g)
