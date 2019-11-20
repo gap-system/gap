@@ -965,7 +965,7 @@ static Obj SumCyc(Obj opL, Obj opR)
 */
 static Obj ZeroCyc(Obj op)
 {
-    return INTOBJ_INT( 0L );
+    return INTOBJ_INT(0);
 }
 
 
@@ -1340,7 +1340,7 @@ static Obj ProdCyc(Obj opL, Obj opR)
 */
 static Obj OneCyc(Obj op)
 {
-    return INTOBJ_INT( 1L );
+    return INTOBJ_INT(1);
 }
 
 

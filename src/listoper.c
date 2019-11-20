@@ -139,7 +139,7 @@ static Obj FuncLT_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
 */
 static Int InList(Obj objL, Obj listR)
 {
-  return Fail != POS_LIST( listR, objL, INTOBJ_INT(0L) );
+    return Fail != POS_LIST(listR, objL, INTOBJ_INT(0));
 }
 
 static Obj FuncIN_LIST_DEFAULT(Obj self, Obj obj, Obj list)

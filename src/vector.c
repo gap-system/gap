@@ -564,7 +564,7 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
         vecR = ELM_PLIST(matR, i);
         ptrR = CONST_ADDR_OBJ(vecR);
         ptrP = ADDR_OBJ(vecP);
-        if (elmL == INTOBJ_INT(1L)) {
+        if (elmL == INTOBJ_INT(1)) {
             for (k = 1; k <= col; k++) {
                 elmT = ptrR[k];
                 elmP = ptrP[k];
@@ -579,7 +579,8 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
                 else
                     ptrP[k] = elmS;
             }
-        } else if (elmL == INTOBJ_INT(-1L)) {
+        }
+        else if (elmL == INTOBJ_INT(-1)) {
             for (k = 1; k <= col; k++) {
                 elmT = ptrR[k];
                 elmP = ptrP[k];
@@ -595,10 +596,11 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
                     ptrP[k] = elmS;
 
             }
-        } else if (elmL != INTOBJ_INT(0L)) {
+        }
+        else if (elmL != INTOBJ_INT(0)) {
             for (k = 1; k <= col; k++) {
                 elmR = ptrR[k];
-                if (elmR != INTOBJ_INT(0L)) {
+                if (elmR != INTOBJ_INT(0)) {
                     if (! ARE_INTOBJS(elmL, elmR)
                             || ! PROD_INTOBJS(elmT, elmL, elmR)) {
                         elmT = PROD(elmL, elmR);
