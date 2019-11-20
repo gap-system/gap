@@ -335,7 +335,7 @@ static Int IsCopyableObjError(Obj obj)
     ErrorQuit(
         "Panic: tried to test copyability of unsupported type '%s'",
         (Int)TNAM_OBJ(obj), 0L );
-    return 0L;
+    return 0;
 }
 
 static Int IsCopyableObjObject(Obj obj)
@@ -1025,7 +1025,7 @@ static void PrintObjObject(Obj obj)
 static Obj PrintObjHandler(Obj self, Obj obj)
 {
     PrintObj( obj );
-    return 0L;
+    return 0;
 }
 
 UInt SetPrintObjState(UInt state)
@@ -1116,7 +1116,7 @@ void ViewObj(Obj obj)
 static Obj FuncViewObj(Obj self, Obj obj)
 {
     ViewObj( obj );
-    return 0L;
+    return 0;
 }
 
 

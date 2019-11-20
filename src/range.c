@@ -187,24 +187,24 @@ static Int LtRange(Obj listL, Obj listR)
 {
     /* first compare the first elements                                    */
     if ( GET_LOW_RANGE(listL) < GET_LOW_RANGE(listR) )
-        return 1L;
+        return 1;
     else if ( GET_LOW_RANGE(listR) < GET_LOW_RANGE(listL) )
-        return 0L;
+        return 0;
 
     /* next compare the increments (or the second elements)                */
     if ( GET_INC_RANGE(listL) < GET_INC_RANGE(listR) )
-        return 1L;
+        return 1;
     else if ( GET_INC_RANGE(listR) < GET_INC_RANGE(listL) )
-        return 0L;
+        return 0;
 
     /* finally compare the lengths                                         */
     if ( GET_LEN_RANGE(listL) < GET_LEN_RANGE(listR) )
-        return 1L;
+        return 1;
     else if ( GET_LEN_RANGE(listR) < GET_LEN_RANGE(listL) )
-        return 0L;
+        return 0;
 
     /* the two ranges are equal                                            */
-    return 0L;
+    return 0;
 }
 
 

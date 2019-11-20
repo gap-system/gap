@@ -141,16 +141,16 @@ static Int EqRat(Obj opL, Obj opR)
 
     /* compare the numerators                                              */
     if ( ! EQ( numL, numR ) ) {
-        return 0L;
+        return 0;
     }
 
     /* compare the denominators                                            */
     if ( ! EQ( denL, denR ) ) {
-        return 0L;
+        return 0;
     }
 
     /* no differences found, they must be equal                            */
-    return 1L;
+    return 1;
 }
 
 

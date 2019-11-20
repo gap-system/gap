@@ -952,7 +952,7 @@ static Int EqPlist(Obj left, Obj right)
     lenL = LEN_PLIST( left );
     lenR = LEN_PLIST( right );
     if ( lenL != lenR ) {
-        return 0L;
+        return 0;
     }
 
     CheckRecursionBefore();
@@ -963,13 +963,13 @@ static Int EqPlist(Obj left, Obj right)
         elmR = ELM_PLIST( right, i );
         if ( ( (elmL == 0 ) != (elmR == 0) ) || ! EQ( elmL, elmR ) ) {
             DecRecursionDepth();
-            return 0L;
+            return 0;
         }
     }
 
     /* no differences found, the lists are equal                           */
     DecRecursionDepth();
-    return 1L;
+    return 1;
 }
 
 
@@ -1037,7 +1037,7 @@ static Int LenPlist(Obj list)
 
 static Int LenPlistEmpty(Obj list)
 {
-    return 0L;
+    return 0;
 }
 
 
@@ -1924,20 +1924,20 @@ static Int IsDensePlist(Obj list)
     /* special case for empty list                                         */
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-        return 1L;
+        return 1;
     }
 
     /* loop over the entries of the list                                   */
     for ( i = 1; i <= lenList; i++ ) {
         if ( ELM_PLIST( list, i ) == 0 )
-            return 0L;
+            return 0;
     }
 
     /* set the dense flag (even if the elements are mutable)               */
     SET_FILT_LIST( list, FN_IS_DENSE );
 
     /* no hole found                                                       */
-    return 1L;
+    return 1;
 }
 
 
@@ -2001,7 +2001,7 @@ static Int IsSSortPlist(Obj list)
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-        return 2L;
+        return 2;
     }
 
     /* get the first element                                               */
@@ -2010,7 +2010,7 @@ static Int IsSSortPlist(Obj list)
       goto notDense;
 #ifdef HPCGAP
     if (!CheckReadAccess(elm1))
-      return 0L;
+      return 0;
 #endif
     areMut   = IS_MUTABLE_OBJ( elm1 );
     if (!SyInitializing)
@@ -2028,7 +2028,7 @@ static Int IsSSortPlist(Obj list)
         goto notDense;
 #ifdef HPCGAP
       if (!CheckReadAccess(elm2))
-        return 0L;
+        return 0;
 #endif
       if ( ! LT( elm1, elm2 ) )
         break;
@@ -2056,19 +2056,19 @@ static Int IsSSortPlist(Obj list)
           SET_FILT_LIST( list, FN_IS_NHOMOG);
         SET_FILT_LIST( list, FN_IS_SSORT );
       }
-      return 2L;
+      return 2;
     }
     else {
       if ( ! areMut ) {
         SET_FILT_LIST( list, FN_IS_NSORT );
       }
-      return 0L;
+      return 0;
 
     }
 
  notDense:
     SET_FILT_LIST( list, FN_IS_NDENSE );
-    return 0L;
+    return 0;
 }
 
 static Int IsSSortPlistDense(Obj list)
@@ -2087,14 +2087,14 @@ static Int IsSSortPlistDense(Obj list)
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-        return 2L;
+        return 2;
     }
 
     /* get the first element                                               */
     elm1    = ELM_PLIST( list, 1 );
 #ifdef HPCGAP
     if (!CheckReadAccess(elm1))
-      return 0L;
+      return 0;
 #endif
     areMut   = IS_MUTABLE_OBJ( elm1 );
     if (!SyInitializing)
@@ -2110,7 +2110,7 @@ static Int IsSSortPlistDense(Obj list)
       elm2 = ELM_PLIST( list, i );
 #ifdef HPCGAP
       if (!CheckReadAccess(elm2))
-        return 0L;
+        return 0;
 #endif
       if ( ! LT( elm1, elm2 ) )
         break;
@@ -2130,13 +2130,13 @@ static Int IsSSortPlistDense(Obj list)
           SET_FILT_LIST( list, FN_IS_NHOMOG);
         SET_FILT_LIST( list, FN_IS_SSORT );
       }
-      return 2L;
+      return 2;
     }
     else {
         if ( ! areMut ) {
           SET_FILT_LIST( list, FN_IS_NSORT );
         }
-        return 0L;
+        return 0;
     }
 
 }
@@ -2154,14 +2154,14 @@ static Int IsSSortPlistHom(Obj list)
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-        return 2L;
+        return 2;
     }
 
     /* get the first element                                               */
     elm1    = ELM_PLIST( list, 1 );
 #ifdef HPCGAP
     if (!CheckReadAccess(elm1))
-      return 0L;
+      return 0;
 #endif
 
     /* loop over the other elements                                        */
@@ -2169,7 +2169,7 @@ static Int IsSSortPlistHom(Obj list)
       elm2 = ELM_PLIST( list, i );
 #ifdef HPCGAP
       if (!CheckReadAccess(elm2))
-        return 0L;
+        return 0;
 #endif
       if ( ! LT( elm1, elm2 ) )
         break;
@@ -2179,11 +2179,11 @@ static Int IsSSortPlistHom(Obj list)
 
     if ( lenList < i ) {
       SET_FILT_LIST( list, FN_IS_SSORT );
-      return 2L;
+      return 2;
     }
     else {
       SET_FILT_LIST( list, FN_IS_NSORT );
-      return 0L;
+      return 0;
     }
 
 }
@@ -2218,23 +2218,23 @@ static Int IsPossPlist(Obj list)
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
         if (elm == 0)
-          return 0L;
+          return 0;
 #ifdef HPCGAP
         if ( !CheckReadAccess(elm) )
-          return 0L;
+          return 0;
 #endif
         if (IS_INTOBJ(elm))
           {
             if (INT_INTOBJ(elm) <= 0 )
-              return 0L;
+              return 0;
           }
         else
           if (TNUM_OBJ(elm) != T_INTPOS)
-            return 0L;
+            return 0;
     }
 
     /* no problems found                                                   */
-    return 1L;
+    return 1;
 }
 
 

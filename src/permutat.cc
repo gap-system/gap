@@ -252,22 +252,22 @@ static Int EqPerm(Obj opL, Obj opR)
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
             if ( *(ptL++) != *(ptR++) )
-                return 0L;
+                return 0;
         for ( p = degL; p < degR; p++ )
             if (        p != *(ptR++) )
-                return 0L;
+                return 0;
     }
     else {
         for ( p = 0; p < degR; p++ )
             if ( *(ptL++) != *(ptR++) )
-                return 0L;
+                return 0;
         for ( p = degR; p < degL; p++ )
             if ( *(ptL++) !=        p )
-                return 0L;
+                return 0;
     }
 
     /* otherwise they must be equal                                        */
-    return 1L;
+    return 1;
 }
 
 

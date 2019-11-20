@@ -271,7 +271,7 @@ static Int EqBlist(Obj listL, Obj listR)
     lenL = LEN_BLIST( listL );
     lenR = LEN_BLIST( listR );
     if ( lenL != lenR ) {
-        return 0L;
+        return 0;
     }
 
     /* test for equality blockwise                                         */
@@ -279,11 +279,11 @@ static Int EqBlist(Obj listL, Obj listR)
     ptrR = CONST_BLOCKS_BLIST(listR);
     for ( i = (lenL+BIPEB-1)/BIPEB; 0 < i; i-- ) {
         if ( *ptrL++ != *ptrR++ )
-            return 0L;
+            return 0;
     }
 
     /* no differences found, the lists are equal                           */
-    return 1L;
+    return 1;
 }
 
 

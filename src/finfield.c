@@ -360,7 +360,7 @@ UInt DegreeFFE (
 
     /* the zero element has a degree of one                                */
     if ( val == 0 ) {
-        return 1L;
+        return 1;
     }
 
     /* compute the degree                                                  */
@@ -440,7 +440,7 @@ static Int EqFFE(Obj opL, Obj opR)
     pL = CHAR_FF( fL );
     pR = CHAR_FF( fR );
     if ( pL != pR ) {
-        return 0L;
+        return 0;
     }
 
     /* the zero element is not equal to any other element                  */
@@ -458,7 +458,7 @@ static Int EqFFE(Obj opL, Obj opR)
 
     /* elements in different fields are different too                      */
     if ( mL != mR ) {
-        return 0L;
+        return 0;
     }
 
     /* otherwise compare the elements in the common minimal field          */

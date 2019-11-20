@@ -1100,30 +1100,30 @@ static Int IsSSortListDefault (
 
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
-        return 2L;
+        return 2;
     }
 
     /* get the first element                                               */
     elm1 = ELM0_LIST(list, 1);
 
     if (!elm1) {
-        return 0L;
+        return 0;
     }
 
     /* compare each element with its precursor                             */
     for ( i = 2; i <= lenList; i++ ) {
         elm2 = ELM0_LIST(list, i);
         if (!elm2) {
-            return 0L;
+            return 0;
         }
         if ( ! LT( elm1, elm2 ) ) {
-            return 0L;
+            return 0;
         }
         elm1 = elm2;
     }
 
     /* the list is strictly sorted                                         */
-    return 2L;
+    return 2;
 }
 
 static Int IsSSortListObject(Obj obj)
@@ -1171,22 +1171,22 @@ static Int IsPossListDefault(Obj list)
 
         /* if it has a hole then it isn't a poss list */
         if ( elm == 0)
-          return 0L;
+          return 0;
 
         /* if it's a small integer and non-positive then
            it's not a poss list */
         if ( IS_INTOBJ(elm)) {
           if (INT_INTOBJ(elm) <= 0)
-            return  0L;
+            return 0;
         }
         /* or if it's not a small integer or a positive large integer then it's
            not a poss list */
         else if (TNUM_OBJ(elm) != T_INTPOS)
-          return 0L;
+          return 0;
     }
 
     /* the list is a positions list                                        */
-    return 1L;
+    return 1;
 }
 
 static Int IsPossListObject(Obj obj)

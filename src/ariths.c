@@ -534,7 +534,7 @@ CompaMethod EqFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Int EqNot(Obj opL, Obj opR)
 {
-    return 0L;
+    return 0;
 }
 
 

@@ -327,11 +327,11 @@ static Int EqCyc(Obj opL, Obj opR)
 
     /* compare the order of both fields                                    */
     if ( NOF_CYC(opL) != NOF_CYC(opR) )
-        return 0L;
+        return 0;
 
     /* compare the number of terms                                         */
     if ( SIZE_CYC(opL) != SIZE_CYC(opR) )
-        return 0L;
+        return 0;
 
     /* compare the cyclotomics termwise                                    */
     len = SIZE_CYC(opL);
@@ -341,13 +341,13 @@ static Int EqCyc(Obj opL, Obj opR)
     exr = CONST_EXPOS_CYC(opR,len);
     for ( i = 1; i < len; i++ ) {
         if ( exl[i] != exr[i] )
-            return 0L;
+            return 0;
         else if ( ! EQ(cfl[i],cfr[i]) )
-            return 0L;
+            return 0;
     }
 
     /* all terms are equal                                                 */
-    return 1L;
+    return 1;
 }
 
 
@@ -383,9 +383,9 @@ static Int LtCyc(Obj opL, Obj opR)
     /* compare the order of both fields                                    */
     if ( NOF_CYC(opL) != NOF_CYC(opR) ) {
         if ( INT_INTOBJ( NOF_CYC(opL) ) < INT_INTOBJ( NOF_CYC(opR) ) )
-            return 1L;
+            return 1;
         else
-            return 0L;
+            return 0;
     }
 
     /* compare the cyclotomics termwise                                    */
@@ -411,17 +411,17 @@ static Int LtCyc(Obj opL, Obj opR)
     else if ( ler < lel )
         return LT( cfl[i], INTOBJ_INT(0) );
     else
-        return 0L;
+        return 0;
 }
 
 static Int LtCycYes(Obj opL, Obj opR)
 {
-    return 1L;
+    return 1;
 }
 
 static Int LtCycNot(Obj opL, Obj opR)
 {
-    return 0L;
+    return 0;
 }
 
 

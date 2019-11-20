@@ -250,7 +250,7 @@ static Int EqSet(Obj listL, Obj listR)
     lenL = LEN_PLIST( listL );
     lenR = LEN_PLIST( listR );
     if ( lenL != lenR ) {
-        return 0L;
+        return 0;
     }
 
     /* loop over the elements and compare them                             */
@@ -258,12 +258,12 @@ static Int EqSet(Obj listL, Obj listR)
         elmL = ELM_PLIST( listL, i );
         elmR = ELM_PLIST( listR, i );
         if ( ! EQ( elmL, elmR ) ) {
-            return 0L;
+            return 0;
         }
     }
 
     /* no differences found, the lists are equal                           */
-    return 1L;
+    return 1;
 }
 
 static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
