@@ -34,7 +34,7 @@
 /* constructs a mask that selects bits <from> to <to> inclusive of a UInt */
 static inline UInt MaskForCopyBits(UInt from, UInt to)
 {
-    return ((to == BIPEB - 1) ? 0 : (1L << (to + 1))) - (1L << from);
+    return ((to == BIPEB - 1) ? 0 : ((UInt)1 << (to + 1))) - ((UInt)1 << from);
 }
 
 /* copies a block of bits from the UInt <from> to the one pointed at

@@ -431,7 +431,7 @@ static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
 #endif
 
 
-  if (fabs(f) < (Double) (1L<<NR_SMALL_INT_BITS))
+  if (fabs(f) < (Double)((Int)1 << NR_SMALL_INT_BITS))
     return INTOBJ_INT((Int)f);
 
   int str_len = (int) (log(fabs(f)) / log(16.0)) + 3;
