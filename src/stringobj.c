@@ -302,7 +302,7 @@ static Obj FuncINTLIST_STRING(Obj self, Obj val, Obj sign)
   p=CONST_CHARS_STRING(val);
   addr=ADDR_OBJ(n);
   /* signed or unsigned ? */
-  if (sign == INTOBJ_INT(1L)) {
+  if (sign == INTOBJ_INT(1)) {
     for (i=1; i<=l; i++) {
       addr[i] = INTOBJ_INT(p[i-1]);
     }
@@ -319,7 +319,7 @@ static Obj FuncINTLIST_STRING(Obj self, Obj val, Obj sign)
 
 static Obj FuncSINTLIST_STRING(Obj self, Obj val)
 {
-  return FuncINTLIST_STRING ( self, val, INTOBJ_INT(-1L) );
+    return FuncINTLIST_STRING(self, val, INTOBJ_INT(-1));
 }
 
 /****************************************************************************
