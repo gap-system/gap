@@ -1381,7 +1381,7 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
     UInt    n, i, j;
     const UInt2 * ptt2;
     const UInt4 * ptt4;
-    UInt4 * pttmp = 0L;
+    UInt4 * pttmp = 0;
 
     RequireSmallList("IsInjectiveListTrans", list);
     if (!IS_TRANS(obj) && !IS_LIST(obj)) {

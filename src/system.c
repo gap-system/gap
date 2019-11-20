@@ -1075,7 +1075,7 @@ void InitSystem (
   #if defined(HAVE_SYSCONF) && defined(_SC_PAGESIZE) && defined(_SC_PHYS_PAGES)
     // Set to 3/4 of memory size (in kB), if this is larger
     Int SyStorMaxFromMem =
-        (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3L) / 4 / 1024;
+        (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3) / 4 / 1024;
     SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
   #endif
 #endif // defined(SYS_IS_64_BIT)

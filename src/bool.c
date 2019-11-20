@@ -383,32 +383,32 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
 
     /* bags are registered in 'InitKernel'                                 */
-    True  = NewBag( T_BOOL, 0L );
-    False = NewBag( T_BOOL, 0L );
-    Fail  = NewBag( T_BOOL, 0L );
+    True  = NewBag(T_BOOL, 0);
+    False = NewBag(T_BOOL, 0);
+    Fail  = NewBag(T_BOOL, 0);
 
     /* `fail' is a variable not a language construct                       */
     AssReadOnlyGVar( GVarName( "fail" ), Fail );
 
     /* Undefined is an internal value */
-    Undefined = NewBag( T_BOOL, 0 );
+    Undefined = NewBag(T_BOOL, 0);
 
     /* make and install the 'RETURN_TRUE' function                         */
-    tmp = NewFunctionC( "RETURN_TRUE", -1L, "arg", ReturnTrue1 );
+    tmp = NewFunctionC("RETURN_TRUE", -1, "arg", ReturnTrue1);
     SET_HDLR_FUNC( tmp, 1, ReturnTrue1);
     SET_HDLR_FUNC( tmp, 2, ReturnTrue2);
     SET_HDLR_FUNC( tmp, 3, ReturnTrue3);
     AssReadOnlyGVar( GVarName("RETURN_TRUE"), tmp );
 
     /* make and install the 'RETURN_FALSE' function                        */
-    tmp = NewFunctionC("RETURN_FALSE",-1L,"arg",ReturnFalse1);
+    tmp = NewFunctionC("RETURN_FALSE", -1, "arg", ReturnFalse1);
     SET_HDLR_FUNC( tmp, 1, ReturnFalse1);
     SET_HDLR_FUNC( tmp, 2, ReturnFalse2);
     SET_HDLR_FUNC( tmp, 3, ReturnFalse3);
     AssReadOnlyGVar( GVarName( "RETURN_FALSE" ), tmp );
 
     /* make and install the 'RETURN_FAIL' function                        */
-    tmp = NewFunctionC("RETURN_FAIL", -1L, "arg", ReturnFail1);
+    tmp = NewFunctionC("RETURN_FAIL", -1, "arg", ReturnFail1);
     SET_HDLR_FUNC( tmp, 1, ReturnFail1);
     SET_HDLR_FUNC( tmp, 2, ReturnFail2);
     SET_HDLR_FUNC( tmp, 3, ReturnFail3);

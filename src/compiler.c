@@ -212,16 +212,16 @@ typedef UInt4           LVar;
 #define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (1 + 7 + (nlvar) + (ntemp)))
 
 #define W_UNUSED                0       /* TEMP is currently unused        */
-#define W_HIGHER                (1L<<0) /* LVAR is used as higher variable */
-#define W_UNKNOWN               ((1L<<1) | W_HIGHER)
-#define W_UNBOUND               ((1L<<2) | W_UNKNOWN)
-#define W_BOUND                 ((1L<<3) | W_UNKNOWN)
-#define W_INT                   ((1L<<4) | W_BOUND)
-#define W_INT_SMALL             ((1L<<5) | W_INT)
-#define W_INT_POS               ((1L<<6) | W_INT)
-#define W_BOOL                  ((1L<<7) | W_BOUND)
-#define W_FUNC                  ((1L<<8) | W_BOUND)
-#define W_LIST                  ((1L<<9) | W_BOUND)
+#define W_HIGHER                (1<<0) /* LVAR is used as higher variable */
+#define W_UNKNOWN               ((1<<1) | W_HIGHER)
+#define W_UNBOUND               ((1<<2) | W_UNKNOWN)
+#define W_BOUND                 ((1<<3) | W_UNKNOWN)
+#define W_INT                   ((1<<4) | W_BOUND)
+#define W_INT_SMALL             ((1<<5) | W_INT)
+#define W_INT_POS               ((1<<6) | W_INT)
+#define W_BOOL                  ((1<<7) | W_BOUND)
+#define W_FUNC                  ((1<<8) | W_BOUND)
+#define W_LIST                  ((1<<9) | W_BOUND)
 
 #define W_INT_SMALL_POS         (W_INT_SMALL | W_INT_POS)
 
@@ -532,9 +532,9 @@ static UInt GetIndxHVar(HVar hvar)
 */
 typedef UInt    GVar;
 
-#define COMP_USE_GVAR_ID        (1L << 0)
-#define COMP_USE_GVAR_COPY      (1L << 1)
-#define COMP_USE_GVAR_FOPY      (1L << 2)
+#define COMP_USE_GVAR_ID        (1 << 0)
+#define COMP_USE_GVAR_COPY      (1 << 1)
+#define COMP_USE_GVAR_FOPY      (1 << 2)
 
 static Bag CompInfoGVar;
 
@@ -576,7 +576,7 @@ static UInt CompGetUseGVar(GVar gvar)
 */
 typedef UInt    RNam;
 
-#define COMP_USE_RNAM_ID        (1L << 0)
+#define COMP_USE_RNAM_ID        (1 << 0)
 
 static Bag CompInfoRNam;
 
@@ -696,7 +696,7 @@ static void Emit(const char * fmt, ...)
                 cvar = va_arg( ap, CVar );
                 if ( IS_INTG_CVAR(cvar) ) {
                     Int x = INTG_CVAR(cvar);
-                    if (x >= -(1L <<28) && x < (1L << 28))
+                    if (x >= -(1 << 28) && x < (1 << 28))
                         Pr("INTOBJ_INT(%d)", x, 0);
                     else
                         Pr("ObjInt_Int8(%d)", x, 0);

@@ -2656,17 +2656,17 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
      mt = (UInt4 *)(ADDR_OBJ(mtstr) + 1);
 #ifdef SYS_IS_64_BIT
      if (n <= 32) {
-       res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4) -1L >> (32-n))));
+       res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4)-1 >> (32-n))));
      }
      else {
        unsigned long  rd;
        rd = nextrandMT_int32(mt);
        rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) & 
-                              ((UInt4) -1L >> (64-n))) << 32;
+                              ((UInt4)-1 >> (64-n))) << 32;
        res = INTOBJ_INT((Int)rd);
      }
 #else
-     res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4) -1L >> (32-n))));
+     res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4)-1 >> (32-n))));
 #endif
   }
   else {

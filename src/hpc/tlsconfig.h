@@ -21,9 +21,9 @@
 #ifndef USE_NATIVE_TLS
 
 enum {
-    TLS_SIZE = (sizeof(UInt) == 8) ? (1L << 20) : (1L << 18),
+    TLS_SIZE = (sizeof(UInt) == 8) ? (1 << 20) : (1 << 18),
 };
-#define TLS_MASK (~(TLS_SIZE - 1L))
+#define TLS_MASK (~(TLS_SIZE - 1))
 
 GAP_STATIC_ASSERT((TLS_SIZE & (TLS_SIZE - 1)) == 0,
                   "TLS_SIZE must be a power of 2");

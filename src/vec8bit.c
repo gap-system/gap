@@ -252,7 +252,7 @@ static const UInt1 DbyQ[] = {
 
 
 static const UInt1 * Char2Lookup[9] = {
-    0L,         0L,         GF4Lookup,   GF8Lookup,  GF16Lookup,
+    0,          0,          GF4Lookup,   GF8Lookup,  GF16Lookup,
     GF32Lookup, GF64Lookup, GF128Lookup, GF256Lookup
 };
 

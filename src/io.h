@@ -399,7 +399,7 @@ void LockCurrentOutput(Int lock);
 **
 **  You must always  cast the arguments to  '(long)' to avoid  problems  with
 **  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0L if you don't make use of an argument to please lint.
+**  must pass 0 if you don't make use of an argument to please lint.
 */
 
 void Pr(const Char * format, Int arg1, Int arg2);

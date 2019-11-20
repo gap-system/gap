@@ -1500,7 +1500,7 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* establish Fopy of ViewObj                                           */
-    ImportFuncFromLibrary(  "ViewObj", 0L );
+    ImportFuncFromLibrary(  "ViewObj", 0 );
     ImportFuncFromLibrary(  "Error", &Error );
     /* return success                                                      */
     return 0;

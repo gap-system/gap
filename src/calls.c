@@ -743,7 +743,7 @@ const Char * CookieOfHandler (
             if ( hdlr == HandlerFuncs[i].hdlr )
                 return HandlerFuncs[i].cookie;
         }
-        return (Char *)0L;
+        return (Char *)0;
     }
     else {
         top = NHandlerFuncs;
@@ -757,7 +757,7 @@ const Char * CookieOfHandler (
             else
                 return HandlerFuncs[middle].cookie;
         }
-        return (Char *)0L;
+        return (Char *)0;
     }
 }
 
@@ -773,7 +773,7 @@ ObjFunc HandlerOfCookie(
           if (strcmp(cookie, HandlerFuncs[i].cookie) == 0)
             return HandlerFuncs[i].hdlr;
         }
-      return (ObjFunc)0L;
+      return (ObjFunc)0;
     }
   else
     {
@@ -789,7 +789,7 @@ ObjFunc HandlerOfCookie(
         else
           return HandlerFuncs[middle].hdlr;
       }
-      return (ObjFunc)0L;
+      return (ObjFunc)0;
     }
 }
 
