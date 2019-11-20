@@ -1081,7 +1081,7 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
   result = SetARecordField(record, fieldname, value);
   if (!result)
     ErrorQuit("SET_ATOMIC_RECORD: Field '%s' already exists",
-      (UInt) CONST_CSTR_STRING(field), 0L);
+      (UInt) CONST_CSTR_STRING(field), 0);
   return result;
 }
 
@@ -1095,7 +1095,7 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   fieldname = RNamName(CONST_CSTR_STRING(field));
   if (GetARecordUpdatePolicy(record) != AREC_RW)
     ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
-      (UInt) CONST_CSTR_STRING(field), 0L);
+      (UInt) CONST_CSTR_STRING(field), 0);
   exists = GetARecordField(record, fieldname);
   if (exists)
     SetARecordField(record, fieldname, (Obj) 0);
@@ -1303,7 +1303,7 @@ static void EnlargeAList(Obj list, Int pos)
             HashUnlock(list);
             ErrorQuit(
                 "Atomic List Assignment: extending fixed size atomic list",
-                0L, 0L);
+                0, 0);
             return; /* flow control hint */
         }
         addr = ADDR_ATOM(list);
@@ -1335,7 +1335,7 @@ void AssAList(Obj list, Int pos, Obj obj)
   if (pos < 1) {
     ErrorQuit(
         "Atomic List Element: <pos>=%d is an invalid index for <list>",
-        (Int) pos, 0L);
+        (Int) pos, 0);
   }
 
   EnlargeAList(list, pos);
@@ -1369,7 +1369,7 @@ static Obj AtomicCompareSwapAList(Obj list, Int pos, Obj old, Obj new)
     if (pos < 1) {
         ErrorQuit(
             "Atomic List Element: <pos>=%d is an invalid index for <list>",
-            (Int)pos, 0L);
+            (Int)pos, 0);
     }
 
     EnlargeAList(list, pos);
@@ -1397,7 +1397,7 @@ UInt AddAList(Obj list, Obj obj)
   if (TNUM_OBJ(list) != T_ALIST) {
     HashUnlock(list);
     ErrorQuit("Atomic List Assignment: extending fixed size atomic list",
-      0L, 0L);
+      0, 0);
   }
   addr = ADDR_ATOM(list);
   pol = (UInt)addr[0].atom;
@@ -1679,7 +1679,7 @@ static Obj FuncStrictBindOnce(Obj self, Obj obj, Obj index, Obj new) {
   Obj result;
   result = BindOnce(obj, index, &new, 0, "StrictBindOnce");
   if (result)
-    ErrorQuit("StrictBindOnce: Element already initialized", 0L, 0L);
+    ErrorQuit("StrictBindOnce: Element already initialized", 0, 0);
   return result;
 }
 

@@ -188,7 +188,7 @@ static Int SyLoadModule(const Char * name, InitInfoFunc * func)
 
     handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
     if ( handle == 0 ) {
-      Pr("#W dlopen() error: %s\n", (long) dlerror(), 0L);
+      Pr("#W dlopen() error: %s\n", (long) dlerror(), 0);
       return 1;
     }
 
@@ -224,9 +224,9 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 #ifdef HAVE_DLOPEN
     res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
     if (res == 1)
-        ErrorQuit("module '%g' not found", (Int)filename, 0L);
+        ErrorQuit("module '%g' not found", (Int)filename, 0);
     else if (res == 3)
-        ErrorQuit("symbol 'Init_Dynamic' not found", 0L, 0L);
+        ErrorQuit("symbol 'Init_Dynamic' not found", 0, 0);
 #else
     /* no dynamic library support                                          */
     if (SyDebugLoading) {
@@ -238,23 +238,23 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     /* get the description structure                                       */
     info = (*init)();
     if (info == 0)
-        ErrorQuit("call to init function failed", 0L, 0L);
+        ErrorQuit("call to init function failed", 0, 0);
 
     // info->type should not be larger than kernel version
     if (info->type / 10 > GAP_KERNEL_API_VERSION)
         ErrorMayQuit("LOAD_DYN: kernel module built for newer "
                      "version of GAP",
-                     0L, 0L);
+                     0, 0);
 
     // info->type should not have an older major version
     if (info->type / 10000 < GAP_KERNEL_MAJOR_VERSION)
         ErrorMayQuit("LOAD_DYN: kernel module built for older "
                      "version of GAP",
-                     0L, 0L);
+                     0, 0);
 
     // info->type % 10 should be 0, 1 or 2, for the 3 types of module
     if (info->type % 10 > 2)
-        ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0L, 0L);
+        ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0, 0);
 
     /* check the crc value                                                 */
     if (crc != False) {

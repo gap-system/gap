@@ -570,7 +570,7 @@ static UInt LockID(void * object)
 void HashLock(void * object)
 {
     if (TLS(CurrentHashLock))
-        ErrorQuit("Nested hash locks", 0L, 0L);
+        ErrorQuit("Nested hash locks", 0, 0);
     TLS(CurrentHashLock) = object;
     pthread_rwlock_wrlock(&ObjLock[LockID(object)]);
 }
@@ -578,7 +578,7 @@ void HashLock(void * object)
 void HashLockShared(void * object)
 {
     if (TLS(CurrentHashLock))
-        ErrorQuit("Nested hash locks", 0L, 0L);
+        ErrorQuit("Nested hash locks", 0, 0);
     TLS(CurrentHashLock) = object;
     pthread_rwlock_rdlock(&ObjLock[LockID(object)]);
 }
@@ -586,7 +586,7 @@ void HashLockShared(void * object)
 void HashUnlock(void * object)
 {
     if (TLS(CurrentHashLock) != object)
-        ErrorQuit("Improperly matched hash lock/unlock calls", 0L, 0L);
+        ErrorQuit("Improperly matched hash lock/unlock calls", 0, 0);
     TLS(CurrentHashLock) = 0;
     pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
@@ -594,7 +594,7 @@ void HashUnlock(void * object)
 void HashUnlockShared(void * object)
 {
     if (TLS(CurrentHashLock) != object)
-        ErrorQuit("Improperly matched hash lock/unlock calls", 0L, 0L);
+        ErrorQuit("Improperly matched hash lock/unlock calls", 0, 0);
     TLS(CurrentHashLock) = 0;
     pthread_rwlock_unlock(&ObjLock[LockID(object)]);
 }
@@ -973,7 +973,7 @@ static void InterruptCurrentThread(int locked, Stat stat)
     if (handler)
         CALL_WITH_CATCH(handler, NEW_PLIST(T_PLIST, 0));
     else
-        ErrorReturnVoid("system interrupt", 0L, 0L, "you can 'return;'");
+        ErrorReturnVoid("system interrupt", 0, 0, "you can 'return;'");
     if (!locked)
         pthread_mutex_unlock(thread->lock);
 }
@@ -1336,7 +1336,7 @@ void WriteGuardError(Obj          o,
         return;
     SetGVar(&LastInaccessibleGVar, o);
     PrintGuardError(buffer, "write", o, file, line, func, expr);
-    ErrorMayQuit("%s", (UInt)buffer, 0L);
+    ErrorMayQuit("%s", (UInt)buffer, 0);
 }
 
 void ReadGuardError(Obj          o,
@@ -1351,7 +1351,7 @@ void ReadGuardError(Obj          o,
         return;
     SetGVar(&LastInaccessibleGVar, o);
     PrintGuardError(buffer, "read", o, file, line, func, expr);
-    ErrorMayQuit("%s", (UInt)buffer, 0L);
+    ErrorMayQuit("%s", (UInt)buffer, 0);
 }
 
 #else

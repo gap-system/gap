@@ -1609,9 +1609,8 @@ void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static void PlainListError(Obj list)
 {
-    ErrorQuit(
-        "Panic: cannot convert <list> (is a %s) to a plain list",
-        (Int)TNAM_OBJ(list), 0L );
+    ErrorQuit("Panic: cannot convert <list> (is a %s) to a plain list",
+              (Int)TNAM_OBJ(list), 0);
 }
 
 Obj PLAIN_LIST_COPY(Obj list)

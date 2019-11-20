@@ -323,9 +323,7 @@ Obj             ErrorMustEvalToFuncFunc;
 
 static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args)
 {
-    ErrorQuit(
-        "Function Calls: <func> must be a function",
-        0L, 0L );
+    ErrorQuit("Function Calls: <func> must be a function", 0, 0);
     return 0;
 }
 
@@ -345,9 +343,7 @@ Obj             ErrorMustHaveAssObjFunc;
 
 static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args)
 {
-    ErrorQuit(
-        "Variable: <<unknown>> must have an assigned value",
-        0L, 0L );
+    ErrorQuit("Variable: <<unknown>> must have an assigned value", 0, 0);
     return 0;
 }
 
@@ -468,7 +464,7 @@ void AssGVar(UInt gvar, Obj val)
         // Make certain variable is not constant
         if (info.gvarWriteFlag == GVarConstant) {
             ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar),
-                         0L);
+                         0);
         }
     }
 
@@ -484,7 +480,7 @@ void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
 
     // Make certain variable is not constant
     if (info.gvarWriteFlag == GVarConstant) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0);
     }
 
     AssGVarInternal(gvar, val, info.hasExprCopiesFopies);
@@ -768,7 +764,7 @@ void MakeReadOnlyGVar (
     UInt                gvar )
 {
     if (IsConstantGVar(gvar)) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0);
     }
     SetGVarWriteState(gvar, GVarReadOnly);
 }
@@ -783,7 +779,7 @@ void MakeConstantGVar(UInt gvar)
     if (!IS_INTOBJ(val) && val != True && val != False) {
         ErrorMayQuit(
             "Variable: '%g' must be assigned a small integer, true or false",
-            (Int)NameGVar(gvar), 0L);
+            (Int)NameGVar(gvar), 0);
     }
     SetGVarWriteState(gvar, GVarConstant);
 }
@@ -865,7 +861,7 @@ void MakeReadWriteGVar (
     UInt                gvar )
 {
     if (IsConstantGVar(gvar)) {
-        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0L);
+        ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0);
     }
     SetGVarWriteState(gvar, GVarAssignable);
 }
@@ -1507,7 +1503,7 @@ Obj GVarObj(GVarDescriptor *gvar)
 {
   Obj result = *(gvar->ref);
   if (!result)
-    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0);
   MEMBAR_READ();
   return result;
 }
@@ -1516,12 +1512,12 @@ Obj GVarFunction(GVarDescriptor *gvar)
 {
   Obj result = *(gvar->ref);
   if (!result)
-    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0L);
+    ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0);
   if (REGION(result))
-    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0);
   ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)
-    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0L);
+    ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0);
   MEMBAR_READ();
   return result;
 }

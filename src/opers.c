@@ -1941,7 +1941,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         }
 
         if (!method) {
-            ErrorQuit("no method returned", 0L, 0L);
+            ErrorQuit("no method returned", 0, 0);
         }
 
         /* call this method */
@@ -2029,7 +2029,7 @@ Obj DoOperation6Args(
 
 Obj DoOperationXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument operations", 0L, 0L);
+    ErrorQuit("sorry: cannot yet have X argument operations", 0, 0);
     return 0;
 }
 
@@ -2089,7 +2089,7 @@ Obj DoVerboseOperation6Args(
 */
 Obj DoVerboseOperationXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument operations", 0L, 0L);
+    ErrorQuit("sorry: cannot yet have X argument operations", 0, 0);
     return 0;
 }
 
@@ -2148,7 +2148,7 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 
 static Obj DoConstructor0Args(Obj oper)
 {
-    ErrorQuit("constructors must have at least one argument", 0L, 0L);
+    ErrorQuit("constructors must have at least one argument", 0, 0);
     return 0;
 }
 
@@ -2193,7 +2193,7 @@ static Obj DoConstructor6Args(
 
 static Obj DoConstructorXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
+    ErrorQuit("sorry: cannot yet have X argument constructors", 0, 0);
     return 0;
 }
 
@@ -2212,7 +2212,7 @@ static Obj DoConstructorXArgs(Obj self, Obj args)
 
 static Obj DoVerboseConstructor0Args(Obj oper)
 {
-    ErrorQuit("constructors must have at least one argument", 0L, 0L);
+    ErrorQuit("constructors must have at least one argument", 0, 0);
     return 0;
 }
 
@@ -2257,7 +2257,7 @@ static Obj DoVerboseConstructor6Args(
 
 static Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 {
-    ErrorQuit("sorry: cannot yet have X argument constructors", 0L, 0L);
+    ErrorQuit("sorry: cannot yet have X argument constructors", 0, 0);
     return 0;
 }
 
@@ -2895,8 +2895,7 @@ Obj NewProperty (
 */
 static Obj DoUninstalledGlobalFunction(Obj oper, Obj args)
 {
-    ErrorQuit( "%g: function is not yet defined",
-               (Int)NAME_FUNC(oper), 0L );
+    ErrorQuit("%g: function is not yet defined", (Int)NAME_FUNC(oper), 0);
     return 0;
 }
 
@@ -3148,12 +3147,11 @@ static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
     RequireFunction("INSTALL_GLOBAL_FUNCTION", oper);
     if ( (REREADING != True) &&
          (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
-        ErrorQuit( "operation already installed",
-                   0L, 0L );
+        ErrorQuit("operation already installed", 0, 0);
     }
     RequireFunction("INSTALL_GLOBAL_FUNCTION", func);
     if ( IS_OPERATION(func) ) {
-        ErrorQuit( "<func> must not be an operation", 0L, 0L );
+        ErrorQuit("<func> must not be an operation", 0, 0);
     }
 
     /* install the new method                                              */
@@ -3231,7 +3229,7 @@ static Obj FuncCHANGED_METHODS_OPERATION(Obj self, Obj oper, Obj narg)
     n = GetBoundedInt("CHANGED_METHODS_OPERATION", narg, 0, MAX_OPER_ARGS);
 #ifdef HPCGAP
     if (!PreThreadCreation) {
-        ErrorQuit("Methods may only be changed before thread creation",0L,0L);
+        ErrorQuit("Methods may only be changed before thread creation", 0, 0);
     }
 #endif
     cacheBag = CacheOper( oper, (UInt) n );
@@ -3284,7 +3282,7 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
       case T_COMOBJ:
         break;
       default:
-        ErrorQuit( "<obj> must be a component object", 0L, 0L );
+        ErrorQuit("<obj> must be a component object", 0, 0);
         return 0;
     }
 
@@ -3347,7 +3345,7 @@ static Obj DoGetterFunction(Obj self, Obj obj)
         return GetARecordField( obj, (UInt)INT_INTOBJ(ENVI_FUNC(self)) );
 #endif
       default:
-        ErrorQuit( "<obj> must be a component object", 0L, 0L );
+        ErrorQuit("<obj> must be a component object", 0, 0);
         return 0;
     }
 }

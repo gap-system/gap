@@ -225,8 +225,8 @@ static Int VectorWord(Obj vv, Obj v, Int num)
     for ( i = NPAIRS_WORD(v);  0 < i;  i--, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
         if ( pos > num ) {
-           ErrorQuit( "word contains illegal generators %d", (Int)i, 0L );
-           return 0;
+            ErrorQuit("word contains illegal generators %d", (Int)i, 0);
+            return 0;
         }
         if ( (*ptr) & exps )
             qtr[pos] = ((*ptr)&expm)-exps;

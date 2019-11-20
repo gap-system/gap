@@ -1665,7 +1665,7 @@ static Obj FuncFIND_ALL_IN_STRING(Obj self, Obj string, Obj chars)
   unsigned char table[1<<(8*sizeof(char))];
   const UInt1 *s;
   if (!IsStringConv(string) || !IsStringConv(chars))
-    ErrorQuit("FIND_ALL_IN_STRING: Requires two string arguments", 0L, 0L);
+    ErrorQuit("FIND_ALL_IN_STRING: Requires two string arguments", 0, 0);
   memset(table, 0, sizeof(table));
   len = GET_LEN_STRING(chars);
   s = CONST_CHARS_STRING(chars);
@@ -1702,7 +1702,7 @@ static Obj FuncNORMALIZE_NEWLINES(Obj self, Obj string)
   UInt i, j, len;
   Char *s;
   if (!IsStringConv(string) || !REGION(string))
-    ErrorQuit("NORMALIZE_NEWLINES: Requires a mutable string argument", 0L, 0L);
+    ErrorQuit("NORMALIZE_NEWLINES: Requires a mutable string argument", 0, 0);
   len = GET_LEN_STRING(string);
   s = CSTR_STRING(string);
   for (i = j = 0; i < len; i++) {

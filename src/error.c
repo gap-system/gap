@@ -126,7 +126,7 @@ static Obj FuncDownEnv(Obj self, Obj args)
         depth = INT_INTOBJ(ELM_PLIST(args, 1));
     }
     else {
-        ErrorQuit("usage: DownEnv( [ <depth> ] )", 0L, 0L);
+        ErrorQuit("usage: DownEnv( [ <depth> ] )", 0, 0);
     }
     if (STATE(ErrorLVars) == STATE(BottomLVars)) {
         Pr("not in any function\n", 0L, 0L);
@@ -147,7 +147,7 @@ static Obj FuncUpEnv(Obj self, Obj args)
         depth = INT_INTOBJ(ELM_PLIST(args, 1));
     }
     else {
-        ErrorQuit("usage: UpEnv( [ <depth> ] )", 0L, 0L);
+        ErrorQuit("usage: UpEnv( [ <depth> ] )", 0, 0);
     }
     if (STATE(ErrorLVars) == STATE(BottomLVars)) {
         Pr("not in any function\n", 0L, 0L);

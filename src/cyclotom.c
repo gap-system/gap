@@ -822,7 +822,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   n8 = (UInt8)nl * ((UInt8)*ml);  
   /* Check if it is too large for a small int */
   if (n8 > INT_INTOBJ_MAX)
-    ErrorMayQuit("This computation would require a cyclotomic field too large to be handled",0L, 0L);
+    ErrorMayQuit("This computation would require a cyclotomic field too large to be handled", 0, 0);
 
   /* Switch to UInt now we know we can*/
   n = (UInt)n8;

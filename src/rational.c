@@ -60,7 +60,7 @@
     if (TNUM_OBJ(rat) == T_RAT &&                                            \
         (!LtInt(INTOBJ_INT(1), DEN_RAT(rat)) ||                              \
          GcdInt(NUM_RAT(rat), DEN_RAT(rat)) != INTOBJ_INT(1)))               \
-    ErrorQuit("bad rational", 0L, 0L)
+    ErrorQuit("bad rational", 0, 0)
 #else
 #define CHECK_RAT(rat)
 #endif

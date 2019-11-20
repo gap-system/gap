@@ -155,8 +155,8 @@ Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 static Obj TypeObjError(Obj obj)
 {
-    ErrorQuit( "Panic: basic object of type '%s' is unkind",
-               (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: basic object of type '%s' is unkind",
+              (Int)TNAM_OBJ(obj), 0);
     return 0;
 }
 
@@ -267,9 +267,8 @@ static Obj IsMutableObjFilt;
 
 static Int IsMutableObjError(Obj obj)
 {
-    ErrorQuit(
-        "Panic: tried to test mutability of unsupported type '%s'",
-        (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to test mutability of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
     return 0;
 }
 
@@ -332,9 +331,8 @@ static Obj IsCopyableObjFilt;
 
 static Int IsCopyableObjError(Obj obj)
 {
-    ErrorQuit(
-        "Panic: tried to test copyability of unsupported type '%s'",
-        (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to test copyability of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
     return 0;
 }
 
@@ -369,9 +367,8 @@ static Obj ShallowCopyObjOper;
 */
 static Obj ShallowCopyObjError(Obj obj)
 {
-    ErrorQuit(
-        "Panic: tried to shallow copy object of unsupported type '%s'",
-        (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to shallow copy object of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
     return (Obj)0;
 }
 
@@ -584,9 +581,8 @@ static void MarkCopyingSubBags(Obj obj)
 */
 static Obj CopyObjError(Obj obj, Int mut)
 {
-    ErrorQuit(
-        "Panic: tried to copy object of unsupported type '%s'",
-        (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to copy object of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
     return (Obj)0;
 }
 
@@ -597,9 +593,8 @@ static Obj CopyObjError(Obj obj, Int mut)
 */
 static void CleanObjError(Obj obj)
 {
-    ErrorQuit(
-        "Panic: tried to clean object of unsupported type '%s'",
-        (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to clean object of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
 }
 
 
@@ -628,7 +623,7 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
 
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
-        ErrorQuit("Panic: encountered mutable, non-copyable object",0L,0L);
+        ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
 
     /* make a copy                                                         */
@@ -686,7 +681,7 @@ static Obj CopyObjComObj(Obj obj, Int mut)
 
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
-        ErrorQuit("Panic: encountered mutable, non-copyable object",0L,0L);
+        ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
 
     /* make a copy                                                         */
@@ -744,7 +739,7 @@ static Obj CopyObjDatObj(Obj obj, Int mut)
 
     /* if the object is not copyable return                                */
     if ( ! IS_COPYABLE_OBJ(obj) ) {
-        ErrorQuit("Panic: encountered mutable, non-copyable object",0L,0L);
+        ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
 
     /* make a copy                                                         */
@@ -817,7 +812,7 @@ void MakeImmutable( Obj obj )
 void CheckedMakeImmutable( Obj obj )
 {
   if (!PreMakeImmutableCheck(obj))
-    ErrorQuit("MakeImmutable: Argument has inaccessible subobjects", 0L, 0L);
+    ErrorQuit("MakeImmutable: Argument has inaccessible subobjects", 0, 0);
   MakeImmutable(obj);
 }
 #endif
@@ -825,7 +820,7 @@ void CheckedMakeImmutable( Obj obj )
 static void MakeImmutableError(Obj obj)
 {
   ErrorQuit("No make immutable function installed for a %s",
-            (Int)TNAM_OBJ(obj), 0L);
+            (Int)TNAM_OBJ(obj), 0);
 }
 
 
@@ -1134,9 +1129,8 @@ void (* PrintPathFuncs [ LAST_REAL_TNUM /* +PRINTING */+1 ])( Obj obj, Int indx 
 
 static void PrintPathError(Obj obj, Int indx)
 {
-    ErrorQuit(
-        "Panic: tried to print a path of unsupported type '%s'",
-        (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to print a path of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
 }
 
 
@@ -1211,13 +1205,13 @@ static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
         break;
       default:
         ErrorMayQuit("You can't make component object from a %s.",
-                     (Int)TNAM_OBJ(obj), 0L);
+                     (Int)TNAM_OBJ(obj), 0);
     }
 #else
     if (TNUM_OBJ(obj) == T_PREC+IMMUTABLE)
         ErrorMayQuit(
-            "You can't make a component object from an immutable object", 0L,
-            0L);
+            "You can't make a component object from an immutable object", 0,
+            0);
     SET_TYPE_COMOBJ(obj, type);
     RetypeBag( obj, T_COMOBJ );
     CHANGED_BAG( obj );
@@ -1618,9 +1612,8 @@ void (*SaveObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void SaveObjError( Obj obj )
 {
-  ErrorQuit(
-            "Panic: tried to save an object of unsupported type '%s'",
-            (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to save an object of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
 }
 
 
@@ -1643,9 +1636,8 @@ void (*LoadObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void LoadObjError( Obj obj )
 {
-  ErrorQuit(
-            "Panic: tried to load an object of unsupported type '%s'",
-            (Int)TNAM_OBJ(obj), 0L );
+    ErrorQuit("Panic: tried to load an object of unsupported type '%s'",
+              (Int)TNAM_OBJ(obj), 0);
 }
 
 /****************************************************************************

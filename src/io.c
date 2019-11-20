@@ -428,7 +428,7 @@ static UInt OpenDefaultInput(void)
     return OpenInput("*stdin*");
   stream = CALL_0ARGS(func);
   if (!stream)
-    ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0L, 0L);
+    ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
     return OpenInput(CONST_CSTR_STRING(stream));
   TLS(DefaultInput) = stream;
@@ -446,7 +446,7 @@ static UInt OpenDefaultOutput(void)
     return OpenOutput("*stdout*");
   stream = CALL_0ARGS(func);
   if (!stream)
-    ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0L, 0L);
+    ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
     return OpenOutput(CONST_CSTR_STRING(stream));
   TLS(DefaultOutput) = stream;

@@ -51,7 +51,7 @@ static DeserializationFunction DeserializationFuncByTNum[256];
 
 static void DeserializationError(void)
 {
-    ErrorQuit("Bad deserialization input", 0L, 0L);
+    ErrorQuit("Bad deserialization input", 0, 0);
 }
 
 /* Manage serialization state */
@@ -459,7 +459,7 @@ static void SerializeBool(Obj obj)
         WriteByte(2);
     }
     else
-        ErrorQuit("Internal serialization error: Bad boolean value", 0L, 0L);
+        ErrorQuit("Internal serialization error: Bad boolean value", 0, 0);
 }
 
 static Obj DeserializeBool(UInt tnum)
@@ -702,7 +702,7 @@ static void SerRepError(void)
 {
     ErrorQuit("SerializableRepresentation must return a list prefixed by a "
               "string or integer and string",
-              0L, 0L);
+              0, 0);
 }
 
 static Obj PosObjToList(Obj obj)
@@ -768,8 +768,7 @@ retry:
         map = GVarObj(&DESERIALIZATION_TAG_INT_GVar);
         goto retry; /* more readable than a loop around the switch */
     default:
-        ErrorQuit("Deserialization tag map for int tags is corrupted", 0L,
-                  0L);
+        ErrorQuit("Deserialization tag map for int tags is corrupted", 0, 0);
         return (Obj)0; /* flow control hint */
     }
 }
@@ -894,7 +893,7 @@ static void SerializeTypedObj(Obj obj)
         return;
     type = TYPE_OBJ(obj);
     if (!type)
-        ErrorQuit(typeerror, 0L, 0L);
+        ErrorQuit(typeerror, 0, 0);
     rep = LookupTypeTag(type);
     if (rep) {
         WriteTNum(TNUM_OBJ(obj));
@@ -1017,7 +1016,7 @@ static void SerializeError(Obj obj)
         sprintf(buf, "<%d>", (int)TNUM_OBJ(obj));
         type = buf;
     }
-    ErrorQuit("Cannot serialize object of type %s", (UInt)type, 0L);
+    ErrorQuit("Cannot serialize object of type %s", (UInt)type, 0);
 }
 
 static Obj DeserializeError(UInt tnum)
@@ -1057,8 +1056,8 @@ static Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string)
     SaveSerializationState(&state);
 
     if (!IS_STRING(string))
-        ErrorQuit("DESERIALIZE_NATIVE_STRING: argument must be a string", 0L,
-                  0L);
+        ErrorQuit("DESERIALIZE_NATIVE_STRING: argument must be a string", 0,
+                  0);
     memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
     if (sySetjmp(STATE(ReadJmpError))) {
         memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));

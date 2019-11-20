@@ -397,7 +397,7 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+                ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
             }
 #endif
 
@@ -438,7 +438,7 @@ static ALWAYS_INLINE UInt ExecForHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
             /* test for an interrupt                                       */
             if ( HaveInterrupt() ) {
-                ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+                ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
             }
 #endif
 
@@ -534,7 +534,7 @@ static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+            ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
         }
 #endif
 
@@ -612,7 +612,7 @@ static UInt ExecAtomic(Stat stat)
       break;
     case LOCK_STATUS_READONLY_LOCKED:
       if (lockmode[i] == LOCK_MODE_READWRITE)
-        ErrorMayQuit("Attempt to change from read to write lock", 0L, 0L);
+        ErrorMayQuit("Attempt to change from read to write lock", 0, 0);
       break;
     case LOCK_STATUS_READWRITE_LOCKED:
       break;
@@ -624,7 +624,7 @@ static UInt ExecAtomic(Stat stat)
     PopRegionLocks(lockSP);
   } else {
     status = 0;
-    ErrorMayQuit("Cannot lock required regions", 0L, 0L);      
+    ErrorMayQuit("Cannot lock required regions", 0, 0);
   }
   return status;
 }
@@ -671,7 +671,7 @@ static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+            ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
         }
 #endif
 
@@ -743,7 +743,7 @@ static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
         /* test for an interrupt                                           */
         if ( HaveInterrupt() ) {
-            ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+            ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
         }
 #endif
 
@@ -959,7 +959,7 @@ static UInt ExecReturnObj(Stat stat)
 #if !defined(HAVE_SIGNAL)
     /* test for an interrupt                                               */
     if ( HaveInterrupt() ) {
-        ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+        ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
     }
 #endif
 
@@ -989,7 +989,7 @@ static UInt ExecReturnVoid(Stat stat)
 #if !defined(HAVE_SIGNAL)
     /* test for an interrupt                                               */
     if ( HaveInterrupt() ) {
-        ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+        ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
     }
 #endif
 
@@ -1039,7 +1039,7 @@ UInt TakeInterrupt( void )
 {
   if (HaveInterrupt()) {
       UnInterruptExecStat();
-      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+      ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
       return 1;
   }
   return 0;
@@ -1077,11 +1077,11 @@ static UInt ExecIntrStat(Stat stat)
       SyStorOverrun = 0; /* reset */
       ErrorReturnVoid(
   "reached the pre-set memory limit\n(change it with the -o command line option)",
-        0L, 0L, "you can 'return;'" );
+        0, 0, "you can 'return;'" );
     }
     else
 #endif
-      ErrorReturnVoid( "user interrupt", 0L, 0L, "you can 'return;'" );
+      ErrorReturnVoid( "user interrupt", 0, 0, "you can 'return;'" );
 #endif
 
     /* continue at the interrupted statement                               */
@@ -1178,9 +1178,8 @@ void            (* PrintStatFuncs[256] ) ( Stat stat );
 */
 static void PrintUnknownStat(Stat stat)
 {
-    ErrorQuit(
-        "Panic: cannot print statement of type '%d'",
-        (Int)TNUM_STAT(stat), 0L );
+    ErrorQuit("Panic: cannot print statement of type '%d'",
+              (Int)TNUM_STAT(stat), 0);
 }
 
 

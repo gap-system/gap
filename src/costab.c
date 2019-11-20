@@ -104,8 +104,8 @@ static Obj FuncApplyRel(Obj self,
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 4 ) {
-        ErrorQuit( "<app> must be a list of length 4 not %d",
-                   (Int) LEN_PLIST(app), 0L );
+        ErrorQuit("<app> must be a list of length 4 not %d",
+                  (Int)LEN_PLIST(app), 0);
     }
 
     /* get the four entries                                                */
@@ -171,7 +171,7 @@ static void CompressDeductionList ( void )
 
     /* check if the situation is as assumed                                */
     if ( dedlst != dedSize ) {
-        ErrorQuit( "invalid call of CompressDeductionList", 0L, 0L );
+        ErrorQuit("invalid call of CompressDeductionList", 0, 0);
     }
 
     /* run through the lists and compress them                             */
@@ -580,7 +580,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
     /* check the definitions lists                                         */
     if ( ! ( IS_PLIST(objDefs1) && IS_PLIST(objDefs2) &&
         LEN_PLIST(objDefs1) == LEN_PLIST(objDefs2) ) ) {
-        ErrorQuit( "inconsistent definitions lists", 0L, 0L );
+        ErrorQuit("inconsistent definitions lists", 0, 0);
     }
     ndefsMax = LEN_PLIST(objDefs1);
     apply = 1;
@@ -623,7 +623,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
                 }
                 ndefs++;
                 if ( ndefs > ndefsMax ) {
-                    ErrorQuit( "inconsistent definitions lists", 0L, 0L );
+                    ErrorQuit("inconsistent definitions lists", 0, 0);
                 }
                 SET_ELM_PLIST( objDefs1, ndefs, INTOBJ_INT( lc ) );
                 SET_ELM_PLIST( objDefs2, ndefs, ptNums[lp] );
@@ -1034,7 +1034,7 @@ static Int AddCosetFactor2 (
                     /* used to be unrecoverable error message: 
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
-                        0L, 0L ); */
+                        0, 0); */
                 }
                 ptWord[i] = sum;
             }
@@ -1050,7 +1050,7 @@ static Int AddCosetFactor2 (
                     /* used to be unrecoverable error message: 
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
-                        0L, 0L ); */
+                        0, 0); */
                 }
                 ptWord[i] = sum;
             }
@@ -1119,8 +1119,8 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
     /* get and check the application list                                  */
     RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 9 ) {
-        ErrorQuit( "<app> must be a list of length 9 not %d",
-                   (Int) LEN_PLIST(app), 0L );
+        ErrorQuit("<app> must be a list of length 9 not %d",
+                  (Int)LEN_PLIST(app), 0);
     }
     ptApp = BASE_PTR_PLIST(app) - 1;
 
@@ -1200,7 +1200,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             ptTree = BASE_PTR_PLIST(objTree) - 1;
             treeWordLength = INT_INTOBJ( ptTree[4] );
             if ( LEN_PLIST(objTree2) != treeWordLength ) {
-                ErrorQuit( "ApplyRel2: illegal word length", 0L, 0L );
+                ErrorQuit("ApplyRel2: illegal word length", 0, 0);
             }
 
             /* initialize the coset representative word                    */
@@ -1247,7 +1247,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             /* copy the result to its destination, if necessary            */
             if ( ptWord != ptTree2 ) {
                 if ( LEN_PLIST(word) != treeWordLength ) {
-                    ErrorQuit( "illegal word length", 0L, 0L );
+                    ErrorQuit("illegal word length", 0, 0);
                 }
                 for ( i = 1;  i <= treeWordLength;  i++ ) {
                     ptWord[i] = ptTree2[i];
@@ -1557,17 +1557,17 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     /*  Get and check the first argument (tree)                            */
     objTree = tree;
     if ( ! IS_PLIST(tree) || LEN_PLIST(tree) < 5 ) {
-        ErrorQuit( "invalid <tree>", 0L, 0L );
+        ErrorQuit("invalid <tree>", 0, 0);
     }
 
     /*  Get and check the tree components                                  */
     objTree1 = ELM_PLIST(objTree,1);
     if ( ! IS_PLIST(objTree1) ) {
-        ErrorQuit( "invalid <tree>[1]", 0L, 0L );
+        ErrorQuit("invalid <tree>[1]", 0, 0);
     }
     objTree2 = ELM_PLIST(objTree,2);
     if ( ! IS_PLIST(objTree2) ) {
-        ErrorQuit( "invalid <tree>[2]", 0L, 0L );
+        ErrorQuit("invalid <tree>[2]", 0, 0);
     }
     ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
     ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
@@ -1578,14 +1578,14 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 
     /*  Get the second argument (word)                                     */
     if ( ! IS_PLIST(word) ) {
-        ErrorQuit( "invalid <word>", 0L, 0L );
+        ErrorQuit("invalid <word>", 0, 0);
     }
 
     /* handle the abelianized case                                         */
     ptWord = BASE_PTR_PLIST(word) - 1;
     if ( treeType == 0 ) {
         if ( LEN_PLIST(word) != treeWordLength ) {
-            ErrorQuit( "inconsistent <word> length", 0L, 0L );
+            ErrorQuit("inconsistent <word> length", 0, 0);
         }
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
         for ( leng = treeWordLength;  leng >= 1;  leng-- ) {
@@ -1654,14 +1654,14 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 
     /* handle the general case                                             */
     if ( LEN_PLIST(objTree1) != LEN_PLIST(objTree2) ) {
-        ErrorQuit( "inconsistent <tree> components", 0L, 0L );
+        ErrorQuit("inconsistent <tree> components", 0, 0);
     }
 
     for ( i = 1;  i <= numgens;  i++ ) {
         if ( INT_INTOBJ(ptTree1[i]) <= -i || INT_INTOBJ(ptTree1[i]) >= i
           || INT_INTOBJ(ptTree2[i]) <= -i || INT_INTOBJ(ptTree2[i]) >= i )
         {
-            ErrorQuit( "invalid <tree> components", 0L, 0L );
+            ErrorQuit("invalid <tree> components", 0, 0);
         }
     }
 
@@ -1673,7 +1673,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
             continue;
         }
         if ( gen > numgens || gen < -numgens ) {
-            ErrorQuit( "invalid <word> entry [%d]", i, 0L );
+            ErrorQuit("invalid <word> entry [%d]", i, 0);
         }
         if ( j > 0 && gen == - INT_INTOBJ(ptWord[j]) ) {
             j--;
@@ -1932,11 +1932,11 @@ static Obj FuncAddAbelianRelator(Obj self,
     /* get the length of the given relators list                           */
     numrows = GetPositiveSmallInt("AddAbelianRelator", number);
     if ( numrows < 1 || LEN_PLIST(rels) < numrows ) {
-        ErrorQuit( "inconsistent relator number", 0L, 0L );
+        ErrorQuit("inconsistent relator number", 0, 0);
     }
     tmp = ELM_PLIST( rels, numrows );
     if ( tmp == 0 ) {
-        ErrorQuit( "inconsistent relator number", 0L, 0L );
+        ErrorQuit("inconsistent relator number", 0, 0);
     }
     pt2 = BASE_PTR_PLIST(tmp) - 1;
 

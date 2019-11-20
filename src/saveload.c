@@ -76,7 +76,7 @@ static void CloseAfterSave( void )
     }
 
   if (SyWrite(SaveFile, LoadBuffer, LBPointer - LoadBuffer) < 0)
-    ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0L, 0L);
+    ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0, 0);
   SyFclose(SaveFile);
   SaveFile = -1;
 }
@@ -111,7 +111,7 @@ static void CloseAfterLoad( void )
 static void SAVE_BYTE_BUF(void)
 {
   if (SyWrite(SaveFile, LoadBuffer, LBEnd - LoadBuffer) < 0)
-    ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0L, 0L);
+    ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0, 0);
   LBPointer = LoadBuffer;
   return;
 }
@@ -775,7 +775,7 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
   if (strcmp(buf,"Counts and Sizes") != 0)
-    ErrorQuit("Bad divider",0L,0L);
+    ErrorQuit("Bad divider", 0, 0);
   Pr("Loaded modules: %d\n",nMods = LoadUInt(), 0L);
   Pr("Global Bags   : %d\n",nGlobs = LoadUInt(), 0L);
   Pr("Total Bags    : %d\n",nBags = LoadUInt(), 0L);
@@ -783,7 +783,7 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf, 0L);
   if (strcmp(buf,"Loaded Modules") != 0)
-    ErrorQuit("Bad divider",0L,0L);
+    ErrorQuit("Bad divider", 0, 0);
   for (i = 0; i < nMods; i++)
     {
       UInt type;
@@ -800,7 +800,7 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
   if (strcmp(buf,"Kernel to WS refs") != 0)
-    ErrorQuit("Bad divider",0L,0L);
+    ErrorQuit("Bad divider", 0, 0);
   for (i = 0; i < nGlobs; i++)
     {
       LoadCStr(buf,256);
@@ -810,7 +810,7 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   LoadCStr(buf,256);
   Pr("Divider string: %s\n",(Int)buf,0L);
   if (strcmp(buf,"Bag data") != 0)
-    ErrorQuit("Bad divider",0L,0L);
+    ErrorQuit("Bad divider", 0, 0);
   CloseAfterLoad();
   return (Obj) 0;
 }

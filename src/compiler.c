@@ -2282,7 +2282,7 @@ static CVar CompIntExpr(Expr expr)
 static CVar CompTildeExpr(Expr expr)
 {
     Emit( "if ( ! STATE(Tilde) ) {\n");
-    Emit( "    ErrorMayQuit(\"'~' does not have a value here\",0L,0L);\n" );
+    Emit( "    ErrorMayQuit(\"'~' does not have a value here\", 0, 0);\n" );
     Emit( "}\n" );
     CVar                val;            /* value, result                   */
 
