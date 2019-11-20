@@ -1,5 +1,5 @@
 #@local A,B,C,M,anticomp,com,comp,conj,d,g,g2,i,i2,inv,j,map,map1,map2
-#@local mapBijective,nice,res,t,t1,t2,tuples
+#@local mapBijective,nice,res,t,t1,t2,tuples,hom,aut,dp
 gap> START_TEST("mapping.tst");
 
 # Init
@@ -402,6 +402,19 @@ gap> IsGroupHomomorphism(res);
 true
 gap> IsInjective(res);        
 true
+
+# printing of identity mapping string in direct product element (PR #3753) 
+gap> String(IdentityMapping(SymmetricGroup(3)));
+"IdentityMapping( SymmetricGroup( [ 1 .. 3 ] ) )"
+gap> hom := GroupHomomorphismByImages(g,g,[(1,2),(3,4)],[(3,4),(1,2)]);
+[ (1,2), (3,4) ] -> [ (3,4), (1,2) ]
+gap> aut := Group(hom);;
+gap> dp := DirectProduct(aut,aut);;
+gap> GeneratorsOfGroup(dp);
+[ DirectProductElement( [ [ (1,2), (3,4) ] -> [ (3,4), (1,2) ], 
+      IdentityMapping( Group( [ (1,2), (3,4) ] ) ) ] ), 
+  DirectProductElement( [ IdentityMapping( Group( [ (1,2), (3,4) ] ) ), 
+      [ (1,2), (3,4) ] -> [ (3,4), (1,2) ] ] ) ]
 
 #
 gap> STOP_TEST( "mapping.tst", 1);

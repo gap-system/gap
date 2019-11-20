@@ -1339,6 +1339,7 @@ InstallMethod( PreImagesRepresentative,
 ##
 #M  ViewObj( <idmap> )  . . . . . . . . . . . . . . . .  for identity mapping
 #M  PrintObj( <idmap> ) . . . . . . . . . . . . . . . .  for identity mapping
+#M  String( <idmap> ) . . . . . . . . . . . . . . . . .  for identity mapping
 ##
 InstallMethod( ViewObj,
     "for identity mapping",
@@ -1365,6 +1366,17 @@ InstallMethod( PrintObj,
     function ( id )
     Print( "IdentityMapping( ", Source( id ), " )" );
     end );
+
+InstallMethod( String, 
+    "for identity mapping", 
+    [ IsGeneralMapping and IsOne ], 
+    # rank up, but just to exactly SUM_FLAGS, so that mappings in a special
+    # representation with a custom printing method still get that, even if
+    # the rank of IsGeneralMapping and IsOne happens to be increased a lot
+    {} -> SUM_FLAGS - RankFilter( IsGeneralMapping and IsOne ),
+  function ( id ) 
+    return StringFormatted( "IdentityMapping( {} )", Source(id) ); 
+  end );
 
 
 #############################################################################
