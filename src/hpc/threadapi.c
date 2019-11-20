@@ -1773,7 +1773,7 @@ static void PrintThread(Obj obj)
     }
     sprintf(buf, "<thread #%ld: %s>", (long)thread->id, status_message);
     UnlockThreadControl();
-    Pr("%s", (Int)buf, 0L);
+    Pr("%s", (Int)buf, 0);
 }
 
 static void PrintSemaphore(Obj obj)
@@ -1803,7 +1803,7 @@ static void PrintChannel(Obj obj)
         Pr("%d elements, %d waiting>", size / 2, waiting);
     else {
         Pr("%d/%d elements, ", size / 2, capacity / 2);
-        Pr("%d waiting>", waiting, 0L);
+        Pr("%d waiting>", waiting, 0);
     }
 }
 
@@ -1838,18 +1838,18 @@ static void PrintRegion(Obj obj)
     Obj      name = GetRegionName(region);
 
     if (name) {
-        Pr("<region: %g", (Int)name, 0L);
+        Pr("<region: %g", (Int)name, 0);
     }
     else {
         snprintf(buffer, 32, "<region %p", (void *)GetRegionOf(obj));
-        Pr(buffer, 0L, 0L);
+        Pr(buffer, 0, 0);
     }
     if (region && region->count_active) {
         snprintf(buffer, 32, " (locked %zu/contended %zu)",
                  region->locks_acquired, region->locks_contended);
-        Pr(buffer, 0L, 0L);
+        Pr(buffer, 0, 0);
     }
-    Pr(">", 0L, 0L);
+    Pr(">", 0, 0);
 }
 
 static Obj FuncIS_LOCKED(Obj self, Obj obj)

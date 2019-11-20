@@ -813,13 +813,13 @@ static Int CurrentColour = 0;
 static void setColour(void)
 {
   if(CurrentColour == 0) {
-    Pr("\x1b[0m",0L,0L);
+    Pr("\x1b[0m", 0, 0);
   }
   else if(CurrentColour == 1) {
-    Pr("\x1b[32m",0L,0L);
+    Pr("\x1b[32m", 0, 0);
   }
   else if(CurrentColour == 2) {
-    Pr("\x1b[31m",0L,0L);
+    Pr("\x1b[31m", 0, 0);
   }
 }
 

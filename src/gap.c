@@ -139,7 +139,7 @@ void ViewObjHandler ( Obj obj )
     else {
       PrintObj( obj );
     }
-    Pr( "\n", 0L, 0L );
+    Pr("\n", 0, 0);
   }
   memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
 }
@@ -217,7 +217,7 @@ static Obj Shell(Obj    context,
     if (preCommandHook) {
       if (!IS_FUNC(preCommandHook))
         {
-                  Pr("#E CommandHook was non-function, ignoring\n",0L,0L);
+                  Pr("#E CommandHook was non-function, ignoring\n", 0, 0);
         }
       else
         {
@@ -253,14 +253,14 @@ static Obj Shell(Obj    context,
         break;
       else
         Pr( "'return <object>' cannot be used in this read-eval-print loop\n",
-            0L, 0L );
+            0, 0);
 
     else if (status & STATUS_RETURN_VOID) 
       if(canReturnVoid ) 
         break;
       else
         Pr( "'return' cannot be used in this read-eval-print loop\n",
-            0L, 0L );
+            0, 0);
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
@@ -839,7 +839,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
         /* if request display the statistics                               */
         else if ( strcmp( CONST_CSTR_STRING(cmd), "display" ) == 0 ) {
 #ifdef COUNT_BAGS
-            Pr( "%40s ", (Int)"type",  0L          );
+            Pr("%40s ", (Int)"type", 0);
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
@@ -847,7 +847,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
                     Char buf[41];
                     buf[0] = '\0';
                     strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
-                    Pr("%40s ",    (Int)buf, 0L );
+                    Pr("%40s ",    (Int)buf, 0);
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
                     Pr("%8d %8d\n",(Int)InfoBags[k].nrAll,
@@ -860,7 +860,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
         /* if request give a short display of the statistics                */
         else if ( strcmp( CONST_CSTR_STRING(cmd), "displayshort" ) == 0 ) {
 #ifdef COUNT_BAGS
-            Pr( "%40s ", (Int)"type",  0L          );
+            Pr("%40s ", (Int)"type", 0);
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
@@ -872,7 +872,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
                     Char buf[41];
                     buf[0] = '\0';
                     strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
-                    Pr("%40s ",    (Int)buf, 0L );
+                    Pr("%40s ",    (Int)buf, 0);
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
                     Pr("%8d %8d\n",(Int)InfoBags[k].nrAll,
@@ -1643,8 +1643,8 @@ void InitializeGap (
 #ifdef COUNT_BAGS
     if (SyDebugLoading) {
         if ( SyRestoring ) {
-            Pr( "#W  after setup\n", 0L, 0L );
-            Pr( "#W  %36s ", (Int)"type",  0L          );
+            Pr("#W  after setup\n", 0, 0);
+            Pr("#W  %36s ", (Int)"type", 0);
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( Int i = 0;  i < NUM_TYPES;  i++ ) {
@@ -1653,7 +1653,7 @@ void InitializeGap (
 
                     buf[0] = '\0';
                     strlcat( buf, TNAM_TNUM(i), sizeof(buf) );
-                    Pr("#W  %36s ",    (Int)buf, 0L );
+                    Pr("#W  %36s ",    (Int)buf, 0);
                     Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
                        (Int)(InfoBags[i].sizeLive/1024));
                     Pr("%8d %8d\n",(Int)InfoBags[i].nrAll,
@@ -1704,10 +1704,10 @@ void InitializeGap (
       TRY_IF_NO_ERROR {
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
                 Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
-                    0L, 0L );
+                    0, 0);
                 Pr( " use option '-l <gaproot>'?\n If you ran the GAP"
                     " binary directly, try running the 'gap.sh' or 'gap.bat'"
-                    " script instead.", 0L, 0L );
+                    " script instead.", 0, 0);
             }
       }
       CATCH_ERROR {

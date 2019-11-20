@@ -138,26 +138,26 @@ static void PrintChar(Obj val)
     UChar               chr;
 
     chr = CHAR_VALUE(val);
-    if      ( chr == '\n'  )  Pr("'\\n'",0L,0L);
-    else if ( chr == '\t'  )  Pr("'\\t'",0L,0L);
-    else if ( chr == '\r'  )  Pr("'\\r'",0L,0L);
-    else if ( chr == '\b'  )  Pr("'\\b'",0L,0L);
-    else if ( chr == '\01' )  Pr("'\\>'",0L,0L);
-    else if ( chr == '\02' )  Pr("'\\<'",0L,0L);
-    else if ( chr == '\03' )  Pr("'\\c'",0L,0L);
-    else if ( chr == '\''  )  Pr("'\\''",0L,0L);
-    else if ( chr == '\\'  )  Pr("'\\\\'",0L,0L);
+    if      ( chr == '\n'  )  Pr("'\\n'", 0, 0);
+    else if ( chr == '\t'  )  Pr("'\\t'", 0, 0);
+    else if ( chr == '\r'  )  Pr("'\\r'", 0, 0);
+    else if ( chr == '\b'  )  Pr("'\\b'", 0, 0);
+    else if ( chr == '\01' )  Pr("'\\>'", 0, 0);
+    else if ( chr == '\02' )  Pr("'\\<'", 0, 0);
+    else if ( chr == '\03' )  Pr("'\\c'", 0, 0);
+    else if ( chr == '\''  )  Pr("'\\''", 0, 0);
+    else if ( chr == '\\'  )  Pr("'\\\\'", 0, 0);
     /* print every non-printable on non-ASCII character in three digit
      * notation  */
     /*   old version (changed by FL)
-    else if ( chr == '\0'  )  Pr("'\\0'",0L,0L);
-    else if ( chr <  8     )  Pr("'\\0%d'",(Int)(chr&7),0L);
+    else if ( chr == '\0'  )  Pr("'\\0'", 0, 0);
+    else if ( chr <  8     )  Pr("'\\0%d'",(Int)(chr&7), 0);
     else if ( chr <  32    )  Pr("'\\0%d%d'",(Int)(chr/8),(Int)(chr&7));*/
     else if ( chr < 32 || chr > 126 ) {
         Pr("'\\%d%d", (Int)((chr & 192) >> 6), (Int)((chr & 56) >> 3));
-        Pr("%d'", (Int)(chr&7), 0L);
+        Pr("%d'", (Int)(chr&7), 0);
     }
-    else                      Pr("'%c'",(Int)chr,0L);
+    else                      Pr("'%c'",(Int)chr, 0);
 }
 
 
@@ -548,7 +548,7 @@ typedef void StringOutputterType(void * data, char * strbuf, UInt len);
 void ToPrOutputter(void * data, char * strbuf, UInt len)
 {
     strbuf[len++] = '\0';
-    Pr("%s", (Int)strbuf, 0L);
+    Pr("%s", (Int)strbuf, 0);
 }
 
 // Output to a string
@@ -665,7 +665,7 @@ Obj FuncVIEW_STRING_FOR_STRING(Obj self, Obj string)
 void PrintString1 (
     Obj                 list )
 {
-  Pr("%g", (Int)list, 0L);
+    Pr("%g", (Int)list, 0);
 }
 
 

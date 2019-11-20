@@ -151,13 +151,13 @@ static Obj CopyRange(Obj list, Int mut)
 static void PrintRange(Obj list)
 {
     Pr( "%2>[ %2>%d",   
-       GET_LOW_RANGE(list), 0L );
+       GET_LOW_RANGE(list), 0 );
     if ( GET_INC_RANGE(list) != 1 ) {
         Pr( "%<,%< %2>%d",
-           GET_LOW_RANGE(list)+GET_INC_RANGE(list), 0L );
+           GET_LOW_RANGE(list)+GET_INC_RANGE(list), 0);
     }
     Pr( "%2< .. %2>%d%4< ]",
-       GET_LOW_RANGE(list)+(GET_LEN_RANGE(list)-1)*GET_INC_RANGE(list), 0L );
+       GET_LOW_RANGE(list)+(GET_LEN_RANGE(list)-1)*GET_INC_RANGE(list), 0 );
 }
 
 

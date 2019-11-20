@@ -87,40 +87,40 @@ static void PrintObjSet(Obj set)
 {
   UInt i, size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   Int comma = 0;
-  Pr("OBJ_SET([ ", 0L, 0L);
+  Pr("OBJ_SET([ ", 0, 0);
   for (i=0; i < size; i++) {
     Obj obj = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE + i ];
     if (obj && obj != Undefined) {
       if (comma) {
-        Pr(", ", 0L, 0L);
+        Pr(", ", 0, 0);
       } else {
         comma = 1;
       }
       PrintObj(obj);
     }
   }
-  Pr(" ])", 0L, 0L);
+  Pr(" ])", 0, 0);
 }
 
 static void PrintObjMap(Obj map)
 {
   UInt i, size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   Int comma = 0;
-  Pr("OBJ_MAP([ ", 0L, 0L);
+  Pr("OBJ_MAP([ ", 0, 0);
   for (i=0; i < size; i++) {
     Obj obj = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + i * 2 ];
     if (obj && obj != Undefined) {
       if (comma) {
-        Pr(", ", 0L, 0L);
+        Pr(", ", 0, 0);
       } else {
         comma = 1;
       }
       PrintObj(obj);
-      Pr(", ", 0L, 0L);
+      Pr(", ", 0, 0);
       PrintObj(CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + i * 2 + 1]);
     }
   }
-  Pr(" ])", 0L, 0L);
+  Pr(" ])", 0, 0);
 }
 
 /**

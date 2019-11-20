@@ -1933,7 +1933,7 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
 /* Pr("EQ, %d %d\n",INT_INTOBJ(x),INT_INTOBJ(y)); */
       c=CALL_2ARGS(sumfun,x,y);
       if (!(EQ(c,zero))) {
-/* Pr("Added %d\n",INT_INTOBJ(c),0L); */
+/* Pr("Added %d\n",INT_INTOBJ(c), 0); */
         AddList(sum,a);
         AddList(sum,c);
       }
@@ -1946,7 +1946,7 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
       b=ELM_PLIST(z2,i2);
 /* Pr("B= %d %d\n",ELM_LIST(a,1),ELM_LIST(b,1)); */
       c=CALL_2ARGS(cmpfun,a,b);
-/* Pr("C= %d %d\n",c,0L); */
+/* Pr("C= %d %d\n",c, 0); */
 
       if ( /* this construct is taken from the compiler */
           (Obj)(UInt)(c != False) ) {

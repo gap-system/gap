@@ -105,9 +105,8 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 */
 static UInt ExecUnknownStat(Stat stat)
 {
-    Pr(
-        "Panic: tried to execute a statement of unknown type '%d'\n",
-        (Int)TNUM_STAT(stat), 0L );
+    Pr("Panic: tried to execute a statement of unknown type '%d'\n",
+       (Int)TNUM_STAT(stat), 0);
     return 0;
 }
 
@@ -1124,14 +1123,14 @@ void ClearError ( void )
         /* check for user interrupt */
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
-              0L, 0L);
+              0, 0);
         }
 #ifdef USE_GASMAN
         /* and check if maximal memory was overrun */
         if ( SyStorOverrun != 0 ) {
           SyStorOverrun = 0; /* reset */
-          Pr("GAP has exceeded the permitted memory (-o option),\n", 0L, 0L);
-          Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0L);
+          Pr("GAP has exceeded the permitted memory (-o option),\n", 0, 0);
+          Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0);
         }
 #endif
     }
@@ -1204,7 +1203,7 @@ static void PrintSeqStat(Stat stat)
         PrintStat(READ_STAT(stat, i - 1));
 
         /* print a line break after all but the last statement             */
-        if ( i < nr )  Pr( "\n", 0L, 0L );
+        if ( i < nr )  Pr("\n", 0, 0);
 
     }
 
@@ -1226,30 +1225,30 @@ static void PrintIf(Stat stat)
     UInt                len;            /* length of loop                  */
 
     /* print the 'if' branch                                               */
-    Pr( "if%4> ", 0L, 0L );
+    Pr("if%4> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr( "%2< then%2>\n", 0L, 0L );
+    Pr("%2< then%2>\n", 0, 0);
     PrintStat(READ_STAT(stat, 1));
-    Pr( "%4<\n", 0L, 0L );
+    Pr("%4<\n", 0, 0);
 
     len = SIZE_STAT(stat) / (2 * sizeof(Stat));
     /* print the 'elif' branch                                             */
     for (i = 2; i <= len; i++) {
         if (i == len &&
             TNUM_EXPR(READ_STAT(stat, 2 * (i - 1))) == EXPR_TRUE) {
-            Pr( "else%4>\n", 0L, 0L );
+            Pr("else%4>\n", 0, 0);
         }
         else {
-            Pr( "elif%4> ", 0L, 0L );
+            Pr("elif%4> ", 0, 0);
             PrintExpr(READ_EXPR(stat, 2 * (i - 1)));
-            Pr( "%2< then%2>\n", 0L, 0L );
+            Pr("%2< then%2>\n", 0, 0);
         }
         PrintStat(READ_STAT(stat, 2 * (i - 1) + 1));
-        Pr( "%4<\n", 0L, 0L );
+        Pr("%4<\n", 0, 0);
     }
 
     /* print the 'fi'                                                      */
-    Pr( "fi;", 0L, 0L );
+    Pr("fi;", 0, 0);
 }
 
 
@@ -1266,16 +1265,16 @@ static void PrintFor(Stat stat)
 {
     UInt                i;              /* loop variable                   */
 
-    Pr( "for%4> ", 0L, 0L );
+    Pr("for%4> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr( "%2< in%2> ", 0L, 0L );
+    Pr("%2< in%2> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr( "%2< do%2>\n", 0L, 0L );
+    Pr("%2< do%2>\n", 0, 0);
     for ( i = 2; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat(READ_STAT(stat, i));
-        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
+        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr("\n", 0, 0);
     }
-    Pr( "%4<\nod;", 0L, 0L );
+    Pr("%4<\nod;", 0, 0);
 }
 
 
@@ -1292,14 +1291,14 @@ static void PrintWhile(Stat stat)
 {
     UInt                i;              /* loop variable                   */
 
-    Pr( "while%4> ", 0L, 0L );
+    Pr("while%4> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr( "%2< do%2>\n", 0L, 0L );
+    Pr("%2< do%2>\n", 0, 0);
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat(READ_STAT(stat, i));
-        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
+        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr("\n", 0, 0);
     }
-    Pr( "%4<\nod;", 0L, 0L );
+    Pr("%4<\nod;", 0, 0);
 }
 
 /****************************************************************************
@@ -1317,26 +1316,26 @@ static void PrintAtomic(Stat stat)
   UInt nrexprs;
     UInt                i;              /* loop variable                   */
 
-    Pr( "atomic%4> ", 0L, 0L );
+    Pr("atomic%4> ", 0, 0);
     nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
     for (i = 1; i <=  nrexprs; i++) {
       if (i != 1)
-        Pr(", ",0L,0L);
+        Pr(", ", 0, 0);
       switch (INT_INTEXPR(READ_STAT(stat, 2 * i - 1))) {
       case LOCK_QUAL_NONE:
         break;
       case LOCK_QUAL_READONLY:
-        Pr("readonly ",0L,0L);
+        Pr("readonly ", 0, 0);
         break;
       case LOCK_QUAL_READWRITE:
-        Pr("readwrite ",0L,0L);
+        Pr("readwrite ", 0, 0);
         break;
       }
       PrintExpr(READ_EXPR(stat, 2 * i));
     }
-    Pr( "%2< do%2>\n", 0L, 0L );
+    Pr("%2< do%2>\n", 0, 0);
     PrintStat(READ_STAT(stat, 0));
-    Pr( "%4<\nod;", 0L, 0L );
+    Pr("%4<\nod;", 0, 0);
 }
 #endif
 
@@ -1354,14 +1353,14 @@ static void PrintRepeat(Stat stat)
 {
     UInt                i;              /* loop variable                   */
 
-    Pr( "repeat%4>\n", 0L, 0L );
+    Pr("repeat%4>\n", 0, 0);
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
         PrintStat(READ_STAT(stat, i));
-        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr( "\n", 0L, 0L );
+        if ( i < SIZE_STAT(stat)/sizeof(Stat)-1 )  Pr("\n", 0, 0);
     }
-    Pr( "%4<\nuntil%2> ", 0L, 0L );
+    Pr("%4<\nuntil%2> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
-    Pr( "%2<;", 0L, 0L );
+    Pr("%2<;", 0, 0);
 }
 
 
@@ -1373,7 +1372,7 @@ static void PrintRepeat(Stat stat)
 */
 static void PrintBreak(Stat stat)
 {
-    Pr( "break;", 0L, 0L );
+    Pr("break;", 0, 0);
 }
 
 
@@ -1385,7 +1384,7 @@ static void PrintBreak(Stat stat)
 */
 static void PrintContinue(Stat stat)
 {
-    Pr( "continue;", 0L, 0L );
+    Pr("continue;", 0, 0);
 }
 
 
@@ -1396,7 +1395,7 @@ static void PrintContinue(Stat stat)
 */
 static void PrintEmpty(Stat stat)
 {
-  Pr( ";", 0L, 0L);
+    Pr(";", 0, 0);
 }
 
 
@@ -1411,21 +1410,21 @@ static void PrintInfo(Stat stat)
     UInt                i;              /* loop variable                   */
 
     /* print the keyword                                                   */
-    Pr("%2>Info",0L,0L);
+    Pr("%2>Info", 0, 0);
 
     /* print the opening parenthesis                                       */
-    Pr("%<( %>",0L,0L);
+    Pr("%<( %>", 0, 0);
 
     /* print the expressions that evaluate to the actual arguments         */
     for ( i = 1; i <= NARG_SIZE_INFO( SIZE_STAT(stat) ); i++ ) {
         PrintExpr( ARGI_INFO(stat,i) );
         if ( i != NARG_SIZE_INFO( SIZE_STAT(stat) ) ) {
-            Pr("%<, %>",0L,0L);
+            Pr("%<, %>", 0, 0);
         }
     }
 
     /* print the closing parenthesis                                       */
-    Pr(" %2<);",0L,0L);
+    Pr(" %2<);", 0, 0);
 }
 
 
@@ -1438,18 +1437,18 @@ static void PrintInfo(Stat stat)
 static void PrintAssert2Args(Stat stat)
 {
     /* print the keyword                                                   */
-    Pr("%2>Assert",0L,0L);
+    Pr("%2>Assert", 0, 0);
 
     /* print the opening parenthesis                                       */
-    Pr("%<( %>",0L,0L);
+    Pr("%<( %>", 0, 0);
 
     /* Print the arguments, separated by a comma                           */
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<, %>",0L,0L);
+    Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
 
     /* print the closing parenthesis                                       */
-    Pr(" %2<);",0L,0L);
+    Pr(" %2<);", 0, 0);
 }
 
 
@@ -1462,20 +1461,20 @@ static void PrintAssert2Args(Stat stat)
 static void PrintAssert3Args(Stat stat)
 {
     /* print the keyword                                                   */
-    Pr("%2>Assert",0L,0L);
+    Pr("%2>Assert", 0, 0);
 
     /* print the opening parenthesis                                       */
-    Pr("%<( %>",0L,0L);
+    Pr("%<( %>", 0, 0);
 
     /* Print the arguments, separated by commas                            */
     PrintExpr(READ_EXPR(stat, 0));
-    Pr("%<, %>",0L,0L);
+    Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
-    Pr("%<, %>",0L,0L);
+    Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
 
     /* print the closing parenthesis                                       */
-    Pr(" %2<);",0L,0L);
+    Pr(" %2<);", 0, 0);
 }
 
 
@@ -1490,12 +1489,12 @@ static void PrintReturnObj(Stat stat)
     Expr expr = READ_STAT(stat, 0);
     if (TNUM_EXPR(expr) == EXPR_REF_GVAR &&
         READ_STAT(expr, 0) == GVarName("TRY_NEXT_METHOD")) {
-        Pr( "TryNextMethod();", 0L, 0L );
+        Pr("TryNextMethod();", 0, 0);
     }
     else {
-        Pr( "%2>return%< %>", 0L, 0L );
+        Pr("%2>return%< %>", 0, 0);
         PrintExpr( expr );
-        Pr( "%2<;", 0L, 0L );
+        Pr("%2<;", 0, 0);
     }
 }
 
@@ -1508,7 +1507,7 @@ static void PrintReturnObj(Stat stat)
 */
 static void PrintReturnVoid(Stat stat)
 {
-    Pr( "return;", 0L, 0L );
+    Pr("return;", 0, 0);
 }
 
 

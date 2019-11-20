@@ -523,7 +523,7 @@ void SortPRecRNam (
 
 static void PrintPathPRec(Obj rec, Int indx)
 {
-    Pr(".%H", (Int)NAME_RNAM(labs(GET_RNAM_PREC(rec, indx))), 0L);
+    Pr(".%H", (Int)NAME_RNAM(labs(GET_RNAM_PREC(rec, indx))), 0);
 }
 
 /****************************************************************************

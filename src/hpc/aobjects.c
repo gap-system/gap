@@ -498,9 +498,9 @@ static void PrintAtomicList(Obj obj)
 
   if (TNUM_OBJ(obj) == T_FIXALIST)
     Pr("<fixed atomic list of size %d>",
-      ALIST_LEN((UInt)(CONST_ADDR_OBJ(obj)[0])), 0L);
+      ALIST_LEN((UInt)(CONST_ADDR_OBJ(obj)[0])), 0);
   else
-    Pr("<atomic list of size %d>", ALIST_LEN((UInt)(CONST_ADDR_OBJ(obj)[0])), 0L);
+    Pr("<atomic list of size %d>", ALIST_LEN((UInt)(CONST_ADDR_OBJ(obj)[0])), 0);
 }
 
 static inline Obj ARecordObj(Obj record)
@@ -536,18 +536,18 @@ static void PrintTLRecord(Obj obj)
   if (TLS(threadID) < (UInt)table[TLR_SIZE]) {
     record = table[TLR_DATA+TLS(threadID)];
   }
-  Pr("%2>rec( %2>", 0L, 0L);
+  Pr("%2>rec( %2>", 0, 0);
   if (record) {
     for (i = 1; i <= LEN_PREC(record); i++) {
       Obj val = GET_ELM_PREC(record, i);
-      Pr("%H", (Int)NAME_RNAM(labs(GET_RNAM_PREC(record, i))), 0L);
-      Pr ("%< := %>", 0L, 0L);
+      Pr("%H", (Int)NAME_RNAM(labs(GET_RNAM_PREC(record, i))), 0);
+      Pr ("%< := %>", 0, 0);
       if (val)
         PrintObj(val);
       else
-        Pr("<undefined>", 0L, 0L);
+        Pr("<undefined>", 0, 0);
       if (i < LEN_PREC(record))
-        Pr("%2<, %2>", 0L, 0L);
+        Pr("%2<, %2>", 0, 0);
       else
         comma = 1;
     }
@@ -559,15 +559,15 @@ static void PrintTLRecord(Obj obj)
     Obj value = deftable[AR_DATA+2*i+1].obj;
     if (key && (!record || !PositionPRec(record, key, 0))) {
       if (comma)
-        Pr("%2<, %2>", 0L, 0L);
-      Pr("%H", (Int)(NAME_RNAM(key)), 0L);
-      Pr ("%< := %>", 0L, 0L);
+        Pr("%2<, %2>", 0, 0);
+      Pr("%H", (Int)(NAME_RNAM(key)), 0);
+      Pr ("%< := %>", 0, 0);
       PrintObj(CopyTraversed(value));
       comma = 1;
     }
   }
   HashUnlockShared(defrec);
-  Pr(" %4<)", 0L, 0L);
+  Pr(" %4<)", 0, 0);
 }
 
 

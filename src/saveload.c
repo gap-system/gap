@@ -53,14 +53,14 @@ static Int OpenForSave( Obj fname )
 {
   if (SaveFile != -1)
     {
-      Pr("Already saving\n",0L,0L);
+      Pr("Already saving\n", 0, 0);
       return 1;
     }
   SaveFile = SyFopen(CONST_CSTR_STRING(fname), "wb");
   if (SaveFile == -1)
     {
       Pr("Couldn't open file %s to save workspace\n",
-         (UInt)CONST_CSTR_STRING(fname),0L);
+         (UInt)CONST_CSTR_STRING(fname), 0);
       return 1;
     }
   LBPointer = LoadBuffer;
@@ -92,7 +92,7 @@ static void OpenForLoad( const Char *fname )
   LoadFile = SyFopen(fname, "rb");
   if (LoadFile == -1)
     {
-      Pr("Couldn't open saved workspace %s\n",(Int)fname,0L);
+      Pr("Couldn't open saved workspace %s\n",(Int)fname, 0);
       SyExit(1);
     }
 }
@@ -127,7 +127,7 @@ static UInt1 LOAD_BYTE_BUF(void)
   ret = SyRead(LoadFile, LoadBuffer, 100000);
   if (ret <= 0)
     {
-      Pr(LoadByteErrorMessage, 0L, 0L );
+      Pr(LoadByteErrorMessage, 0, 0);
       SyExit(2);
     }
   LBEnd = LoadBuffer + ret;
@@ -306,7 +306,7 @@ void SaveSubObj( Obj subobj )
            subobj > (Bag)MptrEndBags ||
            (Bag *)PTR_BAG(subobj) < MptrEndBags)
     {
-      Pr("#W bad bag id %d found, 0 saved\n", (Int)subobj, 0L);
+      Pr("#W bad bag id %d found, 0 saved\n", (Int)subobj, 0);
       SaveUInt(0);
     }
   else
@@ -648,7 +648,7 @@ void LoadWorkspace( Char * fname )
 
   LoadCStr(buf,256);
   if (strncmp (buf, "GAP ", 4) != 0) {
-     Pr("File %s does not appear to be a GAP workspae.\n", (long) fname, 0L);
+     Pr("File %s does not appear to be a GAP workspae.\n", (long) fname, 0);
      SyExit(1);
   }
 
@@ -669,11 +669,11 @@ void LoadWorkspace( Char * fname )
      if (strcmp(buf,"32 bit") != 0)
 #endif
         {
-           Pr("This workspace was created by a %s version of GAP.\n", (long)buf, 0L);
+           Pr("This workspace was created by a %s version of GAP.\n", (long)buf, 0);
            SyExit(1);
         }
   } else {
-     Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0L);
+     Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0);
      SyExit(1);
   } 
   
@@ -729,7 +729,7 @@ void LoadWorkspace( Char * fname )
         }
       *glob = LoadSubObj();
       if (SyDebugLoading)
-          Pr("Restored global %s\n", (Int)buf, 0L);
+          Pr("Restored global %s\n", (Int)buf, 0);
     }
 
   LoadCStr(buf,256);
@@ -753,11 +753,11 @@ void LoadWorkspace( Char * fname )
 static void PrSavedObj( UInt x)
 {
   if ((x & 3) == 1)
-    Pr("Immediate  integer %d\n", INT_INTOBJ((Obj)x),0L);
+    Pr("Immediate  integer %d\n", INT_INTOBJ((Obj)x), 0);
   else if ((x & 3) == 2)
     Pr("Immediate FFE %d %d\n", VAL_FFE((Obj)x), SIZE_FF(FLD_FFE((Obj)x)));
   else
-    Pr("Reference to bag number %d\n",x>>2,0L);
+    Pr("Reference to bag number %d\n",x>>2, 0);
 }
 
 static Obj FuncDumpWorkspace(Obj self, Obj fname)
@@ -766,22 +766,22 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   Char buf[256];
   OpenForLoad( CONST_CSTR_STRING(fname) );
   LoadCStr(buf,256);
-  Pr("Header string: %s\n",(Int) buf, 0L);
+  Pr("Header string: %s\n", (Int)buf, 0);
   LoadCStr(buf,256);
-  Pr("GAP Version: %s\n",(Int)buf, 0L);
+  Pr("GAP Version: %s\n", (Int)buf, 0);
   LoadCStr(buf,256);
-  Pr("Word length: %s\n",(Int)buf, 0L);
+  Pr("Word length: %s\n", (Int)buf, 0);
   CheckEndiannessMarker();
   LoadCStr(buf,256);
-  Pr("Divider string: %s\n",(Int)buf,0L);
+  Pr("Divider string: %s\n", (Int)buf, 0);
   if (strcmp(buf,"Counts and Sizes") != 0)
     ErrorQuit("Bad divider", 0, 0);
-  Pr("Loaded modules: %d\n",nMods = LoadUInt(), 0L);
-  Pr("Global Bags   : %d\n",nGlobs = LoadUInt(), 0L);
-  Pr("Total Bags    : %d\n",nBags = LoadUInt(), 0L);
-  Pr("Maximum Size  : %d\n",sizeof(Bag)*LoadUInt(), 0L);
+  Pr("Loaded modules: %d\n", nMods = LoadUInt(), 0);
+  Pr("Global Bags   : %d\n", nGlobs = LoadUInt(), 0);
+  Pr("Total Bags    : %d\n", nBags = LoadUInt(), 0);
+  Pr("Maximum Size  : %d\n", sizeof(Bag) * LoadUInt(), 0);
   LoadCStr(buf,256);
-  Pr("Divider string: %s\n",(Int)buf, 0L);
+  Pr("Divider string: %s\n", (Int)buf, 0);
   if (strcmp(buf,"Loaded Modules") != 0)
     ErrorQuit("Bad divider", 0, 0);
   for (i = 0; i < nMods; i++)
@@ -791,24 +791,24 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
       Pr("Type: %d ",type,0);
       relative = LoadUInt();
       if (relative)
-        Pr("GAP root relative ", 0L, 0L);
+        Pr("GAP root relative ", 0, 0);
       else
-        Pr("absolute ", 0L, 0L);
+        Pr("absolute ", 0, 0);
       LoadCStr(buf,256);
-      Pr("  %s\n",(Int)buf,0L);
+      Pr("  %s\n",(Int)buf, 0);
     }
   LoadCStr(buf,256);
-  Pr("Divider string: %s\n",(Int)buf,0L);
+  Pr("Divider string: %s\n", (Int)buf, 0);
   if (strcmp(buf,"Kernel to WS refs") != 0)
     ErrorQuit("Bad divider", 0, 0);
   for (i = 0; i < nGlobs; i++)
     {
       LoadCStr(buf,256);
-      Pr("  %s ",(Int)buf,0L);
+      Pr("  %s ", (Int)buf, 0);
       PrSavedObj(LoadUInt());
     }
   LoadCStr(buf,256);
-  Pr("Divider string: %s\n",(Int)buf,0L);
+  Pr("Divider string: %s\n", (Int)buf, 0);
   if (strcmp(buf,"Bag data") != 0)
     ErrorQuit("Bad divider", 0, 0);
   CloseAfterLoad();

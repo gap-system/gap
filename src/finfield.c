@@ -543,7 +543,7 @@ static void PrFFV(FF fld, FFV val)
 
     /* print the zero                                                      */
     if ( val == 0 ) {
-        Pr( "%>0*Z(%>%d%2<)", (Int)p, 0L );
+        Pr("%>0*Z(%>%d%2<)", (Int)p, 0);
     }
 
     /* print a nonzero element as power of the primitive root              */
@@ -557,15 +557,15 @@ static void PrFFV(FF fld, FFV val)
         val = (val-1) / ((q-1)/(m-1)) + 1;
 
         /* print the element                                               */
-        Pr( "%>Z(%>%d%<", (Int)p, 0L );
+        Pr("%>Z(%>%d%<", (Int)p, 0);
         if ( d == 1 ) {
-            Pr( "%<)", 0L, 0L );
+            Pr("%<)", 0, 0);
         }
         else {
-            Pr( "^%>%d%2<)", (Int)d, 0L );
+            Pr("^%>%d%2<)", (Int)d, 0);
         }
         if ( val != 2 ) {
-            Pr( "^%>%d%<", (Int)(val-1), 0L );
+            Pr("^%>%d%<", (Int)(val-1), 0);
         }
     }
 

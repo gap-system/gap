@@ -200,15 +200,15 @@ static void PrintPerm(Obj perm)
         if (!ptSeen[p] && ptPerm[p] != p) {
             ptSeen[p] = 1;
             isId = 0;
-            Pr(fmt1,(Int)(p+1),0L);
+            Pr(fmt1,(Int)(p+1), 0);
             ptPerm = CONST_ADDR_PERM<T>(perm);
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 ptSeen[q] = 1;
-                Pr(fmt2,(Int)(q+1),0L);
+                Pr(fmt2,(Int)(q+1), 0);
                 ptPerm = CONST_ADDR_PERM<T>(perm);
                 ptSeen = ADDR_TMP_PERM<T>();
             }
-            Pr("%<)",0L,0L);
+            Pr("%<)", 0, 0);
             /* restore pointer, in case Pr caused a garbage collection */
             ptPerm = CONST_ADDR_PERM<T>(perm);
             ptSeen = ADDR_TMP_PERM<T>();
@@ -216,7 +216,7 @@ static void PrintPerm(Obj perm)
     }
 
     /* special case for the identity                                       */
-    if ( isId )  Pr("()",0L,0L);
+    if ( isId )  Pr("()", 0, 0);
 }
 
 

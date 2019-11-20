@@ -110,11 +110,11 @@ static Obj TypeRat(Obj rat)
 */
 static void PrintRat(Obj rat)
 {
-    Pr( "%>", 0L, 0L );
+    Pr("%>", 0, 0);
     PrintObj( NUM_RAT(rat) );
-    Pr( "%</%>", 0L, 0L );
+    Pr("%</%>", 0, 0);
     PrintObj( DEN_RAT(rat) );
-    Pr( "%<", 0L, 0L );
+    Pr("%<", 0, 0);
 }
 
 
