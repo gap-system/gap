@@ -53,6 +53,8 @@ then
     # so as a workaround, we only test the minimal set of packages there.
     # On the upside, it's good to test that, too!
     make bootstrap-pkg-minimal DOWNLOAD="$WGET"
+    git clone https://github.com/gap-packages/io "$SRCDIR/pkg/io"
+    git clone https://github.com/gap-packages/profiling "$SRCDIR/pkg/profiling"
 else
     make bootstrap-pkg-full DOWNLOAD="$WGET"
 fi
@@ -73,21 +75,10 @@ ls $SRCDIR/pkg
 # compile IO and profiling package, unless NO_COVERAGE is given
 if [[ -z ${NO_COVERAGE} ]]
 then
-  # TODO: get rid of this hack (packages should set 32bit flags themselves)
-  if [[ $ABI == 32 ]]
-  then
-    CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-  fi
 
   # We need to compile the profiling package in order to generate coverage
   # reports; and also the IO package, as the profiling package depends on it.
   pushd "$SRCDIR/pkg"
-
-  rm -rf io*
-  time git clone https://github.com/gap-packages/io
-
-  rm -rf profiling-*
-  time git clone https://github.com/gap-packages/profiling
 
   # Compile io and profiling packages
   # we deliberately reset CFLAGS, CXXFLAGS, LDFLAGS to prevent them from being
@@ -95,15 +86,6 @@ then
   # IO's src/io.c with GAP's.
   CFLAGS= CXXFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 
-  #
-  # Factint is incompatible with HPCGAP and interferes with some tests
-  #
-  
-  if [[ $HPCGAP = yes ]]
-  then
-     rm -rf $SRCDIR/pkg/FactInt*
-  fi
-  
   popd
 
 fi
