@@ -49,43 +49,35 @@ MakeReadOnlyObj(TYPES_VEC8BIT);
 
 InstallGlobalFunction(TYPE_VEC8BIT,
   function( q, mut)
-    local col,filts, type;
+    local col,filts;
     if mut then col := 1; else col := 2; fi;
-    if IsBound(TYPES_VEC8BIT[col][q]) then
-      return TYPES_VEC8BIT[col][q];
-    fi;
-    filts := IsHomogeneousList and IsListDefault and IsCopyable and
-             Is8BitVectorRep and IsSmallList and
-             IsNoImmediateMethodsObject and
-             IsRingElementList and HasLength;
-    if mut then filts := filts and IsMutable; fi;
-    type := NewType(FamilyObj(GF(q)),filts);
     if not IsBound(TYPES_VEC8BIT[col][q]) then
-      InstallTypeSerializationTag(type, SERIALIZATION_BASE_VEC8BIT +
-        SERIALIZATION_TAG_BASE * (q * 4 + col - 1));
-      TYPES_VEC8BIT[col][q] := type;
+        filts := IsHomogeneousList and IsListDefault and IsCopyable and
+                 Is8BitVectorRep and IsSmallList and
+                 IsNoImmediateMethodsObject and
+                 IsRingElementList and HasLength;
+        if mut then filts := filts and IsMutable; fi;
+        TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
+        InstallTypeSerializationTag(TYPES_VEC8BIT[col][q],
+            SERIALIZATION_BASE_VEC8BIT + SERIALIZATION_TAG_BASE * (q * 4 + col - 1));
     fi;
     return TYPES_VEC8BIT[col][q];
 end);
 
 InstallGlobalFunction(TYPE_VEC8BIT_LOCKED,
   function( q, mut)
-    local col,filts, type;
+    local col,filts;
     if mut then col := 3; else col := 4; fi;
-    if IsBound(TYPES_VEC8BIT[col][q]) then
-      return TYPES_VEC8BIT[col][q];
-    fi;
-    filts := IsHomogeneousList and IsListDefault and IsCopyable and
-             Is8BitVectorRep and IsSmallList and
-             IsNoImmediateMethodsObject and
-             IsLockedRepresentationVector and
-             IsRingElementList and HasLength;
-    if mut then filts := filts and IsMutable; fi;
-    type := NewType(FamilyObj(GF(q)),filts);
     if not IsBound(TYPES_VEC8BIT[col][q]) then
-      InstallTypeSerializationTag(type, SERIALIZATION_BASE_VEC8BIT +
-        SERIALIZATION_TAG_BASE * (q * 4 + col - 1));
-      TYPES_VEC8BIT[col][q] := type;
+        filts := IsHomogeneousList and IsListDefault and IsCopyable and
+                 Is8BitVectorRep and IsSmallList and
+                 IsNoImmediateMethodsObject and
+                 IsLockedRepresentationVector and
+                 IsRingElementList and HasLength;
+        if mut then filts := filts and IsMutable; fi;
+        TYPES_VEC8BIT[col][q] := NewType(FamilyObj(GF(q)),filts);
+        InstallTypeSerializationTag(TYPES_VEC8BIT[col][q],
+            SERIALIZATION_BASE_VEC8BIT + SERIALIZATION_TAG_BASE * (q * 4 + col - 1));
     fi;
     return TYPES_VEC8BIT[col][q];
 end);
@@ -126,7 +118,7 @@ InstallOtherMethod( \[\],  "for a compressed VecFFE",
 ##
 ##  <vec> may also be converted back into vector rep over a bigger field.
 ##
-               
+
 InstallOtherMethod( \[\]\:\=,  "for a compressed VecFFE", 
         true, [IsMutable and IsList and Is8BitVectorRep, IsPosInt, IsObject], 
         0, ASS_VEC8BIT);
@@ -223,7 +215,8 @@ InstallMethod( \+, "for a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        return CopyToVectorRep(v,Q_VEC8BIT(w)) + w;
+        v := CopyToVectorRep(v,Q_VEC8BIT(w));
+        return v+w;
     fi;
 end);
 
@@ -234,7 +227,8 @@ InstallMethod( \+, "for an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        return w + CopyToVectorRep(v,Q_VEC8BIT(w));
+        v := CopyToVectorRep(v,Q_VEC8BIT(w));
+        return w+v;
     fi;
 end);
 
@@ -354,7 +348,8 @@ function( a, b )
     if DegreeFFE(a) > 8 or IsLockedRepresentationVector(b) then
         TryNextMethod();
     else
-        return a*CopyToVectorRep(b,Size(Field(a)));
+        b := CopyToVectorRep(b,Size(Field(a)));
+        return a*b;
     fi;
 end );
 
@@ -388,7 +383,8 @@ function( b, a )
     if DegreeFFE(b) > 8 or IsLockedRepresentationVector(a) then
         TryNextMethod();
     else
-        return b*CopyToVectorRep(a,Size(Field(b)));
+        a := CopyToVectorRep(a,Size(Field(b)));
+        return b*a;
     fi;
 end );
 
@@ -410,7 +406,8 @@ InstallMethod( \-, "for a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        return CopyToVectorRep(v,Q_VEC8BIT(w))-w;
+        v := CopyToVectorRep(v,Q_VEC8BIT(w));
+        return v-w;
     fi;
 end);
 
@@ -421,7 +418,8 @@ InstallMethod( \-, "for an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        return w-CopyToVectorRep(v,Q_VEC8BIT(w));
+        v := CopyToVectorRep(v,Q_VEC8BIT(w));
+        return w-v;
     fi;
 end);
 
@@ -529,7 +527,8 @@ InstallMethod( \*, "for a GF2 vector and an 8 bit vector of char 2",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        return CopyToVectorRep(v,Q_VEC8BIT(w))*w;
+        v := CopyToVectorRep(v,Q_VEC8BIT(w));
+        return v*w;
     fi;
 end);
 
@@ -540,7 +539,8 @@ InstallMethod( \*, "for an 8 bit vector of char 2 and a GF2 vector",
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
     else
-        return w*CopyToVectorRep(v,Q_VEC8BIT(w));
+        v := CopyToVectorRep(v,Q_VEC8BIT(w));
+        return w*v;
     fi;
 end);
 
@@ -633,7 +633,6 @@ InstallMethod( Append, "for 8bitm vectors",
         IsIdenticalObj, [Is8BitVectorRep and IsMutable and IsList,
                 Is8BitVectorRep and IsList], 0,
         APPEND_VEC8BIT);
-        
 
 #############################################################################
 ##
@@ -694,7 +693,8 @@ InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsCollsCollsElms,
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
     else
-        return ADD_COEFFS_VEC8BIT_3(v,CopyToVectorRep(w, Q_VEC8BIT(v)),x);
+        w := CopyToVectorRep(w, Q_VEC8BIT(v));
+        return ADD_COEFFS_VEC8BIT_3(v,w,x);
     fi;
 end);
 
@@ -727,7 +727,8 @@ InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsIdenticalObj,
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
     else
-        return ADD_COEFFS_VEC8BIT_2(v,CopyToVectorRep(w, Q_VEC8BIT(v)));
+        w := CopyToVectorRep(w, Q_VEC8BIT(v));
+        return ADD_COEFFS_VEC8BIT_2(v,w);
     fi;
 end);
 
@@ -818,7 +819,7 @@ InstallMethod( ProductCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         [Is8BitVectorRep and IsRowVector, IsInt, Is8BitVectorRep and
          IsRowVector, IsInt ], 0,
         PROD_COEFFS_VEC8BIT);
-        
+
 InstallOtherMethod( ProductCoeffs, "8 bit vectors, kernel method (2 arg)", 
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector, Is8BitVectorRep and
@@ -854,7 +855,7 @@ function(v,w)
     if w1 = fail then
         return fail;
     fi;
-    
+
     return [v1, w1];
 
   else
@@ -875,20 +876,20 @@ InstallMethod( ReduceCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
             SWITCH_OBJ(vl, adjust[1]);
             vr:=adjust[2];    
         fi;
-    	res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
-			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-	    if res = fail then 
-		    TryNextMethod();
-	    else
-		    return res;
-	    fi;
+        res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
+            MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
+        if res = fail then 
+            TryNextMethod();
+        else
+            return res;
+        fi;
 end);
 
 InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)", 
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector and IsMutable, Is8BitVectorRep and
          IsRowVector ], 0,
-    function(v,w) 
+        function(v,w) 
     local adjust;
     adjust := ADJUST_FIELDS_VEC8BIT(v,w);   
     if adjust = fail then
@@ -918,13 +919,13 @@ InstallMethod( QuotRemCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
             SWITCH_OBJ(vl,adjust[1]);
             vr:=adjust[2];    
         fi;
-    	res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
-			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-	    if res = fail then 
-		    TryNextMethod();
-	    else
-		    return res;
-	    fi;
+        res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
+            MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
+        if res = fail then 
+            TryNextMethod();
+        else
+            return res;
+        fi;
 end);
 
 InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)", 
@@ -967,7 +968,7 @@ InstallMethod( PowerModCoeffs,
         v:=adjust[1];    
         w:=adjust[2];    
     fi;
-    
+
     if exp = 1 then
         pow := ShallowCopy(v);
         ReduceCoeffs(pow,lv,w,lw);
@@ -1000,8 +1001,7 @@ InstallMethod( PowerModCoeffs,
     od;
     return pow;
 end);
-            
-            
+
 #############################################################################
 ##
 #M  ZeroVector( len, <vector> )

@@ -107,7 +107,7 @@ InstallOtherMethod( \[\],  "for a compressed VecFFE",
 ##
 ##  <vec> may also be converted back into vector rep over a bigger field.
 ##
-               
+
 InstallOtherMethod( \[\]\:\=,  "for a compressed VecFFE", 
         true, [IsMutable and IsList and Is8BitVectorRep, IsPosInt, IsObject], 
         0, ASS_VEC8BIT);
@@ -622,7 +622,6 @@ InstallMethod( Append, "for 8bitm vectors",
         IsIdenticalObj, [Is8BitVectorRep and IsMutable and IsList,
                 Is8BitVectorRep and IsList], 0,
         APPEND_VEC8BIT);
-        
 
 #############################################################################
 ##
@@ -809,7 +808,7 @@ InstallMethod( ProductCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         [Is8BitVectorRep and IsRowVector, IsInt, Is8BitVectorRep and
          IsRowVector, IsInt ], 0,
         PROD_COEFFS_VEC8BIT);
-        
+
 InstallOtherMethod( ProductCoeffs, "8 bit vectors, kernel method (2 arg)", 
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector, Is8BitVectorRep and
@@ -827,7 +826,7 @@ end);
 ##
 
 BindGlobal("ADJUST_FIELDS_VEC8BIT",
-        function(v,w) 
+function(v,w) 
     local p,e;
     if Q_VEC8BIT(v)<>Q_VEC8BIT(w) then
       p:=Characteristic(v);
@@ -850,13 +849,13 @@ InstallMethod( ReduceCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         if ADJUST_FIELDS_VEC8BIT(vl, vr) = fail then
             TryNextMethod();
         fi;
-    	res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
-			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-	if res = fail then 
-		TryNextMethod();
-	else
-		return res;
-	fi;
+        res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
+            MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
+        if res = fail then 
+            TryNextMethod();
+        else
+            return res;
+        fi;
 end);
 
 InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)", 
@@ -884,13 +883,13 @@ InstallMethod( QuotRemCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
         if ADJUST_FIELDS_VEC8BIT(vl, vr) = fail then
             TryNextMethod();
         fi;
-    	res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
-			MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-	if res = fail then 
-		TryNextMethod();
-	else
-		return res;
-	fi;
+        res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
+            MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
+        if res = fail then 
+            TryNextMethod();
+        else
+            return res;
+        fi;
 end);
 
 InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)", 
@@ -924,7 +923,7 @@ InstallMethod( PowerModCoeffs,
     if ADJUST_FIELDS_VEC8BIT(v, w) = fail then
         TryNextMethod();
     fi;
-    
+
     if exp = 1 then
         pow := ShallowCopy(v);
         ReduceCoeffs(pow,lv,w,lw);
@@ -957,8 +956,7 @@ InstallMethod( PowerModCoeffs,
     od;
     return pow;
 end);
-            
-            
+
 #############################################################################
 ##
 #M  ZeroVector( len, <vector> )
