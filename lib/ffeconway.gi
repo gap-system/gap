@@ -1469,7 +1469,7 @@ end);
 #M Coefficients of an element wrt the canonical basis -- are stored in the 
 ##                                                       element
 InstallMethod(Coefficients,
-        "for a FFE in Conway polynomial represntation wrt the canonical basis of its natural field",
+        "for a FFE in Conway polynomial representation wrt the canonical basis of its natural field",
         IsCollsElms,
         [IsCanonicalBasis and IsBasisFiniteFieldRep, IsFFE and IsCoeffsModConwayPolRep],
         function(cb,x)

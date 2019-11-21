@@ -586,6 +586,11 @@ InstallOtherMethod( \[\], "for GF2 matrix",
       IsPosInt ],
     ELM_GF2MAT );
 
+InstallMethod( \[\,\], "for GF2 matrix",
+    [ IsGF2MatrixRep,
+      IsPosInt, IsPosInt ],
+    MAT_ELM_GF2MAT );
+
 
 #############################################################################
 ##
@@ -604,6 +609,13 @@ InstallOtherMethod( \[\]\:\=,
       IsPosInt,
       IsObject ],
     ASS_GF2MAT );
+
+InstallMethod( \[\,\]\:\=,
+    "for GF2 matrix",
+    [ IsGF2MatrixRep and IsMutable,
+      IsPosInt, IsPosInt,
+      IsObject ],
+    SET_MAT_ELM_GF2MAT );
 
 
 #############################################################################
@@ -1124,7 +1136,7 @@ InstallMethod( \*,
 ##                    of compressed GF2 vectors, otherwise falls through
 ##
 
-InstallMethod(\*, "For a GF2 vector and a compatible matrix",
+InstallMethod(\*, "for a GF2 vector and a compatible matrix",
         IsElmsColls, [IsRowVector and IsGF2VectorRep and IsSmallList
                 and IsRingElementList,
                 IsRingElementTable and IsPlistRep], 0,
@@ -2392,7 +2404,7 @@ InstallMethod( PositionLastNonZero, "for a row vector obj",
     while i >= 1 and IsZero(l[i]) do i := i - 1; od;
     return i;
   end );
-        
+
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
   [IsGF2MatrixRep, IsList, IsList],
   function( m, rows, cols )
