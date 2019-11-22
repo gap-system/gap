@@ -623,27 +623,29 @@ static UInt *** SyAllocBags_(Int size, UInt need)
 
 UInt *** SyAllocBags(Int size, UInt need)
 {
+    GAP_ASSERT(size > 0);
+
     UInt *** ret = INVALID_PTR;
 
     /* first check if we would get above SyStorKill, if yes exit! */
-    if (SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size) {
+    if (SyStorKill != 0 && SyStorKill < syWorksize + size) {
         if (need) {
             Panic("will not extend workspace above -K limit!");
         }
         return 0;
     }
-    else if (SyAllocPool == 0) {
+    else if (SyAllocPool > 0) {
+        // initialize allocation pool if necessary; this aborts if it fails
+        if (POOL == NULL)
+            SyInitialAllocPool();
+        ret = SyAllocBagsFromPool(size, need);
+    }
+    else {
 #if defined(HAVE_SBRK) || defined(HAVE_VM_ALLOCATE)
         ret = SyAllocBags_(size, need);
 #else
         Panic("running without allocation pool not supported on this architecture");
 #endif
-    }
-    else {
-        // initialize allocation pool if necessary; this aborts if it fails
-        if (POOL == NULL)
-            SyInitialAllocPool();
-        ret = SyAllocBagsFromPool(size, need);
     }
 
     // handle allocation failures
@@ -673,7 +675,11 @@ Int SyFreeBags(Int size)
         return SyFreeBagsFromPool(size);
     }
     else {
-        return SyAllocBags(-size, 0) != 0;
+#if defined(HAVE_SBRK) || defined(HAVE_VM_ALLOCATE)
+        return SyAllocBags_(-size, 0) != INVALID_PTR;
+#else
+        Panic("running without allocation pool not supported on this architecture");
+#endif
     }
 }
 
