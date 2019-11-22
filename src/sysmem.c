@@ -674,4 +674,17 @@ UInt *** SyAllocBags(Int size, UInt need)
 #endif
 
 
+Int SyFreeBags(Int size)
+{
+    GAP_ASSERT(size > 0);
+    return SyAllocBags(-size, 0) != 0;
+}
+
+
+void SyFreeAllBags(void)
+{
+    // for now, do nothing
+}
+
+
 #endif // defined(USE_GASMAN)
