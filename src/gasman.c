@@ -1109,7 +1109,7 @@ static void MaybeMoveBags(void)
 
 void FinishBags( void )
 {
-  SyAllocBags(-(sizeof(Bag)*SizeWorkspace/1024),2);
+    SyFreeAllBags();
 }
 
 /****************************************************************************
@@ -2232,7 +2232,7 @@ again:
         /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
         while (SpaceBetweenPointers(stopBags,MptrEndBags)/7 <= SpaceBetweenPointers(EndBags,stopBags)-WORDS_BAG(512*1024L)
                 && SpaceBetweenPointers(EndBags,stopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
-             && SyAllocBags(-512,0) )
+             && SyFreeBags(512) )
             EndBags -= WORDS_BAG(512*1024L);
 
 #ifdef GAP_MEM_CHECK

@@ -171,7 +171,7 @@ void SyMAdviseFree(void);
 
 /****************************************************************************
 **
-*F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> kilobytes
+*F  SyAllocBags( <size>, <need> ) . allocate memory block of <size> kilobytes
 **
 **  'SyAllocBags' is called from Gasman to get new storage from the operating
 **  system. <size> is the needed amount in kilobytes (it is always a multiple
@@ -188,17 +188,38 @@ void SyMAdviseFree(void);
 **  'SyAllocBags' must abort,  because GAP assumes that  'NewBag'  will never
 **  fail.
 **
-**  <size> may also be negative in which case 'SyAllocBags' should return the
-**  storage to the operating system.  In this case  <need>  will always be 0.
-**  'SyAllocBags' can either accept this reduction and  return 1  and  return
-**  the storage to the operating system or refuse the reduction and return 0.
-**
 **  If the operating system does not support dynamic memory management, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
 #if defined(USE_GASMAN)
 UInt *** SyAllocBags(Int size, UInt need);
 #endif
+
+
+/****************************************************************************
+**
+*F  SyFreeBags( <size> ) . . . . . . . . . return <size> kilobytes to the OS
+**
+**  'SyFreeBags' should return the last <size> kilobytes of storage to the
+**  operating system. 'SyFreeBags' can either accept this reduction and
+**  return 1 and return the storage to the operating system or refuse the
+**  reduction and return 0.
+*/
+#if defined(USE_GASMAN)
+Int SyFreeBags(Int size);
+#endif
+
+
+/****************************************************************************
+**
+*F  SyFreeAllBags( ) . . . . . . . . . . . . . .  return all memory to the OS
+**
+**  'SyFreeAllBags' returns all memory allocated by 'SyAllocBags' to the OS.
+*/
+#if defined(USE_GASMAN)
+void SyFreeAllBags(void);
+#endif
+
 
 
 #endif // GAP_SYSMEM_H
