@@ -446,25 +446,32 @@ static void SyInitialAllocPool(void)
 
 static UInt *** SyAllocBagsFromPool(Int size, UInt need)
 {
-    UInt *** ret = INVALID_PTR;
+    GAP_ASSERT(size > 0);
 
-    /* get the storage, but only if we stay within the bounds              */
-    /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-    if (size > 0) {
-        while ((syWorksize + size) * 1024 > SyAllocPool) {
-            if (SyTryToIncreasePool())
-                return INVALID_PTR;
-        }
-        ret = EndOfWorkspace();
-        syWorksize += size;
+    // get the storage, but only if we stay within the bounds
+    while ((syWorksize + size) * 1024 > SyAllocPool) {
+        if (SyTryToIncreasePool())
+            return INVALID_PTR;
     }
-    else if (size < 0 && SyStorMin <= syWorksize + size) {
-        ret = EndOfWorkspace();
-        syWorksize += size;
-    }
-
+    UInt *** ret = EndOfWorkspace();
+    syWorksize += size;
     return ret;
 }
+
+static Int SyFreeBagsFromPool(Int size)
+{
+    GAP_ASSERT(size > 0);
+
+    if (POOL == NULL)
+        return 0; // nothing to deallocate -> signal failure
+
+    if (SyStorMin <= syWorksize - size) {
+        syWorksize -= size;
+        return 1;
+    }
+    return 0;
+}
+
 
 #if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) /* prefer `vm_allocate' over `sbrk' */
 
@@ -661,7 +668,13 @@ UInt *** SyAllocBags(Int size, UInt need)
 Int SyFreeBags(Int size)
 {
     GAP_ASSERT(size > 0);
-    return SyAllocBags(-size, 0) != 0;
+
+    if (SyAllocPool > 0) {
+        return SyFreeBagsFromPool(size);
+    }
+    else {
+        return SyAllocBags(-size, 0) != 0;
+    }
 }
 
 
