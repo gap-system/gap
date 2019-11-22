@@ -47,7 +47,7 @@ local   deg,  i,  j,  char;
       deg := LcmInt( deg, DegreeFFE(j) );
     od;
   od;
-  char := Characteristic(l[1][1]);
+  char := Characteristic(l[1]);
   return GF(char^deg);
 end);
 
@@ -74,7 +74,7 @@ if Length(l)=0 then Error("list must be nonempty");fi;
       od;
     fi;
   od;
-  char := Characteristic(l[1][1]);
+  char := Characteristic(l[1]);
   return GF(char^deg);
 end);
 
