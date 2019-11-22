@@ -298,7 +298,8 @@ static void *SyMMapEnd;            /* End of mmap'ed region for POOL */
 static void *SyMMapAdvised;        /* We have already advised about non-usage
                                       up to here. */
 
-void SyMAdviseFree(void) {
+void SyMAdviseFree(void)
+{
     size_t size;
     void *from;
     if (!SyMMapStart) 
@@ -395,7 +396,7 @@ static int SyTryToIncreasePool(void)
 
 #else
 
-static void SyMAdviseFree(void)
+void SyMAdviseFree(void)
 {
     /* do nothing */
 }
