@@ -442,6 +442,8 @@ static void SyInitialAllocPool(void)
    /* Now both syWorkspace and SyAllocPool are aligned to pagesize */
 }
 
+#define INVALID_PTR ((UInt***)-1)
+
 static UInt *** SyAllocBagsFromPool(Int size, UInt need)
 {
   /* get the storage, but only if we stay within the bounds              */
@@ -453,21 +455,22 @@ static UInt *** SyAllocBagsFromPool(Int size, UInt need)
   }
   if (size > 0) {
     while ((syWorksize+size)*1024 > SyAllocPool) {
-        if (SyTryToIncreasePool()) return (UInt***)-1;
+        if (SyTryToIncreasePool())
+            return INVALID_PTR;
     }
     return EndOfWorkspace();
   }
   else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))
     return EndOfWorkspace();
   else
-    return (UInt***)-1;
+    return INVALID_PTR;
 }
 
 #if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) /* prefer `vm_allocate' over `sbrk' */
 
 UInt *** SyAllocBags(Int size, UInt need)
 {
-    UInt *** ret = (UInt ***)-1;
+    UInt *** ret = INVALID_PTR;
     UInt adjust = 0;
 
     if (SyAllocPool > 0) {
@@ -496,59 +499,53 @@ UInt *** SyAllocBags(Int size, UInt need)
 
         /* get the storage, but only if we stay within the bounds              */
         /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-        if (0 < size )
-          {
+        if (0 < size ) {
 #ifndef SYS_IS_64_BIT
-            while (size > 1024*1024)
-              {
+            while (size > 1024*1024) {
                 ret = (UInt ***)sbrk(1024*1024*1024);
-                if (ret != (UInt ***)-1  && 
+                if (ret != INVALID_PTR  && 
                     ret != EndOfWorkspace())
                   {
                     sbrk(-1024*1024*1024);
-                    ret = (UInt ***)-1;
+                    ret = INVALID_PTR;
                   }
-                if (ret == (UInt ***)-1)
+                if (ret == INVALID_PTR)
                   break;
                 memset(EndOfWorkspace(), 0, 1024*1024*1024);
                 size -= 1024*1024;
                 syWorksize += 1024*1024;
                 adjust++;
-              }
+            }
 #endif
             ret = (UInt ***)sbrk(size*1024);
-            if (ret != (UInt ***)-1  && 
-                ret != EndOfWorkspace())
-              {
+            if (ret != INVALID_PTR && ret != EndOfWorkspace()) {
                 sbrk(-size*1024);
-                ret = (UInt ***)-1;
-              }
-            if (ret != (UInt ***)-1)
-              memset(EndOfWorkspace(), 0, 
-                     1024*size);
-            
-          }
-        else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))  {
+                ret = INVALID_PTR;
+            }
+            if (ret != INVALID_PTR) {
+                memset(EndOfWorkspace(), 0, 1024*size);
+            }
+        }
+        else if (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size)) {
 #ifndef SYS_IS_64_BIT
-          while (size < -1024*1024)
-            {
-              ret = (UInt ***)sbrk(-1024*1024*1024);
-              if (ret == (UInt ***)-1)
-                break;
-              size += 1024*1024;
-              syWorksize -= 1024*1024;
+            while (size < -1024*1024) {
+                ret = (UInt ***)sbrk(-1024*1024*1024);
+                if (ret == INVALID_PTR)
+                    break;
+                size += 1024*1024;
+                syWorksize -= 1024*1024;
             }
 #endif
             ret = (UInt ***)sbrk(size*1024);
         }
         else {
-          ret = (UInt***)-1;
+          ret = INVALID_PTR;
         }
     }
 
 
     // handle allocation failures
-    if (ret == (UInt ***)-1) {
+    if (ret == INVALID_PTR) {
         if (need) {
             Panic("cannot extend the workspace any more!");
         }
@@ -570,7 +567,7 @@ UInt *** SyAllocBags(Int size, UInt need)
       syWorkspace = (UInt ***)0;
 
     /* otherwise return the result (which could be 0 to indicate failure)  */
-    if (ret == (UInt ***)-1)
+    if (ret == INVALID_PTR)
         return 0;
 
     return (UInt ***)(((Char *)ret) - 1024 * 1024 * 1024 * adjust);
@@ -595,7 +592,7 @@ static vm_address_t syBase;
 
 UInt *** SyAllocBags(Int size, UInt need)
 {
-    UInt *** ret = (UInt ***)-1;
+    UInt *** ret = INVALID_PTR;
 
     if (SyAllocPool > 0) {
       if (POOL == NULL) SyInitialAllocPool();
@@ -648,7 +645,7 @@ UInt *** SyAllocBags(Int size, UInt need)
     }
 
     // handle allocation failures
-    if (ret == (UInt ***)-1) {
+    if (ret == INVALID_PTR) {
         if (need) {
             Panic("cannot extend the workspace any more!!!");
         }
