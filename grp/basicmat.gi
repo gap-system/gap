@@ -31,9 +31,9 @@ function( filter, fld, n )
     o := One(fld);
     m := NullMat( n, n, fld );
     for i  in [ 1 .. n-1 ]  do
-        m[i][i+1] := o;
+        m[i,i+1] := o;
     od;
-    m[n][1] := o;
+    m[n,1] := o;
     m :=  [ ImmutableMatrix(fld,m,true) ];
     g := GroupByGenerators( m );
     SetIsCyclic (g, true);
@@ -60,9 +60,9 @@ function( filter, n )
 
     m := NullMat( n, n, Rationals );
     for i  in [ 1 .. n-1 ]  do
-        m[i][i+1] := 1;
+        m[i,i+1] := 1;
     od;
-    m[n][1] := 1;
+    m[n,1] := 1;
     m := GroupByGenerators( [ ImmutableMatrix(Rationals,m,true) ] );
     SetSize( m, n );
     return m;
@@ -154,11 +154,11 @@ function( filter, n, f )
     o := One( f );
 
     mat1 := IdentityMat( n, f );
-    mat1[1][1] := z;
+    mat1[1,1] := z;
     mat2 := List( Zero(o) * mat1, ShallowCopy );
-    mat2[1][1] := -o;
-    mat2[1][n] := o;
-    for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
+    mat2[1,1] := -o;
+    mat2[1,n] := o;
+    for i  in [ 2 .. n ]  do mat2[i,i-1]:= -o;  od;
 
     mat1 := ImmutableMatrix( f, mat1,true );
     mat2 := ImmutableMatrix( f, mat2,true );
@@ -205,15 +205,15 @@ function( filter, n, f )
         z := PrimitiveRoot(f);
         mat1 := IdentityMat( n, f );
         mat2 := List( Zero(o) * mat1, ShallowCopy );
-        mat2[1][n] := o;
-        for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
+        mat2[1,n] := o;
+        for i  in [ 2 .. n ]  do mat2[i,i-1]:= -o;  od;
 
         if q = 2 or q = 3 then
-            mat1[1][2] := o;
+            mat1[1,2] := o;
         else
-            mat1[1][1] := z;
-            mat1[2][2] := z^-1;
-            mat2[1][1] := -o;
+            mat1[1,1] := z;
+            mat1[2,2] := z^-1;
+            mat2[1,1] := -o;
         fi;
         mat1 := ImmutableMatrix(f,mat1,true);
         mat2 := ImmutableMatrix(f,mat2,true);

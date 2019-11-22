@@ -53,9 +53,9 @@ DeclareGlobalFunction("PrintArray");
 ##
 ##  <Description>
 ##  The square matrix <A>A</A> is a generalized Cartan Matrix if and only if
-##  1. <C>A[i][i] = 2</C> for all <M>i</M>,
-##  2. <C>A[i][j]</C> are nonpositive integers for <M>i \neq j</M>,
-##  3. <C>A[i][j] = 0</C> implies <C>A[j][i] = 0</C>.
+##  1. <C>A[i,i] = 2</C> for all <M>i</M>,
+##  2. <C>A[i,j]</C> are nonpositive integers for <M>i \neq j</M>,
+##  3. <C>A[i,j] = 0</C> implies <C>A[j,i] = 0</C>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -968,7 +968,7 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 ##
 ##  <Description>
 ##  These functions all return the transposed of the matrix <A>mat</A>, i.e.,
-##  a matrix <A>trans</A> such that <C><A>trans</A>[<A>i</A>][<A>k</A>] = <A>mat</A>[<A>k</A>][<A>i</A>]</C> holds.
+##  a matrix <M>trans</M> such that <M>trans[i,k] = <A>mat</A>[k,i]</M> holds.
 ##  <P/>
 ##  They differ only w.r.t. the mutability of the result.
 ##  <P/>

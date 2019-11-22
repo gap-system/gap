@@ -413,7 +413,7 @@ function( G, flag )
   if flag then
     rep := List([1..Gcd(q-1, n)-1], i-> IdentityMat(n, GF(q)));
     for i in [1..Gcd(q-1, n)-1] do
-      rep[i][n][n] := Z(q)^i;
+      rep[i][n,n] := Z(q)^i;
     od;
   fi;           
   

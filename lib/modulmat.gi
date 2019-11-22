@@ -193,7 +193,7 @@ InstallGlobalFunction( StandardGeneratorsOfFullMatrixModule, function( M )
     for i in [ 1 .. m ] do
       for j in [ 1 .. n ] do
         gen:= List( zeromat, ShallowCopy );
-        gen[i][j]:= one;
+        gen[i,j]:= one;
         Add( gens, gen );
       od;
     od;

@@ -46,12 +46,12 @@ local gens,mat,G;
   gens:=List(GeneratorsOfGroup(SymmetricGroup(n)),i->PermutationMat(i,n));
   # sign swapper
   mat:= IdentityMat(n,1);
-  mat[1][1]:=-1;
+  mat[1,1]:=-1;
   Add(gens,mat);
   # elementary addition
   if n>1 then
     mat:= IdentityMat(n,1);
-    mat[1][2]:=1;
+    mat[1,2]:=1;
     Add(gens,mat);
   fi;
   gens:=List(gens,Immutable);
@@ -84,7 +84,7 @@ local gens,mat,G;
     Add(gens,mat);
     # elementary addition
     mat:= IdentityMat(n,1);
-    mat[1][2]:=1;
+    mat[1,2]:=1;
     Add(gens,mat);
   fi;
   gens:=List(gens,Immutable);
