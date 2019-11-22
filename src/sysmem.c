@@ -409,8 +409,6 @@ static int SyTryToIncreasePool(void)
 #endif // defined(GAP_MEM_CHECK)
 
 
-static int halvingsdone = 0;
-
 static void SyInitialAllocPool(void)
 {
 #ifdef HAVE_SYSCONF
@@ -433,7 +431,6 @@ static void SyInitialAllocPool(void)
            break;
        }
        SyAllocPool = SyAllocPool / 2;
-       halvingsdone++;
        if (SyDebugLoading) fputs("gap: halving pool size.\n", stderr);
        if (SyAllocPool < 16*1024*1024) {
            Panic("cannot allocate initial memory");
