@@ -446,23 +446,24 @@ static void SyInitialAllocPool(void)
 
 static UInt *** SyAllocBagsFromPool(Int size, UInt need)
 {
-  /* get the storage, but only if we stay within the bounds              */
-  /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-  /* first check if we would get above SyStorKill, if yes exit! */
-  if ( need < 2 && SyStorKill != 0 && 0 < size 
-                && SyStorKill < syWorksize + size ) {
-      Panic("will not extend workspace above -K limit!");
-  }
-  if (size > 0) {
-    while ((syWorksize+size)*1024 > SyAllocPool) {
-        if (SyTryToIncreasePool())
-            return INVALID_PTR;
+    /* get the storage, but only if we stay within the bounds              */
+    /* if ( (0 < size && syWorksize + size <= SyStorMax) */
+    /* first check if we would get above SyStorKill, if yes exit! */
+    if (SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size) {
+        if (need) {
+            Panic("will not extend workspace above -K limit!");
+        }
     }
-    return EndOfWorkspace();
-  }
-  else if  (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size))
-    return EndOfWorkspace();
-  else
+    else if (size > 0) {
+        while ((syWorksize + size) * 1024 > SyAllocPool) {
+            if (SyTryToIncreasePool())
+                return INVALID_PTR;
+        }
+        return EndOfWorkspace();
+    }
+    else if (size < 0 && SyStorMin <= syWorksize + size)
+        return EndOfWorkspace();
+
     return INVALID_PTR;
 }
 
@@ -494,7 +495,7 @@ UInt *** SyAllocBags(Int size, UInt need)
     else {
         /* first check if we would get above SyStorKill, if yes exit! */
         if (SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size) {
-            if (need < 2) {
+            if (need) {
                 Panic("will not extend workspace above -K limit!");
             }
         }
@@ -534,7 +535,7 @@ UInt *** SyAllocBags(Int size, UInt need)
             ret = SyAllocBagHelper(size);
 #endif
         }
-        else if (size < 0 && (need >= 2 || SyStorMin <= syWorksize + size)) {
+        else if (size < 0 && SyStorMin <= syWorksize + size) {
 #ifndef SYS_IS_64_BIT
             while (size < -1024*1024) {
                 ret = (UInt ***)sbrk(-1024*1024*1024);
@@ -607,7 +608,7 @@ UInt *** SyAllocBags(Int size, UInt need)
     }
     else {
         /* first check if we would get above SyStorKill, if yes exit! */
-        if (SyStorKill != 0 && 0 < size && SyStorKill < 1024*(syWorksize + size)) {
+        if (SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size) {
             if (need) {
                 Panic("will not extend workspace above -K limit!");
             }
