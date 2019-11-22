@@ -686,7 +686,7 @@ function( mat )
         Print( "\>\>[ \>\>" );
         for j  in [ 1 .. NrCols(mat) ]  do
             if 1 < j  then Print( "\<,\< \>\>" );  fi;
-            Print( mat[i][j] );
+            Print( mat[i,j] );
         od;
         Print( " \<\<\<\<]" );
     od;
@@ -2559,9 +2559,9 @@ InstallMethod( NewIdentityMatrix, "for IsGF2MatrixRep, GF(2), and an int",
     m[1] := NewZeroVector(IsGF2VectorRep,f,rows);
     for i in [2..rows] do
         m[i] := ShallowCopy(m[1]);
-        m[i][i] := o;
+        m[i,i] := o;
     od;
-    m[1][1] := o;
+    m[1,1] := o;
     ConvertToMatrixRep(m,2);
     return m;
   end );
@@ -2623,7 +2623,7 @@ InstallMethod( NewCompanionMatrix,
     ll := NewMatrix(ty,bd,n,[l]);
     for i in [1..n-1] do
         Add(ll,ZeroMutable(l),i);
-        ll[i][i+1] := one;
+        ll[i,i+1] := one;
     od;
     return ll;
   end );

@@ -369,7 +369,7 @@ FFECONWAY.FiniteFieldEmbeddingRecord := function(p, d1,d2)
         z1 := PowerModCoeffs(x,n,c);
         fam!.ConwayFldEltReducers[d2](z1);
         m := [ZeroMutable(z1),z1];
-        m[1][1] := Z(p)^0;
+        m[1,1] := Z(p)^0;
         z := z1;
         for i in [2..d1-1] do
             z := ProductCoeffs(z,z1);
@@ -1605,11 +1605,11 @@ InstallMethod( Display,
         TryNextMethod();
     fi;
     deg  := Lcm( List( m, DegreeFFE ) );
-    chr  := Characteristic(m[1][1]);
+    chr  := Characteristic(m[1,1]);
     if deg = 1 or chr^deg <= MAXSIZE_GF_INTERNAL then
         TryNextMethod();
     fi;
-    zero := Zero(m[1][1]);
+    zero := Zero(m[1,1]);
     Print("z = Z( ",chr,", ",deg,"); z2 = z^2, etc.\n");
     d := [];
     w := 1;

@@ -110,8 +110,8 @@ function(R)
   mat := Matrix(R);
   if HasIsGroupAsSemigroup(UnderlyingSemigroup(R))
       and IsGroupAsSemigroup(UnderlyingSemigroup(R)) then 
-    return ForAll(Rows(R), i -> ForAny(Columns(R), j -> mat[j][i]<>0))
-      and ForAll(Columns(R), j -> ForAny(Rows(R), i -> mat[j][i]<>0));
+    return ForAll(Rows(R), i -> ForAny(Columns(R), j -> mat[j,i]<>0))
+      and ForAll(Columns(R), j -> ForAny(Rows(R), i -> mat[j,i]<>0));
   else
     TryNextMethod();
   fi;
@@ -146,8 +146,8 @@ function(R)
   local i, mat;
 
   mat := Matrix(R);
-  if ForAny(Columns(R), j -> ForAll(Rows(R), i -> mat[j][i] = 0))
-      or ForAny(Rows(R), i -> ForAll(Columns(R), j -> mat[j][i] = 0)) then 
+  if ForAny(Columns(R), j -> ForAll(Rows(R), i -> mat[j,i] = 0))
+      or ForAny(Rows(R), i -> ForAll(Columns(R), j -> mat[j,i] = 0)) then 
     return false;
   fi;
   return IsSimpleSemigroup(UnderlyingSemigroup(R));
@@ -1333,9 +1333,9 @@ function(D, constructor)
     for j in [1 .. Length(R)] do
       x := L[i] * R[j];
       if x in D then
-        mat[i][j] := x ^ map;
+        mat[i,j] := x ^ map;
       else
-        mat[i][j] := 0;
+        mat[i,j] := 0;
       fi;
     od;
   od;
@@ -1345,8 +1345,8 @@ function(D, constructor)
 
   for j in [1 .. Length(R)] do
     for i in [1 .. Length(L)] do
-      if mat[i][j] <> 0 then
-        RR[j] := ((mat[i][j] ^ -1) ^ inv) * L[i];
+      if mat[i,j] <> 0 then
+        RR[j] := ((mat[i,j] ^ -1) ^ inv) * L[i];
         break;
       fi;
     od;
@@ -1354,8 +1354,8 @@ function(D, constructor)
 
   for i in [1 .. Length(L)] do
     for j in [1 .. Length(R)] do
-      if mat[i][j] <> 0 then
-        LL[i] := R[j] * (mat[i][j] ^ -1) ^ inv;
+      if mat[i,j] <> 0 then
+        LL[i] := R[j] * (mat[i,j] ^ -1) ^ inv;
         break;
       fi;
     od;
