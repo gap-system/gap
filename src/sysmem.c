@@ -467,7 +467,7 @@ static UInt *** SyAllocBagsFromPool(Int size, UInt need)
 
 UInt *** SyAllocBags(Int size, UInt need)
 {
-    UInt * * *          ret;
+    UInt *** ret = (UInt ***)-1;
     UInt adjust = 0;
 
     if (SyAllocPool > 0) {
@@ -477,8 +477,12 @@ UInt *** SyAllocBags(Int size, UInt need)
       ret = SyAllocBagsFromPool(size,need);
     }
     else {
-
-
+        /* first check if we would get above SyStorKill, if yes exit! */
+        if (SyStorKill != 0 && 0 < size && SyStorKill < syWorksize + size) {
+            if (need < 2) {
+                Panic("will not extend workspace above -K limit!");
+            }
+        }
 
         /* force alignment on first call                                       */
         if ( syWorkspace == (UInt***)0 ) {
@@ -492,11 +496,6 @@ UInt *** SyAllocBags(Int size, UInt need)
 
         /* get the storage, but only if we stay within the bounds              */
         /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-        /* first check if we would get above SyStorKill, if yes exit! */
-        if ( need < 2 && SyStorKill != 0 && 0 < size && 
-             SyStorKill < syWorksize + size ) {
-            Panic("will not extend workspace above -K limit!");
-        }
         if (0 < size )
           {
 #ifndef SYS_IS_64_BIT
@@ -548,33 +547,33 @@ UInt *** SyAllocBags(Int size, UInt need)
     }
 
 
-    /* update the size info                                                */
-    if ( ret != (UInt***)-1 ) {
+    // handle allocation failures
+    if (ret == (UInt ***)-1) {
+        if (need) {
+            Panic("cannot extend the workspace any more!");
+        }
+    }
+    else {
+        // update the size info
         syWorksize += size;
-        /* set the overrun flag if we became larger than SyStorMax */
-        if ( SyStorMax != 0 && syWorksize  > SyStorMax)  {
-          SyStorOverrun = -1;
-          SyStorMax=syWorksize*2; /* new maximum */
-          InterruptExecStat(); /* interrupt at the next possible point */
+
+        // set the overrun flag if we became larger than SyStorMax
+        if (SyStorMax != 0 && syWorksize > SyStorMax) {
+            SyStorOverrun = -1;
+            SyStorMax = syWorksize * 2;    // new maximum
+            InterruptExecStat();    // interrupt at the next possible point
         }
     }
 
-    /* test if the allocation failed                                       */
-    if ( ret == (UInt***)-1 && need ) {
-        Panic("cannot extend the workspace any more!");
-    }
     /* if we de-allocated the whole workspace then remember this */
     if (syWorksize == 0)
       syWorkspace = (UInt ***)0;
 
     /* otherwise return the result (which could be 0 to indicate failure)  */
-    if ( ret == (UInt***)-1 )
+    if (ret == (UInt ***)-1)
         return 0;
-    else
-      {
-        return (UInt***)(((Char *)ret) - 1024*1024*1024*adjust);
-      }
 
+    return (UInt ***)(((Char *)ret) - 1024 * 1024 * 1024 * adjust);
 }
 
 #endif
@@ -593,28 +592,23 @@ UInt *** SyAllocBags(Int size, UInt need)
 #endif
 
 static vm_address_t syBase;
- 
-UInt * * * SyAllocBags (
-    Int                 size,
-    UInt                need )
+
+UInt *** SyAllocBags(Int size, UInt need)
 {
-    UInt * * *          ret = (UInt***)-1;
-    vm_address_t        adr;    
+    UInt *** ret = (UInt ***)-1;
 
     if (SyAllocPool > 0) {
       if (POOL == NULL) SyInitialAllocPool();
       /* Note that this does abort GAP if it does not succeed! */
  
       ret = SyAllocBagsFromPool(size,need);
-      if (ret != (UInt ***)-1)
-          syWorksize += size;
-
     }
     else {
-        if ( SyStorKill != 0 && 0 < size && SyStorKill < 1024*(syWorksize + size) ) {
+        /* first check if we would get above SyStorKill, if yes exit! */
+        if (SyStorKill != 0 && 0 < size && SyStorKill < 1024*(syWorksize + size)) {
             if (need) {
                 Panic("will not extend workspace above -K limit!");
-            }  
+            }
         }
         /* check that <size> is divisible by <vm_page_size>                    */
         else if ( size*1024 % vm_page_size != 0 ) {
@@ -628,50 +622,50 @@ UInt * * * SyAllocBags (
 
         /* allocate memory anywhere on first call                              */
         else if ( 0 < size && syBase == 0 ) {
+            GAP_ASSERT(syWorksize == 0);
             if ( vm_allocate(task_self(),&syBase,size*1024,TRUE) == KERN_SUCCESS ) {
-                syWorksize = size;
                 ret = (UInt***) syBase;
             }
         }
 
         /* don't shrink memory but mark it as deactivated                      */
         else if ( size < 0 && syWorksize + size > SyStorMin) {
+            vm_address_t adr;
             adr = (vm_address_t)( (char*) syBase + (syWorksize+size)*1024 );
             if ( vm_deallocate(task_self(),adr,-size*1024) == KERN_SUCCESS ) {
                 ret = (UInt***)( (char*) syBase + syWorksize*1024 );
-                syWorksize += size;
             }
         }
 
         /* get more memory from system                                         */
         else {
+            vm_address_t adr;
             adr = (vm_address_t)( (char*) syBase + syWorksize*1024 );
             if ( vm_allocate(task_self(),&adr,size*1024,FALSE) == KERN_SUCCESS ) {
                 ret = (UInt***) ( (char*) syBase + syWorksize*1024 );
-                syWorksize += size;
             }
-        }
-
-        /* test if the allocation failed                                       */
-        if ( ret == (UInt***)-1 && need ) {
-            Panic("cannot extend the workspace any more!!");
         }
     }
 
-    /* otherwise return the result (which could be 0 to indicate failure)  */
-    if ( ret == (UInt***)-1 ){
+    // handle allocation failures
+    if (ret == (UInt ***)-1) {
         if (need) {
             Panic("cannot extend the workspace any more!!!");
         }
         return (UInt***) 0;
-    } 
+    }
     else {
-        if (syWorksize  > SyStorMax)  {
+        // update the size info
+        syWorksize += size;
+
+        // set the overrun flag if we became larger than SyStorMax
+        if (syWorksize > SyStorMax) {
             SyStorOverrun = -1;
-            SyStorMax=syWorksize*2; /* new maximum */
-            InterruptExecStat(); /* interrupt at the next possible point */
-       }
-     }
+            SyStorMax = syWorksize * 2;    // new maximum
+            InterruptExecStat();    // interrupt at the next possible point
+        }
+    }
+
     return ret;
 }
 
