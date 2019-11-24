@@ -96,6 +96,8 @@ WhereWithVars();
 quit;
 
 # Verify issue #2656 is fixed
+InstallMethod( \[\,\], [ IsMatrixObj, IsPosInt, IsPosInt ],
+    { m, row, col } -> ELM_LIST( m, row, col ) );
 l := [[1]];; f := {} -> l[2,1];;
 f();
 Where();

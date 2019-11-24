@@ -313,29 +313,31 @@ brk> WhereWithVars();
 brk> quit;
 gap> 
 gap> # Verify issue #2656 is fixed
+gap> InstallMethod( \[\,\], [ IsMatrixObj, IsPosInt, IsPosInt ],
+>     { m, row, col } -> ELM_LIST( m, row, col ) );
 gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
 Error, List Element: <list>[2] must have an assigned value in
   return m[i][j]; at GAPROOT/lib/matrix.gi:26 called from 
-ELM_LIST( m, row, col ) at GAPROOT/lib/matobj.gi:27 called from
-return l[2, 1]; at *stdin*:44 called from
+ELM_LIST( m, row, col ) at *stdin*:45 called from
+return l[2, 1]; at *stdin*:46 called from
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:45
+ called from read-eval loop at *stdin*:47
 type 'quit;' to quit to outer loop
 brk> Where();
-ELM_LIST( m, row, col ) at GAPROOT/lib/matobj.gi:27 called from
-return l[2, 1]; at *stdin*:44 called from
+ELM_LIST( m, row, col ) at *stdin*:45 called from
+return l[2, 1]; at *stdin*:46 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
-ELM_LIST( m, row, col ) at GAPROOT/lib/matobj.gi:27
+ELM_LIST( m, row, col ) at *stdin*:45
   arguments:
     m := [ [ 1 ] ]
     row := 2
     col := 1
   local variables: <none>
  called from
-return l[2, 1]; at *stdin*:44
+return l[2, 1]; at *stdin*:46
   arguments: <none>
   local variables: <none>
  called from
@@ -349,6 +351,6 @@ Error, FLAGS_FILTER: <oper> must be an operation (not a function) in
   <<compiled GAP code>> from GAPROOT/lib/oper1.g:378 in function INSTALL_METHOD called from 
 <<compiled GAP code>> from GAPROOT/lib/oper1.g:338 in function InstallMethod called from
 <function "InstallMethod">( <arguments> )
- called from read-eval loop at *stdin*:47
+ called from read-eval loop at *stdin*:49
 type 'quit;' to quit to outer loop
 brk> QUIT;
