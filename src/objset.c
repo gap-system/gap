@@ -40,6 +40,18 @@ static Obj TypeObjMap(Obj obj)
     return TYPE_OBJMAP;
 }
 
+static inline int IS_OBJSET(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return tnum == T_OBJSET || tnum == T_OBJSET + IMMUTABLE;
+}
+
+static inline int IS_OBJMAP(Obj obj)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    return tnum == T_OBJMAP || tnum == T_OBJMAP + IMMUTABLE;
+}
+
 /** Object sets and maps --------------------
  *
  *  Object sets and maps are hash tables where identity is determined
@@ -208,6 +220,7 @@ static void CheckObjSetForCleanUp(Obj set, UInt expand)
  */
 
 Int FindObjSet(Obj set, Obj obj) {
+  GAP_ASSERT(IS_OBJSET(set));
   UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
   GAP_ASSERT(hash < size);
@@ -270,6 +283,7 @@ static void AddObjSetNew(Obj set, Obj obj)
  */
 
 void AddObjSet(Obj set, Obj obj) {
+  GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   if (FindObjSet(set, obj) >= 0)
     return;
   CheckObjSetForCleanUp(set, 1);
@@ -284,6 +298,7 @@ void AddObjSet(Obj set, Obj obj) {
  */
 
 void RemoveObjSet(Obj set, Obj obj) {
+  GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   Int pos = FindObjSet(set, obj);
   if (pos >= 0) {
     ADDR_OBJ(set)[OBJSET_HDRSIZE+pos] = Undefined;
@@ -302,6 +317,7 @@ void RemoveObjSet(Obj set, Obj obj) {
  */
 
 void ClearObjSet(Obj set) {
+  GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   Obj new = NewObjSet();
   SwapMasterPoint(set, new);
   CHANGED_BAG(set);
@@ -315,6 +331,7 @@ void ClearObjSet(Obj set) {
  */
 
 Obj ObjSetValues(Obj set) {
+  GAP_ASSERT(IS_OBJSET(set));
   UInt len = CONST_ADDR_WORD(set)[OBJSET_USED];
   UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   UInt p, i;
@@ -470,6 +487,7 @@ static void CheckObjMapForCleanUp(Obj map, UInt expand)
  */
 
 Int FindObjMap(Obj map, Obj obj) {
+  GAP_ASSERT(IS_OBJMAP(map));
   UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, obj);
   for (;;) {
@@ -546,6 +564,7 @@ static void AddObjMapNew(Obj map, Obj key, Obj value)
  */
 
 void AddObjMap(Obj map, Obj key, Obj value) {
+  GAP_ASSERT(TNUM_OBJ(map) == T_OBJMAP);
   Int pos;
   pos = FindObjMap(map, key);
   if (pos >= 0) {
@@ -565,6 +584,7 @@ void AddObjMap(Obj map, Obj key, Obj value) {
  */
 
 void RemoveObjMap(Obj map, Obj key) {
+  GAP_ASSERT(TNUM_OBJ(map) == T_OBJMAP);
   Int pos = FindObjMap(map, key);
   if (pos >= 0) {
     ADDR_OBJ(map)[OBJSET_HDRSIZE+pos*2] = Undefined;
@@ -584,6 +604,7 @@ void RemoveObjMap(Obj map, Obj key) {
  */
 
 void ClearObjMap(Obj map) {
+  GAP_ASSERT(TNUM_OBJ(map) == T_OBJMAP);
   Obj new = NewObjMap();
   SwapMasterPoint(map, new);
 }
@@ -595,14 +616,16 @@ void ClearObjMap(Obj map) {
  *  This function returns all values from the map.
  */
 
-Obj ObjMapValues(Obj set) {
-  UInt len = CONST_ADDR_WORD(set)[OBJSET_USED];
-  UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
+Obj ObjMapValues(Obj (map))
+{
+  GAP_ASSERT(IS_OBJMAP(map));
+  UInt len = CONST_ADDR_WORD((map))[OBJSET_USED];
+  UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt p, i;
   Obj result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
-    Obj el = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE + 2*i+1];
+    Obj el = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + 2*i+1];
     if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
@@ -620,14 +643,16 @@ Obj ObjMapValues(Obj set) {
  *  This function returns all keys from the map.
  */
 
-Obj ObjMapKeys(Obj set) {
-  UInt len = CONST_ADDR_WORD(set)[OBJSET_USED];
-  UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
+Obj ObjMapKeys(Obj map)
+{
+  GAP_ASSERT(IS_OBJMAP(map));
+  UInt len = CONST_ADDR_WORD(map)[OBJSET_USED];
+  UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt p, i;
   Obj result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
-    Obj el = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE + 2*i];
+    Obj el = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + 2*i];
     if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
@@ -816,8 +841,7 @@ static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj)
 static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj)
 {
     RequireArgumentCondition("FIND_OBJ_SET", set,
-                             TNUM_OBJ(set) == T_OBJSET ||
-                                 TNUM_OBJ(set) == T_OBJSET + IMMUTABLE,
+                             IS_OBJSET(set),
                              "must be an object set");
 
     Int pos = FindObjSet(set, obj);
@@ -850,8 +874,7 @@ static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set)
 static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
 {
     RequireArgumentCondition("OBJ_SET_VALUES", set,
-                             TNUM_OBJ(set) == T_OBJSET ||
-                                 TNUM_OBJ(set) == T_OBJSET + IMMUTABLE,
+                             IS_OBJSET(set),
                              "must be an object set");
 
     return ObjSetValues(set);
@@ -924,8 +947,7 @@ static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value)
 static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
 {
     RequireArgumentCondition("FIND_OBJ_MAP", map,
-                             TNUM_OBJ(map) == T_OBJMAP ||
-                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             IS_OBJMAP(map),
                              "must be an object map");
 
     Int pos = FindObjMap(map, key);
@@ -945,8 +967,7 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
 static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key)
 {
     RequireArgumentCondition("CONTAINS_OBJ_MAP", map,
-                             TNUM_OBJ(map) == T_OBJMAP ||
-                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             IS_OBJMAP(map),
                              "must be an object map");
 
     Int pos = FindObjMap(map, key);
@@ -996,8 +1017,7 @@ static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map)
 static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
 {
     RequireArgumentCondition("OBJ_MAP_VALUES", map,
-                             TNUM_OBJ(map) == T_OBJMAP ||
-                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             IS_OBJMAP(map),
                              "must be an object map");
 
     return ObjMapValues(map);
@@ -1014,8 +1034,7 @@ static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
 static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map)
 {
     RequireArgumentCondition("OBJ_MAP_KEYS", map,
-                             TNUM_OBJ(map) == T_OBJMAP ||
-                                 TNUM_OBJ(map) == T_OBJMAP + IMMUTABLE,
+                             IS_OBJMAP(map),
                              "must be an object map");
 
     return ObjMapKeys(map);
