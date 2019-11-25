@@ -182,21 +182,21 @@ BindGlobal( "FindPackageInfosInSubdirectories", function( pkgdir, name )
     fi;
 
     file:= Filename( [ pkgdir ],
-                      Concatenation( name, "/PackageInfo.g" ) );
+                      StringFormatted( "{}/PackageInfo.g", name ) );
     if file = fail then
       files := [];
       # Perhaps some subdirectories contain `PackageInfo.g' files.
       for subdir in Set( DirectoryContents( pkgpath ) ) do
         if not subdir in [ ".", ".." ] then
           pkgpath:= Filename( [ pkgdir ],
-                              Concatenation( name, "/", subdir ) );
+                              StringFormatted( "{}/{}", name, subdir ) );
           if pkgpath <> fail and IsDirectoryPath( pkgpath )
                               and not subdir in [ ".", ".." ] then
             file:= Filename( [ pkgdir ],
-                Concatenation( name, "/", subdir, "/PackageInfo.g" ) );
+                StringFormatted( "{}/{}/PackageInfo.g", name, subdir ) );
             if file <> fail then
               Add( files,
-                    [ file, Concatenation( name, "/", subdir ) ] );
+                    [ file, StringFormatted( "{}/{}", name, subdir ) ] );
             fi;
           fi;
         fi;
