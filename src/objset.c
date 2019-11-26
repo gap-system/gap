@@ -616,10 +616,10 @@ void ClearObjMap(Obj map) {
  *  This function returns all values from the map.
  */
 
-Obj ObjMapValues(Obj (map))
+Obj ObjMapValues(Obj map)
 {
   GAP_ASSERT(IS_OBJMAP(map));
-  UInt len = CONST_ADDR_WORD((map))[OBJSET_USED];
+  UInt len = CONST_ADDR_WORD(map)[OBJSET_USED];
   UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt p, i;
   Obj result = NEW_PLIST(T_PLIST, len);

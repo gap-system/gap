@@ -4,20 +4,18 @@
 #
 
 #
-gap> CheckSerialization := function(x)
+gap> CheckSerializationGeneric := function(x, f)
 >   local err, x2;
 >   x2 := DeserializeNativeString(SerializeToNativeString(x));
->   if TNUM_OBJ(x) <> TNUM_OBJ(x2) or x2 <> x then
->     err := "Serialization error: ";
->     Append(err, String(x));
+>   if not f(x2) then
+>     Error("Serialization error: ", x, " versus ", x2);
 >   fi;
 > end;;
-gap> CheckSerialization2 := function(x, f)
->   local err;
->   if not f(DeserializeNativeString(SerializeToNativeString(x))) then
->     err := "Serialization error: ";
->     Append(err, String(x));
->   fi;
+gap> CheckSerializationBy := function(x, f)
+>   CheckSerializationGeneric(x, y -> f(x) = f(y));
+> end;;
+gap> CheckSerialization := function(x)
+>   CheckSerializationBy(x, y -> [TNUM_OBJ(y), y]);
 > end;;
 
 #
@@ -68,7 +66,7 @@ gap> CheckSerialization(3.14);
 gap> CheckSerialization(-3.14);
 gap> CheckSerialization(+1.0/0.0); # inf
 gap> CheckSerialization(-1.0/0.0); # -inf
-gap> CheckSerialization(0.0/0.0); # -nan
+gap> CheckSerializationBy(0.0/0.0, IsNaN); # -nan
 
 #
 # permutations
@@ -135,22 +133,28 @@ gap> CheckSerialization([]);
 gap> CheckSerialization(MakeImmutable([]));
 gap> CheckSerialization(["abc", MakeImmutable("abc")]);
 gap> CheckSerialization([1,2,,3,,,4,"x","y"]);
-gap> CheckSerialization2([~], x->IsIdenticalObj(x, x[1]));
-gap> CheckSerialization2(["abc", ~[1]], x->IsIdenticalObj(x[1], x[2]));
+gap> CheckSerializationGeneric([~], x->IsIdenticalObj(x, x[1]));
 
 #
 # object set
 #
-gap> CheckSerialization(OBJ_SET([]));
-gap> CheckSerialization(OBJ_SET([17, -4, 17]));
-gap> CheckSerialization(OBJ_SET([true, false]));
+gap> CheckSerializationBy(OBJ_SET([]), x->SortedList(OBJ_SET_VALUES(x)));
+gap> CheckSerializationBy(OBJ_SET([17, -4, 17]), x->SortedList(OBJ_SET_VALUES(x)));
+gap> CheckSerializationBy(OBJ_SET([true, false]), x->SortedList(OBJ_SET_VALUES(x)));
 
 #
 # object map
 #
-gap> CheckSerialization(OBJ_MAP([]));
-gap> CheckSerialization(OBJ_MAP([17, -4, 21, 17]));
-gap> CheckSerialization(OBJ_SET([false, 0, true, 1]));
+gap> cmp := function(x)
+>   local keys, vals;
+>   keys := OBJ_MAP_KEYS(x);
+>   vals := OBJ_MAP_VALUES(x);
+>   SortParallel(keys, vals);
+>   return [keys, vals];
+> end;;
+gap> CheckSerializationBy(OBJ_MAP([]), cmp);
+gap> CheckSerializationBy(OBJ_MAP([17, -4, 21, 17]), cmp);
+gap> CheckSerializationBy(OBJ_MAP([false, 0, true, 1]), cmp);
 
 #
 # TODO: component object
@@ -214,4 +218,23 @@ gap> DeserializeNativeString("\000\377");
 Error, Bad deserialization input
 gap> DeserializeNativeString("\000\205");
 1
+
+#
+# verify that stuff that gets serialized twice is
+# deserialized into the same object each time
+#
+gap> CheckRepeatedSerialization := function(y)
+>   CheckSerializationGeneric([y, y], x->IsIdenticalObj(x[1], x[2]));
+>   CheckSerializationGeneric(rec(a:=y,b:=y), x->IsIdenticalObj(x.a, x.b));
+> end;;
+gap> CheckRepeatedSerialization("abc");
+gap> CheckRepeatedSerialization([1,2,3]);
+gap> CheckRepeatedSerialization(2^100); # FIXME
+Error, Serialization error: [ 1267650600228229401496703205376, 
+  1267650600228229401496703205376 ] versus [ 1267650600228229401496703205376, 
+  1267650600228229401496703205376 ]
+gap> CheckRepeatedSerialization(1.23); # FIXME
+Error, Serialization error: [ 1.23, 1.23 ] versus [ 1.23, 1.23 ]
+gap> CheckRepeatedSerialization(2/3); # FIXME
+Error, Serialization error: [ 2/3, 2/3 ] versus [ 2/3, 2/3 ]
 #@fi
