@@ -570,7 +570,7 @@ static void SerializeObjMap(Obj obj)
 static Obj DeserializeObjMap(UInt tnum)
 {
     UInt i, len = INT_INTOBJ(ReadImmediateObj());
-    Obj  result = NewObjSet();
+    Obj  result = NewObjMap();
     PushObj(result);
     for (i = 1; i <= len; i++) {
         Obj key = DeserializeObj();
@@ -589,8 +589,10 @@ static void SerializeRecord(Obj obj)
     len = LEN_PREC(obj);
     WriteImmediateObj(INTOBJ_INT(len));
     for (i = 1; i <= len; i++) {
-        UInt rnam = GET_RNAM_PREC(obj, i);
-        Obj  rnams = NAME_RNAM(rnam);
+        // get the rnam, which may be negative (if the record was sorted)
+        Int rnam = GET_RNAM_PREC(obj, i);
+        // since rnams can change across sessions, we store only its name
+        Obj rnams = NAME_RNAM(rnam >= 0 ? rnam : -rnam);
         WriteByteBlock(rnams, sizeof(UInt), GET_LEN_STRING(rnams));
     }
     for (i = 1; i <= len; i++) {
