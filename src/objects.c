@@ -875,6 +875,12 @@ static Obj FuncMakeImmutable(Obj self, Obj obj)
   return obj;
 }
 
+static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
+{
+    UInt         tnum = GetBoundedInt("GET_TNAM_FROM_TNUM", obj, 0, 255);
+    const char * name = TNAM_TNUM(tnum);
+    return MakeImmString(name ? name : "<unnamed tnum>");
+}
 
 
 // This function is used to keep track of which objects are already
@@ -2050,7 +2056,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(FORCE_SWITCH_OBJ, obj1, obj2),
     GVAR_FUNC_1ARGS(SET_PRINT_OBJ_INDEX, index),
     GVAR_FUNC_1ARGS(MakeImmutable, obj),
-
+    GVAR_FUNC_1ARGS(GET_TNAM_FROM_TNUM, obj),
     GVAR_FUNC_0ARGS(DEBUG_TNUM_NAMES),
 
     { 0, 0, 0, 0, 0 }
