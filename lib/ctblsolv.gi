@@ -630,7 +630,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       k:= KernelUnderDualAction( O, Opcgs,
               CanonicalRepresentativeOfExternalSet( orb ) );
       if not zn in k then
-        t:= SubgroupNC( G, StabilizerOfExternalSet( orb ) );
+        t:= StabilizerOfExternalSet( orb );
+        Assert( 1, IsIdenticalObj( Parent( t ), G ) );
         h:= NaturalHomomorphismByNormalSubgroupNC( t, k );
         img:= ImagesSource( h );
         Append( r,
