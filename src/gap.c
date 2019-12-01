@@ -1204,132 +1204,96 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 
 static Obj FuncKERNEL_INFO(Obj self)
 {
-  Obj res = NEW_PREC(0);
-  UInt r,lenvec;
-  Char *p;
-  Obj tmp,list,str;
-  UInt i,j;
+    Obj  res = NEW_PREC(0);
+    UInt r;
+    Obj  tmp;
+    UInt i;
 
-  /* GAP_ARCHITECTURE                                                    */
-  tmp = MakeImmString( SyArchitecture );
-  r = RNamName("GAP_ARCHITECTURE");
-  AssPRec(res,r,tmp);
-  /* KERNEL_VERSION */
-  tmp = MakeImmString( SyKernelVersion );
-  r = RNamName("KERNEL_VERSION");
-  AssPRec(res,r,tmp);
-  tmp = INTOBJ_INT(GAP_KERNEL_API_VERSION);
-  r = RNamName("KERNEL_API_VERSION");
-  AssPRec(res, r, tmp);
-  tmp = MakeImmString( SyBuildVersion );
-  r = RNamName("BUILD_VERSION");
-  AssPRec(res,r,tmp);
-  tmp = MakeImmString( SyBuildDateTime );
-  r = RNamName("BUILD_DATETIME");
-  AssPRec(res,r,tmp);
-  /* GAP_ROOT_PATH                                                       */
-  /* do we need this. Could we rebuild it from the command line in GAP
-     if so, should we                                                    */
-  list = NEW_PLIST_IMM( T_PLIST, MAX_GAP_DIRS );
-  for ( i = 0, j = 1;  i < MAX_GAP_DIRS;  i++ ) {
-    if ( SyGapRootPaths[i][0] ) {
-      tmp = MakeImmString( SyGapRootPaths[i] );
-      SET_ELM_PLIST( list, j, tmp );
-      j++;
-    }
-  }
-  SET_LEN_PLIST( list, j-1 );
-  r = RNamName("GAP_ROOT_PATHS");
-  AssPRec(res,r,list);
-  /* And also the DotGapPath if available */
-  tmp = MakeImmString( DotGapPath );
-  r = RNamName("DOT_GAP_PATH");
-  AssPRec(res,r,tmp);
-    
-  /* make command line and environment available to GAP level       */
-  for (lenvec=0; SyOriginalArgv[lenvec]; lenvec++);
-  tmp = NEW_PLIST_IMM( T_PLIST, lenvec );
-  SET_LEN_PLIST( tmp, lenvec );
-  for (i = 0; i<lenvec; i++) {
-    str = MakeImmString( SyOriginalArgv[i] );
-    SET_ELM_PLIST(tmp, i+1, str);
-    CHANGED_BAG(tmp);
-  }
-  r = RNamName("COMMAND_LINE");
-  AssPRec(res,r, tmp);
+    AssPRec(res, RNamName("GAP_ARCHITECTURE"), MakeImmString(SyArchitecture));
+    AssPRec(res, RNamName("KERNEL_VERSION"), MakeImmString(SyKernelVersion));
+    AssPRec(res, RNamName("KERNEL_API_VERSION"), INTOBJ_INT(GAP_KERNEL_API_VERSION));
+    AssPRec(res, RNamName("BUILD_VERSION"), MakeImmString(SyBuildVersion));
+    AssPRec(res, RNamName("BUILD_DATETIME"), MakeImmString(SyBuildDateTime));
 
-  tmp = NEW_PREC(0);
-  for (i = 0; environ[i]; i++) {
-    for (p = environ[i]; *p != '='; p++)
-      ;
-    p = strchr(environ[i], '=');
-    if (!p) {
-        // should never happen...
-        // FIXME: should we print a warning here?
-        continue;
+    // TODO: GAP_ROOT_PATHS, do we need this? Could we rebuild it from the
+    // command line in GAP? If so, should we?
+    tmp = NEW_PLIST_IMM(T_PLIST, MAX_GAP_DIRS);
+    for (i = 0; i < MAX_GAP_DIRS; i++) {
+        if (SyGapRootPaths[i][0]) {
+            PushPlist(tmp, MakeImmString(SyGapRootPaths[i]));
+        }
     }
-    r = RNamNameWithLen(environ[i], p - environ[i]);
-    p++;   /* Move pointer behind = character */
-    str = MakeString(p);
-    AssPRec(tmp,r , str);
-  }
-  r = RNamName("ENVIRONMENT");
-  AssPRec(res,r, tmp);
+    MakeImmutableNoRecurse(tmp);
+    AssPRec(res, RNamName("GAP_ROOT_PATHS"), tmp);
+
+    AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(DotGapPath));
+
+    // make command line available to GAP level
+    tmp = NEW_PLIST_IMM(T_PLIST, 16);
+    for (i = 0; SyOriginalArgv[i]; i++) {
+        PushPlist(tmp, MakeImmString(SyOriginalArgv[i]));
+    }
+    AssPRec(res, RNamName("COMMAND_LINE"), tmp);
+
+    // make environment available to GAP level
+    tmp = NEW_PREC(0);
+    for (i = 0; environ[i]; i++) {
+        Char * p = strchr(environ[i], '=');
+        if (!p) {
+            // should never happen...
+            // FIXME: should we print a warning here?
+            continue;
+        }
+        r = RNamNameWithLen(environ[i], p - environ[i]);
+        p++; /* Move pointer behind = character */
+        AssPRec(tmp, r, MakeImmString(p));
+    }
+    AssPRec(res, RNamName("ENVIRONMENT"), tmp);
 
 #ifdef HPCGAP
-  r = RNamName("NUM_CPUS");
-  AssPRec(res, r, INTOBJ_INT(SyNumProcessors));
+    AssPRec(res, RNamName("NUM_CPUS"), INTOBJ_INT(SyNumProcessors));
 #endif
 
-  /* export if we want to use readline  */
-  r = RNamName("HAVE_LIBREADLINE");
-  if (SyUseReadline)
-    AssPRec(res, r, True);
-  else
-    AssPRec(res, r, False);
+    // export if we want to use readline
+    AssPRec(res, RNamName("HAVE_LIBREADLINE"), SyUseReadline ? True : False);
 
-  /* export GMP version  */
-  str = MakeImmString( gmp_version );
-  r = RNamName("GMP_VERSION");
-  AssPRec(res, r, str);
+    // export GMP version
+    AssPRec(res, RNamName("GMP_VERSION"), MakeImmString(gmp_version));
 
-  /* export name of the garbage collector we use  */
-  r = RNamName("GC");
+    // export name of the garbage collector we use
 #if defined(USE_GASMAN)
-    AssPRec(res, r, MakeImmString("GASMAN"));
+    tmp = MakeImmString("GASMAN");
 #elif defined(USE_BOEHM_GC)
-    AssPRec(res, r, MakeImmString("Boehm GC"));
+    tmp = MakeImmString("Boehm GC");
 #elif defined(USE_JULIA_GC)
-    AssPRec(res, r, MakeImmString("Julia GC"));
+    tmp = MakeImmString("Julia GC");
 #else
-    #error Unsupported garbage collector
+#error Unsupported garbage collector
 #endif
+    AssPRec(res, RNamName("GC"), tmp);
 
 #ifdef USE_JULIA_GC
-  /* export Julia version  */
-  str = MakeImmString( jl_ver_string() );
-  r = RNamName("JULIA_VERSION");
-  AssPRec(res, r, str);
+    // export Julia version
+    AssPRec(res, RNamName("JULIA_VERSION"), MakeImmString(jl_ver_string()));
 #endif
 
-  r = RNamName("KernelDebug");
+    r = RNamName("KernelDebug");
 #ifdef GAP_KERNEL_DEBUG
-  AssPRec(res, r, True);
+    AssPRec(res, r, True);
 #else
-  AssPRec(res, r, False);
+    AssPRec(res, r, False);
 #endif
 
-  r = RNamName("MemCheck");
+    r = RNamName("MemCheck");
 #ifdef GAP_MEM_CHECK
-  AssPRec(res, r, True);
+    AssPRec(res, r, True);
 #else
-  AssPRec(res, r, False);
+    AssPRec(res, r, False);
 #endif
 
-  MakeImmutable(res);
-  
-  return res;
-  
+    MakeImmutable(res);
+
+    return res;
 }
 
 /****************************************************************************
