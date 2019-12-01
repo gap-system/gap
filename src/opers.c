@@ -1394,7 +1394,6 @@ static void HandleMethodNotFound(Obj   oper,
 {
   Obj r;
   Obj arglist;
-  UInt i;
 #ifdef HPCGAP
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
@@ -1412,11 +1411,8 @@ static void HandleMethodNotFound(Obj   oper,
       RNamPrecedence = RNamName("Precedence");
     }
   AssPRec(r,RNamOperation,oper);
-  arglist = NEW_PLIST_IMM(nargs ? T_PLIST_DENSE : T_PLIST_EMPTY, nargs);
-  SET_LEN_PLIST(arglist,nargs);
-  for (i = 0; i < nargs; i++)
-    SET_ELM_PLIST( arglist, i+1, args[i]);
-  CHANGED_BAG(arglist);
+  arglist = NewPlistFromArray(args, nargs);
+  MakeImmutableNoRecurse(arglist);
   AssPRec(r,RNamArguments,arglist);
   AssPRec(r,RNamIsVerbose,verbose ? True : False);
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
@@ -3320,11 +3316,8 @@ static Obj FuncSETTER_FUNCTION(Obj self, Obj name, Obj filter)
 
     fname = WRAP_NAME(name, "SetterFunc");
     func = NewFunction( fname, 2, ArglistObjVal, DoSetterFunction );
-    tmp = NEW_PLIST_IMM( T_PLIST, 2 );
-    SET_LEN_PLIST( tmp, 2 );
-    SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
-    SET_ELM_PLIST( tmp, 2, filter );
-    CHANGED_BAG(tmp);
+    tmp = NewPlistFromArgs(INTOBJ_INT(RNamObj(name)), filter);
+    MakeImmutableNoRecurse(tmp);
     SET_ENVI_FUNC(func, tmp);
     CHANGED_BAG(func);
     return func;
@@ -3679,18 +3672,12 @@ static Int InitKernel (
     /* share between uncompleted functions                                 */
     StringFilterSetter = MakeImmString("<<filter-setter>>");
 
-    ArglistObj = NEW_PLIST_IMM( T_PLIST, 1 );
-    SET_LEN_PLIST( ArglistObj, 1 );
-    SET_ELM_PLIST( ArglistObj, 1, MakeImmString("obj") );
-    CHANGED_BAG( ArglistObj );
+    ArglistObj = NewPlistFromArgs(MakeImmString("obj"));
+    MakeImmutableNoRecurse(ArglistObj);
 
-    ArglistObjVal = NEW_PLIST_IMM( T_PLIST, 2 );
-    SET_LEN_PLIST( ArglistObjVal, 2 );
-    SET_ELM_PLIST( ArglistObjVal, 1, MakeImmString("obj") );
-    CHANGED_BAG( ArglistObjVal );
-    SET_ELM_PLIST( ArglistObjVal, 2, MakeImmString("val") );
-    CHANGED_BAG( ArglistObjVal );
-
+    ArglistObjVal =
+        NewPlistFromArgs(MakeImmString("obj"), MakeImmString("val"));
+    MakeImmutableNoRecurse(ArglistObjVal);
 
     // Declare the handlers used in various places. Some of the most common
     // ones are abbreviated to save space in saved workspace.

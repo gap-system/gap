@@ -381,11 +381,9 @@ Int RegisterBreakloopObserver(intfunc func)
 static Obj ErrorMessageToGAPString(const Char * msg, Int arg1, Int arg2)
 {
     Char message[1024];
-    Obj  Message;
     SPrTo(message, sizeof(message), msg, arg1, arg2);
     message[sizeof(message) - 1] = '\0';
-    Message = MakeString(message);
-    return Message;
+    return MakeImmString(message);
 }
 
 
@@ -417,9 +415,8 @@ static Obj CallErrorInner(const Char * msg,
     AssPRec(r, RNamName("printThisStatement"),
             printThisStatement ? True : False);
     AssPRec(r, RNamName("lateMessage"), lateMessage);
-    l = NEW_PLIST_IMM(T_PLIST_HOM, 1);
-    SET_ELM_PLIST(l, 1, EarlyMsg);
-    SET_LEN_PLIST(l, 1);
+    l = NewPlistFromArgs(EarlyMsg);
+    MakeImmutableNoRecurse(l);
 
     // Signal functions about entering and leaving break loop
     for (i = 0; i < ARRAY_SIZE(signalBreakFuncList) && signalBreakFuncList[i];
