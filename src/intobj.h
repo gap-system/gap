@@ -134,27 +134,6 @@ EXPORT_INLINE Obj INTOBJ_INT(Int i)
     return o;
 }
 
-/****************************************************************************
-**
-*F  EQ_INTOBJS( <o>, <l>, <r> ) . . . . . . . . . compare two integer objects
-**
-**  'EQ_INTOBJS' returns 'True' if the  (immediate)  integer  object  <l>  is
-**  equal to the (immediate) integer object <r> and  'False'  otherwise.  The
-**  result is also stored in <o>.
-*/
-#define EQ_INTOBJS(o, l, r) ((o) = (((Int)(l)) == ((Int)(r)) ? True : False))
-
-
-/****************************************************************************
-**
-*F  LT_INTOBJS( <o>, <l>, <r> ) . . . . . . . . . compare two integer objects
-**
-**  'LT_INTOBJS' returns 'True' if the  (immediate)  integer  object  <l>  is
-**  less than the (immediate) integer object <r> and  'False' otherwise.  The
-**  result is also stored in <o>.
-*/
-#define LT_INTOBJS(o, l, r) ((o) = (((Int)(l)) < ((Int)(r)) ? True : False))
-
 
 //
 // Check whether the sign and guard bit of the given word match.
