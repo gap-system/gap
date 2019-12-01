@@ -209,34 +209,31 @@ static Int SyLoadModule(const Char * name, InitInfoFunc * func)
 */
 static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 {
-    StructInitInfo * info;
-    Obj              crc1;
-    Int              res;
-    InitInfoFunc     init;
-
     /* check the argument                                                  */
     RequireStringRep("LOAD_DYN", filename);
     if (!IS_INTOBJ(crc) && crc != False) {
         RequireArgument("LOAD_DYN", crc, "must be a small integer or 'false'");
     }
 
-    /* try to read the module                                              */
-#ifdef HAVE_DLOPEN
-    res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
-    if (res == 1)
-        ErrorQuit("module '%g' not found", (Int)filename, 0);
-    else if (res == 3)
-        ErrorQuit("symbol 'Init_Dynamic' not found", 0, 0);
-#else
+#if !defined(HAVE_DLOPEN)
     /* no dynamic library support                                          */
     if (SyDebugLoading) {
         Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0, 0);
     }
     return False;
-#endif
+#else
+
+    InitInfoFunc init;
+
+    /* try to read the module                                              */
+    Int res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
+    if (res == 1)
+        ErrorQuit("module '%g' not found", (Int)filename, 0);
+    else if (res == 3)
+        ErrorQuit("symbol 'Init_Dynamic' not found", 0, 0);
 
     /* get the description structure                                       */
-    info = (*init)();
+    StructInitInfo * info = (*init)();
     if (info == 0)
         ErrorQuit("call to init function failed", 0, 0);
 
@@ -258,14 +255,10 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 
     /* check the crc value                                                 */
     if (crc != False) {
-        crc1 = ObjInt_Int(info->crc);
-        if (!EQ(crc, crc1)) {
+        if (INT_INTOBJ(crc) != info->crc) {
             if (SyDebugLoading) {
-                Pr("#I  LOAD_DYN: crc values do not match, gap ", 0, 0);
-                PrintInt(crc);
-                Pr(", dyn ", 0, 0);
-                PrintInt(crc1);
-                Pr("\n", 0, 0);
+                Pr("#I  LOAD_DYN: crc values do not match, gap %d, dyn %d\n",
+                   INT_INTOBJ(crc), info->crc);
             }
             return False;
         }
@@ -275,6 +268,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     RecordLoadedModule(info, 0, CONST_CSTR_STRING(filename));
 
     return True;
+#endif
 }
 
 
@@ -285,7 +279,6 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 {
     StructInitInfo * info = 0;
-    Obj              crc1;
     Int              k;
 
     /* check the argument                                                  */
@@ -311,14 +304,10 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 
     /* check the crc value                                                 */
     if (crc != False) {
-        crc1 = ObjInt_Int(info->crc);
-        if (!EQ(crc, crc1)) {
+        if (INT_INTOBJ(crc) != info->crc) {
             if (SyDebugLoading) {
-                Pr("#I  LOAD_STAT: crc values do not match, gap ", 0, 0);
-                PrintInt(crc);
-                Pr(", stat ", 0, 0);
-                PrintInt(crc1);
-                Pr("\n", 0, 0);
+                Pr("#I  LOAD_STAT: crc values do not match, gap %d, stat %d\n",
+                   INT_INTOBJ(crc), info->crc);
             }
             return False;
         }
