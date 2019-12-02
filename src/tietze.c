@@ -103,17 +103,16 @@ CheckTietzeLengths(Obj tietze, Int numrels, Obj * lens, Obj ** ptLens)
 
 /****************************************************************************
 **
-*F  CheckTietzeFlags( <tietze>, <numrels>, <flags>, <ptFlags> )
+*F  CheckTietzeFlags( <tietze>, <numrels> )
 */
-static void
-CheckTietzeFlags(Obj tietze, Int numrels, Obj * flags, Obj ** ptFlags)
+static Obj CheckTietzeFlags(Obj tietze, Int numrels)
 {
     /* get and check the Tietze flags list                                 */
-    *flags = ELM_PLIST(tietze, TZ_FLAGS);
-    if ( *flags==0 || ! IS_PLIST(*flags) || LEN_PLIST(*flags)!=numrels ) {
+    Obj flags = ELM_PLIST(tietze, TZ_FLAGS);
+    if (flags==0 || ! IS_PLIST(flags) || LEN_PLIST(flags)!=numrels ) {
         ErrorQuit("invalid Tietze flags list", 0, 0);
     }
-    *ptFlags = ADDR_OBJ(*flags);
+    return flags;
 }
 
 
@@ -170,12 +169,13 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
     /* get and check the Tietze flags list                                 */
-    CheckTietzeFlags( tietze, numrels, &flags, &ptFlags );
+    flags = CheckTietzeFlags(tietze, numrels);
 
     /* check list <lens> to contain the relator lengths                    */
     CheckTietzeRelLengths( tietze, ptRels, ptLens, numrels, &total );
 
     /* sort the list                                                       */
+    ptFlags = ADDR_OBJ(flags);
     h = 1;
     while ( 9 * h + 4 < numrels )
         h = 3 * h + 1;
@@ -271,7 +271,6 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
     Obj                 lens;           /* handle of the lengths list      */
     Obj *               ptLens;         /* pointer to this list            */
     Obj                 flags;          /* handle of the flags list        */
-    Obj *               ptFlags;        /* pointer to this list            */
     Obj                 invs;           /* handle of the inverses list     */
     Obj *               ptInvs;         /* pointer to this list            */
     Obj                 rel;            /* handle of a relator             */
@@ -299,7 +298,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
     CheckTietzeRelLengths( tietze, ptRels, ptLens, numrels, &total );
 
     /* get and check the Tietze flags list                                 */
-    CheckTietzeFlags( tietze, numrels, &flags, &ptFlags );
+    flags = CheckTietzeFlags(tietze, numrels);
 
     /* get and check the Tietze inverses list                              */
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
@@ -312,7 +311,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
         altered = 0;
 
         /* don't change a square relator defining a valid involution       */
-        if (ptFlags[i] == INTOBJ_INT(3) && leng == 2 &&
+        if (ELM_PLIST(flags, i) == INTOBJ_INT(3) && leng == 2 &&
             ptRel[1] == ptInvs[-INT_INTOBJ(ptRel[1])] ) {
             continue;  /*  loop over i  */
         }
@@ -367,7 +366,6 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
             CHANGED_BAG(rels);
             ptRels  = ADDR_OBJ( rels );
             ptLens  = ADDR_OBJ( lens );
-            ptFlags = ADDR_OBJ( flags );
             ptInvs  = ADDR_OBJ( invs ) + (numgens + 1);
         }
 
@@ -391,7 +389,6 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     Obj                 lens;           /* handle of the lengths list      */
     Obj *               ptLens;         /* pointer to this list            */
     Obj                 flags;          /* handle of the flags list        */
-    Obj *               ptFlags;        /* pointer to this list            */
     Obj                 invs;           /* handle of the inverses list     */
     Obj *               ptInvs;         /* pointer to this list            */
     Obj *               ptWrd;          /* pointer to this word            */
@@ -428,7 +425,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
     /* get and check the Tietze flags list                                 */
-    CheckTietzeFlags( tietze, numrels, &flags, &ptFlags );
+    flags = CheckTietzeFlags(tietze, numrels);
 
     /* get and check the Tietze inverses list                              */
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
@@ -1020,7 +1017,8 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
     /* get and check the Tietze flags list                                 */
-    CheckTietzeFlags( tietze, numrels, &flags, &ptFlags );
+    flags = CheckTietzeFlags(tietze, numrels);
+    ptFlags = ADDR_OBJ(flags);
 
     /* check list <lens> to contain the relator lengths                    */
     CheckTietzeRelLengths( tietze, ptRels, ptLens, numrels, &total );
