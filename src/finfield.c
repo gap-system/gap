@@ -1286,16 +1286,13 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
     qR = SIZE_FF( fR  );
 
     if ( qZ == qR ) {
-        fX = fZ;
         qX = qZ;
     }
     else if ( qZ % qR == 0 && (qZ-1) % (qR-1) == 0 ) {
-        fX = fZ;
         qX = qZ;
         if ( vR != 0 )  vR = (qZ-1) / (qR-1) * (vR-1) + 1;
     }
     else if ( qR % qZ == 0 && (qR-1) % (qZ-1) == 0 ) {
-        fX = fR;
         qX = qR;
         if ( vZ != 0 )  vZ = (qR-1) / (qZ-1) * (vZ-1) + 1;
     }

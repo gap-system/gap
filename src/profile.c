@@ -435,16 +435,14 @@ static inline Int8 getTicks(void)
 
 static inline void printOutput(UInt line, int nameid, int exec, int visited)
 {
-    Int8 ticks = 0, newticks = 0;
-
     if (profileState.lastOutputted.line != line ||
         profileState.lastOutputted.fileID != nameid ||
         profileState.lastOutputtedExec != exec) {
 
         if (profileState.OutputRepeats) {
-            newticks = getTicks();
+            Int newticks = getTicks();
 
-            ticks = newticks - profileState.lastOutputtedTime;
+            Int ticks = newticks - profileState.lastOutputtedTime;
 
             // Basic sanity check
             if (ticks < 0)
@@ -459,7 +457,6 @@ static inline void printOutput(UInt line, int nameid, int exec, int visited)
                     ticksDone = (ticks / profileState.minimumProfileTick) *
                                 profileState.minimumProfileTick;
                 }
-                ticks -= ticksDone;
                 outputFilenameIdIfRequired(nameid);
                 fprintf(profileState.Stream,
                         "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,"

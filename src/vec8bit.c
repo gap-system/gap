@@ -1375,7 +1375,7 @@ static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe)
     UInt d;
 
     if (VAL_FFE(ffe) == 1) {    // ffe is the one
-        prod = CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
+        return CopyVec8Bit(vec, IS_MUTABLE_OBJ(vec));
     }
     else if (VAL_FFE(ffe) == 0)
         return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec),
@@ -1682,7 +1682,6 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
         if (val != 0)
             val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mul)) - 1);
         mul = NEW_FFE(FiniteField(p, d0), val);
-        q = q0;
     }
 
     AddVec8BitVec8BitMultInner(vl, vl, vr, mul, INT_INTOBJ(from),
@@ -1743,7 +1742,6 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_3(Obj self, Obj vl, Obj vr, Obj mul)
         if (val != 0)
             val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mul)) - 1);
         mul = NEW_FFE(FiniteField(p, d0), val);
-        q = q0;
     }
     AddVec8BitVec8BitMultInner(vl, vl, vr, mul, 1, LEN_VEC8BIT(vl));
     return (Obj)0;
@@ -4402,7 +4400,6 @@ static Obj FuncADD_COEFFS_VEC8BIT_2(Obj self, Obj vec1, Obj vec2)
             return TRY_NEXT_METHOD;
         RewriteVec8Bit(vec1, q0);
         RewriteVec8Bit(vec2, q0);
-        q = q0;
     }
     AddVec8BitVec8BitInner(vec1, vec1, vec2, 1, len);
     return INTOBJ_INT(RightMostNonZeroVec8Bit(vec1));

@@ -620,7 +620,6 @@ Obj ElmsListDefault (
     Obj                 poss )
 {
     Obj                 elms;           /* selected sublist, result        */
-    Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element from <list>         */
     Int                 lenPoss;        /* length of <positions>           */
     Int                 pos;            /* <position> as integer           */
@@ -629,9 +628,6 @@ Obj ElmsListDefault (
 
     /* general code                                                        */
     if ( ! IS_RANGE(poss) ) {
-
-        /* get the length of <list>                                        */
-        lenList = LEN_LIST( list );
 
         /* get the length of <positions>                                   */
         /* OK because all positions lists are small                        */
@@ -675,7 +671,7 @@ Obj ElmsListDefault (
     else {
 
         /* get the length of <list>                                        */
-        lenList = LEN_LIST( list );
+        Int lenList = LEN_LIST( list );
 
         /* get the length of <positions>, the first elements, and the inc. */
         lenPoss = GET_LEN_RANGE( poss );

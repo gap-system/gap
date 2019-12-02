@@ -138,7 +138,7 @@ static Obj FuncGAP_CRC(Obj self, Obj filename)
 **
 *F  ActivateModule( <info> )
 */
-void ActivateModule(StructInitInfo * info)
+Int ActivateModule(StructInitInfo * info)
 {
     Int res = 0;
 
@@ -166,6 +166,8 @@ void ActivateModule(StructInitInfo * info)
 
     if (info->initModuleState)
         res = res || (info->initModuleState)();
+
+    return res;
 }
 
 
