@@ -26,12 +26,12 @@ addons:
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
-    - env: TEST_SUITES="docomp testtravis"
+    - env: TEST_SUITES="docomp teststandard"
 
     # the same in 32 bit mode, and with debugging turned off, to (a) make it
     # a lot faster, and (b) to make sure nobody accidentally puts some vital
     # computing into code that is only run when debugging is on.
-    - env: TEST_SUITES="docomp testtravis" ABI=32 CONFIGFLAGS=""
+    - env: TEST_SUITES="docomp teststandard" ABI=32 CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
@@ -40,7 +40,7 @@ matrix:
           - libreadline-dev:i386
 
     # HPC-GAP builds (for efficiency, we don't build all combinations)
-    - env: TEST_SUITES="docomp testtravis" ABI=64 HPCGAP=yes
+    - env: TEST_SUITES="docomp teststandard" ABI=64 HPCGAP=yes
 
     # compiler packages and run package tests
     # don't use --coverage in CFLAGS, it causes the weird `atexit` bug in
