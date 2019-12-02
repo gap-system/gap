@@ -14,6 +14,7 @@
 
 #include "bool.h"
 #include "error.h"
+#include "gaputils.h"
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
@@ -588,18 +589,12 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
 {
     Obj                 tietze;         /* handle of the Tietze stack      */
     Obj                 rels;           /* handle of the relators list     */
-    Obj *               ptRels;         /* pointer to this list            */
-    Obj                 res;            /* handle of the result            */
+    const Obj *         ptRels;         /* pointer to this list            */
     Obj                 cnts;           /* list of the counts              */
-    Obj *               ptCnts;         /* pointer to the counts list      */
     Obj                 mins;           /* list of minimal occurrence list  */
-    Obj *               ptMins;         /* pointer to the minimals list    */
     Obj                 lens;           /* list of lengths of those        */
-    Obj *               ptLens;         /* pointer to the lengths list     */
     Obj                 rel;            /* handle of a relator             */
     Obj *               ptRel;          /* pointer to this relator         */
-    Obj                 aux;            /* auxiliary list                  */
-    Int  *              ptAux;          /* pointer to the lengths list     */
     Int                 numgens;        /* number of Tietze generators     */
     Int                 numrels;        /* number of Tietze relators       */
     Int                 leng;           /* length of a relator             */
@@ -623,7 +618,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
 
     /* get and check the Tietze relators list                              */
     rels = CheckTietzeRelators(tietze);
-    ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
     numgens = INT_INTOBJ(ELM_PLIST(tietze, TZ_NUMGENS));
 
@@ -639,40 +633,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         num = numgens;
     }
 
-    /* allocate the result lists                                           */
-    cnts = NEW_PLIST( T_PLIST, numgens );
-    SET_LEN_PLIST( cnts, numgens );
-    for ( k = 1;  k <= numgens;  k++ )
-        ADDR_OBJ(cnts)[k] = INTOBJ_INT(0);
-
-    mins = NEW_PLIST( T_PLIST, numgens );
-
-    lens = NEW_PLIST( T_PLIST, numgens );
-    
-    res = NEW_PLIST( T_PLIST, 3 );
-    SET_LEN_PLIST( res, 3 );
-    ADDR_OBJ(res)[1] = cnts;
-    ADDR_OBJ(res)[2] = mins;
-    ADDR_OBJ(res)[3] = lens;
-    CHANGED_BAG(res);
-
-    /* allocate an auxiliary list                                          */
-    ptAux = 0;
-    if ( numgens > 1 ) {
-        aux   = NEW_STRING( (numgens+1)*sizeof(Int) );
-        ptAux = (Int*)ADDR_OBJ(aux);
-        ptAux[0] = numgens;
-        for ( k = 1;  k <= numgens;  k++ )
-            ptAux[k] = 0;
-
-    }
-
-    /* now we can safely grab pointers                                     */
-    ptRels = ADDR_OBJ(rels);
-    ptCnts = ADDR_OBJ(cnts);
-    ptLens = ADDR_OBJ(lens);
-    ptMins = ADDR_OBJ(mins);
-
     /* handle special case of single generator in generator list           */
     if ( numgens == 1 ) {
 
@@ -680,6 +640,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         nr = 0;  nrm = 0;  min = 0;
 
         /* loop over all relators                                          */
+        ptRels = CONST_ADDR_OBJ(rels);
         for ( i = 1;  i <= numrels;  i++ ) {
             rel = ptRels[i];
             if ( rel == 0 || ! IS_PLIST(rel) ) {
@@ -710,20 +671,43 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         }
 
         /* put the information into the result bags                        */
-        ptCnts[1] = INTOBJ_INT( nr );
-        if ( nr != 0 ) {
-            ptCnts[1] = INTOBJ_INT( nr );
-            SET_LEN_PLIST( lens, 1 );
-            SET_ELM_PLIST( lens, 1, INTOBJ_INT(nrm) );
-            SET_LEN_PLIST( mins, 1 );
-            SET_ELM_PLIST( mins, 1, INTOBJ_INT(min) );
+        cnts = NewPlistFromArgs(INTOBJ_INT(nr));
+        if (nr != 0) {
+            lens = NewPlistFromArgs(INTOBJ_INT(nrm));
+            mins = NewPlistFromArgs(INTOBJ_INT(min));
+        }
+        else {
+            lens = NewEmptyPlist();
+            mins = NewEmptyPlist();
         }
     }
 
     /* handle general case of all Tietze generators                        */
     else {
 
+        // allocate the result lists
+        cnts = NEW_PLIST(T_PLIST, numgens);
+        SET_LEN_PLIST(cnts, numgens);
+        for (k = 1; k <= numgens; k++)
+            ADDR_OBJ(cnts)[k] = INTOBJ_INT(0);
+
+        mins = NEW_PLIST(T_PLIST, numgens);
+        lens = NEW_PLIST(T_PLIST, numgens);
+
+        // allocate an auxiliary list
+        Obj   aux = NEW_STRING((numgens + 1) * sizeof(Int));
+        Int * ptAux = (Int *)ADDR_OBJ(aux);
+        ptAux[0] = numgens;
+        for (k = 1; k <= numgens; k++)
+            ptAux[k] = 0;
+
+        // now we can safely grab pointers
+        Obj * ptCnts = ADDR_OBJ(cnts);
+        Obj * ptLens = ADDR_OBJ(lens);
+        Obj * ptMins = ADDR_OBJ(mins);
+
         /* loop over all relators                                          */
+        ptRels = CONST_ADDR_OBJ(rels);
         for ( i = 1;  i <= numrels;  i++ ) {
             rel = ptRels[i];
             if ( rel == 0 || ! IS_PLIST(rel) ) {
@@ -774,7 +758,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         SET_LEN_PLIST( lens, k );
     }
 
-    return res;
+    return NewPlistFromArgs(cnts, mins, lens);
 }
 
 
