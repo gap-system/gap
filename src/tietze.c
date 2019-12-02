@@ -419,9 +419,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     Int                 wleng;          /* length of the replacing word    */
     Int                 occ;            /* number of occurrences           */
     Int                 i, j;           /* loop variables                  */
-    Int                 alen,len;       /* number of changed relators */
-    Obj                 Idx;
-    Obj *               ptIdx;          /* List of changed relators */
+    Obj                 Idx;            /* list of changed relators */
 
     /* check the Tietze stack                                              */
     CheckTietzeStack(tietze);
@@ -468,10 +466,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     total = CheckTietzeRelLengths(tietze);
 
     /* list of changed relator indices */
-    len=0;
-    alen=20;
-    Idx=NEW_PLIST( T_PLIST, alen );
-    SET_LEN_PLIST(Idx,alen);
+    Idx = NEW_PLIST(T_PLIST, 20);
 
     /* allocate a bag for the inverse of the replacing word                */
     iwrd   = NEW_PLIST( T_PLIST, wleng );
@@ -480,7 +475,6 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     ptInvs = ADDR_OBJ( invs ) + (numgens + 1);
     ptWrd  = ADDR_OBJ( word );
     ptIwrd = ADDR_OBJ( iwrd );
-    ptIdx  = ADDR_OBJ( Idx );
 
     /* invert the replacing word                                           */
     SET_LEN_PLIST( iwrd, wleng );
@@ -496,7 +490,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 
     /* loop over all relators                                              */
     for ( i = 1;  i <= numrels;  i++ ) {
-        /* We assume that ptRels, ptLens and ptIdx are valid at the 
+        /* We assume that ptRels and ptLens are valid at the 
            beginning of this loop (and not rendered invalid by a 
            garbage collection)! */
         rel = ptRels[i];
@@ -521,22 +515,13 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
             continue;
         }
 
-        /* mark that the relator changed */
-        if (len>=alen) {
-          alen+=100; /* more relators changed */
-          GROW_PLIST(Idx,alen);
-          SET_LEN_PLIST(Idx,alen);
-          ptIdx=ADDR_OBJ(Idx);
-        }
-        len+=1;
-        ptIdx[len]=INTOBJ_INT(i);
-        CHANGED_BAG(Idx);
+        // remember that the relator changed
+        PushPlist(Idx, INTOBJ_INT(i));
 
         /* allocate a bag for the modified Tietze relator                  */
         new = NEW_PLIST( T_PLIST, leng + occ * (wleng - 1) );
         /* Now renew saved pointers into bags: */
         pt2 = ptNew = ADDR_OBJ( new );
-        ptIdx  = ADDR_OBJ( Idx );
         ptLens = ADDR_OBJ( lens );
         ptInvs = ADDR_OBJ( invs ) + (numgens + 1);
         ptWrd  = ADDR_OBJ( word );
@@ -584,15 +569,10 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
         SHRINK_PLIST( new, newleng );
         ptRels = ADDR_OBJ( rels );
         ptLens = ADDR_OBJ( lens );
-        ptIdx  = ADDR_OBJ( Idx );
         ptRels[i] = new;
         ADDR_OBJ( flags )[i] = INTOBJ_INT( 1 );
         CHANGED_BAG(rels);
     }
-
-    SHRINK_PLIST(Idx,len);
-    SET_LEN_PLIST(Idx,len);
-    CHANGED_BAG(Idx);
 
     SET_ELM_PLIST(tietze, TZ_TOTAL, INTOBJ_INT(total));
 
