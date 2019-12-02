@@ -1311,11 +1311,20 @@ Region * CurrentRegion(void)
     return TLS(currentRegion);
 }
 
+// Kernel debugging information for guards.
+//
+// When compiled with -DDEBUG_GUARDS, the GAP variable GUARD_ERROR_STACK
+// will contain the C stack after an error, allowing us to located where
+// it occurred without having to fire up a debugger first.
+//
+// The variables NumReadErrors and NumWriteErrors track the number of
+// failed guard checks. These are used in conjunction with the low-level
+// function DISABLE_GUARDS() in order to track how many guard failures
+// occur in a given section of code.
+
 #ifdef DEBUG_GUARDS
 extern GVarDescriptor GUARD_ERROR_STACK;
 #endif
-
-// These are temporary debugging functions.
 
 static Int NumReadErrors = 0;
 static Int NumWriteErrors = 0;
