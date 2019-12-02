@@ -3106,7 +3106,7 @@ UInt SyExecuteProcess (
       func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
-    pid = vfork();
+    pid = fork();
     if ( pid == -1 ) {
         return -1;
     }
