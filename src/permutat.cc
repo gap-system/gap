@@ -2289,7 +2289,7 @@ UInt ScanPermCycle(
     GAP_ASSERT(len >= 1);
 
     /* loop over the entries of the cycle                              */
-    c = p = l = 0;
+    p = l = 0;
     for (j = len; 1 <= j; j--) {
 
         /* get and check current entry for the cycle                   */

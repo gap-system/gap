@@ -551,7 +551,7 @@ void LoadModules(void);
 **
 *F  ActivateModule( <info> )
 */
-void ActivateModule(StructInitInfo * info);
+Int ActivateModule(StructInitInfo * info);
 
 
 /****************************************************************************

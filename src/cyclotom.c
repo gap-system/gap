@@ -1172,24 +1172,17 @@ static Obj ProdCycInt(Obj opL, Obj opR)
 
     /* otherwise multiply every coefficent                                 */
     else {
-        hdP = NewBag( T_CYC, SIZE_CYC(opL) * (sizeof(Obj)+sizeof(UInt4)) );
-        SET_NOF_CYC(hdP, NOF_CYC(opL));
+        len = SIZE_OBJ(opL);
+        hdP = NewBag(T_CYC, len);
+        memcpy( ADDR_OBJ(hdP), CONST_ADDR_OBJ(opL), len);
         len = SIZE_CYC(opL);
-        cfs = CONST_COEFS_CYC(opL);
-        exs = CONST_EXPOS_CYC(opL,len);
         cfp = COEFS_CYC(hdP);
-        exp = EXPOS_CYC(hdP,len);
         for ( i = 1; i < len; i++ ) {
-            CHANGED_BAG( hdP );
-            prd = PROD( cfs[i], opR );
-            cfs = CONST_COEFS_CYC(opL);
-            exs = CONST_EXPOS_CYC(opL,len);
+            prd = PROD( cfp[i], opR );
             cfp = COEFS_CYC(hdP);
-            exp = EXPOS_CYC(hdP,len);
             cfp[i] = prd;
-            exp[i] = exs[i];
+            CHANGED_BAG( hdP );
         }
-        CHANGED_BAG( hdP );
     }
 
     /* return the result                                                   */

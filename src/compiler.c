@@ -5231,7 +5231,6 @@ Int CompileFunc (
     Obj                 magic2 )
 {
     Int                 i;              /* loop variable                   */
-    Obj                 n;              /* temporary                       */
     UInt                col;
     UInt                compFunctionsNr;
 
@@ -5317,7 +5316,7 @@ Int CompileFunc (
     }
     Emit( "\n/* information for the functions */\n" );
     for ( i = 1; i <= compFunctionsNr; i++ ) {
-        n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
+        Obj n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
             Emit( "NameFunc[%d] = MakeImmString(\"%G\");\n", i, n );
         }
@@ -5353,7 +5352,6 @@ Int CompileFunc (
               i, compilerMagic2, i );
         Emit( "InitGlobalBag( &(NameFunc[%d]), \"%g:NameFunc[%d](\"FILE_CRC\")\" );\n", 
                i, magic2, i );
-        n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
     }
     Emit( "\n/* return success */\n" );
     Emit( "return 0;\n" );

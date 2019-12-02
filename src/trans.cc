@@ -3017,7 +3017,6 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
         ptf4 = CONST_ADDR_TRANS4(f);
         ptg4 = ADDR_TRANS4(g);
 
-        i = INT_INTOBJ(ELM_LIST(list, 1)) - 1;
         for (j = 0; j < deg; j++) {
             ptg4[j] = j;
         }
