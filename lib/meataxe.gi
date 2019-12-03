@@ -3128,17 +3128,6 @@ local a,u,i,nb;
 end;
 SMTX.BasesMinimalSupermodules:=SMTX_BasesMinimalSupermodules;
 
-SMTX_BasisRadical:=function(module)
-local m,i,r;
-  m:=SMTX.BasesMaximalSubmodules(module);
-  r:=m[1];
-  for i in [2..Length(m)] do
-    r:=SumIntersectionMat(r,m[i])[2];
-  od;
-  return r;
-end;
-SMTX.BasisRadical:=SMTX_BasisRadical;
-
 #############################################################################
 ##
 #F SMTX.SpanOfMinimalSubGModules(m1, m2) . .
@@ -3182,7 +3171,7 @@ local cf, mat, i;
    cf:=SMTX.CollectedFactors(module);
    mat:=Concatenation(List(cf,i->SMTX_SpanOfMinimalSubGModules(i[1],module)));
    if Length(cf) = 1 then
-     return mat;
+     return ImmutableMatrix(module.field,mat);
    fi;
    TriangulizeMat(mat);
    mat:=ImmutableMatrix(module.field,mat);
