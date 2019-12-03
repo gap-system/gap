@@ -44,8 +44,8 @@ operating system. In particular, it does not include an automatic installer
 program.
 
 Installing the GAP distribution with all the packages and full data libraries
-takes about 1.6 GB of disk space and (except on Windows) will require both a C
-and a C++ compiler (gcc is recommended) to be installed on your system.
+will require (except on Windows) both a C and a C++ compiler (gcc or clang
+is recommended) to be installed on your system.
 To get maximum benefit from GAP and from various packages, we recommend
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation. See
@@ -285,9 +285,10 @@ should give the following lines:
 
 If you want to run a quick test of your GAP installation (though this is
 not required), you can read in a test script that exercises some GAP's
-capabilities. The test requires about 1 GB of memory and should run in
-under a minute on an up-to-date desktop computer. You will get a large
-number of lines with output about the progress of the tests, for example:
+capabilities. To run this test, we recommend to use a computer with at
+least 1 GB of memory; on an up-to-date desktop computer, it should
+complete in about a minute. You will get a large number of lines with
+output about the progress of the tests, for example:
 
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
     You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.
@@ -295,14 +296,15 @@ number of lines with output about the progress of the tests, for example:
     Architecture: SOMETHING-SOMETHING-gcc-default64
 
     testing: ..../gap-4.X.Y/tst/testinstall/alghom.tst
-         105 msec for alghom.tst
+          84 ms (55 ms GC) and 2.90MB allocated for alghom.tst
     testing: ..../gap-4.X.Y/tst/testinstall/algmat.tst
-        1216 msec for algmat.tst
+         839 ms (114 ms GC) and 219MB allocated for algmat.tst
     [ further lines deleted ]
     testing: ..../gap-4.X.Y/tst/testinstall/zmodnze.tst
-          90 msec for zmodnze.tst
+         127 ms (119 ms GC) and 1.29MB allocated for zmodnze.tst
     -----------------------------------
-    total     52070 msec
+    total     62829 ms (24136 ms GC) and 8.61GB allocated
+                  0 failures in 252 files
 
     #I  No errors detected while testing
 
@@ -314,9 +316,9 @@ performing all tests from the `tst` directory.
 
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
 
-The test requires about 1 GB of memory and runs about one hour on an
-Intel Core 2 Duo / 2.53 GHz machine, and produces an output similar to the
-`testinstall.g` test.
+Again we recommend a computer with at least 1 GB of memory to run this
+test. It takes significantly longer to complete than `testinstall.g`,
+but otherwise produces output similar to the `testinstall.g` test.
 
 Windows users should note that the Command Prompt user interface provided
 by Microsoft might not offer history scrolling or cut and paste with the
