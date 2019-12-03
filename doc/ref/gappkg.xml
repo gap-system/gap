@@ -1688,15 +1688,20 @@ the tests, for example:
 <Log><![CDATA[
 You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.
 
-Architecture: x86_64-apple-darwin15.6.0-gcc-6-default64
+Architecture: SOMETHING-SOMETHING-gcc-default64
 
-testing: /Users/alexk/GITREPS/gap/tst/testinstall/alghom.tst
-     140 msec for alghom.tst        
-testing: /Users/alexk/GITREPS/gap/tst/testinstall/algmat.tst
-    1309 msec for algmat.tst        
-testing: /Users/alexk/GITREPS/gap/tst/testinstall/algsc.tst
-     500 msec for algsc.tst         
-... further lines deleted ...
+testing: ..../gap-4.X.Y/tst/testinstall/alghom.tst
+      84 ms (55 ms GC) and 2.90MB allocated for alghom.tst
+testing: ..../gap-4.X.Y/tst/testinstall/algmat.tst
+     839 ms (114 ms GC) and 219MB allocated for algmat.tst
+[ further lines deleted ]
+testing: ..../gap-4.X.Y/tst/testinstall/zmodnze.tst
+     127 ms (119 ms GC) and 1.29MB allocated for zmodnze.tst
+-----------------------------------
+total     62829 ms (24136 ms GC) and 8.61GB allocated
+              0 failures in 252 files
+
+#I  No errors detected while testing
 ]]></Log>
 <P/>
 
