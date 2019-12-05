@@ -291,8 +291,6 @@ complete in about a minute. You will get a large number of lines with
 output about the progress of the tests, for example:
 
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
-    You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.
-
     Architecture: SOMETHING-SOMETHING-gcc-default64
 
     testing: ..../gap-4.X.Y/tst/testinstall/alghom.tst

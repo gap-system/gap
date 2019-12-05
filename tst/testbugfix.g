@@ -13,8 +13,6 @@
 ##  gap> Read( Filename( DirectoriesLibrary( "tst" ), "testbugfix.g" ) );
 ##
 
-Print( "You should start GAP4 using `gap -A -x 80 -r -m 100m -o 1g -K 2g'.\n\n" );
-
 TestDirectory( [ DirectoriesLibrary( "tst/testbugfix") ] ,
                rec(exitGAP := true, testOptions := rec( width := 80 ) ) );
 
