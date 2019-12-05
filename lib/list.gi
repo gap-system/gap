@@ -3006,6 +3006,20 @@ InstallMethod( IsBound\[\],
     return index <= Length( list );
     end );
 
+#############################################################################
+##
+#M  IsBound( list[i] ) . . . . . IsBound for small lists with large arguments
+##
+InstallMethod( IsBound\[\],
+    "for a small list and large positive integer",
+    [ IsSmallList, IsPosInt ],
+    function( list, index )
+    if IsSmallIntRep(index) then
+        TryNextMethod();
+    else
+        return false;
+    fi;
+    end );
 
 #############################################################################
 ##
