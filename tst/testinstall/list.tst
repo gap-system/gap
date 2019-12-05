@@ -100,6 +100,17 @@ gap> Unbind(a[1,1,1]);
 Syntax error: '[]' only supports 1 or 2 indices in stream:1
 Unbind(a[1,1,1]);
               ^
+gap> a := [1,,3];;
+gap> IsBound(a[1]);
+true
+gap> IsBound(a[2]);
+false
+gap> IsBound(a[3]);
+true
+gap> IsBound(a[4]);
+false
+gap> IsBound(a[2^100]);
+false
 
 #
 # slices

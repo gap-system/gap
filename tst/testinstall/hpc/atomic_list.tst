@@ -65,6 +65,8 @@ gap> IsBound(a[3]);
 false
 gap> IsBound(a[9]);
 false
+gap> IsBound(a[2^100]);
+false
 gap> GetWithDefault(a, 2, -1);
 7
 gap> GetWithDefault(a, 3, -1);
