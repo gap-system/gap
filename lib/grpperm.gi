@@ -468,6 +468,57 @@ InstallMethod( NrMovedPoints,
 
 #############################################################################
 ##
+#M  OrbitsMovedPoints( <G> )
+##
+InstallMethod( OrbitsMovedPoints, "for a permutation group", [IsPermGroup],
+function(G)
+local o,i;
+  o:=Orbits(G,MovedPoints(G));
+  o:=List(o,x->Set(x));
+  List(o,IsRange); # save memory if long orbits
+  Sort(o);
+  MakeImmutable(o);
+  for i in o do
+    SetIsSSortedList(i,true);
+  od;
+  SetIsSSortedList(o,true);
+  return o;
+end);
+
+
+#############################################################################
+##
+#M  \=( <G>, <H> )  . .  . . . . . . . . .  test if two perm groups are equal
+##
+InstallMethod( \=, "perm groups", IsIdenticalObj, [ IsPermGroup, IsPermGroup ],
+function ( G, H )
+  # avoid new stabilizer chains if they are not computed yet
+  if HasSize(G) and HasSize(H) and Size(G)<>Size(H) then return false;fi;
+
+  if not (HasGeneratorsOfGroup(G) and HasGeneratorsOfGroup(H)) then
+    TryNextMethod();
+  fi;
+
+  if LargestMovedPoint(G)<>LargestMovedPoint(H)
+    or OrbitsMovedPoints(G)<>OrbitsMovedPoints(H) then
+    return false;
+  fi;
+
+  if IsEqualSet( GeneratorsOfGroup( G ), GeneratorsOfGroup( H ) ) then
+    return true;
+  fi;
+
+  # try to use one existing stab chain
+  if HasStabChainMutable(H) or HasStabChainImmutable(H) then
+    return Size(G)=Size(H) and ForAll(GeneratorsOfGroup(G),gen->gen in H);
+  fi;   
+  return Size(G)=Size(H) and ForAll(GeneratorsOfGroup(H),gen->gen in G);
+end);
+
+
+
+#############################################################################
+##
 #M  BaseOfGroup( <G> )
 ##
 InstallMethod( BaseOfGroup,
