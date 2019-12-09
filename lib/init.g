@@ -1015,8 +1015,9 @@ if GAPInfo.CommandLineOptions.norepl then
 elif IsHPCGAP and THREAD_UI() then
   ReadLib("hpc/consoleui.g");
   MULTI_SESSION();
+  PROGRAM_CLEAN_UP();
 else
   SESSION();
+  PROGRAM_CLEAN_UP();
 fi;
 
-PROGRAM_CLEAN_UP();

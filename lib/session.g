@@ -25,10 +25,15 @@ InstallAtExit( function()
 end);
 
 BIND_GLOBAL("PROGRAM_CLEAN_UP", function()
-    local f;
+    local f, funcs;
     if IsBound( GAPInfo.AtExitFuncs ) and IsList( GAPInfo.AtExitFuncs ) then
-        while not IsEmpty(GAPInfo.AtExitFuncs) do
-            f := Remove(GAPInfo.AtExitFuncs);
+        if IsHPCGAP then
+            funcs := FromAtomicList(GAPInfo.AtExitFuncs);
+        else
+            funcs := GAPInfo.AtExitFuncs;
+        fi;
+        while not IsEmpty(funcs) do
+            f := Remove(funcs);
             if IsFunction(f) then
                 CALL_WITH_CATCH(f,[]);
             fi;
