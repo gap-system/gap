@@ -52,14 +52,18 @@ least these:
 * a C compiler, e.g. GCC or Clang
 * a C++ compiler
 * GNU Make
-* GNU Autoconf (we recommend 2.69 or later)
+* GNU Autoconf
 * GNU Libtool
+
+In addition, we recommend that you install at least the following optional
+dependencies:
 * Development headers for GMP, the GNU Multiple Precision Arithmetic Library
-* optional: Development headers for GNU Readline
+* Development headers for zlib
+* Development headers for GNU Readline
 
 On Ubuntu or Debian, you can install these with the following command:
 
-    sudo apt install build-essential autoconf libtool libgmp-dev libreadline-dev
+    sudo apt-get install build-essential autoconf libtool libgmp-dev libreadline-dev zlib1g-dev
 
 On macOS, you can install the dependencies in several ways:
 
