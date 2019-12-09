@@ -24,7 +24,6 @@ Alternative installation methods which aim to simplify the installation
 mostly by offering precompiled binaries are:
 
 * GAP installer for Homebrew (package manager for macOS)
-* BOB - a tool to download and build GAP and its packages from source
 * Docker image for GAP and most of the packages
 * the rsync-based binary distribution for Linux
 
@@ -45,11 +44,13 @@ program.
 
 Installing the GAP distribution with all the packages and full data libraries
 will require (except on Windows) both a C and a C++ compiler (gcc or clang
-is recommended) to be installed on your system.
+is recommended) to be installed on your system. Please also consult
+section "Installing required dependencies" in the file `README.md`.
+
 To get maximum benefit from GAP and from various packages, we recommend
 to install a number of other free software libraries (and their associated
-development tools) although they are not required for basic operation. See
-<https://www.gap-system.org/Download/tools.html> for more details.
+development tools) although they are not required for basic operation.
+See <https://www.gap-system.org/Download/tools.html> for more details.
 
 The installation consists of five easy steps:
 
