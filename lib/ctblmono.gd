@@ -296,14 +296,15 @@ DeclareGlobalFunction( "TestHomogeneous" );
 ##  <Prop Name="IsPrimitiveCharacter" Arg='chi'/>
 ##
 ##  <Description>
-##  For a character <A>chi</A> of the group <M>G</M>, say,
+##  For a character <A>chi</A> of a group <M>G</M>,
 ##  <Ref Prop="IsPrimitiveCharacter"/> returns <K>true</K> if <A>chi</A> is
-##  not induced from any proper subgroup, and <K>false</K> otherwise.
+##  not induced from any proper subgroup, and <K>false</K> otherwise. This 
+##  currently only works for characters of soluble groups.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> IsPrimitive( Irr( Sl23 )[4] );
+##  gap> IsPrimitiveCharacter( Irr( Sl23 )[4] );
 ##  true
-##  gap> IsPrimitive( Irr( Sl23 )[7] );
+##  gap> IsPrimitiveCharacter( Irr( Sl23 )[7] );
 ##  false
 ##  ]]></Example>
 ##  </Description>
