@@ -305,7 +305,7 @@ end);
 #F  NewDictionary(<objcoll>,<look>)
 ##
 InstallGlobalFunction(NewDictionary,function(arg)
-local hashfun,obj,dom,lookup,maxblist;
+local hashfun,obj,dom,lookup,maxblist,forcesort;
   obj:=arg[1];
   lookup:=arg[2];
   if Length(arg)>2 then
@@ -362,8 +362,9 @@ local hashfun,obj,dom,lookup,maxblist;
   fi;
 
   # can we sort the elements cheaply?
-  if CanEasilySortElements(obj) then
-    Info(InfoHash,1,obj," Sort dictionary");
+  forcesort:=ValueOption("usesortdictionary");
+  if forcesort=true or (forcesort<>false and CanEasilySortElements(obj)) then
+    Info(InfoHash,2,obj," Sort dictionary");
     return DictionaryBySort(lookup);
   fi;
 
