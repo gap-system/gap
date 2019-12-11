@@ -1584,7 +1584,7 @@ BindGlobal("FACTGRP_TRIV",Group([],()));
 InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "search for operation",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,N)
-local h,pool;
+local proj,h,pool;
 
   # catch the trivial case N=G 
   if CanComputeIndex(G,N) and IndexNC(G,N)=1 then
@@ -1608,10 +1608,18 @@ local h,pool;
     return GetNaturalHomomorphismsPool(G,N);
   fi;
 
-
   DoCheapActionImages(G);
   if HasRadicalGroup(G) and N=RadicalGroup(G) then
     h:=GetNaturalHomomorphismsPool(G,N);
+  fi;
+
+  if HasDirectProductInfo(G) and DegreeNaturalHomomorphismsPool(G,N)=fail then
+    for proj in [1..Length(DirectProductInfo(G).groups)] do
+      proj:=Projection(G,proj);
+      h:=NaturalHomomorphismByNormalSubgroup(Image(proj,G),Image(proj,N));
+      AddNaturalHomomorphismsPool(G,
+        ClosureGroup(KernelOfMultiplicativeGeneralMapping(proj),N),proj*h);
+    od;
   fi;
 
   h:=DegreeNaturalHomomorphismsPool(G,N);
