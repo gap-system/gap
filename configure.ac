@@ -845,6 +845,8 @@ AC_CHECK_HEADERS([spawn.h])
 AC_HEADER_SYS_WAIT
 AC_FUNC_FORK
 AC_CHECK_FUNCS([popen posix_spawn])
+AC_CHECK_FUNCS([posix_spawn_file_actions_addchdir])
+AC_CHECK_FUNCS([posix_spawn_file_actions_addchdir_np])
 
 dnl signal handling
 AC_CHECK_TYPE([sig_atomic_t], [],

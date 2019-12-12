@@ -41,10 +41,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-#ifdef HAVE_SPAWN_H
-#include <spawn.h>
-#endif
-
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
@@ -57,6 +53,11 @@
   #elif defined(HAVE_PTY_H)
     #include <pty.h>      /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
   #endif
+#endif
+
+#ifdef HAVE_SPAWN_H
+#define __USE_GNU    // ensures glibc exports posix_spawn_file_actions_addchdir_np
+#include <spawn.h>
 #endif
 
 
@@ -292,22 +293,107 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
     ChildStatusChanged(SIGCHLD);
     return (Obj)0;
 }
+#endif
 
 
-// HACK: since we can't use posix_spawn in a thread-safe manner, disable
-// it for HPC-GAP
+//
+// posix_spawn_file_actions_addchdir was only recently added to POSIX, and
+// most implementations therefore do not yet use this final name, but instead
+// provide the functionality under the alternate name
+// posix_spawn_file_actions_addchdir_np. To keep things simple, we detect this
+// case and use some preprocessor tricks to make things work in either case.
+//
+#if !defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR) &&                      \
+    defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP)
+#define HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
+#define posix_spawn_file_actions_addchdir(f, d)                              \
+    posix_spawn_file_actions_addchdir_np(f, d)
+#endif
+
+
+// Disable posix_spawn in HPC-GAP if we can't use it in a thread-safe manner
+#if defined(HPCGAP) && !defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR)
 #undef HAVE_POSIX_SPAWN
+#endif
+
+
+#ifdef HAVE_POSIX_SPAWN
+
+// The following function behaves like posix_spawn, but also
+// changes the working directory temporarily to 'dir'.
+static int posix_spawn_with_dir(pid_t *                      pid,
+                                const char *                 path,
+                                posix_spawn_file_actions_t * file_actions,
+                                const posix_spawnattr_t *    attrp,
+                                char * const                 argv[],
+                                char * const                 envp[],
+                                const char *                 dir)
+{
+    // For systems that don't support fork+exec well (e.g. embedded systems,
+    // but also Windows), the POSIX Issue 6 (~2001) added posix_spawn() and
+    // friends. These can be used as a replacement for fork+exec in many
+    // applications. However, they curiously miss one very common demand when
+    // launching subprocesses: there is no way to override the working
+    // directory for the child process. This well-known deficiency has finally
+    // been realized as a problem by POSIX in 2018, just about 17 years after
+    // posix_spawn was first put into the standard, and so we might see a
+    // proper fix for this soon, i.e., possibly even within the next decade!
+    // See also <http://austingroupbugs.net/view.php?id=1208>.
+    //
+    // UPDATE: musl libc 1.1.24, glibc 2.29 and macOS 10.15 added preview
+    // versions of these new APIs (with suffix `_np` to indicate it), so we
+    // can actually start using them.
+
+#ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
+    if (posix_spawn_file_actions_addchdir(file_actions, dir)) {
+        PErr("StartChildProcess: addchdir failed");
+        return 1;
+    }
+#else
+    // For older systems that lack posix_spawn_file_actions_addchdir or
+    // posix_spawn_file_actions_addchdir_np, we use the following fallback
+    // code.
+    //
+    // WARNING: This is not thread safe! As explained above, until recently,
+    // there was no portable way to do this race free, without using an
+    // external shim executable which sets the wd and then calls the actually
+    // target executable.
+    int oldwd = open(".", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (oldwd == -1) {
+        PErr("StartChildProcess: cannot open current working directory");
+        return 1;
+    }
+    if (chdir(dir) == -1) {
+        PErr("StartChildProcess: cannot change working "
+             "directory for subprocess");
+        return 1;
+    }
+#endif
+
+    // spawn subprocess
+    int res = posix_spawn(pid, path, file_actions, attrp, argv, envp);
+    if (res) {
+        PErr("StartChildProcess: posix_spawn failed");
+    }
+
+#ifndef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
+    // restore working directory
+    if (fchdir(oldwd)) {
+        PErr("StartChildProcess: failed to restore working dir");
+    }
+    close(oldwd);    // ignore error
+#endif
+    return res;
+}
 
 #endif
+
 
 static Int
 StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 {
     int slave; /* pipe to child                   */
     Int stream;
-#ifdef HAVE_POSIX_SPAWN
-    int oldwd = -1;
-#endif
 
     struct termios tst; /* old and new terminal state      */
 
@@ -364,63 +450,29 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 
     if (posix_spawn_file_actions_addclose(&file_actions,
                                           PtyIOStreams[stream].ptyFD)) {
-        PErr("StartChildProcess: posix_spawn_file_actions_addclose failed");
+        PErr("StartChildProcess: addclose failed");
         posix_spawn_file_actions_destroy(&file_actions);
         goto cleanup;
     }
 
     if (posix_spawn_file_actions_adddup2(&file_actions, slave, 0)) {
-        PErr("StartChildProcess: "
-             "posix_spawn_file_actions_adddup2(slave, 0) failed");
+        PErr("StartChildProcess: adddup2(slave, 0) failed");
         posix_spawn_file_actions_destroy(&file_actions);
         goto cleanup;
     }
 
     if (posix_spawn_file_actions_adddup2(&file_actions, slave, 1)) {
-        PErr("StartChildProcess: "
-             "posix_spawn_file_actions_adddup2(slave, 1) failed");
-        posix_spawn_file_actions_destroy(&file_actions);
-        goto cleanup;
-    }
-
-    // temporarily change the working directory
-    //
-    // WARNING: This is not thread safe! Unfortunately, there is no portable
-    // way to do this race free, without using an external shim executable
-    // which sets the wd and then calls the actually target executable. But at
-    // least this well-known deficiency has finally been realized as a problem
-    // by POSIX in 2018, just about 14 years after posix_spawn was first put
-    // into the standard), and so we might see a proper fix for this soon,
-    // i.e., possibly even within the next decade!
-    // See also <http://austingroupbugs.net/view.php?id=1208>
-    oldwd = open(".", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
-    if (oldwd == -1) {
-        PErr("StartChildProcess: cannot open current working "
-             "directory");
-        posix_spawn_file_actions_destroy(&file_actions);
-        goto cleanup;
-    }
-    if (chdir(dir) == -1) {
-        PErr("StartChildProcess: cannot change working "
-             "directory for subprocess");
+        PErr("StartChildProcess: adddup2(slave, 1) failed");
         posix_spawn_file_actions_destroy(&file_actions);
         goto cleanup;
     }
 
     // spawn subprocess
-    if (posix_spawn(&PtyIOStreams[stream].childPID, prg, &file_actions, 0,
-                    args, environ)) {
-        PErr("StartChildProcess: posix_spawn failed");
+    if (posix_spawn_with_dir(&PtyIOStreams[stream].childPID, prg,
+                             &file_actions, 0, args, environ, dir)) {
+        PErr("StartChildProcess: posix_spawn_with_dir failed");
         goto cleanup;
     }
-
-    // restore working directory
-    if (fchdir(oldwd)) {
-        PErr("StartChildProcess: failed to restore working dir after "
-             "spawning");
-    }
-    close(oldwd);    // ignore error
-    oldwd = -1;
 
     // cleanup
     if (posix_spawn_file_actions_destroy(&file_actions)) {
@@ -469,16 +521,6 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
     return stream;
 
 cleanup:
-#ifdef HAVE_POSIX_SPAWN
-    if (oldwd >= 0) {
-        // restore working directory
-        if (fchdir(oldwd)) {
-            PErr("StartChildProcess: failed to restore working dir during "
-                 "cleanup");
-        }
-        close(oldwd);
-    }
-#endif
     close(slave);
     close(PtyIOStreams[stream].ptyFD);
     PtyIOStreams[stream].inuse = 0;
