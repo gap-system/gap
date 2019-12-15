@@ -3317,6 +3317,32 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##
 KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 
+#############################################################################
+##
+#A  StructuralSeriesOfGroup( <G> )
+##
+##  <#GAPDoc Label="StructuralSeriesOfGroup">
+##  <ManSection>
+##  <Attr Name="StructuralSeriesOfGroup" Arg='G'/>
+##
+##  <Description>
+##  The structural series of a finite group <A>G</A> is a descending series
+##  of characteristic subgroups which goes throught the derived series of
+##  the solvable radical of $G$, refined into elementary abelian factors, as
+##  well as the socle and the <A>Pker</A> (kernel of the action on socle
+##  compoents) of the radical factor
+##  <Example><![CDATA[
+##  gap> gp:=WreathProduct(SymmetricGroup(5),SymmetricGroup(3));;
+##  gap> gp:=WreathProduct(Group((1,2,3,4,5,6)),gp);;
+##  gap> List(StructuralSeriesOfGroup(gp),Size);
+##  [ 4874877920083968000, 812479653347328000, 101559956668416000, 470184984576, 32768, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "StructuralSeriesOfGroup", IsGroup );
+
 
 #############################################################################
 ##

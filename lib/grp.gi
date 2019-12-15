@@ -1996,7 +1996,7 @@ InstallMethod( Socle, "for nilpotent groups",
       soc := TrivialSubgroup(G);
       # now socle is the product of Omega of Sylow subgroups of the center
       for P in SylowSystem(Center(G)) do
-        soc := ClosureSubgroupNC(soc, Omega(P, PrimePGroup(P)));
+        soc := ClosureSubgroupNC(soc, AsSubgroup(G,Omega(P, PrimePGroup(P))));
       od;
     else
       # compute generators for the torsion Omega p-subgroups of the center
@@ -2319,6 +2319,11 @@ InstallMethod( ClosureGroup, "groups with cheap membership test", IsCollsElms,
   [IsGroup and CanEasilyTestMembership,IsMultiplicativeElementWithInverse],
   ClosureGroupIntest);
 
+InstallMethod( ClosureGroup, "trivial subgroup", IsIdenticalObj,
+  [IsGroup and IsTrivial,IsGroup],
+function(T,U)
+  return U;
+end);
 
 #############################################################################
 ##
@@ -2390,6 +2395,9 @@ InstallGlobalFunction( ClosureSubgroupNC, function(arg)
 local G,obj,close;
     G:=arg[1];
     obj:=arg[2];
+    if IsTrivial(G) and IsGroup(obj) then
+      obj:=AsSubgroup(Parent(G),obj);
+    fi;
     if not HasParent( G ) then
       # don't be obnoxious
       Info(InfoWarning,3,"`ClosureSubgroup' called for orphan group" );
@@ -3067,6 +3075,50 @@ InstallMethod( PCoreOp,
 #M  Stabilizer( <G>, <obj> )
 ##
 
+#############################################################################
+##
+#M  StructuralSeriesOfGroup( <G> )
+##
+InstallMethod( StructuralSeriesOfGroup, "generic",true,[IsGroup and IsFinite],0,
+function(G)
+local ser,r,nat,f,Pker,d,i,j,u,loc,p;
+  ser:=[];
+  r:=RadicalGroup(G);
+  ser:=[G];
+  if Size(r)<Size(G) then
+    nat:=NaturalHomomorphismByNormalSubgroupNC(G,r);
+    f:=Image(nat,G);
+    Pker:=f;
+    d:=DirectFactorsFittingFreeSocle(f);
+    for i in d do
+      Pker:=Intersection(Pker,Normalizer(f,i));
+    od;
+    if Size(Pker)<Size(f) then Add(ser,PreImage(nat,Pker)); fi;
+    if Size(Socle(f))<Size(Pker) then Add(ser,PreImage(nat,Socle(f)));fi;
+    Add(ser,r);
+  fi;
+  d:=DerivedSeriesOfGroup(r);
+  for i in [2..Length(d)] do
+    u:=d[i];
+    loc:=[u];
+    p:=Set(Factors(IndexNC(d[i-1],u)));
+    for j in p do
+      u:=ClosureGroup(u,SylowSubgroup(d[i-1],j));
+      #force elementary
+      while not ForAll(GeneratorsOfGroup(u),x->x^j in loc[Length(loc)]) do
+        r:=NaturalHomomorphismByNormalSubgroupNC(u,loc[Length(loc)]);
+        Pker:=Omega(Range(r),j,1);
+        r:=PreImage(r,Pker);
+        Add(loc,r);
+      od;
+      if Size(u)<Size(ser[Length(ser)]) then
+        Add(loc,u);
+      fi;
+    od;
+    Append(ser,Reversed(loc));
+  od;
+  return ser;
+end);
 
 #############################################################################
 ##
