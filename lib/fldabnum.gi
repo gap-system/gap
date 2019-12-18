@@ -2013,4 +2013,6 @@ InstallMethod( GaloisGroup,
 end );
     
 
-InstallMethod( Representative, [IsCyclotomicField], f->0);
+InstallMethod( Representative,
+    [ IsAdditiveMagmaWithZero and IsCyclotomicCollection ],
+    f -> 0 );
