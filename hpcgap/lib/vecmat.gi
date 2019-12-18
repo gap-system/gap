@@ -2489,11 +2489,6 @@ InstallMethod( ConstructingFilter, "for a gf2 vector",
 InstallMethod( ConstructingFilter, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function(v) return IsGF2MatrixRep; end );
 
-InstallMethod( BaseField, "for a compressed gf2 matrix",
-  [IsGF2MatrixRep], function(m) return GF(2); end );
-InstallMethod( BaseField, "for a compressed gf2 vector",
-  [IsGF2VectorRep], function(v) return GF(2); end );
-
 InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )

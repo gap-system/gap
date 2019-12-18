@@ -1112,11 +1112,6 @@ InstallMethod( ConstructingFilter, "for an 8bit vector",
 InstallMethod( ConstructingFilter, "for an 8bit matrix",
   [ Is8BitMatrixRep ], function(v) return Is8BitMatrixRep; end );
 
-InstallMethod( BaseField, "for a compressed 8bit matrix",
-  [Is8BitMatrixRep], function(m) return DefaultFieldOfMatrix(m); end );
-InstallMethod( BaseField, "for a compressed 8bit vector",
-  [Is8BitVectorRep], function(v) return GF(Q_VEC8BIT(v)); end );
-
 InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
@@ -1173,7 +1168,7 @@ InstallMethod( IdentityMatrix, "for a compressed 8bit matrix",
   [IsInt, Is8BitMatrixRep],
   function(rows,m)
     local f,n;
-    f := BaseField(m);
+    f := BaseDomain(m);
     n := IdentityMat(rows,f);
     ConvertToMatrixRep(n,Size(f));
     return n;

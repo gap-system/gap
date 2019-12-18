@@ -690,6 +690,13 @@ DeclareAttribute( "BaseDomain", IsMatrixObj );
 # nor associative. For non-associative base domains, the behavior of
 # powering matrices is undefined.
 
+# HACK: BaseField used to be defined in matrix.gd, as a kind of predecessor
+# to BaseDomain; we keep it around here for backwards compatibility with
+# older versions of the cvec package. It should be removed eventually.
+DeclareSynonymAttr( "BaseField", BaseDomain );
+
+
+
 DeclareAttribute( "NumberRows", IsMatrixObj );
 DeclareAttribute( "NumberColumns", IsMatrixObj );
 DeclareSynonymAttr( "NrRows", NumberRows );

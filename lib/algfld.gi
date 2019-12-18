@@ -328,7 +328,7 @@ end);
 #############################################################################
 ##
 #F  AlgExtElm      A `nicer' ObjByExtRep, that shrinks/grows a list to the 
-##                 correct length and tries to get to the BaseField
+##                 correct length and tries to get to the base field
 ##                 representation
 ##
 BindGlobal("AlgExtElm",function(fam,e)
