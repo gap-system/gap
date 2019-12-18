@@ -293,7 +293,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
 	# deal with "O+" class
 	Add(a,'1');
       fi;
-      if a[p+1]='1' then
+      if a[p+1]='1' and a[p+2]=',' then
 	# gave O(+1,8,2) or so
 	plus:=fail;
       fi;
@@ -313,7 +313,6 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     else
       plus:=fail;
     fi;
-#Error(plus,a);
 
     p:=Position(a,',');
     while p<>fail do
@@ -329,7 +328,6 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       a:=a{[2..Length(a)]};
     fi;
     Add(param,Int(a));
-#Error();
 
     if plus<>fail then
       param:=Concatenation([plus],param);
@@ -529,6 +527,8 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       Error("wrong dimension/parity for O");
     fi;
 
+  elif str="D" then
+    return SimpleGroup("O",1,param[1]*2,param[2]);
   elif str="E" then
     if Length(param)<2 or not param[1] in [6,7,8] then
       Error("E(n,q) needs n=6,7,8");
@@ -846,11 +846,18 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
   local dd,df,dg,r,myprod,gal,i,s,j,ddn;
 
     if g>2 then 
-      # do a few basic cases first ...
+      # so triality is involved
+
+      # do a few basic cases first 
       if d=1 and f=1 and g=6 then
 	# subgroup classes S_3
 	dd:=[ [ 1, "1" ], [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
 	return dd;
+      elif d=1 and f=2 and g=6 then
+        # subgroup classes 2\times S_3 (since S3 cannot act on C2)
+	dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 2, "2_3" ],
+              [ 3, "3" ], [ 4, "2x2" ], [ 6, "6" ], [6,"S3_1"],
+	      [ 6, "S3_2" ], [ 12, "D12" ] ];
       elif d=4 and f=1 and g=6 then
 	# subgroup classes S_4 
 	dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
@@ -860,6 +867,7 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
 	return dd;
       else
 	Error("mixed triality not yet done");
+        return false;
       fi;
     fi;
 
@@ -1090,21 +1098,27 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
   fi;
 
   # kill trivial extension if given
-  e:=Filtered(e,x->x[1]>1);
+  if IsList(e) then 
+    e:=Filtered(e,x->x[1]>1);
 
-  # get size of full outer automorphisms
-  aut:=[1,nam];
-  for i in e do
-    if i[1]>aut[1] then
-      aut:=i;
-    fi;
-  od;
+    # get size of full outer automorphisms
+    aut:=[1,nam];
+    for i in e do
+      if i[1]>aut[1] then
+        aut:=i;
+      fi;
+    od;
+  else
+    aut:=false;
+  fi;
 
   result:=rec(idSimple:=id,
 	      tomName:=nam,
 	      allExtensions:=e,
-              fullAutGroup:=aut,
               classicalId:=ClassicalIsomorphismTypeFiniteSimpleGroup(id));
+  if aut<>false then
+    result.fullAutGroup:=aut;
+  fi;
 
   return result;
 end);
