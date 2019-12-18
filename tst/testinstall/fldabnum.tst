@@ -56,6 +56,10 @@ gap> Z(5) in NF( 3, [ 2 ] );
 false
 gap> EY(5) in NF( 5, [ 4 ] );
 true
+gap> Representative( CF(12) );
+0
+gap> Representative( NF( 15, [ 14 ] ) );
+0
 gap> Intersection( CF(12), CF(15) );
 CF(3)
 gap> Intersection( CF(12), NF( 15, [ 14 ] ) );
