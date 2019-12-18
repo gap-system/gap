@@ -6353,7 +6353,8 @@ InstallMethod( CharacterTableIsoclinic,
       if p = 2 then
         irreducibles:= List( Irr( modtbl ), ValuesOfClassFunction );
       else
-        factorfusion:= GetFusionMap( reg, ordiso );
+        factorfusion:= GetFusionMap( modtbl,
+                                     OrdinaryCharacterTable( modtbl ) );
         nsg:= List( source[2], i -> Position( factorfusion, i ) );
         centre:= List( source[3], i -> Position( factorfusion, i ) );
         xpos:= Position( factorfusion, source[4] );
@@ -6365,7 +6366,8 @@ InstallMethod( CharacterTableIsoclinic,
       if p = source.p then
         irreducibles:= List( Irr( modtbl ), ValuesOfClassFunction );
       else
-        factorfusion:= GetFusionMap( reg, ordiso );
+        factorfusion:= GetFusionMap( modtbl,
+                                     OrdinaryCharacterTable( modtbl ) );
         xpos:= Position( factorfusion, source.centralElement );
         centre:= [ xpos ];
         outer:= List( source.outerClasses,
@@ -6390,11 +6392,10 @@ InstallMethod( CharacterTableIsoclinic,
     # With `IrreducibleCharactersOfIsoclinicGroup', we get irreducibles
     # that fit to t2, thus we have to apply the permutation from t2 to t3.
     if HasClassPermutation( ordiso ) then
+      fus:= GetFusionMap( modtbl, OrdinaryCharacterTable( modtbl ) );
+      inv:= InverseMap( GetFusionMap( reg, ordiso ) );
       pi:= ClassPermutation( ordiso );
-      fus:= GetFusionMap( reg, ordiso );
-      inv:= InverseMap( fus );
-      pi:= PermList( List( [ 1 .. Length( fus ) ],
-                           i -> inv[ fus[i]^pi ] ) );
+      pi:= PermList( List( fus, x -> inv[ x^pi ] ) );
       irreducibles:= List( irreducibles, x -> Permuted( x, pi ) );
     fi;
 

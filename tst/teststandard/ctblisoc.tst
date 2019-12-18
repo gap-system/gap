@@ -1,4 +1,4 @@
-#@local g, t, iso, t3, iso3, orders, n, iso2, filt, outer, c
+#@local g, t, iso, t3, iso3, orders, n, iso2, filt, outer, c, ord, pi, sort
 gap> START_TEST( "ctblisoc.tst" );
 
 # one argument
@@ -150,6 +150,14 @@ gap> CharacterTableIsoclinic( t, n, c );;
 gap> CharacterTableIsoclinic( t mod 3,
 >        rec( normalSubgroup:= n, centralElement:= c ) );;
 gap> CharacterTableIsoclinic( t mod 3, n, c );;
+
+# argument with class permutation that does not act on p-regular classes
+gap> t:= CharacterTable( SmallGroup( 240, 90 ) );;
+gap> ord:= OrdersClassRepresentatives( t );;
+gap> iso:= CharacterTableIsoclinic( t );;
+gap> pi:= ( Position( ord, 2 ), Position( ord, 3 ) );;
+gap> sort:= CharacterTableWithSortedClasses( iso, pi );;
+gap> sort mod 3;;   # ran into an error in an older version of GAP
 
 ##
 gap> STOP_TEST( "ctblisoc.tst" );
