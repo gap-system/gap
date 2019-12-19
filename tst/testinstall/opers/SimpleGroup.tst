@@ -289,8 +289,13 @@ gap> SimpleGroup("3D(4,2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(la
 211341312
 rec( name := "3D(4,2)", parameter := 2, series := "3D", shortname := "3D4(2)" 
  )
-gap> SimpleGroup("3D(4,4)");
-Error, Can't do yet
+gap> g:=SimpleGroup("3D(4,169)");
+3D4(169)
+gap> Size(g);
+240332510774609437207471962071721640113937228636403184123398400
+gap> g:=ChevalleyG(19);;
+gap> Size(g);
+796793353927300800
 
 #
 gap> SimpleGroup("2E(5,2)");

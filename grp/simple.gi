@@ -233,7 +233,44 @@ local p,f,z,G,o;
       [0,0,0,0,1,0,0]]);
   fi;
 
+  SetSize(G,q^6*(q^6-1)*(q^2-1));
   return G; 
+end);
+
+# generators from 
+# Howlett, R. B.(5-SYD-SM); Rylands, L. J.; Taylor, D. E.(5-SYD-SM)
+# Matrix generators for exceptional groups of Lie type. 
+# J. Symbolic Comput. 31 (2001), no. 4, 429–445. 
+# Note that Magma uses slightly different generators
+BindGlobal("Chevalley3D4",function(q)
+local f,mu,m1,m2,x,n,o;
+  f:=GF(q^3);
+  o:=One(f);
+  mu:=PrimitiveRoot(f);
+  m1:=DiagonalMat([mu^(q^2),mu^(-q^2),mu^(q+1),mu^(q-1),
+                   mu^(-q+1),mu^(-q-1),mu^(q^2),mu^(-q^2)]);
+  x:=IdentityMat(8,f);
+  x[1,2]:=o;
+  x[3,4]:=o;
+  x[3,5]:=o;
+  x[3,6]:=o;
+  x[4,6]:=o;
+  x[5,6]:=o;
+  x[7,8]:=o;
+  n:=NullMat(8,8,f);
+  n[1,3]:=o;
+  n[2,1]:=-o;
+  n[3,7]:=o;
+  n[4,5]:=-o;
+  n[5,4]:=-o;
+  n[6,2]:=-o;
+  n[7,8]:=o;
+  n[8,6]:=o;
+  m2:=x*n;
+  x:=Group(m1,m2);
+  SetName(x,Concatenation("3D4(",String(q),")"));
+  SetSize(x,q^12*(q^8+q^4+1)*(q^6-1)*(q^2-1));
+  return x;
 end);
 
 InstallGlobalFunction(SimpleGroup,function(arg)
@@ -577,7 +614,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     elif a=3 then
       g:=DoAtlasrepGroup(["3D4(3)"]);
     else
-      Error("Can't do yet");
+      return Chevalley3D4(a);
     fi;
     s:=Concatenation("3D4(",String(a),")");
 
