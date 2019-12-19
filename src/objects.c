@@ -877,7 +877,7 @@ static Obj FuncMakeImmutable(Obj self, Obj obj)
 
 static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 {
-    UInt         tnum = GetBoundedInt("GET_TNAM_FROM_TNUM", obj, 0, 255);
+    UInt         tnum = GetBoundedInt("GET_TNAM_FROM_TNUM", obj, 0, NUM_TYPES - 1);
     const char * name = TNAM_TNUM(tnum);
     return MakeImmString(name ? name : "<unnamed tnum>");
 }
