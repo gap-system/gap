@@ -193,7 +193,7 @@ static StructInitInfo module = {
     // init struct using C99 designated initializers; for a full list of
     // fields, please refer to the definition of StructInitInfo
     .type = MODULE_BUILTIN,
-    .name = "stats",
+    .name = "tracing",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
 };
