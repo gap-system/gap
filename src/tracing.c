@@ -130,6 +130,7 @@ static Obj FuncUntraceInternalMethods(Obj self)
     TrackingActive = 0;
     return 0;
 }
+
 static Obj FuncGET_TRACED_INTERNAL_METHODS_COUNTS(Obj self)
 {
     return RecordedStats;
