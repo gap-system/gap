@@ -32,6 +32,7 @@
 */
 const InitInfoFunc InitFuncsBuiltinModules[] = {
 
+// clang-format off
 #ifdef HPCGAP
     // Traversal functionality may be needed during the initialization
     // of some modules, so set it up as early as possible
@@ -45,61 +46,101 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoObjects,
 
     /* profiling and interpreter hooking information */
-    InitInfoProfile, InitInfoHookIntrprtr, InitInfoTracing,
+    InitInfoProfile,
+    InitInfoHookIntrprtr,
+    InitInfoTracing,
 
     /* scanner, reader, interpreter, coder, caller, compiler               */
-    InitInfoIO, InitInfoScanner, InitInfoRead, InitInfoCalls, InitInfoExprs,
-    InitInfoStats, InitInfoCode,
-    InitInfoVars, /* must come after InitExpr and InitStats */
-    InitInfoFuncs, InitInfoOpers, InitInfoInfo, InitInfoIntrprtr,
+    InitInfoIO,
+    InitInfoScanner,
+    InitInfoRead,
+    InitInfoCalls,
+    InitInfoExprs,
+    InitInfoStats,
+    InitInfoCode,
+    InitInfoVars,       /* must come after InitExpr and InitStats */
+    InitInfoFuncs,
+    InitInfoOpers,
+    InitInfoInfo,
+    InitInfoIntrprtr,
     InitInfoCompiler,
 
     /* arithmetic operations                                               */
     InitInfoAriths,
 
     /* record packages                                                     */
-    InitInfoRecords, InitInfoPRecord,
+    InitInfoRecords,
+    InitInfoPRecord,
 
     /* internal types                                                      */
-    InitInfoInt, InitInfoIntFuncs, InitInfoRat, InitInfoCyc, InitInfoFinfield,
-    InitInfoPermutat, InitInfoTrans, InitInfoPPerm, InitInfoBool,
+    InitInfoInt,
+    InitInfoIntFuncs,
+    InitInfoRat,
+    InitInfoCyc,
+    InitInfoFinfield,
+    InitInfoPermutat,
+    InitInfoTrans,
+    InitInfoPPerm,
+    InitInfoBool,
     InitInfoMacfloat,
 
     /* list packages                                                       */
-    InitInfoLists, InitInfoListOper, InitInfoListFunc, InitInfoPlist,
-    InitInfoSet, InitInfoVector, InitInfoVecFFE, InitInfoBlist, InitInfoRange,
-    InitInfoString, InitInfoGF2Vec, InitInfoVec8bit,
+    InitInfoLists,
+    InitInfoListOper,
+    InitInfoListFunc,
+    InitInfoPlist,
+    InitInfoSet,
+    InitInfoVector,
+    InitInfoVecFFE,
+    InitInfoBlist,
+    InitInfoRange,
+    InitInfoString,
+    InitInfoGF2Vec,
+    InitInfoVec8bit,
 
     /* free and presented groups                                           */
-    InitInfoFreeGroupElements, InitInfoCosetTable, InitInfoTietze,
-    InitInfoPcElements, InitInfoCollectors, InitInfoPcc, InitInfoDeepThought,
+    InitInfoFreeGroupElements,
+    InitInfoCosetTable,
+    InitInfoTietze,
+    InitInfoPcElements,
+    InitInfoCollectors,
+    InitInfoPcc,
+    InitInfoDeepThought,
     InitInfoDTEvaluation,
 
     /* algebras                                                            */
     InitInfoSCTable,
 
     /* save and load workspace, weak pointers                              */
-    InitInfoWeakPtr, InitInfoSaveLoad,
+    InitInfoWeakPtr,
+    InitInfoSaveLoad,
 
     /* syntax and parser tools */
     InitInfoSyntaxTree,
 
     /* input and output                                                    */
-    InitInfoStreams, InitInfoSysFiles, InitInfoIOStream,
+    InitInfoStreams,
+    InitInfoSysFiles,
+    InitInfoIOStream,
 
     /* main module                                                         */
-    InitInfoModules, InitInfoGap, InitInfoError,
+    InitInfoModules,
+    InitInfoGap,
+    InitInfoError,
 
     // objsets / objmaps
     InitInfoObjSets,
 
 #ifdef HPCGAP
     /* threads                                                             */
-    InitInfoThreadAPI, InitInfoAObjects, InitInfoSerialize,
+    InitInfoThreadAPI,
+    InitInfoAObjects,
+    InitInfoSerialize,
 #else
     // libgap API
     InitInfoLibGapApi,
 #endif
 
     0
+// clang-format on
 };
