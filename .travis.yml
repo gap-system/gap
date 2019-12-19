@@ -56,6 +56,7 @@ matrix:
           - libreadline-dev
           - zlib1g-dev
           - libboost-dev            # for NormalizInterface
+          - libcdd-dev              # for CddInterface
           - libmpfr-dev             # for float
           - libmpfi-dev             # for float
           - libmpc-dev              # for float
@@ -78,6 +79,7 @@ matrix:
           - libncurses5-dev:i386    # for Browse
           - libcurl4-openssl-dev:i386 # for curlInterface
           - libboost-dev:i386       # for NormalizInterface
+          - libcdd-dev:i386         # for CddInterface
           - libmpfr-dev:i386        # for float
           - libmpfi-dev:i386        # for float
           - libmpc-dev:i386         # for float
