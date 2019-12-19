@@ -158,9 +158,17 @@ after_script:
   - bash etc/ci-run-codecov.sh
 
 notifications:
+  email:
+    if: branch =~ ^(master|stable-.*)$
+    recipients:
+      - max@quendi.de
+    on_success: never
+    on_failure: always
+    on_pull_requests: false
   slack:
-    if: branch =~ ^(master|stable-*)$
-    secure: chHSXX/jjg393BA7W5CPiWqV+/qxXcwNbKvVAkdfFq0r9fYBnCFeIj1Af5yvIW06R3DWAv22hXyagSFO3OgINefoKXXyGirsp7qGNpKIHsNHmS0DE8uN+Qk+iap7O2HpRkJD6gf0gK6pudW1BxQhBxEoP2hSBODzq2mU5hhodr4=
+    if: branch =~ ^(master|stable-.*)$
+    rooms:
+      - 'gap-system:U1zEhxmGtTzx2kp1ACiT4qhG#travis'
     on_pull_requests: false
     on_success: change
     on_failure: always
