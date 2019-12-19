@@ -7,7 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This file contains functionality for tracing operations
+**  This file contains functionality for tracing how often internal operations
+** (like +, ^, -) are executed on each TNUM.
 **
 */
 
@@ -20,10 +21,6 @@
 #include "plist.h"
 #include "precord.h"
 #include "records.h"
-
-// This file contains functionality which stores how often internal operations
-// (like +, ^, -) are executed on each TNUM.
-
 
 static Obj RecordedStats;
 
@@ -43,6 +40,7 @@ void ReportWrappedOperation1(const char * cname, Obj op)
         val = INTOBJ_INT(0);
     }
 
+    // Cannot use SUM here, as that is traced, so would cause a loop
     UInt8 intval = Int8_ObjInt(val);
     intval++;
     val = ObjInt_Int8(intval);
@@ -73,6 +71,7 @@ void ReportWrappedOperation2(const char * cname, Obj op1, Obj op2)
         val = INTOBJ_INT(0);
     }
 
+    // Cannot use SUM here, as that is traced, so would cause a loop
     UInt8 intval = Int8_ObjInt(val);
     intval++;
     val = ObjInt_Int8(intval);
