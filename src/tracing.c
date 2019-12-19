@@ -15,6 +15,7 @@
 #include "tracing.h"
 
 #include "bool.h"
+#include "gaputils.h"
 #include "integer.h"
 #include "lists.h"
 #include "modules.h"
@@ -85,16 +86,18 @@ typedef struct {
 } voidfuncs;
 
 // Store the list of operators which can have tracing enabled and disabled
+// 64 Controllers allows for future growth, but can be increased if the
+// asserts below are ever triggered
 static voidfuncs Controllers[64];
 static int       TrackingActive;
 
 void InstallOpWrapper(voidfunc activate, voidfunc deactivate)
 {
     int pos = 0;
-    while (pos < 64 && Controllers[pos].activate != 0) {
+    while (pos < ARRAY_SIZE(Controllers) && Controllers[pos].activate != 0) {
         pos++;
     }
-    assert(pos < 64);
+    assert(pos < ARRAY_SIZE(Controllers));
     voidfuncs val = { activate, deactivate };
     Controllers[pos] = val;
 }
@@ -105,7 +108,7 @@ static Obj FuncTraceInternalMethods(Obj self)
         return Fail;
     }
     int pos = 0;
-    while (pos < 64 && Controllers[pos].activate != 0) {
+    while (pos < ARRAY_SIZE(Controllers) && Controllers[pos].activate != 0) {
         Controllers[pos].activate();
         pos++;
     }
@@ -120,7 +123,7 @@ static Obj FuncUntraceInternalMethods(Obj self)
         return Fail;
     }
     int pos = 0;
-    while (pos < 64 && Controllers[pos].deactivate != 0) {
+    while (pos < ARRAY_SIZE(Controllers) && Controllers[pos].deactivate != 0) {
         Controllers[pos].deactivate();
         pos++;
     }
