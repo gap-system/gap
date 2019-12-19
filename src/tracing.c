@@ -85,46 +85,46 @@ typedef struct {
 } voidfuncs;
 
 // Store the list of operators which can have tracing enabled and disabled
-static voidfuncs controllers[64];
-static int       tracking_active;
+static voidfuncs Controllers[64];
+static int       TrackingActive;
 
 void InstallOpWrapper(voidfunc activate, voidfunc deactivate)
 {
     int pos = 0;
-    while (pos < 64 && controllers[pos].activate != 0) {
+    while (pos < 64 && Controllers[pos].activate != 0) {
         pos++;
     }
     assert(pos < 64);
     voidfuncs val = { activate, deactivate };
-    controllers[pos] = val;
+    Controllers[pos] = val;
 }
 
 static Obj FuncTraceInternalMethods(Obj self)
 {
-    if (tracking_active) {
+    if (TrackingActive) {
         return Fail;
     }
     int pos = 0;
-    while (pos < 64 && controllers[pos].activate != 0) {
-        controllers[pos].activate();
+    while (pos < 64 && Controllers[pos].activate != 0) {
+        Controllers[pos].activate();
         pos++;
     }
-    tracking_active = 1;
+    TrackingActive = 1;
     RecordedStats = NEW_PREC(0);
     return True;
 }
 
 static Obj FuncUntraceInternalMethods(Obj self)
 {
-    if (!tracking_active) {
+    if (!TrackingActive) {
         return Fail;
     }
     int pos = 0;
-    while (pos < 64 && controllers[pos].deactivate != 0) {
-        controllers[pos].deactivate();
+    while (pos < 64 && Controllers[pos].deactivate != 0) {
+        Controllers[pos].deactivate();
         pos++;
     }
-    tracking_active = 0;
+    TrackingActive = 0;
     return 0;
 }
 static Obj FuncGET_TRACED_INTERNAL_METHODS_COUNTS(Obj self)
