@@ -2185,7 +2185,6 @@ static Int InitKernel (
         }
     }
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2200,7 +2199,6 @@ static Int PostRestore (
     /* whats that?                                                         */
     TYPES_LIST_FAM_RNam = RNamName( "TYPES_LIST_FAM" );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2223,7 +2221,6 @@ static Int InitLibrary (
     SET_HDLR_FUNC( PosListOper, 2, PosListHandler2 );
     SET_HDLR_FUNC( PosListOper, 3, PosListHandler3 );
 
-    /* return success                                                      */
     return PostRestore( module );
 }
 
@@ -2511,7 +2508,6 @@ static Int CheckInit (
         }           
     }
 
-    /* return success                                                      */
     return ! success;
 }
 

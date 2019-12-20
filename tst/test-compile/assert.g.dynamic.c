@@ -265,7 +265,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[1] = 0;
  NameFunc[2] = 0;
  
- /* return success */
  return 0;
  
 }
@@ -287,7 +286,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitHandlerFunc( HdlrFunc2, "assert.g:HdlrFunc2("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[2]), "assert.g:NameFunc[2]("FILE_CRC")" );
  
- /* return success */
  return 0;
  
 }
@@ -311,7 +309,6 @@ static Int InitLibrary ( StructInitInfo * module )
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
- /* return success */
  return 0;
  
 }

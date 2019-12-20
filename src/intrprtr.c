@@ -3939,7 +3939,6 @@ static Int InitKernel (
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -3957,7 +3956,6 @@ static Int InitLibrary (
     lev = GVarName("CurrentAssertionLevel");
     AssGVar( lev, INTOBJ_INT(0) );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -3967,7 +3965,6 @@ static Int InitModuleState(void)
     STATE(IntrIgnoring) = 0;
     STATE(IntrReturning) = 0;
 
-    // return success
     return 0;
 }
 

@@ -4142,7 +4142,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[19] = 0;
  NameFunc[20] = 0;
  
- /* return success */
  return 0;
  
 }
@@ -4292,7 +4291,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitHandlerFunc( HdlrFunc20, "GAPROOT/lib/type1.g:HdlrFunc20("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[20]), "GAPROOT/lib/type1.g:NameFunc[20]("FILE_CRC")" );
  
- /* return success */
  return 0;
  
 }
@@ -4316,7 +4314,6 @@ static Int InitLibrary ( StructInitInfo * module )
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
- /* return success */
  return 0;
  
 }

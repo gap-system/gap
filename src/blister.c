@@ -1998,7 +1998,6 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_BLIST_EMPTY_MUT", &TYPE_BLIST_EMPTY_MUT );
     ImportGVarFromLibrary( "TYPE_BLIST_EMPTY_IMM", &TYPE_BLIST_EMPTY_IMM );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2014,7 +2013,6 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

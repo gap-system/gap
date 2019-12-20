@@ -365,7 +365,6 @@ static Int InitKernel (
 #ifdef HPCGAP
     MakeBagTypePublic(T_BOOL);
 #endif
-    /* return success                                                      */
     return 0;
 }
 
@@ -414,7 +413,6 @@ static Int InitLibrary (
     SET_HDLR_FUNC( tmp, 3, ReturnFail3);
     AssReadOnlyGVar( GVarName( "RETURN_FAIL" ), tmp );
 
-    /* return success                                                      */
     return 0;
 }
 

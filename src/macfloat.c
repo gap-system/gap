@@ -614,7 +614,6 @@ static Int InitKernel (
        at least for a while */
      
     
-    /* return success                                                      */
     return 0;
 }
 
@@ -629,7 +628,6 @@ static Int InitLibrary (
     /* init functions */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

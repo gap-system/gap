@@ -1233,7 +1233,6 @@ static Int InitKernel (
     PlainListFuncs  [ T_RANGE_SSORT            ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = PlainRange;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1249,7 +1248,6 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

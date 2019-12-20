@@ -2719,7 +2719,6 @@ static Int InitLibrary(StructInitInfo * module)
 
     ExportAsConstantGVar(MAX_THREADS);
 
-    /* return success                                                      */
     return 0;
 }
 

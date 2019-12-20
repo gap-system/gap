@@ -1725,7 +1725,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1771,7 +1770,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1799,7 +1797,6 @@ static Int InitModuleState(void)
     CollectorsState()->SC_CW2_VECTOR = NEW_STRING(0);
     CollectorsState()->SC_MAX_STACK_SIZE = maxStackSize;
 
-    // return success
     return 0;
 }
 

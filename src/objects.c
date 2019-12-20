@@ -2206,7 +2206,6 @@ static Int InitKernel (
     ReadOnlyDatObjs = (getenv("GAP_READONLY_DATOBJS") != 0);
 #endif
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2353,7 +2352,6 @@ static Int InitLibrary (
     AssConstantGVar(GVarName("INTOBJ_MIN"), INTOBJ_MIN);
     AssConstantGVar(GVarName("INTOBJ_MAX"), INTOBJ_MAX);
 
-    /* return success                                                      */
     return 0;
 }
 

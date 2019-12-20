@@ -241,7 +241,6 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
 
-    /* return success                                                      */
     return 0;
 }
 

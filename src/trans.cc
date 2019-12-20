@@ -4297,7 +4297,6 @@ static Int InitKernel(StructInitInfo * module)
     OneFuncs[T_TRANS4] = OneTrans;
     OneMutFuncs[T_TRANS4] = OneTrans;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -4321,7 +4320,6 @@ static Int InitLibrary(StructInitInfo * module)
     Obj ID_TRANS4 = NEW_TRANS4(0);
     AssReadOnlyGVar(GVarName("ID_TRANS4"), ID_TRANS4);
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -4329,7 +4327,6 @@ static Int InitModuleState(void)
 {
     MODULE_STATE(Trans).TmpTrans = 0;
 
-    // return success
     return 0;
 }
 

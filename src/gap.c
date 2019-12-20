@@ -1469,7 +1469,6 @@ static Int InitKernel (
     /* establish Fopy of ViewObj                                           */
     ImportFuncFromLibrary(  "ViewObj", 0 );
     ImportFuncFromLibrary(  "Error", &Error );
-    /* return success                                                      */
     return 0;
 }
 
@@ -1493,7 +1492,6 @@ static Int PostRestore (
 
     QUITTINGGVar      = GVarName( "QUITTING" );
     
-    /* return success                                                      */
     return 0;
 }
 
@@ -1525,7 +1523,6 @@ static Int InitLibrary (
     AssReadOnlyGVar(GVarName("memory_allocated"), INTOBJ_INT(0));
 
 
-    /* return success                                                      */
     return PostRestore( module );
 }
 

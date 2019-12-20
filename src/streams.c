@@ -1864,7 +1864,6 @@ static Int InitKernel (
     ImportFuncFromLibrary( "IsInputStream", &IsInputStream );
     ImportFuncFromLibrary( "IsOutputStream", &IsOutputStream );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1883,7 +1882,6 @@ static Int PostRestore (
     /* pick up the number of this global */
     LastReadValueGVar = GVarName("LastReadValue");
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1899,7 +1897,6 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
 
-    /* return success                                                      */
     return PostRestore( module );
 }
 

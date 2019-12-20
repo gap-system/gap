@@ -2307,7 +2307,6 @@ static Int InitKernel (
 
     InitCopyGVar("TYPE_LVARS",&TYPE_LVARS);
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2322,7 +2321,6 @@ static Int PostRestore (
     STATE(CurrLVars) = STATE(BottomLVars);
     SWITCH_TO_OLD_LVARS( STATE(BottomLVars) );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2337,7 +2335,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2358,7 +2355,6 @@ static Int InitModuleState(void)
     STATE(CurrLVars) = STATE(BottomLVars);
     SWITCH_TO_OLD_LVARS( STATE(BottomLVars) );
 
-    // return success
     return 0;
 }
 

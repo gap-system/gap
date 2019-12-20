@@ -3988,7 +3988,6 @@ static Int InitKernel(StructInitInfo * module)
     InvMutFuncs[T_PPERM2] = InvPPerm2;
     InvMutFuncs[T_PPERM4] = InvPPerm4;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -4019,7 +4018,6 @@ static Int InitLibrary(StructInitInfo * module)
     ADDR_PPERM4(ID_PPERM4)[0] = 1;
     AssReadOnlyGVar(GVarName("ID_PPERM4"), ID_PPERM4);
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -4028,7 +4026,6 @@ static Int InitModuleState(void)
 {
     TmpPPerm = 0;
 
-    // return success
     return 0;
 }
 

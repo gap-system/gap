@@ -869,7 +869,6 @@ static Int InitKernel (
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -884,7 +883,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

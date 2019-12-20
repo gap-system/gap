@@ -924,7 +924,6 @@ static Int InitKernel (
     MakeBagTypePublic(T_RAT);
 #endif
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -940,7 +939,6 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

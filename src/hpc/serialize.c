@@ -1152,7 +1152,6 @@ static Int InitKernel(StructInitInfo * module)
     DeclareGVar(&SERIALIZATION_TAGS_NEED_UPDATE_GVar,
                 "SERIALIZATION_TAGS_NEED_UPDATE");
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1166,7 +1165,6 @@ static Int InitLibrary(StructInitInfo * module)
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
 
-    /* return success                                                      */
     return 0;
 }
 

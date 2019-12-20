@@ -2923,7 +2923,6 @@ static Int InitKernel (
     InitGlobalBag(&ReaderState()->StackNams, "src/read.c:StackNams");
 #endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
-    /* return success                                                      */
     return 0;
 }
 
@@ -2937,7 +2936,6 @@ static Int InitModuleState(void)
     ReaderState()->CurrLHSGVar = 0;
     ReaderState()->CurrentGlobalForLoopDepth = 0;
 
-    // return success
     return 0;
 }
 

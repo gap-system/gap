@@ -2107,7 +2107,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2177,7 +2176,6 @@ static Int InitKernel (
     InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
 
     InitHdlrFuncsFromTable( GVarFuncs );
-    /* return success                                                      */
     return 0;
 }
 

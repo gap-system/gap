@@ -3675,7 +3675,6 @@ static Int InitKernel (
     }
 #endif
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -3691,7 +3690,6 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

@@ -2153,7 +2153,6 @@ static Int InitKernel (
     MakeImmutableObjFuncs[ T_STRING_SSORT ] = MakeImmutableNoRecurse;
     MakeImmutableObjFuncs[ T_STRING_NSORT ] = MakeImmutableNoRecurse;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2178,7 +2177,6 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

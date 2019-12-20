@@ -2909,7 +2909,6 @@ static Int InitKernel (
     InvMutFuncs[ T_PERM2 ] = InvPerm<UInt2>;
     InvMutFuncs[ T_PERM4 ] = InvPerm<UInt4>;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2924,7 +2923,6 @@ static Int PostRestore(StructInitInfo * module)
     RN_orbit = RNamName("orbit");
     RN_transversal = RNamName("transversal");
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2943,7 +2941,6 @@ static Int InitLibrary (
     /* make the identity permutation                                       */
     IdentityPerm = NEW_PERM2(0);
 
-    /* return success                                                      */
     return PostRestore(module);
 }
 
@@ -2953,7 +2950,6 @@ static Int InitModuleState(void)
     /* make the buffer bag                                                 */
     TmpPerm = 0;
 
-    // return success
     return 0;
 }
 

@@ -1561,7 +1561,6 @@ UInt ResizeBag (
     GAP_ASSERT(SanityCheckGasmanPointers());
     CANARY_ALLOW_ACCESS_BAG(bag);
     CANARY_ENABLE_VALGRIND();
-    /* return success                                                      */
     return 1;
 }
 
@@ -2303,7 +2302,6 @@ again:
 
     GAP_ASSERT(SanityCheckGasmanPointers());
 
-    /* return success                                                      */
     return 1;
 }
 
