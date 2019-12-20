@@ -80,16 +80,6 @@ which can be useful for debugging or testing.
 The needed packages (and their needed packages, and so on)
 are loaded in any case.
 </Item>
-<Mark><Index Key="-B"><C>-B</C></Index>
-<C>-B </C><A>architecture</A></Mark>
-<Item>
-Executable binary files that form part of &GAP; or of  a &GAP;  package
-are kept in a subdirectory of the <F>bin</F> directory within  the  &GAP; or
-package root directory. The subdirectory  name  is  determined  from  the
-operating system, processor and compiler details when &GAP;  (resp.  the
-package) is installed. Under rare circumstances, it may be  necessary  to
-override this name, and this can be done using the <C>-B</C> option.
-</Item>
 <Mark><Index Key="-b"><C>-b</C></Index>
 <C>-b</C></Mark>
 <Item>
