@@ -1,0 +1,16 @@
+gap> ListWithIdenticalEntries(2^50, 'a');
+Error, Cannot allocate 1125899906842633 bytes: cannot extend the workspace any more!!
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> ListWithIdenticalEntries(2^50, true);
+Error, Cannot allocate 140737488355336 bytes: cannot extend the workspace any more!!
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> ListWithIdenticalEntries(2^50, 2);
+Error, Cannot allocate 9007199254741000 bytes: cannot extend the workspace any more!!
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> quit;

@@ -1,0 +1,17 @@
+gap> l := [];
+[  ]
+gap> l[2^50] := 1;
+Error, Cannot allocate 9007199254741000 bytes: cannot extend the workspace any more!!!!
+not in any function at *stdin*:3
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> l[2^50] := 2;
+Error, Cannot allocate 9007199254741000 bytes: cannot extend the workspace any more!!!!
+not in any function at *stdin*:3
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> l[3] := 3;
+3
+gap> l;
+[ ,, 3 ]
+gap> quit;
