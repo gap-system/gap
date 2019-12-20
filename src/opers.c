@@ -215,7 +215,6 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
     }
 #endif
     SET_HASH_FLAGS( flags, INTOBJ_INT((UInt)hash+1) );
-    CHANGED_BAG(flags);
     return HASH_FLAGS(flags);
 }
 
