@@ -1072,11 +1072,14 @@ static UInt ExecIntrStat(Stat stat)
 
     /* and now for something completely different                          */
 #ifdef USE_GASMAN
-    if ( SyStorOverrun != 0 ) {
-      SyStorOverrun = 0; /* reset */
-      ErrorReturnVoid(
-  "reached the pre-set memory limit\n(change it with the -o command line option)",
-        0, 0, "you can 'return;'" );
+    if (SyStorOverrun != SY_STOR_OVERRUN_CLEAR) {
+        Int printError = (SyStorOverrun == SY_STOR_OVERRUN_TO_REPORT);
+        SyStorOverrun = SY_STOR_OVERRUN_CLEAR; /* reset */
+        if (printError) {
+            ErrorReturnVoid("reached the pre-set memory limit\n"
+                            "(change it with the -o command line option)",
+                            0, 0, "you can 'return;'");
+        }
     }
     else
 #endif
@@ -1127,10 +1130,14 @@ void ClearError ( void )
         }
 #ifdef USE_GASMAN
         /* and check if maximal memory was overrun */
-        if ( SyStorOverrun != 0 ) {
-          SyStorOverrun = 0; /* reset */
-          Pr("GAP has exceeded the permitted memory (-o option),\n", 0, 0);
-          Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax, 0);
+        if (SyStorOverrun != SY_STOR_OVERRUN_CLEAR) {
+            if (SyStorOverrun == SY_STOR_OVERRUN_TO_REPORT) {
+                Pr("GAP has exceeded the permitted memory (-o option),\n", 0,
+                   0);
+                Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax,
+                   0);
+            }
+            SyStorOverrun = SY_STOR_OVERRUN_CLEAR; /* reset */
         }
 #endif
     }
