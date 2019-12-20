@@ -384,6 +384,13 @@ Obj CALL_WITH_CATCH(Obj func, Obj args);
 */
 void AssertionFailure(void);
 
+/****************************************************************************
+**
+*F  TooLargeAllocError
+**
+**  Helper function used by gasman when a too large allocation occurs
+*/
+void TooLargeAllocError(UInt bytes, const char * reason);
 
 /****************************************************************************
 **

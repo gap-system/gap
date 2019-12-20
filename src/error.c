@@ -28,6 +28,7 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysmem.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -622,6 +623,14 @@ void AssertionFailure(void)
     ErrorReturnVoid("Assertion failure", 0, 0, "you may 'return;'");
 }
 
+// This function is called from gasman.c, when a large allocation fails
+void TooLargeAllocError(UInt bytes, const char * reason)
+{
+    // If a SyStorOverrun message is scheduled, mark it as already printed
+    if (SyStorOverrun == SY_STOR_OVERRUN_TO_REPORT)
+        SyStorOverrun = SY_STOR_OVERRUN_REPORTED;
+    ErrorMayQuit("Cannot allocate %d bytes: %s", bytes, (Int)reason);
+}
 
 /****************************************************************************
 **

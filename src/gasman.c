@@ -114,6 +114,7 @@
 #include "gasman.h"
 #include "gasman_intern.h"
 
+#include "error.h"
 #include "gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
@@ -1102,6 +1103,22 @@ static void MaybeMoveBags(void)
 
 /****************************************************************************
 **
+*F  ReportOutOfMemory(size, reason) . . . . . .  handle running out of memory
+**
+*/
+// ReportOutOfMemory is a macro so the correct filename/line is passed to
+// panic. The '1ll << 27' check ensures we only try to recover when a large
+// allocation fails.
+#define ReportOutOfMemory(size, reason)                                      \
+    {                                                                        \
+        if (size > (1LL << 27)) {                                            \
+            TooLargeAllocError(size, reason);                                \
+        }                                                                    \
+        Panic("%s", reason);                                                 \
+    }
+
+/****************************************************************************
+**
 *F  FinishBags() . . . . . . . . . . . . . . . . . . . . . . .finalize GASMAN
 **
 ** `FinishBags()' ends GASMAN and returns all memory to the OS pool
@@ -1257,7 +1274,7 @@ Bag NewBag (
     if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
     {
-        Panic("cannot extend the workspace any more!!!!");
+        ReportOutOfMemory(size, "cannot extend the workspace any more!!");
     }
 
     GAP_ASSERT(type < T_DUMMY);
@@ -1478,7 +1495,8 @@ UInt ResizeBag (
         // check that enough storage for the new bag is available
         if (SpaceBetweenPointers(EndBags, CONST_PTR_BAG(bag)) < WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
-            Panic("cannot extend the workspace any more!!!!!");
+            ReportOutOfMemory(new_size,
+                             "cannot extend the workspace any more!!!");
         }
 
         // update header pointer in case bag moved
@@ -1504,7 +1522,8 @@ UInt ResizeBag (
         /* check that enough storage for the new bag is available          */
         if ( SizeAllocationArea <  WORDS_BAG(sizeof(BagHeader)+new_size)
               && CollectBags( new_size, 0 ) == 0 ) {
-            Panic("Cannot extend the workspace any more!!!!!!");
+            ReportOutOfMemory(new_size,
+                             "cannot extend the workspace any more!!!!");
         }
 
         // update header pointer in case bag moved
