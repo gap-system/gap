@@ -114,6 +114,7 @@
 #include "gasman.h"
 #include "gasman_intern.h"
 
+#include "error.h"
 #include "gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
@@ -1076,6 +1077,36 @@ static void MaybeMoveBags(void)
 
 /****************************************************************************
 **
+*F  ReportOutOfMemory_
+**
+**  The '1 << 27' check ensures we only try to recover when a large
+**  allocation fails.
+*/
+static void ReportOutOfMemory_(int line, UInt size, const char * reason)
+{
+    // if a small allocation failed, we are in serious trouble
+    if (size <= (1 << 27))
+        Panic_(__FILE__, line, "%s", reason);
+
+    // If a SyStorOverrun message is scheduled, mark it as already printed
+    if (SyStorOverrun == SY_STOR_OVERRUN_TO_REPORT)
+        SyStorOverrun = SY_STOR_OVERRUN_REPORTED;
+    ErrorMayQuit("Cannot allocate %d bytes: %s", size, (Int)reason);
+}
+
+/****************************************************************************
+**
+*F  ReportOutOfMemory(size, reason) . . . . . .  handle running out of memory
+**
+**  `ReportOutOfMemory' is called by gasman when a too large allocation
+**  occurs. It is implemented a macro so we can get the line of the caller.
+**  The actual work is done by `ReportOutOfMemory_`.
+*/
+#define ReportOutOfMemory(size, reason)                                      \
+    ReportOutOfMemory_(__LINE__, size, reason)
+
+/****************************************************************************
+**
 *F  FinishBags() . . . . . . . . . . . . . . . . . . . . . . .finalize GASMAN
 **
 ** `FinishBags()' ends GASMAN and returns all memory to the OS pool
@@ -1231,7 +1262,7 @@ Bag NewBag (
     if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
     {
-        Panic("cannot extend the workspace any more!!!!");
+        ReportOutOfMemory(size, "cannot extend the workspace any more!!");
     }
 
     GAP_ASSERT(type < T_DUMMY);
@@ -1452,7 +1483,8 @@ UInt ResizeBag (
         // check that enough storage for the new bag is available
         if (SpaceBetweenPointers(EndBags, CONST_PTR_BAG(bag)) < WORDS_BAG(new_size)
               && CollectBags( new_size-old_size, 0 ) == 0 ) {
-            Panic("cannot extend the workspace any more!!!!!");
+            ReportOutOfMemory(new_size,
+                              "cannot extend the workspace any more!!!");
         }
 
         // update header pointer in case bag moved
@@ -1478,7 +1510,8 @@ UInt ResizeBag (
         /* check that enough storage for the new bag is available          */
         if ( SizeAllocationArea <  WORDS_BAG(sizeof(BagHeader)+new_size)
               && CollectBags( new_size, 0 ) == 0 ) {
-            Panic("Cannot extend the workspace any more!!!!!!");
+            ReportOutOfMemory(new_size,
+                              "cannot extend the workspace any more!!!!");
         }
 
         // update header pointer in case bag moved
