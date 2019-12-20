@@ -35,7 +35,7 @@
 
 
 Int SyStorMax;
-Int SyStorOverrun;
+SyStorEnum SyStorOverrun;
 Int SyStorKill;
 Int SyStorMin;
 
@@ -659,7 +659,7 @@ UInt *** SyAllocBags(Int size, UInt need)
 
     // set the overrun flag if we became larger than SyStorMax
     if (SyStorMax != 0 && syWorksize > SyStorMax) {
-        SyStorOverrun = -1;
+        SyStorOverrun = SY_STOR_OVERRUN_TO_REPORT;
         SyStorMax = syWorksize * 2; // new maximum
         InterruptExecStat();        // interrupt at the next possible point
     }
