@@ -2076,7 +2076,7 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 
     // Check if this allocation would even fit into memory
     if (SIZE_MAX - (size_t)(sizeof(BagHeader) + size) < (size_t)AllocBags) {
-        return 0;
+        return 2; // signal error
     }
 
     // store in 'stopBags' where this allocation takes us
@@ -2141,7 +2141,7 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 
         /* get the storage we absolutely need                              */
         while ( EndBags < stopBags
-             && SyAllocBags(512,1) )
+             && SyAllocBags(512,0) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* if not enough storage is free, fail                             */
