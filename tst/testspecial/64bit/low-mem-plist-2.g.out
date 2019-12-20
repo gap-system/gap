@@ -1,0 +1,11 @@
+gap> EmptyPlist(2^50);
+Error, Cannot allocate 9007199254741000 bytes: cannot extend the workspace any more!!
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> EmptyPlist(2^50);
+Error, Cannot allocate 9007199254741000 bytes: cannot extend the workspace any more!!
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> quit;
