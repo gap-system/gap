@@ -1838,66 +1838,12 @@ to ensure that IsWeakDeadBag works correctly.
 static Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1);
 static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1);
 
-
-
-UInt CollectBags (
-    UInt                size,
-    UInt                full )
+static UInt CollectBags_Mark(void)
 {
     Bag                 first;          /* first bag on a linked list      */
-    Bag *               p;              /* loop variable                   */
-    Bag *               dst;            /* destination in sweeping         */
-    Bag *               src;            /* source in sweeping              */
-    Bag *               end;            /* end of a bag in sweeping        */
     UInt                nrLiveBags;     /* number of live new bags         */
     UInt                sizeLiveBags;   /* total size of live new bags     */
-    UInt                nrDeadBags;     /* number of dead new bags         */
-    UInt                nrHalfDeadBags; /* number of dead new bags         */
-    UInt                sizeDeadBags;   /* total size of dead new bags     */
-    UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
-
-    GAP_ASSERT(SanityCheckGasmanPointers());
-    CANARY_DISABLE_VALGRIND();
-    CANARY_FORBID_ACCESS_ALL_BAGS();
-#ifdef DEBUG_MASTERPOINTERS
-    CheckMasterPointers();
-#endif
-
-
-    // call the before functions (if any)
-    for (i = 0; i < CollectFuncBags.nrBefore; ++i)
-        CollectFuncBags.before[i]();
-
-    /* copy 'full' into a global variable, to avoid warning from GNU C     */
-    FullBags = full;
-
-    /* do we want to make a full garbage collection?                       */
-again:
-    if ( FullBags ) {
-
-        /* then every bag is considered to be a young bag                  */
-        YoungBags = OldBags;
-        NrLiveBags = 0;
-        SizeLiveBags = 0;
-
-        /* empty the list of changed old bags                              */
-        while ( ChangedBags != 0 ) {
-            first = ChangedBags;
-            ChangedBags = LINK_BAG(first);
-            LINK_BAG(first) = first;
-        }
-
-        // Also time to change the tag for dead children of weak pointer
-        // objects. After this collection, there can be no more weak pointer
-        // objects pointing to anything with OldWeakDeadBagMarker in it.
-        SWAP(Bag *, OldWeakDeadBagMarker, NewWeakDeadBagMarker);
-    }
-
-    /* information at the beginning of garbage collections                 */
-    SyMsgsBags(FullBags, 0, 0);
-
-    /* * * * * * * * * * * * * * *  mark phase * * * * * * * * * * * * * * */
 
     /* prepare the list of marked bags for the future                      */
     MarkedBags = 0;
@@ -1990,7 +1936,17 @@ again:
     SizeLiveBags += sizeLiveBags;
     SyMsgsBags(FullBags, 2, sizeLiveBags / 1024);
 
-    /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
+    return nrLiveBags;
+}
+
+static UInt CollectBags_Sweep(void)
+{
+    Bag *               dst;            /* destination in sweeping         */
+    Bag *               src;            /* source in sweeping              */
+    Bag *               end;            /* end of a bag in sweeping        */
+    UInt                nrDeadBags;     /* number of dead new bags         */
+    UInt                nrHalfDeadBags; /* number of half dead new bags    */
+    UInt                sizeDeadBags;   /* total size of dead new bags     */
 
     /* sweep through the young generation                                  */
     nrDeadBags = 0;
@@ -2137,7 +2093,14 @@ again:
     if ( FullBags )
         SizeDeadBags = 0;
 
-    /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
+    return nrDeadBags + nrHalfDeadBags;
+}
+
+static Int CollectBags_Check(UInt size, UInt nrBags)
+{
+    UInt                done;           /* do we have to make a full gc    */
+    Bag *               p;              /* loop variable                   */
+    UInt                i;              /* loop variable                   */
 
     // Check if this allocation would even fit into memory
     if (SIZE_MAX - (size_t)(sizeof(BagHeader) + size) < (size_t)AllocBags) {
@@ -2152,13 +2115,13 @@ again:
     if ( ! FullBags ) {
 
         /* maybe adjust the size of the allocation area                    */
-        if ( nrLiveBags+nrDeadBags +nrHalfDeadBags < 512
+        if ( nrBags < 512
 
              /* The test below should stop AllocSizeBags
                 growing uncontrollably when all bags are big */
              && stopBags > OldBags + 4*1024*WORDS_BAG(AllocSizeBags))
             AllocSizeBags += 256;
-        else if ( 4096 < nrLiveBags+nrDeadBags+nrHalfDeadBags
+        else if ( 4096 < nrBags
                && 256 < AllocSizeBags )
             AllocSizeBags -= 256;
 
@@ -2166,7 +2129,7 @@ again:
         if ( EndBags < stopBags + WORDS_BAG(1024*AllocSizeBags)
           || SizeMptrsArea <
 
-             /*      nrLiveBags+nrDeadBags+nrHalfDeadBags+ 4096 */
+             /*      nrBags+ 4096 */
              /*      If this test triggered, but the one below didn't
                      then a full collection would ensue which wouldn't
                      do anything useful. Possibly a version of the
@@ -2211,7 +2174,7 @@ again:
 
         /* if not enough storage is free, fail                             */
         if ( EndBags < stopBags )
-            return 0;
+            return 2; // signal error
 
         /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
         while ( ( SpaceBetweenPointers(EndBags, stopBags) <  SpaceBetweenPointers(stopBags, OldBags)/7 ||
@@ -2278,6 +2241,69 @@ again:
     /* information after the check phase                                   */
     SyMsgsBags(FullBags, 5, (EndBags - stopBags) / (1024 / sizeof(Bag)));
     SyMsgsBags(FullBags, 6, SizeWorkspace / (1024 / sizeof(Bag)));
+
+    return done;
+}
+
+UInt CollectBags (
+    UInt                size,
+    UInt                full )
+{
+    Bag                 first;          /* first bag on a linked list      */
+    UInt                nrBags;         /* number of new bags              */
+    UInt                done;           /* do we have to make a full gc    */
+    UInt                i;              /* loop variable                   */
+
+    GAP_ASSERT(SanityCheckGasmanPointers());
+    CANARY_DISABLE_VALGRIND();
+    CANARY_FORBID_ACCESS_ALL_BAGS();
+#ifdef DEBUG_MASTERPOINTERS
+    CheckMasterPointers();
+#endif
+
+
+    // call the before functions (if any)
+    for (i = 0; i < CollectFuncBags.nrBefore; ++i)
+        CollectFuncBags.before[i]();
+
+    /* copy 'full' into a global variable, to avoid warning from GNU C     */
+    FullBags = full;
+
+    /* do we want to make a full garbage collection?                       */
+again:
+    if ( FullBags ) {
+
+        /* then every bag is considered to be a young bag                  */
+        YoungBags = OldBags;
+        NrLiveBags = 0;
+        SizeLiveBags = 0;
+
+        /* empty the list of changed old bags                              */
+        while ( ChangedBags != 0 ) {
+            first = ChangedBags;
+            ChangedBags = LINK_BAG(first);
+            LINK_BAG(first) = first;
+        }
+
+        // Also time to change the tag for dead children of weak pointer
+        // objects. After this collection, there can be no more weak pointer
+        // objects pointing to anything with OldWeakDeadBagMarker in it.
+        SWAP(Bag *, OldWeakDeadBagMarker, NewWeakDeadBagMarker);
+    }
+
+    /* information at the beginning of garbage collections                 */
+    SyMsgsBags(FullBags, 0, 0);
+
+    /* * * * * * * * * * * * * * *  mark phase * * * * * * * * * * * * * * */
+    nrBags = CollectBags_Mark();
+
+    /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
+    nrBags += CollectBags_Sweep();
+
+    /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
+    done = CollectBags_Check(size, nrBags);
+    if (done == 2)
+        return 0;
 
     // if we are not done, then try again
     if ( ! done ) {
