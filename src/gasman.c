@@ -2104,12 +2104,11 @@ static Int CollectBags_Check(UInt size, UInt nrBags)
 
     // Check if this allocation would even fit into memory
     if (SIZE_MAX - (size_t)(sizeof(BagHeader) + size) < (size_t)AllocBags) {
-        return 0;
+        return 2; // signal error
     }
 
     // store in 'stopBags' where this allocation takes us
     Bag * stopBags = AllocBags + WORDS_BAG(sizeof(BagHeader)+size);
-
 
     /* if we only performed a partial garbage collection                   */
     if ( ! FullBags ) {
@@ -2169,7 +2168,7 @@ static Int CollectBags_Check(UInt size, UInt nrBags)
 
         /* get the storage we absolutely need                              */
         while ( EndBags < stopBags
-             && SyAllocBags(512,1) )
+             && SyAllocBags(512,0) )
             EndBags += WORDS_BAG(512*1024L);
 
         /* if not enough storage is free, fail                             */
@@ -2302,8 +2301,7 @@ again:
 
     /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
     done = CollectBags_Check(size, nrBags);
-    if (done == 2)
-        return 0;
+    // done: 0 - finished, 1 - not finished, 2 - out of memory
 
     // if we are not done, then try again
     if ( ! done ) {
@@ -2328,7 +2326,7 @@ again:
 
     GAP_ASSERT(SanityCheckGasmanPointers());
 
-    return 1;
+    return (done != 2);
 }
 
 
