@@ -256,17 +256,18 @@ Error, <obj> must be a component object
 #
 gap> CLEAR_CACHE_INFO();
 gap> opcheck := OPERS_CACHE_INFO();;
-gap> if GAPInfo.KernelInfo.KernelDebug then
->   if IsHPCGAP then
->     ops := [ 0, 0, 0, 6, 0, 0, 4, 0, 0, 0, 0];
->   else
->     ops := [ 0, 0, 0, 7, 0, 0, 2, 0, 0, 0, 0];
->   fi;
-> else
->  ops := [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-> fi;
-gap> opcheck{[1..11]} = ops;
-true
+#@if GAPInfo.KernelInfo.KernelDebug and IsHPCGAP
+gap> opcheck{[1..11]};
+[ 0, 0, 0, 6, 0, 0, 4, 0, 0, 0, 0 ]
+#@fi
+#@if GAPInfo.KernelInfo.KernelDebug and not IsHPCGAP
+gap> opcheck{[1..11]};
+[ 0, 0, 0, 7, 0, 0, 2, 0, 0, 0, 0 ]
+#@fi
+#@if not GAPInfo.KernelInfo.KernelDebug
+gap> opcheck{[1..11]};
+[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+#@fi
 
 #
 # method tracing
