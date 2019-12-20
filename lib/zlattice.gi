@@ -307,8 +307,8 @@ InstallGlobalFunction( DecompositionInt, function( A, B, depth )
 
       # matrix is singular modulo that `p', choose another one
       p := NextPrimeInt( p );
-      Print( "#I DecompositionInt: choosing new prime : ", p, "\n" );
-#T better Info
+      Info( InfoZLattice, 1,
+            "DecompositionInt: choosing new prime ", p );
       Aqinv:= InverseMatMod( A, p );
     od;
 
