@@ -1596,7 +1596,6 @@ static Int InitKernel (
     PowFuncs[  T_FFE ][ T_INT ] = PowFFEInt;
     PowFuncs[  T_FFE ][ T_FFE ] = PowFFEFFE;
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1633,7 +1632,6 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
     SET_HDLR_FUNC(ValGVar(GVarName("Z")), 2, FuncZ2);
 
-    /* return success                                                      */
     return 0;
 }
 

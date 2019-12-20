@@ -2159,7 +2159,6 @@ static Int InitKernel (
 #ifdef HPCGAP
     MakeBagTypePublic(T_CYC);
 #endif
-    /* return success                                                      */
     return 0;
 }
 
@@ -2180,7 +2179,6 @@ static Int InitLibrary (
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2191,7 +2189,6 @@ static Int InitModuleState(void)
     LastECyc = 0;
     LastNCyc = 0;
 
-    // return success
     return 0;
 }
 

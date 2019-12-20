@@ -3744,7 +3744,6 @@ static Int InitKernel(
 #endif
 
 
-  /* return success                                                      */
   return 0;
 
 }

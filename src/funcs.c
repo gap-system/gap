@@ -841,7 +841,6 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -921,7 +920,6 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_FUNCCALL_OPTS  , PrintFunccallOpts);
     InstallPrintExprFunc( EXPR_FUNC      , PrintFuncExpr);
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -930,7 +928,6 @@ static Int InitModuleState(void)
     FuncsState()->ExecState = NEW_PLIST(T_PLIST_EMPTY, 16);
     FuncsState()->RecursionDepth = 0;
 
-    // return success
     return 0;
 }
 

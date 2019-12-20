@@ -1599,7 +1599,6 @@ static Int InitKernel (
 
 
     
-    /* return success                                                      */
     return 0;
 }
 
@@ -1619,7 +1618,6 @@ static Int InitLibrary (
     SET_HDLR_FUNC( AddListOper, 2, FuncADD_LIST);
     SET_HDLR_FUNC( AddListOper, 3, FuncADD_LIST3);
 
-    /* return success                                                      */
     return 0;
 }
 

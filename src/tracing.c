@@ -172,7 +172,6 @@ static Int InitLibrary(StructInitInfo * module)
     InitGVarFuncsFromTable(GVarFuncs);
 
     RecordedStats = NEW_PREC(0);
-    /* return success                                                      */
     return 0;
 }
 

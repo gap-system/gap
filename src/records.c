@@ -648,7 +648,6 @@ static Int InitKernel (
         UnbRecFuncs[ type ] = UnbRecObject;
     }
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -678,7 +677,6 @@ static Int InitLibrary (
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

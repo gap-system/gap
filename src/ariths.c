@@ -1660,7 +1660,6 @@ static Int InitKernel (
     InstallModObject(0);
 
     
-    /* return success                                                      */
     return 0;
 }
 
@@ -1676,7 +1675,6 @@ static Int InitLibrary (
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

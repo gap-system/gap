@@ -2346,7 +2346,6 @@ static Int InitKernel (
     InitGlobalBag( &objWordValue, "src/costab.c:objWordValue" );
     InitGlobalBag( &objExponent , "src/costab.c:objExponent"  );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -2361,7 +2360,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

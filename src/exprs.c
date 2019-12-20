@@ -1781,7 +1781,6 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_REC       , PrintRecExpr);
     InstallPrintExprFunc( EXPR_REC_TILDE , PrintRecExpr);
 
-    /* return success                                                      */
     return 0;
 }
 

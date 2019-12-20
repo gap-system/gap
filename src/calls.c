@@ -1788,7 +1788,6 @@ static Int InitKernel (
     InitHandlerFunc( DoProf6args, "p6" );
     InitHandlerFunc( DoProfXargs, "pX" );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1805,7 +1804,6 @@ static Int InitLibrary(StructInitInfo * module)
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

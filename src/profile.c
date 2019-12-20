@@ -952,7 +952,6 @@ static Int InitLibrary (
 
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
-    /* return success                                                      */
     return 0;
 }
 

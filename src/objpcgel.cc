@@ -340,7 +340,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -361,7 +360,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 

@@ -3243,7 +3243,6 @@ static Int InitKernel (
     /* some functions and globals needed for float conversion */
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -3279,7 +3278,6 @@ static Int PreSave (
   memset(ADDR_OBJ(CS(StackStat)) + 1, 0, SIZE_BAG(CS(StackStat)) - sizeof(Obj));
   memset(ADDR_OBJ(CS(StackExpr)) + 1, 0, SIZE_BAG(CS(StackExpr)) - sizeof(Obj));
 
-  /* return success                                                      */
   return 0;
 }
 
@@ -3298,7 +3296,6 @@ static Int InitModuleState(void)
     CS(OffsBodyStack) = MainOffsBodyStack;
 #endif
 
-    // return success
     return 0;
 }
 

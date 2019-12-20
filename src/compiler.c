@@ -5324,7 +5324,7 @@ Int CompileFunc (
             Emit( "NameFunc[%d] = 0;\n", i );
         }
     }
-    Emit( "\n/* return success */\n" );
+    Emit( "\n" );
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
     Emit( "\n" );
@@ -5353,7 +5353,7 @@ Int CompileFunc (
         Emit( "InitGlobalBag( &(NameFunc[%d]), \"%g:NameFunc[%d](\"FILE_CRC\")\" );\n", 
                i, magic2, i );
     }
-    Emit( "\n/* return success */\n" );
+    Emit( "\n" );
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
 
@@ -5374,7 +5374,7 @@ Int CompileFunc (
     Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
-    Emit( "\n/* return success */\n" );
+    Emit( "\n" );
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
 
@@ -5404,7 +5404,6 @@ Int CompileFunc (
     SyNrCols = col;
     CloseOutput();
 
-    /* return success                                                      */
     return compFunctionsNr;
 }
 
@@ -5680,7 +5679,6 @@ static Int InitKernel (
     CompStatFuncs[ STAT_EMPTY           ] = CompEmpty;
 
     CompStatFuncs[ STAT_PROCCALL_OPTS   ] = CompProccallOpts;
-    /* return success                                                      */
     return 0;
 }
 
@@ -5696,7 +5694,6 @@ static Int PostRestore (
     G_Length = GVarName( "Length" );
     G_Add    = GVarName( "Add"    );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -5711,7 +5708,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return PostRestore( module );
 }
 

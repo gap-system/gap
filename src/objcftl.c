@@ -358,7 +358,6 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -399,7 +398,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -415,7 +413,6 @@ static Int InitModuleState(void)
     CFTLState()->SYLLABLE_STACK = NEW_PLIST( T_PLIST, 4096 );
     CFTLState()->EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
 
-    // return success
     return 0;
 }
 

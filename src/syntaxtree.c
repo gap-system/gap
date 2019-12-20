@@ -940,7 +940,6 @@ static Int InitLibrary(StructInitInfo * module)
     }
 
 
-    /* return success */
     return 0;
 }
 

@@ -544,7 +544,6 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[7] = 0;
  NameFunc[8] = 0;
  
- /* return success */
  return 0;
  
 }
@@ -579,7 +578,6 @@ static Int InitKernel ( StructInitInfo * module )
  InitHandlerFunc( HdlrFunc8, "and_filter.g:HdlrFunc8("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[8]), "and_filter.g:NameFunc[8]("FILE_CRC")" );
  
- /* return success */
  return 0;
  
 }
@@ -603,7 +601,6 @@ static Int InitLibrary ( StructInitInfo * module )
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
- /* return success */
  return 0;
  
 }

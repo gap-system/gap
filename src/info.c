@@ -127,7 +127,6 @@ static Int InitKernel(StructInitInfo * module)
     ImportFuncFromLibrary("SHOW_USED_INFO_CLASSES",
                           &ShowUsedInfoClassesHandler);
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -147,7 +146,6 @@ static Int InitLibrary(StructInitInfo * module)
     ExportAsConstantGVar(INFODATA_OUTPUT);
     ExportAsConstantGVar(INFODATA_NUM);
 
-    /* return success                                                      */
     return 0;
 }
 

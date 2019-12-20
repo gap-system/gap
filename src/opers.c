@@ -3810,7 +3810,6 @@ static Int InitKernel (
     pthread_mutex_init(&CacheLock, NULL);
 #endif
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -3878,7 +3877,6 @@ static Int InitLibrary (
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -3891,7 +3889,6 @@ static Int InitModuleState(void)
     SET_LEN_PLIST(STATE(MethodCache), 1);
 #endif
 
-    // return success
     return 0;
 }
 

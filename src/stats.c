@@ -1636,7 +1636,6 @@ static Int InitKernel (
     for (i = FIRST_NON_INTERRUPT_STAT; i <= LAST_NON_INTERRUPT_STAT; i++)
         IntrExecStatFuncs[i] = ExecStatFuncs[i];
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1651,7 +1650,6 @@ static Int InitModuleState(void)
     }
 #endif
 
-    // return success
     return 0;
 }
 

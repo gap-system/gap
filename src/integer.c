@@ -2914,7 +2914,6 @@ static Int InitKernel ( StructInitInfo * module )
   MakeBagTypePublic( T_INTNEG );
 #endif
   
-  /* return success                                                        */
   return 0;
 }
 
@@ -2929,7 +2928,6 @@ static Int InitLibrary ( StructInitInfo *    module )
   InitGVarFiltsFromTable( GVarFilts );
   InitGVarFuncsFromTable( GVarFuncs );
   
-  /* return success                                                        */
   return 0;
 }
 

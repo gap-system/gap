@@ -937,7 +937,6 @@ UInt ResizeBag(Bag bag, UInt new_size)
     // update the size
     header->size = new_size;
 
-    // return success
     return 1;
 }
 

@@ -504,7 +504,6 @@ UInt ResizeBag(Bag bag, UInt new_size)
         memcpy(DATA(header), src, old_size < new_size ? old_size : new_size);
         SET_PTR_BAG(bag, DATA(header));
     }
-    /* return success                                                      */
     return 1;
 }
 

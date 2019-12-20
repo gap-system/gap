@@ -1661,7 +1661,6 @@ static Int InitKernel (
     ImportGVarFromLibrary("REREADING", &REREADING);
     
     
-    /* return success                                                      */
     return 0;
 }
 
@@ -1680,7 +1679,6 @@ static Int PostRestore (
     /* update fopies and copies                                            */
     UpdateCopyFopyInfo();
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1749,7 +1747,6 @@ static Int InitLibrary (
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* return success                                                      */
     return 0;
 }
 
@@ -1768,7 +1765,6 @@ static Int CheckInit (
         Pr("#W  failed to updated copies and fopies\n", 0, 0);
     }
 
-    /* return success                                                      */
     return ! success;
 }
 
@@ -1779,7 +1775,6 @@ static Int InitModuleState(void)
     STATE(CurrNamespace) = NEW_STRING(0);
     SET_LEN_STRING(STATE(CurrNamespace), 0);
 
-    // return success
     return 0;
 }
 

@@ -5818,7 +5818,6 @@ static Int PreSave(StructInitInfo * module)
     for (q = 3; q <= 256; q++)
         SET_ELM_PLIST(FieldInfo8Bit, q, (Obj)0);
 
-    // return success
     return 0;
 }
 
@@ -5853,7 +5852,6 @@ static Int InitKernel(StructInitInfo * module)
                  &IsLockedRepresentationVector);
     InitFopyGVar("AsInternalFFE", &AsInternalFFE);
 
-    // return success
     return 0;
 }
 
@@ -5874,7 +5872,6 @@ static Int InitLibrary(StructInitInfo * module)
     InitGVarFuncsFromTable(GVarFuncs);
 
 
-    // return success
     return 0;
 }
 
