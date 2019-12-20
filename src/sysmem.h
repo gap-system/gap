@@ -32,7 +32,17 @@
 **  This is used in the function 'SyAllocBags' below.
 */
 extern Int SyStorMax;
-extern Int SyStorOverrun;
+
+// SyStorOverrun tracks whether an allocation exceeding the memory limit
+// specified by SyStorMax is exceeded. Several places in the GAP code base
+// check its values and will take appropriate actions if it is set to a
+// value different from SY_STOR_OVERRUN_CLEAR.
+typedef enum {
+    SY_STOR_OVERRUN_CLEAR,
+    SY_STOR_OVERRUN_TO_REPORT,
+    SY_STOR_OVERRUN_REPORTED
+} SyStorEnum;
+extern SyStorEnum SyStorOverrun;
 
 /****************************************************************************
 **

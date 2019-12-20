@@ -713,7 +713,7 @@ void InitSystem (
 #else
     SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
 #endif // defined(SYS_IS_64_BIT)
-    SyStorOverrun = 0;
+    SyStorOverrun = SY_STOR_OVERRUN_CLEAR;
     SyStorKill = 0;
 #endif // defined(USE_GASMAN)
     SyUseModule = 1;
