@@ -1173,10 +1173,9 @@ end);
 # Adapted from the integer code by AH and Sean Gage
 #
 
-
-FFECONWAY.LogFFERhoIterate := function(y,z,q)
-    local   p,  p3,  zp3,  k,  x,  xd,  a,  ad,  b,  bd,  n,  nd,  m,  
-            r;
+# given elements y,r of GF(q), compute exponents m, n such that y^m = r^n
+FFECONWAY.LogFFERhoIterate := function(y,r,q)
+    local p, p3, zp3, k, x, xd, a, ad, b, bd, n, nd, m, n;
     p := Characteristic(y);
     p3:=QuoInt(q,3);
     zp3:=QuoInt(2*q,3);
@@ -1201,7 +1200,7 @@ FFECONWAY.LogFFERhoIterate := function(y,z,q)
             a := (a*2) mod k;
             b := (b*2) mod k;
         else
-            x := x * z;
+            x := x * r;
             b := (b + 1) mod k;
         fi;
         
@@ -1218,7 +1217,7 @@ FFECONWAY.LogFFERhoIterate := function(y,z,q)
             ad := (ad*2) mod k;
             bd := (bd*2) mod k;
         else
-            xd := xd * z;
+            xd := xd * r;
             bd := (bd + 1) mod k;
         fi;
         if not IsCoeffsModConwayPolRep(xd) then
@@ -1234,21 +1233,29 @@ FFECONWAY.LogFFERhoIterate := function(y,z,q)
             ad := (ad*2) mod k;
             bd := (bd*2) mod k;
         else
-            xd := xd * z;
+            xd := xd * r;
             bd := (bd + 1) mod k;
         fi;
   until x=xd;
 
   m := (a-ad) mod k;
- r := (bd-b) mod k;
-  return [m,r];
+  n := (bd-b) mod k;
+  return [m,n];
 end;
 
 
+# y: the number whose logarithm we want to compute
+# r: the base of the logarithm (typically a primitive root)
+# ord: a multiple of the order of <r>
+# f: a list of factors of <ord> or a multiple of <ord>
+# q: the size of the field
+#
+# output: the logarithm of y with base <r>, or fail if no such logarithm exists
+FFECONWAY.DoLogFFERho :=function(y,r,ord,f,q)
+    local fact, s, i, t, d, Y, R, MN, M, N, rep, k, theta, Yp, o;
 
-FFECONWAY.DoLogFFERho :=function(y,z,ord,f,q)
-    local   fact,  s,  i,  t,  d,  Q,  R,  MN,  M,  N,  rep,  k,  
-            theta,  Qp,  o;
+    # set <fact> to a factorization of <ord> by exploiting that <f> already
+    # contains factors of a multiple of <ord>
     fact:=[];
     s:=ord;
     for i in f do
@@ -1259,68 +1266,74 @@ FFECONWAY.DoLogFFERho :=function(y,z,ord,f,q)
         fi;
     od;
 
+    # we have non-trivial factors of <ord>; exploit that to compute
+    # the result
     if Length(fact)>1 then
         d:=ord;
         while (d=ord) and Length(fact)>0 do
+            # take a factor <s> of <ord> ...
             s:=Remove(fact);
+            # if <s> happens to be a factor of the order of <r>, and if y has
+            # a logarithm the given <r>, then y^s has a logarithm with base r^s;
+            # use that for recursion
             t:=ord/s;
-            Q:=y^s;
-            R:=z^s;
+            Y:=y^s;
+            R:=r^s;
             
-        # iterate
-            MN:=FFECONWAY.LogFFERhoIterate(Q,R,q);
+            # iterate
+            MN:=FFECONWAY.LogFFERhoIterate(Y,R,q);
             M:=MN[1];
             N:=MN[2];
-            rep:=GcdRepresentation(ord,s*M);
-            d:=rep[1]*ord+rep[2]*s*M;
+            rep:=Gcdex(ord,s*M);
+            d:=rep.gcd;
         od;
         
         if d < ord then
-            k:=(rep[2]*s*N/d);
-            if Gcd(DenominatorRat(k),ord)<>1 then
+            k:=(rep.coeff2*s*N/d);
+            if GcdInt(DenominatorRat(k),ord)<>1 then
                 return fail;        # can't invert (can't happen if not primitive root)
             fi;
             k:=k mod ord;
-            theta:= z^(ord/d);
+            theta:= r^(ord/d);
             
-            Qp:=y/(z^k);
-            i:=FFECONWAY.DoLogFFERho(Qp,theta,d,f,q);
+            Yp:=y/(r^k);
+            i:=FFECONWAY.DoLogFFERho(Yp,theta,d,fact,q);
             if i=fail then return i;fi; # bail out
             o:=(k+i*(ord/d)) mod ord;
-            Assert(1,z^o=y);
+            Assert(1,r^o=y);
             return o;
         fi;
     fi;
     
     # naive case, iterate
-    MN:=FFECONWAY.LogFFERhoIterate(y,z,q);
+    MN:=FFECONWAY.LogFFERhoIterate(y,r,q);
     M:=MN[1];
     N:=MN[2];
-    rep:=GcdRepresentation(ord,M);
-    d:=rep[1]*ord+rep[2]*M;
-    k:=(rep[2]*N/d);
-    if Gcd(DenominatorRat(k),ord)<>1 then
+    rep:=Gcdex(ord,M);
+    d:=rep.gcd;
+    k:=(rep.coeff2*N/d);
+    if GcdInt(DenominatorRat(k),ord)<>1 then
         return fail;        # can't invert (can't happen if not primitive root)
     fi;
     k:=k mod ord;
-    theta:= z^(ord/d);
-    Qp:= y/(z^k);
-    i := 0; while i < d do i := i + 1;
-        if IsOne(Qp) then
-            Assert(1,z^k = y);
+    theta:= r^(ord/d);
+    Yp:= y/(r^k);
+    for i in [1..d] do
+        if IsOne(Yp) then
+            Assert(1,r^k = y);
             return k;
         fi;
         k:=(k+ord/d) mod ord;
-        Qp:=Qp/theta;
+        Yp:=Yp/theta;
     od;
-    # process failed (because z was not a primitive root)
+    # process failed (because r was not a primitive root)
     return fail;
 end;
 
 FFECONWAY.DoLogFFE := 
-        function(y,z)
+        function(y,r)
     local   d,  p,  q,  dy,  o,  ix,  f;
-    if IsZero(z)  then
+    if IsZero(r)  then
         Error("LogFFE: element is not a power of base");
     fi;       
     #
@@ -1328,22 +1341,22 @@ FFECONWAY.DoLogFFE :=
     #
     
     y := FFECONWAY.WriteOverSmallestField(y);
-    z := FFECONWAY.WriteOverSmallestField(z);
+    r := FFECONWAY.WriteOverSmallestField(r);
     
     #
     # If we're in the Zech range then all is good
     #
-    if IsInternalRep(z) then
+    if IsInternalRep(r) then
         if not IsInternalRep(y) then
             Error("LogFFE: element is not a power of base");
         else
-            return LogFFE(y,z);
+            return LogFFE(y,r);
         fi;
     fi;
     
     
-    d := DegreeFFE(z);
-    p := Characteristic(z);
+    d := DegreeFFE(r);
+    p := Characteristic(r);
     q := p^d;
     dy := DegreeFFE(y);
     
@@ -1352,18 +1365,18 @@ FFECONWAY.DoLogFFE :=
     fi;
     
     #
-    # If elements are not over same field then I can find the smallest power of z
+    # If elements are not over same field then I can find the smallest power of r
     # that lies in the right field and recurse. This handles the case that y is in internal rep
     #
     if d <> dy then
-        o := Order(z);
+        o := Order(r);
         ix := o/Gcd(o,p^dy-1);
-        return LogFFE(y,z^ix)*ix;
+        return LogFFE(y,r^ix)*ix;
     fi;
     
     # use rho method
-    f:=Factors(Integers,q-1:quiet); # Quick factorization, don't stop if its too hard
-     return FFECONWAY.DoLogFFERho(y,z,q-1,f,q);
+    f:=Factors(Integers,q-1:quiet); # Quick factorization, don't stop if it is too hard
+     return FFECONWAY.DoLogFFERho(y,r,q-1,f,q);
  end;
  
 InstallMethod( LogFFE,

@@ -478,6 +478,61 @@ true
 gap> q:=37^3;; r:=Z(q)^1055;; ForAll([0..q-2], i -> LogFFE(r^i,r)=i);
 true
 
+#
+# test FFECONWAY.LogFFERhoIterate for large fields in isolation
+#
+gap> q:=359^2;; F:=GF(q);; z:=Z(q);;
+gap> ForAll([1..30], function(i)
+>   local a, b, MR;
+>   a:=Random(F);
+>   b:=Random(F);
+>   MR:=FFECONWAY.LogFFERhoIterate(a,b,q);
+>   return a^MR[1] = b^MR[2];
+> end);
+true
+gap> q:=281^2;; F:=GF(q);; z:=Z(q);;
+gap> ForAll([1..30], function(i)
+>   local a, b, MR;
+>   a:=Random(F);
+>   b:=Random(F);
+>   MR:=FFECONWAY.LogFFERhoIterate(a,b,q);
+>   return a^MR[1] = b^MR[2];
+> end);
+true
+
+# test large field case, and an issue reported 2018-12-16
+# (see <https://github.com/gap-system/gap/issues/3784>)
+gap> ForAll(Primes,p->LogFFE(Z(p^2)^4,Z(p^2)^2) <> fail);
+true
+gap> z:=Z(359^2);;
+gap> r:=z^2;
+gap> LogFFE(z^0,r);
+0
+gap> LogFFE(z,r);
+fail
+gap> LogFFE(z^2,r);
+1
+gap> LogFFE(z^3,r);
+fail
+gap> LogFFE(z^4,r);
+2
+gap> ForAll([0,2..20], n -> LogFFE(z^n,r) = n/2 );
+true
+gap> ForAll([1,3..21], n -> LogFFE(z^n,r) = fail );
+true
+gap> z:=Z(281^2);;
+gap> r:=z^2;
+gap> LogFFE(z^0,r);
+0
+gap> LogFFE(z,r);
+fail
+gap> LogFFE(z^2,r);
+1
+gap> LogFFE(z^3,r);
+fail
+gap> LogFFE(z^4,r);
+2
+
 # error handling
 gap> LogFFE(0*Z(2), Z(2));
 Error, LogFFE: <z> must be a nonzero finite field element

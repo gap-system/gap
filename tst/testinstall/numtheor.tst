@@ -80,4 +80,17 @@ gap> JACOBI_INT(1, fail);
 Error, JACOBI_INT: <m> must be an integer (not the value 'fail')
 
 #
+#
+#
+gap> p:=65537;;
+gap> ForAll([1..100], function(i)
+>   local a, b, MR;
+>   a:=Random(1,p);
+>   b:=Random(1,p);
+>   MR:=LogModRhoIterate(a,b,p);
+>   return PowerModInt(a,MR[1],p)=PowerModInt(b,MR[2],p);
+> end);
+true
+
+#
 gap> STOP_TEST( "numtheor.tst", 1);
