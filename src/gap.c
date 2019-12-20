@@ -1209,7 +1209,7 @@ static Obj FuncKERNEL_INFO(Obj self)
     Obj  tmp;
     UInt i;
 
-    AssPRec(res, RNamName("GAP_ARCHITECTURE"), MakeImmString(SyArchitecture));
+    AssPRec(res, RNamName("GAP_ARCHITECTURE"), MakeImmString(GAPARCH));
     AssPRec(res, RNamName("KERNEL_VERSION"), MakeImmString(SyKernelVersion));
     AssPRec(res, RNamName("KERNEL_API_VERSION"), INTOBJ_INT(GAP_KERNEL_API_VERSION));
     AssPRec(res, RNamName("BUILD_VERSION"), MakeImmString(SyBuildVersion));

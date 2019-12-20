@@ -22,13 +22,6 @@
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
 
-
-/****************************************************************************
-**
-*V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
-*/
-extern const Char * SyArchitecture;
-
 /****************************************************************************
 **
 *V  SyKernelVersion  . . . . . . . . . . . . . . . .  kernel version number

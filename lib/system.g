@@ -90,7 +90,6 @@ BIND_GLOBAL( "GAPInfo", rec(
                      "of root paths" ] ),
       rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
       rec( short:= "A", default := false, help := ["disable/enable autoloading of suggested", "GAP packages"] ),
-      rec( short:= "B", default := "",    arg := "<name>", help := [ "current architecture"] ),
       rec( short:= "D", default := false, help := ["enable/disable debugging the loading of files"] ),
       rec( short:= "M", default := false, help := ["disable/enable loading of compiled modules"] ),
       rec( short:= "N", default := false, help := ["do not use hidden implications"] ),

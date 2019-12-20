@@ -72,13 +72,6 @@ const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 **
-*V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
-*/
-const Char * SyArchitecture = GAPARCH;
-
-
-/****************************************************************************
-**
 *V  SyCTRD  . . . . . . . . . . . . . . . . . . .  true if '<ctr>-D' is <eof>
 */
 UInt SyCTRD;
@@ -999,8 +992,6 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 /* These options must be kept in sync with those in system.g, so the help output
    is correct */
 static const struct optInfo options[] = {
-  { 'B',  "architecture", storeString, &SyArchitecture, 1}, /* default architecture needs to be passed from kernel 
-                                                                  to library. Might be needed for autoload of compiled files */
   { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */
   { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, /* must handle in kernel */
   { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
