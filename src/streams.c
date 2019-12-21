@@ -33,6 +33,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "systime.h"
 #include "vars.h"
 
 #include <dirent.h>

@@ -25,6 +25,7 @@
 #include "plist.h"
 #include "stringobj.h"
 #include "sysfiles.h"
+#include "systime.h"
 #include "vars.h"
 
 #include "hpc/thread.h"

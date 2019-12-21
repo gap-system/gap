@@ -17,6 +17,7 @@
 #include "stats.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "systime.h"
 
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>

@@ -52,6 +52,7 @@
 #include "saveload.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "systime.h"
 #include "vars.h"
 
 #ifdef HPCGAP

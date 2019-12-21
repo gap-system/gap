@@ -39,6 +39,7 @@
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
+#include "systime.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -49,6 +50,8 @@
 #endif
 
 #include <gmp.h>
+
+#include <unistd.h>
 
 #ifdef USE_JULIA_GC
 #include "julia.h"
@@ -1078,7 +1081,7 @@ static Obj FuncSleep(Obj self, Obj secs)
     Int s = GetSmallInt("Sleep", secs);
 
     if (s > 0)
-        SySleep((UInt)s);
+        sleep((UInt)s);
 
     /* either we used up the time, or we were interrupted. */
     if (HaveInterrupt()) {
@@ -1102,7 +1105,7 @@ static Obj FuncMicroSleep(Obj self, Obj msecs)
     Int s = GetSmallInt("MicroSleep", msecs);
 
     if (s > 0)
-        SyUSleep((UInt)s);
+        usleep((UInt)s);
 
     /* either we used up the time, or we were interrupted. */
     if (HaveInterrupt()) {

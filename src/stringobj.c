@@ -64,6 +64,7 @@
 #include "plist.h"
 #include "range.h"
 #include "saveload.h"
+#include "sysstr.h"
 
 #ifdef HPCGAP
 #include "hpc/guards.h"
