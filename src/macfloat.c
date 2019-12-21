@@ -25,12 +25,13 @@
 #include "ariths.h"
 #include "bool.h"
 #include "error.h"
-#include "io.h"
 #include "integer.h"
+#include "io.h"
 #include "modules.h"
 #include "plist.h"
 #include "saveload.h"
 #include "stringobj.h"
+#include "sysstr.h"
 
 #define RequireMacFloat(funcname, op) \
     RequireArgumentCondition(funcname, op, IS_MACFLOAT(op), \

@@ -753,7 +753,7 @@ static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
     retcode = waitpid(PtyIOStreams[pty].childPID, &status, WNOHANG);
     if (retcode == 0) {
         // Give process a second to quit
-        SySleep(1);
+        sleep(1);
         retcode = waitpid(PtyIOStreams[pty].childPID, &status, WNOHANG);
     }
     if (retcode == 0) {
