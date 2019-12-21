@@ -236,8 +236,8 @@ we provide guidelines for the release preparation and its distribution.
 <Heading>Structure of a GAP Package</Heading>
 
 <Index Subkey="for a GAP package">home directory</Index>
-A &GAP; package should have an alphanumeric name (<A>packagename</A>, say);
-mixed case is fine, but there should  be  no  whitespace characters. 
+A &GAP; package should have an alphanumeric name;
+mixed case is fine, but there should be no whitespace characters.
 All files of a &GAP; package <A>packagename</A> must be collected in a 
 single directory <A>packagedir</A>, where <A>packagedir</A> should  be
 just <A>packagename</A> optionally converted to lowercase and optionally 
@@ -923,7 +923,7 @@ before the package is loaded so it will be silently overwritten.
 <Index>needed package</Index>
 <Index>suggested package</Index>
 <Index Subkey="for a GAP package">dependencies</Index>
-It is possible for one &GAP; package <C>A</C>, say,
+It is possible for one &GAP; package <C>A</C>
 to require another package <C>B</C>.
 For that, one simply adds the name and the (least) version number of the
 package <C>B</C> to the <C>NeededOtherPackages</C> component of the
@@ -1106,7 +1106,7 @@ part and implementation part does in general <E>not</E> allow one to actually
 For example,
 in the case of a <Q>cyclic dependency</Q> as in the second example above,
 suppose that <C>B</C> provides a new function <C>f</C> or a new global record
-<C>r</C>, say, which are declared in the declaration part of <C>B</C>.
+<C>r</C> which are declared in the declaration part of <C>B</C>.
 Then the code in the implementation part of <C>A</C> may contain
 calls to the functions defined in the declaration part of <C>B</C>.
 However, the implementation part of <C>A</C> may be read
@@ -1286,7 +1286,7 @@ This means that the binary is not regarded as essential for this
 package.
 <P/>
 You might also have to cope with the situation that external binaries will
-only run under UNIX (and not, say, under Windows), or may not compile with
+only run under UNIX (and not e.g. under Windows), or may not compile with
 some compilers or default compiler options.
 See&nbsp;<Ref Sect="Testing for the System Architecture"/>
 for information on how to test for the architecture.

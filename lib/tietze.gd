@@ -231,7 +231,7 @@ DeclareGlobalFunction("AddRelator");
 ##  redundant list of generators of <A>H</A> which consists of an (in general
 ##  small) list of <Q>primary</Q> generators, followed by an (in general
 ##  large) list of <Q>secondary</Q> generators, and then construct a
-##  presentation <M>P_0</M>, say,
+##  presentation <M>P_0</M>
 ##  <E>on a sublist of these generators</E> by rewriting
 ##  the defining relators of <A>G</A>.
 ##  This sublist contains all primary, but, at least in general,
@@ -273,7 +273,7 @@ DeclareGlobalFunction("AddRelator");
 ##  Starting from <M>P = P_0</M>, it runs through a number of steps in each
 ##  of which it eliminates the current <Q>last</Q> generator (with respect to
 ##  the list of all primary and secondary generators). If the last generator
-##  <A>g</A>, say, is a primary generator, then the procedure terminates.
+##  <A>g</A> is a primary generator, then the procedure terminates.
 ##  Otherwise it checks whether there is a relator in the current
 ##  presentation which can be used to substitute <A>g</A> by a Tietze
 ##  transformation. If so, this is done.
@@ -1745,7 +1745,7 @@ DeclareGlobalFunction("TzRemoveGenerators");
 ##  <M>l_1</M> and <M>l_2</M>, respectively,
 ##  such that <M>l_1 \leq l_2</M> and <M>r_1</M> and <M>r_2</M>
 ##  coincide (possibly after inverting or conjugating one of them) in some
-##  maximal subword <M>w</M>, say, of length greater than <M>l_1/2</M>,
+##  maximal subword <M>w</M> of length greater than <M>l_1/2</M>,
 ##  and then to substitute each copy of <M>w</M> in <M>r_2</M> by the inverse
 ##  complement of <M>w</M> in <M>r_1</M>.
 ##  <P/>
@@ -1778,7 +1778,7 @@ DeclareGlobalFunction("TzRemoveGenerators");
 ##  <P/>
 ##  As this subroutine performs a very expensive process, it has been
 ##  implemented as a C routine in the &GAP; kernel. For the given relator
-##  <M>r_1</M> of length <M>l_1</M>, say, it first determines the
+##  <M>r_1</M> of length <M>l_1</M> it first determines the
 ##  <E>minimal match length</E> <M>l</M> which is <M>l_1/2+1</M>,
 ##  if <M>l_1</M> is even, or <M>(l_1+1)/2</M>, otherwise.
 ##  Then it builds up a hash list for all subwords of length <M>l</M>
@@ -1826,7 +1826,7 @@ DeclareGlobalFunction("TzSearch");
 ##  <M>l_1</M> and <M>l_2</M>, respectively, such that <M>l_1</M> is even,
 ##  <M>l_1 \leq l_2</M>, and <M>r_1</M> and <M>r_2</M> coincide (possibly 
 ##  after inverting or conjugating one of them) in some maximal subword
-##  <M>w</M>, say, of length at least <M>l_1/2</M>.
+##  <M>w</M> of length at least <M>l_1/2</M>.
 ##  Let <M>l</M> be the length of <M>w</M>. Then, if <M>l > l_1/2</M>,
 ##  the pair is handled as in <Ref Func="TzSearch"/>.
 ##  Otherwise, if <M>l = l_1/2</M>, then <Ref Func="TzSearchEqual"/>
@@ -2136,7 +2136,7 @@ DeclareGlobalFunction("TzSubstitute");
 ##  <Func Name="TzSubstituteCyclicJoins" Arg='P'/>
 ##
 ##  <Description>
-##  tries to find pairs of commuting generators <M>a</M> and <M>b</M>, say,
+##  tries to find pairs of commuting generators <M>a</M> and <M>b</M>
 ##  such that the exponent of <M>a</M> (i. e. the least currently known
 ##  positive integer <M>n</M> such that <M>a^n</M> is a relator in <A>P</A>)
 ##  is prime to the exponent of <M>b</M>.

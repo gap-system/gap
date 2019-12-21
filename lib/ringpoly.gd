@@ -208,7 +208,7 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  specially to always denote the variable with internal number <A>nr</A>.)
 ##  <P/>
 ##  The indeterminate names have not necessarily any relations to variable
-##  names: this means that an indeterminate whose name is, say,  <Q><C>x</C></Q>
+##  names: this means that an indeterminate whose name is <Q><C>x</C></Q>
 ##  cannot be accessed using the variable <C>x</C>, unless <C>x</C> was defined to
 ##  be that indeterminate.
 ##  <#/GAPDoc>

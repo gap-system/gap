@@ -337,7 +337,7 @@ DeclareAttribute( "PowerSubalgebraSeries", IsAlgebra );
 ##
 ##  <Description>
 ##  The <E>adjoint map</E> <M>ad(x)</M> of an element <M>x</M> in an
-##  <M>F</M>-algebra <M>A</M>, say, is the left multiplication by <M>x</M>.
+##  <M>F</M>-algebra <M>A</M> is the left multiplication by <M>x</M>.
 ##  This map is <M>F</M>-linear and thus, w.r.t. the given basis
 ##  <A>B</A><M> = (x_1, x_2, \ldots, x_n)</M> of <M>A</M>,
 ##  <M>ad(x)</M> can be represented by a matrix over <M>F</M>.
@@ -603,7 +603,7 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##
 ##  <Description>
 ##  Let <A>lst</A>  be a nonempty list of square matrices of the same
-##  dimension <M>n</M>, say, with entries in the field <A>F</A>.
+##  dimension <M>n</M> with entries in the field <A>F</A>.
 ##  <Ref Func="FullMatrixAlgebraCentralizer"/> returns
 ##  the (pointwise) centralizer of all matrices in <A>lst</A>, inside
 ##  the full matrix algebra of <M>n \times n</M> matrices over <A>F</A>.

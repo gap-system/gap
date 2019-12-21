@@ -166,7 +166,7 @@ DeclareGlobalFunction( "CyclotomicPolynomial" );
 ##  <Description>
 ##  For a univariate polynomial <A>pol</A> of degree <M>d</M> in the
 ##  indeterminate <M>X</M>,
-##  with coefficients in a finite field <A>F</A> with <M>q</M> elements, say,
+##  with coefficients in a finite field <A>F</A> with <M>q</M> elements,
 ##  <Ref Oper="IsPrimitivePolynomial"/> returns <K>true</K> if
 ##  <Enum>
 ##  <Item>

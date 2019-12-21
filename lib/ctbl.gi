@@ -1312,7 +1312,7 @@ InstallMethod( IsSimpleCharacterTable,
 ##  a simple group of prime order by outer automorphisms.
 ##  (These groups are not regarded as almost simple.)
 ##  Namely, such a group has a unique minimal normal subgroup <M>N</M> of
-##  prime order <M>p</M>, say,
+##  prime order <M>p</M>
 ##  and all nontrivial conjugacy classes of <M>G</M> inside <M>N</M>
 ##  have length <M>[G:N]</M>.
 ##
@@ -2204,7 +2204,7 @@ InstallMethod( ClassPositionsOfSolvableRadical,
 ##
 #M  ClassPositionsOfLowerCentralSeries( <tbl> )
 ##
-##  Let <A>tbl</A> be the character table of the group <M>G</M>, say.
+##  Let <A>tbl</A> be the character table of a group <M>G</M>.
 ##  The lower central series <M>[ K_1, K_2, \ldots, K_n ]</M> of <M>G</M>
 ##  is defined by <M>K_1 = G</M>, and <M>K_{i+1} = [ K_i, G ]</M>.
 ##  <C>ClassPositionsOfLowerCentralSeries( <A>tbl</A> )</C> is a list
@@ -5919,7 +5919,7 @@ InstallMethod( CharacterTableIsoclinic,
 ##  class positions of the i-th coset of the relevant normal subgroup 'N'
 ##  in 'H' that is given by <p>.G' or '4.G',
 ##  and <xpos> is the class position in 'H' of a generating element of the
-##  relevant central subgroup 'C', say, of order <p> or 4 in 'N'.
+##  relevant central subgroup 'C' of order <p> or 4 in 'N'.
 ##  <center> is a list that describes 'C', as follows;
 ##  if 'H' has the structure '4.G.2' then <center> contains the class
 ##  positions in 'H' of elements of the orders 2 and 4 in 'C',

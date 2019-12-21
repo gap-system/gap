@@ -271,7 +271,7 @@ end );
 #F  SizePolynomialUnipotentClassGL( <la> ) . . . . . . centralizer order of
 #F  unipotent elements in GL_n( q )
 ##  
-##  <la> must be a partition of, say, n.
+##  <la> must be a partition of the natural number n.
 ##  
 ##  This function returns a  pair [coefficient list, valuation] defining a
 ##  polynomial over the integers, having the following property: The order

@@ -450,7 +450,7 @@ DeclareGlobalFunction("PresentationAugmentedCosetTable");
 ##
 ##  <Description>
 ##  uses the Reduced Reidemeister-Schreier method to compute a presentation
-##  <M>P</M>, say, for the normal closure of a subgroup <A>H</A> of a
+##  <M>P</M> for the normal closure of a subgroup <A>H</A> of a
 ##  finitely presented group <A>G</A>.
 ##  The generators in the resulting presentation will be named
 ##  <A>string</A><C>1</C>, <A>string</A><C>2</C>, <M>\ldots</M>,
@@ -492,7 +492,7 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 ##
 ##  <Description>
 ##  uses the Modified Todd-Coxeter coset representative enumeration method
-##  to compute a presentation <M>P</M>, say, for a subgroup <A>H</A> of a
+##  to compute a presentation <M>P</M> for a subgroup <A>H</A> of a
 ##  finitely presented group <A>G</A>.
 ##  The presentation returned is in generators corresponding to the
 ##  generators of <A>H</A>. The generators in the resulting
@@ -623,7 +623,7 @@ DeclareGlobalFunction("PresentationSubgroupMtc");
 ##
 ##  <Description>
 ##  uses the  Reduced Reidemeister-Schreier method to compute a presentation
-##  <A>P</A>, say, for a subgroup <A>H</A> of a finitely presented group
+##  <A>P</A> for a subgroup <A>H</A> of a finitely presented group
 ##  <A>G</A>.
 ##  The generators in the resulting presentation will be named
 ##  <A>string</A><C>1</C>, <A>string</A><C>2</C>, <M>\ldots</M>,

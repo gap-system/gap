@@ -98,7 +98,7 @@ InstallTrueMethod( IsFreeLeftModule,
 ##  The filter <Ref Filt="IsGaussianSpace"/> (see&nbsp;<Ref Sect="Filters"/>)
 ##  for the row space (see&nbsp;<Ref Filt="IsRowSpace"/>)
 ##  or matrix space (see&nbsp;<Ref Filt="IsMatrixSpace"/>) <A>V</A>
-##  over the field <M>F</M>, say,
+##  over a field <M>F</M>
 ##  indicates that the entries of all row vectors or matrices in <A>V</A>,
 ##  respectively, are all contained in <M>F</M>.
 ##  In this case, <A>V</A> is called a <E>Gaussian</E> vector space.

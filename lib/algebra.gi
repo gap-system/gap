@@ -2443,7 +2443,7 @@ InstallMethod( CentralizerOp,
 ##
 #F  CentreFromSCTable( <T> )
 ##
-##  Given a structure constants table <T> w.r.t. a basis $B$, say,
+##  Given a structure constants table <T> w.r.t. a basis $B$,
 ##  `CentreFromSCTable' returns a list of $B$-coefficients vectors
 ##  of a basis for the centre of an $F$-algebra with s.c. table <T>,
 ##  where $F$ is assumed to be commutative.

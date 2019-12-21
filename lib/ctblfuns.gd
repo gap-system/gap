@@ -285,7 +285,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  <Attr Name="UnderlyingCharacterTable" Arg='psi'/>
 ##
 ##  <Description>
-##  For a class function <A>psi</A> of the group <M>G</M>, say,
+##  For a class function <A>psi</A> of a group <M>G</M>
 ##  the character table of <M>G</M> is stored as value of
 ##  <Ref Attr="UnderlyingCharacterTable"/>.
 ##  The ordering of entries in the list <A>psi</A>
@@ -1283,7 +1283,7 @@ DeclareOperation( "MatScalarProducts",
 ##
 ##  <Description>
 ##  <Index Subkey="of character" Key="Norm"><C>Norm</C></Index>
-##  For an ordinary class function <A>chi</A> of the group <M>G</M>, say,
+##  For an ordinary class function <A>chi</A> of a group <M>G</M>
 ##  we have <M><A>chi</A> = \sum_{{\chi \in Irr(G)}} a_{\chi} \chi</M>,
 ##  with complex coefficients <M>a_{\chi}</M>.
 ##  The <E>norm</E> of <A>chi</A> is defined as
@@ -1332,7 +1332,7 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 ##  <Description>
 ##  <Index Subkey="of a character">centre</Index>
-##  For a character <A>chi</A> of the group <M>G</M>, say,
+##  For a character <A>chi</A> of a group <M>G</M>,
 ##  <Ref Attr="CentreOfCharacter"/> returns the <E>centre</E> of <A>chi</A>,
 ##  that is, the normal subgroup of all those elements of <M>G</M> for which
 ##  the quotient of the value of <A>chi</A> by the degree of <A>chi</A> is
@@ -1453,7 +1453,7 @@ DeclareAttribute( "DegreeOfCharacter", IsClassFunction );
 ##  <Oper Name="InertiaSubgroup" Arg='[tbl, ]G, chi'/>
 ##
 ##  <Description>
-##  Let <A>chi</A> be a character of the group <M>H</M>, say,
+##  Let <A>chi</A> be a character of a group <M>H</M>
 ##  and <A>tbl</A> the character table of <M>H</M>;
 ##  if the argument <A>tbl</A> is not given then the underlying character
 ##  table of <A>chi</A> (see&nbsp;<Ref Attr="UnderlyingCharacterTable"/>) is
@@ -1492,7 +1492,7 @@ DeclareOperation( "InertiaSubgroup",
 ##  <Attr Name="KernelOfCharacter" Arg='[tbl, ]chi'/>
 ##
 ##  <Description>
-##  For a class function <A>chi</A> of the group <M>G</M>, say,
+##  For a class function <A>chi</A> of a group <M>G</M>,
 ##  <Ref Attr="KernelOfCharacter"/> returns the normal subgroup of <M>G</M>
 ##  that is formed by those conjugacy classes for which the value of
 ##  <A>chi</A> equals the degree of <A>chi</A>.
@@ -1640,7 +1640,7 @@ DeclareOperation( "Transitivity", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##
 ##  <Description>
 ##  <Index>central character</Index>
-##  For a character <A>chi</A> of the group <M>G</M>, say,
+##  For a character <A>chi</A> of a group <M>G</M>,
 ##  <Ref Attr="CentralCharacter"/> returns
 ##  the <E>central character</E> of <A>chi</A>.
 ##  <P/>
@@ -1703,7 +1703,7 @@ DeclareOperation( "DeterminantOfCharacter",
 ##  <Oper Name="EigenvaluesChar" Arg='[tbl, ]chi, class'/>
 ##
 ##  <Description>
-##  Let <A>chi</A> be a character of the group <M>G</M>, say.
+##  Let <A>chi</A> be a character of a group <M>G</M>.
 ##  For an element <M>g \in G</M> in the <A>class</A>-th conjugacy class,
 ##  of order <M>n</M>, let <M>M</M> be a matrix of a representation affording
 ##  <A>chi</A>.
@@ -1819,7 +1819,7 @@ DeclareOperation( "Tensored", [ IsHomogeneousList, IsHomogeneousList ] );
 ##  <Oper Name="RestrictedClassFunction" Arg='[tbl, ]chi, target'/>
 ##
 ##  <Description>
-##  Let <A>chi</A> be a class function of the group <M>G</M>, say,
+##  Let <A>chi</A> be a class function of a group <M>G</M>
 ##  and let <A>target</A> be either a subgroup <M>H</M> of <M>G</M>
 ##  or an injective homomorphism from <M>H</M> to <M>G</M>
 ##  or the character table of <A>H</A>.
@@ -1951,7 +1951,7 @@ DeclareSynonym( "Inflated", Restricted );
 ##   Label="for the character table of a supergroup"/>
 ##
 ##  <Description>
-##  Let <A>chi</A> be a class function of the group <M>G</M>, say,
+##  Let <A>chi</A> be a class function of a group <M>G</M>
 ##  and let <A>target</A> be either a supergroup <M>H</M> of <M>G</M>
 ##  or an injective homomorphism from <M>H</M> to <M>G</M>
 ##  or the character table of <A>H</A>.
@@ -2158,7 +2158,7 @@ DeclareOperation( "InducedCyclic", [ IsOrdinaryTable, IsList, IsString ] );
 ##
 ##  <Description>
 ##  Let <A>reducibles</A> be a list of ordinary virtual characters
-##  of the group <M>G</M>, say.
+##  of a group <M>G</M>.
 ##  If <A>constituents</A> is given then it must also be a list of ordinary
 ##  virtual characters of <M>G</M>,
 ##  otherwise we have <A>constituents</A> equal to <A>reducibles</A>

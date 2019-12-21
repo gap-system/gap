@@ -255,10 +255,10 @@ DeclareGlobalFunction( "PermCharInfo" );
 ##  <A>permchars</A>.
 ##  The degrees and distinguishing letters of the constituents refer to
 ##  the irreducibles of <A>tbl</A>, as follows.
-##  The two irreducible characters of <A>tbl2</A> of degree <M>N</M>, say,
+##  The two irreducible characters of <A>tbl2</A> of degree <M>N</M>
 ##  that extend the irreducible character <M>N</M> <C>a</C> of <A>tbl</A>
 ##  are denoted by <M>N</M> <C>a</C><M>^+</M> and <M>N </M><C>a</C><M>^-</M>.
-##  The irreducible character of <A>tbl2</A> of degree <M>2N</M>, say, whose
+##  The irreducible character of <A>tbl2</A> of degree <M>2N</M> whose
 ##  restriction to <A>tbl</A> is the sum of the irreducible characters
 ##  <M>N</M> <C>a</C> and <M>N</M> <C>b</C> is denoted as <M>N</M> <C>ab</C>.
 ##  Multiplicities larger than <M>1</M> of constituents are denoted by
@@ -314,7 +314,7 @@ DeclareGlobalFunction( "PermCharInfoRelative" );
 ##  possible permutation characters listed in
 ##  Section&nbsp;<Ref Sect="Possible Permutation Characters"/>,
 ##  The other two implement test of additional properties.
-##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>, say,
+##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>,
 ##  <A>char</A> a rational character of <A>tbl</A>,
 ##  and <A>chars</A> a list of rational characters of <A>tbl</A>.
 ##  For applying <Ref Func="TestPerm5"/>, the knowledge of a <M>p</M>-modular

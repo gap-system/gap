@@ -517,7 +517,7 @@ InstallMethod( \in,
 #F  AlgebraByStructureConstants( <R>, <sctable>, <name1>, <name2>, ... )
 ##
 ##  is an algebra $A$ over the ring <R>, defined by the structure constants
-##  table <sctable> of length $n$, say.
+##  table <sctable> of length $n$.
 ##
 ##  The generators of $A$ are linearly independent abstract space generators
 ##  $x_1, x_2, \ldots, x_n$ which are multiplied according to the formula

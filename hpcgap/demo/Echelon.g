@@ -48,7 +48,7 @@ end;
 ##  
 ##  TrigonalizeSubset(mat, pivots, inds)  
 ##  
-##  Arguments: matrix mat with, say, n rows;
+##  Arguments: matrix mat with n rows;
 ##             list pivots of length n, such that 
 ##                  pivots[i] = PositionNonZero(mat[i]) or = 0;
 ##             inds is a sublist of [1..n].

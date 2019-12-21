@@ -409,7 +409,7 @@ DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 ##  <Attr Name="IsomorphismSCAlgebra" Arg='A' Label="for an algebra"/>
 ##
 ##  <Description>
-##  For a basis <A>B</A> of an algebra <M>A</M>, say,
+##  For a basis <A>B</A> of an algebra <M>A</M>,
 ##  <Ref Attr="IsomorphismSCAlgebra" Label="w.r.t. a given basis"/> returns
 ##  an algebra isomorphism from <M>A</M> to an algebra <M>S</M> given by
 ##  structure constants

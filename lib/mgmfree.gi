@@ -42,12 +42,12 @@ InstallMethod( IsWholeFamily,
 ##
 #M  Enumerator( <M> ) . . . . . . . . . . . . . . enumerator for a free magma
 ##
-##  Let <M> be a free magma on $N$ generators $x_1, x_2, \ldots, x_N$, say.
+##  Let <M> be a free magma on $N$ generators $x_1, x_2, \ldots, x_N$.
 ##  Each element in <M> is uniquely determined by an element in a free
 ##  semigroup $S$ over $s_1, s_2, \ldots, s_N$ (which is obtained by mapping
 ##  $x_i$ to $s_i$) plus the ``bracketing of the element.
 ##  Thus we can describe each element $x$ in <M> by a quadruple $[N,l,p,q]$
-##  where $l$ is the length of the corresponding associative word $s$, say,
+##  where $l$ is the length of the corresponding associative word $s$,
 ##  $p$ is the position of $s$ among the associative words of length $l$ in
 ##  $S$ (so $0 \leq p < N^l$),
 ##  and $q$ is the position of the bracketing of $x$

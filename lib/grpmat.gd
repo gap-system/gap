@@ -366,7 +366,7 @@ InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingBilinearForm );
 ##  <Description>
 ##  This attribute describes a sesquilinear form that is invariant under the
 ##  matrix group <A>matgrp</A> over the field <M>F</M> with <M>q^2</M>
-##  elements, say.
+##  elements.
 ##  The form is given by a record with the component <C>matrix</C>
 ##  which is is a matrix <M>M</M> such that for every generator <M>g</M> of
 ##  <A>matgrp</A>
@@ -528,7 +528,7 @@ DeclareGlobalFunction( "AffineActionByMatrixGroup" );
 ##
 ##  <Description>
 ##  For a matrix group <A>matgrp</A> and a basis <A>B</A> of a field
-##  extension <M>L / K</M>, say, such that the entries of all matrices in
+##  extension <M>L / K</M> such that the entries of all matrices in
 ##  <A>matgrp</A> lie in <M>L</M>,
 ##  <Ref Func="BlowUpIsomorphism"/> returns the isomorphism with source
 ##  <A>matgrp</A> that is defined by mapping the matrix <M>A</M> to

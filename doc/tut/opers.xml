@@ -169,7 +169,7 @@ of other  attribute   values. Details  of   this <E>method selection</E>   are
 described in chapter&nbsp;<Ref Chap="Method Selection" BookName="ref"/>.
 <P/>
 We  only present the following  rule  of  thumb here:
-Each installed method for an attribute, say <Ref Func="Size" BookName="ref"/>,
+Each installed method for an attribute, for example <Ref Func="Size" BookName="ref"/>,
 has a <Q>required filter</Q>, which is made  up from certain simple filters
 which must yield <K>true</K> for the argument <A>obj</A> for this method to be
 applicable.

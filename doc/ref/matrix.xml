@@ -140,7 +140,7 @@ or the product of a finite field element and an integer matrix.
 returns the product of the row vector <A>vec</A> and the matrix <A>mat</A>.
 Probably the most usual situation is that <A>vec</A> and <A>mat</A> have the same
 lengths and are defined over a common field,
-and that all rows of <A>mat</A> have the same length <M>m</M>, say;
+and that all rows of <A>mat</A> have some common length <M>m</M>;
 in this case the product is a new row vector of length <M>m</M> over the same
 field which is the sum of the scalar multiples of the rows of <A>mat</A> with the
 corresponding entries of <A>vec</A>.
@@ -173,7 +173,7 @@ This form evaluates to the (Cauchy) product of the two matrices <A>mat1</A> and
 Probably the most usual situation is that the number of columns of <A>mat1</A>
 equals the number of rows of <A>mat2</A>,
 and that the elements of <A>mat</A> and <A>vec</A> lie in a common field;
-if <A>mat1</A> is a matrix with <M>m</M> rows and <M>n</M> columns, say, and <A>mat2</A> is a
+if <A>mat1</A> is a matrix with <M>m</M> rows and <M>n</M> columns and <A>mat2</A> is a
 matrix with <M>n</M> rows and <M>o</M> columns, the result is a new matrix with <M>m</M>
 rows and <M>o</M> columns.
 The element in row <M>i</M> at position <M>j</M> of the product is the sum of
@@ -551,7 +551,7 @@ written over finite fields.
 
 The following operations deal with matrices over a ring,
 but only care about the residues of their entries modulo some ring element.
-In the case of the integers and a prime number <M>p</M>, say,
+In the case of the integers and a prime number <M>p</M>,
 this is effectively computation in a matrix over the prime field
 in characteristic <M>p</M>.
 
@@ -567,7 +567,7 @@ in characteristic <M>p</M>.
 <Heading>Special Multiplication Algorithms for Matrices over GF(2)</Heading>
 
 When multiplying two compressed matrices <M>M</M> and <M>N</M> over GF(2) of dimensions
-<M>a \times b</M> and <M>b \times c</M>, say,
+<M>a \times b</M> and <M>b \times c</M>,
 where <M>a</M>, <M>b</M> and <M>c</M> are all
 greater than or equal to 128, &GAP; by default uses a more
 sophisticated matrix multiplication algorithm, in which linear

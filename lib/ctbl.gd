@@ -90,7 +90,7 @@
 ##  themselves (which are not domains in the sense of &GAP;).
 ##  <P/>
 ##  For computations with characters of a finite group <M>G</M> with <M>n</M>
-##  conjugacy classes, say, we fix an ordering of the classes, and then
+##  conjugacy classes, we fix an ordering of the classes, and then
 ##  identify each class with its position according to this ordering.
 ##  Each character of <M>G</M> can be represented by a list of length
 ##  <M>n</M> in which the character value for elements of the <M>i</M>-th
@@ -2697,7 +2697,7 @@ DeclareSynonym( "ComputedIsPSolubleCharacterTables",
 ##
 ##  <Description>
 ##  For two ordinary character tables <A>tbl</A> and <A>subtbl</A> of a group
-##  <M>G</M> and its subgroup <M>U</M>, say,
+##  <M>G</M> and its subgroup <M>U</M>
 ##  and a list <A>fus</A> of positive integers that describes the class
 ##  fusion of <M>U</M> into <M>G</M>,
 ##  <Ref Func="IsClassFusionOfNormalSubgroup"/> returns <K>true</K>
@@ -3870,7 +3870,7 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##
 ##  <Description>
 ##  Let <A>tbl</A> be the (ordinary or modular) character table of a group
-##  <M>H</M>, say, with the structure <M>p.G.p</M> for some prime <M>p</M>,
+##  <M>H</M> with the structure <M>p.G.p</M> for some prime <M>p</M>,
 ##  that is, <M>H/Z</M> has a normal subgroup <M>N</M> of index <M>p</M>
 ##  and a central subgroup <M>Z</M> of order <M>p</M> contained in <M>N</M>.
 ##  <P/>
@@ -4148,7 +4148,7 @@ DeclareGlobalFunction( "CharacterTableOfNormalSubgroup" );
 ##   Arg='tbl, chars, degree, norm, galois'/>
 ##
 ##  <Description>
-##  returns a permutation <M>\pi</M>, say, that can be applied to the list
+##  returns a permutation <M>\pi</M> that can be applied to the list
 ##  <A>chars</A> of characters of the character table <A>tbl</A> in order to
 ##  sort this list w.r.t.&nbsp;increasing degree, norm, or both.
 ##  The arguments <A>degree</A>, <A>norm</A>, and <A>galois</A> must be
@@ -4253,7 +4253,7 @@ DeclareOperation( "SortedCharacters",
 ##   Arg='tbl, classes, orders, galois'/>
 ##
 ##  <Description>
-##  returns a permutation <M>\pi</M>, say, that can be applied to the columns
+##  returns a permutation <M>\pi</M> that can be applied to the columns
 ##  in the character table <A>tbl</A> in order to sort this table
 ##  w.r.t.&nbsp;increasing class length, element order, or both.
 ##  <A>classes</A> and <A>orders</A> must be Booleans.
