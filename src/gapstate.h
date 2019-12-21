@@ -18,6 +18,7 @@
 #include "system.h"
 
 #include "scanner.h"
+#include "sysjmp.h"
 
 #if defined(HPCGAP)
 #include "hpc/tls.h"

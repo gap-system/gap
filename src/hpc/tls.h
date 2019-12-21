@@ -60,6 +60,8 @@
 // assembly code for pthread_getspecific() is implemented in a way
 // consistent with such code.
 
+#include "sysjmp.h"
+
 #include "hpc/tlsconfig.h"
 
 typedef struct Region Region;
