@@ -329,7 +329,7 @@ end );
 #F  RingByStructureConstants( <moduli>, <sctable>, <name1>, <name2>, ... )
 ##
 ##  is an Z-module $M$ defined by the structure constants
-##  table <sctable> of length $n$, say.
+##  table <sctable> of length $n$.
 ##
 ##  The generators of $M$ are linearly independent abstract space generators
 ##  $x_1, x_2, \ldots, x_n$ whose additive orders is given by the list

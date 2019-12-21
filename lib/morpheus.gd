@@ -59,7 +59,7 @@ DeclareAttribute("AutomorphismGroup",IsDomain);
 ##
 ##  <Description>
 ##  indicates whether <A>G</A> consists of automorphisms of another group
-##  <M>H</M>, say.
+##  <M>H</M>.
 ##  The group <M>H</M> can be obtained from <A>G</A> via the attribute
 ##  <Ref Attr="AutomorphismDomain"/>.
 ##  </Description>

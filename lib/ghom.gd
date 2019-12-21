@@ -463,7 +463,7 @@ DeclareOperation( "InnerAutomorphismNC",
 ##
 ##  <Description>
 ##  Let <A>hom</A> be a group general mapping
-##  (see&nbsp;<Ref Filt="IsGroupGeneralMapping"/>) with source <M>G</M>, say.
+##  (see&nbsp;<Ref Filt="IsGroupGeneralMapping"/>) with source <M>G</M>.
 ##  <Ref Prop="IsConjugatorIsomorphism"/> returns <K>true</K> if <A>hom</A>
 ##  is induced by conjugation of <M>G</M> by an element <M>g</M> that lies in
 ##  <M>G</M> or in a group into which <M>G</M> is naturally embedded

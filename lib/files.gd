@@ -549,7 +549,7 @@ end );
 ##  <P/>
 ##  <Ref Func="CrcFile"/> computes a checksum value for the file with
 ##  filename <A>filename</A> and returns this value as an integer.
-##  The function returns <K>fail</K> if a system error occurred, say,
+##  The function returns <K>fail</K> if a system error occurred,
 ##  for example, if <A>filename</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.

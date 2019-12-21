@@ -44,7 +44,7 @@
 ##
 ##  <Description>
 ##  Let <A>V</A> and <A>W</A> be two left modules over the same left acting
-##  domain <M>R</M>, say, and <A>gens</A> and <A>imgs</A> lists
+##  domain <M>R</M> and <A>gens</A> and <A>imgs</A> lists
 ##  (of the same length) of elements in <A>V</A> and <A>W</A>, respectively.
 ##  <Ref Oper="LeftModuleGeneralMappingByImages"/> returns
 ##  the general mapping with source <A>V</A> and range <A>W</A>
@@ -85,7 +85,7 @@ DeclareOperation( "LeftModuleGeneralMappingByImages",
 ##
 ##  <Description>
 ##  Let <A>V</A> and <A>W</A> be two left modules over the same left acting
-##  domain <M>R</M>, say, and <A>gens</A> and <A>imgs</A> lists (of the same
+##  domain <M>R</M> and <A>gens</A> and <A>imgs</A> lists (of the same
 ##  length) of elements in <A>V</A> and <A>W</A>, respectively.
 ##  <Ref Func="LeftModuleHomomorphismByImages"/> returns
 ##  the left <M>R</M>-module homomorphism with source <A>V</A> and range

@@ -1405,7 +1405,7 @@ DeclareAttribute( "DerivedSubgroupsTomUnique", IsTableOfMarks );
 ##  <Attr Name="NormalizersTom" Arg='tom'/>
 ##
 ##  <Description>
-##  Let <A>tom</A> be the table of marks of a group <M>G</M>, say.
+##  Let <A>tom</A> be the table of marks of a group <M>G</M>.
 ##  <Ref Oper="NormalizerTom"/> tries to find the conjugacy class of the
 ##  normalizer <M>N</M> in <M>G</M> of a subgroup <M>U</M> in the
 ##  <A>sub</A>-th class of <A>tom</A>.
@@ -1577,7 +1577,7 @@ DeclareOperation( "CyclicExtensionsTomOp", [ IsTableOfMarks, IsList ] );
 ##  <Oper Name="DecomposedFixedPointVector" Arg='tom, fix'/>
 ##
 ##  <Description>
-##  Let <A>tom</A> be the table of marks of the group <M>G</M>, say,
+##  Let <A>tom</A> be the table of marks of a group <M>G</M>
 ##  and let <A>fix</A> be a vector of fixed point numbers w.r.t.&nbsp;an
 ##  action of <M>G</M>, i.e., a vector which contains for each class of
 ##  subgroups the number of fixed points under the given action.
@@ -1689,7 +1689,7 @@ DeclareOperation( "IntersectionsTom",
 ##  <Oper Name="FactorGroupTom" Arg='tom, n'/>
 ##
 ##  <Description>
-##  For a table of marks <A>tom</A> of the group <M>G</M>, say,
+##  For a table of marks <A>tom</A> of a group <M>G</M>
 ##  and the normal subgroup <M>N</M> of <M>G</M> corresponding to the
 ##  <A>n</A>-th class of subgroups of <A>tom</A>,
 ##  <Ref Oper="FactorGroupTom"/> returns the table of marks of the factor

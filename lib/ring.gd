@@ -891,7 +891,7 @@ DeclareOperation( "IsUnit", [ IsRing, IsRingElement ] );
 ##
 ##  <Description>
 ##  <Ref Oper="InterpolatedPolynomial"/> returns, for given lists <A>x</A>,
-##  <A>y</A> of elements in a ring <A>R</A> of the same length <M>n</M>, say,
+##  <A>y</A> of elements in a ring <A>R</A> of the same length <M>n</M>
 ##  the unique  polynomial of  degree less than <M>n</M> which has value
 ##  <A>y</A>[<M>i</M>] at <A>x</A><M>[i]</M>,
 ##  for all <M>i \in \{ 1, \ldots, n \}</M>. 

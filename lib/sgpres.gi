@@ -1127,7 +1127,7 @@ end );
 ##
 ##  'PresentationNormalClosureRrs'  uses  the  Reduced  Reidemeister-Schreier
 ##  method  to compute a  presentation  (i.e. a presentation record)  for the
-##  normal closure  N, say,  of a subgroup H of a finitely presented group G.
+##  normal closure  N of a subgroup H of a finitely presented group G.
 ##  The  generators in the  resulting presentation  will be named  <string>1,
 ##  <string>2, ... , the default string is `\"_x\"'.
 ##

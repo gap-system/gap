@@ -36,7 +36,7 @@ end;
 ##
 ##  Let i be the smallest positive integer which has not yet been used as
 ##  a generator number and for which no component T!.i exists so far in the
-##  given presentation T, say. `AddGenerator' defines a new abstract
+##  given presentation T. `AddGenerator' defines a new abstract
 ##  generator _xi and adds it, as component T!.i, to the given presentation.
 ##
 InstallGlobalFunction( AddGenerator, function ( T )
@@ -3717,7 +3717,7 @@ InstallGlobalFunction( TzSubstitute, function ( arg )
         return;
     fi;
 
-    # get the nth pair [ a, b ], say, from the list.
+    # get the nth pair, say [ a, b ], from the list.
     i := pairs[n][2];
     j := pairs[n][3];
     k := pairs[n][4];
@@ -3766,7 +3766,7 @@ end );
 #M  TzSubstituteCyclicJoins( <Tietze record> ) . . common roots of generators
 ##
 ##  `TzSubstituteCyclicJoins'  tries to find pairs of  commuting generators a
-##  and b, say, such that exponent(a) is prime to exponent(b).  For each such
+##  and b such that exponent(a) is prime to exponent(b).  For each such
 ##  pair, their product a * b is substituted as a new generator,  and a and b
 ##  are eliminated.
 ##
@@ -3819,7 +3819,7 @@ InstallGlobalFunction( TzSubstituteCyclicJoins, function ( T )
 
             # If there are relators a^m and b^n with m prime to n, then
             # a = (a*b)^n,  b = (a*b)^m,  and  (a*b)^(m*n) = 1.  Hence we
-            # may define a new generator g, say, by a*b together with the
+            # may define a new generator g by a*b together with the
             # two relations  a = g^n  and  b = g^m,  and then eliminate a
             # and b.  (Note that we can take a^-1 instead of a or b^-1
             # instead of b.)

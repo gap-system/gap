@@ -496,7 +496,7 @@ DeclareGlobalFunction( "LogPackageLoadingMessage" );
 ##  <Func Name="IsPackageMarkedForLoading" Arg='name, version'/>
 ##
 ##  <Description>
-##  This function can be used in the code of a package <M>A</M>, say,
+##  This function can be used in the code of a package <M>A</M>
 ##  for testing whether the package <A>name</A> in version <A>version</A>
 ##  will be loaded after the <Ref Func="LoadPackage"/> call for the package
 ##  <M>A</M> has been executed.
@@ -539,7 +539,7 @@ DeclareGlobalFunction( "DefaultPackageBannerString" );
 ##  <Description>
 ##  <Index Key="GAPInfo.Architecture"><C>GAPInfo.Architecture</C></Index>
 ##  returns a list that is either empty or contains one directory object
-##  <C>dir</C>, say, that describes the place where external binaries of the
+##  <C>dir</C> that describes the place where external binaries of the
 ##  &GAP; package <A>name</A> should be located.
 ##  <P/>
 ##  In the latter case,
@@ -582,7 +582,7 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  <Description>
 ##  takes the string <A>name</A>, a name of a &GAP; package,
 ##  and returns a list that is either empty or contains one directory object
-##  <C>dir</C>, say, that describes the place where the library functions of
+##  <C>dir</C> that describes the place where the library functions of
 ##  this &GAP; package should be located.
 ##  <P/>
 ##  In the latter case,

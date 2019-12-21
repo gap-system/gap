@@ -11,7 +11,7 @@
 ##  This file contains the design of elements of algebras given by structure
 ##  constants (s.~c.).
 ##
-##  An s.~c. algebra is a free left module $A$ of fixed dimension $n$, say,
+##  An s.~c. algebra is a free left module $A$ of fixed dimension $n$
 ##  over a ring-with-one $R$, with multiplication defined on the vectors of
 ##  the standard basis $B$ of $A$ by the structure constants table.
 ##

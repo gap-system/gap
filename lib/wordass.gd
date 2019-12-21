@@ -1055,7 +1055,7 @@ DeclareGlobalFunction( "StoreInfoFreeMagma" );
 ##  If the only argument is a string <A>string</A> then
 ##  <Ref Func="InfiniteListOfNames"/> returns an infinite list with the
 ##  string <A>string</A><M>i</M> at position <M>i</M>.
-##  If a finite list <A>initnames</A> of length <M>n</M>, say,
+##  If a finite list <A>initnames</A> of length <M>n</M>
 ##  is given as second argument,
 ##  the <M>i</M>-th entry of the returned infinite list is equal to
 ##  <A>initnames</A><C>[</C><M>i</M><C>]</C> if <M>i \leq n</M>,
@@ -1078,7 +1078,7 @@ DeclareGlobalFunction( "InfiniteListOfNames" );
 ##  <Ref Func="InfiniteListOfGenerators"/> returns an infinite list
 ##  containing at position <M>i</M> the element in <A>Fam</A>
 ##  obtained as <C>ObjByExtRep( <A>Fam</A>, [ </C><M>i</M><C>, 1 ] )</C>.
-##  If a finite list <A>init</A> of length <M>n</M>, say,
+##  If a finite list <A>init</A> of length <M>n</M>
 ##  is given as second argument, the <M>i</M>-th entry of the returned
 ##  infinite list is equal to
 ##  <A>init</A><C>[</C><M>i</M><C>]</C> if <M>i \leq n</M>,

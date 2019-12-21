@@ -191,7 +191,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  <Oper Name="PossiblePowerMaps" Arg='tbl, p[, options]'/>
 ##
 ##  <Description>
-##  For the ordinary character table <A>tbl</A> of the group <M>G</M>, say,
+##  For the ordinary character table <A>tbl</A> of a group <M>G</M>
 ##  and a prime integer <A>p</A>,
 ##  <Ref Oper="PossiblePowerMaps"/> returns the list of all maps that have
 ##  the following properties of the <M>p</M>-th power map of <A>tbl</A>.
@@ -865,7 +865,7 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##
 ##  <Description>
 ##  For two ordinary character tables <A>subtbl</A> and <A>tbl</A> of the
-##  groups <M>H</M> and <M>G</M>, say,
+##  groups <M>H</M> and <M>G</M>,
 ##  <Ref Oper="PossibleClassFusions"/> returns the list of all maps that have
 ##  the following properties of class fusions from <A>subtbl</A> to
 ##  <A>tbl</A>.

@@ -1084,7 +1084,7 @@ DeclareOperation( "ConstructingFilter", [IsMatrixObj] );
 # Implementation: given an n x m matrix <m>, create a new zero vector <v> of
 # length n (= NrRows) in a representation "compatible" with that of <m>, i.e.
 # there "should be" a fast action  <v>*<m>
-# FIXME: is this really useful? Compare to, say, `ExtractRow(mat,1)` etc. ???
+# FIXME: is this really useful? For example, compare to `ExtractRow(mat,1)` etc. ???
 DeclareOperation( "CompatibleVector", [IsMatrixObj] );
 
 DeclareOperation( "ChangedBaseDomain", [IsMatrixObj,IsSemiring] );

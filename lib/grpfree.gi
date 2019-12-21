@@ -28,7 +28,7 @@
 ##  So the iterator for a free group of rank $n$ uses the following ordering.
 ##  Enumerate signless words (that is, forget about the signs of exponents)
 ##  as given by the enumerator of free monoids, and for each such word
-##  consisting of $k$, say, pairs of generators/exponents, enumerate all
+##  consisting of $k$ pairs of generators/exponents, enumerate all
 ##  $2^k$ possibilities of signs for the exponents.
 ##
 ##  The enumerator for a free group uses a different succession, in order to

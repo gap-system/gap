@@ -38,9 +38,9 @@
   semigroup elements is created from a specific Rees matrix semigroup, which
   contains the whole family of its elements.  So, it is not possible to
   multiply or compare elements belonging to distinct Rees matrix semigroups, 
-  since they belong to different families. This situation is similar to, say,
-  free groups, and different to, say, permutations, which belong to a single
-  family, and where arbitrary permutations can be compared and multiplied
+  since they belong to different families. For example, this situation is
+  similar to free groups, but it is different to permutations, which belong to a
+  single family, and where arbitrary permutations can be compared and multiplied
   without reference to any group containing them. <P/>
 
   A subsemigroup of a Rees matrix semigroup is not necessarily a Rees matrix

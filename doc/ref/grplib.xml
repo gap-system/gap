@@ -573,7 +573,7 @@ just consists of the <M>&QQ;</M>-classes of i.m.f.&nbsp;subgroups of <M>GL_n(&QQ
 <P/>
 Secondly, there is the set <M>Q_2(n)</M> of the  <M>&QQ;</M>-classes of the remaining
 i.m.f.&nbsp;subgroups of <M>GL_n(&ZZ;)</M>, i.e.,  of   those which are  not  maximal
-finite subgroups of <M>GL_n(&QQ;)</M>. For any such group  <M>G</M>, say, there is at
+finite subgroups of <M>GL_n(&QQ;)</M>. For any such group <M>G</M>, there is at
 least one class <M>C \in Q_1(n)</M> such that <M>G</M> is conjugate under <M>&QQ;</M> to a
 proper subgroup of some   group <M>H \in C</M>.   In  fact, the class <M>C</M>   is
 uniquely determined for any group   <M>G</M> occurring in the library  (though
@@ -587,7 +587,7 @@ of i.m.f.&nbsp;subgroups  of <M>GL_4(&ZZ;)</M>   with representative subgroups  
 \ldots,  G_6</M> of isomorphism types  <M>G_1 \cong W(F_4)</M>, <M>G_2 \cong D_{12}
 \wr C_2</M>, <M>G_3 \cong  G_4 \cong C_2 \times  S_5</M>, <M>G_5 \cong W(B_4)</M>, and
 <M>G_6  \cong (D_{12}  </M><C>Y</C><M>  D_{12})   \!:\! C_2</M>.  The    corresponding
-<M>&QQ;</M>-classes, <M>R_1, \ldots, R_6</M>, say, are pairwise different except that
+<M>&QQ;</M>-classes, which we denote <M>R_1, \ldots, R_6</M>, are pairwise different except that
 <M>R_3</M> coincides  with <M>R_4</M>.   The  groups <M>G_1</M>,  <M>G_2</M>, and  <M>G_3</M>  are
 i.m.f.&nbsp;subgroups of <M>GL_4(&QQ;)</M>, but <M>G_5</M>  and <M>G_6</M> are not because they
 are  conjugate under <M>GL_4(&QQ;)</M> to proper  subgroups  of <M>G_1</M> and <M>G_2</M>,

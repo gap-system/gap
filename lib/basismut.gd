@@ -180,7 +180,7 @@ DeclareOperation( "NrBasisVectors", [ IsMutableBasis ] );
 ##  <Oper Name="ImmutableBasis" Arg='MB[, V]'/>
 ##
 ##  <Description>
-##  <Ref Oper="ImmutableBasis"/> returns the immutable basis <M>B</M>, say,
+##  <Ref Oper="ImmutableBasis"/> returns the immutable basis <M>B</M>
 ##  with the same basis vectors as in the mutable basis <A>MB</A>.
 ##  <P/>
 ##  If the second argument <A>V</A> is present then <A>V</A> is the value of
@@ -217,7 +217,7 @@ DeclareOperation( "ImmutableBasis", [ IsMutableBasis, IsFreeLeftModule ] );
 ##  <Oper Name="CloseMutableBasis" Arg='MB, v'/>
 ##
 ##  <Description>
-##  For a mutable basis <A>MB</A> over the coefficient ring <M>R</M>, say,
+##  For a mutable basis <A>MB</A> over the coefficient ring <M>R</M>
 ##  and a vector <A>v</A>, <Ref Oper="CloseMutableBasis"/> changes <A>MB</A>
 ##  such that afterwards it describes the <M>R</M>-span of the former
 ##  basis vectors together with <A>v</A>.
@@ -263,7 +263,7 @@ DeclareOperation( "CloseMutableBasis",
 ##  <Oper Name="IsContainedInSpan" Arg='MB, v'/>
 ##
 ##  <Description>
-##  For a mutable basis <A>MB</A> over the coefficient ring <M>R</M>, say,
+##  For a mutable basis <A>MB</A> over the coefficient ring <M>R</M>
 ##  and a vector <A>v</A>, <C>IsContainedInSpan</C> returns <K>true</K> is <A>v</A> lies in the
 ##  <M>R</M>-span of the current basis vectors of <A>MB</A>,
 ##  and <K>false</K> otherwise.

@@ -225,7 +225,7 @@ InstallTrueMethod( IsSmallList,
 ##  <Prop Name="IsIntegralBasis" Arg='B'/>
 ##
 ##  <Description>
-##  Let <A>B</A> be an <M>S</M>-basis of a <E>field</E> <M>F</M>, say, for a subfield <M>S</M> of <M>F</M>,
+##  Let <A>B</A> be an <M>S</M>-basis of a <E>field</E> <M>F</M> for a subfield <M>S</M> of <M>F</M>,
 ##  and let <M>R</M> and <M>M</M> be the rings of algebraic integers in <M>S</M> and <M>F</M>,
 ##  respectively.
 ##  <C>IsIntegralBasis</C> returns <K>true</K> if <A>B</A> is also an <M>R</M>-basis of <M>M</M>,
@@ -246,7 +246,7 @@ DeclareProperty( "IsIntegralBasis", IsBasis );
 ##  <Prop Name="IsNormalBasis" Arg='B'/>
 ##
 ##  <Description>
-##  Let <A>B</A> be an <M>S</M>-basis of a <E>field</E> <M>F</M>, say,
+##  Let <A>B</A> be an <M>S</M>-basis of a <E>field</E> <M>F</M>
 ##  for a subfield <M>S</M> of <M>F</M>.
 ##  <C>IsNormalBasis</C> returns <K>true</K> if <A>B</A> is invariant under
 ##  the Galois group
@@ -275,7 +275,7 @@ DeclareProperty( "IsNormalBasis", IsBasis );
 ##  <Prop Name="IsSemiEchelonized" Arg='B'/>
 ##
 ##  <Description>
-##  Let <A>B</A> be a basis of a Gaussian row or matrix space <M>V</M>, say
+##  Let <A>B</A> be a basis of a Gaussian row or matrix space <M>V</M>
 ##  (see&nbsp;<Ref Filt="IsGaussianSpace"/>) over the field <M>F</M>.
 ##  <P/>
 ##  If <M>V</M> is a row space then <A>B</A> is semi-echelonized if the matrix formed
@@ -339,7 +339,7 @@ DeclareAttribute( "BasisVectors", IsBasis );
 ##  <Attr Name="EnumeratorByBasis" Arg='B'/>
 ##
 ##  <Description>
-##  For a basis <A>B</A> of the free left <M>F</M>-module <M>V</M> of dimension <M>n</M>, say,
+##  For a basis <A>B</A> of the free left <M>F</M>-module <M>V</M> of dimension <M>n</M>,
 ##  <C>EnumeratorByBasis</C> returns an enumerator that loops over the elements of
 ##  <M>V</M> as linear combinations of the vectors of <A>B</A> with coefficients the
 ##  row vectors in the full row space (see&nbsp;<Ref Func="FullRowSpace"/>) of dimension <M>n</M>
@@ -373,7 +373,7 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##  <Attr Name="StructureConstantsTable" Arg='B'/>
 ##
 ##  <Description>
-##  Let <A>B</A> be a basis of a free left module <M>R</M>, say,
+##  Let <A>B</A> be a basis of a free left module <M>R</M>
 ##  that is also a ring.
 ##  In this case <Ref Attr="StructureConstantsTable"/> returns
 ##  a structure constants table <M>T</M> in sparse representation,
@@ -438,7 +438,7 @@ DeclareAttribute( "StructureConstantsTable", IsBasis );
 ##  <Attr Name="UnderlyingLeftModule" Arg='B'/>
 ##
 ##  <Description>
-##  For a basis <A>B</A> of a free left module <M>V</M>, say,
+##  For a basis <A>B</A> of a free left module <M>V</M>,
 ##  <Ref Attr="UnderlyingLeftModule"/> returns <M>V</M>.
 ##  <P/>
 ##  The reason why a basis stores a free left module is that otherwise one
@@ -498,7 +498,7 @@ DeclareOperation( "Coefficients", [ IsBasis, IsVector ] );
 ##
 ##  <Description>
 ##  If <A>B</A> is a basis object (see <Ref Filt="IsBasis"/>)
-##  or a homogeneous list of length <M>n</M>, say,
+##  or a homogeneous list of length <M>n</M>,
 ##  and <A>coeff</A> is a row vector of the same length,
 ##  <Ref Oper="LinearCombination"/> returns the vector
 ##  <M>\sum_{{i = 1}}^n <A>coeff</A>[i] * <A>B</A>[i]</M>.
@@ -561,7 +561,7 @@ DeclareOperation( "SiftedVector", [ IsBasis, IsVector ] );
 ##  <Oper Name="IteratorByBasis" Arg='B'/>
 ##
 ##  <Description>
-##  For a basis <A>B</A> of the free left <M>F</M>-module <M>V</M> of dimension <M>n</M>, say,
+##  For a basis <A>B</A> of the free left <M>F</M>-module <M>V</M> of dimension <M>n</M>,
 ##  <C>IteratorByBasis</C> returns an iterator that loops over the elements of <M>V</M>
 ##  as linear combinations of the vectors of <A>B</A> with coefficients the row
 ##  vectors in the full row space (see&nbsp;<Ref Func="FullRowSpace"/>) of dimension <M>n</M> over
@@ -749,8 +749,8 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  and analogously for each vector in <M>W</M>,
 ##  one can compute the preimage in <M>V</M>.
 ##  <P/>
-##  This allows one to delegate computations w.r.t.&nbsp;a basis <M>B</M>,
-##  say, of <M>V</M> to the corresponding basis <M>C</M>, say, of <M>W</M>.
+##  This allows one to delegate computations w.r.t.&nbsp;a basis <M>B</M>
+##  of <M>V</M> to the corresponding basis <M>C</M> of <M>W</M>.
 ##  We call <M>W</M> the <E>nice free left module</E> of <M>V</M>,
 ##  and <M>C</M> the <E>nice basis</E> of <M>B</M>.
 ##  (Note that it may happen that also <M>C</M> delegates questions to a

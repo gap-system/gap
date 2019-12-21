@@ -1815,7 +1815,7 @@ An <E>enumerator</E> is an immutable list that need not store its elements
 explicitly but knows, from a set of basic data,
 how to determine the <M>i</M>-th element and the position of a given object.
 A typical example of this is a vector space over a finite field with <M>q</M>
-elements, say, for which it is very easy to enumerate all elements
+elements for which it is very easy to enumerate all elements
 using <M>q</M>-adic expansions of integers.
 <P/>
 Using this enumeration can be even quicker than a binary search in a sorted

@@ -444,8 +444,8 @@ DeclareGlobalFunction( "CompositionOfStraightLinePrograms" );
 ##
 ##  <Description>
 ##  For a nonempty dense list <A>listofprogs</A> of straight line programs
-##  <M>p_1, p_2, \ldots, p_m</M>, say,
-##  that have the same number <M>n</M>, say, of inputs
+##  <M>p_1, p_2, \ldots, p_m</M>
+##  that have the same number <M>n</M> of inputs
 ##  (see&nbsp;<Ref Attr="NrInputsOfStraightLineProgram"/>),
 ##  <Ref Func="IntegratedStraightLineProgram"/> returns a straight line
 ##  program <M>prog</M> with <M>n</M> inputs such that for each

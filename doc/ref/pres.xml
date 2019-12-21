@@ -88,7 +88,7 @@ numbering of generators in a family of associative words.
 <Section Label="Printing Presentations">
 <Heading>Printing Presentations</Heading>
 
-Whenever you create a presentation <M>P</M>, say, or assign it to a variable,
+Whenever you create a presentation <M>P</M>, or assign it to a variable,
 &GAP; will respond by printing <M>P</M>.
 However, as <M>P</M> may contain a lot of generators and many relators
 of large length, it would be annoying if the standard print facilities

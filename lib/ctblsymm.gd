@@ -253,7 +253,7 @@ DeclareGlobalVariable( "CharTableWeylD",
 ##  <Func Name="CharacterValueWreathSymmetric" Arg='tbl, n, beta, pi'/>
 ##
 ##  <Description>
-##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>, say.
+##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>.
 ##  The aim of this function is to compute a single character value
 ##  from the character table of the wreath product of <M>G</M>
 ##  with the full symmetric group on <A>n</A> points.

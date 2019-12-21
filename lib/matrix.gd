@@ -1370,7 +1370,7 @@ DeclareGlobalFunction( "BaseSteinitzVectors" );
 ##  <P/>
 ##  More precisely,
 ##  regard <A>mat</A> as the matrix of a linear transformation on the row space
-##  <M>F^n</M> w.r.t.&nbsp;the <M>F</M>-basis with vectors <M>(v_1, ldots, v_n)</M>, say,
+##  <M>F^n</M> w.r.t.&nbsp;the <M>F</M>-basis with vectors <M>(v_1, ldots, v_n)</M>
 ##  and suppose that the basis <A>B</A> consists of the vectors
 ##  <M>(b_1,  \ldots, b_m)</M>;
 ##  then the returned matrix is the matrix of the linear transformation
@@ -1637,7 +1637,7 @@ DeclareGlobalFunction( "DiagonalMat" );
 ##  vector.
 ##  <P/>
 ##  More precisely, if <A>coeffs</A> is the coefficients list of a vector
-##  <M>v</M> w.r.t. a basis <M>B</M> (see&nbsp;<Ref Attr="Basis"/>), say,
+##  <M>v</M> w.r.t. a basis <M>B</M> (see&nbsp;<Ref Attr="Basis"/>)
 ##  then the returned matrix describes the
 ##  reflection in <M>v</M> w.r.t. <M>B</M> as a map on a row space,
 ##  with action from the right.
@@ -1763,7 +1763,7 @@ DeclareGlobalFunction( "RandomUnimodularMat" );
 ##  <C>GF(<A>q</A>^<A>r</A>)</C> for some <A>r</A> are powers of an element
 ##  <M>\xi</M> in the splitting field, which is of order <A>expo</A>.
 ##  <Ref Func="SimultaneousEigenvalues"/> returns a matrix of
-##  integers mod <A>expo</A>, say <M>(a_{{i,j}})</M>, such that the power
+##  integers mod <A>expo</A> <M>(a_{{i,j}})</M>, such that the power
 ##  <M>\xi^{{a_{{i,j}}}}</M> is an eigenvalue of the <A>i</A>-th matrix in
 ##  <A>matlist</A> and the eigenspaces of the different matrices to the
 ##  eigenvalues <M>\xi^{{a_{{i,j}}}}</M> for fixed <A>j</A> are equal.

@@ -390,8 +390,8 @@ to form groups of automorphisms.
 <Heading>Calculating with Group Automorphisms</Heading>
 
 Usually the best way to calculate in a group of automorphisms is to
-translate all calculations to an isomorphic group in a representation, for
-which better algorithms are available, say a permutation group. This
+translate all calculations to an isomorphic group in a representation for
+which better algorithms are available, such as a permutation group. This
 translation can be done automatically using <Ref Attr="NiceMonomorphism"/>.
 <P/>
 Once a group knows to be a group of automorphisms (this can be achieved
