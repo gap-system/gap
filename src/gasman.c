@@ -117,6 +117,7 @@
 #include "gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
+#include "sysjmp.h"
 #include "sysmem.h"
 
 #ifdef GAP_MEM_CHECK

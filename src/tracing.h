@@ -19,7 +19,7 @@
 // so the macros below function correctly
 void ReportWrappedOperation1(const char *, Obj op);
 void ReportWrappedOperation2(const char *, Obj op1, Obj op2);
-void InstallOpWrapper(voidfunc, voidfunc);
+void InstallOpWrapper(void (*activate)(void), void (*deactivate)(void));
 
 
 // Many built-in operators in GAP are implemented as a 1 or 2 dimensional

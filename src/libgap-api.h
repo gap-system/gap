@@ -13,6 +13,7 @@
 #ifndef LIBGAP_API_H
 #define LIBGAP_API_H
 
+#include "sysjmp.h"
 #include "system.h"
 
 

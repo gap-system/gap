@@ -306,42 +306,6 @@ void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 
 /****************************************************************************
 **
-*F  sySetjmp( <jump buffer> )
-*F  syLongjmp( <jump buffer>, <value> )
-** 
-**  macros and functions, defining our selected longjump mechanism
-*/
-
-#if defined(HAVE_SIGSETJMP)
-#define sySetjmp( buff ) (sigsetjmp( (buff), 0))
-#define syLongjmpInternal siglongjmp
-#define syJmp_buf sigjmp_buf
-#elif defined(HAVE__SETJMP)
-#define sySetjmp _setjmp
-#define syLongjmpInternal _longjmp
-#define syJmp_buf jmp_buf
-#else
-#define sySetjmp setjmp
-#define syLongjmpInternal longjmp
-#define syJmp_buf jmp_buf
-#endif
-
-void syLongjmp(syJmp_buf * buf, int val) NORETURN;
-
-/****************************************************************************
-**
-*F  RegisterSyLongjmpObserver( <func> )
-**
-**  register a function to be called before longjmp is called.
-*/
-
-typedef void (*voidfunc)(void);
-
-Int RegisterSyLongjmpObserver(voidfunc);
-
-
-/****************************************************************************
-**
 *F  InitSystem( <argc>, <argv>, <handleSignals> ) . initialize system package
 **
 **  'InitSystem' is called very early during the initialization from  'main'.
