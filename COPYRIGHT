@@ -15,7 +15,7 @@ along with GAP; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-Copyright (C) 1988-2018 by its authors, which include:
+Copyright (C) 1988-2020 by its authors, which include:
 
 * Ákos Seress
 * Alex Wegner
@@ -24,6 +24,7 @@ Copyright (C) 1988-2018 by its authors, which include:
 * Alice Niemeyer
 * Andreas Distler
 * Andrew Solomon
+* Anna Sucker
 * Ansgar Kaup
 * Arne Storjohann
 * Bernhard Reinke
@@ -44,10 +45,12 @@ Copyright (C) 1988-2018 by its authors, which include:
 * David Joyner
 * Derek F. Holt
 * Dmitrii Pasechnik
+* Dominik Bernhardt
 * Emma Ahrens
 * Erik M. Bray
 * Erzsébet Horváth
 * Etaoin Shrdlu
+* Fabian Zickgraf
 * Felix Noeske
 * Ferenc Ràkòczi
 * Florian Heiderich
@@ -63,11 +66,13 @@ Copyright (C) 1988-2018 by its authors, which include:
 * Hans Ulrich Besche
 * Heiko Theißen
 * Isabel M. Araújo
+* Isuru Fernando
 * Jack Schmidt
 * James Mitchell
 * James Williams
 * Jan de Muijnck-Hughes
 * Jendrik Brachter
+* Jens Brandt
 * Jens Hollmann
 * Jens Rosenboom
 * Jerome Benoit
@@ -80,6 +85,7 @@ Copyright (C) 1988-2018 by its authors, which include:
 * Juergen Wisliceny
 * Laurent Bartholdi
 * Lucas Jones
+* Lucas Wollenhaupt
 * Lukas Maas
 * Marco Costantini
 * Markus Baumeister
@@ -92,6 +98,7 @@ Copyright (C) 1988-2018 by its authors, which include:
 * Mohamed Barakat
 * Oliver Bonten
 * Paul Smith
+* Paula Hähndel
 * Reimer Behrends
 * Rob Wainwright
 * Robert Arthur
