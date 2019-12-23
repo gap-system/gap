@@ -41,6 +41,9 @@
 
 #include <sys/stat.h>
 
+#ifdef SYS_IS_DARWIN
+#include <mach-o/dyld.h>
+#endif
 
 #ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
@@ -317,6 +320,114 @@ void Panic_(const char * file, int line, const char * fmt, ...)
     fputs("\n", stderr);
     SyExit(1);
 }
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * finding location of executable * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+** The function 'find_yourself' is based on code (C) 2015 Mark Whitis, under
+** the MIT License : https://stackoverflow.com/a/34271901/928031
+*/
+
+static void
+find_yourself(const char * argv0, char * result, size_t resultsize)
+{
+    GAP_ASSERT(resultsize >= GAP_PATH_MAX);
+
+    char tmpbuf[GAP_PATH_MAX];
+
+    // absolute path, like '/usr/bin/gap'
+    if (argv0[0] == '/') {
+        if (realpath(argv0, result) && !access(result, F_OK)) {
+            return;    // success
+        }
+    }
+    // relative path, like 'bin/gap.sh'
+    else if (strchr(argv0, '/')) {
+        if (!getcwd(tmpbuf, sizeof(tmpbuf)))
+            return;
+        strlcat(tmpbuf, "/", sizeof(tmpbuf));
+        strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+        if (realpath(tmpbuf, result) && !access(result, F_OK)) {
+            return;    // success
+        }
+    }
+    // executable name, like 'gap'
+    else {
+        char pathenv[GAP_PATH_MAX], *saveptr, *pathitem;
+        strlcpy(pathenv, getenv("PATH"), sizeof(pathenv));
+        pathitem = strtok_r(pathenv, ":", &saveptr);
+        for (; pathitem; pathitem = strtok_r(NULL, ":", &saveptr)) {
+            strlcpy(tmpbuf, pathitem, sizeof(tmpbuf));
+            strlcat(tmpbuf, "/", sizeof(tmpbuf));
+            strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+            if (realpath(tmpbuf, result) && !access(result, F_OK)) {
+                return;    // success
+            }
+        }
+    }
+
+    *result = 0;    // reset buffer after error
+}
+
+
+static char GAPExecLocation[GAP_PATH_MAX] = "";
+
+static void SetupGAPLocation(const char * argv0)
+{
+    // In the code below, we keep reseting locBuf, as some of the methods we
+    // try do not promise to leave the buffer empty on a failed return.
+    char locBuf[GAP_PATH_MAX] = "";
+    Int4 length = 0;
+
+#ifdef SYS_IS_DARWIN
+    uint32_t len = sizeof(locBuf);
+    if (_NSGetExecutablePath(locBuf, &len) != 0) {
+        *locBuf = 0;    // reset buffer after error
+    }
+#endif
+
+    // try Linux procfs
+    if (!*locBuf) {
+        ssize_t ret = readlink("/proc/self/exe", locBuf, sizeof(locBuf));
+        if (ret < 0)
+            *locBuf = 0;    // reset buffer after error
+    }
+
+    // try FreeBSD / DragonFly BSD procfs
+    if (!*locBuf) {
+        ssize_t ret = readlink("/proc/curproc/file", locBuf, sizeof(locBuf));
+        if (ret < 0)
+            *locBuf = 0;    // reset buffer after error
+    }
+
+    // try NetBSD procfs
+    if (!*locBuf) {
+        ssize_t ret = readlink("/proc/curproc/exe", locBuf, sizeof(locBuf));
+        if (ret < 0)
+            *locBuf = 0;    // reset buffer after error
+    }
+
+    // if we are still failing, go and search the path
+    if (!*locBuf) {
+        find_yourself(argv0, locBuf, GAP_PATH_MAX);
+    }
+
+    // resolve symlinks (if present)
+    if (!realpath(locBuf, GAPExecLocation))
+        *GAPExecLocation = 0;    // reset buffer after error
+
+    // now strip the executable name off
+    length = strlen(GAPExecLocation);
+    while (length > 0 && GAPExecLocation[length] != '/') {
+        GAPExecLocation[length] = 0;
+        length--;
+    }
+}
+
 
 /****************************************************************************
 **
@@ -749,6 +860,7 @@ void InitSystem (
 #if defined(SYS_DEFAULT_PATHS)
     SySetGapRootPath( SYS_DEFAULT_PATHS );
 #else
+    SetupGAPLocation(argv[0]);
     SySetInitialGapRootPaths();
 #endif
 

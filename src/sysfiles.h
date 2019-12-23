@@ -58,20 +58,6 @@ Int4 SyGAPCRC(const Char * name);
 
 /****************************************************************************
 **
-*F * * * * * * * * * * finding location of executable * * * * * * * * * * * *
-*/
-
-// 'GAPExecLocation' is the path to the directory containing the running GAP
-// executable, terminated by a slash, or contains the empty string is it could
-// not be detect.
-extern char GAPExecLocation[GAP_PATH_MAX];
-
-// Fills in GAPExecLocation. Is called straight after 'main' starts.
-void SetupGAPLocation(int argc, char ** argv);
-
-
-/****************************************************************************
-**
 
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
