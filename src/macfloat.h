@@ -29,23 +29,9 @@ typedef double Double;
 #define MATH(name) name
 #endif
 
-EXPORT_INLINE Double VAL_MACFLOAT(Obj obj)
-{
-    Double val;
-    memcpy(&val, CONST_ADDR_OBJ(obj), sizeof(Double));
-    return val;
-}
-
-EXPORT_INLINE void SET_VAL_MACFLOAT(Obj obj, Double val)
-{
-    memcpy(ADDR_OBJ(obj), &val, sizeof(Double));
-}
-
-EXPORT_INLINE  Int IS_MACFLOAT(Obj obj)
-{
-    return TNUM_OBJ(obj) == T_MACFLOAT;
-}
-
+Double VAL_MACFLOAT(Obj obj);
+void SET_VAL_MACFLOAT(Obj obj, Double val);
+Int IS_MACFLOAT(Obj obj);
 Obj NEW_MACFLOAT(Double val);
 
 
