@@ -38,6 +38,24 @@
         "must be a macfloat")
 
 
+Double VAL_MACFLOAT(Obj obj)
+{
+    Double val;
+    memcpy(&val, CONST_ADDR_OBJ(obj), sizeof(Double));
+    return val;
+}
+
+void SET_VAL_MACFLOAT(Obj obj, Double val)
+{
+    memcpy(ADDR_OBJ(obj), &val, sizeof(Double));
+}
+
+ Int IS_MACFLOAT(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_MACFLOAT;
+}
+
+
 /****************************************************************************
 **
 *F  TypeMacfloat( <macfloat> )  . . . . . . . . . .  type of a macfloat value
