@@ -1799,8 +1799,6 @@ static void GenStackFuncBags(void)
 #endif
 }
 
-static UInt FullBags;
-
 /*  These are used to overwrite masterpointers which may still be
 linked from weak pointer objects but whose bag bodies have been
 collected.  Two values are used so that old masterpointers of this
@@ -1812,7 +1810,7 @@ to ensure that IsWeakDeadBag works correctly.
 static Bag * NewWeakDeadBagMarker = (Bag *)(1000*sizeof(Bag) + 1);
 static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1);
 
-static UInt CollectBags_Mark(void)
+static UInt CollectBags_Mark(UInt FullBags)
 {
     Bag                 first;          /* first bag on a linked list      */
     UInt                nrLiveBags;     /* number of live new bags         */
@@ -1913,7 +1911,7 @@ static UInt CollectBags_Mark(void)
     return nrLiveBags;
 }
 
-static UInt CollectBags_Sweep(void)
+static UInt CollectBags_Sweep(UInt FullBags)
 {
     Bag *               dst;            /* destination in sweeping         */
     Bag *               src;            /* source in sweeping              */
@@ -2070,7 +2068,7 @@ static UInt CollectBags_Sweep(void)
     return nrDeadBags + nrHalfDeadBags;
 }
 
-static Int CollectBags_Check(UInt size, UInt nrBags)
+static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 {
     UInt                done;           /* do we have to make a full gc    */
     Bag *               p;              /* loop variable                   */
@@ -2223,7 +2221,6 @@ UInt CollectBags (
     UInt                size,
     UInt                full )
 {
-    Bag                 first;          /* first bag on a linked list      */
     UInt                nrBags;         /* number of new bags              */
     UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
@@ -2240,50 +2237,46 @@ UInt CollectBags (
     for (i = 0; i < CollectFuncBags.nrBefore; ++i)
         CollectFuncBags.before[i]();
 
-    /* copy 'full' into a global variable, to avoid warning from GNU C     */
-    FullBags = full;
-
     /* do we want to make a full garbage collection?                       */
-again:
-    if ( FullBags ) {
+    do {
+        if (full) {
 
-        /* then every bag is considered to be a young bag                  */
-        YoungBags = OldBags;
-        NrLiveBags = 0;
-        SizeLiveBags = 0;
+            // then every bag is considered to be a young bag
+            YoungBags = OldBags;
+            NrLiveBags = 0;
+            SizeLiveBags = 0;
 
-        /* empty the list of changed old bags                              */
-        while ( ChangedBags != 0 ) {
-            first = ChangedBags;
-            ChangedBags = LINK_BAG(first);
-            LINK_BAG(first) = first;
+            // empty the list of changed old bags
+            while ( ChangedBags != 0 ) {
+                Bag first = ChangedBags;
+                ChangedBags = LINK_BAG(first);
+                LINK_BAG(first) = first;
+            }
+
+            // Also time to change the tag for dead children of weak pointer
+            // objects. After this collection, there can be no more weak pointer
+            // objects pointing to anything with OldWeakDeadBagMarker in it.
+            SWAP(Bag *, OldWeakDeadBagMarker, NewWeakDeadBagMarker);
         }
 
-        // Also time to change the tag for dead children of weak pointer
-        // objects. After this collection, there can be no more weak pointer
-        // objects pointing to anything with OldWeakDeadBagMarker in it.
-        SWAP(Bag *, OldWeakDeadBagMarker, NewWeakDeadBagMarker);
-    }
+        // information at the beginning of garbage collections
+        SyMsgsBags(full, 0, 0);
 
-    /* information at the beginning of garbage collections                 */
-    SyMsgsBags(FullBags, 0, 0);
+        // mark phase
+        nrBags = CollectBags_Mark(full);
 
-    /* * * * * * * * * * * * * * *  mark phase * * * * * * * * * * * * * * */
-    nrBags = CollectBags_Mark();
+        // sweep phase
+        nrBags += CollectBags_Sweep(full);
 
-    /* * * * * * * * * * * * * * * sweep phase * * * * * * * * * * * * * * */
-    nrBags += CollectBags_Sweep();
+        // check phase
+        done = CollectBags_Check(size, full, nrBags);
+        if (done == 2)
+            return 0;
 
-    /* * * * * * * * * * * * * * * check phase * * * * * * * * * * * * * * */
-    done = CollectBags_Check(size, nrBags);
-    if (done == 2)
-        return 0;
+        // if we are not done, then try a full collection next
+        full = 1;
 
-    // if we are not done, then try again
-    if ( ! done ) {
-        FullBags = 1;
-        goto again;
-    }
+    } while (!done);
 
     // call the after functions (if any)
     for (i = 0; i < CollectFuncBags.nrAfter; ++i)
