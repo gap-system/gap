@@ -627,13 +627,11 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
     // try to look up the variable on the stack of local variables
     const UInt countNams = LEN_PLIST(ReaderState()->StackNams);
     for (nest = 0; nest < countNams; nest++) {
-#ifndef SYS_IS_64_BIT
         if (nest >= MAX_FUNC_EXPR_NESTING) {
             Pr("Warning: abandoning search for %s at %dth higher frame\n",
                (Int)s->Value, MAX_FUNC_EXPR_NESTING);
             break;
         }
-#endif
         nams = ELM_PLIST(ReaderState()->StackNams, countNams - nest);
         indx = findValueInNams(nams, s->Value, 1, LEN_PLIST(nams));
         if (indx != 0) {
@@ -664,14 +662,12 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
             }
             lvars = ENVI_FUNC(FUNC_LVARS(lvars));
             nest++;
-#ifndef SYS_IS_64_BIT
             if (nest >= MAX_FUNC_EXPR_NESTING) {
                 Pr("Warning: abandoning search for %s at %dth higher "
                    "frame\n",
                    (Int)s->Value, MAX_FUNC_EXPR_NESTING);
                 break;
             }
-#endif
         }
         lvars0 = PARENT_LVARS(lvars0);
         nest0++;
