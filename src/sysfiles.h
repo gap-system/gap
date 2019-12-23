@@ -529,12 +529,17 @@ Obj SyReadStringFile(Int fid);
 Obj SyReadStringFileGeneric(Int fid);
 
 
-#if !defined(SYS_IS_64_BIT) && defined(__GNU_LIBRARY__)
-#define USE_CUSTOM_MEMMOVE 1
+// A bug in memmove() provided by glibc 2.21 to 2.27 on 32bit systems can lead
+// to data corruption. We use our own memmove on affected systems. For details,
+// see <https://sourceware.org/bugzilla/show_bug.cgi?id=22644> and also
+// <https://www.cvedetails.com/cve/CVE-2017-18269/>.
+#if !defined(SYS_IS_64_BIT) && defined(__GLIBC__)
+  #if __GLIBC_PREREQ(2,21) && !__GLIBC_PREREQ(2,28)
+  #define USE_CUSTOM_MEMMOVE 1
+  #endif
 #endif
 
 #ifdef USE_CUSTOM_MEMMOVE
-// Internal implementation of memmove, to avoid issues with glibc
 void * SyMemmove(void * dst, const void * src, size_t size);
 #else
 #define SyMemmove memmove
