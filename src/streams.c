@@ -382,7 +382,7 @@ static void READ_TEST_OR_LOOP(Obj context)
         type = ReadEvalCommand(context, &evalResult, &dualSemicolon);
 
         /* stop the stopwatch                                              */
-        AssGVarWithoutReadOnlyCheck(Time, ObjInt_Int(SyTime() - oldtime));
+        UpdateTime(oldtime);
 
         /* handle ordinary command                                         */
         if ( type == 0 && evalResult != 0 ) {

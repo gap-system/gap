@@ -18,30 +18,6 @@
 
 /****************************************************************************
 **
-*V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
-**
-**  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
-**  and  'last3', which are automatically  assigned  the result values in the
-**  main read-eval-print loop.
-*/
-extern UInt Last;
-
-
-/****************************************************************************
-**
-*V  Last2 . . . . . . . . . . . . . . . . . . . . . . global variable 'last2'
-*/
-extern UInt Last2;
-
-
-/****************************************************************************
-**
-*V  Last3 . . . . . . . . . . . . . . . . . . . . . . global variable 'last3'
-*/
-extern UInt Last3;
-
-/****************************************************************************
-**
 *F  UpdateLast(<newLast>, <lastDepth>)
 **
 **  Updates Last, Last2 and Last3 by the new result 'newLast'.
@@ -53,12 +29,11 @@ void UpdateLast(Obj newLast, Int lastDepth);
 
 /****************************************************************************
 **
-*V  Time  . . . . . . . . . . . . . . . . . . . . . . global variable  'time'
+*F  UpdateTime(<startTime>)
 **
-**  'Time' is the global variable 'time', which is automatically assigned the
-**  time the last command took.
+**  Updates Time to the difference SyTime() - startTime.
 */
-extern UInt Time;
+void UpdateTime(UInt startTime);
 
 
 /****************************************************************************

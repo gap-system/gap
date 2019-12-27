@@ -70,21 +70,21 @@ static UInt SystemErrorCode;
 **  and  'last3', which are automatically  assigned  the result values in the
 **  main read-eval-print loop.
 */
-UInt Last;
+static UInt Last;
 
 
 /****************************************************************************
 **
 *V  Last2 . . . . . . . . . . . . . . . . . . . . . . global variable 'last2'
 */
-UInt Last2;
+static UInt Last2;
 
 
 /****************************************************************************
 **
 *V  Last3 . . . . . . . . . . . . . . . . . . . . . . global variable 'last3'
 */
-UInt Last3;
+static UInt Last3;
 
 
 /****************************************************************************
@@ -94,7 +94,7 @@ UInt Last3;
 **  'Time' is the global variable 'time', which is automatically assigned the
 **  time the last command took.
 */
-UInt Time;
+static UInt Time;
 
 /****************************************************************************
 **
@@ -154,11 +154,6 @@ void ViewObjHandler ( Obj obj )
 */
 static UInt QUITTINGGVar;
 
-
-/*
-TL: Obj ShellContext = 0;
-TL: Obj BaseShellContext = 0;
-*/
 
 static Obj Shell(Obj    context,
                  UInt   canReturnVoid,
@@ -280,7 +275,7 @@ static Obj Shell(Obj    context,
         
     /* stop the stopwatch                                          */
     if (setTime) {
-        AssGVarWithoutReadOnlyCheck(Time, ObjInt_Int(SyTime() - time));
+        UpdateTime(time);
         AssGVarWithoutReadOnlyCheck(MemoryAllocated,
                                 ObjInt_Int8(SizeAllBags - mem));
     }
@@ -1051,8 +1046,8 @@ for all immediate objects (small integers or ffes) and (b) returns reasonably
 small results (roughly in the range from 1 to the max number of objects that
 have existed in this session. In HPC-GAP it returns almost the same value as
 HANDLE_OBJ for non-immediate objects, but divided by sizeof(Obj), which gets
-rids of a few zero bits and thus increases the chance of the result value
-to be an immediate integer. */
+rid of a few zero bits and thus increases the chance of the result value
+fitting into an immediate integer. */
 
 static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 {
@@ -1361,6 +1356,12 @@ void UpdateLast(Obj newLast, Int lastDepth)
     if (lastDepth >= 1)
         AssGVarWithoutReadOnlyCheck(Last, newLast);
 }
+
+void UpdateTime(UInt startTime)
+{
+    AssGVarWithoutReadOnlyCheck(Time, ObjInt_Int(SyTime() - startTime));
+}
+
 
 // UPDATE_STAT lets code assign the special variables which GAP
 // automatically sets in interactive sessions. This is for demonstration
