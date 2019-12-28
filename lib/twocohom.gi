@@ -1237,6 +1237,8 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     Add(new,LeftQuotient(mapped2(rules[i][1]),mapped2(rules[i][2])));
   od;
   r.presentation:=rec(group:=FreeGroupOfFpGroup(fpg),relators:=new,
+    # position of relators with tails in tzrules
+    monrulpos:=List(rules{hastail},x->Position(tzrules,x)),
     prewords:=List(ogens,x->UnderlyingElement(ImagesRepresentative(fp,x))));
 
   # normalform word and collect the tails
