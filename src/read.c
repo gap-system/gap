@@ -1319,7 +1319,7 @@ static UInt ReadLocals(ScannerState * s, TypSymbolSet follow, Obj nams)
             }
             nloc += 1;
             PushPlist(nams, MakeImmString(s->Value));
-            if (LEN_PLIST(nams) >= 65536) {
+            if (LEN_PLIST(nams) >= MAX_FUNC_LVARS) {
                 SyntaxError(s, "Too many function arguments and locals");
             }
         }
