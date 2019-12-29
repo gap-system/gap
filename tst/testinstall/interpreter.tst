@@ -253,5 +253,41 @@ Error, PosObj Assignment: <position> must be a positive small integer (not the\
  value 'fail')
 
 #
+# weird corner cases in for loop index variables
+#
+gap> for + in [1,2,3] do od;
+Syntax error: Identifier expected in stream:1
+for + in [1,2,3] do od;
+    ^
+gap> for x[1] in [1,2,3] do od;
+Syntax error: in expected in stream:1
+for x[1] in [1,2,3] do od;
+     ^
+gap> for x{[1]} in [1,2,3] do od;
+Syntax error: in expected in stream:1
+for x{[1]} in [1,2,3] do od;
+     ^
+gap> for IsHPCGAP in [1,2,3] do od;
+Error, Variable: 'IsHPCGAP' is constant
+gap> for IsHPCGAP[1] in [1,2,3] do od;
+Syntax error: in expected in stream:1
+for IsHPCGAP[1] in [1,2,3] do od;
+            ^
+gap> for IsHPCGAP{[1]} in [1,2,3] do od;
+Syntax error: in expected in stream:1
+for IsHPCGAP{[1]} in [1,2,3] do od;
+            ^
+gap> for PrintObj in [1,2,3] do od;
+Error, Variable: 'PrintObj' is read only
+gap> for PrintObj[1] in [1,2,3] do od;
+Syntax error: in expected in stream:1
+for PrintObj[1] in [1,2,3] do od;
+            ^
+gap> for PrintObj{[1]} in [1,2,3] do od;
+Syntax error: in expected in stream:1
+for PrintObj{[1]} in [1,2,3] do od;
+            ^
+
+#
 #
 gap> STOP_TEST("interpreter.tst", 1);

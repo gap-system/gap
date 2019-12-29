@@ -301,4 +301,40 @@ Error, PosObj Assignment: <position> must be a positive small integer (not the\
  value 'fail')
 
 #
+# weird corner cases in for loop index variables
+#
+gap> function() for + in [1,2,3] do od; end();
+Syntax error: Identifier expected in stream:1
+function() for + in [1,2,3] do od; end();
+               ^
+gap> function() local x; for x[1] in [1,2,3] do od; end();
+Syntax error: in expected in stream:1
+function() local x; for x[1] in [1,2,3] do od; end();
+                         ^
+gap> function() local x; for x{[1]} in [1,2,3] do od; end();
+Syntax error: in expected in stream:1
+function() local x; for x{[1]} in [1,2,3] do od; end();
+                         ^
+gap> function() for IsHPCGAP in [1,2,3] do od; end();
+Error, Variable: 'IsHPCGAP' is constant
+gap> function() for IsHPCGAP[1] in [1,2,3] do od; end();
+Syntax error: in expected in stream:1
+function() for IsHPCGAP[1] in [1,2,3] do od; end();
+                       ^
+gap> function() for IsHPCGAP{[1]} in [1,2,3] do od; end();
+Syntax error: in expected in stream:1
+function() for IsHPCGAP{[1]} in [1,2,3] do od; end();
+                       ^
+gap> function() for PrintObj in [1,2,3] do od; end();
+Error, Variable: 'PrintObj' is read only
+gap> function() for PrintObj[1] in [1,2,3] do od; end();
+Syntax error: in expected in stream:1
+function() for PrintObj[1] in [1,2,3] do od; end();
+                       ^
+gap> function() for PrintObj{[1]} in [1,2,3] do od; end();
+Syntax error: in expected in stream:1
+function() for PrintObj{[1]} in [1,2,3] do od; end();
+                       ^
+
+#
 gap> STOP_TEST("coder.tst", 1);
