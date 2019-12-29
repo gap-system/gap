@@ -11,7 +11,7 @@
 #ifndef GAP_MODULES_BUILTIN_H
 #define GAP_MODULES_BUILTIN_H
 
-#include "system.h"
+#include "modules.h"
 
 extern const InitInfoFunc InitFuncsBuiltinModules[];
 

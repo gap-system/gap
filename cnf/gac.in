@@ -366,7 +366,7 @@ make_compstat () {
             echo "extern StructInitInfo * Init__${name} ( void );"
         done
 
-        echo     "InitInfoFunc CompInitFuncs [] = {"
+        echo     "InitInfoFunc CompInitFuncs[] = {"
         echo     "#ifndef AVOID_PRECOMPILED"
         echo     "    Init__type1,"
         echo     "    Init__oper1,"

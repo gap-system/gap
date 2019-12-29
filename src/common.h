@@ -185,12 +185,14 @@ typedef Stat Expr;
 enum { BIPEB = sizeof(UInt) * 8, LBIPEB = (BIPEB == 64) ? 6 : 5 };
 
 
-
 /****************************************************************************
 **
+*T  StructInitInfo  . . . . . . . . . . . . . . . . . module init information
+**
+**  This is a forward declaration so that StructInitInfo can be used in other
+**  header files. The actual declaration is in modules.h.
 */
 typedef const struct init_info StructInitInfo;
-typedef StructInitInfo* (*InitInfoFunc)(void);
 
 
 #endif // GAP_COMMON_H

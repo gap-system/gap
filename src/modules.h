@@ -136,6 +136,13 @@ struct init_info {
 
 /****************************************************************************
 **
+*T  InitInfoFunc
+*/
+typedef StructInitInfo* (*InitInfoFunc)(void);
+
+
+/****************************************************************************
+**
 **  Some helper functions and macros used for validation in GVAR_FUNC_2ARGS
 **  and its likes.
 **

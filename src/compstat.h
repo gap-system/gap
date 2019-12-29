@@ -11,7 +11,7 @@
 #ifndef GAP_COMPSTAT_H
 #define GAP_COMPSTAT_H
 
-#include "system.h"
+#include "modules.h"
 
 /****************************************************************************
 **

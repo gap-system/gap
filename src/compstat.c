@@ -21,11 +21,11 @@
 **  This a dummy list in case no module is statically linked.
 */
 #ifndef AVOID_PRECOMPILED
-extern StructInitInfo * Init__type1 ( void );
-extern StructInitInfo * Init__oper1( void );
+extern StructInitInfo * Init__type1(void);
+extern StructInitInfo * Init__oper1(void);
 #endif
 
-InitInfoFunc CompInitFuncs [] = {
+InitInfoFunc CompInitFuncs[] = {
 #ifndef AVOID_PRECOMPILED
     Init__type1,
     Init__oper1,
