@@ -39,6 +39,7 @@
 #include "modules.h"
 #include "plist.h"
 #include "stringobj.h"
+#include "sysstr.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

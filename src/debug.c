@@ -17,9 +17,10 @@
 #include "system.h"
 
 #include "calls.h"
-#include "compiled.h"
 #include "fibhash.h"
+#include "gap_all.h"
 #include "hookintrprtr.h"
+#include "sysstr.h"
 #include "vec8bit.h"
 
 #ifdef HPCGAP

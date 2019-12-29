@@ -35,6 +35,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "sysstr.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"

@@ -25,6 +25,7 @@
 #include "plist.h"
 #include "stringobj.h"
 #include "sysopt.h"
+#include "sysstr.h"
 
 
 static UInt NextSymbol(ScannerState * s);

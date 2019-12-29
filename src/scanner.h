@@ -17,7 +17,6 @@
 #ifndef GAP_SCANNER_H
 #define GAP_SCANNER_H
 
-#include "sysstr.h"
 #include "system.h"
 
 /****************************************************************************
@@ -256,11 +255,6 @@ typedef struct {
 /* TL: extern  UInt            NrError; */
 /* TL: extern  UInt            NrErrLine; */
 
-
-EXPORT_INLINE int IsIdent(char c)
-{
-    return IsAlpha(c) || c == '_' || c == '@';
-}
 
 int IsKeyword(const char * str);
 

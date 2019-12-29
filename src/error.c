@@ -28,6 +28,7 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysstr.h"
 #include "vars.h"
 
 #ifdef HPCGAP

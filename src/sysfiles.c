@@ -33,6 +33,7 @@
 #include "stringobj.h"
 #include "sysenv.h"
 #include "sysopt.h"
+#include "sysstr.h"
 
 #include "hpc/thread.h"
 
