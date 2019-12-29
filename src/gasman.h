@@ -66,7 +66,7 @@
 **  Note that bag identifiers are recycled.  That means that after a bag dies
 **  its identifier may be reused for a new bag.
 **
-**  The following is defined in "system.h"
+**  The following is defined in "common.h"
 **
 typedef UInt * *        Bag;
 */
