@@ -28,6 +28,7 @@
 #include "stats.h"
 #include "stringobj.h"
 #include "sysopt.h"
+#include "sysstr.h"
 #include "vars.h"
 
 #include <stdarg.h>

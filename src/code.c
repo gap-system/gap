@@ -30,6 +30,7 @@
 #include "records.h"
 #include "saveload.h"
 #include "stringobj.h"
+#include "sysstr.h"
 #include "vars.h"
 
 #include "hpc/thread.h"

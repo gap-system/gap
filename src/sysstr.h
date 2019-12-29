@@ -37,6 +37,16 @@
 
 /****************************************************************************
 **
+*F  IsIdent( <ch> )
+*/
+EXPORT_INLINE int IsIdent(char ch)
+{
+    return IsAlpha(ch) || ch == '_' || ch == '@';
+}
+
+
+/****************************************************************************
+**
 *F  strlcpy( <dst>, <src>, <len> )
 **
 **  Copy <src> to buffer <dst> of size <len>. At most <len>-1 characters will

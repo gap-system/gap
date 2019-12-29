@@ -26,6 +26,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysjmp.h"
+#include "sysstr.h"
 #include "systime.h"
 #include "vars.h"
 
