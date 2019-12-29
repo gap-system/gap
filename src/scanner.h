@@ -195,11 +195,6 @@ typedef UInt            TypSymbolSet;
 *T  ScannerState
 **
 **  The struct 'ScannerState' encapsulates the state of the scanner.
-**
-**  In the future, it is planned to allow use of multiple instances of the
-**  scanner simultaneously within a single thread. However, this is not yet
-**  ready, and currently only once instance of 'ScannerState' is used, which
-**  is stored inside the global instance of struct 'GAPState'.
 */
 typedef struct {
 

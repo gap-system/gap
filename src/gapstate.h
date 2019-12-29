@@ -17,7 +17,6 @@
 
 #include "system.h"
 
-#include "scanner.h"
 #include "sysjmp.h"
 
 #if defined(HPCGAP)
@@ -58,11 +57,6 @@ typedef struct GAPState {
     syJmp_buf ReadJmpError;
 
     /* From scanner.c */
-    // TODO: eventually, ScannerState should be removed from GAPState
-    // (and then also #include "scanner.h" at the top), and instead code
-    // using a caller should dynamically allocate a ScannerState on the stack.
-    // But for now, we can't really do that.
-    ScannerState Scanner;
     UInt   NrError;
     UInt   NrErrLine;
 
