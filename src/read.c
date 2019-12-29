@@ -2050,7 +2050,9 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
     Match(s, S_FOR, "for", follow);
 
     /* <Var>                                                               */
-    ReadCallVarAss(s, follow, 'r');
+    volatile LHSRef ref = ReadVar(s, follow);
+    if (ref.type != R_INVALID)
+        EvalRef(ref, 1);
 
     /* 'in' <Expr>                                                         */
     Match(s, S_IN, "in", S_DO|S_OD|follow);
