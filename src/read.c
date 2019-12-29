@@ -2525,7 +2525,10 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 #endif
 
     struct ReaderState * volatile rs = ReaderState();
-    ScannerState * volatile       s = &STATE(Scanner);
+
+    ScannerState scanner;
+    ScannerState * volatile s = &scanner;
+    memset(s, 0, sizeof(ScannerState));
 
     /* get the first symbol from the input                                 */
     Match(s, s->Symbol, "", 0);
@@ -2656,7 +2659,10 @@ UInt ReadEvalFile(Obj *evalResult)
 #endif
 
     struct ReaderState * volatile rs = ReaderState();
-    ScannerState * volatile       s = &STATE(Scanner);
+
+    ScannerState scanner;
+    ScannerState * volatile s = &scanner;
+    memset(s, 0, sizeof(ScannerState));
 
     /* get the first symbol from the input                                 */
     Match(s, s->Symbol, "", 0);

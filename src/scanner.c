@@ -1123,8 +1123,6 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     InitHdlrFuncsFromTable( GVarFuncs );
-
-    InitGlobalBag(&STATE(Scanner).ValueObj, "ValueObj");
     return 0;
 }
 

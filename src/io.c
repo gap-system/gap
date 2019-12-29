@@ -91,9 +91,6 @@ typedef struct {
     // character
     Char * ptr;
 
-    //
-    UInt symbol;
-
     // the number of the line where the fragment of code currently being
     // interpreted started; used for profiling
     Int interpreterStartLine;
@@ -472,10 +469,6 @@ static UInt OpenDefaultOutput(void)
 **  may  also fail if  you have too  many files open at once.   It  is system
 **  dependent how many are  too many, but  16  files should  work everywhere.
 **
-**  Directely after the 'OpenInput' call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-**
 **  You can open  '*stdin*' to  read  from the standard  input file, which is
 **  usually the terminal, or '*errin*' to  read from the standard error file,
 **  which  is  the  terminal  even if '*stdin*'  is  redirected from  a file.
@@ -515,7 +508,6 @@ UInt OpenInput (
     if (IO()->InputStackPointer > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
-        IO()->Input->symbol = STATE(Scanner).Symbol;
         IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
@@ -534,10 +526,9 @@ UInt OpenInput (
     strlcpy(IO()->Input->name, filename, sizeof(IO()->Input->name));
     IO()->Input->gapnameid = 0;
 
-    /* start with an empty line and no symbol                              */
+    // start with an empty line
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
-    STATE(Scanner).Symbol = S_ILLEGAL;
     STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
@@ -562,7 +553,6 @@ UInt OpenInputStream(Obj stream, UInt echo)
     if (IO()->InputStackPointer > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
-        IO()->Input->symbol = STATE(Scanner).Symbol;
         IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
@@ -584,10 +574,9 @@ UInt OpenInputStream(Obj stream, UInt echo)
     strlcpy(IO()->Input->name, "stream", sizeof(IO()->Input->name));
     IO()->Input->gapnameid = 0;
 
-    /* start with an empty line and no symbol                              */
+    // start with an empty line
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
-    STATE(Scanner).Symbol = S_ILLEGAL;
     STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
@@ -643,7 +632,6 @@ UInt CloseInput ( void )
 #endif
     IO()->Input = IO()->InputStack[sp - 1];
     STATE(In) = IO()->Input->ptr;
-    STATE(Scanner).Symbol = IO()->Input->symbol;
     STATE(InterpreterStartLine) = IO()->Input->interpreterStartLine;
 
     /* indicate success                                                    */
@@ -658,8 +646,6 @@ UInt CloseInput ( void )
 void FlushRestOfInputLine( void )
 {
   STATE(In)[0] = STATE(In)[1] = '\0';
-  /* IO()->Input->number = 1; */
-  STATE(Scanner).Symbol = S_ILLEGAL;
 }
 
 /****************************************************************************
