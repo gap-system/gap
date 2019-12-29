@@ -779,7 +779,6 @@ Int SyFopen (
 {
     Int                 fid;
     Char                namegz [1024];
-    Char                cmd [1024];
     int                 flags = 0;
 
     /* handle standard files                                               */
@@ -821,16 +820,11 @@ Int SyFopen (
         return (Int)-1;
     }
 
-    /* set up <namegz> and <cmd> for pipe command                          */
-    namegz[0] = '\0';
-    // Need space for "gunzip < '", ".gz'" and terminating \0.
-    if (strlen(name) <= sizeof(cmd) - 10 - 4 - 1) {
-      strxcpy( namegz, name, sizeof(namegz) );
-      strxcat( namegz, ".gz", sizeof(namegz) );
-
-      strxcpy( cmd, "gunzip < '", sizeof(cmd) );
-      strxcat( cmd, namegz, sizeof(cmd) );
-      strxcat( cmd, "'", sizeof(cmd) );
+    // set up <namegz>
+    strlcpy(namegz, name, sizeof(namegz));
+    if (strlcat(namegz, ".gz", sizeof(namegz)) >= sizeof(namegz)) {
+        // buffer was not big enough, give up
+        namegz[0] = '\0';
     }
     if (strncmp( mode, "r", 1 ) == 0)
       flags = O_RDONLY;
