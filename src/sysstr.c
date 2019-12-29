@@ -7,6 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
+**  This file implements low-level functions dealing with C strings and
+**  characters.
 */
 
 #include "sysstr.h"
