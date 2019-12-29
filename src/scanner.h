@@ -216,7 +216,7 @@ typedef struct {
 **  'GetIdent' truncates an identifier after that many characters.
 */
     Obj    ValueObj;
-    Char   Value[1024];
+    char   Value[1024];
 
     enum SCANNER_SYMBOLS Symbol;
 
