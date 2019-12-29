@@ -82,7 +82,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             pos = GetInputLinePosition();
         }
 
-        if (startPos <= pos) {
+        if (0 <= pos && startPos <= pos) {
             Int i;
             for (i = 0; i <= startPos; i++) {
                 if (line[i] == '\t')
