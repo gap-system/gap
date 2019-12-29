@@ -106,28 +106,29 @@ static void ReadFuncExprAbbrevSingle(ScannerState * s, TypSymbolSet follow);
 
 static void ReadAtom(ScannerState * s, TypSymbolSet follow, Char mode);
 
-void PushGlobalForLoopVariable( UInt var)
+static void PushGlobalForLoopVariable(UInt var)
 {
     struct ReaderState * rs = ReaderState();
-    if (rs->CurrentGlobalForLoopDepth < 100)
+    if (rs->CurrentGlobalForLoopDepth <
+        ARRAY_SIZE(rs->CurrentGlobalForLoopVariables))
         rs->CurrentGlobalForLoopVariables[rs->CurrentGlobalForLoopDepth] = var;
     rs->CurrentGlobalForLoopDepth++;
 }
 
-void PopGlobalForLoopVariable( void )
+static void PopGlobalForLoopVariable(void)
 {
     GAP_ASSERT(ReaderState()->CurrentGlobalForLoopDepth);
     ReaderState()->CurrentGlobalForLoopDepth--;
 }
 
-static UInt GlobalComesFromEnclosingForLoop (UInt var)
+static UInt GlobalComesFromEnclosingForLoop(UInt var)
 {
     struct ReaderState * rs = ReaderState();
     for (UInt i = 0; i < rs->CurrentGlobalForLoopDepth; i++) {
-        if (i == 100)
-          return 0;
+        if (i == ARRAY_SIZE(rs->CurrentGlobalForLoopVariables))
+            return 0;
         if (rs->CurrentGlobalForLoopVariables[i] == var)
-          return 1;
+            return 1;
     }
     return 0;
 }
@@ -2058,11 +2059,15 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
 
     /* 'do' <Statements>                                                   */
     Match(s, S_DO, "do", STATBEGIN|S_OD|follow);
+    if (ref.type == R_GVAR)
+        PushGlobalForLoopVariable(ref.var);
     ReaderState()->LoopNesting++;
     TRY_IF_NO_ERROR { IntrForBeginBody(); }
     nrs = ReadStats(s, S_OD|follow);
     TRY_IF_NO_ERROR { IntrForEndBody( nrs ); }
     ReaderState()->LoopNesting--;
+    if (ref.type == R_GVAR)
+        PopGlobalForLoopVariable();
 
     /* 'od'                                                                */
     Match(s, S_OD, "while parsing a 'for' loop: statement or 'od'", follow);

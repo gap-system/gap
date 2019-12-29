@@ -1087,12 +1087,6 @@ void CodeForBegin ( void )
 
 void CodeForIn ( void )
 {
-  Expr var = PopExpr();
-  if (TNUM_EXPR(var) == EXPR_REF_GVAR)
-    {
-      PushGlobalForLoopVariable(READ_EXPR(var, 0));
-    }
-  PushExpr(var);
 }
 
 void CodeForBeginBody ( void )
@@ -1113,9 +1107,6 @@ void CodeForEndBody (
     /* get the variable reference                                          */
     var = PopExpr();
 
-    if (TNUM_EXPR(var) == EXPR_REF_GVAR)
-      PopGlobalForLoopVariable();
-    
     /* select the type of the for-statement                                */
     if ( TNUM_EXPR(list) == EXPR_RANGE && SIZE_EXPR(list) == 2*sizeof(Expr)
       && IS_REF_LVAR(var) ) {

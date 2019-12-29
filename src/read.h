@@ -118,14 +118,6 @@ void FinishAndCallFakeFuncExpr(void);
 
 /****************************************************************************
 **
-*/
-void PushGlobalForLoopVariable(UInt var);
-
-void PopGlobalForLoopVariable(void);
-
-
-/****************************************************************************
-**
 *F  Call0ArgsInNewReader(Obj f)  . . . . . . . . . . . . call a GAP function
 **
 **  The current reader context is saved and a new one is started.
