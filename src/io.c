@@ -1926,7 +1926,7 @@ static inline void FormatOutput(
         prec--;
       }
       for ( const Char * q = (const Char *)arg1; *q != '\0'; q++ ) {
-        if ( !IsIdent(*q) && !IsDigit(*q) ) {
+        if ( !IsIdent(*q) ) {
           prec--;
         }
         prec--;
@@ -1943,7 +1943,7 @@ static inline void FormatOutput(
       for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
         Char c = ((const Char *)arg1)[i];
 
-        if ( !IsIdent(c) && !IsDigit(c) ) {
+        if ( !IsIdent(c) ) {
           put_a_char(state, '\\');
         }
         put_a_char(state, c);

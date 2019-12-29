@@ -271,7 +271,7 @@ static UInt GetIdent(ScannerState * s, Int i)
 
     // read all characters into 's->Value'
     Char c = PEEK_CURR_CHAR();
-    for (; IsIdent(c) || IsDigit(c) || c == '\\'; i++) {
+    for (; IsIdent(c) || c == '\\'; i++) {
 
         // handle escape sequences
         if (c == '\\') {
@@ -498,7 +498,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint)
       }
       // Now if the next character is alphanumerical, or an identifier type
       // symbol then we really do have an error, otherwise we return a result
-      if (IsIdent(c) || IsDigit(c)) {
+      if (IsIdent(c)) {
         SyntaxError(s, "Badly formed number");
       }
       else {
@@ -546,7 +546,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint)
       }
       // Now if the next character is alphanumerical, or an identifier type
       // symbol then we really do have an error, otherwise we return a result
-      if (!IsIdent(c) && !IsDigit(c)) {
+      if (!IsIdent(c)) {
         symbol = S_FLOAT;
         goto finish;
       }

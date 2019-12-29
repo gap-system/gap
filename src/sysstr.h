@@ -7,6 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
+**  This file declares low-level functions dealing with C strings and
+**  characters.
 */
 
 #ifndef GAP_SYSSTR_H
@@ -14,13 +16,15 @@
 
 #include "system.h"
 
+#include <ctype.h>
+#include <string.h>
 
 /****************************************************************************
 **
 *F  IsAlpha( <ch> ) . . . . . . . . . . . . .  is a character a normal letter
 **
-**  'IsAlpha' returns 1 if its character argument is a normal character  from
-**  the range 'a..zA..Z' and 0 otherwise.
+**  'IsAlpha' returns 1 if its character argument is a character from the
+**  range 'a..zA..Z' and 0 otherwise.
 */
 #define IsAlpha(ch) (isalpha((unsigned int)ch))
 
@@ -37,11 +41,14 @@
 
 /****************************************************************************
 **
-*F  IsIdent( <ch> )
+*F  IsIdent( <ch> ) . . . . . . . .  is a character valid in a GAP identifier
+**
+**  'IsIdent' returns 1 if its character argument can be used unquoted inside
+**  a GAP identifier, i.e., is in the range 'a..zA..Z0-9_@', and 0 otherwise.
 */
 EXPORT_INLINE int IsIdent(char ch)
 {
-    return IsAlpha(ch) || ch == '_' || ch == '@';
+    return isalnum((unsigned int)ch) || ch == '_' || ch == '@';
 }
 
 
