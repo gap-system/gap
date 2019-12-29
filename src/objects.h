@@ -31,7 +31,7 @@
 **
 **  'Obj' is the type of objects.
 **
-**  The following is defined in "system.h"
+**  The following is defined in "common.h"
 **
 #define Obj             Bag
 */

@@ -32,7 +32,7 @@
 **  The first entry of the bag <p> is either zero, or a reference to another
 **  permutation representing the inverse of <p>. The remaining entries of the
 **  bag form an array describing the permutation. For bags of type 'T_PERM2',
-**  the entries are of type 'UInt2' (defined in 'system.h' as an 16 bit wide
+**  the entries are of type 'UInt2' (defined in 'common.h' as an 16 bit wide
 **  unsigned integer type), for type 'T_PERM4' the entries are of type
 **  'UInt4' (defined as a 32bit wide unsigned integer type). The first of
 **  these entries is the image of 0, the second is the image of 1, and so on.
