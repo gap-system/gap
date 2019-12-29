@@ -63,7 +63,7 @@ typedef struct {
     Int file;
 
     // the name of the file; this is only used in error messages
-    Char name[256];
+    char name[256];
 
     //
     UInt gapnameid;
@@ -71,7 +71,7 @@ typedef struct {
     // a buffer that holds the current input line; always terminated
     // by the character '\0'. Because 'line' holds only part of the line for
     // very long lines the last character need not be a <newline>.
-    Char line[32768];
+    char line[32768];
 
     // the next line from the stream as GAP string
     Obj sline;
@@ -89,7 +89,7 @@ typedef struct {
     // pointer to the current character within the current line. This is not
     // used for the current input file, where 'In' points to the current
     // character
-    Char * ptr;
+    char * ptr;
 
     //
     UInt symbol;
@@ -122,7 +122,7 @@ typedef struct {
     Obj  stream;
     Int  file;
 
-    Char line[MAXLENOUTPUTLINE];
+    char line[MAXLENOUTPUTLINE];
     Int  pos;
     Int  format;
     Int  indent;

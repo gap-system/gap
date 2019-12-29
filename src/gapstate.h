@@ -70,9 +70,9 @@ typedef struct GAPState {
     // begin interpreted, so the current line is outputted when profiling
     UInt InterpreterStartLine;
 
-    const Char * Prompt;
+    const char * Prompt;
 
-    Char * In;
+    char * In;
 
     /* From stats.c */
     Obj  ReturnObjStat;
