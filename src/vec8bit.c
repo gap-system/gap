@@ -999,7 +999,6 @@ void PlainVec8Bit(Obj list)
 */
 static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
 {
-    // check whether <list> is an 8bit vector
     if (!IS_VEC8BIT_REP(list)) {
         RequireArgument("PLAIN_VEC8BIT", list, "must be an 8bit vector");
     }
@@ -1010,7 +1009,6 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
     }
     PlainVec8Bit(list);
 
-    // return nothing
     return 0;
 }
 
@@ -5215,7 +5213,6 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5252,7 +5249,6 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS(Obj self, Obj mat)
     Obj  row;
     UInt q;
     UInt width;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5289,7 +5285,6 @@ static Obj FuncTRIANGULIZE_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5326,7 +5321,6 @@ static Obj FuncRANK_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5363,7 +5357,6 @@ static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
     Obj  row;
     UInt q;
     Obj  det;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5466,7 +5459,6 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
     const UInt1 * gettab = 0, *settab = 0;
     Obj     type;
 
-    // check argument
     if (TNUM_OBJ(mat) != T_POSOBJ) {
         ErrorMayQuit("TRANSPOSED_MAT8BIT: Need compressed matrix", 0, 0);
     }

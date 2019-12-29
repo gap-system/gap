@@ -715,7 +715,6 @@ Obj ElmsListDefault (
 
     }
 
-    /* return the result                                                   */
     return elms;
 }
 

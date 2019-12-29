@@ -380,7 +380,6 @@ static Obj ProdPerm(Obj opL, Obj opR)
             *(ptP++) = IMAGE( ptL[ p ], ptR, degR );
     }
 
-    /* return the result                                                   */
     return prd;
 }
 
@@ -460,7 +459,6 @@ static Obj LQuoPerm(Obj opL, Obj opR)
             ptM[ *(ptL++) ] = p;
     }
 
-    /* return the result                                                   */
     return mod;
 }
 
@@ -757,7 +755,6 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
-    /* return the result                                                   */
     return pow;
 }
 
@@ -908,7 +905,6 @@ static Obj PowPerm(Obj opL, Obj opR)
             ptC[ IMAGE(p,ptR,degR) ] = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
     }
 
-    /* return the result                                                   */
     return cnj;
 }
 
@@ -964,7 +960,6 @@ static Obj CommPerm(Obj opL, Obj opR)
                = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
     }
 
-    /* return the result                                                   */
     return com;
 }
 
@@ -1075,7 +1070,6 @@ static inline Obj PermList(Obj list)
 
 static Obj FuncPermList(Obj self, Obj list)
 {
-    /* check the arguments                                                 */
     RequireSmallList("PermList", list);
 
     UInt len = LEN_LIST( list );
@@ -1168,8 +1162,6 @@ static Obj SmallestMovedPointPerm(Obj perm)
 */
 static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 {
-
-    /* check the argument                                                  */
     RequirePermutation("LargestMovedPointPerm", perm);
 
     return INTOBJ_INT(LargestMovedPointPerm(perm));
@@ -1229,7 +1221,6 @@ static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
 {
     UInt                pnt;            /* value of the point              */
 
-    /* evaluate and check the arguments                                    */
     RequirePermutation("CycleLengthPermInt", perm);
     pnt = GetPositiveSmallInt("CycleLengthPermInt", point) - 1;
 
@@ -1295,7 +1286,6 @@ static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
 {
     UInt                pnt;            /* value of the point              */
 
-    /* evaluate and check the arguments                                    */
     RequirePermutation("CyclePermInt", perm);
     pnt = GetPositiveSmallInt("CyclePermInt", point) - 1;
 
@@ -1408,7 +1398,6 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 
 static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 {
-    /* evaluate and check the arguments                                    */
     RequirePermutation("CycleStructPerm", perm);
 
     if (TNUM_OBJ(perm) == T_PERM2) {
@@ -1484,7 +1473,6 @@ static inline Obj ORDER_PERM(Obj perm)
 
 static Obj FuncORDER_PERM(Obj self, Obj perm)
 {
-    /* check arguments and extract permutation                             */
     RequirePermutation("OrderPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1559,7 +1547,6 @@ static inline Obj SIGN_PERM(Obj perm)
 
 static Obj FuncSIGN_PERM(Obj self, Obj perm)
 {
-    /* check arguments and extract permutation                             */
     RequirePermutation("SignPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1676,7 +1663,6 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 
 static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm)
 {
-    /* check arguments and extract permutation                             */
     RequirePermutation("SmallestGeneratorPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1791,7 +1777,6 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
 
 static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
 {
-    /* check arguments and extract permutation                             */
     RequirePermutation("RestrictedPerm", perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1984,7 +1969,6 @@ static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
       if (tmp<res) res = tmp;
     }
 
-    /* return the result                                                   */
     return INTOBJ_INT(res);
 
 }
@@ -2143,7 +2127,6 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
         SortDensePlist(res);
     }
 
-    /* return the result                                                   */
     return res;
 }
 

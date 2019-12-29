@@ -1084,7 +1084,6 @@ static Obj EvalRecExpr(Expr expr)
     rec = RecExpr1( expr );
     RecExpr2( rec, expr );
 
-    /* return the result                                                   */
     return rec;
 }
 

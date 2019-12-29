@@ -1307,7 +1307,6 @@ static Obj EvalIsbRecName(Expr expr)
     /* get the name (stored immediately in the expression)                 */
     rnam = READ_EXPR(expr, 1);
 
-    /* return the result                                                   */
     return (ISB_REC( record, rnam ) ? True : False);
 }
 
@@ -1330,7 +1329,6 @@ static Obj EvalIsbRecExpr(Expr expr)
     /* evaluate the name and convert it to a record name                   */
     rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
-    /* return the result                                                   */
     return (ISB_REC( record, rnam ) ? True : False);
 }
 
@@ -1566,7 +1564,6 @@ static Obj EvalIsbPosObj(Expr expr)
     /* get the result                                                      */
     isb = IsbPosObj(list, p) ? True : False;
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -1822,7 +1819,6 @@ static Obj EvalIsbComObjName(Expr expr)
     /* select the element of the record                                    */
     isb = IsbComObj( record, rnam ) ? True : False;
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -1849,7 +1845,6 @@ static Obj EvalIsbComObjExpr(Expr expr)
     /* select the element of the record                                    */
     isb = IsbComObj( record, rnam ) ? True : False;
 
-    /* return the result                                                   */
     return isb;
 }
 

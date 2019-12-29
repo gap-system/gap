@@ -236,7 +236,6 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
     UInt                nn;
     UInt                i;              /* loop variable                   */
 
-    /* get and check the first argument                                    */
     RequireFlags("TRUES_FLAGS", flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return TRUES_FLAGS(flags);
@@ -281,7 +280,6 @@ static Obj FuncSIZE_FLAGS(Obj self, Obj flags)
     UInt                nrb;            /* number of blocks in flags       */
     UInt                n;              /* number of bits in flags         */
 
-    /* get and check the first argument                                    */
     RequireFlags("SIZE_FLAGS", flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
@@ -613,7 +611,6 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
 #       endif
 #   endif
 
-    /* and return the result                                               */
     return flags;
 }
 
@@ -1969,7 +1966,6 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         }
     } while (res == TRY_NEXT_METHOD);
 
-    /* return the result                                                   */
     return res;
 }
 
@@ -3139,7 +3135,6 @@ static Obj REREADING;
 
 static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
 {
-    /* check the arguments                                                 */
     RequireFunction("INSTALL_GLOBAL_FUNCTION", oper);
     if ( (REREADING != True) &&
          (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
@@ -3524,13 +3519,8 @@ void ChangeDoOperations (
 */
 static Obj FuncTRACE_METHODS(Obj self, Obj oper)
 {
-    /* check the argument                                                  */
     RequireOperation(oper);
-
-    /* install trace handler                                               */
-    ChangeDoOperations( oper, 1 );
-
-    /* return nothing                                                      */
+    ChangeDoOperations(oper, 1);
     return 0;
 }
 
@@ -3541,14 +3531,8 @@ static Obj FuncTRACE_METHODS(Obj self, Obj oper)
 */
 static Obj FuncUNTRACE_METHODS(Obj self, Obj oper)
 {
-
-    /* check the argument                                                  */
     RequireOperation(oper);
-
-    /* install trace handler                                               */
-    ChangeDoOperations( oper, 0 );
-
-    /* return nothing                                                      */
+    ChangeDoOperations(oper, 0);
     return 0;
 }
 

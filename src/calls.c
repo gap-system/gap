@@ -495,7 +495,6 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
     StorDone += storCurr;
 
-    /* return the result from the function                                 */
     return result;
 }
 
@@ -1191,14 +1190,12 @@ Obj CallFuncList ( Obj func, Obj list )
     } else {
       result = DoOperation2Args(CallFuncListOper, func, list);
     }
-    /* return the result                                                   */
     return result;
 
 }
 
 static Obj FuncCALL_FUNC_LIST(Obj self, Obj func, Obj list)
 {
-    /* check that the second argument is a list                            */
     RequireSmallList("CallFuncList", list);
     return CallFuncList(func, list);
 }
@@ -1206,7 +1203,6 @@ static Obj FuncCALL_FUNC_LIST(Obj self, Obj func, Obj list)
 static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 {
     Obj retval, retlist;
-    /* check that the second argument is a list                            */
     RequireSmallList("CallFuncListWrap", list);
     retval = CallFuncList(func, list);
 

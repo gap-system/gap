@@ -363,7 +363,6 @@ static Obj FuncCrcString(Obj self, Obj str)
     Int4        ch;
     Int         seen_nl;
 
-    // check the argument
     RequireStringRep("CrcString", str);
 
     ptr = CONST_CSTR_STRING(str);

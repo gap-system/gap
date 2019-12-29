@@ -593,7 +593,6 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   UInt                len;            /* length of lines on the screen   */
   UInt                nr;             /* number of lines on the screen   */
 
-  /* check the arguments                                                 */
   RequireSmallList("SizeScreen", args);
   if (1 < LEN_LIST(args)) {
       ErrorMayQuit("SizeScreen: number of arguments must be 0 or 1 (not %d)",
@@ -673,7 +672,6 @@ static Obj FuncWindowCmd(Obj self, Obj args)
   const Char *    inptr;
   const Char *    qtr;
 
-  // check arguments
   RequireSmallList("WindowCmd", args);
   tmp = ELM_LIST(args, 1);
   if (!IsStringConv(tmp)) {
@@ -803,7 +801,6 @@ static Obj FuncWindowCmd(Obj self, Obj args)
 */
 static Obj FuncGASMAN(Obj self, Obj args)
 {
-    /* check the argument                                                  */
     if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
         ErrorMayQuit(
             "usage: GASMAN( \"display\"|\"displayshort\"|\"clear\"|\"collect\"|\"message\"|\"partial\" )",
@@ -921,7 +918,6 @@ static Obj FuncGASMAN(Obj self, Obj args)
 #endif // USE_GASMAN
     }
 
-    /* return nothing, this function is a procedure                        */
     return 0;
 }
 

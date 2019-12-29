@@ -66,7 +66,6 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
             ptrS[i] = elmS;
     }
 
-    /* return the result                                                   */
     return vecS;
 }
 
@@ -113,7 +112,6 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
             ptrS[i] = elmS;
     }
 
-    /* return the result                                                   */
     return vecS;
 }
 
@@ -182,7 +180,6 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
             ptrS[i] = ptrL[i];
         }
 
-    /* return the result                                                   */
     return vecS;
 }
 
@@ -229,7 +226,6 @@ static Obj DiffIntVector(Obj elmL, Obj vecR)
             ptrD[i] = elmD;
     }
 
-    /* return the result                                                   */
     return vecD;
 }
 
@@ -276,7 +272,6 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
             ptrD[i] = elmD;
     }
 
-    /* return the result                                                   */
     return vecD;
 }
 
@@ -354,7 +349,6 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
             ptrD[i] = ptrL[i];
         }
 
-    /* return the result                                                   */
     return vecD;
 }
 
@@ -401,7 +395,6 @@ static Obj ProdIntVector(Obj elmL, Obj vecR)
             ptrP[i] = elmP;
     }
 
-    /* return the result                                                   */
     return vecP;
 }
 
@@ -448,7 +441,6 @@ static Obj ProdVectorInt(Obj vecL, Obj elmR)
             ptrP[i] = elmP;
     }
 
-    /* return the result                                                   */
     return vecP;
 }
 
@@ -508,7 +500,6 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
         elmP = elmS;
     }
 
-    /* return the result                                                   */
     return elmP;
 }
 
@@ -626,7 +617,6 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
         }
     }
 
-    /* return the result                                                   */
     return vecP;
 }
 

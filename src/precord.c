@@ -566,7 +566,6 @@ static Obj InnerRecNames(Obj rec)
 
 static Obj FuncREC_NAMES(Obj self, Obj rec)
 {
-    /* check the argument                                                  */
     if (IS_PREC(rec)) {
         return InnerRecNames(rec);
     }
@@ -587,7 +586,6 @@ static Obj FuncREC_NAMES(Obj self, Obj rec)
 /* same as FuncREC_NAMES except for different argument check  */
 static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
 {
-    /* check the argument                                                  */
     switch (TNUM_OBJ(rec)) {
       case T_COMOBJ:
         return InnerRecNames(rec);

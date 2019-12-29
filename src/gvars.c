@@ -821,13 +821,8 @@ void MakeThreadLocalVar (
 */
 static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
 {       
-    // check the argument
     RequireStringRep("MakeReadOnlyGVar", name);
-
-    /* get the variable and make it read only                              */
     MakeReadOnlyGVar(GVarName(CONST_CSTR_STRING(name)));
-
-    /* return void                                                         */
     return 0;
 }
 
@@ -844,13 +839,8 @@ static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
 */
 static Obj FuncMakeConstantGVar(Obj self, Obj name)
 {
-    // check the argument
     RequireStringRep("MakeConstantGVar", name);
-
-    /* get the variable and make it read only                              */
     MakeConstantGVar(GVarName(CONST_CSTR_STRING(name)));
-
-    /* return void                                                         */
     return 0;
 }
 
@@ -881,13 +871,8 @@ void MakeReadWriteGVar (
 */
 static Obj FuncMakeReadWriteGVar(Obj self, Obj name)
 {
-    // check the argument
     RequireStringRep("MakeReadWriteGVar", name);
-
-    /* get the variable and make it read write                             */
     MakeReadWriteGVar(GVarName(CONST_CSTR_STRING(name)));
-
-    /* return void                                                         */
     return 0;
 }
 
@@ -911,10 +896,7 @@ static Obj FuncIsReadOnlyGVar (
     Obj                 self,
     Obj                 name )
 {
-    // check the argument
     RequireStringRep("IsReadOnlyGVar", name);
-
-    /* get the answer                             */
     return IsReadOnlyGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
 }
 
@@ -935,10 +917,7 @@ Int IsConstantGVar(UInt gvar)
 
 static Obj FuncIsConstantGVar(Obj self, Obj name)
 {
-    // check the argument
     RequireStringRep("IsConstantGVar", name);
-
-    /* get the answer                             */
     return IsConstantGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
 }
 
@@ -988,7 +967,6 @@ static Obj FuncAUTO(Obj self, Obj args)
         CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
-    /* return void                                                         */
     return 0;
 }
 
@@ -1118,9 +1096,7 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
 */
 static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 {
-    // check the argument
     RequireStringRep("ASS_GVAR", gvar);
-
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
     return 0;
 }
@@ -1132,7 +1108,6 @@ static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 */
 static Obj FuncISB_GVAR(Obj self, Obj gvar)
 {
-    // check the argument
     RequireStringRep("ISB_GVAR", gvar);
 
     UInt gv = GVarName( CONST_CSTR_STRING(gvar) );
@@ -1157,7 +1132,6 @@ static Obj FuncISB_GVAR(Obj self, Obj gvar)
 
 static Obj FuncIS_AUTO_GVAR(Obj self, Obj gvar)
 {
-    // check the argument
     RequireStringRep("IS_AUTO_GVAR", gvar);
     Obj expr = ExprGVar(GVarName( CONST_CSTR_STRING(gvar) ) );
     return (expr && !IS_INTOBJ(expr)) ? True : False;
@@ -1173,10 +1147,8 @@ static Obj FuncVAL_GVAR(Obj self, Obj gvar)
 {
     Obj val;
 
-    // check the argument
     RequireStringRep("VAL_GVAR", gvar);
 
-    /* get the value */
     val = ValAutoGVar( GVarName( CONST_CSTR_STRING(gvar) ) );
 
     if (val == 0)
@@ -1191,12 +1163,9 @@ static Obj FuncVAL_GVAR(Obj self, Obj gvar)
 
 static Obj FuncUNB_GVAR(Obj self, Obj gvar)
 {
-    // check the argument
     RequireStringRep("UNB_GVAR", gvar);
-
-    /*  */
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), (Obj)0 );
-    return (Obj) 0;
+    return 0;
 }
 
 
