@@ -510,7 +510,6 @@ static Obj ElmsBlist(Obj list, Obj poss)
             }
         }
     }
-    /* return the result                                                   */
     return elms;
 }
 
@@ -922,7 +921,6 @@ static Int IsBlist(Obj list)
         isBlist = (len < i);
     }
 
-    /* return the result                                                   */
     return isBlist;
 }
 
@@ -972,7 +970,6 @@ static Int IsBlistConv(Obj list)
         }
     }
 
-    /* return the result                                                   */
     return isBlist;
 }
 
@@ -1263,7 +1260,6 @@ static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
         *ptr1++ |= *ptr2++;
     }
 
-    /* return nothing, this function is a procedure                        */
     return 0;
 }
 
@@ -1509,7 +1505,6 @@ static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
     for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- )
         *ptr1++ &= *ptr2++;
 
-    /* return nothing, this function is a procedure                        */
     return 0;
 }
 
@@ -1543,7 +1538,6 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
     for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- )
         *ptr1++ &= ~ *ptr2++; 
 
-    /* return nothing, this function is a procedure */
     return 0;
 }
 
@@ -1594,7 +1588,6 @@ static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
 
 static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 {
-    // get and check the arguments
     RequireBlist("FlipBlist", blist);
     RequireMutable("FlipBlist", blist, "boolean list");
 
@@ -1629,7 +1622,6 @@ static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 
 static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 {
-    // get and check the arguments
     RequireBlist("ClearAllBitsBlist", blist);
     RequireMutable("ClearAllBitsBlist", blist, "boolean list");
 
@@ -1658,7 +1650,6 @@ static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 
 static Obj FuncSET_ALL_BLIST(Obj self, Obj blist)
 {
-    // get and check the arguments
     RequireBlist("SetAllBitsBlist", blist);
     RequireMutable("SetAllBitsBlist", blist, "boolean list");
 

@@ -115,7 +115,6 @@ Int IsSet (
         isSet = 0;
     }
 
-    /* return the result                                                   */
     return isSet;
 }
 
@@ -202,7 +201,6 @@ static Obj FuncLIST_SORTED_LIST(Obj self, Obj list)
 {
     Obj                 set;            /* result                          */
 
-    /* check the argument                                                  */
     RequireSmallList("Set", list);
 
     /* if the list is empty create a new empty list                        */
@@ -268,10 +266,9 @@ static Int EqSet(Obj listL, Obj listR)
 
 static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 {
-    /* check the arguments, convert to sets if necessary                   */
     RequireSmallList("IsEqualSet", list1);
-    if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
     RequireSmallList("IsEqualSet", list2);
+    if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
     if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
 
     /* and now compare them                                                */
@@ -302,7 +299,6 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
     Obj                 e2;             /* element of right set            */
     UInt                pos;            /* position                        */
 
-    /* check the arguments, convert to sets if necessary                   */
     RequireSmallList("IsSubsetSet", set1);
     RequireSmallList("IsSubsetSet", set2);
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
@@ -401,7 +397,6 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
   UInt                wasNHom;
   UInt                wasTab;
     
-  /* check the arguments                                                 */
   RequireMutableSet("AddSet", set);
   len = LEN_PLIST(set);
 
@@ -485,8 +480,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
     }
   }
 
-  /* return void, this is a procedure                                    */
-  return (Obj)0;
+  return 0;
 }
 
 
@@ -512,7 +506,6 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
     UInt                len;            /* logical length of the list      */
     UInt                pos;            /* position                        */
 
-    /* check the arguments                                                 */
     RequireMutableSet("RemoveSet", set);
     len = LEN_PLIST(set);
 
@@ -533,8 +526,7 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
         }
     }
 
-    /* return void, this is a procedure                                    */
-    return (Obj)0;
+    return 0;
 }
 
 
@@ -568,7 +560,6 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
     Obj                 e2;             /* element of right set            */
     Obj                 TmpUnion;
 
-    /* check the arguments                                                 */
     RequireMutableSet("UniteSet", set1);
     RequireSmallList("UniteSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
@@ -645,8 +636,7 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
         SET_ELM_PLIST( TmpUnion, i1, (Obj)0 );
     }
 
-    /* return void, this is a procedure                                    */
-    return (Obj)0;
+    return 0;
 }
 
 
@@ -733,7 +723,6 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
     UInt                len2;           /* length  of right set            */
     UInt                lenr;           /* length  of result set           */
 
-    /* check the arguments                                                 */
     RequireMutableSet("IntersectSet", set1);
     RequireSmallList("IntersectSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
@@ -800,10 +789,8 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
           }
       }
 
-    /* return void, this is a procedure                                    */
-    return (Obj)0;
+    return 0;
 }
-
 
 
 /****************************************************************************
@@ -898,7 +885,6 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
     UInt                x;            
     UInt                ll;           
 
-    /* check the arguments                                                 */
     RequireMutableSet("SubtractSet", set1);
     RequireSmallList("SubtractSet", set2);
     if ( ! IsSet(set2) )  set2 = SetList(set2);
@@ -936,8 +922,7 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
     else
       RESET_FILT_LIST(set1, FN_IS_NHOMOG);
 
-    /* return void, this is a procedure                                    */
-    return (Obj)0;
+    return 0;
 }
 
 

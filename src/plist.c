@@ -1296,7 +1296,6 @@ static Obj ElmsPlist(Obj list, Obj poss)
 
     }
 
-    /* return the result                                                   */
     return elms;
 }
 
@@ -1450,7 +1449,6 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
 
     }
 
-    /* return the result                                                   */
     return elms;
 }
 
@@ -2408,7 +2406,6 @@ static Obj FuncASS_PLIST_DEFAULT(Obj self, Obj plist, Obj pos, Obj val)
 {
     Int                 p;
 
-    /* check the arguments                                                 */
     p = GetPositiveSmallInt("List Assignment", pos);
     if (!IS_PLIST(plist) || !IS_PLIST_MUTABLE(plist)) {
         RequireArgumentEx(0, plist, "<list>", "must be a mutable plain list");

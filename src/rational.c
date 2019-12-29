@@ -252,7 +252,6 @@ static Obj SumRat(Obj opL, Obj opR)
         sum = numS;
     }
 
-    /* return the result                                                   */
     CHECK_RAT(sum);
     return sum;
 }
@@ -387,7 +386,6 @@ static Obj DiffRat(Obj opL, Obj opR)
         dif = numD;
     }
 
-    /* return the result                                                   */
     CHECK_RAT(dif);
     return dif;
 }
@@ -452,7 +450,6 @@ static Obj ProdRat(Obj opL, Obj opR)
         prd = numP;
     }
 
-    /* return the result                                                   */
     CHECK_RAT(prd);
     return prd;
 }
@@ -557,7 +554,6 @@ static Obj QuoRat(Obj opL, Obj opR)
         quo = numQ;
     }
 
-    /* return the result */
     CHECK_RAT(quo);
     return quo;
 }
@@ -659,7 +655,6 @@ static Obj PowRat(Obj opL, Obj opR)
         pow = MakeRat(numP, denP);
     }
 
-    /* return the result                                                   */
     CHECK_RAT(pow);
     return pow;
 }
@@ -705,10 +700,8 @@ static Obj FiltIS_RAT(Obj self, Obj val)
 */
 static Obj FuncNUMERATOR_RAT(Obj self, Obj rat)
 {
-    /* check the argument                                                   */
     RequireRational("NumeratorRat", rat);
 
-    /* return the numerator                                                */
     if ( TNUM_OBJ(rat) == T_RAT ) {
         return NUM_RAT(rat);
     }
@@ -730,10 +723,8 @@ static Obj FuncNUMERATOR_RAT(Obj self, Obj rat)
 */
 static Obj FuncDENOMINATOR_RAT(Obj self, Obj rat)
 {
-    /* check the argument                                                  */
     RequireRational("DenominatorRat", rat);
 
-    /* return the denominator                                              */
     if ( TNUM_OBJ(rat) == T_RAT ) {
         return DEN_RAT(rat);
     }

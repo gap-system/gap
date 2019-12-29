@@ -751,7 +751,6 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
     /* clean out  */
     CleanOut();
 
-    /* return void                                                         */
     return 0;
 }
 
@@ -1352,7 +1351,6 @@ static Obj FuncCopyRel(Obj self, Obj rel) /* the given relator */
     Obj *               ptCopy;         /* pointer to the copy             */
     Int                 leng;           /* length of the given word        */
 
-    /* Get and check argument                                              */
     RequirePlainList(0, rel);
     leng = LEN_PLIST(rel);
 
@@ -1390,7 +1388,6 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
     Int                 i, j, k, l;     /* integer variables               */
     Int                 ii, jj, kk;     /* integer variables               */
 
-    /* Get and check the argument                                          */
     RequirePlainList(0, rel);
     leng  = LEN_PLIST(rel);
     if (leng == 0) {
@@ -1522,7 +1519,6 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         }
     }
 
-    /* return nothing                                                      */
     return 0;
 }
 
@@ -1902,7 +1898,6 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
         SET_LEN_PLIST( ptTabl2[2*j  ], lcos );
     }
 
-    /* return void                                                         */
     return 0;
 }
 
@@ -1925,7 +1920,6 @@ static Obj FuncAddAbelianRelator(Obj self,
     Int                 numrows;        /* number of relators              */
     Int                 i, j;           /* loop variables                  */
 
-    /* check the arguments                                                 */
     RequirePlainList(0, rels);
     ptRels = BASE_PTR_PLIST(rels) - 1;
 

@@ -489,7 +489,6 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
 
     CHECK_RECURSION_AFTER
 
-    /* return the result                                                   */
     return result;
 }
 
@@ -574,7 +573,6 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
 
     CHECK_RECURSION_AFTER
 
-    /* return the result                                                   */
     return result;
 }
 
@@ -626,7 +624,6 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 
     CHECK_RECURSION_AFTER
 
-    /* return the result                                                   */
     return result;
 }
 

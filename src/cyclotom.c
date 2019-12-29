@@ -784,7 +784,6 @@ static Obj Cyclotomic(UInt n, UInt m)
         /* 'CHANGED_BAG' not needed for last bag                           */
     }
 
-    /* return the result                                                   */
     return cyc;
 }
 
@@ -1011,7 +1010,6 @@ static Obj AInvCyc(Obj op)
     }
     CHANGED_BAG( res );
 
-    /* return the result                                                   */
     return res;
 }
 
@@ -1185,7 +1183,6 @@ static Obj ProdCycInt(Obj opL, Obj opR)
         }
     }
 
-    /* return the result                                                   */
     return hdP;
 }
 
@@ -1472,7 +1469,6 @@ static Obj PowCyc(Obj opL, Obj opR)
 
     }
 
-    /* return the result                                                   */
     return pow;
 }
 
@@ -1499,7 +1495,6 @@ static Obj FuncE(Obj self, Obj n)
         return DoOperation1Args( self, n );
     }
 
-    /* get and check the argument                                          */
     GetPositiveSmallInt("E", n);
 
     /* for $e_1$ return 1 and for $e_2$ return -1                          */
@@ -1623,7 +1618,6 @@ static Obj AttrCONDUCTOR(Obj self, Obj cyc)
         return DoAttribute( ConductorAttr, cyc );
     }
 
-    /* check the argument                                                  */
     if (!IS_CYC(cyc) && !IS_SMALL_LIST(cyc)) {
         RequireArgument("Conductor", cyc,
                         "must be a cyclotomic or a small list");
@@ -1694,7 +1688,6 @@ static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
         return DoOperation1Args( self, cyc );
     }
 
-    /* check the argument                                                  */
     if (!IS_CYC(cyc)) {
         RequireArgument("COEFFSCYC", cyc, "must be a cyclotomic");
     }
@@ -1720,7 +1713,6 @@ static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
         /* 'CHANGED_BAG' not needed for last bag                           */
     }
 
-    /* return the result                                                   */
     return list;
 }
 
@@ -1885,7 +1877,6 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 
     }
 
-    /* return the result                                                   */
     return gal;
 }
 
@@ -1915,7 +1906,6 @@ static Obj FuncCycList(Obj self, Obj list)
         return DoOperation1Args( self, list );
     }
 
-    /* get and check the argument                                          */
     if ( ! IS_PLIST( list ) || ! IS_DENSE_LIST( list ) ) {
         RequireArgument("CycList", list, "must be a dense plain list");
     }

@@ -192,7 +192,6 @@ Obj             SumSclList (
           }
     }
 
-    /* return the result                                                   */
     return listS;
 }
 
@@ -223,7 +222,6 @@ Obj             SumListScl (
           }
     }
 
-    /* return the result                                                   */
     return listS;
 }
 
@@ -275,7 +273,6 @@ Obj             SumListList (
         }
     }
 
-    /* return the result                                                   */
     return listS;
 }
 
@@ -362,7 +359,6 @@ static Obj ZeroListDefault(Obj list)
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
 
-    /* return the result                                                   */
     return res;
 }
 
@@ -421,7 +417,6 @@ static Obj ZeroListMutDefault(Obj list)
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
 
-    /* return the result                                                   */
     return res;
 }
 
@@ -518,7 +513,6 @@ static Obj AInvMutListDefault(Obj list)
         else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
-    /* return the result                                                   */
     return res;
 }
 
@@ -579,7 +573,6 @@ static Obj AInvListDefault(Obj list)
         else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
-    /* return the result                                                   */
     return res;
 }
 
@@ -645,7 +638,6 @@ Obj             DiffSclList (
          else if (HAS_FILT_LIST(listR, FN_IS_NDENSE))
            SET_FILT_LIST( listD, FN_IS_NDENSE );
       }
-    /* return the result                                                   */
     return listD;
 }
 
@@ -690,7 +682,6 @@ Obj             DiffListScl (
          else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
            SET_FILT_LIST( listD, FN_IS_NDENSE );
       }
-    /* return the result                                                   */
     return listD;
 }
 
@@ -773,7 +764,6 @@ Obj             DiffListList (
              HAS_FILT_LIST(listL, FN_IS_DENSE))
       SET_FILT_LIST( listD, FN_IS_DENSE );
     
-    /* return the result                                                   */
     return listD;
 }
 
@@ -852,7 +842,6 @@ Obj             ProdSclList (
            SET_FILT_LIST( listP, FN_IS_NDENSE );
       }
 
-    /* return the result                                                   */
     return listP;
 }
 
@@ -893,7 +882,6 @@ Obj             ProdListScl (
          else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
            SET_FILT_LIST( listP, FN_IS_NDENSE );
       }
-    /* return the result                                                   */
     return listP;
 }
 
@@ -942,7 +930,6 @@ Obj             ProdListList (
     if (!listP)
       ErrorMayQuit("Inner product multiplication of lists: no summands", 0, 0);
     
-    /* return the result                                                   */
     return listP;
 }
 
@@ -1221,7 +1208,6 @@ static Obj InvMatrix(Obj mat, UInt mut)
         SHRINK_PLIST(  ELM_PLIST( res, i ), len );
     }
 
-    /* return the result                                                   */
     return res;
 }
 

@@ -272,7 +272,6 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
         }
     }
 
-    /* return the result                                                   */
     return res;
 }
 

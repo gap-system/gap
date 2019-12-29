@@ -257,7 +257,6 @@ static Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
         while (ptS < end)
             *ptS++ = *ptL++ ^ *ptR++;
 
-    // return the result
     return sum;
 }
 
@@ -340,7 +339,6 @@ static Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
         mask <<= 1;
     }
 
-    // return the result
     return (n & 1) ? GF2One : GF2Zero;
 }
 
@@ -407,7 +405,6 @@ static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
         }
     }
 
-    // return the result
     return prod;
 }
 
@@ -479,7 +476,6 @@ static Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
             BLOCK_ELM_GF2VEC(prod, j) |= MASK_POS_GF2VEC(j);
     }
 
-    // return the result
     return prod;
 }
 
@@ -1393,10 +1389,7 @@ static void ConvGF2Vec(Obj list)
 */
 static Obj FuncCONV_GF2VEC(Obj self, Obj list)
 {
-    // check whether <list> is a GF2 vector
     ConvGF2Vec(list);
-
-    // return nothing
     return 0;
 }
 
@@ -1483,9 +1476,7 @@ static Obj NewGF2Vec(Obj list)
 */
 static Obj FuncCOPY_GF2VEC(Obj self, Obj list)
 {
-    // check whether <list> is a GF2 vector
     list = NewGF2Vec(list);
-
     return list;
 }
 
@@ -1537,13 +1528,10 @@ static Obj FuncCONV_GF2MAT(Obj self, Obj list)
 */
 static Obj FuncPLAIN_GF2VEC(Obj self, Obj list)
 {
-    // check whether <list> is a GF2 vector
     if (!IS_GF2VEC_REP(list)) {
         RequireArgument("PLAIN_GF2VEC", list, "must be a GF2 vector");
     }
     PlainGF2Vec(list);
-
-    // return nothing
     return 0;
 }
 
@@ -1826,7 +1814,6 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
         }
     }
 
-    // return the result
     return elms;
 }
 
@@ -1890,8 +1877,6 @@ static Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
 static Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
 {
     PlainGF2Mat(list);
-
-    // return nothing
     return 0;
 }
 
@@ -2642,7 +2627,6 @@ static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
     UInt imod, nrb, nstart;
     UInt i, j, k, n;
 
-    // check argument
     if (TNUM_OBJ(mat) != T_POSOBJ) {
         ErrorMayQuit("TRANSPOSED_GF2MAT: Need compressed matrix over GF(2)\n",
                      0, 0);
@@ -3771,7 +3755,6 @@ static Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat)
     UInt i, len;
     UInt width;
     Obj  row;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -3806,7 +3789,6 @@ static Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS(Obj self, Obj mat)
     UInt i, len;
     UInt width;
     Obj  row;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -3837,7 +3819,6 @@ static Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat)
     UInt i, len;
     UInt width;
     Obj  row;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -3869,7 +3850,6 @@ static Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat)
     UInt i, len;
     UInt width;
     Obj  row;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -3900,7 +3880,6 @@ static Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
     UInt i, len;
     UInt width;
     Obj  row;
-    // check argts
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;

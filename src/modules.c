@@ -126,10 +126,7 @@ static void RegisterModuleState(StructInitInfo * info)
 */
 static Obj FuncGAP_CRC(Obj self, Obj filename)
 {
-    /* check the argument                                                  */
     RequireStringRep("GAP_CRC", filename);
-
-    /* compute the crc value                                               */
     return ObjInt_Int(SyGAPCRC(CONST_CSTR_STRING(filename)));
 }
 
@@ -211,7 +208,6 @@ static Int SyLoadModule(const Char * name, InitInfoFunc * func)
 */
 static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 {
-    /* check the argument                                                  */
     RequireStringRep("LOAD_DYN", filename);
     if (!IS_INTOBJ(crc) && crc != False) {
         RequireArgument("LOAD_DYN", crc, "must be a small integer or 'false'");
@@ -283,7 +279,6 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     StructInitInfo * info = 0;
     Int              k;
 
-    /* check the argument                                                  */
     RequireStringRep("LOAD_STAT", filename);
     if (!IS_INTOBJ(crc) && crc != False) {
         RequireArgument("LOAD_STAT", crc, "must be a small integer or 'false'");

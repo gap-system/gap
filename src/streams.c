@@ -861,7 +861,6 @@ static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 */
 static Obj FuncREAD(Obj self, Obj filename)
 {
-   /* check the argument                                                  */
     RequireStringRep("READ", filename);
 
     /* try to open the file                                                */
@@ -978,7 +977,6 @@ static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
 */
 static Obj FuncREAD_AS_FUNC(Obj self, Obj filename)
 {
-    // check the argument
     RequireStringRep("READ_AS_FUNC", filename);
 
     /* try to open the file                                                */
@@ -1017,7 +1015,6 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 {
     Char filenamecpy[GAP_PATH_MAX];
 
-    // check the argument
     RequireStringRep("READ", filename);
 
     /* Copy to avoid garbage collection moving string                      */
@@ -1067,7 +1064,6 @@ static Obj FuncTmpDirectory(Obj self)
 */
 static Obj FuncRemoveFile(Obj self, Obj filename)
 {
-    // check the argument
     RequireStringRep("RemoveFile", filename);
     
     /* call the system dependent function                                  */
@@ -1080,7 +1076,6 @@ static Obj FuncRemoveFile(Obj self, Obj filename)
 */
 static Obj FuncCreateDir(Obj self, Obj filename)
 {
-    // check the argument
     RequireStringRep("CreateDir", filename);
     
     /* call the system dependent function                                  */
@@ -1093,7 +1088,6 @@ static Obj FuncCreateDir(Obj self, Obj filename)
 */
 static Obj FuncRemoveDir(Obj self, Obj filename)
 {
-    // check the argument
     RequireStringRep("RemoveDir", filename);
     
     /* call the system dependent function                                  */
@@ -1163,7 +1157,6 @@ static Obj FuncIsExistingFile(Obj self, Obj filename)
 {
     Int             res;
 
-    // check the argument
     RequireStringRep("IsExistingFile", filename);
     
     /* call the system dependent function                                  */
@@ -1180,7 +1173,6 @@ static Obj FuncIsReadableFile(Obj self, Obj filename)
 {
     Int             res;
 
-    // check the argument
     RequireStringRep("IsReadableFile", filename);
     
     /* call the system dependent function                                  */
@@ -1197,7 +1189,6 @@ static Obj FuncIsWritableFile(Obj self, Obj filename)
 {
     Int             res;
 
-    // check the argument
     RequireStringRep("IsWritableFile", filename);
     
     /* call the system dependent function                                  */
@@ -1214,7 +1205,6 @@ static Obj FuncIsExecutableFile(Obj self, Obj filename)
 {
     Int             res;
 
-    // check the argument
     RequireStringRep("IsExecutableFile", filename);
     
     /* call the system dependent function                                  */
@@ -1231,7 +1221,6 @@ static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
 {
     Int             res;
 
-    // check the argument
     RequireStringRep("IsDirectoryPathString", filename);
     
     /* call the system dependent function                                  */
@@ -1257,7 +1246,6 @@ static Obj FuncLIST_DIR(Obj self, Obj dirname)
     struct dirent *entry;
     Obj res;
 
-    // check the argument
     RequireStringRep("LIST_DIR", dirname);
     
     SyClearErrorNo();
@@ -1285,7 +1273,6 @@ static Obj FuncLIST_DIR(Obj self, Obj dirname)
 */
 static Obj FuncCLOSE_FILE(Obj self, Obj fid)
 {
-    // check the argument
     Int ifid = GetSmallInt("CLOSE_FILE", fid);
     
     /* call the system dependent function                                  */
@@ -1302,7 +1289,6 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 {
     Int             fid;
 
-    // check the argument
     RequireStringRep("INPUT_TEXT_FILE", filename);
     
     /* call the system dependent function                                  */
@@ -1320,7 +1306,6 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 */
 static Obj FuncIS_END_OF_FILE(Obj self, Obj fid)
 {
-    // check the argument
     Int ifid = GetSmallInt("IS_END_OF_FILE", fid);
     
     Int ret = SyIsEndOfFile( ifid );
@@ -1336,7 +1321,6 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
 {
     Int             fid;
 
-    // check the argument
     RequireStringRep("OUTPUT_TEXT_FILE", filename);
     RequireTrueOrFalse("OUTPUT_TEXT_FILE", append);
     
@@ -1360,7 +1344,6 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
 */
 static Obj FuncPOSITION_FILE(Obj self, Obj fid)
 {
-    // check the argument
     Int ifid = GetSmallInt("POSITION_FILE", fid);
 
     Int ret = SyFtell(ifid);
@@ -1381,7 +1364,6 @@ static Obj FuncPOSITION_FILE(Obj self, Obj fid)
 */
 static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
 {
-    // check the argument
     Int ifid = GetSmallInt("READ_BYTE_FILE", fid);
     
     /* call the system dependent function                                  */
@@ -1405,7 +1387,6 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
     UInt            lstr;
     Obj             str;
 
-    // check the argument
     Int ifid = GetSmallInt("READ_LINE_FILE", fid);
 
     /* read <fid> until we see a newline or eof or we've read at least
@@ -1455,9 +1436,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
     Obj             str;
     UInt            csize;
 
-    // check the argument
     Int ifid = GetSmallInt("READ_ALL_FILE", fid);
-
     Int ilim = GetSmallInt("READ_ALL_FILE", limit);
 
     /* read <fid> until we see  eof or we've read at least
@@ -1541,7 +1520,6 @@ static Obj FuncSEEK_POSITION_FILE(Obj self, Obj fid, Obj pos)
 {
     Int             ret;
 
-    // check the argument
     Int ifid = GetSmallInt("SEEK_POSITION_FILE", fid);
     Int ipos = GetSmallInt("SEEK_POSITION_FILE", pos);
     
@@ -1556,7 +1534,6 @@ static Obj FuncSEEK_POSITION_FILE(Obj self, Obj fid, Obj pos)
 */
 static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch)
 {
-    // check the argument
     Int ifid = GetSmallInt("WRITE_BYTE_FILE", fid);
     Int ich = GetSmallInt("WRITE_BYTE_FILE", ch);
     
@@ -1593,7 +1570,6 @@ static Obj FuncWRITE_STRING_FILE_NC(Obj self, Obj fid, Obj str)
 
 static Obj FuncREAD_STRING_FILE(Obj self, Obj fid)
 {
-    // check the argument
     Int ifid = GetSmallInt("READ_STRING_FILE", fid);
     return SyReadStringFid(ifid);
 }
@@ -1741,7 +1717,6 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     Int                 res;
     Int                 i;
 
-    // check the argument
     RequireStringRep("ExecuteProcess", dir);
     RequireStringRep("ExecuteProcess", prg);
     Int iin = GetSmallInt("ExecuteProcess", in);

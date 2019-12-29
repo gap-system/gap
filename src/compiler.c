@@ -932,7 +932,6 @@ static CVar CompUnknownBool(Expr expr)
     /* free the temporary                                                  */
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
-    /* return the result                                                   */
     return res;
 }
     
@@ -1021,7 +1020,6 @@ static CVar CompFunccall0to6Args(Expr expr)
     }
     if ( IS_TEMP_CVAR( func ) )  FreeTemp( TEMP_CVAR( func ) );
 
-    /* return the result                                                   */
     return result;
 }
 
@@ -1079,7 +1077,6 @@ static CVar CompFunccallXArgs(Expr expr)
     if ( IS_TEMP_CVAR( argl ) )  FreeTemp( TEMP_CVAR( argl ) );
     if ( IS_TEMP_CVAR( func ) )  FreeTemp( TEMP_CVAR( func ) );
 
-    /* return the result                                                   */
     return result;
 }
 
@@ -1195,7 +1192,6 @@ static CVar CompOr(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1234,7 +1230,6 @@ static CVar CompOrBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1292,7 +1287,6 @@ static CVar CompAnd(Expr expr)
     if ( IS_TEMP_CVAR( right1 ) )  FreeTemp( TEMP_CVAR( right1 ) );
     if ( IS_TEMP_CVAR( left   ) )  FreeTemp( TEMP_CVAR( left   ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1331,7 +1325,6 @@ static CVar CompAndBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1360,7 +1353,6 @@ static CVar CompNot(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( left ) )  FreeTemp( TEMP_CVAR( left ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1389,7 +1381,6 @@ static CVar CompNotBool(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( left ) )  FreeTemp( TEMP_CVAR( left ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1426,7 +1417,6 @@ static CVar CompEq(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1463,7 +1453,6 @@ static CVar CompEqBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1500,7 +1489,6 @@ static CVar CompNe(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1537,7 +1525,6 @@ static CVar CompNeBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1574,7 +1561,6 @@ static CVar CompLt(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1611,7 +1597,6 @@ static CVar CompLtBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1648,7 +1633,6 @@ static CVar CompGe(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1685,7 +1669,6 @@ static CVar CompGeBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1722,7 +1705,6 @@ static CVar CompGt(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1759,7 +1741,6 @@ static CVar CompGtBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1796,7 +1777,6 @@ static CVar CompLe(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1833,7 +1813,6 @@ static CVar CompLeBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1865,7 +1844,6 @@ static CVar CompIn(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1897,7 +1875,6 @@ static CVar CompInBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1942,7 +1919,6 @@ static CVar CompSum(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -1984,7 +1960,6 @@ static CVar CompAInv(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -2029,7 +2004,6 @@ static CVar CompDiff(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -2074,7 +2048,6 @@ static CVar CompProd(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -2106,7 +2079,6 @@ static CVar CompQuo(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -2143,7 +2115,6 @@ static CVar CompMod(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -2180,7 +2151,6 @@ static CVar CompPow(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
-    /* return the result                                                   */
     return val;
 }
 
@@ -2443,7 +2413,6 @@ static CVar CompListExpr(Expr expr)
     list = CompListExpr1( expr );
     CompListExpr2( list, expr );
 
-    /* return the result                                                   */
     return list;
 }
 
@@ -2653,7 +2622,6 @@ static CVar CompRecExpr(Expr expr)
     rec = CompRecExpr1( expr );
     CompRecExpr2( rec, expr );
 
-    /* return the result                                                   */
     return rec;
 }
 
@@ -2845,7 +2813,6 @@ static CVar CompIsbLVar(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -2909,7 +2876,6 @@ static CVar CompIsbHVar(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -2998,7 +2964,6 @@ static CVar CompIsbGVar(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -3277,7 +3242,6 @@ static CVar CompIsbRecName(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -3312,7 +3276,6 @@ static CVar CompIsbRecExpr(Expr expr)
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -3486,7 +3449,6 @@ static CVar CompIsbComObjName(Expr expr)
     /* free the temporaries                                                */
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -3521,7 +3483,6 @@ static CVar CompIsbComObjExpr(Expr expr)
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the result                                                   */
     return isb;
 }
 
@@ -5435,7 +5396,6 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     magic1 = ELM_LIST( arg, 4 );
     magic2 = ELM_LIST( arg, 5 );
 
-    // check the arguments
     RequireStringRep("CompileFunc", output);
     RequireFunction("CompileFunc", func);
     RequireStringRep("CompileFunc", name);
@@ -5471,7 +5431,6 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
         INT_INTOBJ(magic1), magic2 );
 
 
-    /* return the result                                                   */
     return INTOBJ_INT(nr);
 }
 

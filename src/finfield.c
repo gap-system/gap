@@ -638,7 +638,6 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
-    /* compute and return the result                                       */
     vX = SUM_FFV( vL, vR, SUCC_FF(fX) );
     return NEW_FFE( fX, vX );
 }
@@ -668,7 +667,6 @@ static Obj SumFFEInt(Obj opL, Obj opR)
     /* get the left operand                                                */
     vL = VAL_FFE( opL );
 
-    /* compute and return the result                                       */
     vX = SUM_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
 }
@@ -698,7 +696,6 @@ static Obj SumIntFFE(Obj opL, Obj opR)
     /* get the right operand                                               */
     vR = VAL_FFE( opR );
 
-    /* compute and return the result                                       */
     vX = SUM_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
 }
@@ -715,7 +712,6 @@ static Obj ZeroFFE(Obj op)
     /* get the field for the result                                        */
     fX = FLD_FFE( op );
 
-    /* return the result                                                   */
     return NEW_FFE( fX, 0 );
 }
 
@@ -737,7 +733,6 @@ static Obj AInvFFE(Obj op)
     /* get the operand                                                     */
     v = VAL_FFE( op );
 
-    /* compute and return the result                                       */
     vX = NEG_FFV( v, sX ); 
     return NEW_FFE( fX, vX );
 }
@@ -797,7 +792,6 @@ static Obj DiffFFEFFE(Obj opL, Obj opR)
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
-    /* compute and return the result                                       */
     vR = NEG_FFV( vR, SUCC_FF(fX) );
     vX = SUM_FFV( vL, vR, SUCC_FF(fX) );
     return NEW_FFE( fX, vX );
@@ -828,7 +822,6 @@ static Obj DiffFFEInt(Obj opL, Obj opR)
     /* get the left operand                                                */
     vL = VAL_FFE( opL );
 
-    /* compute and return the result                                       */
     vR = NEG_FFV( vR, sX );
     vX = SUM_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
@@ -859,7 +852,6 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
     /* get the right operand                                               */
     vR = VAL_FFE( opR );
 
-    /* compute and return the result                                       */
     vR = NEG_FFV( vR, sX );
     vX = SUM_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
@@ -920,7 +912,6 @@ static Obj ProdFFEFFE(Obj opL, Obj opR)
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
-    /* compute and return the result                                       */
     vX = PROD_FFV( vL, vR, SUCC_FF(fX) );
     return NEW_FFE( fX, vX );
 }
@@ -950,7 +941,6 @@ static Obj ProdFFEInt(Obj opL, Obj opR)
     /* get the left operand                                                */
     vL = VAL_FFE( opL );
 
-    /* compute and return the result                                       */
     vX = PROD_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
 }
@@ -980,7 +970,6 @@ static Obj ProdIntFFE(Obj opL, Obj opR)
     /* get the right operand                                               */
     vR = VAL_FFE( opR );
 
-    /* compute and return the result                                       */
     vX = PROD_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
 }
@@ -997,7 +986,6 @@ static Obj OneFFE(Obj op)
     /* get the field for the result                                        */
     fX = FLD_FFE( op );
 
-    /* return the result                                                   */
     return NEW_FFE( fX, 1 );
 }
 
@@ -1020,7 +1008,6 @@ static Obj InvFFE(Obj op)
     v = VAL_FFE( op );
     if ( v == 0 ) return Fail;
 
-    /* compute and return the result                                       */
     vX = QUO_FFV( 1, v, sX ); 
     return NEW_FFE( fX, vX );
 }
@@ -1080,7 +1067,6 @@ static Obj QuoFFEFFE(Obj opL, Obj opR)
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
-    /* compute and return the result                                       */
     if ( vR == 0 ) {
         ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
     }
@@ -1113,7 +1099,6 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
     /* get the left operand                                                */
     vL = VAL_FFE( opL );
 
-    /* compute and return the result                                       */
     if ( vR == 0 ) {
         ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
     }
@@ -1146,7 +1131,6 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
     /* get the right operand                                               */
     vR = VAL_FFE( opR );
 
-    /* compute and return the result                                       */
     if ( vR == 0 ) {
         ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
     }
@@ -1198,7 +1182,6 @@ static Obj PowFFEInt(Obj opL, Obj opR)
     /* reduce vR modulo the order of the multiplicative group first.       */
     vR %= *sX;
 
-    /* compute and return the result                                       */
     vX = POW_FFV( vL, vR, sX );
     return NEW_FFE( fX, vX );
 }
@@ -1215,7 +1198,6 @@ static Obj PowFFEFFE(Obj opL, Obj opR)
         ErrorMayQuit("<x> and <y> have different characteristic", 0, 0);
     }
 
-    /* compute and return the result                                       */
     return opL;
 }
 
@@ -1265,7 +1247,6 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
     UInt                qZ, qR, qX;     /* size  of left, right, common    */
     Int                 a, b, c, d, t;  /* temporaries                     */
 
-    /* check the arguments                                                 */
     if (!IS_FFE(opZ) || VAL_FFE(opZ) == 0) {
         ErrorMayQuit("LogFFE: <z> must be a nonzero finite field element", 0,
                      0);

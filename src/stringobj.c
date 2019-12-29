@@ -953,7 +953,6 @@ static Obj ElmsString(Obj list, Obj poss)
 
     }
 
-    /* return the result                                                   */
     return elms;
 }
 
@@ -1305,7 +1304,6 @@ Int IsStringConv (
         ConvString( obj );
     }
 
-    /* return the result                                                   */
     return res;
 }
 
@@ -1342,7 +1340,6 @@ static Obj FuncIS_STRING_CONV(Obj self, Obj obj)
 */
 static Obj FuncCONV_STRING(Obj self, Obj string)
 {
-    /* check whether <string> is a string                                  */
     if (!IS_STRING(string)) {
         RequireArgument("ConvString", string, "must be a string");
     }
@@ -1350,7 +1347,6 @@ static Obj FuncCONV_STRING(Obj self, Obj string)
     /* convert to the string representation                                */
     ConvString( string );
 
-    /* return nothing                                                      */
     return 0;
 }
 
@@ -1372,7 +1368,6 @@ static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 */
 static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 {
-    /* check whether <string> is a string                                 */
     if (!IS_STRING(string)) {
         RequireArgument("CopyToStringRep", string, "must be a string");
     }
@@ -1394,14 +1389,10 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
   Int    ipos, i, j, lens, lenss, max;
   const UInt1  *s, *ss;
 
-  /* check whether <string> is a string                                  */
   RequireStringRep("POSITION_SUBSTRING", string);
-  
-  /* check whether <substr> is a string                        */
   RequireStringRep("POSITION_SUBSTRING", substr);
-
-  /* check wether <off> is a non-negative integer  */
   RequireNonnegativeSmallInt("POSITION_SUBSTRING", off);
+
   ipos = INT_INTOBJ(off);
 
   /* special case for the empty string */
@@ -1444,7 +1435,6 @@ static Obj FuncNormalizeWhitespace(Obj self, Obj string)
   UInt1  *s, c;
   Int i, j, len, white;
 
-  /* check whether <string> is a string                                  */
   RequireStringRep("NormalizeWhitespace", string);
   
   len = GET_LEN_STRING(string);
@@ -1491,10 +1481,7 @@ static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
   Int i, j, len;
   UInt1 REMCHARLIST[256] = {0};
 
-  /* check whether <string> is a string                                  */
   RequireStringRep("RemoveCharacters", string);
-  
-  /* check whether <rem> is a string                                  */
   RequireStringRep("RemoveCharacters", rem);
   
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
@@ -1531,10 +1518,7 @@ static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
 {
   Int j, len;
 
-  /* check whether <string> is a string                                  */
   RequireStringRep("TranslateString", string);
-  
-  // check whether <trans> is a string of length at least 256
   RequireStringRep("TranslateString", trans);
   if ( GET_LEN_STRING( trans ) < 256 ) {
       ErrorMayQuit("TranslateString: <trans> must have length >= 256",
@@ -1569,13 +1553,8 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
   UInt1 SPLITSTRINGSEPS[256] = { 0 };
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
-  /* check whether <string> is a string                                  */
   RequireStringRep("SplitString", string);
-
-  /* check whether <seps> is a string                                  */
   RequireStringRep("SplitString", seps);
-
-  /* check whether <wspace> is a string                                  */
   RequireStringRep("SplitString", wspace);
 
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */

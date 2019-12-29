@@ -399,7 +399,6 @@ static Obj ElmsRange(Obj list, Obj poss)
 
     }
 
-    /* return the result                                                   */
     return elms;
 }
 
@@ -682,7 +681,6 @@ static Int IsRange(Obj list)
 
     }
 
-    /* return the result of the test                                       */
     return isRange;
 }
 

@@ -793,7 +793,6 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         SET_LEN_PLIST( lens, k );
     }
 
-    /* return the result                                                   */
     return res;
 }
 

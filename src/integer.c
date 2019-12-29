@@ -1552,7 +1552,6 @@ static Obj ProdIntObj ( Obj n, Obj op )
     }
   }
   
-  /* return the result                                                     */
   return res;
 }
 
@@ -1702,7 +1701,6 @@ static Obj PowObjInt(Obj op, Obj n)
     }
   }
 
-  /* return the result                                                   */
   return res;
 }
 
@@ -1837,7 +1835,6 @@ Obj ModInt(Obj opL, Obj opR)
     
   }
   
-  /* return the result                                                     */
 #if DEBUG_GMP
   assert( !IS_NEG_INT(mod) );
 #endif
@@ -1949,7 +1946,6 @@ Obj QuoInt(Obj opL, Obj opR)
                  (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR) );
   }
   
-  /* normalize and return the result                                       */
   quo = GMP_NORMALIZE(quo);
   quo = GMP_REDUCE( quo );
   return quo;
@@ -2081,7 +2077,6 @@ Obj RemInt(Obj opL, Obj opR)
     
   }
   
-  /* return the result                                                     */
   CHECK_INT(rem);
   return rem;
 }

@@ -113,7 +113,6 @@ static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
         ptrS[i] = NEW_FFE(fld, valS);
     }
 
-    /* return the result                                                   */
     return vecS;
 }
 
@@ -172,7 +171,6 @@ static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
         ptrS[i] = NEW_FFE(fld, valS);
     }
 
-    /* return the result                                                   */
     return vecS;
 }
 
@@ -248,7 +246,6 @@ static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
         for (; i <= len; i++)
             ptrS[i] = ptrL[i];
 
-    /* return the result                                                   */
     return vecS;
 }
 
@@ -307,7 +304,6 @@ static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
         valD = SUM_FFV(valL, valR, succ);
         ptrD[i] = NEW_FFE(fld, valD);
     }
-    /* return the result                                                   */
     return vecD;
 }
 
@@ -368,7 +364,6 @@ static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
         ptrD[i] = NEW_FFE(fld, valD);
     }
 
-    /* return the result                                                   */
     return vecD;
 }
 
@@ -450,7 +445,6 @@ static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
         for (; i <= len; i++)
             ptrD[i] = ptrL[i];
 
-    /* return the result                                                   */
     return vecD;
 }
 
@@ -509,7 +503,6 @@ static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
         ptrP[i] = NEW_FFE(fld, valP);
     }
 
-    /* return the result                                                   */
     return vecP;
 }
 
@@ -567,7 +560,6 @@ static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
         ptrP[i] = NEW_FFE(fld, valP);
     }
 
-    /* return the result                                                   */
     return vecP;
 }
 
@@ -625,7 +617,6 @@ static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
         valS = SUM_FFV(valS, valP, succ);
     }
 
-    /* return the result                                                   */
     return NEW_FFE(fld, valS);
 }
 
