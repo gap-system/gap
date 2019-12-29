@@ -5,4 +5,3 @@ int in stream:1
 . . . .
 ^
 Syntax error: Record component name expected in stream:2
-

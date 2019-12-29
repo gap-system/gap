@@ -101,25 +101,21 @@ Syntax error: Character literal must not include <newline> in stream:1
 s := '
      ^
 Syntax error: ; expected in stream:2
-
 gap> s := 'x
 Syntax error: Missing single quote in character constant in stream:1
 s := 'x
      ^^
 Syntax error: ; expected in stream:2
-
 gap> s := "
 Syntax error: String must not include <newline> in stream:1
 s := "
      ^
 Syntax error: ; expected in stream:2
-
 gap> s := "x
 Syntax error: String must not include <newline> in stream:1
 s := "x
      ^^
 Syntax error: ; expected in stream:2
-
 
 # errors in the middle of parsing a float literal
 gap> 12.34\56;
@@ -185,11 +181,9 @@ gap> f();
 # with syntax errors
 gap> f:=ReadAsFunction(InputTextString("return 1"));;
 Syntax error: ; expected in stream:1
-
 gap> f:={} -> ReadAsFunction(InputTextString("return 1"));;
 gap> f();
 Syntax error: ; expected in stream:1
-
 fail
 
 # with execution errors
@@ -210,7 +204,6 @@ local x; x := function(a) return a end;; return x(1);
 gap> f:={} -> ReadAsFunction(InputTextString("return 1"));;
 gap> f();
 Syntax error: ; expected in stream:1
-
 fail
 
 #
