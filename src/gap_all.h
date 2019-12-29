@@ -25,7 +25,6 @@ extern "C" {
 #include "code.h"
 #include "collectors.h"
 #include "compiler.h"
-#include "compstat.h"
 #include "costab.h"
 #include "cyclotom.h"
 #include "dt.h"

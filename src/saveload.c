@@ -16,7 +16,6 @@
 
 #include "bool.h"
 #include "calls.h"
-#include "compstat.h"
 #include "error.h"
 #include "finfield.h"
 #ifdef USE_GASMAN
