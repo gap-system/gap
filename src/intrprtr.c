@@ -250,7 +250,7 @@ ExecStatus IntrEnd(UInt error, Obj *result)
     if ( ! error ) {
 
         /* leave the execution environment                                 */
-        ExecEnd( 0UL );
+        ExecEnd(0);
 
         /* remember whether the interpreter interpreted a return-statement */
         intrReturning = STATE(IntrReturning);
@@ -271,10 +271,10 @@ ExecStatus IntrEnd(UInt error, Obj *result)
     else {
 
         /* leave the execution environment                                 */
-        ExecEnd( 1UL );
+        ExecEnd(1);
 
         /* clean up the coder too                                          */
-        if ( STATE(IntrCoding) > 0 ) { CodeEnd( 1UL ); }
+        if ( STATE(IntrCoding) > 0 ) { CodeEnd(1); }
 
         /* remember that we had an error                                   */
         intrReturning = STATUS_ERROR;

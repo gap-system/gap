@@ -2367,11 +2367,7 @@ static Obj FuncSHRINKCOEFFS_GF2VEC(Obj self, Obj vec)
     off = BIPEB - ((len - 1) % BIPEB + 1);
 
     // mask out the last bits
-#ifdef SYS_IS_64_BIT
-    *ptr &= 0xffffffffffffffff >> off;
-#else
-    *ptr &= 0xffffffff >> off;
-#endif
+    *ptr &= ALL_BITS_UINT >> off;
 
     // find last non-trivial block
     while (0 < nbb && !*ptr) {
@@ -2720,11 +2716,7 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
     off2 = BIPEB - off;    // number of insignificant bits in last word
 
     // mask out the last bits
-#ifdef SYS_IS_64_BIT
-    *num2 &= 0xffffffffffffffff >> off2;
-#else
-    *num2 &= 0xffffffff >> off2;
-#endif
+    *num2 &= ALL_BITS_UINT >> off2;
 
     if (len <= NR_SMALL_INT_BITS)
         // it still fits into a small integer
@@ -2889,17 +2881,9 @@ static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
     off = (len - 1) % BIPEB + 1;    // number of significant bits in last word
     off = BIPEB - off;    // number of insignificant bits in last word
     end = ptL + ((len - 1) / BIPEB);
-#ifdef SYS_IS_64_BIT
-    *end &= 0xffffffffffffffff >> off;
-#else
-    *end &= 0xffffffff >> off;
-#endif
+    *end &= ALL_BITS_UINT >> off;
     end = ptR + ((len - 1) / BIPEB);
-#ifdef SYS_IS_64_BIT
-    *end &= 0xffffffffffffffff >> off;
-#else
-    *end &= 0xffffffff >> off;
-#endif
+    *end &= ALL_BITS_UINT >> off;
 
     return INTOBJ_INT(DistGF2Vecs(ptL, ptR, len));
 }
@@ -3274,11 +3258,7 @@ static void ResizeGF2Vec(Obj vec, UInt newlen)
             ptr = BLOCKS_GF2VEC(vec) + (len - 1) / BIPEB;
             off = BIPEB - ((len - 1) % BIPEB +
                            1);    // number of insignificant bits in last word
-#ifdef SYS_IS_64_BIT
-            *ptr &= 0xffffffffffffffff >> off;
-#else
-            *ptr &= 0xffffffff >> off;
-#endif
+            *ptr &= ALL_BITS_UINT >> off;
             ptr++;
         }
 
@@ -3298,11 +3278,7 @@ static void ResizeGF2Vec(Obj vec, UInt newlen)
         if (newlen % BIPEB) {
             ptr = BLOCKS_GF2VEC(vec) + (newlen - 1) / BIPEB;
             off = BIPEB - ((newlen - 1) % BIPEB + 1);
-#ifdef SYS_IS_64_BIT
-            *ptr &= 0xffffffffffffffff >> off;
-#else
-            *ptr &= 0xffffffff >> off;
-#endif
+            *ptr &= ALL_BITS_UINT >> off;
         }
         SET_LEN_GF2VEC(vec, newlen);
         ResizeWordSizedBag(vec, SIZE_PLEN_GF2VEC(newlen));
@@ -3467,11 +3443,7 @@ static void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
         for (i = 0; i < (len2 - 1) / BIPEB; i++)
             *ptr1++ ^= *ptr2++;
         block = *ptr2;
-#ifdef SYS_IS_64_BIT
-        block &= (0xFFFFFFFFFFFFFFFF >> (BIPEB - (len2 - 1) % BIPEB - 1));
-#else
-        block &= (0xFFFFFFFF >> (BIPEB - (len2 - 1) % BIPEB - 1));
-#endif
+        block &= (ALL_BITS_UINT >> (BIPEB - (len2 - 1) % BIPEB - 1));
         *ptr1 ^= block;
     }
     else {
@@ -3486,11 +3458,7 @@ static void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
 
         if (len2 % BIPEB) {
             block = *ptr2;
-#ifdef SYS_IS_64_BIT
-            block &= 0xFFFFFFFFFFFFFFFF >> (BIPEB - (len2 - 1) % BIPEB - 1);
-#else
-            block &= 0xFFFFFFFF >> (BIPEB - (len2 - 1) % BIPEB - 1);
-#endif
+            block &= ALL_BITS_UINT >> (BIPEB - (len2 - 1) % BIPEB - 1);
             *ptr1++ ^= block << shift1;
             if (len2 % BIPEB + off % BIPEB > BIPEB) {
                 assert(ptr1 < BLOCKS_GF2VEC(vec1) +

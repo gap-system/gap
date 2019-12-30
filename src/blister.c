@@ -652,26 +652,26 @@ static Obj PosBlist(Obj list, Obj val, Obj start)
          {
            if (x != 0)
              for (j = firstoffset; j <= lastoffset; j++)
-               if ((x & (1UL << j)) != 0)
+               if ((x & ((UInt)1 << j)) != 0)
                  return INTOBJ_INT(BIPEB*firstblock + j + 1);
            return Fail;
          }
        if (x != 0)
          for (j = firstoffset; j < BIPEB; j++)
-           if ((x & (1UL << j)) != 0)
+           if ((x & ((UInt)1 << j)) != 0)
              return INTOBJ_INT(BIPEB*firstblock + j + 1);
        for (i  = firstblock + 1; i < lastblock; i++)
          {
            x = ptr[i];
            if (x != 0)
              for (j = 0; j < BIPEB; j++)
-               if ((x & (1UL << j)) != 0)
+               if ((x & ((UInt)1 << j)) != 0)
                  return INTOBJ_INT(BIPEB*i + j + 1);
          }
        x = ptr[lastblock];
        if (x != 0)
          for (j = 0; j <= lastoffset; j++)
-           if ((x & (1UL << j)) != 0)
+           if ((x & ((UInt)1 << j)) != 0)
              return INTOBJ_INT(BIPEB*lastblock + j + 1);
        return Fail;
     }
@@ -681,28 +681,28 @@ static Obj PosBlist(Obj list, Obj val, Obj start)
       x = ptr[firstblock];
       if (firstblock == lastblock) 
         {
-          if (x != ~0UL)
+          if (x != ALL_BITS_UINT)
             for (j = firstoffset; j <= lastoffset; j++)
-              if ((x & (1UL << j)) == 0)
+              if ((x & ((UInt)1 << j)) == 0)
                 return INTOBJ_INT(BIPEB*firstblock + j + 1);
            return Fail;
          }
-       if (x != ~0UL)
+       if (x != ALL_BITS_UINT)
          for (j = firstoffset; j < BIPEB; j++)
-           if ((x & (1UL << j)) == 0)
+           if ((x & ((UInt)1 << j)) == 0)
              return INTOBJ_INT(BIPEB*firstblock + j + 1);
        for (i  = firstblock + 1; i < lastblock; i++)
          {
            x = ptr[i];
-           if (x != ~0UL)
+           if (x != ALL_BITS_UINT)
              for (j = 0; j < BIPEB; j++)
-               if ((x & (1UL << j)) == 0)
+               if ((x & ((UInt)1 << j)) == 0)
                  return INTOBJ_INT(BIPEB*i + j + 1);
          }
        x = ptr[lastblock];
-       if (x != ~0UL)
+       if (x != ALL_BITS_UINT)
          for (j = 0; j <= lastoffset; j++)
-           if ((x & (1UL << j)) == 0)
+           if ((x & ((UInt)1 << j)) == 0)
              return INTOBJ_INT(BIPEB*lastblock + j + 1);
        return Fail;
     }
@@ -1320,11 +1320,11 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
 
         /* set the corresponding entries to 'true'                         */
         for ( k = i; k < j && k%BIPEB != 0; k++ )
-            ptrBlist[k/BIPEB] |= (1UL << k%BIPEB);
+            ptrBlist[k/BIPEB] |= ((UInt)1 << k%BIPEB);
         for ( ; k+BIPEB < j; k += BIPEB )
             ptrBlist[k/BIPEB] = ~(UInt)0;
         for ( ; k < j; k++ )
-            ptrBlist[k/BIPEB] |= (1UL << k%BIPEB);
+            ptrBlist[k/BIPEB] |= ((UInt)1 << k%BIPEB);
 
     }
 
@@ -1344,7 +1344,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
                 if ( IS_INTOBJ( ptrSub[l] ) ) {
                     t = INT_INTOBJ( ptrSub[l] ) - s + 1;
                     if ( 0 < t && t <= lenList )
-                        ptrBlist[(t-1)/BIPEB] |= (1UL << (t-1)%BIPEB);
+                        ptrBlist[(t-1)/BIPEB] |= ((UInt)1 << (t-1)%BIPEB);
                 }
             }
         }

@@ -1440,7 +1440,7 @@ static Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
             for (; len >= BIPEB; len -= BIPEB)
                 *ptrBlist++ = ~(UInt)0;
             if (len > 0)
-                *ptrBlist |= (1UL << len) - 1;
+                *ptrBlist |= ((UInt)1 << len) - 1;
         }
     }
     else if (len == 0) {
