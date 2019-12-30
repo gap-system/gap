@@ -39,7 +39,7 @@ gap> StructureDescription(H);
 #
 gap> g:=PerfectGroup(IsPermGroup,30720,1);;
 gap> h:=g^(1,153);;
-gap> AutomorphismGroup(g);;
+gap> AutomorphismGroup(g);; # pull out of isom. test (reduce timeout risk)
 gap> AutomorphismGroup(h);;
 gap> IsomorphismGroups(g,h:forcetest)<>fail;
 true

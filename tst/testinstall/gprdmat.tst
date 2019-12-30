@@ -80,5 +80,12 @@ gap> H:=TensorWreathProduct(G, Group( (1,2,3) ));;
 gap> Size(H);
 648
 
+# Semidirect
+gap> G:=SemidirectProduct(GL(3,2),GF(2)^3);;
+gap> emb:=Embedding(G,1);;
+gap> emb:=Embedding(G,2);;
+gap> Image(emb);
+<matrix group with 3 generators>
+
 #
 gap> STOP_TEST("gprdmat.tst", 1);
