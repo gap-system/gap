@@ -471,11 +471,11 @@ Int HASHKEY_MEM_NC(const void * ptr, UInt4 seed, Int read)
 #ifdef SYS_IS_64_BIT
     UInt8 hashout[2];
     MurmurHash3_x64_128(ptr, read, seed, (void *)hashout);
-    return hashout[0] % (1UL << 60);
+    return hashout[0] % ((UInt)1 << 60);
 #else
     UInt4 hashout;
     MurmurHash3_x86_32(ptr, read, seed, (void *)&hashout);
-    return hashout % (1UL << 28);
+    return hashout % ((UInt)1 << 28);
 #endif
 }
 

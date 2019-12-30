@@ -14,6 +14,8 @@
 #include "system.h"
 
 
+#define ALL_BITS_UINT  (~(UInt)0)
+
 /****************************************************************************
 **
 *F  CopyBits( <fromblock>, <from-starting-bit>, <toblock>, <to-starting-bit>,

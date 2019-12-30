@@ -156,7 +156,7 @@ static Obj WordVectorAndClear(Obj type, Obj vv, Int num)
     ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
-    expm = (1UL << ebits) - 1;
+    expm = ((UInt)1 << ebits) - 1;
 
     /* construct a new object                                              */
     obj = NewWord(type, num);
@@ -216,7 +216,7 @@ static Int VectorWord(Obj vv, Obj v, Int num)
     ebits = EBITS_WORD(v);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
     /* unfold <v> into <vv>                                                */
@@ -380,10 +380,10 @@ static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
     ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
-    expm = (1UL << ebits) - 1;
+    expm = ((UInt)1 << ebits) - 1;
 
     /* get the exponent sign masks                                         */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
 
     /* <nw> contains the stack of words to insert                          */
     vnw = CollectorsState()->SC_NW_STACK;
@@ -650,7 +650,7 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
     ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
-    expm = (1UL << ebits) - 1;
+    expm = ((UInt)1 << ebits) - 1;
 
     /* use <g> as right argument for the collector                         */
     g = NewWord(SC_DEFAULT_TYPE(sc), 1);
@@ -888,10 +888,10 @@ static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
     ebits = EBITS_WORDTYPE( SC_DEFAULT_TYPE(sc) );
 
     /* get the exponent mask                                               */
-    expm = (1UL << ebits) - 1;
+    expm = ((UInt)1 << ebits) - 1;
 
     /* get the exponent sign masks                                         */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
 
     /* <nw> contains the stack of words to insert                          */
     vnw = CollectorsState()->SC_NW_STACK;

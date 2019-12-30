@@ -207,7 +207,7 @@ static Obj NBits_ExponentSums3(Obj obj, Obj vstart, Obj vend)
     ebits = EBITS_WORD(obj);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
     /* get the number of gen/exp pairs                                     */
@@ -304,7 +304,7 @@ static Obj NBits_ExponentSyllable(Obj w, Obj pos)
     ebits = EBITS_WORD(w);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
     /* return the <i> th exponent                                          */
@@ -354,7 +354,7 @@ static Obj NBits_ExtRepOfObj(Obj obj)
     ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
     /* get the number of gen/exp pairs                                     */
@@ -461,7 +461,7 @@ static Obj NBits_HeadByNumber(Obj l, Obj r)
     ebits = EBITS_WORD(l);
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
+    genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return                                       */
     nl = NPAIRS_WORD(l);
@@ -560,7 +560,7 @@ static Obj NBits_Less(Obj l, Obj r)
     ebits = EBITS_WORD(l);
     
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
     
     /* Skip the common prefix and determine if the first word is smaller   */
@@ -572,7 +572,7 @@ static Obj NBits_Less(Obj l, Obj r)
             /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
+            genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
@@ -662,7 +662,7 @@ static Obj NBits_AssocWord(Obj type, Obj data)
     ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
-    expm = (1UL << ebits) - 1;
+    expm = ((UInt)1 << ebits) - 1;
 
     /* construct a new object                                              */
     num = LEN_LIST(data)/2;
@@ -724,7 +724,7 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
     ebits = EBITS_WORDTYPE(type);
 
     /* get the exponent mask                                               */
-    expm = (1UL << ebits) - 1;
+    expm = ((UInt)1 << ebits) - 1;
 
     /* count the number of non-zero entries                                */
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
@@ -800,12 +800,12 @@ static Obj NBits_Power(Obj l, Obj r)
     ebits = EBITS_WORD(l);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
-    invm = (1UL<<ebits)-1;
+    invm = ((UInt)1<<ebits)-1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
+    genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -873,7 +873,7 @@ static Obj NBits_Power(Obj l, Obj r)
 
         /* and fix the exponent at position <sr>                           */
         pr = DATA_WORD(obj);
-        pr[sr] = (pr[sr] & genm) | (ex & ((1UL<<ebits)-1));
+        pr[sr] = (pr[sr] & genm) | (ex & (((UInt)1<<ebits)-1));
         return obj;
     }
 
@@ -888,9 +888,9 @@ static Obj NBits_Power(Obj l, Obj r)
             return TRY_NEXT_METHOD;
         }
         if ( 0 < pow )
-            ex = ex & ((1UL<<ebits)-1);
+            ex = ex & (((UInt)1<<ebits)-1);
         else
-            ex = (-ex) & ((1UL<<ebits)-1);
+            ex = (-ex) & (((UInt)1<<ebits)-1);
 
         /* create a new word                                               */
         apw = ( pow < 0 ) ? -pow : pow;
@@ -1041,11 +1041,11 @@ static Obj NBits_Product(Obj l, Obj r)
     ebits = EBITS_WORD(l);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
+    genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <l> or <r> is the identity return the other                      */
     nl = NPAIRS_WORD(l);
@@ -1086,7 +1086,7 @@ static Obj NBits_Product(Obj l, Obj r)
 
     /* handle the overlap                                                  */
     if ( over ) {
-        po[-1] = (po[-1] & genm) | (ex & ((1UL<<ebits)-1));
+        po[-1] = (po[-1] & genm) | (ex & (((UInt)1<<ebits)-1));
         sr++;
     }
 
@@ -1138,12 +1138,12 @@ static Obj NBits_Quotient(Obj l, Obj r)
     ebits = EBITS_WORD(l);
 
     /* get the exponent masks                                              */
-    exps = 1UL << (ebits-1);
+    exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
-    sepm = (1UL << ebits) - 1;
+    sepm = ((UInt)1 << ebits) - 1;
 
     /* get the generator mask                                              */
-    genm = ((1UL << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
+    genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
     /* if <r> is the identity return <l>                                   */
     nl = NPAIRS_WORD(l);
@@ -1228,7 +1228,7 @@ static Obj NBits_LengthWord(Obj w)
   data = CONST_DATA_WORD(w);
   
   /* get the exponent masks                                              */
-  exps = 1UL << (ebits-1);
+  exps = (UInt)1 << (ebits-1);
   expm = exps - 1;
   
   len = INTOBJ_INT(0);

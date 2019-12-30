@@ -72,7 +72,7 @@ static Obj ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
     /* otherwise find the syllable belonging to <exp>                      */
     else {
         ebits = EBITS_WORD(w);
-        exps  = 1UL << (ebits-1);
+        exps  = (UInt)1 << (ebits-1);
         expm  = exps - 1;
         npos  = INT_INTOBJ(pos);
         ptr   = CONST_DATA_WORD(w);
@@ -109,7 +109,7 @@ static Obj LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 
     /* otherwise it is the exponent of the first syllable                  */
     else {
-        exps = 1UL << (EBITS_WORD(w)-1);
+        exps = (UInt)1 << (EBITS_WORD(w)-1);
         expm = exps - 1;
         p = CONST_DATA_WORD(w)[0];
         if ( p & exps )
@@ -151,7 +151,7 @@ static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
     le=1; /* last exponent which has been assigned+1 */
 
     ebits = EBITS_WORD(w);
-    exps  = 1UL << (ebits-1);
+    exps  = (UInt)1 << (ebits-1);
     expm  = exps - 1;
 
     ptr   = CONST_DATA_WORD(w);

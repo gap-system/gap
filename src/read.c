@@ -1581,7 +1581,7 @@ static void ReadAtom(ScannerState * s, TypSymbolSet follow, Char mode)
         Match(s, S_LPAREN, "(", follow);
         if (s->Symbol == S_RPAREN) {
             Match(s, S_RPAREN, ")", follow);
-            TRY_IF_NO_ERROR { IntrPerm( 0UL ); }
+            TRY_IF_NO_ERROR { IntrPerm(0); }
             return;
         }
         ReadExpr(s, S_RPAREN|follow, 'r');
@@ -2528,7 +2528,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     ScannerState * volatile       s = &STATE(Scanner);
 
     /* get the first symbol from the input                                 */
-    Match(s, s->Symbol, "", 0UL);
+    Match(s, s->Symbol, "", 0);
 
     // if scanning the first symbol produced a syntax error, abort
     if (STATE(NrError)) {
@@ -2659,7 +2659,7 @@ UInt ReadEvalFile(Obj *evalResult)
     ScannerState * volatile       s = &STATE(Scanner);
 
     /* get the first symbol from the input                                 */
-    Match(s, s->Symbol, "", 0UL);
+    Match(s, s->Symbol, "", 0);
 
     /* if we have hit <end-of-file>, then give up                          */
     if (s->Symbol == S_EOF) {
