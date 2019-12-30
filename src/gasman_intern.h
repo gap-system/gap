@@ -182,7 +182,7 @@ typedef struct {
 extern TNumGlobalBags GlobalBags;
 
 
-void SortGlobals(UInt byWhat);
+void SortGlobals(void);
 
 Bag * GlobalByCookie(const Char * cookie);
 

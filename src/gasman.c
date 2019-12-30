@@ -731,7 +731,7 @@ TNumGlobalBags GlobalBags;
 **  it is used by 'CollectBags'. <cookie> is also recorded to allow things to
 **  be matched up after loading a saved workspace.
 */
-static UInt GlobalSortingStatus;
+static UInt GlobalsAreSorted;
 
 static void ClearGlobalBags(void)
 {
@@ -742,7 +742,7 @@ static void ClearGlobalBags(void)
       GlobalBags.cookie[i] = 0;
     }
   GlobalBags.nr = 0;
-  GlobalSortingStatus = 0;
+  GlobalsAreSorted = 0;
 }
 
 void InitGlobalBag (
@@ -754,55 +754,33 @@ void InitGlobalBag (
         Panic("Gasman cannot handle so many global variables");
     }
 
-    if (cookie != 0) {
-        for (UInt i = 0; i < GlobalBags.nr; i++) {
-            if (0 == strcmp(GlobalBags.cookie[i], cookie)) {
-                if (GlobalBags.addr[i] == addr)
-                    Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
-                else
-                    Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
-            }
+    if (cookie == 0) {
+        Panic("Gasman got a NULL cookie");
+    }
+
+    for (UInt i = 0; i < GlobalBags.nr; i++) {
+        if (0 == strcmp(GlobalBags.cookie[i], cookie)) {
+            if (GlobalBags.addr[i] == addr)
+                Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
+            else
+                Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0);
         }
     }
 
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;
     GlobalBags.nr++;
-    GlobalSortingStatus = 0;
+    GlobalsAreSorted = 0;
 }
 
 
-static Int IsLessGlobal (
-    const Char *        cookie1,
-    const Char *        cookie2,
-    UInt                byWhat )
-{
-  if (byWhat != 2)
-    {
-      Panic("can only sort globals by cookie");
-    }
-  if (cookie1 == 0 && cookie2 == 0)
-    return 0;
-  if (cookie1 == 0)
-    return -1;
-  if (cookie2 == 0)
-    return 1;
-  return strcmp(cookie1, cookie2) < 0;
-}
-
-
-
-void SortGlobals( UInt byWhat )
+void SortGlobals(void)
 {
   const Char *tmpcookie;
   Bag * tmpaddr;
   UInt len, h, i, k;
-  if (byWhat != 2)
-    {
-      Panic("can only sort globals by cookie");
-    }
-  if (GlobalSortingStatus == byWhat)
-    return;
+  if (GlobalsAreSorted)
+      return;
   len = GlobalBags.nr;
   h = 1;
   while ( 9*h + 4 < len )
@@ -812,20 +790,17 @@ void SortGlobals( UInt byWhat )
       tmpcookie = GlobalBags.cookie[i];
       tmpaddr = GlobalBags.addr[i];
       k = i;
-      while ( h <= k && IsLessGlobal(tmpcookie,
-                                     GlobalBags.cookie[k-h],
-                                     byWhat))
-        {
+      while (h <= k && strcmp(tmpcookie, GlobalBags.cookie[k - h]) < 0) {
           GlobalBags.cookie[k] = GlobalBags.cookie[k-h];
           GlobalBags.addr[k] = GlobalBags.addr[k-h];
           k -= h;
-        }
+      }
       GlobalBags.cookie[k] = tmpcookie;
       GlobalBags.addr[k] = tmpaddr;
     }
     h = h / 3;
   }
-  GlobalSortingStatus = byWhat;
+  GlobalsAreSorted = 1;
 }
 
 
@@ -837,15 +812,14 @@ Bag * GlobalByCookie(
   Int res;
   if (cookie == 0)
       Panic("zero cookie passed to GlobalByCookie");
-  if (GlobalSortingStatus != 2)
-    {
+  if (!GlobalsAreSorted) {
       for (i = 0; i < GlobalBags.nr; i++)
         {
           if (strcmp(cookie, GlobalBags.cookie[i]) == 0)
             return GlobalBags.addr[i];
         }
       return (Bag *)0;
-    }
+  }
   else
     {
       top = GlobalBags.nr;

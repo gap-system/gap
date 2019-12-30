@@ -708,12 +708,7 @@ void LoadWorkspace( Char * fname )
     {
       Panic("Bad divider");
     }
-  SortGlobals(2);               /* globals by cookie for quick
-                                 lookup */
-  for (i = 0; i < GlobalBags.nr; i++)
-    {
-      GAP_ASSERT(GlobalBags.cookie[i] != NULL);
-    }
+    SortGlobals();    // globals by cookie for quick lookup
     // TODO: the goal here is to stop exporting `GlobalBags` completely...
     if (nGlobs != GlobalBags.nr) {
         Panic("Wrong number of global bags in saved workspace %d %d",
