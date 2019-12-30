@@ -2270,10 +2270,14 @@ UInt CollectBags (
 
         // check phase
         done = CollectBags_Check(size, full, nrBags);
-        if (done == 2)
-            return 0;
 
-        // if we are not done, then try a full collection next
+        // the variable done can take on several values:
+        // 0: not yet finished, try again with a full collection
+        // 1: finished successfully to allocate the request memory
+        // 2: giving up, we are out of memory
+
+        // if there is another iteration of this loop, then we should perform
+        // a full collection
         full = 1;
 
     } while (!done);
@@ -2295,7 +2299,7 @@ UInt CollectBags (
 
     GAP_ASSERT(SanityCheckGasmanPointers());
 
-    return 1;
+    return done != 2;
 }
 
 
