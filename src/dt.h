@@ -15,7 +15,7 @@
 #ifndef GAP_DT_H
 #define GAP_DT_H
 
-#include "system.h"
+#include "common.h"
 
 
 /****************************************************************************

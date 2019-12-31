@@ -11,7 +11,7 @@
 #ifndef LIBGAP_INTERN_H
 #define LIBGAP_INTERN_H
 
-#include "system.h"
+#include "common.h"
 
 
 /****************************************************************************

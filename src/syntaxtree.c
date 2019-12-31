@@ -13,6 +13,7 @@
 #include "bool.h"
 #include "calls.h"
 #include "code.h"
+#include "common.h"
 #include "error.h"
 #include "exprs.h"
 #include "gvars.h"
@@ -26,7 +27,6 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "system.h"
 #include "vars.h"
 
 #include <ctype.h>

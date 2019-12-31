@@ -11,7 +11,7 @@
 #ifndef GAP_HPC_MISC_H
 #define GAP_HPC_MISC_H
 
-#include "system.h"
+#include "common.h"
 
 #ifndef HPCGAP
 #error This header is only meant to be used with HPC-GAP

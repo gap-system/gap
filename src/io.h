@@ -22,7 +22,7 @@
 #ifndef GAP_IO_H
 #define GAP_IO_H
 
-#include "system.h"
+#include "common.h"
 
 
 Char GET_NEXT_CHAR(void);

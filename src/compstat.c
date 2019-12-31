@@ -8,8 +8,8 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "system.h"
 #include "compstat.h"
+#include "common.h"
 
 // #define AVOID_PRECOMPILED
 

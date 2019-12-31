@@ -11,7 +11,7 @@
 #ifndef GAP_SERIALIZE_H
 #define GAP_SERIALIZE_H
 
-#include "system.h"
+#include "common.h"
 
 typedef void (*SerializationFunction)(Obj obj);
 typedef Obj (*DeserializationFunction)(UInt tnum);

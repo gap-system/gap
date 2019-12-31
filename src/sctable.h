@@ -14,7 +14,7 @@
 #ifndef GAP_SCTABLE_H
 #define GAP_SCTABLE_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

@@ -11,7 +11,7 @@
 #ifndef GAP_TLSCONFIG_H
 #define GAP_TLSCONFIG_H
 
-#include "system.h"
+#include "common.h"
 
 #if !defined(HPCGAP)
 #error This header is only meant to be used with HPC-GAP

@@ -15,7 +15,7 @@
 #ifndef GAP_SYSMEM_H
 #define GAP_SYSMEM_H
 
-#include "system.h"
+#include "common.h"
 
 
 /****************************************************************************

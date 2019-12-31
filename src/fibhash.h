@@ -11,7 +11,7 @@
 #ifndef GAP_FIBHASH_H
 #define GAP_FIBHASH_H
 
-#include "system.h"
+#include "common.h"
 
 enum {
     FIB_HASH_BITS = sizeof(void *) * 8,

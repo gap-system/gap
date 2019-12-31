@@ -34,7 +34,7 @@
 #ifndef GAP_INTOBJ_H
 #define GAP_INTOBJ_H
 
-#include "system.h"
+#include "common.h"
 
 enum {
     NR_SMALL_INT_BITS = sizeof(UInt) * 8 - 4,

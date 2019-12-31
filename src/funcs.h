@@ -17,7 +17,7 @@
 #ifndef GAP_FUNCS_H
 #define GAP_FUNCS_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

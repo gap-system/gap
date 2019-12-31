@@ -12,7 +12,7 @@
 #ifndef GAP_SYSTIME_H
 #define GAP_SYSTIME_H
 
-#include "system.h"
+#include "common.h"
 
 
 /****************************************************************************

@@ -16,7 +16,7 @@
 
 #include "bool.h"
 #include "calls.h"
-#include "system.h"
+#include "common.h"
 
 
 enum {

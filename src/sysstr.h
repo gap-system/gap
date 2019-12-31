@@ -14,7 +14,7 @@
 #ifndef GAP_SYSSTR_H
 #define GAP_SYSSTR_H
 
-#include "system.h"
+#include "common.h"
 
 #include <ctype.h>
 #include <string.h>

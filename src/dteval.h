@@ -15,7 +15,7 @@
 #ifndef GAP_DTEVAL_H
 #define GAP_DTEVAL_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

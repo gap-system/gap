@@ -14,7 +14,7 @@
 #ifndef GAP_PROFILE_H
 #define GAP_PROFILE_H
 
-#include "system.h"
+#include "common.h"
 
 Int enableProfilingAtStartup(Char ** argv, void * dummy);
 Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy);
