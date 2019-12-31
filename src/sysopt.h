@@ -49,37 +49,18 @@ extern UInt SyCTRD;
 
 /****************************************************************************
 **
-*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
-*/
-extern Char SyCompileInput[GAP_PATH_MAX];
-
-
-/****************************************************************************
-**
-*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic number
-*/
-extern Char * SyCompileMagic1;
-
-
-/****************************************************************************
-**
-*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
-*/
-extern Char SyCompileName[256];
-
-
-/****************************************************************************
-**
-*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
-*/
-extern Char SyCompileOutput[GAP_PATH_MAX];
-
-
-/****************************************************************************
-**
 *V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
+*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
+*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
+*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
+*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
 */
 extern Int SyCompilePlease;
+extern Char * SyCompileOutput;
+extern Char * SyCompileInput;
+extern Char * SyCompileName;
+extern Char * SyCompileMagic1;
+
 
 /****************************************************************************
 **
