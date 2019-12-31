@@ -1216,7 +1216,7 @@ static Obj FuncKERNEL_INFO(Obj self)
     MakeImmutableNoRecurse(tmp);
     AssPRec(res, RNamName("GAP_ROOT_PATHS"), tmp);
 
-    AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(DotGapPath));
+    AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(SyDotGapPath()));
 
     // make command line available to GAP level
     tmp = NEW_PLIST_IMM(T_PLIST, 16);
