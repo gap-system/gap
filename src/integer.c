@@ -109,15 +109,7 @@ static Obj ObjInt_UIntInv( UInt i );
 
 #if DEBUG_GMP
 
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
-#  define CURRENT_FUNCTION  __func__
-#elif defined(_MSC_VER)
-#  define CURRENT_FUNCTION __FUNCTION__
-#else
-#  define CURRENT_FUNCTION "<unknown>"
-#endif
-
-#define CHECK_INT(op)  IS_NORMALIZED_AND_REDUCED(op, CURRENT_FUNCTION, __LINE__)
+#define CHECK_INT(op)  IS_NORMALIZED_AND_REDUCED(op, __func__, __LINE__)
 #else
 #define CHECK_INT(op)  do { } while(0);
 #endif
