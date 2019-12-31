@@ -15,6 +15,7 @@
 
 #include "bool.h"
 #include "calls.h"
+#include "compstat.h"
 #include "error.h"
 #include "funcs.h"
 #include "gap.h"
@@ -33,6 +34,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "sysroots.h"
 #include "sysstr.h"
 #include "systime.h"
 #include "vars.h"
@@ -426,76 +428,80 @@ static void READ_TEST_OR_LOOP(Obj context)
 */
 Int READ_GAP_ROOT ( const Char * filename )
 {
-    TypGRF_Data         result;
-    Int                 res;
-    UInt                type;
+    char path[GAP_PATH_MAX];
 
-    /* try to find the file                                                */
-    res = SyFindOrLinkGapRootFile( filename, &result );
+    // try to find the GAP file
+    SyFindGapRootFile(filename, path, sizeof(path));
 
-    /* not found                                                           */
-    if ( res == 0 ) {
+    // try to find compiled version of the GAP file
+    if (SyUseModule) {
+        // search for a statically linked module matching the given filename
+        Char module[GAP_PATH_MAX];
+        strxcpy(module, "GAPROOT/", sizeof(module));
+        strxcat(module, filename, sizeof(module));
+        for (int k = 0; CompInitFuncs[k]; k++) {
+            StructInitInfo * info = (*(CompInitFuncs[k]))();
+            if (info && !strcmp(module, info->name)) {
+                // found a matching statically linked module; if there is also
+                // a GAP file, compare their CRC
+                if (*path && info->crc != SyGAPCRC(path)) {
+                    Pr("#W Static module %s has CRC mismatch, ignoring\n",
+                       (Int)filename, 0);
+                    break;
+                }
+
+                // This code section covers transparently loading GAC compiled
+                // versions of GAP source files, by running code similar to
+                // that in FuncLOAD_STAT. For example, lib/oper1.g is compiled
+                // into C code which is stored in src/c_oper1.c; when reading
+                // lib/oper1.g, we instead will load its compiled version.
+                if (SyDebugLoading) {
+                    Pr("#I  READ_GAP_ROOT: loading '%s' statically\n",
+                       (Int)filename, 0);
+                }
+                ActivateModule(info);
+                RecordLoadedModule(info, 1, filename);
+                return 1;
+            }
+        }
+    }
+
+    // not found?
+    if (*path == 0)
+        return 0;
+
+    // special handling case if we are trying to load compiled modules needed
+    // for a saved workspace
+    if (SyRestoring) {
+        // ErrorQuit is not available
+        Pr("Can't find compiled module '%s' needed by saved workspace\n",
+           (Int)filename, 0);
         return 0;
     }
 
-    // statically linked
-    else if (res == 2) {
-        // This code section covers transparently loading GAC compiled
-        // versions of GAP source files, by running code similar to that in
-        // FuncLOAD_STAT. For example, lib/oper1.g is compiled into C code
-        // which is stored in src/c_oper1.c; when reading lib/oper1.g, we
-        // instead will load its compiled version.
-        if ( SyDebugLoading ) {
-            Pr("#I  READ_GAP_ROOT: loading '%s' statically\n", (Int)filename,
-               0);
+    // ordinary gap file
+    if (SyDebugLoading) {
+        Pr("#I  READ_GAP_ROOT: loading '%s' as GAP file\n", (Int)filename, 0);
+    }
+    if (OpenInput(path)) {
+        while (1) {
+            ClearError();
+            Obj  evalResult;
+            UInt type = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
+            if (STATE(UserHasQuit) || STATE(UserHasQUIT))
+                break;
+            if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
+                Pr("'return' must not be used in file", 0, 0);
+            }
+            else if (type & (STATUS_QUIT | STATUS_EOF)) {
+                break;
+            }
         }
-        ActivateModule(result.module_info);
-        RecordLoadedModule(result.module_info, 1, filename);
+        CloseInput();
+        ClearError();
         return 1;
     }
 
-    /* special handling for the other cases, if we are trying to load compiled
-       modules needed for a saved workspace ErrorQuit is not available */
-    else if (SyRestoring) {
-        if ( res == 3 ) {
-            Pr("Can't find compiled module '%s' needed by saved workspace\n",
-               (Int)filename, 0);
-            return 0;
-        }
-        Pr("unknown result code %d from 'SyFindGapRoot'", res, 0);
-        SyExit(1);
-    }
-    
-    /* ordinary gap file                                                   */
-    else if ( res == 3 ) {
-        if ( SyDebugLoading ) {
-            Pr("#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
-               (Int)filename, 0);
-        }
-        if ( OpenInput(result.path) ) {
-            while ( 1 ) {
-                ClearError();
-                Obj evalResult;
-                type = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
-                if (STATE(UserHasQuit) || STATE(UserHasQUIT))
-                  break;
-                if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-                    Pr("'return' must not be used in file", 0, 0);
-                }
-                else if ( type & (STATUS_QUIT | STATUS_EOF) ) {
-                    break;
-                }
-            }
-            CloseInput();
-            ClearError();
-            return 1;
-        }
-    }
-
-    /* don't know                                                          */
-    else {
-        ErrorQuit("unknown result code %d from 'SyFindGapRoot'", res, 0);
-    }
     return 0;
 }
 

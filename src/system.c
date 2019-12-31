@@ -23,6 +23,7 @@
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
+#include "sysroots.h"
 #include "sysstr.h"
 
 #ifdef HPCGAP
@@ -101,15 +102,9 @@ Int SyDebugLoading;
 
 /****************************************************************************
 **
-*V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
-**
-*/
-Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-
-
-/****************************************************************************
-**
 *V  DotGapPath
+**
+**  The path to the user's ~/.gap directory, if available.
 */
 static Char DotGapPath[GAP_PATH_MAX];
 
@@ -428,125 +423,6 @@ const Char * SyDotGapPath(void)
 
 /****************************************************************************
 **
-*F  SySetGapRootPath( <string> )  . . . . . . . . .  set the root directories
-**
-**  'SySetGapRootPath' takes a string and modifies a list of root directories
-**  in 'SyGapRootPaths'.
-**
-**  A  leading semicolon in  <string> means  that the list  of directories in
-**  <string> is  appended  to the  existing list  of  root paths.  A trailing
-**  semicolon means they are prepended.   If there is  no leading or trailing
-**  semicolon, then the root paths are overwritten.
-*/
-
-
-/****************************************************************************
-**
-*f  SySetGapRootPath( <string> )
-**
-** This function assumes that the system uses '/' as path separator.
-** Currently, we support nothing else. For Windows (or rather: Cygwin), we
-** rely on a small hack which converts the path separator '\' used there
-** on '/' on the fly. Put differently: Systems that use completely different
-**  path separators, or none at all, are currently not supported.
-*/
-
-static void SySetGapRootPath( const Char * string )
-{
-    const Char *          p;
-    Char *          q;
-    Int             i;
-    Int             n;
-
-    /* set string to a default value if unset                              */
-    if ( string == 0 || *string == 0 ) {
-        string = "./";
-    }
- 
-    /* 
-    ** check if we append, prepend or overwrite. 
-    */ 
-    if( string[0] == ';' ) {
-        /* Count the number of root directories already present.           */
-         n = 0; while( SyGapRootPaths[n][0] != '\0' ) n++;
-
-         /* Skip leading semicolon.                                        */
-         string++;
-
-    }
-    else if( string[ strlen(string) - 1 ] == ';' ) {
-        /* Count the number of directories in 'string'.                    */
-        n = 0; p = string; while( *p ) if( *p++ == ';' ) n++;
-
-        /* Find last root path.                                            */
-        for( i = 0; i < MAX_GAP_DIRS; i++ ) 
-            if( SyGapRootPaths[i][0] == '\0' ) break;
-        i--;
-
-#ifdef HPCGAP
-        n *= 2; // for each root <ROOT> we also add <ROOT/hpcgap> as a root
-#endif
-
-        /* Move existing root paths to the back                            */
-        if( i + n >= MAX_GAP_DIRS ) return;
-        while( i >= 0 ) {
-            memcpy( SyGapRootPaths[i+n], SyGapRootPaths[i], sizeof(SyGapRootPaths[i+n]) );
-            i--;
-        }
-
-        n = 0;
-
-    }
-    else {
-        /* Make sure to wipe out all possibly existing root paths          */
-        for( i = 0; i < MAX_GAP_DIRS; i++ ) SyGapRootPaths[i][0] = '\0';
-        n = 0;
-    }
-
-    /* unpack the argument                                                 */
-    p = string;
-    while ( *p ) {
-        if( n >= MAX_GAP_DIRS ) return;
-
-        q = SyGapRootPaths[n];
-        while ( *p && *p != ';' ) {
-            *q = *p++;
-
-#ifdef SYS_IS_CYGWIN32
-            /* fix up for DOS */
-            if (*q == '\\')
-              *q = '/';
-#endif
-            
-            q++;
-        }
-        if ( q == SyGapRootPaths[n] ) {
-            strxcpy( SyGapRootPaths[n], "./", sizeof(SyGapRootPaths[n]) );
-        }
-        else if ( q[-1] != '/' ) {
-            *q++ = '/';
-            *q   = '\0';
-        }
-        else {
-            *q   = '\0';
-        }
-        if ( *p ) {
-            p++;
-        }
-        n++;
-#ifdef HPCGAP
-        // or each root <ROOT> we also add <ROOT/hpcgap> as a root (and first)
-        if( n < MAX_GAP_DIRS ) {
-            strlcpy( SyGapRootPaths[n], SyGapRootPaths[n-1], sizeof(SyGapRootPaths[n]) );
-        }
-        strxcat( SyGapRootPaths[n-1], "hpcgap/", sizeof(SyGapRootPaths[n-1]) );
-        n++;
-#endif
-    }
-}
-
-/****************************************************************************
-**
 *F  SySetInitialGapRootPaths( <string> )  . . . . .  set the root directories
 **
 **  Set up GAP's initial root paths, based on the location of the
@@ -580,6 +456,7 @@ static void SySetInitialGapRootPaths(void)
     // Note that GAPExecLocation must always end with a slash.
     SySetGapRootPath("./");
 }
+
 
 /****************************************************************************
 **
@@ -980,22 +857,6 @@ void InitSystem (
           SySetGapRootPath(DotGapPath);
         }
         DotGapPath[strlen(DotGapPath)-1] = '\0';
-        
-        /* and in this case we can also expand paths which start
-           with a tilde ~ */
-        Char userhome[GAP_PATH_MAX];
-        strxcpy(userhome, getenv("HOME"), sizeof(userhome));
-        const UInt userhomelen = strlen(userhome);
-        for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
-            const UInt pathlen = strlen(SyGapRootPaths[i]);
-            if (SyGapRootPaths[i][0] == '~' &&
-                userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
-                SyMemmove(SyGapRootPaths[i] + userhomelen,
-                        /* don't copy the ~ but the trailing '\0' */
-                        SyGapRootPaths[i] + 1, pathlen);
-                memcpy(SyGapRootPaths[i], userhome, userhomelen);
-          }
-        }
     }
 
 
