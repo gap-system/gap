@@ -68,12 +68,6 @@ void ErrorMayQuitNrArgs(Int narg, Int actual) NORETURN;
 */
 void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN;
 
-/****************************************************************************
-**
-*F  ErrorQuitRange3( <first>, <second>, <last> ) . . .divisibility rules
-*/
-void ErrorQuitRange3(Obj first, Obj second, Obj last) NORETURN;
-
 
 /****************************************************************************
 **
