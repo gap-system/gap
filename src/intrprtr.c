@@ -93,13 +93,15 @@
 //
 // IgnoreLevel gives the highest value of IntrIgnoring which means this
 // statement is NOT ignored (this is usually, but not always, 0)
-#define INTERPRETER_PROFILE_HOOK(ignoreLevel)                                \
-    if (!STATE(IntrCoding)) {                                                \
-        InterpreterHook(GetInputFilenameID(), STATE(InterpreterStartLine),   \
-                        STATE(IntrReturning) ||                              \
-                            (STATE(IntrIgnoring) > ignoreLevel));            \
-    }                                                                        \
+static void INTERPRETER_PROFILE_HOOK(int ignoreLevel)
+{
+    if (!STATE(IntrCoding)) {
+        InterpreterHook(GetInputFilenameID(), STATE(InterpreterStartLine),
+                        STATE(IntrReturning) ||
+                            (STATE(IntrIgnoring) > ignoreLevel));
+    }
     STATE(InterpreterStartLine) = 0;
+}
 
 
 // Put the profiling hook into SKIP_IF_RETURNING, as this is run in
