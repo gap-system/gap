@@ -7,11 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  The  files  "system.c" and  "sysfiles.c"   contain  all operating  system
-**  dependent functions.  File and  stream operations are implemented in this
-**  files, all the other system dependent functions in "system.c".  There are
-**  various  labels determine which operating  system is  actually used, they
-**  are described in "system.c".
+**  This file implements operating system dependent functions dealing with
+**  file and stream operations.
 */
 
 #include "sysfiles.h"
