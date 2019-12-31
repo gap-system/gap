@@ -1815,7 +1815,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(READ_STRING_FILE, fid),
     GVAR_FUNC_1ARGS(FD_OF_FILE, fid),
 #ifdef HPCGAP
-    GVAR_FUNC_2ARGS(RAW_MODE_FILE, fid, bool),
+    GVAR_FUNC_2ARGS(RAW_MODE_FILE, fid, onoff),
 #endif
 #ifdef HAVE_SELECT
     GVAR_FUNC_5ARGS(

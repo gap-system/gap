@@ -81,19 +81,19 @@ static Obj TypeBool(Obj val)
 
 /****************************************************************************
 **
-*F  PrintBool( <bool> ) . . . . . . . . . . . . . . . . print a boolean value
+*F  PrintBool( <val> ) . . . . . . . . . . . . . . . .  print a boolean value
 **
-**  'PrintBool' prints the boolean value <bool>.
+**  'PrintBool' prints the boolean value <val>.
 */
-static void PrintBool(Obj bool)
+static void PrintBool(Obj val)
 {
-    if ( bool == True ) {
+    if (val == True) {
         Pr("true", 0, 0);
     }
-    else if ( bool == False ) {
+    else if (val == False) {
         Pr("false", 0, 0);
     }
-    else if ( bool == Fail ) {
+    else if (val == Fail) {
         Pr("fail", 0, 0);
     }
     else {
