@@ -11,7 +11,7 @@
 #ifndef GAP_REGION_H
 #define GAP_REGION_H
 
-#include "system.h"
+#include "common.h"
 
 #ifndef HPCGAP
 #error This header is only meant to be used with HPC-GAP

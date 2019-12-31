@@ -15,7 +15,7 @@
 #ifndef GAP_MODULES_H
 #define GAP_MODULES_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

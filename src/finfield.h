@@ -52,6 +52,7 @@
 #ifndef GAP_FINFIELD_H
 #define GAP_FINFIELD_H
 
+#include "common.h"
 #include "ffdata.h"
 #include "objects.h"
 

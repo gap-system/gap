@@ -14,7 +14,7 @@
 #ifndef GAP_LISTOPER_H
 #define GAP_LISTOPER_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

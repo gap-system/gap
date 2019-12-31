@@ -14,7 +14,7 @@
 #ifndef GAP_OBJCFTL_H
 #define GAP_OBJCFTL_H
 
-#include "system.h"
+#include "common.h"
 
 #define PC_NUMBER_OF_GENERATORS      1
 #define PC_GENERATORS                2

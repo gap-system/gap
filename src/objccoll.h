@@ -11,7 +11,7 @@
 #ifndef GAP_OBJCCOLL_H
 #define GAP_OBJCCOLL_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

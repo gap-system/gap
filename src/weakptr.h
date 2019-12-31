@@ -20,7 +20,7 @@
 #ifndef GAP_WEAKPTR_H
 #define GAP_WEAKPTR_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

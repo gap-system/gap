@@ -13,7 +13,7 @@
 #ifndef GAP_COMPILER_H
 #define GAP_COMPILER_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

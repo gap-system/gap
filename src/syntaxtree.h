@@ -11,7 +11,7 @@
 #ifndef GAP_SYNTAXTREE_H
 #define GAP_SYNTAXTREE_H
 
-#include "system.h"
+#include "common.h"
 
 StructInitInfo * InitInfoSyntaxTree(void);
 

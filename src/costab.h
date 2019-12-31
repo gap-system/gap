@@ -13,7 +13,7 @@
 #ifndef GAP_COSTAB_H
 #define GAP_COSTAB_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

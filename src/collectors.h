@@ -11,7 +11,7 @@
 #ifndef GAP_COLLECTORS_H
 #define GAP_COLLECTORS_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

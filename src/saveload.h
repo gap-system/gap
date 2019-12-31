@@ -15,7 +15,7 @@
 #ifndef GAP_SAVELOAD_H
 #define GAP_SAVELOAD_H
 
-#include "system.h"
+#include "common.h"
 
 /***************************************************************************
 **

@@ -36,7 +36,7 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
-#include "system.h"
+#include "common.h"
 
 
 /****************************************************************************

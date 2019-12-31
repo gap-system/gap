@@ -20,7 +20,7 @@
 #ifndef GAP_VECTOR_H
 #define GAP_VECTOR_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

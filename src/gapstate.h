@@ -15,8 +15,6 @@
 #ifndef GAP_GAPSTATE_H
 #define GAP_GAPSTATE_H
 
-#include "system.h"
-
 #include "sysjmp.h"
 
 #if defined(HPCGAP)

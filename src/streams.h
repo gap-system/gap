@@ -14,7 +14,7 @@
 #ifndef GAP_STREAMS_H
 #define GAP_STREAMS_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

@@ -17,7 +17,7 @@
 #define GAP_EXPRS_H
 
 #include "code.h"
-#include "system.h"
+#include "common.h"
 #include "vars.h"
 
 /****************************************************************************

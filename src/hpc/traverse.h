@@ -11,7 +11,7 @@
 #ifndef GAP_TRAVERSE_H
 #define GAP_TRAVERSE_H
 
-#include "system.h"
+#include "common.h"
 
 typedef struct TraversalState TraversalState;
 

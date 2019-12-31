@@ -17,7 +17,7 @@
 #ifndef GAP_SET_H
 #define GAP_SET_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

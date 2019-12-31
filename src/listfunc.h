@@ -13,7 +13,7 @@
 #ifndef GAP_LISTFUNC_H
 #define GAP_LISTFUNC_H
 
-#include "system.h"
+#include "common.h"
 
 /****************************************************************************
 **

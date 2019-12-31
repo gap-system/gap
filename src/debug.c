@@ -14,7 +14,7 @@
 // libgap as a shared library
 #define EXPORT_INLINE extern inline
 
-#include "system.h"
+#include "common.h"
 
 #include "calls.h"
 #include "fibhash.h"

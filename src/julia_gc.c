@@ -16,6 +16,7 @@
 
 #include "julia_gc.h"
 
+#include "common.h"
 #include "fibhash.h"
 #include "funcs.h"
 #include "gap.h"
@@ -24,7 +25,6 @@
 #include "objects.h"
 #include "plist.h"
 #include "sysmem.h"
-#include "system.h"
 #include "vars.h"
 
 #include <stdio.h>
