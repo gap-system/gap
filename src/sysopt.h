@@ -110,7 +110,12 @@ extern Int SyDebugLoading;
 */
 enum { MAX_GAP_DIRS = 16 };
 extern Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-extern Char DotGapPath[GAP_PATH_MAX];
+
+/****************************************************************************
+**
+*F  SyDotGapPath()
+*/
+const Char * SyDotGapPath(void);
 
 /****************************************************************************
 **

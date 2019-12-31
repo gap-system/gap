@@ -125,7 +125,14 @@ Int SyDebugLoading;
 **
 */
 Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-Char DotGapPath[GAP_PATH_MAX];
+
+
+/****************************************************************************
+**
+*V  DotGapPath
+*/
+static Char DotGapPath[GAP_PATH_MAX];
+
 
 /****************************************************************************
 **
@@ -426,6 +433,16 @@ static void SetupGAPLocation(const char * argv0)
         GAPExecLocation[length] = 0;
         length--;
     }
+}
+
+
+/****************************************************************************
+**
+*F  SyDotGapPath()
+*/
+const Char * SyDotGapPath(void)
+{
+    return DotGapPath;
 }
 
 
