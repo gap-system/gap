@@ -118,16 +118,13 @@ static void SAVE_BYTE_BUF(void)
 #define SAVE_BYTE(byte) {if (LBPointer >= LBEnd) {SAVE_BYTE_BUF();} \
                           *LBPointer++ = (UInt1)(byte);}
 
-static const Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
-
 static UInt1 LOAD_BYTE_BUF(void)
 {
   Int ret;
   ret = SyRead(LoadFile, LoadBuffer, 100000);
   if (ret <= 0)
     {
-      Pr(LoadByteErrorMessage, 0, 0);
-      SyExit(2);
+      Panic("Unexpected End of File in Load");
     }
   LBEnd = LoadBuffer + ret;
   LBPointer = LoadBuffer;
@@ -647,18 +644,15 @@ void LoadWorkspace( Char * fname )
 
   LoadCStr(buf,256);
   if (strncmp (buf, "GAP ", 4) != 0) {
-     Pr("File %s does not appear to be a GAP workspae.\n", (long) fname, 0);
-     SyExit(1);
+     Panic("File %s does not appear to be a GAP workspace", fname);
   }
 
   if (strcmp (buf, "GAP workspace") == 0) {
 
      LoadCStr(buf,256);
      if (strcmp(buf, GetKernelDescription()) != 0) {
-         Pr("This workspace is not compatible with GAP kernel (%s, present: "
-            "%s).\n",
-            (long)buf, (long)GetKernelDescription());
-         SyExit(1);
+         Panic("This workspace is not compatible with GAP kernel (%s, present: "
+            "%s)", buf, GetKernelDescription());
      }
 
      LoadCStr(buf,256);
@@ -668,12 +662,10 @@ void LoadWorkspace( Char * fname )
      if (strcmp(buf,"32 bit") != 0)
 #endif
         {
-           Pr("This workspace was created by a %s version of GAP.\n", (long)buf, 0);
-           SyExit(1);
+           Panic("This workspace was created by a %s version of GAP", buf);
         }
   } else {
-     Pr("File %s probably isn't a GAP workspace.\n", (long)fname, 0);
-     SyExit(1);
+     Panic("File %s probably isn't a GAP workspace", fname);
   } 
   
   CheckEndiannessMarker();

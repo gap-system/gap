@@ -860,9 +860,8 @@ void LoadModules(void)
                     }
                 }
                 if (CompInitFuncs[k] == 0) {
-                    Pr("Static module %s not found in loading kernel\n",
-                       (Int)buf, 0);
-                    SyExit(1);
+                    Panic("Static module %s not found in loading kernel",
+                          buf);
                 }
             }
             else {

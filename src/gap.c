@@ -416,7 +416,7 @@ int realmain( int argc, char * argv[] )
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
       if ( ! OpenInput(SyCompileInput) ) {
-        SyExit(1);
+        return 1;
       }
       func = READ_AS_FUNC();
       crc  = SyGAPCRC(SyCompileInput);
@@ -426,13 +426,10 @@ int realmain( int argc, char * argv[] )
                          MakeImmString(SyCompileName),
                          crc,
                          MakeImmString(SyCompileMagic1) );
-      if ( type == 0 )
-        SyExit( 1 );
-      SyExit( 0 );
+      return ( type == 0 ) ? 1 : 0;
     }
   }
-  SyExit(SystemErrorCode);
-  return 0;
+  return SystemErrorCode;
 }
 
 #if !defined(COMPILECYGWINDLL)
