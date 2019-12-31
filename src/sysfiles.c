@@ -15,7 +15,6 @@
 
 #include "bool.h"
 #include "calls.h"
-#include "compstat.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gaputils.h"
@@ -166,59 +165,6 @@ static ssize_t echoandcheck(int fid, const char *buf, size_t count)
       }
   }
   return ret;
-}
-
-
-/****************************************************************************
-**
-*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-*F  SyFindOrLinkGapRootFile( <filename>, <result> ) . . . . . .  load or link
-**
-**  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
-**  check if there is a corresponding statically linked module. If the CRC
-**  matches the statically linked module is loaded, and <result->module_info>
-**  is set to point to its StructInitInfo instance.
-**
-**  The function returns:
-**
-**  0: no file or module was found
-**  2: a statically linked module was found
-**  3: only a GAP file was found; its path is stored in  <result->path>
-*/
-Int SyFindOrLinkGapRootFile(const Char * filename, TypGRF_Data * result)
-{
-    // find the GAP file
-    Int found_gap =
-        SyFindGapRootFile(filename, result->path, sizeof(result->path)) != 0;
-
-    if (SyUseModule) {
-        // search for a statically linked module matching the given filename
-        Char module[GAP_PATH_MAX];
-        strxcpy(module, "GAPROOT/", sizeof(module));
-        strxcat(module, filename, sizeof(module));
-        for (Int k = 0; CompInitFuncs[k]; k++) {
-            StructInitInfo * info = (*(CompInitFuncs[k]))();
-            if (info && !strcmp(module, info->name)) {
-                // found a matching statically linked module; if there is also
-                // a GAP file, compare their CRC
-                if (found_gap && info->crc != SyGAPCRC(result->path)) {
-                    Pr("#W Static module %s has CRC mismatch, ignoring\n",
-                       (Int)filename, 0);
-                    break;
-                }
-
-                result->module_info = info;
-                return 2;
-            }
-        }
-    }
-
-    return found_gap ? 3 : 0;
 }
 
 
@@ -3263,29 +3209,6 @@ Obj SyIsDir ( const Char * name )
   else if (S_ISSOCK(ourlstatbuf.st_mode)) return ObjsChar['S'];
 #endif
   else return ObjsChar['?'];
-}
-
-/****************************************************************************
-**
-*F  SyFindGapRootFile( <filename>,<buffer> ) . .  find file in system area
-*/
-Char * SyFindGapRootFile ( const Char * filename, Char * buffer, size_t bufferSize )
-{
-    Int k;
-
-    for ( k = 0; k < ARRAY_SIZE(SyGapRootPaths); k++ ) {
-        if ( SyGapRootPaths[k][0] ) {
-            if (strlcpy( buffer, SyGapRootPaths[k], bufferSize ) >= bufferSize)
-                continue;
-            if (strlcat( buffer, filename, bufferSize ) >= bufferSize)
-                continue;
-            if ( SyIsReadableFile(buffer) == 0 ) {
-                return buffer;
-            }
-        }
-    }
-    buffer[0] = '\0';
-    return 0;
 }
 
 

@@ -39,6 +39,7 @@
 #include "sysfiles.h"
 #include "sysmem.h"
 #include "sysopt.h"
+#include "sysroots.h"
 #include "sysstr.h"
 #include "systime.h"
 #include "vars.h"
@@ -1204,18 +1205,7 @@ static Obj FuncKERNEL_INFO(Obj self)
     AssPRec(res, RNamName("KERNEL_API_VERSION"), INTOBJ_INT(GAP_KERNEL_API_VERSION));
     AssPRec(res, RNamName("BUILD_VERSION"), MakeImmString(SyBuildVersion));
     AssPRec(res, RNamName("BUILD_DATETIME"), MakeImmString(SyBuildDateTime));
-
-    // TODO: GAP_ROOT_PATHS, do we need this? Could we rebuild it from the
-    // command line in GAP? If so, should we?
-    tmp = NEW_PLIST_IMM(T_PLIST, MAX_GAP_DIRS);
-    for (i = 0; i < MAX_GAP_DIRS; i++) {
-        if (SyGapRootPaths[i][0]) {
-            PushPlist(tmp, MakeImmString(SyGapRootPaths[i]));
-        }
-    }
-    MakeImmutableNoRecurse(tmp);
-    AssPRec(res, RNamName("GAP_ROOT_PATHS"), tmp);
-
+    AssPRec(res, RNamName("GAP_ROOT_PATHS"), SyGetGapRootPaths());
     AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(SyDotGapPath()));
 
     // make command line available to GAP level

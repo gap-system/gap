@@ -70,30 +70,6 @@ extern Int SyDebugLoading;
 
 /****************************************************************************
 **
-*V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
-**
-**  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
-**  files are located.
-**
-**  It is modified by the command line option -l.
-**
-**  It is copied into the GAP variable 'GAPInfo.RootPaths' and used by
-**  'SyFindGapRootFile'.
-**
-**  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
-**  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
-**  be a valid filename.
-**
-**  In addition we store the path to the users ~/.gap directory, if available,
-**  in 'DotGapPath'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-enum { MAX_GAP_DIRS = 16 };
-extern Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
-
-/****************************************************************************
-**
 *F  SyDotGapPath()
 */
 const Char * SyDotGapPath(void);

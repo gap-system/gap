@@ -16,35 +16,6 @@
 
 #include "system.h"
 
-/****************************************************************************
-**
-*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-*F  SyFindOrLinkGapRootFile( <filename>, <result> ) . . . . . .  load or link
-**
-**  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
-**  check if there is a corresponding statically linked module. If the CRC
-**  matches the statically linked module is loaded, and <result->module_info>
-**  is set to point to its StructInitInfo instance.
-**
-**  The function returns:
-**
-**  0: no file or module was found
-**  2: a statically linked module was found
-**  3: only a GAP file was found; its path is stored in  <result->path>
-*/
-
-typedef union {
-    Char             path[GAP_PATH_MAX];
-    StructInitInfo * module_info;
-} TypGRF_Data;
-
-Int SyFindOrLinkGapRootFile(const Char * filename, TypGRF_Data * result);
-
 
 /****************************************************************************
 **
@@ -440,16 +411,6 @@ Int SyRmdir(const Char * name);
 **  device 'P' for a FIFO (named pipe) and 'S' for a socket.
 */
 Obj SyIsDir(const Char * name);
-
-/****************************************************************************
-**
-*F  SyFindGapRootFile( <filename>, <buffer>, <bufferSize> ) . . .  find file in system area
-**
-**  <buffer> must point to a buffer of at least <bufferSize> characters.
-**  The returned pointer will either be NULL, or <buffer>
-*/
-Char *
-SyFindGapRootFile(const Char * filename, Char * buffer, size_t bufferSize);
 
 
 /****************************************************************************
