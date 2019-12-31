@@ -79,37 +79,17 @@ UInt SyCTRD;
 
 /****************************************************************************
 **
+*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
+*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
 *V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
-*/
-Char SyCompileInput[GAP_PATH_MAX];
-
-
-/****************************************************************************
-**
+*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 *V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
 */
-Char * SyCompileMagic1;
-
-
-/****************************************************************************
-**
-*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
-*/
-Char SyCompileName[256];
-
-
-/****************************************************************************
-**
-*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
-*/
-Char SyCompileOutput[GAP_PATH_MAX];
-
-
-/****************************************************************************
-**
-*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
-*/
 Int SyCompilePlease;
+Char * SyCompileOutput;
+Char * SyCompileInput;
+Char * SyCompileName;
+Char * SyCompileMagic1;
 
 
 /****************************************************************************
@@ -717,12 +697,12 @@ static Int storeMemory2( Char **argv, void *Where )
 
 static Int processCompilerArgs( Char **argv, void * dummy)
 {
-  SyCompilePlease = 1;
-  strxcat( SyCompileOutput, argv[0], sizeof(SyCompileOutput) );
-  strxcat( SyCompileInput, argv[1], sizeof(SyCompileInput) );
-  strxcat( SyCompileName, argv[2], sizeof(SyCompileName) );
-  SyCompileMagic1 = argv[3];
-  return 4;
+    SyCompilePlease = 1;
+    SyCompileOutput = argv[0];
+    SyCompileInput = argv[1];
+    SyCompileName = argv[2];
+    SyCompileMagic1 = argv[3];
+    return 4;
 }
 
 static Int unsetString( Char **argv, void *Where)
