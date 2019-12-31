@@ -88,10 +88,10 @@ struct init_info {
     /* name of the module: filename with ".c" or library filename          */
     const Char * name;
 
-    /* revision entry of c file for MODULE_BUILTIN                         */
+    // revision_c is obsolete and only kept for backwards compatibility
     const Char * revision_c;
 
-    /* revision entry of h file for MODULE_BUILTIN                         */
+    // revision_h is obsolete and only kept for backwards compatibility
     const Char * revision_h;
 
     /* version number for MODULE_BUILTIN                                   */

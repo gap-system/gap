@@ -9,7 +9,6 @@
 **
 **  This file declares functions and variables related to command line
 **  settable options.
-**
 */
 
 #ifndef GAP_SYSOPT_H

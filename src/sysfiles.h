@@ -7,8 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  The  file 'system.c'  declares  all operating system  dependent functions
-**  except file/stream handling which is done in "sysfiles.h".
+**  This file declares operating system dependent functions dealing with file
+**  and stream operations.
 */
 
 #ifndef GAP_SYSFILES_H
@@ -139,7 +139,7 @@ void SyBufSetEOF(Int fid);
 **
 **  If it is necessary to adjust the  filename  this  should  be  done  here.
 **  Right now GAP does not read nonascii files, but if this changes sometimes
-**  'SyFopen' must adjust the mode argument to open the file in binary  mode.
+**  'SyFopen' must adjust the mode argument to open the file in binary mode.
 */
 Int SyFopen(const Char * name, const Char * mode);
 
