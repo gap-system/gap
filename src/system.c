@@ -951,8 +951,6 @@ void InitSystem (
 
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
-      /*         SyLineEdit   = 1;
-                 SyCTRD       = 1; */
         SyRedirectStderrToStdOut();
         syWinPut( 0, "@p", "1." );
     }
@@ -961,12 +959,6 @@ void InitSystem (
     if ( SyCompilePlease || SyRestoring ) {
         SyLoadSystemInitFile = 0;
     }
-
-    /* the compiler will *not* read in the .gaprc file                     
-    if ( gaprc && ! ( SyCompilePlease || SyRestoring ) ) {
-        sySetGapRCFile();
-    }
-    */
 
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {

@@ -461,18 +461,6 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
         narg, actual);
 }
 
-/****************************************************************************
-**
-*F  ErrorQuitRange3( <first>, <second>, <last> ) . . divisibility
-*/
-void ErrorQuitRange3(Obj first, Obj second, Obj last)
-{
-    ErrorQuit("Range expression <last>-<first> must be divisible by "
-              "<second>-<first>, not %d %d",
-              INT_INTOBJ(last) - INT_INTOBJ(first),
-              INT_INTOBJ(second) - INT_INTOBJ(first));
-}
-
 
 /****************************************************************************
 **
