@@ -2731,20 +2731,24 @@ struct SavedReaderState {
   UInt                userHasQuit;
   syJmp_buf           readJmpError;
   UInt                nrError;
+  Bag                 oldLvars;
 };
 
 static void SaveReaderState(struct SavedReaderState *s) {
   s->userHasQuit = STATE(UserHasQuit);
   s->nrError = STATE(NrError);
+  s->oldLvars = STATE(CurrLVars);
   memcpy( s->readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
 }
 
 static void ClearReaderState(void ) {
   STATE(UserHasQuit) = 0;
   STATE(NrError) = 0;
+  SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 }
 
 static void RestoreReaderState(const struct SavedReaderState *s) {
+  SWITCH_TO_OLD_LVARS(s->oldLvars);
   memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
   STATE(UserHasQuit) = s->userHasQuit;
   STATE(NrError) = s->nrError;
@@ -2758,35 +2762,29 @@ static void RestoreReaderState(const struct SavedReaderState *s) {
 **  The current reader context is saved and a new one is started.
 */
 Obj Call0ArgsInNewReader(Obj f)
-
 {
   struct SavedReaderState s;
-  IntrState intr = { 0, 0, 0, 0 };
   Obj result;
 
-  /* remember the old reader context                                     */
+  // remember the old state
   SaveReaderState(&s);
 
-  // initialize everything and begin an interpreter
+  // initialize everything
   ClearReaderState();
-  IntrBegin(&intr,  STATE(BottomLVars) );
 
   TRY_IF_NO_ERROR {
     result = CALL_0ARGS(f);
-    PushVoidObj(&intr);
-    /* end the interpreter                                                 */
-    IntrEnd(&intr, 0, NULL);
   }
   CATCH_ERROR {
     result = 0;
-    IntrEnd(&intr, 1, NULL);
     ClearError();
   }
 
-  /* switch back to the old reader context                               */
+  // switch back to the old state
   RestoreReaderState(&s);
   return result;
 }
+
 
 /****************************************************************************
 **
@@ -2794,34 +2792,26 @@ Obj Call0ArgsInNewReader(Obj f)
 **
 **  The current reader context is saved and a new one is started.
 */
-Obj Call1ArgsInNewReader(Obj f,Obj a)
-
+Obj Call1ArgsInNewReader(Obj f, Obj a)
 {
   struct SavedReaderState s;
-  IntrState intr = { 0, 0, 0, 0 };
   Obj result;
 
-  /* remember the old reader context                                     */
-
+  // remember the old state
   SaveReaderState(&s);
 
-  // initialize everything and begin an interpreter
+  // initialize everything
   ClearReaderState();
-  IntrBegin(&intr, STATE(BottomLVars) );
 
   TRY_IF_NO_ERROR {
     result = CALL_1ARGS(f,a);
-    PushVoidObj(&intr);
-    /* end the interpreter                                                 */
-    IntrEnd(&intr, 0, NULL);
   }
   CATCH_ERROR {
     result = 0;
-    IntrEnd(&intr, 1, NULL);
     ClearError();
   }
 
-  /* switch back to the old reader context                               */
+  // switch back to the old state
   RestoreReaderState(&s);
   return result;
 }

@@ -35,6 +35,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "vars.h"
 
 #ifdef HAVE_DLOPEN
 #include <dlfcn.h>
@@ -155,9 +156,10 @@ Int ActivateModule(StructInitInfo * info)
         if (info->initLibrary) {
             // Start a new executor to run the outer function of the module in
             // global context
-            ExecBegin(STATE(BottomLVars));
+            Bag oldLvars = STATE(CurrLVars);
+            SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
             res = res || info->initLibrary(info);
-            ExecEnd(res);
+            SWITCH_TO_OLD_LVARS(oldLvars);
         }
     }
 

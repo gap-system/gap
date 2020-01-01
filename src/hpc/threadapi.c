@@ -19,7 +19,6 @@
 #include "funcs.h"
 #include "gapstate.h"
 #include "gvars.h"
-#include "intrprtr.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -31,6 +30,7 @@
 #include "set.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "vars.h"
 
 #include "hpc/guards.h"
 #include "hpc/misc.h"
@@ -432,15 +432,15 @@ static GVarDescriptor GVarTHREAD_EXIT;
 
 static void ThreadedInterpreter(void * funcargs)
 {
-    IntrState intr = { 0, 0, 0, 0 };
-    Obj tmp, func;
+    Obj tmp, func, oldLVars;
     int i;
 
-    /* initialize everything and begin an interpreter                       */
+    // initialize everything and begin a fresh execution context
     STATE(NrError) = 0;
     STATE(ThrownObject) = 0;
+    oldLVars = STATE(CurrLVars);
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 
-    IntrBegin(&intr, STATE(BottomLVars));
     tmp = KEPTALIVE(funcargs);
     StopKeepAlive(funcargs);
     func = ELM_PLIST(tmp, 1);
@@ -462,15 +462,12 @@ static void ThreadedInterpreter(void * funcargs)
         exit = GVarOptFunction(&GVarTHREAD_EXIT);
         if (exit)
             CALL_0ARGS(exit);
-        PushVoidObj(&intr);
-        /* end the interpreter */
-        IntrEnd(&intr, 0, NULL);
     }
     CATCH_ERROR
     {
-        IntrEnd(&intr, 1, NULL);
         ClearError();
     }
+    SWITCH_TO_OLD_LVARS(oldLVars);
 }
 
 

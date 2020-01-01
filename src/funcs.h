@@ -27,16 +27,6 @@
 */
 Obj MakeFunction(Obj fexp);
 
-/****************************************************************************
-**
-*F  ExecBegin( <frame> ) . . . . . . . .  begin an execution in context frame
-**  if in doubt, pass STATE(BottomLVars) as <frame>
-**
-*F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
-*/
-void ExecBegin(Obj frame);
-void ExecEnd(UInt error);
-
 
 /****************************************************************************
 **

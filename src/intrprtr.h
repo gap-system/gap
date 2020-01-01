@@ -39,13 +39,18 @@ struct IntrState {
     // directly interpret, such as loops or function bodies.
     UInt coding;
 
-    // If 'IntrReturning' is non-zero, the interpreter is currently exiting
+    // If 'returning' is non-zero, the interpreter is currently exiting
     // statements enclosing a return statement. Actions from these statements
     // are ignored.
     ExecStatus returning;
 
     // 'StackObj' is the stack of values.
     Obj StackObj;
+
+    // 'IntrBegin' stores in 'oldLVars' the previous value of
+    // 'STATE(CurrLVars)', and 'IntrEnd' restores it from there by calling
+    // 'SWITCH_TO_OLD_LVARS'.
+    Bag oldLVars;
 };
 
 typedef struct IntrState IntrState;
@@ -878,13 +883,6 @@ void IntrAssertEnd3Args(IntrState * intr);
 *F  IntrContinue() . . . . . . . . . . . . . . . interpret continue-statement
 */
 void IntrContinue(IntrState * intr);
-
-
-/****************************************************************************
-**
-*F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
-*/
-void PushVoidObj(IntrState * intr);
 
 
 /****************************************************************************
