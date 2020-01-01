@@ -43,7 +43,6 @@ static ModuleStateOffset FuncsStateOffset = -1;
 
 struct FuncsModuleState {
     Int RecursionDepth;
-    Obj ExecState;
 };
 
 extern inline struct FuncsModuleState *FuncsState(void)
@@ -766,28 +765,6 @@ static void PrintFunccallOpts(Expr call)
     Pr(" %4<)", 0, 0);
 }
 
-  
-
-/****************************************************************************
-**
-*F  ExecBegin() . . . . . . . . . . . . . . . . . . . . .  begin an execution
-*F  ExecEnd(<error>)  . . . . . . . . . . . . . . . . . . .  end an execution
-*/
-
-void ExecBegin(Obj frame)
-{
-    // remember the old execution state
-    PushPlist(FuncsState()->ExecState, STATE(CurrLVars));
-
-    // set up new state
-    SWITCH_TO_OLD_LVARS( frame );
-}
-
-void ExecEnd(UInt error)
-{
-    // switch back to the old state
-    SWITCH_TO_OLD_LVARS(PopPlist(FuncsState()->ExecState));
-}
 
 /****************************************************************************
 **
@@ -850,9 +827,6 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     RecursionTrapInterval = 5000;
-
-    /* make the global variable known to Gasman                            */
-    InitGlobalBag( &FuncsState()->ExecState, "src/funcs.c:ExecState" );
 
     /* Register the handler for our exported function                      */
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -920,7 +894,6 @@ static Int InitKernel (
 
 static Int InitModuleState(void)
 {
-    FuncsState()->ExecState = NEW_PLIST(T_PLIST_EMPTY, 16);
     FuncsState()->RecursionDepth = 0;
 
     return 0;

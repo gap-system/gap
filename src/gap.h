@@ -51,8 +51,8 @@ void ViewObjHandler(Obj obj);
 **                      subroutines, explaining why evaluation, or execution
 **                      has terminated.
 **
-**  Values are powers of two, although I do not currently know of any
-**  cirumstances where they can get combined
+**  Values are powers of two; this is used to test a given status for
+**  multiple possible values simultaneously.
 */
 
 typedef UInt ExecStatus;

@@ -128,7 +128,7 @@ static void PushFunctionVoidReturn(IntrState * intr)
     PushPlist(intr->StackObj, (Obj)&VoidReturnMarker);
 }
 
-void PushVoidObj(IntrState * intr)
+static void PushVoidObj(IntrState * intr)
 {
     PushPlist(intr->StackObj, 0);
 }
@@ -247,23 +247,25 @@ void IntrBegin(IntrState * intr, Obj frame)
     /* no return-statement was yet interpreted                             */
     intr->returning = 0;
 
-    /* start an execution environment                                      */
-    ExecBegin(frame);
+    // remember the old execution state
+    intr->oldLVars = STATE(CurrLVars);
+
+    // start an execution environment
+    SWITCH_TO_OLD_LVARS(frame);
 }
 
 ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
 {
     UInt                intrReturning;  /* interpreted return-statement?   */
 
+    // restore the execution environment
+    SWITCH_TO_OLD_LVARS(intr->oldLVars);
+
     /* if everything went fine                                             */
     if ( ! error ) {
 
-        /* leave the execution environment                                 */
-        ExecEnd(0);
-
         /* remember whether the interpreter interpreted a return-statement */
         intrReturning = intr->returning;
-        intr->returning = 0;
 
         /* must be back in immediate (non-ignoring, non-coding) mode       */
         GAP_ASSERT(intr->ignoring == 0);
@@ -278,9 +280,6 @@ ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
     /* otherwise clean up the mess                                         */
     else {
 
-        /* leave the execution environment                                 */
-        ExecEnd(1);
-
         /* clean up the coder too                                          */
         if (intr->coding > 0) {
             CodeEnd(1);
@@ -288,11 +287,6 @@ ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
 
         /* remember that we had an error                                   */
         intrReturning = STATUS_ERROR;
-        intr->returning = 0;
-
-        /* must be back in immediate (non-ignoring, non-coding) mode       */
-        intr->ignoring = 0;
-        intr->coding = 0;
 
         /* dummy result value (probably ignored)                           */
         if (result)

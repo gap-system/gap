@@ -45,7 +45,6 @@
 #include "vars.h"
 
 #ifdef HPCGAP
-#include "intrprtr.h"
 #include "hpc/misc.h"
 #include "hpc/thread.h"
 #include "hpc/threadapi.h"
