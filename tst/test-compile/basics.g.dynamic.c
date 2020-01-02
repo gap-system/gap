@@ -1593,7 +1593,7 @@ static Obj  HdlrFunc9 (
  /* l![2 + 2] := 4; */
  C_SUM_INTOBJS( t_1, INTOBJ_INT(2), INTOBJ_INT(2) )
  CHECK_INT_SMALL_POS( t_1 );
- AssPosObj( l_l, INT_INTOBJ(t_1), INTOBJ_INT(4) );
+ AssPosObj( l_l, Int_ObjInt(t_1), INTOBJ_INT(4) );
  
  /* Display( l ); */
  t_1 = GF_Display;
@@ -1647,7 +1647,7 @@ static Obj  HdlrFunc9 (
  t_2 = MakeString( "l[4] = " );
  C_SUM_INTOBJS( t_4, INTOBJ_INT(2), INTOBJ_INT(2) )
  CHECK_INT_SMALL_POS( t_4 );
- t_3 = ElmPosObj( l_l, INT_INTOBJ(t_4) );
+ t_3 = ElmPosObj( l_l, Int_ObjInt(t_4) );
  t_4 = MakeString( "\n" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_3ARGS( t_1, t_2, t_3, t_4 );

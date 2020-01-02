@@ -720,13 +720,13 @@ static void Emit(const char * fmt, ...)
                     Pr("%d", INTG_CVAR(cvar), 0);
                 }
                 else if ( IS_TEMP_CVAR(cvar) ) {
-                    Pr("INT_INTOBJ(t_%d)", TEMP_CVAR(cvar), 0);
+                    Pr("Int_ObjInt(t_%d)", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "INT_INTOBJ(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Emit( "Int_ObjInt(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
                 }
                 else {
-                    Emit( "INT_INTOBJ(l_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Emit( "Int_ObjInt(l_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
                 }
             }
 

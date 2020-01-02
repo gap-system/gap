@@ -516,8 +516,8 @@ static Obj  HdlrFunc5 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
@@ -1036,7 +1036,7 @@ static Obj  HdlrFunc7 (
       l_i = t_1;
       
       /* if IsBound( cached![i] ) then */
-      t_4 = IsbPosObj( l_cached, INT_INTOBJ(l_i) ) ? True : False;
+      t_4 = IsbPosObj( l_cached, Int_ObjInt(l_i) ) ? True : False;
       t_3 = (Obj)(UInt)(t_4 != False);
       if ( t_3 ) {
        
@@ -1122,8 +1122,8 @@ static Obj  HdlrFunc7 (
       l_i = t_1;
       
       /* if IsBound( parent![i] ) <> IsBound( cached![i] ) then */
-      t_4 = IsbPosObj( a_parent, INT_INTOBJ(l_i) ) ? True : False;
-      t_5 = IsbPosObj( l_cached, INT_INTOBJ(l_i) ) ? True : False;
+      t_4 = IsbPosObj( a_parent, Int_ObjInt(l_i) ) ? True : False;
+      t_5 = IsbPosObj( l_cached, Int_ObjInt(l_i) ) ? True : False;
       t_3 = (Obj)(UInt)( ! EQ( t_4, t_5 ));
       if ( t_3 ) {
        
@@ -1138,19 +1138,19 @@ static Obj  HdlrFunc7 (
       /* fi */
       
       /* if IsBound( parent![i] ) and IsBound( cached![i] ) and not IS_IDENTICAL_OBJ( parent![i], cached![i] ) then */
-      t_6 = IsbPosObj( a_parent, INT_INTOBJ(l_i) ) ? True : False;
+      t_6 = IsbPosObj( a_parent, Int_ObjInt(l_i) ) ? True : False;
       t_5 = (Obj)(UInt)(t_6 != False);
       t_4 = t_5;
       if ( t_4 ) {
-       t_7 = IsbPosObj( l_cached, INT_INTOBJ(l_i) ) ? True : False;
+       t_7 = IsbPosObj( l_cached, Int_ObjInt(l_i) ) ? True : False;
        t_6 = (Obj)(UInt)(t_7 != False);
        t_4 = t_6;
       }
       t_3 = t_4;
       if ( t_3 ) {
        t_8 = GF_IS__IDENTICAL__OBJ;
-       t_9 = ElmPosObj( a_parent, INT_INTOBJ(l_i) );
-       t_10 = ElmPosObj( l_cached, INT_INTOBJ(l_i) );
+       t_9 = ElmPosObj( a_parent, Int_ObjInt(l_i) );
+       t_10 = ElmPosObj( l_cached, Int_ObjInt(l_i) );
        if ( TNUM_OBJ( t_8 ) == T_FUNCTION ) {
         t_7 = CALL_2ARGS( t_8, t_9, t_10 );
        }
@@ -1329,7 +1329,7 @@ static Obj  HdlrFunc7 (
    l_i = t_1;
    
    /* if IsBound( parent![i] ) and not IsBound( type[i] ) then */
-   t_5 = IsbPosObj( a_parent, INT_INTOBJ(l_i) ) ? True : False;
+   t_5 = IsbPosObj( a_parent, Int_ObjInt(l_i) ) ? True : False;
    t_4 = (Obj)(UInt)(t_5 != False);
    t_3 = t_4;
    if ( t_3 ) {
@@ -1341,7 +1341,7 @@ static Obj  HdlrFunc7 (
    if ( t_3 ) {
     
     /* type[i] := parent![i]; */
-    t_3 = ElmPosObj( a_parent, INT_INTOBJ(l_i) );
+    t_3 = ElmPosObj( a_parent, Int_ObjInt(l_i) );
     C_ASS_LIST_FPL( l_type, l_i, t_3 )
     
    }
@@ -1405,8 +1405,8 @@ static Obj  HdlrFunc7 (
   }
   while ( 1 ) {
    if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+    if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+    t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
     t_1 = (Obj)(((UInt)t_1)+4);
     if ( t_2 == 0 )  continue;
    }
@@ -2834,8 +2834,8 @@ static Obj  HdlrFunc20 (
   }
   while ( 1 ) {
    if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+    if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+    t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
     t_1 = (Obj)(((UInt)t_1)+4);
     if ( t_2 == 0 )  continue;
    }
@@ -3134,8 +3134,8 @@ static Obj  HdlrFunc20 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
