@@ -1587,9 +1587,11 @@ void InitializeGap (
     InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
     InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 
+#ifdef GAP_ENABLE_SAVELOAD
+    if ( SyRestoring ) {
+
 #ifdef COUNT_BAGS
-    if (SyDebugLoading) {
-        if ( SyRestoring ) {
+        if (SyDebugLoading) {
             Pr("#W  after setup\n", 0, 0);
             Pr("#W  %36s ", (Int)"type", 0);
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
@@ -1608,37 +1610,33 @@ void InitializeGap (
                 }
             }
         }
-    }
 #endif
 
-    /* if we are restoring, load the workspace and call the post restore   */
-    if ( SyRestoring ) {
+        // we are restoring, load the workspace and call the post restore
         ModulesInitModuleState();
         LoadWorkspace(SyRestoring);
         SyRestoring = NULL;
 
         /* Call POST_RESTORE which is a GAP function that now takes control, 
            calls the post restore functions and then runs a GAP session */
-        if (POST_RESTORE != (Obj) 0 &&
-            IS_FUNC(POST_RESTORE)) {
+        if (POST_RESTORE != 0 && IS_FUNC(POST_RESTORE)) {
           TRY_IF_NO_ERROR {
             CALL_0ARGS(POST_RESTORE);
           }
         }
-    }
 
+        return;
+    }
+#endif // GAP_ENABLE_SAVELOAD
 
     /* otherwise call library initialisation                               */
-    else {
 #ifdef USE_GASMAN
-        CheckAllHandlers();
+    CheckAllHandlers();
 #endif
 
-        SyInitializing = 1;
-        ModulesInitLibrary();
-        ModulesInitModuleState();
-
-    }
+    SyInitializing = 1;
+    ModulesInitLibrary();
+    ModulesInitModuleState();
 
     /* check initialisation                                                */
     ModulesCheckInit();

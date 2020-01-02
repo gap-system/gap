@@ -265,10 +265,12 @@ static Obj ReturnFail3(Obj self, Obj val1, Obj val2, Obj val3)
 **
 **  Actually, there is nothing to do
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveBool(Obj obj)
 {
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -276,10 +278,12 @@ static void SaveBool(Obj obj)
 **
 **  Actually, there is nothing to do
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadBool(Obj obj)
 {
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -349,11 +353,13 @@ static Int InitKernel (
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
     InitGlobalBag( &Undefined,  "src/bool.c:UNDEFINED"  );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install the saving functions                                       */
     SaveObjFuncs[ T_BOOL ] = SaveBool;
 
     /* install the loading functions                                       */
     LoadObjFuncs[ T_BOOL ] = LoadBool;
+#endif
 
     /* install the printer for boolean values                              */
     PrintObjFuncs[ T_BOOL ] = PrintBool;

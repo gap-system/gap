@@ -380,6 +380,7 @@ static void ResizeObjSet(Obj set, UInt bits)
   CHANGED_BAG(set);
 }
 
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveObjSet(Obj set)
 {
     UInt size = ADDR_WORD(set)[OBJSET_SIZE];
@@ -412,6 +413,8 @@ static void LoadObjSet(Obj set)
         AddObjSetNew(set, val);
     }
 }
+#endif
+
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
@@ -697,6 +700,7 @@ static void ResizeObjMap(Obj map, UInt bits)
   CHANGED_BAG(new);
 }
 
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveObjMap(Obj map)
 {
     UInt size = ADDR_WORD(map)[OBJSET_SIZE];
@@ -732,6 +736,7 @@ static void LoadObjMap(Obj map)
         AddObjMapNew(map, key, val);
     }
 }
+#endif
 
 #ifdef USE_THREADSAFE_COPYING
 #ifndef WARD_ENABLED
@@ -1119,6 +1124,7 @@ static Int InitKernel (
   SetTraversalMethod(T_OBJMAP, TRAVERSE_BY_FUNCTION, TraverseObjMap, CopyObjMap);
 #endif
 
+#ifdef GAP_ENABLE_SAVELOAD
   // Install saving functions
   SaveObjFuncs[ T_OBJSET            ] = SaveObjSet;
   SaveObjFuncs[ T_OBJSET +IMMUTABLE ] = SaveObjSet;
@@ -1129,6 +1135,7 @@ static Int InitKernel (
   LoadObjFuncs[ T_OBJSET +IMMUTABLE ] = LoadObjSet;
   LoadObjFuncs[ T_OBJMAP            ] = LoadObjMap;
   LoadObjFuncs[ T_OBJMAP +IMMUTABLE ] = LoadObjMap;
+#endif
 
   // init filters and functions
   InitHdlrFuncsFromTable( GVarFuncs );

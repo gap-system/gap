@@ -150,6 +150,7 @@ static Obj TypeBlistSSort(Obj list)
 **
 **   The saving method for the blist tnums
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveBlist(Obj bl)
 {
     UInt                i;
@@ -161,6 +162,8 @@ static void SaveBlist(Obj bl)
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         SaveUInt(*ptr++);
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -168,6 +171,7 @@ static void SaveBlist(Obj bl)
 **
 **   The loading method for the blist tnums
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadBlist(Obj bl)
 {
     UInt                i;
@@ -181,6 +185,7 @@ static void LoadBlist(Obj bl)
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
         *ptr++ = LoadUInt();
 }
+#endif
 
 
 /****************************************************************************
@@ -1910,6 +1915,7 @@ static Int InitKernel (
     InitSetFiltListTNumsFromTable  ( SetFiltTab    );
     InitResetFiltListTNumsFromTable( ResetFiltTab  );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* Install the saving functions -- cannot save while copying           */
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
         SaveObjFuncs[ t1            ] = SaveBlist;
@@ -1917,6 +1923,7 @@ static Int InitKernel (
         LoadObjFuncs[ t1            ] = LoadBlist;
         LoadObjFuncs[ t1 +IMMUTABLE ] = LoadBlist;
     }
+#endif
 
     /* install the copy functions                                          */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {

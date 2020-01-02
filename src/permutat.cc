@@ -2148,6 +2148,7 @@ Obj             OnSetsPerm (
 *F  SavePerm2( <perm2> )
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SavePerm2(Obj perm)
 {
     SaveSubObj(STOREDINV_PERM(perm));
@@ -2156,12 +2157,15 @@ static void SavePerm2(Obj perm)
     for (UInt i = 0; i < len; i++)
         SaveUInt2( *ptr++);
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  SavePerm4( <perm4> )
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SavePerm4(Obj perm)
 {
     SaveSubObj(STOREDINV_PERM(perm));
@@ -2170,12 +2174,15 @@ static void SavePerm4(Obj perm)
     for (UInt i = 0; i < len; i++)
         SaveUInt4( *ptr++);
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadPerm2( <perm2> )
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadPerm2(Obj perm)
 {
     ADDR_OBJ(perm)[0] = LoadSubObj();    // stored inverse
@@ -2184,12 +2191,15 @@ static void LoadPerm2(Obj perm)
     for (UInt i = 0; i < len; i++)
         *ptr++ = LoadUInt2();
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadPerm4( <perm4> )
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadPerm4(Obj perm)
 {
     ADDR_OBJ(perm)[0] = LoadSubObj();    // stored inverse
@@ -2198,6 +2208,7 @@ static void LoadPerm4(Obj perm)
     for (UInt i = 0; i < len; i++)
         *ptr++ = LoadUInt4( );
 }
+#endif
 
 
 /****************************************************************************
@@ -2824,11 +2835,13 @@ static Int InitKernel (
     /* make the identity permutation                                       */
     InitGlobalBag( &IdentityPerm, "src/permutat.cc:IdentityPerm" );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install the saving functions */
     SaveObjFuncs[ T_PERM2 ] = SavePerm2;
     SaveObjFuncs[ T_PERM4 ] = SavePerm4;
     LoadObjFuncs[ T_PERM2 ] = LoadPerm2;
     LoadObjFuncs[ T_PERM4 ] = LoadPerm4;
+#endif
 
     /* install the printing functions                                      */
     PrintObjFuncs[ T_PERM2   ] = PrintPerm<UInt2>;

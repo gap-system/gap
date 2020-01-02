@@ -237,6 +237,7 @@ static Obj FiltIS_INT(Obj self, Obj val)
 **
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveInt(Obj op)
 {
     const UInt * ptr = CONST_ADDR_INT(op);
@@ -244,6 +245,7 @@ static void SaveInt(Obj op)
         SaveUInt(*ptr++);
     return;
 }
+#endif
 
 
 /****************************************************************************
@@ -252,6 +254,7 @@ static void SaveInt(Obj op)
 **
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadInt(Obj op)
 {
     UInt * ptr = ADDR_INT(op);
@@ -259,6 +262,7 @@ static void LoadInt(Obj op)
         *ptr++ = LoadUInt();
     return;
 }
+#endif
 
 
 /****************************************************************************
@@ -2827,11 +2831,13 @@ static Int InitKernel ( StructInitInfo * module )
   InitMarkFuncBags( T_INTPOS, MarkNoSubBags );
   InitMarkFuncBags( T_INTNEG, MarkNoSubBags );
   
+#ifdef GAP_ENABLE_SAVELOAD
   /* Install the saving methods */
   SaveObjFuncs [ T_INTPOS ] = SaveInt;
   SaveObjFuncs [ T_INTNEG ] = SaveInt;
   LoadObjFuncs [ T_INTPOS ] = LoadInt;
   LoadObjFuncs [ T_INTNEG ] = LoadInt;
+#endif
   
   /* install the printing functions                                        */
   PrintObjFuncs[ T_INT    ] = PrintInt;

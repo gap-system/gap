@@ -602,10 +602,11 @@ Int IsInternallyMutableObj(Obj obj);
 **  size and type have already been saved.
 **  No saving function may allocate any bag.
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 extern void (*SaveObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void SaveObjError(Obj obj);
+#endif
 
 
 /****************************************************************************
@@ -622,10 +623,13 @@ void SaveObjError(Obj obj);
 **  contains the bag in question.
 **  No loading function may allocate any bag.
 */
+#ifdef GAP_ENABLE_SAVELOAD
 
 extern void (*LoadObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void LoadObjError(Obj obj);
+#endif
+
 
 /****************************************************************************
 **

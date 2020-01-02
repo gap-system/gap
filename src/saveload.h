@@ -17,6 +17,8 @@
 
 #include "common.h"
 
+#ifdef GAP_ENABLE_SAVELOAD
+
 /***************************************************************************
 **
 *F  SaveWorkspace( <fname> ) . . . . . .save the workspace to the named file
@@ -52,6 +54,8 @@ UInt  LoadUInt(void);
 UInt8 LoadUInt8(void);
 void LoadCStr(Char * buf, UInt maxlen);
 Obj  LoadSubObj(void);
+
+#endif // GAP_ENABLE_SAVELOAD
 
 
 /***************************************************************************

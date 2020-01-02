@@ -216,7 +216,9 @@ UInt SyQuitOnBreak;
 **  of a workspace to restore.
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 Char * SyRestoring;
+#endif
 
 
 /****************************************************************************
@@ -582,11 +584,13 @@ static Int processCompilerArgs( Char **argv, void * dummy)
     return 4;
 }
 
+#ifdef GAP_ENABLE_SAVELOAD
 static Int unsetString( Char **argv, void *Where)
 {
   *(Char **)Where = (Char *)0;
   return 0;
 }
+#endif
 
 static Int forceLineEditing( Char **argv,void *Level)
 {
@@ -625,9 +629,11 @@ static const struct optInfo options[] = {
   { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */
   { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, /* must handle in kernel */
   { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
+#ifdef GAP_ENABLE_SAVELOAD
   { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
-  { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
+#endif
+  { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
   { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
@@ -830,9 +836,14 @@ void InitSystem (
     }
 
     /* should GAP load 'init/lib.g' on initialization */
-    if ( SyCompilePlease || SyRestoring ) {
+    if ( SyCompilePlease ) {
         SyLoadSystemInitFile = 0;
     }
+#ifdef GAP_ENABLE_SAVELOAD
+    else if ( SyRestoring ) {
+        SyLoadSystemInitFile = 0;
+    }
+#endif
 
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {

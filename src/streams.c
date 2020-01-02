@@ -470,6 +470,7 @@ Int READ_GAP_ROOT ( const Char * filename )
     if (*path == 0)
         return 0;
 
+#ifdef GAP_ENABLE_SAVELOAD
     // special handling case if we are trying to load compiled modules needed
     // for a saved workspace
     if (SyRestoring) {
@@ -478,6 +479,7 @@ Int READ_GAP_ROOT ( const Char * filename )
            (Int)filename, 0);
         return 0;
     }
+#endif
 
     // ordinary gap file
     if (SyDebugLoading) {

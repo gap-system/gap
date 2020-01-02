@@ -738,24 +738,28 @@ static Obj FuncDENOMINATOR_RAT(Obj self, Obj rat)
 *F  SaveRat( <rat> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveRat(Obj rat)
 {
   SaveSubObj(NUM_RAT(rat));
   SaveSubObj(DEN_RAT(rat));
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadRat( <rat> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadRat(Obj rat)
 {
   SET_NUM_RAT(rat, LoadSubObj());
   SET_DEN_RAT(rat, LoadSubObj());
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -828,9 +832,11 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install a saving functions */
     SaveObjFuncs[ T_RAT ] = SaveRat;
     LoadObjFuncs[ T_RAT ] = LoadRat;
+#endif
 
     /* install the printer                                                 */
     PrintObjFuncs[ T_RAT ] = PrintRat;

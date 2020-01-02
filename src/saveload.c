@@ -33,6 +33,8 @@
 #include <unistd.h>
 
 
+#ifdef GAP_ENABLE_SAVELOAD
+
 /***************************************************************************
 **
 ** Temporary Stuff which will probably be revised to tie in with sysfiles
@@ -45,8 +47,6 @@ static UInt1 LoadBuffer[100000];
 static UInt1* LBPointer;
 static UInt1* LBEnd;
 static Obj userHomeExpand;
-
-#ifdef USE_GASMAN
 
 static Int OpenForSave( Obj fname ) 
 {
@@ -79,8 +79,6 @@ static void CloseAfterSave( void )
   SyFclose(SaveFile);
   SaveFile = -1;
 }
-
-#endif
 
 static void OpenForLoad( const Char *fname ) 
 {
@@ -121,7 +119,7 @@ static void SAVE_BYTE_BUF(void)
 static UInt1 LOAD_BYTE_BUF(void)
 {
   Int ret;
-  ret = SyRead(LoadFile, LoadBuffer, 100000);
+  ret = SyRead(LoadFile, LoadBuffer, sizeof(LoadBuffer));
   if (ret <= 0)
     {
       Panic("Unexpected End of File in Load");
@@ -233,8 +231,6 @@ void SaveCStr( const Char * str)
   } while (*(str++));
 }
 
-#include <assert.h>
-
 void LoadCStr( Char *buf, UInt maxsize)
 {
   UInt nread = 0;
@@ -285,12 +281,10 @@ void LoadString ( Obj string )
   }
 }
 
+#ifdef USE_GASMAN
+
 void SaveSubObj( Obj subobj )
 {
-#ifndef USE_GASMAN
-  // FIXME: HACK
-  assert(0);
-#else
   if (!subobj)
     SaveUInt(0);
   else if (IS_INTOBJ(subobj))
@@ -307,15 +301,10 @@ void SaveSubObj( Obj subobj )
     }
   else
     SaveUInt(((UInt)LINK_BAG(subobj)) << 2);
-#endif
 }
 
 Obj LoadSubObj( void )
 {
-#ifndef USE_GASMAN
-  // FIXME: HACK
-  assert(0);
-#else
   UInt word = LoadUInt();
   if (word == 0)
     return (Obj) 0;
@@ -323,9 +312,9 @@ Obj LoadSubObj( void )
     return (Obj) word;
   else
     return (Obj)(MptrBags + (word >> 2)-1);
-#endif
 }
 
+#endif
 
 /***************************************************************************
 **
@@ -343,9 +332,7 @@ static void SaveBagData (Bag bag )
 
   /* dispatch */
   (*(SaveObjFuncs[ header->type]))(bag);
-
 }
-
 
 
 static void LoadBagData ( void )
@@ -376,8 +363,6 @@ static void LoadBagData ( void )
 **
 */
 
-#ifdef USE_GASMAN
-
 static void WriteEndiannessMarker( void )
 {
   UInt x;
@@ -397,8 +382,6 @@ static void WriteEndiannessMarker( void )
   SAVE_BYTE(((UInt1 *)&x)[7]);
 #endif
 }
-
-#endif
 
 
 static void CheckEndiannessMarker( void )
@@ -511,6 +494,7 @@ static void RemoveSaveIndex( Bag bag)
   LINK_BAG(bag) = bag;
 }
 
+#endif
 
 static Char * GetKernelDescription(void)
 {
@@ -556,15 +540,9 @@ static void WriteSaveHeader( void )
       SaveSubObj(*(GlobalBags.addr[i]));
     }
 }
-#endif
 
 Obj SaveWorkspace( Obj fname )
 {
-#ifndef USE_GASMAN
-  Pr("SaveWorkspace is only supported when GASMAN is in use",0,0);
-  return Fail;
-
-#else
   Obj fullname;
   Obj result;
 
@@ -602,13 +580,6 @@ Obj SaveWorkspace( Obj fname )
   ModulesPostSave();
 
   return result;
-#endif
-}
-
-
-static Obj FuncSaveWorkspace(Obj self, Obj filename)
-{
-  return SaveWorkspace( filename );
 }
 
 
@@ -625,14 +596,8 @@ static Obj FuncSaveWorkspace(Obj self, Obj filename)
 **  we need to fiddle with Bag internals somewhat
 **
 */
-
-
 void LoadWorkspace( Char * fname )
 {
-#ifndef USE_GASMAN
-  Pr("LoadWorkspace is only supported when GASMAN is in use\n",0,0);
-
-#else
   UInt nGlobs, nBags, i, maxSize;
   Char buf[256];
   Obj * glob;
@@ -731,7 +696,6 @@ void LoadWorkspace( Char * fname )
   FinishedRestoringBags();
 
   CloseAfterLoad();
-#endif
 
     ModulesPostRestore();
 }
@@ -739,7 +703,7 @@ void LoadWorkspace( Char * fname )
 static void PrSavedObj( UInt x)
 {
   if ((x & 3) == 1)
-    Pr("Immediate  integer %d\n", INT_INTOBJ((Obj)x), 0);
+    Pr("Immediate integer %d\n", INT_INTOBJ((Obj)x), 0);
   else if ((x & 3) == 2)
     Pr("Immediate FFE %d %d\n", VAL_FFE((Obj)x), SIZE_FF(FLD_FFE((Obj)x)));
   else
@@ -801,6 +765,19 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   return (Obj) 0;
 }
 
+#endif // GAP_ENABLE_SAVELOAD
+
+
+static Obj FuncSaveWorkspace(Obj self, Obj filename)
+{
+#ifdef GAP_ENABLE_SAVELOAD
+    return SaveWorkspace(filename);
+#else
+    ErrorMayQuit("SaveWorkspace is only supported when GASMAN is in use", 0, 0);
+    return Fail;
+#endif
+}
+
 
 /****************************************************************************
 **
@@ -815,10 +792,12 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
 static StructGVarFunc GVarFuncs [] = {
 
     GVAR_FUNC_1ARGS(SaveWorkspace, fname),
+#ifdef GAP_ENABLE_SAVELOAD
     GVAR_FUNC_1ARGS(DumpWorkspace, fname),
 #ifdef USE_GASMAN
     GVAR_FUNC_3ARGS(FindBag, minsize, maxsize, tnum),
     GVAR_FUNC_1ARGS(BagStats, filename),
+#endif
 #endif
     { 0, 0, 0, 0, 0 }
 
@@ -832,14 +811,17 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
+#ifdef GAP_ENABLE_SAVELOAD
     SaveFile = -1;
     LBPointer = LoadBuffer;
     LBEnd = LoadBuffer;
-  
-    /* init filters and functions                                          */
-    InitHdlrFuncsFromTable( GVarFuncs );
+
     /* allow ~/... expansion in SaveWorkspace                              */ 
     ImportFuncFromLibrary("UserHomeExpand", &userHomeExpand);
+#endif
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
 }

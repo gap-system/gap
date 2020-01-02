@@ -3155,6 +3155,7 @@ void CodeAssertEnd3Args ( void )
 **  machines of different endianness, but this would mean parsing the bag as
 **  we save it which it would be nice to avoid just now.
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveBody(Obj body)
 {
   UInt i;
@@ -3166,6 +3167,8 @@ static void SaveBody(Obj body)
   for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
     SaveUInt(*ptr++);
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -3176,6 +3179,7 @@ static void SaveBody(Obj body)
 **  are currently both UInt
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadBody(Obj body)
 {
   UInt i;
@@ -3186,6 +3190,7 @@ static void LoadBody(Obj body)
   for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
     *ptr++ = LoadUInt();
 }
+#endif
 
 
 /****************************************************************************
@@ -3215,8 +3220,10 @@ static Int InitKernel (
     /* install the marking functions for function body bags                */
     InitMarkFuncBags( T_BODY, MarkFourSubBags );
 
+#ifdef GAP_ENABLE_SAVELOAD
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
+#endif
 
 #ifdef HPCGAP
     /* Allocate function bodies in the public data space */

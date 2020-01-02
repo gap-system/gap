@@ -158,27 +158,32 @@ static Int LtMacfloat(Obj macfloatL, Obj macfloatR)
 
 /****************************************************************************
 **
-*F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
+*F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . save a Macfloatean 
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveMacfloat(Obj obj)
 {
     const UInt1 *data = (const UInt1 *)CONST_ADDR_OBJ(obj);
     for (UInt i = 0; i < sizeof(Double); i++)
         SaveUInt1(data[i]);
 }
+#endif
+
 
 /****************************************************************************
 **
-*F  LoadMacfloat( <macfloat> ) . . . . . . . . . . . . . . . . . . . . save a Macfloatean 
+*F  LoadMacfloat( <macfloat> ) . . . . . . . . . . . . . . load a Macfloatean 
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadMacfloat(Obj obj)
 {
     UInt1 *data = (UInt1 *)ADDR_OBJ(obj);
     for (UInt i = 0; i < sizeof(Double); i++)
         data[i] = LoadUInt1();
 }
+#endif
 
 
 Obj NEW_MACFLOAT( Double val )
@@ -590,11 +595,13 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_MACFLOAT", &TYPE_MACFLOAT );
     TypeObjFuncs[ T_MACFLOAT ] = TypeMacfloat;
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install the saving functions                                       */
     SaveObjFuncs[ T_MACFLOAT ] = SaveMacfloat;
 
     /* install the loading functions                                       */
     LoadObjFuncs[ T_MACFLOAT ] = LoadMacfloat;
+#endif
 
     /* install the printer for macfloatean values                              */
     PrintObjFuncs[ T_MACFLOAT ] = PrintMacfloat;

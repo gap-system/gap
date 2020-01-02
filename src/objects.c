@@ -1613,7 +1613,7 @@ static Obj FuncIS_IDENTICAL_OBJ(Obj self, Obj obj1, Obj obj2)
 **  size and type have already been saved
 **  No saving function may allocate any bag
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 void (*SaveObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void SaveObjError( Obj obj )
@@ -1621,6 +1621,7 @@ void SaveObjError( Obj obj )
     ErrorQuit("Panic: tried to save an object of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
 }
+#endif
 
 
 /****************************************************************************
@@ -1637,7 +1638,7 @@ void SaveObjError( Obj obj )
 **  contains the bag in question
 **  No loading function may allocate any bag
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 void (*LoadObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
 void LoadObjError( Obj obj )
@@ -1645,13 +1646,15 @@ void LoadObjError( Obj obj )
     ErrorQuit("Panic: tried to load an object of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  SaveComObj( Obj comobj)
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveComObj(Obj comobj)
 {
   UInt len,i;
@@ -1664,13 +1667,14 @@ static void SaveComObj(Obj comobj)
       SaveSubObj(GET_ELM_PREC(comobj, i));
     }
 }
+#endif
 
 /****************************************************************************
 **
 *F  SavePosObj( Obj posobj)
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SavePosObj(Obj posobj)
 {
   UInt len,i;
@@ -1681,6 +1685,7 @@ static void SavePosObj(Obj posobj)
       SaveSubObj(CONST_ADDR_OBJ(posobj)[i]);
     }
 }
+#endif
 
 /****************************************************************************
 **
@@ -1689,7 +1694,7 @@ static void SavePosObj(Obj posobj)
 **  Here we lose endianness protection, because we don't know if this is really
 **  UInts, or if it might be smaller data
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveDatObj(Obj datobj)
 {
   UInt len,i;
@@ -1702,13 +1707,14 @@ static void SaveDatObj(Obj datobj)
       SaveUInt(*ptr++);
     }
 }
+#endif
 
 /****************************************************************************
 **
 *F  LoadComObj( Obj comobj)
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadComObj(Obj comobj)
 {
   UInt len,i;
@@ -1721,13 +1727,14 @@ static void LoadComObj(Obj comobj)
       SET_ELM_PREC(comobj, i, LoadSubObj());
     }
 }
+#endif
 
 /****************************************************************************
 **
 *F  LoadPosObj( Obj posobj)
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadPosObj(Obj posobj)
 {
   UInt len,i;
@@ -1738,6 +1745,7 @@ static void LoadPosObj(Obj posobj)
       ADDR_OBJ(posobj)[i] = LoadSubObj();
     }
 }
+#endif
 
 /****************************************************************************
 **
@@ -1746,7 +1754,7 @@ static void LoadPosObj(Obj posobj)
 **  Here we lose endianness protection, because we don't know if this is really
 **  UInts, or if it might be smaller data
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadDatObj(Obj datobj)
 {
   UInt len,i;
@@ -1759,6 +1767,7 @@ static void LoadDatObj(Obj datobj)
       *ptr ++ = LoadUInt();
     }
 }
+#endif
 
 
 /****************************************************************************
@@ -2174,6 +2183,7 @@ static Int InitKernel (
         PrintPathFuncs[ t ] = PrintPathError;
     }
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
     for ( t = FIRST_REAL_TNUM;  t <= LAST_REAL_TNUM;  t++ ) {
         assert(SaveObjFuncs[ t ] == 0);
@@ -2191,6 +2201,7 @@ static Int InitKernel (
     LoadObjFuncs[ T_COMOBJ ] = LoadComObj;
     LoadObjFuncs[ T_POSOBJ ] = LoadPosObj;
     LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
+#endif
 
     for (t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(MakeImmutableObjFuncs[ t ] == 0);

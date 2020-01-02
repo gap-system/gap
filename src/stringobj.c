@@ -167,10 +167,12 @@ static void PrintChar(Obj val)
 *F  SaveChar( <char> )  . . . . . . . . . . . . . . . . . .  save a character
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveChar(Obj c)
 {
     SaveUInt1( CHAR_VALUE(c));
 }
+#endif
 
 
 /****************************************************************************
@@ -178,11 +180,12 @@ static void SaveChar(Obj c)
 *F  LoadChar( <char> )  . . . . . . . . . . . . . . . . . .  load a character
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadChar(Obj c)
 {
     SET_CHAR_VALUE(c, LoadUInt1());
 }
-
+#endif
 
 
 /****************************************************************************
@@ -2019,15 +2022,18 @@ static Int InitKernel (
     InitSetFiltListTNumsFromTable  ( SetFiltTab    );
     InitResetFiltListTNumsFromTable( ResetFiltTab  );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* Install the saving function                                         */
     SaveObjFuncs[ T_CHAR ] = SaveChar;
     LoadObjFuncs[ T_CHAR ] = LoadChar;
+#endif
 
     /* install the character functions                                     */
     PrintObjFuncs[ T_CHAR ] = PrintChar;
     EqFuncs[ T_CHAR ][ T_CHAR ] = EqChar;
     LtFuncs[ T_CHAR ][ T_CHAR ] = LtChar;
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install the saving method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         SaveObjFuncs[ t1            ] = SaveString;
@@ -2035,6 +2041,7 @@ static Int InitKernel (
         LoadObjFuncs[ t1            ] = LoadString;
         LoadObjFuncs[ t1 +IMMUTABLE ] = LoadString;
     }
+#endif
 
 #if !defined(USE_THREADSAFE_COPYING)
     /* install the copy method                                             */
