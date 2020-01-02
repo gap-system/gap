@@ -253,6 +253,13 @@ static void RemoveGCRoots(void)
 
 #if !defined(USE_NATIVE_TLS) && !defined(USE_PTHREAD_TLS)
 
+#ifdef HAVE_FUNC_ATTRIBUTE_NOINLINE
+#define NOINLINE __attribute__((noinline))
+#else
+#define NOINLINE
+#endif
+
+
 /* In order to safely use thread-local memory on the main stack, we have
  * to work around an idiosyncracy in some virtual memory systems. These
  * VM implementations do not allow fully random access within the stack
