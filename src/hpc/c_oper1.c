@@ -375,8 +375,8 @@ static Obj  HdlrFunc2 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
@@ -425,8 +425,8 @@ static Obj  HdlrFunc2 (
    }
    while ( 1 ) {
     if ( t_7 ) {
-     if ( LEN_LIST(t_8) < INT_INTOBJ(t_5) )  break;
-     t_6 = ELMV0_LIST( t_8, INT_INTOBJ(t_5) );
+     if ( LEN_LIST(t_8) < Int_ObjInt(t_5) )  break;
+     t_6 = ELMV0_LIST( t_8, Int_ObjInt(t_5) );
      t_5 = (Obj)(((UInt)t_5)+4);
      if ( t_6 == 0 )  continue;
     }
@@ -895,8 +895,8 @@ static Obj  HdlrFunc3 (
   }
   while ( 1 ) {
    if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+    if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+    t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
     t_1 = (Obj)(((UInt)t_1)+4);
     if ( t_2 == 0 )  continue;
    }
@@ -2214,8 +2214,8 @@ static Obj  HdlrFunc6 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
@@ -2535,8 +2535,8 @@ static Obj  HdlrFunc6 (
   }
   while ( 1 ) {
    if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+    if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+    t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
     t_1 = (Obj)(((UInt)t_1)+4);
     if ( t_2 == 0 )  continue;
    }
@@ -3401,8 +3401,8 @@ static Obj  HdlrFunc8 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
@@ -3634,8 +3634,8 @@ static Obj  HdlrFunc7 (
   }
   while ( 1 ) {
    if ( t_3 ) {
-    if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-    t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+    if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+    t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
     t_1 = (Obj)(((UInt)t_1)+4);
     if ( t_2 == 0 )  continue;
    }
@@ -4945,8 +4945,8 @@ static Obj  HdlrFunc18 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
@@ -5239,8 +5239,8 @@ static Obj  HdlrFunc17 (
  }
  while ( 1 ) {
   if ( t_3 ) {
-   if ( LEN_LIST(t_4) < INT_INTOBJ(t_1) )  break;
-   t_2 = ELMV0_LIST( t_4, INT_INTOBJ(t_1) );
+   if ( LEN_LIST(t_4) < Int_ObjInt(t_1) )  break;
+   t_2 = ELMV0_LIST( t_4, Int_ObjInt(t_1) );
    t_1 = (Obj)(((UInt)t_1)+4);
    if ( t_2 == 0 )  continue;
   }
