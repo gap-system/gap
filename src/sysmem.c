@@ -448,7 +448,7 @@ static void SyInitialAllocPool(void)
 
 #define INVALID_PTR ((UInt***)-1)
 
-static UInt *** SyAllocBagsFromPool(Int size, UInt need)
+static UInt *** SyAllocBagsFromPool(Int size)
 {
     GAP_ASSERT(size > 0);
 
@@ -492,7 +492,7 @@ static UInt *** SyAllocBagHelper(Int size)
     return ret;
 }
 
-static UInt *** SyAllocBags_(Int size, UInt need)
+static UInt *** SyAllocBags_(UInt size)
 {
     GAP_ASSERT(SyAllocPool == 0);
     UInt *** ret = INVALID_PTR;
@@ -505,53 +505,69 @@ static UInt *** SyAllocBags_(Int size, UInt need)
         syWorkspace = (UInt***)sbrk( 0 );
     }
 
-    /* get the storage, but only if we stay within the bounds              */
-    /* if ( (0 < size && syWorksize + size <= SyStorMax) */
-    if (0 < size ) {
+    // get the storage
 #ifndef SYS_IS_64_BIT
-        UInt adjust = 0;
-        // on 32bit systems, call sbrk with at most 1 GB at a time,
-        // to avoid integer overflow
-        while (size >= 1024*1024) {
-            ret = SyAllocBagHelper(1024);
-            if (ret == INVALID_PTR)
-                break;
-            size -= 1024*1024;
-            syWorksize += 1024*1024;
-            adjust++;
-        }
-        // try to allocate the rest, if any
-        if (size < 0 && size < 1024*1024)
-            ret = SyAllocBagHelper(size);
-        if (ret != INVALID_PTR) {
-            while (adjust--)
-                ret = (UInt ***)(((Char *)ret) - 1024 * 1024 * 1024);
-        }
-#else
-        // allocate all at once
+    UInt adjust = 0;
+    // on 32bit systems, call sbrk with at most 1 GB at a time,
+    // to avoid integer overflow
+    while (size >= 1024*1024) {
+        ret = SyAllocBagHelper(1024);
+        if (ret == INVALID_PTR)
+            break;
+        size -= 1024*1024;
+        syWorksize += 1024*1024;
+        adjust++;
+    }
+    // try to allocate the rest, if any
+    if (size < 1024*1024)
         ret = SyAllocBagHelper(size);
-#endif
+    if (ret != INVALID_PTR) {
+        while (adjust--)
+            ret = (UInt ***)(((Char *)ret) - 1024 * 1024 * 1024);
     }
-    else if (size < 0 && SyStorMin <= syWorksize + size) {
-#ifndef SYS_IS_64_BIT
-        while (size < -1024*1024) {
-            ret = (UInt ***)sbrk(-1024*1024*1024);
-            if (ret == INVALID_PTR)
-                break;
-            size += 1024*1024;
-            syWorksize -= 1024*1024;
-        }
+#else
+    // allocate all at once
+    ret = SyAllocBagHelper(size);
 #endif
-        ret = (UInt ***)sbrk(size*1024);
-    }
 
     if (ret != INVALID_PTR) {
         // update the size info
         syWorksize += size;
+    }
 
-        /* if we de-allocated the whole workspace then remember this */
-        if (syWorksize == 0)
-          syWorkspace = (UInt ***)0;
+    return ret;
+}
+
+static UInt *** SyFreeBags_(UInt size)
+{
+    GAP_ASSERT(SyAllocPool == 0);
+    UInt *** ret = INVALID_PTR;
+
+    /* force alignment on first call                                       */
+    if (syWorkspace == 0) {
+        UInt align = (UInt)sbrk(0) % sizeof(UInt);
+        if (align != 0)
+            syWorkspace = (UInt***)sbrk(sizeof(UInt) - align);
+        syWorkspace = (UInt***)sbrk( 0 );
+    }
+
+    if (syWorksize >= size && syWorksize - size >= SyStorMin) {
+#ifndef SYS_IS_64_BIT
+        while (size >= 1024*1024) {
+            ret = (UInt ***)sbrk(-1024*1024*1024);
+            if (ret == INVALID_PTR)
+                break;
+            size -= 1024*1024;
+            syWorksize -= 1024*1024;
+        }
+#endif
+        ret = (UInt ***)sbrk(-size*1024);
+        if (ret != INVALID_PTR) {
+            syWorksize -= size;
+            if (syWorksize == 0) {
+                syWorkspace = (UInt ***)0;
+            }
+        }
     }
 
     return ret;
@@ -574,7 +590,7 @@ static UInt *** SyAllocBags_(Int size, UInt need)
 
 static vm_address_t syBase;
 
-static UInt *** SyAllocBags_(Int size, UInt need)
+static UInt *** SyAllocBags_(UInt size)
 {
     GAP_ASSERT(SyAllocPool == 0);
     UInt *** ret = INVALID_PTR;
@@ -584,25 +600,11 @@ static UInt *** SyAllocBags_(Int size, UInt need)
         Panic("memory block size is not a multiple of vm_page_size");
     }
 
-    /* check that we don't try to shrink uninitialized memory                */
-    else if ( size <= 0 && syBase == 0 ) {
-        Panic("trying to shrink uninitialized vm memory");
-    }
-
     /* allocate memory anywhere on first call                              */
     else if ( 0 < size && syBase == 0 ) {
         GAP_ASSERT(syWorksize == 0);
         if ( vm_allocate(task_self(),&syBase,size*1024,TRUE) == KERN_SUCCESS ) {
             ret = (UInt***) syBase;
-        }
-    }
-
-    /* don't shrink memory but mark it as deactivated                      */
-    else if ( size < 0 && syWorksize + size > SyStorMin) {
-        vm_address_t adr;
-        adr = (vm_address_t)( (char*) syBase + (syWorksize+size)*1024 );
-        if ( vm_deallocate(task_self(),adr,-size*1024) == KERN_SUCCESS ) {
-            ret = (UInt***)( (char*) syBase + syWorksize*1024 );
         }
     }
 
@@ -623,7 +625,40 @@ static UInt *** SyAllocBags_(Int size, UInt need)
     return ret;
 }
 
+static UInt *** SyFreeBags_(UInt size)
+{
+    GAP_ASSERT(SyAllocPool == 0);
+    UInt *** ret = INVALID_PTR;
+
+    /* check that <size> is divisible by <vm_page_size>                    */
+    if ( size*1024 % vm_page_size != 0 ) {
+        Panic("memory block size is not a multiple of vm_page_size");
+    }
+
+    /* check that we don't try to shrink uninitialized memory                */
+    else if ( syBase == 0 ) {
+        Panic("trying to shrink uninitialized vm memory");
+    }
+
+    /* don't shrink memory but mark it as deactivated                      */
+    else if (syWorksize >= size && syWorksize - size >= SyStorMin) {
+        vm_address_t adr;
+        adr = (vm_address_t)( (char*) syBase + (syWorksize-size)*1024 );
+        if ( vm_deallocate(task_self(),adr,size*1024) == KERN_SUCCESS ) {
+            ret = (UInt***)( (char*) syBase + syWorksize*1024 );
+
+            syWorksize -= size;
+            if (syWorksize == 0) {
+                syWorkspace = (UInt ***)0;
+            }
+        }
+    }
+
+    return ret;
+}
+
 #endif
+
 
 UInt *** SyAllocBags(Int size, UInt need)
 {
@@ -642,11 +677,11 @@ UInt *** SyAllocBags(Int size, UInt need)
         // initialize allocation pool if necessary; this aborts if it fails
         if (POOL == NULL)
             SyInitialAllocPool();
-        ret = SyAllocBagsFromPool(size, need);
+        ret = SyAllocBagsFromPool(size);
     }
     else {
 #if defined(HAVE_SBRK) || defined(HAVE_VM_ALLOCATE)
-        ret = SyAllocBags_(size, need);
+        ret = SyAllocBags_(size);
 #else
         Panic("running without allocation pool not supported on this architecture");
 #endif
@@ -680,7 +715,7 @@ Int SyFreeBags(Int size)
     }
     else {
 #if defined(HAVE_SBRK) || defined(HAVE_VM_ALLOCATE)
-        return SyAllocBags_(-size, 0) != INVALID_PTR;
+        return SyFreeBags_(size) != INVALID_PTR;
 #else
         Panic("running without allocation pool not supported on this architecture");
 #endif
