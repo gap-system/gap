@@ -775,7 +775,7 @@ static void CleanObjWPObj(Obj obj)
 **
 *F  SaveWPObj(<wpobj>)
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveWPObj(Obj wpobj)
 {
     UInt len = STORED_LEN_WPOBJ(wpobj);
@@ -784,12 +784,14 @@ static void SaveWPObj(Obj wpobj)
         SaveSubObj(ELM_WPOBJ(wpobj, i));
     }
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadWPObj(<wpobj>)
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadWPObj(Obj wpobj)
 {
     const UInt len = LoadUInt();
@@ -798,6 +800,7 @@ static void LoadWPObj(Obj wpobj)
         SET_ELM_WPOBJ(wpobj, i, LoadSubObj());
     }
 }
+#endif
 
 
 /****************************************************************************
@@ -877,8 +880,10 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
     /* saving function                                                     */
+#ifdef GAP_ENABLE_SAVELOAD
     SaveObjFuncs[ T_WPOBJ ] = SaveWPObj;
     LoadObjFuncs[ T_WPOBJ ] = LoadWPObj;
+#endif
 
     // List functions
     ElmDefListFuncs[T_WPOBJ] = ElmDefWPList;

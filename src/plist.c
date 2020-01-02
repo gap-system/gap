@@ -2374,7 +2374,7 @@ static void PlainPlist(Obj list)
 *F  SavePlist( <list> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SavePlist(Obj list)
 {
   UInt i;
@@ -2382,13 +2382,15 @@ static void SavePlist(Obj list)
   for (i = 1; i <= LEN_PLIST(list); i++)
     SaveSubObj(ELM_PLIST(list,i));
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadPlist( <list> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadPlist(Obj list)
 {
   UInt i;
@@ -2396,6 +2398,7 @@ static void LoadPlist(Obj list)
   for (i = 1; i <= LEN_PLIST(list); i++)
     SET_ELM_PLIST(list,i, LoadSubObj());
 }
+#endif
 
 
 /****************************************************************************
@@ -3292,12 +3295,14 @@ static Int InitKernel (
     /* If T_PLIST_FFE is not the last PLIST type then some more
        work needs to be done here */
 
+#ifdef GAP_ENABLE_SAVELOAD
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
         SaveObjFuncs[ t1            ] = SavePlist;
         SaveObjFuncs[ t1 +IMMUTABLE ] = SavePlist;
         LoadObjFuncs[ t1            ] = LoadPlist;
         LoadObjFuncs[ t1 +IMMUTABLE ] = LoadPlist;
     }
+#endif
 
     /* get the types (resp. type functions)                                */
     ImportGVarFromLibrary( "TYPE_LIST_NDENSE_MUTABLE",

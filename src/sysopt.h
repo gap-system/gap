@@ -180,7 +180,9 @@ extern UInt SyQuitOnBreak;
 **  of a workspace to restore.
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 extern Char * SyRestoring;
+#endif
 
 /****************************************************************************
 **

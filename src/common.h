@@ -29,6 +29,11 @@
 GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 
 
+#ifdef USE_GASMAN
+#define GAP_ENABLE_SAVELOAD
+#endif
+
+
 // EXPORT_INLINE is used for most inline functions declared in our header
 // files; it is set to `inline` by default, except in debug.c, where it is set
 // to `extern inline`, to ensure exactly one instance of the function is

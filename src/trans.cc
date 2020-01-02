@@ -4048,6 +4048,7 @@ Obj OnTuplesTrans(Obj tup, Obj f)
 ** Save and load workspace, garbage collection, IS_TRANS
 *******************************************************************************/
 
+#ifdef GAP_ENABLE_SAVELOAD
 // Save and load
 static void SaveTrans2(Obj f)
 {
@@ -4092,6 +4093,8 @@ static void LoadTrans4(Obj f)
         *ptr++ = LoadUInt4();
     }
 }
+#endif
+
 
 static Obj TYPE_TRANS2;
 
@@ -4246,11 +4249,13 @@ static Int InitKernel(StructInitInfo * module)
     // make the identity trans
     InitGlobalBag(&IdentityTrans, "src/trans.c:IdentityTrans");
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install the saving functions */
     SaveObjFuncs[T_TRANS2] = SaveTrans2;
     LoadObjFuncs[T_TRANS2] = LoadTrans2;
     SaveObjFuncs[T_TRANS4] = SaveTrans4;
     LoadObjFuncs[T_TRANS4] = LoadTrans4;
+#endif
 
     /* install the comparison methods                                      */
     EqFuncs[T_TRANS2][T_TRANS2] = EqTrans22;

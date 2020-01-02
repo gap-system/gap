@@ -709,26 +709,29 @@ static Obj FiltIS_RANGE(Obj self, Obj obj)
 *F  SaveRange( <range> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveRange(Obj range)
 {
   SaveSubObj(CONST_ADDR_OBJ(range)[0]); /* length */
   SaveSubObj(CONST_ADDR_OBJ(range)[1]); /* base */
   SaveSubObj(CONST_ADDR_OBJ(range)[2]); /* increment */
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadRange( <range> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadRange(Obj range)
 {
   ADDR_OBJ(range)[0] = LoadSubObj(); /* length */
   ADDR_OBJ(range)[1] = LoadSubObj(); /* base */
   ADDR_OBJ(range)[2] = LoadSubObj(); /* increment */
 }
+#endif
 
 
 /****************************************************************************
@@ -1115,6 +1118,7 @@ static Int InitKernel (
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* Saving functions */
     SaveObjFuncs[T_RANGE_NSORT            ] = SaveRange;
     SaveObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = SaveRange;
@@ -1124,6 +1128,7 @@ static Int InitKernel (
     LoadObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = LoadRange;
     LoadObjFuncs[T_RANGE_SSORT            ] = LoadRange;
     LoadObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = LoadRange;
+#endif
 
 #if !defined(USE_THREADSAFE_COPYING)
     /* install the copy methods                                            */

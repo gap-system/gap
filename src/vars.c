@@ -2063,7 +2063,7 @@ static void VarsAfterCollectBags(void)
 *F  SaveLVars ( <lvars> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveLVars(Obj lvars)
 {
   UInt len,i;
@@ -2077,13 +2077,15 @@ static void SaveLVars(Obj lvars)
   for (i = 0; i < len; i++)
     SaveSubObj(*ptr++);
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadLVars ( <lvars> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadLVars(Obj lvars)
 {
   UInt len,i;
@@ -2097,6 +2099,8 @@ static void LoadLVars(Obj lvars)
   for (i = 0; i < len; i++)
     *ptr++ = LoadSubObj();
 }
+#endif
+
 
 static Obj TYPE_LVARS;
 
@@ -2173,11 +2177,13 @@ static Int InitKernel (
     MakeBagTypePublic(T_HVARS);
 #endif
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* and the save restore functions */
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
     LoadObjFuncs[ T_LVARS ] = LoadLVars;
     SaveObjFuncs[ T_HVARS ] = SaveLVars;
     LoadObjFuncs[ T_HVARS ] = LoadLVars;
+#endif
 
     /* and a type */
     TypeObjFuncs[ T_LVARS ] = TypeLVars;

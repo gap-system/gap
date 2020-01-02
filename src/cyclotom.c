@@ -1953,6 +1953,7 @@ static void MarkCycSubBags(Obj cyc)
 **
 **  We do not save the XXX_CYC field, since it is not used.
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveCyc(Obj cyc)
 {
   UInt len, i;
@@ -1967,6 +1968,8 @@ static void SaveCyc(Obj cyc)
   for (i = 1; i < len; i++)
     SaveUInt4(*expos++);
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -1974,6 +1977,7 @@ static void SaveCyc(Obj cyc)
 **
 **  We do not load the XXX_CYC field, since it is not used.
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadCyc(Obj cyc)
 {
   UInt len, i;
@@ -1988,6 +1992,7 @@ static void LoadCyc(Obj cyc)
   for (i = 1; i < len; i++)
     *expos++ = LoadUInt4();
 }
+#endif
 
 
 /****************************************************************************
@@ -2087,9 +2092,11 @@ static Int InitKernel (
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* and the saving function                                             */
     SaveObjFuncs[ T_CYC ] = SaveCyc;
     LoadObjFuncs[ T_CYC ] = LoadCyc;
+#endif
 
     /* install the evaluation and print function                           */
     PrintObjFuncs[ T_CYC ] = PrintCyc;

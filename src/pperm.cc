@@ -3725,6 +3725,7 @@ static Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
 
 /* other internal things */
 
+#ifdef GAP_ENABLE_SAVELOAD
 /* Save and load */
 static void SavePPerm2(Obj f)
 {
@@ -3773,6 +3774,8 @@ static void LoadPPerm4(Obj f)
     for (i = 0; i < len + 1; i++)
         *ptr++ = LoadUInt4();
 }
+#endif
+
 
 static Obj TYPE_PPERM2;
 
@@ -3919,11 +3922,13 @@ static Int InitKernel(StructInitInfo * module)
 
     InitGlobalBag(&EmptyPartialPerm, "src/pperm.c:EmptyPartialPerm");
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* install the saving functions */
     SaveObjFuncs[T_PPERM2] = SavePPerm2;
     LoadObjFuncs[T_PPERM2] = LoadPPerm2;
     SaveObjFuncs[T_PPERM4] = SavePPerm4;
     LoadObjFuncs[T_PPERM4] = LoadPPerm4;
+#endif
 
     /* install the comparison methods                                      */
     EqFuncs[T_PPERM2][T_PPERM2] = EqPPerm<UInt2, UInt2>;

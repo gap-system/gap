@@ -1545,7 +1545,7 @@ static Obj FuncFUNC_BODY_SIZE(Obj self, Obj func)
     return ObjInt_UInt(SIZE_BAG(body));
 }
 
-#ifdef USE_GASMAN
+#ifdef GAP_ENABLE_SAVELOAD
 
 static void SaveHandler(ObjFunc hdlr)
 {

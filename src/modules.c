@@ -145,7 +145,11 @@ Int ActivateModule(StructInitInfo * info)
         res = info->initKernel(info);
     }
 
-    if (!SyRestoring) {
+    int flag = 0;
+#ifdef GAP_ENABLE_SAVELOAD
+    flag = SyRestoring != 0;
+#endif
+    if (!flag) {
         UpdateCopyFopyInfo();
 
         if (info->initLibrary) {
@@ -824,6 +828,7 @@ void RecordLoadedModule(StructInitInfo * info,
     NrModules++;
 }
 
+#ifdef GAP_ENABLE_SAVELOAD
 
 void SaveModules(void)
 {
@@ -893,6 +898,8 @@ void LoadModules(void)
         }
     }
 }
+
+#endif
 
 void ModulesSetup(void)
 {
@@ -1007,6 +1014,8 @@ void ModulesDestroyModuleState(void)
 }
 
 
+#ifdef GAP_ENABLE_SAVELOAD
+
 Int ModulesPreSave(void)
 {
     for (UInt i = 0; i < NrModules; i++) {
@@ -1051,6 +1060,8 @@ void ModulesPostRestore(void)
         }
     }
 }
+
+#endif
 
 
 /****************************************************************************

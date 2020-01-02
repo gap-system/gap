@@ -709,7 +709,7 @@ static Int LtPRec(Obj left, Obj right)
 *F  SavePRec( <prec> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void SavePRec(Obj prec)
 {
   UInt len,i;
@@ -721,13 +721,15 @@ static void SavePRec(Obj prec)
       SaveSubObj(GET_ELM_PREC(prec, i));
     }
 }
+#endif
+
 
 /****************************************************************************
 **
 *F  LoadPRec( <prec> )
 **
 */
-
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadPRec(Obj prec)
 {
   UInt len,i;
@@ -739,6 +741,8 @@ static void LoadPRec(Obj prec)
       SET_ELM_PREC(prec, i, LoadSubObj());
     }
 }
+#endif
+
 
 /****************************************************************************
 **
@@ -813,11 +817,13 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* Install saving functions                                            */
     SaveObjFuncs[ T_PREC            ] = SavePRec;
     SaveObjFuncs[ T_PREC +IMMUTABLE ] = SavePRec;
     LoadObjFuncs[ T_PREC            ] = LoadPRec;
     LoadObjFuncs[ T_PREC +IMMUTABLE ] = LoadPRec;
+#endif
 
     /* install into record function tables                                 */
     ElmRecFuncs[ T_PREC            ] = ElmPRec;

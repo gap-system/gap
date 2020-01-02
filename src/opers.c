@@ -108,6 +108,7 @@ static Obj TypeFlags(Obj flags)
 *F  SaveFlags( <flags> )  . . . . . . . . . . . . . . . . . save a flags list
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void SaveFlags(Obj flags)
 {
     UInt        i, len, *ptr;
@@ -121,6 +122,7 @@ static void SaveFlags(Obj flags)
     for ( i = 1;  i <= len;  i++ )
         SaveUInt(*ptr++);
 }
+#endif
 
 
 /****************************************************************************
@@ -128,6 +130,7 @@ static void SaveFlags(Obj flags)
 *F  LoadFlags( <flags> )  . . . . . . . . . . . . . . . . . load a flags list
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 static void LoadFlags(Obj flags)
 {
     Obj         sub;
@@ -142,6 +145,7 @@ static void LoadFlags(Obj flags)
     for ( i = 1;  i <= len;  i++ )
         *ptr++ = LoadUInt();
 }
+#endif
 
 
 /****************************************************************************
@@ -2966,6 +2970,7 @@ static void InstallGlobalFunction(Obj oper, Obj func)
 **  a simple function, and so must be an operation
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 void SaveOperationExtras (
     Obj         oper )
 {
@@ -2979,14 +2984,10 @@ void SaveOperationExtras (
     SaveSubObj(header->extra);
     for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         SaveSubObj(header->methods[i]);
-#ifdef HPCGAP
-    // FIXME: We probably don't want to save/restore the cache?
-    // (and that would include "normal" GAP, too...)
-#else
     for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         SaveSubObj(header->cache[i]);
-#endif
 }
+#endif
 
 
 /****************************************************************************
@@ -2997,6 +2998,7 @@ void SaveOperationExtras (
 **  a simple function, and so must be an operation
 **
 */
+#ifdef GAP_ENABLE_SAVELOAD
 void LoadOperationExtras (
     Obj         oper )
 {
@@ -3010,14 +3012,10 @@ void LoadOperationExtras (
     header->extra = LoadSubObj();
     for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         header->methods[i] = LoadSubObj();
-#ifdef HPCGAP
-    // FIXME: We probably don't want to save/restore the cache?
-    // (and that would include "normal" GAP, too...)
-#else
     for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         header->cache[i] = LoadSubObj();
-#endif
 }
+#endif
 
 
 /****************************************************************************
@@ -3776,9 +3774,11 @@ static Int InitKernel (
     /* install the printing function                                       */
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
 
+#ifdef GAP_ENABLE_SAVELOAD
     /* and the saving function */
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
+#endif
 
 #ifdef HPCGAP
     /* flags are public objects by default */
