@@ -42,6 +42,9 @@ typedef struct GAPState {
     Obj  StackObj;
     Obj  Tilde;
 
+    // The current assertion level for use in Assert
+    Int CurrentAssertionLevel;
+
     /* From gvar.c */
     Obj CurrNamespace;
 

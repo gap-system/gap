@@ -3808,15 +3808,11 @@ void            IntrInfoEnd( UInt narg )
 *F  IntrAssertEnd2Args() . . . . called after reading the closing parenthesis
 *F  IntrAssertEnd3Args() . . . . called after reading the closing parenthesis
 **
-*V  CurrentAssertionLevel  . .  . . . . . . . . . . . .  copy of GAP variable
-**
 **
 **  STATE(IntrIgnoring) is increased by (a total of) 2 if an assertion either
 **  is not tested (because we were Ignoring when we got to it, or due to
 **  level) or is tested and passes
 */
-
-Obj              CurrentAssertionLevel;
 
 void              IntrAssertBegin ( void )
 {
@@ -3830,18 +3826,16 @@ void              IntrAssertBegin ( void )
 
 void             IntrAssertAfterLevel ( void )
 {
-  Obj level;
-
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     if ( STATE(IntrIgnoring)  > 0 ) { STATE(IntrIgnoring)++; return; }
     if ( STATE(IntrCoding)    > 0 ) { CodeAssertAfterLevel(); return; }
 
 
-    level = PopObj();
+    Int level = GetSmallIntEx("Assert", PopObj(), "<lev>");
 
-    if (LT( CurrentAssertionLevel, level))
-           STATE(IntrIgnoring) = 1;
+    if (STATE(CurrentAssertionLevel) < level)
+        STATE(IntrIgnoring) = 1;
 }
 
 void             IntrAssertAfterCondition ( void )
@@ -3934,7 +3928,6 @@ static Int InitKernel (
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
 #endif
 
-    InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
     /* The work of handling Options is also delegated*/
@@ -3944,22 +3937,6 @@ static Int InitKernel (
     return 0;
 }
 
-
-/****************************************************************************
-**
-*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
-*/
-static Int InitLibrary (
-    StructInitInfo *    module )
-{
-    UInt            lev;
-
-    /* The Assertion level is also controlled at GAP level                 */
-    lev = GVarName("CurrentAssertionLevel");
-    AssGVar( lev, INTOBJ_INT(0) );
-
-    return 0;
-}
 
 static Int InitModuleState(void)
 {
@@ -3981,7 +3958,6 @@ static StructInitInfo module = {
     .type = MODULE_BUILTIN,
     .name = "intrprtr",
     .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
 
     .initModuleState = InitModuleState,
 };

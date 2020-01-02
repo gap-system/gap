@@ -892,10 +892,13 @@ static UInt ExecInfo(Stat stat)
 static UInt ExecAssert2Args(Stat stat)
 {
     Obj             level;
+    Int             lev;
     Obj             cond;
 
     level = EVAL_EXPR(READ_STAT(stat, 0));
-    if ( ! LT(CurrentAssertionLevel, level) )  {
+    lev = GetSmallIntEx("Assert", level, "<lev>");
+
+    if (STATE(CurrentAssertionLevel) >= lev) {
         cond = EVAL_EXPR(READ_STAT(stat, 1));
         RequireTrueOrFalse("Assert", cond);
         if (cond == False) {
@@ -917,11 +920,14 @@ static UInt ExecAssert2Args(Stat stat)
 static UInt ExecAssert3Args(Stat stat)
 {
     Obj             level;
+    Int             lev;
     Obj             cond;
     Obj             message;
 
     level = EVAL_EXPR(READ_STAT(stat, 0));
-    if ( ! LT(CurrentAssertionLevel, level) ) {
+    lev = GetSmallIntEx("Assert", level, "<lev>");
+
+    if (STATE(CurrentAssertionLevel) >= lev) {
         cond = EVAL_EXPR(READ_STAT(stat, 1));
         RequireTrueOrFalse("Assert", cond);
         if (cond == False) {

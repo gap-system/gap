@@ -5,11 +5,11 @@
 /* global variables used in handlers */
 static GVar G_Print;
 static Obj  GF_Print;
-static GVar G_runtest;
-static GVar G_AssertionLevel;
-static Obj  GF_AssertionLevel;
 static GVar G_SetAssertionLevel;
 static Obj  GF_SetAssertionLevel;
+static GVar G_AssertionLevel;
+static Obj  GF_AssertionLevel;
+static GVar G_runtest;
 
 /* record names used in handlers */
 
@@ -48,7 +48,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(1)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 1 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -63,7 +63,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(1)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 1 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -72,7 +72,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(0)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 0 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -87,7 +87,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(0)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 0 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -123,7 +123,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(3)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 3 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -138,7 +138,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(3)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 3 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -147,7 +147,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(2)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -162,7 +162,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(2)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -171,7 +171,7 @@ static Obj  HdlrFunc2 (
  }
  
  /* Assert( ... ); */
- if ( ! LT(CurrentAssertionLevel, INTOBJ_INT(2)) ) {
+ if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
@@ -255,9 +255,9 @@ static Int PostRestore ( StructInitInfo * module )
  
  /* global variables used in handlers */
  G_Print = GVarName( "Print" );
- G_runtest = GVarName( "runtest" );
- G_AssertionLevel = GVarName( "AssertionLevel" );
  G_SetAssertionLevel = GVarName( "SetAssertionLevel" );
+ G_AssertionLevel = GVarName( "AssertionLevel" );
+ G_runtest = GVarName( "runtest" );
  
  /* record names used in handlers */
  
@@ -276,8 +276,8 @@ static Int InitKernel ( StructInitInfo * module )
  
  /* global variables used in handlers */
  InitFopyGVar( "Print", &GF_Print );
- InitFopyGVar( "AssertionLevel", &GF_AssertionLevel );
  InitFopyGVar( "SetAssertionLevel", &GF_SetAssertionLevel );
+ InitFopyGVar( "AssertionLevel", &GF_AssertionLevel );
  
  /* information for the functions */
  InitGlobalBag( &FileName, "assert.g:FileName("FILE_CRC")" );
