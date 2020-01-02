@@ -859,8 +859,6 @@ void IntrInfoEnd(UInt narg);
 **
 *F  IntrAssertEnd2Args() . . . . called after reading the closing parenthesis
 *F  IntrAssertEnd3Args() . . . . called after reading the closing parenthesis
-**
-*V  CurrentAssertionLevel . . . .  . . . . . . . . . . . copy of GAP variable
 */
 
 void IntrAssertBegin(void);
@@ -868,8 +866,6 @@ void IntrAssertAfterLevel(void);
 void IntrAssertAfterCondition(void);
 void IntrAssertEnd2Args(void);
 void IntrAssertEnd3Args(void);
-
-extern Obj              CurrentAssertionLevel;
 
 /****************************************************************************
 **

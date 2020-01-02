@@ -1,6 +1,7 @@
 #
 gap> SetAssertionLevel(fail);
-Error, Usage SetAssertionLevel( <level> )
+Error, SetAssertionLevel: <level> must be a non-negative small integer (not th\
+e value 'fail')
 
 # test InstallAttributeMethodByGroupGeneralMappingByImages indirectly
 gap> G:=SymmetricGroup(3);;

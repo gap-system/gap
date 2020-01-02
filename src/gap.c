@@ -1377,6 +1377,20 @@ static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
 }
 
 
+static Obj FuncSetAssertionLevel(Obj self, Obj level)
+{
+    RequireNonnegativeSmallInt("SetAssertionLevel", level);
+    STATE(CurrentAssertionLevel) = INT_INTOBJ(level);
+    return 0;
+}
+
+
+static Obj FuncAssertionLevel(Obj self)
+{
+    return INTOBJ_INT(STATE(CurrentAssertionLevel));
+}
+
+
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -1423,6 +1437,10 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(MASTER_POINTER_NUMBER, ob),
     GVAR_FUNC_1ARGS(BREAKPOINT, integer),
     GVAR_FUNC_2ARGS(UPDATE_STAT, string, object),
+
+    GVAR_FUNC_1ARGS(SetAssertionLevel, level),
+    GVAR_FUNC_0ARGS(AssertionLevel),
+
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1474,7 +1492,7 @@ static Int PostRestore (
     MemoryAllocated   = GVarName( "memory_allocated"  );
 
     QUITTINGGVar      = GVarName( "QUITTING" );
-    
+
     return 0;
 }
 
@@ -1505,6 +1523,10 @@ static Int InitLibrary (
     AssReadOnlyGVar(GVarName("time"), INTOBJ_INT(0));
     AssReadOnlyGVar(GVarName("memory_allocated"), INTOBJ_INT(0));
 
+    // ensure any legacy code which directly tries to set the former GAP
+    // global 'CurrentAssertionLevel' or tries to compare to an integer,
+    // runs into an error.
+    AssConstantGVar(GVarName("CurrentAssertionLevel"), False);
 
     return PostRestore( module );
 }

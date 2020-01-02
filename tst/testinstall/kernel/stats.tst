@@ -12,6 +12,8 @@ gap> f('x');
 Error, Range: <last> must be a small integer (not a character)
 
 # test Assert with two arguments
+gap> function() Assert(fail, 0); end();
+Error, Assert: <lev> must be a small integer (not the value 'fail')
 gap> function() Assert(0, 0); end();
 Error, Assert: <cond> must be 'true' or 'false' (not the integer 0)
 gap> function() Assert(0, true); end();
@@ -22,6 +24,8 @@ gap> function() Assert(100, true); end();
 gap> function() Assert(100, false); end();
 
 # test Assert with three arguments
+gap> function() Assert(fail, 0, "message\n"); end();
+Error, Assert: <lev> must be a small integer (not the value 'fail')
 gap> function() Assert(0, 0, "message\n"); end();
 Error, Assert: <cond> must be 'true' or 'false' (not the integer 0)
 gap> function() Assert(0, true, "message\n"); end();

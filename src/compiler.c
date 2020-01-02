@@ -4971,7 +4971,7 @@ static void CompAssert2(Stat stat)
 
     Emit( "\n/* Assert( ... ); */\n" );
     lev = CompExpr(READ_STAT(stat, 0));
-    Emit( "if ( ! LT(CurrentAssertionLevel, %c) ) {\n", lev );
+    Emit( "if ( STATE(CurrentAssertionLevel) >= %i ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
     Emit( "if ( ! %c ) {\n", cnd );
     Emit( "AssertionFailure();\n" );
@@ -4996,7 +4996,7 @@ static void CompAssert3(Stat stat)
 
     Emit( "\n/* Assert( ... ); */\n" );
     lev = CompExpr(READ_STAT(stat, 0));
-    Emit( "if ( ! LT(CurrentAssertionLevel, %c) ) {\n", lev );
+    Emit( "if ( STATE(CurrentAssertionLevel) >= %i ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
     Emit( "if ( ! %c ) {\n", cnd );
     msg = CompExpr(READ_STAT(stat, 2));
