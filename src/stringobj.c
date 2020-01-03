@@ -558,13 +558,7 @@ void ToPrOutputter(void * data, char * strbuf, UInt len)
 // Output to a string
 void ToStringOutputter(void * data, char * buf, UInt lenbuf)
 {
-    Obj str = (Obj)data;
-    UInt lenstr = GET_LEN_STRING(str);
-    UInt newlen = lenstr + lenbuf;
-    GROW_STRING(str, newlen);
-    memcpy(CHARS_STRING(str) + lenstr, buf, lenbuf);
-    CHARS_STRING(str)[newlen] = '\0';
-    SET_LEN_STRING(str, newlen);
+    AppendCStr((Obj)data, buf, lenbuf);
 }
 
 void OutputStringGeneric(Obj list, StringOutputterType func, void * data)
@@ -1307,6 +1301,52 @@ BOOL IsStringConv(Obj obj)
     }
 
     return res;
+}
+
+
+/****************************************************************************
+**
+*F  AppendCStr( <str>, <buf>, <len> ) . . append data in a buffer to a string
+**
+**  'AppendCStr' appends <len> bytes of data taken from <buf> to <str>, where
+**  <str> must be a mutable GAP string object.
+*/
+void AppendCStr(Obj str, const char * buf, UInt len)
+{
+    GAP_ASSERT(IS_MUTABLE_OBJ(str));
+    GAP_ASSERT(IS_STRING_REP(str));
+
+    UInt len1 = GET_LEN_STRING(str);
+    UInt newlen = len1 + len;
+    GROW_STRING(str, newlen);
+    SET_LEN_STRING(str, newlen);
+    CLEAR_FILTS_LIST(str);
+    memcpy(CHARS_STRING(str) + len1, buf, len);
+    CHARS_STRING(str)[newlen] = '\0'; // add terminator
+}
+
+
+/****************************************************************************
+**
+*F  AppendString( <str1>, <str2> ) . . . . . . . append one string to another
+**
+**  'AppendString' appends <str2> to the end of <str1>. Both <str1> and <str>
+**  must be a GAP string objects, and <str1> must be mutable.
+*/
+void AppendString(Obj str1, Obj str2)
+{
+    GAP_ASSERT(IS_MUTABLE_OBJ(str1));
+    GAP_ASSERT(IS_STRING_REP(str1));
+    GAP_ASSERT(IS_STRING_REP(str2));
+
+    UInt len1 = GET_LEN_STRING(str1);
+    UInt len2 = GET_LEN_STRING(str2);
+    UInt newlen = len1 + len2;
+    GROW_STRING(str1, newlen);
+    SET_LEN_STRING(str1, newlen);
+    CLEAR_FILTS_LIST(str1);
+    memcpy(CHARS_STRING(str1) + len1, CONST_CHARS_STRING(str2), len2);
+    CHARS_STRING(str1)[newlen] = '\0'; // add terminator
 }
 
 

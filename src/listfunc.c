@@ -225,15 +225,8 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 
     /* handle the case of strings now */
     if (IS_STRING_REP(list1) && IS_STRING_REP(list2)) {
-        len1 = GET_LEN_STRING(list1);
-        len2 = GET_LEN_STRING(list2);
-        GROW_STRING(list1, len1 + len2);
-        SET_LEN_STRING(list1, len1 + len2);
-        CLEAR_FILTS_LIST(list1);
-        // copy data, including terminating zero byte
-        // Can't use memcpy, in case list1 == list2
-        SyMemmove(CHARS_STRING(list1) + len1, CONST_CHARS_STRING(list2), len2 + 1);
-        return (Obj) 0;
+        AppendString(list1, list2);
+        return 0;
     }
 
     /* check the type of the first argument                                */
