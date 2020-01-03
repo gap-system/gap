@@ -162,15 +162,6 @@ DeclareGlobalFunction("TmpNameAllArchs");
 
 #############################################################################
 ##
-#F ShortFileNameWindows(<name>)
-##
-##  returns a short file name (https://en.wikipedia.org/wiki/8.3_filename)
-##  for use under Windows. Paths can contain either / or \ separators,
-##  either will be permitted.
-DeclareGlobalFunction("ShortFileNameWindows");
-
-#############################################################################
-##
 #F  Exec( <cmd>, <option1>, ..., <optionN> )  . . . . . . . execute a command
 ##
 ##  <#GAPDoc Label="Exec">
