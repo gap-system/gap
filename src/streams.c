@@ -997,25 +997,24 @@ static Obj FuncTmpName(Obj self)
 */
 static Obj FuncTmpDirectory(Obj self)
 {
-    char   name[GAP_PATH_MAX];
+    Obj name;
     char * env_tmpdir = getenv("TMPDIR");
     if (env_tmpdir != NULL) {
-        strxcpy(name, env_tmpdir, sizeof(name));
-        strxcat(name, "/", sizeof(name));
+        name = MakeString(env_tmpdir);
     }
     else {
 #ifdef SYS_IS_CYGWIN32
-        strxcpy(name, "C:/WINDOWS/Temp/", sizeof(name));
+        name = MakeString("C:/WINDOWS/Temp/");
 #else
-        strxcpy(name, "/tmp/", sizeof(name));
+        name = MakeString("/tmp");
 #endif
     }
-    strxcat(name, "gaptempdirXXXXXX", sizeof(name));
+    const char * extra = "/gaptempdirXXXXXX";
+    AppendCStr(name, extra, strlen(extra));
 
-    char * tmp = mkdtemp(name);
-    if (tmp == 0)
+    if (mkdtemp(CSTR_STRING(name)) == 0)
         return Fail;
-    return MakeString(tmp);
+    return name;
 }
 
 
