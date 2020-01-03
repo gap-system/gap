@@ -1036,8 +1036,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 */
 static Obj FuncTmpName(Obj self)
 {
-    static char name[1024];
-    strxcat(name, "/tmp/gaptempfile.XXXXXX", sizeof(name));
+    char name[] = "/tmp/gaptempfile.XXXXXX";
     close(mkstemp(name));
     return MakeString(name);
 }
@@ -1049,8 +1048,8 @@ static Obj FuncTmpName(Obj self)
 */
 static Obj FuncTmpDirectory(Obj self)
 {
-    static char name[1024];
-    char *      env_tmpdir = getenv("TMPDIR");
+    char   name[GAP_PATH_MAX];
+    char * env_tmpdir = getenv("TMPDIR");
     if (env_tmpdir != NULL) {
         strxcpy(name, env_tmpdir, sizeof(name));
         strxcat(name, "/", sizeof(name));
