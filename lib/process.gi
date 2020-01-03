@@ -245,67 +245,6 @@ end);
 
 #############################################################################
 ##
-#F  ShortFileNameWindows( <name> )
-##
-InstallGlobalFunction( ShortFileNameWindows, function( name )
-local new, a, s, suff, change, p, ns, i, j;
-  new:="";
-  # take care of heading drive letter
-  if Length(name)>2 and name[2]=':' and (name[1] in CHARS_UALPHA or name[1]
-    in CHARS_LALPHA) then
-    new:=name{[1..2]};
-    name:=name{[3..Length(name)]};
-  fi;
-  a:=0;
-  for i in [1..Length(name)+1] do
-    if i>Length(name) or name[i] in "\\/" then
-      s:=UppercaseString(name{[a+1..i-1]});
-      a:=i;
-      suff:="";
-      change:=false;
-      if i>Length(name) then
-	# last `.' in file name
-	p:=First([Length(s),Length(s)-1..1],x->s[x]='.');
-	if p<>fail then
-	  if p+3<Length(s) then
-	    change:=true;
-	  fi;
-	  suff:=Concatenation(".",s{[p+1..Minimum(p+3,Length(s))]});
-	  s:=s{[1..p-1]};
-	fi;
-      fi;
-      # strip s of illegal characters and convert
-      ns:="";
-      for j in s do
-	if j in " ." then
-	  change:=true;
-	elif j in "\"*:<>?|" then
-	  change:=true;
-	  Add(ns,'_');
-	else
-	  Add(ns,j);
-	fi;
-      od;
-      s:=ns;
-      if change or Length(s)>8 then
-	#T The ~1 is not completely correct, it could be another number. A
-	#T problem however is unlikely in practice
-	s:=Concatenation(s{[1..Minimum(6,Length(s))]},"~1");
-      fi;
-      Append(new,s);
-      Append(new,suff);
-
-      # keep \/
-      if i<=Length(name) then
-	Add(new,name[i]);
-      fi;
-    fi;
-  od;
-  return new;
-end);
-
-#############################################################################
-##
 #F  Exec( <str_1>, <str_2>, ..., <str_n> )  . . . . . . . . execute a command
 ##
 InstallGlobalFunction( Exec, function( arg )
