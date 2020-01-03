@@ -421,30 +421,6 @@ Obj SyIsDir(const Char * name);
 
 /****************************************************************************
 **
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-Char * SyTmpname(void);
-
-
-/****************************************************************************
-**
-*F  SyTmpdir( <hint> )  . . . . . . . . . . . .  return a temporary directory
-**
-**  'SyTmpdir'  returns the directory   for  a temporary directory.  This  is
-**  guaranteed  to be newly  created and empty  immediately after the call to
-**  'SyTmpdir'. <hint> should be used by 'SyTmpdir' to  construct the name of
-**  the directory (but 'SyTmpdir' is free to use only  a part of <hint>), and
-**  must be a string of at most 8 alphanumerical characters.  Under UNIX this
-**  would   usually   represent   '/usr/tmp/<hint>_<proc_id>_<cnt>/',   e.g.,
-**  '/usr/tmp/guava_17188_1/'.
-*/
-Char * SyTmpdir(const Char * hint);
-
-
-/****************************************************************************
-**
 *F  void getwindowsize( void )  . probe the OS for the window size and
 **                               set SyNrRows and SyNrCols accordingly
 */

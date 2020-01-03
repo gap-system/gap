@@ -3217,60 +3217,6 @@ Obj SyIsDir ( const Char * name )
 *F * * * * * * * * * * * * * * * directories  * * * * * * * * * * * * * * * *
 */
 
-
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns  a new temporary name.  Subsequent  calls
-**  to 'SyTmpname'  should  produce different  file names  *even* if no files
-**  were created.
-*/
-Char *SyTmpname ( void )
-{
-  static char name[1024];
-  strxcpy(name, "/tmp/gaptempfile.XXXXXX", sizeof(name));
-  close(mkstemp(name));
-  return name;
-}
-
-
-/****************************************************************************
-**
-*F  SyTmpdir( <hint> )  . . . . . . . . . . . .  return a temporary directory
-**
-**  'SyTmpdir'  returns the directory   for  a temporary directory.  This  is
-**  guaranteed  to be newly  created and empty  immediately after the call to
-**  'SyTmpdir'. <hint> should be used by 'SyTmpdir' to  construct the name of
-**  the directory (but 'SyTmpdir' is free to use only  a part of <hint>), and
-**  must be a string of at most 8 alphanumerical characters.  Under UNIX this
-**  would   usually   represent   '/usr/tmp/<hint>_<proc_id>_<cnt>/',   e.g.,
-**  '/usr/tmp/guava_17188_1/'.
-*/
-Char * SyTmpdir( const Char * hint )
-{
-#ifdef SYS_IS_CYGWIN32
-#define TMPDIR_BASE "/cygdrive/c/WINDOWS/Temp/"
-#else
-#define TMPDIR_BASE "/tmp/"
-#endif
-  static char name[1024];
-  static const char *base = TMPDIR_BASE;
-  char * env_tmpdir = getenv("TMPDIR");
-  if (env_tmpdir != NULL) {
-    strxcpy(name, env_tmpdir, sizeof(name));
-    strxcat(name, "/", sizeof(name));
-  }
-  else
-    strxcpy(name, base, sizeof(name));
-  if (hint)
-    strxcat(name, hint, sizeof(name));
-  else
-    strxcat(name, "gaptempdir", sizeof(name));
-  strxcat(name, "XXXXXX", sizeof(name));
-  return mkdtemp(name);
-}
-
 /****************************************************************************
 **
 *F  SyReadStringFile( <fid> ) . . . . . . . . read file content into a string

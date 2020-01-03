@@ -1036,14 +1036,10 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 */
 static Obj FuncTmpName(Obj self)
 {
-    Char *              tmp;
-    Obj                 name;
-
-    tmp = SyTmpname();
-    if ( tmp == 0 )
-        return Fail;
-    name = MakeString(tmp);
-    return name;
+    static char name[1024];
+    strxcat(name, "/tmp/gaptempfile.XXXXXX", sizeof(name));
+    close(mkstemp(name));
+    return MakeString(name);
 }
 
 
@@ -1053,14 +1049,25 @@ static Obj FuncTmpName(Obj self)
 */
 static Obj FuncTmpDirectory(Obj self)
 {
-    Char *              tmp;
-    Obj                 name;
+    static char name[1024];
+    char *      env_tmpdir = getenv("TMPDIR");
+    if (env_tmpdir != NULL) {
+        strxcpy(name, env_tmpdir, sizeof(name));
+        strxcat(name, "/", sizeof(name));
+    }
+    else {
+#ifdef SYS_IS_CYGWIN32
+        strxcpy(name, "/cygdrive/c/WINDOWS/Temp/", sizeof(name));
+#else
+        strxcpy(name, "/tmp/", sizeof(name));
+#endif
+    }
+    strxcat(name, "gaptempdirXXXXXX", sizeof(name));
 
-    tmp = SyTmpdir("tm");
-    if ( tmp == 0 )
+    char * tmp = mkdtemp(name);
+    if (tmp == 0)
         return Fail;
-    name = MakeString(tmp);
-    return name;
+    return MakeString(tmp);
 }
 
 
