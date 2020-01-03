@@ -2520,19 +2520,8 @@ static Obj WRAP_NAME(Obj name, const char *addon)
 
 static Obj PREFIX_NAME(Obj name, const char *prefix)
 {
-    UInt name_len = GET_LEN_STRING(name);
-    UInt prefix_len = strlen(prefix);
-    Obj fname = NEW_STRING( name_len + prefix_len );
-#ifdef HPCGAP
-    ImpliedWriteGuard(fname);
-#endif
-
-    char *ptr = CSTR_STRING(fname);
-    memcpy( ptr, prefix, prefix_len );
-    ptr += prefix_len;
-    memcpy( ptr, CONST_CSTR_STRING(name), name_len );
-    ptr += name_len;
-    *ptr = 0;
+    Obj fname = MakeString(prefix);
+    AppendString(fname, name);
     MakeImmutable(fname);
     return fname;
 }

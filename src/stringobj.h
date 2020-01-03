@@ -372,6 +372,26 @@ EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
 
 /****************************************************************************
 **
+*F  AppendCStr( <str>, <buf>, <len> ) . . append data in a buffer to a string
+**
+**  'AppendCStr' appends <len> bytes of data taken from <buf> to <str>, where
+**  <str> must be a mutable GAP string object.
+*/
+void AppendCStr(Obj str, const char * buf, UInt len);
+
+
+/****************************************************************************
+**
+*F  AppendString( <str1>, <str2> ) . . . . . . . append one string to another
+**
+**  'AppendString' appends <str2> to the end of <str1>. Both <str1> and <str>
+**  must be a GAP string objects, and <str1> must be mutable.
+*/
+void AppendString(Obj str1, Obj str2);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
