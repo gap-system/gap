@@ -17,7 +17,7 @@
 
 #include "sysjmp.h"
 
-#if defined(HPCGAP)
+#ifdef HPCGAP
 #include "hpc/tls.h"
 #endif
 
@@ -77,7 +77,7 @@ typedef struct GAPState {
     void * PtrBody;
 
     /* From opers.c */
-#if defined(HPCGAP)
+#ifdef HPCGAP
     Obj   MethodCache;
     Obj * MethodCacheItems;
     UInt  MethodCacheSize;
@@ -107,7 +107,7 @@ typedef struct GAPState {
 #endif
 } GAPState;
 
-#if defined(HPCGAP)
+#ifdef HPCGAP
 
 EXPORT_INLINE GAPState * ActiveGAPState(void)
 {

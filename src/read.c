@@ -2875,9 +2875,7 @@ Obj Call1ArgsInNewReader(Obj f,Obj a)
 static Int InitKernel (
     StructInitInfo *    module )
 {
-#if !defined(HPCGAP)
     InitGlobalBag(&ReaderState()->StackNams, "src/read.c:StackNams");
-#endif
     InitCopyGVar( "GAPInfo", &GAPInfo);
     return 0;
 }

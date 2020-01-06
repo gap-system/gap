@@ -3972,15 +3972,12 @@ void             IntrAssertEnd3Args ( void )
 static Int InitKernel (
     StructInitInfo *    module )
 {
-#if !defined(HPCGAP)
     InitGlobalBag( &STATE(IntrState),  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &STATE(StackObj),   "src/intrprtr.c:StackObj"   );
     InitGlobalBag( &STATE(ErrorLVars), "STATE(ErrorLVars)"         );
 
-
     /* Ensure that the value in '~' does not get garbage collected         */
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
-#endif
 
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 

@@ -2151,7 +2151,6 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-#if !defined(HPCGAP)
     /* make 'CurrLVars' known to Gasman                                    */
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
     InitGlobalBag( &STATE(BottomLVars), "src/vars.c:BottomLVars" );
@@ -2162,7 +2161,6 @@ static Int InitKernel (
       snprintf(cookies[i], sizeof(cookies[i]), "src/vars.c:LVarsPool%d", i);
       InitGlobalBag(&STATE(LVarsPool[i]), cookies[i]);
     }
-#endif
 
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );

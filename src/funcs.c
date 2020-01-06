@@ -851,10 +851,8 @@ static Int InitKernel (
 {
     RecursionTrapInterval = 5000;
 
-#if !defined(HPCGAP)
     /* make the global variable known to Gasman                            */
     InitGlobalBag( &FuncsState()->ExecState, "src/funcs.c:ExecState" );
-#endif
 
     /* Register the handler for our exported function                      */
     InitHdlrFuncsFromTable( GVarFuncs );
