@@ -1454,9 +1454,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
     /* init the completion function                                        */
-#if !defined(HPCGAP)
     InitGlobalBag( &STATE(ThrownObject), "src/gap.c:ThrownObject"      );
-#endif
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );

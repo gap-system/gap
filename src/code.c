@@ -3230,10 +3230,8 @@ static Int InitKernel (
     MakeBagTypePublic(T_BODY);
 #endif
 
-#if !defined(HPCGAP)
     /* make the result variable known to Gasman                            */
     InitGlobalBag(&CS(CodeResult), "CodeResult");
-#endif
 
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag(&CS(StackStat), "CS(StackStat)");

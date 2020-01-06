@@ -1597,10 +1597,8 @@ static Int InitKernel (
                    "src/gvars.c:FopiesGVars"  );
 #endif
 
-#if !defined(HPCGAP)
     InitGlobalBag( &STATE(CurrNamespace),
                    "src/gvars.c:CurrNamespace" );
-#endif
 
     CountGVars = INTOBJ_INT(0);
     InitGlobalBag( &CountGVars,

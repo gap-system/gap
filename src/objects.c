@@ -47,7 +47,7 @@ static ModuleStateOffset ObjectsStateOffset = -1;
 
 typedef struct {
     UInt  PrintObjDepth;
-#if defined(HPCGAP)
+#ifdef HPCGAP
     Obj   PrintObjThissObj;
     Obj * PrintObjThiss;
     Obj   PrintObjIndicesObj;

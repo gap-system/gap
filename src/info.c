@@ -59,7 +59,7 @@ void InfoDoPrint(Obj cls, Obj lvl, Obj args)
 {
     if (IS_PLIST(cls))
         cls = ELM_PLIST(cls, 1);
-#if defined(HPCGAP)
+#ifdef HPCGAP
     Obj fun = Elm0AList(cls, INFODATA_HANDLER);
 #else
     Obj fun = ELM_PLIST(cls, INFODATA_HANDLER);
@@ -80,7 +80,7 @@ Obj InfoCheckLevel(Obj selectors, Obj level)
     // The fast-path only deals with the case where all arguments are of the
     // correct type, and were False is returned.
     if (CALL_1ARGS(IsInfoClassListRep, selectors) == True) {
-#if defined(HPCGAP)
+#ifdef HPCGAP
         Obj index = ElmAList(selectors, INFODATA_CURRENTLEVEL);
 #else
         Obj index = ELM_PLIST(selectors, INFODATA_CURRENTLEVEL);
