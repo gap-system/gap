@@ -2082,12 +2082,14 @@ static void ReadWhile(ScannerState * s, TypSymbolSet follow)
 
 /****************************************************************************
 **
-*F  ReadAtomic( <follow> ) . . . . . . . . . . . . . .  read an atomic block
+*F  ReadAtomic( <follow> ) . . . . . . . . . . . . . . . read an atomic block
 **
 **  'ReadAtomic' reads an atomic block. In case of an error it skips all
 **  symbols up to one contained in <follow>.
 **
-**  <Statement> := 'atomic' <QualifiedExpression> { ',' <QualifiedExpression } 'do' <Statements> 'od' ';'
+**  <Statement> := 'atomic' <QualifiedExpr> { ',' <QualifiedExpr } 'do'
+**                     <Statements>
+**                 'od' ';'
 **
 **  These functions only do something meaningful inside HPC-GAP; in plain GAP,
 **  they are simply placeholders.
@@ -2116,7 +2118,7 @@ static void ReadAtomic(ScannerState * s, TypSymbolSet follow)
         return;
     }
 
-    /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
+    /* 'atomic' <QualifiedExpr> {',' <QualifiedExpr> } 'do'    */
     TRY_IF_NO_ERROR { IntrAtomicBegin(ReaderState()->StackNams); }
 
     ReadQualifiedExpr(s, S_DO|S_OD|follow, 'r');
@@ -2372,8 +2374,9 @@ static void ReadQUIT(ScannerState * s, TypSymbolSet follow)
 **              |  'while' <Expr>  'do' <Statements>  'od' ';'
 **              |  'repeat' <Statements>  'until' <Expr> ';'
 **              |  'break' ';'
+**              |  'continue' ';'
 **              |  'return' [ <Expr> ] ';'
-**              |  'atomic' <QualifiedExpression> { ',' <QualifiedExpression> } 'do' <Statements> 'od' ';'
+**              |  'atomic' <QualifiedExpr> { ',' <QualifiedExpr> } 'do' <Statements> 'od' ';'
 **              |  ';'
 */
 static Int TryReadStatement(ScannerState * s, TypSymbolSet follow)

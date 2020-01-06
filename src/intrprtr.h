@@ -278,7 +278,16 @@ void IntrWhileEndBody(UInt nr);
 
 void IntrWhileEnd(Obj stackNams);
 
-void IntrQualifiedExprBegin(UInt access);
+
+/****************************************************************************
+**
+*F  IntrQualifiedExprBegin(<qual>) .  interpret readonly/readwrite expr start
+*F  IntrQualifiedExprEnd() . . . . . .  interpret readonly/readwrite expr end
+**
+**  These functions interpret the beginning and end of the readonly/readwrite
+**  qualified expressions of an atomic statement.
+*/
+void IntrQualifiedExprBegin(UInt qual);
 
 void IntrQualifiedExprEnd(void);
 
@@ -867,19 +876,6 @@ void IntrAssertAfterCondition(void);
 void IntrAssertEnd2Args(void);
 void IntrAssertEnd3Args(void);
 
-/****************************************************************************
-**
-*F  IntrSaveWSBegin() . . . . . . . . . . . . . Start interpreting a save WS
-**
-*F  IntrSaveWSEnd() . . . . . . . . . . . . . . Actually save the workspace
-**
-**  'IntrSaveWSBegin' is called when the reader starts reading a
-**  SaveWorkspace command. 
-*/
-
-void IntrSaveWSBegin(void);
-
-void IntrSaveWSEnd(void);
 
 /****************************************************************************
 **

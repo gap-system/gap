@@ -841,11 +841,12 @@ void CodeAtomicEnd(void);
 
 /****************************************************************************
 **
-*F  CodeQualifiedExprBegin()  . . . code readonly/readwrite expression start
-*F  CodeQualifiedExprEnd()  . . . . . code readonly/readwrite expression end
+*F  CodeQualifiedExprBegin(<qual>) . code readonly/readwrite expression start
+*F  CodeQualifiedExprEnd() . . . . . . code readonly/readwrite expression end
 **
+**  These functions code the beginning and end of the readonly/readwrite
+**  qualified expressions of an atomic statement.
 */
-
 void CodeQualifiedExprBegin(UInt qual);
 
 void CodeQualifiedExprEnd(void);
@@ -923,6 +924,16 @@ void CodeRepeatEnd(void);
 **  the reader encounters a 'break;'.
 */
 void CodeBreak(void);
+
+
+/****************************************************************************
+**
+*F  CodeContinue() . . . . . . . . . . . . . . . . .  code continue-statement
+**
+**  'CodeContinue' is the action to code a continue-statement. It is called
+**  when the reader encounters a 'continue;'.
+*/
+void CodeContinue(void);
 
 
 /****************************************************************************
@@ -1100,6 +1111,11 @@ void CodeListExprEnd(UInt nr, UInt range, UInt top, UInt tilde);
 */
 void CodeStringExpr(Obj str);
 
+
+/****************************************************************************
+**
+*F  CodePragma(<pragma>)
+*/
 void CodePragma(Obj pragma);
 
 
@@ -1384,9 +1400,6 @@ void CodeAssertAfterCondition(void);
 void CodeAssertEnd2Args(void);
 
 void CodeAssertEnd3Args(void);
-
-/*  CodeContinue() .  . . . . . . . . . . . .  code continue-statement */
-void CodeContinue(void);
 
 
 /****************************************************************************

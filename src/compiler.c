@@ -609,13 +609,20 @@ static UInt CompGetUseRNam(RNam rnam)
 **  correspond  to the '%'  format elements  in  <fmt>.  Nothing  is actually
 **  outputted if 'CompPass' is not 2.
 **
-**  'Emit'   supports the following   '%'  format elements:  '%d' formats  an
-**  integer,   '%s' formats a  string,  '%S' formats a    string with all the
-**  necessary escapes, %C does the same  but uses only  valid C escapes, '%n'
-**  formats a  name   ('_' is  converted   to '__',  special  characters  are
-**  converted to     '_<hex1><hex2>'),    '%c'  formats     a  C     variable
-**  ('INTOBJ_INT(<int>)'  for integers,  'a_<name>' for arguments, 'l_<name>'
-**  for locals, 't_<nr>' for temporaries), and '%%' outputs a single '%'.
+**  'Emit' supports the following '%' format elements:
+**  - '%d' formats an integer,
+**  - '%s' formats a string,
+**  - '%S' formats a string with all the necessary escapes,
+**  - '%g' formats a GAP string,
+**  - '%G' formats a GAP string with all the necessary escapes,
+**  - '%C' does the same but uses only valid C escapes,
+**  - '%n' formats a name ('_' is converted to '__', special characters are
+**         converted to '_<hex1><hex2>')
+**  - '%c' formats a C variable ('INTOBJ_INT(<int>)' for integers, 'a_<name>'
+**         for arguments, 'l_<name>' for locals, 't_<nr>' for temporaries),
+**  - '%i' formats a C variable as an integer ('<int>' for integers, and for
+**         everything else the same as INT_INTOBJ(%c) would produce
+**  - '%%' outputs a single '%'.
 */
 static Int EmitIndent;
 

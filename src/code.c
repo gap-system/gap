@@ -1214,7 +1214,7 @@ void CodeAtomicEnd ( void )
 
 /****************************************************************************
 **
-*F  CodeQualifiedExprBegin() . . . . code readonly/readwrite expression start
+*F  CodeQualifiedExprBegin(<qual>) . code readonly/readwrite expression start
 *F  CodeQualifiedExprEnd() . . . . . . code readonly/readwrite expression end
 **
 **  These functions code the beginning and end of the readonly/readwrite
@@ -1809,6 +1809,11 @@ void CodeStringExpr (
     PushExpr( string );
 }
 
+
+/****************************************************************************
+**
+*F  CodePragma(<pragma>)
+*/
 void CodePragma(Obj pragma)
 {
     GAP_ASSERT(IS_STRING_REP(pragma));
