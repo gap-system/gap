@@ -862,11 +862,11 @@ void IntrWhileEnd(Obj stackNams)
 
 /****************************************************************************
 **
-*F  IntrQualifiedExprBegin( UInt qual ) . . . .  interpret expression guarded
-**                                       by readwrite or readonly
-*F  IntrQualifiedExprEnd( ) 
-**                                       by readwrite or readonly
+*F  IntrQualifiedExprBegin(<qual>) .  interpret readonly/readwrite expr start
+*F  IntrQualifiedExprEnd() . . . . . .  interpret readonly/readwrite expr end
 **
+**  These functions interpret the beginning and end of the readonly/readwrite
+**  qualified expressions of an atomic statement.
 */
 void IntrQualifiedExprBegin(UInt qual) 
 {
