@@ -153,15 +153,6 @@ DeclareOperation( "Process",
 
 #############################################################################
 ##
-#F  TmpNameAllArchs( )
-##
-##  returns a temporary file name based on the output of a call to TmpName
-##  but with adjusted temporary directory path for Window architectures
-##
-DeclareGlobalFunction("TmpNameAllArchs");
-
-#############################################################################
-##
 #F  Exec( <cmd>, <option1>, ..., <optionN> )  . . . . . . . execute a command
 ##
 ##  <#GAPDoc Label="Exec">

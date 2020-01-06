@@ -8,7 +8,7 @@ gap> CLOSE_LOG_TO();
 Error, LogTo: can not close the logfile
 gap> LOG_TO(fail);
 Error, LogTo: <filename> must be a string (not the value 'fail')
-gap> LOG_TO(TmpNameAllArchs());
+gap> LOG_TO(TmpName());
 true
 gap> CLOSE_LOG_TO();
 true
@@ -25,7 +25,7 @@ gap> CLOSE_INPUT_LOG_TO();
 Error, InputLogTo: can not close the logfile
 gap> INPUT_LOG_TO(fail);
 Error, InputLogTo: <filename> must be a string (not the value 'fail')
-gap> INPUT_LOG_TO(TmpNameAllArchs());
+gap> INPUT_LOG_TO(TmpName());
 true
 gap> CLOSE_INPUT_LOG_TO();
 true
@@ -42,7 +42,7 @@ gap> CLOSE_OUTPUT_LOG_TO();
 Error, OutputLogTo: can not close the logfile
 gap> OUTPUT_LOG_TO(fail);
 Error, OutputLogTo: <filename> must be a string (not the value 'fail')
-gap> OUTPUT_LOG_TO(TmpNameAllArchs());
+gap> OUTPUT_LOG_TO(TmpName());
 true
 gap> CLOSE_OUTPUT_LOG_TO();
 true

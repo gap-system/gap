@@ -1038,7 +1038,11 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 */
 static Obj FuncTmpName(Obj self)
 {
+#ifdef SYS_IS_CYGWIN32
+    char name[] = "C:/WINDOWS/Temp/gaptempfile.XXXXXX";
+#else
     char name[] = "/tmp/gaptempfile.XXXXXX";
+#endif
     close(mkstemp(name));
     return MakeString(name);
 }
@@ -1058,7 +1062,7 @@ static Obj FuncTmpDirectory(Obj self)
     }
     else {
 #ifdef SYS_IS_CYGWIN32
-        strxcpy(name, "/cygdrive/c/WINDOWS/Temp/", sizeof(name));
+        strxcpy(name, "C:/WINDOWS/Temp/", sizeof(name));
 #else
         strxcpy(name, "/tmp/", sizeof(name));
 #endif

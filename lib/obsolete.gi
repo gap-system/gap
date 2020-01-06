@@ -1028,3 +1028,12 @@ end );
 ##
 BindGlobal("R_N", fail);
 BindGlobal("R_X", fail);
+
+
+
+#############################################################################
+##
+#F  TmpNameAllArchs( )
+##
+##  Still used in guava (10/2019)
+DeclareObsoleteSynonym( "TmpNameAllArchs", "TmpName" );
