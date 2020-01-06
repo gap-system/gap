@@ -477,14 +477,6 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
   if dir = fail  then
     return fail;
   fi;
-  if ARCH_IS_WINDOWS() then
-    # We want to deliver a Windows path
-    if dir{[1..10]} = "/cygdrive/" then
-        drive := dir[11];
-        dir := Concatenation("C:",dir{[12..Length(dir)]});
-        dir[1] := drive;
-    fi;
-  fi;
 
   # remember directory name
   Add( GAPInfo.DirectoriesTemporary, dir );
