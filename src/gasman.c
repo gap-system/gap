@@ -2173,9 +2173,17 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 
 
         /* get the storage we absolutely need                              */
-        while ( EndBags < stopBags
-             && SyAllocBags(512,0) )
-            EndBags += WORDS_BAG(512*1024L);
+        if (EndBags < stopBags) {
+            size_t bytes = (char *)stopBags - (char *)EndBags;
+            // Increment in blocks of 512K
+            size_t blocks = bytes / 1024 / 512;
+            if (blocks * 1024 * 512 < bytes) {
+                blocks++;
+            }
+            if (SyAllocBags(blocks * 512, 0)) {
+                EndBags += WORDS_BAG(blocks * 512 * 1024);
+            }
+        }
 
         /* if not enough storage is free, fail                             */
         if ( EndBags < stopBags )
