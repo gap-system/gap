@@ -15,6 +15,24 @@ f := function() unknownvarname1 := unknownvarname2; end;;
 Syntax warning: Unbound global variable in stream:1
 f := function() unknownvarname1 := unknownvarname2; end;;
                                    ^^^^^^^^^^^^^^^
+gap> f := function() for unknownvarname in [1..10] do od; end;
+Syntax warning: Unbound global variable in stream:1
+f := function() for unknownvarname in [1..10] do od; end;
+                    ^^^^^^^^^^^^^^
+function(  ) ... end
+gap> f := function(x) for x in unknownvarname do od; end;
+Syntax warning: Unbound global variable in stream:1
+f := function(x) for x in unknownvarname do od; end;
+                          ^^^^^^^^^^^^^^
+function( x ) ... end
+gap> f := function() for unknownvarname1 in unknownvarname2 do od; end;
+Syntax warning: Unbound global variable in stream:1
+f := function() for unknownvarname1 in unknownvarname2 do od; end;
+                    ^^^^^^^^^^^^^^^
+Syntax warning: Unbound global variable in stream:1
+f := function() for unknownvarname1 in unknownvarname2 do od; end;
+                                       ^^^^^^^^^^^^^^^
+function(  ) ... end
 
 # Cases where we can't get the right marker, check we do not crash
 gap> f := function() unknownvarname
