@@ -693,6 +693,55 @@ static LHSRef ReadVar(ScannerState * s, TypSymbolSet follow)
     return ref;
 }
 
+// Helper function to be called after `ReadVar`, before any further tokens
+// have been consumed via calls to `Match`.
+static void CheckUnboundGlobal(ScannerState * s, LHSRef ref)
+{
+    // only warn if we are accessing a global variable
+    if (ref.type != R_GVAR)
+        return;
+
+    // only warn if inside a function
+    if (LEN_PLIST(ReaderState()->StackNams) == 0)
+        return;
+
+    // allow use in left hand side (LHS) of an assignment
+    if (ref.var == ReaderState()->CurrLHSGVar)
+        return;
+
+    // only warn if the global variable does not exist ...
+    if (ValGVar(ref.var) != 0)
+        return;
+
+    // ... and isn't an auto var
+    if (ExprGVar(ref.var) != 0)
+        return;
+
+    // don't warn if we are skipping/ignoring code
+    if (STATE(IntrIgnoring))
+        return;
+
+    // if the global was used as loop variable in an enclosing for loop, that
+    // means it will be assigned before execution gets here, so don't warn.
+    if (GlobalComesFromEnclosingForLoop(ref.var))
+        return;
+
+    // check if the user disabled this warning
+    if (WarnOnUnboundGlobalsRNam == 0)
+        WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
+    if (GAPInfo && IS_REC(GAPInfo) &&
+        ISB_REC(GAPInfo, WarnOnUnboundGlobalsRNam) &&
+        ELM_REC(GAPInfo, WarnOnUnboundGlobalsRNam) == False)
+        return;
+
+    // don't warn if we are compiling code
+    if (SyCompilePlease)
+        return;
+
+    // Need to pass an offset, because we have already parsed more tokens
+    SyntaxWarningWithOffset(s, "Unbound global variable", 2);
+}
+
 /****************************************************************************
 **
 *F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
@@ -752,26 +801,8 @@ static void ReadCallVarAss(ScannerState * s, TypSymbolSet follow, Char mode)
 
 
     /* check whether this is an unbound global variable                    */
-
-    if (WarnOnUnboundGlobalsRNam == 0)
-      WarnOnUnboundGlobalsRNam = RNamName("WarnOnUnboundGlobals");
-
-    if ( ref.type == R_GVAR            // Reading a global variable
-      && mode != 'i'                // Not inside 'IsBound'
-      && LEN_PLIST(ReaderState()->StackNams) != 0   // Inside a function
-      && ref.var != ReaderState()->CurrLHSGVar  // Not LHS of assignment
-      && ValGVar(ref.var) == 0          // Not an existing global var
-      && ExprGVar(ref.var) == 0         // Or an auto var
-      && ! STATE(IntrIgnoring)      // Not currently ignoring parsed code
-      && ! GlobalComesFromEnclosingForLoop(ref.var) // Not loop variable
-      && (GAPInfo == 0 || !IS_REC(GAPInfo)
-          || !ISB_REC(GAPInfo,WarnOnUnboundGlobalsRNam) // Warning enabled
-          ||  ELM_REC(GAPInfo,WarnOnUnboundGlobalsRNam) != False )
-      && ! SyCompilePlease )        // Not compiling
-    {
-        // Need to pass an offset, because we have already parsed more tokens
-        SyntaxWarningWithOffset(s, "Unbound global variable", 2);
-    }
+    if (mode != 'i')    // Not inside 'IsBound'
+        CheckUnboundGlobal(s, ref);
 
     /* followed by one or more selectors                                   */
     while (IS_IN(s->Symbol, S_LPAREN | S_LBRACK | S_LBRACE | S_DOT)) {
@@ -1997,6 +2028,7 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
     volatile LHSRef ref = ReadVar(s, follow);
     if (ref.type != R_INVALID)
         EvalRef(ref, 1);
+    CheckUnboundGlobal(s, ref);
 
     /* 'in' <Expr>                                                         */
     Match(s, S_IN, "in", S_DO|S_OD|follow);
