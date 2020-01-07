@@ -1185,60 +1185,6 @@ static ArgList ReadFuncArgList(ScannerState * s,
 }
 
 
-void StartFakeFuncExpr(Int startLine)
-{
-    assert(STATE(IntrCoding) == 0);
-
-    // switch to coding mode now
-    CodeBegin();
-
-    // code a function expression (with no arguments and locals)
-    Obj nams = NEW_PLIST(T_PLIST, 0);
-
-    // If we are in the break loop, then a local variable context may well
-    // exist, and we have to create an empty local variable names list to
-    // match the function expression that we are creating.
-    //
-    // Without this, access to variables defined in the existing local
-    // variable context will be coded as LVAR accesses; but when we then
-    // execute this code, they will not actually be available in the current
-    // context, but rather one level up, i.e., they really should have been
-    // coded as HVARs.
-    //
-    // If we are not in a break loop, then this would be a waste of time and
-    // effort
-    if (LEN_PLIST(ReaderState()->StackNams) > 0) {
-        PushPlist(ReaderState()->StackNams, nams);
-    }
-
-    CodeFuncExprBegin(0, 0, nams, startLine);
-}
-
-
-void FinishAndCallFakeFuncExpr(void)
-{
-    assert(STATE(IntrCoding) == 0);
-
-    // code a function expression (with one statement in the body)
-    CodeFuncExprEnd(1, 1);
-
-    // switch back to immediate mode and get the function
-    Obj func = CodeEnd(0);
-
-    // If we are in a break loop, then we will have created a "dummy" local
-    // variable names list to get the counts right. Remove it.
-    const UInt len = LEN_PLIST(ReaderState()->StackNams);
-    if (len > 0)
-        PopPlist(ReaderState()->StackNams);
-
-    // call the function
-    CALL_0ARGS(func);
-
-    // push void
-    PushVoidObj();
-}
-
-
 static void ReadFuncExprBody(ScannerState * s,
                              TypSymbolSet   follow,
                              Int            isAbbrev,
@@ -2044,7 +1990,7 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
     nrError   = STATE(NrError);
 
     /* 'for'                                                               */
-    TRY_IF_NO_ERROR { IntrForBegin(); }
+    TRY_IF_NO_ERROR { IntrForBegin(ReaderState()->StackNams); }
     Match(s, S_FOR, "for", follow);
 
     /* <Var>                                                               */
@@ -2072,7 +2018,7 @@ static void ReadFor(ScannerState * s, TypSymbolSet follow)
     /* 'od'                                                                */
     Match(s, S_OD, "while parsing a 'for' loop: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
-        IntrForEnd();
+        IntrForEnd(ReaderState()->StackNams);
     }
     CATCH_ERROR {
         /* an error has occurred *after* the 'IntrForBegin'                */
@@ -2107,7 +2053,7 @@ static void ReadWhile(ScannerState * s, TypSymbolSet follow)
     nrError   = STATE(NrError);
 
     /* 'while' <Expr>  'do'                                                */
-    TRY_IF_NO_ERROR { IntrWhileBegin(); }
+    TRY_IF_NO_ERROR { IntrWhileBegin(ReaderState()->StackNams); }
     Match(s, S_WHILE, "while", follow);
     ReadExpr(s, S_DO|S_OD|follow, 'r');
     Match(s, S_DO, "do", STATBEGIN|S_DO|follow);
@@ -2122,7 +2068,7 @@ static void ReadWhile(ScannerState * s, TypSymbolSet follow)
     /* 'od'                                                                */
     Match(s, S_OD, "while parsing a 'while' loop: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
-        IntrWhileEnd();
+        IntrWhileEnd(ReaderState()->StackNams);
     }
     CATCH_ERROR {
         /* an error has occurred *after* the 'IntrWhileBegin'              */
@@ -2171,7 +2117,7 @@ static void ReadAtomic(ScannerState * s, TypSymbolSet follow)
     }
 
     /* 'atomic' <QualifiedExpression> {',' <QualifiedExpression> } 'do'    */
-    TRY_IF_NO_ERROR { IntrAtomicBegin(); }
+    TRY_IF_NO_ERROR { IntrAtomicBegin(ReaderState()->StackNams); }
 
     ReadQualifiedExpr(s, S_DO|S_OD|follow, 'r');
     nexprs = 1;
@@ -2197,7 +2143,7 @@ static void ReadAtomic(ScannerState * s, TypSymbolSet follow)
     /* 'od'                                                                */
     Match(s, S_OD, "while parsing an atomic block: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
-        IntrAtomicEnd();
+        IntrAtomicEnd(ReaderState()->StackNams);
     }
     CATCH_ERROR {
         /* an error has occurred *after* the 'IntrAtomicBegin'             */
@@ -2237,7 +2183,7 @@ static void ReadRepeat(ScannerState * s, TypSymbolSet follow)
     nrError   = STATE(NrError);
 
     /* 'repeat'                                                            */
-    TRY_IF_NO_ERROR { IntrRepeatBegin(); }
+    TRY_IF_NO_ERROR { IntrRepeatBegin(ReaderState()->StackNams); }
     Match(s, S_REPEAT, "repeat", follow);
 
     //  <Statements>
@@ -2251,7 +2197,7 @@ static void ReadRepeat(ScannerState * s, TypSymbolSet follow)
     Match(s, S_UNTIL, "while parsing a 'repeat' loop: statement or 'until'", EXPRBEGIN|follow);
     ReadExpr(s, follow, 'r');
     TRY_IF_NO_ERROR {
-        IntrRepeatEnd();
+        IntrRepeatEnd(ReaderState()->StackNams);
     }
     CATCH_ERROR {
         /* an error has occurred *after* the 'IntrRepeatBegin'             */
