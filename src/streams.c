@@ -15,7 +15,6 @@
 
 #include "bool.h"
 #include "calls.h"
-#include "compstat.h"
 #include "error.h"
 #include "funcs.h"
 #include "gap.h"
@@ -435,26 +434,25 @@ Int READ_GAP_ROOT ( const Char * filename )
 
     // try to find compiled version of the GAP file
     if (SyUseModule) {
-        // search for a statically linked module matching the given filename
+        // This code section covers transparently loading GAC compiled
+        // versions of GAP source files, by running code similar to
+        // that in FuncLOAD_STAT. For example, lib/oper1.g is compiled
+        // into C code which is stored in src/c_oper1.c; when reading
+        // lib/oper1.g, we instead will load its compiled version.
         Char module[GAP_PATH_MAX];
         strxcpy(module, "GAPROOT/", sizeof(module));
         strxcat(module, filename, sizeof(module));
-        for (int k = 0; CompInitFuncs[k]; k++) {
-            StructInitInfo * info = (*(CompInitFuncs[k]))();
-            if (info && !strcmp(module, info->name)) {
-                // found a matching statically linked module; if there is also
-                // a GAP file, compare their CRC
-                if (*path && info->crc != SyGAPCRC(path)) {
-                    Pr("#W Static module %s has CRC mismatch, ignoring\n",
-                       (Int)filename, 0);
-                    break;
-                }
 
-                // This code section covers transparently loading GAC compiled
-                // versions of GAP source files, by running code similar to
-                // that in FuncLOAD_STAT. For example, lib/oper1.g is compiled
-                // into C code which is stored in src/c_oper1.c; when reading
-                // lib/oper1.g, we instead will load its compiled version.
+        // search for a statically linked module matching the given filename
+        StructInitInfo * info = LookupStaticModule(module);
+        if (info) {
+            // found a matching statically linked module; if there is also
+            // a GAP file, compare their CRC
+            if (*path && info->crc != SyGAPCRC(path)) {
+                Pr("#W Static module %s has CRC mismatch, ignoring\n",
+                   (Int)filename, 0);
+            }
+            else {
                 if (SyDebugLoading) {
                     Pr("#I  READ_GAP_ROOT: loading '%s' statically\n",
                        (Int)filename, 0);

@@ -578,6 +578,13 @@ void RecordLoadedModule(StructInitInfo * module,
 
 /****************************************************************************
 **
+*F  LookupStaticModule(<name>)
+*/
+StructInitInfo * LookupStaticModule(const char * name);
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * *
 */
 

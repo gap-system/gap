@@ -174,6 +174,22 @@ Int ActivateModule(StructInitInfo * info)
 
 /****************************************************************************
 **
+*F  LookupStaticModule(<name>)
+*/
+StructInitInfo * LookupStaticModule(const char * name)
+{
+    for (int k = 0; CompInitFuncs[k]; k++) {
+        StructInitInfo * info = (*(CompInitFuncs[k]))();
+        if (info && strcmp(name, info->name) == 0) {
+            return info;
+        }
+    }
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F  SyLoadModule( <name>, <func> )  . . . . . . . . .  load a compiled module
 **
 **  This function attempts to load a compiled module <name>.
@@ -281,7 +297,6 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
 {
     StructInitInfo * info = 0;
-    Int              k;
 
     RequireStringRep("LOAD_STAT", filename);
     if (!IS_INTOBJ(crc) && crc != False) {
@@ -289,13 +304,8 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
     }
 
     /* try to find the module                                              */
-    for (k = 0; CompInitFuncs[k]; k++) {
-        info = (*(CompInitFuncs[k]))();
-        if (info && !strcmp(CONST_CSTR_STRING(filename), info->name)) {
-            break;
-        }
-    }
-    if (CompInitFuncs[k] == 0) {
+    info = LookupStaticModule(CONST_CSTR_STRING(filename));
+    if (info == 0) {
         if (SyDebugLoading) {
             Pr("#I  LOAD_STAT: no module named '%g' found\n", (Int)filename,
                0);
@@ -854,17 +864,8 @@ void LoadModules(void)
             StructInitInfo * info = NULL;
             /* Search for user module static case first */
             if (IS_MODULE_STATIC(type)) {
-                UInt k;
-                for (k = 0; CompInitFuncs[k]; k++) {
-                    info = (*(CompInitFuncs[k]))();
-                    if (info == 0) {
-                        continue;
-                    }
-                    if (!strcmp(buf, info->name)) {
-                        break;
-                    }
-                }
-                if (CompInitFuncs[k] == 0) {
+                info = LookupStaticModule(buf);
+                if (info == 0) {
                     Panic("Static module %s not found in loading kernel",
                           buf);
                 }
