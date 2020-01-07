@@ -111,13 +111,6 @@ void ReadEvalError(void) NORETURN;
 
 /****************************************************************************
 **
-*/
-void StartFakeFuncExpr(Int startLine);
-void FinishAndCallFakeFuncExpr(void);
-
-
-/****************************************************************************
-**
 *F  Call0ArgsInNewReader(Obj f)  . . . . . . . . . . . . call a GAP function
 **
 **  The current reader context is saved and a new one is started.

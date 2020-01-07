@@ -233,7 +233,7 @@ void IntrIfEnd(UInt nr);
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrForBegin(void);
+void IntrForBegin(Obj stackNams);
 
 void IntrForIn(void);
 
@@ -241,7 +241,7 @@ void IntrForBeginBody(void);
 
 void IntrForEndBody(UInt nr);
 
-void IntrForEnd(void);
+void IntrForEnd(Obj stackNams);
 
 
 /****************************************************************************
@@ -270,13 +270,13 @@ void IntrForEnd(void);
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrWhileBegin(void);
+void IntrWhileBegin(Obj stackNams);
 
 void IntrWhileBeginBody(void);
 
 void IntrWhileEndBody(UInt nr);
 
-void IntrWhileEnd(void);
+void IntrWhileEnd(Obj stackNams);
 
 void IntrQualifiedExprBegin(UInt access);
 
@@ -311,13 +311,13 @@ void IntrQualifiedExprEnd(void);
 **  they are simply placeholders.
 */
 
-void IntrAtomicBegin(void);
+void IntrAtomicBegin(Obj stackNams);
 
 void IntrAtomicBeginBody(UInt nrexprs);
 
 void IntrAtomicEndBody(Int nrstats);
 
-void IntrAtomicEnd(void);
+void IntrAtomicEnd(Obj stackNams);
 
 #ifdef HPCGAP
 /* TODO: move these constants to a more appropriate location */
@@ -353,13 +353,13 @@ enum {
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrRepeatBegin(void);
+void IntrRepeatBegin(Obj stackNams);
 
 void IntrRepeatBeginBody(void);
 
 void IntrRepeatEndBody(UInt nr);
 
-void IntrRepeatEnd(void);
+void IntrRepeatEnd(Obj stackNams);
 
 
 /****************************************************************************

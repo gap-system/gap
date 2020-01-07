@@ -202,6 +202,60 @@ static Obj PopVoidObj(void)
 }
 
 
+static void StartFakeFuncExpr(Obj stackNams, Int startLine)
+{
+    assert(STATE(IntrCoding) == 0);
+
+    // switch to coding mode now
+    CodeBegin();
+
+    // code a function expression (with no arguments and locals)
+    Obj nams = NEW_PLIST(T_PLIST, 0);
+
+    // If we are in the break loop, then a local variable context may well
+    // exist, and we have to create an empty local variable names list to
+    // match the function expression that we are creating.
+    //
+    // Without this, access to variables defined in the existing local
+    // variable context will be coded as LVAR accesses; but when we then
+    // execute this code, they will not actually be available in the current
+    // context, but rather one level up, i.e., they really should have been
+    // coded as HVARs.
+    //
+    // If we are not in a break loop, then this would be a waste of time and
+    // effort
+    if (LEN_PLIST(stackNams) > 0) {
+        PushPlist(stackNams, nams);
+    }
+
+    CodeFuncExprBegin(0, 0, nams, startLine);
+}
+
+
+static void FinishAndCallFakeFuncExpr(Obj stackNams)
+{
+    assert(STATE(IntrCoding) == 0);
+
+    // code a function expression (with one statement in the body)
+    CodeFuncExprEnd(1, 1);
+
+    // switch back to immediate mode and get the function
+    Obj func = CodeEnd(0);
+
+    // If we are in a break loop, then we will have created a "dummy" local
+    // variable names list to get the counts right. Remove it.
+    const UInt len = LEN_PLIST(stackNams);
+    if (len > 0)
+        PopPlist(stackNams);
+
+    // call the function
+    CALL_0ARGS(func);
+
+    // push void
+    PushVoidObj();
+}
+
+
 /****************************************************************************
 **
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
@@ -659,14 +713,14 @@ void            IntrIfEnd (
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrForBegin ( void )
+void IntrForBegin(Obj stackNams)
 {
     /* ignore                                                              */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
     if (STATE(IntrCoding) == 0)
-        StartFakeFuncExpr(0);
+        StartFakeFuncExpr(stackNams, 0);
 
     STATE(IntrCoding)++;
 
@@ -708,7 +762,7 @@ void IntrForEndBody (
     CodeForEndBody(nr);
 }
 
-void IntrForEnd ( void )
+void IntrForEnd(Obj stackNams)
 {
     /* ignore                                                              */
     SKIP_IF_RETURNING();
@@ -721,7 +775,7 @@ void IntrForEnd ( void )
     CodeForEnd();
 
     if (STATE(IntrCoding) == 0)
-        FinishAndCallFakeFuncExpr();
+        FinishAndCallFakeFuncExpr(stackNams);
 }
 
 
@@ -751,14 +805,14 @@ void IntrForEnd ( void )
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void            IntrWhileBegin ( void )
+void IntrWhileBegin(Obj stackNams)
 {
     /* ignore                                                              */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
     if (STATE(IntrCoding) == 0)
-        StartFakeFuncExpr(0);
+        StartFakeFuncExpr(stackNams, 0);
 
     STATE(IntrCoding)++;
 
@@ -789,7 +843,7 @@ void            IntrWhileEndBody (
     CodeWhileEndBody( nr );
 }
 
-void            IntrWhileEnd ( void )
+void IntrWhileEnd(Obj stackNams)
 {
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -802,7 +856,7 @@ void            IntrWhileEnd ( void )
     CodeWhileEnd();
 
     if (STATE(IntrCoding) == 0)
-        FinishAndCallFakeFuncExpr();
+        FinishAndCallFakeFuncExpr(stackNams);
 }
 
 
@@ -863,14 +917,14 @@ void IntrQualifiedExprEnd( void )
 **  These functions only do something meaningful inside HPC-GAP; in plain
 **  GAP, they are simply placeholders.
 */
-void            IntrAtomicBegin ( void )
+void IntrAtomicBegin(Obj stackNams)
 {
     /* ignore                                                              */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
     if (STATE(IntrCoding) == 0)
-        StartFakeFuncExpr(GetInputLineNumber());
+        StartFakeFuncExpr(stackNams, GetInputLineNumber());
 
     STATE(IntrCoding)++;
 
@@ -900,7 +954,7 @@ void            IntrAtomicEndBody (
     CodeAtomicEndBody(nrstats);
 }
 
-void            IntrAtomicEnd ( void )
+void IntrAtomicEnd(Obj stackNams)
 {
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -913,7 +967,7 @@ void            IntrAtomicEnd ( void )
     CodeAtomicEnd();
 
     if (STATE(IntrCoding) == 0)
-        FinishAndCallFakeFuncExpr();
+        FinishAndCallFakeFuncExpr(stackNams);
 }
 
 
@@ -943,14 +997,14 @@ void            IntrAtomicEnd ( void )
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void            IntrRepeatBegin ( void )
+void IntrRepeatBegin(Obj stackNams)
 {
     /* ignore                                                              */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
     if (STATE(IntrCoding) == 0)
-        StartFakeFuncExpr(GetInputLineNumber());
+        StartFakeFuncExpr(stackNams, GetInputLineNumber());
 
     STATE(IntrCoding)++;
 
@@ -981,7 +1035,7 @@ void            IntrRepeatEndBody (
     CodeRepeatEndBody( nr );
 }
 
-void            IntrRepeatEnd ( void )
+void IntrRepeatEnd(Obj stackNams)
 {
     /* ignore                                                              */
     SKIP_IF_RETURNING();
@@ -994,7 +1048,7 @@ void            IntrRepeatEnd ( void )
     CodeRepeatEnd();
 
     if (STATE(IntrCoding) == 0)
-        FinishAndCallFakeFuncExpr();
+        FinishAndCallFakeFuncExpr(stackNams);
 }
 
 
