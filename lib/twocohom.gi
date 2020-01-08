@@ -671,7 +671,9 @@ end );
 
 # return isomorphism G-fp and fp->mon, such that presentation of monoid is
 # confluent (wrt wreath order). Returns list [fphom,monhom,ordering]
-BindGlobal("ConfluentMonoidPresentationForGroup",function(G)
+InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
+  [IsGroup and IsFinite],
+function(G)
 local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept;
   if IsSymmetricGroup(G) then
@@ -840,11 +842,13 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
   if not HasIsomorphismFpMonoid(G) then
     SetIsomorphismFpMonoid(G,hom);
   fi;
+  j:=rec(fphom:=iso,monhom:=hom);
   if dept=fail then
-    return [iso,hom,k!.ordering];
+    j.ordering:=k!.ordering;
   else
-    return [iso,hom,WreathProductOrdering(fm,dept)];
+    j.ordering:=WreathProductOrdering(fm,dept);
   fi;
+  return j;
 end);
 
 #############################################################################
@@ -984,9 +988,9 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   else
     # new approach with RWS from chief series
     mon:=ConfluentMonoidPresentationForGroup(G);
-    fp:=mon[1];
+    fp:=mon.fphom;
     fpg:=Range(fp);
-    fm:=mon[2];
+    fm:=mon.monhom;
     mon:=Range(fm);
     tzrules:=List(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord));
   fi;
