@@ -5881,7 +5881,7 @@ InstallMethod( CharacterTableIsoclinic,
 ##
 #M  CharacterTableIsoclinic( <ordtbl>, <nsg> )
 ##
-##  Perhaps <nsg> is is fact <center>, so do not delegate to the case
+##  Perhaps <nsg> is in fact <center>, so do not delegate to the case
 ##  where the second argument is a record.
 ##
 InstallMethod( CharacterTableIsoclinic,

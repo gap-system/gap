@@ -3870,7 +3870,7 @@ static Obj PowIntTrans4(Obj point, Obj f)
 **  transformation <f>.  It is called from 'FuncOnSets'.
 **
 **  The input <set> must be a non-empty set, i.e., plain, dense and strictly
-**  sorted. This is is not verified.
+**  sorted. This is not verified.
 */
 Obj OnSetsTrans(Obj set, Obj f)
 {
@@ -3963,7 +3963,7 @@ Obj OnSetsTrans(Obj set, Obj f)
 **  'OnTuplesTrans'  returns  the  image  of  the  tuple  <tup>   under  the
 **  transformation <f>.  It is called from 'FuncOnTuples'.
 **
-**  The input <tup> must be a non-empty and dense plain list. This is is not
+**  The input <tup> must be a non-empty and dense plain list. This is not
 **  verified.
 */
 Obj OnTuplesTrans(Obj tup, Obj f)

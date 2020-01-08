@@ -770,7 +770,7 @@ void InitGlobalBag(Bag * addr, const Char * cookie);
 **  A freeing function must *not* call 'NewBag', 'ResizeBag', or 'RetypeBag'.
 **
 **  When such  a function is  called for a bag <bag>,  its subbags  are still
-**  accessible.  Note that it it not specified, whether the freeing functions
+**  accessible.  Note that it is not specified whether the freeing functions
 **  for the subbags of   <bag> (if there   are freeing functions for  bags of
 **  their types) are called before or after the freeing function for <bag>.
 */

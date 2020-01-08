@@ -207,7 +207,7 @@ typedef struct {
 **  variable 'Value' holds the name of the identifier, the digits of
 **  the integer or float literal as a C string. For large integer or float
 **  literals that do not fit into 'Value', instead 'ValueObj'
-**  holds the the literal as a GAP string object. If the symbol is 'S_STRING'
+**  holds the literal as a GAP string object. If the symbol is 'S_STRING'
 **  or 'S_HELP', the string literal or help text is always stored in
 **  'ValueObj' as a GAP string object.
 **

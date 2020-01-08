@@ -828,7 +828,7 @@ local aug,w,p,pres,f,fam,opt;
 
   # write the homomorphism in terms of the image's free generators
   # (so preimages are cheap)
-  # this object cannot test whether is is a proper mapping, so skip
+  # this object cannot test whether it is a proper mapping, so skip
   # safety assertions that could be triggered by the construction process
   f:=GroupHomomorphismByImagesNC(u,f,w,GeneratorsOfGroup(f):noassert);
   # but give it `aug' as coset table, so we will use rewriting for images

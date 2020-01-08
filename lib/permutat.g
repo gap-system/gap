@@ -17,7 +17,7 @@
 ##  Internally, &GAP; stores a permutation as a list of the <M>d</M> images
 ##  of the integers <M>1, \ldots, d</M>, where the <Q>internal degree</Q>
 ##  <M>d</M> is the largest integer moved by the permutation or bigger.
-##  When a permutation is read in in cycle notation, <M>d</M> is always set
+##  When a permutation is read in cycle notation, <M>d</M> is always set
 ##  to the largest moved integer, but a bigger <M>d</M> can result from a
 ##  multiplication of two permutations, because the product is not shortened
 ##  if it fixes&nbsp;<M>d</M>.

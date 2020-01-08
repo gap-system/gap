@@ -1253,12 +1253,12 @@ local q,p,e,i,j,cnt,sel,si;
     # is the denominator a constant?
     if Length(den[1])>0 then
       q:=den[1];
-      e:=q{[2,4..Length(q)]}; # the exponents exponents
-      q:=q{[1,3..Length(q)-1]}; # the indeterminant occuring
+      e:=q{[2,4..Length(q)]}; # the exponents
+      q:=q{[1,3..Length(q)-1]}; # the indeterminate occurring
       IsSSortedList(q);
       i:=1;
       while i<Length(num) and ForAny(e,j->j>0) do
-	cnt:=0; # how many indeterminants did we find
+	cnt:=0; # how many indeterminates did we find
 	for j in [1,3..Length(num[i])-1] do
 	  p:=Position(q,num[i][j]); # uses PositionSorted
 	  if p<>fail then

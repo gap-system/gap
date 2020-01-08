@@ -748,7 +748,7 @@ DeclareOperation( "CorrespondingPermutations",
 ##  <Description>
 ##  The default <Ref Oper="PrintObj"/> method for class functions
 ##  does the same as <Ref Oper="ViewObj"/>,
-##  except that the character table is is <Ref Func="Print"/>-ed instead of
+##  except that the character table is <Ref Func="Print"/>-ed instead of
 ##  <Ref Func="View"/>-ed.
 ##  <P/>
 ##  <E>Note</E> that if a class function is shown only with one of the

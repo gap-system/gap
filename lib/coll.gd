@@ -2226,7 +2226,7 @@ DeclareSynonym( "Set", SSortedList );
 ##  If the argument is a list (which may contain holes),
 ##  then <C>Length( <A>imm</A> )</C> is the <Ref Attr="Length"/> value of
 ##  this list,
-##  and <A>imm</A> contains the elements (and holes) of of the list
+##  and <A>imm</A> contains the elements (and holes) of the list
 ##  in the same order.
 ##  If the argument is a collection that is not a list,
 ##  then <C>Length( <A>imm</A> )</C> is the number of different elements

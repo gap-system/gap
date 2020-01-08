@@ -2734,7 +2734,7 @@ end);
 # Efficiency Points:
 #
 # (1) "Omega" is used to compute Omega(G/<z>,p,e). |G/<z>| = |G|/p.
-# This is a very very tiny reduction AND it is very possible for
+# This is a very tiny reduction AND it is very possible for
 # Omega(G/<z>)=G/<z> for every nontrivial element z of the socle without
 # Omega(G)=G. Hence the calculation of Omega(G/<z>) may take a very
 # long time AND may prove worthless.

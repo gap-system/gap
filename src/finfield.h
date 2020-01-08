@@ -144,7 +144,7 @@ extern  Obj             SuccFF;
 **  into a 'UInt2'.
 **
 **  It may be possible to change this to 'UInt4' to allow small finite fields
-**  with more than than  65536 elements.  The macros  and have been coded  in
+**  with more than  65536 elements.  The macros  and have been coded  in
 **  such a  way that they work  without problems.  The exception is 'POW_FFV'
 **  which  will only work if  the product of integers  of type 'FFV' does not
 **  cause an overflow.  And of course the successor table stored for a finite

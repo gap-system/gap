@@ -173,7 +173,7 @@ const Int SyNanosecondsSinceEpochMonotonic = 0;
 **  SyNanosecondsSinceEpoch.
 **
 **  If the return value is positive then the value has been returned
-**  by the operating system can can probably be relied on. If the
+**  by the operating system can probably be relied on. If the
 **  return value is negative it is just an estimate (as in the case
 **  of gettimeofday we have no way to get the exact resolution so we
 **  just pretend that the resolution is 1000 nanoseconds).

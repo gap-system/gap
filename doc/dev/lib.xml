@@ -21,7 +21,7 @@ The &GAP; kernel supports a variety of options which can be enabled by running
 and debugging &GAP; kernel code.
 <P/>
 
-The first option, <C>--enable-debug</C>, is well supported can can be used
+The first option, <C>--enable-debug</C>, is well supported and can be used
 whenever the &GAP; kernel, or kernel modules, are being developed (although
 developers should still check their code works without it).
 <P/>

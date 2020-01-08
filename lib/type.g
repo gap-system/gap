@@ -200,7 +200,7 @@ end );
 ##  subrepresentation of, and <A>slots</A> lists the admissible names of
 ##  components that objects in the representation <A>rep</A> may have.
 ##  The admissible positions resp. component names of <A>super</A> need not
-##  be be listed in <A>slots</A>.
+##  be listed in <A>slots</A>.
 ##  <P/>
 ##  The incremental rank (see&nbsp;<Ref Sect="Filters"/>)
 ##  of <A>rep</A> is 1.

@@ -56,7 +56,7 @@ end );
 #F  NumberPerfectGroups( size )
 ##
 ##  `NumberPerfectGroups'  returns the number of nonisomorphic perfect groups
-##  of size size for 1 <= size <= 1 000 000.
+##  of size `size' for 1 <= size <= 1 000 000.
 ##
 ##  Exception:  The number of  perfect groups  is not yet known for the eight
 ##  sizes  61440, 122880, 172032, 245760, 344064, 491520, 688128, and 983040.
@@ -87,7 +87,7 @@ end );
 #F  NumberPerfectLibraryGroups( size )
 ##
 ##  `NumberPerfectLibraryGroups'  returns the number of nonisomorphic perfect
-##  groups of size size for 1 <= size <= 1 000 000 which are available in the
+##  groups of size `size' for 1 <= size <= 1 000 000 which are available in the
 ##  perfect groups library.
 ##
 InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
@@ -120,7 +120,7 @@ end );
 ##  or  [ 3, <size1>, <n1>, <size2>, <n2>, <string1>, <string2> ... ]
 ##
 ##  In the first case,  the resulting group G is just the direct product D of
-##  the n1-th group of size size1, G1, and the n2-th group of size size2, G2,
+##  the n1-th group of size `size1', G1, and the n2-th group of size `size2', G2,
 ##  from the perfect groups library.
 ##
 ##  In the second case,  the string entries  are expected  to be the names of
@@ -198,7 +198,7 @@ end;
 ##  or  [ 4, <size1>, <n1>, <size2>, <n2>, <over>, <n1'>, <n2'> ]
 ##
 ##  The resulting group G is the subdirect product of the n1-th group of size
-##  size1, G1, and the n2-th group of size size2, G2, from the perfect groups
+##  `size1', G1, and the n2-th group of size `size2', G2, from the perfect groups
 ##  library over the perfect group G0 of size over.
 ##
 ##  Note:  This function is an internal function, hence the arguments are not
@@ -478,10 +478,10 @@ end );
 #F  DisplayInformationPerfectGroups( [ <size>, <n> ] )  . . . . . . . . . . .
 ##
 ##  `DisplayInformationPerfectGroups'  displays  some invariants  of the n-th
-##  group of size size from the perfect groups library.
+##  group of size `size' from the perfect groups library.
 ##
 ##  If no value of n has been specified, the invariants will be displayed for
-##  all groups of size size available in the library.
+##  all groups of size `size' available in the library.
 ##
 InstallGlobalFunction( DisplayInformationPerfectGroups,
     function ( arg )
@@ -654,7 +654,7 @@ local a6a6, a6a6a6, empty, factor, minsize, minsizenum, n, nn, num, pos,
         # check the size for being a multiple of minsize.
         if PERFRec.sizes[sizenum] mod minsize = 0 then
 
-            # loop over the library groups of size size.
+            # loop over the library groups of size `size'.
             size := PERFRec.sizes[sizenum];
 	    PerfGrpLoad(size);
             nn := PERFRec.number[sizenum];

@@ -295,7 +295,7 @@ end );
 ##
 ##
 InstallOtherMethod( \+,
-    "for ring ring general mapping and ring g.m.b.i.",
+    "for ring general mapping and ring g.m.b.i.",
     IsIdenticalObj,
     [ IsRingGeneralMapping,
       IsRingGeneralMapping and IsRingGeneralMappingByImagesDefaultRep],
@@ -331,7 +331,7 @@ end );
 ##
 ##
 InstallOtherMethod( \=,
-    "for ring ring general mapping and ring g.m.b.i.",
+    "for ring general mapping and ring g.m.b.i.",
     IsIdenticalObj,
     [ IsRingGeneralMapping,
       IsRingGeneralMapping and IsRingGeneralMappingByImagesDefaultRep],

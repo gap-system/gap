@@ -128,7 +128,7 @@ to create a GitHub account, see below for an alternative.
 From there you will have to wait on one of the GAP committers to respond to
 the request. This response might be an accept or some changes, improvements or
 alternatives will be suggested. We do not guarantee that all requests will be
-accepted. You may want to to read the section discussing the reviewing process
+accepted. You may want to read the section discussing the reviewing process
 below to make the review of your pull request go smoothly.
 
 

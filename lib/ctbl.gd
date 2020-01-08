@@ -3278,7 +3278,7 @@ DeclareGlobalFunction( "ConvertToCharacterTableNC" );
 ##  with value <K>true</K>, then no attribute values are set.
 ##  <P/>
 ##  (The handling of generic character tables may change in the future.
-##  Currently they are used just just for specialization,
+##  Currently they are used just for specialization,
 ##  see&nbsp;<Ref Chap="Generic Character Tables" BookName="ctbllib"/>.)
 ##  </Description>
 ##  </ManSection>

@@ -3480,7 +3480,7 @@ static Obj LQuoPPerm(Obj f, Obj g)
 **  permutation <f>.  It is called from 'FuncOnSets'.
 **
 **  The input <set> must be a non-empty set, i.e., plain, dense and strictly
-**  sorted. This is is not verified.
+**  sorted. This is not verified.
 */
 Obj OnSetsPPerm(Obj set, Obj f)
 {
@@ -3573,7 +3573,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
 **  'OnTuplesPPerm'  returns  the  image  of  the  tuple  <tup>   under  the
 **  partial permutation <f>.  It is called from 'FuncOnTuples'.
 **
-**  The input <tup> must be a non-empty and dense plain list. This is is not
+**  The input <tup> must be a non-empty and dense plain list. This is not
 **  verified.
 */
 Obj OnTuplesPPerm(Obj tup, Obj f)

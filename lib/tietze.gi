@@ -215,7 +215,7 @@ InstallGlobalFunction( DecodeTree, function ( T )
     if trlast <= primary then
         # if yes, delete the tree ...
         Unbind( T!.tree );
-        # ... and reinitialize the tracing of generator images images if
+        # ... and reinitialize the tracing of generator images if
         # it had been initialized before.
         if IsBound( T!.preImagesNewGens ) then
             TzInitGeneratorImages( T );

@@ -751,7 +751,7 @@ DeclareAttributeSuppCT( "ComputedClassFusions",
 ##  <Ref Attr="ComputedClassFusions"/> list of <A>source</A>
 ##  contains a record with <C>name</C> component
 ##  <C>Identifier( <A>destination</A> )</C>,
-##  and returns returns the <C>map</C> component of the first such record.
+##  and returns the <C>map</C> component of the first such record.
 ##  <C>GetFusionMap( <A>source</A>, <A>destination</A>,
 ##  <A>specification</A> )</C> fetches
 ##  that fusion map for which the record additionally has the

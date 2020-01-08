@@ -177,7 +177,7 @@ Obj GAP_EvalString(const char * cmd);
 ////
 
 // Returns the value of the global GAP variable with name <name>, or NULL if
-// no global variable with this this name is defined.
+// no global variable with this name is defined.
 Obj GAP_ValueGlobalVariable(const char * name);
 
 // Checks if assigning to the global GAP variable <name> is possible, by
