@@ -1758,7 +1758,7 @@ static Int InitKernel (
 
 
     /* initialise all 'Do<Something><N>args' handlers, give the most       */
-    /* common ones short cookies to save space in in the saved workspace   */
+    /* common ones short cookies to save space in the saved workspace   */
     InitHandlerFunc( DoFail0args, "f0" );
     InitHandlerFunc( DoFail1args, "f1" );
     InitHandlerFunc( DoFail2args, "f2" );

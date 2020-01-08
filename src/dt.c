@@ -515,7 +515,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 **  <a> is not marked but all the other nodes of <a> are marked.  It is
 **  assumed that if the top node of a subtree <b> of tree(<tree>, index) 
 **  is marked,  all
-**  nodes of of <b> are marked.  Hence it suffices to look for a subtree <a>
+**  nodes of <b> are marked.  Hence it suffices to look for a subtree <a>
 **  of <tree> such that the top node of <a> is unmarked and the left and the
 **  right node of <a> are marked.  'FindTree' returns an integer <i> such 
 **  that tree(<tree> ,i) has the properties mentioned above.  If such a tree

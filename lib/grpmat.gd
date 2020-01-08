@@ -368,7 +368,7 @@ InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingBilinearForm );
 ##  matrix group <A>matgrp</A> over the field <M>F</M> with <M>q^2</M>
 ##  elements.
 ##  The form is given by a record with the component <C>matrix</C>
-##  which is is a matrix <M>M</M> such that for every generator <M>g</M> of
+##  which is a matrix <M>M</M> such that for every generator <M>g</M> of
 ##  <A>matgrp</A>
 ##  the equation <M>g \cdot M \cdot (g^{tr})^f = M</M> holds,
 ##  where <M>f</M> is the automorphism of <M>F</M> that raises each element

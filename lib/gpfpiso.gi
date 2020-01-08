@@ -244,11 +244,11 @@ InstallGlobalFunction(IsomorphismFpGroupByChiefSeriesFactor,
 function(g,str,N)
   local ser, ab, homs, gens, idx, start, pcgs, hom, f, fgens, auts, sf, orb, tra, j, a, ad, lad, n, fg, free, rels, fp, vals, dec, still, lgens, ngens, nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l, m;
   if Size(g)=1 then
-    # often occurs in induction base base
+    # often occurs in induction base
     return
     GroupHomomorphismByFunction(g,TRIVIAL_FP_GROUP,x->One(TRIVIAL_FP_GROUP),x->One(g):noassert);
   elif g=N then
-    # often occurs in induction base base
+    # often occurs in induction base
     return GroupHomomorphismByImagesNC(g,TRIVIAL_FP_GROUP,GeneratorsOfGroup(g),
              List(GeneratorsOfGroup(g),x->One(TRIVIAL_FP_GROUP)):noassert);
   elif IsTrivial(N) then

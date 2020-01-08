@@ -732,7 +732,7 @@ regressions in code that relied on this undocumented behavior)
 (<URL><LinkText>&Hash;3095</LinkText><Link>https://github.com/gap-system/gap/pull/3095</Link></URL>).
 </Item>
 <Item>
-Fix <Ref Oper="ShallowCopy" BookName="ref"/> for for a Knuth-Bendix rewriting system
+Fix <Ref Oper="ShallowCopy" BookName="ref"/> for a Knuth-Bendix rewriting system
 (<URL><LinkText>&Hash;3128</LinkText><Link>https://github.com/gap-system/gap/pull/3128</Link></URL>).
 [Reported by Ignat Soroko]
 </Item>

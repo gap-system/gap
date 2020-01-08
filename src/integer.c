@@ -911,7 +911,7 @@ Obj IntHexString(Obj str)
   }
 
   else {
-    /* Each hex digit corresponds to to 4 bits, and each GMP limb has sizeof(UInt)
+    /* Each hex digit corresponds to 4 bits, and each GMP limb has sizeof(UInt)
        bytes, thus 2*sizeof(UInt) hex digits fit into one limb. We use this
        to compute the number of limbs minus 1: */
     nd = (len - 1) / (2*sizeof(UInt));

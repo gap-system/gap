@@ -229,7 +229,7 @@ function <Ref Func="CharacterTableWithStoredGroup" BookName="ref"/>.
 </Item>
 </List>
 
-Many problems in &GAP; have have been fixed, among them the following:
+Many problems in &GAP; have been fixed, among them the following:
 
 <List>
 <Item>

@@ -140,7 +140,7 @@ that gives sizes of distance spheres in the Cayley graph of a group.
 <!-- #123 -->
 A new group constructor <Ref Oper="FreeAbelianGroup" BookName="ref"/>
 for free abelian groups has been added. By default, it creates suitable
-fp groups. Though free abelian groups groups do not offer much
+fp groups. Though free abelian groups do not offer much
 functionality right now, in the future other implementations may be
 provided, e.g. by the <Package>Polycyclic</Package> package.
 </Item>

@@ -797,7 +797,7 @@ static Obj PowIntPerm(Obj opL, Obj opR)
 *F  QuoIntPerm( <opL>, <opR> )  .  preimage of an integer under a permutation
 **
 **  'QuoIntPerm' returns the preimage of the preimage integer <opL> under the
-**  permutation <opR>.  If <opL> is larger than  the degree of  <opR> is is a
+**  permutation <opR>.  If <opL> is larger than  the degree of  <opR> it is a
 **  fixpoint, and thus simply returned.
 **
 **  There are basically two ways to find the preimage.  One is to run through
@@ -1683,7 +1683,7 @@ static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm)
 **  'RESTRICTED_PERM( <perm>, <dom>, <test> )'
 **
 **  'RESTRICTED_PERM' returns the restriction of <perm> to <dom>. If <test>
-**  is set to `true' is is verified that <dom> is the union of cycles of
+**  is set to `true' it is verified that <dom> is the union of cycles of
 **  <perm>.
 */
 template <typename T>
@@ -1990,7 +1990,7 @@ static Obj FuncSMALLEST_IMG_TUP_PERM(Obj self, Obj tup, Obj perm)
 **  'OnTuplesPerm'  returns  the  image  of  the  tuple  <tup>   under  the
 **  permutation <perm>.  It is called from 'FuncOnTuples'.
 **
-**  The input <tup> must be a non-empty and dense plain list. This is is not
+**  The input <tup> must be a non-empty and dense plain list. This is not
 **  verified.
 */
 template <typename T>
@@ -2067,7 +2067,7 @@ Obj             OnTuplesPerm (
 **  <perm>.  It is called from 'FuncOnSets'.
 **
 **  The input <set> must be a non-empty set, i.e., plain, dense and strictly
-**  sorted. This is is not verified.
+**  sorted. This is not verified.
 */
 template <typename T>
 static inline Obj OnSetsPerm_(Obj set, Obj perm)

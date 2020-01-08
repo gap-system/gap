@@ -118,7 +118,7 @@ void             GrowPlist (
 **   T_PLIST_DENSE              known only not to have a hole
 **   T_PLIST_DENSE_NHOM         known to be dense but not homogenous *  **
 **   T_PLIST_DENSE_NHOM_SSORT   dense, non-hom but strictly sorted
-**   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not be be sorted
+**   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not to be sorted
 **   T_PLIST_EMPTY              the empty list
 **   T_PLIST_HOM                known to be homogenous *
 **   T_PLIST_HOM_NSORT           etc

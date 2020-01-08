@@ -1463,7 +1463,7 @@ DeclareGlobalFunction("TryGcdCancelExtRepPolynomials");
 ##  <Description>
 ##  is called by <Ref Func="TryGcdCancelExtRepPolynomials"/> to perform the
 ##  actual work.
-##  It will return either <K>fail</K> or a new list of of external
+##  It will return either <K>fail</K> or a new list of external
 ##  representations of cancelled polynomials.
 ##  The cancellation performed is not necessarily optimal.
 ##  </Description>

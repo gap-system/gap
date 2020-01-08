@@ -210,7 +210,7 @@ DeclareAttribute( "CentralizerInGLnZ", IsCyclotomicMatrixGroup );
 ##  The initial value is <C>RightAction</C>. For functions which have
 ##  variants OnRight and OnLeft, this variable determines which
 ##  variant is returned by the generic form. The value of
-##  <Ref Var="CrystGroupDefaultAction"/> can be changed with with the
+##  <Ref Var="CrystGroupDefaultAction"/> can be changed with the
 ##  function <Ref Func="SetCrystGroupDefaultAction"/>.
 ##  </Description>
 ##  </ManSection>

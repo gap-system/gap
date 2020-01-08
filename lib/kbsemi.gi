@@ -193,7 +193,7 @@ function(kbrws,v)
       Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
       kbrws!.tzrules:=q;
 
-      #delete pairs pairs of indexes that include i
+      #delete pairs of indexes that include i
       #and change ocurrences of indexes k greater than i in the 
       #list of pairs and change them to k-1
       #So we'll construct a new list with the right pairs

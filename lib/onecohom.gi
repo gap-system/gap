@@ -1049,7 +1049,7 @@ local   n, a, i, nonSmall, v, vv, j;
     # if<r>has  an entry 'conjugated'  the  records  is no relator   for  a
     # presentation,but belongs to relation
     #     (g_i n_i)^s_j =<r>
-    # which is used to determinate normal complements.  [i,j] is bound  to to
+    # which is used to determinate normal complements.  [i,j] is bound  to
     # 'conjugated'. i is always a small generator.
     if IsBound(r.conjugated)  then
         n:=(ocr.generators[r.conjugated[1]]

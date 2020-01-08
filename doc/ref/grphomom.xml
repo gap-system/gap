@@ -30,7 +30,7 @@ Section&nbsp;<Ref Sect="Nice Monomorphisms"/> explains a technique
 how to enforce this automatically.
 <P/>
 Homomorphisms are also used to represent group automorphisms, and section
-<Ref Sect="Group Automorphisms"/> explains explains &GAP;'s facilities to work
+<Ref Sect="Group Automorphisms"/> explains &GAP;'s facilities to work
 with automorphism groups.
 <P/>
 Section <Ref Sect="Searching for Homomorphisms"/> explains

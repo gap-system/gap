@@ -140,7 +140,7 @@ gap> IndexInWholeGroup(freesub);
 <Index>factorization</Index>
 <Index Subkey="in generators">words</Index>
 
-Using homomorphisms (see chapter&nbsp;<Ref Chap="Group Homomorphisms"/>) is is possible to
+Using homomorphisms (see chapter&nbsp;<Ref Chap="Group Homomorphisms"/>) it is possible to
 express group elements as words in given generators: Create a free group
 (see&nbsp;<Ref Func="FreeGroup" Label="for given rank"/>)
 on the correct number of generators and create a
