@@ -27,6 +27,8 @@
 #include "sysmem.h"
 #include "vars.h"
 
+#include "bags.inc"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
