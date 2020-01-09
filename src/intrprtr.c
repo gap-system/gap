@@ -282,7 +282,9 @@ ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
         ExecEnd(1);
 
         /* clean up the coder too                                          */
-        if ( intr->coding > 0 ) { CodeEnd(1); }
+        if (intr->coding > 0) {
+            CodeEnd(1);
+        }
 
         /* remember that we had an error                                   */
         intrReturning = STATUS_ERROR;
@@ -530,9 +532,14 @@ void IntrIfBegin(IntrState * intr)
     // be executed, either because a previous branch is always executed
     // (i.e., it has a 'true' condition), or else because the current branch
     // has a 'false' condition
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) { CodeIfBegin(); return; }
-
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeIfBegin();
+        return;
+    }
 }
 
 void IntrIfElif(IntrState * intr)
@@ -540,8 +547,10 @@ void IntrIfElif(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIfElif(); return; }
-
+    if (intr->coding > 0) {
+        CodeIfElif();
+        return;
+    }
 }
 
 void IntrIfElse(IntrState * intr)
@@ -549,7 +558,10 @@ void IntrIfElse(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIfElse(); return; }
+    if (intr->coding > 0) {
+        CodeIfElse();
+        return;
+    }
 
 
     /* push 'true' (to execute body of else-branch)                        */
@@ -562,8 +574,11 @@ void IntrIfBeginBody(IntrState * intr)
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) {
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
         intr->ignoring = CodeIfBeginBody();
         return;
     }
@@ -589,10 +604,15 @@ Int IntrIfEndBody(IntrState * intr, UInt nr)
     INTERPRETER_PROFILE_HOOK(intr, 0);
 
     /* ignore or code                                                      */
-    if ( intr->returning > 0 ) { return 0; }
-    if ( intr->ignoring  > 0 ) { intr->ignoring--; return 0; }
-    if ( intr->coding    > 0 ) {
-        intr->ignoring = CodeIfEndBody( nr );
+    if (intr->returning > 0) {
+        return 0;
+    }
+    if (intr->ignoring > 0) {
+        intr->ignoring--;
+        return 0;
+    }
+    if (intr->coding > 0) {
+        intr->ignoring = CodeIfEndBody(nr);
         return 1;
     }
 
@@ -613,14 +633,20 @@ void IntrIfEnd(IntrState * intr, UInt nr)
     INTERPRETER_PROFILE_HOOK(intr, 1);
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
 
-    if ( intr->ignoring  > 1 ) { intr->ignoring--; return; }
+    if (intr->ignoring > 1) {
+        intr->ignoring--;
+        return;
+    }
 
     // if one branch was executed (ignoring the others), reset IntrIgnoring
-    if ( intr->ignoring == 1 ) {
+    if (intr->ignoring == 1) {
         intr->ignoring = 0;
     }
 
-    if ( intr->coding    > 0 ) { CodeIfEnd( nr ); return; }
+    if (intr->coding > 0) {
+        CodeIfEnd(nr);
+        return;
+    }
 
     PushVoidObj(intr);
 }
@@ -1051,7 +1077,10 @@ void IntrReturnObj(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeReturnObj(); return; }
+    if (intr->coding > 0) {
+        CodeReturnObj();
+        return;
+    }
 
 
     /* empty the values stack and push the return value                    */
@@ -1076,7 +1105,10 @@ void IntrReturnVoid(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeReturnVoid(); return; }
+    if (intr->coding > 0) {
+        CodeReturnVoid();
+        return;
+    }
 
 
     /* empty the values stack and push the void value                      */
@@ -1196,8 +1228,14 @@ void IntrOrL(IntrState * intr)
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) { CodeOrL(); return; }
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeOrL();
+        return;
+    }
 
 
     /* if the left operand is 'true', ignore the right operand             */
@@ -1216,8 +1254,14 @@ void IntrOr(IntrState * intr)
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 1 ) { intr->ignoring--; return; }
-    if ( intr->coding    > 0 ) { CodeOr(); return; }
+    if (intr->ignoring > 1) {
+        intr->ignoring--;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeOr();
+        return;
+    }
 
 
     /* stop ignoring things now                                            */
@@ -1268,8 +1312,14 @@ void IntrAndL(IntrState * intr)
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) { CodeAndL(); return; }
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeAndL();
+        return;
+    }
 
 
     /* if the left operand is 'false', ignore the right operand            */
@@ -1288,8 +1338,14 @@ void IntrAnd(IntrState * intr)
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 1 ) { intr->ignoring--; return; }
-    if ( intr->coding    > 0 ) { CodeAnd(); return; }
+    if (intr->ignoring > 1) {
+        intr->ignoring--;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeAnd();
+        return;
+    }
 
 
     /* stop ignoring things now                                            */
@@ -1342,7 +1398,10 @@ void IntrNot(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeNot(); return; }
+    if (intr->coding > 0) {
+        CodeNot();
+        return;
+    }
 
 
     /* get and check the operand                                           */
@@ -1395,7 +1454,10 @@ void IntrEq(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeEq(); return; }
+    if (intr->coding > 0) {
+        CodeEq();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1414,7 +1476,10 @@ void IntrNe(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeNe(); return; }
+    if (intr->coding > 0) {
+        CodeNe();
+        return;
+    }
 
 
     /* '<left> <> <right>' is 'not <left> = <right>'                       */
@@ -1431,7 +1496,10 @@ void IntrLt(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeLt(); return; }
+    if (intr->coding > 0) {
+        CodeLt();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1450,7 +1518,10 @@ void IntrGe(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeGe(); return; }
+    if (intr->coding > 0) {
+        CodeGe();
+        return;
+    }
 
 
     /* '<left> >= <right>' is 'not <left> < <right>'                       */
@@ -1463,7 +1534,10 @@ void IntrGt(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeGt(); return; }
+    if (intr->coding > 0) {
+        CodeGt();
+        return;
+    }
 
 
     /* '<left> > <right>' is '<right> < <left>'                            */
@@ -1476,7 +1550,10 @@ void IntrLe(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeLe(); return; }
+    if (intr->coding > 0) {
+        CodeLe();
+        return;
+    }
 
 
     /* '<left> <= <right>' is 'not <right> < <left>'                       */
@@ -1502,7 +1579,10 @@ void IntrIn(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIn(); return; }
+    if (intr->coding > 0) {
+        CodeIn();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1540,7 +1620,10 @@ void IntrSum(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeSum(); return; }
+    if (intr->coding > 0) {
+        CodeSum();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1562,7 +1645,10 @@ void IntrAInv(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAInv(); return; }
+    if (intr->coding > 0) {
+        CodeAInv();
+        return;
+    }
 
 
     /* get the operand                                                     */
@@ -1584,7 +1670,10 @@ void IntrDiff(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeDiff(); return; }
+    if (intr->coding > 0) {
+        CodeDiff();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1607,7 +1696,10 @@ void IntrProd(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeProd(); return; }
+    if (intr->coding > 0) {
+        CodeProd();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1630,7 +1722,10 @@ void IntrQuo(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeQuo(); return; }
+    if (intr->coding > 0) {
+        CodeQuo();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1653,7 +1748,10 @@ void IntrMod(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeMod(); return; }
+    if (intr->coding > 0) {
+        CodeMod();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1676,7 +1774,10 @@ void IntrPow(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodePow(); return; }
+    if (intr->coding > 0) {
+        CodePow();
+        return;
+    }
 
 
     /* get the operands                                                    */
@@ -1796,7 +1897,10 @@ void IntrTrueExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeTrueExpr(); return; }
+    if (intr->coding > 0) {
+        CodeTrueExpr();
+        return;
+    }
 
 
     /* push the value                                                      */
@@ -1815,7 +1919,10 @@ void IntrFalseExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeFalseExpr(); return; }
+    if (intr->coding > 0) {
+        CodeFalseExpr();
+        return;
+    }
 
 
     /* push the value                                                      */
@@ -1838,7 +1945,10 @@ void IntrTildeExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeTildeExpr(); return; }
+    if (intr->coding > 0) {
+        CodeTildeExpr();
+        return;
+    }
 
     if(! (STATE(Tilde)) ) {
         ErrorQuit("'~' does not have a value here", 0, 0);
@@ -1861,7 +1971,10 @@ void IntrCharExpr(IntrState * intr, Char chr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeCharExpr( chr ); return; }
+    if (intr->coding > 0) {
+        CodeCharExpr(chr);
+        return;
+    }
 
 
     /* push the value                                                      */
@@ -1888,7 +2001,10 @@ void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodePermCycle(nrx,nrc); return; }
+    if (intr->coding > 0) {
+        CodePermCycle(nrx, nrc);
+        return;
+    }
 
 
     /* get the permutation (allocate for the first cycle)                  */
@@ -1898,14 +2014,17 @@ void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
     }
     else {
         const UInt countObj = LEN_PLIST(intr->StackObj);
-        m = INT_INTOBJ( ELM_LIST( intr->StackObj, countObj - nrx ) );
-        perm = ELM_LIST( intr->StackObj, countObj - nrx - 1 );
+        m = INT_INTOBJ(ELM_LIST(intr->StackObj, countObj - nrx));
+        perm = ELM_LIST(intr->StackObj, countObj - nrx - 1);
     }
 
     m = ScanPermCycle(perm, m, (Obj)intr, nrx, GetFromStack);
 
     /* push the permutation (if necessary, drop permutation first)         */
-    if ( nrc != 1 ) { PopObj(intr); PopObj(intr); }
+    if (nrc != 1) {
+        PopObj(intr);
+        PopObj(intr);
+    }
     PushObj(intr, perm);
     PushObj(intr, INTOBJ_INT(m));
 }
@@ -1918,7 +2037,10 @@ void IntrPerm(IntrState * intr, UInt nrc)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodePerm(nrc); return; }
+    if (intr->coding > 0) {
+        CodePerm(nrc);
+        return;
+    }
 
 
     /* special case for identity permutation                               */
@@ -1957,7 +2079,10 @@ void IntrListExprBegin(IntrState * intr, UInt top)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeListExprBegin( top ); return; }
+    if (intr->coding > 0) {
+        CodeListExprBegin(top);
+        return;
+    }
 
 
     /* allocate the new list                                               */
@@ -1967,8 +2092,12 @@ void IntrListExprBegin(IntrState * intr, UInt top)
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
         old = STATE(Tilde);
-        if ( old != 0 ) { PushObj(intr, old); }
-        else            { PushVoidObj(intr);  }
+        if (old != 0) {
+            PushObj(intr, old);
+        }
+        else {
+            PushVoidObj(intr);
+        }
         STATE(Tilde) = list;
     }
 
@@ -1981,7 +2110,10 @@ void IntrListExprBeginElm(IntrState * intr, UInt pos)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeListExprBeginElm( pos ); return; }
+    if (intr->coding > 0) {
+        CodeListExprBeginElm(pos);
+        return;
+    }
 
 
     /* remember this position on the values stack                          */
@@ -1998,7 +2130,10 @@ void IntrListExprEndElm(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeListExprEndElm(); return; }
+    if (intr->coding > 0) {
+        CodeListExprEndElm();
+        return;
+    }
 
 
     /* get the value                                                       */
@@ -2031,7 +2166,10 @@ void IntrListExprEnd(
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeListExprEnd(nr,range,top,tilde); return; }
+    if (intr->coding > 0) {
+        CodeListExprEnd(nr, range, top, tilde);
+        return;
+    }
 
 
     /* if this was a top level expression, restore the value of '~'        */
@@ -2128,7 +2266,10 @@ void IntrStringExpr(IntrState * intr, Obj string)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeStringExpr( string ); return; }
+    if (intr->coding > 0) {
+        CodeStringExpr(string);
+        return;
+    }
 
 
     /* push the string, already newly created                              */
@@ -2164,7 +2305,10 @@ void IntrRecExprBegin(IntrState * intr, UInt top)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeRecExprBegin( top ); return; }
+    if (intr->coding > 0) {
+        CodeRecExprBegin(top);
+        return;
+    }
 
 
     /* allocate the new record                                             */
@@ -2174,8 +2318,12 @@ void IntrRecExprBegin(IntrState * intr, UInt top)
     /* (and save the old value of '~' on the values stack)                 */
     if ( top ) {
         old = STATE(Tilde);
-        if ( old != 0 ) { PushObj(intr, old); }
-        else            { PushVoidObj(intr);  }
+        if (old != 0) {
+            PushObj(intr, old);
+        }
+        else {
+            PushVoidObj(intr);
+        }
         STATE(Tilde) = record;
     }
 
@@ -2188,7 +2336,10 @@ void IntrRecExprBeginElmName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeRecExprBeginElmName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeRecExprBeginElmName(rnam);
+        return;
+    }
 
 
     /* remember the name on the values stack                               */
@@ -2202,7 +2353,10 @@ void IntrRecExprBeginElmExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeRecExprBeginElmExpr(); return; }
+    if (intr->coding > 0) {
+        CodeRecExprBeginElmExpr();
+        return;
+    }
 
 
     /* convert the expression to a record name                             */
@@ -2221,7 +2375,10 @@ void IntrRecExprEndElm(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeRecExprEndElm(); return; }
+    if (intr->coding > 0) {
+        CodeRecExprEndElm();
+        return;
+    }
 
 
     /* get the value                                                       */
@@ -2248,7 +2405,10 @@ void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeRecExprEnd(nr,top,tilde); return; }
+    if (intr->coding > 0) {
+        CodeRecExprEnd(nr, top, tilde);
+        return;
+    }
 
 
     /* if this was a top level expression, restore the value of '~'        */
@@ -2279,7 +2439,10 @@ void IntrFuncCallOptionsBegin(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeFuncCallOptionsBegin( ); return; }
+    if (intr->coding > 0) {
+        CodeFuncCallOptionsBegin();
+        return;
+    }
 
 
     /* allocate the new record                                             */
@@ -2293,7 +2456,10 @@ void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeFuncCallOptionsBeginElmName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeFuncCallOptionsBeginElmName(rnam);
+        return;
+    }
 
 
     /* remember the name on the values stack                               */
@@ -2329,7 +2495,10 @@ void IntrFuncCallOptionsEndElm(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeFuncCallOptionsEndElm(); return; }
+    if (intr->coding > 0) {
+        CodeFuncCallOptionsEndElm();
+        return;
+    }
 
 
     /* get the value                                                       */
@@ -2357,7 +2526,10 @@ void IntrFuncCallOptionsEndElmEmpty(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeFuncCallOptionsEndElmEmpty(); return; }
+    if (intr->coding > 0) {
+        CodeFuncCallOptionsEndElmEmpty();
+        return;
+    }
 
 
     /* get the value                                                       */
@@ -2381,9 +2553,10 @@ void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeFuncCallOptionsEnd(nr); return; }
-
-
+    if (intr->coding > 0) {
+        CodeFuncCallOptionsEnd(nr);
+        return;
+    }
 }
 
 
@@ -2676,7 +2849,10 @@ void IntrAssGVar(IntrState * intr, UInt gvar)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssGVar( gvar ); return; }
+    if (intr->coding > 0) {
+        CodeAssGVar(gvar);
+        return;
+    }
 
 
     /* get the right hand side                                             */
@@ -2694,7 +2870,10 @@ void IntrUnbGVar(IntrState * intr, UInt gvar)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbGVar( gvar ); return; }
+    if (intr->coding > 0) {
+        CodeUnbGVar(gvar);
+        return;
+    }
 
 
     /* assign the right hand side                                          */
@@ -2716,7 +2895,10 @@ void IntrRefGVar(IntrState * intr, UInt gvar)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeRefGVar( gvar ); return; }
+    if (intr->coding > 0) {
+        CodeRefGVar(gvar);
+        return;
+    }
 
 
     /* get and check the value                                             */
@@ -2735,7 +2917,10 @@ void IntrIsbGVar(IntrState * intr, UInt gvar)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbGVar( gvar ); return; }
+    if (intr->coding > 0) {
+        CodeIsbGVar(gvar);
+        return;
+    }
 
 
     /* get the value                                                       */
@@ -2764,11 +2949,14 @@ void IntrAssList(IntrState * intr, Int narg)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssList( narg); return; }
+    if (intr->coding > 0) {
+        CodeAssList(narg);
+        return;
+    }
 
     /* get the right hand side                                             */
     rhs = PopObj(intr);
-    
+
     if (narg == 1) {
       /* get the position                                                  */
       pos = PopObj(intr);
@@ -2785,11 +2973,11 @@ void IntrAssList(IntrState * intr, Int narg)
       }
     }
     else if (narg == 2) {
-      Obj col = PopObj(intr);
-      Obj row = PopObj(intr);
-      list = PopObj(intr);
+        Obj col = PopObj(intr);
+        Obj row = PopObj(intr);
+        list = PopObj(intr);
 
-      ASS_MAT(list, row, col, rhs);
+        ASS_MAT(list, row, col, rhs);
     }
 
     /* push the right hand side again                                      */
@@ -2806,7 +2994,10 @@ void IntrAsssList(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAsssList(); return; }
+    if (intr->coding > 0) {
+        CodeAsssList();
+        return;
+    }
 
 
     /* get the right hand sides                                            */
@@ -2835,21 +3026,24 @@ void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
     Obj                 rhss;           /* right hand sides, right operand */
     Obj ixs;
     Int i;
-    
+
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssListLevel( narg, level ); return; }
+    if (intr->coding > 0) {
+        CodeAssListLevel(narg, level);
+        return;
+    }
 
     /* get right hand sides (checking is done by 'AssListLevel')           */
     rhss = PopObj(intr);
 
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
-      /* get and check the position                                        */
-      pos = PopObj(intr);
-      SET_ELM_PLIST(ixs, i, pos);
-      CHANGED_BAG(ixs);
+        /* get and check the position                                      */
+        pos = PopObj(intr);
+        SET_ELM_PLIST(ixs, i, pos);
+        CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 
@@ -2873,7 +3067,10 @@ void IntrAsssListLevel(IntrState * intr, UInt level)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAsssListLevel( level ); return; }
+    if (intr->coding > 0) {
+        CodeAsssListLevel(level);
+        return;
+    }
 
 
     /* get right hand sides (checking is done by 'AsssListLevel')          */
@@ -2904,12 +3101,15 @@ void IntrUnbList(IntrState * intr, Int narg)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbList( narg); return; }
+    if (intr->coding > 0) {
+        CodeUnbList(narg);
+        return;
+    }
 
     if (narg == 1) {
       /* get and check the position                                        */
       pos = PopObj(intr);
-      
+
       /* get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')      */
       list = PopObj(intr);
 
@@ -2922,11 +3122,11 @@ void IntrUnbList(IntrState * intr, Int narg)
       }
     }
     else if (narg == 2) {
-      Obj col = PopObj(intr);
-      Obj row = PopObj(intr);
-      list = PopObj(intr);
+        Obj col = PopObj(intr);
+        Obj row = PopObj(intr);
+        list = PopObj(intr);
 
-      UNB_MAT(list, row, col);
+        UNB_MAT(list, row, col);
     }
 
     /* push void                                                           */
@@ -2952,7 +3152,10 @@ void IntrElmList(IntrState * intr, Int narg)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmList( narg ); return; }
+    if (intr->coding > 0) {
+        CodeElmList(narg);
+        return;
+    }
 
     if (narg == 1) {
       /* get the position                                                  */
@@ -2970,11 +3173,11 @@ void IntrElmList(IntrState * intr, Int narg)
       }
     }
     else /*if (narg == 2)*/ {
-      Obj col = PopObj(intr);
-      Obj row = PopObj(intr);
-      list = PopObj(intr);
+        Obj col = PopObj(intr);
+        Obj row = PopObj(intr);
+        list = PopObj(intr);
 
-      elm = ELM_MAT(list, row, col);
+        elm = ELM_MAT(list, row, col);
     }
 
     /* push the element                                                    */
@@ -2990,7 +3193,10 @@ void IntrElmsList(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmsList(); return; }
+    if (intr->coding > 0) {
+        CodeElmsList();
+        return;
+    }
 
 
     /* get and check the positions                                         */
@@ -3017,14 +3223,17 @@ void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmListLevel( narg, level ); return; }
+    if (intr->coding > 0) {
+        CodeElmListLevel(narg, level);
+        return;
+    }
 
     /* get the positions */
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
-      pos = PopObj(intr);
-      SET_ELM_PLIST(ixs,i,pos);
-      CHANGED_BAG(ixs);
+        pos = PopObj(intr);
+        SET_ELM_PLIST(ixs, i, pos);
+        CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 
@@ -3047,7 +3256,10 @@ void IntrElmsListLevel(IntrState * intr, UInt level)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmsListLevel( level ); return; }
+    if (intr->coding > 0) {
+        CodeElmsListLevel(level);
+        return;
+    }
 
 
     /* get and check the positions                                         */
@@ -3076,15 +3288,18 @@ void IntrIsbList(IntrState * intr, Int narg)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbList(narg); return; }
+    if (intr->coding > 0) {
+        CodeIsbList(narg);
+        return;
+    }
 
     if (narg == 1) {
       /* get and check the position                                        */
       pos = PopObj(intr);
-      
+
       /* get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')      */
       list = PopObj(intr);
-      
+
       /* get the result                                                    */
       if (IS_POS_INTOBJ(pos)) {
         isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
@@ -3094,11 +3309,11 @@ void IntrIsbList(IntrState * intr, Int narg)
       }
     }
     else /*if (narg == 2)*/ {
-      Obj col = PopObj(intr);
-      Obj row = PopObj(intr);
-      list = PopObj(intr);
+        Obj col = PopObj(intr);
+        Obj row = PopObj(intr);
+        list = PopObj(intr);
 
-      isb = ISB_MAT(list, row, col) ? True : False;
+        isb = ISB_MAT(list, row, col) ? True : False;
     }
 
     /* push the result                                                     */
@@ -3119,7 +3334,10 @@ void IntrAssRecName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssRecName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeAssRecName(rnam);
+        return;
+    }
 
 
     /* get the right hand side                                             */
@@ -3144,7 +3362,10 @@ void IntrAssRecExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssRecExpr(); return; }
+    if (intr->coding > 0) {
+        CodeAssRecExpr();
+        return;
+    }
 
 
     /* get the right hand side                                             */
@@ -3170,7 +3391,10 @@ void IntrUnbRecName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbRecName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeUnbRecName(rnam);
+        return;
+    }
 
 
     /* get the record (checking is done by 'UNB_REC')                      */
@@ -3191,7 +3415,10 @@ void IntrUnbRecExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbRecExpr(); return; }
+    if (intr->coding > 0) {
+        CodeUnbRecExpr();
+        return;
+    }
 
 
     /* get the name and convert it to a record name                        */
@@ -3221,7 +3448,10 @@ void IntrElmRecName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmRecName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeElmRecName(rnam);
+        return;
+    }
 
 
     /* get the record (checking is done by 'ELM_REC')                      */
@@ -3243,7 +3473,10 @@ void IntrElmRecExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmRecExpr(); return; }
+    if (intr->coding > 0) {
+        CodeElmRecExpr();
+        return;
+    }
 
 
     /* get the name and convert it to a record name                        */
@@ -3267,7 +3500,10 @@ void IntrIsbRecName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbRecName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeIsbRecName(rnam);
+        return;
+    }
 
 
     /* get the record (checking is done by 'ISB_REC')                      */
@@ -3289,7 +3525,10 @@ void IntrIsbRecExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbRecExpr(); return; }
+    if (intr->coding > 0) {
+        CodeIsbRecExpr();
+        return;
+    }
 
 
     /* get the name and convert it to a record name                        */
@@ -3320,7 +3559,10 @@ void IntrAssPosObj(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssPosObj(); return; }
+    if (intr->coding > 0) {
+        CodeAssPosObj();
+        return;
+    }
 
 
     /* get the right hand side                                             */
@@ -3349,7 +3591,10 @@ void IntrUnbPosObj(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbPosObj(); return; }
+    if (intr->coding > 0) {
+        CodeUnbPosObj();
+        return;
+    }
 
 
     /* get and check the position                                          */
@@ -3381,7 +3626,10 @@ void IntrElmPosObj(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmPosObj(); return; }
+    if (intr->coding > 0) {
+        CodeElmPosObj();
+        return;
+    }
 
 
     /* get and check the position                                          */
@@ -3408,7 +3656,10 @@ void IntrIsbPosObj(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbPosObj(); return; }
+    if (intr->coding > 0) {
+        CodeIsbPosObj();
+        return;
+    }
 
 
     /* get and check the position                                          */
@@ -3439,7 +3690,10 @@ void IntrAssComObjName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssComObjName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeAssComObjName(rnam);
+        return;
+    }
 
 
     /* get the right hand side                                             */
@@ -3464,7 +3718,10 @@ void IntrAssComObjExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssComObjExpr(); return; }
+    if (intr->coding > 0) {
+        CodeAssComObjExpr();
+        return;
+    }
 
 
     /* get the right hand side                                             */
@@ -3490,7 +3747,10 @@ void IntrUnbComObjName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbComObjName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeUnbComObjName(rnam);
+        return;
+    }
 
 
     /* get the record (checking is done by 'UNB_REC')                      */
@@ -3511,7 +3771,10 @@ void IntrUnbComObjExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeUnbComObjExpr(); return; }
+    if (intr->coding > 0) {
+        CodeUnbComObjExpr();
+        return;
+    }
 
 
     /* get the name and convert it to a record name                        */
@@ -3541,7 +3804,10 @@ void IntrElmComObjName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmComObjName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeElmComObjName(rnam);
+        return;
+    }
 
 
     /* get the record (checking is done by 'ELM_REC')                      */
@@ -3563,7 +3829,10 @@ void IntrElmComObjExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeElmComObjExpr(); return; }
+    if (intr->coding > 0) {
+        CodeElmComObjExpr();
+        return;
+    }
 
 
     /* get the name and convert it to a record name                        */
@@ -3587,7 +3856,10 @@ void IntrIsbComObjName(IntrState * intr, UInt rnam)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbComObjName( rnam ); return; }
+    if (intr->coding > 0) {
+        CodeIsbComObjName(rnam);
+        return;
+    }
 
 
     /* get the record (checking is done by 'ISB_REC')                      */
@@ -3609,7 +3881,10 @@ void IntrIsbComObjExpr(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeIsbComObjExpr(); return; }
+    if (intr->coding > 0) {
+        CodeIsbComObjExpr();
+        return;
+    }
 
 
     /* get the name and convert it to a record name                        */
@@ -3636,7 +3911,10 @@ void IntrEmpty(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeEmpty(); return; }
+    if (intr->coding > 0) {
+        CodeEmpty();
+        return;
+    }
 
 
     /* interpret */
@@ -3669,14 +3947,15 @@ void IntrInfoBegin(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeInfoBegin(); return; }
-
+    if (intr->coding > 0) {
+        CodeInfoBegin();
+        return;
+    }
 }
 
 
 void IntrInfoMiddle(IntrState * intr)
 {
-
     Obj selectors;   /* first argument of Info */
     Obj level;       /* second argument of Info */
     Obj selected;    /* GAP Boolean answer to whether this message
@@ -3684,8 +3963,14 @@ void IntrInfoMiddle(IntrState * intr)
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) { CodeInfoMiddle(); return; }
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeInfoMiddle();
+        return;
+    }
 
 
     level = PopObj(intr);
@@ -3694,17 +3979,16 @@ void IntrInfoMiddle(IntrState * intr)
     selected = InfoCheckLevel(selectors, level);
 
     if (selected == False)
-      intr->ignoring = 1;
+        intr->ignoring = 1;
     else {
-      PushObj(intr, selectors);
-      PushObj(intr, level);
+        PushObj(intr, selectors);
+        PushObj(intr, level);
     }
 }
 
 void IntrInfoEnd(IntrState * intr, UInt narg)
 {
-
-     Obj args;    /* gathers up the arguments to be printed */
+    Obj args; /* gathers up the arguments to be printed */
 
     /* ignore or code                                                      */
     INTERPRETER_PROFILE_HOOK(intr, 1);
@@ -3714,17 +3998,19 @@ void IntrInfoEnd(IntrState * intr, UInt narg)
         intr->ignoring--;
         return;
     }
-    if ( intr->coding    > 0 ) { CodeInfoEnd( narg ); return; }
-
+    if (intr->coding > 0) {
+        CodeInfoEnd(narg);
+        return;
+    }
 
     /* print if necessary                                                  */
-    if ( intr->ignoring  > 0 )
-      intr->ignoring--;
+    if (intr->ignoring > 0)
+        intr->ignoring--;
     else {
-        args = NEW_PLIST( T_PLIST, narg);
+        args = NEW_PLIST(T_PLIST, narg);
         SET_LEN_PLIST(args, narg);
         while (narg > 0)
-          SET_ELM_PLIST(args, narg--, PopObj(intr));
+            SET_ELM_PLIST(args, narg--, PopObj(intr));
 
         Obj level = PopObj(intr);
         Obj selectors = PopObj(intr);
@@ -3735,7 +4021,7 @@ void IntrInfoEnd(IntrState * intr, UInt narg)
     /* If we actually executed this statement at all
        (even if we printed nothing) then return a Void */
     if (intr->ignoring == 0)
-      PushVoidObj(intr);
+        PushVoidObj(intr);
 }
 
 
@@ -3767,8 +4053,10 @@ void IntrAssertBegin(IntrState * intr)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    if ( intr->coding    > 0 ) { CodeAssertBegin(); return; }
-
+    if (intr->coding > 0) {
+        CodeAssertBegin();
+        return;
+    }
 }
 
 
@@ -3776,8 +4064,14 @@ void IntrAssertAfterLevel(IntrState * intr)
 {
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) { CodeAssertAfterLevel(); return; }
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeAssertAfterLevel();
+        return;
+    }
 
 
     Int level = GetSmallIntEx("Assert", PopObj(intr), "<lev>");
@@ -3788,12 +4082,18 @@ void IntrAssertAfterLevel(IntrState * intr)
 
 void IntrAssertAfterCondition(IntrState * intr)
 {
-  Obj condition;
+    Obj condition;
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
-    if ( intr->ignoring  > 0 ) { intr->ignoring++; return; }
-    if ( intr->coding    > 0 ) { CodeAssertAfterCondition(); return; }
+    if (intr->ignoring > 0) {
+        intr->ignoring++;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeAssertAfterCondition();
+        return;
+    }
 
 
     condition = PopObj(intr);
@@ -3814,13 +4114,16 @@ void IntrAssertEnd2Args(IntrState * intr)
         intr->ignoring -= 2;
         return;
     }
-    if ( intr->coding    > 0 ) { CodeAssertEnd2Args(); return; }
+    if (intr->coding > 0) {
+        CodeAssertEnd2Args();
+        return;
+    }
 
 
-    if ( intr->ignoring  == 0 )
-      AssertionFailure();
+    if (intr->ignoring == 0)
+        AssertionFailure();
     else
-      intr->ignoring -= 2;
+        intr->ignoring -= 2;
 
     GAP_ASSERT(intr->ignoring == 0);
     PushVoidObj(intr);
@@ -3829,24 +4132,31 @@ void IntrAssertEnd2Args(IntrState * intr)
 
 void IntrAssertEnd3Args(IntrState * intr)
 {
-  Obj message;
-  /* ignore or code                                                      */
-  INTERPRETER_PROFILE_HOOK(intr, 2);
-  SKIP_IF_RETURNING_NO_PROFILE_HOOK();
-  if ( intr->ignoring  > 2 ) { intr->ignoring -= 2; return; }
-  if ( intr->coding    > 0 ) { CodeAssertEnd3Args(); return; }
+    Obj message;
+    /* ignore or code                                                      */
+    INTERPRETER_PROFILE_HOOK(intr, 2);
+    SKIP_IF_RETURNING_NO_PROFILE_HOOK();
+    if (intr->ignoring > 2) {
+        intr->ignoring -= 2;
+        return;
+    }
+    if (intr->coding > 0) {
+        CodeAssertEnd3Args();
+        return;
+    }
 
 
-  if ( intr->ignoring  == 0 ) {
-      message = PopVoidObj(intr);
-      if (message != (Obj) 0 ) {
-          if (IS_STRING_REP( message ))
-            PrintString1(message);
-          else
-            PrintObj(message);
-      }
-  } else
-      intr->ignoring -= 2;
+    if (intr->ignoring == 0) {
+        message = PopVoidObj(intr);
+        if (message != (Obj)0) {
+            if (IS_STRING_REP(message))
+                PrintString1(message);
+            else
+                PrintObj(message);
+        }
+    }
+    else
+        intr->ignoring -= 2;
 
     GAP_ASSERT(intr->ignoring == 0);
     PushVoidObj(intr);
