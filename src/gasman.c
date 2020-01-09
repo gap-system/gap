@@ -119,6 +119,8 @@
 #include "sysfiles.h"
 #include "sysmem.h"
 
+#include "bags.inc"
+
 #ifdef GAP_MEM_CHECK
 #include <sys/mman.h>
 #endif

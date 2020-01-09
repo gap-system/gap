@@ -20,6 +20,8 @@
 #include "objects.h"
 #include "sysmem.h"
 
+#include "bags.inc"
+
 #ifdef TRACK_CREATOR
 #include "calls.h"
 #include "vars.h"
