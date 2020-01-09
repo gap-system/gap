@@ -35,11 +35,6 @@ typedef struct GAPState {
 #endif
 
     /* From intrprtr.c */
-    UInt IntrIgnoring;
-    UInt IntrReturning;
-    UInt IntrCoding;
-    Obj  IntrState;
-    Obj  StackObj;
     Obj  Tilde;
 
     // The current assertion level for use in Assert

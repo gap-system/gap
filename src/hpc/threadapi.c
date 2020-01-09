@@ -432,6 +432,7 @@ static GVarDescriptor GVarTHREAD_EXIT;
 
 static void ThreadedInterpreter(void * funcargs)
 {
+    IntrState intr = { 0, 0, 0, 0 };
     Obj tmp, func;
     int i;
 
@@ -439,7 +440,7 @@ static void ThreadedInterpreter(void * funcargs)
     STATE(NrError) = 0;
     STATE(ThrownObject) = 0;
 
-    IntrBegin(STATE(BottomLVars));
+    IntrBegin(&intr, STATE(BottomLVars));
     tmp = KEPTALIVE(funcargs);
     StopKeepAlive(funcargs);
     func = ELM_PLIST(tmp, 1);
@@ -461,13 +462,13 @@ static void ThreadedInterpreter(void * funcargs)
         exit = GVarOptFunction(&GVarTHREAD_EXIT);
         if (exit)
             CALL_0ARGS(exit);
-        PushVoidObj();
+        PushVoidObj(&intr);
         /* end the interpreter */
-        IntrEnd(0, NULL);
+        IntrEnd(&intr, 0, NULL);
     }
     CATCH_ERROR
     {
-        IntrEnd(1, NULL);
+        IntrEnd(&intr, 1, NULL);
         ClearError();
     }
 }
