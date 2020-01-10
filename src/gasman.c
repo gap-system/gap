@@ -554,19 +554,24 @@ void InitSweepFuncBags (
 
 /****************************************************************************
 **
+*F  MarkAllSubBagsDefault(<bag>) . . . marking function that marks everything
+**
+**  'MarkAllSubBagsDefault' is the same  as 'MarkAllSubBags' but is used as
+**  the initial default marking function. This allows to catch cases where
+**  'InitMarkFuncBags' is called twice for the same type: the first time is
+**  accepted because the marking function is still 'MarkAllSubBagsDefault';
+**  the second time raises a warning, because a non-default marking function
+**  is being replaced.
+*/
+static void MarkAllSubBagsDefault(Bag bag)
+{
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
+}
+
+
+/****************************************************************************
+**
 *F  InitMarkFuncBags(<type>,<mark-func>)  . . . . .  install marking function
-*F  MarkNoSubBags(<bag>)  . . . . . . . . marking function that marks nothing
-*F  MarkOneSubBags(<bag>) . . . . . .  marking function that marks one subbag
-*F  MarkTwoSubBags(<bag>) . . . . . . marking function that marks two subbags
-*F  MarkThreeSubBags(<bag>) . . . . marking function that marks three subbags
-*F  MarkFourSubBags(<bag>)  . . . .  marking function that marks four subbags
-*F  MarkAllSubBags(<bag>) . . . . . .  marking function that marks everything
-**
-**  'InitMarkFuncBags', 'MarkNoSubBags', 'MarkOneSubBags',  'MarkTwoSubBags',
-**  and 'MarkAllSubBags' are really too simple for an explanation.
-**
-**  'MarkAllSubBagsDefault' is the same  as 'MarkAllSubBags' but is only used
-**  by GASMAN as default.  This will allow to catch type clashes.
 */
 
 TNumMarkFuncBags TabMarkFuncBags [ NUM_TYPES ];
