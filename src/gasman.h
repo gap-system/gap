@@ -190,7 +190,7 @@ EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 **
 **  See also 'IS_INTOBJ' and 'IS_FFE'.
 */
-EXPORT_INLINE Int IS_BAG_REF(Obj bag)
+EXPORT_INLINE BOOL IS_BAG_REF(Obj bag)
 {
     return bag && !((Int)bag & 0x03);
 }
@@ -358,7 +358,7 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 void CHANGED_BAG(Bag bag);
 
-int IsGapObj(void *);
+BOOL IsGapObj(void *);
 
 #elif defined(GAP_MEMORY_CANARY)
 

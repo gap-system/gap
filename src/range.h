@@ -53,7 +53,7 @@ EXPORT_INLINE Obj NEW_RANGE_SSORT(void)
 **  a range, but  the kernel does not know  this yet.  Use  'IsRange' to test
 **  whether a list is a range.
 */
-EXPORT_INLINE Int IS_RANGE(Obj val)
+EXPORT_INLINE BOOL IS_RANGE(Obj val)
 {
     return TNUM_OBJ(val) >= T_RANGE_NSORT &&
            TNUM_OBJ(val) <= T_RANGE_SSORT + IMMUTABLE;

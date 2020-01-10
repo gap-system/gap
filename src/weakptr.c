@@ -370,7 +370,7 @@ static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 ** */
 
 
-static Int IsBoundElmWPObj(Obj wp, Obj pos)
+static BOOL IsBoundElmWPObj(Obj wp, Obj pos)
 {
     RequireWPObj("IsBoundElmWPObj", wp);
     UInt ipos = GetPositiveSmallInt("IsBoundElmWPObj", pos);

@@ -84,6 +84,11 @@ typedef uintptr_t UInt;
 GAP_STATIC_ASSERT(sizeof(void *) == sizeof(Int), "sizeof(Int) is wrong");
 GAP_STATIC_ASSERT(sizeof(void *) == sizeof(UInt), "sizeof(UInt) is wrong");
 
+// FIXME: workaround a conflict with the Semigroups package
+#undef BOOL
+typedef Int BOOL; // TODO: should be changed to `char` once packages adapted
+enum { FALSE = 0, TRUE = 1 };
+
 
 /****************************************************************************
 **

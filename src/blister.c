@@ -316,7 +316,7 @@ static Int LenBlist(Obj list)
 **
 **  'IsbBlist' is the function in 'IsbListFuncs' for boolean lists.
 */
-static Int IsbBlist(Obj list, Int pos)
+static BOOL IsbBlist(Obj list, Int pos)
 {
     return (pos <= LEN_BLIST(list));
 }
@@ -756,7 +756,7 @@ static void PlainBlist(Obj list)
 **  'IsPossBlist' returns  1 if  <list> is  empty, and 0 otherwise, since a
 **  boolean list is a positions list if and only if it is empty.
 */
-static Int IsPossBlist(Obj list)
+static BOOL IsPossBlist(Obj list)
 {
     return LEN_BLIST(list) == 0;
 }
@@ -766,7 +766,7 @@ static Int IsPossBlist(Obj list)
 **
 *F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
 */
-static Int IsHomogBlist(Obj list)
+static BOOL IsHomogBlist(Obj list)
 {
     return (0 < LEN_BLIST(list));
 }
@@ -776,18 +776,18 @@ static Int IsHomogBlist(Obj list)
 **
 *F  IsSSortBlist( <list> )  . . . . . . .  check if <list> is strictly sorted
 */
-static Int IsSSortBlist(Obj list)
+static BOOL IsSSortBlist(Obj list)
 {
-    Int                 isSort;
+    BOOL isSort;
 
     if ( LEN_BLIST(list) <= 1 ) {
-        isSort = 1;
+        isSort = TRUE;
     }
     else if ( LEN_BLIST(list) == 2 ) {
         isSort = (TEST_BIT_BLIST(list, 1) && !TEST_BIT_BLIST(list, 2));
     }
     else {
-        isSort = 0;
+        isSort = FALSE;
     }
     SET_FILT_LIST( list, (isSort ? FN_IS_SSORT : FN_IS_NSORT) );
 
@@ -894,20 +894,20 @@ UInt COUNT_TRUES_BLOCKS(const UInt * ptr, UInt nblocks)
 **  list that   has no holes  and contains  only  'true' and  'false',  and 0
 **  otherwise.
 */
-static Int IsBlist(Obj list)
+static BOOL IsBlist(Obj list)
 {
-    UInt                isBlist;        /* result of the test              */
+    BOOL                isBlist;        /* result of the test              */
     Int                 len;            /* logical length of the list      */
     UInt                i;              /* loop variable                   */
 
     /* if <list> is known to be a boolean list, it is very easy            */
     if ( IS_BLIST_REP(list) ) {
-        isBlist = 1;
+        isBlist = TRUE;
     }
 
     /* if <list> is not a small list, it isn't a boolean list (convert to list)   */
     else if ( ! IS_SMALL_LIST( list ) ) {
-        isBlist = 0;
+        isBlist = FALSE;
     }
 
     /* otherwise test if there are holes and if all elements are boolean   */
@@ -940,20 +940,20 @@ static Int IsBlist(Obj list)
 **  boolean lists into the compact representation of type 'T_BLIST' described
 **  above.
 */
-static Int IsBlistConv(Obj list)
+static BOOL IsBlistConv(Obj list)
 {
-    UInt                isBlist;        /* result of the test              */
+    BOOL                isBlist;        /* result of the test              */
     Int                 len;            /* logical length of the list      */
     UInt                i;              /* loop variable                   */
 
     /* if <list> is known to be a boolean list, it is very easy            */
     if ( IS_BLIST_REP(list) ) {
-        isBlist = 1;
+        isBlist = TRUE;
     }
 
     /* if <list> is not a list, it isn't a boolean list (convert to list)  */
     else if ( ! IS_SMALL_LIST(list) ) {
-        isBlist = 0;
+        isBlist = FALSE;
     }
 
     /* otherwise test if there are holes and if all elements are boolean   */

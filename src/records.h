@@ -63,9 +63,9 @@ UInt RNamObj(Obj obj);
 *F  IS_REC(<obj>) . . . . . . . . . . . . . . . . . . . is an object a record
 *V  IsRecFuncs[<type>]  . . . . . . . . . . . . . . . . table of record tests
 */
-extern Int (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
+extern BOOL (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-EXPORT_INLINE Int IS_REC(Obj obj)
+EXPORT_INLINE BOOL IS_REC(Obj obj)
 {
     return (*IsRecFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -95,9 +95,9 @@ EXPORT_INLINE Obj ELM_REC(Obj rec, UInt rnam)
 **  name <rnam> and 0 otherwise.  An error is signalled if  <rec>  is  not  a
 **  record.
 */
-extern Int (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
+extern BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
-EXPORT_INLINE Int ISB_REC(Obj rec, UInt rnam)
+EXPORT_INLINE BOOL ISB_REC(Obj rec, UInt rnam)
 {
     return (*IsbRecFuncs[TNUM_OBJ(rec)])(rec, rnam);
 }
@@ -136,7 +136,7 @@ EXPORT_INLINE void UNB_REC(Obj rec, UInt rnam)
 **
 *F  iscomplete_rnam( <name>, <len> )  . . . . . . . . . . . . .  check <name>
 */
-UInt iscomplete_rnam(Char * name, UInt len);
+BOOL iscomplete_rnam(Char * name, UInt len);
 
 
 /****************************************************************************

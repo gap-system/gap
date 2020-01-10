@@ -223,7 +223,7 @@ EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks)
 **  'IsKernelFunction' returns 1 if <func> is a kernel function (i.e.
 **  compiled from C code), and 0 otherwise.
 */
-Int IsKernelFunction(Obj func);
+BOOL IsKernelFunction(Obj func);
 
 
 EXPORT_INLINE ObjFunc_0ARGS HDLR_0ARGS(Obj func)
@@ -271,7 +271,7 @@ EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
 **
 *F  IS_FUNC( <obj> )  . . . . . . . . . . . . . check if object is a function
 */
-EXPORT_INLINE int IS_FUNC(Obj obj)
+EXPORT_INLINE BOOL IS_FUNC(Obj obj)
 {
     return TNUM_OBJ(obj) == T_FUNCTION;
 }

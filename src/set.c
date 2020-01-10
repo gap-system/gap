@@ -59,10 +59,9 @@
 ** 
 */
 
-Int IsSet ( 
-    Obj                 list )
+BOOL IsSet(Obj list)
 {
-    Int                 isSet;          /* result                          */
+    BOOL isSet = FALSE;
 
     /* if <list> is a plain list                                           */
     if ( IS_PLIST( list ) ) {
@@ -70,17 +69,12 @@ Int IsSet (
         /* if <list> is the empty list, it is a set (:-)                     */
         if ( LEN_PLIST(list) == 0 ) {
             RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-            isSet = 1;
+            isSet = TRUE;
         }
 
         /* if <list>  strictly sorted, it is a set            */
         else if ( IS_SSORT_LIST(list) ) {
-            isSet = 1;
-        }
-
-        /* otherwise it is not a set                                       */
-        else {
-            isSet = 0;
+            isSet = TRUE;
         }
 
     }
@@ -92,7 +86,7 @@ Int IsSet (
         if ( LEN_LIST(list) == 0 ) {
             PLAIN_LIST( list );
             RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-            isSet = 1;
+            isSet = TRUE;
         }
 
         /* if <list> strictly sorted, it is a set            */
@@ -100,19 +94,9 @@ Int IsSet (
             PLAIN_LIST( list );
             /* SET_FILT_LIST( list, FN_IS_HOMOG ); */
             SET_FILT_LIST( list, FN_IS_SSORT );
-            isSet = 1;
+            isSet = TRUE;
         }
 
-        /* otherwise it is not a set                                       */
-        else {
-            isSet = 0;
-        }
-
-    }
-
-    /* otherwise it is certainly not a set                                 */
-    else {
-        isSet = 0;
     }
 
     return isSet;
@@ -389,7 +373,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
 {
   UInt                len;            /* logical length of the list      */
   UInt                pos;            /* position                        */
-  UInt                isCyc;          /* True if the set being added to consists
+  BOOL                isCyc;          /* True if the set being added to consists
                                          of kernel cyclotomics           */
   UInt                notpos;         /* position of an original element
                                          (not the new one)               */

@@ -298,9 +298,7 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-Int IsbPRec (
-    Obj                 rec,
-    UInt                rnam )
+BOOL IsbPRec(Obj rec, UInt rnam)
 {
     return PositionPRec(rec, rnam, 1) != 0;
 }

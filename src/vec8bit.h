@@ -37,7 +37,7 @@ Obj CopyVec8Bit(Obj list, UInt mut);
 */
 extern Obj IsVec8bitRep;
 
-EXPORT_INLINE int IS_VEC8BIT_REP(Obj obj)
+EXPORT_INLINE BOOL IS_VEC8BIT_REP(Obj obj)
 {
     return TNUM_OBJ(obj) == T_DATOBJ && True == DoFilter(IsVec8bitRep, obj);
 }

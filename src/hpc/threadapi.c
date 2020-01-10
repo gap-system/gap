@@ -1344,7 +1344,7 @@ static Obj FuncCreateChannel(Obj self, Obj args)
     return CreateChannel(capacity);
 }
 
-static int IsChannel(Obj obj)
+static BOOL IsChannel(Obj obj)
 {
     return obj && TNUM_OBJ(obj) == T_CHANNEL;
 }
@@ -1427,7 +1427,7 @@ static Obj FuncReceiveChannel(Obj self, Obj channel)
     return ReceiveChannel(ObjPtr(channel));
 }
 
-static int IsChannelList(Obj list)
+static BOOL IsChannelList(Obj list)
 {
     int len = LEN_PLIST(list);
     int i;
@@ -1632,7 +1632,7 @@ static Obj FuncCreateBarrier(Obj self)
     return CreateBarrier();
 }
 
-static int IsBarrier(Obj obj)
+static BOOL IsBarrier(Obj obj)
 {
     return obj && TNUM_OBJ(obj) == T_BARRIER;
 }
@@ -1712,7 +1712,7 @@ static Obj SyncIsBound(SyncVar * var)
     return var->value ? True : False;
 }
 
-static int IsSyncVar(Obj var)
+static BOOL IsSyncVar(Obj var)
 {
     return var && TNUM_OBJ(var) == T_SYNCVAR;
 }

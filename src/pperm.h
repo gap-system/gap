@@ -13,7 +13,7 @@
 
 #include "objects.h"
 
-EXPORT_INLINE int IS_PPERM(Obj f)
+EXPORT_INLINE BOOL IS_PPERM(Obj f)
 {
     return (TNUM_OBJ(f) == T_PPERM2 || TNUM_OBJ(f) == T_PPERM4);
 }

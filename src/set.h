@@ -48,7 +48,7 @@ Obj SetList(Obj list);
 **  to reflect this. If it is not then 'SetList' is called to make a copy of
 **  'list', remove the holes, sort the copy, and remove the duplicates.
 */
-Int IsSet(Obj list);
+BOOL IsSet(Obj list);
 
 
 /****************************************************************************

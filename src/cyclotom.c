@@ -634,7 +634,7 @@ static Obj Cyclotomic(UInt n, UInt m)
     UInt                p;              /* prime factor                    */
     static UInt         lastN;          /* rember last n, dont recompute:  */
     static UInt         phi;            /* Euler phi(n)                    */
-    static UInt         isSqfree;       /* is n squarefree?                */
+    static BOOL         isSqfree;       /* is n squarefree?                */
     static UInt         nrp;            /* number of its prime factors     */
 
     /* get a pointer to the cyclotomic and a copy of n to factor           */
@@ -672,12 +672,13 @@ static Obj Cyclotomic(UInt n, UInt m)
     if ( n != lastN ) {
         lastN = n;
         phi = n;  k = n;
-        isSqfree = 1;
+        isSqfree = TRUE;
         nrp = 0;
         for ( p = 2; p <= k; p++ ) {
             if ( k % p == 0 ) {
                 phi = phi * (p-1) / p;
-                if ( k % (p*p) == 0 )  isSqfree = 0;
+                if (k % (p * p) == 0)
+                    isSqfree = FALSE;
                 nrp++;
                 while ( k % p == 0 )  k = k / p;
             }

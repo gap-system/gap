@@ -1071,14 +1071,14 @@ static const char * AllKeywords[] = {
     "IsBound", "Unbind",   "TryNextMethod", "Info",     "Assert",
 };
 
-int IsKeyword(const char * str)
+BOOL IsKeyword(const char * str)
 {
     for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
         if (strcmp(str, AllKeywords[i]) == 0) {
-            return 1;
+            return TRUE;
         }
     }
-    return 0;
+    return FALSE;
 }
 
 static Obj FuncALL_KEYWORDS(Obj self)

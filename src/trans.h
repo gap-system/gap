@@ -13,7 +13,7 @@
 
 #include "objects.h"
 
-EXPORT_INLINE int IS_TRANS(Obj f)
+EXPORT_INLINE BOOL IS_TRANS(Obj f)
 {
     return (TNUM_OBJ(f) == T_TRANS2 || TNUM_OBJ(f) == T_TRANS4);
 }

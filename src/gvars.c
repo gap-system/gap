@@ -880,8 +880,7 @@ static Obj FuncMakeReadWriteGVar(Obj self, Obj name)
 **
 *F  IsReadOnlyGVar( <gvar> ) . . . . . . return status of a global variable
 */
-Int IsReadOnlyGVar (
-    UInt                gvar )
+BOOL IsReadOnlyGVar(UInt gvar)
 {
     return GetGVarFlagInfo(gvar).gvarWriteFlag == GVarReadOnly;
 }
@@ -904,7 +903,7 @@ static Obj FuncIsReadOnlyGVar (
 **
 *F  IsConstantGVar( <gvar> ) . . . . . . return if a variable is a constant
 */
-Int IsConstantGVar(UInt gvar)
+BOOL IsConstantGVar(UInt gvar)
 {
     return GetGVarFlagInfo(gvar).gvarWriteFlag == GVarConstant;
 }
@@ -976,9 +975,7 @@ static Obj FuncAUTO(Obj self, Obj args)
 *F  iscomplete( <name>, <len> ) . . . . . . . .  find the completions of name
 *F  completion( <name>, <len> ) . . . . . . . .  find the completions of name
 */
-UInt            iscomplete_gvar (
-    Char *              name,
-    UInt                len )
+BOOL iscomplete_gvar(Char * name, UInt len)
 {
     const Char *        curr;
     UInt                i, k;
@@ -988,9 +985,10 @@ UInt            iscomplete_gvar (
     for ( i = 1; i <= numGVars; i++ ) {
         curr = CONST_CSTR_STRING( NameGVar( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
-        if ( k == len && curr[k] == '\0' )  return 1;
+        if (k == len && curr[k] == '\0')
+            return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 UInt            completion_gvar (

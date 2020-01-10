@@ -1079,7 +1079,7 @@ static void ReadRecExpr(ReaderState * rs, TypSymbolSet follow)
 typedef struct {
     Int        narg;           /* number of arguments             */
     Obj        nams;           /* list of local variables names   */
-    UInt       isvarg;         /* does function have varargs?     */
+    BOOL       isvarg;         /* does function have varargs?     */
 #ifdef HPCGAP
     Obj        locks;          /* locks of the function (HPC-GAP) */
 #endif
@@ -1117,7 +1117,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
     LockQual   lockqual;
     Bag        locks = 0;      /* locks of the function */
 #endif
-    UInt       isvarg = 0;     /* does function have varargs?     */
+    BOOL       isvarg = FALSE; // does function have varargs?
 
 #ifdef HPCGAP
     if (is_atomic)
@@ -1183,7 +1183,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
             SyntaxError(&rs->s, "Three dots required for variadic argument list");
         }
         if (rs->s.Symbol == S_DOTDOTDOT) {
-            isvarg = 1;
+            isvarg = TRUE;
             Match(&rs->s, S_DOTDOTDOT, "...", follow);
         }
     }
@@ -1191,7 +1191,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
 
     // Special case for function(arg)
     if ( narg == 1 && ! strcmp( "arg", CONST_CSTR_STRING( ELM_PLIST(nams, narg) ) )) {
-        isvarg = 1;
+        isvarg = TRUE;
     }
 
     ArgList args;
@@ -1392,7 +1392,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
     ArgList args;
     args.narg = 1;
     args.nams = nams;
-    args.isvarg = 0;
+    args.isvarg = FALSE;
 #ifdef HPCGAP
     args.locks = 0;
 #endif

@@ -232,7 +232,7 @@ static Int LenRange(Obj list)
 **
 **  'IsbRange' is the function in 'IsbListFuncs' for ranges.
 */
-static Int IsbRange(Obj list, Int pos)
+static BOOL IsbRange(Obj list, Int pos)
 {
     return (pos <= GET_LEN_RANGE(list));
 }
@@ -492,18 +492,18 @@ static void AsssRange(Obj list, Obj poss, Obj vals)
 **
 **  'IsPossRange' is the function in 'IsPossListFuncs' for ranges.
 */
-static Int IsPossRange(Obj list)
+static BOOL IsPossRange(Obj list)
 {
     /* test if the first element is positive                               */
     if ( GET_LOW_RANGE( list ) <= 0 )
-        return 0;
+        return FALSE;
 
     /* test if the last element is positive                                */
     if ( INT_INTOBJ( GET_ELM_RANGE( list, GET_LEN_RANGE(list) ) ) <= 0 )
-        return 0;
+        return FALSE;
 
     /* otherwise <list> is a positions list                                */
-    return 1;
+    return TRUE;
 }
 
 
@@ -610,9 +610,9 @@ static void PlainRange(Obj list)
 */
 static Obj IsRangeFilt;
 
-static Int IsRange(Obj list)
+static BOOL IsRange(Obj list)
 {
-    Int                 isRange;        /* result of the test              */
+    BOOL                isRange;        /* result of the test              */
     Int                 len;            /* logical length of list          */
     Int                 low;            /* value of first element of range */
     Int                 inc;            /* increment                       */
@@ -621,38 +621,38 @@ static Int IsRange(Obj list)
     /* if <list> is represented as a range, it is of course a range      */
     if ( TNUM_OBJ(list) == T_RANGE_NSORT
       || TNUM_OBJ(list) == T_RANGE_SSORT ) {
-        isRange = 1;
+        isRange = TRUE;
     }
 
     /* if <list> is not a list, it is not a range at the moment        */
     else if ( ! IS_SMALL_LIST( list ) ) {
-       /* isRange = 0; */
+       /* isRange = FALSE; */
        isRange = (DoFilter(IsRangeFilt, list) == True);
     }
 
     /* if <list> is the empty list, it is a range by definition          */
     else if ( LEN_LIST(list) == 0 ) {
-        isRange = 1;
+        isRange = TRUE;
     }
 
     /* if <list> is a list with just one integer, it is also a range     */
     else if ( LEN_LIST(list)==1 && IS_INTOBJ(ELMW_LIST(list,1)) ) {
-        isRange = 1;
+        isRange = TRUE;
     }
 
     /* if the first element is not an integer, it is not a range           */
     else if ( ELMV0_LIST(list,1)==0 || !IS_INTOBJ(ELMW_LIST(list,1)) ) {
-        isRange = 0;
+        isRange = FALSE;
     }
 
     /* if the second element is not an integer, it is not a range          */
     else if ( ELMV0_LIST(list,2)==0 || !IS_INTOBJ(ELMW_LIST(list,2)) ) {
-        isRange = 0;
+        isRange = FALSE;
     }
 
     /* if the first and the second element are equal it is also not a range*/
     else if ( ELMW_LIST(list,1) == ELMW_LIST(list,2) ) {
-        isRange = 0;
+        isRange = FALSE;
     }
 
     /* otherwise, test if the elements are consecutive integers            */

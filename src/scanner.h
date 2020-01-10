@@ -251,7 +251,7 @@ typedef struct {
 /* TL: extern  UInt            NrErrLine; */
 
 
-int IsKeyword(const char * str);
+BOOL IsKeyword(const char * str);
 
 
 /****************************************************************************

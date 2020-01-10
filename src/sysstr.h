@@ -46,7 +46,7 @@
 **  'IsIdent' returns 1 if its character argument can be used unquoted inside
 **  a GAP identifier, i.e., is in the range 'a..zA..Z0-9_@', and 0 otherwise.
 */
-EXPORT_INLINE int IsIdent(char ch)
+EXPORT_INLINE BOOL IsIdent(char ch)
 {
     return isalnum((unsigned int)ch) || ch == '_' || ch == '@';
 }

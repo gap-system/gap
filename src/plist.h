@@ -62,7 +62,7 @@ EXPORT_INLINE Obj NEW_PLIST_WITH_MUTABILITY(Int mut, UInt type, Int plen)
 **
 *F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list
 */
-EXPORT_INLINE Int IS_PLIST(Obj list)
+EXPORT_INLINE BOOL IS_PLIST(Obj list)
 {
     return FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
@@ -80,7 +80,7 @@ EXPORT_INLINE Int IS_PLIST(Obj list)
 **  (which have the same memory layout as plists), as the plist APIs using it
 **  for assertion checks are in practice invoked on such objects, too.
 */
-EXPORT_INLINE Int IS_PLIST_OR_POSOBJ(Obj list)
+EXPORT_INLINE BOOL IS_PLIST_OR_POSOBJ(Obj list)
 {
     UInt tnum = TNUM_OBJ(list);
     return (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) ||
@@ -224,7 +224,7 @@ EXPORT_INLINE Obj * BASE_PTR_PLIST(Obj list)
 **  whether they are dense or not (i.e. of type 'T_PLIST'),
 **  use 'IS_DENSE_LIST' instead.
 */
-EXPORT_INLINE Int IS_DENSE_PLIST(Obj list)
+EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list)
 {
     return T_PLIST_DENSE <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
@@ -234,7 +234,7 @@ EXPORT_INLINE Int IS_DENSE_PLIST(Obj list)
 **
 *F  IS_PLIST_MUTABLE( <list> )  . . . . . . . . . . . is a plain list mutable
 */
-EXPORT_INLINE Int IS_PLIST_MUTABLE(Obj list)
+EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
 {
     GAP_ASSERT(IS_PLIST(list));
     return !((TNUM_OBJ(list) - T_PLIST) % 2);

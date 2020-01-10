@@ -748,7 +748,7 @@ static Int LenString(Obj list)
 **
 **  'IsbString'  is the function in 'IsbListFuncs'  for strings.
 */
-static Int IsbString(Obj list, Int pos)
+static BOOL IsbString(Obj list, Int pos)
 {
     /* since strings are dense, this must only test for the length         */
     return (pos <= GET_LEN_STRING(list));
@@ -1042,7 +1042,7 @@ static void AsssString(Obj list, Obj poss, Obj vals)
 **
 **  'IsSSortString' is the function in 'IsSSortListFuncs' for strings.
 */
-static Int IsSSortString(Obj list)
+static BOOL IsSSortString(Obj list)
 {
     Int                 len;
     Int                 i;
@@ -1068,7 +1068,7 @@ static Int IsSSortString(Obj list)
 **
 **  'IsPossString' is the function in 'IsPossListFuncs' for strings.
 */
-static Int IsPossString(Obj list)
+static BOOL IsPossString(Obj list)
 {
     return GET_LEN_STRING( list ) == 0;
 }
@@ -1157,11 +1157,11 @@ static void PlainString(Obj list)
 **  'IS_STRING' returns 1  if the object <obj>  is a string  and 0 otherwise.
 **  It does not change the representation of <obj>.
 */
-Int (*IsStringFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsStringFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 static Obj IsStringFilt;
 
-static Int IsStringList(Obj list)
+static BOOL IsStringList(Obj list)
 {
     Int                 lenList;
     Obj                 elm;
@@ -1183,12 +1183,12 @@ static Int IsStringList(Obj list)
     return (lenList < i);
 }
 
-static Int IsStringListHom(Obj list)
+static BOOL IsStringListHom(Obj list)
 {
     return (TNUM_OBJ( ELM_LIST(list,1) ) == T_CHAR);
 }
 
-static Int IsStringObject(Obj obj)
+static BOOL IsStringObject(Obj obj)
 {
     return (DoFilter( IsStringFilt, obj ) != False);
 }
@@ -1294,8 +1294,7 @@ void ConvString (
 **  otherwise.   If <obj> is a  string it  changes  its representation to the
 **  string representation.
 */
-Int IsStringConv (
-    Obj                 obj )
+BOOL IsStringConv(Obj obj)
 {
     Int                 res;
 

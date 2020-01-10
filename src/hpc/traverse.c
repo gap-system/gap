@@ -35,7 +35,7 @@ struct TraversalState {
     UInt                    hashBits;
     Region *                region;
     int                     border;
-    int (*traversalCheck)(TraversalState *, Obj);
+    BOOL (*traversalCheck)(TraversalState *, Obj);
 };
 
 static Obj NewList(UInt size)
@@ -159,7 +159,7 @@ void QueueForTraversal(TraversalState * traversal, Obj obj)
 
 static void TraverseRegionFrom(TraversalState * traversal,
                         Obj              obj,
-                        int (*traversalCheck)(TraversalState *, Obj))
+                        BOOL (*traversalCheck)(TraversalState *, Obj))
 {
     GAP_ASSERT(IS_BAG_REF(obj));
     GAP_ASSERT(REGION(obj) != NULL);
@@ -204,24 +204,24 @@ static void TraverseRegionFrom(TraversalState * traversal,
 //   return CheckReadAccess(obj);
 // }
 
-static int IsSameRegion(TraversalState * traversal,Obj obj)
+static BOOL IsSameRegion(TraversalState * traversal, Obj obj)
 {
     return REGION(obj) == traversal->region;
 }
 
-static int IsMutable(TraversalState * traversal, Obj obj)
+static BOOL IsMutable(TraversalState * traversal, Obj obj)
 {
     return CheckReadAccess(obj) && IS_MUTABLE_OBJ(obj);
 }
 
-static int IsWritableOrImmutable(TraversalState * traversal, Obj obj)
+static BOOL IsWritableOrImmutable(TraversalState * traversal, Obj obj)
 {
     int writable = CheckExclusiveWriteAccess(obj);
     if (!writable && IS_MUTABLE_OBJ(obj)) {
         traversal->border = 1;
-        return 0;
+        return FALSE;
     }
-    return 1;
+    return TRUE;
 }
 
 Obj ReachableObjectsFrom(Obj obj)

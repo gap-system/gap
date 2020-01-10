@@ -31,7 +31,7 @@ typedef double Double;
 
 Double VAL_MACFLOAT(Obj obj);
 void SET_VAL_MACFLOAT(Obj obj, Double val);
-Int IS_MACFLOAT(Obj obj);
+BOOL IS_MACFLOAT(Obj obj);
 Obj NEW_MACFLOAT(Double val);
 
 

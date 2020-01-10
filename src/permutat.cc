@@ -173,7 +173,7 @@ static void PrintPerm(Obj perm)
     UInt                degPerm;        /* degree of the permutation       */
     const T *           ptPerm;         /* pointer to the permutation      */
     UInt                p,  q;          /* loop variables                  */
-    UInt                isId;           /* permutation is the identity?    */
+    BOOL                isId;           /* permutation is the identity?    */
     const char *        fmt1;           /* common formats to print points  */
     const char *        fmt2;           /* common formats to print points  */
 
@@ -193,13 +193,13 @@ static void PrintPerm(Obj perm)
     memset(ptSeen, 0, DEG_PERM<T>(perm) * sizeof(T));
 
     /* run through all points                                              */
-    isId = 1;
+    isId = TRUE;
     ptPerm = CONST_ADDR_PERM<T>(perm);
     for ( p = 0; p < degPerm; p++ ) {
         /* if the smallest is the one we started with lets print the cycle */
         if (!ptSeen[p] && ptPerm[p] != p) {
             ptSeen[p] = 1;
-            isId = 0;
+            isId = FALSE;
             Pr(fmt1,(Int)(p+1), 0);
             ptPerm = CONST_ADDR_PERM<T>(perm);
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
@@ -2078,7 +2078,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     const T *           ptPrm;          /* pointer to the permutation      */
     Obj                 tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
-    UInt                isint;          /* <set> only holds integers       */
+    BOOL                isint;          /* <set> only holds integers       */
     UInt                i, k;           /* loop variables                  */
 
     GAP_ASSERT(IS_PLIST(set));
@@ -2097,7 +2097,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     lmp = DEG_PERM<T>(perm);
 
     /* loop over the entries of the tuple                              */
-    isint = 1;
+    isint = TRUE;
     for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
         if (IS_POS_INTOBJ(*ptTup)) {
             k = INT_INTOBJ( *ptTup );
@@ -2108,7 +2108,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
             *ptRes = tmp;
         }
         else {
-            isint = 0;
+            isint = FALSE;
             tmp = POW( *ptTup, perm );
             ptTup = CONST_ADDR_OBJ(set) + i;
             ptRes = ADDR_OBJ(res) + i;

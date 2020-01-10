@@ -44,7 +44,7 @@
 **  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
 **  element and 0 otherwise.
 */
-EXPORT_INLINE Int IS_FFE(Obj o)
+EXPORT_INLINE BOOL IS_FFE(Obj o)
 {
     return (Int)o & 0x02;
 }
@@ -562,12 +562,12 @@ void CheckedMakeImmutable(Obj obj);
 **  'IS_MUTABLE_OBJ' returns   1 if the object  <obj> is mutable   (i.e., can
 **  change due to assignments), and 0 otherwise.
 */
-extern Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-EXPORT_INLINE Int IS_MUTABLE_OBJ(Obj obj)
+extern BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
+EXPORT_INLINE BOOL IS_MUTABLE_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     if (/*FIRST_CONSTANT_TNUM <= tnum &&*/ tnum <= LAST_CONSTANT_TNUM)
-        return 0;
+        return FALSE;
     if (FIRST_IMM_MUT_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM)
         return !(tnum & IMMUTABLE);
     return ((*IsMutableObjFuncs[tnum])(obj));
@@ -585,7 +585,7 @@ EXPORT_INLINE Int IS_MUTABLE_OBJ(Obj obj)
 */
 
 #ifdef HPCGAP
-Int IsInternallyMutableObj(Obj obj);
+BOOL IsInternallyMutableObj(Obj obj);
 #endif
 
 /****************************************************************************
@@ -638,8 +638,8 @@ void LoadObjError(Obj obj);
 **  'IS_COPYABLE_OBJ' returns 1 if the object <obj> is copyable (i.e., can be
 **  copied into a mutable object), and 0 otherwise.
 */
-extern Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
-EXPORT_INLINE Int IS_COPYABLE_OBJ(Obj obj)
+extern BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
+EXPORT_INLINE BOOL IS_COPYABLE_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     return (IsCopyableObjFuncs[tnum])(obj);
@@ -816,7 +816,7 @@ EXPORT_INLINE void PRINT_PATH(Obj obj, Int idx)
 **
 *F  IS_COMOBJ( <obj> )  . . . . . . . . . . . is an object a component object
 */
-EXPORT_INLINE Int IS_COMOBJ(Obj obj)
+EXPORT_INLINE BOOL IS_COMOBJ(Obj obj)
 {
     return TNUM_OBJ(obj) == T_COMOBJ;
 }
@@ -852,14 +852,14 @@ EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
 void AssComObj(Obj obj, UInt rnam, Obj val);
 void UnbComObj(Obj obj, UInt rnam);
 Obj  ElmComObj(Obj obj, UInt rnam);
-Int  IsbComObj(Obj obj, UInt rnam);
+BOOL IsbComObj(Obj obj, UInt rnam);
 
 
 /****************************************************************************
 **
 *F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
 */
-EXPORT_INLINE Int IS_POSOBJ(Obj obj)
+EXPORT_INLINE BOOL IS_POSOBJ(Obj obj)
 {
     return TNUM_OBJ(obj) == T_POSOBJ;
 }
@@ -895,14 +895,14 @@ EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
 void AssPosObj(Obj obj, Int idx, Obj val);
 void UnbPosObj(Obj obj, Int idx);
 Obj  ElmPosObj(Obj obj, Int idx);
-Int  IsbPosObj(Obj obj, Int idx);
+BOOL IsbPosObj(Obj obj, Int idx);
 
 
 /****************************************************************************
 **
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
-EXPORT_INLINE Int IS_DATOBJ(Obj obj)
+EXPORT_INLINE BOOL IS_DATOBJ(Obj obj)
 {
     return TNUM_OBJ(obj) == T_DATOBJ;
 }

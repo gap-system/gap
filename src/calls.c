@@ -991,9 +991,9 @@ void PrintFunction (
     Int                 narg;           /* number of arguments             */
     Int                 nloc;           /* number of locals                */
     UInt                i;              /* loop variable                   */
-    UInt                isvarg;         /* does function have varargs?     */
+    BOOL                isvarg;         /* does function have varargs?     */
 
-    isvarg = 0;
+    isvarg = FALSE;
 
     if ( IS_OPERATION(func) ) {
       CALL_1ARGS( PrintOperation, func );
@@ -1014,7 +1014,7 @@ void PrintFunction (
     /* print the arguments                                                 */
     narg = NARG_FUNC(func);
     if (narg < 0) {
-      isvarg = 1;
+      isvarg = TRUE;
       narg = -narg;
     }
     
@@ -1527,7 +1527,7 @@ static Obj FuncIsKernelFunction(Obj self, Obj func)
     return IsKernelFunction(func) ? True : False;
 }
 
-Int IsKernelFunction(Obj func)
+BOOL IsKernelFunction(Obj func)
 {
     GAP_ASSERT(IS_FUNC(func));
     return (BODY_FUNC(func) == 0) ||

@@ -43,6 +43,8 @@
 #include <sys/stat.h>
 
 #ifdef SYS_IS_DARWIN
+// Workaround: TRUE / FALSE are also defined by the OS X Mach-O headers
+#define ENUM_DYLD_BOOL
 #include <mach-o/dyld.h>
 #endif
 
