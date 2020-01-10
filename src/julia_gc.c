@@ -278,11 +278,29 @@ static void * AllocateBagMemory(UInt type, UInt size)
     return result;
 }
 
+
+/****************************************************************************
+**
+*F  MarkAllSubBagsDefault(<bag>) . . . marking function that marks everything
+**
+**  'MarkAllSubBagsDefault' is the same  as 'MarkAllSubBags' but is used as
+**  the initial default marking function. This allows to catch cases where
+**  'InitMarkFuncBags' is called twice for the same type: the first time is
+**  accepted because the marking function is still 'MarkAllSubBagsDefault';
+**  the second time raises a warning, because a non-default marking function
+**  is being replaced.
+*/
+static void MarkAllSubBagsDefault(Bag bag)
+{
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
+}
+
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 {
     // HOOK: set mark function for type `type`.
+    GAP_ASSERT(TabMarkFuncBags[type] == MarkAllSubBagsDefault);
     TabMarkFuncBags[type] = mark_func;
 }
 
@@ -714,7 +732,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     // HOOK: initialization happens here.
     GapStackBottom = stack_bottom;
     for (UInt i = 0; i < NUM_TYPES; i++) {
-        TabMarkFuncBags[i] = MarkAllSubBags;
+        TabMarkFuncBags[i] = MarkAllSubBagsDefault;
     }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.

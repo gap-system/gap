@@ -693,9 +693,13 @@ void MarkFourSubBags(Bag bag);
 */
 void MarkAllSubBags(Bag bag);
 
-void MarkAllSubBagsDefault(Bag);
 
+/****************************************************************************
+**
+*F  MarkAllButFirstSubBags(<bag>) . . . .  marks all subbags except the first
+*/
 void MarkAllButFirstSubBags(Bag bag);
+
 
 /****************************************************************************
 **
