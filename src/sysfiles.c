@@ -112,25 +112,25 @@ typedef struct {
 
     // set to 1 by any read operation that hits eof; reset to 0 by a
     // subsequent successful read
-    UInt ateof;
+    BOOL ateof;
 
     // records that last character read was \r for cygwin and other systems
     // that need end-of-line hackery
-    UInt crlast;
+    BOOL crlast;
 
     // if non-negative then this file has a buffer in syBuffers[bufno]; if
     // negative, this file may not be buffered
-    Int bufno;
+    int bufno;
 
     // set when this fid is a *stdin* or *errin* and really is a tty
-    Int isTTY;
+    BOOL isTTY;
 } SYS_SY_BUF;
 
 #define SYS_FILE_BUF_SIZE 20000
 
 typedef struct {
     Char buf[SYS_FILE_BUF_SIZE];
-    UInt inuse;
+    BOOL inuse;
     UInt bufstart;
     UInt buflen;
 } SYS_SY_BUFFER;
@@ -567,7 +567,7 @@ int SyBufFileno(Int fid)
     return (syBuf[fid].type == raw_socket) ? syBuf[fid].fp : -1;
 }
 
-Int SyBufIsTTY(Int fid)
+BOOL SyBufIsTTY(Int fid)
 {
     GAP_ASSERT(0 <= fid && fid < ARRAY_SIZE(syBuf));
     return syBuf[fid].isTTY;
@@ -576,7 +576,7 @@ Int SyBufIsTTY(Int fid)
 void SyBufSetEOF(Int fid)
 {
     GAP_ASSERT(0 <= fid && fid < ARRAY_SIZE(syBuf));
-    syBuf[fid].ateof = 1;
+    syBuf[fid].ateof = TRUE;
 }
 
 
@@ -713,15 +713,14 @@ UInt SySetBuffering( UInt fid )
 
   bufno = 0;
   HashLock(&syBuf);
-  while (bufno < ARRAY_SIZE(syBuffers) &&
-         syBuffers[bufno].inuse != 0)
+  while (bufno < ARRAY_SIZE(syBuffers) && syBuffers[bufno].inuse)
     bufno++;
   if (bufno >= ARRAY_SIZE(syBuffers)) {
       HashUnlock(&syBuf);
       return 0;
   }
   syBuf[fid].bufno = bufno;
-  syBuffers[bufno].inuse = 1;
+  syBuffers[bufno].inuse = TRUE;
   syBuffers[bufno].bufstart = 0;
   syBuffers[bufno].buflen = 0;
   HashUnlock(&syBuf);
@@ -770,7 +769,7 @@ Int SyFclose (
 
     /* mark the buffer as unused                                           */
     if (syBuf[fid].bufno >= 0)
-      syBuffers[syBuf[fid].bufno].inuse = 0;
+      syBuffers[syBuf[fid].bufno].inuse = FALSE;
     SyBufMarkUnused(fid);
     HashUnlock(&syBuf);
     return 0;
@@ -1435,17 +1434,17 @@ static Int syGetchTerm(Int fid)
      */
     if (ch == '\n') {
         if (syBuf[fid].crlast) {
-            syBuf[fid].crlast = 0;
+            syBuf[fid].crlast = FALSE;
             goto tryagain;
         } else
             return (UChar)'\n';
     }
     if (ch == '\r') {
-        syBuf[fid].crlast = 1;
+        syBuf[fid].crlast = TRUE;
         return (Int)'\n';
     }
     // We saw a '\r' without a '\n'
-    syBuf[fid].crlast = 0;
+    syBuf[fid].crlast = FALSE;
 #endif  /* line end hack */
 
     /* return the character                                                */
@@ -1487,7 +1486,7 @@ static Int syGetchNonTerm(Int fid)
     }
 
     if (ret < 1) {
-        syBuf[fid].ateof = 1;
+        syBuf[fid].ateof = TRUE;
         return EOF;
     }
 
@@ -1497,17 +1496,17 @@ static Int syGetchNonTerm(Int fid)
      */
     if (ch == '\n') {
         if (syBuf[fid].crlast) {
-            syBuf[fid].crlast = 0;
+            syBuf[fid].crlast = FALSE;
             goto tryagain;
         } else
             return (UChar)'\n';
     }
     if (ch == '\r') {
-        syBuf[fid].crlast = 1;
+        syBuf[fid].crlast = TRUE;
         return (Int)'\n';
     }
     // We saw a '\r' without a '\n'
-    syBuf[fid].crlast = 0;
+    syBuf[fid].crlast = FALSE;
 #endif  /* line end hack */
 
     /* return the character                                                */
@@ -3250,7 +3249,7 @@ Obj SyReadStringFile(Int fid)
     len = GET_LEN_STRING(str);
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
-    syBuf[fid].ateof = 1;
+    syBuf[fid].ateof = TRUE;
     return str;
 }
 
@@ -3289,7 +3288,7 @@ static Obj SyReadStringFileStat(Int fid)
             len -= ret;
             ptr += ret;
         }
-        syBuf[fid].ateof = 1;
+        syBuf[fid].ateof = TRUE;
         return str;
     } else {
         SySetErrorNo();

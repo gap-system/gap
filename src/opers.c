@@ -371,7 +371,7 @@ static Int IsSubsetFlagsCalls;
 **
 *F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) . subset test with no safety check
 */
-Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
+BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 {
     Int    len1;
     Int    len2;

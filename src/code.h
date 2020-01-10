@@ -381,7 +381,7 @@ void SET_VISITED_STAT(Stat stat);
 **  'LVAR_REF_LVAR' returns the local variable (by its index) to which <expr>
 **  is a (immediate) reference.
 */
-EXPORT_INLINE Int IS_REF_LVAR(Expr expr)
+EXPORT_INLINE BOOL IS_REF_LVAR(Expr expr)
 {
     return ((Int)expr & 0x03) == 0x03;
 }
@@ -412,7 +412,7 @@ EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr)
 **  'INT_INTEXPR' converts the (immediate) integer  expression <expr> to a  C
 **  integer.
 */
-EXPORT_INLINE Int IS_INTEXPR(Expr expr)
+EXPORT_INLINE BOOL IS_INTEXPR(Expr expr)
 {
     return ((Int)expr & 0x03) == 0x01;
 }

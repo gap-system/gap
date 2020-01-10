@@ -455,15 +455,15 @@ Obj GMP_REDUCE(Obj op)
 **
 */
 #if DEBUG_GMP
-static int IS_NORMALIZED_AND_REDUCED(Obj op, const char * func, int line)
+static BOOL IS_NORMALIZED_AND_REDUCED(Obj op, const char * func, int line)
 {
   mp_size_t size;
   if ( IS_INTOBJ( op ) ) {
-    return 1;
+    return TRUE;
   }
   if ( !IS_LARGEINT( op ) ) {
     /* ignore non-integers */
-    return 0;
+    return FALSE;
   }
   for ( size = SIZE_INT(op); size != (mp_size_t)1; size-- ) {
     if ( CONST_ADDR_INT(op)[(size - 1)] != 0 ) {
@@ -478,15 +478,15 @@ static int IS_NORMALIZED_AND_REDUCED(Obj op, const char * func, int line)
          ( IS_INTNEG(op) && VAL_LIMB0(op) == -INT_INTOBJ_MIN ) ) {
       if ( IS_INTNEG(op) ) {
         Pr("WARNING: non-reduced negative gmp value (%s:%d)\n",(Int)func,line);
-        return 0;
+        return FALSE;
       }
       else {
         Pr("WARNING: non-reduced positive gmp value (%s:%d)\n",(Int)func,line);
-        return 0;
+        return FALSE;
       }
     }
   }
-  return 1;
+  return TRUE;
 }
 #endif
 

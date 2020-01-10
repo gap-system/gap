@@ -83,7 +83,7 @@ int SyBufFileno(Int fid);
 **
 **  Given a 'syBuf' buffer id, return 1 if it references a TTY, else 0
 */
-Int SyBufIsTTY(Int fid);
+BOOL SyBufIsTTY(Int fid);
 
 
 // HACK: set 'ateof' to true for the given 'syBuf' entry

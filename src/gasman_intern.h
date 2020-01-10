@@ -122,7 +122,7 @@ void MarkBagWeakly(Bag bag);
 **  an object which was freed as the only references to it were weak.
 **  This is used for implement weak pointer references.
 */
-Int IsWeakDeadBag(Bag bag);
+BOOL IsWeakDeadBag(Bag bag);
 
 /****************************************************************************
 **

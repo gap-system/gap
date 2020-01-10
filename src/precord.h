@@ -36,7 +36,7 @@ Obj NEW_PREC(UInt len);
 **
 *F  IS_PREC( <rec> ) . . . . . . . . .  check if <rec> is in plain record rep
 */
-EXPORT_INLINE Int IS_PREC(Obj rec)
+EXPORT_INLINE BOOL IS_PREC(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE;
@@ -55,7 +55,7 @@ EXPORT_INLINE Int IS_PREC(Obj rec)
 **  the same memory layout as precs), as the precs APIs using it for
 **  assertion checks are in practice invoked on such objects, too.
 */
-EXPORT_INLINE Int IS_PREC_OR_COMOBJ(Obj rec)
+EXPORT_INLINE BOOL IS_PREC_OR_COMOBJ(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
@@ -212,7 +212,7 @@ Obj ElmPRec(Obj rec, UInt rnam);
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-Int IsbPRec(Obj rec, UInt rnam);
+BOOL IsbPRec(Obj rec, UInt rnam);
 
 
 /****************************************************************************

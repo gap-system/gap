@@ -27,7 +27,7 @@
 **
 *F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
 */
-EXPORT_INLINE Int IS_BLIST_REP(Obj list)
+EXPORT_INLINE BOOL IS_BLIST_REP(Obj list)
 {
     return T_BLIST <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= T_BLIST_SSORT + IMMUTABLE;
@@ -47,6 +47,7 @@ EXPORT_INLINE Int SIZE_PLEN_BLIST(Int plen)
     GAP_ASSERT(plen >= 0);
     return sizeof(Obj) + (plen + BIPEB - 1) / BIPEB * sizeof(UInt);
 }
+
 
 /****************************************************************************
 **

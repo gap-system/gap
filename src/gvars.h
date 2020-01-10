@@ -135,7 +135,7 @@ UInt GVarName(const Char * name);
 **
 *F  iscomplete_gvar( <name>, <len> )  . . . . . . . . . . . . .  check <name>
 */
-UInt iscomplete_gvar(Char * name, UInt len);
+BOOL iscomplete_gvar(Char * name, UInt len);
 
 
 /****************************************************************************
@@ -165,9 +165,9 @@ void MakeConstantGVar(UInt gvar);
 void MakeThreadLocalVar(UInt gvar, UInt rnam);
 #endif
 
-Int IsReadOnlyGVar(UInt gvar);
+BOOL IsReadOnlyGVar(UInt gvar);
 
-Int IsConstantGVar(UInt gvar);
+BOOL IsConstantGVar(UInt gvar);
 
 
 /****************************************************************************

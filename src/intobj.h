@@ -56,7 +56,7 @@ enum {
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
 **  and 0 otherwise.
 */
-EXPORT_INLINE Int IS_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_INTOBJ(Obj o)
 {
     return (Int)o & 0x01;
 }
@@ -69,7 +69,7 @@ EXPORT_INLINE Int IS_INTOBJ(Obj o)
 **  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a positive integer, and 0 otherwise.
 */
-EXPORT_INLINE Int IS_POS_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o)
 {
     return ((Int)o & 0x01) && ((Int)o > 0x01);
 }
@@ -81,7 +81,7 @@ EXPORT_INLINE Int IS_POS_INTOBJ(Obj o)
 **  'IS_NONNEG_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a non-negative integer, and 0 otherwise.
 */
-EXPORT_INLINE Int IS_NONNEG_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o)
 {
     return ((Int)o & 0x01) && ((Int)o > 0);
 }

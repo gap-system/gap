@@ -39,7 +39,7 @@ static Obj NamesRNam;
 **
 **  'IS_VALID_RNAM' returns if <rnam> is a valid record name.
 */
-static Int IS_VALID_RNAM(UInt rnam)
+static BOOL IS_VALID_RNAM(UInt rnam)
 {
     return rnam != 0 && rnam <= LEN_PLIST(NamesRNam);
 }
@@ -320,7 +320,7 @@ static Obj FuncNameRNam(Obj self, Obj rnam)
 **  'IS_REC' returns a nonzero value if the object <obj> is a  record  and  0
 **  otherwise.
 */
-Int             (*IsRecFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 static Obj IsRecFilt;
 
@@ -329,7 +329,7 @@ static Obj FiltIS_REC(Obj self, Obj obj)
     return (IS_REC(obj) ? True : False);
 }
 
-static Int IsRecObject(Obj obj)
+static BOOL IsRecObject(Obj obj)
 {
     return (DoFilter( IsRecFilt, obj ) == True);
 }
@@ -376,7 +376,7 @@ static Obj ElmRecObject(Obj obj, UInt rnam)
 **  name <rnam> and 0 otherwise.  An error is signalled if  <rec>  is  not  a
 **  record.
 */
-Int             (*IsbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
+BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
 static Obj IsbRecOper;
 
@@ -386,12 +386,12 @@ static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
                                                                : False);
 }
 
-static Int IsbRecError(Obj rec, UInt rnam)
+static BOOL IsbRecError(Obj rec, UInt rnam)
 {
     RequireArgument("Record IsBound", rec, "must be a record");
 }
 
-static Int IsbRecObject(Obj obj, UInt rnam)
+static BOOL IsbRecObject(Obj obj, UInt rnam)
 {
     return (DoOperation2Args( IsbRecOper, obj, INTOBJ_INT(rnam) ) == True);
 }
@@ -459,9 +459,7 @@ static void UnbRecObject(Obj obj, UInt rnam)
 *F  iscomplete( <name>, <len> ) . . . . . . . .  find the completions of name
 *F  completion( <name>, <len> ) . . . . . . . .  find the completions of name
 */
-UInt            iscomplete_rnam (
-    Char *              name,
-    UInt                len )
+BOOL iscomplete_rnam(Char * name, UInt len)
 {
     const Char *        curr;
     UInt                i, k;
@@ -470,9 +468,10 @@ UInt            iscomplete_rnam (
     for ( i = 1; i <= countRNam; i++ ) {
         curr = CONST_CSTR_STRING( NAME_RNAM( i ) );
         for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
-        if ( k == len && curr[k] == '\0' )  return 1;
+        if (k == len && curr[k] == '\0')
+            return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 UInt            completion_rnam (

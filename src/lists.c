@@ -51,7 +51,7 @@
 **  'IS_LIST' only calls the function pointed  to  by  'IsListFuncs[<type>]',
 **  passing <obj> as argument.
 */
-Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 static Obj IsListFilt;
 
@@ -60,7 +60,7 @@ static Obj FiltIS_LIST(Obj self, Obj obj)
     return (IS_LIST( obj ) ? True : False);
 }
 
-static Int IsListObject(Obj obj)
+static BOOL IsListObject(Obj obj)
 {
     return (DoFilter( IsListFilt, obj ) == True);
 }
@@ -77,18 +77,18 @@ static Int IsListObject(Obj obj)
 **  This is, in some sense, a workaround for the not yet implemented features
 **  below (see LENGTH).
 */
-Int             (*IsSmallListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 static Obj IsSmallListFilt;
 static Obj HasIsSmallListFilt;
 static Obj LengthAttr;
 static Obj SetIsSmallList;
 
-static Int IsSmallListObject(Obj obj)
+static BOOL IsSmallListObject(Obj obj)
 {
   Obj len;
   if (DoFilter(IsListFilt, obj) != True)
-    return 0;
+    return FALSE;
   if (DoFilter(HasIsSmallListFilt, obj) == True)
     return DoFilter(IsSmallListFilt, obj) == True;
   if (DoTestAttribute(LengthAttr, obj) == True)
@@ -97,12 +97,12 @@ static Int IsSmallListObject(Obj obj)
       if (IS_INTOBJ(len))
         {
           CALL_2ARGS(SetIsSmallList, obj, True);
-          return 1;
+          return TRUE;
         }
       else
         {
           CALL_2ARGS(SetIsSmallList, obj, False);
-          return 0;
+          return FALSE;
         }
     }
   return 0;
@@ -256,7 +256,7 @@ static Obj LengthInternal(Obj obj)
 **  list, then 'IsbListFuncs[<type>]' points to 'IsbListError', which signals
 **  the error.
 */
-Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+BOOL (*IsbListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos);
 
 static Obj             IsbListOper;
 
@@ -268,24 +268,22 @@ static Obj FuncISB_LIST(Obj self, Obj list, Obj pos)
         return ISBB_LIST( list, pos ) ? True : False;
 }
 
-static Int IsbListError(Obj list, Int pos)
+static BOOL IsbListError(Obj list, Int pos)
 {
     RequireArgument("IsBound", list, "must be a list");
 }
 
-static Int IsbListObject(Obj list, Int pos)
+static BOOL IsbListObject(Obj list, Int pos)
 {
     return DoOperation2Args( IsbListOper, list, INTOBJ_INT(pos) ) == True;
 }
 
-Int             ISBB_LIST (
-    Obj                 list,
-    Obj                 pos )
+BOOL ISBB_LIST(Obj list, Obj pos)
 {
     return DoOperation2Args( IsbListOper, list, pos ) == True;
 }
 
-Int ISB_MAT(Obj mat, Obj row, Obj col)
+BOOL ISB_MAT(Obj mat, Obj row, Obj col)
 {
     return DoOperation3Args(IsbListOper, mat, row, col) == True;
 }
@@ -996,7 +994,7 @@ static Obj FuncASSS_LIST_DEFAULT(Obj self, Obj list, Obj poss, Obj objs)
 **  the   type  of  a    list,  then  'IsDenseListFuncs[<type>]'  points   to
 **  'AlwaysNo', which just returns 0.
 */
-Int             (*IsDenseListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 static Obj IsDenseListFilt;
 
@@ -1005,7 +1003,7 @@ static Obj FiltIS_DENSE_LIST(Obj self, Obj obj)
     return (IS_DENSE_LIST( obj ) ? True : False);
 }
 
-static Int IsDenseListObject(Obj obj)
+static BOOL IsDenseListObject(Obj obj)
 {
     return (DoFilter( IsDenseListFilt, obj ) == True);
 }
@@ -1022,7 +1020,7 @@ static Int IsDenseListObject(Obj obj)
 **  'AlwaysNo', which just returns 0.
 **
 */
-Int             (*IsHomogListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 static Obj IsHomogListFilt;
 
@@ -1031,7 +1029,7 @@ static Obj FiltIS_HOMOG_LIST(Obj self, Obj obj)
     return (IS_HOMOG_LIST( obj ) ? True : False);
 }
 
-static Int IsHomogListObject(Obj obj)
+static BOOL IsHomogListObject(Obj obj)
 {
     return (DoFilter( IsHomogListFilt, obj ) == True);
 }
@@ -1047,7 +1045,7 @@ static Int IsHomogListObject(Obj obj)
 **  the type of a list, then 'IsTableListFuncs[<type>]' points to
 **  'AlwaysNo', which just returns 0.
 */
-Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsTableListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 static Obj IsTableListFilt;
 
@@ -1056,7 +1054,7 @@ static Obj FiltIS_TABLE_LIST(Obj self, Obj obj)
     return (IS_TABLE_LIST( obj ) ? True : False);
 }
 
-static Int IsTableListObject(Obj obj)
+static BOOL IsTableListObject(Obj obj)
 {
     return (DoFilter( IsTableListFilt, obj ) == True);
 }
@@ -1073,7 +1071,7 @@ static Int IsTableListObject(Obj obj)
 **  points to 'AlwaysNo', which just returns 0.
 **
 */
-Int (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsSSortListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 static Obj IsSSortListProp;
 
@@ -1082,8 +1080,7 @@ static Obj PropIS_SSORT_LIST(Obj self, Obj obj)
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
 
-static Int IsSSortListDefault (
-    Obj                 list )
+static BOOL IsSSortListDefault(Obj list)
 {
     Int                 lenList;
     Obj                 elm1;
@@ -1095,33 +1092,33 @@ static Int IsSSortListDefault (
 
     /* special case for the empty list                                     */
     if ( lenList == 0 ) {
-        return 2;
+        return TRUE;
     }
 
     /* get the first element                                               */
     elm1 = ELM0_LIST(list, 1);
 
     if (!elm1) {
-        return 0;
+        return FALSE;
     }
 
     /* compare each element with its precursor                             */
     for ( i = 2; i <= lenList; i++ ) {
         elm2 = ELM0_LIST(list, i);
         if (!elm2) {
-            return 0;
+            return FALSE;
         }
         if ( ! LT( elm1, elm2 ) ) {
-            return 0;
+            return FALSE;
         }
         elm1 = elm2;
     }
 
     /* the list is strictly sorted                                         */
-    return 2;
+    return TRUE;
 }
 
-static Int IsSSortListObject(Obj obj)
+static BOOL IsSSortListObject(Obj obj)
 {
     return (DoProperty( IsSSortListProp, obj ) == True);
 }
@@ -1142,7 +1139,7 @@ static Obj FuncIS_SSORT_LIST_DEFAULT(Obj self, Obj obj)
 **  the   type    of a   list,    then  'IsPossListFuncs[<type>]'   points to
 **  'NotIsPossList', which just returns 0.
 */
-Int             (*IsPossListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+BOOL (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
 static Obj IsPossListProp;
 
@@ -1151,7 +1148,7 @@ static Obj PropIS_POSS_LIST(Obj self, Obj obj)
     return (IS_POSS_LIST(obj) ? True : False);
 }
 
-static Int IsPossListDefault(Obj list)
+static BOOL IsPossListDefault(Obj list)
 {
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
@@ -1166,25 +1163,25 @@ static Int IsPossListDefault(Obj list)
 
         /* if it has a hole then it isn't a poss list */
         if ( elm == 0)
-          return 0;
+          return FALSE;
 
         /* if it's a small integer and non-positive then
            it's not a poss list */
         if ( IS_INTOBJ(elm)) {
           if (INT_INTOBJ(elm) <= 0)
-            return 0;
+            return FALSE;
         }
         /* or if it's not a small integer or a positive large integer then it's
            not a poss list */
         else if (TNUM_OBJ(elm) != T_INTPOS)
-          return 0;
+          return FALSE;
     }
 
     /* the list is a positions list                                        */
-    return 1;
+    return TRUE;
 }
 
-static Int IsPossListObject(Obj obj)
+static BOOL IsPossListObject(Obj obj)
 {
     return (DoProperty( IsPossListProp, obj ) == True);
 }

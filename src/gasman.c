@@ -444,7 +444,7 @@ UInt                    NrHalfDeadBags;
 **
 *F  IS_BAG_ID -- check if a value looks like a masterpointer id
 */
-static inline UInt IS_BAG_ID(void * ptr)
+static inline BOOL IS_BAG_ID(void * ptr)
 {
     return (((void *)MptrBags <= ptr) && (ptr < (void *)MptrEndBags) &&
             ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
@@ -454,7 +454,7 @@ static inline UInt IS_BAG_ID(void * ptr)
 **
 *F  IS_BAG_BODY -- check if value like a pointer to a bag body
 */
-static inline UInt IS_BAG_BODY(void * ptr)
+static inline BOOL IS_BAG_BODY(void * ptr)
 {
     return (((void *)OldBags <= ptr) && (ptr < (void *)AllocBags) &&
             ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
@@ -608,17 +608,17 @@ static inline Bag MARKED_HALFDEAD(Bag x)
     return (Bag)((UInt)x | HALFDEAD);
 }
 
-static inline Int IS_MARKED_DEAD(Bag x)
+static inline BOOL IS_MARKED_DEAD(Bag x)
 {
     return LINK_BAG(x) == MARKED_DEAD(x);
 }
 
-// static inline Int IS_MARKED_ALIVE(Bag x)
+// static inline BOOL IS_MARKED_ALIVE(Bag x)
 // {
 //     return LINK_BAG(x) == MARKED_ALIVE(x);
 // }
 
-static inline Int IS_MARKED_HALFDEAD(Bag x)
+static inline BOOL IS_MARKED_HALFDEAD(Bag x)
 {
     return LINK_BAG(x) == MARKED_HALFDEAD(x);
 }
@@ -687,12 +687,12 @@ void MarkBagWeakly(Bag bag)
     }
 }
 
-Int IsWeakDeadBag(Bag bag)
+BOOL IsWeakDeadBag(Bag bag)
 {
     CANARY_DISABLE_VALGRIND();
-    Int isWeakDeadBag = (((UInt)bag & (sizeof(Bag) - 1)) == 0) &&
-                        (Bag)MptrBags <= bag && bag < (Bag)MptrEndBags &&
-                        (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
+    BOOL isWeakDeadBag = (((UInt)bag & (sizeof(Bag) - 1)) == 0) &&
+                         (Bag)MptrBags <= bag && bag < (Bag)MptrEndBags &&
+                         (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
     CANARY_ENABLE_VALGRIND();
     return isWeakDeadBag;
 }
@@ -710,7 +710,7 @@ void CallbackForAllBags(void (*func)(Bag))
 {
     for (Bag bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
         CANARY_DISABLE_VALGRIND();
-        Int is_bag = IS_BAG_BODY(*bag);
+        BOOL is_bag = IS_BAG_BODY(*bag);
         CANARY_ENABLE_VALGRIND();
         if (is_bag) {
             (*func)(bag);

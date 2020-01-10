@@ -536,7 +536,7 @@ static void TryMarkRange(void * start, void * end)
     }
 }
 
-int IsGapObj(void * p)
+BOOL IsGapObj(void * p)
 {
     return jl_typeis(p, datatype_mptr);
 }

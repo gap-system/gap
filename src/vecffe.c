@@ -33,29 +33,29 @@
 **
 **  One may think of this as an optimized special case of 'KTNumPlist'.
 */
-static Int IsVecFFE(Obj obj)
+static BOOL IsVecFFE(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     if (tnum == T_PLIST_FFE || tnum == T_PLIST_FFE + IMMUTABLE)
-        return 1;
+        return TRUE;
 
     // must be a plain list of length >= 1
     if (!IS_PLIST(obj) || LEN_PLIST(obj) == 0)
-        return 0;
+        return FALSE;
 
     Obj x = ELM_PLIST(obj, 1);
     if (!IS_FFE(x))
-        return 0;
+        return FALSE;
 
     const FF  fld = FLD_FFE(x);
     const Int len = LEN_PLIST(obj);
     for (Int i = 2; i <= len; i++) {
         x = ELM_PLIST(obj, i);
         if (!IS_FFE(x) || FLD_FFE(x) != fld)
-            return 0;
+            return FALSE;
     }
     RetypeBagSM(obj, T_PLIST_FFE);
-    return 1;
+    return TRUE;
 }
 
 
@@ -886,7 +886,7 @@ static Obj FuncSMALLEST_FIELD_VECFFE(Obj self, Obj vec)
 {
     Obj elm;
     UInt deg, deg1, deg2, i, len, p, q;
-    UInt isVecFFE;
+    BOOL isVecFFE;
     if (!IS_PLIST(vec))
         return Fail;
     isVecFFE = IsVecFFE(vec);

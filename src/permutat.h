@@ -133,7 +133,7 @@ EXPORT_INLINE void CLEAR_STOREDINV_PERM(Obj perm)
 #define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
 
 
-EXPORT_INLINE int IS_PERM(Obj f)
+EXPORT_INLINE BOOL IS_PERM(Obj f)
 {
     return (TNUM_OBJ(f) == T_PERM2 || TNUM_OBJ(f) == T_PERM4);
 }

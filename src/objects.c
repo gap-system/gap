@@ -261,22 +261,22 @@ static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type)
 **
 **  'IS_MUTABLE_OBJ' is defined in the declaration part of this package.
 */
-Int (*IsMutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 static Obj IsMutableObjFilt;
 
-static Int IsMutableObjError(Obj obj)
+static BOOL IsMutableObjError(Obj obj)
 {
     ErrorQuit("Panic: tried to test mutability of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
-    return 0;
+    return FALSE;
 }
 
-static Int IsMutableObjObject(Obj obj)
+static BOOL IsMutableObjObject(Obj obj)
 {
 #ifdef HPCGAP
     if (RegionBag(obj) == ReadOnlyRegion)
-        return 0;
+        return FALSE;
 #endif
     return (DoFilter( IsMutableObjFilt, obj ) == True);
 }
@@ -307,7 +307,8 @@ static Obj FiltIS_INTERNALLY_MUTABLE_OBJ(Obj self, Obj obj)
       DoFilter( IsInternallyMutableObjFilt, obj) == True) ? True : False;
 }
 
-Int IsInternallyMutableObj(Obj obj) {
+BOOL IsInternallyMutableObj(Obj obj)
+{
     return TNUM_OBJ(obj) == T_DATOBJ &&
       RegionBag(obj) != ReadOnlyRegion &&
       DoFilter( IsInternallyMutableObjFilt, obj) == True;
@@ -325,18 +326,18 @@ Int IsInternallyMutableObj(Obj obj) {
 **
 **  'IS_COPYABLE_OBJ' is defined in the declaration part of this package.
 */
-Int (*IsCopyableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
+BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
 static Obj IsCopyableObjFilt;
 
-static Int IsCopyableObjError(Obj obj)
+static BOOL IsCopyableObjError(Obj obj)
 {
     ErrorQuit("Panic: tried to test copyability of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
-    return 0;
+    return FALSE;
 }
 
-static Int IsCopyableObjObject(Obj obj)
+static BOOL IsCopyableObjObject(Obj obj)
 {
     return (DoFilter( IsCopyableObjFilt, obj ) == True);
 }
@@ -885,15 +886,15 @@ static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 
 // This function is used to keep track of which objects are already
 // being printed or viewed to trigger the use of ~ when needed.
-static inline UInt IS_ON_PRINT_STACK(const ObjectsModuleState * os, Obj obj)
+static inline BOOL IS_ON_PRINT_STACK(const ObjectsModuleState * os, Obj obj)
 {
     if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj) &&
           TNUM_OBJ(obj) <= LAST_LIST_TNUM))
-        return 0;
+        return FALSE;
     for (UInt i = 0; i < os->PrintObjDepth; i++)
         if (os->PrintObjThiss[i] == obj)
-            return 1;
-    return 0;
+            return TRUE;
+    return FALSE;
 }
 
 #ifdef HPCGAP
@@ -1281,7 +1282,7 @@ Obj ElmComObj(Obj obj, UInt rnam)
     }
 }
 
-Int IsbComObj(Obj obj, UInt rnam)
+BOOL IsbComObj(Obj obj, UInt rnam)
 {
     switch (TNUM_OBJ(obj)) {
     case T_COMOBJ:
@@ -1488,9 +1489,9 @@ Obj ElmPosObj(Obj obj, Int idx)
     return elm;
 }
 
-Int IsbPosObj(Obj obj, Int idx)
+BOOL IsbPosObj(Obj obj, Int idx)
 {
-    Int isb;
+    BOOL isb;
     if (TNUM_OBJ(obj) == T_POSOBJ) {
 #ifdef HPCGAP
         // Because BindOnce() functions can reallocate the list even if they
@@ -1498,7 +1499,7 @@ Int IsbPosObj(Obj obj, Int idx)
         // positional objects.
         const Bag * contents = CONST_PTR_BAG(obj);
         if (idx > SIZE_BAG_CONTENTS(contents) / sizeof(Obj) - 1)
-            isb = 0;
+            isb = FALSE;
         else
             isb = contents[idx] != 0;
 #else

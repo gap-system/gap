@@ -35,9 +35,9 @@
 **  vector type must set  it to '2'.  A  package implementing a matrix  type
 **  must set it to '3'.
 */
-extern  Int             (*IsListFuncs [LAST_REAL_TNUM+1]) ( Obj obj );
+extern BOOL (*IsListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-EXPORT_INLINE Int IS_LIST(Obj obj)
+EXPORT_INLINE BOOL IS_LIST(Obj obj)
 {
     return (*IsListFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -57,9 +57,9 @@ EXPORT_INLINE Int IS_LIST(Obj obj)
 **  instead it will check if the object HasIsSmallList and IsSmallList, or
 **  HasLength in which case Length will be checked
 */
-extern Int (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
+extern BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-EXPORT_INLINE Int IS_SMALL_LIST(Obj obj)
+EXPORT_INLINE BOOL IS_SMALL_LIST(Obj obj)
 {
     return (*IsSmallListFuncs[TNUM_OBJ(obj)])(obj);
 }
@@ -78,9 +78,9 @@ EXPORT_INLINE Int IS_SMALL_LIST(Obj obj)
 **  already that the list is dense (e.g. for sets).
 */
 
-extern Int (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
+extern BOOL (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
+EXPORT_INLINE BOOL IS_DENSE_LIST(Obj list)
 {
     return (*IsDenseListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -101,9 +101,9 @@ EXPORT_INLINE Int IS_DENSE_LIST(Obj list)
 **  homogeneous (e.g. for sets).
 */
 
-extern Int (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
+extern BOOL (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
+EXPORT_INLINE BOOL IS_HOMOG_LIST(Obj list)
 {
     return (*IsHomogListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -125,9 +125,9 @@ EXPORT_INLINE Int IS_HOMOG_LIST(Obj list)
 **  acceptable (e.g. a range with positive <low> and <high> values).
 */
 
-extern Int (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
+extern BOOL (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-EXPORT_INLINE Int IS_POSS_LIST(Obj list)
+EXPORT_INLINE BOOL IS_POSS_LIST(Obj list)
 {
     return (*IsPossListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -182,16 +182,16 @@ EXPORT_INLINE Obj LENGTH(Obj list)
 **
 */
 
-extern  Int             (*IsbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+extern BOOL (*IsbListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos);
 
-EXPORT_INLINE Int ISB_LIST(Obj list, Int pos)
+EXPORT_INLINE BOOL ISB_LIST(Obj list, Int pos)
 {
     return (*IsbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-Int ISBB_LIST(Obj list, Obj pos);
+BOOL ISBB_LIST(Obj list, Obj pos);
 
-Int ISB_MAT(Obj list, Obj row, Obj col);
+BOOL ISB_MAT(Obj list, Obj row, Obj col);
 
 
 /****************************************************************************
@@ -580,9 +580,9 @@ void AssListObject(Obj list, Int pos, Obj obj);
 **  guarantees already that the list has this property.
 */
 
-extern  Int             (*IsTableListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+extern BOOL (*IsTableListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
+EXPORT_INLINE BOOL IS_TABLE_LIST(Obj list)
 {
     return (*IsTableListFuncs[TNUM_OBJ(list)])(list);
 }
@@ -592,7 +592,7 @@ EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 *F  IS_SSORT_LIST(<list>) . . . . . . . . . .  test for strictly sorted lists
 *V  IsSSortListFuncs[<type>]  .  table of strictly sorted list test functions
 **
-**  'IS_SSORT_LIST' returns 2 if the list <list> is  a strictly  sorted  list
+**  'IS_SSORT_LIST' returns 1 if the list <list> is  a strictly  sorted  list
 **  and 0 otherwise,  i.e., if either <list>  is not a list,  or if it is not
 **  strictly sorted.
 **
@@ -602,9 +602,9 @@ EXPORT_INLINE Int IS_TABLE_LIST(Obj list)
 **  of the list guarantees already that the list is strictly sorted.
 */
 
-extern  Int             (*IsSSortListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
+extern BOOL (*IsSSortListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-EXPORT_INLINE Int IS_SSORT_LIST(Obj list)
+EXPORT_INLINE BOOL IS_SSORT_LIST(Obj list)
 {
     return (*IsSSortListFuncs[TNUM_OBJ(list)])(list);
 }

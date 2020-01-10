@@ -50,10 +50,10 @@
 */
 typedef struct {
     // non-zero if input comes from a stream
-    UInt isstream;
+    BOOL isstream;
 
     // non-zero if input come from a string stream
-    UInt isstringstream;
+    BOOL isstringstream;
 
     // if input comes from a stream, this points to a GAP IsInputStream object
     Obj stream;
@@ -80,7 +80,7 @@ typedef struct {
     Int spos;
 
     //
-    UInt echo;
+    BOOL echo;
 
 
     // The following variables are used to store the state of the interpreter
@@ -114,8 +114,8 @@ typedef struct {
 /* the maximal number of used line break hints */
 #define MAXHINTS 100
 typedef struct {
-    UInt isstream;
-    UInt isstringstream;
+    BOOL isstream;
+    BOOL isstringstream;
     Obj  stream;
     Int  file;
 
@@ -218,7 +218,7 @@ void LockCurrentOutput(Int lock)
 */
 
 
-static inline Int IS_CHAR_PUSHBACK_EMPTY(void)
+static inline BOOL IS_CHAR_PUSHBACK_EMPTY(void)
 {
     return STATE(In) != &IO()->Pushback;
 }

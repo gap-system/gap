@@ -78,7 +78,7 @@ extern Obj TRY_NEXT_METHOD;
 **
 *F  IS_OPERATION( <obj> ) . . . . . . . . . . check if object is an operation
 */
-EXPORT_INLINE Int IS_OPERATION(Obj obj)
+EXPORT_INLINE BOOL IS_OPERATION(Obj obj)
 {
     return TNUM_OBJ(obj) == T_FUNCTION && SIZE_OBJ(obj) == sizeof(OperBag);
 }
@@ -243,7 +243,7 @@ EXPORT_INLINE void SET_ENABLED_ATTR(Obj oper, Int on)
 **
 *F  IS_FILTER( <oper> ) . . . . . . . . . . . . . check if object is a filter
 */
-EXPORT_INLINE Int IS_FILTER(Obj oper)
+EXPORT_INLINE BOOL IS_FILTER(Obj oper)
 {
     if (!IS_OPERATION(oper))
         return 0;
@@ -467,7 +467,7 @@ EXPORT_INLINE void SET_ELM_FLAGS(Obj list, UInt pos)
 **
 *F  IS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . . . subset test
 */
-Int IS_SUBSET_FLAGS(Obj flags1, Obj flags2);
+BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2);
 
 
 /****************************************************************************

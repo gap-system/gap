@@ -23,7 +23,7 @@ Obj NewAtomicRecord(UInt capacity);
 Obj SetARecordField(Obj record, UInt field, Obj obj);
 Obj GetARecordField(Obj record, UInt field);
 Obj ElmARecord(Obj record, UInt rnam);
-Int IsbARecord(Obj record, UInt rnam);
+BOOL IsbARecord(Obj record, UInt rnam);
 void AssARecord(Obj record, UInt rnam, Obj value);
 void UnbARecord(Obj record, UInt rnam);
 
