@@ -1026,9 +1026,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     orbs:=[];
     for j in [1..Length(u[1])] do
       a:=u[1][j];
-#if ForAny(GeneratorsOfGroup(a),i->SIZE_OBJ(i)>maxsz) then Error("1");fi;
       n:=u[2][j];
-#if ForAny(GeneratorsOfGroup(n),i->SIZE_OBJ(i)>maxsz) then Error("2");fi;
 
       # find indices of subgroups normal under a and form orbits under the
       # normalizer
@@ -1125,7 +1123,6 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 	      n:=u[2][k];
 	    else
 	      n:=Normalizer(u[2][k],nts[j]);
-#if ForAny(GeneratorsOfGroup(n),i->SIZE_OBJ(i)>maxsz) then Error("2a");fi;
 	    fi;
 	    if Length(GeneratorsOfGroup(n))>3 then
 	      w:=Size(n);
@@ -1138,7 +1135,6 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 
 	    OCOneCocycles(ocr,true);
 	    if IsBound(ocr.complement) then
-#if ForAny(ocr.complementGens,i->SIZE_OBJ(i)>maxsz) then Error("3");fi;
 	      v:=BaseSteinitzVectors(
 		BasisVectors(Basis(ocr.oneCocycles)),
 		BasisVectors(Basis(ocr.oneCoboundaries)));
@@ -1160,7 +1156,6 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 	      else
 		for w in Enumerator(v) do
 		  cg:=ocr.cocycleToList(w);
-  #if ForAny(cg,i->SIZE_OBJ(i)>maxsz) then Error("3");fi;
 		  for ii in [1..Length(cg)] do
 		    cg[ii]:=ocr.complementGens[ii]*cg[ii];
 		  od;
@@ -3429,6 +3424,18 @@ local d,ind,i,ma,ab,a,p,b,c,e,n;
       elif IsPrimeInt(ind) then return d;fi;
     fi;
   fi;
+  if Size(G)>1 and MemoryUsage(G.1)*Length(GeneratorsOfGroup(G))>
+    # if the storage size of generators is more than 
+    10000
+    # then try to reduce the generating set.
+  then
+    a:=SmallGeneratingSet(G);
+    if Length(a)<Length(GeneratorsOfGroup(G))-1 then
+      b:=Size(G);
+      G:=Group(a);
+      SetSize(G,b);
+    fi;
+  fi;
   return G;
 end);
 
@@ -3451,7 +3458,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
   maxer:=function(sub)
   local m,a,b,len,sz,i,j,k,r,tb;
     #Print("call maxer for ",Size(sub)," |l|=",Length(l)," |process|=",Length(process),"\n");
-    if bound>1 and 2^(Length(AbelianInvariants(sub))-3)>bound then
+    if bound>1 and prime^(Length(AbelianInvariants(sub))-3)>bound then
       i:=0;
       repeat
         m:=BoundedIndexAbelianized(G,sub,bound*prime^i);
@@ -3460,7 +3467,19 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
       if Size(m)^2<Size(sub) then
         m:=MaximalSubgroupClassReps(sub:cheap:=false);
       else
-        m:=[m];
+        # add maxes not containing derived
+        if IsSolvableGroup(sub) then
+          i:=IsomorphismPcGroup(sub);
+          a:=DerivedSubgroup(Image(i));
+          a:=Filtered(MaximalSubgroupClassReps(Image(i)),
+            x->not IsSubset(x,a));
+          a:=List(a,x->PreImage(i,x));
+        else
+          a:=DerivedSubgroup(sub);
+          a:=Filtered(MaximalSubgroupClassReps(sub),
+            x->not IsSubset(x,a));
+        fi;
+        m:=Concatenation([m],a);
       fi;
     else
       m:=MaximalSubgroupClassReps(sub:cheap:=false);
