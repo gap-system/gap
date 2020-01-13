@@ -304,12 +304,17 @@ ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
 }
 
 
-void IntrAbortCoding(IntrState * intr, Obj lvars)
+/****************************************************************************
+**
+*F  IntrAbortCoding() . . . . . . . . . . . . . . . . . . . . .  abort coding
+**
+**  'IntrAbortCoding' aborts coding, if it is active.
+*/
+void IntrAbortCoding(IntrState * intr)
 {
     if (intr->coding) {
         CodeEnd(1);
         intr->coding--;
-        SWITCH_TO_OLD_LVARS(lvars);
     }
 }
 
