@@ -1218,10 +1218,7 @@ static void ReadFuncExprBody(ReaderState * rs,
 {
     volatile UInt nr;           // number of statements
     volatile UInt nrError;      // copy of <STATE(NrError)>
-    volatile Bag  currLVars;    // copy of <STATE(CurrLVars)>
 
-    // remember the current variables in case of an error
-    currLVars = STATE(CurrLVars);
     nrError = STATE(NrError);
 
     // push the new local variables list
@@ -1261,7 +1258,7 @@ static void ReadFuncExprBody(ReaderState * rs,
     CATCH_ERROR {
         // an error has occurred *after* the 'IntrFuncExprEnd'
         if (nrError == 0)
-            IntrAbortCoding(&rs->intr, currLVars);
+            IntrAbortCoding(&rs->intr);
     }
 
     // pop the new local variables list
@@ -2006,10 +2003,7 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
 
     /* 'for'                                                               */
@@ -2050,7 +2044,7 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
         if (nrError == 0)
-            IntrAbortCoding(&rs->intr, currLVars);
+            IntrAbortCoding(&rs->intr);
     }
 }
 
@@ -2070,10 +2064,7 @@ static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
 
     /* 'while' <Expr>  'do'                                                */
@@ -2100,7 +2091,7 @@ static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
         if (nrError == 0)
-            IntrAbortCoding(&rs->intr, currLVars);
+            IntrAbortCoding(&rs->intr);
     }
 }
 
@@ -2123,13 +2114,10 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nexprs;         /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 #ifdef HPCGAP
     volatile int        lockSP;         /* lock stack */
 #endif
 
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
 #ifdef HPCGAP
     lockSP    = RegionLockSP();
@@ -2177,7 +2165,7 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
         if (nrError == 0)
-            IntrAbortCoding(&rs->intr, currLVars);
+            IntrAbortCoding(&rs->intr);
     }
 #ifdef HPCGAP
     /* This is a no-op if IntrAtomicEnd(&rs->intr) succeeded, otherwise it restores
@@ -2202,10 +2190,7 @@ static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 
-    /* remember the current variables in case of an error                  */
-    currLVars = STATE(CurrLVars);
     nrError   = STATE(NrError);
 
     /* 'repeat'                                                            */
@@ -2231,7 +2216,7 @@ static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
            to recover. Otherwise it was probably an error in executing the
            body and we just return */
         if (nrError == 0)
-            IntrAbortCoding(&rs->intr, currLVars);
+            IntrAbortCoding(&rs->intr);
     }
 }
 
@@ -2615,7 +2600,6 @@ UInt ReadEvalFile(Obj *evalResult)
     volatile UInt       nr;
     volatile Obj        nams;
     volatile Int        nloc;
-    volatile Bag        currLVars;      /* copy of <STATE(CurrLVars)>      */
 #ifdef HPCGAP
     volatile int        lockSP;
 #endif
@@ -2660,8 +2644,6 @@ UInt ReadEvalFile(Obj *evalResult)
         nloc = ReadLocals(rs, 0, nams);
     }
 
-    currLVars = STATE(CurrLVars);
-
     /* fake the 'function ()'                                              */
     IntrFuncExprBegin(&rs->intr, 0, nloc, nams, GetInputLineNumber());
 
@@ -2680,7 +2662,7 @@ UInt ReadEvalFile(Obj *evalResult)
         IntrFuncExprEnd(&rs->intr, nr);
     }
     CATCH_ERROR {
-        IntrAbortCoding(&rs->intr, currLVars);
+        IntrAbortCoding(&rs->intr);
     }
 
     /* end the interpreter                                                 */
