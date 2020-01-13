@@ -766,7 +766,7 @@ void MakeImmutable( Obj obj )
 void CheckedMakeImmutable( Obj obj )
 {
   if (!PreMakeImmutableCheck(obj))
-    ErrorQuit("MakeImmutable: Argument has inaccessible subobjects", 0L, 0L);
+    ErrorMayQuit("MakeImmutable: Argument has inaccessible subobjects", 0, 0);
   MakeImmutable(obj);
 }
 #endif

@@ -1156,10 +1156,10 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
         break;
         
       case 1:
-        RetypeBag( img, T_PLIST_DENSE_NHOM_SSORT );
+        RetypeBagSM( img, T_PLIST_DENSE_NHOM_SSORT );
 
       case 2:
-        RetypeBag( img, T_PLIST_HOM_SSORT );
+        RetypeBagSM( img, T_PLIST_HOM_SSORT );
 
       }
 
