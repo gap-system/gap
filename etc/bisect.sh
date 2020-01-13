@@ -55,12 +55,32 @@
 #  bisect-before-hpcgap-merge is good (by checking it out, and running this
 #  script). Depending on the outcome, mark it either as good via `git bisect
 #  good`, and then proceed as above; or else mark it as bad, then proceed to
-#  test bisect-before-hpcgap-merge.
+#  test bisect-before-hpcgap-merge (some more hints on that below).
 #
 #  For reference, here are the commit hashes to which the tags refer:
 #
 #  a5cb6b00726281d5310b89e5c4088fb62aa8d9d0  bisect-before-hpcgap-merge
 #  c30acd6be350871560bd2efbff3af01f642a9fb6  bisect-after-new-buildsys
+#
+#  Note that when switching from testing commits using the "new" build system
+#  to those using the old build system, you may need to perform some manual
+#  cleanup to remove build artifacts that conflict between the two build
+#  systems. At the very least, you should remove `GNUmakefile`. One option is
+#  to use `git clean`, but beware that this may remove files you want to keep.
+#  So I recommend to first run it in "dry mode" to just get a list of things
+#  it would remove:
+#
+#      git clean -ndx -e pkg   # keep pkg dir
+#
+#  You can then identify files you want to keep and add more `-e PATTERN`
+#  arguments. Once you are satisfied, run it in "force" mode to actually
+#  delete the file, by changing `-ndx` to `-fdx`. Alternatively you can of
+#  course also manually remove files.
+#
+#  Afterwards, I recommend to re-run `configure` manually, once. If you have
+#  GMP installed system wide, you should run `./configure --with-gmp=system`.
+#  Otherwise, GAP will compile its own copy of GMP, which can waste quite a
+#  bit of time.
 #
 set -e
 
@@ -111,4 +131,4 @@ else
   Print("Commit is bad\\n");
   QUIT_GAP(1);
 fi;
-' | ./gap -A -b -q
+' | bin/gap.sh -A -b -q
