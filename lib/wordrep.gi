@@ -219,9 +219,9 @@ local a,n,t,
    or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS)) and
      ValueOption("printnopowers")<>true then
     if Length(l)>0 and n=infinity then
-      n:=2*(AbsInt(Maximum(l))+1); 
+      n:=2*(Maximum(List(l,AbsInt))+1);
     fi;
-    a:=FindSubstringPowers(l,n);
+    a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are used already
   else
     a:=[l,[]];
   fi;
