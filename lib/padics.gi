@@ -425,7 +425,7 @@ function( fam, list )
     elif not IsInt(list[2]) or list[2] < 0 or list[2] >= fam!.modulus then
         Error( "<list>[2] must be an integer in {0..p^precision}" );
     fi;
-    return Objectify( fam!.defaultType, Immutable(list) );
+    return Objectify( fam!.defaultType, list );
 end );
 
 
@@ -496,7 +496,7 @@ function ( rg, fam )
         c[1] := c[1] + 1;
         c[2] := c[2] / fam!.prime;
     od;
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -577,7 +577,7 @@ function( a )
 
     fam := FamilyObj( a );
     c := [ a![1], -a![2] mod fam!.modulus];
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -598,7 +598,7 @@ function( a )
     fi;
     fam:= FamilyObj( a );
     c:= [ -a![1] , 1/a![2] mod fam!.modulus ];
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -647,7 +647,7 @@ function( a, b )
         c:= [ b![1],
               (fam!.prime^(a![1]-b![1])*a![2]+b![2]) mod fam!.modulus ];
     fi;
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -671,7 +671,7 @@ function( a, b )
     else
         c:= [ a![1]+b![1] , a![2]*b![2] mod fam!.modulus ];
     fi;
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -692,7 +692,7 @@ function( a, b )
     fi;
     fam:= FamilyObj( a );
     c:= [ a![1]-b![1] , a![2]/b![2] mod fam!.modulus ];
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -841,7 +841,7 @@ function( fam, list )
     elif not ForAll( list[2], x -> x in range )  then
         Error( "<list>[2] must be a list of integers in ", range );
     fi;
-    return Objectify( fam!.defaultType, Immutable(list) );
+    return Objectify( fam!.defaultType, list );
 end );
 
 
@@ -866,7 +866,7 @@ function( fam, rat )
     erg    := List( [1..fam!.n], i->0 );
     erg[1] := c[2];
     c      := [ c[1], erg ];
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -922,7 +922,7 @@ function ( rg, fam )
         c[1] := c[1] + 1;
         c[2] := c[2] / fam!.prime;
     od;
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -1043,7 +1043,7 @@ function( a )
 
     fam := FamilyObj( a );
     c := [ a![1], List( a![2], x -> (-x) mod fam!.modulus ) ];
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -1164,7 +1164,7 @@ function( x, y )
     c[1] := ppot;
     c[2] := fam!.prime^(x![1]-ppot)*x![2] + fam!.prime^(y![1]-ppot)*y![2];
     c[2] := List( c[2], x -> x mod fam!.modulus );
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -1192,7 +1192,7 @@ function( x, y )
     c[1] := ppot;
     c[2] := fam!.prime^(x![1]-ppot)*x![2] - fam!.prime^(y![1]-ppot)*y![2];
     c[2] := List( c[2], x -> x mod fam!.modulus );
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
@@ -1219,7 +1219,7 @@ function( a, x )
     fi;
     c := [ a![1] + x![1] ];
     c[2] := List( a![2] * x![2], x -> x mod Qpxy!.modulus );
-    return Objectify( Qpxy!.defaultType, Immutable( c ) );
+    return Objectify( Qpxy!.defaultType, c );
 end );
 
 
@@ -1246,7 +1246,7 @@ function( x, a )
     fi;
     c := [ a![1] + x![1] ];
     c[2] := List( x![2] * a![2], x -> x mod Qpxy!.modulus );
-    return Objectify( Qpxy!.defaultType, Immutable( c ) );
+    return Objectify( Qpxy!.defaultType, c );
 end );
 
 
@@ -1285,7 +1285,7 @@ function (a, b)
         vec := ShiftedCoeffs( vec, fam!.f-1 );
     od;
     c := [ a![1] + b![1], List(addvec * fam!.M, x -> x mod fam!.modulus) ];
-    return Objectify( fam!.defaultType, Immutable( c ) );
+    return Objectify( fam!.defaultType, c );
 end );
 
 
