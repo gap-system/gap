@@ -1941,7 +1941,7 @@ InstallMethod( Factors,
     fi;
 
     # Store the factorization.
-    Assert( 2, Product( factors ) = pol );
+    Assert( 2, Product( factors ) = lc * pol * IndeterminateOfUnivariateRationalFunction( pol )^val );
     StoreFactorsPol( coeffring, pol, factors );
 
     # Return the factorization.
