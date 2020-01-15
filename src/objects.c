@@ -171,8 +171,6 @@ static Obj TypeObjError(Obj obj)
 **  is not a posobj/comobj/datobj, attempts to first convert it to one; if
 **  that fails, an error is raised.
 */
-static void SetTypeComObj(Obj obj, Obj type);
-static void SetTypePosObj(Obj obj, Obj type);
 //static void SetTypeDatObj(Obj obj, Obj type);
 
 void SET_TYPE_OBJ(Obj obj, Obj type)
@@ -204,15 +202,28 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
         break;
 #endif
     case T_PREC:
+#ifdef HPCGAP
+        MEMBAR_WRITE();
+#endif
         RetypeBag(obj, T_COMOBJ);
         SET_TYPE_COMOBJ(obj, type);
         CHANGED_BAG(obj);
         break;
     case T_COMOBJ:
-        SetTypeComObj(obj, type);
+#ifdef HPCGAP
+        ReadGuard(obj);
+        MEMBAR_WRITE();
+#endif
+        SET_TYPE_COMOBJ(obj, type);
+        CHANGED_BAG(obj);
         break;
     case T_POSOBJ:
-        SetTypePosObj(obj, type);
+#ifdef HPCGAP
+        ReadGuard(obj);
+        MEMBAR_WRITE();
+#endif
+        SET_TYPE_POSOBJ(obj, type);
+        CHANGED_BAG(obj);
         break;
     case T_DATOBJ:
         SetTypeDatObj(obj, type);
@@ -220,6 +231,9 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
 
     default:
         if (IS_PLIST(obj)) {
+#ifdef HPCGAP
+            MEMBAR_WRITE();
+#endif
             RetypeBag(obj, T_POSOBJ);
             SET_TYPE_POSOBJ(obj, type);
             CHANGED_BAG(obj);
@@ -1158,15 +1172,6 @@ static Obj TypeComObj(Obj obj)
     return result;
 }
 
-static void SetTypeComObj(Obj obj, Obj type)
-{
-#ifdef HPCGAP
-    ReadGuard(obj);
-    MEMBAR_WRITE();
-#endif
-    SET_TYPE_COMOBJ(obj, type);
-    CHANGED_BAG(obj);
-}
 #endif
 
 
@@ -1199,19 +1204,10 @@ static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
 #ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
       case T_PREC:
-        MEMBAR_WRITE();
-        SET_TYPE_COMOBJ(obj, type);
-        RetypeBag( obj, T_COMOBJ );
-        CHANGED_BAG( obj );
-        break;
       case T_COMOBJ:
-        SetTypeComObj(obj, type);
-        break;
       case T_AREC:
       case T_ACOMOBJ:
         SET_TYPE_OBJ( obj, type );
-        RetypeBag( obj, T_ACOMOBJ );
-        CHANGED_BAG( obj );
         break;
       default:
         ErrorMayQuit("You can't make component object from a %s.",
@@ -1313,16 +1309,6 @@ static Obj TypePosObj(Obj obj)
 #endif
     return result;
 }
-
-static void SetTypePosObj(Obj obj, Obj type)
-{
-#ifdef HPCGAP
-    ReadGuard(obj);
-    MEMBAR_WRITE();
-#endif
-    SET_TYPE_POSOBJ(obj, type);
-    CHANGED_BAG(obj);
-}
 #endif
 
 
@@ -1355,15 +1341,10 @@ static Obj FuncSET_TYPE_POSOBJ(Obj self, Obj obj, Obj type)
       case T_APOSOBJ:
       case T_ALIST:
       case T_FIXALIST:
-        SET_TYPE_OBJ( obj, type );
-        RetypeBag( obj, T_APOSOBJ );
-        CHANGED_BAG( obj );
-        break;
       case T_POSOBJ:
-        SetTypePosObj( obj, type );
+        SET_TYPE_OBJ( obj, type );
         break;
       default:
-        MEMBAR_WRITE();
         SET_TYPE_POSOBJ(obj, type);
         RetypeBag( obj, T_POSOBJ );
         CHANGED_BAG( obj );
