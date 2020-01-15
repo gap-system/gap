@@ -98,14 +98,14 @@ void             GrowPlist (
 **
 **  TypePlist works with KTNumPlist to determine the type of a plain list
 **  Considerable care is needed to deal with self-referential lists. This is
-**  basically achieved with the TESTING flag in the TNum. This must be set in
-**  the "current" list before triggering determination of the Type (or KTNum)
-**  of any sublist.
+**  basically achieved with the OBJ_FLAG_TESTING flag in the TNum. This must
+**  be set in the "current" list before triggering determination of the Type
+**  (or KTNum) of any sublist.
 **
 **  KTNumPlist determined the "true" TNum of the list, taking account of such
 **  factors as denseness, homogeneity and so on. It modifies the stored TNum
 **  of the list to the most informative "safe" value, allowing for the
-**  mutability of the list entries (and preserving TESTING).
+**  mutability of the list entries (and preserving OBJ_FLAG_TESTING).
 **
 **  Here begins a new attempt by Steve to describe how it all works:
 **
@@ -185,8 +185,8 @@ void             GrowPlist (
 **     the family of the elements.
 **
 **     recursive lists (ie lists which are there own subobjects are detected
-**     using the TESTING tnums. Any list being examined must have TESTING
-**     added to its tnum BEFORE any element of it is examined.
+**     using the OBJ_FLAG_TESTING tnums. Any list being examined must have
+**     OBJ_FLAG_TESTING added to its tnum BEFORE any element of it is examined.
 **
 **
 **     FIXME HPC-GAP: All of this is horribly thread-unsafe!
@@ -234,8 +234,8 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
       return TNUM_OBJ(list);
     }
 #endif
-    /* if list has `TESTING' keep that                                     */
-    testing = TEST_OBJ_FLAG(list, TESTING);
+    // if list has `OBJ_FLAG_TESTING' keep that
+    testing = TEST_OBJ_FLAG(list, OBJ_FLAG_TESTING);
 
     knownDense = HAS_FILT_LIST( list, FN_IS_DENSE );
     knownNDense = HAS_FILT_LIST( list, FN_IS_NDENSE );
@@ -264,16 +264,16 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
       isTable = 0;
     }
 #endif
-    else if (TEST_OBJ_FLAG(elm, TESTING)) {
+    else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
         isHom   = 0;
         areMut  = IS_PLIST_MUTABLE(elm);
         isTable = 0;
     }
     else {
 #ifdef HPCGAP
-        if (!testing) SET_OBJ_FLAG(list, TESTING|TESTED);
+        if (!testing) SET_OBJ_FLAG(list, OBJ_FLAG_TESTING|OBJ_FLAG_TESTED);
 #else
-        if (!testing) SET_OBJ_FLAG(list, TESTING);
+        if (!testing) SET_OBJ_FLAG(list, OBJ_FLAG_TESTING);
 #endif
 
         if (IS_PLIST(elm)) {
@@ -301,7 +301,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
             }
 
         }
-        if (!testing) CLEAR_OBJ_FLAG(list, TESTING);
+        if (!testing) CLEAR_OBJ_FLAG(list, OBJ_FLAG_TESTING);
     }
 
     i = 2;
@@ -327,7 +327,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
             isRect = 0;
         }
 #endif
-        else if (TEST_OBJ_FLAG(elm, TESTING)) {
+        else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
             isHom   = 0;
             areMut  = (areMut || IS_PLIST_MUTABLE(elm));
             isTable = 0;
@@ -465,7 +465,7 @@ static Int KTNumHomPlist(Obj list)
     /* look at the first element                                           */
     elm = ELM_PLIST( list, 1 );
     assert(elm);
-    assert(!TEST_OBJ_FLAG(elm, TESTING));
+    assert(!TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING));
 
     isSSort = HAS_FILT_LIST(list, FN_IS_SSORT );
     isNSort = HAS_FILT_LIST(list, FN_IS_NSORT );
@@ -522,7 +522,7 @@ static Int KTNumHomPlist(Obj list)
         for ( i = 2; isTable && i <= lenList; i++ ) {
           elm = ELM_PLIST( list, i );
           assert(elm);
-          assert(!TEST_OBJ_FLAG(elm, TESTING));
+          assert(!TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING));
           isTable = isTable && IS_LIST(elm); /* (isTable && IS_SMALL_LIST(elm) && LEN_LIST(elm) == len);*/
           isRect = isRect && IS_PLIST(elm) && LEN_PLIST(elm) == len;
         }
@@ -611,18 +611,18 @@ static Obj TypePlistWithKTNum (
 #ifdef HPCGAP
     if (CheckWriteAccess(list)) {
       /* recursion is possible for this type of list                       */
-      SET_OBJ_FLAG( list, TESTING|TESTED );
+      SET_OBJ_FLAG( list, OBJ_FLAG_TESTING|OBJ_FLAG_TESTED );
       tnum = KTNumPlist( list, &family);
-      CLEAR_OBJ_FLAG( list, TESTING );
+      CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     } else {
       tnum = TNUM_OBJ(list);
       family = 0;
     }
 #else
     /* recursion is possible for this type of list                         */
-    SET_OBJ_FLAG( list, TESTING );
+    SET_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     tnum = KTNumPlist( list, &family);
-    CLEAR_OBJ_FLAG( list, TESTING );
+    CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
 #endif
     if (ktnum != (UInt *) 0)
       *ktnum = tnum;

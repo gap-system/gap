@@ -334,9 +334,12 @@ EXPORT_INLINE void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
 **
 */
 enum {
-    TESTING = (1 << 0),
+    // OBJ_FLAG_TESTING is used by KTNumPlist for tagging objects as they are
+    // recursively traversed
+    OBJ_FLAG_TESTING = (1 << 0),
+
 #ifdef HPCGAP
-    TESTED  = (1 << 1),
+    OBJ_FLAG_TESTED  = (1 << 1),
 #endif
 };
 

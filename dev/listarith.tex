@@ -161,14 +161,14 @@ these. Rather than rewrite it, I copy here the  explanation from
 **
 **  TypePlist works with KTnumPlist to determine the type of a plain list
 **  Considerable care is needed to deal with self-referential lists. This is
-**  basically achieved with the TESTING flag in the Tnum. This must be set in
+**  basically achieved with the OBJ_FLAG_TESTING flag in the Tnum. This must be set in
 **  the "current" list before triggering determination of the Type (or KTnum)
 **  of any sublist.
 **
 **  KTnumPlist determined the "true" Tnum of the list, taking account of such
 **  factors as denseness, homogeneity and so on. It modifies the stored Tnum
 **  of the list to the most informative "safe" value, allowing for the
-**  mutability of the list entries (and preserving TESTING).
+**  mutability of the list entries (and preserving OBJ_FLAG_TESTING).
 **
 **  Here begins a new attempt by Steve to describe how it all works:
 **
@@ -248,7 +248,7 @@ these. Rather than rewrite it, I copy here the  explanation from
 **     the family of the elements.
 **
 **     recursive lists (ie lists which are there own subobjects are detected
-**     using the TESTING tnums. Any list being examined must have TESTING added to
+**     using the OBJ_FLAG_TESTING tnums. Any list being examined must have OBJ_FLAG_TESTING added to
 **     its tnum BEFORE any element of it is examined.
 **
 **     
