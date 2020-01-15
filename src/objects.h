@@ -326,6 +326,9 @@ enum {
 #ifdef HPCGAP
     OBJ_FLAG_TESTED  = (1 << 1),
 #endif
+
+    // OBJ_FLAG_IMMUTABLE is used to mark immutable objects.
+    OBJ_FLAG_IMMUTABLE = (1 << 2),
 };
 
 
@@ -528,6 +531,7 @@ EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
     UInt type = TNUM_OBJ(obj);
     GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));
     RetypeBag(obj, type | IMMUTABLE);
+    SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
 }
 
 
@@ -555,6 +559,8 @@ EXPORT_INLINE BOOL IS_MUTABLE_OBJ(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
     if (/*FIRST_CONSTANT_TNUM <= tnum &&*/ tnum <= LAST_CONSTANT_TNUM)
+        return FALSE;
+    if (TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE))
         return FALSE;
     if (FIRST_IMM_MUT_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM)
         return !(tnum & IMMUTABLE);
