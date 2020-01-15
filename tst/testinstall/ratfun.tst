@@ -104,7 +104,45 @@ gap> (t^24-1)/(t^16-1);
 gap> (t^24-1)/(t^-16-1);
 (t^32+t^24+t^16)/(-t^8-1)
 
-#
+# factor over rationals
+gap> Factors(t^0);
+[ 1 ]
+gap> Factors(t^1);
+[ t ]
+gap> Factors(t^2);
+[ t, t ]
+gap> Factors(t-1);
+[ t-1 ]
+gap> Factors((t-1)*t);
+[ t-1, t ]
+gap> Factors((t-1)*t^2);
+[ t-1, t, t ]
+gap> Factors(t^2-1);
+[ t-1, t+1 ]
+gap> Factors((t^2-1)*t);
+[ t-1, t, t+1 ]
+gap> Factors((t^2-1)*t^2);
+[ t-1, t, t, t+1 ]
+
+# factor over abelian number field
+gap> Factors(E(7)*t^0);
+[ E(7) ]
+gap> Factors(E(7)*t^1);
+[ E(7)*t ]
+gap> Factors(E(7)*t^2);
+[ E(7)*t, t ]
+gap> Factors(E(7)*(t-1));
+[ E(7)*t+(-E(7)) ]
+gap> Factors(E(7)*(t-1)*t);
+[ E(7)*t, t-1 ]
+gap> Factors(E(7)*(t-1)*t^2);
+[ E(7)*t, t, t-1 ]
+gap> Factors(E(7)*t^2-1);
+[ E(7)*t+(-E(7)^4), t+E(7)^3 ]
+gap> Factors(E(7)*(t^2-1)*t);
+[ E(7)*t+(-E(7)), t, t+1 ]
+gap> Factors(E(7)*(t^2-1)*t^2);
+[ E(7)*t+(-E(7)), t, t, t+1 ]
 gap> Gcd(t-2,t^2-2*t);
 t-2
 
