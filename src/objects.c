@@ -239,7 +239,7 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
             CHANGED_BAG(obj);
         }
         else {
-            ErrorQuit("cannot change type of a %s", (Int)TNAM_OBJ(obj), 0);
+            ErrorMayQuit("cannot change type of a %s", (Int)TNAM_OBJ(obj), 0);
         }
         break;
     }
@@ -1201,27 +1201,19 @@ static Obj FuncIS_COMOBJ(Obj self, Obj obj)
 */
 static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
 {
-#ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
-      case T_PREC:
-      case T_COMOBJ:
-      case T_AREC:
-      case T_ACOMOBJ:
-        SET_TYPE_OBJ( obj, type );
+    case T_PREC:
+    case T_COMOBJ:
+#ifdef HPCGAP
+    case T_AREC:
+    case T_ACOMOBJ:
+#endif
+        SET_TYPE_OBJ(obj, type);
         break;
-      default:
-        ErrorMayQuit("You can't make component object from a %s.",
+    default:
+        ErrorMayQuit("You can't make a component object from a %s",
                      (Int)TNAM_OBJ(obj), 0);
     }
-#else
-    if (TNUM_OBJ(obj) == T_PREC+IMMUTABLE)
-        ErrorMayQuit(
-            "You can't make a component object from an immutable object", 0,
-            0);
-    SET_TYPE_COMOBJ(obj, type);
-    RetypeBag( obj, T_COMOBJ );
-    CHANGED_BAG( obj );
-#endif
     return obj;
 }
 
@@ -1336,25 +1328,24 @@ static Obj FuncIS_POSOBJ(Obj self, Obj obj)
 */
 static Obj FuncSET_TYPE_POSOBJ(Obj self, Obj obj, Obj type)
 {
-#ifdef HPCGAP
     switch (TNUM_OBJ(obj)) {
-      case T_APOSOBJ:
-      case T_ALIST:
-      case T_FIXALIST:
-      case T_POSOBJ:
-        SET_TYPE_OBJ( obj, type );
+#ifdef HPCGAP
+    case T_APOSOBJ:
+    case T_ALIST:
+    case T_FIXALIST:
+#endif
+    case T_POSOBJ:
         break;
-      default:
-        SET_TYPE_POSOBJ(obj, type);
-        RetypeBag( obj, T_POSOBJ );
-        CHANGED_BAG( obj );
+    default:
+        if (!IS_PLIST(obj)) {
+            ErrorMayQuit("You can't make a positional object from a %s",
+                         (Int)TNAM_OBJ(obj), 0);
+        }
+        // TODO: we should also reject immutable plists, but that risks
+        // breaking existing code
         break;
     }
-#else
-    RetypeBag( obj, T_POSOBJ );
-    SET_TYPE_POSOBJ(obj, type);
-    CHANGED_BAG( obj );
-#endif
+    SET_TYPE_OBJ(obj, type);
     return obj;
 }
 
