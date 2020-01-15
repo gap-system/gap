@@ -294,6 +294,7 @@ BindGlobal("LOWERCASETRANSTABLE", (function()
     l{1+[65..90]} := l{1+[97..122]};
     l{1+[192..214]} := l{33+[192..214]};
     l{1+[216..221]} := l{33+[216..221]};
+    ConvertToStringRep(l);
     return Immutable(l);
 end)());
 
@@ -303,6 +304,7 @@ BindGlobal("UPPERCASETRANSTABLE", (function()
     l{1+[97..122]} := l{1+[65..90]};
     l{33+[192..214]} := l{1+[192..214]};
     l{33+[216..221]} := l{1+[216..221]};
+    ConvertToStringRep(l);
     return Immutable(l);
 end)());
 
