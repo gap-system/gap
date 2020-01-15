@@ -838,6 +838,10 @@ void RetypeBagIntern(Bag bag, UInt new_type)
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_type = header->type;
 
+    // exit early if nothing is to be done
+    if (old_type == new_type)
+        return;
+
 #ifdef COUNT_BAGS
     /* update the statistics      */
     {
