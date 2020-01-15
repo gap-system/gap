@@ -650,7 +650,7 @@ function( str )
         atomic InputTextFileStillOpen do
             AddSet( InputTextFileStillOpen, fid );
         od;
-        return Objectify( InputTextFileType, Immutable([fid, str]) );
+        return Objectify( InputTextFileType, [fid, Immutable(str)] );
     fi;
 end );
 
@@ -812,7 +812,7 @@ InputTextNoneType := NewType(
 #M  InputTextNone() . . . . . . . . . .  create a new dummy input text stream
 ##
 InstallGlobalFunction( InputTextNone, function()
-    return Objectify( InputTextNoneType, Immutable([]) );
+    return Objectify( InputTextNoneType, [] );
 end );
 
 
@@ -1098,7 +1098,7 @@ function( str, append )
         atomic OutputTextFileStillOpen do
             AddSet( OutputTextFileStillOpen, fid );
         od;
-        return Objectify( OutputTextFileType, Immutable([fid, str, true]) );
+        return Objectify( OutputTextFileType, [fid, Immutable(str), true] );
     fi;
 end );
 
@@ -1258,7 +1258,7 @@ OutputTextNoneType := NewType(
 #M  OutputTextNone()  . . . . . . . . . create a new dummy output text stream
 ##
 InstallGlobalFunction( OutputTextNone, function()
-    return Objectify( OutputTextNoneType, Immutable([]) );
+    return Objectify( OutputTextNoneType, [] );
 end );
 
 
