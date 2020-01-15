@@ -326,6 +326,11 @@ enum {
 #ifdef HPCGAP
     OBJ_FLAG_TESTED  = (1 << 1),
 #endif
+
+    // OBJ_FLAG_IMMUTABLE marks immutable objects with a tnum between
+    // FIRST_IMM_MUT_TNUM and LAST_IMM_MUT_TNUM. For any other object it
+    // has no meaning, see IS_MUTABLE_OBJ.
+    OBJ_FLAG_IMMUTABLE = (1 << 2),
 };
 
 
@@ -528,6 +533,7 @@ EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
     UInt type = TNUM_OBJ(obj);
     GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));
     RetypeBag(obj, type | IMMUTABLE);
+    SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
 }
 
 
