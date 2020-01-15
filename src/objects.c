@@ -1540,10 +1540,7 @@ static Obj FuncSET_TYPE_DATOBJ(Obj self, Obj obj, Obj type)
     ReadGuard( obj );
 #endif
     SET_TYPE_DATOBJ(obj, type);
-#ifdef HPCGAP
-    if (TNUM_OBJ(obj) != T_DATOBJ)
-#endif
-      RetypeBag( obj, T_DATOBJ );
+    RetypeBag( obj, T_DATOBJ );
     CHANGED_BAG( obj );
     return obj;
 #endif
