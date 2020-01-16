@@ -449,7 +449,8 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 
 /****************************************************************************
 **
-*F  RetypeBag(<bag>,<new>)  . . . . . . . . . . . .  change the type of a bag
+*F  RetypeBag(<bag>,<new>) . . . . . . . . . . . . . change the type of a bag
+*F  RetypeBagIntern(<bag>,<new>) . . . . . . . . . . . . . internal interface
 **
 **  'RetypeBag' changes the type of the bag with identifier <bag>  to the new
 **  type <new>.  The identifier, the size,  and also the  address of the data
@@ -468,14 +469,31 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 **  It is, as usual, the responsibility of the application to ensure that the
 **  data stored in the bag makes sense when the  bag is interpreted  as a bag
 **  of type <type>.
+**
+**  'RetypeBagIntern' is the internal version of 'RetypeBag', implemented by
+**  the GC backend. It is called by 'RetypeBag'.
 */
-void RetypeBag(Bag bag, UInt new_type);
+void RetypeBagIntern(Bag bag, UInt new_type);
 
 #ifdef HPCGAP
 void RetypeBagIfWritable(Bag bag, UInt new_type);
 #else
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 #endif
+
+#ifdef GAP_KERNEL_DEBUG
+// This helper tests whether the type change is "allowed". As such, it rejects
+// attempts to retype an immutable list or record into a mutable one.
+void PrecheckRetypeBag(Bag bag, UInt new_type);
+#endif
+
+EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
+{
+#ifdef GAP_KERNEL_DEBUG
+    PrecheckRetypeBag(bag, new_type);
+#endif
+    RetypeBagIntern(bag, new_type);
+}
 
 
 /****************************************************************************
