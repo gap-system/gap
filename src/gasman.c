@@ -1325,9 +1325,7 @@ Bag NewBag (
 **  If  {\Gasman} was compiled with the  option 'COUNT_BAGS' then 'RetypeBag'
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
-void            RetypeBag (
-    Bag                 bag,
-    UInt                new_type )
+void RetypeBagIntern(Bag bag, UInt new_type)
 {
     BagHeader * header = BAG_HEADER(bag);
 

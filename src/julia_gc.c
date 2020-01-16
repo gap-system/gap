@@ -833,7 +833,7 @@ UInt CollectBags(UInt size, UInt full)
     return 1;
 }
 
-void RetypeBag(Bag bag, UInt new_type)
+void RetypeBagIntern(Bag bag, UInt new_type)
 {
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_type = header->type;
