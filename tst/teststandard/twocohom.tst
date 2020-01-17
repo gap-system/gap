@@ -24,6 +24,11 @@ gap> IsomorphismGroups(a,h);
 fail
 gap> IsomorphismGroups(h,PerfectGroup(IsPermGroup,10752,1))<>fail;
 true
+gap> g:=PSL(2,8);;
+gap> mo:=IrreducibleModules(g,GF(2));;
+gap> coh:=TwoCohomologyGeneric(g,First(mo[2],x->x.dimension=6));;
+gap> Length(coh.cohomology);
+3
 
 # that's all, folks
 gap> STOP_TEST( "twocohom.tst", 1);

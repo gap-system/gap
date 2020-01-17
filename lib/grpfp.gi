@@ -4858,6 +4858,7 @@ local freegp, gens, mongens, s, t, p, freemon, gensmon, id, newrels,
 
   # can we use attribute?
   if HasIsomorphismFpMonoid(g) and IsBound(IsomorphismFpMonoid(g)!.type) and
+    # type 0 is inverses first
     IsomorphismFpMonoid(g)!.type=1 then
     return IsomorphismFpMonoid(g);
   fi;
@@ -4947,6 +4948,7 @@ local freegp, gens, mongens, s, t, p, freemon, gensmon, id, newrels,
   invfun := x -> ElementOfFpGroup( FamilyObj(One(g)),
      MonwordToGroupword( idg, UnderlyingElement( x ) ) );
   hom:=MagmaIsomorphismByFunctionsNC(g, mon, isomfun, invfun);
+  # type 0 is inverses first
   hom!.type:=1;
   if not HasIsomorphismFpMonoid(g) then
     SetIsomorphismFpMonoid(g,hom);
@@ -4980,6 +4982,7 @@ function(g)
 
   # can we use attribute?
   if HasIsomorphismFpMonoid(g) and IsBound(IsomorphismFpMonoid(g)!.type) and
+    # type 0 is inverses first
     IsomorphismFpMonoid(g)!.type=0 then
     return IsomorphismFpMonoid(g);
   fi;
@@ -5052,6 +5055,7 @@ function(g)
   invfun := x -> ElementOfFpGroup( FamilyObj(One(g)),
      MSword2gpword( id, UnderlyingElement( x ),0 ) );
   hom:=MagmaIsomorphismByFunctionsNC(g, mon, isomfun, invfun);
+  # type 0 is inverses first
   hom!.type:=0;
   if not HasIsomorphismFpMonoid(g) then
     SetIsomorphismFpMonoid(g,hom);
