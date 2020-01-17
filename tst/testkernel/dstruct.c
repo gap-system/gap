@@ -4,6 +4,8 @@
 
 #include <libgap-api.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static int int_cmp(int a, int b)
 {

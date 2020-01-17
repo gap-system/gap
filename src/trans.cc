@@ -64,6 +64,8 @@ extern "C" {
 #include "plist.h"
 #include "saveload.h"
 
+#include <stdio.h>
+
 } // extern "C"
 
 #include "permutat_intern.hh"

@@ -28,6 +28,8 @@
 
 #include "objects.h"
 
+#include <string.h>
+
 /****************************************************************************
 **
 *F  NEW_PLIST(<type>,<plen>)  . . . . . . . . . . . allocate a new plain list

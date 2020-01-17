@@ -11,6 +11,8 @@
 #include "gapstate.h"
 #include "hpc/thread.h"
 
+#include <string.h>
+
 #ifdef USE_NATIVE_TLS
 
 __thread GAPState TLSGAPtate;

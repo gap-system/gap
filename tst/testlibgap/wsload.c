@@ -3,6 +3,9 @@
  * Also shows how to directly pass command line arguments to libgap.
  */
 #include "common.h"
+
+#include <string.h>
+
 int main(int argc, char ** argv)
 {
     char *args[50];

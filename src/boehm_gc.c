@@ -33,6 +33,11 @@
 #include "hpc/thread.h"
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
 #ifndef WARD_ENABLED
 
 static inline Bag * DATA(BagHeader * bag)

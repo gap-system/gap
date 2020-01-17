@@ -13,6 +13,8 @@
 
 #include "system.h"
 
+#include <string.h>
+
 
 #define ALL_BITS_UINT  (~(UInt)0)
 

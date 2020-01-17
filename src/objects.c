@@ -38,6 +38,9 @@
 #include "hpc/traverse.h"
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+
 
 enum {
     MAXPRINTDEPTH = 64,

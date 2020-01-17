@@ -30,16 +30,15 @@
 #include "sysenv.h"
 #include "sysopt.h"
 #include "sysstr.h"
+#include "system.h"
 
 #include "hpc/thread.h"
-
-#ifdef HAVE_LIBREADLINE
-#include <readline/readline.h>
-#endif
 
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
@@ -67,6 +66,10 @@ typedef void sig_handler_t ( int );
 
 #ifdef SYS_IS_CYGWIN32
 #include <process.h>
+#endif
+
+#ifdef HAVE_LIBREADLINE
+#include <readline/readline.h>
 #endif
 
 #include <zlib.h>

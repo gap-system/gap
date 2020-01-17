@@ -32,6 +32,7 @@
 
 #include "hpc/thread.h"
 
+#include <stdio.h>
 #include <sys/time.h>                   // for gettimeofday
 #include <sys/types.h>
 #include <unistd.h>

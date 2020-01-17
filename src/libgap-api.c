@@ -36,6 +36,8 @@
 #include "streams.h"
 #include "stringobj.h"
 
+#include <stdio.h>
+
 static BOOL UsingLibGap = FALSE;
 
 BOOL IsUsingLibGap(void)

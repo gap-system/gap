@@ -33,6 +33,8 @@
 #include "records.h"
 #include "stringobj.h"
 
+#include <stdlib.h>
+
 
 static Obj TYPE_ALIST;
 static Obj TYPE_AREC;

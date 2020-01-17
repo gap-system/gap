@@ -11,9 +11,9 @@
  */
 
 #include "common.h"
+#include "intobj.h"
 
-#include <intobj.h>
-
+#include <string.h>
 
 void records(void)
 {

@@ -43,6 +43,9 @@
 #include "hpc/guards.h"
 #endif
 
+#include <stdio.h>
+
+
 /****************************************************************************
 **
 *V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
