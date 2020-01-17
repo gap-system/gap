@@ -242,7 +242,16 @@ end );
 ##
 InstallGlobalFunction(IsomorphismFpGroupByChiefSeriesFactor,
 function(g,str,N)
-  local ser, ab, homs, gens, idx, start, pcgs, hom, f, fgens, auts, sf, orb, tra, j, a, ad, lad, n, fg, free, rels, fp, vals, dec, still, lgens, ngens, nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l, m;
+  local ser, ab, homs, gens, idx, start, pcgs, hom, f, fgens, auts, sf, orb,
+  tra, j, a, ad, lad, n, fg, free, rels, fp, vals, dec, still, lgens, ngens,
+  nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l,
+  m,abelianlimit,locallim,abpow,needgens;
+
+  abelianlimit:=ValueOption("abelianlimit");
+  if abelianlimit=fail then
+    abelianlimit:=infinity;
+  fi;
+
   if Size(g)=1 then
     # often occurs in induction base
     return
@@ -265,6 +274,7 @@ function(g,str,N)
   homs:=[];
   gens:=[];
   idx:=[];
+  abpow:=[]; # store powers for large order abelian
   for i in [2..Length(ser)] do
     start:=Length(gens)+1;
     if HasAbelianFactorGroup(ser[i-1],ser[i]) then
@@ -272,6 +282,23 @@ function(g,str,N)
       pcgs:=ModuloPcgs(ser[i-1],ser[i]);
       homs[i-1]:=pcgs;
       Append(gens,pcgs);
+      f:=pcgs;
+      j:=RelativeOrders(pcgs)[1];
+      abpow[i-1]:=[];
+      if abelianlimit<>infinity then
+        # split up evenly
+        k:=LogInt(j-1,abelianlimit)+1; # ensure rounded up
+        locallim:=RootInt(j-1,k)+1; # ensure rounded up
+
+        while j>locallim do
+          k:=Minimum(locallim,RootInt(j,2));
+          Add(abpow[i-1],k);
+          f:=List(f,x->x^k);
+          Append(gens,f);
+          j:=QuoInt(j,k);
+        od;
+      fi;
+
     else
       ab[i-1]:=false;
       hom:=NaturalHomomorphismByNormalSubgroup(ser[i-1],ser[i]:noassert);
@@ -390,13 +417,28 @@ function(g,str,N)
     nvals:=[];
     if ab[i-1] then
       pcgs:=homs[i-1];
+      needgens:=Length(pcgs);
       p:=RelativeOrders(pcgs)[1];
       # define function in function to preserve local variables
-      dodecomp:=function(ngens,pcgs)
-		 return elm ->
-		   LinearCombinationPcgs(ngens,ExponentsOfPcElement(pcgs,elm));
+      dodecomp:=function(ngens,pcgs,abpow)
+                local l;
+                  l:=Length(pcgs);
+                  return function(elm)
+                  local e,i,j,q;
+                    e:=ShallowCopy(ExponentsOfPcElement(pcgs,elm));
+                    for i in [1..Length(abpow)] do
+                      for j in [1..l] do
+                        # reduce entry so far
+                        q:=QuotientRemainder(e[l*(i-1)+j],abpow[i]);
+                        e[l*(i-1)+j]:=q[2];
+                        e[l*i+j]:=q[1];
+                      od;
+                    od;
+
+                    return LinearCombinationPcgs(ngens,e);
+                  end;
 		end;
-      decomp:=dodecomp(ngens,pcgs);
+      decomp:=dodecomp(ngens,pcgs,abpow[i-1]);
       for j in [1..Length(pcgs)] do
 	Add(nrels,ngens[j]^p);
 	if still then
@@ -405,13 +447,30 @@ function(g,str,N)
         for k in [1..j-1] do
 	  Add(nrels,Comm(ngens[j],ngens[k]));
 	  if still then
-	    Add(nvals,Comm(pcgs[j],pcgs[k]));
+	    Add(nrels,Comm(pcgs[j],pcgs[k]));
 	  fi;
 	od;
       od;
+
+      # generator power relations
+      if Length(abpow[i-1])>0 then
+        for k in [1..Length(abpow[i-1])] do
+          for j in [1..Length(pcgs)] do
+            Add(nrels,ngens[Length(pcgs)*(k-1)+j]^abpow[i-1][k]
+              /ngens[Length(pcgs)*k+j]);
+            if still then
+              Add(nvals,One(pcgs[1])); # new generator is just shorthand for
+              # power, so no tail to consider
+            fi;
+          od;
+        od;
+        
+      fi;
+
     else
       hom:=homs[i-1];
       hogens:=FreeGeneratorsOfFpGroup(Range(hom));
+      needgens:=Length(hogens);
       dodecomp:=function(ngens,hogens,hom)
 		  return elm->
 		          MappedWord(UnderlyingElement(Image(hom,elm)),
@@ -437,7 +496,7 @@ function(g,str,N)
     od;
     # action relators
     for j in [1..idx[i-1][1]-1] do
-      for k in [1..Length(ngens)] do
+      for k in [1..needgens] do
         a:=lgens[k]^gens[j];
 	ad:=decomp(a);
 	Add(rels,ngens[k]^free[j]/ad);
@@ -453,7 +512,8 @@ function(g,str,N)
   Assert(1,ForAll(rels,i->MappedWord(i,GeneratorsOfGroup(f),gens) in N));
 
   fp:=f/rels;
-  di:=rec(gens:=gens,fp:=fp,idx:=idx,dec:=dec,source:=g,homs:=homs);
+  di:=rec(gens:=gens,fp:=fp,idx:=idx,dec:=dec,source:=g,homs:=homs,
+     abpow:=abpow);
   if IsTrivial(N) then
     hom:=GroupHomomorphismByImagesNC(g,fp,gens,GeneratorsOfGroup(fp):noassert);
     SetIsBijective(hom,true);
@@ -888,5 +948,213 @@ function( G, series )
     return IsomorphismFpGroupBySubnormalSeries( G, series, "F" );
 end);
 
-InstallOtherMethod(IsomorphismFpGroupForRewriting,"generic fallback",true,
-  [IsGroup],0,IsomorphismFpGroup);
+InstallOtherMethod(IsomorphismFpGroupForRewriting,
+  "generic, deal with large element orders", true,
+  [IsGroup],0,
+function(G)
+local hom;
+  IsSimpleGroup(G);
+  hom:=IsomorphismFpGroup(G:abelianlimit:=10);
+  return hom;
+end);
+
+# return isomorphism G-fp and fp->mon, such that presentation of monoid is
+# confluent (wrt wreath order). Returns list [fphom,monhom,ordering]
+InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
+  [IsGroup and IsFinite],
+function(G)
+local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
+      loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept;
+  IsSimpleGroup(G);
+  if IsSymmetricGroup(G) then
+    i:=SymmetricGroup(SymmetricDegree(G));
+    iso:=CheapIsomSymAlt(G,i)*IsomorphismFpGroup(i);
+    fp:=Range(iso);
+    hom:=IsomorphismFpMonoid(fp);
+    m:=Range(hom);
+    fm:=FreeMonoidOfFpMonoid(m);
+    k:=KnuthBendixRewritingSystem(m);
+    MakeConfluent(k);
+    rules:=Rules(k);
+    dept:=fail;
+  else
+    iso:=IsomorphismFpGroupByChiefSeries(G:rewrite,abelianlimit:=10);
+
+    fp:=Range(iso);
+    gens:=GeneratorsOfGroup(fp);
+    n:=Length(gens);
+    dec:=iso!.decompinfo;
+
+    fmgens:=[];
+    mgens:=[];
+    for i in gens do
+      Add(fmgens,i);
+      Add(fmgens,i^-1);
+      Add(mgens,String(i));
+      Add(mgens,String(i^-1));
+    od;
+    nums:=List(fmgens,x->LetterRepAssocWord(UnderlyingElement(x))[1]);
+    fm:=FreeMonoid(mgens);
+    mgens:=GeneratorsOfMonoid(fm);
+    rules:=[];
+    reduce:=function(w)
+    local red,i,p;
+      w:=LetterRepAssocWord(w);
+      repeat
+        i:=1;
+        red:=false;
+        while i<=Length(rules) and red=false do
+          p:=PositionSublist(w,LetterRepAssocWord(rules[i][1]));
+          if p<>fail then
+            #Print("Apply ",rules[i],p,w,"\n");
+            w:=Concatenation(w{[1..p-1]},LetterRepAssocWord(rules[i][2]),
+              w{[p+Length(rules[i][1])..Length(w)]});
+            red:=true;
+          else
+            i:=i+1;
+          fi;
+        od;
+      until red=false;
+      return AssocWordByLetterRep(FamilyObj(One(fm)),w);
+    end;
+
+
+    homs:=ShallowCopy(dec.homs);
+    mos:=[];
+    off:=Length(mgens);
+    dept:=[];
+    # go up so we may reduce tails
+    for i in [Length(homs),Length(homs)-1..1] do
+      Add(dept,off);
+      if IsPcgs(homs[i]) then
+        if Length(dec.abpow[i])>0 then
+          ffp:=FreeAbelianGroup(Length(homs[i])*(Length(dec.abpow[i])+1));
+          # relations: order
+          m:=GeneratorsOfGroup(ffp);
+          r:=List(m,x->x^RelativeOrders(homs[i])[1]);
+          # power dependence
+          for j in [1..Length(dec.abpow[i])] do
+            for k in [1..Length(homs[i])] do
+              Add(r,m[Length(homs[i])*(j-1)+k]^dec.abpow[i][j]
+                /m[Length(homs[i])*j+k]);
+            od;
+          od;
+          ffp:=ffp/r;
+
+        else
+          ffp:=AbelianGroup(IsFpGroup,RelativeOrders(homs[i]));
+        fi;
+      else
+        ffp:=Range(homs[i]);
+      fi;
+
+      imo:=IsomorphismFpMonoid(ffp);
+      Add(mos,imo);
+      m:=Range(imo);
+      loff:=off-Length(GeneratorsOfMonoid(m));
+      monreps:=fmgens{[loff+1..off]};
+      monreal:=mgens{[loff+1..off]};
+      if IsBound(m!.rewritingSystem) then
+        k:=m!.rewritingSystem;
+      else
+        k:=KnuthBendixRewritingSystem(m);
+      fi;
+      MakeConfluent(k);
+      # convert rules
+      for r in Rules(k) do
+        left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreps);
+        right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreps);
+        diff:=LeftQuotient(PreImagesRepresentative(iso,right),
+                PreImagesRepresentative(iso,left));
+        diff:=ImagesRepresentative(iso,diff);
+
+        left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreal);
+        right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreal);
+        if not IsOne(diff) then 
+          right:=right*Product(List(LetterRepAssocWord(UnderlyingElement(diff)),
+            x->mgens[Position(nums,x)]));
+        fi;
+        right:=reduce(right); # monoid word might change
+        Add(rules,[left,right]);
+      od;
+      for j in [loff+1..off] do
+        # if the generator gets reduced away, won't need to use it
+        if reduce(mgens[j])=mgens[j] then
+          for k in [off+1..Length(mgens)] do
+            if reduce(mgens[k])=mgens[k] then
+              right:=fmgens[j]^-1*fmgens[k]*fmgens[j];
+              #collect
+              right:=ImagesRepresentative(iso,PreImagesRepresentative(iso,right));
+              right:=Product(List(LetterRepAssocWord(UnderlyingElement(right)),
+                x->mgens[Position(nums,x)]));
+              right:=reduce(mgens[j]*right);
+              Add(rules,[mgens[k]*mgens[j],right]);
+            fi;
+          od;
+        fi;
+      od;
+      #if i<Length(homs) then Error("ZU");fi;
+      off:=loff;
+    od;
+    Add(dept,off);
+    # calculate levels for ordering
+    dept:=dept+1;
+    dept:=List([1..Length(mgens)],
+      x->PositionProperty(dept,y->x>=y)-1);
+
+    if ForAny(rules,x->x[2]<>reduce(x[2])) then Error("irreduced right");fi;
+
+    # inverses are true inverses, also for extension
+    for i in [1..Length(gens)] do
+      left:=mgens[2*i-1]*mgens[2*i];
+      left:=reduce(left);
+      if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+      left:=mgens[2*i]*mgens[2*i-1];
+      left:=reduce(left);
+      if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+    od;
+  fi;
+
+  # finally create 
+  m:=FactorFreeMonoidByRelations(fm,rules);
+  mgens:=GeneratorsOfMonoid(m);
+
+  hom:=MagmaIsomorphismByFunctionsNC(fp,m,
+        function(w)
+          local l,i;
+          l:=[];
+          for i in LetterRepAssocWord(UnderlyingElement(w)) do
+            if i>0 then Add(l,2*i-1);
+            else Add(l,-2*i);fi;
+          od;
+          return ElementOfFpMonoid(FamilyObj(One(m)),
+                  AssocWordByLetterRep(FamilyObj(One(fm)),l));
+        end,
+        function(w)
+          local g,i,x;
+          g:=[];
+          for i in LetterRepAssocWord(UnderlyingElement(w)) do
+            if IsOddInt(i) then x:=(i+1)/2;
+            else x:=-i/2;fi;
+            # word must be freely cancelled
+            if Length(g)>0 and x=-g[Length(g)] then
+              Unbind(g[Length(g)]);
+            else Add(g,x); fi;
+          od;
+          return ElementOfFpGroup(FamilyObj(One(fp)),
+                  AssocWordByLetterRep(FamilyObj(One(FreeGroupOfFpGroup(fp))),g));
+        end);
+
+  hom!.type:=1;
+  if not HasIsomorphismFpMonoid(G) then
+    SetIsomorphismFpMonoid(G,hom);
+  fi;
+  j:=rec(fphom:=iso,monhom:=hom);
+  if dept=fail then
+    j.ordering:=k!.ordering;
+  else
+    j.ordering:=WreathProductOrdering(fm,dept);
+  fi;
+  return j;
+end);
+
