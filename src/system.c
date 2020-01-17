@@ -546,12 +546,14 @@ static Int storePosInteger( Char **argv, void *Where )
 }
 #endif
 
+#ifdef GAP_ENABLE_SAVELOAD
 static Int storeString( Char **argv, void *Where )
 {
   Char **where = (Char **)Where;
   *where = argv[0];
   return 1;
 }
+#endif
 
 #ifdef USE_GASMAN
 static Int storeMemory( Char **argv, void *Where )
