@@ -44,6 +44,9 @@
 #include <pthread.h>
 #endif
 
+#include <stdio.h>
+
+
 /****************************************************************************
 **
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag

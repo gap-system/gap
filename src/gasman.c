@@ -123,6 +123,8 @@
 
 #include "bags.inc"
 
+#include <string.h>
+
 #ifdef GAP_MEM_CHECK
 #include <sys/mman.h>
 #endif

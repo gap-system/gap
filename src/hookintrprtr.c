@@ -22,6 +22,8 @@
 
 #include "hpc/thread.h"
 
+#include <string.h>
+
 
 /* List of active hooks */
 struct InterpreterHooks * activeHooks[HookCount];

@@ -13,6 +13,7 @@
 
 #include "system.h"
 
+#include <stddef.h>
 #include <sys/time.h>
 #include <sys/types.h>
 

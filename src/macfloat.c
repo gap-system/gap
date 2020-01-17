@@ -33,6 +33,10 @@
 #include "stringobj.h"
 #include "sysstr.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
+
 #define RequireMacFloat(funcname, op) \
     RequireArgumentCondition(funcname, op, IS_MACFLOAT(op), \
         "must be a macfloat")

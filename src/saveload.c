@@ -30,6 +30,7 @@
 #include "sysfiles.h"
 #include "sysopt.h"
 
+#include <stdio.h>
 #include <unistd.h>
 
 

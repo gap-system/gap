@@ -47,6 +47,8 @@
 #include "hpc/traverse.h"
 #endif
 
+#include <stdlib.h>
+
 /****************************************************************************
 **
 *F * * * * * * * * * standard functions for plain records * * * * * * * * * *

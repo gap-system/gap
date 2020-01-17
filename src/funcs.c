@@ -39,6 +39,9 @@
 #include "hpc/thread.h"
 #endif
 
+#include <stdlib.h>
+
+
 static ModuleStateOffset FuncsStateOffset = -1;
 
 struct FuncsModuleState {
