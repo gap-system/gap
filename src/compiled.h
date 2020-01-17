@@ -14,6 +14,11 @@
 #ifndef GAP_COMPILED_H
 #define GAP_COMPILED_H
 
+// HACK: for backwards compatibility with packages that need it,
+// include stdio.h here. Should be removed once all packages are
+// updated to not need it.
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
