@@ -97,7 +97,7 @@ DeclareAttribute("PerfectIdentification", IsGroup );
 ##  One can iterate over the perfect groups library with:
 ##  <Example><![CDATA[
 ##  gap> for n in SizesPerfectGroups() do
-##  >      for k in [1..NrPerfectLibraryGroups(n)] do
+##  >      for k in [1..NrPerfectGroups(n)] do
 ##  >        pg := PerfectGroup(n,k);
 ##  >      od;
 ##  >    od;
@@ -116,6 +116,9 @@ DeclareGlobalFunction("SizesPerfectGroups");
 ##  <#GAPDoc Label="NumberPerfectGroups">
 ##  <ManSection>
 ##  <Func Name="NumberPerfectGroups" Arg='size'/>
+##  <Func Name="NrPerfectGroups" Arg='size'/>
+##  <Func Name="NumberPerfectLibraryGroups" Arg='size'/>
+##  <Func Name="NrPerfectLibraryGroups" Arg='size'/>
 ##
 ##  <Description>
 ##  returns the number of non-isomorphic perfect groups of size <A>size</A> for
@@ -123,33 +126,19 @@ DeclareGlobalFunction("SizesPerfectGroups");
 ##  listed at the beginning  of  this section for  which the number is not
 ##  yet known. For these values as well as for any argument out of range it
 ##  returns <K>fail</K>.
+##  <A>NrPerfectGroups</A> is a synonym for <Ref Func="NumberPerfectGroups"/>.
+##  Moreover <A>NumberPerfectLibraryGroups</A> (and its synonym <A>NrPerfectLibraryGroups</A>)
+##  exist for historical reasons, and return 0 instead of fail for arguments
+##  outside the library scope.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("NumberPerfectGroups");
 DeclareSynonym("NrPerfectGroups",NumberPerfectGroups);
-
-
-#############################################################################
-##
-#F  NumberPerfectLibraryGroups( <size> )  . . . . . . . . . . . . . . . . . .
-##
-##  <#GAPDoc Label="NumberPerfectLibraryGroups">
-##  <ManSection>
-##  <Func Name="NumberPerfectLibraryGroups" Arg='size'/>
-##
-##  <Description>
-##  returns the number of perfect groups of size <A>size</A> which are available
-##  in the  library of finite perfect groups. (The purpose  of the function
-##  is  to provide a simple way  to formulate a loop over all library groups
-##  of a given size.)
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
 DeclareGlobalFunction("NumberPerfectLibraryGroups");
 DeclareSynonym("NrPerfectLibraryGroups",NumberPerfectLibraryGroups);
+
 
 
 #############################################################################

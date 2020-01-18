@@ -46,11 +46,6 @@
 ##        have  not  yet   been  determined.   It  is  needed  by  subroutine
 ##        NumberPerfectGroups.
 ##
-##     PERFRec.notAvailable
-##        is a list of all sizes less than 10^6  for which the perfect groups
-##        are known, but not yet in the library.  It is needed by subroutines
-##        DisplayInformationPerfectGroups and NumberPerfectLibraryGroups.
-##
 ##     PERFRec.sizeNumberSimpleGroup
 ##        is an ordered list of the  'size numbers'  of all nonabelian simple
 ##        groups which occur as composition factor of any library group.

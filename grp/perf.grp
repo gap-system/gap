@@ -86,26 +86,14 @@ InstallGlobalFunction( NumberPerfectGroups, function ( size )
     fi;
 end );
 
+InstallGlobalFunction(NumberPerfectLibraryGroups,function(size)
+local a;
+  a:=NumberPerfectGroups(size);
+  if a=fail then return 0;
+  else return a;fi;
+end);
 
-#############################################################################
-##
-#F  NumberPerfectLibraryGroups( size )
-##
-##  `NumberPerfectLibraryGroups'  returns the number of nonisomorphic perfect
-##  groups of size `size' for 1 <= size <= 1 000 000 which are available in the
-##  perfect groups library.
-##
-InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
-local sizenum;
 
-    if size=1 then
-      return 1;
-    elif IsOddInt(size) then return 0;fi;
-    # get the number and return it.
-    sizenum := PerfGrpLoad( size );
-    return PERFRec.number[sizenum];
-
-end );
 
 #############################################################################
 ##
@@ -489,7 +477,7 @@ local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
   if IsInt(arg[1]) then
     size:=arg[1];
     if Length(arg)=1 then
-      nr:=[1..NumberPerfectLibraryGroups(size)];
+      nr:=[1..NumberPerfectGroups(size)];
     else
       nr:=arg[2];
     fi;
@@ -690,7 +678,7 @@ local s,l;
     Print("#W  No information about size ",s," available\n");
     return fail;
   fi;
-  l:=NumberPerfectLibraryGroups(s);
+  l:=NumberPerfectGroups(s);
   while l>1 do
     if IsomorphismGroups(G,PerfectGroup(IsPermGroup,s,l))<>fail then
       return [s,l];

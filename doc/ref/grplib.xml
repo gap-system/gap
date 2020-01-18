@@ -297,42 +297,31 @@ It returns <K>fail</K> if no such group exists in the library.
 <Heading>Finite Perfect Groups</Heading>
 
 <Index>perfect groups</Index>
-The &GAP; library of finite  perfect groups provides, up to isomorphism,
-a list of all perfect groups whose sizes are less than  <M>10^6</M>  excluding
-the following sizes:
-<P/>
-<List>
-<Item>
-      For <M>n = 61440</M>, 122880, 172032, 245760, 344064, 491520, 688128, or
-      983040,  the perfect groups  of size  <M>n</M>  have not completely been
-      determined yet.  The library  neither provides  the number of these
-      groups nor the groups themselves.
-</Item>
-<Item>
-      For  <M>n = 86016</M>,  368640,  or  737280,  the library  does not  yet
-      contain  the perfect groups  of size  <M>n</M>,  it  only provides their
-      numbers which are 52, 46, and 54, respectively.
-</Item>
-</List>
-<P/>
-Except for these eleven sizes, the list of altogether 1097 perfect groups
-in the  library is complete.  It relies  on results of  Derek&nbsp;F. Holt and
-Wilhelm Plesken which  are published in their  book    <Q>Perfect Groups</Q>
-<Cite Key="HP89"/>. Moreover,   they     have  supplied us    with    files with
-presentations of 488 of the groups. In terms of  these, the remaining 607
-nontrivial groups in the library can be described as 276 direct products,
-107  central   products, and 224  subdirect  products.  They are computed
-automatically by suitable &GAP; functions whenever they are needed.  Two
-additional groups omitted from the book <Q>Perfect Groups</Q> have also been
-included.
+The &GAP; library of finite  perfect groups provides, up to isomorphism, a
+list of all perfect groups whose sizes are less than  <M>10^6</M>. 
+The groups of most of these orders have been enumerated by
+Derek&nbsp;F. Holt and Wilhelm Plesken and
+published in their  book    <Q>Perfect Groups</Q> <Cite Key="HP89"/>.
+For orders <M>n = 86016</M>,  368640,  or  737280 this work only counted the
+groups (but did not explicitly list them), the groups of orders
+<M>n = 61440</M>, 122880, 172032, 245760, 344064, 491520,
+688128, or 983040 were omitted.
 <P/>
 We are grateful to Derek Holt and Wilhelm Plesken for making their groups
 available to the &GAP; community  by contributing their files. It should
 be noted that  their book contains a  lot of further information for many
 of the library groups.  So we would like  to recommend  it to any  &GAP;
 user who is interested in the groups.
+Two additional groups omitted from the book <Q>Perfect Groups</Q> have also
+been included.
 <P/>
-The library has been brought into &GAP; format by Volkmar Felsch.
+The library of these has been brought into &GAP; format by Volkmar Felsch.
+<P/>
+The perfect groups of size less than <M>10^6</M>which were missing in the work of Holt
+and Plesken have been enumerated by Alexander
+Hulpke. They are stored directly and provide less construction information
+in their names.
+<P/>
 <P/>
 As  all groups are stored  by presentations, a permutation representation
 is obtained by coset enumeration. Note that some of the library groups do
@@ -343,7 +332,6 @@ Computations in these groups may be rather time consuming.
 <#Include Label="PerfectGroup">
 <#Include Label="PerfectIdentification">
 <#Include Label="NumberPerfectGroups">
-<#Include Label="NumberPerfectLibraryGroups">
 <#Include Label="SizeNumbersPerfectGroups">
 <#Include Label="DisplayInformationPerfectGroups">
 
@@ -1168,4 +1156,3 @@ gap> LargestMovedPoint( P2 );
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-
