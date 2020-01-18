@@ -1882,7 +1882,7 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);; NormalSubgroups(g);
 ##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
 ##  gap> g:=AbelianGroup([2,2]);; NormalSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([ f2 ]),
 ##    Group([ f1*f2 ]), Group([ f1 ]), Group([  ]) ]
@@ -3316,6 +3316,32 @@ KeyDependentOperation( "PRump", IsGroup, IsPosInt, "prime" );
 ##  <#/GAPDoc>
 ##
 KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
+
+#############################################################################
+##
+#A  StructuralSeriesOfGroup( <G> )
+##
+##  <#GAPDoc Label="StructuralSeriesOfGroup">
+##  <ManSection>
+##  <Attr Name="StructuralSeriesOfGroup" Arg='G'/>
+##
+##  <Description>
+##  The structural series of a finite group <A>G</A> is a descending series
+##  of characteristic subgroups which goes throught the derived series of
+##  the solvable radical of $G$, refined into elementary abelian factors, as
+##  well as the socle and the <A>Pker</A> (kernel of the action on socle
+##  components) of the radical factor
+##  <Example><![CDATA[
+##  gap> gp:=WreathProduct(SymmetricGroup(5),SymmetricGroup(3));;
+##  gap> gp:=WreathProduct(Group((1,2,3,4,5,6)),gp);;
+##  gap> List(StructuralSeriesOfGroup(gp),Size);
+##  [ 4874877920083968000, 812479653347328000, 101559956668416000, 470184984576, 32768, 1 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "StructuralSeriesOfGroup", IsGroup );
 
 
 #############################################################################

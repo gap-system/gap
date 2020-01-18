@@ -529,6 +529,30 @@ DeclareGlobalFunction( "ReducedPermdegree" );
 
 DeclareGlobalFunction("MovedPointsPerms");
 
+
+#############################################################################
+##
+#A  OrbitsMovedPoints( <G> )
+##
+##  <#GAPDoc Label="OrbitsMovedPoints">
+##  <ManSection>
+##  <Attr Name="OrbitsMovedPoints" Arg='G'/>
+##
+##  <Description>
+##  For a permutation group <A>G</A>, this attribute returns the orbits on the points moved 
+##  as a set of sets.
+##  <Example><![CDATA[
+##  gap> OrbitsMovedPoints(Group((9,5),(7,3,2)));
+##  [ [ 2, 3, 7 ], [ 5, 9 ] ]
+##  ]]></Example>
+##  <P/>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "OrbitsMovedPoints", IsPermGroup );
+
+
 #############################################################################
 ##
 #F  LogPerm( <a>, <b> )

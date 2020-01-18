@@ -8,8 +8,8 @@ gap> coh:=TwoCohomologyGeneric(g,mo[2][2]:
 > model:=PerfectGroup(IsPermGroup,10752,1));;
 gap> Length(coh.cohomology);
 2
-gap> comp:=CompatiblePairs(g,mo[2][2]);
-<group of size 2688 with 5 generators>
+gap> comp:=CompatiblePairs(g,mo[2][2]);;Size(comp);
+2688
 gap> reps:=CompatiblePairOrbitRepsGeneric(comp,coh);;Length(reps);
 3
 gap> h:=FpGroupCocycle(coh,reps[1],true);;

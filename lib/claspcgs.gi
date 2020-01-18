@@ -1883,3 +1883,31 @@ InstallGlobalFunction( CentralStepRatClPGroup,
     fi;
     return classes;
 end );
+
+InstallMethod(CanonicalRepresentativeOfExternalSet,"pc class",true,
+    [ IsExternalOrbit and IsConjugacyClassGroupRep and
+      CategoryCollections(IsElementFinitePolycyclicGroup)],0,
+function(c)
+local a;
+  a:=ClassesSolvableGroup( ActingDomain(c), 0,
+    rec(candidates:= [Representative(c)] ));
+  return a[1].representative;
+end);
+
+#############################################################################
+##
+#M  <cl1> = <cl2>
+##
+InstallMethod( \=,"classes for pc group", IsIdenticalObj,
+    [ IsExternalOrbit and IsConjugacyClassGroupRep and
+    CategoryCollections(IsElementFinitePolycyclicGroup),
+    IsExternalOrbit and IsConjugacyClassGroupRep and 
+    CategoryCollections(IsElementFinitePolycyclicGroup) ],
+function( cl1, cl2 )
+  if not IsIdenticalObj( ActingDomain( cl1 ), ActingDomain( cl2 ) )  then
+      TryNextMethod();
+  fi;
+  return Size(cl1)=Size(cl2) and 
+    CanonicalRepresentativeOfExternalSet(cl1)
+      =CanonicalRepresentativeOfExternalSet(cl2);
+end );

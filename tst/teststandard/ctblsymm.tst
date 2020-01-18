@@ -14,6 +14,8 @@ gap> for i in [ 1 .. Length( irr ) ] do
 >        Error( "wrong result!" );
 >      fi;
 >    od;
+gap> Length(Irr(CharacterTable("symmetric",12)));
+77
 
 #
 gap> STOP_TEST( "ctblsymm.tst" );

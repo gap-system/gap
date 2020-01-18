@@ -421,6 +421,7 @@ the series without destroying the properties of the series.
 <#Include Label="AscendingChain">
 <#Include Label="IntermediateGroup">
 <#Include Label="IntermediateSubgroups">
+<#Include Label="StructuralSeriesOfGroup">
 
 </Section>
 

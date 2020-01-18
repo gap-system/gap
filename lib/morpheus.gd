@@ -139,7 +139,7 @@ DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
 ##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
 ##      [ (2,4), (1,4,3,2), (1,3)(2,4) ] ]
 ##  gap> NiceObject(au);
-##  Group([ (1,2,3,4), (1,3)(2,4), (2,4) ])
+##  Group([ (1,2,4,6), (1,4)(2,6), (2,6)(3,5) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -509,7 +509,7 @@ DeclareGlobalFunction("IsomorphismGroups");
 ##  gap> h:=Group((1,2,3),(1,2));
 ##  Group([ (1,2,3), (1,2) ])
 ##  gap> quo:=GQuotients(g,h);
-##  [ [ (1,2,3,4), (1,3,4) ] -> [ (2,3), (1,2,3) ] ]
+##  [ [ (1,2), (1,3,4,2) ] -> [ (1,2), (2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
