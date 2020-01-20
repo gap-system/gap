@@ -11,7 +11,7 @@ res := Test( "doublecoset1.tst", rec(showProgress := true) );
 Print( "*** RUNTIME ", Runtime()-starttime, "\n" );
 
 if res then
-  QUIT_GAP(0);
+  QuitGap(0);
 else
-  QUIT_GAP(1);
+  QuitGap(1);
 fi;

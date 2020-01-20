@@ -89,7 +89,7 @@ do
         $GAP -b <<GAPInput
         SaveWorkspace("testpackagesload.wsp");
         PrintTo("packagenames", JoinStringsWithSeparator( SortedList(RecNames( GAPInfo.PackagesInfo )),"\n") );
-        QUIT_GAP(0);
+        QuitGap(0);
 GAPInput
         for pkg in $(cat packagenames)
         do
@@ -208,7 +208,7 @@ GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         Read("$SRCDIR/tst/testmanuals.g");
         SaveWorkspace("testmanuals.wsp");
-        QUIT_GAP(0);
+        QuitGap(0);
 GAPInput
 
     TESTMANUALSPASS=yes
@@ -216,7 +216,7 @@ GAPInput
     do
         $GAP -b -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
-        QUIT_GAP(0);
+        QuitGap(0);
 GAPInput
     done
 
@@ -229,7 +229,7 @@ GAPInput
         # Also test a package banner
         LoadPackage("polycyclic");
         SaveWorkspace("test.wsp");
-        QUIT_GAP(0);
+        QuitGap(0);
 GAPInput
 
     ;;

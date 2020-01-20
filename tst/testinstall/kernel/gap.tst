@@ -214,23 +214,37 @@ gap> MicroSleep(0);
 gap> MicroSleep(1);
 
 #
-gap> GAP_EXIT_CODE("invalid");
-Error, GAP_EXIT_CODE: Argument must be boolean or integer
-gap> GAP_EXIT_CODE(fail);
-gap> GAP_EXIT_CODE(false);
-gap> GAP_EXIT_CODE(true);
+gap> exitCode := GapExitCode();;
+gap> GapExitCode(0);;
+gap> GapExitCode();
+0
+gap> GapExitCode("invalid");
+Error, GapExitCode: <code> Argument must be boolean or integer (not a list (st\
+ring))
+gap> GapExitCode(fail);
+0
+gap> GapExitCode(false);
+1
+gap> GapExitCode(true);
+1
+gap> GapExitCode(6);
+0
+gap> GapExitCode();
+6
+gap> GapExitCode(exitCode);
+6
 
 #
-gap> QUIT_GAP("invald");
-Error, usage: QUIT_GAP( [ <return value> ] )
-gap> QUIT_GAP(1, 2);
-Error, usage: QUIT_GAP( [ <return value> ] )
+gap> QuitGap("invald");
+Error, usage: QuitGap( [ <return value> ] )
+gap> QuitGap(1, 2);
+Error, usage: QuitGap( [ <return value> ] )
 
 #
-gap> FORCE_QUIT_GAP("invald");
-Error, usage: FORCE_QUIT_GAP( [ <return value> ] )
-gap> FORCE_QUIT_GAP(1, 2);
-Error, usage: FORCE_QUIT_GAP( [ <return value> ] )
+gap> ForceQuitGap("invald");
+Error, usage: ForceQuitGap( [ <return value> ] )
+gap> ForceQuitGap(1, 2);
+Error, usage: ForceQuitGap( [ <return value> ] )
 
 #
 gap> BREAKPOINT(0);

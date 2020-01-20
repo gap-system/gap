@@ -475,7 +475,7 @@ CallAndInstallPostRestore( function()
        "  Boolean options toggle the current value each time they are called.\n",
        "  Default actions are indicated first.\n",
        "\n" );
-      QUIT_GAP();
+      QuitGap();
     fi;
 end );
 

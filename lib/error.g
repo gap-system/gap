@@ -328,7 +328,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
             and IsBound(OnBreak) and IsFunction(OnBreak) then
             OnBreak();
         fi;
-        FORCE_QUIT_GAP(1);
+        ForceQuitGap(1);
     fi;
 
     # OnBreak() is set to Where() by default, which prints the traceback.

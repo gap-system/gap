@@ -264,7 +264,7 @@ UInt SyWindow;
 **  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.
 **
-**  If the user calls 'QUIT_GAP' with a value, then the global variable
+**  If the user calls 'QuitGap' with a value, then the global variable
 **  'UserHasQUIT' will be set, and their requested return value will be
 **  in 'SystemErrorCode'. If the return value would be 0, we check
 **  this value and use it instead.

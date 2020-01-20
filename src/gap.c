@@ -1002,32 +1002,41 @@ static int SetExitValue(Obj code)
 
 /****************************************************************************
 **
-*F  FuncGAP_EXIT_CODE() . . . . . . . . Set the code with which GAP exits.
+*F  FuncGapExitCode() . . . . . . . . Set the code with which GAP exits.
 **
 */
 
-static Obj FuncGAP_EXIT_CODE(Obj self, Obj code)
+static Obj FuncGapExitCode(Obj self, Obj args)
 {
-  if (!SetExitValue(code))
-    ErrorQuit("GAP_EXIT_CODE: Argument must be boolean or integer", 0, 0);
-  return (Obj) 0;
+    if (LEN_LIST(args) > 1) {
+        ErrorQuit("usage: QuitGap( [ <return value> ] )", 0, 0);
+    }
+
+    Obj prev_exit_value = ObjInt_Int(SystemErrorCode);
+
+    if (LEN_LIST(args) == 1) {
+        Obj code = ELM_PLIST(args, 1);
+        RequireArgumentCondition("GapExitCode", code, SetExitValue(code),
+                                 "Argument must be boolean or integer");
+    }
+    return (Obj)prev_exit_value;
 }
 
 
 /****************************************************************************
 **
-*F  FuncQUIT_GAP()
+*F  FuncQuitGap()
 **
 */
 
-static Obj FuncQUIT_GAP(Obj self, Obj args)
+static Obj FuncQuitGap(Obj self, Obj args)
 {
   if ( LEN_LIST(args) == 0 ) {
     SystemErrorCode = 0;
   }
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
-    ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0, 0);
+    ErrorQuit( "usage: QuitGap( [ <return value> ] )", 0, 0);
   }
   STATE(UserHasQUIT) = 1;
   GAP_THROW();
@@ -1036,11 +1045,11 @@ static Obj FuncQUIT_GAP(Obj self, Obj args)
 
 /****************************************************************************
 **
-*F  FuncFORCE_QUIT_GAP()
+*F  FuncForceQuitGap()
 **
 */
 
-static Obj FuncFORCE_QUIT_GAP(Obj self, Obj args)
+static Obj FuncForceQuitGap(Obj self, Obj args)
 {
   if ( LEN_LIST(args) == 0 )
   {
@@ -1048,7 +1057,7 @@ static Obj FuncFORCE_QUIT_GAP(Obj self, Obj args)
   }
   else if ( LEN_LIST(args) != 1 
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
-    ErrorQuit( "usage: FORCE_QUIT_GAP( [ <return value> ] )", 0, 0);
+    ErrorQuit( "usage: ForceQuitGap( [ <return value> ] )", 0, 0);
   }
   SyExit(SystemErrorCode);
 }
@@ -1295,9 +1304,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(OBJ_HANDLE, handle),
     GVAR_FUNC_1ARGS(HANDLE_OBJ, object),
     GVAR_FUNC_1ARGS(WindowCmd, args),
-    GVAR_FUNC_1ARGS(GAP_EXIT_CODE, exitCode),
-    GVAR_FUNC(QUIT_GAP, -1, "args"),
-    GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),
+    GVAR_FUNC(GapExitCode, -1, "exitCode"),
+    GVAR_FUNC(QuitGap, -1, "args"),
+    GVAR_FUNC(ForceQuitGap, -1, "args"),
     GVAR_FUNC_0ARGS(SHOULD_QUIT_ON_BREAK),
     GVAR_FUNC(SHELL,
               10,

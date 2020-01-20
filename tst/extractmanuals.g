@@ -65,4 +65,4 @@ GAPInfo.ManualDataTut.pathtoroot := DirectoriesLibrary("");
 WriteExamplesTst( testdir, GAPInfo.ManualDataTut );
 
 #
-QUIT_GAP(0);
+QuitGap(0);

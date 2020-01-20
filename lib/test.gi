@@ -809,7 +809,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   opts.testOptions.returnNumFailures := true;
   
   if opts.exitGAP then
-    GAP_EXIT_CODE(1);
+    GapExitCode(1);
   fi;
   
   files := [];
@@ -882,7 +882,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
         Print( "#I  Errors detected while testing\n\n" );
       fi;
       if opts.exitGAP then
-        QUIT_GAP(1);
+        QuitGap(1);
       fi;
       return false;
     fi;
@@ -932,9 +932,9 @@ InstallGlobalFunction( "TestDirectory", function(arg)
 
   if opts.exitGAP then
     if testTotalFailures = 0 then
-      QUIT_GAP(0);
+      QuitGap(0);
     else
-      QUIT_GAP(1);
+      QuitGap(1);
     fi;
   fi;
   

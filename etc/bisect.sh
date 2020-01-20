@@ -99,13 +99,13 @@ echo '
 # if ErrorLevel is not defined, something is very wrong, so skip the commit
 if not IsBound(ErrorLevel) then
   Print("Panic, ErrorLevel not defined, skipping this commit\\n");
-  FORCE_QUIT_GAP(125);
+  ForceQuitGap(125);
 fi;
 
 # intercept any further break loops and again, bail out
 OnBreak:=function()
   Print("Panic, break loop was triggered, skipping this commit\\n");
-  FORCE_QUIT_GAP(125);
+  ForceQuitGap(125);
 end;
 
 # check if we are in an error handler...
@@ -119,16 +119,16 @@ if ErrorLevel > 0 then
   else
     # ... for any other error: tell git to skip this commit
     Print("Panic, GAP run into an error during startup, skipping this commit\\n");
-    FORCE_QUIT_GAP(125);
+    ForceQuitGap(125);
   fi;
 fi;
 
 # run the actual test
 if Test("'${TESTFILE}'") then
   Print("Commit is good\\n");
-  QUIT_GAP(0);
+  QuitGap(0);
 else
   Print("Commit is bad\\n");
-  QUIT_GAP(1);
+  QuitGap(1);
 fi;
 ' | bin/gap.sh -A -b -q

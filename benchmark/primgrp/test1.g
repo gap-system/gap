@@ -17,7 +17,7 @@ Print("*** RUNTIME ",Runtime()-starttime,"\n");
 
 if has_errors then
   Print("*** FAIL\n");
-  QUIT_GAP(1);
+  QuitGap(1);
 else
-  QUIT_GAP(0);
+  QuitGap(0);
 fi;
