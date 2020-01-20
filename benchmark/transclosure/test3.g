@@ -16,4 +16,4 @@ i:=8;
   t:=TransitiveClosureBinaryRelation(r);
 
 Print("*** RUNTIME ",Runtime()-starttime,"\n");
-QUIT_GAP(0);
+QuitGap(0);

@@ -59,7 +59,7 @@ else
 fi
 
 # check that GAP is at least able to start
-echo 'Print("GAP started successfully\n");QUIT_GAP(0);' | ./gap -T
+echo 'Print("GAP started successfully\n");QuitGap(0);' | ./gap -T
 
 # packages must be placed inside SRCDIR, as only that
 # is a GAP root, while BUILDDIR is not.

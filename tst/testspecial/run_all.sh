@@ -8,7 +8,7 @@ GAPDIR=${GAPDIR:-../..}
 
 retvalue=0
 gap="$GAPDIR/bin/gap.sh"
-if "${gap}" -A -b -c 'QUIT_GAP(GAPInfo.BytesPerVariable - 8);'; then
+if "${gap}" -A -b -c 'QuitGap(GAPInfo.BytesPerVariable - 8);'; then
     echo "Running 64-bit special tests"
     tocheck="*.g 64bit/*.g"
 else

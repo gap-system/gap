@@ -36,7 +36,7 @@ ls -l "$COVDIR" # for debugging
 $GAP -a 500M -m 500M -q <<GAPInput
 if LoadPackage("profiling") <> true then
     Print("ERROR: could not load profiling package");
-    FORCE_QUIT_GAP(1);
+    ForceQuitGap(1);
 fi;
 d := Directory("$COVDIR");;
 Print("Scanning for coverage data...\n");

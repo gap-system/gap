@@ -760,3 +760,12 @@ BindGlobal("STRING_LIST_DIR", function(dirname)
       return JoinStringsWithSeparator( list, "\000" );
     fi;
 end);
+
+
+#############################################################################
+##
+##
+##  Used in many packages, documented CamelCase versions introduced (04/2020)
+DeclareObsoleteSynonym("GAP_EXIT_CODE", "GapExitCode", 2);
+DeclareObsoleteSynonym("QUIT_GAP", "QuitGap", 2);
+DeclareObsoleteSynonym("FORCE_QUIT_GAP", "ForceQuitGap", 2);

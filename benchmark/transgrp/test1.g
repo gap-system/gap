@@ -12,7 +12,7 @@ l:=Length(MakeTransitiveGroups(12));
 Print("*** RUNTIME ",Runtime()-starttime,"\n");
 if l<>301 then
   Print("*** FAIL\n");
-  QUIT_GAP(1);
+  QuitGap(1);
 else
-  QUIT_GAP(0);
+  QuitGap(0);
 fi;

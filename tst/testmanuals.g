@@ -46,12 +46,12 @@ end;
 TestManualChapter := function(filename)
     local testResult;
     
-    GAP_EXIT_CODE(1);
+    GapExitCode(1);
     testResult := Test(filename, rec( width := 72,
 		        compareFunction := "uptowhitespace",
 		        reportDiff := ExamplesReportDiff ) );
     if not(testResult) then
-        QUIT_GAP(1);
+        QuitGap(1);
     fi;
-    QUIT_GAP(0);
+    QuitGap(0);
 end;

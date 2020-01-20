@@ -819,7 +819,7 @@ end);
 
 BindGlobal("CommandQUIT@", function(line)
   TERMINAL_CLOSE();
-  FORCE_QUIT_GAP();
+  ForceQuitGap();
 end);
 
 BindGlobal("InitializeCommands@", function()
@@ -1087,7 +1087,7 @@ BindGlobal("MULTI_SESSION", function()
   CompleteHandShake(ProgramShutdown@);
   PROGRAM_CLEAN_UP();
   TERMINAL_CLOSE();
-  QUIT_GAP();
+  QuitGap();
 end);
 
 BindGlobal("ConsoleUIRegisterCommand", function(name, func)

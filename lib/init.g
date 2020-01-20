@@ -61,7 +61,7 @@ Error := function( arg )
     od;
     Print("\n");
     if SHOULD_QUIT_ON_BREAK() then
-        FORCE_QUIT_GAP(1);
+        ForceQuitGap(1);
     fi;
     JUMP_TO_CATCH("early error");
 end;
@@ -73,7 +73,7 @@ ErrorInner := function(options, message)
     Print("Error before error-handling is initialized: ");
     Print(message);
     if SHOULD_QUIT_ON_BREAK() then
-        FORCE_QUIT_GAP(1);
+        ForceQuitGap(1);
     fi;
     JUMP_TO_CATCH("early error");
 end;

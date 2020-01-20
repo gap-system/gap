@@ -31,4 +31,4 @@ TestDirectory( dirs, rec(exitGAP := true) );
 
   
 # Should never get here
-FORCE_QUIT_GAP(1);
+ForceQuitGap(1);

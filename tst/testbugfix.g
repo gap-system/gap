@@ -17,4 +17,4 @@ TestDirectory( [ DirectoriesLibrary( "tst/testbugfix") ] ,
                rec(exitGAP := true, testOptions := rec( width := 80 ) ) );
 
 # Should never get here
-FORCE_QUIT_GAP(1);
+ForceQuitGap(1);
