@@ -986,14 +986,19 @@ or <C>brk></C> or <C>brk_<A>nn</A>></C> prompt.
 </ManSection>
 
 <ManSection>
-<Func Name="GapExitCode" Arg='ret'/>
+<Func Name="GapExitCode" Arg='[ret]'/>
 
 <Description>
-A <C>GapExitCode</C> sets the return value which will be used when
-&GAP; exits. This may be an integer, or a boolean (where
-<K>true</K> is interpreted as 0, and
-<K>false</K> is interpreted as 1.
+<Ref Func="GapExitCode"/> sets the exit value which is returned
+to the operating system (or parent process) when &GAP; exits.
+This may be an integer in the range [-128..127] (other values
+are reduced modulo 256), or a boolean. <K>true</K> corresponds
+to the return value 0, which by convention is treated as "success".
+<K>false</K> corresponds to the return value 1, which by convention
+is treated as "failure". The exit value is not changed if no argument
+is given.
 <P/>
+The <E>previous</E> exit code is returned.
 </Description>
 </ManSection>
 
@@ -1001,9 +1006,10 @@ A <C>GapExitCode</C> sets the return value which will be used when
 <Func Name="QuitGap" Arg='[ret]'/>
 
 <Description>
-A <C>QuitGap</C> acts similarly to the keyword <C>quit</C>. It exits
-&GAP; cleanly, calling any function installed using <C>InstallAtExit</C>.
-The optional argument will be passed to <C>GapExitCode</C>.
+<Ref Func="QuitGap"/> acts similarly to the keyword <C>QUIT</C>, except
+<C>QUIT</C> can not be called from a function. It exits
+&GAP; cleanly, calling any function installed using <Ref Func="InstallAtExit"/>.
+The optional argument <A>ret</A> will be passed to <Ref Func="GapExitCode"/>.
 <P/>
 </Description>
 </ManSection>
@@ -1012,10 +1018,11 @@ The optional argument will be passed to <C>GapExitCode</C>.
 <Func Name="ForceQuitGap" Arg='[ret]'/>
 
 <Description>
-A <C>ForceQuitGap</C> is similar to <C>QuitGap</C>, except it ignores any
-functions installed with <C>InstallAtExit</C>, or any other functions
-normally run at GAP exit, and exits GAP immediately.
-The optional argument will be passed to <C>GapExitCode</C>.
+<Ref Func="ForceQuitGap"/> is similar to <Ref Func="QuitGap"/>, except it ignores any
+functions installed with <Ref Func="InstallAtExit"/>, or any other functions
+normally run at GAP exit, such as flushing any partially outputted lines
+to both the screen and files, and exits GAP immediately.
+The optional argument <A>ret</A> will be passed to <Ref Func="GapExitCode"/>.
 <P/>
 </Description>
 </ManSection>
@@ -1027,7 +1034,7 @@ The optional argument will be passed to <C>GapExitCode</C>.
 
 <Description>
 Before actually terminating, &GAP; will call (with no arguments) all
-of the functions that have been installed using <C>InstallAtExit</C>. These
+of the functions that have been installed using <Ref Func="InstallAtExit"/>. These
 typically perform tasks such as cleaning up temporary files created
 during the session, and closing open files. If an error occurs during
 the execution of one of these functions, that function is simply
@@ -1434,4 +1441,3 @@ interpret.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-
