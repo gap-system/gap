@@ -109,7 +109,7 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
 end);
 
 InstallGlobalFunction(SubgroupByFittingFreeData,function(G,gens,imgs,ipcgs)
-local ffs,hom,U,rest,ker,r,p,l,i,depths;
+local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
 
   ffs:=FittingFreeLiftSetup(G);
   # get back to initial group -- dont induce of induce
@@ -204,10 +204,13 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths;
 
   # FittingFreeLiftSetup for U, if correct
   if Size(RadicalGroup(Image(rest,U)))=1 then
+    pcisom:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
+    pcisom:=GroupHomomorphismByImagesNC(U,SubgroupNC(Range(ffs.pcisom),pcisom),
+      ipcgs,pcisom);
     r:=rec(inducedfrom:=ffs,
           pcgs:=ipcgs,
           depths:=depths,
-          pcisom:=ffs.pcisom,
+          pcisom:=pcisom,
           radical:=ker,
           factorhom:=rest
           );
@@ -567,17 +570,12 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 	Add(stabrad,rep);
 #Print("increased ",stabrsubsz," by ",relo,"\n");
 	stabrsubsz:=stabrsubsz*relo;
-	#rep:=ImageElm(pcisom,rep);
-	#stabrsub:=ClosureGroup(stabrsub,rep);
-#if Size(stabrsub)<>stabrzubsz then Error("HUH10");fi;
 	subsz:=stabrsubsz;
 	ratio:=gpsz/subsz/Length(orb);
       fi;
 
     od;
     stabrad:=Reversed(stabrad);
-
-#if Length(orb)<>Length(Orbit(Group(pcgsimgs),orb[1],actfun)) then Error("HUH9");fi;
 
     subsz:=stabrsubsz;
     if  solvsz>subsz*Length(orb) then
