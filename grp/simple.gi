@@ -721,7 +721,7 @@ local a,l,pos,g,b;
   if a>=1316848669 then
     # 1316848669 is the first prime power whose L2 order is beyond the
     # simple2 list
-    Error("List of simple groups only available up to ",
+    Error("List of simple groups only available up to order",
       SIMPLE_GROUPS_ITERATOR_RANGE);
   fi;
   l:=SizeL2Q(a);
@@ -1276,4 +1276,3 @@ local H,d,id,hom,field,C,dom,orbs;
   return hom*RestrictedInverseGeneralMapping(d);
 
 end);
-
