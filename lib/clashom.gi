@@ -2474,7 +2474,7 @@ local r,	#radical
 	Info(InfoHomClass,3,"central step");
 	new:=LiftClassesEANonsolvCentral(G,mpcgs,i,hom,pcisom,solvtriv,fran);
       elif Length(fants)>0 and Order(i[1])=1 then
-	# special case for trivial representetive
+	# special case for trivial representative
 	new:=LiftClassesEATrivRep(G,mpcgs,i,fants,hom,pcisom,solvtriv);
 	if new=fail then
 	  new:=LiftClassesEANonsolvGeneral(G,mpcgs,i,hom,pcisom,solvtriv,fran);
