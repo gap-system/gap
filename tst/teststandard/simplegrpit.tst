@@ -49,6 +49,9 @@ Sz(8)
 PSU(3,4)
 gap> IsDoneIterator(it);
 true
+gap> it:=SimpleGroupsIterator(1053927211015007279,1053927211015007281);;
+gap> for g in it do Print(g,"\n"); od;
+PSL(3,179)
 
 #
 gap> STOP_TEST("simplegrpit.tst", 1);

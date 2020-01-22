@@ -703,16 +703,30 @@ local NextL2PrimePowerInt;
   fi;
 end);
 
+BindGlobal("LOADSIMPLE2",function()
+local a;
+  if not IsBound(SIMPLEGPSNONL2[248]) then
+    MakeReadWriteGlobal("SIMPLEGPSNONL2");
+    a:=ReadAsFunction(Filename(List(GAPInfo.RootPaths,Directory),
+      "grp/simple2.g"));
+    SIMPLEGPSNONL2:=Immutable(Concatenation(SIMPLEGPSNONL2,a()));
+    MakeReadOnlyGlobal("SIMPLEGPSNONL2");
+  fi;
+end);
+
 BindGlobal("NextIterator_SimGp",function(it)
 local a,l,pos,g,b;
   if it!.done then return fail;fi;
   a:=it!.b;
-  if a>1259903 then
-    # 1259903 is the last prime power whose L2 order is <10^18
-    Error("List of simple groups is only available up to order 10^18");
+  if a>=1316848669 then
+    # 1316848669 is the first prime power whose L2 order is beyond the
+    # simple2 list
+    Error("List of simple groups only available up to order",
+      SIMPLE_GROUPS_ITERATOR_RANGE);
   fi;
   l:=SizeL2Q(a);
   pos:=it!.pos;
+  if pos>=245  then LOADSIMPLE2(); fi;
   if l<SIMPLEGPSNONL2[pos][1] and not it!.nopsl2 then
     # next is a L2
     g:=SimpleGroup("L",2,a);
@@ -775,8 +789,8 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     stack:=a[3];
     a:=a[2];
   until SizeL2Q(b)>=start;
-  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start);
-
+  if start>=10^18 then LOADSIMPLE2(); fi;
+  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start); 
   return IteratorByFunctions(rec(
     IsDoneIterator:=IsDoneIterator_SimGp,
     NextIterator:=NextIterator_SimGp,
@@ -1165,7 +1179,7 @@ local a;
   if n<168 then return 5;fi; 
   a:=Filtered(SIMPLEGPSNONL2,x->x[1]=n);
   # we have degree data up to order 2^55
-  if n<=10^55 and Length(a)=0 then
+  if n<=2^55 and Length(a)=0 then
     # L2 case
     return 2*RootInt(n,3);
   elif Length(a)>0 and ForAll(a,x->Length(x)>4) then
@@ -1262,4 +1276,3 @@ local H,d,id,hom,field,C,dom,orbs;
   return hom*RestrictedInverseGeneralMapping(d);
 
 end);
-

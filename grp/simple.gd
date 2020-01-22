@@ -75,7 +75,7 @@ DeclareGlobalFunction("EpimorphismFromClassical");
 ##
 ##  <Description>
 ##  This function returns an iterator that will run over all nonabelian simple groups, starting
-##  at order <A>start</A> if specified, up to order <M>10^{18}</M> (or -- if specified
+##  at order <A>start</A> if specified, up to order <M>10^{27}</M> (or -- if specified
 ##  -- order <A>end</A>). If the option <A>NOPSL2</A> is given, groups of type
 ##  <M>PSL_2(q)</M> are omitted.
 ##  <Example><![CDATA[
@@ -95,7 +95,7 @@ DeclareGlobalFunction("EpimorphismFromClassical");
 ##  </ManSection>
 ##  <#/GAPDoc>
 DeclareGlobalFunction("SimpleGroupsIterator");
-
+BindGlobal("SIMPLE_GROUPS_ITERATOR_RANGE",10^27);
 
 #############################################################################
 ##

@@ -4285,8 +4285,9 @@ InstallGlobalFunction( SmallSimpleGroup,
 
     if order < 60 then return fail; fi;
 
-    if   order > 10^18
-    then Error("simple groups of order > 10^18 are currently\n",
+    if   order > SIMPLE_GROUPS_ITERATOR_RANGE then 
+      Error("simple groups of order > ",SIMPLE_GROUPS_ITERATOR_RANGE,
+                " are currently\n",
                "not available via this function.");
     fi;
 
@@ -4312,9 +4313,10 @@ InstallGlobalFunction( AllSmallNonabelianSimpleGroups,
 
     min:=Minimum(orders);
     max:=Maximum(orders);
-    if max>10^18 then 
-      Error("simple groups of order > 10^18 are currently\n",
-               "not available via this function.");
+    if max> SIMPLE_GROUPS_ITERATOR_RANGE then 
+      Error("simple groups of order > ",SIMPLE_GROUPS_ITERATOR_RANGE,
+        " are currently\n",
+        "not available via this function.");
     fi;
     it:=SimpleGroupsIterator(min,max);
     grps:=[];
