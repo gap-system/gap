@@ -877,7 +877,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
         // different type is something better to be avoided anyway. So instead
         // of supporting a feature nobody uses right now, we error out and
         // wait to see if somebody complains.
-        Panic("cannot change bag type to one requiring a 'free' callback");
+        ErrorQuit("cannot change bag type to one requiring a 'free' callback", 0, 0);
     }
     header->type = new_type;
 }
