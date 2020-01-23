@@ -709,6 +709,22 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     return YoungRef;
 }
 
+//
+// This function is called from GAP.jl to set the super type our custom Julia
+// types to GAP.GapObj
+//
+void GAP_register_GapObj(jl_datatype_t * gapobj_type)
+{
+    if (!gapobj_type || !jl_is_datatype(gapobj_type)) {
+        Panic("GAP_register_GapObj: GapObj is not a datatype");
+    }
+
+    // DO THE GREAT MAGIC HACK (yes we are bad citizens :/) and
+    // change the super type of ForeignGAP.MPtr to GapObj
+    datatype_mptr->super = gapobj_type;
+    jl_gc_wb(datatype_mptr, datatype_mptr->super);
+}
+
 void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 {
     // HOOK: initialization happens here.
@@ -728,10 +744,17 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     jl_gc_enable_conservative_gc_support();
     jl_init();
 
-    // Import GAPTypes module to have access to GapObj abstract type.
-    // Needs to be done before setting any GC states
+    Module = jl_new_module(jl_symbol("ForeignGAP"));
+    Module->parent = jl_main_module;
+
+    // If we were loaded from GAP.jl, then try to retrieve GapObj from it.
+    // We do this by extracting it from the relevant instances of the GAP.jl
+    // module, which we get from the global variable `__JULIAGAPMODULE` if
+    // present.
+    //
+    // Newer versions of GAP.jl do not need this mechanism and instead call
+    // GAP_register_GapObj.
     jl_module_t *   parent_module;
-    jl_module_t *   gaptypes_module;
     jl_datatype_t * gapobj_type;
 
     parent_module = (jl_module_t *)jl_get_global(
@@ -741,34 +764,19 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
             Panic("__JULIAGAPMODULE is set in julia main module, but does "
                   "not point to a module");
         }
-    }
-    else {
-        // GAP.jl is not yet loaded, i.e., this is a standalone GAP; so try to
-        // load GAPTypes.jl directly and into the main module
-        parent_module = jl_main_module;
-        jl_eval_string("import GAPTypes");
-        if (jl_exception_occurred()) {
-            Panic("could not import GAPTypes module into Julia");
+
+        // retrieve GapObj abstract julia type
+        gapobj_type =
+            (jl_datatype_t *)jl_get_global(parent_module, jl_symbol("GapObj"));
+        if (!gapobj_type) {
+            Panic("GapObj type is not bound in GAP module");
+        }
+        if (!jl_is_datatype(gapobj_type)) {
+            Panic("GapObj in the GAP module is not a datatype");
         }
     }
-
-    gaptypes_module =
-        (jl_module_t *)jl_get_global(parent_module, jl_symbol("GAPTypes"));
-    if (!gaptypes_module) {
-        Panic("GAPTypes.jl is not available");
-    }
-    if (!jl_is_module(gaptypes_module)) {
-        Panic("GAPTypes global does not point to a module");
-    }
-
-    // Get GapObj abstract julia type
-    gapobj_type =
-        (jl_datatype_t *)jl_get_global(gaptypes_module, jl_symbol("GapObj"));
-    if (!gapobj_type) {
-        Panic("GapObj type is not bound in GAPTypes module");
-    }
-    if (!jl_is_datatype(gapobj_type)) {
-        Panic("GapObj in the GAPTypes module is not a datatype");
+    else {
+        gapobj_type = 0;
     }
 
     JuliaTLS = jl_get_ptls_states();
@@ -780,20 +788,15 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     jl_gc_set_cb_post_gc(PostGCHook, 1);
     // jl_gc_enable(0); /// DEBUGGING
 
-    Module = jl_new_module(jl_symbol("ForeignGAP"));
-    Module->parent = jl_main_module;
-
-    // Import GapObj type into ForeignGAP module
-    jl_module_use(Module, gaptypes_module, jl_symbol("GapObj"));
 
     jl_set_const(jl_main_module, jl_symbol("ForeignGAP"),
                  (jl_value_t *)Module);
     datatype_mptr = jl_new_foreign_type(
         jl_symbol("MPtr"), Module, gapobj_type, MPtrMarkFunc, NULL, 1, 0);
-    datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, gapobj_type,
+    datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, 0,
                                        BagMarkFunc, JFinalizer, 1, 0);
     datatype_largebag =
-        jl_new_foreign_type(jl_symbol("LargeBag"), Module, gapobj_type,
+        jl_new_foreign_type(jl_symbol("LargeBag"), Module, 0,
                             BagMarkFunc, JFinalizer, 1, 1);
 
     // export datatypes to Julia level
