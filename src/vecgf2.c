@@ -4125,15 +4125,15 @@ static Int InitKernel(StructInitInfo * module)
     RNrelns = 0;
 
     // import type functions
-    ImportGVarFromLibrary("TYPE_LIST_GF2VEC", &TYPE_LIST_GF2VEC);
-    ImportGVarFromLibrary("TYPE_LIST_GF2VEC_IMM", &TYPE_LIST_GF2VEC_IMM);
-    ImportGVarFromLibrary("TYPE_LIST_GF2VEC_IMM_LOCKED",
+    InitCopyGVar("TYPE_LIST_GF2VEC", &TYPE_LIST_GF2VEC);
+    InitCopyGVar("TYPE_LIST_GF2VEC_IMM", &TYPE_LIST_GF2VEC_IMM);
+    InitCopyGVar("TYPE_LIST_GF2VEC_IMM_LOCKED",
                           &TYPE_LIST_GF2VEC_IMM_LOCKED);
-    ImportGVarFromLibrary("TYPE_LIST_GF2VEC_LOCKED",
+    InitCopyGVar("TYPE_LIST_GF2VEC_LOCKED",
                           &TYPE_LIST_GF2VEC_LOCKED);
     ImportFuncFromLibrary("IsGF2VectorRep", &IsGF2VectorRep);
-    ImportGVarFromLibrary("TYPE_LIST_GF2MAT", &TYPE_LIST_GF2MAT);
-    ImportGVarFromLibrary("TYPE_LIST_GF2MAT_IMM", &TYPE_LIST_GF2MAT_IMM);
+    InitCopyGVar("TYPE_LIST_GF2MAT", &TYPE_LIST_GF2MAT);
+    InitCopyGVar("TYPE_LIST_GF2MAT_IMM", &TYPE_LIST_GF2MAT_IMM);
 
     // initialize one and zero of GF2
     ImportGVarFromLibrary("GF2One", &GF2One);

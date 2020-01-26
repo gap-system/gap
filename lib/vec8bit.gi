@@ -13,11 +13,11 @@
 
 #############################################################################
 ##
-#V  `TYPES_VEC8BIT . . . . . . . . prepared types for compressed GF(q) vectors
+#v  TYPES_VEC8BIT . . . . . . . . prepared types for compressed GF(q) vectors
 ##
 ##  A length 4 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
 ##  of mutable vectors over GF(q), TYPES_VEC8BIT[2][q] is the type of 
-##  immutable vectors and TYPES_VEC8BIT[3][q] the type of locked vectors
+##  immutable vectors. TYPES_VEc8BIT[3][q] is the type of locked vectors.
 ##  The 257th position is bound to 1 to stop the lists
 ##  shrinking.
 ##
@@ -25,7 +25,7 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_VEC8BIT , [[],[], [], []]);
+BindGlobal("TYPES_VEC8BIT" , [[],[], [], []]);
 TYPES_VEC8BIT[1][257] := 1;
 TYPES_VEC8BIT[2][257] := 1;
 TYPES_VEC8BIT[3][257] := 1;
@@ -73,14 +73,13 @@ end);
 
 #############################################################################
 ##
-#V  TYPE_FIELDINFO_8BIT type of the fieldinfo bags
+#V  TYPE_FIELDINFO_8BIT . . . . . . . . . . . . .  type of the fieldinfo bags
 ##
 ##  These bags are created by the kernel and accessed by the kernel. The type
 ##  doesn't really say anything, because there are no applicable operations.
 ##
 
-InstallValue( TYPE_FIELDINFO_8BIT, TYPE_KERNEL_OBJECT);
-
+BindGlobal( "TYPE_FIELDINFO_8BIT", TYPE_KERNEL_OBJECT);
 
 #############################################################################
 ##

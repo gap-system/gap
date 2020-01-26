@@ -2868,6 +2868,11 @@ local res;
   Error( "iterator is exhausted" );
 end);
 
+# data types for low index memory blocks
+BindGlobal("TYPE_LOWINDEX_DATA",
+  NewType(NewFamily("LowIndexDataFamily",IsObject),
+    IsObject and IsDataObjectRep));
+
 BindGlobal("IsDoneIter_LowIndSubs",function(iter)
 local data, G, N, ts, rels, m, mm, stack1, stack2, mu, nu, s, t, n, i, sj,
 j, ok, b,k,tr;

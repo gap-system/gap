@@ -20,19 +20,6 @@ DeclareRepresentation( "Is8BitMatrixRep",
         IsPositionalObjectRep and IsRowListMatrix,[],
         IsMatrix );
 
-#############################################################################
-##
-#v  TYPES_MAT8BIT . . . . . . . . prepared types for compressed GF(q) vectors
-##
-##  A length 2 list of length 257 lists. TYPES_MAT8BIT[1][q] will be the type
-##  of mutable vectors over GF(q), TYPES_MAT8BIT[2][q] is the type of 
-##  immutable vectors. The 257th position is bound to 1 to stop the lists
-##  shrinking.
-##
-##  It is accessed directly by the kernel, so the format cannot be changed
-##  without changing the kernel.
-##
-DeclareGlobalVariable( "TYPES_MAT8BIT" );
 
 #############################################################################
 ##

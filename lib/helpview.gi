@@ -56,7 +56,6 @@ DeclareUserPreference( rec(
     end,
   ) );
 
-InstallValue(HELP_VIEWER_INFO, rec());
 
 # text on screen
 HELP_VIEWER_INFO.screen := rec(

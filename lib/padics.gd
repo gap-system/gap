@@ -247,7 +247,7 @@ DeclareOperation( "ShiftedPadicNumber", [ IsPadicNumber, IsInt ] );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PurePadicNumberFamily" );
-DeclareGlobalVariable( "PADICS_FAMILIES");
+
 
 #############################################################################
 ##

@@ -20,7 +20,6 @@ DeclareGlobalFunction("SIMPLE_STRING");
 DeclareGlobalVariable("HELP_KNOWN_BOOKS");
 DeclareGlobalFunction("HELP_ADD_BOOK");
 DeclareGlobalFunction("HELP_REMOVE_BOOK");
-DeclareGlobalVariable("HELP_BOOK_HANDLER");
 DeclareGlobalVariable("HELP_BOOKS_INFO");
 DeclareGlobalFunction("HELP_BOOK_INFO");
 DeclareGlobalFunction("HELP_SHOW_BOOKS");
@@ -36,8 +35,6 @@ DeclareGlobalFunction("HELP_GET_MATCHES");
 DeclareGlobalFunction("HELP_SHOW_MATCHES");
 DeclareGlobalFunction("HELP_SHOW_FROM_LAST_TOPICS");
 DeclareGlobalFunction("HELP_LAB_FILE");
-DeclareGlobalVariable("HELP_BOOK_RING");
-DeclareGlobalVariable("HELP_TOPIC_RING");
 DeclareGlobalVariable("HELP_LAST");
 DeclareGlobalFunction("HELP");
 

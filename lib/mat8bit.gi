@@ -16,22 +16,22 @@
 
 #############################################################################
 ##
-#V  TYPES_MAT8BIT . . . . . . . prepared types for compressed GF(q) matrices
+#V  TYPES_MAT8BIT . . . . . . . . prepared types for compressed GF(q) vectors
 ##
-##  A length 2 list of length 257 lists. TYPES_MAT8BIT[0][q] will be the type
-##  of mutable matrices over GF(q), TYPES_MAT8BIT[1][q] is the type of 
-##  immutable matrices. The 257th position is bound to 1 to stop the lists
+##  A length 2 list of length 257 lists. TYPES_MAT8BIT[1][q] will be the type
+##  of mutable vectors over GF(q), TYPES_MAT8BIT[2][q] is the type of 
+##  immutable vectors. The 257th position is bound to 1 to stop the lists
 ##  shrinking.
 ##
-##  It may later accessed directly by the kernel, so the format cannot be changed
+##  It is accessed directly by the kernel, so the format cannot be changed
 ##  without changing the kernel.
 ##
 
 if IsHPCGAP then
-    InstallValue(TYPES_MAT8BIT, [ FixedAtomicList(256), FixedAtomicList(256) ]);
+    BindGlobal("TYPES_MAT8BIT", [ FixedAtomicList(256), FixedAtomicList(256) ]);
     MakeReadOnlyObj(TYPES_MAT8BIT);
 else
-    InstallValue(TYPES_MAT8BIT, [[],[]]);
+    BindGlobal("TYPES_MAT8BIT", [[],[]]);
     TYPES_MAT8BIT[1][257] := 1;
     TYPES_MAT8BIT[2][257] := 1;
 fi;

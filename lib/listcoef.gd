@@ -697,7 +697,3 @@ DeclareOperation("CosetLeadersMatFFE",[IsMatrix,IsFFECollection]);
 DeclareOperation("AddToListEntries", [ IsList and
         IsExtAElementCollection and IsMutable, IsList
         and IsCyclotomicCollection, IsExtAElement ] );
-
-# data types for low index memory blocks. Created here to avoid having to
-# read the fp group stuff early
-DeclareGlobalVariable("TYPE_LOWINDEX_DATA");

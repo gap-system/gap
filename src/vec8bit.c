@@ -5827,11 +5827,11 @@ static Int InitKernel(StructInitInfo * module)
     // import type functions
     ImportFuncFromLibrary("TYPE_VEC8BIT", &TYPE_VEC8BIT);
     ImportFuncFromLibrary("TYPE_VEC8BIT_LOCKED", &TYPE_VEC8BIT_LOCKED);
-    ImportGVarFromLibrary("TYPES_VEC8BIT", &TYPES_VEC8BIT);
+    InitCopyGVar("TYPES_VEC8BIT", &TYPES_VEC8BIT);
     ImportFuncFromLibrary("TYPE_MAT8BIT", &TYPE_MAT8BIT);
-    ImportGVarFromLibrary("TYPES_MAT8BIT", &TYPES_MAT8BIT);
+    InitCopyGVar("TYPES_MAT8BIT", &TYPES_MAT8BIT);
     ImportFuncFromLibrary("Is8BitVectorRep", &IsVec8bitRep);
-    ImportGVarFromLibrary("TYPE_FIELDINFO_8BIT", &TYPE_FIELDINFO_8BIT);
+    InitCopyGVar("TYPE_FIELDINFO_8BIT", &TYPE_FIELDINFO_8BIT);
 
     // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);

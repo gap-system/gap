@@ -30,20 +30,6 @@ DeclareRepresentation( "Is8BitVectorRep",
         IsDataObjectRep and IsVectorObj,[],
         IsRowVector and IsSmallList );
 
-#############################################################################
-##
-#v  TYPES_VEC8BIT . . . . . . . . prepared types for compressed GF(q) vectors
-##
-##  A length 4 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
-##  of mutable vectors over GF(q), TYPES_VEC8BIT[2][q] is the type of 
-##  immutable vectors. TYPES_VEc8BIT[3][q] is the type of locked vectors.
-##  The 257th position is bound to 1 to stop the lists
-##  shrinking.
-##
-##  It is accessed directly by the kernel, so the format cannot be changed
-##  without changing the kernel.
-##
-DeclareGlobalVariable( "TYPES_VEC8BIT" );
 
 #############################################################################
 ##
@@ -54,14 +40,6 @@ DeclareGlobalVariable( "TYPES_VEC8BIT" );
 DeclareGlobalFunction( "TYPE_VEC8BIT" );
 DeclareGlobalFunction( "TYPE_VEC8BIT_LOCKED" );
 
-#############################################################################
-##
-#V  TYPE_FIELDINFO_8BIT . . . . . . . . . . . . .  type of the fieldinfo bags
-##
-##  These bags are created by the kernel and accessed by the kernel. The type
-##  doesn't really say anything, because there are no applicable operations.
-##
-DeclareGlobalVariable( "TYPE_FIELDINFO_8BIT" );
 
 #############################################################################
 ##

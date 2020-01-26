@@ -43,71 +43,6 @@ DeclareRepresentation(
     IsDataObjectRep and IsVectorObj, [],
     IsRowVector );
 
-
-#############################################################################
-##
-#V  TYPE_LIST_GF2VEC  . . . . . . . . . . . . . . type of mutable GF2 vectors
-##
-##  <ManSection>
-##  <Var Name="TYPE_LIST_GF2VEC"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable(
-    "TYPE_LIST_GF2VEC",
-    "type of a packed GF2 vector" );
-
-
-#############################################################################
-##
-#V  TYPE_LIST_GF2VEC_IMM  . . . . . . . . . . . type of immutable GF2 vectors
-##
-##  <ManSection>
-##  <Var Name="TYPE_LIST_GF2VEC_IMM"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable(
-    "TYPE_LIST_GF2VEC_IMM",
-    "type of a packed, immutable GF2 vector" );
-
-
-#############################################################################
-##
-#V  TYPE_LIST_GF2VEC_IMM_LOCKED . . . . . . . . type of immutable GF2 vectors
-##
-##  <ManSection>
-##  <Var Name="TYPE_LIST_GF2VEC_IMM_LOCKED"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable(
-    "TYPE_LIST_GF2VEC_IMM_LOCKED",
-    "type of a packed, immutable GF2 vector with representation lock" );
-
-
-#############################################################################
-##
-#V  TYPE_LIST_GF2VEC_LOCKED . . . . . . . . type of mutable GF2 vectors
-##
-##  <ManSection>
-##  <Var Name="TYPE_LIST_GF2VEC_LOCKED"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable(
-    "TYPE_LIST_GF2VEC_LOCKED",
-    "type of a packed, mutable GF2 vector with representation lock" );
-
-
 #############################################################################
 ##
 #F  ConvertToGF2VectorRep( <vector> ) . . . . . . . .  convert representation
@@ -302,39 +237,6 @@ InstallTrueMethod( IsSmallList, IsList and IsGF2VectorRep );
 InstallTrueMethod( IsOrdinaryMatrix, IsMatrix and IsGF2MatrixRep );
 InstallTrueMethod( IsConstantTimeAccessList, IsList and IsGF2MatrixRep );
 InstallTrueMethod( IsSmallList, IsList and IsGF2MatrixRep );
-
-
-#############################################################################
-##
-#V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . .  type of mutable GF2 matrices
-##
-##  <ManSection>
-##  <Var Name="TYPE_LIST_GF2MAT"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable(
-    "TYPE_LIST_GF2MAT",
-    "type of a packed GF2 matrix" );
-
-
-#############################################################################
-##
-#V  TYPE_LIST_GF2MAT_IMM  . . . . . . . . . .  type of immutable GF2 matrices
-##
-##  <ManSection>
-##  <Var Name="TYPE_LIST_GF2MAT_IMM"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable(
-    "TYPE_LIST_GF2MAT_IMM",
-    "type of a packed, immutable GF2 matrix" );
-
 
 
 #############################################################################

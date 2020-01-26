@@ -596,7 +596,7 @@ end);
 ##  The `default' handler functions will be assigned helpdef.g, see there for
 ##  more details on the interfaces of each of these functions.
 ##  
-InstallValue(HELP_BOOK_HANDLER, rec(default:=rec()));
+BindGlobal("HELP_BOOK_HANDLER", rec(default:=rec()));
 if IsHPCGAP then
   LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
 fi;
@@ -1162,12 +1162,12 @@ end);
 # here we store the last 16 requests 
 HELP_RING_IDX :=  0;
 HELP_RING_SIZE := 16;
-InstallValue(HELP_BOOK_RING, ListWithIdenticalEntries( HELP_RING_SIZE, 
+BindGlobal("HELP_BOOK_RING", ListWithIdenticalEntries( HELP_RING_SIZE, 
                                              ["tutorial"] ));
 if IsHPCGAP then
   LockAndMigrateObj(HELP_BOOK_RING,HELP_REGION);
 fi;
-InstallValue(HELP_TOPIC_RING, ListWithIdenticalEntries( HELP_RING_SIZE, 
+BindGlobal("HELP_TOPIC_RING", ListWithIdenticalEntries( HELP_RING_SIZE, 
                                              "welcome to gap" ));
 if IsHPCGAP then
   LockAndMigrateObj(HELP_TOPIC_RING,HELP_REGION);

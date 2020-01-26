@@ -14,6 +14,7 @@
 
 #include "bool.h"
 #include "error.h"
+#include "gvars.h"
 #include "integer.h"
 #include "io.h"
 #include "lists.h"
@@ -2323,8 +2324,8 @@ static Int InitKernel (
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* import kind (and unkind) functions */
-    ImportGVarFromLibrary( "TYPE_LOWINDEX_DATA",&TYPE_LOWINDEX_DATA     );
+    // import type object
+    InitCopyGVar("TYPE_LOWINDEX_DATA", &TYPE_LOWINDEX_DATA);
 
     /* static variables                                                    */
     InitGlobalBag( &objRel      , "src/costab.c:objRel"       );
