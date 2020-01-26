@@ -25,7 +25,7 @@
 ##  without changing the kernel.
 ##
 
-InstallValue(TYPES_VEC8BIT, 
+BindGlobal("TYPES_VEC8BIT", 
   [ MakeWriteOnceAtomic([]), 
     MakeWriteOnceAtomic([]), 
     MakeWriteOnceAtomic([]), 
@@ -84,14 +84,13 @@ end);
 
 #############################################################################
 ##
-#V  TYPE_FIELDINFO_8BIT type of the fieldinfo bags
+#V  TYPE_FIELDINFO_8BIT . . . . . . . . . . . . .  type of the fieldinfo bags
 ##
 ##  These bags are created by the kernel and accessed by the kernel. The type
 ##  doesn't really say anything, because there are no applicable operations.
 ##
 
-InstallValue( TYPE_FIELDINFO_8BIT, TYPE_KERNEL_OBJECT);
-
+BindGlobal( "TYPE_FIELDINFO_8BIT", TYPE_KERNEL_OBJECT);
 
 #############################################################################
 ##

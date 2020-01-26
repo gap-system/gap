@@ -71,12 +71,6 @@
 
 
 ##  Section 1
-DeclareGlobalVariable("CompositeSPP2",
-  "Composite <10^7 that are strong psp base 2 and have no factor <1000");
-DeclareGlobalVariable("CCANT_1_7_3_q11");
-DeclareGlobalVariable("CCANT_1_7_3_q63");
-DeclareGlobalVariable("CCANT_1_7_3_q64");
-DeclareGlobalVariable("CCANT_1_7_3_q65");
 
 #############################################################################
 ##

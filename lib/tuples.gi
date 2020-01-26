@@ -14,8 +14,18 @@
 
 #############################################################################
 ##
-#V  DIRECT_PRODUCT_ELEMENT_FAMILIES . . . list of all direct product elements
-#V                                                                   families
+#V  DIRECT_PRODUCT_ELEMENT_FAMILIES . . . all direct product element families
+#V                                                             so far created
+##
+##  <ManSection>
+##  <Var Name="DIRECT_PRODUCT_ELEMENT_FAMILIES"/>
+##
+##  <Description>
+##  <Ref Var="DIRECT_PRODUCT_ELEMENT_FAMILIES"/> is a list whose <M>i</M>-th
+##  component is a weak pointer object containing all currently known
+##  families of <M>i+1</M> component direct product elements.
+##  </Description>
+##  </ManSection>
 ##
 EmptyDirectProductElementsFamily!.defaultTupleType:= NewType(
     EmptyDirectProductElementsFamily, IsDefaultDirectProductElementRep );
@@ -23,7 +33,7 @@ EmptyDirectProductElementsFamily!.defaultTupleType:= NewType(
 SetComponentsOfDirectProductElementsFamily( EmptyDirectProductElementsFamily,
     [] );
 
-InstallValue( DIRECT_PRODUCT_ELEMENT_FAMILIES,
+BindGlobal( "DIRECT_PRODUCT_ELEMENT_FAMILIES",
     [ [ EmptyDirectProductElementsFamily ] ] );
 
 

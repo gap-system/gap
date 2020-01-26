@@ -91,7 +91,7 @@
 ##
 ##############################################################################
 
-InstallValue(CompositeSPP2,
+BindGlobal("CompositeSPP2",
   [ 1194649, 1678541, 2284453, 2304167, 3090091, 3125281,
   3375041, 3400013, 3898129, 4181921, 4360621, 4469471,
   4513841, 4863127, 5044033, 5173169, 5489641, 5919187,
@@ -124,10 +124,10 @@ fi;
 ##  because of the initial residue tests.
 ##
 ##############################################################################
-InstallValue(CCANT_1_7_3_q11,List([1..11],i->0));
-InstallValue(CCANT_1_7_3_q63,List([1..63],i->0));
-InstallValue(CCANT_1_7_3_q64,List([1..64],i->0));
-InstallValue(CCANT_1_7_3_q65,List([1..65],i->0));
+BindGlobal("CCANT_1_7_3_q11",List([1..11],i->0));
+BindGlobal("CCANT_1_7_3_q63",List([1..63],i->0));
+BindGlobal("CCANT_1_7_3_q64",List([1..64],i->0));
+BindGlobal("CCANT_1_7_3_q65",List([1..65],i->0));
 
 Perform([0..32], function(t)
     CCANT_1_7_3_q11[(t^2 mod 11)+1]:=1;

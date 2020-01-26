@@ -24,7 +24,7 @@ DeclareFilter( "IsLockedRepresentationVector" );
 ##
 #V  TYPE_LIST_GF2VEC  . . . . . . . . . . . . . . type of mutable GF2 vectors
 ##
-InstallValue( TYPE_LIST_GF2VEC,
+BindGlobal( "TYPE_LIST_GF2VEC",
   NewType( CollectionsFamily( FFEFamily(2) ),
            IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject
            and IsMutable and IsCopyable and IsGF2VectorRep )
@@ -35,7 +35,7 @@ InstallValue( TYPE_LIST_GF2VEC,
 ##
 #V  TYPE_LIST_GF2VEC_IMM  . . . . . . . . . . . type of immutable GF2 vectors
 ##
-InstallValue( TYPE_LIST_GF2VEC_IMM,
+BindGlobal( "TYPE_LIST_GF2VEC_IMM",
   NewType( CollectionsFamily( FFEFamily(2) ),
           IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
            and IsCopyable and IsGF2VectorRep )
@@ -46,7 +46,7 @@ InstallValue( TYPE_LIST_GF2VEC_IMM,
 ##
 #V  TYPE_LIST_GF2VEC_IMM_LOCKED  . . . . type of immutable locked GF2 vectors
 ##
-InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
+BindGlobal( "TYPE_LIST_GF2VEC_IMM_LOCKED",
   NewType( CollectionsFamily( FFEFamily(2) ),
           IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
@@ -57,7 +57,7 @@ InstallValue( TYPE_LIST_GF2VEC_IMM_LOCKED,
 ##
 #V  TYPE_LIST_GF2VEC_LOCKED  . . . . type of mutable locked GF2 vectors
 ##
-InstallValue( TYPE_LIST_GF2VEC_LOCKED,
+BindGlobal( "TYPE_LIST_GF2VEC_LOCKED",
   NewType( CollectionsFamily( FFEFamily(2) ),
           IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
            and IsCopyable and IsGF2VectorRep and
@@ -69,7 +69,7 @@ InstallValue( TYPE_LIST_GF2VEC_LOCKED,
 ##
 #V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . .  type of mutable GF2 matrices
 ##
-InstallValue( TYPE_LIST_GF2MAT,
+BindGlobal( "TYPE_LIST_GF2MAT",
   NewType( CollectionsFamily(CollectionsFamily(FFEFamily(2))),
            IsMatrix and IsListDefault and IsSmallList and
           IsFFECollColl and IsNoImmediateMethodsObject
@@ -82,7 +82,7 @@ InstallValue( TYPE_LIST_GF2MAT,
 ##
 #V  TYPE_LIST_GF2MAT_IMM  . . . . . . . . . .  type of immutable GF2 matrices
 ##
-InstallValue( TYPE_LIST_GF2MAT_IMM,
+BindGlobal( "TYPE_LIST_GF2MAT_IMM",
   NewType( CollectionsFamily(CollectionsFamily(FFEFamily(2))),
           IsMatrix and IsListDefault and IsCopyable and IsGF2MatrixRep
           and IsNoImmediateMethodsObject 

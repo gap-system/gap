@@ -31,6 +31,14 @@ BindGlobal("STBBCKT_STRING_SUBORBITS2",MakeImmutable("Suborbits2"));
 BindGlobal("STBBCKT_STRING_SUBORBITS3",MakeImmutable("Suborbits3"));
 BindGlobal("STBBCKT_STRING_TWOCLOSURE",MakeImmutable("TwoClosure"));
 
+
+#############################################################################
+##
+#V  Refinements . . . . . . . . . . . . . . .  record of refinement processes
+##
+BindGlobal( "Refinements", AtomicRecord() );
+
+
 #############################################################################
 ##
 #F  IsSlicedPerm( <perm> )  . . . . . . . . . . . . . . . sliced permutations
@@ -1546,12 +1554,6 @@ InstallGlobalFunction( PartitionBacktrack,
     fi;
 end );
     
-#############################################################################
-##
-#V  Refinements . . . . . . . . . . . . . . .  record of refinement processes
-##
-InstallValue( Refinements, AtomicRecord() );
-
 #############################################################################
 ##
 #F  Refinements.ProcessFixpoint( <pnt>, <cellnum> )  . . .  process a fixpoint

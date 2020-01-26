@@ -34,7 +34,7 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-DeclareGlobalVariable("HELP_VIEWER_INFO");
+BindGlobal("HELP_VIEWER_INFO", rec());
 
 DeclareGlobalFunction("FindWindowId");
 DeclareGlobalFunction("SetHelpViewer");

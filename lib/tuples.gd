@@ -143,26 +143,6 @@ BindGlobal( "EmptyDirectProductElementsFamily",
 
 #############################################################################
 ##
-#V  DIRECT_PRODUCT_ELEMENT_FAMILIES . . . all direct product element families
-#V                                                             so far created
-##
-##  <ManSection>
-##  <Var Name="DIRECT_PRODUCT_ELEMENT_FAMILIES"/>
-##
-##  <Description>
-##  <Ref Var="DIRECT_PRODUCT_ELEMENT_FAMILIES"/> is a list whose <M>i</M>-th
-##  component is a weak pointer object containing all currently known
-##  families of <M>i+1</M> component direct product elements.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalVariable( "DIRECT_PRODUCT_ELEMENT_FAMILIES",
-    "list, at position i the list of known i+1 component \
-direct product elements families" );
-
-
-#############################################################################
-##
 #O  DirectProductElement( [<fam>, ]<objlist> )
 #O  DirectProductElementNC( <fam>, <objlist> )  . . . . omits check on object
 #O                                                families and objlist length

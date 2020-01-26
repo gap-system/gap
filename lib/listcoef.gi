@@ -1569,10 +1569,3 @@ InstallMethod( AddToListEntries, "fast kernel method", true,
         [IsList and IsPlistRep and IsMutable and IsCyclotomicCollection,
          IsRange and IsRangeRep, IsInt], 0, 
         ADD_TO_LIST_ENTRIES_PLIST_RANGE);
-
-
-# data types for low index memory blocks. Created here to avoid having to
-# read the fp group stuff early
-InstallValue(TYPE_LOWINDEX_DATA,
-  NewType(NewFamily("LowIndexDataFamily",IsObject),
-    IsObject and IsDataObjectRep));

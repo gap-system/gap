@@ -369,7 +369,7 @@ end );
 ##  p-adic numbers see "PadicNumber" below.
 ##
 
-InstallValue(PADICS_FAMILIES,[]);
+BindGlobal("PADICS_FAMILIES", []);
 
 
 InstallGlobalFunction( PurePadicNumberFamily, function( p, precision )

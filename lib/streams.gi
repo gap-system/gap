@@ -1676,33 +1676,82 @@ end);
 
 #############################################################################
 ##
-
 #F  # # # # # # # # # # # # # CharReadHookFunc  # # # # # # # # # # # # # # #
 ##
 
 
-
+#############################################################################
+##
+#V  OnCharReadHookInFuncs . . . . . . . installed handler functions for input
+##
+##  'OnCharReadHookInFuncs' contains a list of functions that are installed as
+##  reading handlers for streams.
+BindGlobal( "OnCharReadHookInFuncs", [] );
 
 #############################################################################
 ##
-#V  OnCharReadHookInFuncs
-#V  OnCharReadHookInFds
-#V  OnCharReadHookInStreams
-#V  OnCharReadHookOutFuncs
-#V  OnCharReadHookOutFds
-#V  OnCharReadHookOutStreams
-#V  OnCharReadHookExcFuncs
-#V  OnCharReadHookExcFds
-#V  OnCharReadHookExcStreams
-InstallValue( OnCharReadHookInFuncs, []);
-InstallValue( OnCharReadHookInFds, []);
-InstallValue( OnCharReadHookInStreams, []);
-InstallValue( OnCharReadHookOutFuncs, []);
-InstallValue( OnCharReadHookOutFds, []);
-InstallValue( OnCharReadHookOutStreams, []);
-InstallValue( OnCharReadHookExcFuncs, []);
-InstallValue( OnCharReadHookExcFds, []);
-InstallValue( OnCharReadHookExcStreams, []);
+#V  OnCharReadHookInFds . . . . . . . . file descriptors for reading handlers
+##
+##  'OnCharReadHookInFds' contains a list of file descriptors of streams for
+##  which reading handlers are installed.
+BindGlobal( "OnCharReadHookInFds", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookInStreams . . . . . . . . . . streams with reading handlers
+##
+##  'OnCharReadHookInStreams' contains a list of streams for which reading
+##  handlers are installed.
+BindGlobal( "OnCharReadHookInStreams", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookOutFuncs . . . . . . installed handler functions for output
+##
+##  'OnCharReadHookOutFuncs' contains a list of functions that are installed
+##  as reading handlers for streams.
+BindGlobal( "OnCharReadHookOutFuncs", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookOutFds . . . . . . .  file descriptors for writing handlers
+##
+##  'OnCharReadHookOutFds' contains a list of file descriptors of streams for
+##  which writing handlers are installed.
+BindGlobal( "OnCharReadHookOutFds", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookOutStreams . . . . . . . . . . streams with writing handlers
+##
+##  'OnCharReadHookOutStreams' contains a list of streams for which writing
+##  handlers are installed.
+BindGlobal( "OnCharReadHookOutStreams", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookExcFuncs . . . . installed handler functions for exceptions
+##
+##  'OnCharReadHookExcFuncs' contains a list of functions that are installed
+##  as exception handlers for streams.
+BindGlobal( "OnCharReadHookExcFuncs", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookExcFds  . . . . . . file descriptors for exception handlers
+##
+##  'OnCharReadHookExcFds' contains a list of file descriptors of streams for
+##  which exception handlers are installed.
+BindGlobal( "OnCharReadHookExcFds", [] );
+
+#############################################################################
+##
+#V  OnCharReadHookExcStreams . . . . . . . .  streams with exception handlers
+##
+##  'OnCharReadHookExcStreams' contains a list of streams for which exception
+##  handlers are installed.
+BindGlobal( "OnCharReadHookExcStreams", [] );
+
 
 # Just to avoid warnings:
 OnCharReadHookActive := false;

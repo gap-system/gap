@@ -66,8 +66,6 @@ DeclareGlobalFunction("Refinements_Suborbits3");
 DeclareGlobalFunction("Refinements_TwoClosure");
 
 
-DeclareGlobalVariable( "Refinements" );
-
 DeclareGlobalFunction( "NextLevelRegularGroups" );
 DeclareGlobalFunction( "RBaseGroupsBloxPermGroup" );
 DeclareGlobalFunction( "RepOpSetsPermGroup" );
