@@ -204,8 +204,7 @@ static Int VectorWord(Obj vv, Obj v, Int num)
     /* fix the length                                                      */
     if ( SIZE_OBJ(vv) != num*sizeof(Int)+sizeof(Obj)+1 ) {
         ResizeBag( vv, num*sizeof(Int)+sizeof(Obj)+1 );
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vv)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vv) + 1, 0, sizeof(Int) * num);
     }
 
     /* if <v> is zero, return                                              */
@@ -1264,10 +1263,8 @@ static Obj ReducedComm(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the returned object         */
     Int                 num;        /* number of gen/exp pairs in <data>   */
-    Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
     Obj                 vc2;        /* collect vector                      */
-    Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <u>*<w> to                           */
     vcw = CollectorsState()->SC_CW_VECTOR;
@@ -1275,15 +1272,13 @@ static Obj ReducedComm(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vcw, u, num ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
     /* collect <w> into it                                                 */
     if ( fc->collectWord( sc, vcw, w ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return ReducedComm( fc, sc, w, u );
     }
 
@@ -1292,29 +1287,23 @@ static Obj ReducedComm(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vc2, w, num ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vc2)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
     /* collect <u> into it                                                 */
     if ( fc->collectWord( sc, vc2, u ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vc2)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
         return ReducedComm( fc, sc, w, u );
     }
 
     /* now use 'Solution' to solve the equation, will clear <vcw>          */
     if ( fc->solution( sc, vcw, vc2, fc->collectWord ) == -1 )
     {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vc2)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
         return ReducedComm( fc, sc, w, u );
     }
 
@@ -1334,7 +1323,6 @@ static Obj ReducedForm(FinPowConjCol * fc, Obj sc, Obj w)
     Int                 i;      /* loop variable for gen/exp pairs         */
     Obj                 vcw;    /* collect vector                          */
     Obj                 type;   /* type of the return objue                */
-    Int *               qtr;    /* pointer into the collect vector         */
 
     /* use 'cwVector' to collect word <w> to                               */
     vcw = CollectorsState()->SC_CW_VECTOR;
@@ -1346,8 +1334,7 @@ static Obj ReducedForm(FinPowConjCol * fc, Obj sc, Obj w)
 
     /* and collect <w> into it                                             */
     while ( (i = fc->collectWord( sc, vcw, w )) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
     }
     num = i;
 
@@ -1367,10 +1354,8 @@ static Obj ReducedLeftQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
-    Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
     Obj                 vc2;        /* collect vector                      */
-    Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
     vcw = CollectorsState()->SC_CW_VECTOR;
@@ -1378,8 +1363,7 @@ static Obj ReducedLeftQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
@@ -1388,20 +1372,16 @@ static Obj ReducedLeftQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vc2, u, num ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vc2)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
     /* now use 'Solution' to solve the equation, will clear <vcw>          */
     if ( fc->solution( sc, vcw, vc2, fc->collectWord ) == -1 )
     {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vc2)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
         return ReducedLeftQuotient( fc, sc, w, u );
     }
 
@@ -1419,9 +1399,7 @@ static Obj ReducedProduct(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
-    Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
-    Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
     vcw = CollectorsState()->SC_CW_VECTOR;
@@ -1429,15 +1407,13 @@ static Obj ReducedProduct(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
     /* collect <w> into it                                                 */
     if ( fc->collectWord( sc, vcw, u ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return ReducedProduct( fc, sc, w, u );
     }
 
@@ -1459,7 +1435,6 @@ static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
     Obj                 vcw;        /* collect vector                      */
     Obj                 vc2;        /* collect vector                      */
     Int                 pow;        /* power to raise <w> to               */
-    Int *               qtr;        /* pointer into the collect vector     */
     Obj                 res;        /* the result                          */
 
     /* get the integer of <vpow>                                           */
@@ -1482,18 +1457,15 @@ static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
         
         /* check that it has the correct length, unpack <w> into it        */
         if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-            for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
-                *qtr = 0;
+            memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
             return Fail;
         }
 
         /* use 'Solution' to invert it, this will clear <vcw>              */
         if (fc->solution(sc,vcw,vc2,fc->collectWord) == -1) {
-                for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
-                    *qtr = 0;
-                for ( i=num, qtr=(Int*)(ADDR_OBJ(vc2)+1);  0<i;  i--,qtr++ )
-                    *qtr = 0;
-                return ReducedPowerSmallInt(fc,sc,w,vpow);
+            memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+            memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
+            return ReducedPowerSmallInt(fc, sc, w, vpow);
         }
 
         /* and replace <pow> and <w> by its inverse                        */
@@ -1513,16 +1485,14 @@ static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
 
         /* check that it has the correct length, unpack <w> into it        */
         if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-            for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
-                *qtr = 0;
+            memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
             return Fail;
         }
 
         /* multiply <w> into <vcw>                                         */
         for ( i = pow;  1 < i;  i-- ) {
             if ( fc->collectWord( sc, vcw, w ) == -1 ) {
-                for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
-                    *qtr = 0;
+                memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
                 return ReducedPowerSmallInt(fc,sc,w,vpow);
             }
         }
@@ -1554,10 +1524,8 @@ static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 {
     Obj                 type;       /* type of the return objue            */
     Int                 num;        /* number of gen/exp pairs in <data>   */
-    Int                 i;          /* loop variable for gen/exp pairs     */
     Obj                 vcw;        /* collect vector                      */
     Obj                 vc2;        /* collect vector                      */
-    Int *               qtr;        /* pointer into the collect vector     */
 
     /* use 'cwVector' to collect word <w> to                               */
     vcw  = CollectorsState()->SC_CW_VECTOR;
@@ -1567,17 +1535,14 @@ static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <u> into it            */
     if ( fc->vectorWord( vcw, u, num ) == -1 )  {
-        for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--,qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
     /* use 'Solution' to invert it, this will clear <vcw>                  */
     if ( fc->solution( sc, vcw, vc2, fc->collectWord ) == -1 ) {
-        for ( i=num, qtr=(Int*)(ADDR_OBJ(vcw)+1);  0<i;  i--,qtr++ )
-            *qtr = 0;
-        for ( i=num, qtr=(Int*)(ADDR_OBJ(vc2)+1);  0<i;  i--,qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        memset(ADDR_OBJ(vc2) + 1, 0, sizeof(Int) * num);
         return ReducedQuotient( fc, sc, w, u );
     }
 
@@ -1586,15 +1551,13 @@ static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     /* check that it has the correct length, unpack <w> into it            */
     if ( fc->vectorWord( vcw, w, num ) == -1 )  {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return Fail;
     }
 
     /* collect <w> into it                                                 */
     if ( fc->collectWord( sc, vcw, u ) == -1 ) {
-        for ( i = num, qtr = (Int*)(ADDR_OBJ(vcw)+1);  0 < i;  i--, qtr++ )
-            *qtr = 0;
+        memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
         return ReducedQuotient( fc, sc, w, u );
     }
 
