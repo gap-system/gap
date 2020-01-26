@@ -1785,6 +1785,9 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     if ( IS_FFE(src) ) {
         ErrorMayQuit("finite field elements cannot be cloned", 0, 0);
     }
+    if ( TNUM_OBJ(src) == T_BOOL ) {
+        ErrorMayQuit("booleans cannot be cloned", 0, 0);
+    }
 
 #ifdef HPCGAP
     switch (TNUM_OBJ(src)) {
