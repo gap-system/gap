@@ -203,14 +203,14 @@ static Obj FuncREM_LIST(Obj self, Obj list)
 **
 *F  FuncAPPEND_LIST_INTR(<list1>,<list2>)  . . . . . append elements to a list
 **
-**  'FuncAPPEND_LIST_INTR' implements the function 'AppendList'.
+**  'FuncAPPEND_LIST_INTR' implements the function 'Append'.
 **
-**  'AppendList(<list1>,<list2>)'
+**  'Append(<list1>,<list2>)'
 **
-**  'AppendList' adds (see "Add") the elements of the list <list2> to the end
+**  'Append' adds (see "Add") the elements of the list <list2> to the end
 **  of the list <list1>. It is allowed that <list2> contains empty positions,
 **  in which case the corresponding positions  will be left empty in <list1>.
-**  'AppendList' returns nothing, it is called only for its side effect.
+**  'Append' returns nothing, it is called only for its side effect.
 */
 static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 {
@@ -220,6 +220,8 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     Int                 i;              /* loop variable                   */
 
     RequireMutable("Append", list1, "list");
+    RequireSmallList("Append", list1);
+    RequireSmallList("Append", list2);
 
     /* handle the case of strings now */
     if (IS_STRING_REP(list1) && IS_STRING_REP(list2)) {
@@ -236,7 +238,6 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 
     /* check the type of the first argument                                */
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
-        RequireSmallList("AppendList", list1);
         if ( ! IS_PLIST( list1 ) ) {
             PLAIN_LIST( list1 );
         }
@@ -246,7 +247,6 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 
     /* check the type of the second argument                               */
     if ( ! IS_PLIST( list2 ) ) {
-        RequireSmallList("AppendList", list2);
         len2 = LEN_LIST( list2 );
     }
     else {

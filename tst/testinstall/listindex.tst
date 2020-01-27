@@ -230,7 +230,7 @@ gap> Append(Immutable([1,2,3]), [1,2,3]);
 Error, Append: <list1> must be a mutable list (not an immutable plain list of \
 cyclotomics)
 gap> Append([1,2,3], () );
-Error, AppendList: <list2> must be a small list (not a permutation (small))
+Error, Append: <list2> must be a small list (not a permutation (small))
 gap> Append( () , [1,2,3] );
 Error, Append: <list1> must be a mutable list (not a permutation (small))
 gap> s;
