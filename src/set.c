@@ -281,67 +281,34 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
     UInt                i2;             /* index into the right set        */
     Obj                 e1;             /* element of left  set            */
     Obj                 e2;             /* element of right set            */
-    UInt                pos;            /* position                        */
 
     RequireSmallList("IsSubsetSet", set1);
     RequireSmallList("IsSubsetSet", set2);
     if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
     if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
 
-    /* special case if the second argument is a set                        */
-    if ( IsSet( set2 ) ) {
+    // get the logical lengths and get the pointer
+    len1 = LEN_PLIST(set1);
+    len2 = LEN_PLIST(set2);
+    i1 = 1;
+    i2 = 1;
 
-        /* get the logical lengths and get the pointer                     */
-        len1 = LEN_PLIST( set1 );
-        len2 = LEN_PLIST( set2 );
-        i1 = 1;
-        i2 = 1;
-
-        /* now compare the two sets                                        */
-        while ( i1 <= len1 && i2 <= len2 && len2 - i2 <= len1 - i1 ) {
-            e1 = ELM_PLIST( set1, i1 );
-            e2 = ELM_PLIST( set2, i2 );
-            if ( EQ( e1, e2 ) ) {
-                i1++;  i2++;
-            }
-            else if ( LT( e1, e2 ) ) {
-                i1++;
-            }
-            else {
-                break;
-            }
+    // now compare the two sets
+    while (i1 <= len1 && i2 <= len2 && len2 - i2 <= len1 - i1) {
+        e1 = ELM_PLIST(set1, i1);
+        e2 = ELM_PLIST(set2, i2);
+        if (EQ(e1, e2)) {
+            i1++;
+            i2++;
         }
-
+        else if (LT(e1, e2)) {
+            i1++;
+        }
+        else {
+            break;
+        }
     }
 
-    /* general case                                                        */
-    else {
-
-        /* first convert the other argument into a proper list             */
-        PLAIN_LIST( set2 );
-
-        /* get the logical lengths                                         */
-        len1 = LEN_PLIST( set1 );
-        len2 = LEN_PLIST( set2 );
-
-        /* loop over the second list and look for every element            */
-        for ( i2 = 1; i2 <= len2; i2++ ) {
-
-            /* ignore holes                                                */
-            if ( ELM_PLIST(set2,i2) == 0 )
-                continue;
-
-            /* perform the binary search to find the position              */
-            pos = PositionSortedDensePlist( set1, ELM_PLIST(set2,i2) );
-
-            /* test if the element was found at position k                 */
-            if ( len1<pos || ! EQ(ELM_PLIST(set1,pos),ELM_PLIST(set2,i2)) ) {
-                break;
-            }
-
-        }
-
-    }
 
     /* return 'true' if every element of <set2> appeared in <set1>         */
     return ((i2 == len2 + 1) ? True : False);
