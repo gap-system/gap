@@ -2030,7 +2030,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
                 if (!TEST_OBJ_FLAG(objects[i], OBJ_FLAG_TESTED))
                     TYPE_OBJ(objects[i]);
                 if (retype >= 2)
-                    IsSet(objects[i]);
+                    IS_SSORT_LIST(objects[i]); // record if the list a set in the tnum
             }
         }
     }

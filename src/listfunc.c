@@ -1057,7 +1057,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
     Obj                 img;            /* handle of the image, result     */
     UInt                status;        /* the elements are mutable        */
 
-    if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IsSet(set)) {
+    if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IS_SSORT_LIST(set)) {
         RequireArgument("OnSets", set, "must be a set");
     }
 

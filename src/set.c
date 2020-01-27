@@ -13,7 +13,7 @@
 **  For the full definition  of sets see chapter "Sets" in the {\GAP} Manual.
 **  Read also section "More about Sets" about the internal flag for sets.
 **
-**  The second part consists  of the functions 'IsSet', 'SetList', 'SetList',
+**  The second part consists  of the functions 'IsSet', 'SetList',
 **  'IsEqualSet',  'IsSubsetSet',    'AddSet',    'RemoveSet',    'UniteSet',
 **  'IntersectSet',  and 'SubtractSet'.  These  functions make it possible to
 **  make sets, either  by converting a  list to  a  set, or  by computing the
@@ -39,6 +39,11 @@
     RequireArgumentCondition(funcname, op, IS_MUTABLE_OBJ(op) && IsSet(op),  \
                              "must be a mutable proper set")
 
+static BOOL IsPlainSet(Obj list)
+{
+    return IS_PLIST(list) && IS_SSORT_LIST(list);
+}
+
 
 /****************************************************************************
 **
@@ -58,35 +63,19 @@
 **  the holes, sort the copy, and remove the duplicates.  
 ** 
 */
-
 BOOL IsSet(Obj list)
 {
-    BOOL isSet = FALSE;
-
-    /* if <list> is a plain list                                           */
-    if ( IS_PLIST( list ) ) {
-
-        /* if <list> is the empty list, it is a set (:-)                     */
-        if ( LEN_PLIST(list) == 0 ) {
-            RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-            isSet = TRUE;
-        }
-
-        /* if <list>  strictly sorted, it is a set            */
-        else if ( IS_SSORT_LIST(list) ) {
-            isSet = TRUE;
-        }
-
-    }
+    if (IsPlainSet(list))
+        return TRUE;
 
     /* if it is another small list                                         */
-    else if ( IS_SMALL_LIST(list) ) {
+    if ( IS_SMALL_LIST(list) ) {
 
         /* if <list> is the empty list, it is a set (:-)                     */
         if ( LEN_LIST(list) == 0 ) {
             PLAIN_LIST( list );
             RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
-            isSet = TRUE;
+            return TRUE;
         }
 
         /* if <list> strictly sorted, it is a set            */
@@ -94,12 +83,12 @@ BOOL IsSet(Obj list)
             PLAIN_LIST( list );
             /* SET_FILT_LIST( list, FN_IS_HOMOG ); */
             SET_FILT_LIST( list, FN_IS_SSORT );
-            isSet = TRUE;
+            return TRUE;
         }
 
     }
 
-    return isSet;
+    return FALSE;
 }
 
 
@@ -109,6 +98,7 @@ BOOL IsSet(Obj list)
 **
 **  'SetList' returns  a new set that contains  the elements of <list>.  Note
 **  that 'SetList' returns a new plain list even if <list> was already a set.
+**  In this case 'SetList' is equal to 'ShallowCopy'.
 **
 **  'SetList' makes a copy  of the list  <list>, removes the holes, sorts the
 **  copy and finally removes duplicates, which must appear next to each other
@@ -252,8 +242,8 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 {
     RequireSmallList("IsEqualSet", list1);
     RequireSmallList("IsEqualSet", list2);
-    if ( ! IsSet( list1 ) )  list1 = SetList( list1 );
-    if ( ! IsSet( list2 ) )  list2 = SetList( list2 );
+    if (!IsPlainSet(list1)) list1 = SetList(list1);
+    if (!IsPlainSet(list2)) list2 = SetList(list2);
 
     /* and now compare them                                                */
     return (EqSet( list1, list2 ) ? True : False );
@@ -284,8 +274,8 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
 
     RequireSmallList("IsSubsetSet", set1);
     RequireSmallList("IsSubsetSet", set2);
-    if ( ! IsSet( set1 ) )  set1 = SetList( set1 );
-    if ( ! IsSet( set2 ) )  set2 = SetList( set2 );
+    if (!IsPlainSet(set1)) set1 = SetList(set1);
+    if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     // get the logical lengths and get the pointer
     len1 = LEN_PLIST(set1);
@@ -512,7 +502,7 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
 
     RequireMutableSet("UniteSet", set1);
     RequireSmallList("UniteSet", set2);
-    if ( ! IsSet(set2) )  set2 = SetList(set2);
+    if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
@@ -661,7 +651,7 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
 
     RequireMutableSet("IntersectSet", set1);
     RequireSmallList("IntersectSet", set2);
-    if ( ! IsSet(set2) )  set2 = SetList(set2);
+    if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );
@@ -823,7 +813,7 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
 
     RequireMutableSet("SubtractSet", set1);
     RequireSmallList("SubtractSet", set2);
-    if ( ! IsSet(set2) )  set2 = SetList(set2);
+    if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
     len1 = LEN_PLIST( set1 );

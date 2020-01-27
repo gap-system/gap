@@ -1393,7 +1393,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
         else {
 
             // turn <sub> into a set (and hence a plist) for faster searching
-            if (!IsSet(sub)) {
+            if (!IS_PLIST(sub) || !IS_SSORT_LIST(sub)) {
                 sub = SetList(sub);
                 lenSub = LEN_PLIST(sub);
             }
@@ -1432,7 +1432,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     else {
 
         // turn <sub> into a set (and hence a plist) for faster searching
-        if (!IsSet(sub)) {
+        if (!IS_PLIST(sub) || !IS_SSORT_LIST(sub)) {
             sub = SetList(sub);
             lenSub = LEN_PLIST(sub);
         }
