@@ -1300,8 +1300,8 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     lenList  = LEN_LIST( list );
     lenSub   = LEN_LIST( sub );
 
-    // if the sublist is empty, nothing has to be done
-    if (lenSub == 0) {
+    // if the list or the sublist are empty, nothing has to be done
+    if (lenList == 0 || lenSub == 0) {
         return 0;
     }
 
@@ -1356,7 +1356,10 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     }
 
     /* if <list> is a set we have two possibilities                        */
-    else if ( IsSet( list ) ) {
+    else if (IS_SMALL_LIST(list) && IS_SSORT_LIST(list)) {
+
+        if (!IS_PLIST(list))
+            list = PLAIN_LIST_COPY(list);
 
         // compute the logarithm of the length of <list>
         for ( i = lenList, l = 0; i != 0; i >>= 1, l++ ) ;
