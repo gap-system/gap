@@ -53,17 +53,8 @@ static BOOL IsPlainSet(Obj list)
 **  otherwise.  A proper set is a  list that has no holes,
 **  no duplicates, and is sorted.  As a side effect 'IsSet' changes the
 **  type of proper sets as appropriate.
-**
-**  A typical call in the set functions looks like this:
-**
-**  |    if ( ! IsSet(list) )  list = SetList(list); |
-**
-**  This tests if 'list' is a proper set and the type  is changed 
-**  If it is not  then 'SetList' is  called to make  a copy of 'list', remove
-**  the holes, sort the copy, and remove the duplicates.  
-** 
 */
-BOOL IsSet(Obj list)
+static BOOL IsSet(Obj list)
 {
     if (IsPlainSet(list))
         return TRUE;
