@@ -264,13 +264,12 @@ void Match(ScannerState * s,
 **  'GetIdent' can decide with one string comparison if 's->Value' holds
 **  a keyword or not.
 */
-static UInt GetIdent(ScannerState * s, Int i)
+static UInt GetIdent(ScannerState * s, Int i, Char c)
 {
     // initially it could be a keyword
     Int isQuoted = 0;
 
     // read all characters into 's->Value'
-    Char c = PEEK_CURR_CHAR();
     for (; IsIdent(c) || c == '\\'; i++) {
 
         // handle escape sequences
@@ -388,18 +387,16 @@ static UInt AddCharToValue(ScannerState * s, UInt pos, Char c)
     return AddCharToBuf(&s->ValueObj, s->Value, MAX_VALUE_LEN - 1, pos, c);
 }
 
-static UInt GetNumber(ScannerState * s, Int readDecimalPoint)
+static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
 {
   UInt symbol = S_ILLEGAL;
   UInt i = 0;
-  Char c;
   UInt seenADigit = 0;
   UInt seenExp = 0;
   UInt seenExpDigit = 0;
 
   s->ValueObj = 0;
 
-  c = PEEK_CURR_CHAR();
   if (readDecimalPoint) {
     s->Value[i++] = '.';
   }
@@ -422,7 +419,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint)
         s->ValueObj = 0;
       }
       // this looks like an identifier, scan the rest of it
-      return GetIdent(s, i);
+      return GetIdent(s, i, c);
     }
 
     // Or maybe we saw a '.' which could indicate one of two things: a
@@ -608,7 +605,7 @@ finish:
 */
 void ScanForFloatAfterDotHACK(ScannerState * s)
 {
-    s->Symbol = GetNumber(s, 1);
+    s->Symbol = GetNumber(s, 1, PEEK_CURR_CHAR());
 }
 
 
@@ -617,12 +614,10 @@ void ScanForFloatAfterDotHACK(ScannerState * s)
 *F  GetOctalDigits()
 **
 */
-static inline Char GetOctalDigits(ScannerState * s)
+static inline Char GetOctalDigits(ScannerState * s, Char c)
 {
+    GAP_ASSERT('0' <= c && c <= '7');
     Char result;
-    Char c = PEEK_CURR_CHAR();
-    if ( c < '0' || c > '7' )
-        SyntaxError(s, "Expecting octal digit");
     result = 8 * (c - '0');
     c = GET_NEXT_CHAR();
     if ( c < '0' || c > '7' )
@@ -638,9 +633,9 @@ static inline Char GetOctalDigits(ScannerState * s)
 *F  CharHexDigit( <ch> ) . . . . . . . . .  turn a single hex digit into Char
 **
 */
-static inline Char CharHexDigit(ScannerState * s, Char c)
+static inline Char CharHexDigit(ScannerState * s)
 {
-    c = GET_NEXT_CHAR();
+    Char c = GET_NEXT_CHAR();
     if (!isxdigit((unsigned int)c)) {
         SyntaxError(s, "Expecting hexadecimal digit");
     }
@@ -682,10 +677,10 @@ static Char GetEscapedChar(ScannerState * s)
        octal numbers */
     c = GET_NEXT_CHAR();
     if (c == 'x') {
-        result = 16 * CharHexDigit(s, c);
-        result += CharHexDigit(s, c);
-    } else if (c >= '0' && c <= '7' ) {
-        result += GetOctalDigits(s);
+        result = 16 * CharHexDigit(s);
+        result += CharHexDigit(s);
+    } else if (c >= '0' && c <= '7') {
+        result += GetOctalDigits(s, c);
     } else {
         SyntaxError(s, "Expecting hexadecimal escape, or two more octal digits");
     }
@@ -693,7 +688,7 @@ static Char GetEscapedChar(ScannerState * s)
     /* escaped three digit octal numbers are allowed in input */
     result = 64 * (c - '0');
     c = GET_NEXT_CHAR();
-    result += GetOctalDigits(s);
+    result += GetOctalDigits(s, c);
   } else {
       /* Following discussions on pull-request #612, this warning is currently
          disabled for backwards compatibility; some code relies on this behaviour
@@ -724,12 +719,11 @@ static Char GetEscapedChar(ScannerState * s)
 **  An error is raised if the string includes a <newline> character or if the
 **  file ends before the closing '"'.
 */
-static void GetStr(ScannerState * s)
+static Char GetStr(ScannerState * s, Char c)
 {
     Obj  string = 0;
     Char buf[1024];
     UInt i = 0;
-    Char c = PEEK_CURR_CHAR();
 
     while (c != '"' && c != '\n' && c != '\377') {
         if (c == '\\') {
@@ -751,15 +745,16 @@ static void GetStr(ScannerState * s)
         *STATE(In) = '\0';
         SyntaxError(s, "String must end with \" before end of file");
     }
+
+    return c;
 }
 
 
-static void GetPragma(ScannerState * s)
+static void GetPragma(ScannerState * s, Char c)
 {
     Obj  string = 0;
     Char buf[1024];
     UInt i = 0;
-    Char c = PEEK_CURR_CHAR();
 
     while ( c != '\n' && c != '\r' && c != '\377') {
         i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
@@ -791,12 +786,11 @@ static void GetPragma(ScannerState * s)
 **
 **  An error is raised if the file ends before the closing """.
 */
-static void GetTripStr(ScannerState * s)
+static Char GetTripStr(ScannerState * s, Char c)
 {
     Obj  string = 0;
     Char buf[1024];
     UInt i = 0;
-    Char c = PEEK_CURR_CHAR();
 
     // print only a partial prompt while reading a triple string
     STATE(Prompt) = SyQuiet ? "" : "> ";
@@ -827,6 +821,8 @@ static void GetTripStr(ScannerState * s)
         *STATE(In) = '\0';
         SyntaxError(s, "String must end with \"\"\" before end of file");
     }
+
+    return c;
 }
 
 /****************************************************************************
@@ -856,13 +852,7 @@ static void GetString(ScannerState * s)
         }
     }
 
-    if (isTripleQuoted)
-        GetTripStr(s);
-    else
-        GetStr(s);
-
-    c = PEEK_CURR_CHAR();
-
+    c = isTripleQuoted ? GetTripStr(s, c) : GetStr(s, c);
 
     // skip trailing '"'
     if (c == '"')
@@ -980,7 +970,7 @@ static UInt NextSymbol(ScannerState * s)
             c = GET_NEXT_CHAR_NO_LC();
             if (c == '%') {
                 // we have encountered a pragma
-                GetPragma(s);
+                GetPragma(s, c);
                 return S_PRAGMA;
             }
 
@@ -994,7 +984,7 @@ static UInt NextSymbol(ScannerState * s)
 
     // switch according to the character
     if (IsAlpha(c)) {
-        return GetIdent(s, 0);
+        return GetIdent(s, 0, c);
     }
 
     UInt symbol;
@@ -1047,13 +1037,13 @@ static UInt NextSymbol(ScannerState * s)
     case '?':         symbol = S_HELP;              GetHelp(s); break;
     case '"':         symbol = S_STRING;            GetString(s); break;
     case '\'':        symbol = S_CHAR;              GetChar(s); break;
-    case '\\':        return GetIdent(s, 0);
-    case '_':         return GetIdent(s, 0);
-    case '@':         return GetIdent(s, 0);
+    case '\\':        return GetIdent(s, 0, c);
+    case '_':         return GetIdent(s, 0, c);
+    case '@':         return GetIdent(s, 0, c);
 
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
-                      return GetNumber(s, 0);
+                      return GetNumber(s, 0, c);
 
     case '\377':      symbol = S_EOF;           *STATE(In) = '\0'; break;
 
