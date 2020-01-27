@@ -3445,7 +3445,7 @@ static Int InitKernel (
         ElmListFuncs  [ t1            ] = ElmPlistDense;
         ElmListFuncs  [ t1 +IMMUTABLE ] = ElmPlistDense;
     }
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
         ElmvListFuncs [ t1            ] = ElmvPlist;
         ElmvListFuncs [ t1 +IMMUTABLE ] = ElmvPlist;
     }
@@ -3454,10 +3454,6 @@ static Int InitKernel (
         ElmvListFuncs [ t1 +IMMUTABLE ] = ElmvPlistDense;
     }
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
-        ElmwListFuncs [ t1            ] = ElmvPlistDense;
-        ElmwListFuncs [ t1 +IMMUTABLE ] = ElmvPlistDense;
-    }
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         ElmwListFuncs [ t1            ] = ElmvPlistDense;
         ElmwListFuncs [ t1 +IMMUTABLE ] = ElmvPlistDense;
     }
