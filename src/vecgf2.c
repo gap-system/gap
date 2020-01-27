@@ -2624,7 +2624,7 @@ static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
     UInt i, j, k, n;
 
     if (TNUM_OBJ(mat) != T_POSOBJ) {
-        ErrorMayQuit("TRANSPOSED_GF2MAT: Need compressed matrix over GF(2)\n",
+        ErrorMayQuit("TRANSPOSED_GF2MAT: Need compressed matrix over GF(2)",
                      0, 0);
     }
     // type for mat
