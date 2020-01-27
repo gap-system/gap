@@ -19,13 +19,14 @@
 
 #include "common.h"
 
+
 /****************************************************************************
 **
 *F  SetList(<list>) . . . . . . . . . . . . . . . . .  make a set from a list
 **
 **  'SetList' returns  a new set that contains  the elements of <list>.  Note
-**  that 'SetList' returns a  new list even if <list>  was already a set.  In
-**  this case 'SetList' is equal to 'ShallowCopy'.
+**  that 'SetList' returns a new plain list even if <list> was already a set.
+**  In this case 'SetList' is equal to 'ShallowCopy'.
 **
 **  'SetList' makes a copy  of the list  <list>, removes the holes, sorts the
 **  copy and finally removes duplicates, which must appear next to each other
