@@ -611,10 +611,8 @@ static Int EqPRec(Obj left, Obj right)
     UInt                i;              /* loop variable                   */
 
     /* quick first checks                                                  */
-    if ( ! IS_PREC(left) )
-        return 0;
-    if ( ! IS_PREC(right) )
-        return 0;
+    GAP_ASSERT(IS_PREC(left));
+    GAP_ASSERT(IS_PREC(right));
     if ( LEN_PREC(left) != LEN_PREC(right) )
         return 0;
 
@@ -660,10 +658,8 @@ static Int LtPRec(Obj left, Obj right)
     Int                 res;            /* result of comparison            */
 
     /* quick first checks                                                  */
-    if ( ! IS_PREC(left) || ! IS_PREC(right) ) {
-        if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return 1;
-        if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return 0;
-    }
+    GAP_ASSERT(IS_PREC(left));
+    GAP_ASSERT(IS_PREC(right));
 
     /* ensure records are sorted by their RNam */
     SortPRecRNam(left,0);
