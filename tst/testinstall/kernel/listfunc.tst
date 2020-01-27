@@ -23,7 +23,7 @@ Error, Remove: <list> must not be empty
 gap> APPEND_LIST_INTR(fail, fail);
 Error, Append: <list1> must be a mutable list (not the value 'fail')
 gap> APPEND_LIST_INTR(rec(), fail);
-Error, AppendList: <list1> must be a small list (not a record (plain))
+Error, Append: <list1> must be a small list (not a record (plain))
 
 #
 gap> POSITION_SORTED_LIST(fail, fail);
