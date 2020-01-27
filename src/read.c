@@ -2126,7 +2126,7 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
     Match(&rs->s, S_ATOMIC, "atomic", follow);
     /* Might just be an atomic function literal as an expression */
     if (rs->s.Symbol == S_FUNCTION) {
-        ReadExpr(rs, follow, 'a');
+        ReadFuncExpr(rs, follow, 'a');
         return;
     }
 
