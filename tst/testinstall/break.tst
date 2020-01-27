@@ -47,6 +47,8 @@ for i in [1..5] do List([1..5], function(x) continue; return 1; end); od;
 
 #
 #
+gap> quit; # ignored
+gap> quit; 1; # ignore everything after `quit`
 gap> if true then quit; fi;
 Syntax error: 'quit;' cannot be used in this context in stream:1
 if true then quit; fi;
@@ -65,6 +67,8 @@ for i in [1..5] do quit; od;
                    ^^^^
 
 #
+gap> QUIT; # ignored
+gap> QUIT; 1; # ignore everything after `QUIT`
 gap> if true then QUIT; fi;
 Syntax error: 'QUIT;' cannot be used in this context in stream:1
 if true then QUIT; fi;

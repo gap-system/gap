@@ -408,10 +408,10 @@ static void READ_TEST_OR_LOOP(Obj context)
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( type & (STATUS_QUIT | STATUS_EOF) ) {
+        else if ( type & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF) ) {
             break;
         }
-        // FIXME: what about other types? e.g. STATUS_ERROR and STATUS_QQUIT
+        // FIXME: what about STATUS_ERROR
 
     }
 
