@@ -333,22 +333,7 @@ release and will tag it with an appropriate tag).
 Version numbers must be adjusted in the following files:
 <List>
 <Item>
-<F>lib/system.g</F>, see <C>Version</C>, <C>Date</C> and
-<C>NeedKernelVersion</C>
-</Item>
-<Item>
-<F>src/system.c</F>, see <C>SyKernelVersion</C>
-</Item>
-<Item>
-<F>doc/versiondata</F>, see <C>VERSIONNUMBER</C>,
-<C>VERSIONSUFFIX</C>, <C>RELEASEDAY</C> and <C>RELEASEYEAR</C>.
-</Item>
-<Item>
-<F>cnf/configure.in</F> and <F>cnf/configure.out</F>, 
-look for <C>4.dev</C>
-</Item>
-<Item>
-<F>bin/*.bat</F> files, look for <C>gap4dev</C> in paths.
+<F>configure.ac</F>, look at the top of the file
 </Item>
 </List>
 </Item>
