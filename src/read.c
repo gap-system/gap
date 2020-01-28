@@ -2441,17 +2441,6 @@ static UInt ReadStats(ReaderState * rs, TypSymbolSet follow)
 */
 
 
-/****************************************************************************
-**
-*F  ReadEvalCommand() . . . . . . . . . . . . . . . . . . .  read one command
-**
-**  'ReadEvalCommand' reads one command and interprets it immediately.
-**
-**  It does not expect the first symbol of its input already read and won't
-**  read the  first symbol of the  next  input.
-**
-*/
-
 static void RecreateStackNams(ReaderState * rs, Obj context)
 {
     Obj stackNams = rs->StackNams;
@@ -2475,6 +2464,20 @@ static void RecreateStackNams(ReaderState * rs, Obj context)
     }
 }
 
+
+/****************************************************************************
+**
+*F  ReadEvalCommand() . . . . . . . . . . . . . . . . . . .  read one command
+**
+**  'ReadEvalCommand' reads one command and interprets it immediately.
+**
+**  It does not expect the first symbol of its input already read and won't
+**  read the first symbol of the next input.
+**
+**  If 'dualSemicolon' is a non-zero pointer, then the integer it points to
+**  will be set to 1 if the command was followed by a double semicolon, else
+**  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
+*/
 ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 {
     volatile ExecStatus          type;
@@ -2589,10 +2592,10 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 **  'ReadEvalFile' reads an entire file and returns (in 'evalResult') the
 **  entire file as thunk, i.e., as function of no argument.
 **
-**  It does not expect the  first symbol of its input  already read and  wont
-**  reads to the end of the input (unless an error happens).
+**  It does not expect the first symbol of its input already read and reads
+**  to the end of the input (unless an error happens).
 */
-UInt ReadEvalFile(Obj *evalResult)
+UInt ReadEvalFile(Obj * evalResult)
 {
     volatile ExecStatus type;
     volatile Obj        tilde;

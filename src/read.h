@@ -77,14 +77,12 @@
 **
 **  'ReadEvalCommand' reads one command and interprets it immediately.
 **
-**  It does not expect the  first symbol of its input  already read and  wont
-**  read the  first symbol of the  next  input.
+**  It does not expect the first symbol of its input already read and won't
+**  read the first symbol of the next input.
 **
-**  The if pointer dualSemicolon is non-zero, then the integer it
-**  it points to will be set to 1 if the command was followed by
-**  a double semi-colon, otherwise it is set to 0. It is safe to
-**  pass 0 for dualSemicolon, in this case it is ignore.
-**
+**  If 'dualSemicolon' is a non-zero pointer, then the integer it points to
+**  will be set to 1 if the command was followed by a double semicolon, else
+**  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
 */
 UInt ReadEvalCommand(Obj context, Obj * evalResult, UInt * dualSemicolon);
 
@@ -96,8 +94,8 @@ UInt ReadEvalCommand(Obj context, Obj * evalResult, UInt * dualSemicolon);
 **  'ReadEvalFile' reads an entire file and returns (in 'evalResult') the
 **  entire file as thunk, i.e., as function of no argument.
 **
-**  It does not expect the  first symbol of its input  already read and  wont
-**  reads to the end of the input (unless an error happens).
+**  It does not expect the first symbol of its input already read and reads
+**  to the end of the input (unless an error happens).
 */
 UInt ReadEvalFile(Obj * evalResult);
 
