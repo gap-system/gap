@@ -896,6 +896,9 @@ static Obj FuncGASMAN(Obj self, Obj args)
                     const UInt sz = ((Int)bag & 3) ? 0 : SIZE_BAG(bag);
                     Pr("%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], sz);
                 }
+                else {
+                    Pr("%50s: not allocated\n", (Int)GlobalBags.cookie[i], 0);
+                }
             }
         }
 
