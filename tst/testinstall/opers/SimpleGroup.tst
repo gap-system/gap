@@ -301,6 +301,14 @@ gap> Size(g);
 gap> SimpleGroup("2E(5,2)");
 Error, 2E(n,q) needs n=6
 
+# syntax for O+/- that had been broken
+gap> SimpleGroup("O", 3, 5);
+O(3,5)
+gap> SimpleGroup("O+", 8, 2);
+O+(8,2)
+gap> SimpleGroup("O-", 4, 2);
+O-(4,2)
+
 #
 gap> SimpleGroup("X(4,3)");
 Error, Can't handle type X
