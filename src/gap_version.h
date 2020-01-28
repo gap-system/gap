@@ -10,7 +10,7 @@
 **  This file contains the GAP build version
 */
 
-#include "gap_version.h"
+#include "common.h"
 
 
 /****************************************************************************
@@ -19,7 +19,7 @@
 **
 **  'SyKernelVersion' is something like "4.12.2" or "4.12.dev".
 */
-const char * SyKernelVersion = "@GAP_VERSION@";
+extern const char * SyKernelVersion;
 
 
 /****************************************************************************
@@ -29,7 +29,7 @@ const char * SyKernelVersion = "@GAP_VERSION@";
 **  'SyReleaseDay' is the date of the release, e.g. "19-Jun-2019"; for
 **  development versions, this is set to "today".
 */
-const char * SyReleaseDay = "@GAP_RELEASEDAY@";
+extern const char * SyReleaseDay;
 
 
 /****************************************************************************
@@ -39,14 +39,15 @@ const char * SyReleaseDay = "@GAP_RELEASEDAY@";
 **  'SyBuildVersion' is identical to 'SyKernelVersion' for release versions.
 **  For development versions, it is something like "4.12dev-302-g09161ee".
 */
-const char * SyBuildVersion = "@GAP_BUILD_VERSION@";
+extern const char * SyBuildVersion;
 
 
 /****************************************************************************
 **
-*V  SyBuildDateTime . . . . . . . . . .  date and time the build was compiled
+*V  SyBuildDateTime . . . . . . . . . . . . . . . date the build was compiled
 **
-**  'SyBuildDateTime' is set to something like "2020-01-30 09:48:08", with
-**  the value given in local time.
+**  'SyBuildDateTime' is identical to 'SyReleaseDay' for release versions.
+**  For development versions, it is something like "2020-01-30 09:48:08" in
+**  local time.
 */
-const char * SyBuildDateTime = "@GAP_BUILD_DATETIME@";
+extern const char * SyBuildDateTime;

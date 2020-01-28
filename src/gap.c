@@ -18,6 +18,7 @@
 #include "compiler.h"
 #include "error.h"
 #include "funcs.h"
+#include "gap_version.h"
 #include "gapstate.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
@@ -1215,6 +1216,7 @@ static Obj FuncKERNEL_INFO(Obj self)
     AssPRec(res, RNamName("KERNEL_API_VERSION"), INTOBJ_INT(GAP_KERNEL_API_VERSION));
     AssPRec(res, RNamName("BUILD_VERSION"), MakeImmString(SyBuildVersion));
     AssPRec(res, RNamName("BUILD_DATETIME"), MakeImmString(SyBuildDateTime));
+    AssPRec(res, RNamName("RELEASEDAY"), MakeImmString(SyReleaseDay));
     AssPRec(res, RNamName("GAP_ROOT_PATHS"), SyGetGapRootPaths());
     AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(SyDotGapPath()));
 
