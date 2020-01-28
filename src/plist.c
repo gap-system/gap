@@ -1406,14 +1406,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
         if      ( HAS_FILT_LIST(list, FN_IS_SSORT) && inc > 0 )
-          {
-              elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss );
-        /*      if (lenPoss > 1 && inc < 0)
-                {
-                  RESET_FILT_LIST(elms, FN_IS_SSORT);
-                  SET_FILT_LIST(elms, FN_IS_NSORT);
-                }  */
-          }
+          elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
           elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_TABLE))
