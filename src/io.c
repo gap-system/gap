@@ -2151,9 +2151,9 @@ static Int InitKernel (
 
     /* tell GASMAN about the global bags                                   */
     InitGlobalBag(&(IO()->InputLogFileOrStream.stream),
-                  "src/scanner.c:InputLogFileOrStream");
+                  "src/io.c:InputLogFileOrStream");
     InitGlobalBag(&(IO()->OutputLogFileOrStream.stream),
-                  "src/scanner.c:OutputLogFileOrStream");
+                  "src/io.c:OutputLogFileOrStream");
 #endif
 
     /* import functions from the library                                   */
