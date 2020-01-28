@@ -438,9 +438,9 @@ static Obj FuncDensePartialPermNC(Obj self, Obj img)
 /* assumes that dom is a set and that img is duplicatefree */
 static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
 {
-    GAP_ASSERT(IS_LIST(dom));
-    GAP_ASSERT(IS_LIST(img));
-    GAP_ASSERT(LEN_LIST(dom) == LEN_LIST(img));
+    RequireSmallList("SparsePartialPermNC", dom);
+    RequireSmallList("SparsePartialPermNC", img);
+    RequireSameLength("SparsePartialPermNC", dom, img);
 
     UInt    rank, deg, i, j, codeg;
     Obj     f;
@@ -450,38 +450,36 @@ static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
     if (LEN_LIST(dom) == 0)
         return EmptyPartialPerm;
 
-    rank = LEN_LIST(dom);
-    deg = INT_INTOBJ(ELM_LIST(dom, rank));
+    // make sure we have plain lists
+    if (!IS_PLIST(dom))
+        dom = PLAIN_LIST_COPY(dom);
+    if (!IS_PLIST(img))
+        img = PLAIN_LIST_COPY(img);
+
+    // make img immutable
+    MakeImmutable(img);
+    MakeImmutable(dom);
+
+    rank = LEN_PLIST(dom);
+    deg = INT_INTOBJ(ELM_PLIST(dom, rank));
 
     // find if we are PPERM2 or PPERM4
     codeg = 0;
     i = rank;
     while (codeg < 65536 && i > 0) {
-        j = INT_INTOBJ(ELM_LIST(img, i--));
+        j = INT_INTOBJ(ELM_PLIST(img, i--));
         if (j > codeg)
             codeg = j;
     }
-
-    // make sure we have plain lists
-    if (!IS_PLIST(dom))
-        PLAIN_LIST(dom);
-    if (!IS_PLIST(img))
-        PLAIN_LIST(img);
-
-    // make img immutable
-    MakeImmutable(img);
-    MakeImmutable(dom);
 
     // create the pperm
     if (codeg < 65536) {
         f = NEW_PPERM2(deg);
         ptf2 = ADDR_PPERM2(f);
         for (i = 1; i <= rank; i++) {
-            ptf2[INT_INTOBJ(ELM_PLIST(dom, i)) - 1] =
-                INT_INTOBJ(ELM_PLIST(img, i));
+            j = INT_INTOBJ(ELM_PLIST(img, i));
+            ptf2[INT_INTOBJ(ELM_PLIST(dom, i)) - 1] = j;
         }
-        SET_DOM_PPERM(f, dom);
-        SET_IMG_PPERM(f, img);
         SET_CODEG_PPERM2(f, codeg);
     }
     else {
@@ -493,10 +491,10 @@ static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
                 codeg = j;
             ptf4[INT_INTOBJ(ELM_PLIST(dom, i)) - 1] = j;
         }
-        SET_DOM_PPERM(f, dom);
-        SET_IMG_PPERM(f, img);
         SET_CODEG_PPERM4(f, codeg);
     }
+    SET_DOM_PPERM(f, dom);
+    SET_IMG_PPERM(f, img);
     CHANGED_BAG(f);
     return f;
 }
