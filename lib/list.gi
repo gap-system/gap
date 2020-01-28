@@ -967,21 +967,6 @@ InstallOtherMethod( ProductOp,
 
 #############################################################################
 ##
-#M  Elm0List
-##
-InstallMethod( Elm0List,
-    [ IsList, IsInt ],
-    function ( list, pos )
-    if IsBound( list[pos] ) then
-        return list[pos];
-    else
-        return fail;
-    fi;
-    end );
-
-
-#############################################################################
-##
 #M  <list>{<poss>}
 #M  <list>{<poss>}:=<objs>
 ##

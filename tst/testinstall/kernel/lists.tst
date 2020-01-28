@@ -34,14 +34,6 @@ gap> UNB_LIST([1],1);
 gap> UNB_LIST([1],2);
 
 #
-gap> ELM0_LIST([1],1);
-1
-gap> ELM0_LIST([1],2);
-fail
-gap> ELM0_LIST(1,2);
-Error, List Element: <list> must be a list (not the integer 1)
-
-#
 gap> ELM_LIST([1],1);
 1
 gap> ELM_LIST([1],2);

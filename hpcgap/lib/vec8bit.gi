@@ -247,17 +247,6 @@ end);
 
 #############################################################################
 ##
-#M  ELM0_LIST( <vec> ) 
-##
-##  alternatibe element access interface, returns fail when unbound
-##
-
-InstallMethod(ELM0_LIST, "for an 8 bit vector",
-        true, [IsList and Is8BitVectorRep, IsPosInt], 0,
-        ELM0_VEC8BIT);
-
-#############################################################################
-##
 #M  DegreeFFE( <vector> )
 ##
 BindGlobal("Q_TO_DEGREE", # discrete logarithm list

@@ -1067,9 +1067,9 @@ static BOOL IsbPlistDense(Obj list, Int pos)
 **  <list>, or  0  if <list> has no  assigned  object at  <pos>.   It  is the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 **
-**  'Elm0vPlist' does the same thing than 'Elm0List', but need not check that
-**  <pos>  is less  than or  equal   to the length   of  <list>, this is  the
-**  responsibility of the caller.
+**  'Elm0vPlist' does the same thing as 'Elm0Plist', but does not need to
+**  check that <pos> is less than or equal to the length of <list>, this is
+**  the responsibility of the caller.
 */
 static Obj Elm0Plist(Obj list, Int pos)
 {
