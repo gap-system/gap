@@ -345,9 +345,9 @@ static Obj Elm0Blist(Obj list, Int pos)
 **
 *F  Elm0vBlist( <list>, <pos> ) . . . . . select an element of a boolean list
 **
-**  'Elm0vPlist' does the same thing than 'Elm0List', but need not check that
-**  <pos>  is less  than or  equal   to the length   of  <list>, this is  the
-**  responsibility of the caller.
+**  'Elm0vPlist' does the same thing as 'Elm0Blist', but does not need to
+**  check that <pos> is less than or equal to the length of <list>, this is
+**  the responsibility of the caller.
 */
 static Obj Elm0vBlist(Obj list, Int pos)
 {

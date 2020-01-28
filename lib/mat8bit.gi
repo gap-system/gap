@@ -258,22 +258,6 @@ end);
 
 #############################################################################
 ##
-#M  ELM0_LIST( <mat> ) 
-##
-##  alternative element access interface, returns fail when unbound
-##
-
-InstallMethod(ELM0_LIST, "for an 8 bit matrix",
-        true, [IsList and Is8BitMatrixRep, IsPosInt], 0,
-        function(m,p)
-    if p > m![1] then 
-        return fail;
-    fi;
-    return m![p+1];
-end);
-
-#############################################################################
-##
 #M  ConvertToMatrixRepNC( <list>, <fieldsize )
 #M  ConvertToMatrixRep( <list>[, <fieldsize> | <field>])
 ##

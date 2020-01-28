@@ -379,46 +379,15 @@ static Obj Elm0ListError(Obj list, Int pos)
 **  list object <list>, or 0 if <list>  has no assigned object  at <pos>.  It
 **  is the responsibility  of the caller to  ensure that <pos> is a  positive
 **  integer.
-**
-**  Note that the method   returns `Fail' if there  is  no entry  at position
-**  <pos>, in this case `Elm0ListObject' must  check if the position is bound
-**  and `Fail'  means that there realy is  the object `Fail' at this position
-**  or if it is unbound in which case 0 is returned.
 */
-static Obj Elm0ListOper;
-
 static Obj Elm0ListObject(Obj list, Int pos)
 {
-    Obj                 elm;
-
-    elm = DoOperation2Args( Elm0ListOper, list, INTOBJ_INT(pos) );
-
-    if ( elm == Fail ) {
-        if ( DoOperation2Args(IsbListOper,list,INTOBJ_INT(pos)) == True )
-            return Fail;
-        else
-            return 0;
-    } else {
-        return elm;
-    }
+    if (ISB_LIST(list, pos))
+        return ELM_LIST(list, pos);
+    else
+        return 0;
 }
 
-
-/****************************************************************************
-**
-*F  FuncELM0_LIST( <self>, <list>, <pos> )  . . . . . . operation `ELM0_LIST'
-*/
-static Obj FuncELM0_LIST(Obj self, Obj list, Obj pos)
-{
-    Obj                 elm;
-    elm = ELM0_LIST( list, INT_INTOBJ(pos) );
-    if ( elm == 0 ) {
-        return Fail;
-    }
-    else {
-        return elm;
-    }
-}
 
 /****************************************************************************
 **
@@ -1861,7 +1830,6 @@ static StructGVarOper GVarOpers[] = {
       "src/lists.c:POS_LIST" },
 
     GVAR_OPER_2ARGS(ISB_LIST, list, pos, &IsbListOper),
-    GVAR_OPER_2ARGS(ELM0_LIST, list, pos, &Elm0ListOper),
     GVAR_OPER_3ARGS(ELM_DEFAULT_LIST, list, pos, default, &ElmDefListOper),
     GVAR_OPER_2ARGS(ELM_LIST, list, pos, &ElmListOper),
     GVAR_OPER_2ARGS(ELMS_LIST, list, poss, &ElmsListOper),

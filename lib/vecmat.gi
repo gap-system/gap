@@ -130,19 +130,6 @@ InstallOtherMethod( Length,
 
 #############################################################################
 ##
-#M  ELM0_LIST( <gf2vec>, <pos> )  . . . . select an element from a GF2 vector
-##
-InstallMethod( ELM0_LIST,
-    "for GF2 vector",
-    true,
-    [ IsList and IsGF2VectorRep,
-      IsPosInt ],
-    0,
-    ELM0_GF2VEC );
-
-
-#############################################################################
-##
 #M  ELM_LIST( <gf2vec>, <pos> ) . . . . . select an element from a GF2 vector
 ##
 InstallOtherMethod( ELM_LIST,

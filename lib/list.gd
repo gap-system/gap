@@ -257,15 +257,6 @@ DeclareOperationKernel( "{}",
 
 #############################################################################
 ##
-#o  Elm0List( <list>, <pos> )
-##
-DeclareOperationKernel( "Elm0List",
-    [ IsList, IS_INT ],
-    ELM0_LIST );
-
-
-#############################################################################
-##
 #O  Unbind( <list>[<n>] )
 ##
 ##  <#GAPDoc Label="Unbind_list">
