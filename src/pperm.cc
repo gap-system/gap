@@ -386,7 +386,7 @@ static Obj FuncEmptyPartialPerm(Obj self)
 /* method for creating a partial perm */
 static Obj FuncDensePartialPermNC(Obj self, Obj img)
 {
-    GAP_ASSERT(IS_LIST(img));
+    RequireSmallList("DensePartialPermNC", img);
 
     UInt    deg, i, j, codeg;
     UInt2 * ptf2;
@@ -526,7 +526,7 @@ static Obj FuncRankOfPartialPerm(Obj self, Obj f)
 /* domain of a partial perm */
 static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("DOMAIN_PPERM", f);
 
     if (DOM_PPERM(f) == NULL) {
         INIT_PPERM(f);
@@ -537,7 +537,7 @@ static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
 /* image list of pperm */
 static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("IMAGE_PPERM", f);
 
     if (IMG_PPERM(f) == NULL) {
         INIT_PPERM(f);
@@ -620,7 +620,7 @@ static UInt4 * FindImg(UInt n, UInt rank, Obj img)
 // the least m, r such that f^m=f^m+r
 static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("INDEX_PERIOD_PPERM", f);
 
     UInt    i, len, j, pow, rank, k, deg, n;
     UInt2 * ptf2;
@@ -719,7 +719,7 @@ static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 // the least power of <f> which is an idempotent
 static Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("SMALLEST_IDEM_POW_PPERM", f);
 
     Obj x, ind, per, pow;
 
@@ -736,7 +736,7 @@ static Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
  * there exists <j> in <out> and a pos int <k> such that <j^(f^k)=i>. */
 static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("COMPONENT_REPS_PPERM", f);
 
     UInt    i, j, rank, k, deg, nr, n;
     UInt2 * ptf2;
@@ -819,7 +819,7 @@ static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 /* the number of components of a partial perm (as a functional digraph) */
 static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("NR_COMPONENTS_PPERM", f);
 
     UInt    i, j, n, rank, k, deg, nr;
     UInt2 * ptf2;
@@ -893,7 +893,7 @@ static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 /* the components of a partial perm (as a functional digraph) */
 static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("COMPONENTS_PPERM", f);
 
     UInt i, j, n, rank, k, deg, nr, len;
     Obj  dom, img, out;
@@ -1005,8 +1005,8 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 // the points that can be obtained from <pt> by successively applying <f>.
 static Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_INTOBJ(pt));
+    RequirePartialPerm("COMPONENT_PPERM_INT", f);
+    RequireSmallInt("COMPONENT_PPERM_INT", pt);
 
     UInt i, j, deg, len;
     Obj  out;
@@ -1055,7 +1055,7 @@ static Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 // the fixed points of a partial perm
 static Obj FuncFIXED_PTS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("FIXED_PTS_PPERM", f);
 
     UInt    len, i, j, deg, rank;
     Obj     out, dom;
@@ -1122,7 +1122,7 @@ static Obj FuncFIXED_PTS_PPERM(Obj self, Obj f)
 
 static Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("NR_FIXED_PTS_PPERM", f);
 
     UInt    nr, i, j, deg, rank;
     Obj     dom;
@@ -1172,7 +1172,7 @@ static Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f)
 // the moved points of a partial perm
 static Obj FuncMOVED_PTS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("MOVED_PTS_PPERM", f);
 
     UInt    len, i, j, deg, rank;
     Obj     out, dom;
@@ -1237,7 +1237,7 @@ static Obj FuncMOVED_PTS_PPERM(Obj self, Obj f)
 
 static Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("NR_MOVED_PTS_PPERM", f);
 
     UInt    nr, i, j, deg, rank;
     Obj     dom;
@@ -1286,7 +1286,7 @@ static Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f)
 
 static Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("LARGEST_MOVED_PT_PPERM", f);
 
     UInt    i, j, deg;
     Obj     dom;
@@ -1334,7 +1334,7 @@ static Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f)
 
 static Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("SMALLEST_MOVED_PT_PPERM", f);
 
     UInt    i, j, deg, rank;
     Obj     dom;
@@ -1385,7 +1385,7 @@ static Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f)
 // convert a T_PPERM4 with codeg<65536 to a T_PPERM2
 static Obj FuncTRIM_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("TRIM_PPERM", f);
 
     UInt    deg, i;
     UInt4 * ptf;
@@ -1432,7 +1432,7 @@ static Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data)
 // test if a partial perm is an idempotent
 static Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("IS_IDEM_PPERM", f);
 
     UInt2 * ptf2;
     UInt4 * ptf4;
@@ -1483,7 +1483,7 @@ static Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
 /* an idempotent partial perm <e> with ker(e)=ker(f) */
 static Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("LEFT_ONE_PPERM", f);
 
     Obj     dom, g;
     UInt    deg, i, j, rank;
@@ -1530,7 +1530,7 @@ static Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
 // an idempotent partial perm <e> with im(e)=im(f)
 static Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("RIGHT_ONE_PPERM", f);
 
     Obj     g, img;
     UInt    i, j, codeg, rank;
@@ -1665,8 +1665,8 @@ static Obj JOIN_IDEM_PPERMS(Obj f, Obj g)
 
 static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PPERM(g));
+    RequirePartialPerm("JOIN_IDEM_PPERMS", f);
+    RequirePartialPerm("JOIN_IDEM_PPERMS", g);
 
     UInt def, deg;
 
@@ -1797,8 +1797,8 @@ static Obj JOIN_PPERMS(Obj f, Obj g)
 
 static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PPERM(g));
+    RequirePartialPerm("JOIN_PPERMS", f);
+    RequirePartialPerm("JOIN_PPERMS", g);
 
     if (EQ(f, g))
         return f;
@@ -1819,8 +1819,8 @@ static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
 
 static Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PPERM(g));
+    RequirePartialPerm("MEET_PPERMS", f);
+    RequirePartialPerm("MEET_PPERMS", g);
 
     UInt   deg, i, j, degf, degg, codeg;
     UInt2 *ptf2, *ptg2, *ptmeet2;
@@ -2114,7 +2114,7 @@ static Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
 // for a partial perm with equal dom and img
 static Obj FuncAS_PERM_PPERM(Obj self, Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("AS_PERM_PPERM", f);
 
     UInt2 *ptf2, *ptp2;
     UInt4 *ptf4, *ptp4;
@@ -2159,8 +2159,8 @@ static Obj FuncAS_PERM_PPERM(Obj self, Obj f)
 // and dom(f)=dom(g), no checking
 static Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g)
 {
-    GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PPERM(g));
+    RequirePartialPerm("PERM_LEFT_QUO_PPERM_NC", f);
+    RequirePartialPerm("PERM_LEFT_QUO_PPERM_NC", g);
 
     UInt   deg, i, j, rank;
     Obj    perm, dom;
@@ -2342,7 +2342,7 @@ static Obj FuncHAS_IMG_PPERM(Obj self, Obj f)
 // an idempotent partial perm on the union of the domain and image
 static Obj OnePPerm(Obj f)
 {
-    GAP_ASSERT(IS_PPERM(f));
+    RequirePartialPerm("OnePPerm", f);
 
     Obj     g, img, dom;
     UInt    i, j, deg, rank;
@@ -3654,8 +3654,8 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
 
 static Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
 {
-    GAP_ASSERT(IS_LIST(set));
-    GAP_ASSERT(IS_PPERM(f));
+    RequireSmallList("OnPosIntSetsPartialPerm", set);
+    RequirePartialPerm("OnPosIntSetsPartialPerm", f);
 
     UInt2 *     ptf2;
     UInt4 *     ptf4;
