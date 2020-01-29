@@ -2374,8 +2374,20 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
 
   aup:=Normalizer(d,Image(emb,g));
 
-  #reduce degree
-  s:=SmallerDegreePermutationRepresentation(aup:cheap);
+  #reduce degree -- avoid redundant fixed points
+  if count>1 then
+    p:=aup;
+    s:=IdentityMapping(p);
+    repeat
+      i:=SmallerDegreePermutationRepresentation(p);
+      if NrMovedPoints(Range(i))<NrMovedPoints(p) then
+        p:=Image(i,p);
+        s:=s*i;
+      fi;
+    until NrMovedPoints(Source(i))=NrMovedPoints(Range(i));
+  else
+    s:=SmallerDegreePermutationRepresentation(aup:cheap);
+  fi;
   emb:=emb*s;
   aup:=Image(s,aup);
   ge:=Image(emb,g);
@@ -2395,7 +2407,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   Unbind(acts);Unbind(act);Unbind(ttypes);Unbind(w);Unbind(wl);
   Unbind(wemb);Unbind(lemb);Unbind(ahom);Unbind(thom);Unbind(d);
 
-  # produce data to map fro au to aup:
+  # produce data to map from au to aup:
   lemb:=MovedPoints(aup);
   stbs:=[];
   orb:=Orbits(aup,MovedPoints(aup));

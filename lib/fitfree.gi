@@ -204,9 +204,16 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
 
   # FittingFreeLiftSetup for U, if correct
   if Size(RadicalGroup(Image(rest,U)))=1 then
-    pcisom:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
-    pcisom:=GroupHomomorphismByImagesNC(U,SubgroupNC(Range(ffs.pcisom),pcisom),
-      ipcgs,pcisom);
+    if ipcgs=MappingGeneratorsImages(ffs.pcisom)[1] then
+      pcisom:=ffs.pcisom;
+    else
+      pcisom:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
+      RUN_IN_GGMBI:=true;
+      pcisom:=GroupHomomorphismByImagesNC(Group(ipcgs,OneOfPcgs(ipcgs)),
+        SubgroupNC(Range(ffs.pcisom),pcisom),
+        ipcgs,pcisom);
+      RUN_IN_GGMBI:=false;
+    fi;
     r:=rec(inducedfrom:=ffs,
           pcgs:=ipcgs,
           depths:=depths,
