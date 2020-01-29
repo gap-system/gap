@@ -184,20 +184,20 @@ local p,f,z,G,o;
   # first generator differs for q=2,p=3
   if q=2 then 
     G:=Group(
-	o*[[1,1,0,0,0,0,0],
-	[0,1,0,0,0,0,0],
-	[0,0,1,1,1,0,0],
-	[0,0,0,1,0,0,0],
-	[0,0,0,0,1,0,0],
-	[0,0,0,0,0,1,1],
-	[0,0,0,0,0,0,1]],
-	o*[[0,0,1,0,0,0,0],
-	[1,0,0,0,0,0,0],
-	[0,0,0,0,0,1,0],
-	[0,0,0,1,0,0,0],
-	[0,1,0,0,0,0,0],
-	[0,0,0,0,0,0,1],
-	[0,0,0,0,1,0,0]]);
+        o*[[1,1,0,0,0,0,0],
+        [0,1,0,0,0,0,0],
+        [0,0,1,1,1,0,0],
+        [0,0,0,1,0,0,0],
+        [0,0,0,0,1,0,0],
+        [0,0,0,0,0,1,1],
+        [0,0,0,0,0,0,1]],
+        o*[[0,0,1,0,0,0,0],
+        [1,0,0,0,0,0,0],
+        [0,0,0,0,0,1,0],
+        [0,0,0,1,0,0,0],
+        [0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,1],
+        [0,0,0,0,1,0,0]]);
   elif p=3 then 
     G:=Group(
     o*[[z^2,0,0,0,0,0,0],
@@ -280,10 +280,10 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     if p.series="Spor" then
       brg:=p.parameter[1];
       if '=' in brg then
-	brg:=brg{[1..Position(brg,'=')-1]};
+        brg:=brg{[1..Position(brg,'=')-1]};
       fi;
       while brg[Length(brg)]=' ' do
-	brg:=brg{[1..Length(brg)-1]};
+        brg:=brg{[1..Length(brg)-1]};
       od;
       brg:=[brg];
     else
@@ -321,50 +321,52 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     if '+' in a or '-' in a then
       p:=Position(a,'+');
       if p<>fail then
-	plus:=1;
+        plus:=1;
       else
-	p:=Position(a,'-');
-	plus:=-1;
+        p:=Position(a,'-');
+        plus:=-1;
       fi;
       if Length(a)=1 then
-	# deal with "O+" class
-	Add(a,'1');
-      fi;
-      if a[p+1]='1' and a[p+2]=',' then
-	# gave O(+1,8,2) or so
-	plus:=fail;
+        # deal with "O+" class
+        Add(a,'1');
+      elif Length(a)>=p+1 and a[p+1]='1' and a[p+2]=',' then
+        # gave O(+1,8,2) or so
+        plus:=fail;
       fi;
       if plus<>fail then
-	if p=1 then
-	  # leading +-, possibly with comma
-	  a:=a{[2..Length(a)]};
-	  if Length(a)>1 and a[1]=',' then
-	    a:=a{[2..Length(a)]};
-	  fi;
-	else
-	  # internal +-
-	  a[p]:=',';
-	fi;
+        if p=1 then
+          # leading +-, possibly with comma
+          a:=a{[2..Length(a)]};
+          if a="1" then a:="";fi;
+          if Length(a)>1 and a[1]=',' then
+            a:=a{[2..Length(a)]};
+          fi;
+        else
+          # internal +-
+          a[p]:=',';
+        fi;
       fi;
 
     else
       plus:=fail;
     fi;
 
-    p:=Position(a,',');
-    while p<>fail do
-      s:=a{[1..p-1]};
-      if s[1]='+' then
-	s:=s{[2..Length(s)]};
-      fi;
-      Add(param,Int(s));
-      a:=a{[p+1..Length(a)]};
+    if Length(a)>0 then
       p:=Position(a,',');
-    od;
-    if a[1]='+' then
-      a:=a{[2..Length(a)]};
+      while p<>fail do
+        s:=a{[1..p-1]};
+        if s[1]='+' then
+          s:=s{[2..Length(s)]};
+        fi;
+        Add(param,Int(s));
+        a:=a{[p+1..Length(a)]};
+        p:=Position(a,',');
+      od;
+      if a[1]='+' then
+        a:=a{[2..Length(a)]};
+      fi;
+      Add(param,Int(a));
     fi;
-    Add(param,Int(a));
 
     if plus<>fail then
       param:=Concatenation([plus],param);
@@ -383,9 +385,9 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     if str="A" or str="ALT" then
       if Length(param)=1 and param[1]>4 then
         g:=AlternatingGroup(param[1]);
-	SetName(g,Concatenation("A",String(param[1])));
-	SetIsSimpleGroup(g,true);
-	return g;
+        SetName(g,Concatenation("A",String(param[1])));
+        SetIsSimpleGroup(g,true);
+        return g;
       else
         Error("illegal parameter for alternating groups");
       fi;
@@ -397,74 +399,74 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     elif str="M" or str="MATHIEU" then
       if Length(param)=1 and param[1] in [11,12,22,23,24] then
         g:=MathieuGroup(param[1]);
-	SetName(g,Concatenation("M",String(param[1])));
-	return g;
+        SetName(g,Concatenation("M",String(param[1])));
+        return g;
       else
         Error("illegal parameter for Mathieu groups");
       fi;
 
     elif str="J" or str="JANKO" then
       if Length(param)=1 and param[1] in [1..4] then
-	if param[1]=1 then
-	  g:=PrimitiveGroup(266,1);
-	elif param[1]=2 then
-	  g:=PrimitiveGroup(100,1);
-	else
-	  g:=[,,"J3","J4"];
-	  g:=DoAtlasrepGroup([g[param[1]]]);
-	fi;
-	SetIsSimpleGroup(g,true);
-	return g;
+        if param[1]=1 then
+          g:=PrimitiveGroup(266,1);
+        elif param[1]=2 then
+          g:=PrimitiveGroup(100,1);
+        else
+          g:=[,,"J3","J4"];
+          g:=DoAtlasrepGroup([g[param[1]]]);
+        fi;
+        SetIsSimpleGroup(g,true);
+        return g;
       else
         Error("illegal parameter for Janko groups");
       fi;
 
     elif str="CO" or str="." or str="CONWAY" then
       if Length(param)=1 and param[1] in [1..3] then
-	if param[1]=3 then
-	  g:=PrimitiveGroup(276,3);
-	elif param[1]=2 then
-	  g:=PrimitiveGroup(2300,1);
-	else
-	  g:=DoAtlasrepGroup(["Co1"]);
-	fi;
-	SetIsSimpleGroup(g,true);
-	return g;
+        if param[1]=3 then
+          g:=PrimitiveGroup(276,3);
+        elif param[1]=2 then
+          g:=PrimitiveGroup(2300,1);
+        else
+          g:=DoAtlasrepGroup(["Co1"]);
+        fi;
+        SetIsSimpleGroup(g,true);
+        return g;
       else
         Error("illegal parameter for Conway groups");
       fi;
 
     elif str="FI" or str="FISCHER" then
       if Length(param)=1 and param[1] in [22,23,24] then
-	s:=Concatenation("Fi",String(param[1]));
-	if param[1] = 24 then Append(s,"'"); fi;
+        s:=Concatenation("Fi",String(param[1]));
+        if param[1] = 24 then Append(s,"'"); fi;
         g:=DoAtlasrepGroup([s]);
-	SetIsSimpleGroup(g,true);
-	return g;
+        SetIsSimpleGroup(g,true);
+        return g;
       else
         Error("illegal parameter for Fischer groups");
       fi;
     elif str="SUZ" or str="SZ" or str="SUZUKI" then
       if Length(param)=0 and str="SUZ" then
-	g:=PrimitiveGroup(1782,1);
-	SetIsSimpleGroup(g,true);
-	return g;
+        g:=PrimitiveGroup(1782,1);
+        SetIsSimpleGroup(g,true);
+        return g;
       elif Length(param)=1 and param[1]>7 and
         PrimeDivisors(param[1])=[2] and IsOddInt(LogInt(param[1],2)) then
-	g:=SuzukiGroup(IsPermGroup,param[1]);
-	SetName(g,Concatenation("Sz(",String(param),")"));
-	SetIsSimpleGroup(g,true);
-	return g;
+        g:=SuzukiGroup(IsPermGroup,param[1]);
+        SetName(g,Concatenation("Sz(",String(param),")"));
+        SetIsSimpleGroup(g,true);
+        return g;
       else
         Error("illegal parameter for Suzuki groups");
       fi;
     elif str="R" or str="REE" or str="2G" then
       if Length(param)=1 and param[1]>26 and
         PrimeDivisors(param[1])=[3] and IsOddInt(LogInt(param[1],3)) then
-	g:=ReeGroup(IsMatrixGroup,param[1]);
-	SetName(g,Concatenation("Ree(",String(param[1]),")"));
-	SetIsSimpleGroup(g,true);
-	return g;
+        g:=ReeGroup(IsMatrixGroup,param[1]);
+        SetName(g,Concatenation("Ree(",String(param[1]),")"));
+        SetIsSimpleGroup(g,true);
+        return g;
       else
         Error("illegal parameter for Ree groups");
       fi;
@@ -534,10 +536,10 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       g:=Action(g,NormedRowVectors(GF(param[2])^param[1]),OnLines);
       s:=DerivedSubgroup(g);
       if s<>g and IsBound(g!.actionHomomorphism) then
-	s!.actionHomomorphism:=ActionHomomorphism(
-	  PreImage(g!.actionHomomorphism,s),
-	  HomeEnumerator(UnderlyingExternalSet(g!.actionHomomorphism)),
-	  OnLines,"surjective");
+        s!.actionHomomorphism:=ActionHomomorphism(
+          PreImage(g!.actionHomomorphism,s),
+          HomeEnumerator(UnderlyingExternalSet(g!.actionHomomorphism)),
+          OnLines,"surjective");
       fi;
       g:=s;
       s:=Concatenation("O(",String(param[1]),",",String(param[2]),")");
@@ -598,9 +600,9 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     else
       g:=ChevalleyG(a);
       g:=Action(g,
-	   Set(Orbit(g,One(DefaultFieldOfMatrixGroup(g))*[1,0,0,0,0,0,0],
-	     OnLines)),
-	  OnLines);
+           Set(Orbit(g,One(DefaultFieldOfMatrixGroup(g))*[1,0,0,0,0,0,0],
+             OnLines)),
+          OnLines);
     fi;
     s:=Concatenation("G_2(",String(a),")");
 
@@ -634,12 +636,12 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     if Length(a)>1 then
       SortParallel(List(a,Length),a);
       if IsBound(g!.actionHomomorphism) then
-	# pull back
-	p:=UnderlyingExternalSet(g!.actionHomomorphism);
-	a:=Action(Source(g!.actionHomomorphism),HomeEnumerator(p){a[1]},
-	     FunctionAction(p));
+        # pull back
+        p:=UnderlyingExternalSet(g!.actionHomomorphism);
+        a:=Action(Source(g!.actionHomomorphism),HomeEnumerator(p){a[1]},
+             FunctionAction(p));
       else
-	a:=Action(g,a[1]);
+        a:=Action(g,a[1]);
       fi;
       SetSize(a,Size(g));
       g:=a;
@@ -648,16 +650,16 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     a:=Blocks(g,MovedPoints(g));
     if Length(a)>1 then
       if IsBound(g!.actionHomomorphism) then
-	# pull back
-	p:=UnderlyingExternalSet(g!.actionHomomorphism);
-	sets:=Set(List(a,x->HomeEnumerator(p){x}));
-	p:=FunctionAction(p);
-	a:=Action(Source(g!.actionHomomorphism),sets,
-	     function(set,g)
-	       return Set(List(set,x->p(x,g)));
-	     end);
+        # pull back
+        p:=UnderlyingExternalSet(g!.actionHomomorphism);
+        sets:=Set(List(a,x->HomeEnumerator(p){x}));
+        p:=FunctionAction(p);
+        a:=Action(Source(g!.actionHomomorphism),sets,
+             function(set,g)
+               return Set(List(set,x->p(x,g)));
+             end);
       else
-	a:=Action(g,a,OnSets);
+        a:=Action(g,a,OnSets);
       fi;
       SetSize(a,Size(g));
       g:=a;
@@ -731,7 +733,7 @@ local a,l,pos,g,b;
       if a[4]=0 then
         b:=a{[2,3]}; # 0 is filler
       else
-	b:=a{[2..4]};
+        b:=a{[2..4]};
       fi;
       g:=CallFuncList(SimpleGroup,b);
     fi;
@@ -887,23 +889,23 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
 
       # do a few basic cases first 
       if d=1 and f=1 and g=6 then
-	# subgroup classes S_3
-	dd:=[ [ 1, "1" ], [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
-	return dd;
+        # subgroup classes S_3
+        dd:=[ [ 1, "1" ], [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
+        return dd;
       elif d=1 and f=2 and g=6 then
         # subgroup classes 2\times S_3 (since S3 cannot act on C2)
-	dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 2, "2_3" ],
+        dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 2, "2_3" ],
               [ 3, "3" ], [ 4, "2x2" ], [ 6, "6" ], [6,"S3_1"],
-	      [ 6, "S3_2" ], [ 12, "D12" ] ];
+              [ 6, "S3_2" ], [ 12, "D12" ] ];
       elif d=4 and f=1 and g=6 then
-	# subgroup classes S_4 
-	dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
-	      [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
-	      [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ], 
-	      [ 24, "S4" ] ];
-	return dd;
+        # subgroup classes S_4 
+        dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
+              [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
+              [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ], 
+              [ 24, "S4" ] ];
+        return dd;
       else
-	Error("mixed triality not yet done");
+        Error("mixed triality not yet done");
         return false;
       fi;
     fi;
@@ -922,24 +924,24 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     local d2,g1,f1;
       d2:=c2[1];
       if c1[3]>0 and d2>0 then
-	d2:=((d2+1)^gal[c1[3]+1])-1;
+        d2:=((d2+1)^gal[c1[3]+1])-1;
       fi;
 
       if c1[2]=1 then
-	# g-action
-	d2:=-d2 mod d;
+        # g-action
+        d2:=-d2 mod d;
       fi;
 
       if g=1 then
-	g1:=0;
+        g1:=0;
       else
-	g1:=(c1[2]+c2[2]) mod g;
+        g1:=(c1[2]+c2[2]) mod g;
       fi;
 
       if f=1 then
-	f1:=0;
+        f1:=0;
       else
-	f1:=(c1[3]+c2[3]) mod f;
+        f1:=(c1[3]+c2[3]) mod f;
       fi;
       f1:=[(c1[1]+d2) mod d,g1,f1];
 #Print(c1,"*",c2,"=",f1,"\n");
@@ -958,33 +960,33 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
       dd:=List(ConjugacyClassesSubgroups(dd),Representative);
       ddn:=[];
       for i in dd do
-	if IsCyclic(i) then
-	  Add(ddn,String(Size(i)));
-	else
-	  r:="";
-	  s:=Reversed(ElementaryAbelianSeriesLargeSteps(i));
-	  for j in [2..Length(s)] do
-	    if Length(r)>0 then
-	      Add(r,'.');
-	    fi;
-	    j:=AbelianInvariants(s[j]/s[j-1]);
-	    Append(r,String(j[1]));
-	    if Length(j)>1 then
-	      Add(r,'^');
-	      Append(r,String(Length(j)));
-	    fi;
-	  od;
-	  Add(ddn,r);
-	fi;
+        if IsCyclic(i) then
+          Add(ddn,String(Size(i)));
+        else
+          r:="";
+          s:=Reversed(ElementaryAbelianSeriesLargeSteps(i));
+          for j in [2..Length(s)] do
+            if Length(r)>0 then
+              Add(r,'.');
+            fi;
+            j:=AbelianInvariants(s[j]/s[j-1]);
+            Append(r,String(j[1]));
+            if Length(j)>1 then
+              Add(r,'^');
+              Append(r,String(Length(j)));
+            fi;
+          od;
+          Add(ddn,r);
+        fi;
       od;
       r:=[];
       for i in [1..Length(dd)] do
-	if Number(ddn,x->x=ddn[i])=1 then
-	  Add(r,[Size(dd[i]),ddn[i]]);
-	else
-	  Add(r,[Size(dd[i]),Concatenation(ddn[i],"_",
-	    String(Number(ddn{[1..i]},x->x=ddn[i])))]);
-	fi;
+        if Number(ddn,x->x=ddn[i])=1 then
+          Add(r,[Size(dd[i]),ddn[i]]);
+        else
+          Add(r,[Size(dd[i]),Concatenation(ddn[i],"_",
+            String(Number(ddn{[1..i]},x->x=ddn[i])))]);
+        fi;
       od;
       
       return r;
@@ -1150,8 +1152,8 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
   fi;
 
   result:=rec(idSimple:=id,
-	      tomName:=nam,
-	      allExtensions:=e,
+              tomName:=nam,
+              allExtensions:=e,
               classicalId:=ClassicalIsomorphismTypeFiniteSimpleGroup(id));
   if aut<>false then
     result.fullAutGroup:=aut;
@@ -1216,10 +1218,10 @@ local H,d,id,hom,field,C,dom,orbs;
     if IsMatrixGroup(Source(hom)) and Image(hom)=G and Size(Source(hom))/Size(G)<field then
       # test that the source is really the group we want
       if GeneratorsOfGroup(C)=GeneratorsOfGroup(Source(hom)) 
-	or Source(hom)=C then
-	  return hom;
+        or Source(hom)=C then
+          return hom;
       #else
-#	Print("different source -- ID\n");
+#       Print("different source -- ID\n");
       fi;
     fi;
   fi;
