@@ -3487,21 +3487,19 @@ Obj OnSetsPPerm(Obj set, Obj f)
     UInt2 *     ptf2;
     UInt4 *     ptf4;
     UInt        deg;
-    const Obj * ptset;
-    Obj *       ptres, res;
+    Obj         res;
+    const Obj * ptres;
+    Obj *       ptresOut;
     UInt        i, k, reslen;
+    Obj         tmp;
 
-    GAP_ASSERT(IS_PLIST(set));
-    GAP_ASSERT(LEN_PLIST(set) > 0);
-    GAP_ASSERT(IS_PPERM(f));
-
-    const UInt len = LEN_PLIST(set);
-
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
+    // copy the list into a mutable plist, which we will then modify in place
+    res = PLAIN_LIST_COPY(set);
+    const UInt len = LEN_PLIST(res);
 
     /* get the pointer                                                 */
-    ptset = CONST_ADDR_OBJ(set) + len;
-    ptres = ADDR_OBJ(res) + 1;
+    ptres = CONST_ADDR_OBJ(res) + 1;
+    ptresOut = ADDR_OBJ(res) + 1;
     reslen = 0;
 
     if (TNUM_OBJ(f) == T_PPERM2) {
@@ -3509,12 +3507,13 @@ Obj OnSetsPPerm(Obj set, Obj f)
         deg = DEG_PPERM2(f);
 
         /* loop over the entries of the tuple                              */
-        for (i = len; 1 <= i; i--, ptset--) {
-            if (IS_POS_INTOBJ(*ptset)) {
-                k = INT_INTOBJ(*ptset);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg && ptf2[k - 1] != 0) {
                     reslen++;
-                    *ptres++ = INTOBJ_INT(ptf2[k - 1]);
+                    *ptresOut++ = INTOBJ_INT(ptf2[k - 1]);
                 }
             }
             else {
@@ -3533,12 +3532,13 @@ Obj OnSetsPPerm(Obj set, Obj f)
         deg = DEG_PPERM4(f);
 
         /* loop over the entries of the tuple                              */
-        for (i = len; 1 <= i; i--, ptset--) {
-            if (IS_POS_INTOBJ(*ptset)) {
-                k = INT_INTOBJ(*ptset);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg && ptf4[k - 1] != 0) {
                     reslen++;
-                    *ptres++ = INTOBJ_INT(ptf4[k - 1]);
+                    *ptresOut++ = INTOBJ_INT(ptf4[k - 1]);
                 }
             }
             else {
@@ -3581,21 +3581,21 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     UInt2 *     ptf2;
     UInt4 *     ptf4;
     UInt        deg;
-    const Obj * pttup;
-    Obj *       ptres, res;
+    Obj         res;
+    const Obj * ptres;
+    Obj *       ptresOut;
     UInt        i, k, reslen;
+    Obj         tmp;
 
-    GAP_ASSERT(IS_PLIST(tup));
-    GAP_ASSERT(LEN_PLIST(tup) > 0);
-    GAP_ASSERT(IS_PPERM(f));
-
-    const UInt len = LEN_PLIST(tup);
-
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST_CYC, len);
+    // copy the list into a mutable plist, which we will then modify in place
+    res = PLAIN_LIST_COPY(tup);
+    RESET_FILT_LIST(res, FN_IS_SSORT);
+    RESET_FILT_LIST(res, FN_IS_NSORT);
+    const UInt len = LEN_PLIST(res);
 
     /* get the pointer                                                 */
-    pttup = CONST_ADDR_OBJ(tup) + 1;
-    ptres = ADDR_OBJ(res) + 1;
+    ptres = CONST_ADDR_OBJ(res) + 1;
+    ptresOut = ADDR_OBJ(res) + 1;
     reslen = 0;
 
     if (TNUM_OBJ(f) == T_PPERM2) {
@@ -3603,12 +3603,13 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         deg = DEG_PPERM2(f);
 
         /* loop over the entries of the tuple                              */
-        for (i = 1; i <= len; i++, pttup++) {
-            if (IS_POS_INTOBJ(*pttup)) {
-                k = INT_INTOBJ(*pttup);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg && ptf2[k - 1] != 0) {
                     reslen++;
-                    *ptres++ = INTOBJ_INT(ptf2[k - 1]);
+                    *ptresOut++ = INTOBJ_INT(ptf2[k - 1]);
                 }
             }
             else {
@@ -3627,12 +3628,13 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         deg = DEG_PPERM4(f);
 
         /* loop over the entries of the tuple                              */
-        for (i = 1; i <= len; i++, pttup++) {
-            if (IS_POS_INTOBJ(*pttup)) {
-                k = INT_INTOBJ(*pttup);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg && ptf4[k - 1] != 0) {
                     reslen++;
-                    *ptres++ = INTOBJ_INT(ptf4[k - 1]);
+                    *ptresOut++ = INTOBJ_INT(ptf4[k - 1]);
                 }
             }
             else {

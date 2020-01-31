@@ -1009,19 +1009,16 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
     }
     /* special case for permutations                                       */
     if (IS_PERM(elm)) {
-        PLAIN_LIST( tuple );
         return OnTuplesPerm( tuple, elm );
     }
 
     /* special case for transformations                                       */
     if (IS_TRANS(elm)) {
-        PLAIN_LIST( tuple );
         return OnTuplesTrans( tuple, elm );
     }
 
     /* special case for partial perms */
     if (IS_PPERM(elm)) {
-        PLAIN_LIST( tuple );
         return OnTuplesPPerm( tuple, elm );
     }
 
@@ -1073,19 +1070,16 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
         
     /* special case for permutations                                       */
     if (IS_PERM(elm)) {
-        PLAIN_LIST( set );
         return OnSetsPerm( set, elm );
     }
 
     /* special case for transformations */
     if (IS_TRANS(elm)){
-      PLAIN_LIST(set);
       return OnSetsTrans( set, elm);
     }
     
     /* special case for partial perms */
     if (IS_PPERM(elm)){
-      PLAIN_LIST(set);
       return OnSetsPPerm( set, elm);
     }
 

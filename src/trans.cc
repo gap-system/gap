@@ -3879,37 +3879,30 @@ Obj OnSetsTrans(Obj set, Obj f)
     const UInt2 * ptf2;
     const UInt4 * ptf4;
     UInt    deg;
-    const Obj *   ptset;
     Obj *   ptres, tmp, res;
     UInt    i, isint, k;
 
-    GAP_ASSERT(IS_PLIST(set));
-    GAP_ASSERT(LEN_PLIST(set) > 0);
+    // copy the list into a mutable plist, which we will then modify in place
+    res = PLAIN_LIST_COPY(set);
+    const UInt len = LEN_PLIST(res);
 
-    const UInt len = LEN_PLIST(set);
-
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
-    SET_LEN_PLIST(res, len);
-
-    ptset = CONST_ADDR_OBJ(set) + len;
-    ptres = ADDR_OBJ(res) + len;
+    ptres = ADDR_OBJ(res) + 1;
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         // loop over the entries of the tuple
         isint = 1;
-        for (i = len; 1 <= i; i--, ptset--, ptres--) {
-            if (IS_POS_INTOBJ(*ptset)) {
-                k = INT_INTOBJ(*ptset);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg) {
-                    k = ptf2[k - 1] + 1;
+                    *ptres = INTOBJ_INT(ptf2[k - 1] + 1);
                 }
-                *ptres = INTOBJ_INT(k);
             }
             else {
                 isint = 0;
-                tmp = POW(*ptset, f);
-                ptset = CONST_ADDR_OBJ(set) + i;
+                tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf2 = CONST_ADDR_TRANS2(f);
                 *ptres = tmp;
@@ -3923,18 +3916,17 @@ Obj OnSetsTrans(Obj set, Obj f)
 
         // loop over the entries of the tuple
         isint = 1;
-        for (i = len; 1 <= i; i--, ptset--, ptres--) {
-            if (IS_POS_INTOBJ(*ptset)) {
-                k = INT_INTOBJ(*ptset);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg) {
-                    k = ptf4[k - 1] + 1;
+                    *ptres = INTOBJ_INT(ptf4[k - 1] + 1);
                 }
-                *ptres = INTOBJ_INT(k);
             }
             else {
                 isint = 0;
-                tmp = POW(*ptset, f);
-                ptset = CONST_ADDR_OBJ(set) + i;
+                tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf4 = CONST_ADDR_TRANS4(f);
                 *ptres = tmp;
@@ -3947,12 +3939,12 @@ Obj OnSetsTrans(Obj set, Obj f)
     if (isint) {
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
-
         RetypeBagSM(res, T_PLIST_CYC_SSORT);
     }
     else {
         SortDensePlist(res);
         RemoveDupsDensePlist(res);
+        RESET_FILT_LIST(res, FN_IS_SSORT);
     }
 
     return res;
@@ -3973,41 +3965,34 @@ Obj OnTuplesTrans(Obj tup, Obj f)
     const UInt2 * ptf2;
     const UInt4 * ptf4;
     UInt    deg, i, k;
-    const Obj *   pttup;
     Obj *   ptres, res, tmp;
 
-    GAP_ASSERT(IS_PLIST(tup));
-    GAP_ASSERT(LEN_PLIST(tup) > 0);
+    // copy the list into a mutable plist, which we will then modify in place
+    res = PLAIN_LIST_COPY(tup);
+    RESET_FILT_LIST(res, FN_IS_NSORT);
+    const UInt len = LEN_PLIST(res);
 
-    const UInt len = LEN_PLIST(tup);
-
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST, len);
-    SET_LEN_PLIST(res, len);
-
-    pttup = CONST_ADDR_OBJ(tup) + len;
-    ptres = ADDR_OBJ(res) + len;
+    ptres = ADDR_OBJ(res) + 1;
 
     if (TNUM_OBJ(f) == T_TRANS2) {
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
 
         // loop over the entries of the tuple
-        for (i = len; 1 <= i; i--, pttup--, ptres--) {
-            if (IS_POS_INTOBJ(*pttup)) {
-                k = INT_INTOBJ(*pttup);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg) {
                     k = ptf2[k - 1] + 1;
                 }
                 *ptres = INTOBJ_INT(k);
             }
+            else if (tmp == NULL) {
+                ErrorQuit("OnTuples: <tup> must not contain holes", 0, 0);
+            }
             else {
-                if (*pttup == NULL) {
-                    ErrorQuit("OnTuples for transformation: list must not "
-                              "contain holes",
-                              0, 0);
-                }
-                tmp = POW(*pttup, f);
-                pttup = CONST_ADDR_OBJ(tup) + i;
+                tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf2 = CONST_ADDR_TRANS2(f);
                 *ptres = tmp;
@@ -4020,22 +4005,20 @@ Obj OnTuplesTrans(Obj tup, Obj f)
         deg = DEG_TRANS4(f);
 
         // loop over the entries of the tuple
-        for (i = len; 1 <= i; i--, pttup--, ptres--) {
-            if (IS_POS_INTOBJ(*pttup)) {
-                k = INT_INTOBJ(*pttup);
+        for (i = 1; i <= len; i++, ptres++) {
+            tmp = *ptres;
+            if (IS_POS_INTOBJ(tmp)) {
+                k = INT_INTOBJ(tmp);
                 if (k <= deg) {
                     k = ptf4[k - 1] + 1;
                 }
                 *ptres = INTOBJ_INT(k);
             }
+            else if (tmp == NULL) {
+                ErrorQuit("OnTuples: <tup> must not contain holes", 0, 0);
+            }
             else {
-                if (*pttup == NULL) {
-                    ErrorQuit("OnTuples for transformation: list must not "
-                              "contain holes",
-                              0, 0);
-                }
-                tmp = POW(*pttup, f);
-                pttup = CONST_ADDR_OBJ(tup) + i;
+                tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf4 = CONST_ADDR_TRANS4(f);
                 *ptres = tmp;

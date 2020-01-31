@@ -2665,9 +2665,9 @@ gap> OnTuples([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19, 324, 4124, 123124, 2 ^ 60]
 [ 10, 7, 10, 8, 8, 7, 5, 9, 1, 9, 11, 19, 324, 4124, 123124, 
   1152921504606846976 ]
 gap> OnTuples([1, , 3], Transformation([1, 1]));
-Error, OnTuples for transformation: list must not contain holes
+Error, OnTuples: <tup> must not contain holes
 gap> OnTuples([1, , 3], Transformation([1], [65537]));
-Error, OnTuples for transformation: list must not contain holes
+Error, OnTuples: <tup> must not contain holes
 gap> f := Transformation([2, 6, 7, 2, 6, 9, 9, 1, 1, 5]);;
 gap> OnTuples([1 .. 10], f);
 [ 2, 6, 7, 2, 6, 9, 9, 1, 1, 5 ]
