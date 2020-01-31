@@ -1,4 +1,4 @@
-#@local checklens,n,permAll,permBig,permSml,x,y,moved,p
+#@local checklens,n,permAll,permBig,permSml,x,y,moved,p,r,t,l
 gap> START_TEST("perm.tst");
 
 # Permutations come in two flavors in GAP, with two TNUMs: T_PERM2 for
@@ -471,9 +471,9 @@ gap> OnTuples([(1,2),(1,3)],(1,2,70000));
 
 #
 gap> OnTuples([,1],());
-Error, OnTuples for perm: list must not contain holes
+Error, OnTuples: <tup> must not contain holes
 gap> OnTuples([,1],(70000,70001));
-Error, OnTuples for perm: list must not contain holes
+Error, OnTuples: <tup> must not contain holes
 
 #
 # OnSets for permutations
@@ -496,6 +496,20 @@ gap> OnSets([(3,4),(1,2)],(1,2,70000));
 [ (3,4), (2,70000) ]
 gap> OnSets([(1,2),(1,3)],(1,2,70000));
 [ (2,3), (2,70000) ]
+
+#
+# OnTuples and OnSets for a non-internal list
+#
+gap> r:=NewCategory("ListTestObject",IsSmallList);;
+gap> t:=NewType(ListsFamily, r and IsMutable and IsPositionalObjectRep);;
+gap> InstallMethod(IsBound\[\],[r,IsPosInt],{l,i}->true);
+gap> InstallMethod(\[\],[r,IsPosInt],{l,i}->i);
+gap> InstallMethod(Length,[r],l->3); # hard code length
+gap> l:=Objectify(t,[]);;
+gap> OnTuples(l, (1,3));
+[ 3, 2, 1 ]
+gap> OnSets(l, (1,3));
+[ 1, 2, 3 ]
 
 #
 # MappingPermListList

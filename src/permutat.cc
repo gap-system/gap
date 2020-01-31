@@ -2011,44 +2011,37 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
 {
     Obj                 res;            /* handle of the image, result     */
     Obj *               ptRes;          /* pointer to the result           */
-    const Obj *         ptTup;          /* pointer to the tuple            */
     const T *           ptPrm;          /* pointer to the permutation      */
     Obj                 tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
     UInt                i, k;           /* loop variables                  */
 
-    GAP_ASSERT(IS_PLIST(tup));
-    GAP_ASSERT(LEN_PLIST(tup) > 0);
-
-    const UInt len = LEN_PLIST(tup);
-
-    /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(tup), T_PLIST, len);
-    SET_LEN_PLIST(res, len);
+    // copy the list into a mutable plist, which we will then modify in place
+    res = PLAIN_LIST_COPY(tup);
+    RESET_FILT_LIST(res, FN_IS_SSORT);
+    RESET_FILT_LIST(res, FN_IS_NSORT);
+    const UInt len = LEN_PLIST(res);
 
     /* get the pointer                                                 */
-    ptTup = CONST_ADDR_OBJ(tup) + len;
-    ptRes = ADDR_OBJ(res) + len;
+    ptRes = ADDR_OBJ(res) + 1;
     ptPrm = CONST_ADDR_PERM<T>(perm);
     lmp = DEG_PERM<T>(perm);
 
     /* loop over the entries of the tuple                              */
-    for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-        if (IS_POS_INTOBJ(*ptTup)) {
-            k = INT_INTOBJ( *ptTup );
-            if (k <= lmp)
-                tmp = INTOBJ_INT( ptPrm[k-1] + 1 );
-            else
-                tmp = *ptTup;
-            *ptRes = tmp;
+    for (i = 1; i <= len; i++, ptRes++) {
+        tmp = *ptRes;
+        if (IS_POS_INTOBJ(tmp)) {
+            k = INT_INTOBJ(tmp);
+            if (k <= lmp) {
+                *ptRes = INTOBJ_INT(ptPrm[k - 1] + 1);
+            }
+        }
+        else if (tmp == NULL) {
+            ErrorQuit("OnTuples: <tup> must not contain holes", 0, 0);
         }
         else {
-            if (*ptTup == NULL) {
-                ErrorQuit("OnTuples for perm: list must not contain holes", 0,
-                          0);
-            }
-            tmp = POW( *ptTup, perm );
-            ptTup = CONST_ADDR_OBJ(tup) + i;
+            tmp = POW(tmp, perm);
+            //  POW may trigger a garbage collection, so update pointers
             ptRes = ADDR_OBJ(res) + i;
             ptPrm = CONST_ADDR_PERM<T>(perm);
             *ptRes = tmp;
@@ -2087,43 +2080,34 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
 {
     Obj                 res;            /* handle of the image, result     */
     Obj *               ptRes;          /* pointer to the result           */
-    const Obj *         ptTup;          /* pointer to the tuple            */
     const T *           ptPrm;          /* pointer to the permutation      */
     Obj                 tmp;            /* temporary handle                */
     UInt                lmp;            /* largest moved point             */
-    BOOL                isint;          /* <set> only holds integers       */
     UInt                i, k;           /* loop variables                  */
 
-    GAP_ASSERT(IS_PLIST(set));
-    GAP_ASSERT(LEN_PLIST(set) > 0);
-
-    const UInt len = LEN_PLIST(set);
-
-    /* make a bag for the result and initialize pointers                   */
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST, len);
-    SET_LEN_PLIST(res, len);
+    // copy the list into a mutable plist, which we will then modify in place
+    res = PLAIN_LIST_COPY(set);
+    const UInt len = LEN_PLIST(res);
 
     /* get the pointer                                                 */
-    ptTup = CONST_ADDR_OBJ(set) + len;
-    ptRes = ADDR_OBJ(res) + len;
+    ptRes = ADDR_OBJ(res) + 1;
     ptPrm = CONST_ADDR_PERM<T>(perm);
     lmp = DEG_PERM<T>(perm);
 
     /* loop over the entries of the tuple                              */
-    isint = TRUE;
-    for ( i = len; 1 <= i; i--, ptTup--, ptRes-- ) {
-        if (IS_POS_INTOBJ(*ptTup)) {
-            k = INT_INTOBJ( *ptTup );
-            if (k <= lmp)
-                tmp = INTOBJ_INT( ptPrm[k-1] + 1 );
-            else
-                tmp = INTOBJ_INT( k );
-            *ptRes = tmp;
+    BOOL isSmallIntList = TRUE;
+    for (i = 1; i <= len; i++, ptRes++) {
+        tmp = *ptRes;
+        if (IS_POS_INTOBJ(tmp)) {
+            k = INT_INTOBJ(tmp);
+            if (k <= lmp) {
+                *ptRes = INTOBJ_INT(ptPrm[k - 1] + 1);
+            }
         }
         else {
-            isint = FALSE;
-            tmp = POW( *ptTup, perm );
-            ptTup = CONST_ADDR_OBJ(set) + i;
+            isSmallIntList = FALSE;
+            tmp = POW(tmp, perm);
+            //  POW may trigger a garbage collection, so update pointers
             ptRes = ADDR_OBJ(res) + i;
             ptPrm = CONST_ADDR_PERM<T>(perm);
             *ptRes = tmp;
@@ -2132,12 +2116,13 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     }
 
     // sort the result
-    if (isint) {
+    if (isSmallIntList) {
         SortPlistByRawObj(res);
         RetypeBagSM(res, T_PLIST_CYC_SSORT);
     }
     else {
         SortDensePlist(res);
+        SET_FILT_LIST(res, FN_IS_SSORT);
     }
 
     return res;
