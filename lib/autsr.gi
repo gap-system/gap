@@ -619,7 +619,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     u:=SylowSubgroup(u,p);
     u:=Omega(u,p,1);
     i:=Position(d,u);
-    if i<>fail and i>2 and Size(u)<=100 then
+    if i<>fail and i>2 then
       d:=d{Union([1],[i..Length(d)])};
     fi;
   fi;
