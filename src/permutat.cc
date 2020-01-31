@@ -1026,9 +1026,8 @@ static inline Obj PermList(Obj list)
     T *                 ptTmp;          /* pointer to the buffer bag       */
     Int                 i,  k;          /* loop variables                  */
 
-    PLAIN_LIST( list );
-
-    degPerm = LEN_LIST( list );
+    GAP_ASSERT(IS_PLIST(list));
+    degPerm = LEN_PLIST( list );
 
     /* make sure that the global buffer bag is large enough for checkin*/
     UseTmpPerm(SIZEBAG_PERM<T>(degPerm));
@@ -1073,6 +1072,20 @@ static Obj FuncPermList(Obj self, Obj list)
     RequireSmallList("PermList", list);
 
     UInt len = LEN_LIST( list );
+    if (len == 0)
+        return IdentityPerm;
+    if (!IS_PLIST(list)) {
+        if (!IS_POSS_LIST(list))
+            return Fail;
+        if (IS_RANGE(list)) {
+            if (GET_LOW_RANGE(list) == 1 && GET_INC_RANGE(list) == 1)
+                return IdentityPerm;
+            else
+                return Fail;
+        }
+        list = PLAIN_LIST_COPY(list);
+    }
+
     if ( len <= 65536 ) {
         return PermList<UInt2>(list);
     }

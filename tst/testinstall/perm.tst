@@ -284,6 +284,8 @@ gap> SetX(permAll, permAll, {a,b} -> Comm(a,b) = LeftQuotient((b*a), a*b));
 #
 gap> PermList([1,2,3]) = ();
 true
+gap> PermList([1..3]) = ();
+true
 gap> () = PermList([1,2,3]);
 true
 gap> (1,2) = PermList([2,1,3]);
@@ -312,6 +314,14 @@ fail
 gap> PermList([1,0,3]);
 fail
 gap> PermList([1,1,3]);
+fail
+gap> PermList([2..5]);
+fail
+gap> PermList([1,0..-4]);
+fail
+gap> PermList("abc");
+fail
+gap> PermList([true,false]); # argument is a blist
 fail
 
 # PermList error handling for T_PERM4
