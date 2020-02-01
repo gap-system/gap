@@ -1319,9 +1319,10 @@ Region * CurrentRegion(void)
 
 // Kernel debugging information for guards.
 //
-// When compiled with -DDEBUG_GUARDS, the GAP variable GUARD_ERROR_STACK
-// will contain the C stack after an error, allowing us to located where
-// it occurred without having to fire up a debugger first.
+// When DEBUG_GUARDS is #defined, the GAP variable GUARD_ERROR_STACK
+// is set to a GAP plain list describing the C stack after an error,
+// allowing us to located where it occurred without having to fire up a
+// debugger first.
 //
 // The variables NumReadErrors and NumWriteErrors track the number of
 // failed guard checks. These are used in conjunction with the low-level

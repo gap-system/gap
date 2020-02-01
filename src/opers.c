@@ -1492,10 +1492,6 @@ static Obj FuncCOMPACT_TYPE_IDS(Obj self)
 // TYPE_OBJ
 static inline Obj TYPE_OBJ_FEO(Obj obj)
 {
-#ifdef HPCGAP
-    /* TODO: We need to be able to automatically derive this. */
-    ImpliedWriteGuard(obj);
-#endif
     switch ( TNUM_OBJ( obj ) ) {
     case T_COMOBJ:
         return TYPE_COMOBJ(obj);
@@ -2524,9 +2520,6 @@ static Obj WRAP_NAME(Obj name, const char *addon)
     UInt name_len = GET_LEN_STRING(name);
     UInt addon_len = strlen(addon);
     Obj fname = NEW_STRING( name_len + addon_len + 2 );
-#ifdef HPCGAP
-    ImpliedWriteGuard(fname);
-#endif
 
     char *ptr = CSTR_STRING(fname);
     memcpy( ptr, addon, addon_len );
@@ -2545,9 +2538,6 @@ static Obj PREFIX_NAME(Obj name, const char *prefix)
     UInt name_len = GET_LEN_STRING(name);
     UInt prefix_len = strlen(prefix);
     Obj fname = NEW_STRING( name_len + prefix_len );
-#ifdef HPCGAP
-    ImpliedWriteGuard(fname);
-#endif
 
     char *ptr = CSTR_STRING(fname);
     memcpy( ptr, prefix, prefix_len );

@@ -27,11 +27,6 @@ static ALWAYS_INLINE Bag WriteGuard(Bag bag)
 }
 
 
-EXPORT_INLINE Bag ImpliedWriteGuard(Bag bag)
-{
-    return bag;
-}
-
 EXPORT_INLINE int CheckWriteAccess(Bag bag)
 {
     Region * region;
@@ -59,11 +54,6 @@ static ALWAYS_INLINE Bag ReadGuard(Bag bag)
 {
     if (!ReadCheck(bag))
         HandleReadGuardError(bag);
-    return bag;
-}
-
-static ALWAYS_INLINE Bag ImpliedReadGuard(Bag bag)
-{
     return bag;
 }
 
