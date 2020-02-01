@@ -265,6 +265,13 @@ AC_MSG_CHECKING([whether to use guards for race protection in HPC-GAP])
 AC_MSG_RESULT([$enable_guards])
 
 dnl
+dnl Check: --enable-guards requires --enable-hpcgap
+dnl
+
+AS_IF([[test "x$enable_guards" == "xyes" && test "x$enable_hpcgap" == "xno"]],
+  [AC_MSG_ERROR([Option --enable-guards requires --enable-hpcgap])])
+
+dnl
 dnl User setting: native thread-local storage (off by default)
 dnl See src/hpc/tls.h for more details on thread-local storage options.
 dnl
