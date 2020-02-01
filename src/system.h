@@ -25,14 +25,6 @@
 #endif
 
 
-// If we are not running HPC-GAP, guards should be disabled
-
-#ifndef HPCGAP
-#ifdef USE_HPC_GUARDS
-#error Do not use --enable-guards without --enable-hpcgap.
-#endif
-#endif
-
 /****************************************************************************
 **
 *S  GAP_PATH_MAX . . . . . . . . . . . .  size for buffers storing file paths
