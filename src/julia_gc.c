@@ -785,6 +785,10 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 #endif
     max_pool_obj_size = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
+#ifdef HPCGAP
+    if (!getenv("JULIA_NUM_THREADS"))
+        setenv("JULIA_NUM_THREADS", "16", 0); // TODO: make configurable
+#endif
     jl_init();
     jl_gc_enable(0);
 
