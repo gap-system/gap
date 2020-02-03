@@ -4075,6 +4075,16 @@ Error, <set> must be a list of positive small integers
 gap> OnTuples(["a"], PPerm4([1, 2, 3, 4, 5, 7], [6, 4, 5, 3, 8, 2]));
 Error, <tup> must be a list of small integers
 
+# Test regression for OnSets and OnTuples on empty sets
+gap> OnSets([], PartialPerm([])) = [];
+true
+gap> OnTuples([], PartialPerm([])) = [];
+true
+gap> OnSets([1], PartialPerm([])) = [];
+true
+gap> OnTuples([1], PartialPerm([])) = [];
+true
+
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;
 gap> SetUserPreference("NotationForPartialPerm", notationpp);;

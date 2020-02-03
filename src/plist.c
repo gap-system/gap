@@ -1035,6 +1035,7 @@ static Int LenPlist(Obj list)
 
 static Int LenPlistEmpty(Obj list)
 {
+    GAP_ASSERT(LEN_PLIST(list) == 0);
     return 0;
 }
 
