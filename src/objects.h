@@ -841,7 +841,13 @@ EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj)
 */
 EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
 {
+#ifdef HPCGAP
+    MEMBAR_WRITE();
+    // Only require a read guard
+    ((Obj *) CONST_ADDR_OBJ(obj))[0] = val;
+#else
     ADDR_OBJ(obj)[0] = val;
+#endif
 }
 
 
@@ -884,7 +890,13 @@ EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj)
 */
 EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
 {
+#ifdef HPCGAP
+    MEMBAR_WRITE();
+    // Only require a read guard
+    ((Obj *) CONST_ADDR_OBJ(obj))[0] = val;
+#else
     ADDR_OBJ(obj)[0] = val;
+#endif
 }
 
 
