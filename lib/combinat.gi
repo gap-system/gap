@@ -2466,6 +2466,7 @@ InstallGlobalFunction(AssociatedPartition,function(lambda)
   local res, k, j;
   res := [];
   k := Length(lambda);
+  if k=0 then return res;fi; # empty partition
   for j in [1..lambda[1]] do
     if j <= lambda[k] then
       res[j] := k;

@@ -393,6 +393,7 @@ and <A>change</A> is the base change from <A>bas</A> to <A>sub</A>
 
 <Description>
 creates a new module corresponding to the action of <A>module</A> on
+the non-trivial submodule
 <A>sub</A>.
 In the <C>NB</C> version the basis <A>sub</A> must be normed.
 (That is it must be in echelon form with pivots normed to 1,
@@ -405,7 +406,7 @@ see&nbsp;<Ref Func="MTX.NormedBasisAndBaseChange"/>.)
 
 <Description>
 creates a new module corresponding to the action of <A>module</A> on the
-factor of <A>sub</A>. If <A>compl</A> is given, it has to be a basis of a
+factor of the proper submodule <A>sub</A>. If <A>compl</A> is given, it has to be a basis of a
 (vector space-)complement of <A>sub</A>. The action then will correspond to
 <A>compl</A>.
 <P/>
