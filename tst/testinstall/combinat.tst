@@ -498,5 +498,11 @@ gap> Print(List( [0..14], Bernoulli ),"\n");
 gap> Bernoulli( 80 );
 -4603784299479457646935574969019046849794257872751288919656867/230010
 
+# AssociatedPartition
+gap> AssociatedPartition([]);
+[  ]
+gap> AssociatedPartition(Concatenation([7],ListWithIdenticalEntries(99,1)));
+[ 100, 1, 1, 1, 1, 1, 1 ]
+
 # thats it for the combinatorical package  ##################################
 gap> STOP_TEST( "combinat.tst", 1);
