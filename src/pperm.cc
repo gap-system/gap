@@ -3550,16 +3550,17 @@ Obj OnSetsPPerm(Obj set, Obj f)
             }
         }
     }
-    if (reslen == 0) {
-        RetypeBagSM(res, T_PLIST_EMPTY);
-        return res;
-    }
+
     SET_LEN_PLIST(res, reslen);
     SHRINK_PLIST(res, reslen);
 
-    // sort the result
-    SortPlistByRawObj(res);
-    RetypeBagSM(res, T_PLIST_CYC_SSORT);
+    if (reslen == 0) {
+        RetypeBagSM(res, T_PLIST_EMPTY);
+    }
+    else {
+        SortPlistByRawObj(res);
+        RetypeBagSM(res, T_PLIST_CYC_SSORT);
+    }
 
     return res;
 }
