@@ -376,7 +376,7 @@ static Obj EvalFunccallXargs(Expr call)
 **  'DoExecFunc<i>args' first switches  to a new  values bag.  Then it enters
 **  the arguments <arg1>, <arg2>, and so on in this new  values bag.  Then it
 **  executes  the function body.   After  that it  switches back  to  the old
-**  values bag.  Finally it returns the result from 'STATE(ReturnObjStat)'.
+**  values bag.
 **
 **  Note that these functions are never called directly, they are only called
 **  through the function call mechanism.
