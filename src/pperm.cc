@@ -3658,67 +3658,16 @@ static Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
     RequireSmallList("OnPosIntSetsPartialPerm", set);
     RequirePartialPerm("OnPosIntSetsPartialPerm", f);
 
-    UInt2 *     ptf2;
-    UInt4 *     ptf4;
-    UInt        deg;
-    const Obj * ptset;
-    Obj *       ptres, tmp, res;
-    UInt        i, k, reslen;
+    const UInt len = LEN_LIST(set);
 
-    if (LEN_LIST(set) == 0)
+    if (len == 0)
         return set;
 
-    if (LEN_LIST(set) == 1 && ELM_LIST(set, 1) == INTOBJ_INT(0)) {
+    if (len == 1 && ELM_LIST(set, 1) == INTOBJ_INT(0)) {
         return FuncIMAGE_SET_PPERM(self, f);
     }
 
-    PLAIN_LIST(set);
-    res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT,
-                                    LEN_PLIST(set));
-
-    /* get the pointer                                                 */
-    ptset = CONST_ADDR_OBJ(set) + LEN_LIST(set);
-    ptres = ADDR_OBJ(res) + 1;
-    reslen = 0;
-
-    if (TNUM_OBJ(f) == T_PPERM2) {
-        ptf2 = ADDR_PPERM2(f);
-        deg = DEG_PPERM2(f);
-        /* loop over the entries of the tuple                              */
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--) {
-            k = INT_INTOBJ(*ptset);
-            if (k <= deg && ptf2[k - 1] != 0) {
-                tmp = INTOBJ_INT(ptf2[k - 1]);
-                reslen++;
-                *ptres++ = tmp;
-            }
-        }
-    }
-    else {
-        ptf4 = ADDR_PPERM4(f);
-        deg = DEG_PPERM4(f);
-        /* loop over the entries of the tuple                              */
-        for (i = LEN_LIST(set); 1 <= i; i--, ptset--) {
-            k = INT_INTOBJ(*ptset);
-            if (k <= deg && ptf4[k - 1] != 0) {
-                tmp = INTOBJ_INT(ptf4[k - 1]);
-                reslen++;
-                *ptres++ = tmp;
-            }
-        }
-    }
-    ResizeBag(res, (reslen + 1) * sizeof(Obj));
-    SET_LEN_PLIST(res, reslen);
-
-    if (reslen == 0) {
-        RetypeBagSM(res, T_PLIST_EMPTY);
-    }
-    else {
-        SortPlistByRawObj(res);
-        RetypeBagSM(res, T_PLIST_CYC_SSORT);
-    }
-
-    return res;
+    return OnSetsPPerm(set, f);
 }
 
 /****************************************************************************/
