@@ -135,9 +135,9 @@ UInt HaveInterrupt(void)
 **  that a leave-statement was executed).  If no leave-statement is executed,
 **  then 0 is returned.
 **
-**  A statement sequence with <n> statements is represented by  a bag of type
-**  'STAT_SEQ_STAT' with  <n> subbags.  The first  is  the  first statement, the
-**  second is the second statement, and so on.
+**  A statement sequence with <n> statements is a statement of type
+**  'STAT_SEQ_STAT' with <n> slots. The first points to the first statement,
+**  the second points to the second statement, and so on.
 */
 static ALWAYS_INLINE UInt ExecSeqStatHelper(Stat stat, UInt nr)
 {
@@ -205,11 +205,12 @@ static UInt ExecSeqStat7(Stat stat)
 **  tell the  calling executor that a  leave-statement was executed).   If no
 **  leave-statement is executed, then 0 is returned.
 **
-**  An if-statement with <n> branches is represented by  a bag of type 'STAT_IF'
-**  with 2*<n> subbags.  The first subbag is  the first condition, the second
-**  subbag is the  first body, the third subbag  is the second condition, the
-**  fourth subbag is the second body, and so  on.  If the if-statement has an
-**  else-branch, this is represented by a branch without a condition.
+**  An if-statement with <n> branches is a statement of type 'STAT_IF' with
+**  2*<n> slots. The first slot points to the first condition, the second
+**  slot points to the first body, the third slot points to the second
+**  condition, the fourth slot points to the second body, and so on. If the
+**  if-statement has an else-branch, this is represented by a branch with
+**  'EXPR_TRUE' as condition.
 */
 static UInt ExecIf(Stat stat)
 {
@@ -330,10 +331,10 @@ static UInt ExecIfElifElse(Stat stat)
 **  a return-statement was  executed).  If  no leave-statement was  executed,
 **  then 0 is returned.
 **
-**  A for-loop with <n> statements  in its body   is represented by a bag  of
-**  type 'STAT_FOR' with <n>+2  subbags.  The first  subbag is an assignment bag
-**  for the loop variable, the second subbag  is the list-expression, and the
-**  remaining subbags are the statements.
+**  A for-loop with <n> statements in its body is a statement of type
+**  'STAT_FOR' with <n>+2 slots. The first slot points to an assignment bag
+**  for the loop variable, the second slot points to the list-expression, and
+**  the remaining slots points to the statements.
 */
 Obj ITERATOR;
 Obj IS_DONE_ITER;
@@ -490,10 +491,10 @@ static UInt ExecFor3(Stat stat)
 **  a return-statement was  executed).  If  no leave-statement was  executed,
 **  then 0 is returned.
 **
-**  A short for-loop with <n> statements in its body is  represented by a bag
-**  of   type 'STAT_FOR_RANGE'  with <n>+2 subbags.     The  first subbag is  an
-**  assignment   bag  for  the  loop  variable,   the second    subbag is the
-**  list-expression, and the remaining subbags are the statements.
+**  A short for-loop with <n> statements in its body is a statement of type
+**  'STAT_FOR_RANGE' with <n>+2 slots. The first slot points to an assignment
+**  bag for the loop variable, the second slot points to the list-expression,
+**  and the remaining slots points to the statements.
 */
 static ALWAYS_INLINE UInt ExecForRangeHelper(Stat stat, UInt nr)
 {
@@ -644,10 +645,10 @@ static UInt ExecAtomic(Stat stat)
 **  tell the calling executor  that a return-statement  was executed).  If no
 **  leave-statement was executed, then 0 is returned.
 **
-**  A while-loop with <n> statements  in its body  is represented by a bag of
-**  type  'STAT_WHILE' with <n>+1 subbags.   The first  subbag is the condition,
-**  the second subbag is the first statement,  the third subbag is the second
-**  statement, and so on.
+**  A while-loop with <n> statements in its body is a statement of type
+**  'STAT_WHILE' with <n>+1 slots. The first slot points to the condition,
+**  the second slot points to the first statement, the third slot points to
+**  the second statement, and so on.
 */
 static ALWAYS_INLINE UInt ExecWhileHelper(Stat stat, UInt nr)
 {
@@ -718,10 +719,10 @@ static UInt ExecWhile3(Stat stat)
 **  tell the  calling executor that a  return-statement was executed).  If no
 **  leave-statement was executed, then 0 is returned.
 **
-**  A repeat-loop with <n> statements in its body is  represented by a bag of
-**  type 'STAT_REPEAT'  with <n>+1 subbags.  The  first subbag is the condition,
-**  the second subbag is the first statement, the  third subbag is the second
-**  statement, and so on.
+**  A repeat-loop with <n> statements in its body is a statement of type
+**  'STAT_REPEAT' with <n>+1 slots. The first slot points to the condition
+**  second slot points to the first statement, the third slot points to the
+**  second statement, and so on.
 */
 static ALWAYS_INLINE UInt ExecRepeatHelper(Stat stat, UInt nr)
 {
@@ -786,8 +787,7 @@ static UInt ExecRepeat3(Stat stat)
 **  This is done by returning STATUS_BREAK (to tell the calling executor that
 **  a break-statement was executed).
 **
-**  A break-statement is  represented  by a bag of   type 'STAT_BREAK' with   no
-**  subbags.
+**  A break-statement is a statement of type 'STAT_BREAK' with no slots.
 */
 static UInt ExecBreak(Stat stat)
 {
@@ -797,15 +797,15 @@ static UInt ExecBreak(Stat stat)
 
 /****************************************************************************
 **
-*F  ExecContinue(<stat>) . . . . . . . . . . . . . . . execute a continue-statement
+*F  ExecContinue(<stat>) . . . . . . . . . . . . execute a continue-statement
 **
 **  'ExecContinue' executes the continue-statement <stat>.
 **
 **  This is done by returning STATUS_CONTINUE (to tell the calling executor
 **  that a continue-statement was executed).
 **
-**  A continue-statement is  represented  by a bag of   type 'STAT_CONTINUE' with   no
-**  subbags.
+**  A continue-statement is a statement of type 'STAT_CONTINUE' with no
+**  slots.
 */
 static UInt ExecContinue(Stat stat)
 {
@@ -821,7 +821,7 @@ static UInt ExecContinue(Stat stat)
 */
 static UInt ExecEmpty(Stat stat)
 {
-  return 0;
+    return 0;
 }
 
 
@@ -835,8 +835,8 @@ static UInt ExecEmpty(Stat stat)
 **  function InfoDecision to decide whether the message has to be printed. If
 **  it has, the other arguments are evaluated and passed to InfoDoPrint
 **
-**  An  info-statement is represented by a  bag of type 'STAT_INFO' with subbags
-**  for the arguments
+**  An info-statement is a statement of type 'STAT_INFO' with slots for the
+**  arguments.
 */
 static UInt ExecInfo(Stat stat)
 {
@@ -886,8 +886,8 @@ static UInt ExecInfo(Stat stat)
 **
 **  'ExecAssert2Args' executes the 2 argument assert-statement <stat>.
 **
-**  A 2 argument assert-statement is  represented  by a bag of   type
-**  'STAT_ASSERT_2ARGS' with subbags for the 2 arguments
+**  A 2 argument assert-statement is a statement of type 'STAT_ASSERT_2ARGS'
+**  with slots for the two arguments
 */
 static UInt ExecAssert2Args(Stat stat)
 {
@@ -914,8 +914,8 @@ static UInt ExecAssert2Args(Stat stat)
 **
 **  'ExecAssert3Args' executes the 3 argument assert-statement <stat>.
 **
-**  A 3 argument assert-statement is  represented  by a bag of   type
-**  'STAT_ASSERT_3ARGS' with subbags for the 3 arguments
+**  A 3 argument assert-statement is a statement of type 'STAT_ASSERT_3ARGS'
+**  with slots for the three arguments.
 */
 static UInt ExecAssert3Args(Stat stat)
 {
@@ -955,9 +955,8 @@ static UInt ExecAssert3Args(Stat stat)
 **  return-value-statement, and returning   1 (to tell   the calling executor
 **  that a return-value-statement was executed).
 **
-**  A return-value-statement  is represented by a  bag of type 'STAT_RETURN_OBJ'
-**  with      one  subbag.    This  subbag     is   the    expression  of the
-**  return-value-statement.
+**  A return-value-statement is a statement of type 'STAT_RETURN_OBJ' with
+**  one slot. This slot points to the expression of the return-value-statement.
 */
 static UInt ExecReturnObj(Stat stat)
 {
@@ -986,8 +985,8 @@ static UInt ExecReturnObj(Stat stat)
 **  This  is done by   returning 2  (to tell    the calling executor  that  a
 **  return-void-statement was executed).
 **
-**  A return-void-statement  is represented by  a bag of type 'STAT_RETURN_VOID'
-**  with no subbags.
+**  A return-void-statement is a statement of type 'STAT_RETURN_VOID' with no
+**  slots.
 */
 static UInt ExecReturnVoid(Stat stat)
 {
@@ -1391,7 +1390,7 @@ static void PrintBreak(Stat stat)
 
 /****************************************************************************
 **
-*F  PrintContinue(<stat>)  . . . . . . . . . . . . . . . print a continue-statement
+*F  PrintContinue(<stat>) . . . . . . . . . . . .  print a continue-statement
 **
 **  'PrintContinue' prints the continue-statement <stat>.
 */
@@ -1414,7 +1413,7 @@ static void PrintEmpty(Stat stat)
 
 /****************************************************************************
 **
-*F  PrintInfo(<stat>)  . . . . . . . . . . . . . . . print an info-statement
+*F  PrintInfo(<stat>) . . . . . . . . . . . . . . . . print an info-statement
 **
 **  'PrintInfo' prints the info-statement <stat>.
 */
