@@ -91,33 +91,6 @@ UInt OpenErrorOutput( void )
 **
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
-
-static void DownEnvInner(Int depth)
-{
-    /* if we are asked to go up ... */
-    if (depth < 0) {
-        /* ... we determine which level we are supposed to end up on ... */
-        depth = STATE(ErrorLLevel) + depth;
-        if (depth < 0) {
-            depth = 0;
-        }
-        /* ... then go back to the top, and later go down to the appropriate
-         * level. */
-        STATE(ErrorLVars) = STATE(BaseShellContext);
-        STATE(ErrorLLevel) = 0;
-        STATE(ShellContext) = STATE(BaseShellContext);
-    }
-
-    /* now go down */
-    while (0 < depth && STATE(ErrorLVars) != STATE(BottomLVars) &&
-           PARENT_LVARS(STATE(ErrorLVars)) != STATE(BottomLVars)) {
-        STATE(ErrorLVars) = PARENT_LVARS(STATE(ErrorLVars));
-        STATE(ErrorLLevel)++;
-        STATE(ShellContext) = PARENT_LVARS(STATE(ShellContext));
-        depth--;
-    }
-}
-
 static Obj FuncDownEnv(Obj self, Obj args)
 {
     Int depth;
@@ -136,7 +109,7 @@ static Obj FuncDownEnv(Obj self, Obj args)
         return (Obj)0;
     }
 
-    DownEnvInner(depth);
+    STATE(ErrorLLevel) += depth;;
     return (Obj)0;
 }
 
@@ -157,7 +130,7 @@ static Obj FuncUpEnv(Obj self, Obj args)
         return (Obj)0;
     }
 
-    DownEnvInner(-depth);
+    STATE(ErrorLLevel) -= depth;
     return (Obj)0;
 }
 
