@@ -540,7 +540,7 @@ static void CANARY_ALLOW_ACCESS_BAG(Bag bag)
     Int    bagLength = SIZE_BAG(bag);
     VALGRIND_MAKE_MEM_DEFINED(ptr, bagLength);
 
-    BagHeader * header = BAG_HEADER(bag);
+    const BagHeader * header = CONST_BAG_HEADER(bag);
     VALGRIND_MAKE_MEM_DEFINED(
         header, sizeof(*header) - sizeof(header->memory_canary_padding));
 }
@@ -554,7 +554,7 @@ static void CANARY_FORBID_ACCESS_BAG(Bag bag)
     Int    bagLength = SIZE_BAG(bag);
     VALGRIND_MAKE_MEM_NOACCESS(ptr, bagLength);
 
-    BagHeader * header = BAG_HEADER(bag);
+    const BagHeader * header = CONST_BAG_HEADER(bag);
     VALGRIND_MAKE_MEM_NOACCESS(
         header, sizeof(*header) - sizeof(header->memory_canary_padding));
 }
