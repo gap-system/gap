@@ -152,12 +152,12 @@ static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
     }
     if (!IS_BAG_REF(ptr[pos])) {
         ptr[pos] = (Bag)jl_gc_new_weakref((jl_value_t *)val);
-        jl_gc_wb_back(BAG_HEADER(list));
+        jl_gc_wb_back(CONST_BAG_HEADER(list));
     }
     else {
         jl_weakref_t * wref = (jl_weakref_t *)(ptr[pos]);
         wref->value = (jl_value_t *)val;
-        jl_gc_wb(wref, BAG_HEADER(val));
+        jl_gc_wb(wref, CONST_BAG_HEADER(val));
     }
 #endif
 }

@@ -108,13 +108,20 @@ enum {
 /****************************************************************************
 **
 *F  BAG_HEADER(<bag>) . . . . . . . . . . . . . . . . . . . . header of a bag
+*F  CONST_BAG_HEADER(<bag>) . . . . . . . . . . . . read-only header of a bag
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
 EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
 {
     GAP_ASSERT(bag);
-    return (((BagHeader *)*bag) - 1);
+    return ((*(BagHeader **)bag) - 1);
+}
+
+EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag)
+{
+    GAP_ASSERT(bag);
+    return ((*(const BagHeader **)bag) - 1);
 }
 
 
@@ -136,7 +143,7 @@ EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
 */
 EXPORT_INLINE UInt TNUM_BAG(Bag bag)
 {
-    return BAG_HEADER(bag)->type;
+    return CONST_BAG_HEADER(bag)->type;
 }
 
 
@@ -168,7 +175,7 @@ EXPORT_INLINE UInt TNUM_BAG(Bag bag)
 */
 EXPORT_INLINE uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag)
 {
-    return BAG_HEADER(bag)->flags & flag;
+    return CONST_BAG_HEADER(bag)->flags & flag;
 }
 
 EXPORT_INLINE void SET_BAG_FLAG(Bag bag, uint8_t flag)
@@ -180,6 +187,7 @@ EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 {
     BAG_HEADER(bag)->flags &= ~flag;
 }
+
 
 /****************************************************************************
 **
@@ -209,8 +217,9 @@ EXPORT_INLINE BOOL IS_BAG_REF(Obj bag)
 **  the size of a bag when it allocates it with 'NewBag' and may later change
 **  it with 'ResizeBag' (see "NewBag" and "ResizeBag").
 */
-EXPORT_INLINE UInt SIZE_BAG(Bag bag) {
-    return BAG_HEADER(bag)->size;
+EXPORT_INLINE UInt SIZE_BAG(Bag bag)
+{
+    return CONST_BAG_HEADER(bag)->size;
 }
 
 
@@ -223,7 +232,8 @@ EXPORT_INLINE UInt SIZE_BAG(Bag bag) {
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) {
+EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
+{
     return ((const BagHeader *)ptr)[-1].size;
 }
 
@@ -244,7 +254,9 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) {
 
 /****************************************************************************
 **
-*F  PTR_BAG(<bag>)  . . . . . . . . . . . . . . . . . . . .  pointer to a bag
+*F  PTR_BAG(<bag>) . . . . . . . . . . . . . . . . . . . . . pointer to a bag
+*F  CONST_PTR_BAG(<bag>) . . . . . . . . . . . . . read-only pointer to a bag
+*F  SET_PTR_BAG(<bag>) . . . . . . . . . . . . . . . set the pointer to a bag
 **
 **  'PTR_BAG' returns the address of the data area of the bag with identifier
 **  <bag>.  Using  this pointer the application  can then  read data from the
