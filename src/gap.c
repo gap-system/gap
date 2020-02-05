@@ -174,16 +174,9 @@ static Obj Shell(Obj    context,
   UInt dualSemicolon;
   UInt oldPrintDepth;
   Obj res;
-  Obj oldShellContext;
-  Obj oldBaseShellContext;
-  Int oldRecursionDepth;
-  oldShellContext = STATE(ShellContext);
-  STATE(ShellContext) = context;
-  oldBaseShellContext = STATE(BaseShellContext);
-  STATE(BaseShellContext) = context;
   Int oldErrorLLevel = STATE(ErrorLLevel);
   STATE(ErrorLLevel) = 0;
-  oldRecursionDepth = GetRecursionDepth();
+  Int oldRecursionDepth = GetRecursionDepth();
   
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
@@ -227,8 +220,25 @@ static Obj Shell(Obj    context,
         }
     }
 
+    // update ErrorLVars based on ErrorLLevel
+    //
+    // It is slightly wasteful to do this every time, but that's OK since this
+    // code is only used for interactive input, and the time it takes a user
+    // to press the return key is something like a thousand times greater than
+    // the time it takes to execute this loop.
+    Int depth = STATE(ErrorLLevel);
+    Obj errorLVars = context;
+    STATE(ErrorLLevel) = 0;
+    while (0 < depth && errorLVars != STATE(BottomLVars) &&
+           PARENT_LVARS(errorLVars) != STATE(BottomLVars)) {
+        errorLVars = PARENT_LVARS(errorLVars);
+        STATE(ErrorLLevel)++;
+        depth--;
+    }
+    STATE(ErrorLVars) = errorLVars;
+
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(STATE(ShellContext), &evalResult, &dualSemicolon);
+    status = ReadEvalCommand(errorLVars, &evalResult, &dualSemicolon);
     if (STATE(UserHasQUIT))
       break;
 
@@ -292,8 +302,6 @@ static Obj Shell(Obj    context,
   SetPrintObjState(oldPrintDepth);
   CloseInput();
   CloseOutput();
-  STATE(BaseShellContext) = oldBaseShellContext;
-  STATE(ShellContext) = oldShellContext;
   STATE(ErrorLLevel) = oldErrorLLevel;
   SetRecursionDepth(oldRecursionDepth);
 
@@ -1460,9 +1468,6 @@ static Int InitKernel (
 
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
-
-    InitGlobalBag( &STATE(ShellContext), "STATE(ShellContext)" );
-    InitGlobalBag( &STATE(BaseShellContext), "STATE(BaseShellContext)" );
 
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );

@@ -82,10 +82,8 @@ typedef struct GAPState {
     Obj  ThrownObject;
     UInt UserHasQuit;
     UInt UserHasQUIT;
-    Obj  ShellContext;
-    Obj  BaseShellContext;
     Obj  ErrorLVars;        // ErrorLVars as modified by DownEnv / UpEnv
-    Int  ErrorLLevel;       // record where on the stack ErrorLVars is relative to the top, i.e. BaseShellContext
+    Int  ErrorLLevel;       // record where on the stack ErrorLVars is relative to the top
     void (*JumpToCatchCallback)(void); // This callback is called in FuncJUMP_TO_CATCH,
                                    // this is not used by GAP itself but by programs
                                    // that use GAP as a library to handle errors
