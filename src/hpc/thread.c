@@ -1363,15 +1363,20 @@ void SetGuardErrorStack(void)
 }
 #endif
 
-void HandleReadGuardError(Bag bag)
+int ExtendedGuardCheck(Bag bag)
 {
-    NumReadErrors++;
     // We shift some of the rarer checks here to
     // avoid overloading ReadCheck().
     if (REGION(bag)->alt_owner == GetTLS())
-        return;
+        return 1;
     if (TLS(DisableGuards))
-        return;
+        return 1;
+    return 0;
+}
+
+void HandleReadGuardError(Bag bag)
+{
+    NumReadErrors++;
     SetGVar(&LastInaccessibleGVar, bag);
 #ifdef DEBUG_GUARDS
     SetGuardErrorStack();
@@ -1386,10 +1391,6 @@ void HandleWriteGuardError(Bag bag)
     NumWriteErrors++;
     // We shift some of the rarer checks here to
     // avoid overloading ReadCheck().
-    if (REGION(bag)->alt_owner == GetTLS())
-        return;
-    if (TLS(DisableGuards))
-        return;
     SetGVar(&LastInaccessibleGVar, bag);
 #ifdef DEBUG_GUARDS
     SetGuardErrorStack();

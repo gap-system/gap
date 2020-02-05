@@ -106,6 +106,18 @@ enum {
 #define NOINLINE
 #endif
 
+#ifdef HAVE_FUNC_ATTRIBUTE_PURE
+#define PURE_FUNC __attribute__((pure))
+#else
+#define PURE_FUNC
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+#define CONSTRUCTOR_FUNC __attribute__((constructor))
+#else
+#define CONSTRUCTOR_FUNC
+#endif
+
 
 /****************************************************************************
 **
