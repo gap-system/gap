@@ -776,7 +776,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
         }
     }
     else {
-        gapobj_type = 0;
+        gapobj_type = jl_any_type;
     }
 
     JuliaTLS = jl_get_ptls_states();
@@ -793,10 +793,10 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
                  (jl_value_t *)Module);
     datatype_mptr = jl_new_foreign_type(
         jl_symbol("MPtr"), Module, gapobj_type, MPtrMarkFunc, NULL, 1, 0);
-    datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, 0,
+    datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, jl_any_type,
                                        BagMarkFunc, JFinalizer, 1, 0);
     datatype_largebag =
-        jl_new_foreign_type(jl_symbol("LargeBag"), Module, 0,
+        jl_new_foreign_type(jl_symbol("LargeBag"), Module, jl_any_type,
                             BagMarkFunc, JFinalizer, 1, 1);
 
     // export datatypes to Julia level
