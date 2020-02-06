@@ -3573,7 +3573,7 @@ In this section we list most important new features and bugfixes in the
 core system introduced in **GAP** 4.5. For the list of changes in the
 interface between the core system and packages as well as for an
 overview of new and updated packages, see Section
-[7.2](????).
+[7.2](#72-packages-in-gap-45).
 
 ##### 7.1-1 Improved functionality
 
@@ -3858,7 +3858,7 @@ Furthermore, by default **GAP** will now automatically read a
 user-specific **GAP** root directory (unless **GAP** is called with the
 `-r` option). All user settings can be made in that directory, so there
 will be no risk of them being lost during an update (see Section
-[7.1-3](????) below for more details). Private
+[7.1-3](#71-3-improvements-to-the-user-interface) below for more details). Private
 packages can also be installed in this directory for the same reason.
 
 There are some changes in archive formats used for the distribution: we
