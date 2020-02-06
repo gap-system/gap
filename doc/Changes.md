@@ -26,241 +26,241 @@ Reference: Authors and Maintainers of the **GAP** reference manual.
 
 ### Contents
 
-[1 Preface](chap1.md#X874E1D45845007FE)
+[1 Preface](#X874E1D45845007FE)
 
 [2 Changes between **GAP** 4.9 and **GAP**
-4.10](chap2.md#X795B238486D0ABCD)
+4.10](#X795B238486D0ABCD)
 
- [2.1 **GAP** 4.10.0 (November 2018)](chap2.md#X7AC99045788C39ED) 
+ [2.1 **GAP** 4.10.0 (November 2018)](#X7AC99045788C39ED) 
 
   
-  [2.1-1 New features and major changes](chap2.md#X7D6E0C387D13B429) 
+  [2.1-1 New features and major changes](#X7D6E0C387D13B429) 
   
   [2.1-2 Improved and extended
-functionality](chap2.md#X7D7FE19B7F8235E5)    
-  [2.1-3 Changed documentation](chap2.md#X82A7352D8641A11E)    
+functionality](#X7D7FE19B7F8235E5)    
+  [2.1-3 Changed documentation](#X82A7352D8641A11E)    
   [2.1-4 Fixed bugs that could lead to
-crashes](chap2.md#X842F3691816406D6)    
+crashes](#X842F3691816406D6)    
   [2.1-5 Fixed bugs that could lead to incorrect
-results](chap2.md#X7D8629AE7B18F72B)    
+results](#X7D8629AE7B18F72B)    
   [2.1-6 Fixed bugs that could lead to break
-loops](chap2.md#X86F4ECE78773DE72)    
-  [2.1-7 Other fixed bugs](chap2.md#X8470A7907B252827)    
+loops](#X86F4ECE78773DE72)    
+  [2.1-7 Other fixed bugs](#X8470A7907B252827)    
   [2.1-8 Removed or obsolete
-functionality](chap2.md#X7E82CC3E7C54ACEC)    
-  [2.1-9 Packages](chap2.md#X844ECC8387ADC6D7) 
+functionality](#X7E82CC3E7C54ACEC)    
+  [2.1-9 Packages](#X844ECC8387ADC6D7) 
 
- [2.2 **GAP** 4.10.1 (February 2019)](chap2.md#X858254CF7D9DE943) 
+ [2.2 **GAP** 4.10.1 (February 2019)](#X858254CF7D9DE943) 
 
   
   [2.2-1 Changes in the core **GAP** system introduced in **GAP**
-4.10.1](chap2.md#X785A404B8565D020)    
+4.10.1](#X785A404B8565D020)    
   [2.2-2 New and updated packages since **GAP**
-4.10.0](chap2.md#X7D3DEF227BFDF572) 
+4.10.0](#X7D3DEF227BFDF572) 
 
- [2.3 **GAP** 4.10.2 (June 2019)](chap2.md#X788B3576809DC149) 
+ [2.3 **GAP** 4.10.2 (June 2019)](#X788B3576809DC149) 
 
   
   [2.3-1 Changes in the core **GAP** system introduced in **GAP**
-4.10.21](chap2.md#X7B1174477F4EB41B)    
+4.10.21](#X7B1174477F4EB41B)    
   [2.3-2 New and updated packages since **GAP**
-4.10.1](chap2.md#X7A4D9C2B857C8C78) 
+4.10.1](#X7A4D9C2B857C8C78) 
 
 [3 Changes between **GAP** 4.8 and **GAP**
-4.9](chap3.md#X7DE3F944789F9676)
+4.9](#X7DE3F944789F9676)
 
- [3.1 **GAP** 4.9.1 (May 2018)](chap3.md#X7E74F2127F858880) 
+ [3.1 **GAP** 4.9.1 (May 2018)](#X7E74F2127F858880) 
 
   
   [3.1-1 Changes in the core **GAP** system introduced in **GAP**
-4.9](chap3.md#X87E35B7B7D7B2AF6)    
-  [3.1-2 **HPC-GAP**](chap3.md#X7F52B77B7DBACC17)    
+4.9](#X87E35B7B7D7B2AF6)    
+  [3.1-2 **HPC-GAP**](#X7F52B77B7DBACC17)    
   [3.1-3 New and updated packages since **GAP**
-4.8.10](chap3.md#X875343D47A7B5E62) 
+4.8.10](#X875343D47A7B5E62) 
 
- [3.2 **GAP** 4.9.2 (July 2018)](chap3.md#X788623D37D59433D) 
+ [3.2 **GAP** 4.9.2 (July 2018)](#X788623D37D59433D) 
 
   
   [3.2-1 Changes in the core **GAP** system introduced in **GAP**
-4.9.2](chap3.md#X80F675A48712F934)    
+4.9.2](#X80F675A48712F934)    
   [3.2-2 New and updated packages since **GAP**
-4.9.1](chap3.md#X85F5CB9C80D89E10) 
+4.9.1](#X85F5CB9C80D89E10) 
 
- [3.3 **GAP** 4.9.3 (September 2018)](chap3.md#X7DCF1B2984AEB7F0) 
+ [3.3 **GAP** 4.9.3 (September 2018)](#X7DCF1B2984AEB7F0) 
 
   
   [3.3-1 Changes in the core **GAP** system introduced in **GAP**
-4.9.3](chap3.md#X878606AD8708A3AF)    
+4.9.3](#X878606AD8708A3AF)    
   [3.3-2 New and updated packages since **GAP**
-4.9.2](chap3.md#X7C655E8782735518) 
+4.9.2](#X7C655E8782735518) 
 
 [4 Changes between **GAP** 4.7 and **GAP**
-4.8](chap4.md#X78E4871E83067AB2)
+4.8](#X78E4871E83067AB2)
 
- [4.1 **GAP** 4.8.2 (February 2016)](chap4.md#X79FD32317A501139) 
+ [4.1 **GAP** 4.8.2 (February 2016)](#X79FD32317A501139) 
 
   
   [4.1-1 Changes in the core **GAP** system introduced in **GAP**
-4.8](chap4.md#X809328727BE7E536)    
+4.8](#X809328727BE7E536)    
   [4.1-2 New and updated packages since **GAP**
-4.7.8](chap4.md#X82C1E2C67F40F08E) 
+4.7.8](#X82C1E2C67F40F08E) 
 
- [4.2 **GAP** 4.8.3 (March 2016)](chap4.md#X7A20BE707ADF7026) 
+ [4.2 **GAP** 4.8.3 (March 2016)](#X7A20BE707ADF7026) 
 
   
   [4.2-1 Changes in the core **GAP** system introduced in **GAP**
-4.8.3](chap4.md#X879A200E81946C6F) 
+4.8.3](#X879A200E81946C6F) 
 
- [4.3 **GAP** 4.8.4 (June 2016)](chap4.md#X7B972D037B89F4F7) 
+ [4.3 **GAP** 4.8.4 (June 2016)](#X7B972D037B89F4F7) 
 
   
   [4.3-1 Changes in the core **GAP** system introduced in **GAP**
-4.8.4](chap4.md#X7E7C695481D3E9AF) 
+4.8.4](#X7E7C695481D3E9AF) 
 
- [4.4 **GAP** 4.8.5 (September 2016)](chap4.md#X7878A4097FDB663D) 
+ [4.4 **GAP** 4.8.5 (September 2016)](#X7878A4097FDB663D) 
 
   
   [4.4-1 Changes in the core **GAP** system introduced in **GAP**
-4.8.5](chap4.md#X790C1A5D81C9B334) 
+4.8.5](#X790C1A5D81C9B334) 
 
- [4.5 **GAP** 4.8.6 (November 2016)](chap4.md#X82FEFE5A7B7EF603) 
+ [4.5 **GAP** 4.8.6 (November 2016)](#X82FEFE5A7B7EF603) 
 
   
   [4.5-1 Changes in the core **GAP** system introduced in **GAP**
-4.8.6](chap4.md#X809C8F4681E75C99) 
+4.8.6](#X809C8F4681E75C99) 
 
- [4.6 **GAP** 4.8.7 (March 2017)](chap4.md#X7D60AECE7957C682) 
+ [4.6 **GAP** 4.8.7 (March 2017)](#X7D60AECE7957C682) 
 
   
   [4.6-1 Changes in the core **GAP** system introduced in **GAP**
-4.8.7](chap4.md#X87ECFC4F81FD0602)    
+4.8.7](#X87ECFC4F81FD0602)    
   [4.6-2 New and updated packages since **GAP**
-4.8.6](chap4.md#X7C0FA46587A3CEFB) 
+4.8.6](#X7C0FA46587A3CEFB) 
 
- [4.7 **GAP** 4.8.8 (August 2017)](chap4.md#X822D0A3E85F800B3) 
+ [4.7 **GAP** 4.8.8 (August 2017)](#X822D0A3E85F800B3) 
 
   
   [4.7-1 Changes in the core **GAP** system introduced in **GAP**
-4.8.8](chap4.md#X7EE70D9681685719)    
+4.8.8](#X7EE70D9681685719)    
   [4.7-2 New and updated packages since **GAP**
-4.8.7](chap4.md#X7B7FD76C7D5787DF) 
+4.8.7](#X7B7FD76C7D5787DF) 
 
 [5 Changes between **GAP** 4.6 and **GAP**
-4.7](chap5.md#X7C361B5F862188D4)
+4.7](#X7C361B5F862188D4)
 
- [5.1 **GAP** 4.7.2 (December 2013)](chap5.md#X81CB2A15826D4AFB) 
+ [5.1 **GAP** 4.7.2 (December 2013)](#X81CB2A15826D4AFB) 
 
   
   [5.1-1 Changes in the core **GAP** system introduced in **GAP**
-4.7](chap5.md#X7998D9AB780EC4DE)    
+4.7](#X7998D9AB780EC4DE)    
   [5.1-2 New and updated packages since **GAP**
-4.6.5](chap5.md#X8536D3AE87C31A56) 
+4.6.5](#X8536D3AE87C31A56) 
 
- [5.2 **GAP** 4.7.3 (February 2014)](chap5.md#X80EA4AA07A9A4A4D) 
+ [5.2 **GAP** 4.7.3 (February 2014)](#X80EA4AA07A9A4A4D) 
 
- [5.3 **GAP** 4.7.4 (February 2014)](chap5.md#X795A5A517CDC5C91) 
+ [5.3 **GAP** 4.7.4 (February 2014)](#X795A5A517CDC5C91) 
 
- [5.4 **GAP** 4.7.5 (May 2014)](chap5.md#X80E231E67E972DB5) 
+ [5.4 **GAP** 4.7.5 (May 2014)](#X80E231E67E972DB5) 
 
- [5.5 **GAP** 4.7.6 (November 2014)](chap5.md#X80763B757AC31C33) 
+ [5.5 **GAP** 4.7.6 (November 2014)](#X80763B757AC31C33) 
 
- [5.6 **GAP** 4.7.7 (February 2015)](chap5.md#X7F3DFFFF86F3B1F0) 
+ [5.6 **GAP** 4.7.7 (February 2015)](#X7F3DFFFF86F3B1F0) 
 
- [5.7 **GAP** 4.7.8 (June 2015)](chap5.md#X80D11C6780BB54A2) 
+ [5.7 **GAP** 4.7.8 (June 2015)](#X80D11C6780BB54A2) 
 
 [6 Changes between **GAP** 4.5 and **GAP**
-4.6](chap6.md#X809ACE9A7DB63A3B)
+4.6](#X809ACE9A7DB63A3B)
 
- [6.1 **GAP** 4.6.2 (February 2013)](chap6.md#X7AE9D2F086E11238) 
+ [6.1 **GAP** 4.6.2 (February 2013)](#X7AE9D2F086E11238) 
 
   
   [6.1-1 Changes in the core **GAP** system introduced in **GAP**
-4.6](chap6.md#X7EE8AAA27E920B1E)    
+4.6](#X7EE8AAA27E920B1E)    
   [6.1-2 New and updated packages since **GAP**
-4.5.4](chap6.md#X8262CB4279E9D374) 
+4.5.4](#X8262CB4279E9D374) 
 
- [6.2 **GAP** 4.6.3 (March 2013)](chap6.md#X819FA4607D642A92) 
+ [6.2 **GAP** 4.6.3 (March 2013)](#X819FA4607D642A92) 
 
- [6.3 **GAP** 4.6.4 (April 2013)](chap6.md#X7F304046877CF484) 
+ [6.3 **GAP** 4.6.4 (April 2013)](#X7F304046877CF484) 
 
- [6.4 **GAP** 4.6.5 (July 2013)](chap6.md#X811FB2407ED4AB5D) 
+ [6.4 **GAP** 4.6.5 (July 2013)](#X811FB2407ED4AB5D) 
 
 [7 Changes between **GAP** 4.4 and **GAP**
-4.5](chap7.md#X84D336197CBC3777)
+4.5](#X84D336197CBC3777)
 
  [7.1 Changes in the core **GAP** system introduced in **GAP**
-4.5](chap7.md#X87783FB985375B5F) 
+4.5](#X87783FB985375B5F) 
 
   
-  [7.1-1 Improved functionality](chap7.md#X84FC44718386FA1A)    
-  [7.1-2 Changes in distribution formats](chap7.md#X7E24E9DE7CADD1B7) 
+  [7.1-1 Improved functionality](#X84FC44718386FA1A)    
+  [7.1-2 Changes in distribution formats](#X7E24E9DE7CADD1B7) 
   
   [7.1-3 Improvements to the user
-interface](chap7.md#X80AB8641792E74C9)    
-  [7.1-4 Better documentation](chap7.md#X81318FC0873923C3) 
+interface](#X80AB8641792E74C9)    
+  [7.1-4 Better documentation](#X81318FC0873923C3) 
 
- [7.2 Packages in **GAP** 4.5](chap7.md#X7CD19B647C39B3F7) 
+ [7.2 Packages in **GAP** 4.5](#X7CD19B647C39B3F7) 
 
   
   [7.2-1 Interface between the core system and
-packages](chap7.md#X7E8089C881AB6BA1)    
+packages](#X7E8089C881AB6BA1)    
   [7.2-2 New and updated packages since **GAP**
-4.4.12](chap7.md#X7D1ECE3D8403AC6F) 
+4.4.12](#X7D1ECE3D8403AC6F) 
 
- [7.3 **GAP** 4.5.5 (July 2012)](chap7.md#X7DB3678580B402F1) 
+ [7.3 **GAP** 4.5.5 (July 2012)](#X7DB3678580B402F1) 
 
- [7.4 **GAP** 4.5.6 (September 2012)](chap7.md#X85A84FF97CCEAA08) 
+ [7.4 **GAP** 4.5.6 (September 2012)](#X85A84FF97CCEAA08) 
 
- [7.5 **GAP** 4.5.7 (December 2012)](chap7.md#X78C0EBF8860AF110) 
+ [7.5 **GAP** 4.5.7 (December 2012)](#X78C0EBF8860AF110) 
 
 [8 Changes between **GAP** 4.3 and **GAP**
-4.4](chap8.md#X84747575872E4F81)
+4.4](#X84747575872E4F81)
 
  [8.1 Changes in the core **GAP** system introduced in **GAP**
-4.4](chap8.md#X80084CB083AB949F) 
+4.4](#X80084CB083AB949F) 
 
   
-  [8.1-1 Potentially Incompatible Changes](chap8.md#X7C5AC61F824086D6)
+  [8.1-1 Potentially Incompatible Changes](#X7C5AC61F824086D6)
    
-  [8.1-2 New Packages](chap8.md#X7D9702E3815BE9FB)    
-  [8.1-3 Performance Enhancements](chap8.md#X7DA8709A850E772D)    
+  [8.1-2 New Packages](#X7D9702E3815BE9FB)    
+  [8.1-3 Performance Enhancements](#X7DA8709A850E772D)    
   [8.1-4 New Programming and User
-Features](chap8.md#X83E1A0D87D3D1EAF) 
+Features](#X83E1A0D87D3D1EAF) 
 
- [8.2 **GAP** 4.4 Bugfix 2 (April 2004)](chap8.md#X814A860E7B203FCF) 
+ [8.2 **GAP** 4.4 Bugfix 2 (April 2004)](#X814A860E7B203FCF) 
 
- [8.3 **GAP** 4.4 Bugfix 3 (May 2004)](chap8.md#X7C4492557E1EA74C) 
+ [8.3 **GAP** 4.4 Bugfix 3 (May 2004)](#X7C4492557E1EA74C) 
 
  [8.4 **GAP** 4.4 Bugfix 4 (December
-2004)](chap8.md#X78844C2C83310762) 
+2004)](#X78844C2C83310762) 
 
- [8.5 **GAP** 4.4 Update 5 (May 2005)](chap8.md#X7E6E6B7A7F6616CC) 
+ [8.5 **GAP** 4.4 Update 5 (May 2005)](#X7E6E6B7A7F6616CC) 
 
  [8.6 **GAP** 4.4 Update 6 (September
-2005)](chap8.md#X784D15477A825A78) 
+2005)](#X784D15477A825A78) 
 
- [8.7 **GAP** 4.4 Update 7 (March 2006)](chap8.md#X786A20E17B11DAFD) 
+ [8.7 **GAP** 4.4 Update 7 (March 2006)](#X786A20E17B11DAFD) 
 
  [8.8 **GAP** 4.4 Update 8 (September
-2006)](chap8.md#X83D5AF3679B8F685) 
+2006)](#X83D5AF3679B8F685) 
 
  [8.9 **GAP** 4.4 Update 9 (November
-2006)](chap8.md#X7E9F0AB1807D6B64) 
+2006)](#X7E9F0AB1807D6B64) 
 
  [8.10 **GAP** 4.4 Update 10 (October
-2007)](chap8.md#X8499C5CA7CD76125) 
+2007)](#X8499C5CA7CD76125) 
 
  [8.11 **GAP** 4.4 Update 11 (December
-2008)](chap8.md#X86F8AE877C7699E1) 
+2008)](#X86F8AE877C7699E1) 
 
  [8.12 **GAP** 4.4 Update 12 (December
-2008)](chap8.md#X87EF7820794F3C59) 
+2008)](#X87EF7820794F3C59) 
 
-[9 Changes from Earlier Versions](chap9.md#X7F5DE9997CF43125)
+[9 Changes from Earlier Versions](#X7F5DE9997CF43125)
 
 
 
-[1 Preface](chap1.md#X874E1D45845007FE)
+[1 Preface](#X874E1D45845007FE)
 
 ### 1 Preface
 
@@ -280,7 +280,7 @@ in their documentation.
 
 
 [2 Changes between **GAP** 4.9 and **GAP**
-4.10](chap2.md#X795B238486D0ABCD)
+4.10](#X795B238486D0ABCD)
 
 ### 2 Changes between **GAP** 4.9 and **GAP** 4.10
 
@@ -294,7 +294,7 @@ These changes are also listed on the Wiki page
 
 #### 2.1 **GAP** 4.10.0 (November 2018)
 
-##### 2.1-1 New features and major changes {chap2.md#X7D6E0C387D13B429} 
+##### 2.1-1 New features and major changes {#X7D6E0C387D13B429} 
 
   - **Reduce impact of immediate methods**  
     **GAP** allows declaring so-called "immediate methods". The idea is
