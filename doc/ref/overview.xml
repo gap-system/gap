@@ -46,8 +46,8 @@ can be found on our website in a section entitled
 <P/>
 For those readers who have used an earlier version of &GAP;, an
 overview of the changes from &GAP;&nbsp;4.4 and a brief 
-summary of changes from earlier versions is given in a separate
-manual <Ref Chap="Changes between GAP 4.4 and GAP 4.5" BookName="changes"/>.
+summary of changes from earlier versions is given in CHANGES.md
+file in the main directory.
 <P/>
 The system that you are getting now consists of a <Q>core system</Q> and
 a number of packages. The core system consists of four main parts.

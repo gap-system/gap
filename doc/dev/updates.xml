@@ -192,12 +192,11 @@ adjusted since test codes are now distributed across multiple files. The
 these files, but it does not save them to a file, testing them <Q>on the fly</Q>.
 </Item>
 
-<Mark>Prepare an overview of changes for the Changes manual</Mark>
+<Mark>Prepare an overview of changes for the CHANGES.md file</Mark>
 <Item>
 If regular nightly/weekly tests go well and you hope to wrap a suitable
 release candidate, you may start to prepare an overview of changes that
-will appear in the next release for the Changes manual
-(see <Ref BookName="changes" Label="Preface"/>) combining it from
+will appear in the next release in CHANGES.md, combining it from
 descriptions provided in files from the <F>dev/Updates</F> directory.
 <P/>
 You may postpone this step until the very release, or perform it in several
@@ -205,8 +204,8 @@ iterations, keeping track on new entries that will appear in the
 <F>dev/Updates</F> directory. You may group various entries together and 
 re-order them so that entries which are likely to be interesting for more 
 &GAP; users are closer to the top of each category.
-While converting plain text to the manual format, add cross-references and 
-other &GAPDoc; markup as appropriate. Ideally, you need only to add the markup,
+While converting plain text to markdown, add cross-references and 
+other markup as appropriate. Ideally, you need only to add the markup,
 and the text of descriptions need not further editing, but please evaluate
 it critically. At least you may need to change tenses or reorder the text
 to better fit surrounding items. Also, do not forget to describe new 
