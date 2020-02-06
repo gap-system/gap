@@ -5,10 +5,10 @@ manuals that are maintained by the authors of the respective packages):
 
 These manuals are written in GAPDoc format, provided by the 
 [GAPDoc package](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/index.html). 
-Their source is contained in the directories `doc/tut`, `doc/ref` and `doc/changes` 
+Their source is contained in the directories `doc/tut` and `doc/ref`
 respectively. Some documentation is also stored in the library files to be kept 
 close to the code it describes. It is included in the manual using the mechanism 
-documented [here](https://www.gap-system.org/Manuals/pkg/GAPDoc-1.5.1/doc/chap4.html).
+documented [here](https://www.gap-system.org/Manuals/pkg/GAPDoc-1.6.2/doc/chap4.html).
 
 There is also a document describing [**Changes from Earlier Versions**](Changes.md).
 

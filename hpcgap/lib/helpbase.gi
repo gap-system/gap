@@ -516,7 +516,7 @@ InstallGlobalFunction(HELP_ADD_BOOK, function( short, long, dir )
 atomic readwrite HELP_REGION do
   sortfun := function(a, b)
     local main, pa, pb;
-    main := ["tutorial", "reference", "changes", "hpc-gap", "development" ];
+    main := ["tutorial", "reference", "hpc-gap", "development" ];
     pa := Position(main, a);
     pb := Position(main, b);
     if pa <> fail then
