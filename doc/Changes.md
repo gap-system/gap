@@ -1,47 +1,6 @@
 # GAP - Changes from Earlier Versions
 
-Release 4.11.0, ??-???-2020
-
-**The GAP Group**  
-Email: <support@gap-system.org>  
-Homepage: <https://www.gap-system.org>
-
-### Copyright
-
-Copyright © (1987-2020) for the core part of the GAP system by the
-GAP Group.
-
-Most parts of this distribution, including the core part of the GAP
-system are distributed under the terms of the GNU General Public
-License, see <http://www.gnu.org/licenses/gpl.html> or the file `GPL` in
-the `etc` directory of the GAP installation.
-
-More detailed information about copyright and licenses of parts of this
-distribution can be found in Section Reference: Copyright and License of
-the GAP reference manual.
-
-GAP is developed over a long time and has many authors and
-contributors. More detailed information can be found in Section
-Reference: Authors and Maintainers of the GAP reference manual.
-
-
-### Preface
-
-This document describes most essential changes from previous GAP releases.
-
-In addition to this manual, there is the GAP Tutorial (see
-[Tutorial: Preface](../../doc/tut/chap1.html#X874E1D45845007FE)) and the
-GAP Reference Manual (see Reference: Preface) containing detailed
-documentation of the mathematical functionality of GAP.
-
-A lot of the functionality of the system and a number of contributed
-extensions are provided as GAP packages, and each of these has its
-own manual. New versions of packages are released independently of
-GAP releases, and changes between package versions may be described
-in their documentation.
-
-
-### 1 Changes between GAP 4.10 and GAP 4.11
+### Changes in GAP 4.11.0 
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes>.
