@@ -10,7 +10,7 @@ respectively. Some documentation is also stored in the library files to be kept
 close to the code it describes. It is included in the manual using the mechanism 
 documented [here](https://www.gap-system.org/Manuals/pkg/GAPDoc-1.6.2/doc/chap4.html).
 
-There is also a document describing [**Changes from Earlier Versions**](Changes.md).
+There is also a document describing [**Changes from Earlier Versions**](../CHANGES.md).
 
 The official GAP distribution includes all documentation, so there is no need to 
 build it after GAP installation. However, if you need to build the development 
