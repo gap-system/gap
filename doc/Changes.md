@@ -29,9 +29,9 @@ Reference: Authors and Maintainers of the **GAP** reference manual.
 
 This document describes most essential changes from previous **GAP** releases.
 
-In addition to this manual, there is the ***GAP** Tutorial* (see
+In addition to this manual, there is the **GAP** Tutorial (see
 [Tutorial: Preface](../../doc/tut/chap1.html#X874E1D45845007FE)) and the
-***GAP** Reference Manual* (see Reference: Preface) containing detailed
+**GAP** Reference Manual (see Reference: Preface) containing detailed
 documentation of the mathematical functionality of **GAP**.
 
 A lot of the functionality of the system and a number of contributed
@@ -42,6 +42,9 @@ in their documentation.
 
 
 ### 1 Changes between **GAP** 4.10 and **GAP** 4.11
+
+These changes are also listed on the Wiki page
+<https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes>.
 
 ## 1.1 New features and major changes
 
@@ -286,8 +289,7 @@ a GAP function object (see PR [#3371](https://github.com/gap-system/gap/pull/337
 
 This chapter contains an overview of the most important changes
 introduced in **GAP** 4.10.0 release (the first public release of
-**GAP** 4.10). Later it will also contain information about subsequent
-update releases for **GAP** 4.10.
+**GAP** 4.10), as well as about subsequent update releases for **GAP** 4.10.
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.10-release-notes>.
@@ -1105,8 +1107,7 @@ been permanently retired some time ago and are not coming back (see
 
 This chapter contains an overview of the most important changes
 introduced in **GAP** 4.9.1 release (the 1st public release of **GAP**
-4.9). Later it will also contain information about subsequent update
-releases for **GAP** 4.9.
+4.9), and about subsequent update releases for **GAP** 4.9.
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.9-release-notes>.
@@ -2173,7 +2174,7 @@ distribution. Additionally, it has three new packages:
 
 This chapter contains an overview of the most important changes
 introduced in **GAP** 4.8.2 release (the 1st public release of **GAP**
-4.8). Later it will also contain information about subsequent update
+4.8), and information about subsequent update
 releases for **GAP** 4.8. First of all, the **GAP** development
 repository is now hosted on GitHub at
 <https://github.com/gap-system/gap>, and **GAP** 4.8 is the first major
