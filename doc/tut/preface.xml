@@ -25,11 +25,11 @@ algebras.
 <P/>
 In addition to this manual, there is the <E>&GAP; Reference Manual</E> 
 <Alt Only="HTML">(see <Ref BookName="ref" Label="Preface"/>)</Alt>
-containing detailed documentation of the mathematical functionality of &GAP;,
-and the manual called <E><Q>&GAP; - Changes from Earlier Versions</Q></E>
-<Alt Only="HTML">(see <Ref BookName="Changes" Label="Preface"/>)</Alt>
-which describes most essential changes from previous &GAP; releases.
+containing detailed documentation of the mathematical functionality of &GAP;.
 <P/>
+There is also a document CHANGES.md in the root directory on the
+most essential changes from previous &GAP; releases.
+
 A lot of the functionality of the system and a number of
 contributed extensions are provided as <Q>&GAP; packages</Q>
 and each of these has its own manual.
