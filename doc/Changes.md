@@ -1,6 +1,6 @@
 # GAP - Changes from Earlier Versions
 
-Release 4.10.2, 19-Jun-2019
+Release 4.11.0, ??-???-2020
 
 **The GAP Group**  
 Email: <support@gap-system.org>  
@@ -8,7 +8,7 @@ Homepage: <https://www.gap-system.org>
 
 ### Copyright
 
-Copyright © (1987-2019) for the core part of the **GAP** system by the
+Copyright © (1987-2020) for the core part of the **GAP** system by the
 **GAP** Group.
 
 Most parts of this distribution, including the core part of the **GAP**
@@ -173,6 +173,7 @@ a GAP function object (see PR [#3371](https://github.com/gap-system/gap/pull/337
 
 ## 1.3 Changed documentation
 
+- [#3886](https://github.com/gap-system/gap/pull/3886) Convert `Changes` manuals book into markdown
 - [#2798](https://github.com/gap-system/gap/pull/2798) Clarify `MemoizePosIntFunction` documentation
 - [#2946](https://github.com/gap-system/gap/pull/2946) Document what a "small integer" resp. "immediate integer" is
 - [#2953](https://github.com/gap-system/gap/pull/2953) Document that `PermutationGModule` works not just for finite fields
