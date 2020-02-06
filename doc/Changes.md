@@ -1,12 +1,3 @@
-Goto Chapter: [Top](chap0.md) [1](chap1.md) [2](chap2.md)
-[3](chap3.md) [4](chap4.md) [5](chap5.md) [6](chap6.md)
-[7](chap7.md) [8](chap8.md) [9](chap9.md) [Ind](chapInd.html)
-
- [\[Top of Book\]](chap0.md)  [\[Contents\]](chap0.md#contents) 
- [\[Next Chapter\]](chap1.md) 
-
-[\[MathJax on\]](chap0_mj.html)
-
 # GAP - Changes from Earlier Versions
 
 Release 4.10.2, 19-Jun-2019
@@ -267,7 +258,6 @@ Features](chap8.md#X83E1A0D87D3D1EAF)
 
 [9 Changes from Earlier Versions](chap9.md#X7F5DE9997CF43125)
 
- [9.1 Earlier Changes](chap9.md#X8205C966783E6F37) 
 
 
 [1 Preface](chap1.md#X874E1D45845007FE)
@@ -304,7 +294,7 @@ These changes are also listed on the Wiki page
 
 #### 2.1 **GAP** 4.10.0 (November 2018)
 
-##### 2.1-1 New features and major changes
+##### 2.1-1 New features and major changes {chap2.md#X7D6E0C387D13B429} 
 
   - **Reduce impact of immediate methods**  
     **GAP** allows declaring so-called "immediate methods". The idea is
@@ -6238,8 +6228,6 @@ Other fixed bugs:
 [9 Changes from Earlier Versions](chap.md#X7F5DE9997CF43125)
 
 ### 9 Changes from Earlier Versions
-
-#### 9.1 Earlier Changes
 
 The most important changes between **GAP** 4.2 and **GAP** 4.3 were:
 
