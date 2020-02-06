@@ -8,40 +8,40 @@ Homepage: <https://www.gap-system.org>
 
 ### Copyright
 
-Copyright © (1987-2020) for the core part of the **GAP** system by the
-**GAP** Group.
+Copyright © (1987-2020) for the core part of the GAP system by the
+GAP Group.
 
-Most parts of this distribution, including the core part of the **GAP**
+Most parts of this distribution, including the core part of the GAP
 system are distributed under the terms of the GNU General Public
 License, see <http://www.gnu.org/licenses/gpl.html> or the file `GPL` in
-the `etc` directory of the **GAP** installation.
+the `etc` directory of the GAP installation.
 
 More detailed information about copyright and licenses of parts of this
 distribution can be found in Section Reference: Copyright and License of
-the **GAP** reference manual.
+the GAP reference manual.
 
-**GAP** is developed over a long time and has many authors and
+GAP is developed over a long time and has many authors and
 contributors. More detailed information can be found in Section
-Reference: Authors and Maintainers of the **GAP** reference manual.
+Reference: Authors and Maintainers of the GAP reference manual.
 
 
 ### Preface
 
-This document describes most essential changes from previous **GAP** releases.
+This document describes most essential changes from previous GAP releases.
 
-In addition to this manual, there is the **GAP** Tutorial (see
+In addition to this manual, there is the GAP Tutorial (see
 [Tutorial: Preface](../../doc/tut/chap1.html#X874E1D45845007FE)) and the
-**GAP** Reference Manual (see Reference: Preface) containing detailed
-documentation of the mathematical functionality of **GAP**.
+GAP Reference Manual (see Reference: Preface) containing detailed
+documentation of the mathematical functionality of GAP.
 
 A lot of the functionality of the system and a number of contributed
-extensions are provided as **GAP** packages, and each of these has its
+extensions are provided as GAP packages, and each of these has its
 own manual. New versions of packages are released independently of
-**GAP** releases, and changes between package versions may be described
+GAP releases, and changes between package versions may be described
 in their documentation.
 
 
-### 1 Changes between **GAP** 4.10 and **GAP** 4.11
+### 1 Changes between GAP 4.10 and GAP 4.11
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes>.
@@ -286,28 +286,28 @@ a GAP function object (see PR [#3371](https://github.com/gap-system/gap/pull/337
 - [NCOnvex](https://homalg-project.github.io/NConvex/) Polyhedral constructions and computations for cones, polyhedrons, polytopes and fans, by Kamal Saleh, Sebastian Gutsche
 - [NoCK](https://pjastr.github.io/NoCK/) Computation of Tolzanos’s obstruction for compact Clifford-Klein forms, by Maciej Bocheński, Piotr Jastrzębski, Anna Szczepkowska, Aleksy Tralle, Artur Woike
 
-### 2 Changes between **GAP** 4.9 and **GAP** 4.10
+### 2 Changes between GAP 4.9 and GAP 4.10
 
 This chapter contains an overview of the most important changes
-introduced in **GAP** 4.10.0 release (the first public release of
-**GAP** 4.10), as well as about subsequent update releases for **GAP** 4.10.
+introduced in GAP 4.10.0 release (the first public release of
+GAP 4.10), as well as about subsequent update releases for GAP 4.10.
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.10-release-notes>.
 
-#### 2.1 **GAP** 4.10.0 (November 2018)
+#### 2.1 GAP 4.10.0 (November 2018)
 
 ##### 2.1-1 New features and major changes
 
   - **Reduce impact of immediate methods**  
-    **GAP** allows declaring so-called "immediate methods". The idea is
+    GAP allows declaring so-called "immediate methods". The idea is
     that these are very simple and fast methods which are immediately
     called if information about an object becomes known, in order to
     perform some quick deduction. For example, if the order of a group
     is set, there might be immediate methods which update the filters
     `IsFinite` and `IsTrivial` of the group suitably.
     
-    While this can be very elegant and useful in interactive **GAP**
+    While this can be very elegant and useful in interactive GAP
     sessions, the overhead for running these immediate methods and
     applying their results can become a major factor in the runtime of
     complex computations that create thousands or millions of objects.
@@ -329,8 +329,8 @@ These changes are also listed on the Wiki page
         triggering immediate methods for these.
     
     As a result of these and other changes, consider the following
-    example; with **GAP** 4.9, it takes about 130 seconds on one test
-    system, while with **GAP** 4.10 it runs in about 22 seconds, i.e.,
+    example; with GAP 4.9, it takes about 130 seconds on one test
+    system, while with GAP 4.10 it runs in about 22 seconds, i.e.,
     more than six times
         faster.
     
@@ -345,25 +345,25 @@ These changes are also listed on the Wiki page
   - **Change definition of `IsPGroup` to *not* require finiteness**  
     This is a small change in terms of amount of code changed, but we
     list it here as it has a potential (albeit rather unlikely) impact
-    on the code written by **GAP** users: In the past, the **GAP**
+    on the code written by GAP users: In the past, the GAP
     manual entry for `IsPGroup` defined p-groups as being finite groups,
     which differs from the most commonly used definition for p-groups.
     Note however that there was not actual implication installed from
     `IsPGroup` to `IsFinite`, so it always was possible to actually
-    created infinite groups in the filter `IsPGroup`. In **GAP** 4.10,
+    created infinite groups in the filter `IsPGroup`. In GAP 4.10,
     we adjusted (in
     [\#1545](https://github.com/gap-system/gap/pull/1545)) the
     documentation for `IsPGroup` to the commonly accepted definition for
-    p-groups. In addition, code in the **GAP** library and in packages
+    p-groups. In addition, code in the GAP library and in packages
     using `IsPGroup` was audited and (in a very few cases) adjusted to
     explicitly check `IsFinite` (see e.g.
     [\#2866](https://github.com/gap-system/gap/pull/2866)).
 
   - **Experimental support for using the **Julia** garbage collector**  
     It is now possible to use the garbage collector of the [Julia
-    language](https://julialang.org) instead of **GAP**'s traditional
+    language](https://julialang.org) instead of GAP's traditional
     **GASMAN** garbage collector. This is partly motivated by a desire
-    to allow tight integration with **GAP** and **Julia** in the future.
+    to allow tight integration with GAP and **Julia** in the future.
     Warning: right now, this is *slower*, and also requires a patched
     version of **Julia**.
     
@@ -382,19 +382,19 @@ These changes are also listed on the Wiki page
 
   - ****libGAP** (work in progress)**  
     We now provide a experimental way to allow 3rd party code to link
-    **GAP** as a library; this is based on the **libGAP** code by
+    GAP as a library; this is based on the **libGAP** code by
     [SageMath](https://www.sagemath.org), but different: while we aim to
     provide the same functionality, we do not rename any symbols, and we
     do not provide the same API. We hope that a future version of
-    **SageMath** can drop its custom modifications for **GAP** and use
+    **SageMath** can drop its custom modifications for GAP and use
     this interface instead. Work is underway to achieve this goal. If
     you are interested in this kind of interface, please get in touch
     with us to help us improve it. See also [this
     email](https://mail.gap-system.org/pipermail/gap/2018-August/001123.html).
     
-    To get an idea how **libGAP** works, you can configure **GAP** as
+    To get an idea how **libGAP** works, you can configure GAP as
     normal, and then execute `make testlibgap` which will build a small
-    program that uses some of the existing API and links **GAP**.
+    program that uses some of the existing API and links GAP.
     Relevant pull requests:
     
       - [\#1690](https://github.com/gap-system/gap/pull/1690) Add a
@@ -404,7 +404,7 @@ These changes are also listed on the Wiki page
         `IsLIBGAP` constant
     
       - [\#2702](https://github.com/gap-system/gap/pull/2702) Add
-        **GAP** kernel API
+        GAP kernel API
     
       - [\#2723](https://github.com/gap-system/gap/pull/2723) Introduce
         command line options `--norepl` and `--nointeract`
@@ -438,7 +438,7 @@ These changes are also listed on the Wiki page
     `GcdInt`, `LcmInt`, `PValuation`, `RootInt`, `SmallestRootInt`,
     `IsPrimePowerInt`
 
-  - [\#2063](https://github.com/gap-system/gap/pull/2063) Teach **GAP**
+  - [\#2063](https://github.com/gap-system/gap/pull/2063) Teach GAP
     that BPSW pseudo primes less than 2^64 are all known to be prime
     (the previous limit was 10^13)
 
@@ -513,11 +513,11 @@ These changes are also listed on the Wiki page
     [\#2602](https://github.com/gap-system/gap/pull/2602),
     [\#2718](https://github.com/gap-system/gap/pull/2718) Improved and
     documented various kernel and memory debugging facilities (requires
-    recompiling **GAP** with `--enable-debug`, `--enable-valgrind` resp.
+    recompiling GAP with `--enable-debug`, `--enable-valgrind` resp.
     `--enable-memory-checking`)
 
   - [\#2308](https://github.com/gap-system/gap/pull/2308) Method
-    selection code was rewritten from **GAP** to C
+    selection code was rewritten from GAP to C
 
   - [\#2326](https://github.com/gap-system/gap/pull/2326) Change
     `SimpleGroup` to perform better input validation and improve or
@@ -567,7 +567,7 @@ These changes are also listed on the Wiki page
     rejects empty inputs and warns if the input contains no test
 
   - [\#2574](https://github.com/gap-system/gap/pull/2574) When reporting
-    syntax errors, **GAP** now "underlines" the complete last token, not
+    syntax errors, GAP now "underlines" the complete last token, not
     just the position where it stopped parsing
 
   - [\#2577](https://github.com/gap-system/gap/pull/2577),
@@ -611,7 +611,7 @@ These changes are also listed on the Wiki page
 
   - [\#2812](https://github.com/gap-system/gap/pull/2812) Reduce memory
     usage and improve performance the MTC (modified Todd-Coxeter) code
-    that was rewritten in **GAP** 4.9, but which was much slower than
+    that was rewritten in GAP 4.9, but which was much slower than
     the old (but buggy) code it replaced; the difference is now small,
     but the old code still is faster in some case.
 
@@ -769,8 +769,8 @@ These changes are also listed on the Wiki page
 
   - [\#2269](https://github.com/gap-system/gap/pull/2269),
     [\#2660](https://github.com/gap-system/gap/pull/2660) Fix some
-    issues with the interface between **GAP** and **XGAP** (or other
-    similar frontends for **GAP**)
+    issues with the interface between GAP and **XGAP** (or other
+    similar frontends for GAP)
 
   - [\#2315](https://github.com/gap-system/gap/pull/2315) Prevent
     creation of groups of floats, just like we prevent creation of
@@ -815,7 +815,7 @@ These changes are also listed on the Wiki page
     lead to different series of random numbers being generated.
 
   - [\#2720](https://github.com/gap-system/gap/pull/2720) Reject
-    workspaces made in a **GAP** with readline support in a **GAP**
+    workspaces made in a GAP with readline support in a GAP
     without, and vice versa, instead of crashing
 
   - [\#2657](https://github.com/gap-system/gap/pull/2657) The subobjects
@@ -831,7 +831,7 @@ These changes are also listed on the Wiki page
 
   - Remove multiple undocumented internal functions. Nobody should have
     been using them, but if you were, you may extract it from a previous
-    **GAP** release that still contained it.
+    GAP release that still contained it.
     ([\#2670](https://github.com/gap-system/gap/pull/2670),
     [\#2781](https://github.com/gap-system/gap/pull/2781) and more)
 
@@ -854,7 +854,7 @@ These changes are also listed on the Wiki page
 
 ##### 2.1-9 Packages
 
-**GAP** 4.10.0 distribution includes 140 packages.
+GAP 4.10.0 distribution includes 140 packages.
 
 Added to the distribution:
 
@@ -867,27 +867,27 @@ Added to the distribution:
     graphical objects by clicking, selecting, dragging and zooming.
 
   - The **JupyterVis** package by Nathan Carter, which is intended for
-    use in Jupyter Notebooks running **GAP** kernels and adds
+    use in Jupyter Notebooks running GAP kernels and adds
     visualization tools for use in such notebooks, such as charts and
     graphs.
 
-No longer redistributed with **GAP**:
+No longer redistributed with GAP:
 
   - The **linboxing** package has been unusable (it does not compile)
     for several years now, and is unmaintained. It was therefore dropped
-    from the **GAP** package distribution. If anybody is willing to take
+    from the GAP package distribution. If anybody is willing to take
     over and fix the package, the latest sources are available at
     <https://github.com/gap-packages/linboxing>.
 
   - The **recogbase** package has been merged into the `recog` package,
     and therefore is no longer distributed with
-**GAP**.
+GAP.
 
-#### 2.2 **GAP** 4.10.1 (February 2019)
+#### 2.2 GAP 4.10.1 (February 2019)
 
-##### 2.2-1 Changes in the core **GAP** system introduced in **GAP** 4.10.1
+##### 2.2-1 Changes in the core GAP system introduced in GAP 4.10.1
 
-Fixes in the experimental way to allow 3rd party code to link **GAP** as
+Fixes in the experimental way to allow 3rd party code to link GAP as
 a library:
 
   - Do not start a session when loading workspace if `--nointeract`
@@ -917,7 +917,7 @@ Fixes in the experimental support for using the Julia garbage collector:
   - Export Julia `CFLAGS`, `LDFLAGS`, and `LIBS` to `sysinfo.gap`
     ([\#3248](https://github.com/gap-system/gap/pull/3248)).
 
-  - Change `MPtr` Julia type of **GAP** objects to be a subtype of the
+  - Change `MPtr` Julia type of GAP objects to be a subtype of the
     abstract Julia `GapObj` type provided by the Julia package
     `GAPTypes.jl`
     ([\#3497](https://github.com/gap-system/gap/pull/3497)).
@@ -955,7 +955,7 @@ Fixed bugs that could lead to incorrect results:
     ([\#3220](https://github.com/gap-system/gap/pull/3220)).
 
   - Fix a bug in `Gcd` for polynomials not returning standard
-    associates, introduced in **GAP** 4.10.0
+    associates, introduced in GAP 4.10.0
     ([\#3227](https://github.com/gap-system/gap/pull/3227)).
 
 Fixed bugs that could lead to break loops:
@@ -992,19 +992,19 @@ Other fixed bugs:
   - Fix string copying logic
     ([\#3071](https://github.com/gap-system/gap/pull/3071)).
 
-##### 2.2-2 New and updated packages since **GAP** 4.10.0
+##### 2.2-2 New and updated packages since GAP 4.10.0
 
-**GAP** 4.10.1 distribution contains 145 packages, including updated
-versions of 35 packages from **GAP** 4.10.0 distribution, and also the
+GAP 4.10.1 distribution contains 145 packages, including updated
+versions of 35 packages from GAP 4.10.0 distribution, and also the
 following five new packages:
 
   - **MajoranaAlgebras** by Markus Pfeiffer and Madeleine Whybrow, which
     constructs Majorana representations of finite groups.
 
   - **PackageManager** by Michael Torpey, providing a collection of
-    functions for installing and removing **GAP** packages, with the
+    functions for installing and removing GAP packages, with the
     eventual aim of becoming a full pip-style package manager for the
-    **GAP** system.
+    GAP system.
 
   - **Thelma** by Victor Bovdi and Vasyl Laver, implementing algorithms
     to deal with threshold elements.
@@ -1017,12 +1017,12 @@ following five new packages:
     also includes a database of classical and skew braces of small
     orders.
 
-#### 2.3 **GAP** 4.10.2 (June 2019)
+#### 2.3 GAP 4.10.2 (June 2019)
 
-##### 2.3-1 Changes in the core **GAP** system introduced in **GAP** 4.10.21
+##### 2.3-1 Changes in the core GAP system introduced in GAP 4.10.21
 
 Improvements in the experimental way to allow 3rd party code to link
-**GAP** as a library:
+GAP as a library:
 
   - Add `GAP_AssignGlobalVariable` and
     `GAP_IsNameOfWritableGlobalVariable` to the **libGAP** API
@@ -1088,10 +1088,10 @@ Other fixed bugs:
   - Fix corner case in modified Todd-Coxeter algorithm when relator is
     trivial ([\#3311](https://github.com/gap-system/gap/pull/3311)).
 
-##### 2.3-2 New and updated packages since **GAP** 4.10.1
+##### 2.3-2 New and updated packages since GAP 4.10.1
 
-**GAP** 4.10.1 distribution contains 145 packages, including updated
-versions of 55 packages from **GAP** 4.10.1 distribution,
+GAP 4.10.1 distribution contains 145 packages, including updated
+versions of 55 packages from GAP 4.10.1 distribution,
 
 A new package **MonoidalCategories** by Mohamed Barakat, Sebastian
 Gutsche and Sebastian Posur have been added to the distribution. It is
@@ -1104,37 +1104,37 @@ been permanently retired some time ago and are not coming back (see
 <https://github.com/gap-packages/qaos/issues/13> for details).
 
 
-### 3 Changes between **GAP** 4.8 and **GAP** 4.9
+### 3 Changes between GAP 4.8 and GAP 4.9
 
 This chapter contains an overview of the most important changes
-introduced in **GAP** 4.9.1 release (the 1st public release of **GAP**
-4.9), and about subsequent update releases for **GAP** 4.9.
+introduced in GAP 4.9.1 release (the 1st public release of GAP
+4.9), and about subsequent update releases for GAP 4.9.
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.9-release-notes>.
 
-#### 3.1 **GAP** 4.9.1 (May 2018)
+#### 3.1 GAP 4.9.1 (May 2018)
 
-##### 3.1-1 Changes in the core **GAP** system introduced in **GAP** 4.9
+##### 3.1-1 Changes in the core GAP system introduced in GAP 4.9
 
 Major changes:
 
-  - Merged **HPC-GAP** into **GAP**. For details, please refer to
+  - Merged **HPC-GAP** into GAP. For details, please refer to
     Subsection [3.1-2](chap.md#X7F52B77B7DBACC17) at the end of these
     release notes.
 
-  - **GAP** has a new build system, which resolves many quirks and
+  - GAP has a new build system, which resolves many quirks and
     issues with the old system, and will be easier to maintain. For
     regular users, the usual `./configure && make` should work fine as
     before. If you are interested in technical details on the new build
     system, take a look at `README.buildsys.md`.
 
-  - The guidelines for developing **GAP** packages were revised and
+  - The guidelines for developing GAP packages were revised and
     moved from the Example package to Reference: Using and Developing
     GAP Packages ([\#484](https://github.com/gap-system/gap/pull/484)).
 
   - In addition to supporting single argument lambda functions like `a
-    -> a+1`, **GAP** now supports lambdas with fewer or more than one
+    -> a+1`, GAP now supports lambdas with fewer or more than one
     argument, or even a variable number. E.g. `{a,b} -> a+b` is a
     shorthand for `function(a,b) return a+b; end`. For details on how to
     use this, see Reference: Function. For technical details, e.g. why
@@ -1149,27 +1149,27 @@ Major changes:
     [\#462](https://github.com/gap-system/gap/pull/462)).
 
   - The libraries of small, primitive and transitive groups which
-    previously were an integral part of **GAP** were split into three
+    previously were an integral part of GAP were split into three
     separate packages
     [PrimgGrp](http://gap-packages.github.io/primgrp/),
     [SmallGrp](https://gap-packages.github.io/smallgrp/) and
     [TransGrp](http://www.math.colostate.edu/~hulpke/transgrp/). For
-    backwards compatibility, these are required packages in **GAP** 4.9
-    (i.e., **GAP** will not start without them). We plan to change this
-    for **GAP** 4.10 (see
+    backwards compatibility, these are required packages in GAP 4.9
+    (i.e., GAP will not start without them). We plan to change this
+    for GAP 4.10 (see
     [\#2434](https://github.com/gap-system/gap/pull/2434)), once all
     packages which currently implicitly rely on these new packages had
     time to add explicit dependencies on them
     ([\#1650](https://github.com/gap-system/gap/pull/1650),
     [\#1714](https://github.com/gap-system/gap/pull/1714)).
 
-  - The performance of **GAP**'s sorting functions (such as `Sort`
+  - The performance of GAP's sorting functions (such as `Sort`
     (Reference: Sort), `SortParallel` (Reference: SortParallel), etc.)
     has been substantially improved, in some examples by more than a
     factor of four: as a trivial example, compare the timing for
     `Sort([1..100000000] * 0)`. As a side effect, the result of sorting
     lists with equal entries may produce different answers compared to
-    previous **GAP** versions. If you would like to make your code
+    previous GAP versions. If you would like to make your code
     independant of the exact employed sorting algorithm, you can use the
     newly added `StableSort` (Reference: StableSort), `StableSortBy`
     (Reference: StableSortBy) and `StableSortParallel` (Reference:
@@ -1239,7 +1239,7 @@ Major changes:
       - Remove profiling limit on files with \<= 2^16 lines
         ([\#1913](https://github.com/gap-system/gap/pull/1913))
 
-  - In many cases **GAP** now outputs the filename and location of
+  - In many cases GAP now outputs the filename and location of
     functions in helpful places, e.g. in error messages or when
     displaying compiled functions. We also try to always use the format
     `FILENAME:LINE`, which various utilities already know how to parse
@@ -1250,10 +1250,10 @@ Major changes:
     [\#755](https://github.com/gap-system/gap/pull/755\)),
     [\#1058](https://github.com/gap-system/gap/pull/1058).
 
-  - **GAP** now supports constant variables, whose value cannot change
+  - GAP now supports constant variables, whose value cannot change
     anymore during runtime; code using such constants can then be
-    slightly optimized by **GAP**. E.g. if `foo` is turned into a
-    constant variable bound to the value `false`, then **GAP** can
+    slightly optimized by GAP. E.g. if `foo` is turned into a
+    constant variable bound to the value `false`, then GAP can
     optimize `if foo then ... fi;` blocks completely away. For details,
     see `MakeConstantGlobal` (Reference: MakeConstantGlobal) in
     Reference: More About Global Variables.
@@ -1335,7 +1335,7 @@ Other changes:
     ([\#683](https://github.com/gap-system/gap/pull/683))
 
   - Various speed improvements to polynomial factorisation and the
-    **GAP** MeatAxe
+    GAP MeatAxe
     ([\#720](https://github.com/gap-system/gap/pull/720),
     [\#1027](https://github.com/gap-system/gap/pull/1027))
 
@@ -1514,7 +1514,7 @@ Other changes:
   - Add `String` (Reference: String) method for functions
     ([\#1591](https://github.com/gap-system/gap/pull/1591))
 
-  - Check modules were compiled with the same version of **GAP** when
+  - Check modules were compiled with the same version of GAP when
     loading them ([\#1600](https://github.com/gap-system/gap/pull/1600))
 
   - When printing function, reproduce `TryNextMethod()` correctly
@@ -1625,11 +1625,11 @@ Other changes:
     similar tight loops with "Ctrl-C"
     ([\#2259](https://github.com/gap-system/gap/pull/2259)).
 
-  - Improved **GAP** testing infrastructure, extended **GAP** test
+  - Improved GAP testing infrastructure, extended GAP test
     suite, and increased code coverage
 
   - Countless other tweaks, improvements, fixes were applied to the
-    **GAP** library, kernel and manual
+    GAP library, kernel and manual
 
 Fixed bugs:
 
@@ -1717,7 +1717,7 @@ Fixed bugs:
     [\#1383](https://github.com/gap-system/gap/pull/1383),
     [\#1573](https://github.com/gap-system/gap/pull/1573))
 
-  - Fix starting **GAP** on systems with large inodes
+  - Fix starting GAP on systems with large inodes
     ([\#1033](https://github.com/gap-system/gap/pull/1033))
 
   - Fix `NrFixedPoints` (Reference: NrFixedPoints for a partial perm)
@@ -1886,7 +1886,7 @@ Fixed bugs:
     pointed at the wrong code line in some cases
     ([\#1814](https://github.com/gap-system/gap/pull/1814))
 
-  - Fix the interaction of signals in **GAP** and the **IO** package
+  - Fix the interaction of signals in GAP and the **IO** package
     ([\#1851](https://github.com/gap-system/gap/pull/1851))
 
   - Make line editing resilient to `LineEditKeyHandler` failure (in
@@ -1987,16 +1987,16 @@ Removed or obsolete functionality:
 
 ##### 3.1-2 **HPC-GAP**
 
-**GAP** includes experimental code to support multithreaded programming
-in **GAP**, dubbed **HPC-GAP** (where HPC stands for "high performance
-computing"). **GAP** and **HPC-GAP** codebases diverged during the
+GAP includes experimental code to support multithreaded programming
+in GAP, dubbed **HPC-GAP** (where HPC stands for "high performance
+computing"). GAP and **HPC-GAP** codebases diverged during the
 project, and we are currently working on unifying the codebases and
-incorporating the **HPC-GAP** code back into the mainstream **GAP**
+incorporating the **HPC-GAP** code back into the mainstream GAP
 versions.
 
-This is work in progress, and **HPC-GAP** as it is included with **GAP**
+This is work in progress, and **HPC-GAP** as it is included with GAP
 right now still suffers from various limitations and problems, which we
-are actively working on to resolve. However, including it with **GAP**
+are actively working on to resolve. However, including it with GAP
 (disabled by default) considerably simplifies development of
 **HPC-GAP**. It also means that you can very easily get a (rough\!)
 sneak peak of **HPC-GAP**. It comes together with the new manual book
@@ -2004,24 +2004,24 @@ called "**HPC-GAP** Reference Manual" and located in the \`doc/hpc\`
 directory.
 
 Users interested in experimenting with shared memory parallel
-programming in **GAP** can build **HPC-GAP** by following the
+programming in GAP can build **HPC-GAP** by following the
 instructions from
 <https://github.com/gap-system/gap/wiki/Building-HPC-GAP>. While it is
-possible to build **HPC-GAP** from a release version of **GAP** you
-downloaded from the **GAP** website, due to the ongoing development of
+possible to build **HPC-GAP** from a release version of GAP you
+downloaded from the GAP website, due to the ongoing development of
 **HPC-GAP**, we recommend that you instead build **HPC-GAP** from the
-latest development version available in the **GAP** repository at
+latest development version available in the GAP repository at
 GitHub, i.e. <https://github.com/gap-system/gap>.
 
-##### 3.1-3 New and updated packages since **GAP** 4.8.10
+##### 3.1-3 New and updated packages since GAP 4.8.10
 
-There were 132 packages redistributed together with **GAP** 4.8.10. The
-**GAP** 4.9.1 distribution includes 134 packages, including numerous
+There were 132 packages redistributed together with GAP 4.8.10. The
+GAP 4.9.1 distribution includes 134 packages, including numerous
 updates of previously redistributed packages, and some major changes
 outlined below.
 
 The libraries of small, primitive and transitive groups which previously
-were an integral part of **GAP** were split into three separate packages
+were an integral part of GAP were split into three separate packages
 [PrimgGrp](http://gap-packages.github.io/primgrp/),
 [SmallGrp](https://gap-packages.github.io/smallgrp/) and
 [TransGrp](http://www.math.colostate.edu/~hulpke/transgrp/):
@@ -2043,9 +2043,9 @@ were an integral part of **GAP** were split into three separate packages
     transitive groups, with an optional download of the library of
     transitive groups of degree 32.
 
-For backwards compatibility, these are required packages in **GAP** 4.9
-(i.e., **GAP** will not start without them). We plan to change this for
-**GAP** 4.10 (see
+For backwards compatibility, these are required packages in GAP 4.9
+(i.e., GAP will not start without them). We plan to change this for
+GAP 4.10 (see
 [\#2434](https://github.com/gap-system/gap/pull/2434)), once all
 packages which currently implicitly rely on these new packages had time
 to add explicit dependencies on them
@@ -2055,29 +2055,29 @@ to add explicit dependencies on them
 The new **ZeroMQInterface** package by Markus Pfeiffer and Reimer
 Behrends has been added for the redistribution. It provides both
 low-level bindings as well as some higher level interfaces for the
-[ZeroMQ](http://zeromq.org/) message passing library for **GAP** and
+[ZeroMQ](http://zeromq.org/) message passing library for GAP and
 **HPC-GAP** enabling lightweight distributed computation.
 
 The **HAPprime** package by Paul Smith is no longer redistributed with
-**GAP**. Part of the code has been incorporated into the **HAP**
+GAP. Part of the code has been incorporated into the **HAP**
 package. Its source code repository, containing the code of the last
 distributed version, can still be found at
 <https://github.com/gap-packages/happrime>.
 
 Also, the **ParGAP** package by Gene Cooperman is no longer
-redistributed with **GAP** because it no longer can be compiled with
-**GAP** 4.9 (see [this
+redistributed with GAP because it no longer can be compiled with
+GAP 4.9 (see [this
 announcement](https://mail.gap-system.org/pipermail/gap/2018-March/001082.html)).
 Its source code repository, containing the code of the last distributed
 version, plus some first fixes needed for compatibility for GAP 4.9, can
 still be found at <https://github.com/gap-packages/pargap>. If somebody
 is interested in repairing this package and taking over its maintenance,
-so that it can be distributed again, please contact the **GAP**
+so that it can be distributed again, please contact the GAP
 team.
 
-#### 3.2 **GAP** 4.9.2 (July 2018)
+#### 3.2 GAP 4.9.2 (July 2018)
 
-##### 3.2-1 Changes in the core **GAP** system introduced in **GAP** 4.9.2
+##### 3.2-1 Changes in the core GAP system introduced in GAP 4.9.2
 
 Fixed bugs that could lead to break loops:
 
@@ -2116,33 +2116,33 @@ Other fixed bugs and further improvements:
     the **simpcomp** package
     ([\#2475](https://github.com/gap-system/gap/pull/2475)).
 
-  - Fixed a bug in restoring a workspace, which prevented **GAP** from
+  - Fixed a bug in restoring a workspace, which prevented GAP from
     saving the history if a workspace was loaded during startup
     ([\#2578](https://github.com/gap-system/gap/pull/2578)).
 
-##### 3.2-2 New and updated packages since **GAP** 4.9.1
+##### 3.2-2 New and updated packages since GAP 4.9.1
 
-This release contains updated versions of 22 packages from **GAP** 4.9.1
+This release contains updated versions of 22 packages from GAP 4.9.1
 distribution. Additionally, it has three new packages. The new
 **JupyterKernel** package by Markus Pfeiffer provides a so-called
 *kernel* for the Jupyter interactive document system
 (<https://jupyter.org/>). This package requires Jupyter to be installed
 on your system (see <https://jupyter.org/install> for instructions). It
-also requires **GAP** packages **IO**, **ZeroMQInterface**, **json**,
+also requires GAP packages **IO**, **ZeroMQInterface**, **json**,
 and also two new packages by Markus Pfeiffer called **crypting** and
-**uuid**, all included into **GAP** 4.9.2 distribution. The
+**uuid**, all included into GAP 4.9.2 distribution. The
 **JupyterKernel** package is not yet usable on
 Windows.
 
-#### 3.3 **GAP** 4.9.3 (September 2018)
+#### 3.3 GAP 4.9.3 (September 2018)
 
-##### 3.3-1 Changes in the core **GAP** system introduced in **GAP** 4.9.3
+##### 3.3-1 Changes in the core GAP system introduced in GAP 4.9.3
 
 Fixed bugs that could lead to break loops:
 
   - Fixed a regression in `HighestWeightModule` (Reference:
     HighestWeightModule) caused by changes in sort functions introduced
-    in **GAP** 4.9 release
+    in GAP 4.9 release
     ([\#2617](https://github.com/gap-system/gap/pull/2617)).
 
 Other fixed bugs and further improvements:
@@ -2150,9 +2150,9 @@ Other fixed bugs and further improvements:
   - Fixed a compile time assertion that caused compiler error on some
     systems ([\#2691](https://github.com/gap-system/gap/pull/2691)).
 
-##### 3.3-2 New and updated packages since **GAP** 4.9.2
+##### 3.3-2 New and updated packages since GAP 4.9.2
 
-This release contains updated versions of 18 packages from **GAP** 4.9.2
+This release contains updated versions of 18 packages from GAP 4.9.2
 distribution. Additionally, it has three new packages:
 
   - The **curlInterface** package by Christopher Jefferson and Michael
@@ -2171,29 +2171,29 @@ distribution. Additionally, it has three new packages:
     polynomials.
 
 
-### 4 Changes between **GAP** 4.7 and **GAP** 4.8
+### 4 Changes between GAP 4.7 and GAP 4.8
 
 This chapter contains an overview of the most important changes
-introduced in **GAP** 4.8.2 release (the 1st public release of **GAP**
+introduced in GAP 4.8.2 release (the 1st public release of GAP
 4.8), and information about subsequent update
-releases for **GAP** 4.8. First of all, the **GAP** development
+releases for GAP 4.8. First of all, the GAP development
 repository is now hosted on GitHub at
-<https://github.com/gap-system/gap>, and **GAP** 4.8 is the first major
-**GAP** release made from this repository. The public issue tracker for
-the core **GAP** system is located at
+<https://github.com/gap-system/gap>, and GAP 4.8 is the first major
+GAP release made from this repository. The public issue tracker for
+the core GAP system is located at
 <https://github.com/gap-system/gap/issues>, and you may use appropriate
 milestones from <https://github.com/gap-system/gap/milestones> to see
-all changes that were introduced in corresponding **GAP** releases. An
+all changes that were introduced in corresponding GAP releases. An
 overview of the most significant ones is provided below.
 
-#### 4.1 **GAP** 4.8.2 (February 2016)
+#### 4.1 GAP 4.8.2 (February 2016)
 
-##### 4.1-1 Changes in the core **GAP** system introduced in **GAP** 4.8
+##### 4.1-1 Changes in the core GAP system introduced in GAP 4.8
 
 New features:
 
   - Added support for profiling which tracks how much time in spent on
-    each line of **GAP** code. This can be used to show where code is
+    each line of GAP code. This can be used to show where code is
     spending a long time and also check which lines of code are even
     executed. See the documentation for `ProfileLineByLine` (Reference:
     ProfileLineByLine) and `CoverageLineByLine` (Reference:
@@ -2228,9 +2228,9 @@ New features:
     function with a limit on the CPU time it can consume. This
     functionality may not be available on all systems and you should
     check `GAPInfo.TimeoutsSupported` before using this functionality.
-    (These functions were withdrawn in **GAP** 4.9.)
+    (These functions were withdrawn in GAP 4.9.)
 
-  - **GAP** now displays the filename and line numbers of statements in
+  - GAP now displays the filename and line numbers of statements in
     backtraces when entering the break loop.
 
   - Introduced `TestDirectory` (Reference: TestDirectory) function to
@@ -2244,7 +2244,7 @@ Improved and extended functionality:
 
   - `TraceAllMethods` (Reference: TraceAllMethods) and
     `UntraceAllMethods` (Reference: UntraceAllMethods) to turn on and
-    off tracing all methods in **GAP**. Also, for the uniform approach
+    off tracing all methods in GAP. Also, for the uniform approach
     `UntraceImmediateMethods` (Reference: UntraceImmediateMethods) has
     been added as an equivalent of `TraceImmediateMethods(false)`.
 
@@ -2265,12 +2265,12 @@ Changed functionality:
 
   - As a preparation for the future developments to support
     multithreading, some language extensions from the **HPC-GAP**
-    project were backported to the **GAP** library to help to unify the
-    codebase of both **GAP** 4 and **HPC-GAP**. The only change which is
+    project were backported to the GAP library to help to unify the
+    codebase of both GAP 4 and **HPC-GAP**. The only change which is
     not backwards compatible is that `atomic`, `readonly` and
     `readwrite` are now keywords, and thus are no longer valid
     identifiers. So if you have any variables or functions using that
-    name, you will have to change it in **GAP** 4.8.
+    name, you will have to change it in GAP 4.8.
 
   - There was inconsistent use of the following properties of
     semigroups: `IsGroupAsSemigroup`, `IsMonoidAsSemigroup`, and
@@ -2303,7 +2303,7 @@ Changed functionality:
 Fixed bugs:
 
   - A combination of two bugs could lead to a segfault. First off,
-    `NullMat` (Reference: NullMat) (and various other **GAP**
+    `NullMat` (Reference: NullMat) (and various other GAP
     functions), when asked to produce matrix over a small field, called
     `ConvertToMatrixRep` (Reference: ConvertToMatrixRep for a list (and
     a field)). After this, if the user tried to change one of the
@@ -2342,11 +2342,11 @@ Fixed bugs:
   - Fixed the problem with using Windows default browser as a help
     viewer using `SetHelpViewer("browser");`.
 
-##### 4.1-2 New and updated packages since **GAP** 4.7.8
+##### 4.1-2 New and updated packages since GAP 4.7.8
 
-At the time of the release of **GAP** 4.7.8 there were 119 packages
-redistributed with **GAP**. New packages that have been added to the
-redistribution since the release of **GAP** 4.7.8 are:
+At the time of the release of GAP 4.7.8 there were 119 packages
+redistributed with GAP. New packages that have been added to the
+redistribution since the release of GAP 4.7.8 are:
 
   - **CAP** (Categories, Algorithms, Programming) package by Sebastian
     Gutsche, Sebastian Posur and Øystein Skartsæterhagen, together with
@@ -2394,16 +2394,16 @@ redistribution since the release of **GAP** 4.7.8 are:
     modules and Cat1-algebras and morphisms of these
 structures.
 
-#### 4.2 **GAP** 4.8.3 (March 2016)
+#### 4.2 GAP 4.8.3 (March 2016)
 
-##### 4.2-1 Changes in the core **GAP** system introduced in **GAP** 4.8.3
+##### 4.2-1 Changes in the core GAP system introduced in GAP 4.8.3
 
 New features:
 
   - New function `TestPackage` (Reference: TestPackage) to run standard
-    tests (if available) for a single package in the current **GAP**
+    tests (if available) for a single package in the current GAP
     session (also callable via `make testpackage PKGNAME=pkgname` to run
-    package tests in the same settings that are used for testing **GAP**
+    package tests in the same settings that are used for testing GAP
     releases).
 
 Improved and extended functionality:
@@ -2451,18 +2451,18 @@ Other fixed bugs:
     (Reference: SetHelpViewer). \[Reported by Tom
 McDonough\]
 
-#### 4.3 **GAP** 4.8.4 (June 2016)
+#### 4.3 GAP 4.8.4 (June 2016)
 
-##### 4.3-1 Changes in the core **GAP** system introduced in **GAP** 4.8.4
+##### 4.3-1 Changes in the core GAP system introduced in GAP 4.8.4
 
 New features:
 
-  - The **GAP** distribution now includes `bin/BuildPackages.sh`, a
+  - The GAP distribution now includes `bin/BuildPackages.sh`, a
     script which can be started from the `pkg` directory via
     `../bin/BuildPackages.sh` and will attempt to build as many packages
     as possible. It replaces the `InstPackages.sh` script which was not
-    a part of the **GAP** distribution and had to be downloaded
-    separately from the **GAP** website. The new script is more robust
+    a part of the GAP distribution and had to be downloaded
+    separately from the GAP website. The new script is more robust
     and simplifies adding new packages with binaries, as it requires no
     adjustments if the new package supports the standard `./configure;
     make` build procedure.
@@ -2477,7 +2477,7 @@ Improved and extended functionality:
   - An info message with the suggestion to use `InfoPackageLoading`
     (Reference: InfoPackageLoading) will now be displayed when
     `LoadPackage` (Reference: LoadPackage) returns `fail` (unless
-    **GAP** is started with `-b` option).
+    GAP is started with `-b` option).
 
   - The build system will now enable C++ support in GMP only if a
     working C++ compiler is detected.
@@ -2523,9 +2523,9 @@ Other fixed bugs:
     lists in 64-bit GAP
 installations.
 
-#### 4.4 **GAP** 4.8.5 (September 2016)
+#### 4.4 GAP 4.8.5 (September 2016)
 
-##### 4.4-1 Changes in the core **GAP** system introduced in **GAP** 4.8.5
+##### 4.4-1 Changes in the core GAP system introduced in GAP 4.8.5
 
 Improved and extended functionality:
 
@@ -2568,26 +2568,26 @@ Fixed bugs that could lead to break loops:
     as the result of various
 algorithms.
 
-#### 4.5 **GAP** 4.8.6 (November 2016)
+#### 4.5 GAP 4.8.6 (November 2016)
 
-##### 4.5-1 Changes in the core **GAP** system introduced in **GAP** 4.8.6
+##### 4.5-1 Changes in the core GAP system introduced in GAP 4.8.6
 
 Fixed bugs that could lead to break loops:
 
-  - Fixed regression in the **GAP** kernel code introduced in **GAP**
+  - Fixed regression in the GAP kernel code introduced in GAP
     4.8.5 and breaking `StringFile` ([GAPDoc:
     StringFile](../../pkg/GAPDoc-1.6.2/doc/chap.md#X7E14D32181FBC3C3))
     ability to work with compressed files. \[Reported by Bill
     Allombert\]
 
-#### 4.6 **GAP** 4.8.7 (March 2017)
+#### 4.6 GAP 4.8.7 (March 2017)
 
-##### 4.6-1 Changes in the core **GAP** system introduced in **GAP** 4.8.7
+##### 4.6-1 Changes in the core GAP system introduced in GAP 4.8.7
 
 Fixed bugs that could lead to incorrect results:
 
-  - Fixed a regression from **GAP** 4.7.6 when reading compressed files
-    after a workspace is loaded. Before the fix, if **GAP** is started
+  - Fixed a regression from GAP 4.7.6 when reading compressed files
+    after a workspace is loaded. Before the fix, if GAP is started
     with the `-L` option (load workspace), using `ReadLine` (Reference:
     ReadLine) on the input stream for a compressed file returned by
     `InputTextFile` (Reference: InputTextFile) only returned the first
@@ -2595,14 +2595,14 @@ Fixed bugs that could lead to incorrect results:
 
 Other fixed bugs:
 
-  - Fixed compiler warning occurring when **GAP** is compiled with gcc
+  - Fixed compiler warning occurring when GAP is compiled with gcc
     6.2.0. \[Reported by Bill Allombert\]
 
-##### 4.6-2 New and updated packages since **GAP** 4.8.6
+##### 4.6-2 New and updated packages since GAP 4.8.6
 
-This release contains updated versions of 19 packages from **GAP** 4.8.6
+This release contains updated versions of 19 packages from GAP 4.8.6
 distribution. Additionally, the following package has been added for the
-redistribution with **GAP**:
+redistribution with GAP:
 
   - **lpres** package (author: René Hartung, maintainer: Laurent
     Bartholdi) to work with L-presented groups, namely groups given by a
@@ -2612,9 +2612,9 @@ redistribution with **GAP**:
     Todd-Coxeter and Reidemeister-Schreier algorithms for such
 groups.
 
-#### 4.7 **GAP** 4.8.8 (August 2017)
+#### 4.7 GAP 4.8.8 (August 2017)
 
-##### 4.7-1 Changes in the core **GAP** system introduced in **GAP** 4.8.8
+##### 4.7-1 Changes in the core GAP system introduced in GAP 4.8.8
 
 Fixed bugs that could lead to incorrect results:
 
@@ -2636,23 +2636,23 @@ Other fixed bugs:
     default browser as a help viewer on Windows. \[Reported by Jack
     Saunders\]
 
-##### 4.7-2 New and updated packages since **GAP** 4.8.7
+##### 4.7-2 New and updated packages since GAP 4.8.7
 
-This release contains updated versions of 29 packages from **GAP** 4.8.7
+This release contains updated versions of 29 packages from GAP 4.8.7
 distribution. Additionally, the **Gpd** package (author: Chris Wensley)
 has been renamed to **Groupoids**.
 
 
-### 5 Changes between **GAP** 4.6 and **GAP** 4.7
+### 5 Changes between GAP 4.6 and GAP 4.7
 
 This chapter contains an overview of most important changes introduced
-in **GAP** 4.7.2 release (the first public release of **GAP** 4.7). It
-also contains information about subsequent update releases for **GAP**
+in GAP 4.7.2 release (the first public release of GAP 4.7). It
+also contains information about subsequent update releases for GAP
 4.7.
 
-#### 5.1 **GAP** 4.7.2 (December 2013)
+#### 5.1 GAP 4.7.2 (December 2013)
 
-##### 5.1-1 Changes in the core **GAP** system introduced in **GAP** 4.7
+##### 5.1-1 Changes in the core GAP system introduced in GAP 4.7
 
 Improved and extended functionality:
 
@@ -2705,22 +2705,22 @@ Improved and extended functionality:
         gap> Exponent(K); # should take at most a few seconds
         168
 
-  - The functionality in **GAP** for transformations and transformation
+  - The functionality in GAP for transformations and transformation
     semigroups has been rewritten and extended. Partial permutations and
     inverse semigroups have been newly implemented. The documentation
     for transformations and transformation semigroups has been improved.
     Transformations and partial permutations are implemented in the
-    **GAP** kernel. Methods for calculating attributes of
+    GAP kernel. Methods for calculating attributes of
     transformations and partial permutations, and taking products, and
     so are also implemented in the kernel. The new implementations are
     largely backwards compatible; some exceptions are given below.
     
     The degree of a transformation `f` is usually defined as the largest
     positive integer where `f` is defined. In previous versions of
-    **GAP**, transformations were only defined on positive integers less
+    GAP, transformations were only defined on positive integers less
     than their degree, it was only possible to multiply transformations
     of equal degree, and a transformation did not act on any point
-    exceeding its degree. Starting with **GAP** 4.7, transformations
+    exceeding its degree. Starting with GAP 4.7, transformations
     behave more like permutations, in that they fix unspecified points
     and it is possible to multiply arbitrary transformations.
     
@@ -2781,18 +2781,18 @@ Improved and extended functionality:
     the default level 0 is introduced. Setting it to 1 will trigger
     warnings at runtime if an obsolete variable declared with
     `DeclareObsoleteSynonym` is used. This is recommended for testing
-    **GAP** distribution and packages.
+    GAP distribution and packages.
 
-  - The **GAP** help system now recognises some common different
+  - The GAP help system now recognises some common different
     spelling patterns (for example, -ise/-ize, -isation/-ization,
     solvable/soluble) and searches for all possible spelling options
     even when the synonyms are not declared.
 
   - Added new function `Cite` (Reference: Cite) which produces citation
-    samples for **GAP** and packages.
+    samples for GAP and packages.
 
-  - It is now possible to compile **GAP** with user-supplied `CFLAGS`
-    which now will not be overwritten by **GAP** default settings.
+  - It is now possible to compile GAP with user-supplied `CFLAGS`
+    which now will not be overwritten by GAP default settings.
     \[Suggested by Jeroen Demeyer\]
 
 Fixed bugs:
@@ -2830,29 +2830,29 @@ Fixed bugs:
     the break loop.
 
   - Empty strings were treated slightly differently than other strings
-    in the **GAP** kernel, for historical reasons. This resulted in
+    in the GAP kernel, for historical reasons. This resulted in
     various inconsistencies. For example, `IsStringRep("")` returned
     true, but a method installed for arguments of type `IsStringRep`
     would NOT be invoked when called with an empty string.
     
-    We remove this special case in the **GAP** kernel (which dates back
-    the very early days of **GAP** 4 in 1996). This uncovered one issue
+    We remove this special case in the GAP kernel (which dates back
+    the very early days of GAP 4 in 1996). This uncovered one issue
     in the kernel function `POSITION_SUBSTRING` (when calling it with an
     empty string as second argument), which was also fixed.
 
   - The parser for floating point numbers contained a bug that could
-    cause **GAP** to crash or to get into a state where the only action
-    left to the user was to exit **GAP** via Ctrl-D. For example,
-    entering four dots with spaces between them on the **GAP** prompt
-    and then pressing the return key caused **GAP** to exit.
+    cause GAP to crash or to get into a state where the only action
+    left to the user was to exit GAP via Ctrl-D. For example,
+    entering four dots with spaces between them on the GAP prompt
+    and then pressing the return key caused GAP to exit.
     
     The reason was (ironically) an error check in the innards of the
-    float parser code which invoked the **GAP** `Error()` function at a
+    float parser code which invoked the GAP `Error()` function at a
     point where it should not have.
 
   - Removing the last character in a string was supposed to overwrite
     the old removed character in memory with a zero byte, but failed to
-    do so due to an off-by-one error. For most **GAP** operations, this
+    do so due to an off-by-one error. For most GAP operations, this
     has no visible effect, except for those which directly operate on
     the underlying memory representation of strings. For example, when
     trying to use such a string to reference a record entry, a (strange)
@@ -2886,10 +2886,10 @@ Changed functionality:
     this. The value of this preference is also accessible in
     `GAPInfo.ViewLength`.
 
-##### 5.1-2 New and updated packages since **GAP** 4.6.5
+##### 5.1-2 New and updated packages since GAP 4.6.5
 
-At the time of the release of **GAP** 4.6.5 there were 107 packages
-redistributed with **GAP**. The first public release of **GAP** 4.7
+At the time of the release of GAP 4.6.5 there were 107 packages
+redistributed with GAP. The first public release of GAP 4.7
 contains 114 packages.
 
 One of essential changes is that the **Citrus** package by J.Mitchell
@@ -2899,7 +2899,7 @@ generalized so that in the future the same code can be used to compute
 with other types of semigroups.
 
 Furthermore, new packages that have been added to the redistribution
-since the release of **GAP** 4.6.5 are:
+since the release of GAP 4.6.5 are:
 
   - **4ti2interface** package by Sebastian Gutsche, providing an
     interface to **4ti2**, a software package for algebraic, geometric
@@ -2940,12 +2940,12 @@ since the release of **GAP** 4.6.5 are:
     theta-groups and semisimple subalgebras.
 
 Furthermore, some packages have been upgraded substantially since the
-**GAP** 4.6.5 release:
+GAP 4.6.5 release:
 
   - **ANUPQ** package by Greg Gamble, Werner Nickel and Eamonn O'Brien
     has been updated after Max Horn joined it as a maintainer. As a
     result, it is now much easier to install and use it with the current
-    **GAP** release.
+    GAP release.
 
   - **Wedderga** package by Osnel Broche Cristo, Allen Herman, Alexander
     Konovalov, Aurora Olivieri, Gabriela Olteanu, Ángel del Río and
@@ -2955,7 +2955,7 @@ Furthermore, some packages have been upgraded substantially since the
     fields, and rational quaternion algebras (contribution by Allen
     Herman).
 
-#### 5.2 **GAP** 4.7.3 (February 2014)
+#### 5.2 GAP 4.7.3 (February 2014)
 
 Fixed bugs which could lead to incorrect results:
 
@@ -2963,14 +2963,14 @@ Fixed bugs which could lead to incorrect results:
     \[Reported by Anvita\]
 
   - The `Order` (Reference: Order) method for group homomorphisms newly
-    introduced in **GAP** 4.7 had a bug that caused it to sometimes
+    introduced in GAP 4.7 had a bug that caused it to sometimes
     return incorrect results. \[Reported by Benjamin Sambale\]
 
 Fixed bugs that could lead to break loops:
 
   - Several bugs were fixed and missing methods were introduced in the
     new code for transformations, partial permutations and semigroups
-    that was first included in **GAP** 4.7. Some minor corrections were
+    that was first included in GAP 4.7. Some minor corrections were
     made in the documentation for transformations.
 
   - Break loop in `IsomorphismFpMonoid` when prefixes in generators
@@ -2987,14 +2987,14 @@ Improved functionality:
   - Better detection of UTF-8 terminal encoding on some systems.
     \[Suggested by Andries Brouwer\]
 
-#### 5.3 **GAP** 4.7.4 (February 2014)
+#### 5.3 GAP 4.7.4 (February 2014)
 
-This release was prepared immediately after **GAP** 4.7.3 to revert the
+This release was prepared immediately after GAP 4.7.3 to revert the
 fix of the error handling for the single quote at the end of an input
-line, contained in **GAP** 4.7.3. It happened that (only on Windows) the
+line, contained in GAP 4.7.3. It happened that (only on Windows) the
 fix caused error messages in one of the packages.
 
-#### 5.4 **GAP** 4.7.5 (May 2014)
+#### 5.4 GAP 4.7.5 (May 2014)
 
 Fixed bugs which could lead to incorrect results:
 
@@ -3038,19 +3038,19 @@ Other fixed bugs:
     NumberPerfectLibraryGroups) not being aware that there are no
     perfect groups of odd order.
 
-  - Restored the ability to build **GAP** on OS X 10.4 and 10.5 which
-    was accidentally broken in the previous **GAP** release by using the
+  - Restored the ability to build GAP on OS X 10.4 and 10.5 which
+    was accidentally broken in the previous GAP release by using the
     build option not supported by these versions.
 
   - Fixed some problems for ia64 and sparc architectures. \[Reported by
     Bill Allombert and Volker Braun\]
 
-New package added for the redistribution with **GAP**:
+New package added for the redistribution with GAP:
 
   - **permut** package by A.Ballester-Bolinches, E.Cosme-Llópez, and
     R.Esteban-Romero to deal with permutability in finite groups.
 
-#### 5.5 **GAP** 4.7.6 (November 2014)
+#### 5.5 GAP 4.7.6 (November 2014)
 
 Fixed bugs which could lead to incorrect results:
 
@@ -3058,7 +3058,7 @@ Fixed bugs which could lead to incorrect results:
     to return an incomplete list. \[Reported by Florian Beye\]
 
   - A bug that may lead to incorrect results and infinite loops when
-    **GAP** is compiled without GMP support using gcc 4.9.
+    GAP is compiled without GMP support using gcc 4.9.
 
   - A bug that may cause `OrthogonalEmbeddings` (Reference:
     OrthogonalEmbeddings) to return an incomplete result. \[Reported by
@@ -3092,7 +3092,7 @@ Other fixed bugs:
   - Some minor bugs in the transformation and partial permutation code
     and documentation were resolved.
 
-#### 5.6 **GAP** 4.7.7 (February 2015)
+#### 5.6 GAP 4.7.7 (February 2015)
 
 New features:
 
@@ -3115,8 +3115,8 @@ Fixed bugs which could lead to incorrect results:
     Breuer\]
 
   - The usage of `abs` in `src/gmpints.c` was replaced by `AbsInt`. The
-    former is defined to operate on 32-bit integers even if **GAP** is
-    compiled in 64-bit mode. That lead to truncating **GAP** integers
+    former is defined to operate on 32-bit integers even if GAP is
+    compiled in 64-bit mode. That lead to truncating GAP integers
     and caused a crash in `RemInt` (Reference: RemInt), reported by
     Willem De Graaf and Heiko Dietrich. Using `AbsInt` fixes the crash,
     and ensures the correct behaviour on 32-bit and 64-bit builds.
@@ -3149,20 +3149,20 @@ Other fixed bugs:
     infinite loop in the routine for approximating a root. \[Reported by
     Daniel Błażewicz\]
 
-  - Fixed the crash when **GAP** is called when the environment
+  - Fixed the crash when GAP is called when the environment
     variables `HOME` or `PATH` are unset. \[Reported by Bill Allombert\]
 
 Furthermore, new packages that have been added to the redistribution
-since the release of **GAP** 4.7.6 are:
+since the release of GAP 4.7.6 are:
 
   - **json** package by Christopher Jefferson, providing a mapping
-    between the **JSON** markup language and **GAP**
+    between the **JSON** markup language and GAP
 
   - **SglPPow** package by Bettina Eick and Michael Vaughan-Lee,
     providing the database of p-groups of order p^7 for p \> 11, and of
     order 3^8.
 
-#### 5.7 **GAP** 4.7.8 (June 2015)
+#### 5.7 GAP 4.7.8 (June 2015)
 
 Fixed bugs which could lead to incorrect results:
 
@@ -3184,7 +3184,7 @@ Fixed bugs which could lead to incorrect results:
     Horn\]
 
 Furthermore, new packages that have been added to the redistribution
-since the release of **GAP** 4.7.7 are:
+since the release of GAP 4.7.7 are:
 
   - **PatternClass** by Michael Albert, Ruth Hoffmann and Steve Linton,
     allowing to explore the permutation pattern classes build by token
@@ -3201,16 +3201,16 @@ since the release of **GAP** 4.7.7 are:
     modules over quotients of path algebras.
 
 
-### 6 Changes between **GAP** 4.5 and **GAP** 4.6
+### 6 Changes between GAP 4.5 and GAP 4.6
 
-This chapter lists most important changes between **GAP** 4.5.7 and
-**GAP** 4.6.2 (i.e. between the last release of **GAP** 4.5 and the
-first public release of **GAP** 4.6). It also contains information about
-subsequent update releases for **GAP** 4.6.
+This chapter lists most important changes between GAP 4.5.7 and
+GAP 4.6.2 (i.e. between the last release of GAP 4.5 and the
+first public release of GAP 4.6). It also contains information about
+subsequent update releases for GAP 4.6.
 
-#### 6.1 **GAP** 4.6.2 (February 2013)
+#### 6.1 GAP 4.6.2 (February 2013)
 
-##### 6.1-1 Changes in the core **GAP** system introduced in **GAP** 4.6
+##### 6.1-1 Changes in the core GAP system introduced in GAP 4.6
 
 Improved and extended functionality:
 
@@ -3248,7 +3248,7 @@ Improved and extended functionality:
     otherwise. This is useful for representing subsets of a fixed set by
     boolean lists.
 
-  - When assigning to a position in a compressed FFE vector **GAP** now
+  - When assigning to a position in a compressed FFE vector GAP now
     checks to see if the value being assigned can be converted into an
     internal FFE element if it isn't one already. This uses new
     attribute `AsInternalFFE` (Reference: AsInternalFFE), for which
@@ -3269,8 +3269,8 @@ Improved and extended functionality:
     `x` got unbound before the syntax error was reported. A specific
     check was added to catch this and similar cases a little earlier.
 
-  - Allow a `GAPARGS` parameter to the top-level **GAP** `Makefile` to
-    pass extra arguments to the **GAP** used for manual building.
+  - Allow a `GAPARGS` parameter to the top-level GAP `Makefile` to
+    pass extra arguments to the GAP used for manual building.
 
   - Added an attribute `UnderlyingRingElement` (Reference:
     UnderlyingRingElement) for Lie objects.
@@ -3287,7 +3287,7 @@ Improved and extended functionality:
 Fixed bugs which could lead to crashes:
 
   - The extremely old `DEBUG_DEADSONS_BAGS` compile-time option has not
-    worked correctly for many years and indeed crashes **GAP**. The type
+    worked correctly for many years and indeed crashes GAP. The type
     of bug it is there to detect has not arisen in many years and we
     have certainly not used this option, so it has been removed.
     \[Reported by Volker Braun\]
@@ -3311,16 +3311,16 @@ No longer supported:
   - The file `lib/consistency.g`, which contained three undocumented
     auxiliary functions, has been removed from the library. In addition,
     the global record `Revision` is now deprecated, so there is no need
-    to bind its components in **GAP** packages.
+    to bind its components in GAP packages.
 
-##### 6.1-2 New and updated packages since **GAP** 4.5.4
+##### 6.1-2 New and updated packages since GAP 4.5.4
 
-At the time of the release of **GAP** 4.5 there were 99 packages
-redistributed with **GAP**. The first public release of **GAP** 4.6
+At the time of the release of GAP 4.5 there were 99 packages
+redistributed with GAP. The first public release of GAP 4.6
 contains 106 packages.
 
 The new packages that have been added to the redistribution since the
-release of **GAP** 4.5.4 are:
+release of GAP 4.5.4 are:
 
   - **AutoDoc** package by S. Gutsche, providing tools for automated
     generation of **GAPDoc** manuals.
@@ -3335,7 +3335,7 @@ release of **GAP** 4.5.4 are:
   - **Convex** package by S. Gutsche, which provides structures and
     algorithms for convex geometry.
 
-  - **Float** package by L. Bartholdi, which extends **GAP**
+  - **Float** package by L. Bartholdi, which extends GAP
     floating-point capabilities by providing new floating-point handlers
     for high-precision real, interval and complex arithmetic using MPFR,
     MPFI, MPC or CXSC external libraries. It also contains a very
@@ -3355,7 +3355,7 @@ release of **GAP** 4.5.4 are:
     structure and by their combinatorics.
 
 Furthermore, some packages have been upgraded substantially since the
-**GAP** 4.5.4 release:
+GAP 4.5.4 release:
 
   - Starting from 2.x.x, the functionality for iterated monodromy groups
     has been moved from the **FR** package by L. Bartholdi to a separate
@@ -3364,7 +3364,7 @@ Furthermore, some packages have been upgraded substantially since the
     the dependency of **FR** on external library modules, and should
     make its installation much easier.
 
-#### 6.2 **GAP** 4.6.3 (March 2013)
+#### 6.2 GAP 4.6.3 (March 2013)
 
 Improved functionality:
 
@@ -3391,8 +3391,8 @@ Improved functionality:
     
     Finally, `MutableIdentityMat` (Reference: MutableIdentityMat) and
     `MutableNullMat` (Reference: MutableNullMat) were explicitly
-    declared obsolete (and may be removed in **GAP** 4.7). They actually
-    were deprecated since **GAP** 4.1, and their use discouraged by the
+    declared obsolete (and may be removed in GAP 4.7). They actually
+    were deprecated since GAP 4.1, and their use discouraged by the
     manual. Code using them should switch to `IdentityMat` (Reference:
     IdentityMat) respectively `NullMat` (Reference: NullMat).
 
@@ -3443,41 +3443,41 @@ Fixed bugs:
     for the problem which may cause returning wrong results or producing
     an error when being called for a non-prime field.
 
-  - A bug in the **GAP** kernel caused `RNamObj` to error out when
+  - A bug in the GAP kernel caused `RNamObj` to error out when
     called with a string that had the `IsSSortedList` (Reference:
     IsSSortedList) property set (regardless of whether it was set to
     `true` or `false`). This in turn would lead to strange (and
     inappropriate) errors when using such a string to access entries of
     a record.
 
-  - **GAP** can store vectors over small finite fields (size at most
+  - GAP can store vectors over small finite fields (size at most
     256) in a special internal data representation where each entry of
     the vector uses exactly one byte. Due to an off-by-one bug, the case
     of a field with exactly 256 elements was not handled properly. As a
-    result, **GAP** failed to convert a vector to the special data
+    result, GAP failed to convert a vector to the special data
     representation, which in some situations could lead to a crash. The
     off-by-one error was fixed and now vectors over GF(256) work as
     expected.
 
   - A bug in the code for accessing sublist via the `list{poss}` syntax
-    could lead to **GAP** crashing. Specifically, if the list was a
+    could lead to GAP crashing. Specifically, if the list was a
     compressed vector over a finite field, and the sublist syntax was
     nested, as in `vec{poss1}{poss2}`. This now correctly triggers an
     error instead of crashing.
 
-New packages added for the redistribution with **GAP**:
+New packages added for the redistribution with GAP:
 
   - **SpinSym** package by L. Maas, which contains Brauer tables of
     Schur covers of symmetric and alternating groups and provides some
     related functionalities.
 
-#### 6.3 **GAP** 4.6.4 (April 2013)
+#### 6.3 GAP 4.6.4 (April 2013)
 
 New functionality:
 
   - New command line option `-O` was introduced to disable loading
     obsolete variables. This option may be used, for example, to check
-    that they are not used in a **GAP** package or one's own **GAP**
+    that they are not used in a GAP package or one's own GAP
     code. For further details see Reference: options and Reference:
     Replaced and Removed Command Names.
 
@@ -3527,7 +3527,7 @@ Fixed bugs that could lead to break loops:
     straight line programs had a bug which triggered an error, if the
     straight line program contained unnecessary steps.
 
-#### 6.4 **GAP** 4.6.5 (July 2013)
+#### 6.4 GAP 4.6.5 (July 2013)
 
 Improved functionality:
 
@@ -3556,23 +3556,23 @@ Fixed bugs that could lead to break loops:
     \[Reported by Izumi Miyamoto\]
 
   - The new code for semidirect products of permutation groups,
-    introduced in **GAP** 4.6, had a bug which was causing problems for
+    introduced in GAP 4.6, had a bug which was causing problems for
     `Projection` (Reference: Projection). \[Reported by Graham Ellis\]
 
 
 
-### 7 Changes between **GAP** 4.4 and **GAP** 4.5
+### 7 Changes between GAP 4.4 and GAP 4.5
 
-This chapter lists most important changes between **GAP** 4.4.12 and the
-first public release of **GAP** 4.5. It also contains information about
-subsequent update releases for **GAP** 4.5. It is not meant to serve as
+This chapter lists most important changes between GAP 4.4.12 and the
+first public release of GAP 4.5. It also contains information about
+subsequent update releases for GAP 4.5. It is not meant to serve as
 a complete account on all improvements; instead, it should be viewed as
-an introduction to **GAP** 4.5, accompanying its release announcement.
+an introduction to GAP 4.5, accompanying its release announcement.
 
-#### 7.1 Changes in the core **GAP** system introduced in **GAP** 4.5
+#### 7.1 Changes in the core GAP system introduced in GAP 4.5
 
 In this section we list most important new features and bugfixes in the
-core system introduced in **GAP** 4.5. For the list of changes in the
+core system introduced in GAP 4.5. For the list of changes in the
 interface between the core system and packages as well as for an
 overview of new and updated packages, see Section
 [7.2](#72-packages-in-gap-45).
@@ -3581,13 +3581,13 @@ overview of new and updated packages, see Section
 
 Performance improvements:
 
-  - The **GAP** kernel now uses **GMP** (GNU multiple precision
+  - The GAP kernel now uses **GMP** (GNU multiple precision
     arithmetic library, <http://gmplib.org/>) for faster large integer
     arithmetic.
 
   - Improved performance for records with large number of components.
 
-  - Speedup of hash tables implementation at the **GAP** library level.
+  - Speedup of hash tables implementation at the GAP library level.
 
   - `MemoryUsage` (Reference: MemoryUsage) is now much more efficient,
     in particular for large objects.
@@ -3598,18 +3598,18 @@ Performance improvements:
 
 New and improved kernel functionality:
 
-  - By default, the **GAP** kernel compiles with the **GMP** and
-    **readline** libraries. The **GMP** library is supplied with **GAP**
+  - By default, the GAP kernel compiles with the **GMP** and
+    **readline** libraries. The **GMP** library is supplied with GAP
     and we recommend that you use the version we supply. There are some
     problems with some other versions. It is also possible to compile
-    the **GAP** kernel with the system **GMP** if your system has it.
+    the GAP kernel with the system **GMP** if your system has it.
     The **readline** library must be installed on your system in advance
-    to be used with **GAP**.
+    to be used with GAP.
 
-  - Floating point literals are now supported in the **GAP** language,
-    so that, floating point numbers can be entered in **GAP**
+  - Floating point literals are now supported in the GAP language,
+    so that, floating point numbers can be entered in GAP
     expressions in a natural way. Support for floats is now properly
-    documented, see Reference: Floats. **GAP** has an interface using
+    documented, see Reference: Floats. GAP has an interface using
     which packages may add new floating point implementations and
     integrate them with the parser. In particular, we expect that there
     will soon be a package that implements arbitrary precision floating
@@ -3621,8 +3621,8 @@ New and improved kernel functionality:
     GlobalMersenneTwister for details.
 
   - Defaults for `-m` and `-o` options have been increased. Changes have
-    been made to the way that **GAP** obtains memory from the Operating
-    System, to make **GAP** more compatible with C libraries. A new `-s`
+    been made to the way that GAP obtains memory from the Operating
+    System, to make GAP more compatible with C libraries. A new `-s`
     option has been introduced to control or turn off the new behaviour,
     see Reference: Command Line Options.
 
@@ -3733,7 +3733,7 @@ New and improved library functionality:
     `CharacterTableWithStoredGroup` (Reference:
     CharacterTableWithStoredGroup).
 
-Many problems in **GAP** have have been fixed, among them the following:
+Many problems in GAP have have been fixed, among them the following:
 
   - Polynomial factorisation over rationals could miss factors of degree
     greater than deg(f)/2 if they have very small coefficients, while
@@ -3770,7 +3770,7 @@ Many problems in **GAP** have have been fixed, among them the following:
     record) and the trivial character of the character table given as
     the first argument was not the first in the list of irreducibles.
 
-  - **GAP** crashed when the intersection of ranges became empty.
+  - GAP crashed when the intersection of ranges became empty.
 
   - `IsPSL`, and in turn `StructureDescription` (Reference:
     StructureDescription), erroneously recognised non-PSL groups of the
@@ -3791,7 +3791,7 @@ Many problems in **GAP** have have been fixed, among them the following:
   - The kernel recursion depth counter was not reset properly when
     running into many break loops.
 
-  - **GAP** did not behave well when printing of a (large) object was
+  - GAP did not behave well when printing of a (large) object was
     interrupted with `Ctrl-C`. Now the object is no longer corrupted and
     the indentation level is reset.
 
@@ -3817,11 +3817,11 @@ No longer supported:
 
   - Completion files mechanism.
 
-  - **GAP** 3 compatibility mode.
+  - GAP 3 compatibility mode.
 
-In addition, we no longer recommend using the **GAP** compiler `gac` to
-compile **GAP** code to **C**, and may withdraw it in future releases.
-Compiling **GAP** code only ever gave a substantial speedup for rather
+In addition, we no longer recommend using the GAP compiler `gac` to
+compile GAP code to **C**, and may withdraw it in future releases.
+Compiling GAP code only ever gave a substantial speedup for rather
 specific types of calculation, and much more benefit can usually be
 achieved quite easily by writing a small number of key functions in
 **C** and loading them into the kernel as described in
@@ -3835,7 +3835,7 @@ Also, the following functions and operations were made obsolete:
 
 ##### 7.1-2 Changes in distribution formats
 
-The **GAP** 4.5 source distribution has the form of a single archive
+The GAP 4.5 source distribution has the form of a single archive
 containing the core system and the most recent "stable" versions of all
 currently redistributed packages. There are no optional archives to
 download: the **TomLib** package now contains all its tables of marks in
@@ -3844,20 +3844,20 @@ Explorer, and the former `tools` archive is now included as an archive
 in the `etc` directory. To unpack and install the archive, user the
 script `etc/install-tools.sh`.
 
-We no longer distribute separate bugfix archives when the core **GAP**
+We no longer distribute separate bugfix archives when the core GAP
 system changes, or updated packages archives when a redistributed
-package is updated. Instead, the single **GAP** source distribution
-archive will be labelled by the version of the core **GAP** system and
+package is updated. Instead, the single GAP source distribution
+archive will be labelled by the version of the core GAP system and
 also by a timestamp. This archive contains the core system and the
 stable versions of the relevant packages on that date. To upgrade, you
-simply replace the whole directory containing the **GAP** installation,
-and rebuild binaries for the **GAP** kernel and packages. For new
+simply replace the whole directory containing the GAP installation,
+and rebuild binaries for the GAP kernel and packages. For new
 versions of packages, we will also continue to redistribute individual
 package archives so it will be possible to update a single package
-without changing the rest of the **GAP** installation.
+without changing the rest of the GAP installation.
 
-Furthermore, by default **GAP** will now automatically read a
-user-specific **GAP** root directory (unless **GAP** is called with the
+Furthermore, by default GAP will now automatically read a
+user-specific GAP root directory (unless GAP is called with the
 `-r` option). All user settings can be made in that directory, so there
 will be no risk of them being lost during an update (see Section
 [7.1-3](#71-3-improvements-to-the-user-interface) below for more details). Private
@@ -3869,19 +3869,19 @@ have added `.zip`, and stopped providing `.zoo` archives. We no longer
 provide GAP binaries for Mac OS 9 (Classic) any more. For installations
 from source on Mac OS X one may follow the instructions for UNIX.
 
-With the release of **GAP** 4.5, we also encourage more users to take
+With the release of GAP 4.5, we also encourage more users to take
 advantage of the increasingly mature binary distributions which are now
 available. These include:
 
-  - The binary `rsync` distribution for **GAP** on Linux PCs with i686
+  - The binary `rsync` distribution for GAP on Linux PCs with i686
     or x86\_64 compatible processors provided by Frank Lübeck, see
     <http://www.math.rwth-aachen.de/~Frank.Luebeck/gap/rsync>.
 
-  - **BOB**, a tool for Linux and Mac OS X to download and build **GAP**
+  - **BOB**, a tool for Linux and Mac OS X to download and build GAP
     and its packages from source provided by M. Neunhöffer:
     <http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html>.
 
-  - The **GAP** installer for Windows provided by Alexander Konovalov:
+  - The GAP installer for Windows provided by Alexander Konovalov:
     <https://www.gap-system.org/ukrgap/wininst/>.
 
 In the near future, we also hope to have a binary distribution for Mac
@@ -3893,36 +3893,36 @@ of the increasingly large number of packages. The **Example** package
 documents technical requirements for packages, many of which are checked
 automatically by our systems. This will allow us to check the
 compatibility of packages with the system and with other packages more
-thoroughly before publishing them on the **GAP** website.
+thoroughly before publishing them on the GAP website.
 
 ##### 7.1-3 Improvements to the user interface
 
-By default, **GAP** now uses the **readline** library for command line
+By default, GAP now uses the **readline** library for command line
 editing. It provides such advantages as working with unicode terminals,
 nicer handling of long input lines, improved TAB-completion and flexible
 configuration. For further details, see Reference: Editing using the
 readline library.
 
 We have extended facilities for user interface customisation. By default
-**GAP** automatically scans a user specific **GAP** root directory
-(unless **GAP** is called with the `-r` option). The name of this user
+GAP automatically scans a user specific GAP root directory
+(unless GAP is called with the `-r` option). The name of this user
 specific directory depends on the operating system and is contained in
-`GAPInfo.UserGapRoot`. This directory can be used to tell **GAP** about
+`GAPInfo.UserGapRoot`. This directory can be used to tell GAP about
 personal preferences, to load some additional code, to install
-additional packages, or to overwrite some **GAP** files, see Reference:
+additional packages, or to overwrite some GAP files, see Reference:
 GAP Root Directories. Instead of a single `.gaprc` file we now use more
 flexible setup based on two files: `gap.ini` which is read early in the
 startup process, and `gaprc` which is read after the startup process,
 but before the first input file given on the command line. These files
-may be located in the user specific **GAP** root directory
-`GAPInfo.UserGapRoot` which by default is the first **GAP** root
+may be located in the user specific GAP root directory
+`GAPInfo.UserGapRoot` which by default is the first GAP root
 directory, see Reference: The gap.ini and gaprc files. For
 compatibility, the `.gaprc` file is still read if the directory
 `GAPInfo.UserGapRoot` does not exist. See Reference: The former .gaprc
 file for the instructions how to migrate your old setup.
 
 Furthermore, there are functions to deal with user preferences, for
-example, to specify how **GAP**'s online help is shown or whether the
+example, to specify how GAP's online help is shown or whether the
 coloured prompt should be used. Calls to set user preferences may appear
 in the user's `gap.ini` file, as explained in Reference: Configuring
 User preferences.
@@ -3930,22 +3930,22 @@ User preferences.
 In the Windows version, we include a new shell which uses the **mintty**
 terminal in addition to the two previously used shells (Windows command
 line and **RXVT**). The **mintty** shell is now recommended. It supports
-Unicode encoding and has flexible configurations options. Also, **GAP**
+Unicode encoding and has flexible configurations options. Also, GAP
 under Windows now starts in the `%HOMEDRIVE%%HOMEPATH%` directory, which
 is the user's home directory. Besides this, a larger workspace is now
 permitted without a need to modify the Windows registry.
 
 Other changes in the user interface include:
 
-  - the command line history is now implemented at the **GAP** level, it
-    can be stored on quitting a **GAP** session and reread when starting
+  - the command line history is now implemented at the GAP level, it
+    can be stored on quitting a GAP session and reread when starting
     a new session, see Reference: The command line history.
 
   - `SetPrintFormattingStatus("stdout",false);` may be used to switch
     off the automatic line breaking in terminal output, see
     `SetPrintFormattingStatus` (Reference: PrintFormattingStatus).
 
-  - **GAP** supports terminals with up to 4096 columns (extendable at
+  - GAP supports terminals with up to 4096 columns (extendable at
     compile time).
 
   - Directories in `-l` command-line option can now be specified
@@ -3956,12 +3956,12 @@ Other changes in the user interface include:
     user configurable (call `UserPreference("MaxBitsIntView")` to see
     the default value).
 
-  - The **GAP** banner has been made more compact and informative.
+  - The GAP banner has been made more compact and informative.
 
   - `SetHelpViewer` (Reference: SetHelpViewer) now supports the Google
     Chrome browser.
 
-  - Multiple matches in the **GAP** online help are displayed via a
+  - Multiple matches in the GAP online help are displayed via a
     function from the **Browse** package, which is loaded in the default
     configuration. This feature can be replaced by the known pager using
     the command
@@ -3973,14 +3973,14 @@ Other changes in the user interface include:
 
 ##### 7.1-4 Better documentation
 
-The main **GAP** manuals have been converted to the **GAPDoc** format
+The main GAP manuals have been converted to the **GAPDoc** format
 provided by the **GAPDoc** package by Frank Lübeck and Max Neunhöffer
 (<http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc>). This
 documentation format is already used by many packages and is now
-recommended for all **GAP** documentation.
+recommended for all GAP documentation.
 
 Besides improvements to the documentation layout in all formats (text,
-PDF and HTML), the new **GAP** manuals incorporate a large number of
+PDF and HTML), the new GAP manuals incorporate a large number of
 corrections, clarifications, additions and updated examples.
 
 We now provide two HTML versions of the manual, one of them with
@@ -3988,24 +3988,24 @@ We now provide two HTML versions of the manual, one of them with
 mathematical symbols. Also, there are two PDF versions of the manual - a
 coloured and a monochrome one.
 
-Several separate manuals now became parts of the **GAP** Reference
-manual. Thus, now there are three main **GAP** manual books:
+Several separate manuals now became parts of the GAP Reference
+manual. Thus, now there are three main GAP manual books:
 
-  - ***GAP** Tutorial* (see [Tutorial:
+  - *GAP Tutorial* (see [Tutorial:
     Preface](../../doc/tut/chap.md#X874E1D45845007FE))
 
-  - ***GAP** Reference manual* (see Reference: Preface)
+  - *GAP Reference manual* (see Reference: Preface)
 
-  - ***GAP** - Changes from Earlier Versions* (this manual)
+  - *GAP - Changes from Earlier Versions* (this manual)
 
 Note that there is no index file combining these three manuals. Instead
-of that, please use the **GAP** help system which will search all of
+of that, please use the GAP help system which will search all of
 these and about 100 package manuals.
 
-#### 7.2 Packages in **GAP** 4.5
+#### 7.2 Packages in GAP 4.5
 
 Here we list most important changes affecting packages and present new
-or essentially changed packages. For the changes in the core **GAP**
+or essentially changed packages. For the changes in the core GAP
 system, see Section [7.1](chap.md#X87783FB985375B5F).
 
 ##### 7.2-1 Interface between the core system and packages
@@ -4013,7 +4013,7 @@ system, see Section [7.1](chap.md#X87783FB985375B5F).
 The package loading mechanism has been improved. The most important new
 feature is that all dependencies are evaluated in advance and then used
 to determine the order in which package files are read. This allows
-**GAP** to handle cyclic dependencies as well as situations where
+GAP to handle cyclic dependencies as well as situations where
 package A requires package B to be loaded completely before any file of
 package A is read. To avoid distortions of the order in which packages
 will be loaded, package authors are strongly discouraged from calling
@@ -4026,42 +4026,42 @@ addition, there is now a better error management if package loading
 fails for packages that use the new functionality to log package loading
 messages (see `DisplayPackageLoadingLog` (Reference:
 DisplayPackageLoadingLog) and the rest of the Chapter Reference: Using
-and Developing GAP Packages which documents how to *use* **GAP**
+and Developing GAP Packages which documents how to *use* GAP
 packages), and package authors are very much encouraged to use these
 logging facilities.
 
-In **GAP** 4.4 certain packages were marked as *autoloaded* and would be
-loaded, if present, when **GAP** started up. In **GAP** 4.5, this notion
+In GAP 4.4 certain packages were marked as *autoloaded* and would be
+loaded, if present, when GAP started up. In GAP 4.5, this notion
 is divided into three. Certain packages are recorded as *needed* by the
-**GAP** system and others as *suggested*, in the same way that packages
+GAP system and others as *suggested*, in the same way that packages
 may *need* or *suggest* other packages. If a needed package is not
-loadable, **GAP** will not start. Currently only **GAPDoc** is needed.
+loadable, GAP will not start. Currently only **GAPDoc** is needed.
 If a suggested package is loadable, it will be loaded. Typically these
 are packages which install better methods for Operations and Objects
-already present in **GAP**. Finally, the user preferences mechanism can
+already present in GAP. Finally, the user preferences mechanism can
 be used to specify additional packages that should be loaded if
 possible. By default this includes most packages that were autoloaded in
-**GAP** 4.4.12, see `ShowUserPreferences` (Reference:
+GAP 4.4.12, see `ShowUserPreferences` (Reference:
 ShowUserPreferences).
 
-**GAP** packages may now use local *namespaces* to avoid name clashes
-for global variables introduced in other packages or in the **GAP**
+GAP packages may now use local *namespaces* to avoid name clashes
+for global variables introduced in other packages or in the GAP
 library, see Reference: Namespaces for GAP packages.
 
-All guidance on how to *develop* a **GAP** package has been consolidated
+All guidance on how to *develop* a GAP package has been consolidated
 in the **Example** package which also contains a checklist for upgrading
-a **GAP** package to **GAP** 4.5 (the guidance has been transferred to
-Reference: Using and Developing GAP Packages in **GAP** 4.9).
+a GAP package to GAP 4.5 (the guidance has been transferred to
+Reference: Using and Developing GAP Packages in GAP 4.9).
 
-##### 7.2-2 New and updated packages since **GAP** 4.4.12
+##### 7.2-2 New and updated packages since GAP 4.4.12
 
-At the time of the release of **GAP** 4.4.12 there were 75 packages
-redistributed with **GAP** (including the **TomLib** which was
-distributed in the core **GAP** archive). The first public release of
-**GAP** 4.5 contains precisely 99 packages.
+At the time of the release of GAP 4.4.12 there were 75 packages
+redistributed with GAP (including the **TomLib** which was
+distributed in the core GAP archive). The first public release of
+GAP 4.5 contains precisely 99 packages.
 
 The new packages that have been added to the redistribution since the
-release of **GAP** 4.4.12 are:
+release of GAP 4.4.12 are:
 
   - **Citrus** package by J.D. Mitchell for computations with
     transformation semigroups and monoids (this package is a replacement
@@ -4088,8 +4088,8 @@ release of **GAP** 4.4.12 are:
 
   - **hecke** package by D. Traytel, providing functions for calculating
     decomposition matrices of Hecke algebras of the symmetric groups and
-    q-Schur algebras (this package is a port of the **GAP** 3 package
-    **Specht 2.4** to **GAP** 4).
+    q-Schur algebras (this package is a port of the GAP 3 package
+    **Specht 2.4** to GAP 4).
 
   - **Homalg** project by M. Barakat, S. Gutsche, M. Lange-Hegermann et
     al., containing the following packages for the homological algebra:
@@ -4116,9 +4116,9 @@ release of **GAP** 4.4.12 are:
 
   - **SCSCP** package by A. Konovalov and S. Linton, implementing the
     Symbolic Computation Software Composability Protocol (**SCSCP**, see
-    <http://www.symbolic-computation.org/scscp>) for **GAP**, which
-    provides interfaces to link a **GAP** instance with another copy of
-    **GAP** or other **SCSCP**-compliant system running locally or
+    <http://www.symbolic-computation.org/scscp>) for GAP, which
+    provides interfaces to link a GAP instance with another copy of
+    GAP or other **SCSCP**-compliant system running locally or
     remotely.
 
   - **simpcomp** package by F. Effenberger and J. Spreer for working
@@ -4132,17 +4132,17 @@ release of **GAP** 4.4.12 are:
     parametrised presentations for finite p-groups of fixed coclass.
 
 Furthermore, some packages have been upgraded substantially since the
-**GAP** 4.4.12 release:
+GAP 4.4.12 release:
 
   - **Alnuth** package by B. Assmann, A. Distler and B. Eick uses an
     interface to PARI/GP system instead of the interface to KANT (thanks
     to B. Allombert for the GP code for the new interface and help with
     the transition) and now also works under Windows.
 
-  - **CTblLib** package (the **GAP** Character Table Library) by T.
+  - **CTblLib** package (the GAP Character Table Library) by T.
     Breuer has been extended by many new character tables, a few bugs
     have been fixed, and new features have been added, for example
-    concerning the relation to **GAP**'s group libraries, better search
+    concerning the relation to GAP's group libraries, better search
     facilities, and interactive overviews. For details, see the package
     manual.
 
@@ -4157,9 +4157,9 @@ Furthermore, some packages have been upgraded substantially since the
         exact algebraic computation.
 
   - **Example** package by W. Nickel, G. Gamble and A. Konovalov has a
-    more detailed and up-to-date guidance on developing a **GAP**
+    more detailed and up-to-date guidance on developing a GAP
     package (transferred to Reference: Using and Developing GAP Packages
-    in **GAP** 4.9).
+    in GAP 4.9).
 
   - **FR** package by L. Bartholdi now uses floating-point numbers to
     compute approximations of rational maps given by their
@@ -4210,7 +4210,7 @@ Furthermore, some packages have been upgraded substantially since the
   - **GRAPE** package by L.H. Soicher:
     
       - With much help from A. Hulpke, the interface between **GRAPE**
-        and `dreadnaut` is now done entirely in **GAP** code.
+        and `dreadnaut` is now done entirely in GAP code.
     
       - A 32-bit `nauty/dreadnaut` binary for Windows (XP and later) is
         included with **GRAPE**, so now **GRAPE** provides full
@@ -4226,15 +4226,15 @@ Furthermore, some packages have been upgraded substantially since the
         which additionally maps the first list of colour-classes to the
         second (classwise).
     
-      - The **GAP** code and old standalone programs for the
+      - The GAP code and old standalone programs for the
         undocumented functions `Enum` and `EnumColadj` have been removed
         as their functionality can now largely be handled by current
-        documented **GAP** and **GRAPE** functions.
+        documented GAP and **GRAPE** functions.
 
   - **IO** package by M. Neunhöffer:
     
       - New build system to allow for more flexibility regarding the use
-        of compiler options and adjusting to **GAP** 4.5.
+        of compiler options and adjusting to GAP 4.5.
     
       - New functions to access time like `IO_gettimeofday`, `IO_gmtime`
         and `IO_localtime`.
@@ -4264,7 +4264,7 @@ Furthermore, some packages have been upgraded substantially since the
     communication by the remote procedure call protocol implemented in
     the **SCSCP** package. Also, a third-party external library to
     support binary OpenMath encoding has been replaced by a proper
-    implementation made entirely in **GAP**.
+    implementation made entirely in GAP.
 
   - **Orb** package by J. Müller, M. Neunhöffer and F. Noeske:
     
@@ -4297,7 +4297,7 @@ Furthermore, some packages have been upgraded substantially since the
         `KernelOfTransformation`.
     
       - New build system to allow for more flexibility regarding the use
-        of compiler options and to adjust to **GAP** 4.5.
+        of compiler options and to adjust to GAP 4.5.
 
   - **RCWA** package by S. Kohl among the new features and other
     improvements has the following:
@@ -4327,10 +4327,10 @@ Furthermore, some packages have been upgraded substantially since the
     on 64-bit architectures (thanks to N. Eldredge and M. Horn for
     sending patches). Furthermore, there is now an export to XFig option
     (thanks to Russ Woodroofe for this patch). The help system in
-    **XGAP** has been adjusted to **GAP** 4.5.
+    **XGAP** has been adjusted to GAP 4.5.
 
   - Additionally, some packages with kernel modules or external binaries
-    are now available in Windows. The `-win.zip` archive and the **GAP**
+    are now available in Windows. The `-win.zip` archive and the GAP
     installer for Windows include working versions of the following
     packages: **Browse**, **cvec**, **EDIM**, **GRAPE**, **IO** and
     **orb**, which were previously unavailable for Windows users.
@@ -4347,7 +4347,7 @@ Finally, the following packages are withdrawn:
 
   - **NQL** package by R. Hartung has been withdrawn by the author.
 
-#### 7.3 **GAP** 4.5.5 (July 2012)
+#### 7.3 GAP 4.5.5 (July 2012)
 
 Fixed bugs which could lead to crashes:
 
@@ -4377,11 +4377,11 @@ Other fixed bugs:
     **nq** packages to compute group quotients via an external program.
     Previously, on Mac OS X this could be done precisely 128 times, and
     then an error would occur. That is, one could e.g. compute 128
-    nilpotent quotients, and then had to restart **GAP** to compute
+    nilpotent quotients, and then had to restart GAP to compute
     more. This also affected other systems, such as OpenBSD, where it
     now also works correctly.
 
-  - On Mac OS X, using **GAP** compiled against GNU readline 6.2,
+  - On Mac OS X, using GAP compiled against GNU readline 6.2,
     pasting text into the terminal session would result in this text
     appearing very slowly, with a 0.1 sec delay between each
     "keystroke". This is not the case with versions 6.1 and older, and
@@ -4393,7 +4393,7 @@ Other fixed bugs:
     break loop in case of several undeclared user preferences.
     \[Reported by James Mitchell\]
 
-  - **GAP** did not start correctly if the user preference
+  - GAP did not start correctly if the user preference
     `"InfoPackageLoadingLevel"` was set to a number \>= 3. The reason is
     that `PrintFormattedString` was called before it was installed. The
     current fix is a temporary solution.
@@ -4425,9 +4425,9 @@ Improved functionality:
     to a backup file `gap.ini.bak`.
 
   - The **CTblLib** and **TomLib** packages are removed from the list of
-    suggested packages of the core part of **GAP**. Instead they are
+    suggested packages of the core part of GAP. Instead they are
     added to the default list of the user preference `"PackagesToLoad"`.
-    This way it is possible to configure **GAP** to not load these
+    This way it is possible to configure GAP to not load these
     packages via changing the default value of `"PackagesToLoad"`.
 
   - The conjugacy test in S\_n for intransitive subgroups was improved.
@@ -4436,11 +4436,11 @@ Improved functionality:
 
   - Added `InstallAndCallPostRestore` to `lib/system.g` and call it in
     `lib/init.g` instead of `CallAndInstallPostRestore` for the function
-    that reads the files listed in **GAP** command line. This fixes the
+    that reads the files listed in GAP command line. This fixes the
     problem reported by Yevgen Muntyan when `SaveWorkspace` (Reference:
-    SaveWorkspace) was used in a file listed in **GAP** command line
+    SaveWorkspace) was used in a file listed in GAP command line
     (before, according to the documentation, `SaveWorkspace` (Reference:
-    SaveWorkspace) was only allowed at the main **GAP** prompt).
+    SaveWorkspace) was only allowed at the main GAP prompt).
 
   - There is now a new user preference `PackagesToIgnore`, see
     `SetUserPreference` (Reference: SetUserPreference). It contains a
@@ -4450,7 +4450,7 @@ Improved functionality:
     for testing purposes if one wants to run some code without loading
     certain packages.
 
-#### 7.4 **GAP** 4.5.6 (September 2012)
+#### 7.4 GAP 4.5.6 (September 2012)
 
 Improved functionality:
 
@@ -4462,10 +4462,10 @@ Improved functionality:
     Attila Egri-Nagy\].
 
   - Changed kernel tables such that list access functionality for
-    `T_SINGULAR` objects can be installed by methods at the **GAP**
+    `T_SINGULAR` objects can be installed by methods at the GAP
     level.
 
-  - In case of saved history, "UP" arrow after starting **GAP** yields
+  - In case of saved history, "UP" arrow after starting GAP yields
     last stored line. The user preference `HistoryMaxLines` is now used
     when storing and saving history (see `SetUserPreference` (Reference:
     SetUserPreference)).
@@ -4536,10 +4536,10 @@ Improved documentation:
     string value, and two isomorphic groups in different representations
     can produce different strings.
 
-  - **GAP** now allows overloading of a loaded help book by another one.
+  - GAP now allows overloading of a loaded help book by another one.
     In this case, only a warning is printed and no error is raised. This
     makes sense if a book of a not loaded package is loaded in a
-    workspace and then **GAP** is started with a root path that contains
+    workspace and then GAP is started with a root path that contains
     a newer version. \[Reported by Sebastian Gutsche\]
 
   - Provided a better description of user preferences mechanism
@@ -4548,10 +4548,10 @@ Improved documentation:
     function to create a file which contains descriptions of all known
     user preferences and also sets those user preferences which
     currently do not have their default value. One can then edit that
-    file to customize (further) the user preferences for future **GAP**
+    file to customize (further) the user preferences for future GAP
     sessions.
 
-New packages added for the redistribution with **GAP**:
+New packages added for the redistribution with GAP:
 
   - **AutoDoc** package by S. Gutsche, providing tools for automated
     generation of **GAPDoc** manuals.
@@ -4567,7 +4567,7 @@ New packages added for the redistribution with **GAP**:
     Lange-Hegermann, which provides some auxiliary functionality for the
     **homalg** project (<http://homalg.math.rwth-aachen.de/>).
 
-#### 7.5 **GAP** 4.5.7 (December 2012)
+#### 7.5 GAP 4.5.7 (December 2012)
 
 Fixed bugs which could lead to crashes:
 
@@ -4577,7 +4577,7 @@ Fixed bugs which could lead to crashes:
 
   - On 32-bit systems we can have long integers `n` such that
     `Log2Int(n)` is not an immediate integer. In such cases `Log2Int`
-    gave wrong or corrupted results which in turn could crash **GAP**,
+    gave wrong or corrupted results which in turn could crash GAP,
     e.g., in `ViewObj(n)`.
 
   - Some patterns of use of `UpEnv` (Reference: UpEnv) and `DownEnv`
@@ -4610,16 +4610,16 @@ Other fixed bugs:
   - The 64-bit version of the `gac` script produced wrong (\>= 2^31) CRC
     values because of an integer conversion problem.
 
-  - It was not possible to compile **GAP** on some systems where
+  - It was not possible to compile GAP on some systems where
     `HAVE_SELECT` detects as false.
 
   - Numbers in memory options on the command line exceeding 2^32 could
     not be parsed correctly, even on 64-bit systems. \[Reported by
     Volker Braun\]
 
-New packages added for the redistribution with **GAP**:
+New packages added for the redistribution with GAP:
 
-  - **Float** package by L. Bartholdi, which extends **GAP**
+  - **Float** package by L. Bartholdi, which extends GAP
     floating-point capabilities by providing new floating-point handlers
     for high-precision real, interval and complex arithmetic using MPFR,
     MPFI, MPC or CXSC external libraries. It also contains a very
@@ -4631,18 +4631,18 @@ New packages added for the redistribution with **GAP**:
     structure and by their combinatorics.
 
 
-### 8 Changes between **GAP** 4.3 and **GAP** 4.4
+### 8 Changes between GAP 4.3 and GAP 4.4
 
 This chapter contains an overview of most important changes introduced
-in **GAP** 4.4. It also contains information about subsequent update
-releases of **GAP** 4.4.
+in GAP 4.4. It also contains information about subsequent update
+releases of GAP 4.4.
 
-#### 8.1 Changes in the core **GAP** system introduced in **GAP** 4.4
+#### 8.1 Changes in the core GAP system introduced in GAP 4.4
 
 ##### 8.1-1 Potentially Incompatible Changes
 
   - The mechanism for the loading of Packages has changed to allow
-    easier updates independent of main **GAP** releases. Packages
+    easier updates independent of main GAP releases. Packages
     require a file `PackageInfo.g` now. The new `PackageInfo.g` files
     are available for all packages with the new version of GAP (see
     Reference: PackageInfo.g for a GAP package).
@@ -4701,13 +4701,13 @@ sensibly possible.
 
   - The algorithm for `BrauerCharacterValue` (Reference:
     BrauerCharacterValue) has been extended to the case where the
-    splitting field is not supported in **GAP**. (T. Breuer)
+    splitting field is not supported in GAP. (T. Breuer)
 
   - Brauer tables of direct products can now be constructed from the
     known Brauer tables of the direct factors. (T. Breuer)
 
   - Basic support for vector spaces of rational functions and of uea
-    elements is available now in **GAP**. (T. Breuer and W. de Graaf)
+    elements is available now in GAP. (T. Breuer and W. de Graaf)
 
   - Various new functions for computations with integer matrices are
     available, such as methods for computing normal forms of integer
@@ -4812,13 +4812,13 @@ Breuer and A. Hulpke.
 
 Finally, as always, a number of bugs have been fixed. This release thus
 incorporates the contents of all the bug fixes which were released for
-**GAP** 4.3. It also fixes a number of bugs discovered since the last
+GAP 4.3. It also fixes a number of bugs discovered since the last
 bug fix.
 
 Below we list changes in the main system (excluding packages) that have
-been corrected or added in bugfixes and updates for **GAP** 4.4.
+been corrected or added in bugfixes and updates for GAP 4.4.
 
-#### 8.2 **GAP** 4.4 Bugfix 2 (April 2004)
+#### 8.2 GAP 4.4 Bugfix 2 (April 2004)
 
 Fixed bugs which could lead to crashes:
 
@@ -4835,7 +4835,7 @@ Other fixed bugs:
     returned by `MolienSeriesWithGivenDenominator` (in the case that the
     constant term of this numerator is zero).
 
-#### 8.3 **GAP** 4.4 Bugfix 3 (May 2004)
+#### 8.3 GAP 4.4 Bugfix 3 (May 2004)
 
 Fixed bugs which could produce wrong results:
 
@@ -4879,7 +4879,7 @@ Other fixed bugs:
 
   - Enable ReeGroup(q) for q = 3.
 
-#### 8.4 **GAP** 4.4 Bugfix 4 (December 2004)
+#### 8.4 GAP 4.4 Bugfix 4 (December 2004)
 
 Fixed bugs which could produce wrong results:
 
@@ -4891,7 +4891,7 @@ Fixed bugs which could produce wrong results:
     characteristic 0 erraneously claimed to be faithful.
 
   - A primitive representation of degree 574 for PSL(2,41) has been
-    missing in the classification on which the **GAP** library was
+    missing in the classification on which the GAP library was
     built.
 
   - A bug in `Append` for compressed vectors over GF(2): if the length
@@ -4943,7 +4943,7 @@ Other fixed bugs:
   - An error in the routine for `Resultant` if one of the polynomials
     has degree zero.
 
-#### 8.5 **GAP** 4.4 Update 5 (May 2005)
+#### 8.5 GAP 4.4 Update 5 (May 2005)
 
 Fixed bugs which could produce wrong results:
 
@@ -5011,9 +5011,9 @@ Fixed bugs which could produce wrong results:
 
 Fixed bugs which could lead to crashes:
 
-  - Some code and comments in the **GAP** kernel assumed that there is
+  - Some code and comments in the GAP kernel assumed that there is
     no garbage collection during the core printing function `Pr`, which
-    is not correct. This could cause **GAP** in rare cases to crash
+    is not correct. This could cause GAP in rare cases to crash
     during printing permutations, cyclotomics or strings with zero
     bytes. \[Reported by Warwick Harvey\]
 
@@ -5071,7 +5071,7 @@ Other fixed bugs:
     domains of non-row spaces was not complete.
 
   - When a workspace has been created without packages(`-A` option) and
-    is loaded into a **GAP** session without packages (same option) then
+    is loaded into a GAP session without packages (same option) then
     an error message is printed.
 
   - So far the functions `IsPrimeInt` (Reference: IsPrimeInt) and
@@ -5085,7 +5085,7 @@ Other fixed bugs:
     large primes; the warnings can be switched off. See `IsPrimeInt`
     (Reference: IsPrimeInt) for more details.
     
-    If we get a reasonable primality test in **GAP** we will change the
+    If we get a reasonable primality test in GAP we will change the
     definition of `IsPrimeInt` to do a proper test.
 
   - Corrected some names of primitive groups in degree 26. \[Reported by
@@ -5123,7 +5123,7 @@ New or improved functionality:
     former versions of a `colorprompt.g` file: Now you just need a
     `ColorPrompt(true);` in your `.gaprc` file.)
 
-  - Specialised kernel functions to support **GUAVA** 2.0. **GAP** will
+  - Specialised kernel functions to support **GUAVA** 2.0. GAP will
     only load **GUAVA** in version at least 2.002 after this update.
 
   - Now there is a kernel function `CYC_LIST` for converting a list of
@@ -5151,13 +5151,13 @@ New or improved functionality:
     authors and referees. (It uses the new function
     `IsDocumentedVariable`.)
 
-  - The mechanisms for testing **GAP** has been improved:
+  - The mechanisms for testing GAP has been improved:
     
       - The information whether a test file belongs to the list in
         `tst/testall.g` is now stored in the test file itself.
     
       - Some targets for testing have been added to the `Makefile` in
-        the **GAP** root directory, the output of the tests goes to the
+        the GAP root directory, the output of the tests goes to the
         new directory `dev/log`.
     
       - Utility functions for testing are in the new file
@@ -5165,7 +5165,7 @@ New or improved functionality:
         `tst/*.tst` can be performed with a function call, and the file
         `tst/testall.g` can be created automatically; the file
         `tst/testfull.g` is now obsolete. The remormalization of the
-        scaling factors can now be done using a **GAP** function, so the
+        scaling factors can now be done using a GAP function, so the
         file `tst/renorm.g` is obsolete.
     
       - Now the functions `START_TEST` and `STOP_TEST` use components in
@@ -5179,7 +5179,7 @@ New or improved functionality:
     attribute, and the construction of a magma, monoid, etc. from
     multiplication tables has been unified.
 
-#### 8.6 **GAP** 4.4 Update 6 (September 2005)
+#### 8.6 GAP 4.4 Update 6 (September 2005)
 
 Attribution of bugfixes and improved functionalities to those who
 reported or provided these, respectively, is still fairly incomplete and
@@ -5205,7 +5205,7 @@ Fixed bugs which could produce wrong results:
     warning \[Reported by Colin Ingalls\]. These problems are fixed.
     However, the methods currently used can be expected to be slower
     than the ones used before; we hope to fix this in the next version
-    of **GAP**.
+    of GAP.
 
   - `DerivedSubgroup` (Reference: DerivedSubgroup) and
     `CommutatorSubgroup` (Reference: CommutatorSubgroup) for permutation
@@ -5254,7 +5254,7 @@ Fixed bugs which could lead to crashes:
   - Problem in composition series for permutation groups for
     non-Frobenius groups with regular point stabilizer.
 
-  - After lots of computations with compressed GF(2) vectors **GAP**
+  - After lots of computations with compressed GF(2) vectors GAP
     occasionally crashed. The reason were three missing `CHANGED_BAG`s
     in `SemiEchelonPListGF2Vecs`. They were missing, because a garbage
     collection could be triggered during the computation such that newly
@@ -5262,7 +5262,7 @@ Fixed bugs which could lead to crashes:
     code because the error condition cannot easily be reproduced.
     \[Reported by Klaus Lux\]
 
-  - Minor bug that crashed **GAP**: The type of `IMPLICATIONS` could not
+  - Minor bug that crashed GAP: The type of `IMPLICATIONS` could not
     be determined in a fresh session. \[Reported by Marco Costantini\]
 
   - `Assert` (Reference: Assert) caused an infinite loop if called as
@@ -5277,7 +5277,7 @@ Other fixed bugs:
     orderings.
 
   - When testing for conjugacy of a primitive group to an imprimitive
-    group,**GAP** runs into an error in EARNS calculation. \[Reported by
+    group,GAP runs into an error in EARNS calculation. \[Reported by
     John Jones\]
 
   - The centre of a magma is commonly defined to be the set of elements
@@ -5316,7 +5316,7 @@ Other fixed bugs:
     divisible by `e` and another compressed 8-bit vector `w` was
     appended, such that the sum of the lengths became divisible by `e`,
     then one 0 byte too much was written, which destroyed the `TNUM` of
-    the next **GAP** object in memory. \[Reported by Klaus Lux\]
+    the next GAP object in memory. \[Reported by Klaus Lux\]
 
   - `PermutationCycle` (Reference: PermutationCycle) returned `fail` if
     the cycle was not a contiguous subset of the specified domain.
@@ -5331,7 +5331,7 @@ Other fixed bugs:
 
   - The function `Debug` now prints a meaningful message if the user
     tries to debug an operation. Also, the help file for `vi` is now
-    available in the case of several **GAP** root directories.
+    available in the case of several GAP root directories.
 
   - It is no longer possible to create corrupt objects via ranges of
     length \>2^28, resp. \>2^60 (depending on the architecture). The
@@ -5435,11 +5435,11 @@ New or improved functionality:
     runtimes for the tests that are substantially longer than the usual
     runtimes with default assertion level 0. In particular this is the
     reason why some of the standard test files require more time in
-    **GAP** 4.4.6 than in **GAP** 4.4.5.
+    GAP 4.4.6 than in GAP 4.4.5.
 
   - Some very basic functionality for floats.
 
-#### 8.7 **GAP** 4.4 Update 7 (March 2006)
+#### 8.7 GAP 4.4 Update 7 (March 2006)
 
 New or improved functionality:
 
@@ -5454,13 +5454,13 @@ New or improved functionality:
     `LowIndexSubgroupsFpGroupIterator`. \[Suggested (and based on code
     contributed) by Michael Hartley\]
 
-  - Semigroup functionality in **GAP** has been improved and extended.
+  - Semigroup functionality in GAP has been improved and extended.
     Green's relations are now stored differently, making the system more
     amenable to new methods for computing these relations in special
     cases. It is now possible to calculate Green's classes etc. without
     computing the entire semigroup or necessarily loading the package
     **MONOID**. Furthermore, the Froidure-Pin algorithm has now been
-    implemented in **GAP**.
+    implemented in GAP.
 
   - Functionality for creating free products of any list of groups for
     which a finite presentation can be determined had been added. This
@@ -5488,7 +5488,7 @@ New or improved functionality:
     tables now keeps the order of the irreducibles in the ordinary
     table.
 
-  - **GAP** can now handle any finite field for which the Conway
+  - GAP can now handle any finite field for which the Conway
     polynomial is known or can be computed.
 
   - New Conway polynomials provided by John Bray and Kate Minola have
@@ -5500,7 +5500,7 @@ New or improved functionality:
 
   - Now a few more checks are done during the `configure` phase of
     compiling for future use of some I/O functions of the C-library in a
-    package. Also the path to the **GAP** binaries for the **GAP**
+    package. Also the path to the GAP binaries for the GAP
     compiler is now handled via autoconf. Finally, now `autoconf`
     version 2.59 is used.
 
@@ -5620,7 +5620,7 @@ Other fixed bugs:
 
   - Up to now, `PowerMap` (Reference: PowerMap) ran into an error when
     one asked for the n-th power map where n was not a small integer.
-    This happened in some **GAP** library functions if the exponent of
+    This happened in some GAP library functions if the exponent of
     the character table in question was not a small integer.
 
   - Up to now, the test whether a finite field element was contained in
@@ -5667,7 +5667,7 @@ Other fixed bugs:
     handle this case correctly, as well as other unusual characters in
     path names (except for double quotes).
 
-#### 8.8 **GAP** 4.4 Update 8 (September 2006)
+#### 8.8 GAP 4.4 Update 8 (September 2006)
 
 New or improved functionality:
 
@@ -5680,7 +5680,7 @@ New or improved functionality:
 
   - It is now allowed to continue long integers, strings or identifiers
     by ending a line with a backslash or with a backslash and carriage
-    return character. So, files with **GAP** code and DOS/Windows-style
+    return character. So, files with GAP code and DOS/Windows-style
     line breaks are now valid input on all architectures.
 
   - The command line for starting the session and the system environment
@@ -5688,7 +5688,7 @@ New or improved functionality:
     `GAPInfo.SystemEnvironment`.
 
   - Names of all bound global variables and all component names are
-    available on **GAP** level.
+    available on GAP level.
 
   - Added a few new Conway polynomials computed by Kate Minola and John
     Bray.
@@ -5818,7 +5818,7 @@ Other fixed bugs:
   - Adjust things slightly to make later conversion to new
     vectors/matrices easier. Nothing of this should be visible.
 
-  - Corrected some details in the documentation of the **GAP** language.
+  - Corrected some details in the documentation of the GAP language.
     \[Reported by Alexander Konovalov\]
 
   - Now `PositionSorted` (Reference: PositionSorted) is much faster on
@@ -5829,7 +5829,7 @@ Other fixed bugs:
   - Now it is possible to switch repeated warnings off when working with
     iterative polynomial rings.
 
-#### 8.9 **GAP** 4.4 Update 9 (November 2006)
+#### 8.9 GAP 4.4 Update 9 (November 2006)
 
 Fixed bugs which could produce wrong results:
 
@@ -5857,12 +5857,12 @@ New or improved functionality:
     manual examples to use the latter form. \[Reported by Vahid
     Dabbaghian\]
 
-#### 8.10 **GAP** 4.4 Update 10 (October 2007)
+#### 8.10 GAP 4.4 Update 10 (October 2007)
 
 New or improved functionality:
 
-  - Files in the `cnf` directory of the **GAP** distribution are now
-    archived as binary files. Now **GAP** can be installed with UNIX or
+  - Files in the `cnf` directory of the GAP distribution are now
+    archived as binary files. Now GAP can be installed with UNIX or
     with WINDOWS style line breaks on any system and should work without
     problems.
 
@@ -5898,8 +5898,8 @@ New or improved functionality:
   - The function `RemoveCharacters` (Reference: RemoveCharacters) is now
     documented.
 
-  - Lists in **GAP** sometimes occupy memory for possible additional
-    entries. Now plain lists and strings read by **GAP** and the lists
+  - Lists in GAP sometimes occupy memory for possible additional
+    entries. Now plain lists and strings read by GAP and the lists
     returned by `List` (Reference: list element operation) only occupy
     the memory they really need. For more details see the documentation
     of the new function `EmptyPlist` (Reference: EmptyPlist).
@@ -5960,14 +5960,14 @@ Fixed bugs which could produce wrong results:
 
 Fixed bugs which could lead to crashes:
 
-  - **GAP** crashed when the `PATH` environment variable was not set.
+  - GAP crashed when the `PATH` environment variable was not set.
     \[Reported by Robert F. Morse\]
 
-  - **GAP** could crash when started with option `-x 1`. Now the number
+  - GAP could crash when started with option `-x 1`. Now the number
     of columns is initialized with at least 2. \[Reported by Robert F.
     Morse\]
 
-  - After loading a saved workspace **GAP** crashed when one tried to
+  - After loading a saved workspace GAP crashed when one tried to
     slice a compressed vector over a field with 2 \< q \<= 256 elements,
     which had already existed in the saved workspace. \[Reported by
     Laurent Bartholdi\]
@@ -5989,11 +5989,11 @@ Fixed bugs which could lead to crashes:
     finite field represented as elements of a bigger (external) field
     caused a segfault. \[Reported by Edmund Robertson\]
 
-  - **GAP** crashed when `BlistList` was called with a range and a list
+  - GAP crashed when `BlistList` was called with a range and a list
     containing large integers or non-integers. \[Reported by Laurent
     Bartholdi\]
 
-  - **GAP** no longer crashes when `OnTuples` is called with a list that
+  - GAP no longer crashes when `OnTuples` is called with a list that
     contains holes. \[Reported by Thomas Breuer\]
 
 Other fixed bugs:
@@ -6031,7 +6031,7 @@ Other fixed bugs:
 
   - New C library interfaces (e.g., to ncurses in the **Browse**
     package) need some more memory to be allocated with `malloc`. The
-    default value of **GAP** `-a` option is now `2m>`.
+    default value of GAP `-a` option is now `2m>`.
 
   - Avoid warnings about pointer types by newer gcc compilers.
 
@@ -6039,12 +6039,12 @@ Other fixed bugs:
     coded (e.g. in a loop or function body).
 
   - `ZmodpZObj` is now a synonym for `ZmodnZObj` such that from now on
-    such objects print in a way that can be read back into **GAP**.
+    such objects print in a way that can be read back into GAP.
 
   - The outdated note that binary streams are not yet implemented has
     been removed.
 
-#### 8.11 **GAP** 4.4 Update 11 (December 2008)
+#### 8.11 GAP 4.4 Update 11 (December 2008)
 
 Fixed bugs which could produce wrong results:
 
@@ -6069,7 +6069,7 @@ Fixed bugs which could produce wrong results:
     DefiningPolynomial) erroneously returned a polynomial w.r.t. the
     extension of the prime field. \[Reported by Stefan Kohl\]
 
-  - Since the release of **GAP** 4.4.10, the return values of the
+  - Since the release of GAP 4.4.10, the return values of the
     function `QuaternionAlgebra` (Reference: QuaternionAlgebra) were not
     consistent w.r.t. the attribute `GeneratorsOfAlgebra` (Reference:
     GeneratorsOfAlgebra); the returned list could have length four or
@@ -6080,7 +6080,7 @@ Fixed bugs which could produce wrong results:
     calculated a wrong ordering in certain cases. \[Reported by Paul
     Smith\]
 
-  - The (**GAP** kernel) method for the operation `IntersectSet`
+  - The (GAP kernel) method for the operation `IntersectSet`
     (Reference: IntersectSet) for ranges had two bugs, which could yield
     a result range with either too few or too many elements. As a
     consequence, for example the `Intersection` (Reference:
@@ -6147,7 +6147,7 @@ Other fixed bugs:
     (manual.six file) shorter and more informative. \[Reported by
     Alexander Hulpke\]
 
-  - **GAP** cannot call methods with more than six arguments. Now the
+  - GAP cannot call methods with more than six arguments. Now the
     functions `NewOperation` (Reference: NewOperation),
     `DeclareOperation` (Reference: DeclareOperation), and
     `InstallMethod` (Reference: InstallMethod) signal an error if one
@@ -6172,7 +6172,7 @@ New or improved functionality:
 
   - The function `FrobeniusCharacterValue` (Reference:
     FrobeniusCharacterValue) returned `fail` for results that require a
-    finite field with more than 65536 elements. Meanwhile **GAP** can
+    finite field with more than 65536 elements. Meanwhile GAP can
     handle larger finite fields, so this restriction was removed. (It is
     still possible that `FrobeniusCharacterValue` (Reference:
     FrobeniusCharacterValue) returns `fail`.)
@@ -6201,23 +6201,23 @@ New or improved functionality:
     optional parameters are given then of course ths depends on these
     parameters).
 
-#### 8.12 **GAP** 4.4 Update 12 (December 2008)
+#### 8.12 GAP 4.4 Update 12 (December 2008)
 
 Fixed bugs which could lead to crashes:
 
   - A bug whereby leaving an incomplete statement on a line (for
     instance typing while and then return) when prompt colouring was in
-    use could lead to **GAP** crashing.
+    use could lead to GAP crashing.
 
 Other fixed bugs:
 
   - A bug which made the command-line editor unusable in a 64-bit
-    version of **GAP** on Mac OS X.
+    version of GAP on Mac OS X.
 
 
 ### 9 Changes from Earlier Versions
 
-The most important changes between **GAP** 4.2 and **GAP** 4.3 were:
+The most important changes between GAP 4.2 and GAP 4.3 were:
 
   - The performance of several routines has been substantially improved.
 
@@ -6228,11 +6228,11 @@ The most important changes between **GAP** 4.2 and **GAP** 4.3 were:
     groups, character tables and tables of marks have been extended.
 
   - The Windows installation has been simplified for the case where you
-    are installing **GAP** in its standard location.
+    are installing GAP in its standard location.
 
   - Many bugs have been fixed.
 
-The most important changes between **GAP** 4.1 and **GAP** 4.2 were:
+The most important changes between GAP 4.1 and GAP 4.2 were:
 
   - A much extended and improved library of small groups as well as
     associated `IdGroup` ([smallgrp:
@@ -6240,7 +6240,7 @@ The most important changes between **GAP** 4.1 and **GAP** 4.2 were:
     routines.
 
   - The primitive groups library has been made more independent of the
-    rest of **GAP**, some errors were corrected.
+    rest of GAP, some errors were corrected.
 
   - New (and often much faster) infrastructure for orbit computation,
     based on a general "dictionary" abstraction.
@@ -6252,7 +6252,7 @@ The most important changes between **GAP** 4.1 and **GAP** 4.2 were:
     semigroups.
 
   - Bidirectional streams, allowing an external process to be started
-    and then controlled "interactively" by **GAP**
+    and then controlled "interactively" by GAP
 
   - A prototype implementation of algorithms using general subgroup
     chains.
@@ -6260,15 +6260,15 @@ The most important changes between **GAP** 4.1 and **GAP** 4.2 were:
   - Changes in the behavior of vectors over small finite fields.
 
   - A fifth book "New features for Developers" has been added to the
-    **GAP** manual.
+    GAP manual.
 
   - Numerous bug fixes and performance improvements
 
-The changes between the final release of **GAP** 3 (version 3.4.4) and
-**GAP** 4 are wide-ranging. The general philosophy of the changes is
-two-fold. Firstly, many assumptions in the design of **GAP** 3 revealed
+The changes between the final release of GAP 3 (version 3.4.4) and
+GAP 4 are wide-ranging. The general philosophy of the changes is
+two-fold. Firstly, many assumptions in the design of GAP 3 revealed
 its authors' primary interest in group theory, and indeed in finite
-group theory. Although much of the **GAP** 4 library is concerned with
+group theory. Although much of the GAP 4 library is concerned with
 groups, the basic design now allows extension to other algebraic
 structures, as witnessed by the inclusion of substantial bodies of
 algorithms for computation with semigroups and Lie algebras. Secondly,
@@ -6277,10 +6277,10 @@ contributing to it has grown, some aspects of the underlying system have
 proved to be restricting, and these have been improved as part of
 comprehensive re-engineering of the system. This has included the new
 method selection system, which underpins the library, and a new, much
-more flexible, **GAP** package interface.
+more flexible, GAP package interface.
 
 Details of these changes can be found in the document "Migrating to GAP
-4" available at the **GAP** website, see
+4" available at the GAP website, see
 <https://www.gap-system.org/Gap3/migratedoc.pdf>.
 
 It is perhaps worth mentioning a few points here.
@@ -6288,7 +6288,7 @@ It is perhaps worth mentioning a few points here.
 Firstly, much remains unchanged, from the perspective of the
 mathematical user:
 
-  - The syntax of that part of the **GAP** language that most users need
+  - The syntax of that part of the GAP language that most users need
     for investigating mathematical problems.
 
   - The great majority of function names.
@@ -6298,18 +6298,18 @@ mathematical user:
 A number of visible aspects have changed:
 
   - Some function names that need finer specifications now that there
-    are more structures available in **GAP**.
+    are more structures available in GAP.
 
   - The access to information already obtained about a mathematical
-    structure. In **GAP** 3 such information about a group could be
+    structure. In GAP 3 such information about a group could be
     looked up by directly inspecting the group record, whereas in
-    **GAP** 4 functions must be used to access such information.
+    GAP 4 functions must be used to access such information.
 
 Behind the scenes, much has changed:
 
   - A new kernel, with improvements in memory management and in the
     language interpreter, as well as new features such as saving of
-    workspaces and the possibility of compilation of **GAP** code into
+    workspaces and the possibility of compilation of GAP code into
     C.
 
   - A new structure to the library, based upon a new type and method
@@ -6322,18 +6322,18 @@ Behind the scenes, much has changed:
   - Data structures and algorithms for new mathematical objects, such as
     algebras and semigroups.
 
-  - A new and more flexible structure for the **GAP** installation and
-    documentation, which means, for example, that a **GAP** package and
+  - A new and more flexible structure for the GAP installation and
+    documentation, which means, for example, that a GAP package and
     its documentation can be installed and be fully usable without any
-    changes to the **GAP** system.
+    changes to the GAP system.
 
-Very few features of **GAP** 3 are not yet available in **GAP** 4.
+Very few features of GAP 3 are not yet available in GAP 4.
 
-  - Not all of the **GAP** 3 packages have yet been converted for use
-    with **GAP** 4.
+  - Not all of the GAP 3 packages have yet been converted for use
+    with GAP 4.
 
   - The library of crystallographic groups which was present in
-    **GAP** 3 is now part of a **GAP** 4 package
+    GAP 3 is now part of a GAP 4 package
     [**CrystCat**](https://www.gap-system.org/Packages/crystcat.html) by
     V. Felsch and F. Gähler.
 
