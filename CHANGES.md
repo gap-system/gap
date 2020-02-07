@@ -10,28 +10,35 @@ These changes are also listed on the Wiki page
 #### Removed ability to return objects from many error break loops
 
 Many error break loops in GAP used to allow replacing an object in a
-computation by another one. This ability was very tricky to use, and leads to
-computation results that are difficult to reproduce. At the same time,
+computation by another one. This ability was very tricky to use, and leads
+to computation results that are difficult to reproduce. At the same time,
 supporting this adds complexity to the GAP kernel. We therefore decided to
 remove this feature. Right now, this is not yet fully done, but we removed
 about 3/4 of these, and will remove the rest in a future GAP release. (See
 e.g. PR [#2966](https://github.com/gap-system/gap/pull/2966)).
 
 #### GAP now contains some C++ code
-
-Therefore, in order to compile it, you need a C++ compiler. See [#2667](https://github.com/gap-system/gap/pull/2667) for the rationale.
+#### 
+Therefore, in order to compile it, you need a C++ compiler. See
+[#2667](https://github.com/gap-system/gap/pull/2667) for the rationale.
 
 #### HPC-GAP
 
-The `ward` tool has been decommissioned in PR [#2870](https://github.com/gap-system/gap/pull/2870). In the future, guard checks will be performed in a different way; however, this code is not yet complete (see PR [#2845](https://github.com/gap-system/gap/pull/2845)). In the meantime, guard checking is broken. If you are interested in using HPC-GAP, please consider helping us to fix this and other issues with it.
+The `ward` tool has been decommissioned in PR
+[#2870](https://github.com/gap-system/gap/pull/2870). In the future, guard
+checks will be performed in a different way; however, this code is not yet
+complete (see PR [#2845](https://github.com/gap-system/gap/pull/2845)). In
+the meantime, guard checking is broken. If you are interested in using
+HPC-GAP, please consider helping us to fix this and other issues with it.
 
 #### Syntax trees
 
 Functions were added which allow converting a GAP function object into an
 abstract syntax tree which can be parsed and modified from within GAP code
-(see PR [#2628](https://github.com/gap-system/gap/pull/2628)). Moreover, it is
-possible to convert such a syntax tree (possibly after modifying it) back into
-a GAP function object (see PR [#3371](https://github.com/gap-system/gap/pull/3371)).
+(see PR [#2628](https://github.com/gap-system/gap/pull/2628)). Moreover, it
+is possible to convert such a syntax tree (possibly after modifying it) back
+into a GAP function object (see PR
+[#3371](https://github.com/gap-system/gap/pull/3371)).
 
 ### Improved and extended functionality
 
@@ -66,11 +73,11 @@ a GAP function object (see PR [#3371](https://github.com/gap-system/gap/pull/337
 - [#3077](https://github.com/gap-system/gap/pull/3077) Allow appending to the command line history
 - [#3078](https://github.com/gap-system/gap/pull/3078) Avoid memory issues in solvable conjugacy classes routine
 - [#3080](https://github.com/gap-system/gap/pull/3080) Method to compute Hall subgroups of arbitrary finite groups.
-- [#3093](https://github.com/gap-system/gap/pull/3093) Methods transforming small matrix groups into permutation groups now work for objects of type `IsMatrixObj` 
+- [#3093](https://github.com/gap-system/gap/pull/3093) Methods transforming small matrix groups into permutation groups now work for objects of type `IsMatrixObj`
 - [#3099](https://github.com/gap-system/gap/pull/3099) Show a warning when `GroupWithGenerators` called on a domain
 - [#3104](https://github.com/gap-system/gap/pull/3104) Extend `IntegratedStraightLineProgram` to the situation that some of the input programs return lists of elements
 - [#3118](https://github.com/gap-system/gap/pull/3118) Make `Refinements` an `AtomicRecord` so it can be added to by users
-- [#3129](https://github.com/gap-system/gap/pull/3129) `BrauerTableOp` now works for cyclic defect such that all Brauer characters lift to characteristic zero 
+- [#3129](https://github.com/gap-system/gap/pull/3129) `BrauerTableOp` now works for cyclic defect such that all Brauer characters lift to characteristic zero
 - [#3168](https://github.com/gap-system/gap/pull/3168) Allow input and output to be mixed in `Test`
 - [#3207](https://github.com/gap-system/gap/pull/3207) Display for functions with large literals is improved
 - [#3626](https://github.com/gap-system/gap/pull/3626) Customisable names of classes and characters in `Display` of character tables
@@ -236,7 +243,7 @@ a GAP function object (see PR [#3371](https://github.com/gap-system/gap/pull/337
 
 ### New packages redistributed with GAP
 - [CddInterface](https://homalg-project.github.io/CddInterface/) GAP interface to cdd, by Kamal Saleh
-- [DifSets](https://dylanpeifer.github.io/difsets/)  Enumeration of the difference sets (up to equivalence) in 
+- [DifSets](https://dylanpeifer.github.io/difsets/)  Enumeration of the difference sets (up to equivalence) in
  groups,  by Dylan Peifer
 - [ferret](https://gap-packages.github.io/ferret/) C++ reimplementation of Jeffery Leon’s Partition Backtrack framework for solving problems in permutation groups, by Christopher Jefferson
 - [images](https://gap-packages.github.io/images/) Finding minimal and canonical images in permutation groups, by Christopher Jefferson, Markus Pfeiffer, Rebecca Waldecker, Eliza Jonauskyte
@@ -273,8 +280,8 @@ Fixed bugs that could lead to crashes:
 
 Fixed bugs that could lead to incorrect results:
 
-  - Fix a bug in `ClassPositionsOfLowerCentralSeries`. \[Reported by Frieder Ladisch\]
-    ([#3321](https://github.com/gap-system/gap/pull/3321)).
+  - Fix a bug in `ClassPositionsOfLowerCentralSeries`. (Reported by Frieder
+    Ladisch) ([#3321](https://github.com/gap-system/gap/pull/3321)).
 
   - Fix a dangerous bug in the comparison of large negative integers,
     introduced in GAP 4.10.1: if `x` and `y` were equal, but not
@@ -298,7 +305,7 @@ Fixed bugs that could lead to break loops:
     instead, since this can not be always guaranteed (this could
     happen, for example, in perfect subgroup computation). Also
     added an assertion to `ClosureSubgroupNC` to catch this
-    situation in other cases. \[Reported by Serge Bouc\]
+    situation in other cases. (Reported by Serge Bouc)
     ([#3397](https://github.com/gap-system/gap/pull/3397)).
 
   - Fix a "method not found" error in `SubdirectProduct`
@@ -409,13 +416,13 @@ Fixed bugs that could lead to break loops:
 
   - Fix `ShallowCopy` for for a Knuth-Bendix
     rewriting system
-    ([#3128](https://github.com/gap-system/gap/pull/3128)). \[Reported
-    by Ignat Soroko\]
+    ([#3128](https://github.com/gap-system/gap/pull/3128)). (Reported
+    by Ignat Soroko)
 
   - Fix `IsMonomialMatrix` to work with
     compressed matrices
-    ([#3149](https://github.com/gap-system/gap/pull/3149)). \[Reported
-    by Dominik Bernhardt\]
+    ([#3149](https://github.com/gap-system/gap/pull/3149)). (Reported
+    by Dominik Bernhardt)
 
 Removed or obsolete functionality:
 
@@ -464,50 +471,50 @@ following five new packages:
 
 ### New features and major changes
 
-  - **Reduce impact of immediate methods**  
+  - **Reduce impact of immediate methods**
     GAP allows declaring so-called "immediate methods". The idea is
     that these are very simple and fast methods which are immediately
     called if information about an object becomes known, in order to
     perform some quick deduction. For example, if the order of a group
     is set, there might be immediate methods which update the filters
     `IsFinite` and `IsTrivial` of the group suitably.
-    
+
     While this can be very elegant and useful in interactive GAP
     sessions, the overhead for running these immediate methods and
     applying their results can become a major factor in the runtime of
     complex computations that create thousands or millions of objects.
-    
+
     To address this, various steps were taken:
-    
+
       - some immediate methods were turned into regular methods;
-    
+
       - a special handlers for `SetSize` was created that deduces
         properties which previously were taken care of by immediate
         methods;
-    
+
       - some immediate methods were replaced by implications (set via
         `InstallTrueMethod`), a mechanism that essentially adds zero
         overhead, unlike immediate methods;
-    
+
       - various group constructors were modified to precompute and
         preset properties of freshly created group objects, to avoid
         triggering immediate methods for these.
-    
+
     As a result of these and other changes, consider the following
     example; with GAP 4.9, it takes about 130 seconds on one test
     system, while with GAP 4.10 it runs in about 22 seconds, i.e.,
     more than six times
         faster.
-    
+
         G:=PcGroupCode( 741231213963541373679312045151639276850536621925972119311,11664);;
         IsomorphismGroups(G,PcGroupCode(CodePcGroup(G),Size(G)))<>fail;
-    
+
     Relevant pull requests and issues:
     [#2386](https://github.com/gap-system/gap/pull/2386),
     [#2387](https://github.com/gap-system/gap/pull/2387),
     [#2522](https://github.com/gap-system/gap/pull/2522).
 
-  - **Change definition of `IsPGroup` to *not* require finiteness**  
+  - **Change definition of `IsPGroup` to *not* require finiteness**
     This is a small change in terms of amount of code changed, but we
     list it here as it has a potential (albeit rather unlikely) impact
     on the code written by GAP users: In the past, the GAP
@@ -524,14 +531,14 @@ following five new packages:
     explicitly check `IsFinite` (see e.g.
     [#2866](https://github.com/gap-system/gap/pull/2866)).
 
-  - **Experimental support for using the **Julia** garbage collector**  
+  - **Experimental support for using the **Julia** garbage collector**
     It is now possible to use the garbage collector of the [Julia
     language](https://julialang.org) instead of GAP's traditional
     **GASMAN** garbage collector. This is partly motivated by a desire
     to allow tight integration with GAP and **Julia** in the future.
     Warning: right now, this is *slower*, and also requires a patched
     version of **Julia**.
-    
+
     Relevant pull requests:
     [#2092](https://github.com/gap-system/gap/pull/2092),
     [#2408](https://github.com/gap-system/gap/pull/2408),
@@ -545,7 +552,7 @@ following five new packages:
     [#2905](https://github.com/gap-system/gap/pull/2905),
     [#2931](https://github.com/gap-system/gap/pull/2931).
 
-  - ****libGAP** (work in progress)**  
+  - ****libGAP** (work in progress)**
     We now provide a experimental way to allow 3rd party code to link
     GAP as a library; this is based on the **libGAP** code by
     [SageMath](https://www.sagemath.org), but different: while we aim to
@@ -556,21 +563,21 @@ following five new packages:
     you are interested in this kind of interface, please get in touch
     with us to help us improve it. See also [this
     email](https://mail.gap-system.org/pipermail/gap/2018-August/001123.html).
-    
+
     To get an idea how **libGAP** works, you can configure GAP as
     normal, and then execute `make testlibgap` which will build a small
     program that uses some of the existing API and links GAP.
     Relevant pull requests:
-    
+
       - [#1690](https://github.com/gap-system/gap/pull/1690) Add a
         callback to `FuncJUMP_TO_CATCH`
-    
+
       - [#2528](https://github.com/gap-system/gap/pull/2528) Add
         `IsLIBGAP` constant
-    
+
       - [#2702](https://github.com/gap-system/gap/pull/2702) Add
         GAP kernel API
-    
+
       - [#2723](https://github.com/gap-system/gap/pull/2723) Introduce
         command line options `--norepl` and `--nointeract`
 
@@ -584,15 +591,15 @@ following five new packages:
 
   - [#2057](https://github.com/gap-system/gap/pull/2057) Various
     changes, including:
-    
+
       - Improve computation of automorphism groups for fp groups (we
         still recommend to instead first convert the group to a
         computationally nice representation, such as a perm or pc group)
-    
+
       - Add `MinimalFaithfulPermutationDegree` attribute for finite groups
-    
+
       - Improve performance of `GQuotients(F,G)` when `F` is an fp group
-    
+
       - Some other performance and documentation tweaks
 
   - [#2061](https://github.com/gap-system/gap/pull/2061),
@@ -1042,8 +1049,8 @@ No longer redistributed with GAP:
 
 Fixed bugs that could lead to break loops:
 
-  - Fixed a regression in `HighestWeightModule` caused by changes in sort functions introduced
-    in GAP 4.9 release
+  - Fixed a regression in `HighestWeightModule` caused by changes in
+    sort functions introduced in GAP 4.9 release
     ([#2617](https://github.com/gap-system/gap/pull/2617)).
 
 Other fixed bugs and further improvements:
@@ -1079,8 +1086,8 @@ distribution. Additionally, it has three new packages:
 Fixed bugs that could lead to break loops:
 
   - Fixed a bug in iterating over an empty cartesian product
-    ([#2421](https://github.com/gap-system/gap/pull/2421)). \[Reported
-    by @isadofschi\]
+    ([#2421](https://github.com/gap-system/gap/pull/2421)). (Reported
+    by @isadofschi)
 
 Fixed bugs that could lead to crashes:
 
@@ -1095,8 +1102,8 @@ Fixed bugs that could lead to incorrect results:
 
   - Fixed a bug in computing maximal subgroups, which broke some other
     calculations, in particular, computing intermediate subgroups.
-    ([#2488](https://github.com/gap-system/gap/pull/2488)). \[Reported
-    by Seyed Hassan Alavi\]
+    ([#2488](https://github.com/gap-system/gap/pull/2488)). (Reported
+    by Seyed Hassan Alavi)
 
 Other fixed bugs and further improvements:
 
@@ -1106,7 +1113,7 @@ Other fixed bugs and further improvements:
 
   - The `bin/gap.sh` script now respects the `GAP_DIR` environment
     variable ([#2465](https://github.com/gap-system/gap/pull/2465)).
-    \[Contributed by RussWoodroofe\]
+    (Contributed by RussWoodroofe)
 
   - The `bin/BuildPackages.sh` script now properly builds binaries for
     the **simpcomp** package
@@ -1139,26 +1146,25 @@ This is the first public release of GAP 4.9.
 
 Major changes:
 
-  - Merged **HPC-GAP** into GAP. For details, please refer to
-    Subsection [3.1-2](chap.md#X7F52B77B7DBACC17) at the end of these
-    release notes.
+  - Merged **HPC-GAP** into GAP. For details, please refer to the end of
+    these release notes.
 
-  - GAP has a new build system, which resolves many quirks and
-    issues with the old system, and will be easier to maintain. For
-    regular users, the usual `./configure && make` should work fine as
-    before. If you are interested in technical details on the new build
-    system, take a look at `README.buildsys.md`.
+  - GAP has a new build system, which resolves many quirks and issues
+    with the old system, and will be easier to maintain. For regular
+    users, the usual `./configure && make` should work fine as before.
+    If you are interested in technical details on the new build system,
+    take a look at `README.buildsys.md`.
 
-  - The guidelines for developing GAP packages were revised and
-    moved from the Example package to the reference manual.
+  - The guidelines for developing GAP packages were revised and moved
+    from the Example package to the reference manual.
     ([#484](https://github.com/gap-system/gap/pull/484)).
 
-  - In addition to supporting single argument lambda functions like `a
-    -> a+1`, GAP now supports lambdas with fewer or more than one
+  - In addition to supporting single argument lambda functions like
+    `a -> a+1`, GAP now supports lambdas with fewer or more than one
     argument, or even a variable number. E.g. `{a,b} -> a+b` is a
-    shorthand for `function(a,b) return a+b; end`. For details on how to
-    use this, please refer to the reference manual. For technical details,
-    e.g. why we did not choose the syntax `(a,b) -> a+b`, see
+    shorthand for `function(a,b) return a+b; end`. For details on how
+    to use this, please refer to the reference manual. For technical
+    details, e.g. why we did not choose the syntax `(a,b) -> a+b`, see
     [#490](https://github.com/gap-system/gap/pull/490).
 
   - Function calls, list accesses and records accesses now can be
@@ -1183,73 +1189,75 @@ Major changes:
     ([#1650](https://github.com/gap-system/gap/pull/1650),
     [#1714](https://github.com/gap-system/gap/pull/1714)).
 
-  - The performance of GAP's sorting functions (such as `Sort`, `SortParallel`, etc.)
-    has been substantially improved, in some examples by more than a
-    factor of four: as a trivial example, compare the timing for
-    `Sort([1..100000000] * 0)`. As a side effect, the result of sorting
-    lists with equal entries may produce different answers compared to
-    previous GAP versions. If you would like to make your code
-    independant of the exact employed sorting algorithm, you can use the
-    newly added `StableSort`, `StableSortBy` and `StableSortParallel`. (For some technical details, see
+  - The performance of GAP's sorting functions (such as `Sort`,
+    `SortParallel`, etc.) has been substantially improved, in some
+    examples by more than a factor of four: as a trivial example,
+    compare the timing for `Sort([1..100000000] * 0)`. As a side
+    effect, the result of sorting lists with equal entries may produce
+    different answers compared to previous GAP versions. If you would
+    like to make your code independant of the exact employed sorting
+    algorithm, you can use the newly added `StableSort`, `StableSortBy`
+    and `StableSortParallel`. (For some technical details, see
     [#609](https://github.com/gap-system/gap/pull/609)).
 
   - We removed our old home-grown big integer code, and instead always
     use the GMP based big integer code. This means that the GMP library
     now is a required dependency, not just an optional one. Note that
     GAP has been using GMP big integer arithmetic for a long time by
-    default, and we also have been bundling GMP with GAP. So this change
-    mostly removed code that was never in use for most users.
+    default, and we also have been bundling GMP with GAP. So this
+    change mostly removed code that was never in use for most users.
 
-  - A number of improvements have been made to `Random`. These may lead to different sequences of numbers being
-    created. On the up side, many more methods for `Random` (and other `RandomXYZ` operations) now optionally take an
-    explicit `RandomSource` as first argument
+  - A number of improvements have been made to `Random`. These may lead
+    to different sequences of numbers being created. On the up side,
+    many more methods for `Random` (and other `RandomXYZ` operations)
+    now optionally take an explicit `RandomSource` as first argument
     (but not yet all: help with issue
     [#1098](https://github.com/gap-system/gap/pull/1098) is welcome).
     Some relevant pull requests:
-    
+
       - Allow creating random permutations using a random source
         ([#1165](https://github.com/gap-system/gap/pull/1165))
-    
+
       - Let more `Random` methods use an alternative
         source ([#1168](https://github.com/gap-system/gap/pull/1168))
-    
+
       - Help `Random` methods to use `RandomSource`
         ([#810](https://github.com/gap-system/gap/pull/810))
-    
+
       - Remove uses of old random generator
         ([#808](https://github.com/gap-system/gap/pull/808))
-    
+
       - Fix `Random` on long (\>2^28) lists
         ([#781](https://github.com/gap-system/gap/pull/781))
-    
+
       - Fix `RandomUnimodularMat`
         ([#1511](https://github.com/gap-system/gap/pull/1511))
-    
+
       - Use `RandomSource` in a few more
         places ([#1599](https://github.com/gap-system/gap/pull/1599))
 
   - The output and behaviour of the profiling system has been
     substantially improved:
-    
+
       - Make profiling correctly handle the same file being opened
         multiple times
         ([#1069](https://github.com/gap-system/gap/pull/1069))
-    
+
       - Do not profile the `return` statements inserted into the end
         of functions
         ([#1073](https://github.com/gap-system/gap/pull/1073))
-    
+
       - Ensure we reset `OutputtedFilenameList` in profiling when a
         workspace is restored
         ([#1164](https://github.com/gap-system/gap/pull/1164))
-    
+
       - Better tracking of amounts of memory allocated and time spent in
         the garbage collector
         ([#1806](https://github.com/gap-system/gap/pull/1806))
-    
+
       - Allow profiling of memory usage
         ([#1808](https://github.com/gap-system/gap/pull/1808))
-    
+
       - Remove profiling limit on files with \<= 2^16 lines
         ([#1913](https://github.com/gap-system/gap/pull/1913))
 
@@ -1275,24 +1283,23 @@ Major changes:
 
 Other changes:
 
-  - Enhance `StructureDescription`
-    with a major rewrite, enhancing `DirectFactorsOfGroup"` and adding
-    `SemidirectDecompositions`; the core algorithm now also works for
-    infinite abelian groups. Further, it became faster by quickly
-    finding abelian direct factors and recognizing several cases where
-    the group is direct indecomposable.
+  - Enhance `StructureDescription` with a major rewrite, enhancing
+    `DirectFactorsOfGroup"` and adding `SemidirectDecompositions`; the
+    core algorithm now also works for infinite abelian groups. Further,
+    it became faster by quickly finding abelian direct factors and
+    recognizing several cases where the group is direct indecomposable.
     ([#379](https://github.com/gap-system/gap/pull/379),
     [#763](https://github.com/gap-system/gap/pull/763),
     [#985](https://github.com/gap-system/gap/pull/985))
 
-  - Mark `FittingSubgroup` and
-    `FrattiniSubgroup` as nilpotent
+  - Mark `FittingSubgroup` and `FrattiniSubgroup` as nilpotent
     ([#400](https://github.com/gap-system/gap/pull/400))
 
   - Add method for `Socle` for finite nilpotent
     groups ([#402](https://github.com/gap-system/gap/pull/402))
 
-  - Change `ViewString` and `String` methods for various inverse semigroups and monoids
+  - Change `ViewString` and `String` methods for various inverse
+    semigroups and monoids
     ([#438](https://github.com/gap-system/gap/pull/438),
     [#880](https://github.com/gap-system/gap/pull/880),
     [#882](https://github.com/gap-system/gap/pull/882))
@@ -1303,13 +1310,11 @@ Other changes:
   - Improve `Union` for a list with many ranges
     ([#444](https://github.com/gap-system/gap/pull/444))
 
-  - Add `UserHomeExpand`, a function to
-    expand `~` in filenames.
+  - Add `UserHomeExpand`, a function to expand `~` in filenames.
     ([#447](https://github.com/gap-system/gap/pull/447))
 
-  - Extra hint in "No Method Found" error message if one of the
-    arguments is `fail`
-    ([#460](https://github.com/gap-system/gap/pull/460))
+  - Extra hint in "No Method Found" error message if one of the arguments
+    is `fail` ([#460](https://github.com/gap-system/gap/pull/460))
 
   - Tell Sylow subgroups of natural A\_n or S\_n their size when we make
     them ([#529](https://github.com/gap-system/gap/pull/529))
@@ -1321,13 +1326,11 @@ Other changes:
   - Remove `.zoo` archive related tools
     ([#540](https://github.com/gap-system/gap/pull/540))
 
-  - Add new `FrattiniSubgroup`,
-    `MaximalNormalSubgroups`,
-    `MinimalNormalSubgroups` and
-    `Socle` methods for abelian and/or solvable
-    groups, even infinite ones. The new methods are only triggered if
-    the group already knows that it is abelian and/or solvable.
-    ([#552](https://github.com/gap-system/gap/pull/552),
+  - Add new `FrattiniSubgroup`, `MaximalNormalSubgroups`,
+    `MinimalNormalSubgroups` and `Socle` methods for abelian and/or
+    solvable groups, even infinite ones. The new methods are only
+    triggered if the group already knows that it is abelian and/or
+    solvable. ([#552](https://github.com/gap-system/gap/pull/552),
     [#583](https://github.com/gap-system/gap/pull/583),
     [#606](https://github.com/gap-system/gap/pull/606))
 
@@ -1345,9 +1348,8 @@ Other changes:
   - Collection of enhancements
     ([#683](https://github.com/gap-system/gap/pull/683))
 
-  - Various speed improvements to polynomial factorisation and the
-    GAP MeatAxe
-    ([#720](https://github.com/gap-system/gap/pull/720),
+  - Various speed improvements to polynomial factorisation and the GAP
+    MeatAxe ([#720](https://github.com/gap-system/gap/pull/720),
     [#1027](https://github.com/gap-system/gap/pull/1027))
 
   - The code and documentation for transformations is improved and
@@ -1359,12 +1361,11 @@ Other changes:
     argument, from which the roots will be taken
     ([#761](https://github.com/gap-system/gap/pull/761))
 
-  - Change `Permanent` from a global function to
-    an attribute ([#777](https://github.com/gap-system/gap/pull/777))
+  - Change `Permanent` from a global function to an attribute
+    ([#777](https://github.com/gap-system/gap/pull/777))
 
-  - Add `CallFuncListWrap` to wrap return
-    value to allow distinguishing between functions which return and
-    functions which don't
+  - Add `CallFuncListWrap` to wrap return value to allow distinguishing
+    between functions which return and functions which don't
     ([#824](https://github.com/gap-system/gap/pull/824))
 
   - Allow repeated use of same `DeclareSynonym` call
@@ -1377,25 +1378,25 @@ Other changes:
   - New functionality: Cannon/Holt automorphisms and others
     ([#878](https://github.com/gap-system/gap/pull/878))
 
-  - Add `IsPowerfulPGroup` property, and a
-    `FrattiniSubgroup` method for powerful
-    p-groups ([#894](https://github.com/gap-system/gap/pull/894))
+  - Add `IsPowerfulPGroup` property, and a `FrattiniSubgroup` method for
+    powerful p-groups
+    ([#894](https://github.com/gap-system/gap/pull/894))
 
   - Improve performance for group isomorphism/automorphisms
     ([#896](https://github.com/gap-system/gap/pull/896),
     [#968](https://github.com/gap-system/gap/pull/968))
 
-  - Make `ListX`, `SetX`, `SumX` and `ProductX` support lists
-    which are not collections
+  - Make `ListX`, `SetX`, `SumX` and `ProductX` support lists which are
+    not collections
     ([#903](https://github.com/gap-system/gap/pull/903))
 
   - Some improvements for `LatticeByCyclicExtension`
     ([#905](https://github.com/gap-system/gap/pull/905))
 
   - Add helpers to retrieve information about operations and filters:
-    `CategoryByName`, `TypeOfOperation`, `FilterByName`, `FiltersObj`, `FiltersType`, `IdOfFilter`, `IdOfFilterByName`,
-    `IsAttribute`, `IsCategory`, `IsProperty`,
-    `IsRepresentation`
+    `CategoryByName`, `TypeOfOperation`, `FilterByName`, `FiltersObj`,
+    `FiltersType`, `IdOfFilter`, `IdOfFilterByName`, `IsAttribute`,
+    `IsCategory`, `IsProperty`, `IsRepresentation`
     ([#925](https://github.com/gap-system/gap/pull/925),
     [#1593](https://github.com/gap-system/gap/pull/1593))
 
@@ -1408,38 +1409,36 @@ Other changes:
   - Add `LowercaseChar` and `UppercaseChar`
     ([#952](https://github.com/gap-system/gap/pull/952))
 
-  - Add `PositionMaximum` and
-    `PositionMinimum`
+  - Add `PositionMaximum` and `PositionMinimum`
     ([#956](https://github.com/gap-system/gap/pull/956))
 
   - Switching default command history length from infinity to 1000
     ([#960](https://github.com/gap-system/gap/pull/960))
 
-  - Allow conversion of `-infinity` to float via `NewFloat` and `MakeFloat`
-    ([#961](https://github.com/gap-system/gap/pull/961))
+  - Allow conversion of `-infinity` to float via `NewFloat` and
+    `MakeFloat` ([#961](https://github.com/gap-system/gap/pull/961))
 
   - Add option `NoPrecomputedData` to avoid use of data libraries in
     certain computations (useful if one wants to verify the content of
     these data libraries)
     ([#986](https://github.com/gap-system/gap/pull/986))
 
-  - Remove one-argument version of `AsPartialPerm` for a
-    transformation
+  - Remove one-argument version of `AsPartialPerm` for a transformation
     ([#1036](https://github.com/gap-system/gap/pull/1036))
 
-  - Partial perms now have a `MultiplicativeZero` rather than a `Zero`, since
-    they are multiplicative rather than additive elements
+  - Partial perms now have a `MultiplicativeZero` rather than a `Zero`,
+    since they are multiplicative rather than additive elements
     ([#1040](https://github.com/gap-system/gap/pull/1040))
 
   - Various enhancements:
     ([#1046](https://github.com/gap-system/gap/pull/1046))
-    
+
       - A bugfix in `NaturalHomomorphismByIdeal` for polynomial rings
-    
+
       - Improvements in handling solvable permutation groups
-    
+
       - The trivial group now is a member of the perfect groups library
-    
+
       - Improvements in using tabulated data for maximal subgroups
 
   - New tests for group constructors and some fixes (e.g. `GO(1,4,5)`
@@ -1455,15 +1454,15 @@ Other changes:
   - Remove GAP4stones from tests
     ([#1072](https://github.com/gap-system/gap/pull/1072))
 
-  - `AsMonoid` and `AsSemigroup` are now operations, and various bugs were resolved
-    related to isomorphisms of semigroups and monoids
+  - `AsMonoid` and `AsSemigroup` are now operations, and various bugs
+    were resolved related to isomorphisms of semigroups and monoids
     ([#1112](https://github.com/gap-system/gap/pull/1112))
 
   - Mark isomorphisms between trivial groups as bijective
     ([#1116](https://github.com/gap-system/gap/pull/1116))
 
-  - Speed up `RootMod` and `RootsMod` for moduli with large prime factors; also add
-    `IS_PROBAB_PRIME_INT` kernel function
+  - Speed up `RootMod` and `RootsMod` for moduli with large prime
+    factors; also add `IS_PROBAB_PRIME_INT` kernel function
     ([#1141](https://github.com/gap-system/gap/pull/1141))
 
   - The search for the documentation of system setters and testers now
@@ -1493,8 +1492,8 @@ Other changes:
     of `RepresentativeAction`
     ([#1390](https://github.com/gap-system/gap/pull/1390))
 
-  - Revise Chapter 52 of the reference manual (fp semigroups and
-    monoids) ([#1441](https://github.com/gap-system/gap/pull/1441))
+  - Revise Chapter 52 of the reference manual (fp semigroups and monoids)
+    ([#1441](https://github.com/gap-system/gap/pull/1441))
 
   - Improve the performance of the `Info` statement
     ([#1464](https://github.com/gap-system/gap/pull/1464),
@@ -1510,16 +1509,15 @@ Other changes:
   - Add `String` method for functions
     ([#1591](https://github.com/gap-system/gap/pull/1591))
 
-  - Check modules were compiled with the same version of GAP when
-    loading them ([#1600](https://github.com/gap-system/gap/pull/1600))
+  - Check modules were compiled with the same version of GAP when loading
+    them ([#1600](https://github.com/gap-system/gap/pull/1600))
 
   - When printing function, reproduce `TryNextMethod()` correctly
     ([#1613](https://github.com/gap-system/gap/pull/1613))
 
   - New "Bitfields" feature providing efficient support for packing
     multiple data items into a single word for cache and memory
-    efficiency
-    ([#1616](https://github.com/gap-system/gap/pull/1616))
+    efficiency ([#1616](https://github.com/gap-system/gap/pull/1616))
 
   - Improved `bin/BuildPackages.sh`, in particular added option to abort
     upon failure ([#2022](https://github.com/gap-system/gap/pull/2022))
@@ -1527,45 +1525,44 @@ Other changes:
   - Rewrote integer code (GMP) for better performance of certain large
     integer operations, and added kernel implementations of various
     functions, including these:
-    
-      - Add kernel implementations of `AbsInt`, `SignInt`; add new
-        kernel functions `ABS_RAT`, `SIGN_RAT`; and speed up `mod`,
-        `RemInt`, `QuoInt` for divisors which are small powers of 2
+
+      - Add kernel implementations of `AbsInt`, `SignInt`; add new kernel
+        functions `ABS_RAT`, `SIGN_RAT`; and speed up `mod`, `RemInt`,
+        `QuoInt` for divisors which are small powers of 2
         ([#1045](https://github.com/gap-system/gap/pull/1045))
-    
+
       - Add kernel implementations of `Jacobi`, `PowerModInt`,
         `Valuation` (for integers), `PValuation` (for integers)
         ([#1075](https://github.com/gap-system/gap/pull/1045))
-    
+
       - Add kernel implementation of `Factorial`
         ([#1969](https://github.com/gap-system/gap/pull/1969))
-    
+
       - Add kernel implementation of `Binomial`
         ([#1921](https://github.com/gap-system/gap/pull/1921))
-    
+
       - Add kernel implementation of `LcmInt`
         ([#2019](https://github.com/gap-system/gap/pull/2019))
 
   - Check version of kernel for package versions
     ([#1600](https://github.com/gap-system/gap/pull/1600))
 
-  - Add new `AlgebraicExtensionNC`
-    operation ([#1665](https://github.com/gap-system/gap/pull/1665))
+  - Add new `AlgebraicExtensionNC` operation
+    ([#1665](https://github.com/gap-system/gap/pull/1665))
 
   - Add `NumberColumns` and `NumberRows` to `MatrixObj` interface
     ([#1657](https://github.com/gap-system/gap/pull/1657))
 
-  - `MinimalGeneratingSet` returns an
-    answer for non-cyclic groups that already have a generating set of
-    size 2 (which hence is minimal)
+  - `MinimalGeneratingSet` returns an answer for non-cyclic groups that
+    already have a generating set of size 2 (which hence is minimal)
     ([#1755](https://github.com/gap-system/gap/pull/1755))
 
-  - Add `GetWithDefault` which returns the
-    n-th element of the list if it is bound, and the default value
-    otherwise ([#1762](https://github.com/gap-system/gap/pull/1762))
+  - Add `GetWithDefault` which returns the n-th element of the list if it
+    is bound, and the default value otherwise
+    ([#1762](https://github.com/gap-system/gap/pull/1762))
 
-  - Fast method for `ElmsBlist` when positions are a range with
-    increment 1 ([#1773](https://github.com/gap-system/gap/pull/1773))
+  - Fast method for `ElmsBlist` when positions are a range with increment
+    1 ([#1773](https://github.com/gap-system/gap/pull/1773))
 
   - Make permutations remember their inverses
     ([#1831](https://github.com/gap-system/gap/pull/1831))
@@ -1573,17 +1570,14 @@ Other changes:
   - Add invariant forms for `GU(1,q)` and `SU(1,q)`
     ([#1874](https://github.com/gap-system/gap/pull/1874))
 
-  - Implement `StandardAssociate` and
-    `StandardAssociateUnit` for
-    `ZmodnZ`, clarify documentation for
-    `IsEuclideanRing`
+  - Implement `StandardAssociate` and `StandardAssociateUnit` for
+    `ZmodnZ`, clarify documentation for `IsEuclideanRing`
     ([#1990](https://github.com/gap-system/gap/pull/1990))
 
   - Improve documentation and interface for floats
     ([#2016](https://github.com/gap-system/gap/pull/2016))
 
-  - Add `PositionsProperty` method for
-    non-dense lists
+  - Add `PositionsProperty` method for non-dense lists
     ([#2021](https://github.com/gap-system/gap/pull/2021))
 
   - Add `TrivialGroup(IsFpGroup)`
@@ -1599,36 +1593,35 @@ Other changes:
 
   - Various changes
     ([#2253](https://github.com/gap-system/gap/pull/2253)):
-    
+
       - Improve performance and memory usage of
         `ImageKernelBlocksHomomorphism"`
-    
+
       - Document `LowIndexSubgroups`
-    
-      - Correct `ClassesSolvableGroup`
-        documentation to clarify that it requires, but does not test
-        membership
-    
-      - fix `IsNaturalGL` for trivial matrix
-        groups with empty generating set
+
+      - Correct `ClassesSolvableGroup` documentation to clarify that it
+        requires, but does not test membership
+
+      - fix `IsNaturalGL` for trivial matrix groups with empty generating
+        set
 
   - Make it possible to interrupt `repeat continue; until false;` and
     similar tight loops with "Ctrl-C"
     ([#2259](https://github.com/gap-system/gap/pull/2259)).
 
-  - Improved GAP testing infrastructure, extended GAP test
-    suite, and increased code coverage
+  - Improved GAP testing infrastructure, extended GAP test suite, and
+    increased code coverage
 
-  - Countless other tweaks, improvements, fixes were applied to the
-    GAP library, kernel and manual
+  - Countless other tweaks, improvements, fixes were applied to the GAP
+    library, kernel and manual
 
 Fixed bugs:
 
-  - Fix bugs in `NormalSubgroups` and
-    `PrintCSV`
+  - Fix bugs in `NormalSubgroups` and `PrintCSV`
     ([#433](https://github.com/gap-system/gap/pull/433))
 
-  - Fix nice monomorphism dispatch for `HallSubgroup` (e.g. fixes `HallSubgroup(GL(3,4), [2,3])`)
+  - Fix nice monomorphism dispatch for `HallSubgroup` (e.g. fixes
+    `HallSubgroup(GL(3,4), [2,3])`)
     ([#559](https://github.com/gap-system/gap/pull/559))
 
   - Check for permutations whose degree would exceed the internal limit,
@@ -1639,8 +1632,7 @@ Fixed bugs:
     ([#709](https://github.com/gap-system/gap/pull/709) which fixes
     [#397](https://github.com/gap-system/gap/issues/397))
 
-  - Fix rankings for `Socle` and
-    `MinimalNormalSubgroups`
+  - Fix rankings for `Socle` and `MinimalNormalSubgroups`
     ([#711](https://github.com/gap-system/gap/pull/711))
 
   - Make key and attribute values immutable
@@ -1649,7 +1641,8 @@ Fixed bugs:
   - Make `OnTuples([-1], (1,2))` return an error
     ([#718](https://github.com/gap-system/gap/pull/718))
 
-  - Fix bug in `NewmanInfinityCriterion` which could corrupt the `PCentralSeries` attribute
+  - Fix bug in `NewmanInfinityCriterion` which could corrupt the
+    `PCentralSeries` attribute
     ([#719](https://github.com/gap-system/gap/pull/719))
 
   - The length of the list returned by `OnSetsPerm` is now properly set
@@ -1756,26 +1749,24 @@ Fixed bugs:
 
   - Collection of improvements and fixes:
     ([#1294](https://github.com/gap-system/gap/pull/1294))
-    
+
       - A fix for quotient rings of rings by structure constants
-    
+
       - Generic routine for transformation matrix to rational canonical
         form
-    
+
       - Speed improvements to block homomorphisms
-    
-      - New routines for conjugates or subgroups with desired
-        containment
-    
+
+      - New routines for conjugates or subgroups with desired containment
+
       - Performance improvement for conjugacy classes in groups with a
         huge number of classes, giving significant improvements to
-        `IntermediateSubgroups` (e.g.
-        7-Sylow subgroup in PSL(7,2)), ascending chain and thus in turn
-        double coset calculations and further routines that rely on it
+        `IntermediateSubgroups` (e.g. 7-Sylow subgroup in PSL(7,2)),
+        ascending chain and thus in turn double coset calculations and
+        further routines that rely on it
 
-  - Fix `EqFloat` to return correct results,
-    instead of always returning `false`
-    ([#1370](https://github.com/gap-system/gap/pull/1370))
+  - Fix `EqFloat` to return correct results, instead of always returning
+    `false` ([#1370](https://github.com/gap-system/gap/pull/1370))
 
   - Various changes, including fixes for `CallFuncList`
     ([#1417](https://github.com/gap-system/gap/pull/1417))
@@ -1786,8 +1777,7 @@ Fixed bugs:
   - Check the arguments to `IsInjectiveListTrans` to prevent crashes
     ([#1435](https://github.com/gap-system/gap/pull/1435))
 
-  - Change `BlownUpMat` to return fail for
-    certain invalid inputs
+  - Change `BlownUpMat` to return fail for certain invalid inputs
     ([#1488](https://github.com/gap-system/gap/pull/1488))
 
   - Fixes for creating Green's classes of semigroups
@@ -1806,13 +1796,13 @@ Fixed bugs:
   - Fix for computing quotients of certain algebra modules
     ([#1669](https://github.com/gap-system/gap/pull/1669))
 
-  - Fix an error in the default method for `PositionNot` ([#1672](https://github.com/gap-system/gap/pull/1672))
+  - Fix an error in the default method for `PositionNot`
+    ([#1672](https://github.com/gap-system/gap/pull/1672))
 
   - Improvements to Rees matrix semigroups code and new tests
     ([#1676](https://github.com/gap-system/gap/pull/1676))
 
-  - Fix `CodePcGroup` for the trivial
-    polycyclic group
+  - Fix `CodePcGroup` for the trivial polycyclic group
     ([#1679](https://github.com/gap-system/gap/pull/1679))
 
   - Fix `FroidurePinExtendedAlg` for partial permutation monoids
@@ -1821,30 +1811,28 @@ Fixed bugs:
   - Fix computing the radical of a zero dimensional associative algebra
     ([#1701](https://github.com/gap-system/gap/pull/1701))
 
-  - Fix a bug in `RadicalOfAlgebra` which
-    could cause a break loop for some associative algebras
+  - Fix a bug in `RadicalOfAlgebra` which could cause a break loop for
+    some associative algebras
     ([#1716](https://github.com/gap-system/gap/pull/1716))
 
   - Fix a recursion depth trap error when repeatedly calling `Test`
     ([#1753](https://github.com/gap-system/gap/pull/1753))
 
-  - Fix bugs in `PrimePGroup` for direct
-    products of p-groups
+  - Fix bugs in `PrimePGroup` for direct products of p-groups
     ([#1754](https://github.com/gap-system/gap/pull/1754))
 
-  - Fix `UpEnv` (available in break loops) when at
-    the bottom of the backtrace
-    ([#1780](https://github.com/gap-system/gap/pull/1780))
+  - Fix `UpEnv` (available in break loops) when at the bottom of the
+    backtrace ([#1780](https://github.com/gap-system/gap/pull/1780))
 
-  - Fix `IsomorphismPartialPermSemigroup` and `IsomorphismPartialPermMonoid` for permutation groups
-    with 0 generators
-    ([#1784](https://github.com/gap-system/gap/pull/1784))
+  - Fix `IsomorphismPartialPermSemigroup` and
+    `IsomorphismPartialPermMonoid` for permutation groups with 0
+    generators ([#1784](https://github.com/gap-system/gap/pull/1784))
 
-  - Fix `DisplaySemigroup` for
-    transformation semigroups
+  - Fix `DisplaySemigroup` for transformation semigroups
     ([#1785](https://github.com/gap-system/gap/pull/1785))
 
-  - Fix "no method found" errors in `MagmaWithOne` and `MagmaWithInverses`
+  - Fix "no method found" errors in `MagmaWithOne` and
+    `MagmaWithInverses`
     ([#1798](https://github.com/gap-system/gap/pull/1798))
 
   - Fix an error computing kernel of group homomorphism from fp group
@@ -1854,8 +1842,8 @@ Fixed bugs:
   - Fix an error in MTC losing components when copying a new augmented
     coset table ([#1809](https://github.com/gap-system/gap/pull/1809))
 
-  - Fix output of `Where` in a break loop, which
-    pointed at the wrong code line in some cases
+  - Fix output of `Where` in a break loop, which pointed at the wrong
+    code line in some cases
     ([#1814](https://github.com/gap-system/gap/pull/1814))
 
   - Fix the interaction of signals in GAP and the **IO** package
@@ -1882,15 +1870,13 @@ Fixed bugs:
   - Fix bug in `InstallFlushableValueFromFunction`
     ([#1920](https://github.com/gap-system/gap/pull/1920))
 
-  - Fix `ONanScottType` and introduce
-    `RestrictedInverseGeneralMapping`
+  - Fix `ONanScottType` and introduce `RestrictedInverseGeneralMapping`
     ([#1937](https://github.com/gap-system/gap/pull/1937))
 
-  - Fix `QuotientMod` documentation, and the
-    integer implementation. This partially reverts changes made in
-    version 4.7.8 in 2013. The documentation is now correct (resp.
-    consistent again), and several corner cases, e.g.
-    `QuotientMod(0,0,m)` now work correctly
+  - Fix `QuotientMod` documentation, and the integer implementation. This
+    partially reverts changes made in version 4.7.8 in 2013. The
+    documentation is now correct (resp. consistent again), and several
+    corner cases, e.g. `QuotientMod(0,0,m)` now work correctly
     ([#1991](https://github.com/gap-system/gap/pull/1991))
 
   - Fix `PositionProperty` with from \< 1
@@ -1899,9 +1885,8 @@ Fixed bugs:
   - Fix inefficiency when dealing with certain algebra modules
     ([#2058](https://github.com/gap-system/gap/pull/2058))
 
-  - Restrict capacity of plain lists to 2^28 in 32-bit and 2^60 in
-    64-bit builds
-    ([#2064](https://github.com/gap-system/gap/pull/2064))
+  - Restrict capacity of plain lists to 2^28 in 32-bit and 2^60 in 64-bit
+    builds ([#2064](https://github.com/gap-system/gap/pull/2064))
 
   - Fix crashes with very large heaps (\> 2 GB) on 32 bit systems, and
     work around a bug in `memmove` in 32-bit glibc versions which could
@@ -1912,8 +1897,9 @@ Fixed bugs:
     `LoadAllPackages`
     ([#2167](https://github.com/gap-system/gap/pull/2167)).
 
-  - Fix `TriangulizedMat([])` (see `TriangulizedMat` to return an empty list instead of producing an
-    error ([#2260](https://github.com/gap-system/gap/pull/2260)).
+  - Fix `TriangulizedMat([])` (see `TriangulizedMat` to return an empty
+    list instead of producing an error
+    ([#2260](https://github.com/gap-system/gap/pull/2260)).
 
   - Fix several potential (albeit rare) crashes related to garbage
     collection ([#2321](https://github.com/gap-system/gap/pull/2321),
@@ -2050,21 +2036,21 @@ team.
 
 Fixed bugs that could lead to incorrect results:
 
-  - Fixed a bug in `RepresentativeAction` producing incorrect answers for both symmetric
-    and alternating groups, with both `OnTuples`
-    and `OnSets`, by producing elements outside the
-    group. \[Reported by Mun See Chang\]
+  - Fixed a bug in `RepresentativeAction` producing incorrect answers for
+    both symmetric and alternating groups, with both `OnTuples` and
+    `OnSets`, by producing elements outside the group. (Reported by Mun
+    See Chang)
 
 Fixed bugs that could lead to break loops:
 
-  - Fixed a bug in `RepresentativeAction` for S\_n and A\_n acting on non-standard
+  - Fixed a bug in `RepresentativeAction` for S_n and A_n acting on non-standard
     domains.
 
 Other fixed bugs:
 
   - Fixed a problem with checking the path to a file when using the
-    default browser as a help viewer on Windows. \[Reported by Jack
-    Saunders\]
+    default browser as a help viewer on Windows. (Reported by Jack
+    Saunders)
 
 ### New and updated packages since GAP 4.8.7
 
@@ -2079,16 +2065,16 @@ has been renamed to **Groupoids**.
 
 Fixed bugs that could lead to incorrect results:
 
-  - Fixed a regression from GAP 4.7.6 when reading compressed files
-    after a workspace is loaded. Before the fix, if GAP is started
-    with the `-L` option (load workspace), using `ReadLine` on the input stream for a compressed file returned by
-    `InputTextFile` only returned the first
-    character. \[Reported by Bill Allombert\]
+  - Fixed a regression from GAP 4.7.6 when reading compressed files after
+    a workspace is loaded. Before the fix, if GAP is started with the
+    `-L` option (load workspace), using `ReadLine` on the input stream
+    for a compressed file returned by `InputTextFile` only returned the
+    first character. (Reported by Bill Allombert)
 
 Other fixed bugs:
 
   - Fixed compiler warning occurring when GAP is compiled with gcc
-    6.2.0. \[Reported by Bill Allombert\]
+    6.2.0. (Reported by Bill Allombert)
 
 ### New and updated packages since GAP 4.8.6
 
@@ -2097,12 +2083,11 @@ distribution. Additionally, the following package has been added for the
 redistribution with GAP:
 
   - **lpres** package (author: René Hartung, maintainer: Laurent
-    Bartholdi) to work with L-presented groups, namely groups given by a
-    finite generating set and a possibly infinite set of relations given
-    as iterates of finitely many seed relations by a finite set of
-    endomorphisms. The package implements nilpotent quotient,
-    Todd-Coxeter and Reidemeister-Schreier algorithms for such
-groups.
+    Bartholdi) to work with L-presented groups, namely groups given by
+    a finite generating set and a possibly infinite set of relations
+    given as iterates of finitely many seed relations by a finite set
+    of endomorphisms. The package implements nilpotent quotient,
+    Todd-Coxeter and Reidemeister-Schreier algorithms for such groups.
 
 
 ## GAP 4.8.6 (November 2016)
@@ -2113,7 +2098,7 @@ Fixed bugs that could lead to break loops:
 
   - Fixed regression in the GAP kernel code introduced in GAP
     4.8.5 and breaking `StringFile` ability to work with compressed
-    files. \[Reported by Bill Allombert\]
+    files. (Reported by Bill Allombert)
 
 
 ## GAP 4.8.5 (September 2016)
@@ -2133,7 +2118,7 @@ Fixed bugs that could lead to incorrect results:
 
   - A bug in the code for algebraic field extensions over non-prime
     fields that may cause, for example, a list of all elements of the
-    extension not being a duplicate-free. \[Reported by Huta Gana\]
+    extension not being a duplicate-free. (Reported by Huta Gana)
 
   - So far, `FileString` only wrote files of sizes less than 2G and did
     not indicate an error in case of larger strings. Now strings of any
@@ -2144,11 +2129,11 @@ Fixed bugs that could lead to break loops:
 
   - `NaturalHomomorphismByIdeal` was not reducing monomials before
     forming a quotient ring, causing a break loop on some inputs.
-    \[Reported by Dmytro Savchuk\]
+    (Reported by Dmytro Savchuk)
 
   - A bug in `DefaultInfoHandler` caused a break loop on startup with
     the setting `SetUserPreference( "InfoPackageLoadingLevel", 4
-    )`\`. \[Reported by Mathieu Dutour\]
+    )`\`. (Reported by Mathieu Dutour)
 
   - The `Iterator` for permutation groups was broken when the
     `StabChainMutable` of the group was not reduced, which can
@@ -2161,27 +2146,27 @@ Fixed bugs that could lead to break loops:
 
 New features:
 
-  - The GAP distribution now includes `bin/BuildPackages.sh`, a
-    script which can be started from the `pkg` directory via
-    `../bin/BuildPackages.sh` and will attempt to build as many packages
-    as possible. It replaces the `InstPackages.sh` script which was not
-    a part of the GAP distribution and had to be downloaded
-    separately from the GAP website. The new script is more robust
-    and simplifies adding new packages with binaries, as it requires no
-    adjustments if the new package supports the standard `./configure;
-    make` build procedure.
+  - The GAP distribution now includes `bin/BuildPackages.sh`, a script
+    which can be started from the `pkg` directory via
+    `../bin/BuildPackages.sh` and will attempt to build as many
+    packages as possible. It replaces the `InstPackages.sh` script
+    which was not a part of the GAP distribution and had to be
+    downloaded separately from the GAP website. The new script is more
+    robust and simplifies adding new packages with binaries, as it
+    requires no adjustments if the new package supports the standard
+    `./configure; make` build procedure.
 
 Improved and extended functionality:
 
-  - `SimpleGroup` now produces more informative error message in the
-  case when `AtlasGroup` could not load the requested group.
+  - `SimpleGroup` now produces more informative error message in the case
+    when `AtlasGroup` could not load the requested group.
 
-  - An info message with the suggestion to use `InfoPackageLoading` will now be displayed when
-    `LoadPackage` returns `fail` (unless
-    GAP is started with `-b` option).
+  - An info message with the suggestion to use `InfoPackageLoading` will
+    now be displayed when `LoadPackage` returns `fail` (unless GAP is
+    started with `-b` option).
 
-  - The build system will now enable C++ support in GMP only if a
-    working C++ compiler is detected.
+  - The build system will now enable C++ support in GMP only if a working
+    C++ compiler is detected.
 
   - More checks were added when embedding coefficient rings or rational
     numbers into polynomial rings in order to forbid adding polynomials
@@ -2195,32 +2180,31 @@ Fixed bugs that could lead to crashes:
 Fixed bugs that could lead to incorrect results:
 
   - Fixed an error in the code for partial permutations that occurred on
-    big-endian systems. \[Reported by Bill Allombert\]
+    big-endian systems. (Reported by Bill Allombert)
 
-  - Fixed the kernel method for `Remove` with one
-    argument, which failed to reduce the length of a list to the
-    position of the last bound entry. \[Reported by Peter Schauenburg\]
+  - Fixed the kernel method for `Remove` with one argument, which failed
+    to reduce the length of a list to the position of the last bound
+    entry. (Reported by Peter Schauenburg)
 
 Fixed bugs that could lead to break loops:
 
-  - Fixed the break loop while using `Factorization` on permutation groups by removing some old code that
-    relied on further caching in `Factorization`. \[Reported by Grahame
-    Erskine\]
+  - Fixed the break loop while using `Factorization` on permutation
+    groups by removing some old code that relied on further caching in
+    `Factorization`. (Reported by Grahame Erskine)
 
   - Fixed a problem with computation of maximal subgroups in an almost
-    simple group. \[Reported by Ramon Esteban Romero\]
+    simple group. (Reported by Ramon Esteban Romero)
 
-  - Added missing methods for `Intersection2`
-    when one of the arguments is an empty list. \[Reported by Wilf
-    Wilson\]
+  - Added missing methods for `Intersection2` when one of the arguments
+    is an empty list. (Reported by Wilf Wilson)
 
 Other fixed bugs:
 
-  - Fixed several bugs in `RandomPrimitivePolynomial`. \[Reported by Nusa Zidaric\]
+  - Fixed several bugs in `RandomPrimitivePolynomial`. (Reported by Nusa
+    Zidaric)
 
-  - Fixed several problems with `Random` on long
-    lists in 64-bit GAP
-installations.
+  - Fixed several problems with `Random` on long lists in 64-bit GAP
+    installations.
 
 
 ## GAP 4.8.3 (March 2016)
@@ -2229,22 +2213,21 @@ installations.
 
 New features:
 
-  - New function `TestPackage` to run standard
-    tests (if available) for a single package in the current GAP
-    session (also callable via `make testpackage PKGNAME=pkgname` to run
-    package tests in the same settings that are used for testing GAP
-    releases).
+  - New function `TestPackage` to run standard tests (if available) for a
+    single package in the current GAP session (also callable via `make
+    testpackage PKGNAME=pkgname` to run package tests in the same
+    settings that are used for testing GAP releases).
 
 Improved and extended functionality:
 
-  - `TestDirectory` now prints a special
-    status message to indicate the outcome of the test (this is
-    convenient for automated testing). If necessary, this message may be
-    suppressed by using the option `suppressStatusMessage`
+  - `TestDirectory` now prints a special status message to indicate the
+    outcome of the test (this is convenient for automated testing). If
+    necessary, this message may be suppressed by using the option
+    `suppressStatusMessage`
 
   - Improved output of tracing methods (which may be invoked, for
-    example, with `TraceAllMethods`) by
-    displaying filename and line number in some more cases.
+    example, with `TraceAllMethods`) by displaying filename and line
+    number in some more cases.
 
 Changed functionality:
 
@@ -2253,28 +2236,27 @@ Changed functionality:
 Fixed bugs that could lead to incorrect results:
 
   - Fallback methods for conjugacy classes, that were never intended for
-    infinite groups, now use `IsFinite` filter to
-    prevent them being called for infinite groups. \[Reported by Gabor
-    Horvath\]
+    infinite groups, now use `IsFinite` filter to prevent them being
+    called for infinite groups. (Reported by Gabor Horvath)
 
 Fixed bugs that could lead to break loops:
 
   - Calculating stabiliser for the alternating group caused a break loop
     in the case when it defers to the corresponding symmetric group.
 
-  - It was not possible to use `DotFileLatticeSubgroups` for a trivial group. \[Reported by Sergio
-    Siccha\]
+  - It was not possible to use `DotFileLatticeSubgroups` for a trivial
+    group. (Reported by Sergio Siccha)
 
-  - A break loop while computing `AutomorphismGroup` for `TransitiveGroup(12,269)`. \[Reported by
-    Ignat Soroko\]
+  - A break loop while computing `AutomorphismGroup` for
+    `TransitiveGroup(12,269)`. (Reported by Ignat Soroko)
 
   - A break loop while computing conjugacy classes of `PSL(6,4)`.
-    \[Reported by Martin Macaj\]
+    (Reported by Martin Macaj)
 
 Other fixed bugs:
 
-  - Fix for using Firefox as a default help viewer with `SetHelpViewer`. \[Reported by Tom
-McDonough\]
+  - Fix for using Firefox as a default help viewer with `SetHelpViewer`.
+    (Reported by Tom McDonough)
 
 
 ## GAP 4.8.2 (February 2016)
@@ -2285,9 +2267,10 @@ The GAP development repository is now hosted on GitHub at
 <https://github.com/gap-system/gap>, and GAP 4.8 is the first major GAP
 release made from this repository. The public issue tracker for the core GAP
 system is located at <https://github.com/gap-system/gap/issues>, and you may
-use appropriate milestones from <https://github.com/gap-system/gap/milestones>
-to see all changes that were introduced in corresponding GAP releases. An
-overview of the most significant ones is provided below.
+use appropriate milestones from
+<https://github.com/gap-system/gap/milestones> to see all changes that were
+introduced in corresponding GAP releases. An overview of the most
+significant ones is provided below.
 
 ### Changes in the core GAP system introduced in GAP 4.8
 
@@ -2296,15 +2279,16 @@ New features:
   - Added support for profiling which tracks how much time in spent on
     each line of GAP code. This can be used to show where code is
     spending a long time and also check which lines of code are even
-    executed. See the documentation for `ProfileLineByLine` and `CoverageLineByLine` for details on generating profiles, and the
+    executed. See the documentation for `ProfileLineByLine` and
+    `CoverageLineByLine` for details on generating profiles, and the
     **Profiling** package for transforming these profiles into a
     human-readable form.
 
   - Added ability to install (in the library or packages) methods for
-    accessing lists using multiple indices and indexing into lists using
-    indices other than positive small integers. Such methods could
-    allow, for example, to support expressions like
-    
+    accessing lists using multiple indices and indexing into lists
+    using indices other than positive small integers. Such methods
+    could allow, for example, to support expressions like
+
         m[1,2];
         m[1,2,3] := x;
         IsBound(m["a","b",Z(7)]);
@@ -2312,13 +2296,13 @@ New features:
 
   - Added support for partially variadic functions to allow function
     expressions like
-    
+
         function( a, b, c, x... ) ... end;
-    
+
     which would require at least three arguments and assign the first
     three to a, b and c and then a list containing any remaining ones to
     x.
-    
+
     The former special meaning of the argument arg is still supported
     and is now equivalent to `function( arg... )`, so no changes in the
     existing code are required.
@@ -2332,33 +2316,33 @@ New features:
   - GAP now displays the filename and line numbers of statements in
     backtraces when entering the break loop.
 
-  - Introduced `TestDirectory` function to
-    find (recursively) all `.tst` files from a given directory or a list
-    of directories and run them using `Test`.
+  - Introduced `TestDirectory` function to find (recursively) all `.tst`
+    files from a given directory or a list of directories and run them
+    using `Test`.
 
 Improved and extended functionality:
 
   - Method tracing shows the filename and line of function during
     tracing.
 
-  - `TraceAllMethods` and
-    `UntraceAllMethods` to turn on and
-    off tracing all methods in GAP. Also, for the uniform approach
-    `UntraceImmediateMethods` has
-    been added as an equivalent of `TraceImmediateMethods(false)`.
+  - `TraceAllMethods` and `UntraceAllMethods` to turn on and off tracing
+    all methods in GAP. Also, for the uniform approach
+    `UntraceImmediateMethods` has been added as an equivalent of
+    `TraceImmediateMethods(false)`.
 
-  - The most common cases of `AddDictionary`
-    on three arguments now bypass method selection, avoiding the cost of
-    determining homogeneity for plain lists of mutable objects.
+  - The most common cases of `AddDictionary` on three arguments now
+    bypass method selection, avoiding the cost of determining
+    homogeneity for plain lists of mutable objects.
 
   - Improved methods for symmetric and alternating groups in the
     "natural" representations and removed some duplicated code.
 
   - Package authors may optionally specify the source code repository,
     issue tracker and support email address for their package using new
-    components in the `PackageInfo.g` file, which will be used to create
-    hyperlinks from the package overview page (see `PackageInfo.g` from
-    the Example package which you may use as a template).
+    components in the `PackageInfo.g` file, which will be used to
+    create hyperlinks from the package overview page (see
+    `PackageInfo.g` from the Example package which you may use as a
+    template).
 
 Changed functionality:
 
@@ -2371,41 +2355,41 @@ Changed functionality:
     identifiers. So if you have any variables or functions using that
     name, you will have to change it in GAP 4.8.
 
-  - There was inconsistent use of the following properties of
-    semigroups: `IsGroupAsSemigroup`, `IsMonoidAsSemigroup`, and
+  - There was inconsistent use of the following properties of semigroups:
+    `IsGroupAsSemigroup`, `IsMonoidAsSemigroup`, and
     `IsSemilatticeAsSemigroup`. `IsGroupAsSemigroup` was true for
     semigroups that mathematically defined a group, and for semigroups
-    in the category `IsGroup`;
-    `IsMonoidAsSemigroup` was only true for semigroups that
-    mathematically defined monoids, but did not belong to the category
-    `IsMonoid`; and `IsSemilatticeAsSemigroup` was
+    in the category `IsGroup`; `IsMonoidAsSemigroup` was only true for
+    semigroups that mathematically defined monoids, but did not belong
+    to the category `IsMonoid`; and `IsSemilatticeAsSemigroup` was
     simply a property of semigroups, as there is no category
     `IsSemilattice`.
-    
+
     From version 4.8 onwards, `IsSemilatticeAsSemigroup` is renamed to
-    `IsSemilattice`, and `IsMonoidAsSemigroup` returns true for
-    semigroups in the category `IsMonoid`.
-    
+        `IsSemilattice`, and `IsMonoidAsSemigroup` returns true for
+        semigroups in the category `IsMonoid`.
+
     This way all of the properties of the type `IsXAsSemigroup` are
-    consistent. It should be noted that the only methods installed for
-    `IsMonoidAsSemigroup` belong to the **Semigroups** and **Smallsemi**
-    packages.
+        consistent. It should be noted that the only methods installed
+        for `IsMonoidAsSemigroup` belong to the **Semigroups** and
+        **Smallsemi** packages.
 
   - `ReadTest` became obsolete and for backwards compatibility is
-    replaced by `Test` with the option to compare the
-    output up to whitespaces.
+    replaced by `Test` with the option to compare the output up to
+    whitespaces.
 
-  - The function \`ErrorMayQuit\`, which differs from `Error` by not allowing execution to continue, has been
-    renamed to `ErrorNoReturn`.
+  - The function `ErrorMayQuit`, which differs from `Error` by not
+    allowing execution to continue, has been renamed to
+    `ErrorNoReturn`.
 
 Fixed bugs:
 
   - A combination of two bugs could lead to a segfault. First off,
-    `NullMat` (and various other GAP functions), when asked to
-    produce matrix over a small field, called `ConvertToMatrixRep`.
-    After this, if the user tried to change one of the entries to a
-    value from a larger extension field, this resulted in an error.
-    (This is now fixed).
+    `NullMat` (and various other GAP functions), when asked to produce
+    matrix over a small field, called `ConvertToMatrixRep`. After this,
+    if the user tried to change one of the entries to a value from a
+    larger extension field, this resulted in an error. (This is now
+    fixed).
 
     Unfortunately, the C code catching this error had a bug and allowed
     users to type "return" to continue while ignoring the conversion
@@ -2446,12 +2430,12 @@ redistribution since the release of GAP 4.7.8 are:
   - **CAP** (Categories, Algorithms, Programming) package by Sebastian
     Gutsche, Sebastian Posur and Øystein Skartsæterhagen, together with
     three associated packages **GeneralizedMorphismsForCAP**,
-    **LinearAlgebraForCAP** and **ModulePresentationsForCAP** (all three
-    - by Sebastian Gutsche and Sebastian Posur).
+    **LinearAlgebraForCAP** and **ModulePresentationsForCAP** (all
+    three - by Sebastian Gutsche and Sebastian Posur).
 
-  - **Digraphs** package by Jan De Beule, Julius Jonušas, James
-    Mitchell, Michael Torpey and Wilf Wilson, which provides
-    functionality to work with graphs, digraphs, and multidigraphs.
+  - **Digraphs** package by Jan De Beule, Julius Jonušas, James Mitchell,
+    Michael Torpey and Wilf Wilson, which provides functionality to
+    work with graphs, digraphs, and multidigraphs.
 
   - **FinInG** package by John Bamberg, Anton Betten, Philippe Cara, Jan
     De Beule, Michel Lavrauw and Max Neunhöffer for computation in
@@ -2466,8 +2450,8 @@ redistribution since the release of GAP 4.7.8 are:
     solve integral linear inequalities.
 
   - **matgrp** package by Alexander Hulpke, which provides an interface
-    to the solvable radical functionality for matrix groups, building on
-    constructive recognition.
+    to the solvable radical functionality for matrix groups, building
+    on constructive recognition.
 
   - **NormalizInterface** package by Sebastian Gutsche, Max Horn and
     Christof Söger, which provides a GAP interface to **Normaliz**,
@@ -2476,7 +2460,8 @@ redistribution since the release of GAP 4.7.8 are:
     configurations, lattice polytopes, and rational cones.
 
   - **profiling** package by Christopher Jefferson for transforming
-    profiles produced by `ProfileLineByLine` and `CoverageLineByLine` into a human-readable form.
+    profiles produced by `ProfileLineByLine` and `CoverageLineByLine`
+    into a human-readable form.
 
   - **Utils** package by Sebastian Gutsche, Stefan Kohl and Christopher
     Wensley, which provides a collection of utility functions gleaned
@@ -2484,8 +2469,7 @@ redistribution since the release of GAP 4.7.8 are:
 
   - **XModAlg** package by Zekeriya Arvasi and Alper Odabas, which
     provides a collection of functions for computing with crossed
-    modules and Cat1-algebras and morphisms of these
-structures.
+    modules and Cat1-algebras and morphisms of these structures.
 
 
 ## GAP 4.7.8 (June 2015)
@@ -2493,7 +2477,7 @@ structures.
 Fixed bugs which could lead to incorrect results:
 
   - Added two groups of degree 1575 which were missing in the library
-    of first primitive groups. \[Reported by Gordon Royle\]
+    of first primitive groups. (Reported by Gordon Royle)
 
   - Fixed the error in the code for algebra module elements in packed
     representation caused by the use of `Objectify` with the type
@@ -2501,11 +2485,11 @@ Fixed bugs which could lead to incorrect results:
     the reference manual. The problem was that after calculating
     `u+v` where one of the summands was known to be zero, this
     knowledge was wrongly passed to the sum via the type.
-    \[Reported by Istvan Szollosi\]
+    (Reported by Istvan Szollosi)
 
   - Fixed a bug in `PowerMod` causing wrong results for univariate
     Laurent polynomials when the two polynomial arguments are
-    stored with the same non-zero shift. \[Reported by Max Horn\]
+    stored with the same non-zero shift. (Reported by Max Horn)
 
 Furthermore, new packages that have been added to the redistribution
 since the release of GAP 4.7.7 are:
@@ -2532,59 +2516,59 @@ New features:
   - Introduced some arithmetic operations for infinity and negative
     infinity
 
-  - Introduced new property `IsGeneratorsOfSemigroup` which reflects wheter the list or
-    collection generates a semigroup.
+  - Introduced new property `IsGeneratorsOfSemigroup` which reflects
+    wheter the list or collection generates a semigroup.
 
 Fixed bugs which could lead to incorrect results:
 
-  - Fixed a bug in `Union` (actually, in the internal library
-    function `JoinRanges`) caused by downward running ranges.
-    \[Reported by Matt Fayers\]
+  - Fixed a bug in `Union` (actually, in the internal library function
+    `JoinRanges`) caused by downward running ranges. (Reported by Matt
+    Fayers)
 
-  - Fixed a bug where recursive records might be printed with the
-    wrong component name, coming from component names being ordered
-    differently in two different pieces of code. \[Reported by
-    Thomas Breuer\]
+  - Fixed a bug where recursive records might be printed with the wrong
+    component name, coming from component names being ordered
+    differently in two different pieces of code. (Reported by Thomas
+    Breuer)
 
-  - The usage of `abs` in `src/gmpints.c` was replaced by `AbsInt`.
-    The former is defined to operate on 32-bit integers even if GAP
-    is compiled in 64-bit mode. That lead to truncating GAP
-    integers and caused a crash in `RemInt`, reported by Willem De
-    Graaf and Heiko Dietrich. Using `AbsInt` fixes the crash, and
-    ensures the correct behaviour on 32-bit and 64-bit builds.
+  - The usage of `abs` in `src/gmpints.c` was replaced by `AbsInt`. The
+    former is defined to operate on 32-bit integers even if GAP is
+    compiled in 64-bit mode. That lead to truncating GAP integers and
+    caused a crash in `RemInt`, reported by Willem De Graaf and Heiko
+    Dietrich. Using `AbsInt` fixes the crash, and ensures the correct
+    behaviour on 32-bit and 64-bit builds.
 
 Fixed bugs that could lead to break loops:
 
-  - A problem with `ProbabilityShapes`
-    not setting frequencies list for small degrees. \[Reported by Daniel
-    Błażewicz and independently by Mathieu Gagne\]
+  - A problem with `ProbabilityShapes` not setting frequencies list for
+    small degrees. (Reported by Daniel Błażewicz and independently by
+    Mathieu Gagne)
 
-  - An error when generating a free monoid of rank infinity. \[Reported
-    by Nick Loughlin\]
+  - An error when generating a free monoid of rank infinity. (Reported by
+    Nick Loughlin)
 
   - Several bugs with the code for Rees matrix semigroups not handling
     trivial cases properly.
 
-  - A bug in `IsomorphismTypeInfoFiniteSimpleGroup` affecting one particular group
-    due to a misformatting in a routine that translates between the
-    Chevalley type and the name used in the table (in this case, `"T"`
-    was used instead of `["T"]`). \[Reported by Petr Savicky\]
+  - A bug in `IsomorphismTypeInfoFiniteSimpleGroup` affecting one
+    particular group due to a misformatting in a routine that
+    translates between the Chevalley type and the name used in the
+    table (in this case, `"T"` was used instead of `["T"]`). (Reported
+    by Petr Savicky)
 
 Other fixed bugs:
 
-  - The `Basis` method for full homomorphism spaces
-    of linear mappings did not set basis vectors which could be obtained
-    by `GeneratorsOfLeftModule`.
+  - The `Basis` method for full homomorphism spaces of linear mappings
+    did not set basis vectors which could be obtained by
+    `GeneratorsOfLeftModule`.
 
-  - A problem with `GaloisType` entering an
-    infinite loop in the routine for approximating a root. \[Reported by
-    Daniel Błażewicz\]
+  - A problem with `GaloisType` entering an infinite loop in the routine
+    for approximating a root. (Reported by Daniel Błażewicz)
 
-  - Fixed the crash when GAP is called when the environment
-    variables `HOME` or `PATH` are unset. \[Reported by Bill Allombert\]
+  - Fixed the crash when GAP is called when the environment variables
+    `HOME` or `PATH` are unset. (Reported by Bill Allombert)
 
 Furthermore, new packages that have been added to the redistribution
-since the release of GAP 4.7.6 are:
+    since the release of GAP 4.7.6 are:
 
   - **json** package by Christopher Jefferson, providing a mapping
     between the **JSON** markup language and GAP
@@ -2598,34 +2582,31 @@ since the release of GAP 4.7.6 are:
 
 Fixed bugs which could lead to incorrect results:
 
-  - A bug that may cause `ShortestVectors`
-    to return an incomplete list. \[Reported by Florian Beye\]
+  - A bug that may cause `ShortestVectors` to return an incomplete list.
+    (Reported by Florian Beye)
 
-  - A bug that may lead to incorrect results and infinite loops when
-    GAP is compiled without GMP support using gcc 4.9.
+  - A bug that may lead to incorrect results and infinite loops when GAP
+    is compiled without GMP support using gcc 4.9.
 
-  - A bug that may cause `OrthogonalEmbeddings` to return an incomplete result. \[Reported by
-    Benjamin Sambale\]
+  - A bug that may cause `OrthogonalEmbeddings` to return an incomplete
+    result. (Reported by Benjamin Sambale)
 
 Fixed bugs that could lead to break loops:
 
-  - `ClosureGroup` should be used instead of
-    `ClosureSubgroup` in case there is no
-    parent group, otherwise some calculations such as e.g.
-    `NormalSubgroups` may fail. \[Reported
-    by Dmitrii Pasechnik\]
+  - `ClosureGroup` should be used instead of `ClosureSubgroup` in case
+    there is no parent group, otherwise some calculations such as e.g.
+    `NormalSubgroups` may fail. (Reported by Dmitrii Pasechnik)
 
-  - Fixed a line in the code that used a hard-coded identity
-    permutation, not a generic identity element of a group. \[Reported
-    by Toshio Sumi\]
+  - Fixed a line in the code that used a hard-coded identity permutation,
+    not a generic identity element of a group. (Reported by Toshio
+    Sumi)
 
   - Fixed a problem in the new code for calculating maximal subgroups
     that caused a break loop for some groups from the transitive groups
-    library. \[Reported by Petr Savicky\]
+    library. (Reported by Petr Savicky)
 
-  - Fixed a problem in `ClosureSubgroup`
-    not accepting some groups without `Parent`.
-    \[Reported by Inneke van Gelder\]
+  - Fixed a problem in `ClosureSubgroup` not accepting some groups
+    without `Parent`. (Reported by Inneke van Gelder)
 
 Other fixed bugs:
 
@@ -2640,10 +2621,10 @@ Other fixed bugs:
 
 Fixed bugs which could lead to incorrect results:
 
-  - `InstallValue` cannot handle immediate
-    values, characters or booleans for technical reasons. A check for
-    such values was introduced to trigger an error message and prevent
-    incorrect results caused by this. \[Reported by Sebastian Gutsche\]
+  - `InstallValue` cannot handle immediate values, characters or booleans
+    for technical reasons. A check for such values was introduced to
+    trigger an error message and prevent incorrect results caused by
+    this. (Reported by Sebastian Gutsche)
 
   - `KnowsDictionary` and `LookupDictionary` methods for
     `IsListLookupDictionary` were using `PositionFirstComponent`; the
@@ -2654,33 +2635,34 @@ Fixed bugs which could lead to incorrect results:
 Other fixed bugs:
 
   - A bug in `DirectProductElementsFamily` which used
-    `CanEasilyCompareElements`
-    instead of `CanEasilySortElements`.
+    `CanEasilyCompareElements` instead of `CanEasilySortElements`.
 
   - Fixed wrong `Infolevel` message that caused a break loop for some
     automorphism group computations.
 
-  - Fixed an error that sometimes caused a break loop in `HallSubgroup`. \[Reported by Benjamin Sambale\]
+  - Fixed an error that sometimes caused a break loop in `HallSubgroup`.
+    (Reported by Benjamin Sambale)
 
   - Fixed a rare error in computation of conjugacy classes of a finite
     group by homomorphic images, providing fallback to a default
     algorithm.
 
-  - Fixed an error in the calculation of Frattini subgroup in the case
-    of the trivial radical.
+  - Fixed an error in the calculation of Frattini subgroup in the case of
+    the trivial radical.
 
   - Several minor bugs were fixed in the documentation, kernel, and
     library code for transformations.
 
-  - Fixed errors in `NumberPerfectGroups` and `NumberPerfectLibraryGroups` not being aware that there are no
+  - Fixed errors in `NumberPerfectGroups` and
+    `NumberPerfectLibraryGroups` not being aware that there are no
     perfect groups of odd order.
 
-  - Restored the ability to build GAP on OS X 10.4 and 10.5 which
-    was accidentally broken in the previous GAP release by using the
-    build option not supported by these versions.
+  - Restored the ability to build GAP on OS X 10.4 and 10.5 which was
+    accidentally broken in the previous GAP release by using the build
+    option not supported by these versions.
 
-  - Fixed some problems for ia64 and sparc architectures. \[Reported by
-    Bill Allombert and Volker Braun\]
+  - Fixed some problems for ia64 and sparc architectures. (Reported by
+    Bill Allombert and Volker Braun)
 
 New package added for the redistribution with GAP:
 
@@ -2701,11 +2683,11 @@ fix caused error messages in one of the packages.
 Fixed bugs which could lead to incorrect results:
 
   - Incorrect result returned by `AutomorphismGroup(PSp(4,2^n))`.
-    \[Reported by Anvita\]
+    (Reported by Anvita)
 
-  - The `Order` method for group homomorphisms newly
-    introduced in GAP 4.7 had a bug that caused it to sometimes
-    return incorrect results. \[Reported by Benjamin Sambale\]
+  - The `Order` method for group homomorphisms newly introduced in
+    GAP 4.7 had a bug that caused it to sometimes return incorrect
+    results. (Reported by Benjamin Sambale)
 
 Fixed bugs that could lead to break loops:
 
@@ -2714,18 +2696,18 @@ Fixed bugs that could lead to break loops:
     that was first included in GAP 4.7. Some minor corrections were
     made in the documentation for transformations.
 
-  - Break loop in `IsomorphismFpMonoid` when prefixes in generators
-    names were longer than one letter. \[Reported by Dmytro Savchuk and
-    Yevgen Muntyan\]
+  - Break loop in `IsomorphismFpMonoid` when prefixes in generators names
+    were longer than one letter. (Reported by Dmytro Savchuk and Yevgen
+    Muntyan)
 
   - Break loop while displaying the result of
-    `MagmaWithInversesByMultiplicationTable`. \[Reported by Grahame
-    Erskine\]
+    `MagmaWithInversesByMultiplicationTable`. (Reported by Grahame
+    Erskine)
 
 Improved functionality:
 
   - Better detection of UTF-8 terminal encoding on some systems.
-    \[Suggested by Andries Brouwer\]
+    (Suggested by Andries Brouwer)
 
 
 ## GAP 4.7.2 (December 2013)
@@ -2759,12 +2741,12 @@ Improved and extended functionality:
 
   - To illustrate the improvements listed above, one could try, for
     example
-    
+
         g:=WreathProduct(MathieuGroup(11),Group((1,2)));
         Length(ConjugacyClassesSubgroups(g));
-    
+
     and
-    
+
         g:=SemidirectProduct(GL(3,5),GF(5)^3);
         g:=Image(IsomorphismPermGroup(g));
         MaximalSubgroupClassReps(g);
@@ -2776,7 +2758,7 @@ Improved and extended functionality:
     easily verified equality exp(G) = exp(P\_1) x ... x exp(P\_k). This
     is usually at least as fast and in many cases orders of magnitude
     faster.
-    
+
         gap> G:=SmallGroup(2^7*9,33);;
         gap> H:=DirectProduct(G, ElementaryAbelianGroup(2^10));;
         gap> Exponent(H); # should take at most a few milliseconds
@@ -2794,7 +2776,7 @@ Improved and extended functionality:
     transformations and partial permutations, and taking products, and
     so are also implemented in the kernel. The new implementations are
     largely backwards compatible; some exceptions are given below.
-    
+
     The degree of a transformation `f` is usually defined as the largest
     positive integer where `f` is defined. In previous versions of
     GAP, transformations were only defined on positive integers less
@@ -2803,39 +2785,39 @@ Improved and extended functionality:
     exceeding its degree. Starting with GAP 4.7, transformations
     behave more like permutations, in that they fix unspecified points
     and it is possible to multiply arbitrary transformations.
-    
+
       - in the display of a transformation, the trailing fixed points
         are no longer printed. More precisely, in the display of a
         transformation `f` if `n` is the largest value such that
         `n^f<>n` or `i^f=n` for some `i<>n`, then the values exceeding
         `n` are not printed.
-    
+
       - the display for semigroups of transformations now includes more
         information, for example `<transformation semigroup on 10 pts
         with 10 generators>` and `<inverse partial perm semigroup on 10
         pts with 10 generators>`.
-    
+
       - transformations which define a permutation can be inverted, and
         groups of transformations can be created.
-    
+
     Further information regarding transformations and partial
     permutations, can be found in the relevant chapters of the reference
     manual.
-    
+
     The code for Rees matrix semigroups has been completely rewritten to
     fix the numerous bugs in the previous versions. The display of a
     Rees matrix semigroup has also been improved to include the numbers
     of rows and columns, and the underlying semigroup. Again the new
     implementations should be backwards compatible with the exception
     that the display is different.
-    
+
     The code for magmas with a zero adjoined has been improved so that
     it is possible to access more information about the original magma.
     The display has also been changed to indicate that the created magma
     is a magma with zero adjoined (incorporating the display of the
     underlying magma). Elements of a magma with zero are also printed so
     that it is clear that they belong to a magma with zero.
-    
+
     If a semigroup is created by generators in the category
     IsMultiplicativeElementWithOneCollection and
     CanEasilyCompareElements, then it is now checked if the One of the
@@ -2852,8 +2834,8 @@ Improved and extended functionality:
     may be provided, e.g. by the **Polycyclic** package.
 
   - The message about halving the pool size at startup is only shown
-    when `-D` command line option is used. \[Suggested by Volker
-    Braun\]
+    when `-D` command line option is used. (Suggested by Volker
+    Braun)
 
   - An info class called `InfoObsolete` with the default level 0 is
     introduced. Setting it to 1 will trigger warnings at runtime if
@@ -2871,45 +2853,44 @@ Improved and extended functionality:
 
   - It is now possible to compile GAP with user-supplied `CFLAGS`
     which now will not be overwritten by GAP default settings.
-    \[Suggested by Jeroen Demeyer\]
+    (Suggested by Jeroen Demeyer)
 
 Fixed bugs:
 
-  - `Union` had O(n^3) behaviour when given many
-    ranges (e.g. it could take 10 seconds to find a union of 1000
-    1-element sets). The new implementation reduces that to O(n log n)
-    (and 4ms for the 10 second example), at the cost of not merging
-    ranges as well as before in some rare cases.
+  - `Union` had O(n^3) behaviour when given many ranges (e.g. it could
+    take 10 seconds to find a union of 1000 1-element sets). The new
+    implementation reduces that to O(n log n) (and 4ms for the 10
+    second example), at the cost of not merging ranges as well as
+    before in some rare cases.
 
   - `IsLatticeOrderBinaryRelation` only checked the existence of upper
     bounds but not the uniqueness of the least upper bound (and dually
     for lower bounds), so in some cases it could return the wrong
-    answer. \[Reported by Attila Egri-Nagy\]
+    answer. (Reported by Attila Egri-Nagy)
 
-  - `LowIndexSubgroupsFpGroup`
-    triggered a break loop if the list of generators of the 2nd argument
-    contained the identity element of the group. \[Reported by Ignat
-    Soroko\]
+  - `LowIndexSubgroupsFpGroup` triggered a break loop if the list of
+    generators of the 2nd argument contained the identity element of
+    the group. (Reported by Ignat Soroko)
 
   - Fixed regression in heuristics used by
     `NaturalHomomorphismByNormalSubgroup` that could produce a
     permutation representation of an unreasonably large degree.
-    \[Reported by Izumi Miyamoto\]
+    (Reported by Izumi Miyamoto)
 
-  - Fixed inconsistent behaviour of `QuotientMod( Integers, r, s, m )`
-    in the case where s and m are not coprime. This fix also corrects
-    the division behaviour of `ZmodnZ` objects, see `QuotientMod` and `ZmodnZ`.
-    \[Reported by Mark Dickinson\]
+  - Fixed inconsistent behaviour of `QuotientMod( Integers, r, s, m )` in
+    the case where s and m are not coprime. This fix also corrects the
+    division behaviour of `ZmodnZ` objects, see `QuotientMod` and
+    `ZmodnZ`. (Reported by Mark Dickinson)
 
-  - Fixed an oversight in the loading process causing `OnQuit` not resetting the options stack after exiting
-    the break loop.
+  - Fixed an oversight in the loading process causing `OnQuit` not
+    resetting the options stack after exiting the break loop.
 
   - Empty strings were treated slightly differently than other strings
     in the GAP kernel, for historical reasons. This resulted in
     various inconsistencies. For example, `IsStringRep("")` returned
     true, but a method installed for arguments of type `IsStringRep`
     would NOT be invoked when called with an empty string.
-    
+
     We remove this special case in the GAP kernel (which dates back
     the very early days of GAP 4 in 1996). This uncovered one issue
     in the kernel function `POSITION_SUBSTRING` (when calling it with an
@@ -2920,44 +2901,42 @@ Fixed bugs:
     left to the user was to exit GAP via Ctrl-D. For example,
     entering four dots with spaces between them on the GAP prompt
     and then pressing the return key caused GAP to exit.
-    
+
     The reason was (ironically) an error check in the innards of the
     float parser code which invoked the GAP `Error()` function at a
     point where it should not have.
 
-  - Removing the last character in a string was supposed to overwrite
-    the old removed character in memory with a zero byte, but failed to
-    do so due to an off-by-one error. For most GAP operations, this
-    has no visible effect, except for those which directly operate on
-    the underlying memory representation of strings. For example, when
-    trying to use such a string to reference a record entry, a (strange)
-    error could be triggered.
+  - Removing the last character in a string was supposed to overwrite the
+    old removed character in memory with a zero byte, but failed to do
+    so due to an off-by-one error. For most GAP operations, this has no
+    visible effect, except for those which directly operate on the
+    underlying memory representation of strings. For example, when
+    trying to use such a string to reference a record entry, a
+    (strange) error could be triggered.
 
-  - `ViewString` and `DisplayString` are now handling strings, characters and immediate
-    FFEs in a consistent manner.
+  - `ViewString` and `DisplayString` are now handling strings, characters
+    and immediate FFEs in a consistent manner.
 
   - Multiple fixes to the build process for less common Debian platforms
-    (arm, ia64, mips, sparc, GNU/Hurd). \[Suggested by Bill Allombert\]
+    (arm, ia64, mips, sparc, GNU/Hurd). (Suggested by Bill Allombert)
 
-  - Fixes for several regressions in the `gac` script. \[Suggested by
-    Bill Allombert\]
+  - Fixes for several regressions in the `gac` script. (Suggested by Bill
+    Allombert)
 
 Changed functionality:
 
-  - It is not possible now to call `WreathProduct` with 2nd argument H not being a permutation group,
-    without using the 3rd argument specifying the permutation
-    representation. This is an incompatible change but it will produce
-    an error instead of a wrong result. The former behaviour of
-    `WreathProduct` may now be achieved by
-    using `StandardWreathProduct`
-    which returns the wreath product for the (right regular) permutation
-    action of H on its elements.
+  - It is not possible now to call `WreathProduct` with 2nd argument H
+    not being a permutation group, without using the 3rd argument
+    specifying the permutation representation. This is an incompatible
+    change but it will produce an error instead of a wrong result. The
+    former behaviour of `WreathProduct` may now be achieved by using
+    `StandardWreathProduct` which returns the wreath product for the
+    (right regular) permutation action of H on its elements.
 
-  - The function `ViewLength` to specify the maximal number of lines
-    that are printed in `ViewObj` became obsolete,
-    since there was already a user preference `ViewLength` to specify
-    this. The value of this preference is also accessible in
-    `GAPInfo.ViewLength`.
+  - The function `ViewLength` to specify the maximal number of lines that
+    are printed in `ViewObj` became obsolete, since there was already a
+    user preference `ViewLength` to specify this. The value of this
+    preference is also accessible in `GAPInfo.ViewLength`.
 
 ### New and updated packages since GAP 4.6.5
 
@@ -3045,16 +3024,16 @@ Improved functionality:
 Fixed bugs which could lead to incorrect results:
 
   - `IntHexString` wrongly produced a large integer when there were
-    too many leading zeros. \[Reported by Joe Bohanon\]
+    too many leading zeros. (Reported by Joe Bohanon)
 
 Fixed bugs that could lead to break loops:
 
   - A bug that may occur in some cases while calling
-    `TransitiveIdentification`. \[Reported by Izumi Miyamoto\]
+    `TransitiveIdentification`. (Reported by Izumi Miyamoto)
 
   - The new code for semidirect products of permutation groups,
     introduced in GAP 4.6, had a bug which was causing problems for
-    `Projection`. \[Reported by Graham Ellis\]
+    `Projection`. (Reported by Graham Ellis)
 
 
 ## GAP 4.6.4 (April 2013)
@@ -3069,35 +3048,35 @@ New functionality:
 Fixed bugs which could lead to incorrect results:
 
   - Fixed the bug in `NewmanInfinityCriterion` which may cause
-    returning `true` instead of `false`. \[Reported by Lev
-    Glebsky\]
+    returning `true` instead of `false`. (Reported by Lev
+    Glebsky)
 
 Fixed bugs which could lead to crashes:
 
   - Fixed the kernel method for `Remove` which did not raise an error
     in case of empty lists, but corrupted the object. The error
-    message in a library method is also improved. \[Reported by
-    Roberto Ràdina\]
+    message in a library method is also improved. (Reported by
+    Roberto Ràdina)
 
 Fixed bugs that could lead to break loops:
 
   - Fixed requirements in a method to multiply a list and an
-    algebraic element. \[Reported by Sebastian Gutsche\]
+    algebraic element. (Reported by Sebastian Gutsche)
 
   - Fixed a bug in `NaturalCharacter` entering a break loop when
     being called on a homomorphism whose image is not a permutation
-    group. \[Reported by Sebastian Gutsche\]
+    group. (Reported by Sebastian Gutsche)
 
   - Fixed a bug in `ExponentsConjugateLayer` which occured, for
-    example, in some calls of `SubgroupsSolvableGroup` \[Reported
-    by Ramon Esteban-Romero\]
+    example, in some calls of `SubgroupsSolvableGroup` (Reported
+    by Ramon Esteban-Romero)
 
   - Fixed a problem with displaying function fields, e.g.
-    `Field(Indeterminate(Rationals,"x"))`. \[Reported by Jan Willem
-    Knopper\]
+    `Field(Indeterminate(Rationals,"x"))`. (Reported by Jan Willem
+    Knopper)
 
   - Fixed two bugs in the code for `NaturalHomomorphismByIdeal` for
-    polynomial rings. \[Reported by Martin Leuner\]
+    polynomial rings. (Reported by Martin Leuner)
 
   - Added missing method for `String` for `-infinity`.
 
@@ -3113,59 +3092,55 @@ Fixed bugs that could lead to break loops:
 
 Improved functionality:
 
-  - Several changes were made to `IdentityMat`
-    and `NullMat`. First off, the documentation was
-    changed to properly state that these functions support arbitrary
-    rings, and not just fields. Also, more usage examples were added to
-    the manual.
-    
-    For `NullMat`, it is now also always possible to specify a ring
-    element instead of a ring, and this is documented. This matches
-    existing `IdentityMat` behavior, and partially worked before
-    (undocumented), but in some cases could run into error or infinite
-    recursion.
-    
-    In the other direction, if a finite field element, `IdentityMat` now
-    really creates a matrix over the smallest field containing that
-    element. Previously, a matrix over the prime field was created
-    instead, contrary to the documentation.
-    
-    Furthermore, `IdentityMat` over small finite fields is now
-    substantially faster when creating matrices of large dimension (say
-    a thousand or so).
-    
-    Finally, `MutableIdentityMat` and
-    `MutableNullMat` were explicitly
-    declared obsolete (and may be removed in GAP 4.7). They actually
-    were deprecated since GAP 4.1, and their use discouraged by the
-    manual. Code using them should switch to `IdentityMat` respectively `NullMat`.
+  - Several changes were made to `IdentityMat` and `NullMat`. First off,
+    the documentation was changed to properly state that these
+    functions support arbitrary rings, and not just fields. Also, more
+    usage examples were added to the manual.
 
-  - Two new `PerfectResiduum` methods were
-    added for solvable and perfect groups, handling these cases
-    optimally. Moreover, the existing generic method was improved by
-    changing it to use `DerivedSeriesOfGroup`. Previously, it would always compute the
+    For `NullMat`, it is now also always possible to specify a ring element
+    instead of a ring, and this is documented. This matches existing
+    `IdentityMat` behavior, and partially worked before (undocumented), but
+    in some cases could run into error or infinite recursion.
+
+    In the other direction, if a finite field element, `IdentityMat` now
+    really creates a matrix over the smallest field containing that element.
+    Previously, a matrix over the prime field was created instead, contrary
+    to the documentation.
+
+    Furthermore, `IdentityMat` over small finite fields is now substantially
+    faster when creating matrices of large dimension (say a thousand or so).
+
+    Finally, `MutableIdentityMat` and `MutableNullMat` were explicitly
+    declared obsolete (and may be removed in GAP 4.7). They actually were
+    deprecated since GAP 4.1, and their use discouraged by the manual. Code
+    using them should switch to `IdentityMat` respectively `NullMat`.
+
+  - Two new `PerfectResiduum` methods were added for solvable and perfect
+    groups, handling these cases optimally. Moreover, the existing
+    generic method was improved by changing it to use
+    `DerivedSeriesOfGroup`. Previously, it would always compute the
     derived series from scratch and then throw away the result.
 
-  - A new `MinimalGeneratingSet`
-    method for groups handled by a nice monomorphisms was added, similar
-    to the existing `SmallGeneratingSet`
-    method. This is useful if the nice monomorphism is already mapping
-    into a pc or pcp group.
+  - A new `MinimalGeneratingSet` method for groups handled by a nice
+    monomorphisms was added, similar to the existing
+    `SmallGeneratingSet` method. This is useful if the nice
+    monomorphism is already mapping into a pc or pcp group.
 
-  - Added a special method for `DerivedSubgroup` if the group is known to be abelian.
+  - Added a special method for `DerivedSubgroup` if the group is known to
+    be abelian.
 
 Fixed bugs:
 
-  - Fixed a bug in `PowerModInt` computing r^e
-    mod m in a special case when e=0 and m=0. \[Reported by Ignat
-    Soroko\]
+  - Fixed a bug in `PowerModInt` computing r^e mod m in a special case
+    when e=0 and m=0. (Reported by Ignat Soroko)
 
-  - `CoefficientsQadic` now better checks
-    its arguments to avoid an infinite loop when being asked for a
-    q-adic representation for q=1. \[Reported by Ignat Soroko\]
+  - `CoefficientsQadic` now better checks its arguments to avoid an
+    infinite loop when being asked for a q-adic representation for q=1.
+    (Reported by Ignat Soroko)
 
-  - Methods for `SylowSubgroupOp` (see `SylowSubgroup`) for symmetric and alternating group did not always
-    set `IsPGroup` and `PrimePGroup` for the returned Sylow subgroup.
+  - Methods for `SylowSubgroupOp` (see `SylowSubgroup`) for symmetric and
+    alternating group did not always set `IsPGroup` and `PrimePGroup`
+    for the returned Sylow subgroup.
 
   - Display of matrices consisting of Conway field elements (which are
     displayed as polynomials) did not print constant 1 terms.
@@ -3175,23 +3150,24 @@ Fixed bugs:
     `GeneratorsOfDomain`).
 
   - Trying to solve the word problem in an fp group where one or more
-    generators has a name of more than one alphabetic character led to a
-    break loop.
+    generators has a name of more than one alphabetic character led to
+    a break loop.
 
-  - Provided the default method for `AbsoluteIrreducibleModules` as a temporary workaround
-    for the problem which may cause returning wrong results or producing
-    an error when being called for a non-prime field.
+  - Provided the default method for `AbsoluteIrreducibleModules` as a
+    temporary workaround for the problem which may cause returning
+    wrong results or producing an error when being called for a
+    non-prime field.
 
-  - A bug in the GAP kernel caused `RNamObj` to error out when
-    called with a string that had the `IsSSortedList` property set (regardless of whether it was set to
-    `true` or `false`). This in turn would lead to strange (and
-    inappropriate) errors when using such a string to access entries of
-    a record.
+  - A bug in the GAP kernel caused `RNamObj` to error out when called
+    with a string that had the `IsSSortedList` property set (regardless
+    of whether it was set to `true` or `false`). This in turn would
+    lead to strange (and inappropriate) errors when using such a string
+    to access entries of a record.
 
-  - GAP can store vectors over small finite fields (size at most
-    256) in a special internal data representation where each entry of
-    the vector uses exactly one byte. Due to an off-by-one bug, the case
-    of a field with exactly 256 elements was not handled properly. As a
+  - GAP can store vectors over small finite fields (size at most 256) in
+    a special internal data representation where each entry of the
+    vector uses exactly one byte. Due to an off-by-one bug, the case of
+    a field with exactly 256 elements was not handled properly. As a
     result, GAP failed to convert a vector to the special data
     representation, which in some situations could lead to a crash. The
     off-by-one error was fixed and now vectors over GF(256) work as
@@ -3218,20 +3194,20 @@ This is the first public release of GAP 4.6.
 
 Improved and extended functionality:
 
-  - It is now possible to declare a name as an operation with two or
-    more arguments (possibly several times) and *THEN* declare it as an
+  - It is now possible to declare a name as an operation with two or more
+    arguments (possibly several times) and *THEN* declare it as an
     attribute. Previously this was only possible in the other order.
     This should make the system more independent of the order in which
     packages are loaded.
 
-  - Words in fp groups are now printed in factorised form if possible
-    and not too time-consuming, i.e. `a*b*a*b*a*b` will be printed as
+  - Words in fp groups are now printed in factorised form if possible and
+    not too time-consuming, i.e. `a*b*a*b*a*b` will be printed as
     `(a*b)^3`.
 
   - Added methods to calculate Hall subgroups in nonsolvable groups.
 
-  - Added a generic method for `IsPSolvable`
-    and a better generic method for `IsPNilpotent` for groups.
+  - Added a generic method for `IsPSolvable` and a better generic method
+    for `IsPNilpotent` for groups.
 
   - Improvements to action homomorphisms: image of an element can use
     existing stabiliser chain of the image group (to reduce the number
@@ -3242,68 +3218,69 @@ Improved and extended functionality:
     the `HomePcgs` of a permutation group is in `IsPcgsPermGroupRep`
     representation in more cases.
 
-  - Added an operation `SortBy` with arguments being
-    a function f of one argument and a list l to be sorted in such a way
-    that `l(f[i]) <= l(f[i+1])`.
+  - Added an operation `SortBy` with arguments being a function f of one
+    argument and a list l to be sorted in such a way that `l(f[i]) <=
+    l(f[i+1])`.
 
   - Added a kernel function `MEET_BLIST` which returns `true` if the two
     boolean lists have `true` in any common position and `false`
-    otherwise. This is useful for representing subsets of a fixed set by
-    boolean lists.
+    otherwise. This is useful for representing subsets of a fixed set
+    by boolean lists.
 
   - When assigning to a position in a compressed FFE vector GAP now
     checks to see if the value being assigned can be converted into an
     internal FFE element if it isn't one already. This uses new
-    attribute `AsInternalFFE`, for which
-    methods are installed for internal FFEs, Conway FFEs and ZmodpZ
-    objects.
+    attribute `AsInternalFFE`, for which methods are installed for
+    internal FFEs, Conway FFEs and ZmodpZ objects.
 
-  - Replaced `ViewObj` method for fields by
-    `ViewString` method to improve the way how
-    polynomial rings over algebraic extenstions of fields are displayed.
+  - Replaced `ViewObj` method for fields by `ViewString` method to
+    improve the way how polynomial rings over algebraic extenstions of
+    fields are displayed.
 
   - Made the info string (optional 2nd argument to
-    `InstallImmediateMethod`) behave
-    similarly to the info string in `InstallMethod`. In particular, `TraceImmediateMethods` now always prints the name of the operation.
+    `InstallImmediateMethod`) behave similarly to the info string in
+    `InstallMethod`. In particular, `TraceImmediateMethods` now always
+    prints the name of the operation.
 
   - Syntax errors such as `Unbind(x,1)` had the unhelpful property that
     `x` got unbound before the syntax error was reported. A specific
     check was added to catch this and similar cases a little earlier.
 
-  - Allow a `GAPARGS` parameter to the top-level GAP `Makefile` to
-    pass extra arguments to the GAP used for manual building.
+  - Allow a `GAPARGS` parameter to the top-level GAP `Makefile` to pass
+    extra arguments to the GAP used for manual building.
 
   - Added an attribute `UnderlyingRingElement` for Lie objects.
 
-  - The function `PrimeDivisors` now became
-    an attribute. \[suggested by Mohamed Barakat\]
+  - The function `PrimeDivisors` now became an attribute. (suggested by
+    Mohamed Barakat)
 
-  - Added an operation `DistancePerms` with a
-    kernel method for internal permutations and a generic method.
+  - Added an operation `DistancePerms` with a kernel method for internal
+    permutations and a generic method.
 
-  - Added a method for `Subfields` to support
-    large finite fields. \[reported by Inneke van Gelder\]
+  - Added a method for `Subfields` to support large finite fields.
+    (reported by Inneke van Gelder)
 
 Fixed bugs which could lead to crashes:
 
   - The extremely old `DEBUG_DEADSONS_BAGS` compile-time option has not
-    worked correctly for many years and indeed crashes GAP. The type
-    of bug it is there to detect has not arisen in many years and we
-    have certainly not used this option, so it has been removed.
-    \[Reported by Volker Braun\]
+    worked correctly for many years and indeed crashes GAP. The type of
+    bug it is there to detect has not arisen in many years and we have
+    certainly not used this option, so it has been removed. (Reported
+    by Volker Braun)
 
 Other fixed bugs:
 
   - Scanning of floating point literals collided with iterated use of
     integers as record field elements in expressions like `r.1.2`.
 
-  - Fixed two potential problems in `NorSerPermPcgs`, one corrupting
-    some internal data and one possibly mixing up different pcgs.
+  - Fixed two potential problems in `NorSerPermPcgs`, one corrupting some
+    internal data and one possibly mixing up different pcgs.
 
-  - Fixed a performance problem with `NiceMonomorphism`. \[reported by John Bamberg\]
+  - Fixed a performance problem with `NiceMonomorphism`. (reported by
+    John Bamberg)
 
-  - Fixed a bug in `ReadCSV` that caused some
-    `.csv` files being parsed incorrectly.
+  - Fixed a bug in `ReadCSV` that caused some `.csv` files being parsed
+    incorrectly.
 
 No longer supported:
 
@@ -3369,23 +3346,23 @@ GAP 4.5.4 release:
 Fixed bugs which could lead to crashes:
 
   - Closing with `LogInputTo` (or `LogOutputTo`) a logfile opened with
-    `LogTo` left the data structures corrupted,
-    resulting in a crash.
+    `LogTo` left the data structures corrupted, resulting in a crash.
 
   - On 32-bit systems we can have long integers `n` such that
     `Log2Int(n)` is not an immediate integer. In such cases `Log2Int`
     gave wrong or corrupted results which in turn could crash GAP,
     e.g., in `ViewObj(n)`.
 
-  - Some patterns of use of `UpEnv` and `DownEnv` were leading to a segfault.
+  - Some patterns of use of `UpEnv` and `DownEnv` were leading to a
+    segfault.
 
 Other fixed bugs:
 
   - Viewing of long negative integers was broken, because it went into a
     break loop.
 
-  - Division by zero in `ZmodnZ` (n not prime)
-    produced invalid objects. \[Reported by Mark Dickinson\]
+  - Division by zero in `ZmodnZ` (n not prime) produced invalid objects.
+    (Reported by Mark Dickinson)
 
   - Fixed a bug in determining multiplicative inverse for a zero
     polynomial.
@@ -3398,9 +3375,8 @@ Other fixed bugs:
     missing.
 
   - For a semigroup of associative words that is not the full semigroup
-    of all associative words, the methods for `Size`
-    and `IsTrivial` called one another causing
-    infinite recursion.
+    of all associative words, the methods for `Size` and `IsTrivial`
+    called one another causing infinite recursion.
 
   - The 64-bit version of the `gac` script produced wrong (\>= 2^31) CRC
     values because of an integer conversion problem.
@@ -3409,8 +3385,8 @@ Other fixed bugs:
     `HAVE_SELECT` detects as false.
 
   - Numbers in memory options on the command line exceeding 2^32 could
-    not be parsed correctly, even on 64-bit systems. \[Reported by
-    Volker Braun\]
+    not be parsed correctly, even on 64-bit systems. (Reported by
+    Volker Braun)
 
 New packages added for the redistribution with GAP:
 
@@ -3430,98 +3406,95 @@ New packages added for the redistribution with GAP:
 
 Improved functionality:
 
-  - The argument of `SaveWorkspace` can now
-    start with `~/` which is expanded to the users home directory.
+  - The argument of `SaveWorkspace` can now start with `~/` which is
+    expanded to the users home directory.
 
-  - Added the method for `Iterator` for
-    `PositiveIntegers`. \[Suggested by
-    Attila Egri-Nagy\].
+  - Added the method for `Iterator` for `PositiveIntegers`. (Suggested by
+    Attila Egri-Nagy).
 
   - Changed kernel tables such that list access functionality for
-    `T_SINGULAR` objects can be installed by methods at the GAP
-    level.
+    `T_SINGULAR` objects can be installed by methods at the GAP level.
 
-  - In case of saved history, "UP" arrow after starting GAP yields
-    last stored line. The user preference `HistoryMaxLines` is now used
-    when storing and saving history (see `SetUserPreference`).
+  - In case of saved history, "UP" arrow after starting GAP yields last
+    stored line. The user preference `HistoryMaxLines` is now used when
+    storing and saving history (see `SetUserPreference`).
 
 Fixed bugs which could lead to crashes:
 
   - A crash occuring during garbage collection following a call to
-    `AClosVec` for a `GF(2)` code. \[Reported by Volker Braun\]
+    `AClosVec` for a `GF(2)` code. (Reported by Volker Braun)
 
-  - A crash when parsing certain syntactically invalid code. \[Reported
-    by multiple users\]
+  - A crash when parsing certain syntactically invalid code. (Reported by
+    multiple users)
 
   - Fixed and improved command line editing without readline support.
     Fixed a segfault which could be triggered by a combination of "UP"
-    and "DOWN" arrows. \[Reported by James Mitchell\]
+    and "DOWN" arrows. (Reported by James Mitchell)
 
   - Fixed a bug in the kernel code for floats that caused a crash on
-    SPARC Solaris in 32-bit mode. \[Reported by Volker Braun\]
+    SPARC Solaris in 32-bit mode. (Reported by Volker Braun)
 
 Other fixed bugs:
 
   - Very large (more than 1024 digit) integers were not being coded
     correctly in function bodies unless the integer limb size was 16
-    bits. \[Reported by Stefan Kohl\]
+    bits. (Reported by Stefan Kohl)
 
-  - An old variable was used in assertion, causing errors in a
-    debugging compilation. \[Reported by Volker Braun\]
+  - An old variable was used in assertion, causing errors in a debugging
+    compilation. (Reported by Volker Braun)
 
-  - The environment variable `PAGER` is now correctly interpreted
-    when it contains the full path to the pager program.
-    Furthermore, if the external pager `less` is found from the
-    environment it is made sure that the option `-r` is used (same
-    for `more -f`). \[Reported by Benjamin Lorenz\]
+  - The environment variable `PAGER` is now correctly interpreted when it
+    contains the full path to the pager program. Furthermore, if the
+    external pager `less` is found from the environment it is made sure
+    that the option `-r` is used (same for `more -f`). (Reported by
+    Benjamin Lorenz)
 
-  - Fixed a bug in `PermliftSeries`. \[Reported by Aiichi Yamasaki\]
+  - Fixed a bug in `PermliftSeries`. (Reported by Aiichi Yamasaki)
 
   - Fixed discarder function in lattice computation to distinguish
-    general and zuppo discarder. \[Reported by Leonard Soicher\]
+    general and zuppo discarder. (Reported by Leonard Soicher)
 
   - The `GL` and `SL` constructors did not correctly handle
     `GL(filter,dim,ring)`.
 
   - The names of two primitive groups of degree 64 were incorrect.
 
-  - The `\in` method for groups handled by a nice monomorphism
-    sometimes could produce an error in situations where it should
-    return false. This only happened when using
-    `SeedFaithfulAction` to influence how `NiceMonomorphism` builds
-    the nice monomorphims for a matrix groups.
+  - The `\in` method for groups handled by a nice monomorphism sometimes
+    could produce an error in situations where it should return false.
+    This only happened when using `SeedFaithfulAction` to influence how
+    `NiceMonomorphism` builds the nice monomorphims for a matrix
+    groups.
 
-  - Wrong `PrintObj` method was removed to fix delegations
-    accordingly to the reference manual.
+  - Wrong `PrintObj` method was removed to fix delegations accordingly to
+    the reference manual.
 
-  - Fixed a method for `Coefficients` which, after Gaussian
-    elimination, did not check that the coefficients actually lie
-    in the left-acting-domain of the vector space. This could lead
-    to a wrong answer in a vector space membership test. \[Reported
-    by Kevin Watkins\]
+  - Fixed a method for `Coefficients` which, after Gaussian elimination,
+    did not check that the coefficients actually lie in the
+    left-acting-domain of the vector space. This could lead to a wrong
+    answer in a vector space membership test. (Reported by Kevin
+    Watkins)
 
 Improved documentation:
 
   - Removed outdated statements from the documentation of
-    `StructureDescription` which now
-    non-ambiguosly states that `StructureDescription` is not an
-    isomorphism invariant: non-isomorphic groups can have the same
-    string value, and two isomorphic groups in different representations
-    can produce different strings.
+    `StructureDescription` which now non-ambiguosly states that
+    `StructureDescription` is not an isomorphism invariant:
+    non-isomorphic groups can have the same string value, and two
+    isomorphic groups in different representations can produce
+    different strings.
 
-  - GAP now allows overloading of a loaded help book by another one.
-    In this case, only a warning is printed and no error is raised. This
+  - GAP now allows overloading of a loaded help book by another one. In
+    this case, only a warning is printed and no error is raised. This
     makes sense if a book of a not loaded package is loaded in a
-    workspace and then GAP is started with a root path that contains
-    a newer version. \[Reported by Sebastian Gutsche\]
+    workspace and then GAP is started with a root path that contains a
+    newer version. (Reported by Sebastian Gutsche)
 
   - Provided a better description of user preferences mechanism and a
-    hint to familiarise with them using `WriteGapIniFile` function
-    to create a file which contains descriptions of all known user
-    preferences and also sets those user preferences which
-    currently do not have their default value. One can then edit
-    that file to customize (further) the user preferences for
-    future GAP sessions.
+    hint to familiarise with them using `WriteGapIniFile` function to
+    create a file which contains descriptions of all known user
+    preferences and also sets those user preferences which currently do
+    not have their default value. One can then edit that file to
+    customize (further) the user preferences for future GAP sessions.
 
 New packages added for the redistribution with GAP:
 
@@ -3536,8 +3509,8 @@ New packages added for the redistribution with GAP:
     (<http://www.polymake.org>).
 
   - **ToolsForHomalg** package by M. Barakat, S. Gutsche and M.
-    Lange-Hegermann, which provides some auxiliary functionality for the
-    **homalg** project (<http://homalg.math.rwth-aachen.de/>).
+    Lange-Hegermann, which provides some auxiliary functionality for
+    the **homalg** project (<http://homalg.math.rwth-aachen.de/>).
 
 
 ## GAP 4.5.5 (July 2012)
@@ -3546,99 +3519,100 @@ Fixed bugs which could lead to crashes:
 
   - For small primes (compact fields) `ZmodnZObj(r,p)` now returns the
     corresponding FFE to avoid crashes when compacting matrices.
-    \[Reported by Ignat Soroko\]
+    (Reported by Ignat Soroko)
 
 Other fixed bugs:
 
-  - Fixed a bug in `CommutatorSubgroup`
-    for fp groups causing infinite recursion, which could, for example,
-    be triggered by computing automorphism groups.
+  - Fixed a bug in `CommutatorSubgroup` for fp groups causing infinite
+    recursion, which could, for example, be triggered by computing
+    automorphism groups.
 
   - Previously, the list of factors of a polynomial was mutable, and
     hence could be accidentally corrupted by callers. Now the list of
     irreducible factors is stored immutable. To deal with implicit
-    reliance on old code, always a shallow copy is returned. \[reported
-    by Jakob Kroeker\]
+    reliance on old code, always a shallow copy is returned. (reported
+    by Jakob Kroeker)
 
   - Computing high powers of matrices ran into an error for matrices in
     the format of the **cvec** package. Now the library function also
-    works with these matrices. \[reported by Klaus Lux\]
+    works with these matrices. (reported by Klaus Lux)
 
   - The pseudo tty code which is responsible for spawning subprocesses
     has been partially rewritten to allow more than 128 subprocesses on
-    certain systems. This mechanism is for example used by **ANUPQ** and
-    **nq** packages to compute group quotients via an external program.
-    Previously, on Mac OS X this could be done precisely 128 times, and
-    then an error would occur. That is, one could e.g. compute 128
-    nilpotent quotients, and then had to restart GAP to compute
-    more. This also affected other systems, such as OpenBSD, where it
-    now also works correctly.
+    certain systems. This mechanism is for example used by **ANUPQ**
+    and **nq** packages to compute group quotients via an external
+    program. Previously, on Mac OS X this could be done precisely 128
+    times, and then an error would occur. That is, one could e.g.
+    compute 128 nilpotent quotients, and then had to restart GAP to
+    compute more. This also affected other systems, such as OpenBSD,
+    where it now also works correctly.
 
-  - On Mac OS X, using GAP compiled against GNU readline 6.2,
-    pasting text into the terminal session would result in this text
-    appearing very slowly, with a 0.1 sec delay between each
-    "keystroke". This is not the case with versions 6.1 and older, and
-    has been reported to the GNU readline team. In the meantime, we work
-    around this issue in most situations by setting `rl_event_hook` only
-    if `OnCharReadHookActive` is set.
+  - On Mac OS X, using GAP compiled against GNU readline 6.2, pasting
+    text into the terminal session would result in this text appearing
+    very slowly, with a 0.1 sec delay between each "keystroke". This is
+    not the case with versions 6.1 and older, and has been reported to
+    the GNU readline team. In the meantime, we work around this issue
+    in most situations by setting `rl_event_hook` only if
+    `OnCharReadHookActive` is set.
 
-  - `ShowUserPreferences` ran into a
-    break loop in case of several undeclared user preferences.
-    \[Reported by James Mitchell\]
+  - `ShowUserPreferences` ran into a break loop in case of several
+    undeclared user preferences. (Reported by James Mitchell)
 
   - GAP did not start correctly if the user preference
-    `"InfoPackageLoadingLevel"` was set to a number \>= 3. The reason is
-    that `PrintFormattedString` was called before it was installed. The
-    current fix is a temporary solution.
+    `"InfoPackageLoadingLevel"` was set to a number \>= 3. The reason
+    is that `PrintFormattedString` was called before it was installed.
+    The current fix is a temporary solution.
 
   - The `"hints"` member of `TypOutputFile` used to contain 3\*100
-    entries, yet `addLineBreakHint` would write entries with index up to
-    and including 3\*99+3=300, leading to a buffer overflow. This would
-    end up overwriting the `"stream"` member with -1. Fixed by
-    incrementing the size of `"hints"` to 301. \[Reported by Jakob
-    Kroeker\]
+    entries, yet `addLineBreakHint` would write entries with index up
+    to and including 3\*99+3=300, leading to a buffer overflow. This
+    would end up overwriting the `"stream"` member with -1. Fixed by
+    incrementing the size of `"hints"` to 301. (Reported by Jakob
+    Kroeker)
 
-  - The function `IsDocumentedWord` tested the given word against
-    strings obtained by splitting help matches at non-letter characters.
-    This way, variable names containing underscores or digits were
+  - The function `IsDocumentedWord` tested the given word against strings
+    obtained by splitting help matches at non-letter characters. This
+    way, variable names containing underscores or digits were
     erroneously not regarded as documented, and certain substrings of
     these names were erroneously regarded as documented.
 
-  - On Windows, an error occurred if one tried to use the default
-    Windows browser as a help viewer (see `SetHelpViewer`). Now the browser opens the top of the correspoding
-    manual chapter. The current fix is a temporary solution since the
-    problem remains with the positioning at the required manual section.
+  - On Windows, an error occurred if one tried to use the default Windows
+    browser as a help viewer (see `SetHelpViewer`). Now the browser
+    opens the top of the correspoding manual chapter. The current fix
+    is a temporary solution since the problem remains with the
+    positioning at the required manual section.
 
 Improved functionality:
 
-  - `WriteGapIniFile` on Windows now
-    produces the `gap.ini` file with Windows style line breaks. Also, an
-    info message is now printed if an existing `gap.ini` file was moved
-    to a backup file `gap.ini.bak`.
+  - `WriteGapIniFile` on Windows now produces the `gap.ini` file with
+    Windows style line breaks. Also, an info message is now printed if
+    an existing `gap.ini` file was moved to a backup file
+    `gap.ini.bak`.
 
   - The **CTblLib** and **TomLib** packages are removed from the list of
-    suggested packages of the core part of GAP. Instead they are
-    added to the default list of the user preference `"PackagesToLoad"`.
-    This way it is possible to configure GAP to not load these
-    packages via changing the default value of `"PackagesToLoad"`.
+    suggested packages of the core part of GAP. Instead they are added
+    to the default list of the user preference `"PackagesToLoad"`. This
+    way it is possible to configure GAP to not load these packages via
+    changing the default value of `"PackagesToLoad"`.
 
   - The conjugacy test in S\_n for intransitive subgroups was improved.
     This deals with inefficiency issue in the case reported by Stefan
     Kohl.
 
   - Added `InstallAndCallPostRestore` to `lib/system.g` and call it in
-    `lib/init.g` instead of `CallAndInstallPostRestore` for the function
-    that reads the files listed in GAP command line. This fixes the
-    problem reported by Yevgen Muntyan when `SaveWorkspace` was used in a file listed in GAP command line
-    (before, according to the documentation, `SaveWorkspace` was only allowed at the main GAP prompt).
+    `lib/init.g` instead of `CallAndInstallPostRestore` for the
+    function that reads the files listed in GAP command line. This
+    fixes the problem reported by Yevgen Muntyan when `SaveWorkspace`
+    was used in a file listed in GAP command line (before, according to
+    the documentation, `SaveWorkspace` was only allowed at the main GAP
+    prompt).
 
   - There is now a new user preference `PackagesToIgnore`, see
-    `SetUserPreference`. It contains a
-    list of names of packages that shall be regarded as not available at
-    all in the current session, both for autoloading and for later calls
-    of `LoadPackage`. This preference is useful
-    for testing purposes if one wants to run some code without loading
-    certain packages.
+    `SetUserPreference`. It contains a list of names of packages that
+    shall be regarded as not available at all in the current session,
+    both for autoloading and for later calls of `LoadPackage`. This
+    preference is useful for testing purposes if one wants to run some
+    code without loading certain packages.
 
 
 ## GAP 4.5.4 (June 2012)
@@ -3663,16 +3637,15 @@ overview of new and updated packages, see Section
 
 Performance improvements:
 
-  - The GAP kernel now uses **GMP** (GNU multiple precision
-    arithmetic library, <http://gmplib.org/>) for faster large integer
-    arithmetic.
+  - The GAP kernel now uses **GMP** (GNU multiple precision arithmetic
+    library, <http://gmplib.org/>) for faster large integer arithmetic.
 
   - Improved performance for records with large number of components.
 
   - Speedup of hash tables implementation at the GAP library level.
 
-  - `MemoryUsage` is now much more efficient,
-    in particular for large objects.
+  - `MemoryUsage` is now much more efficient, in particular for large
+    objects.
 
   - Speedups in the computation of low index subgroups, Tietze
     transformations, calculating high powers of matrices over finite
@@ -3680,42 +3653,40 @@ Performance improvements:
 
 New and improved kernel functionality:
 
-  - By default, the GAP kernel compiles with the **GMP** and
-    **readline** libraries. The **GMP** library is supplied with
-    GAP and we recommend that you use the version we supply. There
-    are some problems with some other versions. It is also possible
-    to compile the GAP kernel with the system **GMP** if your
-    system has it. The **readline** library must be installed on
-    your system in advance to be used with GAP.
+  - By default, the GAP kernel compiles with the **GMP** and **readline**
+    libraries. The **GMP** library is supplied with GAP and we
+    recommend that you use the version we supply. There are some
+    problems with some other versions. It is also possible to compile
+    the GAP kernel with the system **GMP** if your system has it. The
+    **readline** library must be installed on your system in advance to
+    be used with GAP.
 
   - Floating point literals are now supported in the GAP language, so
-    that, floating point numbers can be entered in GAP expressions
-    in a natural way. Support for floats is now properly
-    documented. GAP has an interface using which packages may add
-    new floating point implementations and integrate them with the
-    parser. In particular, we expect that there will soon be a
-    package that implements arbitrary precision floating point
-    arithmetic.
+    that, floating point numbers can be entered in GAP expressions in a
+    natural way. Support for floats is now properly documented. GAP has
+    an interface using which packages may add new floating point
+    implementations and integrate them with the parser. In particular,
+    we expect that there will soon be a package that implements
+    arbitrary precision floating point arithmetic.
 
   - The Mersenne twister random number generator has been made
     independent of endianness, so that random seeds can now be
     transferred between architectures.
 
-  - Defaults for `-m` and `-o` options have been increased. Changes
-    have been made to the way that GAP obtains memory from the
-    Operating System, to make GAP more compatible with C libraries.
-    A new `-s` option has been introduced to control or turn off
-    the new behaviour.
+  - Defaults for `-m` and `-o` options have been increased. Changes have
+    been made to the way that GAP obtains memory from the Operating
+    System, to make GAP more compatible with C libraries. A new `-s`
+    option has been introduced to control or turn off the new
+    behaviour.
 
   - The filename and lines from which a function was read can now be
-    recovered using `FilenameFunc`, `StartlineFunc` and
-    `EndlineFunc`. This allows you, for example, to implement a
-    function such as `PageSource` to show the file containing the
-    source code of a function or a method in a pager, see `Pager`.
+    recovered using `FilenameFunc`, `StartlineFunc` and `EndlineFunc`.
+    This allows you, for example, to implement a function such as
+    `PageSource` to show the file containing the source code of a
+    function or a method in a pager, see `Pager`.
 
-  - `CallFuncList` was made into an operation so that it can be used
-    to define behaviour of a non-function when called as a
-    function.
+  - `CallFuncList` was made into an operation so that it can be used to
+    define behaviour of a non-function when called as a function.
 
   - Improvements to the cyclotomic number arithmetic for fields with
     large conductors.
@@ -3724,34 +3695,35 @@ New and improved kernel functionality:
 
   - Opportunity to interrupt some long kernel computations, e.g.
     multiplication of compressed matrices, intercepting `Ctrl-C` in
-    designated places in the kernel code by means of a special
-    kernel function for that purpose.
+    designated places in the kernel code by means of a special kernel
+    function for that purpose.
 
   - `ELM_LIST` now allows you to install methods where the second
     argument is NOT a positive integer.
 
-  - Kernel function `DirectoryContents` to get the list of names of
-    files and subdirectories in a directory.
+  - Kernel function `DirectoryContents` to get the list of names of files
+    and subdirectories in a directory.
 
-  - Kernel functions for Kronecker product of compressed matrices,
-    see `KroneckerProduct`.
+  - Kernel functions for Kronecker product of compressed matrices, see
+    `KroneckerProduct`.
 
 New and improved library functionality:
 
   - Extensions of data libraries:
-    
+
       - Functions and iterators are now available to create and
         enumerate simple groups by their order up to isomorphism:
         `SimpleGroup`, `SmallSimpleGroup`, `SimpleGroupsIterator` and
         `AllSmallNonabelianSimpleGroups`.
-    
+
       - See also packages **CTblLib**, **IRREDSOL** and **Smallsemi**
         listed in Section [7.2-2](chap.md#X7D1ECE3D8403AC6F).
 
   - Many more methods are now available for the built-in floating point
     numbers.
 
-  - The bound for the proper primality test in `IsPrimeInt` increased up to 10^18.
+  - The bound for the proper primality test in `IsPrimeInt` increased up
+    to 10^18.
 
   - Improved code for determining transversal and double coset
     representatives in large groups.
@@ -3771,13 +3743,13 @@ New and improved library functionality:
   - Functionality specific for use in undergraduate abstract algebra
     courses, e.g. checksums; string/integer list conversion; rings of
     small orders; the function `SetNameObject` to set display names for
-    objects for more informative examples, e.g. constructing groups from
-    "named" objects, such as, for example, `R90` for a 90-degree
+    objects for more informative examples, e.g. constructing groups
+    from "named" objects, such as, for example, `R90` for a 90-degree
     rotation).
 
-  - Functions `DirectoryDesktop` and
-    `DirectoryHome` which provide uniform
-    access to default directories under Windows, Mac OS X and Unix.
+  - Functions `DirectoryDesktop` and `DirectoryHome` which provide
+    uniform access to default directories under Windows, Mac OS X and
+    Unix.
 
   - Improved methods for hashing when computing orbits.
 
@@ -3787,18 +3759,16 @@ New and improved library functionality:
 
   - Basic version of the simplex algorithm for matrices.
 
-  - New functions, operations and attributes: `PrimeDivisors`, `Shuffle` for
-    lists, `IteratorOfPartitions`,
-    `IteratorOfCombinations`,
-    `EnumeratorOfCombinations` and
-    others.
+  - New functions, operations and attributes: `PrimeDivisors`, `Shuffle`
+    for lists, `IteratorOfPartitions`, `IteratorOfCombinations`,
+    `EnumeratorOfCombinations` and others.
 
   - The behaviour of `Info` statements can now be configured per info
     class, this applies to the way the arguments are printed and to the
     output stream.
 
-  - New function `Test` which is a more flexible and
-    informative substitute of `ReadTest` operation.
+  - New function `Test` which is a more flexible and informative
+    substitute of `ReadTest` operation.
 
   - `ConnectGroupAndCharacterTable` is replaced by more robust function
     `CharacterTableWithStoredGroup`.
@@ -3825,25 +3795,25 @@ Many problems in GAP have have been fixed, among them the following:
   - Composing a homomorphism from a permutation group to a finitely
     presented group with another homomorphism could give wrong results.
 
-  - For certain arguments, the function `EU` returned
-    wrong results.
+  - For certain arguments, the function `EU` returned wrong results.
 
-  - In the table of marks of cyclic groups, `NormalizersTom` value was wrong.
+  - In the table of marks of cyclic groups, `NormalizersTom` value was
+    wrong.
 
-  - The function `PermChars` returned a perhaps
-    wrong result when the second argument was a positive integer (not a
-    record) and the trivial character of the character table given as
-    the first argument was not the first in the list of irreducibles.
+  - The function `PermChars` returned a perhaps wrong result when the
+    second argument was a positive integer (not a record) and the
+    trivial character of the character table given as the first
+    argument was not the first in the list of irreducibles.
 
   - GAP crashed when the intersection of ranges became empty.
 
-  - `IsPSL`, and in turn `StructureDescription`, erroneously recognised non-PSL groups of the
-    right order as PSL.
+  - `IsPSL`, and in turn `StructureDescription`, erroneously recognised
+    non-PSL groups of the right order as PSL.
 
   - The semidirect product method for pcgs computable groups sometimes
     tried to use finite presentations which were not polycyclic. This
-    usually happened when the groups were not pc groups, and there was a
-    very low risk of getting a wrong result.
+    usually happened when the groups were not pc groups, and there was
+    a very low risk of getting a wrong result.
 
   - The membership test for a group of finite field elements ran into an
     error if the zero element of the field was given as the first
@@ -3856,8 +3826,8 @@ Many problems in GAP have have been fixed, among them the following:
     running into many break loops.
 
   - GAP did not behave well when printing of a (large) object was
-    interrupted with `Ctrl-C`. Now the object is no longer corrupted and
-    the indentation level is reset.
+    interrupted with `Ctrl-C`. Now the object is no longer corrupted
+    and the indentation level is reset.
 
 Potentially incompatible changes:
 
@@ -3923,8 +3893,7 @@ without changing the rest of the GAP installation.
 Furthermore, by default GAP will now automatically read a
 user-specific GAP root directory (unless GAP is called with the
 `-r` option). All user settings can be made in that directory, so there
-will be no risk of them being lost during an update (see Section
-[7.1-3](#71-3-improvements-to-the-user-interface) below for more details). Private
+will be no risk of them being lost during an update. Private
 packages can also be installed in this directory for the same reason.
 
 There are some changes in archive formats used for the distribution: we
@@ -4029,9 +3998,9 @@ Other changes in the user interface include:
     function from the **Browse** package, which is loaded in the default
     configuration. This feature can be replaced by the known pager using
     the command
-    
+
     ``` normal
-    
+
     SetUserPreference( "browse", "SelectHelpMatches", false );
     ```
 
@@ -4068,8 +4037,7 @@ these and about 100 package manuals.
 ## Packages in GAP 4.5
 
 Here we list most important changes affecting packages and present new
-or essentially changed packages. For the changes in the core GAP
-system, see Section [7.1](chap.md#X87783FB985375B5F).
+or essentially changed packages.
 
 ### Interface between the core system and packages
 
@@ -4207,11 +4175,11 @@ GAP 4.4.12 release:
     manual.
 
   - **DESIGN** package by L.H. Soicher:
-    
+
       - The functions `PointBlockIncidenceMatrix`, `ConcurrenceMatrix`,
         and `InformationMatrix` compute matrices associated with block
         designs.
-    
+
       - The function `BlockDesignEfficiency` computes certain
         statistical efficiency measures of a 1-(v,k,r) design, using
         exact algebraic computation.
@@ -4226,22 +4194,22 @@ GAP 4.4.12 release:
 
   - The **GAPDoc** package by F. Lübeck and M. Neunhöffer provides
     various improvements, for example:
-    
+
       - The layout of the text version of the manuals can be configured
         quite freely, several standard "themes" are provided. The
         display is now adjusted to the current screen width.
-    
+
       - Some details of the layout of the HTML version of the manuals
         can now be configured by the user. All manuals are available
         with and without MathJax support for display of mathematical
         formulae.
-    
+
       - The text and HTML versions of manuals make more use of unicode
         characters (but the text version is also still reasonably good
         on terminals with latin1 or ASCII encoding).
-    
+
       - The PDF version of the manuals uses better fonts.
-    
+
       - Of course, there are various improvements for authors of manuals
         as well, for example new functions `ExtractExamples` and
         `RunExamples` for automatic testing and correcting of manual
@@ -4249,30 +4217,30 @@ GAP 4.4.12 release:
 
   - **Gpd** package by E.J. Moore and C.D. Wensley has been
     substantially rewritten. The main extensions provide functions for:
-    
+
       - Subgroupoids of a direct product with complete graph groupoid,
         specified by a root group and choice of rays.
-    
+
       - Automorphisms of finite groupoids - by object permutations; by
         root group automorphisms; and by ray images.
-    
+
       - The automorphism group of a finite groupoid together with an
         isomorphism to a quotient of permutation groups.
-    
+
       - Homogeneous groupoids (unions of isomorphic groupoids) and their
         morphisms, in particular homogeneous discrete groupoids: the
         latter are used in constructing crossed modules of groupoids in
         the **XMod** package.
 
   - **GRAPE** package by L.H. Soicher:
-    
+
       - With much help from A. Hulpke, the interface between **GRAPE**
         and `dreadnaut` is now done entirely in GAP code.
-    
+
       - A 32-bit `nauty/dreadnaut` binary for Windows (XP and later) is
         included with **GRAPE**, so now **GRAPE** provides full
         functionality under Windows, with no installation necessary.
-    
+
       - Graphs with ordered partitions of their vertices into
         "colour-classes" are now handled by the graph automorphism group
         and isomorphism testing functions. An automorphism of a graph
@@ -4282,26 +4250,26 @@ GAP 4.4.12 release:
         second is a graph isomorphism from the first graph to the second
         which additionally maps the first list of colour-classes to the
         second (classwise).
-    
+
       - The GAP code and old standalone programs for the
         undocumented functions `Enum` and `EnumColadj` have been removed
         as their functionality can now largely be handled by current
         documented GAP and **GRAPE** functions.
 
   - **IO** package by M. Neunhöffer:
-    
+
       - New build system to allow for more flexibility regarding the use
         of compiler options and adjusting to GAP 4.5.
-    
+
       - New functions to access time like `IO_gettimeofday`, `IO_gmtime`
         and `IO_localtime`.
-    
+
       - Some parallel skeletons built on `fork` like: `ParListByFork`,
         `ParMapReduceByFork`, `ParTakeFirstResultByFork` and
         `ParWorkerFarmByFork`.
-    
+
       - `IOHub` objects for automatic I/O multiplexing.
-    
+
       - New functions `IO_gethostbyname` and `IO_getsockname`.
 
   - **IRREDSOL** package by B. Höfling now covers all irreducible
@@ -4324,59 +4292,59 @@ GAP 4.4.12 release:
     implementation made entirely in GAP.
 
   - **Orb** package by J. Müller, M. Neunhöffer and F. Noeske:
-    
+
     There have been numerous improvements to this package:
-    
+
       - A new fast implementation of AVL trees (balanced binary trees)
         in C.
-    
+
       - New interface to hash table functionality and implementation in
         C for speedup.
-    
+
       - Some new hash functions for various object types like
         transformations.
-    
+
       - New function `ORB_EstimateOrbitSize` using the birthday paradox.
-    
+
       - Improved functionality for product replacer objects.
-    
+
       - New "tree hash tables".
-    
+
       - New functionality to compute weak and strong orbits for
         semigroups and monoids.
-    
+
       - `OrbitGraph` for Orb orbits.
-    
+
       - Fast C kernel methods for the following functions:
-        
+
         `PermLeftQuoTransformationNC`, `MappingPermSetSet`,
         `MappingPermListList`, `ImageSetOfTransformation`, and
         `KernelOfTransformation`.
-    
+
       - New build system to allow for more flexibility regarding the use
         of compiler options and to adjust to GAP 4.5.
 
   - **RCWA** package by S. Kohl among the new features and other
     improvements has the following:
-    
+
       - A database of all 52394 groups generated by 3 class
         transpositions of ℤ which interchange residue classes with
         modulus less than or equal to 6. This database contains the
         orders and the moduli of all of these groups. Also it provides
         information on what is known about which of these groups are
         equal and how their finite and infinite orbits on ℤ look like.
-    
+
       - More routines for investigating the action of an rcwa group on
         ℤ. Examples are a routine which attempts to find out whether a
         given rcwa group acts transitively on the set of nonnegative
         integers in its support and a routine which looks for finite
         orbits on the set of all residue classes of ℤ.
-    
+
       - Ability to deal with rcwa permutations of ℤ^2.
-    
+
       - Important methods have been made more efficient in terms of
         runtime and memory consumption.
-    
+
       - The output has been improved. For example, rcwa permutations are
         now `Display`'ed in ASCII text resembling LaTeX output.
 
@@ -4415,20 +4383,19 @@ Fixed bugs which could lead to crashes:
 
 Other fixed bugs:
 
-  - A bug which made the command-line editor unusable in a 64-bit
-    version of GAP on Mac OS X.
+  - A bug which made the command-line editor unusable in a 64-bit version
+    of GAP on Mac OS X.
 
 
 ## GAP 4.4 Update 11 (December 2008)
-
+## 
 Fixed bugs which could produce wrong results:
 
-  - `MemoryUsage` on objects with no subobjects
-    left them in the cache and thus reported 0 in subsequent calls to
-    MemoryUsage for the same object. \[Reported by Stefan Kohl\]
+  - `MemoryUsage` on objects with no subobjects left them in the cache
+    and thus reported 0 in subsequent calls to MemoryUsage for the same
+    object. (Reported by Stefan Kohl)
 
-  - `Irr` might be missing characters. \[Reported by
-    Angel del Rio\]
+  - `Irr` might be missing characters. (Reported by Angel del Rio)
 
   - Up to now, it was allowed to call the function
     `FullMatrixAlgebraCentralizer` with a field and a list of matrices
@@ -4438,35 +4405,37 @@ Fixed bugs which could produce wrong results:
     in the field, if not then an error is signaled.
 
   - For those finite fields that are regarded as field extensions over
-    non-prime fields (one can construct such fields with `AsField`), the function `DefiningPolynomial` erroneously returned a polynomial w.r.t. the
-    extension of the prime field. \[Reported by Stefan Kohl\]
+    non-prime fields (one can construct such fields with `AsField`),
+    the function `DefiningPolynomial` erroneously returned a polynomial
+    w.r.t. the extension of the prime field. (Reported by Stefan Kohl)
 
-  - Since the release of GAP 4.4.10, the return values of the
-    function `QuaternionAlgebra` were not
-    consistent w.r.t. the attribute `GeneratorsOfAlgebra`; the returned list could have length four or
+  - Since the release of GAP 4.4.10, the return values of the function
+    `QuaternionAlgebra` were not consistent w.r.t. the attribute
+    `GeneratorsOfAlgebra`; the returned list could have length four or
     five. Now always the list of elements of the canonical basis is
     returned.
 
-  - `MonomialGrevlexOrdering`
-    calculated a wrong ordering in certain cases. \[Reported by Paul
-    Smith\]
+  - `MonomialGrevlexOrdering` calculated a wrong ordering in certain
+    cases. (Reported by Paul Smith)
 
-  - The (GAP kernel) method for the operation `IntersectSet` for ranges had two bugs, which could yield
-    a result range with either too few or too many elements. As a
-    consequence, for example the `Intersection` results for ranges could be wrong. \[Reported by
-    Matthew Fayers\]
+  - The (GAP kernel) method for the operation `IntersectSet` for ranges
+    had two bugs, which could yield a result range with either too few
+    or too many elements. As a consequence, for example the
+    `Intersection` results for ranges could be wrong. (Reported by
+    Matthew Fayers)
 
   - Fixed a bug in the short-form display of elements of larger finite
     fields, a bug in some cross-field conversions and some
-    inefficiencies and a missing method in the `LogFFE` code. \[Reported by Jia Huang\]
+    inefficiencies and a missing method in the `LogFFE` code. (Reported
+    by Jia Huang)
 
-  - In rare cases `SmithNormalFormIntegerMatTransforms` returned a wrong normal form
-    (the version without transforming matrices did not have this
-    problem). This is fixed. \[Reported by Alexander Hulpke\]
+  - In rare cases `SmithNormalFormIntegerMatTransforms` returned a wrong
+    normal form (the version without transforming matrices did not have
+    this problem). This is fixed. (Reported by Alexander Hulpke)
 
-  - The variant of the function `StraightLineProgram` that takes a
-    string as its first argument returned wrong results if the last
-    character of this string was a closing bracket.
+  - The variant of the function `StraightLineProgram` that takes a string
+    as its first argument returned wrong results if the last character
+    of this string was a closing bracket.
 
   - The code for central series in a permutation group used too tight a
     bound and thus falsely return a nilpotent permutation group as
@@ -4477,85 +4446,84 @@ Fixed bugs which could lead to crashes:
   - Under certain circumstances the kernel code for position in blists
     would access a memory location just after the end of the blist. If
     this location was not accessible, a crash could result. This was
-    corrected and the code was cleaned up. \[Reported by Alexander
-    Hulpke\]
+    corrected and the code was cleaned up. (Reported by Alexander
+    Hulpke)
 
 Other fixed bugs:
 
-  - The function `IsomorphismTypeInfoFiniteSimpleGroup` can be called with a positive
-    integer instead of a group, and then returns information about the
-    simple group(s) of this order. (This feature is currently
-    undocumented.) For the argument 1, however, it ran into an infinite
-    loop.
+  - The function `IsomorphismTypeInfoFiniteSimpleGroup` can be called
+    with a positive integer instead of a group, and then returns
+    information about the simple group(s) of this order. (This feature
+    is currently undocumented.) For the argument 1, however, it ran
+    into an infinite loop.
 
   - A lookup in an empty dictionary entered a break loop. Now returns
-    `fail`. \[Reported by Laurent Bartholdi\]
+    `fail`. (Reported by Laurent Bartholdi)
 
   - The c++ keyword `and` can no longer be used as a macro parameter in
-    the kernel. \[Reported by Paul Smith\]
+    the kernel. (Reported by Paul Smith)
 
-  - The operation `KernelOfMultiplicativeGeneralMapping` has methods designed to handle
-    maps between permutation groups in a two-step approach, but did not
-    reliably trigger the second step. This has now been fixed,
-    preventing a slow infinite loop repeating the first step. This was
-    normally only seen as part of a larger calculation.
+  - The operation `KernelOfMultiplicativeGeneralMapping` has methods
+    designed to handle maps between permutation groups in a two-step
+    approach, but did not reliably trigger the second step. This has
+    now been fixed, preventing a slow infinite loop repeating the first
+    step. This was normally only seen as part of a larger calculation.
 
-  - There were two methods for the operation `Intersection2` which have implicitly assumed that finiteness of a
-    collection can always be decided. Now, these methods check for
-    `IsFinite` and `CanComputeSize` prior to calling `IsFinite`.
+  - There were two methods for the operation `Intersection2` which have
+    implicitly assumed that finiteness of a collection can always be
+    decided. Now, these methods check for `IsFinite` and
+    `CanComputeSize` prior to calling `IsFinite`.
 
   - Made error message in case of corrupted help book information
-    (manual.six file) shorter and more informative. \[Reported by
-    Alexander Hulpke\]
+    (manual.six file) shorter and more informative. (Reported by
+    Alexander Hulpke)
 
   - GAP cannot call methods with more than six arguments. Now the
-    functions `NewOperation`,
-    `DeclareOperation`, and
-    `InstallMethod` signal an error if one
-    attempts to declare an operation or to install a method with more
-    than six arguments.
+    functions `NewOperation`, `DeclareOperation`, and `InstallMethod`
+    signal an error if one attempts to declare an operation or to
+    install a method with more than six arguments.
 
-  - Up to now, `IsOne` had a special method for
-    general mappings, which was much worse than the generic method; this
-    special method has now been removed.
+  - Up to now, `IsOne` had a special method for general mappings, which
+    was much worse than the generic method; this special method has now
+    been removed.
 
   - When printing elements of an algebraic extension parentheses around
-    coefficients were missing. \[Reported by Maxim Hendriks\]
+    coefficients were missing. (Reported by Maxim Hendriks)
 
 New or improved functionality:
 
   - Make dynamic loading of modules possible on CYGWIN using a DLL based
     approach. Also move to using autoconf version 2.61.
 
-  - One can now call `Basis`, `Iterator` etc. with the return value of the function
-    `AlgebraicExtension`.
+  - One can now call `Basis`, `Iterator` etc. with the return value of
+    the function `AlgebraicExtension`.
 
-  - The function `FrobeniusCharacterValue` returned `fail` for results that require a
-    finite field with more than 65536 elements. Meanwhile GAP can
-    handle larger finite fields, so this restriction was removed. (It is
-    still possible that `FrobeniusCharacterValue` returns `fail`.)
+  - The function `FrobeniusCharacterValue` returned `fail` for results
+    that require a finite field with more than 65536 elements.
+    Meanwhile GAP can handle larger finite fields, so this restriction
+    was removed. (It is still possible that `FrobeniusCharacterValue`
+    returns `fail`.)
 
   - Methods for testing membership in general linear groups and special
     linear groups over the integers have been added.
 
-  - Methods for `String` and `ViewString` for full
-    row modules have been added. Further, a default method for
-    `IsRowModule` has been added, which returns
-    `false` for objects which are not free left modules.
+  - Methods for `String` and `ViewString` for full row modules have been
+    added. Further, a default method for `IsRowModule` has been added,
+    which returns `false` for objects which are not free left modules.
 
   - A `ViewString` method for objects with name has been added.
 
-  - The method for `View` for polynomial rings has
-    been improved, and methods for `String` and
-    `ViewString` for polynomial rings have been added.
+  - The method for `View` for polynomial rings has been improved, and
+    methods for `String` and `ViewString` for polynomial rings have
+    been added.
 
   - `Binomial` now works with huge `n`.
 
   - The function `InducedClassFunctionsByFusionMap` is now documented.
 
-  - The return values of the function `QuaternionAlgebra` now store that they are division rings (if
-    optional parameters are given then of course ths depends on these
-    parameters).
+  - The return values of the function `QuaternionAlgebra` now store that
+    they are division rings (if optional parameters are given then of
+    course ths depends on these parameters).
 
 
 ## GAP 4.4 Update 10 (October 2007)
@@ -4615,25 +4583,25 @@ Fixed bugs which could produce wrong results:
 
   - When forming the semidirect product of a matrix group with a vector
     space over a non-prime field the embedding of the vector space gave
-    a wrong result. \[Reported by anvita21\]
+    a wrong result. (Reported by anvita21)
 
   - DefaultRing failed for constant polynomials over nonprime fields.
-    \[Reported by Stefan Kohl\]
+    (Reported by Stefan Kohl)
 
   - The method in ffeconway.gi that gets coefficients WRT to the
     canonical basis of the field from the representation is only correct
     if the basis is over the prime field. Added a TryNextMethod if this
-    is not the case. \[Reported by Alla Detinko\]
+    is not the case. (Reported by Alla Detinko)
 
   - Creating a large (\>2^16) field over a non-prime subfield went
-    completely wrong. \[Reported by Jack Schmidt, from Alla Detinko\]
+    completely wrong. (Reported by Jack Schmidt, from Alla Detinko)
 
   - A method for Coefficients for Conway polynomial FFEs didn't check
     that the basis provided was the canonical basis of the RIGHT field.
-    \[Reported by Bettina Eick\]
+    (Reported by Bettina Eick)
 
-  - An elementary abelian series was calculated wrongly. \[Reported by
-    N. Sieben\]
+  - An elementary abelian series was calculated wrongly. (Reported by
+    N. Sieben)
 
   - Orbits on sets of transformations failed.
 
@@ -4657,56 +4625,56 @@ Fixed bugs which could produce wrong results:
 Fixed bugs which could lead to crashes:
 
   - GAP crashed when the `PATH` environment variable was not set.
-    \[Reported by Robert F. Morse\]
+    (Reported by Robert F. Morse)
 
   - GAP could crash when started with option `-x 1`. Now the number
-    of columns is initialized with at least 2. \[Reported by Robert F.
-    Morse\]
+    of columns is initialized with at least 2. (Reported by Robert F.
+    Morse)
 
   - After loading a saved workspace GAP crashed when one tried to
     slice a compressed vector over a field with 2 \< q \<= 256 elements,
-    which had already existed in the saved workspace. \[Reported by
-    Laurent Bartholdi\]
+    which had already existed in the saved workspace. (Reported by
+    Laurent Bartholdi)
 
   - `FFECONWAY.WriteOverSmallestCommonField` tripped up when the common
     field is smaller than the field over which some of the vector
     elements are written, because it did a test based on the degree of
-    the element, not the field it is written over. \[Reported by Thomas
-    Breuer\]
+    the element, not the field it is written over. (Reported by Thomas
+    Breuer)
 
   - Fixed the following error: When an FFE in the Conway polynomial
     representation actually lied in a field that is handled in the
     internal representation (eg GF(3)) and you tried to write it over a
     bigger field that is ALSO handled internally (eg GF(9)) you got an
     element written over the larger field, but in the Conway polynomial
-    representation, which is forbidden. \[Reported by Jack Schmidt\]
+    representation, which is forbidden. (Reported by Jack Schmidt)
 
   - Attempting to compress a vector containing elements of a small
     finite field represented as elements of a bigger (external) field
-    caused a segfault. \[Reported by Edmund Robertson\]
+    caused a segfault. (Reported by Edmund Robertson)
 
   - GAP crashed when `BlistList` was called with a range and a list
-    containing large integers or non-integers. \[Reported by Laurent
-    Bartholdi\]
+    containing large integers or non-integers. (Reported by Laurent
+    Bartholdi)
 
   - GAP no longer crashes when `OnTuples` is called with a list that
-    contains holes. \[Reported by Thomas Breuer\]
+    contains holes. (Reported by Thomas Breuer)
 
 Other fixed bugs:
 
   - `Socle` for the trivial group could produce an error message.
 
   - `DirectoryContents` ran into an error
-    for immutable strings without trailing slash as argument. \[Reported
-    by Thomas Breuer\]
+    for immutable strings without trailing slash as argument. (Reported
+    by Thomas Breuer)
 
   - The functions `IsInjective` and
     `IsSingleValued` did not work for
-    general linear mappings with trivial (pre)image. \[Reported by Alper
-    Odabas\]
+    general linear mappings with trivial (pre)image. (Reported by Alper
+    Odabas)
 
   - Creating an enumerator for a prime field with more than 65536
-    elements ran into an infinite recursion. \[Reported by Akos Seress\]
+    elements ran into an infinite recursion. (Reported by Akos Seress)
 
   - The performance of `List`, `Filtered`, `Number`, `ForAll` and
     `ForAny` if applied to non-internally represented lists was
@@ -4717,11 +4685,11 @@ Other fixed bugs:
     improves performance in certain lookups.
 
   - A method for `IsSubset` was missing for the
-    case that exactly one argument is an inhomogeneous list. \[Reported
-    by Laurent Bartholdi\]
+    case that exactly one argument is an inhomogeneous list. (Reported
+    by Laurent Bartholdi)
 
   - Long integers in expressions are now printed (was not yet
-    implemented). \[Reported by Thomas Breuer\]
+    implemented). (Reported by Thomas Breuer)
 
   - Fixed kernel function for printing records.
 
@@ -4747,7 +4715,7 @@ Fixed bugs which could produce wrong results:
 
   - The methods of `ReadByte` for reading from
     files or terminals returned wrong results for characters in the
-    range `[128..255]`. \[Reported by Yevgen Muntyan\]
+    range `[128..255]`. (Reported by Yevgen Muntyan)
 
 Other fixed bugs:
 
@@ -4760,14 +4728,14 @@ Other fixed bugs:
     works with all types of lists.
 
   - Fixed a problem in choosing the prime in the Dixon-Schneider
-    algorithm. \[Reported by Toshio Sumi\]
+    algorithm. (Reported by Toshio Sumi)
 
 New or improved functionality:
 
   - `ReducedOrdinary` was used in the manual, but was not documented,
     being a synonym for the documented `ReducedCharacters`. Changed
-    manual examples to use the latter form. \[Reported by Vahid
-    Dabbaghian\]
+    manual examples to use the latter form. (Reported by Vahid
+    Dabbaghian)
 
 
 ## GAP 4.4 Update 8 (September 2006)
@@ -4796,11 +4764,11 @@ New or improved functionality:
   - Added a few new Conway polynomials computed by Kate Minola and John
     Bray.
 
-  - There is a new concept of *random sources*, see `IsRandomSource`, which provides random number generators
-    which are independent of each other. There is kernel code for the
-    Mersenne twister random number generator (based on the code by
-    Makoto Matsumoto distributed at
-    <http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html>). It
+  - There is a new concept of *random sources*, see `IsRandomSource`,
+    which provides random number generators which are independent of
+    each other. There is kernel code for the Mersenne twister random
+    number generator (based on the code by Makoto Matsumoto distributed
+    at <http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html>). It
     provides fast 32-bit pseudorandom integers with a period of length
     2^19937-1 and a 623-dimensional equidistribution. The library
     methods for random elements of lists and for random (long) integers
@@ -4808,29 +4776,27 @@ New or improved functionality:
 
   - In line editing mode (usual input mode without -n option) in lines
     starting with `gap> `, `> ` or `brk> ` this beginning part is
-    immediately removed. This is a convenient feature that allows one to
-    cut and paste input lines from other sessions or from manual
+    immediately removed. This is a convenient feature that allows one
+    to cut and paste input lines from other sessions or from manual
     examples into the current session.
 
 Fixed bugs which could produce wrong results:
 
-  - The function `Decomposition` returned
-    coefficient vectors also in certain situations where in fact no
-    decomposition exists. This happened only if the matrix entered as
-    the first argument contained irrational values and a row in the
-    matrix entered as the second argument did not respect the algebraic
-    conjugacy relations between the columns of the first argument. So
-    there was no problem for the usual cases that the two matrices are
-    integral or that they are lists of Brauer characters. \[Reported by
-    Jürgen Müller\]
+  - The function `Decomposition` returned coefficient vectors also in
+    certain situations where in fact no decomposition exists. This
+    happened only if the matrix entered as the first argument contained
+    irrational values and a row in the matrix entered as the second
+    argument did not respect the algebraic conjugacy relations between
+    the columns of the first argument. So there was no problem for the
+    usual cases that the two matrices are integral or that they are
+    lists of Brauer characters. (Reported by Jürgen Müller)
 
   - PC group homomorphisms can claim a wrong kernel after composition.
-    \[Reported by Serge Bouc\]
+    (Reported by Serge Bouc)
 
-  - The return value of `OctaveAlgebra` had
-    an inconsistent defining structure constants table for the case of
-    coefficients fields not containing the integer zero. \[Reported by
-    Gábor Nagy\]
+  - The return value of `OctaveAlgebra` had an inconsistent defining
+    structure constants table for the case of coefficients fields not
+    containing the integer zero. (Reported by Gábor Nagy)
 
   - The manual guarantees that a conjugator automorphism has a
     conjugating element in the group if possible. This was not
@@ -4853,56 +4819,55 @@ Fixed bugs which could produce wrong results:
     `IS_BLIST_REP` in its filter list.
 
   - `Orbits` did not respect a special `PositionCanonical` method for
-    right transversals. \[Reported by Steve Costenoble\]
+    right transversals. (Reported by Steve Costenoble)
 
   - Wrong results for `GcdInt` for some arguments on 64 bit systems
-    only. \[Reported by Robert Morse\]
+    only. (Reported by Robert Morse)
 
   - When prescribing a subgroup to be included, the low index algorithm
     for fp groups sometimes returned subgroups which are in fact
-    conjugate. (No subgroups are missing.) \[Reported by Ignaz Soroko\]
+    conjugate. (No subgroups are missing.) (Reported by Ignaz Soroko)
 
 Fixed bugs which could lead to crashes:
 
   - The command line option `-x` allowed arguments \> 256 which can then
     result in internal buffers overflowing. Now bigger numbers in the
-    argument are equivalent to `-x 256`. \[Reported by Michael Hartley\]
+    argument are equivalent to `-x 256`. (Reported by Michael Hartley)
 
 Other fixed bugs:
 
-  - Two special methods for the operation `CompositionMapping2` were not correct, such that
-    composing (and multiplying) certain group homomorphisms did not
-    work. \[Reported by Peter Mayr\]
+  - Two special methods for the operation `CompositionMapping2` were not
+    correct, such that composing (and multiplying) certain group
+    homomorphisms did not work. (Reported by Peter Mayr)
 
-  - In the definition of `FrobeniusCharacterValue`, it had been stated erroneously that the
-    value must lie in the field of p^n-th roots of unity; the correct
-    condition is that the value must lie in the field of (p^n-1)-th
-    roots of unity. \[Reported by Jack Schmidt\]
+  - In the definition of `FrobeniusCharacterValue`, it had been stated
+    erroneously that the value must lie in the field of p^n-th roots of
+    unity; the correct condition is that the value must lie in the
+    field of (p^n-1)-th roots of unity. (Reported by Jack Schmidt)
 
-  - The function `DirectProduct` failed when
-    one of the factors was known to be infinite.
+  - The function `DirectProduct` failed when one of the factors was known
+    to be infinite.
 
   - For a linear action homomorphism `PreImageElm` was very slow because
     there was no good method to check for injectivity, which is needed
-    for nearly all good methods for `PreImageElm`. This change adds such
-    a new method for `IsInjective`. \[Reported by Akos Seress\]
+    for nearly all good methods for `PreImageElm`. This change adds
+    such a new method for `IsInjective`. (Reported by Akos Seress)
 
   - Rare errors in the complement routine for permutation groups.
 
   - Blocks code now uses jellyfish-style random elements to avoid bad
     Schreier trees.
 
-  - A method for `IsPolycyclicGroup` has
-    been added. Such a method was missing so far.
+  - A method for `IsPolycyclicGroup` has been added. Such a method was
+    missing so far.
 
-  - Corrected `EpimorphismSchurCover`
-    to handle the trivial group correctly. Added new methods that follow
-    immediately from computing the Schur Cover of a group. The attribute
-    `Epicentre`, the operations
-    `NonabelianExteriorSquare` and
+  - Corrected `EpimorphismSchurCover` to handle the trivial group
+    correctly. Added new methods that follow immediately from computing
+    the Schur Cover of a group. The attribute `Epicentre`, the
+    operations `NonabelianExteriorSquare` and
     `EpimorphismNonabelianExteriorSquare`, and the property
-    `IsCentralFactor` are added to the
-    library with documentation and references.
+    `IsCentralFactor` are added to the library with documentation and
+    references.
 
   - Display the correct expression in a call stack trace if an operation
     was called somewhere up due to the evaluation of a unary or binary
@@ -4915,12 +4880,11 @@ Other fixed bugs:
     vectors/matrices easier. Nothing of this should be visible.
 
   - Corrected some details in the documentation of the GAP language.
-    \[Reported by Alexander Konovalov\]
+    (Reported by Alexander Konovalov)
 
-  - Now `PositionSorted` is much faster on
-    long mutable plain lists. (The former operation is substituted by a
-    function and a new operation `PositionSortedOp`.) \[Reported by
-    Silviu Radu\]
+  - Now `PositionSorted` is much faster on long mutable plain lists. (The
+    former operation is substituted by a function and a new operation
+    `PositionSortedOp`.) (Reported by Silviu Radu)
 
   - Now it is possible to switch repeated warnings off when working with
     iterative polynomial rings.
@@ -4930,23 +4894,23 @@ Other fixed bugs:
 
 New or improved functionality:
 
-  - The `Display` functionality for character
-    tables has been extended by addition of an option to show power maps
-    and centralizer orders in a format similar to that used in the
-    ATLAS. Furthermore the options handling is now hierarchical, in
-    order to admit more flexible overloading.
+  - The `Display` functionality for character tables has been extended by
+    addition of an option to show power maps and centralizer orders in
+    a format similar to that used in the ATLAS. Furthermore the options
+    handling is now hierarchical, in order to admit more flexible
+    overloading.
 
-  - For the function `LowIndexSubgroupsFpGroup`, there is now an iterator variant
-    `LowIndexSubgroupsFpGroupIterator`. \[Suggested (and based on code
-    contributed) by Michael Hartley\]
+  - For the function `LowIndexSubgroupsFpGroup`, there is now an iterator
+    variant `LowIndexSubgroupsFpGroupIterator`. (Suggested (and based
+    on code contributed) by Michael Hartley)
 
   - Semigroup functionality in GAP has been improved and extended.
-    Green's relations are now stored differently, making the system more
-    amenable to new methods for computing these relations in special
-    cases. It is now possible to calculate Green's classes etc. without
-    computing the entire semigroup or necessarily loading the package
-    **MONOID**. Furthermore, the Froidure-Pin algorithm has now been
-    implemented in GAP.
+    Green's relations are now stored differently, making the system
+    more amenable to new methods for computing these relations in
+    special cases. It is now possible to calculate Green's classes etc.
+    without computing the entire semigroup or necessarily loading the
+    package **MONOID**. Furthermore, the Froidure-Pin algorithm has now
+    been implemented in GAP.
 
   - Functionality for creating free products of any list of groups for
     which a finite presentation can be determined had been added. This
@@ -4958,43 +4922,43 @@ New or improved functionality:
     functionality.
 
   - Some new Straight Line Program (SLP) functionality has been added.
-    The new functions take given SLPs and create new ones by restricting
-    to a subset of the results, or to an intermediate result or by
-    calculating the product of the results of two SLPs.
+    The new functions take given SLPs and create new ones by
+    restricting to a subset of the results, or to an intermediate
+    result or by calculating the product of the results of two SLPs.
 
-  - New code has been added to allow group elements with memory; that
-    is, they store automatically how they were derived from some given
-    set of generators. Note that there is not yet documentation for this
+  - New code has been added to allow group elements with memory; that is,
+    they store automatically how they were derived from some given set
+    of generators. Note that there is not yet documentation for this
     functionality, but some packages already use it.
 
   - New code has been added to handle matrices and vectors in such a way
     that they do not change their representation in a generic manner.
 
-  - The `Irr` method for p-solvable p-modular Brauer
-    tables now keeps the order of the irreducibles in the ordinary
-    table.
+  - The `Irr` method for p-solvable p-modular Brauer tables now keeps the
+    order of the irreducibles in the ordinary table.
 
-  - GAP can now handle any finite field for which the Conway
-    polynomial is known or can be computed.
+  - GAP can now handle any finite field for which the Conway polynomial
+    is known or can be computed.
 
   - New Conway polynomials provided by John Bray and Kate Minola have
     been added.
 
   - The `ReadTest` methods for strings (filenames) and streams now
-    automatically set the screen width (see `SizeScreen`) to 80 before the tests, and reset it afterwards.
+    automatically set the screen width (see `SizeScreen`) to 80 before
+    the tests, and reset it afterwards.
 
   - Now a few more checks are done during the `configure` phase of
-    compiling for future use of some I/O functions of the C-library in a
-    package. Also the path to the GAP binaries for the GAP
-    compiler is now handled via autoconf. Finally, now `autoconf`
-    version 2.59 is used.
+    compiling for future use of some I/O functions of the C-library in
+    a package. Also the path to the GAP binaries for the GAP compiler
+    is now handled via autoconf. Finally, now `autoconf` version 2.59
+    is used.
 
 Fixed bugs which could produce wrong results:
 
   - Some technical errors in the functions for compressed vectors and
     matrices which could lead to corruption of internal data structures
-    and so to crashes or conceivably to wrong results. \[Reported by
-    Roman Schmied\]
+    and so to crashes or conceivably to wrong results. (Reported by
+    Roman Schmied)
 
   - A potential problem in the generic method for the undocumented
     operation `DirectFactorsOfGroup`: It was silently assumed that
@@ -5009,42 +4973,40 @@ Fixed bugs which could produce wrong results:
 
   - Given a class function object of value zero, an `Arithmetic
     Operations for Class Functions` method for a class function erroneously did not
-    return `fail`. \[Reported by Jack Schmidt\]
+    return `fail`. (Reported by Jack Schmidt)
 
   - The `Arithmetic Operations for Class Functions` method for a class
     function erroneously returned a finite number if one of the values
     was nonreal, not a cyclotomic integer, and had norm 1.
 
   - Two missing perfect groups were added, and the permutation degree
-    lowered on the perfect groups with the largest degrees. \[Reported
-    by Jack Schmidt\]
+    lowered on the perfect groups with the largest degrees. (Reported
+    by Jack Schmidt)
 
-  - When a character table was displayed with `Printing Character
-    Tables`, the centralizer
+  - When a character table was displayed with `Display`, the centralizer
     order displayed for the first class shown was not correct if it did
-    not involve all prime divisors of the group. \[Reported by Jack
-    Schmidt\]
+    not involve all prime divisors of the group. (Reported by Jack
+    Schmidt)
 
-  - The first argument of the function `VectorSpace` must be a field. This is checked from now on.
-    \[Reported by Laurent Bartholdi\]
+  - The first argument of the function `VectorSpace` must be a field.
+    This is checked from now on. (Reported by Laurent Bartholdi)
 
   - Up to now, it was possible to create a group object from a semigroup
-    of cyclotomics using `AsGroup`, although groups
-    of cyclotomics are not admissible. \[Reported by Alexander
-    Konovalov\]
+    of cyclotomics using `AsGroup`, although groups of cyclotomics are
+    not admissible. (Reported by Alexander Konovalov)
 
   - The documentation of `CharacteristicPolynomial(F,mat)` was ambiguous
     if `FieldOfMatrix(mat) <= F < DefaultFieldOfMatrix(mat)`. In
     particular, the result was representation dependent. This was fixed
-    by introducing a second field which specifies the vector space which
-    mat acts upon. \[Reported by Jack Schmidt\]
+    by introducing a second field which specifies the vector space
+    which mat acts upon. (Reported by Jack Schmidt)
 
   - `AssociatedReesMatrixSemigroupOfDClass` produced an incorrect
     sandwich matrix for the semigroup created. This matrix is an
     attribute set when creating the Rees matrix semigroup but is not
     used for creating the semigroup. The incorrect result was returned
-    when `SandwichMatrix` was called. \[Reported by Nelson Silva and
-    Joao Araujo\]
+    when `SandwichMatrix` was called. (Reported by Nelson Silva and
+    Joao Araujo)
 
   - The literal `"compiled"` was given an incorrect length. The kernel
     was then unable to find compiled library code as the search path was
@@ -5052,7 +5014,7 @@ Fixed bugs which could produce wrong results:
     used to invoke the `gac` compiler.
 
   - The twisting group in a generic wreath product might have had
-    intransitive action. \[Reported by Laurent Bartholdi\]
+    intransitive action. (Reported by Laurent Bartholdi)
 
   - There was an arithmetic bug in the polynomial reduction code.
 
@@ -5075,7 +5037,7 @@ Other fixed bugs:
 
   - `permutation^0` and `permutation^1` were not handled with special
     code in the kernel, hence were very slow for big permutations.
-    \[Reported by Max Neunhöffer\]
+    (Reported by Max Neunhöffer)
 
   - Added code to cache the induced pcgs for an arbitrary parent pcgs.
     (This code was formerly part of the **CRISP** package.)
@@ -5088,17 +5050,17 @@ Other fixed bugs:
     for membership test in groups which have an induced pcgs - added
     `GroupOfPcgs` attribute to pcgs in various methods - fixed
     declarations of `PcgsElementaryAbelianSeries`, `PcgsChiefSeries`
-    (the declared argument was a pcgs, not a group) \[Reported by Roman
-    Schmied\]
+    (the declared argument was a pcgs, not a group) (Reported by Roman
+    Schmied)
 
   - Corrected a term ordering problem encountered by the basis
     construction code for finite dimensional vector spaces of
-    multivariate rational functions. \[Reported by Jan Draisma\]
+    multivariate rational functions. (Reported by Jan Draisma)
 
   - When the factor of a finite dimensional group ring by an ideal was
     formed, a method intended for free algebras modulo relations was
     used, and the returned factor algebra could be used for (almost)
-    nothing. \[Reported by Heiko Dietrich\]
+    nothing. (Reported by Heiko Dietrich)
 
   - Up to now, `PowerMap` ran into an error when
     one asked for the n-th power map where n was not a small integer.
@@ -5107,41 +5069,41 @@ Other fixed bugs:
 
   - Up to now, the test whether a finite field element was contained in
     a group of finite field elements ran into an error if the element
-    was not in the field generated by the group elements. \[Reported by
-    Heiko Dietrich\]
+    was not in the field generated by the group elements. (Reported by
+    Heiko Dietrich)
 
   - Conjugacy classes of natural (special) linear groups are now always
     returned with trivial class first.
 
-  - Up to now, it could happen that `CheckFixedPoints` reduced an entry in its second argument to a list
-    containing only one integer but did not replace the list by that
-    integer; according to the conventions, this replacement should be
-    done.
+  - Up to now, it could happen that `CheckFixedPoints` reduced an entry
+    in its second argument to a list containing only one integer but
+    did not replace the list by that integer; according to the
+    conventions, this replacement should be done.
 
   - The functions `PrintTo` and `AppendTo` did not work correctly for
-    streams. \[Reported by Marco Costantini\]
+    streams. (Reported by Marco Costantini)
 
   - The function `Basis` did not return a value when it was called with
-    the argument `Rationals`. \[Reported by Klaus Lux\]
+    the argument `Rationals`. (Reported by Klaus Lux)
 
-  - For certain matrix groups, the function `StructureDescription`
-    raised an error message. The reason for this was that a trivial
-    method for `IsGeneralLinearGroup` for matrix groups in
-    `lib/grpmat.gi` which is ranked higher than the nontrivial method
-    for generic groups in `lib/grpnames.gi` called the operation
-    `IsNaturalGL`, for which there was no nontrivial method available.
-    \[Reported by Nilo de Roock\]
+  - For certain matrix groups, the function `StructureDescription` raised
+    an error message. The reason for this was that a trivial method for
+    `IsGeneralLinearGroup` for matrix groups in `lib/grpmat.gi` which
+    is ranked higher than the nontrivial method for generic groups in
+    `lib/grpnames.gi` called the operation `IsNaturalGL`, for which
+    there was no nontrivial method available. (Reported by Nilo de
+    Roock)
 
-  - Action on sets of length 1 was not correctly handled. \[Reported by
-    Mathieu Dutour\]
+  - Action on sets of length 1 was not correctly handled. (Reported by
+    Mathieu Dutour)
 
   - Now `WriteByte` admits writing zero characters to all streams.
-    \[Reported by Marco Costantini\]
+    (Reported by Marco Costantini)
 
-  - The conjugacy test for subgroups tests for elementary abelian
-    regular normal subgroup (EARNS) conjugacy. The fix will catch this
-    in the case that the second group has no EARNS. \[Reported by Andrew
-    Johnson\]
+  - The conjugacy test for subgroups tests for elementary abelian regular
+    normal subgroup (EARNS) conjugacy. The fix will catch this in the
+    case that the second group has no EARNS. (Reported by Andrew
+    Johnson)
 
   - So far, the UNIX installation didn't result in a correct gap.sh if
     the installation path contained space characters. Now it should
@@ -5169,7 +5131,7 @@ Fixed bugs which could produce wrong results:
 
   - The functions `EpimorphismSchurCover` and
     `AbelianInvariantsMultiplier` may have produced wrong results
-    without warning \[Reported by Colin Ingalls\]. These problems
+    without warning (Reported by Colin Ingalls). These problems
     are fixed. However, the methods currently used can be expected
     to be slower than the ones used before; we hope to fix this in
     the next version of GAP.
@@ -5195,7 +5157,7 @@ Fixed bugs which could produce wrong results:
     work correctly when one asked for a particular version of the
     package, via a version number starting with the character `=`,
     in the sense that a version with a larger version number was
-    loaded if it was available. \[Reported by Burkhard Höfling\]
+    loaded if it was available. (Reported by Burkhard Höfling)
 
   - The generator names constructed by `AlgebraByStructureConstants`
     were nonsense.
@@ -5207,11 +5169,11 @@ Fixed bugs which could produce wrong results:
   - The elements in a free magma ring have the filter
     `IsAssociativeElement` set whenever the elements in the
     underlying magma and in the coefficients ring have this filter
-    set. \[Reported by Randy Cone\]
+    set. (Reported by Randy Cone)
 
   - The function `InstallValue` must not be used for objects in the
     filter `IsFamily` because these objects are compared via
-    `IsIdenticalObj`. \[Reported by Max Neunhöffer\]
+    `IsIdenticalObj`. (Reported by Max Neunhöffer)
 
 Fixed bugs which could lead to crashes:
 
@@ -5224,10 +5186,10 @@ Fixed bugs which could lead to crashes:
     collection could be triggered during the computation such that newly
     created bags could become "old". It is not possible to provide test
     code because the error condition cannot easily be reproduced.
-    \[Reported by Klaus Lux\]
+    (Reported by Klaus Lux)
 
   - Minor bug that crashed GAP: The type of `IMPLICATIONS` could not
-    be determined in a fresh session. \[Reported by Marco Costantini\]
+    be determined in a fresh session. (Reported by Marco Costantini)
 
   - `Assert` caused an infinite loop if called as
     the first line of a function called from another function.
@@ -5241,14 +5203,14 @@ Other fixed bugs:
     orderings.
 
   - When testing for conjugacy of a primitive group to an imprimitive
-    group,GAP runs into an error in EARNS calculation. \[Reported
-    by John Jones\]
+    group,GAP runs into an error in EARNS calculation. (Reported
+    by John Jones)
 
   - The centre of a magma is commonly defined to be the set of
     elements that commute and associate with all elements. The
     previous definition left out "associate" and caused problems
     with extending the functionality to nonassociative loops.
-    \[Reported by Petr Vojtechovsky\]
+    (Reported by Petr Vojtechovsky)
 
   - New kernel methods for taking the intersection and difference
     between sets of substantially different sizes give a big
@@ -5258,33 +5220,30 @@ Other fixed bugs:
     `IsNaturalAlternatingGroup` are faster and should run much less
     often into inefficient tests.
 
-  - The perfect group library, see `Finite Perfect Groups`, is split
-    into several files which are loaded and unloaded to keep memory
-    usage down. The global variable `PERFSELECT` is a blist which
-    indicates which orders are currently loaded. An off-by-one
-    error wrongly added the last order of the previous file into
-    the list of valid orders when a new file was loaded. A
-    subsequent access to this order raises an error.
+  - The perfect group library, see `Finite Perfect Groups`, is split into
+    several files which are loaded and unloaded to keep memory usage
+    down. The global variable `PERFSELECT` is a blist which indicates
+    which orders are currently loaded. An off-by-one error wrongly
+    added the last order of the previous file into the list of valid
+    orders when a new file was loaded. A subsequent access to this
+    order raises an error.
 
   - Up to now, the method installed for testing the membership of
     rationals in the field of rationals via `IsRat` was not called;
-    instead a more general method was used that called `Conductor`
-    and thus was much slower. Now the special method has been
-    ranked up by changing the requirements in the method
-    installation.
+    instead a more general method was used that called `Conductor` and
+    thus was much slower. Now the special method has been ranked up by
+    changing the requirements in the method installation.
 
-  - Fixed a bug in `APPEND_VEC8BIT`, which was triggered in the
-    following situation: Let `e` be the number of field elements
-    stored in one byte. If a compressed 8bit-vector `v` had length
-    not divisible by `e` and another compressed 8-bit vector `w`
-    was appended, such that the sum of the lengths became divisible
-    by `e`, then one 0 byte too much was written, which destroyed
-    the `TNUM` of the next GAP object in memory. \[Reported by
-    Klaus Lux\]
+  - Fixed a bug in `APPEND_VEC8BIT`, which was triggered in the following
+    situation: Let `e` be the number of field elements stored in one
+    byte. If a compressed 8bit-vector `v` had length not divisible by
+    `e` and another compressed 8-bit vector `w` was appended, such that
+    the sum of the lengths became divisible by `e`, then one 0 byte too
+    much was written, which destroyed the `TNUM` of the next GAP object
+    in memory. (Reported by Klaus Lux)
 
-  - `PermutationCycle` returned `fail` if the cycle was not a
-    contiguous subset of the specified domain. \[Reported by Luc
-    Teirlinck\]
+  - `PermutationCycle` returned `fail` if the cycle was not a contiguous
+    subset of the specified domain. (Reported by Luc Teirlinck)
 
   - Now `Inverse` correctly returns `fail` for zeros in finite fields
     (and does no longer enter a break loop).
@@ -5293,105 +5252,100 @@ Other fixed bugs:
     argument was a group that knew that it was solvable.
 
   - The function `Debug` now prints a meaningful message if the user
-    tries to debug an operation. Also, the help file for `vi` is
-    now available in the case of several GAP root directories.
+    tries to debug an operation. Also, the help file for `vi` is now
+    available in the case of several GAP root directories.
 
   - It is no longer possible to create corrupt objects via ranges of
-    length \>2^28, resp. \>2^60 (depending on the architecture).
-    The limitation concerning the arguments of ranges is
-    documented. \[Reported by Stefan Kohl\]
+    length \>2^28, resp. \>2^60 (depending on the architecture). The
+    limitation concerning the arguments of ranges is documented.
+    (Reported by Stefan Kohl)
 
   - Now `IsElementaryAbelian` and
-    `ClassPositionsOfMinimalNormalSubgroups` are available for
-    ordinary character tables. Now the operation
-    `CharacterTableIsoclinic` is an attribute, and there is another
-    new attribute `SourceOfIsoclinicTable` that points back to the
-    original table; this is used for computing the Brauer tables of
-    those tables in the character table library that are computed
-    using `CharacterTableIsoclinic`. Now
-    `ClassPositionsOfDerivedSubgroup` avoids calling `Irr`, since
-    `LinearCharacters` is sufficient. Now
-    `ClassPositionsOfElementaryAbelianSeries` works also for the
-    table of the trivial group. Restrictions of character objects
-    know that they are characters.
+    `ClassPositionsOfMinimalNormalSubgroups` are available for ordinary
+    character tables. Now the operation `CharacterTableIsoclinic` is an
+    attribute, and there is another new attribute
+    `SourceOfIsoclinicTable` that points back to the original table;
+    this is used for computing the Brauer tables of those tables in the
+    character table library that are computed using
+    `CharacterTableIsoclinic`. Now `ClassPositionsOfDerivedSubgroup`
+    avoids calling `Irr`, since `LinearCharacters` is sufficient. Now
+    `ClassPositionsOfElementaryAbelianSeries` works also for the table
+    of the trivial group. Restrictions of character objects know that
+    they are characters.
 
-    A few formulations in the documentation concerning character
-    tables have been improved slightly.
+    A few formulations in the documentation concerning character tables
+        have been improved slightly.
 
-  - Up to now, `IsPGroup` has rarely been set. Now many basic
-    operations such as `SylowSubgroup` set this attribute on the
-    returned result.
+  - Up to now, `IsPGroup` has rarely been set. Now many basic operations
+    such as `SylowSubgroup` set this attribute on the returned result.
 
   - Computing an enumerator for a semigroup required too much time
     because it used all elements instead of the given generators.
-    \[Reported by Manuel Delgado\]
+    (Reported by Manuel Delgado)
 
-  - Avoid potential error message when working with automorphism
-    groups.
+  - Avoid potential error message when working with automorphism groups.
 
   - Fixed wrong page references in manual indices.
 
-  - Make `MutableCopyMat` an operation and install the former
-    function which does call `List` with `ShallowCopy` the default
-    method for lists. Also use this in a few appropriate places.
+  - Make `MutableCopyMat` an operation and install the former function
+    which does call `List` with `ShallowCopy` the default method for
+    lists. Also use this in a few appropriate places.
 
-  - An old DEC compiler doesn't like C preprocessor directives that
-    are preceded by whitespace. Removed such whitespace. \[Reported
-    by Chris Wensley\]
+  - An old DEC compiler doesn't like C preprocessor directives that are
+    preceded by whitespace. Removed such whitespace. (Reported by Chris
+    Wensley)
 
 New or improved functionality:
 
   - The primitive groups library has been extended to degree 2499.
 
-  - New operation `Remove` and extended
-    functionality of `Add` with an optional argument
-    giving the position of the insertion. They are based on an efficient
-    kernel function `COPY_LIST_ENTRIES`.
+  - New operation `Remove` and extended functionality of `Add` with an
+    optional argument giving the position of the insertion. They are
+    based on an efficient kernel function `COPY_LIST_ENTRIES`.
 
   - Added fast kernel implementation of Tarjan's algorithm for strongly
     connected components of a directed graph.
 
-  - Now `IsProbablyPrimeInt` can be used
-    with larger numbers. (Made internal function `TraceModQF`
-    non-recursive.)
+  - Now `IsProbablyPrimeInt` can be used with larger numbers. (Made
+    internal function `TraceModQF` non-recursive.)
 
-  - A new operation `PadicValuation` and a
-    corresponding method for rationals.
+  - A new operation `PadicValuation` and a corresponding method for
+    rationals.
 
-  - A new operation `PartialFactorization` has been added, and a corresponding method for
-    integers has been installed. This method allows one to specify the
-    amount of work to be spent on looking for factors.
+  - A new operation `PartialFactorization` has been added, and a
+    corresponding method for integers has been installed. This method
+    allows one to specify the amount of work to be spent on looking for
+    factors.
 
   - The generators of full s. c. algebras can now be accessed with the
-    dot operator. \[Reported by Marcus Bishop\]
+    dot operator. (Reported by Marcus Bishop)
 
   - New Conway polynomials computed by Kate Minola, John Bray, Richard
     Parker.
 
-  - A new attribute `EpimorphismFromFreeGroup`. The code has been written by Alexander
-    Hulpke.
+  - A new attribute `EpimorphismFromFreeGroup`. The code has been written
+    by Alexander Hulpke.
 
-  - The functions `Lambda`, `Phi`,
-    `Sigma`, and `Tau` have been
-    turned into operations, to admit the installation of methods for
-    arguments other than integers.
+  - The functions `Lambda`, `Phi`, `Sigma`, and `Tau` have been turned
+    into operations, to admit the installation of methods for arguments
+    other than integers.
 
-  - Up to now, one could assign only lists with `InstallFlushableValue`. Now also records are admitted.
+  - Up to now, one could assign only lists with `InstallFlushableValue`.
+    Now also records are admitted.
 
-  - `InstallMethod` now admits entering a
-    list of strings instead of a list of required filters. Each such
-    string must evaluate to a filter when used as the argument of
-    `EvalString`. The advantage of this variant
-    is that these strings are used to compose an info string (which is
-    shown by `ApplicableMethod`) that reflects exactly the required
-    filters.
+  - `InstallMethod` now admits entering a list of strings instead of a
+    list of required filters. Each such string must evaluate to a
+    filter when used as the argument of `EvalString`. The advantage of
+    this variant is that these strings are used to compose an info
+    string (which is shown by `ApplicableMethod`) that reflects exactly
+    the required filters.
 
   - In test files that are read with `ReadTest`, the assertion level is
     set to 2 between `START_TEST` and `STOP_TEST`. This may result in
     runtimes for the tests that are substantially longer than the usual
     runtimes with default assertion level 0. In particular this is the
-    reason why some of the standard test files require more time in
-    GAP 4.4.6 than in GAP 4.4.5.
+    reason why some of the standard test files require more time in GAP
+    4.4.6 than in GAP 4.4.5.
 
   - Some very basic functionality for floats.
 
@@ -5409,11 +5363,11 @@ Fixed bugs which could produce wrong results:
     the embedding then a permutation had been returned instead of
     `fail`.
 
-  - Two problems with `PowerMod` for polynomials. \[Reported by Jack
-    Schmidt\]
+  - Two problems with `PowerMod` for polynomials. (Reported by Jack
+    Schmidt)
 
   - Some methods for computing the sum of ideals returned the first
-    summand instead of the sum. \[Reported by Alexander Konovalov\]
+    summand instead of the sum. (Reported by Alexander Konovalov)
 
   - Wrong result in `Intersection` for pc groups.
 
@@ -5426,11 +5380,11 @@ Fixed bugs which could produce wrong results:
     available in the ext-manual. This new feature is used in
     `LoadPackage`, now one can require a
     specific version of a package.
-    
+
     The library code still contained parts of the handling of completion
     files for packages, which does not work and therefore had already
     been removed from the documentation. This code has now been removed.
-    
+
     Now a new component `PreloadFile` is supported in `PackageInfo.g`
     files; if it is bound then the file in question is read
     immediately before the package or its documentation is
@@ -5443,23 +5397,23 @@ Fixed bugs which could produce wrong results:
   - A bug which caused `InducedPcgs` to return a pcgs which is not
     induced wrt. the parent pcgs of `pcgs`. This may cause
     unpredictable behaviour, e. g. when `SiftedPcElement` is used
-    subsequently. \[Reported by Alexander Konovalov\]
+    subsequently. (Reported by Alexander Konovalov)
 
   - Fixed a bug in `SmallGroupsInformation(512)`.
 
   - `PowerModCoeffs` with exponent 1 for compressed vectors did not
     reduce (a copy of) the input vector before returning it.
-    \[Reported by Frank Lübeck\]
+    (Reported by Frank Lübeck)
 
   - Sorting a mutable non-plain list (e.g., a compressed matrix over
     fields of order \< 257) could potentially destroy that object.
-    \[Reported by Alexander Hulpke\]
+    (Reported by Alexander Hulpke)
 
   - Under rare circumstances computing the closure of a permutation
     group by a normalizing element could produce a corrupted
     stabilizer chain. (The underlying algorithm uses random
     elements, probability of failure was below 1 percent).
-    \[Reported by Thomas Breuer\]
+    (Reported by Thomas Breuer)
 
 Fixed bugs which could lead to crashes:
 
@@ -5467,34 +5421,34 @@ Fixed bugs which could lead to crashes:
     no garbage collection during the core printing function `Pr`, which
     is not correct. This could cause GAP in rare cases to crash
     during printing permutations, cyclotomics or strings with zero
-    bytes. \[Reported by Warwick Harvey\]
+    bytes. (Reported by Warwick Harvey)
 
 Other fixed bugs:
 
   - A rare problem with the choice of prime in the Dixon-Schneider
-    algorithm for computing the character table of a group. \[Reported
-    by Jack Schmidt\]
+    algorithm for computing the character table of a group. (Reported
+    by Jack Schmidt)
 
-  - `DirectProduct` for trivial permutation
-    groups returned a strange object.
+  - `DirectProduct` for trivial permutation groups returned a strange
+    object.
 
   - A problem with `PolynomialReduction` running into an infinite loop.
 
-  - Adding linear mappings with different image domains was not
-    possible. \[Reported by Pasha Zusmanovich\]
+  - Adding linear mappings with different image domains was not possible.
+    (Reported by Pasha Zusmanovich)
 
   - Multiplying group ring elements with rationals was not possible.
-    \[Reported by Laurent Bartholdi\]
+    (Reported by Laurent Bartholdi)
 
-  - `Random` now works for finite fields of size
-    larger than 2^28. \[Reported by Jack Schmidt\]
+  - `Random` now works for finite fields of size larger than 2^28.
+    (Reported by Jack Schmidt)
 
   - Univariate polynomial creators did modify the coefficient list
-    passed. \[Reported by Jürgen Müller\]
+    passed. (Reported by Jürgen Müller)
 
-  - Fixed `IntHexString` to accept arguments
-    not in `IsStringRep`; the argument is now first converted if
-    necessary. \[Reported by Kenn Heinrich\]
+  - Fixed `IntHexString` to accept arguments not in `IsStringRep`; the
+    argument is now first converted if necessary. (Reported by Kenn
+    Heinrich)
 
   - The library code for stabilizer chains contained quite some explicit
     references to the identity `()`. This is unfortunate if one works
@@ -5503,58 +5457,59 @@ Other fixed bugs:
     memory, how they were obtained from the group generators. For such
     cases it is much cleaner to use the `One(...)` operation instead of
     `()`, such that the library code can be used for a richer class of
-    group objects. This fix contains only rather trivial changes `()` to
-    `One(...)` which were carefully checked by me. The tests for
+    group objects. This fix contains only rather trivial changes `()`
+    to `One(...)` which were carefully checked by me. The tests for
     permutation groups all run without a problem. However, it is
     relatively difficult to provide test code for this particular
-    change, since the "improvement" only shows up when one generates new
-    group objects. This is for example done in the package **recog**
-    which is in preparation. \[Reported by Akos Seress and Max
-    Neunhöffer\]
+    change, since the "improvement" only shows up when one generates
+    new group objects. This is for example done in the package
+    **recog** which is in preparation. (Reported by Akos Seress and Max
+    Neunhöffer)
 
   - Using `{}` to select elements of a known inhomogenous dense list
     produced a list that might falsely claim to be known inhomogenous,
-    which could lead to a segfault if the list typing code tried to mark
-    it homogenous, since the code intended to catch such errors also had
-    a bug. \[Reported by Steve Linton\]
+    which could lead to a segfault if the list typing code tried to
+    mark it homogenous, since the code intended to catch such errors
+    also had a bug. (Reported by Steve Linton)
 
-  - The record for the generic iterator construction of subspaces
-    domains of non-row spaces was not complete.
+  - The record for the generic iterator construction of subspaces domains
+    of non-row spaces was not complete.
 
   - When a workspace has been created without packages(`-A` option) and
-    is loaded into a GAP session without packages (same option) then
-    an error message is printed.
+    is loaded into a GAP session without packages (same option) then an
+    error message is printed.
 
-  - So far the functions `IsPrimeInt` and
-    `IsProbablyPrimeInt` are essentially
-    the same except that `IsPrimeInt` issues an additional warning when
-    (non-proven) probable primes are considered as primes.
-    
+  - So far the functions `IsPrimeInt` and `IsProbablyPrimeInt` are
+    essentially the same except that `IsPrimeInt` issues an additional
+    warning when (non-proven) probable primes are considered as primes.
+
     These warnings now print the probable primes in question as well; if
-    a probable prime is used several times then the warning is also
-    printed several times; there is no longer a warning for some known
-    large primes; the warnings can be switched off. See `IsPrimeInt` for more details.
-    
-    If we get a reasonable primality test in GAP we will change the
-    definition of `IsPrimeInt` to do a proper test.
+        a probable prime is used several times then the warning is also
+        printed several times; there is no longer a warning for some
+        known large primes; the warnings can be switched off. See
+        `IsPrimeInt` for more details.
 
-  - Corrected some names of primitive groups in degree 26. \[Reported by
-    Robert F. Bailey\]
+    If we get a reasonable primality test in GAP we will change the
+        definition of `IsPrimeInt` to do a proper test.
+
+  - Corrected some names of primitive groups in degree 26. (Reported by
+    Robert F. Bailey)
 
 New or improved functionality:
 
   - Several changes for `ConwayPolynomial`:
-    
+
       - many new pre-computed polynomials
-    
+
       - put data in several separate files (only read when needed)
-    
+
       - added info on origins of pre-computed polynomials
-    
-      - improved performance of `ConwayPolynomial` and `IsPrimitivePolynomial` for p \< 256
-    
+
+      - improved performance of `ConwayPolynomial` and
+      `IsPrimitivePolynomial` for p < 256
+
       - improved documentation of `ConwayPolynomial`
-    
+
       - added and documented new functions `IsCheapConwayPolynomial` and
         `RandomPrimitivePolynomial`
 
@@ -5594,14 +5549,14 @@ New or improved functionality:
     `IsDocumentedVariable`.)
 
   - The mechanisms for testing GAP has been improved:
-    
+
       - The information whether a test file belongs to the list in
         `tst/testall.g` is now stored in the test file itself.
-    
+
       - Some targets for testing have been added to the `Makefile` in
         the GAP root directory, the output of the tests goes to the
         new directory `dev/log`.
-    
+
       - Utility functions for testing are in the new file
         `tst/testutil.g`. Now the loops over (some or all) files
         `tst/*.tst` can be performed with a function call, and the file
@@ -5609,11 +5564,11 @@ New or improved functionality:
         `tst/testfull.g` is now obsolete. The remormalization of the
         scaling factors can now be done using a GAP function, so the
         file `tst/renorm.g` is obsolete.
-    
+
       - Now the functions `START_TEST` and `STOP_TEST` use components in
         `GAPInfo` instead of own globals, and the random number
         generator is always reset in `START_TEST`.
-    
+
       - `GAPInfo.SystemInformation` now takes two arguments, now one can
         use it easier in the tests.
 
@@ -5790,7 +5745,7 @@ committed to our policy of maintaining upward compatibility whenever
 sensibly possible.
 
   - Groebner Bases:
-    
+
     Buchberger's algorithm to compute Groebner Bases has been
     implemented in GAP. (A. Hulpke)
 
@@ -5816,8 +5771,8 @@ sensibly possible.
   - A method for computing the Galois group of a rational polynomial is
     available again. (A. Hulpke)
 
-  - The algorithm for `BrauerCharacterValue` has been extended to the case where the
-    splitting field is not supported in GAP. (T. Breuer)
+  - The algorithm for `BrauerCharacterValue` has been extended to the
+    case where the splitting field is not supported in GAP. (T. Breuer)
 
   - Brauer tables of direct products can now be constructed from the
     known Brauer tables of the direct factors. (T. Breuer)
