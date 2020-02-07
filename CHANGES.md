@@ -3673,8 +3673,7 @@ an introduction to GAP 4.5, accompanying its release announcement.
         `SimpleGroup`, `SmallSimpleGroup`, `SimpleGroupsIterator` and
         `AllSmallNonabelianSimpleGroups`.
 
-      - See also packages **CTblLib**, **IRREDSOL** and **Smallsemi**
-        listed in Section [7.2-2](chap.md#X7D1ECE3D8403AC6F).
+      - See also packages **CTblLib**, **IRREDSOL** and **Smallsemi**.
 
   - Many more methods are now available for the built-in floating point
     numbers.
