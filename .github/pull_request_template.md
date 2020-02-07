@@ -8,7 +8,7 @@ Thank You!
 
 If this pull request should be mentioned in the release notes, 
 please provide a short description matching the style of the GAP
-CHANGES.md file in the root directory.
+`CHANGES.md` file in the root directory.
 
 ## Further details
 

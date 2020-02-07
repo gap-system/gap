@@ -27,7 +27,7 @@ In addition to this manual, there is the <E>&GAP; Reference Manual</E>
 <Alt Only="HTML">(see <Ref BookName="ref" Label="Preface"/>)</Alt>
 containing detailed documentation of the mathematical functionality of &GAP;.
 <P/>
-There is also a document CHANGES.md in the root directory on the
+There is also a document <F>CHANGES.md</F> in the root directory on the
 most essential changes from previous &GAP; releases.
 
 A lot of the functionality of the system and a number of

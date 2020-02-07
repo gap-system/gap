@@ -192,11 +192,11 @@ adjusted since test codes are now distributed across multiple files. The
 these files, but it does not save them to a file, testing them <Q>on the fly</Q>.
 </Item>
 
-<Mark>Prepare an overview of changes for the CHANGES.md file</Mark>
+<Mark>Prepare an overview of changes for the <F>CHANGES.md</F> file</Mark>
 <Item>
 If regular nightly/weekly tests go well and you hope to wrap a suitable
 release candidate, you may start to prepare an overview of changes that
-will appear in the next release in CHANGES.md, combining it from
+will appear in the next release in <F>CHANGES.md</F>, combining it from
 descriptions provided in files from the <F>dev/Updates</F> directory.
 <P/>
 You may postpone this step until the very release, or perform it in several
