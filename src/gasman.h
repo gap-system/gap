@@ -151,6 +151,46 @@ EXPORT_INLINE UInt TNUM_BAG(Bag bag)
     return CONST_BAG_HEADER(bag)->type;
 }
 
+/****************************************************************************
+**
+*F  ReadCheck(<bag>) . . . . . . . . . . . . . is the bag readable in HPCGAP?
+*F  WriteCheck(<bag>)  . . . . . . . . . . . . is the bag writable in HPCGAP?
+*F  HandleReadGuardError(<bag>)  . . . . . . . . . . signal read access error
+*F  HandleWriteGuardError(<bag>) . . . . . . . . .  signal write access error
+**
+**  These funtion handle access checks in HPCGAP, i.e. whether a bag can
+**  safely be read or modified without causing race conditions. These are
+**  called in functions such as PTR_BAG() and CONST_PTR_BAG(), which should
+**  implicitly or explicitly guard all object accesses. In order to access
+**  objects without triggering checks, alternative functions UNSAFE_PTR_BAG()
+**  and UNSAFE_CONST_PTR_BAG() are provided.
+*/
+#ifdef HPCGAP
+extern int ExtendedGuardCheck(Bag) PURE_FUNC;
+
+EXPORT_INLINE int ReadCheck(Bag bag)
+{
+    Region *region;
+    region = REGION(bag);
+    if (!region)
+        return 1;
+    if (region->owner == GetTLS())
+        return 1;
+    if (region->readers[TLS(threadID)])
+        return 1;
+    return ExtendedGuardCheck(bag);
+}
+
+EXPORT_INLINE int WriteCheck(Bag bag)
+{
+    Region * region;
+    region = REGION(bag);
+    return !region || region->owner == GetTLS() || ExtendedGuardCheck(bag);
+}
+
+extern void HandleReadGuardError(Bag) NORETURN;
+extern void HandleWriteGuardError(Bag) NORETURN;
+#endif // HPCGAP
 
 /****************************************************************************
 **
@@ -310,33 +350,6 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
 **  the application  must inform {\Gasman}  that it  has changed  the bag, by
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
 */
-#ifdef HPCGAP
-extern int ExtendedGuardCheck(Bag) PURE_FUNC;
-
-EXPORT_INLINE int ReadCheck(Bag bag)
-{
-    Region *region;
-    region = REGION(bag);
-    if (!region)
-        return 1;
-    if (region->owner == GetTLS())
-        return 1;
-    if (region->readers[TLS(threadID)])
-        return 1;
-    return ExtendedGuardCheck(bag);
-}
-
-EXPORT_INLINE int WriteCheck(Bag bag)
-{
-    Region * region;
-    region = REGION(bag);
-    return !region || region->owner == GetTLS() || ExtendedGuardCheck(bag);
-}
-
-extern void HandleReadGuardError(Bag) NORETURN;
-extern void HandleWriteGuardError(Bag) NORETURN;
-#endif // HPCGAP
-
 EXPORT_INLINE Bag *PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
