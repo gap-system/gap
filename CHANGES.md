@@ -1,6 +1,6 @@
-# GAP - Changes from Earlier Versions
+# GAP - history of changes
 
-### Changes in GAP 4.11.0 
+### Changes in GAP 4.11.0 (February 2020)
 
 These changes are also listed on the Wiki page
 <https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes>.
