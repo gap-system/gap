@@ -1301,7 +1301,7 @@ This is the first public release of GAP 4.9.
   - Extra hint in "No Method Found" error message if one of the arguments
     is `fail` ([#460](https://github.com/gap-system/gap/pull/460))
 
-  - Tell Sylow subgroups of natural A\_n or S\_n their size when we make
+  - Tell Sylow subgroups of natural A_n or S_n their size when we make
     them ([#529](https://github.com/gap-system/gap/pull/529))
 
   - Some small enhancements on Sylow and Hall subgroup computations,
@@ -2718,8 +2718,8 @@ This is the first public release of GAP 4.7.
   - Computing the exponent of a finite group G could be extremely slow.
     This was due to a slow default method being used, which computed all
     conjugacy classes of elements in order to compute the exponent. We
-    now instead compute Sylow subgroups P\_1, ..., P\_k of G and use the
-    easily verified equality exp(G) = exp(P\_1) x ... x exp(P\_k). This
+    now instead compute Sylow subgroups P_1, ..., P_k of G and use the
+    easily verified equality exp(G) = exp(P_1) x ... x exp(P_k). This
     is usually at least as fast and in many cases orders of magnitude
     faster.
 
@@ -3264,7 +3264,7 @@ release of GAP 4.5.4 are:
     generation of **GAPDoc** manuals.
 
   - **Congruence** package by A. Konovalov, which provides functions to
-    construct various canonical congruence subgroups in SL\_2(ℤ), and
+    construct various canonical congruence subgroups in SL_2(ℤ), and
     also intersections of a finite number of such subgroups, implements
     the algorithm for generating Farey symbols for congruence subgroups
     and uses it to produce a system of independent generators for these
@@ -3467,12 +3467,12 @@ GAP 4.5.4 release:
     algorithms for convex geometry.
 
   - **PolymakeInterface** package by T. Baechler and S. Gutsche,
-    providing a link to the callable library of the **polymake** system
-    (<http://www.polymake.org>).
+    providing a link to the callable library of the
+    [**polymake**](http://www.polymake.org) system.
 
   - **ToolsForHomalg** package by M. Barakat, S. Gutsche and M.
     Lange-Hegermann, which provides some auxiliary functionality for
-    the **homalg** project (<http://homalg.math.rwth-aachen.de/>).
+    the [**homalg**](http://homalg.math.rwth-aachen.de/) project.
 
 
 ## GAP 4.5.5 (July 2012)
@@ -3557,7 +3557,7 @@ GAP 4.5.4 release:
     way it is possible to configure GAP to not load these packages via
     changing the default value of `"PackagesToLoad"`.
 
-  - The conjugacy test in S\_n for intransitive subgroups was improved.
+  - The conjugacy test in S_n for intransitive subgroups was improved.
     This deals with inefficiency issue in the case reported by Stefan
     Kohl.
 
@@ -3589,8 +3589,8 @@ an introduction to GAP 4.5, accompanying its release announcement.
 
 ### Performance improvements:
 
-  - The GAP kernel now uses **GMP** (GNU multiple precision arithmetic
-    library, <http://gmplib.org/>) for faster large integer arithmetic.
+  - The GAP kernel now uses [**GMP**](http://gmplib.org/) (GNU multiple precision arithmetic
+    library, for faster large integer arithmetic.
 
   - Improved performance for records with large number of components.
 
@@ -3679,7 +3679,7 @@ an introduction to GAP 4.5, accompanying its release announcement.
   - Improved code for determining transversal and double coset
     representatives in large groups.
 
-  - Improvements in `Normalizer` for S\_n.
+  - Improvements in `Normalizer` for S_n.
 
   - Smith normal form of a matrix may be computed over arbitrary
     euclidean rings, see `NormalFormIntMat`.
@@ -3857,16 +3857,15 @@ With the release of GAP 4.5, we also encourage more users to take
 advantage of the increasingly mature binary distributions which are now
 available. These include:
 
-  - The binary `rsync` distribution for GAP on Linux PCs with i686
-    or x86\_64 compatible processors provided by Frank Lübeck, see
-    <http://www.math.rwth-aachen.de/~Frank.Luebeck/gap/rsync>.
+  - The binary [`rsync` distribution](http://www.math.rwth-aachen.de/~Frank.Luebeck/gap/rsync)
+    for GAP on Linux PCs with i686 or x86_64 compatible processors provided by Frank Lübeck.
 
-  - **BOB**, a tool for Linux and Mac OS X to download and build GAP
-    and its packages from source provided by M. Neunhöffer:
-    <http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html>.
+  - [**BOB**](http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob.html),
+    a tool for Linux and Mac OS X to download and build GAP
+    and its packages from source provided by M. Neunhöffer.
 
-  - The GAP installer for Windows provided by Alexander Konovalov:
-    <https://www.gap-system.org/ukrgap/wininst/>.
+  - The [GAP installer for Windows](https://www.gap-system.org/ukrgap/wininst/),
+    provided by Alexander Konovalov.
 
 In the near future, we also hope to have a binary distribution for Mac
 OS X.
@@ -3958,9 +3957,9 @@ Other changes in the user interface include:
 ### Better documentation
 
 The main GAP manuals have been converted to the **GAPDoc** format
-provided by the **GAPDoc** package by Frank Lübeck and Max Neunhöffer
-(<http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc>). This
-documentation format is already used by many packages and is now
+provided by the [**GAPDoc**](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc) package
+by Frank Lübeck and Max Neunhöffer.
+This documentation format is already used by many packages and is now
 recommended for all GAP documentation.
 
 Besides improvements to the documentation layout in all formats (text,
@@ -3968,7 +3967,7 @@ PDF and HTML), the new GAP manuals incorporate a large number of
 corrections, clarifications, additions and updated examples.
 
 We now provide two HTML versions of the manual, one of them with
-**MathJax** (<http://www.mathjax.org>) support for better display of
+[**MathJax**](http://www.mathjax.org) support for better display of
 mathematical symbols. Also, there are two PDF versions of the manual - a
 coloured and a monochrome one.
 
@@ -4070,13 +4069,13 @@ release of GAP 4.4.12 are:
     q-Schur algebras (this package is a port of the GAP 3 package
     **Specht 2.4** to GAP 4).
 
-  - **Homalg** project by M. Barakat, S. Gutsche, M. Lange-Hegermann et
+  - [**Homalg**](http://homalg.math.rwth-aachen.de/) project by
+    M. Barakat, S. Gutsche, M. Lange-Hegermann et
     al., containing the following packages for the homological algebra:
     **homalg**, **ExamplesForHomalg**, **Gauss**, **GaussForHomalg**,
     **GradedModules**, **GradedRingForHomalg**, **HomalgToCAS**,
-    **IO\_ForHomalg**, **LocalizeRingForHomalg**, **MatricesForHomalg**,
-    **Modules**, **RingsForHomalg** and **SCO** (see
-    <http://homalg.math.rwth-aachen.de/>).
+    **IO_ForHomalg**, **LocalizeRingForHomalg**, **MatricesForHomalg**,
+    **Modules**, **RingsForHomalg** and **SCO**.
 
   - **MapClass** package by A. James, K. Magaard and S. Shpectorov to
     calculate the mapping class group orbits for a given finite group.
@@ -4094,9 +4093,8 @@ release of GAP 4.4.12 are:
     groups, matrix groups and projective groups).
 
   - **SCSCP** package by A. Konovalov and S. Linton, implementing the
-    Symbolic Computation Software Composability Protocol (**SCSCP**, see
-    <http://www.symbolic-computation.org/scscp>) for GAP, which
-    provides interfaces to link a GAP instance with another copy of
+    Symbolic Computation Software Composability Protocol [**SCSCP**](http://www.symbolic-computation.org/scscp)
+    for GAP, which provides interfaces to link a GAP instance with another copy of
     GAP or other **SCSCP**-compliant system running locally or
     remotely.
 
@@ -4714,8 +4712,8 @@ Finally, the following packages are withdrawn:
   - There is a new concept of *random sources*, see `IsRandomSource`,
     which provides random number generators which are independent of
     each other. There is kernel code for the Mersenne twister random
-    number generator (based on the code by Makoto Matsumoto distributed
-    at <http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html>). It
+    number generator (based on the code by Makoto Matsumoto available
+    [here](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html)). It
     provides fast 32-bit pseudorandom integers with a period of length
     2^19937-1 and a 623-dimensional equidistribution. The library
     methods for random elements of lists and for random (long) integers
@@ -5088,7 +5086,7 @@ discuss until the next update how to improve this feature.
   - `NaturalHomomorphismByNormalSubgroup` for FpGroups did
     unnecessary rewrites.
 
-  - The alternating group A\_3 incorrectly claimed to be not simple.
+  - The alternating group A_3 incorrectly claimed to be not simple.
 
   - `ExponentSyllable` for straight line program elements gave a wrong
     result.
@@ -5767,7 +5765,7 @@ The following new Packages have been accepted.
     suggestion of H. Pahlings.
 
   - New improved methods for normalizer and subgroup conjugation in
-    S\_n have been installed and new improved methods for
+    S_n have been installed and new improved methods for
     `IsNaturalSymmetricGroup` and `IsNaturalAlternatingGroup` have
     been implemented. These improve the available methods when
     groups of large degrees are given.
@@ -5889,7 +5887,7 @@ more flexible, GAP package interface.
 
 Details of these changes can be found in the document "Migrating to GAP
 4" available at the GAP website, see
-<https://www.gap-system.org/Gap3/migratedoc.pdf>.
+[here](https://www.gap-system.org/Gap3/migratedoc.pdf).
 
 It is perhaps worth mentioning a few points here.
 
