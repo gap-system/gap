@@ -2,8 +2,8 @@
 
 ## GAP 4.11.0 (February 2020)
 
-These changes are also listed on the Wiki page
-<https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes>.
+These changes are also listed on the
+[Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
 
 ### New features and major changes
 
@@ -324,8 +324,7 @@ based on the **CAP** package and implements monoidal structures for
 
 Unfortunately we had to withdraw the **QaoS** package from distribution
 of GAP, as the servers it crucially relies on for its functionality have
-been permanently retired some time ago and are not coming back (see
-<https://github.com/gap-packages/qaos/issues/13> for details).
+been permanently retired some time ago and are not coming back ([details](https://github.com/gap-packages/qaos/issues/13)).
 
 
 ## GAP 4.10.1 (February 2019)
@@ -1030,8 +1029,8 @@ No longer redistributed with GAP:
   - The **linboxing** package has been unusable (it does not compile)
     for several years now, and is unmaintained. It was therefore dropped
     from the GAP package distribution. If anybody is willing to take
-    over and fix the package, the latest sources are available at
-    <https://github.com/gap-packages/linboxing>.
+    over and fix the package, the latest sources are available on
+    [github](https://github.com/gap-packages/linboxing).
 
   - The **recogbase** package has been merged into the `recog` package,
     and therefore is no longer distributed with GAP.
@@ -1055,9 +1054,8 @@ This release contains updated versions of 18 packages from GAP 4.9.2
 distribution. Additionally, it has three new packages:
 
   - The **curlInterface** package by Christopher Jefferson and Michael
-    Torpey, which provides a simple wrapper around **libcurl** library
-    (<https://curl.haxx.se/>) to allow downloading files over http, ftp
-    and https protocols.
+    Torpey, which provides a simple wrapper around **libcurl** [library](https://curl.haxx.se/)
+    to allow downloading files over http, ftp and https protocols.
 
   - The **datastructures** package by Markus Pfeiffer, Max Horn,
     Christopher Jefferson and Steve Linton, which aims at providing
@@ -1117,9 +1115,9 @@ distribution. Additionally, it has three new packages:
 This release contains updated versions of 22 packages from GAP 4.9.1
 distribution. Additionally, it has three new packages. The new
 **JupyterKernel** package by Markus Pfeiffer provides a so-called
-*kernel* for the Jupyter interactive document system
-(<https://jupyter.org/>). This package requires Jupyter to be installed
-on your system (see <https://jupyter.org/install> for instructions). It
+*kernel* for the [Jupyter](https://jupyter.org/) interactive document system.
+This package requires Jupyter to be installed
+on your system ([instructions](https://jupyter.org/install)). It
 also requires GAP packages **IO**, **ZeroMQInterface**, **json**,
 and also two new packages by Markus Pfeiffer called **crypting** and
 **uuid**, all included into GAP 4.9.2 distribution. The
@@ -1946,13 +1944,12 @@ directory.
 
 Users interested in experimenting with shared memory parallel
 programming in GAP can build **HPC-GAP** by following the
-instructions from
-<https://github.com/gap-system/gap/wiki/Building-HPC-GAP>. While it is
+[instructions](https://github.com/gap-system/gap/wiki/Building-HPC-GAP). While it is
 possible to build **HPC-GAP** from a release version of GAP you
 downloaded from the GAP website, due to the ongoing development of
 **HPC-GAP**, we recommend that you instead build **HPC-GAP** from the
-latest development version available in the GAP repository at
-GitHub, i.e. <https://github.com/gap-system/gap>.
+latest development version available in the GAP [repository at
+GitHub](https://github.com/gap-system/gap).
 
 ### New and updated packages since GAP 4.8.10
 
@@ -2002,8 +1999,7 @@ low-level bindings as well as some higher level interfaces for the
 The **HAPprime** package by Paul Smith is no longer redistributed with
 GAP. Part of the code has been incorporated into the **HAP**
 package. Its source code repository, containing the code of the last
-distributed version, can still be found at
-<https://github.com/gap-packages/happrime>.
+distributed version, can still be found on [github](https://github.com/gap-packages/happrime).
 
 Also, the **ParGAP** package by Gene Cooperman is no longer
 redistributed with GAP because it no longer can be compiled with
@@ -2011,7 +2007,7 @@ GAP 4.9 (see [this
 announcement](https://mail.gap-system.org/pipermail/gap/2018-March/001082.html)).
 Its source code repository, containing the code of the last distributed
 version, plus some first fixes needed for compatibility for GAP 4.9, can
-still be found at <https://github.com/gap-packages/pargap>. If somebody
+still be found on [github](https://github.com/gap-packages/pargap). If somebody
 is interested in repairing this package and taking over its maintenance,
 so that it can be distributed again, please contact the GAP
 team.
@@ -2238,12 +2234,11 @@ Fixed bugs that could lead to break loops:
 
 This is the first public release of GAP 4.8.
 
-The GAP development repository is now hosted on GitHub at
-<https://github.com/gap-system/gap>, and GAP 4.8 is the first major GAP
+The GAP development repository is now [hosted on GitHub](https://github.com/gap-system/gap),
+and GAP 4.8 is the first major GAP
 release made from this repository. The public issue tracker for the core GAP
-system is located at <https://github.com/gap-system/gap/issues>, and you may
-use appropriate milestones from
-<https://github.com/gap-system/gap/milestones> to see all changes that were
+system is located [here](https://github.com/gap-system/gap/issues), and you may
+use appropriate [milestones](https://github.com/gap-system/gap/milestones) to see all changes that were
 introduced in corresponding GAP releases. An overview of the most
 significant ones is provided below.
 
@@ -2923,8 +2918,8 @@ Furthermore, new packages that have been added to the redistribution
 since the release of GAP 4.6.5 are:
 
   - **4ti2interface** package by Sebastian Gutsche, providing an
-    interface to **4ti2**, a software package for algebraic, geometric
-    and combinatorial problems on linear spaces (<http://www.4ti2.de>).
+    interface to [**4ti2**](http://www.4ti2.de), a software package for algebraic, geometric
+    and combinatorial problems on linear spaces.
 
   - **CoReLG** by Heiko Dietrich, Paolo Faccin and Willem de Graaf for
     calculations in real semisimple Lie algebras.
@@ -3286,12 +3281,12 @@ release of GAP 4.5.4 are:
     lattice reduction algorithm via the external library FPLLL.
 
   - **PolymakeInterface** package by T. Baechler and S. Gutsche,
-    providing a link to the callable library of the **polymake** system
-    (<http://www.polymake.org>).
+    providing a link to the callable library of the [**polymake**](http://www.polymake.org)
+    system.
 
   - **ToolsForHomalg** package by M. Barakat, S. Gutsche and M.
     Lange-Hegermann, which provides some auxiliary functionality for the
-    **homalg** project (<http://homalg.math.rwth-aachen.de/>).
+    [**homalg**](http://homalg.math.rwth-aachen.de/) project.
 
   - **ToricVarieties** package by S. Gutsche, which provides data
     structures to handle toric varieties by their commutative algebra
@@ -3302,8 +3297,8 @@ GAP 4.5.4 release:
 
   - Starting from 2.x.x, the functionality for iterated monodromy groups
     has been moved from the **FR** package by L. Bartholdi to a separate
-    package IMG (currently undeposited, available from
-    <https://github.com/laurentbartholdi/img>). This completely removes
+    package IMG (currently undeposited, available from on [github](https://github.com/laurentbartholdi/img)).
+    This completely removes
     the dependency of **FR** on external library modules, and should
     make its installation much easier.
 
