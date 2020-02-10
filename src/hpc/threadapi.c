@@ -46,6 +46,10 @@
 
 #include <pthread.h>
 
+#ifdef USE_JULIA_GC
+#include "libgap-api.h"
+#endif
+
 
 #define RequireThread(funcname, op, argname)                                 \
     RequireArgumentConditionEx(funcname, op, "<" argname ">",                \
@@ -430,6 +434,20 @@ void StopKeepAlive(Obj node)
 
 static GVarDescriptor GVarTHREAD_INIT;
 static GVarDescriptor GVarTHREAD_EXIT;
+
+#ifdef USE_JULIA_GC
+#define INTERPRETER_INIT 2
+void InitInterpreterState()
+{
+    if ((TLS(threadInit) & INTERPRETER_INIT) == 0) {
+        GAP_InitializeThread();
+    }
+    TLS(threadInit) |= INTERPRETER_INIT;
+    STATE(NrError) = 0;
+    STATE(ThrownObject) = 0;
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+}
+#endif
 
 static void ThreadedInterpreter(void * funcargs)
 {
