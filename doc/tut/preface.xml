@@ -23,10 +23,15 @@ broader,    and  you will  also   find information   about algorithms and
 programming  for other   algebraic structures,   such as semigroups   and
 algebras.
 <P/>
-In addition to this manual, there is the <E>&GAP; Reference Manual</E> 
+In addition to this manual, there are <E>&GAP; Reference Manual</E>
 <Alt Only="HTML">(see <Ref BookName="ref" Label="Preface"/>)</Alt>
-containing detailed documentation of the mathematical functionality of &GAP;.
+containing detailed documentation of the mathematical functionality of &GAP;,
+and
+<E>HPC-GAP Reference Manual</E>
+<Alt Only="HTML">(see <Ref BookName="ref"/>)</Alt>
+documenting a multi-threaded version of GAP.
 <P/>
+
 There is also a document <F>CHANGES.md</F> in the root directory on the
 most essential changes from previous &GAP; releases.
 

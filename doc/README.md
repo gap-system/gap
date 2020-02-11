@@ -1,7 +1,8 @@
-GAP has two main GAP manuals (they are called "main" to distinguish them from package 
+GAP has three main GAP manuals (they are called "main" to distinguish them from package
 manuals that are maintained by the authors of the respective packages):
 * **GAP Tutorial**
 * **GAP Reference Manual**
+* **HPC-GAP Reference Manual**
 
 These manuals are written in GAPDoc format, provided by the 
 [GAPDoc package](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/index.html). 
@@ -25,7 +26,7 @@ steps:
 This will build the manuals. Each of them will be built twice to ensure that 
 cross-references between manuals are resolved.
 
-Both of these directories contain a file `makedocrel.g`. You may read it into 
+Each of these directories contain a file `makedocrel.g`. You may read it into
 GAP if you want to build faster just one manual to see how your changes look like, 
 or if GAPDoc reports an error in the XML code that you want to debug. Then you may 
 call `make doc` as a final check at a later stage.
