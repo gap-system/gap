@@ -81,7 +81,7 @@ GAPInfo.UseReadline := true;
 ##  <Listing Type="From readline init file">
 ##  $if GAP
 ##    set blink-matching-paren on
-##    "\C-n": dump-functions
+##    "\C-x\C-o": dump-functions
 ##    "\ep": kill-region
 ##  $endif
 ##  </Listing>
@@ -89,6 +89,14 @@ GAPInfo.UseReadline := true;
 ##  Alternatively,       from      within       &GAP;      the       command
 ##  <C>ReadlineInitLine(<A>line</A>);</C> can be  used, where <A>line</A> is
 ##  a string containing a line as in the init file.
+##  <P/>
+##  
+##  Caveat:  &GAP;   overwrites  the  following  keys   (after  reading  the
+##  <File>~/.inputrc</File>  file):  <C>\C-g</C>, <C>\C-i</C>,  <C>\C-n</C>,
+##  <C>\C-o</C>,   <C>\C-p</C>,  <C>\C-r</C>,   <C>\C-\</C>,  <C>\e&lt;</C>,
+##  <C>\e&gt;</C>,   <C>Up</C>,   <C>Down</C>,   <C>TAB</C>,   <C>Space</C>,
+##  <C>PageUp</C>,  <C>PageDown</C>.  So,  do  not redefine  these  in  your
+##  <File>~/.inputrc</File>.
 ##  <P/>
 ##  
 ##  Note that after pressing <B>Ctrl-v</B> the next special character is 
