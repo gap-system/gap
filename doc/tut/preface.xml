@@ -28,7 +28,7 @@ In addition to this manual, there are <E>&GAP; Reference Manual</E>
 containing detailed documentation of the mathematical functionality of &GAP;,
 and
 <E>HPC-GAP Reference Manual</E>
-<Alt Only="HTML">(see <Ref BookName="ref"/>)</Alt>
+<Alt Only="HTML">(see <Ref BookName="hpc" Label="Tasks"/>)</Alt>
 documenting a multi-threaded version of GAP.
 <P/>
 
