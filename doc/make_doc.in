@@ -16,7 +16,7 @@ echo "--------------------"
 
 "$GAP" $GAPARGS -A <<EOF
 base:="@abs_top_srcdir@";;
-books:=["ref", "tut", "changes", "hpc", "dev"];;
+books:=["ref", "tut", "hpc", "dev"];;
 latexOpts := rec(Maintitlesize := "\\\\fontsize{36}{38}\\\\selectfont");;
 for run in [1,2] do
   for book in books do

@@ -401,8 +401,8 @@ GAP Reference manual.
 
 The manual is also available in pdf format. In the full distribution these
 files are included in the directory `gap-4.X.Y/doc` in the subdirectories
-`tut` (a beginner's tutorial), `ref` (the reference manual) and `changes`
-(changes from earlier versions).
+`tut` (a beginner's tutorial), `ref` (the reference manual), and `hpc` (HPC-GAP
+reference manual).
 
 If you want to use these manual files with the help system from your GAP
 session you may check (or make sure) that your system provides some

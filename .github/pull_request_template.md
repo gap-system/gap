@@ -8,7 +8,7 @@ Thank You!
 
 If this pull request should be mentioned in the release notes, 
 please provide a short description matching the style of the GAP
-[Changes manual](https://www.gap-system.org/Manuals/doc/changes/chap0.html).
+`CHANGES.md` file in the root directory.
 
 ## Further details
 

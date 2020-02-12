@@ -41,7 +41,7 @@ If you need to compile a single manual book, call
 <Verb><![CDATA[
 gap makedocrel.g
 ]]></Verb>
-in the corresponding directory (<F>ref</F>, <F>tut</F> or <F>changes</F>).
+in the corresponding directory (<F>ref</F>, <F>tut</F>, <F>hpc</F> or <F>dev</F>).
 This is convenient when you're working on the documentation and want to 
 check if the changed manual book compiles, so you need not to recompile 
 all manual books from scratch.
