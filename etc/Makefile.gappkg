@@ -57,7 +57,10 @@ all: $(KEXT_SO)
 # For each file FOO.c in SOURCES, add gen/FOO.lo to KEXT_OBJS; similar
 # for .cc files
 ########################################################################
-KEXT_OBJS = $(patsubst %.cc,gen/%.lo,$(patsubst %.c,gen/%.lo,$(KEXT_SOURCES)))
+KEXT_OBJS = $(patsubst %.s,gen/%.lo, \
+            $(patsubst %.cc,gen/%.lo, \
+            $(patsubst %.c,gen/%.lo, \
+                $(KEXT_SOURCES))))
 
 ########################################################################
 # Quiet rules.
@@ -104,6 +107,11 @@ gen/%.lo: %.c Makefile
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.cc Makefile
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -c $< -o $@
+
+# build rule for assembler code
+# The dependency on Makefile ensures that re-running configure recompiles everything
+gen/%.lo: %.s Makefile
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 
 # build rule for linking all object files together into a kernel extension
 $(KEXT_SO): $(KEXT_OBJS)
