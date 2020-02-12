@@ -324,7 +324,8 @@ based on the **CAP** package and implements monoidal structures for
 
 Unfortunately we had to withdraw the **QaoS** package from distribution
 of GAP, as the servers it crucially relies on for its functionality have
-been permanently retired some time ago and are not coming back ([details](https://github.com/gap-packages/qaos/issues/13)).
+been permanently retired some time ago and are not coming back
+([details](https://github.com/gap-packages/qaos/issues/13)).
 
 
 ## GAP 4.10.1 (February 2019)
@@ -1029,8 +1030,8 @@ No longer redistributed with GAP:
   - The **linboxing** package has been unusable (it does not compile)
     for several years now, and is unmaintained. It was therefore dropped
     from the GAP package distribution. If anybody is willing to take
-    over and fix the package, the latest sources are available on
-    [github](https://github.com/gap-packages/linboxing).
+    over and fix the package, the latest sources are available at
+    <https://github.com/gap-packages/linboxing>.
 
   - The **recogbase** package has been merged into the `recog` package,
     and therefore is no longer distributed with GAP.
@@ -1054,7 +1055,7 @@ This release contains updated versions of 18 packages from GAP 4.9.2
 distribution. Additionally, it has three new packages:
 
   - The **curlInterface** package by Christopher Jefferson and Michael
-    Torpey, which provides a simple wrapper around **libcurl** [library](https://curl.haxx.se/)
+    Torpey, which provides a simple wrapper around [**libcurl**](https://curl.haxx.se/)
     to allow downloading files over http, ftp and https protocols.
 
   - The **datastructures** package by Markus Pfeiffer, Max Horn,
@@ -1942,11 +1943,11 @@ sneak peak of **HPC-GAP**. It comes together with the new manual book
 called "**HPC-GAP** Reference Manual" and located in the \`doc/hpc\`
 directory.
 
-Users interested in experimenting with shared memory parallel
-programming in GAP can build **HPC-GAP** by following the
-[instructions](https://github.com/gap-system/gap/wiki/Building-HPC-GAP). While it is
-possible to build **HPC-GAP** from a release version of GAP you
-downloaded from the GAP website, due to the ongoing development of
+Users interested in experimenting with shared memory parallel programming
+in GAP can build **HPC-GAP** by following the
+[instructions](https://github.com/gap-system/gap/wiki/Building-HPC-GAP).
+While it is possible to build **HPC-GAP** from a release version of GAP
+you downloaded from the GAP website, due to the ongoing development of
 **HPC-GAP**, we recommend that you instead build **HPC-GAP** from the
 latest development version available in the GAP [repository at
 GitHub](https://github.com/gap-system/gap).
@@ -1997,20 +1998,18 @@ low-level bindings as well as some higher level interfaces for the
 **HPC-GAP** enabling lightweight distributed computation.
 
 The **HAPprime** package by Paul Smith is no longer redistributed with
-GAP. Part of the code has been incorporated into the **HAP**
-package. Its source code repository, containing the code of the last
-distributed version, can still be found on [github](https://github.com/gap-packages/happrime).
+GAP. Part of the code has been incorporated into the **HAP** package. Its
+source code repository, containing the code of the last distributed
+version, can still be found at <https://github.com/gap-packages/happrime>.
 
 Also, the **ParGAP** package by Gene Cooperman is no longer
-redistributed with GAP because it no longer can be compiled with
-GAP 4.9 (see [this
-announcement](https://mail.gap-system.org/pipermail/gap/2018-March/001082.html)).
+redistributed with GAP because it no longer can be compiled with GAP 4.9
+(see [this announcement](https://mail.gap-system.org/pipermail/gap/2018-March/001082.html)).
 Its source code repository, containing the code of the last distributed
 version, plus some first fixes needed for compatibility for GAP 4.9, can
-still be found on [github](https://github.com/gap-packages/pargap). If somebody
+still be found at <https://github.com/gap-packages/pargap>. If somebody
 is interested in repairing this package and taking over its maintenance,
-so that it can be distributed again, please contact the GAP
-team.
+so that it can be distributed again, please contact the GAP team.
 
 
 ## GAP 4.8.8 (August 2017)
@@ -2024,8 +2023,8 @@ team.
 
 ### Fixed bugs that could lead to break loops:
 
-  - Fixed a bug in `RepresentativeAction` for S_n and A_n acting on non-standard
-    domains.
+  - Fixed a bug in `RepresentativeAction` for S_n and A_n acting on
+    non-standard domains.
 
 ### Other fixed bugs:
 
@@ -2234,13 +2233,14 @@ Fixed bugs that could lead to break loops:
 
 This is the first public release of GAP 4.8.
 
-The GAP development repository is now [hosted on GitHub](https://github.com/gap-system/gap),
-and GAP 4.8 is the first major GAP
-release made from this repository. The public issue tracker for the core GAP
-system is located [here](https://github.com/gap-system/gap/issues), and you may
-use appropriate [milestones](https://github.com/gap-system/gap/milestones) to see all changes that were
-introduced in corresponding GAP releases. An overview of the most
-significant ones is provided below.
+The GAP development repository is now [hosted on
+GitHub](https://github.com/gap-system/gap), and GAP 4.8 is the first major
+GAP release made from this repository. The public issue tracker for the
+core GAP system is located
+[here](https://github.com/gap-system/gap/issues), and you may use
+appropriate [milestones](https://github.com/gap-system/gap/milestones) to
+see all changes that were introduced in corresponding GAP releases. An
+overview of the most significant ones is provided below.
 
 ### New features:
 
@@ -2918,8 +2918,9 @@ Furthermore, new packages that have been added to the redistribution
 since the release of GAP 4.6.5 are:
 
   - **4ti2interface** package by Sebastian Gutsche, providing an
-    interface to [**4ti2**](http://www.4ti2.de), a software package for algebraic, geometric
-    and combinatorial problems on linear spaces.
+    interface to [**4ti2**](http://www.4ti2.de), a software package
+    for algebraic, geometric and combinatorial problems on linear
+    spaces.
 
   - **CoReLG** by Heiko Dietrich, Paolo Faccin and Willem de Graaf for
     calculations in real semisimple Lie algebras.
@@ -3281,8 +3282,8 @@ release of GAP 4.5.4 are:
     lattice reduction algorithm via the external library FPLLL.
 
   - **PolymakeInterface** package by T. Baechler and S. Gutsche,
-    providing a link to the callable library of the [**polymake**](http://www.polymake.org)
-    system.
+    providing a link to the callable library of the
+    [**polymake**](http://www.polymake.org) system.
 
   - **ToolsForHomalg** package by M. Barakat, S. Gutsche and M.
     Lange-Hegermann, which provides some auxiliary functionality for the
@@ -3297,8 +3298,8 @@ GAP 4.5.4 release:
 
   - Starting from 2.x.x, the functionality for iterated monodromy groups
     has been moved from the **FR** package by L. Bartholdi to a separate
-    package IMG (currently undeposited, available from on [github](https://github.com/laurentbartholdi/img)).
-    This completely removes
+    package IMG (currently undeposited, available at
+    <https://github.com/laurentbartholdi/img>). This completely removes
     the dependency of **FR** on external library modules, and should
     make its installation much easier.
 
@@ -3589,8 +3590,9 @@ an introduction to GAP 4.5, accompanying its release announcement.
 
 ### Performance improvements:
 
-  - The GAP kernel now uses [**GMP**](http://gmplib.org/) (GNU multiple precision arithmetic
-    library, for faster large integer arithmetic.
+  - The GAP kernel now uses [**GMP**](http://gmplib.org/) (GNU multiple
+    precision arithmetic library) for faster large integer
+    arithmetic.
 
   - Improved performance for records with large number of components.
 
@@ -3957,10 +3959,11 @@ Other changes in the user interface include:
 ### Better documentation
 
 The main GAP manuals have been converted to the **GAPDoc** format
-provided by the [**GAPDoc**](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc) package
-by Frank Lübeck and Max Neunhöffer.
-This documentation format is already used by many packages and is now
-recommended for all GAP documentation.
+provided by the
+[**GAPDoc**](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc)
+package by Frank Lübeck and Max Neunhöffer. This documentation format is
+already used by many packages and is now recommended for all GAP
+documentation.
 
 Besides improvements to the documentation layout in all formats (text,
 PDF and HTML), the new GAP manuals incorporate a large number of
@@ -4010,26 +4013,26 @@ Developing GAP Packages" in the reference manual which documents how to
 these logging facilities.
 
 In GAP 4.4 certain packages were marked as *autoloaded* and would be
-loaded, if present, when GAP started up. In GAP 4.5, this notion
-is divided into three. Certain packages are recorded as *needed* by the
-GAP system and others as *suggested*, in the same way that packages
-may *need* or *suggest* other packages. If a needed package is not
-loadable, GAP will not start. Currently only **GAPDoc** is needed.
-If a suggested package is loadable, it will be loaded. Typically these
-are packages which install better methods for Operations and Objects
-already present in GAP. Finally, the user preferences mechanism can
-be used to specify additional packages that should be loaded if
-possible. By default this includes most packages that were autoloaded in
-GAP 4.4.12, see `ShowUserPreferences`.
+loaded, if present, when GAP started up. In GAP 4.5, this notion is
+divided into three. Certain packages are recorded as *needed* by the GAP
+system and others as *suggested*, in the same way that packages may
+*need* or *suggest* other packages. If a needed package is not loadable,
+GAP will not start. Currently only **GAPDoc** is needed. If a suggested
+package is loadable, it will be loaded. Typically these are packages
+which install better methods for Operations and Objects already present
+in GAP. Finally, the user preferences mechanism can be used to specify
+additional packages that should be loaded if possible. By default this
+includes most packages that were autoloaded in GAP 4.4.12, see
+`ShowUserPreferences`.
 
-GAP packages may now use local *namespaces* to avoid name clashes
-for global variables introduced in other packages or in the GAP
-library, see Reference: Namespaces for GAP packages.
+GAP packages may now use local *namespaces* to avoid name clashes for
+global variables introduced in other packages or in the GAP library, see
+Reference: Namespaces for GAP packages.
 
-All guidance on how to *develop* a GAP package has been consolidated
-in the **Example** package which also contains a checklist for upgrading
-a GAP package to GAP 4.5 (the guidance has been transferred to
-Reference: Using and Developing GAP Packages in GAP 4.9).
+All guidance on how to *develop* a GAP package has been consolidated in
+the **Example** package which also contains a checklist for upgrading a
+GAP package to GAP 4.5 (the guidance has been transferred to Reference:
+Using and Developing GAP Packages in GAP 4.9).
 
 ### New and updated packages since GAP 4.4.12
 
@@ -4093,10 +4096,10 @@ release of GAP 4.4.12 are:
     groups, matrix groups and projective groups).
 
   - **SCSCP** package by A. Konovalov and S. Linton, implementing the
-    Symbolic Computation Software Composability Protocol [**SCSCP**](http://www.symbolic-computation.org/scscp)
-    for GAP, which provides interfaces to link a GAP instance with another copy of
-    GAP or other **SCSCP**-compliant system running locally or
-    remotely.
+    Symbolic Computation Software Composability Protocol
+    [**SCSCP**](http://www.symbolic-computation.org/scscp) for GAP, which
+    provides interfaces to link a GAP instance with another copy of GAP or
+    other **SCSCP**-compliant system running locally or remotely.
 
   - **simpcomp** package by F. Effenberger and J. Spreer for working
     with simplicial complexes.
@@ -4916,8 +4919,8 @@ Finally, the following packages are withdrawn:
     overwriting part of the next object in the workspace. Thanks to Jack
     Schmidt for narrowing down the problem.
 
-  - Given a class function object of value zero, an `Arithmetic
-    Operations for Class Functions` method for a class function erroneously did not
+  - Given a class function object of value zero, an `Arithmetic Operations for Class Functions`
+     method for a class function erroneously did not
     return `fail`. (Reported by Jack Schmidt)
 
   - The `Arithmetic Operations for Class Functions` method for a class
