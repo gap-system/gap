@@ -758,7 +758,7 @@ end );
 ##  quotients.
 ##  <P/>
 ##  The product of two vector objects <A>v1</A> and <A>v2</A> as well as the
-##  result of <Ref Oper="ScalarProduct" Label="for two vector objects"/> is
+##  result of <Ref Meth="ScalarProduct" Label="for two vector objects"/> is
 ##  the standard scalar product of the two arguments
 ##  (an element of the base domain of the vector objects).
 ##  <P/>
