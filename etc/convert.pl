@@ -34,7 +34,7 @@
 #                    <pkg>/
 #                         htm
 #
-#     for each main manual <main> (in: ref, tut, changes) and each
+#     for each main manual <main> (in: ref, tut) and each
 #     package <pkg>. To make inter-linking between manuals work,
 #     one should generally use the -c option for everything, (or not use
 #     it for everything). Linking to package manuals from the main
@@ -487,7 +487,7 @@ sub name2fn {
     # : indicates a cross-volume reference
     my $canon_name = canonize $name;
     #print STDERR "canon_name = $canon_name\n";
-    if ( $canon_name =~ /^(ref|tut|changes):/ ) {
+    if ( $canon_name =~ /^(ref|tut):/ ) {
       if ($mainman==1) {
 	$bdir = "../$1/";
       } else {
@@ -540,7 +540,7 @@ sub name2fn {
 sub name2linktext {
    my $name;
   ($name) = @_;
-  $name =~ s/^(ref|tut|changes)://;
+  $name =~ s/^(ref|tut)://;
   return $name;
 }
 
@@ -2105,10 +2105,8 @@ if ($opt_n) {
       $booktitle = "The GAP 4 Tutorial";
   } elsif ($book eq "ref") { 
       $booktitle = "The GAP 4 Reference Manual"; 
-  } elsif ($book eq "changes") { 
-      $booktitle = "GAP - Changes from Earlier Versions"; 
   } else  { 
-      die "Invalid book, must be tut, ref or changes"; 
+      die "Invalid book, must be tut or ref"; 
   }
   $booktitle_body = booktitle_body($booktitle, "GAP");
   $mainman=1;

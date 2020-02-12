@@ -15,13 +15,15 @@
 <Index Key="About GAP manual">About &GAP; manual</Index>
 
 Welcome to &GAP;. 
-This is one of three manuals documenting the core part of &GAP;, 
+This is one of the manuals documenting the core part of &GAP;,
 the others being the <E>&GAP; Tutorial</E>
 <Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>
-and the document called
-<E><Q>&GAP; - Changes from Earlier Versions</Q></E><Alt Only="HTML"> (see
-<Ref BookName="Changes" Label="Preface"/>)</Alt>.
-<P/>
+and  <E>HPC-GAP Reference Manual</E>
+<Alt Only="HTML">(see <Ref BookName="hpc" Label="Tasks"/>)</Alt>.
+
+There is also a document <F>CHANGES.md</F> on the 
+changes from earlier versions in the root directory.
+
 This preface serves not only to introduce <Q>The &GAP; Reference Manual</Q>, 
 but also as an introduction to the whole system.
 <P/>
