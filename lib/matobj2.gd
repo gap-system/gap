@@ -275,7 +275,7 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  respectively,
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> returns
 ##  a filter <C>f</C> such that when
-##  <Ref Oper="NewVector"/> or <Ref Oper="NewMatrix"/>, respectively,
+##  <Ref Constr="NewVector"/> or <Ref Constr="NewMatrix"/>, respectively,
 ##  is called with <C>f</C> then a vector object or a matrix object,
 ##  respectively, in the same representation as the argument is produced.
 ##  </Description>
@@ -326,10 +326,10 @@ DeclareAttribute( "CompatibleVectorFilter", IsMatrixObj );
 ##  <ManSection>
 ##  <Heading>Element Access and Assignment for Vector Objects</Heading>
 ##
-##  <Oper Name="[]" Arg="v,i" Label="for a vector object and an integer"/>
-##  <Oper Name="[]:=" Arg="v,i,obj"
+##  <Oper Name="\[\]" Arg="v,i" Label="for a vector object and an integer"/>
+##  <Oper Name="\[\]\:\=" Arg="v,i,obj"
 ##   Label="for a vector object and an integer"/>
-##  <Oper Name="{}" Arg="v,list" Label="for a vector object and a list"/>
+##  <Oper Name="\{\}" Arg="v,list" Label="for a vector object and a list"/>
 ##
 ##  <Description>
 ##  For a vector object <A>v</A> and a positive integer <A>i</A> that is
@@ -734,20 +734,20 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  <#GAPDoc Label="NewVector">
 ##  <ManSection>
 ##  <Heading>NewVector and NewZeroVector</Heading>
-##  <Oper Name="NewVector" Arg='filt,R,list'/>
-##  <Oper Name="NewZeroVector" Arg='filt,R,n'/>
+##  <Constr Name="NewVector" Arg='filt,R,list'/>
+##  <Constr Name="NewZeroVector" Arg='filt,R,n'/>
 ##
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>, and a list <A>list</A>
 ##  of elements that belong to <A>R</A>,
-##  <Ref Oper="NewVector"/> returns a mutable vector object which has
+##  <Ref Constr="NewVector"/> returns a mutable vector object which has
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a vector object"/> <A>R</A>,
 ##  and the entries in <A>list</A>.
 ##  The list <A>list</A> is guaranteed not to be changed by this operation.
 ##  <P/>
-##  Similarly, <Ref Oper="NewZeroVector"/> returns a mutable vector object
+##  Similarly, <Ref Constr="NewZeroVector"/> returns a mutable vector object
 ##  of length <A>n</A> which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
@@ -770,14 +770,14 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <#GAPDoc Label="NewMatrix">
 ##  <ManSection>
 ##  <Heading>NewMatrix, NewZeroMatrix, NewIdentityMatrix</Heading>
-##  <Oper Name="NewMatrix" Arg='filt,R,ncols,list'/>
-##  <Oper Name="NewZeroMatrix" Arg='filt,R,m,n'/>
-##  <Oper Name="NewIdentityMatrix" Arg='filt,R,n'/>
+##  <Constr Name="NewMatrix" Arg='filt,R,ncols,list'/>
+##  <Constr Name="NewZeroMatrix" Arg='filt,R,m,n'/>
+##  <Constr Name="NewIdentityMatrix" Arg='filt,R,n'/>
 ##
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
-##  <Ref Oper="NewMatrix"/> returns a mutable matrix object which has
+##  <Ref Constr="NewMatrix"/> returns a mutable matrix object which has
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> <A>R</A>,
@@ -793,13 +793,13 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  The corresponding entries must be in or compatible with <A>R</A>.
 ##  If <A>list</A> already contains vector objects, they are copied.
 ##  <P/>
-##  Similarly, <Ref Oper="NewZeroMatrix"/> returns a mutable zero matrix
+##  Similarly, <Ref Constr="NewZeroMatrix"/> returns a mutable zero matrix
 ##  object with <A>m</A> rows and <A>n</A> columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values.
 ##  <P/>
-##  Similarly, <Ref Oper="NewIdentityMatrix"/> returns a mutable idetity
+##  Similarly, <Ref Constr="NewIdentityMatrix"/> returns a mutable identity
 ##  matrix object with <A>m</A> rows and <A>n</A> columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
@@ -1358,7 +1358,7 @@ DeclareOperation( "CompatibleVector", [ IsMatrixObj ] );
 ##
 ##  <#GAPDoc Label="RowsOfMatrix">
 ##  <ManSection>
-##  <Oper Name="RowsOfMatrix" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="RowsOfMatrix" Arg='M' Label="for a matrix object"/>
 ##
 ##  <Returns>a plain list</Returns>
 ##
@@ -1397,7 +1397,7 @@ DeclareAttribute( "RowsOfMatrix", IsMatrixObj );
 ##  <#GAPDoc Label="RowListMatObj_[]">
 ##  <ManSection>
 ##  <Heading>List Access for a Row List Matrix</Heading>
-##  <Oper Name="[]" Arg='mat, pos' Label="for a row list matrix"/>
+##  <Oper Name="\[\]" Arg='mat, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##
@@ -1421,7 +1421,7 @@ DeclareOperation( "[]", [ IsRowListMatrix, IsPosInt ] );
 ##  <#GAPDoc Label="RowListMatObj_[]_ASS">
 ##  <ManSection>
 ##  <Heading>List Assignment for a Row List Matrix</Heading>
-##  <Oper Name="[]:=" Arg='mat, pos, vec'
+##  <Oper Name="\[\]\:\=" Arg='mat, pos, vec'
 ##   Label="for a row list matrix and a vector object"/>
 ##
 ##  <Returns>nothing</Returns>
@@ -1451,7 +1451,7 @@ DeclareOperation( "[]:=", [ IsRowListMatrix, IsPosInt, IsVectorObj ] );
 ##  <#GAPDoc Label="RowListMatObj_{}">
 ##  <ManSection>
 ##  <Heading>Sublist Access for a Row List Matrix</Heading>
-##  <Oper Name="{}" Arg='mat, poss' Label="for a row list matrix"/>
+##  <Oper Name="\{\}" Arg='mat, poss' Label="for a row list matrix"/>
 ##
 ##  <Returns>a row list matrix</Returns>
 ##
@@ -1475,7 +1475,7 @@ DeclareOperation( "{}", [IsRowListMatrix,IsList] );
 ##  <#GAPDoc Label="RowListMatObj_{}_ASS">
 ##  <ManSection>
 ##  <Heading>Sublist Assignment for a Row List Matrix</Heading>
-##  <Oper Name="{}:=" Arg='mat, poss, mat2' Label="for row list matrices"/>
+##  <Oper Name="\{\}\:\=" Arg='mat, poss, mat2' Label="for row list matrices"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
@@ -1502,7 +1502,7 @@ DeclareOperation( "{}:=", [IsRowListMatrix,IsList,IsRowListMatrix] );
 ##
 ##  <#GAPDoc Label="RowListMatObj_IsBound">
 ##  <ManSection>
-##  <Oper Name="IsBound[]" Arg='mat, pos' Label="for a row list matrix"/>
+##  <Oper Name="IsBound\[\]" Arg='mat, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns><K>true</K> or <K>false</K></Returns>
 ##
@@ -1524,7 +1524,7 @@ DeclareOperation( "IsBound[]", [ IsRowListMatrix, IsPosInt ] );
 ##
 ##  <#GAPDoc Label="RowListMatObj_Unbind">
 ##  <ManSection>
-##  <Oper Name="Unbind[]" Arg='mat, pos' Label="for a row list matrix"/>
+##  <Oper Name="Unbind\[\]" Arg='mat, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns>nothing</Returns>
 ##

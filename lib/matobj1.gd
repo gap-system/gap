@@ -48,7 +48,7 @@
 ##  Typically, <M>R</M> will be at least a semiring.
 ##  <P/>
 ##  For creating new vector objects compatible with <M>v</M>,
-##  the constructor <Ref Oper="NewVector"/>
+##  the constructor <Ref Constr="NewVector"/>
 ##  requires that also the value of
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  is known for <M>v</M>.
@@ -117,7 +117,7 @@ DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
 ##  Typically, <M>R</M> will be at least a semiring.
 ##  <P/>
 ##  For creating new matrix objects compatible with <M>M</M>,
-##  the constructor <Ref Oper="NewMatrix"/>
+##  the constructor <Ref Constr="NewMatrix"/>
 ##  requires that also the value of
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  is known for <M>M</M>.

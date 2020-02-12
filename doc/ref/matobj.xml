@@ -234,10 +234,10 @@ for your new type of vector or matrix objects.)
   <Ref Attr="Length" Label="for a vector object"/>,
 </Item>
 <Item>
-  <Ref Oper="[]" Label="for a vector object and an integer"/>,
+  <Ref Oper="\[\]" Label="for a vector object and an integer"/>,
 </Item>
 <Item>
-  <Ref Oper="[]:=" Label="for a vector object and an integer"/>,
+  <Ref Oper="\[\]\:\=" Label="for a vector object and an integer"/>,
 </Item>
 <Item>
   <Ref Oper="\&lt;"/> (see <Ref Oper="\&lt;" Label="for two vector objects"/>),
@@ -246,7 +246,7 @@ for your new type of vector or matrix objects.)
   <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
 </Item>
 <Item>
-  <Ref Oper="NewVector"/>.
+  <Ref Constr="NewVector"/>.
 </Item>
 </List>
 
@@ -280,7 +280,7 @@ for your new type of vector or matrix objects.)
   <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/>,
 </Item>
 <Item>
-  <Ref Oper="NewMatrix"/>.
+  <Ref Constr="NewMatrix"/>.
 </Item>
 </List>
 
