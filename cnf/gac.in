@@ -291,7 +291,7 @@ while [ $# -gt 0 ]; do
 
     -L|--addlibs)         shift; c_addlibs="${c_addlibs} $1";;
 
-    *.g|*.gap|*.gd|*.gi|*.c|*.cc|*.cpp|*.o|*.lo)
+    *.g|*.gap|*.gd|*.gi|*.c|*.cc|*.cpp|*.cxx|*.s|*.o|*.lo)
                           inputs="${inputs} $1";;
 
     *)                    echo "$0: cannot handle this argument '$1'"
@@ -392,6 +392,10 @@ for input in ${inputs}; do
         *.cpp) # compile '.cpp' source files (also C++)
             name=$(basename ${input} .cpp)
             process_c_file $name $input "-x c++";;
+
+        *.s) # compile '.s' source files (assembler)
+            name=$(basename ${input} .s)
+            process_c_file $name $input;; # HACK: just use the C compiler
 
         *.o) # look over '.o' source files
             name=$(basename ${input} .o)
