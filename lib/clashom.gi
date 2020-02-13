@@ -1723,7 +1723,6 @@ BindGlobal("LiftClassesEANonsolvGeneral",
   aff := ExtendedVectors( field ^ r );
 
   gens:=Concatenation(cl[2],Npcgs,cl[3]); # all generators
-#if ForAny(gens,x->Order(x)=1) then Error("HUH2"); fi;
   gpsz:=cl[5];
 
   solvsz:=cl[6];
@@ -2643,7 +2642,6 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
   # 6:cenfac, 7:cenfacimgs, 8:censize, 9:cenfacsize
 
   gens:=Concatenation(cl[5],Npcgs,cl[6]); # all generators
-#if ForAny(gens,x->Order(x)=1) then Error("HUH2"); fi;
   gpsz:=cl[8];
 
   solvsz:=cl[8]/cl[9];
@@ -2913,6 +2911,7 @@ local r,	#radical
 	# image as canonical one for future use.
 	j:=j+1;
 	Add(cl,ConjugacyClass(f,fr));
+        Add(classrange,Length(cl));
 	conj:=One(f);
       else
 	j:=classrange[j];
@@ -2969,9 +2968,10 @@ local r,	#radical
       if ValueOption("conjugacytest")=true and Length(sel)<>2 then
 	return fail;
       fi;
-      Info(InfoHomClass,2,Length(sel),"in candidate group");
+      Info(InfoHomClass,2,Length(sel)," in candidate group");
       select:=Difference(select,sel);
-      new:=LiftConCandCenNonsolvGeneral(G,mpcgs,reps{sel},hom,pcisom,solvtriv,fran);
+      new:=LiftConCandCenNonsolvGeneral(G,mpcgs,reps{sel},hom,pcisom,
+             solvtriv,fran);
       # conj test 
       if new=fail then
 	return new;
