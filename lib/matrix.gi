@@ -2002,15 +2002,6 @@ InstallOtherMethod( MutableCopyMatrix, "for empty lists", [ IsList and IsEmpty ]
   mat -> [ ] );
 
 
-# FIXME: remove the following method again sometime soon (as of February
-# 2020); it is only here to work around an issue in the polycyclic package
-# which calls MutableCopyMat on a vector; once a new polycyclic release is
-# out, we should revert this again.
-InstallMethod( MutableCopyMat, "generic method", [IsList],
-    -SUM_FLAGS,
-  mat -> List( mat, ShallowCopy ) );
-
-
 #############################################################################
 ##
 #M  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
