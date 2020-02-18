@@ -625,8 +625,8 @@ InstallMethod( Unpack,
             ## but avoids code duplication.
 
 InstallOtherMethod( Unpack,
-  "generic method for plain lists",
-  [ IsRowVector and IsPlistRep ],
+  "generic method for lists",
+  [ IsList ],
   ShallowCopy );
 
 InstallMethod( \{\},
