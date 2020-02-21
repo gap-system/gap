@@ -60,6 +60,7 @@ BIND_GLOBAL( "GAPInfo", rec(
     # for those options is correct
     CommandLineOptionData := [
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
+      rec( short:= "v", long := "version", default := false, help := ["print the version and exit"] ),
       rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
       rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
       rec( short:= "e", default := false, help := ["disable/enable quitting on <ctr>-D"] ),
@@ -479,6 +480,13 @@ CallAndInstallPostRestore( function()
        "  Boolean options toggle the current value each time they are called.\n",
        "  Default actions are indicated first.\n",
        "\n" );
+      QUIT_GAP();
+    elif GAPInfo.CommandLineOptions.v then
+      PRINT_TO( "*errout*",
+        "KernelVersion ", GAPInfo.KernelVersion, "\n",
+        "BuildVersion ", GAPInfo.BuildVersion, "\n",
+        "\n" );
+      # PRINT_TO( "*errout*",GAPInfo.KernelVersion);
       QUIT_GAP();
     fi;
 end );
