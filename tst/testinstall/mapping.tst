@@ -271,9 +271,13 @@ gap> IsTotal( map );
 true
 gap> Image( map, Z(3) );
 0*Z(3)
+gap> map(Z(3));
+0*Z(3)
 gap> ImageElm( map, Z(3) );
 0*Z(3)
 gap> Image( map, [ Z(3) ] );
+[ 0*Z(3) ]
+gap> map( [ Z(3) ] );
 [ 0*Z(3) ]
 gap> ImagesElm( map, Z(3) );
 [ 0*Z(3) ]
@@ -344,6 +348,18 @@ list or collection
 gap> Image(mapBijective, Z(9));
 Error, <elm> must be an element of Source(<map>)
 gap> Image(map, [Z(3), Z(9)]);
+Error, the collection <elm> must be contained in Source(<map>)
+
+# Image in alternative syntax
+gap> map(0*Z(3));
+Error, <map> must be single-valued and total
+gap> mapBijective(Z(5));
+Error, the families of the element or collection <elm> and Source(<map>) don't\
+ match, maybe <elm> is not contained in Source(<map>) or is not a homogeneous \
+list or collection
+gap> mapBijective(Z(9));
+Error, <elm> must be an element of Source(<map>)
+gap> map([Z(3), Z(9)]);
 Error, the collection <elm> must be contained in Source(<map>)
 
 # Images
