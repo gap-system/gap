@@ -24,6 +24,7 @@ ReadLib( "matblock.gi" );
 ReadLib( "tuples.gi"   );
 
 ReadLib( "domain.gi"   );
+ReadLib( "mapping1.gi"  );
 ReadLib( "mapping.gi"  );
 ReadLib( "mapprep.gi"  );
 ReadLib( "mapphomo.gi" );
