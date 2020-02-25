@@ -2188,8 +2188,12 @@ InstallMethod( CyclesOp, true, [ IsObject, IsList, IsFunction ], 1,
     IsSSortedList(D);
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
     orbs := [  ];
-    next := 1;
-    while next <> fail do
+    next := 0;
+    while true do
+        next := Position( blist, false, next );
+        if next = fail then
+            return Immutable( orbs );
+        fi;
         pnt := D[ next ];
         orb := CycleOp( g, D[ next ], act );
         Add( orbs, orb );
@@ -2199,9 +2203,7 @@ InstallMethod( CyclesOp, true, [ IsObject, IsList, IsFunction ], 1,
                 blist[ pos ] := true;
             fi;
         od;
-        next := Position( blist, false, next );
     od;
-    return Immutable( orbs );
 end );
 
 #############################################################################

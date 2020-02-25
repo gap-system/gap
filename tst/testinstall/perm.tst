@@ -374,6 +374,10 @@ l')
 #
 # CycleLengthPermInt, CyclePermInt
 #
+gap> Cycles((),[]);
+[  ]
+gap> Cycles((),[1]);
+[ [ 1 ] ]
 gap> Cycles((1,2,3)(4,5)(6,70),[4..7]);
 [ [ 4, 5 ], [ 6, 70 ], [ 7 ] ]
 gap> CycleLengths((1,2,3)(4,5)(6,70),[4..7]);
