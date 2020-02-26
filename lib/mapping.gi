@@ -10,69 +10,10 @@
 ##
 ##  This file contains
 ##  1. the design of families of general mappings
+##     now moved to mapping1.gi since it contain GAP/HPCGAP divergence
 ##  2. generic methods for general mappings
 ##  3. generic methods for underlying relations of general mappings
 ##
-
-
-#############################################################################
-##
-##  1. the design of families of general mappings
-##
-
-
-#############################################################################
-##
-#M  FamiliesOfGeneralMappingsAndRanges( <Fam> )
-##
-InstallMethod( FamiliesOfGeneralMappingsAndRanges,
-    "for a family (return empty list)",
-    true,
-    [ IsFamily ], 0,
-    Fam -> WeakPointerObj( [] ) );
-
-
-#############################################################################
-##
-#F  GeneralMappingsFamily( <famsourceelms>, <famrangeelms> )
-##
-InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
-
-    local info, i, len, entry, Fam, freepos;
-
-    # Check whether this family was already constructed.
-    info:= FamiliesOfGeneralMappingsAndRanges( FS );
-    len:= LengthWPObj( info );
-    for i in [ 1.. len+1 ] do
-      entry:=ElmWPObj( info, i );
-      if entry=fail then
-        if not IsBound( freepos ) then
-          freepos:= i;
-        fi;
-      elif IsIdenticalObj( FamilyRange(entry), FR ) then
-        return entry;
-      fi;
-    od;
-
-    # Construct the family.
-    if CanEasilyCompareElementsFamily(FR) 
-       and CanEasilyCompareElementsFamily(FS) then
-      Fam:= NewFamily( "GeneralMappingsFamily", IsGeneralMapping ,
-                       CanEasilyCompareElements,
-                       CanEasilyCompareElements);
-    else
-      Fam:= NewFamily( "GeneralMappingsFamily", IsGeneralMapping );
-    fi;
-    SetFamilyRange(  Fam, FR );
-    SetFamilySource( Fam, FS );
-
-    # Store the family in free spot.
-    SetElmWPObj( info, freepos, Fam );
-
-    # Return the family.
-    return Fam;
-end );
-
 
 #############################################################################
 ##
