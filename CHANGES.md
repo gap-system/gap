@@ -243,13 +243,14 @@ These changes are also listed on the
 
 ### New packages redistributed with GAP
 
+- [AGT](https://gap-packages.github.io/agt/) A library of strongly regular graphs on at most 40 vertices, and functionality to inspect combinatorial and algebraic properties of graphs in GRAPE format, by Rhys J. Evans
 - [CddInterface](https://homalg-project.github.io/CddInterface/) GAP interface to cdd, by Kamal Saleh
 - [DifSets](https://dylanpeifer.github.io/difsets/)  Enumeration of the difference sets (up to equivalence) in groups, by Dylan Peifer
 - [ferret](https://gap-packages.github.io/ferret/) C++ reimplementation of Jeffery Leon’s Partition Backtrack framework for solving problems in permutation groups, by Christopher Jefferson
 - [images](https://gap-packages.github.io/images/) Finding minimal and canonical images in permutation groups, by Christopher Jefferson, Markus Pfeiffer, Rebecca Waldecker, Eliza Jonauskyte
 - [NCOnvex](https://homalg-project.github.io/NConvex/) Polyhedral constructions and computations for cones, polyhedrons, polytopes and fans, by Kamal Saleh, Sebastian Gutsche
 - [NoCK](https://pjastr.github.io/NoCK/) Computation of Tolzanos’s obstruction for compact Clifford-Klein forms, by Maciej Bocheński, Piotr Jastrzębski, Anna Szczepkowska, Aleksy Tralle, Artur Woike
-
+- [RepnDecomp](https://gap-packages.github.io/RepnDecomp/) Algorithms for decomposing linear representations of finite groups, by Kaashif Hymabaccus
 
 ## GAP 4.10.2 (June 2019)
 
