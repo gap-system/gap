@@ -63,6 +63,7 @@ matrix:
           #- libfplll-dev           # for float
           - pari-gp                 # for alnuth
           - libzmq3-dev             # for ZeroMQInterface
+          - singular                # for IO_ForHomalg
 
     # compile packages and run GAP tests in 32 bit mode
     # it seems profiling is having trouble collecting the coverage data here, so we
@@ -86,6 +87,7 @@ matrix:
           #- libfplll-dev:i386      # for float
           - pari-gp:i386            # for alnuth
           - libzmq3-dev:i386        # for ZeroMQInterface
+          - singular:i386           # for IO_ForHomalg
 
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITES="docomp testinstall"
