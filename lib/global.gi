@@ -57,12 +57,29 @@ end);
 ##
 
 CheckGlobalName := function( name )
+    local pos;
     if not IsString( name ) then
-      Error("CheckGlobalName: the argument must be a string");
+        Error("CheckGlobalName: the argument must be a string");
     fi;
-    if ForAny(name, l -> not l in IdentifierLetters) then
-        Info(InfoWarning + InfoGlobal, 2, 
-             "suspicious global variable name ", name);
+    pos := 1;
+    # This function is used early in the initialization process, so we need to
+    # do PositionProperty manually.
+    while pos <= Length(name) do
+        if name[pos] in IdentifierLetters then
+            pos := pos + 1;
+        else
+            break;
+        fi;
+    od;
+    if pos <= Length(name) then
+        Info(InfoWarning + InfoGlobal, 1,
+             "suspicious global variable name \"", name, "\", ",
+             "non-identifier character found at position ", pos);
+    fi;
+    if Length(name) = 0 then
+        Info(InfoWarning + InfoGlobal, 1,
+             "suspicious global variable name \"", name, "\", ",
+             "name is the empty string");
     fi;
 end;
 
