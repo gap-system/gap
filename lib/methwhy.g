@@ -491,12 +491,14 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
       locs := GET_DECLARATION_LOCATIONS(fun);
       if n > Length(locs) then
         Print("Operation ", NameFunction(fun), " has only ",
-              Length(locs), " declarations.\n");
+              Length(locs), " declarations. ",
+              "To find an installed method see ?ApplicableMethod.\n");
         return;
       else
         if Length(locs) > 1 then
           Print("Operation ", NameFunction(fun), " has ",
-                Length(locs), " declarations, showing number ", n, ".\n");
+                Length(locs), " declarations, showing number ", n, ". ",
+                "To find an installed method see ?ApplicableMethod.\n");
         fi;
         f := locs[n][1];
         l := locs[n][2];
