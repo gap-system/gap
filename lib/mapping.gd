@@ -882,7 +882,7 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  <A>elm</A> of the source of the mapping <A>map</A> under <A>map</A>,
 ##  i.e., the unique element of the range to which <A>map</A> maps
 ##  <A>elm</A>.
-##  This can also be expressed as <A>elm</A><C>^</C><A>map</A>.
+##  This can also be expressed as <A>elm</A><C>^</C><A>map</A> or as 
 ##  Note that <A>map</A> must be total and single valued,
 ##  a multi valued general mapping is not allowed
 ##  (see&nbsp;<Ref Func="Images" Label="set of images of the source of a general mapping"/>).
@@ -890,13 +890,19 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  <C>Image( <A>map</A>, <A>coll</A> )</C> is the image of the subset
 ##  <A>coll</A> of the source of the mapping <A>map</A> under <A>map</A>,
 ##  i.e., the subset of the range to which <A>map</A> maps elements of
-##  <A>coll</A>.
+##  <A>coll</A>. <P/> 
 ##  <A>coll</A> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
 ##  Note that in this case <A>map</A> may also be multi-valued.
 ##  (If <A>coll</A> and the result are lists then the positions of
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
+##  <C>Image( <A>map</A>, <A>coll</A> )</C> can also be expressed as <C><A>map</A>(<A>coll</A>)</C> and
+##  <C>Image( <A>map</A>, <A>elm</A> )</C> as  <C><A>map</A>(<A>elm</A>)</C>.
+##  Those using this notation should remember that composition of mappings in &GAP;
+##  still follows the conventions appropriate for mapping acting from the right, so that 
+##  <C>(<A>map1</A>*<A>map2</A>)(<A>x</A>)</C> is equivalent to 
+##  <C><A>map2</A>(<A>map1</A>(<A>x</A>))</C>    <P/>
 ##  <Ref Func="Image" Label="set of images of the source of a general mapping"/>
 ##  delegates to <Ref Attr="ImagesSource"/> when called
 ##  with one argument, and to <Ref Oper="ImageElm"/> resp.

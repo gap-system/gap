@@ -152,6 +152,21 @@ InstallGlobalFunction( Image, function ( arg )
                    "Image(<map>,<coll>)" );
 end );
 
+#############################################################################
+##
+#M  <map>(<elm>)
+#M  <map>(<coll>)
+##
+##  Method to alow mappings to be used like functions when appropriate
+
+InstallMethod(CallFuncList, [IsGeneralMapping, IsList],
+        function(map, lst) 
+    if Length(lst) <> 1 then 
+        TryNextMethod(); 
+    fi; 
+    return Image(map, lst[1]); 
+end);
+
 
 #############################################################################
 ##
