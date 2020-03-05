@@ -2589,6 +2589,28 @@ InstallMethod( InnerAutomorphismsAutomorphismGroup,
 
 #############################################################################
 ##
+#M  InnerAutomorphismGroup( <G> )
+##
+InstallMethod( InnerAutomorphismGroup,
+    "for groups",
+    true,
+    [ IsGroup and HasGeneratorsOfGroup ], 0,
+    function( G )
+    local gens, A;
+    if HasAutomorphismGroup( G ) or IsTrivial( G ) then
+        return InnerAutomorphismsAutomorphismGroup( AutomorphismGroup( G ) );
+    fi;
+    gens:= GeneratorsOfGroup( G );
+    # get the non-central generators
+    gens:= Filtered( gens, i -> not ForAll( gens, j -> i*j = j*i ) );
+    A := Group( List( gens, i -> InnerAutomorphism( G, i ) ) );
+    SetIsGroupOfAutomorphismsFiniteGroup( A, true );
+    return A;
+    end );
+
+
+#############################################################################
+##
 #F  IsomorphismGroups(<G>,<H>) . . . . . . . . . .  isomorphism from G onto H
 ##
 InstallGlobalFunction(IsomorphismGroups,function(G,H)

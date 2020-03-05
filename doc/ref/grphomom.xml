@@ -377,6 +377,7 @@ to form groups of automorphisms.
 <#Include Label="AutomorphismDomain">
 <#Include Label="IsAutomorphismGroup">
 <#Include Label="InnerAutomorphismsAutomorphismGroup">
+<#Include Label="InnerAutomorphismGroup">
 <#Include Label="InducedAutomorphism">
 
 <!-- %%  The code for automorphism groups was designed and implemented by Bettina -->
