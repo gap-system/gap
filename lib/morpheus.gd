@@ -172,6 +172,27 @@ DeclareAttribute("InnerAutomorphismsAutomorphismGroup",IsGroup);
 
 #############################################################################
 ##
+#A  InnerAutomorphismGroup(<G>)
+##
+##  <#GAPDoc Label="InnerAutomorphismGroup">
+##  <ManSection>
+##  <Attr Name="InnerAutomorphismGroup" Arg='G'/>
+##
+##  <Description>
+##  For a group <A>G</A> this attribute stores the group of inner
+##  automorphisms (automorphisms induced by conjugation) of the original group.
+##  <Example><![CDATA[
+##  gap> InnerAutomorphismGroup(SymmetricGroup(5));
+##  <group with 2 generators>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute("InnerAutomorphismGroup", IsGroup);
+
+#############################################################################
+##
 #F  AssignNiceMonomorphismAutomorphismGroup(<autgrp>,<group>)   local
 ##
 ##  <#GAPDoc Label="AssignNiceMonomorphismAutomorphismGroup">

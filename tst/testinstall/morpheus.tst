@@ -2,11 +2,14 @@
 ##
 ##  This  file  tests the automorphism routines
 ##
-#@local a,autd8,d8,g,inn,iso1,iso2,iso3,iso4,p,r,s4
+#@local a,autd8,d8,g,inn,inn2,iso1,iso2,iso3,iso4,p,r,s4
 gap> START_TEST("morpheus.tst");
 gap> g:=Group((1,2,3,4),(1,3));;
+gap> inn2:=InnerAutomorphismGroup(g);;
 gap> a:=AutomorphismGroup(g);;
 gap> inn:=InnerAutomorphismsAutomorphismGroup(a);;
+gap> inn = inn2;
+true
 gap> iso1:=IsomorphismGroups(a,g);;
 gap> iso1=fail;
 false
