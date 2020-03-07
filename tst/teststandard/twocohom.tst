@@ -24,6 +24,12 @@ gap> IsomorphismGroups(a,h);
 fail
 gap> IsomorphismGroups(h,PerfectGroup(IsPermGroup,10752,1))<>fail;
 true
+gap> g:=SmallGroup(24,12);
+<pc group of size 24 with 4 generators>
+gap> mo:=IrreducibleModules(g,GF(2));;
+gap> coh:=TwoCohomologyGeneric(g,First(mo[2],x->x.dimension=1));;
+gap> Length(coh.cohomology);
+2
 gap> g:=PSL(2,8);;
 gap> mo:=IrreducibleModules(g,GF(2));;
 gap> coh:=TwoCohomologyGeneric(g,First(mo[2],x->x.dimension=6));;

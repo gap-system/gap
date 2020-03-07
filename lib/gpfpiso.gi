@@ -552,6 +552,12 @@ function(g,str)
   return IsomorphismFpGroupByChiefSeriesFactor(g,str,TrivialSubgroup(g));
 end);
 
+InstallMethod( IsomorphismFpGroupByChiefSeries,"pc grp",true,
+               [IsPcGroup,IsString], 0,
+function(g,str)
+  return IsomorphismFpGroupByChiefSeriesFactor(g,str,TrivialSubgroup(g));
+end);
+
 BindGlobal("DecompElmHomChiefSer",function(di,elm)
 local f, w, a, i;
   f:=FreeGroupOfFpGroup(di.fp);
