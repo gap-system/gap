@@ -68,7 +68,7 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
         k := k + 1;
       fi;
     od;
-    f := PolycyclicFactorGroup( f, r );
+    f := PolycyclicFactorGroupNC( f, r:noconfluencetest );
     SetSize( f, Product(ints) );
     SetIsAbelian( f, true );
 
@@ -163,7 +163,7 @@ function( filter, n )
             Add( r, g[i]^pi[i] / g[i+1] );
         od;
         Add( r, g[Length(g)] ^ pi[Length(g)] );
-        f := PolycyclicFactorGroup( f, r );
+        f := PolycyclicFactorGroupNC( f, r );
         if Size(Set(pi)) = 1 then
             SetIsPGroup( f, true );
             SetPrimePGroup( f, pi[1] );
@@ -208,7 +208,7 @@ function( filter, n )
     for i  in [ 2 .. Length(g) ]  do
         Add( r, g[i]^g[1] * g[i] );
     od;
-    f := PolycyclicFactorGroup( f, r );
+    f := PolycyclicFactorGroupNC( f, r );
     SetSize( f, n );
     if n = 2^LogInt(n,2) then
         SetIsPGroup( f, true );
@@ -375,7 +375,7 @@ function( filters, order, exp )
     od;
 
     # return the pc group
-    f := PolycyclicFactorGroup( f, r );
+    f := PolycyclicFactorGroupNC( f, r );
     SetIsPGroup( f, true );
     SetPrimePGroup( f, p );
     return f;

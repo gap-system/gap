@@ -200,4 +200,5 @@ gap> Number(newList,g->IsPowerfulPGroup(g));
 gap> myList:=AllSmallGroups(2^4);;
 gap> Number(myList,g->IsPowerfulPGroup(g));
 6
+gap> g:=AbelianGroup(ListWithIdenticalEntries(2000,2));;
 gap> STOP_TEST("pgroups.tst", 1);
