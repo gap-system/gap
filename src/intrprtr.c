@@ -59,10 +59,10 @@
 static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 {
     if (!intr->coding) {
-        InterpreterHook(GetInputFilenameID(), STATE(InterpreterStartLine),
+        InterpreterHook(GetInputFilenameID(), intr->startLine,
                         intr->returning || (intr->ignoring > ignoreLevel));
     }
-    STATE(InterpreterStartLine) = 0;
+    intr->startLine = 0;
 }
 
 

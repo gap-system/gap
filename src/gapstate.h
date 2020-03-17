@@ -56,10 +56,6 @@ typedef struct GAPState {
     UInt   NrError;
     UInt   NrErrLine;
 
-    // Used for recording the first line of the fragment of code currently
-    // begin interpreted, so the current line is outputted when profiling
-    UInt InterpreterStartLine;
-
     const char * Prompt;
 
     char * In;
