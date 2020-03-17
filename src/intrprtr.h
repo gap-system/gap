@@ -44,6 +44,11 @@ struct IntrState {
     // are ignored.
     ExecStatus returning;
 
+    // Record the first line of the fragment of code currently being
+    // interpreted in 'startLine', so we can mark interpreted code lines when
+    // profiling
+    UInt startLine;
+
     // 'StackObj' is the stack of values.
     Obj StackObj;
 

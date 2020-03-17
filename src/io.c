@@ -93,10 +93,6 @@ typedef struct {
     // character
     char * ptr;
 
-    // the number of the line where the fragment of code currently being
-    // interpreted started; used for profiling
-    Int interpreterStartLine;
-
     // the number of the current line; used in error messages
     Int number;
 
@@ -510,7 +506,6 @@ UInt OpenInput (
     if (IO()->InputStackPointer > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
-        IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
     /* enter the file identifier and the file name                         */
@@ -531,7 +526,6 @@ UInt OpenInput (
     // start with an empty line
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
-    STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
     /* indicate success                                                    */
@@ -555,7 +549,6 @@ UInt OpenInputStream(Obj stream, UInt echo)
     if (IO()->InputStackPointer > 0) {
         GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
-        IO()->Input->interpreterStartLine = STATE(InterpreterStartLine);
     }
 
     /* enter the file identifier and the file name                         */
@@ -579,7 +572,6 @@ UInt OpenInputStream(Obj stream, UInt echo)
     // start with an empty line
     STATE(In) = IO()->Input->line;
     STATE(In)[0] = STATE(In)[1] = '\0';
-    STATE(InterpreterStartLine) = 0;
     IO()->Input->number = 1;
 
     /* indicate success                                                    */
@@ -634,7 +626,6 @@ UInt CloseInput ( void )
 #endif
     IO()->Input = IO()->InputStack[sp - 1];
     STATE(In) = IO()->Input->ptr;
-    STATE(InterpreterStartLine) = IO()->Input->interpreterStartLine;
 
     /* indicate success                                                    */
     return 1;

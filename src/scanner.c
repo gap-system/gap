@@ -213,10 +213,6 @@ void Match(ScannerState * s,
 {
     Char                errmsg [256];
 
-    if (STATE(InterpreterStartLine) == 0 && symbol != S_ILLEGAL) {
-        STATE(InterpreterStartLine) = s->SymbolStartLine[0];
-    }
-
     // if 's->Symbol' is the expected symbol match it away
     if (symbol == s->Symbol) {
         s->Symbol = NextSymbol(s);
