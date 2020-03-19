@@ -510,9 +510,17 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  positive integer <M>n=\mu(G)</M> such that <A>G</A> is isomorphic to a
 ##  subgroup of the symmetric group of degree <M>n</M>.
 ##  This can require calculating the whole subgroup lattice.
+##  If the option `representation` is given, the operation returns the
+##  corresponding isomorphism.
 ##  <Example><![CDATA[
 ##  gap> MinimalFaithfulPermutationDegree(SmallGroup(96,3));
 ##  12
+##  gap> g:=TransitiveGroup(10,32);;
+##  gap> MinimalFaithfulPermutationDegree(g);
+##  6
+##  gap> map:=MinimalFaithfulPermutationDegree(g:representation);;
+##  gap> Size(Image(map));
+##  720
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

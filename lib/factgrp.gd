@@ -189,8 +189,7 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  <Func Name="SmallerDegreePermutationRepresentation" Arg='G'/>
 ##
 ##  <Description>
-##  Let <A>G</A> be a permutation group that acts transitively
-##  on its moved points.
+##  Let <A>G</A> be a permutation group.
 ##  <Ref Func="SmallerDegreePermutationRepresentation"/> tries to find a
 ##  faithful permutation representation of smaller degree.
 ##  The result is a group homomorphism onto a permutation group,
@@ -226,6 +225,10 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  gap> small:= SmallerDegreePermutationRepresentation( image );;
 ##  gap> Image( small );
 ##  Group([ (2,3), (2,3,4), (1,2)(3,4), (1,3)(2,4) ])
+##  gap> g:=Image(IsomorphismPermGroup(GL(4,5)));;
+##  gap> sm:=SmallerDegreePermutationRepresentation(g:cheap);;
+##  gap> NrMovedPoints(Range(sm));
+##  624
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
