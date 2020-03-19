@@ -30,11 +30,35 @@ gap> mo:=IrreducibleModules(g,GF(2));;
 gap> coh:=TwoCohomologyGeneric(g,First(mo[2],x->x.dimension=1));;
 gap> Length(coh.cohomology);
 2
-gap> g:=PSL(2,8);;
+gap> g:=Image(IsomorphismPermGroup(GL(2,8)));;
 gap> mo:=IrreducibleModules(g,GF(2));;
-gap> coh:=TwoCohomologyGeneric(g,First(mo[2],x->x.dimension=6));;
-gap> Length(coh.cohomology);
-3
+gap> mo:=Filtered(mo[2],x->x.dimension=6);;
+gap> coh:=List(mo,x->TwoCohomologyGeneric(g,x));;
+gap> pos:=First([1..Length(coh)],x->Length(coh[x].cohomology)>0);;
+gap> coh:=coh[pos];;
+gap> mo:=mo[pos];;
+gap> comp:=CompatiblePairs(g,mo);;Size(comp);
+63504
+gap> reps:=CompatiblePairOrbitRepsGeneric(comp,coh);;Length(reps);
+2
+gap> gp:=FpGroupCocycle(coh,coh.cohomology[1],true);;
+gap> p:=Image(IsomorphismPermGroup(gp));;
+gap> ConfluentMonoidPresentationForGroup(p);;
+gap> Length(ConjugacyClasses(p));
+119
+
+# routines used for rewriting
+gap> WeylGroupFp("A",3);
+<fp group on the generators [ s1, s2, s3 ]>
+gap> WeylGroupFp("B",3);
+<fp group on the generators [ s1, s2, s3 ]>
+gap> WeylGroupFp("D",5);
+<fp group on the generators [ s1, s2, s3, s4, s5 ]>
+gap> WeylGroupFp("E",6);
+<fp group on the generators [ s1, s2, s3, s4, s5, s6 ]>
+gap> WeylGroupFp("F",4);
+<fp group on the generators [ s1, s2, s3, s4 ]>
+gap> ConfluentMonoidPresentationForGroup(SmallGroup(24,12));;
 
 # that's all, folks
 gap> STOP_TEST( "twocohom.tst", 1);
