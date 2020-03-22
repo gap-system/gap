@@ -3493,7 +3493,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
           eq,facs,hlist,c,p,g,gcd,bb,E,ei,ni,hom,qq;
 
 
-      if One( A ) = fail then TryNextMethod(); fi;
+      if MultiplicativeNeutralElement( A ) = fail then TryNextMethod(); fi;
 
       F:=LeftActingDomain(A);
       B:=Centre(A);
@@ -3502,7 +3502,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
       hom:= NaturalHomomorphismByIdeal( B, Rad );
       Q:= ImagesSource( hom );
       bQ:= BasisVectors( Basis( Q ) );
-      ids:= [ One( Q ) ];
+      ids:= [ MultiplicativeNeutralElement( Q ) ];
       ideals:= [ Q ];
 
       # The variable `k' will point to the first element of `ideals' that
