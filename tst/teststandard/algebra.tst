@@ -11,6 +11,8 @@ gap> Length( dec );
 2
 gap> ForAny( dec, IsAlgebraWithOne );
 false
+gap> List( dec, One );
+[ fail, fail ]
 gap> List( dec, CentralIdempotentsOfAlgebra );;
 
 #

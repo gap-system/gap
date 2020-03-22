@@ -397,6 +397,26 @@ InstallMethod( ViewObj,
 
 #############################################################################
 ##
+#M  Representative( <I> ) . . . . one element of a left/right/two sided ideal
+##
+InstallMethod( Representative,
+    "for left ideal with known generators",
+    [ IsRing and HasGeneratorsOfLeftIdeal ],
+    RepresentativeFromGenerators( GeneratorsOfLeftIdeal ) );
+
+InstallMethod( Representative,
+    "for right ideal with known generators",
+    [ IsRing and HasGeneratorsOfRightIdeal ],
+    RepresentativeFromGenerators( GeneratorsOfRightIdeal ) );
+
+InstallMethod( Representative,
+    "for two-sided ideal with known generators",
+    [ IsRing and HasGeneratorsOfTwoSidedIdeal ],
+    RepresentativeFromGenerators( GeneratorsOfTwoSidedIdeal ) );
+
+
+#############################################################################
+##
 #M  Zero( <I> ) . . . . . . . . . . . . . . . . . . . . . . . .  for an ideal
 ##
 InstallOtherMethod( Zero,
