@@ -6,7 +6,7 @@
 set -e
 
 # check whether curl is available, and if so, delegate to it
-command -v curl >/dev/null 2>&1 && exec curl -O "$@"
+command -v curl >/dev/null 2>&1 && exec curl -L -O "$@"
 
 # check whether wget is available, and if so, delegate to it
 command -v wget >/dev/null 2>&1 && exec wget -N "$@"
