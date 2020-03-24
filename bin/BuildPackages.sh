@@ -35,6 +35,7 @@ GAPROOT="$(cd .. && pwd)"
 GAP="$GAPROOT/bin/gap.sh"
 COLORS=yes
 STRICT=no       # exit with non-zero exit code when encountering any failures
+PARALLEL=no
 PACKAGES=()
 
 # If output does not go into a terminal (but rather into a log file),
@@ -46,6 +47,7 @@ while [[ "$#" -ge 1 ]]; do
   case "$option" in
     --with-gaproot)   GAPROOT="$1"; shift ;;
     --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
+    --parallel)       PARALLEL=yes; ;;
 
     --with-gap)       GAP="$1"; shift ;;
     --with-gap=*)     GAP=${option#--with-gap=}; ;;
@@ -61,6 +63,10 @@ while [[ "$#" -ge 1 ]]; do
     *)                PACKAGES+=("$option") ;;
   esac
 done
+
+if [ "x$PARALLEL" = "xyes" ]; then
+  export MAKEFLAGS="${MAKEFLAGS:--j3}"
+fi;
 
 # If user specified no packages to build, build all packages in subdirectories.
 if [[ ${#PACKAGES[@]} == 0 ]]
@@ -249,7 +255,8 @@ build_one_package() {
 
 date >> "$LOGDIR/fail.log"
 for PKG in "${PACKAGES[@]}"
-do
+do 
+  ( 
   # cut off the ending slash (if exists)
   PKG="${PKG%/}"
   # cut off everything before the first slash to only keep the package name
@@ -286,7 +293,19 @@ do
     echo
     warning "$PKG does not seem to be a package directory, skipping"
   fi
+  ) &
+  if [ "x$PARALLEL" != "xyes" ]; then
+    # If more than 4 background jobs are running, wait for one to finish
+    if [[ $(jobs -r -p | wc -l) -gt 4 ]]; then
+        wait -n
+    fi
+  else
+    # wait for this package to finish building
+    wait
+  fi;
 done
+# Wait until all packages are built, if in parallel
+wait
 
 echo "" >> "$LOGDIR/fail.log"
 echo ""
