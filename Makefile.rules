@@ -1135,7 +1135,7 @@ testkernel: ${KERNELTESTS}
 
 # change PKG_BRANCH to stable-X.Y in the stable branch
 PKG_BRANCH = master
-PKG_BOOTSTRAP_URL = https://www.gap-system.org/pub/gap/gap4pkgs/
+PKG_BOOTSTRAP_URL = https://files.gap-system.org/gap4pkgs/
 PKG_MINIMAL = packages-required-$(PKG_BRANCH).tar.gz
 PKG_FULL = packages-$(PKG_BRANCH).tar.gz
 DOWNLOAD = $(abs_srcdir)/etc/download.sh
