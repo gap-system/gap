@@ -5827,6 +5827,245 @@ Below we list changes in the main system (excluding packages) that have
 been corrected or added in bugfixes and updates for GAP 4.4.
 
 
+## GAP 4.3 Bugfix 5
+
+### Fixed bugs which could lead to wrong results:
+
+  - A wrong return format for `IsomorphicSubgroups` applied to cyclic
+    groups.
+
+  - A wrong `true` result of `IsSubset` for certain algebras.
+
+  - A bug in the subgroup conjugation test for permutation groups that
+    are not subgroups.
+
+  - A strange behaviour of `Intersection` for the case that a strictly
+    sorted list is the unique entry of the list that is given as the
+    argument; in this situation, this entry itself was returned instead
+    of a shallow copy.
+
+  - Possibly wrong result of `Centre` for pc groups.
+
+  - Possibly wrong result of `DirectSumDecomposition` for matrix Lie
+    algebras.
+
+### Fixed bugs which could lead to crashes:
+
+  - Segmentation faults and other strange behaviour when assigning
+    finite field elements of different characteristics into compressed
+    vectors.
+
+### Other fixed bugs:
+
+  - A missing method for `BaseOrthogonalSpaceMat`.
+
+  - A missing `Set` call in the construction of the global variable
+    `AUTOLOAD_PACKAGES`.
+
+  - A wrong display string of the numerator in rational functions
+    returned by `MolienSeries` (in the case that the constant term
+    of this numerator is zero).
+
+  - An error in the basis of a product space of algebras.
+
+  - An error in `LieNormalizer`, `LieCentralizer` for zero subspaces.
+
+  - An error in the computation of matrices of adjoint modules.
+
+  - A strange error message when constructing the simple Lie algebra
+    of type B1.
+
+  - An error in `ModuleByRestriction`.
+
+  - An error in `IrrBaumClausen` for the trivial group.
+
+  - An error with vector space bases of row spaces over fields which
+    neither are prime fields nor contain all entries of the vectors.
+
+  - An error with `IsMonomial`, when it uses the function
+    `TestMonomialFromLattice` (i.e., in hard cases, likely for
+    characters of nonsolvable groups).
+
+
+## GAP 4.3 Bugfix 4
+
+### Fixed bugs which could lead to wrong results:
+
+  - A problem with composing a homomorphism from an fp group with
+    another homomorphism (images may be wrong).
+
+  - An error in the comparison routine for univariate rational functions.
+
+  - A problem when calculating representations of a group in which class
+    arrangement in group and character table are not identical.
+
+  - Three missing primitive groups of degree 441 were addded.
+
+### Other fixed bugs:
+
+  - A problem with a homomorphism from a free group in the trivial
+    permutation group.
+
+  - A problem with the multiplication of rationals and elements in
+    large prime fields.
+
+  - A problem with attempting to create univariate polynomials of very
+    high degree.
+
+  - A problem with output going to errout incorrectly after a syntax error.
+
+  - An error in the function ReducedSCTable.
+
+  - An error in computing the Rees Matrix semigroup.
+
+  - A compatibility problem with earlier versions of gap in semigroup
+    and monoid rewriting systems.
+
+  - The behaviour of `PQuotient` when an attempt is made to compute a
+    p-quotient with more generators than the underlying data structure
+    was initialised with.
+
+  - A problem with computing `BasisVectors` for a basis of an algebraic
+    field extension.
+
+  - A problem with the definition of `IsRowVector` (which previously
+    returned `true` also for matrices).
+
+  - A problem with `BaumClausenInfo`.
+
+  - A problem with `IsRowModule` for infinite dimensional vector spaces
+    (which are not row spaces).
+
+  - A problem with `Difference` with first argument a list that is not
+    a set and second argument an empty list.
+
+  - The failure of Elements() to compute the elements of a pc group with non-prime relative orders.
+
+  - A wrong computation of single character values of Weyl groups of
+    type B and character tables of Weyl groups of type D. Furthermore,
+    a much more efficient function for computing all character values
+    is provided.
+
+  - Packages accidentally overwriting the setting of `InfoWarning`.
+
+  - A missing method for `IsPolynomial` for univariate rational functions.
+
+  - A problem in the on-line help which sometimes returned a blank entry
+    for a topic even though the topic was documented.
+
+  - A problem in the help system where a tilde in a filename was
+    replaced by a blank.
+
+  - A problem that prevented the documentation of some packages from
+    autoloading.
+
+
+## GAP 4.3 Bugfix 3
+
+### Fixed bugs which could lead to wrong results:
+
+  - An error in `IdGroup` that mistakenly was not corrected in Bugfix 2.
+
+  - An inconsistent setting of `IndicesNormalSteps`.
+
+  - A problem with the inversion routine for quaternions.
+
+
+## GAP 4.3 Bugfix 2
+
+### Fixed bugs which could lead to wrong results:
+
+  - The result of `ProjectiveSymplecticGroup(n,q);`.
+
+### Fixed bugs which could lead to crashes:
+
+  - A segmentation fault when appending to a length 0 compressed vector
+    over GF2.
+
+### Other fixed bugs:
+
+  - An error in the computation of inverses in quaternion algebras with
+    non-standard parameters.
+
+  - `GeneratorOfCyclicGroup` for a trivial pc group.
+
+  - A problem in backtrack routines using `Suborbits` if the group has
+    fixed points in the range `[1..max(Omega)]`.
+
+  - A problem with `CharacterTableDirectProduct` if exactly one argument
+    is a Brauer table.
+
+  - Problems with `IntScalarProduct` and `NonnegIntScalarProducts` if
+    the third argument is not a plain list (this situation does not
+    occur in GAP library functions).
+
+  - A problem with `GQuotient`.
+
+  - A problem with the linear algebra methods for Lie algebra cohomology.
+
+  - A Problem with requesting transitive groups of degree including 1.
+
+  - A Problem with inverting lists of compressed vectors over fields of
+    order greater than 2.
+
+  - An error in computing whether an element is in a Green's D equivalence
+    class or not.
+
+  - A missing method for `MovedPoints(perm)`.
+
+  - The method `IsGreensLessThanOrEqual` should work for Green's D classes
+    for finite groups.
+
+  - The method `GroupHClassOfGreensDClass` was not implemented and is
+    required for the Rees Matrix methods.
+
+  - The methods `AssociatedReesMatrixSemigroupOfDClass`, `IsZeroSimpleSemigroup`,
+    `IsomorphismReesMatrixSemigroup`, and `SandwichMatrixOfReesZeroMatrixSemigroup`
+    all create Greens classes using obsolete methods which for some
+    semigroups leads to infinite recursion or causes GAP to stop with
+    an error message.
+
+  - A problem with `CentralizerModulo` for permutation groups.
+
+  - A wrong name for PGL(2,49) in the primitive groups library of degree 50.
+
+  - Missing `Representative` methods for certain trivial groups and
+    trivial spaces.
+
+  - A missing setting of `IndicesNormalSteps`.
+
+
+## GAP 4.3 Bugfix 1
+
+### Fixed bugs which could lead to crashes:
+
+  - A segmentation fault when converting length 0 compressed vectors to
+    larger fields.
+
+### Other fixed bugs:
+
+  - A bug in the handling of Processes with empty input or output streams.
+
+  - An error in the function for computing quotients of algebra modules.
+
+  - An error in computing the strongly connected components of a binary
+    relation in which incorrect results can be returned.
+
+  - A "no method found" error in OrbitStabilizerAlgorithm for infinite groups.
+
+  - Calculation of iterated automorphism groups might stop with an error message.
+
+  - The output of the internal pager (see `Pager`) is no longer copied to log files.
+
+  - Some memory is not freed up as soon as it could be, resulting in
+    over-use of memory and over-large saved workspaces.
+
+  - Saving and loading a workspace using a kernel containing a statically
+    loaded user module (most likely a compiled GAP file) did not work.
+
+  - Problems with `EulerianFunction` for certain types of groups.
+
+
 ## Changes from Earlier Versions
 
 The most important changes between GAP 4.2 and GAP 4.3 were:
