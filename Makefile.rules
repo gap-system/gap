@@ -403,7 +403,7 @@ GAP_LDFLAGS += -Wl,--allow-multiple-definition
 # loads that DLL and calls the renamed main function.
 all: bin/$(GAPARCH)/gap.dll
 bin/$(GAPARCH)/gap.dll: symlinks libgap.la
-	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
+	cp .libs/cyggap-*.dll $@  # FIXME: HACK to support kernel extensions
 gap$(EXEEXT): libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
