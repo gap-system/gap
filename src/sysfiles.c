@@ -2059,7 +2059,7 @@ static void initreadline(void)
   /* this should pipe signals through to GAP  */
   rl_already_prompted = 1 ;
 
-  rl_catch_signals = 0;
+  rl_catch_signals = 1;
   rl_catch_sigwinch = 1;
   /* hook to read from other channels */
   rl_event_hook = 0;
