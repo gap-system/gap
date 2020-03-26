@@ -367,9 +367,11 @@ obj/%.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 
 ########################################################################
 # Linker rules for gap executable
+#
+# use the standard Libtool versioning (i.e. current:revision:age)
 ########################################################################
 
-LINK=$(LIBTOOL) --mode=link $(CC) -export-dynamic
+LINK=$(LIBTOOL) --mode=link $(CC) -export-dynamic -version-info $(LIBGAPCURRENT):$(LIBGAPREVISION):$(LIBGAPAGE)
 
 libgap.la: $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) -no-undefined -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@

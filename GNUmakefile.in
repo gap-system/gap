@@ -35,6 +35,11 @@ GAP_RELEASEDAY = @GAP_RELEASEDAY@
 GAP_KERNEL_MINOR_VERSION = @gap_kernel_minor_version@
 GAP_KERNEL_MAJOR_VERSION = @gap_kernel_major_version@
 
+# libgap version (for Libtool c:r:a format)
+LIBGAPCURRENT = @LIBGAP_CURRENT@
+LIBGAPREVISION = @LIBGAP_REVISION@
+LIBGAPAGE = @LIBGAP_AGE@
+
 # autoconf package metadata
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@

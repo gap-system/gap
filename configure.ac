@@ -9,6 +9,17 @@ m4_define([gap_releaseyear], [this year])
 
 m4_define([gap_tarname], [gap-gap_version])
 
+dnl libgap_current/revision/age must be set using the GNU Libtool rules at
+dnl https://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
+dnl which uses current:revision:age format.
+dnl The starting point is libgap from GAP 4.10,
+dnl which has current:revion:age=0:0:0
+dnl
+m4_define([libgap_vers_current],[1])
+m4_define([libgap_vers_revision],[0])
+m4_define([libgap_vers_age],[0])
+
+
 AC_INIT([GAP],
         gap_version,
         [support@gap-system.org],
@@ -28,6 +39,10 @@ dnl versions.
 AC_SUBST([GAP_VERSION], "gap_version")
 AC_SUBST([GAP_RELEASEDAY], "gap_releaseday")
 AC_SUBST([GAP_RELEASEYEAR], "gap_releaseyear")
+
+AC_SUBST([LIBGAP_CURRENT],  "libgap_vers_current")
+AC_SUBST([LIBGAP_REVISION], "libgap_vers_revision")
+AC_SUBST([LIBGAP_AGE],      "libgap_vers_age")
 
 dnl
 dnl Get canonical host information
