@@ -1,0 +1,10 @@
+gap> Test("leading-empty-line.tst", rec(width := 800, ignoreComments := false));
+########> Diff in leading-empty-line.tst:1
+# Input is:
+
+# Expected output:
+
+# But found:
+########
+false
+gap> QUIT;
