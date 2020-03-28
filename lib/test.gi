@@ -93,8 +93,9 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
         i := i+1;
       else
         Add(inp, "\n");
+        Add(pos, i);
         i := i+1;
-        while i <= Length(lines) and (Length(lines[i]) = 0 or lines[i][1] = '#') do
+        while i <= Length(lines) and (Length(lines[i]) = 0 or (StartsWith(lines[i], "#") and not StartsWith(lines[i], "#@"))) do
           i := i+1;
         od;
         Add(outp, JoinStringsWithSeparator(lines{[1..i-1]}, "\n"));
