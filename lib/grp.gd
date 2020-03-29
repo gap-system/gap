@@ -4455,6 +4455,29 @@ DeclareAttribute( "IsomorphismFpGroupForRewriting", IsGroup );
 
 #############################################################################
 ##
+#A  ConfluentMonoidPresentationForGroup( <G> )
+##
+##  <#GAPDoc Label="ConfluentMonoidPresentationForGroup">
+##  <ManSection>
+##  <Attr Name="ConfluentMonoidPresentationForGroup" Arg='G'/>
+##
+##  <Description>
+##  This attribute holds, for a (finite) group <A>G</A>, a record that holds
+##  information about a confluent monoid presentation, namely a homomorphism
+##  from <A>G</A> to a finitely presented group, a homomorphism from this
+##  finitely presented group to a finitely presented monoid, whose presentation
+##  is a confluent rewriting system, and an ordering wrt. which this system is
+##  confluent.  It is made an attribute
+##  to ensure that iterated cohomology computations use the same presentation.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "ConfluentMonoidPresentationForGroup", IsGroup );
+
+
+#############################################################################
+##
 #A  PrimePowerComponents( <g> )
 ##
 ##  <ManSection>

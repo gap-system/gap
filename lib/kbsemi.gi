@@ -79,6 +79,10 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
      return(l);
   end;
 
+  if ValueOption("isconfluent")=true then
+    CantorList:=n->[];
+  fi;
+
   # check that fam is a family of elements of an fp smg or monoid
   if not (IsElementOfFpMonoidFamily(fam) or IsElementOfFpSemigroupFamily(fam))
   then
@@ -179,7 +183,9 @@ InstallOtherMethod(AddRuleReduced,
 [ IsKnuthBendixRewritingSystem and IsMutable and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
-  local u,a,b,c,k,n,s,add_rule,remove_rule,fam;
+  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc;
+
+    ptc:=IsBound(kbrws!.pairs2check);
 
     #given a Knuth Bendix Rewriting System, kbrws,
     #removes rule i of the set of rules of kbrws and    
@@ -193,23 +199,25 @@ function(kbrws,v)
       Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
       kbrws!.tzrules:=q;
 
-      #delete pairs of indexes that include i
-      #and change ocurrences of indexes k greater than i in the 
-      #list of pairs and change them to k-1
-      #So we'll construct a new list with the right pairs
-      l:=[];
-      for j in [1..Length(kbrws!.pairs2check)] do
-        if kbrws!.pairs2check[j][1]<>i and kbrws!.pairs2check[j][2]<>i then
-          a:=kbrws!.pairs2check[j];
-          for k in [1..2] do
-            if kbrws!.pairs2check[j][k]>i then
-              a[k]:=kbrws!.pairs2check[j][k]-1;
-            fi;
-          od;
-          Add(l,a);
-        fi;
-      od;
-      kbrws!.pairs2check:=l;
+      if ptc then
+        #delete pairs of indexes that include i
+        #and change ocurrences of indexes k greater than i in the 
+        #list of pairs and change them to k-1
+        #So we'll construct a new list with the right pairs
+        l:=[];
+        for j in [1..Length(kbrws!.pairs2check)] do
+          if kbrws!.pairs2check[j][1]<>i and kbrws!.pairs2check[j][2]<>i then
+            a:=kbrws!.pairs2check[j];
+            for k in [1..2] do
+              if kbrws!.pairs2check[j][k]>i then
+                a[k]:=kbrws!.pairs2check[j][k]-1;
+              fi;
+            od;
+            Add(l,a);
+          fi;
+        od;
+        kbrws!.pairs2check:=l;
+      fi;
     end;
 
 
@@ -225,15 +233,17 @@ function(kbrws,v)
       #insert rule 
       Add(kbrws!.tzrules,u);
     
-      #insert new pairs
-      l:=kbrws!.pairs2check;
-      n:=Length(kbrws!.tzrules);
-      Add(l,[n,n]);
-      for i in [1..n-1] do
-        Append(l,[[i,n],[n,i]]);
-      od;
-  
-      kbrws!.pairs2check:=l;
+      if ptc then
+        #insert new pairs
+        l:=kbrws!.pairs2check;
+        n:=Length(kbrws!.tzrules);
+        Add(l,[n,n]);
+        for i in [1..n-1] do
+          Append(l,[[i,n],[n,i]]);
+        od;
+    
+        kbrws!.pairs2check:=l;
+      fi;
     end;
 
     #the stack is a list of pairs of words such that if two words form a pair 
