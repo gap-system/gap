@@ -725,11 +725,16 @@ AS_IF([test "x$with_gc" = xboehm],
 )
 
 dnl
-dnl Define kernel version
+dnl Define libgap and kernel versions
 dnl
 
-gap_kernel_major_version=8
-gap_kernel_minor_version=0
+libgap_current=8
+libgap_revision=0
+libgap_age=0
+
+gap_kernel_minor_version=$libgap_age
+gap_kernel_major_version=$(( libgap_current - libgap_age ))
+
 AC_SUBST([gap_kernel_major_version])
 AC_SUBST([gap_kernel_minor_version])
 
@@ -740,10 +745,9 @@ dnl libgap_current/revision/age must be set using the GNU Libtool rules at
 dnl https://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
 dnl which uses current:revision:age format.
 dnl Set it up as discussed on GAP's PR 3928
-libgap_current=$(( gap_kernel_major_version + gap_kernel_minor_version ))
 AC_SUBST([LIBGAP_CURRENT], $libgap_current)
-AC_SUBST([LIBGAP_REVISION],0)
-AC_SUBST([LIBGAP_AGE],     $gap_kernel_minor_version)
+AC_SUBST([LIBGAP_REVISION],$libgap_revision)
+AC_SUBST([LIBGAP_AGE],     $libgap_age)
 
 dnl
 dnl User setting: Compatibility mode (on by default)
