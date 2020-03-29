@@ -1324,6 +1324,9 @@ CITATION: $(srcdir)/CITATION.in config.status
 gac: $(srcdir)/cnf/gac.in config.status
 	@$(SHELL) ./config.status $@
 
+GNUmakefile: $(srcdir)/GNUmakefile.in config.status
+	$(SHELL) ./config.status $@
+
 libtool: config.status
 	@$(SHELL) ./config.status $@
 
