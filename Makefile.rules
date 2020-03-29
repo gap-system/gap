@@ -372,7 +372,7 @@ obj/%.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
 LINK=$(LIBTOOL) --mode=link $(CC) -export-dynamic
 
 libgap.la: $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) -no-undefined -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
+	$(QUIET_LINK)$(LINK) -no-undefined -version-info $(GAP_LIBTOOL_CURRENT):0:$(GAP_LIBTOOL_AGE) -rpath $(libdir) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS) -o $@
 
 ifeq ($(SYS_IS_CYGWIN32),yes)
 
@@ -400,8 +400,15 @@ GAP_LDFLAGS += -Wl,--allow-multiple-definition
 # GAP's standard main function is renamed. And gap.exe is a tiny binary which
 # loads that DLL and calls the renamed main function.
 all: bin/$(GAPARCH)/gap.dll
+
 bin/$(GAPARCH)/gap.dll: symlinks libgap.la
-	cp .libs/cyggap-0.dll $@  # FIXME: HACK to support kernel extensions
+	# FIXME: HACK to support kernel extensions; this is necessary
+	# because we don't use `libtool --mode=install` and so we have to
+	# work with the libtool wrappers for shared libraries meant for
+	# using during development, not for what we actually use them for.
+	# See also `LTINSTALL` and `install-libgap`.
+	cp .libs/cyggap-*.dll $@
+
 gap$(EXEEXT): libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(srcdir)/src/gapw95.c $(GAP_LIBS) libgap.la -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
@@ -727,6 +734,8 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "" >> $@
 	@echo "GAP_VERSION=\"$(GAP_VERSION)\"" >> $@
 	@echo "GAP_BUILD_VERSION=\"$(GAP_BUILD_VERSION)\"" >> $@
+	@echo "GAP_LIBTOOL_CURRENT=$(GAP_LIBTOOL_CURRENT)" >> $@
+	@echo "GAP_LIBTOOL_AGE=$(GAP_LIBTOOL_AGE)" >> $@
 	@echo "GAP_KERNEL_MAJOR_VERSION=$(GAP_KERNEL_MAJOR_VERSION)" >> $@
 	@echo "GAP_KERNEL_MINOR_VERSION=$(GAP_KERNEL_MINOR_VERSION)" >> $@
 	@echo "" >> $@
