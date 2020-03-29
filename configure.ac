@@ -9,6 +9,28 @@ m4_define([gap_releaseyear], [this year])
 
 m4_define([gap_tarname], [gap-gap_version])
 
+dnl
+dnl libtool library version
+dnl
+dnl The version of the libgap shared library as well as the kernel
+dnl version are derived from libtool_current and libtool_age.
+dnl When making a new GAP release, these values need to be adjusted, based on
+dnl the following rules:
+dnl
+dnl 1. If any interfaces have been added, removed, or changed since the last
+dnl    update, increment current.
+dnl 2. If any interfaces have been added since the last public release, then
+dnl    increment age.
+dnl 3. If any interfaces have been removed or changed since the last public
+dnl    release, then set age to 0.
+dnl
+dnl For further details, refer to the Libtool manual chapter on "Library
+dnl interface versions", available at
+dnl <https://www.gnu.org/software/libtool/manual/html_node/Versioning.html>
+m4_define([libtool_current], [8])
+m4_define([libtool_age], [0])
+
+
 AC_INIT([GAP],
         gap_version,
         [support@gap-system.org],
@@ -724,11 +746,15 @@ AS_IF([test "x$with_gc" = xboehm],
 )
 
 dnl
-dnl Define kernel version
+dnl Export library and kernel version
 dnl
+AC_SUBST([GAP_LIBTOOL_CURRENT], "libtool_current")
+AC_SUBST([GAP_LIBTOOL_AGE], "libtool_age")
 
-gap_kernel_major_version=8
-gap_kernel_minor_version=0
+dnl kernel version is derived from the libtool library version
+gap_kernel_major_version=$(( libtool_current - libtool_age ))
+gap_kernel_minor_version=libtool_age
+
 AC_SUBST([gap_kernel_major_version])
 AC_SUBST([gap_kernel_minor_version])
 

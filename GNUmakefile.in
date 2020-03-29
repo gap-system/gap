@@ -27,9 +27,13 @@ GC_SOURCES = @GC_SOURCES@
 COMPAT_MODE = @COMPAT_MODE@
 GAPARCH = @GAPARCH@
 
-#
+# GAP version and release date
 GAP_VERSION = @GAP_VERSION@
 GAP_RELEASEDAY = @GAP_RELEASEDAY@
+
+# libtool library version
+GAP_LIBTOOL_CURRENT = @GAP_LIBTOOL_CURRENT@
+GAP_LIBTOOL_AGE = @GAP_LIBTOOL_AGE@
 
 # GAP kernel version
 GAP_KERNEL_MINOR_VERSION = @gap_kernel_minor_version@
