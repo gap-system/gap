@@ -469,6 +469,9 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
   bestdeg:=infinity;
   # what degree would we consider immediately acceptable?
   if actbase<>fail then
+    if ForAny(actbase,x->not IsSubset(g,x)) then
+      Error("illegal actbase given!");
+    fi;
     baddegree:=RootInt(Sum(actbase,Size)^2,3);
   else
     baddegree:=RootInt(Size(g)^3,4);
@@ -2242,7 +2245,7 @@ local a,b,c,p;
       # the degree looks rather big. Can we do better?
       Info(InfoMorph,2,"test automorphism domain ",p);
       c:=GroupByGenerators(GeneratorsOfGroup(a.aut),One(a.aut));
-      AssignNiceMonomorphismAutomorphismGroup(c,G); 
+      AssignNiceMonomorphismAutomorphismGroup(c,G:autactbase:=fail); 
       if IsPermGroup(Range(NiceMonomorphism(c))) and
 	LargestMovedPoint(Range(NiceMonomorphism(c)))<p then
         Info(InfoMorph,1,"improved domain ",

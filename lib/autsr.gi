@@ -612,6 +612,22 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     SortBy(d,Size); # in case reversed order....
   fi;
 
+  # now go up in series if elementary abelian to avoid too many tiny steps
+  u:=1; # last group in the series to be used
+  i:=2;
+  while i<Length(d) do
+    p:=IndexNC(d[i+1],d[u]);
+    # should we skip group i?
+    if p<100 and IsPrimePowerInt(p) and
+       HasElementaryAbelianFactorGroup(d[i+1],d[u]) then
+       d:=Concatenation(d{[1..i-1]},d{[i+1..Length(d)]});
+       # i stays the same, as it now is the next subgroup
+    else
+      u:=i;
+      i:=i+1;
+    fi;
+  od;
+
   # avoid small central subgroups, as the factor will be hard to represent
   u:=Centre(G);
   if Size(u)>1 then
