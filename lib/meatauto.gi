@@ -1690,5 +1690,5 @@ SMTX.SetEndAlgResidue:=SMTX.Setter("endAlgResidue");
 SMTX.EndAlgResidue:=SMTX.Getter("endAlgResidue");
 
 if IsHPCGAP then
-    MakeReadOnlyObj(SMTX);
+    SMTX := AtomicRecord(SMTX);
 fi;
