@@ -4,12 +4,10 @@ gap> START_TEST("IsomorphismGroups.tst");
 gap> SetAssertionLevel(0);;
 
 #
-gap> g:=PerfectGroup(IsPermGroup,15360,1);;
+gap> g:=PerfectGroup(IsPermGroup,7680,1);;
 gap> h:=g^(1,2);;
-gap> Length(CharacteristicSubgroups(g));
-5
-gap> Length(CharacteristicSubgroups(h));
-5
+gap> CharacteristicSubgroups(g);;
+gap> CharacteristicSubgroups(h);;
 gap> IsomorphismGroups(g,h)<>fail;
 true
 
