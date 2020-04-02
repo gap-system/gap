@@ -46,6 +46,28 @@ extern inline struct CFTLModuleState *CFTLState(void)
     return (struct CFTLModuleState *)StateSlotsAtOffset(CFTLStateOffset);
 }
 
+static inline Obj IncInt(Obj x)
+{
+    if (IS_INTOBJ(x) && x != INTOBJ_MAX) {
+        return (Obj)((Int)x + (Int)4);
+    }
+    return SumInt(x, INTOBJ_INT(1));
+}
+
+static inline Obj DecInt(Obj x)
+{
+    if (IS_INTOBJ(x) && x != INTOBJ_MIN) {
+        return (Obj)((Int)x - (Int)4);
+    }
+    return DiffInt(x, INTOBJ_INT(1));
+}
+
+static inline Obj FastAInvInt(Obj x)
+{
+    if (IS_INTOBJ(x) && x != INTOBJ_MIN)
+        return INTOBJ_INT(-INT_INTOBJ(x));
+    return AInvInt(x);
+}
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))
 
@@ -164,13 +186,13 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
                   SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
                   if( (y = GET_POWER( h )) ) e = QuoInt( s, e );
               }
-              else if( LtInt( s, INTOBJ_INT(0) ) ) {
+              else if( IS_NEG_INT( s ) ) {
                   t = ModInt( s, e );
                   SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
               
                   if( (y = GET_IPOWER( h )) ) {
                       e = QuoInt( s, e );
-                      if( !IS_INT_ZERO( t ) ) e = DiffInt( e, INTOBJ_INT(1) );
+                      if( !IS_INT_ZERO( t ) ) e = DecInt( e );
                       e = AInvInt(e);
                   }
               }
@@ -193,13 +215,13 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
           /* Assume that the top of the exponent stack is non-zero. */
           e = ELM_PLIST( est, st );
           
-          if( LtInt( INTOBJ_INT(0), e ) ) {
-            C_DIFF_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
+          if( IS_POS_INT( e ) ) {
+            e = DecInt( e );
             SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
             conj  = CONST_ADDR_OBJ(pcp)[PC_CONJUGATES];
             iconj = CONST_ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
             
-            C_SUM_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
+            ge = IncInt( ELM_PLIST( list, g ) );
           }
           else {
             C_SUM_FIA( ee, e, INTOBJ_INT(1) );  e = ee;
@@ -207,7 +229,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             conj  = CONST_ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
             iconj = CONST_ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
             
-            C_DIFF_FIA( ge, ELM_PLIST( list, g ), INTOBJ_INT(1) );
+            ge = DecInt( ELM_PLIST( list, g ) );
           }
         }
         SET_ELM_PLIST( list, g, ge );  CHANGED_BAG( list );
@@ -224,14 +246,14 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             
                 if( (y = GET_POWER( g )) ) ge = QuoInt( ge, e );
             }
-            else if( LtInt( ge, INTOBJ_INT(0) ) ) {
+            else if( IS_NEG_INT( ge ) ) {
                 mge = ModInt( ge, e );
                 SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
             
                 if( (y = GET_IPOWER( g )) ) {
                     ge = QuoInt( ge, e );
                     if( !IS_INT_ZERO( mge ) ) 
-                        ge = DiffInt( ge, INTOBJ_INT(1) );
+                        ge = DecInt( ge );
                     ge = AInvInt(ge);
                 }
             }
@@ -244,7 +266,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             e = ELM_PLIST( list, h );
             if( !IS_INT_ZERO(e) ) {
             
-                if( LtInt( INTOBJ_INT(0), e ) ) {
+                if( IS_POS_INT( e ) ) {
                     if( GET_CONJ( h, g ) ) break;
                 }
                 else {
@@ -260,12 +282,12 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             if( !IS_INT_ZERO(e) ) {
               SET_ELM_PLIST( list, hh, INTOBJ_INT(0) );
               
-              if( LtInt( INTOBJ_INT(0), e ) ) {
+              if( IS_POS_INT( e ) ) {
                   x = ELM_PLIST(  gens, hh );
               }
               else {
                   x = ELM_PLIST( igens, hh );
-                  C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
+                  e = FastAInvInt(e);
               }
               
               PUSH_STACK( x, e );
@@ -278,17 +300,13 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
           if( !IS_INT_ZERO(e) ) {
             SET_ELM_PLIST( list, h, INTOBJ_INT(0) );
             
-            x = (Obj)0;
-            if( LtInt( INTOBJ_INT(0), e ) ) x = GET_CONJ( h, g );
-            else                            x = GET_ICONJ( h, g );
+            x = IS_POS_INT( e ) ? GET_CONJ( h, g ) : GET_ICONJ( h, g );
             
             if( x == (Obj)0 )  {
-              if( LtInt( INTOBJ_INT(0), e ) ) x = ELM_PLIST(  gens, h );
-              else                            x = ELM_PLIST( igens, h );
-            
+              x = IS_POS_INT( e ) ? ELM_PLIST( gens, h ) : ELM_PLIST( igens, h );
             }
-            if( LtInt( e, INTOBJ_INT(0) ) ) {
-              C_PROD_FIA( ee, e, INTOBJ_INT(-1) );  e = ee;
+            if( IS_NEG_INT( e ) ) {
+              e = FastAInvInt(e);
             }
             PUSH_STACK( x, e );
           }
@@ -301,8 +319,8 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
         w   = ELM_PLIST( wst, st );
         syl = INT_INTOBJ( ELM_PLIST( sst, st ) ) + 2;
         if( syl > LEN_PLIST( w ) ) {
-          we = DiffInt( ELM_PLIST( west, st ), INTOBJ_INT(1) );
-          if( EqInt( we, INTOBJ_INT(0) ) ) { st--; }
+          we = DecInt( ELM_PLIST( west, st ) );
+          if( we == INTOBJ_INT(0) ) { st--; }
           else {
             SET_ELM_PLIST( west, st, we );
             SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
