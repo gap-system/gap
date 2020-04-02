@@ -790,7 +790,7 @@ static Char GetTripStr(ScannerState * s, Char c)
     UInt i = 0;
 
     // print only a partial prompt while reading a triple string
-    STATE(Prompt) = SyQuiet ? "" : "> ";
+    SetPrompt(SyQuiet ? "" : "> ");
 
     while (c != '\377') {
         // only thing to check for is a triple quote
