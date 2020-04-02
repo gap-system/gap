@@ -371,7 +371,7 @@ static void RunThreadedMain2(int (*mainFunction)(int, char **),
     thread_data[0].state = TSTATE_RUNNING;
     thread_data[0].tls = GetTLS();
     InitSignals();
-    if (sySetjmp(TLS(threadExit)))
+    if (setjmp(TLS(threadExit)))
         exit(0);
     exit((*mainFunction)(argc, argv));
 }

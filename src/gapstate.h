@@ -50,7 +50,7 @@ typedef struct GAPState {
     Bag   LVarsPool[16];
 
     /* From read.c */
-    syJmp_buf ReadJmpError;
+    jmp_buf ReadJmpError;
 
     /* From scanner.c */
     UInt   NrError;

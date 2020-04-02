@@ -49,12 +49,12 @@
 **  correctly, you must backup ReadJmpError before TRY_IF_NO_ERROR, and restore it
 **  in a matching CATCH_ERROR block.
 */
-/* TL: extern syJmp_buf ReadJmpError; */
+/* TL: extern jmp_buf ReadJmpError; */
 
 #define TRY_IF_NO_ERROR \
     if (!STATE(NrError)) { \
         volatile Int recursionDepth = GetRecursionDepth();  \
-        if (sySetjmp(STATE(ReadJmpError))) { \
+        if (setjmp(STATE(ReadJmpError))) { \
             SetRecursionDepth(recursionDepth);  \
             STATE(NrError)++; \
         }\

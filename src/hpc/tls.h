@@ -88,7 +88,7 @@ typedef struct ThreadLocalStorage
   UInt PeriodicCheckCount;
 
   /* From read.c */
-  syJmp_buf threadExit;
+  jmp_buf threadExit;
 
   /* From scanner.c */
   Obj DefaultOutput;

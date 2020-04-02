@@ -29,7 +29,7 @@
 #endif
 
 
-extern syJmp_buf * GAP_GetReadJmpError(void);
+extern jmp_buf * GAP_GetReadJmpError(void);
 extern void GAP_EnterDebugMessage_(char * message, char * file, int line);
 extern void GAP_EnterStack_(void *);
 extern void GAP_LeaveStack_(void);
@@ -99,7 +99,7 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 
 #define GAP_Error_Setjmp()                                                   \
     (GAP_unlikely(GAP_Error_Prejmp_(__FILE__, __LINE__)) ||                  \
-     GAP_Error_Postjmp_(sySetjmp(*GAP_GetReadJmpError())))
+     GAP_Error_Postjmp_(setjmp(*GAP_GetReadJmpError())))
 
 
 // Code which uses the GAP API exposed by this header file should sandwich

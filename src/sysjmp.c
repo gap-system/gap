@@ -43,10 +43,10 @@ Int RegisterSyLongjmpObserver(voidfunc func)
     return 0;
 }
 
-void syLongjmp(syJmp_buf * buf, int val)
+void syLongjmp(jmp_buf * buf, int val)
 {
     Int i;
     for (i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
         (signalSyLongjmpFuncs[i])();
-    syLongjmpInternal(*buf, val);
+    longjmp(*buf, val);
 }

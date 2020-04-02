@@ -604,10 +604,10 @@ static void GapRootScanner(int full)
         (*ExtraMarkFuncBags)();
 
     // scan the stack for further object references, and mark them
-    syJmp_buf registers;
-    sySetjmp(registers);
-    TryMarkRange(registers, (char *)registers + sizeof(syJmp_buf));
-    TryMarkRange((char *)registers + sizeof(syJmp_buf), stackend);
+    jmp_buf registers;
+    setjmp(registers);
+    TryMarkRange(registers, (char *)registers + sizeof(jmp_buf));
+    TryMarkRange((char *)registers + sizeof(jmp_buf), stackend);
 
     // mark all global objects
     for (Int i = 0; i < GlobalCount; i++) {

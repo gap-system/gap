@@ -1031,12 +1031,12 @@ static Obj FuncSERIALIZE_TO_NATIVE_STRING(Obj self, Obj obj)
 {
     Obj                         result;
     volatile SerializeModuleState state;
-    syJmp_buf                   readJmpError;
+    jmp_buf                   readJmpError;
     SaveSerializationState(&state);
     InitNativeStringSerializer(NEW_STRING(0));
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
-    if (sySetjmp(STATE(ReadJmpError))) {
-        memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
+    if (setjmp(STATE(ReadJmpError))) {
+        memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
         RestoreSerializationState(&state);
         syLongjmp(&(STATE(ReadJmpError)), 1);
     }
@@ -1044,7 +1044,7 @@ static Obj FuncSERIALIZE_TO_NATIVE_STRING(Obj self, Obj obj)
     while (LEN_PLIST(MODULE_STATE(Serialize).stack) > 0)
         SerializeObj(PopObj());
     result = MODULE_STATE(Serialize).obj;
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
     RestoreSerializationState(&state);
     return result;
 }
@@ -1053,22 +1053,22 @@ static Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string)
 {
     Obj                         result;
     volatile SerializeModuleState state;
-    syJmp_buf                   readJmpError;
+    jmp_buf                   readJmpError;
 
     SaveSerializationState(&state);
 
     if (!IS_STRING(string))
         ErrorQuit("DESERIALIZE_NATIVE_STRING: argument must be a string", 0,
                   0);
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
-    if (sySetjmp(STATE(ReadJmpError))) {
-        memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
+    if (setjmp(STATE(ReadJmpError))) {
+        memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
         RestoreSerializationState(&state);
         syLongjmp(&(STATE(ReadJmpError)), 1);
     }
     InitNativeStringDeserializer(string);
     result = DeserializeObj();
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
     RestoreSerializationState(&state);
     return result;
 }
