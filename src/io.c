@@ -294,7 +294,15 @@ Char PEEK_NEXT_CHAR(void)
 
 Char PEEK_CURR_CHAR(void)
 {
-    return *STATE(In);
+    Char c = *STATE(In);
+
+    // if no character is available then get one
+    if (c == '\0') {
+        STATE(In)--;
+        c = GET_NEXT_CHAR();
+    }
+
+    return c;
 }
 
 void SKIP_TO_END_OF_LINE(void)
