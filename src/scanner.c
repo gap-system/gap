@@ -418,8 +418,10 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
       return GetIdent(s, i, c);
     }
 
-    // Or maybe we saw a '.' which could indicate one of two things: a
-    // float literal or S_DOT, i.e., '.' used to access a record entry.
+    // Or maybe we saw a '.' which could indicate one of three things:
+    // - a float literal: 12.345
+    // - S_DOT, i.e., '.' used to access a record entry: r.12.345
+    // - S_DDOT, i.e., '..' in a range expression:  [12..345]
     if (c == '.') {
       GAP_ASSERT(i < MAX_VALUE_LEN - 1);
 
@@ -431,10 +433,9 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
         goto finish;
       }
 
-      // peek ahead to decide which
+      // peek ahead to decide if we are looking at a range expression
       if (PEEK_NEXT_CHAR() == '.') {
-        // It was '.', so this looks like '..' and we are probably
-        // inside a range expression.
+        // we are looking at '..' and are probably inside a range expression
         symbol = S_INT;
         goto finish;
       }
