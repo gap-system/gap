@@ -454,7 +454,7 @@ static void ThreadedInterpreter(void * funcargs)
     TRY_IF_NO_ERROR
     {
         Obj init, exit;
-        if (sySetjmp(TLS(threadExit)))
+        if (setjmp(TLS(threadExit)))
             return;
         init = GVarOptFunction(&GVarTHREAD_INIT);
         if (init)
@@ -884,21 +884,21 @@ static Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
 {
     Region * volatile oldRegion = TLS(currentRegion);
     Region * volatile region = GetRegionOf(obj);
-    syJmp_buf readJmpError;
+    jmp_buf readJmpError;
 
     RequireFunction("WITH_TARGET_REGION", func);
     if (!region || !CheckExclusiveWriteAccess(obj))
         return ArgumentError(
             "WITH_TARGET_REGION: Requires write access to target region");
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
-    if (sySetjmp(STATE(ReadJmpError))) {
-        memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
+    if (setjmp(STATE(ReadJmpError))) {
+        memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
         TLS(currentRegion) = oldRegion;
         syLongjmp(&(STATE(ReadJmpError)), 1);
     }
     TLS(currentRegion) = region;
     CALL_0ARGS(func);
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
     TLS(currentRegion) = oldRegion;
     return (Obj)0;
 }

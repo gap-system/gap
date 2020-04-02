@@ -234,7 +234,7 @@ static Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
 
 Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
 {
-    volatile syJmp_buf readJmpError;
+    volatile jmp_buf readJmpError;
     volatile Obj       res;
     volatile Obj       currLVars;
     volatile Obj       tilde;
@@ -250,7 +250,7 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
 #endif
 
     memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError),
-           sizeof(syJmp_buf));
+           sizeof(jmp_buf));
     currLVars = STATE(CurrLVars);
 #ifdef GAP_KERNEL_DEBUG
     volatile Stat currStat = BRK_CALL_TO();
@@ -262,7 +262,7 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
     int      lockSP = RegionLockSP();
     Region * savedRegion = TLS(currentRegion);
 #endif
-    if (sySetjmp(STATE(ReadJmpError))) {
+    if (setjmp(STATE(ReadJmpError))) {
         SET_LEN_PLIST(res, 2);
         SET_ELM_PLIST(res, 1, False);
         SET_ELM_PLIST(res, 2, STATE(ThrownObject));
@@ -300,7 +300,7 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
             SET_LEN_PLIST(res, 1);
     }
     memcpy((void *)&STATE(ReadJmpError), (void *)&readJmpError,
-           sizeof(syJmp_buf));
+           sizeof(jmp_buf));
     return res;
 }
 

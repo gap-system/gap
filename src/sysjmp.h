@@ -18,27 +18,13 @@
 
 /****************************************************************************
 **
-*F  sySetjmp( <jump buffer> )
 *F  syLongjmp( <jump buffer>, <value> )
 **
-**  macros and functions, defining our selected longjump mechanism
+**  A wrapper around longjmp, so other functions can do work before longjmp
+**  is called
 */
 
-#if defined(HAVE_SIGSETJMP)
-#define sySetjmp(buff) (sigsetjmp((buff), 0))
-#define syLongjmpInternal siglongjmp
-#define syJmp_buf sigjmp_buf
-#elif defined(HAVE__SETJMP)
-#define sySetjmp _setjmp
-#define syLongjmpInternal _longjmp
-#define syJmp_buf jmp_buf
-#else
-#define sySetjmp setjmp
-#define syLongjmpInternal longjmp
-#define syJmp_buf jmp_buf
-#endif
-
-void syLongjmp(syJmp_buf * buf, int val) NORETURN;
+void syLongjmp(jmp_buf * buf, int val) NORETURN;
 
 /****************************************************************************
 **

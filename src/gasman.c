@@ -1848,7 +1848,7 @@ UInt ResizeBag (
 **  identifiers can exist, and so 'CollectBags' frees these masterpointers.
 */
 
-static syJmp_buf RegsBags;
+static jmp_buf RegsBags;
 
 #if defined(SPARC)
 static void SparcStackFuncBags(void)
@@ -1940,7 +1940,7 @@ static UInt CollectBags_Mark(UInt FullBags)
     }
 
     /* mark from the stack                                                 */
-    sySetjmp( RegsBags );
+    setjmp( RegsBags );
 #if defined(SPARC)
     SparcStackFuncBags();
 #endif

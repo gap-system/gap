@@ -2499,7 +2499,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     volatile ExecStatus          type;
     volatile Obj                 tilde;
     volatile Obj                 errorLVars;
-    syJmp_buf           readJmpError;
+    jmp_buf           readJmpError;
 #ifdef HPCGAP
     int                 lockSP;
 #endif
@@ -2528,7 +2528,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     /* remember the old reader context                                     */
     tilde       = STATE(Tilde);
     errorLVars  = STATE(ErrorLVars);
-    memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
+    memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
     rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
@@ -2593,7 +2593,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     GAP_ASSERT(rs->LoopNesting == 0);
 
     /* switch back to the old reader context                               */
-    memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
     STATE(Tilde)       = tilde;
     STATE(ErrorLVars)  = errorLVars;
 
@@ -2615,7 +2615,7 @@ UInt ReadEvalFile(Obj * evalResult)
 {
     volatile ExecStatus type;
     volatile Obj        tilde;
-    syJmp_buf           readJmpError;
+    jmp_buf           readJmpError;
     volatile UInt       nr;
     volatile Obj        nams;
     volatile Int        nloc;
@@ -2643,7 +2643,7 @@ UInt ReadEvalFile(Obj * evalResult)
 #ifdef HPCGAP
     lockSP      = RegionLockSP();
 #endif
-    memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
+    memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
     rs->StackNams    = NEW_PLIST( T_PLIST, 16 );
@@ -2694,7 +2694,7 @@ UInt ReadEvalFile(Obj * evalResult)
     }
 
     /* switch back to the old reader context                               */
-    memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+    memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
 #ifdef HPCGAP
     PopRegionLocks(lockSP);
     if (TLS(CurrentHashLock))
@@ -2730,7 +2730,7 @@ void ReadEvalError(void)
 
 struct SavedReaderState {
   UInt                userHasQuit;
-  syJmp_buf           readJmpError;
+  jmp_buf           readJmpError;
   UInt                nrError;
   Bag                 oldLvars;
 };
@@ -2739,7 +2739,7 @@ static void SaveReaderState(struct SavedReaderState *s) {
   s->userHasQuit = STATE(UserHasQuit);
   s->nrError = STATE(NrError);
   s->oldLvars = STATE(CurrLVars);
-  memcpy( s->readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
+  memcpy( s->readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 }
 
 static void ClearReaderState(void ) {
@@ -2750,7 +2750,7 @@ static void ClearReaderState(void ) {
 
 static void RestoreReaderState(const struct SavedReaderState *s) {
   SWITCH_TO_OLD_LVARS(s->oldLvars);
-  memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(syJmp_buf) );
+  memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(jmp_buf) );
   STATE(UserHasQuit) = s->userHasQuit;
   STATE(NrError) = s->nrError;
 }

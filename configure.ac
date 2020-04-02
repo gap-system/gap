@@ -903,24 +903,6 @@ AC_SEARCH_LIBS([cos], [m], [], [
 dnl check for math functions
 AC_CHECK_FUNCS([log2 log10 log1p exp2 expm1 exp10 trunc])
 
-dnl sigsetjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
-AC_MSG_CHECKING([for sigsetjmp])
-AC_LINK_IFELSE(
-  [AC_LANG_PROGRAM([[#include <setjmp.h>]],
-      [[sigjmp_buf t; sigsetjmp(t, 0)]])],
-  [AC_MSG_RESULT([yes])
-   AC_DEFINE([HAVE_SIGSETJMP], [1], [Define to 1 if you have the `sigsetjmp' function.])],
-  [AC_MSG_RESULT([no])])
-
-dnl _setjmp is a macro on some platforms, cannot use AC_CHECK_FUNCS
-AC_MSG_CHECKING([for _setjmp])
-AC_LINK_IFELSE(
-  [AC_LANG_PROGRAM([[#include <setjmp.h>]],
-      [[sigjmp_buf t; _setjmp(t, 0)]])],
-  [AC_MSG_RESULT([yes])
-   AC_DEFINE([HAVE__SETJMP], [1], [Define to 1 if you have the `_setjmp' function.])],
-  [AC_MSG_RESULT([no])])
-
 dnl pthreads
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AX_PTHREAD

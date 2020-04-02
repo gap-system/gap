@@ -461,7 +461,7 @@ Obj GAP_CharWithValue(UChar obj)
     return ObjsChar[obj];
 }
 
-syJmp_buf * GAP_GetReadJmpError(void)
+jmp_buf * GAP_GetReadJmpError(void)
 {
     return &(STATE(ReadJmpError));
 }

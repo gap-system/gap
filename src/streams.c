@@ -700,7 +700,7 @@ static Obj FuncPrint(Obj self, Obj args)
 {
     volatile Obj        arg;
     volatile UInt       i;
-    syJmp_buf           readJmpError;
+    jmp_buf           readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
@@ -715,17 +715,17 @@ static Obj FuncPrint(Obj self, Obj args)
             PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf) );
+            memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
             /* if an error occurs stop printing                            */
             TRY_IF_NO_ERROR {
                 PrintObj( arg );
             }
             CATCH_ERROR {
-                memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+                memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
                 ReadEvalError();
             }
-            memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+            memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -738,7 +738,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     volatile Obj        arg;
     volatile Obj        destination;
     volatile UInt       i;
-    syJmp_buf           readJmpError;
+    jmp_buf           readJmpError;
 
     /* first entry is the file or stream                                   */
     destination = ELM_LIST(args, 1);
@@ -772,7 +772,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy(readJmpError, STATE(ReadJmpError), sizeof(syJmp_buf));
+        memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
         TRY_IF_NO_ERROR
         {
             if (IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg)) {
@@ -791,10 +791,10 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         CATCH_ERROR
         {
             CloseOutput();
-            memcpy( STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf) );
+            memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
             ReadEvalError();
         }
-        memcpy(STATE(ReadJmpError), readJmpError, sizeof(syJmp_buf));
+        memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
     }
 
     /* close the output file again, and return nothing                     */
