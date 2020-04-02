@@ -1802,22 +1802,27 @@ static void ReadAnd(ReaderState * rs, TypSymbolSet follow, Char mode)
 static void
 ReadQualifiedExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
 {
-  volatile UInt access  = 0;
-  if (rs->s.Symbol == S_READWRITE) 
-    {
-      Match_(rs, S_READWRITE, "readwrite", follow | EXPRBEGIN);
-      access = 2;
+#ifdef HPCGAP
+    volatile LockQual qual = LOCK_QUAL_NONE;
+#else
+    volatile UInt qual = 0;
+#endif
+    if (rs->s.Symbol == S_READWRITE) {
+        Match_(rs, S_READWRITE, "readwrite", follow | EXPRBEGIN);
+#ifdef HPCGAP
+        qual = LOCK_QUAL_READWRITE;
+#endif
     }
-  else if (rs->s.Symbol == S_READONLY) 
-    {
-      Match_(rs, S_READONLY, "readonly", follow | EXPRBEGIN);
-      access = 1;
+    else if (rs->s.Symbol == S_READONLY) {
+        Match_(rs, S_READONLY, "readonly", follow | EXPRBEGIN);
+#ifdef HPCGAP
+        qual = LOCK_QUAL_READONLY;
+#endif
     }
-  TRY_IF_NO_ERROR { IntrQualifiedExprBegin(&rs->intr, access); }
-  ReadExpr(rs, follow,mode);
-  TRY_IF_NO_ERROR { IntrQualifiedExprEnd(&rs->intr); }
+    TRY_IF_NO_ERROR { IntrQualifiedExprBegin(&rs->intr, qual); }
+    ReadExpr(rs, follow, mode);
+    TRY_IF_NO_ERROR { IntrQualifiedExprEnd(&rs->intr); }
 }
-
 
 
 /****************************************************************************
