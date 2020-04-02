@@ -739,7 +739,7 @@ static Char GetStr(ScannerState * s, Char c)
         SyntaxError(s, "String must not include <newline>");
 
     if (c == '\377') {
-        *STATE(In) = '\0';
+        FlushRestOfInputLine();
         SyntaxError(s, "String must end with \" before end of file");
     }
 
@@ -764,7 +764,7 @@ static void GetPragma(ScannerState * s, Char c)
     s->ValueObj = AppendBufToString(string, buf, i);
 
     if (c == '\377') {
-        *STATE(In) = '\0';
+        FlushRestOfInputLine();
     }
 }
 
@@ -815,7 +815,7 @@ static Char GetTripStr(ScannerState * s, Char c)
     s->ValueObj = AppendBufToString(string, buf, i);
 
     if (c == '\377') {
-        *STATE(In) = '\0';
+        FlushRestOfInputLine();
         SyntaxError(s, "String must end with \"\"\" before end of file");
     }
 
@@ -955,12 +955,6 @@ static UInt NextSymbol(ScannerState * s)
 
     Char c = PEEK_CURR_CHAR();
 
-    // if no character is available then get one
-    if (c == '\0') {
-        STATE(In)--;
-        c = GET_NEXT_CHAR();
-    }
-
     // skip over <spaces>, <tabs>, <newlines> and comments
     while (c == ' ' || c == '\t' || c== '\n' || c== '\r' || c == '\f' || c=='#') {
         if (c == '#') {
@@ -1042,7 +1036,7 @@ static UInt NextSymbol(ScannerState * s)
     case '5': case '6': case '7': case '8': case '9':
                       return GetNumber(s, 0, c);
 
-    case '\377':      symbol = S_EOF;           *STATE(In) = '\0'; break;
+    case '\377':      symbol = S_EOF;  FlushRestOfInputLine(); break;
 
     default:          symbol = S_ILLEGAL;       GET_NEXT_CHAR(); break;
     }
