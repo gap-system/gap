@@ -198,6 +198,12 @@ UInt CloseInputLog(void);
 /* TL: extern  const Char *    Prompt; */
 
 /****************************************************************************
+**
+*F  SetPrompt( <prompt> ) . . . . . . . . . . . . . set the user input prompt
+*/
+void SetPrompt(const char * prompt);
+
+/****************************************************************************
  **
  *V  PrintPromptHook . . . . . . . . . . . . . . function for printing prompt
  *V  EndLineHook . . . . . . . . . . . function called at end of command line

@@ -145,9 +145,6 @@ static Obj PrintFormattingStatus;
 */
 static Obj FilenameCache;
 
-/* TODO: Eliminate race condition in HPC-GAP */
-static Char promptBuf[81];
-
 static ModuleStateOffset IOStateOffset = -1;
 
 enum {
@@ -256,7 +253,7 @@ Char GET_NEXT_CHAR(void)
 
         // if we get here, we saw a line continuation; change the prompt to a
         // partial prompt from now on
-        STATE(Prompt) = SyQuiet ? "" : "> ";
+        SetPrompt(SyQuiet ? "" : "> ");
     }
 
     return *STATE(In);
@@ -1138,6 +1135,16 @@ UInt OpenAppend (
 
 /****************************************************************************
 **
+*F  SetPrompt( <prompt> ) . . . . . . . . . . . . . set the user input prompt
+*/
+void SetPrompt(const char * prompt)
+{
+    strlcpy(STATE(Prompt), prompt, sizeof(STATE(Prompt)));
+}
+
+
+/****************************************************************************
+**
 *F  GetLine2( <input>, <buffer>, <length> ) . . . . . . . . get a line, local
 */
 static Int GetLine2 (
@@ -1604,8 +1611,7 @@ static Obj FuncPRINT_CPROMPT(Obj self, Obj prompt)
   if (IS_STRING_REP(prompt)) {
     /* by assigning to Prompt we also tell readline (if used) what the
        current prompt is  */
-    strlcpy(promptBuf, CONST_CSTR_STRING(prompt), sizeof(promptBuf));
-    STATE(Prompt) = promptBuf;
+    SetPrompt(CONST_CSTR_STRING(prompt));
   }
   Pr("%s%c", (Int)STATE(Prompt), (Int)'\03' );
   return (Obj) 0;

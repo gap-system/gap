@@ -200,7 +200,7 @@ static Obj Shell(Obj    context,
     }
 
     /* read and evaluate one command                                   */
-    STATE(Prompt) = prompt;
+    SetPrompt(prompt);
     ClearError();
     SetPrintObjState(0);
     ResetOutputIndent();
@@ -216,7 +216,7 @@ static Obj Shell(Obj    context,
         {
           Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
-          STATE(Prompt) = prompt;
+          SetPrompt(prompt);
           ClearError();
         }
     }
