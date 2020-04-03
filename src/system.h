@@ -16,7 +16,6 @@
 
 #include "common.h"
 
-
 /* check if we are on a 64 bit machine                                     */
 #if SIZEOF_VOID_P == 8
 # define SYS_IS_64_BIT          1
@@ -73,6 +72,18 @@ enum {
 #define NORETURN __attribute__((noreturn))
 #else
 #define NORETURN
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_PURE
+#define PURE_FUNC __attribute__((pure))
+#else
+#define PURE_FUNC
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
+#define CONSTRUCTOR_FUNC __attribute__((constructor))
+#else
+#define CONSTRUCTOR_FUNC
 #endif
 
 

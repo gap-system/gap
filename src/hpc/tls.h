@@ -69,6 +69,7 @@ typedef struct Region Region;
 typedef struct ThreadLocalStorage
 {
   int threadID;
+  int threadInit;
   void *threadLock;
   void *threadSignal;
   void *acquiredMonitor;
@@ -107,18 +108,6 @@ extern __thread ThreadLocalStorage *TLSInstance;
 #ifdef USE_PTHREAD_TLS
 
 #include <pthread.h>
-
-#ifdef HAVE_FUNC_ATTRIBUTE_PURE
-#define PURE_FUNC __attribute__((pure))
-#else
-#define PURE_FUNC
-#endif
-
-#ifdef HAVE_FUNC_ATTRIBUTE_CONSTRUCTOR
-#define CONSTRUCTOR_FUNC __attribute__((constructor))
-#else
-#define CONSTRUCTOR_FUNC
-#endif
 
 #ifdef ALLOW_PURE_PTHREAD_GETSPECIFIC
 // pthread_getspecific() is not defined as pure by default; redeclaring

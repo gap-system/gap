@@ -1485,7 +1485,6 @@ Obj GVarFunction(GVarDescriptor *gvar)
     ErrorQuit("Global variable '%s' not initialized", (UInt)(gvar->name), 0);
   if (REGION(result))
     ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0);
-  ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)
     ErrorQuit("Global variable '%s' is not a function", (UInt)(gvar->name), 0);
   MEMBAR_READ();
@@ -1499,7 +1498,6 @@ Obj GVarOptFunction(GVarDescriptor *gvar)
     return (Obj) 0;
   if (REGION(result))
     return (Obj) 0;
-  ImpliedWriteGuard(result);
   if (TNUM_OBJ(result) != T_FUNCTION)
     return (Obj) 0;
   MEMBAR_READ();

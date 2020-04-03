@@ -46,6 +46,10 @@
 
 #include <pthread.h>
 
+#ifdef USE_JULIA_GC
+#include "libgap-api.h"
+#endif
+
 
 #define RequireThread(funcname, op, argname)                                 \
     RequireArgumentConditionEx(funcname, op, "<" argname ">",                \
@@ -430,6 +434,20 @@ void StopKeepAlive(Obj node)
 
 static GVarDescriptor GVarTHREAD_INIT;
 static GVarDescriptor GVarTHREAD_EXIT;
+
+#ifdef USE_JULIA_GC
+#define INTERPRETER_INIT 2
+void InitInterpreterState()
+{
+    if ((TLS(threadInit) & INTERPRETER_INIT) == 0) {
+        GAP_InitializeThread();
+    }
+    TLS(threadInit) |= INTERPRETER_INIT;
+    STATE(NrError) = 0;
+    STATE(ThrownObject) = 0;
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+}
+#endif
 
 static void ThreadedInterpreter(void * funcargs)
 {
@@ -957,6 +975,9 @@ static void PrintRegion(Obj);
 
 GVarDescriptor LastInaccessibleGVar;
 static GVarDescriptor MAX_INTERRUPTGVar;
+#ifdef DEBUG_GUARDS
+GVarDescriptor GUARD_ERROR_STACK;
+#endif
 
 static UInt RNAM_SIGINT;
 static UInt RNAM_SIGCHLD;
@@ -2350,7 +2371,7 @@ void InitSignals(void)
     timer.it_interval.tv_usec = 10000;
     timer.it_value.tv_sec = 0;
     timer.it_value.tv_usec = 10000;
-    setitimer(ITIMER_VIRTUAL, &timer, NULL);
+    // setitimer(ITIMER_VIRTUAL, &timer, NULL);
 }
 
 static Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
@@ -2645,6 +2666,9 @@ static Int InitKernel(StructInitInfo * module)
 
     DeclareGVar(&LastInaccessibleGVar, "LastInaccessible");
     DeclareGVar(&MAX_INTERRUPTGVar, "MAX_INTERRUPT");
+#ifdef DEBUG_GUARDS
+    DeclareGVar(&GUARD_ERROR_STACK, "GUARD_ERROR_STACK");
+#endif
 
     // install mark functions
     InitMarkFuncBags(T_THREAD, MarkNoSubBags);

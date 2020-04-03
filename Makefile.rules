@@ -64,9 +64,7 @@ SOURCES += src/intfuncs.c
 SOURCES += src/intrprtr.c
 SOURCES += src/io.c
 SOURCES += src/iostream.c
-ifeq ($(HPCGAP),no)             # we don't support a kernel API in HPC-GAP atm
 SOURCES += src/libgap-api.c
-endif
 SOURCES += src/listfunc.c
 SOURCES += src/listoper.c
 SOURCES += src/lists.c

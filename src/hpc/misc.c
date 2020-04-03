@@ -50,7 +50,7 @@ UInt SyNumGCThreads = 0;
 *V  SingleThreadStartup . . . . . . . . .  start HPC-GAP with just one thread
 **
 */
-UInt SingleThreadStartup = 0;
+UInt SingleThreadStartup = 1;
 
 /****************************************************************************
 **

@@ -41,6 +41,10 @@ Region * NewRegion(void)
     result = GC_malloc(sizeof(Region) + (MAX_THREADS + 1));
     lock = GC_malloc_atomic(sizeof(*lock));
     GC_register_finalizer(lock, LockFinalizer, NULL, NULL, NULL);
+#elif defined(USE_JULIA_GC)
+    result = AllocateMemoryBlock(sizeof(Region) + (MAX_THREADS + 1));
+    lock = AllocateMemoryBlock(sizeof(*lock));
+    // NYI: finalize locks
 #else
     #error Not yet implemented for this garbage collector
 #endif
@@ -79,3 +83,4 @@ void RetypeBagIfWritable(Obj obj, UInt new_type)
     if (CheckWriteAccess(obj))
         RetypeBag(obj, new_type);
 }
+

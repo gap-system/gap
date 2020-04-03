@@ -246,6 +246,29 @@ AS_CASE([$with_gc],
 AC_MSG_RESULT([$with_gc])
 
 dnl
+dnl User setting: disable guards (race protection)
+dnl
+
+AC_ARG_ENABLE([guards],
+    [AS_HELP_STRING([--enable-guards],
+        [enable guards for race protection in HPC-GAP])],
+    [enable_guards=$enableval],
+    [enable_guards=no])
+
+AS_IF([[test "x$enable_guards" == "xyes"]], [
+    AC_DEFINE([USE_HPC_GUARDS], [1], [define as 1 if guards should be checked])
+])
+AC_MSG_CHECKING([whether to use guards for race protection in HPC-GAP])
+AC_MSG_RESULT([$enable_guards])
+
+dnl
+dnl Check: --enable-guards requires --enable-hpcgap
+dnl
+
+AS_IF([[test "x$enable_guards" == "xyes" && test "x$enable_hpcgap" == "xno"]],
+  [AC_MSG_ERROR([Option --enable-guards requires --enable-hpcgap])])
+
+dnl
 dnl User setting: native thread-local storage (off by default)
 dnl See src/hpc/tls.h for more details on thread-local storage options.
 dnl
@@ -941,6 +964,9 @@ AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])
   dnl also enable backtrace, to help debug spurious crashes
   AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
+  AS_IF([test "x$enable_guards" = xno], [
+    AS_BOX([WARNING: HPC-GAP guards (race condition protection) are disabled.])
+    ])
   ])
 
 AS_IF([test "x$enable_macos_tls_asm" = xno],[

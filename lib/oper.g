@@ -1983,8 +1983,6 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     od;
 end );
 
-if not IsHPCGAP then
-
 BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
     local oper,j;
     for oper in OPERATIONS do
@@ -1993,8 +1991,6 @@ BIND_GLOBAL( "FLUSH_ALL_METHOD_CACHES", function()
         od;
     od;
 end);
-
-fi;
 
 if BASE_SIZE_METHODS_OPER_ENTRY <> 6 then
     Error("MethodsOperation must be updated for new BASE_SIZE_METHODS_OPER_ENTRY");

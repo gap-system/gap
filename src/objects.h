@@ -831,7 +831,11 @@ EXPORT_INLINE BOOL IS_COMOBJ(Obj obj)
 */
 EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj)
 {
-    return CONST_ADDR_OBJ(obj)[0];
+    Obj result = CONST_ADDR_OBJ(obj)[0];
+#ifdef HPCGAP
+    MEMBAR_READ();
+#endif
+    return result;
 }
 
 
@@ -841,7 +845,12 @@ EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj)
 */
 EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
 {
+#ifdef HPCGAP
+    MEMBAR_WRITE();
+    UNSAFE_PTR_BAG(obj)[0] = val;
+#else
     ADDR_OBJ(obj)[0] = val;
+#endif
 }
 
 
@@ -874,7 +883,11 @@ EXPORT_INLINE BOOL IS_POSOBJ(Obj obj)
 */
 EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj)
 {
-    return CONST_ADDR_OBJ(obj)[0];
+    Obj result = CONST_ADDR_OBJ(obj)[0];
+#ifdef HPCGAP
+    MEMBAR_READ();
+#endif
+    return result;
 }
 
 
@@ -884,7 +897,12 @@ EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj)
 */
 EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
 {
+#ifdef HPCGAP
+    MEMBAR_WRITE();
+    UNSAFE_PTR_BAG(obj)[0] = val;
+#else
     ADDR_OBJ(obj)[0] = val;
+#endif
 }
 
 
@@ -917,7 +935,11 @@ EXPORT_INLINE BOOL IS_DATOBJ(Obj obj)
 */
 EXPORT_INLINE Obj TYPE_DATOBJ(Obj obj)
 {
-    return CONST_ADDR_OBJ(obj)[0];
+    Obj result = CONST_ADDR_OBJ(obj)[0];
+#ifdef HPCGAP
+    MEMBAR_READ();
+#endif
+    return result;
 }
 
 
@@ -929,7 +951,12 @@ EXPORT_INLINE Obj TYPE_DATOBJ(Obj obj)
 */
 EXPORT_INLINE void SET_TYPE_DATOBJ(Obj obj, Obj val)
 {
+#ifdef HPCGAP
+    MEMBAR_WRITE();
+    UNSAFE_PTR_BAG(obj)[0] = val;
+#else
     ADDR_OBJ(obj)[0] = val;
+#endif
 }
 
 void SetTypeDatObj(Obj obj, Obj type);
