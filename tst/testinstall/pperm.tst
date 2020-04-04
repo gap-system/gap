@@ -3333,8 +3333,40 @@ gap> MultiplicativeZeroOp(x);
 gap> MultiplicativeZero(x);
 <empty partial perm>
 
-# Test PartialPerm (for sparse incorrect arg)
+# Test PartialPerm
 gap> PartialPerm([1,2,8],[3,4,1,2]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([0,1],[2,3]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([2,3],[0,1]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([-2,-3],[5,6]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([5,6],[-2,-3]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([5,2^100], [5,6]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([5,6],[5,2^100]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([5,5],[5,6]);
+Error, usage: the 1st argument must be a set of positive integers and the 2nd \
+argument must be a duplicate-free list of positive integers of equal length to\
+ the first
+gap> PartialPerm([5,6],[5,5]);
 Error, usage: the 1st argument must be a set of positive integers and the 2nd \
 argument must be a duplicate-free list of positive integers of equal length to\
  the first
