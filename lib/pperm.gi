@@ -518,8 +518,8 @@ function(arg)
                     "duplicate-free,");
     fi;
   elif Length(arg) = 2 then
-    if IsSSortedList(arg[1]) and ForAll(arg[1], IsSmallIntRep)
-        and IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsSmallIntRep)
+    if IsSSortedList(arg[1]) and ForAll(arg[1], IsPosInt and IsSmallIntRep)
+        and IsDuplicateFreeList(arg[2]) and ForAll(arg[2], IsPosInt and IsSmallIntRep)
         and Length(arg[1]) = Length(arg[2]) then
       return SparsePartialPermNC(arg[1], arg[2]);
     else
