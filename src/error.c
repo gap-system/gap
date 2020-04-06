@@ -28,6 +28,7 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysjmp.h"
 #include "sysstr.h"
 #include "vars.h"
 

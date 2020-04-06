@@ -15,11 +15,13 @@
 #ifndef GAP_GAPSTATE_H
 #define GAP_GAPSTATE_H
 
-#include "sysjmp.h"
+#include "common.h"
 
 #ifdef HPCGAP
 #include "hpc/tls.h"
 #endif
+
+#include <setjmp.h>
 
 enum {
     STATE_SLOTS_SIZE = 32768,

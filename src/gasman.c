@@ -118,11 +118,11 @@
 #include "gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
-#include "sysjmp.h"
 #include "sysmem.h"
 
 #include "bags.inc"
 
+#include <setjmp.h>
 #include <string.h>
 
 #ifdef GAP_MEM_CHECK
