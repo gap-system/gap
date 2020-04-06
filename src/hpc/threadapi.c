@@ -30,6 +30,7 @@
 #include "set.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysjmp.h"
 #include "vars.h"
 
 #include "hpc/guards.h"

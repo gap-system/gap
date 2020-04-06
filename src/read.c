@@ -26,6 +26,7 @@
 #include "scanner.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysjmp.h"
 #include "sysopt.h"
 #include "sysstr.h"
 #include "vars.h"

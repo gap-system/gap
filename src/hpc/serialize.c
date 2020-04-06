@@ -22,6 +22,7 @@
 #include "rational.h"
 #include "records.h"
 #include "stringobj.h"
+#include "sysjmp.h"
 
 #include "hpc/aobjects.h"
 

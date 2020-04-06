@@ -22,7 +22,8 @@
 #include "plist.h"
 #include "precord.h"
 #include "records.h"
-#include "sysjmp.h"
+
+#include <setjmp.h>
 
 static Obj RecordedStats;
 
