@@ -2,6 +2,11 @@
 dist: xenial
 language: c
 
+# Store downloaded package archives in ~/.gap-package-cache
+cache:
+  directories:
+    $HOME/.gap-package-cache
+
 env:
   global:
     - CFLAGS="--coverage -O2 -g"
