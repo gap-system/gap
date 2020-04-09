@@ -2,14 +2,8 @@
 ##
 ##  values for the `MakeGAPDocDoc' call that builds the Reference Manual
 ##
-
-GAPInfo.ManualDataRef:= rec(
-  pathtodoc:= ".",
-  main:= "main.xml",
-  bookname:= "ref",
-  pathtoroot:= "../..",
-
-  files:= [
+bookname:= "ref";
+files:= [
     "../../src/sysfiles.c",
     "../../grp/basic.gd",
     "../../grp/classic.gd",
@@ -213,5 +207,4 @@ GAPInfo.ManualDataRef:= rec(
     "../../grp/simple.gd",
     "../../tst/teststandard.g",
     "../../tst/testinstall.g",
-  ],
- );;
+];

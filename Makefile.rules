@@ -796,10 +796,16 @@ TESTGAP = $(TESTGAPauto) -A
 manuals: doc
 
 doc: gap$(EXEEXT) doc/make_doc doc/versiondata
-	doc/make_doc
+	doc/make_doc all withpdf
 
-html: gap$(EXEEXT) doc/make_doc doc/versiondata
-	doc/make_doc nopdf
+doc-html html: gap$(EXEEXT) doc/make_doc doc/versiondata
+	doc/make_doc all nopdf
+
+doc-ref: gap$(EXEEXT) doc/make_doc doc/versiondata
+	doc/make_doc ref withpdf 1
+
+doc-ref-html: gap$(EXEEXT) doc/make_doc doc/versiondata
+	doc/make_doc ref nopdf 1
 
 clean-doc:
 	rm -f doc/*/chap*.html doc/*/chap*.txt doc/*/*.css doc/*/*.js
