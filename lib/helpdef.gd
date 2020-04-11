@@ -18,10 +18,10 @@
 ##  
   
 DeclareGlobalFunction("GapLibToc2Gap");
-DeclareGlobalVariable("HELP_CHAPTER_BEGIN");
-DeclareGlobalVariable("HELP_SECTION_BEGIN");
-DeclareGlobalVariable("HELP_FAKECHAP_BEGIN");
-DeclareGlobalVariable("HELP_PRELCHAPTER_BEGIN");
+DeclareGlobalName("HELP_CHAPTER_BEGIN");
+DeclareGlobalName("HELP_SECTION_BEGIN");
+DeclareGlobalName("HELP_FAKECHAP_BEGIN");
+DeclareGlobalName("HELP_PRELCHAPTER_BEGIN");
 DeclareGlobalFunction("HELP_CHAPTER_INFO");
 DeclareGlobalFunction("HELP_PRINT_SECTION_URL");
 DeclareGlobalFunction("HELP_PRINT_SECTION_MAC_IC_URL");

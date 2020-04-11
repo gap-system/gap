@@ -5218,7 +5218,7 @@ fi;
 ##
 #V  CharacterTableDisplayDefaults
 ##
-InstallValue( CharacterTableDisplayDefaults, rec(
+BindGlobal( "CharacterTableDisplayDefaults", rec(
       Global:= rec(
         centralizers    := true,
 

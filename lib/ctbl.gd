@@ -3591,7 +3591,7 @@ DeclareAttribute( "DisplayOptions", IsNearlyCharacterTable );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharacterTableDisplayDefaults" );
+DeclareGlobalName( "CharacterTableDisplayDefaults" );
 
 
 #############################################################################

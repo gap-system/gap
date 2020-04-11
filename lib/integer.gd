@@ -74,12 +74,11 @@ DeclareCategory( "IsNonnegativeIntegers", IsSemiringWithOneAndZero );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "Integers", "ring of integers" );
+DeclareGlobalName( "Integers" );
 
-DeclareGlobalVariable( "PositiveIntegers", "semiring of positive integers" );
+DeclareGlobalName( "PositiveIntegers" );
 
-DeclareGlobalVariable( "NonnegativeIntegers",
-    "semiring of nonnegative integers" );
+DeclareGlobalName( "NonnegativeIntegers" );
 
 
 #############################################################################
@@ -117,7 +116,7 @@ DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
+DeclareGlobalName( "GaussianIntegers");
 
 
 #############################################################################
@@ -144,7 +143,7 @@ DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "Primes", "list of the 168 primes less than 1000" );
+DeclareGlobalName( "Primes" );
 
 
 #############################################################################

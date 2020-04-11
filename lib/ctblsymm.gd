@@ -180,8 +180,7 @@ DeclareGlobalFunction( "CharValueSymmetric" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharTableSymmetric",
-    "generic character table of symmetric groups" );
+DeclareGlobalName( "CharTableSymmetric" );
 
 
 #############################################################################
@@ -195,8 +194,7 @@ DeclareGlobalVariable( "CharTableSymmetric",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharTableAlternating",
-    "generic character table of alternating groups" );
+DeclareGlobalName( "CharTableAlternating" );
 
 
 #############################################################################
@@ -224,8 +222,7 @@ DeclareGlobalFunction( "CharValueWeylB" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharTableWeylB",
-    "generic character table of Weyl groups of type B" );
+DeclareGlobalName( "CharTableWeylB" );
 
 
 #############################################################################
@@ -239,8 +236,7 @@ DeclareGlobalVariable( "CharTableWeylB",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharTableWeylD",
-    "generic character table of Weyl groups of type D" );
+DeclareGlobalName( "CharTableWeylD" );
 
 
 #############################################################################
@@ -366,8 +362,7 @@ DeclareGlobalFunction( "CharacterTableWreathSymmetric" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
-    "gen. char. table of the standard Schur double cover of symm. groups" );
+DeclareGlobalName( "CharTableDoubleCoverSymmetric" );
 
 
 #############################################################################
@@ -381,5 +376,4 @@ DeclareGlobalVariable( "CharTableDoubleCoverSymmetric",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "CharTableDoubleCoverAlternating",
-    "generic char. table of the Schur double cover of alternating groups" );
+DeclareGlobalName( "CharTableDoubleCoverAlternating" );

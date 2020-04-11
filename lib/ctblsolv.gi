@@ -849,7 +849,7 @@ InstallMethod( Irr,
 ##
 #V  BaumClausenInfoDebug  . . . . . . . . . . . . . . testing BaumClausenInfo
 ##
-InstallValue( BaumClausenInfoDebug, rec(
+BindGlobal( "BaumClausenInfoDebug", rec(
     makemat:= function( record, e )
         local dim, mat, diag, gcd, i;
         dim:= Length( record.diag );
