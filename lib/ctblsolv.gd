@@ -27,7 +27,7 @@
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "BaumClausenInfoDebug" );
+DeclareGlobalName( "BaumClausenInfoDebug" );
 
 
 #############################################################################

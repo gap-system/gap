@@ -490,7 +490,7 @@ end);
 # in second list: for each book a list 
 #                 [short name, long name, 
 #                  directory containing the manual.six file] 
-InstallValue(HELP_KNOWN_BOOKS, [[],[]]);
+BindGlobal("HELP_KNOWN_BOOKS", [[],[]]);
 if IsHPCGAP then
   LockAndMigrateObj(HELP_KNOWN_BOOKS,HELP_REGION);
 fi;
@@ -629,7 +629,7 @@ fi;
 ##  components  in  this help  book record  depend  on  the format  of the
 ##  documentation and the corresponding handler functions.
 ##  
-InstallValue(HELP_BOOKS_INFO, rec());
+BindGlobal("HELP_BOOKS_INFO", rec());
 if IsHPCGAP then
   LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
 fi;
@@ -1174,7 +1174,7 @@ if IsHPCGAP then
 fi;
 # here we store the last shown topic, initialized with 0 (leading to
 # show "Tutorial: Help", see below)
-InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0, 
+BindGlobal("HELP_LAST", rec(MATCH := 0, BOOK := 0, 
              NEXT_VIEWER := false, TOPICS := []));
 NAMES_SYSTEM_GVARS:= "to be defined in init.g";
 

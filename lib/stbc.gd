@@ -211,8 +211,7 @@ DeclareAttribute( "StabChainOptions", IsPermGroup, "mutable" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "DefaultStabChainOptions",
-    "default options for stabilizer chain calculations" );
+DeclareGlobalName( "DefaultStabChainOptions" );
 
 
 #############################################################################

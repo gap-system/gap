@@ -14,7 +14,7 @@
 ##
 #V  Integers  . . . . . . . . . . . . . . . . . . . . .  ring of the integers
 ##
-InstallValue( Integers, Objectify( NewType(
+BindGlobal( "Integers", Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
     IsIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -35,7 +35,7 @@ SetIsWholeFamily( Integers, false );
 ##
 #V  NonnegativeIntegers . . . . . . . . . .  semiring of nonnegative integers
 ##
-InstallValue( NonnegativeIntegers, Objectify( NewType(
+BindGlobal( "NonnegativeIntegers", Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
     IsNonnegativeIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -53,7 +53,7 @@ SetIsWholeFamily( NonnegativeIntegers, false );
 ##
 #V  PositiveIntegers  . . . . . . . . . . . . . semiring of positive integers
 ##
-InstallValue( PositiveIntegers, Objectify( NewType(
+BindGlobal( "PositiveIntegers", Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
     IsPositiveIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -71,7 +71,7 @@ SetIsWholeFamily( PositiveIntegers, false );
 ##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
 ##
-InstallValue( GaussianIntegers, Objectify( NewType(
+BindGlobal( "GaussianIntegers", Objectify( NewType(
     CollectionsFamily(CyclotomicsFamily),
     IsGaussianIntegers and IsAttributeStoringRep ),
     rec() ) );
@@ -148,7 +148,7 @@ InstallMethod( Coefficients,
 ##
 #V  Primes  . . . . . . . . . . . . . . . . . . . . . .  list of small primes
 ##
-InstallValue( Primes,
+BindGlobal( "Primes",
   [   2,  3,  5,  7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
      67, 71, 73, 79, 83, 89, 97,101,103,107,109,113,127,131,137,139,149,151,
     157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,

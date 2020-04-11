@@ -1353,4 +1353,4 @@ DeclareGlobalFunction("StringFactorizationWord");
 DeclareGlobalFunction("CanMapFiniteAbelianInvariants");
 
 # used in homomorphisms
-DeclareGlobalVariable("TRIVIAL_FP_GROUP");
+DeclareGlobalName("TRIVIAL_FP_GROUP");

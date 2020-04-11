@@ -382,7 +382,7 @@ end );
 ##  Note that this record is accessed in the `Irr' method for natural
 ##  symmetric groups.
 ##
-InstallValue( CharTableSymmetric, Immutable( rec(
+BindGlobal( "CharTableSymmetric", Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -486,7 +486,7 @@ InstallValue( CharTableSymmetric, Immutable( rec(
 ##
 #V  CharTableAlternating  . .  generic character table of alternating groups.
 ##
-InstallValue( CharTableAlternating, Immutable( rec(
+BindGlobal( "CharTableAlternating", Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -831,7 +831,7 @@ end );
 ##
 #V  CharTableWeylB  . . . . generic character table of Weyl groups of type B.
 ##
-InstallValue( CharTableWeylB, Immutable( rec(
+BindGlobal( "CharTableWeylB", Immutable( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -886,7 +886,7 @@ InstallValue( CharTableWeylB, Immutable( rec(
 ##
 #V  CharTableWeylD  . . . . generic character table of Weyl groups of type D.
 ##
-InstallValue( CharTableWeylD, rec(
+BindGlobal( "CharTableWeylD", rec(
     isGenericTable:=
         true,
     identifier:=
@@ -1742,7 +1742,7 @@ BindGlobal( "OrderOfSchurLift", function( pi )
 ##
 #V  CharTableDoubleCoverSymmetric
 ##
-InstallValue( CharTableDoubleCoverSymmetric, MakeImmutable ( rec(
+BindGlobal( "CharTableDoubleCoverSymmetric", MakeImmutable ( rec(
     isGenericTable:=
         true,
     identifier:=
@@ -1879,7 +1879,7 @@ InstallValue( CharTableDoubleCoverSymmetric, MakeImmutable ( rec(
 ##
 #V  CharTableDoubleCoverAlternating
 ##
-InstallValue( CharTableDoubleCoverAlternating, MakeImmutable( rec(
+BindGlobal( "CharTableDoubleCoverAlternating", MakeImmutable( rec(
     isGenericTable:=
         true,
     identifier:=

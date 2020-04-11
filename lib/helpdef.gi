@@ -112,10 +112,10 @@ end);
 #F  HELP_CHAPTER_INFO( <book>, <chapter> )  . . . .  get info about a chapter
 ##
 ##  this is a helper function for `HELP_SHOW_SECTIONS'
-InstallValue(HELP_CHAPTER_BEGIN, Immutable("\\Chapter"));
-InstallValue(HELP_SECTION_BEGIN, Immutable("\\Section"));
-InstallValue(HELP_FAKECHAP_BEGIN, Immutable("%\\FakeChapter"));
-InstallValue(HELP_PRELCHAPTER_BEGIN, Immutable("\\PreliminaryChapter"));
+BindGlobal("HELP_CHAPTER_BEGIN", Immutable("\\Chapter"));
+BindGlobal("HELP_SECTION_BEGIN", Immutable("\\Section"));
+BindGlobal("HELP_FAKECHAP_BEGIN", Immutable("%\\FakeChapter"));
+BindGlobal("HELP_PRELCHAPTER_BEGIN", Immutable("\\PreliminaryChapter"));
 
 InstallGlobalFunction(HELP_CHAPTER_INFO, function( book, chapter )
     local   info,  filename,  stream,  poss,  secnum,  pos,  line;
