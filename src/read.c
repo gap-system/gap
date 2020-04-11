@@ -727,8 +727,12 @@ static void CheckUnboundGlobal(ReaderState * rs, LHSRef ref)
     if (ValGVar(ref.var) != 0)
         return;
 
-    // ... and isn't an auto var
+    // ... and isn't an auto var ...
     if (ExprGVar(ref.var) != 0)
+        return;
+
+    // ... and was not "declared" via DeclareGlobalName
+    if (IsDeclaredGVar(ref.var))
         return;
 
     // don't warn if we are skipping/ignoring code

@@ -1890,16 +1890,29 @@ end );
 ##  <Func Name="InstallGlobalFunction" Arg='oper, func'/>
 ##
 ##  <Description>
-##  <Ref Func="DeclareGlobalFunction"/> 
 ##  &GAP; functions that are not operations and that are intended to be
-##  called by users should be notified to &GAP; in the declaration part
-##  of the respective package
-##  (see Section&nbsp;<Ref Sect="Declaration and Implementation Part"/>)
-##  via <Ref Func="DeclareGlobalFunction"/>, which returns a function that
-##  serves as a place holder for the function that will be installed later,
-##  and that will print an error message if it is called.
+##  called by users should be notified to &GAP;
+##  via <Ref Func="DeclareGlobalFunction"/>.
+##  <Ref Func="DeclareGlobalFunction"/>
+##  returns a function that serves as a placeholder for the function that will
+##  be installed later.
+##  The placeholder will print an error message if it is called.
 ##  See also&nbsp;<Ref Func="DeclareSynonym"/>.
 ##  <P/>
+##
+##  In the past the main application of this was to allow access to variables
+##  before they were assigned. Starting with &GAP; 4.12 we recommend to use
+##  <Ref Func="DeclareGlobalName"/>/<Ref Func="BindGlobal"/> instead of
+##  <Ref Func="DeclareGlobalVariable"/>/<Ref Func="InstallGlobalFunction"/>
+##  whenever possible.
+##  <P/>
+##
+##  If used at all, then
+##  <Ref Func="DeclareGlobalVariable"/> shall be used in the declaration part
+##  of the respective package
+##  (see&nbsp;<Ref Sect="Declaration and Implementation Part"/>).
+##  <P/>
+##
 ##  A global function declared with <Ref Func="DeclareGlobalFunction"/>
 ##  can be given its value <A>func</A> via
 ##  <Ref Func="InstallGlobalFunction"/>;
@@ -1920,11 +1933,6 @@ end );
 ##  InstallGlobalFunction( SumOfTwoCubes, function(x, y) return x^3 + y^3; end);
 ##  ]]></Log>
 ##  <P/>
-##  <!-- Commented out by AK after the withdrowal of completion files:
-##  <E>Note:</E> <A>func</A> must be a function which has <E>not</E> been
-##  declared with <Ref Func="DeclareGlobalFunction"/> itself.
-##  Otherwise completion files
-##  (see&nbsp;<Ref Sect="Completion Files"/>) get confused! -->
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
