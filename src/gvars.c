@@ -232,13 +232,6 @@ static Obj             FopiesGVars;
 // FlagsGVars contains information about global variables.
 // Once cast to a GVarFlagInfo struct, this information is:
 //
-// gvarWriteFlag: A value of type GVarWriteFlag which denotes if the variable
-// is Assignable, ReadOnly, or Constant.
-// hasExprCopiesFopies: If the variable has ever had a non-default value
-// assigned to ExprGVars, CopiesGVars or FopiesGVars. Note that this value is
-// never cleared at present, so it can be set to 1 while these three arrays
-// all have their default value, but if it is 0 these arrays definitely have
-// their default values.
 
 typedef enum {
     GVarAssignable = 0,
@@ -247,8 +240,21 @@ typedef enum {
 } GVarWriteFlag;
 
 typedef struct {
+    // 'gvarWriteFlag' is a value of type GVarWriteFlag which denotes whether
+    // the variable is assignable, read-only, or constant.
     unsigned char gvarWriteFlag : 2;
+
+    // 'hasExprCopiesFopies' indicates whether the variable has ever had a
+    // non-default value assigned to ExprGVars, CopiesGVars or FopiesGVars.
+    // Note that this value is never cleared at present, so it can be set to 1
+    // while these three arrays all have their default value, but if it is 0
+    // these arrays definitely have their default values.
     unsigned char hasExprCopiesFopies : 1;
+
+    // 'isDeclared' indicates whether the variable was marked by
+    // 'DeclareGlobalName' in which case no "Unbound global variable" syntax
+    // warnings should be issued for it.
+    unsigned char isDeclared : 1;
 } GVarFlagInfo;
 
 // If this size increases, the type used in GetGVarFlags and
@@ -290,11 +296,24 @@ static void SetGVarWriteState(Int gvar, GVarWriteFlag w)
     SetGVarFlagInfo(gvar, info);
 }
 
-static void SetHasExprCopiesFopies(Int gvar, Int set)
+static void SetHasExprCopiesFopies(Int gvar, BOOL set)
 {
     GVarFlagInfo info = GetGVarFlagInfo(gvar);
     info.hasExprCopiesFopies = set;
     SetGVarFlagInfo(gvar, info);
+}
+
+static void SetIsDeclaredName(Int gvar, BOOL set)
+{
+    GVarFlagInfo info = GetGVarFlagInfo(gvar);
+    info.isDeclared = set;
+    SetGVarFlagInfo(gvar, info);
+}
+
+BOOL IsDeclaredGVar(UInt gvar)
+{
+    GVarFlagInfo info = GetGVarFlagInfo(gvar);
+    return info.isDeclared;
 }
 
 
@@ -808,6 +827,18 @@ void MakeThreadLocalVar (
         SetTLDefault(TLVars, rnam, value);
 }
 #endif
+
+
+/****************************************************************************
+**
+*F  FuncDeclareGlobalName(<self>,<name>)
+*/
+Obj FuncDeclareGlobalName(Obj self, Obj name)
+{
+    RequireStringRep("DeclareGlobalName", name);
+    SetIsDeclaredName(GVarName(CONST_CSTR_STRING(name)), 1);
+    return 0;
+}
 
 
 /****************************************************************************
@@ -1534,6 +1565,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(IsConstantGVar, name),
     GVAR_FUNC(AUTO, -3, "func, arg, names..."),
 
+    GVAR_FUNC_1ARGS(DeclareGlobalName, name),
 
     GVAR_FUNC_0ARGS(IDENTS_GVAR),
     GVAR_FUNC_0ARGS(IDENTS_BOUND_GVARS),

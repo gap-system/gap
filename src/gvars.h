@@ -169,6 +169,8 @@ BOOL IsReadOnlyGVar(UInt gvar);
 
 BOOL IsConstantGVar(UInt gvar);
 
+BOOL IsDeclaredGVar(UInt gvar);
+
 
 /****************************************************************************
 **

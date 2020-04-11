@@ -105,8 +105,16 @@ InstallMethod( FlushCaches, "return method", [], function() end );
 ##  instead of using <Ref Func="BindGlobal"/> one can also declare the
 ##  variable with <Ref Func="DeclareGlobalVariable"/>
 ##  which creates a new global variable named by the string <A>name</A>.
-##  If the second argument <A>description</A> is entered then this must be
-##  a string that describes the meaning of the global variable.
+##  <P/>
+##
+##  In the past the main application of this was to allow access to variables
+##  before they were assigned. Starting with &GAP; 4.12 we recommend to
+##  instead use <Ref Func="DeclareGlobalName"/> for this kind of problem.
+##  The main remaining application for <Ref Func="DeclareGlobalVariable"/>
+##  is when one needs flushable values.
+##  <P/>
+##
+##  If used at all, then
 ##  <Ref Func="DeclareGlobalVariable"/> shall be used in the declaration part
 ##  of the respective package
 ##  (see&nbsp;<Ref Sect="Declaration and Implementation Part"/>),

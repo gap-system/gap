@@ -967,9 +967,51 @@ following:
 <Heading>Global Variables in the Library</Heading>
 
 Global variables in the &GAP; library are usually read-only in order to
-avoid their being overwritten accidentally.
+prevent them from being overwritten accidentally.
 
 See also Section <Ref Sect="More About Global Variables"/>.
+
+
+<ManSection>
+<Func Name="DeclareGlobalName" Arg="name"/>
+
+<Description>
+For global variables, sometimes code needs to reference them before
+a value can sensibly be assigned to them. For example, consider the
+following definition of a recursive function:
+<Log><![CDATA[
+BindGlobal( "fun", function(n)
+  if n > 0 then
+    return 2*fun(n-1);
+  fi;
+  return 1;
+end );
+]]></Log>
+The problem with that code is that it triggers a syntax warning about access
+to an unbound global variable, as <C>fun</C> only gets assigned after the
+complete statement has been parsed, yet that statement references <C>fun</C>.
+<P/>
+
+To resolve this, one can declare the variable with <Ref
+Func="DeclareGlobalName"/> before assigning it via <Ref Func="BindGlobal"/>.
+This informs &GAP; that a global variable with the specified name will
+eventually be defined, and that thus no syntax warnings pertaining to its use
+should be printed.
+<P/>
+
+We recommend using <Ref Func="DeclareGlobalName"/> instead of <Ref
+Func="DeclareGlobalVariable"/> or <Ref Func="DeclareGlobalFunction"/>
+whenever possible.
+<P/>
+
+<Ref Func="DeclareGlobalName"/> shall be used in the declaration part
+of the respective package
+(see&nbsp;<Ref Sect="Declaration and Implementation Part"/>),
+values can then be assigned to the new variable as usual, preferably via
+<Ref Func="BindGlobal"/>, in the implementation part
+(again, see&nbsp;<Ref Sect="Declaration and Implementation Part"/>).
+</Description>
+</ManSection>
 
 <#Include Label="DeclareGlobalVariable">
 <#Include Label="InstallValue">
@@ -1006,6 +1048,8 @@ Calls to the following functions belong to the declaration part.
 <Item><Ref Func="DeclareFilter"/>,</Item>
 <Item><Ref Func="DeclareOperation"/>,</Item>
 <Item><Ref Func="DeclareGlobalFunction"/>,</Item>
+<Item><Ref Func="DeclareGlobalName"/>,</Item>
+<Item><Ref Func="DeclareGlobalVariable"/>,</Item>
 <Item><Ref Func="DeclareSynonym"/>,</Item>
 <Item><Ref Func="DeclareSynonymAttr"/>,</Item>
 <Item><Ref Func="DeclareProperty"/>,</Item>
@@ -1015,6 +1059,7 @@ Calls to the following functions belong to the implementation part.
 <List>
 <Item><Ref Func="DeclareRepresentation"/>,</Item>
 <Item><Ref Func="InstallGlobalFunction"/>,</Item>
+<Item><Ref Func="InstallValue"/>,</Item>
 <Item><Ref Func="InstallMethod"/>,</Item>
 <Item><Ref Func="InstallImmediateMethod"/>,</Item>
 <Item><Ref Func="InstallOtherMethod"/>,</Item>

@@ -752,14 +752,14 @@ and <Ref Func="InstallValue"/> pair. There are also operations
 and their methods,  and  related  objects like attributes and filters which 
 also have <C>Declare...</C> and <C>Install...</C> pairs.
 <P/>
-<E>Secondly</E>,  it's  a  good  idea  to  reduce  the  chance  of  accidental
+<E>Secondly</E>,  it is a  good  idea  to  reduce  the  chance  of  accidental
 overwriting by choosing names for your functions and variables that begin
 with a string that identifies it  with  the  package,  e.g.&nbsp;some  of  the
 undocumented functions in the <Package>Example</Package> package begin with <C>Eg</C>. This is
 especially important in cases where you actually want the user to be able
 to change the value of a function or variable defined  by  your  package,
 for which you have used direct assignments  (for  which  the  user  will
-receive no warning  if  she  accidentally  overwrites  them).  It's  also
+receive no warning  if  she  accidentally  overwrites  them).  It is  also
 important  for  functions  and  variables   defined   via   <C>BindGlobal</C>,
 <C>DeclareGlobalFunction</C>/<C>InstallGlobalFunction</C>                       and
 <C>DeclareGlobalVariable</C>/<C>InstallValue</C>, in order to  avoid  name  clashes
@@ -1446,7 +1446,7 @@ package onto the public server, please ensure that a new archive has
 a new version number. This should be done even for very minor changes.
 <P/>
 For most of the packages it will be inappropriate to re-use the date 
-of the release as a version number. It's much more obvious how big are
+of the release as a version number. It is much more obvious how big are
 the changes between versions "4.4.12", "4.5.1" and "4.5.2" than between 
 versions "2008.12.17", "2011.04.15" and "2011.09.14". The concept of
 using version numbers to convey the meaning of the status of the code
