@@ -1829,8 +1829,8 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
                  Obj  arg5,
                  Obj  arg6)
 {
-    Obj types[n];
-    Obj ids[n];
+    Obj types[n > 0 ? n : 1];
+    Obj ids[n > 0 ? n : 1];
     Int prec;
     Obj method;
     Obj res;
@@ -1914,7 +1914,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
         /* If there was no method found, then pass the information needed
            for the error reporting. This function rarely returns */
         if (method == Fail) {
-            Obj args[n];
+            Obj args[n > 0 ? n : 1];
             /* It is intentional that each case in this case statement except
                0 drops through */
             switch (n) {
