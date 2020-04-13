@@ -1811,8 +1811,8 @@ static Int OperationNext;
 
 
 template <UInt n, BOOL verbose, BOOL constructor>
-static Obj DoOperationNArgs(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+static Obj
+DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
     // the following two lines look this way to avoid "allocating" a
     // zero-length array, which would result in undefined behavior (even
@@ -1828,22 +1828,22 @@ static Obj DoOperationNArgs(
        drops through */
     switch (n) {
     case 6:
-        types[5] = TYPE_OBJ_FEO(arg6);
+        types[5] = TYPE_OBJ_FEO(a6);
     case 5:
-        types[4] = TYPE_OBJ_FEO(arg5);
+        types[4] = TYPE_OBJ_FEO(a5);
     case 4:
-        types[3] = TYPE_OBJ_FEO(arg4);
+        types[3] = TYPE_OBJ_FEO(a4);
     case 3:
-        types[2] = TYPE_OBJ_FEO(arg3);
+        types[2] = TYPE_OBJ_FEO(a3);
     case 2:
-        types[1] = TYPE_OBJ_FEO(arg2);
+        types[1] = TYPE_OBJ_FEO(a2);
     case 1:
         if (constructor) {
-            RequireFilter("Constructor", arg1, "the first argument");
-            types[0] = FLAGS_FILT(arg1);
+            RequireFilter("Constructor", a1, "the first argument");
+            types[0] = FLAGS_FILT(a1);
         }
         else
-            types[0] = TYPE_OBJ_FEO(arg1);
+            types[0] = TYPE_OBJ_FEO(a1);
     case 0:
         break;
     default:
@@ -1909,23 +1909,22 @@ static Obj DoOperationNArgs(
                 arglist = NewEmptyPlist();
                 break;
             case 1:
-                arglist = NewPlistFromArgs(arg1);
+                arglist = NewPlistFromArgs(a1);
                 break;
             case 2:
-                arglist = NewPlistFromArgs(arg1, arg2);
+                arglist = NewPlistFromArgs(a1, a2);
                 break;
             case 3:
-                arglist = NewPlistFromArgs(arg1, arg2, arg3);
+                arglist = NewPlistFromArgs(a1, a2, a3);
                 break;
             case 4:
-                arglist = NewPlistFromArgs(arg1, arg2, arg3, arg4);
+                arglist = NewPlistFromArgs(a1, a2, a3, a4);
                 break;
             case 5:
-                arglist = NewPlistFromArgs(arg1, arg2, arg3, arg4, arg5);
+                arglist = NewPlistFromArgs(a1, a2, a3, a4, a5);
                 break;
             case 6:
-                arglist =
-                    NewPlistFromArgs(arg1, arg2, arg3, arg4, arg5, arg6);
+                arglist = NewPlistFromArgs(a1, a2, a3, a4, a5, a6);
                 break;
             default:
                 GAP_ASSERT(0);
@@ -1943,22 +1942,22 @@ static Obj DoOperationNArgs(
             res = CALL_0ARGS(method);
             break;
         case 1:
-            res = CALL_1ARGS(method, arg1);
+            res = CALL_1ARGS(method, a1);
             break;
         case 2:
-            res = CALL_2ARGS(method, arg1, arg2);
+            res = CALL_2ARGS(method, a1, a2);
             break;
         case 3:
-            res = CALL_3ARGS(method, arg1, arg2, arg3);
+            res = CALL_3ARGS(method, a1, a2, a3);
             break;
         case 4:
-            res = CALL_4ARGS(method, arg1, arg2, arg3, arg4);
+            res = CALL_4ARGS(method, a1, a2, a3, a4);
             break;
         case 5:
-            res = CALL_5ARGS(method, arg1, arg2, arg3, arg4, arg5);
+            res = CALL_5ARGS(method, a1, a2, a3, a4, a5);
             break;
         case 6:
-            res = CALL_6ARGS(method, arg1, arg2, arg3, arg4, arg5, arg6);
+            res = CALL_6ARGS(method, a1, a2, a3, a4, a5, a6);
             break;
         default:
             res = 0; // redundant, but silences a warning later on
@@ -1975,39 +1974,34 @@ Obj DoOperation0Args(Obj oper)
     return DoOperationNArgs<0, FALSE, FALSE>(oper, 0, 0, 0, 0, 0, 0);
 }
 
-Obj DoOperation1Args(Obj oper, Obj arg1)
+Obj DoOperation1Args(Obj oper, Obj a1)
 {
-    return DoOperationNArgs<1, FALSE, FALSE>(oper, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs<1, FALSE, FALSE>(oper, a1, 0, 0, 0, 0, 0);
 }
 
-Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2)
+Obj DoOperation2Args(Obj oper, Obj a1, Obj a2)
 {
-    return DoOperationNArgs<2, FALSE, FALSE>(oper, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs<2, FALSE, FALSE>(oper, a1, a2, 0, 0, 0, 0);
 }
 
-Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+Obj DoOperation3Args(Obj oper, Obj a1, Obj a2, Obj a3)
 {
-    return DoOperationNArgs<3, FALSE, FALSE>(oper, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs<3, FALSE, FALSE>(oper, a1, a2, a3, 0, 0, 0);
 }
 
-Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+Obj DoOperation4Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4)
 {
-    return DoOperationNArgs<4, FALSE, FALSE>(oper, arg1, arg2, arg3, arg4, 0,
-                                             0);
+    return DoOperationNArgs<4, FALSE, FALSE>(oper, a1, a2, a3, a4, 0, 0);
 }
 
-Obj DoOperation5Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
+Obj DoOperation5Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    return DoOperationNArgs<5, FALSE, FALSE>(oper, arg1, arg2, arg3, arg4,
-                                             arg5, 0);
+    return DoOperationNArgs<5, FALSE, FALSE>(oper, a1, a2, a3, a4, a5, 0);
 }
 
-Obj DoOperation6Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+Obj DoOperation6Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    return DoOperationNArgs<6, FALSE, FALSE>(oper, arg1, arg2, arg3, arg4,
-                                             arg5, arg6);
+    return DoOperationNArgs<6, FALSE, FALSE>(oper, a1, a2, a3, a4, a5, a6);
 }
 
 
@@ -2032,39 +2026,35 @@ Obj DoVerboseOperation0Args(Obj oper)
     return DoOperationNArgs<0, TRUE, FALSE>(oper, 0, 0, 0, 0, 0, 0);
 }
 
-Obj DoVerboseOperation1Args(Obj oper, Obj arg1)
+Obj DoVerboseOperation1Args(Obj oper, Obj a1)
 {
-    return DoOperationNArgs<1, TRUE, FALSE>(oper, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs<1, TRUE, FALSE>(oper, a1, 0, 0, 0, 0, 0);
 }
 
-Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2)
+Obj DoVerboseOperation2Args(Obj oper, Obj a1, Obj a2)
 {
-    return DoOperationNArgs<2, TRUE, FALSE>(oper, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs<2, TRUE, FALSE>(oper, a1, a2, 0, 0, 0, 0);
 }
 
-Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+Obj DoVerboseOperation3Args(Obj oper, Obj a1, Obj a2, Obj a3)
 {
-    return DoOperationNArgs<3, TRUE, FALSE>(oper, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs<3, TRUE, FALSE>(oper, a1, a2, a3, 0, 0, 0);
 }
 
-Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+Obj DoVerboseOperation4Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4)
 {
-    return DoOperationNArgs<4, TRUE, FALSE>(oper, arg1, arg2, arg3, arg4, 0,
-                                            0);
+    return DoOperationNArgs<4, TRUE, FALSE>(oper, a1, a2, a3, a4, 0, 0);
 }
 
-Obj DoVerboseOperation5Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
+Obj DoVerboseOperation5Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    return DoOperationNArgs<5, TRUE, FALSE>(oper, arg1, arg2, arg3, arg4,
-                                            arg5, 0);
+    return DoOperationNArgs<5, TRUE, FALSE>(oper, a1, a2, a3, a4, a5, 0);
 }
 
 Obj DoVerboseOperation6Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+    Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    return DoOperationNArgs<6, TRUE, FALSE>(oper, arg1, arg2, arg3, arg4,
-                                            arg5, arg6);
+    return DoOperationNArgs<6, TRUE, FALSE>(oper, a1, a2, a3, a4, a5, a6);
 }
 
 
@@ -2137,40 +2127,36 @@ static Obj DoConstructor0Args(Obj oper)
     return 0;
 }
 
-static Obj DoConstructor1Args(Obj oper, Obj arg1)
+static Obj DoConstructor1Args(Obj oper, Obj a1)
 {
-    return DoOperationNArgs<1, FALSE, TRUE>(oper, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs<1, FALSE, TRUE>(oper, a1, 0, 0, 0, 0, 0);
 }
 
-static Obj DoConstructor2Args(Obj oper, Obj arg1, Obj arg2)
+static Obj DoConstructor2Args(Obj oper, Obj a1, Obj a2)
 {
-    return DoOperationNArgs<2, FALSE, TRUE>(oper, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs<2, FALSE, TRUE>(oper, a1, a2, 0, 0, 0, 0);
 }
 
-static Obj DoConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoConstructor3Args(Obj oper, Obj a1, Obj a2, Obj a3)
 {
-    return DoOperationNArgs<3, FALSE, TRUE>(oper, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs<3, FALSE, TRUE>(oper, a1, a2, a3, 0, 0, 0);
+}
+
+static Obj DoConstructor4Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4)
+{
+    return DoOperationNArgs<4, FALSE, TRUE>(oper, a1, a2, a3, a4, 0, 0);
 }
 
 static Obj
-DoConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+DoConstructor5Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    return DoOperationNArgs<4, FALSE, TRUE>(oper, arg1, arg2, arg3, arg4, 0,
-                                            0);
+    return DoOperationNArgs<5, FALSE, TRUE>(oper, a1, a2, a3, a4, a5, 0);
 }
 
 static Obj
-DoConstructor5Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
+DoConstructor6Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    return DoOperationNArgs<5, FALSE, TRUE>(oper, arg1, arg2, arg3, arg4,
-                                            arg5, 0);
-}
-
-static Obj DoConstructor6Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
-{
-    return DoOperationNArgs<6, FALSE, TRUE>(oper, arg1, arg2, arg3, arg4,
-                                            arg5, arg6);
+    return DoOperationNArgs<6, FALSE, TRUE>(oper, a1, a2, a3, a4, a5, a6);
 }
 
 static Obj DoConstructorXArgs(Obj self, Obj args)
@@ -2198,40 +2184,36 @@ static Obj DoVerboseConstructor0Args(Obj oper)
     return 0;
 }
 
-static Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
+static Obj DoVerboseConstructor1Args(Obj oper, Obj a1)
 {
-    return DoOperationNArgs<1, TRUE, TRUE>(oper, arg1, 0, 0, 0, 0, 0);
+    return DoOperationNArgs<1, TRUE, TRUE>(oper, a1, 0, 0, 0, 0, 0);
 }
 
-static Obj DoVerboseConstructor2Args(Obj oper, Obj arg1, Obj arg2)
+static Obj DoVerboseConstructor2Args(Obj oper, Obj a1, Obj a2)
 {
-    return DoOperationNArgs<2, TRUE, TRUE>(oper, arg1, arg2, 0, 0, 0, 0);
+    return DoOperationNArgs<2, TRUE, TRUE>(oper, a1, a2, 0, 0, 0, 0);
 }
 
-static Obj DoVerboseConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+static Obj DoVerboseConstructor3Args(Obj oper, Obj a1, Obj a2, Obj a3)
 {
-    return DoOperationNArgs<3, TRUE, TRUE>(oper, arg1, arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs<3, TRUE, TRUE>(oper, a1, a2, a3, 0, 0, 0);
+}
+
+static Obj DoVerboseConstructor4Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4)
+{
+    return DoOperationNArgs<4, TRUE, TRUE>(oper, a1, a2, a3, a4, 0, 0);
 }
 
 static Obj
-DoVerboseConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+DoVerboseConstructor5Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
 {
-    return DoOperationNArgs<4, TRUE, TRUE>(oper, arg1, arg2, arg3, arg4, 0,
-                                           0);
-}
-
-static Obj DoVerboseConstructor5Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
-{
-    return DoOperationNArgs<5, TRUE, TRUE>(oper, arg1, arg2, arg3, arg4, arg5,
-                                           0);
+    return DoOperationNArgs<5, TRUE, TRUE>(oper, a1, a2, a3, a4, a5, 0);
 }
 
 static Obj DoVerboseConstructor6Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+    Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
-    return DoOperationNArgs<6, TRUE, TRUE>(oper, arg1, arg2, arg3, arg4, arg5,
-                                           arg6);
+    return DoOperationNArgs<6, TRUE, TRUE>(oper, a1, a2, a3, a4, a5, a6);
 }
 
 static Obj DoVerboseConstructorXArgs(Obj self, Obj args)
