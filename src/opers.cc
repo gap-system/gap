@@ -1393,15 +1393,10 @@ static UInt RNamPrecedence;
 static Obj  HANDLE_METHOD_NOT_FOUND;
 static Obj  CHECK_REPEATED_ATTRIBUTE_SET;
 
-static void HandleMethodNotFound(Obj   oper,
-                                 Int   nargs,
-                                 Obj * args,
-                                 UInt  verbose,
-                                 UInt  constructor,
-                                 Int   precedence)
+static void HandleMethodNotFound(
+    Obj oper, Obj arglist, UInt verbose, UInt constructor, Int precedence)
 {
   Obj r;
-  Obj arglist;
 #ifdef HPCGAP
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
@@ -1419,8 +1414,6 @@ static void HandleMethodNotFound(Obj   oper,
       RNamPrecedence = RNamName("Precedence");
     }
   AssPRec(r,RNamOperation,oper);
-  arglist = NewPlistFromArray(args, nargs);
-  MakeImmutableNoRecurse(arglist);
   AssPRec(r,RNamArguments,arglist);
   AssPRec(r,RNamIsVerbose,verbose ? True : False);
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
@@ -1910,28 +1903,34 @@ static Obj DoOperationNArgs(
         /* If there was no method found, then pass the information needed
            for the error reporting. This function rarely returns */
         if (method == Fail) {
-            Obj args[n > 0 ? n : 1];
-            /* It is intentional that each case in this case statement except
-               0 drops through */
+            Obj arglist;
             switch (n) {
-            case 6:
-                args[5] = arg6;
-            case 5:
-                args[4] = arg5;
-            case 4:
-                args[3] = arg4;
-            case 3:
-                args[2] = arg3;
-            case 2:
-                args[1] = arg2;
-            case 1:
-                args[0] = arg1;
             case 0:
+                arglist = NewEmptyPlist();
+                break;
+            case 1:
+                arglist = NewPlistFromArgs(arg1);
+                break;
+            case 2:
+                arglist = NewPlistFromArgs(arg1, arg2);
+                break;
+            case 3:
+                arglist = NewPlistFromArgs(arg1, arg2, arg3);
+                break;
+            case 4:
+                arglist = NewPlistFromArgs(arg1, arg2, arg3, arg4);
+                break;
+            case 5:
+                arglist = NewPlistFromArgs(arg1, arg2, arg3, arg4, arg5);
+                break;
+            case 6:
+                arglist =
+                    NewPlistFromArgs(arg1, arg2, arg3, arg4, arg5, arg6);
                 break;
             default:
                 GAP_ASSERT(0);
             }
-            HandleMethodNotFound(oper, n, args, verbose, constructor, prec);
+            HandleMethodNotFound(oper, arglist, verbose, constructor, prec);
         }
 
         if (!method) {
