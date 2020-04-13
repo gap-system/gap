@@ -501,7 +501,7 @@ Obj DoFilter(Obj self, Obj obj);
 **
 *F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
 */
-Obj NewFilter(Obj name, Obj nams, ObjFunc hdlr);
+Obj NewFilter(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
 
 
 /****************************************************************************
@@ -595,7 +595,7 @@ Obj DoTestAttribute(Obj self, Obj obj);
 **
 *F  NewAttribute( <name> ) . . . . . . . . . . . . . . . make a new attribute
 */
-Obj NewAttribute(Obj name, Obj nams, ObjFunc hdlr);
+Obj NewAttribute(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
 
 
 /****************************************************************************
@@ -609,7 +609,7 @@ Obj DoProperty(Obj self, Obj obj);
 **
 *F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
 */
-Obj NewProperty(Obj name, Obj nams, ObjFunc hdlr);
+Obj NewProperty(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
 
 
 /****************************************************************************
