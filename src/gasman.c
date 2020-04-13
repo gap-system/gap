@@ -1895,10 +1895,11 @@ static void GenStackFuncBags(void)
         }
     }
 
-    /* mark from registers, dirty dirty hack                               */
-    for ( p = (Bag*)((void*)RegsBags);
-          p < (Bag*)((void*)RegsBags)+sizeof(RegsBags)/sizeof(Bag);
-          p++ )
+    // mark from registers, dirty dirty hack: we treat the jmp_buf as a
+    // sequence of Bag values. Note that sizeof(jmp_buf) need not be a
+    // multiple of sizeof(Bag), hence the end condition looks slightly.
+    // unusual.
+    for (p = (Bag *)RegsBags; p + 1 <= (Bag *)(RegsBags + 1); p++)
         MarkBag( *p );
 
 #ifdef DEBUG_GASMAN_MARKING
