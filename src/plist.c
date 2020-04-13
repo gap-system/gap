@@ -3657,7 +3657,7 @@ static Int InitKernel (
       MakeImmutableObjFuncs[ t1 ] = MakeImmutablePlistNoMutElms;
 
     /* mutable tables may have mutable rows */
-      MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
+    MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
 
 #ifdef HPCGAP
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
