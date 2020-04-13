@@ -151,12 +151,13 @@ dnl
 dnl endianess
 AC_C_BIGENDIAN
 
-dnl function attributes
+dnl C/C++ attributes with GNU syntax (i.e., `__attribute__(FOO)`)
 AX_GCC_FUNC_ATTRIBUTE([always_inline])
+AX_GCC_FUNC_ATTRIBUTE([constructor])
+AX_GCC_FUNC_ATTRIBUTE([fallthrough])
 AX_GCC_FUNC_ATTRIBUTE([format])
 AX_GCC_FUNC_ATTRIBUTE([noinline])
 AX_GCC_FUNC_ATTRIBUTE([noreturn])
-AX_GCC_FUNC_ATTRIBUTE([constructor])
 AX_GCC_FUNC_ATTRIBUTE([pure])
 
 dnl compiler builtins
