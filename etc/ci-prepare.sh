@@ -46,7 +46,7 @@ time make V=1 -j4
 
 # download packages; instruct curl to retry several times if the
 # connection is refused, to work around intermittent failures
-DOWNLOAD="curl -L --retry 5 --retry-delay 5 -O"
+DOWNLOAD="curl -L --retry 5 --retry-delay 5 --max-time 120 -O"
 if [[ $(uname) == Darwin ]]
 then
     # Travis OSX builders seem to have very small download bandwidth,
