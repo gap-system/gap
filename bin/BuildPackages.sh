@@ -164,11 +164,11 @@ build_fail() {
 run_configure_and_make() {
   # We want to know if this is an autoconf configure script
   # or not, without actually executing it!
-  if [[ -f autogen.sh && ! -f configure ]]
+  if [[ -x autogen.sh && ! -x configure ]]
   then
     ./autogen.sh
   fi
-  if [[ -f "configure" ]]
+  if [[ -x configure ]]
   then
     if grep Autoconf ./configure > /dev/null
     then
@@ -201,6 +201,10 @@ build_one_package() {
   (  # start subshell
   set -e
   cd "$CURDIR/$PKG"
+  if [[ -x prerequisites.sh ]]
+  then
+    ./prerequisites.sh
+  fi
   case "$PKG" in
     # All but the last lines should end by '&&', otherwise (for some reason)
     # some packages that fail to build will not get reported in the logs.
