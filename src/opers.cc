@@ -1484,10 +1484,9 @@ static Obj FuncCOMPACT_TYPE_IDS(Obj self)
 **  operations related to them.
 **
 **  This code has been refactored to reduce repetition. Its efficiency now
-**  depends on the C compiler inlining some quite large functions and then
+**  depends on the C++ compiler inlining template functions and
 **  doing constant folding to effectively produce a specialised version of
-**  the main function. This is why several functions below have been
-**  marked with 'ALWAYS_INLINE'.
+**  the main function.
 */
 
 // Helper function to quickly get the type of an object, avoiding
@@ -1608,11 +1607,8 @@ static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
 // This function actually searches the cache. Normally it should be
 // called with n a compile-time constant to allow the optimiser to tidy
 // things up.
-// It is also marked with 'ALWAYS_INLINE' for this reason (see above).
-static ALWAYS_INLINE Obj GetMethodCached(Obj  cacheBag,
-                                         UInt n,
-                                         Int  prec,
-                                         Obj  ids[])
+template <UInt n>
+static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
 {
     UInt  typematch;
     Obj * cache;
@@ -1706,13 +1702,12 @@ static Obj NEXT_VMETHOD_PRINT_INFO;
 // If <constructor> is non-zero, then <oper> is a constructor, leading
 // to <types[0]> being treated differently.
 //
-// Use of 'ALWAYS_INLINE' is critical for performance, see discussion
-// earlier in this file.
 enum {
     BASE_SIZE_METHODS_OPER_ENTRY = 6,
 };
-static ALWAYS_INLINE Obj GetMethodUncached(
-    UInt verbose, UInt constructor, UInt n, Obj methods, Int prec, Obj types[])
+template <UInt n>
+static Obj GetMethodUncached(
+    UInt verbose, UInt constructor, Obj methods, Int prec, Obj types[])
 {
     if (methods == 0)
         return Fail;
@@ -1822,21 +1817,16 @@ static Int OperationNext;
 #endif
 
 
-// Use of 'ALWAYS_INLINE' is critical for performance, see discussion
-// earlier in this file.
-static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
-                 UInt n,
-                 UInt verbose,
-                 UInt constructor,
-                 Obj  arg1,
-                 Obj  arg2,
-                 Obj  arg3,
-                 Obj  arg4,
-                 Obj  arg5,
-                 Obj  arg6)
+template <UInt n, BOOL verbose, BOOL constructor>
+static Obj DoOperationNArgs(
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    Obj types[n > 0 ? n : 1];
-    Obj ids[n > 0 ? n : 1];
+    // the following two lines look this way to avoid "allocating" a
+    // zero-length array, which would result in undefined behavior (even
+    // though we don't access the two arrays when n is zero). In addition, we
+    // carefully avoid warnings in GCC due to -Wduplicated-branches.
+    Obj types[n > 0 ? n : +1];
+    Obj ids[n > 0 ? n : +1];
     Int prec;
     Obj method;
     Obj res;
@@ -1874,7 +1864,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
             ids[0] = ID_TYPE(types[0]);
     }
 
-    for (UInt i = 1; i < n; i++)
+    for (int i = 1; i < n; i++)
         ids[i] = ID_TYPE(types[i]);
 
     Obj cacheBag = CacheOper(oper, n);
@@ -1894,7 +1884,7 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
     do {
         prec++;
         /* Is there a method in the cache */
-        method = verbose ? 0 : GetMethodCached(cacheBag, n, prec, ids);
+        method = verbose ? 0 : GetMethodCached<n>(cacheBag, prec, ids);
 
 #ifdef COUNT_OPERS
         if (method)
@@ -1910,8 +1900,8 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
 
         /* otherwise try to find one in the list of methods */
         if (!method) {
-            method = GetMethodUncached(verbose, constructor, n, methods,
-                                              prec, types);
+            method = GetMethodUncached<n>(verbose, constructor, methods, prec,
+                                          types);
             /* update the cache */
             if (!verbose && method)
                 CacheMethod(cacheBag, n, prec, ids, method);
@@ -1983,45 +1973,42 @@ static ALWAYS_INLINE Obj DoOperationNArgs(Obj  oper,
 
 Obj DoOperation0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return DoOperationNArgs<0, FALSE, FALSE>(oper, 0, 0, 0, 0, 0, 0);
 }
 
 Obj DoOperation1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, 0, 0, arg1, 0, 0, 0, 0,
-                            0);
+    return DoOperationNArgs<1, FALSE, FALSE>(oper, arg1, 0, 0, 0, 0, 0);
 }
 
 Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, 0, 0, arg1, arg2, 0, 0,
-                            0, 0);
+    return DoOperationNArgs<2, FALSE, FALSE>(oper, arg1, arg2, 0, 0, 0, 0);
 }
 
 Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, 0, 0, arg1, arg2, arg3,
-                            0, 0, 0);
+    return DoOperationNArgs<3, FALSE, FALSE>(oper, arg1, arg2, arg3, 0, 0, 0);
 }
 
 Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, 0, 0, arg1, arg2, arg3,
-                            arg4, 0, 0);
+    return DoOperationNArgs<4, FALSE, FALSE>(oper, arg1, arg2, arg3, arg4, 0,
+                                             0);
 }
 
 Obj DoOperation5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, 0, 0, arg1, arg2, arg3,
-                            arg4, arg5, 0);
+    return DoOperationNArgs<5, FALSE, FALSE>(oper, arg1, arg2, arg3, arg4,
+                                             arg5, 0);
 }
 
 Obj DoOperation6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, 0, 0, arg1, arg2, arg3,
-                            arg4, arg5, arg6);
+    return DoOperationNArgs<6, FALSE, FALSE>(oper, arg1, arg2, arg3, arg4,
+                                             arg5, arg6);
 }
 
 
@@ -2043,46 +2030,42 @@ Obj DoOperationXArgs(Obj self, Obj args)
 */
 Obj DoVerboseOperation0Args(Obj oper)
 {
-    return DoOperationNArgs(oper, 0, 1, 0, 0, 0, 0, 0,
-                            0, 0);
+    return DoOperationNArgs<0, TRUE, FALSE>(oper, 0, 0, 0, 0, 0, 0);
 }
 
 Obj DoVerboseOperation1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, 1, 0, arg1, 0, 0,
-                            0, 0, 0);
+    return DoOperationNArgs<1, TRUE, FALSE>(oper, arg1, 0, 0, 0, 0, 0);
 }
 
 Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, 1, 0, arg1, arg2,
-                            0, 0, 0, 0);
+    return DoOperationNArgs<2, TRUE, FALSE>(oper, arg1, arg2, 0, 0, 0, 0);
 }
 
 Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, 1, 0, arg1, arg2,
-                            arg3, 0, 0, 0);
+    return DoOperationNArgs<3, TRUE, FALSE>(oper, arg1, arg2, arg3, 0, 0, 0);
 }
 
 Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, 1, 0, arg1, arg2,
-                            arg3, arg4, 0, 0);
+    return DoOperationNArgs<4, TRUE, FALSE>(oper, arg1, arg2, arg3, arg4, 0,
+                                            0);
 }
 
 Obj DoVerboseOperation5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, 1, 0, arg1, arg2,
-                            arg3, arg4, arg5, 0);
+    return DoOperationNArgs<5, TRUE, FALSE>(oper, arg1, arg2, arg3, arg4,
+                                            arg5, 0);
 }
 
 Obj DoVerboseOperation6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, 1, 0, arg1, arg2,
-                            arg3, arg4, arg5, arg6);
+    return DoOperationNArgs<6, TRUE, FALSE>(oper, arg1, arg2, arg3, arg4,
+                                            arg5, arg6);
 }
 
 
@@ -2157,41 +2140,38 @@ static Obj DoConstructor0Args(Obj oper)
 
 static Obj DoConstructor1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, 0, 1, arg1, 0, 0,
-                            0, 0, 0);
+    return DoOperationNArgs<1, FALSE, TRUE>(oper, arg1, 0, 0, 0, 0, 0);
 }
 
 static Obj DoConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, 0, 1, arg1, arg2,
-                            0, 0, 0, 0);
+    return DoOperationNArgs<2, FALSE, TRUE>(oper, arg1, arg2, 0, 0, 0, 0);
 }
 
 static Obj DoConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, 0, 1, arg1, arg2,
-                            arg3, 0, 0, 0);
+    return DoOperationNArgs<3, FALSE, TRUE>(oper, arg1, arg2, arg3, 0, 0, 0);
 }
 
 static Obj
 DoConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, 0, 1, arg1, arg2,
-                            arg3, arg4, 0, 0);
+    return DoOperationNArgs<4, FALSE, TRUE>(oper, arg1, arg2, arg3, arg4, 0,
+                                            0);
 }
 
 static Obj
 DoConstructor5Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, 0, 1, arg1, arg2,
-                            arg3, arg4, arg5, 0);
+    return DoOperationNArgs<5, FALSE, TRUE>(oper, arg1, arg2, arg3, arg4,
+                                            arg5, 0);
 }
 
 static Obj DoConstructor6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, 0, 1, arg1, arg2,
-                            arg3, arg4, arg5, arg6);
+    return DoOperationNArgs<6, FALSE, TRUE>(oper, arg1, arg2, arg3, arg4,
+                                            arg5, arg6);
 }
 
 static Obj DoConstructorXArgs(Obj self, Obj args)
@@ -2221,41 +2201,38 @@ static Obj DoVerboseConstructor0Args(Obj oper)
 
 static Obj DoVerboseConstructor1Args(Obj oper, Obj arg1)
 {
-    return DoOperationNArgs(oper, 1, 1, 1, arg1,
-                            0, 0, 0, 0, 0);
+    return DoOperationNArgs<1, TRUE, TRUE>(oper, arg1, 0, 0, 0, 0, 0);
 }
 
 static Obj DoVerboseConstructor2Args(Obj oper, Obj arg1, Obj arg2)
 {
-    return DoOperationNArgs(oper, 2, 1, 1, arg1,
-                            arg2, 0, 0, 0, 0);
+    return DoOperationNArgs<2, TRUE, TRUE>(oper, arg1, arg2, 0, 0, 0, 0);
 }
 
 static Obj DoVerboseConstructor3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
 {
-    return DoOperationNArgs(oper, 3, 1, 1, arg1,
-                            arg2, arg3, 0, 0, 0);
+    return DoOperationNArgs<3, TRUE, TRUE>(oper, arg1, arg2, arg3, 0, 0, 0);
 }
 
 static Obj
 DoVerboseConstructor4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    return DoOperationNArgs(oper, 4, 1, 1, arg1,
-                            arg2, arg3, arg4, 0, 0);
+    return DoOperationNArgs<4, TRUE, TRUE>(oper, arg1, arg2, arg3, arg4, 0,
+                                           0);
 }
 
 static Obj DoVerboseConstructor5Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    return DoOperationNArgs(oper, 5, 1, 1, arg1,
-                            arg2, arg3, arg4, arg5, 0);
+    return DoOperationNArgs<5, TRUE, TRUE>(oper, arg1, arg2, arg3, arg4, arg5,
+                                           0);
 }
 
 static Obj DoVerboseConstructor6Args(
     Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    return DoOperationNArgs(oper, 6, 1, 1, arg1,
-                            arg2, arg3, arg4, arg5, arg6);
+    return DoOperationNArgs<6, TRUE, TRUE>(oper, arg1, arg2, arg3, arg4, arg5,
+                                           arg6);
 }
 
 static Obj DoVerboseConstructorXArgs(Obj self, Obj args)
