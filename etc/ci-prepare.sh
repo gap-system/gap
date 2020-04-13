@@ -44,17 +44,17 @@ fi
 time "$SRCDIR/configure" --enable-Werror $CONFIGFLAGS
 time make V=1 -j4
 
-# download packages; instruct wget to retry several times if the
+# download packages; instruct curl to retry several times if the
 # connection is refused, to work around intermittent failures
-WGET="wget --tries=5 --waitretry=5 --retry-connrefused"
+DOWNLOAD="curl -L --retry 5 --retry-delay 5 --max-time 120 -O"
 if [[ $(uname) == Darwin ]]
 then
     # Travis OSX builders seem to have very small download bandwidth,
     # so as a workaround, we only test the minimal set of packages there.
     # On the upside, it's good to test that, too!
-    make bootstrap-pkg-minimal DOWNLOAD="$WGET"
+    make bootstrap-pkg-minimal DOWNLOAD="$DOWNLOAD"
 else
-    make bootstrap-pkg-full DOWNLOAD="$WGET"
+    make bootstrap-pkg-full DOWNLOAD="$DOWNLOAD"
 fi
 
 # check that GAP is at least able to start
