@@ -216,7 +216,7 @@ typedef struct {
     const Char * name;
     const Char * argument;
     Obj *        filter;
-    Obj (*handler)(Obj, Obj);
+    ObjFunc_1ARGS handler;
     const Char * cookie;
 } StructGVarFilt;
 
@@ -236,7 +236,7 @@ typedef struct {
     const Char * name;
     const Char * argument;
     Obj *        attribute;
-    Obj (*handler)(Obj, Obj);
+    ObjFunc_1ARGS handler;
     const Char * cookie;
 } StructGVarAttr;
 
@@ -256,7 +256,7 @@ typedef struct {
     const Char * name;
     const Char * argument;
     Obj *        property;
-    Obj (*handler)(Obj, Obj);
+    ObjFunc_1ARGS handler;
     const Char * cookie;
 } StructGVarProp;
 

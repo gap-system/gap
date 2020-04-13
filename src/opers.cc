@@ -11,6 +11,8 @@
 **  and properties package.
 */
 
+extern "C" {
+
 #include "opers.h"
 
 #include "ariths.h"
@@ -45,6 +47,8 @@
 #endif
 
 #include <stdio.h>
+
+} // extern "C"
 
 
 /****************************************************************************
@@ -979,7 +983,7 @@ static Obj SetterAndFilter(Obj getter)
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
         setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
                                 MakeImmString("<<setter-and-filter>>"), 2, ArglistObjVal,
-                                DoSetAndFilter );
+                                (ObjFunc)DoSetAndFilter );
         /* assign via 'obj' to avoid GC issues */
         obj =  SetterFilter( FLAG1_FILT(getter) );
         SET_FLAG1_FILT(setter, obj);
@@ -1058,7 +1062,7 @@ static Obj NewSetterFilter(Obj getter)
     Obj                 setter;
 
     setter = NewOperation( StringFilterSetter, 2, ArglistObjVal,
-                           DoSetFilter );
+                           (ObjFunc)DoSetFilter );
     SET_FLAG1_FILT(setter, FLAG1_FILT(getter));
     SET_FLAG2_FILT(setter, INTOBJ_INT(0));
     CHANGED_BAG(setter);
@@ -1094,7 +1098,7 @@ Obj DoFilter (
 Obj NewFilter (
     Obj                 name,
     Obj                 nams,
-    ObjFunc             hdlr )
+    ObjFunc_1ARGS       hdlr )
 {
     Obj                 getter;
     Obj                 setter;
@@ -1104,7 +1108,7 @@ Obj NewFilter (
     flag1 = ++CountFlags;
 
     GAP_ASSERT(hdlr);
-    getter = NewOperation(name, 1, nams, hdlr);
+    getter = NewOperation(name, 1, nams, (ObjFunc)hdlr);
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     flags = NEW_FLAGS( flag1 );
@@ -1185,7 +1189,7 @@ Obj NewAndFilter (
     SET_LEN_STRING(str, str_len - 1);
 
     getter = NewFunctionT( T_FUNCTION, sizeof(OperBag), str, 1,
-                           ArglistObj, DoAndFilter );
+                           ArglistObj, (ObjFunc)DoAndFilter );
     SET_FLAG1_FILT(getter, oper1);
     SET_FLAG2_FILT(getter, oper2);
     flags = FuncAND_FLAGS( 0, FLAGS_FILT(oper1), FLAGS_FILT(oper2) );
@@ -1200,7 +1204,7 @@ Obj NewAndFilter (
 
 static Obj FuncIS_AND_FILTER(Obj self, Obj filt)
 {
-  return (IS_FUNC(filt) && HDLR_FUNC(filt, 1) == DoAndFilter) ? True : False;
+  return (IS_FUNC(filt) && HDLR_FUNC(filt, 1) == (ObjFunc)DoAndFilter) ? True : False;
 }
 
 
@@ -1229,7 +1233,7 @@ static Obj SetterReturnTrueFilter(Obj getter)
 
     setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
         MakeImmString("<<setter-true-filter>>"), 2, ArglistObjVal,
-        DoSetReturnTrueFilter );
+        (ObjFunc)DoSetReturnTrueFilter );
     SET_FLAG1_FILT(setter, INTOBJ_INT(0));
     SET_FLAG2_FILT(setter, INTOBJ_INT(0));
     CHANGED_BAG(setter);
@@ -1250,7 +1254,7 @@ static Obj NewReturnTrueFilter(void)
 
     getter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
         MakeImmString("ReturnTrueFilter"), 1, ArglistObj,
-        DoReturnTrueFilter );
+        (ObjFunc)DoReturnTrueFilter );
     SET_FLAG1_FILT(getter, INTOBJ_INT(0));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
     flags = NEW_FLAGS( 0 );
@@ -1632,7 +1636,7 @@ static ALWAYS_INLINE Obj GetMethodCached(Obj  cacheBag,
             if (cache[i + 1] == INTOBJ_INT(prec)) {
                 typematch = 1;
                 // This loop runs over the arguments, should be compiled away
-                for (UInt j = 0; j < n; j++) {
+                for (int j = 0; j < n; j++) {
                     if (cache[i + j + 2] != ids[j]) {
                         typematch = 0;
                         break;
@@ -2105,14 +2109,14 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
     oper = NewFunctionT(T_FUNCTION, sizeof(OperBag), name, narg, nams, hdlr);
 
     /* enter the handlers                                                  */
-    SET_HDLR_FUNC(oper, 0, DoOperation0Args);
-    SET_HDLR_FUNC(oper, 1, DoOperation1Args);
-    SET_HDLR_FUNC(oper, 2, DoOperation2Args);
-    SET_HDLR_FUNC(oper, 3, DoOperation3Args);
-    SET_HDLR_FUNC(oper, 4, DoOperation4Args);
-    SET_HDLR_FUNC(oper, 5, DoOperation5Args);
-    SET_HDLR_FUNC(oper, 6, DoOperation6Args);
-    SET_HDLR_FUNC(oper, 7, DoOperationXArgs);
+    SET_HDLR_FUNC(oper, 0, (ObjFunc)DoOperation0Args);
+    SET_HDLR_FUNC(oper, 1, (ObjFunc)DoOperation1Args);
+    SET_HDLR_FUNC(oper, 2, (ObjFunc)DoOperation2Args);
+    SET_HDLR_FUNC(oper, 3, (ObjFunc)DoOperation3Args);
+    SET_HDLR_FUNC(oper, 4, (ObjFunc)DoOperation4Args);
+    SET_HDLR_FUNC(oper, 5, (ObjFunc)DoOperation5Args);
+    SET_HDLR_FUNC(oper, 6, (ObjFunc)DoOperation6Args);
+    SET_HDLR_FUNC(oper, 7, (ObjFunc)DoOperationXArgs);
 
     /* reenter the given handler */
     if (narg != -1)
@@ -2273,14 +2277,14 @@ static Obj NewConstructor(Obj name)
     oper = NewFunctionT( T_FUNCTION, sizeof(OperBag), name, -1, 0, 0 );
 
     /* enter the handlers                                                  */
-    SET_HDLR_FUNC(oper, 0, DoConstructor0Args);
-    SET_HDLR_FUNC(oper, 1, DoConstructor1Args);
-    SET_HDLR_FUNC(oper, 2, DoConstructor2Args);
-    SET_HDLR_FUNC(oper, 3, DoConstructor3Args);
-    SET_HDLR_FUNC(oper, 4, DoConstructor4Args);
-    SET_HDLR_FUNC(oper, 5, DoConstructor5Args);
-    SET_HDLR_FUNC(oper, 6, DoConstructor6Args);
-    SET_HDLR_FUNC(oper, 7, DoConstructorXArgs);
+    SET_HDLR_FUNC(oper, 0, (ObjFunc)DoConstructor0Args);
+    SET_HDLR_FUNC(oper, 1, (ObjFunc)DoConstructor1Args);
+    SET_HDLR_FUNC(oper, 2, (ObjFunc)DoConstructor2Args);
+    SET_HDLR_FUNC(oper, 3, (ObjFunc)DoConstructor3Args);
+    SET_HDLR_FUNC(oper, 4, (ObjFunc)DoConstructor4Args);
+    SET_HDLR_FUNC(oper, 5, (ObjFunc)DoConstructor5Args);
+    SET_HDLR_FUNC(oper, 6, (ObjFunc)DoConstructor6Args);
+    SET_HDLR_FUNC(oper, 7, (ObjFunc)DoConstructorXArgs);
 
     /*N 1996/06/06 mschoene this should not be done here                   */
     SET_FLAG1_FILT(oper, INTOBJ_INT(0));
@@ -2559,12 +2563,12 @@ static Obj PREFIX_NAME(Obj name, const char *prefix)
     return fname;
 }
 
-static Obj MakeSetter(Obj name, Int flag1, Int flag2, Obj (*setFunc)(Obj, Obj, Obj))
+static Obj MakeSetter(Obj name, Int flag1, Int flag2, ObjFunc_2ARGS setFunc)
 {
     Obj fname;
     Obj setter;
     fname = PREFIX_NAME(name, "Set");
-    setter = NewOperation(fname, 2, 0, setFunc);
+    setter = NewOperation(fname, 2, 0, (ObjFunc)setFunc);
     SET_FLAG1_FILT(setter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(setter, INTOBJ_INT(flag2));
     CHANGED_BAG(setter);
@@ -2578,7 +2582,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     Obj flags;
     fname = PREFIX_NAME(name, "Has");
     tester = NewFunctionT(T_FUNCTION, sizeof(OperBag), fname, 1, 0,
-                          DoTestAttribute);
+                          (ObjFunc)DoTestAttribute);
     SET_FLAG1_FILT(tester, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(tester, INTOBJ_INT(flag2));
     flags = NEW_FLAGS( flag2 );
@@ -2611,7 +2615,7 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
 Obj NewAttribute (
     Obj                 name,
     Obj                 nams,
-    ObjFunc             hdlr )
+    ObjFunc_1ARGS       hdlr )
 {
     Obj                 getter;
     Obj                 setter;
@@ -2624,7 +2628,7 @@ Obj NewAttribute (
     tester = MakeTester(name, 0, flag2);
 
     GAP_ASSERT(hdlr);
-    getter = NewOperation(name, 1, nams, hdlr);
+    getter = NewOperation(name, 1, nams, (ObjFunc)hdlr);
 
     SetupAttribute(getter, setter, tester, flag2);
 
@@ -2638,7 +2642,7 @@ Obj NewAttribute (
 **  should not have any one-argument declarations) into an attribute
 */
 
-static void ConvertOperationIntoAttribute(Obj oper, ObjFunc hdlr)
+static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
 {
     Obj                 setter;
     Obj                 tester;
@@ -2655,7 +2659,7 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc hdlr)
 
     /* Change the handlers */
     GAP_ASSERT(hdlr);
-    SET_HDLR_FUNC(oper, 1, hdlr);
+    SET_HDLR_FUNC(oper, 1, (ObjFunc)hdlr);
 
     SetupAttribute( oper, setter, tester, flag2);
 }
@@ -2842,7 +2846,7 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
 Obj NewProperty (
     Obj                 name,
     Obj                 nams,
-    ObjFunc             hdlr )
+    ObjFunc_1ARGS       hdlr )
 {
     Obj                 getter;
     Obj                 setter;
@@ -2858,7 +2862,7 @@ Obj NewProperty (
     tester = MakeTester(name, flag1, flag2);
 
     GAP_ASSERT(hdlr);
-    getter = NewOperation(name, 1, nams, hdlr);
+    getter = NewOperation(name, 1, nams, (ObjFunc)hdlr);
 
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
@@ -2909,15 +2913,15 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     Obj                 namobj;
 
     /* create the function                                                 */
-    func = NewFunction( name, -1, nams, DoUninstalledGlobalFunction );
-    SET_HDLR_FUNC(func, 0, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 1, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 2, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 3, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 4, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 5, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 6, DoUninstalledGlobalFunction);
-    SET_HDLR_FUNC(func, 7, DoUninstalledGlobalFunction);
+    func = NewFunction( name, -1, nams, (ObjFunc)DoUninstalledGlobalFunction );
+    SET_HDLR_FUNC(func, 0, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 1, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 2, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 3, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 4, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 5, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 6, (ObjFunc)DoUninstalledGlobalFunction);
+    SET_HDLR_FUNC(func, 7, (ObjFunc)DoUninstalledGlobalFunction);
 
     /* added the name                                                      */
     namobj = ImmutableString(name);
@@ -3035,7 +3039,7 @@ void LoadOperationExtras (
 static Obj FuncNEW_OPERATION(Obj self, Obj name)
 {
     RequireStringRep("NewOperation", name);
-    return NewOperation(name, -1, 0, DoOperationXArgs);
+    return NewOperation(name, -1, 0, (ObjFunc)DoOperationXArgs);
 }
 
 
@@ -3051,7 +3055,7 @@ static Obj FuncNEW_CONSTRUCTOR(Obj self, Obj name)
 
 static Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
 {
-    return (IS_FUNC(x) && HDLR_FUNC(x, 1) == DoConstructor1Args) ? True : False;
+    return (IS_FUNC(x) && HDLR_FUNC(x, 1) == (ObjFunc)DoConstructor1Args) ? True : False;
 }
 
 /****************************************************************************
@@ -3311,7 +3315,7 @@ static Obj FuncSETTER_FUNCTION(Obj self, Obj name, Obj filter)
     Obj                 tmp;
 
     fname = WRAP_NAME(name, "SetterFunc");
-    func = NewFunction( fname, 2, ArglistObjVal, DoSetterFunction );
+    func = NewFunction( fname, 2, ArglistObjVal, (ObjFunc)DoSetterFunction );
     tmp = NewPlistFromArgs(INTOBJ_INT(RNamObj(name)), filter);
     MakeImmutableNoRecurse(tmp);
     SET_ENVI_FUNC(func, tmp);
@@ -3346,7 +3350,7 @@ static Obj FuncGETTER_FUNCTION(Obj self, Obj name)
     Obj                 fname;
 
     fname = WRAP_NAME(name, "GetterFunc");
-    func = NewFunction( fname, 1, ArglistObj, DoGetterFunction );
+    func = NewFunction( fname, 1, ArglistObj, (ObjFunc)DoGetterFunction );
     SET_ENVI_FUNC(func, INTOBJ_INT( RNamObj(name) ));
     return func;
 }
@@ -3666,64 +3670,64 @@ static Int InitKernel (
 
     // Declare the handlers used in various places. Some of the most common
     // ones are abbreviated to save space in saved workspace.
-    InitHandlerFunc( DoFilter,                  "df"                                    );
-    InitHandlerFunc( DoSetFilter,               "dsf"                                   );
-    InitHandlerFunc( DoAndFilter,               "daf"                                   );
-    InitHandlerFunc( DoSetAndFilter,            "dsaf"                                  );
-    InitHandlerFunc( DoReturnTrueFilter,        "src/opers.c:DoReturnTrueFilter"        );
-    InitHandlerFunc( DoSetReturnTrueFilter,     "src/opers.c:DoSetReturnTrueFilter"     );
+    InitHandlerFunc( (ObjFunc)DoFilter,                  "df"                                    );
+    InitHandlerFunc( (ObjFunc)DoSetFilter,               "dsf"                                   );
+    InitHandlerFunc( (ObjFunc)DoAndFilter,               "daf"                                   );
+    InitHandlerFunc( (ObjFunc)DoSetAndFilter,            "dsaf"                                  );
+    InitHandlerFunc( (ObjFunc)DoReturnTrueFilter,        "src/opers.c:DoReturnTrueFilter"        );
+    InitHandlerFunc( (ObjFunc)DoSetReturnTrueFilter,     "src/opers.c:DoSetReturnTrueFilter"     );
     
-    InitHandlerFunc( DoAttribute,               "da"                                    );
-    InitHandlerFunc( DoSetAttribute,            "dsa"                                   );
-    InitHandlerFunc( DoTestAttribute,           "src/opers.c:DoTestAttribute"           );
-    InitHandlerFunc( DoVerboseAttribute,        "src/opers.c:DoVerboseAttribute"        );
-    InitHandlerFunc( DoMutableAttribute,        "src/opers.c:DoMutableAttribute"        );
-    InitHandlerFunc( DoVerboseMutableAttribute, "src/opers.c:DoVerboseMutableAttribute" );
+    InitHandlerFunc( (ObjFunc)DoAttribute,               "da"                                    );
+    InitHandlerFunc( (ObjFunc)DoSetAttribute,            "dsa"                                   );
+    InitHandlerFunc( (ObjFunc)DoTestAttribute,           "src/opers.c:DoTestAttribute"           );
+    InitHandlerFunc( (ObjFunc)DoVerboseAttribute,        "src/opers.c:DoVerboseAttribute"        );
+    InitHandlerFunc( (ObjFunc)DoMutableAttribute,        "src/opers.c:DoMutableAttribute"        );
+    InitHandlerFunc( (ObjFunc)DoVerboseMutableAttribute, "src/opers.c:DoVerboseMutableAttribute" );
 
-    InitHandlerFunc( DoProperty,                "src/opers.c:DoProperty"                );
-    InitHandlerFunc( DoSetProperty,             "src/opers.c:DoSetProperty"             );
-    InitHandlerFunc( DoVerboseProperty,         "src/opers.c:DoVerboseProperty"         );
+    InitHandlerFunc( (ObjFunc)DoProperty,                "src/opers.c:DoProperty"                );
+    InitHandlerFunc( (ObjFunc)DoSetProperty,             "src/opers.c:DoSetProperty"             );
+    InitHandlerFunc( (ObjFunc)DoVerboseProperty,         "src/opers.c:DoVerboseProperty"         );
 
-    InitHandlerFunc( DoSetterFunction,          "dtf"                                   );
-    InitHandlerFunc( DoGetterFunction,          "dgf"                                   );
+    InitHandlerFunc( (ObjFunc)DoSetterFunction,          "dtf"                                   );
+    InitHandlerFunc( (ObjFunc)DoGetterFunction,          "dgf"                                   );
     
-    InitHandlerFunc( DoOperation0Args,          "o0"                                    );
-    InitHandlerFunc( DoOperation1Args,          "o1"                                    );
-    InitHandlerFunc( DoOperation2Args,          "o2"                                    );
-    InitHandlerFunc( DoOperation3Args,          "o3"                                    );
-    InitHandlerFunc( DoOperation4Args,          "o4"                                    );
-    InitHandlerFunc( DoOperation5Args,          "o5"                                    );
-    InitHandlerFunc( DoOperation6Args,          "o6"                                    );
-    InitHandlerFunc( DoOperationXArgs,          "o7"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation0Args,          "o0"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation1Args,          "o1"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation2Args,          "o2"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation3Args,          "o3"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation4Args,          "o4"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation5Args,          "o5"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperation6Args,          "o6"                                    );
+    InitHandlerFunc( (ObjFunc)DoOperationXArgs,          "o7"                                    );
 
-    InitHandlerFunc( DoVerboseOperation0Args,   "src/opers.c:DoVerboseOperation0Args"   );
-    InitHandlerFunc( DoVerboseOperation1Args,   "src/opers.c:DoVerboseOperation1Args"   );
-    InitHandlerFunc( DoVerboseOperation2Args,   "src/opers.c:DoVerboseOperation2Args"   );
-    InitHandlerFunc( DoVerboseOperation3Args,   "src/opers.c:DoVerboseOperation3Args"   );
-    InitHandlerFunc( DoVerboseOperation4Args,   "src/opers.c:DoVerboseOperation4Args"   );
-    InitHandlerFunc( DoVerboseOperation5Args,   "src/opers.c:DoVerboseOperation5Args"   );
-    InitHandlerFunc( DoVerboseOperation6Args,   "src/opers.c:DoVerboseOperation6Args"   );
-    InitHandlerFunc( DoVerboseOperationXArgs,   "src/opers.c:DoVerboseOperationXArgs"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation0Args,   "src/opers.c:DoVerboseOperation0Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation1Args,   "src/opers.c:DoVerboseOperation1Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation2Args,   "src/opers.c:DoVerboseOperation2Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation3Args,   "src/opers.c:DoVerboseOperation3Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation4Args,   "src/opers.c:DoVerboseOperation4Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation5Args,   "src/opers.c:DoVerboseOperation5Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperation6Args,   "src/opers.c:DoVerboseOperation6Args"   );
+    InitHandlerFunc( (ObjFunc)DoVerboseOperationXArgs,   "src/opers.c:DoVerboseOperationXArgs"   );
     
-    InitHandlerFunc( DoConstructor0Args,        "src/opers.c:DoConstructor0Args"        );
-    InitHandlerFunc( DoConstructor1Args,        "src/opers.c:DoConstructor1Args"        );
-    InitHandlerFunc( DoConstructor2Args,        "src/opers.c:DoConstructor2Args"        );
-    InitHandlerFunc( DoConstructor3Args,        "src/opers.c:DoConstructor3Args"        );
-    InitHandlerFunc( DoConstructor4Args,        "src/opers.c:DoConstructor4Args"        );
-    InitHandlerFunc( DoConstructor5Args,        "src/opers.c:DoConstructor5Args"        );
-    InitHandlerFunc( DoConstructor6Args,        "src/opers.c:DoConstructor6Args"        );
-    InitHandlerFunc( DoConstructorXArgs,        "src/opers.c:DoConstructorXArgs"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor0Args,        "src/opers.c:DoConstructor0Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor1Args,        "src/opers.c:DoConstructor1Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor2Args,        "src/opers.c:DoConstructor2Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor3Args,        "src/opers.c:DoConstructor3Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor4Args,        "src/opers.c:DoConstructor4Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor5Args,        "src/opers.c:DoConstructor5Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructor6Args,        "src/opers.c:DoConstructor6Args"        );
+    InitHandlerFunc( (ObjFunc)DoConstructorXArgs,        "src/opers.c:DoConstructorXArgs"        );
 
-    InitHandlerFunc( DoVerboseConstructor0Args, "src/opers.c:DoVerboseConstructor0Args" );
-    InitHandlerFunc( DoVerboseConstructor1Args, "src/opers.c:DoVerboseConstructor1Args" );
-    InitHandlerFunc( DoVerboseConstructor2Args, "src/opers.c:DoVerboseConstructor2Args" );
-    InitHandlerFunc( DoVerboseConstructor3Args, "src/opers.c:DoVerboseConstructor3Args" );
-    InitHandlerFunc( DoVerboseConstructor4Args, "src/opers.c:DoVerboseConstructor4Args" );
-    InitHandlerFunc( DoVerboseConstructor5Args, "src/opers.c:DoVerboseConstructor5Args" );
-    InitHandlerFunc( DoVerboseConstructor6Args, "src/opers.c:DoVerboseConstructor6Args" );
-    InitHandlerFunc( DoVerboseConstructorXArgs, "src/opers.c:DoVerboseConstructorXArgs" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor0Args, "src/opers.c:DoVerboseConstructor0Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor1Args, "src/opers.c:DoVerboseConstructor1Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor2Args, "src/opers.c:DoVerboseConstructor2Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor3Args, "src/opers.c:DoVerboseConstructor3Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor4Args, "src/opers.c:DoVerboseConstructor4Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor5Args, "src/opers.c:DoVerboseConstructor5Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructor6Args, "src/opers.c:DoVerboseConstructor6Args" );
+    InitHandlerFunc( (ObjFunc)DoVerboseConstructorXArgs, "src/opers.c:DoVerboseConstructorXArgs" );
 
-    InitHandlerFunc( DoUninstalledGlobalFunction, "src/opers.c:DoUninstalledGlobalFunction" );
+    InitHandlerFunc( (ObjFunc)DoUninstalledGlobalFunction, "src/opers.c:DoUninstalledGlobalFunction" );
 
     /* install the type function                                           */
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
@@ -3803,17 +3807,13 @@ static Int InitKernel (
 
 /****************************************************************************
 **
-*F  postRestore( <module> ) . . . . . . .  initialise library data structures
+*F  PostRestore( <module> ) . . . . . . .  initialise library data structures
 **
 */
-
-
-static Int postRestore (
-    StructInitInfo *    module )
+static Int PostRestore(StructInitInfo * module)
 {
-
-  CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")));
-  return 0;
+    CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")));
+    return 0;
 }
 
 /****************************************************************************
@@ -3884,14 +3884,22 @@ static Int InitModuleState(void)
 *F  InitInfoOpers() . . . . . . . . . . . . . . . . . table of init functions
 */
 static StructInitInfo module = {
-    // init struct using C99 designated initializers; for a full list of
-    // fields, please refer to the definition of StructInitInfo
-    .type = MODULE_BUILTIN,
-    .name = "opers",
-    .initKernel = InitKernel,
-    .initLibrary = InitLibrary,
-    .postRestore = postRestore,
-    .initModuleState = InitModuleState,
+ /* type        = */ MODULE_BUILTIN,
+ /* name        = */ "opers",
+ /* revision_c  = */ 0,
+ /* revision_h  = */ 0,
+ /* version     = */ 0,
+ /* crc         = */ 0,
+ /* initKernel  = */ InitKernel,
+ /* initLibrary = */ InitLibrary,
+ /* checkInit   = */ 0,
+ /* preSave     = */ 0,
+ /* postSave    = */ 0,
+ /* postRestore = */ PostRestore,
+ /* moduleStateSize      = */ 0,
+ /* moduleStateOffsetPtr = */ 0,
+ /* initModuleState      = */ InitModuleState,
+ /* destroyModuleState   = */ 0,
 };
 
 StructInitInfo * InitInfoOpers ( void )
