@@ -443,7 +443,7 @@ true
 
 # HashFuncForPPerm and HASH_FUNC_FOR_PPERM
 gap> f := PartialPerm([65536]);;
-gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 260581
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) in [260581,402746]
 > or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 953600;
 true
 gap> f := PartialPermNC([65535]);;
@@ -452,8 +452,8 @@ gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 354405
 true
 gap> f := PartialPerm([1, 2, 3, 4, 5, 6, 7, 9, 11, 12, 15, 16, 19],
 >                     [2, 4, 11, 1, 20, 10, 15, 16, 5, 3, 6, 12, 9]);;
-gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 773594
-> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) = 982764;
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) in [773594,109657]
+> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(f, 10 ^ 6) in [982764,570602];
 true
 gap> f := PartialPermNC([65536]);;
 gap> g := PartialPermNC([2, 65536], [70000, 1]);;
@@ -461,8 +461,8 @@ gap> h := f * g;
 <identity partial perm on [ 1 ]>
 gap> IsPPerm4Rep(h);
 true
-gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(h, 10 ^ 6) = 567548
-> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(h, 10 ^ 6) = 464636;
+gap> GAPInfo.BytesPerVariable = 8 and HASH_FUNC_FOR_PPERM(h, 10 ^ 6) in [567548,351540]
+> or GAPInfo.BytesPerVariable = 4 and HASH_FUNC_FOR_PPERM(h, 10 ^ 6) in [464636,754304];
 true
 gap> IsPPerm2Rep(h);
 true
