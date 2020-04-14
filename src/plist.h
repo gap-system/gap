@@ -332,17 +332,31 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
 **
 *F  NewPlistFromArgs(<args...>) .  create a plain list from list of arguments
 **
-**  This macro turns a variable-length list of macro arguments into an array,
-**  which is then passed to NewPlistFromArray.
+**  NewPlistFromArgs turns a variable-length list of arguments into
+**  an array, which is then passed to NewPlistFromArray.
 **
-**  __VA_ARGS__ contains the list of arguments given to this macro.
-**  (Obj[]){ __VA_ARGS__ } creates an array of Obj containing the elements
-**  of __VA_ARGS__.
+**  There is no (nice) single implementation of NewPlistFromArgs that works
+**  in both C and C++, so there are two seperate implementations.
 */
+#ifdef __cplusplus
+
+// For C++, we use a variadic template function (requires C++11)
+extern "C++" template <typename... Ts>
+Obj NewPlistFromArgs(Ts... args)
+{
+    const int size = sizeof...(args);
+    Obj       res[size] = { args... };
+    return NewPlistFromArray(res, size);
+}
+#else
+
+// For C, we use a variadic macro: __VA_ARGS__ contains the list of
+// arguments given to this macro. (Obj[]){ __VA_ARGS__ } creates an
+// array of Obj containing the elements of __VA_ARGS__.
 #define NewPlistFromArgs(...)                                                \
     NewPlistFromArray((Obj[]){ __VA_ARGS__ },                                \
                       ARRAY_SIZE(((Obj[]){ __VA_ARGS__ })))
-
+#endif
 
 /****************************************************************************
 **
