@@ -964,10 +964,7 @@ static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
     deg = DEG_TRANS(f);
 
     if (i >= deg) {
-        out = NEW_PLIST(T_PLIST_CYC, 1);
-        SET_LEN_PLIST(out, 1);
-        SET_ELM_PLIST(out, 1, pt);
-        return out;
+        return NewPlistFromArgs(pt);
     }
 
     out = NEW_PLIST(T_PLIST_CYC_SSORT, 0);
@@ -1227,7 +1224,7 @@ static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
     const UInt4 * ptf4;
     UInt4 * seen;
     UInt    deg, i, pt, dist, pow, len, last_pt;
-    Obj     ord, out;
+    Obj     ord;
     Int     cyc;
 
     RequireTransformation("IndexPeriodOfTransformation", f);
@@ -1235,12 +1232,7 @@ static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (deg == 0) {
-        out = NEW_PLIST(T_PLIST_CYC, 2);
-
-        SET_LEN_PLIST(out, 2);
-        SET_ELM_PLIST(out, 1, INTOBJ_INT(1));
-        SET_ELM_PLIST(out, 2, INTOBJ_INT(1));
-        return out;
+        return NewPlistFromArgs(INTOBJ_INT(1), INTOBJ_INT(1));
     }
 
     // seen[pt] = 0 -> haven't seen pt before
@@ -1347,12 +1339,7 @@ static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
         }
     }
 
-    out = NEW_PLIST(T_PLIST_CYC, 2);
-
-    SET_LEN_PLIST(out, 2);
-    SET_ELM_PLIST(out, 1, INTOBJ_INT(--pow));
-    SET_ELM_PLIST(out, 2, ord);
-    return out;
+    return NewPlistFromArgs(INTOBJ_INT(--pow), ord);
 }
 
 // Returns the least integer m such that f ^ m is an idempotent.
@@ -2678,9 +2665,7 @@ static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
     if (cpt >= deg) {
-        out = NEW_PLIST(T_PLIST_CYC_SSORT, 1);
-        SET_LEN_PLIST(out, 1);
-        SET_ELM_PLIST(out, 1, pt);
+        out = NewPlistFromArgs(pt);
         return out;
     }
     out = NEW_PLIST(T_PLIST_CYC, 0);

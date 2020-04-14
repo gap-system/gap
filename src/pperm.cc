@@ -623,7 +623,7 @@ static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
     UInt    i, len, j, pow, rank, k, deg, n;
     UInt2 * ptf2;
     UInt4 * ptseen, *ptf4;
-    Obj     dom, img, ord, out;
+    Obj     dom, img, ord;
 
     pow = 0;
     ord = INTOBJ_INT(1);
@@ -707,11 +707,7 @@ static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
             }
         }
     }
-    out = NEW_PLIST(T_PLIST_CYC, 2);
-    SET_LEN_PLIST(out, 2);
-    SET_ELM_PLIST(out, 1, INTOBJ_INT(pow + 1));
-    SET_ELM_PLIST(out, 2, ord);
-    return out;
+    return NewPlistFromArgs(INTOBJ_INT(pow + 1), ord);
 }
 
 // the least power of <f> which is an idempotent
