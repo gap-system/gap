@@ -115,10 +115,6 @@ SOURCES += src/weakptr.c
 
 SOURCES += $(GC_SOURCES)
 
-ifeq ($(GAPMPI),yes)
-  SOURCES += src/hpc/gapmpi.c
-endif
-
 ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/aobjects.c
   SOURCES += src/hpc/misc.c
