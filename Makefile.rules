@@ -1080,7 +1080,7 @@ testbugfix: all
             tee `date -u +dev/log/testbugfix2_%Y-%m-%d-%H-%M` )
 
 #
-check:
+check: all
 	$(TESTGAP) tst/testinstall.g
 
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload)
