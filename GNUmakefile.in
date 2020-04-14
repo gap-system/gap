@@ -27,6 +27,9 @@ GC_SOURCES = @GC_SOURCES@
 COMPAT_MODE = @COMPAT_MODE@
 GAPARCH = @GAPARCH@
 
+# maintainer mode
+MAINTAINER_MODE = @MAINTAINER_MODE@
+
 # GAP kernel version
 GAP_KERNEL_MINOR_VERSION = @gap_kernel_minor_version@
 GAP_KERNEL_MAJOR_VERSION = @gap_kernel_major_version@
