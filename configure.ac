@@ -386,6 +386,27 @@ AC_ARG_ENABLE([debug],
 AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
 
+dnl
+dnl Maintainer mode (on by default) controls whether our build system
+dnl automatically regenerates `configure` if `configure.ac` or any of its
+dnl other sources changes, by running `autoconf`. Similarly, it regenerates
+dnl `src/config.h.in` if necessary by running `autoheader`.
+dnl
+dnl While this is very useful when developing GAP, it can be problematic if
+dnl a user wants to compile a release version of GAP but does not have
+dnl autoconf installed; or if for some reason the GAP source code is readonly
+dnl and they want to run an out-of-tree build. Thus we allow turning this
+dnl off.
+AC_ARG_ENABLE([maintainer-mode],
+    [AS_HELP_STRING([--disable-maintainer-mode], [disable maintainer mode])],
+    [],
+    [enable_maintainer_mode=yes]
+    )
+AC_MSG_CHECKING([whether to enable maintainer-mode mode])
+AC_MSG_RESULT([$enable_maintainer_mode])
+AC_SUBST([MAINTAINER_MODE], [$enable_maintainer_mode])
+
+dnl
 AC_ARG_ENABLE([memory-checking],
     [AS_HELP_STRING([--enable-memory-checking], [enable memory checking])],
     [AC_DEFINE([GAP_MEM_CHECK], [1], [define if building with memory checking])],
@@ -394,6 +415,7 @@ AC_ARG_ENABLE([memory-checking],
 AC_MSG_CHECKING([whether to enable memory checking])
 AC_MSG_RESULT([$enable_memory_checking])
 
+dnl
 AC_ARG_ENABLE([valgrind],
     [AS_HELP_STRING([--enable-valgrind], [enable valgrind extensions to GASMAN])],
     [AC_DEFINE([GAP_MEMORY_CANARY], [1], [define if building with valgrind extensions])],
