@@ -1294,6 +1294,7 @@ configure_deps = $(srcdir)/configure.ac $(ACLOCAL_M4)
 config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
 
+ifneq ($(MAINTAINER_MODE),no)
 $(srcdir)/configure: $(configure_deps)
 	@if command -v autoconf >/dev/null 2>&1 ; then \
 	   echo "running autoconf" ; \
@@ -1301,6 +1302,7 @@ $(srcdir)/configure: $(configure_deps)
 	 else \
 	   echo "autoconf not available, proceeding with stale configure" ; \
 	 fi
+endif
 
 gen/config.h: gen/stamp-h
 	@if test ! -f $@; then rm -f gen/stamp-h; else :; fi
@@ -1311,6 +1313,7 @@ gen/stamp-h: $(srcdir)/src/config.h.in config.status
 	$(SHELL) ./config.status gen/config.h
 	echo > $@
 
+ifneq ($(MAINTAINER_MODE),no)
 $(srcdir)/src/config.h.in: $(configure_deps) 
 	@if command -v autoheader >/dev/null 2>&1 ; then \
 	   echo "running autoheader" ; \
@@ -1320,6 +1323,7 @@ $(srcdir)/src/config.h.in: $(configure_deps)
 	   echo "autoheader not available, proceeding with stale config.h" ; \
 	 fi
 	touch $@
+endif
 
 doc/versiondata: $(srcdir)/doc/versiondata.in config.status
 	@$(SHELL) ./config.status $@
