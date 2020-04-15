@@ -7,3 +7,5 @@ Explanation
 
 dir-test : A directory containing some example files and sub-directories
            for testing directory enumeration.
+
+compress : not-compressed.txt - A text file which is not compressed but ends in gz

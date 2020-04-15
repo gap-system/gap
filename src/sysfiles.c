@@ -616,6 +616,9 @@ Int SyFopen (
     Char                namegz [1024];
     int                 flags = 0;
 
+    Char * terminator = strrchr(name, '.');
+    BOOL endsgz = terminator && (strcmp(terminator, ".gz") == 0);
+
     /* handle standard files                                               */
     if ( strcmp( name, "*stdin*" ) == 0 ) {
         if ( strcmp( mode, "r" ) != 0 )
@@ -677,8 +680,11 @@ Int SyFopen (
 #endif
 
     /* try to open the file                                                */
-    syBuf[fid].fp = open(name,flags, 0644);
-    if ( 0 <= syBuf[fid].fp ) {
+    if (endsgz && (syBuf[fid].gzfp = gzopen(name, mode))) {
+        syBuf[fid].type = gzip_socket;
+        syBuf[fid].fp = -1;
+        syBuf[fid].bufno = -1;
+    } else if (0 <= (syBuf[fid].fp = open(name, flags, 0644))) {
         syBuf[fid].type = raw_socket;
         syBuf[fid].echo = syBuf[fid].fp;
         syBuf[fid].bufno = -1;
