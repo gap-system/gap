@@ -75,10 +75,6 @@ gap> StringFile( Filename(dir, "tmp2"));
 fail
 gap> StringFile( Filename(dir, "tmp1"));
 "Hello, world!"
-gap> FileString( Filename(dir, "test.g.gz"), "\037\213\b\b0,\362W\000\ctest.g\0003\3246\264\346\<\000\225\307\236\324\005\000\000\000" );
-32
-gap> StringFile( Filename(dir, "test.g") ) = "1+1;\n" or ARCH_IS_WINDOWS(); # works only when Cygwin installed with gzip
-true
 gap> StringFile( "/" );
 Error, in StringFile: Is a directory (21)
 
