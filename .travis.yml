@@ -18,7 +18,7 @@ addons:
     - zlib1g-dev
     - python
     - python-pip
-    - perl
+    - jq    # for etc/travis_fastfail.sh
 
 #
 # The following test jobs are roughly sorted by duration, from longest to
@@ -149,17 +149,38 @@ matrix:
     # test Julia integration
     - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
 
+    # build on non-x86 platform
+    - env: TEST_SUITES="docomp testinstall"
+      arch: arm64
+      dist: bionic
+      before_install:
+        # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
+        - sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels
+
+    # build on non-x86 platform
+    - env: TEST_SUITES="docomp testinstall"
+      arch: ppc64le
+      dist: bionic
+
+    # build on non-x86 platform; big endian!
+    - env: TEST_SUITES="docomp testinstall"
+      arch: s390x
+      dist: bionic
+      before_install:
+        # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
+        - sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels
+
+# use travis_terminate below to ensure travis immediately aborts upon error,
+# and also to work around timeouts (see https://travis-ci.community/t/7659)
 script:
-  - set -e
-  - etc/travis_fastfail.sh
-  - pip install --user gcovr==4.1
-  - bash etc/ci-prepare.sh
-  - bash etc/ci.sh
+  - etc/travis_fastfail.sh || travis_terminate $?
+  - python -m pip install --user gcovr==4.1 || travis_terminate $?
+  - bash etc/ci-prepare.sh || travis_terminate $?
+  - bash etc/ci.sh || travis_terminate $?
 
 after_script:
-  - set -e
-  - bash etc/ci-gather-coverage.sh
-  - bash etc/ci-run-codecov.sh
+  - bash etc/ci-gather-coverage.sh || travis_terminate $?
+  - bash etc/ci-run-codecov.sh || travis_terminate $?
 
 notifications:
   email:
