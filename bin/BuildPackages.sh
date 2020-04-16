@@ -32,6 +32,7 @@ fi
 
 CURDIR="$(pwd)"
 GAPROOT="$(cd .. && pwd)"
+GAP="$GAPROOT/bin/gap.sh"
 COLORS=yes
 STRICT=no       # exit with non-zero exit code when encountering any failures
 PACKAGES=()
@@ -45,6 +46,9 @@ while [[ "$#" -ge 1 ]]; do
   case "$option" in
     --with-gaproot)   GAPROOT="$1"; shift ;;
     --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
+
+    --with-gap)       GAP="$1"; shift ;;
+    --with-gap=*)     GAP=${option#--with-gap=}; ;;
 
     --no-color)       COLORS=no ;;
     --color)          COLORS=yes ;;
@@ -168,7 +172,7 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      local PKG_NAME=$($GAPROOT/gap -q -T -A <<GAPInput
+      local PKG_NAME=$($GAP -q -T -A <<GAPInput
 Read("PackageInfo.g");
 Print(GAPInfo.PackageInfoCurrent.PackageName);
 GAPInput
