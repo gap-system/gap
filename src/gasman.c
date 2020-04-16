@@ -1779,8 +1779,7 @@ static void SparcStackFuncBags(void)
 }
 #endif
 
-
-static void GenStackFuncBags(void)
+static NOINLINE void GenStackFuncBags(void)
 {
     Bag *               top;            /* top of stack                    */
     Bag *               p;              /* loop variable                   */
