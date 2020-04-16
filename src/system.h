@@ -63,6 +63,31 @@ enum {
 *T  Wrappers for various compiler attributes
 **
 */
+
+// recent clang and gcc versions have __has_attribute; for compilers that lack
+// it, we have to rely on the autoconf test results.
+#ifdef __has_attribute
+
+#if __has_attribute(always_inline)
+#define HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE 1
+#else
+#undef HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE
+#endif
+
+#if __has_attribute(noreturn)
+#define HAVE_FUNC_ATTRIBUTE_NORETURN 1
+#else
+#undef HAVE_FUNC_ATTRIBUTE_NORETURN
+#endif
+
+#if __has_attribute(noinline)
+#define HAVE_FUNC_ATTRIBUTE_NOINLINE 1
+#else
+#undef HAVE_FUNC_ATTRIBUTE_NOINLINE
+#endif
+
+#endif
+
 #if defined(HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE) && !defined(GAP_KERNEL_DEBUG)
 #define ALWAYS_INLINE __attribute__((always_inline)) inline
 #else
@@ -73,6 +98,12 @@ enum {
 #define NORETURN __attribute__((noreturn))
 #else
 #define NORETURN
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_NOINLINE
+#define NOINLINE __attribute__((noinline))
+#else
+#define NOINLINE
 #endif
 
 
