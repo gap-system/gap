@@ -2,6 +2,8 @@
 
 # Hacked up merger for testing
 
+from __future__ import print_function
+
 import json
 import os
 import os.path
@@ -14,12 +16,13 @@ print("Merging coveralls json coverage")
 # Special-cased gap-coveralls.json, because we rely
 # on GAP to set the correct service_name, pull-request number
 # etc
-print "file: gap-coveralls.json", # python2 avoiding line break.
+print("file: gap-coveralls.json", end="")
 if os.path.isfile('gap-coveralls.json'):
     with open('gap-coveralls.json', 'r') as f:
         merged = json.load(f)
     print(" done.")
 else:
+    print()
     print("WARNING: could not find gap-coveralls.json, quitting")
     sys.exit(0)
 
@@ -28,7 +31,7 @@ if not 'source_files' in merged:
     merged['source_files'] = []
 
 for fn in coverage_files:
-    print "file: %s" % (fn,), # python2 avoiding line break.
+    print("file: %s" % (fn,), end="")
     if os.path.isfile(fn):
         with open(fn, 'r') as f:
             cover = json.load(f)
