@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 #
 # This script expects a single argument, which should be an URL pointing to a
 # file for download; it then tries to download that file, into a local file
