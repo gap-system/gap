@@ -58,10 +58,12 @@ AC_CANONICAL_HOST
 
 
 dnl
-dnl Check for working C and C++ compiler; insist on C99 support
+dnl Check for working C and C++ compiler; insist on C99 and C++11 support
 dnl
 AC_PROG_CC_C99
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX(11)
+
 AC_LANG([C])
 
 
