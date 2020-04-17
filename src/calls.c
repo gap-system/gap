@@ -1202,22 +1202,10 @@ static Obj FuncCALL_FUNC_LIST(Obj self, Obj func, Obj list)
 
 static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 {
-    Obj retval, retlist;
     RequireSmallList("CallFuncListWrap", list);
-    retval = CallFuncList(func, list);
-
-    if (retval == 0)
-    {
-        retlist = NewImmutableEmptyPlist();
-    }
-    else
-    {
-        retlist = NEW_PLIST(T_PLIST, 1);
-        SET_LEN_PLIST(retlist, 1);
-        SET_ELM_PLIST(retlist, 1, retval);
-        CHANGED_BAG(retlist);
-    }
-    return retlist;
+    Obj retval = CallFuncList(func, list);
+    return (retval == 0) ? NewImmutableEmptyPlist()
+                         : NewPlistFromArgs(retval);
 }
 
 /****************************************************************************
