@@ -498,7 +498,7 @@ install-gaproot:
 	@echo "Warning, 'make install-gaproot' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
 	# TODO: update paths and FLAGS in sysinfo.gap
-	$(INSTALL) -m 0644 $(srcdir)/sysinfo.gap $(DESTDIR)$(datarootdir)/gap
+	$(INSTALL) -m 0644 sysinfo.gap $(DESTDIR)$(datarootdir)/gap
 	# the following lines should not use `cp -r`, which is not quite portable,
 	# and which also may not deal with file permissions correctly
 	cp -r $(srcdir)/doc $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
