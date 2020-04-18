@@ -209,18 +209,18 @@ build_one_package() {
   cd "$CURDIR/$PKG"
   if [[ -x prerequisites.sh ]]
   then
-    ./prerequisites.sh
+    ./prerequisites.sh "$GAPROOT"
+  elif [[ -x build-normaliz.sh ]]
+  then
+    # used in NormalizInterface; to be replaced by prerequisites.sh in future
+    # versions
+    ./build-normaliz.sh "$GAPROOT"
   fi
   case "$PKG" in
     # All but the last lines should end by '&&', otherwise (for some reason)
     # some packages that fail to build will not get reported in the logs.
     atlasrep*)
       chmod 1777 datagens dataword
-    ;;
-
-    NormalizInterface*)
-      ./build-normaliz.sh "$GAPROOT" && \
-      run_configure_and_make
     ;;
 
     pargap*)
