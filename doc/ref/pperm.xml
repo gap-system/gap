@@ -441,8 +441,7 @@ gap> EmptyPartialPerm();
 
   <ManSection><Heading>RandomPartialPerm</Heading>
     <Func Name="RandomPartialPerm" Arg="n" Label="for a positive integer"/>
-    <Func Name="RandomPartialPerm" Arg="set" Label="for a set of positive
-      integers"/>
+    <Func Name="RandomPartialPerm" Arg="set" Label="for a set of positive integers"/>
     <Func Name="RandomPartialPerm" Arg="dom, img" Label="for domain and image"/>
     <Returns>A random partial permutation.</Returns>
     <Description>
@@ -1013,8 +1012,7 @@ gap> MultiplicativeZero(f);
   in &GAP; into partial permutations. 
   
   <ManSection>
-  <Oper Name="AsPartialPerm" Arg="f, set" Label="for a permutation and a set of
-    positive integers"/>
+  <Oper Name="AsPartialPerm" Arg="f, set" Label="for a permutation and a set of positive integers"/>
   <Meth Name="AsPartialPerm" Arg="f" Label="for a permutation"/>
   <Meth Name="AsPartialPerm" Arg="f, n" Label="for a permutation and a positive integer"/>
   <Returns>A partial permutation.</Returns>
@@ -1165,8 +1163,7 @@ gap> AsPartialPerm(f, [ 2 .. 4 ] );
     
     <Mark><C>LQUO(<A>g</A>, <A>f</A>)</C></Mark>
     <Item>
-      <Index Key="LQUO" Subkey="for a permutation or partial permutation
-        and partial permutation"><C>LQUO</C></Index>
+      <Index Key="LQUO" Subkey="for a permutation or partial permutation and partial permutation"><C>LQUO</C></Index>
       returns <C><A>g</A>^-1*<A>f</A></C>
       when <A>f</A> is a partial permutation and
       <A>g</A> is a permutation or partial permutation. 

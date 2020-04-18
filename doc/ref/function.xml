@@ -34,10 +34,8 @@ functions.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Calling a function with a list argument that is interpreted as
-several arguments">
-<Heading>Calling a function with a list argument that is interpreted as
-several arguments</Heading>
+<Section Label="Calling a function with a list argument that is interpreted as several arguments">
+<Heading>Calling a function with a list argument that is interpreted as several arguments</Heading>
 
 <#Include Label="CallFuncList">
 
