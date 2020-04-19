@@ -174,7 +174,7 @@ matrix:
 # and also to work around timeouts (see https://travis-ci.community/t/7659)
 script:
   - etc/travis_fastfail.sh || travis_terminate $?
-  - python -m pip install --user gcovr==4.1 || travis_terminate $?
+  - python -m pip install --user gcovr==4.2 || travis_terminate $?
   - bash etc/ci-prepare.sh || travis_terminate $?
   - bash etc/ci.sh || travis_terminate $?
 
