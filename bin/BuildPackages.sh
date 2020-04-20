@@ -294,7 +294,7 @@ do
     warning "$PKG does not seem to be a package directory, skipping"
   fi
   ) &
-  if [ "x$PARALLEL" != "xyes" ]; then
+  if [ "x$PARALLEL" = "xyes" ]; then
     # If more than 4 background jobs are running, wait for one to finish
     if [[ $(jobs -r -p | wc -l) -gt 4 ]]; then
         wait -n
