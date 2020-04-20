@@ -1,3 +1,8 @@
+#
+# Modified for GAP, to support g++ 4.7
+#
+# In test_variadic_templates, change 'constexpr auto' to 'constexpr int'
+#
 # ===========================================================================
 #  https://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx.html
 # ===========================================================================
@@ -397,13 +402,13 @@ namespace cxx11
     template <int N0, int... N1toN>
     struct sum<N0, N1toN...>
     {
-      static constexpr auto value = N0 + sum<N1toN...>::value;
+      static constexpr int value = N0 + sum<N1toN...>::value;
     };
 
     template <>
     struct sum<>
     {
-      static constexpr auto value = 0;
+      static constexpr int value = 0;
     };
 
     static_assert(sum<>::value == 0, "");
