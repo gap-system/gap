@@ -432,10 +432,6 @@ show := function(file)
 end
 );
 
-if IsHPCGAP then
-    MakeReadOnlyObj(HELP_VIEWER_INFO);
-fi;
-
 #############################################################################
 ##
 #F  SetHelpViewer(<viewer>):  Set the viewer used for help

@@ -34,7 +34,11 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-BindGlobal("HELP_VIEWER_INFO", rec());
+if IsHPCGAP then
+    BindGlobal("HELP_VIEWER_INFO", AtomicRecord());
+else
+    BindGlobal("HELP_VIEWER_INFO", rec());
+fi;
 
 DeclareGlobalFunction("FindWindowId");
 DeclareGlobalFunction("SetHelpViewer");
