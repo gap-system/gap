@@ -242,11 +242,15 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
             record.PackageDoc:= [ record.PackageDoc ];
           fi;
           if IsHPCGAP then
-            # FIXME: we make the package info record immutable, to
-            # allow access from multiple threads; but that in turn
-            # can break packages, which rely on their package info
-            # record being readable (see issue #2568)
-            MakeImmutable(record);
+            # FIXME: we make the package info record atomic and its
+            # entries immutable in order to allow for access from
+            # multiple threads. This is an iteration on a previous
+            # workaround related to issue #2568, where packages rely on
+            # being able to update packag info later. It can still break
+            # packages that either write thread-local information into
+            # this record that then get accessed from other threads or
+            # by concurrent access from multiple threads.
+            record := AtomicRecord(MakeReadOnlyObj(record));
           fi;
           Add( GAPInfo.PackagesInfo, record );
         fi;
@@ -343,11 +347,11 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
         record.( name ):= [ r ];
       fi;
       if IsHPCGAP then
-        # FIXME: we make the package info record immutable, to
+        # FIXME: we make the package info record readonly, to
         # allow access from multiple threads; but that in turn
         # can break packages, which rely on their package info
         # record being readable (see issue #2568)
-        MakeImmutable( record.( name ) );
+        MakeReadOnlyObj( record.( name ) );
       fi;
     od;
     GAPInfo.PackagesInfo:= AtomicRecord(record);
