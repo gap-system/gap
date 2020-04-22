@@ -2054,9 +2054,9 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
     bookname:= LowercaseString( bookname );
     entries:= List( entries,
                      entry -> Concatenation( "\\makelabel{", bookname, ":",
-                                             esctex(entry[1]), "}{",
-                                             SecNumber( entry[3] ), "}{",
-                                             entry[7], "}\n" ) );
+                                       esctex(NormalizedWhitespace(entry[1])), 
+                                       "}{", SecNumber( entry[3] ), "}{",
+                                       entry[7], "}\n" ) );
     # forget entries that contain a character from "\\*+/=" in label,
     # these were never allowed, so no old manual will refer to them
     entries := Filtered(entries, entry ->
