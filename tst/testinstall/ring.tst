@@ -16,6 +16,10 @@ false
 gap> IsIntegralRing( SmallRing(4,3) );
 false
 
+# Zero divisors not on the diagonal
+gap> IsIntegralRing( Integers mod 6 );
+false
+
 # Integral rings
 gap> IsIntegralRing( GF(5) );
 true
