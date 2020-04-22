@@ -381,11 +381,11 @@ CallAndInstallPostRestore( function()
       env := GAPInfo.SystemEnvironment;
     fi;
     enc := fail;
-    if IsBound(env.LC_CTYPE) then
-      enc := env.LC_CTYPE;
-    fi;
-    if enc = fail and IsBound(env.LC_ALL) then
+    if IsBound(env.LC_ALL) then
       enc := env.LC_ALL;
+    fi;
+    if enc = fail and IsBound(env.LC_CTYPE) then
+      enc := env.LC_CTYPE;
     fi;
     if enc = fail and IsBound(env.LANG) then
       enc := env.LANG;
