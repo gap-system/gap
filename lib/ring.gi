@@ -701,7 +701,7 @@ InstallMethod( IsIntegralRing,
         zero := Zero( R );
         for i  in [1..Length(elms)]  do
             if elms[i] = zero then continue; fi;
-            for k  in [i+1..Length(elms)]  do
+            for k  in [i..Length(elms)]  do
                 if elms[k] = zero then continue; fi;
                 if elms[i] * elms[k] = zero then
                     return false;
