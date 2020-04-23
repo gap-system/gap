@@ -641,7 +641,7 @@ local G, P, l, m, i;
        = DegreeOfLaurentPolynomial(G)
     then
       P := G;
-      G := RPGcdCRT(t.modulo,t.gcd,t.prime,t.brci);
+      G := RPGcdCRT(P,t.modulo,t.gcd,t.prime,t.brci);
       t.modulo := t.modulo * t.prime;
       Info(InfoPoly,3,"gcd mod ",t.modulo," = ",G);
       if G = P  then
@@ -764,10 +764,7 @@ local brci,gcd,fam,fc,gc;
   if gcd=fail then
     # fall back to the original version:
     gcd:=RPIGcd(f,g);
-    if Length(gcd)>0 and not IsOne(gcd[Length(gcd)]) then
-      gcd:=gcd/gcd[Length(gcd)];
-    fi;
-    return gcd;
+    return StandardAssociate(gcd);
 
   fi;
   fc:=Minimum(fc[2],gc[2]);
