@@ -1032,7 +1032,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
     rules:=Rules(k);
     dept:=fail;
   else
-    iso:=IsomorphismFpGroupByChiefSeries(G:rewrite,abelianlimit:=10);
+    iso:=IsomorphismFpGroupByChiefSeries(G:rewrite);
 
     fp:=Range(iso);
     gens:=GeneratorsOfGroup(fp);
@@ -1172,7 +1172,6 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
 
   # finally create 
   m:=FactorFreeMonoidByRelations(fm,rules);
-  mgens:=GeneratorsOfMonoid(m);
   hom:=MakeFpGroupToMonoidHomType1(fp,m);
 
   j:=rec(fphom:=iso,monhom:=hom);
@@ -1181,6 +1180,8 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
   else
     j.ordering:=WreathProductOrdering(fm,dept);
   fi;
+  k:=KnuthBendixRewritingSystem(FamilyObj(One(m)),j.ordering);
+  MakeConfluent(k); # will store in monoid as reducedConfluent
   return j;
 end);
 
