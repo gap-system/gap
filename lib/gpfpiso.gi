@@ -1018,7 +1018,8 @@ InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
   [IsGroup and IsFinite],
 function(G)
 local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
-      loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept;
+      loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept,
+      lode;
   IsSimpleGroup(G);
   if IsSymmetricGroup(G) then
     i:=SymmetricGroup(SymmetricDegree(G));
@@ -1077,6 +1078,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
     mos:=[];
     off:=Length(mgens);
     dept:=[];
+    lode:=[];
     # go up so we may reduce tails
     for i in [Length(homs),Length(homs)-1..1] do
       Add(dept,off);
@@ -1112,6 +1114,11 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
         k:=m!.rewritingSystem;
       else
         k:=KnuthBendixRewritingSystem(m);
+      fi;
+      if HasLevelsOfGenerators(k!.ordering) then
+        Add(lode,LevelsOfGenerators(k!.ordering));
+      else
+        Add(lode,fail);
       fi;
       MakeConfluent(k);
       # convert rules
@@ -1156,6 +1163,20 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
     dept:=dept+1;
     dept:=List([1..Length(mgens)],
       x->PositionProperty(dept,y->x>=y)-1);
+
+    # are there local levels to keep? First make them fractional additions
+    off:=10^(1+LogInt(Length(dept),10)); # cent level for local depths
+    for i in [1..Maximum(dept)] do
+      if lode[i]<>fail then
+        diff:=Filtered([1..Length(dept)],x->dept[x]=i);
+        dept{diff}:=dept{diff}+lode[i]/off;
+      fi;
+    od;
+    if ForAny(dept,x->not IsInt(x)) then
+      # reintegralize
+      diff:=Set(dept);
+      dept:=List(dept,x->Position(diff,x));
+    fi;
 
     if ForAny(rules,x->x[2]<>reduce(x[2])) then Error("irreduced right");fi;
 
