@@ -1201,7 +1201,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
   else
     j.ordering:=WreathProductOrdering(fm,dept);
   fi;
-  k:=KnuthBendixRewritingSystem(FamilyObj(One(m)),j.ordering);
+  k:=KnuthBendixRewritingSystem(FamilyObj(One(m)),j.ordering:isconfluent);
   MakeConfluent(k); # will store in monoid as reducedConfluent
   return j;
 end);
