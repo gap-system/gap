@@ -18,6 +18,7 @@
 #include "compiler.h"
 #include "error.h"
 #include "funcs.h"
+#include "gap_version.h"
 #include "gapstate.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
@@ -1256,6 +1257,9 @@ static Obj FuncKERNEL_INFO(Obj self)
   tmp = MakeImmString( SyBuildDateTime );
   r = RNamName("BUILD_DATETIME");
   AssPRec(res,r,tmp);
+
+  AssPRec(res, RNamName("RELEASEDAY"), MakeImmString(SyReleaseDay));
+
   /* GAP_ROOT_PATH                                                       */
   /* do we need this. Could we rebuild it from the command line in GAP
      if so, should we                                                    */

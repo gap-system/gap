@@ -13,7 +13,7 @@
 ########################################################################
 # Default rule: build gap
 ########################################################################
-all: gap$(EXEEXT) gac libgap.la
+all: gap$(EXEEXT) gac libgap.la CITATION doc/versiondata
 .PHONY: all
 
 # Backwards compatibility: add "default" target as alias for "all"
@@ -717,6 +717,7 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 	@echo "GAP_HPCGAP=$(HPCGAP)" >> $@
 	@echo "" >> $@
 	@echo "GAP_VERSION=\"$(GAP_VERSION)\"" >> $@
+	@echo "GAP_BUILD_VERSION=\"$(GAP_BUILD_VERSION)\"" >> $@
 	@echo "GAP_KERNEL_MAJOR_VERSION=$(GAP_KERNEL_MAJOR_VERSION)" >> $@
 	@echo "GAP_KERNEL_MINOR_VERSION=$(GAP_KERNEL_MINOR_VERSION)" >> $@
 	@echo "" >> $@
@@ -783,10 +784,10 @@ TESTGAPauto = $(abs_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80
 # Alias for backwards compatibility
 manuals: doc
 
-doc: gap$(EXEEXT) doc/make_doc
+doc: gap$(EXEEXT) doc/make_doc doc/versiondata
 	doc/make_doc
 
-html: gap$(EXEEXT) doc/make_doc
+html: gap$(EXEEXT) doc/make_doc doc/versiondata
 	doc/make_doc nopdf
 
 clean-doc:
@@ -805,7 +806,7 @@ check-manuals: all
 	( cd doc/ref ; echo 'Read("testconsistency.g");' | $(TESTGAP) | \
 	               tee `date -u +../../dev/log/check_manuals_%Y-%m-%d-%H-%M` )
 
-.PHONY: doc clean-doc manuals check-manuals
+.PHONY: doc clean-doc manuals check-manuals html
 
 ########################################################################
 # Rules for test{install/standard/etc.} targets
@@ -1251,13 +1252,16 @@ GVF = $(srcdir)/cnf/GAP-VERSION-FILE
 
 # the GAP-VERSION-FILE contains the raw version, nothing else
 $(GVF): FORCE
-	@cd $(srcdir) && $(SHELL) cnf/GAP-VERSION-GEN
+	@cd $(srcdir) && $(SHELL) cnf/GAP-VERSION-GEN $(GAP_VERSION)
 -include $(GVF)
 
 # generate gen/gap_version.c
-gen/gap_version.c: $(srcdir)/src/gap_version.c.in $(GVF)
+gen/gap_version.c: $(srcdir)/src/gap_version.c.in $(GVF) $(srcdir)/Makefile.rules
 	@$(MKDIR_P) $(@D)
-	$(QUIET_SED)sed -e "s/@GAP_VERSION@/$(GAP_VERSION)/" < $< > $@
+	$(QUIET_SED)sed -e "s/@GAP_VERSION@/$(GAP_VERSION)/" \
+				    -e "s/@GAP_RELEASEDAY@/$(GAP_RELEASEDAY)/" \
+					-e "s/@GAP_BUILD_VERSION@/$(GAP_BUILD_VERSION)/" \
+					-e "s/@GAP_BUILD_DATETIME@/$(GAP_BUILD_DATETIME)/" < $< > $@
 
 
 ########################################################################
@@ -1303,18 +1307,23 @@ $(srcdir)/src/config.h.in: $(configure_deps)
 	touch $@
 endif
 
+doc/versiondata: $(srcdir)/doc/versiondata.in config.status
+	@$(SHELL) ./config.status $@
+
+doc/make_doc: $(srcdir)/doc/make_doc.in config.status
+	@$(SHELL) ./config.status $@
+
+CITATION: $(srcdir)/CITATION.in config.status
+	@$(SHELL) ./config.status $@
+
+gac: $(srcdir)/cnf/gac.in config.status
+	@$(SHELL) ./config.status $@
+
 GNUmakefile: $(srcdir)/GNUmakefile.in config.status
 	$(SHELL) ./config.status $@
 
 libtool: config.status
-	$(SHELL) ./config.status $@
-
-doc/make_doc: $(srcdir)/doc/make_doc.in config.status
-	$(SHELL) ./config.status $@
-
-gac: $(srcdir)/cnf/gac.in config.status
-	$(SHELL) ./config.status $@
-
+	@$(SHELL) ./config.status $@
 
 ########################################################################
 # Special .PHONY target: targets depending on it will always be

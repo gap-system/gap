@@ -21,12 +21,6 @@
 
 BIND_GLOBAL( "GAPInfo", rec(
 
-# do not edit the following three lines. Occurences of `4.dev' and `today'
-# will be replaced by string matching by distribution wrapping scripts.
-    Version := MakeImmutable("4.dev"),
-    Date := MakeImmutable("today"),
-    NeedKernelVersion := MakeImmutable("4.dev"),
-
 # Without the needed packages, GAP does not start.
     Dependencies := MakeImmutable(rec(
       NeededOtherPackages := [
@@ -278,9 +272,11 @@ CallAndInstallPostRestore( function()
     local j, i, CommandLineOptions, opt, InitFiles, line, word, value, padspace;
 
     GAPInfo.KernelInfo:= KERNEL_INFO();
+    GAPInfo.Version := GAPInfo.KernelInfo.KERNEL_VERSION;
     GAPInfo.KernelVersion:= GAPInfo.KernelInfo.KERNEL_VERSION;
+    GAPInfo.Date := GAPInfo.KernelInfo.RELEASEDAY;
     GAPInfo.BuildVersion:= GAPInfo.KernelInfo.BUILD_VERSION;
-    GAPInfo.BuildDateTime:= GAPInfo.KernelInfo.BUILD_DATETIME;
+    GAPInfo.BuildDateTime := GAPInfo.KernelInfo.BUILD_DATETIME;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
 
     # The exact command line which called GAP as list of strings;

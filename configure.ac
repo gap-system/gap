@@ -2,13 +2,32 @@ dnl
 dnl Setup autoconf
 dnl
 AC_PREREQ([2.68])
-AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [https://www.gap-system.org/])
+
+m4_define([gap_version], [4.11.0])
+m4_define([gap_releaseday], [29-Feb-2020])
+m4_define([gap_releaseyear], [2020])
+
+m4_define([gap_tarname], [gap-gap_version])
+
+AC_INIT([GAP],
+        gap_version,
+        [support@gap-system.org],
+        gap_tarname,
+        [https://www.gap-system.org/])
 
 AC_CONFIG_SRCDIR([src/gap.c])
 AC_CONFIG_AUX_DIR([cnf])
 
 AC_CONFIG_HEADERS([gen/config.h:src/config.h.in])
 AC_CONFIG_COMMANDS([gen/stamp-h], [echo timestamp > gen/stamp-h])
+
+dnl note that the final version used by the GAP kernel is GAP_BUILD_VERSION
+dnl and is computed by cnf/GAP-VERSION-GEN, which takes git commit hashes into
+dnl account to produce a more fine-grained version string for GAP development
+dnl versions.
+AC_SUBST([GAP_VERSION], "gap_version")
+AC_SUBST([GAP_RELEASEDAY], "gap_releaseday")
+AC_SUBST([GAP_RELEASEYEAR], "gap_releaseyear")
 
 dnl
 dnl Get canonical host information
@@ -810,6 +829,8 @@ dnl
 dnl Output everything
 dnl
 AC_CONFIG_FILES([GNUmakefile])
+AC_CONFIG_FILES([CITATION])
 AC_CONFIG_FILES([doc/make_doc], [chmod +x doc/make_doc])
+AC_CONFIG_FILES([doc/versiondata])
 AC_CONFIG_FILES([gac:cnf/gac.in], [chmod +x gac])
 AC_OUTPUT
