@@ -19,6 +19,7 @@
 #include "compstat.h"
 #include "error.h"
 #include "finfield.h"
+#include "gap_version.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
 #endif

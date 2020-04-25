@@ -15,6 +15,7 @@
 
 #include "system.h"
 
+#include "gap_version.h"
 #include "gaputils.h"
 #ifdef GAP_MEM_CHECK
 #include "gasman_intern.h"
@@ -56,14 +57,6 @@
 #include <mach/mach_time.h>
 #endif
 
-
-/****************************************************************************
-**
-*V  SyKernelVersion  . . . . . . . . . . . . . . . hard coded kernel version
-** do not edit the following line. Occurrences of `4.dev' and `today'
-** will be replaced by string matching by distribution wrapping scripts.
-*/
-const Char * SyKernelVersion = "4.dev";
 
 /****************************************************************************
 **

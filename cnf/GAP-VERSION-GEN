@@ -9,17 +9,13 @@
 # This script is based on git.git's GIT-VERSION-GEN script
 
 GVF=cnf/GAP-VERSION-FILE
-DEF_VER=v4.dev
+DEF_VER=${1:-4.dev}
 
 LF='
 '
 
-# First see if there is a VERSION file (included in release tarballs),
-# then try git-describe, then default.
-if test -f VERSION
-then
-	VN=$(cat VERSION) || VN="$DEF_VER"
-elif test -d ${GIT_DIR:-.git} -o -f .git &&
+# First  try git-describe, then default.
+if test -d ${GIT_DIR:-.git} -o -f .git &&
 	VN=$(git describe --match "v[0-9]*" --abbrev=7 HEAD 2>/dev/null) &&
 	case "$VN" in
 	*$LF*) (exit 1) ;;
@@ -40,11 +36,12 @@ VN=$(expr "$VN" : v*'\(.*\)')
 # if it is missing, or if the version changed.
 if test -r $GVF
 then
-	VC=$(sed -e 's/^GAP_VERSION = //' <$GVF)
+	VC=$(sed -e 's/^GAP_BUILD_VERSION = //' -e '/GAP_BUILD_DATETIME/d'  <$GVF)
 else
 	VC=unset
 fi
 test "$VN" = "$VC" || {
-	echo >&2 "GAP_VERSION = $VN"
-	echo "GAP_VERSION = $VN" >$GVF
+	echo >&2 "GAP_BUILD_VERSION = $VN"
+	echo "GAP_BUILD_VERSION = $VN" >$GVF
+	echo "GAP_BUILD_DATETIME = $(date '+%Y-%m-%d %H:%M:%S%z')" >>$GVF
 }
