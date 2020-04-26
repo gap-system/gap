@@ -628,20 +628,79 @@ gap> Sin(0.);
 0.
 gap> Tan(0.);
 0.
+gap> Sec(0.);
+1.
+gap> Csc(0.);
+inf
+gap> Cot(0.);
+inf
 gap> Acos(1.);
 0.
 gap> Asin(0.);
 0.
+gap> Atan(0.);
+0.
+
+#
+gap> Cosh(0.);
+1.
+gap> Sinh(0.);
+0.
+gap> Tanh(0.);
+0.
+gap> Sech(0.);
+1.
+gap> Csch(0.);
+inf
+gap> Coth(0.);
+inf
+gap> Asinh(0.);
+0.
+gap> Acosh(0.);
+nan
+gap> Atanh(0.);
+0.
+
+#
 gap> Log(1.);
 0.
+gap> Log2(1.);
+0.
+gap> Log10(1.);
+0.
+gap> Log1p(0.);
+0.
+
+#
 gap> Exp(0.);
 1.
-gap> if IsBound(Log2) then Assert(0, Log2(1.) = 0.); fi;
-gap> if IsBound(Log10) then Assert(0, Log10(1.) = 0.); fi;
-gap> if IsBound(Log1p) then Assert(0, Log1p(0.) = 0.); fi;
-gap> if IsBound(Exp2) then Assert(0, Exp2(0.) = 1.); fi;
-gap> if IsBound(Exp10) then Assert(0, Exp10(0.) = 1.); fi;
-gap> if IsBound(Expm1) then Assert(0, Expm1(0.) = 0.); fi;
+gap> Exp2(0.);
+1.
+gap> Exp10(0.);
+1.
+gap> Expm1(0.);
+0.
+
+#
+gap> CubeRoot(0.);
+0.
+gap> Square(0.);
+0.
+
+#
+gap> FrExp(0.);
+[ 0., 0 ]
+gap> LdExp(0.,0);
+0.
+gap> Norm(0.);
+0.
+gap> SinCos(0.);
+[ 0., 1. ]
+gap> Erf(0.);
+0.
+gap> #Zeta(0.);     # TODO: not implemented for machine floats
+gap> Gamma(1.);
+1.
 
 #
 gap> Round(1.3);
@@ -672,6 +731,26 @@ gap> Ceil(-1.9);
 -1.
 gap> Ceil(-1.3);
 -1.
+
+#
+gap> Trunc(1.3);
+1.
+gap> Trunc(1.9);
+1.
+gap> Trunc(-1.9);
+-1.
+gap> Trunc(-1.3);
+-1.
+
+#
+gap> Frac(1.3);
+0.3
+gap> Frac(1.9);
+0.9
+gap> Frac(-1.9);
+0.1
+gap> Frac(-1.3);
+0.7
 
 #
 gap> AbsoluteValue(1.3);
