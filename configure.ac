@@ -950,8 +950,8 @@ AC_SEARCH_LIBS([cos], [m], [], [
   AC_MSG_ERROR([unable to find the cos() function])
 ])
 
-dnl check for math functions
-AC_CHECK_FUNCS([log2 log10 log1p exp2 expm1 exp10 trunc])
+dnl check for non-standard math functions
+AC_CHECK_FUNCS([exp10])
 
 dnl pthreads
 AS_IF([test "x$enable_hpcgap" = xyes],[

@@ -61,39 +61,44 @@ InstallMethod( Int, "for macfloats", true, [ IsIEEE754FloatRep ], 0, INTFLOOR_MA
 InstallMethod( Sin, "for macfloats", [ IsIEEE754FloatRep ], SIN_MACFLOAT );
 InstallMethod( Cos, "for macfloats", [ IsIEEE754FloatRep ], COS_MACFLOAT );
 InstallMethod( Tan, "for macfloats", [ IsIEEE754FloatRep ], TAN_MACFLOAT );
-InstallMethod( Acos, "for macfloats", [ IsIEEE754FloatRep ], ACOS_MACFLOAT );
 InstallMethod( Asin, "for macfloats", [ IsIEEE754FloatRep ], ASIN_MACFLOAT );
+InstallMethod( Acos, "for macfloats", [ IsIEEE754FloatRep ], ACOS_MACFLOAT );
 InstallMethod( Atan, "for macfloats", [ IsIEEE754FloatRep ], ATAN_MACFLOAT );
-InstallMethod( Atan2, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], ATAN2_MACFLOAT );
+
+InstallMethod( Sinh, "for macfloats", [ IsIEEE754FloatRep ], SINH_MACFLOAT );
+InstallMethod( Cosh, "for macfloats", [ IsIEEE754FloatRep ], COSH_MACFLOAT );
+InstallMethod( Tanh, "for macfloats", [ IsIEEE754FloatRep ], TANH_MACFLOAT );
+InstallMethod( Asinh, "for macfloats", [ IsIEEE754FloatRep ], ASINH_MACFLOAT );
+InstallMethod( Acosh, "for macfloats", [ IsIEEE754FloatRep ], ACOSH_MACFLOAT );
+InstallMethod( Atanh, "for macfloats", [ IsIEEE754FloatRep ], ATANH_MACFLOAT );
+
 InstallMethod( Log, "for macfloats", [ IsIEEE754FloatRep ], LOG_MACFLOAT );
+InstallMethod( Log2, "for macfloats", [ IsIEEE754FloatRep ], LOG2_MACFLOAT );
+InstallMethod( Log10, "for macfloats", [ IsIEEE754FloatRep ], LOG10_MACFLOAT );
+InstallMethod( Log1p, "for macfloats", [ IsIEEE754FloatRep ], LOG1P_MACFLOAT );
+
 InstallMethod( Exp, "for macfloats", [ IsIEEE754FloatRep ], EXP_MACFLOAT );
-if IsBound(LOG2_MACFLOAT) then
-    InstallMethod( Log2, "for macfloats", [ IsIEEE754FloatRep ], LOG2_MACFLOAT );
-fi;
-if IsBound(LOG10_MACFLOAT) then
-    InstallMethod( Log10, "for macfloats", [ IsIEEE754FloatRep ], LOG10_MACFLOAT );
-fi;
-if IsBound(LOG1P_MACFLOAT) then
-    InstallMethod( Log1p, "for macfloats", [ IsIEEE754FloatRep ], LOG1P_MACFLOAT );
-fi;
-if IsBound(EXP2_MACFLOAT) then
-    InstallMethod( Exp2, "for macfloats", [ IsIEEE754FloatRep ], EXP2_MACFLOAT );
-fi;
-if IsBound(EXPM1_MACFLOAT) then
-    InstallMethod( Expm1, "for macfloats", [ IsIEEE754FloatRep ], EXPM1_MACFLOAT );
-fi;
+InstallMethod( Exp2, "for macfloats", [ IsIEEE754FloatRep ], EXP2_MACFLOAT );
+InstallMethod( Expm1, "for macfloats", [ IsIEEE754FloatRep ], EXPM1_MACFLOAT );
 if IsBound(EXP10_MACFLOAT) then
     InstallMethod( Exp10, "for macfloats", [ IsIEEE754FloatRep ], EXP10_MACFLOAT );
 fi;    
 
 InstallMethod( Sqrt, "for macfloats", [ IsIEEE754FloatRep ], SQRT_MACFLOAT );
+InstallMethod( CubeRoot, "for macfloats", [ IsIEEE754FloatRep ], CBRT_MACFLOAT );
+
+InstallMethod( Atan2, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], ATAN2_MACFLOAT );
+InstallMethod( Hypothenuse, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], HYPOT_MACFLOAT );
+
+InstallMethod( Erf, "for macfloats", [ IsIEEE754FloatRep ], ERF_MACFLOAT );
+InstallMethod( Gamma, "for macfloats", [ IsIEEE754FloatRep ], GAMMA_MACFLOAT );
+
 InstallMethod( Round, "for macfloats", [ IsIEEE754FloatRep ], RINT_MACFLOAT );
 InstallMethod( Floor, "for macfloats", [ IsIEEE754FloatRep ], FLOOR_MACFLOAT );
 InstallMethod( Ceil, "for macfloats", [ IsIEEE754FloatRep ], CEIL_MACFLOAT );
 InstallMethod( AbsoluteValue, "for macfloats", [ IsIEEE754FloatRep ], ABS_MACFLOAT );
 InstallMethod( SignFloat, "for macfloats", [ IsIEEE754FloatRep ], SIGN_MACFLOAT );
 InstallMethod( SignBit, "for macfloats", [ IsIEEE754FloatRep ], SIGNBIT_MACFLOAT );
-InstallMethod( Hypothenuse, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], HYPOT_MACFLOAT );
 InstallMethod( LdExp, "for macfloat,int", [ IsIEEE754FloatRep, IsInt ], LDEXP_MACFLOAT );
 InstallMethod( FrExp, "for macfloat", [ IsIEEE754FloatRep ], FREXP_MACFLOAT );
 InstallMethod( EqFloat, "for macfloats", [ IsIEEE754FloatRep, IsIEEE754FloatRep ], EQ_MACFLOAT );

@@ -51,8 +51,8 @@ end);
 ## <#GAPDoc Label="Float-Math-Commands">
 ## <ManSection>
 ##   <Heading>Standard mathematical operations</Heading>
-##   <Attr Name="Cos" Arg="f"/>
 ##   <Attr Name="Sin" Arg="f"/>
+##   <Attr Name="Cos" Arg="f"/>
 ##   <Attr Name="Tan" Arg="f"/>
 ##   <Attr Name="Sec" Arg="f"/>
 ##   <Attr Name="Csc" Arg="f"/>
@@ -60,8 +60,8 @@ end);
 ##   <Attr Name="Asin" Arg="f"/>
 ##   <Attr Name="Acos" Arg="f"/>
 ##   <Attr Name="Atan" Arg="f"/>
-##   <Attr Name="Cosh" Arg="f"/>
 ##   <Attr Name="Sinh" Arg="f"/>
+##   <Attr Name="Cosh" Arg="f"/>
 ##   <Attr Name="Tanh" Arg="f"/>
 ##   <Attr Name="Sech" Arg="f"/>
 ##   <Attr Name="Csch" Arg="f"/>
@@ -79,16 +79,16 @@ end);
 ##   <Attr Name="Expm1" Arg="f"/>
 ##   <Attr Name="CubeRoot" Arg="f"/>
 ##   <Attr Name="Square" Arg="f"/>
+##   <Oper Name="Atan2" Arg="y x"/>
+##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Attr Name="Ceil" Arg="f"/>
 ##   <Attr Name="Floor" Arg="f"/>
 ##   <Attr Name="Round" Arg="f"/>
 ##   <Attr Name="Trunc" Arg="f"/>
-##   <Oper Name="Atan2" Arg="y x"/>
 ##   <Attr Name="FrExp" Arg="f"/>
 ##   <Oper Name="LdExp" Arg="f exp"/>
 ##   <Attr Name="AbsoluteValue" Arg="f" Label="for floats"/>
 ##   <Attr Name="Norm" Arg="f" Label="for floats"/>
-##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Attr Name="Frac" Arg="f"/>
 ##   <Attr Name="SinCos" Arg="f"/>
 ##   <Attr Name="Erf" Arg="f"/>
