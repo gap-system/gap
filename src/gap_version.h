@@ -17,7 +17,7 @@
 **
 *V  SyKernelVersion . . . . . . . . . . . . . . . . . . kernel version number
 **
-**  'SyKernelVersion' is something like "4.12.2" or "4.12.dev".
+**  'SyKernelVersion' is something like "4.37.2" or "4.37dev".
 */
 extern const char * SyKernelVersion;
 
@@ -37,7 +37,7 @@ extern const char * SyReleaseDay;
 *V  SyBuildVersion . . . . . . . . . . . . . . . . . source version for build
 **
 **  'SyBuildVersion' is identical to 'SyKernelVersion' for release versions.
-**  For development versions, it is something like "4.12dev-302-g09161ee".
+**  For development versions, it is something like "4.37dev-302-g09161ee".
 */
 extern const char * SyBuildVersion;
 
