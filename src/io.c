@@ -1577,7 +1577,6 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 *F  FuncToggleEcho( )
 **
 */
-
 static Obj FuncToggleEcho(Obj self)
 {
     IO()->Input->echo = 1 - IO()->Input->echo;
@@ -1605,7 +1604,6 @@ static Obj FuncCPROMPT(Obj self)
 **  uses the content of <prompt> as `Prompt' (at most 80 characters).
 **  (important is the flush character without resetting the cursor column)
 */
-
 static Obj FuncPRINT_CPROMPT(Obj self, Obj prompt)
 {
   if (IS_STRING_REP(prompt)) {
@@ -1622,6 +1620,56 @@ void ResetOutputIndent(void)
     GAP_ASSERT(IO()->Output);
     IO()->Output->indent = 0;
 }
+
+
+
+/****************************************************************************
+**
+*V  AllKeywords
+**
+*/
+static const char * AllKeywords[] = {
+    "and",     "atomic",   "break",         "continue", "do",     "elif",
+    "else",    "end",      "false",         "fi",       "for",    "function",
+    "if",      "in",       "local",         "mod",      "not",    "od",
+    "or",      "readonly", "readwrite",     "rec",      "repeat", "return",
+    "then",    "true",     "until",         "while",    "quit",   "QUIT",
+    "IsBound", "Unbind",   "TryNextMethod", "Info",     "Assert",
+};
+
+
+/****************************************************************************
+**
+*F  IsKeyword( )
+**
+*/
+static BOOL IsKeyword(const char * str)
+{
+    for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
+        if (strcmp(str, AllKeywords[i]) == 0) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+
+/****************************************************************************
+**
+*F  FuncALL_KEYWORDS( )
+**
+*/
+static Obj FuncALL_KEYWORDS(Obj self)
+{
+    Obj l = NewEmptyPlist();
+    for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
+        Obj s = MakeImmString(AllKeywords[i]);
+        ASS_LIST(l, i+1, s);
+    }
+    MakeImmutable(l);
+    return l;
+}
+
 
 /****************************************************************************
 **
@@ -2067,6 +2115,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_0ARGS(ToggleEcho),
     GVAR_FUNC_0ARGS(CPROMPT),
     GVAR_FUNC_1ARGS(PRINT_CPROMPT, prompt),
+    GVAR_FUNC_0ARGS(ALL_KEYWORDS),
     GVAR_FUNC_0ARGS(INPUT_FILENAME),
     GVAR_FUNC_0ARGS(INPUT_LINENUMBER),
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_STDOUT, format),

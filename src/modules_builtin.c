@@ -50,9 +50,8 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoHookIntrprtr,
     InitInfoTracing,
 
-    /* scanner, reader, interpreter, coder, caller, compiler               */
+    // reader, interpreter, coder, caller, compiler, ...
     InitInfoIO,
-    InitInfoScanner,
     InitInfoRead,
     InitInfoCalls,
     InitInfoExprs,
