@@ -122,6 +122,10 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
     ordering:=wordord,
     freefam:=freefam));
 
+  if ValueOption("isconfluent")=true then
+    kbrws!.createdconfluent:=true;
+  fi;
+
   if HasLetterRepWordsLessFunc(wordord) then
     kbrws!.tzordering:=LetterRepWordsLessFunc(wordord);
   else
@@ -150,15 +154,24 @@ InstallMethod(ReduceRules,
 function(rws)
   local
         r,      # local copy of the rules
+        ptc,    # do we need to check pairs
         v;      # a rule
 
+  ptc:=not (IsBound(rws!.createdconfluent) and rws!.createdconfluent);
   r := ShallowCopy(rws!.tzrules);
   rws!.tzrules:=[];
-  rws!.pairs2check:=[];
+  if ptc then
+    rws!.pairs2check:=[];
+  else
+    Unbind(rws!.pairs2check);
+  fi;
   rws!.reduced := true;
   for v in r do
     AddRuleReduced(rws, v);
   od;
+  if not ptc then
+    rws!.pairs2check:=[];
+  fi;
 end);
 
 
