@@ -251,9 +251,6 @@ typedef struct {
 /* TL: extern  UInt            NrErrLine; */
 
 
-BOOL IsKeyword(const char * str);
-
-
 /****************************************************************************
 **
 *F  SyntaxError( <msg> ) . . . . . . . . . . . . . . . . raise a syntax error
@@ -376,16 +373,5 @@ void Match(ScannerState * s,
 */
 void ScanForFloatAfterDotHACK(ScannerState * s);
 
-
-/****************************************************************************
-**
-*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
-*/
-
-/****************************************************************************
-**
-*F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
-*/
-StructInitInfo * InitInfoScanner ( void );
 
 #endif // GAP_SCANNER_H
