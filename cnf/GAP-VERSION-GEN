@@ -9,7 +9,7 @@
 # This script is based on git.git's GIT-VERSION-GEN script
 
 GVF=cnf/GAP-VERSION-FILE
-DEF_VER=${1:-4.12dev}
+DEF_VER=${1:-4.dev}
 
 LF='
 '
