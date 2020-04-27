@@ -9,31 +9,31 @@ makeindex -l $1.idl
 
 # put hyphenation help into long commands
 echo "Hyphenating long index entries"
-echo '{a=index($0,"`");\
-    if (a==0) {print $0;}\
-    else {\
-      b=index($0,"'"'"'");\
-      if (b-a>40) {\
-	anf=substr($0,1,a);\
-	mid=substr($0,a+1,b-a-1);\
-	end=substr($0,b);\
-	b=length(mid);\
-	i=1;\
-	cap=1;\
-	mid2=substr(mid,1,i-1);\
-	while (i<=length(mid)) {\
-	  c=substr(mid,i,1);\
-	  if (c!=tolower(c)){\
-	    if (cap==0) mid2 = mid2 "\\\-";\
-	    cap=1;\
-	  }\
-	  else cap=0;\
-	  mid2=mid2 c;\
-	  i=i+1;\
-	}\
-	print anf mid2 end;\
-      }\
-      else print $0;\
+echo '{a=index($0,"`");
+    if (a==0) {print $0;}
+    else {
+      b=index($0,"'"'"'");
+      if (b-a>40) {
+	anf=substr($0,1,a);
+	mid=substr($0,a+1,b-a-1);
+	end=substr($0,b);
+	b=length(mid);
+	i=1;
+	cap=1;
+	mid2=substr(mid,1,i-1);
+	while (i<=length(mid)) {
+	  c=substr(mid,i,1);
+	  if (c!=tolower(c)){
+	    if (cap==0) mid2 = mid2 "\\\-";
+	    cap=1;
+	  }
+	  else cap=0;
+	  mid2=mid2 c;
+	  i=i+1;
+	}
+	print anf mid2 end;
+      }
+      else print $0;
     }
   }' >mh.awk
 cp $1.ind $1.idl
