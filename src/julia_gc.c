@@ -532,7 +532,7 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
     MarkFromList(stack);
 }
 
-static void TryMarkRange(void * start, void * end)
+static NOINLINE void TryMarkRange(void * start, void * end)
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
