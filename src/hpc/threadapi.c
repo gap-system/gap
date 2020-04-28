@@ -438,7 +438,6 @@ static void ThreadedInterpreter(void * funcargs)
     int i;
 
     // initialize everything and begin a fresh execution context
-    GAP_ASSERT(STATE(NrError) == 0);
     STATE(ThrownObject) = 0;
     SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 

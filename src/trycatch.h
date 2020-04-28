@@ -25,7 +25,7 @@
 *S  GAP_CATCH
 **
 **  These two macros implement a kind of "poor man's exception handler".
-**  See also `read.h` for the two related macros TRY_IF_NO_ERROR and
+**  See also `read.c` for the two related macros TRY_IF_NO_ERROR and
 **  CATCH_ERROR (which have special code for use in the GAP "reader",
 **  and should not be used elsewhere).
 **

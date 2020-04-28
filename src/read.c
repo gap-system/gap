@@ -36,6 +36,58 @@
 #endif
 
 
+/****************************************************************************
+**
+*S  TRY_IF_NO_ERROR
+*S  CATCH_ERROR
+**
+**  To deal with errors found by the reader, we implement a kind of exception
+**  handling using setjmp, with the help of these two macros. See also
+**  GAP_TRY and GAP_CATCH in trycatch.h for two closely related macros.
+**
+**  To use these constructs, write code like this:
+**    TRY_IF_NO_ERROR {
+**       ... code which might trigger reader error ...
+**    }
+**  or
+**    TRY_IF_NO_ERROR {
+**       ... code which might trigger reader error ...
+**    }
+**    CATCH_ERROR {
+**       ... error handler ...
+**    }
+**
+**  Then, if the reader encounters an error, or if the interpretation of an
+**  expression or statement leads to an error, 'GAP_THROW' is invoked,
+**  which in turn calls 'longjmp' to return to right after the block
+**  following TRY_IF_NO_ERROR.
+**
+**  A second effect of 'TRY_IF_NO_ERROR' is that it prevents the execution of
+**  the code it wraps if 'rs->s.NrError' is non-zero, i.e. if any errors
+**  occurred. This is key for enabling graceful error recovery in the reader,
+**  and for this reason it is crucial that all calls from the reader into
+**  the interpreter are wrapped into 'TRY_IF_NO_ERROR' blocks.
+**
+**  Note that while you can in principle nest TRY_IF_NO_ERROR constructs, to
+**  do this correctly, you must backup ReadJmpError before TRY_IF_NO_ERROR,
+**  and restore it in a matching CATCH_ERROR block.
+*/
+/* TL: extern jmp_buf ReadJmpError; */
+
+#define TRY_IF_NO_ERROR \
+    if (!rs->s.NrError) { \
+        volatile Int recursionDepth = GetRecursionDepth();  \
+        if (setjmp(STATE(ReadJmpError))) { \
+            SetRecursionDepth(recursionDepth);  \
+            rs->s.NrError++; \
+        }\
+    }\
+    if (!rs->s.NrError)
+
+#define CATCH_ERROR \
+    else
+
+
 struct ReaderState {
 
 ScannerState s;
@@ -1238,9 +1290,9 @@ static void ReadFuncExprBody(ReaderState * rs,
                              Int            startLine)
 {
     volatile UInt nr;           // number of statements
-    volatile UInt nrError;      // copy of <STATE(NrError)>
+    volatile UInt nrError;      // copy of <rs->s.NrError>
 
-    nrError = STATE(NrError);
+    nrError = rs->s.NrError;
 
     // push the new local variables list
     PushPlist(rs->StackNams, args.nams);
@@ -2028,9 +2080,9 @@ static void ReadIf(ReaderState * rs, TypSymbolSet follow)
 static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
 
-    nrError   = STATE(NrError);
+    nrError   = rs->s.NrError;
 
     /* 'for'                                                               */
     TRY_IF_NO_ERROR { IntrForBegin(&rs->intr, rs->StackNams); }
@@ -2089,9 +2141,9 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
 
-    nrError   = STATE(NrError);
+    nrError   = rs->s.NrError;
 
     /* 'while' <Expr>  'do'                                                */
     TRY_IF_NO_ERROR { IntrWhileBegin(&rs->intr, rs->StackNams); }
@@ -2139,12 +2191,12 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nexprs;         /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
 #ifdef HPCGAP
     volatile int        lockSP;         /* lock stack */
 #endif
 
-    nrError   = STATE(NrError);
+    nrError   = rs->s.NrError;
 #ifdef HPCGAP
     lockSP    = RegionLockSP();
 #endif
@@ -2215,9 +2267,9 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
 static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <STATE(NrError)>        */
+    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
 
-    nrError   = STATE(NrError);
+    nrError   = rs->s.NrError;
 
     /* 'repeat'                                                            */
     TRY_IF_NO_ERROR { IntrRepeatBegin(&rs->intr, rs->StackNams); }
@@ -2514,10 +2566,6 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     int                 lockSP;
 #endif
 
-    // invariant: before any call to ReadEvalCommand, there must have been
-    // a call to ClearError, and thus NrError == 0 holds
-    GAP_ASSERT(STATE(NrError) == 0);
-
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
@@ -2526,7 +2574,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     Match_(rs, rs->s.Symbol, "", 0);
 
     // if scanning the first symbol produced a syntax error, abort
-    if (STATE(NrError)) {
+    if (rs->s.NrError) {
         FlushRestOfInputLine();
         return STATUS_ERROR;
     }
@@ -2637,10 +2685,6 @@ UInt ReadEvalFile(Obj * evalResult)
     volatile int        lockSP;
 #endif
 
-    // invariant: before any call to ReadEvalFile, there must have been
-    // a call to ClearError, and thus NrError == 0 holds
-    GAP_ASSERT(STATE(NrError) == 0);
-
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
@@ -2736,26 +2780,22 @@ UInt ReadEvalFile(Obj * evalResult)
 
 struct SavedReaderState {
   UInt                userHasQuit;
-  UInt                nrError;
   Bag                 oldLvars;
 };
 
 static void SaveReaderState(struct SavedReaderState *s) {
   s->userHasQuit = STATE(UserHasQuit);
-  s->nrError = STATE(NrError);
   s->oldLvars = STATE(CurrLVars);
 }
 
 static void ClearReaderState(void ) {
   STATE(UserHasQuit) = 0;
-  STATE(NrError) = 0;
   SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 }
 
 static void RestoreReaderState(const struct SavedReaderState *s) {
   SWITCH_TO_OLD_LVARS(s->oldLvars);
   STATE(UserHasQuit) = s->userHasQuit;
-  STATE(NrError) = s->nrError;
 }
 
 
