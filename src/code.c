@@ -274,7 +274,10 @@ Stat NewStatOrExpr (
         bodySize = CS(OffsBody);
     while (bodySize < CS(OffsBody))
         bodySize *= 2;
+    GAP_ASSERT(STATE(PtrBody) == PTR_BAG(body));
     ResizeBag(body, bodySize);
+    // resize a bag can change its address, even without a GC taking place;
+    // so we must update PtrBody here
     STATE(PtrBody) = PTR_BAG(body);
 
     /* enter type and size                                                 */
