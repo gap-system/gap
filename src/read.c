@@ -2514,6 +2514,10 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     int                 lockSP;
 #endif
 
+    // invariant: before any call to ReadEvalCommand, there must have been
+    // a call to ClearError, and thus NrError == 0 holds
+    GAP_ASSERT(STATE(NrError) == 0);
+
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
@@ -2633,6 +2637,10 @@ UInt ReadEvalFile(Obj * evalResult)
     volatile int        lockSP;
 #endif
 
+    // invariant: before any call to ReadEvalFile, there must have been
+    // a call to ClearError, and thus NrError == 0 holds
+    GAP_ASSERT(STATE(NrError) == 0);
+
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
@@ -2723,8 +2731,8 @@ UInt ReadEvalFile(Obj * evalResult)
 */
 void ReadEvalError(void)
 {
-    STATE(PtrBody)  = PTR_BAG(BODY_FUNC(CURR_FUNC()));
-    STATE(PtrLVars) = PTR_BAG(STATE(CurrLVars));
+    GAP_ASSERT(STATE(PtrBody) == PTR_BAG(BODY_FUNC(CURR_FUNC())));
+    GAP_ASSERT(STATE(PtrLVars) == PTR_BAG(STATE(CurrLVars)));
     syLongjmp( &(STATE(ReadJmpError)), 1 );
 }
 
