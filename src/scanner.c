@@ -100,7 +100,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
 
     if (error) {
         // one more error
-        STATE(NrError)++;
+        s->NrError++;
         STATE(NrErrLine)++;
     }
 }

@@ -1146,9 +1146,6 @@ void ClearError ( void )
         }
 #endif
     }
-
-    /* reset <STATE(NrError)>                                                */
-    STATE(NrError) = 0;
 }
 
 /****************************************************************************

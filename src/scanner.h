@@ -223,8 +223,7 @@ typedef struct {
     // Track the last three symbols, for 'Unbound global' warnings
     UInt   SymbolStartPos[3];
     UInt   SymbolStartLine[3];
-} ScannerState;
-
+    
 /****************************************************************************
 **
 *V  NrError . . . . . . . . . . . . . . . .  number of errors in current expr
@@ -247,8 +246,10 @@ typedef struct {
 **  one line, since they  probabely  just reflect  the  fact that the  parser
 **  has not resynchronized yet.
 */
-/* TL: extern  UInt            NrError; */
+    UInt NrError;
 /* TL: extern  UInt            NrErrLine; */
+
+} ScannerState;
 
 
 /****************************************************************************
