@@ -478,8 +478,6 @@ if [ $comp_howfar = "link" ]; then
 fi
 
 # Remove temporary directory.
-# We may assume it is empty at this stage.
 if [ "$savetemps" = "false" ]; then
-    rm -rf "${gactmp}/.libs"
-    rmdir "${gactmp}"
+    rm -rf "${gactmp}"
 fi
