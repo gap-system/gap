@@ -1398,7 +1398,7 @@ end);
 
 InstallGlobalFunction(PrintFormatted, function(args...)
     # Do some very baic argument checking
-    if not Length(args) > 1 and IsString(args[1]) then
+    if not (Length(args) > 1 and IsString(args[1])) then
         ErrorNoReturn("Usage: PrintFormatted(<string>, <data>...)");
     fi;
     
