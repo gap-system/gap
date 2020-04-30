@@ -700,7 +700,6 @@ static Obj FuncPrint(Obj self, Obj args)
 {
     volatile Obj        arg;
     volatile UInt       i;
-    jmp_buf           readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
@@ -715,17 +714,7 @@ static Obj FuncPrint(Obj self, Obj args)
             PrintFunction( arg );
         }
         else {
-            memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
-
-            /* if an error occurs stop printing                            */
-            TRY_IF_NO_ERROR {
-                PrintObj( arg );
-            }
-            CATCH_ERROR {
-                memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
-                ReadEvalError();
-            }
-            memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
+            PrintObj( arg );
         }
     }
 

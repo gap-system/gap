@@ -1649,9 +1649,7 @@ void InitializeGap (
         /* Call POST_RESTORE which is a GAP function that now takes control, 
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != 0 && IS_FUNC(POST_RESTORE)) {
-          TRY_IF_NO_ERROR {
-            CALL_0ARGS(POST_RESTORE);
-          }
+          Call0ArgsInNewReader(POST_RESTORE);
         }
 
         return;

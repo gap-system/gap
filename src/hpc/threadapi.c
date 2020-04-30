@@ -801,39 +801,17 @@ static Obj FuncHASH_UNLOCK_SHARED(Obj self, Obj target)
 
 static Obj FuncHASH_SYNCHRONIZED(Obj self, Obj target, Obj function)
 {
-    volatile int locked = 0;
-    jmp_buf      readJmpError;
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
-    TRY_IF_NO_ERROR
-    {
-        HashLock(target);
-        locked = 1;
-        CALL_0ARGS(function);
-        locked = 0;
-        HashUnlock(target);
-    }
-    if (locked)
-        HashUnlock(target);
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
+    HashLock(target);
+    Call0ArgsInNewReader(function);
+    HashUnlock(target);
     return (Obj)0;
 }
 
 static Obj FuncHASH_SYNCHRONIZED_SHARED(Obj self, Obj target, Obj function)
 {
-    volatile int locked = 0;
-    jmp_buf      readJmpError;
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
-    TRY_IF_NO_ERROR
-    {
-        HashLockShared(target);
-        locked = 1;
-        CALL_0ARGS(function);
-        locked = 0;
-        HashUnlockShared(target);
-    }
-    if (locked)
-        HashUnlockShared(target);
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
+    HashLockShared(target);
+    Call0ArgsInNewReader(function);
+    HashUnlockShared(target);
     return (Obj)0;
 }
 
