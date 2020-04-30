@@ -728,7 +728,6 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     volatile Obj        arg;
     volatile Obj        destination;
     volatile UInt       i;
-    jmp_buf           readJmpError;
 
     /* first entry is the file or stream                                   */
     destination = ELM_LIST(args, 1);
@@ -762,8 +761,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         arg = ELM_LIST(args,i);
 
         /* if an error occurs stop printing                                */
-        memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
-        TRY_IF_NO_ERROR
+        GAP_TRY
         {
             if (IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg)) {
                 PrintString1(arg);
@@ -778,13 +776,11 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
                 PrintObj(arg);
             }
         }
-        CATCH_ERROR
+        GAP_CATCH
         {
             CloseOutput();
-            memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
             GAP_THROW();
         }
-        memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
     }
 
     /* close the output file again, and return nothing                     */
