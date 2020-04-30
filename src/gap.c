@@ -131,14 +131,12 @@ UInt ViewObjGVar;
 void ViewObjHandler ( Obj obj )
 {
   volatile Obj        func;
-  jmp_buf             readJmpError;
 
   /* get the functions                                                   */
   func = ValAutoGVar(ViewObjGVar);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
-  memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
-  TRY_IF_NO_ERROR {
+  GAP_TRY {
     if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
@@ -147,7 +145,8 @@ void ViewObjHandler ( Obj obj )
     }
     Pr("\n", 0, 0);
   }
-  memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
+  GAP_CATCH {
+  }
 }
 
 
