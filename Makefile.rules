@@ -401,6 +401,7 @@ gap$(EXEEXT): $(OBJS) $(DEPFILES) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 endif
 
 ########################################################################
+# FIXME: what does "docomp" mean?
 # The "docomp" target regenerates the various src/c_*.c files, and
 # replaces the old "etc/docomp" script.
 ########################################################################
