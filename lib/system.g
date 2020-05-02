@@ -113,7 +113,10 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( long := "bare", default := false,
            help := [ "Attempt to start GAP without even needed packages (developer tool)" ] ),
       ,
-      rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the given expression"] ),
+      rec( short:= "c", default := "", arg := "<expr>",
+      help := [ "Execute the given expression. The order in which files are
+                read and expressions are executed is the order in which they
+                are given on the command line."] ),
     ],
     ) );
 
