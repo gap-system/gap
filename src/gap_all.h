@@ -71,6 +71,7 @@ extern "C" {
 #include "sysfiles.h"
 #include "tietze.h"
 #include "trans.h"
+#include "trycatch.h"
 #include "vars.h"
 #include "vector.h"
 #include "weakptr.h"
