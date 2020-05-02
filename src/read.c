@@ -29,6 +29,7 @@
 #include "sysjmp.h"
 #include "sysopt.h"
 #include "sysstr.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -2740,7 +2741,6 @@ void ReadEvalError(void)
 
 struct SavedReaderState {
   UInt                userHasQuit;
-  jmp_buf           readJmpError;
   UInt                nrError;
   Bag                 oldLvars;
 };
@@ -2749,7 +2749,6 @@ static void SaveReaderState(struct SavedReaderState *s) {
   s->userHasQuit = STATE(UserHasQuit);
   s->nrError = STATE(NrError);
   s->oldLvars = STATE(CurrLVars);
-  memcpy( s->readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 }
 
 static void ClearReaderState(void ) {
@@ -2760,7 +2759,6 @@ static void ClearReaderState(void ) {
 
 static void RestoreReaderState(const struct SavedReaderState *s) {
   SWITCH_TO_OLD_LVARS(s->oldLvars);
-  memcpy( STATE(ReadJmpError), s->readJmpError, sizeof(jmp_buf) );
   STATE(UserHasQuit) = s->userHasQuit;
   STATE(NrError) = s->nrError;
 }
@@ -2783,10 +2781,10 @@ Obj Call0ArgsInNewReader(Obj f)
   // initialize everything
   ClearReaderState();
 
-  TRY_IF_NO_ERROR {
+  GAP_TRY {
     result = CALL_0ARGS(f);
   }
-  CATCH_ERROR {
+  GAP_CATCH {
     result = 0;
     ClearError();
   }
@@ -2814,10 +2812,10 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
   // initialize everything
   ClearReaderState();
 
-  TRY_IF_NO_ERROR {
+  GAP_TRY {
     result = CALL_1ARGS(f,a);
   }
-  CATCH_ERROR {
+  GAP_CATCH {
     result = 0;
     ClearError();
   }

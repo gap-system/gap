@@ -31,6 +31,7 @@
 #include "stats.h"
 #include "stringobj.h"
 #include "sysjmp.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #include "hpc/guards.h"
@@ -434,13 +435,12 @@ static GVarDescriptor GVarTHREAD_EXIT;
 
 static void ThreadedInterpreter(void * funcargs)
 {
-    Obj tmp, func, oldLVars;
+    Obj tmp, func;
     int i;
 
     // initialize everything and begin a fresh execution context
     STATE(NrError) = 0;
     STATE(ThrownObject) = 0;
-    oldLVars = STATE(CurrLVars);
     SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 
     tmp = KEPTALIVE(funcargs);
@@ -452,7 +452,7 @@ static void ThreadedInterpreter(void * funcargs)
     }
     SET_LEN_PLIST(tmp, LEN_PLIST(tmp) - 1);
 
-    TRY_IF_NO_ERROR
+    GAP_TRY
     {
         Obj init, exit;
         if (setjmp(TLS(threadExit)))
@@ -465,11 +465,9 @@ static void ThreadedInterpreter(void * funcargs)
         if (exit)
             CALL_0ARGS(exit);
     }
-    CATCH_ERROR
+    GAP_CATCH
     {
-        ClearError();
     }
-    SWITCH_TO_OLD_LVARS(oldLVars);
 }
 
 
@@ -885,22 +883,23 @@ static Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
 {
     Region * volatile oldRegion = TLS(currentRegion);
     Region * volatile region = GetRegionOf(obj);
-    jmp_buf readJmpError;
 
     RequireFunction("WITH_TARGET_REGION", func);
     if (!region || !CheckExclusiveWriteAccess(obj))
         return ArgumentError(
             "WITH_TARGET_REGION: Requires write access to target region");
-    memcpy(readJmpError, STATE(ReadJmpError), sizeof(jmp_buf));
-    if (setjmp(STATE(ReadJmpError))) {
-        memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
+
+    GAP_TRY
+    {
+        TLS(currentRegion) = region;
+        CALL_0ARGS(func);
+        TLS(currentRegion) = oldRegion;
+    }
+    GAP_CATCH
+    {
         TLS(currentRegion) = oldRegion;
         syLongjmp(&(STATE(ReadJmpError)), 1);
     }
-    TLS(currentRegion) = region;
-    CALL_0ARGS(func);
-    memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
-    TLS(currentRegion) = oldRegion;
     return (Obj)0;
 }
 

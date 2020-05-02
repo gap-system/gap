@@ -43,6 +43,7 @@
 #include "sysroots.h"
 #include "sysstr.h"
 #include "systime.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -1675,7 +1676,7 @@ void InitializeGap (
        past here when we're about to exit. 
                                            */
     if ( SyLoadSystemInitFile ) {
-      TRY_IF_NO_ERROR {
+      GAP_TRY {
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
                 Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
                     0, 0);
@@ -1684,7 +1685,7 @@ void InitializeGap (
                     " script instead.", 0, 0);
             }
       }
-      CATCH_ERROR {
+      GAP_CATCH {
           Panic("Caught error at top-most level, probably quit from "
                 "library loading");
       }

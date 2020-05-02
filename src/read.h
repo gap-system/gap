@@ -17,10 +17,12 @@
 
 /****************************************************************************
 **
-*F  TRY_IF_NO_ERROR / CATCH_ERROR
+*S  TRY_IF_NO_ERROR
+*S  CATCH_ERROR
 **
 **  To deal with errors found by the reader, we implement a kind of exception
-**  handling using setjmp, with the help of two macros.
+**  handling using setjmp, with the help of these two macros. See also
+**  GAP_TRY and GAP_CATCH in trycatch.h for two closely related macros.
 **
 **  To use these constructs, write code like this:
 **    TRY_IF_NO_ERROR {
@@ -39,15 +41,15 @@
 **  which in turn calls 'longjmp' to return to right after the block
 **  following TRY_IF_NO_ERROR.
 **
-**  A second effect of 'TRY_IF_NO_ERROR' is that it prevents the execution of the
-**  code it wraps if 'STATE(NrError)' is non-zero, i.e. if any errors
+**  A second effect of 'TRY_IF_NO_ERROR' is that it prevents the execution of
+**  the code it wraps if 'STATE(NrError)' is non-zero, i.e. if any errors
 **  occurred. This is key for enabling graceful error recovery in the reader,
 **  and for this reason it is crucial that all calls from the reader into
 **  the interpreter are wrapped into 'TRY_IF_NO_ERROR' blocks.
 **
-**  Note that while you can in principle nest TRY_IF_NO_ERROR constructs, to do this
-**  correctly, you must backup ReadJmpError before TRY_IF_NO_ERROR, and restore it
-**  in a matching CATCH_ERROR block.
+**  Note that while you can in principle nest TRY_IF_NO_ERROR constructs, to
+**  do this correctly, you must backup ReadJmpError before TRY_IF_NO_ERROR,
+**  and restore it in a matching CATCH_ERROR block.
 */
 /* TL: extern jmp_buf ReadJmpError; */
 

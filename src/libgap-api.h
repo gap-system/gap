@@ -137,7 +137,7 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 //
 // * GAP_Error_Setjmp() effectively calls setjmp to the STATE(ReadJmpError)
 //   longjmp buffer, so that read errors which occur in GAP that are not
-//   otherwise "handled" by a TRY_IF_NO_ERROR { } block have a logical place
+//   otherwise "handled" by a GAP_TRY { } block have a logical place
 //   to return to.  It returns 1 if no error occurred, and 0 if returning
 //   from an error.
 #define GAP_Enter()                                                          \
