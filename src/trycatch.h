@@ -40,11 +40,14 @@
 **       ... error handler ...
 **    }
 **
-**  Note that GAP_TRY must ALWAYS be used together with GAP_CATCH; otherwise
-**  STATE(ReadJmpError) will not be restored properly, which can lead to
-**  crashes later on. To help catch violations of this rule, we introduce the
-**  variable gap__j which is then exclusively used in GAP_CATCH. Failure to
-**  use GAP_CATCH then triggers an "unused variable" compiler warning.
+**  WARNING: it is not safe to use `return` inside a GAP_TRY block; doing so
+**  would leave STATE(ReadJmpError) in an inconsistent state, which can lead
+**  to crashes on.
+**
+**  For the same reason, GAP_TRY must ALWAYS be used followed by a GAP_CATCH
+**  block. To help catch violations of this rule, we introduce the variable
+**  gap__j which is then exclusively used in GAP_CATCH. Failure to use
+**  GAP_CATCH then triggers an "unused variable" compiler warning.
 **
 **  The implementation of these two macros (ab)uses for loops to run code
 **  at the start resp. end of the following code block; in order to have
@@ -61,9 +64,6 @@
         for (gap__i = 1; gap__i; gap__i = 0,                                 \
             gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth))
 
-
-// TODO: call SetRecursionDepth(recursionDepth); in GAP_CATCH; but for that we
-// need perhaps a helper function
 #define GAP_CATCH                                                            \
     else for (gap__j = 1,                                                    \
               gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth);       \
