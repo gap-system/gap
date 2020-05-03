@@ -1080,8 +1080,6 @@ static Obj FuncPermList(Obj self, Obj list)
         if (IS_RANGE(list)) {
             if (GET_LOW_RANGE(list) == 1 && GET_INC_RANGE(list) == 1)
                 return IdentityPerm;
-            else
-                return Fail;
         }
         list = PLAIN_LIST_COPY(list);
     }
