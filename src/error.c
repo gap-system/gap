@@ -28,8 +28,8 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "sysjmp.h"
 #include "sysstr.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -311,7 +311,7 @@ static Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
     if (STATE(JumpToCatchCallback) != 0) {
         (*STATE(JumpToCatchCallback))();
     }
-    syLongjmp(&(STATE(ReadJmpError)), 1);
+    GAP_THROW();
     return 0;
 }
 

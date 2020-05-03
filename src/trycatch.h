@@ -16,6 +16,8 @@
 #include "funcs.h"    // for SetRecursionDepth
 #include "gapstate.h"
 
+#include <string.h>    // for memcpy
+
 
 /****************************************************************************
 **
@@ -75,5 +77,13 @@ static inline int gap_restore_trycatch(jmp_buf jb, int recursionDepth)
     return 0;
 }
 
+/****************************************************************************
+**
+*F  GAP_THROW
+**
+**  `GAP_THROW` raises an "exception" by invoking `longjmp` which can be
+**  caught via `GAP_TRY` and `GAP_CATCH`.
+*/
+void GAP_THROW(void) NORETURN;
 
 #endif

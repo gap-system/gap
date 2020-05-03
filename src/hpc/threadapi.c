@@ -30,7 +30,6 @@
 #include "set.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "sysjmp.h"
 #include "trycatch.h"
 #include "vars.h"
 
@@ -876,7 +875,7 @@ static Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
     GAP_CATCH
     {
         TLS(currentRegion) = oldRegion;
-        syLongjmp(&(STATE(ReadJmpError)), 1);
+        GAP_THROW();
     }
     return (Obj)0;
 }

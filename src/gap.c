@@ -316,7 +316,7 @@ static Obj Shell(Obj    context,
           return Fail;
         }
       else
-        ReadEvalError();
+        GAP_THROW();
     }
 
   if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
@@ -1163,7 +1163,7 @@ static Obj FuncQUIT_GAP(Obj self, Obj args)
     ErrorQuit( "usage: QUIT_GAP( [ <return value> ] )", 0, 0);
   }
   STATE(UserHasQUIT) = 1;
-  ReadEvalError();
+  GAP_THROW();
   return (Obj)0; 
 }
 

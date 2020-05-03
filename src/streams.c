@@ -36,6 +36,7 @@
 #include "sysroots.h"
 #include "sysstr.h"
 #include "systime.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #include <dirent.h>
@@ -781,7 +782,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         {
             CloseOutput();
             memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
-            ReadEvalError();
+            GAP_THROW();
         }
         memcpy(STATE(ReadJmpError), readJmpError, sizeof(jmp_buf));
     }

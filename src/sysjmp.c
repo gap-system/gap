@@ -11,17 +11,17 @@
 
 #include "sysjmp.h"
 
+#include "trycatch.h"
+
 
 /****************************************************************************
 **
-*F syLongjmp( <jump buffer>, <value>)
-** Perform a long jump
+*F  RegisterSyLongjmpObserver( <func> )
 **
-*F RegisterSyLongjmpObserver( <func> )
-** Register a function to be called before longjmp is called.
-** returns 1 on success, 0 if the table of functions is already full.
-** This function is idempotent -- if a function is passed multiple times
-** it is still only registered once.
+**  Register a function to be called before longjmp is called.
+**  Returns 1 on success, 0 if the table of functions is already full.
+**  This function is idempotent -- if a function is passed multiple times
+**  it is still only registered once.
 */
 
 enum { signalSyLongjmpFuncsLen = 16 };
@@ -43,10 +43,10 @@ Int RegisterSyLongjmpObserver(voidfunc func)
     return 0;
 }
 
-void syLongjmp(jmp_buf * buf, int val)
+void GAP_THROW(void)
 {
     Int i;
     for (i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
         (signalSyLongjmpFuncs[i])();
-    longjmp(*buf, val);
+    longjmp(STATE(ReadJmpError), 1);
 }

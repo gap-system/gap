@@ -37,9 +37,9 @@
 #include "plist.h"
 #include "precord.h"
 #include "range.h"
-#include "read.h"
 #include "records.h"
 #include "stringobj.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -420,7 +420,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
       if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
         /* the procedure must have called READ() and the user quit
            from a break loop inside it */
-        ReadEvalError();
+        GAP_THROW();
       }
     }
 
