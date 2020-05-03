@@ -42,6 +42,7 @@
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
 #endif
+#include "gaptime.h"
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"
@@ -52,7 +53,6 @@
 #include "saveload.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "systime.h"
 #include "vars.h"
 
 #ifdef HPCGAP

@@ -19,6 +19,7 @@
 #include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
+#include "gaptime.h"
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"
@@ -35,7 +36,6 @@
 #include "sysopt.h"
 #include "sysroots.h"
 #include "sysstr.h"
-#include "systime.h"
 #include "trycatch.h"
 #include "vars.h"
 

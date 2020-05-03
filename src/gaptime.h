@@ -9,8 +9,8 @@
 **
 */
 
-#ifndef GAP_SYSTIME_H
-#define GAP_SYSTIME_H
+#ifndef GAP_GAPTIME_H
+#define GAP_GAPTIME_H
 
 #include "common.h"
 
@@ -24,11 +24,6 @@
 **  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
 UInt SyTime(void);
-
-/* TODO: Properly document the following three calls */
-UInt SyTimeSys(void);
-UInt SyTimeChildren(void);
-UInt SyTimeChildrenSys(void);
 
 
 /****************************************************************************
@@ -50,14 +45,20 @@ UInt SyTimeChildrenSys(void);
 **  If we are using gettimeofday we cannot guarantee the values that
 **  are returned by SyNanosecondsSinceEpoch to be monotonic.
 **
-**  Returns -1 to represent failure
-**
+**  Returns -1 to represent failure.
 */
 Int8 SyNanosecondsSinceEpoch(void);
-Int8 SyNanosecondsSinceEpochResolution(void);
-
-extern const char * const SyNanosecondsSinceEpochMethod;
-extern const Int          SyNanosecondsSinceEpochMonotonic;
 
 
-#endif    // GAP_SYSTIME_H
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+*F  InitInfoTime() . . . . . . . . . . . . . . . . .  table of init functions
+*/
+StructInitInfo * InitInfoTime(void);
+
+#endif    // GAP_GAPTIME_H
