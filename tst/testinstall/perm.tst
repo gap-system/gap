@@ -301,6 +301,10 @@ gap> ForAll(checklens, n -> not(
 >  PermList(Concatenation([1..n-1], [n+1,n,n+2,n+4,n+3])) =
 >  PermList(Concatenation([1..n-1], [n+1,n+2,n,n+4,n+3]))));
 true
+gap> PermList([1..5]);
+()
+gap> PermList([5,4..1]);
+(1,5)(2,4)
 
 # PermList error handling
 gap> PermList(1);
