@@ -37,7 +37,7 @@
 **    }
 **
 **  Then, if the reader encounters an error, or if the interpretation of an
-**  expression or statement leads to an error, 'ReadEvalError' is invoked,
+**  expression or statement leads to an error, 'GAP_THROW' is invoked,
 **  which in turn calls 'longjmp' to return to right after the block
 **  following TRY_IF_NO_ERROR.
 **
@@ -100,13 +100,6 @@ UInt ReadEvalCommand(Obj context, Obj * evalResult, UInt * dualSemicolon);
 **  to the end of the input (unless an error happens).
 */
 UInt ReadEvalFile(Obj * evalResult);
-
-
-/****************************************************************************
-**
-*F  ReadEvalError() . . . . . . . . . . . . . . . . . .  return with an error
-*/
-void ReadEvalError(void) NORETURN;
 
 
 /****************************************************************************

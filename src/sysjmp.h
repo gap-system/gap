@@ -18,23 +18,13 @@
 
 /****************************************************************************
 **
-*F  syLongjmp( <jump buffer>, <value> )
-**
-**  A wrapper around longjmp, so other functions can do work before longjmp
-**  is called
-*/
-
-void syLongjmp(jmp_buf * buf, int val) NORETURN;
-
-/****************************************************************************
-**
 *F  RegisterSyLongjmpObserver( <func> )
 **
-**  register a function to be called before longjmp is called.
+**  Register a function to be called before longjmp is called.
+**  Returns 1 on success, 0 if the table of functions is already full.
+**  This function is idempotent -- if a function is passed multiple times
+**  it is still only registered once.
 */
-
-typedef void (*voidfunc)(void);
-
 Int RegisterSyLongjmpObserver(voidfunc);
 
 #endif    // GAP_SYSJMP_H

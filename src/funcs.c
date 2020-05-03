@@ -29,9 +29,9 @@
 #include "modules.h"
 #include "opers.h"
 #include "plist.h"
-#include "read.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -187,7 +187,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
         // the function must have called READ() and the user quit from
         // a break loop inside it
-        ReadEvalError();
+        GAP_THROW();
     }
 
     if (ignoreResult) {

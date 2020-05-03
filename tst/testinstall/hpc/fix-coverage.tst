@@ -21,7 +21,4 @@ Error, Object not in a readable region
 # stdtasks.g:
 #   FireTrigger:    if trigger.done then return; fi   at start
 
-# funcs.c:540: ReadEvalError call in EvalFunccall2args
-#  -> once we can trigger this, trigger it for 0-6 and X args, for better coverage
-#      and also in the Proccals
 #@fi

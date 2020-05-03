@@ -22,7 +22,6 @@
 #include "rational.h"
 #include "records.h"
 #include "stringobj.h"
-#include "sysjmp.h"
 #include "trycatch.h"
 
 #include "hpc/aobjects.h"
@@ -1046,7 +1045,7 @@ static Obj FuncSERIALIZE_TO_NATIVE_STRING(Obj self, Obj obj)
     GAP_CATCH
     {
         RestoreSerializationState(&state);
-        syLongjmp(&(STATE(ReadJmpError)), 1);
+        GAP_THROW();
     }
     return result;
 }
@@ -1070,7 +1069,7 @@ static Obj FuncDESERIALIZE_NATIVE_STRING(Obj self, Obj string)
     GAP_CATCH
     {
         RestoreSerializationState(&state);
-        syLongjmp(&(STATE(ReadJmpError)), 1);
+        GAP_THROW();
     }
     return result;
 }

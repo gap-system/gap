@@ -21,7 +21,6 @@
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
-#include "modules.h"
 #include "plist.h"
 #include "stringobj.h"
 #include "sysopt.h"

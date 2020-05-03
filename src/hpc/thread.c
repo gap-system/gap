@@ -19,7 +19,6 @@
 #include "plist.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "sysjmp.h"
 #include "vars.h"
 
 #include "hpc/guards.h"
@@ -928,7 +927,7 @@ static void TerminateCurrentThread(int locked)
     PopRegionLocks(0);
     if (TLS(CurrentHashLock))
         HashUnlock(TLS(CurrentHashLock));
-    syLongjmp(&(TLS(threadExit)), 1);
+    longjmp(TLS(threadExit), 1);
 }
 
 static void PauseCurrentThread(int locked)

@@ -26,7 +26,6 @@
 #include "scanner.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "sysjmp.h"
 #include "sysopt.h"
 #include "sysstr.h"
 #include "trycatch.h"
@@ -2723,18 +2722,6 @@ UInt ReadEvalFile(Obj * evalResult)
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;
-}
-
-
-/****************************************************************************
-**
-*F  ReadEvalError() . . . . . . . . . . . . . . . . . .  return with an error
-*/
-void ReadEvalError(void)
-{
-    GAP_ASSERT(STATE(PtrBody) == PTR_BAG(BODY_FUNC(CURR_FUNC())));
-    GAP_ASSERT(STATE(PtrLVars) == PTR_BAG(STATE(CurrLVars)));
-    syLongjmp( &(STATE(ReadJmpError)), 1 );
 }
 
 
