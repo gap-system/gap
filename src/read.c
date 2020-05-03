@@ -2538,7 +2538,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     }
 
     /* print only a partial prompt from now on                             */
-    SetPrompt(SyQuiet ? "" : "> ");
+    SetPrompt("> ");
 
     /* remember the old reader context                                     */
     tilde       = STATE(Tilde);
@@ -2655,7 +2655,7 @@ UInt ReadEvalFile(Obj * evalResult)
     }
 
     /* print only a partial prompt from now on                             */
-    SetPrompt(SyQuiet ? "" : "> ");
+    SetPrompt("> ");
 
     /* remember the old reader context                                     */
     tilde       = STATE(Tilde);

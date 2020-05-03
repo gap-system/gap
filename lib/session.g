@@ -43,25 +43,16 @@ end);
 
 BIND_GLOBAL("SESSION",
     function()
-    local   prompt;
-
-    if GAPInfo.CommandLineOptions.q then
-        prompt := "";
-    else
-        prompt := "gap> ";
-    fi;
 
     SHELL( GetBottomLVars(), # in global context
         false, # no return
         false, # no return  obj
         3,     # set last, last2 and last3 each command
         true,  # set time after each command
-        prompt,
+        "gap> ",
         function()
             if IsBound(OnGAPPromptHook) and IsFunction(OnGAPPromptHook) then
                 OnGAPPromptHook();
-            else
-                return;
             fi;
         end,
         "*stdin*",
@@ -89,25 +80,16 @@ if IsHPCGAP then
 
     BIND_GLOBAL("THREAD_SESSION",
         function()
-        local   f, prompt;
-
-        if GAPInfo.CommandLineOptions.q then
-            prompt := "";
-        else
-            prompt := "gap> ";
-        fi;
 
         SHELL( GetBottomLVars(), # in global context
             false, # no return
             false, # no return  obj
             3,     # set last, last2 and last3 each command
             true,  # set time after each command
-            prompt,
+            "gap> ",
             function()
                 if IsBound(OnGAPPromptHook) and IsFunction(OnGAPPromptHook) then
                     OnGAPPromptHook();
-                else
-                    return;
                 fi;
             end,
             "*defin*",
