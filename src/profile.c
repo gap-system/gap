@@ -18,6 +18,7 @@
 #include "code.h"
 #include "error.h"
 #include "funcs.h"
+#include "gaptime.h"
 #include "hookintrprtr.h"
 #include "io.h"
 #include "lists.h"
@@ -27,7 +28,6 @@
 #include "sysfiles.h"
 #include "sysjmp.h"
 #include "sysstr.h"
-#include "systime.h"
 #include "vars.h"
 
 #include "hpc/thread.h"

@@ -28,9 +28,9 @@ int CheckChildStatusChanged(int childPID, int status);
 
 /****************************************************************************
 **
-*F  InitInfoFloat()  . . . . . . . . . . . . . . . . . table of init functions
+*F  InitInfoIOStream()  . . . . . . . . . . . . . . . table of init functions
 */
-StructInitInfo * InitInfoIOStream ( void );
+StructInitInfo * InitInfoIOStream(void);
 
 
 #endif // GAP_IOSTREAM_H

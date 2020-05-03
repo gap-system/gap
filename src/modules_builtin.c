@@ -10,8 +10,9 @@
 
 #include "modules_builtin.h"
 
-#include "gap_all.h"
 #include "gap.h"
+#include "gap_all.h"
+#include "gaptime.h"
 #include "hookintrprtr.h"
 #include "info.h"
 #include "intfuncs.h"
@@ -26,13 +27,14 @@
 #include "vecffe.h"
 #include "vecgf2.h"
 
+// clang-format off
+
 /****************************************************************************
 **
 *V  InitFuncsBuiltinModules . . . . .  list of builtin modules init functions
 */
 const InitInfoFunc InitFuncsBuiltinModules[] = {
 
-// clang-format off
 #ifdef HPCGAP
     // Traversal functionality may be needed during the initialization
     // of some modules, so set it up as early as possible
@@ -126,6 +128,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoModules,
     InitInfoGap,
     InitInfoError,
+    InitInfoTime,
 
     // objsets / objmaps
     InitInfoObjSets,
@@ -141,5 +144,6 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
 #endif
 
     0
-// clang-format on
 };
+
+// clang-format on

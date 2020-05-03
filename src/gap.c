@@ -23,6 +23,7 @@
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
 #endif
+#include "gaptime.h"
 #include "gvars.h"
 #include "integer.h"
 #include "io.h"
@@ -42,7 +43,6 @@
 #include "sysopt.h"
 #include "sysroots.h"
 #include "sysstr.h"
-#include "systime.h"
 #include "trycatch.h"
 #include "vars.h"
 
@@ -53,8 +53,6 @@
 #endif
 
 #include <gmp.h>
-
-#include <unistd.h>
 
 #ifdef USE_JULIA_GC
 #include "julia.h"
@@ -484,89 +482,6 @@ static Obj FuncRETURN_FIRST(Obj self, Obj args)
 static Obj FuncRETURN_NOTHING(Obj self, Obj arg)
 {
   return 0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncRuntime( <self> ) . . . . . . . . . . . . internal function 'Runtime'
-**
-**  'FuncRuntime' implements the internal function 'Runtime'.
-**
-**  'Runtime()'
-**
-**  'Runtime' returns the time spent since the start of GAP in  milliseconds.
-**  How much time execution of statements take is of course system dependent.
-**  The accuracy of this number is also system dependent.
-*/
-static Obj FuncRuntime(Obj self)
-{
-    return ObjInt_UInt(SyTime());
-}
-
-
-static Obj FuncRUNTIMES(Obj self)
-{
-  Obj    res;
-  res = NEW_PLIST(T_PLIST, 4);
-  ASS_LIST(res, 1, ObjInt_UInt(SyTime()));
-  ASS_LIST(res, 2, ObjInt_UInt(SyTimeSys()));
-  ASS_LIST(res, 3, ObjInt_UInt(SyTimeChildren()));
-  ASS_LIST(res, 4, ObjInt_UInt(SyTimeChildrenSys()));
-  return res;
-}
-
-
-/****************************************************************************
-**
-*F  FuncNanosecondsSinceEpoch( <self> )
-**
-**  'FuncNanosecondsSinceEpoch' returns an integer which represents the
-**  number of nanoseconds since some unspecified starting point. This
-**  function wraps SyNanosecondsSinceEpoch.
-**
-*/
-static Obj FuncNanosecondsSinceEpoch(Obj self)
-{
-  Int8 val = SyNanosecondsSinceEpoch();
-
-  if(val == -1) {
-    return Fail;
-  }
-  else {
-    return ObjInt_Int8(val);
-  }
-}
-
-/****************************************************************************
-**
-*F  FuncNanosecondsSinceEpochInfo( <self> )
-**
-**  'FuncNanosecondsSinceEpochInformation' returns a plain record
-**  contains information about the timers used for FuncNanosecondsSinceEpoch
-**
-*/
-static Obj FuncNanosecondsSinceEpochInfo(Obj self)
-{
-  Obj res, tmp;
-  Int8 resolution;
-
-  res = NEW_PREC(4);
-  /* Note this has to be "DYN" since we're not passing a
-     literal but a const char * */
-  tmp = MakeImmString(SyNanosecondsSinceEpochMethod);
-  AssPRec(res, RNamName("Method"), tmp);
-  AssPRec(res, RNamName("Monotonic"),
-               SyNanosecondsSinceEpochMonotonic ? True : False);
-  resolution = SyNanosecondsSinceEpochResolution();
-  if (resolution > 0) {
-      AssPRec(res, RNamName("Resolution"), ObjInt_Int8(resolution));
-      AssPRec(res, RNamName("Reliable"), True);
-  } else if (resolution <= 0) {
-      AssPRec(res, RNamName("Resolution"), ObjInt_Int8(-resolution));
-      AssPRec(res, RNamName("Reliable"), False);
-  }
-  return res;
 }
 
 
@@ -1069,54 +984,6 @@ static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
 #endif
 }
 
-/****************************************************************************
-**
-*F  FuncSleep( <self>, <secs> )
-**
-*/
-
-static Obj FuncSleep(Obj self, Obj secs)
-{
-    Int s = GetSmallInt("Sleep", secs);
-
-    if (s > 0)
-        sleep((UInt)s);
-
-    /* either we used up the time, or we were interrupted. */
-    if (HaveInterrupt()) {
-        ClearError(); /* The interrupt may still be pending */
-        ErrorReturnVoid("user interrupt in sleep", 0, 0,
-                        "you can 'return;' as if the sleep was finished");
-    }
-
-    return (Obj)0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncMicroSleep( <self>, <secs> )
-**
-*/
-
-static Obj FuncMicroSleep(Obj self, Obj msecs)
-{
-    Int s = GetSmallInt("MicroSleep", msecs);
-
-    if (s > 0)
-        usleep((UInt)s);
-
-    /* either we used up the time, or we were interrupted. */
-    if (HaveInterrupt()) {
-        ClearError(); /* The interrupt may still be pending */
-        ErrorReturnVoid(
-            "user interrupt in microsleep", 0, 0,
-            "you can 'return;' as if the microsleep was finished");
-    }
-
-    return (Obj)0;
-}
-
 
 // Common code in the next 3 methods.
 static int SetExitValue(Obj code)
@@ -1409,10 +1276,6 @@ static Obj FuncAssertionLevel(Obj self)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC_0ARGS(Runtime),
-    GVAR_FUNC_0ARGS(RUNTIMES),
-    GVAR_FUNC_0ARGS(NanosecondsSinceEpoch),
-    GVAR_FUNC_0ARGS(NanosecondsSinceEpochInfo),
     GVAR_FUNC(SizeScreen, -1, "args"),
     GVAR_FUNC_1ARGS(ID_FUNC, object),
     GVAR_FUNC(RETURN_FIRST, -2, "first, rest"),
@@ -1431,8 +1294,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(OBJ_HANDLE, handle),
     GVAR_FUNC_1ARGS(HANDLE_OBJ, object),
     GVAR_FUNC_1ARGS(WindowCmd, args),
-    GVAR_FUNC_1ARGS(MicroSleep, msecs),
-    GVAR_FUNC_1ARGS(Sleep, secs),
     GVAR_FUNC_1ARGS(GAP_EXIT_CODE, exitCode),
     GVAR_FUNC(QUIT_GAP, -1, "args"),
     GVAR_FUNC(FORCE_QUIT_GAP, -1, "args"),

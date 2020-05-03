@@ -139,7 +139,7 @@ static void KillChild(UInt stream)
 **
 */
 #define PErr(msg)                                                            \
-    Pr(msg ": %s (errnor %d)\n", (Int)strerror(errno), (Int)errno);
+    Pr(msg ": %s (errno %d)\n", (Int)strerror(errno), (Int)errno);
 
 /****************************************************************************
 **
