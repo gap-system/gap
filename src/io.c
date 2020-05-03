@@ -253,7 +253,7 @@ Char GET_NEXT_CHAR(void)
 
         // if we get here, we saw a line continuation; change the prompt to a
         // partial prompt from now on
-        SetPrompt(SyQuiet ? "" : "> ");
+        SetPrompt("> ");
     }
 
     return *STATE(In);
@@ -1147,6 +1147,8 @@ UInt OpenAppend (
 */
 void SetPrompt(const char * prompt)
 {
+    if (SyQuiet)
+        prompt = "";
     strlcpy(STATE(Prompt), prompt, sizeof(STATE(Prompt)));
 }
 

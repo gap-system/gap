@@ -24,7 +24,6 @@
 #include "modules.h"
 #include "plist.h"
 #include "stringobj.h"
-#include "sysopt.h"
 #include "sysstr.h"
 
 
@@ -790,7 +789,7 @@ static Char GetTripStr(ScannerState * s, Char c)
     UInt i = 0;
 
     // print only a partial prompt while reading a triple string
-    SetPrompt(SyQuiet ? "" : "> ");
+    SetPrompt("> ");
 
     while (c != '\377') {
         // only thing to check for is a triple quote
