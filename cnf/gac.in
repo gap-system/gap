@@ -75,10 +75,10 @@ libtool="$SHELL ${abs_top_builddir}/libtool"
 # These three should be filled in by the standard autoconf procedures
 c_compiler="$libtool --mode=compile $GAP_CC"
 cxx_compiler="$libtool --mode=compile $GAP_CXX"
-c_linker="$libtool --mode=link $GAP_CXX"
+c_linker="$libtool --mode=link $GAP_CC -export-dynamic"
 
 # These will need special care
-c_dyn_linker="$libtool --mode=link $GAP_CXX -module -avoid-version -rpath $libdir"
+c_dyn_linker="$libtool --mode=link $GAP_CC -module -avoid-version -rpath $libdir"
 c_addlibs=""
 
 SYS_IS_CYGWIN32=@SYS_IS_CYGWIN32@
