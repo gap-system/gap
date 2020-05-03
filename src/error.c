@@ -235,11 +235,9 @@ static Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
 
 Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
 {
-    volatile jmp_buf readJmpError;
     volatile Obj       res;
     volatile Obj       currLVars;
     volatile Obj       tilde;
-    volatile Int       recursionDepth;
 
     RequireFunction("CALL_WITH_CATCH", func);
     if (!IS_LIST(args))
@@ -250,37 +248,15 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
     }
 #endif
 
-    memcpy((void *)&readJmpError, (void *)&STATE(ReadJmpError),
-           sizeof(jmp_buf));
     currLVars = STATE(CurrLVars);
-#ifdef GAP_KERNEL_DEBUG
-    volatile Stat currStat = BRK_CALL_TO();
-#endif
-    recursionDepth = GetRecursionDepth();
     tilde = STATE(Tilde);
     res = NEW_PLIST_IMM(T_PLIST_DENSE, 2);
 #ifdef HPCGAP
     int      lockSP = RegionLockSP();
     Region * savedRegion = TLS(currentRegion);
 #endif
-    if (setjmp(STATE(ReadJmpError))) {
-        SET_LEN_PLIST(res, 2);
-        SET_ELM_PLIST(res, 1, False);
-        SET_ELM_PLIST(res, 2, STATE(ThrownObject));
-        CHANGED_BAG(res);
-        STATE(ThrownObject) = 0;
-        SWITCH_TO_OLD_LVARS(currLVars);
-        GAP_ASSERT(currStat == BRK_CALL_TO());
-        SetRecursionDepth(recursionDepth);
-        STATE(Tilde) = tilde;
-#ifdef HPCGAP
-        PopRegionLocks(lockSP);
-        TLS(currentRegion) = savedRegion;
-        if (TLS(CurrentHashLock))
-            HashUnlock(TLS(CurrentHashLock));
-#endif
-    }
-    else {
+    GAP_TRY
+    {
         Obj result = CallFuncList(func, args);
         // Make an explicit check if an interrupt occurred
         // in case func was a kernel function.
@@ -300,8 +276,22 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
         else
             SET_LEN_PLIST(res, 1);
     }
-    memcpy((void *)&STATE(ReadJmpError), (void *)&readJmpError,
-           sizeof(jmp_buf));
+    GAP_CATCH
+    {
+        SET_LEN_PLIST(res, 2);
+        SET_ELM_PLIST(res, 1, False);
+        SET_ELM_PLIST(res, 2, STATE(ThrownObject));
+        CHANGED_BAG(res);
+        STATE(ThrownObject) = 0;
+        SWITCH_TO_OLD_LVARS(currLVars);
+        STATE(Tilde) = tilde;
+#ifdef HPCGAP
+        PopRegionLocks(lockSP);
+        TLS(currentRegion) = savedRegion;
+        if (TLS(CurrentHashLock))
+            HashUnlock(TLS(CurrentHashLock));
+#endif
+    }
     return res;
 }
 
