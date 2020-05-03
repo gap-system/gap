@@ -72,7 +72,7 @@ CC="@CC@"
 
 # These three should be filled in by the standard autoconf procedures 
 c_compiler="$libtool --mode=compile $CC"
-c_linker="$libtool --mode=link $CC"
+c_linker="$libtool --mode=link $CC -export-dynamic"
 
 # read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, GAP_LDFLAGS, GAP_LIBS
 . "${abs_top_builddir}/sysinfo.gap"
