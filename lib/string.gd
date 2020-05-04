@@ -939,3 +939,68 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 DeclareGlobalFunction("StringFormatted");
 DeclareGlobalFunction("PrintFormatted");
 DeclareGlobalFunction("PrintToFormatted");
+
+
+#############################################################################
+##
+##  <#GAPDoc Label="Pluralize">
+##  <ManSection>
+##  <Func Name="Pluralize" Arg='[count, ]string[, plural]'/>
+##  <Returns>A string</Returns>
+##
+##  <Description>
+##    This function returns an attempt at the appropriate pluralization
+##    of a string (considered as a singular English noun), using several
+##    rules and heuristics of English grammar.
+##    <P/>
+##
+##    The arguments to this function are an optional non-negative
+##    integer <A>count</A> (the number of objects in question),
+##    a non-empty string <A>string</A>
+##    (the singular form of the object in question),
+##    and an optional additional string <A>plural</A>
+##    (the plural form of <A>string</A>).
+##    <P/>
+##
+##    If <A>plural</A> is given, then <C>Pluralize</C> uses it as the
+##    plural form of <A>string</A>, otherwise <C>Pluralize</C>
+##    makes an informed guess at the plural.
+##    <P/>
+##
+##    If <A>count</A> is not given, then <C>Pluralize</C> returns this
+##    plural form of <A>string</A>.
+##    If <A>count</A> is given and has value <M>n \neq 1</M>,
+##    then this string is prepended by "\&gt;n\&lt; ";
+##    else if <A>count</A> has value <M>1</M>, then <C>Pluralize</C>
+##    returns <A>string</A>, prepended by "\&gt;1\&lt; ".
+##    <P/>
+##
+##    Note that <Ref Func="StripLineBreakCharacters" /> can be used to
+##    remove the control characters <C>\&lt;</C> and <C>\&gt;</C> from
+##    the return value.
+##
+##  </Description>
+##  </ManSection>
+##  <Example><![CDATA[
+##  gap> Pluralize( "generator" );
+##  "generators"
+##  gap> Pluralize( 1, "generator" );
+##  "\>1\< generator"
+##  gap> Pluralize( 0, "generator" );
+##  "\>0\< generators"
+##  gap> Pluralize( "man", "men" );
+##  "men"
+##  gap> Pluralize( 1, "man", "men" );
+##  "\>1\< man"
+##  gap> Print( Pluralize( 2, "man", "men" ) );
+##  2 men
+##  gap> Print( Pluralize( 2, "vertex" ) );
+##  2 vertices
+##  gap> Print( Pluralize( 3, "matrix" ) );
+##  3 matrices
+##  gap> Print( Pluralize( 4, "battery" ) );
+##  4 batteries
+##  ]]></Example>
+##  <#/GAPDoc>
+
+DeclareGlobalFunction("Pluralize");

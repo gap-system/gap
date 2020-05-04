@@ -1406,3 +1406,86 @@ InstallGlobalFunction(PrintFormatted, function(args...)
     # directed
     Print(CallFuncList(StringFormatted, args));
 end);
+
+InstallGlobalFunction(Pluralize,
+function(args...)
+  local nargs, i, count, include_num, str, len, out;
+
+  #Int and one string
+  #Int and two strings
+  #One string
+  #Two strings
+
+  nargs := Length(args);
+  if nargs >= 1 and IsInt(args[1]) and args[1] >= 0 then
+    i := 2;
+    count := args[1];
+    include_num := true;
+  else
+    i := 1;
+    include_num := false; # if not given, assume pluralization is wanted.
+  fi;
+
+  if not (nargs in [i, i + 1] and
+          IsString(args[i]) and
+          (nargs = i or IsString(args[i + 1]))) then
+    ErrorNoReturn("Usage: Pluralize([<count>, ]<string>[, <plural>])");
+  fi;
+
+  str := args[i];
+  len := Length(str);
+
+  if len = 0 then
+    ErrorNoReturn("the argument <str> must be a non-empty string");
+  elif include_num and count = 1 then # no pluralization needed
+    return Concatenation("\>1\< ", str);
+  elif nargs = i + 1 then  # pluralization given
+    out := args[i + 1];
+  elif len <= 2 then
+    out := Concatenation(str, "s");
+
+  # Guess and return the plural form of <str>.
+  # Inspired by the "Ruby on Rails" inflection rules.
+
+  # Uncountable nouns
+  elif str in ["equipment", "information"] then
+    out := str;
+
+  # Irregular plurals
+  elif str = "axis" then
+    out := "axes";
+  elif str = "child" then
+    out := "children";
+  elif str = "person" then
+    out := "people";
+
+  # Peculiar endings
+  elif EndsWith(str, "ix") or EndsWith(str, "ex") then
+    out := Concatenation(str{[1 .. len - 2]}, "ices");
+  elif EndsWith(str, "x") then
+    out := Concatenation(str, "es");
+  elif EndsWith(str, "tum") or EndsWith(str, "ium") then
+    out := Concatenation(str{[1 .. len - 2]}, "a");
+  elif EndsWith(str, "sis") then
+    out := Concatenation(str{[1 .. len - 3]}, "ses");
+  elif EndsWith(str, "fe") and not EndsWith(str, "ffe") then
+    out := Concatenation(str{[1 .. len - 2]}, "ves");
+  elif EndsWith(str, "lf") or EndsWith(str, "rf") or EndsWith(str, "loaf") then
+    out := Concatenation(str{[1 .. len - 1]}, "ves");
+  elif EndsWith(str, "y") and not str[len - 1] in "aeiouy" then
+    out := Concatenation(str{[1 .. len - 1]}, "ies");
+  elif str{[len - 1, len]} in ["ch", "ss", "sh"] then
+    out := Concatenation(str, "es");
+  elif EndsWith(str, "s") then
+    out := str;
+
+  # Default to appending 's'
+  else
+    out := Concatenation(str, "s");
+  fi;
+
+  if include_num then
+    return Concatenation("\>", String(args[1]), "\< ", out);
+  fi;
+  return out;
+end);
