@@ -2914,6 +2914,18 @@ function(G,U)
   return U;
 end);
 
+InstallOtherMethod( NormalClosure, "generic method for a list of generators",
+  IsIdenticalObj, [ IsGroup, IsList ],
+function(G, list)
+  return NormalClosure(G, Group(list, One(G)));
+end);
+
+InstallOtherMethod( NormalClosure, "generic method for an empty list of generators",
+  [ IsGroup, IsList and IsEmpty ],
+function(G, list)
+  return TrivialSubgroup(G);
+end);
+
 #############################################################################
 ##
 #M  NormalIntersection( <G>, <U> )  . . . . . intersection with normal subgrp
