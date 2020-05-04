@@ -59,10 +59,10 @@ gap> [1..3]^4;
 196
 gap> [1..3]^0;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 3rd choice method found for `OneSameMutability' on 1 arguments
+Error, no 3rd choice method found for `OneSameMutability' on 1 argument
 gap> [1..3]^-1;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 2nd choice method found for `InverseSameMutability' on 1 arguments
+Error, no 2nd choice method found for `InverseSameMutability' on 1 argument
 
 # multiplication of int*float and float*int used to behave inconsistently
 gap> 10^400 * 10.^-300; # used to return 1.e+100

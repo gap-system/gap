@@ -637,7 +637,7 @@ gap> MakeImmutable(m);
   [ 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2) ], [ Z(2^2), Z(2^2), Z(2^2), Z(2^2) ] ]
 gap> TriangulizeMat(m);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `TriangulizeMat' on 1 arguments
+Error, no 1st choice method found for `TriangulizeMat' on 1 argument
 
 #
 gap> STOP_TEST("mat8bit.tst");

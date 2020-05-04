@@ -28,7 +28,7 @@ gap> TrivialGroup(1);
 Error, usage: TrivialGroup( [<filter>] )
 gap> TrivialGroup(IsRing);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `TrivialGroupCons' on 1 arguments
+Error, no 1st choice method found for `TrivialGroupCons' on 1 argument
 
 #
 # abelian groups

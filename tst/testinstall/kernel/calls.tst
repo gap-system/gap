@@ -79,7 +79,7 @@ gap> UnprofileFunctions([o]);
 #
 gap> PROF_FUNC(1);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `PROF_FUNC' on 1 arguments
+Error, no 1st choice method found for `PROF_FUNC' on 1 argument
 gap> PROF_FUNC(x->x);
 [ 0, 0, 0, 0, 0 ]
 gap> CLEAR_PROFILE_FUNC(fail);
