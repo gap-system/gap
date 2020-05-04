@@ -134,7 +134,7 @@ gap> S := InverseSemigroup(x);
 <inverse partial perm semigroup of rank 7 with 1 generator>
 gap> Zero(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+Error, no 1st choice method found for `ZeroMutable' on 1 argument
 gap> MultiplicativeZero(S);
 fail
 
@@ -157,17 +157,17 @@ gap> S := SymmetricInverseMonoid(5);
 <symmetric inverse monoid of degree 5>
 gap> ZeroMutable(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+Error, no 1st choice method found for `ZeroMutable' on 1 argument
 gap> ZeroImmutable(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+Error, no 1st choice method found for `ZeroMutable' on 1 argument
 gap> S := Monoid(PartialPerm([2, 1]));;
 gap> ZeroImmutable(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+Error, no 1st choice method found for `ZeroMutable' on 1 argument
 gap> ZeroMutable(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `ZeroMutable' on 1 arguments
+Error, no 1st choice method found for `ZeroMutable' on 1 argument
 
 # Test GeneratorsOfInverseSemigroup
 gap> S := Semigroup(PartialPerm([1, 3], [3, 5]), 
