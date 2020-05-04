@@ -159,7 +159,7 @@ static Obj DoWrap0args(Obj self)
 
 /****************************************************************************
 **
-*F  DoWrap1args( <self>, <arg1> ) . . . . . . . wrap up 1 arguments in a list
+*F  DoWrap1args( <self>, <arg1> ) . . . . . . . wrap up 1 argument in a list
 */
 static Obj DoWrap1args(Obj self, Obj arg1)
 {
@@ -333,7 +333,7 @@ static Obj DoFail0args(Obj self)
 
 /****************************************************************************
 **
-*F  DoFail1args( <self>,<arg1> ) . . .  fail a function call with 1 arguments
+*F  DoFail1args( <self>,<arg1> ) . . .  fail a function call with 1 argument
 */
 static Obj DoFail1args(Obj self, Obj arg1)
 {
@@ -507,7 +507,7 @@ static Obj DoProf0args (
 
 /****************************************************************************
 **
-*F  DoProf1args( <self>, <arg1>)  . . . . profile a function with 1 arguments
+*F  DoProf1args( <self>, <arg1>)  . . . . profile a function with 1 argument
 */
 static Obj DoProf1args (
     Obj                 self,
