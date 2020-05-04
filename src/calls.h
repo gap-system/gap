@@ -345,7 +345,7 @@ EXPORT_INLINE Obj CALL_XARGS(Obj f, Obj as)
 /****************************************************************************
 **
 *F  CALL_0ARGS_PROF( <func>, <arg1> ) . . . . .  call a prof func with 0 args
-*F  CALL_1ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 1 args
+*F  CALL_1ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 1 arg
 *F  CALL_2ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 2 args
 *F  CALL_3ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 3 args
 *F  CALL_4ARGS_PROF( <func>, <arg1>, ... )  . .  call a prof func with 4 args
