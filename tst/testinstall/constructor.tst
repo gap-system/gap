@@ -13,7 +13,7 @@ gap> c(c);
 Error, Constructor: the first argument must be a filter (not a function)
 gap> c(IsInt);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `foobar' on 1 arguments
+Error, no 1st choice method found for `foobar' on 1 argument
 gap> InstallMethod(c,[IsInt],x->x);
 gap> c(IsInt);
 <Category "IsInt">

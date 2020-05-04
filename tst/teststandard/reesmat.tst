@@ -788,22 +788,22 @@ gap> MultiplicativeZero(UUU);
 0
 gap> One(R);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(U);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(UU);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(UUU);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(V);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> ParentAttr(R);
 <Rees 0-matrix semigroup 7x6 over Group([ (1,2) ])>
 gap> ParentAttr(U);
