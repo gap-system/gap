@@ -688,6 +688,7 @@ gap> HexStringInt(last);
 <#Include Label="Ordinal">
 <#Include Label="EvalString">
 <#Include Label="CrcString">
+<#Include Label="Pluralize">
 
 </Section>
 
