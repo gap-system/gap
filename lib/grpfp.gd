@@ -254,7 +254,7 @@ InstallTrueMethod(CanEasilyTestMembership, IsSubgroupFgGroup and IsWholeFamily);
 ##  gap> IsFpGroup(g);
 ##  true
 ##  gap> h:=CyclicGroup(2);
-##  <pc group of size 2 with 1 generators>
+##  <pc group of size 2 with 1 generator>
 ##  gap> IsFpGroup(h);
 ##  false
 ##  ]]></Example>

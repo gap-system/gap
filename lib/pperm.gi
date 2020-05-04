@@ -589,8 +589,8 @@ function(f)
   fi;
 
   return STRINGIFY("<partial perm on ",
-                   RankOfPartialPerm(f),
-                   " pts with degree ",
+                   Pluralize(RankOfPartialPerm(f), "pt"),
+                   " with degree ",
                    DegreeOfPartialPerm(f),
                    ", codegree ",
                    CoDegreeOfPartialPerm(f),

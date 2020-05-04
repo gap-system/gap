@@ -5191,7 +5191,7 @@ function(G)
       if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
         Print(GeneratorsOfGroup(G));
       else
-        Print("<",Length(GeneratorsOfGroup(G))," generators>");
+        Print("<",Pluralize(Length(GeneratorsOfGroup(G)),"generator"),">");
       fi;
     else
       Print("<fp, no generators known>");

@@ -140,10 +140,10 @@ gap> mat:=[[(), 0, 0], [0, (), 0], [0, 0, ()],
 > [(), (), ()], [0, 0, ()]];;
 gap> R:=ReesZeroMatrixSemigroup(G, mat);
 <Rees 0-matrix semigroup 3x5 over 
-  <permutation group of size 1007 with 1 generators>>
+  <permutation group of size 1007 with 1 generator>>
 gap> ReesZeroMatrixSubsemigroup(R, [1,3], G, [1..5]);
 <Rees 0-matrix semigroup 2x5 over 
-  <permutation group of size 1007 with 1 generators>>
+  <permutation group of size 1007 with 1 generator>>
 ]]></Example>
     </Description>
   </ManSection>

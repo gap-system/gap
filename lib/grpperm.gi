@@ -2184,8 +2184,8 @@ function(G)
       Append(str,String(Size(G)));
     fi;
     Append(str," with ");
-    Append(str,String(Length( gens )));
-    Append(str," generators>");
+    Append(str,Pluralize(Length( gens ), "generator"));
+    Append(str,">");
   else
     str:="Group(";
     if IsEmpty( gens ) or ForAll(gens,i->Order(i)=1) then

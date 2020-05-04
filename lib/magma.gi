@@ -74,8 +74,9 @@ InstallMethod( ViewString,
     true,
     [ IsMagma and HasGeneratorsOfMagma ], 0,
     function( M )
-    return STRINGIFY("<magma with ", Length( GeneratorsOfMagma(M) ), 
-    " generators>" );
+    local nrgens;
+    nrgens := Length( GeneratorsOfMagma(M) );
+    return STRINGIFY( "<magma with ", Pluralize( nrgens, "generator" ), ">" );
     end );
 
 InstallMethod( ViewString,
@@ -83,12 +84,13 @@ InstallMethod( ViewString,
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
     function( M )
-    if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
+    local nrgens;
+    nrgens := Length( GeneratorsOfMagmaWithOne(M) );
+    if nrgens = 0 then
       return "<trivial magma-with-one>" ;
-    else
-      return STRINGIFY("<magma-with-one with ", 
-      Length( GeneratorsOfMagmaWithOne(M) ), " generators>" );
     fi;
+    return STRINGIFY( "<magma-with-one with ",
+                      Pluralize( nrgens, "generator" ), ">" );
     end );
 
 InstallMethod( ViewString,
@@ -96,13 +98,13 @@ InstallMethod( ViewString,
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     function( M )
-    if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
+    local nrgens;
+    nrgens := Length( GeneratorsOfMagmaWithInverses( M ) );
+    if nrgens = 0 then
       return "<trivial magma-with-inverses>";
-    else
-      return STRINGIFY( "<magma-with-inverses with ",
-             Length( GeneratorsOfMagmaWithInverses( M ) ),
-             " generators>" );
     fi;
+    return STRINGIFY( "<magma-with-inverses with ",
+                      Pluralize( nrgens, "generator" ), ">" );
     end );
 
 

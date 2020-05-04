@@ -197,7 +197,7 @@ gap> c:= LieCentre( l1 );
 gap> gens:= GeneratorsOfAlgebra( l1 );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10 ]
 gap> s1:= Subalgebra( l1, [ gens[1] ] );
-<Lie algebra over Rationals, with 1 generators>
+<Lie algebra over Rationals, with 1 generator>
 gap> Dimension( s1 );
 1
 gap> IsLieSolvable( s1 );
@@ -486,7 +486,7 @@ gap> Print(gens,"\n");
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
   v.15 ]
 gap> s2:= Subalgebra( l2, [ gens[1] ] );
-<Lie algebra over Rationals, with 1 generators>
+<Lie algebra over Rationals, with 1 generator>
 gap> Dimension( s2 );
 1
 gap> IsLieSolvable( s2 );
@@ -630,7 +630,7 @@ gap> LieCentre( l3 );
 gap> gens:= GeneratorsOfAlgebra( l3 );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14 ]
 gap> s3:= Subalgebra( l3, [ gens[1] ] );
-<Lie algebra over Rationals, with 1 generators>
+<Lie algebra over Rationals, with 1 generator>
 gap> Dimension( s3 );
 1
 gap> IsLieSolvable( s3 );

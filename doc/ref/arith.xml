@@ -304,7 +304,7 @@ hence the generic methods for such domains will have a chance to succeed.
 gap> a:= MyObject( Z(7) );
 <Z(7)>
 gap> m:= Magma( a );
-<magma with 1 generators>
+<magma with 1 generator>
 gap> e:= MultiplicativeNeutralElement( m );
 <Z(7)^2>
 gap> elms:= AsList( m );

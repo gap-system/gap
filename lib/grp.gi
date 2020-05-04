@@ -4488,26 +4488,25 @@ InstallMethod( ViewString,
     "for a group with generators",
     [ IsGroup and HasGeneratorsOfMagmaWithInverses ],
     function( G )
-    if IsEmpty( GeneratorsOfMagmaWithInverses( G ) ) then
+    local nrgens;
+    nrgens := Length( GeneratorsOfMagmaWithInverses( G ) );
+    if nrgens = 0 then
         return "<trivial group>";
-    else
-        return Concatenation("<group with ",
-                       String( Length( GeneratorsOfMagmaWithInverses( G ) ) ),
-                       " generators>");
     fi;
+    return Concatenation("<group with ", Pluralize( nrgens, "generator" ), ">");
     end );
 
 InstallMethod( ViewString,
     "for a group with generators and size",
     [ IsGroup and HasGeneratorsOfMagmaWithInverses and HasSize],
     function( G )
-    if IsEmpty( GeneratorsOfMagmaWithInverses( G ) ) then
+    local nrgens;
+    nrgens := Length(GeneratorsOfMagmaWithInverses( G ) );
+    if nrgens = 0 then
         return "<trivial group>";
-    else
-        return Concatenation("<group of size ", String(Size(G))," with ",
-             String(Length( GeneratorsOfMagmaWithInverses( G ) )),
-             " generators>");
     fi;
+    return Concatenation("<group of size ", String(Size(G))," with ",
+                         Pluralize(nrgens, "generator"), ">");
     end );
 
 InstallMethod( ViewObj, "for a group",

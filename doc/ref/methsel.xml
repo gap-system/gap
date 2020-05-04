@@ -104,7 +104,7 @@ gap> InstallMethod(XCons, [IsGroup, IsInt], function(t,x) return CyclicGroup(x);
 gap> InstallMethod(XCons, [IsPermGroup, IsInt], function(t,x) return SymmetricGroup(x); end);
 gap> InstallMethod(XCons, [IsSemigroup, IsInt], function(t,x) return FullTransformationMonoid(x); end);
 gap> XCons(IsGroup,3);
-<pc group of size 3 with 1 generators>
+<pc group of size 3 with 1 generator>
 gap> XCons(IsPermGroup,3);
 Sym( [ 1 .. 3 ] )
 gap> XCons(IsSemigroup,4);

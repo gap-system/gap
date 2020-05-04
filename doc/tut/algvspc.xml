@@ -419,12 +419,12 @@ of an algebra by an ideal is naturally an algebra itself.
 gap> m:= [ [ 1, 2, 3 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ];;
 gap> A:= Algebra( Rationals, [ m ] );;
 gap> subA:= Subalgebra( A, [ m-m^2 ] );
-<algebra over Rationals, with 1 generators>
+<algebra over Rationals, with 1 generator>
 gap> Dimension( subA );
 2
 gap> idA:= Ideal( A, [ m-m^3 ] );
 <two-sided ideal in <algebra of dimension 3 over Rationals>, 
-  (1 generators)>
+  (1 generator)>
 gap> Dimension( idA ); 
 2
 gap> B:= A/idA;

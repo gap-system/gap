@@ -192,7 +192,7 @@ DeclareConstructor( "PcgsByPcSequenceCons",
 ##  gap> modu := ModuloPcgs( G, H );
 ##  Pcgs([ (4,5) ])
 ##  gap> PcGroupWithPcgs(modu);
-##  <pc group of size 2 with 1 generators>
+##  <pc group of size 2 with 1 generator>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

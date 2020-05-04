@@ -351,14 +351,10 @@ InstallMethod(ViewObj, "for a subsemigroup of a Rees matrix semigroup",
 InstallMethod(PrintObj, "for a subsemigroup of a Rees matrix semigroup",
 [IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R) 
-  Print("\><subsemigroup of \>", Length(Rows(ParentAttr(R))), "x",
-   Length(Columns(ParentAttr(R))), "\< Rees matrix semigroup \>with ");
-  Print(Length(GeneratorsOfSemigroup(R)));
-  Print(" generator");
-  if Length(GeneratorsOfSemigroup(R))>1 then 
-    Print("s");
-  fi;
-  Print("\<>\<");
+  Print("\><subsemigroup of \>",
+        Length(Rows(ParentAttr(R))), "x", Length(Columns(ParentAttr(R))),
+        "\< Rees matrix semigroup \>with ",
+        Pluralize(Length(GeneratorsOfSemigroup(R)), "generator"), "\<>\<");
   return;
 end);
 
@@ -382,14 +378,10 @@ InstallMethod(ViewObj, "for a subsemigroup of a Rees 0-matrix semigroup",
 InstallMethod(PrintObj, "for a subsemigroup of a Rees 0-matrix semigroup",
 [IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R) 
-  Print("\><subsemigroup of \>", Length(Rows(ParentAttr(R))), "x",
-   Length(Columns(ParentAttr(R))), "\< Rees 0-matrix semigroup \>with ");
-  Print(Length(GeneratorsOfSemigroup(R)));
-  Print(" generator");
-  if Length(GeneratorsOfSemigroup(R))>1 then 
-    Print("s");
-  fi;
-  Print("\<>\<");
+  Print("\><subsemigroup of \>",
+        Length(Rows(ParentAttr(R))), "x", Length(Columns(ParentAttr(R))),
+        "\< Rees 0-matrix semigroup \>with ",
+        Pluralize(Length(GeneratorsOfSemigroup(R)), "generator"), "\<>\<");
   return;
 end);
 

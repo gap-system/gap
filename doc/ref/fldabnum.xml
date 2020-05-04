@@ -177,7 +177,7 @@ over a non-cyclotomic field.
 <P/>
 <Example><![CDATA[
 gap> g:= GaloisGroup( AsField( Field( [ Sqrt(5) ] ), CF(5) ) );
-<group of size 2 with 1 generators>
+<group of size 2 with 1 generator>
 gap> gens:= GeneratorsOfGroup( g );
 [ ANFAutomorphism( AsField( NF(5,[ 1, 4 ]), CF(5) ), 4 ) ]
 gap> x:= last[1];;  x^2;

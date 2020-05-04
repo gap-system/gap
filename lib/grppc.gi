@@ -2293,15 +2293,16 @@ end);
 ##
 InstallMethod(ViewObj,"pc group",true,[IsPcGroup],0,
 function(G)
+local nrgens;
+  nrgens := Length(GeneratorsOfGroup(G));
   if (not HasParent(G)) or
-   Length(GeneratorsOfGroup(G))*Length(GeneratorsOfGroup(Parent(G)))
+   nrgens*Length(GeneratorsOfGroup(Parent(G)))
      / GAPInfo.ViewLength > 50 then
     Print("<pc group");
     if HasSize(G) then
       Print(" of size ",Size(G));
     fi;
-    Print(" with ",Length(GeneratorsOfGroup(G)),
-          " generators>");
+    Print(" with ", Pluralize(nrgens, "generator"), ">");
   else
     Print("Group(");
     ViewObj(GeneratorsOfGroup(G));

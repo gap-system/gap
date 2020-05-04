@@ -71,8 +71,8 @@ InstallMethod( ViewObj,
     true,
     [ IsRing and HasGeneratorsOfRing ], 0,
     function( R )
-    Print( "<ring with ", Length( GeneratorsOfRing( R ) ),
-           " generators>" );
+    Print( "<ring with ",
+           Pluralize( Length( GeneratorsOfRing( R ) ), "generator" ), ">" );
     end );
 
 
@@ -93,8 +93,9 @@ InstallMethod( ViewObj,
     true,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     function( R )
-    Print( "<ring-with-one, with ", Length( GeneratorsOfRingWithOne( R ) ),
-           " generators>" );
+    local nrgens;
+    nrgens := Length( GeneratorsOfRingWithOne( R ) );
+    Print( "<ring-with-one, with ", Pluralize(nrgens, "generator" ), ">" );
     end );
 
 

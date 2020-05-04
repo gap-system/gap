@@ -18,7 +18,7 @@ true
 gap> IsNonGaussianRowSpace( z );
 false
 gap> v:= LeftModuleByGenerators( GF(9), [ [ Z(3), Z(3), Z(3) ] ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> IsGaussianRowSpace( v );
 true
 gap> IsNonGaussianRowSpace( v );
@@ -26,7 +26,7 @@ false
 gap> v = LeftModuleByGenerators( GF(9), [ [ Z(3), Z(3), Z(3) ] ], Zero( v ) );
 true
 gap> w:= LeftModuleByGenerators( GF(9), [ [ Z(27), Z(3), Z(3) ] ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> IsGaussianRowSpace( w );
 false
 gap> IsNonGaussianRowSpace( w );
@@ -221,7 +221,7 @@ VectorSpace( GF(3^6), [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ],
 gap> u = uuu;
 true
 gap> c:= VectorSpace( GF(9), [ [ Z(3)^0, 0*Z(3), 0*Z(3) ] ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> f:= v + c;;
 gap> Print( f, "\n" );
 VectorSpace( GF(3^2), 
@@ -332,7 +332,7 @@ SemiEchelonBasis( <vector space of dimension 2 over Rationals>,
 ##  8. Methods for mutable bases of non-Gaussian row spaces
 ##
 gap> mb:= MutableBasis( Rationals, [ [ E(4) ] ] );
-<mutable basis over Rationals, 1 vectors>
+<mutable basis over Rationals, 1 vector>
 gap> CloseMutableBasis( mb, [ E(3) ] );
 true
 gap> CloseMutableBasis( mb, [ E(3)+E(4) ] );
