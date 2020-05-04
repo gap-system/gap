@@ -1280,8 +1280,8 @@ InstallMethod(ViewObj,"lattice",true,[IsLatticeSubgroupsRep],0,
 function(l)
   Print("<subgroup lattice of ");
   ViewObj(l!.group);
-  Print(", ", Length(l!.conjugacyClassesSubgroups)," classes, ",
-    Sum(l!.conjugacyClassesSubgroups,Size)," subgroups");
+  Print(", ", Pluralize(Length(l!.conjugacyClassesSubgroups),"class"),
+        ", ", Pluralize(Sum(l!.conjugacyClassesSubgroups,Size),"subgroup"));
   if IsBound(l!.func) then
     Print(", restricted under further condition l!.func");
   fi;

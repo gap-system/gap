@@ -255,4 +255,9 @@ gap> "IsBLetterWordsFamily" in CategoriesOfObject(FamilyObj(F.1));
 false
 
 #
+gap> F := FreeGroup(2);;
+gap> Group(F.1 ^ 100);
+Group(<1 generator>)
+
+#
 gap> STOP_TEST( "grpfree.tst", 1);

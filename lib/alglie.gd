@@ -772,7 +772,7 @@ DeclareOperation( "PthPowerImage", [ IsJacobianElement, IsInt ] );
 ##  gap> L := JenningsLieAlgebra(SmallGroup(4,1)); # group C_4
 ##  <Lie algebra of dimension 2 over GF(2)>
 ##  gap> L0 := Subalgebra(L,GeneratorsOfAlgebra(L){[1]});
-##  <Lie algebra over GF(2), with 1 generators>
+##  <Lie algebra over GF(2), with 1 generator>
 ##  gap> Dimension(L0);
 ##  1
 ##  gap> PClosureSubalgebra(L0); last=L;
@@ -1468,7 +1468,7 @@ DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 ##  gap> List( [1,2,3], g.hom_components );
 ##  [ <vector space over GF(3), with 3 generators>, 
 ##    <vector space over GF(3), with 2 generators>, 
-##    <vector space over GF(3), with 1 generators> ]
+##    <vector space over GF(3), with 1 generator> ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

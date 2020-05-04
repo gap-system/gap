@@ -154,7 +154,7 @@ InstallMethod( ViewObj,
     function( MB )
     Print( "<mutable basis over " );
     View( MB!.leftActingDomain );
-    Print( ", ", NrBasisVectors( MB ), " vectors>" );
+    Print( ", ", Pluralize( NrBasisVectors( MB ), "vector" ), ">" );
     end );
 
 
@@ -332,7 +332,9 @@ InstallMethod( ViewObj,
     Print( "<mutable basis over " );
     View( LeftActingDomain( MB!.leftModule ) );
     if IsBound( MB!.niceMutableBasis ) then
-      Print( ", ", NrBasisVectors( MB!.niceMutableBasis ), " vectors>" );
+      Print( ", ",
+             Pluralize( NrBasisVectors( MB!.niceMutableBasis ), "vector" ),
+             ">" );
     else
       Print( ", 0 vectors>" );
     fi;

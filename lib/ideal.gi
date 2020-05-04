@@ -356,8 +356,9 @@ InstallMethod( ViewObj,
     if HasDimension( I ) then
       Print( "\<,\< \>\>(dimension ", Dimension( I ), "\<\<\<\<)>" );
     else
-      Print( "\<,\< \>\>(", Length( GeneratorsOfLeftIdeal( I ) ),
-             " generators)\<\<\<\<>" );
+      Print( "\<,\< \>\>(",
+             Pluralize( Length( GeneratorsOfLeftIdeal( I ) ), "generator" ),
+             ")\<\<\<\<>" );
     fi;
     end );
 
@@ -372,8 +373,9 @@ InstallMethod( ViewObj,
     if HasDimension( I ) then
       Print( "\<,\< \>\>(dimension ", Dimension( I ), "\<\<\<\<)>" );
     else
-      Print( "\<,\< \>\>(", Length( GeneratorsOfRightIdeal( I ) ),
-             " generators)\<\<\<\<>" );
+      Print( "\<,\< \>\>(",
+             Pluralize( Length( GeneratorsOfRightIdeal( I ) ), "generator" ),
+             ")\<\<\<\<>" );
     fi;
     end );
 
@@ -389,8 +391,9 @@ InstallMethod( ViewObj,
     if HasDimension( I ) then
       Print( "\<,\< \>\>(dimension ", Dimension( I ), "\<\<\<\<)>" );
     else
-      Print( "\<,\< \>\>(", Length( GeneratorsOfTwoSidedIdeal( I ) ),
-             " generators)\<\<\<\<>" );
+      Print( "\<,\< \>\>(",
+             Pluralize( Length( GeneratorsOfTwoSidedIdeal( I ) ), "generator" ),
+             ")\<\<\<\<>" );
     fi;
     end );
 

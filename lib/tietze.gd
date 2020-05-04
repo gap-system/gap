@@ -1475,7 +1475,7 @@ DeclareGlobalFunction("TzPrintLengths");
 ##  </Item>
 ##  <Mark><C>expandLimit</C>:</Mark>
 ##  <Item>
-##    Whenever the routine for eliminating more than 1 generators is
+##    Whenever the routine for eliminating more than 1 generator is
 ##    called for a presentation <A>P</A> by the
 ##    <Ref Func="TzEliminate" Label="for a presentation (and a generator)"/>
 ##    command or the elimination phase of the <Ref Func="TzGo"/> command,

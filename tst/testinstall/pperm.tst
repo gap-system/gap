@@ -4120,7 +4120,8 @@ true
 #
 gap> SetUserPreference("PartialPermDisplayLimit", 1);
 gap> PartialPerm([1], [2]);
-<partial perm on 1 pts with degree 1, codegree 2>
+<partial perm on 1 pt with degree 1, codegree 2>
+gap> SetUserPreference("PartialPermDisplayLimit", 100);;
 
 #
 gap> SetUserPreference("PartialPermDisplayLimit", display);;

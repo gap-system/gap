@@ -34,28 +34,28 @@ function ( x )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [ ['a'] ], 1));
-#I  Searching Method for foobar with 1 arguments:
+#I  Searching Method for foobar with 1 argument:
 #I  Total: 4 entries
 #I  Method 1: ``foobar: for a string'' at stream:1 , value: 2*SUM_FLAGS+1
 function ( x )
     return StartsWith( x, "foo" );
 end
 gap> Display(ApplicableMethod(foobar, [ ['a'] ], 1, 2));
-#I  Searching Method for foobar with 1 arguments:
+#I  Searching Method for foobar with 1 argument:
 #I  Total: 4 entries
 #I  Method 1: ``foobar: for a string'' at stream:1 , value: 2*SUM_FLAGS+1
 #I  Skipped:
 #I  Method 2: ``foobar: for a list'' at stream:1 , value: 42
 <Attribute "Length">
 gap> Display(ApplicableMethod(foobar, [fail], 1));
-#I  Searching Method for foobar with 1 arguments:
+#I  Searching Method for foobar with 1 argument:
 #I  Total: 4 entries
 #I  Method 4: ``foobar'' at stream:1 , value: 0
 function ( x )
     return fail;
 end
 gap> Display(ApplicableMethod(foobar, [fail], 4));
-#I  Searching Method for foobar with 1 arguments:
+#I  Searching Method for foobar with 1 argument:
 #I  Total: 4 entries
 #I  Method 1: ``foobar: for a string'' at stream:1, value: 2*SUM_FLAGS+1
 #I   - 1st argument needs [ "IsString" ]
@@ -68,7 +68,7 @@ function ( x )
     return fail;
 end
 gap> ApplicableMethod(foobar, [fail], 6);; Print("\n");
-#I  Searching Method for foobar with 1 arguments:
+#I  Searching Method for foobar with 1 argument:
 #I  Total: 4 entries
 #I  Method 1: ``foobar: for a string'' at stream:1, value: 2*SUM_FLAGS+1
 #I   - 1st argument needs [ "IsString" ]
@@ -155,13 +155,13 @@ fail
 #
 gap> Display(ApplicableMethod(foobar, [], 5));
 #I  Searching Method for foobar with 0 arguments:
-#I  Total: 1 entries
+#I  Total: 1 entry
 #I  Method 1: ``foobar: for no argument'' at stream:1, value: 0
 function (  )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1], 5));
-#I  Searching Method for foobar with 1 arguments:
+#I  Searching Method for foobar with 1 argument:
 #I  Total: 4 entries
 #I  Method 1: ``foobar: for a string'' at stream:1, value: 2*SUM_FLAGS+1
 #I   - 1st argument needs [ "IsString" ]
@@ -183,28 +183,28 @@ function ( x, y... )
 end
 gap> Display(ApplicableMethod(foobar, [1..3], 5));
 #I  Searching Method for foobar with 3 arguments:
-#I  Total: 1 entries
+#I  Total: 1 entry
 #I  Method 1: ``foobar: for 3 integers'' at stream:3, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..4], 5));
 #I  Searching Method for foobar with 4 arguments:
-#I  Total: 1 entries
+#I  Total: 1 entry
 #I  Method 1: ``foobar: for 4 integers'' at stream:4, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..5], 5));
 #I  Searching Method for foobar with 5 arguments:
-#I  Total: 1 entries
+#I  Total: 1 entry
 #I  Method 1: ``foobar: for 5 integers'' at stream:5, value: 0
 function ( x, y... )
     return 1;
 end
 gap> Display(ApplicableMethod(foobar, [1..6], 5));
 #I  Searching Method for foobar with 6 arguments:
-#I  Total: 1 entries
+#I  Total: 1 entry
 #I  Method 1: ``foobar: for 6 integers'' at stream:6, value: 0
 function ( x, y... )
     return 1;

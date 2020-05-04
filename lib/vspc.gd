@@ -507,7 +507,7 @@ DeclareGlobalFunction( "VectorSpace" );
 ##  <Example><![CDATA[
 ##  gap> V:= VectorSpace( Rationals, [ [ 1, 2, 3 ], [ 1, 1, 1 ] ] );;
 ##  gap> W:= Subspace( V, [ [ 0, 1, 2 ] ] );
-##  <vector space over Rationals, with 1 generators>
+##  <vector space over Rationals, with 1 generator>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -574,7 +574,7 @@ DeclareSynonym( "AsVectorSpace", AsLeftModule );
 ##  gap> V:= VectorSpace( Rationals, [ [ 1, 2, 3 ], [ 1, 1, 1 ] ] );;
 ##  gap> W:= VectorSpace( Rationals, [ [ 1/2, 1/2, 1/2 ] ] );;
 ##  gap> U:= AsSubspace( V, W );
-##  <vector space over Rationals, with 1 generators>
+##  <vector space over Rationals, with 1 generator>
 ##  gap> Parent( U ) = V;
 ##  true
 ##  gap> AsSubspace( V, [ [ 1, 1, 1 ] ] );

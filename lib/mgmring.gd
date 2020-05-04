@@ -186,7 +186,7 @@
 ##  gap> fg:= GroupRing( f, g );
 ##  <algebra-with-one over GF(2), with 2 generators>
 ##  gap> fh:= GroupRing( f, h );
-##  <algebra-with-one over GF(2), with 1 generators>
+##  <algebra-with-one over GF(2), with 1 generator>
 ##  gap> IsSubset( fg, fh );
 ##  false
 ##  gap> o1:= One( fh );  o2:= One( fg );  o1 = o2;
@@ -195,7 +195,7 @@
 ##  false
 ##  gap> emb:= Embedding( g, fg );;
 ##  gap> im:= Image( emb, h );
-##  <group of size 3 with 1 generators>
+##  <group of size 3 with 1 generator>
 ##  gap> IsSubset( fg, im );
 ##  true
 ##  ]]></Example>

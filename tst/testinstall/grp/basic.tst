@@ -154,12 +154,12 @@ Group([ (1,2,3,4) ])
 gap> CyclicGroup(IsFpGroup,4);
 <fp group of size 4 on the generators [ a ]>
 gap> G:=CyclicGroup(IsMatrixGroup, 6);
-<matrix group of size 6 with 1 generators>
+<matrix group of size 6 with 1 generator>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 Rationals
 6
 gap> G:=CyclicGroup(IsMatrixGroup, GF(2), 6);
-<matrix group of size 6 with 1 generators>
+<matrix group of size 6 with 1 generator>
 gap> FieldOfMatrixGroup(G); DimensionOfMatrixGroup(G);
 GF(2)
 6
@@ -181,9 +181,9 @@ Error, no 2nd choice method found for `CyclicGroupCons' on 2 arguments
 # dihedral groups
 #
 gap> DihedralGroup(2);
-<pc group of size 2 with 1 generators>
+<pc group of size 2 with 1 generator>
 gap> DihedralGroup(IsPcGroup,2);
-<pc group of size 2 with 1 generators>
+<pc group of size 2 with 1 generator>
 gap> DihedralGroup(IsPermGroup,2);
 Group([ (1,2) ])
 gap> DihedralGroup(IsFpGroup,2);
