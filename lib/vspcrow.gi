@@ -315,8 +315,7 @@ InstallMethod( Coefficients,
     fi;
 
     # Preset the coefficients list with zeroes.
-    zero:= Zero( v[1] );
-    coeff:= List( vectors, x -> zero );
+    coeff:= ListWithIdenticalEntries( Length( vectors ), Zero( v[1] ) );
 
     # Compute the coefficients of the base vectors.
     v:= ShallowCopy( v );
