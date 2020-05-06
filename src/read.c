@@ -2767,62 +2767,34 @@ UInt ReadEvalFile(Obj * evalResult)
 
 /****************************************************************************
 **
-**  Reader state -- the next group of functions are used to "push" the
-**  current interpreter state allowing GAP code to be interpreted in the
-**  middle of other code. This is used, for instance, in the command-line
-**  editor.
-*/
-
-
-struct SavedReaderState {
-  UInt                userHasQuit;
-  Bag                 oldLvars;
-};
-
-static void SaveReaderState(struct SavedReaderState *s) {
-  s->userHasQuit = STATE(UserHasQuit);
-  s->oldLvars = STATE(CurrLVars);
-}
-
-static void ClearReaderState(void ) {
-  STATE(UserHasQuit) = 0;
-  SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
-}
-
-static void RestoreReaderState(const struct SavedReaderState *s) {
-  SWITCH_TO_OLD_LVARS(s->oldLvars);
-  STATE(UserHasQuit) = s->userHasQuit;
-}
-
-
-/****************************************************************************
-**
 *F  Call0ArgsInNewReader(Obj f)  . . . . . . . . . . . . call a GAP function
 **
 **  The current reader context is saved and a new one is started.
 */
 Obj Call0ArgsInNewReader(Obj f)
 {
-  struct SavedReaderState s;
-  Obj result;
+    // remember the old state
+    volatile UInt userHasQuit = STATE(UserHasQuit);
+    volatile Obj  oldLvars = STATE(CurrLVars);
+    volatile Obj  result = 0;
 
-  // remember the old state
-  SaveReaderState(&s);
+    // initialize everything
+    STATE(UserHasQuit) = 0;
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 
-  // initialize everything
-  ClearReaderState();
+    GAP_TRY
+    {
+        result = CALL_0ARGS(f);
+    }
+    GAP_CATCH
+    {
+        ClearError();
+    }
 
-  GAP_TRY {
-    result = CALL_0ARGS(f);
-  }
-  GAP_CATCH {
-    result = 0;
-    ClearError();
-  }
-
-  // switch back to the old state
-  RestoreReaderState(&s);
-  return result;
+    // switch back to the old state
+    SWITCH_TO_OLD_LVARS(oldLvars);
+    STATE(UserHasQuit) = userHasQuit;
+    return result;
 }
 
 
@@ -2834,26 +2806,28 @@ Obj Call0ArgsInNewReader(Obj f)
 */
 Obj Call1ArgsInNewReader(Obj f, Obj a)
 {
-  struct SavedReaderState s;
-  Obj result;
+    // remember the old state
+    volatile UInt userHasQuit = STATE(UserHasQuit);
+    volatile Obj  oldLvars = STATE(CurrLVars);
+    volatile Obj  result = 0;
 
-  // remember the old state
-  SaveReaderState(&s);
+    // initialize everything
+    STATE(UserHasQuit) = 0;
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 
-  // initialize everything
-  ClearReaderState();
+    GAP_TRY
+    {
+        result = CALL_1ARGS(f, a);
+    }
+    GAP_CATCH
+    {
+        ClearError();
+    }
 
-  GAP_TRY {
-    result = CALL_1ARGS(f,a);
-  }
-  GAP_CATCH {
-    result = 0;
-    ClearError();
-  }
-
-  // switch back to the old state
-  RestoreReaderState(&s);
-  return result;
+    // switch back to the old state
+    SWITCH_TO_OLD_LVARS(oldLvars);
+    STATE(UserHasQuit) = userHasQuit;
+    return result;
 }
 
 
