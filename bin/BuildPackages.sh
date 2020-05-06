@@ -32,7 +32,6 @@ fi
 
 CURDIR="$(pwd)"
 GAPROOT="$(cd .. && pwd)"
-GAP="$GAPROOT/bin/gap.sh"
 COLORS=yes
 STRICT=no       # exit with non-zero exit code when encountering any failures
 PARALLEL=no
@@ -63,6 +62,8 @@ while [[ "$#" -ge 1 ]]; do
     *)                PACKAGES+=("$option") ;;
   esac
 done
+
+GAP="${GAP:-$GAPROOT/bin/gap.sh}"
 
 if [ "x$PARALLEL" = "xyes" ]; then
   export MAKEFLAGS="${MAKEFLAGS:--j3}"
