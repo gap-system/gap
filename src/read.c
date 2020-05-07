@@ -2606,8 +2606,6 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
 
-    GAP_ASSERT(rs->LoopNesting == 0);
-
     IntrBegin(&rs->intr,  context );
 
     switch (rs->s.Symbol) {
@@ -2714,8 +2712,6 @@ UInt ReadEvalFile(Obj * evalResult)
     STATE(Tilde)     = 0;
     rs->CurrLHSGVar  = 0;
     IntrBegin(&rs->intr, STATE(BottomLVars));
-
-    GAP_ASSERT(rs->LoopNesting == 0);
 
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
