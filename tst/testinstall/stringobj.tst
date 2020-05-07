@@ -93,6 +93,10 @@ gap> """x""" = "x";
 true
 gap> """""" = "";
 true
+gap> """x"y""" = "x\"y";
+true
+gap> """x""y""" = "x\"\"y";
+true
 gap> """\n""" = "\\n";
 true
 gap> """("\n")""" = "(\"\\n\")";

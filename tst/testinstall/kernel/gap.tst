@@ -21,6 +21,8 @@ gap> SHELL(lvars,true,true,0,5,6,7,8,9,10);
 Error, SHELL: <setTime> must be 'true' or 'false' (not the integer 5)
 gap> SHELL(lvars,true,true,0,false,6,7,8,9,10);
 Error, SHELL: <prompt> must be a string (not the integer 6)
+gap> SHELL(lvars,true,true,0,false,ListWithIdenticalEntries(81,'x'),7,8,9,10);
+Error, SHELL: <prompt> must be a string of length at most 80
 gap> SHELL(lvars,true,true,0,false,"abc",7,8,9,10);
 Error, SHELL: <preCommandHook> must be function or false (not the integer 7)
 gap> SHELL(lvars,true,true,0,false,"abc",false,8,9,10);
@@ -31,6 +33,12 @@ gap> SHELL(lvars,true,true,0,false,"abc",false,"","",10);
 Error, SHELL: <catchQUIT> must be 'true' or 'false' (not the integer 10)
 gap> SHELL(lvars,true,true,0,false,"abc",false,"","",false);
 Error, SHELL: can't open outfile 
+
+#
+gap> RETURN_FIRST();
+Error, Function: number of arguments must be at least 1 (not 0)
+gap> RETURN_FIRST(1);
+1
 
 #
 gap> l:=RUNTIMES();; List(l,IsInt);
@@ -201,3 +209,9 @@ Error, usage: FORCE_QUIT_GAP( [ <return value> ] )
 
 #
 gap> BREAKPOINT(0);
+
+#
+gap> UPDATE_STAT(fail, fail);
+Error, UPDATE_STAT: <name> must be a string (not the value 'fail')
+gap> UPDATE_STAT("foobar", fail);
+Error, UPDATE_STAT: unsupported <name> value 'foobar'

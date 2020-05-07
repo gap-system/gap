@@ -74,6 +74,10 @@ Syntax error: Expecting hexadecimal escape, or two more octal digits in stream\
 :1
 "\090";
 ^^^
+gap> "\009";
+Syntax error: Expecting octal digit in stream:1
+"\009";
+^^^^
 gap> "\0x1g";
 Syntax error: Expecting hexadecimal digit in stream:1
 "\0x1g";
