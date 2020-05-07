@@ -2,7 +2,7 @@
 ##
 ##  This  file  tests  the large finite fields.
 ##
-#@local fieldpairs,fieldsizes,iF,iPI,iW,izs,zs,iFI,x
+#@local fieldpairs,fieldsizes,iF,iPI,iW,izs,zs,iFI,x,i,F
 gap> START_TEST("ffeconway.tst");
 
 #
@@ -58,6 +58,8 @@ gap> fieldpairs := Concatenation(List(fieldsizes, pd -> List(Filtered([1..pd[2]-
 #
 gap> zs := List(fieldsizes, pd -> Z(pd[1],pd[2]));
 [ z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z, z ]
+gap> ForAll([1..Length(zs)] , i-> IsCoeffsModConwayPolRep(zs[i]));
+true
 
 #
 # and another way
@@ -183,7 +185,19 @@ gap> List(izs, AdditiveInverse);
   18446744073709551627+9223372036854775815z ]
 
 #
-# and across fields
+# Test comparisons within the field
+#
+gap> ForAny([1..Length(zs)] , i-> zs[i] < zs[i]);
+false
+gap> List([1..Length(zs)] , i-> zs[i] < izs[i]);
+[ false, false, true, true, true, true, true, true, true, true, true, true, 
+  true, true, true, true, true ]
+gap> List([1..Length(zs)] , i-> izs[i] < zs[i]);
+[ true, true, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false ]
+
+#
+# Test arithmetic across fields
 #
 gap> List(fieldpairs, pdd -> Z(pdd[1],pdd[2])+Z(pdd[1],pdd[3]));
 [ 1+z, z+z4+z9+z10+z15+z17+z19+z21+z23+z25+z26+z27+z29+z30+z33, 
@@ -702,6 +716,59 @@ z30+2z31+2z32+2z34+2z35+2z36+z38+z39+z40+2z42+z45+2z46+2z49+2z51+z52+z53+2z54+\
 gap> ForAll(fieldsizes, pd -> ForAll(DivisorsInt(pd[2]), d2 -> 
 >     Z(pd[1],pd[2])^((pd[1]^pd[2]-1)/(pd[1]^d2-1)) = Z(pd[1],d2) ));
 true
+
+#
+# Test comparisons across fields
+#
+gap> x := List(fieldpairs, pdd -> Z(pdd[1],pdd[2]) < Z(pdd[1],pdd[3]));
+[ false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false, false, false, false, 
+  false, false, false, false, false, false, false ]
+gap> x = List(fieldpairs, pdd -> not (Z(pdd[1],pdd[3]) < Z(pdd[1],pdd[2])));
+true
+
+# MinimalPolynomial
+gap> for i in [1..Length(zs)] do
+>  F := GF(Characteristic(zs[i]));
+>  SetName(Indeterminate(F, 567), "t");
+>  Print(i,": \c",MinimalPolynomial(F, zs[i], 567),"\n");
+> od;
+1: t^17+t^3+Z(2)^0
+2: t^32+t^15+t^9+t^7+t^4+t^3+Z(2)^0
+3: t^60+t^45+t^44+t^42+t^41+t^39+t^36+t^34+t^33+t^32+t^30+t^26+t^25+t^22+t^19+t^1\
+7+t^12+t^8+t^5+t^4+t^3+t^2+Z(2)^0
+4: t^76+t^38+t^37+t^36+t^35+t^34+t^33+t^31+t^29+t^27+t^25+t^24+t^23+t^20+t^19+t^1\
+5+t^14+t^5+t^2+t+Z(2)^0
+5: t^87+t^30+t^28+t^26+t^20+t^16+t^14+t^13+t^12+t^11+t^10+t^8+t^7+t^5+t^3+t+Z(2)^\
+0
+6: t^11-t^2+Z(3)^0
+7: t^20-t^13+t^11+t^10+t^9+t^8-t^5-t^4-t^3+t-Z(3)^0
+8: t^60+t^44-t^41+t^40-t^39-t^38-t^36+t^35+t^34-t^33+t^32+t^30-t^28-t^27-t^26-t^2\
+4-t^22+t^21+t^20-t^16-t^15+t^14-t^11+t^10-t^8-t^6+t^5-t^4-t^3-t^2-Z(3)^0
+9: t^4+Z(17)^11*t^2+Z(17)^3*t+Z(17)
+10: t^2+Z(257)^177*t+Z(257)
+11: t^11+Z(257)^199*t+Z(257)^129
+12: t^2+Z(65521)^34212*t+Z(65521)
+13: t^2-t+ZmodpZObj(3,65537)
+14: t^2+ZmodpZObj(268435397,268435399)*t+ZmodpZObj(3,268435399)
+15: t^2-t+ZmodpZObj(2,4294967291)
+16: t^3+ZmodpZObj(2,1152921504606846883)*t+ZmodpZObj(1152921504606846881,115292150\
+4606846883)
+17: t^2+ZmodpZObj(18446744073709551625,18446744073709551629)*t+ZmodpZObj(2,1844674\
+4073709551629)
+
+#
+gap> Display([[ zs[1], zs[1]^2], [0*zs[1], zs[1]^3]]);
+z = Z( 2, 17); z2 = z^2, etc.
+z  z2 
+.  z3 
+
+# AsInternalFFE
 gap> AsInternalFFE(0*Z(2,10));
 0*Z(2)
 gap> AsInternalFFE(Z(2,10)^0);
@@ -720,6 +787,8 @@ gap> AsInternalFFE(Z(65537,2)^0);
 fail
 gap> AsInternalFFE(Z(65537,2));
 fail
+
+#
 gap> SetInfoLevel(InfoPrimeInt,iPI);
 gap> SetInfoLevel(InfoFactor,iF);
 gap> if IsBound(InfoFactInt) then SetInfoLevel(InfoFactInt,iFI); fi;

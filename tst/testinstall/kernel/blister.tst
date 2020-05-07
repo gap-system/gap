@@ -142,6 +142,10 @@ gap> List(l, IsHomogeneousList);
 [ true, true, true, true ]
 
 # IsSSortBlist
+gap> IsSSortedList([true]);
+true
+gap> IsSSortedList([false]);
+true
 gap> List(l, IsSSortedList);
 [ true, true, false, false ]
 

@@ -143,8 +143,36 @@ gap> Factors(E(7)*(t^2-1)*t);
 [ E(7)*t+(-E(7)), t, t+1 ]
 gap> Factors(E(7)*(t^2-1)*t^2);
 [ E(7)*t+(-E(7)), t, t, t+1 ]
+
+# gcd
 gap> Gcd(t-2,t^2-2*t);
 t-2
+gap> Gcd((t-2)*(t^15-7*t^6+123456),(t^2-2*t)*(t^13+t^2-1));
+t-2
+
+# ApproxRootBound, RootBound
+gap> f := t-1;; ApproxRootBound(f); RootBound(f);
+67/60
+67/60
+gap> f := t-2;; ApproxRootBound(f); RootBound(f);
+fail
+2
+gap> f := t^13+t^2-1;; ApproxRootBound(f); RootBound(f);
+fail
+2
+gap> f := t^15-7*t^6+123456;; ApproxRootBound(f); RootBound(f);
+1309/580
+1309/580
+gap> f := (t-2)*(t^15-7*t^6+123456)*(t^2-2*t)*(t^13+t^2-1);;
+gap> ApproxRootBound(f); RootBound(f);
+fail
+6350587813037534063249833/74175632498330000000000
+
+# PolynomialModP
+gap> PolynomialModP(t^5 + 20 * t + 25, 2);
+x_100^5+Z(2)^0
+gap> PolynomialModP(t^5 + 20 * t + 25, 3);
+x_100^5-x_100+Z(3)^0
 
 #
 # multivariate

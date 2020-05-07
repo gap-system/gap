@@ -78,4 +78,14 @@ String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
 String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
 ...  at *stdin*:4
 you may 'return;'
+brk> return; # try once more
+Error, recursion depth trap (5000) in
+  String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from 
+String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
+String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
+String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
+String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
+String( record.(nam) ) at GAPROOT/lib/record.gi:99 called from
+...  at *stdin*:4
+you may 'return;'
 brk> QUIT;

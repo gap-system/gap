@@ -137,4 +137,18 @@ Syntax error: String must end with """ before end of file in stream:2
 Syntax error: ; expected in stream:2
 
 #
+# cover some border cases in NextSymbol
+#
+gap> [1]![1];
+1
+gap> [1]!![1];
+Syntax error: ; expected in stream:1
+[1]!![1];
+   ^
+gap> %;
+Syntax error: expression expected in stream:1
+%;
+^
+
+#
 gap> STOP_TEST("kernel/scanner.tst", 1);

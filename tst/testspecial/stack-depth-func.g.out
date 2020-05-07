@@ -10,4 +10,14 @@ f(  ); at *stdin*:2 called from
 f(  ); at *stdin*:2 called from
 ...  at *stdin*:3
 you may 'return;'
+brk> return; # try once more
+Error, recursion depth trap (10000) in
+  f(  ); at *stdin*:2 called from 
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+f(  ); at *stdin*:2 called from
+...  at *stdin*:3
+you may 'return;'
 brk> QUIT;

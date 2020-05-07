@@ -110,4 +110,14 @@ LARGEST_MOVED_POINT_PERM:65536
 ORDER_PERM:2
 SIGN_PERM:1
 CYCLE_SHORT_PERM (short output): [ [ 1, 32768 ] ]
+
+#
+gap> RESTRICTED_PERM((1,2), fail, fail);
+fail
+
+#
+gap> SCR_SIFT_HELPER(fail, fail, fail);
+Error, SCR_SIFT_HELPER: <stb> must be a plain record (not the value 'fail')
+
+#
 gap> STOP_TEST("kernel/permutat.tst", 1);
