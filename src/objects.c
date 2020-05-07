@@ -437,9 +437,9 @@ static Obj ShallowCopyObjDefault(Obj obj)
 
 /****************************************************************************
 **
-*F  ShallowCopyObjHandler( <self>, <obj> )  .  handler for 'SHALLOW_COPY_OBJ'
+*F  FuncSHALLOW_COPY_OBJ( <self>, <obj> ) . .  handler for 'SHALLOW_COPY_OBJ'
 */
-static Obj ShallowCopyObjHandler(Obj self, Obj obj)
+static Obj FuncSHALLOW_COPY_OBJ(Obj self, Obj obj)
 {
     return SHALLOW_COPY_OBJ( obj );
 }
@@ -1042,9 +1042,9 @@ static void PrintObjObject(Obj obj)
 
 /****************************************************************************
 **
-*F  PrintObjHandler( <self>, <obj> )  . . . . . . . .  handler for 'PrintObj'
+*F  FuncPRINT_OBJ( <self>, <obj> ) . . . . . . . . . . handler for 'PrintObj'
 */
-static Obj PrintObjHandler(Obj self, Obj obj)
+static Obj FuncPRINT_OBJ(Obj self, Obj obj)
 {
     PrintObj( obj );
     return 0;
@@ -1133,9 +1133,9 @@ void ViewObj(Obj obj)
 
 /****************************************************************************
 **
-*F  FuncViewObj( <self>, <obj> )  . . . . . . . .  handler for 'ViewObj'
+*F  FuncVIEW_OBJ( <self>, <obj> ) . . . . . . . . . . . handler for 'ViewObj'
 */
-static Obj FuncViewObj(Obj self, Obj obj)
+static Obj FuncVIEW_OBJ(Obj self, Obj obj)
 {
     ViewObj( obj );
     return 0;
@@ -2008,14 +2008,9 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "SHALLOW_COPY_OBJ", 1, "obj", &ShallowCopyObjOper,
-      ShallowCopyObjHandler, "src/objects.c:SHALLOW_COPY_OBJ" },
-
-    { "PRINT_OBJ", 1, "obj", &PrintObjOper,
-      PrintObjHandler, "src/objects.c:PRINT_OBJ" },
-
-    { "VIEW_OBJ", 1, "obj", &ViewObjOper,
-      FuncViewObj, "src/objects.c:VIEW_OBJ" },
+    GVAR_OPER_1ARGS(SHALLOW_COPY_OBJ, obj, &ShallowCopyObjOper),
+    GVAR_OPER_1ARGS(PRINT_OBJ, obj, &PrintObjOper),
+    GVAR_OPER_1ARGS(VIEW_OBJ, obj, &ViewObjOper),
 
     { 0, 0, 0, 0, 0, 0 }
 
