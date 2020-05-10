@@ -434,7 +434,8 @@ gap> Columns(R);
       Label="for a Rees 0-matrix semigroup"/>
     <Returns>A semigroup.</Returns>
     <Description>
-      <Ref Attr="UnderlyingSemigroup"/> returns the underlying semigroup of the Rees
+      <Ref Attr="UnderlyingSemigroup" Label="for a Rees matrix semigroup" />
+      returns the underlying semigroup of the Rees
       matrix or 0-matrix semigroup <A>R</A>. <P/>
       
       Arbitrary subsemigroups of Rees matrix or 0-matrix semigroups do not have
