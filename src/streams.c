@@ -489,8 +489,7 @@ Int READ_GAP_ROOT ( const Char * filename )
     if (OpenInput(path)) {
         while (1) {
             ClearError();
-            Obj  evalResult;
-            UInt type = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
+            UInt type = ReadEvalCommand(STATE(BottomLVars), 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
             if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
