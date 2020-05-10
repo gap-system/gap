@@ -2,7 +2,7 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-#@local x, str
+#@local x, str, len
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -40,24 +40,22 @@ gap> PrintString(x);
 "abc"
 gap> String(x);
 "abc"
-gap> x:="\0xFF";
-"\377"
-gap> PrintString(x);
-"\377"
-gap> ViewString(x);
-"\"\\377\""
+gap> "\0x4a";
+"J"
+gap> x:="\0x4A";
+"J"
 gap> x:="\0x42\0x23\0x10\0x10\0x10";
 "B#\020\020\020"
 gap> PrintString(x);
 "B#\020\020\020"
 gap> ViewString(x);
 "\"B#\\020\\020\\020\""
-gap> x:="A string with \0xFF Hex stuff \0x42 in it";
-"A string with \377 Hex stuff B in it"
+gap> x:="A string with Hex stuff \0x42 in it";
+"A string with Hex stuff B in it"
 gap> PrintString(x);
-"A string with \377 Hex stuff B in it"
+"A string with Hex stuff B in it"
 gap> ViewString(x);
-"\"A string with \\377 Hex stuff B in it\""
+"\"A string with Hex stuff B in it\""
 gap> x := "\n\t\c\\\"'";
 "\n\t\c\\\"'"
 gap> PrintString(x);
@@ -189,11 +187,19 @@ gap> PrintString(x);
 "'a'"
 gap> String(x);
 "'a'"
-gap> x:='\0x42';
+gap> '\0x42';
 'B'
-gap> x:='\0xFF';
+gap> '\102';
+'B'
+gap> '\0xFF';
 '\377'
-gap> x:='\0xab';
+gap> '\0xff';
+'\377'
+gap> '\0xFf';
+'\377'
+gap> '\0xfF';
+'\377'
+gap> '\0xab';
 '\253'
 
 # Huge strings
