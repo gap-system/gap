@@ -373,7 +373,7 @@ Bag NewBag(UInt type, UInt size)
     bag = GC_malloc(4 * sizeof(Bag *));
     if (STATE(PtrLVars)) {
         bag[2] = (void *)CURR_FUNC();
-        if (STATE(CurrLVars) != STATE(BottomLVars)) {
+        if (!IsBottomLVars(STATE(CurrLVars))) {
             Obj plvars = PARENT_LVARS(STATE(CurrLVars));
             bag[3] = (void *)(FUNC_LVARS(plvars));
         }

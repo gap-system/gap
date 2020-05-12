@@ -53,6 +53,14 @@
 
 /****************************************************************************
 **
+*F  IsBottomLVars(<lvars>) . .  check whether some lvars are the bottom lvars
+**
+*/
+BOOL IsBottomLVars(Obj lvars);
+
+
+/****************************************************************************
+**
 *V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
 **
 **  'PtrLVars' is a pointer to the 'CurrLVars' bag.  This  makes it faster to
