@@ -304,6 +304,10 @@ gap> DicyclicGroup(1);
 Error, usage: <size> must be a positive integer divisible by 4
 gap> DicyclicGroup(IsFpGroup,1);
 Error, usage: <size> must be a positive integer divisible by 4
+gap> DicyclicGroup(IsMatrixGroup, fail, 256);
+Error, usage: <field> must be a field
+gap> DicyclicGroup(IsMatrixGroup, GF(2), 256, "extra");
+Error, usage: DicyclicGroup( [<filter>, [<field>, ] ] <size> )
 
 #
 # (generalised) quaternion groups
@@ -318,6 +322,22 @@ gap> QuaternionGroup(12);
 <pc group of size 12 with 3 generators>
 gap> QuaternionGroup(11);
 Error, usage: <size> must be a positive integer divisible by 4
+gap> QuaternionGroup(IsMatrixGroup, GF(2), 256, "extra");
+Error, usage: QuaternionGroup( [<filter>, [<field>, ] ] <size> )
+
+#
+gap> GeneralisedQuaternionGroup(4);
+Error, usage: <size> must be a power of 2 and at least 8
+gap> GeneralisedQuaternionGroup(12);
+Error, usage: <size> must be a power of 2 and at least 8
+gap> GeneralisedQuaternionGroup(11);
+Error, usage: <size> must be a positive integer divisible by 4
+gap> GeneralisedQuaternionGroup(IsMatrixGroup, fail, 256);
+Error, usage: <field> must be a field
+gap> GeneralisedQuaternionGroup(IsMatrixGroup, GF(2), 256, "extra");
+Error, usage: GeneralisedQuaternionGroup( [<filter>, [<field>, ] ] <size> )
+
+#
 gap> GeneralisedQuaternionGroup(16);
 <pc group of size 16 with 4 generators>
 gap> Q := GeneralisedQuaternionGroup(IsFpGroup, 32);
@@ -328,7 +348,7 @@ true
 gap> GeneralisedQuaternionGroup(IsMatrixGroup, 32);
 <matrix group of size 32 with 2 generators>
 gap> F:=FunctionField(GF(16),1);;
-gap> Q:=GeneralisedQuaternionGroup(IsMatrixGroup, F, 256); 
+gap> Q:=GeneralisedQuaternionGroup(IsMatrixGroup, F, 256);
 <matrix group of size 256 with 2 generators>
 gap> HasIsGeneralisedQuaternionGroup(Q);
 true

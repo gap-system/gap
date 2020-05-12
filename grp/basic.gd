@@ -391,7 +391,7 @@ DeclareSynonym("QuaternionGroupCons", DicyclicGroupCons);
 ##  <#/GAPDoc>
 ##
 BindGlobal( "GRPLIB_DicyclicParameterCheck",
-function(args, quaternion)
+function(name, args)
     local size;
 
     if Length(args) = 1 then
@@ -404,7 +404,7 @@ function(args, quaternion)
             ErrorNoReturn("usage: <field> must be a field");
         fi;
     else
-        ErrorNoReturn("usage: DicyclicGroup( [<filter>, [<field>, ] ] <size> )");
+        ErrorNoReturn("usage: ", name, "( [<filter>, [<field>, ] ] <size> )");
     fi;
 
     size := args[Length(args)];
@@ -417,9 +417,9 @@ function(args, quaternion)
     fi;
 
     if not IsPrimePowerInt(size) or size < 8 then
-        if quaternion = "error" then
+        if name = "GeneralisedQuaternionGroup" then
             ErrorNoReturn("usage: <size> must be a power of 2 and at least 8");
-        elif quaternion = "warn" then
+        elif name = "QuaternionGroup" then
             if not IsPrimePowerInt(size) then
                 Info(InfoWarning, 1, "Warning: QuaternionGroup called with <size> ", size,
                                      " which is not a power of 2");
@@ -437,7 +437,7 @@ BindGlobal( "DicyclicGroup",
 function(args...)
     local res;
 
-    res := GRPLIB_DicyclicParameterCheck(args, "");
+    res := GRPLIB_DicyclicParameterCheck("DicyclicGroup", args);
 
     return CallFuncList(DicyclicGroupCons, res);
 end);
@@ -446,7 +446,7 @@ BindGlobal( "QuaternionGroup",
 function(args...)
     local res;
 
-    res := GRPLIB_DicyclicParameterCheck(args, "warn");
+    res := GRPLIB_DicyclicParameterCheck("QuaternionGroup", args);
 
     return CallFuncList(DicyclicGroupCons, res);
 end);
@@ -455,7 +455,7 @@ BindGlobal( "GeneralisedQuaternionGroup",
 function(args...)
     local res, grp;
 
-    res := GRPLIB_DicyclicParameterCheck(args, "error");
+    res := GRPLIB_DicyclicParameterCheck("GeneralisedQuaternionGroup", args);
     grp := CallFuncList(DicyclicGroupCons, res);
     SetIsGeneralisedQuaternionGroup(grp, true);
 
