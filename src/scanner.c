@@ -467,10 +467,55 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
     if (c == '\\')
       SyntaxError(s, "Badly formed number");
 
+    // If the next thing is the start of the exponential notation, read it now.
+    if (c == 'e' || c == 'E' || c == 'd' || c == 'D' || c == 'q' || c == 'Q') {
+      i = AddCharToValue(s, i, c);
+      c = GET_NEXT_CHAR();
+      if (c == '+' || c == '-') {
+        i = AddCharToValue(s, i, c);
+        c = GET_NEXT_CHAR();
+      }
+
+      // Here we are into the unsigned exponent of a number in scientific
+      // notation, so we just read digits
+
+      while (IsDigit(c)) {
+        i = AddCharToValue(s, i, c);
+        seenExpDigit = 1;
+        c = GET_NEXT_CHAR();
+      }
+
+      // Look out for a single alphabetic character on the end
+      // which could be a conversion marker
+      if (seenExpDigit) {
+        if (IsAlpha(c)) {
+          i = AddCharToValue(s, i, c);
+          c = GET_NEXT_CHAR();
+          symbol = S_FLOAT;
+          goto finish;
+        }
+        if (c == '_') {
+          i = AddCharToValue(s, i, c);
+          c = GET_NEXT_CHAR();
+          // After which there may be one character signifying the
+          // conversion style
+          if (IsAlpha(c)) {
+            i = AddCharToValue(s, i, c);
+            c = GET_NEXT_CHAR();
+          }
+          symbol = S_FLOAT;
+          goto finish;
+        }
+      }
+
+      // Otherwise this is the end of the token
+      if (!seenExpDigit)
+        SyntaxError(s, 
+            "Badly formed number: need at least one digit in the exponent");
+    }
     // If we found an identifier type character in this context could be an
     // error or the start of one of the allowed trailing marker sequences
-    if (IsIdent(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' &&
-        c != 'q' && c != 'Q') {
+    else if (IsIdent(c)) {
 
       // Allow one letter on the end of the numbers -- could be an i, C99
       // style
@@ -494,58 +539,8 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
       if (IsIdent(c)) {
         SyntaxError(s, "Badly formed number");
       }
-      else {
-        symbol = S_FLOAT;
-        goto finish;
-      }
     }
 
-    // If the next thing is the start of the exponential notation, read it now.
-    if (c == 'e' || c == 'E' || c == 'd' || c == 'D' || c == 'q' || c == 'Q') {
-      i = AddCharToValue(s, i, c);
-      c = GET_NEXT_CHAR();
-      if (c == '+' || c == '-') {
-        i = AddCharToValue(s, i, c);
-        c = GET_NEXT_CHAR();
-      }
-
-  // Here we are into the unsigned exponent of a number in scientific
-  // notation, so we just read digits
-
-  while (IsDigit(c)) {
-    i = AddCharToValue(s, i, c);
-    seenExpDigit = 1;
-    c = GET_NEXT_CHAR();
-  }
-
-  // Look out for a single alphabetic character on the end
-  // which could be a conversion marker
-  if (seenExpDigit) {
-    if (IsAlpha(c)) {
-      i = AddCharToValue(s, i, c);
-      c = GET_NEXT_CHAR();
-      symbol = S_FLOAT;
-      goto finish;
-    }
-    if (c == '_') {
-      i = AddCharToValue(s, i, c);
-      c = GET_NEXT_CHAR();
-      // After which there may be one character signifying the
-      // conversion style
-      if (IsAlpha(c)) {
-        i = AddCharToValue(s, i, c);
-        c = GET_NEXT_CHAR();
-      }
-      symbol = S_FLOAT;
-      goto finish;
-    }
-  }
-
-  // Otherwise this is the end of the token
-  if (!seenExpDigit)
-    SyntaxError(s, 
-        "Badly formed number: need at least one digit in the exponent");
-} // end of `IsAlpha(c)`
 
   symbol = S_FLOAT;
 
