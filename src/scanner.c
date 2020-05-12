@@ -455,6 +455,10 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
   // When we get here we have read possibly some digits, a . and possibly
   // some more digits, but not an e,E,d,D,q or Q
 
+  // In any case, from now on, we know we are dealing with a float literal
+  symbol = S_FLOAT;
+
+
     // read digits
     while (IsDigit(c)) {
       i = AddCharToValue(s, i, c);
@@ -491,7 +495,6 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
         if (IsAlpha(c)) {
           i = AddCharToValue(s, i, c);
           c = GET_NEXT_CHAR();
-          symbol = S_FLOAT;
           goto finish;
         }
         if (c == '_') {
@@ -503,7 +506,6 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
             i = AddCharToValue(s, i, c);
             c = GET_NEXT_CHAR();
           }
-          symbol = S_FLOAT;
           goto finish;
         }
       }
@@ -541,8 +543,6 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
       }
     }
 
-
-  symbol = S_FLOAT;
 
 finish:
   i = AddCharToValue(s, i, '\0');
