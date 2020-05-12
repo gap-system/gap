@@ -488,44 +488,19 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
         seenExpDigit = 1;
         c = GET_NEXT_CHAR();
       }
-
-      // Look out for a single alphabetic character on the end
-      // which could be a conversion marker
-      if (seenExpDigit) {
-        if (IsAlpha(c)) {
-          i = AddCharToValue(s, i, c);
-          c = GET_NEXT_CHAR();
-          goto finish;
-        }
-        if (c == '_') {
-          i = AddCharToValue(s, i, c);
-          c = GET_NEXT_CHAR();
-          // After which there may be one character signifying the
-          // conversion style
-          if (IsAlpha(c)) {
-            i = AddCharToValue(s, i, c);
-            c = GET_NEXT_CHAR();
-          }
-          goto finish;
-        }
-      }
-
-      // Otherwise this is the end of the token
       if (!seenExpDigit)
         SyntaxError(s, 
             "Badly formed number: need at least one digit in the exponent");
     }
-    // If we found an identifier type character in this context could be an
-    // error or the start of one of the allowed trailing marker sequences
-    else if (IsIdent(c)) {
 
-      // Allow one letter on the end of the numbers -- could be an i, C99
-      // style
+      // Allow one letter at the end of the number, which is a conversion
+      // marker; e.g. an `i` as in C99, to indicate an imaginary value.
       if (IsAlpha(c)) {
         i = AddCharToValue(s, i, c);
         c = GET_NEXT_CHAR();
       }
-      // independently of that, we allow an _ signalling immediate conversion
+
+      // independently of that, we allow an _ signalling immediate or "eager" conversion
       if (c == '_') {
         i = AddCharToValue(s, i, c);
         c = GET_NEXT_CHAR();
@@ -536,12 +511,11 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
           c = GET_NEXT_CHAR();
         }
       }
-      // Now if the next character is alphanumerical, or an identifier type
-      // symbol then we really do have an error, otherwise we return a result
+
+      // Now if the next character is an identifier symbol then we have an error
       if (IsIdent(c)) {
         SyntaxError(s, "Badly formed number");
       }
-    }
 
 
 finish:

@@ -270,29 +270,25 @@ stream:1
 gap> 1.e0i;
 "std:1.e0i"
 gap> 1.e0ix;
-Syntax error: ; expected in stream:1
+Syntax error: Badly formed number in stream:1
 1.e0ix;
-     ^
+^^^^^
 gap> 1.e0_;
 "std:1.e0"
 gap> 1.e0_y;
 "eager:1.e0"
 gap> 1.e0_yx;
-Syntax error: ; expected in stream:1
+Syntax error: Badly formed number in stream:1
 1.e0_yx;
-      ^
+^^^^^^
 gap> 1.e0i_;
-Syntax error: ; expected in stream:1
-1.e0i_;
-     ^
+"std:1.e0i"
 gap> 1.e0i_y;
-Syntax error: ; expected in stream:1
-1.e0i_y;
-     ^^
+"eager:1.e0i"
 gap> 1.e0i_yx;
-Syntax error: ; expected in stream:1
+Syntax error: Badly formed number in stream:1
 1.e0i_yx;
-     ^^^
+^^^^^^^
 
 #
 gap> 1.0i;
@@ -364,29 +360,25 @@ stream:1
 gap> 1.0e0i;
 "std:1.0e0i"
 gap> 1.0e0ix;
-Syntax error: ; expected in stream:1
+Syntax error: Badly formed number in stream:1
 1.0e0ix;
-      ^
+^^^^^^
 gap> 1.0e0_;
 "std:1.0e0"
 gap> 1.0e0_y;
 "eager:1.0e0"
 gap> 1.0e0_yx;
-Syntax error: ; expected in stream:1
+Syntax error: Badly formed number in stream:1
 1.0e0_yx;
-       ^
+^^^^^^^
 gap> 1.0e0i_;
-Syntax error: ; expected in stream:1
-1.0e0i_;
-      ^
+"std:1.0e0i"
 gap> 1.0e0i_y;
-Syntax error: ; expected in stream:1
-1.0e0i_y;
-      ^^
+"eager:1.0e0i"
 gap> 1.0e0i_yx;
-Syntax error: ; expected in stream:1
+Syntax error: Badly formed number in stream:1
 1.0e0i_yx;
-      ^^^
+^^^^^^^^
 
 # restore float handlers
 gap> Unbind(EAGER_FLOAT_LITERAL_CONVERTERS.y);
