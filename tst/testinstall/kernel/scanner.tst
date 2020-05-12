@@ -190,6 +190,209 @@ a.x111111111111111111111111111111111111111111111111111111111111111111111111111\
 ^^^^^^^^^^^^
 
 #
+# floating point oddities
+#
+
+# temporarily set up fake float handlers
+gap> IsBound(EAGER_FLOAT_LITERAL_CONVERTERS.y);
+false
+gap> EAGER_FLOAT_LITERAL_CONVERTERS.y := x->Concatenation("eager:",x);;
+gap> old_FLOAT_STRING := FLOAT_STRING;;
+gap> FLOAT_STRING := x->Concatenation("std:",x);;
+
+#
+gap> 1.i;
+"std:1.i"
+gap> 1.ix;
+Syntax error: Badly formed number in stream:1
+1.ix;
+^^^
+gap> 1._;
+"std:1."
+gap> 1._y;
+"eager:1."
+gap> 1._yx;
+Syntax error: Badly formed number in stream:1
+1._yx;
+^^^^
+gap> 1.i_;
+"std:1.i"
+gap> 1.i_y;
+"eager:1.i"
+gap> 1.i_yx;
+Syntax error: Badly formed number in stream:1
+1.i_yx;
+^^^^^
+
+#
+gap> 1.ei;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.ei;
+^^^
+gap> 1.eix;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.eix;
+^^^
+gap> 1.e_;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.e_;
+^^^
+gap> 1.e_y;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.e_y;
+^^^
+gap> 1.e_yx;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.e_yx;
+^^^
+gap> 1.ei_;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.ei_;
+^^^
+gap> 1.ei_y;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.ei_y;
+^^^
+gap> 1.ei_yx;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.ei_yx;
+^^^
+
+#
+gap> 1.e0i;
+"std:1.e0i"
+gap> 1.e0ix;
+Syntax error: ; expected in stream:1
+1.e0ix;
+     ^
+gap> 1.e0_;
+"std:1.e0"
+gap> 1.e0_y;
+"eager:1.e0"
+gap> 1.e0_yx;
+Syntax error: ; expected in stream:1
+1.e0_yx;
+      ^
+gap> 1.e0i_;
+Syntax error: ; expected in stream:1
+1.e0i_;
+     ^
+gap> 1.e0i_y;
+Syntax error: ; expected in stream:1
+1.e0i_y;
+     ^^
+gap> 1.e0i_yx;
+Syntax error: ; expected in stream:1
+1.e0i_yx;
+     ^^^
+
+#
+gap> 1.0i;
+"std:1.0i"
+gap> 1.0ix;
+Syntax error: Badly formed number in stream:1
+1.0ix;
+^^^^
+gap> 1.0_;
+"std:1.0"
+gap> 1.0_y;
+"eager:1.0"
+gap> 1.0_yx;
+Syntax error: Badly formed number in stream:1
+1.0_yx;
+^^^^^
+gap> 1.0i_;
+"std:1.0i"
+gap> 1.0i_y;
+"eager:1.0i"
+gap> 1.0i_yx;
+Syntax error: Badly formed number in stream:1
+1.0i_yx;
+^^^^^^
+
+#
+gap> 1.0ei;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0ei;
+^^^^
+gap> 1.0eix;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0eix;
+^^^^
+gap> 1.0e_;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0e_;
+^^^^
+gap> 1.0e_y;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0e_y;
+^^^^
+gap> 1.0e_yx;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0e_yx;
+^^^^
+gap> 1.0ei_;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0ei_;
+^^^^
+gap> 1.0ei_y;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0ei_y;
+^^^^
+gap> 1.0ei_yx;
+Syntax error: Badly formed number: need at least one digit in the exponent in \
+stream:1
+1.0ei_yx;
+^^^^
+
+#
+gap> 1.0e0i;
+"std:1.0e0i"
+gap> 1.0e0ix;
+Syntax error: ; expected in stream:1
+1.0e0ix;
+      ^
+gap> 1.0e0_;
+"std:1.0e0"
+gap> 1.0e0_y;
+"eager:1.0e0"
+gap> 1.0e0_yx;
+Syntax error: ; expected in stream:1
+1.0e0_yx;
+       ^
+gap> 1.0e0i_;
+Syntax error: ; expected in stream:1
+1.0e0i_;
+      ^
+gap> 1.0e0i_y;
+Syntax error: ; expected in stream:1
+1.0e0i_y;
+      ^^
+gap> 1.0e0i_yx;
+Syntax error: ; expected in stream:1
+1.0e0i_yx;
+      ^^^
+
+# restore float handlers
+gap> Unbind(EAGER_FLOAT_LITERAL_CONVERTERS.y);
+gap> FLOAT_STRING := old_FLOAT_STRING;;
+
+#
 # test EOF inside a string literal
 #
 gap> Read(InputTextString("\"123"));
