@@ -501,18 +501,13 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
     }
 
     // If the next thing is the start of the exponential notation, read it now.
-    if (IsAlpha(c)) {
+    if (c == 'e' || c == 'E' || c == 'd' || c == 'D' || c == 'q' || c == 'Q') {
       i = AddCharToValue(s, i, c);
       c = GET_NEXT_CHAR();
       if (c == '+' || c == '-') {
         i = AddCharToValue(s, i, c);
         c = GET_NEXT_CHAR();
       }
-    }
-    else {
-      symbol = S_FLOAT;
-      goto finish;
-    }
 
   // Here we are into the unsigned exponent of a number in scientific
   // notation, so we just read digits
@@ -550,6 +545,8 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
   if (!seenExpDigit)
     SyntaxError(s, 
         "Badly formed number: need at least one digit in the exponent");
+} // end of `IsAlpha(c)`
+
   symbol = S_FLOAT;
 
 finish:
