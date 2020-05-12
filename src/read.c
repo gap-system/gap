@@ -713,10 +713,10 @@ static LHSRef ReadVar(ReaderState * rs, TypSymbolSet follow)
     // up the static definition stack for each call function
     lvars0 = STATE(ErrorLVars);
     nest0 = 0;
-    while (ref.type == R_INVALID && lvars0 != 0 && lvars0 != STATE(BottomLVars)) {
+    while (ref.type == R_INVALID && lvars0 != 0 && !IsBottomLVars(lvars0)) {
         lvars = lvars0;
         nest = 0;
-        while (ref.type == R_INVALID && lvars != 0 && lvars != STATE(BottomLVars)) {
+        while (ref.type == R_INVALID && lvars != 0 && !IsBottomLVars(lvars)) {
             nams = NAMS_FUNC(FUNC_LVARS(lvars));
             if (nams != 0) {
                 indx = findValueInNams(nams, rs->s.Value, 1, LEN_PLIST(nams));
@@ -2523,7 +2523,7 @@ static void RecreateStackNams(ReaderState * rs, Obj context)
 {
     Obj stackNams = rs->StackNams;
     Obj lvars = context;
-    while (lvars != STATE(BottomLVars) && lvars != (Obj)0)  {
+    while (lvars && !IsBottomLVars(lvars))  {
         Obj nams = NAMS_FUNC(FUNC_LVARS(lvars));
         if (nams != (Obj) 0) {
             PushPlist(stackNams, nams);

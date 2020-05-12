@@ -229,8 +229,8 @@ static Obj Shell(Obj    context,
     Int depth = STATE(ErrorLLevel);
     Obj errorLVars = context;
     STATE(ErrorLLevel) = 0;
-    while (0 < depth && errorLVars != STATE(BottomLVars) &&
-           PARENT_LVARS(errorLVars) != STATE(BottomLVars)) {
+    while (0 < depth && !IsBottomLVars(errorLVars) &&
+           !IsBottomLVars(PARENT_LVARS(errorLVars))) {
         errorLVars = PARENT_LVARS(errorLVars);
         STATE(ErrorLLevel)++;
         depth--;

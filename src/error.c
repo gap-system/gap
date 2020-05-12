@@ -105,7 +105,7 @@ static Obj FuncDownEnv(Obj self, Obj args)
     else {
         ErrorQuit("usage: DownEnv( [ <depth> ] )", 0, 0);
     }
-    if (STATE(ErrorLVars) == STATE(BottomLVars)) {
+    if (IsBottomLVars(STATE(ErrorLVars))) {
         Pr("not in any function\n", 0, 0);
         return (Obj)0;
     }
@@ -126,7 +126,7 @@ static Obj FuncUpEnv(Obj self, Obj args)
     else {
         ErrorQuit("usage: UpEnv( [ <depth> ] )", 0, 0);
     }
-    if (STATE(ErrorLVars) == STATE(BottomLVars)) {
+    if (IsBottomLVars(STATE(ErrorLVars))) {
         Pr("not in any function\n", 0, 0);
         return (Obj)0;
     }
@@ -137,7 +137,7 @@ static Obj FuncUpEnv(Obj self, Obj args)
 
 static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
-    if (context == STATE(BottomLVars))
+    if (IsBottomLVars(context))
         return Fail;
 
     Obj func = FUNC_LVARS(context);
@@ -170,7 +170,7 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 
 static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 {
-    if (context == STATE(BottomLVars))
+    if (IsBottomLVars(context))
         return 0;
 
     /* HACK: we want to redirect output */

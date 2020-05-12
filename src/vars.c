@@ -2014,7 +2014,7 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
   Obj nams = NAMS_FUNC(func);
   UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
   Obj values = NEW_PLIST_IMM(T_PLIST, len);
-  if (lvars == STATE(BottomLVars))
+  if (IsBottomLVars(lvars))
     return Fail;
   AssPRec(contents, RNamName("func"), func);
   AssPRec(contents, RNamName("names"), nams);
@@ -2023,7 +2023,7 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
       len--;
   SET_LEN_PLIST(values, len);
   AssPRec(contents, RNamName("values"), values);
-  if (ENVI_FUNC(func) != STATE(BottomLVars))
+  if (!IsBottomLVars(ENVI_FUNC(func)))
     AssPRec(contents, RNamName("higher"), ENVI_FUNC(func));
   return contents;
 }
@@ -2034,6 +2034,18 @@ static Obj FuncENVI_FUNC(Obj self, Obj func)
     Obj envi = ENVI_FUNC(func);
     return (envi && IS_LVARS_OR_HVARS(envi)) ? envi : Fail;
 }
+
+
+/****************************************************************************
+**
+*F  IsBottomLVars(<lvars>) . .  check whether some lvars are the bottom lvars
+**
+*/
+BOOL IsBottomLVars(Obj lvars)
+{
+    return lvars == STATE(BottomLVars);
+}
+
 
 /****************************************************************************
 **
