@@ -783,7 +783,7 @@ Int SyFopen (
     int                 flags = 0;
 
     Char * terminator = strrchr(name, '.');
-    BOOL endsgz = terminator && (strcmp(terminator, ".gz") == 0);
+    int endsgz = terminator && (strcmp(terminator, ".gz") == 0);
 
     /* handle standard files                                               */
     if ( strcmp( name, "*stdin*" ) == 0 ) {
