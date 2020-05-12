@@ -287,15 +287,17 @@ static UInt GetIdent(ScannerState * s, Int i, Char c)
         c = GET_NEXT_CHAR();
     }
 
-    // terminate the identifier and lets assume that it is not a keyword
+    // reject overlong identifiers
     if (i > MAX_VALUE_LEN - 1) {
         SyntaxError(
             s, "Identifiers in GAP must consist of at most 1023 characters.");
         i = MAX_VALUE_LEN - 1;
     }
+
+    // terminate the identifier
     s->Value[i] = '\0';
 
-    // if it is quoted then it is an identifier
+    // if it is quoted then it is not a keyword
     if (isQuoted)
         return S_IDENT;
 
