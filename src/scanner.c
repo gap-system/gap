@@ -510,29 +510,8 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
       }
     }
     else {
-      // Might be a conversion marker
-      if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' &&
-          c != 'q' && c != 'Q') {
-        i = AddCharToValue(s, i, c);
-        c = GET_NEXT_CHAR();
-      }
-      // independently of that, we allow an _ signalling immediate conversion
-      if (c == '_') {
-        i = AddCharToValue(s, i, c);
-        c = GET_NEXT_CHAR();
-        // After which there may be one character signifying the
-        // conversion style
-        if (IsAlpha(c))
-          i = AddCharToValue(s, i, c);
-        c = GET_NEXT_CHAR();
-      }
-      // Now if the next character is alphanumerical, or an identifier type
-      // symbol then we really do have an error, otherwise we return a result
-      if (!IsIdent(c)) {
-        symbol = S_FLOAT;
-        goto finish;
-      }
-      SyntaxError(s, "Badly formed number");
+      symbol = S_FLOAT;
+      goto finish;
     }
 
   // Here we are into the unsigned exponent of a number in scientific
