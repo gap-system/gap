@@ -388,7 +388,6 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
   UInt symbol = S_ILLEGAL;
   UInt i = 0;
   UInt seenADigit = 0;
-  UInt seenExp = 0;
   UInt seenExpDigit = 0;
 
   s->ValueObj = 0;
@@ -502,12 +501,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
     }
 
     // If the next thing is the start of the exponential notation, read it now.
-
     if (IsAlpha(c)) {
-      if (!seenADigit)
-        SyntaxError(s, "Badly formed number: need a digit before or after "
-                    "the decimal point");
-      seenExp = 1;
       i = AddCharToValue(s, i, c);
       c = GET_NEXT_CHAR();
       if (c == '+' || c == '-') {
@@ -515,13 +509,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
         c = GET_NEXT_CHAR();
       }
     }
-
-    // Either we saw an exponent indicator, or we hit end of token deal with
-    // the end of token case
-    if (!seenExp) {
-      if (!seenADigit)
-        SyntaxError(s, "Badly formed number: need a digit before or after "
-                    "the decimal point");
+    else {
       // Might be a conversion marker
       if (IsAlpha(c) && c != 'e' && c != 'E' && c != 'd' && c != 'D' &&
           c != 'q' && c != 'Q') {
