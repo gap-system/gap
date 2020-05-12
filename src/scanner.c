@@ -387,8 +387,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
 {
   UInt symbol = S_ILLEGAL;
   UInt i = 0;
-  UInt seenADigit = 0;
-  UInt seenExpDigit = 0;
+  BOOL seenADigit = FALSE;
 
   s->ValueObj = 0;
 
@@ -399,7 +398,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
     // read initial sequence of digits into 'Value'
     while (IsDigit(c)) {
       i = AddCharToValue(s, i, c);
-      seenADigit = 1;
+      seenADigit = TRUE;
       c = GET_NEXT_CHAR();
     }
 
@@ -443,7 +442,6 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
       i = AddCharToValue(s, i, '.');
       c = GET_NEXT_CHAR();
     }
-
     else {
       // Anything else we see tells us that the token is done
       symbol = S_INT;
@@ -451,18 +449,15 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
     }
   }
 
-
   // When we get here we have read possibly some digits, a . and possibly
   // some more digits, but not an e,E,d,D,q or Q
-
   // In any case, from now on, we know we are dealing with a float literal
   symbol = S_FLOAT;
-
 
     // read digits
     while (IsDigit(c)) {
       i = AddCharToValue(s, i, c);
-      seenADigit = 1;
+      seenADigit = TRUE;
       c = GET_NEXT_CHAR();
     }
     if (!seenADigit)
@@ -482,15 +477,13 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
 
       // Here we are into the unsigned exponent of a number in scientific
       // notation, so we just read digits
-
-      while (IsDigit(c)) {
-        i = AddCharToValue(s, i, c);
-        seenExpDigit = 1;
-        c = GET_NEXT_CHAR();
-      }
-      if (!seenExpDigit)
+      if (!IsDigit(c))
         SyntaxError(s, 
             "Badly formed number: need at least one digit in the exponent");
+      while (IsDigit(c)) {
+        i = AddCharToValue(s, i, c);
+        c = GET_NEXT_CHAR();
+      }
     }
 
       // Allow one letter at the end of the number, which is a conversion
@@ -505,7 +498,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
         i = AddCharToValue(s, i, c);
         c = GET_NEXT_CHAR();
         // After which there may be one character signifying the
-        // conversion style
+        // conversion styles
         if (IsAlpha(c)) {
           i = AddCharToValue(s, i, c);
           c = GET_NEXT_CHAR();
@@ -516,7 +509,6 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
       if (IsIdent(c)) {
         SyntaxError(s, "Badly formed number");
       }
-
 
 finish:
   i = AddCharToValue(s, i, '\0');
