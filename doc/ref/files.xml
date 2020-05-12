@@ -265,6 +265,19 @@ resp. <Ref Func="IsExecutableFile"/> to check such permissions.
 </Description>
 </ManSection>
 
+<ManSection>
+<Func Name="IsWritablePath" Arg='pathname'/>
+
+<Description>
+<Ref Func="IsWritablePath"/>
+returns <K>true</K> if either there is a writable file (not a directory) with
+the filename <A>pathname</A>
+or there is no such file, but one could be created by writing to it
+(i.e., the path names a non-existent file in a writable directory)
+and <K>false</K> otherwise.
+</Description>
+</ManSection>
+
 </Section>
 
 

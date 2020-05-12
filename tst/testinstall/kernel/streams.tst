@@ -108,6 +108,9 @@ Error, IsExecutableFile: <filename> must be a string (not the value 'fail')
 gap> IsDirectoryPathString(fail);
 Error, IsDirectoryPathString: <filename> must be a string (not the value 'fail\
 ')
+gap> IsWritablePathString(fail);
+Error, IsWritablePathString: <filename> must be a string (not the value 'fail'\
+)
 gap> LIST_DIR(fail);
 Error, LIST_DIR: <dirname> must be a string (not the value 'fail')
 

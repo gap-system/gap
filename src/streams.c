@@ -1232,6 +1232,23 @@ static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
     return res == -1 ? False : True;
 }
 
+/****************************************************************************
+**
+*F  FuncIsWritablePath( <self>, <filename> ) . .  is <filename> a valid 
+**  destination for output -- a writable file or non-existent file in a 
+**  writable directory.
+*/
+static Obj FuncIsWritablePathString(Obj self, Obj filename)
+{
+    Int res;
+
+    RequireStringRep("IsWritablePathString", filename);
+
+    /* call the system dependent function                                  */
+    res = SyIsWritablePath(CONST_CSTR_STRING(filename));
+    return res == -1 ? False : True;
+}
+
 
 /****************************************************************************
 **
@@ -1804,6 +1821,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(IsWritableFile, filename),
     GVAR_FUNC_1ARGS(IsExecutableFile, filename),
     GVAR_FUNC_1ARGS(IsDirectoryPathString, filename),
+    GVAR_FUNC_1ARGS(IsWritablePathString, filename),
     GVAR_FUNC_1ARGS(LIST_DIR, dirname),
     GVAR_FUNC_1ARGS(CLOSE_FILE, fid),
     GVAR_FUNC_1ARGS(INPUT_TEXT_FILE, filename),

@@ -380,10 +380,21 @@ Int SyIsExecutableFile(const Char * name);
 **
 *F  SyIsDirectoryPath( <name> ) . . . . . . . . .  is file <name> a directory
 **
-**  'SyIsDirectoryPath' returns 1 if the  file <name>  is a directory  and  0
+**  'SyIsDirectoryPath' returns 0 if the  file <name>  is a directory  and -1
 **  otherwise. <name> is a system dependent description of the file.
 */
 Int SyIsDirectoryPath(const Char * name);
+
+/****************************************************************************
+**
+*F  SyIsWritablePath( <name> ) . . . . . . . . .is <name> a valid output path
+**
+** 'SyIsWritablePath' returns 0 if the file <name> is an existing
+**  writable file or a non-existent file in an existing writable
+**  directory and -1 otherwise. <name> is a system dependent
+**  description of the file.
+*/
+Int SyIsWritablePath(const Char * name);
 
 
 /****************************************************************************

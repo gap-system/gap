@@ -3139,6 +3139,32 @@ Int SyIsDirectoryPath ( const Char * name )
     return S_ISDIR(buf.st_mode) ? 0 : -1;
 }
 
+/****************************************************************************
+**
+*F  SyIsWritablePath( <name> ) . . . . . . . . .is <name> a valid output path
+**
+**  'SyIsWritablePath' returns 0 if the file <name> is an existing
+**  writable file (not a directory) or a non-existent file in an
+**  existing writable directory and -1 otherwise. <name> is a system
+**  dependent description of the file.
+*/
+Int SyIsWritablePath(const Char * name)
+{
+    if (0 == SyIsDirectoryPath(name))
+        return -1;
+    if (0 == SyIsWritableFile(name))
+        return 0;
+    if (0 == SyIsExistingFile(name))
+        return -1;
+    Char * slash = rindex(name, '/');
+    if (!slash)
+        return SyIsWritableFile(".");
+    Char basename[slash - name + 1];
+    memcpy(basename, name, slash - name);
+    basename[slash - name] = '\0';
+    return SyIsWritableFile(basename);
+}
+
 
 /****************************************************************************
 **
