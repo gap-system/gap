@@ -36,6 +36,7 @@ extern "C" {
 #include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
+#include "gaptime.h"
 #include "gasman.h"
 #include "gvars.h"
 #include "info.h"
