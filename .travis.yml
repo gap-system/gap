@@ -97,7 +97,7 @@ matrix:
     # OS X builds: since those are slow and limited on Travis, we only run testinstall
     - env: TEST_SUITES="docomp testinstall"
       os: osx
-      compiler: clang
+      osx_image: xcode11.4
 
     # test creating the manual
     - env: TEST_SUITES=makemanuals
