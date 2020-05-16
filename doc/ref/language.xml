@@ -134,7 +134,7 @@ Digits, uppercase and lowercase letters, <B>Space</B>, <B>Tab</B>,
 <B>Newline</B>, <B>Return</B> and the special characters
 <P/>
 <Listing><![CDATA[
-"    `    (    )    *    +    ,    -    #
+"    '    (    )    *    +    ,    -    #
 .    /    :    ;    <    =    >    ~    
 [    \    ]    ^    _    {    }    ! 
 ]]></Listing>
