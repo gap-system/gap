@@ -47,12 +47,12 @@ for f in DirectoryContents(d) do
     Add(covs, f);
     Print("  ", f, "\n");
 od;
+prefix := Concatenation(GAPInfo.SystemEnvironment.PWD, "/");
 if Length(covs) > 0 then
     Print("Merging ", Length(covs), " coverage files...\n");
     r := MergeLineByLineProfiles(covs);;
 
     # now remove "weird" entries, and entries for pkg files
-    prefix := Concatenation(GAPInfo.SystemEnvironment.PWD, "/");
     r.line_info := Filtered(r.line_info, file ->
         StartsWith(file[1], prefix) and
         fail = PositionSublist(file[1], "/pkg/") and
@@ -60,15 +60,18 @@ if Length(covs) > 0 then
 
     Print("Outputting JSON for Codecov...\n");
     OutputJsonCoverage(r, "gap-coverage.json");;
-
-    Print("Outputting JSON for Coveralls...\n");
-    OutputCoverallsJsonCoverage(r, "gap-coveralls.json", prefix);
 else
     # Don't error, because we might want to gather
     # gcov coverage, so just inform that we didn't find
     # GAP coverage data
     Print("No coverage files found...\n");
+    r := rec( line_info := [] );
 fi;
+
+# Always output coveralls JSON, as ci-coveralls-merge.py relies
+# on it being present and containing all relevant metadata...
+Print("Outputting JSON for Coveralls...\n");
+OutputCoverallsJsonCoverage(r, "gap-coveralls.json", prefix);
 GAPInput
 
 if [[ -f gap-coveralls.json ]]
