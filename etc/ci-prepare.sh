@@ -55,7 +55,12 @@ then
     git clone https://github.com/gap-packages/io "$SRCDIR/pkg/io"
     git clone https://github.com/gap-packages/profiling "$SRCDIR/pkg/profiling"
 else
-    make bootstrap-pkg-full DOWNLOAD="$DOWNLOAD"
+    if ! make bootstrap-pkg-full DOWNLOAD="$DOWNLOAD"
+    then
+      df
+      ls -l /tmp
+      exit 1
+    fi
 fi
 
 # check that GAP is at least able to start

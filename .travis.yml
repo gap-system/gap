@@ -154,6 +154,9 @@ matrix:
 
     # test Julia integration
     - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
+      before_install:
+        - df -a
+        - ls -al /tmp
 
     # build on non-x86 platform
     - env: TEST_SUITES="docomp testinstall"
@@ -162,11 +165,16 @@ matrix:
       before_install:
         # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
         - sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels
+        - df -a
+        - ls -al /tmp
 
     # build on non-x86 platform
     - env: TEST_SUITES="docomp testinstall"
       arch: ppc64le
       dist: bionic
+      before_install:
+        - df -a
+        - ls -al /tmp
 
     # build on non-x86 platform; big endian!
     - env: TEST_SUITES="docomp testinstall"
@@ -175,6 +183,8 @@ matrix:
       before_install:
         # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
         - sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels
+        - df -a
+        - ls -al /tmp
 
 # use travis_terminate below to ensure travis immediately aborts upon error,
 # and also to work around timeouts (see https://travis-ci.community/t/7659)
