@@ -1193,6 +1193,7 @@ InstallGlobalFunction( DirectoriesPackagePrograms, function( name )
 
     # We are not allowed to call
     # `InstalledPackageVersion', `TestPackageAvailability' etc.
+    name:= LowercaseString( name );
     info:= PackageInfo( name );
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
