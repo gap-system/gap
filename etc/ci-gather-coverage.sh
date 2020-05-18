@@ -77,7 +77,7 @@ GAPInput
 if [[ -f gap-coveralls.json ]]
 then
   # generate kernel coverage reports by running gcov
-  python etc/ci-gcovr-coverage.py -r . --output c-coveralls.json --exclude-directories pkg/ --exclude-directories extern/
+  python etc/ci-gcovr-coverage.py -r . --output c-coveralls.json --exclude-directories pkg/ --exclude-directories extern/ --exclude extern
 
   python etc/ci-coveralls-merge.py
 fi
