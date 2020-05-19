@@ -4,6 +4,43 @@
 gap> START_TEST("kernel/scanner.tst");
 
 #
+#
+#
+gap> 	&;
+Syntax error: expression expected in stream:1
+	&;
+	^
+
+#
+# test weird things about GetIdent
+#
+
+#
+gap> x\ay := function() end;;
+gap> NameFunction(x\ay);
+"xay"
+
+#
+gap> x\ny := function() end;;
+gap> NameFunction(x\ny);
+"x\ny"
+
+#
+gap> x\ty := function() end;;
+gap> NameFunction(x\ty);
+"x\ty"
+
+#
+gap> x\ry := function() end;;
+gap> NameFunction(x\ry);
+"x\ry"
+
+#
+gap> x\by := function() end;;
+gap> NameFunction(x\by);
+"x\by"
+
+#
 # test long gvar names: at most 1023 chars are supported
 #
 gap> x1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 := 1;
@@ -155,19 +192,20 @@ a.x111111111111111111111111111111111111111111111111111111111111111111111111111\
 #
 # test EOF inside a string literal
 #
-gap> EvalString("\"123");
+gap> Read(InputTextString("\"123"));
 Syntax error: String must end with " before end of file in stream:1
-Syntax error: ; expected in stream:1
-Error, Could not evaluate string.
-
-gap> EvalString("\"\"\"123");
+gap> Read(InputTextString("\"\"\"123"));
 Syntax error: String must end with """ before end of file in stream:1
-Syntax error: ; expected in stream:1
-Error, Could not evaluate string.
-
 gap> obj := """
 Syntax error: String must end with """ before end of file in stream:2
 Syntax error: ; expected in stream:2
+
+#
+# test EOF inside a pragma
+#
+gap> Read(InputTextString("#% pragma"));
+gap> Read(InputTextString("1 #% pragma"));
+gap> Read(InputTextString("1 #% pragma;"));
 
 #
 # cover some border cases in NextSymbol

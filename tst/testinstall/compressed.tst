@@ -72,6 +72,8 @@ gap> stream := OutputTextFile( fname, false );;
 gap> PrintTo( stream, "1");
 gap> AppendTo( stream, "2");
 gap> PrintTo( stream, "3");
+gap> WriteLine(stream, "abc");
+true
 gap> CloseStream(stream);
 gap> stream;
 closed-stream
@@ -81,7 +83,7 @@ true
 # verify it
 gap> stream := InputTextFile( fname );;
 gap> ReadAll(stream);
-"123"
+"123abc\n"
 gap> CloseStream(stream);
 gap> stream;
 closed-stream
@@ -96,8 +98,8 @@ closed-stream
 
 # too long partial read
 gap> stream := InputTextFile( fname );;
-gap> ReadAll(stream, 5);
-"123"
+gap> ReadAll(stream, 10);
+"123abc\n"
 gap> CloseStream(stream);
 gap> stream;
 closed-stream
@@ -118,7 +120,7 @@ gap> CloseStream(stream);
 # verify it
 gap> stream := InputTextFile( fname );;
 gap> ReadAll(stream);
-"1234"
+"123abc\n4"
 gap> CloseStream(stream);
 gap> stream;
 closed-stream

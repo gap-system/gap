@@ -2731,6 +2731,7 @@ UInt ReadEvalFile(Obj * evalResult)
 
     /* we now want to be at <end-of-file>                                  */
     if (rs->s.Symbol != S_EOF) {
+        FlushRestOfInputLine();
         SyntaxError(&rs->s, "<end-of-file> expected");
     }
 
