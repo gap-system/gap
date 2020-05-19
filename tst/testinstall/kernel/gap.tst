@@ -1,4 +1,29 @@
 #
+# Tests for functions defined in src/gap.c
+#
+gap> START_TEST("kernel/gap.tst");
+
+# stress test the kernel helper `ViewObjHandler`: force an error
+# in ViewObj; afterwards everything should still work as before
+gap> l := [ ~ ];; r := rec(a:=~);;
+gap> cat := NewCategory("IsMockObject", IsObject);;
+gap> type := NewType(NewFamily("MockFamily"), cat);;
+gap> InstallMethod(ViewObj, [cat], function(s) Error("oops"); end);
+gap> InstallMethod(PrintObj, [cat], function(s) Error("uups"); end);
+gap> x:=Objectify(type,[]); r; Print(l, "\n");
+Error, oops
+rec( a := ~ )
+[ ~ ]
+gap> ViewObj(x); r; Print(l, "\n");
+Error, oops
+rec( a := ~ )
+[ ~ ]
+gap> PrintObj(x); r; Print(l, "\n");
+Error, uups
+rec( a := ~ )
+[ ~ ]
+
+#
 gap> SHELL();
 Error, Function: number of arguments must be 10 (not 0)
 gap> SHELL(1,2,3,4,5,6,7,8,9,10);
@@ -215,3 +240,6 @@ gap> UPDATE_STAT(fail, fail);
 Error, UPDATE_STAT: <name> must be a string (not the value 'fail')
 gap> UPDATE_STAT("foobar", fail);
 Error, UPDATE_STAT: unsupported <name> value 'foobar'
+
+#
+gap> STOP_TEST("kernel/gap.tst", 1);
