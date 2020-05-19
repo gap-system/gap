@@ -374,14 +374,17 @@ static void READ_TEST_OR_LOOP(Obj context)
     UInt                type;
     UInt                oldtime;
     UInt                dualSemicolon;
+    UInt                oldPrintObjState;
 
     /* get the starting time                                               */
     oldtime = SyTime();
+    oldPrintObjState = SetPrintObjState(0);
 
     /* now do the reading                                                  */
     while ( 1 ) {
 
         /* read and evaluate the command                                   */
+        SetPrintObjState(0);
         ClearError();
         Obj evalResult;
         type = ReadEvalCommand(context, &evalResult, &dualSemicolon);
@@ -397,9 +400,7 @@ static void READ_TEST_OR_LOOP(Obj context)
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {
-                Bag currLVars = STATE(CurrLVars); /* in case view runs into error */
                 ViewObjHandler( evalResult );
-                SWITCH_TO_OLD_LVARS(currLVars);
             }
         }
 
@@ -416,6 +417,7 @@ static void READ_TEST_OR_LOOP(Obj context)
 
     }
 
+    SetPrintObjState(oldPrintObjState);
     ClearError();
 }
 

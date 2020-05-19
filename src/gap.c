@@ -128,13 +128,12 @@ UInt ViewObjGVar;
 
 void ViewObjHandler ( Obj obj )
 {
-  volatile Obj        func;
-
-  /* get the functions                                                   */
-  func = ValAutoGVar(ViewObjGVar);
+  // save some values in case view runs into error
+  volatile Bag  currLVars   = STATE(CurrLVars);
 
   /* if non-zero use this function, otherwise use `PrintObj'             */
   GAP_TRY {
+    Obj func = ValAutoGVar(ViewObjGVar);
     if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
       ViewObj(obj);
     }
@@ -142,8 +141,10 @@ void ViewObjHandler ( Obj obj )
       PrintObj( obj );
     }
     Pr("\n", 0, 0);
+    GAP_ASSERT(currLVars == STATE(CurrLVars));
   }
   GAP_CATCH {
+    SWITCH_TO_OLD_LVARS(currLVars);
   }
 }
 
@@ -171,7 +172,7 @@ static Obj Shell(Obj    context,
   UInt status;
   Obj evalResult;
   UInt dualSemicolon;
-  UInt oldPrintDepth;
+  UInt oldPrintObjState;
   Obj res;
   Int oldErrorLLevel = STATE(ErrorLLevel);
   STATE(ErrorLLevel) = 0;
@@ -187,7 +188,7 @@ static Obj Shell(Obj    context,
       ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
   
-  oldPrintDepth = SetPrintObjState(0);
+  oldPrintObjState = SetPrintObjState(0);
 
   while ( 1 ) {
 
@@ -298,7 +299,7 @@ static Obj Shell(Obj    context,
 
   }
   
-  SetPrintObjState(oldPrintDepth);
+  SetPrintObjState(oldPrintObjState);
   CloseInput();
   CloseOutput();
   STATE(ErrorLLevel) = oldErrorLLevel;
