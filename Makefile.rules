@@ -56,7 +56,7 @@ SOURCES += src/finfield.c
 SOURCES += src/funcs.c
 SOURCES += src/gap.c
 SOURCES += src/gaptime.c
-SOURCES += gen/gap_version.c	# generated source file
+SOURCES += build/gap_version.c	# generated source file
 SOURCES += src/gvars.c
 SOURCES += src/hookintrprtr.c
 SOURCES += src/info.c
@@ -139,10 +139,10 @@ GAP_PKG_CPPFLAGS =
 
 # First add include paths
 
-# The "gen/" directory contains generated header files and thus is
+# The "build/" directory contains generated header files and thus is
 # placed into the list of include directories.
-GAP_CPPFLAGS += -I$(builddir)/gen
-GAP_PKG_CPPFLAGS += -I$(abs_builddir)/gen
+GAP_CPPFLAGS += -I$(builddir)/build
+GAP_PKG_CPPFLAGS += -I$(abs_builddir)/build
 
 # The other source files are relative to the srcdir
 GAP_CPPFLAGS += -I$(srcdir)/src
@@ -244,11 +244,11 @@ GAP_LIBS += $(LIBS)
 
 # OBJS shall contain the names of all object files that constitute GAP.
 # So turn all FOO/bar.c and FOO/bar.cc file names in SOURCES into
-# gen/obj/FOO/bar.c.lo resp. gen/obj/FOO/bar.cc.lo
-OBJS = $(patsubst %,gen/obj/%.lo,$(SOURCES))
+# build/obj/FOO/bar.c.lo resp. build/obj/FOO/bar.cc.lo
+OBJS = $(patsubst %,build/obj/%.lo,$(SOURCES))
 
 # ensure config.h is built before the compilers gets invoked
-$(OBJS): gen/config.h
+$(OBJS): build/config.h
 
 
 ########################################################################
@@ -276,7 +276,7 @@ endif
 # support. The result is much simpler.
 #
 # So, here is what happens :We instruct the compiler via some flags to
-# create a "gen/deps/FOO.d" file whenever it compiles "FOO.c". This file
+# create a "build/deps/FOO.d" file whenever it compiles "FOO.c". This file
 # encodes the header dependencies of "FOO.c" in a way that make can read
 # (i.e. simply as a bunch of make targets with dependencies). Then, to
 # let make track the header dependencies, we include the *.d files.
@@ -287,7 +287,7 @@ endif
 ########################################################################
 
 # List of all (potential) dependency tracking files, derived from SOURCES
-DEPFILES = $(patsubst %,gen/deps/%.d,$(SOURCES))
+DEPFILES = $(patsubst %,build/deps/%.d,$(SOURCES))
 
 # Include the dependency tracking files, skip any missing ones
 -include $(wildcard $(DEPFILES))
@@ -297,8 +297,8 @@ DEPFILES = $(patsubst %,gen/deps/%.d,$(SOURCES))
 # because our compile rules have two targets, the .lo and the .d file;
 # and the value of $@ will be whichever of the two files triggered the
 # compiler rule, so we cannot use it directly
-DEPFILE = gen/deps/$(*D)/$(<F).d
-OBJFILE = gen/obj/$(*D)/$(<F).lo
+DEPFILE = build/deps/$(*D)/$(<F).d
+OBJFILE = build/obj/$(*D)/$(<F).lo
 
 # The following flags instruct the compiler to enable advanced
 # dependency tracking. Supported by GCC 3 and newer; clang; Intel C
@@ -327,14 +327,14 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
 # careful to not put these into GAP_CXXFLAGS, as kernel extensions may want to
 # use GAP_CXXFLAGS but also may have a  need to interface with C++ code in
 # libraries that use exceptions.
-gen/obj/%.cc.lo gen/deps/%.cc.d: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool
-	@$(MKDIR_P) gen/obj/$(*D) gen/deps/$(*D)
+build/obj/%.cc.lo build/deps/%.cc.d: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool
+	@$(MKDIR_P) build/obj/$(*D) build/deps/$(*D)
 	$(QUIET_CXX)$(LIBTOOL) --mode=compile --tag CXX $(CXX) $(DEPFLAGS) $(GAP_CXXFLAGS) -fno-exceptions -fno-rtti $(WARN_CXXFLAGS) $(GAP_CPPFLAGS) -c $< -o $(OBJFILE)
 	@echo "$<:" >> $(DEPFILE)
 
 # Build rule for C source files
-gen/obj/%.c.lo gen/deps/%.c.d: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
-	@$(MKDIR_P) gen/obj/$(*D) gen/deps/$(*D)
+build/obj/%.c.lo build/deps/%.c.d: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
+	@$(MKDIR_P) build/obj/$(*D) build/deps/$(*D)
 	$(QUIET_CC)$(LIBTOOL) --mode=compile --tag CC $(CC) $(DEPFLAGS) $(GAP_CFLAGS) $(WARN_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $(OBJFILE)
 	@echo "$<:" >> $(DEPFILE)
 
@@ -460,7 +460,7 @@ distclean: clean
 
 clean:
 	rm -rf bin/$(GAPARCH)
-	rm -rf gen
+	rm -rf build
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
 	rm -f doc/wsp.g
@@ -761,7 +761,7 @@ symlinks: FORCE
 	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_srcdir)/src bin/$(GAPARCH)/src
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gac bin/$(GAPARCH)/gac
 	@$(srcdir)/cnf/REGEN-SYMLINK ../../gap bin/$(GAPARCH)/gap
-	@$(srcdir)/cnf/REGEN-SYMLINK ../../gen/config.h bin/$(GAPARCH)/config.h
+	@$(srcdir)/cnf/REGEN-SYMLINK ../../build/config.h bin/$(GAPARCH)/config.h
 
 .PHONY: symlinks
 
@@ -1081,7 +1081,7 @@ check: all
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload)
 
 # run a test in tst/testlibgap
-tst/testlibgap/%: gen/obj/tst/testlibgap/%.c.lo gen/obj/tst/testlibgap/common.c.lo libgap.la
+tst/testlibgap/%: build/obj/tst/testlibgap/%.c.lo build/obj/tst/testlibgap/common.c.lo libgap.la
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $^ $(GAP_LIBS) -o $@
 
 clean: clean-testlibgap
@@ -1098,7 +1098,7 @@ testlibgap: ${LIBGAPTESTS}
 KERNELTESTS := $(addprefix tst/testkernel/,dstruct)
 
 # run a test in tst/testkernel
-tst/testkernel/%: gen/obj/tst/testkernel/%.c.lo libgap.la
+tst/testkernel/%: build/obj/tst/testkernel/%.c.lo libgap.la
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $^ $(GAP_LIBS) -o $@
 
 clean: clean-testkernel
@@ -1253,8 +1253,8 @@ $(GVF): FORCE
 	@cd $(srcdir) && $(SHELL) cnf/GAP-VERSION-GEN $(GAP_VERSION)
 -include $(GVF)
 
-# generate gen/gap_version.c
-gen/gap_version.c: $(srcdir)/src/gap_version.c.in $(GVF) $(srcdir)/Makefile.rules
+# generate build/gap_version.c
+build/gap_version.c: $(srcdir)/src/gap_version.c.in $(GVF) $(srcdir)/Makefile.rules
 	@$(MKDIR_P) $(@D)
 	$(QUIET_SED)sed -e "s/@GAP_VERSION@/$(GAP_VERSION)/" \
 				    -e "s/@GAP_RELEASEDAY@/$(GAP_RELEASEDAY)/" \
@@ -1284,13 +1284,13 @@ $(srcdir)/configure: $(configure_deps)
 	 fi
 endif
 
-gen/config.h: gen/stamp-h
-	@if test ! -f $@; then rm -f gen/stamp-h; else :; fi
-	@if test ! -f $@; then $(MAKE) gen/stamp-h; else :; fi
+build/config.h: build/stamp-h
+	@if test ! -f $@; then rm -f build/stamp-h; else :; fi
+	@if test ! -f $@; then $(MAKE) build/stamp-h; else :; fi
 
-gen/stamp-h: $(srcdir)/src/config.h.in config.status
-	@rm -f gen/stamp-h
-	$(SHELL) ./config.status gen/config.h
+build/stamp-h: $(srcdir)/src/config.h.in config.status
+	@rm -f build/stamp-h
+	$(SHELL) ./config.status build/config.h
 	echo > $@
 
 ifneq ($(MAINTAINER_MODE),no)
@@ -1298,7 +1298,7 @@ $(srcdir)/src/config.h.in: $(configure_deps)
 	@if command -v autoheader >/dev/null 2>&1 ; then \
 	   echo "running autoheader" ; \
 	   cd $(srcdir) && autoheader ; \
-	   rm -f gen/stamp-h ; \
+	   rm -f build/stamp-h ; \
 	 else \
 	   echo "autoheader not available, proceeding with stale config.h" ; \
 	 fi

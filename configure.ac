@@ -40,8 +40,8 @@ AC_INIT([GAP],
 AC_CONFIG_SRCDIR([src/gap.c])
 AC_CONFIG_AUX_DIR([cnf])
 
-AC_CONFIG_HEADERS([gen/config.h:src/config.h.in])
-AC_CONFIG_COMMANDS([gen/stamp-h], [echo timestamp > gen/stamp-h])
+AC_CONFIG_HEADERS([build/config.h:src/config.h.in])
+AC_CONFIG_COMMANDS([build/stamp-h], [echo timestamp > build/stamp-h])
 
 dnl note that the final version used by the GAP kernel is GAP_BUILD_VERSION
 dnl and is computed by cnf/GAP-VERSION-GEN, which takes git commit hashes into

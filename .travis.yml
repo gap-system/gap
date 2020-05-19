@@ -131,7 +131,7 @@ matrix:
     #
     # Also change the compiler to GCC 4.7, to ensure we stay compatible
     # with that older version.
-    - env: TEST_SUITES="docomp testbuildsys testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=build CONFIGFLAGS="--enable-valgrind CC=gcc-4.7 CXX=g++-4.7"
+    - env: TEST_SUITES="docomp testbuildsys testinstall" NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree CONFIGFLAGS="--enable-valgrind CC=gcc-4.7 CXX=g++-4.7"
       addons:
         apt_packages:
           - gcc-4.7
@@ -140,7 +140,7 @@ matrix:
 
     # same as above, but in 32 bit mode, also turn off debugging (see elsewhere in this file for
     # an explanation).
-    - env: TEST_SUITES="docomp testbuildsys testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=build CONFIGFLAGS=""
+    - env: TEST_SUITES="docomp testbuildsys testinstall" NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=""
       addons:
         apt_packages:
           - gcc-multilib
