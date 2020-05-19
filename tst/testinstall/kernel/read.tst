@@ -65,6 +65,14 @@ rec("a":=1);
     ^^^
 
 #
+# ReadFactor
+#
+gap> 2^3^4;
+Syntax error: '^' is not associative in stream:1
+2^3^4;
+   ^
+
+#
 # ReadAtomic
 #
 gap> f := atomic function() end;;
@@ -204,6 +212,16 @@ local x; x := function(a) return a end;; return x(1);
 gap> f:={} -> ReadAsFunction(InputTextString("return 1"));;
 gap> f();
 Syntax error: ; expected in stream:1
+fail
+
+# empty body is not supported right now
+gap> ReadAsFunction(InputTextString(""));
+fail
+
+# check what happens if the function body ends earlier than
+# anticipated (FIXME: implement a better error message)
+gap> ReadAsFunction(InputTextString("return 1; end"));
+Syntax error: <end-of-file> expected in stream:1
 fail
 
 #
