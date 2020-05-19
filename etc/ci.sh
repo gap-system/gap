@@ -131,25 +131,25 @@ GAPInput
 
     # test: create garbage *.d and *.lo files in the source dir; these should not
     # affect the out of tree build, nor should they be removed by `make clean`
-    mkdir -p $SRCDIR/gen/deps/src
-    mkdir -p $SRCDIR/gen/obj/src
-    echo "garbage content !!!" > $SRCDIR/gen/deps/src/bool.c.d
-    echo "garbage content !!!" > $SRCDIR/gen/obj/src/bool.c.lo
+    mkdir -p $SRCDIR/build/deps/src
+    mkdir -p $SRCDIR/build/obj/src
+    echo "garbage content !!!" > $SRCDIR/build/deps/src/bool.c.d
+    echo "garbage content !!!" > $SRCDIR/build/obj/src/bool.c.lo
 
     # test: `make clean` works and afterwards we can still `make`
     make clean
     make
 
     # verify our "garbage" files are still there
-    test -f $SRCDIR/gen/deps/src/bool.c.d
-    test -f $SRCDIR/gen/obj/src/bool.c.lo
+    test -f $SRCDIR/build/deps/src/bool.c.d
+    test -f $SRCDIR/build/obj/src/bool.c.lo
 
     # test: `make` should regenerate removed *.d files (and then also regenerate the
     # corresponding *.lo file, which we verify by overwriting it with garbage)
-    rm gen/deps/src/bool.c.d
-    echo "garbage content !!!" > gen/obj/src/bool.c.lo
+    rm build/deps/src/bool.c.d
+    echo "garbage content !!!" > build/obj/src/bool.c.lo
     make
-    test -f gen/deps/src/bool.c.d
+    test -f build/deps/src/bool.c.d
 
     # test: running `make` a second time should produce no output
     test -z "$(make)"

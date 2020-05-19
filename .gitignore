@@ -15,7 +15,6 @@
 /libtool
 /src/config.h.in
 /src/config.h.in~
-/gen/
 
 /build/
 /extern/build/
