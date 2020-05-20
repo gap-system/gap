@@ -1048,7 +1048,7 @@ InstallGlobalFunction( IsPackageLoaded, function( name, version... )
     result := IsPackageMarkedForLoading( name, version );
     if result then
         # check if the package actually completed loading
-        result := GAPInfo.PackagesLoaded.( name )[4];
+        result := GAPInfo.PackagesLoaded.( LowercaseString( name ) )[4];
     fi;
     return result;
     end );

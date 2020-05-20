@@ -979,6 +979,7 @@ end);
 ##
 InstallGlobalFunction( "TestPackage", function(pkgname)
 local testfile, str;
+pkgname := LowercaseString(pkgname);
 if not IsBound( GAPInfo.PackagesInfo.(pkgname) ) then
     Print("#I  No package with the name ", pkgname, " is available\n");
     return fail;

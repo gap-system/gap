@@ -276,6 +276,8 @@ gap> TestPackageAvailability("non-existing-package");
 fail
 gap> TestPackageAvailability("mockpkg");
 fail
+gap> TestPackageAvailability("MOCKPKG");
+fail
 gap> TestPackageAvailability("mockpkg", "=0.1");
 fail
 gap> TestPackageAvailability("mockpkg", ">=0.1");
@@ -289,6 +291,8 @@ fail
 gap> IsPackageLoaded("non-existing-package");
 false
 gap> IsPackageLoaded("mockpkg");
+false
+gap> IsPackageLoaded("MOCKPKG");
 false
 gap> IsPackageLoaded("mockpkg", "=0.1");
 false
@@ -323,6 +327,9 @@ fail
 gap> TestPackageAvailability("mockpkg") = Filename(mockpkgpath, "");
 oops, should not print here
 true
+gap> TestPackageAvailability("MOCKPKG") = Filename(mockpkgpath, "");
+oops, should not print here
+true
 gap> TestPackageAvailability("mockpkg", "=0.1") = Filename(mockpkgpath, "");
 oops, should not print here
 true
@@ -338,6 +345,8 @@ fail
 gap> IsPackageLoaded("non-existing-package");
 false
 gap> IsPackageLoaded("mockpkg");
+false
+gap> IsPackageLoaded("MOCKPKG");
 false
 gap> IsPackageLoaded("mockpkg", "=0.1");
 false
@@ -431,6 +440,8 @@ gap> TestPackageAvailability("non-existing-package");
 fail
 gap> TestPackageAvailability("mockpkg");
 true
+gap> TestPackageAvailability("MOCKPKG");
+true
 gap> TestPackageAvailability("mockpkg", "=0.1");
 true
 gap> TestPackageAvailability("mockpkg", ">=0.1");
@@ -444,6 +455,8 @@ fail
 gap> IsPackageLoaded("non-existing-package");
 false
 gap> IsPackageLoaded("mockpkg");
+true
+gap> IsPackageLoaded("MOCKPKG");
 true
 gap> IsPackageLoaded("mockpkg", "=0.1");
 true
