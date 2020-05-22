@@ -1483,8 +1483,10 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 **  all symbols up to one contained in <follow>.
 **
 **  <Literal> := <Int>
+**            |  <Float>
 **            |  'true'
 **            |  'false'
+**            |  '~'
 **            |  <Char>
 **            |  <Perm>
 **            |  <String>
@@ -1500,13 +1502,6 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 */
 static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
 {
-    if (rs->s.Symbol == S_DOT) {
-        // HACK: The only way a dot could turn up here is in a floating point
-        // literal that starts with '.'. Call back to the scanner to deal
-        // with this.
-        ScanForFloatAfterDotHACK(&rs->s);
-    }
-
     switch (rs->s.Symbol) {
 
     /* <Int>                                                               */
@@ -1549,7 +1544,7 @@ static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
         Match_(rs, S_CHAR, "character", follow);
         break;
 
-    /* string */
+    /* <String>                                                            */
     case S_STRING:
         GAP_ASSERT(rs->s.ValueObj != 0);
         TRY_IF_NO_ERROR { IntrStringExpr(&rs->intr, rs->s.ValueObj); }
@@ -1562,7 +1557,7 @@ static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
         ReadListExpr(rs, follow);
         break;
 
-    /* <Rec>                                                               */
+    /* <Record>                                                            */
     case S_REC:
         ReadRecExpr(rs, follow);
         break;
