@@ -152,8 +152,6 @@ gap> 1.;
 1.
 gap> 0.;
 0.
-gap> .1;
-0.1
 gap> 0.1;
 0.1
 gap> 1111111111111111111111111111111111111.1;
@@ -161,31 +159,28 @@ gap> 1111111111111111111111111111111111111.1;
 gap> 1.11111111111111111111111111111111111111;
 1.11111
 gap> .;
-Syntax error: Badly formed number: need a digit before or after the decimal po\
-int in stream:1
+Syntax error: literal expected in stream:1
 .;
 ^
 gap> .n;
-Syntax error: Badly formed number: need a digit before or after the decimal po\
-int in stream:1
+Syntax error: literal expected in stream:1
 .n;
 ^
 gap> .q;
-Syntax error: Badly formed number: need a digit before or after the decimal po\
-int in stream:1
+Syntax error: literal expected in stream:1
 .q;
 ^
 gap> .0n;
-Error, failed to convert float literal
+Syntax error: literal expected in stream:1
+.0n;
+^
 gap> .0q;
-Syntax error: Badly formed number: need at least one digit in the exponent in \
-stream:1
+Syntax error: literal expected in stream:1
 .0q;
-^^^
+^
 gap> .0qn;
-Syntax error: Badly formed number: need at least one digit in the exponent in \
-stream:1
+Syntax error: literal expected in stream:1
 .0qn;
-^^^
+^
 gap> Unbind(x);
 gap> STOP_TEST( "longnumber.tst", 1);

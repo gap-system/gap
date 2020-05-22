@@ -366,10 +366,6 @@ static UInt GetIdent(ScannerState * s, Int i, Char c)
 **
 **  When 's->Value' is completely filled, then a GAP string object is
 **  created in 's->ValueObj' and all data is stored there.
-**
-**  The argument is used to signal if a decimal point was already read,
-**  or whether we are starting from scratch..
-**
 */
 static UInt AddCharToBuf(Obj * string, Char * buf, UInt bufsize, UInt pos, Char c)
 {
@@ -386,89 +382,79 @@ static UInt AddCharToValue(ScannerState * s, UInt pos, Char c)
     return AddCharToBuf(&s->ValueObj, s->Value, MAX_VALUE_LEN - 1, pos, c);
 }
 
-static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
+static UInt GetNumber(ScannerState * s, Char c)
 {
     UInt symbol = S_ILLEGAL;
     UInt i = 0;
-    BOOL seenADigit = FALSE;
 
     s->ValueObj = 0;
 
-    if (readDecimalPoint) {
-        s->Value[i++] = '.';
+    GAP_ASSERT(IsDigit(c));
+
+    // read initial sequence of digits into 'Value'
+    while (IsDigit(c)) {
+        i = AddCharToValue(s, i, c);
+        c = GET_NEXT_CHAR();
     }
-    else {
-        // read initial sequence of digits into 'Value'
-        while (IsDigit(c)) {
-            i = AddCharToValue(s, i, c);
-            seenADigit = TRUE;
-            c = GET_NEXT_CHAR();
+
+    // maybe we saw an identifier character and realised that this is an
+    // identifier we are reading
+    if (IsIdent(c) || c == '\\') {
+        // if necessary, copy back from s->ValueObj to s->Value
+        if (s->ValueObj) {
+            i = GET_LEN_STRING(s->ValueObj);
+            GAP_ASSERT(i >= MAX_VALUE_LEN - 1);
+            memcpy(s->Value, CONST_CSTR_STRING(s->ValueObj),
+                   MAX_VALUE_LEN);
+            s->ValueObj = 0;
         }
+        // this looks like an identifier, scan the rest of it
+        return GetIdent(s, i, c);
+    }
 
-        // maybe we saw an identifier character and realised that this is an
-        // identifier we are reading
-        if (IsIdent(c) || c == '\\') {
-            // if necessary, copy back from s->ValueObj to s->Value
-            if (s->ValueObj) {
-                i = GET_LEN_STRING(s->ValueObj);
-                GAP_ASSERT(i >= MAX_VALUE_LEN - 1);
-                memcpy(s->Value, CONST_CSTR_STRING(s->ValueObj),
-                       MAX_VALUE_LEN);
-                s->ValueObj = 0;
-            }
-            // this looks like an identifier, scan the rest of it
-            return GetIdent(s, i, c);
-        }
+    // Or maybe we saw a '.' which could indicate one of three things:
+    // - a float literal: 12.345
+    // - S_DOT, i.e., '.' used to access a record entry: r.12.345
+    // - S_DDOT, i.e., '..' in a range expression:  [12..345]
+    if (c == '.') {
+        GAP_ASSERT(i < MAX_VALUE_LEN - 1);
 
-        // Or maybe we saw a '.' which could indicate one of three things:
-        // - a float literal: 12.345
-        // - S_DOT, i.e., '.' used to access a record entry: r.12.345
-        // - S_DDOT, i.e., '..' in a range expression:  [12..345]
-        if (c == '.') {
-            GAP_ASSERT(i < MAX_VALUE_LEN - 1);
-
-            // If the symbol before this integer was S_DOT then we must be in
-            // a nested record element expression, so don't look for a float.
-            // This is a bit fragile
-            if (s->Symbol == S_DOT || s->Symbol == S_BDOT) {
-                symbol = S_INT;
-                goto finish;
-            }
-
-            // peek ahead to decide if we are looking at a range expression
-            if (PEEK_NEXT_CHAR(s->input) == '.') {
-                // we are looking at '..' and are probably inside a range
-                // expression
-                symbol = S_INT;
-                goto finish;
-            }
-
-            // Now the '.' must be part of our number; store it and move on
-            i = AddCharToValue(s, i, '.');
-            c = GET_NEXT_CHAR();
-        }
-        else {
-            // Anything else we see tells us that the token is done
+        // If the symbol before this integer was S_DOT then we must be in
+        // a nested record element expression, so don't look for a float.
+        // This is a bit fragile
+        if (s->Symbol == S_DOT || s->Symbol == S_BDOT) {
             symbol = S_INT;
             goto finish;
         }
+
+        // peek ahead to decide if we are looking at a range expression
+        if (PEEK_NEXT_CHAR(s->input) == '.') {
+            // we are looking at '..' and are probably inside a range
+            // expression
+            symbol = S_INT;
+            goto finish;
+        }
+
+        // Now the '.' must be part of our number; store it and move on
+        i = AddCharToValue(s, i, '.');
+        c = GET_NEXT_CHAR();
+    }
+    else {
+        // Anything else we see tells us that the token is done
+        symbol = S_INT;
+        goto finish;
     }
 
-    // When we get here we have read possibly some digits, a . and possibly
+    // When we get here we have read some digits and a dot and possibly
     // some more digits, but not an e,E,d,D,q or Q
     // In any case, from now on, we know we are dealing with a float literal
     symbol = S_FLOAT;
 
-    // read digits
+    // read digits after dot
     while (IsDigit(c)) {
         i = AddCharToValue(s, i, c);
-        seenADigit = TRUE;
         c = GET_NEXT_CHAR();
     }
-    if (!seenADigit)
-        SyntaxError(s,
-                    "Badly formed number: need a digit before or after the "
-                    "decimal point");
     if (c == '\\')
         SyntaxError(s, "Badly formed number");
 
@@ -526,17 +512,6 @@ finish:
         AppendBufToString(s->ValueObj, s->Value, i - 1);
     }
     return symbol;
-}
-
-
-/****************************************************************************
-**
-*F  ScanForFloatAfterDotHACK()
-**
-*/
-void ScanForFloatAfterDotHACK(ScannerState * s)
-{
-    s->Symbol = GetNumber(s, 1, PEEK_CURR_CHAR(s->input));
 }
 
 
@@ -970,7 +945,7 @@ static UInt NextSymbol(ScannerState * s)
 
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
-                      return GetNumber(s, 0, c);
+                      return GetNumber(s, c);
 
     case '\377':      symbol = S_EOF;  FlushRestOfInputLine(s->input); break;
 

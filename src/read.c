@@ -1495,13 +1495,6 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 */
 static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
 {
-    if (rs->s.Symbol == S_DOT) {
-        // HACK: The only way a dot could turn up here is in a floating point
-        // literal that starts with '.'. Call back to the scanner to deal
-        // with this.
-        ScanForFloatAfterDotHACK(&rs->s);
-    }
-
     switch (rs->s.Symbol) {
 
     /* <Int>                                                               */

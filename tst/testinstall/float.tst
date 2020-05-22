@@ -775,7 +775,7 @@ gap> ComplexConjugate(1.3);
 #
 gap> Display(1.3);
 1.3
-gap> Display(-.4e6);
+gap> Display(-0.4e6);
 -400000.
 gap> PrintObj(1.3); Print("Q\n");
 1.3Q
