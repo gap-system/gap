@@ -160,7 +160,7 @@ matrix:
       dist: bionic
       before_install:
         # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
-        - sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels
+        - test -d ~/.cache/pip/wheels && sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels || echo "all good"
 
     # build on non-x86 platform
     - env: TEST_SUITES="docomp testinstall"
@@ -173,7 +173,7 @@ matrix:
       dist: bionic
       before_install:
         # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
-        - sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels
+        - test -d ~/.cache/pip/wheels && sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels || echo "all good"
 
 # use travis_terminate below to ensure travis immediately aborts upon error,
 # and also to work around timeouts (see https://travis-ci.community/t/7659)
