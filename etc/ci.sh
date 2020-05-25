@@ -126,6 +126,13 @@ GAPInput
     ;;
 
   testbuildsys)
+    # use parallel make if possible to speed up things a bit
+    export MAKEFLAGS="${MAKEFLAGS:--j3}"
+
+    # in case we change file locations again...
+    bool_d=build/deps/src/bool.c.d
+    bool_lo=build/obj/src/bool.c.lo
+
     # this test assumes we are doing an out-of-tree build
     test $BUILDDIR != $SRCDIR
 
@@ -133,26 +140,56 @@ GAPInput
     # affect the out of tree build, nor should they be removed by `make clean`
     mkdir -p $SRCDIR/build/deps/src
     mkdir -p $SRCDIR/build/obj/src
-    echo "garbage content !!!" > $SRCDIR/build/deps/src/bool.c.d
-    echo "garbage content !!!" > $SRCDIR/build/obj/src/bool.c.lo
+    echo "garbage content !!!" > $SRCDIR/${bool_d}
+    echo "garbage content !!!" > $SRCDIR/${bool_lo}
 
-    # test: `make clean` works and afterwards we can still `make`
+    # test: `make clean` works and afterwards we can still `make`; in particular
+    # build/config.h must be regenerated before any actual compilation
     make clean
     make
 
+    # verify that deps file has a target for the .lo file but not for the .d file
+    fgrep "bool.c.lo:" ${bool_d} > /dev/null
+    ! fgrep "bool.c.d:" ${bool_d} > /dev/null
+    ! fgrep "garbage content:" ${bool_lo} > /dev/null
+
     # verify our "garbage" files are still there
-    test -f $SRCDIR/build/deps/src/bool.c.d
-    test -f $SRCDIR/build/obj/src/bool.c.lo
+    test -f $SRCDIR/${bool_d}
+    test -f $SRCDIR/${bool_lo}
+
+    # test: `make` should regenerate removed *.lo files
+    rm ${bool_lo}
+    make
+    test -f ${bool_lo}
+
+    # verify that deps file has a target for the .lo file but not for the .d file
+    fgrep "bool.c.lo:" ${bool_d} > /dev/null
+    ! fgrep "bool.c.d:" ${bool_d} > /dev/null
+    ! fgrep "garbage content:" ${bool_lo} > /dev/null
 
     # test: `make` should regenerate removed *.d files (and then also regenerate the
     # corresponding *.lo file, which we verify by overwriting it with garbage)
-    rm build/deps/src/bool.c.d
-    echo "garbage content !!!" > build/obj/src/bool.c.lo
+    rm ${bool_d}
+    echo "garbage content !!!" > ${bool_lo}
     make
-    test -f build/deps/src/bool.c.d
+    test -f ${bool_d}
+
+    # verify that deps file has a target for the .lo file but not for the .d file
+    fgrep "bool.c.lo:" ${bool_d} > /dev/null
+    ! fgrep "bool.c.d:" ${bool_d} > /dev/null
+    ! fgrep "garbage content:" ${bool_lo} > /dev/null
 
     # test: running `make` a second time should produce no output
     test -z "$(make)"
+
+    # test: touching all source files does *not* trigger a rebuild if we make
+    # a target that doesn't depend on sources. We verify this by replacing the source
+    # code with garbage
+    mv $SRCDIR/src/bool.h book.h.bak
+    echo "garbage content !!!" > $SRCDIR/src/bool.h
+    make print-OBJS  # should print something but not error out
+    mv book.h.bak $SRCDIR/src/bool.h
+
     ;;
 
   makemanuals)

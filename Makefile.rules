@@ -247,9 +247,6 @@ GAP_LIBS += $(LIBS)
 # build/obj/FOO/bar.c.lo resp. build/obj/FOO/bar.cc.lo
 OBJS = $(patsubst %,build/obj/%.lo,$(SOURCES))
 
-# ensure config.h is built before the compilers gets invoked
-$(OBJS): build/config.h
-
 
 ########################################################################
 # Quiet rules.
@@ -307,7 +304,7 @@ OBJFILE = build/obj/$(*D)/$(<F).lo
 # TODO: use configure to compute DEPFLAGS, so that we can
 # disable it for compilers that don't support it, resp. replace it
 # something that works for that compiler
-DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
+DEPFLAGS = -MQ $(OBJFILE) -MMD -MP -MF $(DEPFILE)
 
 
 ########################################################################
@@ -327,13 +324,13 @@ DEPFLAGS = -MQ "$@" -MMD -MP -MF $(DEPFILE)
 # careful to not put these into GAP_CXXFLAGS, as kernel extensions may want to
 # use GAP_CXXFLAGS but also may have a  need to interface with C++ code in
 # libraries that use exceptions.
-build/obj/%.cc.lo build/deps/%.cc.d: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool
+build/obj/%.cc.lo build/deps/%.cc.d: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool build/config.h
 	@$(MKDIR_P) build/obj/$(*D) build/deps/$(*D)
 	$(QUIET_CXX)$(LIBTOOL) --mode=compile --tag CXX $(CXX) $(DEPFLAGS) $(GAP_CXXFLAGS) -fno-exceptions -fno-rtti $(WARN_CXXFLAGS) $(GAP_CPPFLAGS) -c $< -o $(OBJFILE)
 	@echo "$<:" >> $(DEPFILE)
 
 # Build rule for C source files
-build/obj/%.c.lo build/deps/%.c.d: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool
+build/obj/%.c.lo build/deps/%.c.d: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool build/config.h
 	@$(MKDIR_P) build/obj/$(*D) build/deps/$(*D)
 	$(QUIET_CC)$(LIBTOOL) --mode=compile --tag CC $(CC) $(DEPFLAGS) $(GAP_CFLAGS) $(WARN_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $(OBJFILE)
 	@echo "$<:" >> $(DEPFILE)
