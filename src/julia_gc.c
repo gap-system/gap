@@ -37,6 +37,9 @@
 #include <julia.h>
 #include <julia_gcext.h>
 
+// import jl_get_current_task from julia_internal.h, which unfortunately
+// isn't installed as part of a typical Julia installation
+JL_DLLEXPORT jl_value_t *jl_get_current_task(void);
 
 /****************************************************************************
 **
@@ -572,9 +575,9 @@ static void GapRootScanner(int full)
     // Module is a valid Julia object at this point, so further checks
     // in JMark() can be skipped.
     jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)Module);
-    jl_task_t * task = JuliaTLS->current_task;
+    jl_task_t * task = (jl_task_t *)jl_get_current_task();
     size_t      size;
-    int         tid;
+    int         tid;    // unused
     // We figure out the end of the stack from the current task. While
     // `stack_bottom` is passed to InitBags(), we cannot use that if
     // current_task != root_task.
@@ -585,13 +588,13 @@ static void GapRootScanner(int full)
     //
     // 1. GAP is not being used as a library, but is the main program
     //    and in charge of the main() function.
-    // 2. The stack of the current task is that of the main task of the
-    //    main thread.
+    // 2. The stack of the current task is that of the root task of the
+    //    main thread (which has thread id 0).
     //
     // The reason is that if Julia is being initialized from GAP, it
     // cannot always reliably find the top of the stack for that task,
     // so we have to fall back to GAP for that.
-    if (!IsUsingLibGap() && JuliaTLS->tid == 0 &&
+    if (!IsUsingLibGap() && jl_threadid() == 0 &&
         JuliaTLS->root_task == task) {
         stackend = (char *)GapStackBottom;
     }
@@ -625,7 +628,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     char * stack = (char *)jl_task_stack_buffer(task, &size, &tid);
     // If it is the current task, it has been scanned by GapRootScanner()
     // already.
-    if (task == JuliaTLS->current_task)
+    if (task == (jl_task_t *)jl_get_current_task())
         return;
     int rescan = 1;
     if (!FullGC) {
