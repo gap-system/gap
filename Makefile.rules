@@ -1073,7 +1073,7 @@ testbugfix: all
 
 #
 check: all
-	$(TESTGAP) tst/testinstall.g
+	$(TESTGAP) $(top_srcdir)/tst/testinstall.g
 
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload)
 
