@@ -305,7 +305,7 @@ static Obj FuncCrcString(Obj self, Obj str)
     Int4        ch;
     Int         seen_nl;
 
-    RequireStringRep("CrcString", str);
+    RequireStringRep(SELF_NAME, str);
 
     ptr = CONST_CSTR_STRING(str);
     len = GET_LEN_STRING(str);

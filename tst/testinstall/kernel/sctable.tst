@@ -10,27 +10,27 @@ gap> T := EmptySCTable(2,0*Z(2));
 
 #
 gap> SCTableEntry(false, false, false, false);
-Error, SCTableEntry: <table> must be a small list (not the value 'false')
+Error, SC_TABLE_ENTRY: <table> must be a small list (not the value 'false')
 gap> SCTableEntry([], false, false, false);
 Error, SCTableEntry: <table> must be a list with at least 3 elements
 gap> SCTableEntry(T, false, false, false);
-Error, SCTableEntry: <i> must be an integer between 1 and 2 (not the value 'fa\
-lse')
+Error, SC_TABLE_ENTRY: <i> must be an integer between 1 and 2 (not the value '\
+false')
 gap> SCTableEntry(T, 10, false, false);
-Error, SCTableEntry: <i> must be an integer between 1 and 2 (not the integer 1\
-0)
+Error, SC_TABLE_ENTRY: <i> must be an integer between 1 and 2 (not the integer\
+ 10)
 gap> SCTableEntry(T, 1, false, false);
-Error, SCTableEntry: <j> must be an integer between 1 and 2 (not the value 'fa\
-lse')
+Error, SC_TABLE_ENTRY: <j> must be an integer between 1 and 2 (not the value '\
+false')
 gap> SCTableEntry(T, 1, 10, false);
-Error, SCTableEntry: <j> must be an integer between 1 and 2 (not the integer 1\
-0)
+Error, SC_TABLE_ENTRY: <j> must be an integer between 1 and 2 (not the integer\
+ 10)
 gap> SCTableEntry(T, 1, 1, false);
-Error, SCTableEntry: <k> must be an integer between 1 and 2 (not the value 'fa\
-lse')
+Error, SC_TABLE_ENTRY: <k> must be an integer between 1 and 2 (not the value '\
+false')
 gap> SCTableEntry(T, 1, 1, 10);
-Error, SCTableEntry: <k> must be an integer between 1 and 2 (not the integer 1\
-0)
+Error, SC_TABLE_ENTRY: <k> must be an integer between 1 and 2 (not the integer\
+ 10)
 gap> SCTableEntry(T, 1, 1, 1);
 0*Z(2)
 gap> SCTableEntry([], 1, 1, 1);

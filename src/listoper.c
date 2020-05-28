@@ -1309,7 +1309,7 @@ static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
   UInt i;
   UInt len = LEN_LIST(list1);
   Obj el1, el2;
-  RequireSameLength("AddRowVector", list1, list2);
+  RequireSameLength(SELF_NAME, list1, list2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1337,7 +1337,7 @@ static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
   UInt i;
   Obj e1,e2, prd, sum;
   UInt len = LEN_PLIST(list1);
-  RequireSameLength("AddRowVector", list1, list2);
+  RequireSameLength(SELF_NAME, list1, list2);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);
@@ -1373,7 +1373,7 @@ static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
   UInt i;
   Obj el1,el2;
   UInt len = LEN_LIST(list1);
-  RequireSameLength("AddRowVector", list1, list2);
+  RequireSameLength(SELF_NAME, list1, list2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1400,7 +1400,7 @@ static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
   UInt i;
   Obj e1,e2, sum;
   UInt len = LEN_PLIST(list1);
-  RequireSameLength("AddRowVector", list1, list2);
+  RequireSameLength(SELF_NAME, list1, list2);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);
@@ -1757,10 +1757,10 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
   Obj  lexico;
 
   if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
-      RequireArgument("MONOM_TOT_DEG_LEX", u, "must be a dense plain list");
+      RequireArgument(SELF_NAME, u, "must be a dense plain list");
   }
   if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
-      RequireArgument("MONOM_TOT_DEG_LEX", v, "must be a dense plain list");
+      RequireArgument(SELF_NAME, v, "must be a dense plain list");
   }
     
   lu = LEN_PLIST( u );
@@ -1833,10 +1833,10 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   Obj  total,ai,bi;
 
   if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
-      RequireArgument("MONOM_GRLEX", u, "must be a dense plain list");
+      RequireArgument(SELF_NAME, u, "must be a dense plain list");
   }
   if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
-      RequireArgument("MONOM_GRLEX", v, "must be a dense plain list");
+      RequireArgument(SELF_NAME, v, "must be a dense plain list");
   }
     
   lu = LEN_PLIST( u );

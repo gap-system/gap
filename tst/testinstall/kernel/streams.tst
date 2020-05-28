@@ -7,13 +7,13 @@ gap> START_TEST("kernel/streams.tst");
 gap> CLOSE_LOG_TO();
 Error, LogTo: can not close the logfile
 gap> LOG_TO(fail);
-Error, LogTo: <filename> must be a string (not the value 'fail')
+Error, LOG_TO: <filename> must be a string (not the value 'fail')
 gap> LOG_TO(TmpName());
 true
 gap> CLOSE_LOG_TO();
 true
 gap> LOG_TO_STREAM(fail);
-Error, LogTo: <stream> must be an output stream (not the value 'fail')
+Error, LOG_TO_STREAM: <stream> must be an output stream (not the value 'fail')
 gap> str := "";; s:=OutputTextString(str, false);;
 gap> LOG_TO_STREAM(s);
 true
@@ -24,13 +24,14 @@ true
 gap> CLOSE_INPUT_LOG_TO();
 Error, InputLogTo: can not close the logfile
 gap> INPUT_LOG_TO(fail);
-Error, InputLogTo: <filename> must be a string (not the value 'fail')
+Error, INPUT_LOG_TO: <filename> must be a string (not the value 'fail')
 gap> INPUT_LOG_TO(TmpName());
 true
 gap> CLOSE_INPUT_LOG_TO();
 true
 gap> INPUT_LOG_TO_STREAM(fail);
-Error, InputLogTo: <stream> must be an output stream (not the value 'fail')
+Error, INPUT_LOG_TO_STREAM: <stream> must be an output stream (not the value '\
+fail')
 gap> str := "";; s:=OutputTextString(str, false);;
 gap> INPUT_LOG_TO_STREAM(s);
 true
@@ -41,13 +42,14 @@ true
 gap> CLOSE_OUTPUT_LOG_TO();
 Error, OutputLogTo: can not close the logfile
 gap> OUTPUT_LOG_TO(fail);
-Error, OutputLogTo: <filename> must be a string (not the value 'fail')
+Error, OUTPUT_LOG_TO: <filename> must be a string (not the value 'fail')
 gap> OUTPUT_LOG_TO(TmpName());
 true
 gap> CLOSE_OUTPUT_LOG_TO();
 true
 gap> OUTPUT_LOG_TO_STREAM(fail);
-Error, OutputLogTo: <stream> must be an output stream (not the value 'fail')
+Error, OUTPUT_LOG_TO_STREAM: <stream> must be an output stream (not the value \
+'fail')
 gap> str := "";; s:=OutputTextString(str, false);;
 gap> OUTPUT_LOG_TO_STREAM(s);
 true
@@ -65,11 +67,11 @@ fail
 gap> READ_STREAM(fail);
 Error, READ_STREAM: <stream> must be an input stream (not the value 'fail')
 gap> READ_STREAM_LOOP_WITH_CONTEXT(fail, fail, fail);
-Error, READ_STREAM_LOOP: <instream> must be an input stream (not the value 'fa\
-il')
+Error, READ_STREAM_LOOP_WITH_CONTEXT: <instream> must be an input stream (not \
+the value 'fail')
 gap> READ_STREAM_LOOP_WITH_CONTEXT(InputTextString(""), fail, fail);
-Error, READ_STREAM_LOOP: <outstream> must be an output stream (not the value '\
-fail')
+Error, READ_STREAM_LOOP_WITH_CONTEXT: <outstream> must be an output stream (no\
+t the value 'fail')
 gap> READ_AS_FUNC(fail);
 Error, READ_AS_FUNC: <filename> must be a string (not the value 'fail')
 gap> READ_AS_FUNC_STREAM(false);
@@ -80,7 +82,7 @@ Error, READ_STREAM: <stream> must be an input stream (not the value 'fail')
 gap> READ_STREAM(fail);
 Error, READ_STREAM: <stream> must be an input stream (not the value 'fail')
 gap> READ_GAP_ROOT(fail);
-Error, READ: <filename> must be a string (not the value 'fail')
+Error, READ_GAP_ROOT: <filename> must be a string (not the value 'fail')
 
 #
 gap> RemoveFile(fail);

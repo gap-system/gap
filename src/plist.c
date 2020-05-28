@@ -799,7 +799,7 @@ Obj             ShallowCopyPlist (
 */
 static Obj FuncEmptyPlist(Obj self, Obj len)
 {
-    RequireNonnegativeSmallInt("EmptyPlist", len);
+    RequireNonnegativeSmallInt(SELF_NAME, len);
     return NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
 }
 
@@ -812,7 +812,7 @@ static Obj FuncEmptyPlist(Obj self, Obj len)
 */
 static Obj FuncShrinkAllocationPlist(Obj self, Obj plist)
 {
-    RequirePlainList("ShrinkAllocationPlist", plist);
+    RequirePlainList(SELF_NAME, plist);
     SHRINK_PLIST(plist, LEN_PLIST(plist));
     return (Obj)0;
 }

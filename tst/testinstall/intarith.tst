@@ -239,13 +239,17 @@ gap> List(data, x -> x mod bigPos);
 
 #
 gap> bigNeg mod 0;
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> smlNeg mod 0;
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> smlPos mod 0;
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> bigPos mod 0;
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 
 # test optimization for moduli which are a power of 2
 gap> x:=2^80;
@@ -315,17 +319,21 @@ gap> List(data, x -> QuoInt(x, bigPos));
 
 #
 gap> QuoInt(bigNeg, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> QuoInt(smlNeg, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> QuoInt(smlPos, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> QuoInt(bigPos, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> QuoInt(fail,1);
-Error, QuoInt: <a> must be an integer (not the value 'fail')
+Error, QUO_INT: <a> must be an integer (not the value 'fail')
 gap> QuoInt(1,fail);
-Error, QuoInt: <b> must be an integer (not the value 'fail')
+Error, QUO_INT: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> QuoInt(-2^28, -1);
@@ -365,17 +373,21 @@ gap> List(data, x -> RemInt(x, bigPos));
 
 #
 gap> RemInt(bigNeg, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> RemInt(smlNeg, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> RemInt(smlPos, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> RemInt(bigPos, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 gap> RemInt(fail,1);
-Error, RemInt: <a> must be an integer (not the value 'fail')
+Error, REM_INT: <a> must be an integer (not the value 'fail')
 gap> RemInt(1,fail);
-Error, RemInt: <b> must be an integer (not the value 'fail')
+Error, REM_INT: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> RemInt(-2^28, 2^28);
@@ -446,9 +458,9 @@ true
 
 #
 gap> GcdInt(fail,1);
-Error, GcdInt: <a> must be an integer (not the value 'fail')
+Error, GCD_INT: <a> must be an integer (not the value 'fail')
 gap> GcdInt(1,fail);
-Error, GcdInt: <b> must be an integer (not the value 'fail')
+Error, GCD_INT: <b> must be an integer (not the value 'fail')
 
 # corner cases
 gap> GcdInt(0, 0);
@@ -525,9 +537,9 @@ true
 gap> AbsInt(-2^60) = 2^60;  # corner case on 64bit systems
 true
 gap> AbsInt(fail);
-Error, AbsRat: <op> must be a rational (not the value 'fail')
+Error, AbsInt: <op> must be a rational (not the value 'fail')
 gap> ABS_INT(fail);
-Error, AbsInt: <n> must be an integer (not the value 'fail')
+Error, ABS_INT: <n> must be an integer (not the value 'fail')
 
 #
 # SignInt
@@ -535,9 +547,9 @@ Error, AbsInt: <n> must be an integer (not the value 'fail')
 gap> List(data, SignInt);
 [ -1, -1, -1, -1, 0, 1, 1, 1, 1 ]
 gap> SignInt(fail);
-Error, SignRat: <op> must be a rational (not the value 'fail')
+Error, SignInt: <op> must be a rational (not the value 'fail')
 gap> SIGN_INT(fail);
-Error, SignInt: <n> must be an integer (not the value 'fail')
+Error, SIGN_INT: <n> must be an integer (not the value 'fail')
 
 #
 # QuotientMod
@@ -559,7 +571,8 @@ gap> Set([1..12], f);
 
 # test that m = 0 is forbidden
 gap> QuotientMod(5, 4, 0);
-Error, Integer operations: <divisor> must be nonzero
+Error, Integer operations: <divisor> must be a nonzero integer (not the intege\
+r 0)
 
 # some old test cases, to show case that issue #149 is resolved
 gap> QuotientMod(2, 4, 6);
@@ -1263,7 +1276,7 @@ gap> for m in [1..100] do
 
 #
 gap> INVMODINT(1,0);
-Error, InverseModInt: <mod> must be nonzero
+Error, INVMODINT: <mod> must be a nonzero integer (not the integer 0)
 gap> INVMODINT(2,10);
 fail
 gap> INVMODINT(2,-10);
@@ -1288,7 +1301,7 @@ gap> for m in [1..100] do
 
 #
 gap> PowerModInt(1,1,0);
-Error, PowerModInt: <mod> must be nonzero
+Error, PowerModInt: <mod> must be a nonzero integer (not the integer 0)
 gap> PowerModInt(0,-1,5);
 Error, PowerModInt: negative <exp> but <base> is not invertible modulo <mod>
 gap> PowerModInt(2,-1,5);
@@ -1383,13 +1396,13 @@ gap> List([2..6], p->List(data, n->PVALUATION_INT(n,p)));
   [ 0, 10, 2, 0, 0, 0, 2, 10, 0 ], [ 0, 20, 4, 0, 0, 0, 4, 20, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
 gap> PVALUATION_INT(10,0);
-Error, PValuation: <p> must be nonzero
+Error, PVALUATION_INT: <p> must be a nonzero integer (not the integer 0)
 gap> PVALUATION_INT(0,0);
-Error, PValuation: <p> must be nonzero
+Error, PVALUATION_INT: <p> must be a nonzero integer (not the integer 0)
 gap> PVALUATION_INT(fail,1);
-Error, PValuation: <n> must be an integer (not the value 'fail')
+Error, PVALUATION_INT: <n> must be an integer (not the value 'fail')
 gap> PVALUATION_INT(1,fail);
-Error, PValuation: <p> must be an integer (not the value 'fail')
+Error, PVALUATION_INT: <p> must be an integer (not the value 'fail')
 
 #
 # test ROOT_INT
@@ -1428,9 +1441,9 @@ Error, Root: <n> is negative but <k> is even
 gap> RootInt(0, 0);
 Error, Root: <k> must be a positive integer
 gap> RootInt(fail, 1);
-Error, Root: <n> must be an integer (not the value 'fail')
+Error, ROOT_INT: <n> must be an integer (not the value 'fail')
 gap> RootInt(1, fail);
-Error, Root: <k> must be an integer (not the value 'fail')
+Error, ROOT_INT: <k> must be an integer (not the value 'fail')
 
 #
 # test IS_PROBAB_PRIME_INT
@@ -1442,7 +1455,7 @@ gap> Filtered([-100..100], n -> false <> IS_PROBAB_PRIME_INT(2^255+n, 5));
 gap> Filtered([-100..100], n -> false <> IsProbablyPrimeInt(2^255+n));
 [ -31, -19, 95 ]
 gap> IS_PROBAB_PRIME_INT(fail, 1);
-Error, IsProbablyPrimeInt: <n> must be an integer (not the value 'fail')
+Error, IS_PROBAB_PRIME_INT: <n> must be an integer (not the value 'fail')
 gap> IS_PROBAB_PRIME_INT(1, fail);
 Error, IsProbablyPrimeInt: <reps> must be a positive small integer (not the va\
 lue 'fail')

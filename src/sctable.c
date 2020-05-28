@@ -63,7 +63,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     Int                 l;              /* loop variable                   */
 
     /* check the table                                                     */
-    RequireSmallList("SCTableEntry", table);
+    RequireSmallList(SELF_NAME, table);
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
         ErrorMayQuit(
@@ -72,7 +72,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <i>                                                           */
-    RequireBoundedInt("SCTableEntry", i, 1, dim);
+    RequireBoundedInt(SELF_NAME, i, 1, dim);
 
     /* get and check the relevant row                                      */
     tmp = ELM_LIST( table, INT_INTOBJ(i) );
@@ -83,7 +83,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <j>                                                           */
-    RequireBoundedInt("SCTableEntry", j, 1, dim);
+    RequireBoundedInt(SELF_NAME, j, 1, dim);
 
     /* get and check the basis and coefficients list                       */
     tmp = ELM_LIST( tmp, INT_INTOBJ(j) );
@@ -116,7 +116,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
     }
 
     /* check <k>                                                           */
-    RequireBoundedInt("SCTableEntry", k, 1, dim);
+    RequireBoundedInt(SELF_NAME, k, 1, dim);
 
     /* look for the (i,j,k) entry                                          */
     for ( l = 1; l <= len; l++ ) {
@@ -182,7 +182,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
     Int                 i, j;           /* loop variables                  */
 
     /* check the arguments a bit                                           */
-    RequireSmallList("SCTableProduct", table);
+    RequireSmallList(SELF_NAME, table);
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
         ErrorMayQuit(

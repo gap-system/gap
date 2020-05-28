@@ -313,7 +313,7 @@ static Int LengthWPObj(Obj wp)
 
 static Obj FuncLengthWPObj(Obj self, Obj wp)
 {
-    RequireWPObj("LengthWPObj", wp);
+    RequireWPObj(SELF_NAME, wp);
     return INTOBJ_INT(LengthWPObj(wp));
 }
 
@@ -328,7 +328,7 @@ static Obj FuncLengthWPObj(Obj self, Obj wp)
 
 static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 {
-    RequireWPObj("SetElmWPObj", wp);
+    RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt("SetElmWPObj", pos);
 
 #ifdef USE_BOEHM_GC
@@ -417,7 +417,7 @@ static Obj FuncIsBoundElmWPObj(Obj self, Obj wp, Obj pos)
 
 static Obj FuncUnbindElmWPObj(Obj self, Obj wp, Obj pos)
 {
-    RequireWPObj("UnbindElmWPObj", wp);
+    RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt("UnbindElmWPObj", pos);
 
   Int len = LengthWPObj(wp);
@@ -493,7 +493,7 @@ static Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 */
 static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 {
-    RequireWPObj("ElmWPObj", wp);
+    RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt("ElmWPObj", pos);
 
     return ElmDefWPList(wp, ipos, Fail);

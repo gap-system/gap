@@ -166,7 +166,7 @@ static Obj FuncLIST_SORTED_LIST(Obj self, Obj list)
 {
     Obj                 set;            /* result                          */
 
-    RequireSmallList("Set", list);
+    RequireSmallList(SELF_NAME, list);
 
     /* if the list is empty create a new empty list                        */
     if ( LEN_LIST(list) == 0 ) {
@@ -231,8 +231,8 @@ static Int EqSet(Obj listL, Obj listR)
 
 static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 {
-    RequireSmallList("IsEqualSet", list1);
-    RequireSmallList("IsEqualSet", list2);
+    RequireSmallList(SELF_NAME, list1);
+    RequireSmallList(SELF_NAME, list2);
     if (!IsPlainSet(list1)) list1 = SetList(list1);
     if (!IsPlainSet(list2)) list2 = SetList(list2);
 
@@ -263,8 +263,8 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
     Obj                 e1;             /* element of left  set            */
     Obj                 e2;             /* element of right set            */
 
-    RequireSmallList("IsSubsetSet", set1);
-    RequireSmallList("IsSubsetSet", set2);
+    RequireSmallList(SELF_NAME, set1);
+    RequireSmallList(SELF_NAME, set2);
     if (!IsPlainSet(set1)) set1 = SetList(set1);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
@@ -328,8 +328,8 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
   UInt                wasHom;
   UInt                wasNHom;
   UInt                wasTab;
-    
-  RequireMutableSet("AddSet", set);
+
+  RequireMutableSet(SELF_NAME, set);
   len = LEN_PLIST(set);
 
   /* perform the binary search to find the position                      */
@@ -438,7 +438,7 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
     UInt                len;            /* logical length of the list      */
     UInt                pos;            /* position                        */
 
-    RequireMutableSet("RemoveSet", set);
+    RequireMutableSet(SELF_NAME, set);
     len = LEN_PLIST(set);
 
     /* perform the binary search to find the position                      */
@@ -491,8 +491,8 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
     Obj                 e2;             /* element of right set            */
     Obj                 TmpUnion;
 
-    RequireMutableSet("UniteSet", set1);
-    RequireSmallList("UniteSet", set2);
+    RequireMutableSet(SELF_NAME, set1);
+    RequireSmallList(SELF_NAME, set2);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
@@ -640,8 +640,8 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
     UInt                len2;           /* length  of right set            */
     UInt                lenr;           /* length  of result set           */
 
-    RequireMutableSet("IntersectSet", set1);
-    RequireSmallList("IntersectSet", set2);
+    RequireMutableSet(SELF_NAME, set1);
+    RequireSmallList(SELF_NAME, set2);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */
@@ -800,10 +800,10 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
     UInt                len2;           /* length  of right set            */
     UInt                lenr;           /* length  of result set           */
     UInt                x;            
-    UInt                ll;           
+    UInt                ll;
 
-    RequireMutableSet("SubtractSet", set1);
-    RequireSmallList("SubtractSet", set2);
+    RequireMutableSet(SELF_NAME, set1);
+    RequireSmallList(SELF_NAME, set2);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     /* get the logical lengths and the pointer                             */

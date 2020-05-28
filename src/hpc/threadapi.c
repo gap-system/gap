@@ -511,7 +511,7 @@ static Obj FuncCreateThread(Obj self, Obj funcargs)
 static Obj FuncWaitThread(Obj self, Obj obj)
 {
     const char * error = NULL;
-    RequireThread("WaitThread", obj, "thread");
+    RequireThread(SELF_NAME, obj, "thread");
     LockThreadControl(1);
     ThreadObject *thread = (ThreadObject *)ADDR_OBJ(obj);
     if (thread->status & THREAD_JOINED)
@@ -544,7 +544,7 @@ static Obj FuncCurrentThread(Obj self)
 
 static Obj FuncThreadID(Obj self, Obj thread)
 {
-    RequireThread("ThreadID", thread, "thread");
+    RequireThread(SELF_NAME, thread, "thread");
     return INTOBJ_INT(ThreadID(thread));
 }
 
@@ -571,7 +571,7 @@ static Obj FuncKillThread(Obj self, Obj thread)
 static Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
 {
     int id = GetThreadID("InterruptThread", thread);
-    RequireBoundedInt("InterruptThread", handler, 0, MAX_INTERRUPT);
+    RequireBoundedInt(SELF_NAME, handler, 0, MAX_INTERRUPT);
     InterruptThread(id, (int)(INT_INTOBJ(handler)));
     return (Obj)0;
 }
@@ -584,14 +584,14 @@ static Obj FuncInterruptThread(Obj self, Obj thread, Obj handler)
 
 static Obj FuncSetInterruptHandler(Obj self, Obj handler, Obj func)
 {
-    RequireBoundedInt("SetInterruptHandler", handler, 0, MAX_INTERRUPT);
+    RequireBoundedInt(SELF_NAME, handler, 0, MAX_INTERRUPT);
     if (func == Fail) {
         SetInterruptHandler((int)(INT_INTOBJ(handler)), (Obj)0);
         return (Obj)0;
     }
     if (TNUM_OBJ(func) != T_FUNCTION || NARG_FUNC(func) != 0 ||
         !BODY_FUNC(func))
-        RequireArgument("SetInterruptHandler", func,
+        RequireArgument(SELF_NAME, func,
                         "must be a parameterless function or 'fail'");
     SetInterruptHandler((int)(INT_INTOBJ(handler)), func);
     return (Obj)0;
@@ -657,7 +657,7 @@ static Obj FuncSetRegionName(Obj self, Obj obj, Obj name)
     if (!region)
         ArgumentError(
             "SetRegionName: Cannot change name of the public region");
-    RequireStringRep("SetRegionName", name);
+    RequireStringRep(SELF_NAME, name);
     SetRegionName(region, name);
     return (Obj)0;
 }
@@ -850,7 +850,7 @@ static Obj FuncDISABLE_GUARDS(Obj self, Obj flag)
     else if (IS_INTOBJ(flag))
         TLS(DisableGuards) = (int)(INT_INTOBJ(flag));
     else
-        RequireArgument("DISABLE_GUARDS", flag,
+        RequireArgument(SELF_NAME, flag,
                         "must be a boolean or a small integer");
     return (Obj)0;
 }
@@ -860,7 +860,7 @@ static Obj FuncWITH_TARGET_REGION(Obj self, Obj obj, Obj func)
     Region * volatile oldRegion = TLS(currentRegion);
     Region * volatile region = GetRegionOf(obj);
 
-    RequireFunction("WITH_TARGET_REGION", func);
+    RequireFunction(SELF_NAME, func);
     if (!region || !CheckExclusiveWriteAccess(obj))
         return ArgumentError(
             "WITH_TARGET_REGION: Requires write access to target region");
@@ -1326,7 +1326,7 @@ static BOOL IsChannel(Obj obj)
 
 static Obj FuncDestroyChannel(Obj self, Obj channel)
 {
-    RequireChannel("DestroyChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     if (!DestroyChannel(ObjPtr(channel)))
         ErrorQuit("DestroyChannel: Channel is in use", 0, 0);
     return (Obj)0;
@@ -1334,71 +1334,71 @@ static Obj FuncDestroyChannel(Obj self, Obj channel)
 
 static Obj FuncTallyChannel(Obj self, Obj channel)
 {
-    RequireChannel("TallyChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     return INTOBJ_INT(TallyChannel(ObjPtr(channel)));
 }
 
 static Obj FuncSendChannel(Obj self, Obj channel, Obj obj)
 {
-    RequireChannel("SendChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     SendChannel(ObjPtr(channel), obj, 1);
     return (Obj)0;
 }
 
 static Obj FuncTransmitChannel(Obj self, Obj channel, Obj obj)
 {
-    RequireChannel("TransmitChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     SendChannel(ObjPtr(channel), obj, 0);
     return (Obj)0;
 }
 
 static Obj FuncMultiSendChannel(Obj self, Obj channel, Obj list)
 {
-    RequireChannel("MultiSendChannel", channel);
-    RequireDenseList("MultiSendChannel", list);
+    RequireChannel(SELF_NAME, channel);
+    RequireDenseList(SELF_NAME, list);
     MultiSendChannel(ObjPtr(channel), list, 1);
     return (Obj)0;
 }
 
 static Obj FuncMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
-    RequireChannel("MultiTransmitChannel", channel);
-    RequireDenseList("MultiTransmitChannel", list);
+    RequireChannel(SELF_NAME, channel);
+    RequireDenseList(SELF_NAME, list);
     MultiSendChannel(ObjPtr(channel), list, 0);
     return (Obj)0;
 }
 
 static Obj FuncTryMultiSendChannel(Obj self, Obj channel, Obj list)
 {
-    RequireChannel("TryMultiSendChannel", channel);
-    RequireDenseList("TryMultiSendChannel", list);
+    RequireChannel(SELF_NAME, channel);
+    RequireDenseList(SELF_NAME, list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 1));
 }
 
 
 static Obj FuncTryMultiTransmitChannel(Obj self, Obj channel, Obj list)
 {
-    RequireChannel("TryMultiTransmitChannel", channel);
-    RequireDenseList("TryMultiTransmitChannel", list);
+    RequireChannel(SELF_NAME, channel);
+    RequireDenseList(SELF_NAME, list);
     return INTOBJ_INT(TryMultiSendChannel(ObjPtr(channel), list, 0));
 }
 
 
 static Obj FuncTrySendChannel(Obj self, Obj channel, Obj obj)
 {
-    RequireChannel("TrySendChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     return TrySendChannel(ObjPtr(channel), obj, 1) ? True : False;
 }
 
 static Obj FuncTryTransmitChannel(Obj self, Obj channel, Obj obj)
 {
-    RequireChannel("TryTransmitChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     return TrySendChannel(ObjPtr(channel), obj, 0) ? True : False;
 }
 
 static Obj FuncReceiveChannel(Obj self, Obj channel)
 {
-    RequireChannel("ReceiveChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     return ReceiveChannel(ObjPtr(channel));
 }
 
@@ -1444,20 +1444,20 @@ static Obj FuncReceiveAnyChannelWithIndex(Obj self, Obj args)
 
 static Obj FuncMultiReceiveChannel(Obj self, Obj channel, Obj count)
 {
-    RequireChannel("MultiReceiveChannel", channel);
-    RequireNonnegativeSmallInt("MultiReceiveChannel", count);
+    RequireChannel(SELF_NAME, channel);
+    RequireNonnegativeSmallInt(SELF_NAME, count);
     return MultiReceiveChannel(ObjPtr(channel), INT_INTOBJ(count));
 }
 
 static Obj FuncInspectChannel(Obj self, Obj channel)
 {
-    RequireChannel("InspectChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     return InspectChannel(ObjPtr(channel));
 }
 
 static Obj FuncTryReceiveChannel(Obj self, Obj channel, Obj obj)
 {
-    RequireChannel("TryReceiveChannel", channel);
+    RequireChannel(SELF_NAME, channel);
     return TryReceiveChannel(ObjPtr(channel), obj);
 }
 
@@ -1500,7 +1500,7 @@ static Obj FuncCreateSemaphore(Obj self, Obj args)
 static Obj FuncSignalSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
-    RequireSemaphore("SignalSemaphore", semaphore);
+    RequireSemaphore(SELF_NAME, semaphore);
     sem = ObjPtr(semaphore);
     LockMonitor(ObjPtr(sem->monitor));
     sem->count++;
@@ -1513,7 +1513,7 @@ static Obj FuncSignalSemaphore(Obj self, Obj semaphore)
 static Obj FuncWaitSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
-    RequireSemaphore("WaitSemaphore", semaphore);
+    RequireSemaphore(SELF_NAME, semaphore);
     sem = ObjPtr(semaphore);
     LockMonitor(ObjPtr(sem->monitor));
     sem->waiting++;
@@ -1531,7 +1531,7 @@ static Obj FuncTryWaitSemaphore(Obj self, Obj semaphore)
 {
     Semaphore * sem;
     int         success;
-    RequireSemaphore("TryWaitSemaphore", semaphore);
+    RequireSemaphore(SELF_NAME, semaphore);
     sem = ObjPtr(semaphore);
     LockMonitor(ObjPtr(sem->monitor));
     success = (sem->count > 0);
@@ -1614,7 +1614,7 @@ static BOOL IsBarrier(Obj obj)
 
 static Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
-    RequireBarrier("StartBarrier", barrier);
+    RequireBarrier(SELF_NAME, barrier);
     Int c = GetSmallInt("StartBarrier", count);
     StartBarrier(ObjPtr(barrier), c);
     return (Obj)0;
@@ -1622,7 +1622,7 @@ static Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 
 static Obj FuncWaitBarrier(Obj self, Obj barrier)
 {
-    RequireBarrier("WaitBarrier", barrier);
+    RequireBarrier(SELF_NAME, barrier);
     WaitBarrier(ObjPtr(barrier));
     return (Obj)0;
 }
@@ -1699,26 +1699,26 @@ static Obj FuncCreateSyncVar(Obj self)
 
 static Obj FuncSyncWrite(Obj self, Obj syncvar, Obj value)
 {
-    RequireSyncVar("SyncWrite", syncvar);
+    RequireSyncVar(SELF_NAME, syncvar);
     SyncWrite(ObjPtr(syncvar), value);
     return (Obj)0;
 }
 
 static Obj FuncSyncTryWrite(Obj self, Obj syncvar, Obj value)
 {
-    RequireSyncVar("SyncTryWrite", syncvar);
+    RequireSyncVar(SELF_NAME, syncvar);
     return SyncTryWrite(ObjPtr(syncvar), value) ? True : False;
 }
 
 static Obj FuncSyncRead(Obj self, Obj syncvar)
 {
-    RequireSyncVar("SyncRead", syncvar);
+    RequireSyncVar(SELF_NAME, syncvar);
     return SyncRead(ObjPtr(syncvar));
 }
 
 static Obj FuncSyncIsBound(Obj self, Obj syncvar)
 {
-    RequireSyncVar("SyncIsBound", syncvar);
+    RequireSyncVar(SELF_NAME, syncvar);
     return SyncIsBound(ObjPtr(syncvar));
 }
 
@@ -1929,7 +1929,7 @@ static Obj FuncTRYLOCK(Obj self, Obj args)
 
 static Obj FuncUNLOCK(Obj self, Obj sp)
 {
-    RequireNonnegativeSmallInt("UNLOCK", sp);
+    RequireNonnegativeSmallInt(SELF_NAME, sp);
     PopRegionLocks(INT_INTOBJ(sp));
     return (Obj)0;
 }
@@ -1974,7 +1974,7 @@ static Obj FuncCLONE_DELIMITED(Obj self, Obj obj)
 static Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        RequireArgument("NEW_REGION", name, "must be a string or fail");
+        RequireArgument(SELF_NAME, name, "must be a string or fail");
     Int p = GetSmallInt("NEW_REGION", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2033,7 +2033,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
 static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        RequireArgument("SHARE", name, "must be a string or fail");
+        RequireArgument(SELF_NAME, name, "must be a string or fail");
     Int p = GetSmallInt("SHARE", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2051,7 +2051,7 @@ static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        RequireArgument("SHARE_RAW", name, "must be a string or fail");
+        RequireArgument(SELF_NAME, name, "must be a string or fail");
     Int p = GetSmallInt("SHARE_RAW", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2069,7 +2069,7 @@ static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
-        RequireArgument("SHARE_NORECURSE", name, "must be a string or fail");
+        RequireArgument(SELF_NAME, name, "must be a string or fail");
     Int p = GetSmallInt("SHARE_NORECURSE", prec);
     Region * region = NewRegion();
     region->prec = p;
@@ -2176,7 +2176,7 @@ static Obj FuncMakeThreadLocal(Obj self, Obj var)
     char * name;
     UInt   gvar;
     if (!IsStringConv(var) || GET_LEN_STRING(var) == 0)
-        RequireArgument("MakeThreadLocal", var, "must be a variable name");
+        RequireArgument(SELF_NAME, var, "must be a variable name");
     name = CSTR_STRING(var);
     gvar = GVarName(name);
     name = CSTR_STRING(NameGVar(gvar)); /* to apply namespace scopes where needed. */
@@ -2332,8 +2332,8 @@ void InitSignals(void)
 static Obj FuncPERIODIC_CHECK(Obj self, Obj count, Obj func)
 {
     UInt n;
-    RequireNonnegativeSmallInt("PERIODIC_CHECK", count);
-    RequireFunction("PERIODIC_CHECK", func);
+    RequireNonnegativeSmallInt(SELF_NAME, count);
+    RequireFunction(SELF_NAME, func);
     /*
      * The following read of SigVTALRMCounter is a dirty read. We don't
      * need to synchronize access to it because it's a monotonically

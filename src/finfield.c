@@ -1424,13 +1424,13 @@ static Obj FuncZ(Obj self, Obj q)
       return CALL_1ARGS(ZOp, q);
     
     if ( !IS_INTOBJ(q) || INT_INTOBJ(q)<=1 ) {
-        RequireArgument("Z", q, "must be a positive prime power");
+        RequireArgument(SELF_NAME, q, "must be a positive prime power");
     }
 
     ff = FiniteFieldBySize(INT_INTOBJ(q));
 
     if (!ff) {
-        RequireArgument("Z", q, "must be a positive prime power");
+        RequireArgument(SELF_NAME, q, "must be a positive prime power");
     }
 
     /* make the root                                                       */
@@ -1455,7 +1455,7 @@ static Obj FuncZ2(Obj self, Obj p, Obj d)
                 ff = FiniteField(ip, id);
 
                 if (ff == 0 || CHAR_FF(ff) != ip)
-                    RequireArgument("Z", p, "must be a prime");
+                    RequireArgument(SELF_NAME, p, "must be a prime");
 
                 /* make the root */
                 return NEW_FFE(ff, (ip == 2 && id == 1 ? 1 : 2));

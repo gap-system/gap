@@ -696,7 +696,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
 
-    RequireStringRep("ACTIVATE_PROFILING", filename);
+    RequireStringRep(SELF_NAME, filename);
 
     if(coverage != True && coverage != False) {
       ErrorMayQuit("<coverage> must be a boolean",0,0);
@@ -727,7 +727,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
 
     profileState.lastOutputtedTime = getTicks();
 
-    RequireNonnegativeSmallInt("ACTIVATE_PROFILING", resolution);
+    RequireNonnegativeSmallInt(SELF_NAME, resolution);
 
     HashLock(&profileState);
 

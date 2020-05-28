@@ -219,9 +219,9 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     Obj                 elm;            /* one element of the second list  */
     Int                 i;              /* loop variable                   */
 
-    RequireMutable("Append", list1, "list");
-    RequireSmallList("Append", list1);
-    RequireSmallList("Append", list2);
+    RequireMutable(SELF_NAME, list1, "list");
+    RequireSmallList(SELF_NAME, list1);
+    RequireSmallList(SELF_NAME, list2);
 
     /* handle the case of strings now */
     if (IS_STRING_REP(list1) && IS_STRING_REP(list2)) {
@@ -353,7 +353,7 @@ UInt            PositionSortedDensePlist (
 
 static Obj FuncPOSITION_SORTED_LIST(Obj self, Obj list, Obj obj)
 {
-    RequireSmallList("POSITION_SORTED_LIST", list);
+    RequireSmallList(SELF_NAME, list);
 
     UInt h;
     if ( IS_DENSE_PLIST(list) ) {
@@ -426,8 +426,8 @@ static UInt PositionSortedDensePlistComp(Obj list, Obj obj, Obj func)
 static Obj
 FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
 {
-    RequireSmallList("POSITION_SORTED_LIST_COMP", list);
-    RequireFunction("POSITION_SORTED_LIST_COMP", func);
+    RequireSmallList(SELF_NAME, list);
+    RequireFunction(SELF_NAME, func);
 
     UInt h;
     if ( IS_DENSE_PLIST(list) ) {
@@ -447,8 +447,8 @@ FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
 */
 static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 {
-    RequirePlainList("POSITION_SORTED_BY", list);
-    RequireFunction("POSITION_SORTED_BY", func);
+    RequirePlainList(SELF_NAME, list);
+    RequireFunction(SELF_NAME, func);
 
     // perform the binary search to find the position
     UInt l = 0;
@@ -778,7 +778,7 @@ UInt            RemoveDupsDensePlist (
 */
 static Obj FuncSORT_LIST(Obj self, Obj list)
 {
-    RequireSmallList("SORT_LIST", list);
+    RequireSmallList(SELF_NAME, list);
 
     if ( IS_DENSE_PLIST(list) ) {
         SortDensePlist( list );
@@ -793,7 +793,7 @@ static Obj FuncSORT_LIST(Obj self, Obj list)
 
 static Obj FuncSTABLE_SORT_LIST(Obj self, Obj list)
 {
-    RequireSmallList("STABLE_SORT_LIST", list);
+    RequireSmallList(SELF_NAME, list);
 
     if ( IS_DENSE_PLIST(list) ) {
         SortDensePlistMerge( list );
@@ -814,8 +814,8 @@ static Obj FuncSTABLE_SORT_LIST(Obj self, Obj list)
 */
 static Obj FuncSORT_LIST_COMP(Obj self, Obj list, Obj func)
 {
-    RequireSmallList("SORT_LIST_COMP", list);
-    RequireFunction("SORT_LIST_COMP", func);
+    RequireSmallList(SELF_NAME, list);
+    RequireFunction(SELF_NAME, func);
 
     if ( IS_DENSE_PLIST(list) ) {
         SortDensePlistComp( list, func );
@@ -829,8 +829,8 @@ static Obj FuncSORT_LIST_COMP(Obj self, Obj list, Obj func)
 
 static Obj FuncSTABLE_SORT_LIST_COMP(Obj self, Obj list, Obj func)
 {
-    RequireSmallList("STABLE_SORT_LIST_COMP", list);
-    RequireFunction("STABLE_SORT_LIST_COMP", func);
+    RequireSmallList(SELF_NAME, list);
+    RequireFunction(SELF_NAME, func);
 
     if ( IS_DENSE_PLIST(list) ) {
         SortDensePlistCompMerge( list, func );
@@ -849,9 +849,9 @@ static Obj FuncSTABLE_SORT_LIST_COMP(Obj self, Obj list, Obj func)
 */
 static Obj FuncSORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 {
-    RequireSmallList("SORT_PARA_LIST", list);
-    RequireSmallList("SORT_PARA_LIST", shadow);
-    RequireSameLength("SORT_PARA_LIST", list, shadow);
+    RequireSmallList(SELF_NAME, list);
+    RequireSmallList(SELF_NAME, shadow);
+    RequireSameLength(SELF_NAME, list, shadow);
 
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlist( list, shadow );
@@ -866,9 +866,9 @@ static Obj FuncSORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 
 static Obj FuncSTABLE_SORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 {
-    RequireSmallList("STABLE_SORT_PARA_LIST", list);
-    RequireSmallList("STABLE_SORT_PARA_LIST", shadow);
-    RequireSameLength("STABLE_SORT_PARA_LIST", list, shadow);
+    RequireSmallList(SELF_NAME, list);
+    RequireSmallList(SELF_NAME, shadow);
+    RequireSameLength(SELF_NAME, list, shadow);
 
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlistMerge( list, shadow );
@@ -888,11 +888,11 @@ static Obj FuncSTABLE_SORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 */
 static Obj FuncSORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
 {
-    RequireSmallList("SORT_PARA_LIST_COMP", list);
-    RequireSmallList("SORT_PARA_LIST_COMP", shadow);
-    RequireSameLength("SORT_PARA_LIST_COMP", list, shadow);
-    RequireFunction("SORT_PARA_LIST_COMP", func);
-    
+    RequireSmallList(SELF_NAME, list);
+    RequireSmallList(SELF_NAME, shadow);
+    RequireSameLength(SELF_NAME, list, shadow);
+    RequireFunction(SELF_NAME, func);
+
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlistComp( list, shadow, func );
     }
@@ -906,11 +906,11 @@ static Obj FuncSORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
 static Obj
 FuncSTABLE_SORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
 {
-    RequireSmallList("SORT_PARA_LIST_COMP", list);
-    RequireSmallList("SORT_PARA_LIST_COMP", shadow);
-    RequireSameLength("SORT_PARA_LIST_COMP", list, shadow);
-    RequireFunction("SORT_PARA_LIST_COMP", func);
-    
+    RequireSmallList(SELF_NAME, list);
+    RequireSmallList(SELF_NAME, shadow);
+    RequireSameLength(SELF_NAME, list, shadow);
+    RequireFunction(SELF_NAME, func);
+
     if ( IS_DENSE_PLIST(list) && IS_DENSE_PLIST(shadow) ) {
         SortParaDensePlistCompMerge( list, shadow, func );
     }
@@ -956,7 +956,7 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
     Obj                 img;            /* image, result                   */
     Obj                 tmp;            /* temporary                       */
 
-    RequireSmallList("OnPairs", pair);
+    RequireSmallList(SELF_NAME, pair);
     if (LEN_LIST(pair) != 2) {
         ErrorMayQuit("OnPairs: <pair> must have length 2, not length %d",
                      LEN_LIST(pair), 0);
@@ -996,7 +996,7 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
     Obj                 tmp;            /* temporary                       */
     UInt                i;              /* loop variable                   */
 
-    RequireSmallList("OnTuples", tuple);
+    RequireSmallList(SELF_NAME, tuple);
 
     /* special case for the empty list */
     if (LEN_LIST(tuple) == 0) {
@@ -1055,7 +1055,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
     UInt                status;        /* the elements are mutable        */
 
     if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IS_SSORT_LIST(set)) {
-        RequireArgument("OnSets", set, "must be a set");
+        RequireArgument(SELF_NAME, set, "must be a set");
     }
 
     /* special case for the empty list */
@@ -1295,7 +1295,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
   srclist = ELM_PLIST(args, 1);
   GAP_ASSERT(srclist != 0);
   if (!IS_PLIST(srclist))
-      RequireArgumentEx("CopyListEntries", srclist, "<fromlst>",
+      RequireArgumentEx(SELF_NAME, srclist, "<fromlst>",
                         "must be a plain list");
 
   srcstart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 2), "<fromind>");
@@ -1303,7 +1303,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
   dstlist = ELM_PLIST(args,4);
   GAP_ASSERT(dstlist != 0);
   if (!IS_PLIST(dstlist) || !IS_MUTABLE_OBJ(dstlist))
-      RequireArgumentEx("CopyListEntries", dstlist, "<tolst>",
+      RequireArgumentEx(SELF_NAME, dstlist, "<tolst>",
                         "must be a mutable plain list");
   dststart = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 5), "<toind>");
   dstinc = GetSmallIntEx("CopyListEntries", ELM_PLIST(args, 6), "<tostep>");
@@ -1416,7 +1416,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
 
 static Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
 {
-    RequireNonnegativeSmallInt("LIST_WITH_IDENTICAL_ENTRIES", n);
+    RequireNonnegativeSmallInt(SELF_NAME, n);
 
     Obj  list = 0;
     Int  len = INT_INTOBJ(n);

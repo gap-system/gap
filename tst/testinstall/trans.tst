@@ -169,8 +169,8 @@ gap> SMALLEST_MOVED_PT_TRANS(Transformation([1, 2, 1, 4, 5]));
 gap> SMALLEST_MOVED_PT_TRANS(Transformation([65537], [1]));
 65537
 gap> SMALLEST_MOVED_PT_TRANS("a");
-Error, SMALLEST_MOVED_PTS_TRANS: <f> must be a transformation (not a list (str\
-ing))
+Error, SMALLEST_MOVED_PT_TRANS: <f> must be a transformation (not a list (stri\
+ng))
 
 # Test SMALLEST_IMAGE_PT
 gap> SMALLEST_IMAGE_PT(IdentityTransformation);
@@ -281,8 +281,7 @@ gap> IMAGE_SET_TRANS(Transformation([65537 .. 70000], [65537 .. 70000] * 0 + 1))
 > = [1 .. 65536];
 true
 gap> IMAGE_SET_TRANS("a");
-Error, UNSORTED_IMAGE_SET_TRANS: <f> must be a transformation (not a list (str\
-ing))
+Error, IMAGE_SET_TRANS: <f> must be a transformation (not a list (string))
 gap> IMAGE_SET_TRANS(Transformation([2, 1, 2, 4, 5]));
 [ 1, 2, 4, 5 ]
 gap> IsSet(last);
@@ -1128,9 +1127,9 @@ true
 gap> POW_KER_PERM([1 .. 100] * 0 + 1, (1,2,3)(65537, 65538)) = [1 .. 100] * 0 + 1;
 true
 gap> POW_KER_PERM([1, 2], 1);
-Error, POW_KER_TRANS: <p> must be a permutation (not the integer 1)
+Error, POW_KER_PERM: <p> must be a permutation (not the integer 1)
 gap> POW_KER_PERM(1, 2);
-Error, POW_KER_TRANS: <p> must be a permutation (not the integer 2)
+Error, POW_KER_PERM: <p> must be a permutation (not the integer 2)
 gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 1, 2], p)); 
 [ [ 1, 1, 2 ], [ 1, 2, 1 ], [ 1, 2, 2 ] ]
 gap> Set(SymmetricGroup(3), p -> POW_KER_PERM([1, 2, 3], p)); 

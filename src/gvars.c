@@ -585,7 +585,7 @@ Obj             ValGVarTL (
 
 static Obj FuncIsThreadLocalGVar(Obj self, Obj name)
 {
-    RequireStringRep("IsThreadLocalGVar", name);
+    RequireStringRep(SELF_NAME, name);
 
   UInt gvar = GVarName(CONST_CSTR_STRING(name));
   return (VAL_GVAR_INTERN(gvar) == 0 && IS_INTOBJ(ExprGVar(gvar))) ?
@@ -853,8 +853,8 @@ Obj FuncDeclareGlobalName(Obj self, Obj name)
 **  must be a GAP string) read only.
 */
 static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
-{       
-    RequireStringRep("MakeReadOnlyGVar", name);
+{
+    RequireStringRep(SELF_NAME, name);
     MakeReadOnlyGVar(GVarName(CONST_CSTR_STRING(name)));
     return 0;
 }
@@ -872,7 +872,7 @@ static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
 */
 static Obj FuncMakeConstantGVar(Obj self, Obj name)
 {
-    RequireStringRep("MakeConstantGVar", name);
+    RequireStringRep(SELF_NAME, name);
     MakeConstantGVar(GVarName(CONST_CSTR_STRING(name)));
     return 0;
 }
@@ -904,7 +904,7 @@ void MakeReadWriteGVar (
 */
 static Obj FuncMakeReadWriteGVar(Obj self, Obj name)
 {
-    RequireStringRep("MakeReadWriteGVar", name);
+    RequireStringRep(SELF_NAME, name);
     MakeReadWriteGVar(GVarName(CONST_CSTR_STRING(name)));
     return 0;
 }
@@ -928,7 +928,7 @@ static Obj FuncIsReadOnlyGVar (
     Obj                 self,
     Obj                 name )
 {
-    RequireStringRep("IsReadOnlyGVar", name);
+    RequireStringRep(SELF_NAME, name);
     return IsReadOnlyGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
 }
 
@@ -949,7 +949,7 @@ BOOL IsConstantGVar(UInt gvar)
 
 static Obj FuncIsConstantGVar(Obj self, Obj name)
 {
-    RequireStringRep("IsConstantGVar", name);
+    RequireStringRep(SELF_NAME, name);
     return IsConstantGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
 }
 
@@ -980,7 +980,7 @@ static Obj FuncAUTO(Obj self, Obj args)
 
     /* get and check the function                                          */
     func = ELM_LIST( args, 1 );
-    RequireFunction("AUTO", func);
+    RequireFunction(SELF_NAME, func);
 
     /* get the argument                                                    */
     arg = ELM_LIST( args, 2 );
@@ -991,7 +991,7 @@ static Obj FuncAUTO(Obj self, Obj args)
     /* make the global variables automatic                                 */
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
         name = ELM_LIST( args, i );
-        RequireStringRep("AUTO", name);
+        RequireStringRep(SELF_NAME, name);
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
@@ -1127,7 +1127,7 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
 */
 static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 {
-    RequireStringRep("ASS_GVAR", gvar);
+    RequireStringRep(SELF_NAME, gvar);
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
     return 0;
 }
@@ -1139,7 +1139,7 @@ static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 */
 static Obj FuncISB_GVAR(Obj self, Obj gvar)
 {
-    RequireStringRep("ISB_GVAR", gvar);
+    RequireStringRep(SELF_NAME, gvar);
 
     UInt gv = GVarName( CONST_CSTR_STRING(gvar) );
     if (VAL_GVAR_INTERN(gv))
@@ -1163,7 +1163,7 @@ static Obj FuncISB_GVAR(Obj self, Obj gvar)
 
 static Obj FuncIS_AUTO_GVAR(Obj self, Obj gvar)
 {
-    RequireStringRep("IS_AUTO_GVAR", gvar);
+    RequireStringRep(SELF_NAME, gvar);
     Obj expr = ExprGVar(GVarName( CONST_CSTR_STRING(gvar) ) );
     return (expr && !IS_INTOBJ(expr)) ? True : False;
 }
@@ -1178,7 +1178,7 @@ static Obj FuncVAL_GVAR(Obj self, Obj gvar)
 {
     Obj val;
 
-    RequireStringRep("VAL_GVAR", gvar);
+    RequireStringRep(SELF_NAME, gvar);
 
     val = ValAutoGVar( GVarName( CONST_CSTR_STRING(gvar) ) );
 
@@ -1194,7 +1194,7 @@ static Obj FuncVAL_GVAR(Obj self, Obj gvar)
 
 static Obj FuncUNB_GVAR(Obj self, Obj gvar)
 {
-    RequireStringRep("UNB_GVAR", gvar);
+    RequireStringRep(SELF_NAME, gvar);
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), (Obj)0 );
     return 0;
 }

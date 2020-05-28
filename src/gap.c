@@ -357,13 +357,13 @@ static Obj FuncSHELL(Obj self, Obj args)
   
   context = ELM_PLIST(args,1);
   if (!IS_LVARS_OR_HVARS(context))
-    RequireArgument("SHELL", context, "must be a local variables bag");
+    RequireArgument(SELF_NAME, context, "must be a local variables bag");
   
   canReturnVoid = ELM_PLIST(args, 2);
-  RequireTrueOrFalse("SHELL", canReturnVoid);
+  RequireTrueOrFalse(SELF_NAME, canReturnVoid);
 
   canReturnObj = ELM_PLIST(args, 3);
-  RequireTrueOrFalse("SHELL", canReturnObj);
+  RequireTrueOrFalse(SELF_NAME, canReturnObj);
 
   lastDepth = GetSmallIntEx("SHELL", ELM_PLIST(args,4), "lastDepth");
   if (lastDepth < 0 )
@@ -378,10 +378,10 @@ static Obj FuncSHELL(Obj self, Obj args)
     }
 
   setTime = ELM_PLIST(args, 5);
-  RequireTrueOrFalse("SHELL", setTime);
+  RequireTrueOrFalse(SELF_NAME, setTime);
 
   prompt = ELM_PLIST(args,6);
-  RequireStringRep("SHELL", prompt);
+  RequireStringRep(SELF_NAME, prompt);
   if (GET_LEN_STRING(prompt) > 80)
     ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
   promptBuffer[0] = '\0';
@@ -392,16 +392,16 @@ static Obj FuncSHELL(Obj self, Obj args)
   if (preCommandHook == False)
     preCommandHook = 0;
   else if (!IS_FUNC(preCommandHook))
-    RequireArgument("SHELL", preCommandHook, "must be function or false");
+    RequireArgument(SELF_NAME, preCommandHook, "must be function or false");
   
   infile = ELM_PLIST(args,8);
-  RequireStringRep("SHELL", infile);
+  RequireStringRep(SELF_NAME, infile);
 
   outfile = ELM_PLIST(args,9);
-  RequireStringRep("SHELL", outfile);
+  RequireStringRep(SELF_NAME, outfile);
 
   catchQUIT = ELM_PLIST(args, 10);
-  RequireTrueOrFalse("SHELL", catchQUIT);
+  RequireTrueOrFalse(SELF_NAME, catchQUIT);
 
   res = Shell(context, canReturnVoid == True, canReturnObj == True,
               lastDepth, setTime == True, promptBuffer, preCommandHook,
@@ -513,7 +513,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   UInt                len;            /* length of lines on the screen   */
   UInt                nr;             /* number of lines on the screen   */
 
-  RequireSmallList("SizeScreen", args);
+  RequireSmallList(SELF_NAME, args);
   if (1 < LEN_LIST(args)) {
       ErrorMayQuit("SizeScreen: number of arguments must be 0 or 1 (not %d)",
                    LEN_LIST(args), 0);
@@ -592,10 +592,10 @@ static Obj FuncWindowCmd(Obj self, Obj args)
   const Char *    inptr;
   const Char *    qtr;
 
-  RequireSmallList("WindowCmd", args);
+  RequireSmallList(SELF_NAME, args);
   tmp = ELM_LIST(args, 1);
   if (!IsStringConv(tmp)) {
-      RequireArgumentEx("WindowCmd", tmp, "<cmd>", "must be a string");
+      RequireArgumentEx(SELF_NAME, tmp, "<cmd>", "must be a string");
   }
     if ( 3 != LEN_LIST(tmp) ) {
         ErrorMayQuit("WindowCmd: <cmd> must be a string of length 3", 0, 0);
@@ -732,7 +732,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
 
         /* evaluate and check the command                                  */
         Obj cmd = ELM_PLIST( args, i );
-        RequireStringRep("GASMAN", cmd);
+        RequireStringRep(SELF_NAME, cmd);
 
         // perform full garbage collection
         if ( strcmp( CONST_CSTR_STRING(cmd), "collect" ) == 0 ) {
@@ -943,8 +943,7 @@ static Obj FuncTNAM_OBJ(Obj self, Obj obj)
 static Obj FuncOBJ_HANDLE(Obj self, Obj handle)
 {
     if (handle != INTOBJ_INT(0) && !IS_POS_INT(handle))
-        RequireArgument("OBJ_HANDLE", handle,
-                        "must be a non-negative integer");
+        RequireArgument(SELF_NAME, handle, "must be a non-negative integer");
     return (Obj)UInt_ObjInt(handle);
 }
 
@@ -1232,7 +1231,7 @@ void UpdateTime(UInt startTime)
 // usual.
 static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
 {
-    RequireStringRep("UPDATE_STAT", name);
+    RequireStringRep(SELF_NAME, name);
 
     const char * cname = CONST_CSTR_STRING(name);
     if (strcmp(cname, "time") == 0) {
@@ -1259,7 +1258,7 @@ static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
 
 static Obj FuncSetAssertionLevel(Obj self, Obj level)
 {
-    RequireNonnegativeSmallInt("SetAssertionLevel", level);
+    RequireNonnegativeSmallInt(SELF_NAME, level);
     STATE(CurrentAssertionLevel) = INT_INTOBJ(level);
     return 0;
 }

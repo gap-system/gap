@@ -1288,8 +1288,8 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
   Obj *q;
 
   /* short check */
-  RequirePlainList("MULT_WOR_LETTREP", a);
-  RequirePlainList("MULT_WOR_LETTREP", b);
+  RequirePlainList(SELF_NAME, a);
+  RequirePlainList(SELF_NAME, b);
 
   /* Find overlap */
   /* l:=Length(a); */
@@ -1386,9 +1386,9 @@ static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
   const Char *p,*q;
   
   /* short check, if necessary strings are compacted */
-  RequireStringRep("MULT_BYT_LETTREP", a);
-  RequireStringRep("MULT_BYT_LETTREP", b);
-  
+  RequireStringRep(SELF_NAME, a);
+  RequireStringRep(SELF_NAME, b);
+
   /* Find overlap */
   /* l:=Length(a); */
   l=GET_LEN_STRING(a);

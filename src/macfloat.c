@@ -352,7 +352,7 @@ static Obj FuncMACFLOAT_INT(Obj self, Obj i)
 
 static Obj FuncMACFLOAT_STRING(Obj self, Obj s)
 {
-    RequireStringRep("MACFLOAT_STRING", s);
+    RequireStringRep(SELF_NAME, s);
 
   char * endptr;
   UChar *sp = CHARS_STRING(s);
@@ -446,7 +446,7 @@ static Obj FuncSIGNBIT_MACFLOAT(Obj self, Obj f)
 
 static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
 {
-    RequireMacFloat("INTFLOOR_MACFLOAT", macfloat);
+    RequireMacFloat(SELF_NAME, macfloat);
 
     Double f = VAL_MACFLOAT(macfloat);
     if (isnan(f))

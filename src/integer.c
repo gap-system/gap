@@ -123,11 +123,12 @@ static Obj ObjInt_UIntInv( UInt i );
 
 #define SIZE_INT_OR_INTOBJ(obj) (IS_INTOBJ(obj) ? 1 : SIZE_INT(obj))
 
-#define RequireNonzero(funcname, op, argname) \
-    do { \
-      if (op == INTOBJ_INT(0) ) { \
-        ErrorMayQuit(funcname ": <" argname "> must be nonzero", 0, 0); \
-      } \
+#define RequireNonzero(funcname, op, argname)                                \
+    do {                                                                     \
+        if (op == INTOBJ_INT(0)) {                                           \
+            RequireArgumentEx(funcname, op, "<" argname ">",                 \
+                              "must be a nonzero integer");                  \
+        }                                                                    \
     } while (0)
 
 
@@ -839,7 +840,7 @@ static Obj StringIntBase(Obj op, int base)
 */
 static Obj FuncHexStringInt(Obj self, Obj n)
 {
-    RequireInt("HexStringInt", n);
+    RequireInt(SELF_NAME, n);
     return StringIntBase(n, 16);
 }
 
@@ -872,6 +873,7 @@ static mp_limb_t hexstr2int( const UInt1 *p, UInt len )
 
 static Obj FuncIntHexString(Obj self,  Obj str)
 {
+    RequireStringRep(SELF_NAME, str);
     return IntHexString(str);
 }
 
@@ -883,7 +885,7 @@ Obj IntHexString(Obj str)
   const UInt1 *p;
   UInt *limbs;
 
-  RequireStringRep("IntHexString", str);
+  GAP_ASSERT(IS_STRING_REP(str));
 
   len = GET_LEN_STRING(str);
   if (len == 0) {
@@ -1009,7 +1011,7 @@ Int CLog2Int(Int a)
 */
 static Obj FuncLog2Int(Obj self, Obj n)
 {
-    RequireInt("Log2Int", n);
+    RequireInt(SELF_NAME, n);
 
     if (IS_INTOBJ(n)) {
         return INTOBJ_INT(CLog2Int(INT_INTOBJ(n)));
@@ -1039,7 +1041,7 @@ static Obj FuncLog2Int(Obj self, Obj n)
 */
 static Obj FuncSTRING_INT(Obj self, Obj n)
 {
-    RequireInt("STRING_INT", n);
+    RequireInt(SELF_NAME, n);
     return StringIntBase(n, 10);
 }
 
@@ -1380,7 +1382,7 @@ Obj AbsInt( Obj op )
 
 static Obj FuncABS_INT(Obj self, Obj n)
 {
-    RequireInt("AbsInt", n);
+    RequireInt(SELF_NAME, n);
     Obj res = AbsInt(n);
     CHECK_INT(res);
     return res;
@@ -1411,7 +1413,7 @@ Obj SignInt( Obj op )
 
 static Obj FuncSIGN_INT(Obj self, Obj n)
 {
-    RequireInt("SignInt", n);
+    RequireInt(SELF_NAME, n);
     Obj res = SignInt(n);
     CHECK_INT(res);
     return res;
@@ -1965,8 +1967,8 @@ Obj QuoInt(Obj opL, Obj opR)
 */
 static Obj FuncQUO_INT(Obj self, Obj a, Obj b)
 {
-    RequireInt("QuoInt", a);
-    RequireInt("QuoInt", b);
+    RequireInt(SELF_NAME, a);
+    RequireInt(SELF_NAME, b);
     return QuoInt(a, b);
 }
 
@@ -2094,8 +2096,8 @@ Obj RemInt(Obj opL, Obj opR)
 */
 static Obj FuncREM_INT(Obj self, Obj a, Obj b)
 {
-    RequireInt("RemInt", a);
-    RequireInt("RemInt", b);
+    RequireInt(SELF_NAME, a);
+    RequireInt(SELF_NAME, b);
     return RemInt(a, b);
 }
 
@@ -2167,8 +2169,8 @@ Obj GcdInt ( Obj opL, Obj opR )
 */
 static Obj FuncGCD_INT(Obj self, Obj a, Obj b)
 {
-    RequireInt("GcdInt", a);
-    RequireInt("GcdInt", b);
+    RequireInt(SELF_NAME, a);
+    RequireInt(SELF_NAME, b);
     return GcdInt(a, b);
 }
 
@@ -2220,8 +2222,8 @@ Obj LcmInt(Obj opL, Obj opR)
 
 static Obj FuncLCM_INT(Obj self, Obj a, Obj b)
 {
-    RequireInt("LcmInt", a);
-    RequireInt("LcmInt", b);
+    RequireInt(SELF_NAME, a);
+    RequireInt(SELF_NAME, b);
     return LcmInt(a, b);
 }
 
@@ -2230,7 +2232,7 @@ static Obj FuncLCM_INT(Obj self, Obj a, Obj b)
 */
 static Obj FuncFACTORIAL_INT(Obj self, Obj n)
 {
-    RequireNonnegativeSmallInt("Factorial", n);
+    RequireNonnegativeSmallInt(SELF_NAME, n);
 
     mpz_t mpzResult;
     mpz_init(mpzResult);
@@ -2332,8 +2334,8 @@ Obj BinomialInt(Obj n, Obj k)
 
 static Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
 {
-    RequireInt("Binomial", n);
-    RequireInt("Binomial", k);
+    RequireInt(SELF_NAME, n);
+    RequireInt(SELF_NAME, k);
     return BinomialInt(n, k);
 }
 
@@ -2346,8 +2348,8 @@ static Obj FuncJACOBI_INT(Obj self, Obj n, Obj m)
   fake_mpz_t mpzL, mpzR;
   int result;
 
-  RequireInt("Jacobi", n);
-  RequireInt("Jacobi", m);
+  RequireInt(SELF_NAME, n);
+  RequireInt(SELF_NAME, m);
 
   CHECK_INT(n);
   CHECK_INT(m);
@@ -2372,13 +2374,13 @@ static Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
   mpz_t mpzResult;
   int k;
 
-  RequireInt("PValuation", n);
-  RequireInt("PValuation", p);
+  RequireInt(SELF_NAME, n);
+  RequireInt(SELF_NAME, p);
 
   CHECK_INT(n);
   CHECK_INT(p);
 
-  RequireNonzero("PValuation", p, "p");
+  RequireNonzero(SELF_NAME, p, "p");
 
   if (SIZE_INT_OR_INTOBJ(n) == 1 && SIZE_INT_OR_INTOBJ(p) == 1) {
     UInt N = AbsOfSmallInt(n);
@@ -2418,8 +2420,8 @@ static Obj FuncROOT_INT(Obj self, Obj n, Obj k)
 {
     fake_mpz_t n_mpz, result_mpz;
 
-    RequireInt("Root", n);
-    RequireInt("Root", k);
+    RequireInt(SELF_NAME, n);
+    RequireInt(SELF_NAME, k);
 
     if (!IS_POS_INT(k))
         ErrorMayQuit("Root: <k> must be a positive integer", 0, 0);
@@ -2476,10 +2478,9 @@ Obj InverseModInt(Obj base, Obj mod)
     CHECK_INT(base);
     CHECK_INT(mod);
 
-    RequireNonzero("InverseModInt", mod, "mod");
     if (mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1))
         return INTOBJ_INT(0);
-    if (base == INTOBJ_INT(0))
+    if (base == INTOBJ_INT(0) || mod == INTOBJ_INT(0))
         return Fail;
 
     // handle small inputs separately
@@ -2531,8 +2532,9 @@ Obj InverseModInt(Obj base, Obj mod)
 */
 static Obj FuncINVMODINT(Obj self, Obj base, Obj mod)
 {
-    RequireInt("InverseModInt", base);
-    RequireInt("InverseModInt", mod);
+    RequireInt(SELF_NAME, base);
+    RequireInt(SELF_NAME, mod);
+    RequireNonzero(SELF_NAME, mod, "mod");
     return InverseModInt(base, mod);
 }
 
@@ -2544,15 +2546,15 @@ static Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
 {
   fake_mpz_t base_mpz, exp_mpz, mod_mpz, result_mpz;
 
-  RequireInt("PowerModInt", base);
-  RequireInt("PowerModInt", exp);
-  RequireInt("PowerModInt", mod);
+  RequireInt(SELF_NAME, base);
+  RequireInt(SELF_NAME, exp);
+  RequireInt(SELF_NAME, mod);
 
   CHECK_INT(base);
   CHECK_INT(exp);
   CHECK_INT(mod);
 
-  RequireNonzero("PowerModInt", mod, "mod");
+  RequireNonzero(SELF_NAME, mod, "mod");
   if ( mod == INTOBJ_INT(1) || mod == INTOBJ_INT(-1) )
     return INTOBJ_INT(0);
 
@@ -2588,7 +2590,7 @@ static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
   fake_mpz_t n_mpz;
   Int res;
 
-  RequireInt("IsProbablyPrimeInt", n);
+  RequireInt(SELF_NAME, n);
   UInt r = GetPositiveSmallInt("IsProbablyPrimeInt", reps);
 
   CHECK_INT(n);
@@ -2633,13 +2635,13 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   Int i, n, q, r, qoff, len;
   UInt4 *mt;
   UInt4 *pt;
-  RequireStringRep("RandomIntegerMT", mtstr);
+  RequireStringRep(SELF_NAME, mtstr);
   if (GET_LEN_STRING(mtstr) < 2500) {
      ErrorMayQuit(
          "RandomIntegerMT: <mtstr> must be a string with at least 2500 characters",
          0, 0);
   }
-  RequireNonnegativeSmallInt("RandomIntegerMT", nrbits);
+  RequireNonnegativeSmallInt(SELF_NAME, nrbits);
   n = INT_INTOBJ(nrbits);
 
   /* small int case */

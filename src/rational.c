@@ -304,7 +304,7 @@ static Obj AbsRat(Obj op)
 
 static Obj FuncABS_RAT(Obj self, Obj op)
 {
-    RequireRational("AbsRat", op);
+    RequireRational(SELF_NAME, op);
     return (TNUM_OBJ(op) == T_RAT) ? AbsRat(op) : AbsInt(op);
 }
 
@@ -320,7 +320,7 @@ static Obj SignRat(Obj op)
 
 static Obj FuncSIGN_RAT(Obj self, Obj op)
 {
-    RequireRational("SignRat", op);
+    RequireRational(SELF_NAME, op);
     return (TNUM_OBJ(op) == T_RAT) ? SignRat(op) : SignInt(op);
 }
 
@@ -700,7 +700,7 @@ static Obj FiltIS_RAT(Obj self, Obj val)
 */
 static Obj FuncNUMERATOR_RAT(Obj self, Obj rat)
 {
-    RequireRational("NumeratorRat", rat);
+    RequireRational(SELF_NAME, rat);
 
     if ( TNUM_OBJ(rat) == T_RAT ) {
         return NUM_RAT(rat);
@@ -723,7 +723,7 @@ static Obj FuncNUMERATOR_RAT(Obj self, Obj rat)
 */
 static Obj FuncDENOMINATOR_RAT(Obj self, Obj rat)
 {
-    RequireRational("DenominatorRat", rat);
+    RequireRational(SELF_NAME, rat);
 
     if ( TNUM_OBJ(rat) == T_RAT ) {
         return DEN_RAT(rat);
