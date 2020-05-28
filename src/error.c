@@ -555,6 +555,12 @@ void RequireArgumentEx(const char * funcname,
     ErrorMayQuit(msgbuf, arg1, 0);
 }
 
+const char * SELF_NAME_HELPER(Obj self, const char * func)
+{
+    if (self && NAME_FUNC(self))
+        return CONST_CSTR_STRING(NAME_FUNC(self));
+    return func;
+}
 
 void ErrorBoundedInt(
     const char * funcname, Obj op, const char * argname, int min, int max)
