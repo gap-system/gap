@@ -309,7 +309,7 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
     AtomicObj * addr;
     Obj         result;
 
-    UInt n = GetPositiveSmallInt(CONST_CSTR_STRING(NAME_FUNC(self)), index);
+    UInt n = GetPositiveSmallInt(SELF_NAME, index);
 
     switch (TNUM_OBJ(list)) {
     case T_FIXALIST:
@@ -318,12 +318,12 @@ static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
     case T_ALIST:
         return AtomicCompareSwapAList(list, n, old, new);
     default:
-      RequireArgument(CONST_CSTR_STRING(NAME_FUNC(self)), list, "must be an atomic list");
+        RequireArgument(SELF_NAME, list, "must be an atomic list");
   }
   addr = ADDR_ATOM(list);
   len = ALIST_LEN((UInt)addr[0].atom);
 
-  RequireBoundedInt(CONST_CSTR_STRING(NAME_FUNC(self)), index, 1, len);
+  RequireBoundedInt(SELF_NAME, index, 1, len);
   aold.obj = old;
   anew.obj = new;
   result = COMPARE_AND_SWAP(&(addr[n+1].atom), aold.atom, anew.atom) ?

@@ -97,8 +97,8 @@ static Obj TesterAndFilter(Obj getter);
                                "must be a filter")
 
 #define RequireOperation(op)                                                 \
-    RequireArgumentCondition(CONST_CSTR_STRING(NAME_FUNC(self)), op,         \
-                             IS_OPERATION(op), "must be an operation")
+    RequireArgumentCondition(SELF_NAME, op, IS_OPERATION(op),                \
+                             "must be an operation")
 
 
 /****************************************************************************

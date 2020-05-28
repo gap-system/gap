@@ -94,6 +94,9 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 **
 **  If funcname is 0, then 'funcname: ' is omitted from the message.
 **  If argname is 0, then '<argname> ' is omitted from the message.
+**
+**  All string arguments are copied to a buffer before a garbage collection
+**  may be triggered, hence it is safe to pass pointers into string objects.
 */
 void RequireArgumentEx(const char * funcname,
                        Obj          op,
@@ -101,6 +104,13 @@ void RequireArgumentEx(const char * funcname,
                        const char * msg) NORETURN;
 
 #define NICE_ARGNAME(op) "<" #op ">"
+
+/****************************************************************************
+**
+*F  SELF_NAME
+*/
+#define SELF_NAME SELF_NAME_HELPER(self, __func__)
+const char * SELF_NAME_HELPER(Obj self, const char * func);
 
 /****************************************************************************
 **
