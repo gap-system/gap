@@ -51,6 +51,19 @@ extern "C" {
 } // extern "C"
 
 
+#ifndef __has_cpp_attribute         // For backwards compatibility
+#define __has_cpp_attribute(x) 0
+#endif
+
+#if __has_cpp_attribute(fallthrough)
+#define FALLTHROUGH [[fallthrough]]
+#elif defined(HAVE_FUNC_ATTRIBUTE_FALLTHROUGH)
+#define FALLTHROUGH __attribute__((fallthrough))
+#else
+#define FALLTHROUGH do {} while(0)
+#endif
+
+
 /****************************************************************************
 **
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag
@@ -1824,19 +1837,22 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     Obj method;
     Obj res;
 
-    /* It is intentional that each case in this case statement except 0
-       drops through */
     switch (n) {
     case 6:
         types[5] = TYPE_OBJ_FEO(a6);
+        FALLTHROUGH;
     case 5:
         types[4] = TYPE_OBJ_FEO(a5);
+        FALLTHROUGH;
     case 4:
         types[3] = TYPE_OBJ_FEO(a4);
+        FALLTHROUGH;
     case 3:
         types[2] = TYPE_OBJ_FEO(a3);
+        FALLTHROUGH;
     case 2:
         types[1] = TYPE_OBJ_FEO(a2);
+        FALLTHROUGH;
     case 1:
         if (constructor) {
             RequireFilter("Constructor", a1, "the first argument");
