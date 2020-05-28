@@ -91,7 +91,7 @@ static Obj FuncInitRandomMT(Obj self, Obj initstr)
   UInt4 *mt, key_length, byte_key_length, i, j, k, N = 624;
 
   /* check the seed, given as string */
-  RequireStringRep("InitRandomMT", initstr);
+  RequireStringRep(SELF_NAME, initstr);
 
   /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
      endianness marker */
@@ -602,7 +602,7 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
     GAP_ASSERT(IS_PLIST(args));
     GAP_ASSERT(LEN_PLIST(args) >= 1 && ELM_PLIST(args, 1));
     Obj widths = ELM_PLIST(args, 1);
-    RequireSmallList("MAKE_BITFIELDS", widths);
+    RequireSmallList(SELF_NAME, widths);
     UInt nfields = LEN_LIST(widths);
     if (LEN_PLIST(args) != nfields + 1)
         ErrorMayQuit(
@@ -628,7 +628,7 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
 
 static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
 {
-    RequireSmallList("MAKE_BITFIELDS", widths);
+    RequireSmallList(SELF_NAME, widths);
     UInt nfields = LEN_LIST(widths);
     UInt starts[nfields + 1];
     starts[0] = 0;

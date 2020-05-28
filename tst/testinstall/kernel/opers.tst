@@ -128,7 +128,7 @@ Error, property is already set the other way
 
 #
 gap> NEW_FILTER(fail);
-Error, NewFilter: <name> must be a string (not the value 'fail')
+Error, NEW_FILTER: <name> must be a string (not the value 'fail')
 
 #
 gap> FLAG1_FILTER(fail);
@@ -170,24 +170,24 @@ Error, Constructor: the first argument must be a filter (not the integer 1)
 
 #
 gap> NEW_OPERATION(fail);
-Error, NewOperation: <name> must be a string (not the value 'fail')
+Error, NEW_OPERATION: <name> must be a string (not the value 'fail')
 gap> NEW_CONSTRUCTOR(fail);
-Error, NewConstructor: <name> must be a string (not the value 'fail')
+Error, NEW_CONSTRUCTOR: <name> must be a string (not the value 'fail')
 gap> NEW_ATTRIBUTE(fail);
-Error, NewAttribute: <name> must be a string (not the value 'fail')
+Error, NEW_ATTRIBUTE: <name> must be a string (not the value 'fail')
 gap> OPER_TO_ATTRIBUTE(fail);
 Error, OPER_TO_ATTRIBUTE: <oper> must be an operation (not the value 'fail')
 gap> OPER_TO_MUTABLE_ATTRIBUTE(fail);
 Error, OPER_TO_MUTABLE_ATTRIBUTE: <oper> must be an operation (not the value '\
 fail')
 gap> NEW_MUTABLE_ATTRIBUTE(fail);
-Error, NewMutableAttribute: <name> must be a string (not the value 'fail')
+Error, NEW_MUTABLE_ATTRIBUTE: <name> must be a string (not the value 'fail')
 gap> NEW_PROPERTY(fail);
-Error, NewProperty: <name> must be a string (not the value 'fail')
+Error, NEW_PROPERTY: <name> must be a string (not the value 'fail')
 
 #
 gap> NEW_GLOBAL_FUNCTION(fail);
-Error, NewGlobalFunction: <name> must be a string (not the value 'fail')
+Error, NEW_GLOBAL_FUNCTION: <name> must be a string (not the value 'fail')
 gap> INSTALL_GLOBAL_FUNCTION(fail, fail);
 Error, INSTALL_GLOBAL_FUNCTION: <oper> must be a function (not the value 'fail\
 ')

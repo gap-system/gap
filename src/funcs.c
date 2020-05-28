@@ -778,8 +778,8 @@ static void PrintFunccallOpts(Expr call)
 static Obj FuncSetRecursionTrapInterval(Obj self, Obj interval)
 {
     if (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
-        RequireArgument("SetRecursionTrapInterval", interval,
-            "must be a small integer greater than 5");
+        RequireArgument(SELF_NAME, interval,
+                        "must be a small integer greater than 5");
     RecursionTrapInterval = INT_INTOBJ(interval);
     return 0;
 }

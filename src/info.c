@@ -42,7 +42,7 @@ static Obj ShowUsedInfoClassesHandler;
 
 static Obj FuncShowUsedInfoClasses(Obj self, Obj choice)
 {
-    RequireTrueOrFalse("ShowUsedInfoClasses", choice);
+    RequireTrueOrFalse(SELF_NAME, choice);
 
     if (choice == True) {
         STATE(ShowUsedInfoClassesActive) = 1;

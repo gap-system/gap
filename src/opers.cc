@@ -198,7 +198,7 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
     Int                  i;
 
     /* do some trivial checks                                              */
-    RequireFlags("HASH_FLAGS", flags);
+    RequireFlags(SELF_NAME, flags);
     if ( HASH_FLAGS(flags) != 0 ) {
         return HASH_FLAGS(flags);
     }
@@ -260,7 +260,7 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
     UInt                nn;
     UInt                i;              /* loop variable                   */
 
-    RequireFlags("TRUES_FLAGS", flags);
+    RequireFlags(SELF_NAME, flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return TRUES_FLAGS(flags);
     }
@@ -304,7 +304,7 @@ static Obj FuncSIZE_FLAGS(Obj self, Obj flags)
     UInt                nrb;            /* number of blocks in flags       */
     UInt                n;              /* number of bits in flags         */
 
-    RequireFlags("SIZE_FLAGS", flags);
+    RequireFlags(SELF_NAME, flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
     }
@@ -376,8 +376,8 @@ static Int EqFlags(Obj flags1, Obj flags2)
 static Obj FuncIS_EQUAL_FLAGS(Obj self, Obj flags1, Obj flags2)
 {
     /* do some trivial checks                                              */
-    RequireFlags("IS_EQUAL_FLAGS", flags1);
-    RequireFlags("IS_EQUAL_FLAGS", flags2);
+    RequireFlags(SELF_NAME, flags1);
+    RequireFlags(SELF_NAME, flags2);
 
     return EqFlags(flags1, flags2) ? True : False;
 }
@@ -436,9 +436,9 @@ BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 static Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2)
 {
     /* do some correctness checks                                            */
-    RequireFlags("IS_SUBSET_FLAGS", flags1);
-    RequireFlags("IS_SUBSET_FLAGS", flags2);
-    
+    RequireFlags(SELF_NAME, flags1);
+    RequireFlags(SELF_NAME, flags2);
+
     return IS_SUBSET_FLAGS(flags1, flags2) ? True : False;
 }
 
@@ -459,8 +459,8 @@ static Obj FuncSUB_FLAGS(Obj self, Obj flags1, Obj flags2)
     Int                 i;
 
     /* do some trivial checks                                              */
-    RequireFlags("SUB_FLAGS", flags1);
-    RequireFlags("SUB_FLAGS", flags2);
+    RequireFlags(SELF_NAME, flags1);
+    RequireFlags(SELF_NAME, flags2);
 
     /* do the real work                                                    */
     len1   = LEN_FLAGS(flags1);
@@ -526,8 +526,8 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
 #endif
 
     /* do some trivial checks                                              */
-    RequireFlags("AND_FLAGS", flags1);
-    RequireFlags("AND_FLAGS", flags2);
+    RequireFlags(SELF_NAME, flags1);
+    RequireFlags(SELF_NAME, flags2);
 
     if (flags1 == flags2)
         return flags1;
@@ -706,7 +706,7 @@ static Int WITH_HIDDEN_IMPS_HIT=0;
 static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
-    RequireFlags("WITH_HIDDEN_IMPS_FLAGS", flags);
+    RequireFlags(SELF_NAME, flags);
 
 #ifdef HPCGAP
     RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
@@ -823,7 +823,7 @@ static Int WITH_IMPS_FLAGS_HIT=0;
 static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
-    RequireFlags("WITH_IMPS_FLAGS", flags);
+    RequireFlags(SELF_NAME, flags);
 
     Int changed, lastand, i, j, stop, imps_length;
     Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
@@ -1298,7 +1298,7 @@ static Obj NewReturnTrueFilter(void)
 */
 static Obj FuncNEW_FILTER(Obj self, Obj name)
 {
-    RequireStringRep("NewFilter", name);
+    RequireStringRep(SELF_NAME, name);
     return NewFilter(name, 0, DoFilter);
 }
 
@@ -3012,7 +3012,7 @@ void LoadOperationExtras (
 */
 static Obj FuncNEW_OPERATION(Obj self, Obj name)
 {
-    RequireStringRep("NewOperation", name);
+    RequireStringRep(SELF_NAME, name);
     return NewOperation(name, -1, 0, (ObjFunc)DoOperationXArgs);
 }
 
@@ -3023,7 +3023,7 @@ static Obj FuncNEW_OPERATION(Obj self, Obj name)
 */
 static Obj FuncNEW_CONSTRUCTOR(Obj self, Obj name)
 {
-    RequireStringRep("NewConstructor", name);
+    RequireStringRep(SELF_NAME, name);
     return NewConstructor( name );
 }
 
@@ -3038,7 +3038,7 @@ static Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
 */
 static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name)
 {
-    RequireStringRep("NewAttribute", name);
+    RequireStringRep(SELF_NAME, name);
     return NewAttribute(name, 0, DoAttribute);
 }
 /****************************************************************************
@@ -3070,7 +3070,7 @@ static Obj FuncOPER_TO_MUTABLE_ATTRIBUTE(Obj self, Obj oper)
 */
 static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
 {
-    RequireStringRep("NewMutableAttribute", name);
+    RequireStringRep(SELF_NAME, name);
     return NewAttribute(name, 0, DoMutableAttribute);
 }
 
@@ -3081,7 +3081,7 @@ static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
 */
 static Obj FuncNEW_PROPERTY(Obj self, Obj name)
 {
-    RequireStringRep("NewProperty", name);
+    RequireStringRep(SELF_NAME, name);
     return NewProperty(name, 0, DoProperty);
 }
 
@@ -3095,7 +3095,7 @@ static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
     Obj                 args;           
     Obj                 list;
 
-    RequireStringRep("NewGlobalFunction", name);
+    RequireStringRep(SELF_NAME, name);
 
     args = MakeImmString("args");
     list = NEW_PLIST( T_PLIST, 1 );
@@ -3114,12 +3114,12 @@ static Obj REREADING;
 
 static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
 {
-    RequireFunction("INSTALL_GLOBAL_FUNCTION", oper);
+    RequireFunction(SELF_NAME, oper);
     if ( (REREADING != True) &&
          (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledGlobalFunction) ) {
         ErrorQuit("operation already installed", 0, 0);
     }
-    RequireFunction("INSTALL_GLOBAL_FUNCTION", func);
+    RequireFunction(SELF_NAME, func);
     if ( IS_OPERATION(func) ) {
         ErrorQuit("<func> must not be an operation", 0, 0);
     }

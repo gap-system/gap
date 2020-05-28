@@ -45,9 +45,10 @@ gap> RecNames( () );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `RecNames' on 1 arguments
 gap> REC_NAMES( () );
-Error, RecNames: <rec> must be a record (not a permutation (small))
+Error, REC_NAMES: <rec> must be a record (not a permutation (small))
 gap> REC_NAMES_COMOBJ( () );
-Error, RecNames: <rec> must be a component object (not a permutation (small))
+Error, REC_NAMES_COMOBJ: <rec> must be a component object (not a permutation (\
+small))
 gap> rec() < rec(x := 1);
 true
 gap> rec(x := 1) = rec(x := 2);

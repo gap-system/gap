@@ -210,13 +210,13 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
           return list;
         default:
           HashUnlock(list);
-          RequireArgument("MakeFixedAtomicList", list, "must be an atomic list");
+          RequireArgument(SELF_NAME, list, "must be an atomic list");
           return (Obj) 0; /* flow control hint */
       }
       HashUnlock(list);
       break;
     default:
-      RequireArgument("MakeFixedAtomicList", list, "must be an atomic list");
+      RequireArgument(SELF_NAME, list, "must be an atomic list");
   }
   return (Obj) 0; /* flow control hint */
 }
@@ -243,7 +243,7 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   UInt len;
   const AtomicObj *addr;
   if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
-    RequireArgument("GET_ATOMIC_LIST", list, "must be an atomic list");
+    RequireArgument(SELF_NAME, list, "must be an atomic list");
   addr = CONST_ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
   n = GetBoundedInt("GET_ATOMIC_LIST", index, 1, len);
@@ -288,7 +288,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   UInt len;
   AtomicObj *addr;
   if (TNUM_OBJ(list) != T_ALIST && TNUM_OBJ(list) != T_FIXALIST)
-    RequireArgument("SET_ATOMIC_LIST", list, "must be an atomic list");
+    RequireArgument(SELF_NAME, list, "must be an atomic list");
   addr = ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
   n = GetBoundedInt("SET_ATOMIC_LIST", index, 1, len);
@@ -357,12 +357,12 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
     case T_APOSOBJ:
       break;
     default:
-      RequireArgument("ATOMIC_ADDITION", list, "must be a fixed atomic list");
+      RequireArgument(SELF_NAME, list, "must be a fixed atomic list");
   }
   addr = ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
   n = GetBoundedInt("ATOMIC_ADDITION", index, 1, len);
-  RequireSmallInt("ATOMIC_ADDITION", index);
+  RequireSmallInt(SELF_NAME, index);
   do
   {
     aold = addr[n+1];
@@ -377,7 +377,7 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
 static Obj FuncAddAtomicList(Obj self, Obj list, Obj obj)
 {
     if (TNUM_OBJ(list) != T_ALIST)
-        RequireArgument("AddAtomicList", list, "must be a non-fixed atomic list");
+        RequireArgument(SELF_NAME, list, "must be a non-fixed atomic list");
     return INTOBJ_INT(AddAList(list, obj));
 }
 
@@ -400,7 +400,7 @@ Obj FromAtomicList(Obj list)
 static Obj FuncFromAtomicList(Obj self, Obj list)
 {
     if (TNUM_OBJ(list) != T_FIXALIST && TNUM_OBJ(list) != T_ALIST)
-        RequireArgument("FromAtomicList", list, "must be an atomic list");
+        RequireArgument(SELF_NAME, list, "must be an atomic list");
     return FromAtomicList(list);
 }
 
@@ -810,14 +810,15 @@ Obj FromAtomicRecord(Obj record)
 static Obj FuncFromAtomicRecord(Obj self, Obj record)
 {
     if (TNUM_OBJ(record) != T_AREC)
-        RequireArgument("FromAtomicRecord", record, "must be an atomic record");
+        RequireArgument(SELF_NAME, record, "must be an atomic record");
     return FromAtomicRecord(record);
 }
 
 static Obj FuncFromAtomicComObj(Obj self, Obj comobj)
 {
     if (TNUM_OBJ(comobj) != T_ACOMOBJ)
-        RequireArgument("FromAtomicComObj", comobj, "must be an atomic component object");
+        RequireArgument(SELF_NAME, comobj,
+                        "must be an atomic component object");
     return FromAtomicRecord(comobj);
 }
 
@@ -1065,8 +1066,8 @@ static Obj FuncGET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj def)
   UInt fieldname;
   Obj result;
   if (TNUM_OBJ(record) != T_AREC)
-    RequireArgument("GET_ATOMIC_RECORD", record, "must be an atomic record");
-  RequireStringRep("GET_ATOMIC_RECORD", field);
+    RequireArgument(SELF_NAME, record, "must be an atomic record");
+  RequireStringRep(SELF_NAME, field);
   fieldname = RNamName(CONST_CSTR_STRING(field));
   result = GetARecordField(record, fieldname);
   return result ? result : def;
@@ -1077,8 +1078,8 @@ static Obj FuncSET_ATOMIC_RECORD(Obj self, Obj record, Obj field, Obj value)
   UInt fieldname;
   Obj result;
   if (TNUM_OBJ(record) != T_AREC)
-    RequireArgument("SET_ATOMIC_RECORD", record, "must be an atomic record");
-  RequireStringRep("SET_ATOMIC_RECORD", field);
+    RequireArgument(SELF_NAME, record, "must be an atomic record");
+  RequireStringRep(SELF_NAME, field);
   fieldname = RNamName(CONST_CSTR_STRING(field));
   result = SetARecordField(record, fieldname, value);
   if (!result)
@@ -1092,8 +1093,8 @@ static Obj FuncUNBIND_ATOMIC_RECORD(Obj self, Obj record, Obj field)
   UInt fieldname;
   Obj exists;
   if (TNUM_OBJ(record) != T_AREC)
-    RequireArgument("UNBIND_ATOMIC_RECORD", record, "must be an atomic record");
-  RequireStringRep("UNBIND_ATOMIC_RECORD", field);
+    RequireArgument(SELF_NAME, record, "must be an atomic record");
+  RequireStringRep(SELF_NAME, field);
   fieldname = RNamName(CONST_CSTR_STRING(field));
   if (GetARecordUpdatePolicy(record) != AREC_RW)
     ErrorQuit("UNBIND_ATOMIC_RECORD: Record elements cannot be changed",
@@ -1169,8 +1170,8 @@ static Obj FuncThreadLocalRecord(Obj self, Obj args)
 
     defaults = (narg >= 1) ? ELM_PLIST(args, 1) : NEW_PREC(0);
     constructors = (narg >= 2) ? ELM_PLIST(args, 2) : NEW_PREC(0);
-    RequirePlainRec("ThreadLocalRecord", defaults);
-    RequirePlainRec("ThreadLocalRecord", constructors);
+    RequirePlainRec(SELF_NAME, defaults);
+    RequirePlainRec(SELF_NAME, constructors);
 
     if (!OnlyConstructors(constructors))
         ArgumentError("ThreadLocalRecord: <constructors> must be a record containing parameterless functions");
@@ -1181,9 +1182,9 @@ static Obj FuncThreadLocalRecord(Obj self, Obj args)
 static Obj FuncSetTLDefault(Obj self, Obj record, Obj name, Obj value)
 {
   if (TNUM_OBJ(record) != T_TLREC)
-    RequireArgument("SetTLDefault", record, "must be a thread-local record");
+    RequireArgument(SELF_NAME, record, "must be a thread-local record");
   if (!IS_STRING(name) && !IS_INTOBJ(name))
-    RequireArgument("SetTLDefault", value, "must be a string or an integer");
+    RequireArgument(SELF_NAME, value, "must be a string or an integer");
   SetTLDefault(record, RNamObj(name), value);
   return (Obj) 0;
 }
@@ -1191,10 +1192,10 @@ static Obj FuncSetTLDefault(Obj self, Obj record, Obj name, Obj value)
 static Obj FuncSetTLConstructor(Obj self, Obj record, Obj name, Obj function)
 {
   if (TNUM_OBJ(record) != T_TLREC)
-    RequireArgument("SetTLConstructor", record, "must be a thread-local record");
+    RequireArgument(SELF_NAME, record, "must be a thread-local record");
   if (!IS_STRING(name) && !IS_INTOBJ(name))
-    RequireArgument("SetTLConstructor", name, "must be a string or an integer");
-  RequireFunction("SetTLConstructor", function);
+    RequireArgument(SELF_NAME, name, "must be a string or an integer");
+  RequireFunction(SELF_NAME, function);
   SetTLConstructor(record, RNamObj(name), function);
   return (Obj) 0;
 }

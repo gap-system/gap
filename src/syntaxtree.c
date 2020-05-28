@@ -637,7 +637,7 @@ static Expr SyntaxTreeCodeFunc(Obj node)
 
 static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
 {
-    RequirePlainRec("SYNTAX_TREE_CODE", tree);
+    RequirePlainRec(SELF_NAME, tree);
     CodeBegin();
     UInt nr_stats = SyntaxTreeCodeFunc_Internal(tree);
     CodeFuncExprEnd(nr_stats, 0);
@@ -902,7 +902,7 @@ static Obj FuncSYNTAX_TREE(Obj self, Obj func)
     Obj result;
 
     if (!IS_FUNC(func) || IsKernelFunction(func) || IS_OPERATION(func)) {
-        RequireArgument("SYNTAX_TREE", func, "must be a plain GAP function");
+        RequireArgument(SELF_NAME, func, "must be a plain GAP function");
     }
 
     result = NewSyntaxTreeNode(EXPR_FUNC);

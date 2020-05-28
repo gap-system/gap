@@ -502,7 +502,7 @@ static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
 /* the degree of pperm is the maximum point where it is defined */
 static Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
 {
-    RequirePartialPerm("DegreeOfPartialPerm", f);
+    RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(DEG_PPERM(f));
 }
 
@@ -510,14 +510,14 @@ static Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
 
 static Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
 {
-    RequirePartialPerm("CoDegreeOfPartialPerm", f);
+    RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(CODEG_PPERM(f));
 }
 
 /* the rank is the number of points where it is defined */
 static Obj FuncRankOfPartialPerm(Obj self, Obj f)
 {
-    RequirePartialPerm("RankOfPartialPerm", f);
+    RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(RANK_PPERM(f));
 }
 
@@ -574,7 +574,7 @@ static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 /* image set of partial perm */
 static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 {
-    RequirePartialPerm("IMAGE_SET_PPERM", f);
+    RequirePartialPerm(SELF_NAME, f);
 
     if (IMG_PPERM(f) == NULL) {
         INIT_PPERM(f);
@@ -589,8 +589,8 @@ static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 /* preimage under a partial perm */
 static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 {
-    RequirePartialPerm("PREIMAGE_PPERM_INT", f);
-    RequireSmallInt("PREIMAGE_PPERM_INT", pt);
+    RequirePartialPerm(SELF_NAME, f);
+    RequireSmallInt(SELF_NAME, pt);
     if (TNUM_OBJ(f) == T_PPERM2)
         return PreImagePPermInt<UInt2>(pt, f);
     else
@@ -1609,8 +1609,8 @@ static Obj NaturalLeqPartialPerm(Obj f, Obj g)
 
 static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
 {
-    RequirePartialPerm("NaturalLeqPartialPerm", f);
-    RequirePartialPerm("NaturalLeqPartialPerm", g);
+    RequirePartialPerm(SELF_NAME, f);
+    RequirePartialPerm(SELF_NAME, g);
 
     if (TNUM_OBJ(f) == T_PPERM2 && TNUM_OBJ(g) == T_PPERM2) {
         return NaturalLeqPartialPerm<UInt2, UInt2>(f, g);
@@ -2221,8 +2221,8 @@ static Obj FuncShortLexLeqPartialPerm(Obj self, Obj f, Obj g)
     UInt2 *ptf2, *ptg2;
     UInt4 *ptf4, *ptg4;
 
-    RequirePartialPerm("ShortLexLeqPartialPerm", f);
-    RequirePartialPerm("ShortLexLeqPartialPerm", g);
+    RequirePartialPerm(SELF_NAME, f);
+    RequirePartialPerm(SELF_NAME, g);
 
     if (TNUM_OBJ(f) == T_PPERM2) {
         if (DEG_PPERM2(f) == 0)

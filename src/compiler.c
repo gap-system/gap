@@ -5403,11 +5403,11 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     magic1 = ELM_LIST( arg, 4 );
     magic2 = ELM_LIST( arg, 5 );
 
-    RequireStringRep("CompileFunc", output);
-    RequireFunction("CompileFunc", func);
-    RequireStringRep("CompileFunc", name);
-    RequireSmallInt("CompileFunc", magic1);
-    RequireStringRep("CompileFunc", magic2);
+    RequireStringRep(SELF_NAME, output);
+    RequireFunction(SELF_NAME, func);
+    RequireStringRep(SELF_NAME, name);
+    RequireSmallInt(SELF_NAME, magic1);
+    RequireStringRep(SELF_NAME, magic2);
 
     /* possible optimiser flags                                            */
     CompFastIntArith        = 1;

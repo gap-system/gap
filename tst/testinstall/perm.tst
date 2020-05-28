@@ -369,11 +369,11 @@ gap> moved(SymmetricGroup(1));
 gap> moved(Group((8,9,10),(13,15,19)));
 [ 8, 19, [ 8, 9, 10, 13, 15, 19 ], 6 ]
 gap> SMALLEST_MOVED_POINT_PERM(fail);
-Error, SmallestMovedPointPerm: <perm> must be a permutation (not the value 'fa\
-il')
+Error, SMALLEST_MOVED_POINT_PERM: <perm> must be a permutation (not the value \
+'fail')
 gap> LARGEST_MOVED_POINT_PERM(fail);
-Error, LargestMovedPointPerm: <perm> must be a permutation (not the value 'fai\
-l')
+Error, LARGEST_MOVED_POINT_PERM: <perm> must be a permutation (not the value '\
+fail')
 
 #
 # CycleLengthPermInt, CyclePermInt
@@ -415,7 +415,7 @@ gap> Order( (1,2,3,4)(70,71,72) );
 gap> Order( (1,2,3,4)(70000,71000,72000) );
 12
 gap> ORDER_PERM(fail);
-Error, OrderPerm: <perm> must be a permutation (not the value 'fail')
+Error, ORDER_PERM: <perm> must be a permutation (not the value 'fail')
 
 #
 # SignPerm
@@ -425,13 +425,14 @@ gap> List(permSml, SignPerm);
 gap> List(permBig, SignPerm);
 [ 1, -1, -1, 1, 1, -1 ]
 gap> SIGN_PERM(fail);
-Error, SignPerm: <perm> must be a permutation (not the value 'fail')
+Error, SIGN_PERM: <perm> must be a permutation (not the value 'fail')
 
 #
 # SmallestGeneratorPerm
 #
 gap> SMALLEST_GENERATOR_PERM( 1 );
-Error, SmallestGeneratorPerm: <perm> must be a permutation (not the integer 1)
+Error, SMALLEST_GENERATOR_PERM: <perm> must be a permutation (not the integer \
+1)
 gap> SmallestGeneratorPerm( (1,3,2) );
 (1,2,3)
 gap> SmallestGeneratorPerm( (1,2,3) );
@@ -549,12 +550,14 @@ fail
 gap> MappingPermListList([1,2], [1000,1000]);
 fail
 gap> MappingPermListList((), []);
-Error, AddRowVector: <src> must be a dense list (not a permutation (small))
+Error, MappingPermListList: <src> must be a dense list (not a permutation (sma\
+ll))
 gap> MappingPermListList([], ());
-Error, AddRowVector: <dst> must be a dense list (not a permutation (small))
+Error, MappingPermListList: <dst> must be a dense list (not a permutation (sma\
+ll))
 gap> MappingPermListList("cheese", "cake");
-Error, AddRowVector: <src> must have the same length as <dst> (lengths are 6 a\
-nd 4)
+Error, MappingPermListList: <src> must have the same length as <dst> (lengths \
+are 6 and 4)
 gap> MappingPermListList("cheese", "cakeba");
 Error, <src> must be a dense list of positive small integers
 gap> MappingPermListList([1,2], [3,[]]);

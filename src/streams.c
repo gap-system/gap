@@ -242,7 +242,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     Obj result;
     Obj evalResult;
 
-    RequireInputStream("READ_COMMAND_REAL", stream);
+    RequireInputStream(SELF_NAME, stream);
 
     result = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST(result, 1);
@@ -546,7 +546,7 @@ static Obj FuncCLOSE_LOG_TO(Obj self)
 */
 static Obj FuncLOG_TO(Obj self, Obj filename)
 {
-    RequireStringRep("LogTo", filename);
+    RequireStringRep(SELF_NAME, filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0,
                         "you can 'return;'");
@@ -562,7 +562,7 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 */
 static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
-    RequireOutputStream("LogTo", stream);
+    RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenLogStream(stream) ) {
         ErrorReturnVoid("LogTo: cannot log to stream", 0, 0,
                         "you can 'return;'");
@@ -607,7 +607,7 @@ static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
 */
 static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 {
-    RequireStringRep("InputLogTo", filename);
+    RequireStringRep(SELF_NAME, filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0,
                         "you can 'return;'");
@@ -623,7 +623,7 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 */
 static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
-    RequireOutputStream("InputLogTo", stream);
+    RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenInputLogStream(stream) ) {
         ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0,
                         "you can 'return;'");
@@ -668,7 +668,7 @@ static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
 */
 static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 {
-    RequireStringRep("OutputLogTo", filename);
+    RequireStringRep(SELF_NAME, filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
         ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0,
                         "you can 'return;'");
@@ -684,7 +684,7 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 */
 static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
-    RequireOutputStream("OutputLogTo", stream);
+    RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenOutputLogStream(stream) ) {
         ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0,
                         "you can 'return;'");
@@ -856,7 +856,7 @@ static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 */
 static Obj FuncREAD(Obj self, Obj filename)
 {
-    RequireStringRep("READ", filename);
+    RequireStringRep(SELF_NAME, filename);
 
     /* try to open the file                                                */
     if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
@@ -909,7 +909,7 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
 */
 static Obj FuncREAD_STREAM(Obj self, Obj stream)
 {
-    RequireInputStream("READ_STREAM", stream);
+    RequireInputStream(SELF_NAME, stream);
 
     /* try to open the file                                                */
     if (!OpenInputStream(stream, 0)) {
@@ -935,8 +935,8 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
 {
     Int res;
 
-    RequireInputStream("READ_STREAM_LOOP", instream);
-    RequireOutputStream("READ_STREAM_LOOP", outstream);
+    RequireInputStream(SELF_NAME, instream);
+    RequireOutputStream(SELF_NAME, outstream);
 
     if (!OpenInputStream(instream, 0)) {
         return False;
@@ -972,7 +972,7 @@ static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
 */
 static Obj FuncREAD_AS_FUNC(Obj self, Obj filename)
 {
-    RequireStringRep("READ_AS_FUNC", filename);
+    RequireStringRep(SELF_NAME, filename);
 
     /* try to open the file                                                */
     if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
@@ -990,7 +990,7 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj filename)
 */
 static Obj FuncREAD_AS_FUNC_STREAM(Obj self, Obj stream)
 {
-    RequireInputStream("READ_AS_FUNC_STREAM", stream);
+    RequireInputStream(SELF_NAME, stream);
 
     /* try to open the file                                                */
     if (!OpenInputStream(stream, 0)) {
@@ -1010,7 +1010,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 {
     Char filenamecpy[GAP_PATH_MAX];
 
-    RequireStringRep("READ", filename);
+    RequireStringRep(SELF_NAME, filename);
 
     /* Copy to avoid garbage collection moving string                      */
     strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
@@ -1069,8 +1069,8 @@ static Obj FuncTmpDirectory(Obj self)
 */
 static Obj FuncRemoveFile(Obj self, Obj filename)
 {
-    RequireStringRep("RemoveFile", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     return SyRemoveFile( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
@@ -1081,8 +1081,8 @@ static Obj FuncRemoveFile(Obj self, Obj filename)
 */
 static Obj FuncCreateDir(Obj self, Obj filename)
 {
-    RequireStringRep("CreateDir", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     return SyMkdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
@@ -1093,8 +1093,8 @@ static Obj FuncCreateDir(Obj self, Obj filename)
 */
 static Obj FuncRemoveDir(Obj self, Obj filename)
 {
-    RequireStringRep("RemoveDir", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     return SyRmdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
@@ -1105,7 +1105,7 @@ static Obj FuncRemoveDir(Obj self, Obj filename)
 */
 static Obj FuncIsDir(Obj self, Obj filename)
 {
-    RequireStringRep("IsDir", filename);
+    RequireStringRep(SELF_NAME, filename);
 
     /* call the system dependent function                                  */
     return SyIsDir( CONST_CSTR_STRING(filename) );
@@ -1162,8 +1162,8 @@ static Obj FuncIsExistingFile(Obj self, Obj filename)
 {
     Int             res;
 
-    RequireStringRep("IsExistingFile", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     res = SyIsExistingFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
@@ -1178,8 +1178,8 @@ static Obj FuncIsReadableFile(Obj self, Obj filename)
 {
     Int             res;
 
-    RequireStringRep("IsReadableFile", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     res = SyIsReadableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
@@ -1194,8 +1194,8 @@ static Obj FuncIsWritableFile(Obj self, Obj filename)
 {
     Int             res;
 
-    RequireStringRep("IsWritableFile", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     res = SyIsWritableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
@@ -1210,8 +1210,8 @@ static Obj FuncIsExecutableFile(Obj self, Obj filename)
 {
     Int             res;
 
-    RequireStringRep("IsExecutableFile", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     res = SyIsExecutableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
@@ -1226,8 +1226,8 @@ static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
 {
     Int             res;
 
-    RequireStringRep("IsDirectoryPathString", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     res = SyIsDirectoryPath( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
@@ -1251,8 +1251,8 @@ static Obj FuncLIST_DIR(Obj self, Obj dirname)
     struct dirent *entry;
     Obj res;
 
-    RequireStringRep("LIST_DIR", dirname);
-    
+    RequireStringRep(SELF_NAME, dirname);
+
     SyClearErrorNo();
     dir = opendir(CONST_CSTR_STRING(dirname));
     if (dir == NULL) {
@@ -1294,8 +1294,8 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 {
     Int             fid;
 
-    RequireStringRep("INPUT_TEXT_FILE", filename);
-    
+    RequireStringRep(SELF_NAME, filename);
+
     /* call the system dependent function                                  */
     SyClearErrorNo();
     fid = SyFopen( CONST_CSTR_STRING(filename), "r" );
@@ -1326,9 +1326,9 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
 {
     Int             fid;
 
-    RequireStringRep("OUTPUT_TEXT_FILE", filename);
-    RequireTrueOrFalse("OUTPUT_TEXT_FILE", append);
-    
+    RequireStringRep(SELF_NAME, filename);
+    RequireTrueOrFalse(SELF_NAME, append);
+
     /* call the system dependent function                                  */
     SyClearErrorNo();
     if ( append == True ) {
@@ -1617,9 +1617,9 @@ static Obj FuncUNIXSelect(Obj self,
   Int i,j;
   Obj o;
 
-  RequirePlainList("UNIXSelect", inlist);
-  RequirePlainList("UNIXSelect", outlist);
-  RequirePlainList("UNIXSelect", exclist);
+  RequirePlainList(SELF_NAME, inlist);
+  RequirePlainList(SELF_NAME, outlist);
+  RequirePlainList(SELF_NAME, exclist);
 
   FD_ZERO(&infds);
   FD_ZERO(&outfds);
@@ -1722,18 +1722,18 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     Int                 res;
     Int                 i;
 
-    RequireStringRep("ExecuteProcess", dir);
-    RequireStringRep("ExecuteProcess", prg);
+    RequireStringRep(SELF_NAME, dir);
+    RequireStringRep(SELF_NAME, prg);
     Int iin = GetSmallInt("ExecuteProcess", in);
     Int iout = GetSmallInt("ExecuteProcess", out);
-    RequireSmallList("ExecuteProcess", args);
+    RequireSmallList(SELF_NAME, args);
 
     /* create an argument array                                            */
     for ( i = 1;  i <= LEN_LIST(args);  i++ ) {
         if ( i == 1023 )
             break;
         tmp = ELM_LIST( args, i );
-        RequireStringRep("ExecuteProcess", tmp);
+        RequireStringRep(SELF_NAME, tmp);
         ExecArgs[i] = tmp;
     }
     ExecCArgs[0]   = CSTR_STRING(prg);

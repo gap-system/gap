@@ -1620,7 +1620,7 @@ static Obj AttrCONDUCTOR(Obj self, Obj cyc)
     }
 
     if (!IS_CYC(cyc) && !IS_SMALL_LIST(cyc)) {
-        RequireArgument("Conductor", cyc,
+        RequireArgument(SELF_NAME, cyc,
                         "must be a cyclotomic or a small list");
     }
 
@@ -1690,7 +1690,7 @@ static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
     }
 
     if (!IS_CYC(cyc)) {
-        RequireArgument("COEFFSCYC", cyc, "must be a cyclotomic");
+        RequireArgument(SELF_NAME, cyc, "must be a cyclotomic");
     }
 
     /* if <cyc> is rational just put it in a list of length 1              */
@@ -1908,7 +1908,7 @@ static Obj FuncCycList(Obj self, Obj list)
     }
 
     if ( ! IS_PLIST( list ) || ! IS_DENSE_LIST( list ) ) {
-        RequireArgument("CycList", list, "must be a dense plain list");
+        RequireArgument(SELF_NAME, list, "must be a dense plain list");
     }
 
     /* enlarge the buffer if necessary                                     */
@@ -1923,7 +1923,7 @@ static Obj FuncCycList(Obj self, Obj list)
             // reset ResultCyc, otherwise the next operation using it will see
             // our left-over garbage data
             SET_LEN_PLIST( ResultCyc, 0 );
-            RequireArgumentEx("CycList", val, 0,
+            RequireArgumentEx(SELF_NAME, val, 0,
                               "each entry must be a rational");
         }
         res[i] = val;

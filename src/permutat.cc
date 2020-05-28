@@ -1069,7 +1069,7 @@ static inline Obj PermList(Obj list)
 
 static Obj FuncPermList(Obj self, Obj list)
 {
-    RequireSmallList("PermList", list);
+    RequireSmallList(SELF_NAME, list);
 
     UInt len = LEN_LIST( list );
     if (len == 0)
@@ -1173,7 +1173,7 @@ static Obj SmallestMovedPointPerm(Obj perm)
 */
 static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 {
-    RequirePermutation("LargestMovedPointPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     return INTOBJ_INT(LargestMovedPointPerm(perm));
 }
@@ -1186,7 +1186,7 @@ static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 */
 static Obj FuncSMALLEST_MOVED_POINT_PERM(Obj self, Obj perm)
 {
-    RequirePermutation("SmallestMovedPointPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     return SmallestMovedPointPerm(perm);
 }
@@ -1232,7 +1232,7 @@ static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
 {
     UInt                pnt;            /* value of the point              */
 
-    RequirePermutation("CycleLengthPermInt", perm);
+    RequirePermutation(SELF_NAME, perm);
     pnt = GetPositiveSmallInt("CycleLengthPermInt", point) - 1;
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1297,7 +1297,7 @@ static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
 {
     UInt                pnt;            /* value of the point              */
 
-    RequirePermutation("CyclePermInt", perm);
+    RequirePermutation(SELF_NAME, perm);
     pnt = GetPositiveSmallInt("CyclePermInt", point) - 1;
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
@@ -1409,7 +1409,7 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 
 static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 {
-    RequirePermutation("CycleStructPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     if (TNUM_OBJ(perm) == T_PERM2) {
         return CYCLE_STRUCT_PERM<UInt2>(perm);
@@ -1484,7 +1484,7 @@ static inline Obj ORDER_PERM(Obj perm)
 
 static Obj FuncORDER_PERM(Obj self, Obj perm)
 {
-    RequirePermutation("OrderPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return ORDER_PERM<UInt2>(perm);
@@ -1558,7 +1558,7 @@ static inline Obj SIGN_PERM(Obj perm)
 
 static Obj FuncSIGN_PERM(Obj self, Obj perm)
 {
-    RequirePermutation("SignPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return SIGN_PERM<UInt2>(perm);
@@ -1674,7 +1674,7 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 
 static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm)
 {
-    RequirePermutation("SmallestGeneratorPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return SMALLEST_GENERATOR_PERM<UInt2>(perm);
@@ -1788,7 +1788,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
 
 static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
 {
-    RequirePermutation("RestrictedPerm", perm);
+    RequirePermutation(SELF_NAME, perm);
 
     if ( TNUM_OBJ(perm) == T_PERM2 ) {
         return RESTRICTED_PERM<UInt2>(perm, dom, test);
@@ -1807,8 +1807,8 @@ static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
 */
 static Obj FuncTRIM_PERM(Obj self, Obj perm, Obj n)
 {
-    RequirePermutation("TRIM_PERM", perm);
-    RequireNonnegativeSmallInt("TRIM_PERM", n);
+    RequirePermutation(SELF_NAME, perm);
+    RequireNonnegativeSmallInt(SELF_NAME, n);
     UInt newDeg = INT_INTOBJ(n);
     UInt oldDeg =
         (TNUM_OBJ(perm) == T_PERM2) ? DEG_PERM2(perm) : DEG_PERM4(perm);
@@ -2471,9 +2471,9 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     Int mytabs[DEGREELIMITONSTACK+1];
     Int mytabd[DEGREELIMITONSTACK+1];
 
-    RequireDenseList("AddRowVector", src);
-    RequireDenseList("AddRowVector", dst);
-    RequireSameLength("AddRowVector", src, dst);
+    RequireDenseList(SELF_NAME, src);
+    RequireDenseList(SELF_NAME, dst);
+    RequireSameLength(SELF_NAME, src, dst);
 
     l = LEN_LIST(src);
     d = 0;
@@ -2702,8 +2702,8 @@ static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn)
 static Obj FuncSCR_SIFT_HELPER(Obj self, Obj stb, Obj g, Obj n)
 {
     if (!IS_PREC(stb))
-        RequireArgument("SCR_SIFT_HELPER", stb, "must be a plain record");
-    RequirePermutation("SCR_SIFT_HELPER", g);
+        RequireArgument(SELF_NAME, stb, "must be a plain record");
+    RequirePermutation(SELF_NAME, g);
     UInt nn = GetSmallInt("SCR_SIFT_HELPER", n);
 
     /* Setup the result, sort out which rep we are going to work in  */

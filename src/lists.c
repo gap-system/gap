@@ -1184,7 +1184,7 @@ static Obj PosListHandler2(Obj self, Obj list, Obj obj)
 static Obj PosListHandler3(Obj self, Obj list, Obj obj, Obj start)
 {
     if (TNUM_OBJ(start) != T_INTPOS && !IS_NONNEG_INTOBJ(start)) {
-        RequireArgument("Position", start, "must be a non-negative integer");
+        RequireArgument(SELF_NAME, start, "must be a non-negative integer");
     }
     return POS_LIST( list, obj, start );
 }

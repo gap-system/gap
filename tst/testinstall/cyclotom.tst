@@ -317,7 +317,7 @@ Error, Conductor: <list>[2] must be a cyclotomic (not a boolean or fail)
 
 #
 gap> COEFFS_CYC(false);
-Error, COEFFSCYC: <cyc> must be a cyclotomic (not the value 'false')
+Error, COEFFS_CYC: <cyc> must be a cyclotomic (not the value 'false')
 
 #
 gap> CycList([1,fail]);

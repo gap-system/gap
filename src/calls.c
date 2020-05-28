@@ -1196,13 +1196,13 @@ Obj CallFuncList ( Obj func, Obj list )
 
 static Obj FuncCALL_FUNC_LIST(Obj self, Obj func, Obj list)
 {
-    RequireSmallList("CallFuncList", list);
+    RequireSmallList(SELF_NAME, list);
     return CallFuncList(func, list);
 }
 
 static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 {
-    RequireSmallList("CallFuncListWrap", list);
+    RequireSmallList(SELF_NAME, list);
     Obj retval = CallFuncList(func, list);
     return (retval == 0) ? NewImmutableEmptyPlist()
                          : NewPlistFromArgs(retval);
@@ -1240,7 +1240,7 @@ static Obj AttrNAME_FUNC(Obj self, Obj func)
 
 static Obj FuncSET_NAME_FUNC(Obj self, Obj func, Obj name)
 {
-    RequireStringRep("SET_NAME_FUNC", name);
+    RequireStringRep(SELF_NAME, name);
 
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     SET_NAME_FUNC(func, ImmutableString(name));
@@ -1345,7 +1345,7 @@ static Obj FuncCLEAR_PROFILE_FUNC(Obj self, Obj func)
 {
     Obj                 prof;
 
-    RequireFunction("CLEAR_PROFILE_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     /* clear profile info                                                  */
     prof = PROF_FUNC(func);
@@ -1377,7 +1377,7 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
     Obj                 prof;
     Obj                 copy;
 
-    RequireFunction("PROFILE_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     /* uninstall trace handler                                             */
     ChangeDoOperations( func, 0 );
@@ -1423,13 +1423,13 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
 */
 static Obj FuncIS_PROFILED_FUNC(Obj self, Obj func)
 {
-    RequireFunction("IS_PROFILED_FUNC", func);
+    RequireFunction(SELF_NAME, func);
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
 static Obj FuncFILENAME_FUNC(Obj self, Obj func)
 {
-    RequireFunction("FILENAME_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     if (BODY_FUNC(func)) {
         Obj fn =  GET_FILENAME_BODY(BODY_FUNC(func));
@@ -1441,7 +1441,7 @@ static Obj FuncFILENAME_FUNC(Obj self, Obj func)
 
 static Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
 {
-    RequireFunction("STARTLINE_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     if (BODY_FUNC(func)) {
         UInt sl = GET_STARTLINE_BODY(BODY_FUNC(func));
@@ -1453,7 +1453,7 @@ static Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
 
 static Obj FuncENDLINE_FUNC(Obj self, Obj func)
 {
-    RequireFunction("ENDLINE_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     if (BODY_FUNC(func)) {
         UInt el = GET_ENDLINE_BODY(BODY_FUNC(func));
@@ -1465,7 +1465,7 @@ static Obj FuncENDLINE_FUNC(Obj self, Obj func)
 
 static Obj FuncLOCATION_FUNC(Obj self, Obj func)
 {
-    RequireFunction("LOCATION_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     if (BODY_FUNC(func)) {
         Obj sl = GET_LOCATION_BODY(BODY_FUNC(func));
@@ -1483,7 +1483,7 @@ static Obj FuncUNPROFILE_FUNC(Obj self, Obj func)
 {
     Obj                 prof;
 
-    RequireFunction("UNPROFILE_FUNC", func);
+    RequireFunction(SELF_NAME, func);
 
     /* uninstall trace handler                                             */
     ChangeDoOperations( func, 0 );
@@ -1526,7 +1526,7 @@ BOOL IsKernelFunction(Obj func)
 /* Returns a measure of the size of a GAP function */
 static Obj FuncFUNC_BODY_SIZE(Obj self, Obj func)
 {
-    RequireFunction("FUNC_BODY_SIZE", func);
+    RequireFunction(SELF_NAME, func);
     Obj body = BODY_FUNC(func);
     if (body == 0)
         return INTOBJ_INT(0);

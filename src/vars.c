@@ -1998,7 +1998,7 @@ static Obj FuncGetBottomLVars(Obj self)
 static Obj FuncParentLVars(Obj self, Obj lvars)
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
-      RequireArgument("ParentLVars", lvars, "must be an lvars");
+      RequireArgument(SELF_NAME, lvars, "must be an lvars");
   }
   Obj parent = PARENT_LVARS(lvars);
   return parent ? parent : Fail;
@@ -2007,7 +2007,7 @@ static Obj FuncParentLVars(Obj self, Obj lvars)
 static Obj FuncContentsLVars(Obj self, Obj lvars)
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
-      RequireArgument("ContentsLVars", lvars, "must be an lvars");
+      RequireArgument(SELF_NAME, lvars, "must be an lvars");
   }
   Obj contents = NEW_PREC(0);
   Obj func = FUNC_LVARS(lvars);
@@ -2030,7 +2030,7 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
 
 static Obj FuncENVI_FUNC(Obj self, Obj func)
 {
-    RequireFunction("ENVI_FUNC", func);
+    RequireFunction(SELF_NAME, func);
     Obj envi = ENVI_FUNC(func);
     return (envi && IS_LVARS_OR_HVARS(envi)) ? envi : Fail;
 }

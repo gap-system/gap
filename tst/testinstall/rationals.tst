@@ -6,9 +6,9 @@ gap> NumeratorRat(x);
 gap> DenominatorRat(x);
 3
 gap> NumeratorRat('c');
-Error, NumeratorRat: <rat> must be a rational (not a character)
+Error, NUMERATOR_RAT: <rat> must be a rational (not a character)
 gap> DenominatorRat('c');
-Error, DenominatorRat: <rat> must be a rational (not a character)
+Error, DENOMINATOR_RAT: <rat> must be a rational (not a character)
 
 #
 gap> IsRat(x);

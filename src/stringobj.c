@@ -204,7 +204,7 @@ static void LoadChar(Obj c)
 static Obj FuncEmptyString(Obj self, Obj len)
 {
     Obj                 new;
-    RequireNonnegativeSmallInt("EmptyString", len);
+    RequireNonnegativeSmallInt(SELF_NAME, len);
     new = NEW_STRING(INT_INTOBJ(len));
     SET_LEN_STRING(new, 0);
     return new;
@@ -220,7 +220,7 @@ static Obj FuncEmptyString(Obj self, Obj len)
 */
 static Obj FuncShrinkAllocationString(Obj self, Obj str)
 {
-    RequireStringRep("ShrinkAllocationString", str);
+    RequireStringRep(SELF_NAME, str);
     SHRINK_STRING(str);
     return (Obj)0;
 }
@@ -249,7 +249,7 @@ static Obj FuncINT_CHAR(Obj self, Obj val)
 {
     /* get and check the character                                         */
     if (TNUM_OBJ(val) != T_CHAR) {
-        RequireArgument("INT_CHAR", val, "must be a character");
+        RequireArgument(SELF_NAME, val, "must be a character");
     }
 
     /* return the character                                                */
@@ -280,7 +280,7 @@ static Obj FuncSINT_CHAR(Obj self, Obj val)
 {
     /* get and check the character                                         */
     if (TNUM_OBJ(val) != T_CHAR) {
-        RequireArgument("SINT_CHAR", val, "must be a character");
+        RequireArgument(SELF_NAME, val, "must be a character");
     }
 
     /* return the character                                                */
@@ -298,7 +298,7 @@ static Obj FuncINTLIST_STRING(Obj self, Obj val, Obj sign)
   const UInt1 *p;
 
   /* test whether val is a string, convert to compact rep if necessary */
-  RequireStringRep("INTLIST_STRING", val);
+  RequireStringRep(SELF_NAME, val);
 
   l=GET_LEN_STRING(val);
   n=NEW_PLIST(T_PLIST,l);
@@ -343,7 +343,7 @@ static Obj FuncSTRING_SINTLIST(Obj self, Obj val)
   /* general code */
   if (!IS_RANGE(val) && !IS_PLIST(val)) {
   again:
-      RequireArgument("STRING_SINTLIST", val,
+      RequireArgument(SELF_NAME, val,
                       "must be a plain list of small integers or a range");
   }
   if (! IS_RANGE(val) ) {
@@ -385,7 +385,7 @@ static Obj FuncREVNEG_STRING(Obj self, Obj val)
   UInt1 *q;
 
   /* test whether val is a string, convert to compact rep if necessary */
-  RequireStringRep("REVNEG_STRING", val);
+  RequireStringRep(SELF_NAME, val);
 
   l=GET_LEN_STRING(val);
   n=NEW_STRING(l);
@@ -647,7 +647,7 @@ void PrintString(Obj list)
 Obj FuncVIEW_STRING_FOR_STRING(Obj self, Obj string)
 {
     if (!IS_STRING(string)) {
-        RequireArgument("VIEW_STRING_FOR_STRING", string, "must be a string");
+        RequireArgument(SELF_NAME, string, "must be a string");
     }
 
     if (!IS_STRING_REP(string)) {
@@ -1343,7 +1343,7 @@ static Obj FuncIS_STRING_CONV(Obj self, Obj obj)
 static Obj FuncCONV_STRING(Obj self, Obj string)
 {
     if (!IS_STRING(string)) {
-        RequireArgument("ConvString", string, "must be a string");
+        RequireArgument(SELF_NAME, string, "must be a string");
     }
 
     /* convert to the string representation                                */
@@ -1371,7 +1371,7 @@ static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 {
     if (!IS_STRING(string)) {
-        RequireArgument("CopyToStringRep", string, "must be a string");
+        RequireArgument(SELF_NAME, string, "must be a string");
     }
     return CopyToStringRep(string);
 }
@@ -1391,9 +1391,9 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
   Int    ipos, i, j, lens, lenss, max;
   const UInt1  *s, *ss;
 
-  RequireStringRep("POSITION_SUBSTRING", string);
-  RequireStringRep("POSITION_SUBSTRING", substr);
-  RequireNonnegativeSmallInt("POSITION_SUBSTRING", off);
+  RequireStringRep(SELF_NAME, string);
+  RequireStringRep(SELF_NAME, substr);
+  RequireNonnegativeSmallInt(SELF_NAME, off);
 
   ipos = INT_INTOBJ(off);
 
@@ -1437,8 +1437,8 @@ static Obj FuncNormalizeWhitespace(Obj self, Obj string)
   UInt1  *s, c;
   Int i, j, len, white;
 
-  RequireStringRep("NormalizeWhitespace", string);
-  
+  RequireStringRep(SELF_NAME, string);
+
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
   i = -1;
@@ -1483,9 +1483,9 @@ static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
   Int i, j, len;
   UInt1 REMCHARLIST[256] = {0};
 
-  RequireStringRep("RemoveCharacters", string);
-  RequireStringRep("RemoveCharacters", rem);
-  
+  RequireStringRep(SELF_NAME, string);
+  RequireStringRep(SELF_NAME, rem);
+
   /* set REMCHARLIST by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(rem);
   s = CHARS_STRING(rem);
@@ -1520,8 +1520,8 @@ static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
 {
   Int j, len;
 
-  RequireStringRep("TranslateString", string);
-  RequireStringRep("TranslateString", trans);
+  RequireStringRep(SELF_NAME, string);
+  RequireStringRep(SELF_NAME, trans);
   if ( GET_LEN_STRING( trans ) < 256 ) {
       ErrorMayQuit("TranslateString: <trans> must have length >= 256",
                    0, 0 );
@@ -1555,9 +1555,9 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
   UInt1 SPLITSTRINGSEPS[256] = { 0 };
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
-  RequireStringRep("SplitString", string);
-  RequireStringRep("SplitString", seps);
-  RequireStringRep("SplitString", wspace);
+  RequireStringRep(SELF_NAME, string);
+  RequireStringRep(SELF_NAME, seps);
+  RequireStringRep(SELF_NAME, wspace);
 
   /* set SPLITSTRINGSEPS by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(seps);

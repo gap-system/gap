@@ -574,7 +574,7 @@ static Obj FuncREC_NAMES(Obj self, Obj rec)
         return InnerRecNames(FromAtomicRecord(rec));
     }
 #endif
-    RequireArgument("RecNames", rec, "must be a record");
+    RequireArgument(SELF_NAME, rec, "must be a record");
     return Fail;
 }
 
@@ -594,7 +594,7 @@ static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
         return InnerRecNames(FromAtomicRecord(rec));
 #endif
     }
-    RequireArgument("RecNames", rec, "must be a component object");
+    RequireArgument(SELF_NAME, rec, "must be a component object");
     return Fail;
 }
 

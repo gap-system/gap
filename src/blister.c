@@ -1068,7 +1068,7 @@ static Obj FiltIS_BLIST_REP(Obj self, Obj obj)
 */
 static Obj FuncSIZE_BLIST(Obj self, Obj blist)
 {
-    RequireBlist("SizeBlist", blist);
+    RequireBlist(SELF_NAME, blist);
     return INTOBJ_INT(SizeBlist(blist));
 }
 
@@ -1094,8 +1094,8 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub);
 
 static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub)
 {
-    RequireSmallList("BlistList", list);
-    RequireSmallList("BlistList", sub);
+    RequireSmallList(SELF_NAME, list);
+    RequireSmallList(SELF_NAME, sub);
 
     Int lenList = LEN_LIST( list );
     Obj blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
@@ -1129,9 +1129,9 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
     UInt                nn;
     UInt                i;              /* loop variable                   */
 
-    RequireSmallList("ListBlist", list);
-    RequireBlist("ListBlist", blist);
-    RequireSameLength("ListBlist", blist, list);
+    RequireSmallList(SELF_NAME, list);
+    RequireBlist(SELF_NAME, blist);
+    RequireSameLength(SELF_NAME, blist, list);
 
     /* compute the number of 'true'-s                                      */
     n = SizeBlist(blist);
@@ -1171,7 +1171,7 @@ static Obj FuncPositionNthTrueBlist(
     const UInt *        ptr;
 
     /* Check the arguments. */
-    RequireBlist("ListBlist", blist);
+    RequireBlist(SELF_NAME, blist);
     Int nth = GetPositiveSmallIntEx("Position", Nth, "<nth>");
 
     nrb = NUMBER_BLOCKS_BLIST(blist);
@@ -1216,9 +1216,9 @@ static Obj FuncIS_SUB_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    RequireBlist("IsSubsetBlist", blist1);
-    RequireBlist("IsSubsetBlist", blist2);
-    RequireSameLength("IsSubsetBlist", blist1, blist2);
+    RequireBlist(SELF_NAME, blist1);
+    RequireBlist(SELF_NAME, blist2);
+    RequireSameLength(SELF_NAME, blist1, blist2);
 
     /* test for subset property blockwise                                  */
     ptr1 = CONST_BLOCKS_BLIST(blist1);
@@ -1253,10 +1253,10 @@ static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    RequireBlist("UniteBlist", blist1);
-    RequireMutable("UniteBlist", blist1, "boolean list");
-    RequireBlist("UniteBlist", blist2);
-    RequireSameLength("UniteBlist", blist1, blist2);
+    RequireBlist(SELF_NAME, blist1);
+    RequireMutable(SELF_NAME, blist1, "boolean list");
+    RequireBlist(SELF_NAME, blist2);
+    RequireSameLength(SELF_NAME, blist1, blist2);
 
     /* compute the union by *or*-ing blockwise                             */
     ptr1 = BLOCKS_BLIST(blist1);
@@ -1291,11 +1291,11 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     Int                 i, j, k, l;     /* loop variables                  */
     Int                 s, t;           /* elements of a range             */
 
-    RequireSmallList("UniteBlistList", list);
-    RequireBlist("UniteBlistList", blist);
-    RequireMutable("UniteBlistList", blist, "boolean list");
-    RequireSameLength("UniteBlistList", blist, list);
-    RequireSmallList("UniteBlistList", sub);
+    RequireSmallList(SELF_NAME, list);
+    RequireBlist(SELF_NAME, blist);
+    RequireMutable(SELF_NAME, blist, "boolean list");
+    RequireSameLength(SELF_NAME, blist, list);
+    RequireSmallList(SELF_NAME, sub);
 
     lenList  = LEN_LIST( list );
     lenSub   = LEN_LIST( sub );
@@ -1502,10 +1502,10 @@ static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    RequireBlist("IntersectBlist", blist1);
-    RequireMutable("IntersectBlist", blist1, "boolean list");
-    RequireBlist("IntersectBlist", blist2);
-    RequireSameLength("IntersectBlist", blist1, blist2);
+    RequireBlist(SELF_NAME, blist1);
+    RequireMutable(SELF_NAME, blist1, "boolean list");
+    RequireBlist(SELF_NAME, blist2);
+    RequireSameLength(SELF_NAME, blist1, blist2);
 
     /* compute the intersection by *and*-ing blockwise                     */
     ptr1 = BLOCKS_BLIST(blist1);
@@ -1535,10 +1535,10 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    RequireBlist("SubtractBlist", blist1);
-    RequireMutable("SubtractBlist", blist1, "boolean list");
-    RequireBlist("SubtractBlist", blist2);
-    RequireSameLength("SubtractBlist", blist1, blist2);
+    RequireBlist(SELF_NAME, blist1);
+    RequireMutable(SELF_NAME, blist1, "boolean list");
+    RequireBlist(SELF_NAME, blist2);
+    RequireSameLength(SELF_NAME, blist1, blist2);
 
     /* compute the difference by operating blockwise                       */
     ptr1 = BLOCKS_BLIST(blist1);
@@ -1569,9 +1569,9 @@ static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
     const UInt *        ptr2;           /* pointer to the second argument  */
     UInt                i;              /* loop variable                   */
 
-    RequireBlist("MeetBlist", blist1);
-    RequireBlist("MeetBlist", blist2);
-    RequireSameLength("MeetBlist", blist1, blist2);
+    RequireBlist(SELF_NAME, blist1);
+    RequireBlist(SELF_NAME, blist2);
+    RequireSameLength(SELF_NAME, blist1, blist2);
 
     /* compute the difference by operating blockwise                       */
     ptr1 = CONST_BLOCKS_BLIST(blist1);
@@ -1596,8 +1596,8 @@ static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
 
 static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 {
-    RequireBlist("FlipBlist", blist);
-    RequireMutable("FlipBlist", blist, "boolean list");
+    RequireBlist(SELF_NAME, blist);
+    RequireMutable(SELF_NAME, blist, "boolean list");
 
     if (LEN_BLIST(blist) == 0) {
         return 0;
@@ -1630,8 +1630,8 @@ static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 
 static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 {
-    RequireBlist("ClearAllBitsBlist", blist);
-    RequireMutable("ClearAllBitsBlist", blist, "boolean list");
+    RequireBlist(SELF_NAME, blist);
+    RequireMutable(SELF_NAME, blist, "boolean list");
 
     if (LEN_BLIST(blist) == 0) {
         return 0;
@@ -1658,8 +1658,8 @@ static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 
 static Obj FuncSET_ALL_BLIST(Obj self, Obj blist)
 {
-    RequireBlist("SetAllBitsBlist", blist);
-    RequireMutable("SetAllBitsBlist", blist, "boolean list");
+    RequireBlist(SELF_NAME, blist);
+    RequireMutable(SELF_NAME, blist, "boolean list");
 
     if (LEN_BLIST(blist) == 0) {
         return 0;

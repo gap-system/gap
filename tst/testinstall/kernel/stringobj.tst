@@ -59,7 +59,7 @@ Error, INTLIST_STRING: <val> must be a string (not the integer 1)
 gap> SINTLIST_STRING("ABC");
 [ 65, 66, 67 ]
 gap> SINTLIST_STRING(1);
-Error, INTLIST_STRING: <val> must be a string (not the integer 1)
+Error, SINTLIST_STRING: <val> must be a string (not the integer 1)
 
 #
 gap> STRING_SINTLIST([ 65, 66, 67 ]);
@@ -79,11 +79,11 @@ Error, REVNEG_STRING: <val> must be a string (not the integer 1)
 
 #
 gap> CONV_STRING(1);
-Error, ConvString: <string> must be a string (not the integer 1)
+Error, CONV_STRING: <string> must be a string (not the integer 1)
 
 #
 gap> COPY_TO_STRING_REP(1);
-Error, CopyToStringRep: <string> must be a string (not the integer 1)
+Error, COPY_TO_STRING_REP: <string> must be a string (not the integer 1)
 
 #
 gap> POSITION_SUBSTRING("abc","x",0);
@@ -110,9 +110,9 @@ Error, NormalizeWhitespace: <string> must be a string (not the integer 1)
 gap> s:="abcdabcd";; REMOVE_CHARACTERS(s, "db"); s;
 "acac"
 gap> REMOVE_CHARACTERS(1,1);
-Error, RemoveCharacters: <string> must be a string (not the integer 1)
+Error, REMOVE_CHARACTERS: <string> must be a string (not the integer 1)
 gap> REMOVE_CHARACTERS(s,1);
-Error, RemoveCharacters: <rem> must be a string (not the integer 1)
+Error, REMOVE_CHARACTERS: <rem> must be a string (not the integer 1)
 
 #
 gap> s:="abc";; TranslateString(s,UPPERCASETRANSTABLE); s;
