@@ -2606,7 +2606,13 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
 
-    IntrBegin(&rs->intr,  context );
+    // remember the old execution state
+    Bag oldLVars = STATE(CurrLVars);
+
+    // start an execution environment
+    SWITCH_TO_OLD_LVARS(context);
+
+    IntrBegin(&rs->intr);
 
     switch (rs->s.Symbol) {
     /* read an expression or an assignment or a procedure call             */
@@ -2632,23 +2638,23 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
         SyntaxError(&rs->s, "; expected");
     }
 
-    /* end the interpreter                                                 */
-    TRY_IF_NO_ERROR {
-        type = IntrEnd(&rs->intr, 0, evalResult);
+    // check for dual semicolon
+    if (dualSemicolon)
+        *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
 
-        /* check for dual semicolon */
-        if (dualSemicolon)
-            *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
-    }
-    CATCH_ERROR {
-        IntrEnd(&rs->intr, 1, evalResult);
-        type = STATUS_ERROR;
+    // end the interpreter
+    type = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+
+    // restore the execution environment
+    SWITCH_TO_OLD_LVARS(oldLVars);
+
 #ifdef HPCGAP
+    if (rs->s.NrError > 0) {
         PopRegionLocks(lockSP);
         if (TLS(CurrentHashLock))
             HashUnlock(TLS(CurrentHashLock));
-#endif
     }
+#endif
 
     GAP_ASSERT(rs->LoopNesting == 0);
 
@@ -2711,7 +2717,14 @@ UInt ReadEvalFile(Obj * evalResult)
     rs->ReadTilde    = 0;
     STATE(Tilde)     = 0;
     rs->CurrLHSGVar  = 0;
-    IntrBegin(&rs->intr, STATE(BottomLVars));
+
+    // remember the old execution state
+    Bag oldLVars = STATE(CurrLVars);
+
+    // start an execution environment
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+
+    IntrBegin(&rs->intr);
 
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
@@ -2744,13 +2757,10 @@ UInt ReadEvalFile(Obj * evalResult)
     }
 
     /* end the interpreter                                                 */
-    TRY_IF_NO_ERROR {
-        type = IntrEnd(&rs->intr, 0, evalResult);
-    }
-    CATCH_ERROR {
-        IntrEnd(&rs->intr, 1, evalResult);
-        type = STATUS_ERROR;
-    }
+    type = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+
+    // restore the execution environment
+    SWITCH_TO_OLD_LVARS(oldLVars);
 
     /* switch back to the old reader context                               */
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );

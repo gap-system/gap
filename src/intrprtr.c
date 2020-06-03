@@ -219,8 +219,7 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
 *F  IntrEnd(<error>,<result>)  . . . . . . . . . . . . .  stop an interpreter
 **
-**  'IntrBegin' starts a new interpreter in context <frame>. If in doubt,
-**  pass STATE(BottomLVars) as <frame>
+**  'IntrBegin' starts a new interpreter.
 **
 **  'IntrEnd' stops the current interpreter.
 **
@@ -235,7 +234,7 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
 **  return-void-statement was interpreted. If 'IntrEnd' returns 'STATUS_QUIT',
 **  then a quit-statement was interpreted.
 */
-void IntrBegin(IntrState * intr, Obj frame)
+void IntrBegin(IntrState * intr)
 {
     /* allocate a new values stack                                         */
     intr->StackObj = NEW_PLIST(T_PLIST, 64);
@@ -246,26 +245,12 @@ void IntrBegin(IntrState * intr, Obj frame)
 
     /* no return-statement was yet interpreted                             */
     intr->returning = 0;
-
-    // remember the old execution state
-    intr->oldLVars = STATE(CurrLVars);
-
-    // start an execution environment
-    SWITCH_TO_OLD_LVARS(frame);
 }
 
-ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
+ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
 {
-    UInt                intrReturning;  /* interpreted return-statement?   */
-
-    // restore the execution environment
-    SWITCH_TO_OLD_LVARS(intr->oldLVars);
-
     /* if everything went fine                                             */
     if ( ! error ) {
-
-        /* remember whether the interpreter interpreted a return-statement */
-        intrReturning = intr->returning;
 
         /* must be back in immediate (non-ignoring, non-coding) mode       */
         GAP_ASSERT(intr->ignoring == 0);
@@ -275,6 +260,8 @@ ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
         GAP_ASSERT(LEN_PLIST(intr->StackObj) == 1);
         if (result)
             *result = PopVoidObj(intr);
+
+        return intr->returning;
     }
 
     /* otherwise clean up the mess                                         */
@@ -285,16 +272,13 @@ ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result)
             CodeEnd(1);
         }
 
-        /* remember that we had an error                                   */
-        intrReturning = STATUS_ERROR;
-
         /* dummy result value (probably ignored)                           */
         if (result)
             *result = 0;
-    }
 
-    /* indicate whether a return-statement was interpreted                 */
-    return intrReturning;
+        // indicate that we had an error
+        return STATUS_ERROR;
+    }
 }
 
 

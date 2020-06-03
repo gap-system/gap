@@ -51,11 +51,6 @@ struct IntrState {
 
     // 'StackObj' is the stack of values.
     Obj StackObj;
-
-    // 'IntrBegin' stores in 'oldLVars' the previous value of
-    // 'STATE(CurrLVars)', and 'IntrEnd' restores it from there by calling
-    // 'SWITCH_TO_OLD_LVARS'.
-    Bag oldLVars;
 };
 
 typedef struct IntrState IntrState;
@@ -66,8 +61,7 @@ typedef struct IntrState IntrState;
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
 *F  IntrEnd(<error>,<result>)  . . . . . . . . . . . . .  stop an interpreter
 **
-**  'IntrBegin' starts a new interpreter in context <frame>. If in doubt,
-**  pass STATE(BottomLVars) as <frame>
+**  'IntrBegin' starts a new interpreter.
 **
 **  'IntrEnd' stops the current interpreter.
 **
@@ -82,9 +76,9 @@ typedef struct IntrState IntrState;
 **  return-void-statement was interpreted. If 'IntrEnd' returns 'STATUS_QUIT',
 **  then a quit-statement was interpreted.
 */
-void IntrBegin(IntrState * intr, Obj frame);
+void IntrBegin(IntrState * intr);
 
-ExecStatus IntrEnd(IntrState * intr, UInt error, Obj * result);
+ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result);
 
 
 /****************************************************************************
