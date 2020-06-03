@@ -438,9 +438,6 @@ static void ThreadedInterpreter(void * funcargs)
     int i;
 
     // initialize everything and begin a fresh execution context
-    STATE(ThrownObject) = 0;
-    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
-
     tmp = KEPTALIVE(funcargs);
     StopKeepAlive(funcargs);
     func = ELM_PLIST(tmp, 1);

@@ -2593,6 +2593,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
+    if (!context)
+        context = STATE(BottomLVars);
     rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
     rs->ReadTop        = 0;
     rs->ReadTilde      = 0;

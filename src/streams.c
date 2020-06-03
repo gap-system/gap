@@ -76,7 +76,7 @@ static Int READ_COMMAND(Obj *evalResult)
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(STATE(BottomLVars), evalResult, 0);
+    status = ReadEvalCommand(0, evalResult, 0);
     if( status == STATUS_EOF )
         return 0;
 
@@ -181,8 +181,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             SET_LEN_STRING(outstreamString, 0);
         }
 
-        status =
-            ReadEvalCommand(STATE(BottomLVars), &evalResult, &dualSemicolon);
+        status = ReadEvalCommand(0, &evalResult, &dualSemicolon);
 
         if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             result = NEW_PLIST(T_PLIST, 5);
@@ -302,7 +301,7 @@ static void READ_INNER(void)
     while ( 1 ) {
         ClearError();
         Obj evalResult;
-        ExecStatus status = ReadEvalCommand(STATE(BottomLVars), &evalResult, 0);
+        ExecStatus status = ReadEvalCommand(0, &evalResult, 0);
         if (STATE(UserHasQuit) || STATE(UserHasQUIT))
             break;
 
@@ -491,7 +490,7 @@ Int READ_GAP_ROOT ( const Char * filename )
     if (OpenInput(path)) {
         while (1) {
             ClearError();
-            UInt type = ReadEvalCommand(STATE(BottomLVars), 0, 0);
+            UInt type = ReadEvalCommand(0, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
             if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
@@ -963,8 +962,7 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
 
 static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
 {
-    return FuncREAD_STREAM_LOOP_WITH_CONTEXT(self, stream, catcherrstdout,
-                                             STATE(BottomLVars));
+    return FuncREAD_STREAM_LOOP_WITH_CONTEXT(self, stream, catcherrstdout, 0);
 }
 /****************************************************************************
 **
