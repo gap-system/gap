@@ -479,30 +479,45 @@ static sizeMultiplier memoryUnits[]= {
 #endif
 };
 
-static UInt ParseMemory( Char * s)
-{
-  double size = atof(s);
-  Char symbol =  s[strlen(s)-1];
-  UInt i;
-  UInt maxmem;
+
 #ifdef SYS_IS_64_BIT
-  maxmem = 15000000000000000000UL;
+static const UInt maxmem = 15000000000000000000UL;
 #else
-  maxmem = 4000000000UL;
+static const UInt maxmem = 4000000000UL;
 #endif
-  
-  for (i = 0; i < ARRAY_SIZE(memoryUnits); i++) {
-    if (symbol == memoryUnits[i].symbol) {
-      UInt value = memoryUnits[i].value;
-      if (size > maxmem/value)
-        return maxmem;
-      else
-        return size * value;
-    }      
-  }
-  if (!IsDigit(symbol))
-    fputs("Unrecognised memory unit ignored", stderr);
-  return size;
+
+static Int ParseMemory(Char * s)
+{
+    char * end;
+    const double size = strtod(s, &end);
+    const char symbol = end[0];
+
+    if (s == end)
+        goto err;
+
+    // if no unit was specified: return immediately
+    if (symbol == 0)
+        return size;
+
+    // units consist of a single character; reject if there is more
+    if (end[1] != 0)
+        goto err;
+
+    for (int i = 0; i < ARRAY_SIZE(memoryUnits); i++) {
+        if (symbol == memoryUnits[i].symbol) {
+            UInt value = memoryUnits[i].value;
+            if (size > maxmem / value)
+                return maxmem;
+            else
+                return size * value;
+        }
+    }
+
+err:
+    fputs("Unrecognized memory size '", stderr);
+    fputs(s, stderr);
+    fputs("'\n", stderr);
+    return -1;
 }
 
 
@@ -533,8 +548,10 @@ static Int storePosInteger( Char **argv, void *Where )
     n = n * 10 + (*p-'0');
     p++;
   }
-  if (p == argv[0] || *p || n == 0)
-    fputs("Argument not a positive integer", stderr);
+  if (p == argv[0] || *p || n == 0) {
+      fputs("Argument not a positive integer\n", stderr);
+      return -1;
+  }
   *where = n;
   return 1;
 }
@@ -552,17 +569,23 @@ static Int storeString( Char **argv, void *Where )
 #ifdef USE_GASMAN
 static Int storeMemory( Char **argv, void *Where )
 {
-  UInt *where = (UInt *)Where;
-  *where = ParseMemory(argv[0]);
-  return 1;
+    UInt * where = (UInt *)Where;
+    Int    res = ParseMemory(argv[0]);
+    if (res < 0)
+        return -1;
+    *where = res;
+    return 1;
 }
 #endif
 
 static Int storeMemory2( Char **argv, void *Where )
 {
-  UInt *where = (UInt *)Where;
-  *where = ParseMemory(argv[0])/1024;
-  return 1;
+    UInt * where = (UInt *)Where;
+    Int    res = ParseMemory(argv[0]);
+    if (res < 0)
+        return -1;
+    *where = res / 1024;
+    return 1;
 }
 
 static Int processCompilerArgs( Char **argv, void * dummy)
