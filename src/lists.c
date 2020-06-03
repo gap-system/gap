@@ -26,7 +26,6 @@
 #include "bool.h"
 #include "calls.h"
 #include "error.h"
-#include "gapstate.h"
 #include "gaputils.h"
 #include "integer.h"
 #include "io.h"

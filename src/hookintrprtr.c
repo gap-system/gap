@@ -15,7 +15,6 @@
 
 #include "code.h"
 #include "exprs.h"
-#include "gapstate.h"
 #include "gaputils.h"
 #include "modules.h"
 #include "stats.h"
