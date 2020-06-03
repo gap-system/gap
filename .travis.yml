@@ -61,6 +61,7 @@ matrix:
           - libgmp-dev
           - libreadline-dev
           - zlib1g-dev
+          - 4ti2                    # for 4ti2Interface
           - libboost-dev            # for NormalizInterface
           - libcdd-dev              # for CddInterface
           - libmpfr-dev             # for float
@@ -83,6 +84,7 @@ matrix:
           - libgmp-dev:i386
           - libreadline-dev:i386
           - zlib1g-dev:i386
+          - 4ti2:i386               # for 4ti2Interface
           - libncurses5-dev:i386    # for Browse
           - libcurl4-openssl-dev:i386 # for curlInterface
           - libboost-dev:i386       # for NormalizInterface
