@@ -48,8 +48,8 @@ while [[ "$#" -ge 1 ]]; do
     --with-gaproot=*) GAPROOT=${option#--with-gaproot=}; ;;
     --parallel)       PARALLEL=yes; ;;
 
-    --with-gap)       GAP="$1"; shift ;;
-    --with-gap=*)     GAP=${option#--with-gap=}; ;;
+    --with-gap)       GAP_EXE="$1"; shift ;;
+    --with-gap=*)     GAP_EXE=${option#--with-gap=}; ;;
 
     --no-color)       COLORS=no ;;
     --color)          COLORS=yes ;;
@@ -62,8 +62,6 @@ while [[ "$#" -ge 1 ]]; do
     *)                PACKAGES+=("$option") ;;
   esac
 done
-
-GAP="${GAP:-$GAPROOT/bin/gap.sh}"
 
 if [ "x$PARALLEL" = "xyes" ]; then
   export MAKEFLAGS="${MAKEFLAGS:--j3}"
@@ -109,6 +107,20 @@ fi
 
 # read in sysinfo
 source "$GAPROOT/sysinfo.gap"
+
+# determine the GAP executable to call:
+# - if the user specified one explicitly via the `--gap` option, then
+#   GAP_EXE is set and we should use that
+# - otherwise if sysinfo.gap set the GAP variable, use that
+# - otherwise fall back to $GAPROOT/bin/gap.sh
+if [[ -n $GAP_EXE ]]
+then
+  GAP="$GAP_EXE"
+else
+  GAP="${GAP:-$GAPROOT/bin/gap.sh}"
+fi
+
+
 
 # detect whether GAP was built in 32bit mode
 # TODO: once all packages have adapted to the new build system,
