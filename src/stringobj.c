@@ -1724,11 +1724,14 @@ static Obj FuncSMALLINT_STR(Obj self, Obj str)
   } else if (*string == '+') {
     string++;
   }
+  const Char * start = string;
   while (IsDigit(*string)) {
     x *= 10;
     x += (*string - '0');
     string++;
   }
+  if (start == string || *string)
+    return Fail;
   return INTOBJ_INT(sign*x);
 }
 
