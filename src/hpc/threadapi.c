@@ -17,7 +17,6 @@
 #include "code.h"
 #include "error.h"
 #include "funcs.h"
-#include "gapstate.h"
 #include "gvars.h"
 #include "io.h"
 #include "lists.h"

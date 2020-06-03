@@ -13,7 +13,6 @@
 #include "bool.h"
 #include "calls.h"
 #include "error.h"
-#include "gapstate.h"
 #include "gvars.h"
 #include "modules.h"
 #include "objset.h"

@@ -21,7 +21,6 @@
 #include "calls.h"
 #include "error.h"
 #include "fibhash.h"
-#include "gapstate.h"
 #include "gaputils.h"
 #include "gvars.h"
 #include "io.h"
