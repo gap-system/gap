@@ -724,6 +724,9 @@ GAP_KERNEL_MINOR_VERSION=$(GAP_KERNEL_MINOR_VERSION)
 GAP_BIN_DIR="$(abs_builddir)"
 GAP_LIB_DIR="$(abs_srcdir)"
 
+GAP="$(abs_builddir)/bin/gap.sh"
+GAC="$(abs_builddir)/gac"
+
 GAP_CC="$(CC)"
 GAP_CXX="$(CXX)"
 GAP_CFLAGS="$(GAP_CFLAGS)"

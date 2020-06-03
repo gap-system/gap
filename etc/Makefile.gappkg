@@ -50,9 +50,6 @@ endif
 KEXT_BINARCHDIR = bin/$(GAParch)
 KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
 
-GAP = $(GAPPATH)/gap
-GAC = $(GAPPATH)/gac
-
 # override KEXT_RECONF if your package needs a different invocation
 # for reconfiguring (e.g. `./config.status --recheck` for autoconf)
 ifdef KEXT_USE_AUTOCONF
