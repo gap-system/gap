@@ -159,7 +159,7 @@ Int ActivateModule(StructInitInfo * info)
             // Start a new executor to run the outer function of the module in
             // global context
             Bag oldLvars = STATE(CurrLVars);
-            SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+            SWITCH_TO_BOTTOM_LVARS();
             res = res || info->initLibrary(info);
             SWITCH_TO_OLD_LVARS(oldLvars);
         }
