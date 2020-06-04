@@ -2049,6 +2049,16 @@ BOOL IsBottomLVars(Obj lvars)
 
 /****************************************************************************
 **
+*F  SWITCH_TO_BOTTOM_LVARS( ) . . . . .  switch to bottom local variables bag
+*/
+void SWITCH_TO_BOTTOM_LVARS(void)
+{
+    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+}
+
+
+/****************************************************************************
+**
 *F  VarsBeforeCollectBags() . . . . . . . . actions before garbage collection
 *F  VarsAfterCollectBags()  . . . . . . . .  actions after garbage collection
 */
@@ -2333,7 +2343,7 @@ static Int PostRestore (
     StructInitInfo *    module )
 {
     STATE(CurrLVars) = STATE(BottomLVars);
-    SWITCH_TO_OLD_LVARS( STATE(BottomLVars) );
+    SWITCH_TO_BOTTOM_LVARS();
 
     return 0;
 }
@@ -2367,7 +2377,7 @@ static Int InitModuleState(void)
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
     STATE(CurrLVars) = STATE(BottomLVars);
-    SWITCH_TO_OLD_LVARS( STATE(BottomLVars) );
+    SWITCH_TO_BOTTOM_LVARS();
 
     return 0;
 }

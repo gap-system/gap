@@ -265,6 +265,13 @@ EXPORT_INLINE void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)
 
 /****************************************************************************
 **
+*F  SWITCH_TO_BOTTOM_LVARS( ) . . . . .  switch to bottom local variables bag
+*/
+void SWITCH_TO_BOTTOM_LVARS(void);
+
+
+/****************************************************************************
+**
 *F  ASS_LVAR( <lvar>, <val> ) . . . . . . . . . . .  assign to local variable
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.

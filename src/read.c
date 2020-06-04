@@ -2593,15 +2593,11 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
-    if (!context)
-        context = STATE(BottomLVars);
     rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
     rs->ReadTop        = 0;
     rs->ReadTilde      = 0;
     STATE(Tilde)       = 0;
     rs->CurrLHSGVar    = 0;
-    STATE(ErrorLVars)  = context;
-    RecreateStackNams(rs, context);
 #ifdef HPCGAP
     lockSP = RegionLockSP();
 #endif
@@ -2612,7 +2608,13 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     Bag oldLVars = STATE(CurrLVars);
 
     // start an execution environment
-    SWITCH_TO_OLD_LVARS(context);
+    if (context)
+        SWITCH_TO_OLD_LVARS(context);
+    else
+        SWITCH_TO_BOTTOM_LVARS();
+
+    STATE(ErrorLVars) = STATE(CurrLVars);
+    RecreateStackNams(rs, STATE(CurrLVars));
 
     IntrBegin(&rs->intr);
 
@@ -2724,7 +2726,7 @@ UInt ReadEvalFile(Obj * evalResult)
     Bag oldLVars = STATE(CurrLVars);
 
     // start an execution environment
-    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+    SWITCH_TO_BOTTOM_LVARS();
 
     IntrBegin(&rs->intr);
 
@@ -2793,7 +2795,7 @@ Obj Call0ArgsInNewReader(Obj f)
 
     // initialize everything
     STATE(UserHasQuit) = 0;
-    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+    SWITCH_TO_BOTTOM_LVARS();
 
     GAP_TRY
     {
@@ -2826,7 +2828,7 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
 
     // initialize everything
     STATE(UserHasQuit) = 0;
-    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+    SWITCH_TO_BOTTOM_LVARS();
 
     GAP_TRY
     {
