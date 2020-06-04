@@ -56,7 +56,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
       rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
       rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
-      rec( short:= "e", default := false, help := ["disable/enable quitting on <ctr>-D"] ),
+      rec( short:= "e", default := false, help := ["disable/enable quitting on <ctrl>-D"] ),
       rec( short:= "f", default := false, help := ["force line editing"] ),
       rec( short:= "n", default := false, help := ["prevent line editing"] ),
       rec( short:= "E", long := "readline", default := true,
@@ -77,20 +77,20 @@ BIND_GLOBAL( "GAPInfo", rec(
              "postfix 'k' = *1024, 'm' = *1024*1024,", "'g' = *1024*1024*1024"] ),
       ,
       rec( short:= "l", long := "roots", default := [], arg := "<paths>",
-           help := [ "set the GAP root paths",
+           help := [ "set or modify the GAP root paths",
                      "Directories are separated using ';'.",
                      "Putting ';' on the start/end of list appends",
                      "directories to the end/start of existing list",
                      "of root paths" ] ),
-      rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
+      rec( short:= "r", default := false, help := ["disable/enable user GAP root dir GAPInfo.UserGapRoot"] ),
       rec( short:= "A", default := false, help := ["disable/enable autoloading of suggested", "GAP packages"] ),
       rec( short:= "D", default := false, help := ["enable/disable debugging the loading of files"] ),
       rec( short:= "M", default := false, help := ["disable/enable loading of compiled modules"] ),
       rec( short:= "N", default := false, help := ["do not use hidden implications"] ),
       rec( short:= "O", default := false, help := ["disable/enable loading of obsolete files"] ),
       rec( short:= "T", long := "nobreakloop", default := false, help := ["disable/enable break loop and error traceback"] ),
-      rec( long := "alwaystrace", default := false, help := ["always print error traceback (overrides behaviour of -T)"] ),
-      rec( long := "quitonbreak", default := false, help := ["quit GAP with non-zero return value instead of entering break loop"]),
+      rec( long := "alwaystrace", default := false, help := ["always print error traceback", "(overrides behaviour of -T)"] ),
+      rec( long := "quitonbreak", default := false, help := ["quit GAP with non-zero return value instead", "of entering break loop"]),
       ,
       rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace"] ),
       rec( short:= "R", default := false, help := ["prevent restoring of workspace (ignoring -L)"] ),
@@ -100,20 +100,20 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short := "s", default := "4g" ),
       rec( short := "z", default := "20" ),
       rec( long := "prof", default := "", arg := "<file>",
-           help := [ "Run ProfileLineByLine(<filename>) on GAP start"] ),
+           help := [ "Run ProfileLineByLine(<file>) on GAP start"] ),
       rec( long := "memprof", default := "", arg := "<file>",
-           help := [ "Run ProfileLineByLine(<filename>) with recordMem := true on GAP start"] ),
+           help := [ "Run ProfileLineByLine(<file>) on GAP start", "with recordMem := true"] ),
       rec( long := "cover", default := "", arg := "<file>",
-           help := [ "Run CoverageLineByLine(<filename>) on GAP start"] ),
+           help := [ "Run CoverageLineByLine(<file>) on GAP start"] ),
       rec( long := "enableMemCheck", default := false),
       rec( long := "norepl", default := false,
            help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
       rec( long := "nointeract", default := false,
-           help := [ "Start GAP in non-interactive mode (disable read-evaluate-print loop (REPL) and break loop)" ] ),
+           help := [ "Start GAP in non-interactive mode (disable REPL", "and break loop)" ] ),
       rec( long := "bare", default := false,
-           help := [ "Attempt to start GAP without even needed packages (developer tool)" ] ),
+           help := [ "Attempt to start GAP without even needed packages", "(developer tool)" ] ),
       ,
-      rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the given expression"] ),
+      rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the expression <expr>"] ),
     ],
     ) );
 
@@ -460,7 +460,7 @@ CallAndInstallPostRestore( function()
 
           PRINT_TO("*errout*", opt.help[1], "\n");
           for j in [2..LENGTH(opt.help)] do
-            padspace(0, 3+18+8+3);
+            padspace(0, 3+18+8+3 + 2);
             PRINT_TO("*errout*", opt.help[j],"\n");
           od;
         else
