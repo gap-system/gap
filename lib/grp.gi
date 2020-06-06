@@ -5111,9 +5111,7 @@ RedispatchOnCondition(MinimalNormalSubgroups, true,
 ##
 #M  SmallGeneratingSet(<G>)
 ##
-InstallMethod(SmallGeneratingSet,"generators subset",
-  [IsGroup and HasGeneratorsOfGroup],
-function (G)
+BindGlobal("SMALLGENERATINGSETGENERIC",function (G)
 local  i, U, gens,test;
   gens := Set(GeneratorsOfGroup(G));
   i := 1;
@@ -5133,6 +5131,9 @@ local  i, U, gens,test;
   od;
   return gens;
 end);
+
+InstallMethod(SmallGeneratingSet,"generators subset",
+  [IsGroup and HasGeneratorsOfGroup],SMALLGENERATINGSETGENERIC);
 
 #############################################################################
 ##
