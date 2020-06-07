@@ -706,7 +706,7 @@ InstallMethod( TwoCohomologyGeneric,"generic, using rewriting system",true,
 function(G,mo)
 local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
-      findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,
+      findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,genkill,
       c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos;
 
 
@@ -855,6 +855,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   # tails.
   hastail:=[];
   rules:=[];
+  genkill:=[]; # relations that kill generators. Needed for presenation.
   for r in tzrules do
     if Length(r[1])>=2 then
       Add(rules,r);
@@ -863,27 +864,34 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         then 
           AddSet(hastail,Length(rules));
       fi;
-    elif Length(r[1])>1 then
-      if Length(r[2])=0 then Error("generator is trivial");fi;
-      if Length(r[2])<>1 or formalinverse[r[1][1]]<>r[2][1] then
-        Add(rules,r);
-        AddSet(hastail,Length(rules));
-      else
+#    elif Length(r[1])>1 then
+#      if Length(r[2])=0 then Error("generator is trivial");fi;
+#      if Length(r[2])<>1 or formalinverse[r[1][1]]<>r[2][1] then
+#        Add(rules,r);
+#        AddSet(hastail,Length(rules));
+#      else
 #Print("Not use: ",r,"\n");
-        # Do not use these rules for overlaps
-        if r[2][1]>r[1][1] then
-          Error("code assumes that larger number gets reduced to smaller");
-        fi;
-        if ForAny(rules,x->r[1][1] in x[2] or (x<>r and r[1][1] in x[1])) then
-          Error("rules are not reduced");
-        fi;
-      fi;
+#        # Do not use these rules for overlaps
+#        if r[2][1]>r[1][1] then
+#          Error("code assumes that larger number gets reduced to smaller");
+#        fi;
+#        if ForAny(rules,x->r[1][1] in x[2] or (x<>r and r[1][1] in x[1])) then
+#          Error("rules are not reduced");
+#        fi;
+#      fi;
     else
-      # Length of r[1] is 1. That is this generator is not used.
-      # check that it is really just an inverse that goes away, otherwise
-      # awkward.
-      if formalinverse[r[1][1]]>r[1][1] then
-        Error("generator vanishes?");
+      # Length of r[1] is 1. That is, this generator is not used!
+      m:=First(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord)=r);
+      m:=List(m,x->PreImagesRepresentative(fm,ElementOfFpMonoid(FamilyObj(One(mon)),x)));
+      m:=List(m,UnderlyingElement); # free group elements/words
+
+      if not IsOne(m[1]*Subword(m[2],1,1)) then
+        # Does the relation make a generator redundant (by expressing it in the
+        # other gens)? If so, remember relation as needed to kill this generator, but
+        # no influence on Cohomology calculation (which just uses the rest)
+        if  m[1] in GeneratorsOfGroup(FreeGroupOfFpGroup(FamilyObj(fpg)!.wholeGroup))
+          then Add(genkill,r);
+        fi;
       fi;
     fi;
   od;
@@ -1059,7 +1067,10 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     # rule that would get the tail
     Add(new,LeftQuotient(mapped2(rules[i][1]),mapped2(rules[i][2])));
   od;
+
   r.presentation:=rec(group:=FreeGroupOfFpGroup(fpg),relators:=new,
+    # relators to kill superfluous generators
+    killrelators:=List(genkill,i->LeftQuotient(mapped2(i[1]),mapped2(i[2]))),
     # position of relators with tails in tzrules
     monrulpos:=List(rules{hastail},x->Position(tzrules,x)),
     prewords:=List(ogens,x->UnderlyingElement(ImagesRepresentative(fp,x))));
@@ -1450,7 +1461,7 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step;
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq;
 
   # function to evaluate product (as integer list) in gens (and their
   # inverses invs) with corresponding action mats
@@ -1503,6 +1514,11 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     od;
     Add(rels,new);
   od;
+  for i in [1..Length(r.presentation.killrelators)] do
+    new:=MappedWord(r.presentation.killrelators[i],ogens,gens{[1..n]});
+    Add(rels,new);
+  od;
+
   for i in [n+1..Length(gens)] do
     Add(rels,gens[i]^r.prime);
     for j in [i+1..Length(gens)] do
@@ -1518,6 +1534,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
   fp:=f/rels;
   prime:=Size(r.module.field);
   SetSize(fp,Size(r.group)*prime^r.module.dimension);
+  simi:=fail;
 
   if Length(arg)>2 and arg[3]=true then
     if IsZero(z) and MTX.IsIrreducible(r.module) then
@@ -1568,6 +1585,9 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
               50
               # the rewriting seems to be sufficiently spiffy that we don't
               # need to worry about this more involved process.
+
+              # this might fail if generators are killed by rewriting
+              and Length(r.presentation.killrelators)=0
               then
 
               # Rewriting produces a bad presentation. Rather rebuild a new
@@ -1689,8 +1709,17 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
               fi;
 
             else
-              e:=LargerQuotientBySubgroupAbelianization(quot,m);
+              if simi=fail then
+                simi:=IsomorphismSimplifiedFpGroup(Source(quot));
+                simiq:=InverseGeneralMapping(simi)*quot;
+              fi;
+              e:=LargerQuotientBySubgroupAbelianization(simiq,m);
               if e<>fail then
+                i:=simi*DefiningQuotientHomomorphism(e);
+                j:=Image(DefiningQuotientHomomorphism(e));;
+                j:=List(Orbits(j,MovedPoints(j)),x->Stabilizer(j,x[1]));
+                j:=List(j,x->PreImage(i,x));
+                e:=Intersection(j);
                 e:=Intersection(e,KernelOfMultiplicativeGeneralMapping(quot));
               fi;
             fi;
