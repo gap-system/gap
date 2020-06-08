@@ -912,7 +912,7 @@ local H, pres,map,mapi,opt;
   opt:=TzOptions(pres);
 
   if ValueOption("protected")<>fail then
-    opt.expandLimit:=ValueOption("protected");
+    opt.protected:=ValueOption("protected");
   fi;
 
   opt.printLevel:=InfoLevel(InfoFpGroup); 
