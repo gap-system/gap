@@ -312,13 +312,16 @@ available to the &GAP; community  by contributing their files. It should
 be noted that  their book contains a  lot of further information for many
 of the library groups.  So we would like  to recommend  it to any  &GAP;
 user who is interested in the groups.
-Two additional groups omitted from the book <Q>Perfect Groups</Q> have also
-been included.
-<P/>
 The library of these has been brought into &GAP; format by Volkmar Felsch.
 <P/>
-The perfect groups of size less than <M>10^6</M>which were missing in the work of Holt
-and Plesken have been enumerated by Alexander
+Several additional groups omitted from the book <Q>Perfect Groups</Q> have also
+been included. Two groups -- one of order 450000 with a factor group of
+type <M>A_6</M> and the one of order 962280 -- were found by Jack Schmidt in
+2005. Two groups of order 243000 and one each of orders 729000, 871200, 878460
+were found in 2020 by Alexander Hulpke.
+<P/>
+The perfect groups of size less than <M>10^6</M> which had not been
+classified in the work of Holt and Plesken have been enumerated by Alexander
 Hulpke. They are stored directly and provide less construction information
 in their names.
 <P/>
