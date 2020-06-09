@@ -192,7 +192,7 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  <Func Name="AllHomomorphismClasses" Arg='G,H'/>
 ##
 ##  <Description>
-##  For two groups <A>G</A> and <A>H</A>, this function returns
+##  For two finite groups <A>G</A> and <A>H</A>, this function returns
 ##  representatives of all homomorphisms <M><A>G</A> to <A>H</A></M> up to
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
@@ -218,7 +218,7 @@ DeclareGlobalFunction("AllHomomorphismClasses");
 ##  <Func Name="AllAutomorphisms" Arg='G'/>
 ##
 ##  <Description>
-##  For two groups <A>G</A> and <A>H</A>, this function returns
+##  For two finite groups <A>G</A> and <A>H</A>, this function returns
 ##  all homomorphisms <M><A>G</A> to <A>H</A></M>. Since this number will
 ##  grow quickly, <Ref Func="AllHomomorphismClasses"/> should be used in most
 ##  cases.
@@ -918,6 +918,13 @@ end);
 # up to G-conjugacy
 InstallGlobalFunction(AllHomomorphismClasses,function(H,G)
 local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
+
+  if not HasIsFinite(H) then
+    Info(InfoPerformance,1,"Forcing finiteness test -- might not terminate");
+    if not IsFinite(H) then
+      Error("First argument must be finite group");
+    fi;
+  fi;
 
   if IsAbelian(G) and not IsAbelian(H) then
     k:=NaturalHomomorphismByNormalSubgroup(H,DerivedSubgroup(H));
