@@ -474,7 +474,7 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
 #endif
 
     /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, narg, NLOC_FUNC(func), oldLvars );
+    oldLvars = SWITCH_TO_NEW_LVARS(func, narg, NLOC_FUNC(func));
 
     /* enter the arguments                                                 */
     for (Int i = 0; i < narg; i++)
@@ -557,7 +557,7 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
 #endif
 
     /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, len, NLOC_FUNC(func), oldLvars );
+    oldLvars = SWITCH_TO_NEW_LVARS(func, len, NLOC_FUNC(func));
 
     /* enter the arguments                                                 */
     for ( i = 1; i <= len; i++ ) {
@@ -603,7 +603,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 #endif
 
     /* switch to a new values bag                                          */
-    SWITCH_TO_NEW_LVARS( func, named+1, NLOC_FUNC(func), oldLvars );
+    oldLvars = SWITCH_TO_NEW_LVARS(func, named + 1, NLOC_FUNC(func));
 
     /* enter the arguments                                                 */
     for (i = 1; i <= named; i++) {

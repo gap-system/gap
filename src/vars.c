@@ -2051,9 +2051,9 @@ BOOL IsBottomLVars(Obj lvars)
 **
 *F  SWITCH_TO_BOTTOM_LVARS( ) . . . . .  switch to bottom local variables bag
 */
-void SWITCH_TO_BOTTOM_LVARS(void)
+Obj SWITCH_TO_BOTTOM_LVARS(void)
 {
-    SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+    return SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
 }
 
 

@@ -5073,7 +5073,7 @@ static void CompFunc(Obj func)
     }
 
     /* switch to this function (so that 'CONST_ADDR_STAT' and 'CONST_ADDR_EXPR' work)  */
-    SWITCH_TO_NEW_LVARS( func, narg, nloc, oldFrame );
+    oldFrame = SWITCH_TO_NEW_LVARS(func, narg, nloc);
 
     /* get the info bag                                                    */
     info = INFO_FEXP( CURR_FUNC() );

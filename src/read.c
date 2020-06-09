@@ -2604,17 +2604,14 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 
     AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
 
-    // remember the old execution state
-    Bag oldLVars = STATE(CurrLVars);
+    // remember the old execution state and start an execution environment
+    Bag oldLVars =
+        context ? SWITCH_TO_OLD_LVARS(context) : SWITCH_TO_BOTTOM_LVARS();
 
-    // start an execution environment
     if (context)
-        SWITCH_TO_OLD_LVARS(context);
-    else
-        SWITCH_TO_BOTTOM_LVARS();
+        RecreateStackNams(rs, context);
 
     STATE(ErrorLVars) = STATE(CurrLVars);
-    RecreateStackNams(rs, STATE(CurrLVars));
 
     IntrBegin(&rs->intr);
 
@@ -2722,11 +2719,8 @@ UInt ReadEvalFile(Obj * evalResult)
     STATE(Tilde)     = 0;
     rs->CurrLHSGVar  = 0;
 
-    // remember the old execution state
-    Bag oldLVars = STATE(CurrLVars);
-
-    // start an execution environment
-    SWITCH_TO_BOTTOM_LVARS();
+    // remember the old execution state and start an execution environment
+    Bag oldLVars = SWITCH_TO_BOTTOM_LVARS();
 
     IntrBegin(&rs->intr);
 
@@ -2790,12 +2784,12 @@ Obj Call0ArgsInNewReader(Obj f)
 {
     // remember the old state
     volatile UInt userHasQuit = STATE(UserHasQuit);
-    volatile Obj  oldLvars = STATE(CurrLVars);
+    volatile Obj  oldLvars;
     volatile Obj  result = 0;
 
     // initialize everything
     STATE(UserHasQuit) = 0;
-    SWITCH_TO_BOTTOM_LVARS();
+    oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
     GAP_TRY
     {
@@ -2823,12 +2817,12 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
 {
     // remember the old state
     volatile UInt userHasQuit = STATE(UserHasQuit);
-    volatile Obj  oldLvars = STATE(CurrLVars);
+    volatile Obj  oldLvars;
     volatile Obj  result = 0;
 
     // initialize everything
     STATE(UserHasQuit) = 0;
-    SWITCH_TO_BOTTOM_LVARS();
+    oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
     GAP_TRY
     {
