@@ -152,8 +152,7 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
         return Fail;
     }
 
-    Obj currLVars = STATE(CurrLVars);
-    SWITCH_TO_OLD_LVARS(context);
+    Obj currLVars = SWITCH_TO_OLD_LVARS(context);
     GAP_ASSERT(call == BRK_CALL_TO());
 
     Obj retlist = Fail;
@@ -201,8 +200,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         Pr("<corrupted statement> ", 0, 0);
     }
     else {
-        Obj currLVars = STATE(CurrLVars);
-        SWITCH_TO_OLD_LVARS(context);
+        Obj currLVars = SWITCH_TO_OLD_LVARS(context);
         GAP_ASSERT(call == BRK_CALL_TO());
 
         Int type = TNUM_STAT(call);

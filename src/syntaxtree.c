@@ -597,7 +597,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     AssPRec(result, RNamName("nams"), NAMS_FUNC(func));
 
     /* switch to this function (so that 'READ_STAT' and 'READ_EXPR' work) */
-    SWITCH_TO_NEW_LVARS(func, narg, nloc, oldFrame);
+    oldFrame = SWITCH_TO_NEW_LVARS(func, narg, nloc);
     stats = SyntaxTreeCompiler(OFFSET_FIRST_STAT);
     SWITCH_TO_OLD_LVARS(oldFrame);
 

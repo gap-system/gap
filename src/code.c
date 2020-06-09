@@ -799,7 +799,6 @@ void CodeFuncExprBegin (
 {
     Obj                 fexp;           /* function expression bag         */
     Bag                 body;           /* function body                   */
-    Bag                 old;            /* old frame                       */
     Stat                stat1;          /* first statement in body         */
 
     /* remember the current offset                                         */
@@ -831,8 +830,7 @@ void CodeFuncExprBegin (
     MakeHighVars(STATE(CurrLVars));
 
     /* switch to this function                                             */
-    SWITCH_TO_NEW_LVARS( fexp, (narg >0 ? narg : -narg), nloc, old );
-    (void) old; /* please picky compilers. */
+    SWITCH_TO_NEW_LVARS(fexp, (narg > 0 ? narg : -narg), nloc);
 
     /* allocate the top level statement sequence                           */
     stat1 = NewStat( STAT_SEQ_STAT, 8*sizeof(Stat) );
