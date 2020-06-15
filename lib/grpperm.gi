@@ -1949,62 +1949,30 @@ end );
 # return e is a^e=b or false otherwise
 InstallGlobalFunction("LogPerm",
 function(a,b)
-local oa,ob,q,ma,mb,tofix,locpow,i,c,l,divisor,step,goal,exp,nc,j,new,k,gcd;
+local oa,ob,q,aa,m,e,tst,s,c,p,g;
   oa:=Order(a);
   ob:=Order(b);
   if oa mod ob<>0 then Info(InfoGroup,20,"1"); return false;fi;
   q:=oa/ob;
-  ma:=MovedPoints(a);
-  mb:=MovedPoints(b);
-  if not IsSubset(ma,mb) then Info(InfoGroup,20,"2"); return false;fi;
-  tofix:=Difference(ma,mb);
-  ma:=ShallowCopy(ma); # to allow removing elements
-  Sort(ma);
-  IsSet(ma);
-  locpow:=[];
+  aa:=a^q;
 
-  # reversed, as subgroup constructions naturally pick stabilizers first
-  for i in [Maximum(ma),Maximum(ma)-1..Minimum(ma)] do
-    if i in ma then #we're removing from ma on the way
-      c:=Cycle(a,i);
-      l:=Length(c);
-      divisor:=l/Gcd(l,q); # length of cycles
-      step:=l/divisor; # resulting number of cycles
-      #nc:=[];
-      if i in tofix and divisor>1 or divisor=1 and not i in tofix 
-        then Info(InfoGroup,20,"3"); return false;fi;
-      if divisor=1 then # all fixed
-	if ForAny(c,x->x in mb) then
-          Info(InfoGroup,20,"4");return false;
-	fi;
-        #for j in c do
-        #  Add(nc,[j]);
-        #od;
-      else
-        for j in [1..step] do
-          new:=c{j+([0,q..(divisor-1)*q] mod l)}; # cycle for q-th power
-          goal:=new[1]^b;
-          exp:=Position(new,goal);
-          if exp=fail then Info(InfoGroup,20,"5");return false;fi;
-          exp:=exp-1;
-	  for k in locpow do
-	    gcd:=Gcd(k[1],Length(new));
-	    if k[2] mod gcd<>exp mod gcd then Info(InfoGroup,20,"6");return false;fi;# cannot both hold
-	  od;
-          AddSet(locpow,[Length(new),exp]);
-          new:=new{1+(exp*[0..divisor-1] mod divisor)};
-          if new<>Cycle(b,new[1]) then Info(InfoGroup,20,"7");return false;fi;
-          #Add(nc,new);
-        od;
-      fi;
-      SubtractSet(ma,c);
+  m:=1; # order modulo which power is OK so far
+  e:=1;
+  while m<ob do
+    tst:=aa^e/b; 
+    s:=SmallestMovedPoint(tst); # a point on which there might be a difference
+    if s=infinity then # found it
+      return q*e mod oa;
     fi;
+    c:=Cycle(aa,s);
+    g:=Gcd(m,Length(c));
+    p:=Position(c,s^b);
+    if p=fail or (e mod g<>(p-1) mod g) then return false;fi;
+    e:=ChineseRem([m,Length(c)],[e,p-1]);
+    m:=Lcm(m,Length(c));
   od;
-  if Length(locpow)=0 then exp:=0;
-  else
-    exp:=ChineseRem(List(locpow,x->x[1]),List(locpow,x->x[2])); # power afterwards
-  fi;
-  return q*exp mod oa;
+  if aa^e<>b then return false;fi;
+  return q*e mod oa;
 end);
 
 
