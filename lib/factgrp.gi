@@ -541,8 +541,11 @@ InstallMethod(DoCheapActionImages,"generic",true,[IsGroup],0,Ignore);
 
 InstallMethod(DoCheapActionImages,"permutation",true,[IsPermGroup],0,
 function(G)
-local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
+local pool, dom, o, op, Go, j, b, i,allb,newb,mov,allbold,onlykernel,k,
+  found,type;
 
+  onlykernel:=ValueOption("onlykernel");
+  found:=NrMovedPoints(G);
   pool:=NaturalHomomorphismsPool(G);
   if pool.GopDone=false then
 
@@ -552,7 +555,6 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
     o:=Set(List(o,Set));
 
     # do orbits and test for blocks 
-    bl:=[];
     for i in o do
       if Length(i)<>Length(dom) or
 	# only works if domain are the first n points
@@ -561,26 +563,51 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 	Range(op:onlyimage); #`onlyimage' forces same generators 
         AddNaturalHomomorphismsPool(G,Stabilizer(G,i,OnTuples),
 			    op,Length(i));
+        type:=1;
       else
 	op:=IdentityMapping(G);
+        type:=2;
       fi;
 
       Go:=Image(op,G);
       # all minimal and maximal blocks
       mov:=MovedPoints(Go);
       allb:=ShallowCopy(RepresentativesMinimalBlocks(Go,mov));
-      for j in allb do
-	b:=Orbit(G,i{j},OnSets);
+      allbold:=[];
+      SortBy(allb,Length);
+      while Length(allb)>0 do
+        j:=Remove(allb);
+        Add(allbold,j);
+        # even if generic spread, <found, since blocks are always of size
+        # >1.
+        if Length(i)/Length(j)<found then
+          b:=List(Orbit(G,i{j},OnSets),Immutable);
 
-	Add(bl,Immutable(Set(b)));
-	# also one finer blocks (as we iterate only once)
-	newb:=Blocks(Go,Blocks(Go,mov,j),OnSets);
-	if Length(newb)>1 then
-	  newb:=Union(newb[1]);
-	  if not newb in allb then
-	    Add(allb,newb);
-	  fi;
-	fi;
+          #Add(bl,Immutable(Set(b)));
+          op:=ActionHomomorphism(G,Set(b),OnSets,"surjective");
+          ImagesSource(op:onlyimage); #`onlyimage' forces same generators 
+          k:=KernelOfMultiplicativeGeneralMapping(op);
+          if onlykernel<>fail and k=onlykernel and Length(b)<found then
+            found:=Length(b);
+          fi;
+          AddNaturalHomomorphismsPool(G,k,op);
+
+          # also one finer blocks (to make up for iterating only once)
+          if type=2 then
+            newb:=Blocks(G,b,OnSets);
+          else
+            newb:=Blocks(Go,Blocks(Go,mov,j),OnSets);
+          fi;
+
+          if Length(newb)>1 then
+            newb:=Union(newb[1]);
+            if not (newb in allb or newb in allbold) then
+              Add(allb,newb);
+              SortBy(allb,Length);
+            fi;
+          fi;
+
+        fi;
 
       od;
 
@@ -592,13 +619,6 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,mov;
 #	  Add(bl,Immutable(Set(b)));
 #	fi;
 #      fi;
-    od;
-
-    for i in bl do
-      op:=ActionHomomorphism(G,i,OnSets,"surjective");
-      ImagesSource(op:onlyimage); #`onlyimage' forces same generators 
-      b:=KernelOfMultiplicativeGeneralMapping(op);
-      AddNaturalHomomorphismsPool(G,b,op);
     od;
 
     pool.GopDone:=true;
@@ -861,8 +881,10 @@ end;
 #F  SmallerDegreePermutationRepresentation( <G> )
 ##
 InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
-local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
-  i,cheap,first,k2;
+local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
+  i,cheap,k2,change;
+
+  change:=false;
   Info(InfoFactor,1,"Smaller degree for order ",Size(G),", deg: ",NrMovedPoints(G));
   cheap:=ValueOption("cheap");
   if cheap="skip" then
@@ -870,6 +892,19 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
   fi;
 
   cheap:=cheap=true;
+
+  if Length(GeneratorsOfGroup(G))>7 then
+    s:=SmallGeneratingSet(G);
+    if Length(s)=0 then s:=[One(G)];fi;
+    if Length(s)<Length(GeneratorsOfGroup(G))-1 then
+      Info(InfoFactor,1,"reduced to ",Length(s)," generators");
+      H:=Group(s);
+      change:=true;
+      SetSize(H,Size(G));
+      return SmallerDegreePermutationRepresentation(H);
+    fi;
+  fi;
+
 
   # deal with large abelian components first (which could be direct)
   if cheap<>true then
@@ -890,6 +925,11 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
     fi;
   fi;
 
+  # known simple?
+  if HasIsSimpleGroup(G) and IsSimpleGroup(G)
+      and NrMovedPoints(G)>=SufficientlySmallDegreeSimpleGroupOrder(Size(G))
+        then return IdentityMapping(G);
+  fi;
 
   if not IsTransitive(G,MovedPoints(G)) then
     o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
@@ -945,19 +985,16 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
       return s;
     fi;
     return IdentityMapping(G);
-  # simple test is comparatively cheap for permgrp
-  elif HasIsSimpleGroup(G) and IsSimpleGroup(G) and not IsAbelian(G) then 
-    H:=SimpleGroup(ClassicalIsomorphismTypeFiniteSimpleGroup(G));
-    if IsPermGroup(H) and NrMovedPoints(H)>=NrMovedPoints(G) then
-      return IdentityMapping(G);
-    fi;
-  fi; # transitive/simple treatment
+  fi; # intransitive treatment
+
+  
 
   # if the original group has no stabchain we probably do not want to keep
   # it (or a homomorphisms pool) there -- make a copy for working
   # intermediately with it.
   if not HasStabChainMutable(G) then
     H:= GroupWithGenerators( GeneratorsOfGroup( G ),One(G) );
+    change:=true;
     if HasSize(G) then
       SetSize(H,Size(G));
     fi;
@@ -972,47 +1009,45 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,
   b.dotriv:=true;
   AddNaturalHomomorphismsPool(H,TrivialSubgroup(H),hom,NrMovedPoints(H));
   b.dotriv:=false;
-  ihom:=H;
-  improve:=false; # indicator for first run
-  first:=true;
-  repeat
-    if improve=false and NrMovedPoints(H)*5>Size(H) and
-      IsTransitive(H,MovedPoints(H)) then
-      b:=Blocks(H,MovedPoints(H));
-      map:=ActionHomomorphism(G,b,OnSets,"surjective");
-      ImagesSource(map:onlyimage); #`onlyimage' forces same generators 
-      b:=KernelOfMultiplicativeGeneralMapping(map);
-      AddNaturalHomomorphismsPool(G,b,map);
-      if Size(b)=1 then
-	H:=Image(map);
-	Info(InfoFactor,2," first improved to degree ",NrMovedPoints(H));
-	hom:=hom*map;
-	ihom:=H;
-      fi;
-    fi;
-    improve:=false;
-    b:=NaturalHomomorphismsPool(H);
-    b.dotriv:=true;
-    if first then # only once!
-      b.GopDone:=false;
-      DoCheapActionImages(H);
-      CloseNaturalHomomorphismsPool(H,TrivialSubgroup(H));
-      first:=false;
-    fi;
-    b.dotriv:=false;
-    map:=GetNaturalHomomorphismsPool(H,TrivialSubgroup(H));
-    if map<>fail and Image(map)<>H then
-      improve:=true;
-      H:=Image(map);
-      Info(InfoFactor,2,"improved to degree ",NrMovedPoints(H));
-      hom:=hom*map;
-      ihom:=H;
-    fi;
-  until improve=false;
 
+  # cheap initial block reduction?
+  if IsTransitive(H,MovedPoints(H)) then
+    improve:=true;
+    while improve and (cheap or NrMovedPoints(H)*5>Size(H)) do
+      improve:=false;
+      bl:=Blocks(H,MovedPoints(H));
+      map:=ActionHomomorphism(G,bl,OnSets,"surjective");
+      ImagesSource(map:onlyimage); #`onlyimage' forces same generators 
+      bl:=KernelOfMultiplicativeGeneralMapping(map);
+      AddNaturalHomomorphismsPool(G,bl,map);
+      if Size(bl)=1 then
+	hom:=hom*map;
+	H:=Image(map);
+        change:=true;
+	Info(InfoFactor,2," quickblocks improved to degree ",NrMovedPoints(H));
+      fi;
+    od;
+  fi;
+
+  b:=NaturalHomomorphismsPool(H);
+  b.dotriv:=true;
+  if change then
+    DoCheapActionImages(H:onlykernel:=TrivialSubgroup(H));
+  else
+    DoCheapActionImages(H);
+  fi;
+  CloseNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+  b.dotriv:=false;
+  map:=GetNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+  if map<>fail and Image(map)<>H then
+    Info(InfoFactor,2,"cheap actions improved to degree ",NrMovedPoints(H));
+    hom:=hom*map;
+    H:=Image(map);
+  fi;
+  
   o:=DegreeNaturalHomomorphismsPool(H,TrivialSubgroup(H));
   if cheap<>true and (IsBool(o) or o*2>=NrMovedPoints(H)) then
-    s:=GenericFindActionKernel(ihom,TrivialSubgroup(ihom),NrMovedPoints(ihom));
+    s:=GenericFindActionKernel(H,TrivialSubgroup(H),NrMovedPoints(H));
     if s<>fail then
       hom:=hom*s;
     fi;
@@ -1801,4 +1836,3 @@ InstallMethod( UseFactorRelation,
    fi;
    TryNextMethod();
    end );
-
