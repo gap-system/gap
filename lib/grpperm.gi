@@ -2044,7 +2044,6 @@ local  i, j, U, gens,o,v,a,sel,min,orb,orp,ok;
               ForAll(orp,x->IsPrimitive(U,orb[x]));
         fi;
 
-
 	StabChainOptions(U).random:=100; # randomized size
 #Print("A:",i,",",j," ",Size(G)/Size(U),"\n");
         if ok and Size(U)=Size(G) then
@@ -2061,18 +2060,14 @@ local  i, j, U, gens,o,v,a,sel,min,orb,orp,ok;
     i:=i+1;
   fi;
   while i <= Length(gens) and Length(gens)>min do
-    # random did not improve much, try subsets
+    # random did not improve much, try removing generators one by one
     U:=Subgroup(G,gens{Difference([1..Length(gens)],[i])});
-
-    ok:=true;
-    # first test orbits
-    if ok then
-      ok:=Length(orb)=Length(Orbits(U,MovedPoints(U))) and
-          ForAll(orp,x->IsPrimitive(U,orb[x]));
-    fi;
-
     StabChainOptions(U).random:=100; # randomized size
-    if Size(U)<Size(G) then
+
+    # first test orbits
+    ok:=Length(orb)=Length(Orbits(U,MovedPoints(G)));
+
+    if not ok or Size(U)<Size(G) then
       i:=i+1;
     else
       gens:=Set(GeneratorsOfGroup(U));
