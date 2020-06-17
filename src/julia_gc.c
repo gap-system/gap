@@ -646,7 +646,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
         if (tag->bits.gc & 2)
             rescan = 0;
     }
-    if (stack && tid < 0) {
+    if (stack) {
         if (task->copy_stack) {
             // We know which part of the task stack is actually used,
             // so we shorten the range we have to scan.
