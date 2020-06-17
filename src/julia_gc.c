@@ -199,10 +199,16 @@ static jl_datatype_t * datatype_largebag;
 static UInt            StackAlignBags;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
+static BOOL            is_threaded;
 static jl_task_t *     RootTaskOfMainThread;
 static size_t          max_pool_obj_size;
 static UInt            YoungRef;
 static int             FullGC;
+
+void SetJuliaTLS(void)
+{
+    JuliaTLS = jl_get_ptls_states();
+}
 
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
 typedef struct {
@@ -708,7 +714,7 @@ static void PreGCHook(int full)
     // a thread-local variable.
     FullGC = full;
     SaveTLS = JuliaTLS;
-    JuliaTLS = jl_get_ptls_states();
+    SetJuliaTLS();
     // This is the same code as in VarsBeforeCollectBags() for GASMAN.
     // It is necessary because ASS_LVAR() and related functionality
     // does not call CHANGED_BAG() for performance reasons. CHANGED_BAG()
@@ -807,7 +813,12 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     jl_gc_enable_conservative_gc_support();
     jl_init();
 
-    JuliaTLS = jl_get_ptls_states();
+    SetJuliaTLS();
+    // This variable is not defined in Julia headers, but its existence
+    // is relied on in the Base module. Thus, defining it as extern is
+    // portable.
+    extern int jl_n_threads;
+    is_threaded = jl_n_threads > 1;
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
     jl_gc_set_cb_root_scanner(GapRootScanner, 1);
@@ -856,8 +867,6 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     else {
         gapobj_type = jl_any_type;
     }
-
-
 
     jl_set_const(jl_main_module, jl_symbol("ForeignGAP"),
                  (jl_value_t *)Module);
@@ -957,6 +966,8 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
+    if (is_threaded)
+        SetJuliaTLS();
 #if defined(SCAN_STACK_FOR_MPTRS_ONLY)
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, 0);
