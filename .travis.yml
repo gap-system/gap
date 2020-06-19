@@ -1,5 +1,4 @@
-# Force Ubuntu 16.04 "Xenial" to get newer GCC, binutils etc.
-dist: xenial
+dist: bionic
 language: c
 
 # Store downloaded package archives in ~/.gap-package-cache
@@ -33,7 +32,9 @@ addons:
 matrix:
   include:
     # general test suite (subsumes testinstall tests, too)
+    # use an older Ubuntu dist to make sure we stay compatible with that
     - env: TEST_SUITES="docomp teststandard"
+      dist: xenial
 
     # the same in 32 bit mode, and with debugging turned off, to (a) make it
     # a lot faster, and (b) to make sure nobody accidentally puts some vital
@@ -53,7 +54,6 @@ matrix:
     # compile packages and run GAP tests
     # don't use --enable-debug to prevent the tests from taking too long
     - env: TEST_SUITES="testpackages testinstall-loadall" ABI=64
-      dist: bionic # avoid 'atexit' linker error in packages using C++ code
       addons:
         apt_packages:
           - gcc-multilib
@@ -76,7 +76,6 @@ matrix:
     # it seems profiling is having trouble collecting the coverage data here, so we
     # use NO_COVERAGE=1
     - env: TEST_SUITES="testpackages testinstall-loadall" ABI=32 NO_COVERAGE=1 
-      dist: bionic # avoid 'atexit' linker error in packages using C++ code
       addons:
         apt_packages:
           - gcc-multilib
@@ -160,7 +159,6 @@ matrix:
     # build on non-x86 platform
     - env: TEST_SUITES="docomp testinstall"
       arch: arm64
-      dist: bionic
       before_install:
         # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
         - test -d ~/.cache/pip/wheels && sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels || echo "all good"
@@ -168,12 +166,10 @@ matrix:
     # build on non-x86 platform
     - env: TEST_SUITES="docomp testinstall"
       arch: ppc64le
-      dist: bionic
 
     # build on non-x86 platform; big endian!
     - env: TEST_SUITES="docomp testinstall"
       arch: s390x
-      dist: bionic
       before_install:
         # work around cache dir owned by root (see https://travis-ci.community/t/7822/6)
         - test -d ~/.cache/pip/wheels && sudo chown -fR $USER:$GROUP ~/.cache/pip/wheels || echo "all good"
