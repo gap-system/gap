@@ -92,7 +92,7 @@ gap> Length(MovedPoints(p));
 720
 gap> q:=SmallerDegreePermutationRepresentation(p);;
 gap> NrMovedPoints(Image(q));
-6
+12
 ]]></Example>
 
 </Section>

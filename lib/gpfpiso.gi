@@ -1944,7 +1944,7 @@ local p,dat,lev,l,sub,c,s,r,dc;
     sub:=ComplementClassesRepresentatives(l,s); # torus
     if Length(sub)>0 and Size(sub[1])>1 then
       s:=Normalizer(G,sub[1]);
-      r:=Complementclasses(s,sub[1]);
+      r:=ComplementClassesRepresentatives(s,sub[1]);
       if Length(r)>0 then
         s:=r[1];
       fi;
