@@ -2464,9 +2464,21 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  <Index Subkey="by conjugation">action</Index>
 ##  returns <C><A>pnt</A> ^ <A>g</A></C>.
 ##  This is for example the action of a permutation group on points,
-##  or the action of a group on its elements via conjugation.
+##  or the action of a group on its elements via conjugation,
+##  that is, if both <A>pnt</A> and <A>g</A> are elements from a common group
+##  then <C><A>pnt</A> ^ <A>g</A></C> is equal to
+##  <A>g</A><M>^{{-1}}</M><C>*</C><A>pnt</A><C>*</C><A>g</A>.
 ##  The action of a matrix group on vectors from the right is described by
 ##  both <Ref Func="OnPoints"/> and <Ref Func="OnRight"/>.
+##  <Example><![CDATA[
+##  gap> OnPoints( 1, (1,2,3) );
+##  2
+##  gap> OnPoints( (1,2), (1,2,3) );
+##  (2,3)
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, 1, OnPoints );
+##  [ 1, 2, 3, 4 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2488,6 +2500,16 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  or the action of a group on the cosets of a subgroup.
 ##  The action of a matrix group on vectors from the right is described by
 ##  both <Ref Func="OnPoints"/> and <Ref Func="OnRight"/>.
+##  <Example><![CDATA[
+##  gap> OnRight( [ 1, 2 ], [ [ 1, 2 ], [ 3, 4 ] ] );
+##  [ 7, 10 ]
+##  gap> OnRight( (1,2,3), (2,3,4) );
+##  (1,3)(2,4)
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, (), OnRight );
+##  [ (), (1,2,3), (2,3,4), (1,3,2), (1,3)(2,4), (1,2)(3,4), (2,4,3), 
+##    (1,4,2), (1,4,3), (1,3,4), (1,2,4), (1,4)(2,3) ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2512,6 +2534,16 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  (see&nbsp;<Ref Sect="External Sets"/>),
 ##  that is, a right coset <M>Ug</M> is an external set for the group
 ##  <M>U</M> acting on it via <Ref Func="OnLeftInverse"/>.)
+##  <Example><![CDATA[
+##  gap> OnLeftInverse( [ 1, 2 ], [ [ 1, 2 ], [ 3, 4 ] ] );
+##  [ 0, 1/2 ]
+##  gap> OnLeftInverse( (1,2,3), (2,3,4) );
+##  (1,2,4)
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, (), OnLeftInverse );
+##  [ (), (1,3,2), (2,4,3), (1,2,3), (1,3)(2,4), (1,2)(3,4), (2,3,4), 
+##    (1,2,4), (1,3,4), (1,4,3), (1,4,2), (1,4)(2,3) ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2540,6 +2572,15 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  <P/>
 ##  (<Ref Func="OnTuples"/> is an action on lists that preserves the ordering
 ##  of entries.)
+##  <Example><![CDATA[
+##  gap> OnSets( [ 1, 3 ], (1,2,3) );
+##  [ 1, 2 ]
+##  gap> OnSets( [ (2,3), (1,2) ], (1,2,3) );
+##  [ (2,3), (1,3) ]
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, [ 1, 2 ], OnSets );
+##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 4 ], [ 1, 4 ], [ 2, 4 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2562,6 +2603,16 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  <P/>
 ##  (<Ref Func="OnSets"/> is an action on lists that additionally sorts
 ##  the entries of the result.)
+##  <Example><![CDATA[
+##  gap> OnTuples( [ 1, 3 ], (1,2,3) );
+##  [ 2, 1 ]
+##  gap> OnTuples( [ (2,3), (1,2) ], (1,2,3) );
+##  [ (1,3), (2,3) ]
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, [ 1, 2 ], OnTuples );
+##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 1 ], [ 3, 4 ], [ 2, 1 ], 
+##    [ 1, 4 ], [ 4, 1 ], [ 4, 2 ], [ 3, 2 ], [ 2, 4 ], [ 4, 3 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2610,6 +2661,8 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  <P/>
 ##  <Example><![CDATA[
+##  gap> OnLines( [ 1, 2 ], [ [ 1, 2 ], [ 3, 4 ] ] );
+##  [ 1, 10/7 ]
 ##  gap> gl:=GL(2,5);;v:=[1,0]*Z(5)^0;
 ##  [ Z(5)^0, 0*Z(5) ]
 ##  gap> h:=Action(gl,Orbit(gl,v,OnLines),OnLines);
@@ -2637,6 +2690,14 @@ DeclareGlobalFunction("OnLines");
 ##  <A>set</A> must be a sorted list whose entries are again sorted lists,
 ##  otherwise an error is triggered
 ##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <Example><![CDATA[
+##  gap> OnSetsSets( [ [ 1, 2 ], [ 3, 4 ] ], (1,2,3) );
+##  [ [ 1, 4 ], [ 2, 3 ] ]
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, [ [ 1, 2 ], [ 3, 4 ] ], OnSetsSets );
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+##    [ [ 1, 3 ], [ 2, 4 ] ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2678,6 +2739,15 @@ DeclareGlobalFunction( "OnSetsDisjointSets" );
 ##  <A>set</A> must be a sorted list,
 ##  otherwise an error is triggered
 ##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <Example><![CDATA[
+##  gap> OnSetsTuples( [ [ 1, 2 ], [ 3, 4 ] ], (1,2,3) );
+##  [ [ 1, 4 ], [ 2, 3 ] ]
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, [ [ 1, 2 ], [ 3, 4 ] ], OnSetsTuples );
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 2, 4 ], [ 3, 1 ] ], 
+##    [ [ 2, 1 ], [ 4, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2698,6 +2768,15 @@ DeclareGlobalFunction("OnSetsTuples");
 ##  <A>set</A> must be a list whose entries are again sorted lists,
 ##  otherwise an error is triggered
 ##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <Example><![CDATA[
+##  gap> OnTuplesSets( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
+##  [ [ 1, 3 ], [ 1, 4 ] ]
+##  gap> g:= Group( (1,2,3), (2,3,4) );;
+##  gap> Orbit( g, [ [ 1, 2 ], [ 3, 4 ] ], OnTuplesSets );
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
+##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ], 
+##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2716,28 +2795,9 @@ DeclareGlobalFunction("OnTuplesSets");
 ##  <Description>
 ##  implements the action on tuples of tuples.
 ##  <Example><![CDATA[
+##  gap> OnTuplesTuples( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
+##  [ [ 3, 1 ], [ 1, 4 ] ]
 ##  gap> g:=Group((1,2,3),(2,3,4));;
-##  gap> Orbit(g,1,OnPoints);
-##  [ 1, 2, 3, 4 ]
-##  gap> Orbit(g,(),OnRight);
-##  [ (), (1,2,3), (2,3,4), (1,3,2), (1,3)(2,4), (1,2)(3,4), (2,4,3), 
-##    (1,4,2), (1,4,3), (1,3,4), (1,2,4), (1,4)(2,3) ]
-##  gap> Orbit(g,[1,2],OnPairs);
-##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 1 ], [ 3, 4 ], [ 2, 1 ], 
-##    [ 1, 4 ], [ 4, 1 ], [ 4, 2 ], [ 3, 2 ], [ 2, 4 ], [ 4, 3 ] ]
-##  gap> Orbit(g,[1,2],OnSets);
-##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 4 ], [ 1, 4 ], [ 2, 4 ] ]
-##  gap> Orbit(g,[[1,2],[3,4]],OnSetsSets);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
-##    [ [ 1, 3 ], [ 2, 4 ] ] ]
-##  gap> Orbit(g,[[1,2],[3,4]],OnTuplesSets);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
-##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ], 
-##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
-##  gap> Orbit(g,[[1,2],[3,4]],OnSetsTuples);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
-##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 2, 4 ], [ 3, 1 ] ], 
-##    [ [ 2, 1 ], [ 4, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ] ]
 ##  gap> Orbit(g,[[1,2],[3,4]],OnTuplesTuples);
 ##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
 ##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 3, 1 ], [ 2, 4 ] ], 
