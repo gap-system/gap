@@ -162,7 +162,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     the cursor down one line and back to the beginning of the line.
 </Item>
 <Mark>
-<Index><C>\"</C></Index>
+<Index Key='\"'><C>\"</C></Index>
 <Index>doublequote character</Index>
 <C>\"</C></Mark>
 <Item>
@@ -171,7 +171,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     because it is otherwise interpreted as end of the string.
 </Item>
 <Mark>
-<Index><C>\'</C></Index>
+<Index Key="\'"><C>\'</C></Index>
 <Index>singlequote character</Index>
 <C>\'</C></Mark>
 <Item>
@@ -180,7 +180,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     because it is otherwise interpreted as end of the character.
 </Item>
 <Mark>
-<Index><C>\\</C></Index>
+<Index Key='\\'><C>\\</C></Index>
 <Index>backslash character</Index>
 <C>\\</C></Mark>
 <Item>
@@ -190,7 +190,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     an escape sequence.
 </Item>
 <Mark>
-<Index><C>\b</C></Index>
+<Index Key='\b'><C>\b</C></Index>
 <Index>backspace character</Index>
 <C>\b</C></Mark>
 <Item>
@@ -200,7 +200,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     and should not be relied upon.
 </Item>
 <Mark>
-<Index><C>\r</C></Index>
+<Index Key='\r'><C>\r</C></Index>
 <Index>carriage return character</Index>
 <C>\r</C></Mark>
 <Item>
@@ -210,7 +210,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     is again system dependent.
 </Item>
 <Mark>
-<Index><C>\c</C></Index>
+<Index Key='\c'><C>\c</C></Index>
 <Index>flush character</Index>
 <C>\c</C></Mark>
 <Item>
@@ -223,7 +223,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     use <C>\c</C>.
 </Item>
 <Mark>
-<Index><C>\XYZ</C></Index>
+<Index Key='\\XYZ'><C>\XYZ</C></Index>
 <Index>octal character codes</Index>
 <C>\XYZ</C></Mark>
 <Item>
@@ -235,7 +235,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
     in &GAP;.
 </Item>
 <Mark>
-<Index><C>\0xYZ</C></Index>
+<Index Key='\\0xYZ'><C>\0xYZ</C></Index>
 <Index>hexadecimal character codes</Index>
 <C>\0xYZ</C></Mark>
 <Item>
