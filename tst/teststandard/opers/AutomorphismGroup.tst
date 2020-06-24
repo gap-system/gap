@@ -37,8 +37,8 @@ gap> StructureDescription(H);
 "PSL(3,3) : C2"
 
 #
-gap> g:=PerfectGroup(IsPermGroup,30720,1);;
-gap> h:=g^(1,153);;
+gap> g:=PerfectGroup(IsPermGroup,15360,1);;
+gap> h:=g^(1,129);;
 gap> AutomorphismGroup(g);; # pull out of isom. test (reduce timeout risk)
 gap> AutomorphismGroup(h);;
 gap> IsomorphismGroups(g,h:forcetest)<>fail;
