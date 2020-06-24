@@ -526,7 +526,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <P/>
 ##  <Index Subkey="of group element using powering operator">character value</Index>
 ##  <Index Subkey="meaning for class functions">power</Index>
-##  <Index Subkey="for class functions"><C>^</C></Index>
+##  <Index Key="^" Subkey="for class functions"><C>^</C></Index>
 ##  The <E>powering</E> operator <Ref Oper="\^"/> has several meanings
 ##  for class functions.
 ##  The power of a class function by a nonnegative integer is clearly the
