@@ -1072,9 +1072,14 @@ one chosen for &GAP;.
 The unary <C>+</C> is ignored. The unary <C>-</C> returns the additive inverse of
 its operand; over the integers it is equivalent to multiplication by <C>-1</C>.
 <P/>
+<Index Subkey="for two group elements">^</Index>
+<Index Subkey="with a group element">conjugation</Index>
 <C>^</C> denotes powering of a multiplicative element if the right operand  is
 an integer, and is also used to denote the action of a group element on a
 point of a set if the right operand is a group element.
+In the special case that both operands are group elements,
+<C>^</C> denotes conjugation, that is,
+<M>g</M><C>^</C><M>h = h^{{-1}} g h</M>.
 <P/>
 <Index Subkey="precedence">arithmetic operators</Index>
 The <E>precedence</E> of those operators is as follows.
