@@ -1115,83 +1115,104 @@ gap> AsPartialPerm(f, [ 2 .. 4 ] );
 
 <Section Label="sect:OperatorsPartialPerms">
   <Heading>Operators and operations for partial permutations</Heading>
-  <List>    
-    
-    <Mark><C><A>f</A> ^ -1</C></Mark>
-    <Item>
-      returns the inverse of the partial permutation <A>f</A>.
-    </Item>
 
-    <Mark><C><A>i</A> ^ <A>f</A></C></Mark>
-    <Item>
+<ManSection>
+  <Meth Name="Inverse" Arg="f" Label="for a partial permutation"/>
+  <Description>
+      returns the inverse of the partial permutation <A>f</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Meth Name="\^" Arg="i, f" Label="for a positive integer and a partial permutation"/>
+  <Description>
       returns the image of the positive integer <A>i</A> under the
       partial permutation <A>f</A> if it is defined and <C>0</C> if it is not.
-    </Item>    
-    <Mark><C><A>i</A> / <A>f</A></C></Mark>
-    <Item>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Meth Name="\/" Arg="i, f" Label="for a positive integer and a partial permutation"/>
+  <Description>
       returns the preimage of the positive integer <A>i</A> under the
       partial permutation <A>f</A> if it is defined and <C>0</C> if it is not.
       Note that the inverse of <A>f</A> is not calculated to find the
       preimage of <A>i</A>.
-    </Item>
+  </Description>
+</ManSection>
 
-    <Mark><C><A>f</A> ^ <A>g</A></C></Mark>
-    <Item>
-    returns <C><A>g</A>^-1*<A>f</A>*<A>g</A></C> when
-     <A>f</A> is a partial permutation and <A>g</A> is a permutation or partial
-     permutation; see <Ref Oper="\^"/>. This operation requires
-     essentially the same number of steps as multiplying partial permutations,
-     which is around one third as many as inverting and multiplying twice. 
-   </Item>
+<ManSection>
+  <Meth Name="\^" Arg="f, g" Label="for a partial permutation and a permutation or partial permutation"/>
+  <Description>
+      <C><A>f</A> ^ <A>g</A></C>
+      returns <C><A>g</A>^-1*<A>f</A>*<A>g</A></C> when
+      <A>f</A> is a partial permutation and <A>g</A> is a permutation or partial
+      permutation; see <Ref Oper="\^"/>. This operation requires
+      essentially the same number of steps as multiplying partial permutations,
+      which is around one third as many as inverting and multiplying twice.
+  </Description>
+</ManSection>
 
-     <Mark><C><A>f</A> * <A>g</A></C></Mark>
-     <Item>
-       returns the composition of <A>f</A> and <A>g</A> when <A>f</A> and
-       <A>g</A> are partial permutations or permutations. The product of a
-       permutation and a partial permutation is returned as a partial
-       permutation. 
-     </Item>
-   
-     <Mark><C><A>f</A> / <A>g</A></C></Mark>
-    <Item>
+ <ManSection>
+  <Meth Name="\*" Arg="f, g" Label="for permutations and partial permutations"/>
+  <Description>
+      <C><A>f</A> * <A>g</A></C>
+      returns the composition of <A>f</A> and <A>g</A> when <A>f</A> and
+      <A>g</A> are partial permutations or permutations. The product of a
+      permutation and a partial permutation is returned as a partial
+      permutation.
+   </Description>
+</ManSection>
+
+<ManSection>
+  <Meth Name="\/" Arg="f, g" Label="for a partial permutation and permutation or partial permutation"/>
+  <Description>
+      <C><A>f</A> / <A>g</A></C>
       returns <C><A>f</A>*<A>g</A>^-1</C> when <A>f</A> is a partial
       permutation and
-      <A>g</A> is a permutation or partial permutation. 
-      This operation requires essentially the same number of steps 
+      <A>g</A> is a permutation or partial permutation.
+      This operation requires essentially the same number of steps
       as multiplying partial permutations, which is
       approximately half that required to first invert <A>g</A> and then take
-      the product with <A>f</A>. 
-    </Item>
-    
-    <Mark><C>LQUO(<A>g</A>, <A>f</A>)</C></Mark>
-    <Item>
-      <Index Key="LQUO" Subkey="for a permutation or partial permutation
-        and partial permutation"><C>LQUO</C></Index>
+      the product with <A>f</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Meth Name="LeftQuotient" Arg="g, f" Label="for a permutation or partial permutation
+        and a partial permutation"/>
+  <Description>
       returns <C><A>g</A>^-1*<A>f</A></C>
       when <A>f</A> is a partial permutation and
-      <A>g</A> is a permutation or partial permutation. 
-      This operation requires essentially the same number of steps 
+      <A>g</A> is a permutation or partial permutation.
+      This operation requires essentially the same number of steps
       as multiplying partial permutations, which is
       approximately half that required to first invert <A>g</A> and then take
-      the product with <A>f</A>. 
-    </Item>
-    
-    <Mark><C><A>f</A> &lt; <A>g</A></C></Mark>
-    <Item>
+      the product with <A>f</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Meth Name="\&lt;" Arg="f, g" Label="for partial permutations"/>
+  <Description>
+      <C><A>f</A> &lt; <A>g</A></C>
       returns <K>true</K> if the image of <A>f</A> on the range from 1 to the
-      degree of <A>f</A> 
+      degree of <A>f</A>
       is lexicographically less than the corresponding image for <A>g</A>
       and <K>false</K> if it is not. See <Ref Func="NaturalLeqPartialPerm"/>
       and <Ref Func="ShortLexLeqPartialPerm"/> for additional orders for
-      partial permutations. 
-    </Item>
-    
-    <Mark><C><A>f</A> = <A>g</A></C></Mark>
-    <Item>
+      partial permutations.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Meth Name="\=" Arg="f, g" Label="for partial permutations"/>
+  <Description>
+      <C><A>f</A> = <A>g</A></C>
       returns <K>true</K> if the partial permutation <A>f</A> equals the
       partial permutation <A>g</A> and returns <K>false</K> if it does not.
-    </Item>
-   </List>
+  </Description>
+</ManSection>
 
 <!-- *************************************************************** -->
 

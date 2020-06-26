@@ -589,87 +589,86 @@ gap> PermutationOfImage( f );
 
 <Section Label="sect:OperatorsTransformations">
   <Heading>Operators for transformations</Heading>
-  <List>
 
-    <Mark><C><A>i</A> ^ <A>f</A></C></Mark>
-    <Item>
-      <Index Key="\^" 
-        Subkey="for a positive integer and a transformation">
-        <C>\^</C>
-      </Index>
+<ManSection>
+  <Meth Name="\^" Arg="i, f" Label="for a positive integer and a transformation"/>
+  <Description>
+      <C><A>i</A> ^ <A>f</A></C>
       returns the image of the positive integer <A>i</A> under the
       transformation <A>f</A>.
-    </Item>
+  </Description>
+</ManSection>
 
-    <Mark><C><A>f</A> ^ <A>g</A></C></Mark>
-    <Item>
-      <Index Key="\^" 
-        Subkey="for a transformation and a permutation">
-        <C>\^</C>
-      </Index>
+<ManSection>
+  <Meth Name="\^" Arg="f, g" Label="for a transformation and a permutation"/>
+  <Description>
+      <C><A>f</A> ^ <A>g</A></C>
       returns <C><A>g</A> ^ -1 * <A>f</A> * <A>g</A></C> when
       <A>f</A> is a transformation and <A>g</A> is a permutation
-      <Ref Oper="\^"/>.  
+      <Ref Oper="\^"/>.
       This operation requires essentially the same number of steps as
       multiplying a transformation by a permutation, which is
       approximately one third of the number required to first invert
       <A>g</A>, take the product with <A>f</A>, and then the product
-      with <A>g</A>. 
-    </Item>
+      with <A>g</A>.
+  </Description>
+</ManSection>
 
-    <Mark><C><A>f</A> * <A>g</A></C></Mark>
-    <Item>
-      <Index Key="\*" Subkey="for transformations"><C>\*</C></Index>
+<ManSection>
+  <Meth Name="\*" Arg="f, g" Label="for transformations"/>
+  <Description>
+      <C><A>f</A> * <A>g</A></C>
       returns the composition of <A>f</A> and <A>g</A> when <A>f</A> and
       <A>g</A> are transformations or permutations. The product of a
-      permutation and a transformation is returned as a transformation. 
-    </Item>
+      permutation and a transformation is returned as a transformation.
+  </Description>
+</ManSection>
 
-    <Mark><C><A>f</A> / <A>g</A></C></Mark>
-    <Item>
-      <Index Key="\/" 
-        Subkey="for a transformation and a permutation">
-        <C>\/</C>
-      </Index>
+<ManSection>
+  <Meth Name="\/" Arg="f, g" Label="for a transformation and a permutation"/>
+  <Description>
+      <C><A>f</A> / <A>g</A></C>
       returns <C><A>f</A> * <A>g</A> ^ -1</C> when <A>f</A> is a
       transformation and <A>g</A> is a permutation.  This operation
       requires essentially the same number of steps as multiplying a
       transformation by a permutation, which is approximately half the
       number required to first invert <A>g</A> and then take the product
-      with <A>f</A>. 
-    </Item>
+      with <A>f</A>.
+  </Description>
+</ManSection>
 
-    <Mark><C>LQUO( <A>g</A>, <A>f</A> )</C></Mark>
-    <Item>
-      <Index Key="LQUO" 
-        Subkey="for a permutation and transformation">
-        <C>LQUO</C>
-      </Index>
+<ManSection>
+  <Meth Name="LeftQuotient" Arg="g, f" Label="for a permutation and transformation"/>
+  <Description>
       returns <C><A>g</A> ^ -1 * <A>f</A></C> when <A>f</A> is a
       transformation and <A>g</A> is a permutation. This operation uses
       essentially the same number of steps as multiplying a
       transformation by a permutation, which is approximately half the
       number required to first invert <A>g</A> and then take the product
-      with <A>f</A>. 
-    </Item>
+      with <A>f</A>.
+  </Description>
+</ManSection>
 
-    <Mark><C><A>f</A> &lt; <A>g</A></C></Mark>
-    <Item>
-      <Index Key="\&lt;" Subkey="for transformations"><C>\&lt;</C></Index>
+<ManSection>
+  <Meth Name="\&lt;" Arg="i, f" Label="for transformations"/>
+  <Description>
       <Index Subkey="for transformations">smaller</Index>
+      <C><A>f</A> &lt; <A>g</A></C>
       returns <K>true</K> if the image list of <A>f</A> is
       lexicographically less than the image list of <A>g</A> and
       <K>false</K> if it is not.
-    </Item>
+  </Description>
+</ManSection>
 
-    <Mark><C><A>f</A> = <A>g</A></C></Mark>
-    <Item>
-      <Index Key="\=" Subkey="for transformations"><C>\=</C></Index>
+<ManSection>
+  <Meth Name="\=" Arg="f, g" Label="for transformations"/>
+  <Description>
       <Index Subkey="for transformations">equality</Index>
+      <C><A>f</A> = <A>g</A></C>
       returns <K>true</K> if the transformation <A>f</A> equals the
       transformation <A>g</A> and returns <K>false</K> if it does not.
-    </Item>
-  </List>
+  </Description>
+</ManSection>
 
 <!-- *************************************************************** -->
 
