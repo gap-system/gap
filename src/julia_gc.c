@@ -199,6 +199,7 @@ static jl_datatype_t * datatype_largebag;
 static UInt            StackAlignBags;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
+static jl_task_t *     RootTaskOfMainThread;
 static size_t          max_pool_obj_size;
 static UInt            YoungRef;
 static int             FullGC;
@@ -281,11 +282,13 @@ static void * AllocateBagMemory(UInt type, UInt size)
     return result;
 }
 
+
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
 {
     // HOOK: set mark function for type `type`.
+    GAP_ASSERT(TabMarkFuncBags[type] == MarkAllSubBagsDefault);
     TabMarkFuncBags[type] = mark_func;
 }
 
@@ -369,6 +372,38 @@ void MarkJuliaObj(void * obj)
 // from which freed objects are then marked. Hence, we add additional checks
 // when traversing GAP master pointer and bag objects that this happens
 // only for live objects.
+//
+// We use "bottom" to refer to the origin of the stack, and "top" to describe
+// the current stack pointer. Confusingly, on most contemporary architectures,
+// the stack grows "downwards", which means that the "bottom" of the stack is
+// the highest address and "top" is the lowest. The stack is contained in a
+// stack buffer, which has a start and end (and the end of the stack buffer
+// coincides with the bottom of the stack).
+//
+//   +------------------------------------------------+
+//   | guard |    unused area          | active stack |
+//   | pages |  <--- growth ---        | frames       |
+//   +------------------------------------------------+
+//   ^                                 ^              ^
+//   |                                 |              |
+// start                              top         bottom/end
+//
+// All stacks in Julia are associated with tasks and we can use
+// jl_task_stack_buffer() to retrieve the buffer information (start and size)
+// for that stack. That said, in a couple of cases we make adjustments.
+//
+// 1. The stack buffer of the root task of the main thread, when started
+//    from GAP can extend past the point where Julia believes its bottom is.
+//    Therefore, for that stack, we use GapBottomStack instead.
+// 2. For the current task of the current thread, we know where exactly the
+//    top is and do not need to scan the entire stack buffer.
+//
+// As seen in the diagram above, the stack buffer can include guard pages,
+// which trigger a segmentation fault when accessed. As the extent of
+// guard pages is usually not known, we intercept segmentation faults and
+// scan the stack buffer from its end until we reach either the start of
+// the stack buffer or receive a segmentation fault due to hitting a guard
+// page.
 
 static void TryMark(void * p)
 {
@@ -467,13 +502,16 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
         (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
     jl_jmp_buf exc_buf;
     if (!jl_setjmp(exc_buf, 0)) {
-        // The bottom of the stack may be protected with
-        // guard pages; accessing these results in segmentation
-        // faults. Julia catches those segmentation faults and
-        // longjmps to JuliaTLS->safe_restore; we use this
-        // mechamism to abort stack scanning when a protected
-        // page is hit. For this to work, we must scan the stack
-        // from top to bottom, so we see any guard pages last.
+        // The start of the stack buffer may be protected with guard
+        // pages; accessing these results in segmentation faults.
+        // Julia catches those segmentation faults and longjmps to
+        // JuliaTLS->safe_restore; we use this mechanism to abort stack
+        // scanning when a protected page is hit. For this to work, we
+        // must scan the stack from the end of the stack buffer towards
+        // the start (i.e. in the direction in which the stack grows).
+        // Note that this will by necessity also scan the unused area
+        // of the stack buffer past the stack top. We therefore also
+        // optimize scanning for areas that contain only null bytes.
         JuliaTLS->safe_restore = &exc_buf;
         FindLiveRangeReverse(stack, start, end);
     }
@@ -517,7 +555,7 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
     MarkFromList(stack);
 }
 
-static void TryMarkRange(void * start, void * end)
+static NOINLINE void TryMarkRange(void * start, void * end)
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
@@ -573,26 +611,27 @@ static void GapRootScanner(int full)
     // 2. The stack of the current task is that of the root task of the
     //    main thread (which has thread id 0).
     //
-    // The reason is that if Julia is being initialized from GAP, it
-    // cannot always reliably find the top of the stack for that task,
-    // so we have to fall back to GAP for that.
-    if (!IsUsingLibGap() && jl_threadid() == 0 &&
-        JuliaTLS->root_task == task) {
+    // The reason is that when called from GAP, jl_init() does not
+    // reliably know where the bottom of the initial stack is. However,
+    // GAP does have that information, so we use that instead.
+    if (task == RootTaskOfMainThread) {
         stackend = (char *)GapStackBottom;
     }
 
-    // allow installing a custom marking function. This is used for
+    // Allow installing a custom marking function. This is used for
     // integrating GAP (possibly linked as a shared library) with other code
     // bases which use their own form of garbage collection. For example,
     // with Python (for SageMath).
     if (ExtraMarkFuncBags)
         (*ExtraMarkFuncBags)();
 
-    // scan the stack for further object references, and mark them
-    syJmp_buf registers;
-    sySetjmp(registers);
-    TryMarkRange(registers, (char *)registers + sizeof(syJmp_buf));
-    TryMarkRange((char *)registers + sizeof(syJmp_buf), stackend);
+    // We scan the stack of the current task from the stack pointer
+    // towards the stack bottom, ensuring that we also scan any
+    // references stored in registers.
+    jmp_buf registers;
+    setjmp(registers);
+    TryMarkRange(registers, (char *)registers + sizeof(jmp_buf));
+    TryMarkRange((char *)registers + sizeof(jmp_buf), stackend);
 
     // mark all global objects
     for (Int i = 0; i < GlobalCount; i++) {
@@ -629,13 +668,34 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
             rescan = 0;
     }
     if (stack) {
-        if (task->copy_stack) {
+        // task->copy_stack is 0 if the COPY_STACKS implementation is
+        // not used or 1 if the task stack does not point to valid
+        // memory. If it is neither zero nor one, then we can use that
+        // value to determine the actual top of the stack.
+        switch (task->copy_stack) {
+        case 0:
+            // do not adjust stack.
+            break;
+        case 1:
+            // stack buffer is not valid memory.
+            return;
+        default:
             // We know which part of the task stack is actually used,
             // so we shorten the range we have to scan.
             stack = stack + size - task->copy_stack;
             size = task->copy_stack;
         }
-        ScanTaskStack(rescan, task, stack, stack + size);
+        char * stackend = stack + size;
+        if (task == RootTaskOfMainThread) {
+            stackend = (char *)GapStackBottom;
+        }
+
+        // Unlike the stack of the current task that we scan in
+        // GapRootScanner, we do not know the stack pointer. We
+        // therefore use a separate routine that scans from the
+        // stack bottom until we reach the other end of the stack
+        // or a guard page.
+        ScanTaskStack(rescan, task, stack, stackend);
     }
 }
 
@@ -733,7 +793,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     // HOOK: initialization happens here.
     GapStackBottom = stack_bottom;
     for (UInt i = 0; i < NUM_TYPES; i++) {
-        TabMarkFuncBags[i] = MarkAllSubBags;
+        TabMarkFuncBags[i] = MarkAllSubBagsDefault;
     }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
@@ -746,6 +806,21 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     max_pool_obj_size = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
     jl_init();
+
+    JuliaTLS = jl_get_ptls_states();
+    // These callbacks potentially require access to the Julia
+    // TLS and thus need to be installed after initialization.
+    jl_gc_set_cb_root_scanner(GapRootScanner, 1);
+    jl_gc_set_cb_task_scanner(GapTaskScanner, 1);
+    jl_gc_set_cb_pre_gc(PreGCHook, 1);
+    jl_gc_set_cb_post_gc(PostGCHook, 1);
+    // jl_gc_enable(0); /// DEBUGGING
+
+    // If we are embedding Julia in GAP, remember the root task
+    // of the main thread. The extent of the stack buffer of that
+    // task is calculated a bit differently than for other tasks.
+    if (!IsUsingLibGap())
+        RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
 
     Module = jl_new_module(jl_symbol("ForeignGAP"));
     Module->parent = jl_main_module;
@@ -782,14 +857,6 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
         gapobj_type = jl_any_type;
     }
 
-    JuliaTLS = jl_get_ptls_states();
-    // These callbacks potentially require access to the Julia
-    // TLS and thus need to be installed after initialization.
-    jl_gc_set_cb_root_scanner(GapRootScanner, 1);
-    jl_gc_set_cb_task_scanner(GapTaskScanner, 1);
-    jl_gc_set_cb_pre_gc(PreGCHook, 1);
-    jl_gc_set_cb_post_gc(PostGCHook, 1);
-    // jl_gc_enable(0); /// DEBUGGING
 
 
     jl_set_const(jl_main_module, jl_symbol("ForeignGAP"),
@@ -825,6 +892,10 @@ void RetypeBag(Bag bag, UInt new_type)
 {
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_type = header->type;
+
+    // exit early if nothing is to be done
+    if (old_type == new_type)
+        return;
 
 #ifdef COUNT_BAGS
     /* update the statistics      */
@@ -945,7 +1016,6 @@ UInt ResizeBag(Bag bag, UInt new_size)
     // update the size
     header->size = new_size;
 
-    // return success
     return 1;
 }
 
