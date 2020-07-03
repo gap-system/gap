@@ -486,7 +486,7 @@ static const UInt maxmem = 15000000000000000000UL;
 static const UInt maxmem = 4000000000UL;
 #endif
 
-static Int ParseMemory(Char * s)
+static BOOL ParseMemory(Char * s, UInt *result)
 {
     char * end;
     const double size = strtod(s, &end);
@@ -496,8 +496,10 @@ static Int ParseMemory(Char * s)
         goto err;
 
     // if no unit was specified: return immediately
-    if (symbol == 0)
-        return size;
+    if (symbol == 0) {
+        *result = size;
+        return TRUE;
+    }
 
     // units consist of a single character; reject if there is more
     if (end[1] != 0)
@@ -507,9 +509,10 @@ static Int ParseMemory(Char * s)
         if (symbol == memoryUnits[i].symbol) {
             UInt value = memoryUnits[i].value;
             if (size > maxmem / value)
-                return maxmem;
+                *result = maxmem;
             else
-                return size * value;
+                *result = size * value;
+            return TRUE;
         }
     }
 
@@ -517,7 +520,7 @@ err:
     fputs("Unrecognized memory size '", stderr);
     fputs(s, stderr);
     fputs("'\n", stderr);
-    return -1;
+    return FALSE;
 }
 
 
@@ -570,10 +573,8 @@ static Int storeString( Char **argv, void *Where )
 static Int storeMemory( Char **argv, void *Where )
 {
     UInt * where = (UInt *)Where;
-    Int    res = ParseMemory(argv[0]);
-    if (res < 0)
+    if (!ParseMemory(argv[0], where))
         return -1;
-    *where = res;
     return 1;
 }
 #endif
@@ -581,10 +582,9 @@ static Int storeMemory( Char **argv, void *Where )
 static Int storeMemory2( Char **argv, void *Where )
 {
     UInt * where = (UInt *)Where;
-    Int    res = ParseMemory(argv[0]);
-    if (res < 0)
+    if (!ParseMemory(argv[0], where))
         return -1;
-    *where = res / 1024;
+    *where /= 1024;
     return 1;
 }
 
