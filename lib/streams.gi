@@ -1396,7 +1396,7 @@ InputOutputStreamByPtyDefaultType :=
 #############################################################################
 ##
 #M  InputOutputLocalProcess(<current-dir>, <executable>, <args>)
-#M   . . .input/output stream to a process run as a "slave" on the local host
+##   . . .input/output stream to a child process on the local host
 ##
 
 InstallGlobalFunction( InputOutputLocalProcess,

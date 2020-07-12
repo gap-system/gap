@@ -143,25 +143,25 @@ static void KillChild(UInt stream)
 
 /****************************************************************************
 **
-*F  OpenPty( <master>, <slave> ) . . . . . . . . open a pty master/slave pair
+*F  OpenPty( <parent>, <child> ) . . . . . . . . open a pseudo terminal
 */
 
 #ifdef HAVE_OPENPTY
 
-static UInt OpenPty(int * master, int * slave)
+static UInt OpenPty(int * parent, int * child)
 {
     /* openpty is available on OpenBSD, NetBSD and FreeBSD, Mac OS X,
        Cygwin, Interix, OSF/1 4 and 5, and glibc (since 1998), and hence
        on most modern Linux systems. See also:
        https://www.gnu.org/software/gnulib/manual/html_node/openpty.html */
-    return (openpty(master, slave, NULL, NULL, NULL) < 0);
+    return (openpty(parent, child, NULL, NULL, NULL) < 0);
 }
 
 #elif defined(HAVE_POSIX_OPENPT)
 
-static UInt OpenPty(int * master, int * slave)
+static UInt OpenPty(int * parent, int * child)
 {
-    /* Attempt to use POSIX 98 pseudo ttys. Opening a master tty is done
+    /* Attempt to use POSIX 98 pseudo ttys. Opening a parent tty is done
        via posix_openpt, which is available on virtually every current
        UNIX system; indeed, according to gnulib, it is available on at
        least the following systems:
@@ -184,37 +184,37 @@ static UInt OpenPty(int * master, int * slave)
          - Interix 3.5
          - BeOS
        */
-    *master = posix_openpt(O_RDWR | O_NOCTTY);
-    if (*master < 0) {
+    *parent = posix_openpt(O_RDWR | O_NOCTTY);
+    if (*parent < 0) {
         PErr("OpenPty: posix_openpt failed");
         return 1;
     }
 
-    if (grantpt(*master)) {
+    if (grantpt(*parent)) {
         PErr("OpenPty: grantpt failed");
         goto error;
     }
-    if (unlockpt(*master)) {
-        close(*master);
+    if (unlockpt(*parent)) {
+        close(*parent);
         PErr("OpenPty: unlockpt failed");
         goto error;
     }
 
-    *slave = open(ptsname(*master), O_RDWR, 0);
-    if (*slave < 0) {
-        PErr("OpenPty: opening slave tty failed");
+    *child = open(ptsname(*parent), O_RDWR, 0);
+    if (*child < 0) {
+        PErr("OpenPty: opening child tty failed");
         goto error;
     }
     return 0;
 
 error:
-    close(*master);
+    close(*parent);
     return 1;
 }
 
 #else
 
-static UInt OpenPty(int * master, int * slave)
+static UInt OpenPty(int * parent, int * child)
 {
     Pr("no pseudo tty support available\n", 0, 0);
     return 1;
@@ -392,7 +392,7 @@ static int posix_spawn_with_dir(pid_t *                      pid,
 static Int
 StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 {
-    int slave; /* pipe to child                   */
+    int child; /* pipe to child                   */
     Int stream;
 
     struct termios tst; /* old and new terminal state      */
@@ -407,7 +407,7 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
     }
 
     /* open pseudo terminal for communication with gap */
-    if (OpenPty(&PtyIOStreams[stream].ptyFD, &slave)) {
+    if (OpenPty(&PtyIOStreams[stream].ptyFD, &child)) {
         PErr("StartChildProcess: open pseudo tty failed");
         FreeStream(stream);
         HashUnlock(PtyIOStreams);
@@ -415,8 +415,8 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
     }
 
     /* Now fiddle with the terminal sessions on the pty */
-    if (tcgetattr(slave, &tst) == -1) {
-        PErr("StartChildProcess: tcgetattr on slave pty failed");
+    if (tcgetattr(child, &tst) == -1) {
+        PErr("StartChildProcess: tcgetattr on child pty failed");
         goto cleanup;
     }
     tst.c_cc[VINTR] = 0377;
@@ -426,8 +426,8 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
     tst.c_cc[VTIME] = 0;
     tst.c_lflag    &= ~(ECHO|ICANON);
     tst.c_oflag    &= ~(ONLCR);
-    if (tcsetattr(slave, TCSANOW, &tst) == -1) {
-        PErr("StartChildProcess: tcsetattr on slave pty failed");
+    if (tcsetattr(child, TCSANOW, &tst) == -1) {
+        PErr("StartChildProcess: tcsetattr on child pty failed");
         goto cleanup;
     }
 
@@ -455,14 +455,14 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
         goto cleanup;
     }
 
-    if (posix_spawn_file_actions_adddup2(&file_actions, slave, 0)) {
-        PErr("StartChildProcess: adddup2(slave, 0) failed");
+    if (posix_spawn_file_actions_adddup2(&file_actions, child, 0)) {
+        PErr("StartChildProcess: adddup2(child, 0) failed");
         posix_spawn_file_actions_destroy(&file_actions);
         goto cleanup;
     }
 
-    if (posix_spawn_file_actions_adddup2(&file_actions, slave, 1)) {
-        PErr("StartChildProcess: adddup2(slave, 1) failed");
+    if (posix_spawn_file_actions_adddup2(&file_actions, child, 1)) {
+        PErr("StartChildProcess: adddup2(child, 1) failed");
         posix_spawn_file_actions_destroy(&file_actions);
         goto cleanup;
     }
@@ -484,11 +484,11 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
     if (PtyIOStreams[stream].childPID == 0) {
         /* Set up the child */
         close(PtyIOStreams[stream].ptyFD);
-        if (dup2(slave, 0) == -1)
+        if (dup2(child, 0) == -1)
             _exit(-1);
         fcntl(0, F_SETFD, 0);
 
-        if (dup2(slave, 1) == -1)
+        if (dup2(child, 1) == -1)
             _exit(-1);
         fcntl(1, F_SETFD, 0);
 
@@ -503,25 +503,25 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
         execv(prg, args);
 
         /* This should never happen */
-        close(slave);
+        close(child);
         _exit(1);
     }
 #endif
 
-    /* Now we're back in the master */
+    /* Now we're back in the parent */
     /* check if the fork was successful */
     if (PtyIOStreams[stream].childPID == -1) {
         PErr("StartChildProcess: cannot fork to subprocess");
         goto cleanup;
     }
-    close(slave);
+    close(child);
 
 
     HashUnlock(PtyIOStreams);
     return stream;
 
 cleanup:
-    close(slave);
+    close(child);
     close(PtyIOStreams[stream].ptyFD);
     PtyIOStreams[stream].inuse = 0;
     FreeStream(stream);
