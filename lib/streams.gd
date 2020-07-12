@@ -860,23 +860,23 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 #############################################################################
 ##
 #F  InputOutputLocalProcess(<dir>, <executable>, <args>) %
-##   . . .input/output stream to a process run as a "slave" on the local host
+##   . . .input/output stream to a child process on the local host
 ##
 ##  <#GAPDoc Label="InputOutputLocalProcess">
 ##  <ManSection>
 ##  <Func Name="InputOutputLocalProcess" Arg='dir, executable, args'/>
 ##
 ##  <Description>
-##  starts up a slave process, whose executable file is <A>executable</A>, with
+##  starts up a child process, whose executable file is <A>executable</A>, with
 ##  <Q>command line</Q> arguments <A>args</A> in the directory <A>dir</A>. (Suitable 
 ##  choices for <A>dir</A> are <C>DirectoryCurrent()</C> or <C>DirectoryTemporary()</C>
 ##  (see Section&nbsp;<Ref Sect="Directories"/>); <C>DirectoryTemporary()</C> may be a good choice
 ##  when <A>executable</A> generates output files that it doesn't itself remove
 ##  afterwards.) 
 ##  <Ref Func="InputOutputLocalProcess"/> returns an InputOutputStream object. Bytes
-##  written to this stream are received by the slave process as if typed
+##  written to this stream are received by the child process as if typed
 ##  at a terminal on standard input. Bytes written to standard output
-##  by the slave process can be read from the stream. 
+##  by the child process can be read from the stream. 
 ##  <P/>
 ##  When the stream is closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.
