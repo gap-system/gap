@@ -123,7 +123,9 @@ DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
 ##  <Prop Name="IsAutomorphismGroup" Arg='G'/>
 ##
 ##  <Description>
-##  indicates whether <A>G</A> is the full automorphism group of another
+##  indicates whether <A>G</A>, which must be
+##  <Ref Prop="IsGroupOfAutomorphisms"/>,
+##  is the full automorphism group of another
 ##  group <M>H</M>, this group is given as <Ref Attr="AutomorphismDomain"/>
 ##  value of <A>G</A>.
 ##  <Example><![CDATA[
