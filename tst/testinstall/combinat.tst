@@ -474,6 +474,21 @@ gap> for n in [ 1 .. 15 ] do
 >      fi;
 >    od;
 
+#F  IteratorOfPartitionsSet( <set> )
+gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..13]] do
+>      pn:= PartitionsSet( s );
+>      iter:= IteratorOfPartitionsSet( s );
+>      list:= [];
+>      for i in [ 1 .. Length( pn ) ] do
+>        Add( list, NextIterator( iter ) );
+>      od;
+>      if not IsDoneIterator( iter ) then
+>        Error( "wrong number of elements" );
+>      elif Set(pn) <> Set(list) then
+>        Error( "different elements" );
+>      fi;
+>    od;
+
 #F  Lucas(<P>,<Q>,<k>)  . . . . . . . . . . . . . . value of a lucas sequence
 gap> Print(List( [0..10], i->Lucas(1,-2,i)[1] ),"\n");
 [ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]

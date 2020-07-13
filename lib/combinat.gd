@@ -1154,6 +1154,26 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 
 #############################################################################
 ##
+#F  IteratorOfPartitionsSet( <set> )
+##
+##  <#GAPDoc Label="IteratorOfPartitionsSet">
+##  <ManSection>
+##  <Func Name="IteratorOfPartitionsSet" Arg='set'/>
+##
+##  <Description>
+##  <Ref Func="IteratorOfPartitionsSet" /> returns an iterator
+##  (see&nbsp;<Ref Sect="Iterators"/>) for all unordered partitions of the
+##  set <A>set</A> into pairwise disjoint nonempty sets
+##  (see <Ref Func="PartitionsSet"/>).
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "IteratorOfPartitionsSet" );
+
+
+#############################################################################
+##
 #F  SignPartition( <pi> ) . . . . . . . . . . . . .  sign of partition <pi>
 ##
 ##  <#GAPDoc Label="SignPartition">

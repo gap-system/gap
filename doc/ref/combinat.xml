@@ -57,6 +57,7 @@ subsets.
 <#Include Label="NrPartitionsSet">
 <#Include Label="Partitions">
 <#Include Label="IteratorOfPartitions">
+<#Include Label="IteratorOfPartitionsSet">
 <#Include Label="NrPartitions">
 <#Include Label="OrderedPartitions">
 <#Include Label="NrOrderedPartitions">

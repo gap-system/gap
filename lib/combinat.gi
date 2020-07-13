@@ -2448,6 +2448,76 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 
 #############################################################################
 ##
+#F  IteratorOfPartitionsSet( <set> )
+##
+##  all unordered partitions of the set <A>set</A> into pairwise disjoint
+##  nonempty sets.
+##
+##  If $B_0, B_1, \ldots, B_m$ are subsets forming a partition of
+##  $\{1, 2, \ldots, n\}$, then the partition can be described by the 
+##  restricted growth string $a_1 a_2 \ldots a_n$, where $a_i = j$ if 
+##  $i \in B_j$. We may assume $a_1 = 0$ and then a restricted growth string
+##  satisfies $a_i \leq Max(\{a_1, a_2, \ldots, a_{i-1}\}) + 1$ for 
+##  $i =2, 3, \ldots, n$. We may increment through restricted growth strings
+##  by incrementing $a_i$ for the largest $i$ such that the inequality is not
+##  tight, and setting $a_j=0$ for all $j>i$.
+##
+InstallGlobalFunction( IteratorOfPartitionsSet, function( s )
+    local nextIterator, isDone, m, out, i, shallowCopy;
+
+    if not IsSet(s) then
+      Error( "<s> must be a set" );
+    fi;
+
+    nextIterator := function(iter)
+      local j, max, part, m, out, i;
+      if Length(iter!.s) = 0 then
+        iter!.next := false;
+        return [];
+      fi;
+      part := StructuralCopy(iter!.next);
+      j := Size(iter!.next);
+      # Compute next restricted growth string using a_i \leq Max({a_0 .. a_{i-1}})+1
+      while j > 1 do
+        max := Maximum(iter!.next{[1 .. j-1]});
+        if iter!.next[j] <= max then
+          iter!.next[j] := iter!.next[j]+1;
+          # Convert restricted growth string to partition of set
+          m := Maximum(part)+1;
+          out := List([1 .. m], t -> []);
+          for i in [1 .. Size(part)] do
+            Add(out[part[i]+1], iter!.s[i]);
+          od;
+          return out;
+        else
+          iter!.next[j] := 0;
+          j := j-1;
+        fi;
+      od;
+      m := Maximum(part)+1;
+      out := List([1 .. m], t -> []);
+      for i in [1 .. Size(part)] do
+        Add(out[part[i]+1], iter!.s[i]);
+      od;
+      iter!.next := false;
+      return out;
+    end;
+
+    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ) );
+
+    isDone := iter -> iter!.next = false;
+
+    return IteratorByFunctions( rec(
+      IsDoneIterator := isDone,
+      NextIterator := nextIterator,
+      ShallowCopy := shallowCopy,
+      s := Immutable(s),
+      next := ListWithIdenticalEntries(Size(s), 0) ) );
+  end);
+
+
+#############################################################################
+##
 #F  SignPartition( <pi> ) . . . . . . . . . . . . .  signum of partition <pi>
 ##
 InstallGlobalFunction(SignPartition,function(pi)
