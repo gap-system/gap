@@ -148,7 +148,7 @@ gap> for i in [0..100] do
 >      od;
 >    od;
 
-# Just sanity check I really am making string reps
+# Just consistency check I really am making string reps
 gap> IsStringRep(lowAlpha{[1..0]}) and IsStringRep(lowAlpha{[1..10]});
 true
 gap> for i in [0..26] do

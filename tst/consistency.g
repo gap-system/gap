@@ -7,7 +7,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file runs a vast number of sanity checks on a large number of
+##  This file runs a vast number of consistency checks on a large number of
 ##  groups.
 
 SetAssertionLevel(2);
@@ -82,7 +82,7 @@ local u,cs,ncs,n,rep,i,au,hom,cl,co;
 
 end;
 
-Sanity:=function(arg)
+ConsistencyChecksForGroups:=function(arg)
 local deg,sz,anzdeg,anzsz,i,j;
   deg:=2;
   sz:=2;
