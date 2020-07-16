@@ -1557,6 +1557,9 @@ local pcgs,rel,gp,i,indp,inds,module,sub;
         ind:=Concatenation(ind{[1..i-1]},[ind[i-1]+Length(inds)],
           ind{[i..Length(ind)]});
         SetIndicesChiefNormalSteps(pcgs,ind);
+      else
+        i:=i+1; # cannot do
+        SetIndicesChiefNormalSteps(pcgs,ind);
       fi;
     else
       i:=i+1;
