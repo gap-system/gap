@@ -434,9 +434,9 @@ DeclareGlobalFunction("StringNumbers");
 ##  object <A>o</A>, for example in the system's main loop,
 ##  &GAP; will print the string <A>s</A>.
 ##  Calling <Ref Func="SetNameObject"/> for the same object <A>o</A> with
-##  <A>s</A> set to <C>fail</C>
+##  <A>s</A> set to <Ref Var="fail"/>
 ##  deletes the special viewing setup.
-##  since use of this features potentially slows down the whole print
+##  Since use of this features potentially slows down the whole print
 ##  process, this function should be used sparingly.
 ##  <Example><![CDATA[
 ##  gap> SetNameObject(3,"three"); 

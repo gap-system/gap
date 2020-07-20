@@ -1078,7 +1078,7 @@ function(x)
     ppart := x![1];
     coeffppart := (val - ppart*fam!.e - coeffypart) / fam!.e;
     # so x = p^(ppart + coeffppart) * y^coeffypart * z 
-    # and z is divisable neither by y nor by p, so it has Valuation 0
+    # and z is divisible neither by y nor by p, so it has Valuation 0
     # and can be inverted.
     # We don't have y^(-1) but y^(e-1) which is p*y^(-1) 
     # so z = x * y^(e-1)^coeffypart * p^(-ppart-coeffppart-coeffypart).

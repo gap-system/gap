@@ -271,10 +271,6 @@ In  order to get  another  representation  of  <C>a8</C>, we consider  another
 action, namely  that on  the elements   of a  certain conjugacy  class by
 conjugation.
 <P/>
-In the following example we temporarily increase the line length limit
-from its default value 80 to 82 in order to make the long expression fit
-into one line.
-<P/>
 <Example><![CDATA[
 gap> ccl := ConjugacyClasses( a8 );; Length( ccl );
 14

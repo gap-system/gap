@@ -2156,7 +2156,7 @@ DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 ##  <Description>
 ##  <Ref Func="Last"/> returns the last element of the list <A>list</A>
 ##  for which the unary function <A>func</A> returns <K>true</K>;
-##  if <A>func</A> is not given, the first element is returned.
+##  if <A>func</A> is not given, the last element is returned.
 ##  <A>list</A> may contain holes.
 ##  <A>func</A> must return either <K>true</K> or <K>false</K> for each
 ##  element of <A>list</A>, otherwise an error is signalled.

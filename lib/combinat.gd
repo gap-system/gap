@@ -903,7 +903,7 @@ DeclareGlobalFunction("NrPartitionsSet");
 ##  returns the set of all (unordered) partitions of the positive integer
 ##  <A>n</A> into sums with <A>k</A> summands.
 ##  If <A>k</A> is not given it returns all unordered partitions of
-##  <A>set</A> for all <A>k</A>.
+##  <A>n</A> for all <A>k</A>.
 ##  <P/>
 ##  An <E>unordered partition</E> is an unordered sum
 ##  <M>n = p_1 + p_2 + \cdots + p_k</M>
