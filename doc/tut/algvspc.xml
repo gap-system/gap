@@ -361,10 +361,6 @@ If <M>T</M> knows that it is (anti)symmetric, then at the same time also
 the product of the <M>j</M>-th and the <M>i</M>-th basis vector is set
 appropriately.
 <P/>
-In the following example we temporarily increase the line length limit from
-its default value 80 to 82 in order to make the long output expression fit
-into one line.
-<P/>
 <Example><![CDATA[
 gap> T:= EmptySCTable( 2, 0, "symmetric" );
 [ [ [ [  ], [  ] ], [ [  ], [  ] ] ], 
@@ -419,10 +415,6 @@ CanonicalBasis( <algebra of dimension 3 over GF(2)> )
 Subalgebras and ideals of an algebra can be constructed by specifying
 a set of generators for the subalgebra or ideal. The quotient space
 of an algebra by an ideal is naturally an algebra itself.
-<P/>
-In the following example we temporarily increase the line length limit from
-its default value 80 to 81 in order to make the long output expression fit
-into one line.
 <P/>
 <Example><![CDATA[
 gap> m:= [ [ 1, 2, 3 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ];;

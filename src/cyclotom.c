@@ -30,7 +30,7 @@
 **
 **  For example for $n = 45$ we take the roots $e_{45}^i$ such  that  $i$  is
 **  not congruent to $(45/5)*[-(5/5-1)/2..(5/5-1)/2]$ mod $5$, i.e.,   is not
-**  divisable by 5, and is not congruent  to $(45/9)[-(9/3-1)/2 .. (9/3-1)/2]
+**  divisible by 5, and is not congruent  to $(45/9)[-(9/3-1)/2 .. (9/3-1)/2]
 **  = [-5,0,5]$ mod $9$,  i.e.,  $i \in [1,2,3,6,7,8,11,12,16,17,19,21,24,26,
 **  28,29,33,34,37,38,39,42,43,44]$.
 **
@@ -444,9 +444,9 @@ static Int LtCycNot(Obj opL, Obj opR)
 **  Now we subtract $c$ times the left hand side from 'ResultCyc'.
 **
 **  If $p^2$  does not divide  $n$ then the roots  that are  not in the  base
-**  because of $p$ are those  whose exponent is divisable  by $p$.  But $n/p$
-**  is not  divisable by $p$, so  neither of the exponent $k*n/p+i, k=1..p-1$
-**  is divisable by $p$, so those new roots are acceptable w.r.t. $p$.
+**  because of $p$ are those  whose exponent is divisible  by $p$.  But $n/p$
+**  is not  divisible by $p$, so  neither of the exponent $k*n/p+i, k=1..p-1$
+**  is divisible by $p$, so those new roots are acceptable w.r.t. $p$.
 **
 **  A similar argument shows that  the new  roots  are also acceptable w.r.t.
 **  $p$ even if $p^2$ divides $n$...
@@ -460,7 +460,7 @@ static Int LtCycNot(Obj opL, Obj opR)
 **
 **  For an example, suppose 'ResultCyc' is $e_{45}+e_{45}^5 =: e+e^5$.  $e^5$
 **  does  not lie in the  base  because $5  \in 5*[-1,0,1]$  mod $9$ and also
-**  because it is  divisable  by 5.  After  subtracting  $e^5*(1+e_3+e_3^2) =
+**  because it is  divisible  by 5.  After  subtracting  $e^5*(1+e_3+e_3^2) =
 **  e^5+e^{20}+e^{35}$ from  'ResultCyc' we get $e-e^{20}-e^{35}$.  Those two
 **  roots are  still not  in the  base because of  5.  But  after subtracting
 **  $-e^{20}*(1+e_5+e_5^2+e_5^3+e_5^4)=-e^{20}-e^{29}-e^{38}-e^2-e^{11}$  and
@@ -658,7 +658,7 @@ static Obj Cyclotomic(UInt n, UInt m)
         }
     }
 
-    /* if all exps are divisable 1 < k replace $e_n^i$ by $e_{n/k}^{i/k}$  */
+    /* if all exps are divisible 1 < k replace $e_n^i$ by $e_{n/k}^{i/k}$  */
     /* this is the only way a prime whose square divides $n$ could reduce  */
     if ( 1 < gcd ) {
         for ( i = 1; i < n/gcd; i++ ) {
@@ -709,7 +709,7 @@ static Obj Cyclotomic(UInt n, UInt m)
         if ( nn % p != 0 )  continue;
         nn = nn / p;  while ( nn % p == 0 )  nn = nn / p;
 
-        /* if $p$ is not quadratic and the number of terms is divisiable   */
+        /* if $p$ is not quadratic and the number of terms is divisible   */
         /* $p-1$ and $p$ divides $m$ not then a reduction is possible      */
         if ( n % (p*p) != 0 && len % (p-1) == 0 && m % p != 0 ) {
 

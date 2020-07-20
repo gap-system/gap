@@ -397,7 +397,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##  the result is undefined.)
 ##  <P/>
 ##  If the assignment overwrites existing variables a warning is given, if
-##  any of the variables if write protected, or any of the generator names   
+##  any of the variables is write protected, or any of the generator names
 ##  would not be a proper variable name, an error is raised.
 ##  </Description>
 ##  </ManSection>

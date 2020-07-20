@@ -965,9 +965,9 @@ DeclareOperation( "SemiEchelonMats", [ IsList ] );
 ##  <Oper Name="SemiEchelonMatsDestructive" Arg='mats'/>
 ##
 ##  <Description>
-##  Does the same as <C>SemiEchelonmats</C>, except that it may destroy
-##  its argument. Therefore the argument must be a list of matrices
-##  that re mutable.
+##  Does the same as <Ref Oper="SemiEchelonMats"/>,
+##  except that it may destroy its argument.
+##  Therefore the argument must be a list of matrices that are mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

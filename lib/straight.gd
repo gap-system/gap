@@ -803,12 +803,12 @@ DeclareGlobalFunction( "IntermediateResultsOfSLPWithoutOverwriteInner" );
 ##  <Func Name="IntermediateResultsOfSLPWithoutOverwrite" Arg='slp, k'/>
 ##
 ##  <Description>
-##  Returns a new slp that calculates only the value of slots contained
-##  in the list k.
+##  Returns a new slp that calculates only the values of slots contained
+##  in the list <A>k</A>.
 ##  Note that <A>slp</A> must not overwrite slots but only append!!!
 ##  Use <Ref Func="IntermediateResultOfSLP"/> in the other case!
-##  <A>slp</A> is either a slp or a pair where the first entry is the lines
-##  of the slp and the second is the number of inputs.
+##  <A>slp</A> is either a slp or a pair where the first entry is the
+##  list of lines of the slp and the second is the number of its inputs.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -827,8 +827,8 @@ DeclareGlobalFunction( "IntermediateResultsOfSLPWithoutOverwrite" );
 ##  must be an integer.
 ##  Note that <A>slp</A> must not overwrite slots but only append!!!
 ##  Use <Ref Func="IntermediateResultOfSLP"/> in the other case!
-##  <A>slp</A> is either an slp or a pair where the first entry is the lines
-##  of the slp and the second is the number of inputs.
+##  <A>slp</A> is either an slp or a pair where the first entry is the
+##  list of lines of the slp and the second is the number of its inputs.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

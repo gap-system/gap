@@ -376,7 +376,7 @@ forces it on us <E>and</E> where no conflicts arise.
 In programming the library, we use the underlying mathematically
 precise operations or attributes,
 such as <Ref Attr="RankMat"/> and
-<C>RankOperation</C>.
+<Ref Oper="RankAction" Label="for a group, an action domain, etc."/>.
 These should be attributes if appropriate, and the only role of the
 operation <C>Rank</C> is to decide which attribute the user meant.
 That way, stored information is stored with <Q>full mathematical precision</Q>

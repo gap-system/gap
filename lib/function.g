@@ -292,7 +292,7 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  <Log><![CDATA[
 ##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
 ##  gap> FilenameFunc( meth );
-##  "... some path ... gap4r5/lib/grpperm.gi"
+##  "... some path ... /lib/grpperm.gi"
 ##  gap> StartlineFunc( meth );
 ##  487
 ##  gap> EndlineFunc( meth );
