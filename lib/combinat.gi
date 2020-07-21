@@ -2481,25 +2481,22 @@ InstallGlobalFunction( IteratorOfPartitionsSet, function( s )
       while j > 1 do
         max := Maximum(iter!.next{[1 .. j-1]});
         if iter!.next[j] <= max then
-          iter!.next[j] := iter!.next[j]+1;
-          # Convert restricted growth string to partition of set
-          m := Maximum(part)+1;
-          out := List([1 .. m], t -> []);
-          for i in [1 .. Size(part)] do
-            Add(out[part[i]+1], iter!.s[i]);
-          od;
-          return out;
-        else
-          iter!.next[j] := 0;
-          j := j-1;
+          break;
         fi;
+        iter!.next[j] := 0;
+        j := j-1;
       od;
+      if j > 1 then
+        iter!.next[j] := iter!.next[j]+1;
+      else
+        iter!.next := false;
+      fi;
+      # Convert restricted growth string to partition of set
       m := Maximum(part)+1;
       out := List([1 .. m], t -> []);
       for i in [1 .. Size(part)] do
         Add(out[part[i]+1], iter!.s[i]);
       od;
-      iter!.next := false;
       return out;
     end;
 
