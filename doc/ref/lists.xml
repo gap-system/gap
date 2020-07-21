@@ -1672,6 +1672,7 @@ with possibly slightly different meaning for lists and non-list collections.
 <#Include Label="Filtered">
 <#Include Label="Number">
 <#Include Label="First">
+<#Include Label="Last">
 <#Include Label="ForAll">
 <#Include Label="ForAny">
 <#Include Label="Product">
