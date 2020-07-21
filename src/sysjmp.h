@@ -25,6 +25,6 @@
 **  This function is idempotent -- if a function is passed multiple times
 **  it is still only registered once.
 */
-Int RegisterSyLongjmpObserver(voidfunc);
+int RegisterSyLongjmpObserver(voidfunc);
 
 #endif    // GAP_SYSJMP_H

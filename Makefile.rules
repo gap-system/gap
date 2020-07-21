@@ -1090,7 +1090,7 @@ testbugfix: all
 check: all
 	$(TESTGAP) $(top_srcdir)/tst/testinstall.g
 
-LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload)
+LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch)
 
 # run a test in tst/testlibgap
 tst/testlibgap/%: build/obj/tst/testlibgap/%.c.lo build/obj/tst/testlibgap/common.c.lo libgap.la

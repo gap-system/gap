@@ -28,10 +28,9 @@ enum { signalSyLongjmpFuncsLen = 16 };
 
 static voidfunc signalSyLongjmpFuncs[signalSyLongjmpFuncsLen];
 
-Int RegisterSyLongjmpObserver(voidfunc func)
+int RegisterSyLongjmpObserver(voidfunc func)
 {
-    Int i;
-    for (i = 0; i < signalSyLongjmpFuncsLen; ++i) {
+    for (int i = 0; i < signalSyLongjmpFuncsLen; ++i) {
         if (signalSyLongjmpFuncs[i] == func) {
             return 1;
         }
@@ -43,10 +42,33 @@ Int RegisterSyLongjmpObserver(voidfunc func)
     return 0;
 }
 
+enum { tryCatchFuncsLen = 16 };
+
+static TryCatchHandler tryCatchFuncs[tryCatchFuncsLen];
+
+int RegisterTryCatchHandler(TryCatchHandler func)
+{
+    for (int i = 0; i < tryCatchFuncsLen; ++i) {
+        if (tryCatchFuncs[i] == func) {
+            return 1;
+        }
+        if (tryCatchFuncs[i] == 0) {
+            tryCatchFuncs[i] = func;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void InvokeTryCatchHandler(TryCatchMode mode)
+{
+    for (int i = 0; i < tryCatchFuncsLen && tryCatchFuncs[i]; ++i)
+        (tryCatchFuncs[i])(mode);
+}
+
 void GAP_THROW(void)
 {
-    Int i;
-    for (i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
+    for (int i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
         (signalSyLongjmpFuncs[i])();
     longjmp(STATE(ReadJmpError), 1);
 }
