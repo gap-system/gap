@@ -15,8 +15,36 @@
 
 #include "funcs.h"    // for SetRecursionDepth
 #include "gapstate.h"
+#include "system.h"    // for NORETURN
 
 #include <string.h>    // for memcpy
+
+/****************************************************************************
+**
+*T  TryCatchMode
+*T  TryCatchHandler
+*F  RegisterTryCatchHandler()
+*F  InvokeTryCatchHandler()
+**
+**  The function RegisterTryCatchObserver() allows the installation of
+**  global exception handlers that are being called whenever GAP_TRY or
+**  CALL_WITH_CATCH() code is executed. It returns 1 if installing the
+**  handler was successful, 0 otherwise. Installation can only fail if one
+**  attempts to install more handlers than the allotted maximum (currently
+**  16).
+**
+**  The mode parameter of the handler function signals whether it has been
+**  called at the beginning of the section, at the end of the section
+**  without an error being raised, or at the end of a section with an error
+**  being raised, respectively. The function InvokeTryCatchObserver() is
+**  used to invoke those handlers as needed.
+*/
+typedef enum { TryEnter = 0, TryLeave = 1, TryCatch = 2 } TryCatchMode;
+
+typedef void (*TryCatchHandler)(TryCatchMode mode);
+
+int  RegisterTryCatchHandler(TryCatchHandler func);
+void InvokeTryCatchHandler(TryCatchMode mode);
 
 
 /****************************************************************************
@@ -60,12 +88,14 @@
     jmp_buf      gap__jmp_buf;                                               \
     volatile Int gap__recursionDepth = GetRecursionDepth();                  \
     memcpy(gap__jmp_buf, STATE(ReadJmpError), sizeof(jmp_buf));              \
+    InvokeTryCatchHandler(TryEnter);                                         \
     if (!setjmp(STATE(ReadJmpError)))                                        \
         for (gap__i = 1; gap__i; gap__i = 0,                                 \
+            InvokeTryCatchHandler(TryLeave),                                 \
             gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth))
 
 #define GAP_CATCH                                                            \
-    else for (gap__j = 1,                                                    \
+    else for (gap__j = 1, InvokeTryCatchHandler(TryCatch),                   \
               gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth);       \
               gap__j; gap__j = 0)
 
