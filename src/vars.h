@@ -157,14 +157,8 @@ EXPORT_INLINE Obj CURR_FUNC(void)
 
 /****************************************************************************
 **
-*F  BRK_CALL_TO() . . . . . . . . . expr. which was called from current frame
 *F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
 */
-EXPORT_INLINE Expr BRK_CALL_TO(void)
-{
-    return STAT_LVARS_PTR(STATE(PtrLVars));
-}
-
 EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr)
 {
     ((LVarsHeader *)STATE(PtrLVars))->stat = expr;

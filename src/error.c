@@ -153,7 +153,6 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     }
 
     Obj currLVars = SWITCH_TO_OLD_LVARS(context);
-    GAP_ASSERT(call == BRK_CALL_TO());
 
     Obj retlist = Fail;
     Int type = TNUM_STAT(call);
@@ -201,7 +200,6 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     }
     else {
         Obj currLVars = SWITCH_TO_OLD_LVARS(context);
-        GAP_ASSERT(call == BRK_CALL_TO());
 
         Int type = TNUM_STAT(call);
         Obj filename = GET_FILENAME_BODY(body);
