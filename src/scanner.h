@@ -152,9 +152,6 @@ enum SCANNER_SYMBOLS {
 **      =, <>, <, >=, <=, >, in
 **      +, -
 **      *, /, mod, ^
-**
-**  'TypSymbolSet'  is defined in the   definition  file of  this  package as
-**  follows:
 */
 typedef UInt            TypSymbolSet;
 
@@ -167,8 +164,6 @@ typedef UInt            TypSymbolSet;
 **  <set> and 0 otherwise. Due to the grouping into classes some symbol sets
 **  may contain more than mentioned.
 **  For example 'IS_IN(S_POW,S_MULT|S_DIV|S_MOD)' is 1.
-**
-**  'IS_IN' is defined in the definition file of this package as follows:
 */
 #define IS_IN(symbol,set)       ((symbol) & ((set) & ~7))
 

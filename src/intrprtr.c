@@ -1934,6 +1934,8 @@ void IntrTildeExpr(IntrState * intr)
     }
 
     if(! (STATE(Tilde)) ) {
+        // this code should be impossible to reach, the parser won't allow us
+        // to get here; but we leave it here out of paranoia
         ErrorQuit("'~' does not have a value here", 0, 0);
     }
 

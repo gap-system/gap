@@ -171,8 +171,6 @@ static Obj TypeObjError(Obj obj)
 **  is not a posobj/comobj/datobj, attempts to first convert it to one; if
 **  that fails, an error is raised.
 */
-//static void SetTypeDatObj(Obj obj, Obj type);
-
 void SET_TYPE_OBJ(Obj obj, Obj type)
 {
     switch (TNUM_OBJ(obj)) {

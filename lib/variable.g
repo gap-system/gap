@@ -146,7 +146,8 @@ end );
 ##
 ##  <Description>
 ##  <Ref Func="InstallValue"/> assigns the value <A>value</A> to the global
-##  variable <A>gvar</A>.
+##  variable <A>gvar</A> if it was previously declared via
+##  <Ref Func="DeclareGlobalVariable"/>.
 ##  <Ref Func="InstallFlushableValue"/> does the same but additionally
 ##  provides that each call of <Ref Oper="FlushCaches"/>
 ##  will assign a structural copy of <A>value</A> to <A>gvar</A>.
