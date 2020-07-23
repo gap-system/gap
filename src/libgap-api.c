@@ -93,13 +93,8 @@ Obj GAP_EvalString(const char * cmd)
 Obj GAP_ValueGlobalVariable(const char * name)
 {
     UInt gvar = GVarName(name);
-    // TODO: GVarName should never return 0?
-    if (gvar != 0) {
-        return ValGVar(gvar);
-    }
-    else {
-        return NULL;
-    }
+    GAP_ASSERT(gvar != 0);
+    return ValAutoGVar(gvar);
 }
 
 int GAP_CanAssignGlobalVariable(const char * name)
