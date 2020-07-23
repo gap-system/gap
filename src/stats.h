@@ -37,7 +37,7 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **
 **  If   this  causes   the  execution  of   a  return-value-statement,  then
 **  'EXEC_STAT' returns 'STATUS_RETURN_VAL', and the return value is stored
-**  in 'ReturnObjStat'. If a return-void-statement is executed, then
+**  in 'STATE(ReturnObjStat)'. If a return-void-statement is executed, then
 **  'EXEC_STAT' returns 'STATUS_RETURN_VOID'. If a break-statement is
 **  executed (which cannot happen if <stat> is the body of a function), then
 **  'EXEC_STAT' returns 'STATUS_BREAK'. Otherwise 'EXEC_STAT' returns
@@ -65,17 +65,6 @@ Obj EXEC_CURR_FUNC(void);
 */
 
 extern UInt (* IntrExecStatFuncs[256]) ( Stat stat );
-
-
-/****************************************************************************
-**
-*V  ReturnObjStat . . . . . . . . . . . . . . . .  result of return-statement
-**
-**  'ReturnObjStat'  is   the result of the   return-statement  that was last
-**  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
-**  interpret functions.
-*/
-/* TL: extern  Obj             ReturnObjStat; */
 
 
 /****************************************************************************

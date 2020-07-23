@@ -511,7 +511,7 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
 /****************************************************************************
 **
 **  'RetypeBagSM' works like 'RetypeBag', but ensures that the given bag
-**  returns the same mutability (SM).
+**  retains the same mutability (SM).
 **
 **  FIXME: for now, this checks the tnums; later, this will be turned
 **  into a check for an object flag
