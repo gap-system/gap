@@ -1028,7 +1028,11 @@ static Obj FuncTmpName(Obj self)
 #else
     char name[] = "/tmp/gaptempfile.XXXXXX";
 #endif
-    close(mkstemp(name));
+
+    int fd = mkstemp(name);
+    if (fd < 0)
+        return Fail;
+    close(fd);
     return MakeString(name);
 }
 
@@ -1353,6 +1357,7 @@ static Obj FuncPOSITION_FILE(Obj self, Obj fid)
 
     // Return if failed
     if (ret == -1) {
+        SySetErrorNo();
         return Fail;
     }
 
