@@ -199,7 +199,7 @@ static jl_datatype_t * datatype_largebag;
 static UInt            StackAlignBags;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
-static BOOL            is_threaded;
+static Int             is_threaded;
 static jl_task_t *     RootTaskOfMainThread;
 static size_t          max_pool_obj_size;
 static UInt            YoungRef;
