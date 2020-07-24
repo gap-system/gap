@@ -89,7 +89,7 @@ void InvokeTryCatchHandler(TryCatchMode mode);
     volatile Int gap__recursionDepth = GetRecursionDepth();                  \
     memcpy(gap__jmp_buf, STATE(ReadJmpError), sizeof(jmp_buf));              \
     InvokeTryCatchHandler(TryEnter);                                         \
-    if (!setjmp(STATE(ReadJmpError)))                                        \
+    if (!_setjmp(STATE(ReadJmpError)))                                       \
         for (gap__i = 1; gap__i; gap__i = 0,                                 \
             InvokeTryCatchHandler(TryLeave),                                 \
             gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth))
