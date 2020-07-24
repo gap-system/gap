@@ -100,7 +100,7 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 
 #define GAP_Error_Setjmp()                                                   \
     (GAP_unlikely(GAP_Error_Prejmp_(__FILE__, __LINE__)) ||                  \
-     GAP_Error_Postjmp_(setjmp(*GAP_GetReadJmpError())))
+     GAP_Error_Postjmp_(_setjmp(*GAP_GetReadJmpError())))
 
 
 // Code which uses the GAP API exposed by this header file should sandwich

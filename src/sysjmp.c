@@ -70,5 +70,5 @@ void GAP_THROW(void)
 {
     for (int i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
         (signalSyLongjmpFuncs[i])();
-    longjmp(STATE(ReadJmpError), 1);
+    _longjmp(STATE(ReadJmpError), 1);
 }
