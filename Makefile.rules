@@ -504,7 +504,6 @@ install-gaproot:
 	cp -r $(srcdir)/doc $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
 	cp -r $(srcdir)/grp $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
 	cp -r $(srcdir)/lib $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
-	cp -r $(srcdir)/tst $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
 	# TODO: what about CITATION, CONTRIBUTING.md, COPYRIGHT, INSTALL.md,
 	# LICENSE, README* ? Copy them also here? Or into some other path?
 	# TODO: also copy bin/BuildPackage.sh, as it is very useful?
