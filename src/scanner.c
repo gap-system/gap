@@ -76,20 +76,20 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             pos = s->SymbolStartPos[tokenoffset - 1];
 
         if (s->SymbolStartLine[tokenoffset] != GetInputLineNumber()) {
-            startPos = 0;
+            startPos = 1;
             pos = GetInputLinePosition();
         }
 
-        if (0 <= pos && startPos <= pos) {
+        if (0 < pos && startPos <= pos) {
             Int i;
-            for (i = 0; i <= startPos; i++) {
+            for (i = 0; i < startPos; i++) {
                 if (line[i] == '\t')
                     Pr("\t", 0, 0);
                 else
                     Pr(" ", 0, 0);
             }
 
-            for (; i <= pos; i++)
+            for (; i < pos; i++)
                 Pr("^", 0, 0);
             Pr("\n", 0, 0);
         }
