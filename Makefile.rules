@@ -783,8 +783,9 @@ endif
 ########################################################################
 
 GAPARGS=
-TESTGAP = $(abs_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80 -r -A $(GAPARGS)
-TESTGAPauto = $(abs_builddir)/bin/gap.sh --quitonbreak -b -m 100m -o 1g -q -x 80 -r $(GAPARGS)
+TESTGAPcore = $(abs_builddir)/bin/gap.sh --quitonbreak -b -q -r $(GAPARGS)
+TESTGAPauto = $(TESTGAPcore) -m 100m -o 1g -x 80
+TESTGAP = $(TESTGAPauto) -A
 
 ########################################################################
 # Documentation rules
@@ -1087,7 +1088,7 @@ testbugfix: all
 
 #
 check: all
-	$(TESTGAP) $(top_srcdir)/tst/testinstall.g
+	$(TESTGAPcore) $(top_srcdir)/tst/testinstall.g
 
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch)
 
