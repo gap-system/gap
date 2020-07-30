@@ -73,6 +73,8 @@ typedef struct {
     // a buffer that holds the current input line; always terminated
     // by the character '\0'. Because 'line' holds only part of the line for
     // very long lines the last character need not be a <newline>.
+    // The actual line data starts in line[1]; the first byte line[0]
+    // is reserved for the "pushback buffer" used by PEEK_NEXT_CHAR.
     char line[32768];
 
     // the next line from the stream as GAP string
@@ -187,9 +189,6 @@ struct IOModuleState {
     TypOutputFile OutputLogFileOrStream;
 
     Int NoSplitLine;
-
-    Char   Pushback;
-    Char * RealIn;
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
@@ -211,20 +210,9 @@ void LockCurrentOutput(Int lock)
 **  'GET_NEXT_CHAR' returns the next character from  the current input file.
 **  This character is afterwards also available as '*In'.
 */
-
-
-static inline BOOL IS_CHAR_PUSHBACK_EMPTY(void)
-{
-    return STATE(In) != &IO()->Pushback;
-}
-
 Char GET_NEXT_CHAR(void)
 {
-    if (STATE(In) == &IO()->Pushback) {
-        STATE(In) = IO()->RealIn;
-    }
-    else
-        STATE(In)++;
+    STATE(In)++;
 
     // handle line continuation, i.e., backslash followed by new line; and
     // also the case when we run out of buffered data
@@ -264,11 +252,7 @@ Char GET_NEXT_CHAR(void)
 // current line, when handling comment lines.
 Char GET_NEXT_CHAR_NO_LC(void)
 {
-    if (STATE(In) == &IO()->Pushback) {
-        STATE(In) = IO()->RealIn;
-    }
-    else
-        STATE(In)++;
+    STATE(In)++;
 
     if (!*STATE(In))
         GetLine();
@@ -278,18 +262,25 @@ Char GET_NEXT_CHAR_NO_LC(void)
 
 Char PEEK_NEXT_CHAR(void)
 {
-    assert(IS_CHAR_PUSHBACK_EMPTY());
-
     // store the current character
-    IO()->Pushback = *STATE(In);
+    char c = *STATE(In);
 
-    // read next character
-    GET_NEXT_CHAR();
+    // read next character; this will increment STATE(In) and then possibly
+    // read in new line data, and so even might end up reseting STATE(In) to
+    // point at the start of the line buffer, which is equal to Input->line+1
+    char next = GET_NEXT_CHAR();
 
-    // fake insert the previous character
-    IO()->RealIn = STATE(In);
-    STATE(In) = &IO()->Pushback;
-    return *IO()->RealIn;
+    // push back the previous character: first, return STATE(In) to the
+    // previous position; then, if we detect that GET_NEXT_CHAR read a new
+    // line, also restore the previous character by placing it in the "push
+    // back buffer"
+    GAP_ASSERT(STATE(In) > IO()->Input->line);
+    STATE(In)--;
+    if (STATE(In) == IO()->Input->line)
+        *STATE(In) = c;
+
+    // return the next character
+    return next;
 }
 
 Char PEEK_CURR_CHAR(void)
@@ -298,6 +289,7 @@ Char PEEK_CURR_CHAR(void)
 
     // if no character is available then get one
     if (c == '\0') {
+        GAP_ASSERT(STATE(In) > IO()->Input->line);
         STATE(In)--;
         c = GET_NEXT_CHAR();
     }
@@ -328,24 +320,16 @@ Int GetInputLineNumber(void)
 const Char * GetInputLineBuffer(void)
 {
     GAP_ASSERT(IO()->Input);
-    return IO()->Input->line;
+    // first byte of Input->line is reserved for the pushback buffer, so add 1
+    return IO()->Input->line + 1;
 }
 
-// Get current line position. In the case where we pushed back the last
-// character on the previous line we return the first character of the
-// current line, as we cannot retrieve the previous line.
 Int GetInputLinePosition(void)
 {
-    if (STATE(In) == &IO()->Pushback) {
-        // Subtract 2 as a value was pushed back
-        Int pos = IO()->RealIn - IO()->Input->line - 2;
-        if (pos < 0)
-            pos = 0;
-        return pos;
-    }
-    else {
-        return STATE(In) - IO()->Input->line - 1;
-    }
+    GAP_ASSERT(IO()->Input);
+    // first byte of Input->line is reserved for the pushback buffer, so add 1
+    // subtract 1 from STATE(In) because TODO/FIXME
+    return (STATE(In) - 1) - (IO()->Input->line + 1);
 }
 
 UInt GetInputFilenameID(void)
@@ -509,7 +493,6 @@ UInt OpenInput (
 
     /* remember the current position in the current file                   */
     if (IO()->InputStackPointer > 0) {
-        GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
     }
 
@@ -530,7 +513,8 @@ UInt OpenInput (
 
     // start with an empty line
     STATE(In) = IO()->Input->line;
-    STATE(In)[0] = STATE(In)[1] = '\0';
+    *STATE(In)++ = '\0';    // init the pushback buffer and skip over it
+    *STATE(In) = '\0';      // empty line buffer
     IO()->Input->number = 1;
 
     /* indicate success                                                    */
@@ -552,7 +536,6 @@ UInt OpenInputStream(Obj stream, UInt echo)
 
     /* remember the current position in the current file                   */
     if (IO()->InputStackPointer > 0) {
-        GAP_ASSERT(IS_CHAR_PUSHBACK_EMPTY());
         IO()->Input->ptr = STATE(In);
     }
 
@@ -576,7 +559,8 @@ UInt OpenInputStream(Obj stream, UInt echo)
 
     // start with an empty line
     STATE(In) = IO()->Input->line;
-    STATE(In)[0] = STATE(In)[1] = '\0';
+    *STATE(In)++ = '\0';    // init the pushback buffer and skip over it
+    *STATE(In) = '\0';      // empty line buffer
     IO()->Input->number = 1;
 
     /* indicate success                                                    */
@@ -1269,18 +1253,19 @@ static Char GetLine(void)
     }
 
     /* bump the line number                                                */
-    if (IO()->Input->line < STATE(In) && *(STATE(In) - 1) == '\n') {
+    if (STATE(In) > IO()->Input->line && STATE(In)[-1] == '\n') {
         IO()->Input->number++;
     }
 
     /* initialize 'STATE(In)', no errors on this line so far                      */
     STATE(In) = IO()->Input->line;
-    STATE(In)[0] = '\0';
+    *STATE(In)++ = '\0';    // init the pushback buffer and skip over it
+    *STATE(In) = '\0';      // empty line buffer
     STATE(NrErrLine) = 0;
 
     /* try to read a line                                              */
-    if (!GetLine2(IO()->Input, IO()->Input->line,
-                  sizeof(IO()->Input->line))) {
+    if (!GetLine2(IO()->Input, IO()->Input->line + 1,
+                  sizeof(IO()->Input->line) - 1)) {
         STATE(In)[0] = '\377';  STATE(In)[1] = '\0';
     }
 
