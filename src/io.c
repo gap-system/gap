@@ -1144,15 +1144,6 @@ static Int GetLine2 (
     Char *                  buffer,
     UInt                    length )
 {
-#ifdef HPCGAP
-    if ( ! input ) {
-        input = IO()->Input;
-        if (!input)
-            OpenDefaultInput();
-        input = IO()->Input;
-    }
-#endif
-
     if ( input->isstream ) {
         if (input->sline == 0 ||
             (IS_STRING(input->sline) &&
@@ -1260,6 +1251,11 @@ static Char GetLine(void)
     *STATE(In)++ = '\0';    // init the pushback buffer and skip over it
     *STATE(In) = '\0';      // empty line buffer
     STATE(NrErrLine) = 0;
+
+#ifdef HPCGAP
+    if (!IO()->Input)
+        OpenDefaultInput();
+#endif
 
     /* try to read a line                                              */
     if (!GetLine2(IO()->Input, IO()->Input->line + 1,
