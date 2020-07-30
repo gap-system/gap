@@ -327,9 +327,7 @@ const Char * GetInputLineBuffer(void)
 Int GetInputLinePosition(void)
 {
     GAP_ASSERT(IO()->Input);
-    // first byte of Input->line is reserved for the pushback buffer, so add 1
-    // subtract 1 from STATE(In) because TODO/FIXME
-    return (STATE(In) - 1) - (IO()->Input->line + 1);
+    return STATE(In) - GetInputLineBuffer();
 }
 
 UInt GetInputFilenameID(void)
