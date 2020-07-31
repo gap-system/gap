@@ -155,7 +155,7 @@ matrix:
     - env: TEST_SUITES="testspecial test-compile testlibgap testkernel"
 
     # test Julia integration
-    - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--disable-Werror"
+    - env: TEST_SUITES="testinstall" JULIA=yes CONFIGFLAGS="--enable-debug --disable-Werror"
 
     # build on non-x86 platform
     - env: TEST_SUITES="docomp testinstall"
