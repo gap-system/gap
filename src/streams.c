@@ -356,15 +356,10 @@ Obj READ_AS_FUNC ( void )
     ClearError();
     Obj evalResult;
     UInt type = ReadEvalFile(&evalResult);
+    ClearError();
 
     /* get the function                                                    */
     Obj func = (type == 0) ? evalResult : Fail;
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
-    }
-    ClearError();
 
     /* return the function                                                 */
     return func;
@@ -952,8 +947,11 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj input)
     if (!OpenInputFileOrStream(SELF_NAME, input))
         return False;
 
-    /* read the function                                                   */
-    return READ_AS_FUNC();
+    Obj func = READ_AS_FUNC();
+    if (!CloseInput()) {
+        ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
+    }
+    return func;
 }
 
 
