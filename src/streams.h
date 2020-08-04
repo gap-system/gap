@@ -26,7 +26,8 @@
 **
 *F  READ_AS_FUNC()  . . . . . . . . . . . . .  read current input as function
 **
-**  Read the current input as function and close the input stream.
+**  Read the current input as function. The caller is responsible for opening
+**  and closing the input.
 */
 Obj READ_AS_FUNC(void);
 

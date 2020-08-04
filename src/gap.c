@@ -427,6 +427,9 @@ int realmain( int argc, char * argv[] )
         return 1;
       }
       func = READ_AS_FUNC();
+      if (!CloseInput()) {
+          return 2;
+      }
       crc  = SyGAPCRC(SyCompileInput);
       type = CompileFunc(
                          MakeImmString(SyCompileOutput),
