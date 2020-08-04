@@ -333,17 +333,6 @@ UInt CloseOutput(void);
 UInt OpenAppend(const Char * filename);
 
 
-/****************************************************************************
-**
-*V  In  . . . . . . . . . . . . . . . . . pointer to current character, local
-**
-**  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
-**  current input character.  It points into the buffer 'Input->line'.
-*/
-
-/* TL: extern Char *          In; */
-
-
 // get the filename of the current input
 const Char * GetInputFilename(void);
 
