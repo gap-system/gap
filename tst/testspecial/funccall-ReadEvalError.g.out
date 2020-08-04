@@ -1,8 +1,8 @@
-gap> Read(InputTextString("quit;")); # trigger ReadEvalError in EvalOrExecCall
+gap> Read(InputTextString("quit;")); # trigger GAP_THROW in EvalOrExecCall
 gap> 1+1;
 2
 gap> 
-gap> READ_STREAM(InputTextString("quit;")); # trigger ReadEvalError in IntrFuncCallEnd
+gap> READ(InputTextString("quit;")); # trigger GAP_THROW in IntrFuncCallEnd
 gap> 1+1;
 2
 gap> QUIT;

@@ -399,7 +399,7 @@ static UInt OpenDefaultInput(void)
   Obj func, stream;
   stream = TLS(DefaultInput);
   if (stream)
-      return OpenInputStream(stream, 0);
+      return OpenInputStream(stream, FALSE);
   func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
   if (!func)
     return OpenInput("*stdin*");
@@ -409,7 +409,7 @@ static UInt OpenDefaultInput(void)
   if (IsStringConv(stream))
     return OpenInput(CONST_CSTR_STRING(stream));
   TLS(DefaultInput) = stream;
-  return OpenInputStream(stream, 0);
+  return OpenInputStream(stream, FALSE);
 }
 
 static UInt OpenDefaultOutput(void)
@@ -515,7 +515,7 @@ UInt OpenInput (
 **
 **  The same as 'OpenInput' but for streams.
 */
-UInt OpenInputStream(Obj stream, UInt echo)
+UInt OpenInputStream(Obj stream, BOOL echo)
 {
     /* fail if we can not handle another open input file                   */
     if (IO()->InputStackPointer == MAX_OPEN_FILES)

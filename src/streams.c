@@ -71,6 +71,18 @@ static Obj IsOutputStream;
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
+static UInt OpenInputFileOrStream(const char * funcname, Obj input)
+{
+    if (IsStringConv(input)) {
+        return OpenInput(CONST_CSTR_STRING(input));
+    }
+    else if (CALL_1ARGS(IsInputStream, input) == True) {
+        return OpenInputStream(input, FALSE);
+    }
+    RequireArgumentEx(funcname, input, "<input>",
+                      "must be a string or an input stream");
+}
+
 static Int READ_COMMAND(Obj *evalResult)
 {
     ExecStatus    status;
@@ -328,13 +340,6 @@ static void READ_INNER(void)
           }
         
     }
-
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit("Panic: READ cannot close input, this should not happen", 0,
-                  0);
-    }
     ClearError();
 }
 
@@ -357,9 +362,7 @@ Obj READ_AS_FUNC ( void )
 
     /* close the input file again, and return 'true'                       */
     if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: READ_AS_FUNC cannot close input, this should not happen",
-            0, 0);
+        ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
     }
     ClearError();
 
@@ -849,51 +852,43 @@ static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 
 /****************************************************************************
 **
-*F  FuncREAD( <self>, <filename> )  . . . . . . . . . . . . . . . read a file
+*F  FuncREAD( <self>, <input> )  . . . . . . . . . . .  read a file or stream
 **
 **  Read the current input and close the input stream.
 */
-static Obj FuncREAD(Obj self, Obj filename)
+static Obj FuncREAD(Obj self, Obj input)
 {
-    RequireStringRep(SELF_NAME, filename);
-
-    /* try to open the file                                                */
-    if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
+    if (!OpenInputFileOrStream(SELF_NAME, input))
         return False;
-    }
 
-    /* read the test file                                                  */
+    // read the file
     READ_INNER();
+    if (!CloseInput()) {
+        ErrorQuit("Panic: READ cannot close input", 0, 0);
+    }
     return True;
 }
 
+
 /****************************************************************************
 **
-*F  FuncREAD_NORECOVERY( <self>, <filename> )  . . .  . . . . . . read a file
+*F  FuncREAD_NORECOVERY( <self>, <input> ) . . .  . . . read a file or stream
 **
-**  Read the current input and close the input stream. Disable the normal 
+**  Read the current input and close the input stream. Disable the normal
 **  mechanism which ensures that quitting from a break loop gets you back to
 **  a live prompt. This is initially designed for the files read from the
 **  command line.
 */
 static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
 {
-    if ( IsStringConv( input ) ) {
-        if ( ! OpenInput( CONST_CSTR_STRING(input) ) ) {
-            return False;
-        }
-    }
-    else if (CALL_1ARGS(IsInputStream, input) == True) {
-        if (!OpenInputStream(input, 0)) {
-            return False;
-        }
-    }
-    else {
-        return Fail;
-    }
+    if (!OpenInputFileOrStream(SELF_NAME, input))
+        return False;
 
-    /* read the file */
+    // read the file
     READ_INNER();
+    if (!CloseInput()) {
+        ErrorQuit("Panic: READ_NORECOVERY cannot close input", 0, 0);
+    }
     if (STATE(UserHasQuit)) {
         STATE(UserHasQuit) = 0;    // stop recovery here
         return Fail;
@@ -901,24 +896,6 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
     return True;
 }
 
-
-/****************************************************************************
-**
-*F  FuncREAD_STREAM( <self>, <stream> )   . . . . . . . . . . . read a stream
-*/
-static Obj FuncREAD_STREAM(Obj self, Obj stream)
-{
-    RequireInputStream(SELF_NAME, stream);
-
-    /* try to open the file                                                */
-    if (!OpenInputStream(stream, 0)) {
-        return False;
-    }
-
-    /* read the test file                                                  */
-    READ_INNER();
-    return True;
-}
 
 /****************************************************************************
 **
@@ -937,7 +914,7 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
     RequireInputStream(SELF_NAME, instream);
     RequireOutputStream(SELF_NAME, outstream);
 
-    if (!OpenInputStream(instream, 0)) {
+    if (!OpenInputStream(instream, FALSE)) {
         return False;
     }
 
@@ -964,36 +941,16 @@ static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
 {
     return FuncREAD_STREAM_LOOP_WITH_CONTEXT(self, stream, catcherrstdout, 0);
 }
-/****************************************************************************
-**
-*F  FuncREAD_AS_FUNC( <self>, <filename> )  . . . . . . . . . . . read a file
-*/
-static Obj FuncREAD_AS_FUNC(Obj self, Obj filename)
-{
-    RequireStringRep(SELF_NAME, filename);
-
-    /* try to open the file                                                */
-    if ( ! OpenInput( CONST_CSTR_STRING(filename) ) ) {
-        return Fail;
-    }
-
-    /* read the function                                                   */
-    return READ_AS_FUNC();
-}
 
 
 /****************************************************************************
 **
-*F  FuncREAD_AS_FUNC_STREAM( <self>, <stream> ) . . . . . . . . read a file
+*F  FuncREAD_AS_FUNC( <self>, <input> ) . read a file or stream as a function
 */
-static Obj FuncREAD_AS_FUNC_STREAM(Obj self, Obj stream)
+static Obj FuncREAD_AS_FUNC(Obj self, Obj input)
 {
-    RequireInputStream(SELF_NAME, stream);
-
-    /* try to open the file                                                */
-    if (!OpenInputStream(stream, 0)) {
-        return Fail;
-    }
+    if (!OpenInputFileOrStream(SELF_NAME, input))
+        return False;
 
     /* read the function                                                   */
     return READ_AS_FUNC();
@@ -1771,16 +1728,14 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC_1ARGS(READ, filename),
-    GVAR_FUNC_1ARGS(READ_NORECOVERY, filename),
+    GVAR_FUNC_1ARGS(READ, input),
+    GVAR_FUNC_1ARGS(READ_NORECOVERY, input),
     GVAR_FUNC_4ARGS(READ_ALL_COMMANDS, instream, echo, capture, outputFunc),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
-    GVAR_FUNC_1ARGS(READ_STREAM, stream),
     GVAR_FUNC_2ARGS(READ_STREAM_LOOP, stream, catchstderrout),
     GVAR_FUNC_3ARGS(
         READ_STREAM_LOOP_WITH_CONTEXT, stream, catchstderrout, context),
-    GVAR_FUNC_1ARGS(READ_AS_FUNC, filename),
-    GVAR_FUNC_1ARGS(READ_AS_FUNC_STREAM, stream),
+    GVAR_FUNC_1ARGS(READ_AS_FUNC, input),
     GVAR_FUNC_1ARGS(READ_GAP_ROOT, filename),
     GVAR_FUNC_1ARGS(LOG_TO, filename),
     GVAR_FUNC_1ARGS(LOG_TO_STREAM, filename),
