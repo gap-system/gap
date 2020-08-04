@@ -1416,7 +1416,7 @@ local H,a,m,i,l;
   fi;
 
   # compute anew for new group to avoid taint
-  H:=Group(GeneratorsOfGroup(G));
+  H:=Group(GeneratorsOfGroup(G),One(G));
   for i in [Size,IsNaturalAlternatingGroup,IsNaturalSymmetricGroup] do
     if Tester(i)(G) then Setter(i)(H,i(G));fi;
   od;
