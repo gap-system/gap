@@ -59,8 +59,6 @@ typedef struct GAPState {
 
     char Prompt[80];
 
-    char * In;
-
     /* From stats.c */
     Obj  ReturnObjStat;
     UInt (**CurrExecStatFuncs)(Stat);
