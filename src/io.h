@@ -82,7 +82,7 @@ UInt OpenInput(const Char * filename);
 **
 **  The same as 'OpenInput' but for streams.
 */
-UInt OpenInputStream(Obj stream, UInt echo);
+UInt OpenInputStream(Obj stream, BOOL echo);
 
 
 /****************************************************************************

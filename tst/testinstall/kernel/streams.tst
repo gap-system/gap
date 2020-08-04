@@ -4,6 +4,10 @@
 gap> START_TEST("kernel/streams.tst");
 
 #
+gap> LastSystemError();
+rec( message := "no error", number := 0 )
+
+#
 gap> CLOSE_LOG_TO();
 Error, LogTo: can not close the logfile
 gap> LOG_TO(fail);
@@ -60,27 +64,43 @@ true
 gap> READ_COMMAND_REAL(true, fail);
 Error, READ_COMMAND_REAL: <stream> must be an input stream (not the value 'tru\
 e')
+
+#
 gap> READ(fail);
-Error, READ: <filename> must be a string (not the value 'fail')
+Error, READ: <input> must be a string or an input stream (not the value 'fail'\
+)
+gap> READ("/this/path/does/not/exist!");
+false
+gap> READ(InputTextString(""));
+true
+
+#
 gap> READ_NORECOVERY(fail);
-fail
-gap> READ_STREAM(fail);
-Error, READ_STREAM: <stream> must be an input stream (not the value 'fail')
+Error, READ_NORECOVERY: <input> must be a string or an input stream (not the v\
+alue 'fail')
+gap> READ_NORECOVERY("/this/path/does/not/exist!");
+false
+gap> READ_NORECOVERY(InputTextString(""));
+true
+
+#
 gap> READ_STREAM_LOOP_WITH_CONTEXT(fail, fail, fail);
 Error, READ_STREAM_LOOP_WITH_CONTEXT: <instream> must be an input stream (not \
 the value 'fail')
 gap> READ_STREAM_LOOP_WITH_CONTEXT(InputTextString(""), fail, fail);
 Error, READ_STREAM_LOOP_WITH_CONTEXT: <outstream> must be an output stream (no\
 t the value 'fail')
+
+#
 gap> READ_AS_FUNC(fail);
-Error, READ_AS_FUNC: <filename> must be a string (not the value 'fail')
-gap> READ_AS_FUNC_STREAM(false);
-Error, READ_AS_FUNC_STREAM: <stream> must be an input stream (not the value 'f\
-alse')
-gap> READ_STREAM(fail);
-Error, READ_STREAM: <stream> must be an input stream (not the value 'fail')
-gap> READ_STREAM(fail);
-Error, READ_STREAM: <stream> must be an input stream (not the value 'fail')
+Error, READ_AS_FUNC: <input> must be a string or an input stream (not the valu\
+e 'fail')
+gap> READ_AS_FUNC("/this/path/does/not/exist!");
+false
+gap> READ_AS_FUNC(InputTextString(""));
+fail
+
+#
 gap> READ_GAP_ROOT(fail);
 Error, READ_GAP_ROOT: <filename> must be a string (not the value 'fail')
 
@@ -93,10 +113,6 @@ gap> RemoveDir(fail);
 Error, RemoveDir: <filename> must be a string (not the value 'fail')
 gap> IsDir(fail);
 Error, IsDir: <filename> must be a string (not the value 'fail')
-
-#
-gap> LastSystemError();; LastSystemError();
-rec( message := "no error", number := 0 )
 
 #
 gap> IsExistingFile(fail);

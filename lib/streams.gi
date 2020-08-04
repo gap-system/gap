@@ -231,7 +231,7 @@ InstallOtherMethod( Read,
     "input stream",
     [ IsInputStream ],
 function( stream )
-    READ_STREAM(stream);
+    READ(stream);
     CloseStream(stream);
 end );
 
@@ -243,7 +243,7 @@ end );
 InstallOtherMethod( ReadAsFunction,
     "input stream",
     [ IsInputStream ],
-    READ_AS_FUNC_STREAM );
+    READ_AS_FUNC );
 
 
 #############################################################################
