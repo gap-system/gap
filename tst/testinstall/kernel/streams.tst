@@ -98,7 +98,7 @@ e 'fail')
 gap> READ_AS_FUNC("/this/path/does/not/exist!");
 false
 gap> READ_AS_FUNC(InputTextString(""));
-fail
+function(  ) ... end
 
 #
 gap> READ_GAP_ROOT(fail);
