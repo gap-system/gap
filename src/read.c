@@ -2697,11 +2697,6 @@ UInt ReadEvalFile(Obj * evalResult)
     /* get the first symbol from the input                                 */
     Match_(rs, rs->s.Symbol, "", 0);
 
-    /* if we have hit <end-of-file>, then give up                          */
-    if (rs->s.Symbol == S_EOF) {
-        return STATUS_EOF;
-    }
-
     /* print only a partial prompt from now on                             */
     SetPrompt("> ");
 

@@ -214,9 +214,9 @@ gap> f();
 Syntax error: ; expected in stream:1
 fail
 
-# empty body is not supported right now
+# empty body
 gap> ReadAsFunction(InputTextString(""));
-fail
+function(  ) ... end
 
 # check what happens if the function body ends earlier than
 # anticipated (FIXME: implement a better error message)
