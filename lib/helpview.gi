@@ -221,7 +221,7 @@ else # UNIX but not Mac OS X
   HELP_VIEWER_INFO.firefox := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("firefox \"file://", url,"\" >/dev/null 2>1 &"));
+    Exec(Concatenation("firefox \"file://", url,"\" >/dev/null 2>&1 &"));
   end
   );
 
@@ -229,7 +229,7 @@ else # UNIX but not Mac OS X
   HELP_VIEWER_INFO.chrome := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("chromium-browser \"file://", url,"\" >/dev/null 2>1 &"));
+    Exec(Concatenation("chromium-browser \"file://", url,"\" >/dev/null 2>&1 &"));
   end
   );
   
@@ -237,7 +237,7 @@ else # UNIX but not Mac OS X
   HELP_VIEWER_INFO.konqueror := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("konqueror \"file://", url,"\" >/dev/null 2>1 &"));
+    Exec(Concatenation("konqueror \"file://", url,"\" >/dev/null 2>&1 &"));
   end
   );
 
