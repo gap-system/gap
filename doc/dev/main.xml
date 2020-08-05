@@ -44,7 +44,6 @@ there is a concept of <E>modules</E> where  parts of the
 
 <Body>
 <#Include SYSTEM "structure.xml">
-<#Include SYSTEM "updates.xml">
 <#Include SYSTEM "kernel.xml">
 <#Include SYSTEM "lib.xml">
 <#Include SYSTEM "documentation.xml">
