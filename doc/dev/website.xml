@@ -27,20 +27,6 @@ the tree using this navigation bar. However, pages can still link to other
 pages that reside in some other branch of the tree. 
 
 <P/>
-With very few exceptions, all pages are static HTML pages conforming to
-the XHTML 1.0 standard (see Section <Ref Sect="WPXHTML"/>). However, these
-pages are not edited directly by the maintainer, but they are produced
-by a tool called <Q>the <Package>Mixer</Package></Q> (see <Ref
-Sect="WPMixer"/>), which takes so called <Q><F>.mixer</F>-files</Q>
-as source and produces the final HTML files. During this process,
-the navigation bar and some other parts of the page are created
-automatically, such that the maintainer does not have to worry about
-technicalities. A <F>.mixer</F> file essentially contains the content of
-the page in form of a well-formed XML document (see again Section <Ref
-Sect="WPXHTML"/> for an explanation) and the <Package>Mixer</Package> 
-handles the technical details.
-
-<P/>
 All the sources for the web pages are kept in the git repository
 <C>https://github.com/gap-system/GapWWW</C>. So you can clone this repository using
 
@@ -49,24 +35,18 @@ git clone https://github.com/gap-system/GapWWW
 </Verb>
 
 The web server in St Andrews also uses its clone, updates it to the latest
-revision of the &master; branch, runs the <Package>Mixer</Package> and then 
+revision of the &master; branch, runs the Jekyll tool and then 
 serves the pages. Another named branch is called &testing; and it is served
 on the password protected version of the &GAP; website at 
-<URL>http://devel.gap-system.org/testsite</URL> where work in progress may
+<URL>https://test.gap-system.org</URL> where work in progress may
 be published to be reviewed internally.
 
 <P/>
-The &GAP; website has some pages that are treated specially such as
-the &GAP; manuals, the pages for the &GAP; packages, the pages
-providing search facilities, the pages for the &GAP; bibliography, the
-sitemap, and the (old) &GAP; forum archive. The setup for these special
+The &GAP; website has some pages that are treated specially such as the &GAP;
+manuals, the pages for the &GAP; packages, the pages for the &GAP;
+bibliography, and the (old) &GAP; forum archive. The setup for these special
 pages is described in Sections <Ref Sect="WPManuals"/> to 
 <Ref Sect="WPForum"/> in this chapter.
-
-<P/>
-In the following sections we first cover the <Package>Mixer</Package>, the 
-web standard XHTML 1.0, the usage of git for the web pages, and the
-installation of the web site on the web server.
 </Section>
 
 
@@ -85,47 +65,13 @@ and fixing typos) only requires to install
 Clone the Website repository: <C>git clone https://github.com/gap-system/GapWWW</C>
 </Item>
 <Item>
-Make changes in the &master; branch 
+Make changes in a feature branch 
 </Item>
 <Item>
-Commit and push changes to trigger notification to website admininstrator(s) 
-to check and approve this update.
+Submit your changes as GitHub pull request so that website administrator(s) 
+can review and merge this update.
 </Item>
 </Enum>
-
-A more robust scenario, especially for changes that are more likely to 
-break the <Package>Mixer</Package> syntax, is to clone also the 
-<Package>Mixer</Package> repository with
-
-<Verb>
-git clone https://github.com/gap-system/Mixer
-</Verb>
-
-an build the <Package>Mixer</Package> as described in the <F>mixer.README</F> 
-file (see Section <Ref Sect="WPMixer"/> for further details). For this step, 
-you will need a C compiler (for compiling parts of the <Package>Mixer</Package>) 
-and a <URL Text="Python">https://www.python.org/</URL> interpreter (for
-running the <Package>Mixer</Package>). 
-<P/>
-
-With <Package>Mixer</Package>, you may run the <F>mixer.py</F> script 
-(probably with <C>-f</C> option to rebuild everything regardless the 
-timestamps) inside the <F>GapWWW</F> working directory to check how 
-produced html pages look like in your browser before committing and 
-pushing the changes. 
-<P/>
-
-Finally, while changes in the &master; branches will trigger notification 
-to website admininstrator(s) to check and approve them, for changes that 
-you want to be internally reviewed prior to publication, you may use the 
-&testing; branch which is served on the password protected version of the 
-&GAP; website at <URL>http://devel.gap-system.org/testsite</URL>. Changes
-in the &testing; branch will appear at the testing site immediately after
-pushing them to the master repository. This workflow is useful if you want
-to show your suggestions to a wider group of people who may not have an
-opportunity to install <Package>Mixer</Package> and have a local version
-of the &GAP; website to review your changes.
-<P/>
 
 If you are one of website admininstrator(s), then you will also need to
 be able to access the web server in St Andrews via <C>ssh</C> to run 
@@ -133,128 +79,6 @@ certain update scripts and copy necessary data.
 </Section>
 
 
-<Section Label="WPMixer">
-<Heading>The Mixer</Heading>
-
-The <Package>Mixer</Package> is a Python script that uses a C-library to
-parse XML documents (see Section <Ref Sect="WPXHTML"/>). Therefore this
-library (which comes with the <Package>Mixer</Package>) has to be compiled
-first.
-
-<P/>
-The <Package>Mixer</Package> is kept in the git repository 
-<C>https://github.com/gap-system/Mixer</C>. To clone this
-repository, use
-
-<Verb>
-git clone https://github.com/gap-system/Mixer
-</Verb>
-
-<P/>
-The above command creates a clone of this repository in the directory 
-<F>Mixer</F> of the current directory.
-In that directory you can create the manual of the <Package>Mixer</Package>
-by calling <C>make mixer.pdf</C> provided you have an installation of
-&LaTeX; on your machine. In that manual the <Package>Mixer</Package> and
-its installation are described in details.
-
-<P/>
-Alternatively you can download a copy of the <Package>Mixer</Package>
-and its documentation
-from 
-<URL Text="this page">
-http://www.math.rwth-aachen.de/~Max.Neunhoeffer/Computer/Software/mixer.html
-</URL>.
-
-<P/>
-A small comment on the rationale behind the <Package>Mixer</Package> might
-be in order. The fact that the input of the <Package>Mixer</Package>,
-that is the <F>.mixer</F>-files have to be well-formed XML documents
-(see Section <Ref Sect="WPXHTML"/>) might at first sight be considered
-inconvenient and a bit awkward. However, this fact greatly improves the
-chances that the resulting HTML files conform to the XHTML 1.0 standard
-and at the same time lead to the fact that the <Package>Mixer</Package>
-is able to give very concise and usable error message during parsing
-in case something is not well-formed. This together with the automatically
-generated navigation bar makes the <Package>Mixer</Package> a valuable tool
-for the creation of web pages.
-
-<P/>
-Note in particular that the tree structure of the whole web site is
-controlled by the <F>tree</F> files in each subdirectory, exactly as
-described in the manual of the <Package>Mixer</Package>.
-
-</Section>
-
-<Section Label="WPXHTML">
-<Heading>XHTML</Heading>
-
-The HTML language has undergone a series of revision and standardizations.
-One major step was to make an HTML standard that conforms to the XML
-standard which happened with the revision <Q>XHTML 1.0</Q> of the
-HTML standard. This step was important because the XML framework
-makes it much easier to parse such documents automatically and check
-for <Q>well-formedness</Q>. Here, the term <Q>well-formed</Q> means
-that the document fulfils a set of syntactic rules. That is, a document
-might be well-formed and at the same time not make any sense.
-See <URL Text="this page">https://www.w3.org/TR/xhtml1/</URL> for details.
-A short introduction to the XML standard can be found in
-Section <Ref Sect="XML" BookName="GAPDoc"/>  in the &GAPDoc; manual.
-<P/>
-
-The &GAP; web pages should conform to the standard XHTML 1.0.
-To cut a long story short, this means a few restrictions on the markup
-to use. Here we quickly cover the most important things, which should
-enable anybody who has ever seen an HTML document of any version
-to get started.
-
-<Enum>
-<Item>
-All tags must be written with lower case letters in the element names.
-</Item>
-<Item>
-All non-empty elements must have a start- and end-tag, in particular
-enclose paragraphs in <C>&lt;p&gt;</C> and <C>&lt;/p&gt;</C> or list 
-entries in <C>&lt;li&gt;</C> and <C>&lt;/li&gt;</C>.
-</Item>
-<Item>
-Elements must be properly nested like brackets, that is things like
-<C>&lt;a&gt;&lt;b&gt;&lt;/a&gt;&lt;/b&gt;</C> are not allowed.
-</Item>
-<Item>
-Attributes always must have an assigned value and the value must be
-enclosed by either double or single quotes; for example
-<C>&lt;a href="https://www.gap-system.org"&gt;GAP site&lt;/a&gt;</C>.
-</Item>
-<Item> Write empty elements like <C>&lt;br /&gt;</C>, the space before the
-<C>/</C> is not necessary according to the specification but it helps
-some old browsers to interpret it correctly.
-</Item>
-<Item> Do not put information on colors or fonts in the XHTML file. Instead
-use the <C>.css</C> style sheet file. (For complicated cases use the
-<C>class</C> attribute to mark elements for which you want to give special
-formating rules in the style sheet.
-</Item>
-<Item> The XML markup characters <Q><C>&lt;</C></Q>, <Q><C>&amp;</C></Q>, and 
-    <Q><C>&gt;</C></Q>
-    must be entered as <Q><C>&amp;lt;</C></Q>, <Q><C>&amp;amp;</C></Q>, 
-    and <Q><C>&amp;gt;</C></Q>
-    respectively. There are quite a few such <Q>entities</Q> which are
-    defined to enter special characters. See
-    <URL Text="this page">https://www.w3.org/TR/xhtml1/Overview.html#h-A2</URL>
-    for details.
-</Item>
-</Enum>
-
-Using the <URL Text="W3C">https://www.w3.org/TR/html401/</URL>
-specification
-<URL Text="HTML 4.01">https://www.w3.org/TR/html401/</URL> - this includes
-a nice <E>elements</E> overview - together with the above rules and 
-the general rule to avoid complicated looking constructs when possible,
-we found it not too difficult to produce sets of valid web pages.
-
-
-</Section>
 
 <Section Label="WPHG">
 <Heading>Git usage</Heading>
@@ -287,13 +111,7 @@ process of its publication:
 Changes in the &master; branch will not be automatically published on
 the web server. They will be reviewed by the website administrator who
 will then have to run the update script on the server in St Andrews as 
-described in Section <Ref Sect="WPyin"/> to make them available online.
-</Item>
-<Item>
-Changes in the &testing; branch will immediately appear on the password 
-protected version of the &GAP; website at 
-<URL>http://devel.gap-system.org/testsite</URL> where they may be reviewed
-by others.
+described in Section <Ref Sect="WPwebserver"/> to make them available online.
 </Item>
 <Item>
 Changes in feature branches (which you may create to keep some
@@ -311,32 +129,15 @@ in this process should be agreed on separately.
 
 </Section>
 
-<Section Label="WPyin">
+<Section Label="WPwebserver">
     <Heading>The web server in St Andrews</Heading>
 
 Currently, the actually published version of the web site is contained in 
 the directory <F>/gap/GapWWW</F> on the following machine in St Andrews:
 <Verb>
-    yin.mcs.st-andrews.ac.uk
+    gap-web.host.cs.st-andrews.ac.uk
 </Verb>
-This machine is not really a web server, but the real web server mounts
-and serves the directory <F>/gap/GapWWW</F> from <F>yin</F> via NFS.
 <P/>
-
-The <Package>Mixer</Package> is checked out (still old CVS version, it has 
-not been changed since it remained unchanged over several years) and 
-installed in the directory <F>/gap/Mixer</F>. It can be called with the command
-
-<Verb>
-    /gap/Mixer/mixer.py
-</Verb>
-
-<P/>
-The files are checked out with ownership <F>gapchron</F> which is a
-user on <F>yin</F> with the same numerical user ID than the <F>gap</F>
-user. In other words, one has to be the user <F>gap</F> to manipulate
-the data. Note that the home directory of the user <F>gap</F> is in fact
-<F>/gap</F>.
 
 <P/>
 To get access to this data the easiest and most secure way is probably
@@ -345,22 +146,28 @@ to create an RSA key pair, append the public key to
 <F>.ssh</F> subdirectory of the user's home directory.
 
 <P/>
-There is one shell script which is run by a website administrator to 
-update the website. This script is in <F>bin/updateGapWWW.sh</F>.
-It basically pulls the latest version from the master repository 
-and runs the <Package>Mixer</Package>. You can trigger the update manually
-by doing
-
-<Verb>
-   ssh gap@yin.mcs.st-andrews.ac.uk bin/updateGapWWW.sh
-</Verb>
-
-once you have <C>ssh</C> access to <F>yin</F>.
+Before performing an update on <F>gap-web</F>,
+it is wise to check first  whether <Package>jekyll</Package> runs without
+an error message in your own checked out version of the website.
 
 <P/>
-Before performing an update on <F>yin</F>, it is wise to check first 
-whether the <Package>Mixer</Package> runs without
-an error message in your own checked out version of the website.
+The next step then is to test it on the online test version of the website.
+To do so, ssh into  <F>gap-web</F> and the enter these commands:
+<Verb>
+  cd ~/test.gap-system.org
+  git pull
+  jekyll build
+</Verb>
+Assuming this worked without error message, you can review the results
+at <URL>https://test.gap-system.org</URL>.
+
+<P/>
+Finally, to update the actual website, use the following:
+<Verb>
+  cd ~/www.gap-system.org
+  git pull
+  jekyll build
+</Verb>
 
 </Section>
 
@@ -370,11 +177,9 @@ an error message in your own checked out version of the website.
 This section describes the procedure to install the &GAP; web site on
 a machine from scratch. Thus, this section is usually not needed 
 because all this is already done on the machine
-<F>yin.mcs.st-andrews.ac.uk</F>. However, if one wants to have an exact
+<F>gap-web.host.cs.st-andrews.ac.uk</F>. However, if one wants to have an exact
 copy of the web site or have to install it somewhere anew, this
-section is needed. This section was derived from the ASCII document
-<F>GapWWW/INSTALL</F> long time ago when it was under CVS control 
-(so <F>GapWWW/INSTALL</F> is likely heavily outdated).
+section is needed.
 
 <Subsection>
 <Heading>Needed ingredients</Heading>
@@ -384,15 +189,7 @@ section is needed. This section was derived from the ASCII document
   standard tools: <C>git</C>, <C>tar</C>, <C>gzip</C>, <C>make</C>, <C>sh</C>
 </Item>
 <Item>
-  a C-compiler, preferably <C>gcc</C>
-</Item>
-<Item>
-  <Package>Python</Package> version 2.2 or later (for running the 
-  <Package>Mixer</Package>)
-</Item>
-<Item>
-  <URL Text="yEd graph editor">http://www.yworks.com/en/products_yed_about.html</URL> 
-  if you want to edit the sitemap
+  <Package>jekyll</Package>
 </Item>
 <Item>
   a web server if pages shall be published
@@ -402,14 +199,7 @@ section is needed. This section was derived from the ASCII document
     references into the manual (this can reside on some web site)
 </Item>
 <Item>
-  facility to run CGI-scripts for feedback pages (TODO: check if we still use them)
-</Item>
-<Item>
   setup for automatic creation of the pages for packages
-</Item>
-<Item>
-  the <C>swish</C> utility for the creation of the search indices
-  (TODO: may be better to switch to Google search)
 </Item>
 </List>
 
@@ -430,16 +220,6 @@ This creates a subdirectory <F>GapWWW</F> in the current directory.
 </Item>
 
 <Item>
-Clone the git repository Mixer:
-
-<Verb>
-git clone https://github.com/gap-system/Mixer
-</Verb>
-
-This creates a subdirectory <F>Mixer</F> in the current directory.
-</Item>
-
-<Item>
 Unpack some (frozen) subtrees, which are in archives:
 
 <Verb>
@@ -453,6 +233,9 @@ Unpack some (frozen) subtrees, which are in archives:
 </Item>      
 
 <Item>
+TODO/FIXME/WARNING: everything after this is outdated!!!
+<P/>
+
 Edit <F>GapWWW/lib/config</F>, see that file for instructions:
 
 <Verb>
@@ -487,28 +270,6 @@ which is unchanges since 2010 and may be somewhat outdated.
 </Item>
 
 <Item>
-Install search facility:
-             
-<P/>
-    Things are in <F>GapWWW/Search</F>. You need the <C>swish</C> utility 
-    installed to create the index files for searching. Create a link in
-the <F>Search</F> directory to the swish executable.
-    Then create index files by:
-             
-<Verb>
-    cd Search
-    ln -s PATHTOSWISH swish
-    make
-    cd ..
-</Verb>
-
-(<F>PATHTOSWISH</F> has to be replaced by the path to the swish executable.)
-
-<P/>
-The CGI script <F>GapWWW/Search/search.cgi</F> will take care of the rest.
-</Item>
-
-<Item>
 Install package manuals:
 
 <P/>
@@ -539,12 +300,11 @@ Make sure that the file
 </Item>
 
 <Item>
-Run the mixer:
+Run Jekyll:
 
 <Verb>
-    ../Mixer/mixer.py -f
+    jekyll build
 </Verb>
-    (the <C>-f</C> forces creation regardless of timestamps)
 </Item>
 </Enum>
 
@@ -563,18 +323,9 @@ git pull
 in the <F>GapWWW</F> directory, followed by a
              
 <Verb>
-  ../Mixer/mixer.py
+  jekyll build
 </Verb>
 
-The mixer has an option <C>-f</C> to force recreation of all pages. This is
-necessary if some general files like the address database
-<F>lib/addresses</F> or templates changes.
-
-<P/>
-To change the sitemap, use <Package>yEd</Package> graph editor to modify 
-<F>sitemap.graphml</F> file, then used <Package>yEd</Package> export
-menu to create <F>sitemap.html</F> file with associated <F>.png</F>
-image.
 </Subsection>
 
 </Section>
@@ -628,44 +379,6 @@ under version control in the directory <F>GapWWW/Packages</F>. These nodes then 
 have to be put into the tree by mentioning them in the <F>tree</F> file
 there.
 
-</Section>
-
-<Section Label="WPSearch">
-<Heading>The search engine on the web pages</Heading>
-
-The search engine on the web pages internally uses the <C>swish</C> tool.
-It is used to create an index of all pages which allows very fast
-searches when a user submits a query. All files for this setup are in
-the directory <F>GapWWW/Search</F>.
-
-<P/>
-The indices are regenerated by doing
-
-<Verb>
-    touch everything.conf
-    make
-</Verb>
-
-in that directory. This is done automatically every night, such that 
-usually nothing has to be done after installation.
-
-<P/>
-To make this work, one needs a <C>swish</C> executable and has to create
-a link <F>GapWWW/Search/swish</F> to that executable.
-
-</Section>
-
-
-<Section Label="WPSitemap">
-<Heading>The sitemap</Heading>
-
-The sitemap picture is generated and edited in the following way: The
-original source is the file <F>sitemap.graphml</F> which is generated and
-edited with the <Package>yEd</Package> program. <Package>yEd</Package>
-functionality allows to export the sitemap as a clickable HTML image map,
-producing two files <F>sitemap.html</F> and <F>sitemap1_1.png</F>. Because 
-the sitemap usually does not change very much, these two files are also
-kept under the version control.
 </Section>
 
 <Section Label="WPForum">
