@@ -3650,8 +3650,13 @@ end );
 #F  RandomUnimodularMat( [rs ,] <m> )  . . . . . . . random unimodular matrix
 ##
 InstallGlobalFunction( RandomUnimodularMat, function ( arg )
-    local  rs, m, mat, c, i, j, k, l, a, b, v, w, gcd;
+local  rs, m, mat, c, i, j, k, l, a, b, v, w, gcd,dom;
     
+    dom:=ValueOption("domain");
+    if dom=fail or dom=false then
+      dom:=Integers;
+    fi;
+
     if Length(arg) >= 1 and IsRandomSource(arg[1]) then
         rs := Remove(arg, 1);
     else
@@ -3683,8 +3688,8 @@ InstallGlobalFunction( RandomUnimodularMat, function ( arg )
             j := Random(rs, 1, m);
         until j <> i;
         repeat
-            a := Random( rs, Integers );
-            b := Random( rs, Integers );
+            a := Random( rs, dom );
+            b := Random( rs, dom );
             gcd := Gcdex( a, b );
         until gcd.gcd = 1;
         v := mat[i];  w := mat[j];
@@ -3697,8 +3702,8 @@ InstallGlobalFunction( RandomUnimodularMat, function ( arg )
             l := Random(rs, 1, m);
         until l <> k;
         repeat
-            a := Random( rs, Integers );
-            b := Random( rs, Integers );
+            a := Random( rs, dom );
+            b := Random( rs, dom );
             gcd := Gcdex( a, b );
         until gcd.gcd = 1;
         for i  in [1..m]  do

@@ -55,7 +55,7 @@ local C,M,p,all,gens,sub,q,hom,fp,rels,new,pre,sel,i,free,cnt;
 end);
 
 BindGlobal("AGSRPrepareAutomLift",function(G,pcgs,nat)
-local ocr, fphom, fpg, free, len, dim, tmp, L0, S, R, rels, mat, r, RS, i, g, v;
+local ocr,fphom,fpg,free,len,dim,tmp,L0,S,R,rels,mat,r,RS,i,g,v,cnt;
 
   ocr:=rec(group:=G,modulePcgs:=pcgs);
   fphom:=IsomorphismFpGroup(G);
@@ -72,13 +72,18 @@ local ocr, fphom, fpg, free, len, dim, tmp, L0, S, R, rels, mat, r, RS, i, g, v;
   ocr.module:=GModuleByMats(
     LinearActionLayer(G,ocr.generators,ocr.modulePcgs),ocr.field);
   ocr.moduleauts:=MTX.ModuleAutomorphisms(ocr.module);
+
   if Size(ocr.moduleauts)>
       # Finding the relations comes at a cost that needs to be plausible
       # with searching multiple times through the automorphism group. This
       # order bound is a heuristic that seems to be OK by magnitude.
       321
     then
-    ocr.trickrels:=AGSRFindRels(nat);
+    cnt:=0;
+    repeat
+      ocr.trickrels:=AGSRFindRels(nat);
+      cnt:=cnt+1;
+    until ocr.trickrels<>fail or 2^cnt>10*Size(ocr.moduleauts);
   else
     ocr.trickrels:=fail;
   fi;
@@ -206,7 +211,7 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
 
   else
     phom:=IsomorphismPermGroup(ocr.moduleauts);
-    enum:=Enumerator(Image(phom));
+    enum:=Enumerator(Image(phom,ocr.moduleauts));
     Info(InfoMorph,5,"Search through module automorphisms of size ",
       Size(Image(phom)));
   fi;
@@ -918,7 +923,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # try to find some further generators
     if Size(AQP)/Size(Aperm)>100 then
-      for j in Pcgs(RadicalGroup(AQP)) do
+      for j in SpecialPcgs(RadicalGroup(AQP)) do
 	cond(j);
       od;
       for j in GeneratorsOfGroup(AQP) do
@@ -983,7 +988,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      Size(A)>10^8 and AbelianRank(r)<10
+      Size(A)>10^8 and AbelianRank(r)<10 and ValueOption("noradicalaut")<>true
       #(
       ## potentially large GL
       #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and

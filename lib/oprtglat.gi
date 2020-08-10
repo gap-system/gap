@@ -287,7 +287,8 @@ Info(InfoLattice,5,startn-n," conjugates");
     fi;
     if not all and savemem<>fail then
       p:=Size(r.representative);
-      r.representative:=Group(GeneratorsOfGroup(r.representative));
+      r.representative:=Group(GeneratorsOfGroup(r.representative),
+        One(r.representative));
       SetSize(r.representative,p);
       p:=Size(r.normalizer);
       r.normalizer:=Group(GeneratorsOfGroup(r.normalizer));

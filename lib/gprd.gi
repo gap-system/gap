@@ -560,7 +560,7 @@ local gc,hc,S,info;
 	    homomorphisms:=[gh,hh],
 	    projections:=[Projection(S,1)*InverseGeneralMapping(gc),
 			  Projection(S,2)*InverseGeneralMapping(hc)]);
-  S:=Group(GeneratorsOfGroup(S));
+  S:=Group(GeneratorsOfGroup(S),One(S));
   SetSubdirectProductInfo(S,info);
   return S;
 end);
@@ -1127,7 +1127,7 @@ local giso,niso,P,gens,a,Go,No,i;
   i:=rec(groups:=[Go,No],
          embeddings:=[giso*Embedding(P,1),niso*Embedding(P,2)],
 	 projections:=Projection(P)*InverseGeneralMapping(giso));
-  P:=Group(GeneratorsOfGroup(P));
+  P:=Group(GeneratorsOfGroup(P),One(P));
   SetSemidirectProductInfo(P,i);
   return P;
 end );
