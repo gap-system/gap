@@ -937,6 +937,9 @@ InstallAndCallPostRestore( function()
         f := GAPInfo.InitFiles[i];
         if IsRecord(f) then
             status := READ_NORECOVERY(InputTextString(f.command));
+        elif EndsWith(f, ".tst") then
+            Test(f);
+            status := true;
         else
             status := READ_NORECOVERY(f);
         fi;
