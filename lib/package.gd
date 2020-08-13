@@ -162,6 +162,21 @@ DeclareGlobalFunction( "SetPackageInfo" );
 
 #############################################################################
 ##
+#F  AddPackageInfos( files, pkgdir, ignore, metapackagerecord... )
+##
+##  Function that adds package info records from the PackageInfo.g files
+##  from the list <files> to the GAPInfo.PackagesInfo list. <files> is a list
+##  of pairs, each pair consisting of the absolute path of a PackageInfo.g
+##  file, and the path of its containing directory, relative to <pkgdir>.
+##  <ignore> contains a list of packages to ignore.
+##  If <metapackagerecord> is set, it contains the package record of a
+##  metapackage, and all <files> refer to subpackages of that metapackage.
+##
+DeclareGlobalFunction( "AddPackageInfos" );
+
+
+#############################################################################
+##
 #F  InitializePackagesInfoRecords()
 ##
 ##  <ManSection>

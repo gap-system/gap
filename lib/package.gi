@@ -161,59 +161,124 @@ InstallGlobalFunction( SetPackageInfo, function( record )
 
 #############################################################################
 ##
-#F  FindPackageInfosInSubdirectories( pkgdir, name )
+#F  SubdirectoriesOfPath( path )
 ##
-##  Finds all PackageInfos in subdirectories of directory name in
-##  directory pkgdir, return a list of their paths.
+##  Returns all subdirectories of <path> as absolute paths.
 ##
-BindGlobal( "FindPackageInfosInSubdirectories", function( pkgdir, name )
-    local pkgpath, file, files, subdir;
-    pkgpath:= Filename( [ pkgdir ], name );
-    # This can be 'fail' if 'name' is a void link.
-    if pkgpath = fail then
-      return [];
+BindGlobal( "SubdirectoriesOfPath", function( path )
+  local name, file, subs;
+  subs := [];
+  path := Directory(path);
+  # iterate over directory contents in alphabetical order, to get identical
+  # behavior across all platforms
+  for name in Set(DirectoryContents(path)) do
+    if name in [ ".", ".." ] then 
+      continue;
     fi;
-
-    if not IsDirectoryPath( pkgpath ) then
-      return [];
+    file := Filename(path, name);
+    if IsDirectoryPath(file) then
+      Add(subs, file);
     fi;
-    if name in [ ".", ".." ] then
-      return [];
-    fi;
-
-    file:= Filename( [ pkgdir ],
-                      Concatenation( name, "/PackageInfo.g" ) );
-    if file = fail then
-      files := [];
-      # Perhaps some subdirectories contain `PackageInfo.g' files.
-      for subdir in Set( DirectoryContents( pkgpath ) ) do
-        if not subdir in [ ".", ".." ] then
-          pkgpath:= Filename( [ pkgdir ],
-                              Concatenation( name, "/", subdir ) );
-          if pkgpath <> fail and IsDirectoryPath( pkgpath )
-                              and not subdir in [ ".", ".." ] then
-            file:= Filename( [ pkgdir ],
-                Concatenation( name, "/", subdir, "/PackageInfo.g" ) );
-            if file <> fail then
-              Add( files,
-                    [ file, Concatenation( name, "/", subdir ) ] );
-            fi;
-          fi;
-        fi;
-      od;
-    else
-      files:= [ [ file, name ] ];
-    fi;
-    return files;
+  od;
+  return subs;
 end );
 
 
 #############################################################################
 ##
-#F  AddPackageInfo( files )
+#F  FindPackageInfosInSubdirectories( dir )
 ##
-BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
-    local file, record, pkgname, version;
+##  This function checks if there is a `PackageInfo.g` file in <dir> or,
+##  if there is no `PackageInfo.g` in <dir>, in any subdirectory of <dir>.
+##  The function returns a list of pairs, each containing the absolute path
+##  to the found PackageInfo.g, and the directory the PackageInfo.g file
+##  is contained in, relative to <dir>.
+##
+BindGlobal( "FindPackageInfosInSubdirectories", function( dir )
+    local name, file, files, subdir, subname;
+
+    ## Check if dir actually exists
+    if not IsDirectoryPath( dir ) then
+      return [];
+    fi;
+
+    name := SplitString( dir, "/" );
+    name := name[ Length( name ) ];
+
+    # trick: by passing the directory inside a list, `Filename` checks whether
+    # the file exists, and returns fail if not
+    file := Filename( [ Directory( dir ) ], "PackageInfo.g" );
+
+    if file <> fail then
+      return [ [ file, name ] ];
+    fi;
+
+    files := [];
+    # Perhaps some subdirectories contain `PackageInfo.g' files.
+    for subdir in SubdirectoriesOfPath( dir ) do
+      file := Filename( [ Directory( subdir ) ], "PackageInfo.g" );
+      if file <> fail then
+        subname := SplitString( subdir, "/" );
+        subname := subname[ Length( subname ) ];
+        Add( files,
+              [ file, Concatenation( name, "/", subname ) ] );
+      fi;
+    od;
+
+    return files;
+end );
+
+#############################################################################
+##
+#F  EnrichMetapackageRecord( subpackagerecord, metapackagerecord )
+##
+##  Enriches the PackageInfo of the metapackage with information from the
+##  subpackage. In particular, it makes the metapackage depend on the given
+##  subpackage, in the precise version contained in the metapackage. This is
+##  important to allow different versions of a metapackage to be installed and
+##  used in parallel.
+
+BindGlobal( "EnrichMetapackageRecord", function( subpackagerecord, metapackagerecord )
+    local version, name;
+    if not IsBound( metapackagerecord.Dependencies.NeededOtherPackages ) then
+        metapackagerecord.Dependencies.NeededOtherPackages := [];
+    fi;
+
+    name := subpackagerecord.PackageName;
+    version := Concatenation( "= ", subpackagerecord.Version );
+
+    Add( metapackagerecord.Dependencies.NeededOtherPackages, [ name, version ] );
+
+end );
+
+#############################################################################
+##
+#F  EnrichSubpackageRecord( subpackagerecord, metapackagerecord )
+##
+##  Enriches the PackageInfo of the subpackage with information from the
+##  metapackage. In particular, the SubpackageOf field in the PackageInfo is
+##  not set, it will be set to the metapackage name.
+
+BindGlobal( "EnrichSubpackageRecord", function( subpackagerecord, metapackagerecord )
+    if not IsBound( subpackagerecord.SubpackageOf ) then
+        subpackagerecord.SubpackageOf := metapackagerecord.PackageName;
+    fi;
+end );
+
+#############################################################################
+##
+#F  AddPackageInfos( files, pkgdir, ignore, metapackagerecord... )
+##
+##
+InstallGlobalFunction( AddPackageInfos, function( files, pkgdir, ignore, metapackagerecord... )
+    local file, record, pkgname, version, isSubpackage, name, dir;
+    if Length( metapackagerecord ) = 1 then
+      isSubpackage := true;
+      metapackagerecord := metapackagerecord[ 1 ];
+    else
+      isSubpackage := false;
+    fi;
+
     for file in files do
       # Read the `PackageInfo.g' file.
       Unbind( GAPInfo.PackageInfoCurrent );
@@ -224,6 +289,13 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
         pkgname:= LowercaseString( record.PackageName );
         NormalizeWhitespace( pkgname );
         version:= record.Version;
+
+        # If we have this version already then leave it out.
+        if ForAny( GAPInfo.PackagesInfo,
+                    r -> r.PackageName = record.PackageName
+                    and r.Version = version ) then
+          continue;
+        fi;
 
         # Check whether GAP wants to reset loadability.
         if     IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
@@ -241,6 +313,20 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
           elif IsRecord( record.PackageDoc ) then
             record.PackageDoc:= [ record.PackageDoc ];
           fi;
+
+          if IsBound( record.HasSubpackage ) and record.HasSubpackage = true then
+            dir := record.InstallationPath;
+            for name in SubdirectoriesOfPath( dir ) do
+              files := FindPackageInfosInSubdirectories( name );
+              AddPackageInfos( files, Directory( dir ), ignore, record );
+            od;
+          fi;
+
+          if isSubpackage then
+            EnrichMetapackageRecord( record, metapackagerecord );
+            EnrichSubpackageRecord( record, metapackagerecord );
+          fi;
+
           if IsHPCGAP then
             # FIXME: we make the package info record immutable, to
             # allow access from multiple threads; but that in turn
@@ -313,11 +399,10 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       fi;
 
       # Loop over subdirectories of this package directory.
-      for name in Set( DirectoryContents( Filename( pkgdir, "" ) ) ) do
+      for name in SubdirectoriesOfPath( Filename( pkgdir, "" ) ) do
 
           ## Get all package dirs
-          files := FindPackageInfosInSubdirectories( pkgdir, name );
-
+          files := FindPackageInfosInSubdirectories( name );
           AddPackageInfos( files, pkgdir, ignore );
 
       od;
@@ -807,17 +892,19 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       fi;
 
       # Locate the `init.g' file of the package.
-      if Filename( [ Directory( inforec.InstallationPath ) ], "init.g" )
-           = fail  then
-        LogPackageLoadingMessage( PACKAGE_WARNING,
-            Concatenation( "PackageAvailabilityInfo: cannot locate `",
-              inforec.InstallationPath,
-              "/init.g', please check the installation" ),
-            inforec.PackageName );
-        if not checkall then
-          continue;
+      if not IsBound( inforec.HasSubpackage ) or inforec.HasSubpackage = false then
+        if Filename( [ Directory( inforec.InstallationPath ) ], "init.g" )
+            = fail  then
+          LogPackageLoadingMessage( PACKAGE_WARNING,
+              Concatenation( "PackageAvailabilityInfo: cannot locate `",
+                inforec.InstallationPath,
+                "/init.g', please check the installation" ),
+              inforec.PackageName );
+          if not checkall then
+            continue;
+          fi;
+          skip:= true;
         fi;
-        skip:= true;
       fi;
 
       record_local:= StructuralCopy( record );
@@ -1658,16 +1745,18 @@ InstallGlobalFunction( LoadPackage, function( arg )
         # Notify the documentation (for the available version).
         LoadPackageDocumentation( info );
 
-        # Read the `init.g' files.
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "start reading file 'init.g'",
-            info.PackageName );
-        GAPInfo.PackageCurrent:= info;
-        ReadPackage( pkgname, "init.g" );
-        Unbind( GAPInfo.PackageCurrent );
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "finish reading file 'init.g'",
-            info.PackageName );
+        # Read the `init.g' files if package is not a metapackage.
+        if not IsBound( info.HasSubpackage ) or info.HasSubpackage = false then
+          LogPackageLoadingMessage( PACKAGE_DEBUG,
+              "start reading file 'init.g'",
+              info.PackageName );
+          GAPInfo.PackageCurrent:= info;
+          ReadPackage( pkgname, "init.g" );
+          Unbind( GAPInfo.PackageCurrent );
+          LogPackageLoadingMessage( PACKAGE_DEBUG,
+              "finish reading file 'init.g'",
+              info.PackageName );
+        fi;
 
         filename:= Filename( [ Directory( info.InstallationPath ) ],
                              "read.g" );
@@ -2131,7 +2220,7 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 InstallGlobalFunction( ValidatePackageInfo, function( info )
     local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
           IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
-          list;
+          list, hasSubpackage, isSubpackage, docTester;
 
     if IsString( info ) then
       if IsReadableFile( info ) then
@@ -2202,24 +2291,33 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         x -> IsString(x) and Length(x) = 10 and x{ [3,6] } = "//"
                  and ForAll( x{ [1,2,4,5,7,8,9,10] }, IsDigitChar ),
         "a string of the form `dd/mm/yyyy'" );
-    TestOption( record, "License",
-        x -> IsString(x) and 0 < Length(x),
-        "a nonempty string containing an SPDX ID" );
-    TestMandat( record, "ArchiveURL", IsURL, "a string started with http://, https:// or ftp://" );
-    TestMandat( record, "ArchiveFormats", IsString, "a string" );
-    TestOption( record, "TextFiles", IsStringList, "a list of strings" );
-    TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
-    TestOption( record, "TextBinaryFilesPatterns", 
-        x -> IsStringList(x) and 
-             ForAll( x, i -> Length(i) > 0 ) and
-             ForAll( x, i -> i[1] in ['T','B'] ),  
-        "a list of strings, each started with 'T' or 'B'" );
-    if Number( [ IsBound(record.TextFiles), 
-                 IsBound(record.BinaryFiles), 
-                 IsBound(record.TextBinaryFilesPatterns) ],
-               a -> a=true ) > 1 then
-      Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
-      Print("#W  components must be bound\n");
+
+    TestOption( record, "HasSubpackage", IsBool, "a bool" );
+    hasSubpackage := IsBound( record.HasSubpackage ) and record.HasSubpackage;
+
+    TestOption( record, "SubpackageOf", IsString, "a string" );
+    isSubpackage := IsBound( record.SubpackageOf );
+
+    if not isSubpackage then
+      TestOption( record, "License",
+          x -> IsString(x) and 0 < Length(x),
+          "a nonempty string containing an SPDX ID" );
+      TestMandat( record, "ArchiveURL", IsURL, "a string started with http://, https:// or ftp://" );
+      TestMandat( record, "ArchiveFormats", IsString, "a string" );
+      TestOption( record, "TextFiles", IsStringList, "a list of strings" );
+      TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
+      TestOption( record, "TextBinaryFilesPatterns",
+          x -> IsStringList(x) and
+              ForAll( x, i -> Length(i) > 0 ) and
+              ForAll( x, i -> i[1] in ['T','B'] ),
+          "a list of strings, each started with 'T' or 'B'" );
+      if Number( [ IsBound(record.TextFiles),
+                  IsBound(record.BinaryFiles),
+                  IsBound(record.TextBinaryFilesPatterns) ],
+                a -> a=true ) > 1 then
+        Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
+        Print("#W  components must be bound\n");
+      fi;
     fi;
     if     TestOption( record, "Persons", IsRecordList, "a list of records" )
        and IsBound( record.Persons ) then
@@ -2253,21 +2351,23 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       od;
     fi;
 
-    if TestMandat( record, "Status",
-           x -> x in [ "accepted", "submitted", "deposited", "dev", "other" ],
-           "one of \"accepted\", \"deposited\", \"dev\", \"other\"" )
-       and record.Status = "accepted" then
-      TestMandat( record, "CommunicatedBy",
-          x -> IsString(x) and PositionSublist( x, " (" ) <> fail
-                   and x[ Length(x) ] = ')',
-          "a string of the form `<name> (<place>)'" );
-      TestMandat( record, "AcceptDate",
-          x -> IsString( x ) and Length( x ) = 7 and x[3] = '/'
-                   and ForAll( x{ [1,2,4,5,6,7] }, IsDigitChar ),
-          "a string of the form `mm/yyyy'" );
+    if not isSubpackage then
+      if TestMandat( record, "Status",
+            x -> x in [ "accepted", "submitted", "deposited", "dev", "other" ],
+            "one of \"accepted\", \"deposited\", \"dev\", \"other\"" )
+        and record.Status = "accepted" then
+        TestMandat( record, "CommunicatedBy",
+            x -> IsString(x) and PositionSublist( x, " (" ) <> fail
+                    and x[ Length(x) ] = ')',
+            "a string of the form `<name> (<place>)'" );
+        TestMandat( record, "AcceptDate",
+            x -> IsString( x ) and Length( x ) = 7 and x[3] = '/'
+                    and ForAll( x{ [1,2,4,5,6,7] }, IsDigitChar ),
+            "a string of the form `mm/yyyy'" );
+      fi;
+      TestMandat( record, "README_URL", IsURL, "a string started with http://, https:// or ftp://" );
+      TestMandat( record, "PackageInfoURL", IsURL, "a string started with http://, https:// or ftp://" );
     fi;
-    TestMandat( record, "README_URL", IsURL, "a string started with http://, https:// or ftp://" );
-    TestMandat( record, "PackageInfoURL", IsURL, "a string started with http://, https:// or ftp://" );
 
     if TestOption( record, "SourceRepository", IsRecord, "a record" ) then
       if IsBound( record.SourceRepository ) then
@@ -2278,10 +2378,22 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestOption( record, "IssueTrackerURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestOption( record, "SupportEmail", IsString, "a string" );
     TestMandat( record, "AbstractHTML", IsString, "a string" );
-    TestMandat( record, "PackageWWWHome", IsURL, "a string started with http://, https:// or ftp://" );
-    if TestMandat( record, "PackageDoc",
-           x -> IsRecord( x ) or IsRecordList( x ),
-           "a record or a list of records" ) then
+    if isSubpackage then
+      TestOption( record, "PackageWWWHome", IsURL, "a string started with http://, https:// or ftp://" );
+    else
+      TestMandat( record, "PackageWWWHome", IsURL, "a string started with http://, https:// or ftp://" );
+    fi;
+    if hasSubpackage then
+      # for metapackages, documentation is optional, hence so is PackageDoc;
+      # but if it exists, we should of course still validate it
+      docTester := TestOption;
+    else
+      docTester := TestMandat;
+    fi;
+    docTester( record, "PackageDoc",
+          x -> IsRecord( x ) or IsRecordList( x ),
+          "a record or a list of records" );
+    if IsBound( record.PackageDoc ) then
       if IsRecord( record.PackageDoc ) then
         list:= [ record.PackageDoc ];
       else
