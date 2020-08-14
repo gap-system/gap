@@ -94,4 +94,15 @@ gap> Index(sym,b);
 3603600
 gap> Length(ContainedConjugates(sym,a,b));
 5
+
+# NormalizerOfSimpleGroupInSymmetricGroup
+gap> NormalizerOfSimpleGroupInSymmetricGroup( AlternatingGroup(5)) = Normaliser( SymmetricGroup(5), AlternatingGroup(5));
+#I: Computed all lifts.
+true
+gap> NormalizerOfSimpleGroupInSymmetricGroup( PSL(2,7)) = Normaliser( SymmetricGroup(8), PSL(2,7));
+#I: Computed all lifts.
+true
+gap> NormalizerOfSimpleGroupInSymmetricGroup( PSU(3,3)) = Normalizer( SymmetricGroup(91), PSU(3,3));
+#I: Computed all lifts.
+true
 gap> STOP_TEST( "grpperm.tst", 1);
