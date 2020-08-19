@@ -135,7 +135,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   size   := SizeScreen();
   wd := QuoInt(size[1]+2, 2);
   # really print line without breaking it
-  pl := function(l)
+  pl := function(l, final)
     local   r;
     r := 1;
     while r*wd<=Length(l) do
@@ -145,7 +145,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     if (r-1)*wd < Length(l) then
       PrintTo(out, l{[(r-1)*wd+1..Length(l)]});
     fi;
-    PrintTo(out, "\n");
+    PrintTo(out, final);
   end;
   
   if not formatted then
@@ -191,17 +191,17 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   emptyline:= String( "", size[1]-2 );
   repeat
     for i in [from..Minimum(len, from+size[2]-2)] do
-      pl(lines[i]);
+      pl(lines[i], "\n");
     od;
     if len = i then
       if exitAtEnd then
         break;
       fi;
       for i in [ len+1 .. from+size[2]-2 ] do
-        pl( emptyline );
+        pl( emptyline, "\n" );
       od;
     fi;
-    PrintTo(out, halt);
+    pl(halt, "");
     repeat
       char := ReadByte(stream);
       if char = fail then
