@@ -1,4 +1,4 @@
-#############################################################################
+###########################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
 ##  This file's authors include Martin Schönert, Alexander Hulpke.
@@ -1332,7 +1332,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       D,params,might,bo;
   if IsSolvableGroup(G) then
     return [TrivialSubgroup(G)];
-  elif Size(RadicalGroup(G))>1 then
+  elif Size(RadicalGroup(G))>1 and (IsPermGroup(G) or IsMatrixGroup(G)) then
     D:=LatticeViaRadical(G,IsPerfectGroup);
     D:=List(D!.conjugacyClassesSubgroups,Representative);
     if simple then
