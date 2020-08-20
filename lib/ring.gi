@@ -908,12 +908,21 @@ InstallMethod( Units,
       TryNextMethod();
     fi;
 
-    units:= GroupByGenerators( [], one );
+    if IsAssociative(R) then
+      units:= GroupByGenerators( [], one );
+    else
+      units:=Magma(one);
+    fi;
     for elm in Enumerator( R ) do
       if IsUnit( R, elm ) and not elm in units then
-        units:= ClosureGroupDefault( units, elm );
+        if IsAssociative(R) then
+          units:= ClosureGroupDefault( units, elm );
+        else
+          units:= ClosureMagmaDefault( units, elm );
+        fi;
       fi;
     od;
+
     return units;
     end );
 
