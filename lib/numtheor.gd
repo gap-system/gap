@@ -186,6 +186,8 @@ DeclareOperation( "Lambda", [ IsObject ] );
 ##  for computing <M>\lambda(<A>m</A>)</M> (see <Ref Oper="Lambda"/>) as the
 ##  default for <A>bound</A>, and then factoring <A>bound</A>
 ##  (see&nbsp;<Ref Func="FactorsInt"/>).
+##  <P/>
+##  If an incorrect <A>bound</A> is given then the result will be wrong.
 ##  <Example><![CDATA[
 ##  gap> OrderMod( 2, 7 );
 ##  3
