@@ -161,11 +161,11 @@ DeclareOperation( "Lambda", [ IsObject ] );
 
 #############################################################################
 ##
-#F  OrderMod( <n>, <m> )  . . . . . . . .  multiplicative order of an integer
+#F  OrderMod( <n>, <m>[, <bound>] ) . . .  multiplicative order of an integer
 ##
 ##  <#GAPDoc Label="OrderMod">
 ##  <ManSection>
-##  <Func Name="OrderMod" Arg='n, m'/>
+##  <Func Name="OrderMod" Arg='n, m[, bound]'/>
 ##
 ##  <Description>
 ##  <Index>multiplicative order of an integer</Index>
@@ -181,13 +181,21 @@ DeclareOperation( "Lambda", [ IsObject ] );
 ##  each element of maximal order is called a primitive root modulo <A>m</A>
 ##  (see&nbsp;<Ref Func="IsPrimitiveRootMod"/>).
 ##  <P/>
+##  If no a priori known multiple <A>bound</A> of the desired order is given,
 ##  <Ref Func="OrderMod"/> usually spends most of its time factoring <A>m</A>
-##  and <M>\phi(<A>m</A>)</M> (see&nbsp;<Ref Func="FactorsInt"/>).
+##  for computing <M>\lambda(<A>m</A>)</M> (see <Ref Oper="Lambda"/>) as the
+##  default for <A>bound</A>, and then factoring <A>bound</A>
+##  (see&nbsp;<Ref Func="FactorsInt"/>).
+##  <P/>
+##  If an incorrect <A>bound</A> is given then the result will be wrong.
 ##  <Example><![CDATA[
 ##  gap> OrderMod( 2, 7 );
 ##  3
 ##  gap> OrderMod( 3, 7 );  # 3 is a primitive root modulo 7
 ##  6
+##  gap> m:= (5^166-1) / 167;;   # about 10^113
+##  gap> OrderMod( 5, m, 166 );  # needs minutes without third argument
+##  166
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
