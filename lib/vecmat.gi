@@ -1521,13 +1521,19 @@ end);
 ##
 InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
-  ConvertToVectorRepNC(v,f);
+  if f <> 0 then
+    # method is called with f=0 for finite fields with large characteristic
+    ConvertToVectorRepNC(v,f);
+  fi;
   return Immutable(v);
 end);
 
 InstallOtherMethod( ImmutableVector,"general,3",[IsObject,IsRowVector,IsBool],0,
 function(f,v,change)
-  ConvertToVectorRepNC(v,f);
+  if f <> 0 then
+    # method is called with f=0 for finite fields with large characteristic
+    ConvertToVectorRepNC(v,f);
+  fi;
   if change then
     MakeImmutable(v);
     return v;
