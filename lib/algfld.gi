@@ -94,7 +94,6 @@ local fam,i,cof,red,rchar,impattr,deg,tmp;
   else
     rchar:=0;
   fi;
-  fam!.rchar:=rchar;
 
   fam!.poly:=p;
   fam!.polCoeffs:=CoefficientsOfUnivariatePolynomial(p);
@@ -608,7 +607,7 @@ local i,fam,f,g,t,h,rf,rg,rh,z;
     #od;
   od;
   rf:=1/f[Length(f)]*rf;
-  rf:=ImmutableVector(fam!.rchar, rf, true);
+  rf:=ImmutableVector(fam!.baseField, rf, true);
   return AlgExtElm(fam,rf);
 end);
 
@@ -907,7 +906,7 @@ function(rs,e)
 local fam,l;
   fam:=e!.extFam;
   l:=List([1..fam!.deg],i->Random(rs,fam!.baseField));
-  l:=ImmutableVector(fam!.rchar,l,true);
+  l:=ImmutableVector(fam!.baseField,l,true);
   return AlgExtElm(fam,l);
 end);
 
