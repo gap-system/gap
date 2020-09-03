@@ -2,7 +2,7 @@
 ##
 ##  Test of algebraic extensions.
 ##
-#@local t, f0, p1, f1, p2, f2, p3, f3, p4, f4, x, l, a, ll, b
+#@local t, f0, p1, f1, p2, f2, p3, f3, p4, f4, x, l, a, ll, b, pol, K, xinv, c
 gap> START_TEST("algext.tst");
 gap> t := Runtime();;
 gap> f0 := GF(3);;
@@ -24,6 +24,13 @@ gap> ll := AlgebraicExtension(l, x^5-2, "beta");;
 gap> b := RootOfDefiningPolynomial(ll);;
 gap> (a+b)^5-(a-b)^5;
 20*alpha^2*beta^3+(10*alpha^2-10)*beta+!4
+
+#
+gap> pol := UnivariatePolynomial(GF(293), Z(293)^0 * ConwayPol(293,8));;
+gap> K := AlgebraicExtension(GF(293), pol);;
+gap> xinv := 1/PrimitiveElement(K);
+Z(293)^145*a^7+Z(293)^274*a^3+Z(293)^120*a^2+Z(293)^134*a+Z(293)^179
+gap> c := Random(K);;
 
 #
 gap> STOP_TEST("algext.tst",1);
