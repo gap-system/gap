@@ -114,7 +114,7 @@ void SyBufSetEOF(Int fid);
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary mode.
 */
-Int SyFopen(const Char * name, const Char * mode);
+Int SyFopen(const Char * name, const Char * mode, BOOL transcompress);
 
 
 /****************************************************************************

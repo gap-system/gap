@@ -654,6 +654,28 @@ function( str )
     fi;
 end );
 
+#############################################################################
+##
+#M  InputTextFileRaw( <str> )  . . . . .  create a raw input text file stream
+##
+InstallMethod( InputTextFileRaw,
+    "input text stream from file without compression",
+    [ IsString ],
+function( str )
+    local   fid;
+    str := UserHomeExpand(str);
+
+    fid := INPUT_TEXT_FILE_RAW(str);
+    if fid = fail  then
+        return fail;
+    else
+        atomic InputTextFileStillOpen do
+            AddSet( InputTextFileStillOpen, fid );
+        od;
+        return Objectify( InputTextFileType, [fid, Immutable(str)] );
+    fi;
+end );
+
 
 #############################################################################
 ##
@@ -1102,12 +1124,39 @@ function( str, append )
     fi;
 end );
 
+InstallMethod( OutputTextFileRaw,
+    "output raw text stream from file",
+    [ IsString,
+      IsBool ],
+function( str, append )
+    local   fid;
+    str := UserHomeExpand(str);
+
+    fid := OUTPUT_TEXT_FILE_RAW( str, append );
+    if fid = fail  then
+        return fail;
+    else
+        atomic OutputTextFileStillOpen do
+            AddSet( OutputTextFileStillOpen, fid );
+        od;
+        return Objectify( OutputTextFileType, [fid, Immutable(str), true] );
+    fi;
+end );
+
 InstallOtherMethod( OutputTextFile,
         "error catching method, append not given",
         [ IsString ],
         -SUM_FLAGS, # as low as possible
         function( str )
     Error("Usage OutputTextFile( <fname>, <append> )");
+end );
+
+InstallOtherMethod( OutputTextFileRaw,
+        "error catching method, append not given",
+        [ IsString ],
+        -SUM_FLAGS, # as low as possible
+        function( str )
+    Error("Usage OutputTextFileRaw( <fname>, <append> )");
 end );
 
 #############################################################################

@@ -57,12 +57,11 @@ static Int OpenForSave( Obj fname )
       Pr("Already saving\n", 0, 0);
       return 1;
     }
-  SaveFile = SyFopen(CONST_CSTR_STRING(fname), "wb");
-  if (SaveFile == -1)
-    {
-      Pr("Couldn't open file %s to save workspace\n",
-         (UInt)CONST_CSTR_STRING(fname), 0);
-      return 1;
+    SaveFile = SyFopen(CONST_CSTR_STRING(fname), "wb", TRUE);
+    if (SaveFile == -1) {
+        Pr("Couldn't open file %s to save workspace\n",
+           (UInt)CONST_CSTR_STRING(fname), 0);
+        return 1;
     }
   LBPointer = LoadBuffer;
   LBEnd = LBPointer+sizeof(LoadBuffer);
@@ -88,11 +87,10 @@ static void OpenForLoad( const Char *fname )
     {
       Panic("Internal error -- this should never happen");
     }
-  LoadFile = SyFopen(fname, "rb");
-  if (LoadFile == -1)
-    {
-      Pr("Couldn't open saved workspace %s\n",(Int)fname, 0);
-      SyExit(1);
+    LoadFile = SyFopen(fname, "rb", TRUE);
+    if (LoadFile == -1) {
+        Pr("Couldn't open saved workspace %s\n", (Int)fname, 0);
+        SyExit(1);
     }
 }
 

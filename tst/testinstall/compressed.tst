@@ -1,15 +1,15 @@
-#@local dir,fname,isGzippedFile,stream,str
+#@local o,dir,fname,rawfname,isGzippedFile,stream,str
 gap> START_TEST("compressed.tst");
 gap> dir := DirectoryTemporary();;
 gap> fname := Filename(dir, "test.g.gz");;
+gap> rawfname := Filename(dir, "rawtest.g.gz");;
 
 # Let us check when we have written a compressed file by checking the gzip header
-gap> isGzippedFile := function(dir, name)
->    local out, str,prog;
->    str := "";
->    out := OutputTextString(str, true);
->    Process(dir, Filename(DirectoriesSystemPrograms(),"cat"), InputTextNone(), out, [name]);
->    return str{[1..2]} = "\037\213";
+gap> isGzippedFile := function(fname)
+>    local ins, str;
+>    ins := InputTextFileRaw(fname);
+>    str := [ReadByte(ins), ReadByte(ins)];
+>    return str{[1..2]} = [31,139];
 >  end;;
 gap> str := "hello\ngoodbye\n";;
 
@@ -17,11 +17,25 @@ gap> str := "hello\ngoodbye\n";;
 gap> FileString( fname, str ) = Length(str);
 true
 
+# Write an uncompressed file, using OutputTextFileRaw
+gap> o := OutputTextFileRaw(rawfname, false);;
+gap> WriteAll(o, str);
+true
+gap> CloseStream(o);
+
 # Check file really is compressed
-gap> isGzippedFile(dir, "test.g.gz");
+gap> isGzippedFile(fname);
 true
 
+# Check file really is NOT compressed
+gap> isGzippedFile(rawfname);
+false
+
 # Check reading compressed file
+gap> StringFile( fname ) = str;
+true
+
+# Check reading uncompressed file
 gap> StringFile( fname ) = str;
 true
 
@@ -77,7 +91,7 @@ true
 gap> CloseStream(stream);
 gap> stream;
 closed-stream
-gap> isGzippedFile(dir, "test.g.gz");
+gap> isGzippedFile(fname);
 true
 
 # verify it

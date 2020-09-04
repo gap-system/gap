@@ -623,12 +623,15 @@ DeclareOperation( "InputTextString", [ IsString ] );
 ##  <#GAPDoc Label="InputTextFile">
 ##  <ManSection>
 ##  <Oper Name="InputTextFile" Arg='filename'/>
+##  <Oper Name="InputTextFileRaw" Arg='filename'/>
 ##
 ##  <Description>
 ##  <C>InputTextFile( <A>filename</A> )</C> returns an input stream in the category
 ##  <Ref Filt="IsInputTextStream"/> that delivers the characters from the file
 ##  <A>filename</A>. If <A>filename</A> ends in <C>.gz</C> and the file is
 ##  a valid gzipped file, then the file will be transparently uncompressed.
+##  <C>InputTextFileRaw</C> acts the same as <C>InputTextFile</>, without automatic
+##  uncompression.
 ##  <P/>
 ##  <C>InputTextFile</C> is designed for use with text files and automatically
 ##  handles windows-style line endings. This means it should <E>not</E> be used for
@@ -639,6 +642,7 @@ DeclareOperation( "InputTextString", [ IsString ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "InputTextFile", [ IsString ] );
+DeclareOperation( "InputTextFileRaw", [ IsString ] );
 
 
 #############################################################################
@@ -726,6 +730,7 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  <#GAPDoc Label="OutputTextFile">
 ##  <ManSection>
 ##  <Oper Name="OutputTextFile" Arg='filename, append'/>
+##  <Oper Name="OutputTextFileRaw" Arg='filename, append'/>
 ##
 ##  <Description>
 ##  <C>OutputTextFile( <A>filename</A>, <A>append</A> )</C> returns an output stream in the
@@ -733,7 +738,7 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  <A>filename</A>.  If <A>append</A> is <K>false</K>, then the file is emptied first,
 ##  otherwise received characters are added at the end of the file.
 ##  If <A>filename</A> ends in <C>.gz</C> then the file will be
-##  written with gzip compression.
+##  written with gzip compression. <C>OutputTextFileRaw</C> disables automatic compression.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> # use a temporary directory
@@ -766,6 +771,7 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "OutputTextFile", [ IsString, IsBool ] );
+DeclareOperation( "OutputTextFileRaw", [ IsString, IsBool ] );
 
 
 #############################################################################

@@ -1296,7 +1296,25 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 
     /* call the system dependent function                                  */
     SyClearErrorNo();
-    fid = SyFopen( CONST_CSTR_STRING(filename), "r" );
+    fid = SyFopen(CONST_CSTR_STRING(filename), "r", TRUE);
+    if (fid == -1)
+        SySetErrorNo();
+    return fid == -1 ? Fail : INTOBJ_INT(fid);
+}
+
+/****************************************************************************
+**
+*F  FuncINPUT_TEXT_FILE_RAW( <self>, <name> ) open without compress
+*/
+static Obj FuncINPUT_TEXT_FILE_RAW(Obj self, Obj filename)
+{
+    Int fid;
+
+    RequireStringRep(SELF_NAME, filename);
+
+    /* call the system dependent function                                  */
+    SyClearErrorNo();
+    fid = SyFopen(CONST_CSTR_STRING(filename), "r", FALSE);
     if ( fid == - 1)
         SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
@@ -1330,10 +1348,34 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
     /* call the system dependent function                                  */
     SyClearErrorNo();
     if ( append == True ) {
-        fid = SyFopen( CONST_CSTR_STRING(filename), "a" );
+        fid = SyFopen(CONST_CSTR_STRING(filename), "a", TRUE);
     }
     else {
-        fid = SyFopen( CONST_CSTR_STRING(filename), "w" );
+        fid = SyFopen(CONST_CSTR_STRING(filename), "w", TRUE);
+    }
+    if (fid == -1)
+        SySetErrorNo();
+    return fid == -1 ? Fail : INTOBJ_INT(fid);
+}
+
+/****************************************************************************
+**
+*F  FuncOUTPUT_TEXT_FILE_RAW( <self>, <name>, <append> )
+*/
+static Obj FuncOUTPUT_TEXT_FILE_RAW(Obj self, Obj filename, Obj append)
+{
+    Int fid;
+
+    RequireStringRep(SELF_NAME, filename);
+    RequireTrueOrFalse(SELF_NAME, append);
+
+    /* call the system dependent function                                  */
+    SyClearErrorNo();
+    if (append == True) {
+        fid = SyFopen(CONST_CSTR_STRING(filename), "a", FALSE);
+    }
+    else {
+        fid = SyFopen(CONST_CSTR_STRING(filename), "w", FALSE);
     }
     if ( fid == - 1)
         SySetErrorNo();
@@ -1806,7 +1848,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(LIST_DIR, dirname),
     GVAR_FUNC_1ARGS(CLOSE_FILE, fid),
     GVAR_FUNC_1ARGS(INPUT_TEXT_FILE, filename),
+    GVAR_FUNC_1ARGS(INPUT_TEXT_FILE_RAW, filename),
     GVAR_FUNC_2ARGS(OUTPUT_TEXT_FILE, filename, append),
+    GVAR_FUNC_2ARGS(OUTPUT_TEXT_FILE_RAW, filename, append),
     GVAR_FUNC_1ARGS(IS_END_OF_FILE, fid),
     GVAR_FUNC_1ARGS(POSITION_FILE, fid),
     GVAR_FUNC_1ARGS(READ_BYTE_FILE, fid),

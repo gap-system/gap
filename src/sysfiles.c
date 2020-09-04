@@ -237,7 +237,7 @@ Int4 SyGAPCRC( const Char * name )
     Int         seen_nl;
 
     /* the CRC of a non existing file is 0                                 */
-    fid = SyFopen( name, "r" );
+    fid = SyFopen(name, "r", TRUE);
     if ( fid == -1 ) {
         return 0;
     }
@@ -608,9 +608,7 @@ void SyBufSetEOF(Int fid)
 **  'SyFopen' must adjust the mode argument to open the file in binary mode.
 */
 
-Int SyFopen (
-    const Char *        name,
-    const Char *        mode )
+Int SyFopen(const Char * name, const Char * mode, BOOL transcompress)
 {
     Int                 fid;
     Char                namegz [1024];
@@ -680,16 +678,18 @@ Int SyFopen (
 #endif
 
     /* try to open the file                                                */
-    if (endsgz && (syBuf[fid].gzfp = gzopen(name, mode))) {
+    if (endsgz && transcompress && (syBuf[fid].gzfp = gzopen(name, mode))) {
         syBuf[fid].type = gzip_socket;
         syBuf[fid].fp = -1;
         syBuf[fid].bufno = -1;
-    } else if (0 <= (syBuf[fid].fp = open(name, flags, 0644))) {
+    }
+    else if (0 <= (syBuf[fid].fp = open(name, flags, 0644))) {
         syBuf[fid].type = raw_socket;
         syBuf[fid].echo = syBuf[fid].fp;
         syBuf[fid].bufno = -1;
     }
-    else if (strncmp(mode, "r", 1) == 0 && SyIsReadableFile(namegz) == 0 &&
+    else if (strncmp(mode, "r", 1) == 0 && transcompress &&
+             SyIsReadableFile(namegz) == 0 &&
              (syBuf[fid].gzfp = gzopen(namegz, mode))) {
         syBuf[fid].type = gzip_socket;
         syBuf[fid].fp = -1;
