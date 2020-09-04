@@ -1096,7 +1096,8 @@ local num,den,R,cf,pow,dr,a;
       num[1],den[1],num[2]-den[2],
         IndeterminateNumberOfUnivariateRationalFunction(ratfun));
     # maintain factorization of denominator
-    StoreFactorsPol(R,den,ListWithIdenticalEntries(pow+1,dr));
+    StoreFactorsPol(R,DenominatorOfRationalFunction(cf),
+      ListWithIdenticalEntries(pow+1,dr));
   else
     cf:=num/den; # cancellation
   fi;
