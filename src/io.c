@@ -360,7 +360,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
 #endif
 
     /* try to open the input file                                          */
-    file = SyFopen( filename, "r" );
+    file = SyFopen(filename, "r", TRUE);
     if ( file == -1 )
         return 0;
 
@@ -503,7 +503,7 @@ UInt OpenLog (
         return 0;
 
     /* try to open the file                                                */
-    IO()->OutputLogFileOrStream.file = SyFopen(filename, "w");
+    IO()->OutputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
     IO()->OutputLogFileOrStream.isstream = FALSE;
     if (IO()->OutputLogFileOrStream.file == -1)
         return 0;
@@ -597,7 +597,7 @@ UInt OpenInputLog (
         return 0;
 
     /* try to open the file                                                */
-    IO()->InputLogFileOrStream.file = SyFopen(filename, "w");
+    IO()->InputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
     IO()->InputLogFileOrStream.isstream = FALSE;
     if (IO()->InputLogFileOrStream.file == -1)
         return 0;
@@ -694,7 +694,7 @@ UInt OpenOutputLog (
     /* try to open the file                                                */
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
     IO()->OutputLogFileOrStream.isstream = FALSE;
-    IO()->OutputLogFileOrStream.file = SyFopen(filename, "w");
+    IO()->OutputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
     if (IO()->OutputLogFileOrStream.file == -1)
         return 0;
 
@@ -817,7 +817,7 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
 #endif
 
     /* try to open the file                                                */
-    Int file = SyFopen(filename, append ? "a" : "w");
+    Int file = SyFopen(filename, append ? "a" : "w", FALSE);
     if ( file == -1 )
         return 0;
 

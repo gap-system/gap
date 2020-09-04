@@ -1264,8 +1264,8 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 
     /* call the system dependent function                                  */
     SyClearErrorNo();
-    fid = SyFopen( CONST_CSTR_STRING(filename), "r" );
-    if ( fid == - 1)
+    fid = SyFopen(CONST_CSTR_STRING(filename), "r", TRUE);
+    if (fid == -1)
         SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
@@ -1286,24 +1286,26 @@ static Obj FuncIS_END_OF_FILE(Obj self, Obj fid)
 
 /****************************************************************************
 **
-*F  FuncOUTPUT_TEXT_FILE( <self>, <name>, <append> )  . . . . . open a stream
+*F  FuncOUTPUT_TEXT_FILE( <self>, <name>, <append>, <comp> )  . open a stream
 */
-static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append)
+static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append, Obj comp)
 {
     Int             fid;
 
     RequireStringRep(SELF_NAME, filename);
     RequireTrueOrFalse(SELF_NAME, append);
+    RequireTrueOrFalse(SELF_NAME, comp);
 
+    Int compbool = (comp == True);
     /* call the system dependent function                                  */
     SyClearErrorNo();
     if ( append == True ) {
-        fid = SyFopen( CONST_CSTR_STRING(filename), "a" );
+        fid = SyFopen(CONST_CSTR_STRING(filename), "a", compbool);
     }
     else {
-        fid = SyFopen( CONST_CSTR_STRING(filename), "w" );
+        fid = SyFopen(CONST_CSTR_STRING(filename), "w", compbool);
     }
-    if ( fid == - 1)
+    if (fid == -1)
         SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
@@ -1773,7 +1775,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(LIST_DIR, dirname),
     GVAR_FUNC_1ARGS(CLOSE_FILE, fid),
     GVAR_FUNC_1ARGS(INPUT_TEXT_FILE, filename),
-    GVAR_FUNC_2ARGS(OUTPUT_TEXT_FILE, filename, append),
+    GVAR_FUNC_3ARGS(OUTPUT_TEXT_FILE, filename, append, compress),
     GVAR_FUNC_1ARGS(IS_END_OF_FILE, fid),
     GVAR_FUNC_1ARGS(POSITION_FILE, fid),
     GVAR_FUNC_1ARGS(READ_BYTE_FILE, fid),

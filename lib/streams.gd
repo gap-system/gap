@@ -726,14 +726,15 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  <#GAPDoc Label="OutputTextFile">
 ##  <ManSection>
 ##  <Oper Name="OutputTextFile" Arg='filename, append'/>
+##  <Oper Name="OutputGzipFile" Arg='filename, append'/>
 ##
 ##  <Description>
 ##  <C>OutputTextFile( <A>filename</A>, <A>append</A> )</C> returns an output stream in the
 ##  category <C>IsOutputTextFile</C> that writes received characters to the file
 ##  <A>filename</A>.  If <A>append</A> is <K>false</K>, then the file is emptied first,
 ##  otherwise received characters are added at the end of the file.
-##  If <A>filename</A> ends in <C>.gz</C> then the file will be
-##  written with gzip compression.
+##  <C>OutputGzipFile</C> acts identically to <C>OutputTextFile</C>, except it compresses
+##  the output with gzip.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> # use a temporary directory
@@ -766,6 +767,7 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "OutputTextFile", [ IsString, IsBool ] );
+DeclareOperation( "OutputGzipFile", [ IsString, IsBool ] );
 
 
 #############################################################################
