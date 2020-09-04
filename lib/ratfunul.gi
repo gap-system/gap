@@ -1069,17 +1069,61 @@ end);
 RedispatchOnCondition(Derivative,true,
   [IsPolynomial],[IsLaurentPolynomial],0);
 
-InstallOtherMethod(Derivative,"uratfun,ind",true,
+InstallOtherMethod(Derivative,"uratfun",true,
   [IsUnivariateRationalFunction],0,
 function(ratfun)
-local num,den;
+local num,den,R,cf,pow,dr,a;
+  # try to be good for the case of iterated derivatives by using if the
+  # denominator is a power
   num:=NumeratorOfRationalFunction(ratfun);
   den:=DenominatorOfRationalFunction(ratfun);
-  return (Derivative(num)*den-num*Derivative(den))/(den^2);
+  R:=CoefficientsRing(DefaultRing([den]));
+  cf:=Collected(Factors(den));
+  pow:=Gcd(List(cf,x->x[2]));
+  if pow>1 then
+    dr:=Product(List(cf,x->x[1]^(x[2]/pow))); # root
+  else
+    dr:=den;
+  fi;
+  #cf:=(Derivative(num)*dr-num*pow*Derivative(dr))/dr^(pow+1);
+  num:=Derivative(num)*dr-num*pow*Derivative(dr);
+  den:=dr^(pow+1);
+  if IsOne(Gcd(num,dr)) then
+    # avoid cancellation
+    num:=CoefficientsOfUnivariateLaurentPolynomial(num);
+    den:=CoefficientsOfUnivariateLaurentPolynomial(den);
+    cf:=UnivariateRationalFunctionByExtRepNC(FamilyObj(ratfun),
+      num[1],den[1],num[2]-den[2],
+        IndeterminateNumberOfUnivariateRationalFunction(ratfun));
+    # maintain factorization of denominator
+    StoreFactorsPol(R,DenominatorOfRationalFunction(cf),
+      ListWithIdenticalEntries(pow+1,dr));
+  else
+    cf:=num/den; # cancellation
+  fi;
+  return cf;
+  #return (Derivative(num)*den-num*Derivative(den))/(den^2);
 end);
 
 RedispatchOnCondition(Derivative,true,
   [IsPolynomial],[IsUnivariateRationalFunction],0);
+
+
+InstallGlobalFunction(TaylorSeriesRationalFunction,function(f,at,deg)
+local t,i,x;
+  if not (IsUnivariateRationalFunction(f) and deg>=0) then
+    Error("function is not univariate pol, or degree negative");
+  fi;
+  x:=IndeterminateOfUnivariateRationalFunction(f);
+  t:=Zero(f);
+  for i in [0..deg] do
+    if i>0 then 
+      f:=Derivative(f);
+    fi;
+    t:=t+Value(f,at)*(x-at)^i/Factorial(i);
+  od;
+  return t;
+end);
 
 #############################################################################
 ##

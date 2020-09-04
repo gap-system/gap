@@ -430,6 +430,8 @@ extended versions for Laurent polynomials exist).
 
 <#Include Label="UnivariateRationalFunctionByCoefficients">
 
+<#Include Label="TaylorSeriesRationalFunction">
+
 </Section>
 
 

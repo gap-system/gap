@@ -1340,6 +1340,27 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 DeclareAttribute("Derivative",IsUnivariateRationalFunction);
 DeclareOperation("Derivative",[IsPolynomialFunction,IsPosInt]);
 
+#############################################################################
+##
+#A  TaylorSeriesRationalFunction( <ratfun>, <at>, <deg> )
+##
+##  <#GAPDoc Label="TaylorSeriesRationalFunction">
+##  <ManSection>
+##  <Attr Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg]'/>
+##
+##  <Description>
+##  Computes the taylor series up to degree <A>deg</A> of <A>ratfun</A> at
+##  <A>at</A>.
+##  <Example><![CDATA[
+##  gap> TaylorSeriesRationalFunction((x^5+3*x+7)/(x^5+x+1),0,11);
+##  -50*x^11+36*x^10-26*x^9+22*x^8-18*x^7+14*x^6-10*x^5+4*x^4-4*x^3+4*x^2-4*x+7
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("TaylorSeriesRationalFunction");
+
 
 #############################################################################
 ##
