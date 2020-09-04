@@ -94,7 +94,8 @@ void SyBufSetEOF(Int fid);
 
 /****************************************************************************
 **
-*F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
+*F  SyFopen( <name>, <mode>, <transparent_compress> )
+*F                                             open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file with the name  <name>.
 **  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
@@ -105,16 +106,21 @@ void SyBufSetEOF(Int fid);
 **  'SyFopen' returns -1 if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:
-**  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
-**  'SyFopen( "*stdout*","w")' returns 1 identifying the standard outpt file.
-**  'SyFopen( "*errin*", "r")' returns 2 identifying the brk loop input file.
-**  'SyFopen( "*errout*","w")' returns 3 identifying the error messages file.
+**  'SyFopen( "*stdin*", "r", ..)' returns 0, the standard input file.
+**  'SyFopen( "*stdout*","w", ..)' returns 1, the standard outpt file.
+**  'SyFopen( "*errin*", "r", ..)' returns 2, the brk loop input file.
+**  'SyFopen( "*errout*","w", ..)' returns 3, the error messages file.
 **
-**  If it is necessary to adjust the  filename  this  should  be  done  here.
+**  If it is necessary  to adjust the filename  this should be done here, the
+**  filename convention used in GAP is that '/' is the directory separator.
+**
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary mode.
+**
+**  If <transparent_compress> is TRUE, files with names ending '.gz' will be
+**  automatically compressed/decompressed using gzip.
 */
-Int SyFopen(const Char * name, const Char * mode);
+Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress);
 
 
 /****************************************************************************

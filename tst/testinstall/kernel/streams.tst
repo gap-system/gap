@@ -142,11 +142,14 @@ gap> IS_END_OF_FILE(0);
 false
 gap> IS_END_OF_FILE(254);
 fail
-gap> OUTPUT_TEXT_FILE(fail, fail);
+gap> OUTPUT_TEXT_FILE(fail, fail, fail);
 Error, OUTPUT_TEXT_FILE: <filename> must be a string (not the value 'fail')
-gap> OUTPUT_TEXT_FILE("test", fail);
+gap> OUTPUT_TEXT_FILE("test", fail, fail);
 Error, OUTPUT_TEXT_FILE: <append> must be 'true' or 'false' (not the value 'fa\
 il')
+gap> OUTPUT_TEXT_FILE("test", true, fail);
+Error, OUTPUT_TEXT_FILE: <comp> must be 'true' or 'false' (not the value 'fail\
+')
 
 #
 gap> POSITION_FILE(fail);

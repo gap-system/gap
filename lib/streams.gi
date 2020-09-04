@@ -1084,14 +1084,14 @@ fi;
 #M  OutputTextFile( <str>, <append> )
 ##
 InstallMethod( OutputTextFile,
-    "output text stream from file",
+    "output text stream to file",
     [ IsString,
       IsBool ],
 function( str, append )
     local   fid;
     str := UserHomeExpand(str);
 
-    fid := OUTPUT_TEXT_FILE( str, append );
+    fid := OUTPUT_TEXT_FILE( str, append, false );
     if fid = fail  then
         return fail;
     else
@@ -1108,6 +1108,37 @@ InstallOtherMethod( OutputTextFile,
         -SUM_FLAGS, # as low as possible
         function( str )
     Error("Usage OutputTextFile( <fname>, <append> )");
+end );
+
+#############################################################################
+##
+#M  OutputGzipFile( <str>, <append> )
+##
+InstallMethod( OutputGzipFile,
+    "output gzipped text to file",
+    [ IsString,
+      IsBool ],
+function( str, append )
+    local   fid;
+    str := UserHomeExpand(str);
+
+    fid := OUTPUT_TEXT_FILE( str, append, true );
+    if fid = fail  then
+        return fail;
+    else
+        atomic OutputTextFileStillOpen do
+            AddSet( OutputTextFileStillOpen, fid );
+        od;
+        return Objectify( OutputTextFileType, [fid, Immutable(str), true] );
+    fi;
+end );
+
+InstallOtherMethod( OutputGzipFile,
+        "error catching method, append not given",
+        [ IsString ],
+        -SUM_FLAGS, # as low as possible
+        function( str )
+    Error("Usage OutputGzipFile( <fname>, <append> )");
 end );
 
 #############################################################################

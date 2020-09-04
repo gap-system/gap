@@ -237,7 +237,7 @@ Int4 SyGAPCRC( const Char * name )
     Int         seen_nl;
 
     /* the CRC of a non existing file is 0                                 */
-    fid = SyFopen( name, "r" );
+    fid = SyFopen(name, "r", TRUE);
     if ( fid == -1 ) {
         return 0;
     }
@@ -585,7 +585,8 @@ void SyBufSetEOF(Int fid)
 
 /****************************************************************************
 **
-*F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
+*F  SyFopen( <name>, <mode>, <transparent_compress> )
+*F                                             open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file with the name  <name>.
 **  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
@@ -596,21 +597,22 @@ void SyBufSetEOF(Int fid)
 **  'SyFopen' returns -1 if it cannot open the file.
 **
 **  The following standard files names and file identifiers  are  guaranteed:
-**  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
-**  'SyFopen( "*stdout*","w")' returns 1 identifying the standard outpt file.
-**  'SyFopen( "*errin*", "r")' returns 2 identifying the brk loop input file.
-**  'SyFopen( "*errout*","w")' returns 3 identifying the error messages file.
+**  'SyFopen( "*stdin*", "r", ..)' returns 0, the standard input file.
+**  'SyFopen( "*stdout*","w", ..)' returns 1, the standard outpt file.
+**  'SyFopen( "*errin*", "r", ..)' returns 2, the brk loop input file.
+**  'SyFopen( "*errout*","w", ..)' returns 3, the error messages file.
 **
 **  If it is necessary  to adjust the filename  this should be done here, the
 **  filename convention used in GAP is that '/' is the directory separator.
 **
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary mode.
+**
+**  If <transparent_compress> is TRUE, files with names ending '.gz' will be
+**  automatically compressed/decompressed using gzip.
 */
 
-Int SyFopen (
-    const Char *        name,
-    const Char *        mode )
+Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
 {
     Int                 fid;
     Char                namegz [1024];
@@ -666,16 +668,19 @@ Int SyFopen (
 #endif
 
     /* try to open the file                                                */
-    if (endsgz && (syBuf[fid].gzfp = gzopen(name, mode))) {
+    if (endsgz && transparent_compress &&
+        (syBuf[fid].gzfp = gzopen(name, mode))) {
         syBuf[fid].type = gzip_socket;
         syBuf[fid].fp = -1;
         syBuf[fid].bufno = -1;
-    } else if (0 <= (syBuf[fid].fp = open(name, flags, 0644))) {
+    }
+    else if (0 <= (syBuf[fid].fp = open(name, flags, 0644))) {
         syBuf[fid].type = raw_socket;
         syBuf[fid].echo = syBuf[fid].fp;
         syBuf[fid].bufno = -1;
     }
-    else if (strncmp(mode, "r", 1) == 0 && SyIsReadableFile(namegz) == 0 &&
+    else if (strncmp(mode, "r", 1) == 0 && transparent_compress &&
+             SyIsReadableFile(namegz) == 0 &&
              (syBuf[fid].gzfp = gzopen(namegz, mode))) {
         syBuf[fid].type = gzip_socket;
         syBuf[fid].fp = -1;

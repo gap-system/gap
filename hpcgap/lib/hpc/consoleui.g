@@ -1022,7 +1022,7 @@ end);
 BindGlobal("OutputLoop@", function()
   local packet, threadid, prefix, text, stdout, newlines,
     eol, last_thread, p, last, line, prompt;
-  stdout := OUTPUT_TEXT_FILE("*stdout*", false);
+  stdout := OUTPUT_TEXT_FILE("*stdout*", false, false);
   ControlThread@ := true;
   last_thread := false;
   eol := true;
