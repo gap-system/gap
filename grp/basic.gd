@@ -169,6 +169,7 @@ end );
 ##  </ManSection>
 ##
 DeclareConstructor( "AlternatingGroupCons", [ IsGroup, IsInt ] );
+DeclareConstructor( "AlternatingGroupCons", [ IsGroup, IsDenseList ] );
 
 
 #############################################################################
@@ -693,6 +694,7 @@ end );
 ##  </ManSection>
 ##
 DeclareConstructor( "SymmetricGroupCons", [ IsGroup, IsInt ] );
+DeclareConstructor( "SymmetricGroupCons", [ IsGroup, IsDenseList ] );
 
 
 #############################################################################

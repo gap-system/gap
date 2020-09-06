@@ -127,7 +127,7 @@ function( filter, deg )
     local   alt;
 
     if 4 < deg  then
-        Error( "<deg> must be at most 4" );
+        TryNextMethod();
     fi;
     alt := GroupByPcgs(Pcgs(AlternatingGroupCons(IsPermGroup,[1..deg])));
     SetIsAlternatingGroup( alt, true );
@@ -396,7 +396,7 @@ InstallMethod( SymmetricGroupCons,
 
 function( filter, deg )
     if 4 < deg  then
-        Error( "<deg> must be at most 4" );
+        TryNextMethod();
     fi;
     return GroupByPcgs(Pcgs(SymmetricGroupCons(IsPermGroup,[1..deg])));
 end );

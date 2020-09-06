@@ -469,6 +469,11 @@ BIND_GLOBAL( "INSTALL_METHOD",
       ADD_LIST( flags, FLAGS_FILTER( i ) );
     od;
 
+    # Deal with constructors
+    if IS_CONSTRUCTOR( opr ) then
+      flags[1] := WITH_IMPS_FLAGS( flags[1] );
+    fi;
+
     # Check the rank.
     if not IsBound( arglist[ pos ] ) then
       Error( "the method is missing in <arglist>" );

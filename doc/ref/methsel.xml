@@ -145,6 +145,18 @@ Note that in both these cases there are methods that actually produce results
 of the required types, but they have not been installed with this information,
 so are not selected.
 
+<Example>
+gap> XCons(IsRegularSemigroup,4);
+&lt;pc group of size 4 with 2 generators&gt;
+</Example>
+
+Finally note the possibly unexpected behaviour in this example. Since
+all groups are regular semigroups, the cyclic group constructor is
+applicable.
+
+The exact details of method ranking for constructors are under review
+at this time and may be changed, so do not rely on them.
+
 <#Include Label="NewConstructor">
 <#Include Label="DeclareConstructor">
 
@@ -335,7 +347,6 @@ one can install also <E>immediate methods</E>.
 <#Include Label="MethodReordering">
 
 </Section>
-
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Operations and Mathematical Terms">
