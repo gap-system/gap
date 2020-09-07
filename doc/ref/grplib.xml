@@ -99,6 +99,31 @@ calculations.
 <#Include Label="SuzukiGroup">
 <#Include Label="ReeGroup">
 
+<Subsection Label="Generator Names">
+<Heading>Generator Names</Heading>
+For groups created as finitely presented groups, including polycyclic groups, the
+generators are labelled, by default, with a letter and a number. Using the
+option <C>generatorNames</C> it is possible to influcence this naming. If
+this option holds a string, the generators are named with this string and
+numbers, if a list of strings of sufficient length is given, the generator
+names are taken from this list of strings.
+<P/>
+<Example><![CDATA[
+gap> GeneratorsOfGroup(AbelianGroup([5,7]));
+[ f1, f2 ]
+gap> GeneratorsOfGroup(AbelianGroup([5,7]:generatorNames:="a"));
+[ a1, a2 ]
+gap> GeneratorsOfGroup(AbelianGroup([5,7]:generatorNames:=["u","v","w"]));
+[ u, v ]
+gap> AsSSortedList(DihedralGroup(12:generatorNames:="a"));
+[ <identity> of ..., a1, a2, a3, a1*a2, a1*a3, a2*a3, a3^2, a1*a2*a3,
+  a1*a3^2, a2*a3^2, a1*a2*a3^2 ]
+gap> AsSSortedList(DihedralGroup(12:generatorNames:=["a","b","c"]));
+[ <identity> of ..., a, b, c, a*b, a*c, b*c, c^2, a*b*c, a*c^2, b*c^2,
+  a*b*c^2 ]
+]]></Example>
+</Subsection>
+
 </Section>
 
 
