@@ -424,6 +424,7 @@ InstallMethod( GeneratorsSmallest,
 ##
 InstallGlobalFunction( FreeGroup, function ( arg )
     local names,      # list of generators names
+          opt,
           zarg,
           lesy,       # filter for letter or syllable words family
           F,          # family of free group element objects
@@ -455,7 +456,6 @@ InstallGlobalFunction( FreeGroup, function ( arg )
     elif Length( zarg ) = 2 and IsInt( zarg[1] ) and 0 <= zarg[1] then
       names:= List( [ 1 .. zarg[1] ],
                     i -> Concatenation( zarg[2], String(i) ) );
-      MakeImmutable( names );
     elif Length( zarg ) = 1 and IsList( zarg[1] ) and IsEmpty( zarg[1] ) then
       names:= zarg[1];
     elif 1 <= Length( zarg ) and ForAll( zarg, IsString ) then
@@ -465,6 +465,20 @@ InstallGlobalFunction( FreeGroup, function ( arg )
       names:= zarg[1];
     else
       Error("usage: FreeGroup(<name1>,<name2>..) or FreeGroup(<rank>)");
+    fi;
+
+    opt:=ValueOption("generatorNames");
+    if opt<>fail then
+      if IsString(opt) then
+      names:= List( [ 1 .. Length(names) ],
+                    i -> Concatenation( opt, String(i) ) );
+      elif IsList(opt) and ForAll(opt,IsString) 
+        and Length(names)<=Length(opt) then
+        names:=opt{[1..Length(names)]};
+        MakeImmutable( names );
+      else
+        Error("Cannot process `generatorNames` option");
+      fi;
     fi;
 
     # deal with letter words family types
