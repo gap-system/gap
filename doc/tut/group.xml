@@ -162,7 +162,7 @@ gap> Size( f );
 ]]></Example>
 <P/>
 The factor group  is again represented as  a  permutation group
-(its first three generators are trivial, meaning that the first three
+(its last three generators are trivial, meaning that the last three
 generators of the preimage are in the kernel of <C>hom</C>). However,
 the action domain  of this factor  group has  nothing  to do with  the
 action domain of <C>norm</C>. (It only happens that both are subsets of the
@@ -197,8 +197,9 @@ gap> x * rep^-1 in ker;
 true
 ]]></Example>
 <P/>
-The factor  group <C>f</C>  is  a simple  group,  i.e., it has  no non-trivial
-normal subgroups. &GAP; can detect this fact,  and it can then also find
+The factor  group <C>f</C>  is  a simple  group,  i.e., it is a non-trivial
+group whose only normal subgroups are its trivial subgroup and itself.
+&GAP; can detect this fact,  and it can then also find
 the name by which this simple group is known among group theorists. (Such
 names are of course not available for non-simple groups.)
 <P/>
@@ -316,7 +317,7 @@ group), but it also  denotes the natural  action  of permutations on
 positive integers (and exponentiation of integers as well, of course).
 It is in fact the default action and will be supplied by the system if not
 given. Another common action is for example
-always assumes <Ref Func="OnRight" BookName="ref"/>, which means right
+<Ref Func="OnRight" BookName="ref"/>, which means right
 multiplication, defined as <M>d</M><C> * </C><M>g</M>.
 (Group actions in &GAP; are always from the right.)
 <P/>
@@ -340,7 +341,8 @@ for example would the default domain of <C>Group(  (2,3,4)  )</C> be
 To avoid confusion, all action  functions  require that you
 specify  the domain of action.
 If we had specified <C>[ 1 .. 113 ]</C> in the
-primitivity test above,  point&nbsp;113  would have been  a fixpoint  (and the
+primitivity test above,  point&nbsp;113  would have been  a fixed point
+(and the
 action would not even have been transitive).
 <P/>
 Now <C>blocks</C> is a list of blocks (i.e., a list of lists), which we do not
@@ -362,7 +364,7 @@ true
 Note that we give a third argument (the action function
 <Ref Func="OnSets" BookName="ref"/>) to
 indicate that the action is not the default action on points but an
-action on sets of elements given as sorted lists.
+action on sets of elements given as strictly sorted lists.
 (Section&nbsp;<Ref Sect="Basic Actions" BookName="ref"/> lists all
 actions that are pre-defined by &GAP;.)
 <P/>
@@ -553,7 +555,7 @@ a subgroup.
 <Section Label="Subgroups!as Stabilizers">
 <Heading>Subgroups as Stabilizers</Heading>
 
-Action functions can also be  used without constructing external sets.
+Action functions can also be used to construct subgroups.
 We will try to   find several subgroups  in <C>a8</C>  as stabilizers of  such
 actions. One subgroup is immediately  available, namely the stabilizer
 of one point. The index of the stabilizer must of course  be equal to the
@@ -831,6 +833,7 @@ stabilizer using the centralizer algorithm for permutation groups. In the
 usual way we now look for the subgroups above <C>u105</C>.
 <P/>
 <Example><![CDATA[
+gap> orb:=Set(orb);;
 gap> blocks := Blocks( a8, orb );; Length( blocks );
 15
 gap> Set(blocks[1]);
@@ -847,9 +850,9 @@ the  points  of  the   orbit and  the   cosets  of  <C>u105</C>.   The   point
 To get the subgroup above <C>u105</C> that has index 15 in <C>a8</C>,
 we must form the closure of <C>u105</C> with an element of the coset that
 corresponds to any other point in the first block.
-If we choose the point <C>(1,3)(2,4)(5,8)(6,7)</C>,
+If we choose the point <C>(1,3)(2,4)(5,7)(6,8)</C>,
 we must use an element of <C>a8</C> that maps <C>(1,2)(3,4)(5,6)(7,8)</C> to
-<C>(1,3)(2,4)(5,8)(6,7)</C>.
+<C>(1,3)(2,4)(5,7)(6,8)</C>.
 The function <Ref Func="RepresentativeAction" BookName="ref"/> does
 what we need.
 It takes a group and two points and returns an element of the group
@@ -862,18 +865,18 @@ lie in one orbit under the group,
 <P/>
 <Example><![CDATA[
 gap> rep := RepresentativeAction( a8, (1,2)(3,4)(5,6)(7,8),
->                                        (1,3)(2,4)(5,8)(6,7) );
-(1,5,7,2,8,4,3)
+>                                        (1,3)(2,4)(5,7)(6,8) );
+(2,3)(6,7)
 gap> u15 := ClosureGroup( u105, rep );; Index( a8, u15 );
 15
 ]]></Example>
 <P/>
 <C>u15</C> is of course a maximal  subgroup, because <C>a8</C>  has no subgroups of
 index 3 or&nbsp;5.  There is in fact  another  class of subgroups  of index 15
-above <C>u105</C> that we get by adding <C>(2,3)(6,7)</C> to <C>u105</C>.
+above <C>u105</C> that we get by adding <C>(2,3)(6,8)</C> to <C>u105</C>.
 <P/>
 <Example><![CDATA[
-gap> u15b := ClosureGroup( u105, (2,3)(6,7) );; Index( a8, u15b );
+gap> u15b := ClosureGroup( u105, (2,3)(6,8) );; Index( a8, u15b );
 15
 gap> RepresentativeAction( a8, u15, u15b );
 fail
@@ -1094,7 +1097,8 @@ the mapping was surjective).
 <Section Label="Nice Monomorphisms">
 <Heading>Nice Monomorphisms</Heading>
 
-For some types of groups, the best method to calculate in an isomorphic
+For some types of groups, the best method for calculations in it is to use 
+instead an isomorphic
 group in a <Q>better</Q> representation (say, a permutation group).
 We call an injective homomorphism,
 that will give such an isomorphic image a <Q>nice monomorphism</Q>.

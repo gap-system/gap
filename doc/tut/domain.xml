@@ -274,7 +274,8 @@ The functions <Ref Func="AsList" BookName="ref"/> and
 <Ref Func="AsSortedList" BookName="ref"/> mentioned above do not return
 domains, but they fit into the general pattern in the sense that they
 forget all the structure of the argument, including the fact that it is
-a domain, and return a list with the same elements as the argument has.
+a domain, and return an immutable list with the same elements as the
+argument has.
 
 </Section>
 
@@ -311,7 +312,8 @@ true
 ]]></Example>
 <P/>
 Many functions return subdomains of their arguments, for example
-the result of <C>SylowSubgroup( <A>G</A> )</C> is a group with parent group
+the result of <C>SylowSubgroup( <A>G</A>, <A>prime</A> )</C>
+is a group with parent group
 <A>G</A>.
 <P/>
 If you are sure that the domain <C>Something( <A>gens</A> )</C> is contained
