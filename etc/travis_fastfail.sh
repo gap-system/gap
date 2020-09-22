@@ -6,7 +6,7 @@
 # License is MIT: https://julialang.org/license
 
 curlhdr="Accept: application/vnd.travis-ci.2+json"
-endpoint="https://api.travis-ci.org/repos/$TRAVIS_REPO_SLUG"
+endpoint="https://api.travis-ci.com/repos/$TRAVIS_REPO_SLUG"
 
 # Fail fast for superseded builds to PR's
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
