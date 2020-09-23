@@ -953,16 +953,16 @@ UInt OpenOutput (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    IO()->Output = PushNewOutput();
-    IO()->Output->file = file;
-    IO()->Output->line[0] = '\0';
-    IO()->Output->pos = 0;
-    IO()->Output->indent = 0;
-    IO()->Output->isstream = 0;
-    IO()->Output->format = 1;
+    TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->file = file;
+    output->line[0] = '\0';
+    output->pos = 0;
+    output->indent = 0;
+    output->isstream = 0;
+    output->format = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    IO()->Output->hints[0] = -1;
+    output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -985,19 +985,17 @@ UInt OpenOutputStream (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    IO()->Output = PushNewOutput();
-    IO()->Output->stream = stream;
-    IO()->Output->isstringstream =
-        (CALL_1ARGS(IsStringStream, stream) == True);
-    IO()->Output->format =
-        (CALL_1ARGS(PrintFormattingStatus, stream) == True);
-    IO()->Output->line[0] = '\0';
-    IO()->Output->pos = 0;
-    IO()->Output->indent = 0;
-    IO()->Output->isstream = 1;
+    TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->stream = stream;
+    output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
+    output->line[0] = '\0';
+    output->pos = 0;
+    output->indent = 0;
+    output->isstream = 1;
 
     /* variables related to line splitting, very bad place to split        */
-    IO()->Output->hints[0] = -1;
+    output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
@@ -1023,16 +1021,18 @@ UInt OpenOutputStream (
 */
 UInt CloseOutput ( void )
 {
+    TypOutputFile * output = IO()->Output;
+
     // silently refuse to close the test output file; this is probably an
     // attempt to close *errout* which is silently not opened, so let's
     // silently not close it
-    if (IO()->IgnoreStdoutErrout == IO()->Output)
+    if (IO()->IgnoreStdoutErrout == output)
         return 1;
 
     /* refuse to close the initial output file '*stdout*'                  */
 #ifdef HPCGAP
-    if (IO()->OutputStackPointer <= 1 && IO()->Output->isstream &&
-        TLS(DefaultOutput) == IO()->Output->stream)
+    if (IO()->OutputStackPointer <= 1 && output->isstream &&
+        TLS(DefaultOutput) == output->stream)
         return 0;
 #else
     if (IO()->OutputStackPointer <= 1)
@@ -1041,8 +1041,8 @@ UInt CloseOutput ( void )
 
     /* flush output and close the file                                     */
     Pr("%c", (Int)'\03', 0);
-    if (!IO()->Output->isstream) {
-        SyFclose(IO()->Output->file);
+    if (!output->isstream) {
+        SyFclose(output->file);
     }
 
     /* revert to previous output file and indicate success                 */
@@ -1084,15 +1084,15 @@ UInt OpenAppend (
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    IO()->Output = PushNewOutput();
-    IO()->Output->file = file;
-    IO()->Output->line[0] = '\0';
-    IO()->Output->pos = 0;
-    IO()->Output->indent = 0;
-    IO()->Output->isstream = 0;
+    TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->file = file;
+    output->line[0] = '\0';
+    output->pos = 0;
+    output->indent = 0;
+    output->isstream = 0;
 
     /* variables related to line splitting, very bad place to split        */
-    IO()->Output->hints[0] = -1;
+    output->hints[0] = -1;
 
     /* indicate success                                                    */
     return 1;
