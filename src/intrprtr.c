@@ -59,7 +59,8 @@
 static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 {
     if (!intr->coding) {
-        InterpreterHook(GetInputFilenameID(), intr->startLine,
+        InterpreterHook(GetInputFilenameID(GetCurrentInput()),
+                        intr->startLine,
                         intr->returning || (intr->ignoring > ignoreLevel));
     }
     intr->startLine = 0;
@@ -875,7 +876,8 @@ void IntrAtomicBegin(IntrState * intr, Obj stackNams)
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0)
-        StartFakeFuncExpr(intr, stackNams, GetInputLineNumber());
+        StartFakeFuncExpr(intr, stackNams,
+                          GetInputLineNumber(GetCurrentInput()));
 
     intr->coding++;
 
@@ -954,7 +956,8 @@ void IntrRepeatBegin(IntrState * intr, Obj stackNams)
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0)
-        StartFakeFuncExpr(intr, stackNams, GetInputLineNumber());
+        StartFakeFuncExpr(intr, stackNams,
+                          GetInputLineNumber(GetCurrentInput()));
 
     intr->coding++;
 

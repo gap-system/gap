@@ -1398,7 +1398,7 @@ static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
     ArgList args;
 
     /* begin the function               */
-    startLine = GetInputLineNumber();
+    startLine = GetInputLineNumber(rs->s.input);
     if (rs->s.Symbol == S_ATOMIC) {
         Match_(rs, S_ATOMIC, "atomic", follow);
         is_atomic = 1;
@@ -1442,7 +1442,7 @@ static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
     /* match away the '->'                                                 */
     Match_(rs, S_MAPTO, "->", follow);
 
-    ReadFuncExprBody(rs, follow, 1, 0, args, GetInputLineNumber());
+    ReadFuncExprBody(rs, follow, 1, 0, args, GetInputLineNumber(rs->s.input));
 }
 
 /****************************************************************************
@@ -1472,7 +1472,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
     /* match away the '->'                                                 */
     Match_(rs, S_MAPTO, "->", follow);
 
-    ReadFuncExprBody(rs, follow, 1, 0, args, GetInputLineNumber());
+    ReadFuncExprBody(rs, follow, 1, 0, args, GetInputLineNumber(rs->s.input));
 }
 
 /****************************************************************************
@@ -2556,7 +2556,10 @@ static void RecreateStackNams(ReaderState * rs, Obj context)
 **  will be set to 1 if the command was followed by a double semicolon, else
 **  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
 */
-ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
+ExecStatus ReadEvalCommand(Obj            context,
+                           TypInputFile * input,
+                           Obj *          evalResult,
+                           UInt *         dualSemicolon)
 {
     volatile ExecStatus          type;
     volatile Obj                 tilde;
@@ -2570,12 +2573,15 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
 
+    GAP_ASSERT(input);
+    rs->s.input = input;
+
     /* get the first symbol from the input                                 */
     Match_(rs, rs->s.Symbol, "", 0);
 
     // if scanning the first symbol produced a syntax error, abort
     if (rs->s.NrError) {
-        FlushRestOfInputLine();
+        FlushRestOfInputLine(input);
         return STATUS_ERROR;
     }
 
@@ -2602,7 +2608,8 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
     lockSP = RegionLockSP();
 #endif
 
-    AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"), INTOBJ_INT(GetInputLineNumber()));
+    AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"),
+            INTOBJ_INT(GetInputLineNumber(rs->s.input)));
 
     // remember the old execution state and start an execution environment
     Bag oldLVars =
@@ -2678,7 +2685,7 @@ ExecStatus ReadEvalCommand(Obj context, Obj *evalResult, UInt *dualSemicolon)
 **  It does not expect the first symbol of its input already read and reads
 **  to the end of the input (unless an error happens).
 */
-UInt ReadEvalFile(Obj * evalResult)
+UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
 {
     volatile ExecStatus type;
     volatile Obj        tilde;
@@ -2693,6 +2700,9 @@ UInt ReadEvalFile(Obj * evalResult)
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
+
+    GAP_ASSERT(input);
+    rs->s.input = input;
 
     /* get the first symbol from the input                                 */
     Match_(rs, rs->s.Symbol, "", 0);
@@ -2728,7 +2738,8 @@ UInt ReadEvalFile(Obj * evalResult)
     }
 
     /* fake the 'function ()'                                              */
-    IntrFuncExprBegin(&rs->intr, 0, nloc, nams, GetInputLineNumber());
+    IntrFuncExprBegin(&rs->intr, 0, nloc, nams,
+                      GetInputLineNumber(rs->s.input));
 
     /* read the statements                                                 */
     GAP_ASSERT(rs->LoopNesting == 0);
@@ -2737,7 +2748,7 @@ UInt ReadEvalFile(Obj * evalResult)
 
     /* we now want to be at <end-of-file>                                  */
     if (rs->s.Symbol != S_EOF) {
-        FlushRestOfInputLine();
+        FlushRestOfInputLine(input);
         SyntaxError(&rs->s, "<end-of-file> expected");
     }
 

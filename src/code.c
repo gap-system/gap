@@ -290,7 +290,7 @@ Stat NewStatOrExpr (
 
 static Stat NewStat(UInt type, UInt size)
 {
-    return NewStatOrExpr(type, size, GetInputLineNumber());
+    return NewStatOrExpr(type, size, GetInputLineNumber(GetCurrentInput()));
 }
 
 
@@ -820,7 +820,7 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    SET_GAPNAMEID_BODY(body, GetInputFilenameID());
+    SET_GAPNAMEID_BODY(body, GetInputFilenameID(GetCurrentInput()));
     SET_STARTLINE_BODY(body, startLine);
     CS(OffsBody) = sizeof(BodyHeader);
 
@@ -898,7 +898,7 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
 
     /* make the body smaller                                               */
     ResizeBag(BODY_FUNC(fexp), CS(OffsBody));
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), GetInputLineNumber());
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), GetInputLineNumber(GetCurrentInput()));
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
