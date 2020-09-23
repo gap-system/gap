@@ -200,4 +200,14 @@ enum { BIPEB = sizeof(UInt) * 8, LBIPEB = (BIPEB == 64) ? 6 : 5 };
 typedef const struct init_info StructInitInfo;
 
 
+/****************************************************************************
+**
+*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
+**
+**  This is a forward declaration so that TypInputFile can be used in header
+**  files. The actual declaration is in io.c and is private.
+*/
+typedef struct TypInputFile TypInputFile;
+
+
 #endif // GAP_COMMON_H

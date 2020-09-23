@@ -24,16 +24,6 @@
 
 #include "common.h"
 
-
-Char GET_NEXT_CHAR(void);
-Char GET_NEXT_CHAR_NO_LC(void);
-Char PEEK_NEXT_CHAR(void);
-Char PEEK_CURR_CHAR(void);
-
-// skip the rest of the current line, ignoring line continuations
-// (used to handle comments)
-void SKIP_TO_END_OF_LINE(void);
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
@@ -333,20 +323,31 @@ UInt CloseOutput(void);
 UInt OpenAppend(const Char * filename);
 
 
+TypInputFile * GetCurrentInput(void);
+
+Char GetNextChar(TypInputFile * input);
+Char GET_NEXT_CHAR_NO_LC(TypInputFile * input);
+Char PEEK_NEXT_CHAR(TypInputFile * input);
+Char PEEK_CURR_CHAR(TypInputFile * input);
+
+// skip the rest of the current line, ignoring line continuations
+// (used to handle comments)
+void SKIP_TO_END_OF_LINE(TypInputFile * input);
+
 // get the filename of the current input
-const Char * GetInputFilename(void);
+const Char * GetInputFilename(TypInputFile * input);
 
 // get the number of the current line in the current thread's input
-Int GetInputLineNumber(void);
+Int GetInputLineNumber(TypInputFile * input);
 
 //
-const Char * GetInputLineBuffer(void);
+const Char * GetInputLineBuffer(TypInputFile * input);
 
 //
-Int GetInputLinePosition(void);
+Int GetInputLinePosition(TypInputFile * input);
 
 // get the filenameid (if any) of the current input
-UInt GetInputFilenameID(void);
+UInt GetInputFilenameID(TypInputFile * input);
 
 // get the filename (as GAP string object) with the given id
 Obj GetCachedFilename(UInt id);
@@ -419,7 +420,7 @@ void SPrTo(
 *F  FlushRestOfInputLine()  . . . . . . . . . . . . discard remainder of line
 */
 
-void FlushRestOfInputLine(void);
+void FlushRestOfInputLine(TypInputFile * input);
 
 
 StructInitInfo * InitInfoIO(void);

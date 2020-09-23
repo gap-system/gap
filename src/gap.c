@@ -187,7 +187,9 @@ static Obj Shell(Obj    context,
       CloseOutput();
       ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
-  
+
+  TypInputFile * input = GetCurrentInput();
+
   oldPrintObjState = SetPrintObjState(0);
 
   while ( 1 ) {
@@ -238,7 +240,7 @@ static Obj Shell(Obj    context,
     STATE(ErrorLVars) = errorLVars;
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(errorLVars, &evalResult, &dualSemicolon);
+    status = ReadEvalCommand(errorLVars, input, &evalResult, &dualSemicolon);
     if (STATE(UserHasQUIT))
       break;
 
@@ -293,7 +295,7 @@ static Obj Shell(Obj    context,
 
     if (STATE(UserHasQuit))
       {
-        FlushRestOfInputLine();
+        FlushRestOfInputLine(input);
         STATE(UserHasQuit) = 0;        /* quit has done its job if we are here */
       }
 

@@ -193,6 +193,9 @@ typedef UInt            TypSymbolSet;
 */
 typedef struct {
 
+    //
+    TypInputFile * input;
+
 /****************************************************************************
 **
 *V  Value . . . . . . . . . . . . . value of the identifier, float or integer

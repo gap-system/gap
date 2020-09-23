@@ -50,7 +50,7 @@
 **
 **  'TypInputFile' describes the information stored for open input files.
 */
-typedef struct {
+struct TypInputFile {
     // non-zero if input comes from a stream
     BOOL isstream;
 
@@ -92,7 +92,7 @@ typedef struct {
     // the number of the current line; used in error messages
     Int number;
 
-} TypInputFile;
+};
 
 
 /****************************************************************************
@@ -123,7 +123,7 @@ typedef struct {
 } TypOutputFile;
 
 
-static Char GetLine(void);
+static Char GetLine(TypInputFile * input);
 static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
 
 static Obj ReadLineFunc;
@@ -196,36 +196,40 @@ void LockCurrentOutput(Int lock)
     IO()->IgnoreStdoutErrout = lock ? IO()->Output : NULL;
 }
 
+TypInputFile * GetCurrentInput(void)
+{
+    return IO()->Input;
+}
 
 /****************************************************************************
 **
-*F  GET_NEXT_CHAR()  . . . . . . . . . . . . .  get the next character, local
+*F  GetNextChar() . . . . . . . . . . . . . . . get the next character, local
 **
-**  'GET_NEXT_CHAR' returns the next character from  the current input file.
+**  'GetNextChar' returns the next character from  the current input file.
 */
-Char GET_NEXT_CHAR(void)
+Char GetNextChar(TypInputFile * input)
 {
-    IO()->Input->ptr++;
+    input->ptr++;
 
     // handle line continuation, i.e., backslash followed by new line; and
     // also the case when we run out of buffered data
-    while (*IO()->Input->ptr == '\\' || *IO()->Input->ptr == 0) {
+    while (*input->ptr == '\\' || *input->ptr == 0) {
 
         // if we run out of data, get more, and try again
-        if (*IO()->Input->ptr == 0) {
-            GetLine();
+        if (*input->ptr == 0) {
+            GetLine(input);
             continue;
         }
 
         // we have seen a backslash; so check now if it starts a
         // line continuation, i.e., whether it is followed by a line terminator
-        if (IO()->Input->ptr[1] == '\n') {
+        if (input->ptr[1] == '\n') {
             // LF is the line terminator used in Unix and its relatives
-            IO()->Input->ptr += 2;
+            input->ptr += 2;
         }
-        else if (IO()->Input->ptr[1] == '\r' && IO()->Input->ptr[2] == '\n') {
+        else if (input->ptr[1] == '\r' && input->ptr[2] == '\n') {
             // CR+LF is the line terminator used by Windows
-            IO()->Input->ptr += 3;
+            input->ptr += 3;
         }
         else {
             // if we see a backlash without a line terminator after it, stop
@@ -237,99 +241,95 @@ Char GET_NEXT_CHAR(void)
         SetPrompt("> ");
     }
 
-    return *IO()->Input->ptr;
+    return *input->ptr;
 }
 
-// GET_NEXT_CHAR_NO_LC is like GET_NEXT_CHAR, but does not handle
+// GET_NEXT_CHAR_NO_LC is like GetNextChar, but does not handle
 // line continuations. This is used when skipping to the end of the
 // current line, when handling comment lines.
-Char GET_NEXT_CHAR_NO_LC(void)
+Char GET_NEXT_CHAR_NO_LC(TypInputFile * input)
 {
-    IO()->Input->ptr++;
-
-    if (!*IO()->Input->ptr)
-        GetLine();
-
-    return *IO()->Input->ptr;
+    char c = *(++input->ptr);
+    return c ? c : GetLine(input);
 }
 
-Char PEEK_NEXT_CHAR(void)
+Char PEEK_NEXT_CHAR(TypInputFile * input)
 {
     // store the current character
-    char c = *IO()->Input->ptr;
+    char c = *input->ptr;
 
     // read next character; this will increment IO()->Input->ptr and then
     // possibly read in new line data, and so even might end up reseting
     // IO()->Input->ptr to point at the start of the line buffer, which is
     // equal to Input->line+1
-    char next = GET_NEXT_CHAR();
+    char next = GetNextChar(input);
 
-    // push back the previous character: first, return IO()->Input->ptr to the
-    // previous position; then, if we detect that GET_NEXT_CHAR read a new
+    // push back the previous character: first, return input->ptr to the
+    // previous position; then, if we detect that GetNextChar read a new
     // line, also restore the previous character by placing it in the "push
     // back buffer"
-    GAP_ASSERT(IO()->Input->ptr > IO()->Input->line);
-    IO()->Input->ptr--;
-    if (IO()->Input->ptr == IO()->Input->line)
-        *IO()->Input->ptr = c;
+    GAP_ASSERT(input->ptr > input->line);
+    input->ptr--;
+    if (input->ptr == input->line)
+        *input->ptr = c;
 
     // return the next character
     return next;
 }
 
-Char PEEK_CURR_CHAR(void)
+Char PEEK_CURR_CHAR(TypInputFile * input)
 {
-    Char c = *IO()->Input->ptr;
+    Char c = *input->ptr;
 
     // if no character is available then get one
     if (c == '\0') {
-        GAP_ASSERT(IO()->Input->ptr > IO()->Input->line);
-        IO()->Input->ptr--;
-        c = GET_NEXT_CHAR();
+        GAP_ASSERT(input->ptr > input->line);
+        input->ptr--;
+        c = GetNextChar(input);
     }
 
     return c;
 }
 
-void SKIP_TO_END_OF_LINE(void)
+void SKIP_TO_END_OF_LINE(TypInputFile * input)
 {
-    Char c = *IO()->Input->ptr;
+    Char c = *input->ptr;
     while (c != '\n' && c != '\r' && c != '\377')
-        c = GET_NEXT_CHAR_NO_LC();
+        c = GET_NEXT_CHAR_NO_LC(input);
 }
 
 
-const Char * GetInputFilename(void)
+const Char * GetInputFilename(TypInputFile * input)
 {
-    GAP_ASSERT(IO()->Input);
-    return IO()->Input->name;
+    GAP_ASSERT(input);
+    return input->name;
 }
 
-Int GetInputLineNumber(void)
+Int GetInputLineNumber(TypInputFile * input)
 {
-    GAP_ASSERT(IO()->Input);
-    return IO()->Input->number;
+    GAP_ASSERT(input);
+    return input->number;
 }
 
-const Char * GetInputLineBuffer(void)
+const Char * GetInputLineBuffer(TypInputFile * input)
 {
-    GAP_ASSERT(IO()->Input);
+    GAP_ASSERT(input);
     // first byte of Input->line is reserved for the pushback buffer, so add 1
-    return IO()->Input->line + 1;
+    return input->line + 1;
 }
 
-Int GetInputLinePosition(void)
+Int GetInputLinePosition(TypInputFile * input)
 {
-    GAP_ASSERT(IO()->Input);
-    return IO()->Input->ptr - GetInputLineBuffer();
+    GAP_ASSERT(input);
+    return input->ptr - GetInputLineBuffer(input);
 }
 
-UInt GetInputFilenameID(void)
+UInt GetInputFilenameID(TypInputFile * input)
 {
-    GAP_ASSERT(IO()->Input);
-    UInt gapnameid = IO()->Input->gapnameid;
+    GAP_ASSERT(input);
+    UInt gapnameid = input->gapnameid;
     if (gapnameid == 0) {
-        Obj filename = MakeImmString(GetInputFilename());
+        Obj filename = MakeImmString(GetInputFilename(input));
 #ifdef HPCGAP
         // TODO/FIXME: adjust this code to work more like the corresponding
         // code below for GAP?!?
@@ -343,7 +343,7 @@ UInt GetInputFilenameID(void)
             gapnameid = INT_INTOBJ(pos);
         }
 #endif
-        IO()->Input->gapnameid = gapnameid;
+        input->gapnameid = gapnameid;
     }
     return gapnameid;
 }
@@ -484,25 +484,25 @@ UInt OpenInput (
         return 0;
 
     /* enter the file identifier and the file name                         */
-    IO()->Input = PushNewInput();
-    IO()->Input->isstream = 0;
-    IO()->Input->file = file;
-    IO()->Input->name[0] = '\0';
+    TypInputFile * input = IO()->Input = PushNewInput();
+    input->isstream = 0;
+    input->file = file;
+    input->name[0] = '\0';
 
     // enable echo for stdin and errin
     if (!strcmp("*errin*", filename) || !strcmp("*stdin*", filename))
-        IO()->Input->echo = 1;
+        input->echo = 1;
     else
-        IO()->Input->echo = 0;
+        input->echo = 0;
 
-    strlcpy(IO()->Input->name, filename, sizeof(IO()->Input->name));
-    IO()->Input->gapnameid = 0;
+    strlcpy(input->name, filename, sizeof(input->name));
+    input->gapnameid = 0;
 
     // start with an empty line
-    IO()->Input->line[0] = '\0';    // init the pushback buffer
-    IO()->Input->line[1] = '\0';    // empty line buffer
-    IO()->Input->ptr = IO()->Input->line + 1;
-    IO()->Input->number = 1;
+    input->line[0] = '\0';    // init the pushback buffer
+    input->line[1] = '\0';    // empty line buffer
+    input->ptr = input->line + 1;
+    input->number = 1;
 
     /* indicate success                                                    */
     return 1;
@@ -522,28 +522,27 @@ UInt OpenInputStream(Obj stream, BOOL echo)
         return 0;
 
     /* enter the file identifier and the file name                         */
-    IO()->Input = PushNewInput();
-    IO()->Input->isstream = 1;
-    IO()->Input->stream = stream;
-    IO()->Input->isstringstream =
-        (CALL_1ARGS(IsStringStream, stream) == True);
-    if (IO()->Input->isstringstream) {
-        IO()->Input->sline = CONST_ADDR_OBJ(stream)[2];
-        IO()->Input->spos = INT_INTOBJ(CONST_ADDR_OBJ(stream)[1]);
+    TypInputFile * input = IO()->Input = PushNewInput();
+    input->isstream = 1;
+    input->stream = stream;
+    input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    if (input->isstringstream) {
+        input->sline = CONST_ADDR_OBJ(stream)[2];
+        input->spos = INT_INTOBJ(CONST_ADDR_OBJ(stream)[1]);
     }
     else {
-        IO()->Input->sline = 0;
+        input->sline = 0;
     }
-    IO()->Input->file = -1;
-    IO()->Input->echo = echo;
-    strlcpy(IO()->Input->name, "stream", sizeof(IO()->Input->name));
-    IO()->Input->gapnameid = 0;
+    input->file = -1;
+    input->echo = echo;
+    strlcpy(input->name, "stream", sizeof(input->name));
+    input->gapnameid = 0;
 
     // start with an empty line
-    IO()->Input->line[0] = '\0';    // init the pushback buffer
-    IO()->Input->line[1] = '\0';    // empty line buffer
-    IO()->Input->ptr = IO()->Input->line + 1;
-    IO()->Input->number = 1;
+    input->line[0] = '\0';    // init the pushback buffer
+    input->line[1] = '\0';    // empty line buffer
+    input->ptr = input->line + 1;
+    input->number = 1;
 
     /* indicate success                                                    */
     return 1;
@@ -606,9 +605,9 @@ UInt CloseInput ( void )
 *F  FlushRestOfInputLine()  . . . . . . . . . . . . discard remainder of line
 */
 
-void FlushRestOfInputLine( void )
+void FlushRestOfInputLine(TypInputFile * input)
 {
-    IO()->Input->ptr[0] = IO()->Input->ptr[1] = '\0';
+    input->ptr[0] = input->ptr[1] = '\0';
 }
 
 /****************************************************************************
@@ -1122,11 +1121,11 @@ void SetPrompt(const char * prompt)
 **
 *F  GetLine2( <input>, <buffer>, <length> ) . . . . . . . . get a line, local
 */
-static Int GetLine2 (
-    TypInputFile *          input,
-    Char *                  buffer,
-    UInt                    length )
+static Int GetLine2(TypInputFile * input)
 {
+    Char * buffer = input->line + 1;
+    UInt   length = sizeof(input->line) - 1;
+
     if ( input->isstream ) {
         if (input->sline == 0 ||
             (IS_STRING(input->sline) &&
@@ -1185,7 +1184,7 @@ static Int GetLine2 (
 
 /****************************************************************************
 **
-*F  GetLine() . . . . . . . . . . . . . . . . . . . . . . . get a line, local
+*F  GetLine( <input> ) . . . . . . . . . . . . . . . . . .  get a line, local
 **
 **  'GetLine'  fetches another  line from  the  input 'Input' into the buffer
 **  'Input->line', sets the pointer 'Input->ptr' to the beginning of this
@@ -1197,24 +1196,18 @@ static Int GetLine2 (
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-static Char GetLine(void)
+static Char GetLine(TypInputFile * input)
 {
+    GAP_ASSERT(input);
+
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     /* if the GAP function `PrintPromptHook' is defined then it is called  */
     /* for printing the prompt, see also `EndLineHook'                     */
-    if (!IO()->Input->isstream) {
-        if (IO()->Input->file == 0) {
-            if ( ! SyQuiet ) {
-                if (IO()->Output->pos > 0)
-                    Pr("\n", 0, 0);
-                if ( PrintPromptHook )
-                     Call0ArgsInNewReader( PrintPromptHook );
-                else
-                     Pr( "%s%c", (Int)STATE(Prompt), (Int)'\03' );
-            } else
-                Pr("%c", (Int)'\03', 0);
+    if (!input->isstream) {
+        if (input->file == 0 && SyQuiet) {
+            Pr("%c", (Int)'\03', 0);
         }
-        else if (IO()->Input->file == 2) {
+        else if (input->file == 0 || input->file == 2) {
             if (IO()->Output->pos > 0)
                 Pr("\n", 0, 0);
             if ( PrintPromptHook )
@@ -1225,37 +1218,29 @@ static Char GetLine(void)
     }
 
     /* bump the line number                                                */
-    if (IO()->Input->ptr > IO()->Input->line &&
-        IO()->Input->ptr[-1] == '\n') {
-        IO()->Input->number++;
+    if (input->ptr > input->line && input->ptr[-1] == '\n') {
+        input->number++;
     }
 
-    // initialize 'IO()->Input->ptr', no errors on this line so far
-    IO()->Input->line[0] = '\0';    // init the pushback buffer
-    IO()->Input->line[1] = '\0';    // empty line buffer
-    IO()->Input->ptr = IO()->Input->line + 1;
+    // initialize 'input->ptr', no errors on this line so far
+    input->line[0] = '\0';    // init the pushback buffer
+    input->line[1] = '\0';    // empty line buffer
+    input->ptr = input->line + 1;
     STATE(NrErrLine) = 0;
 
-#ifdef HPCGAP
-    if (!IO()->Input)
-        OpenDefaultInput();
-#endif
-
     /* try to read a line                                              */
-    if (!GetLine2(IO()->Input, IO()->Input->line + 1,
-                  sizeof(IO()->Input->line) - 1)) {
-        IO()->Input->ptr[0] = '\377';
-        IO()->Input->ptr[1] = '\0';
+    if (!GetLine2(input)) {
+        input->ptr[0] = '\377';
+        input->ptr[1] = '\0';
     }
 
     /* if necessary echo the line to the logfile                      */
-    if (IO()->InputLog != 0 && IO()->Input->echo == 1)
-        if (!(IO()->Input->ptr[0] == '\377' && IO()->Input->ptr[1] == '\0'))
-            PutLine2(IO()->InputLog, IO()->Input->ptr,
-                     strlen(IO()->Input->ptr));
+    if (IO()->InputLog != 0 && input->echo == 1)
+        if (!(input->ptr[0] == '\377' && input->ptr[1] == '\0'))
+            PutLine2(IO()->InputLog, input->ptr, strlen(input->ptr));
 
     /* return the current character                                        */
-    return *IO()->Input->ptr;
+    return *input->ptr;
 }
 
 
@@ -1554,7 +1539,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 */
 static Obj FuncToggleEcho(Obj self)
 {
-    IO()->Input->echo = 1 - IO()->Input->echo;
+    IO()->Input->echo = !IO()->Input->echo;
     return (Obj)0;
 }
 
@@ -2049,7 +2034,7 @@ static Obj FuncINPUT_FILENAME(Obj self)
     if (IO()->Input == 0)
         return MakeImmString("*defin*");
 
-    UInt gapnameid = GetInputFilenameID();
+    UInt gapnameid = GetInputFilenameID(GetCurrentInput());
     return GetCachedFilename(gapnameid);
 }
 

@@ -28,6 +28,7 @@
 
 static UInt NextSymbol(ScannerState * s);
 
+#define GET_NEXT_CHAR() GetNextChar(s->input)
 
 /****************************************************************************
 **
@@ -55,12 +56,13 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             Pr("Syntax warning: %s", (Int)msg, 0);
 
         // ... and the filename + line, unless it is '*stdin*'
-        if (strcmp("*stdin*", GetInputFilename()) != 0)
-            Pr(" in %s:%d", (Int)GetInputFilename(), GetInputLineNumber());
+        if (strcmp("*stdin*", GetInputFilename(s->input)) != 0)
+            Pr(" in %s:%d", (Int)GetInputFilename(s->input),
+               GetInputLineNumber(s->input));
         Pr("\n", 0, 0);
 
         // print the current line
-        const char * line = GetInputLineBuffer();
+        const char * line = GetInputLineBuffer(s->input);
         const UInt len = strlen(line);
         if (len > 0 && line[len-1] != '\n')
             Pr("%s\n", (Int)line, 0);
@@ -71,13 +73,13 @@ static void SyntaxErrorOrWarning(ScannerState * s,
         Int startPos = s->SymbolStartPos[tokenoffset];
         Int pos;
         if (tokenoffset == 0)
-            pos = GetInputLinePosition();
+            pos = GetInputLinePosition(s->input);
         else
             pos = s->SymbolStartPos[tokenoffset - 1];
 
-        if (s->SymbolStartLine[tokenoffset] != GetInputLineNumber()) {
+        if (s->SymbolStartLine[tokenoffset] != GetInputLineNumber(s->input)) {
             startPos = 1;
-            pos = GetInputLinePosition();
+            pos = GetInputLinePosition(s->input);
         }
 
         if (0 < pos && startPos <= pos) {
@@ -433,7 +435,7 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
             }
 
             // peek ahead to decide if we are looking at a range expression
-            if (PEEK_NEXT_CHAR() == '.') {
+            if (PEEK_NEXT_CHAR(s->input) == '.') {
                 // we are looking at '..' and are probably inside a range
                 // expression
                 symbol = S_INT;
@@ -533,7 +535,7 @@ finish:
 */
 void ScanForFloatAfterDotHACK(ScannerState * s)
 {
-    s->Symbol = GetNumber(s, 1, PEEK_CURR_CHAR());
+    s->Symbol = GetNumber(s, 1, PEEK_CURR_CHAR(s->input));
 }
 
 
@@ -670,7 +672,7 @@ static Char GetStr(ScannerState * s, Char c)
         SyntaxError(s, "String must not include <newline>");
 
     if (c == '\377') {
-        FlushRestOfInputLine();
+        FlushRestOfInputLine(s->input);
         SyntaxError(s, "String must end with \" before end of file");
     }
 
@@ -695,7 +697,7 @@ static void GetPragma(ScannerState * s, Char c)
     s->ValueObj = AppendBufToString(string, buf, i);
 
     if (c == '\377') {
-        FlushRestOfInputLine();
+        FlushRestOfInputLine(s->input);
     }
 }
 
@@ -746,7 +748,7 @@ static Char GetTripStr(ScannerState * s, Char c)
     s->ValueObj = AppendBufToString(string, buf, i);
 
     if (c == '\377') {
-        FlushRestOfInputLine();
+        FlushRestOfInputLine(s->input);
         SyntaxError(s, "String must end with \"\"\" before end of file");
     }
 
@@ -861,8 +863,8 @@ static void StoreSymbolPosition(ScannerState * s)
     s->SymbolStartPos[2] = s->SymbolStartPos[1];
     s->SymbolStartLine[1] = s->SymbolStartLine[0];
     s->SymbolStartPos[1] = s->SymbolStartPos[0];
-    s->SymbolStartLine[0] = GetInputLineNumber();
-    s->SymbolStartPos[0] = GetInputLinePosition();
+    s->SymbolStartLine[0] = GetInputLineNumber(s->input);
+    s->SymbolStartPos[0] = GetInputLinePosition(s->input);
 }
 
 
@@ -881,22 +883,24 @@ static void StoreSymbolPosition(ScannerState * s)
 */
 static UInt NextSymbol(ScannerState * s)
 {
+    GAP_ASSERT(s->input == GetCurrentInput());
+
     // Record end of previous symbol's position
     StoreSymbolPosition(s);
 
-    Char c = PEEK_CURR_CHAR();
+    Char c = PEEK_CURR_CHAR(s->input);
 
     // skip over <spaces>, <tabs>, <newlines> and comments
     while (c == ' ' || c == '\t' || c== '\n' || c== '\r' || c == '\f' || c=='#') {
         if (c == '#') {
-            c = GET_NEXT_CHAR_NO_LC();
+            c = GET_NEXT_CHAR_NO_LC(s->input);
             if (c == '%') {
                 // we have encountered a pragma
                 GetPragma(s, c);
                 return S_PRAGMA;
             }
 
-            SKIP_TO_END_OF_LINE();
+            SKIP_TO_END_OF_LINE(s->input);
         }
         c = GET_NEXT_CHAR();
     }
@@ -967,7 +971,7 @@ static UInt NextSymbol(ScannerState * s)
     case '5': case '6': case '7': case '8': case '9':
                       return GetNumber(s, 0, c);
 
-    case '\377':      symbol = S_EOF;  FlushRestOfInputLine(); break;
+    case '\377':      symbol = S_EOF;  FlushRestOfInputLine(s->input); break;
 
     default:          symbol = S_ILLEGAL;       GET_NEXT_CHAR(); break;
     }

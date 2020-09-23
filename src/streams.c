@@ -88,7 +88,8 @@ static Int READ_COMMAND(Obj *evalResult)
     ExecStatus    status;
 
     ClearError();
-    status = ReadEvalCommand(0, evalResult, 0);
+    TypInputFile * input = GetCurrentInput();
+    status = ReadEvalCommand(0, input, evalResult, 0);
     if( status == STATUS_EOF )
         return 0;
 
@@ -173,6 +174,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
         return Fail;
     }
 
+    TypInputFile * input = GetCurrentInput();
 
     if (capture == True) {
         outstreamString = NEW_STRING(0);
@@ -193,7 +195,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             SET_LEN_STRING(outstreamString, 0);
         }
 
-        status = ReadEvalCommand(0, &evalResult, &dualSemicolon);
+        status = ReadEvalCommand(0, input, &evalResult, &dualSemicolon);
 
         if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             result = NEW_PLIST(T_PLIST, 5);
@@ -296,7 +298,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
 
 static UInt LastReadValueGVar;
 
-static void READ_INNER(void)
+static void READ_INNER(TypInputFile * input)
 {
     if (STATE(UserHasQuit))
       {
@@ -309,11 +311,12 @@ static void READ_INNER(void)
         STATE(UserHasQUIT) = 0;
       }
     AssGVarWithoutReadOnlyCheck( LastReadValueGVar, 0);
+
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
         Obj evalResult;
-        ExecStatus status = ReadEvalCommand(0, &evalResult, 0);
+        ExecStatus status = ReadEvalCommand(0, input, &evalResult, 0);
         if (STATE(UserHasQuit) || STATE(UserHasQUIT))
             break;
 
@@ -354,8 +357,9 @@ Obj READ_AS_FUNC ( void )
 {
     /* now do the reading                                                  */
     ClearError();
+    TypInputFile * input = GetCurrentInput();
     Obj evalResult;
-    UInt type = ReadEvalFile(&evalResult);
+    UInt type = ReadEvalFile(input, &evalResult);
     ClearError();
 
     /* get the function                                                    */
@@ -366,7 +370,7 @@ Obj READ_AS_FUNC ( void )
 }
 
 
-static void READ_TEST_OR_LOOP(Obj context)
+static void READ_TEST_OR_LOOP(Obj context, TypInputFile * input)
 {
     UInt                type;
     UInt                oldtime;
@@ -384,7 +388,7 @@ static void READ_TEST_OR_LOOP(Obj context)
         SetPrintObjState(0);
         ClearError();
         Obj evalResult;
-        type = ReadEvalCommand(context, &evalResult, &dualSemicolon);
+        type = ReadEvalCommand(context, input, &evalResult, &dualSemicolon);
 
         /* stop the stopwatch                                              */
         UpdateTime(oldtime);
@@ -486,9 +490,10 @@ Int READ_GAP_ROOT ( const Char * filename )
         Pr("#I  READ_GAP_ROOT: loading '%s' as GAP file\n", (Int)filename, 0);
     }
     if (OpenInput(path)) {
+        TypInputFile * input = GetCurrentInput();
         while (1) {
             ClearError();
-            UInt type = ReadEvalCommand(0, 0, 0);
+            UInt type = ReadEvalCommand(0, input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
             if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
@@ -857,7 +862,7 @@ static Obj FuncREAD(Obj self, Obj input)
         return False;
 
     // read the file
-    READ_INNER();
+    READ_INNER(GetCurrentInput());
     if (!CloseInput()) {
         ErrorQuit("Panic: READ cannot close input", 0, 0);
     }
@@ -880,7 +885,7 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
         return False;
 
     // read the file
-    READ_INNER();
+    READ_INNER(GetCurrentInput());
     if (!CloseInput()) {
         ErrorQuit("Panic: READ_NORECOVERY cannot close input", 0, 0);
     }
@@ -920,7 +925,7 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
     }
 
     LockCurrentOutput(1);
-    READ_TEST_OR_LOOP(context);
+    READ_TEST_OR_LOOP(context, GetCurrentInput());
     LockCurrentOutput(0);
 
     res = CloseInput();
