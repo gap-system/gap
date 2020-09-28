@@ -382,12 +382,16 @@ dnl User setting: Debug mode (off by default)
 dnl
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug], [enable debug mode])],
-    [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])
-     AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])],
+    []
     [enable_debug=no]
     )
 AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
+
+AS_IF([test "x$enable_debug" != "xno"],
+    [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])
+     AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])],
+)
 
 dnl
 dnl Maintainer mode (on by default) controls whether our build system
@@ -412,20 +416,28 @@ AC_SUBST([MAINTAINER_MODE], [$enable_maintainer_mode])
 dnl
 AC_ARG_ENABLE([memory-checking],
     [AS_HELP_STRING([--enable-memory-checking], [enable memory checking])],
-    [AC_DEFINE([GAP_MEM_CHECK], [1], [define if building with memory checking])],
+    [],
     [enable_memory_checking=no]
     )
 AC_MSG_CHECKING([whether to enable memory checking])
 AC_MSG_RESULT([$enable_memory_checking])
 
+AS_IF([test "x$enable_memory_checking" != "xno"],
+  [AC_DEFINE([GAP_MEM_CHECK], [1], [define if building with memory checking])]
+)
+
 dnl
 AC_ARG_ENABLE([valgrind],
     [AS_HELP_STRING([--enable-valgrind], [enable valgrind extensions to GASMAN])],
-    [AC_DEFINE([GAP_MEMORY_CANARY], [1], [define if building with valgrind extensions])],
+    [],
     [enable_valgrind=no]
     )
 AC_MSG_CHECKING([whether to enable valgrind extensions to GASMAN])
 AC_MSG_RESULT([$enable_valgrind])
+
+AS_IF([test "x$enable_valgrind" != "xno"],
+  [AC_DEFINE([GAP_MEMORY_CANARY], [1], [define if building with valgrind extensions])]
+)
 
 if test "x$enable_valgrind" != "xno" -a "x$enable_memory_checking" != "xno"; then
     AC_MSG_ERROR([--enable-valgrind and --enable-memory-checking cannot be used at the same time])
