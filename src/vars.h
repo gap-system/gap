@@ -41,20 +41,7 @@
 
 /****************************************************************************
 **
-*V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
-**
-**  'BottomLVars' is the local variables bag at the bottom of the call stack.
-**  Without   such a dummy  frame at  the bottom, 'SWITCH_TO_NEW_LVARS' would
-**  have to check for the bottom, slowing it down.
-**
-*/
-/* TL: extern  Bag             BottomLVars; */
-
-
-/****************************************************************************
-**
-*F  IsBottomLVars(<lvars>) . .  check whether some lvars are the bottom lvars
-**
+*F  IsBottomLVars(<lvars>) . . test whether lvars is at the call stack bottom
 */
 BOOL IsBottomLVars(Obj lvars);
 

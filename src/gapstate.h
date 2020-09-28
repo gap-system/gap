@@ -46,7 +46,6 @@ typedef struct GAPState {
     Obj CurrNamespace;
 
     /* From vars.c */
-    Bag   BottomLVars;
     Bag   CurrLVars;
     Obj * PtrLVars;
     Bag   LVarsPool[16];
