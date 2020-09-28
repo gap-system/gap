@@ -69,7 +69,7 @@
 **  have to check for the bottom, slowing it down.
 **
 */
-/* TL: Bag BottomLVars; */
+static Bag BottomLVars;
 
 
 /****************************************************************************
@@ -1992,7 +1992,7 @@ static Obj FuncGetCurrentLVars(Obj self)
 
 static Obj FuncGetBottomLVars(Obj self)
 {
-  return STATE(BottomLVars);
+  return BottomLVars;
 }
 
 static Obj FuncParentLVars(Obj self, Obj lvars)
@@ -2043,7 +2043,7 @@ static Obj FuncENVI_FUNC(Obj self, Obj func)
 */
 BOOL IsBottomLVars(Obj lvars)
 {
-    return lvars == STATE(BottomLVars);
+    return lvars == BottomLVars;
 }
 
 
@@ -2053,7 +2053,7 @@ BOOL IsBottomLVars(Obj lvars)
 */
 Obj SWITCH_TO_BOTTOM_LVARS(void)
 {
-    return SWITCH_TO_OLD_LVARS(STATE(BottomLVars));
+    return SWITCH_TO_OLD_LVARS(BottomLVars);
 }
 
 
@@ -2178,7 +2178,7 @@ static Int InitKernel (
 {
     /* make 'CurrLVars' known to Gasman                                    */
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
-    InitGlobalBag( &STATE(BottomLVars), "src/vars.c:BottomLVars" );
+    InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
 
     enum { count = ARRAY_SIZE(STATE(LVarsPool)) };
     static char cookies[count][24];
@@ -2342,7 +2342,7 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    STATE(CurrLVars) = STATE(BottomLVars);
+    STATE(CurrLVars) = BottomLVars;
     SWITCH_TO_BOTTOM_LVARS();
 
     return 0;
@@ -2356,28 +2356,30 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
-    InitGVarFuncsFromTable( GVarFuncs );
-
-    return 0;
-}
-
-
-static Int InitModuleState(void)
-{
     Obj tmpFunc, tmpBody;
 
-    STATE(BottomLVars) = NewBag(T_HVARS, 3 * sizeof(Obj));
+    BottomLVars = NewBag(T_HVARS, 3 * sizeof(Obj));
     tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
 
-    LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(STATE(BottomLVars));
+    LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(BottomLVars);
     hdr->func = tmpFunc;
     hdr->parent = Fail;
     tmpBody = NewFunctionBody();
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
-    STATE(CurrLVars) = STATE(BottomLVars);
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    return PostRestore(module);
+}
+
+
+static Int InitModuleState(void)
+{
+#ifdef HPCGAP
+    STATE(CurrLVars) = BottomLVars;
     SWITCH_TO_BOTTOM_LVARS();
+#endif
 
     return 0;
 }
