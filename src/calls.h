@@ -473,14 +473,6 @@ Obj ArgStringToList(const Char * nams_c);
 *F * * * * * * * * * * * * * type and print function  * * * * * * * * * * * *
 */
 
-/****************************************************************************
-**
-*F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
-**
-**  'PrintFunction' prints  the   function  <func> .
-*/
-void PrintFunction(Obj func);
-
 void PrintKernelFunction(Obj func);
 
 

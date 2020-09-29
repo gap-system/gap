@@ -985,8 +985,7 @@ static Obj TypeFunction(Obj func)
 
 static Obj PrintOperation;
 
-void PrintFunction (
-    Obj                 func )
+static void PrintFunction(Obj func)
 {
     Int                 narg;           /* number of arguments             */
     Int                 nloc;           /* number of locals                */

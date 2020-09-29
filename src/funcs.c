@@ -697,7 +697,7 @@ static void PrintFuncExpr(Expr expr)
 {
     /* get the function expression bag                                     */
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
-    PrintFunction( fexp );
+    PrintObj( fexp );
 }
 
 
