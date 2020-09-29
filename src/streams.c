@@ -714,9 +714,6 @@ static Obj FuncPrint(Obj self, Obj args)
         else if ( IS_STRING_REP(arg) ) {
             PrintString1(arg);
         }
-        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintFunction( arg );
-        }
         else {
             PrintObj( arg );
         }
@@ -771,9 +768,6 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
             }
             else if (IS_STRING_REP(arg)) {
                 PrintString1(arg);
-            }
-            else if (IS_FUNC(arg)) {
-                PrintFunction(arg);
             }
             else {
                 PrintObj(arg);
