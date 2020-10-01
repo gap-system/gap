@@ -49,36 +49,6 @@ gap> SizesPerfectGroups();
   887040, 892800, 900000, 903168, 907200, 912576, 921600, 921984, 929280, 
   933120, 936000, 937500, 943488, 950400, 950520, 960000, 962280, 967680, 
   976500, 979200, 979776, 983040, 987840 ]
-gap> List(SizesPerfectGroups(), NrPerfectLibraryGroups);
-[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 7, 1, 1, 1, 1, 3, 1, 1, 1, 7, 1, 
-  2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 5, 1, 1, 3, 1, 1, 9, 4, 1, 1, 1, 1, 1, 
-  1, 3, 1, 7, 1, 1, 1, 1, 5, 22, 1, 3, 1, 1, 1, 1, 1, 4, 1, 1, 37, 2, 1, 1, 
-  4, 1, 1, 1, 4, 25, 3, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2, 1, 3, 0, 1, 4, 1, 
-  1, 1, 4, 1, 4, 4, 3, 1, 1, 6, 1, 0, 1, 8, 2, 1, 3, 1, 1, 1, 1, 1, 1, 15, 3, 
-  1, 1, 1, 4, 5, 2, 0, 1, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 1, 18, 1, 3, 1, 12, 
-  1, 0, 8, 1, 1, 1, 3, 1, 19, 1, 1, 2, 1, 1, 1, 1, 1, 3, 1, 2, 1, 26, 3, 3, 
-  1, 17, 5, 1, 1, 2, 0, 1, 1, 4, 3, 2, 7, 1, 1, 2, 1, 3, 2, 3, 1, 3, 18, 1, 
-  27, 1, 1, 0, 3, 1, 1, 1, 6, 1, 1, 3, 3, 0, 1, 1, 11, 1, 1, 2, 2, 1, 1, 4, 
-  3, 1, 1, 1, 1, 3, 1, 2, 1, 1, 3, 8, 1, 1, 25, 4, 3, 18, 1, 4, 17, 6, 1, 0, 
-  1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 19, 1, 1, 7, 1, 1, 2, 3, 1, 4, 1, 12, 1, 2, 
-  41, 1, 1, 1, 3, 2, 1, 0, 23, 3, 2, 1, 1, 1, 1, 2, 3, 2, 1, 1, 3, 0, 1, 13, 
-  2, 5, 3, 16, 2, 2, 1, 3, 2, 3, 3, 2, 1, 2, 1, 1, 3, 1, 7, 6, 4, 1, 23, 8, 
-  2, 21, 3, 8, 1, 2, 1, 12, 1, 20, 1, 1, 4, 0, 1 ]
-gap> List(SizesPerfectGroups(), NrPerfectGroups);
-[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 7, 1, 1, 1, 1, 3, 1, 1, 1, 7, 1, 
-  2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 5, 1, 1, 3, 1, 1, 9, 4, 1, 1, 1, 1, 1, 
-  1, 3, 1, 7, 1, 1, 1, 1, 5, 22, 1, 3, 1, 1, 1, 1, 1, 4, 1, 1, 37, 2, 1, 1, 
-  4, 1, 1, 1, 4, 25, 3, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2, 1, 3, fail, 1, 4, 
-  1, 1, 1, 4, 1, 4, 4, 3, 1, 1, 6, 1, 52, 1, 8, 2, 1, 3, 1, 1, 1, 1, 1, 1, 
-  15, 3, 1, 1, 1, 4, 5, 2, fail, 1, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 1, 18, 1, 
-  3, 1, 12, 1, fail, 8, 1, 1, 1, 3, 1, 19, 1, 1, 2, 1, 1, 1, 1, 1, 3, 1, 2, 
-  1, 26, 3, 3, 1, 17, 5, 1, 1, 2, fail, 1, 1, 4, 3, 2, 7, 1, 1, 2, 1, 3, 2, 
-  3, 1, 3, 18, 1, 27, 1, 1, fail, 3, 1, 1, 1, 6, 1, 1, 3, 3, 46, 1, 1, 11, 1, 
-  1, 2, 2, 1, 1, 4, 3, 1, 1, 1, 1, 3, 1, 2, 1, 1, 3, 8, 1, 1, 25, 4, 3, 18, 
-  1, 4, 17, 6, 1, fail, 1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 19, 1, 1, 7, 1, 1, 2, 
-  3, 1, 4, 1, 12, 1, 2, 41, 1, 1, 1, 3, 2, 1, fail, 23, 3, 2, 1, 1, 1, 1, 2, 
-  3, 2, 1, 1, 3, 54, 1, 13, 2, 5, 3, 16, 2, 2, 1, 3, 2, 3, 3, 2, 1, 2, 1, 1, 
-  3, 1, 7, 6, 4, 1, 23, 8, 2, 21, 3, 8, 1, 2, 1, 12, 1, 20, 1, 1, 4, fail, 1 ]
 
 #
 gap> DisplayInformationPerfectGroups(1);
@@ -106,10 +76,6 @@ gap> DisplayInformationPerfectGroups([3840,2]);
 #I Perfect group 3840:  A5 ( 2^4 E 2^1 A ) C 2^1 II
 #I   centre = 4  size = 2^8*3*5  orbit size = 64
 #I   Holt-Plesken class 1 (6,2)
-gap> DisplayInformationPerfectGroups(61440);
-#I  no information known about size 61440
-gap> DisplayInformationPerfectGroups(86016);
-#I  no information available about size 86016
 gap> DisplayInformationPerfectGroups(967680,4);
 #I Perfect group 
 967680:  quasisimple group  L3(4) 3^1 x ( 2^1 A 2^1 ) x ( 2^1 A 2^1 )
@@ -164,16 +130,6 @@ gap> IsFpGroup(g);
 true
 
 #
-# construct all perfect groups, to verify this works
-# TODO: slow (takes a few seconds), move to teststandard?
-#
-gap> for n in SizesPerfectGroups() do
->   for i in [1..NumberPerfectLibraryGroups(n)] do
->     PerfectGroup(n, i);
->   od;
-> od;
-
-#
 # test PerfGrpConst directly for some corner cases
 #
 gap> PerfGrpConst(IsPermGroup, []);
@@ -192,10 +148,6 @@ gap> PerfectGroup(1,2);
 Error, PerfectGroup(1,2) does not exist !
 gap> PerfectGroup(30,1);
 Error, PerfectGroup(30,1) does not exist !
-gap> PerfectGroup(61440, 1);
-Error, Perfect groups of size 61440 not known
-gap> PerfectGroup(86016, 1);
-Error, Perfect groups of size 86016 not available
 
 #
 gap> STOP_TEST("perfectgroups.tst", 1);
