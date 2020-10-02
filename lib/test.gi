@@ -164,11 +164,14 @@ InstallGlobalFunction(ParseTestFile, function(arg)
 end);
 
 InstallGlobalFunction(RunTests, function(arg)
-  local tests, opts, breakOnError, inp, outp, pos, cmp, times, ttime, nrlines,
-        s, res, fres, t, f, i, gaproot, localbag;
+  local tests, opts, breakOnError, alwaysPrintTracebackOnError, inp, outp,
+        pos, cmp, times, ttime, nrlines, s, res, fres, t, f, i, gaproot,
+        localbag;
   # don't enter break loop in case of error during test
   tests := arg[1];
-  opts := rec( breakOnError := false, showProgress := "some", localdef := false );
+  opts := rec( breakOnError := false, alwaysPrintTracebackOnError:= false,
+               showProgress := "some", localdef := false );
+
   if not IS_OUTPUT_TTY() then
     opts.showProgress := false;
   fi;
@@ -194,6 +197,8 @@ InstallGlobalFunction(RunTests, function(arg)
 
   breakOnError := BreakOnError;
   BreakOnError := opts.breakOnError;
+  alwaysPrintTracebackOnError:= AlwaysPrintTracebackOnError;
+  AlwaysPrintTracebackOnError:= opts.alwaysPrintTracebackOnError;
 
   localbag := false;
   if opts.localdef <> false then
@@ -228,8 +233,10 @@ InstallGlobalFunction(RunTests, function(arg)
     # check whether the user aborted by pressing ctrl-C
     if StartsWith(res, "Error, user interrupt") then
         BreakOnError := breakOnError;
+        AlwaysPrintTracebackOnError:= alwaysPrintTracebackOnError;
         Error("user interrupt");
         BreakOnError := opts.breakOnError;
+        AlwaysPrintTracebackOnError:= opts.alwaysPrintTracebackOnError;
     fi;
     Add(cmp, res);
     Add(times, t);
@@ -241,6 +248,7 @@ InstallGlobalFunction(RunTests, function(arg)
   Add(times, Runtime() - ttime);
   # reset
   BreakOnError := breakOnError;
+  AlwaysPrintTracebackOnError:= alwaysPrintTracebackOnError;
 end);
 
 BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
