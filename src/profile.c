@@ -335,13 +335,10 @@ static void leaveFunction(Obj func)
 */
 
 #ifdef HAVE_POPEN
-static int endsWithgz(const char* s)
+static BOOL endsWithgz(const char * s)
 {
   s = strrchr(s, '.');
-  if(s)
-    return strcmp(s, ".gz") == 0;
-  else
-    return 0;
+  return s && streq(s, ".gz");
 }
 #endif
 

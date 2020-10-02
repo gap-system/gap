@@ -473,8 +473,8 @@ UInt OpenInput (
 #ifdef HPCGAP
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
-    if (! strcmp(filename, "*defin*") ||
-        (! strcmp(filename, "*errin*") && TLS(DefaultInput)) )
+    if (streq(filename, "*defin*") ||
+        (streq(filename, "*errin*") && TLS(DefaultInput)))
         return OpenDefaultInput();
 #endif
 
@@ -490,7 +490,7 @@ UInt OpenInput (
     input->name[0] = '\0';
 
     // enable echo for stdin and errin
-    if (!strcmp("*errin*", filename) || !strcmp("*stdin*", filename))
+    if (streq("*errin*", filename) || streq("*stdin*", filename))
         input->echo = 1;
     else
         input->echo = 0;
@@ -930,8 +930,7 @@ UInt OpenOutput (
 
     // do nothing for stdout and errout if caught
     if (IO()->Output != NULL && IO()->IgnoreStdoutErrout == IO()->Output &&
-        (strcmp(filename, "*errout*") == 0 ||
-         strcmp(filename, "*stdout*") == 0)) {
+        (streq(filename, "*errout*") || streq(filename, "*stdout*"))) {
         return 1;
     }
 
@@ -942,8 +941,8 @@ UInt OpenOutput (
 #ifdef HPCGAP
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
-    if ( ! strcmp( filename, "*defout*" ) ||
-         (! strcmp( filename, "*errout*" ) && TLS(threadID) != 0) )
+    if (streq(filename, "*defout*") ||
+        (streq(filename, "*errout*") && TLS(threadID) != 0))
         return OpenDefaultOutput();
 #endif
 
@@ -1074,7 +1073,7 @@ UInt OpenAppend (
         return 0;
 
 #ifdef HPCGAP
-    if ( ! strcmp( filename, "*defout*") )
+    if (streq(filename, "*defout*"))
         return OpenDefaultOutput();
 #endif
 
@@ -1606,7 +1605,7 @@ static const char * AllKeywords[] = {
 static BOOL IsKeyword(const char * str)
 {
     for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
-        if (strcmp(str, AllKeywords[i]) == 0) {
+        if (streq(str, AllKeywords[i])) {
             return TRUE;
         }
     }

@@ -53,6 +53,7 @@
 #include "saveload.h"
 #include "stats.h"
 #include "stringobj.h"
+#include "sysstr.h"
 #include "vars.h"
 
 #ifdef HPCGAP
@@ -642,7 +643,7 @@ void InitHandlerFunc (
     }
 
     for (UInt i = 0; i < NHandlerFuncs; i++)
-        if (!strcmp(HandlerFuncs[i].cookie, cookie))
+        if (streq(HandlerFuncs[i].cookie, cookie))
             Pr("Duplicate cookie %s\n", (Int)cookie, 0);
 
     HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
@@ -770,7 +771,7 @@ ObjFunc HandlerOfCookie(
     {
       for (i = 0; i < NHandlerFuncs; i++)
         {
-          if (strcmp(cookie, HandlerFuncs[i].cookie) == 0)
+          if (streq(cookie, HandlerFuncs[i].cookie))
             return HandlerFuncs[i].hdlr;
         }
       return (ObjFunc)0;

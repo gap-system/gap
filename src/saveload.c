@@ -30,6 +30,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "sysstr.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -614,19 +615,19 @@ void LoadWorkspace( Char * fname )
      Panic("File %s does not appear to be a GAP workspace", fname);
   }
 
-  if (strcmp (buf, "GAP workspace") == 0) {
+  if (streq(buf, "GAP workspace")) {
 
      LoadCStr(buf,256);
-     if (strcmp(buf, GetKernelDescription()) != 0) {
+     if (!streq(buf, GetKernelDescription())) {
          Panic("This workspace is not compatible with GAP kernel (%s, present: "
             "%s)", buf, GetKernelDescription());
      }
 
      LoadCStr(buf,256);
 #ifdef SYS_IS_64_BIT             
-     if (strcmp(buf,"64 bit") != 0)
+     if (!streq(buf,"64 bit"))
 #else
-     if (strcmp(buf,"32 bit") != 0)
+     if (!streq(buf,"32 bit"))
 #endif
         {
            Panic("This workspace was created by a %s version of GAP", buf);
@@ -638,7 +639,7 @@ void LoadWorkspace( Char * fname )
   CheckEndiannessMarker();
   
   LoadCStr(buf,256);
-  if (strcmp(buf,"Counts and Sizes") != 0)
+  if (!streq(buf,"Counts and Sizes"))
     {
       Panic("Bad divider");
     }
@@ -654,7 +655,7 @@ void LoadWorkspace( Char * fname )
   /* The restoring kernel must have at least as many compiled modules
      as the saving one. */
   LoadCStr(buf,256);
-  if (strcmp(buf,"Loaded Modules") != 0)
+  if (!streq(buf,"Loaded Modules"))
     {
       Panic("Bad divider");
     }
@@ -662,7 +663,7 @@ void LoadWorkspace( Char * fname )
 
   /* Now the kernel variables that point into the workspace */
   LoadCStr(buf,256);
-  if (strcmp(buf,"Kernel to WS refs") != 0)
+  if (!streq(buf,"Kernel to WS refs"))
     {
       Panic("Bad divider");
     }
@@ -686,7 +687,7 @@ void LoadWorkspace( Char * fname )
     }
 
   LoadCStr(buf,256);
-  if (strcmp(buf,"Bag data") != 0)
+  if (!streq(buf,"Bag data"))
     {
       Panic("Bad divider");
     }
@@ -726,16 +727,16 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
   CheckEndiannessMarker();
   LoadCStr(buf,256);
   Pr("Divider string: %s\n", (Int)buf, 0);
-  if (strcmp(buf,"Counts and Sizes") != 0)
-    ErrorQuit("Bad divider", 0, 0);
+  if (!streq(buf, "Counts and Sizes"))
+      ErrorQuit("Bad divider", 0, 0);
   Pr("Loaded modules: %d\n", nMods = LoadUInt(), 0);
   Pr("Global Bags   : %d\n", nGlobs = LoadUInt(), 0);
   Pr("Total Bags    : %d\n", nBags = LoadUInt(), 0);
   Pr("Maximum Size  : %d\n", sizeof(Bag) * LoadUInt(), 0);
   LoadCStr(buf,256);
   Pr("Divider string: %s\n", (Int)buf, 0);
-  if (strcmp(buf,"Loaded Modules") != 0)
-    ErrorQuit("Bad divider", 0, 0);
+  if (!streq(buf, "Loaded Modules"))
+      ErrorQuit("Bad divider", 0, 0);
   for (i = 0; i < nMods; i++)
     {
       UInt type;
@@ -751,8 +752,8 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
     }
   LoadCStr(buf,256);
   Pr("Divider string: %s\n", (Int)buf, 0);
-  if (strcmp(buf,"Kernel to WS refs") != 0)
-    ErrorQuit("Bad divider", 0, 0);
+  if (!streq(buf, "Kernel to WS refs"))
+      ErrorQuit("Bad divider", 0, 0);
   for (i = 0; i < nGlobs; i++)
     {
       LoadCStr(buf,256);
@@ -761,8 +762,8 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
     }
   LoadCStr(buf,256);
   Pr("Divider string: %s\n", (Int)buf, 0);
-  if (strcmp(buf,"Bag data") != 0)
-    ErrorQuit("Bad divider", 0, 0);
+  if (!streq(buf, "Bag data"))
+      ErrorQuit("Bad divider", 0, 0);
   CloseAfterLoad();
   return (Obj) 0;
 }

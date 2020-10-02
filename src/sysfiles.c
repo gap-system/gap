@@ -617,34 +617,20 @@ Int SyFopen (
     int                 flags = 0;
 
     Char * terminator = strrchr(name, '.');
-    BOOL endsgz = terminator && (strcmp(terminator, ".gz") == 0);
+    BOOL   endsgz = terminator && (streq(terminator, ".gz"));
 
     /* handle standard files                                               */
-    if ( strcmp( name, "*stdin*" ) == 0 ) {
-        if ( strcmp( mode, "r" ) != 0 )
-          return -1;
-        else
-          return 0;
+    if (streq(name, "*stdin*")) {
+        return streq(mode, "r") ? 0 : -1;
     }
-    else if ( strcmp( name, "*stdout*" ) == 0 ) {
-        if ( strcmp( mode, "w" ) != 0 && strcmp( mode, "a" ) != 0 )
-          return -1;
-        else
-          return 1;
+    else if (streq(name, "*stdout*")) {
+        return streq(mode, "w") || streq(mode, "a") ? 1 : -1;
     }
-    else if ( strcmp( name, "*errin*" ) == 0 ) {
-        if ( strcmp( mode, "r" ) != 0 )
-          return -1;
-        else if ( !SyBufInUse( 2 ) )
-          return -1;
-        else
-          return 2;
+    else if (streq(name, "*errin*")) {
+        return (streq(mode, "r") && SyBufInUse(2)) ? 2 : -1;
     }
-    else if ( strcmp( name, "*errout*" ) == 0 ) {
-        if ( strcmp( mode, "w" ) != 0 && strcmp( mode, "a" ) != 0 )
-          return -1;
-        else
-          return 3;
+    else if (streq(name, "*errout*")) {
+        return streq(mode, "w") || streq(mode, "a") ? 3 : -1;
     }
 
     HashLock(&syBuf);
@@ -675,8 +661,8 @@ Int SyFopen (
     }
 
 #ifdef SYS_IS_CYGWIN32
-    if(strlen(mode) >= 2 && mode[1] == 'b')
-       flags |= O_BINARY;
+    if (strlen(mode) >= 2 && mode[1] == 'b')
+        flags |= O_BINARY;
 #endif
 
     /* try to open the file                                                */

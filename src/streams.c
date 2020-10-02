@@ -738,7 +738,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         i = append ? OpenAppend(CONST_CSTR_STRING(destination))
                    : OpenOutput(CONST_CSTR_STRING(destination));
         if (!i) {
-            if (strcmp(CSTR_STRING(destination), "*errout*") == 0) {
+            if (streq(CSTR_STRING(destination), "*errout*")) {
                 Panic("Failed to open *errout*!");
             }
             ErrorQuit("%s: cannot open '%g' for output", (Int)funcname,
