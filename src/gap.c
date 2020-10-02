@@ -197,13 +197,12 @@ static Obj Shell(Obj    context,
   if (!OpenOutput(outFile, FALSE))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
 
-  if(!OpenInput(inFile))
+  TypInputFile input = { 0 };
+  if (!OpenInput(&input, inFile))
     {
       CloseOutput();
       ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
-
-  TypInputFile * input = GetCurrentInput();
 
   oldPrintObjState = SetPrintObjState(0);
 
@@ -255,7 +254,7 @@ static Obj Shell(Obj    context,
     STATE(ErrorLVars) = errorLVars;
 
     /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(errorLVars, input, &evalResult, &dualSemicolon);
+    status = ReadEvalCommand(errorLVars, &input, &evalResult, &dualSemicolon);
     if (STATE(UserHasQUIT))
       break;
 
@@ -310,14 +309,14 @@ static Obj Shell(Obj    context,
 
     if (STATE(UserHasQuit))
       {
-        FlushRestOfInputLine(input);
+        FlushRestOfInputLine(&input);
         STATE(UserHasQuit) = 0;        /* quit has done its job if we are here */
       }
 
   }
   
   SetPrintObjState(oldPrintObjState);
-  CloseInput();
+  CloseInput(&input);
   CloseOutput();
   STATE(ErrorLLevel) = oldErrorLLevel;
   SetRecursionDepth(oldRecursionDepth);
@@ -402,11 +401,12 @@ int realmain( int argc, char * argv[] )
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
-      if ( ! OpenInput(SyCompileInput) ) {
+      TypInputFile input = { 0 };
+      if ( ! OpenInput(&input, SyCompileInput) ) {
         return 1;
       }
-      func = READ_AS_FUNC();
-      if (!CloseInput()) {
+      func = READ_AS_FUNC(&input);
+      if (!CloseInput(&input)) {
           return 2;
       }
       crc  = SyGAPCRC(SyCompileInput);
