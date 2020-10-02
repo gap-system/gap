@@ -71,24 +71,25 @@ static Obj IsOutputStream;
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
 
-static UInt OpenInputFileOrStream(const char * funcname, Obj input)
+static UInt OpenInputFileOrStream(const char *   funcname,
+                                  TypInputFile * input,
+                                  Obj            inputObj)
 {
-    if (IsStringConv(input)) {
-        return OpenInput(CONST_CSTR_STRING(input));
+    if (IsStringConv(inputObj)) {
+        return OpenInput(input, CONST_CSTR_STRING(inputObj));
     }
-    else if (CALL_1ARGS(IsInputStream, input) == True) {
-        return OpenInputStream(input, FALSE);
+    else if (CALL_1ARGS(IsInputStream, inputObj) == True) {
+        return OpenInputStream(input, inputObj, FALSE);
     }
-    RequireArgumentEx(funcname, input, "<input>",
+    RequireArgumentEx(funcname, inputObj, "<input>",
                       "must be a string or an input stream");
 }
 
-static Int READ_COMMAND(Obj *evalResult)
+static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
 {
     ExecStatus    status;
 
     ClearError();
-    TypInputFile * input = GetCurrentInput();
     status = ReadEvalCommand(0, input, evalResult, 0);
     if( status == STATUS_EOF )
         return 0;
@@ -170,11 +171,10 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     RequireInputStream("READ_ALL_COMMANDS", instream);
 
     /* try to open the streams */
-    if (!OpenInputStream(instream, echo == True)) {
+    TypInputFile input = { 0 };
+    if (!OpenInputStream(&input, instream, echo == True)) {
         return Fail;
     }
-
-    TypInputFile * input = GetCurrentInput();
 
     if (capture == True) {
         outstreamString = NEW_STRING(0);
@@ -182,7 +182,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
                                      outstreamString, True);
     }
     if (outstream && !OpenOutputStream(outstream)) {
-        CloseInput();
+        CloseInput(&input);
         return Fail;
     }
 
@@ -195,7 +195,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             SET_LEN_STRING(outstreamString, 0);
         }
 
-        status = ReadEvalCommand(0, input, &evalResult, &dualSemicolon);
+        status = ReadEvalCommand(0, &input, &evalResult, &dualSemicolon);
 
         if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
             result = NEW_PLIST(T_PLIST, 5);
@@ -229,7 +229,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
 
     if (outstream)
         CloseOutput();
-    CloseInput();
+    CloseInput(&input);
     ClearError();
 
     return resultList;
@@ -262,13 +262,14 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     SET_ELM_PLIST(result, 1, False);
 
     /* try to open the file                                                */
-    if (!OpenInputStream(stream, echo == True)) {
+    TypInputFile input = { 0 };
+    if (!OpenInputStream(&input, stream, echo == True)) {
         return result;
     }
 
-    status = READ_COMMAND(&evalResult);
-    
-    CloseInput();
+    status = READ_COMMAND(&input, &evalResult);
+
+    CloseInput(&input);
 
     if( status == 0 ) return result;
 
@@ -353,11 +354,10 @@ static void READ_INNER(TypInputFile * input)
 **
 **  Read the current input as function and close the input stream.
 */
-Obj READ_AS_FUNC ( void )
+Obj READ_AS_FUNC(TypInputFile * input)
 {
     /* now do the reading                                                  */
     ClearError();
-    TypInputFile * input = GetCurrentInput();
     Obj evalResult;
     UInt type = ReadEvalFile(input, &evalResult);
     ClearError();
@@ -489,11 +489,12 @@ Int READ_GAP_ROOT ( const Char * filename )
     if (SyDebugLoading) {
         Pr("#I  READ_GAP_ROOT: loading '%s' as GAP file\n", (Int)filename, 0);
     }
-    if (OpenInput(path)) {
-        TypInputFile * input = GetCurrentInput();
+
+    TypInputFile input = { 0 };
+    if (OpenInput(&input, path)) {
         while (1) {
             ClearError();
-            UInt type = ReadEvalCommand(0, input, 0, 0);
+            UInt type = ReadEvalCommand(0, &input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
             if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
@@ -503,7 +504,7 @@ Int READ_GAP_ROOT ( const Char * filename )
                 break;
             }
         }
-        CloseInput();
+        CloseInput(&input);
         ClearError();
         return 1;
     }
@@ -849,14 +850,15 @@ static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 **
 **  Read the current input and close the input stream.
 */
-static Obj FuncREAD(Obj self, Obj input)
+static Obj FuncREAD(Obj self, Obj inputObj)
 {
-    if (!OpenInputFileOrStream(SELF_NAME, input))
+    TypInputFile input = { 0 };
+    if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
     // read the file
-    READ_INNER(GetCurrentInput());
-    if (!CloseInput()) {
+    READ_INNER(&input);
+    if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ cannot close input", 0, 0);
     }
     return True;
@@ -872,14 +874,15 @@ static Obj FuncREAD(Obj self, Obj input)
 **  a live prompt. This is initially designed for the files read from the
 **  command line.
 */
-static Obj FuncREAD_NORECOVERY(Obj self, Obj input)
+static Obj FuncREAD_NORECOVERY(Obj self, Obj inputObj)
 {
-    if (!OpenInputFileOrStream(SELF_NAME, input))
+    TypInputFile input = { 0 };
+    if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
     // read the file
-    READ_INNER(GetCurrentInput());
-    if (!CloseInput()) {
+    READ_INNER(&input);
+    if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ_NORECOVERY cannot close input", 0, 0);
     }
     if (STATE(UserHasQuit)) {
@@ -907,21 +910,22 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
     RequireInputStream(SELF_NAME, instream);
     RequireOutputStream(SELF_NAME, outstream);
 
-    if (!OpenInputStream(instream, FALSE)) {
+    TypInputFile input = { 0 };
+    if (!OpenInputStream(&input, instream, FALSE)) {
         return False;
     }
 
     if (!OpenOutputStream(outstream)) {
-        res = CloseInput();
+        res = CloseInput(&input);
         GAP_ASSERT(res);
         return False;
     }
 
     LockCurrentOutput(1);
-    READ_TEST_OR_LOOP(context, GetCurrentInput());
+    READ_TEST_OR_LOOP(context, &input);
     LockCurrentOutput(0);
 
-    res = CloseInput();
+    res = CloseInput(&input);
     GAP_ASSERT(res);
 
     res &= CloseOutput();
@@ -940,13 +944,14 @@ static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
 **
 *F  FuncREAD_AS_FUNC( <self>, <input> ) . read a file or stream as a function
 */
-static Obj FuncREAD_AS_FUNC(Obj self, Obj input)
+static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
 {
-    if (!OpenInputFileOrStream(SELF_NAME, input))
+    TypInputFile input = { 0 };
+    if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
-    Obj func = READ_AS_FUNC();
-    if (!CloseInput()) {
+    Obj func = READ_AS_FUNC(&input);
+    if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
     }
     return func;

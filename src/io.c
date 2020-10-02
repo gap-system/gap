@@ -46,57 +46,6 @@
 
 /****************************************************************************
 **
-*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
-**
-**  'TypInputFile' describes the information stored for open input files.
-*/
-struct TypInputFile {
-    // non-zero if input comes from a stream
-    BOOL isstream;
-
-    // non-zero if input come from a string stream
-    BOOL isstringstream;
-
-    // if input comes from a stream, this points to a GAP IsInputStream object
-    Obj stream;
-
-    // holds the file identifier received from 'SyFopen' and which is passed
-    // to 'SyFgets' and 'SyFclose' to identify this file
-    Int file;
-
-    // the name of the file; this is only used in error messages
-    char name[256];
-
-    //
-    UInt gapnameid;
-
-    // a buffer that holds the current input line; always terminated
-    // by the character '\0'. Because 'line' holds only part of the line for
-    // very long lines the last character need not be a <newline>.
-    // The actual line data starts in line[1]; the first byte line[0]
-    // is reserved for the "pushback buffer" used by PEEK_NEXT_CHAR.
-    char line[32768];
-
-    // the next line from the stream as GAP string
-    Obj sline;
-
-    //
-    Int spos;
-
-    //
-    BOOL echo;
-
-    // pointer to the current character within the current line
-    char * ptr;
-
-    // the number of the current line; used in error messages
-    Int number;
-
-};
-
-
-/****************************************************************************
-**
 *T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
 **
 **  'TypOutputFile' describes the information stored for open  output  files:
@@ -149,16 +98,11 @@ enum {
 
 struct IOModuleState {
 
-    // The stack of the open input files
-    TypInputFile * InputStack[MAX_OPEN_FILES];
-    int            InputStackPointer;
-
     // The stack of open output files
     TypOutputFile * OutputStack[MAX_OPEN_FILES];
     int             OutputStackPointer;
 
-    // A pointer to the current input file. It points to the top of the stack
-    // 'InputFiles'.
+    // A pointer to the current input file
     TypInputFile * Input;
 
     // A pointer to the current output file. It points to the top of the
@@ -258,9 +202,9 @@ Char PEEK_NEXT_CHAR(TypInputFile * input)
     // store the current character
     char c = *input->ptr;
 
-    // read next character; this will increment IO()->Input->ptr and then
+    // read next character; this will increment input->ptr and then
     // possibly read in new line data, and so even might end up reseting
-    // IO()->Input->ptr to point at the start of the line buffer, which is
+    // input->ptr to point at the start of the line buffer, which is
     // equal to Input->line+1
     char next = GetNextChar(input);
 
@@ -360,22 +304,8 @@ Obj GetCachedFilename(UInt id)
 */
 
 #if !defined(HPCGAP)
-static TypInputFile  InputFiles[MAX_OPEN_FILES];
 static TypOutputFile OutputFiles[MAX_OPEN_FILES];
 #endif
-
-static TypInputFile * PushNewInput(void)
-{
-    GAP_ASSERT(IO()->InputStackPointer < MAX_OPEN_FILES);
-    const int sp = IO()->InputStackPointer++;
-#ifdef HPCGAP
-    if (!IO()->InputStack[sp]) {
-        IO()->InputStack[sp] = AllocateMemoryBlock(sizeof(TypInputFile));
-    }
-#endif
-    GAP_ASSERT(IO()->InputStack[sp]);
-    return IO()->InputStack[sp];
-}
 
 static TypOutputFile * PushNewOutput(void)
 {
@@ -394,22 +324,22 @@ static TypOutputFile * PushNewOutput(void)
 static GVarDescriptor DEFAULT_INPUT_STREAM;
 static GVarDescriptor DEFAULT_OUTPUT_STREAM;
 
-static UInt OpenDefaultInput(void)
+static UInt OpenDefaultInput(TypInputFile * input)
 {
   Obj func, stream;
   stream = TLS(DefaultInput);
   if (stream)
-      return OpenInputStream(stream, FALSE);
+      return OpenInputStream(input, stream, FALSE);
   func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
   if (!func)
-    return OpenInput("*stdin*");
+    return OpenInput(input, "*stdin*");
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
-    return OpenInput(CONST_CSTR_STRING(stream));
+    return OpenInput(input, CONST_CSTR_STRING(stream));
   TLS(DefaultInput) = stream;
-  return OpenInputStream(stream, FALSE);
+  return OpenInputStream(input, stream, FALSE);
 }
 
 static UInt OpenDefaultOutput(void)
@@ -461,21 +391,18 @@ static UInt OpenDefaultOutput(void)
 **  '*stdin*' for  that purpose.  This  file on   the other   hand  cannot be
 **  closed by 'CloseInput'.
 */
-UInt OpenInput (
-    const Char *        filename )
+UInt OpenInput(TypInputFile * input, const Char * filename)
 {
-    Int                 file;
+    GAP_ASSERT(input);
 
-    /* fail if we can not handle another open input file                   */
-    if (IO()->InputStackPointer == MAX_OPEN_FILES)
-        return 0;
+    Int file;
 
 #ifdef HPCGAP
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (streq(filename, "*defin*") ||
         (streq(filename, "*errin*") && TLS(DefaultInput)))
-        return OpenDefaultInput();
+        return OpenDefaultInput(input);
 #endif
 
     /* try to open the input file                                          */
@@ -484,10 +411,10 @@ UInt OpenInput (
         return 0;
 
     /* enter the file identifier and the file name                         */
-    TypInputFile * input = IO()->Input = PushNewInput();
+    memset(input, 0, sizeof(TypInputFile));
+    input->prev = IO()->Input;
     input->isstream = FALSE;
     input->file = file;
-    input->name[0] = '\0';
 
     // enable echo for stdin and errin
     if (streq("*errin*", filename) || streq("*stdin*", filename))
@@ -504,6 +431,8 @@ UInt OpenInput (
     input->ptr = input->line + 1;
     input->number = 1;
 
+    IO()->Input = input;
+
     /* indicate success                                                    */
     return 1;
 }
@@ -515,14 +444,13 @@ UInt OpenInput (
 **
 **  The same as 'OpenInput' but for streams.
 */
-UInt OpenInputStream(Obj stream, BOOL echo)
+UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
 {
-    /* fail if we can not handle another open input file                   */
-    if (IO()->InputStackPointer == MAX_OPEN_FILES)
-        return 0;
+    GAP_ASSERT(input);
 
     /* enter the file identifier and the file name                         */
-    TypInputFile * input = IO()->Input = PushNewInput();
+    memset(input, 0, sizeof(TypInputFile));
+    input->prev = IO()->Input;
     input->isstream = TRUE;
     input->stream = stream;
     input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
@@ -544,6 +472,8 @@ UInt OpenInputStream(Obj stream, BOOL echo)
     input->ptr = input->line + 1;
     input->number = 1;
 
+    IO()->Input = input;
+
     /* indicate success                                                    */
     return 1;
 }
@@ -564,39 +494,22 @@ UInt OpenInputStream(Obj stream, BOOL echo)
 **  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
 **  close the current output file, which will lead to very strange behaviour.
 */
-UInt CloseInput ( void )
+UInt CloseInput(TypInputFile * input)
 {
-    /* refuse to close the initial input file                              */
-#ifdef HPCGAP
-    // In HPC-GAP, only for the main thread.
-    if (TLS(threadID) != 0) {
-        if (IO()->InputStackPointer <= 0)
-            return 0;
-    } else
-#else
-    if (IO()->InputStackPointer <= 1)
-        return 0;
-#endif
+    GAP_ASSERT(input);
+    GAP_ASSERT(input == IO()->Input);
 
-    /* close the input file                                                */
-    if (!IO()->Input->isstream) {
-        SyFclose(IO()->Input->file);
+    // close the input file
+    if (!input->isstream) {
+        SyFclose(input->file);
     }
 
-    /* don't keep GAP objects alive unnecessarily */
-    memset(IO()->Input, 0, sizeof(TypInputFile));
+    // revert to previous input
+    IO()->Input = input->prev;
 
-    /* revert to last file                                                 */
-    const int sp = --IO()->InputStackPointer;
-#ifdef HPCGAP
-    if (sp == 0) {
-        IO()->Input = NULL;
-        return 1;
-    }
-#endif
-    IO()->Input = IO()->InputStack[sp - 1];
+    // don't keep GAP objects alive unnecessarily
+    memset(input, 0, sizeof(TypInputFile));
 
-    /* indicate success                                                    */
     return 1;
 }
 
@@ -2064,8 +1977,6 @@ static Int InitLibrary (
 
 #if !defined(HPCGAP)
 static Char OutputFilesStreamCookie[MAX_OPEN_FILES][9];
-static Char InputFilesStreamCookie[MAX_OPEN_FILES][9];
-static Char InputFilesSlineCookie[MAX_OPEN_FILES][9];
 #endif
 
 static Int InitKernel (
@@ -2078,12 +1989,10 @@ static Int InitKernel (
 
 #if !defined(HPCGAP)
     for (Int i = 0; i < MAX_OPEN_FILES; i++) {
-        IO()->InputStack[i] = &InputFiles[i];
         IO()->OutputStack[i] = &OutputFiles[i];
     }
 #endif
 
-    OpenInput("*stdin*");
     OpenOutput("*stdout*", FALSE);
 
     InitGlobalBag( &FilenameCache, "FilenameCache" );
@@ -2094,22 +2003,12 @@ static Int InitKernel (
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
 #else
-    // Initialize cookies for streams. Also initialize the cookies for the
-    // GAP strings which hold the latest lines read from the streams  and the
-    // name of the current input file. For HPC-GAP we don't need the cookies
+    // Initialize cookies for streams. For HPC-GAP we don't need the cookies
     // anymore, since the data got moved to thread-local storage.
     for (Int i = 0; i < MAX_OPEN_FILES; i++) {
         strxcpy(OutputFilesStreamCookie[i], "ostream0", sizeof(OutputFilesStreamCookie[i]));
         OutputFilesStreamCookie[i][7] = '0' + i;
         InitGlobalBag(&(OutputFiles[i].stream), &(OutputFilesStreamCookie[i][0]));
-
-        strxcpy(InputFilesStreamCookie[i], "istream0", sizeof(InputFilesStreamCookie[i]));
-        InputFilesStreamCookie[i][7] = '0' + i;
-        InitGlobalBag(&(InputFiles[i].stream), &(InputFilesStreamCookie[i][0]));
-
-        strxcpy(InputFilesSlineCookie[i], "isline 0", sizeof(InputFilesSlineCookie[i]));
-        InputFilesSlineCookie[i][7] = '0' + i;
-        InitGlobalBag(&(InputFiles[i].sline), &(InputFilesSlineCookie[i][0]));
     }
 
     /* tell GASMAN about the global bags                                   */

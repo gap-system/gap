@@ -29,7 +29,7 @@
 **  Read the current input as function. The caller is responsible for opening
 **  and closing the input.
 */
-Obj READ_AS_FUNC(void);
+Obj READ_AS_FUNC(TypInputFile * input);
 
 
 /****************************************************************************

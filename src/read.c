@@ -2600,10 +2600,7 @@ ExecStatus ReadEvalCommand(Obj            context,
 
     // initialize everything and begin an interpreter
     rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
-    rs->ReadTop        = 0;
-    rs->ReadTilde      = 0;
     STATE(Tilde)       = 0;
-    rs->CurrLHSGVar    = 0;
 #ifdef HPCGAP
     lockSP = RegionLockSP();
 #endif
@@ -2719,10 +2716,7 @@ UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
 
     // initialize everything and begin an interpreter
     rs->StackNams    = NEW_PLIST( T_PLIST, 16 );
-    rs->ReadTop      = 0;
-    rs->ReadTilde    = 0;
     STATE(Tilde)     = 0;
-    rs->CurrLHSGVar  = 0;
 
     // remember the old execution state and start an execution environment
     Bag oldLVars = SWITCH_TO_BOTTOM_LVARS();

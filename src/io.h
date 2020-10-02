@@ -24,6 +24,60 @@
 
 #include "common.h"
 
+
+/****************************************************************************
+**
+*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
+**
+**  'TypInputFile' describes the information stored for open input files.
+*/
+struct TypInputFile {
+    // pointer to the previously active input
+    struct TypInputFile * prev;
+
+    // non-zero if input comes from a stream
+    BOOL isstream;
+
+    // non-zero if input come from a string stream
+    BOOL isstringstream;
+
+    // if input comes from a stream, this points to a GAP IsInputStream object
+    Obj stream;
+
+    // holds the file identifier received from 'SyFopen' and which is passed
+    // to 'SyFgets' and 'SyFclose' to identify this file
+    Int file;
+
+    // the name of the file; this is only used in error messages
+    char name[256];
+
+    //
+    UInt gapnameid;
+
+    // a buffer that holds the current input line; always terminated
+    // by the character '\0'. Because 'line' holds only part of the line for
+    // very long lines the last character need not be a <newline>.
+    // The actual line data starts in line[1]; the first byte line[0]
+    // is reserved for the "pushback buffer" used by PEEK_NEXT_CHAR.
+    char line[32768];
+
+    // the next line from the stream as GAP string
+    Obj sline;
+
+    //
+    Int spos;
+
+    //
+    BOOL echo;
+
+    // pointer to the current character within the current line
+    char * ptr;
+
+    // the number of the current line; used in error messages
+    Int number;
+};
+
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
@@ -63,7 +117,7 @@
 **  '*stdin*' for  that purpose.  This  file on   the other   hand  cannot be
 **  closed by 'CloseInput'.
 */
-UInt OpenInput(const Char * filename);
+UInt OpenInput(TypInputFile * input, const Char * filename);
 
 
 /****************************************************************************
@@ -72,7 +126,7 @@ UInt OpenInput(const Char * filename);
 **
 **  The same as 'OpenInput' but for streams.
 */
-UInt OpenInputStream(Obj stream, BOOL echo);
+UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo);
 
 
 /****************************************************************************
@@ -90,7 +144,7 @@ UInt OpenInputStream(Obj stream, BOOL echo);
 **  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
 **  close the current output file, which will lead to very strange behaviour.
 */
-UInt CloseInput(void);
+UInt CloseInput(TypInputFile * input);
 
 
 /****************************************************************************
