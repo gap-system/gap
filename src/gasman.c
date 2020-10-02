@@ -119,6 +119,7 @@
 #include "io.h"
 #include "sysfiles.h"
 #include "sysmem.h"
+#include "sysstr.h"
 
 #include "bags.inc"
 
@@ -833,7 +834,7 @@ void InitGlobalBag (
     }
 
     for (UInt i = 0; i < GlobalBags.nr; i++) {
-        if (0 == strcmp(GlobalBags.cookie[i], cookie)) {
+        if (streq(GlobalBags.cookie[i], cookie)) {
             if (GlobalBags.addr[i] == addr)
                 Pr("Duplicate global bag entry %s\n", (Int)cookie, 0);
             else
@@ -889,7 +890,7 @@ Bag * GlobalByCookie(
   if (!GlobalsAreSorted) {
       for (i = 0; i < GlobalBags.nr; i++)
         {
-          if (strcmp(cookie, GlobalBags.cookie[i]) == 0)
+          if (streq(cookie, GlobalBags.cookie[i]))
             return GlobalBags.addr[i];
         }
       return (Bag *)0;

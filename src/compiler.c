@@ -5350,7 +5350,7 @@ Int CompileFunc (
     /* emit the initialization code                                        */
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
-    if ( ! strcmp( "Init_Dynamic", CONST_CSTR_STRING(name) ) ) {
+    if (streq("Init_Dynamic", CONST_CSTR_STRING(name))) {
         Emit( ".type        = MODULE_DYNAMIC,\n" );
     }
     else {

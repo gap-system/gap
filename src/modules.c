@@ -35,6 +35,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
+#include "sysstr.h"
 #include "vars.h"
 
 #ifdef HAVE_DLOPEN
@@ -183,7 +184,7 @@ StructInitInfo * LookupStaticModule(const char * name)
 {
     for (int k = 0; CompInitFuncs[k]; k++) {
         StructInitInfo * info = (*(CompInitFuncs[k]))();
-        if (info && strcmp(name, info->name) == 0) {
+        if (info && streq(name, info->name)) {
             return info;
         }
     }

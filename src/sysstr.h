@@ -54,6 +54,20 @@ EXPORT_INLINE BOOL IsIdent(char ch)
 
 /****************************************************************************
 **
+*F  streq( <s1>, <s2> ) . . . . . . . .  test whether two C strings are equal
+**
+**  'streq' is a simple wrapper around the standard C function 'strcmp', with
+**  the advantage that code using it is often easier to understand for human
+**  beings.
+*/
+EXPORT_INLINE BOOL streq(const char * s1, const char * s2)
+{
+    return 0 == strcmp(s1, s2);
+}
+
+
+/****************************************************************************
+**
 *F  strlcpy( <dst>, <src>, <len> )
 **
 **  Copy <src> to buffer <dst> of size <len>. At most <len>-1 characters will

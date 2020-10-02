@@ -740,12 +740,12 @@ static Obj FuncGASMAN(Obj self, Obj args)
         RequireStringRep(SELF_NAME, cmd);
 
         // perform full garbage collection
-        if ( strcmp( CONST_CSTR_STRING(cmd), "collect" ) == 0 ) {
+        if (streq(CONST_CSTR_STRING(cmd), "collect")) {
             CollectBags(0,1);
         }
 
         // perform partial garbage collection
-        else if ( strcmp( CONST_CSTR_STRING(cmd), "partial" ) == 0 ) {
+        else if (streq(CONST_CSTR_STRING(cmd), "partial")) {
             CollectBags(0,0);
         }
 
@@ -758,7 +758,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
 #else
 
         /* if request display the statistics                               */
-        else if ( strcmp( CONST_CSTR_STRING(cmd), "display" ) == 0 ) {
+        else if (streq(CONST_CSTR_STRING(cmd), "display")) {
 #ifdef COUNT_BAGS
             Pr("%40s ", (Int)"type", 0);
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
@@ -779,7 +779,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
         }
 
         /* if request give a short display of the statistics                */
-        else if ( strcmp( CONST_CSTR_STRING(cmd), "displayshort" ) == 0 ) {
+        else if (streq(CONST_CSTR_STRING(cmd), "displayshort")) {
 #ifdef COUNT_BAGS
             Pr("%40s ", (Int)"type", 0);
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
@@ -804,7 +804,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
         }
 
         /* if request display the statistics                               */
-        else if ( strcmp( CONST_CSTR_STRING(cmd), "clear" ) == 0 ) {
+        else if (streq(CONST_CSTR_STRING(cmd), "clear")) {
 #ifdef COUNT_BAGS
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
 #ifdef GASMAN_CLEAR_TO_LIVE
@@ -819,7 +819,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
         }
 
         /* or display information about global bags                        */
-        else if ( strcmp( CONST_CSTR_STRING(cmd), "global" ) == 0 ) {
+        else if (streq(CONST_CSTR_STRING(cmd), "global")) {
             for ( i = 0;  i < GlobalBags.nr;  i++ ) {
                 Bag bag = *(GlobalBags.addr[i]);
                 if (bag != 0) {
@@ -833,7 +833,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
         }
 
         /* or finally toggle Gasman messages                               */
-        else if ( strcmp( CONST_CSTR_STRING(cmd), "message" ) == 0 ) {
+        else if (streq(CONST_CSTR_STRING(cmd), "message")) {
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
         }
 
@@ -1248,19 +1248,19 @@ static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
     RequireStringRep(SELF_NAME, name);
 
     const char * cname = CONST_CSTR_STRING(name);
-    if (strcmp(cname, "time") == 0) {
+    if (streq(cname, "time")) {
         AssGVarWithoutReadOnlyCheck(Time, newStat);
     }
-    else if (strcmp(cname, "last") == 0) {
+    else if (streq(cname, "last")) {
         AssGVarWithoutReadOnlyCheck(Last, newStat);
     }
-    else if (strcmp(cname, "last2") == 0) {
+    else if (streq(cname, "last2")) {
         AssGVarWithoutReadOnlyCheck(Last2, newStat);
     }
-    else if (strcmp(cname, "last3") == 0) {
+    else if (streq(cname, "last3")) {
         AssGVarWithoutReadOnlyCheck(Last3, newStat);
     }
-    else if (strcmp(cname, "memory_allocated") == 0) {
+    else if (streq(cname, "memory_allocated")) {
         AssGVarWithoutReadOnlyCheck(MemoryAllocated, newStat);
     }
     else {

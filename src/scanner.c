@@ -56,7 +56,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             Pr("Syntax warning: %s", (Int)msg, 0);
 
         // ... and the filename + line, unless it is '*stdin*'
-        if (strcmp("*stdin*", GetInputFilename(s->input)) != 0)
+        if (!streq("*stdin*", GetInputFilename(s->input)))
             Pr(" in %s:%d", (Int)GetInputFilename(s->input),
                GetInputLineNumber(s->input));
         Pr("\n", 0, 0);
@@ -306,41 +306,41 @@ static UInt GetIdent(ScannerState * s, Int i, Char c)
     // now check if 's->Value' holds a keyword
     const Char * v = s->Value;
     switch ( 256*v[0]+v[i-1] ) {
-    case 256*'a'+'d': if(!strcmp(v,"and"))           return S_AND;
-    case 256*'a'+'c': if(!strcmp(v,"atomic"))        return S_ATOMIC;
-    case 256*'b'+'k': if(!strcmp(v,"break"))         return S_BREAK;
-    case 256*'c'+'e': if(!strcmp(v,"continue"))      return S_CONTINUE;
-    case 256*'d'+'o': if(!strcmp(v,"do"))            return S_DO;
-    case 256*'e'+'f': if(!strcmp(v,"elif"))          return S_ELIF;
-    case 256*'e'+'e': if(!strcmp(v,"else"))          return S_ELSE;
-    case 256*'e'+'d': if(!strcmp(v,"end"))           return S_END;
-    case 256*'f'+'e': if(!strcmp(v,"false"))         return S_FALSE;
-    case 256*'f'+'i': if(!strcmp(v,"fi"))            return S_FI;
-    case 256*'f'+'r': if(!strcmp(v,"for"))           return S_FOR;
-    case 256*'f'+'n': if(!strcmp(v,"function"))      return S_FUNCTION;
-    case 256*'i'+'f': if(!strcmp(v,"if"))            return S_IF;
-    case 256*'i'+'n': if(!strcmp(v,"in"))            return S_IN;
-    case 256*'l'+'l': if(!strcmp(v,"local"))         return S_LOCAL;
-    case 256*'m'+'d': if(!strcmp(v,"mod"))           return S_MOD;
-    case 256*'n'+'t': if(!strcmp(v,"not"))           return S_NOT;
-    case 256*'o'+'d': if(!strcmp(v,"od"))            return S_OD;
-    case 256*'o'+'r': if(!strcmp(v,"or"))            return S_OR;
-    case 256*'r'+'e': if(!strcmp(v,"readwrite"))     return S_READWRITE;
-    case 256*'r'+'y': if(!strcmp(v,"readonly"))      return S_READONLY;
-    case 256*'r'+'c': if(!strcmp(v,"rec"))           return S_REC;
-    case 256*'r'+'t': if(!strcmp(v,"repeat"))        return S_REPEAT;
-    case 256*'r'+'n': if(!strcmp(v,"return"))        return S_RETURN;
-    case 256*'t'+'n': if(!strcmp(v,"then"))          return S_THEN;
-    case 256*'t'+'e': if(!strcmp(v,"true"))          return S_TRUE;
-    case 256*'u'+'l': if(!strcmp(v,"until"))         return S_UNTIL;
-    case 256*'w'+'e': if(!strcmp(v,"while"))         return S_WHILE;
-    case 256*'q'+'t': if(!strcmp(v,"quit"))          return S_QUIT;
-    case 256*'Q'+'T': if(!strcmp(v,"QUIT"))          return S_QQUIT;
-    case 256*'I'+'d': if(!strcmp(v,"IsBound"))       return S_ISBOUND;
-    case 256*'U'+'d': if(!strcmp(v,"Unbind"))        return S_UNBIND;
-    case 256*'T'+'d': if(!strcmp(v,"TryNextMethod")) return S_TRYNEXT;
-    case 256*'I'+'o': if(!strcmp(v,"Info"))          return S_INFO;
-    case 256*'A'+'t': if(!strcmp(v,"Assert"))        return S_ASSERT;
+    case 256*'a'+'d': if(streq(v,"and"))           return S_AND;
+    case 256*'a'+'c': if(streq(v,"atomic"))        return S_ATOMIC;
+    case 256*'b'+'k': if(streq(v,"break"))         return S_BREAK;
+    case 256*'c'+'e': if(streq(v,"continue"))      return S_CONTINUE;
+    case 256*'d'+'o': if(streq(v,"do"))            return S_DO;
+    case 256*'e'+'f': if(streq(v,"elif"))          return S_ELIF;
+    case 256*'e'+'e': if(streq(v,"else"))          return S_ELSE;
+    case 256*'e'+'d': if(streq(v,"end"))           return S_END;
+    case 256*'f'+'e': if(streq(v,"false"))         return S_FALSE;
+    case 256*'f'+'i': if(streq(v,"fi"))            return S_FI;
+    case 256*'f'+'r': if(streq(v,"for"))           return S_FOR;
+    case 256*'f'+'n': if(streq(v,"function"))      return S_FUNCTION;
+    case 256*'i'+'f': if(streq(v,"if"))            return S_IF;
+    case 256*'i'+'n': if(streq(v,"in"))            return S_IN;
+    case 256*'l'+'l': if(streq(v,"local"))         return S_LOCAL;
+    case 256*'m'+'d': if(streq(v,"mod"))           return S_MOD;
+    case 256*'n'+'t': if(streq(v,"not"))           return S_NOT;
+    case 256*'o'+'d': if(streq(v,"od"))            return S_OD;
+    case 256*'o'+'r': if(streq(v,"or"))            return S_OR;
+    case 256*'r'+'e': if(streq(v,"readwrite"))     return S_READWRITE;
+    case 256*'r'+'y': if(streq(v,"readonly"))      return S_READONLY;
+    case 256*'r'+'c': if(streq(v,"rec"))           return S_REC;
+    case 256*'r'+'t': if(streq(v,"repeat"))        return S_REPEAT;
+    case 256*'r'+'n': if(streq(v,"return"))        return S_RETURN;
+    case 256*'t'+'n': if(streq(v,"then"))          return S_THEN;
+    case 256*'t'+'e': if(streq(v,"true"))          return S_TRUE;
+    case 256*'u'+'l': if(streq(v,"until"))         return S_UNTIL;
+    case 256*'w'+'e': if(streq(v,"while"))         return S_WHILE;
+    case 256*'q'+'t': if(streq(v,"quit"))          return S_QUIT;
+    case 256*'Q'+'T': if(streq(v,"QUIT"))          return S_QQUIT;
+    case 256*'I'+'d': if(streq(v,"IsBound"))       return S_ISBOUND;
+    case 256*'U'+'d': if(streq(v,"Unbind"))        return S_UNBIND;
+    case 256*'T'+'d': if(streq(v,"TryNextMethod")) return S_TRYNEXT;
+    case 256*'I'+'o': if(streq(v,"Info"))          return S_INFO;
+    case 256*'A'+'t': if(streq(v,"Assert"))        return S_ASSERT;
     }
 
     return S_IDENT;
