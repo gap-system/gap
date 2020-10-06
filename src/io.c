@@ -1088,6 +1088,7 @@ UInt OpenAppend (
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
+    output->format = TRUE;
     output->indent = 0;
 
     /* variables related to line splitting, very bad place to split        */
