@@ -103,6 +103,10 @@ static void RegisterModuleState(StructInitInfo * info)
     if (size == 0)
         return;
 
+    if (SyDebugLoading) {
+        fprintf(stderr, "#I    module '%s' reserved %d bytes module state\n", info->name, (int)size);
+    }
+
     // using moduleStateSize without moduleStateOffsetPtr makes no sense
     GAP_ASSERT(info->moduleStateOffsetPtr);
 
