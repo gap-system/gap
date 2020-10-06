@@ -115,7 +115,7 @@ typedef struct {
 
     char line[MAXLENOUTPUTLINE];
     Int  pos;
-    Int  format;
+    BOOL format;
     Int  indent;
 
     /* each hint is a tripel (position, value, indent) */
@@ -485,15 +485,15 @@ UInt OpenInput (
 
     /* enter the file identifier and the file name                         */
     TypInputFile * input = IO()->Input = PushNewInput();
-    input->isstream = 0;
+    input->isstream = FALSE;
     input->file = file;
     input->name[0] = '\0';
 
     // enable echo for stdin and errin
     if (streq("*errin*", filename) || streq("*stdin*", filename))
-        input->echo = 1;
+        input->echo = TRUE;
     else
-        input->echo = 0;
+        input->echo = FALSE;
 
     strlcpy(input->name, filename, sizeof(input->name));
     input->gapnameid = 0;
@@ -523,7 +523,7 @@ UInt OpenInputStream(Obj stream, BOOL echo)
 
     /* enter the file identifier and the file name                         */
     TypInputFile * input = IO()->Input = PushNewInput();
-    input->isstream = 1;
+    input->isstream = TRUE;
     input->stream = stream;
     input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     if (input->isstringstream) {
@@ -636,7 +636,7 @@ UInt OpenLog (
 
     /* try to open the file                                                */
     IO()->OutputLogFileOrStream.file = SyFopen(filename, "w");
-    IO()->OutputLogFileOrStream.isstream = 0;
+    IO()->OutputLogFileOrStream.isstream = FALSE;
     if (IO()->OutputLogFileOrStream.file == -1)
         return 0;
 
@@ -663,7 +663,7 @@ UInt OpenLogStream (
         return 0;
 
     /* try to open the file                                                */
-    IO()->OutputLogFileOrStream.isstream = 1;
+    IO()->OutputLogFileOrStream.isstream = TRUE;
     IO()->OutputLogFileOrStream.stream = stream;
     IO()->OutputLogFileOrStream.file = -1;
 
@@ -730,7 +730,7 @@ UInt OpenInputLog (
 
     /* try to open the file                                                */
     IO()->InputLogFileOrStream.file = SyFopen(filename, "w");
-    IO()->InputLogFileOrStream.isstream = 0;
+    IO()->InputLogFileOrStream.isstream = FALSE;
     if (IO()->InputLogFileOrStream.file == -1)
         return 0;
 
@@ -756,7 +756,7 @@ UInt OpenInputLogStream (
         return 0;
 
     /* try to open the file                                                */
-    IO()->InputLogFileOrStream.isstream = 1;
+    IO()->InputLogFileOrStream.isstream = TRUE;
     IO()->InputLogFileOrStream.stream = stream;
     IO()->InputLogFileOrStream.file = -1;
 
@@ -825,7 +825,7 @@ UInt OpenOutputLog (
 
     /* try to open the file                                                */
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
-    IO()->OutputLogFileOrStream.isstream = 0;
+    IO()->OutputLogFileOrStream.isstream = FALSE;
     IO()->OutputLogFileOrStream.file = SyFopen(filename, "w");
     if (IO()->OutputLogFileOrStream.file == -1)
         return 0;
@@ -853,7 +853,7 @@ UInt OpenOutputLogStream (
 
     /* try to open the file                                                */
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
-    IO()->OutputLogFileOrStream.isstream = 1;
+    IO()->OutputLogFileOrStream.isstream = TRUE;
     IO()->OutputLogFileOrStream.stream = stream;
     IO()->OutputLogFileOrStream.file = -1;
 
@@ -953,12 +953,12 @@ UInt OpenOutput (
 
     /* put the file on the stack, start at position 0 on an empty line     */
     TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->isstream = FALSE;
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
+    output->format = TRUE;
     output->indent = 0;
-    output->isstream = 0;
-    output->format = 1;
 
     /* variables related to line splitting, very bad place to split        */
     output->hints[0] = -1;
@@ -985,13 +985,13 @@ UInt OpenOutputStream (
 
     /* put the file on the stack, start at position 0 on an empty line     */
     TypOutputFile * output = IO()->Output = PushNewOutput();
-    output->stream = stream;
+    output->isstream = TRUE;
     output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
-    output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
+    output->stream = stream;
     output->line[0] = '\0';
     output->pos = 0;
+    output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
     output->indent = 0;
-    output->isstream = 1;
 
     /* variables related to line splitting, very bad place to split        */
     output->hints[0] = -1;
@@ -1084,11 +1084,11 @@ UInt OpenAppend (
 
     /* put the file on the stack, start at position 0 on an empty line     */
     TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->isstream = FALSE;
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
     output->indent = 0;
-    output->isstream = 0;
 
     /* variables related to line splitting, very bad place to split        */
     output->hints[0] = -1;
