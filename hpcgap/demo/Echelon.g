@@ -27,7 +27,7 @@
 ##  t1:=CurrentTime();res1:=TrigonalizeByThreads(m,4,5,40);;t2:=CurrentTime();
 ##  
 
-# (very?) temporary helper, until RecieveAnyChannel is available
+# (very?) temporary helper, until ReceiveAnyChannel is available
 # 
 # this version is bad, it eats up CPU cycles and doesn't provide a good
 # load balancing

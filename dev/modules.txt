@@ -50,7 +50,7 @@ To sum up everything:
 Name: 	   Modules	  	    Components		    Packages
 
 Idea/	   Software                 Optional loading        Authorship,
-Concept:   engineering		       			    Maintainance
+Concept:   engineering		       			    Maintenance
 
 Aims,      ``independent''          system will work        Refereeing,
 Require-     evolution,              without them,          ``fame and blame'',

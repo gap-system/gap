@@ -1117,7 +1117,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	bc:=First(b,i->dom[1] in i);
 	if subo<>fail and (Length(subo)<=subomax) then
 	  Info(InfoFactor,2,"try all seeds");
-	  # if the degree is not too big or if we are desparate then go for
+	  # if the degree is not too big or if we are desperate then go for
 	  # all blocks
 	  # greedy approach: take always locally best one (otherwise there
 	  # might be too much work to do)

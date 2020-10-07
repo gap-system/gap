@@ -2360,7 +2360,7 @@ InstallTrueMethod( CanEasilyComputePcgs, IsGroup and HasFamilyPcgs );
 # InstallTrueMethod(CanEasilyTestMembership,CanEasilyComputePcgs); 
 # we cannot test membership using a pcgs
 
-# InstallTrueMethod(CanComputeSize, CanEasilyComputePcgs); #unneccessary
+# InstallTrueMethod(CanComputeSize, CanEasilyComputePcgs); #unnecessary
 
 #############################################################################
 ##

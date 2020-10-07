@@ -214,7 +214,7 @@ function(kbrws,v)
 
       if ptc then
         #delete pairs of indexes that include i
-        #and change ocurrences of indexes k greater than i in the 
+        #and change occurrences of indexes k greater than i in the 
         #list of pairs and change them to k-1
         #So we'll construct a new list with the right pairs
         l:=[];

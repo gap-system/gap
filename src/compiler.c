@@ -100,7 +100,7 @@ static Int CompCheckListElements;
 **
 **  The only difference between the  first pass and  the second pass is  that
 **  'Emit'  emits  no code  during the first  pass.   While  this causes many
-**  unneccessary  computations during the first pass,  the  advantage is that
+**  unnecessary  computations during the first pass,  the  advantage is that
 **  the two passes are guaranteed to do exactly the same computations.
 */
 static Int CompPass;
@@ -544,7 +544,7 @@ static void CompSetUseGVar(GVar gvar, UInt mode)
     /* only mark in pass 1                                                 */
     if ( CompPass != 1 )  return;
 
-    /* resize if neccessary                                                */
+    /* resize if necessary                                                */
     if ( SIZE_OBJ(CompInfoGVar)/sizeof(UInt) <= gvar ) {
         ResizeBag( CompInfoGVar, sizeof(UInt)*(gvar+1) );
     }
@@ -586,7 +586,7 @@ static void CompSetUseRNam(RNam rnam, UInt mode)
     /* only mark in pass 1                                                 */
     if ( CompPass != 1 )  return;
 
-    /* resize if neccessary                                                */
+    /* resize if necessary                                                */
     if ( SIZE_OBJ(CompInfoRNam)/sizeof(UInt) <= rnam ) {
         ResizeBag( CompInfoRNam, sizeof(UInt)*(rnam+1) );
     }

@@ -233,7 +233,7 @@ typedef struct {
 **
 **  If 'NrError' is greater than zero the parser functions  will  not  create
 **  new bags.  This prevents the parser from creating new bags after an error
-**  occured.
+**  occurred.
 **
 **  'NrErrLine' is an integer whose value is the number of  errors  found  on
 **  the current line.  It is set to 0 in 'GetLine' and incremented with  each
@@ -269,7 +269,7 @@ typedef struct {
 **
 **  'SyntaxError' first increments 'NrError' by   1.  If 'NrError' is greater
 **  than zero the parser functions  will not create  new bags.  This prevents
-**  the parser from creating new bags after an error occured.
+**  the parser from creating new bags after an error occurred.
 **
 **  'SyntaxError'  also  increments  'NrErrLine'  by  1.  If  'NrErrLine'  is
 **  greater than zero  'SyntaxError' will not print an  error  message.  This

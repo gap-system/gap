@@ -2104,7 +2104,7 @@ DeclareOperation("FieldOfMatrixList",[IsListOrCollection]);
 ##  <M>R</M> has a quotient field that can be represented, this quotient
 ##  field is returned instead.
 ##  In general <M>R</R> is not chosen to be as small as possible, but to
-##  be determined quickly without being unneccesarily large
+##  be determined quickly without being unnecessarily large
 ##  (see <Ref Attr="DefaultFieldOfMatrix"/>).
 ##  </Description>
 ##  </ManSection>

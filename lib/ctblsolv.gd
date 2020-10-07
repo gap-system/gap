@@ -330,7 +330,7 @@ DeclareGlobalFunction( "ProjectiveCharDeg" );
 ##  <Description>
 ##  <A>G</A> must be a supersolvable group,
 ##  and <A>z</A> a central element in <A>G</A>.
-##  <Ref Func="CoveringTriplesCharacters"/> returns a list of tripels
+##  <Ref Func="CoveringTriplesCharacters"/> returns a list of triples
 ##  <M>[ T, K, e ]</M>
 ##  such that every irreducible character <M>\chi</M> of <A>G</A> with the
 ##  property that <M>\chi(<A>z</A>)</M> is a multiple of

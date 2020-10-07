@@ -419,7 +419,7 @@ end);
 ##  ]]></Example>
 ##  <Ref Oper="CallFuncListWrap"/> differs only in that the result is a list.
 ##  This returned list is empty if the called function returned no value,
-##  else it contains the returned value as it's single member. This allows
+##  else it contains the returned value as its single member. This allows
 ##  wrapping functions which may, or may not return a value.
 ##
 ##  <Example><![CDATA[

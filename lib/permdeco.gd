@@ -69,7 +69,7 @@ DeclareGlobalFunction("WreathActionChiefFactor");
 ## The option `limit' can be used to limit the orders of the solvable
 ## factors (if possible).
 ##
-## This is considered an old function that will be superceded by
+## This is considered an old function that will be superseded by
 ##  FittingFreeLiftSetup
 DeclareGlobalFunction("PermliftSeries");
 

@@ -1307,7 +1307,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	    return rec( orbit := orb, stabilizer := stb );
 	  elif  ind=Length(orb) then
 	    # we have reached the full orbit. No further tests
-	    # neccessary
+	    # necessary
 
 	    # do we still need to tick off the orbit in `blist' to
 	    # please the caller?

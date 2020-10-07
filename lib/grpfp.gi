@@ -593,7 +593,7 @@ local A,B,U,V,W,E,F,map;
   #  Then G>H if and only if the following two conditions hold:
   #  1) The image of G in B contains V.
   #  2) G contains ker(S->B) (so with 1 it is sufficient, this is trivially
-  #     neccessary as H contains this kernel).
+  #     necessary as H contains this kernel).
   #     This condition is fulfilled, if U>E
 
   #  To compute this, first note that F is generated (as normal subgroup) by

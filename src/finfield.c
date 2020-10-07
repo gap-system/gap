@@ -305,7 +305,7 @@ FF              CommonFF (
         return f2;
     }
 
-    /* compute the neccessary degree                                       */
+    /* compute the necessary degree                                       */
     d = d1;
     while ( d % d2 != 0 ) {
         d += d1;

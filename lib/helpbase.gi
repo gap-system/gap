@@ -132,7 +132,7 @@ BindGlobal( "TRANSATL", MakeImmutable(
 ##  "emphasize" and  "emphasise" may be used). However, this only creates 
 ##  a tiny and really neglectible overhead (try e.g. `??SizesCentralisers'
 ##  or `??Centralizers, Normalizers and Intersections'); however it ensures 
-##  that help searches may be successfull even if they use inconsistent 
+##  that help searches may be successful even if they use inconsistent 
 ##  spelling. In practice, we expect that the majority of help searches 
 ##  will match no more than one pattern. One could use the utility function 
 ##  `FindMultiSpelledHelpEntries' below to see that the help system contains 
@@ -265,7 +265,7 @@ end);
 ##  Analyse/Analyze, Factorisation/Factorization etc. 
 ##
 ##  "FindMultiSpelledHelpEntries" reports help entries that contains more
-##  than one occurence of spelling patterns from the `TRANSATL' list.
+##  than one occurrence of spelling patterns from the `TRANSATL' list.
 ##  It may falsely report entries containing the substring "Size" or "size",
 ##  since it's not possible to detect whether "size" is a part of another 
 ##  word or a word itselg (e.g. both spellings "emphasize" and  "emphasise" 

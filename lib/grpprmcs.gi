@@ -81,7 +81,7 @@ end );
 ##  The program works for  permutation  groups  of  degree  < 2^20 = 1048576.
 ##  For higher degrees  `IsSimple'  and  `CasesCSPG'  must  be  extended with
 ##  longer lists of primitive  groups  from  extensions  in  Kantor's  tables
-##  (see JSC. 12(1991), pp. 517-526).  It may also be  neccessary  to  modify
+##  (see JSC. 12(1991), pp. 517-526).  It may also be  necessary  to  modify
 ##  `FindNormalCSPG'.
 ##
 ##  A general reference for the algorithm is:

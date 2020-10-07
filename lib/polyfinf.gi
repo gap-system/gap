@@ -134,7 +134,7 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
       fi;
   od;
 
-  # if neccessary add irreducible <f> to the list of factors
+  # if necessary add irreducible <f> to the list of factors
   if 0 < DegreeOfLaurentPolynomial(f)  then
       Add(facs,f);
   fi;

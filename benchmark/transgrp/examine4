@@ -583,7 +583,7 @@ local m,z,k,i,j,l,s,e,ergs,sys,g,pool,lev,dran;
   else
     i:=lev;
   fi;
-  # search for the first occurence of a transitivable descendant
+  # search for the first occurrence of a transitivable descendant
   repeat
     l:=List(Concatenation(List([1..Length(z)+i-1],
          i->OrderedPartitions(i,Length(z)-1))),i->ShallowCopy(i-1));

@@ -3514,7 +3514,7 @@ SMTX_OrthogonalSign:=function(gm)
 
     #
     # Main loop of Thackray's algorithm, build up a totally isotropic
-    # subspace and restrict it's perp until the gap between is just 2 dimensional
+    # subspace and restrict its perp until the gap between is just 2 dimensional
     #
 
     while n > 2 do

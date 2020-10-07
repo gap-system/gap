@@ -2275,7 +2275,7 @@ end);
 
 # New implemention of the Modified Todd-Coxeter (MTC) algorithm, based on
 # Chapter 5  of the "Handbook of Computational Group Theory", by Derek F.
-# Holt (refered # to as "Handbook" from here on). Function names after the
+# Holt (referred # to as "Handbook" from here on). Function names after the
 # NEWTC_ agree with those of sections 5.2, 5.3 of the Handbook.
 
 NEWTC_AddDeduction:=function(list,ded)

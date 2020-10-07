@@ -113,7 +113,7 @@ struct TypInputFile {
 **  'stderr'  (Unix file  descriptor  2)  is  not a  terminal,  because  of a
 **  redirection say, to avoid that break loops take their input from a file.
 **
-**  It is not neccessary to open the initial input  file, 'InitScanner' opens
+**  It is not necessary to open the initial input  file, 'InitScanner' opens
 **  '*stdin*' for  that purpose.  This  file on   the other   hand  cannot be
 **  closed by 'CloseInput'.
 */
@@ -327,7 +327,7 @@ UInt CloseOutputLog(void);
 **  '*errout*' when 'LockCurrentOutput(1)' is in effect (used for testing
 **  purposes).
 **
-**  It is not neccessary to open the initial output file; '*stdout'* is
+**  It is not necessary to open the initial output file; '*stdout'* is
 **  opened for that purpose during startup. This file on the other hand  can
 **  not be closed by 'CloseOutput'.
 **

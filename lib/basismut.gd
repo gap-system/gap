@@ -39,7 +39,7 @@
 ##  <Ref Oper="ShallowCopy"/> for a mutable basis returns a mutable
 ##  plain list containing the current basis vectors.
 ##  <!-- Also <Ref Attr="LeftActingDomain"/> (or the analogy for it) should be a basic-->
-##  <!-- operation; up to now, apparantly one can avoid it,-->
+##  <!-- operation; up to now, apparently one can avoid it,-->
 ##  <!-- but conceptually it should be available!-->
 ##  <P/>
 ##  Since mutable bases do not admit arbitrary changes of their lists of
