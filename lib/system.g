@@ -54,6 +54,7 @@ BIND_GLOBAL( "GAPInfo", rec(
     # for those options is correct
     CommandLineOptionData := [
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
+      rec( long := "version", default := false, help := ["print the GAP version and exit"] ),
       rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
       rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
       rec( short:= "e", default := false, help := ["disable/enable quitting on <ctrl>-D"] ),
