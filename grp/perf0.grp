@@ -107,7 +107,7 @@
 ##  
 ##   l[3] (hpNumber)
 ##      is either a class
-##      number k or a list [k,i,j] or [k,i,j,k2,...,kn]. The tripel [k,i,j]
+##      number k or a list [k,i,j] or [k,i,j,k2,...,kn]. The triple [k,i,j]
 ##      means that the respective group  is listed in the k-th class of the
 ##      Holt-Plesken book under the number (i,j).  If the group also occurs
 ##      in some  additional  classes,  then  their  numbers  are  given  as

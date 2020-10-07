@@ -755,7 +755,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
                 v := First(adj[u],x->color[x]=0);
              
                 ## If no undiscovered vertices exist pop the vertex u
-                ##   from the stack and record it's finish time and color
+                ##   from the stack and record its finish time and color
                 ##   it fully discovered
                 ##
                 if v=fail then
@@ -765,7 +765,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
                     ftime[u] := time+1;
                     time := time +1;
 
-                ## Otherwise color the vertex, record it's discover
+                ## Otherwise color the vertex, record its discover
                 ##   time and predesessor edge, and push on the stack.
                 ##
                 else
@@ -1419,7 +1419,7 @@ InstallGlobalFunction(EquivalenceRelationByPartition,
 		Error("Equivalence relations only constructible over domains");
 	fi;
 
-	# make sure there are no repititions
+	# make sure there are no repetitions
 	if not IsSet(AsSortedList(Concatenation(subsX))) then
 		Error("Input does not describe a partition");
 	fi;
@@ -1580,7 +1580,7 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
         forest := [C[1]];
 
         ##
-        ## Put each pair in it's appropriate block and merge blocks
+        ## Put each pair in its appropriate block and merge blocks
         ##     as necessary 
         ##
         for i in C do

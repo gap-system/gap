@@ -1454,7 +1454,7 @@ static Obj PowCyc(Obj opL, Obj opR)
     /* otherwise compute the power with repeated squaring                  */
     else {
 
-        /* if neccessary invert the cyclotomic                             */
+        /* if necessary invert the cyclotomic                             */
         if ( exp < 0 ) {
             opL = InvCyc( opL );
             exp = -exp;

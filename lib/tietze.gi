@@ -1361,7 +1361,7 @@ end);
 #M                                                              from the tree
 ##
 ##  `TzEliminateFromTree'  eliminates  the  last  Tietze  generator.  If that
-##  generator cannot be isolated in any Tietze relator,  then it's definition
+##  generator cannot be isolated in any Tietze relator,  then its  definition
 ##  is  taken  from  the tree  and added  as an  additional  Tietze  relator,
 ##  extending  the  set  of  Tietze generators  appropriately,  if necessary.
 ##  However,  the elimination  will not be  performed  if the resulting total

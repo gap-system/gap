@@ -172,7 +172,7 @@ Please be careful to criticize constructively and not use dismissive language
 
 This section is based on <https://lornajane.net/posts/2015/code-reviews-before-you-even-run-the-code>.
 
-* Is it clear what feature / fix the contribution adresses?
+* Is it clear what feature / fix the contribution addresses?
 * If based on an issue, does it relate to exactly one issue?
 * Do the commit messages look good? Should some commits be squashed / broken up?
 * Does the list of changed files look sensible?

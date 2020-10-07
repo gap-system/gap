@@ -25,7 +25,7 @@
 **  If   it is interpreted,   then the  call   goes to one  of  the  handlers
 **  'DoExecFunc<i>args' that implement execution of function bodies.
 **
-**  The call mechanism makes it in any case unneccessary for the calling code
+**  The call mechanism makes it in any case unnecessary for the calling code
 **  to  know  whether the callee  is  a compiled or  an interpreted function.
 **  Likewise the called code need not know, actually cannot know, whether the
 **  caller is a compiled or an interpreted function.

@@ -574,7 +574,7 @@ local p, j, f, fj, g, q, gj, m, k, i;
     od;
 
     if p>0 and IsBound(pivots[p]) then
-      # reduction occured at pivot element -- need to reduce further
+      # reduction occurred at pivot element -- need to reduce further
       j:=pivots[p];
       f:=l[j];
       if imgs<>false then

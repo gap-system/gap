@@ -1495,7 +1495,7 @@ InstallMethod( PreImagesRepresentative,"constituent homomorphism",
 function( hom, elm )
 local D,DP;
   if not HasStabChainMutable(Source(hom)) then
-    # do not enforce a stabchain if not neccessary -- it could be big
+    # do not enforce a stabchain if not necessary -- it could be big
     TryNextMethod();
   fi;
   D:=Enumerator(UnderlyingExternalSet(hom));

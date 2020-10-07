@@ -162,7 +162,7 @@ static Obj InvPerm(Obj perm);
 **
 **  'PrintPerm' prints the permutation <perm> in the usual cycle notation. It
 **  uses the degree to print all points with same width, which  looks  nicer.
-**  Linebreaks are prefered most after cycles and  next  most  after  commas.
+**  Linebreaks are preferred most after cycles and  next  most  after  commas.
 **
 **  It remembers which points have already  been  printed, to avoid O(n^2)
 **  behaviour.

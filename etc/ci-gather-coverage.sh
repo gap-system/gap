@@ -4,7 +4,7 @@
 
 # This is currently only used for Travis CI integration, see .travis.yml
 # for details.
-# This is in a seperate script, because we always want to run it even if
+# This is in a separate script, because we always want to run it even if
 # the test script fails
 
 set -ex

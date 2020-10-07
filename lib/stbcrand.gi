@@ -318,7 +318,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
             coset,        # word representing coset of S
             residue,      # first component: remainder of Schreier generator
                           # after factorization; second component > 0
-                          # if factorization unsuccesful
+                          # if factorization unsuccessful
             jlimit,       # number of random points to plug into residue[1]
             ran,          # index of random point in an orbit of S
             g,            # permutation to be added to S.stabilizer
@@ -416,9 +416,9 @@ InstallGlobalFunction( SCRMakeStabStrong,
             # form Schreier generator and factorize
             Add(coset,w);
             residue := SiftAsWord(S,coset);
-            # check whether factorization is succesful
+            # check whether factorization is successful
             if residue[2] > 0  then
-                # factorization is unsuccesful; use remainder for
+                # factorization is unsuccessful; use remainder for
                 # construction in stabilizer
                 g := Product(residue[1]);
                 SCRMakeStabStrong(S.stabilizer,[g],param,orbits,where,
@@ -434,7 +434,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
                 while l < Length(missing) do
                     l := l+1;
                     if ImageInWord(missing[l],residue[1]) <> missing[l] then
-                        # factorization is unsuccesful;
+                        # factorization is unsuccessful;
                         # use remainder for construction in stabilizer
                         g := Product(residue[1]);
                         SCRMakeStabStrong(S.stabilizer,[g],param,
@@ -462,7 +462,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
                             if ImageInWord(orbits[l][ran],residue[1])
                               <> orbits[l][ran]
                             then
-                                # factorization is unsuccesful;
+                                # factorization is unsuccessful;
                                 # use remainder for construction in stabilizer
                                 g := Product(residue[1]);
                                 SCRMakeStabStrong(S.stabilizer,[g],param,
@@ -485,7 +485,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
                             if ImageInWord(orbits[l][j],residue[1])
                               <> orbits[l][j]
                             then
-                                # factorization is unsuccesful;
+                                # factorization is unsuccessful;
                                 # use remainder for construction in stabilizer
                                 g := Product(residue[1]);
                                 SCRMakeStabStrong(S.stabilizer,[g],param,
@@ -532,7 +532,7 @@ InstallGlobalFunction( SCRStrongGenTest,
             ranword,      # random element of S as a word in generators
             residue,      # first component: remainder of ranword
                           # after factorization; second component > 0
-                          # if factorization unsuccesful
+                          # if factorization unsuccessful
             jlimit,       # number of random points to plug into residue[1]
             ran,          # index of random point in an orbit of S
             g;            # product of residue[1]
@@ -586,7 +586,7 @@ InstallGlobalFunction( SCRStrongGenTest,
                     Append(ranword,[w[i]]);
                     residue := SiftAsWord(S,ranword);
                     if residue[2]>0 then
-                        # factorization is unsuccesful;
+                        # factorization is unsuccessful;
                         # remainder is witness that SGS for S is not complete
                         g := Product(residue[1]);
                         # Print("k=",k," i=",i," m=",m," mlimit=",mlimit,"\n");

@@ -589,7 +589,7 @@ void SyBufSetEOF(Int fid)
 **
 **  The function 'SyFopen'  is called to open the file with the name  <name>.
 **  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
-**  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
+**  If <mode> is "w" it is opened for writing, it is created  if  necessary.
 **  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
 **
 **  'SyFopen' returns an integer used by the scanner to  identify  the  file.
@@ -919,10 +919,10 @@ void syStopraw (
 
 /****************************************************************************
 **
-*F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
+*F  SyIsIntr() . . . . . . . . . . . . . . . . check whether user hit <ctr>-C
 **
 **  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
-**  wether the user hit '<ctr>-C' to interrupt a computation.
+**  whether the user hit '<ctr>-C' to interrupt a computation.
 **
 **  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
 */

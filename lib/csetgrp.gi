@@ -1103,7 +1103,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
 
   elif ValueOption("sisyphus")=true then
     # purely to allow for tests of up-step mechanism in smaller examples.
-    # This is creating unneccessary extra work and thus should never be used
+    # This is creating unnecessary extra work and thus should never be used
     # in practice, but will force some code to be run through.
     c:=Concatenation([TrivialSubgroup(G)],c);
     cano:=true;

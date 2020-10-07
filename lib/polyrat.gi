@@ -1270,7 +1270,7 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
           # coefficients (to make it  primitive),we do  a slightly
           # weaker test:  (test of  leading   coeffs is  first   in
           # 'TrialQuotientRPF') this just should  reduce the number of
-          # 'ProductMod' neccessary.   the  absolute  part  of  the
+          # 'ProductMod' necessary.   the  absolute  part  of  the
           # product must  divide  the absolute  part of  f  up to a
           # divisor of <lc>
           q:=CoefficientsOfLaurentPolynomial(f)[1][1] / q * lc;

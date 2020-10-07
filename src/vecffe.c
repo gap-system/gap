@@ -830,7 +830,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
 **  'ZeroVecFEE' returns the zero of the vector <vec>.
 **
 **  It is a better version of ZeroListDefault for the case of vecffes
-**  becuase it knows tha the zero is common and the result a vecffe
+**  because it knows tha the zero is common and the result a vecffe
 */
 
 static Obj ZeroMutVecFFE(Obj vec)

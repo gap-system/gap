@@ -273,7 +273,7 @@ do
   # cut off the ending slash (if exists)
   PKG="${PKG%/}"
   # cut off everything before the first slash to only keep the package name
-  # (these two commands are mainly to accomodate the logs better,
+  # (these two commands are mainly to accommodate the logs better,
   # as they make no difference with changing directories)
   PKG="${PKG##*/}"
   if [[ -e "$CURDIR/$PKG/PackageInfo.g" ]]

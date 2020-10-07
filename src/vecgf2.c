@@ -3336,7 +3336,7 @@ static void ShiftLeftGF2Vec(Obj vec, UInt amount)
             block |= (*ptr2) << (BIPEB - off);
             *ptr1++ = block;
         }
-        // Handle last block seperately to avoid reading off end of Bag
+        // Handle last block separately to avoid reading off end of Bag
         block = (*ptr2++) >> off;
         if (ptr2 < BLOCKS_GF2VEC(vec) + NUMBER_BLOCKS_GF2VEC(vec))
             block |= (*ptr2) << (BIPEB - off);

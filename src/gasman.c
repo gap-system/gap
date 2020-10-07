@@ -1074,7 +1074,7 @@ int RegisterAfterCollectFuncBags(TNumCollectFuncBags func)
  *
  * We never use the master pointers in any copy other than the
  * 0th, and we never refer to the Bag area in the 0th copy. However,
- * it simplifies things to not try to seperate the master pointer
+ * it simplifies things to not try to separate the master pointer
  * and Bag areas, because the master pointer area can grow as GAP
  * runs.
  *

@@ -336,7 +336,7 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
 **  an array, which is then passed to NewPlistFromArray.
 **
 **  There is no (nice) single implementation of NewPlistFromArgs that works
-**  in both C and C++, so there are two seperate implementations.
+**  in both C and C++, so there are two separate implementations.
 */
 #ifdef __cplusplus
 

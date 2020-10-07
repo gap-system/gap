@@ -33,7 +33,7 @@
 **  cost.   After every arithmetic operation we  have to compute the greatest
 **  common divisor of numerator and denominator, and divide them by the gcd.
 **
-**  Effort  has been made to improve  efficiency by avoiding unneccessary gcd
+**  Effort  has been made to improve  efficiency by avoiding unnecessary gcd
 **  computations.  Also if  possible this  package will compute  two gcds  of
 **  smaller integers instead of one gcd of larger integers.
 **
@@ -625,7 +625,7 @@ static Obj PowRat(Obj opL, Obj opR)
         pow = opL;
     }
 
-    /* if <opR> is positive raise numerator and denominator seperately    */
+    /* if <opR> is positive raise numerator and denominator separately    */
     else if ( IS_POS_INT(opR) ) {
         numP = PowInt( NUM_RAT(opL), opR );
         denP = PowInt( DEN_RAT(opL), opR );

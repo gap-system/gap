@@ -4,6 +4,6 @@ Most of the cleverness is in `./run_gap.sh`, where we make sure we capture
 all of GAP's output, stop GAP attaching to the terminal, and rewrite any
 filenames which occur in output.
 
-`./run_gap.sh` : This runs GAP, capturing it's input/output
+`./run_gap.sh` : This runs GAP, capturing its input/output
 `./run_all.sh` : This runs all the tests
 `./regenerate_tests.sh` : Regenerate all outputs

@@ -1182,7 +1182,7 @@ This is the first public release of GAP 4.9.
     compare the timing for `Sort([1..100000000] * 0)`. As a side
     effect, the result of sorting lists with equal entries may produce
     different answers compared to previous GAP versions. If you would
-    like to make your code independant of the exact employed sorting
+    like to make your code independent of the exact employed sorting
     algorithm, you can use the newly added `StableSort`, `StableSortBy`
     and `StableSortParallel`. (For some technical details, see
     [#609](https://github.com/gap-system/gap/pull/609)).
@@ -3033,7 +3033,7 @@ GAP 4.6.5 release:
     being called on a homomorphism whose image is not a permutation
     group. (Reported by Sebastian Gutsche)
 
-  - Fixed a bug in `ExponentsConjugateLayer` which occured, for
+  - Fixed a bug in `ExponentsConjugateLayer` which occurred, for
     example, in some calls of `SubgroupsSolvableGroup` (Reported
     by Ramon Esteban-Romero)
 

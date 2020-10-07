@@ -70,7 +70,7 @@ do
         cat "log/fail.log"
         exit 1
     else
-        echo "All packages were built succesfully"
+        echo "All packages were built successfully"
 
         #
         # Now that we built packages, we try to load them.

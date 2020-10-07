@@ -1094,14 +1094,14 @@ static Obj FuncLastSystemError(Obj self)
     /* constructed an error record                                         */
     err = NEW_PREC(0);
 
-    /* check if an errors has occured                                      */
+    /* check if an errors has occurred                                     */
     if ( SyLastErrorNo != 0 ) {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
         msg = MakeString(SyLastErrorMessage);
         ASS_REC( err, ErrorMessageRNam, msg );
     }
 
-    /* no error has occured                                                */
+    /* no error has occurred                                               */
     else {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(0) );
         msg = MakeString("no error");
