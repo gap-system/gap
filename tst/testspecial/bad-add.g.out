@@ -4,7 +4,7 @@ gap> f := function()
 function(  ) ... end
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `+' on 2 arguments at GAPROOT/lib/methsel2.g:249 called from
+Error, no 1st choice method found for `+' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
 1 + "abc" at *stdin*:3 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5

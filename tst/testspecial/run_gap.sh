@@ -16,5 +16,5 @@ gfile="$2"
 GAPROOT=$(cd ../..; pwd)
 ( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
     "$gap" -r -A -b -m 256m -o 512m -x 800 2>/dev/null >/dev/null
-sed "s:${GAPROOT//:/\\:}:GAPROOT:g" < "${outfile}.tmp"
+sed -E -e "s:${GAPROOT//:/\\:}:GAPROOT:g" -e "s;(GAPROOT(/[^/]+)+):[0-9]+;\1:LINE;g" < "${outfile}.tmp"
 rm "${outfile}.tmp"
