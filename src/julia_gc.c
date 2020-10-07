@@ -14,6 +14,8 @@
 **  and gasman.c for two other garbage collector implementations.
 **/
 
+#define _GNU_SOURCE
+
 #include "julia_gc.h"
 
 #include "fibhash.h"
@@ -29,6 +31,7 @@
 
 #include "bags.inc"
 
+#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -502,10 +505,79 @@ static void MarkFromList(PtrArray * arr)
 
 static TaskInfoTree * task_stacks = NULL;
 
+// We need to access the safe_restore member of the Julia TLS. Unfortunately,
+// its offset changes with the Julia version. In order to be able to produce
+// a single gap executable resp. libgap shared library which works across
+// multiple versions, we do the following:
+// - Julia 1.3 and 1.4 are the reference, the relative offset there hence is
+//   defined to be 0 (the absolute offset of safe_restore is 6840 on Linux and
+//   6816 on macOS)
+// - Julia 1.5 uses relative offset 8 (absolute offset is 6848 reps. 6824)
+// - Julia 1.6 added APIs to get and set the safe_restore value
+static int safe_restore_offset;
+
+static void set_safe_restore_with_offset(jl_jmp_buf * buf)
+{
+    jl_ptls_t tls = (jl_ptls_t)((char *)JuliaTLS + safe_restore_offset);
+    tls->safe_restore = buf;
+}
+
+static jl_jmp_buf * get_safe_restore_with_offset(void)
+{
+    jl_ptls_t tls = (jl_ptls_t)((char *)JuliaTLS + safe_restore_offset);
+    return tls->safe_restore;
+}
+
+static void (*set_safe_restore)(jl_jmp_buf * buf);
+static jl_jmp_buf * (*get_safe_restore)(void);
+
+static void SetupSafeRestoreHandlers(void)
+{
+    get_safe_restore = dlsym(RTLD_DEFAULT, "jl_get_safe_restore");
+    set_safe_restore = dlsym(RTLD_DEFAULT, "jl_set_safe_restore");
+
+    // if the new API is available, just use it!
+    if (get_safe_restore && set_safe_restore)
+        return;
+
+    GAP_ASSERT(!set_safe_restore && !get_safe_restore);
+
+    // compute safe_restore_offset; at this point we really kinda
+    // know that the Julia version must be 1.3, 1.4 or 1.5. Deal with that
+    if (jl_ver_major() != 1 || jl_ver_minor() < 3 || jl_ver_minor() > 5)
+        jl_errorf("Julia version %s is not supported by this GAP",
+                  jl_ver_string());
+
+    switch (JULIA_VERSION_MINOR * 10 + jl_ver_minor()) {
+    case 33:
+    case 34:
+    case 43:
+    case 44:
+    case 55:
+        safe_restore_offset = 0;
+        break;
+    case 35:
+    case 45:
+        safe_restore_offset = 8;
+        break;
+    case 53:
+    case 54:
+        safe_restore_offset = -8;
+        break;
+    default:
+        // We should never actually get here...
+        jl_errorf("GAP compiled against Julia %s, but loaded with Julia %s",
+                  JULIA_VERSION_STRING, jl_ver_string());
+    }
+
+    // finally set our alternate get/set functions
+    get_safe_restore = get_safe_restore_with_offset;
+    set_safe_restore = set_safe_restore_with_offset;
+}
+
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
 {
-    volatile jl_jmp_buf * old_safe_restore =
-        (volatile jl_jmp_buf *)JuliaTLS->safe_restore;
+    volatile jl_jmp_buf * old_safe_restore = get_safe_restore();
     jl_jmp_buf exc_buf;
     if (!jl_setjmp(exc_buf, 0)) {
         // The start of the stack buffer may be protected with guard
@@ -518,10 +590,10 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
         // Note that this will by necessity also scan the unused area
         // of the stack buffer past the stack top. We therefore also
         // optimize scanning for areas that contain only null bytes.
-        JuliaTLS->safe_restore = &exc_buf;
+        set_safe_restore(&exc_buf);
         FindLiveRangeReverse(stack, start, end);
     }
-    JuliaTLS->safe_restore = (jl_jmp_buf *)old_safe_restore;
+    set_safe_restore((jl_jmp_buf *)old_safe_restore);
 }
 
 static void
@@ -648,15 +720,48 @@ static void GapRootScanner(int full)
     }
 }
 
-static void GapTaskScanner(jl_task_t * task, int root_task)
+static void (*active_task_stack)(jl_task_t *task,
+                                 char **active_start, char **active_end,
+                                 char **total_start, char **total_end);
+
+static void
+active_task_stack_fallback(jl_task_t *task,
+                                 char **active_start, char **active_end,
+                                 char **total_start, char **total_end)
 {
     size_t size;
     int    tid;
-    char * stack = (char *)jl_task_stack_buffer(task, &size, &tid);
+    *active_start = (char *)jl_task_stack_buffer(task, &size, &tid);
+
+    if (*active_start) {
+        // task->copy_stack is 0 if the COPY_STACKS implementation is
+        // not used or 1 if the task stack does not point to valid
+        // memory. If it is neither zero nor one, then we can use that
+        // value to determine the actual top of the stack.
+        switch (task->copy_stack) {
+        case 0:
+            // do not adjust stack.
+            break;
+        case 1:
+            // stack buffer is not valid memory.
+            return;
+        default:
+            // We know which part of the task stack is actually used,
+            // so we shorten the range we have to scan.
+            *active_start = *active_start + size - task->copy_stack;
+            size = task->copy_stack;
+        }
+        *active_end = *active_start + size;
+    }
+}
+
+static void GapTaskScanner(jl_task_t * task, int root_task)
+{
     // If it is the current task, it has been scanned by GapRootScanner()
     // already.
     if (task == (jl_task_t *)jl_get_current_task())
         return;
+
     int rescan = 1;
     if (!FullGC) {
         // This is a temp hack to work around a problem with the
@@ -673,27 +778,13 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
         if (tag->bits.gc & 2)
             rescan = 0;
     }
-    if (stack) {
-        // task->copy_stack is 0 if the COPY_STACKS implementation is
-        // not used or 1 if the task stack does not point to valid
-        // memory. If it is neither zero nor one, then we can use that
-        // value to determine the actual top of the stack.
-        switch (task->copy_stack) {
-        case 0:
-            // do not adjust stack.
-            break;
-        case 1:
-            // stack buffer is not valid memory.
-            return;
-        default:
-            // We know which part of the task stack is actually used,
-            // so we shorten the range we have to scan.
-            stack = stack + size - task->copy_stack;
-            size = task->copy_stack;
-        }
-        char * stackend = stack + size;
+
+    char * active_start, * active_end, * total_start, * total_end;
+    active_task_stack(task, &active_start, &active_end, &total_start, &total_end);
+
+    if (active_start) {
         if (task == RootTaskOfMainThread) {
-            stackend = (char *)GapStackBottom;
+            active_end = (char *)GapStackBottom;
         }
 
         // Unlike the stack of the current task that we scan in
@@ -701,7 +792,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
         // therefore use a separate routine that scans from the
         // stack bottom until we reach the other end of the stack
         // or a guard page.
-        ScanTaskStack(rescan, task, stack, stackend);
+        ScanTaskStack(rescan, task, active_start, active_end);
     }
 }
 
@@ -790,8 +881,9 @@ void GAP_register_GapObj(jl_datatype_t * gapobj_type)
 
     // DO THE GREAT MAGIC HACK (yes we are bad citizens :/) and
     // change the super type of ForeignGAP.MPtr to GapObj
+    GAP_STATIC_ASSERT(offsetof(jl_datatype_t, super) == 8, "jl_datatype_t->super has wrong offset");
     datatype_mptr->super = gapobj_type;
-    jl_gc_wb(datatype_mptr, datatype_mptr->super);
+    jl_gc_wb(datatype_mptr, gapobj_type);
 }
 
 void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
@@ -814,6 +906,16 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     jl_init();
 
     SetJuliaTLS();
+    SetupSafeRestoreHandlers();
+
+    // With Julia >= 1.6 we want to use `jl_active_task_stack` as introduced
+    // in https://github.com/JuliaLang/julia/pull/36823 but for older
+    // versions, we need fall back to `jl_task_stack_buffer`.
+    active_task_stack = dlsym(RTLD_DEFAULT, "jl_active_task_stack");
+    if (!active_task_stack) {
+        active_task_stack = active_task_stack_fallback;
+    }
+
     // This variable is not defined in Julia headers, but its existence
     // is relied on in the Base module. Thus, defining it as extern is
     // portable.
