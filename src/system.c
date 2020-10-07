@@ -632,6 +632,16 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 #endif
 
 
+static Int printVersion(Char ** argv, void * dummy)
+{
+    SyFputs("GAP ", 1);
+    SyFputs(SyBuildVersion, 1);
+    SyFputs(" built on ", 1);
+    SyFputs(SyBuildDateTime, 1);
+    SyExit(0);
+}
+
+
 /* These are just the options that need kernel processing. Additional options will be 
    recognised and handled in the library */
 
@@ -674,6 +684,7 @@ static const struct optInfo options[] = {
   { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
   { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
   { 0  , "enableMemCheck", enableMemCheck, 0, 0 },
+  { 0  , "version", printVersion, 0, 0 },
   { 0, "", 0, 0, 0}};
 
 
