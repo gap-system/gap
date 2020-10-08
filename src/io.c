@@ -420,12 +420,12 @@ static UInt OpenDefaultOutput(void)
     return OpenOutputStream(stream);
   func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
   if (!func)
-    return OpenOutput("*stdout*");
+    return OpenOutput("*stdout*", FALSE);
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
-    return OpenOutput(CONST_CSTR_STRING(stream));
+    return OpenOutput(CONST_CSTR_STRING(stream), FALSE);
   TLS(DefaultOutput) = stream;
   return OpenOutputStream(stream);
 }
@@ -919,15 +919,19 @@ UInt CloseOutputLog ( void )
 **  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
 **  they are just a convention between the main and the system package.
 **
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
+**  The function does nothing and returns success for '*stdout*' and
+**  '*errout*' when 'LockCurrentOutput(1)' is in effect (used for testing
+**  purposes).
+**
+**  It is not neccessary to open the initial output file; '*stdout'* is
+**  opened for that purpose during startup. This file on the other hand  can
+**  not be closed by 'CloseOutput'.
+**
+**  If <append> is set to true, then 'OpenOutput' does not truncate the file
+**  to size 0 if it exists.
 */
-UInt OpenOutput (
-    const Char *        filename )
+UInt OpenOutput(const Char * filename, BOOL append)
 {
-    Int                 file;
-
     // do nothing for stdout and errout if caught
     if (IO()->Output != NULL && IO()->IgnoreStdoutErrout == IO()->Output &&
         (streq(filename, "*errout*") || streq(filename, "*stdout*"))) {
@@ -947,7 +951,7 @@ UInt OpenOutput (
 #endif
 
     /* try to open the file                                                */
-    file = SyFopen( filename, "w" );
+    Int file = SyFopen(filename, append ? "a" : "w");
     if ( file == -1 )
         return 0;
 
@@ -1048,53 +1052,6 @@ UInt CloseOutput ( void )
     const int sp = --IO()->OutputStackPointer;
     IO()->Output = sp ? IO()->OutputStack[sp - 1] : 0;
 
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-UInt OpenAppend (
-    const Char *        filename )
-{
-    Int                 file;
-
-    /* fail if we can not handle another open output file                  */
-    if (IO()->OutputStackPointer == MAX_OPEN_FILES)
-        return 0;
-
-#ifdef HPCGAP
-    if (streq(filename, "*defout*"))
-        return OpenDefaultOutput();
-#endif
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "a" );
-    if ( file == -1 )
-        return 0;
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    TypOutputFile * output = IO()->Output = PushNewOutput();
-    output->isstream = FALSE;
-    output->file = file;
-    output->line[0] = '\0';
-    output->pos = 0;
-    output->format = TRUE;
-    output->indent = 0;
-
-    /* variables related to line splitting, very bad place to split        */
-    output->hints[0] = -1;
-
-    /* indicate success                                                    */
     return 1;
 }
 
@@ -2127,7 +2084,7 @@ static Int InitKernel (
 #endif
 
     OpenInput("*stdin*");
-    OpenOutput("*stdout*");
+    OpenOutput("*stdout*", FALSE);
 
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 

@@ -194,7 +194,7 @@ static Obj Shell(Obj    context,
   }
 
   /* read-eval-print loop                                                */
-  if (!OpenOutput(outFile))
+  if (!OpenOutput(outFile, FALSE))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
 
   if(!OpenInput(inFile))

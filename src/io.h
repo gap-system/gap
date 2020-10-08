@@ -273,18 +273,21 @@ UInt CloseOutputLog(void);
 **  '*errout*' when 'LockCurrentOutput(1)' is in effect (used for testing
 **  purposes).
 **
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
+**  It is not neccessary to open the initial output file; '*stdout'* is
+**  opened for that purpose during startup. This file on the other hand  can
+**  not be closed by 'CloseOutput'.
+**
+**  If <append> is set to true, then 'OpenOutput' does not truncate the file
+**  to size 0 if it exists.
 */
-UInt OpenOutput(const Char * filename);
+UInt OpenOutput(const Char * filename, BOOL append);
 
 
 /****************************************************************************
 **
 *F  OpenOutputStream( <stream> )  . . . . . . open a stream as current output
 **
-**  The same as 'OpenOutput' (and also 'OpenAppend') but for streams.
+**  The same as 'OpenOutput' but for streams.
 */
 UInt OpenOutputStream(Obj stream);
 
@@ -307,20 +310,6 @@ UInt OpenOutputStream(Obj stream);
 **  'PrintTo' call or an error will not yield much better results.
 */
 UInt CloseOutput(void);
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-UInt OpenAppend(const Char * filename);
 
 
 TypInputFile * GetCurrentInput(void);
