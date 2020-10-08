@@ -62,7 +62,7 @@ UInt OpenErrorOutput( void )
 
     if (ERROR_OUTPUT != NULL) {
         if (IsStringConv(ERROR_OUTPUT)) {
-            ret = OpenOutput(CONST_CSTR_STRING(ERROR_OUTPUT));
+            ret = OpenOutput(CONST_CSTR_STRING(ERROR_OUTPUT), FALSE);
         }
         else {
             if (CALL_1ARGS(IsOutputStream, ERROR_OUTPUT) == True) {
@@ -75,7 +75,7 @@ UInt OpenErrorOutput( void )
         /* It may be we already tried and failed to open *errout* above but
          * but this is an extreme case so it can't hurt to try again
          * anyways */
-        ret = OpenOutput("*errout*");
+        ret = OpenOutput("*errout*", FALSE);
         if (ret) {
             Pr("failed to open error stream\n", 0, 0);
         }
@@ -173,9 +173,10 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 
     /* HACK: we want to redirect output */
     /* Try to print the output to stream. Use *errout* as a fallback. */
-    if ((IsStringConv(stream) && !OpenOutput(CONST_CSTR_STRING(stream))) ||
+    if ((IsStringConv(stream) &&
+         !OpenOutput(CONST_CSTR_STRING(stream), FALSE)) ||
         (!IS_STRING(stream) && !OpenOutputStream(stream))) {
-        if (OpenOutput("*errout*")) {
+        if (OpenOutput("*errout*", FALSE)) {
             Pr("PRINT_CURRENT_STATEMENT: failed to open error stream\n", 0, 0);
         }
         else {

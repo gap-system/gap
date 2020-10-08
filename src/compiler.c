@@ -5204,7 +5204,7 @@ Int CompileFunc (
     UInt                compFunctionsNr;
 
     /* open the output file                                                */
-    if ( ! OpenOutput( CONST_CSTR_STRING(output) ) ) {
+    if (!OpenOutput(CONST_CSTR_STRING(output), FALSE)) {
         return 0;
     }
     col = SyNrCols;

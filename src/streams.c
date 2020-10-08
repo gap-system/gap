@@ -735,8 +735,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     /* try to open the output and handle failures                          */
     if (file) {
         RequireStringRep(funcname, destination);
-        i = append ? OpenAppend(CONST_CSTR_STRING(destination))
-                   : OpenOutput(CONST_CSTR_STRING(destination));
+        i = OpenOutput(CONST_CSTR_STRING(destination), append);
         if (!i) {
             if (streq(CSTR_STRING(destination), "*errout*")) {
                 Panic("Failed to open *errout*!");
