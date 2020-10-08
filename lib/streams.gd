@@ -630,8 +630,8 @@ DeclareOperation( "InputTextString", [ IsString ] );
 ##  <Ref Filt="IsInputTextStream"/> that delivers the characters from the file
 ##  <A>filename</A>. If <A>filename</A> ends in <C>.gz</C> and the file is
 ##  a valid gzipped file, then the file will be transparently uncompressed.
-##  <C>InputTextFileRaw</C> acts the same as <C>InputTextFile</>, without automatic
-##  uncompression.
+##  <C>InputTextFileRaw</C> acts the same as <C>InputTextFile</C>, without automatic
+##  decompression.
 ##  <P/>
 ##  <C>InputTextFile</C> is designed for use with text files and automatically
 ##  handles windows-style line endings. This means it should <E>not</E> be used for
