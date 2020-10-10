@@ -157,16 +157,16 @@ static UInt QUITTINGGVar;
 
 
 static Obj Shell(Obj    context,
-                 UInt   canReturnVoid,
-                 UInt   canReturnObj,
-                 UInt   lastDepth,
-                 UInt   setTime,
+                 BOOL   canReturnVoid,
+                 BOOL   canReturnObj,
+                 BOOL   breakLoop,
                  Char * prompt,
-                 Obj    preCommandHook,
-                 UInt   catchQUIT,
-                 Char * inFile,
-                 Char * outFile)
+                 Obj    preCommandHook)
 {
+  const Char * inFile;
+  const Char * outFile;
+  BOOL setTime = !breakLoop;
+  BOOL catchQUIT = !breakLoop;
   UInt time = 0;
   UInt8 mem = 0;
   UInt status;
@@ -177,7 +177,22 @@ static Obj Shell(Obj    context,
   Int oldErrorLLevel = STATE(ErrorLLevel);
   STATE(ErrorLLevel) = 0;
   Int oldRecursionDepth = GetRecursionDepth();
-  
+
+  if (breakLoop) {
+    inFile = "*errin*";
+    outFile = "*errout*";
+  }
+#ifdef HPCGAP
+  else if (ThreadUI) {
+    inFile = "*defin*";
+    outFile = "*defout*";
+  }
+#endif
+  else {
+    inFile = "*stdin*";
+    outFile = "*stdout*";
+  }
+
   /* read-eval-print loop                                                */
   if (!OpenOutput(outFile))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
@@ -249,7 +264,7 @@ static Obj Shell(Obj    context,
     if ( status == STATUS_END && evalResult != 0 ) {
 
       /* remember the value in 'last'    */
-      UpdateLast(evalResult, lastDepth);
+      UpdateLast(evalResult);
 
       /* print the result                                            */
       if ( ! dualSemicolon ) {
@@ -340,74 +355,36 @@ static Obj Shell(Obj    context,
 }
 
 
-static Obj FuncSHELL(Obj self, Obj args)
+static Obj FuncSHELL(Obj self,
+                     Obj context,
+                     Obj canReturnVoid,
+                     Obj canReturnObj,
+                     Obj breakLoop,
+                     Obj prompt,
+                     Obj preCommandHook)
 {
-  Obj context;
-  Obj canReturnVoid;
-  Obj canReturnObj;
-  Int lastDepth;
-  Obj setTime;
-  Obj prompt;
   Char promptBuffer[81];
-  Obj preCommandHook;
-  Obj infile;
-  Obj outfile;
-  Obj catchQUIT;
   Obj res;
 
-  GAP_ASSERT(LEN_PLIST(args) == 10);
-  
-  context = ELM_PLIST(args,1);
   if (!IS_LVARS_OR_HVARS(context))
     RequireArgument(SELF_NAME, context, "must be a local variables bag");
   
-  canReturnVoid = ELM_PLIST(args, 2);
   RequireTrueOrFalse(SELF_NAME, canReturnVoid);
-
-  canReturnObj = ELM_PLIST(args, 3);
   RequireTrueOrFalse(SELF_NAME, canReturnObj);
-
-  lastDepth = GetSmallIntEx("SHELL", ELM_PLIST(args,4), "lastDepth");
-  if (lastDepth < 0 )
-    {
-      Pr("#W SHELL: negative last depth treated as zero\n",0,0);
-      lastDepth = 0;
-    }
-  else if (lastDepth > 3 )
-    {
-      Pr("#W SHELL: last depth greater than 3 treated as 3\n",0,0);
-      lastDepth = 3;
-    }
-
-  setTime = ELM_PLIST(args, 5);
-  RequireTrueOrFalse(SELF_NAME, setTime);
-
-  prompt = ELM_PLIST(args,6);
+  RequireTrueOrFalse(SELF_NAME, breakLoop);
   RequireStringRep(SELF_NAME, prompt);
   if (GET_LEN_STRING(prompt) > 80)
     ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
   promptBuffer[0] = '\0';
   strlcat(promptBuffer, CONST_CSTR_STRING(prompt), sizeof(promptBuffer));
 
-  preCommandHook = ELM_PLIST(args,7);
- 
   if (preCommandHook == False)
     preCommandHook = 0;
   else if (!IS_FUNC(preCommandHook))
     RequireArgument(SELF_NAME, preCommandHook, "must be function or false");
-  
-  infile = ELM_PLIST(args,8);
-  RequireStringRep(SELF_NAME, infile);
-
-  outfile = ELM_PLIST(args,9);
-  RequireStringRep(SELF_NAME, outfile);
-
-  catchQUIT = ELM_PLIST(args, 10);
-  RequireTrueOrFalse(SELF_NAME, catchQUIT);
 
   res = Shell(context, canReturnVoid == True, canReturnObj == True,
-              lastDepth, setTime == True, promptBuffer, preCommandHook,
-              catchQUIT == True, CSTR_STRING(infile), CSTR_STRING(outfile));
+              breakLoop == True, promptBuffer, preCommandHook);
 
   STATE(UserHasQuit) = 0;
   return res;
@@ -1222,14 +1199,11 @@ static Obj FuncSINGLE_THREAD_STARTUP(Obj self)
 
 #endif
 
-void UpdateLast(Obj newLast, Int lastDepth)
+void UpdateLast(Obj newLast)
 {
-    if (lastDepth >= 3)
-        AssGVarWithoutReadOnlyCheck(Last3, ValGVarTL(Last2));
-    if (lastDepth >= 2)
-        AssGVarWithoutReadOnlyCheck(Last2, ValGVarTL(Last));
-    if (lastDepth >= 1)
-        AssGVarWithoutReadOnlyCheck(Last, newLast);
+    AssGVarWithoutReadOnlyCheck(Last3, ValGVarTL(Last2));
+    AssGVarWithoutReadOnlyCheck(Last2, ValGVarTL(Last));
+    AssGVarWithoutReadOnlyCheck(Last, newLast);
 }
 
 void UpdateTime(UInt startTime)
@@ -1312,10 +1286,13 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(QuitGap, -1, "args"),
     GVAR_FUNC(ForceQuitGap, -1, "args"),
     GVAR_FUNC_0ARGS(SHOULD_QUIT_ON_BREAK),
-    GVAR_FUNC(SHELL,
-              10,
-              "context, canReturnVoid, canReturnObj, lastDepth, "
-              "setTime, prompt, promptHook, preCommandHook, infile, outfile"),
+    GVAR_FUNC_6ARGS(SHELL,
+                    context,
+                    canReturnVoid,
+                    canReturnObj,
+                    breakLoop,
+                    prompt,
+                    preCommandHook),
     GVAR_FUNC_0ARGS(KERNEL_INFO),
 #ifdef HPCGAP
     GVAR_FUNC_0ARGS(THREAD_UI),

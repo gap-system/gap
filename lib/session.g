@@ -47,17 +47,13 @@ BIND_GLOBAL("SESSION",
     SHELL( GetBottomLVars(), # in global context
         false, # no return
         false, # no return  obj
-        3,     # set last, last2 and last3 each command
-        true,  # set time after each command
+        false, # not in a break loop
         "gap> ",
         function()
             if IsBound(OnGAPPromptHook) and IsFunction(OnGAPPromptHook) then
                 OnGAPPromptHook();
             fi;
-        end,
-        "*stdin*",
-        "*stdout*",
-        true);
+        end);
 
     BreakOnError := false;
 end);
@@ -77,29 +73,6 @@ BindGlobal("POST_RESTORE", function()
 end);
 
 if IsHPCGAP then
-
-    BIND_GLOBAL("THREAD_SESSION",
-        function()
-
-        SHELL( GetBottomLVars(), # in global context
-            false, # no return
-            false, # no return  obj
-            3,     # set last, last2 and last3 each command
-            true,  # set time after each command
-            "gap> ",
-            function()
-                if IsBound(OnGAPPromptHook) and IsFunction(OnGAPPromptHook) then
-                    OnGAPPromptHook();
-                fi;
-            end,
-            "*defin*",
-            "*defout*",
-            true);
-
-        BreakOnError := false;
-    end);
-
-
 
     DEFAULT_INPUT_STREAM := function()
         if CurrentThread() = 0 then

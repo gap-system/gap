@@ -174,8 +174,7 @@ Unbind(ErrorInner);
 BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     local   context, mayReturnVoid,  mayReturnObj,  lateMessage,
             x,  prompt,  res, errorLVars, justQuit, printThisStatement,
-            printEarlyMessage, printEarlyTraceback, lastErrorStream,
-            shellOut, shellIn;
+            printEarlyMessage, printEarlyTraceback, lastErrorStream;
 
     context := options.context;
     if not IsLVarsBag(context) then
@@ -349,16 +348,8 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     else
         prompt := "brk> ";
     fi;
-    shellOut := "*errout*";
-    shellIn := "*errin*";
-    if IsHPCGAP then
-        if HaveMultiThreadedUI then
-            shellOut := "*defout*";
-            shellIn := "*defin*";
-        fi;
-    fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,3,false,prompt,false,shellIn,shellOut,false);
+        res := SHELL(context,mayReturnVoid,mayReturnObj,true,prompt,false);
     else
         res := fail;
     fi;
