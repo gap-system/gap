@@ -275,7 +275,7 @@ BindGlobal("StartInteractiveThread@", function()
     ThreadInfo@ := threadinfo;
     AcknowledgeHandShake(handshake, threadinfo);
     AtThreadExit(ThreadExit@);
-    THREAD_SESSION();
+    SESSION();
     UnregisterThread@(true);
   end, handshake);
   threadinfo := CompleteHandShake(handshake);
@@ -1082,7 +1082,7 @@ BindGlobal("MULTI_SESSION", function()
   handshake := StartHandShake();
   ThreadInfo@ := NewThreadInfo@();
   BindGlobal("ControlThreadID@", CreateThread(MainLoop@, ThreadInfo@));
-  THREAD_SESSION();
+  SESSION();
   UnregisterThread@(true);
   CompleteHandShake(ProgramShutdown@);
   PROGRAM_CLEAN_UP();

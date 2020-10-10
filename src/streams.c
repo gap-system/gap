@@ -397,7 +397,7 @@ static void READ_TEST_OR_LOOP(Obj context, TypInputFile * input)
         if ( type == 0 && evalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
-            UpdateLast(evalResult, 3);
+            UpdateLast(evalResult);
 
             /* print the result                                            */
             if ( ! dualSemicolon ) {

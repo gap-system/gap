@@ -18,13 +18,11 @@
 
 /****************************************************************************
 **
-*F  UpdateLast(<newLast>, <lastDepth>)
+*F  UpdateLast(<newLast>)
 **
 **  Updates Last, Last2 and Last3 by the new result 'newLast'.
-**  <lastDepth> determines how many of these variables should be updated, starting
-**  always with 'Last'.
 */
-void UpdateLast(Obj newLast, Int lastDepth);
+void UpdateLast(Obj newLast);
 
 
 /****************************************************************************
