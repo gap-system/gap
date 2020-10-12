@@ -1096,7 +1096,6 @@ static Char GetLine(TypInputFile * input)
     input->line[0] = '\0';    // init the pushback buffer
     input->line[1] = '\0';    // empty line buffer
     input->ptr = input->line + 1;
-    STATE(NrErrLine) = 0;
 
     /* try to read a line                                              */
     if (!GetLine2(input)) {

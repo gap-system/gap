@@ -74,7 +74,16 @@ struct TypInputFile {
     char * ptr;
 
     // the number of the current line; used in error messages
-    Int number;
+    UInt number;
+
+    // 'lastErrorLine' is an integer whose value is the number of the last
+    // line on which an error was found. It is set by 'SyntaxError'.
+    //
+    // If 'lastErrorLine' is equal to the current line number 'SyntaxError'
+    // will not print an error message. This is used to prevent the printing
+    // of multiple error messages for one line, since they usually just
+    // reflect the fact that the parser has not resynchronized yet.
+    UInt lastErrorLine;
 };
 
 

@@ -196,56 +196,39 @@ typedef struct {
     //
     TypInputFile * input;
 
-/****************************************************************************
-**
-*V  Value . . . . . . . . . . . . . value of the identifier, float or integer
-*V  ValueObj . . . . . . . . . . . . . . . . . . . . . .  value of the string
-**
-**  If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_FLOAT' then normally the
-**  variable 'Value' holds the name of the identifier, the digits of
-**  the integer or float literal as a C string. For large integer or float
-**  literals that do not fit into 'Value', instead 'ValueObj'
-**  holds the literal as a GAP string object. If the symbol is 'S_STRING'
-**  or 'S_HELP', the string literal or help text is always stored in
-**  'ValueObj' as a GAP string object.
-**
-**  Note that the size of identifiers in GAP is limited to 1023 characters,
-**  hence identifiers are always stored in 'Value'. For this reason,
-**  'GetIdent' truncates an identifier after that many characters.
-*/
-    Obj    ValueObj;
+    // If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_FLOAT' then normally the
+    // variable 'Value' holds the name of the identifier, the digits of the
+    // integer or float literal as a C string. For large integer or float
+    // literals that do not fit into 'Value', instead 'ValueObj' holds the
+    // literal as a GAP string object
+    //
+    // Note that the size of identifiers in GAP is limited to 1023 characters,
+    // hence identifiers are always stored in 'Value'. For this reason,
+    // 'GetIdent' truncates an identifier after that many characters.
     char   Value[1024];
 
+    // For large integer or float literals that do not fit into 'Value',
+    // instead 'ValueObj' holds the literal as a GAP string object. If the
+    // symbol is 'S_STRING' or 'S_HELP', the string literal or help text is
+    // always stored in 'ValueObj' as a GAP string object.
+    Obj    ValueObj;
+
+    //
     enum SCANNER_SYMBOLS Symbol;
 
     // Track the last three symbols, for 'Unbound global' warnings
     UInt   SymbolStartPos[3];
     UInt   SymbolStartLine[3];
     
-/****************************************************************************
-**
-*V  NrError . . . . . . . . . . . . . . . .  number of errors in current expr
-*V  NrErrLine . . . . . . . . . . . . . . .  number of errors on current line
-**
-**  'NrError' is an integer whose value is the number of errors already found
-**  in the current expression.  It is set to 0 at the beginning of 'Read' and
-**  incremented with each 'SyntaxError' call, including those  from  'Match'.
-**
-**  If 'NrError' is greater than zero the parser functions  will  not  create
-**  new bags.  This prevents the parser from creating new bags after an error
-**  occurred.
-**
-**  'NrErrLine' is an integer whose value is the number of  errors  found  on
-**  the current line.  It is set to 0 in 'GetLine' and incremented with  each
-**  'SyntaxError' call, including those from 'Match'.
-**
-**  If 'NrErrLine' is greater  than  zero  'SyntaxError' will  not  print  an
-**  error message.  This prevents the printing of multiple error messages for
-**  one line, since they  probabely  just reflect  the  fact that the  parser
-**  has not resynchronized yet.
-*/
+    // 'NrError' is an integer whose value is the number of errors already
+    // found in the current expression. It is set to 0 at the beginning of
+    // 'Read' and incremented with each 'SyntaxError' call, including those
+    // from 'Match'.
+    //
+    // If 'NrError' is greater than zero the parser functions will not create
+    // new bags. This prevents the parser from creating new bags after an
+    // error occurred.
     UInt NrError;
-/* TL: extern  UInt            NrErrLine; */
 
 } ScannerState;
 
@@ -271,14 +254,13 @@ typedef struct {
 **  than zero the parser functions  will not create  new bags.  This prevents
 **  the parser from creating new bags after an error occurred.
 **
-**  'SyntaxError'  also  increments  'NrErrLine'  by  1.  If  'NrErrLine'  is
-**  greater than zero  'SyntaxError' will not print an  error  message.  This
-**  prevents the printing of multiple error messages for one line, since they
-**  probabely  just reflect the  fact  that the parser has not resynchronized
-**  yet.  'NrErrLine' is reset to 0 if a new line is read in 'GetLine'.
+**  'SyntaxError' also records the current line number in 'lastErrorLine' to
+**  prevent the printing of multiple error messages for one line, since they
+**  usually  just reflect the  fact  that the parser has not resynchronized
+**  yet.
 ** 
-**  'SyntaxWarning' displays in the same way but does not increase 'NrError'
-**  or 'NrErrLine'.
+**  'SyntaxWarning' displays in the same way but does not change 'NrError'
+**  or 'lastErrorLine'.
 **
 **  Note that unlike 'ErrorQuit', neither function raises an actual error,
 **  so execution continues as normal. Thus you must make sure that subsequent
