@@ -181,7 +181,8 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
         outstream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
                                      outstreamString, True);
     }
-    if (outstream && !OpenOutputStream(outstream)) {
+    TypOutputFile output = { 0 };
+    if (outstream && !OpenOutputStream(&output, outstream)) {
         CloseInput(&input);
         return Fail;
     }
@@ -226,9 +227,12 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             }
         }
     } while (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
+    // FIXME: the above should be in a big GAP_TRY so that we can CloseOutput
+    // before we rethrow
+    // FIXME: actually how does that work right now?!? does it?!?
 
     if (outstream)
-        CloseOutput();
+        CloseOutput(&output);
     CloseInput(&input);
     ClearError();
 
@@ -733,10 +737,12 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     /* first entry is the file or stream                                   */
     destination = ELM_LIST(args, 1);
 
+    TypOutputFile output = { 0 };
+
     /* try to open the output and handle failures                          */
     if (file) {
         RequireStringRep(funcname, destination);
-        i = OpenOutput(CONST_CSTR_STRING(destination), append);
+        i = OpenOutput(&output, CONST_CSTR_STRING(destination), append);
         if (!i) {
             if (streq(CSTR_STRING(destination), "*errout*")) {
                 Panic("Failed to open *errout*!");
@@ -750,7 +756,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
             ErrorQuit("%s: <outstream> must be an output stream",
                       (Int)funcname, 0);
         }
-        i = OpenOutputStream(destination);
+        i = OpenOutputStream(&output, destination);
         if (!i) {
             ErrorQuit("%s: cannot open stream for output", (Int)funcname, 0);
         }
@@ -775,13 +781,13 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         }
         GAP_CATCH
         {
-            CloseOutput();
+            CloseOutput(&output);
             GAP_THROW();
         }
     }
 
     /* close the output file again, and return nothing                     */
-    if ( ! CloseOutput() ) {
+    if (!CloseOutput(&output)) {
         ErrorQuit("%s: cannot close output", (Int)funcname, 0);
     }
 
@@ -915,20 +921,21 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
         return False;
     }
 
-    if (!OpenOutputStream(outstream)) {
+    TypOutputFile output = { 0 };
+    if (!OpenOutputStream(&output, outstream)) {
         res = CloseInput(&input);
         GAP_ASSERT(res);
         return False;
     }
 
-    LockCurrentOutput(1);
+    LockCurrentOutput(TRUE);
     READ_TEST_OR_LOOP(context, &input);
-    LockCurrentOutput(0);
+    LockCurrentOutput(FALSE);
 
     res = CloseInput(&input);
     GAP_ASSERT(res);
 
-    res &= CloseOutput();
+    res &= CloseOutput(&output);
     GAP_ASSERT(res);
 
     return res ? True : False;

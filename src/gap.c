@@ -194,13 +194,14 @@ static Obj Shell(Obj    context,
   }
 
   /* read-eval-print loop                                                */
-  if (!OpenOutput(outFile, FALSE))
+  TypOutputFile output = { 0 };
+  if (!OpenOutput(&output, outFile, FALSE))
       ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
 
   TypInputFile input = { 0 };
   if (!OpenInput(&input, inFile))
     {
-      CloseOutput();
+      CloseOutput(&output);
       ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
     }
 
@@ -317,7 +318,7 @@ static Obj Shell(Obj    context,
   
   SetPrintObjState(oldPrintObjState);
   CloseInput(&input);
-  CloseOutput();
+  CloseOutput(&output);
   STATE(ErrorLLevel) = oldErrorLLevel;
   SetRecursionDepth(oldRecursionDepth);
 

@@ -89,6 +89,47 @@ struct TypInputFile {
 
 /****************************************************************************
 **
+*/
+enum {
+    // the maximal number of used line break hints
+    MAXHINTS = 100,
+
+    // the widest allowed screen width
+    MAXLENOUTPUTLINE = 4096,
+};
+
+
+/****************************************************************************
+**
+*T  TypOutputFile . . . . . . . . . . structure of an open output file, local
+**
+**  'TypOutputFile' describes the information stored for open  output  files:
+**  'file' holds the file identifier which is  received  from  'SyFopen'  and
+**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
+**  'line' is a buffer that holds the current output line.
+**  'pos' is the position of the current character on that line.
+*/
+struct TypOutputFile {
+    // pointer to the previously active output
+    struct TypOutputFile * prev;
+
+    BOOL isstream;
+    BOOL isstringstream;
+    Obj  stream;
+    Int  file;
+
+    char line[MAXLENOUTPUTLINE];
+    Int  pos;
+    BOOL format;
+    Int  indent;
+
+    /* each hint is a triple (position, value, indent) */
+    Int hints[3 * MAXHINTS + 1];
+};
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
@@ -109,7 +150,7 @@ struct TypInputFile {
 **  may  also fail if  you have too  many files open at once.   It  is system
 **  dependent how many are  too many, but  16  files should  work everywhere.
 **
-**  Directely after the 'OpenInput' call the variable  'Symbol' has the value
+**  Directly after the 'OpenInput' call the variable  'Symbol' has the value
 **  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
 **  The first symbol is read by 'Read' in the first call to 'Match' call.
 **
@@ -148,7 +189,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo);
 **
 **  'CloseInput' will not close the initial input file '*stdin*', and returns
 **  0  if such  an  attempt is made.   This is  used in  'Error'  which calls
-**  'CloseInput' until it returns 0, therebye closing all open input files.
+**  'CloseInput' until it returns 0, thereby closing all open input files.
 **
 **  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
 **  close the current output file, which will lead to very strange behaviour.
@@ -343,7 +384,7 @@ UInt CloseOutputLog(void);
 **  If <append> is set to true, then 'OpenOutput' does not truncate the file
 **  to size 0 if it exists.
 */
-UInt OpenOutput(const Char * filename, BOOL append);
+UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append);
 
 
 /****************************************************************************
@@ -352,7 +393,7 @@ UInt OpenOutput(const Char * filename, BOOL append);
 **
 **  The same as 'OpenOutput' but for streams.
 */
-UInt OpenOutputStream(Obj stream);
+UInt OpenOutputStream(TypOutputFile * output, Obj stream);
 
 
 /****************************************************************************
@@ -372,7 +413,7 @@ UInt OpenOutputStream(Obj stream);
 **  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
 **  'PrintTo' call or an error will not yield much better results.
 */
-UInt CloseOutput(void);
+UInt CloseOutput(TypOutputFile * output);
 
 
 TypInputFile * GetCurrentInput(void);
@@ -405,10 +446,6 @@ UInt GetInputFilenameID(TypInputFile * input);
 Obj GetCachedFilename(UInt id);
 
 
-/* the widest allowed screen width */
-#define MAXLENOUTPUTLINE  4096
-
-
 // Reset the indentation level of the current output to zero. The indentation
 // level can be modified via the '%>' and '%<' formats of 'Pr' resp. 'PrTo'.
 void ResetOutputIndent(void);
@@ -419,14 +456,14 @@ void ResetOutputIndent(void);
 //
 // This is used to allow the 'Test' function of the GAP library to
 // consistently capture all output during testing, see 'FuncREAD_STREAM_LOOP'.
-void LockCurrentOutput(Int lock);
+void LockCurrentOutput(BOOL lock);
 
 /****************************************************************************
 **
 *F  Pr( <format>, <arg1>, <arg2> )  . . . . . . . . .  print formatted output
 **
 **  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
+**  string containing   up   to 2  '%'  format   fields,  specifying  how the
 **  corresponding arguments are to be  printed.  The two arguments are passed
 **  as  'long'  integers.   This  is possible  since every  C object  ('int',
 **  'char', pointers) except 'float' or 'double', which are not used  in GAP,
@@ -449,7 +486,7 @@ void LockCurrentOutput(Int lock);
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%i'    is a synonym of %d, in line with recent C library developements
+**  '%i'    is a synonym of %d, in line with recent C library developments
 **  '%I'    print an identifier, given as a null terminated character string.
 **  '%H'    print an identifier, given as GAP string in STRING_REP
 **  '%>'    increment the indentation level.

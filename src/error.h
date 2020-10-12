@@ -40,7 +40,7 @@ Int RegisterBreakloopObserver(intfunc func);
 **                                   ERROR_OUTPUT global variable defined in
 **                                   error.g, or "*errout*" otherwise
 */
-UInt OpenErrorOutput(void);
+UInt OpenErrorOutput(TypOutputFile * output);
 
 /****************************************************************************
 **

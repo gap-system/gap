@@ -44,34 +44,6 @@
 #include <limits.h>
 
 
-/****************************************************************************
-**
-*T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
-**
-**  'TypOutputFile' describes the information stored for open  output  files:
-**  'file' holds the file identifier which is  received  from  'SyFopen'  and
-**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
-**  'line' is a buffer that holds the current output line.
-**  'pos' is the position of the current character on that line.
-*/
-/* the maximal number of used line break hints */
-#define MAXHINTS 100
-typedef struct {
-    BOOL isstream;
-    BOOL isstringstream;
-    Obj  stream;
-    Int  file;
-
-    char line[MAXLENOUTPUTLINE];
-    Int  pos;
-    BOOL format;
-    Int  indent;
-
-    /* each hint is a tripel (position, value, indent) */
-    Int hints[3 * MAXHINTS + 1];
-} TypOutputFile;
-
-
 static Char GetLine(TypInputFile * input);
 static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
 
@@ -98,10 +70,6 @@ enum {
 
 struct IOModuleState {
 
-    // The stack of open output files
-    TypOutputFile * OutputStack[MAX_OPEN_FILES];
-    int             OutputStackPointer;
-
     // A pointer to the current input file
     TypInputFile * Input;
 
@@ -126,6 +94,9 @@ struct IOModuleState {
     TypOutputFile InputLogFileOrStream;
     TypOutputFile OutputLogFileOrStream;
 
+    TypOutputFile DefaultOutput;
+
+
     Int NoSplitLine;
 };
 
@@ -135,7 +106,7 @@ extern inline struct IOModuleState * IO(void)
     return (struct IOModuleState *)StateSlotsAtOffset(IOStateOffset);
 }
 
-void LockCurrentOutput(Int lock)
+void LockCurrentOutput(BOOL lock)
 {
     IO()->IgnoreStdoutErrout = lock ? IO()->Output : NULL;
 }
@@ -303,23 +274,6 @@ Obj GetCachedFilename(UInt id)
 *F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
 */
 
-#if !defined(HPCGAP)
-static TypOutputFile OutputFiles[MAX_OPEN_FILES];
-#endif
-
-static TypOutputFile * PushNewOutput(void)
-{
-    GAP_ASSERT(IO()->OutputStackPointer < MAX_OPEN_FILES);
-    const int sp = IO()->OutputStackPointer++;
-#ifdef HPCGAP
-    if (!IO()->OutputStack[sp]) {
-        IO()->OutputStack[sp] = AllocateMemoryBlock(sizeof(TypOutputFile));
-    }
-#endif
-    GAP_ASSERT(IO()->OutputStack[sp]);
-    return IO()->OutputStack[sp];
-}
-
 #ifdef HPCGAP
 static GVarDescriptor DEFAULT_INPUT_STREAM;
 static GVarDescriptor DEFAULT_OUTPUT_STREAM;
@@ -342,22 +296,22 @@ static UInt OpenDefaultInput(TypInputFile * input)
   return OpenInputStream(input, stream, FALSE);
 }
 
-static UInt OpenDefaultOutput(void)
+static UInt OpenDefaultOutput(TypOutputFile * output)
 {
   Obj func, stream;
   stream = TLS(DefaultOutput);
   if (stream)
-    return OpenOutputStream(stream);
+    return OpenOutputStream(output, stream);
   func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
   if (!func)
-    return OpenOutput("*stdout*", FALSE);
+    return OpenOutput(output, "*stdout*", FALSE);
   stream = CALL_0ARGS(func);
   if (!stream)
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
-    return OpenOutput(CONST_CSTR_STRING(stream), FALSE);
+    return OpenOutput(output, CONST_CSTR_STRING(stream), FALSE);
   TLS(DefaultOutput) = stream;
-  return OpenOutputStream(stream);
+  return OpenOutputStream(output, stream);
 }
 #endif
 
@@ -489,7 +443,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
 **
 **  'CloseInput' will not close the initial input file '*stdin*', and returns
 **  0  if such  an  attempt is made.   This is  used in  'Error'  which calls
-**  'CloseInput' until it returns 0, therebye closing all open input files.
+**  'CloseInput' until it returns 0, thereby closing all open input files.
 **
 **  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
 **  close the current output file, which will lead to very strange behaviour.
@@ -508,7 +462,8 @@ UInt CloseInput(TypInputFile * input)
     IO()->Input = input->prev;
 
     // don't keep GAP objects alive unnecessarily
-    memset(input, 0, sizeof(TypInputFile));
+    input->stream = 0;
+    input->sline = 0;
 
     return 1;
 }
@@ -843,24 +798,22 @@ UInt CloseOutputLog ( void )
 **  If <append> is set to true, then 'OpenOutput' does not truncate the file
 **  to size 0 if it exists.
 */
-UInt OpenOutput(const Char * filename, BOOL append)
+UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
 {
+    GAP_ASSERT(output);
+
     // do nothing for stdout and errout if caught
     if (IO()->Output != NULL && IO()->IgnoreStdoutErrout == IO()->Output &&
         (streq(filename, "*errout*") || streq(filename, "*stdout*"))) {
         return 1;
     }
 
-    /* fail if we can not handle another open output file                  */
-    if (IO()->OutputStackPointer == MAX_OPEN_FILES)
-        return 0;
-
 #ifdef HPCGAP
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
     if (streq(filename, "*defout*") ||
         (streq(filename, "*errout*") && TLS(threadID) != 0))
-        return OpenDefaultOutput();
+        return OpenDefaultOutput(output);
 #endif
 
     /* try to open the file                                                */
@@ -869,7 +822,8 @@ UInt OpenOutput(const Char * filename, BOOL append)
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->prev = IO()->Output;
+    IO()->Output = output;
     output->isstream = FALSE;
     output->file = file;
     output->line[0] = '\0';
@@ -893,15 +847,13 @@ UInt OpenOutput(const Char * filename, BOOL append)
 */
 
 
-UInt OpenOutputStream (
-    Obj                 stream )
+UInt OpenOutputStream(TypOutputFile * output, Obj stream)
 {
-    /* fail if we can not handle another open output file                  */
-    if (IO()->OutputStackPointer == MAX_OPEN_FILES)
-        return 0;
+    GAP_ASSERT(output);
 
     /* put the file on the stack, start at position 0 on an empty line     */
-    TypOutputFile * output = IO()->Output = PushNewOutput();
+    output->prev = IO()->Output;
+    IO()->Output = output;
     output->isstream = TRUE;
     output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
     output->stream = stream;
@@ -935,23 +887,25 @@ UInt OpenOutputStream (
 **  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
 **  'PrintTo' call or an error will not yield much better results.
 */
-UInt CloseOutput ( void )
+UInt CloseOutput(TypOutputFile * output)
 {
-    TypOutputFile * output = IO()->Output;
+    GAP_ASSERT(output);
 
     // silently refuse to close the test output file; this is probably an
     // attempt to close *errout* which is silently not opened, so let's
     // silently not close it
-    if (IO()->IgnoreStdoutErrout == output)
+    if (IO()->IgnoreStdoutErrout == IO()->Output)
         return 1;
+
+    GAP_ASSERT(output == IO()->Output);
 
     /* refuse to close the initial output file '*stdout*'                  */
 #ifdef HPCGAP
-    if (IO()->OutputStackPointer <= 1 && output->isstream &&
+    if (output->prev == 0 && output->isstream &&
         TLS(DefaultOutput) == output->stream)
         return 0;
 #else
-    if (IO()->OutputStackPointer <= 1)
+    if (output->prev == 0)
         return 0;
 #endif
 
@@ -962,8 +916,10 @@ UInt CloseOutput ( void )
     }
 
     /* revert to previous output file and indicate success                 */
-    const int sp = --IO()->OutputStackPointer;
-    IO()->Output = sp ? IO()->OutputStack[sp - 1] : 0;
+    IO()->Output = output->prev;
+
+    // don't keep GAP objects alive unnecessarily
+    output->stream = 0;
 
     return 1;
 }
@@ -1506,7 +1462,7 @@ static Obj FuncALL_KEYWORDS(Obj self)
 *F  PrTo( <stream>, <format>, <arg1>, <arg2> )  . . .  print formatted output
 **
 **  'Pr' is the output function. The first argument is a 'printf' like format
-**  string containing   up   to 2  '%'  format   fields,   specifing  how the
+**  string containing   up   to 2  '%'  format   fields,  specifying  how the
 **  corresponding arguments are to be  printed.  The two arguments are passed
 **  as  'Int'   integers.   This  is possible  since every  C object  ('int',
 **  'char', pointers) except 'float' or 'double', which are not used  in GAP,
@@ -1529,7 +1485,7 @@ static Obj FuncALL_KEYWORDS(Obj self)
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%i'    is a synonym of %d, in line with recent C library developements
+**  '%i'    is a synonym of %d, in line with recent C library developments
 **  '%I'    print an identifier, given as a null terminated character string.
 **  '%H'    print an identifier, given as GAP string in STRING_REP
 **  '%>'    increment the indentation level.
@@ -1871,7 +1827,7 @@ void Pr (
 {
 #ifdef HPCGAP
     if (!IO()->Output) {
-        OpenDefaultOutput();
+        OpenDefaultOutput(&IO()->DefaultOutput);
     }
 #endif
     PrTo(IO()->Output, format, arg1, arg2);
@@ -1914,7 +1870,12 @@ static Obj FuncINPUT_LINENUMBER(Obj self)
 
 static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
 {
-    IO()->OutputStack[1]->format = (val != False);
+    TypOutputFile * output = IO()->Output;
+    if (!output)
+        ErrorMayQuit("SET_PRINT_FORMATTING_STDOUT called while no output is opened\n", 0, 0);
+    while (output->prev)
+        output = output->prev;
+    output->format = (val != False);
     return val;
 }
 
@@ -1974,10 +1935,6 @@ static Int InitLibrary (
     return 0;
 }
 
-#if !defined(HPCGAP)
-static Char OutputFilesStreamCookie[MAX_OPEN_FILES][9];
-#endif
-
 static Int InitKernel (
     StructInitInfo *    module )
 {
@@ -1986,13 +1943,7 @@ static Int InitKernel (
     IO()->InputLog = 0;
     IO()->OutputLog = 0;
 
-#if !defined(HPCGAP)
-    for (Int i = 0; i < MAX_OPEN_FILES; i++) {
-        IO()->OutputStack[i] = &OutputFiles[i];
-    }
-#endif
-
-    OpenOutput("*stdout*", FALSE);
+    OpenOutput(&IO()->DefaultOutput, "*stdout*", FALSE);
 
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
@@ -2002,14 +1953,6 @@ static Int InitKernel (
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
 #else
-    // Initialize cookies for streams. For HPC-GAP we don't need the cookies
-    // anymore, since the data got moved to thread-local storage.
-    for (Int i = 0; i < MAX_OPEN_FILES; i++) {
-        strxcpy(OutputFilesStreamCookie[i], "ostream0", sizeof(OutputFilesStreamCookie[i]));
-        OutputFilesStreamCookie[i][7] = '0' + i;
-        InitGlobalBag(&(OutputFiles[i].stream), &(OutputFilesStreamCookie[i][0]));
-    }
-
     /* tell GASMAN about the global bags                                   */
     InitGlobalBag(&(IO()->InputLogFileOrStream.stream),
                   "src/io.c:InputLogFileOrStream");
