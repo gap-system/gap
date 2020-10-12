@@ -53,9 +53,6 @@ typedef struct GAPState {
     /* From read.c */
     jmp_buf ReadJmpError;
 
-    /* From scanner.c */
-    UInt   NrErrLine;
-
     char Prompt[80];
 
     /* From stats.c */

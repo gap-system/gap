@@ -44,7 +44,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
 {
     GAP_ASSERT(tokenoffset >= 0 && tokenoffset <= 2);
     // do not print a message if we found one already on the current line
-    if (STATE(NrErrLine) == 0) {
+    if (s->input->lastErrorLine != s->input->number) {
 
         // open error output
         OpenErrorOutput();
@@ -103,7 +103,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
     if (error) {
         // one more error
         s->NrError++;
-        STATE(NrErrLine)++;
+        s->input->lastErrorLine = s->input->number;
     }
 }
 
