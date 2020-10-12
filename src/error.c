@@ -55,18 +55,18 @@ static Obj IsOutputStream;
 **                                   ERROR_OUTPUT global variable defined in
 **                                   error.g, or "*errout*" otherwise
 */
-UInt OpenErrorOutput( void )
+UInt OpenErrorOutput(TypOutputFile * output)
 {
     /* Try to print the output to stream. Use *errout* as a fallback. */
     UInt ret = 0;
 
     if (ERROR_OUTPUT != NULL) {
         if (IsStringConv(ERROR_OUTPUT)) {
-            ret = OpenOutput(CONST_CSTR_STRING(ERROR_OUTPUT), FALSE);
+            ret = OpenOutput(output, CONST_CSTR_STRING(ERROR_OUTPUT), FALSE);
         }
         else {
             if (CALL_1ARGS(IsOutputStream, ERROR_OUTPUT) == True) {
-                ret = OpenOutputStream(ERROR_OUTPUT);
+                ret = OpenOutputStream(output, ERROR_OUTPUT);
             }
         }
     }
@@ -75,7 +75,7 @@ UInt OpenErrorOutput( void )
         /* It may be we already tried and failed to open *errout* above but
          * but this is an extreme case so it can't hurt to try again
          * anyways */
-        ret = OpenOutput("*errout*", FALSE);
+        ret = OpenOutput(output, "*errout*", FALSE);
         if (ret) {
             Pr("failed to open error stream\n", 0, 0);
         }
@@ -173,10 +173,11 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
 
     /* HACK: we want to redirect output */
     /* Try to print the output to stream. Use *errout* as a fallback. */
+    TypOutputFile output = { 0 };
     if ((IsStringConv(stream) &&
-         !OpenOutput(CONST_CSTR_STRING(stream), FALSE)) ||
-        (!IS_STRING(stream) && !OpenOutputStream(stream))) {
-        if (OpenOutput("*errout*", FALSE)) {
+         !OpenOutput(&output, CONST_CSTR_STRING(stream), FALSE)) ||
+        (!IS_STRING(stream) && !OpenOutputStream(&output, stream))) {
+        if (OpenOutput(&output, "*errout*", FALSE)) {
             Pr("PRINT_CURRENT_STATEMENT: failed to open error stream\n", 0, 0);
         }
         else {
@@ -216,7 +217,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     }
 
     /* HACK: close the output again */
-    CloseOutput();
+    CloseOutput(&output);
     return 0;
 }
 

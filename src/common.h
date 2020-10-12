@@ -210,4 +210,14 @@ typedef const struct init_info StructInitInfo;
 typedef struct TypInputFile TypInputFile;
 
 
+/****************************************************************************
+**
+*T  TypOutputFile . . . . . . . . . . structure of an open output file, local
+**
+**  This is a forward declaration so that TypOutputFiles can be used in
+**  header files. The actual declaration is in io.h.
+*/
+typedef struct TypOutputFile TypOutputFile;
+
+
 #endif // GAP_COMMON_H

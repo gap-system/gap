@@ -5190,21 +5190,17 @@ static void CompFunc(Obj func)
 
 /****************************************************************************
 **
-*F  CompileFunc( <output>, <func>, <name>, <magic1>, <magic2> ) . . . compile
+*F  CompileFunc( <filename>, <func>, <name>, <magic1>, <magic2> ) . . compile
 */
-Int CompileFunc (
-    Obj                 output,
-    Obj                 func,
-    Obj                 name,
-    Int                 magic1,
-    Obj                 magic2 )
+Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
 {
     Int                 i;              /* loop variable                   */
     UInt                col;
     UInt                compFunctionsNr;
 
     /* open the output file                                                */
-    if (!OpenOutput(CONST_CSTR_STRING(output), FALSE)) {
+    TypOutputFile output = { 0 };
+    if (!OpenOutput(&output, CONST_CSTR_STRING(filename), FALSE)) {
         return 0;
     }
     col = SyNrCols;
@@ -5371,7 +5367,7 @@ Int CompileFunc (
 
     /* close the output file                                               */
     SyNrCols = col;
-    CloseOutput();
+    CloseOutput(&output);
 
     return compFunctionsNr;
 }

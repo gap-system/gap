@@ -47,7 +47,8 @@ static void SyntaxErrorOrWarning(ScannerState * s,
     if (STATE(NrErrLine) == 0) {
 
         // open error output
-        OpenErrorOutput();
+        TypOutputFile output = { 0 };
+        OpenErrorOutput(&output);
 
         // print the message ...
         if (error)
@@ -97,7 +98,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
         }
 
         // close error output
-        CloseOutput();
+        CloseOutput(&output);
     }
 
     if (error) {
