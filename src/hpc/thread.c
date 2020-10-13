@@ -32,6 +32,10 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>
+#endif
+
 #ifdef USE_BOEHM_GC
 # ifdef HPCGAP
 #  define GC_THREADS
@@ -323,6 +327,14 @@ void RunThreadedMain(int (*mainFunction)(int, char **),
      */
     volatile int dummy[1];
     size_t       amount;
+#ifdef HAVE_SYS_RESOURCE_H
+    // Ensure that we have enough room to allocate the stack
+    // on a boundary that is a multiple of TLS_SIZE.
+    struct rlimit rlim;
+    getrlimit(RLIMIT_STACK, &rlim);
+    rlim.rlim_cur = TLS_SIZE * 3;
+    setrlimit(RLIMIT_STACK, &rlim);
+#endif
     amount = ((uintptr_t)dummy) & ~TLS_MASK;
     volatile char * p = alloca(((uintptr_t)dummy) & ~TLS_MASK);
     volatile char * q;
