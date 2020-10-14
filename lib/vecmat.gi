@@ -1201,7 +1201,8 @@ end);
 #F  ConvertToVectorRep(<v>)
 ##
 
-LOCAL_COPY_GF2 := GF(2);
+BindGlobal("LOCAL_COPY_GF2", GF(2));
+BindGlobal("SMALL_PRIME_POWERS", Immutable(Filtered([2..256], IsPrimePowerInt)));
 
 InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     local v, q, vc, common, field, q0;
@@ -1221,10 +1222,12 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         if Length(arg) = 1 then
             return q0;
         fi;
-        if IsInt(arg[2]) then
+        if IsPosInt(arg[2]) then
             q := arg[2];
         elif IsField(arg[2]) then
             q := Size(arg[2]);
+        else
+            return fail;
         fi;
         if q = q0 then
             return q;
@@ -1236,6 +1239,9 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 CONV_GF2VEC(v);
                 return 2;
             elif q <= 256 then
+                if not q in SMALL_PRIME_POWERS then
+                    return fail;
+                fi;
                 CONV_VEC8BIT(v,q);
                 return q;
             else
@@ -1315,13 +1321,13 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     #
     if Length(arg) > 1 then
         field := arg[2];
-        if IsInt(field) then
+        if IsPosInt(field) then
             q := field;
             Assert(2,IsPrimePowerInt(q));
         elif IsField(field) then
             q := Size(field); 
         else
-            Error("q not a field or integer");
+            Error("q not a field or positive integer");
         fi;
     else
         q := fail;
@@ -1384,7 +1390,7 @@ local sf, rep, ind, ind2, row, i,big,l;
     # if empty or not list based, simply return `Immutable'.
     return Immutable(matrix);
   fi;
-  if IsInt(field) then
+  if IsPosInt(field) then
     sf:=field;
   elif IsField(field) then
     sf:=Size(field);
