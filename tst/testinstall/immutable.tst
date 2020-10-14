@@ -39,27 +39,113 @@ true
 gap> v := Immutable([Z(27), Z(3)]);;
 gap> IsMutable(v);
 false
-gap> ConvertToVectorRep(v);;
+gap> ConvertToVectorRep(v);
+27
+gap> ConvertToVectorRep(v);
+27
 gap> IsMutable(v);
 false
 gap> v := Immutable([Z(27), Z(3)]);;
 gap> IsMutable(v);
 false
-gap> ConvertToVectorRepNC(v);;
+gap> ConvertToVectorRep(v, 27);
+27
+gap> ConvertToVectorRep(v, 27);
+27
 gap> IsMutable(v);
 false
+gap> ConvertToVectorRep(v, fail);
+fail
+gap> ConvertToVectorRep(v, -1);
+fail
+gap> ConvertToVectorRep(v, 0);
+fail
+gap> ConvertToVectorRep(v, 1);
+fail
+
+#
 gap> v := [Z(27), Z(3)];;
 gap> IsMutable(v);
 true
-gap> ConvertToVectorRep(v);;
+gap> ConvertToVectorRep(v);
+27
+gap> ConvertToVectorRep(v);
+27
 gap> IsMutable(v);
 true
 gap> v := [Z(27), Z(3)];;
 gap> IsMutable(v);
 true
-gap> ConvertToVectorRepNC(v);;
+gap> ConvertToVectorRep(v, 27);
+27
+gap> ConvertToVectorRep(v, 27);
+27
 gap> IsMutable(v);
 true
+gap> ConvertToVectorRep(v, fail);
+fail
+gap> ConvertToVectorRep(v, -1);
+fail
+gap> ConvertToVectorRep(v, 0);
+fail
+gap> ConvertToVectorRep(v, 1);
+fail
+
+#
+gap> v := Immutable([[Z(27), Z(3)]]);;
+gap> IsMutable(v);
+false
+gap> ConvertToMatrixRep(v);
+27
+gap> ConvertToMatrixRep(v);
+27
+gap> IsMutable(v);
+false
+gap> v := Immutable([[Z(27), Z(3)]]);;
+gap> IsMutable(v);
+false
+gap> ConvertToMatrixRep(v, 27);
+27
+gap> ConvertToMatrixRep(v, 27);
+27
+gap> IsMutable(v);
+false
+gap> ConvertToMatrixRep(v, fail);
+fail
+gap> ConvertToMatrixRep(v, -1);
+fail
+gap> ConvertToMatrixRep(v, 0);
+fail
+gap> ConvertToMatrixRep(v, 1);
+fail
+
+#
+gap> v := [[Z(27), Z(3)]];;
+gap> IsMutable(v);
+true
+gap> ConvertToMatrixRep(v);
+27
+gap> ConvertToMatrixRep(v);
+27
+gap> IsMutable(v);
+true
+gap> v := [[Z(27), Z(3)]];;
+gap> IsMutable(v);
+true
+gap> ConvertToMatrixRep(v, 27);
+27
+gap> ConvertToMatrixRep(v, 27);
+27
+gap> IsMutable(v);
+true
+gap> ConvertToMatrixRep(v, fail);
+fail
+gap> ConvertToMatrixRep(v, -1);
+fail
+gap> ConvertToMatrixRep(v, 0);
+fail
+gap> ConvertToMatrixRep(v, 1);
+fail
 
 #
 gap> STOP_TEST( "immutable.tst", 1);
