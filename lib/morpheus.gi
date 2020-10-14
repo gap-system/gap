@@ -2667,12 +2667,13 @@ local m;
     return fail;
   fi;
 
-  if (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
-      # class number at least cube root. E.g. 10 for 1000, 100 for 1 million
-      # this way Morpheus is only if there are few classes
-      or Length(ConjugacyClasses(G))^3>Size(G)
-    or ValueOption("forcetest")=true) 
-      and Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) then
+  if Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) 
+    and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
+      # the solvable radical method got better, so force if the radical of
+      # the group is a good part
+      # sizeable radical
+      or Size(RadicalGroup(G))^2>Size(G)
+      or ValueOption("forcetest")=true) then
     # In place until a proper implementation of Cannon/Holt isomorphism is
     # done
     return PatheticIsomorphism(G,H);
