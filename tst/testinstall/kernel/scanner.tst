@@ -400,7 +400,9 @@ Syntax error: ; expected in stream:2
 #
 gap> Read(InputTextString("#% pragma"));
 gap> Read(InputTextString("1 #% pragma"));
+Syntax error: ; expected in stream:1
 gap> Read(InputTextString("1 #% pragma;"));
+Syntax error: ; expected in stream:1
 
 #
 # cover some border cases in NextSymbol

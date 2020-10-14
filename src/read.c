@@ -2627,8 +2627,14 @@ ExecStatus ReadEvalCommand(Obj            context,
     // the top level than inside a function, if/else or loop
     case S_QUIT:      ReadQuit(rs,    S_SEMICOLON|S_EOF      ); break;
     case S_QQUIT:     ReadQUIT(rs,    S_SEMICOLON|S_EOF      ); break;
-    case S_HELP:      ReadHelp(rs,    S_SEMICOLON|S_EOF      ); break;
-    case S_PRAGMA:    ReadPragma(rs,  S_SEMICOLON|S_EOF      ); break;
+    case S_HELP:
+        ReadHelp(rs, S_SEMICOLON | S_EOF);
+        rs->s.Symbol = S_SEMICOLON;    // fake a trailing semicolon
+        break;
+    case S_PRAGMA:
+        ReadPragma(rs, S_SEMICOLON | S_EOF);
+        rs->s.Symbol = S_SEMICOLON;    // fake a trailing semicolon
+        break;
 
     // otherwise try to read a generic statement
     default:
@@ -2639,7 +2645,7 @@ ExecStatus ReadEvalCommand(Obj            context,
     }
 
     /* every statement must be terminated by a semicolon                  */
-    if (!IS_IN(rs->s.Symbol, S_SEMICOLON) && rs->s.Symbol != S_HELP && rs->s.Symbol != S_PRAGMA) {
+    if (!IS_IN(rs->s.Symbol, S_SEMICOLON)) {
         SyntaxError(&rs->s, "; expected");
     }
 

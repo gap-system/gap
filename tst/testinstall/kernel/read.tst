@@ -139,6 +139,17 @@ Syntax error: Badly formed number in stream:1
 12.34\56a;
 ^^^^^
 
+# the help command '?' and pragmas should not act as semicolon
+# (see https://github.com/gap-system/gap/issues/2017)
+gap> 1?abc
+Syntax error: ; expected in stream:1
+1?abc
+ ^^^^
+gap> 1#%abc
+Syntax error: ; expected in stream:1
+1#%abc
+ ^^^^^
+
 #
 # ReadEvalFile / READ_AS_FUNC / READ_AS_FUNC_STREAM / ReadAsFunction
 #
