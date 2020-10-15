@@ -334,13 +334,11 @@ static void leaveFunction(Obj func)
 ** of GAP's execution, before anything else is done.
 */
 
-#ifdef HAVE_POPEN
 static BOOL endsWithgz(const char * s)
 {
   s = strrchr(s, '.');
   return s && streq(s, ".gz");
 }
-#endif
 
 static void fopenMaybeCompressed(const char* name, struct ProfileState* ps)
 {

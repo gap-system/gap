@@ -316,8 +316,22 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 #undef HAVE_POSIX_SPAWN
 #endif
 
+// if neither posix_spawn_file_actions_addchdir nor O_CLOEXEC are available,
+// our posix_spawn code should not be used. This affects e.g. Linux systems
+// with an old glibc, see https://github.com/gap-system/gap/issues/3918.
+#if !defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR) && !defined(O_CLOEXEC)
+#undef HAVE_POSIX_SPAWN
+#endif
+
 
 #ifdef HAVE_POSIX_SPAWN
+
+// O_DIRECTORY is not available in old Linux / glibc versions, but the way we
+// use it below, it is optional anyway
+#ifndef O_DIRECTORY
+#define O_DIRECTORY 0
+#endif
+
 
 // The following function behaves like posix_spawn, but also
 // changes the working directory temporarily to 'dir'.
