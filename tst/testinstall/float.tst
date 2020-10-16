@@ -1,4 +1,4 @@
-#@local neginf,posinf,r,nan,l,f,g
+#@local neginf,posinf,r,nan,l,f,g,a,b
 gap> START_TEST("float.tst");
 
 # make sure we are testing the built-in machine floats
@@ -31,6 +31,36 @@ gap> Float(infinity);
 inf
 gap> Float(-infinity);
 -inf
+
+#
+gap> r := (10^309 + 1) / 10^308;;
+gap> Float(r);
+10.
+gap> Float(-r);
+-10.
+gap> NewFloat(IsIEEE754FloatRep, r);
+10.
+gap> NewFloat(IsIEEE754FloatRep, -r);
+-10.
+gap> MakeFloat(0.0, r);
+10.
+gap> MakeFloat(0.0, -r);
+-10.
+
+#
+gap> r := (10^309-1) / 10^308;;
+gap> Float(r);
+10.
+gap> Float(-r);
+-10.
+gap> NewFloat(IsIEEE754FloatRep, r);
+10.
+gap> NewFloat(IsIEEE754FloatRep, -r);
+-10.
+gap> MakeFloat(0.0, r);
+10.
+gap> MakeFloat(0.0, -r);
+-10.
 
 #
 # input floats directly
