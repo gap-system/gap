@@ -197,9 +197,7 @@ DeclareGlobalFunction("MakeReadWriteGlobal");
 ##  <Description>
 ##  MakeConstantGlobal ( <A>name</A> ) marks the global variable named
 ##  by the string <A>name</A> as constant. A constant variable can never
-##  be changed or made read-write. Constant variables can only take an
-##  integer value, <C>true</C> or <C>false</C>. There is a limit on
-##  the size of allowed integers.
+##  be reassigned or made read-write again.
 ##  <P/>
 ##  A warning is given if <A>name</A> is already constant.
 ##  </Description>

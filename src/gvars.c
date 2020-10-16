@@ -797,12 +797,6 @@ void MakeReadOnlyGVar (
 */
 void MakeConstantGVar(UInt gvar)
 {
-    Obj val = ValGVar(gvar);
-    if (!IS_INTOBJ(val) && val != True && val != False) {
-        ErrorMayQuit(
-            "Variable: '%g' must be assigned a small integer, true or false",
-            (Int)NameGVar(gvar), 0);
-    }
     SetGVarWriteState(gvar, GVarConstant);
 }
 

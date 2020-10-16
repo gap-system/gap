@@ -856,16 +856,19 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
         if (mode == 'r' || (mode == 'x' && rs->s.Symbol != S_ASSIGN)) {
             Obj val = ValAutoGVar(ref.var);
             TRY_IF_NO_ERROR {
-                if (val == True)
+                if (val == True) {
                     IntrTrueExpr(&rs->intr);
-                else if (val == False)
+                    return;
+                }
+                else if (val == False) {
                     IntrFalseExpr(&rs->intr);
-                else if (IS_INTOBJ(val))
+                    return;
+                }
+                else if (IS_INTOBJ(val)) {
                     IntrIntObjExpr(&rs->intr, val);
-                else
-                    SyntaxError(&rs->s, "Invalid constant variable");
+                    return;
+                }
             }
-            return;
         }
     }
 

@@ -44,12 +44,11 @@ true
 gap> Unbind(testvar);
 Error, Variable: 'testvar' is constant
 
-# Try making a global var constants whose value is not eligible
+# make a global var constants whose value is not a small integer, true or false
 gap> newtestvar := fail;;
 gap> MakeConstantGlobal("newtestvar");
-Error, Variable: 'newtestvar' must be assigned a small integer, true or false
 gap> IsConstantGlobal("newtestvar");
-false
+true
 
 # some more tests with constant gvars with boolean value
 gap> booltruevar := true;;
