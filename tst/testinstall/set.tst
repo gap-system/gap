@@ -25,6 +25,48 @@ gap> HasIsSSortedList(c) and IsSSortedList(c);
 true
 gap> AddSet(a,(5,6));
 
+#
+gap> AddSet(Immutable([]), 1);
+Error, <set> must be a mutable proper set
+gap> AddSet(fail, 1);
+Error, <set> must be a mutable proper set
+gap> AddSet([2,1], 1);
+Error, ADD_SET: <set> must be a mutable proper set (not a non-strictly-sorted \
+plain list of cyclotomics)
+
+#
+gap> RemoveSet(Immutable([]), 1);
+Error, <set> must be a mutable proper set
+gap> RemoveSet(fail, 1);
+Error, <set> must be a mutable proper set
+gap> RemoveSet([2,1], 1);
+Error, REM_SET: <set> must be a mutable proper set (not a non-strictly-sorted \
+plain list of cyclotomics)
+
+#
+gap> UniteSet(Immutable([]), 1);
+Error, <set> must be a mutable proper set
+gap> UniteSet(fail, 1);
+Error, <set> must be a mutable proper set
+gap> UniteSet([2,1], 1);
+Error, <set> must be a mutable proper set
+
+#
+gap> IntersectSet(Immutable([]), 1);
+Error, <set> must be a mutable proper set
+gap> IntersectSet(fail, 1);
+Error, <set> must be a mutable proper set
+gap> IntersectSet([2,1], 1);
+Error, <set> must be a mutable proper set
+
+#
+gap> SubtractSet(Immutable([]), 1);
+Error, <set> must be a mutable proper set
+gap> SubtractSet(fail, 1);
+Error, <set> must be a mutable proper set
+gap> SubtractSet([2,1], 1);
+Error, <set> must be a mutable proper set
+
 #gap> HasIsSSortedList(a) and IsSSortedList(a);
 #true
 gap> c:=Union(a,[(1,2),(1,2,3)]);
