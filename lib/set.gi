@@ -222,3 +222,22 @@ InstallMethod( SubtractSet,
       RemoveSet( set, obj );
     od;
     end );
+
+
+#############################################################################
+##
+##  Fallback methods to give better user feedback if the first argument is
+##  not mutable or not a set
+##
+BindGlobal("_REQUIRE_MUTABLE_SET",
+    function( set, obj )
+    if not IsMutable(set) or not IsSSortedList( set ) then
+      Error( "<set> must be a mutable proper set" );
+    fi;
+    TryNextMethod();
+    end );
+InstallOtherMethod( AddSet, "for two objects", [ IsObject, IsObject ], _REQUIRE_MUTABLE_SET);
+InstallOtherMethod( RemoveSet, "for two objects", [ IsObject, IsObject ], _REQUIRE_MUTABLE_SET);
+InstallOtherMethod( UniteSet, "for two objects", [ IsObject, IsObject ], _REQUIRE_MUTABLE_SET);
+InstallOtherMethod( IntersectSet, "for two objects", [ IsObject, IsObject ], _REQUIRE_MUTABLE_SET);
+InstallOtherMethod( SubtractSet, "for two objects", [ IsObject, IsObject ], _REQUIRE_MUTABLE_SET);
