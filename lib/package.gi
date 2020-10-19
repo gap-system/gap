@@ -2638,6 +2638,8 @@ InstallGlobalFunction( BibEntry, function( arg )
       fi;
     fi;
 
+    # Make sure that output of BibEntry is in UTF-8 encoding (also
+    # if PackageInfo.g is in latin1 encoding)
     ps:= function( str )
       local uni;
 
@@ -2645,7 +2647,7 @@ InstallGlobalFunction( BibEntry, function( arg )
       if uni = fail then
         uni:= Unicode( str, "ISO-8859-1" );
       fi;
-      return Encode( uni, GAPInfo.TermEncoding );
+      return Encode( uni, "UTF-8" );
     end;
 
     # According to <Cite Key="La85"/>,
@@ -2778,83 +2780,97 @@ InstallGlobalFunction( BibEntry, function( arg )
     return entry;
 end );
 
-Unbind( Unicode );
-Unbind( Encode );
-
 # dummy assignments to functions to be read lated in the GAPDoc package
 ParseBibXMLextString:= "dummy";
 StringBibXMLEntry:= "dummy";
 
 InstallGlobalFunction( Cite, function(arg)
-local name, bib, key, parse, year;
-if Length(arg)=0 then 
-  name:="GAP";
-else
-  name := NormalizedWhitespace(arg[1]);
-fi;
-if name="gap" then 
-  name:="GAP"; 
-fi;
-if Length(arg)<=1 then
-  bib:= BibEntry( name );
-elif Length(arg)>2 then 
-  Error("`Cite' takes no more than two arguments");
-else
-  key:=arg[2];
-  bib:= BibEntry( name, key );
-fi;
-if bib="" then
-  Print("WARNING: No working version of package ", name, " is available!\n");
-  return;
-fi;
-parse:= ParseBibXMLextString( bib );
-Print("Please use one of the following samples\n",
-      "to cite ", name, " version from this installation\n\n");
-
-Print("Text:\n\n");
-Print( StringBibXMLEntry( parse.entries[1], "Text" ) );
-
-Print("HTML:\n\n");
-Print( StringBibXMLEntry( parse.entries[1], "HTML" ) );
-
-Print("BibXML:\n\n");
-Print( bib, "\n\n" );
-
-Print("BibTeX:\n\n");
-Print( StringBibXMLEntry( parse.entries[1], "BibTeX" ), "\n" );
-
-if name="GAP" then
-  year:=SplitString(GAPInfo.Date,"-");
-  if Length(year)=3 then 
-    year:=year[3];
+  local name, bib, key, parse, year, en, pkginfo;
+  if Length(arg)=0 then 
+    name:="GAP";
   else
-    year:=year[1]; # to work in GAP.dev
+    name := NormalizedWhitespace(arg[1]);
   fi;
-  
-  Print("If you are not using BibTeX, here is the bibliography entry produced \n",
-        "by BibTeX (in bibliography style `alpha'):\n\n",
-        "\\bibitem[GAP]{GAP4}\n", 
-        "\\emph{GAP -- Groups, Algorithms, and Programming}, ",
-        "Version ", GAPInfo.Version, ",\n", 
-        "The GAP~Group (", year, "), \\verb+https://www.gap-system.org+.\n\n");
-  Print(
-  "If you have (predominantly) used one or more particular GAP packages,\n", 
-  "please cite these packages in addition to GAP itself (either check the\n", 
-  "the package documentation for the suggestions, or use a scheme like:\n\n",
+  if LowercaseString(name) = "gap" then 
+    name:="GAP"; 
+  else
+    # use spelling as in packages PackageInfo.g
+    pkginfo := InstalledPackageVersion(name);
+    pkginfo := First(PackageInfo(name), r-> r.Version = pkginfo);
+    name := pkginfo.PackageName;
+  fi;
+  if Length(arg)<=1 then
+    bib:= BibEntry( name );
+  elif Length(arg)>2 then 
+    Error("`Cite' takes no more than two arguments");
+  else
+    key:=arg[2];
+    bib:= BibEntry( name, key );
+  fi;
+  if bib="" then
+    Print("WARNING: No working version of package ", name, " is available!\n");
+    return;
+  fi;
+  parse:= ParseBibXMLextString( bib );
+  # use encoding of terminal for printing
+  en := function(str)
+    local enc;
+    enc := GAPInfo.TermEncoding;
+    if enc = "UTF-8" then
+      return str;
+    else
+      return Encode(Unicode(str, "UTF-8"), enc);
+    fi;
+  end;
+  Print("Please use one of the following samples\n",
+        "to cite ", en(name), " version from this installation\n\n");
 
-  "[PKG]\n",
-  "<Author name(s)>, <package name>, <package long title>, \n",
-  "Version <package version> (<package date>), (GAP package),\n",
-  "<package URL>.\n\n",
-  
-  "You may also produce citation samples for a GAP package by entering\n\n",
-  "    Cite(\"packagename\");\n\n",
-  "in a GAP installation with the working version of this package available.\n\n");
-fi;
+  Print("Text:\n\n");
+  Print( en(StringBibXMLEntry( parse.entries[1], "Text" )) );
+
+  Print("HTML:\n\n");
+  Print( en(StringBibXMLEntry( parse.entries[1], "HTML" )) );
+
+  Print("BibXML:\n\n");
+  Print( en(bib), "\n\n" );
+
+  Print("BibTeX:\n\n");
+  Print( en(StringBibXMLEntry( parse.entries[1], "BibTeX" )), "\n" );
+
+  if name="GAP" then
+    year:=SplitString(GAPInfo.Date,"-");
+    if Length(year)=3 then 
+      year:=year[3];
+    else
+      year:=year[1]; # to work in GAP.dev
+    fi;
+    
+    Print("If you are not using BibTeX, here is the bibliography entry produced \n",
+          "by BibTeX (in bibliography style `alpha'):\n\n",
+          "\\bibitem[GAP]{GAP4}\n", 
+          "\\emph{GAP -- Groups, Algorithms, and Programming}, ",
+          "Version ", GAPInfo.Version, ",\n", 
+          "The GAP~Group (", year, "), \\verb+https://www.gap-system.org+.\n\n");
+    Print(
+    "If you have (predominantly) used one or more particular GAP packages,\n", 
+    "please cite these packages in addition to GAP itself (either check the\n", 
+    "package documentation for the suggestions, or use a scheme like:\n\n",
+
+    "[PKG]\n",
+    "<Author name(s)>, <package name>, <package long title>, \n",
+    "Version <package version> (<package date>), (GAP package),\n",
+    "<package URL>.\n\n",
+    
+    "You may also produce citation samples for a GAP package by entering\n\n",
+    "    Cite(\"packagename\");\n\n",
+    "in a GAP installation with the working version of this package available.\n\n");
+  fi;
 end);
 
 Unbind( ParseBibXMLextString );
 Unbind( StringBibXMLEntry );
+Unbind( Unicode );
+Unbind( Encode );
 
 
 #############################################################################
