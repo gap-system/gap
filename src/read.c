@@ -896,7 +896,7 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
             }
         }
         else {
-            Match_(rs, S_ASSIGN, ":=", follow);
+            Match_(rs, S_ASSIGN, "found an expression when a statement was", follow);
             UInt currLHSGVar = rs->CurrLHSGVar;
             if ( LEN_PLIST(rs->StackNams) == 0 || !rs->intr.coding ) {
                 rs->CurrLHSGVar = (ref.type == R_GVAR ? ref.var : 0);

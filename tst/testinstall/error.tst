@@ -24,3 +24,13 @@ Syntax error: while parsing a 'for' loop: statement or 'od' expected in stream\
 :1
 for i in [1..3] do 123; od;
                    ^^^
+
+#
+gap> f := function() Stabilizer; end;
+Syntax error: found an expression when a statement was expected in stream:1
+f := function() Stabilizer; end;
+                          ^
+gap> if false then Stabilizer; fi;
+Syntax error: found an expression when a statement was expected in stream:1
+if false then Stabilizer; fi;
+                        ^
