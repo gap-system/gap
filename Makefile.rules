@@ -448,20 +448,21 @@ etags:
 ########################################################################
 distclean: clean
 	rm -f config.log config.status libtool GNUmakefile configure
-	rm -f bin/gap.sh sysinfo.gap*
 	rm -f doc/make_doc
 	rm -rf dev/log
 	rm -rf tags
 	rm -rf TAGS
-	rmdir bin cnf dev doc src 2>/dev/null || : # remove dirs if they are now empty
 
 clean:
 	rm -rf bin/$(GAPARCH)
 	rm -rf build
+	rm -rf extern/build extern/install
+	rm -f bin/gap.sh sysinfo.gap*
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
 	rm -f doc/wsp.g
 	rm -f cnf/GAP-{CFLAGS,CPPFLAGS,CXXFLAGS,LDFLAGS,LIBS,OBJS}
+	rmdir bin cnf dev doc extern src 2>/dev/null || : # remove dirs if they are now empty
 
 .PHONY: clean distclean
 
@@ -698,11 +699,6 @@ $(OBJS): $(EXTERN_FILES)
 ifeq ($(HPCGAP),yes)
 $(SOURCES): $(EXTERN_FILES)
 endif
-
-distclean: distclean-extern
-distclean-extern:
-	rm -rf extern/build
-	rm -rf extern/install
 
 
 # regenerate sysinfo.gap if necessary
