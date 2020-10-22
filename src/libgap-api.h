@@ -420,6 +420,10 @@ char * GAP_CSTR_STRING(Obj obj);
 // terminated C string.
 Obj GAP_MakeString(const char * string);
 
+// Returns a new mutable GAP string containing a copy of the given
+// C string of given length (in bytes).
+Obj GAP_MakeStringWithLen(const char * string, UInt len);
+
 // Returns a immutable GAP string containing a copy of the given NULL
 // terminated C string.
 Obj GAP_MakeImmString(const char * string);

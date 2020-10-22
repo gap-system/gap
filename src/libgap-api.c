@@ -431,6 +431,11 @@ Obj GAP_MakeString(const char * string)
     return MakeString(string);
 }
 
+Obj GAP_MakeStringWithLen(const char * string, UInt len)
+{
+    return MakeStringWithLen(string, len);
+}
+
 Obj GAP_MakeImmString(const char * string)
 {
     return MakeImmString(string);
