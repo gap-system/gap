@@ -763,8 +763,8 @@ end );
 ##  
 CallAndInstallPostRestore( function()
   if UserPreference("SaveAndRestoreHistory") = true then
-    InstallAtExit(SaveCommandLineHistory);
-    ReadCommandLineHistory();
+    InstallAtExit(SaveCommandLineHistory, [true]);
+    GAPInfo.History.StartPosition := ReadCommandLineHistory();
   fi;
 end );
 
