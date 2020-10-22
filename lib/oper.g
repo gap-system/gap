@@ -1672,15 +1672,17 @@ end );
 ##
 #F  InstallAtExit( <func> ) . . . . . . . . . . function to call when exiting
 ##
-BIND_GLOBAL( "InstallAtExit", function( func )
-    local f;
+BIND_GLOBAL( "InstallAtExit", function( func, args... )
+    local f, arguments;
+    if LEN_LIST(args) > 1 then
+        Error("Usage: InstallAtExit(func[, args])");
+    elif LEN_LIST(args) = 1 then
+        arguments := args[1];
+    else
+        arguments := [];
+    fi;
     if not IS_FUNCTION(func)  then
         Error( "<func> must be a function" );
-    fi;
-    if CHECK_INSTALL_METHOD  then
-        if not NARG_FUNC(func) in [ -1, 0 ]  then
-            Error( "<func> must accept zero arguments" );
-        fi;
     fi;
     # Return if function has already been installed
     # Use this long form to support both List and AtomicList
@@ -1690,6 +1692,7 @@ BIND_GLOBAL( "InstallAtExit", function( func )
         fi;
     od;
     ADD_LIST( GAPInfo.AtExitFuncs, func );
+    ADD_LIST( GAPInfo.AtExitArgs, arguments );
 end );
 
 

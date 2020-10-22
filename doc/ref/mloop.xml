@@ -1029,12 +1029,20 @@ The optional argument <A>ret</A> will be passed to <Ref Func="GapExitCode"/>.
 
 
 <ManSection>
-<Func Name="InstallAtExit" Arg='func'/>
+<Func Name="InstallAtExit" Arg='func, [args]'/>
 <Var Name="QUITTING"/>
 
 <Description>
-Before actually terminating, &GAP; will call (with no arguments) all
-of the functions that have been installed using <Ref Func="InstallAtExit"/>. These
+Before actually terminating, &GAP; will call all
+of the functions that have been installed using <Ref Func="InstallAtExit"/>.
+If the optional parameter <A>args</A> was given, then it is passed as the list
+of argmuments to <A>func</A> when it is executed.
+Otherwise <A>func</A> is executed without arguments.
+A function can only be installed once via <Ref Func="InstallAtExit"/>.
+All subsequent calls of <Ref Func="InstallAtExit"/> with the same function as
+first argument will be ignored.
+<P/>
+The installed functions
 typically perform tasks such as cleaning up temporary files created
 during the session, and closing open files. If an error occurs during
 the execution of one of these functions, that function is simply
