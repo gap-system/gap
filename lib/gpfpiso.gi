@@ -292,6 +292,8 @@ function(g,str,N)
       fi;
       # change generators to make split
       ser:=List(ser,x->ClosureGroup(rad,Filtered(gens,y->y in x)));
+    else
+      rad:=g;
     fi;
     if Length(ser)=0 or Size(ser[Length(ser)])>Size(rad) then Add(ser,rad);fi;
 
@@ -299,7 +301,11 @@ function(g,str,N)
       if HasChiefSeries(g) and N in ChiefSeries(g) and rad in ChiefSeries(g) then
         f:=Filtered(ChiefSeries(g),x->IsSubset(rad,x));
       elif IsTrivial(N) then
-        f:=ChiefSeriesUnderAction(g,rad);
+        if rad=g then
+          f:=ChiefSeries(g);
+        else
+          f:=ChiefSeriesUnderAction(g,rad);
+        fi;
       else
         f:=ChiefSeriesThrough(g,[rad,N]);
       fi;
@@ -1062,13 +1068,13 @@ local fam,mfam,fpfam,mfpfam,hom;
 end);
 
 # return isomorphism G-fp and fp->mon, such that presentation of monoid is
-# confluent (wrt wreath order). Returns list [fphom,monhom,ordering]
+# confluent (wrt wreath order). Returns record with fphom,monhom,ordering
 InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
   [IsGroup and IsFinite],
 function(G)
 local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept,
-      lode;
+      lode,lrules,rulet,addrule;
   IsSimpleGroup(G);
   if IsSymmetricGroup(G) then
     i:=SymmetricGroup(SymmetricDegree(G));
@@ -1102,17 +1108,40 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
     mgens:=GeneratorsOfMonoid(fm);
 
     rules:=[];
+    lrules:=[];
+    rulet:=List(mgens,x->[]); # rules involving a particular letter
+
+    addrule:=function(rule)
+    local i,p;
+      Add(rules,rule);
+      rule:=List(rule,LetterRepAssocWord);
+      Add(lrules,rule);
+      p:=Length(lrules);
+      for i in Set(rule[1]) do
+        AddSet(rulet[i],p);
+      od;
+    end;
+
     reduce:=function(w)
-    local red,i,p;
+    local red,i,p,pool,wn;
+#ow:=w;
       w:=LetterRepAssocWord(w);
       repeat
         i:=1;
+        pool:=Union(rulet{Set(w)});
         red:=false;
-        while i<=Length(rules) and red=false do
-          p:=PositionSublist(w,LetterRepAssocWord(rules[i][1]));
+        while i<=Length(pool) and red=false do
+          p:=fail;
+          if Length(w)>=Length(lrules[pool[i]][1]) then
+            p:=PositionSublist(w,lrules[pool[i]][1]);
+          fi;
           if p<>fail then
-            w:=Concatenation(w{[1..p-1]},LetterRepAssocWord(rules[i][2]),
-              w{[p+Length(rules[i][1])..Length(w)]});
+            wn:=Concatenation(w{[1..p-1]},lrules[pool[i]][2],
+              w{[p+Length(lrules[pool[i]][1])..Length(w)]});
+#if Length(wn)>Length(w) then Error("HOH");fi;
+             w:=wn;
+#            w:=Concatenation(w{[1..p-1]},lrules[pool[i]][2],
+#              w{[p+Length(lrules[pool[i]][1])..Length(w)]});
             red:=true;
           else
             i:=i+1;
@@ -1185,7 +1214,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
             x->mgens[Position(nums,x)]));
         fi;
         right:=reduce(right); # monoid word might change
-        Add(rules,[left,right]);
+        addrule([left,right]);
       od;
       for j in [loff+1..off] do
         # if the generator gets reduced away, won't need to use it
@@ -1199,7 +1228,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
                 x->mgens[Position(nums,x)]));
               right:=reduce(mgens[j]*right);
               #Print("Did rule ",mgens[k],"*",mgens[j],"->",right,"\n");
-              Add(rules,[mgens[k]*mgens[j],right]);
+              addrule([mgens[k]*mgens[j],right]);
             fi;
           od;
         fi;
@@ -1227,16 +1256,18 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       dept:=List(dept,x->Position(diff,x));
     fi;
 
-    if ForAny(rules,x->x[2]<>reduce(x[2])) then Error("irreduced right");fi;
+    if AssertionLevel()>1 and ForAny(rules,x->x[2]<>reduce(x[2])) then
+      Error("irreduced right");
+    fi;
 
     # inverses are true inverses, also for extension
     for i in [1..Length(gens)] do
       left:=mgens[2*i-1]*mgens[2*i];
       left:=reduce(left);
-      if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+      if left<>One(fm) then addrule([left,One(fm)]); fi;
       left:=mgens[2*i]*mgens[2*i-1];
       left:=reduce(left);
-      if left<>One(fm) then Add(rules,[left,One(fm)]); fi;
+      if left<>One(fm) then addrule([left,One(fm)]); fi;
     od;
   fi;
 
@@ -1254,6 +1285,86 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
   MakeConfluent(k); # will store in monoid as reducedConfluent
   return j;
 end);
+
+# special method for pc groups, basically just writing down the pc
+# presentation
+InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
+  [IsGroup and IsFinite and IsPcGroup],
+function(G)
+local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
+  pcgs:=Pcgs(G);
+  iso:=IsomorphismFpGroup(G);
+  fp:=Range(iso);
+  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentative(iso,x))<>pcgs then 
+    Error("pcgs");
+  fi;
+  gens:=[];
+  numi:=[];
+  ord:=[];
+  for i in [1..Length(pcgs)] do
+    Add(gens,String(fp.(i)));
+    Add(gens,String(fp.(i)^-1));
+    Add(numi,i);
+    Add(numi,-i);
+    Append(ord,[i,i]);
+  od;
+  fm:=FreeMonoid(gens);
+  fam:=FamilyObj(One(fm));
+  mword:=w->AssocWordByLetterRep(fam,
+    List(LetterRepAssocWord(UnderlyingElement(w)),x->Position(numi,x)));
+  ord:=WreathProductOrdering(fm,Reversed(ord));
+  k:=CreateKnuthBendixRewritingSystem(FamilyObj(One(fm/[])),ord);
+  if AssertionLevel()<=2 then
+    # assertion level <=2 so the auto tests will never trigger it
+    Unbind(k!.pairs2check);
+  fi;
+  addrule:=function(rul)
+    #Print("Add:",rul,"\n");
+    AddRuleReduced(k,List(rul,LetterRepAssocWord));
+    #Print(Rules(k),"\n");
+  end;
+
+  for i in [Length(pcgs),Length(pcgs)-1..1] do
+    if RelativeOrders(pcgs)[i]>2 then
+      addrule([mword(fp.(i))*mword(fp.(i)^-1),One(fm)]);
+      addrule([mword(fp.(i)^-1)*mword(fp.(i)),One(fm)]);
+    fi;
+    for j in [Length(pcgs),Length(pcgs)-1..i+1] do
+      for e in [[1,1],[1,-1],[-1,1],[-1,-1]] do
+        if (RelativeOrders(pcgs)[j]>2 or e[1]=1) and
+          (RelativeOrders(pcgs)[i]>2 or e[2]=1) then
+          a:=(pcgs[j]^e[1])^(pcgs[i]^e[2]);
+          addrule([mword(fp.(j)^e[1]*fp.(i)^e[2]),mword(fp.(i)^e[2])*mword(a)]);
+        fi;
+      od;
+    od;
+    r:=RelativeOrders(pcgs)[i];
+    if r=2 then
+      a:=ImagesRepresentative(iso,pcgs[i]^2);
+      addrule([mword(fp.(i)^2),mword(a)]);
+      a:=ImagesRepresentative(iso,pcgs[i]^-2);
+      addrule([mword(fp.(i)^-1),mword(fp.(i))*mword(a)]);
+    else
+      a:=ImagesRepresentative(iso,pcgs[i]^r);
+      addrule([mword(fp.(i)^((r+1)/2)),mword(fp.(i)^(-(r-1)/2))*mword(a)]);
+      a:=ImagesRepresentative(iso,pcgs[i]^-r);
+      addrule([mword(fp.(i)^(-(r+1)/2)),mword(fp.(i)^((r-1)/2))*mword(a)]);
+    fi;
+  if IsBound(k!.pairs2check) then
+    e:=StructuralCopy(Rules(k));
+    MakeConfluent(k);
+    Assert(3,Set(Rules(k))=Set(e));
+  fi;
+  od;
+  SetIsConfluent(k,true);
+  SetIsReduced(k,true);
+  m:=fm/Rules(k);
+  a:=MakeFpGroupToMonoidHomType1(fp,m);
+  SetReducedConfluentRewritingSystem(m,k);
+  j:=rec(fphom:=iso,monhom:=a,ordering:=ord);
+  return j;
+end);
+
 
 BindGlobal("WeylGroupFp",function(ser,n)
 local f,rels,i,j,gens;
