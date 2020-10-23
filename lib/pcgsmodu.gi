@@ -221,7 +221,7 @@ InstallMethod( ModuloPcgsByPcSequenceNC, "generic method for pcgs mod pcgs",
 
 function( home, list, modulo )
     local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,
-    i,depthsInParent,dd,par,
+    i,depthsInParent,dd,par,sel,
     pcsexp,denexp,bascha,idx,sep,sed,mat;
 
     # <list> is a pcgs for the sum of <list> and <modulo>
@@ -381,11 +381,13 @@ function( home, list, modulo )
 	    mat:=Concatenation(pcsexp{sep}{new!.layranges[i]},
 		  denexp{sed}{new!.layranges[i]})*One(dd);
 	    mat:=ImmutableMatrix(dd,mat);
-	    while Length(mat)<Length(mat[1]) do
-	      mat:=Concatenation(mat,[First(IdentityMat(Length(mat[1]),dd),
-		x->SolutionMat(mat,x)=fail)]);
+	    if Length(mat)<Length(mat[1]) then
+              # add identity mat vectors at non-pivot positions
+              sel:=List(TriangulizedMat(mat),PositionNonZero);
+              sel:=Difference([1..Length(mat[1])],sel);
+              mat:=Concatenation(mat,IdentityMat(Length(mat[1]),dd){sel});
 	      mat:=ImmutableMatrix(dd,mat);
-	    od;
+	    fi;;
 	    bascha[i]:=mat^-1;
 	    idx[i]:=[sep,sed];
 	  fi;

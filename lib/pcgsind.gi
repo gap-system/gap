@@ -447,7 +447,7 @@ InstallMethod( InducedPcgsByGeneratorsWithImages,
 
 function( pcgs, gens, imgs )
     local  ro, max, id, igs, chain, new, seen, old, u, uw, up, e, x, c, 
-           cw, d, i, j, f;
+           cw, d, i, j, f,nonab;
 
     # do family check here to avoid problems with the empty list
     if not IsIdenticalObj( FamilyObj(pcgs), FamilyObj(gens) )  then
@@ -459,6 +459,9 @@ function( pcgs, gens, imgs )
 
     # get the trivial case first
     if gens = AsList( pcgs ) then return [pcgs, imgs]; fi;
+
+    #catch special case: abelian
+    nonab:=not IsAbelian(Group(pcgs,OneOfPcgs(pcgs)));
 
     # get relative orders and composition length
     ro  := RelativeOrders(pcgs);
@@ -521,7 +524,7 @@ function( pcgs, gens, imgs )
                 # add the commutators with the powers of <u>
                 for u in up do
                     for x in igs do
-                        if x[1] <> id[1] 
+                        if nonab and x[1] <> id[1] 
                            and ( DepthOfPcElement(pcgs,x[1]) + 1 < chain
                               or DepthOfPcElement(pcgs,u[1]) + 1 < chain )
                         then
@@ -546,7 +549,8 @@ function( pcgs, gens, imgs )
                     chain := chain-1;
                 od;
 
-                for i  in [ chain .. max ]  do
+                if nonab then
+                  for i  in [ chain .. max ]  do
                     for j  in [ 1 .. chain-1 ]  do
                         c := Comm( igs[i][1], igs[j][1] );
                         if not c in seen  then
@@ -554,7 +558,8 @@ function( pcgs, gens, imgs )
                             AddSet( new, [c, Comm( igs[i][2], igs[j][2] )] );
                         fi;
                     od;
-                od;
+                  od;
+                fi;
             fi;
         od;
     od;
