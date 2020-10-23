@@ -2289,8 +2289,13 @@ local home,e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
       pcgs:=InducedPcgs(home,e[i-1]);
       mpcgs:=pcgs mod InducedPcgs(home,e[i]);
       op:=LinearActionLayer(U,GeneratorsOfGroup(U),mpcgs);
-      m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(mpcgs,mpcgs[1])));
-      cs:=MTX.BasesCompositionSeries(m);
+      if ForAll(op,IsOne) then
+        m:=op[1]; # identity
+        cs:=List([0..Length(m)],x->m{[Length(m)+1-x..Length(m)]});
+      else
+        m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(mpcgs,mpcgs[1])));
+        cs:=MTX.BasesCompositionSeries(m);
+      fi;
       Sort(cs,function(a,b) return Length(a)>Length(b);end);
       cs:=cs{[2..Length(cs)]};
       Info(InfoPcGroup,2,Length(cs)-1," compositionFactors");
