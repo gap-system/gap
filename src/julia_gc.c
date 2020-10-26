@@ -44,6 +44,10 @@
 // isn't installed as part of a typical Julia installation
 JL_DLLEXPORT jl_value_t *jl_get_current_task(void);
 
+// jl_n_threads is not defined in Julia headers, but its existence is relied
+// on in the Base module. Thus, defining it as extern ought to be portable.
+extern int jl_n_threads;
+
 /****************************************************************************
 **
 **  Various options controlling special features of the Julia GC code follow
@@ -932,10 +936,6 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
         active_task_stack = active_task_stack_fallback;
     }
 
-    // This variable is not defined in Julia headers, but its existence
-    // is relied on in the Base module. Thus, defining it as extern is
-    // portable.
-    extern int jl_n_threads;
     is_threaded = jl_n_threads > 1;
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
