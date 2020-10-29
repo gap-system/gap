@@ -111,6 +111,8 @@ BIND_GLOBAL( "GAPInfo", rec(
            help := [ "Disable the GAP read-evaluate-print loop (REPL)" ] ),
       rec( long := "nointeract", default := false,
            help := [ "Start GAP in non-interactive mode (disable read-evaluate-print loop (REPL) and break loop)" ] ),
+      rec( long := "systemfile", default := "",
+           help := [ "Read this file after 'lib/system.g'" ] ),
       rec( long := "bare", default := false,
            help := [ "Attempt to start GAP without even needed packages (developer tool)" ] ),
       ,
@@ -571,3 +573,11 @@ end);
 ##  </ManSection>
 ##
 #T really ???
+
+if GAPInfo.CommandLineOptions.systemfile <> ""
+   and not READ( GAPInfo.CommandLineOptions.systemfile ) then
+  PRINT_TO( "*errout*", "Could not read file \"",
+            GAPInfo.CommandLineOptions.systemfile,
+            "\" (command line option --systemfile).\n" );
+  QuitGap(1);
+fi;
