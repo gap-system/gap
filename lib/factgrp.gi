@@ -1656,6 +1656,7 @@ local proj,h,pool;
         ClosureGroup(KernelOfMultiplicativeGeneralMapping(proj),N),proj*h);
     od;
   fi;
+  CloseNaturalHomomorphismsPool(G,N);
 
   h:=DegreeNaturalHomomorphismsPool(G,N);
   if h<>fail and RootInt(h^3,2)<IndexNC(G,N) then
