@@ -22,6 +22,9 @@ gap> g:=SymmetricGroup(13);;s:=SylowSubgroup(g,13);;
 gap> ac:=AscendingChain(g,s);;
 gap> Maximum(List([2..Length(ac)],x->Index(ac[x],ac[x-1])))<600000;
 true
+gap> g:=SymmetricGroup(5);;p:=SylowSubgroup(g,5);;
+gap> Length(IntermediateSubgroups(g,p).subgroups);
+3
 gap> g:=SL(6,2);;
 gap> p:=Image(IsomorphismPermGroup(g));;
 gap> s:=SylowSubgroup(p,7);;
