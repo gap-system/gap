@@ -1,4 +1,5 @@
-#############################################################################
+#
+###########################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
 ##  This file's authors include Alexander Hulpke.
@@ -572,11 +573,12 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
       o:=cl;
       cl:=[];
       for i in o do
-        if not ForAny(cl,x->Order(Representative(i))=Order(Representative(x)) 
-          and (Size(x) mod Size(i)=0) and Representative(i) in x) then
+# test to avoid duplicates is more expensive than it is worth
+#        if not ForAny(cl,x->Order(Representative(i))=Order(Representative(x)) 
+#          and (Size(x) mod Size(i)=0) and Representative(i) in x) then
           r:=ConjugacyClass(g,Representative(i));
           Add(cl,r);
-        fi;
+#        fi;
       od;
 
       Info(InfoMorph,2,"actbase ",Length(cl), " classes");
