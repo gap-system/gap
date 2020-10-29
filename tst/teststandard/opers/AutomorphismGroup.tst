@@ -26,17 +26,12 @@ true
 
 #
 gap> G:=GL(IsPermGroup,3,3);;
-gap> H:=AutomGrpSR(G);;
+gap> H:=AutomorphismGroup(G);;
 gap> StructureDescription(H);
 "PSL(3,3) : C2"
 
 #
-gap> G:=GL(IsPermGroup,3,3);;
-gap> H:=AutomorphismGroupMorpheus(G);;
-gap> StructureDescription(H);
-"PSL(3,3) : C2"
-
-#
+gap> SetAssertionLevel(0);
 gap> g:=PerfectGroup(IsPermGroup,15360,1);;
 gap> h:=g^(1,129);;
 gap> AutomorphismGroup(g);; # pull out of isom. test (reduce timeout risk)
