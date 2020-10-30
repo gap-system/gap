@@ -954,7 +954,7 @@ static Int GetLine2(TypInputFile * input)
 
     if ( input->isstream ) {
         if (input->sline == 0 ||
-            (IS_STRING(input->sline) &&
+            (IS_STRING_REP(input->sline) &&
              GET_LEN_STRING(input->sline) <= input->spos)) {
             input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
             input->spos  = 0;
