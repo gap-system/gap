@@ -121,5 +121,17 @@ gap> l:=[];;for i in it do Add(l,i);od;Length(l);
 gap> it:=DescSubgroupIterator(g:skip:=20);;
 gap> l:=[];;for i in it do Add(l,i);od;
 
+# conjugator
+gap> w:=WreathProduct(SymmetricGroup(6),Group((1,2)));;
+gap> d:=DerivedSubgroup(w);;
+gap> d:=DerivedSubgroup(d);;
+gap> a:=Image(Embedding(w,3),(1,2));;
+gap> hom:=ConjugatorAutomorphism(w,a);;
+gap> hom:=AsGroupGeneralMappingByImages(hom);;
+gap> HasIsConjugatorAutomorphism(hom);
+false
+gap> IsConjugatorAutomorphism(hom);
+true
+
 #
 gap> STOP_TEST( "permgrp.tst", 1);
