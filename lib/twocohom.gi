@@ -707,7 +707,8 @@ function(G,mo)
 local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
       findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,genkill,
-      c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos;
+      c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos,
+      nonone,predict,lenpre;
 
 
   # collect the word in factor group
@@ -724,7 +725,12 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       mm:=Minimum(mal,Length(a)-i+1);
       while j<mm do
         s:=s*max+a[i+j];
-        p:=LookupDictionary(dict,s);
+        #p:=LookupDictionary(dict,s);
+        if s<=lenpre then
+          p:=predict[s];
+        else
+          p:=LookupDictionary(dict,s);
+        fi;
         if p<>fail then break; fi;
         j:=j+1;
       od;
@@ -745,7 +751,9 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   local a,i;
     a:=onemat;
     for i in list do
-      a:=a*mats[i];
+      if i in nonone then
+        a:=a*mats[i];
+      fi;
     od;
     return a;
   end;
@@ -765,7 +773,12 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       mm:=Minimum(mal,Length(wrd)-i+1);
       while j<mm do
         s:=s*max+wrd[i+j];
-        p:=LookupDictionary(dict,s);
+        #p:=LookupDictionary(dict,s);
+        if s<=lenpre then
+          p:=predict[s];
+        else
+          p:=LookupDictionary(dict,s);
+        fi;
         if p<>fail and rulpos[p]<>fail then break; fi;
         j:=j+1;
       od;
@@ -818,6 +831,8 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   max:=Maximum(Union(List(tzrules,x->x[1])))+1;
   mal:=Maximum(List(tzrules,x->Length(x[1])));
   dict:=NewDictionary(max,Integers,true);
+  lenpre:=20000;
+  predict:=ListWithIdenticalEntries(lenpre,fail);
   for i in [1..mal] do
     p:=Filtered([1..Length(tzrules)],x->Length(tzrules[x][1])=i);
     for j in p do
@@ -825,7 +840,11 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       for k in [1..i] do
         s:=s*max+tzrules[j][1][k];
       od;
-      AddDictionary(dict,s,j);
+      if s<=lenpre then
+        predict[s]:=j;
+      else
+        AddDictionary(dict,s,j);
+      fi;
     od;
   od;
 
@@ -918,6 +937,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     mats:=List(GeneratorsOfMonoid(mon),
       x->ImagesRepresentative(m,
       PreImagesRepresentative(fm,x))); #Elements for monoid generators
+    nonone:=[1..Length(mats)];
     pre:=mats;
     onemat:=One(G);
     for i in [1..Length(hastail)] do
@@ -935,6 +955,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     x->ImagesRepresentative(hom,PreImagesRepresentative(fp,
     PreImagesRepresentative(fm,x)))); # matrices for monoid generators
   one:=One(mats[1]);
+  nonone:=Filtered([1..Length(mats)],x->not IsOne(mats[x]));
   zero:=zerovec;
   dim:=Length(zero);
   nvars:=dim*Length(hastail); #Number of variables
@@ -1090,7 +1111,11 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       mm:=Minimum(mal,Length(wrd)-i+1);
       while j<mm do
         s:=s*max+wrd[i+j];
-        p:=LookupDictionary(dict,s);
+        if s<=lenpre then
+          p:=predict[s];
+        else
+          p:=LookupDictionary(dict,s);
+        fi;
         if p<>fail and rulpos[p]<>fail then break; fi;
         j:=j+1;
       od;
@@ -1165,7 +1190,12 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         mm:=Minimum(mal,Length(wrd)-i+1);
         while j<mm do
           s:=s*max+wrd[i+j];
-          p:=LookupDictionary(dict,s);
+          #p:=LookupDictionary(dict,s);
+          if s<=lenpre then
+            p:=predict[s];
+          else
+            p:=LookupDictionary(dict,s);
+          fi;
           if p<>fail and rulpos[p]<>fail then break; fi;
           j:=j+1;
         od;
