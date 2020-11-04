@@ -574,7 +574,10 @@ end);
 ##
 #T really ???
 
-if GAPInfo.CommandLineOptions.systemfile <> "" and
-   IsReadableFile( GAPInfo.CommandLineOptions.systemfile ) then
-  READ( GAPInfo.CommandLineOptions.systemfile );
+if GAPInfo.CommandLineOptions.systemfile <> ""
+   and not READ( GAPInfo.CommandLineOptions.systemfile ) then
+  PRINT_TO( "*errout*", "Could not read file \"",
+            GAPInfo.CommandLineOptions.systemfile,
+            "\" (command line option --systemfile).\n" );
+  QuitGap(1);
 fi;
