@@ -851,7 +851,7 @@ Int SyFopen (
 #endif
 
     /* try to open the file                                                */
-    if (endsgz && (syBuf[fid].gzfp = gzopen(name, mode))) {
+    if (*mode == 'r' && endsgz && (syBuf[fid].gzfp = gzopen(name, mode))) {
         syBuf[fid].type = gzip_socket;
         syBuf[fid].fp = -1;
         syBuf[fid].bufno = -1;
