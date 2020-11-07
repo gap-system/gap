@@ -17,9 +17,9 @@ gap> str := "hello\ngoodbye\n";;
 gap> FileString( fname, str ) = Length(str);
 true
 
-# Check file really is compressed
+# Check file really is compressed (FIXME: disabled in stable-4.11)
 gap> isGzippedFile(dir, "test.g.gz");
-true
+false
 
 # Check reading compressed file
 gap> StringFile( fname ) = str;
@@ -76,7 +76,7 @@ gap> CloseStream(stream);
 gap> stream;
 closed-stream
 gap> isGzippedFile(dir, "test.g.gz");
-true
+false
 
 # verify it
 gap> stream := InputTextFile( fname );;
