@@ -146,7 +146,7 @@ GAPInput
     # test: `make clean` works and afterwards we can still `make`; in particular
     # build/config.h must be regenerated before any actual compilation
     make clean
-    make
+    make > /dev/null 2>&1
 
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
@@ -159,7 +159,7 @@ GAPInput
 
     # test: `make` should regenerate removed *.lo files
     rm ${bool_lo}
-    make
+    make > /dev/null 2>&1
     test -f ${bool_lo}
 
     # verify that deps file has a target for the .lo file but not for the .d file
@@ -171,7 +171,7 @@ GAPInput
     # corresponding *.lo file, which we verify by overwriting it with garbage)
     rm ${bool_d}
     echo "garbage content !!!" > ${bool_lo}
-    make
+    make > /dev/null 2>&1
     test -f ${bool_d}
 
     # verify that deps file has a target for the .lo file but not for the .d file
