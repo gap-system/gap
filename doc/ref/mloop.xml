@@ -1062,7 +1062,8 @@ different action may be appropriate.
 If, when &GAP; is exiting due to a <K>quit</K> or end-of-file (i.e. not due
 to a <K>QUIT</K>) the variable <Ref Var="SaveOnExitFile"/> is bound
 to a string value,
-then the system will try to save the workspace to that file.
+then the system will try to save the &GAP; workspace to that file,
+see <Ref Func="SaveWorkspace"/>.
 </Description>
 </ManSection>
 

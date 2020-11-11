@@ -54,7 +54,7 @@ and to <C>gap -b -q -b -q</C> etc.
 &GAP; for UNIX will distinguish between upper and lower case options.
 <P/>
 As described in the &GAP; installation instructions (see the 
-<F>INSTALL</F> file in the &GAP; root directory, or at
+<F>INSTALL.md</F> file in the &GAP; root directory, or at
 <URL>https://www.gap-system.org/Download/INSTALL</URL>),
 usually you will not execute &GAP; directly. Instead  you  will
 call a (shell) script, with the name <C>gap</C>, which in turn executes  &GAP;.
@@ -155,6 +155,8 @@ toggle; you must use <C>-n</C> to disable line editing.
 <Item>
 tells &GAP; to print a message every  time  a  full  garbage
 collection is performed.
+(This is available only if the <C>GASMAN</C> garbage collector is used,
+see <Ref Subsect="Garbage Collection"/>.)
 <P/>
 <Log><![CDATA[
 #G  FULL 44580/2479kb live   57304/4392kb dead   734/4096kb free
@@ -169,8 +171,10 @@ reclaimed by it, and that 734 kilobytes from a  total  allocated  memory  of
 <C>-g -g</C></Mark>
 <Item>
 If you give the option <C>-g</C> twice, &GAP; prints  a  information  message
-every time a  partial  or  full  garbage  collection  is  performed.  The
-message,
+every time a  partial  or  full  garbage  collection  is  performed.
+(This is available only if the <C>GASMAN</C> garbage collector is used,
+see <Ref Subsect="Garbage Collection"/>.)
+The message,
 <P/>
 <Log><![CDATA[
 #G  PART 9405/961kb+live   7525/1324kb+dead   2541/4096kb free
@@ -202,6 +206,8 @@ switched off. You have to set it explicitly when you want to enable it.
 <Item>
 The option <C>-L</C> tells &GAP; to load a saved workspace. See
 section&nbsp;<Ref Sect="Saving and Loading a Workspace"/>.
+(This is available only if the <C>GASMAN</C> garbage collector is used,
+see <Ref Subsect="Garbage Collection"/>.)
 </Item>
 <Mark><Index Key="-l"><C>-l</C></Index>
 <C>-l </C><A>path_list</A></Mark>
@@ -530,6 +536,10 @@ which GAP will not recognize.
 
 &GAP; workspace files are binary files that contain the data of a &GAP;
 session.
+Currently saving and loading workspace files are supported only when the
+<C>GASMAN</C> garbage collector is used,
+see Section <Ref Subsect="Garbage Collection"/>.
+<P/>
 One can produce a workspace file with <Ref Func="SaveWorkspace"/>,
 and load it into a new &GAP; session using the <C>-L</C> command line option,
 see Section <Ref Sect="Command Line Options"/>.

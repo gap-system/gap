@@ -67,6 +67,11 @@ end );
 InstallGlobalFunction(SetGasmanMessageStatus,
         function(stat)
     local oldstat,newstat,i;
+    if GAPInfo.KernelInfo.GC <> "GASMAN" and stat <> "none" then
+      Info( InfoWarning, 1,
+            "SetGasmanMessageStatus makes sense only if GASMAN is running" );
+      return;
+    fi;
     oldstat := GASMAN_MESSAGE_STATUS();
     newstat := Position(["none", "full", "all"], stat);
     if newstat = fail then

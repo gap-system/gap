@@ -1032,18 +1032,31 @@ Segmentation fault
 <Section Label="Global Memory Information">
 <Heading>Global Memory Information</Heading>
 
+<Subsection Label="Garbage Collection">
+<Heading>Garbage Collection</Heading>
+
 <Index Key="GASMAN"><C>GASMAN</C></Index>
 
 The &GAP; environment provides automatic memory management, so that
 the programmer does not need to concern themselves with allocating
 space for objects, or recovering space when objects are no longer
-needed. The component of the kernel which provides this is called
-<C>GASMAN</C> (&GAP; Storage MANager).  Messages reporting garbage
+needed.
+The memory manager that shall be used by &GAP; is specified at compile time.
+One of the choices is called <C>GASMAN</C> (&GAP; Storage MANager).
+(The name of the currently used garbage collector is stored in the
+variable <C>GAPInfo.KernelInfo.GC</C>.)
+
+<P/>
+
+If <C>GASMAN</C> is running then messages reporting garbage
 collections performed by <C>GASMAN</C> can be switched on
 by the <C>-g</C> command
 line option (see section <Ref Sect="Command Line Options"/>).
 There are also some
-facilities to access information from <C>GASMAN</C> from &GAP; programs.
+facilities to access information from <C>GASMAN</C> from &GAP; programs,
+see below.
+
+</Subsection>
 
 <#Include Label="GasmanStatistics">
 <#Include Label="GasmanMessageStatus">
