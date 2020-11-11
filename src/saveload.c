@@ -589,8 +589,8 @@ Obj SaveWorkspace( Obj fname )
 *F  LoadWorkspace( <fname> )  . . . . .  load the workspace to the named file
 **
 **  'LoadWorkspace' is the entry point to the workspace saving. It is not
-**  installed as a GAP function, but instead called from InitGap when the
-**  -L commad-line flag is given
+**  installed as a GAP function, but instead called from InitializeGap when
+**  the -L command-line flag is given
 **
 **  The file saveload.tex in the dev directory describes the saved format
 **  in more detail. Most of the work will be done from inside GASMAN, because

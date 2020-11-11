@@ -17,8 +17,9 @@ This chapter describes the use of the kernel feature of <E>weak pointers</E>.
 This feature is primarily intended for use only in &GAP; internals, and
 should be used extremely carefully otherwise.
 <P/>
-The GASMAN garbage collector is the part of the kernel that manages memory in
-the users workspace.  It will  normally only reclaim  the storage used by  an
+The garbage collector (see Section <Ref Subsect="Garbage Collection"/>)
+is the part of the kernel that manages memory in the user's workspace.
+It will  normally only reclaim  the storage used by  an
 object when the object cannot be reached as a subobject of any &GAP; variable,
 or from any reference in the kernel.
 We say that any link to object <M>a</M> from object <M>b</M>
