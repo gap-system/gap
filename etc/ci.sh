@@ -2,9 +2,9 @@
 
 # Continous integration testing script
 
-# This is currently only used for Travis CI integration, see .travis.yml
-# for details. In addition, it can be run manually, to simulate what
-# happens in the CI environment locally (say, for debugging purposes).
+# This is used for AppVeyor, Travis CI and GitHub Actions integration.
+# In addition, it can be run manually, to simulate what happens in the
+# CI environment locally (say, for debugging purposes).
 
 set -ex
 
@@ -70,7 +70,7 @@ do
         cat "log/fail.log"
         exit 1
     else
-        echo "All packages were built succesfully"
+        echo "All packages were built successfully"
 
         #
         # Now that we built packages, we try to load them.
