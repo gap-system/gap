@@ -61,11 +61,16 @@
 #define BALANCED_TREE_INIT
 
 // Scapegoat trees are height-balanced trees. With respect to a
-// parameter alpha, a binary tree is height-balanced, if
+// parameter alpha, with 0.5 < alpha < 1, a binary tree is
+// height-balanced, if
 //
-//   height(tree) <= log_1/alpha(size(tree))
+//   height(tree) <= log_{1/alpha}(size(tree))
 //
-// where size(tree) is the number of nodes that a tree contains.
+// where size(tree) is the number of nodes that a tree contains. The
+// closer alpha is to 0.5, the closer a height-balanced tree is to a
+// balanced tree. With alpha = 1, a linked list would be
+// height-balanced. However, the smaller alpha is, the more time will be
+// wasted on rebalancing operations.
 //
 // A binary tree is called weight-balanced iff for any subtree `tree`,
 //
@@ -79,28 +84,26 @@
 // contraposition, any tree that is not height-balanced cannot be
 // weight-balanced, either.
 //
-// Furthermore, for any tree that is not height-balanced, any node
-// at maximum depth will have an ancestor that is not weight-balanced.
+// Furthermore, for any tree that is not height-balanced, any node at
+// maximum depth will have an ancestor that is not weight-balanced.
 // Thus, if we violate the height balance property through the insertion
-// of a new node, we can simply check that node's ancestors to look
-// for a node that is not weight-balanced and rebalance the subtree
-// rooted at that node.
+// of a new node, we can simply check that node's ancestors to look for
+// a node that is not weight-balanced and rebalance the subtree rooted
+// at that node.
 //
-// Rebalancing operations have time complexity linear in the number
-// of nodes affected, but their amortized cost is O(log n) per node
-// for a tree with n nodes, as most insertions either do not
-// require rebalancing or only the rebalancing of a small number of
-// nodes.
+// Rebalancing operations have time complexity linear in the number of
+// nodes affected, but their amortized cost is O(log n) per node for a
+// tree with n nodes, as most insertions either do not require
+// rebalancing or only the rebalancing of a small number of nodes.
 //
-// Overall, this ensures that height(tree) = O(log(size(tree)) and
-// that insertion, deletion, and lookup operations can be done in
-// amortized O(log(size(tree)) time. While individual insertion or
-// deletion operations (though not lookup operations) can take
-// O(size(tree)) time, the amortized time complexity remains
-// logarithmic.
+// Overall, this ensures that height(tree) = O(log(size(tree)) and that
+// insertion, deletion, and lookup operations can be done in amortized
+// O(log(size(tree)) time. While individual insertion or deletion
+// operations (though not lookup operations) can take O(size(tree))
+// time, the amortized time complexity remains logarithmic.
 //
-// See [Galperin and Rivest 1993] for further details and proofs
-// of the above claims.
+// See [Galperin and Rivest 1993] for further details and proofs of the
+// above claims.
 
 // The value of MaxTreeDepth assumes that alpha <= 1/sqrt(2). Larger
 // values of alpha do not lead to well-balanced trees.
@@ -116,10 +119,12 @@ static int min_nodes_for_height_init = 0;
 // sparse to be height balanced.
 static Int min_nodes_for_height[MaxTreeDepth];
 
-// alpha = alpha_lo / alpha_hi
+// alpha = ALPHA_NUM / ALPHA_DENOM
 // We use integers to allow for more efficient arithmetic.
-static const Int alpha_hi = 3;
-static const Int alpha_lo = 2;
+enum {
+  ALPHA_DENOM = 3,
+  ALPHA_NUM = 2,
+};
 
 static inline void InitBalancedTrees(void)
 {
@@ -127,8 +132,8 @@ static inline void InitBalancedTrees(void)
         min_nodes_for_height_init = 1;
         double w = 1.0;
         for (int d = 0; d < MaxTreeDepth; d++) {
-            w *= (double)alpha_hi;
-            w /= (double)alpha_lo;
+            w *= (double)ALPHA_DENOM;
+            w /= (double)ALPHA_NUM;
             min_nodes_for_height[d] = (Int)w;
         }
     }
@@ -286,8 +291,8 @@ static inline Int
     //   lsize <= alpha * size && rsize <= alpha * size
     //
     // while avoiding potentially expensive operations.
-    if (alpha_hi * lsize <= alpha_lo * size &&
-        alpha_hi * rsize <= alpha_lo * size) {
+    if (ALPHA_DENOM * lsize <= ALPHA_NUM * size &&
+        ALPHA_DENOM * rsize <= ALPHA_NUM * size) {
         // try further up the tree if the current subtree is balanced
         return size;
     }
@@ -327,7 +332,7 @@ static inline void FN(RemoveNode)(Tree * tree, Node ** nodeaddr)
     }
     DEALLOC(del);
     tree->nodes--;
-    if (alpha_hi * tree->nodes <= alpha_lo * tree->maxnodes) {
+    if (ALPHA_DENOM * tree->nodes <= ALPHA_NUM * tree->maxnodes) {
         if (tree->root)
             FN(Rebalance)(&tree->root, tree->nodes);
         tree->maxnodes = tree->nodes;
