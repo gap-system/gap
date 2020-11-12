@@ -1,0 +1,207 @@
+name: CI
+
+# Trigger the workflow on push or pull request
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    name: ${{ matrix.test-suites }} - ${{ matrix.extra }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # base test: fast first test
+        os: [ubuntu-latest]
+        test-suites: ["testinstall"]
+        extra: [""]
+
+        # add a few extra tests
+        include:
+          - os: ubuntu-latest
+            test-suites: "docomp teststandard"
+            extra: ""
+
+#          - os: ubuntu-latest
+#            test-suites: "docomp teststandard"
+#            extra: "ABI=32 CONFIGFLAGS=\"\""
+
+          # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI, but
+          # somehow when running on GitHub Actions, it takes almost 4 hours (!) to
+          # complete instead of 25 minutes. So for now we just run testinstall.
+          - os: ubuntu-latest
+            test-suites: "docomp testinstall"
+            extra: "HPCGAP=yes ABI=64"
+
+          # compile packages and run GAP tests
+          # don't use --enable-debug to prevent the tests from taking too long
+          - os: ubuntu-latest
+            test-suites: "testpackages testinstall-loadall"
+            extra: "ABI=64 packages+=(
+                    4ti2
+                    libboost-dev
+                    libcdd-dev
+                    libcurl4-openssl-dev
+                    libmpfr-dev
+                    libmpfi-dev
+                    libmpc-dev
+                    libfplll-dev
+                    pari-gp
+                    libzmq3-dev
+                    singular
+                    )"
+
+          # compile packages and run GAP tests in 32 bit mode
+          # it seems profiling is having trouble collecting the coverage data
+          # here, so we use NO_COVERAGE=1
+#          - os: ubuntu-latest
+#            test-suites: "testpackages testinstall-loadall"
+#            extra: "ABI=32 NO_COVERAGE=1 packages+=(
+#                    4ti2                    # for 4ti2Interface
+#                    libboost-dev            # for NormalizInterface
+#                    libcdd-dev              # for CddInterface
+#                    libcurl4-openssl-dev    # for curlInterface
+#                    libmpfr-dev             # for float
+#                    libmpfi-dev             # for float
+#                    libmpc-dev              # for float
+#                    #libfplll-dev           # for float
+#                    pari-gp                 # for alnuth
+#                    libzmq3-dev             # for ZeroMQInterface
+#                    singular                # for IO_ForHomalg
+#                    )"
+
+          - os: macos-latest
+            test-suites: "docomp testinstall"
+            extra: ""
+
+          # test creating the manual
+          # TODO: make the resulting HTML and PDF files available as build
+          # artifacts so that one can read the latest documentation (or even
+          # preview doc changes for PRs). Use the `upload-artifact` action and
+          # make it conditional. Or perhaps move the `makemanuals` job into
+          # a separate workflow job?
+          - os: ubuntu-latest
+            test-suites: "makemanuals"
+            extra: "packages+=(
+                    texlive-latex-base
+                    texlive-latex-recommended
+                    texlive-latex-extra
+                    texlive-extra-utils
+                    texlive-fonts-recommended texlive-fonts-extra
+                    )"
+
+          # run tests contained in the manual
+          - os: ubuntu-latest
+            test-suites: "testmanuals"
+            extra: ""
+
+          # run bugfix regression tests
+          # Also turn on '--enable-memory-checking' to make sure GAP compiles
+          # with the flag enabled. We do not actually test the memory
+          # checking, as this slows down GAP too much.
+          - os: ubuntu-latest
+            test-suites: "testbugfix"
+            extra: "CONFIGFLAGS=\"--enable-memory-checking\""
+
+          # out of tree builds -- these are mainly done to verify that the
+          # build system work in this scenario. Since we don't expect the test
+          # results to vary compared to the in-tree builds, we turn off
+          # coverage reporting by setting NO_COVERAGE=1; this has the extra
+          # benefit of also running the tests at least once with the
+          # ReproducibleBehaviour option turned off.
+
+          # The '--enable-valgrind' checks that GAP builds and runs correctly
+          # when compiled with valgrind support. We do not actually run any
+          # tests using valgrind, as it is too slow.
+          - os: ubuntu-latest
+            test-suites: "docomp testbuildsys testinstall"
+            extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree CONFIGFLAGS=\"--enable-valgrind\"
+                    packages+=(valgrind)"
+            # TODO: install valgrind
+
+          # same as above, but in 32 bit mode, also turn off debugging (see
+          # elsewhere in this file for an explanation).
+#          - os: ubuntu-latest
+#            test-suites: "docomp testbuildsys testinstall"
+#            extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
+
+          # test error reporting and compiling as well as libgap
+          - os: ubuntu-latest
+            test-suites: "testspecial test-compile testlibgap testkernel"
+            extra: ""
+
+          # test Julia integration
+          - os: ubuntu-latest
+            test-suites: "testinstall"
+            extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
+
+          # TODO: add back a test on a big endian machine (we had s390x on Travis)
+          # TODO: add back a test for compilation with an older GCC, e.g. 4.7
+          # TODO: restore Slack notifications for failed CI branch builds
+          # TODO: test without GMP and zlib, to ensure GAP can build its own
+          # TODO: test without readline, to ensure GAP can be compiled & run w/o it
+
+    env:
+      CFLAGS: "--coverage -O2 -g"
+      CXXFLAGS: "--coverage -O2 -g"
+      LDFLAGS: "--coverage"
+      # default config flags: enable debug asserts
+      CONFIGFLAGS: "--enable-debug"
+      COVERALLS_PARALLEL: true
+      TEST_SUITES: ${{ matrix.test-suites }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Set up Python 3.7"
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: "Install dependencies"
+        run: |
+               ${{ matrix.extra }}
+               if [ "$RUNNER_OS" == "Linux" ]; then
+                   packages+=(libgmp-dev libreadline-dev zlib1g-dev)
+                   if [[ $ABI == 32 ]] ; then
+                       for i in "${!packages[@]}"; do
+                           packages[$i]="${packages[$i]}:i386"
+                       done
+                   fi
+                   packages+=(gcc-multilib g++-multilib)
+                   sudo apt-get install "${packages[@]}"
+               elif [ "$RUNNER_OS" == "macOS" ]; then
+                   brew install gmp readline zlib
+               else
+                   echo "$RUNNER_OS not supported"
+                   exit 1
+               fi
+               python -m pip install gcovr
+
+      - name: "Compile GAP and download packages"
+        run: ${{ matrix.extra }} bash etc/ci-prepare.sh
+      - name: "Run tests"
+        run: ${{ matrix.extra }} bash etc/ci.sh
+      - name: "Gather coverage"
+        run: ${{ matrix.extra }} bash etc/ci-gather-coverage.sh
+      - name: "Upload coverage data to codecov"
+        run: ${{ matrix.extra }} bash etc/ci-run-codecov.sh
+      # - uses: codecov/codecov-action@v1
+
+      # TODO: fix coveralls integration
+      #- name: Coveralls Parallel
+      #  uses: coverallsapp/github-action@master
+      #  with:
+      #    github-token: ${{ secrets.github_token }}
+      #    flag-name: run-${{ matrix.test_number }}
+      #    parallel: true
+
+#  finish:
+#    needs: test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Coveralls Finished
+#        uses: coverallsapp/github-action@master
+#        with:
+#          github-token: ${{ secrets.github_token }}
+#          parallel-finished: true
