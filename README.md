@@ -1,7 +1,8 @@
-[![Travis build Status](https://travis-ci.com/gap-system/gap.svg?branch=master)](https://travis-ci.com/gap-system/gap)
-[![AppVeyor build Status](https://ci.appveyor.com/api/projects/status/github/gap-system/gap?branch=master&svg=true)](https://ci.appveyor.com/project/gap-system/gap)
-[![Code Coverage](https://codecov.io/github/gap-system/gap/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-system/gap)
-[![Coverage Status](https://coveralls.io/repos/github/gap-system/gap/badge.svg)](https://coveralls.io/github/gap-system/gap)
+[![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg?branch=stable-4.11)](https://github.com/gap-system/gap/actions?query=workflow%3ACI+branch%3Astable-4.11)
+[![Travis build Status](https://travis-ci.com/gap-system/gap.svg?branch=stable-4.11)](https://travis-ci.com/gap-system/gap/builds)
+[![AppVeyor build Status](https://ci.appveyor.com/api/projects/status/mvut0lq6x9idfrye/branch/stable-4.11?svg=true)](https://ci.appveyor.com/project/gap-system/gap/branch/master)
+[![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/stable-4.11/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/stable-4.11)
+[![Coverage Status](https://coveralls.io/repos/github/gap-system/gap/badge.svg?branch=stable-4.11)](https://coveralls.io/github/gap-system/gap?branch=stable-4.11)
 
 # What is GAP?
 
