@@ -209,25 +209,16 @@ jobs:
             doc/*/*.css
             doc/*/*.js
       - name: "Gather coverage data"
-        run: ${{ matrix.extra }} bash dev/ci-gather-coverage.sh
+        run: ${{ matrix.extra }} COVERALLS_FLAG_NAME="${{ matrix.test-suites }}" bash dev/ci-gather-coverage.sh
       - name: "Upload coverage data"
         run: ${{ matrix.extra }} bash dev/ci-upload-coverage.sh
-      # - uses: codecov/codecov-action@v1
 
-      # TODO: fix coveralls integration
-      #- name: Coveralls Parallel
-      #  uses: coverallsapp/github-action@master
-      #  with:
-      #    github-token: ${{ secrets.github_token }}
-      #    flag-name: run-${{ matrix.test_number }}
-      #    parallel: true
-
-#  finish:
-#    needs: test
-#    runs-on: ubuntu-18.04
-#    steps:
-#      - name: Coveralls Finished
-#        uses: coverallsapp/github-action@master
-#        with:
-#          github-token: ${{ secrets.github_token }}
-#          parallel-finished: true
+  finish:
+    needs: test
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true

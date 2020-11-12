@@ -76,21 +76,15 @@ env := GAPInfo.SystemEnvironment;;
 if IsBound(env.GITHUB_ACTIONS) then
     opt := rec(
         service_name := "github",
-        # The build number. Will default to chronological numbering from builds on repo
-        service_number := env.GITHUB_RUN_NUMBER,
-        # A unique identifier of the job on the service specified by service_name
-        # FIXME: there seems to be no unique per-job id; the GITHUB_RUN_ID is
-        # shared by all jobs in a single build :-(
-        #service_job_id := env.GITHUB_RUN_ID,
-        service_branch := env.GITHUB_REF{[Length("refs/heads/")..Length(env.GITHUB_REF)]},
-        commit_sha := env.GITHUB_SHA,
-#         service_build_url := Concatenation(
-#             "https://ci.appveyor.com/project/",
-#             env.APPVEYOR_REPO_NAME,
-#             "/build/",
-#             env.APPVEYOR_BUILD_VERSION),
+        service_job_id := env.GITHUB_RUN_ID,
     );
 
+    if IsBound(env.COVERALLS_FLAG_NAME) then
+        opt.flag_name := env.COVERALLS_FLAG_NAME;
+    fi;
+
+    # FIXME: should parse the JSON file GITHUB_EVENT_PATH points to
+    # instead to get the PR number
     # GITHUB_REF has the form refs/pull/12345/merge
     if IsBound(env.GITHUB_REF) and StartsWith(env.GITHUB_REF, "refs/pull/") then
         tmp := SplitString(env.GITHUB_REF, "/");
@@ -106,6 +100,11 @@ else
     OutputCoverallsJsonCoverage(r, "gap-coveralls.json", prefix);
 fi;
 GAPInput
+
+
+echo "####  GITHUB_EVENT_PATH ###"
+echo $GITHUB_EVENT_PATH
+cat $GITHUB_EVENT_PATH
 
 if [[ -f gap-coveralls.json ]]
 then
