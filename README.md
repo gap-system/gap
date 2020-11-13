@@ -1,8 +1,8 @@
-[![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg)](https://github.com/gap-system/gap/actions?query=workflow%3A%22CI%22)
+[![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg?branch=master)](https://github.com/gap-system/gap/actions?query=workflow%3ACI+branch%3Amaster)
 [![Travis build Status](https://travis-ci.com/gap-system/gap.svg?branch=master)](https://travis-ci.com/gap-system/gap/builds)
-[![AppVeyor build Status](https://ci.appveyor.com/api/projects/status/github/gap-system/gap?branch=master&svg=true)](https://ci.appveyor.com/project/gap-system/gap)
-[![Code Coverage](https://codecov.io/github/gap-system/gap/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-system/gap)
-[![Coverage Status](https://coveralls.io/repos/github/gap-system/gap/badge.svg)](https://coveralls.io/github/gap-system/gap)
+[![AppVeyor build Status](https://ci.appveyor.com/api/projects/status/mvut0lq6x9idfrye/branch/master?svg=true)](https://ci.appveyor.com/project/gap-system/gap/branch/master)
+[![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/master/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/gap-system/gap/badge.svg?branch=master)](https://coveralls.io/github/gap-system/gap?branch=master)
 
 # What is GAP?
 
