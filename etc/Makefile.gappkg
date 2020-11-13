@@ -50,8 +50,8 @@ endif
 KEXT_BINARCHDIR = bin/$(GAParch)
 KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
 
-GAP = $(GAPPATH)/gap
-GAC = $(GAPPATH)/gac
+GAP ?= $(GAPPATH)/gap
+GAC ?= $(GAPPATH)/gac
 
 # override KEXT_RECONF if your package needs a different invocation
 # for reconfiguring (e.g. `./config.status --recheck` for autoconf)
@@ -111,21 +111,24 @@ KEXT_DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
 # build rule for C code
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.c Makefile
+	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -p "$(CFLAGS)" -c $< -o $@
 
 # build rule for C++ code
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.cc Makefile
+	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -p "$(CXXFLAGS)" -c $< -o $@
 
 # build rule for assembler code
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.s Makefile
+	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -p "$(CFLAGS)" -c $< -o $@
 
 # build rule for linking all object files together into a kernel extension
 $(KEXT_SO): $(KEXT_OBJS)
-	@mkdir -p $(KEXT_BINARCHDIR)
+	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -P "$(KEXT_LDFLAGS)" -P "$(LDFLAGS)" $(KEXT_OBJS) -o $@
 
 # hook into `make clean`
