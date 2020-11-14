@@ -931,10 +931,10 @@ fi;
 
 ResumeMethodReordering();
 
-InstallAndCallPostRestore( function()
+BindGlobal( "ProcessInitFiles", function(initFiles)
     local i, f, status;
-    for i in [1..Length(GAPInfo.InitFiles)] do
-        f := GAPInfo.InitFiles[i];
+    for i in [1..Length(initFiles)] do
+        f := initFiles[i];
         if IsRecord(f) then
             status := READ_NORECOVERY(InputTextString(f.command));
         elif EndsWith(f, ".tst") then
@@ -951,7 +951,7 @@ InstallAndCallPostRestore( function()
                 PRINT_TO( "*errout*", "Reading file \"", f,
                     "\" has been aborted.\n");
             fi;
-            if i < Length (GAPInfo.InitFiles) then
+            if i < Length (initFiles) then
                 PRINT_TO( "*errout*",
                     "The remaining files or commands on the command line will not be read.\n" );
             fi;
@@ -966,6 +966,9 @@ InstallAndCallPostRestore( function()
     od;
 end );
 
+InstallAndCallPostRestore( function()
+    ProcessInitFiles(GAPInfo.InitFiles);
+end );
 
 if GAPInfo.CommandLineOptions.norepl then
   # do not start an interactive session
