@@ -233,11 +233,13 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 {
     RequireSmallList(SELF_NAME, list1);
     RequireSmallList(SELF_NAME, list2);
-    if (!IsPlainSet(list1)) list1 = SetList(list1);
-    if (!IsPlainSet(list2)) list2 = SetList(list2);
+    if (!IS_SSORT_LIST(list1)) list1 = SetList(list1);
+    if (!IS_SSORT_LIST(list2)) list2 = SetList(list2);
 
     /* and now compare them                                                */
-    return (EqSet( list1, list2 ) ? True : False );
+    if (IS_PLIST(list1) && IS_PLIST(list2))
+        return EqSet(list1, list2) ? True : False;
+    return EQ(list1, list2) ? True : False;
 }
 
 
