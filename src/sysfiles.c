@@ -652,12 +652,12 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
         // buffer was not big enough, give up
         namegz[0] = '\0';
     }
-    if (strncmp( mode, "r", 1 ) == 0)
-      flags = O_RDONLY;
-    else if (strncmp( mode, "w",1 ) == 0)
-      flags = O_WRONLY | O_CREAT | O_TRUNC;
-    else if (strncmp( mode, "a",1) == 0)
-      flags = O_WRONLY | O_APPEND | O_CREAT;
+    if (*mode == 'r')
+        flags = O_RDONLY;
+    else if (*mode == 'w')
+        flags = O_WRONLY | O_CREAT | O_TRUNC;
+    else if (*mode == 'a')
+        flags = O_WRONLY | O_APPEND | O_CREAT;
     else {
         Panic("Unknown mode %s", mode);
     }
@@ -679,7 +679,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
         syBuf[fid].echo = syBuf[fid].fp;
         syBuf[fid].bufno = -1;
     }
-    else if (strncmp(mode, "r", 1) == 0 && transparent_compress &&
+    else if (*mode == 'r' && transparent_compress &&
              SyIsReadableFile(namegz) == 0 &&
              (syBuf[fid].gzfp = gzopen(namegz, mode))) {
         syBuf[fid].type = gzip_socket;
@@ -693,7 +693,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
 
     HashUnlock(&syBuf);
 
-    if(strncmp(mode, "r", 1) == 0)
+    if (*mode == 'r')
         SySetBuffering(fid);
 
     /* return file identifier                                              */
