@@ -1486,8 +1486,10 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 **  all symbols up to one contained in <follow>.
 **
 **  <Literal> := <Int>
+**            |  <Float>
 **            |  'true'
 **            |  'false'
+**            |  '~'
 **            |  <Char>
 **            |  <Perm>
 **            |  <String>
@@ -1552,7 +1554,7 @@ static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
         Match_(rs, S_CHAR, "character", follow);
         break;
 
-    /* string */
+    /* <String>                                                            */
     case S_STRING:
         GAP_ASSERT(rs->s.ValueObj != 0);
         TRY_IF_NO_ERROR { IntrStringExpr(&rs->intr, rs->s.ValueObj); }
@@ -1565,7 +1567,7 @@ static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
         ReadListExpr(rs, follow);
         break;
 
-    /* <Rec>                                                               */
+    /* <Record>                                                            */
     case S_REC:
         ReadRecExpr(rs, follow);
         break;
