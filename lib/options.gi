@@ -26,7 +26,7 @@ MakeReadOnlyGlobal("OptionsStack");
 
 #############################################################################
 ##
-#F  PushOptions( <options record> )                           set new options
+#F  PushOptions( <options_record> )                           set new options
 ##
 ##  This is a function, not an operation, so we need to check our arguments
 ##
