@@ -57,11 +57,11 @@
 
 #############################################################################
 ##
-#F  PushOptions( <options record> )                           set new options
+#F  PushOptions( <options_record> )                           set new options
 ##
 ##  <#GAPDoc Label="PushOptions">
 ##  <ManSection>
-##  <Func Name="PushOptions" Arg='options record'/>
+##  <Func Name="PushOptions" Arg='options_record'/>
 ##
 ##  <Description>
 ##  This function pushes a record of options onto the global option stack.
