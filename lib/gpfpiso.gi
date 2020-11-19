@@ -1124,7 +1124,6 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
 
     reduce:=function(w)
     local red,i,p,pool,wn;
-#ow:=w;
       w:=LetterRepAssocWord(w);
       repeat
         i:=1;
@@ -1288,7 +1287,7 @@ end);
 
 # special method for pc groups, basically just writing down the pc
 # presentation
-InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
+InstallMethod(ConfluentMonoidPresentationForGroup,"pc",
   [IsGroup and IsFinite and IsPcGroup],
 function(G)
 local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
