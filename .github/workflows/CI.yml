@@ -23,9 +23,9 @@ jobs:
             test-suites: "docomp teststandard"
             extra: ""
 
-#          - os: ubuntu-latest
-#            test-suites: "docomp teststandard"
-#            extra: "ABI=32 CONFIGFLAGS=\"\""
+          - os: ubuntu-latest
+            test-suites: "docomp teststandard"
+            extra: "ABI=32 CONFIGFLAGS=\"\""
 
           # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI, but
           # somehow when running on GitHub Actions, it takes almost 4 hours (!) to
@@ -43,33 +43,35 @@ jobs:
                     libboost-dev
                     libcdd-dev
                     libcurl4-openssl-dev
-                    libmpfr-dev
-                    libmpfi-dev
-                    libmpc-dev
                     libfplll-dev
-                    pari-gp
+                    libmpc-dev
+                    libmpfi-dev
+                    libmpfr-dev
+                    libncurses5-dev
                     libzmq3-dev
+                    pari-gp
                     singular
                     )"
 
           # compile packages and run GAP tests in 32 bit mode
           # it seems profiling is having trouble collecting the coverage data
           # here, so we use NO_COVERAGE=1
-#          - os: ubuntu-latest
-#            test-suites: "testpackages testinstall-loadall"
-#            extra: "ABI=32 NO_COVERAGE=1 packages+=(
-#                    4ti2                    # for 4ti2Interface
-#                    libboost-dev            # for NormalizInterface
-#                    libcdd-dev              # for CddInterface
-#                    libcurl4-openssl-dev    # for curlInterface
-#                    libmpfr-dev             # for float
-#                    libmpfi-dev             # for float
-#                    libmpc-dev              # for float
-#                    #libfplll-dev           # for float
-#                    pari-gp                 # for alnuth
-#                    libzmq3-dev             # for ZeroMQInterface
-#                    singular                # for IO_ForHomalg
-#                    )"
+          - os: ubuntu-latest
+            test-suites: "testpackages testinstall-loadall"
+            extra: "ABI=32 NO_COVERAGE=1 packages+=(
+                    4ti2
+                    libboost-dev
+                    libcdd-dev
+                    libcurl4-openssl-dev
+                    libfplll-dev
+                    libmpc-dev
+                    libmpfi-dev
+                    libmpfr-dev
+                    libncurses5-dev
+                    libzmq3-dev
+                    pari-gp
+                    singular
+                    )"
 
           - os: macos-latest
             test-suites: "docomp testinstall"
@@ -122,9 +124,9 @@ jobs:
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
-#          - os: ubuntu-latest
-#            test-suites: "docomp testbuildsys testinstall"
-#            extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
+          - os: ubuntu-latest
+            test-suites: "docomp testbuildsys testinstall"
+            extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test error reporting and compiling as well as libgap
           - os: ubuntu-latest
@@ -164,11 +166,13 @@ jobs:
                if [ "$RUNNER_OS" == "Linux" ]; then
                    packages+=(libgmp-dev libreadline-dev zlib1g-dev)
                    if [[ $ABI == 32 ]] ; then
+                       sudo dpkg --add-architecture i386
                        for i in "${!packages[@]}"; do
                            packages[$i]="${packages[$i]}:i386"
                        done
+                       packages+=(gcc-multilib g++-multilib)
                    fi
-                   packages+=(gcc-multilib g++-multilib)
+                   sudo apt-get update
                    sudo apt-get install "${packages[@]}"
                elif [ "$RUNNER_OS" == "macOS" ]; then
                    brew install gmp readline zlib
