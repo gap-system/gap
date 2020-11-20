@@ -991,7 +991,7 @@ static int SetExitValue(Obj code)
 static Obj FuncGapExitCode(Obj self, Obj args)
 {
     if (LEN_LIST(args) > 1) {
-        ErrorQuit("usage: QuitGap( [ <return value> ] )", 0, 0);
+        ErrorQuit("usage: GapExitCode( [ <return value> ] )", 0, 0);
     }
 
     Obj prev_exit_value = ObjInt_Int(SystemErrorCode);

@@ -217,15 +217,17 @@ gap> GapExitCode();
 6
 gap> GapExitCode(exitCode);
 6
+gap> GapExitCode(fail, fail);
+Error, usage: GapExitCode( [ <return value> ] )
 
 #
-gap> QuitGap("invald");
+gap> QuitGap("invalid");
 Error, usage: QuitGap( [ <return value> ] )
 gap> QuitGap(1, 2);
 Error, usage: QuitGap( [ <return value> ] )
 
 #
-gap> ForceQuitGap("invald");
+gap> ForceQuitGap("invalid");
 Error, usage: ForceQuitGap( [ <return value> ] )
 gap> ForceQuitGap(1, 2);
 Error, usage: ForceQuitGap( [ <return value> ] )
