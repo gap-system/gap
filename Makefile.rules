@@ -571,7 +571,7 @@ EXTERN_FILES += $(GMP_FILES)
 gmp: $(GMP_FILES)
 $(GMP_FILES):
 	touch "$(abs_srcdir)/extern/gmp/doc/gmp.info"
-	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" ABI=$(ABI) --disable-static --enable-shared
+	MAKE=$(MAKE) CC="$(CC)" $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" ABI=$(ABI) --disable-static --enable-shared
 
 .PHONY: gmp
 
