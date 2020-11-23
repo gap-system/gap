@@ -15,21 +15,20 @@ jobs:
         # base test: fast first test
         os: [ubuntu-latest]
         test-suites: ["testinstall"]
-        extra: [""]
 
         # add a few extra tests
         include:
           - os: ubuntu-latest
             test-suites: "docomp teststandard"
-            extra: ""
 
           - os: ubuntu-latest
             test-suites: "docomp teststandard"
             extra: "ABI=32 CONFIGFLAGS=\"\""
 
-          # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI, but
-          # somehow when running on GitHub Actions, it takes almost 4 hours (!) to
-          # complete instead of 25 minutes. So for now we just run testinstall.
+          # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI,
+          # but somehow when running on GitHub Actions, it takes almost 4
+          # hours (!) to complete instead of 25 minutes. So for now we just
+          # run testinstall.
           - os: ubuntu-latest
             test-suites: "docomp testinstall"
             extra: "HPCGAP=yes ABI=64"
@@ -38,7 +37,8 @@ jobs:
           # don't use --enable-debug to prevent the tests from taking too long
           - os: ubuntu-latest
             test-suites: "testpackages testinstall-loadall"
-            extra: "ABI=64 packages+=(
+            extra: "ABI=64"
+            packages: "
                     4ti2
                     libboost-dev
                     libcdd-dev
@@ -51,14 +51,15 @@ jobs:
                     libzmq3-dev
                     pari-gp
                     singular
-                    )"
+                    "
 
           # compile packages and run GAP tests in 32 bit mode
           # it seems profiling is having trouble collecting the coverage data
           # here, so we use NO_COVERAGE=1
           - os: ubuntu-latest
             test-suites: "testpackages testinstall-loadall"
-            extra: "ABI=32 NO_COVERAGE=1 packages+=(
+            extra: "ABI=32 NO_COVERAGE=1"
+            packages: "
                     4ti2
                     libboost-dev
                     libcdd-dev
@@ -71,11 +72,10 @@ jobs:
                     libzmq3-dev
                     pari-gp
                     singular
-                    )"
+                    "
 
           - os: macos-latest
             test-suites: "docomp testinstall"
-            extra: ""
 
           # test creating the manual
           # TODO: make the resulting HTML and PDF files available as build
@@ -85,18 +85,18 @@ jobs:
           # a separate workflow job?
           - os: ubuntu-latest
             test-suites: "makemanuals"
-            extra: "packages+=(
+            packages: "
                     texlive-latex-base
                     texlive-latex-recommended
                     texlive-latex-extra
                     texlive-extra-utils
-                    texlive-fonts-recommended texlive-fonts-extra
-                    )"
+                    texlive-fonts-recommended
+                    texlive-fonts-extra
+                    "
 
           # run tests contained in the manual
           - os: ubuntu-latest
             test-suites: "testmanuals"
-            extra: ""
 
           # run bugfix regression tests
           # Also turn on '--enable-memory-checking' to make sure GAP compiles
@@ -118,9 +118,9 @@ jobs:
           # tests using valgrind, as it is too slow.
           - os: ubuntu-latest
             test-suites: "docomp testbuildsys testinstall"
-            extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree CONFIGFLAGS=\"--enable-valgrind\"
-                    packages+=(valgrind)"
-            # TODO: install valgrind
+            extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
+                    CONFIGFLAGS=\"--enable-valgrind\""
+            packages: "valgrind"
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
@@ -131,18 +131,15 @@ jobs:
           # test error reporting and compiling as well as libgap
           - os: ubuntu-latest
             test-suites: "testspecial test-compile testlibgap testkernel"
-            extra: ""
 
           # test Julia integration
           - os: ubuntu-latest
             test-suites: "testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
 
-          # TODO: add back a test on a big endian machine (we had s390x on Travis)
-          # TODO: add back a test for compilation with an older GCC, e.g. 4.7
+          # TODO: add back big endian test (we had s390x on Travis)
+          # TODO: add back test with an older GCC, e.g. 4.7
           # TODO: restore Slack notifications for failed CI branch builds
-          # TODO: test without GMP and zlib, to ensure GAP can build its own
-          # TODO: test without readline, to ensure GAP can be compiled & run w/o it
 
     env:
       CFLAGS: "--coverage -O2 -g"
@@ -164,7 +161,12 @@ jobs:
         run: |
                ${{ matrix.extra }}
                if [ "$RUNNER_OS" == "Linux" ]; then
-                   packages+=(libgmp-dev libreadline-dev zlib1g-dev)
+                   packages=(${{ matrix.packages }})
+                   if [[ $TEST_SUITES == *testbuildsys* ]] ; then
+                       sudo apt-get remove libgmp-dev libreadline-dev zlib1g-dev
+                   else
+                       packages+=(libgmp-dev libreadline-dev zlib1g-dev)
+                   fi
                    if [[ $ABI == 32 ]] ; then
                        sudo dpkg --add-architecture i386
                        for i in "${!packages[@]}"; do
