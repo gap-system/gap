@@ -179,4 +179,14 @@ gap> for x in 5 do od;
 Error, You cannot loop over the integer 5 did you mean the range [1..5]
 
 #
+gap> CoefficientsQadic(0,3);
+[  ]
+gap> CoefficientsQadic(2,3);
+[ 2 ]
+gap> CoefficientsQadic(3^5*2^7,3);
+[ 0, 0, 0, 0, 0, 2, 0, 2, 1, 1 ]
+gap> CoefficientsQadic(3^5*2^7,2);
+[ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1 ]
+
+#
 gap> STOP_TEST("integers.tst", 1);
