@@ -1048,7 +1048,7 @@ variable <C>GAPInfo.KernelInfo.GC</C>.)
 
 <P/>
 
-If <C>GASMAN</C> is running then messages reporting garbage
+If &GAP; uses <C>GASMAN</C> then messages reporting garbage
 collections performed by <C>GASMAN</C> can be switched on
 by the <C>-g</C> command
 line option (see section <Ref Sect="Command Line Options"/>).
@@ -1058,6 +1058,7 @@ see below.
 
 </Subsection>
 
+<#Include Label="CollectGarbage">
 <#Include Label="GasmanStatistics">
 <#Include Label="GasmanMessageStatus">
 <#Include Label="GasmanLimits">

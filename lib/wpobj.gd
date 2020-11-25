@@ -17,7 +17,7 @@
 ##  gap> w := WeakPointerObj([[1,2]]);;
 ##  gap> IsBound(w[1]);
 ##  true
-##  gap> GASMAN("collect");
+##  gap> CollectGarbage( true );
 ##  gap> w;
 ##  WeakPointerObj([ [ ] ]);
 ##

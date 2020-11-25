@@ -66,14 +66,14 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short:= "y", long := "lines", default := "", arg := "<num>", help := ["set number of lines"] ),
       ,
       rec( short:= "g", long := "gasinfo", default := 0,
-           help := ["show GASMAN messages (full/all/no garbage","collections)", "(available only if GASMAN is running)"] ),
+           help := ["show GASMAN messages (full/all/no garbage","collections)", "(only available if GAP uses GASMAN)"] ),
       rec( short:= "m", long := "minworkspace", default := "128m", arg := "<mem>",
            help := ["set the initial workspace size"] ),
       rec( short:= "o", long := "maxworkspace", default := "2g", arg := "<mem>",
-           help := [ "set workspace size where GAP will warn about", "excessive memory usage (GAP may allocate more)", "(available only if GASMAN is running)"] ),
+           help := [ "set workspace size where GAP will warn about", "excessive memory usage (GAP may allocate more)", "(available only if GAP uses GASMAN)"] ),
       rec( short:= "K", long := "limitworkspace", default := "0", arg := "<mem>",
            help := [ "set maximal workspace size (GAP never", "allocates more)"] ),
-      rec( short:= "s", default := "4g", arg := "<mem>", help := [ "set the initially mapped virtual memory", "(available only if GASMAN is running)" ] ),
+      rec( short:= "s", default := "4g", arg := "<mem>", help := [ "set the initially mapped virtual memory", "(available only if GAP uses GASMAN)" ] ),
       rec( short:= "a", default := "0",  arg := "<mem>",help := [ "set amount to pre-malloc-ate",
              "postfix 'k' = *1024, 'm' = *1024*1024,", "'g' = *1024*1024*1024"] ),
       ,
@@ -93,7 +93,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( long := "alwaystrace", default := false, help := ["always print error traceback", "(overrides behaviour of -T)"] ),
       rec( long := "quitonbreak", default := false, help := ["quit GAP with non-zero return value instead", "of entering break loop"]),
       ,
-      rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace", "(available only if GASMAN is running)"] ),
+      rec( short:= "L", default := "", arg := "<file>", help := [ "restore a saved workspace", "(available only if GAP uses GASMAN)"] ),
       rec( short:= "R", default := false, help := ["prevent restoring of workspace (ignoring -L)"] ),
       ,
       rec( short:= "p", default := false, help := ["enable/disable package output mode"] ),
@@ -390,7 +390,7 @@ CallAndInstallPostRestore( function()
     # use the same as the kernel
     CommandLineOptions.E:= GAPInfo.KernelInfo.HAVE_LIBREADLINE;
 
-    # -L is valid only if GASMAN is running.
+    # -L is valid only if GAP uses GASMAN.
     if GAPInfo.KernelInfo.GC <> "GASMAN" then
       CommandLineOptions.L:= "";
     fi;

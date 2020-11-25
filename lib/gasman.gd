@@ -12,6 +12,44 @@
 ##  the GASMAN garbage collector.
 ##
 
+
+#############################################################################
+##
+#F  CollectGarbage( <full> )
+##
+##  <#GAPDoc Label="CollectGarbage">
+##  <ManSection>
+##  <Func Name="CollectGarbage" Arg='full'/>
+##
+##  <Returns>
+##  nothing.
+##  </Returns>
+##  <Description>
+##  This function forces a garbage collection.
+##  If <A>full</A> is <K>true</K> then it triggers a full garbage collection,
+##  otherwise a partial one.
+##  <P/>
+##  &GAP; invokes its garbage collector automatically, thus there is normally
+##  no need to call <Ref Func="CollectGarbage"/>.
+##  <P/>
+##  The function <Ref Func="CollectGarbage"/> was introduced in
+##  &GAP;&nbsp;4.12.
+##  In older &GAP; versions,
+##  one can use <C>GASMAN( "collect" )</C> (if <A>full</A> is <K>true</K>)
+##  or <C>GASMAN( "partial" )</C> (if <A>full</A> is not <K>true</K>)
+##  instead.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> CollectGarbage( false );
+##  gap> CollectGarbage( true );
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("CollectGarbage");
+
+
 #############################################################################
 ##
 #F  GasmanStatistics( )
