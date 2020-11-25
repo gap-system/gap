@@ -54,8 +54,7 @@ and to <C>gap -b -q -b -q</C> etc.
 &GAP; for UNIX will distinguish between upper and lower case options.
 <P/>
 As described in the &GAP; installation instructions (see the 
-<F>INSTALL.md</F> file in the &GAP; root directory, or at
-<URL>https://www.gap-system.org/Download/INSTALL</URL>),
+<F>INSTALL.md</F> file in the &GAP; root directory),
 usually you will not execute &GAP; directly. Instead  you  will
 call a (shell) script, with the name <C>gap</C>, which in turn executes  &GAP;.
 This  script sets some options which are necessary  to  make  &GAP;

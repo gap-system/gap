@@ -352,6 +352,16 @@ if IsHPCGAP then
   ENABLE_AUTO_RETYPING();
 fi;
 
+
+#############################################################################
+##
+##  The command line option '-L' is supported only if GASMAN is used.
+##
+if "-L" in GAPInfo.SystemCommandLine and GAPInfo.KernelInfo.GC <> "GASMAN" then
+  Error( "workspaces (-L option) are supported only if GASMAN is used" );
+fi;
+
+
 # try to find terminal encoding
 CallAndInstallPostRestore( function()
   local env, pos, enc, a, PositionSublist;

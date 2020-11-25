@@ -11,6 +11,22 @@
 ##  This file contains implementations of functions that report information from the
 ##  GASMAN garbage collector
 ##
+
+
+#############################################################################
+##
+#F  CollectGarbage( <full> )
+##
+##  This function works *not* only if GAP uses GASMAN.
+##
+InstallGlobalFunction( CollectGarbage, function( full )
+    if full then
+      GASMAN( "collect" );
+    else
+      GASMAN( "partial" );
+    fi;
+end );
+
 #############################################################################
 ##
 #F  GasmanStatistics( )
