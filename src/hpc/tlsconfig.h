@@ -21,7 +21,11 @@
 #ifndef USE_NATIVE_TLS
 
 enum {
-    TLS_SIZE = (sizeof(UInt) == 8) ? (1 << 20) : (1 << 18),
+#ifdef HAVE_SYS_RESOURCE_H
+    TLS_SIZE = (sizeof(UInt) == 8) ? (1 << 23) : (1 << 22),
+#else
+    TLS_SIZE = (sizeof(UInt) == 8) ? (1 << 22) : (1 << 21),
+#endif
 };
 #define TLS_MASK (~(TLS_SIZE - 1))
 

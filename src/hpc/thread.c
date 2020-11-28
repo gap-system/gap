@@ -32,6 +32,10 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#ifdef HAVE_SYS_RESOURCE_H
+#include <sys/resource.h>
+#endif
+
 #ifdef USE_BOEHM_GC
 # ifdef HPCGAP
 #  define GC_THREADS
@@ -323,6 +327,14 @@ void RunThreadedMain(int (*mainFunction)(int, char **),
      */
     volatile int dummy[1];
     size_t       amount;
+#ifdef HAVE_SYS_RESOURCE_H
+    // Ensure that we have enough room to allocate the stack
+    // on a boundary that is a multiple of TLS_SIZE.
+    struct rlimit rlim;
+    getrlimit(RLIMIT_STACK, &rlim);
+    rlim.rlim_cur = TLS_SIZE * 3;
+    setrlimit(RLIMIT_STACK, &rlim);
+#endif
     amount = ((uintptr_t)dummy) & ~TLS_MASK;
     volatile char * p = alloca(((uintptr_t)dummy) & ~TLS_MASK);
     volatile char * q;
@@ -1311,73 +1323,93 @@ Region * CurrentRegion(void)
     return TLS(currentRegion);
 }
 
-#ifdef VERBOSE_GUARDS
+// Kernel debugging information for guards.
+//
+// When DEBUG_GUARDS is #defined, the GAP variable GUARD_ERROR_STACK
+// is set to a GAP plain list describing the C stack after an error,
+// allowing us to located where it occurred without having to fire up a
+// debugger first.
+//
+// The variables NumReadErrors and NumWriteErrors track the number of
+// failed guard checks. These are used in conjunction with the low-level
+// function DISABLE_GUARDS() in order to track how many guard failures
+// occur in a given section of code.
 
-static void PrintGuardError(char *       buffer,
-                            char *       mode,
-                            Obj          obj,
-                            const char * file,
-                            unsigned     line,
-                            const char * func,
-                            const char * expr)
-{
-    sprintf(buffer, "No %s access to object %llu of type %s\n"
-                    "in %s, line %u, function %s(), accessing %s",
-            mode, (unsigned long long)(UInt)obj, TNAM_OBJ(obj), file, line,
-            func, expr);
-}
-void WriteGuardError(Obj          o,
-                     const char * file,
-                     unsigned     line,
-                     const char * func,
-                     const char * expr)
-{
-    char * buffer = alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
-    ImpliedReadGuard(o);
-    if (TLS(DisableGuards))
-        return;
-    SetGVar(&LastInaccessibleGVar, o);
-    PrintGuardError(buffer, "write", o, file, line, func, expr);
-    ErrorMayQuit("%s", (UInt)buffer, 0);
-}
+#ifdef DEBUG_GUARDS
+extern GVarDescriptor GUARD_ERROR_STACK;
+#endif
 
-void ReadGuardError(Obj          o,
-                    const char * file,
-                    unsigned     line,
-                    const char * func,
-                    const char * expr)
-{
-    char * buffer = alloca(strlen(file) + strlen(func) + strlen(expr) + 200);
-    ImpliedReadGuard(o);
-    if (TLS(DisableGuards))
-        return;
-    SetGVar(&LastInaccessibleGVar, o);
-    PrintGuardError(buffer, "read", o, file, line, func, expr);
-    ErrorMayQuit("%s", (UInt)buffer, 0);
-}
+static Int NumReadErrors = 0;
+static Int NumWriteErrors = 0;
 
-#else
-void WriteGuardError(Obj o)
-{
-    ImpliedReadGuard(o);
-    if (TLS(DisableGuards))
-        return;
-    SetGVar(&LastInaccessibleGVar, o);
-    ErrorMayQuit(
-        "Attempt to write object %i of type %s without having write access",
-        (Int)o, (Int)TNAM_OBJ(o));
-}
+#ifdef DEBUG_GUARDS
 
-void ReadGuardError(Obj o)
+#include <execinfo.h>
+
+#define BACKTRACE_DEPTH 128
+
+// Record the backtrace in a global GAP variable.
+
+void SetGuardErrorStack(void)
 {
-    ImpliedReadGuard(o);
-    if (TLS(DisableGuards))
-        return;
-    SetGVar(&LastInaccessibleGVar, o);
-    ErrorMayQuit(
-        "Attempt to read object %i of type %s without having read access",
-        (Int)o, (Int)TNAM_OBJ(o));
+    void *  callstack[BACKTRACE_DEPTH];
+    int     depth = backtrace(callstack, BACKTRACE_DEPTH);
+    char ** calls = backtrace_symbols(callstack, depth);
+    Obj     stack = NEW_PLIST_IMM(T_PLIST, depth);
+    SET_LEN_PLIST(stack, depth - 1);
+    for (int i = 1; i < depth; i++) {
+        char * p = calls[i] + 1;
+        char * q = p;
+        while (*p) {
+            if (p[-1] == ' ' && p[0] == ' ')
+                p++;
+            else
+                *q++ = *p++;
+        }
+        *q++ = 0;
+        SET_ELM_PLIST(stack, i, MakeImmString(calls[i]));
+        CHANGED_BAG(stack);
+    }
+    free(calls);
+    SetGVar(&GUARD_ERROR_STACK, stack);
 }
 #endif
+
+int ExtendedGuardCheck(Bag bag)
+{
+    // We shift some of the rarer checks here to
+    // avoid overloading ReadCheck().
+    if (REGION(bag)->alt_owner == GetTLS())
+        return 1;
+    if (TLS(DisableGuards))
+        return 1;
+    return 0;
+}
+
+void HandleReadGuardError(Bag bag)
+{
+    NumReadErrors++;
+    SetGVar(&LastInaccessibleGVar, bag);
+#ifdef DEBUG_GUARDS
+    SetGuardErrorStack();
+#endif
+    ErrorMayQuit(
+        "Attempt to read object %i of type %s without having read access",
+        (Int)bag, (Int)TNAM_OBJ(bag));
+}
+
+void HandleWriteGuardError(Bag bag)
+{
+    NumWriteErrors++;
+    // We shift some of the rarer checks here to
+    // avoid overloading ReadCheck().
+    SetGVar(&LastInaccessibleGVar, bag);
+#ifdef DEBUG_GUARDS
+    SetGuardErrorStack();
+#endif
+    ErrorMayQuit(
+        "Attempt to write object %i of type %s without having write access",
+        (Int)bag, (Int)TNAM_OBJ(bag));
+}
 
 #endif

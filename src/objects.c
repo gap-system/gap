@@ -208,18 +208,10 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
         CHANGED_BAG(obj);
         break;
     case T_COMOBJ:
-#ifdef HPCGAP
-        ReadGuard(obj);
-        MEMBAR_WRITE();
-#endif
         SET_TYPE_COMOBJ(obj, type);
         CHANGED_BAG(obj);
         break;
     case T_POSOBJ:
-#ifdef HPCGAP
-        ReadGuard(obj);
-        MEMBAR_WRITE();
-#endif
         SET_TYPE_POSOBJ(obj, type);
         CHANGED_BAG(obj);
         break;

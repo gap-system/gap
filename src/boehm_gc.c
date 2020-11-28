@@ -334,6 +334,9 @@ void RetypeBagIntern(Bag bag, UInt new_type)
     if (old_type == new_type)
         return;
 
+#if defined(HPCGAP) && defined(USE_HPC_GUARDS)
+    WriteGuard(bag);
+#endif
     /* change the size-type word                                           */
     header->type = new_type;
     {
@@ -456,6 +459,9 @@ UInt ResizeBag(Bag bag, UInt new_size)
     CollectBags(0, 0);
 #endif
 
+#if defined(HPCGAP) && defined(USE_HPC_GUARDS)
+    WriteGuard(bag);
+#endif
     BagHeader * header = BAG_HEADER(bag);
 
     /* get type and old size of the bag                                    */
