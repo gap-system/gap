@@ -23,10 +23,10 @@
 #include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
+#include "gaptime.h"
 #include "gasman.h"
 #include "objects.h"
 #include "plist.h"
-#include "sysmem.h"
 #include "vars.h"
 
 #include "bags.inc"
@@ -211,6 +211,8 @@ static jl_task_t *     RootTaskOfMainThread;
 static size_t          max_pool_obj_size;
 static UInt            YoungRef;
 static int             FullGC;
+static UInt            startTime, totalTime;
+
 
 void SetJuliaTLS(void)
 {
@@ -816,6 +818,11 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     }
 }
 
+UInt TotalGCTime(void)
+{
+    return totalTime;
+}
+
 static void PreGCHook(int full)
 {
     // It is possible for the garbage collector to be invoked from a
@@ -833,8 +840,9 @@ static void PreGCHook(int full)
     // we have to add a write barrier at the start of the GC, too.
     if (STATE(CurrLVars))
         CHANGED_BAG(STATE(CurrLVars));
-    /* information at the beginning of garbage collections                 */
-    SyMsgsBags(full, 0, 0);
+
+    startTime = SyTime();
+
 #ifndef REQUIRE_PRECISE_MARKING
     memset(MarkCache, 0, sizeof(MarkCache));
 #ifdef COLLECT_MARK_CACHE_STATS
@@ -846,9 +854,7 @@ static void PreGCHook(int full)
 static void PostGCHook(int full)
 {
     JuliaTLS = SaveTLS;
-    /* information at the end of garbage collections                 */
-    UInt totalAlloc = 0;    // FIXME -- is this data even available?
-    SyMsgsBags(full, 6, totalAlloc);
+    totalTime += SyTime() - startTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
       (long) MarkCacheAttempts,
@@ -1006,6 +1012,8 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     GAP_ASSERT(jl_is_datatype(datatype_bag));
     GAP_ASSERT(jl_is_datatype(datatype_largebag));
     StackAlignBags = stack_align;
+
+    totalTime = 0;
 }
 
 UInt CollectBags(UInt size, UInt full)

@@ -876,11 +876,16 @@ static Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 
 #endif
 
+
+static Obj FuncTOTAL_GC_TIME(Obj self)
+{
+    return ObjInt_UInt8(TotalGCTime());
+}
+
 /****************************************************************************
 **
 *F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
 */
-
 static Obj FuncTotalMemoryAllocated(Obj self)
 {
     return ObjInt_UInt8(SizeAllBags);
@@ -1276,6 +1281,7 @@ static StructGVarFunc GVarFuncs[] = {
 #ifdef GAP_MEM_CHECK
     GVAR_FUNC_1ARGS(GASMAN_MEM_CHECK, int),
 #endif
+    GVAR_FUNC_0ARGS(TOTAL_GC_TIME),
     GVAR_FUNC_0ARGS(TotalMemoryAllocated),
     GVAR_FUNC_1ARGS(SIZE_OBJ, object),
     GVAR_FUNC_1ARGS(TNUM_OBJ, object),

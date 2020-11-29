@@ -317,6 +317,15 @@ void InitBags(UInt              initial_size,
 #endif /* DISABLE_GC */
 }
 
+UInt TotalGCTime(void)
+{
+    // TODO: implement this? However, this is non-trivial: while we can of
+    // course measure how much time is spent in CollectBags(), I am not
+    // aware of a way to decide whether an allocation registered trigger a
+    // collection, and how long that took.
+    return 0;
+}
+
 UInt CollectBags(UInt size, UInt full)
 {
 #ifndef DISABLE_GC

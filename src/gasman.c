@@ -115,6 +115,7 @@
 #include "gasman_intern.h"
 
 #include "error.h"
+#include "gaptime.h"
 #include "gaputils.h"
 #include "io.h"
 #include "sysfiles.h"
@@ -2333,6 +2334,13 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
     return done;
 }
 
+static UInt totalTime;
+
+UInt TotalGCTime(void)
+{
+    return totalTime;
+}
+
 UInt CollectBags (
     UInt                size,
     UInt                full )
@@ -2340,6 +2348,8 @@ UInt CollectBags (
     UInt                nrBags;         /* number of new bags              */
     UInt                done;           /* do we have to make a full gc    */
     UInt                i;              /* loop variable                   */
+
+    UInt startTime = SyTime();
 
     GAP_ASSERT(SanityCheckGasmanPointers());
     CANARY_DISABLE_VALGRIND();
@@ -2414,6 +2424,8 @@ UInt CollectBags (
     CANARY_ENABLE_VALGRIND();
 
     GAP_ASSERT(SanityCheckGasmanPointers());
+
+    totalTime += SyTime() - startTime;
 
     return done != 2;
 }
