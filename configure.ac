@@ -238,7 +238,7 @@ AS_CASE([$with_gc],
                 ],
     [gasman],   [AS_IF([test "x$enable_hpcgap" = xyes],
                     [AC_MSG_ERROR([GASMAN can not be used with HPC-GAP])])
-                 AC_SUBST([GC_SOURCES], [src/gasman.c])
+                 AC_SUBST([GC_SOURCES], ["src/gasman.c src/sysmem.c"])
                  AC_DEFINE([USE_GASMAN],    [1], [define as 1 if GASMAN is used])
                 ],
     [julia],    [AC_SUBST([GC_SOURCES], [src/julia_gc.c])

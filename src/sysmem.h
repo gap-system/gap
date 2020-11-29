@@ -17,6 +17,10 @@
 
 #include "common.h"
 
+#ifndef USE_GASMAN
+#error This file must only be included if GASMAN is used
+#endif
+
 
 /****************************************************************************
 **
@@ -93,12 +97,27 @@ extern Int SyStorMin;
 */
 extern UInt SyAllocPool;
 
+/****************************************************************************
+**
+*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+**
+**  'SyMsgsFlagBags' determines whether garbage collections are reported  or
+**  not.
+**
+**  Per default it is false, i.e. Gasman is silent about garbage collections.
+**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
+**
+**  This is used in the function 'SyMsgsBags' below.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+extern UInt SyMsgsFlagBags;
 
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
 */
-#if defined(USE_GASMAN) && defined(GAP_MEM_CHECK)
+#if defined(GAP_MEM_CHECK)
 UInt   GetMembufCount(void);
 void * GetMembuf(UInt i);
 UInt   GetMembufSize(void);
@@ -163,6 +182,7 @@ UInt   GetMembufSize(void);
 */
 void SyMsgsBags(UInt full, UInt phase, Int nr);
 
+extern Int SyGasmanNumbers[2][9];
 
 /****************************************************************************
 **
@@ -175,9 +195,8 @@ void SyMsgsBags(UInt full, UInt phase, Int nr);
 **  This function is called by GASMAN after each successfully completed
 **  garbage collection.
 */
-#if defined(USE_GASMAN)
 void SyMAdviseFree(void);
-#endif
+
 
 /****************************************************************************
 **
@@ -201,9 +220,7 @@ void SyMAdviseFree(void);
 **  If the operating system does not support dynamic memory management, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
-#if defined(USE_GASMAN)
 UInt *** SyAllocBags(Int size, UInt need);
-#endif
 
 
 /****************************************************************************
@@ -215,9 +232,7 @@ UInt *** SyAllocBags(Int size, UInt need);
 **  return 1 and return the storage to the operating system or refuse the
 **  reduction and return 0.
 */
-#if defined(USE_GASMAN)
 Int SyFreeBags(Int size);
-#endif
 
 
 /****************************************************************************
@@ -226,10 +241,7 @@ Int SyFreeBags(Int size);
 **
 **  'SyFreeAllBags' returns all memory allocated by 'SyAllocBags' to the OS.
 */
-#if defined(USE_GASMAN)
 void SyFreeAllBags(void);
-#endif
-
 
 
 #endif // GAP_SYSMEM_H

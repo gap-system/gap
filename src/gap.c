@@ -39,7 +39,6 @@
 #include "stringobj.h"
 #include "sysenv.h"
 #include "sysfiles.h"
-#include "sysmem.h"
 #include "sysopt.h"
 #include "sysroots.h"
 #include "sysstr.h"
@@ -52,11 +51,15 @@
 #include "hpc/threadapi.h"
 #endif
 
-#include <gmp.h>
-
-#ifdef USE_JULIA_GC
+#if defined(USE_GASMAN)
+#include "sysmem.h"
+#elif defined(USE_JULIA_GC)
 #include "julia.h"
+#elif defined(USE_BOEHM_GC)
+#include "boehm_gc.h"
 #endif
+
+#include <gmp.h>
 
 static Obj Error;
 
@@ -827,6 +830,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
     return 0;
 }
 
+#ifdef USE_GASMAN
 static Obj FuncGASMAN_STATS(Obj self)
 {
   Obj res;
@@ -855,14 +859,19 @@ static Obj FuncGASMAN_MESSAGE_STATUS(Obj self)
 {
     return ObjInt_UInt(SyMsgsFlagBags);
 }
+#endif
 
 static Obj FuncGASMAN_LIMITS(Obj self)
 {
   Obj list;
   list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
-  PushPlist(list, ObjInt_Int(SyStorMin));
-  PushPlist(list, ObjInt_Int(SyStorMax));
-  PushPlist(list, ObjInt_Int(SyStorKill));
+#ifdef USE_GASMAN
+  ASS_LIST(list, 1, ObjInt_Int(SyStorMin));
+  ASS_LIST(list, 2, ObjInt_Int(SyStorMax));
+#endif
+#if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
+  ASS_LIST(list, 3, ObjInt_Int(SyStorKill));
+#endif
   return list;
 }
 
@@ -1275,8 +1284,10 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC(RETURN_FIRST, -2, "first, rest"),
     GVAR_FUNC(RETURN_NOTHING, -1, "object"),
     GVAR_FUNC(GASMAN, -1, "args"),
+#ifdef USE_GASMAN
     GVAR_FUNC_0ARGS(GASMAN_STATS),
     GVAR_FUNC_0ARGS(GASMAN_MESSAGE_STATUS),
+#endif
     GVAR_FUNC_0ARGS(GASMAN_LIMITS),
 #ifdef GAP_MEM_CHECK
     GVAR_FUNC_1ARGS(GASMAN_MEM_CHECK, int),
@@ -1452,7 +1463,12 @@ void InitializeGap (
     InitSystem( *pargc, argv, handleSignals );
 
     /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
-    InitBags(SyStorMin,
+    InitBags(
+#if defined(USE_GASMAN)
+        SyStorMin,
+#else
+        0,
+#endif
              (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN),
              C_STACK_ALIGN);
 

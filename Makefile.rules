@@ -99,7 +99,6 @@ SOURCES += src/stringobj.c
 SOURCES += src/syntaxtree.c
 SOURCES += src/sysfiles.c
 SOURCES += src/sysjmp.c
-SOURCES += src/sysmem.c
 SOURCES += src/sysroots.c
 SOURCES += src/sysstr.c
 SOURCES += src/system.c
