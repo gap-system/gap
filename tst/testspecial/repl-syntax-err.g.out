@@ -1,0 +1,21 @@
+gap> # see <https://github.com/gap-system/gap/issues/4188>
+gap> # we need a line with a statement that gets executed by the immediate
+gap> # interpreter before running into a syntax error (here: a colon instead
+gap> # of a semicolon); this leads to a break loop which we quit; the syntax
+gap> # error then is displayed. The next line then contains another syntax
+gap> # error, which wasn't reported correctly before the above issues was
+gap> # fixed.
+gap> Error(""):
+Error,  called from
+not in any function at *stdin*:9
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+Syntax error: ; expected
+Error(""):
+         ^
+gap> 1:
+Syntax error: ; expected
+1:
+ ^
+gap> QUIT;
