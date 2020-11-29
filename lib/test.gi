@@ -780,11 +780,6 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   totalMem := 0;
   totalGcTime := 0;
   
-  GcTime := function()
-      local g;
-      g := GASMAN_STATS();    
-      return g[1][8] + g[2][8];    
-  end;
   STOP_TEST_CPY := STOP_TEST;
   STOP_TEST := function(arg) end;
   
@@ -877,7 +872,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     
     startTime := Runtime();
     startMem := TotalMemoryAllocated();    
-    startGcTime := GcTime();
+    startGcTime := TOTAL_GC_TIME();
 
     if opts.rewriteToFile then
       opts.testOptions.rewriteToFile := files[i].name;
@@ -901,7 +896,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     
     time := Runtime() - startTime;
     mem := TotalMemoryAllocated() - startMem;    
-    gctime := GcTime() - startGcTime;    
+    gctime := TOTAL_GC_TIME() - startGcTime;    
     filetimes[i] := time;
     filemems[i] := mem;    
     filegctimes[i] := gctime;    

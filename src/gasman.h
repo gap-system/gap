@@ -885,4 +885,10 @@ void FinishBags(void);
 void * AllocateMemoryBlock(UInt size);
 #endif
 
+/****************************************************************************
+**
+*F  TotalGCTime() . . . . . . . . . .  total time spent on garbage collection
+*/
+UInt TotalGCTime(void);
+
 #endif // GAP_GASMAN_H
