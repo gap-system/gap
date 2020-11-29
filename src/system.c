@@ -22,7 +22,6 @@
 #endif
 #include "profile.h"
 #include "sysfiles.h"
-#include "sysmem.h"
 #include "sysopt.h"
 #include "sysroots.h"
 #include "sysstr.h"
@@ -31,8 +30,12 @@
 #include "hpc/misc.h"
 #endif
 
-#ifdef USE_JULIA_GC
+#if defined(USE_GASMAN)
+#include "sysmem.h"
+#elif defined(USE_JULIA_GC)
 #include "julia.h"
+#elif defined(USE_BOEHM_GC)
+#include "boehm_gc.h"
 #endif
 
 #include <assert.h>
@@ -122,23 +125,6 @@ UInt SyLineEdit;
 **  Switch for not using readline although GAP is compiled with libreadline
 */
 UInt SyUseReadline;
-
-/****************************************************************************
-**
-*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
-**
-**  'SyMsgsFlagBags' determines whether garbage collections are reported  or
-**  not.
-**
-**  Per default it is false, i.e. Gasman is silent about garbage collections.
-**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
-**
-**  This is used in the function 'SyMsgsBags' below.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-UInt SyMsgsFlagBags;
-
 
 /****************************************************************************
 **
@@ -462,6 +448,7 @@ static void SySetInitialGapRootPaths(void)
 **  locates the '.gaprc' file (if any), and more.
 */
 
+#if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
 typedef struct { Char symbol; UInt value; } sizeMultiplier;
 
 static sizeMultiplier memoryUnits[]= {
@@ -523,6 +510,7 @@ err:
     return FALSE;
 }
 
+#endif
 
 struct optInfo {
   Char shortkey;
@@ -579,6 +567,7 @@ static Int storeMemory( Char **argv, void *Where )
 }
 #endif
 
+#if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
 static Int storeMemory2( Char **argv, void *Where )
 {
     UInt * where = (UInt *)Where;
@@ -587,6 +576,7 @@ static Int storeMemory2( Char **argv, void *Where )
     *where /= 1024;
     return 1;
 }
+#endif
 
 static Int processCompilerArgs( Char **argv, void * dummy)
 {
@@ -650,7 +640,9 @@ static Int printVersion(Char ** argv, void * dummy)
 static const struct optInfo options[] = {
   { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */
   { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, /* must handle in kernel */
+#if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
   { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
+#endif
 #ifdef GAP_ENABLE_SAVELOAD
   { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
   { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
@@ -660,7 +652,9 @@ static const struct optInfo options[] = {
   { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
   { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
+#ifdef USE_GASMAN
   { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
+#endif
   { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
 #ifdef USE_GASMAN
   { 's', "", storeMemory, &SyAllocPool, 1 }, /* kernel */
@@ -711,7 +705,6 @@ void InitSystem (
 #else
     SyUseReadline = 1;
 #endif
-    SyMsgsFlagBags = 0;
     SyNrCols = 0;
     SyNrColsLocked = 0;
     SyNrRows = 0;
@@ -719,6 +712,8 @@ void InitSystem (
     SyQuiet = 0;
     SyInitializing = 0;
 
+#ifdef USE_GASMAN
+    SyMsgsFlagBags = 0;
     SyStorMin = 16 * sizeof(Obj) * 1024;    // in kB
     SyStorMax = 256 * sizeof(Obj) * 1024;   // in kB
 #ifdef SYS_IS_64_BIT
@@ -730,7 +725,6 @@ void InitSystem (
   #endif
 #endif // defined(SYS_IS_64_BIT)
 
-#ifdef USE_GASMAN
 #ifdef SYS_IS_64_BIT
     SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
 #else
@@ -742,12 +736,14 @@ void InitSystem (
     SyUseModule = 1;
     SyWindow = 0;
 
+#ifdef USE_GASMAN
     for (i = 0; i < 2; i++) {
       UInt j;
       for (j = 0; j < 7; j++) {
         SyGasmanNumbers[i][j] = 0;
       }
     }
+#endif
 
     InitSysFiles();
 
@@ -839,12 +835,12 @@ void InitSystem (
        we determine the size of the screen ourselves */
     getwindowsize();
 
+#ifdef USE_GASMAN
     /* fix max if it is lower than min                                     */
     if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
         SyStorMax = SyStorMin;
     }
 
-#ifdef USE_GASMAN
     /* fix pool size if larger than SyStorKill */
     if ( SyStorKill != 0 && SyAllocPool != 0 &&
                             SyAllocPool > 1024 * SyStorKill ) {

@@ -75,25 +75,6 @@ extern UInt SyUseReadline;
 
 /****************************************************************************
 **
-*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
-**
-**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
-**  not.
-**
-**  Per default it is false, i.e. Gasman is silent about garbage collections.
-**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
-**
-**  This is used in the function 'SyMsgsBags' below.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-extern UInt SyMsgsFlagBags;
-
-
-extern Int SyGasmanNumbers[2][9];
-
-/****************************************************************************
-**
 *V  SyNrCols  . . . . . . . . . . . . . . . . . .  length of the output lines
 **
 **  'SyNrCols' is the length of the lines on the standard output  device.

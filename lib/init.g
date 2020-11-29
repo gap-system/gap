@@ -720,12 +720,14 @@ CallAndInstallPostRestore( function()
     fi;
 
     # option `-g'
-    if   GAPInfo.CommandLineOptions.g = 0 then
-      SetGasmanMessageStatus( "none" );
-    elif GAPInfo.CommandLineOptions.g = 1 then
-      SetGasmanMessageStatus( "full" );
-    else
-      SetGasmanMessageStatus( "all" );
+    if GAPInfo.KernelInfo.GC = "GASMAN" then
+      if   GAPInfo.CommandLineOptions.g = 0 then
+        SetGasmanMessageStatus( "none" );
+      elif GAPInfo.CommandLineOptions.g = 1 then
+        SetGasmanMessageStatus( "full" );
+      else
+        SetGasmanMessageStatus( "all" );
+      fi;
     fi;
 
     # maximal number of lines that are reasonably printed

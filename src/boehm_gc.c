@@ -18,7 +18,6 @@
 #include "gapstate.h"
 #include "gasman.h"
 #include "objects.h"
-#include "sysmem.h"
 
 #include "bags.inc"
 
@@ -37,6 +36,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+Int SyStorKill;
 
 #ifndef WARD_ENABLED
 

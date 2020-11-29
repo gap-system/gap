@@ -42,9 +42,9 @@ SyStorEnum SyStorOverrun;
 Int SyStorKill;
 Int SyStorMin;
 
-#if defined(USE_GASMAN)
 UInt SyAllocPool;
-#endif
+
+UInt SyMsgsFlagBags;
 
 
 /****************************************************************************
@@ -163,8 +163,6 @@ void SyMsgsBags (
     }
 }
 
-
-#if defined(USE_GASMAN)
 
 /****************************************************************************
 **
@@ -727,6 +725,3 @@ void SyFreeAllBags(void)
 {
     // for now, do nothing
 }
-
-
-#endif // defined(USE_GASMAN)

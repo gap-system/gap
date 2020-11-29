@@ -33,10 +33,11 @@
 #include "records.h"
 #include "stringobj.h"
 #include "sysfiles.h"
+#include "vars.h"
+
 #ifdef USE_GASMAN
 #include "sysmem.h"
 #endif
-#include "vars.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"

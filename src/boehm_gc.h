@@ -31,5 +31,6 @@
 #include <gc/gc_mark.h>
 #endif
 
+extern Int SyStorKill;
 
 #endif
