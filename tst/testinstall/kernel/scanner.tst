@@ -393,6 +393,7 @@ gap> Read(InputTextString("\"\"\"123"));
 Syntax error: String must end with """ before end of file in stream:1
 gap> obj := """
 Syntax error: String must end with """ before end of file in stream:2
+Syntax error: ; expected in stream:2
 
 #
 # test EOF inside a pragma
