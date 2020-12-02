@@ -2581,6 +2581,8 @@ ExecStatus ReadEvalCommand(Obj            context,
     GAP_ASSERT(input);
     rs->s.input = input;
 
+    ClearError();
+
     /* get the first symbol from the input                                 */
     Match_(rs, rs->s.Symbol, "", 0);
 
@@ -2679,6 +2681,8 @@ ExecStatus ReadEvalCommand(Obj            context,
     STATE(Tilde)       = tilde;
     STATE(ErrorLVars)  = errorLVars;
 
+    ClearError();
+
     /* return whether a return-statement or a quit-statement were executed */
     return type;
 }
@@ -2711,6 +2715,8 @@ UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
 
     GAP_ASSERT(input);
     rs->s.input = input;
+
+    ClearError();
 
     /* get the first symbol from the input                                 */
     Match_(rs, rs->s.Symbol, "", 0);
@@ -2779,6 +2785,8 @@ UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
       HashUnlock(TLS(CurrentHashLock));
 #endif
     STATE(Tilde)     = tilde;
+
+    ClearError();
 
     /* return whether a return-statement or a quit-statement were executed */
     return type;

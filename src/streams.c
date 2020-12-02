@@ -30,7 +30,6 @@
 #include "precord.h"
 #include "read.h"
 #include "records.h"
-#include "stats.h"
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
@@ -89,7 +88,6 @@ static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
 {
     ExecStatus    status;
 
-    ClearError();
     status = ReadEvalCommand(0, input, evalResult, 0);
     if( status == STATUS_EOF )
         return 0;
@@ -110,7 +108,6 @@ static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
     else if (status == STATUS_QQUIT) {
         STATE(UserHasQUIT) = 1;
     }
-    ClearError();
 
     return 1;
 }
@@ -190,7 +187,6 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     resultList = NEW_PLIST(T_PLIST, 16);
 
     do {
-        ClearError();
         if (outstream) {
             // Clean in case there has been any output
             SET_LEN_STRING(outstreamString, 0);
@@ -234,7 +230,6 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     if (outstream)
         CloseOutput(&output);
     CloseInput(&input);
-    ClearError();
 
     return resultList;
 }
@@ -319,7 +314,6 @@ static void READ_INNER(TypInputFile * input)
 
     /* now do the reading                                                  */
     while ( 1 ) {
-        ClearError();
         Obj evalResult;
         ExecStatus status = ReadEvalCommand(0, input, &evalResult, 0);
         if (STATE(UserHasQuit) || STATE(UserHasQUIT))
@@ -348,7 +342,6 @@ static void READ_INNER(TypInputFile * input)
           }
         
     }
-    ClearError();
 }
 
 
@@ -361,10 +354,8 @@ static void READ_INNER(TypInputFile * input)
 Obj READ_AS_FUNC(TypInputFile * input)
 {
     /* now do the reading                                                  */
-    ClearError();
     Obj evalResult;
     UInt type = ReadEvalFile(input, &evalResult);
-    ClearError();
 
     /* get the function                                                    */
     Obj func = (type == 0) ? evalResult : Fail;
@@ -390,7 +381,6 @@ static void READ_TEST_OR_LOOP(Obj context, TypInputFile * input)
 
         /* read and evaluate the command                                   */
         SetPrintObjState(0);
-        ClearError();
         Obj evalResult;
         type = ReadEvalCommand(context, input, &evalResult, &dualSemicolon);
 
@@ -423,7 +413,6 @@ static void READ_TEST_OR_LOOP(Obj context, TypInputFile * input)
     }
 
     SetPrintObjState(oldPrintObjState);
-    ClearError();
 }
 
 
@@ -497,7 +486,6 @@ Int READ_GAP_ROOT ( const Char * filename )
     TypInputFile input = { 0 };
     if (OpenInput(&input, path)) {
         while (1) {
-            ClearError();
             UInt type = ReadEvalCommand(0, &input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
@@ -509,7 +497,6 @@ Int READ_GAP_ROOT ( const Char * filename )
             }
         }
         CloseInput(&input);
-        ClearError();
         return 1;
     }
 

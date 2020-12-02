@@ -34,7 +34,6 @@
 #include "read.h"
 #include "records.h"
 #include "saveload.h"
-#include "stats.h"    // for ClearError
 #include "streams.h"
 #include "stringobj.h"
 #include "sysenv.h"
@@ -217,7 +216,6 @@ static Obj Shell(Obj    context,
 
     /* read and evaluate one command                                   */
     SetPrompt(prompt);
-    ClearError();
     SetPrintObjState(0);
     ResetOutputIndent();
     SetRecursionDepth(0);
@@ -233,7 +231,6 @@ static Obj Shell(Obj    context,
           Call0ArgsInNewReader(preCommandHook);
           /* Recover from a potential break loop: */
           SetPrompt(prompt);
-          ClearError();
         }
     }
 
