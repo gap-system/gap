@@ -1145,7 +1145,7 @@ InstallMethod( IsSemiRegular, "permgroup on numbers", true,
 
     # compute the orbits and check that they all have the same length
     orbs := OrbitsDomain( G, D, gens, acts, OnPoints );
-    if Length( Set( List( orbs, Length ) ) ) <> 1  then
+    if Length( Set( orbs, Length ) ) <> 1  then
         return false;
     fi;
 
@@ -1582,7 +1582,7 @@ end );
 #F  OnSetsSets( <set>, <g> )
 ##
 InstallGlobalFunction( OnSetsSets, function( e, g )
-    return Set( List( e, i -> OnSets( i, g ) ) );
+    return Set( e, i -> OnSets( i, g ) );
 end );
 
 
@@ -1596,7 +1596,7 @@ end );
 ##  the function must be an object different from `OnSetsSets'.
 ##
 InstallGlobalFunction( OnSetsDisjointSets, function( e, g )
-    return Set( List( e, i -> OnSets( i, g ) ) );
+    return Set( e, i -> OnSets( i, g ) );
 end );
 
 
@@ -1605,7 +1605,7 @@ end );
 #F  OnSetsTuples( <set>, <g> )
 ##
 InstallGlobalFunction( OnSetsTuples, function(e,g)
-  return Set(List(e,i->OnTuples(i,g)));
+  return Set(e,i->OnTuples(i,g));
 end );
 
 #############################################################################

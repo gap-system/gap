@@ -2182,7 +2182,7 @@ BindGlobal("LiftClassesEATrivRep",
 	   stabfacimgs,
 	   hom,0, #gpsz not needed
 	   OnRight,lvec,maxorb,#Maximum(List(lcands,x->x.len)),
-	   Set(List(lcands,x->x.rep)));
+	   Set(lcands,x->x.rep));
       a:=First(lcands,x->x.rep{range}=result.min{range});
       mapper:=mapper*result.elm;
       fmapper:=fmapper*result.felm;
@@ -2233,7 +2233,7 @@ BindGlobal("LiftClassesEATrivRep",
     norpo:=[];
     norpo[p]:=1;
     el:=Filtered(orb,x->x.len=orb[p].len);
-    minvecs:=Set(List(el,x->x.rep));
+    minvecs:=Set(el,x->x.rep);
 #el:=orbslev[3];
     if orb[p].len>30000 then
       Minimizer:=IteratedMinimizer;

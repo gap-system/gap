@@ -1723,7 +1723,7 @@ local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
     while com<Length(comb) do
       com:=com+1;
       # don't try only order 2 generators unless it's a 2-group
-      if Set(List(Flat(combc[com]),i->Order(Representative(i))))<>[2] or
+      if Set(Flat(combc[com]),i->Order(Representative(i)))<>[2] or
 	alltwo then
 	a:=MorClassLoop(G,combc[com],rec(to:=G),4);
 	if Length(a)>0 then
@@ -1827,7 +1827,7 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     combi:=[];
     for i in Ggc do
       c:=Filtered(Hcl,
-	   j->Set(List(j,k->k.size))=Set(List(i,k->k.size))
+	   j->Set(j,k->k.size)=Set(i,k->k.size)
 		and Length(j[1].classes)=Length(i[1].classes) 
 		and Size(j[1].class)=Size(i[1].class)
 		and Size(j[1].representative)=Size(i[1].representative)

@@ -966,7 +966,7 @@ if Length(rans[i])=0 then Error("EGAD");fi;
 	for j in sporb do
 	  s:=List(j,x->SumIntersectionMat(x,new[min[i]])[2]);
 	  # if the dimension changes, its hard to be clever
-	  if Length(Set(List(s,Length)))=1 and
+	  if Length(Set(s,Length))=1 and
 	    Length(s[1])>Length(sofar) and Length(s[1])<Length(new[min[i]]) then
 	    Add(spl,s);
 	  fi;
@@ -1078,7 +1078,7 @@ if Length(rans[i])=0 then Error("EGAD");fi;
       od;
       if Length(m)>Length(i) then
         yet:=ActionHomomorphism(a,m,OnSubspacesByCanonicalBasis,"surjective");
-	sub:=Stabilizer(Image(yet),Set(List(i,x->Position(m,x))),OnSets);
+	sub:=Stabilizer(Image(yet),Set(i,x->Position(m,x)),OnSets);
 	a:=PreImage(yet,sub);
       fi;
     od;
@@ -1101,12 +1101,12 @@ if Length(rans[i])=0 then Error("EGAD");fi;
    spaces:=ShallowCopy(ospaces);
    SortBy(spaces,Length);
    for i in spaces do
-      i:=Set(List(NormedRowVectors(VectorSpace(field,i)),x->Position(yet,x)));
+      i:=Set(NormedRowVectors(VectorSpace(field,i)),x->Position(yet,x));
       b:=Stabilizer(b,i,OnSets);
       Print("Stab ",Size(b),"\n");
     od;
     for i in osporb do
-      i:=List(i,x->Set(List(NormedRowVectors(VectorSpace(field,x)),x->Position(yet,x))));
+      i:=List(i,x->Set(NormedRowVectors(VectorSpace(field,x)),x->Position(yet,x)));
       b:=Stabilizer(b,Union(i),OnSets);
       b:=Stabilizer(b,Set(i),OnSetsSets);
     od;

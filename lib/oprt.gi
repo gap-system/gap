@@ -2232,7 +2232,7 @@ InstallMethod( BlocksOp,
     if Length(D)=1 then return Immutable([D]);fi;
     hom := ActionHomomorphism( G, D, gens, acts, act );
     B := Blocks( ImagesSource( hom ), [ 1 .. Length( D ) ],
-      Set(List(seed,x->Position(D,x))) );
+      Set(seed,x->Position(D,x)) );
     B:=List( B, b -> D{ b } );
     # force sortedness
     if Length(B[1])>0 and CanEasilySortElements(B[1][1]) then
@@ -2285,7 +2285,7 @@ InstallMethod( MaximalBlocksOp,
     H := G;
     blksH := blks;
     onsetact:=function(l,g)
-      return Set(List(l,i->act(i,g)));
+      return Set(l,i->act(i,g));
     end;
 
     while Length( blksH ) <> 1  do

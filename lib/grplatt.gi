@@ -1549,7 +1549,7 @@ function (L)
     if IsPermGroup(grp) then
       notperm:=false;
       dom:=[1..LargestMovedPoint(grp)];
-      orbs:=List(classes,i->Set(List(Orbits(Representative(i),dom),Set)));
+      orbs:=List(classes,i->Set(Orbits(Representative(i),dom),Set));
       orbs:=List(orbs,i->List([1..Maximum(dom)],p->Length(First(i,j->p in j))));
     else
       notperm:=true;
@@ -1564,7 +1564,7 @@ function (L)
     maxsz:=[];
     if IsSolvableGroup(grp) then
       # maxes of grp
-      maxsz[lcl]:=Set(List(MaximalSubgroupClassReps(grp),Size));
+      maxsz[lcl]:=Set(MaximalSubgroupClassReps(grp),Size);
     else
       maxsz[lcl]:=fail; # don't know about group
     fi;
@@ -1584,7 +1584,7 @@ function (L)
         Info(InfoLattice,2," testing class ",i);
 
 	if IsSolvableGroup(I) then
-	  maxsz[i]:=Set(List(MaximalSubgroupClassReps(I),Size));
+	  maxsz[i]:=Set(MaximalSubgroupClassReps(I),Size);
 	else
 	  maxsz[i]:=fail;
 	fi;
@@ -2356,9 +2356,9 @@ local rt,op,a,l,i,j,u,max,subs;
   subs:=List([1..l],i->Filtered([1..i-1],j->IsSubset(a[i],a[j])));
       # List the sets we know to be contained in each set
 
-  max:=Set(List(Difference([1..l],Union(subs)), # sets which are
+  max:=Set(Difference([1..l],Union(subs)), # sets which are
 						# contained in no other
-      i->[i,l+1]));
+      i->[i,l+1]);
 
   for i in [1..l] do
     #take all subsets
@@ -2415,7 +2415,7 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
       # test orbit split
       bas:=List(Orbits(U,MovedPoints(G)),Length);
       if NrCombinations(bas)<10^6 then
-        bas:=Set(List(Combinations(bas),Sum));
+        bas:=Set(Combinations(bas),Sum);
 	m:=Filtered(m,
 	  x->ForAll(List(Orbits(x,MovedPoints(G)),Length),z->z in bas));
       fi;

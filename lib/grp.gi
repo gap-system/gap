@@ -1892,7 +1892,7 @@ function( G )
     fi;
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
-    primes := Set( List( weights, x -> x[3] ) );
+    primes := Set( weights, x -> x[3] );
     comp := List( primes, x -> false );
     for i in [1..Length( primes )] do
         gens := spec{Filtered( [1..Length(spec)],
@@ -1919,7 +1919,7 @@ function( G )
     fi;
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
-    primes := Set( List( weights, x -> x[3] ) );
+    primes := Set( weights, x -> x[3] );
     comp := List( primes, x -> false );
     for i in [1..Length( primes )] do
         gens := spec{Filtered( [1..Length(spec)],
@@ -1949,7 +1949,7 @@ function( G )
     fi;
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
-    primes := Set( List( weights, x -> x[3] ) );
+    primes := Set( weights, x -> x[3] );
     pis    := Combinations( primes );
     comp   := List( pis, x -> false );
     for i in [1..Length( pis )] do

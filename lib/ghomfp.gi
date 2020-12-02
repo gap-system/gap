@@ -729,7 +729,7 @@ local mapi;
   # check, whether we map to the standard generators
   if not (HasIsWholeFamily(Range(hom)) and IsWholeFamily(Range(hom)) and
           Set(FreeGeneratorsOfFpGroup(Range(hom)))
-            =Set(List(GeneratorsOfGroup(Range(hom)),UnderlyingElement)) and
+            =Set(GeneratorsOfGroup(Range(hom)),UnderlyingElement) and
           IsIdenticalObj(mapi[2],GeneratorsOfGroup(Range(hom))) and
           ForAll(List(mapi[2],i->LetterRepAssocWord(UnderlyingElement(i))),
           i->Length(i)=1 and i[1]>0) ) then

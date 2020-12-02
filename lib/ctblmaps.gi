@@ -479,8 +479,8 @@ InstallOtherMethod( PossiblePowerMaps,
     fi;
     fus:= GetFusionMap( modtbl, ordtbl );
     inv:= InverseMap( fus );
-    return Set( List( poss,
-             x -> CompositionMaps( inv, CompositionMaps( x, fus ) ) ) );
+    return Set( poss,
+             x -> CompositionMaps( inv, CompositionMaps( x, fus ) ) );
     end );
 
 
@@ -514,8 +514,8 @@ InstallMethod( PossiblePowerMaps,
     fi;
     fus:= GetFusionMap( modtbl, ordtbl );
     inv:= InverseMap( fus );
-    return Set( List( poss,
-             x -> CompositionMaps( inv, CompositionMaps( x, fus ) ) ) );
+    return Set( poss,
+             x -> CompositionMaps( inv, CompositionMaps( x, fus ) ) );
     end );
 
 
@@ -963,9 +963,9 @@ InstallMethod( FusionConjugacyClassesOp,
         return fail;
       else
 
-        fus:= Set( List( fus, map -> InverseMap(
+        fus:= Set( fus, map -> InverseMap(
                                          GetFusionMap( tbl2, ord2 ) ){
-                                     map{ GetFusionMap( tbl1, ord1 ) } } ) );
+                                     map{ GetFusionMap( tbl1, ord1 ) } } );
         if 1 < Length( fus ) then
           Info( InfoCharacterTable, 1,
                 "fusion is not stored and not uniquely determined" );
@@ -4470,7 +4470,7 @@ InstallGlobalFunction( ConsiderStructureConstants,
           else
             # The possible fusions differ on this triple.
             subsc:= ClassMultiplicationCoefficient( subtbl, i, j, kk );
-            for trpl in Set( List( fusions, x -> x{ [ i, j, kk ] } ) ) do
+            for trpl in Set( fusions, x -> x{ [ i, j, kk ] } ) do
               sc:= ClassMultiplicationCoefficient( tbl, trpl[1], trpl[2],
                        trpl[3] );
               if sc < subsc then

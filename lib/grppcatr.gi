@@ -806,7 +806,7 @@ InstallGlobalFunction (CentrePcGroup, function( G )
     m       := Length( spec );
 
     # get primes and set up
-    primes   := Set( List( weights, x -> x[3] ) );
+    primes   := Set( weights, x -> x[3] );
     cent     := List( primes, x -> [] );
 
     # the first nilpotent factor

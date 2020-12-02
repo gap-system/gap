@@ -13,7 +13,7 @@ end;
 FPMaxReps:=function(g,a,b)
 local l,s;
   l:=LowLayerSubgroups(g,a);
-  s:=Set(List(l,Size));
+  s:=Set(l,Size);
   RemoveSet(s,Size(g));
   s:=Reversed(s);
   if b>Length(s) then return [];fi;

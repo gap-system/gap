@@ -195,7 +195,7 @@ function( F, z, inum )
     # compute the minimal polynomial simply by multiplying $x-cnj$
     pol := [ One(F) ];
     deg := 0;
-    for con  in Set( List( [ 0 .. dd-1 ], x -> z^(q^x) ) )  do
+    for con  in Set( [ 0 .. dd-1 ], x -> z^(q^x) )  do
         pol[deg+2] := pol[deg+1];
         for i  in [ deg+1, deg .. 2 ]  do
             pol[i] := pol[i-1] -  con*pol[i];

@@ -5,8 +5,8 @@
 #
 gap> START_TEST("helptools.tst");
 gap> ForAll(FindMultiSpelledHelpEntries(), i -> 
->    Length( Set( List( HELP_SEARCH_ALTERNATIVES( i[3] ), 
->                       j -> HELP_SEARCH_ALTERNATIVES(j) ) ) ) = 1 );
+>    Length( Set( HELP_SEARCH_ALTERNATIVES( i[3] ), 
+>                       j -> HELP_SEARCH_ALTERNATIVES(j) ) ) = 1 );
 true
 gap> Length(HELP_SEARCH_ALTERNATIVES("AnalyseMetacatalogOfCataloguesOfColourizationLabelingsOfCentreBySolvableNormalisersInNormalizerCentralizersInCentre"));
 4096

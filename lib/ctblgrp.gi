@@ -1265,7 +1265,7 @@ InstallGlobalFunction( DxSplitDegree, function(D,space,r)
         fi;
       od;
     od;
-    return Length(v); #Length(Set(List(AsList(s),i->i.tens[r])));
+    return Length(v); #Length(Set(AsList(s),i->i.tens[r]));
   else
     # nonfix
     # v is an element from the space with non-galois-fix parts.
@@ -1313,7 +1313,7 @@ local i,k,l,u,ga,galOp,p;
       l:=List([1..k],i->Set(Orbit(ga,i)));
       galOp[f].orbits:=l;
       u:=List(Filtered(Collected(
-        List(Set(List(l,i->i[1])),j->D.rids[j])),n->n[2]=1),t->t[1]);
+        List(Set(l,i->i[1]),j->D.rids[j])),n->n[2]=1),t->t[1]);
       galOp[f].uniqueIdentifications:=u;
       galOp[f].identifees:=Filtered([1..k],i->D.rids[i] in u);
     fi;
@@ -2001,13 +2001,13 @@ local G,     # group
   D.raeume:=[r];
 
   # Galois group operating on the columns
-  ga:= GroupByGenerators( Set( List( Flat( GeneratorsPrimeResidues(
+  ga:= GroupByGenerators( Set( Flat( GeneratorsPrimeResidues(
 		      Exponent(G)).generators),
-    i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j))))),());
+    i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j)))),());
 
   D.galMorphisms:=ga;
   D.galoisOrbits:=List([1..k],i->Set(Orbit(ga,i)));
-  D.matrices:=Difference(Set(List(D.galoisOrbits,i->i[1])),[1]);
+  D.matrices:=Difference(Set(D.galoisOrbits,i->i[1]),[1]);
   D.galOp:=[];
   D.irreducibles:=[];
 

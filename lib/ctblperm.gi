@@ -208,7 +208,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
           D.fingerprintRepresentatives:=fr;
         fi;
       fi;
-      D.centmulCandidates:=Set(List(cem,i->i[1]));
+      D.centmulCandidates:=Set(cem,i->i[1]);
     fi;
   fi;
 

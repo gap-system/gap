@@ -345,7 +345,7 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   if IsSubgroupFpGroup(G) then
     if HasIsWholeFamily(G) and IsWholeFamily(G) 
       # total on free generators
-      and Set(FreeGeneratorsOfFpGroup(G))=Set(List(gens,UnderlyingElement))
+      and Set(FreeGeneratorsOfFpGroup(G))=Set(gens,UnderlyingElement)
       then
         l:=List(gens,UnderlyingElement);
         p:=List(l,i->Position(FreeGeneratorsOfFpGroup(G),i));

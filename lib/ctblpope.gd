@@ -399,7 +399,7 @@ DeclareGlobalFunction( "PermCharInfoRelative" );
 ##  [ 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0 ]
 ##  gap> List( lincomb, psi -> TestPerm2( tbl, psi ) );
 ##  [ 0, 5, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1 ]
-##  gap> Set( List( TestPerm3(tbl, lincomb), x -> Position(lincomb, x) ) );
+##  gap> Set( TestPerm3(tbl, lincomb), x -> Position(lincomb, x) );
 ##  [ 1, 4, 6, 7, 8, 9, 10, 11, 13 ]
 ##  gap> tbl:= CharacterTable( "A7" );
 ##  CharacterTable( "A7" )

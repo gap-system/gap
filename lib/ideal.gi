@@ -760,7 +760,7 @@ InstallMethod( \*,
         return [ r * z ];
       fi;
     elif IsFinite( R ) then
-      return Set( List( Enumerator( R ), elm -> r * elm ) );
+      return Set( Enumerator( R ), elm -> r * elm );
     else
       TryNextMethod();
     fi;
@@ -783,7 +783,7 @@ InstallMethod( \*,
         return [ z * r ];
       fi;
     elif IsFinite( R ) then
-      return Set( List( Enumerator( R ), elm -> elm * r ) );
+      return Set( Enumerator( R ), elm -> elm * r );
     else
       TryNextMethod();
     fi;

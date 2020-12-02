@@ -238,10 +238,10 @@ function(G,dom,all)
 	    sely:=selz;
 	    j:=1;
 	    while j<=Length(pbas) and Length(sely)>0 do
-	      #torb:=Set(List(Orbit(r.representative,pbas[j]/i),x->x^i));
+	      #torb:=Set(Orbit(r.representative,pbas[j]/i),x->x^i);
 	      torb:=pbas[j]/i;
 	      torb:=First(rorbs,x->torb in x);
-	      torb:=Set(List(torb,x->x^i));
+	      torb:=Set(torb,x->x^i);
 	      MakeImmutable(torb);
 	      torb:=Position(allo,torb);
 	      if torb=fail then
@@ -516,12 +516,12 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
 	fi;
       fi;
       #if rep<>() then Error("hee"); fi;
-      #if not IsOne(rep) and Set(List(orbs,x->OnSets(x,rep)))<>allorbs[cln] then
+      #if not IsOne(rep) and Set(orbs,x->OnSets(x,rep))<>allorbs[cln] then
 
       h:=h^rep;
       Add(gpcl[cln][2],h);
-      #a:=Set(List(Orbits(h,MovedPoints(h)),Set));
-      #p:=Position(allorbs,List(Set(List(a,Length)),x->Union(Filtered(a,y->Length(y)=x))));
+      #a:=Set(Orbits(h,MovedPoints(h)),Set);
+      #p:=Position(allorbs,List(Set(a,Length),x->Union(Filtered(a,y->Length(y)=x))));
       #if allco[p][2]<>cln then
 #	Error("GGG");
 #      fi;
@@ -546,7 +546,7 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
 	hpos:=1;
 	while nobail and hpos<=Length(j[2]) do
 	  h:=j[2][hpos];
-	  orbs:=Set(List(Orbits(h,MovedPoints(h)),Set));
+	  orbs:=Set(Orbits(h,MovedPoints(h)),Set);
 	  MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
 	  lp:=[];
 	  for k in orbs do
@@ -592,7 +592,7 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
 	      allorbs:=[];
 	      lpats:=[];
 	      for h in je[2] do
-		orbs:=Set(List(Orbits(h,MovedPoints(h)),Set));
+		orbs:=Set(Orbits(h,MovedPoints(h)),Set);
 		MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
 		ornums:=List(orbs,x->LookupDictionary(dict,x));
 		sornums:=ShallowCopy(ornums);Sort(sornums);
@@ -680,7 +680,7 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
 #	allorbs:=[];
 #	lpats:=[];
 #	for h in j[2] do
-#	  orbs:=Set(List(Orbits(h,MovedPoints(h)),Set));
+#	  orbs:=Set(Orbits(h,MovedPoints(h)),Set);
 #	  MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
 #	  lp:=Collected(List(orbs,Length));
 #	  a:=Filtered([1..Length(allorbs)],x->allorbs[x][2]=lp);

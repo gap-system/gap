@@ -203,7 +203,7 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
 #        mc:=List(Factors(Polynomial(k,Concatenation(mc,[ One( k ) ]))),
 #                              DegreeOfUnivariateLaurentPolynomial);
 #        w:=Combinations(mc);
-#        newdeg:=List(Set(List(w{[2..Length(w)]},Sum)),
+#        newdeg:=List(Set(w{[2..Length(w)]},Sum),
 #                              i->[i,Minimum(QuoInt(nn,i),Number(mc,j->j<=i))]);
 #        if degs=[] then
 #          degs:=Filtered(newdeg,i->i[1]>0);

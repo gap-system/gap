@@ -456,7 +456,7 @@ InstallGlobalFunction( RandomSpecialPcgsCoded, function( G )
     # information about special pcgs
     weights := LGWeights( pcgs );
     first   := LGFirst( pcgs );
-    primes  := Set( List( weights, x -> x[3] ) );
+    primes  := Set( weights, x -> x[3] );
 
     # compute public sylow system
     sylow := SylowSystem( G );

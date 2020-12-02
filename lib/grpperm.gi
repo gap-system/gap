@@ -2022,7 +2022,7 @@ local  i, j, U, gens,o,v,a,sel,min,orb,orp,ok;
   gens:=gens{sel};
 
   # store orbit data
-  orb:=Set(List(Orbits(G,MovedPoints(G)),Set));
+  orb:=Set(Orbits(G,MovedPoints(G)),Set);
   orp:=Filtered([1..Length(orb)],x->IsPrimitive(Action(G,orb[x])));
 
   min:=2;

@@ -588,7 +588,7 @@ local dom, l, n, i, j,o,ld,mp,lp,x;
   # do not take all elements but a sampler
   #if Length(shorb)>10000 then
   #  mp:=[1..Length(shorb)];
-  #  shorb:=shorb{Set(List([1..5000],i->Random(mp)))};
+  #  shorb:=shorb{Set([1..5000],i->Random(mp))};
   #fi;
   if Length(shorb)>3000 then
     mp:=[1..Length(shorb)];
@@ -1973,8 +1973,8 @@ function( hom )
   if IsEndoGeneralMapping( hom ) then
 
     # cheap test for cycle structures
-    if Length(Set(List(MappingGeneratorsImages(hom),
-      x->List(x,CycleStructurePerm))))>1
+    if Length(Set(MappingGeneratorsImages(hom),
+      x->List(x,CycleStructurePerm)))>1
     then
       return false;
     fi;
