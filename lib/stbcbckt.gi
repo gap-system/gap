@@ -2840,7 +2840,7 @@ InstallGlobalFunction( PartitionStabilizerPermGroup, function(G,part)
 local pl,single,i,p,W,op,S;
 
   # first separate the sets of different lengths
-  pl:=Set(List(part,Length));
+  pl:=Set(part,Length);
   single:=[];
   for i in [1..Length(pl)] do
     pl[i]:=Filtered(part,j->Length(j)=pl[i]);

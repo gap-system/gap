@@ -294,8 +294,8 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       # and suggested packages of needed packages.
       # The component `GAPInfo.ExcludeFromAutoload' will be unbound after the
       # call of `AutoloadPackages'.
-      GAPInfo.ExcludeFromAutoload:= Set( List(
-          UserPreference( "ExcludeFromAutoload" ), LowercaseString ) );
+      GAPInfo.ExcludeFromAutoload:= Set(
+          UserPreference( "ExcludeFromAutoload" ), LowercaseString );
     fi;
 
     # Do not store information about packages in "PackagesToIgnore".
@@ -2438,7 +2438,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
 InstallGlobalFunction( SuggestUpgrades, function( suggestedversions )
     local ok, outstr, out, entry, inform, info;
 
-    suggestedversions := Set( List( suggestedversions, ShallowCopy ) );
+    suggestedversions := Set( suggestedversions, ShallowCopy );
     ok:= true;
     # We collect the output in a string, because availability test may
     # cause some intermediate printing. This way the output of the present

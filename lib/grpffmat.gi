@@ -400,7 +400,7 @@ function( G, flag )
     # merge with 'a' to remove duplicates
     tup := List(tup, b-> List([1..Length(a)], 
                      i-> Concatenation(a[i],[b[i]])));
-    tup := Set(List(tup,Set));
+    tup := Set(tup,Set);
     
     # now append partitions for distinguishing the unipotent parts
     tup := Concatenation(List(tup, a->

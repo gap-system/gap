@@ -1028,8 +1028,8 @@ atomic readwrite HELP_REGION do
       return m[2];
     fi;
   end;
-  if Length(match) > 1 and Length(Set(List(match, 
-                            m-> [m[1].bookname,getsecnum(m)]))) = 1 then
+  if Length(match) > 1 and Length(Set(match, 
+                            m-> [m[1].bookname,getsecnum(m)])) = 1 then
     match := [match[1]];
   fi;
 

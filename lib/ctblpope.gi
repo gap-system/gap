@@ -2570,7 +2570,7 @@ InstallGlobalFunction( PermCharInfo, function( arg )
       alp:= [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
               "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
               "w", "x", "y", "z" ];
-      degreeset:= Set( List( tbl_irreducibles, DegreeOfCharacter ) );
+      degreeset:= Set( tbl_irreducibles, DegreeOfCharacter );
 
       # `irreds[i]' contains all irreducibles of the `i'--th degree
       irreds:= List( degreeset, x -> [] );
@@ -2718,7 +2718,7 @@ InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
               "w", "x", "y", "z" ];
 
       # `irreds[i]' contains all irreducibles of `tbl' of the `i'--th degree.
-      degreeset:= Set( List( irr, x -> x[1] ) );
+      degreeset:= Set( irr, x -> x[1] );
       irreds:= List( degreeset, x -> [] );
       for chi in irr do
         Add( irreds[ Position( degreeset, chi[1] ) ],

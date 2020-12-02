@@ -128,7 +128,7 @@ AvoidedLayers := function( pcgs, pcgsH, pcgsK )
     od;
 
     # get the avoided Sylow subgroups
-    primes := Set( List( avoided, x -> weights[x][3] ) );
+    primes := Set( avoided, x -> weights[x][3] );
     for p in primes do
         sylow := Filtered( firsts{[1..Length(firsts)-1]},
                            x -> weights[x][3] = p );

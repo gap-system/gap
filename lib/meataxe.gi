@@ -25,7 +25,7 @@ local l,f,dim,m;
   l:=List(l,i->ImmutableMatrix(f,i));
 
   if ForAny(l,i->Length(i)<>Length(i[1])) or
-    Length(Set(List(l,Length)))>1 then
+    Length(Set(l,Length))>1 then
     Error("<l> must be a list of square matrices of the same dimension");
   fi;
   m:=rec(field:=f,

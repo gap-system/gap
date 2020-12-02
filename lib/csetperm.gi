@@ -487,7 +487,7 @@ local s,c,mp,o,i,step,a;
       elif Index(G,U)>NrMovedPoints(U) 
 	  and IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
 	Info(InfoCoset,2,"AC: blocks");
-	s:=Stabilizer(s,Set(List(MaximalBlocks(U,o[i]),Set)),
+	s:=Stabilizer(s,Set(MaximalBlocks(U,o[i]),Set),
                       OnSetsDisjointSets);
 	step:=true;
       else

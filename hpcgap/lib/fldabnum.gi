@@ -209,7 +209,7 @@ BindGlobal( "ReducedGaloisStabilizerInfo", function( N, stabilizer )
       stabilizer:= [ 1 ];
       N:= 1;
     else
-      stabilizer:= Set( List( stabilizer, x -> x mod N ) );
+      stabilizer:= Set( stabilizer, x -> x mod N );
     fi;
 
     return rec( N:= N, stabilizer:= stabilizer );
@@ -462,8 +462,8 @@ InstallMethod( Intersection2,
     # (If a reduction is necessary, `NF' will do.)
 
     F:= Gcd( Conductor( F ), Conductor( G ) );
-    return AbelianNumberField( F, Set( List( GaloisStabilizer( G ),
-                                             x -> x mod F ) ) );
+    return AbelianNumberField( F, Set( GaloisStabilizer( G ),
+                                             x -> x mod F ) );
     end );
 
 InstallMethod( Intersection2,
@@ -479,8 +479,8 @@ InstallMethod( Intersection2,
     # (If a reduction is necessary, `NF' will do.)
 
     F:= Gcd( Conductor( F ), Conductor( G ) );
-    return AbelianNumberField( F, Set( List( GaloisStabilizer( G ),
-                                             x -> x mod F ) ) );
+    return AbelianNumberField( F, Set( GaloisStabilizer( G ),
+                                             x -> x mod F ) );
     end );
 
 InstallMethod( Intersection2,
@@ -498,8 +498,8 @@ InstallMethod( Intersection2,
     # then compute the corresponding stabilizer, i.e. the product of
     # stabilizers.
     N:= GcdInt( Conductor( F ), Conductor( G ) );
-    stabF:= Set( List( GaloisStabilizer( F ), x -> x mod N ) );
-    stabG:= Set( List( GaloisStabilizer( G ), x -> x mod N ) );
+    stabF:= Set( GaloisStabilizer( F ), x -> x mod N );
+    stabG:= Set( GaloisStabilizer( G ), x -> x mod N );
     stab:= [];
     for i in stabF do
       for j in stabG do
@@ -551,10 +551,10 @@ InstallMethod( Subfields,
     local n, stab;
     n:= Conductor( F );
     stab:= GaloisStabilizer( F );
-    return Set( List( ConjugacyClassesSubgroups( GaloisGroup( F ) ),
+    return Set( ConjugacyClassesSubgroups( GaloisGroup( F ) ),
                       x -> AbelianNumberField( n, Union( stab,
                              List( GeneratorsOfGroup( Representative( x ) ),
-                                   y -> ExponentOfPowering( y ) ) ) ) ) );
+                                   y -> ExponentOfPowering( y ) ) ) ) );
     end );
 
 
@@ -901,7 +901,7 @@ InstallGlobalFunction( ZumbroichBase, function( n, m )
         base:= Concatenation( List( base, x -> x + basefactor ) );
       od;
     od;
-    return Set( List( base, x -> x mod n ) );
+    return Set( base, x -> x mod n );
 end );
 
 
@@ -1746,7 +1746,7 @@ InstallGlobalFunction( ANFAutomorphism, function ( F, k )
     # `GaloisCyc( <x>, k )'.
 
     # Choose the smallest representative ...
-    galois:= Set(List(GaloisStabilizer( F ), x->x*k mod Conductor( F )))[1];
+    galois:= Set(GaloisStabilizer( F ), x->x*k mod Conductor( F ))[1];
     if galois = 1 then
       return IdentityMapping( F );
     fi;

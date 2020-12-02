@@ -1867,7 +1867,7 @@ InstallMethod( ClassPositionsOfNormalSubgroups,
           inter;    # intersection of two kernels
 
     # Get the kernels of irreducible characters.
-    kernels:= Set( List( Irr( tbl ), ClassPositionsOfKernel ) );
+    kernels:= Set( Irr( tbl ), ClassPositionsOfKernel );
 
     # Form all possible intersections of the kernels.
     normal:= ShallowCopy( kernels );
@@ -1916,7 +1916,7 @@ InstallMethod( ClassPositionsOfMaximalNormalSubgroups,
 
     # Every normal subgroup is an intersection of kernels of characters,
     # so maximal normal subgroups are kernels of irreducible characters.
-    normal:= Set( List( Irr( tbl ), ClassPositionsOfKernel ) );
+    normal:= Set( Irr( tbl ), ClassPositionsOfKernel );
 
     # Remove non-maximal kernels
     RemoveSet( normal, [ 1 .. NrConjugacyClasses( tbl ) ] );
@@ -1952,8 +1952,8 @@ InstallMethod( ClassPositionsOfMinimalNormalSubgroups,
           minimal,   # list of minimal kernels
           k;         # one kernel
 
-    normal:= Set( List( [ 2 .. NrConjugacyClasses( tbl ) ],
-                        i -> ClassPositionsOfNormalClosure( tbl, [ i ] ) ) );
+    normal:= Set( [ 2 .. NrConjugacyClasses( tbl ) ],
+                        i -> ClassPositionsOfNormalClosure( tbl, [ i ] ) );
 
     # Remove non-minimal kernels
     Sort( normal, function(x,y) return Length(x) < Length(y); end );
@@ -6124,8 +6124,8 @@ InstallMethod( CharacterTableIsoclinic,
       fi;
     else
       nsg:= fail;
-      for ker in Set( List( LinearCharacters( tbl ),
-                            ClassPositionsOfKernel ) ) do
+      for ker in Set( LinearCharacters( tbl ),
+                            ClassPositionsOfKernel ) do
         p2:= size / Sum( classes{ ker }, 0 );
         if ( p = p2 and xpos in ker ) or
            ( p = fail and IsPrimeInt( p2 )

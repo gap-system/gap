@@ -51,7 +51,7 @@ InstallMethod( Alpha,
     # Compute the irreducible characters and the set of their degrees;
     # we need all irreducibles so it is reasonable to compute the table.
     irr:= List( Irr( G ), ValuesOfClassFunction );
-    degrees:= Set( List( irr, x -> x[1] ) );
+    degrees:= Set( irr, x -> x[1] );
     RemoveSet( degrees, 1 );
 
     # Distribute characters to degrees.
@@ -67,7 +67,7 @@ InstallMethod( Alpha,
     max:= 1;
 
     # Compute kernels (as position lists)
-    kernels:= List( chars, x -> Set( List( x, ClassPositionsOfKernel ) ) );
+    kernels:= List( chars, x -> Set( x, ClassPositionsOfKernel ) );
 
     # list of all minimal elements found up to now
     minimal:= [];

@@ -140,8 +140,8 @@ ApproximationNormalizerClasses:=function(u,approx)
 	  if Length(spll)=1 then
 	    pt:=spll[1];
 	  else
-	    pt:=Set(List(cs,i->Filtered(cs,
-			      j->ForAll(spll,k->j in First(k,kk->i in kk)))));
+	    pt:=Set(cs,i->Filtered(cs,
+			      j->ForAll(spll,k->j in First(k,kk->i in kk))));
 	  fi;
 	else
 	  pt:=[[1..Length(classes[i])]];
@@ -291,7 +291,7 @@ Print("no success !");
 
   for i in z do
     # image elms, trf. to pts
-    e:=Set(List(i,j->Position(v,ExponentsOfPcElement(pcgs,Image(isop,j))*one)));
+    e:=Set(i,j->Position(v,ExponentsOfPcElement(pcgs,Image(isop,j))*one));
 
     if ForAll(GeneratorsOfGroup(b),i->OnSets(e,i)=e) then
       c:=b;

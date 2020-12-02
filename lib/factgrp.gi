@@ -187,7 +187,7 @@ local G, N, op, pool, p, c, perm, ch, diff, nch, nd, involved, i;
     pool.cost:=Permuted(pool.cost,perm);
     pool.lock:=Permuted(pool.lock,perm);
     pool.blocksdone:=Permuted(pool.blocksdone,perm);
-    pool.intersects:=Set(List(pool.intersects,i->List(i,j->j^perm)));
+    pool.intersects:=Set(pool.intersects,i->List(i,j->j^perm));
   fi;
 
   return perm; # if anyone wants to keep the permutation
@@ -552,7 +552,7 @@ local pool, dom, o, op, Go, j, b, i,allb,newb,mov,allbold,onlykernel,k,
     dom:=MovedPoints(G);
     # orbits
     o:=OrbitsDomain(G,dom);
-    o:=Set(List(o,Set));
+    o:=Set(o,Set);
 
     # do orbits and test for blocks 
     for i in o do
@@ -633,7 +633,7 @@ local pool, dom, o, bl, op, Go, j, b, i,allb,newb,movl;
   dom:=MovedPoints(G);
   # orbits
   o:=OrbitsDomain(G,dom);
-  o:=Set(List(o,Set));
+  o:=Set(o,Set);
 
 
   # all good blocks
@@ -1137,7 +1137,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	      # store action
 	      op:=1;# remove old homomorphism to free memory
 	      if bdom<>fail then
-	        bb:=Set(List(bb,i->Immutable(Union(bdom{i}))));
+	        bb:=Set(bb,i->Immutable(Union(bdom{i})));
 	      fi;
 
 	      op:=ActionHomomorphism(gimg,bb,OnSets,"surjective");
@@ -1192,7 +1192,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	  Info(InfoFactor,2,"try only one system");
 	  op:=1;# remove old homomorphism to free memory
 	  if bdom<>fail then
-	    b:=Set(List(b,i->Immutable(Union(bdom{i}))));
+	    b:=Set(b,i->Immutable(Union(bdom{i})));
 	  fi;
 	  op:=ActionHomomorphism(gimg,b,OnSets,"surjective");
 	  if HasSize(gimg) and not HasStabChainMutable(gimg) then

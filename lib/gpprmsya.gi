@@ -1466,8 +1466,8 @@ local og,oh,cb,cc,cac,perm1,perm2,
     if Collected(List(og,Length))<>Collected(List(oh,Length)) then
       return fail;
     fi;
-    og:=Set(List(og,Set));
-    oh:=Set(List(oh,Set));
+    og:=Set(og,Set);
+    oh:=Set(oh,Set);
     ac:=[];
     a:=1;
     perm:=();
@@ -1477,7 +1477,7 @@ local og,oh,cb,cc,cac,perm1,perm2,
       Add(perm1,Difference(dom,p1));
       Add(perm2,Difference(dom,p2));
     fi;
-    for i in (Set(List(og,Length))) do
+    for i in (Set(og,Length)) do
       c:=Filtered(og,x->Length(x)=i);
       #Append(p1,c);
       ac2:=Filtered(oh,x->Length(x)=i);

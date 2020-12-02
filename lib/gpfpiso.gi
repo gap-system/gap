@@ -1551,8 +1551,8 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     while l=false and i<=Length(cs) do
       if Size(Intersection(borel,cs[i]))=1 and Size(cs[i])>=Length(dc)
         and Size(ClosureGroup(borel,cs[i]))=Size(group) and 
-        Length(Set(List(Elements(cs[i]),
-          x->PositionProperty(dc,y->x in y))))=Length(dc) then
+        Length(Set(Elements(cs[i]),
+          x->PositionProperty(dc,y->x in y)))=Length(dc) then
         Info(InfoFpGroup,1,"replaced weyl candidate with better subgroup\n");
         l:=cs[i];
       fi;
@@ -2337,8 +2337,8 @@ local p,dat,lev,l,sub,c,s,r,dc;
     for s in c do
       if Size(Intersection(l,s))=1 and Size(s)>=Length(dc)
         and Size(ClosureGroup(l,s))=Size(G) and 
-        Length(Set(List(Elements(s),
-          x->PositionProperty(dc,y->x in y))))=Length(dc) then
+        Length(Set(Elements(s),
+          x->PositionProperty(dc,y->x in y)))=Length(dc) then
         r:=BNnyRewritingPresentation(G,l,s);
         if r<>fail then return r;fi;
       fi;

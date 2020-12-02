@@ -1834,8 +1834,8 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
 
             ## Similar lengths of the partition elements
             ##
-            if Set(List(EquivalenceRelationPartition(x), i->Length(i))) <> 
-               Set(List(EquivalenceRelationPartition(y), i->Length(i))) then
+            if Set(EquivalenceRelationPartition(x), i->Length(i)) <> 
+               Set(EquivalenceRelationPartition(y), i->Length(i)) then
                return false;
             fi; 
      

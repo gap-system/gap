@@ -3752,7 +3752,7 @@ local fgens,grels,max,gens,t,Attempt,perms,short;
     #pseudorandom element - try if it works
     PseudoRandom(G:radius:=Random(2,3))],
     Filtered(gens,j->UnderlyingElement(j)<>UnderlyingElement(t)));
-  gens:=Set(List(gens,UnderlyingElement));
+  gens:=Set(gens,UnderlyingElement);
 
   # recursive search (via smaller and smaller partitions) for a finite index
   # subgroup
@@ -3800,8 +3800,8 @@ local fgens,grels,max,gens,t,Attempt,perms,short;
       perms:=List(t[2]{[1,3..Length(t[2])-1]},PermList);
       short:=FreeGeneratorsOfFpGroup(G);
       short:=Concatenation(short, List(short,Inverse));
-      short:=Set(List(Concatenation(List([1..3],x->Arrangements(short,x))),
-                 Product));
+      short:=Set(Concatenation(List([1..3],x->Arrangements(short,x))),
+                 Product);
       short:=List(short,
         x->[Order(MappedWord(x,FreeGeneratorsOfFpGroup(G),perms)),x]);
       # prefer large order and short word length
@@ -4090,7 +4090,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
 	  repeat
 	    bad:=false;
 	    for z in GeneratorsOfGroup(H) do
-	      e2:=Set(List(e,j->mappow(1/z,rp,rpo[Position(eo,j)])^z));
+	      e2:=Set(e,j->mappow(1/z,rp,rpo[Position(eo,j)])^z);
 	      if not 1 in e2 then
 		Error("one!");
 	      fi;
@@ -4548,7 +4548,7 @@ local Fgens,	# generators of F
 
 
   # exclude orders
-  e:=Set(List(cl,i->Order(Representative(i))));
+  e:=Set(cl,i->Order(Representative(i)));
   e:=List(Fgens,i->ShallowCopy(e));
   for i in [1..Length(Fgens)] do
     if rels[i]<>false then

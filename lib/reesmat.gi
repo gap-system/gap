@@ -173,8 +173,8 @@ function(R)
   # we have a subsemigroup specified by generators which equals a subsemigroup
   # obtained by removing a row, in the case that <R> is not simple.
   gens:=GeneratorsOfSemigroup(R);
-  I:=Set(List(gens, x-> x![1]));
-  J:=Set(List(gens, x-> x![3]));
+  I:=Set(gens, x-> x![1]);
+  J:=Set(gens, x-> x![3]);
 
   return ForAll(GeneratorsOfReesMatrixSemigroupNC(ParentAttr(R), I, 
     Semigroup(List(AsSSortedList(R), x-> x![2])), J), x-> x in R);
@@ -218,8 +218,8 @@ function(R)
   elts:=ShallowCopy(AsSSortedList(R)); 
   RemoveSet(elts, MultiplicativeZero(R));
 
-  I:=Set(List(gens, x-> x![1]));
-  J:=Set(List(gens, x-> x![3]));
+  I:=Set(gens, x-> x![1]);
+  J:=Set(gens, x-> x![3]);
   
   return ForAll(GeneratorsOfReesZeroMatrixSemigroupNC(ParentAttr(R), I, 
     Semigroup(List(elts, x-> x![2])), J), x-> x in R);

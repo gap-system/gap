@@ -451,7 +451,7 @@ local mm,sign,z,p,m,l,d,i,s,r,j,k,freedom,f,b,Setze,Close;
 #Print(mm,"\n",sign,"\n");
 
   # translate into numbers that we can use mult. and div.
-  z:=Set(List(sign,i->i[1]));
+  z:=Set(sign,i->i[1]);
   p:=Primes{[1..Length(z)]};
   Add(z,0);
   Add(p,1);
@@ -657,7 +657,7 @@ local n,m,cl,p;
   n:=Number(sys.blocks,i->ForAny(i,j->ForAny(GeneratorsOfGroup(grp),k->j^k<>j)));
   p:=Stabilizer(sys.kr,sys.parts[n],OnTuples);
   m:=List([1..n],i->Stabilizer(grp,sys.blocks[i],OnTuples));
-  if Length(Set(List(m,Size)))=1 then
+  if Length(Set(m,Size))=1 then
     if IsAbelian(m[1]) then
       cl:=List(m,i->Collected(List(AsList(i),CycleStructurePerm)));
     else
@@ -1121,7 +1121,7 @@ local lsys,z,op,o,dom,dtyp,i,j,typ,r,rt,bs;
     r:=RepresentativesOrbitsPartitions(op,dom,sys.b/z);
 
     # get nestings
-    r:=Filtered(r,i->Length(Set(List(i,j->dtyp[Position(dom,j)])))=1);
+    r:=Filtered(r,i->Length(Set(i,j->dtyp[Position(dom,j)]))=1);
     if Length(r)>0 then
       rt:=List(r,i->dtyp[Position(dom,i[1])]);
       z:=Minimum(rt);
@@ -1456,7 +1456,7 @@ local anz,g,d,no,s,o,
     primdst:=1;
   elif IsSolvableGroup(g) then
     maxes:=MaximalSubgroupClassReps(g);
-    nt:=Set(List(maxes,i->Core(g,i)));
+    nt:=Set(maxes,i->Core(g,i));
     AddSet(nt,g);
     if Length(nt)=nrnt then
       #all normals must be kernel of maximal
@@ -1550,7 +1550,7 @@ local anz,g,d,no,s,o,
 	    maxes:=MaximalSubgroupClassReps(j);
 	    Info(InfoAli,2,Length(maxes)," maxes");
 	    if primdst>1 then
-	      nt:=Set(List(maxes,i->Core(j,i)));
+	      nt:=Set(maxes,i->Core(j,i));
 
 	      # is F a factor of grp which is suitable for us, than there is
 	      # a maximal subgroup of grp (the correspondig one to a max in grp)
@@ -1610,7 +1610,7 @@ local anz,g,d,no,s,o,
 
 	nt:=Filtered(nt,j->Index(grp,j) in possntind);
 
-	Assert(1,Set(List(nt,i->Index(grp,i)))=possntind);
+	Assert(1,Set(nt,i->Index(grp,i))=possntind);
 
 	nt:=rec(liste:=nt);
 
@@ -1655,7 +1655,7 @@ local anz,g,d,no,s,o,
 	Info(InfoAli,2,Length(fa)," orbits");
 	Info(InfoAli,2,"Indices ",List(fa,i->Size(Image(i))));
 
-	Assert(1,Set(List(fa,i->Size(Image(i))))=possntind);
+	Assert(1,Set(fa,i->Size(Image(i)))=possntind);
 
 	for j in [1..Length(fa)] do
 	  fhom:=fa[j];
@@ -3363,7 +3363,7 @@ local i,j,l,p,sup,dom,use,lcl;
   l:=LatticeSubgroups(g);
   lcl:=ConjugacyClassesSubgroups(l);
   sup:=MinimalSupergroupsLattice(l);
-  sup:=List(sup,i->Set(List(i,j->j[1])));
+  sup:=List(sup,i->Set(i,j->j[1]));
   # we know that u is normal in g
   use:=[First([1..Length(lcl)],i->Size(lcl[i])=1
               and Representative(lcl[i])=u)];
@@ -3473,7 +3473,7 @@ local bls, # block size
   # minimal transitive group.
   TransGrpLoad(bla,0);
   TransGrpLoad(bls,0);
-  indices:=Set(List([1..TRANSLENGTHS[bla]],i->TRANSProperties(bla,i)[1]/bla));
+  indices:=Set([1..TRANSLENGTHS[bla]],i->TRANSProperties(bla,i)[1]/bla);
 
   # get all normal subgroups of primitive groups if none are prescribed
   if Length(arg)=1 then
@@ -3639,7 +3639,7 @@ TIMING.sdp:=Runtime()-TIMING.sdp;
     else
       # we need to construct the products.
       # can we use blocks?
-      b:=List(minops,i->Set(List(AllBlocks(i),Length)));
+      b:=List(minops,i->Set(AllBlocks(i),Length));
 
       if (not IsBound(sys.keineschachtel)) and
          bla>6 and ForAll(b,i->Length(i)>0) and IsSolvableGroup(i) then

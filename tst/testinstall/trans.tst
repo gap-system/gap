@@ -1310,9 +1310,9 @@ gap> COMPONENT_REPS_TRANS(f);
 [ [ 1, 16, 19, 23, 24, 38, 44, 50, 57, 86, 91 ], 
   [ 5, 14, 17, 21, 22, 28, 30, 31, 34, 40, 43, 47, 51, 54, 58, 60, 62, 67, 
       68, 76, 82, 83, 87, 92, 96 ], [ 12, 72 ] ]
-gap> Set(List(ComponentRepsOfTransformation(f), x ->
-> Union(List(x, i -> ComponentTransformationInt(f, i)))))
-> = Set(List(ComponentsOfTransformation(f), AsSSortedList));
+gap> Set(ComponentRepsOfTransformation(f), x ->
+> Union(List(x, i -> ComponentTransformationInt(f, i))))
+> = Set(ComponentsOfTransformation(f), AsSSortedList);
 true
 gap> f := Transformation([65537 .. 70000], 
 >                        [65537 .. 70000] * 0 + 1) 

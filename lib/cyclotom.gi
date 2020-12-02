@@ -1678,7 +1678,7 @@ InstallMethod( GaloisMat,
     od;
 
     # Convert the `generators' component to a set of generating permutations.
-    generators:= Set( List( generators, PermList ) );
+    generators:= Set( generators, PermList );
     RemoveSet( generators, () );  # `generators' arose from `PermList'
     if IsEmpty( generators ) then
       generators:= [ () ];  # `generators' arose from `PermList'

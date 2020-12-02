@@ -479,8 +479,8 @@ function( p, R )
 
     # and the indeterminates and coefficients ring of <R>
     crng := CoefficientsRing(R);
-    inds := Set( List( IndeterminatesOfPolynomialRing(R),
-                       x -> ExtRepPolynomialRatFun(x)[1][1] ) );
+    inds := Set( IndeterminatesOfPolynomialRing(R),
+                       x -> ExtRepPolynomialRatFun(x)[1][1] );
 
     # first check the indeterminates
     for exp  in ext{[ 1, 3 .. Length(ext)-1 ]}  do
@@ -552,7 +552,7 @@ function( ogens )
     gens:=ogens{Difference([1..Length(ogens)],g)};
 
     # univariate indeterminates set
-    ind := Set(List(univ,IndeterminateNumberOfUnivariateRationalFunction));
+    ind := Set(univ,IndeterminateNumberOfUnivariateRationalFunction);
     cfs := []; # univariate coefficients set
     for g in univ do
       UniteSet(cfs,CoefficientsOfUnivariateLaurentPolynomial(g)[1]);
@@ -791,8 +791,8 @@ function(f,R)
 
   # and the indeterminates and coefficients ring of <R>
   crng := CoefficientsRing(R);
-  inds := Set(List(IndeterminatesOfFunctionField(R),
-		      x -> ExtRepPolynomialRatFun(x)[1][1]));
+  inds := Set(IndeterminatesOfFunctionField(R),
+		      x -> ExtRepPolynomialRatFun(x)[1][1]);
 
   for ext in [ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f)] do
     # first check the indeterminates

@@ -1236,7 +1236,7 @@ function( G, U )
 
     # get operating elements
     gens := GeneratorsOfGroup( G );
-    gens := Set( List( gens, x -> SiftedPcElement( pcgs, x ) ) );
+    gens := Set( gens, x -> SiftedPcElement( pcgs, x ) );
 
     subg := GeneratorsOfGroup( U );
     id   := Identity( G );
@@ -2631,7 +2631,7 @@ local q, pcgs, sub, hom, f, ex, C;
   return sub;
 
   # otherwise compute the conjugacy classes of elements
-  C := Set( List( ConjugacyClasses(G), x -> Representative(x)^q ) );
+  C := Set( ConjugacyClasses(G), x -> Representative(x)^q );
   return NormalClosure( G, SubgroupNC( G, C ) );
 end );
 
