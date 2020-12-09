@@ -179,7 +179,7 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      local PKG_NAME=$($GAP -q -T -A <<GAPInput
+      local PKG_NAME=$($GAP -q -T -A -r <<GAPInput
 Read("PackageInfo.g");
 Print(GAPInfo.PackageInfoCurrent.PackageName);
 GAPInput
