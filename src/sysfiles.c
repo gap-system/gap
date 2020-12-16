@@ -2062,6 +2062,10 @@ static void initreadline(void)
 
   rl_bind_keyseq("\\C-x\\C-g", GAP_set_macro);
 
+  // disable bracketed paste mode by default: it interferes with our handling
+  // of pastes of data involving REPL prompts "gap>"
+  rl_variable_bind("enable-bracketed-paste", "off");
+
   CLEFuncs = ELM_REC(GAPInfo, RNamName("CommandLineEditFunctions"));
   KeyHandler = ELM_REC(CLEFuncs, RNamName("KeyHandler"));
   ISINITREADLINE = 1;
