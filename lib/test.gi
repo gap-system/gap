@@ -252,25 +252,33 @@ InstallGlobalFunction(RunTests, function(arg)
 end);
 
 BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
-TEST.compareFunctions := AtomicRecord(rec());
-TEST.compareFunctions.uptonl := function(a, b)
+
+TEST.transformFunctions := AtomicRecord(rec());
+TEST.transformFunctions.removenl := function(a)
   a := ShallowCopy(a);
-  b := ShallowCopy(b);
   while Length(a) > 0 and a[Length(a)] = '\n' do
     Remove(a);
   od;
-  while Length(b) > 0 and b[Length(b)] = '\n' do
-    Remove(b);
-  od;
+  return a;
+end;
+TEST.transformFunctions.removewhitespace := function(a)
+  a := ReplacedString(ShallowCopy(a), "\\\n", "");
+  RemoveCharacters(a, " \n\t\r");
+  return a;
+end;
+
+TEST.compareFunctions := AtomicRecord(rec());
+TEST.compareFunctions.uptonl := function(a, b)
+  a := TEST.transformFunctions.removenl(a);
+  b := TEST.transformFunctions.removenl(b);
   return a=b;
 end;
 TEST.compareFunctions.uptowhitespace := function(a, b)
-  a := ReplacedString(ShallowCopy(a), "\\\n", "");
-  b := ReplacedString(ShallowCopy(b), "\\\n", "");
-  RemoveCharacters(a, " \n\t\r");
-  RemoveCharacters(b, " \n\t\r");
+  a := TEST.transformFunctions.removewhitespace(a);
+  b := TEST.transformFunctions.removewhitespace(b);
   return a=b;
 end;
+
 
 ##
 ## CREATE_LOCAL_VARIABLES_BAG(namelist)
@@ -368,10 +376,20 @@ end);
 ##  return <K>true</K> or <K>false</K>, indicating if the strings should
 ##  be considered equivalent or not. By default <Ref Oper="\=" /> is used.
 ##  <Br/>
-##  Two strings are recognized as abbreviations in this component: 
+##  Two strings are recognized as abbreviations in this component:
 ##  <C>"uptowhitespace"</C> checks if the two strings become equal after
 ##  removing all white space. And <C>"uptonl"</C> compares the string up
 ##  to trailing newline characters.
+##  </Item>
+##  <Mark><C>transformFunction</C></Mark>
+##  <Item>This must be a function that gets one string as input, either the newly
+##  generated or the stored output of some &GAP; input. The function must
+##  return a new string which will be used to compare the actual and the expected
+##  output. By default <Ref Func="IdFunc" /> is used.
+##  <Br/>
+##  Two strings are recognized as abbreviations in this component:
+##  <C>"removewhitespace"</C> removes all white space.
+##  And <C>"removenl"</C> removes all trailing newline characters.
 ##  </Item>
 ##  <Mark><C>reportDiff</C></Mark>
 ##  <Item>A function that gets six arguments and reports a difference in the
@@ -498,6 +516,7 @@ InstallGlobalFunction("Test", function(arg)
            width := 80,
            ignoreSTOP_TEST := true,
            compareFunction := EQ,
+           transformFunction := IdFunc,
            showProgress := "some",
            writeTimings := false,
            compareTimings := false,
@@ -541,7 +560,7 @@ InstallGlobalFunction("Test", function(arg)
 
   if IsHPCGAP then
     # HPCGAP's window size varies in different threads
-    opts.compareFunction := "uptowhitespace";
+    opts.transformFunction := "removewhitespace";
     # HPC-GAP's output is not compatible with changing lines
     opts.showProgress := false;
   fi;
@@ -554,7 +573,14 @@ InstallGlobalFunction("Test", function(arg)
     if IsBound(TEST.compareFunctions.(opts.compareFunction)) then
       opts.compareFunction := TEST.compareFunctions.(opts.compareFunction);
     else
-      opts.compareFunction := EQ;
+      Error("Unknown compareFunction '", opts.compareFunction, "'");
+    fi;
+  fi;
+  if IsString(opts.transformFunction) then
+    if IsBound(TEST.transformFunctions.(opts.transformFunction)) then
+      opts.transformFunction := TEST.transformFunctions.(opts.transformFunction);
+    else
+      Error("Unknown transformFunction '", opts.transformFunction, "'");
     fi;
   fi;
 
@@ -609,7 +635,8 @@ InstallGlobalFunction("Test", function(arg)
   # check for and report differences
   failures := 0;
   for i in [1..Length(pf.inp)] do
-    if opts.compareFunction(pf.outp[i], pf.cmp[i]) <> true then
+    if opts.compareFunction(opts.transformFunction(pf.outp[i]),
+                            opts.transformFunction(pf.cmp[i])) <> true then
       if not opts.ignoreSTOP_TEST or 
          PositionSublist(pf.inp[i], "STOP_TEST") <> 1 then
         failures := failures + 1;
