@@ -214,10 +214,8 @@ SYSINFO_CPPFLAGS += $(CPPFLAGS)
 GAP_CFLAGS = $(ABI_CFLAGS)
 SYSINFO_CFLAGS = $(ABI_CFLAGS)
 
-ifeq ($(HPCGAP),yes)
 GAP_CFLAGS += $(PTHREAD_CFLAGS)
 SYSINFO_CFLAGS += $(PTHREAD_CFLAGS)
-endif
 
 GAP_CFLAGS += $(JULIA_CFLAGS) # not added to SYSINFO_CFLAGS
 
@@ -231,9 +229,7 @@ SYSINFO_CFLAGS += $(CFLAGS)
 ########################################################################
 GAP_CXXFLAGS = $(ABI_CFLAGS)
 
-ifeq ($(HPCGAP),yes)
 GAP_CXXFLAGS += $(PTHREAD_CFLAGS)
-endif
 
 # Finally add user provided CXXFLAGS
 GAP_CXXFLAGS += $(CXXFLAGS)
@@ -252,9 +248,7 @@ GAP_LDFLAGS += $(JULIA_LDFLAGS)
 GAP_LDFLAGS += $(BOEHM_GC_LDFLAGS)
 GAP_LDFLAGS += $(LIBATOMIC_OPS_LDFLAGS)
 
-ifeq ($(HPCGAP),yes)
 GAP_LDFLAGS += $(PTHREAD_CFLAGS) $(PTHREAD_LIBS)
-endif
 
 # Finally add user provided flags
 GAP_LDFLAGS += $(LDFLAGS)
