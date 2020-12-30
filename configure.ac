@@ -999,7 +999,7 @@ dnl check for non-standard math functions
 AC_CHECK_FUNCS([exp10])
 
 dnl pthreads
-AS_IF([test "x$enable_hpcgap" = xyes],[
+AS_IF([test "x$enable_hpcgap" = xyes -o "x$with_julia" != xno ],[
   AX_PTHREAD
   ])
 

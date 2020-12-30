@@ -48,6 +48,10 @@
 **  Various options controlling special features of the Julia GC code follow
 */
 
+// if SKIP_GUARD_PAGES is set, stack scanning will attempt to determine
+// the extent of any guard pages and skip them if needed.
+// #define SKIP_GUARD_PAGES
+
 // if SCAN_STACK_FOR_MPTRS_ONLY is defined, stack scanning will only
 // look for references to master pointers, but not bags themselves. This
 // should be safe, as GASMAN uses the same mechanism. It is also faster
@@ -80,6 +84,10 @@
 // can be difficult. As the GC already assumes that the memory
 // range goes from 0 to 2^k-1 (region tables), we simply convert
 // to uintptr_t and compare those.
+//
+#ifdef SKIP_GUARD_PAGES
+#include <pthread.h>
+#endif
 
 static inline int cmp_ptr(void * p, void * q)
 {
@@ -529,8 +537,32 @@ static void MarkFromList(PtrArray * arr)
 
 static TaskInfoTree * task_stacks = NULL;
 
+#ifdef SKIP_GUARD_PAGES
+
+static size_t guardpages_size;
+
+void SetupGuardPagesSize(void)
+{
+    // This is a generic implementation that assumes that all threads
+    // have the default guard pages. This should be correct for the
+    // current Julia implementation.
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    if (pthread_attr_getguardsize(&attr, &guardpages_size) < 0) {
+        perror("Julia GC initialization: pthread_attr_getguardsize");
+        abort();
+    }
+    pthread_attr_destroy(&attr);
+}
+
+#endif
+
+
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
 {
+#ifdef SKIP_GUARD_PAGES
+    FindLiveRangeReverse(stack, start, end);
+#else
     volatile jl_jmp_buf * old_safe_restore = jl_get_safe_restore();
     jl_jmp_buf exc_buf;
     if (!jl_setjmp(exc_buf, 0)) {
@@ -548,6 +580,7 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
         FindLiveRangeReverse(stack, start, end);
     }
     jl_set_safe_restore((jl_jmp_buf *)old_safe_restore);
+#endif
 }
 
 static void
@@ -696,6 +729,13 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     jl_active_task_stack(task, &active_start, &active_end, &total_start, &total_end);
 
     if (active_start) {
+#ifdef SKIP_GUARD_PAGES
+        if (total_start == active_start && total_end == active_end) {
+            // The "active" range is actually the entire stack buffer
+            // and may include guard pages at the start.
+            active_start += guardpages_size;
+        }
+#endif
         if (task == RootTaskOfMainThread) {
             active_end = (char *)GapStackBottom;
         }
@@ -812,6 +852,9 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_init();
 
     SetJuliaTLS();
+#ifdef SKIP_GUARD_PAGES
+    SetupGuardPagesSize();
+#endif
 
     is_threaded = jl_n_threads > 1;
 
