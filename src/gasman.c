@@ -696,7 +696,7 @@ static inline BOOL IS_MARKED_HALFDEAD(Bag x)
     return LINK_BAG(x) == MARKED_HALFDEAD(x);
 }
 
-#ifdef DEBUG_MASTERPOINTERS
+#ifdef GAP_MEM_CHECK
 static inline Bag UNMARKED_DEAD(Bag x)
 {
     GAP_ASSERT(GET_MARK_BITS(x) == DEAD);
@@ -2051,7 +2051,7 @@ static UInt CollectBags_Sweep(UInt FullBags)
 
         /* dead bag                                                        */
         else if (GET_MARK_BITS(header->link) == DEAD) {
-#ifdef DEBUG_MASTERPOINTERS
+#ifdef GAP_MEM_CHECK
             if (CONST_PTR_BAG(UNMARKED_DEAD(header->link)) != DATA(header)) {
                 Panic("incorrectly marked DEAD bag");
             }
@@ -2084,7 +2084,7 @@ static UInt CollectBags_Sweep(UInt FullBags)
 
         /* half-dead bag                                                   */
         else if (GET_MARK_BITS(header->link) == HALFDEAD) {
-#ifdef DEBUG_MASTERPOINTERS
+#ifdef GAP_MEM_CHECK
             if (CONST_PTR_BAG(UNMARKED_HALFDEAD(header->link)) != DATA(header)) {
                 Panic("incorrectly marked HALFDEAD bag");
             }
@@ -2114,7 +2114,7 @@ static UInt CollectBags_Sweep(UInt FullBags)
 
         /* live bag                                                        */
         else if (GET_MARK_BITS(header->link) == ALIVE) {
-#ifdef DEBUG_MASTERPOINTERS
+#ifdef GAP_MEM_CHECK
             if (CONST_PTR_BAG(UNMARKED_ALIVE(header->link)) != DATA(header)) {
                 Panic("incorrectly marked ALIVE bag");
             }
@@ -2354,7 +2354,7 @@ UInt CollectBags (
     GAP_ASSERT(SanityCheckGasmanPointers());
     CANARY_DISABLE_VALGRIND();
     CANARY_FORBID_ACCESS_ALL_BAGS();
-#ifdef DEBUG_MASTERPOINTERS
+#ifdef GAP_MEM_CHECK
     CheckMasterPointers();
 #endif
 
@@ -2413,7 +2413,7 @@ UInt CollectBags (
         CollectFuncBags.after[i]();
 
 
-#ifdef DEBUG_MASTERPOINTERS
+#ifdef GAP_MEM_CHECK
     CheckMasterPointers();
 #endif
 
