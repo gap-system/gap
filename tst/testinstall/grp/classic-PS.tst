@@ -1,5 +1,5 @@
 #
-# Tests for the "projective special" group constructors: PSL, PSU, PSp
+# Tests for the "projective special" group constructors: PSL, PSU, PSp, PSigmaL
 #
 gap> START_TEST("classic-PS.tst");
 
@@ -46,6 +46,28 @@ gap> PSp(4);
 Error, usage: ProjectiveSymplecticGroup( [<filter>, ]<d>, <q> )
 gap> PSp(4,6);
 Error, <subfield> must be a prime or a finite field
+
+#
+gap> PSigmaL( 3, 5 );
+SL(3,5)
+gap> Size( PSigmaL( 3, 9 ) );
+84913920
+gap> Size( PSigmaL( 1, 9 ) ) = Size( PSL( 1, 9 ) ) * 2;
+true
+gap> Size( PSigmaL( 2, 9 ) ) = Size( PSL( 2, 9 ) ) * 2;
+true
+gap> Size( PSigmaL( 3, 9 ) ) = Size( PSL( 3, 9 ) ) * 2;
+true
+gap> PSigmaL( IsPermGroup, 3, 9 ) = PSigmaL( 3, 9 );
+true
+gap> PSigmaL( 3, GF(9) );
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `ProjectiveSpecialSemilinearGroupCons' o\
+n 3 arguments
+gap> PSigmaL( 3 );
+Error, usage: ProjectiveSpecialSemilinearGroup( [<filter>, ]<d>, <q> )
+gap> PSigmaL( 3, 6 );
+Error, usage: SpecialLinearGroup( [<filter>, ]<d>, <R> )
 
 #
 gap> STOP_TEST("classic.tst-PS", 1);

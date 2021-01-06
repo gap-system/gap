@@ -1,5 +1,5 @@
 #
-# Tests for the "projective general" group constructors: PGL, POmega, PGU
+# Tests for the "projective general" group constructors: PGL, POmega, PGU, PGammaL
 #
 gap> START_TEST("classic-PG.tst");
 
@@ -71,6 +71,28 @@ gap> PGU(3);
 Error, usage: ProjectiveGeneralUnitaryGroup( [<filter>, ]<d>, <q> )
 gap> PGU(3,6);
 Error, <subfield> must be a prime or a finite field
+
+#
+gap> PGammaL( 2, 5 );
+GL(2,5)
+gap> Size( PGammaL( 2, 25 ) );
+31200
+gap> Size( PGammaL( 1, 9 ) ) = Size( PGL( 1, 9 ) ) * 2;
+true
+gap> Size( PGammaL( 2, 9 ) ) = Size( PGL( 2, 9 ) ) * 2;
+true
+gap> Size( PGammaL( 3, 9 ) ) = Size( PGL( 3, 9 ) ) * 2;
+true
+gap> PGammaL( IsPermGroup, 3, 9) = PGammaL( 3, 9 );
+true
+gap> PGammaL( 3, GF(9) );
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `ProjectiveGeneralSemilinearGroupCons' o\
+n 3 arguments
+gap> PGammaL( 3 );
+Error, usage: ProjectiveGeneralSemilinearGroup( [<filter>, ]<d>, <q> )
+gap> PGammaL( 3, 6 );
+Error, usage: GeneralLinearGroup( [<filter>, ]<d>, <R> )
 
 #
 gap> STOP_TEST("classic-PG.tst", 1);
