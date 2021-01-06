@@ -1050,3 +1050,119 @@ InstallMethod( ProjectiveOmegaCons,
 
     return p;
   end);
+
+
+#############################################################################
+##
+#F  DECLARE_PROJECTIVE_SEMILINEAR_GROUPS_OPERATION( ... )
+##
+BindGlobal( "DECLARE_PROJECTIVE_SEMILINEAR_GROUPS_OPERATION",
+  function( name, abbrname, lineargroup, sizefun )
+  local opr, pname, consname, cons;
+
+  opr:= VALUE_GLOBAL( name );
+  pname:= Concatenation( "Projective", name );
+  consname:= Concatenation( pname, "Cons" );
+  DeclareConstructor( consname, [ IsGroup, IsInt, IsInt ] );
+  cons:= ValueGlobal( consname );
+
+  BindGlobal( pname, function( arg )
+    if Length( arg ) = 2 then
+      return cons( IsPermGroup, arg[1], arg[2] );
+    elif IsOperation( arg[1] ) then
+      if Length( arg ) = 3 then
+        return cons( arg[1], arg[2], arg[3] );
+      fi;
+    fi;
+    Error( "usage: ", pname, "( [<filter>, ]<d>, <q> )" );
+  end );
+
+  DeclareSynonym( Concatenation( "P", abbrname ), VALUE_GLOBAL( pname ) );
+
+  # Install a method to get the permutation action on lines.
+  InstallMethod( cons,
+      "action on lines",
+      [ IsPermGroup, IsPosInt, IsPosInt ],
+      function( filt, n, q )
+      local lin, facts, d, p, F, points, gens, indices, g;
+
+      lin:= lineargroup( IsMatrixGroup, n, q );
+      facts:= Factors( Integers, q );
+      d:= Length( facts );
+      p:= facts[1];
+
+      if d = 1 then
+        return lin;
+      fi;
+
+      F:= GF( q );
+      points:= Set( NormedRowVectors( F^n ), v -> ImmutableVector( F, v ) );
+      gens:= List( GeneratorsOfGroup( lin ),
+                   mat -> Permutation( mat, points, OnLines ) );
+
+      # Apply the field automorphism to the normed vectors.
+      Apply( points, v -> ImmutableVector( F, List( v, x -> x^p ) ) );
+      indices:= [ 1 .. Length( points ) ];
+      SortParallel( points, indices );
+      Add( gens, PermList( indices ) );
+
+      g:= GroupWithGenerators( gens );
+      SetSize( g, sizefun( n, q, d, lin ) );
+
+      return g;
+  end );
+end );
+
+
+#############################################################################
+##
+#F  ProjectiveGeneralSemilinearGroup( [<filt>, ]<d>, <q> )
+#F  PGammaL( [<filt>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveGeneralSemilinearGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveGeneralSemilinearGroup" Arg='[filt, ]d, q'/>
+##  <Func Name="PGammaL" Arg='[filt, ]d, q'/>
+##
+##  <Description>
+##  <Ref Func="ProjectiveGeneralSemilinearGroup"/> returns a group
+##  isomorphic to the factor group of the general semilinear group
+##  <C>GammaL(</C> <A>d</A>, <A>q</A> <C>)</C> modulo the center of its
+##  normal subgroup <C>GL(</C> <A>d</A>, <A>q</A> <C>)</C>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space <C>GF(</C><A>q</A><C>)^</C><A>d</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_SEMILINEAR_GROUPS_OPERATION( "GeneralSemilinearGroup",
+    "GammaL", GL, { n, q, d, lin } -> d * Size( lin ) / (q-1) );
+
+
+#############################################################################
+##
+#F  ProjectiveSpecialSemilinearGroup( [<filt>, ]<d>, <q> )
+#F  PSigmaL( [<filt>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveSpecialSemilinearGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveSpecialSemilinearGroup" Arg='[filt, ]d, q'/>
+##  <Func Name="PSigmaL" Arg='[filt, ]d, q'/>
+##
+##  <Description>
+##  <Ref Func="ProjectiveSpecialSemilinearGroup"/> returns a group
+##  isomorphic to the factor group of the special semilinear group
+##  <C>SigmaL(</C> <A>d</A>, <A>q</A> <C>)</C> modulo the center of its
+##  normal subgroup <C>SL(</C> <A>d</A>, <A>q</A> <C>)</C>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space <C>GF(</C><A>q</A><C>)^</C><A>d</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_SEMILINEAR_GROUPS_OPERATION( "SpecialSemilinearGroup",
+    "SigmaL", SL, { n, q, d, lin } -> d * Size( lin ) / Gcd( n, q-1 ) );
