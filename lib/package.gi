@@ -1198,8 +1198,9 @@ InstallGlobalFunction( DirectoriesPackagePrograms, function( name )
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
       installationpath:= GAPInfo.PackagesLoaded.( name )[1];
-    elif IsBound( GAPInfo.PackageCurrent ) then
-      # The package is currently going to be loaded.
+    elif IsBound( GAPInfo.PackageCurrent ) and
+         LowercaseString( GAPInfo.PackageCurrent.PackageName ) = name then
+      # The package in question is currently going to be loaded.
       installationpath:= GAPInfo.PackageCurrent.InstallationPath;
     elif 0 < Length( info ) then
       # Take the installed package with the highest version
@@ -1242,8 +1243,9 @@ InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
     if IsBound( GAPInfo.PackagesLoaded.( name ) ) then
       # The package is already loaded.
       installationpath:= GAPInfo.PackagesLoaded.( name )[1];
-    elif IsBound( GAPInfo.PackageCurrent ) then
-      # The package is currently going to be loaded.
+    elif IsBound( GAPInfo.PackageCurrent ) and
+         LowercaseString( GAPInfo.PackageCurrent.PackageName ) = name then
+      # The package in question is currently going to be loaded.
       installationpath:= GAPInfo.PackageCurrent.InstallationPath;
     elif 0 < Length( info ) then
       # Take the installed package with the highest version
