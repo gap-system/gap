@@ -895,23 +895,6 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     return YoungRef;
 }
 
-//
-// This function is called from GAP.jl to set the super type our custom Julia
-// types to GAP.GapObj
-//
-void GAP_register_GapObj(jl_datatype_t * gapobj_type)
-{
-    if (!gapobj_type || !jl_is_datatype(gapobj_type)) {
-        Panic("GAP_register_GapObj: GapObj is not a datatype");
-    }
-
-    // DO THE GREAT MAGIC HACK (yes we are bad citizens :/) and
-    // change the super type of ForeignGAP.MPtr to GapObj
-    GAP_STATIC_ASSERT(offsetof(jl_datatype_t, super) == 8, "jl_datatype_t->super has wrong offset");
-    datatype_mptr->super = gapobj_type;
-    jl_gc_wb(datatype_mptr, gapobj_type);
-}
-
 void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
 {
     // HOOK: initialization happens here.
