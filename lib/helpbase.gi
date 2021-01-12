@@ -1172,6 +1172,11 @@ InstallValue(HELP_TOPIC_RING, ListWithIdenticalEntries( HELP_RING_SIZE,
 if IsHPCGAP then
   LockAndMigrateObj(HELP_TOPIC_RING,HELP_REGION);
 fi;
+BindGlobal("HELP_ORIG_TOPIC_RING", ListWithIdenticalEntries( HELP_RING_SIZE,
+                                             "welcome to gap" ));
+if IsHPCGAP then
+  LockAndMigrateObj(HELP_ORIG_TOPIC_RING,HELP_REGION);
+fi;
 # here we store the last shown topic, initialized with 0 (leading to
 # show "Tutorial: Help", see below)
 InstallValue(HELP_LAST, rec(MATCH := 0, BOOK := 0, 
@@ -1206,11 +1211,12 @@ InstallGlobalFunction(HELP, function( str )
   
   # function to add a topic to the ring
   move := false;
-  add  := function( books, topic )
+  add  := function( books, topic, orig_topic )
       if not move  then
           HELP_RING_IDX := (HELP_RING_IDX+1) mod HELP_RING_SIZE;
           HELP_BOOK_RING[HELP_RING_IDX+1]  := books;
           HELP_TOPIC_RING[HELP_RING_IDX+1] := topic;
+          HELP_ORIG_TOPIC_RING[HELP_RING_IDX+1] := orig_topic;
       fi;
   end;
   
@@ -1239,6 +1245,7 @@ InstallGlobalFunction(HELP, function( str )
       HELP_RING_IDX := (HELP_RING_IDX-1) mod HELP_RING_SIZE;
       books := HELP_BOOK_RING[HELP_RING_IDX+1];
       str  := HELP_TOPIC_RING[HELP_RING_IDX+1];
+      origstr := HELP_ORIG_TOPIC_RING[HELP_RING_IDX+1];
       move := true;
 
   # if the topic is '+' we are interested in the last section again
@@ -1246,6 +1253,7 @@ InstallGlobalFunction(HELP, function( str )
       HELP_RING_IDX := (HELP_RING_IDX+1) mod HELP_RING_SIZE;
       books := HELP_BOOK_RING[HELP_RING_IDX+1];
       str  := HELP_TOPIC_RING[HELP_RING_IDX+1];
+      origstr := HELP_ORIG_TOPIC_RING[HELP_RING_IDX+1];
       move := true;
   fi;
   
@@ -1272,25 +1280,25 @@ InstallGlobalFunction(HELP, function( str )
   # if the subject is 'Welcome to GAP' display a welcome message
   elif book = "" and str = "welcome to gap"  then
       if HELP_SHOW_WELCOME(book)  then
-          add( books, "Welcome to GAP" );
+          add( books, "Welcome to GAP", "Welcome to GAP" );
       fi;
 
   # if the topic is 'books' display the table of books
   elif book = "" and str = "books"  then
       if HELP_SHOW_BOOKS()  then
-          add( books, "books" );
+          add( books, "books", "books" );
       fi;
 
   # if the topic is 'chapters' display the table of chapters
   elif str = "chapters"  or str = "contents" or book <> "" and str = "" then
       if ForAll(books, b->  HELP_SHOW_CHAPTERS(b)) then
-        add( books, "chapters" );
+        add( books, "chapters", "chapters" );
       fi;
 
   # if the topic is 'sections' display the table of sections
   elif str = "sections"  then
       if ForAll(books, b-> HELP_SHOW_SECTIONS(b)) then
-        add(books, "sections");
+        add(books, "sections", "sections");
       fi;
 
   # if the topic is '?<string>' search the index for any entries for
@@ -1298,13 +1306,14 @@ InstallGlobalFunction(HELP, function( str )
   elif Length(str) > 0 and str[1] = '?'  then
       str := str{[2..Length(str)]};    
       NormalizeWhitespace(str);
-      if HELP_SHOW_MATCHES( books, str, false)  then
-          add( books, str );
+      origstr := origstr{[2..Length(origstr)]};
+      if HELP_SHOW_MATCHES( books, str, false : HELP_TOPIC:= origstr ) then
+          add( books, str, origstr );
       fi;
 
   # search for this topic
-  elif HELP_SHOW_MATCHES( books, str, true )  then
-      add( books, str );
+  elif HELP_SHOW_MATCHES( books, str, true : HELP_TOPIC:= origstr ) then
+      add( books, str, origstr );
   elif origstr in NAMES_SYSTEM_GVARS then
       Print( "Help: '", origstr, "' is currently undocumented.\n",
              "      For details, try ?Undocumented Variables\n" );
