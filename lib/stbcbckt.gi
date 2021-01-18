@@ -2960,8 +2960,8 @@ local   Omega,  P,  rbase,  L,mg,mh,i;
     mh:=MovedPoints(H);
     Omega := Intersection(mg,mh);
 
-    # disjoint?
-    if Length(Omega)=0 then
+    # no two points moved in common?
+    if Length(Omega)<=1 then
       return TrivialSubgroup(Parent(G));
     fi;
 
