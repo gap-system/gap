@@ -498,8 +498,8 @@ in microseconds.
 </Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Tracking Memory Usage">
-  <Heading>Tracking Memory Usage</Heading>
+<Section Label="Tracking and Controlling Memory Usage">
+  <Heading>Tracking and Controlling Memory Usage</Heading>
 
   <ManSection>
     <Func Name="TotalMemoryAllocated" Arg=""/>
@@ -513,6 +513,18 @@ in microseconds.
     <Description> In the read-eval-print loop, <Ref Var="memory_allocated"/>
     stores the number of bytes of memory allocated by the last completed statement
     (see also <Ref Var="time"/> for the number of milliseconds it took).
+  </Description>
+  </ManSection>
+
+  <ManSection>
+  <Func Name="DisableMemoryLimits" Arg=''/>
+  <Returns>
+  nothing.
+  </Returns>
+  <Description>
+  Disables limits on the size of GAP's workspace. These are usually
+  set using the --warn-workspace and --maximal-workspace command line options.
+  GAP will still be limited by memory provided by the OS.
   </Description>
   </ManSection>
 

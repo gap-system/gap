@@ -657,7 +657,6 @@ static UInt *** SyFreeBags_(UInt size)
 
 #endif
 
-
 UInt *** SyAllocBags(Int size, UInt need)
 {
     GAP_ASSERT(size > 0);
