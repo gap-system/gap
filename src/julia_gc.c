@@ -199,11 +199,10 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-static jl_module_t *   Module;
 static jl_datatype_t * datatype_mptr;
 static jl_datatype_t * datatype_bag;
 static jl_datatype_t * datatype_largebag;
-static UInt            StackAlignBags;
+static UInt            StackAlignBags = sizeof(void *);
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static Int             is_threaded;
@@ -671,12 +670,6 @@ void CHANGED_BAG(Bag bag)
 
 static void GapRootScanner(int full)
 {
-    // Mark our Julia module (this contains references to our custom data
-    // types, which thus also will not be collected prematurely).
-    // We call jl_gc_mark_queue_obj() directly here, because we know that
-    // Module is a valid Julia object at this point, so further checks
-    // in JMark() can be skipped.
-    jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)Module);
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
     size_t      size;
     int         tid;    // unused
@@ -873,27 +866,16 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     return YoungRef;
 }
 
+// Initialize the integration with Julia's garbage collector; in particular,
+// create Julia types for use in our allocations. The types will be stored
+// in the given 'module', and the MPtr type will be a subtype of 'parent'.
 //
-// This function is called from GAP.jl to set the super type our custom Julia
-// types to GAP.GapObj
-//
-void GAP_register_GapObj(jl_datatype_t * gapobj_type)
-{
-    if (!gapobj_type || !jl_is_datatype(gapobj_type)) {
-        Panic("GAP_register_GapObj: GapObj is not a datatype");
-    }
-
-    // DO THE GREAT MAGIC HACK (yes we are bad citizens :/) and
-    // change the super type of ForeignGAP.MPtr to GapObj
-    GAP_STATIC_ASSERT(offsetof(jl_datatype_t, super) == 8, "jl_datatype_t->super has wrong offset");
-    datatype_mptr->super = gapobj_type;
-    jl_gc_wb(datatype_mptr, gapobj_type);
-}
-
-void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
+// If 'module' is NULL then a new module 'ForeignGAP' is created & exported.
+// If 'parent' is NULL then 'jl_any_type' is used.
+void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
+                                  jl_datatype_t * parent)
 {
     // HOOK: initialization happens here.
-    GapStackBottom = stack_bottom;
     for (UInt i = 0; i < NUM_TYPES; i++) {
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
     }
@@ -921,6 +903,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     }
 
     is_threaded = jl_n_threads > 1;
+
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
     jl_gc_set_cb_root_scanner(GapRootScanner, 1);
@@ -935,61 +918,47 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     if (!IsUsingLibGap())
         RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
 
-    Module = jl_new_module(jl_symbol("ForeignGAP"));
-    Module->parent = jl_main_module;
-
-    // If we were loaded from GAP.jl, then try to retrieve GapObj from it.
-    // We do this by extracting it from the relevant instances of the GAP.jl
-    // module, which we get from the global variable `__JULIAGAPMODULE` if
-    // present.
-    //
-    // Newer versions of GAP.jl do not need this mechanism and instead call
-    // GAP_register_GapObj.
-    jl_module_t *   parent_module;
-    jl_datatype_t * gapobj_type;
-
-    parent_module = (jl_module_t *)jl_get_global(
-        jl_main_module, jl_symbol("__JULIAGAPMODULE"));
-    if (parent_module) {
-        if (!jl_is_module(parent_module)) {
-            Panic("__JULIAGAPMODULE is set in julia main module, but does "
-                  "not point to a module");
-        }
-
-        // retrieve GapObj abstract julia type
-        gapobj_type =
-            (jl_datatype_t *)jl_get_global(parent_module, jl_symbol("GapObj"));
-        if (!gapobj_type) {
-            Panic("GapObj type is not bound in GAP module");
-        }
-        if (!jl_is_datatype(gapobj_type)) {
-            Panic("GapObj in the GAP module is not a datatype");
-        }
-    }
-    else {
-        gapobj_type = jl_any_type;
+    if (module == 0) {
+        jl_sym_t * sym = jl_symbol("ForeignGAP");
+        module = jl_new_module(sym);
+        module->parent = jl_main_module;
+        // make the module available in the Main module (this also ensures
+        // that it won't be GC'ed prematurely, and hence also our datatypes
+        // won't be GCed)
+        jl_set_const(jl_main_module, sym, (jl_value_t *)module);
     }
 
-    jl_set_const(jl_main_module, jl_symbol("ForeignGAP"),
-                 (jl_value_t *)Module);
-    datatype_mptr = jl_new_foreign_type(
-        jl_symbol("MPtr"), Module, gapobj_type, MPtrMarkFunc, NULL, 1, 0);
-    datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), Module, jl_any_type,
+    if (parent == 0) {
+        parent = jl_any_type;
+    }
+
+    datatype_mptr = jl_new_foreign_type(jl_symbol("MPtr"), module, parent,
+                                        MPtrMarkFunc, NULL, 1, 0);
+    datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), module, jl_any_type,
                                        BagMarkFunc, JFinalizer, 1, 0);
     datatype_largebag =
-        jl_new_foreign_type(jl_symbol("LargeBag"), Module, jl_any_type,
+        jl_new_foreign_type(jl_symbol("LargeBag"), module, jl_any_type,
                             BagMarkFunc, JFinalizer, 1, 1);
 
     // export datatypes to Julia level
-    jl_set_const(Module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
-    jl_set_const(Module, jl_symbol("Bag"), (jl_value_t *)datatype_bag);
-    jl_set_const(Module, jl_symbol("LargeBag"),
+    jl_set_const(module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
+    jl_set_const(module, jl_symbol("Bag"), (jl_value_t *)datatype_bag);
+    jl_set_const(module, jl_symbol("LargeBag"),
                  (jl_value_t *)datatype_largebag);
 
     GAP_ASSERT(jl_is_datatype(datatype_mptr));
     GAP_ASSERT(jl_is_datatype(datatype_bag));
     GAP_ASSERT(jl_is_datatype(datatype_largebag));
+}
+
+void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
+{
     StackAlignBags = stack_align;
+    GapStackBottom = stack_bottom;
+
+    if (!datatype_mptr) {
+        GAP_InitJuliaMemoryInterface(0, 0);
+    }
 }
 
 UInt CollectBags(UInt size, UInt full)
