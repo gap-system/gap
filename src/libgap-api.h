@@ -175,10 +175,10 @@ void GAP_MarkBag(Obj obj);
 // Manually run the garbage collector.
 // A <full> collection checks all previously allocated objects, including those
 // that have survived at least one previous garbage collection.
-// A partial collection will attempt to clean up only recently-allocated
+// A partial collection will attempt to clean up only recently allocated
 // objects which have not been garbage-collected yet, and is hence normally
 // a faster operation.
-UInt GAP_CollectBags(UInt full);
+void GAP_CollectBags(BOOL full);
 
 
 ////

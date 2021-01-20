@@ -75,7 +75,7 @@ void GAP_MarkBag(Obj obj)
     MarkBag(obj);
 }
 
-UInt GAP_CollectBags(UInt full)
+void GAP_CollectBags(BOOL full)
 {
     CollectBags(0, full);
 }
