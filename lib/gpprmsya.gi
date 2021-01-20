@@ -673,14 +673,8 @@ InstallMethod(IsNaturalAlternatingGroup,"knows size",true,[IsPermGroup
 end );
 
 InstallMethod(IsNaturalAlternatingGroup,"comprehensive",true,[IsPermGroup],0,
-function( grp )
-  if 0 = NrMovedPoints(grp)  then
-    return IsTrivial(grp);
-  else
-    return PermgpContainsAn(grp)=true and
-      ForAll(GeneratorsOfGroup(grp),i->SignPerm(i)=1);
-  fi;
-end );
+G -> IsTrivial(G) or
+  ForAll(GeneratorsOfGroup(G),i->SignPerm(i)=1) and PermgpContainsAn(G)=true);
 
 #############################################################################
 ##
@@ -705,14 +699,8 @@ InstallMethod(IsNaturalSymmetricGroup,"knows size",true,[IsPermGroup
 end );
 
 InstallMethod(IsNaturalSymmetricGroup,"comprehensive",true,[IsPermGroup],0,
-function( grp )
-  if 0 = NrMovedPoints(grp)  then
-    return IsTrivial(grp);
-  else
-    return PermgpContainsAn(grp)=true and
-      ForAny(GeneratorsOfGroup(grp),i->SignPerm(i)=-1);
-  fi;
-end );
+G -> IsTrivial(G) or
+  ForAny(GeneratorsOfGroup(G),i->SignPerm(i)=-1) and PermgpContainsAn(G)=true);
 
 #############################################################################
 ##
