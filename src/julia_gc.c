@@ -912,12 +912,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_gc_set_cb_post_gc(PostGCHook, 1);
     // jl_gc_enable(0); /// DEBUGGING
 
-    // If we are embedding Julia in GAP, remember the root task
-    // of the main thread. The extent of the stack buffer of that
-    // task is calculated a bit differently than for other tasks.
-    if (!IsUsingLibGap())
-        RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
-
     if (module == 0) {
         jl_sym_t * sym = jl_symbol("ForeignGAP");
         module = jl_new_module(sym);
@@ -932,23 +926,26 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
         parent = jl_any_type;
     }
 
+    // create and store data type for master pointers
     datatype_mptr = jl_new_foreign_type(jl_symbol("MPtr"), module, parent,
                                         MPtrMarkFunc, NULL, 1, 0);
+    GAP_ASSERT(jl_is_datatype(datatype_mptr));
+    jl_set_const(module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
+
+    // create and store data type for small bags
     datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), module, jl_any_type,
                                        BagMarkFunc, JFinalizer, 1, 0);
+    GAP_ASSERT(jl_is_datatype(datatype_bag));
+    jl_set_const(module, jl_symbol("Bag"), (jl_value_t *)datatype_bag);
+
+    // create and store data type for large bags
     datatype_largebag =
         jl_new_foreign_type(jl_symbol("LargeBag"), module, jl_any_type,
                             BagMarkFunc, JFinalizer, 1, 1);
-
-    // export datatypes to Julia level
-    jl_set_const(module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
-    jl_set_const(module, jl_symbol("Bag"), (jl_value_t *)datatype_bag);
+    GAP_ASSERT(jl_is_datatype(datatype_largebag));
     jl_set_const(module, jl_symbol("LargeBag"),
                  (jl_value_t *)datatype_largebag);
 
-    GAP_ASSERT(jl_is_datatype(datatype_mptr));
-    GAP_ASSERT(jl_is_datatype(datatype_bag));
-    GAP_ASSERT(jl_is_datatype(datatype_largebag));
 }
 
 void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
@@ -959,6 +956,12 @@ void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
     if (!datatype_mptr) {
         GAP_InitJuliaMemoryInterface(0, 0);
     }
+
+    // If we are embedding Julia in GAP, remember the root task
+    // of the main thread. The extent of the stack buffer of that
+    // task is calculated a bit differently than for other tasks.
+    if (!IsUsingLibGap())
+        RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
 }
 
 UInt CollectBags(UInt size, UInt full)
