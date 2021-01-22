@@ -391,7 +391,7 @@ static Obj ProdPerm(Obj opL, Obj opR)
 **  'QuoPerm' returns the quotient of the permutations <opL> and <opR>, i.e.,
 **  the product '<opL>\*<opR>\^-1'.
 **
-**  Unfortunatly this can not be done in <degree> steps, we need 2 * <degree>
+**  Unfortunately this cannot be done in <degree> steps, we need 2 * <degree>
 **  steps.
 */
 static Obj QuoPerm(Obj opL, Obj opR)

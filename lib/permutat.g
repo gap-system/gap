@@ -435,7 +435,7 @@ SetOne( PermutationsFamily, () );
 ##  or if <A>list</A> contains a positive integer twice,
 ##  or if <A>list</A> contains an
 ##  integer not in the range <C>[ 1 .. Length( <A>list</A> ) ]</C>,
-##  of if <A>list</A> contains non-integer entries, etc.
+##  or if <A>list</A> contains non-integer entries, etc.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -801,7 +801,7 @@ InstallMethod( Order,
 ##  <Description>
 ##  returns the number of points for which <A>perm1</A> and <A>perm2</A> 
 ##  have different images. This should always produce the same result as
-##  <C>NrMovePoints(<A>perm1</A>/<A>perm2</A>)</C> but some methods may be
+##  <C>NrMovedPoints(<A>perm1</A>/<A>perm2</A>)</C> but some methods may be
 ##  much faster than this form, since no new permutation needs to be created.
 ##  </Description>
 ##  </ManSection>
