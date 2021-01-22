@@ -237,7 +237,7 @@ AS_CASE([$with_gc],
                  AC_DEFINE([USE_BOEHM_GC],  [1], [define as 1 if Boehm GC is used])
                 ],
     [gasman],   [AS_IF([test "x$enable_hpcgap" = xyes],
-                    [AC_MSG_ERROR([GASMAN can not be used with HPC-GAP])])
+                    [AC_MSG_ERROR([GASMAN cannot be used with HPC-GAP])])
                  AC_SUBST([GC_SOURCES], ["src/gasman.c src/sysmem.c"])
                  AC_DEFINE([USE_GASMAN],    [1], [define as 1 if GASMAN is used])
                 ],

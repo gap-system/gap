@@ -42,7 +42,7 @@ we can replace the subterm <M>l</M> of <M>u</M> by the term <M>r</M>
 and obtain a new word <M>v</M>.
 We say that we have <E>rewritten</E> <M>u</M> as <M>v</M>. 
 Note that <M>u</M> and <M>v</M> represent the same element of <M>A</M>.
-If <M>u</M> can not be rewritten using any rule of the rewriting system
+If <M>u</M> cannot be rewritten using any rule of the rewriting system
 we sat that <M>u</M> is <E>reduced</E>. 
 
 

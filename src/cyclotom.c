@@ -601,7 +601,7 @@ static void ConvertToBase(UInt n)
 **  <m> must be a divisor of $n$ and  gives a  hint about possible subfields.
 **  If a prime $p$ divides <m> then no  reduction into a subfield whose order
 **  is $n /  p$  is possible.   In the  arithmetic   functions  you can  take
-**  $lcm(n_l,n_r) / gcd(n_l,n_r) = n / gcd(n_l,n_r)$.  If you can not provide
+**  $lcm(n_l,n_r) / gcd(n_l,n_r) = n / gcd(n_l,n_r)$.  If you cannot provide
 **  such a hint just pass 1.
 **
 **  A special case of the  reduction is the case that  the  cyclotomic  is  a

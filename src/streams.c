@@ -520,7 +520,7 @@ Int READ_GAP_ROOT ( const Char * filename )
 static Obj FuncCLOSE_LOG_TO(Obj self)
 {
     if ( ! CloseLog() ) {
-        ErrorQuit("LogTo: can not close the logfile", 0, 0);
+        ErrorQuit("LogTo: cannot close the logfile", 0, 0);
     }
     return True;
 }
@@ -582,7 +582,7 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
 {
     if ( ! CloseInputLog() ) {
-        ErrorQuit("InputLogTo: can not close the logfile", 0, 0);
+        ErrorQuit("InputLogTo: cannot close the logfile", 0, 0);
     }
     return True;
 }
@@ -643,7 +643,7 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
 {
     if ( ! CloseOutputLog() ) {
-        ErrorQuit("OutputLogTo: can not close the logfile", 0, 0);
+        ErrorQuit("OutputLogTo: cannot close the logfile", 0, 0);
     }
     return True;
 }

@@ -1506,7 +1506,7 @@ end);
 ##  partitions    are  nonincreasing.   Also    '<part>[<i>]' must    be  \<=
 ##  '<n>+1-<k>', since  we need at   least  <k>-1  ones  to  fill the   <k>-1
 ##  positions of <part> remaining after  filling '<part>[<i>]'.  On the other
-##  hand '<part>[<i>]'  must be  >=  '<n>/<k>', because otherwise we  can not
+##  hand '<part>[<i>]'  must be  >=  '<n>/<k>', because otherwise  we  cannot
 ##  fill the <k>-1 remaining positions nonincreasingly.   It is not difficult
 ##  to show  that for  each  candidate satisfying these properties   there is
 ##  indeed a partition, i.e., we never run into a dead end.

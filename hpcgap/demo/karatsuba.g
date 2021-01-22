@@ -139,7 +139,7 @@ KaratsubaPolynomialMultiplicationExtRep:=function( f, g )
 local degf, degg, deg, n, halfn, nr, f1, f0, g1, g0, u, v, w, wuv, k, pos, pos1, val;
 # Zero polynomial will be represented as [ [  ], 0 ]
 # We took care that other representations of zero, for example [ [ 0, 0 ], 0 ] 
-# or [ [ 0, 0 ], 1 ], or [ [ 0 ], 1 ], can not occur, because we reduce
+# or [ [ 0, 0 ], 1 ], or [ [ 0 ], 1 ], cannot occur, because we reduce
 # the presentation after adding polynomials in PlusLaurentPolynomialsExtRep
 # and subtracting them in MinusLaurentPolynomialsExtRep. Note that degree
 # determination is also based on this feature.

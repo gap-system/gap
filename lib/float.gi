@@ -902,7 +902,7 @@ end );
 
 InstallOtherMethod( Indeterminate, [IsFloatFamily,IsPosInt],
         function(fam,ind)
-    Error("`Indeterminate(<family>,<ind>)' can not be used with floats; use `Indeterminate(<float pseudofield>,<ind>)'");
+    Error("`Indeterminate(<family>,<ind>)' cannot be used with floats; use `Indeterminate(<float pseudofield>,<ind>)'");
 end);
 
 InstallOtherMethod( Indeterminate,"number", true, [ IsFloatPseudoField,IsPosInt ],0,

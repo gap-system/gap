@@ -5860,7 +5860,7 @@ function(G,elm)
 
 
   # no pool needed: If the length of w is n, and g is a generator, the
-  # length of w/g can not be less than n-1 (otherwise (w/g)*g is a shorter
+  # length of w/g cannot be less than n-1 (otherwise (w/g)*g is a shorter
   # word) and cannot be more than n+1 (otherwise w/g is a shorter word for
   # it). Thus, if the length of w/g is OK mod 3, it is the right path.
 
