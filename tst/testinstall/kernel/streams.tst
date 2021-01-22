@@ -73,6 +73,21 @@ gap> READ("/this/path/does/not/exist!");
 false
 gap> READ(InputTextString(""));
 true
+gap> stream := InputTextString("function() end;");
+InputTextString(0,15)
+gap> READ(stream);
+true
+gap> LastReadValue;
+function(  ) ... end
+gap> NameFunction(LastReadValue);
+"unknown"
+gap> stream := InputTextString("function() end;");
+InputTextString(0,15)
+gap> READ(stream);
+true
+gap> func := LastReadValue;;
+gap> NameFunction(func);
+"func"
 
 #
 gap> READ_NORECOVERY(fail);
@@ -97,8 +112,10 @@ Error, READ_AS_FUNC: <input> must be a string or an input stream (not the valu\
 e 'fail')
 gap> READ_AS_FUNC("/this/path/does/not/exist!");
 false
-gap> READ_AS_FUNC(InputTextString(""));
+gap> func := READ_AS_FUNC(InputTextString(""));
 function(  ) ... end
+gap> NameFunction(func);
+"func"
 
 #
 gap> READ_GAP_ROOT(fail);
