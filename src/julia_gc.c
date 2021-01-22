@@ -202,7 +202,6 @@ static void JFinalizer(jl_value_t * obj)
 static jl_datatype_t * datatype_mptr;
 static jl_datatype_t * datatype_bag;
 static jl_datatype_t * datatype_largebag;
-static UInt            StackAlignBags = sizeof(void *);
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static BOOL            is_threaded;
@@ -498,7 +497,7 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
             jl_typeis(addr, datatype_mptr)) {
             PtrArrayAdd(arr, addr);
         }
-        q -= StackAlignBags;
+        q -= C_STACK_ALIGN;
     }
 }
 
@@ -660,7 +659,7 @@ static NOINLINE void TryMarkRange(void * start, void * end)
         SWAP(void *, start, end);
     }
     char * p = (char *)align_ptr(start);
-    char * q = (char *)end - sizeof(void *) + StackAlignBags;
+    char * q = (char *)end - sizeof(void *) + C_STACK_ALIGN;
     while (lt_ptr(p, q)) {
         void * addr = *(void **)p;
         if (addr) {
@@ -672,7 +671,7 @@ static NOINLINE void TryMarkRange(void * start, void * end)
             }
 #endif
         }
-        p += StackAlignBags;
+        p += C_STACK_ALIGN;
     }
 }
 
@@ -970,9 +969,8 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 
 }
 
-void InitBags(UInt initial_size, Bag * stack_bottom, UInt stack_align)
+void InitBags(UInt initial_size, Bag * stack_bottom)
 {
-    StackAlignBags = stack_align;
     GapStackBottom = stack_bottom;
     totalTime = 0;
 

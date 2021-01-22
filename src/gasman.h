@@ -850,7 +850,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 
 /****************************************************************************
 **
-*F  InitBags(<initialSize>,<stackStart>,<stackAlign>) . . . initialize Gasman
+*F  InitBags(<initialSize>, <stackStart>) . . . . . . . . . initialize Gasman
 **
 **  'InitBags'  initializes {\Gasman}.  It must be called from an application
 **  using {\Gasman} before any bags can be allocated.
@@ -864,15 +864,8 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 **  the stack grows upward or downward. A value that usually works is the
 **  address of the argument 'argc' of the 'main' function of the application,
 **  i.e., '(Bag\*)\&argc'.
-**
-**  <stackAlign> must be the alignment of items of type 'Bag' on the stack.
-**  It must be a divisor of 'sizeof(Bag)'. The addresses of all identifiers
-**  on the stack must be a multiple of <stackAlign>. If it is 1, identifiers
-**  may be anywhere on the stack, and if it is 'sizeof(Bag)', identifiers may
-**  only be at addresses that are a multiple of 'sizeof(Bag)'. This value
-**  depends on the machine, the operating system, and the compiler.
 */
-void InitBags(UInt initialSize, Bag * stackStart, UInt stackAlign);
+void InitBags(UInt initialSize, Bag * stackStart);
 
 
 /****************************************************************************

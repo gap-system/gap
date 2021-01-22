@@ -257,9 +257,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
     Panic("SetExtraMarkFuncBags not implemented for Boehm GC");
 }
 
-void InitBags(UInt              initial_size,
-              Bag *             stack_bottom,
-              UInt              stack_align)
+void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     UInt i; /* loop variable                   */
 
