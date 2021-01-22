@@ -987,7 +987,7 @@ if not IsBound( GAPInfo.PackagesInfo.(pkgname) ) then
     Print("#I  No package with the name ", pkgname, " is available\n");
     return fail;
 elif LoadPackage( pkgname ) = fail then
-    Print( "#I ", pkgname, " package can not be loaded\n" );
+    Print( "#I ", pkgname, " package cannot be loaded\n" );
     return fail;
 elif not IsBound( GAPInfo.PackagesInfo.(pkgname)[1].TestFile ) then
     Print("#I No standard tests specified in ", pkgname, " package, version ",

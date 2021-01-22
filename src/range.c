@@ -558,7 +558,7 @@ Obj             PosRange (
         }
     }
 
-    /* otherwise it can not be an element of the range                     */
+    /* otherwise it cannot be an element of the range                     */
     else {
         k = 0;
     }

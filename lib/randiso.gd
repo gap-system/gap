@@ -152,8 +152,8 @@ DeclareGlobalFunction( "RandomSpecialPcgsCoded" );
 ##  The integer <A>n</A> gives a certain amount of control over the 
 ##  probability to detect all isomorphisms. If it is <M>0</M>, then nothing 
 ##  will be done at all. The larger <A>n</A> is, the larger is the probability
-##  of finding all isomorphisms. However, due to the underlying method we can
-##  not guarantee that the algorithm finds all isomorphisms, no matter how
+##  of finding all isomorphisms. However, due to the underlying method we
+##  cannot guarantee that the algorithm finds all isomorphisms, no matter how
 ##  large <A>n</A> is.
 ##  </Description>
 ##  </ManSection>

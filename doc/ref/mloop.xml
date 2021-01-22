@@ -1007,7 +1007,7 @@ The <E>previous</E> exit code is returned.
 
 <Description>
 <Ref Func="QuitGap"/> acts similarly to the keyword <C>QUIT</C>, except
-<C>QUIT</C> can not be called from a function. It exits
+<C>QUIT</C> cannot be called from a function. It exits
 &GAP; cleanly, calling any function installed using <Ref Func="InstallAtExit"/>.
 The optional argument <A>ret</A> will be passed to <Ref Func="GapExitCode"/>.
 <P/>

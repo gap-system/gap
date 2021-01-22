@@ -1441,13 +1441,13 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 # vector needs a field > 256, so can't be compressed
                 # or vector contains non-ffes or no common characteristic
                 #
-                return fail; # v can not be written over GF(q)
+                return fail; # v cannot be written over GF(q)
             fi;
             if not IsMutable(v) then
                 MakeImmutable(vc);
             fi;
         else
-            return fail; # v can not be written over GF(q)
+            return fail; # v cannot be written over GF(q)
         fi;
     else
         common := COMMON_FIELD_VECFFE(v);
@@ -1479,7 +1479,7 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
         if not IsMutable(v) then MakeImmutable(res); fi;
         return res;
     else    
-        return fail; # vector can not be written over GF(q)
+        return fail; # vector cannot be written over GF(q)
     fi;
 end);
 

@@ -511,7 +511,7 @@ files in the `bin` directory: `gap.bat` and `gapcmd.bat`. Also,
 
 ### GAP does not work in the remote desktop
 
-GAP can not be started in the Windows Command Prompt shell (via `gapcmd.bat`)
+GAP cannot be started in the Windows Command Prompt shell (via `gapcmd.bat`)
 in the remote desktop. To start GAP in the remote desktop, use the script
 `gap.bat` which should work in such setting.
 

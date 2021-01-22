@@ -40,7 +40,7 @@
 **  a small integer value and its representation as immediate integer handle.
 **
 **  'T_INTPOS' and 'T_INTNEG' are the types of positive respectively negative
-**  integer values that can not be represented by immediate integers.
+**  integer values that cannot be represented by immediate integers.
 **
 **  These large integers values are represented as low-level GMP integer
 **  objects, that is, in base 2^N. That means that the bag of a large integer

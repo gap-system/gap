@@ -9,7 +9,7 @@ rec( message := "no error", number := 0 )
 
 #
 gap> CLOSE_LOG_TO();
-Error, LogTo: can not close the logfile
+Error, LogTo: cannot close the logfile
 gap> LOG_TO(fail);
 Error, LOG_TO: <filename> must be a string (not the value 'fail')
 gap> LOG_TO(TmpName());
@@ -26,7 +26,7 @@ true
 
 #
 gap> CLOSE_INPUT_LOG_TO();
-Error, InputLogTo: can not close the logfile
+Error, InputLogTo: cannot close the logfile
 gap> INPUT_LOG_TO(fail);
 Error, INPUT_LOG_TO: <filename> must be a string (not the value 'fail')
 gap> INPUT_LOG_TO(TmpName());
@@ -44,7 +44,7 @@ true
 
 #
 gap> CLOSE_OUTPUT_LOG_TO();
-Error, OutputLogTo: can not close the logfile
+Error, OutputLogTo: cannot close the logfile
 gap> OUTPUT_LOG_TO(fail);
 Error, OUTPUT_LOG_TO: <filename> must be a string (not the value 'fail')
 gap> OUTPUT_LOG_TO(TmpName());

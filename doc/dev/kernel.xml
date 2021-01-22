@@ -628,7 +628,7 @@ object to a &C; integer. These functions do NOT check for overflows.
 <P/>
 
 The other two integer types are <C>T_INTPOS</C> and <C>T_INTNEG</C> for
-positive (respectively, negative) integer values  that  can  not  be
+positive (respectively, negative) integer values  that  cannot  be
 represented  by  immediate  integers. See comments in <F>integer.c</F>
 for details.
 <P/>

@@ -299,7 +299,7 @@ These changes are also listed on the
 
   - `LatticeViaRadical` called `ClosureSubgroupNC` assuming that the
     parent contained all generators. It now calls `ClosureSubgroup`
-    instead, since this can not be always guaranteed (this could
+    instead, since this cannot always be guaranteed (this could
     happen, for example, in perfect subgroup computation). Also
     added an assertion to `ClosureSubgroupNC` to catch this
     situation in other cases. (Reported by Serge Bouc)
@@ -3798,7 +3798,7 @@ an introduction to GAP 4.5, accompanying its release announcement.
 
   - Due to improvements for vectors over finite fields, certain objects
     have more limitations on changing their base field. For example, one
-    can not create a compressed matrix over GF(2) and then assign an
+    cannot create a compressed matrix over GF(2) and then assign an
     element of GF(4) to one of its entries.
 
 ### No longer supported:
