@@ -169,7 +169,7 @@ EXPORT_INLINE UInt TNUM_BAG(Bag bag)
 **
 **      if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
 **
-**  Each flag must be a an integer with exactly one bit set, e.g. a value
+**  Each flag must be an integer with exactly one bit set, e.g. a value
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
 **  7 (inclusive).
 */

@@ -117,7 +117,7 @@
 
 /****************************************************************************
 **
-*F  ELM_GF2VEC( <list>, <pos> ) . . . . . . . . . . element of a a GF2 vector
+*F  ELM_GF2VEC( <list>, <pos> ) . . . . . . . . . . . element of a GF2 vector
 **
 **  'ELM_GF2VEC' return the <pos>-th element of  the GF2 vector <list>, which
 **  is either 'Z(2)' or '0*Z(2)'.  <pos> must be a positive integer less than
@@ -159,7 +159,7 @@
 
 /****************************************************************************
 **
-*F  ELM_GF2MAT( <list>, <pos> ) . . . . . . . . . . element of a a GF2 matrix
+*F  ELM_GF2MAT( <list>, <pos> ) . . . . . . . . . . . element of a GF2 matrix
 **
 **  'ELM_GF2MAT' returns the <pos>-th element of the GF2 matrix <list>, which
 **  is a GF2 vector.  <pos> must be a positive  integer less than or equal to
@@ -173,7 +173,7 @@
 
 /****************************************************************************
 **
-*F  SET_ELM_GF2MAT( <list>, <pos>, <elm> )  . . set element of a a GF2 matrix
+*F  SET_ELM_GF2MAT( <list>, <pos>, <elm> )  . . . set element of a GF2 matrix
 **
 **  'SET_ELM_GF2MAT'  sets the <pos>-th element   of  the GF2 matrix  <list>,
 **  which must be a  GF2 vector.  <pos> must  be a positive integer less than

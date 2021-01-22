@@ -1843,7 +1843,7 @@ end;
 ## FieldGenCentMat( ) should only be applied to modules that have already
 ## been proved irreducible using IsIrreducible. It then tests for absolute
 ## irreducibility (if not already known) and does nothing if module is
-## absolutely irreducible. Otherwise, it returns a a matrix that generates
+## absolutely irreducible. Otherwise, it returns a matrix that generates
 ## (multiplicatively) the centralizing field (i.e. its multiplicative order
 ## is q^e - 1, where e is the degree of the centralizing field. This is not
 ## yet used, but maybe in future, if we wish to reduce the group to matrices

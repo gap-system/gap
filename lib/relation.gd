@@ -95,7 +95,7 @@ DeclareSynonym("IsBinaryRelation",IsEndoGeneralMapping);
 ##  this function constructs a binary relation such that <M>1</M> is related
 ##  to <A>list</A><C>[1]</C>, <M>2</M> to <A>list</A><C>[2]</C> and so on.
 ##  The first version checks whether the list supplied is valid.
-##  The the <C>NC</C> version skips this check.
+##  The <C>NC</C> version skips this check.
 ##  <Example><![CDATA[
 ##  gap> R:=BinaryRelationOnPoints([[1,2],[2],[3]]);
 ##  Binary Relation on 3 points

@@ -1254,8 +1254,8 @@ end );
 
 #############################################################################
 ##
-#M  \/( <V>, <W> )  . . . . . . .factor of a an algebra module by a submodule
-#M  \/( <V>, <vectors> )  . . . .factor of a an algebra module by a submodule
+#M  \/( <V>, <W> )  . . . . . . .  factor of an algebra module by a submodule
+#M  \/( <V>, <vectors> )  . . . .  factor of an algebra module by a submodule
 ##
 InstallOtherMethod( \/,
         "for an algebra module and collection",

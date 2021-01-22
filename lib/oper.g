@@ -1448,7 +1448,7 @@ BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
             req := GET_OPER_FLAGS( Setter(gvar) );
             STORE_OPER_FLAGS( Setter(gvar), [ FLAGS_FILTER( filter), req[1][2] ] );
         else
-            # gvar is a an existing non-attribute operation, try to convert it
+            # gvar is an existing non-attribute operation, try to convert it
             # into an attribute
             ConvertToAttribute(name, gvar, filter, rank, mutflag);
         fi;

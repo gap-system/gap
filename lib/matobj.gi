@@ -1316,7 +1316,7 @@ InstallMethod( Characteristic,
 ##  prescribed mutability return a matrix object compatible with <A>M</A>,
 ##  provided that <A>M</A> is invertible.
 ##  <!-- over its base domain? -->
-##  (If <A>M</A> is not invertible the the operations return <K>fail</K>.)
+##  (If <A>M</A> is not invertible then the operations return <K>fail</K>.)
 ##  <P/>
 ##  <Ref Prop="IsZero" Label="for matrix object"/> returns <K>true</K> if
 ##  all entries in <A>M</A> are zero, and <K>false</K> otherwise.

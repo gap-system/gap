@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This script generates a version string for GAP based on the the VERSION file
+# This script generates a version string for GAP based on the VERSION file
 # (if any) and the output of `git describe` (if inside a git working tree).
 #
 # The result is printed into cnf/GAP-VERSION-FILE, but only if the version
