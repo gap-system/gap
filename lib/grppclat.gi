@@ -214,6 +214,7 @@ local g,op,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,dims,nm;
 #		      IsCommutative and IsElementaryAbelian);
 
       SetSize(a,p^Length(ma));
+      if Size(a)=Size(g) then a:=g;fi;
       new[i]:=a;
     od;
     ma:=new;
@@ -241,6 +242,7 @@ local g,op,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,dims,nm;
 		      #List(i,j->Product([1..d],k->pcgs[k]^IntFFE(j[k])))));
     od;
   fi;
+  SortBy(ma,x->-Size(x));
   return ma;
 end);
 

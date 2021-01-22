@@ -47,7 +47,7 @@ DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
 InstallGlobalFunction(CreateKnuthBendixRewritingSystem,
 function(fam, wordord)
 local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
-      w,freefam;
+      w,freefam,gens;
 
   #changes the set of relations so that lhs is greater then rhs
   # and removes trivial rules (like u=u)
@@ -99,10 +99,12 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
     w:=CollectionsFamily(fam)!.wholeMonoid;
     r:=RelationsOfFpMonoid(w);
     freefam:=ElementsFamily(FamilyObj(FreeMonoidOfFpMonoid(w)));
+    gens:=GeneratorsOfMonoid(FreeMonoidOfFpMonoid(w));
   else
     w:=CollectionsFamily(fam)!.wholeSemigroup;
     r:=RelationsOfFpSemigroup(w);
     freefam:=ElementsFamily(FamilyObj(FreeSemigroupOfFpSemigroup(w)));
+    gens:=GeneratorsOfSemigroup(FreeSemigroupOfFpSemigroup(w));
   fi;
 
 
@@ -120,7 +122,11 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
      [LetterRepAssocWord(i[1]),LetterRepAssocWord(i[2])]),
     pairs2check:=CantorList(Length(r)),
     ordering:=wordord,
-    freefam:=freefam));
+    freefam:=freefam,
+    generators:=gens));
+
+  kbrws!.bitrules:=List([1,2],nr->
+    List(kbrws!.tzrules,y->BlistList([1..Length(gens)],Set(y[nr]))));
 
   if ValueOption("isconfluent")=true then
     kbrws!.createdconfluent:=true;
@@ -165,6 +171,9 @@ function(rws)
   else
     Unbind(rws!.pairs2check);
   fi;
+  if IsBound(rws!.bitrules) then
+    rws!.bitrules:=[[],[]];
+  fi;
   rws!.reduced := true;
   for v in r do
     AddRuleReduced(rws, v);
@@ -196,9 +205,14 @@ InstallOtherMethod(AddRuleReduced,
 [ IsKnuthBendixRewritingSystem and IsMutable and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
-  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc;
+  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,geli,abi;
 
     ptc:=IsBound(kbrws!.pairs2check);
+    if IsBound(kbrws!.bitrules) then
+      geli:=[1..Length(kbrws!.generators)];
+    else
+      geli:=false;
+    fi;
 
     #given a Knuth Bendix Rewriting System, kbrws,
     #removes rule i of the set of rules of kbrws and    
@@ -211,6 +225,12 @@ function(kbrws,v)
       q:=kbrws!.tzrules{[1..i-1]};
       Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
       kbrws!.tzrules:=q;
+
+      if IsBound(kbrws!.bitrules) then
+        l:=Concatenation([1..i-1],[i+1..Length(kbrws!.bitrules[1])]);
+        kbrws!.bitrules[1]:=kbrws!.bitrules[1]{l};
+        kbrws!.bitrules[2]:=kbrws!.bitrules[2]{l};
+      fi;
 
       if ptc then
         #delete pairs of indexes that include i
@@ -245,6 +265,11 @@ function(kbrws,v)
 
       #insert rule 
       Add(kbrws!.tzrules,u);
+      if IsBound(kbrws!.bitrules) then
+        Add(kbrws!.bitrules[1],BlistList(geli,Set(u[1])));
+        Add(kbrws!.bitrules[2],BlistList(geli,Set(u[2])));
+      fi;
+
     
       if ptc then
         #insert new pairs
@@ -292,6 +317,10 @@ function(kbrws,v)
         fi;
         add_rule([a,b],kbrws);
         kbrws!.reduced := false;
+
+        if geli<>false then
+          abi:=BlistList(geli,Set(a));
+        fi;
     
         #Now we have to check if by adjoining this rule
         #any of the other active ones become redudant
@@ -303,7 +332,8 @@ function(kbrws,v)
           #as a subword then we delete rule k
           #but add it to the stack, since it has to still hold
 
-          if PositionSublist(kbrws!.tzrules[k][1],a,0)<>fail then
+          if (geli=false or IsSubsetBlist(kbrws!.bitrules[1][k],abi)) 
+            and PositionSublist(kbrws!.tzrules[k][1],a,0)<>fail then
           #if PositionWord(kbrws!.rules[k][1],a,1)<>fail then
             Add(s,kbrws!.tzrules[k]);
             remove_rule(k,kbrws);
@@ -313,7 +343,8 @@ function(kbrws,v)
           #else if rhs of rule k contains the new rule 
           #as a subword then we use the new rule
           #to irreduce that rhs
-          elif PositionSublist(kbrws!.tzrules[k][2],a,0)<>fail then
+          elif (geli=false or IsSubsetBlist(kbrws!.bitrules[2][k],abi)) 
+            and PositionSublist(kbrws!.tzrules[k][2],a,0)<>fail then
           #elif PositionWord(kbrws!.rules[k][2],a,1)<>fail then
             kbrws!.tzrules[k][2]:=
               ReduceLetterRepWordsRewSys(kbrws!.tzrules, kbrws!.tzrules[k][2]);
@@ -459,6 +490,7 @@ local   pn,lp,rl,p,i;              #loop variables
   kbrws!.pairs2check:=[];
 
 end);
+
 GAPKB_REW.MakeKnuthBendixRewritingSystemConfluent :=
   GKB_MakeKnuthBendixRewritingSystemConfluent;
 
@@ -800,15 +832,23 @@ InstallMethod( ShallowCopy,
   "for a Knuth Bendix rewriting system",
   true,
   [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep], 0,
-  kbrws -> Objectify( Subtype( TypeObj(kbrws), IsMutable ),
+function(kbrws)
+local new;
+  new:=Objectify( Subtype( TypeObj(kbrws), IsMutable ),
               rec(
+                  generators:=StructuralCopy(kbrws!.generators),
                   family := kbrws!.family,
                   reduced := false,
                   tzrules:= StructuralCopy(kbrws!.tzrules),
                   pairs2check:= [],
                   ordering :=kbrws!.ordering,
                   freefam := kbrws!.freefam,
-                  tzordering := kbrws!.tzordering)));
+                  tzordering := kbrws!.tzordering));
+  if IsBound(kbrws!.bitrules) then
+    new!.bitrules:=List(kbrws!.bitrules,ShallowCopy);
+  fi;
+  return new;
+end);
 
 ###############################################################################
 ##

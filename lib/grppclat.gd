@@ -124,9 +124,9 @@ DeclareGlobalFunction("InducedAutomorphism");
 ##  > [(7,8,9),(1,2,3),(4,5,6)]);
 ##  [ (1,2,3), (4,5,6), (7,8,9) ] -> [ (7,8,9), (1,2,3), (4,5,6) ]
 ##  gap> u:=InvariantSubgroupsElementaryAbelianGroup(g,[hom]);
-##  [ Group(()), Group([ (1,2,3)(4,5,6)(7,8,9) ]), 
-##    Group([ (1,3,2)(7,8,9), (1,3,2)(4,5,6) ]), 
-##    Group([ (7,8,9), (4,5,6), (1,2,3) ]) ]
+##  [ Group([ (7,8,9), (4,5,6), (1,2,3) ]),
+##    Group([ (1,3,2)(7,8,9), (1,3,2)(4,5,6) ]),
+##    Group([ (1,2,3)(4,5,6)(7,8,9) ]), Group(()) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -255,8 +255,8 @@ DeclareGlobalFunction(
 ##  [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ] -> 
 ##  [ (4,5,6), (4,5), (7,8,9), (7,8), (1,2,3), (1,2) ]
 ##  gap> l:=SubgroupsSolvableGroup(g,rec(actions:=[hom]));;
-##  gap> List(l,Size);
-##  [ 1, 3, 9, 27, 54, 2, 6, 18, 108, 4, 216, 8 ]
+##  gap> SortedList(List(l,Size));
+##  [ 1, 2, 3, 4, 6, 8, 9, 18, 27, 54, 108, 216 ]
 ##  gap> Length(ConjugacyClassesSubgroups(g)); # to compare
 ##  162
 ##  ]]></Example>
@@ -282,8 +282,8 @@ DeclareGlobalFunction("SubgroupsSolvableGroup");
 ##  <Example><![CDATA[
 ##  gap> l:=SubgroupsSolvableGroup(g,rec(actions:=[hom],
 ##  > consider:=SizeConsiderFunction(6)));;
-##  gap> List(l,Size);
-##  [ 1, 3, 9, 27, 54, 6, 18, 108, 216 ]
+##  gap> SortedList(List(l,Size));
+##  [ 1, 3, 6, 9, 18, 27, 54, 108, 216 ]
 ##  ]]></Example>
 ##  <P/>
 ##  This example shows that in general the <C>consider</C> function does not
@@ -313,8 +313,8 @@ DeclareGlobalFunction("SizeConsiderFunction");
 ##  <Example><![CDATA[
 ##  gap> l:=SubgroupsSolvableGroup(g,rec(actions:=[hom],
 ##  > consider:=ExactSizeConsiderFunction(6)));;
-##  gap> List(l,Size);
-##  [ 1, 3, 9, 27, 54, 6, 108, 216 ]
+##  gap> SortedList(List(l,Size));
+##  [ 1, 3, 6, 9, 27, 54, 108, 216 ]
 ##  ]]></Example>
 ##  <P/>
 ##  Again, the <C>consider</C> function does not provide
