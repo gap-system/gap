@@ -1882,10 +1882,10 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);; NormalSubgroups(g);
 ##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
 ##  gap> g:=AbelianGroup([2,2]);; NormalSubgroups(g);
-##  [ <pc group of size 4 with 2 generators>, Group([ f1 ]),
-##    Group([ f2 ]), Group([ f1*f2 ]), Group([  ]) ]
+##  [ <pc group of size 4 with 2 generators>, Group([ f2 ]),
+##    Group([ f1*f2 ]), Group([ f1 ]), Group([  ]) ]
 ##  ]]></Example>
 ##  <P/>
 ##  The algorithm for the computation of normal subgroups is described in
@@ -1909,7 +1909,7 @@ DeclareAttribute( "NormalSubgroups", IsGroup );
 ##  subgroups that are invariant under all automorphisms.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(4);; CharacteristicSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
+##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
 ##  gap> g:=AbelianGroup([2,2]);; CharacteristicSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([  ]) ]
