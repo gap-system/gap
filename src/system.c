@@ -653,7 +653,7 @@ static const struct optInfo options[] = {
   { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
   { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
 #ifdef USE_GASMAN
-  { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
+  { 'm', "initial-workspace", storeMemory2, &SyStorMin, 1 }, /* kernel */
 #endif
   { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
 #ifdef USE_GASMAN
@@ -661,7 +661,7 @@ static const struct optInfo options[] = {
 #endif
   { 'n', "", forceLineEditing, 0, 0}, /* prob library */
 #ifdef USE_GASMAN
-  { 'o', "", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
+  { 'o', "warn-workspace", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
 #endif
   { 'p', "", toggle, &SyWindow, 0 }, /* ?? */
   { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
