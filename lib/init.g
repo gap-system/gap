@@ -658,6 +658,8 @@ which may vanish in a future version of GAP"
   ) );
 # HACKUSERPREF temporary hack for AtlasRep and CTblLib:
 GAPInfo.UserPreferences.ReadObsolete := UserPreference("ReadObsolete");
+
+ReadLib("obsolete.g"); # the helpers in there are always read
 CallAndInstallPostRestore( function()
     if not GAPInfo.CommandLineOptions.O and UserPreference( "ReadObsolete" ) <> false and
        not IsBound( GAPInfo.Read_obsolete_gd ) then
