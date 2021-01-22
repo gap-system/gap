@@ -516,12 +516,12 @@ DeclareOperation( "AssignGeneratorVariables", [IsDomain] );
 ##
 ##  <#GAPDoc Label="Length:wordass">
 ##  <ManSection>
-##  <Attr Name="Length" Arg='w' Label="for a associative word"/>
+##  <Attr Name="Length" Arg='w' Label="for an associative word"/>
 ##
 ##  <Description>
 ##  <Index Subkey="of a word">length</Index>
 ##  For an associative word <A>w</A>,
-##  <Ref Attr="Length" Label="for a associative word"/> returns
+##  <Ref Attr="Length" Label="for an associative word"/> returns
 ##  the number of letters in <A>w</A>.
 ##  <P/>
 ##  <Example><![CDATA[

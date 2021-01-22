@@ -297,20 +297,20 @@ void IntrQualifiedExprEnd(IntrState * intr);
 *F  IntrAtomicEndBody(<nr>) . . . . . interpret atomic-statement, end of body
 *F  IntrAtomicEnd() . . . . . .  interpret atomic-statement, end of statement
 **
-**  'IntrAtomicBegin' is an action to interpret a atomic-statement. It is
+**  'IntrAtomicBegin' is an action to interpret an atomic-statement. It is
 **  called when the reader encounters the 'atomic', i.e., *before* the
 **  condition is read.
 **
-**  'IntrAtomicBeginBody' is an action to interpret a atomic-statement. It is
+**  'IntrAtomicBeginBody' is an action to interpret an atomic-statement. It is
 **  called when the reader encounters the beginning of the statement body,
 **  i.e., *after* the expressions to be locked have been read. <nrexprs> is
 **  the number of such  expressions.
 **
-**  'IntrAtomicEndBody' is an action to interpret a atomic-statement. It is
+**  'IntrAtomicEndBody' is an action to interpret an atomic-statement. It is
 **  called when the reader encounters the end of the statement body. <nr> is
 **  the number of statements in the body.
 **
-**  'IntrAtomicEnd' is an action to interpret a atomic-statement. It is
+**  'IntrAtomicEnd' is an action to interpret an atomic-statement. It is
 **  called when the reader encounters the end of the statement, i.e.,
 **  lyimmediate after 'IntrAtomicEndBody'.
 **

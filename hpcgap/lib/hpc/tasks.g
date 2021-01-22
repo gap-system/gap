@@ -338,7 +338,7 @@ WaitTask := function(arg)
   for task in arg do
     atomic readonly task do 
       if task.async then
-        Error("Cannot wait for a asynchronous task");
+        Error("Cannot wait for an asynchronous task");
       fi;
     od;
   od;
@@ -383,7 +383,7 @@ WaitAnyTask := function(arg)
     WRITE_LOCK(task,false);
     if task.async then
       UNLOCK(task);
-      Error("Cannot wait for a async task");
+      Error("Cannot wait for an async task");
     fi;
     if not task.started then
       UNLOCK(task);
@@ -411,7 +411,7 @@ TaskResult := function(task)
   
   atomic readonly task do
     if task.async then
-      Error("Cannot obtain the result of a asynchronous task");
+      Error("Cannot obtain the result of an asynchronous task");
     fi;
     
     if not task.started then

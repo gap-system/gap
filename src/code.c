@@ -1141,19 +1141,19 @@ void CodeForEnd ( void )
 *F  CodeAtomicEndBody( <nr> ) . . . . . .  code atomic-statement, end of body
 *F  CodeAtomicEnd() . . . . . . . . . code atomic-statement, end of statement
 **
-**  'CodeAtomicBegin' is an action to code a atomic-statement. It is called
+**  'CodeAtomicBegin' is an action to code an atomic-statement. It is called
 **  when the reader encounters the 'atomic', i.e., *before* the condition is
 **  read.
 **
-**  'CodeAtomicBeginBody' is an action  to code a atomic-statement. It is
+**  'CodeAtomicBeginBody' is an action  to code an atomic-statement. It is
 **  called when the reader encounters the beginning of the statement body,
 **  i.e., *after* the condition is read.
 **
-**  'CodeAtomicEndBody' is an action to code a atomic-statement. It is called
+**  'CodeAtomicEndBody' is an action to code an atomic-statement. It is called
 **  when the reader encounters the end of the statement body. <nr> is the
 **  number of statements in the body.
 **
-**  'CodeAtomicEnd' is an action to code a atomic-statement. It is called
+**  'CodeAtomicEnd' is an action to code an atomic-statement. It is called
 **  when the reader encounters the end of the statement, i.e., immediate
 **  after 'CodeAtomicEndBody'.
 */

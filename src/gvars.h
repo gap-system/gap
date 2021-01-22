@@ -81,7 +81,7 @@ extern void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val);
 
 /****************************************************************************
 **
-*F  ValAutoGVar(<gvar>) . . . . . . . .  value of a automatic global variable
+*F  ValAutoGVar(<gvar>) . . . . . . . . value of an automatic global variable
 **
 **  'ValAutoGVar' returns the value of the global variable <gvar>.  This will
 **  be 0 if  <gvar> has  no assigned value.    It will also cause a  function

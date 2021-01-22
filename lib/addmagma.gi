@@ -643,7 +643,7 @@ BindGlobal( "ClosureAdditiveMagmaDefault", function( A, elm )
 
     gens:= GeneratorsOfAdditiveMagma( A );
 
-    # try to avoid adding an element to a add. magma that already contains it
+    # try to avoid adding an element to an add. magma that already contains it
     if   elm in gens
       or ( HasAsSSortedList( A ) and elm in AsSSortedList( A ) )
     then

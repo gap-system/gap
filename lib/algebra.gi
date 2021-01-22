@@ -1306,7 +1306,7 @@ InstallMethod( AsFLMLORWithOne,
 
 #############################################################################
 ##
-#M  AsFLMLORWithOne( <F>, <V> ) . .  view a left module as a algebra-with-one
+#M  AsFLMLORWithOne( <F>, <V> ) . . view a left module as an algebra-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
     "for a division ring and a free left module",
@@ -1376,7 +1376,7 @@ InstallMethod( AsFLMLORWithOne,
 
 #############################################################################
 ##
-#M  AsFLMLORWithOne( <F>, <D> ) . . . . view an algebra as a algebra-with-one
+#M  AsFLMLORWithOne( <F>, <D> ) . . .  view an algebra as an algebra-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
     "for a division ring and an algebra",
@@ -1440,7 +1440,7 @@ InstallMethod( AsFLMLORWithOne,
 #M  AsFLMLORWithOne( <F>, <D> ) . . view an alg.-with-one as an alg.-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
-    "for a division ring and a algebra-with-one",
+    "for a division ring and an algebra-with-one",
     [ IsDivisionRing, IsFLMLORWithOne ],
     function( F, D )
     local L, A;
@@ -2209,7 +2209,7 @@ InstallMethod( AsSubalgebraWithOne,
     end );
 
 InstallMethod( AsSubalgebraWithOne,
-    "for an algebra and a algebra-with-one",
+    "for an algebra and an algebra-with-one",
     IsIdenticalObj,
     [ IsAlgebra, IsAlgebraWithOne ],
     function( A, U )

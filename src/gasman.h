@@ -852,7 +852,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 **
 *F  InitBags(<initialSize>,<stackStart>,<stackAlign>) . . . initialize Gasman
 **
-**  'InitBags'  initializes {\Gasman}.  It  must be called from a application
+**  'InitBags'  initializes {\Gasman}.  It must be called from an application
 **  using {\Gasman} before any bags can be allocated.
 **
 **  <initialSize> must be the size of  the initial workspace that 'InitBags'
