@@ -1466,8 +1466,7 @@ void InitializeGap (
 #else
         0,
 #endif
-             (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN),
-             C_STACK_ALIGN);
+             (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN));
 
     STATE(ThrownObject) = 0;
     STATE(UserHasQUIT) = 0;

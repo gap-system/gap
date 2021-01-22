@@ -1197,13 +1197,11 @@ void FinishBags( void )
 **
 *F  InitBags(...) . . . . . . . . . . . . . . . . . . . . . initialize Gasman
 **
-**  'InitBags' remembers <stack-func>, <stack-bottom>, and <stack-align>
-**  in global variables. It also allocates the initial workspace, and sets up
-**  the linked list of available masterpointer.
+**  'InitBags' stores <stack-bottom> in a global variable. It also allocates
+**  the initial workspace, and sets up the linked list of available
+**  masterpointers.
 */
 static Bag * StackBottomBags;
-
-static UInt StackAlignBags;
 
 static TNumExtraMarkFuncBags ExtraMarkFuncBags;
 void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
@@ -1220,10 +1218,7 @@ void SetStackBottomBags(void * StackBottom)
 }
 
 
-void            InitBags (
-    UInt                initial_size,
-    Bag *               stack_bottom,
-    UInt                stack_align )
+void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     Bag *               p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
@@ -1235,7 +1230,6 @@ void            InitBags (
 
     // install the stack values
     StackBottomBags = stack_bottom;
-    StackAlignBags  = stack_align;
 
     /* first get some storage from the operating system                    */
     initial_size    = (initial_size + 511) & ~(511);
@@ -1872,7 +1866,7 @@ static NOINLINE void GenStackFuncBags(void)
 
     top = (Bag*)((void*)&top);
     if ( StackBottomBags < top ) {
-        for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
+        for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
             for (p = (Bag *)((char *)StackBottomBags + i); p < top; p++) {
                 Bag * pcpy = p;
 #if defined(GAP_MEMORY_CANARY)
@@ -1884,7 +1878,7 @@ static NOINLINE void GenStackFuncBags(void)
         }
     }
     else {
-        for ( i = 0; i < sizeof(Bag*); i += StackAlignBags ) {
+        for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
             for (p = (Bag *)((char *)StackBottomBags - i); top < p; p--) {
                 Bag * pcpy = p;
 #if defined(GAP_MEMORY_CANARY)
