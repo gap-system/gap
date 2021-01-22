@@ -61,7 +61,7 @@ InstallTrueMethod( IsPermGroup, IsNaturalAlternatingGroup );
 ##  <Prop Name="IsAlternatingGroup" Arg='group'/>
 ##
 ##  <Description>
-##  is <K>true</K> if the group <A>group</A> is isomorphic to a
+##  is <K>true</K> if the group <A>group</A> is isomorphic to an
 ##  alternating group.
 ##  </Description>
 ##  </ManSection>

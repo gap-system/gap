@@ -82,7 +82,7 @@ static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count);
 **
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
 **
-**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
+**  'syBuf' is an array used as  buffers for  file I/O to   prevent the C I/O
 **  routines  from   allocating their  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 **

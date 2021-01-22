@@ -490,7 +490,7 @@ static Obj EvalSum(Expr expr)
 
 /****************************************************************************
 **
-*F  EvalAInv(<expr>)  . . . . . . . . . . . . . . evaluate a additive inverse
+*F  EvalAInv(<expr>)  . . . . . . . . . . . . .  evaluate an additive inverse
 **
 **  'EvalAInv' evaluates  the additive  inverse-expression  and  returns  its
 **  value, i.e., the  additive inverse of  the operand.  'EvalAInv' is called

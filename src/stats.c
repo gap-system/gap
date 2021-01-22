@@ -1313,7 +1313,7 @@ static void PrintWhile(Stat stat)
 
 /****************************************************************************
 **
-*F  PrintAtomic(<stat>)  . . . . . . . . . . . . . . . . .  print a atomic loop
+*F  PrintAtomic(<stat>)  . . . . . . . . . . . . . . . . print an atomic loop
 **
 **  'PrintAtomic' prints the atomic-loop <stat>.
 **
