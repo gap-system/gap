@@ -387,7 +387,15 @@ static Obj * ELM_COPS_PLIST(Obj cops, UInt i)
     return (Obj *)val;
 }
 
-static void AssGVarInternal(UInt gvar, Obj val, Int hasExprCopiesFopies)
+// Assign 'val' to name 'gvar'. 'hasExprCopiesFopies' can be false if this
+// variable has a non-default value assigned to ExprGVars, CopiesGVars or
+// FopiesGVars (this is a performance optimisation). If 'giveNameToFunc'
+// is TRUE then if 'val' is a function without a name it will be given the
+// name 'gvar'.
+static void AssGVarInternal(UInt gvar,
+                            Obj  val,
+                            BOOL hasExprCopiesFopies,
+                            BOOL giveNameToFunc)
 {
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
@@ -412,7 +420,8 @@ static void AssGVarInternal(UInt gvar, Obj val, Int hasExprCopiesFopies)
 #ifdef HPCGAP
     if (IS_BAG_REF(val) && REGION(val) == 0) { /* public region? */
 #endif
-        if (val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0) {
+        if (giveNameToFunc && val != 0 && TNUM_OBJ(val) == T_FUNCTION &&
+            NAME_FUNC(val) == 0) {
             onam = CopyToStringRep(NameGVar(gvar));
             MakeImmutable(onam);
             SET_NAME_FUNC(val, onam);
@@ -490,12 +499,14 @@ void AssGVar(UInt gvar, Obj val)
         }
     }
 
-    AssGVarInternal(gvar, val, info.hasExprCopiesFopies);
+    AssGVarInternal(gvar, val, info.hasExprCopiesFopies, TRUE);
 }
 
 // This is a kernel-only variant of AssGVar which will change read-only
 // variables, which is used for constants like:
 // Time, MemoryAllocated, last, last2, last3
+// Does not automatically give a name to functions based on variable name,
+// as these names are not given by users.
 void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
 {
     GVarFlagInfo info = GetGVarFlagInfo(gvar);
@@ -505,7 +516,7 @@ void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val)
         ErrorMayQuit("Variable: '%g' is constant", (Int)NameGVar(gvar), 0);
     }
 
-    AssGVarInternal(gvar, val, info.hasExprCopiesFopies);
+    AssGVarInternal(gvar, val, info.hasExprCopiesFopies, FALSE);
 }
 
 
