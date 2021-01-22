@@ -1042,7 +1042,7 @@ DeclareGlobalFunction( "DeclareAutoreadableVariables" );
 ##  <P/>
 ##  The argument <A>info</A> must be either a record as is contained in a
 ##  <F>PackageInfo.g</F> file
-##  or a a string which describes the path to such a file.
+##  or a string which describes the path to such a file.
 ##  The result is <K>true</K> if the record or the contents of the file,
 ##  respectively, has correct format, and <K>false</K> otherwise;
 ##  in the latter case information about the incorrect components is printed.

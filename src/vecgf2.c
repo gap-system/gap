@@ -1484,7 +1484,7 @@ static Obj FuncCOPY_GF2VEC(Obj self, Obj list)
 **
 *F FuncCONV_GF2MAT (<self>, <list> ) . . . convert into a GF2 matrix rep
 **
-** <list> should be a a list of compressed GF2 vectors
+** <list> should be a list of compressed GF2 vectors
 **
 */
 static Obj FuncCONV_GF2MAT(Obj self, Obj list)

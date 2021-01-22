@@ -669,7 +669,7 @@ They are represented by lists, using numbers
 <#Include Label="[4]{ratfun}">
 <#Include Label="[1]{ratfun}">
 <P/>
-The attributes that give a representation of a a rational function as a Laurent polynomial are
+The attributes that give a representation of a rational function as a Laurent polynomial are
 <Ref Attr="CoefficientsOfLaurentPolynomial"/>
 and <Ref Attr="IndeterminateNumberOfUnivariateRationalFunction"/>.
 <P/>

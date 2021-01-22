@@ -154,7 +154,7 @@ InstallOtherMethod( OrderingByLessThanOrEqualFunctionNC,
 #A  LessThanOrEqualFunction( <ord> )
 ##
 InstallMethod( LessThanOrEqualFunction,
-  "for an ordering which has a a LessThanFunction", true,
+  "for an ordering which has a LessThanFunction", true,
   [IsOrdering and HasLessThanFunction], 0,
   function( ord)
     local fun;
@@ -172,7 +172,7 @@ end);
 #A  LessThanFunction( <ord> )
 ##
 InstallMethod( LessThanFunction,
-  "for an ordering which has a a LessThanOrEqualFunction", true,
+  "for an ordering which has a LessThanOrEqualFunction", true,
   [IsOrdering and HasLessThanOrEqualFunction], 0,
   function( ord)
     local fun;

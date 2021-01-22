@@ -722,7 +722,7 @@ one can use logical implications
 <Heading>Types</Heading>
 
 We stated above (see <Ref Chap="Types of Objects"/>) that, for an object <A>obj</A>,
-its <E>type</E> is formed from its family and its filters.  There is a also
+its <E>type</E> is formed from its family and its filters.  There is also
 a third component, used in a few situations, namely defining data of
 the type.
 
