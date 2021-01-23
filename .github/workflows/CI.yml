@@ -56,7 +56,7 @@ jobs:
           # compile packages and run GAP tests in 32 bit mode
           # it seems profiling is having trouble collecting the coverage data
           # here, so we use NO_COVERAGE=1
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testpackages testinstall-loadall"
             extra: "ABI=32 NO_COVERAGE=1"
             packages: "
