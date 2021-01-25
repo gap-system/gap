@@ -13,15 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         # base test: fast first test
-        os: [ubuntu-latest]
+        os: [ubuntu-18.04]
         test-suites: ["testinstall"]
 
         # add a few extra tests
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp teststandard"
 
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp teststandard"
             extra: "ABI=32 CONFIGFLAGS=\"\""
 
@@ -29,13 +29,13 @@ jobs:
           # but somehow when running on GitHub Actions, it takes almost 4
           # hours (!) to complete instead of 25 minutes. So for now we just
           # run testinstall.
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp testinstall"
             extra: "HPCGAP=yes ABI=64"
 
           # compile packages and run GAP tests
           # don't use --enable-debug to prevent the tests from taking too long
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testpackages testinstall-loadall"
             extra: "ABI=64"
             packages: "
@@ -83,7 +83,7 @@ jobs:
           # preview doc changes for PRs). Use the `upload-artifact` action and
           # make it conditional. Or perhaps move the `makemanuals` job into
           # a separate workflow job?
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "makemanuals"
             packages: "
                     texlive-latex-base
@@ -94,7 +94,7 @@ jobs:
                     texlive-fonts-extra
                     "
 
-          # run tests contained in the manual
+          # run tests contained in the manual. Also check ubuntu-latest works.
           - os: ubuntu-latest
             test-suites: "testmanuals"
 
@@ -102,7 +102,7 @@ jobs:
           # Also turn on '--enable-memory-checking' to make sure GAP compiles
           # with the flag enabled. We do not actually test the memory
           # checking, as this slows down GAP too much.
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testbugfix"
             extra: "CONFIGFLAGS=\"--enable-memory-checking\""
 
@@ -116,7 +116,7 @@ jobs:
           # The '--enable-valgrind' checks that GAP builds and runs correctly
           # when compiled with valgrind support. We do not actually run any
           # tests using valgrind, as it is too slow.
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp testbuildsys testinstall"
             extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
                     CONFIGFLAGS=\"--enable-valgrind\""
@@ -124,16 +124,16 @@ jobs:
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp testbuildsys testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test error reporting and compiling as well as libgap
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testspecial test-compile testlibgap testkernel"
 
           # test Julia integration
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
 
@@ -204,7 +204,7 @@ jobs:
 
 #  finish:
 #    needs: test
-#    runs-on: ubuntu-latest
+#    runs-on: ubuntu-18.04
 #    steps:
 #      - name: Coveralls Finished
 #        uses: coverallsapp/github-action@master
