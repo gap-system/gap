@@ -24,7 +24,7 @@
 **
 *V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
 **
-**  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
+**  'SyGapRootPaths' contains the  names   of the directories where   the GAP
 **  files are located.
 **
 **  It is modified by the command line option -l.
@@ -32,7 +32,7 @@
 **  It is copied into the GAP variable 'GAPInfo.RootPaths' and used by
 **  'SyFindGapRootFile'.
 **
-**  Each entry must end  with the pathname seperator, eg.  if 'init.g' is the
+**  Each entry must end  with the pathname separator, e.g. if 'init.g' is the
 **  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
 **  be a valid filename.
 */

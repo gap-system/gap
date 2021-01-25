@@ -748,7 +748,7 @@ end );
 ##
 InstallMethod( IsSubset,"permgrp of natsymmetric group", true,
     [ IsNaturalSymmetricGroup,IsPermGroup ],
-    # we need to override a metrhod that computes the size.
+    # we need to override a method that computes the size.
     SUM_FLAGS,
 
 function( S,G )

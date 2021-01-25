@@ -192,7 +192,7 @@ InstallMethod( \.\:\=,
                0,
 function(obj,nr,elm)
 local msg;
-    msg:=Concatenation("illegal assignement to record component `obj.",
+    msg:=Concatenation("illegal assignment to record component `obj.",
                        NameRNam(nr),"'\n",
                        "of the object <obj>. (Objects by default cannot have record components.\n",
                        "The error might be a relic from translated GAP3 code.)");

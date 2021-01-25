@@ -3187,7 +3187,7 @@ local d, bs;
 end;
 SMTX.BasisRadical:=SMTX_BasisRadical;
 
-# the following assignement is for profiling
+# the following assignment is for profiling
 SMTX.funcs:=[SMTX_OrthogonalVector,SMTX_SpinnedBasis,SMTX_SubQuotActions,
   SMTX_SMCoRaEl,SMTX_IrreducibilityTest,SMTX_RandomIrreducibleSubGModule,
   SMTX_GoodElementGModule,SMTX_FrobeniusAction,SMTX_CompleteBasis,

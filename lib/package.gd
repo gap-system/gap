@@ -734,7 +734,7 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  The package name is case insensitive and may be appropriately abbreviated. 
 ##  At the time of writing, for example, <C>LoadPackage("semi");</C> 
 ##  will load the <Package>Semigroups</Package> package, and 
-##  <C>LoadPackage("j");</C> will load the <Package>json</Package> package. 
+##  <C>LoadPackage("js");</C> will load the <Package>json</Package> package.
 ##  If the abbreviation cannot be uniquely completed, 
 ##  a list of available completions will be offered, 
 ##  and <Ref Func="LoadPackage"/> returns <K>fail</K>.
@@ -772,8 +772,6 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <P/>
 ##  After a package has been loaded, all its code becomes 
 ##  available to use with the rest of the &GAP; library.
-##  <P/>
-##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

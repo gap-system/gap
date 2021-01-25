@@ -276,7 +276,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         # the earlyMessage. If SilentNonInteractiveErrors is true we do not
         # print any messages. If AlwaysPrintTracebackOnError is true we also
         # call OnBreak(), which by default prints the traceback.
-        # SilentNonInteractiveErrors superseeds AlwaysPrintTracebackOnError.
+        # SilentNonInteractiveErrors supersedes AlwaysPrintTracebackOnError.
         # It is used by HPC-GAP to e.g. suppress error messages in worker
         # threads.
         if not SilentNonInteractiveErrors then
