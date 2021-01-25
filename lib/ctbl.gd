@@ -3913,7 +3913,7 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  If <M>p</M> is odd then the &ATLAS; construction describes <M>p</M>
 ##  isoclinic variants that arise from <M>p.G.p</M>.
 ##  (These groups need not be pairwise nonisomorphic.)
-##  Entering an integer <M>k \in \{ 1, 2, \ldots, k-1 \}</M> as the value of
+##  Entering an integer <M>k \in \{ 1, 2, \ldots, p-1 \}</M> as the value of
 ##  the component <C>k</C> of <A>arec</A> yields the <M>k</M>-th of the
 ##  corresponding character tables; the default for <C>k</C> is <M>1</M>.
 ##  <P/>

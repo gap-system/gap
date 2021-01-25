@@ -125,7 +125,7 @@ InstallGlobalFunction( OrderMod, function ( n, m, bound... )
     if n < 0   then n := n mod m + m;  fi;
     if m <= n  then n := n mod m;      fi;
 
-    # return 0 if the $n$ is not relativ prime to $n$
+    # return 0 if $m$ is not coprime to $n$
     if GcdInt(m,n) <> 1  then
         o := 0;
 

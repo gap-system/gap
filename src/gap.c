@@ -1430,7 +1430,7 @@ StructInitInfo * InitInfoGap ( void )
 **
 *F  InitializeGap() . . . . . . . . . . . . . . . . . . . . . . intialize GAP
 **
-**  Each module  (builtin  or compiled) exports  a sturctures  which contains
+**  Each module  (builtin  or compiled) exports  a structure  which  contains
 **  information about the name, version, crc, init function, save and restore
 **  functions.
 **

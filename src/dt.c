@@ -1325,7 +1325,7 @@ static void  TestTree(
 
 /****************************************************************************
 **
-*F  Part(<list>, <pos1>, <pos2> . . . . . . . . . . . . return a part of list
+*F  Part(<list>, <pos1>, <pos2>)  . . . . . . . . . . . return a part of list
 **
 **  'Part' returns <list>{ [<pos1>+1 .. <pos2>] }.
 */

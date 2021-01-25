@@ -114,7 +114,8 @@ static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
 
 /****************************************************************************
 **
-*F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <capture>, <outputFunc> )
+*F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <capture>,
+**                                                         <resultCallback> )
 **
 **  FuncREAD_ALL_COMMANDS attempts to execute all statements read from the
 **  stream <instream>. It returns 'fail' if the stream cannot be opened,
@@ -125,7 +126,7 @@ static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
 **  current output.
 **
 **  If the parameter <capture> is 'true', then any output occurring during
-**  execution of a statement, including the output of <outputFunc>, is
+**  execution of a statement, including the output of <resultCallback>, is
 **  captured into a string.
 **
 **  If <resultCallback> is a function, then this function is called on every
@@ -1726,7 +1727,7 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_1ARGS(READ, input),
     GVAR_FUNC_1ARGS(READ_NORECOVERY, input),
-    GVAR_FUNC_4ARGS(READ_ALL_COMMANDS, instream, echo, capture, outputFunc),
+    GVAR_FUNC_4ARGS(READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
     GVAR_FUNC_2ARGS(READ_STREAM_LOOP, stream, catchstderrout),
     GVAR_FUNC_3ARGS(

@@ -1950,7 +1950,7 @@ static void MarkCycSubBags(Obj cyc)
 
 /****************************************************************************
 **
-*F  SaveCyc() . . . . . . . . . . . . . . . . . . . . . .  save a cyclotyomic
+*F  SaveCyc() . . . . . . . . . . . . . . . . . . . . . . . save a cyclotomic
 **
 **  We do not save the XXX_CYC field, since it is not used.
 */
@@ -1974,7 +1974,7 @@ static void SaveCyc(Obj cyc)
 
 /****************************************************************************
 **
-*F  LoadCyc() . . . . . . . . . . . . . . . . . . . . . .  load a cyclotyomic
+*F  LoadCyc() . . . . . . . . . . . . . . . . . . . . . . . load a cyclotomic
 **
 **  We do not load the XXX_CYC field, since it is not used.
 */

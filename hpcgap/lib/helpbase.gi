@@ -130,7 +130,7 @@ BindGlobal( "TRANSATL", MakeImmutable(
 ##
 ##  This approach may suggest wrong spellings for topics containing the 
 ##  substring "Size" or "size", since it's not possible to detect whether 
-##  "size" is a part of another word or a word itselg (e.g. both spellings 
+##  "size" is a part of another word or a word itself (e.g. both spellings
 ##  "emphasize" and  "emphasise" may be used). However, this only creates 
 ##  a tiny and really neglectible overhead (try e.g. `??SizesCentralisers'
 ##  or `??Centralizers, Normalizers and Intersections'); however it ensures 
@@ -273,7 +273,7 @@ end);
 ##  than one occurrence of spelling patterns from the `TRANSATL' list.
 ##  It may falsely report entries containing the substring "Size" or "size",
 ##  since it's not possible to detect whether "size" is a part of another 
-##  word or a word itselg (e.g. both spellings "emphasize" and  "emphasise" 
+##  word or a word itself (e.g. both spellings "emphasize" and  "emphasise"
 ##  may be used).
 ##
 BindGlobal( "FindMultiSpelledHelpEntries", function( )
