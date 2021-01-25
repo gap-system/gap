@@ -107,15 +107,9 @@ function(S)
     suffix := Concatenation("\>of\< ", suffix);
   fi;
   Append(str, suffix);
-
-  Append(str, "\>with\< \>");
-  Append(str, ViewString(nrgens));
-  Append(str, "\< \>generator");
-  if nrgens > 1 or nrgens = 0 then
-    Append(str, "s");
-  fi;
-  Append(str, "\<>\<");
-
+  Append(str, "\>with\< ");
+  Append(str, Pluralize(nrgens, "generator"));
+  Append(str, ">\<");
   return str;
 end);
 
@@ -187,13 +181,8 @@ function(S)
   fi;
 
   if IsBound(gens) then
-    Append(str, "with\> ");
-    Append(str, ViewString(Length(gens)));
-    Append(str, "\< generator");
-
-    if Length(gens) > 1 or Length(gens) = 0 then
-      Append(str, "s");
-    fi;
+    Append(str, "with ");
+    Append(str, Pluralize(Length(gens), "generator"));
   else
     Remove(str, Length(str));
   fi;
