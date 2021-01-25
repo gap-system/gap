@@ -230,8 +230,8 @@ false
 gap> S := Semigroup([Transformation([1, 1]), Transformation([2, 2])]);
 <transformation semigroup of degree 2 with 2 generators>
 gap> R := ReesMatrixSemigroup(S, [[S.1, S.2]]);
-<Rees matrix semigroup 2x1 over <transformation semigroup of degree 2 with 2 
-  generators>>
+<Rees matrix semigroup 2x1 over <transformation semigroup of degree 2 with 
+  2 generators>>
 gap> IsSimpleSemigroup(R);
 true
 gap> T := Semigroup(RMSElement(R, 2, S.1, 1));

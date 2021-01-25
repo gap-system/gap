@@ -14,8 +14,8 @@ gap> SetUserPreference("NotationForPartialPerms", "component");
 gap> S := Semigroup(PartialPerm([1, 2, 3], [4, 5, 11]), 
 >                   PartialPerm([1], [3]));;
 gap> DisplayString(S);
-"\><\>partial perm\< \>semigroup\< \>of\< \>rank \>3\<\< \>with\< \>2\< \>gene\
-rators\<>\<"
+"\><\>partial perm\< \>semigroup\< \>of\< \>rank \>3\<\< \>with\< \>2\< genera\
+tors>\<"
 
 # Test  One for a partial perm semigroup without generators
 gap> S := SymmetricInverseMonoid(3);;
@@ -325,43 +325,43 @@ Error, the argument must be an inverse semigroup
 
 # Test IsomorphismPartialPermSemigroup for a perm group
 gap> IsomorphismPartialPermSemigroup(Group((1,2,3)));
-MappingByFunction( Group([ (1,2,3) ]), <partial perm group of rank 3 with
-  1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
+MappingByFunction( Group([ (1,2,3) ]), <partial perm group of rank 3 with 
+ 1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
 true
 gap> IsomorphismPartialPermSemigroup(Group([()]));
-MappingByFunction( Group(()), <trivial partial perm group of rank 0 with
-  1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
+MappingByFunction( Group(()), <trivial partial perm group of rank 0 with 
+ 1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
 true
 gap> IsomorphismPartialPermSemigroup(Group([], ()));
-MappingByFunction( Group(()), <trivial partial perm group of rank 0 with
-  1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
+MappingByFunction( Group(()), <trivial partial perm group of rank 0 with 
+ 1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
 true
 gap> IsomorphismPartialPermMonoid(Group((1,2,3)));
-MappingByFunction( Group([ (1,2,3) ]), <partial perm group of rank 3 with
-  1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
+MappingByFunction( Group([ (1,2,3) ]), <partial perm group of rank 3 with 
+ 1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
 true
 gap> IsomorphismPartialPermMonoid(Group([()]));
-MappingByFunction( Group(()), <trivial partial perm group of rank 0 with
-  1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
+MappingByFunction( Group(()), <trivial partial perm group of rank 0 with 
+ 1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
 true
 gap> IsomorphismPartialPermMonoid(Group([], ()));
-MappingByFunction( Group(()), <trivial partial perm group of rank 0 with
-  1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
+MappingByFunction( Group(()), <trivial partial perm group of rank 0 with 
+ 1 generator>, function( p ) ... end, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
