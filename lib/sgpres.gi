@@ -3579,7 +3579,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
         if warn and Length(s)>100*Sum(rels,Length) then
           warn:=false;
           Error(
-            "Trying to eliminate all auxillary generators might cause the\n",
+            "Trying to eliminate all auxiliary generators might cause the\n",
             "size of the presentation to explode. Proceed at risk!");
         fi;
       od;

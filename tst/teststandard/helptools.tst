@@ -67,7 +67,7 @@ gap> PrintRenderedText(1,1 );
 % 
 % This  is a mock package to be used to test GAP library code related to GAP
 % packages,  for  example  to  validate `PackageInfo.g` files. Clearly, it's
-% not   available   anywhere,   and   it   has   it's  `ArchiveURL'  set  to
+% not   available   anywhere,   and   it   has   its   `ArchiveURL'  set  to
 % `Concatenation(  ~.PackageWWWHome,  "/",  ~.PackageName, "-", ~.Version )'
 % only for testing purposes.
 % 

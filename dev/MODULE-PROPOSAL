@@ -4,7 +4,7 @@ A module is a part of GAP that
   - consists of a discrete set of files 
 	[unless there is a very good reason]
   - has a well-defined set of authors/maintainers.
-  - get credited separately (see below)
+  - gets credited separately (see below)
  Typical examples would be:
  - Rational functions
  - Lie Algebras

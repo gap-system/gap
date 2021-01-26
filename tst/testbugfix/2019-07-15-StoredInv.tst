@@ -27,7 +27,7 @@ true
 gap> IsPerm4Rep(q);
 true
 
-# and it's inverse is the correct type
+# and its inverse is the correct type
 gap> IsPerm4Rep(q^-1);
 true
 
@@ -35,6 +35,6 @@ true
 gap> List([1..5], x -> x/p);
 [ 4, 1, 2, 3, 5 ]
 
-# And on q (to ensure it's inverse is not still 'p')
+# And on q (to ensure its inverse is not still 'p')
 gap> List([1..5], x -> x/q);
 [ 2, 3, 4, 1, 5 ]

@@ -786,7 +786,7 @@ end;
 # construct subgroup of GL that stabilizes the spaces given and fixes the
 # listed spaceorbits.
 
-# auxillary
+# auxiliary
 RedmatSpanningIndices:=function(gens)
 local bas,n,one,new,a,b,g;
   n:=Length(gens[1]);

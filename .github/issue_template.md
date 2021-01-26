@@ -1,5 +1,5 @@
 Please use the following template to submit an issue
-(you may delete lines which are not used). Thank You!
+(you may delete lines which are not used). Thank you!
 
 ### Observed behaviour
 

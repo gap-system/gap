@@ -1445,7 +1445,7 @@ StructInitInfo * InitInfoGap ( void )
 **  function is used for both starting and restoring.
 **
 **  `InitLibrary': This function creates objects,  gvar and rnam number,  and
-**  does  assignments of auxillary C   variables (for example, pointers  from
+**  does  assignments of auxiliary C   variables (for example, pointers  from
 **  objects, length of hash lists).  This function is only used for starting.
 **
 **  `PostRestore': Everything in  `InitLibrary' execpt  creating objects.  In

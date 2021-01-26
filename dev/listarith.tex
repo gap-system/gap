@@ -123,7 +123,7 @@ In \verb|vecffe.c| something very similar is done for
 
 \section{XTNum extended despatch}
 
-XTNum is defined in lists.c. It's behaviour is controlled by entries
+XTNum is defined in lists.c. Its behaviour is controlled by entries
 in the IsXTNumListFuncs jump table. These are boolean (C style)
 unctions, possibly defined for types from \verb|FIRST_REAL_TNUM| up to
 \verb|LAST_REAL_TNUM|. Each one is tried in reverse TNUM order, with
@@ -258,7 +258,7 @@ these. Rather than rewrite it, I copy here the  explanation from
 
 What is relevant for our purposes, is that this code, taking advantage
 of the information already stored about the list, walks the structure
-of it, as far as necessary to determine it's ``transient'' TNUM (ie
+of it, as far as necessary to determine its ``transient'' TNUM (ie
 the TNUM that it really deserves, but which might not be storable
 thanks to the presence of mutable subobjects) storing as much
 information along the way as it can. After that, the type is just

@@ -1551,7 +1551,7 @@ InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
 ##  Mahajan and Vinay \cite{MV97}.
 ##
 ##  The run time is $O(n^4)$
-##  Auxillary storage size $n^2+n + C$
+##  Auxiliary storage size $n^2+n + C$
 ##
 ##  Our implementation has two runtime optimizations (both noted
 ##  by Mahajan and Vinay)
@@ -1560,9 +1560,9 @@ InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
 ##    2. Prefix property is maintained allowing for a pruning of many
 ##       vertices at each level
 ##
-##  and two auxillary storage size optimizations
+##  and two auxiliary storage size optimizations
 ##    1. only the upper triangular and diagonal portion of the
-##       auxillary storage is used.
+##       auxiliary storage is used.
 ##    2. Level information storage is reused (2 levels).
 ##
 ##  This code was implemented by:
