@@ -16,6 +16,12 @@ gap> HELP_SEARCH_ALTERNATIVES("setismapping");
 [ "hasismapping", "ismapping", "setismapping" ]
 gap> HELP_SEARCH_ALTERNATIVES("ismapping");
 [ "ismapping" ]
+gap> HELP_SEARCH_ALTERNATIVES( "Centralize" );   # pattern at the end
+[ "Centralise", "Centralize" ]
+gap> HELP_SEARCH_ALTERNATIVES( "Centralizer" );  # one character behind pattern
+[ "Centraliser", "Centralizer" ]
+gap> HELP_SEARCH_ALTERNATIVES( "Centralizers" ); # two characters
+[ "Centralisers", "Centralizers" ]
 
 # Testing the code from `lib/helpt2t.g{d,i}` which converts TeX source code
 # in `gapmacro.tex` format into text for the "screen" online help viewer.

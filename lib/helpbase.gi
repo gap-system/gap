@@ -211,7 +211,7 @@ if Length(positions) > 0 then # matches found
   for i in [1..Length(positions)] do
     Add( chop, [ topic{[begin..patterns[i].start-1 ]} ] );
     Add( chop, patterns[i].pattern );
-    begin := Minimum( patterns[i].finish+1, Length(topic) );
+    begin := Minimum( patterns[i].finish, Length(topic) )+1;
   od;
 
   if begin <= Length( topic ) then
