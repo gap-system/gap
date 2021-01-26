@@ -1,6 +1,6 @@
 Please use the following template to submit a pull request, filling
 in at least the "Text for release notes" and/or "Further details".
-Thank You!
+Thank you!
 
 # Description
 

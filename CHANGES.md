@@ -352,7 +352,7 @@ The GAP 4.11.1 distribution contains 151 packages, of which 49 have been updated
 - [#3103](https://github.com/gap-system/gap/pull/3103) This fixes [#3097](https://github.com/gap-system/gap/issues/3097), a problem with `Order` of automorphism
     and [#3100](https://github.com/gap-system/gap/issues/3100), a problem with `GroupHomomorphismByImages`
 - [#3392](https://github.com/gap-system/gap/pull/3392) Prevent blist functions that modify an argument in-place (such as `UniteBlist`) from modifying immutable blists
-- [#3522](https://github.com/gap-system/gap/pull/3522) `IsSimpleGroup` does not implies `IsAlmostSimpleGroup` anymore
+- [#3522](https://github.com/gap-system/gap/pull/3522) `IsSimpleGroup` does not imply `IsAlmostSimpleGroup` anymore
 - [#3575](https://github.com/gap-system/gap/pull/3575) Fix bug in calculating x/p for an integer x and permutation p, if p has been 'trimmed'.
 - [#3603](https://github.com/gap-system/gap/pull/3603) Fix bug where the result of `StandardAssociateUnit` could be not a unit.
 - [#3611](https://github.com/gap-system/gap/pull/3611) Fix `StandardAssociateUnit` for polynomial rings to return a polynomial, not an element of the coefficient ring

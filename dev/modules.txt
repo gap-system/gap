@@ -5,7 +5,7 @@ also put in a file `dev/modules.txt'
 Modularization of GAP
 ======================
 
-There are three levels of ``separateness'', that are roughly conatined in
+There are three levels of ``separateness'', that are roughly contained in
 each other:
 The first is a purely software engineering level of ``Modules''. A module is
 a piece of code which provides certain functionality via a defined set of

@@ -239,7 +239,7 @@ Authors:     Bettina Eick
 Maintainers: Werner Nickel
 Description: This module contains an algorithm to determine the automorphism
              group of a finite pc group. The implementation follows the ideas
-             of Micheal Smith.
+             of Michael Smith.
 
 Name:        Twocohomology and extensions of finite pc groups
 Proposer:    Bettina Eick
@@ -322,7 +322,7 @@ Authors:     Andrew Solomon, Robert F. Morse
 Maintainer:  Robert F. Morse
 Description: This library code computes congruences for a set with one 
              binary operator. Faster methods are used when 
-	     associativity is known.
+             associativity is known.
 
 Name:        Semigroup relations
 Proposer:    Robert F. Morse 21-May-01
@@ -376,16 +376,16 @@ Authors:     Burkhard Hfling
 Description: This set of files provides the implementation of system dependent
              GAP functions and a user interface to run GAP under MacOS
 
-Name: 	Identification of Galois groups
-Proposer: 	Alexander Hulpke
-Seconder: 	Frank Lübeck (May 4, 2003), Joachim Neub"user (May 5, 2003)
-Files: 	galois.g*
-Author&Maintainer: 	Alexander Hulpke
-Description:	 functionality for determining the permutation isomorphism type of a Galois group.
+Name:        Identification of Galois groups
+Proposer:    Alexander Hulpke
+Seconder:    Frank Lübeck (May 4, 2003), Joachim Neubüser (May 5, 2003)
+Files:       galois.g*
+Author&Maintainer: Alexander Hulpke
+Description: functionality for determining the permutation isomorphism type of a Galois group.
 
 Name:        Characters and Character Degrees of certain solvable groups
 Proposer:    Thomas Breuer
-Seconder:    Frank Lübeck (July 15, 2003), Joachim Neub"user (July 15, 2003)
+Seconder:    Frank Lübeck (July 15, 2003), Joachim Neubüser (July 15, 2003)
 Files:       lib/ctblsolv.gd, lib/ctblsolv.gi
 Authors:     Hans Ulrich Besche, Thomas Breuer
 Maintainer:  Thomas Breuer
@@ -397,7 +397,7 @@ Description: Computation of irreducible character degrees of solvable groups,
 
 Name:        Possible Permutation Characters
 Proposer:    Thomas Breuer
-Seconder:    Frank Lübeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Seconder:    Frank Lübeck (July 31, 2003), Joachim Neubüser (June 17, 2003)
 Files:       lib/ctblpope.gd, lib/ctblpope.gi,
              sections ``Possible Permutation Characters'' and
              ``Computing Possible Permutation Characters'' in
@@ -410,7 +410,7 @@ Description: Computation of characters that have certain properties of
 
 Name:        Monomiality Questions
 Proposer:    Thomas Breuer
-Seconder:    Frank Lübeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Seconder:    Frank Lübeck (July 31, 2003), Joachim Neubüser (June 17, 2003)
 Files:       lib/ctblmono.gd, lib/ctblmono.gi, doc/build/ctblmono.msk,
              tst/ctblmono.tst
 Authors:     Thomas Breuer, Erzsébet Horváth
@@ -419,7 +419,7 @@ Description: Monomiality of finite (solvable) groups and their characters
 
 Name:        Possible Class Fusions, Possible Power Maps
 Proposer:    Thomas Breuer
-Seconder:    Frank Lübeck (July 31, 2003), Joachim Neub"user (June 17, 2003)
+Seconder:    Frank Lübeck (July 31, 2003), Joachim Neubüser (June 17, 2003)
 Files:       lib/ctblmaps.gd, lib/ctblmaps.gi, doc/build/ctblmaps.msk
 Authors:     Thomas Breuer
 Maintainer:  Thomas Breuer
