@@ -756,8 +756,6 @@ BindGlobal( "NextIterator_List", function ( iter )
     return l[ p ];
     end );
 
-#BindGlobal( "IsDoneIterator_DenseList",
-#    iter -> not IsBound( iter!.list[ iter!.pos + 1 ] ) );
 
 BindGlobal( "NextIterator_DenseList", function ( iter )
     local p;
