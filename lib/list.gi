@@ -782,14 +782,13 @@ InstallGlobalFunction( IteratorList, function ( list )
 #T call `Immutable'?
                 pos  := 0,
                 len := Length(list),
+                IsDoneIterator := IsDoneIterator_List,
                 ShallowCopy := ShallowCopy_List );
 
     if IsDenseList( list ) and not IsMutable( list ) then
-      iter.IsDoneIterator := IsDoneIterator_List;
-      iter.NextIterator   := NextIterator_DenseList;
+      iter.NextIterator := NextIterator_DenseList;
     else
-      iter.IsDoneIterator := IsDoneIterator_List;
-      iter.NextIterator   := NextIterator_List;
+      iter.NextIterator := NextIterator_List;
     fi;
 
     return IteratorByFunctions( iter );
