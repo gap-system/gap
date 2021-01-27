@@ -69,6 +69,12 @@ typedef void sig_handler_t ( int );
 #endif
 
 #ifdef HAVE_LIBREADLINE
+// the following two definitions silence some compiler warnings in the
+// readline headers; the first one suppresses the definition of a few
+// deprecated (!) and unused typedefs; the second indicates that stdarg.h is
+// available (since compiling GAP requires C99, this is guaranteed)
+#define _FUNCTION_DEF
+#define HAVE_STDARG_H
 #include <readline/readline.h>
 #endif
 
@@ -3458,6 +3464,11 @@ void InitSysFiles(void)
     setbuf(stdin, (char *)0);
     setbuf(stdout, (char *)0);
     setbuf(stderr, (char *)0);
+
+#ifdef HAVE_LIBREADLINE
+    rl_readline_name = "GAP";
+    rl_initialize ();
+#endif
 }
 
 /* TODO: Should probably do some checks preSave for open files etc and refuse to save
