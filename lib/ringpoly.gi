@@ -54,6 +54,7 @@ local reuse, idn, nbound, p, i,str;
       fi;
     elif nbound and reuse and IsBound(rfam!.namesIndets) then
       # is the indeterminate already used?
+      atomic rfam!.namesIndets do # for HPC-GAP only; ignored in GAP
       p:=Position(rfam!.namesIndets,str);
       if p<>fail then
         if p in avoid then
@@ -68,6 +69,7 @@ local reuse, idn, nbound, p, i,str;
           Add(idn,p);
         fi;
       fi;
+      od; # end of atomic
     else
       p:=fail;
     fi;
@@ -121,7 +123,11 @@ function( r, n )
 
     # cache univariate rings - they might be created often
     if not IsBound(r!.univariateRings) then
-      r!.univariateRings:=[];
+      if IsHPCGAP then
+        r!.univariateRings:=MakeWriteOnceAtomic([]);
+      else
+        r!.univariateRings:=[];
+      fi;
     fi;
 
     if Length(n)=1 
