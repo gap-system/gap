@@ -213,7 +213,7 @@ static Int SyLoadModule(const Char * name, InitInfoFunc * func)
 
     *func = 0;
 
-    handle = dlopen( name, RTLD_LAZY | RTLD_GLOBAL);
+    handle = dlopen( name, RTLD_LAZY | RTLD_LOCAL);
     if ( handle == 0 ) {
       Pr("#W dlopen() error: %s\n", (long) dlerror(), 0);
       return 1;
