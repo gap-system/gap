@@ -739,7 +739,7 @@ InstallMethod( SSortedList,
 ##  lists.)
 ##
 BindGlobal( "IsDoneIterator_List",
-    iter -> ( iter!.pos = iter!.len ) );
+    iter -> ( iter!.pos >= iter!.len ) );
 
 BindGlobal( "NextIterator_List", function ( iter )
     if iter!.pos = Length( iter!.list ) then

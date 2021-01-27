@@ -554,5 +554,61 @@ gap> MakeImmutable(l);;
 gap> IsIdenticalObj(AsSet(l), l);
 true
 
+# IteratorList
+# immutable dense list
+gap> tmp := MakeImmutable([1, 2, 3, 4]);
+[ 1, 2, 3, 4 ]
+gap> it := IteratorList(tmp);
+<iterator>
+gap> for x in it do Print(x); od; Print("\n");
+1234
+gap> IsDoneIterator(it);
+true
+gap> NextIterator(it);
+Error, List Element: <list>[5] must have an assigned value
+gap> IsDoneIterator(it);
+true
+
+# mutable dense list
+gap> tmp := [1 .. 4];;
+gap> it := IteratorList(tmp);
+<iterator>
+gap> for x in it do Print(x); od; Print("\n");
+1234
+gap> IsDoneIterator(it);
+true
+gap> NextIterator(it);
+Error, <iter> is exhausted
+gap> IsDoneIterator(it);
+true
+
+# immutable non-dense list
+gap> tmp := MakeImmutable([, 2, 3, , 5, 6,]);
+[ , 2, 3,, 5, 6 ]
+gap> it := IteratorList(tmp);
+<iterator>
+gap> for x in it do Print(x); od; Print("\n");
+2356
+gap> IsDoneIterator(it);
+true
+gap> NextIterator(it);
+Error, <iter> is exhausted
+gap> IsDoneIterator(it);
+true
+
+# mutable non-dense list
+gap> tmp := [, 2, 3, , 5, 6,];
+[ , 2, 3,, 5, 6 ]
+gap> it := IteratorList(tmp);
+<iterator>
+gap> for x in it do Print(x); od; Print("\n");
+2356
+gap> IsDoneIterator(it);
+true
+gap> NextIterator(it);
+Error, <iter> is exhausted
+gap> IsDoneIterator(it);
+true
+
 #
 gap> STOP_TEST("list.tst");
