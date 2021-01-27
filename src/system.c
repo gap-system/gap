@@ -54,10 +54,6 @@
 #include <mach-o/dyld.h>
 #endif
 
-#ifdef HAVE_LIBREADLINE
-#include <readline/readline.h>
-#endif
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
@@ -747,11 +743,6 @@ void InitSystem (
 
     InitSysFiles();
 
-#ifdef HAVE_LIBREADLINE
-    rl_readline_name = "GAP";
-    rl_initialize ();
-#endif
-    
     if (handleSignals) {
         SyInstallAnswerIntr();
     }
