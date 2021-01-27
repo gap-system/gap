@@ -742,25 +742,31 @@ BindGlobal( "IsDoneIterator_List",
     iter -> ( iter!.pos >= iter!.len ) );
 
 BindGlobal( "NextIterator_List", function ( iter )
-    if iter!.pos = Length( iter!.list ) then
+    local p, l;
+    p := iter!.pos;
+    if p = iter!.len then
         Error("<iter> is exhausted");
     fi;
-    iter!.pos := iter!.pos + 1;
-    while not IsBound( iter!.list[ iter!.pos ] ) do
-        iter!.pos := iter!.pos + 1;
+    l := iter!.list;
+    p := p + 1;
+    while not IsBound( l[ p ] ) do
+        p := p + 1;
     od;
-    return iter!.list[ iter!.pos ];
+    iter!.pos := p;
+    return l[ p ];
     end );
 
 #BindGlobal( "IsDoneIterator_DenseList",
 #    iter -> not IsBound( iter!.list[ iter!.pos + 1 ] ) );
 
 BindGlobal( "NextIterator_DenseList", function ( iter )
-    iter!.pos := iter!.pos + 1;
+    local p;
+    p := iter!.pos + 1;
+    iter!.pos := p;
     #if not IsBound( iter!.list[ iter!.pos ] ) then
     #    Error("<iter> is exhausted");
     #fi;
-    return iter!.list[ iter!.pos ];
+    return iter!.list[ p ];
     end );
 
 BindGlobal( "ShallowCopy_List",
