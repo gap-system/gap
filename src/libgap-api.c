@@ -68,6 +68,20 @@ void GAP_Initialize(int              argc,
 
 
 ////
+//// Garbage collector interface
+////
+void GAP_MarkBag(Obj obj)
+{
+    MarkBag(obj);
+}
+
+void GAP_CollectBags(BOOL full)
+{
+    CollectBags(0, full);
+}
+
+
+////
 //// program evaluation and execution
 ////
 

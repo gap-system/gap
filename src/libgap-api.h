@@ -162,6 +162,26 @@ void GAP_Initialize(int              argc,
 
 
 ////
+//// Garbage collector
+////
+
+// Manual management of the GAP garbage collector: for cases where you want
+// a GAP object to be long-lived beyond the context of the stack frame where
+// it was created, it is necessary to call GAP_MarkBag on the object when
+// the garbage collector is run by the markBagsCallback function passed to
+// GAP_Initialize.
+void GAP_MarkBag(Obj obj);
+
+// Manually run the garbage collector.
+// A <full> collection checks all previously allocated objects, including those
+// that have survived at least one previous garbage collection.
+// A partial collection will attempt to clean up only recently allocated
+// objects which have not been garbage-collected yet, and is hence normally
+// a faster operation.
+void GAP_CollectBags(BOOL full);
+
+
+////
 //// program evaluation and execution
 ////
 
