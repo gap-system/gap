@@ -304,9 +304,6 @@ InstallMethod( Matrix,
 
 InstallMethod( Matrix,
     [ IsSemiring, IsMatrixObj ],
-  # FIXME: Remove this downranking, it was introduced to prevent
-  #        Semigroups from breaking ahead of the 4.10 release
-  -SUM_FLAGS,
     function( R, M )
     if IsPlistRep( M ) then
       TryNextMethod();
