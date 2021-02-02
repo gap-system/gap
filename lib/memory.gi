@@ -305,6 +305,12 @@ InstallMethod(\=,"objects with memory with x",IsIdenticalObj,
     return a!.el=x;
   end);
 
+InstallMethod(\=,"x with objects with memory",IsIdenticalObj,
+  [IsMultiplicativeElement,IsObjWithMemory],0,
+  function(x,a)
+    return x=a!.el;
+  end);
+
 InstallMethod(\<,"objects with memory with x",IsIdenticalObj,
   [IsObjWithMemory,IsMultiplicativeElement],0,
   function(a,x)
