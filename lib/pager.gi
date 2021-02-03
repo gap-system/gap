@@ -131,6 +131,10 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   elif not formatted then
     lines := ShallowCopy(lines);
   fi;
+
+  if Length( lines ) = 0 then
+    return;
+  fi;
   
   size   := SizeScreen();
   wd := QuoInt(size[1]+2, 2);
