@@ -3381,8 +3381,8 @@ BindGlobal( "FreeAlgebraConstructor", function( name, magma )
         od;
         x := Zero(R);
         y := [One(R)];
-        return VectorSpace(R, List(B[degree+1],
-                       p->ElementOfMagmaRing( F, x, y, [p] )));
+        return FreeLeftModule(R, List(B[degree+1],
+                       p->ElementOfMagmaRing( F, x, y, [p] )), Zero(A));
     end));
 
     # Return the result.
