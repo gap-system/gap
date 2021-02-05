@@ -3752,7 +3752,7 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
                 od; od;
             od;
         od;
-	if degree<1 then B := []; else B := B[degree]; fi;
+        if degree<1 then B := []; else B := B[degree]; fi;
         return FreeLeftModule( R, List( B,
 		p->ElementOfMagmaRing( F, zero, [ one ], [ p[3] ] )), Zero(L));
     end) );
