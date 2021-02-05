@@ -449,21 +449,29 @@ DeclareGlobalFunction("LowLayerSubgroups");
 
 #############################################################################
 ##
-#O  ContainedConjugates(<G>,<A>,<B>)
+#O  ContainedConjugates(<G>,<A>,<B>[,<onlyone>])
 ##
 ##  <#GAPDoc Label="ContainedConjugates">
 ##  <ManSection>
-##  <Oper Name="ContainedConjugates" Arg='G, A, B'/>
+##  <Oper Name="ContainedConjugates" Arg='G, A, B [,onlyone]'/>
 ##
 ##  <Description>
 ##  For <M>A,B \leq G</M> this operation returns representatives of the <A>A</A>
 ##  conjugacy classes of subgroups that are conjugate to <A>B</A> under <A>G</A>.
 ##  The function returns a list of pairs of subgroup and conjugating element.
+##  If the optional fourth argument <A>onlyone</A> is given as <A>true</A>,
+##  then only one pair (or <A>fail</A> if none exists) is returned.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(8);;
-##  gap> a:=TransitiveGroup(8,47);;b:=TransitiveGroup(8,7);;
+##  gap> a:=TransitiveGroup(8,47);;b:=TransitiveGroup(8,9);;
 ##  gap> ContainedConjugates(g,a,b);
-##  [ [ Group([ (1,4,2,5,3,6,8,7), (1,3)(2,8) ]), (2,4,5,3)(7,8) ] ]
+##  [ [ Group([ (1,8)(2,3)(4,5)(6,7), (1,3)(2,8)(4,6)(5,7), (1,5)(2,6)(3,7)(4,8),
+##          (4,5)(6,7) ]), () ],
+##    [ Group([ (1,8)(2,3)(4,5)(6,7), (1,5)(2,6)(3,7)(4,8), (1,3)(2,8)(4,6)(5,7),
+##          (2,3)(6,7) ]), (2,4)(3,5) ] ]
+##  gap> ContainedConjugates(g,a,b,true);
+##  [ Group([ (1,8)(2,3)(4,5)(6,7), (1,3)(2,8)(4,6)(5,7), (1,5)(2,6)(3,7)(4,8),
+##      (4,5)(6,7) ]), () ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
