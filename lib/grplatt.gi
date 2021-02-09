@@ -3187,13 +3187,13 @@ local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
   return all;
 end);
 
-#############################################################################
-##
-#F  ContainedConjugates( <G>, <A>, <B> )
-##
-InstallMethod(ContainedConjugates,"finite groups",IsFamFamFam,[IsGroup,IsGroup,IsGroup],0,
-function(G,A,B)
-local l,N,dc,gens,i;
+DoContainedConjugates:=function(arg)
+local G,A,B,onlyone,l,N,dc,gens,i;
+  G:=arg[1];
+  A:=arg[2];
+  B:=arg[3];
+  if Length(arg)>3 then onlyone:=arg[4]; else onlyone:=false;fi;
+
   if not IsFinite(G) and IsFinite(A) and IsFinite(B) then
      TryNextMethod();
   fi;
@@ -3201,7 +3201,8 @@ local l,N,dc,gens,i;
     Error("A and B must be subgroups of G");
   fi;
   if Size(A) mod Size(B)<>0 then
-    return []; # cannot be contained by order
+    # cannot be contained by order
+    if onlyone then return fail;else return [];fi;
   fi;
 
   l:=[];
@@ -3211,15 +3212,30 @@ local l,N,dc,gens,i;
     gens:=SmallGeneratingSet(B);
     for i in dc do
       if ForAll(gens,x->x^i[1] in A) then
+        if onlyone then return [B^i[1],i[1]];fi;
         Add(l,[B^i[1],i[1]]);
       fi;
     od;
+    if onlyone then return fail;fi;
     return l;
+  elif onlyone then
+    l:=DoConjugateInto(G,A,B,true);
+    if IsIdenticalObj(FamilyObj(l),FamilyObj(One(G))) then return [B^l,l];
+    else return fail;fi;
   else
     l:=DoConjugateInto(G,A,B,false);
     return List(l,x->[B^x,x]);
   fi;
-end);
+end;
+
+#############################################################################
+##
+#F  ContainedConjugates( <G>, <A>, <B> )
+##
+InstallMethod(ContainedConjugates,"finite groups",IsFamFamFam,
+  [IsGroup,IsGroup,IsGroup],0,DoContainedConjugates);
+InstallOtherMethod(ContainedConjugates,"onlyone",IsFamFamFamX,
+  [IsGroup,IsGroup,IsGroup,IsBool],0,DoContainedConjugates);
 
 #############################################################################
 ##

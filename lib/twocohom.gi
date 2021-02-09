@@ -708,7 +708,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
       findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,genkill,
       c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos,
-      nonone,predict,lenpre;
+      nonone,predict,lenpre,jv;
 
 
   # collect the word in factor group
@@ -725,17 +725,16 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       mm:=Minimum(mal,Length(a)-i+1);
       while j<mm do
         s:=s*max+a[i+j];
-        #p:=LookupDictionary(dict,s);
         if s<=lenpre then
           p:=predict[s];
         else
           p:=LookupDictionary(dict,s);
         fi;
-        if p<>fail then break; fi;
+        if IsInt(p) then break; fi;
         j:=j+1;
       od;
 
-      if p<>fail then
+      if IsInt(p) then
         a:=Concatenation(a{[1..i-1]},tzrules[p][2],
           a{[i+Length(tzrules[p][1])..Length(a)]});
         i:=Maximum(0,i-mal); # earliest which could be affected
@@ -758,7 +757,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     return a;
   end;
 
-  # normalform word and collect the tails
+  # normalform word and collect the tails 
   collectail:=function(wrd)
   local v,tail,i,j,s,p,mm;
     v:=List(rules,x->zero);
@@ -771,24 +770,29 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       j:=0;
       s:=0;
       mm:=Minimum(mal,Length(wrd)-i+1);
-      while j<mm do
+      p:=true;
+      while j<mm and p<>fail do
         s:=s*max+wrd[i+j];
-        #p:=LookupDictionary(dict,s);
         if s<=lenpre then
           p:=predict[s];
         else
           p:=LookupDictionary(dict,s);
         fi;
-        if p<>fail and rulpos[p]<>fail then break; fi;
+        if IsInt(p) and rulpos[p]<>fail then break; fi;
         j:=j+1;
       od;
 
-      if p<>fail and rulpos[p]<>fail then
+      if IsInt(p) and rulpos[p]<>fail then
         p:=rulpos[p];
         tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
         wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
-#Print("Apply ",p,"@",i,":",wrd,"\n");
-        if p in hastail then v[p]:=v[p]+mapped(tail); fi;
+        if p in hastail then 
+          if IsIdenticalObj(v[p],zero) then
+            v[p]:=mapped(tail);
+          else
+            v[p]:=v[p]+mapped(tail);
+          fi;
+        fi;
         i:=Maximum(0,i-mal); # earliest which could be affected
       fi;
       i:=i+1;
@@ -817,6 +821,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 #      mon!.confl:=tzrules;
 #    fi;
 #  else
+
     # new approach with RWS from chief series
     mon:=ConfluentMonoidPresentationForGroup(G);
     fp:=mon.fphom;
@@ -830,21 +835,31 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   # that rule set is reduced.
   max:=Maximum(Union(List(tzrules,x->x[1])))+1;
   mal:=Maximum(List(tzrules,x->Length(x[1])));
-  dict:=NewDictionary(max,Integers,true);
+
+  # leaving out integers makes it a sort dictionary, which behaves better 
+  # for the few entries we typically look up
+  #dict:=NewDictionary(max,Integers,true);
+  dict:=NewDictionary(max,true); 
   lenpre:=20000;
   predict:=ListWithIdenticalEntries(lenpre,fail);
+  AddDictionary(dict,0,true);
   for i in [1..mal] do
     p:=Filtered([1..Length(tzrules)],x->Length(tzrules[x][1])=i);
     for j in p do
       s:=0;
       for k in [1..i] do
         s:=s*max+tzrules[j][1][k];
+        if k<i then
+          jv:=true;
+        else
+          jv:=j;
+        fi;
+        if s<=lenpre then
+          predict[s]:=jv;
+        else
+          AddDictionary(dict,s,jv);
+        fi;
       od;
-      if s<=lenpre then
-        predict[s]:=j;
-      else
-        AddDictionary(dict,s,j);
-      fi;
     od;
   od;
 
@@ -854,11 +869,6 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),
     GeneratorsOfGroup(G),mo.generators);
   mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),mo.field); # new gens
-
-  #rules:=ShallowCopy(kb!.tzrules);
-  #hastail:=Filtered([1..Length(rules)],x->Length(rules[x][1])<>2 or
-  #  Length(rules[x][2])>0 or formalinverse[rules[x][1][1]]<>rules[x][1][2]);
-  #IsSet(hastail); # quick membership test
 
   l1:=GeneratorsOfGroup(fpg);
   l1:=Concatenation(l1,List(l1,Inverse));
@@ -883,21 +893,6 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         then 
           AddSet(hastail,Length(rules));
       fi;
-#    elif Length(r[1])>1 then
-#      if Length(r[2])=0 then Error("generator is trivial");fi;
-#      if Length(r[2])<>1 or formalinverse[r[1][1]]<>r[2][1] then
-#        Add(rules,r);
-#        AddSet(hastail,Length(rules));
-#      else
-#Print("Not use: ",r,"\n");
-#        # Do not use these rules for overlaps
-#        if r[2][1]>r[1][1] then
-#          Error("code assumes that larger number gets reduced to smaller");
-#        fi;
-#        if ForAny(rules,x->r[1][1] in x[2] or (x<>r and r[1][1] in x[1])) then
-#          Error("rules are not reduced");
-#        fi;
-#      fi;
     else
       # Length of r[1] is 1. That is, this generator is not used!
       m:=First(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord)=r);
@@ -961,6 +956,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   nvars:=dim*Length(hastail); #Number of variables
 
   eqs:=[];
+#rk:=0;
   zeroq:=ImmutableVector(field,ListWithIdenticalEntries(nvars,Zero(field)));
   for i in [1..Length(rules)] do
     l1:=rules[i][1];
@@ -971,7 +967,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       for o in [1..m-1] do # possible overlap Length
         start:=len1-o;
         if ForAll([1..o],k->l1[start+k]=l2[k]) then
-          #Print("Overlap ",l1," ",l2," ",o,"\n");
+#Print("Overlap ",l1," ",l2," ",o,"\n");
 
           # apply l1 first
           new:=Concatenation(rules[i][2],l2{[o+1..Length(l2)]});
@@ -1013,10 +1009,25 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
               fi;
             od;
           fi;
+
+#          if Length(eqs)>0 then
+#            c:=RankMat(eqs);
+#          else
+#            c:=rk;
+#          fi;
+#          if c>rk then rk:=c;
+#            Print("Overlap ",l1," ",l2," ",o," does reduce further:",
+#              Length(eqs[1])-rk,"\n");
+#          else
+#            Print(">>Overlap ",l1," ",l2," ",o," does not reduce further\n");
+#          fi;
+
         fi;
       od;
     od;
   od;
+
+  
   eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
   eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
 
@@ -1116,11 +1127,11 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         else
           p:=LookupDictionary(dict,s);
         fi;
-        if p<>fail and rulpos[p]<>fail then break; fi;
+        if IsInt(p) and rulpos[p]<>fail then break; fi;
         j:=j+1;
       od;
 
-      if p<>fail and rulpos[p]<>fail then
+      if IsInt(p) and rulpos[p]<>fail then
         p:=rulpos[p];
         tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
         wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
@@ -1190,17 +1201,16 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         mm:=Minimum(mal,Length(wrd)-i+1);
         while j<mm do
           s:=s*max+wrd[i+j];
-          #p:=LookupDictionary(dict,s);
           if s<=lenpre then
             p:=predict[s];
           else
             p:=LookupDictionary(dict,s);
           fi;
-          if p<>fail and rulpos[p]<>fail then break; fi;
+          if IsInt(p) and rulpos[p]<>fail then break; fi;
           j:=j+1;
         od;
 
-        if p<>fail and rulpos[p]<>fail then
+        if IsInt(p) and rulpos[p]<>fail then
           p:=rulpos[p];
           tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
           wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
@@ -1491,7 +1501,7 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq;
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold;
 
   # function to evaluate product (as integer list) in gens (and their
   # inverses invs) with corresponding action mats
@@ -1565,6 +1575,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
   prime:=Size(r.module.field);
   SetSize(fp,Size(r.group)*prime^r.module.dimension);
   simi:=fail;
+  wasbold:=false;
 
   if Length(arg)>2 and arg[3]=true then
     if IsZero(z) and MTX.IsIrreducible(r.module) then
@@ -1599,9 +1610,32 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       while Size(p)<Size(fp) do
         # we allow do go immediately to normal subgroup of index up to 4.
         # This reduces search space
-        it:=DescSubgroupIterator(p:skip:=LogInt(Size(p),2));
+        if p=r.group then
+          # re-use the first quotient, helps with repeated subgroups iterator
+          it:=DescSubgroupIterator(p:skip:=LogInt(Size(p),2));
+        else
+          it:=DescSubgroupIterator(r.group:skip:=LogInt(Size(p),2));
+        fi;
         repeat
+          wasbold:=false;
           m:=NextIterator(it);
+          # catch case of large permdegree, try naive first
+          if Index(p,m)=1 and IsPermGroup(p)
+            and NrMovedPoints(p)^2>Size(p) then
+            # take set stabilizer of orbit points.
+            e:=Set(List(Orbits(p,MovedPoints(p)),x->x[1]));
+            m:=Stabilizer(p,e,OnSets);
+	    if IndexNC(p,m)>10*NrMovedPoints(p) then
+	      m:=Intersection(MaximalSubgroupClassReps(p));
+	    fi;
+	    if IndexNC(p,m)>10*NrMovedPoints(p) then
+	      m:=p; # after all..
+	      wasbold:=false;
+	    else
+	      wasbold:=true;
+	    fi;
+          fi;
+          Info(InfoExtReps,3,"Found index ",Index(p,m));
           e:=fail;
           if Index(p,m)>=mindeg and (hom=false or Size(m)=1 or
             false<>MatricesStabilizerOneDim(r.module.field,
@@ -1838,7 +1872,8 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
         List(GeneratorsOfGroup(fp),x->ImagesRepresentative(quot,x)));
 
     fi;
-    new:=new*SmallerDegreePermutationRepresentation(p:cheap);
+    # if we used factor perm rep, be bolder
+    new:=new*SmallerDegreePermutationRepresentation(p:cheap:=wasbold<>true);
     SetIsomorphismPermGroup(fp,new);
   fi;
 

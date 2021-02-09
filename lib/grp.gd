@@ -1035,20 +1035,26 @@ DeclareAttribute( "CommutatorFactorGroup", IsGroup );
 #############################################################################
 ##
 #A  CompositionSeries( <G> )
+#A  CompositionSeriesThrough( <G>, <normals> )
 ##
 ##  <#GAPDoc Label="CompositionSeries">
 ##  <ManSection>
 ##  <Attr Name="CompositionSeries" Arg='G'/>
+##  <Oper Name="CompositionSeriesThrough" Arg='G, normals'/>
 ##
 ##  <Description>
 ##  A composition series is a subnormal series which cannot be refined.
 ##  This attribute returns <E>one</E> composition series (of potentially many
-##  possibilities).
+##  possibilities). The variant <Ref Oper="CompositionSeriesThrough"/> takes
+##  as second argument a list <A>normals</A> of normal subgroups of the
+##  group, and returns a composition series that incorporates these normal
+##  subgroups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "CompositionSeries", IsGroup );
+DeclareOperation( "CompositionSeriesThrough", [IsGroup,IsList] );
 #T and for module?
 
 

@@ -2675,7 +2675,8 @@ local m;
       # the group is a good part
       # sizeable radical
       or Size(RadicalGroup(G))^2>Size(G)
-      or ValueOption("forcetest")=true) then
+      or ValueOption("forcetest")=true) and 
+      ValueOption("forcetest")<>"old" then
     # In place until a proper implementation of Cannon/Holt isomorphism is
     # done
     return PatheticIsomorphism(G,H);

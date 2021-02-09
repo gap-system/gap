@@ -330,8 +330,6 @@ local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
     return fail;
   fi;
 
-  # old code -- obsolete
-
   c:=ValueOption("refineChainActionLimit");
   if IsInt(c) then
     hardlimit:=c;
@@ -339,7 +337,22 @@ local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
     hardlimit:=1000000;
   fi;
 
-  if Index(G,U)>hardlimit then return fail;fi;
+  if Index(G,U)>hardlimit/10
+   and ValueOption("callinintermediategroup")<>true then
+    # try the `AscendingChain` mechanism
+    c:=AscendingChain(G,U:cheap,refineIndex:=QuoInt(IndexNC(G,U),2),
+      callinintermediategroup);
+    if Length(c)>2 then
+      return First(c,x->Size(x)>Size(U));
+    fi;
+  fi;
+
+  if Index(G,U)>hardlimit then 
+    Info(InfoWarning,1,
+      "will have to use permutation action of degree bigger than ", hardlimit);
+  fi;
+
+  # old code -- obsolete
 
   if IsPermGroup(G) and Length(GeneratorsOfGroup(G))>3 then
     G1:=Group(SmallGeneratingSet(G));
