@@ -316,6 +316,9 @@ gap> u:=NormalClosure(g,SylowSubgroup(g,2));;
 gap> cs:=ChiefSeriesThrough(g,[u]);;
 gap> List(cs,Size);
 [ 1215506, 63974, 2206, 1103, 1 ]
+gap> cs:=CompositionSeriesThrough(g,[u]);;
+gap> List(cs,Size);
+[ 1215506, 63974, 2206, 1103, 1 ]
 
 # $Co_2$ on 2300 points
 gap> g:=
