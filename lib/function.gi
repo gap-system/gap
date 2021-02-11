@@ -29,9 +29,6 @@ function(func)
         isvarg := true;
         narg := -narg;
     fi;
-    if narg = 1 and nams <> fail and nams[1] = "arg" then
-        isvarg := true;
-    fi;
     if narg <> 0 then
         if nams = fail then
             Append(result, STRINGIFY("<",narg," unnamed arguments>"));

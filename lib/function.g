@@ -620,9 +620,6 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         isvarg := true;
         narg := -narg;
     fi;
-    if narg = 1 and nams <> fail and nams[1] = "arg" then
-        isvarg := true;
-    fi;
     if narg <> 0 then
         if nams = fail then
             Print( "<",narg," unnamed arguments>" );
