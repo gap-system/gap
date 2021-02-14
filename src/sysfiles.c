@@ -23,6 +23,7 @@
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
+#include "precord.h"
 #include "read.h"
 #include "records.h"
 #include "stats.h"
@@ -80,6 +81,7 @@ typedef void sig_handler_t ( int );
 
 #include <zlib.h>
 
+#include <sys/utsname.h>
 
 static ssize_t SyWriteandcheck(Int fid, const void * buf, size_t count);
 
@@ -339,6 +341,22 @@ static Obj FuncCrcString(Obj self, Obj str)
     return INTOBJ_INT(((Int4) crc) >> 4);
 }
 
+// Get OS Kernel version. Used to discover if GAP is running inside
+// 'Windows Subystem for Linux'
+Obj SyGetOsRelease(void)
+{
+    Obj            r = NEW_PREC(0);
+    struct utsname buf;
+    if (!uname(&buf)) {
+        AssPRec(r, RNamName("sysname"), MakeImmString(buf.sysname));
+        AssPRec(r, RNamName("nodename"), MakeImmString(buf.nodename));
+        AssPRec(r, RNamName("release"), MakeImmString(buf.release));
+        AssPRec(r, RNamName("version"), MakeImmString(buf.version));
+        AssPRec(r, RNamName("machine"), MakeImmString(buf.machine));
+    }
+
+    return r;
+}
 
 /****************************************************************************
 **

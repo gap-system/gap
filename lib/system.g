@@ -517,7 +517,7 @@ end );
 ##  <Func Name="ARCH_IS_WINDOWS" Arg=''/>
 ##
 ##  <Description>
-##  tests whether &GAP; is running on a Windows system.
+##  tests whether &GAP; is running on a Windows system in Cygwin.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -562,6 +562,33 @@ end);
 ##
 BIND_GLOBAL("ARCH_IS_UNIX",function()
   return not ARCH_IS_WINDOWS();
+end);
+
+#############################################################################
+##
+#F  ARCH_IS_WSL()
+##
+##  <#GAPDoc Label="ARCH_IS_WSL">
+##  <ManSection>
+##  <Func Name="ARCH_IS_WSL" Arg=''/>
+##
+##  <Description>
+##  tests whether &GAP; is running on a Windows system inside the
+##  'Windows Subsystem for Linux'. Note that in this case
+##  <Ref Func="ARCH_IS_UNIX"/> will be <K>true</K>, and in most situations
+##  WSL can be treated identically to Linux.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("ARCH_IS_WSL",function()
+  # There is no official way to detect this, but this method is
+  # suggested: https://github.com/microsoft/WSL/issues/423
+  # Note that at some point the string was changed from 'Microsoft' to
+  # 'microsoft'.
+  return ARCH_IS_UNIX() and IsBound(GAPInfo.KernelInfo.uname.release) and (
+    POSITION_SUBSTRING(GAPInfo.KernelInfo.uname.release, "Microsoft", 0) <> fail or
+    POSITION_SUBSTRING(GAPInfo.KernelInfo.uname.release, "microsoft", 0) <> fail);
 end);
 
 #############################################################################

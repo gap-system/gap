@@ -586,6 +586,7 @@ or called from a break loop.
 <#Include Label="ARCH_IS_UNIX">
 <#Include Label="ARCH_IS_MAC_OS_X">
 <#Include Label="ARCH_IS_WINDOWS">
+<#Include Label="ARCH_IS_WSL">
 
 </Section>
 

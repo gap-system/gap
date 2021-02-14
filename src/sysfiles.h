@@ -28,6 +28,13 @@
 */
 Int4 SyGAPCRC(const Char * name);
 
+/****************************************************************************
+**
+*F  SyGetOsRelease( )  . . . . . . . . . . . . . . . . . . . . get name of OS
+**
+**  Get the release of the operating system kernel.
+*/
+Obj SyGetOsRelease(void);
 
 /****************************************************************************
 **

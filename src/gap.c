@@ -1090,6 +1090,9 @@ static Obj FuncKERNEL_INFO(Obj self)
     AssPRec(res, RNamName("GAP_ROOT_PATHS"), SyGetGapRootPaths());
     AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(SyDotGapPath()));
 
+    // Get OS Kernel Release info
+    AssPRec(res, RNamName("uname"), SyGetOsRelease());
+
     // make command line available to GAP level
     tmp = NEW_PLIST_IMM(T_PLIST, 16);
     for (i = 0; SyOriginalArgv[i]; i++) {
