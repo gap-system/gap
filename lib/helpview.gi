@@ -198,48 +198,78 @@ elif ARCH_IS_MAC_OS_X() then
             return;
         end
     );
- 
+
 else # UNIX but not Mac OS X
 
-  # html version with netscape
-  HELP_VIEWER_INFO.netscape := rec(
-  type := "url",
-  show := function(url)
-    Exec(Concatenation("netscape -remote \"openURL(file:", url, ")\""));
-  end
-  );
+  # Graphical systems handled differently in WSL and standard Linux
+  if ARCH_IS_WSL() then
+    HELP_VIEWER_INFO.browser := rec(
+    type := "url",
+    show := function( url )
+      # Ignoring part of the URL after '#' since we are unable
+      # to navigate to the precise location on Windows
+      url := SplitString( url, "#" )[1];
+      Exec(Concatenation("explorer.exe \"$(wslpath -a -w \"",url, "\")\""));
+    end
+    );
 
-  # html version with mozilla
-  HELP_VIEWER_INFO.mozilla := rec(
-  type := "url",
-  show := function(url)
-    Exec(Concatenation("mozilla -remote \"openURL(file:", url, ")\""));
-  end
-  );
+    HELP_VIEWER_INFO.("pdf viewer") := rec(
+        type := "pdf",
+        show := function(file)
+          local   page;
+          # unfortunately one cannot (yet?) give a start page to windows
+          page := 1;
+          if IsRecord(file) then
+            if IsBound(file.page) then
+              page := file.page;
+            fi;
+            file := file.file;
+          fi;
+          Exec(Concatenation("explorer.exe \"$(wslpath -a -w \"",file, "\")\""));
+          Print("#  see page ", page, " in PDF.\n");
+    end
+    );
+  else
+    # html version with netscape
+    HELP_VIEWER_INFO.netscape := rec(
+    type := "url",
+    show := function(url)
+      Exec(Concatenation("netscape -remote \"openURL(file:", url, ")\""));
+    end
+    );
 
-  # html version with firefox
-  HELP_VIEWER_INFO.firefox := rec(
-  type := "url",
-  show := function(url)
-    Exec(Concatenation("firefox \"file://", url,"\" >/dev/null 2>&1 &"));
-  end
-  );
+    # html version with mozilla
+    HELP_VIEWER_INFO.mozilla := rec(
+    type := "url",
+    show := function(url)
+      Exec(Concatenation("mozilla -remote \"openURL(file:", url, ")\""));
+    end
+    );
 
-  # html version with chrome
-  HELP_VIEWER_INFO.chrome := rec(
-  type := "url",
-  show := function(url)
-    Exec(Concatenation("chromium-browser \"file://", url,"\" >/dev/null 2>&1 &"));
-  end
-  );
-  
-  # html version with konqueror  - doesn't work with 'file://...#...' URLs
-  HELP_VIEWER_INFO.konqueror := rec(
-  type := "url",
-  show := function(url)
-    Exec(Concatenation("konqueror \"file://", url,"\" >/dev/null 2>&1 &"));
-  end
-  );
+    # html version with firefox
+    HELP_VIEWER_INFO.firefox := rec(
+    type := "url",
+    show := function(url)
+      Exec(Concatenation("firefox \"file://", url,"\" >/dev/null 2>&1 &"));
+    end
+    );
+
+    # html version with chrome
+    HELP_VIEWER_INFO.chrome := rec(
+    type := "url",
+    show := function(url)
+      Exec(Concatenation("chromium-browser \"file://", url,"\" >/dev/null 2>&1 &"));
+    end
+    );
+    
+    # html version with konqueror  - doesn't work with 'file://...#...' URLs
+    HELP_VIEWER_INFO.konqueror := rec(
+    type := "url",
+    show := function(url)
+      Exec(Concatenation("konqueror \"file://", url,"\" >/dev/null 2>&1 &"));
+    end
+    );
+  fi;
 
   # html version with lynx
   HELP_VIEWER_INFO.lynx := rec(
