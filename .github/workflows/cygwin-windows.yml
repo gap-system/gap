@@ -1,0 +1,79 @@
+# Based on https://github.com/mit-plv/fiat-crypto/blob/master/.github/workflows/coq-windows.yml
+name: CI (Cygwin/Windows)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    env:
+      CFLAGS: "--coverage -O2 -g"
+      CXXFLAGS: "--coverage -O2 -g"
+      LDFLAGS: "--coverage"
+      # default config flags: enable debug asserts
+      CONFIGFLAGS: "--enable-debug"
+      COVERALLS_PARALLEL: true
+      TEST_SUITES: testinstall
+
+    steps:
+    # This sets git to use Linux line endings. While GAP should allow
+    # Windows line endings in GAP files, we currently can't build GAP if the
+    # whole source has Windows line endings
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
+    - uses: actions/checkout@v2
+    - name: Download cygwin
+      run: |
+        & cmd /c 'nslookup www.cygwin.com 2>&1'
+        while ($true)
+        {
+            try
+            {
+                (New-Object Net.WebClient).DownloadFile('http://www.cygwin.com/setup-x86_64.exe', 'setup-x86_64.exe')
+                break
+            }
+            catch
+            {
+                Write-Host "There is an error during package downloading:`n $_"
+            }
+        }
+        & cmd /c 'nslookup www.cygwin.com 8.8.8.8 2>&1'
+      shell: powershell
+    - name: Install cygwin
+      run: |
+        @ECHO ON
+        SET CYGROOT=C:\cygwin64
+        SET CYGCACHE=%CYGROOT%\var\cache\setup
+        setup-x86_64.exe -qnNdO -R %CYGROOT% -l %CYGCACHE% -s %CYGMIRROR% -P wget,git,gcc,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel
+        SET TARGET_ARCH=x86_64-w64-mingw32
+        SET CD_MFMT=%cd:\=/%
+        SET RESULT_INSTALLDIR_CFMT=%CD_MFMT:C:/=/cygdrive/c/%
+      env:
+        CYGMIRROR: "http://mirror.easyname.at/cygwin"
+      shell: cmd
+
+    - name: Set up cygwin profile
+      run: |
+        C:\cygwin64\bin\bash -l -c bash
+      shell: cmd
+
+    # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) without changing directory
+    - name: Compile GAP and download packages
+      run: |
+        @ECHO ON
+        SET CHERE_INVOKING=1
+        C:\cygwin64\bin\bash -l -c 'bash etc/ci-prepare.sh'
+      shell: cmd
+
+    - name: Run tests
+      run: |
+        SET CHERE_INVOKING=1
+        C:\cygwin64\bin\bash -l -c 'bash etc/ci.sh'
+      shell: cmd
