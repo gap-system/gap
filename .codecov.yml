@@ -17,3 +17,4 @@ ignore:
  - "hpcgap/extern"
  - "tst"
  - "pkg"
+ - "grp/*.grp"
