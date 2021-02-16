@@ -29,37 +29,8 @@ jobs:
         git config --global core.eol lf
 
     - uses: actions/checkout@v2
-    - name: Download cygwin
-      run: |
-        & cmd /c 'nslookup www.cygwin.com 2>&1'
-        while ($true)
-        {
-            try
-            {
-                (New-Object Net.WebClient).DownloadFile('http://www.cygwin.com/setup-x86_64.exe', 'setup-x86_64.exe')
-                break
-            }
-            catch
-            {
-                Write-Host "There is an error during package downloading:`n $_"
-            }
-        }
-        & cmd /c 'nslookup www.cygwin.com 8.8.8.8 2>&1'
-      shell: powershell
-    - name: Install cygwin
-      run: |
-        @ECHO ON
-        SET CYGROOT=C:\cygwin64
-        SET CYGCACHE=%CYGROOT%\var\cache\setup
-        setup-x86_64.exe -qnNdO -R %CYGROOT% -l %CYGCACHE% -s %CYGMIRROR% -P wget,git,gcc,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel
-      env:
-        CYGMIRROR: "http://mirror.easyname.at/cygwin"
-      shell: cmd
 
-    - name: Set up cygwin profile
-      run: |
-        C:\cygwin64\bin\bash -l -c bash
-      shell: cmd
+    - uses: gap-actions/setup-cygwin-for-gap@v1
 
     # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) without changing directory
     - name: Compile GAP and download packages
