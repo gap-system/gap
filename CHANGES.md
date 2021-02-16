@@ -1,9 +1,108 @@
 # GAP - history of changes
 
-## GAP 4.11.0 (February 2020)
+## GAP 4.11.1 or GAP 4.12.0 (February 2021)
 
 These changes are also listed on the
 [Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
+
+### New features and major changes
+
+- **Added the missing perfect groups of order up to a million**
+
+  Added perfect groups of orders that had been missing in the Holt/Plesken book
+  (newly computed).
+  This increases the number of groups in the perfect groups library by a factor
+  close to 6.
+  Also added five groups that were found missing in the existing lists.
+  See PR [#3925](https://github.com/gap-system/gap/pull/3925) for details.
+
+### Unstructured list of merged pull requests for GAP 4.12.0
+
+- [#3628](https://github.com/gap-system/gap/pull/3628) When the info level of `InfoAttributes` is at least 3, warn about attempts to set an attribute value that is different from an already stored value
+- [#3643](https://github.com/gap-system/gap/pull/3643) The manual chapter "Vector and Matrix Objects", which had been marked as preliminary in earlier versions, is now regarded as official
+- [#3664](https://github.com/gap-system/gap/pull/3664) Removed `Matrix` as an attribute (the operation `Matrix` remains as it was)
+- [#3668](https://github.com/gap-system/gap/pull/3668) If several instances of a package, with the same version number, are found in the root directories, and if the first such instance cannot be loaded (because a compiled module is missing or does not fit) then the other instances are considered for being loaded.  In earlier versions, only the first instance of a given package version was considered
+- [#3693](https://github.com/gap-system/gap/pull/3693) Improve `ViewString` so strings are correctly escaped
+- [#3694](https://github.com/gap-system/gap/pull/3694) Deprecate undocumented extra arguments for DeclareGlobalFunction and InstallGlobalFunction
+- [#3695](https://github.com/gap-system/gap/pull/3695) Fix issue with test outputs which do not end with a newline when using the rewriteToFile option of Test
+- [#3702](https://github.com/gap-system/gap/pull/3702) Make TmpNameAllArchs obsolete by enhancing TmpName
+- [#3713](https://github.com/gap-system/gap/pull/3713) Add tracing and counting of built-in operations
+- [#3721](https://github.com/gap-system/gap/pull/3721) Add optimised SmallestMovedPoint implementation
+- [#3740](https://github.com/gap-system/gap/pull/3740) Speed up printing of large permutations
+- [#3747](https://github.com/gap-system/gap/pull/3747) Fix unexpected error when testing permutation groups for conjugacy
+- [#3759](https://github.com/gap-system/gap/pull/3759) Fix an issue with error reporting in parallel threads
+- [#3761](https://github.com/gap-system/gap/pull/3761) Fix bugs in HPC-GAP serialization code and improve its tests
+- [#3792](https://github.com/gap-system/gap/pull/3792) Use `Info` not `Print` in `Decomposition`
+- [#3796](https://github.com/gap-system/gap/pull/3796) Remove `-B` command line option for overriding the architecture
+- [#3808](https://github.com/gap-system/gap/pull/3808) Fixed a crash when using a constant global variable (created via `MakeConstantGlobal`) as index variable of a for loop
+- [#3822](https://github.com/gap-system/gap/pull/3822) HPC-GAP: Make the assertion level (which controls `Assert` statements) thread local
+- [#3858](https://github.com/gap-system/gap/pull/3858) Add `DeclareGlobalName` (to replace `DeclareGlobalVariable` where possible)
+- [#3861](https://github.com/gap-system/gap/pull/3861) The range of `SimpleGroupsIterator` has been extended to about 10^27
+- [#3862](https://github.com/gap-system/gap/pull/3862) Rename `QUIT_GAP`, `FORCE_QUIT_GAP` and `GAP_EXIT_CODE` to `QuitGap`, `ForceQuitGap` and `GapExitCode` (the old names remain available as synonyms)
+- [#3901](https://github.com/gap-system/gap/pull/3901) Allow function-call syntax for general mappings
+- [#3903](https://github.com/gap-system/gap/pull/3903) Bug Fix: `Cycles((),[])` now correctly returns `[]`
+- [#3911](https://github.com/gap-system/gap/pull/3911) PageSource now gives a hint, that ApplicableMethod can be used to find the methods installed for an operation
+- [#3912](https://github.com/gap-system/gap/pull/3912) Update of GMP from version 6.1.2 (December 2016) to version 6.2.0 (January 2020)
+- [#3914](https://github.com/gap-system/gap/pull/3914) Added the attribute `InnerAutomorphismGroup` for groups
+- [#3920](https://github.com/gap-system/gap/pull/3920) Admit `CentralIdempotentsOfAlgebra` for algebras without `One`
+- [#3931](https://github.com/gap-system/gap/pull/3931) Bug Fix: Do not ignore `#@` comments after a empty line at start of test file
+- [#3933](https://github.com/gap-system/gap/pull/3933) `libgap` (shared library): Added libtool versioning
+- [#3986](https://github.com/gap-system/gap/pull/3986) Add some missing methods for machine floats (`Sinh`, `Cosh`, `Tanh`, `Asinh`, `Acosh`, `Atanh`, `CubeRoot`, `Erf`, `Gamma`)
+- [#3992](https://github.com/gap-system/gap/pull/3992) Introduced a function `Pluralize` for strings
+- [#4000](https://github.com/gap-system/gap/pull/4000) NormalClosure: Accept a list of normal generators as second argument
+- [#4023](https://github.com/gap-system/gap/pull/4006) Improve float literal parsing, fix some inconsistencies in it
+- [#4026](https://github.com/gap-system/gap/pull/4026) For the buildsystem now only .d files that exist are included
+- [#4035](https://github.com/gap-system/gap/pull/4035) Normalize package name to all-lowercase in `DirectoriesPackagePrograms`
+- [#4037](https://github.com/gap-system/gap/pull/4037) Normalize package name to all-lowercase in `IsPackageLoaded` and `GAPInfo.PackagesInfo`
+- [#4074](https://github.com/gap-system/gap/pull/4074) Add `IteratorOfPartitionsSet` an iterator for all unordered partitions of a set into pairwise disjoint nonempty sets
+- [#4080](https://github.com/gap-system/gap/pull/4080) Allow registering global handlers for GAP_TRY/GAP_CATCH
+- [#4099](https://github.com/gap-system/gap/pull/4099) Passing a `.tst` file as argument to `gap` will now invoke `Test` on it, instead of trying to `Read` it (which will fail)
+- [#4104](https://github.com/gap-system/gap/pull/4104) Add `TaylorSeriesRationalFunction` and improve `Derivative` for univariate rational functions
+- [#4105](https://github.com/gap-system/gap/pull/4105) The function `OrderMod` now admits an optional third argument that is a multiple of the order one wants to compute
+- [#4108](https://github.com/gap-system/gap/pull/4108) Fix some unexpected error when inverting or computing random elements of algebraic extensions of finite fields of size > 256
+- [#4111](https://github.com/gap-system/gap/pull/4111) In `FreeGroup`, support the option `generatorNames` to prescribe the names of the generators
+- [#4126](https://github.com/gap-system/gap/pull/4126) Added a command line option `--version`
+- [#4128](https://github.com/gap-system/gap/pull/4128) Added `OutputGzipFile`, in order to create a gzip compressed file
+- [#4132](https://github.com/gap-system/gap/pull/4132) Fixed a long standing bug which prevented `SetPrintFormattingStatus( "*stdout*", false );` from working as expected
+- [#4142](https://github.com/gap-system/gap/pull/4142) Extend `BindConstant`, `MakeConstantGlobal` to all object types
+- [#4145](https://github.com/gap-system/gap/pull/4145) Improved some errors messages for various set operations (`AddSet`, `UniteSet`, ...)
+- [#4146](https://github.com/gap-system/gap/pull/4146) Fixed `Cite` w.r.t. the encoding used; let `BibEntry` always use encoding "UTF-8"
+- [#4168](https://github.com/gap-system/gap/pull/4168) Improved the documentation concerning GASMAN, added `CollectGarbage`
+- [#4186](https://github.com/gap-system/gap/pull/4186) Improved the performance of `CoeffientsQadic` for long results
+- [#4201](https://github.com/gap-system/gap/pull/4201) Support an optional `transformFunction` in `Test()`, similarto `compareFunction`
+- [#4206](https://github.com/gap-system/gap/pull/4206) Fixed `DirectoriesPackageLibrary`, `DirectoriesPackagePrograms` when they are called during package loading
+- [#4207](https://github.com/gap-system/gap/pull/4207) Added the group constructors `PGammaL`, `PSigmaL`, and their methods for permutation groups
+- [#4215](https://github.com/gap-system/gap/pull/4215) `libgap` API: Expose a minimal interface to the garbage collector, via `GAP_MarkBag`, `GAP_CollectBags`
+- [#4219](https://github.com/gap-system/gap/pull/4219) Fixed `IntermediateGroup`: For large indices, it might have returned `fail` although subgroups exist, instead of issuing an error message or warning about a hard calculation
+- [#4232](https://github.com/gap-system/gap/pull/4232) Iterators for lists: fixed `IsDoneIterator`, improved the performance
+- [#4239](https://github.com/gap-system/gap/pull/4239) Added missing comparison w.r.t. equality of something and an object with memory (`IsObjWithMemory`)
+- [#4245](https://github.com/gap-system/gap/pull/4245) Free (associative or Lie) algebras: admit non-fields as left acting domains, fixed the zero-dimensional case
+
+### Unstructured list of merged pull requests for GAP 4.11.1
+
+- [#3790](https://github.com/gap-system/gap/pull/3790) Add further information to the library of simple groups
+- [#3840](https://github.com/gap-system/gap/pull/3840) Speed up garbage collection
+- [#3922](https://github.com/gap-system/gap/pull/3922) New feature to execute BuildPackages.sh in parallel mode by adding --parallel
+- [#3944](https://github.com/gap-system/gap/pull/3944) Bug Fix: The error checking in `PartialPerm` has been corrected such that invalid inputs (numbers < 1) are detected
+- [#3963](https://github.com/gap-system/gap/pull/3963) Provide automatic compression/decompression of filenames ending `.gz` (as is claimed for example in the documentation of `InputTextFile`)
+- [#3965](https://github.com/gap-system/gap/pull/3965) Fix potential garbage collector crashes on 64bit ARM systems
+- [#3980](https://github.com/gap-system/gap/pull/3980) Fixed `Gcd` for rational polynomials
+- [#4006](https://github.com/gap-system/gap/pull/4006) Fix gac to ensure that binaries it creates on Linux can load and run, even if a GAP package with a compiled kernel extension (such as IO) is present
+- [#4016](https://github.com/gap-system/gap/pull/4016) Improved `etc/Makefile.gappkg` (used by GAP packages that want to build a simple GAP kernel extension)
+- [#4041](https://github.com/gap-system/gap/pull/4041) Fix `make check` in out-of-tree builds
+- [#4042](https://github.com/gap-system/gap/pull/4042) Avoid access to JuliaTLS members by useing jl_threadid() and jl_get_current_task() helpers
+- [#4042](https://github.com/gap-system/gap/pull/4042) Fix compiler constness warnings in weakptr.c
+- [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
+- [#4058](https://github.com/gap-system/gap/pull/4058) Refine the logic for scanning Julia stacks
+- [#4071](https://github.com/gap-system/gap/pull/4071) Make the Julia GC threadsafe when used from GAP.jl
+- [#4076](https://github.com/gap-system/gap/pull/4076) Fix an infinite loop in `BoundedRefinementEANormalSeries` if large factors could not be refined
+- [#4076](https://github.com/gap-system/gap/pull/4076) Improve documentation of `IsAutomorphismGroup`
+- [#4076](https://github.com/gap-system/gap/pull/4076) Fix protected option of `IsomorphismSimplifiedFpGroup`
+- [#4081](https://github.com/gap-system/gap/pull/4081) libgap: Enhance GAP_ValueGlobalVariable to supported automatic variables (see `DeclareAutoreadableVariables`)
+- [#4178](https://github.com/gap-system/gap/pull/4178) Fixed bugs in `RestrictedPerm` with second argument a range
+
+
+## GAP 4.11.0 (February 2020)
 
 ### New features and major changes
 
