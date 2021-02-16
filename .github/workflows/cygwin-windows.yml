@@ -52,9 +52,6 @@ jobs:
         SET CYGROOT=C:\cygwin64
         SET CYGCACHE=%CYGROOT%\var\cache\setup
         setup-x86_64.exe -qnNdO -R %CYGROOT% -l %CYGCACHE% -s %CYGMIRROR% -P wget,git,gcc,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel
-        SET TARGET_ARCH=x86_64-w64-mingw32
-        SET CD_MFMT=%cd:\=/%
-        SET RESULT_INSTALLDIR_CFMT=%CD_MFMT:C:/=/cygdrive/c/%
       env:
         CYGMIRROR: "http://mirror.easyname.at/cygwin"
       shell: cmd
