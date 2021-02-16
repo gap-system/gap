@@ -409,8 +409,8 @@ else
 DOCOMP_PREFIX = $(abs_srcdir)/src
 endif
 docomp: #gap$(EXEEXT)
-	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX) oper1 ./gap$(EXEEXT)
-	@"$(abs_srcdir)"/cnf/GAP-C-GEN $(abs_srcdir)/lib $(DOCOMP_PREFIX) type1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $(abs_srcdir)/lib $(DOCOMP_PREFIX) oper1 ./gap$(EXEEXT)
+	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $(abs_srcdir)/lib $(DOCOMP_PREFIX) type1 ./gap$(EXEEXT)
 
 .PHONY: docomp
 
@@ -451,6 +451,7 @@ distclean: clean
 	rm -rf dev/log
 	rm -rf tags
 	rm -rf TAGS
+	rm -rf cnf/GAP-*
 
 clean:
 	rm -rf bin/$(GAPARCH)
@@ -763,11 +764,11 @@ all: symlinks
 symlinks: FORCE
 	@$(MKDIR_P) bin/$(GAPARCH)
 	@if test -L sysinfo.gap ; then rm -f sysinfo.gap && $(MAKE) sysinfo.gap ; fi
-	@$(srcdir)/cnf/REGEN-SYMLINK sysinfo.gap sysinfo.gap-default$(ABI)
-	@$(srcdir)/cnf/REGEN-SYMLINK $(abs_srcdir)/src bin/$(GAPARCH)/src
-	@$(srcdir)/cnf/REGEN-SYMLINK ../../gac bin/$(GAPARCH)/gac
-	@$(srcdir)/cnf/REGEN-SYMLINK ../../gap bin/$(GAPARCH)/gap
-	@$(srcdir)/cnf/REGEN-SYMLINK ../../build/config.h bin/$(GAPARCH)/config.h
+	@$(srcdir)/cnf/regen-symlink.sh sysinfo.gap sysinfo.gap-default$(ABI)
+	@$(srcdir)/cnf/regen-symlink.sh $(abs_srcdir)/src bin/$(GAPARCH)/src
+	@$(srcdir)/cnf/regen-symlink.sh ../../gac bin/$(GAPARCH)/gac
+	@$(srcdir)/cnf/regen-symlink.sh ../../gap bin/$(GAPARCH)/gap
+	@$(srcdir)/cnf/regen-symlink.sh ../../build/config.h bin/$(GAPARCH)/config.h
 
 .PHONY: symlinks
 
@@ -1257,7 +1258,7 @@ GVF = $(srcdir)/cnf/GAP-VERSION-FILE
 
 # the GAP-VERSION-FILE contains the raw version, nothing else
 $(GVF): FORCE
-	@cd $(srcdir) && $(SHELL) cnf/GAP-VERSION-GEN $(GAP_VERSION)
+	@cd $(srcdir) && $(SHELL) cnf/gap-version-gen.sh $(GAP_VERSION)
 -include $(GVF)
 
 # generate build/gap_version.c
