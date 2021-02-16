@@ -184,6 +184,25 @@ function (  )
     TryNextMethod();
 end
 
+# The number of arguments of a function
+# is not determined by the name "arg" of the parameter.
+gap> f:= function( arg ) return 0; end;
+function( arg... ) ... end
+gap> ViewString( f );
+"function( arg... ) ... end"
+gap> Print( f, "\n" );
+function ( arg... )
+    return 0;
+end
+gap> f:= arg -> 0;
+function( arg ) ... end
+gap> ViewString( f );
+"function( arg ) ... end"
+gap> Print( f, "\n" );
+function ( arg )
+    return 0;
+end
+
 #
 gap> InstallGlobalFunction("CheeseCakeFunction123123", function() end);
 Error, global function `CheeseCakeFunction123123' is not declared yet
