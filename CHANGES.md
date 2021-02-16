@@ -53,11 +53,11 @@ These changes are also listed on the
 - [#2876](https://github.com/gap-system/gap/pull/2876) `IsomorphismTransformationSemigroup` now returns an `IdentityMapping` for a transformation semigroup
 - [#2923](https://github.com/gap-system/gap/pull/2923) Extend obsolete to support multiple levels
 - [#2936](https://github.com/gap-system/gap/pull/2936) Add back `ViewObj` method for generic fields
-- [#2946](https://github.com/gap-system/gap/pull/2946),
-  [#2955](https://github.com/gap-system/gap/pull/2955),
 - [#2952](https://github.com/gap-system/gap/pull/2952) Add command line option `--bare` to start GAP without even needed packages (developer tool)
 - [#2960](https://github.com/gap-system/gap/pull/2960) Add `List` method accepting an iterator and a function
-- [#2974](https://github.com/gap-system/gap/pull/2974),
+- [#2946](https://github.com/gap-system/gap/pull/2946),
+  [#2955](https://github.com/gap-system/gap/pull/2955),
+  [#2974](https://github.com/gap-system/gap/pull/2974),
   [#3372](https://github.com/gap-system/gap/pull/3372) Improve many error messages
 - [#2985](https://github.com/gap-system/gap/pull/2985) Improve support for custom list object implementations
 - [#2998](https://github.com/gap-system/gap/pull/2998),
