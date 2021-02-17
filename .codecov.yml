@@ -4,13 +4,17 @@ coverage:
   range: "70...100"
 
   status:
-    project: no
-    patch: no
-    changes: no
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+    changes:
+      default:
+        informational: true
 
-comment:
-  layout: "header, diff, changes, tree"
-  behavior: default
+comment: false
 
 ignore:
  - "extern"
