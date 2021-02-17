@@ -45,7 +45,7 @@ time "$SRCDIR/configure" --enable-Werror $CONFIGFLAGS
 time make V=1 -j4
 
 # Use alternative downloader which retries on failure and uses the Travis cache
-DOWNLOAD="$SRCDIR/etc/ci-download.sh"
+DOWNLOAD="$SRCDIR/dev/ci-download.sh"
 if [[ $(uname) == Darwin ]]
 then
     # Travis OSX builders seem to have very small download bandwidth,

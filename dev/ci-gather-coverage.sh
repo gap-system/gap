@@ -112,7 +112,7 @@ then
   # generate kernel coverage reports by running gcov
   python -m gcovr -r . -o c-coveralls.json --json --exclude-directories pkg/ --exclude-directories extern/ -e pkg/ -e extern/
 
-  python etc/ci-coveralls-merge.py
+  python dev/ci-coveralls-merge.py
 fi
 
 # upload to coveralls.io
