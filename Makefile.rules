@@ -452,7 +452,6 @@ distclean: clean
 	rm -rf dev/log
 	rm -rf tags
 	rm -rf TAGS
-	rm -rf cnf/GAP-*
 
 clean:
 	rm -rf bin/$(GAPARCH)
@@ -462,7 +461,7 @@ clean:
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
 	rm -f doc/wsp.g
-	rm -f cnf/GAP-{CFLAGS,CPPFLAGS,CXXFLAGS,LDFLAGS,LIBS,OBJS}
+	rm -f cnf/GAP-*
 	rmdir bin cnf dev doc extern src 2>/dev/null || : # remove dirs if they are now empty
 
 .PHONY: clean distclean
