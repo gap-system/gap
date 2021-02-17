@@ -446,6 +446,7 @@ etags:
 # Rules for 'make clean'
 ########################################################################
 distclean: clean
+	rm -rf autom4te.cache
 	rm -f config.log config.status libtool GNUmakefile
 	rm -f doc/make_doc
 	rm -f doc/*/*.aux doc/*/*.bbl doc/*/*.blg doc/*/*.brf doc/*/*.idx doc/*/*.ilg doc/*/*.ind doc/*/*.log doc/*/*.out doc/*/*.pnr doc/*/*.tex doc/*/*.toc
@@ -460,6 +461,7 @@ clean:
 	rm -f bin/gap.sh sysinfo.gap*
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
+	rm -rf .libs
 	rm -f doc/wsp.g
 	rm -f cnf/GAP-*
 	rmdir bin cnf dev doc extern src 2>/dev/null || : # remove dirs if they are now empty
