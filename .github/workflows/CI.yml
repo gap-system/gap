@@ -185,13 +185,13 @@ jobs:
                python -m pip install gcovr
 
       - name: "Compile GAP and download packages"
-        run: ${{ matrix.extra }} bash etc/ci-prepare.sh
+        run: ${{ matrix.extra }} bash dev/ci-prepare.sh
       - name: "Run tests"
-        run: ${{ matrix.extra }} bash etc/ci.sh
+        run: ${{ matrix.extra }} bash dev/ci.sh
       - name: "Gather coverage"
-        run: ${{ matrix.extra }} bash etc/ci-gather-coverage.sh
+        run: ${{ matrix.extra }} bash dev/ci-gather-coverage.sh
       - name: "Upload coverage data to codecov"
-        run: ${{ matrix.extra }} bash etc/ci-run-codecov.sh
+        run: ${{ matrix.extra }} bash dev/ci-run-codecov.sh
       # - uses: codecov/codecov-action@v1
 
       # TODO: fix coveralls integration
