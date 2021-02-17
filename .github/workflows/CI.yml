@@ -13,67 +13,69 @@ jobs:
       fail-fast: false
       matrix:
         # base test: fast first test
-        os: [ubuntu-latest]
+        os: [ubuntu-18.04]
         test-suites: ["testinstall"]
-        extra: [""]
 
         # add a few extra tests
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp teststandard"
-            extra: ""
 
-#          - os: ubuntu-latest
-#            test-suites: "docomp teststandard"
-#            extra: "ABI=32 CONFIGFLAGS=\"\""
+          - os: ubuntu-18.04
+            test-suites: "docomp teststandard"
+            extra: "ABI=32 CONFIGFLAGS=\"\""
 
-          # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI, but
-          # somehow when running on GitHub Actions, it takes almost 4 hours (!) to
-          # complete instead of 25 minutes. So for now we just run testinstall.
-          - os: ubuntu-latest
+          # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI,
+          # but somehow when running on GitHub Actions, it takes almost 4
+          # hours (!) to complete instead of 25 minutes. So for now we just
+          # run testinstall.
+          - os: ubuntu-18.04
             test-suites: "docomp testinstall"
             extra: "HPCGAP=yes ABI=64"
 
           # compile packages and run GAP tests
           # don't use --enable-debug to prevent the tests from taking too long
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testpackages testinstall-loadall"
-            extra: "ABI=64 packages+=(
+            extra: "ABI=64"
+            packages: "
                     4ti2
                     libboost-dev
                     libcdd-dev
                     libcurl4-openssl-dev
-                    libmpfr-dev
-                    libmpfi-dev
-                    libmpc-dev
                     libfplll-dev
-                    pari-gp
+                    libmpc-dev
+                    libmpfi-dev
+                    libmpfr-dev
+                    libncurses5-dev
                     libzmq3-dev
+                    pari-gp
                     singular
-                    )"
+                    "
 
           # compile packages and run GAP tests in 32 bit mode
           # it seems profiling is having trouble collecting the coverage data
           # here, so we use NO_COVERAGE=1
-#          - os: ubuntu-latest
-#            test-suites: "testpackages testinstall-loadall"
-#            extra: "ABI=32 NO_COVERAGE=1 packages+=(
-#                    4ti2                    # for 4ti2Interface
-#                    libboost-dev            # for NormalizInterface
-#                    libcdd-dev              # for CddInterface
-#                    libcurl4-openssl-dev    # for curlInterface
-#                    libmpfr-dev             # for float
-#                    libmpfi-dev             # for float
-#                    libmpc-dev              # for float
-#                    #libfplll-dev           # for float
-#                    pari-gp                 # for alnuth
-#                    libzmq3-dev             # for ZeroMQInterface
-#                    singular                # for IO_ForHomalg
-#                    )"
+          - os: ubuntu-18.04
+            test-suites: "testpackages testinstall-loadall"
+            extra: "ABI=32 NO_COVERAGE=1"
+            packages: "
+                    4ti2
+                    libboost-dev
+                    libcdd-dev
+                    libcurl4-openssl-dev
+                    libfplll-dev
+                    libmpc-dev
+                    libmpfi-dev
+                    libmpfr-dev
+                    libncurses5-dev
+                    libzmq3-dev
+                    pari-gp
+                    singular
+                    "
 
           - os: macos-latest
             test-suites: "docomp testinstall"
-            extra: ""
 
           # test creating the manual
           # TODO: make the resulting HTML and PDF files available as build
@@ -81,26 +83,26 @@ jobs:
           # preview doc changes for PRs). Use the `upload-artifact` action and
           # make it conditional. Or perhaps move the `makemanuals` job into
           # a separate workflow job?
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "makemanuals"
-            extra: "packages+=(
+            packages: "
                     texlive-latex-base
                     texlive-latex-recommended
                     texlive-latex-extra
                     texlive-extra-utils
-                    texlive-fonts-recommended texlive-fonts-extra
-                    )"
+                    texlive-fonts-recommended
+                    texlive-fonts-extra
+                    "
 
-          # run tests contained in the manual
+          # run tests contained in the manual. Also check ubuntu-latest works.
           - os: ubuntu-latest
             test-suites: "testmanuals"
-            extra: ""
 
           # run bugfix regression tests
           # Also turn on '--enable-memory-checking' to make sure GAP compiles
           # with the flag enabled. We do not actually test the memory
           # checking, as this slows down GAP too much.
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testbugfix"
             extra: "CONFIGFLAGS=\"--enable-memory-checking\""
 
@@ -114,33 +116,30 @@ jobs:
           # The '--enable-valgrind' checks that GAP builds and runs correctly
           # when compiled with valgrind support. We do not actually run any
           # tests using valgrind, as it is too slow.
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "docomp testinstall"
-            extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree CONFIGFLAGS=\"--enable-valgrind\"
-                    packages+=(valgrind)"
-            # TODO: install valgrind
+            extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
+                    CONFIGFLAGS=\"--enable-valgrind\""
+            packages: "valgrind"
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
-#          - os: ubuntu-latest
-#            test-suites: "docomp  testinstall"
-#            extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
+          - os: ubuntu-18.04
+            test-suites: "docomp testinstall"
+            extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test error reporting and compiling as well as libgap
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testspecial test-compile testlibgap testkernel"
-            extra: ""
 
           # test Julia integration
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             test-suites: "testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
 
-          # TODO: add back a test on a big endian machine (we had s390x on Travis)
-          # TODO: add back a test for compilation with an older GCC, e.g. 4.7
+          # TODO: add back big endian test (we had s390x on Travis)
+          # TODO: add back test with an older GCC, e.g. 4.7
           # TODO: restore Slack notifications for failed CI branch builds
-          # TODO: test without GMP and zlib, to ensure GAP can build its own
-          # TODO: test without readline, to ensure GAP can be compiled & run w/o it
 
     env:
       CFLAGS: "--coverage -O2 -g"
@@ -162,13 +161,20 @@ jobs:
         run: |
                ${{ matrix.extra }}
                if [ "$RUNNER_OS" == "Linux" ]; then
-                   packages+=(libgmp-dev libreadline-dev zlib1g-dev)
+                   packages=(${{ matrix.packages }})
+                   if [[ $TEST_SUITES == *testbuildsys* ]] ; then
+                       sudo apt-get remove libgmp-dev libreadline-dev zlib1g-dev
+                   else
+                       packages+=(libgmp-dev libreadline-dev zlib1g-dev)
+                   fi
                    if [[ $ABI == 32 ]] ; then
+                       sudo dpkg --add-architecture i386
                        for i in "${!packages[@]}"; do
                            packages[$i]="${packages[$i]}:i386"
                        done
+                       packages+=(gcc-multilib g++-multilib)
                    fi
-                   packages+=(gcc-multilib g++-multilib)
+                   sudo apt-get update
                    sudo apt-get install "${packages[@]}"
                elif [ "$RUNNER_OS" == "macOS" ]; then
                    brew install gmp readline zlib
@@ -198,7 +204,7 @@ jobs:
 
 #  finish:
 #    needs: test
-#    runs-on: ubuntu-latest
+#    runs-on: ubuntu-18.04
 #    steps:
 #      - name: Coveralls Finished
 #        uses: coverallsapp/github-action@master
