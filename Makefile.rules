@@ -1140,7 +1140,7 @@ PKG_BRANCH = stable-4.11
 PKG_BOOTSTRAP_URL = https://files.gap-system.org/gap4pkgs/
 PKG_MINIMAL = packages-required-$(PKG_BRANCH).tar.gz
 PKG_FULL = packages-$(PKG_BRANCH).tar.gz
-DOWNLOAD = $(abs_srcdir)/etc/download.sh
+DOWNLOAD = $(abs_srcdir)/cnf/download.sh
 
 bootstrap-pkg-minimal:
 	@if test -e pkg; then \
