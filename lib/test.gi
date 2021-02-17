@@ -499,6 +499,44 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##  
+DeclareGlobalName("TextAttr"); # from GAPDoc
+DeclareGlobalName("DefaultReportDiffColors"); # initialized in Test() or by the user
+BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
+  if UserPreference("UseColorsInTerminal") = true then
+    Print(DefaultReportDiffColors.message);
+    Print("########> Diff in ");
+    if IsStream(fnam) then
+      Print("test stream, line ",line,":");
+    else
+      Print(fnam,":",line);
+    fi;
+    Print(TextAttr.reset, "\n", DefaultReportDiffColors.message);
+    Print("# Input is:", TextAttr.reset, "\n");
+    Print(DefaultReportDiffColors.input);
+    Print(inp);
+    Print(TextAttr.reset, TextAttr.delline, DefaultReportDiffColors.message);
+    Print("# Expected output:", TextAttr.reset, "\n");
+    Print(DefaultReportDiffColors.expected);
+    Print(expout);
+    Print(TextAttr.reset, TextAttr.delline, DefaultReportDiffColors.message);
+    Print("# But found:", TextAttr.reset, "\n");
+    Print(DefaultReportDiffColors.actual);
+    Print(found);
+    Print(TextAttr.reset, TextAttr.delline, DefaultReportDiffColors.message);
+    Print("########", TextAttr.reset, "\n");
+  else
+    Print("########> Diff in ");
+    if IsStream(fnam) then
+      Print("test stream, line ",line,":\n");
+    else
+      Print(fnam,":",line,"\n");
+    fi;
+    Print("# Input is:\n", inp);
+    Print("# Expected output:\n", expout);
+    Print("# But found:\n", found);
+    Print("########\n");  fi;
+end);
+
 InstallGlobalFunction("Test", function(arg)
   local fnam, nopts, opts, size, full, pf, failures, lines, ign, new,
         cT, ok, oldtimes, thr, delta, len, c, i, j, d, localdef, line;
@@ -509,6 +547,14 @@ InstallGlobalFunction("Test", function(arg)
     nopts := arg[2];
   else 
     nopts := rec();
+  fi;
+  if not IsBound(DefaultReportDiffColors) then
+    BindGlobal("DefaultReportDiffColors", rec(
+        message := TextAttr.4,  # blue text
+        input := "",
+        expected := Concatenation(TextAttr.0, TextAttr.b2), # black text on green background
+        actual := Concatenation(TextAttr.7, TextAttr.b1),   # white text on red background
+        ));
   fi;
   opts := rec(
            ignoreComments := true,
@@ -538,18 +584,7 @@ InstallGlobalFunction("Test", function(arg)
            end,
            rewriteToFile := false,
            breakOnError := false,
-           reportDiff := function(inp, expout, found, fnam, line, time)
-             Print("########> Diff in ");
-             if IsStream(fnam) then
-               Print("test stream, line ",line,":\n");
-             else
-               Print(fnam,":",line,"\n");
-             fi;
-             Print("# Input is:\n", inp);
-             Print("# Expected output:\n", expout);
-             Print("# But found:\n", found);
-             Print("########\n");
-           end,
+           reportDiff := DefaultReportDiff,
            subsWindowsLineBreaks := true,
            returnNumFailures := false,
            localdef := false,
