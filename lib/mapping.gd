@@ -883,6 +883,8 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  i.e., the unique element of the range to which <A>map</A> maps
 ##  <A>elm</A>.
 ##  This can also be expressed as <A>elm</A><C>^</C><A>map</A> or as 
+##  <A>map</A><C>( </C><A>elm</A><C> )</C>.
+##  <P/>
 ##  Note that <A>map</A> must be total and single valued,
 ##  a multi valued general mapping is not allowed
 ##  (see&nbsp;<Ref Func="Images" Label="set of images of the source of a general mapping"/>).
