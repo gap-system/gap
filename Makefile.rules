@@ -697,6 +697,7 @@ endif # BUILD_BOEHM_GC
 # ensure subprojects are built and "installed" before compiling and linking GAP
 gap$(EXEEXT): $(EXTERN_FILES)
 $(OBJS): $(EXTERN_FILES)
+$(DEPFILES): $(EXTERN_FILES)
 ifeq ($(HPCGAP),yes)
 $(SOURCES): $(EXTERN_FILES)
 endif
