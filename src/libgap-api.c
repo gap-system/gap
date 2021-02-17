@@ -18,6 +18,7 @@
 #include "ariths.h"
 #include "bool.h"
 #include "calls.h"
+#include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
 #include "gasman.h"
@@ -461,6 +462,7 @@ syJmp_buf * GAP_GetReadJmpError(void)
 
 
 static volatile sig_atomic_t EnterStackCount = 0;
+static volatile Int RecursionDepth;
 
 
 // These are wrapped by the macros GAP_EnterStack() and GAP_LeaveStack()
@@ -496,6 +498,7 @@ int GAP_Error_Prejmp_(const char * file, int line)
     if (EnterStackCount > 0) {
         return 1;
     }
+    RecursionDepth = GetRecursionDepth();
     return 0;
 }
 
@@ -514,6 +517,7 @@ void GAP_Error_Postjmp_Returning_(void)
     if (EnterStackCount > 0) {
         EnterStackCount = -EnterStackCount;
     }
+    SetRecursionDepth(RecursionDepth);
 }
 
 
