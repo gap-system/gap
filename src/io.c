@@ -49,7 +49,8 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
 
 static Obj ReadLineFunc;
 static Obj WriteAllFunc;
-static Obj IsStringStream;
+static Obj IsInputStringStream;
+static Obj IsOutputStringStream;
 static Obj PrintPromptHook = 0;
 Obj EndLineHook = 0;
 static Obj PrintFormattingStatus;
@@ -407,7 +408,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     input->prev = IO()->Input;
     input->isstream = TRUE;
     input->stream = stream;
-    input->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    input->isstringstream = (CALL_1ARGS(IsInputStringStream, stream) == True);
     if (input->isstringstream) {
         input->sline = CONST_ADDR_OBJ(stream)[2];
         input->spos = INT_INTOBJ(CONST_ADDR_OBJ(stream)[1]);
@@ -855,7 +856,7 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     output->prev = IO()->Output;
     IO()->Output = output;
     output->isstream = TRUE;
-    output->isstringstream = (CALL_1ARGS(IsStringStream, stream) == True);
+    output->isstringstream = (CALL_1ARGS(IsOutputStringStream, stream) == True);
     output->stream = stream;
     output->line[0] = '\0';
     output->pos = 0;
@@ -1964,7 +1965,8 @@ static Int InitKernel (
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
-    ImportFuncFromLibrary( "IsInputTextStringRep", &IsStringStream );
+    ImportFuncFromLibrary( "IsInputTextStringRep", &IsInputStringStream );
+    ImportFuncFromLibrary( "IsOutputTextStringRep", &IsOutputStringStream );
     InitCopyGVar( "PrintPromptHook", &PrintPromptHook );
     InitCopyGVar( "EndLineHook", &EndLineHook );
     InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
