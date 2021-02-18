@@ -1,22 +1,10 @@
 # GAP - history of changes
 
-## GAP 4.11.1 or GAP 4.12.0 (February 2021)
+<!--
 
-These changes are also listed on the
-[Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
-
-### New features and major changes
-
-- **Added the missing perfect groups of order up to a million**
-
-  Added perfect groups of orders that had been missing in the Holt/Plesken book
-  (newly computed).
-  This increases the number of groups in the perfect groups library by a factor
-  close to 6.
-  Also added five groups that were found missing in the existing lists.
-  See PR [#3925](https://github.com/gap-system/gap/pull/3925) for details.
-
-### Unstructured list of merged pull requests for GAP 4.12.0
+The following is an unstructured list of all those merged pull requests
+for GAP 4.12.0 until February 17th, 2021, that are relevant for release notes.
+The label "release notes: added" has already been attached to them.
 
 - [#3628](https://github.com/gap-system/gap/pull/3628) When the info level of `InfoAttributes` is at least 3, warn about attempts to set an attribute value that is different from an already stored value
 - [#3643](https://github.com/gap-system/gap/pull/3643) The manual chapter "Vector and Matrix Objects", which had been marked as preliminary in earlier versions, is now regarded as official
@@ -78,28 +66,79 @@ These changes are also listed on the
 - [#4239](https://github.com/gap-system/gap/pull/4239) Added missing comparison w.r.t. equality of something and an object with memory (`IsObjWithMemory`)
 - [#4245](https://github.com/gap-system/gap/pull/4245) Free (associative or Lie) algebras: admit non-fields as left acting domains, fixed the zero-dimensional case
 
-### Unstructured list of merged pull requests for GAP 4.11.1
+-->
+
+## GAP 4.11.1 (February 2021)
+
+These changes are also listed on the
+[Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
+
+### New features and major changes
+
+- **Added the missing perfect groups of order up to a million**
+
+  Added perfect groups of orders that had been missing in the Holt/Plesken book
+  (newly computed).
+  This increases the number of groups in the perfect groups library by a factor
+  close to 6.
+  Also added five groups that were found missing in the existing lists.
+  See PR [#3925](https://github.com/gap-system/gap/pull/3925) for details.
+
+### Fixed bugs that could lead to crashes
+
+- [#3965](https://github.com/gap-system/gap/pull/3965) Fix potential garbage collector crashes on 64bit ARM systems
+- [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
+- [#4076](https://github.com/gap-system/gap/pull/4076) Fix an infinite loop in `BoundedRefinementEANormalSeries` if large factors could not be refined
+
+### Fixed bugs that could lead to incorrect results
+
+- [#4178](https://github.com/gap-system/gap/pull/4178) Fixed bugs in `RestrictedPerm` with second argument a range
+
+### Fixed bugs that could lead to error messages
+
+- [#3980](https://github.com/gap-system/gap/pull/3980) Fixed `Gcd` for rational polynomials
+
+### Other fixed bugs
+
+- [#3963](https://github.com/gap-system/gap/pull/3963) Provide automatic compression/decompression of filenames ending `.gz` (as is claimed for example in the documentation of `InputTextFile`)
+- [#3944](https://github.com/gap-system/gap/pull/3944) Bug Fix: The error checking in `PartialPerm` has been corrected such that invalid inputs (numbers < 1) are detected
+- [#4006](https://github.com/gap-system/gap/pull/4006) Fix gac to ensure that binaries it creates on Linux can load and run, even if a GAP package with a compiled kernel extension (such as IO) is present
+- [#4076](https://github.com/gap-system/gap/pull/4076) Fix protected option of `IsomorphismSimplifiedFpGroup`
+
+### Improved and extended functionality
 
 - [#3790](https://github.com/gap-system/gap/pull/3790) Add further information to the library of simple groups
 - [#3840](https://github.com/gap-system/gap/pull/3840) Speed up garbage collection
-- [#3922](https://github.com/gap-system/gap/pull/3922) New feature to execute BuildPackages.sh in parallel mode by adding --parallel
-- [#3944](https://github.com/gap-system/gap/pull/3944) Bug Fix: The error checking in `PartialPerm` has been corrected such that invalid inputs (numbers < 1) are detected
-- [#3963](https://github.com/gap-system/gap/pull/3963) Provide automatic compression/decompression of filenames ending `.gz` (as is claimed for example in the documentation of `InputTextFile`)
-- [#3965](https://github.com/gap-system/gap/pull/3965) Fix potential garbage collector crashes on 64bit ARM systems
-- [#3980](https://github.com/gap-system/gap/pull/3980) Fixed `Gcd` for rational polynomials
-- [#4006](https://github.com/gap-system/gap/pull/4006) Fix gac to ensure that binaries it creates on Linux can load and run, even if a GAP package with a compiled kernel extension (such as IO) is present
+
+### Changed documentation
+
+- [#4076](https://github.com/gap-system/gap/pull/4076) Improve documentation of `IsAutomorphismGroup`
+
+### Packages
+
 - [#4016](https://github.com/gap-system/gap/pull/4016) Improved `etc/Makefile.gappkg` (used by GAP packages that want to build a simple GAP kernel extension)
-- [#4041](https://github.com/gap-system/gap/pull/4041) Fix `make check` in out-of-tree builds
+
+### Fixes/improvements in the experimental way to allow 3rd party code to link GAP as a library (libgap)
+
+- [#4081](https://github.com/gap-system/gap/pull/4081) Enhance `GAP_ValueGlobalVariable` to supported automatic variables (see `DeclareAutoreadableVariables`)
+
+### Fixes and improvements in for the **Julia** integration
+
 - [#4042](https://github.com/gap-system/gap/pull/4042) Avoid access to JuliaTLS members by useing jl_threadid() and jl_get_current_task() helpers
 - [#4042](https://github.com/gap-system/gap/pull/4042) Fix compiler constness warnings in weakptr.c
-- [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
 - [#4058](https://github.com/gap-system/gap/pull/4058) Refine the logic for scanning Julia stacks
 - [#4071](https://github.com/gap-system/gap/pull/4071) Make the Julia GC threadsafe when used from GAP.jl
-- [#4076](https://github.com/gap-system/gap/pull/4076) Fix an infinite loop in `BoundedRefinementEANormalSeries` if large factors could not be refined
-- [#4076](https://github.com/gap-system/gap/pull/4076) Improve documentation of `IsAutomorphismGroup`
-- [#4076](https://github.com/gap-system/gap/pull/4076) Fix protected option of `IsomorphismSimplifiedFpGroup`
-- [#4081](https://github.com/gap-system/gap/pull/4081) libgap: Enhance GAP_ValueGlobalVariable to supported automatic variables (see `DeclareAutoreadableVariables`)
-- [#4178](https://github.com/gap-system/gap/pull/4178) Fixed bugs in `RestrictedPerm` with second argument a range
+
+### Other changes
+
+- [#3922](https://github.com/gap-system/gap/pull/3922) Build system: New feature to execute BuildPackages.sh in parallel mode by adding `--parallel`
+- [#4041](https://github.com/gap-system/gap/pull/4041) Build system: Fix `make check` in out-of-tree builds
+
+### New packages redistributed with GAP
+
+
+### Updated packages redistributed with GAP
+
 
 
 ## GAP 4.11.0 (February 2020)
