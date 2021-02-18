@@ -925,17 +925,6 @@ InstallMethod( SeekPositionStream,
 
 #############################################################################
 ##
-
-#R  IsOutputTextStringRep
-##
-DeclareRepresentation(
-    "IsOutputTextStringRep",
-    IsPositionalObjectRep,
-    ["string", "format"] );
-
-
-#############################################################################
-##
 #V  OutputTextStringType
 ##
 OutputTextStringType := NewType(
