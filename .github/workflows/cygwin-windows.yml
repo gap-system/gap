@@ -37,11 +37,11 @@ jobs:
       run: |
         @ECHO ON
         SET CHERE_INVOKING=1
-        C:\cygwin64\bin\bash -l -c 'bash etc/ci-prepare.sh'
+        C:\cygwin64\bin\bash -l -c 'bash dev/ci-prepare.sh'
       shell: cmd
 
     - name: Run tests
       run: |
         SET CHERE_INVOKING=1
-        C:\cygwin64\bin\bash -l -c 'bash etc/ci.sh'
+        C:\cygwin64\bin\bash -l -c 'bash dev/ci.sh'
       shell: cmd
