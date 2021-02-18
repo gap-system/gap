@@ -68,6 +68,23 @@ DeclareRepresentation(
 
 #############################################################################
 ##
+#R  IsOutputTextStringRep   (used in kernel)
+##
+##  <ManSection>
+##  <Filt Name="IsOutputTextStringRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  </Description>
+##  </ManSection>
+##
+DeclareRepresentation(
+    "IsOutputTextStringRep",
+    IsPositionalObjectRep,
+    ["string", "format"] );
+
+
+#############################################################################
+##
 #C  IsClosedStream( <obj> ) . . . . . . . . . . .  category of closed streams
 ##
 ##  <#GAPDoc Label="IsClosedStream">
