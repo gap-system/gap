@@ -517,13 +517,20 @@ end );
 ##  <Func Name="ARCH_IS_WINDOWS" Arg=''/>
 ##
 ##  <Description>
-##  tests whether &GAP; is running on a Windows system in Cygwin.
+##  tests whether &GAP; is running on a Windows system without
+##  standard POSIX tools available (such as a shell).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
-  return POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) <> fail;
+  # Exit early is we are not in Cygwin
+  if POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) = fail then
+    return false;
+  fi;
+  # Check if programs we need exist in their standard Cygwin locations
+  return not IsExistingFile("/usr/bin/sh") or
+         not IsExistingFile("/usr/bin/xdg-open");
 end);
 
 #############################################################################
