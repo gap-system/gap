@@ -455,7 +455,7 @@ arbitrarily many lines.",
     "These preferences are ignored if GAP was not compiled with \
 readline support.",
     ],
-  default:= [1000, false],
+  default:= [10000, true],
   check:= function(max, save) 
     return ((IsInt( max ) and 0 <= max) or max = infinity) 
            and save in [true, false];
