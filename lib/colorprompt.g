@@ -205,7 +205,7 @@ DeclareUserPreference( rec(
 run GAP such that the prompts, the input and output are distinguished \
 by colors. Options are 'true', 'false' or some record as explained in \
 the help section for 'ColorPrompt'." ],
-  default:= false,
+  default:= true,
   check:= val -> val in [ true, false ] or IsRecord( val ),
   ) );
 
