@@ -1613,7 +1613,7 @@ static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
 // This function actually searches the cache. Normally it should be
 // called with n a compile-time constant to allow the optimiser to tidy
 // things up.
-template <UInt n>
+template <Int n>
 static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
 {
     UInt  typematch;
@@ -1823,7 +1823,7 @@ static Int OperationNext;
 #endif
 
 
-template <UInt n, BOOL verbose, BOOL constructor>
+template <Int n, BOOL verbose, BOOL constructor>
 static Obj
 DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
