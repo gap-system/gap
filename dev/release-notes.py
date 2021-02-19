@@ -14,11 +14,11 @@ def get_prs(repo,startdate):
     """Retrieves data for PRs matching selection criteria and puts them in a dictionary,
        which is then saved in a json file, and also returned for immediate use."""
     prs = {}
-    all_pulls = repo.get_pulls(state='closed', sort='created', direction='desc', base='master')
+    all_pulls = repo.get_pulls(state="closed", sort="created", direction="desc", base="master")
     # We need to run this over the whole list of PRs. Sorting by creation date descending
     # is not really helping - could be that some very old PRs are being merged.
     for pr in all_pulls:
-        print(pr.number, end=' ')
+        print(pr.number, end=" ")
         # flush stdout immediately, to see progress indicator
         sys.stdout.flush()
         if pr.merged:
@@ -30,7 +30,7 @@ def get_prs(repo,startdate):
 #                 if len(prs)>5: # for quick testing (maybe later have an optional argument)
 #                     break
     print("\n")
-    with open('prscache.json', 'w', encoding='utf-8') as f:
+    with open("prscache.json", "w", encoding="utf-8") as f:
         json.dump(prs, f, ensure_ascii=False, indent=4)
     return prs    
 
@@ -62,7 +62,7 @@ def changes_overview(prs,startdate):
     f.write("Category " + "release notes: highlight" + "\n")
     removelist = []
     for k in prs:
-        # The format of an entry of list is: ['title of PR', 'Link' (Alternative the PR number can be used), [ list of labels ] ]
+        # The format of an entry of list is: ["title of PR", "Link" (Alternative the PR number can be used), [ list of labels ] ]
         if "release notes: highlight" in prs[k]["labels"]:
             # TODO: writing up these details should be a function
             f.write("- [#")
@@ -161,8 +161,8 @@ def main(startdate):
 
     # Authentication and checking current API capacity
     # TODO: for now this will do, use Sergio's code later
-    with open('/Users/alexk/.github_shell_token', 'r') as f:
-        accessToken=f.read().replace('\n', '')
+    with open("/Users/alexk/.github_shell_token", "r") as f:
+        accessToken=f.read().replace("\n", "")
     g=Github(accessToken)
 
     orgName = "gap-system"
