@@ -1094,6 +1094,7 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
     /* special handling of string streams, where we can copy directly */
     if (output->isstringstream) {
       str = CONST_ADDR_OBJ(output->stream)[1];
+      ConvString(str);
       lstr = GET_LEN_STRING(str);
       GROW_STRING(str, lstr+len);
       memcpy(CHARS_STRING(str) + lstr, line, len);
