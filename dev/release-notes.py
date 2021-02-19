@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Usage ./release-notes.py
+# Usage ./release-notes.py YYYY-MM-DD
 #
 
 import sys
@@ -8,34 +8,49 @@ from github import Github
 from datetime import datetime
 
 def get_prs(repo,startdate):
+    """Returns a dictionary of PRs matching selection criteria."""
     prs = {}
     all_pulls = repo.get_pulls(state='closed', sort='created', direction='desc', base='master')
+    # We need to run this over the whole list of PRs. Sorting by creation date descending
+    # is not really helping - could be that some very old PRs are being merged.
     for pr in all_pulls:
+        print(pr.number, end=' ')
+        # flush stdout immediately, to see progress indicator
+        sys.stdout.flush()
         if pr.merged:
             if pr.closed_at > datetime.fromisoformat(startdate):
                 labs = [lab.name for lab in list(pr.get_labels())]
                 prs[pr.number] = { "title" : pr.title,
                                     "closed_at" : pr.closed_at.isoformat(),
                                     "labels" : labs }
-                # How long do we have to run this?
-                if len(prs)>423: # for quick testing
+                if len(prs)>50: # for quick testing
                     break
-    return prs;
+    print("\n")
+    return prs
 
-# TODO - print markdown to a file, on screen for now
 def changes_overview(prs,startdate):
-    #print("--------------------------------------")
-    #print("## Changes since", startdate)
-    #for k in prs:
-    #    print(k,prs[k]["title"], prs[k]["labels"] )
-    #print("--------------------------------------")
+    """Writes files with information for release notes."""
+
+    #TODO: using cached data, check that the starting date is the same
+    # Also save the date when cache was saved (warning if old?)
     print("## Changes since", startdate)
-    f = open("releasenotes.md", "a")
-    f2 = open("remainingPR.md", "a")
-    f3 = open("releasenotes.json", "a")
+
+    # Opening files with "w" resets them
+    f = open("releasenotes.md", "w")
+    f2 = open("remainingPR.md", "w")
+    f3 = open("releasenotes.json", "w")
     jsondict = prs.copy()
 
-    prioritylist = ["kind: bug: wrong result", "kind: bug: crash", "kind: bug: unexpected error", "kind: bug", "kind: enhancement", "kind: new feature", "kind: performance", "topic:libgap", "topic: julia", "topic: documentation", "topic: packages"]
+    prioritylist = ["kind: bug: wrong result", 
+                    "kind: bug: crash", 
+                    "kind: bug: unexpected error", 
+                    "kind: bug", "kind: enhancement", 
+                    "kind: new feature", 
+                    "kind: performance", 
+                    "topic:libgap", 
+                    "topic: julia", 
+                    "topic: documentation", 
+                    "topic: packages"]
 
     f.write("Release Notes \n\n\n\n")
     f.write("Category " + "release notes: highlight" + "\n")
@@ -148,10 +163,16 @@ def main(startdate):
     repo = g.get_repo( orgName + "/" + repoName)
     
     print("Current GitHub API capacity", g.rate_limiting)
+    # TODO: also print timestamp
     prs = get_prs(repo,startdate)
+    # TODO: implement caching prs in a local file, and an option to use the cache or 
+    # to enforce retrieving updated PR details from Github. I think default is to update 
+    # from GitHub (to get newly merged PRs, updates of labels, PR titles etc., while the
+    # cache could be used for testing and polishing the code to generate output )
+    # 
     changes_overview(prs,startdate)
     print("Remaining GitHub API capacity", g.rate_limiting)
-
+    # TODO: also print timestamp
     
 if __name__ == "__main__":
     print("script name is", sys.argv[0])
