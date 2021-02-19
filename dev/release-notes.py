@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Usage ./release-notes.py YYYY-MM-DD
+# Usage: ./release-notes.py YYYY-MM-DD
 #
 
 import sys
@@ -9,6 +9,8 @@ import os.path
 from github import Github
 from datetime import datetime
 
+def usage():
+    print("Usage: ./release-notes.py YYYY-MM-DD")
 
 def get_prs(repo,startdate):
     """Retrieves data for PRs matching selection criteria and puts them in a dictionary,
@@ -189,8 +191,16 @@ def main(startdate):
     print("Remaining GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
     
 if __name__ == "__main__":
-    print("script name is", sys.argv[0])
     if (len(sys.argv) != 2): # the argument is the start date in ISO 8601
-        usage()              # to be defined
-       	sys.exit(0)          # exit with return value of 0
+        usage()
+       	sys.exit(0)
+
+    try:
+        datetime.fromisoformat(sys.argv[1])
+        
+    except:
+        print("The date is not in ISO8601 format!")
+        usage()
+       	sys.exit(0)
+
     main(sys.argv[1])
