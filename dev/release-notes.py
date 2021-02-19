@@ -169,8 +169,7 @@ def main(startdate):
     repoName = "gap"
     repo = g.get_repo( orgName + "/" + repoName)
     
-    print("Current GitHub API capacity", g.rate_limiting)
-    # TODO: also print timestamp
+    print("Current GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
 
     # TODO: we cache PRs data in a local file. For now, if it exists, it will be used, 
     # otherwise it will be recreated. Later, there may be an option to use the cache or 
@@ -187,8 +186,7 @@ def main(startdate):
         prs = get_prs(repo,startdate)
   
     changes_overview(prs,startdate)
-    print("Remaining GitHub API capacity", g.rate_limiting)
-    # TODO: also print timestamp
+    print("Remaining GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
     
 if __name__ == "__main__":
     print("script name is", sys.argv[0])
