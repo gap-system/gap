@@ -4,11 +4,15 @@
 #
 
 import sys
+import json
+import os.path
 from github import Github
 from datetime import datetime
 
+
 def get_prs(repo,startdate):
-    """Returns a dictionary of PRs matching selection criteria."""
+    """Retrieves data for PRs matching selection criteria and puts them in a dictionary,
+       which is then saved in a json file, and also returned for immediate use."""
     prs = {}
     all_pulls = repo.get_pulls(state='closed', sort='created', direction='desc', base='master')
     # We need to run this over the whole list of PRs. Sorting by creation date descending
@@ -23,10 +27,12 @@ def get_prs(repo,startdate):
                 prs[pr.number] = { "title" : pr.title,
                                     "closed_at" : pr.closed_at.isoformat(),
                                     "labels" : labs }
-                if len(prs)>50: # for quick testing
-                    break
+#                 if len(prs)>5: # for quick testing (maybe later have an optional argument)
+#                     break
     print("\n")
-    return prs
+    with open('prscache.json', 'w', encoding='utf-8') as f:
+        json.dump(prs, f, ensure_ascii=False, indent=4)
+    return prs    
 
 def changes_overview(prs,startdate):
     """Writes files with information for release notes."""
@@ -58,6 +64,7 @@ def changes_overview(prs,startdate):
     for k in prs:
         # The format of an entry of list is: ['title of PR', 'Link' (Alternative the PR number can be used), [ list of labels ] ]
         if "release notes: highlight" in prs[k]["labels"]:
+            # TODO: writing up these details should be a function
             f.write("- [#")
             issuenumber = str(k)
             f.write(issuenumber)
@@ -164,12 +171,21 @@ def main(startdate):
     
     print("Current GitHub API capacity", g.rate_limiting)
     # TODO: also print timestamp
-    prs = get_prs(repo,startdate)
-    # TODO: implement caching prs in a local file, and an option to use the cache or 
+
+    # TODO: we cache PRs data in a local file. For now, if it exists, it will be used, 
+    # otherwise it will be recreated. Later, there may be an option to use the cache or 
     # to enforce retrieving updated PR details from Github. I think default is to update 
     # from GitHub (to get newly merged PRs, updates of labels, PR titles etc., while the
     # cache could be used for testing and polishing the code to generate output )
-    # 
+
+    if os.path.isfile("prscache.json"):
+        print("Using cached data from prscache.json ...")
+        with open("prscache.json", "r") as read_file:
+            prs = json.load(read_file)
+    else:    
+        print("Retriving data using GitHub API ...")
+        prs = get_prs(repo,startdate)
+  
     changes_overview(prs,startdate)
     print("Remaining GitHub API capacity", g.rate_limiting)
     # TODO: also print timestamp
