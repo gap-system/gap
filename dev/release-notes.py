@@ -49,19 +49,24 @@ def changes_overview(prs,startdate):
     f3 = open("releasenotes.json", "w")
     jsondict = prs.copy()
 
-    prioritylist = ["kind: bug: wrong result", 
-                    "kind: bug: crash", 
-                    "kind: bug: unexpected error", 
-                    "kind: bug", "kind: enhancement", 
-                    "kind: new feature", 
-                    "kind: performance", 
-                    "topic:libgap", 
-                    "topic: julia", 
-                    "topic: documentation", 
-                    "topic: packages"]
+    prioritylist = [
+        ["kind: bug: wrong result", "Fixed bugs that could lead to incorrect results"],
+        ["kind: bug: crash", "Fixed bugs that could lead to crashes"],
+        ["kind: bug: unexpected error", "Fixed bugs that could lead to break loops"],
+        ["kind: bug", "Other fixed bugs"],
+        ["kind: enhancement", "Improved and extended functionality"],
+        ["kind: new feature", "New features"], 
+        ["kind: performance", "Performance improvements"],
+        ["topic:libgap", "Improvements in the experimental way to allow 3rd party code to link GAP as a library"],
+        ["topic: julia", "Improvements in the experimental support for using the **Julia** garbage collector"],
+        ["topic: documentation", "Changed documentation"],
+        ["topic: packages", "Packages"]
+    ]
 
-    f.write("Release Notes \n\n\n\n")
-    f.write("Category " + "release notes: highlight" + "\n")
+    # TODO: why does this need a special treatment? 
+    # Adding it to the prioritylist could ensure that it goes first
+    f.write("## Release Notes \n\n")
+    f.write("### " + "New features and major changes" + "\n")
     removelist = []
     for k in prs:
         # The format of an entry of list is: ["title of PR", "Link" (Alternative the PR number can be used), [ list of labels ] ]
@@ -78,7 +83,7 @@ def changes_overview(prs,startdate):
             removelist.append(k)
     for item in removelist:
         del prs[item]
-    f.write("\n\n\n")
+    f.write("\n")
 
 
     removelist = []
@@ -90,7 +95,7 @@ def changes_overview(prs,startdate):
         del jsondict[item]
 
 
-    f2.write("Category " + "release notes: to be added" + "\n")
+    f2.write("### " + "release notes: to be added" + "\n")
     removelist = []
     for k in prs:
         if "release notes: to be added" in prs[k]["labels"]:
@@ -105,10 +110,10 @@ def changes_overview(prs,startdate):
             removelist.append(k)
     for item in removelist:
         del prs[item]
-    f2.write("\n\n\n")
+    f2.write("\n")
 
 
-    f2.write("Uncategorized PR" + "\n")
+    f2.write("### Uncategorized PR" + "\n")
     removelist = []
     for k in prs:
         #if not "release notes: use title" in item[2]:
@@ -128,10 +133,10 @@ def changes_overview(prs,startdate):
     
 
     for priorityobject in prioritylist:
-        f.write("Category " + priorityobject + "\n")
+        f.write("### " + priorityobject[1] + "\n")
         removelist = []
         for k in prs:
-            if priorityobject in prs[k]["labels"]:
+            if priorityobject[0] in prs[k]["labels"]:
                 f.write("- [#")
                 issuenumber = str(k)
                 f.write(issuenumber)
@@ -143,7 +148,7 @@ def changes_overview(prs,startdate):
                 removelist.append(k)
         for item in removelist:
             del prs[item]
-        f.write("\n\n\n")
+        f.write("\n")
     f.close()
 
     f3.write("[")
