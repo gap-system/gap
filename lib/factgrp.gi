@@ -532,6 +532,27 @@ local hom;
   return hom*DoFactorCosetAction(Image(hom,G),Image(hom,U),Image(hom,N));
 end);
 
+# action on lists of subgroups
+InstallOtherMethod(FactorCosetAction,
+  "On cosets of list of groups",IsElmsColls,
+  [IsGroup,IsList],0,
+function(G,L)
+local q,i,gens,imgs,d;
+  if Length(L)=0 or not ForAll(L,x->IsGroup(x) and IsSubset(G,x)) then
+    TryNextMethod();
+  fi;
+  q:=List(L,x->FactorCosetAction(G,x));
+  gens:=MappingGeneratorsImages(q[1])[1];
+  imgs:=List(q,x->List(gens,y->ImagesRepresentative(x,y)));
+  d:=imgs[1];
+  for i in [2..Length(imgs)] do
+    d:=SubdirectDiagonalPerms(d,imgs[i]);
+  od;
+  imgs:=Group(d);
+  q:=GroupHomomorphismByImagesNC(G,imgs,gens,d);
+  return q;
+end);
+
 
 #############################################################################
 ##
