@@ -1967,7 +1967,7 @@ InstallMethod(Intersection2,"subgroups of fp group by quotient",IsIdenticalObj,
   [IsSubgroupFpGroup and IsSubgroupOfWholeGroupByQuotientRep,
    IsSubgroupFpGroup and IsSubgroupOfWholeGroupByQuotientRep],0,
 function ( G, H )
-local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
+local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
 
   # it is not worth to check inclusion first since we're reducing afterwards
   #if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
@@ -1976,23 +1976,49 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   #  return G;
   #fi;
 
+  if Size(G!.quot)<Size(H!.quot) then
+    # make G the one with larger quot
+    A:=G; G:=H;H:=A;
+  fi;
   A:=MakeNiceDirectQuots(G,H);
   G:=A[1];
   H:=A[2];
 
   A:=G!.quot;
   B:=H!.quot;
-  d:=DirectProduct(A,B);
-  e1:=Embedding(d,1);
-  e2:=Embedding(d,2);
   Ag:=GeneratorsOfGroup(A);
   Bg:=GeneratorsOfGroup(B);
   # form the sdp
-  sg:=List([1..Length(Ag)],i->Image(e1,Ag[i])*Image(e2,Bg[i]));
-  s:=SubgroupNC(d,sg);
-  if HasSize(A) and HasSize(B) and IsPermGroup(s) then
-    StabChainOptions(s).limit:=Size(d);
+
+  # use map to determine common subdirect factor
+  map:=GroupGeneralMappingByImages(A,B,Ag,Bg);
+  sz:=Size(A)*Size(CoKernelOfMultiplicativeGeneralMapping(map));
+
+  # is the image obtained all in A?
+  if sz=Size(A) then
+    if ForAll(GeneratorsOfGroup(G!.sub),
+      x->ImagesRepresentative(map,x) in H!.sub) then
+      # G!.sub maps into H!.sub, thus contained in preimage
+      u:=G!.sub;
+    else
+      u:=PreImage(map,H!.sub);
+      u:=Intersection(G!.sub,u);
+    fi;
+    return SubgroupOfWholeGroupByQuotientSubgroup(FamilyObj(G),A,u);
   fi;
+
+  d:=DirectProduct(A,B);
+  e1:=Embedding(d,1);
+  e2:=Embedding(d,2);
+
+  sg:=List([1..Length(Ag)],
+    i->ImagesRepresentative(e1,Ag[i])*ImagesRepresentative(e2,Bg[i]));
+  s:=SubgroupNC(d,sg);
+  SetSize(s,sz);
+  #if HasSize(A) and HasSize(B) and IsPermGroup(s) then
+  #  StabChainOptions(s).limit:=Size(d);
+  #fi;
+
 
   # get both subgroups in the direct product via the projections
   # instead of intersecting both preimages with s we only intersect the
@@ -2011,21 +2037,49 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
     u:=Intersection(u,s);
   fi;
 
-  # reduce
-  if HasSize(s) and IsPermGroup(s) and (Size(s)=Size(A) or Size(s)=Size(B)
-    or NrMovedPoints(s)>1000) then
-    d:=SmallerDegreePermutationRepresentation(s:cheap);
-    A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));
-    if NrMovedPoints(A)<NrMovedPoints(s) then
-      Info(InfoFpGroup,3,"reduced degree from ",NrMovedPoints(s)," to ",
-           NrMovedPoints(A));
-      s:=A;
-      u:=Image(d,u);
+  if IsPermGroup(A) and IsPermGroup(s) then
+    # reduce
+    e1:=Length(Orbits(A,MovedPoints(A)));
+    e2:=Length(Orbits(s,MovedPoints(s)));
+    d:=ValueOption("reduce");
+    if (d<>false and HasSize(s) and 
+      # test proportiopnal to how much orbits added
+      (Random([1..e2+1])>e1) ) or d=true then
+      d:=SmallerDegreePermutationRepresentation(s:cheap);
+      A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));
+      if NrMovedPoints(A)<NrMovedPoints(s) then
+        Info(InfoFpGroup,3,"reduced degree from ",NrMovedPoints(s)," to ",
+            NrMovedPoints(A));
+        s:=A;
+        u:=Image(d,u);
+      fi;
     fi;
   fi;
 
   return SubgroupOfWholeGroupByQuotientSubgroup(FamilyObj(G),s,u);
 end);
+
+InstallOtherMethod(FactorCosetAction,
+  "list of fp groups",IsElmsColls,
+  [IsSubgroupFpGroup and IsWholeFamily,IsList],0,function(g,l)
+local ind,q,is,i;
+  l:=List(l,x->Core(g,x));
+  ind:=List(l,IndexInWholeGroup);
+  Print("Found ",Length(l)," subgroups, core indices:\n",Collected(ind),"\n");
+  l:=List(Set(ind),y->Filtered(l,x->IndexInWholeGroup(x)=y));
+  l:=List(l,x->Intersection(x));
+  SortBy(l,IndexInWholeGroup);
+  if Length(l)=1 then 
+    is:=l[1];
+  else
+    # force a final reduction
+    is:=Intersection(l{[1..Length(l)-1]});
+    is:=Intersection(is,l[Length(l)]:reduce:=true);
+  fi;
+  q:=DefiningQuotientHomomorphism(is);
+  return q;
+end);
+
 
 #############################################################################
 ##
