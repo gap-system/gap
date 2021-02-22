@@ -246,7 +246,7 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
           # then we change it to dd/mm/yyyy. When other tools have adapted to
           # the yyyy-mm-dd format we can normalize to that format and at some
           # point in the future get rid of this code.
-          if record.Date{[5,8]} = "--" then
+          if Length(record.Date) = 10 and record.Date{[5,8]} = "--" then
             date := List( SplitString( record.Date, "-" ), Int);
             date := Permuted(date, (1,3)); # date = [dd,mm,yyyy]
             # generate the day and month strings
