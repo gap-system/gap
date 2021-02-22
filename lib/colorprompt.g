@@ -42,11 +42,14 @@ EndLineHook := function() end;
 ##  <Func Name="ColorPrompt" Arg='bool[, optrec]'/>
 ##
 ##  <Description>
-##  With  <C>ColorPrompt(true);</C> &GAP;  changes its  user interface:
-##  The prompts and the user input are displayed in different colors.
-##  Switch off the colored prompts with <C>ColorPrompt(false);</C>.
+##  <Ref Func="ColorPrompt"/> changes &GAP;'s user interface:
+##  After calling <C>ColorPrompt(true);</C>,
+##  the prompts and the user input are displayed in colors different from
+##  the color that is used for the output.
+##  This is also the default for a &GAP; session.
+##  Switch off these colorings with <C>ColorPrompt(false);</C>.
 ##  <P/>
-##  Note that  this will only work  if your terminal emulation  in which
+##  Note that colors will only work  if your terminal emulation  in which
 ##  you run &GAP; understands the so called ANSI color escape sequences
 ##  &ndash;almost all  terminal emulations  on current  UNIX/Linux
 ##  (<C>xterm</C>, <C>rxvt</C>, <C>konsole</C>, ...) systems do so.
@@ -56,8 +59,9 @@ EndLineHook := function() end;
 ##  conventions you see  the standard prompt in bold blue  and the break
 ##  loop prompt in bold red, as well as your input in red.
 ##  <P/>
-##  If it works for you and you like it, put a call of 
-##  <C>SetUserPreference("UseColorPrompt", true);</C>
+##  If you prefer to switch off colors for prompts and input at the start
+##  of your &GAP; sessions, put a call of
+##  <C>SetUserPreference("UseColorPrompt", false);</C>
 ##  in your <F>gap.ini</F> file.
 ##  If you want a more complicated setting as explained below then
 ##  put your <C>SetUserPreference("UseColorPrompt", rec( ... ) );</C>
@@ -125,7 +129,7 @@ EndLineHook := function() end;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-ColorPrompt := function(arg)
+BindGlobal( "ColorPrompt", function(arg)
   local b, r, a, s;
   b := arg[1];
   r := rec(
@@ -191,9 +195,11 @@ ColorPrompt := function(arg)
   EndLineHook := function()
     WriteAll(STDOut, "\033[0m");
   end;
-end;
+end );
 
-# now, that the file is in the GAP library, the default is no colored prompt
+# Switch off colors for the moment.
+# The default for the GAP session will be set in 'init.g',
+# by evaluating the user preference 'UseColorPrompt'.
 ColorPrompt(false);
 
 # The coloring of the prompt after startup can be configured via a user
