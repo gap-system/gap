@@ -16,6 +16,8 @@
 /src/config.h.in
 /src/config.h.in~
 
+/__pycache__/
+
 /build/
 /extern/build/
 /extern/install/
