@@ -6,7 +6,7 @@
 # The target repository is hardcoded in utils.py:
 #   CURRENT_REPO_NAME
 #
-# As in make_tarball.py, the version of the gap release is taken from the
+# As in make_archives.py, the version of the gap release is taken from the
 # Makefile variable GAP_BUILD_VERSION.
 
 # If we do import * from utils, then initialize_github can't overwrite the
@@ -41,7 +41,7 @@ RELEASE = utils.CURRENT_REPO.create_git_release("v"+GAPVERSION, "v"+GAPVERSION,
 
 tmpdir = os.getcwd() + "/tmp"
 with utils.working_directory(tmpdir):
-    manifest_filename = "__manifest_make_tarball"
+    manifest_filename = "MANIFEST"
     with open(manifest_filename, 'r') as manifest_file:
         manifest = manifest_file.read().splitlines()
     # Upload all assets to release

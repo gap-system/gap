@@ -51,6 +51,9 @@ else:
 
 
 # extract commit_date with format YYYY-MM-DD
+# TODO: is that really what we want? Or should it be the date this
+# script was run? Or for releases, perhaps use the TaggerDate of the
+# release tag (but then we need to find and process that tag)
 commit_date = subprocess.run(["git", "show", "-s", "--format=%as"],
                              check=True, capture_output=True, text=True)
 commit_date = commit_date.stdout.strip()
@@ -137,6 +140,11 @@ with working_directory(tmpdir + "/" + basename):
     with tarfile.open("../"+all_packages_tarball) as tar:
         tar.extractall(path="pkg")
 
+    # TODO: at this point we could generate a JSON file which collects the metadata of
+    # all packages, and upload that as part of the release, too; this file would be rather
+    # useful for updating the website, and also for the PackageManager
+    # (Why JSON? Because GAP, Python and many more can easily process it.)
+
     notice("Building the manuals")
     run_with_log(["make", "doc"], "gapdoc", "building the manuals")
 
@@ -197,7 +205,7 @@ with working_directory(tmpdir):
     with open(filename+".sha256", 'w') as file:
         file.write(sha256file(filename))
 
-    manifest_filename = "__manifest_make_tarball"
+    manifest_filename = "MANIFEST"
     notice(f"Creating manifest {manifest_filename}")
     with open(manifest_filename, 'w') as manifest:
         for archive in archives_to_create:
