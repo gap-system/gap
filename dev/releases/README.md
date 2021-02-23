@@ -32,7 +32,7 @@ Otherwise a flag containing the token is needed when running `make_github_releas
     git push --tags
     ```  
     Note that `Z` will most likely be 4.
-3. Run `make_tarball.py`
+3. Run `make_archives.py`
 4. Run `make_github_release.py`
 5. Change to the root directory of your clone of the `gap-system/GapWWW` repository.
 6. Run `update_website.py` in there
@@ -52,7 +52,7 @@ Otherwise a flag containing the token is needed when running `make_github_releas
     git push --tags
     ```  
     Note that `Z` will most likely be 4.
-3. Run `make_tarball.py`  
+3. Run `make_archives.py`  
     - Exports repository content into new tmp directory via `git archive`
     - Makes and configures GAP to check that it is available (and this is needed for the manuals)
     - Fetches the pkg tar ball
