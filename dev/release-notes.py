@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 #
 # Usage: ./release-notes.py YYYY-MM-DD
+# 
+# Input:
+# A start date in the format YYYY-MM-DD. If one is in the folder of "release-notes.py", it can then be called using: python release-notes.py YYYY-MM-DD
 #
+# Output and description: 
+# This script is used to automatically generate the release notes based on the associated labels of pull requests 
+# that have been merged with the master branch since "startdate". 
+# This script gets the title, the PR number and the labels and categorizes them based on the priority list and discussion from #4257.
+# In addition, a file is generated of PR that could not be categorized and a file for the browse function by Thomas Breuer (see #4257).
 
 import sys
 import json
@@ -175,6 +183,8 @@ def main(startdate):
     repoName = "gap"
     repo = g.get_repo( orgName + "/" + repoName)
     
+    # There is a GitHub API capacity of 5000 per hour i.e. that a maximum of 5000 requests can be made to GitHub per hour.
+    # Therefore, the following line indicates how many requests are currently still available
     print("Current GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
 
     # TODO: we cache PRs data in a local file. For now, if it exists, it will be used, 
