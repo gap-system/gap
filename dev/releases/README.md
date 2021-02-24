@@ -8,7 +8,7 @@
 
 ## Dependencies
 Before starting the release process, the scripts have the following dependencies. Make sure you have the following installed and up to date
-- All tools required to build GAP (as outline in the root `README.md`)
+- All tools required to build GAP (as outlined in the GAP root `README.md`)
 - `git` command line tool
 - `curl` command line tool
 - Python (version >= 3.6)
@@ -44,13 +44,13 @@ If the GitHub token is in an ENVIRONMENT variable called `GITHUB_TOKEN` then not
 Otherwise a flag containing the token is needed when running `make_github_release.py`.
 
 
-1. Go into the gap-system/gap (repository) directory  
+1. In the terminal, change to the root directory of your clone of the GAP repository.
     This should be obvious why
 2. Create an annotated tag for the release in git (using command line)
     ```
     git tag -m "Version Z.X.Y" vZ.X.Y
     git push --tags
-    ```
+    ```  
     Note that `Z` will most likely be 4.
 3. Run `make_tarball.py`  
     - Exports repository content into new tmp directory via `git archive`
@@ -63,9 +63,9 @@ Otherwise a flag containing the token is needed when running `make_github_releas
     - Creates the release on GitHub which matches the tag
     - Uploads the tar balls as assets 
     - Removes the tmp directory from user
-5. Change to the gap-system/GapWWW (repository) directory  
+5. Change to the root directory of your clone of the `gap-system/GapWWW` repository. 
    This should be obvious why
-6. Run `update_website.py` 
+6. Run `update_website.py` in there
    - Fetches the release assets, extracts and configures/builds GAP in a tmp directory
    - Extracts info from the built and rewrites various YAML files
    - Extracts info about packages and updates YAML files
