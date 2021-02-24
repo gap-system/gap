@@ -6,6 +6,17 @@ The following is an unstructured list of all those merged pull requests
 for GAP 4.12.0 until February 17th, 2021, that are relevant for release notes.
 The label "release notes: added" has already been attached to them.
 
+### New features and major changes
+
+- **Added the missing perfect groups of order up to a million**
+
+  Added perfect groups of orders that had been missing in the Holt/Plesken book
+  (newly computed).
+  This increases the number of groups in the perfect groups library by a factor
+  close to 6.
+  Also added five groups that were found missing in the existing lists.
+  See PR [#3925](https://github.com/gap-system/gap/pull/3925) for details.
+
 - [#3628](https://github.com/gap-system/gap/pull/3628) When the info level of `InfoAttributes` is at least 3, warn about attempts to set an attribute value that is different from an already stored value
 - [#3643](https://github.com/gap-system/gap/pull/3643) The manual chapter "Vector and Matrix Objects", which had been marked as preliminary in earlier versions, is now regarded as official
 - [#3664](https://github.com/gap-system/gap/pull/3664) Removed `Matrix` as an attribute (the operation `Matrix` remains as it was)
@@ -73,17 +84,6 @@ The label "release notes: added" has already been attached to them.
 These changes are also listed on the
 [Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
 
-### New features and major changes
-
-- **Added the missing perfect groups of order up to a million**
-
-  Added perfect groups of orders that had been missing in the Holt/Plesken book
-  (newly computed).
-  This increases the number of groups in the perfect groups library by a factor
-  close to 6.
-  Also added five groups that were found missing in the existing lists.
-  See PR [#3925](https://github.com/gap-system/gap/pull/3925) for details.
-
 ### Fixed bugs that could lead to incorrect results
 
 - [#4178](https://github.com/gap-system/gap/pull/4178) Fixed bugs in `RestrictedPerm` with second argument a range
@@ -91,7 +91,6 @@ These changes are also listed on the
 ### Fixed bugs that could lead to crashes
 
 - [#3965](https://github.com/gap-system/gap/pull/3965) Fix potential garbage collector crashes on 64bit ARM systems
-- [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
 - [#4076](https://github.com/gap-system/gap/pull/4076) Fix an infinite loop in `BoundedRefinementEANormalSeries` if large factors could not be refined, fix protected option of `IsomorphismSimplifiedFpGroup`, improve documentation of `IsAutomorphismGroup`
 
 ### Fixed bugs that could lead to error messages
@@ -117,9 +116,10 @@ These changes are also listed on the
 
 - [#4081](https://github.com/gap-system/gap/pull/4081) Enhance `GAP_ValueGlobalVariable` to supported automatic variables (see `DeclareAutoreadableVariables`)
 
-### Fixes and improvements in for the **Julia** integration
+### Fixes and improvements for the **Julia** integration
 
 - [#4042](https://github.com/gap-system/gap/pull/4042) Avoid access to JuliaTLS members by useing `jl_threadid()` and `jl_get_current_task()` helpers, fix compiler constness warnings in weakptr.c
+- [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
 - [#4058](https://github.com/gap-system/gap/pull/4058) Refine the logic for scanning Julia stacks
 - [#4071](https://github.com/gap-system/gap/pull/4071) Make the Julia GC threadsafe when used from GAP.jl
 
