@@ -49,6 +49,11 @@ def changes_overview(prs,startdate):
     f3 = open("releasenotes.json", "w")
     jsondict = prs.copy()
 
+    # the following is a list of pairs [LABEL, DESCRIPTION]; the first entry is the name of a GitHub label
+    # (be careful to match them precisely), the second is a headline for a section the release notes; any PR with
+    # the given label is put into the corresponding section; each PR is put into only one section, the first one
+    # one from this list it fits in.
+    # See also <https://github.com/gap-system/gap/issues/4257>.
     prioritylist = [
         ["kind: bug: wrong result", "Fixed bugs that could lead to incorrect results"],
         ["kind: bug: crash", "Fixed bugs that could lead to crashes"],
@@ -57,8 +62,8 @@ def changes_overview(prs,startdate):
         ["kind: enhancement", "Improved and extended functionality"],
         ["kind: new feature", "New features"], 
         ["kind: performance", "Performance improvements"],
-        ["topic:libgap", "Improvements in the experimental way to allow 3rd party code to link GAP as a library"],
-        ["topic: julia", "Improvements in the experimental support for using the **Julia** garbage collector"],
+        ["topic: libgap", "Improvements to the interface which allows 3rd party code to link GAP as a library"],
+        ["topic: julia", "Improvements in the support for using the **Julia** garbage collector"],
         ["topic: documentation", "Changed documentation"],
         ["topic: packages", "Packages"]
     ]
@@ -72,14 +77,8 @@ def changes_overview(prs,startdate):
         # The format of an entry of list is: ["title of PR", "Link" (Alternative the PR number can be used), [ list of labels ] ]
         if "release notes: highlight" in prs[k]["labels"]:
             # TODO: writing up these details should be a function
-            f.write("- [#")
-            issuenumber = str(k)
-            f.write(issuenumber)
-            f.write("](")
-            f.write("https://github.com/gap-system/gap/pull/" + str(k))
-            f.write(") ")
-            f.write(prs[k]["title"])
-            f.write("\n")
+            title = prs[k]["title"]
+            f.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
             removelist.append(k)
     for item in removelist:
         del prs[item]
@@ -196,7 +195,7 @@ def main(startdate):
     print("Remaining GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
     
 if __name__ == "__main__":
-    if (len(sys.argv) != 2): # the argument is the start date in ISO 8601
+    if len(sys.argv) != 2: # the argument is the start date in ISO 8601
         usage()
        	sys.exit(0)
 
