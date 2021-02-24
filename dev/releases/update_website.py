@@ -407,7 +407,7 @@ except:
 try:
     verify_git_clean()
 except:
-    error("")
+    error("files have changed that we didn't expect (check git status)")
 
 try:
     # TODO push with token!
@@ -422,8 +422,6 @@ except:
 
 notice("TODO: create pull request")
 
-# TODO Delete the temporary gap directory and log files, when we are finished with it
-# The above todo is not needed, users are warned in ReleaseREADME that tmp folders were created and need to be removed manually if required.
 # TODO Download all package tarballs, and compute their sizes and sha256 checksums
 # TODO sftp tarballs from GitHub release system to gap-system.org
 # TODO sftp package manuals
