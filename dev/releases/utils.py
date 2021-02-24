@@ -40,11 +40,14 @@ def verify_git_repo():
         error("current directory is not a git root directory")
 
 # check for uncommitted changes
-def verify_git_clean():
+def is_git_clean():
     res = subprocess.run(["git", "update-index", "--refresh"])
     if res.returncode == 0:
         res = subprocess.run(["git", "diff-index", "--quiet", "HEAD", "--"])
-    if res.returncode != 0:
+    return res.returncode == 0
+
+def verify_git_clean():
+    if not is_git_clean():
         error("uncommitted changes detected")
 
 # from https://code.activestate.com/recipes/576620-changedirectory-context-manager/
