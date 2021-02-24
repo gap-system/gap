@@ -9,13 +9,17 @@
 
 #import subprocess
 import argparse
-import sys
-import requests
 import datetime
-import dateutil.parser
-import tempfile
+import github
+import os
+import re
+import requests
+import subprocess
+import sys
 import tarfile
-from utils import *
+import tempfile
+import utils
+from utils import notice, error, verify_command_available, verify_git_repo, is_git_clean, verify_git_clean, working_directory, download_with_sha256
 from git import Repo
 
 
@@ -28,10 +32,11 @@ if sys.version_info < (3,6):
 ################################################################################
 # Utility functions
 def is_possible_gap4_release_tag(tag):
-    tag = tag.split('.')
-    return len(tag) == 3 and tag[0] == 'v4' and all(x.isdigit() for x in tag[1:])
+    tag = tag.split(".")
+    return len(tag) == 3 and tag[0] == "v4" and all(x.isdigit() for x in tag[1:])
 
 def mb_bytes(nrbytes):
+    # (str) bytes to (str) megabytes
     return str(round(int(nrbytes) / (1024 * 1024)))
 
 
@@ -66,41 +71,39 @@ epilog=
 # TODO Let the user choose between pushing directly and making a PR?
 # TODO let the user supply a gaproot containing the downloaded and unpacked GAP archive?
 # TODO implement some or all of these
-#parser.add_argument('-p', '--push', action='store_true',
-#                    help='also perform the final push, completing the release')
-parser.add_argument('-f', '--force', action='store_true',
-                    help='force push to --push-remeote/--branch')
 
-group = parser.add_argument_group('GAP release details')
+parser.add_argument("-f", "--force", action="store_true",
+                    help="force push to --push-remote/--branch")
 
-group.add_argument('-t', '--tag', type=str,
-                   help='git tag of the GAP release, e.g. v4.15.2 (default: latest release)')
+group = parser.add_argument_group("GAP release details")
+
+group.add_argument("-t", "--tag", type=str,
+                   help="git tag of the GAP release, e.g. v4.15.2 (default: latest release)")
 # TODO Perhaps the default should be to use the date in GAP's "configure" file?
 # TODO This should be an option at least!
-group.add_argument('-d', '--date', type=str,
-                   help='YYYY-MM-DD GAP release date (default: today\'s date)')
-group.add_argument('--use-github-date', action='store_true',
-                   help='use the GitHub release publish date as the GAP release date')
+group.add_argument("-d", "--date", type=str,
+                   help="YYYY-MM-DD GAP release date (default: the date in the GAP release tarball)")
+group.add_argument("--use-github-date", action="store_true",
+                   help="use the GitHub release publish date as the GAP release date")
 
-group = parser.add_argument_group('Paths')
+group = parser.add_argument_group("Paths")
 
-group.add_argument('--tmpdir', type=str,
-                   help='path to the directory in which to download and extract the GAP release (default: a new temporary directory)')
-#group.add_argument('--gap', type=str,
-#                   help='skip downloading an archive and use the GAP located at...')
+group.add_argument("--tmpdir", type=str,
+                   help="path to the directory in which to download and extract the GAP release (default: a new temporary directory)")
 
-group = parser.add_argument_group('Repository details and access')
+group = parser.add_argument_group("Repository details and access")
 
-group.add_argument('--token', type=str,
-                   help='GitHub access token')
-group.add_argument('--branch', type=str,
-                   help='branch in which to make the changes (default: gap-4.X.Y)')
-group.add_argument('--push-remote', type=str, default="origin",
-                   help='git remote to which --branch is pushed (default: origin)')
-group.add_argument('--pr-remote', type=str, default="origin", # TODO
-                   help='git remote to which a PR is made (default: origin)')
-group.add_argument('--gap-fork', type=str, default="gap-system",
-                   help='GitHub GAP fork to search for releases (default: gap-system)')
+group.add_argument("--token", type=str,
+                   help="GitHub access token")
+group.add_argument("--branch", type=str,
+                   help="branch in which to make the changes (default: gap-4.X.Y)")
+group.add_argument("--push-remote", type=str, default="origin",
+                   help="git remote to which --branch is pushed (default: origin)")
+group.add_argument("--pr-remote", type=str, default="origin", # TODO
+                   help="git remote to which a PR is made (default: origin)")
+# --gap-fork is essentially just a feature for testing
+group.add_argument("--gap-fork", type=str, default="gap-system",
+                   help="GitHub GAP fork to search for releases (default: gap-system)")
 
 args = parser.parse_args()
 
@@ -117,17 +120,15 @@ verify_git_clean()
 # Validate the arguments
 
 if args.tag != None and not is_possible_gap4_release_tag(args.tag):
-    error('unrecognised format for GAP release tag: ' + args.tag)
+    error("unrecognised format for GAP release tag: " + args.tag)
 
 if args.use_github_date and args.date:
-    error('--use-github-date and --date/-d were both specified; use at most one')
+    error("--use-github-date and --date/-d were both specified; use at most one")
 elif args.date:
     try:
-        release_date = datetime.datetime.strptime(args.date, '%Y-%m-%d')
+        release_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
     except ValueError:
         error("--date YYYY-MM-DD")
-elif not args.use_github_date:
-    release_date = datetime.datetime.today()
 
 if (args.push_remote != None and len(args.push_remote) == 0) or (args.pr_remote != None and len(args.pr_remote) == 0):
     error("--push-remote and --pr-remote cannot be empty strings")
@@ -138,124 +139,112 @@ if args.tmpdir != None:
     tmpdir = args.tmpdir
 else:
     tmpdir = tempfile.gettempdir()
-if not tmpdir[-1] == '/':
-    tmpdir += '/'
-
-if args.token:
-    token = args.token
-else:
-    temp = subprocess.run(["git", "config", "--get", "github.token"], text=True, capture_output=True)
-    if temp.returncode == 0:
-        token = temp.stdout.strip()
-    elif os.path.isfile(os.path.expanduser('~') + '/.github_shell_token'):
-        with open(os.path.expanduser('~') + '/.github_shell_token', 'r') as token_file:
-            token = token_file.read().replace('\n', '')
-    elif 'GITHUB_TOKEN' in os.environ:
-        token = os.environ['GITHUB_TOKEN']
-    elif 'TOKEN' in os.environ:
-        token = os.environ['TOKEN']
-if token == None or token == '':
-    error("could not determine GitHub access token, please use --token")
-initialize_github(token)
+if not tmpdir[-1] == "/":
+    tmpdir += "/"
 
 
 ################################################################################
-# Use the GitHub API to find the GAP release on GitHub
-# TODO do this via the python GitHub module
-github_releases_url = 'https://api.github.com/repos/' + args.gap_fork + '/gap/releases'
-request = requests.get(github_releases_url)
-try:
-    request.raise_for_status()
-except:
-    error('failed to connect to GitHub API at ' + github_releases_url)
-
-# Select the appropriate release (as a dictionary)
-releases = request.json()
-releases = [ x for x in releases if is_possible_gap4_release_tag(x['tag_name']) ]
-if len(releases) == 0:
-    error("no GAP v4.X.Y releases found on GitHub!")
-if args.tag == None:
-    # Using latest release; therefore ignore drafts and prerelease
-    release = [ x for x in releases if not x['draft'] and not x['prerelease']]
-    if not release:
-        error("cannot determine the latest (non-draft, non-prerelease) release")
-    release = release[0]
-else:
-    release = [ x for x in releases if x['tag_name'] == args.tag ]
-    if len(release) != 1:
+# Use the GitHub API to find the appropriate GAP release on GitHub
+utils.CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", args.gap_fork + "/gap")
+utils.initialize_github(args.token)
+if args.tag:
+    try:
+        release = utils.CURRENT_REPO.get_release(args.tag)
+    except:
         error("non-existent or ambiguous release tag name: " + args.tag)
-    release = release[0]
+else:
+    # Using latest release; therefore ignore drafts and prerelease
+    release = [ x for x in utils.CURRENT_REPO.get_releases() if \
+                not x.draft and not x.prerelease and is_possible_gap4_release_tag(x.tag_name)]
+    try:
+        release = release[0]
+    except:
+        error("cannot determine the latest (non-draft, non-prerelease) v4.X.Y release")
 
 # Divide the assets betwen Windows and UNIX assets
-# TODO should archives e.g.  packages-required-v4.11.0.tar.gz be in assets_unix?
-assets = release['assets']
+# TODO should archives e.g. packages-required-v4.11.0.tar.gz be in assets_unix?
+# TODO Ultimately the assets data should be added to a YAML/JSON data file in
+# the GapWWW repo, and parsed/displayed by the website setup
+assets = release.get_assets()
 def is_windows_asset(name):
-    return any(name.endswith(x) for x in ['exe', '-win.zip', '-win32.zip'])
+    return any(name.endswith(x) for x in [".exe", "-win.zip", "-win32.zip"])
 assets_windows = []
 assets_unix = []
 for asset in assets:
-    if not asset['name'].endswith('sha256'):
-        if is_windows_asset(asset['name']):
+    if not asset.name.endswith("sha256"):
+        if is_windows_asset(asset.name):
             assets_windows.append(asset)
         else:
             assets_unix.append(asset)
 
 # Release date
 if args.use_github_date:
-    release_date = dateutil.parser.isoparse(release['published_at'])
-year  = release_date.strftime('%Y')
-month = release_date.strftime('%B')
-date  = release_date.strftime('%d %B %Y')
+    release_date = release.published_at # datetime object
 
 # Version
-gap_version = release['tag_name'][1:]
-gap_version_major, gap_version_minor = gap_version.split('.')[1:]
+gap_version = release.tag_name[1:]
+gap_version_major, gap_version_minor = gap_version.split(".")[1:]
 
 if not args.branch == None:
     branch = args.branch
 else:
     branch = "gap-" + gap_version
-try:
-    subprocess.run(["git", "checkout", "-b", branch], check=True)
-except:
-    error("branch " + branch + " already exists")
 
-notice("on git branch " + branch + " of GapWWW")
-notice("using GAP tag " + release['tag_name'])
-notice("using GAP release: " + gap_version)
-notice("using release date: " + date)
-notice("using temporary directory: " + tmpdir)
+notice("Using GAP release: " + gap_version)
+notice("Using temporary directory: " + tmpdir)
 
 
 ################################################################################
-# Download and extract the release asset named 'gap-4.X.Y.tar.gz'
-# TODO perhaps don't hardcode this name?
-tarball = 'gap-' + gap_version + '.tar.gz'
-tarball_url = [ x for x in assets_unix if x['name'] == tarball ]
+# Download and extract the release asset named "gap-4.X.Y.tar.gz"
+tarball = "gap-" + gap_version + ".tar.gz"
+tarball_url = [ x for x in assets_unix if x.name == tarball ]
 try:
-    tarball_url = tarball_url[0]['browser_download_url']
+    tarball_url = tarball_url[0].browser_download_url
 except:
-    error("cannot find " + tarball + " in release at tag " + relrease['tag_name'])
+    error("cannot find " + tarball + " in release at tag " + release.tag_name)
 
-gaproot = tmpdir + 'gap-' + gap_version + '/'
-pkg_dir = gaproot + 'pkg/'
-gap_exe = gaproot + 'bin/gap.sh'
+gaproot = tmpdir + "gap-" + gap_version + "/"
+pkg_dir = gaproot + "pkg/"
+gap_exe = gaproot + "bin/gap.sh"
 
-# TODO error handling
 with working_directory(tmpdir):
-    # TODO only extract if I need to?
-    notice('downloading ' + tarball_url + ' (if not already downloaded) to ' + tmpdir + ' . . .')
+    # TODO Can we sometimes avoid extracting this? Perhaps this script has
+    # already been partially-run, and so we'd be able to skip this step?
+    # TODO error handling
+    notice("Downloading " + tarball_url + " (if not already downloaded) to " + tmpdir + " . . .")
     download_with_sha256(tarball_url, tarball)
-    notice('extracting ' + tarball + ' to ' + gaproot + ' . . .')
+    notice("Extracting " + tarball + " to " + gaproot + " . . .")
     with tarfile.open(tarball) as tar:
-        tar.extractall()
+        try:
+            tar.extractall()
+        except:
+            error("failed to extract tarball (was it already extracted?")
+
+
+################################################################################
+# Extract release date from configure.ac
+if not args.date and not args.use_github_date:
+    with working_directory(gaproot):
+        with open("configure.ac", "r") as configure_ac: 
+            filedata = configure_ac.read()
+            try:
+                # Expect date in YYYY-MM-DD format
+                release_date = re.search('\[gap_releaseday\], \[(\d{4}-\d{2}-\d{2})\]', filedata).group(1)
+            except:
+                error("Cannot find the release date in configure.ac, consider using --date")
+            release_date = datetime.datetime.strptime(release_date, "%Y-%m-%d")
+
+year  = release_date.strftime("%Y")
+month = release_date.strftime("%B")
+date  = release_date.strftime("%d %B %Y")
+notice("Using release date: " + date)
 
 
 ################################################################################
 # Compile newly-download GAP so that we can use its executable
 # TODO error handling
 with working_directory(gaproot):
-    if os.path.isfile('bin/gap.sh'):
+    if os.path.isfile("bin/gap.sh"):
         # TODO The tarball is currently always extracted, overwriting any old one,
         # so GAP will never be already compiled by this point
         notice("GAP is already compiled, not recompiling")
@@ -274,9 +263,18 @@ notice("Using GAP package directory: " + pkg_dir)
 
 
 ################################################################################
+try:
+    subprocess.run(["git", "checkout", "-b", branch], check=True, stdout=subprocess.PIPE)
+except subprocess.CalledProcessError:
+    error("branch " + branch + " already exists")
+
+notice("On git branch " + branch + " of GapWWW")
+
+
+################################################################################
 # Rewrite _data/release.yml
 notice("writing new _data/release.yml file")
-with open('_data/release.yml', 'w') as release_yml:
+with open("_data/release.yml", "w") as release_yml:
     release_yml.write("# Release details concerning the most recently released GAP version\n")
     release_yml.write("# This file is automatically updated as part of the GAP release process\n")
     release_yml.write("version: '" + gap_version + "'\n")
@@ -284,23 +282,12 @@ with open('_data/release.yml', 'w') as release_yml:
     release_yml.write("year: '" + year + "'\n")
 
 
-# This is currently unnecessary for new releases since we're only linking to
-# downloads on GitHub; if this changes, this code should maybe be reinstated
-################################################################################
-# Append to _data/gap.yml if necessary
-#with open('_data/gap.yml', 'r+') as gap_yml:
-#    for line in gap_yml:
-#        if line.startswith("gap4" + gap_version_major + "dist:"):
-#            break
-#    else:
-#        notice("appending \"gap4" + gap_version_major + "dist: 'https://files.gap-system.org/gap-4." + gap_version_major + "/'\" to _data/gap.yml")
-#        gap_yml.write("gap4" + gap_version_major + "dist: 'https://files.gap-system.org/gap-4." + gap_version_major + "/'\n")
-#        subprocess.run(["git", "add", "_data/data.yml"], check=True)
-
-
 ################################################################################
 # Update/rewrite the YAML data files in _Package for each package in pkg_dir
 
+#notice("emptying _Packages/ dir")
+# FIXME This line currently will cause etc/rebuild_Packages_dir.sh to fail. Why?
+#subprocess.run(["git", "rm", "_Packages/*.html"], check=True)
 notice("running etc/rebuild_Packages_dir.sh")
 subprocess.run(["etc/rebuild_Packages_dir.sh", pkg_dir, gap_exe], check=True)
 
@@ -316,10 +303,10 @@ subprocess.run([gap_exe, "-A", "-r", "-q", "--nointeract", "--norepl", "etc/Link
 release_file = "_Releases/" + gap_version + ".html"
 notice("writing a new release file: " + release_file)
 
-with open(release_file, 'w') as new_file:
+with open(release_file, "w") as new_file:
     new_file.write("---\n")
     new_file.write("version: " + gap_version + "\n")
-    new_file.write('date: "' + month + ' ' + year + '"\n')
+    new_file.write("date: \"" + month + " " + year + "\"\n")
     new_file.write("packages:")
 
 # Insert brief YAML data describing each package included in this GAP release
@@ -331,20 +318,19 @@ subprocess.run(["etc/release_helper.sh", gaproot, release_file], check=True)
 # HTML code here. But that can happen at a later point in the futre
 # Wilf Wilson: Agreed 100%.
 def write_asset_table_row(out, asset):
-    # TODO use already-downloaded sha256 file that is in the tmpdir
-    request = requests.get(asset['browser_download_url'] + '.sha256')
+    request = requests.get(asset.browser_download_url + ".sha256")
     try:
         request.raise_for_status()
     except:
-        error('failed to download ' + asset['browser_download_url'] + '.sha256')
+        error("failed to download " + asset.browser_download_url + ".sha256")
     sha256 = request.text.strip()
-    out.write('\n<tr>\n')
-    out.write('  <td align="left"><a href="' + asset['browser_download_url'] + '">' + asset['name'] + '</a></td>\n')
-    out.write('  <td align="left">' + mb_bytes(asset['size']) + ' MB</td>\n')
+    out.write("\n<tr>\n")
+    out.write('  <td align="left"><a href="' + asset.browser_download_url + '">' + asset.name + '</a></td>\n')
+    out.write('  <td align="left">' + mb_bytes(asset.size) + ' MB</td>\n')
     out.write('  <td align="left">sha256: ' + sha256 + '</td>\n')
-    out.write('</tr>')
+    out.write("</tr>")
 
-with open(release_file, 'a') as new_file:
+with open(release_file, "a") as new_file:
     new_file.write("""
 ---
 
@@ -396,8 +382,9 @@ the core GAP system (the source code,
 
 subprocess.run(["git", "add", "_data/release.yml", "_Packages/*.html", "_data/help.yml", release_file], check=True)
 
-# TODO if git is clean, then the website is already up to date, so we should
-# exit gracefully
+if is_git_clean():
+    notice("website already up to date, nothing to do!")
+    sys.exit(0)
 
 try:
     subprocess.run(["git", "commit", "-m", "'Update website for GAP " + gap_version + " release'"], check=True)
