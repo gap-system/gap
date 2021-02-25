@@ -9,6 +9,7 @@
 
 from utils import *
 
+import glob
 import shutil
 import subprocess
 import sys
@@ -81,29 +82,9 @@ with tarfile.open(rawgap_tarfile) as tar:
     tar.extractall(path=tmpdir)
 os.remove(rawgap_tarfile)
 
-# Cleaning things up
 notice("Processing exported content")
 
-badfiles = [
-".appveyor.yml",
-".codecov.yml",
-".gitattributes",
-".gitignore",
-".mailmap",
-".travis.yml",
-]
-
 with working_directory(tmpdir + "/" + basename):
-    notice("Removing unwanted files")
-    shutil.rmtree("benchmark")
-    shutil.rmtree("dev")
-    shutil.rmtree(".github")
-    for f in badfiles:
-        try:
-            os.remove(f)
-        except:
-            pass
-
     # This sets the version, release day and year of the release we are
     # creating.
     notice("Patch configure.ac")
@@ -144,9 +125,51 @@ with working_directory(tmpdir + "/" + basename):
     # all packages, and upload that as part of the release, too; this file would be rather
     # useful for updating the website, and also for the PackageManager
     # (Why JSON? Because GAP, Python and many more can easily process it.)
+    # now create the file package-infos.json
+    # We first build the json package, then create the package-infos.json, then
+    # clean up the json package again.
+    path_to_json_package = glob.glob(f'{tmpdir}/{basename}/pkg/json*')[0]
+    with working_directory(path_to_json_package):
+        subprocess.run(["./configure"], check=True)
+        subprocess.run(["make"], check=True)
+
+    package_infos = subprocess.run(["./bin/gap.sh", "-r", "--quiet", "--quitonbreak",
+                                    "dev/releases/PackageInfos-to-JSON.g"],
+                                    check=True, capture_output=True, text=True)
+    package_infos = package_infos.stdout
+
+    with working_directory(tmpdir):
+        with open("package-infos.json", 'w') as file:
+            file.write(package_infos)
+
+    with working_directory(path_to_json_package):
+        subprocess.run(["make", "clean"], check=True)
+        subprocess.run(["rm", "-rf", "bin/", "Makefile"],
+                       check=True)
+
 
     notice("Building the manuals")
     run_with_log(["make", "doc"], "gapdoc", "building the manuals")
+
+    notice("Removing unwanted version-controlled files")
+    badfiles = [
+    ".appveyor.yml",
+    ".codecov.yml",
+    ".gitattributes",
+    ".gitignore",
+    ".mailmap",
+    ".travis.yml",
+    ]
+
+    shutil.rmtree("benchmark")
+    shutil.rmtree("dev")
+    shutil.rmtree(".github")
+    for f in badfiles:
+        try:
+            os.remove(f)
+        except:
+            pass
+
 
     notice("Remove generated files we don't want for distribution")
     run_with_log(["make", "distclean"], "make-distclean", "make distclean")
@@ -210,6 +233,7 @@ with working_directory(tmpdir):
     with open(manifest_filename, 'w') as manifest:
         for archive in archives_to_create:
             manifest.write(f"{archive}\n")
+        manifest.write("package-infos.json\n")
 
 # The end
 notice("DONE")
