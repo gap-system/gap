@@ -12,12 +12,12 @@ that describe the changes.
 
 Up to version 4.11.1, the relevant part of `CHANGES.md` has been put together manually, by evaluating the pull merged requests in question and then structuring this information.
 
-Since then, we intend to extend `CHANGES.md` as automatic as possible, and this file shall help to achieve this.
+Since then, we intend to extend `CHANGES.md` as automatically as possible, and this file shall help to achieve this.
 
 (Up to version 4.10.0, GAP release notes were available also via the GAPDoc book "Changes".  We have stopped providing this format of release notes because preparing it was very time consuming.  However, this format had for example the advantage that its HTML links into the GAP Reference Manual or into package manuals allowed one to easily access information about new or changed GAP functions etc.  It would be good to revive this feature of the "CHANGES" manual, provided it can be achieved essentially automatically.)
 
 
-## How shall GAP release notes look like?
+## How shall GAP release notes look?
 
 The aim of GAP release notes is to give users an overview of **important** changes since the previous version.  This means that this overview does not show a complete list of **all** changes (if one is interested in a complete list then one can consult the history in github), and that the listed changes are shown in a structured way.
 
@@ -45,8 +45,7 @@ Currently the following labels are regarded as relevant for the creation of rele
   Thus the release notes are composed from all those merged pull requests that belong to the release in question (are assigned to the release branch or have a `backport-to-...-DONE` label for the release) AND do NOT have the label `release notes: not needed`.
 
 - For pull requests with the label `release notes: use title`, the text for the release notes is given by the title of the pull request.
-  For all other pull requests, the text for the release notes can be extracted from the pull request body.
-  (The pull request template contains `## Text for release notes`, thus the relevant text is expected there; but where is the end of this text? We have to define a convention to mark the release notes text, then this text can be extracted automatically.)
+  For all other pull requests, the text for the release notes can be extracted from the pull request body.  The pull request template (see `.github/pull_request_template.md) contains the markers `## Text for release notes` and `## (End of text for release notes)`, thus the relevant text is expected between these markers, and can be extracted automatically.
 
 - Up to now, also the labels `release notes: needed` and `release notes: added` have been used.
   The first one means that the text for release notes can be found in the body and has not yet been added to `CHANGES.md`, the second one means that the text has been added to `CHANGES.md`.
@@ -81,7 +80,7 @@ Currently the following labels are regarded as relevant for the creation of rele
   Note that `CHANGES.md` is just **one** way to present the changes, eventually we should put the source data (pull request number, release notes text, labels) into the GAP distribution, and provide a tool for evaluating the data inside a GAP session.
 
 - For convenience, consistency checks can be executed, via suitable queries (restricted to the merged pull requests that belong to the forthcoming release), for example:
-  - There should be no pull request without the labels `release notes: not needed` and `release notes: use title` AND without release notes text in the body.
+  - There should be no pull requests without the labels `release notes: not needed` and `release notes: use title` AND without release notes text in the body.
 
 - The three sections on changes packages in the forthcomiing release (see above) will appear below the groups of pull requests that are defined by the above labels.
   (There will be a script that extracts the information from suitable text files related to the package archives.)
@@ -93,7 +92,7 @@ The following is intended for those who create or review pull requests.
 
 - If your pull request should not be mentioned in the release notes then add the label `release notes: not needed`, and you are done.
 
-- Otherwise, try to find a short title that describes the pull request in the release notes; use appropriate maarkup in the title (e.g., backquotes for surrounding function names).  In this case, add the label `release notes: use title`.
+- Otherwise, try to find a short title that describes the pull request in the release notes; use appropriate markup in the title (e.g., backquotes for surrounding function names).  In this case, add the label `release notes: use title`.
 
 - Otherwise, make sure that the body of the pull request contains the relevant text below the line `## Text for release notes`.
   (In the old workflow, the label `release notes: needed` should be added. I think this should be abolished.)

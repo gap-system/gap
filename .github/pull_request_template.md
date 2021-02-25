@@ -6,9 +6,27 @@ Thank You!
 
 ## Text for release notes 
 
-If this pull request should be mentioned in the release notes, 
-please provide a short description matching the style of the GAP
-`CHANGES.md` file in the root directory.
+If this pull request shall **not** be mentioned in the release notes
+(to be distributed in the file `CHANGES.md`),
+please add the label `release notes: not needed`.
+
+Otherwise, please proceed in one of the following ways:
+
+- Choose a title that can serve as text for the release notes,
+  and add the label `release notes: use title`.
+
+- Put the text for the release notes **here**,
+  that is, between the markers `Text for release notes`
+  and `(End of text for release notes)`.
+
+The first variant is recommended whenever the text for release notes
+is suitable as title.
+
+In both cases, please follow the style of the GAP `CHANGES.md` file
+in the root directory.
+In particular, please surround the names of GAP functions with backquotes.
+
+## (End of text for release notes)
 
 ## Further details
 

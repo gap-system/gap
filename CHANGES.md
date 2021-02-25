@@ -82,7 +82,7 @@ The label "release notes: added" has already been attached to them.
 ## GAP 4.11.1 (February 2021)
 
 These changes are also listed on the
-[Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
+[Wiki page](https://github.com/gap-system/gap/wiki/GAP-4.11-release-notes)
 
 ### Fixed bugs that could lead to incorrect results
 
@@ -118,7 +118,7 @@ These changes are also listed on the
 
 ### Fixes and improvements for the **Julia** integration
 
-- [#4042](https://github.com/gap-system/gap/pull/4042) Avoid access to JuliaTLS members by useing `jl_threadid()` and `jl_get_current_task()` helpers, fix compiler constness warnings in weakptr.c
+- [#4042](https://github.com/gap-system/gap/pull/4042) Avoid access to JuliaTLS members by using `jl_threadid()` and `jl_get_current_task()` helpers, fix compiler constness warnings in weakptr.c
 - [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
 - [#4058](https://github.com/gap-system/gap/pull/4058) Refine the logic for scanning Julia stacks
 - [#4071](https://github.com/gap-system/gap/pull/4071) Make the Julia GC threadsafe when used from GAP.jl
