@@ -81,9 +81,6 @@ The label "release notes: added" has already been attached to them.
 
 ## GAP 4.11.1 (February 2021)
 
-These changes are also listed on the
-[Wiki page](https://github.com/gap-system/gap/wiki/GAP-4.11-release-notes)
-
 ### Fixed bugs that could lead to incorrect results
 
 - [#4178](https://github.com/gap-system/gap/pull/4178) Fixed bugs in `RestrictedPerm` with second argument a range

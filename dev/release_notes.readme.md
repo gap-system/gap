@@ -45,7 +45,7 @@ Currently the following labels are regarded as relevant for the creation of rele
   Thus the release notes are composed from all those merged pull requests that belong to the release in question (are assigned to the release branch or have a `backport-to-...-DONE` label for the release) AND do NOT have the label `release notes: not needed`.
 
 - For pull requests with the label `release notes: use title`, the text for the release notes is given by the title of the pull request.
-  For all other pull requests, the text for the release notes can be extracted from the pull request body.  The pull request template (see `.github/pull_request_template.md) contains the markers `## Text for release notes` and `## (End of text for release notes)`, thus the relevant text is expected between these markers, and can be extracted automatically.
+  For all other pull requests, the text for the release notes can be extracted from the pull request body.  The pull request template (see `.github/pull_request_template.md`) contains the markers `## Text for release notes` and `## (End of text for release notes)`, thus the relevant text is expected between these markers, and can be extracted automatically.
 
 - Up to now, also the labels `release notes: needed` and `release notes: added` have been used.
   The first one means that the text for release notes can be found in the body and has not yet been added to `CHANGES.md`, the second one means that the text has been added to `CHANGES.md`.
