@@ -475,7 +475,7 @@ InstallGlobalFunction( SubmagmaWithOneNC, function( M, gens )
                    and IsTrivial
                    and IsAttributeStoringRep );
       S:= Objectify( K, rec() );
-      SetGeneratorsOfMagmaWithInverses( S, [] );
+      SetGeneratorsOfMagmaWithInverses( S, [One(M)] );
       SetSize( S, 1 );
 #T should be unnecessary since `IsTrivial' implies a good `Size' method
     else
