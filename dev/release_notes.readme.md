@@ -33,7 +33,7 @@ Besides the list of relevant pull requests, the release notes contain also the l
 For each package in question, there is one entry that shows package name (with a link to the package homepage), version, authors, abstract,
 
 Note that the information about packages cannot be extracted from pull requests. It depends on the archives of packages that are distributed with GAP.
-(It would be easy to put this information together if there woud be a text file for each archive that lists which package versions are contained in the archive.)
+(Since the release of GAP 4.11.1, scripts in `dev/releases` can be used to extract the metadata of all packages that belong to a given version of GAP or to a given package archive, hence the differences between two releases can be computed.)
 
 
 ## How are release notes created from the github pull requests?
