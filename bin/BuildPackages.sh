@@ -308,9 +308,10 @@ do
   fi
   ) &
   if [ "x$PARALLEL" = "xyes" ]; then
-    # If more than 4 background jobs are running, wait for one to finish
+    # If more than 4 background jobs are running, wait for one to finish (if
+    # <wait -n> is available) or for all to finish (if only <wait> is available)
     if [[ $(jobs -r -p | wc -l) -gt 4 ]]; then
-        wait -n
+        wait -n 2>&1 >/dev/null || wait
     fi
   else
     # wait for this package to finish building
