@@ -7,5 +7,13 @@ function(o, x)
 end);
 
 out := OutputTextUser();
-GapToJsonStream(out, GAPInfo.PackagesInfo);;
+r := rec();
+for n in RecNames(GAPInfo.PackagesInfo) do
+  x := GAPInfo.PackagesInfo.(n);
+  Assert(0, Length(x) = 1);
+  x := x[1];
+  Unbind(x.InstallationPath);
+  r.(n) := x;
+od;
+GapToJsonStream(out, r);;
 QUIT;
