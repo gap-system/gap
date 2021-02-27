@@ -1,68 +1,33 @@
 #!/usr/bin/env bash
-
+# The file make_doc is generated from make_doc.in
 set -e
 set -o pipefail
 
-GAP=@abs_top_builddir@/bin/gap.sh
-GAPARGS="-b -m 1g -x 80 -q -r --quitonbreak"
-if [ "$1" == "nopdf" ]; then
-  NOPDF=", \"nopdf\""
-else
-  NOPDF=""
+if [ $# != 2 -a $# != 3 ]; then
+    echo "usage: make_doc <books> <nopdf> [<runs>]"
+    exit 1
 fi
-echo "--------------------"
-echo "Building GAP manuals"
-echo "--------------------"
 
-"$GAP" $GAPARGS -A <<EOF
-base:="@abs_top_srcdir@";;
-books:=["ref", "tut", "hpc", "dev"];;
-latexOpts := rec(Maintitlesize := "\\\\fontsize{36}{38}\\\\selectfont");;
-for run in [1,2] do
-  for book in books do
-    path := Concatenation(base, "/doc/", book);
-    dir := Directory(path);
+GAP=@abs_top_builddir@/bin/gap.sh
+GAPARGS="-b -m 1g -x 80 -q -r -A --quitonbreak"
+GAPARGS+=' -c base:="@abs_top_srcdir@";'
+GAPARGS+=' -c books:="'${1}'";'
+if [ "$2" == "withpdf" ]; then
+    GAPARGS+=' -c createPDF:=true;'
+elif [ "$2" == "nopdf" ]; then
+    GAPARGS+=' -c createPDF:=false;'
+else
+    echo '<nopdf> must be either the string "withpdf" or "nopdf"'
+    exit 1
+fi
+if [ "$#" == 3 ]; then
+    if [ "$3" != 1 -a "$3" != 2 ]; then
+        echo "<runs> must be 1 or 2"
+        exit 1
+    fi
+    GAPARGS+=' -c runs:='$3';'
+else
+    GAPARGS+=' -c runs:=2;'
+fi
 
-    # skip over missing manuals
-    if not IsDirectoryPath(path) then
-        continue;
-    fi;
-
-    Print("----------------------------\n");
-    Print("Building GAP manual '",book,"' at ",path,"\n");
-    Print("Run ",run," of 2\n");
-    Print("----------------------------\n");
-
-    # for the reference manual, extra list of source files to scan
-    if book = "ref" then
-        f := Filename(dir, "makedocreldata.g");
-        Read(f);
-        files := GAPInfo.ManualDataRef.files;
-    else
-        files := [];
-    fi;
-
-    if run = 2 then
-        # create black&white version of manual (but only on second run)
-        SetGapDocLaTeXOptions("nocolor", latexOpts);
-        MakeGAPDocDoc( path, "main.xml", files, book, "../..", "MathJax" $NOPDF );;
-
-        # Rename the generated black&white PDF
-        f1 := Filename(dir, "manual.pdf");
-        f2 := Filename(dir, "manual-bw.pdf");
-        Exec(Concatenation("mv -f ", f1, " ", f2));
-
-        # convert manual.six to manual.lab, to allow old-style package manuals
-        # to reference the manual
-        GAPDocManualLabFromSixFile( book, Filename(dir, "manual.six") );;
-
-        #
-        CopyHTMLStyleFiles(dir);
-    fi;
-
-    # create manuals with color
-    SetGapDocLaTeXOptions("color", latexOpts);
-    MakeGAPDocDoc( path, "main.xml", files, book, "../..", "MathJax" $NOPDF);;
-  od;
-od;
-EOF
+"${GAP}" ${GAPARGS} @abs_top_srcdir@/doc/make_doc.g
