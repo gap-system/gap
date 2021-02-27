@@ -1388,6 +1388,29 @@ InstallGlobalFunction( InputFromUser,
   end );
 
 
+#############################################################################
+##
+#M  OpenExternal(filename)  . . . . . . . . . . . . open file in external GUI
+##
+InstallGlobalFunction( OpenExternal, function(filename)
+    local file;
+    if ARCH_IS_MAC_OS_X() then
+      Exec(Concatenation("open \"",filename,"\""));
+    elif ARCH_IS_WINDOWS() then
+      Exec(Concatenation("cmd /c start \"",filename,"\""));
+    elif ARCH_IS_WSL() then
+      # If users pass a URL, make sure if does not get mangled.
+      if ForAny(["https://", "http://"], {pre} -> StartsWith(filename, pre)) then
+        file := filename;
+      else
+        file := Concatenation("$(wslpath -a -w \"",filename,"\")");
+      fi;
+      Exec(Concatenation("explorer.exe \"", file, "\""));
+    else
+      Exec(Concatenation("xdg-open \"",filename,"\""));
+    fi;
+end );
+
 
 #############################################################################
 ##
