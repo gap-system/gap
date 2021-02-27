@@ -132,6 +132,8 @@ The label "release notes: added" has already been attached to them.
 
 ### Updated packages redistributed with GAP
 
+The GAP 4.11.1 distribution contains 151 packages, of which 49 have been updated since GAP 4.11.0. The changes include extending the Transitive Groups Library with representatives for all transitive permutation groups of degree at most 47 (due to Derek Holt), and fixing the ordering of groups of orders 3^7, 5^7, 7^7, 11^7 in the Small Groups Library. For other changes, we refer to the documentation of the packages. The full list of updated packages in the GAP 4.11.1 distribution is given below:
+
 [**4ti2Interface**](https://homalg-project.github.io/homalg_project/4ti2Interface/): 2019.09.02 -> 2020.10-02
 [**AGT**](https://github.com/rhysje00/agt): 0.1 -> 0.2
 [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2019.09.04 -> 2020.08.11
@@ -176,7 +178,7 @@ The label "release notes: added" has already been attached to them.
 [**singular**](https://gap-packages.github.io/singular/): 2019.10.01 -> 2020.12.18
 [**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.4.1 -> 1.4.2
 [**ToolsForHomalg**](https://homalg-project.github.io/homalg_project/ToolsForHomalg/): 2019.09.02 -> 2020.10-03
-[**ToricVarieties**](https://homalg-project.github.io/homalg_project/ToricVarieties/): 2019.12.05 -> 2021.01.12
+[**ToricVarieties**](https://homalg-project.github.io/ToricVarieties_project/ToricVarieties/): 2019.12.05 -> 2021.01.12
 [**TransGrp**](https://www.math.colostate.edu/~hulpke/transgrp): 2.0.5 -> 3.0
 [**Wedderga**](https://gap-packages.github.io/wedderga): 4.9.5 -> 4.10.0
 [**XMod**](https://gap-packages.github.io/xmod/): 2.77 -> 2.82
