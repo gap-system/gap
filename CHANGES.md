@@ -112,6 +112,7 @@ The label "release notes: added" has already been attached to them.
 ### Fixes/improvements in the experimental way to allow 3rd party code to link GAP as a library (libgap)
 
 - [#4081](https://github.com/gap-system/gap/pull/4081) Enhance `GAP_ValueGlobalVariable` to supported automatic variables (see `DeclareAutoreadableVariables`)
+- [#4258](https://github.com/gap-system/gap/pull/4258) Fixed `GAP_Enter` macro so that GAP's recursion depth counter is saved/restored. Without this, if too many GAP errors occurred during runtime a segmentation fault could occur in the program using libgap
 
 ### Fixes and improvements for the **Julia** integration
 
@@ -125,11 +126,61 @@ The label "release notes: added" has already been attached to them.
 - [#3922](https://github.com/gap-system/gap/pull/3922) Build system: New feature to execute `BuildPackages.sh` in parallel mode by adding `--parallel`
 - [#4041](https://github.com/gap-system/gap/pull/4041) Build system: Fix `make check` in out-of-tree builds
 
-### New packages redistributed with GAP
+### Packages no longer redistributed with GAP
 
+**PolymakeInterface**: Following the withdrawal of the package **Convex** in GAP 4.11.0 because of being superseded by **NConvex**, the **PolymakeInterface** has also been withdrawn. These two packages are now replaced by **NormalizInterface** and **NConvex**.
 
 ### Updated packages redistributed with GAP
 
+[**4ti2Interface**](https://homalg-project.github.io/homalg_project/4ti2Interface/): 2019.09.02 -> 2020.10-02
+[**AGT**](https://github.com/rhysje00/agt): 0.1 -> 0.2
+[**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2019.09.04 -> 2020.08.11
+[**Browse**](http://www.math.rwth-aachen.de/~Browse): 1.8.8 -> 1.8.11
+[**CAP**](http://homalg-project.github.io/CAP_project/CAP/): 2019.06.07 -> 2020.10-01
+[**CddInterface**](https://homalg-project.github.io/CddInterface): 2020.01.01 -> 2020.06.24
+[**CTblLib**](http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib): 1.2.2 -> 1.3.1
+[**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.1.1 -> 2.2.1
+[**Digraphs**](https://gap-packages.github.io/Digraphs): 1.1.1 -> 1.3.1
+[**ExamplesForHomalg**](https://homalg-project.github.io/homalg_project/ExamplesForHomalg/): 2019.09.02 -> 2020.10-02
+[**ferret**](https://gap-packages.github.io/ferret/): 1.0.2 -> 1.0.3
+[**GAPDoc**](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc): 1.6.3 -> 1.6.4
+[**Gauss**](https://homalg-project.github.io/homalg_project/Gauss/): 2019.09.02 -> 2020.10-02
+[**GaussForHomalg**](https://homalg-project.github.io/homalg_project/GaussForHomalg/): 2019.09.02 -> 2020.10-02
+[**GeneralizedMorphismsForCAP**](http://homalg-project.github.io/CAP_project/GeneralizedMorphismsForCAP/): 2019.01.16 -> 2020.10-01
+[**GradedModules**](https://homalg-project.github.io/homalg_project/GradedModules/): 2020.01.02 -> 2020.10-02
+[**GradedRingForHomalg**](https://homalg-project.github.io/homalg_project/GradedRingForHomalg/): 2020.01.02 -> 2020.10-02
+[**HAP**](https://gap-packages.github.io/hap): 1.25 -> 1.29
+[**homalg**](https://homalg-project.github.io/homalg_project/homalg/): 2019.09.01 -> 2020.10-02
+[**HomalgToCAS**](https://homalg-project.github.io/homalg_project/HomalgToCAS/): 2019.12.08 -> 2020.10-02
+[**IO_ForHomalg**](https://homalg-project.github.io/homalg_project/IO_ForHomalg/): 2019.09.02 -> 2020.10-02
+[**IRREDSOL**](http://www.icm.tu-bs.de/~bhoeflin/irredsol/index.html): 1.4 -> 1.4.1
+[**json**](https://gap-packages.github.io/json/): 2.0.1 -> 2.0.2
+[**kan**](https://gap-packages.github.io/kan/): 1.29 -> 1.32
+[**LinearAlgebraForCAP**](http://homalg-project.github.io/CAP_project/LinearAlgebraForCAP/): 2019.01.16 -> 2020.10-01
+[**LocalizeRingForHomalg**](https://homalg-project.github.io/homalg_project/LocalizeRingForHomalg/): 2019.09.02 -> 2020.10-02
+[**matgrp**](http://www.math.colostate.edu/~hulpke/matgrp): 0.63 -> 0.64
+[**MatricesForHomalg**](https://homalg-project.github.io/homalg_project/MatricesForHomalg/): 2020.01.02 -> 2020.10-04
+[**ModulePresentationsForCAP**](http://homalg-project.github.io/CAP_project/ModulePresentationsForCAP/): 2019.01.16 -> 2020.10-01
+[**Modules**](https://homalg-project.github.io/homalg_project/Modules/): 2019.09.02 -> 2020.10-02
+[**MonoidalCategories**](http://homalg-project.github.io/CAP_project/MonoidalCategories/): 2019.06.07 -> 2020.10-01
+[**NConvex**](https://homalg-project.github.io/NConvex): 2019.12.10 -> 2020.11-04
+[**NumericalSgps**](https://gap-packages.github.io/numericalsgps): 1.2.1 -> 1.2.2
+[**PackageManager**](https://gap-packages.github.io/PackageManager/): 1.0 -> 1.1
+[**Polycyclic**](https://gap-packages.github.io/polycyclic/): 2.15.1 -> 2.16
+[**PrimGrp**](https://gap-packages.github.io/primgrp/): 3.4.0 -> 3.4.1
+[**profiling**](https://gap-packages.github.io/profiling/): 2.2.1 -> 2.3
+[**QPA**](https://folk.ntnu.no/oyvinso/QPA/): 1.30 -> 1.31
+[**RingsForHomalg**](https://homalg-project.github.io/homalg_project/RingsForHomalg/): 2019.12.08 -> 2020.11-01
+[**SCO**](https://homalg-project.github.io/homalg_project/SCO/): 2019.09.02 -> 2020.10-02
+[**Semigroups**](https://gap-packages.github.io/Semigroups): 3.2.3 -> 3.4.0
+[**singular**](https://gap-packages.github.io/singular/): 2019.10.01 -> 2020.12.18
+[**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.4.1 -> 1.4.2
+[**ToolsForHomalg**](https://homalg-project.github.io/homalg_project/ToolsForHomalg/): 2019.09.02 -> 2020.10-03
+[**ToricVarieties**](https://homalg-project.github.io/homalg_project/ToricVarieties/): 2019.12.05 -> 2021.01.12
+[**TransGrp**](https://www.math.colostate.edu/~hulpke/transgrp): 2.0.5 -> 3.0
+[**Wedderga**](https://gap-packages.github.io/wedderga): 4.9.5 -> 4.10.0
+[**XMod**](https://gap-packages.github.io/xmod/): 2.77 -> 2.82
+[**XModAlg**](https://gap-packages.github.io/xmodalg/): 1.17 -> 1.18
 
 
 ## GAP 4.11.0 (February 2020)
