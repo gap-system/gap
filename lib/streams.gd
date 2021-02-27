@@ -1232,3 +1232,21 @@ DeclareGlobalFunction( "UnInstallCharReadHookFunc" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "InputFromUser" );
+
+#############################################################################
+##
+#F  OpenExternal( <filename> )
+##
+##  <#GAPDoc Label="OpenExternal">
+##  <ManSection>
+##  <Func Name="OpenExternal" Arg='filename'/>
+##
+##  <Description>
+##  Open the file <A>filename</A> using the default application for this file
+##  in the operating system. This can be used to open files like HTML and PDF
+##  files in the GUI.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "OpenExternal" );

@@ -298,6 +298,19 @@ separation character (usually a comma).
 <#Include Label="PrintCSV">
 
 </Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Opening files in the Operating System">
+<Heading>Opening files in the Operating System</Heading>
+
+In some situations it can be desirable to open a file outside of &GAP;,
+for example HTML files, PDFs, or pictures.
+
+<#Include Label="OpenExternal">
+
+</Section>
+
+
 </Chapter>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
