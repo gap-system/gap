@@ -18,6 +18,8 @@
 /gen/
 /obj/
 
+**/__pycache__/
+
 /build/
 /extern/build/
 /extern/install/
