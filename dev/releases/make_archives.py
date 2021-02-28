@@ -10,6 +10,7 @@
 from utils import *
 
 import glob
+import re
 import shutil
 import subprocess
 import sys
@@ -45,7 +46,7 @@ except:
     error("make sure GAP has been compiled via './configure && make'")
 notice(f"Detected GAP version {gapversion}")
 
-if gapversion.find("dev") == -1:
+if re.fullmatch( r"[1-9]+\.[0-9]+\.[0-9]+", gapversion) != None:
     notice(f"--- THIS LOOKS LIKE A RELEASE ---")
 else:
     notice(f"--- THIS LOOKS LIKE A NIGHTLY BUILD ---")
