@@ -177,32 +177,24 @@ with working_directory(tmpdir + "/" + basename):
 
 
 # create the archives
-# If you create additional archives, make sure to add them to archives_to_create!
-archives_to_create = []
+# If you create additional archives, make sure to add them to manifest_list!
+manifest_list = ["package-infos.json"]
 for filename in [all_packages, req_packages, basename, basename + "-core"]:
-    archives_to_create.append(filename + ".tar.gz")
-    archives_to_create.append(filename + ".tar.gz.sha256")
-    archives_to_create.append(filename + ".zip")
-    archives_to_create.append(filename + ".zip.sha256")
+    manifest_list.append(filename + ".tar.gz")
+    manifest_list.append(filename + ".zip")
 
 with working_directory(tmpdir):
     filename = f"{basename}.tar.gz"
     notice(f"Creating {filename}")
     shutil.make_archive(basename, 'gztar', ".", basename)
-    with open(filename+".sha256", 'w') as file:
-        file.write(sha256file(filename))
 
     filename = f"{basename}.zip"
     notice(f"Creating {filename}")
     shutil.make_archive(basename, 'zip', ".", basename)
-    with open(filename+".sha256", 'w') as file:
-        file.write(sha256file(filename))
 
     filename = all_packages + '.zip'
     notice(f"Creating {filename}")
     shutil.make_archive(all_packages, 'zip', basename,  "pkg")
-    with open(filename+".sha256", 'w') as file:
-        file.write(sha256file(filename))
 
     notice("Extract required packages")
     with tarfile.open(req_packages_tarball) as tar:
@@ -211,8 +203,6 @@ with working_directory(tmpdir):
     filename = req_packages + '.zip'
     notice(f"Creating {filename}")
     shutil.make_archive(req_packages, 'zip', ".",  req_packages)
-    with open(filename+".sha256", 'w') as file:
-        file.write(sha256file(filename))
 
     notice("Remove packages")
     shutil.rmtree(basename + "/pkg")
@@ -220,21 +210,21 @@ with working_directory(tmpdir):
     filename = f"{basename}-core.tar.gz"
     notice(f"Creating {filename}")
     shutil.make_archive(basename+"-core", 'gztar', ".", basename)
-    with open(filename+".sha256", 'w') as file:
-        file.write(sha256file(filename))
 
     filename = f"{basename}-core.zip"
     notice(f"Creating {filename}")
     shutil.make_archive(basename+"-core", 'zip', ".", basename)
-    with open(filename+".sha256", 'w') as file:
-        file.write(sha256file(filename))
+
+    for filename in manifest_list:
+        with open(filename+".sha256", 'w') as file:
+            file.write(sha256file(filename))
 
     manifest_filename = "MANIFEST"
     notice(f"Creating manifest {manifest_filename}")
     with open(manifest_filename, 'w') as manifest:
-        for archive in archives_to_create:
-            manifest.write(f"{archive}\n")
-        manifest.write("package-infos.json\n")
+        for filename in manifest_list:
+            manifest.write(f"{filename}\n")
+            manifest.write(f"{filename}.sha256\n")
 
 # The end
 notice("DONE")
