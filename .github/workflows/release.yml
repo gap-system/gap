@@ -1,0 +1,48 @@
+# This workflow takes care of creating release archives for the
+# GAP distribution. It is run for all PR and branch pushes as usual,
+# but also on tags named `vX.Y.Z` with X, Y, Z numbers.
+#
+# For builds triggered by a tag, the tag is turned into a GitHub release and
+# the produced archives are attached to that.
+name: release
+
+# Trigger the workflow on push or pull request
+on:
+  pull_request:
+  push:
+    tags: v[1-9]+.[0-9]+.[0-9]+
+    branches:
+      - master
+      - stable-*
+
+jobs:
+  release:
+    name: Release
+    # Don't run this twice on PRs for branches pushed to the same repository
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    env:
+      NO_COVERAGE: "1"
+      BOOTSTRAP_MINIMAL: "yes"
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+      - name: "Install Python modules"
+        run: pip3 install PyGithub requests python-dateutil
+      - name: "Install latex"
+        run: sudo apt-get install texlive texlive-latex-extra texlive-extra-utils texlive-fonts-extra
+      - name: "Compile GAP and download packages"
+        run: bash dev/ci-prepare.sh
+      - name: "Make archives"
+        run: python -u ./dev/releases/make_archives.py
+      - name: "Make GitHub release"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        # TODO: we should check whether the tag triggering the release
+        # has the right name
+        run: python -u ./dev/releases/make_github_release.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

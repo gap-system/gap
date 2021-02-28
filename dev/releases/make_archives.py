@@ -30,7 +30,7 @@ verify_git_repo()
 verify_git_clean()
 
 # fetch tags, so we can properly detect
-safe_git_fetch_tags()
+#safe_git_fetch_tags()  # FIXME: disabled as it causes issues in GH Actions
 
 # Creating tmp directory
 tmpdir = os.getcwd() + "/tmp"
