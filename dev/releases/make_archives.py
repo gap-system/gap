@@ -10,6 +10,7 @@
 from utils import *
 
 import glob
+import gzip
 import re
 import shutil
 import subprocess
@@ -140,8 +141,8 @@ with working_directory(tmpdir + "/" + basename):
     package_infos = package_infos.stdout
 
     with working_directory(tmpdir):
-        with open("package-infos.json", 'w') as file:
-            file.write(package_infos)
+        with gzip.open("package-infos.json.gz", 'wb') as file:
+            file.write(package_infos.encode('utf-8'))
 
     with working_directory(path_to_json_package):
         subprocess.run(["make", "clean"], check=True)
@@ -178,7 +179,7 @@ with working_directory(tmpdir + "/" + basename):
 
 # create the archives
 # If you create additional archives, make sure to add them to manifest_list!
-manifest_list = ["package-infos.json"]
+manifest_list = ["package-infos.json.gz"]
 for filename in [all_packages, req_packages, basename, basename + "-core"]:
     manifest_list.append(filename + ".tar.gz")
     manifest_list.append(filename + ".zip")
