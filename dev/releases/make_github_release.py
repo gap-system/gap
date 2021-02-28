@@ -14,6 +14,7 @@
 import utils
 import github
 import os
+import re
 
 # Identify GAP release version
 try:
@@ -22,6 +23,9 @@ except:
     utils.error("Could not get GAP version")
 
 utils.notice(f"Detected GAP version {GAPVERSION}")
+if re.fullmatch( r"[1-9]+\.[0-9]+\.[0-9]+", GAPVERSION) == None:
+    utils.error("This does not look a release version")
+
 
 utils.initialize_github()
 
