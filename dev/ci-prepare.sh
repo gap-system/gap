@@ -46,14 +46,17 @@ time make V=1 -j4
 
 # Use alternative downloader which retries on failure and uses the Travis cache
 DOWNLOAD="$SRCDIR/dev/ci-download.sh"
-if [[ $(uname) == Darwin ]]
+
+# if requested, bootstrap with minimal set of packages
+if [[ $BOOTSTRAP_MINIMAL = yes ]]
 then
-    # Travis OSX builders seem to have very small download bandwidth,
-    # so as a workaround, we only test the minimal set of packages there.
-    # On the upside, it's good to test that, too!
     make bootstrap-pkg-minimal DOWNLOAD="$DOWNLOAD"
-    git clone https://github.com/gap-packages/io "$SRCDIR/pkg/io"
-    git clone https://github.com/gap-packages/profiling "$SRCDIR/pkg/profiling"
+    # if coverage is requested, install the io and profiling packages directly
+    if [[ -z ${NO_COVERAGE} ]]
+    then
+      git clone https://github.com/gap-packages/io "$SRCDIR/pkg/io"
+      git clone https://github.com/gap-packages/profiling "$SRCDIR/pkg/profiling"
+    fi
 else
     make bootstrap-pkg-full DOWNLOAD="$DOWNLOAD"
 fi
