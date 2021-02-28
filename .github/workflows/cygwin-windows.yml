@@ -1,0 +1,47 @@
+# Based on https://github.com/mit-plv/fiat-crypto/blob/master/.github/workflows/coq-windows.yml
+name: CI (Cygwin/Windows)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    env:
+      CFLAGS: "--coverage -O2 -g"
+      CXXFLAGS: "--coverage -O2 -g"
+      LDFLAGS: "--coverage"
+      # default config flags: enable debug asserts
+      CONFIGFLAGS: "--enable-debug"
+      COVERALLS_PARALLEL: true
+      TEST_SUITES: testinstall
+
+    steps:
+    # This sets git to use Linux line endings. While GAP should allow
+    # Windows line endings in GAP files, we currently can't build GAP if the
+    # whole source has Windows line endings
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
+    - uses: actions/checkout@v2
+
+    - uses: gap-actions/setup-cygwin-for-gap@v1
+
+    # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) without changing directory
+    - name: Compile GAP and download packages
+      run: |
+        @ECHO ON
+        SET CHERE_INVOKING=1
+        C:\cygwin64\bin\bash -l -c 'bash dev/ci-prepare.sh'
+      shell: cmd
+
+    - name: Run tests
+      run: |
+        SET CHERE_INVOKING=1
+        C:\cygwin64\bin\bash -l -c 'bash dev/ci.sh'
+      shell: cmd
