@@ -1,9 +1,112 @@
 # GAP - history of changes
 
-## GAP 4.11.0 (February 2020)
+## GAP 4.11.1 (February 2021)
 
-These changes are also listed on the
-[Wiki page](https://github.com/gap-system/GAP/wiki/gap-4.11-release-notes)
+### Fixed bugs that could lead to incorrect results
+
+- [#4178](https://github.com/gap-system/gap/pull/4178) Fixed bugs in `RestrictedPerm` with second argument a range
+
+### Fixed bugs that could lead to crashes
+
+- [#3965](https://github.com/gap-system/gap/pull/3965) Fix potential garbage collector crashes on 64bit ARM systems
+- [#4076](https://github.com/gap-system/gap/pull/4076) Fix an infinite loop in `BoundedRefinementEANormalSeries` if large factors could not be refined, fix protected option of `IsomorphismSimplifiedFpGroup`, improve documentation of `IsAutomorphismGroup`
+
+### Fixed bugs that could lead to error messages
+
+- [#3980](https://github.com/gap-system/gap/pull/3980) Fixed `Gcd` for rational polynomials
+
+### Other fixed bugs
+
+- [#3963](https://github.com/gap-system/gap/pull/3963) Provide automatic compression/decompression of filenames ending `.gz` (as is claimed for example in the documentation of `InputTextFile`)
+- [#3944](https://github.com/gap-system/gap/pull/3944) The error checking in `PartialPerm` has been corrected such that invalid inputs (numbers < 1) are detected
+- [#4006](https://github.com/gap-system/gap/pull/4006) Fix `gac` to ensure that binaries it creates on Linux can load and run, even if a GAP package with a compiled kernel extension (such as `IO`) is present
+
+### Improved and extended functionality
+
+- [#3790](https://github.com/gap-system/gap/pull/3790) Add further information to the library of simple groups
+- [#3840](https://github.com/gap-system/gap/pull/3840) Speed up garbage collection
+
+### Packages
+
+- [#4016](https://github.com/gap-system/gap/pull/4016) Improved `etc/Makefile.gappkg` (used by GAP packages that want to build a simple GAP kernel extension)
+
+### Fixes/improvements in the experimental way to allow 3rd party code to link GAP as a library (libgap)
+
+- [#4081](https://github.com/gap-system/gap/pull/4081) Enhance `GAP_ValueGlobalVariable` to supported automatic variables (see `DeclareAutoreadableVariables`)
+- [#4258](https://github.com/gap-system/gap/pull/4258) Fixed `GAP_Enter` macro so that GAP's recursion depth counter is saved/restored. Without this, if too many GAP errors occurred during runtime a segmentation fault could occur in the program using libgap
+
+### Fixes and improvements for the **Julia** integration
+
+- [#4042](https://github.com/gap-system/gap/pull/4042) Avoid access to JuliaTLS members by using `jl_threadid()` and `jl_get_current_task()` helpers, fix compiler constness warnings in weakptr.c
+- [#4053](https://github.com/gap-system/gap/pull/4053) Fix the logic for scanning tasks in the Julia GC
+- [#4058](https://github.com/gap-system/gap/pull/4058) Refine the logic for scanning Julia stacks
+- [#4071](https://github.com/gap-system/gap/pull/4071) Make the Julia GC threadsafe when used from GAP.jl
+
+### Other changes
+
+- [#3922](https://github.com/gap-system/gap/pull/3922) Build system: New feature to execute `BuildPackages.sh` in parallel mode by adding `--parallel`
+- [#4041](https://github.com/gap-system/gap/pull/4041) Build system: Fix `make check` in out-of-tree builds
+
+### Packages no longer redistributed with GAP
+
+**PolymakeInterface**: Following the withdrawal of the package **Convex** in GAP 4.11.0 because of being superseded by **NConvex**, the **PolymakeInterface** has also been withdrawn. These two packages are now replaced by **NormalizInterface** and **NConvex**.
+
+### Updated packages redistributed with GAP
+
+The GAP 4.11.1 distribution contains 151 packages, of which 49 have been updated since GAP 4.11.0. The changes include extending the Transitive Groups Library with representatives for all transitive permutation groups of degree at most 47 (due to Derek Holt), and fixing the ordering of groups of orders 3^7, 5^7, 7^7, 11^7 in the Small Groups Library. For other changes, we refer to the documentation of the packages. The full list of updated packages in the GAP 4.11.1 distribution is given below:
+
+[**4ti2Interface**](https://homalg-project.github.io/homalg_project/4ti2Interface/): 2019.09.02 -> 2020.10-02
+[**AGT**](https://github.com/rhysje00/agt): 0.1 -> 0.2
+[**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2019.09.04 -> 2020.08.11
+[**Browse**](http://www.math.rwth-aachen.de/~Browse): 1.8.8 -> 1.8.11
+[**CAP**](http://homalg-project.github.io/CAP_project/CAP/): 2019.06.07 -> 2020.10-01
+[**CddInterface**](https://homalg-project.github.io/CddInterface): 2020.01.01 -> 2020.06.24
+[**CTblLib**](http://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib): 1.2.2 -> 1.3.1
+[**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.1.1 -> 2.2.1
+[**Digraphs**](https://gap-packages.github.io/Digraphs): 1.1.1 -> 1.3.1
+[**ExamplesForHomalg**](https://homalg-project.github.io/homalg_project/ExamplesForHomalg/): 2019.09.02 -> 2020.10-02
+[**ferret**](https://gap-packages.github.io/ferret/): 1.0.2 -> 1.0.3
+[**GAPDoc**](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc): 1.6.3 -> 1.6.4
+[**Gauss**](https://homalg-project.github.io/homalg_project/Gauss/): 2019.09.02 -> 2020.10-02
+[**GaussForHomalg**](https://homalg-project.github.io/homalg_project/GaussForHomalg/): 2019.09.02 -> 2020.10-02
+[**GeneralizedMorphismsForCAP**](http://homalg-project.github.io/CAP_project/GeneralizedMorphismsForCAP/): 2019.01.16 -> 2020.10-01
+[**GradedModules**](https://homalg-project.github.io/homalg_project/GradedModules/): 2020.01.02 -> 2020.10-02
+[**GradedRingForHomalg**](https://homalg-project.github.io/homalg_project/GradedRingForHomalg/): 2020.01.02 -> 2020.10-02
+[**HAP**](https://gap-packages.github.io/hap): 1.25 -> 1.29
+[**homalg**](https://homalg-project.github.io/homalg_project/homalg/): 2019.09.01 -> 2020.10-02
+[**HomalgToCAS**](https://homalg-project.github.io/homalg_project/HomalgToCAS/): 2019.12.08 -> 2020.10-02
+[**IO_ForHomalg**](https://homalg-project.github.io/homalg_project/IO_ForHomalg/): 2019.09.02 -> 2020.10-02
+[**IRREDSOL**](http://www.icm.tu-bs.de/~bhoeflin/irredsol/index.html): 1.4 -> 1.4.1
+[**json**](https://gap-packages.github.io/json/): 2.0.1 -> 2.0.2
+[**kan**](https://gap-packages.github.io/kan/): 1.29 -> 1.32
+[**LinearAlgebraForCAP**](http://homalg-project.github.io/CAP_project/LinearAlgebraForCAP/): 2019.01.16 -> 2020.10-01
+[**LocalizeRingForHomalg**](https://homalg-project.github.io/homalg_project/LocalizeRingForHomalg/): 2019.09.02 -> 2020.10-02
+[**matgrp**](http://www.math.colostate.edu/~hulpke/matgrp): 0.63 -> 0.64
+[**MatricesForHomalg**](https://homalg-project.github.io/homalg_project/MatricesForHomalg/): 2020.01.02 -> 2020.10-04
+[**ModulePresentationsForCAP**](http://homalg-project.github.io/CAP_project/ModulePresentationsForCAP/): 2019.01.16 -> 2020.10-01
+[**Modules**](https://homalg-project.github.io/homalg_project/Modules/): 2019.09.02 -> 2020.10-02
+[**MonoidalCategories**](http://homalg-project.github.io/CAP_project/MonoidalCategories/): 2019.06.07 -> 2020.10-01
+[**NConvex**](https://homalg-project.github.io/NConvex): 2019.12.10 -> 2020.11-04
+[**NumericalSgps**](https://gap-packages.github.io/numericalsgps): 1.2.1 -> 1.2.2
+[**PackageManager**](https://gap-packages.github.io/PackageManager/): 1.0 -> 1.1
+[**Polycyclic**](https://gap-packages.github.io/polycyclic/): 2.15.1 -> 2.16
+[**PrimGrp**](https://gap-packages.github.io/primgrp/): 3.4.0 -> 3.4.1
+[**profiling**](https://gap-packages.github.io/profiling/): 2.2.1 -> 2.3
+[**QPA**](https://folk.ntnu.no/oyvinso/QPA/): 1.30 -> 1.31
+[**RingsForHomalg**](https://homalg-project.github.io/homalg_project/RingsForHomalg/): 2019.12.08 -> 2020.11-01
+[**SCO**](https://homalg-project.github.io/homalg_project/SCO/): 2019.09.02 -> 2020.10-02
+[**Semigroups**](https://gap-packages.github.io/Semigroups): 3.2.3 -> 3.4.0
+[**singular**](https://gap-packages.github.io/singular/): 2019.10.01 -> 2020.12.18
+[**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.4.1 -> 1.4.2
+[**ToolsForHomalg**](https://homalg-project.github.io/homalg_project/ToolsForHomalg/): 2019.09.02 -> 2020.10-03
+[**ToricVarieties**](https://homalg-project.github.io/ToricVarieties_project/ToricVarieties/): 2019.12.05 -> 2021.01.12
+[**TransGrp**](https://www.math.colostate.edu/~hulpke/transgrp): 2.0.5 -> 3.0
+[**Wedderga**](https://gap-packages.github.io/wedderga): 4.9.5 -> 4.10.0
+[**XMod**](https://gap-packages.github.io/xmod/): 2.77 -> 2.82
+[**XModAlg**](https://gap-packages.github.io/xmodalg/): 1.17 -> 1.18
+
+
+## GAP 4.11.0 (February 2020)
 
 ### New features and major changes
 
@@ -299,7 +402,7 @@ These changes are also listed on the
 
   - `LatticeViaRadical` called `ClosureSubgroupNC` assuming that the
     parent contained all generators. It now calls `ClosureSubgroup`
-    instead, since this can not be always guaranteed (this could
+    instead, since this cannot always be guaranteed (this could
     happen, for example, in perfect subgroup computation). Also
     added an assertion to `ClosureSubgroupNC` to catch this
     situation in other cases. (Reported by Serge Bouc)
@@ -1182,7 +1285,7 @@ This is the first public release of GAP 4.9.
     compare the timing for `Sort([1..100000000] * 0)`. As a side
     effect, the result of sorting lists with equal entries may produce
     different answers compared to previous GAP versions. If you would
-    like to make your code independant of the exact employed sorting
+    like to make your code independent of the exact employed sorting
     algorithm, you can use the newly added `StableSort`, `StableSortBy`
     and `StableSortParallel`. (For some technical details, see
     [#609](https://github.com/gap-system/gap/pull/609)).
@@ -3033,7 +3136,7 @@ GAP 4.6.5 release:
     being called on a homomorphism whose image is not a permutation
     group. (Reported by Sebastian Gutsche)
 
-  - Fixed a bug in `ExponentsConjugateLayer` which occured, for
+  - Fixed a bug in `ExponentsConjugateLayer` which occurred, for
     example, in some calls of `SubgroupsSolvableGroup` (Reported
     by Ramon Esteban-Romero)
 
@@ -3798,7 +3901,7 @@ an introduction to GAP 4.5, accompanying its release announcement.
 
   - Due to improvements for vectors over finite fields, certain objects
     have more limitations on changing their base field. For example, one
-    can not create a compressed matrix over GF(2) and then assign an
+    cannot create a compressed matrix over GF(2) and then assign an
     element of GF(4) to one of its entries.
 
 ### No longer supported:
