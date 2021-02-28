@@ -1352,6 +1352,20 @@ end);
 
 #############################################################################
 ##
+#M  <upol>(<val>)
+##
+##  Method to allow univariate polynomials to be used like functions when 
+##  appropriate
+InstallMethod(CallFuncList, [IsUnivariatePolynomial, IsList], 
+  function(poly, lst) 
+    if Length(lst) <> 1 then 
+        TryNextMethod(); 
+    fi; 
+    return Value(poly, lst[1]); 
+end);
+
+#############################################################################
+##
 #M  Value
 ##                               
 InstallOtherMethod(Value,"rat.fun., with one",

@@ -1077,6 +1077,8 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  The second version takes an univariate rational function and specializes
 ##  the value of its indeterminate to <A>val</A>.
 ##  Again, an optional argument <A>one</A> may be given.
+##  <C>Value( <A>upol</A>, <A>val</A> )</C> can also be expressed as <C>upol( 
+##  <A>val</A> )</C>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Value(x*y+y+x^7,[x,y],[5,7]);
