@@ -72,6 +72,18 @@ gap> Value(t,-1);
 Z(5)^2
 
 #
+gap> data[1](0);
+0
+gap> 0*t(1);
+0*Z(5)
+gap> (0*t)(1);
+0
+gap> data[4](3);
+Z(5)^2
+gap> (t+Z(5)^0)(3);
+Z(5)^2
+
+#
 gap> y1:=Indeterminate(Rationals,1);;
 gap> y2:=Indeterminate(Rationals,2);;
 gap> y3:=Indeterminate(Rationals,3);;

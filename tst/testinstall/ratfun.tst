@@ -86,6 +86,16 @@ gap> Value(t,-1);
 -1
 
 #
+gap> t(0);
+0
+gap> t(1);
+1
+gap> (t+1)(3);
+4
+gap> data[4](3);
+4
+
+#
 gap> y1:=Indeterminate(Rationals,1);;
 gap> y2:=Indeterminate(Rationals,2);;
 gap> y3:=Indeterminate(Rationals,3);;
