@@ -142,6 +142,17 @@ def check_whether_git_tag_exists(tag):
             return True
     return False
 
+# lightweight vs annotated
+# https://stackoverflow.com/questions/40479712/how-can-i-tell-if-a-given-git-tag-is-annotated-or-lightweight#40499437
+def is_annotated_git_tag(tag):
+    is_annotated = subprocess.run(["git", "for-each-ref", "refs/tags/" + tag],
+                                  check=True, capture_output=True, text=True)
+    if "tag" == is_annotated.stdout.split()[1]:
+        return True
+    if "commit" == is_annotated.stdout.split()[1]:
+        return False
+    error(f"could not check whether tag {tag} is annotated")
+
 # Returns a boolean
 def check_whether_github_release_exists(tag):
     if CURRENT_REPO == None:

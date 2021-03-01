@@ -52,6 +52,14 @@ if re.fullmatch( r"[1-9]+\.[0-9]+\.[0-9]+", gapversion) != None:
 else:
     notice(f"--- THIS LOOKS LIKE A NIGHTLY BUILD ---")
 
+# Now make sure that the version number we got from GAP_BUILD_VERSION matches
+# an annotated tag of the current commit.
+tags = subprocess.run(["git", "tag", "--points-at"],
+                     check=True, capture_output=True, text=True)
+tags = tags.stdout.strip().split('\n')
+tags = [ tag for tag in tags if is_annotated_git_tag(tag) ]
+if not "v" + gapversion in tags:
+    error(f"The tag '{gapversion}' does not point to the current commit or is not annotated")
 
 # extract commit_date with format YYYY-MM-DD
 # TODO: is that really what we want? Or should it be the date this
