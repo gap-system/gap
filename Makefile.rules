@@ -454,7 +454,7 @@ etags:
 distclean: clean
 	rm -rf autom4te.cache
 	rm -f config.log config.status libtool GNUmakefile
-	rm -r stamp-h
+	rm -f stamp-h
 	rm -f doc/make_doc
 	rm -f doc/*/*.aux doc/*/*.bbl doc/*/*.blg doc/*/*.brf doc/*/*.idx doc/*/*.ilg doc/*/*.ind doc/*/*.log doc/*/*.out doc/*/*.pnr doc/*/*.tex doc/*/*.toc
 	rm -rf gen
