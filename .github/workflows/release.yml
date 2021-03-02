@@ -46,6 +46,17 @@ jobs:
         run: bash dev/ci-prepare.sh
       - name: "Make archives"
         run: python -u ./dev/releases/make_archives.py
+
+      - name: "Upload artifacts"
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        # Warning: the result is a single .zip file (so things are compressed twice)
+        # To keep things from exploding, we only upload a subset of all generated files
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            tmp/gap-*.tar.gz*
+            tmp/*json*
+
       - name: "Make GitHub release"
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         # TODO: we should check whether the tag triggering the release
