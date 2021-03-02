@@ -387,7 +387,7 @@ if is_git_clean():
     sys.exit(0)
 
 try:
-    subprocess.run(["git", "commit", "-m", "'Update website for GAP " + gap_version + " release'"], check=True)
+    subprocess.run(["git", "commit", "-m", "Update website for GAP " + gap_version + " release"], check=True)
 except:
     error("failed to commit to new branch")
 
