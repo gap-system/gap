@@ -472,7 +472,7 @@ clean:
 	rm -rf .libs
 	rm -f gen/gap_version.c
 	rm -f doc/wsp.g
-	rm -f cnf/GAP-{CFLAGS,CPPFLAGS,CXXFLAGS,LDFLAGS,LIBS,OBJS}
+	rm -f cnf/GAP-{CFLAGS,CPPFLAGS,CXXFLAGS,LDFLAGS,LIBS,OBJS,VERSION-FILE}
 	rmdir bin cnf dev doc extern src 2>/dev/null || : # remove dirs if they are now empty
 
 .PHONY: clean distclean
