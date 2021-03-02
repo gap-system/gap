@@ -165,6 +165,7 @@ with working_directory(tmpdir + "/" + basename):
 
     shutil.rmtree("benchmark")
     shutil.rmtree("dev")
+    shutil.rmtree("doc/dev")
     shutil.rmtree(".github")
     for f in badfiles:
         try:
