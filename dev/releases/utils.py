@@ -5,7 +5,6 @@ import re
 import shutil
 import subprocess
 import sys
-from getpass import getpass
 import github
 
 CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")
@@ -128,29 +127,34 @@ def safe_git_fetch_tags():
         error('failed to fetch tags, you may have to do \n'
               + 'git fetch --tags -f')
 
+# lightweight vs annotated
+# https://stackoverflow.com/questions/40479712/how-can-i-tell-if-a-given-git-tag-is-annotated-or-lightweight#40499437
+def is_annotated_git_tag(tag):
+    res = subprocess.run(["git", "for-each-ref", "refs/tags/" + tag],
+                         capture_output=True, text=True)
+    return res.returncode == 0 and res.stdout.split()[1] == "tag"
 
-# Returns a boolean
-def check_whether_git_tag_exists(tag):
-    safe_git_fetch_tags()
-    res = subprocess.run(["git", "tag", "-l"],
-                         capture_output=True,
-                         text=True,
-                         check=True)
-    tags = res.stdout.split('\n')
-    for s in tags:
-        if tag == s:
-            return True
-    return False
+def get_commit_of_git_tag(tag):
+    res = subprocess.run(["git", "show-ref", "--tags", "--dereference", tag],
+                            check=True, capture_output=True, text=True)
+    res = res.stdout.split('\n')
+    res = [obj for obj in res if obj.find(tag + "^{}") != -1]
+    if len(res) == 0:
+        error(f"Could not find tag {tag}")
+    res = res[0]
+    return res.split()[0]
 
-# Returns a boolean
-def check_whether_github_release_exists(tag):
-    if CURRENT_REPO == None:
-        print("CURRENT_REPO is not initialized. Call initialize_github first")
-    releases = CURRENT_REPO.get_releases()
-    for release in releases:
-        if release.tag_name == tag:
-            return True
-    return False
+def check_git_tag_for_release(tag):
+    if not is_annotated_git_tag(tag):
+        error(f"There is no annotated tag {tag}")
+    # check that tag points to HEAD
+    tag_commit = get_commit_of_git_tag(tag)
+    head = subprocess.run(["git", "rev-parse", "HEAD"],
+                          check=True, capture_output=True, text=True)
+    head = head.stdout.strip()
+    if tag_commit != head:
+        error(f"The tag {tag} does not point to the current commit {head} but"
+              + f" instead points to {tag_commit}")
 
 # sets the global variables GITHUB_INSTANCE and CURRENT_REPO
 # If no token is provided, this uses the value of the environment variable
