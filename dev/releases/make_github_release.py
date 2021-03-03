@@ -24,14 +24,18 @@ PATH_TO_RELEASE = sys.argv[2]
 if re.fullmatch( r"v[1-9]+\.[0-9]+\.[0-9]+", TAG_NAME) == None:
     utils.error("This does not look like a release version")
 
+# Initialize GITHUB_INSTANCE and CURRENT_REPO
+utils.initialize_github()
+
+# Error if the tag TAG_NAME hasn't been pushed to CURRENT_REPO yet.
+if not any(tag.name == TAG_NAME for tag in utils.CURRENT_REPO.get_tags()):
+    utils.error(f"Repository {utils.CURRENT_REPO_NAME} has no tag '{TAG_NAME}'")
+
 # make sure that TAG_NAME
 # - exists
 # - is an annotated tag
 # - points to current HEAD
 utils.check_git_tag_for_release(TAG_NAME)
-
-# Initialize GITHUB_INSTANCE and CURRENT_REPO
-utils.initialize_github()
 
 # Error if this release has been already created on GitHub
 if any(r.tag_name == TAG_NAME for r in utils.CURRENT_REPO.get_releases()):
