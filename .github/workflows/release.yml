@@ -48,7 +48,7 @@ jobs:
         run: python -u ./dev/releases/make_archives.py
 
       - name: "Upload artifacts"
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && failure() }}
         # Warning: the result is a single .zip file (so things are compressed twice)
         # To keep things from exploding, we only upload a subset of all generated files
         uses: actions/upload-artifact@v2
