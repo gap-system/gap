@@ -79,7 +79,7 @@ The label "release notes: added" has already been attached to them.
 
 -->
 
-## GAP 4.11.1 (February 2021)
+## GAP 4.11.1 (March 2021)
 
 ### Fixed bugs that could lead to incorrect results
 
