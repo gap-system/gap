@@ -189,16 +189,25 @@ jobs:
         run: ${{ matrix.extra }} bash dev/ci-prepare.sh
       - name: "Run tests"
         run: ${{ matrix.extra }} bash dev/ci.sh
-      - name: "Upload manuals"
+      - name: "Upload pdf manuals"
         if: ${{ matrix.test-suites == 'makemanuals' }}
         uses: actions/upload-artifact@v2
         with:
-          name: manuals
+          name: manuals-pdf
           path: |
             doc/dev/manual.pdf
             doc/hpc/manual.pdf
             doc/ref/manual.pdf
             doc/tut/manual.pdf
+      - name: "Upload html manuals"
+        if: ${{ matrix.test-suites == 'makemanuals' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: manuals-html
+          path: |
+            doc/*/*.html
+            doc/*/*.css
+            doc/*/*.js
       - name: "Gather coverage"
         run: ${{ matrix.extra }} bash dev/ci-gather-coverage.sh
       - name: "Upload coverage data to codecov"
