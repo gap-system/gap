@@ -325,8 +325,8 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  <Description>
 ##  These functions can be used to compute, or check, check digits for some
 ##  everyday items. In each case what is submitted as input is either the number
-##  with check digit (in which case the function returns <C>true</C> or
-##  <C>false</C>), or the number without check digit (in which case the function
+##  with check digit (in which case the function returns <K>true</K> or
+##  <K>false</K>), or the number without check digit (in which case the function
 ##  returns the missing check digit). The number can be specified as integer, as
 ##  string (for example in case of leading zeros) or as a sequence of arguments,
 ##  each representing a single digit.

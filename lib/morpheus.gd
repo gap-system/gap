@@ -364,7 +364,7 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  <Mark><C>condition</C></Mark>
 ##  <Item>
 ##   A function that will be applied to the homomorphism and must return
-##  <C>true</C> for the homomorphism to be accepted.
+##  <K>true</K> for the homomorphism to be accepted.
 ##  </Item>
 ##  </List>
 ##  <P/>

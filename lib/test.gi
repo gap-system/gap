@@ -346,10 +346,10 @@ end);
 ##  <Item>A <C>#@if</C> allows to conditionally skip parts of the test input depending on
 ##  the value of a boolean expression. The exact behavior is done as follows:
 ##  <P/>
-##  If the &GAP; expression <C>EXPR</C> evaluates to <C>true</C>, then the lines after the
+##  If the &GAP; expression <C>EXPR</C> evaluates to <K>true</K>, then the lines after the
 ##  <C>#@if</C> are used until either a <C>#@else</C> or <C>#@fi</C> is
 ##  reached. If a <C>#@else</C> is present then the code after the <C>#@else</C>
-##  is used if and only if <C>EXPR</C> evaluated to <C>false</C>. Finally,
+##  is used if and only if <C>EXPR</C> evaluated to <K>false</K>. Finally,
 ##  once <C>#endif</C> is reached, evaluation continues normally.
 ##  </Item>
 ##  </List>

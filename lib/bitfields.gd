@@ -53,13 +53,13 @@
 ##  corresponding to the width 1 fields.
 ##  <List> <Mark><C>booleanGetters</C></Mark> <Item>if the <M>i</M>th position of
 ##  this list is set, it contains a function which extracts the <M>i</M>th
-##  field (which will have width one) and returns <C>true</C> if it contains 1
-##  and <C>false</C> if it contains 0</Item>
+##  field (which will have width one) and returns <K>true</K> if it contains 1
+##  and <K>false</K> if it contains 0</Item>
 ##  <Mark><C>booleanSetters</C></Mark> <Item>if the <M>i</M>th position of
 ##  this list is set, it contains a function of two arguments. The first
-##  argument is a packed value, the second is <C>true</C> or <C>false</C>. It returns a
+##  argument is a packed value, the second is <K>true</K> or <K>false</K>. It returns a
 ##  new packed value in which the <M>i</M>th field is set to 1 if the second
-##  argument was <C>true</C> and 0 if it was <C>false</C>. Behaviour for any
+##  argument was <K>true</K> and 0 if it was <K>false</K>. Behaviour for any
 ##  other value is undefined.</Item></List>
 ##  </Description>
 ##  </ManSection>

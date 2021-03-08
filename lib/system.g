@@ -536,7 +536,7 @@ end);
 ##
 ##  <Description>
 ##  tests whether &GAP; is running on Mac OS X. Note that on Mac OS X, also
-##  <Ref Func="ARCH_IS_UNIX"/> will be <C>true</C>.
+##  <Ref Func="ARCH_IS_UNIX"/> will be <K>true</K>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

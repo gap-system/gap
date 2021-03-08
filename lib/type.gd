@@ -76,8 +76,8 @@ DeclareGlobalFunction( "TypeOfOperation" );
 ##  <Func Name="IsCategory" Arg='object'/>
 ##
 ##  <Description>
-##  returns <C>true</C> if <A>object</A> is a category
-##  (see&nbsp;<Ref Sect="Categories"/>), and <C>false</C> otherwise.
+##  returns <K>true</K> if <A>object</A> is a category
+##  (see&nbsp;<Ref Sect="Categories"/>), and <K>false</K> otherwise.
 ##  <P/>
 ##  Note that &GAP; categories are <E>not</E> categories in the usual mathematical
 ##  sense.
@@ -97,8 +97,8 @@ DeclareGlobalFunction( "IsCategory" );
 ##  <Func Name="IsRepresentation" Arg='object'/>
 ##
 ##  <Description>
-##  returns <C>true</C> if <A>object</A> is a representation
-##  (see&nbsp;<Ref Sect="Representation"/>), and <C>false</C> otherwise.
+##  returns <K>true</K> if <A>object</A> is a representation
+##  (see&nbsp;<Ref Sect="Representation"/>), and <K>false</K> otherwise.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -116,8 +116,8 @@ DeclareGlobalFunction( "IsRepresentation" );
 ##  <Func Name="IsAttribute" Arg='object'/>
 ##
 ##  <Description>
-##  returns <C>true</C> if <A>object</A> is an attribute
-##  (see&nbsp;<Ref Sect="Attributes"/>), and <C>false</C> otherwise.
+##  returns <K>true</K> if <A>object</A> is an attribute
+##  (see&nbsp;<Ref Sect="Attributes"/>), and <K>false</K> otherwise.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -135,8 +135,8 @@ DeclareGlobalFunction( "IsAttribute" );
 ##  <Func Name="IsProperty" Arg='object'/>
 ##
 ##  <Description>
-##  returns <C>true</C> if <A>object</A> is a property
-##  (see&nbsp;<Ref Sect="Properties"/>), and <C>false</C> otherwise.
+##  returns <K>true</K> if <A>object</A> is a property
+##  (see&nbsp;<Ref Sect="Properties"/>), and <K>false</K> otherwise.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
