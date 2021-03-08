@@ -2830,7 +2830,7 @@ InstallGlobalFunction( BibEntry, function( arg )
     return entry;
 end );
 
-# dummy assignments to functions to be read lated in the GAPDoc package
+# dummy assignments to functions to be read later in the GAPDoc package
 ParseBibXMLextString:= "dummy";
 StringBibXMLEntry:= "dummy";
 
@@ -2888,13 +2888,10 @@ InstallGlobalFunction( Cite, function(arg)
   Print( en(StringBibXMLEntry( parse.entries[1], "BibTeX" )), "\n" );
 
   if name="GAP" then
-    year:=SplitString(GAPInfo.Date,"-");
-    if Length(year)=3 then 
-      year:=year[3];
-    else
-      year:=year[1]; # to work in GAP.dev
-    fi;
-    
+    # The format of 'GAPInfo.Date' in released GAP is <year>-<month>-<day>.
+    # In 'GAP.dev', the value is "today".
+    year:= SplitString( GAPInfo.Date, "-" )[1];
+
     Print("If you are not using BibTeX, here is the bibliography entry produced \n",
           "by BibTeX (in bibliography style `alpha'):\n\n",
           "\\bibitem[GAP]{GAP4}\n", 
