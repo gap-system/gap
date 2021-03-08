@@ -24,7 +24,7 @@
 ##  position of this filter in the global FILTERS list.
 ##  <P/>
 ##  Note that not every <C>filter</C> for which <C>IsFilter(filter)</C>
-##  returns <C>true</C> has an ID, only elementary filters do.
+##  returns <K>true</K> has an ID, only elementary filters do.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

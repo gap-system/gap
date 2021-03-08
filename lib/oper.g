@@ -1244,9 +1244,9 @@ end );
 ##  this incremental rank (see&nbsp;<Ref Sect="Filters"/>),
 ##  </Item>
 ##  <Item> If the argument <A>mutable</A> is the string <C>"mutable"</C> or
-##  the boolean <C>true</C>, then the values of the attribute are mutable.
+##  the boolean <K>true</K>, then the values of the attribute are mutable.
 ##  </Item>
-##  <Item> If the argument <A>mutable</A> is the boolean <C>false</C>, then
+##  <Item> If the argument <A>mutable</A> is the boolean <K>false</K>, then
 ##  the values of the attribute are immutable.
 ##  </Item>
 ##  </List>
