@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
 #
-# Usage: ./release-notes.py YYYY-MM-DD
+# Usage: ./generate_release_notes.py YYYY-MM-DD
 # 
-# Input:
-# A start date in the format YYYY-MM-DD. If one is in the folder of "release-notes.py", it can then be called using: python release-notes.py YYYY-MM-DD
+# Input: a starting date in the ISO-8601 format.
 #
 # Output and description: 
-# This script is used to automatically generate the release notes based on the associated labels of pull requests 
-# that have been merged with the master branch since "startdate". 
-# This script gets the title, the PR number and the labels and categorizes them based on the priority list and discussion from #4257.
-# In addition, a file is generated of PR that could not be categorized and a file for the browse function by Thomas Breuer (see #4257).
+# This script is used to automatically generate the release notes based on the labels of
+# pull requests that have been merged into the master branch since the starting date.
+# For each such pull request (PR), this script extracts from GitHub its title, number and
+# labels, using the GitHub API via the PyGithub package (https://github.com/PyGithub/PyGithub).
+# For API requests using Basic Authentication or OAuth, you can make up to 5,000 requests
+# per hour (https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting).
+# As of March 2020 this script consumes about 3400 API calls and runs for about 25 minutes.
+# This is why, to reduce the number of API calls and minimise the need to retrieve the data,
+# PR details will be stored in the file `prscache.json`, which will then be used to
+# categorise PR following the priority list and discussion from #4257, and output three
+# files:
+# - "releasenotes.md"   : list of PR by categories for adding to release notes
+# - "remainingPR.md"    : list of PR that could not be categorised
+# - "releasenotes.json" : data for `BrowseReleaseNotes` function by Thomas Breuer (see #4257).
+#
+# If this script detects the file `prscache.json` it will use it, otherwise it will retrieve
+# new data from GitHub. Thus, if new PR were merged, or there were updates of titles and labels
+# of merged PRs, you need to delete `prscache.json` to enforce updating local data (TODO: make
+# this turned on/off via a command line option in the next version).
 
 import sys
 import json
