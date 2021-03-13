@@ -19,6 +19,8 @@ from datetime import datetime
 
 def usage():
     print("Usage: ./release-notes.py YYYY-MM-DD")
+    sys.exit(1)
+
 
 def get_prs(repo,startdate):
     """Retrieves data for PRs matching selection criteria and puts them in a dictionary,
@@ -207,7 +209,6 @@ def main(startdate):
 if __name__ == "__main__":
     if len(sys.argv) != 2: # the argument is the start date in ISO 8601
         usage()
-       	sys.exit(0)
 
     try:
         datetime.fromisoformat(sys.argv[1])
@@ -215,6 +216,5 @@ if __name__ == "__main__":
     except:
         print("The date is not in ISO8601 format!")
         usage()
-       	sys.exit(0)
 
     main(sys.argv[1])
