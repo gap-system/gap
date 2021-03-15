@@ -887,9 +887,90 @@ local id;
   return DataAboutSimpleGroup(id);
 end);
 
+# Tables for outer automorphisms from Bray/Holt/Roney-Dougal, p. 36/37
+BindGlobal("OuterAutoSimplePres",function(class,n,q)
+local p,e,f,rels,gp;
+  class:=UppercaseString(class);
+  p:=SmallestPrimeDivisor(q);
+  e:=LogInt(q,p);
+  if class="L" and n=2 then
+    f:=FreeGroup("d","f");
+    rels:=StringFormatted("d{}=f{}=[d,f]=1",Gcd(q-1,2),e);
+  elif class="L" and n>=3 then
+    f:=FreeGroup("d","g","f");
+    rels:=StringFormatted("d{}=g2=f{}=[g,f]=1,d^g=D,d^f=d{}",Gcd(q-1,n),e,p);
+  elif class="U" and n>=3 then
+    f:=FreeGroup("d","g","f");
+    rels:=StringFormatted("d{}=g2=1,f{}=g,d^g=D,d^f=d{}",Gcd(q+1,n),e,p);
+  elif class="S" and n>=2 and (n<>4 or p<>2) then
+    f:=FreeGroup("d","f");
+    rels:=StringFormatted("d{}=f{}=[d,f]=1",Gcd(q-1,2),e);
+  elif class="S" and n=4 and p=2 then
+    f:=FreeGroup("g","f");
+    rels:=StringFormatted("g2=f,f{}=1",e);
+  elif (class="O" or class="O0" or class="OO") and n>=3 then
+    # special case of characteristic 2 -- copy S status
+    if p=2 then
+      f:=FreeGroup("d","f");
+      rels:=StringFormatted("d{}=f{}=[d,f]=1",Gcd(q-1,2),e);
+    else
+      f:=FreeGroup("d","f");
+      rels:=StringFormatted("d2=f{}=[d,f]=1",e);
+    fi;
+  elif class="O+" and n>=6 and IsEvenInt(n) and n<>8 and p=2 then
+    f:=FreeGroup("g","f");
+    rels:=StringFormatted("g2=f{}=[g,f]=1",e);
+  elif class="O+" and n=8 and p=2 then
+    f:=FreeGroup("t","g","f");
+    rels:=StringFormatted("t^3=g2=(gt)2=f{}=[t,f]=[g,f]=1",e);
+  elif class="O-" and n>=4 and IsEvenInt(n) and p=2 then
+    f:=FreeGroup("g","f");
+    rels:=StringFormatted("g2,f{}=g",e);
+  elif class="O+" and n=8 and IsOddInt(p) then
+    f:=FreeGroup("p","t","g","d","f");
+    rels:=StringFormatted(
+      "p2=t3=g2=(gt)2=d2=1,d^t=p,p^dp,(dg)2=p,f{}=[d,f]=[t,f]=[g,f]=1",e);
+  elif class="O+" and n>=12 and n mod 4=0 and IsOddInt(q) then
+    f:=FreeGroup("p","g","d","f");
+    rels:=StringFormatted("p2=g2=d2=1,(dg)2=p,f{}=[d,f]=[g,f]=1",e);
+  elif class="O+" and n>=6 and n mod 4=2 and q mod 4=1 then
+    f:=FreeGroup("p","g","d","f");
+    rels:=StringFormatted("p2=g2=1,d2=p,d^g=D,f{}=[g,f]=1,d^f=d{}",e,p);
+  elif class="O+" and n>=6 and n mod 4=2 and q mod 4=3 then
+    f:=FreeGroup("g","d","f");
+    rels:=StringFormatted("g2=d2=[d,g]=f{}=[g,f]=[d,f]=1",e);
+  elif class="O-" and n>=4 and (n mod 4=0 or q mod 4=1) and IsOddInt(q) then
+    f:=FreeGroup("g","d","f");
+    rels:=StringFormatted("g2=d2=[d,g]=[d,f]=1,f{}=g",e);
+  elif class="O-" and n>=4 and n mod 4=2 and q mod 4=3 then
+    f:=FreeGroup("p","g","d","f");
+    rels:=StringFormatted("p2=g2=1,d2=p,d^g=D,f{}=[g,f]=[d,f]=1",e);
+  else
+    return fail;
+  fi;
+  gp:=f/ParseRelators(f,rels);
+  SetReducedMultiplication(gp);
+  Size(gp);
+  return gp;
+end);
+
 InstallOtherMethod(DataAboutSimpleGroup,true,[IsRecord],0,
 function(id)
-local nam,e,EFactors,par,expo,prime,result,aut,i;
+local
+nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
+
+  shortname:=function(gp)
+  local s;
+    if IsCyclic(gp) then
+      return String(Size(gp));
+    elif Size(gp)<=31 or Size(gp) in [33..47] then
+      s:=StructureDescription(gp);
+      s:=Filtered(s,x->not x in "C ");
+      return s;
+    else
+      Error("name not yet found");
+    fi;
+  end;
 
 #note: Extensions are up to isomorphism, not with embedding questions. Thus
 #no distinction of ' extensions!
@@ -1038,6 +1119,7 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
   fi;
 
   e:=[];
+  classical:=fail;
   if id.series="Spor" then
     nam:=id.name;
     # deal wirth stupid names in identification
@@ -1076,6 +1158,7 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
       e:=[[2,"2"]];
     fi;
   elif id.series="L" then
+    classical:=["L",par[1],par[2]];
     nam:=Concatenation("L",String(par[1]),"(",String(par[2]),")");
     if par[1]=2 then
       e:=EFactors(Gcd(2,par[2]-1),expo,1);
@@ -1083,9 +1166,11 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
       e:=EFactors(Gcd(par[1],par[2]-1),expo,2);
     fi;
   elif id.series="2A" then
+    classical:=["U",par[1]+1,par[2]];
     nam:=Concatenation("U",String(par[1]+1),"(",String(par[2]),")");
     e:=EFactors(Gcd(par[1]+1,par[2]+1),2*expo,1);
   elif id.series="B" then
+    classical:=["O",2*par[1]+1,par[2]];
     nam:=Concatenation("O",String(2*par[1]+1),"(",String(par[2]),")");
     if par[1]=2 and par[2]=3 then
       nam:="U4(2)"; # library name
@@ -1099,13 +1184,17 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     nam:=Concatenation("Sz(",String(par),")");
     e:=EFactors(1,expo,1);
   elif id.series="C" then
+    classical:=["S",2*par[1],par[2]];
     nam:=Concatenation("S",String(par[1]*2),"(",String(par[2]),")");
-    if par[1]=2 and prime=2 then
-      e:=EFactors(Gcd(2,par[2]-1),expo,2);
-    else
-      e:=EFactors(Gcd(2,par[2]-1),expo,1);
-    fi;
+    #if par[1]=2 and prime=2 then
+    #  e:=EFactors(Gcd(2,par[2]-1),expo,2);
+    #else
+    #  e:=EFactors(Gcd(2,par[2]-1),expo,1);
+    #fi;
+    # efactors finds wrong structure
+    e:=fail;
   elif id.series="D" then
+    classical:=["O+",2*par[1],par[2]];
     nam:=Concatenation("O",String(par[1]*2),"+(",String(par[2]),")");
     if par[1]=4 then
       e:=EFactors(Gcd(2,par[2]-1)^2,expo,6);
@@ -1115,8 +1204,10 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
       e:=EFactors(Gcd(4,par[2]^par[1]-1),expo,2);
     fi;
   elif id.series="2D" then
+    classical:=["O-",2*par[1],par[2]];
     nam:=Concatenation("O",String(par[1]*2),"-(",String(par[2]),")");
-    e:=EFactors(Gcd(4,par[2]^par[1]+1),expo/2,1);
+
+    e:=EFactors(Gcd(4,par[2]^par[1]+1),2*expo,1);
 
   elif id.series="F" then
     nam:=Concatenation("F4(",String(par),")");
@@ -1150,8 +1241,9 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
     e:=fail;
   fi;
 
-  # kill trivial extension if given
+  # get extensions
   if IsList(e) then 
+    # kill trivial extension if given
     e:=Filtered(e,x->x[1]>1);
 
     # get size of full outer automorphisms
@@ -1164,6 +1256,43 @@ local nam,e,EFactors,par,expo,prime,result,aut,i;
   else
     aut:=false;
   fi;
+
+  if classical<>fail then
+    classaut:=OuterAutoSimplePres(classical[1],classical[2],classical[3]);
+    if classaut<>fail then
+      if IdGroup(classaut)=[4,2] then
+        # subgroup classes V4
+        i:=[[2,"2_1"],[2,"2_2"],[2,"2_3"],[4,"2^2"]];
+      elif IdGroup(classaut)=[6,1] then
+        # subgroup classes S_3
+        i:=[  [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
+      elif IdGroup(classaut)=[12,4] then
+        # subgroup classes 2\times S_3 (since S3 cannot act on C2)
+        i:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 2, "2_3" ],
+              [ 3, "3" ], [ 4, "2x2" ], [ 6, "6" ], [6,"S3_1"],
+              [ 6, "S3_2" ], [ 12, "D12" ] ];
+      elif IdGroup(classaut)=[24,12] then
+        # subgroup classes S_4 
+        i:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
+              [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
+              [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ], 
+              [ 24, "S4" ] ];
+      else
+        i:=List(ConjugacyClassesSubgroups(classaut),Representative);
+        i:=Filtered(i,x->Size(x)>1);
+        i:=List(i,x->[Size(x),shortname(x)]);
+      fi;
+      if e<>fail then
+        if Collected(List(i,x->x[1]))<>Collected(List(e,x->x[1])) then
+          Error("outer automorphism disagreement error");
+        fi;
+      else
+        e:=i;
+        aut:=First(e,x->x[1]=Size(classaut));
+      fi;
+    fi;
+  fi;
+
 
   result:=rec(idSimple:=id,
               tomName:=nam,
