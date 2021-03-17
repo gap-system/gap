@@ -189,10 +189,17 @@ gap> g:=SymmetricGroup(17);;s:=SylowSubgroup(g,NrMovedPoints(g));;
 gap> ac:=AscendingChain(g,s);;
 gap> Maximum(List([2..Length(ac)],x->Index(ac[x],ac[x-1])))<10^11;
 true
-gap> g:=PSL(4,5);;
-gap> l:=LowLayerSubgroups(g,3,x->Index(g,x)<=10000);;
-gap> Sum(List(l,x->Index(g,x)));
-89655
+
+# AH: this example will take much longer if tomlib is not loaded,
+# because that's where the data for maximal subgroups of S(4,5) is
+# taken from, otherwise the full subgroup lattice needs to be computed.
+gap> if IsPackageMarkedForLoading( "tomlib", "" ) then
+> g:=PSL(4,5);
+> l:=LowLayerSubgroups(g,3,x->Index(g,x)<=10000);
+> if Sum(List(l,x->Index(g,x))) <> 89655 then
+>     Error( "LowLayerSubgroups test failed" );
+> fi;
+> fi;
 
 # test of ONanScottType -- primitive groups and their type
 gap> rr:=[[60,1,"3a"],[60,2,"3a"],[60,3,"3b"],[60,4,"3b"],
