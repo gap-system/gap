@@ -532,6 +532,27 @@ local hom;
   return hom*DoFactorCosetAction(Image(hom,G),Image(hom,U),Image(hom,N));
 end);
 
+# action on lists of subgroups
+InstallOtherMethod(FactorCosetAction,
+  "On cosets of list of groups",IsElmsColls,
+  [IsGroup,IsList],0,
+function(G,L)
+local q,i,gens,imgs,d;
+  if Length(L)=0 or not ForAll(L,x->IsGroup(x) and IsSubset(G,x)) then
+    TryNextMethod();
+  fi;
+  q:=List(L,x->FactorCosetAction(G,x));
+  gens:=MappingGeneratorsImages(q[1])[1];
+  imgs:=List(q,x->List(gens,y->ImagesRepresentative(x,y)));
+  d:=imgs[1];
+  for i in [2..Length(imgs)] do
+    d:=SubdirectDiagonalPerms(d,imgs[i]);
+  od;
+  imgs:=Group(d);
+  q:=GroupHomomorphismByImagesNC(G,imgs,gens,d);
+  return q;
+end);
+
 
 #############################################################################
 ##
@@ -788,6 +809,9 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 	  # interupt if we're already quite good
 	  interupt:=true;
 	fi;
+	if ForAny(badcores,x->IsSubset(nu,x)) then
+          nu:=u;
+        fi;
 	# Abbruchkriterium: Bis kein Normalteiler, es sei denn, es ist N selber
 	# (das brauchen wir, um in einigen trivialen F"allen abbrechen zu
 	# k"onnen)
@@ -795,10 +819,10 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
       until 
         
         # der Index ist nicht so klein, da"s wir keine Chance haben
-	not ForAny(badcores,x->IsSubset(nu,x)) and (((not bigperm or
+	((not bigperm or
 	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and 
 	(IndexNC(G,nu)>50 or Factorial(IndexNC(G,nu))>=IndexNC(G,N)) and
-	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt);
+	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt;
 
       Info(InfoFactor,4,"Index ",IndexNC(G,nu));
       u:=nu;

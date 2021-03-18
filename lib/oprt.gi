@@ -1111,11 +1111,9 @@ end );
 ##
 #M OrbitStabilizerAlgorithm
 ##
-InstallMethod( OrbitStabilizerAlgorithm,"use stabilizer size",true,
-  [IsGroup and IsFinite and CanComputeSizeAnySubgroup,IsObject,IsObject,
-   IsList,IsList,IsRecord],0,
+BindGlobal("DoOrbitStabilizerAlgorithmStabsize",
 function( G,D,blist,gens,acts, dopr )
-local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
+local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
         onlystab, # do we only care about stabilizer?
         getrep, # function to get representative
 	actsinv,# inverses of acts
@@ -1180,7 +1178,8 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
       q:=PositionCanonical(D,d);
       blist[q]:=true;
     fi;
-    return rec( orbit := orb, stabilizer := G );
+    r:=rec( orbit := orb, stabilizer := G );
+    return r;
   fi;
 
 #  # test for small domains whether the orbit has length 1
@@ -1257,7 +1256,9 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	    fi;
 	    if indh<Length(orb) then
 	      # the stabilizer cannot grow any more
-	      increp:=false;
+              if not (IsBound(dopr.returnReps) and dopr.returnReps) then
+                increp:=false;
+              fi;
 	      incstb:=false;
 	    fi;
 	  fi;
@@ -1274,7 +1275,9 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	    indh:=QuoInt(ind,2);
 	    if indh<Length(orb) then
 	      # the stabilizer cannot grow any more
-	      increp:=false;
+              if not (IsBound(dopr.returnReps) and dopr.returnReps) then
+                increp:=false;
+              fi;
 	      incstb:=false;
 	    fi;
 	  else
@@ -1293,7 +1296,12 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 
 	if increp=false then #we know the stabilizer
 	  if onlystab then
-	    return rec(stabilizer:=stb);
+	    r:=rec(stabilizer:=stb);
+            if IsBound(dopr.returnReps) and dopr.returnReps then
+              r.rep:=rep;r.getrep:=getrep;r.actsinv:=actsinv;
+              r.dictionary:=dict;
+            fi;
+	    return r;
 	  # must the orbit contain the whole domain => extend?
 	elif ind=doml and (not IsBool(D)) and Length(orb)<doml then
 	    if blist=false then
@@ -1304,7 +1312,12 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	      UniteBlist(blist,
 		BlistList([1..Length(blist)],[1..Length(blist)]));
 	    fi;
-	    return rec( orbit := orb, stabilizer := stb );
+	    r:=rec( orbit := orb, stabilizer := stb );
+            if IsBound(dopr.returnReps) and dopr.returnReps then
+              r.rep:=rep;r.getrep:=getrep;r.actsinv:=actsinv;
+              r.dictionary:=dict;
+            fi;
+	    return r;
 	  elif  ind=Length(orb) then
 	    # we have reached the full orbit. No further tests
 	    # necessary
@@ -1324,7 +1337,12 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 	      fi;
 	    fi;
 
-	    return rec( orbit := orb, stabilizer := stb );
+	    r:= rec( orbit := orb, stabilizer := stb );
+            if IsBound(dopr.returnReps) and dopr.returnReps then
+              r.rep:=rep;r.getrep:=getrep;r.actsinv:=actsinv;
+              r.dictionary:=dict;
+            fi;
+	    return r;
 	  fi;
 	fi;
       od;
@@ -1368,8 +1386,106 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
     fi;
   fi;
 
-  return rec( orbit := orb, stabilizer := stb );
+  r:=rec( orbit := orb, stabilizer := stb );
+  if IsBound(dopr.returnReps) and dopr.returnReps then
+    r.rep:=rep;r.getrep:=getrep;r.actsinv:=actsinv;
+    r.dictionary:=dict;
+  fi;
+  return r;
 end );
+
+InstallMethod( OrbitStabilizerAlgorithm,"use stabilizer size",true,
+  [IsGroup and IsFinite and CanComputeSizeAnySubgroup,IsObject,IsObject,
+   IsList,IsList,IsRecord],0,
+function( G,D,blist,gens,acts, dopr )
+local pr,hom,pgens,pacts,pdopr,erg,cs,i,dict,orb,stb,rep,getrep,q,img,gen,
+  gena,actsinv,j,k,e,l,orbl,pcgs;
+  if HasSize(G) and Size(G)>10^5 
+    # not yet implemented for blist case
+    and blist=false then
+ 
+    pr:=PerfectResiduum(G);
+    if IndexNC(G,pr)>3 then
+      hom:=GroupHomomorphismByImagesNC(G,Group(acts),gens,acts);;
+      pgens:=ShallowCopy(SmallGeneratingSet(pr));
+      pacts:=List(pgens,x->ImagesRepresentative(hom,x));
+      pdopr:=ShallowCopy(dopr);
+      pdopr.returnReps:=true;
+      pdopr.onlystab:=false;
+      erg:=DoOrbitStabilizerAlgorithmStabsize(pr,D,blist,pgens,pacts,pdopr);
+      if not IsBound(erg.dictionary) then
+        # degenerate case, routine did not set up everything
+        return DoOrbitStabilizerAlgorithmStabsize(G,D,blist,gens,acts,dopr);
+      fi;
+      dict:=erg.dictionary; orb:=erg.orbit; stb:=erg.stabilizer;
+      rep:=erg.rep; getrep:=erg.getrep;
+      orbl:=Length(orb);
+      if IsBound(dopr.onlystab) and dopr.onlystab=true 
+        and 10*IndexNC(G,pr)<Length(orb) then
+        # it is cheaper to just find the right cosets than to (potentially)
+        # map the whole orbit
+        for i in RightTransversal(G,pr) do
+          gena:=ImagesRepresentative(hom,i);
+          img:=dopr.act(orb[1],gena);
+          q:=LookupDictionary(dict,img);
+          if IsInt(q) then
+            img:=i/getrep(q);
+            stb:=ClosureGroup(stb,img);
+          fi;
+        od;
+        return rec(stabilizer := stb);
+
+      else
+        cs:=CompositionSeriesThrough(G,[pr]);
+        cs:=Reversed(Filtered(cs,x->Size(x)>=Size(pr)));
+        pcgs:=[];
+        # step over the cyclic factors
+        for i in [2..Length(cs)] do
+          gen:=First(GeneratorsOfGroup(cs[i]),x->not x in cs[i-1]);
+          gena:=ImagesRepresentative(hom,gen);
+          img:=dopr.act(orb[1],gena);
+          q:=LookupDictionary(dict,img);
+          if q=fail then
+            # orbit grows
+            e:=First([1..Order(gen)],x->gen^x in cs[i-1]); # local order
+            Add(pcgs,[e,gen,gena]);
+            l:=Length(orb);
+            for j in [1..e-1] do
+              for k in [1..l] do
+                q:=(j-1)*l+k;
+                img:=dopr.act(orb[q],gena);
+                Add(orb,img);
+                AddDictionary(dict,img,Length(orb));
+              od;
+            od;
+          else
+            #Print(q,":",QuoInt(q-1,orbl),"\n");
+            if Length(pcgs)>0 then
+              # find correct position of orbit block
+              j:=Reversed(CoefficientsMultiadic(List(Reversed(pcgs),x->x[1]),
+                QuoInt(q-1,orbl)));
+              k:=Product([1..Length(pcgs)],x->pcgs[x][3]^j[x]);
+              img:=dopr.act(img,k^-1);
+              q:=LookupDictionary(dict,img);
+              k:=Product([1..Length(pcgs)],x->pcgs[x][2]^j[x]);
+            else
+              k:=One(G);
+            fi;
+            stb:=ClosureGroup(stb,gen/k/getrep(q));
+          fi;
+        od;
+        if IsBound(dopr.onlystab) and dopr.onlystab=true then
+          return rec(stabilizer := stb);
+        else
+	  return rec( orbit := orb, stabilizer := stb );
+        fi;
+
+      fi;
+    fi;
+  fi;
+  return DoOrbitStabilizerAlgorithmStabsize(G,D,blist,gens,acts,dopr);
+end);
+
 
 InstallMethod( OrbitStabilizerAlgorithm,"collect stabilizer generators",true,
   [IsGroup,IsObject,IsObject, IsList,IsList,IsRecord],0,

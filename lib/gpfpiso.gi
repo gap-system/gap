@@ -1365,18 +1365,45 @@ local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
 end);
 
 
-BindGlobal("WeylGroupFp",function(ser,n)
-local f,rels,i,j,gens;
+# ser is a string indicating the series (A, B, C, D, E, F), n is a number. If argument `false` is added, only braid
+# relations
+BindGlobal("WeylGroupFp",function(ser,n,docox...)
+local f,rels,i,j,gens,coxrel;
+  coxrel:=function(a,b,n)
+  local m,f,g;
+    if n=2 then Add(rels,Comm(a,b));
+    else
+      if docox then 
+        # coxeter: no negative exponents
+        Add(rels,(a*b)^n); 
+      else 
+        # braid: bababa...  = ababab...
+        m:=QuoInt(n+1,2);
+        f:=Subword((b*a)^m,1,n);
+        g:=Subword((a*b)^m,1,n);
+        Add(rels,f/g);
+      fi;
+    fi;
+  end;
   f:=FreeGroup(List([1..n],x->Concatenation("s",String(x))));
   gens:=GeneratorsOfGroup(f);
-  rels:=List(gens,x->x^2);
+  if Length(docox)=0 then
+    docox:=true;
+  else
+    docox:=docox[1]=true;
+  fi;
+  if docox then
+    rels:=List(gens,x->x^2);
+  else
+    rels:=[];
+  fi;
   if ser="A" then
     for i in [1..n] do
       for j in [1..i-1] do
         if i-j>1 then
-          Add(rels,(gens[i]*gens[j])^2);
+          coxrel(gens[j],gens[i],2);
         else
-          Add(rels,(gens[i]*gens[j])^3);
+          coxrel(gens[j],gens[i],3);
         fi;
       od;
     od;
@@ -1384,68 +1411,68 @@ local f,rels,i,j,gens;
     for i in [1..n] do
       for j in [1..i-1] do
         if i-j>1 then
-          Add(rels,(gens[i]*gens[j])^2);
+          coxrel(gens[j],gens[i],2);
         elif j=1 then
-          Add(rels,(gens[i]*gens[j])^4);
+          coxrel(gens[j],gens[i],4);
         else
-          Add(rels,(gens[i]*gens[j])^3);
+          coxrel(gens[j],gens[i],3);
         fi;
       od;
     od;
   elif ser="D" and n>=4 then
-    Add(rels,(gens[1]*gens[2])^2);
-    Add(rels,(gens[1]*gens[3])^3);
-    Add(rels,(gens[2]*gens[3])^3);
+    coxrel(gens[1],gens[2],2);
+    coxrel(gens[1],gens[3],3);
+    coxrel(gens[2],gens[3],3);
     for i in [4..n] do
       for j in [1..i-1] do
         if i-j>1 then
-          Add(rels,(gens[i]*gens[j])^2);
+          coxrel(gens[j],gens[i],2);
         else
-          Add(rels,(gens[i]*gens[j])^3);
+          coxrel(gens[j],gens[i],3);
         fi;
       od;
     od;
   elif ser="E" then
-    Add(rels,(gens[1]*gens[2])^3);
-    Add(rels,(gens[2]*gens[3])^3);
-    Add(rels,(gens[3]*gens[4])^3);
-    Add(rels,(gens[3]*gens[5])^3);
-    Add(rels,(gens[5]*gens[6])^3);
+    coxrel(gens[1],gens[2],3);
+    coxrel(gens[2],gens[3],3);
+    coxrel(gens[3],gens[4],3);
+    coxrel(gens[3],gens[5],3);
+    coxrel(gens[5],gens[6],3);
 
-    Add(rels,(gens[1]*gens[3])^2);
-    Add(rels,(gens[1]*gens[4])^2);
-    Add(rels,(gens[2]*gens[4])^2);
-    Add(rels,(gens[1]*gens[5])^2);
-    Add(rels,(gens[2]*gens[5])^2);
-    Add(rels,(gens[4]*gens[5])^2);
-    Add(rels,(gens[1]*gens[6])^2);
-    Add(rels,(gens[2]*gens[6])^2);
-    Add(rels,(gens[3]*gens[6])^2);
-    Add(rels,(gens[4]*gens[6])^2);
+    coxrel(gens[1],gens[3],2);
+    coxrel(gens[1],gens[4],2);
+    coxrel(gens[2],gens[4],2);
+    coxrel(gens[1],gens[5],2);
+    coxrel(gens[2],gens[5],2);
+    coxrel(gens[4],gens[5],2);
+    coxrel(gens[1],gens[6],2);
+    coxrel(gens[2],gens[6],2);
+    coxrel(gens[3],gens[6],2);
+    coxrel(gens[4],gens[6],2);
     if n>=7 then
-      Add(rels,(gens[6]*gens[7])^3);
+      coxrel(gens[6],gens[7],3);
       for i in [1..5] do
-        Add(rels,(gens[i]*gens[7])^2);
+        coxrel(gens[i],gens[7],2);
       od;
     fi;
     if n=8 then
-      Add(rels,(gens[7]*gens[8])^3);
+      coxrel(gens[7],gens[8],3);
       for i in [1..6] do
-        Add(rels,(gens[i]*gens[7])^2);
+        coxrel(gens[i],gens[7],2);
       od;
     elif n>8 then 
       Error("E>8 does not exist");
     fi;
   elif ser="F" and n=4 then
-    Add(rels,(gens[1]*gens[2])^3);
-    Add(rels,(gens[2]*gens[3])^4);
-    Add(rels,(gens[3]*gens[4])^3);
+    coxrel(gens[1],gens[2],3);
+    coxrel(gens[2],gens[3],4);
+    coxrel(gens[3],gens[4],3);
 
-    Add(rels,(gens[1]*gens[3])^2);
-    Add(rels,(gens[1]*gens[4])^2);
-    Add(rels,(gens[2]*gens[4])^2);
+    coxrel(gens[1],gens[3],2);
+    coxrel(gens[1],gens[4],2);
+    coxrel(gens[2],gens[4],2);
   elif ser="G" and n=2 then
-    Add(rels,(gens[1]*gens[2])^6);
+    coxrel(gens[1],gens[2],6);
   else
     Error("series ",ser," not yet done");
   fi;

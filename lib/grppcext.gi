@@ -529,6 +529,18 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         return false;
       end;
       K:=SubgroupProperty(Image(triso),test);
+
+      # remove redundant generators
+      B:=[1..Length(GeneratorsOfGroup(K))];
+      for i in [1..Length(GeneratorsOfGroup(K))] do
+        if Size(K)
+          =Size(SubgroupNC(K,GeneratorsOfGroup(K){Difference(B,[i])})) then
+          B:=Difference(B,[i]);
+        fi;
+      od;
+      K:=Group(GeneratorsOfGroup(K){B});
+      pool:=pool{B};
+
       B:=MTX.ModuleAutomorphisms(M);
       if Size(B)>1 then
         for i in Set(GeneratorsOfGroup(B)) do

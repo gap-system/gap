@@ -131,12 +131,19 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  <#GAPDoc Label="FactorCosetAction">
 ##  <ManSection>
 ##  <Oper Name="FactorCosetAction" Arg='G, U[, N]'/>
+##  <Oper Name="FactorCosetAction" Arg='G, L'/>
 ##
 ##  <Description>
 ##  This command computes the action of the group <A>G</A> on the
 ##  right cosets of the subgroup <A>U</A>.
 ##  If a normal subgroup <A>N</A> of <A>G</A> is given,
 ##  it is stored as kernel of this action.
+##  When calling <C>FactorCosetAction</C> with a list of subgroups as the
+##  second argument, an action with image isomorphic to the subdirect
+##  product of the coset actions of all subgroups is computed. (However a
+##  degree reduction may take place if some of the actions are redundant, i.e.
+##  there is no guarantee that every subgroup in the list is represented by an
+##  orbit.)
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4,5),(1,2));;u:=SylowSubgroup(g,2);;Index(g,u);
 ##  15
@@ -144,6 +151,9 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  <action epimorphism>
 ##  gap> StructureDescription(Range(last));
 ##  "S5"
+##  gap> FactorCosetAction(g,[u,SylowSubgroup(g,3)]);;
+##  gap> Size(Image(last));
+##  120
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

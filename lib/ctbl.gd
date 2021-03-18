@@ -4115,12 +4115,9 @@ DeclareOperation( "CharacterTableIsoclinic",
 ##  gap> Length( index2 );
 ##  2
 ##  gap> tg:= CharacterTable( g );;
-##  gap> IsRecord(
-##  >        TransformingPermutationsCharacterTables( index2[1], tg ) );
-##  true
-##  gap> IsRecord(
-##  >        TransformingPermutationsCharacterTables( index2[2], tg ) );
-##  false
+##  gap> SortedList(List(index2,x->IsRecord(
+##  >       TransformingPermutationsCharacterTables(x,tg))));
+##  [ true, false ]
 ##  ]]></Example>
 ##  <P/>
 ##  Alternatively, we could construct the character table of the central
@@ -4610,11 +4607,11 @@ DeclareGlobalFunction( "NormalSubgroupClasses" );
 ##    Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ) ]
 ##  gap> kernel:= KernelOfCharacter( irr[3] );
 ##  Group([ (1,2)(3,4), (1,3)(2,4) ])
+##  gap> SetName(kernel,"V4");
 ##  gap> HasNormalSubgroupClassesInfo( tbl );
 ##  true
 ##  gap> NormalSubgroupClassesInfo( tbl );
-##  rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ],
-##    nsgclasses := [ [ 1, 3 ] ], nsgfactors := [  ] )
+##  rec( nsg := [ V4 ], nsgclasses := [ [ 1, 3 ] ], nsgfactors := [  ] )
 ##  gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 ##  [ 1, 3 ]
 ##  gap> G := FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );;
