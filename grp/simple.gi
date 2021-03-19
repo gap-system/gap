@@ -1000,8 +1000,8 @@ nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
               [ 24, "S4" ] ];
         return dd;
       else
-        Error("mixed triality not yet done");
-        return false;
+        Info(InfoWarning, "DataAboutSimpleGroup: mixed triality not yet done");
+        return fail;
       fi;
     fi;
 
