@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 #
-# Usage: ./generate_release_notes.py YYYY-MM-DD
+# Usage:
+#     ./generate_release_notes.py minor
+# or
+#     ./generate_release_notes.py major
 # 
-# Input: a starting date in the ISO-8601 format.
+# to specify the type of the release.
 #
 # Output and description: 
 # This script is used to automatically generate the release notes based on the labels of
-# pull requests that have been merged into the master branch since the starting date.
+# pull requests that have been merged into the master branch since the starting date
+# specified in the `history_start_date` variable below.
+#
 # For each such pull request (PR), this script extracts from GitHub its title, number and
 # labels, using the GitHub API via the PyGithub package (https://github.com/PyGithub/PyGithub).
 # For API requests using Basic Authentication or OAuth, you can make up to 5,000 requests
 # per hour (https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting).
-# As of March 2020 this script consumes about 3400 API calls and runs for about 25 minutes.
+# As of March 2021 this script consumes about 3400 API calls and runs for about 25 minutes.
 # This is why, to reduce the number of API calls and minimise the need to retrieve the data,
 # PR details will be stored in the file `prscache.json`, which will then be used to
 # categorise PR following the priority list and discussion from #4257, and output three
@@ -24,6 +29,10 @@
 # new data from GitHub. Thus, if new PR were merged, or there were updates of titles and labels
 # of merged PRs, you need to delete `prscache.json` to enforce updating local data (TODO: make
 # this turned on/off via a command line option in the next version).
+#
+# To find out when a branch was created, use e.g.
+#     git show --summary `git merge-base stable-4.11 master`
+#
 
 import sys
 import json
@@ -31,8 +40,34 @@ import os.path
 from github import Github
 from datetime import datetime
 
+#############################################################################
+#
+# Configuration parameters
+#
+# the earliest date we need to track for the next minor/major releases
+history_start_date = "2019-09-09"
+
+# the date of the last minor release (later, we may need to have more precise timestamp
+# - maybe extracted from the corresponding release tag)
+minor_branch_start_date = "2020-03-01" # next day after the minor release
+# question: what if it was merged into master before 4.11.1, but backported after?
+# Hopefully, before publishing 4.11.1 we have backported everything that had to be
+# backported, so this was not the case.
+
+# this version number needed to form labels like "backport-to-4.11-DONE"
+minor_branch_version = "4.11"
+
+# not yet - will make sense after branching the `stable-4.12` branch:
+# major_branch_start_date = "2019-09-09"
+# major_branch_version = "4.12"
+# note that we will have to collate together PRs which are not backported to stable-4.11
+# between `history_start_date` and `major_branch_start_date`, and PRs backported to
+# stable-4.12 after `major_branch_start_date`
+#
+#############################################################################
+
 def usage():
-    print("Usage: ./release-notes.py YYYY-MM-DD")
+    print("Usage: `./release-notes.py minor` or `./release-notes.py major`")
     sys.exit(1)
 
 
@@ -48,7 +83,9 @@ def get_prs(repo,startdate):
         # flush stdout immediately, to see progress indicator
         sys.stdout.flush()
         if pr.merged:
-            if pr.closed_at > datetime.fromisoformat(startdate):
+            if pr.closed_at > datetime.fromisoformat(history_start_date):
+                # getting labels will cost further API calls - if the startdate is
+                # too far in the past, that may exceed the API capacity
                 labs = [lab.name for lab in list(pr.get_labels())]
                 prs[pr.number] = { "title" : pr.title,
                                     "closed_at" : pr.closed_at.isoformat(),
@@ -60,17 +97,39 @@ def get_prs(repo,startdate):
         json.dump(prs, f, ensure_ascii=False, indent=4)
     return prs    
 
-def changes_overview(prs,startdate):
+
+def filter_prs(prs,rel_type):
+    newprs = {}
+
+    if rel_type == "minor":
+
+        # for minor release, list PRs backported to the stable-4.X brach since the previous minor release     
+        for k,v in sorted(prs.items()):
+            if "backport-to-" + minor_branch_version + "-DONE" in v["labels"]:
+                if datetime.fromisoformat(v["closed_at"]) > datetime.fromisoformat(minor_branch_start_date):
+                    newprs[k] = v
+        return newprs
+
+    elif rel_type == "major":
+
+        # for major release, list PRs not backported to the stable-4.X brach
+        for k,v in sorted(prs.items()):
+            if not "backport-to-" + minor_branch_version + "-DONE" in v["labels"]:
+                newprs[k] = v
+        return newprs
+
+    else:
+
+        usage()
+
+
+def changes_overview(prs,startdate,rel_type):
     """Writes files with information for release notes."""
 
-    #TODO: using cached data, check that the starting date is the same
-    # Also save the date when cache was saved (warning if old?)
-    print("## Changes since", startdate)
-
     # Opening files with "w" resets them
-    f = open("releasenotes.md", "w")
-    f2 = open("remainingPR.md", "w")
-    f3 = open("releasenotes.json", "w")
+    f = open("releasenotes_" + rel_type + ".md", "w")
+    f2 = open("remainingPR_" + rel_type + ".md", "w")
+    f3 = open("releasenotes_" + rel_type + ".json", "w")
     jsondict = prs.copy()
 
     # the following is a list of pairs [LABEL, DESCRIPTION]; the first entry is the name of a GitHub label
@@ -95,7 +154,7 @@ def changes_overview(prs,startdate):
     # TODO: why does this need a special treatment? 
     # Adding it to the prioritylist could ensure that it goes first
     f.write("## Release Notes \n\n")
-    f.write("### " + "New features and major changes" + "\n")
+    f.write("### " + "New features and major changes" + "\n\n")
     removelist = []
     for k in prs:
         # The format of an entry of list is: ["title of PR", "Link" (Alternative the PR number can be used), [ list of labels ] ]
@@ -143,7 +202,7 @@ def changes_overview(prs,startdate):
     
 
     for priorityobject in prioritylist:
-        f.write("### " + priorityobject[1] + "\n")
+        f.write("### " + priorityobject[1] + "\n\n")
         removelist = []
         for k in prs:
             if priorityobject[0] in prs[k]["labels"]:
@@ -153,6 +212,12 @@ def changes_overview(prs,startdate):
         for item in removelist:
             del prs[item]
         f.write("\n")
+
+    f.write("### Other changes \n\n")
+    for k in prs:
+        title = prs[k]["title"]
+        f.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
+    f.write("\n")
     f.close()
 
     f3.write("[")
@@ -168,7 +233,8 @@ def changes_overview(prs,startdate):
     f3.write("]")
     f3.close
 
-def main(startdate):
+
+def main(rel_type):
 
     # Authentication and checking current API capacity
     # TODO: for now this will do, use Sergio's code later
@@ -184,32 +250,37 @@ def main(startdate):
     # Therefore, the following line indicates how many requests are currently still available
     print("Current GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
 
+    # If this limit is exceeded, an exception will be raised:
+    # github.GithubException.RateLimitExceededException: 403
+    # {"message": "API rate limit exceeded for user ID XXX.", "documentation_url":
+    # "https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting"}
+
+
     # TODO: we cache PRs data in a local file. For now, if it exists, it will be used, 
     # otherwise it will be recreated. Later, there may be an option to use the cache or 
     # to enforce retrieving updated PR details from Github. I think default is to update 
     # from GitHub (to get newly merged PRs, updates of labels, PR titles etc., while the
     # cache could be used for testing and polishing the code to generate output )
 
+    # TODO: add some data to the cache, e.g. when the cache is saved.
+    # Produce warning if old.
+
     if os.path.isfile("prscache.json"):
         print("Using cached data from prscache.json ...")
         with open("prscache.json", "r") as read_file:
             prs = json.load(read_file)
     else:    
-        print("Retriving data using GitHub API ...")
-        prs = get_prs(repo,startdate)
+        print("Retrieving data using GitHub API ...")
+        prs = get_prs(repo,history_start_date)
   
-    changes_overview(prs,startdate)
+    prs = filter_prs(prs,rel_type)
+    changes_overview(prs,history_start_date,rel_type)
     print("Remaining GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
+
     
 if __name__ == "__main__":
-    if len(sys.argv) != 2: # the argument is the start date in ISO 8601
-        usage()
-
-    try:
-        datetime.fromisoformat(sys.argv[1])
-        
-    except:
-        print("The date is not in ISO8601 format!")
+    # the argument is "minor" or "major" to specify release kind
+    if len(sys.argv) != 2 or not sys.argv[1] in ["minor","major"]:
         usage()
 
     main(sys.argv[1])
