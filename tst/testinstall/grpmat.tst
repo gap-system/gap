@@ -46,6 +46,8 @@ gap> Size(img);
 67010895544320000
 gap> IsNaturalGL( TrivialSubgroup( GL(2,2) ) );
 false
+gap> IsTransitive( Image( IsomorphismPermGroup( SO( 1, 8, 2 ) ) ) );
+true
 
 #
 gap> STOP_TEST( "grpmat.tst", 1);
