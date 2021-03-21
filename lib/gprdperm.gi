@@ -12,20 +12,12 @@
 
 #############################################################################
 ##
-#M  DirectProductOp( <grps>, <G> )  . . . . . . direct product of perm groups
+#F  DirectProductOfPermGroupsWithMovedPoints( <grps>, <pnts> )
 ##
-InstallMethod( DirectProductOp,
-    "for a list of permutation groups, and a permutation group",
-    IsCollsElms,
-    [ IsList and IsPermCollColl, IsPermGroup ], 0,
-    function( grps, G )
-    local   oldgrps,  olds,  news,  perms,  gens,
+BindGlobal("DirectProductOfPermGroupsWithMovedPoints",
+    function( grps, pnts )
+    local   i,  oldgrps,  olds,  news,  perms,  gens,
             deg,  grp,  old,  new,  perm,  gen,  D, info;
-
-    # Check the arguments.
-    if not ForAll( grps, IsGroup ) then
-      TryNextMethod();
-    fi;
 
     oldgrps := [  ];
     olds    := [  ];
@@ -35,10 +27,11 @@ InstallMethod( DirectProductOp,
     deg     := 0;
     
     # loop over the groups
-    for grp  in grps  do
+    for i in [1..Length(grps)] do
 
         # find old domain, new domain, and conjugating permutation
-        old  := MovedPoints( grp );
+        grp  := grps[i];
+        old  := pnts[i];
         new  := [deg+1..deg+Length(old)];
         perm := MappingPermListList( old, new );
         deg  := deg + Length(old);
@@ -63,6 +56,25 @@ InstallMethod( DirectProductOp,
 
     SetDirectProductInfo( D, info );
     return D;
+    end );
+
+
+#############################################################################
+##
+#M  DirectProductOp( <grps>, <G> )  . . . . . . direct product of perm groups
+##
+InstallMethod( DirectProductOp,
+    "for a list of permutation groups, and a permutation group",
+    IsCollsElms,
+    [ IsList and IsPermCollColl, IsPermGroup ], 0,
+    function( grps, G )
+
+    # Check the arguments.
+    if not ForAll( grps, IsGroup ) then
+      TryNextMethod();
+    fi;
+
+    return DirectProductOfPermGroupsWithMovedPoints(grps, List(grps, MovedPoints));
     end );
 
 
