@@ -46,4 +46,11 @@ gap> HasIsFinite(d4) and not IsFinite(d4);
 true
 
 #
+gap> d1 := DirectProductOfPermGroupsWithMovedPoints([g1, g1, g1], [[1..4], [1..4], [1..4]]);;
+gap> MovedPoints(d1);
+[ 1, 2, 3, 5, 6, 7, 9, 10, 11 ]
+gap> HasIsFinite(d1) and IsFinite(d1);
+true
+
+#
 gap> STOP_TEST("gprd.tst");
