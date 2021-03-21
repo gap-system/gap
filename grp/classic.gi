@@ -1789,10 +1789,8 @@ BindGlobal( "OmegaMinus", function( d, q )
       x[i,d-i+1] := o;
     od;
     x[m,d-m+1] := -nu - nubar;
-    if q mod 2 = 1 then
-      x[m,d-m] := -o;
-      x[m+1,d-m+1] := xi^( (q+1)/2 );
-    fi;
+    x[m,d-m] := -o;
+    x[m+1,d-m+1] := -xi;
     x:= ImmutableMatrix( f, x, true );
     SetInvariantQuadraticFormFromMatrix( g, x );
 
