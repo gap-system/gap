@@ -83,7 +83,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "DirectProduct" );
-DeclareOperation( "DirectProductOp", [ IsList, IsGroup ] );
+DeclareOperation( "DirectProductOp", [ IsList, IsSemigroup ] );
 
 #############################################################################
 ##

@@ -2150,7 +2150,7 @@ DeclareAttribute( "LargestElementGroup", IsGroup );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "MinimalGeneratingSet", IsGroup );
+DeclareAttribute( "MinimalGeneratingSet", IsSemigroup );
 
 
 #############################################################################
@@ -2175,7 +2175,7 @@ DeclareAttribute( "MinimalGeneratingSet", IsGroup );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "SmallGeneratingSet", IsGroup );
+DeclareAttribute( "SmallGeneratingSet", IsSemigroup );
 
 
 #############################################################################
