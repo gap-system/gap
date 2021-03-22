@@ -134,24 +134,14 @@ def is_annotated_git_tag(tag):
                          capture_output=True, text=True)
     return res.returncode == 0 and res.stdout.split()[1] == "tag"
 
-def get_commit_of_git_tag(tag):
-    res = subprocess.run(["git", "show-ref", "--tags", "--dereference", tag],
-                            check=True, capture_output=True, text=True)
-    res = res.stdout.split('\n')
-    res = [obj for obj in res if obj.find(tag + "^{}") != -1]
-    if len(res) == 0:
-        error(f"Could not find tag {tag}")
-    res = res[0]
-    return res.split()[0]
-
 def check_git_tag_for_release(tag):
     if not is_annotated_git_tag(tag):
         error(f"There is no annotated tag {tag}")
     # check that tag points to HEAD
-    tag_commit = get_commit_of_git_tag(tag)
+    tag_commit = subprocess.run(["git", "rev-parse", tag + "^{}"],
+                          check=True, capture_output=True, text=True).stdout.strip()
     head = subprocess.run(["git", "rev-parse", "HEAD"],
-                          check=True, capture_output=True, text=True)
-    head = head.stdout.strip()
+                          check=True, capture_output=True, text=True).stdout.strip()
     if tag_commit != head:
         error(f"The tag {tag} does not point to the current commit {head} but"
               + f" instead points to {tag_commit}")
