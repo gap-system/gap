@@ -121,7 +121,7 @@ def filter_prs(prs,rel_type):
 
     if rel_type == "minor":
 
-        # for minor release, list PRs backported to the stable-4.X brach since the previous minor release     
+        # For minor release, list PRs backported to the stable-4.X brach since the previous minor release.
         for k,v in sorted(prs.items()):
             if "backport-to-" + minor_branch_version + "-DONE" in v["labels"]:
                 if datetime.fromisoformat(v["closed_at"]) > datetime.fromisoformat(minor_branch_start_date):
@@ -130,7 +130,10 @@ def filter_prs(prs,rel_type):
 
     elif rel_type == "major":
 
-        # for major release, list PRs not backported to the stable-4.X brach
+        # For major release, list PRs not backported to the stable-4.X brach.
+        # After branching stable-4.12 this will have to be changed to stop checking
+        # for "backport-to-4.11-DONE" at the date of the branching, and check for
+        # "backport-to-4.12-DONE" after that date
         for k,v in sorted(prs.items()):
             if not "backport-to-" + minor_branch_version + "-DONE" in v["labels"]:
                 newprs[k] = v
@@ -161,6 +164,7 @@ def changes_overview(prs,startdate,rel_type):
     # one from this list it fits in.
     # See also <https://github.com/gap-system/gap/issues/4257>.
     prioritylist = [
+        ["release notes: highlight", "New features and major changes"],
         ["kind: bug: wrong result", "Fixed bugs that could lead to incorrect results"],
         ["kind: bug: crash", "Fixed bugs that could lead to crashes"],
         ["kind: bug: unexpected error", "Fixed bugs that could lead to break loops"],
@@ -174,20 +178,9 @@ def changes_overview(prs,startdate,rel_type):
         ["topic: packages", "Packages"]
     ]
 
-    # TODO: why does this need a special treatment? 
-    # Adding it to the prioritylist could ensure that it goes first
-    relnotes_file.write("## Release Notes \n\n")
-    relnotes_file.write("### " + "New features and major changes" + "\n\n")
-    removelist = []
-    for k in prs:
-        if "release notes: highlight" in prs[k]["labels"]:
-            relnotes_file.write(pr_to_md(k, prs[k]["title"]))
-            removelist.append(k)
-    for item in removelist:
-        del prs[item]
-    relnotes_file.write("\n")
+    # Could also introduce some consistency checks here for wrong combinations of labels
 
-
+    # Drop PRs not needed for release notes
     removelist = []
     for k in prs:
         if "release notes: not needed" in prs[k]["labels"]:
@@ -196,8 +189,10 @@ def changes_overview(prs,startdate,rel_type):
         del prs[item]
         del jsondict[item]
 
-
-    unsorted_file.write("### " + "release notes: to be added" + "\n")
+    # Report PRs that have to be updated before inclusion into release notes.
+    unsorted_file.write("### " + "release notes: to be added" + "\n\n")
+    unsorted_file.write("If there are any PRs listed below, check their title and labels.\n")
+    unsorted_file.write("When done, change their label to \"release notes: use title\".\n\n")
     removelist = []
     for k in prs:
         if "release notes: to be added" in prs[k]["labels"]:
@@ -207,8 +202,10 @@ def changes_overview(prs,startdate,rel_type):
         del prs[item]
     unsorted_file.write("\n")
 
-
-    unsorted_file.write("### Uncategorized PR" + "\n")
+    # Report PRs that have neither "to be added" nor "added" or "use title" label
+    unsorted_file.write("### Uncategorized PR" + "\n\n")
+    unsorted_file.write("If there are any PRs listed below, either apply the same steps\n")
+    unsorted_file.write("as above, or change their label to \"release notes: not needed\".\n\n")
     removelist = []
     for k in prs:
         # we need to use both old "release notes: added" label and
@@ -220,7 +217,10 @@ def changes_overview(prs,startdate,rel_type):
     for item in removelist:
         del prs[item]
     unsorted_file.close()
-    
+
+    # All remaining PRs are to be included in the release notes
+
+    relnotes_file.write("## Release Notes \n\n")
 
     for priorityobject in prioritylist:
         relnotes_file.write("### " + priorityobject[1] + "\n\n")
@@ -233,6 +233,9 @@ def changes_overview(prs,startdate,rel_type):
             del prs[item]
         relnotes_file.write("\n")
 
+    # The remaining PRs have no "kind" or "topic" label from the priority list
+    # (may have other "kind" or "topic" label outside the priority list).
+    # Check their list in the release notes, and adjust labels if appropriate.
     relnotes_file.write("### Other changes \n\n")
     for k in prs:
         relnotes_file.write(pr_to_md(k, prs[k]["title"]))
