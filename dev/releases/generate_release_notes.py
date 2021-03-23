@@ -124,6 +124,11 @@ def filter_prs(prs,rel_type):
         usage()
 
 
+def pr_to_md(k, title):
+    """Returns markdown string for the PR entry"""
+    return f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n"
+
+
 def changes_overview(prs,startdate,rel_type):
     """Writes files with information for release notes."""
 
@@ -160,8 +165,7 @@ def changes_overview(prs,startdate,rel_type):
     for k in prs:
         # The format of an entry of list is: ["title of PR", "Link" (Alternative the PR number can be used), [ list of labels ] ]
         if "release notes: highlight" in prs[k]["labels"]:
-            title = prs[k]["title"]
-            f.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
+            f.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
         del prs[item]
@@ -181,8 +185,7 @@ def changes_overview(prs,startdate,rel_type):
     removelist = []
     for k in prs:
         if "release notes: to be added" in prs[k]["labels"]:
-            title = prs[k]["title"]
-            f2.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
+            f2.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
         del prs[item]
@@ -194,8 +197,7 @@ def changes_overview(prs,startdate,rel_type):
     for k in prs:
         #if not "release notes: use title" in item[2]:
         if not "release notes: added" in prs[k]["labels"]:
-            title = prs[k]["title"]
-            f2.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
+            f2.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
         del prs[item]
@@ -207,8 +209,7 @@ def changes_overview(prs,startdate,rel_type):
         removelist = []
         for k in prs:
             if priorityobject[0] in prs[k]["labels"]:
-                title = prs[k]["title"]
-                f.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
+                f.write(pr_to_md(k, prs[k]["title"]))
                 removelist.append(k)
         for item in removelist:
             del prs[item]
@@ -216,8 +217,7 @@ def changes_overview(prs,startdate,rel_type):
 
     f.write("### Other changes \n\n")
     for k in prs:
-        title = prs[k]["title"]
-        f.write(f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n")
+        f.write(pr_to_md(k, prs[k]["title"]))
     f.write("\n")
     f.close()
 
