@@ -1,5 +1,6 @@
 #
-# Tests for the "projective general" group constructors: PGL, POmega, PGU, PGammaL
+# Tests for the "projective general" group constructors:
+# PGL, PGO, POmega, PGU, PGammaL
 #
 gap> START_TEST("classic-PG.tst");
 
@@ -16,6 +17,24 @@ gap> PGL(3);
 Error, usage: ProjectiveGeneralLinearGroup( [<filter>, ]<d>, <q> )
 gap> PGL(3,6);
 Error, usage: GeneralLinearGroup( [<filter>, ]<d>, <R> )
+
+#
+gap> G:= PGO( 3, 5 );;  Size( G );
+120
+gap> G = PGO( 0, 3, 5 );
+true
+gap> G = PGO( IsPermGroup, 3, 5 );
+true
+gap> G = PGO( IsPermGroup, 0, 3, 5 );
+true
+gap> G:= PGO( 1, 4, 5 );;  Size( G );
+14400
+gap> G = PGO( IsPermGroup, 1, 4, 5 );
+true
+gap> G:= PGO( -1, 4, 5 );;  Size( G );
+15600
+gap> G = PGO( IsPermGroup, -1, 4, 5 );
+true
 
 #
 gap> G := POmega(3,7);
@@ -57,6 +76,35 @@ gap> POmega(4,9);
 Error, sign <e> = 0 but dimension <d> is even
 gap> POmega(0,4,9);
 Error, sign <e> = 0 but dimension <d> is even
+
+#
+gap> for d in [ 1, 3, 5, 7 ] do
+>      for q in [ 2, 3, 4, 5 ] do
+>        for cons in [ PGO, PSO, POmega ] do
+>          G:= cons( d, q );
+>          if Size( G ) <> Size( GroupByGenerators( GeneratorsOfGroup( G ),
+>                                                   One( G ) ) ) then
+>            Error( "problem with group order for ", [ d, q ], "\n" );
+>          fi;
+>        od;
+>      od;
+>    od;
+gap> for d in [ 2, 4, 6 ] do
+>      for q in [ 2, 3, 4, 5 ] do
+>        for cons in [ PGO, PSO, POmega ] do
+>          G:= cons( 1, d, q );
+>          if Size( G ) <> Size( GroupByGenerators( GeneratorsOfGroup( G ),
+>                                                   One( G ) ) ) then
+>            Error( [ d, q ] );
+>          fi;
+>          G:= cons( -1, d, q );
+>          if Size( G ) <> Size( GroupByGenerators( GeneratorsOfGroup( G ),
+>                                                   One( G ) ) ) then
+>            Error( [ d, q ] );
+>          fi;
+>        od;
+>      od;
+>    od;
 
 #
 gap> PGU(3,5);

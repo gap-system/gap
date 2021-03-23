@@ -1,5 +1,6 @@
 #
-# Tests for the "projective special" group constructors: PSL, PSU, PSp, PSigmaL
+# Tests for the "projective special" group constructors:
+# PSL, PSO, PSU, PSp, PSigmaL
 #
 gap> START_TEST("classic-PS.tst");
 
@@ -16,6 +17,24 @@ gap> PSL(3);
 Error, usage: ProjectiveSpecialLinearGroup( [<filter>, ]<d>, <q> )
 gap> PSL(3,6);
 Error, usage: SpecialLinearGroup( [<filter>, ]<d>, <R> )
+
+#
+gap> G:= PSO( 3, 5 );;  Size( G );
+120
+gap> G = PSO( 0, 3, 5 );
+true
+gap> G = PSO( IsPermGroup, 3, 5 );
+true
+gap> G = PSO( IsPermGroup, 0, 3, 5 );
+true
+gap> G:= PSO( 1, 4, 5 );;  Size( G );
+7200
+gap> G = PSO( IsPermGroup, 1, 4, 5 );
+true
+gap> G:= PSO( -1, 4, 5 );;  Size( G );
+7800
+gap> G = PSO( IsPermGroup, -1, 4, 5 );
+true
 
 #
 gap> PSU(3,5);
