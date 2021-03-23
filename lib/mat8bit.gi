@@ -243,21 +243,6 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 
 #############################################################################
 ##
-#M  `PlainListCopyOp( <mat> ) 
-##
-##  Make the matrix into a plain list 
-##
-
-InstallMethod( PlainListCopyOp, "for an 8 bit vector",
-        true, [IsSmallList and Is8BitMatrixRep], 0,
-        function (m)
-    PLAIN_MAT8BIT(m);
-    return m;
-end);
-
-
-#############################################################################
-##
 #M  ConvertToMatrixRepNC( <list>, <fieldsize )
 #M  ConvertToMatrixRep( <list>[, <fieldsize> | <field>])
 ##

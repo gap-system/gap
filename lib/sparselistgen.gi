@@ -96,30 +96,6 @@ end);
 
 #############################################################################
 ##
-#M  PlainListCopyOp( <sl> ) make a copy which will really be a plain list
-##
-
-InstallMethod(PlainListCopyOp, "sparse list", [IsSparseList and IsSmallList], 
-        function(sl)
-    local   l,  i, ss;
-    ss := SparseStructureOfList(sl);
-    if IsBound(ss[1]) then
-        l := ListWithIdenticalEntries(Length(sl), ss[1]);
-    else
-        l := [];
-    fi;
-    for i in [1..Length(ss[2])] do
-        if IsBound(ss[3][i]) then
-            l[ss[2][i]] := ss[3][i];
-        else
-            Unbind(l[ss[2][i]]);
-        fi;
-    od;
-    return l;
-end);
-
-#############################################################################
-##
 #F PLAIN_SL ( <sl> ) convert a sparse list in place to a plain list
 ##
 ##  

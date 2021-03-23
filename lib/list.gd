@@ -2371,41 +2371,6 @@ DeclareGlobalFunction( "IntersectionBlist" );
 ##
 DeclareGlobalFunction( "ListWithIdenticalEntries" );
 
-
-#############################################################################
-##
-#F  PlainListCopy( <list> ) . . . . . . . .  make a plain list copy of a list
-##
-##  <ManSection>
-##  <Func Name="PlainListCopy" Arg='list'/>
-##
-##  <Description>
-##  This is intended for use in certain rare situations,
-##  such as before objectifying.
-##  Normally, <C>ConstantAccessTimeList</C> should be enough.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction("PlainListCopy");
-
-
-#############################################################################
-##
-#O  PlainListCopyOp( <list> ) . . . . . . . .return a plain version of a list
-##
-##  <ManSection>
-##  <Oper Name="PlainListCopyOp" Arg='list'/>
-##
-##  <Description>
-##  This operation returns a list equal to its argument, in a plain list
-##  representation. This may be the argument converted in place, or
-##  may be new. It is only intended to be called by <C>PlainListCopy</C>.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation("PlainListCopyOp", [IsSmallList]);
-
-
 #############################################################################
 ##
 #O  PositionNot( <list>, <val>[, <from>] )  . . . . . . . . .  find not <val>

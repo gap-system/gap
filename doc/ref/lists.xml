@@ -1873,6 +1873,16 @@ handled more efficiently,
 for example when one installs a method for a particular operation,
 where an argument is required to be a list in a particular representation.
 
+<ManSection>
+<Func Name="PlainListCopy" Arg='list'/>
+<Description>
+This function returns a list equal to its argument, in a plain list
+representation (see <Ref Filt="IsPlistRep"/>).
+This is intended for use in certain rare situations,
+such as before objectifying, or calling some kernel functions.
+</Description>
+</ManSection>
+
 <#Include Label="IsPlistRep">
 
 </Section>

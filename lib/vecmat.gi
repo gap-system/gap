@@ -1581,31 +1581,6 @@ end);
 
 #############################################################################
 ##
-#M  PlainListCopyOp( <v> )
-##
-
-InstallMethod( PlainListCopyOp, "for a GF2 vector",
-        true, [IsGF2VectorRep and IsSmallList ],
-        0, function( v )
-    PLAIN_GF2VEC(v);
-    return v;
-end);
-
-#############################################################################
-##
-#M  PlainListCopyOp( <m> )
-##
-
-InstallMethod( PlainListCopyOp, "for a GF2 matrix",
-        true, [IsSmallList and IsGF2MatrixRep ],
-        0, function( m )
-    PLAIN_GF2MAT(m);
-    return m;
-end);
-
-
-#############################################################################
-##
 #M  MultVector( <vl>, <mul>)
 ##
 

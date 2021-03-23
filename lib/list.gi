@@ -3890,39 +3890,6 @@ InstallMethod( ViewObj,
     Print( " ]" );
     end );
 
-
-#############################################################################
-##
-#F  PlainListCopy( <list> ) . . . . . . . . . . make a plain list copy of
-##                                          a list
-##
-##  This is intended for use in certain rare situations, such as before
-##  Objectifying. Normally, ConstantAccessTimeList should be enough
-##
-##  This function guarantees that the result will be a plain list, distinct
-##  from the input object.
-##
-InstallGlobalFunction(PlainListCopy, function( list )
-    local tnum, copy;
-
-    if not IsSmallList( list ) then
-        Error("PlainListCopy: argument must be a small list");
-    fi;
-
-    # This is enough much of the time
-    copy := ShallowCopy(list);
-
-    # now do a cheap check on copy
-    tnum := TNUM_OBJ(copy);
-    if FIRST_LIST_TNUM > tnum or LAST_LIST_TNUM < tnum then
-        copy := PlainListCopyOp( copy );
-    fi;
-    Assert(2, not IsIdenticalObj(list,copy));
-    Assert(2, TNUM_OBJ(copy) >= FIRST_LIST_TNUM);
-    Assert(2, TNUM_OBJ(copy) <= LAST_LIST_TNUM);
-    return copy;
-end);
-
 #############################################################################
 ##
 #M  PositionNot( <list>, <obj>, <from-minus-one> ) . . . . . . default method
