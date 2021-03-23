@@ -22,9 +22,10 @@
 # PR details will be stored in the file `prscache.json`, which will then be used to
 # categorise PR following the priority list and discussion from #4257, and output three
 # files:
-# - "releasenotes.md"   : list of PR by categories for adding to release notes
-# - "remainingPR.md"    : list of PR that could not be categorised
-# - "releasenotes.json" : data for `BrowseReleaseNotes` function by Thomas Breuer (see #4257).
+# - "releasenotes_*.md"   : list of PR by categories for adding to release notes
+# - "unsorted_PRs_*.md"    : list of PR that could not be categorised
+# - "releasenotes_*.json" : data for `BrowseReleaseNotes` function by Thomas Breuer (see #4257).
+# where "*" is "minor" or "major" depending on the type of the release.
 #
 # If this script detects the file `prscache.json` it will use it, otherwise it will retrieve
 # new data from GitHub. Thus, if new PR were merged, or there were updates of titles and labels
@@ -147,9 +148,9 @@ def changes_overview(prs,startdate,rel_type):
     """Writes files with information for release notes."""
 
     # Opening files with "w" resets them
-    f = open("releasenotes_" + rel_type + ".md", "w")
-    f2 = open("remainingPR_" + rel_type + ".md", "w")
-    f3 = open("releasenotes_" + rel_type + ".json", "w")
+    relnotes_file = open("releasenotes_" + rel_type + ".md", "w")
+    unsorted_file = open("unsorted_PRs_" + rel_type + ".md", "w")
+    relnotes_json = open("releasenotes_" + rel_type + ".json", "w")
     jsondict = prs.copy()
 
     # the following is a list of pairs [LABEL, DESCRIPTION]; the first entry is the name of a GitHub label
@@ -173,16 +174,16 @@ def changes_overview(prs,startdate,rel_type):
 
     # TODO: why does this need a special treatment? 
     # Adding it to the prioritylist could ensure that it goes first
-    f.write("## Release Notes \n\n")
-    f.write("### " + "New features and major changes" + "\n\n")
+    relnotes_file.write("## Release Notes \n\n")
+    relnotes_file.write("### " + "New features and major changes" + "\n\n")
     removelist = []
     for k in prs:
         if "release notes: highlight" in prs[k]["labels"]:
-            f.write(pr_to_md(k, prs[k]["title"]))
+            relnotes_file.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
         del prs[item]
-    f.write("\n")
+    relnotes_file.write("\n")
 
 
     removelist = []
@@ -194,47 +195,47 @@ def changes_overview(prs,startdate,rel_type):
         del jsondict[item]
 
 
-    f2.write("### " + "release notes: to be added" + "\n")
+    unsorted_file.write("### " + "release notes: to be added" + "\n")
     removelist = []
     for k in prs:
         if "release notes: to be added" in prs[k]["labels"]:
-            f2.write(pr_to_md(k, prs[k]["title"]))
+            unsorted_file.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
         del prs[item]
-    f2.write("\n")
+    unsorted_file.write("\n")
 
 
-    f2.write("### Uncategorized PR" + "\n")
+    unsorted_file.write("### Uncategorized PR" + "\n")
     removelist = []
     for k in prs:
         #if not "release notes: use title" in item[2]:
         if not "release notes: added" in prs[k]["labels"]:
-            f2.write(pr_to_md(k, prs[k]["title"]))
+            unsorted_file.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
         del prs[item]
-    f2.close()
+    unsorted_file.close()
     
 
     for priorityobject in prioritylist:
-        f.write("### " + priorityobject[1] + "\n\n")
+        relnotes_file.write("### " + priorityobject[1] + "\n\n")
         removelist = []
         for k in prs:
             if priorityobject[0] in prs[k]["labels"]:
-                f.write(pr_to_md(k, prs[k]["title"]))
+                relnotes_file.write(pr_to_md(k, prs[k]["title"]))
                 removelist.append(k)
         for item in removelist:
             del prs[item]
-        f.write("\n")
+        relnotes_file.write("\n")
 
-    f.write("### Other changes \n\n")
+    relnotes_file.write("### Other changes \n\n")
     for k in prs:
-        f.write(pr_to_md(k, prs[k]["title"]))
-    f.write("\n")
-    f.close()
+        relnotes_file.write(pr_to_md(k, prs[k]["title"]))
+    relnotes_file.write("\n")
+    relnotes_file.close()
 
-    f3.write("[")
+    relnotes_json.write("[")
     jsonlist = []
     for k in jsondict:
         temp = []
@@ -243,9 +244,9 @@ def changes_overview(prs,startdate,rel_type):
         temp.append(jsondict[k]["labels"])
         jsonlist.append(temp)
     for item in jsonlist:
-        f3.write("%s\n" % item)
-    f3.write("]")
-    f3.close
+        relnotes_json.write("%s\n" % item)
+    relnotes_json.write("]")
+    relnotes_json.close
 
 
 def main(rel_type):
