@@ -993,7 +993,125 @@ DeclareSynonym( "PSp", PSP );
 
 #############################################################################
 ##
-#O  ProjectiveOmegaCons( <filt>, <e>, <d>, <q> )
+#F  DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION( ... )
+##
+BindGlobal("DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION",
+  # ( <name>, <abbreviation>, <sizefunc-or-fail> )
+  function( nam, abbr, szf )
+    local pnam,cons,opr;
+
+    opr:= VALUE_GLOBAL( nam );
+    pnam:= Concatenation( "Projective", nam );
+    cons:= NewConstructor( Concatenation( pnam, "Cons" ),
+                           [ IsGroup, IsInt, IsInt, IsInt ] );
+    BindGlobal( Concatenation( pnam, "Cons" ), cons );
+    BindGlobal( pnam, function( arg )
+      if Length( arg ) = 2 then
+        return cons( IsPermGroup, 0, arg[1], arg[2] );
+      elif Length( arg ) = 3 and ForAll( arg, IsInt ) then
+        return cons( IsPermGroup, arg[1], arg[2], arg[3] );
+      elif IsOperation( arg[1] ) then
+        if Length( arg ) = 3 then
+          return cons( arg[1], 0, arg[2], arg[3] );
+        elif Length( arg ) = 4 then
+          return cons( arg[1], arg[2], arg[3], arg[4] );
+        fi;
+      fi;
+      Error( "usage: ", pnam, "( [<filter>, ][<e>, ]<d>, <q> )" );
+    end );
+
+  DeclareSynonym( Concatenation( "P", abbr ), VALUE_GLOBAL( pnam ) );
+
+  # Install a method to get the permutation action on lines.
+  InstallMethod( cons, "action on lines",
+    [ IsPermGroup, IsInt, IsPosInt, IsPosInt ],
+    function( filter, e, n, q )
+    local g, p;
+
+    g:= opr( IsMatrixGroup, e, n, q );
+    p:= ProjectiveActionOnFullSpace( g, GF( q ), n );
+    if szf <> fail then
+      SetSize( p, szf( e, n, q, g ) );
+    fi;
+
+    return p;
+    end );
+end );
+
+
+#############################################################################
+##
+#F  ProjectiveGeneralOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q> )
+#F  PGO( [<filt>, ][<e>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveGeneralOrthogonalGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveGeneralOrthogonalGroup" Arg='[filt, ][e, ]d, q'/>
+##  <Func Name="PGO" Arg='[filt, ][e, ]d, q'/>
+##
+##  <Description>
+##  constructs a group isomorphic to the projective group
+##  PGO( <A>e</A>, <A>d</A>, <A>q</A> )
+##  of GO( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  modulo the centre
+##  (see <Ref Oper="GeneralOrthogonalGroup"/>),
+##  in the category given by the filter <A>filt</A>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION( "GeneralOrthogonalGroup", "GO",
+  function( e, n, q, g )
+    if ( n mod 2 = 0 and ( q^(n/2) - e ) mod 2 = 0 ) or
+       ( n mod 2 = 1 and ( q - 1 ) mod 2 = 0 ) then
+      return Size( g ) / 2;
+    else
+      return Size( g );
+    fi;
+  end );
+
+
+#############################################################################
+##
+#F  ProjectiveSpecialOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q> )
+#F  PSO( [<filt>, ][<e>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveSpecialOrthogonalGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveSpecialOrthogonalGroup" Arg='[filt, ][e, ]d, q'/>
+##  <Func Name="PSO" Arg='[filt, ][e, ]d, q'/>
+##
+##  <Description>
+##  constructs a group isomorphic to the projective group
+##  PSO( <A>e</A>, <A>d</A>, <A>q</A> )
+##  of SO( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  modulo the centre
+##  (see <Ref Oper="SpecialOrthogonalGroup"/>),
+##  in the category given by the filter <A>filt</A>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION( "SpecialOrthogonalGroup", "SO",
+  function( e, n, q, g )
+    if n mod 2 = 0 and ( q^(n/2) - e ) mod 2 = 0 then
+      return Size( g ) / 2;
+    else
+      return Size( g );
+    fi;
+  end );
+
+
+#############################################################################
+##
 #F  ProjectiveOmega( [<filt>, ][<e>, ]<d>, <q> )
 #F  POmega( [<filt>, ][<e>, ]<d>, <q> )
 ##
@@ -1017,39 +1135,14 @@ DeclareSynonym( "PSp", PSP );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareConstructor( "ProjectiveOmegaCons", [ IsGroup, IsInt, IsInt, IsInt ] );
-
-BindGlobal( "ProjectiveOmega", function( arg )
-    if Length( arg ) = 2  then
-      return ProjectiveOmegaCons( IsPermGroup, 0, arg[1], arg[2] );
-    elif Length( arg ) = 3  and IsInt( arg[1] ) then
-      return ProjectiveOmegaCons( IsPermGroup, arg[1], arg[2], arg[3] );
-    elif Length( arg ) = 3  and IsOperation( arg[1] ) then
-      return ProjectiveOmegaCons( arg[1], 0, arg[2], arg[3] );
-    elif IsOperation( arg[1] ) and Length( arg ) = 4 then
-      return ProjectiveOmegaCons( arg[1], arg[2], arg[3], arg[4] );
-    fi;
-    Error( "usage: ProjectiveOmega( [<filter>, ][<e>, ]<d>, <q> )" );
-  end );
-
-DeclareSynonym( "POmega", ProjectiveOmega );
-
-InstallMethod( ProjectiveOmegaCons,
-    "action on lines",
-    [ IsPermGroup, IsInt, IsPosInt, IsPosInt ],
-    function( filter, e, n, q )
-    local g, p;
-
-    g:= Omega( IsMatrixGroup, e, n, q );
-    p:= ProjectiveActionOnFullSpace( g, GF( q ), n );
+DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION( "Omega", "Omega",
+  function( e, n, q, g )
     if n mod 2 = 0 and ( q^(n/2) - e ) mod 4 = 0 then
-      SetSize( p, Size( g ) / 2 );
+      return Size( g ) / 2;
     else
-      SetSize( p, Size( g ) );
+      return Size( g );
     fi;
-
-    return p;
-  end);
+  end );
 
 
 #############################################################################
