@@ -142,7 +142,7 @@ gap> grps:=[];;
 gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Omega(+1,d,q));
->     if d <> 2 then Add(grps, Omega(-1,d,q)); fi;
+>     Add(grps, Omega(-1,d,q));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);

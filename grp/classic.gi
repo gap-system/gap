@@ -1138,12 +1138,21 @@ BindGlobal( "OzeroOdd", function( d, q, b )
     # <d> and <q> must be odd
     if d mod 2 = 0  then
         Error( "<d> must be odd" );
-    elif d < 3  then
-        Error( "<d> must be at least 3" );
     elif q mod 2 = 0  then
         Error( "<q> must be odd" );
     fi;
+
     f := GF(q);
+    if d = 1 then
+      # The group has order two.
+      s:= ImmutableMatrix( f, [ [ One( f ) ] ], true );
+      g:= GroupWithGenerators( [ -s ] );
+      SetDimensionOfMatrixGroup( g, d );
+      SetFieldOfMatrixGroup( g, f );
+      SetSize( g, 2 );
+      SetInvariantQuadraticFormFromMatrix( g, s );
+      return g;
+    fi;
 
     # identity matrix over <f>
     id := Immutable( IdentityMat( d, f ) );
@@ -1229,8 +1238,6 @@ BindGlobal( "OzeroEven", function( d, q )
     # <d> must be odd, <q> must be even
     if d mod 2 = 0 then
       Error( "<d> must be odd" );
-    elif d < 3 then
-      Error( "<d> must be at least 3" );
     elif q mod 2 = 1 then
       Error( "<q> must be even" );
     fi;
@@ -1239,7 +1246,18 @@ BindGlobal( "OzeroEven", function( d, q )
     o:= One( f );
     n:= Zero( f );
 
-    if d = 3 then
+    if d = 1 then
+
+      # The group is trivial.
+      s:= ImmutableMatrix( f, [ [ o ] ], true );
+      g:= GroupWithGenerators( [], s  );
+      SetDimensionOfMatrixGroup( g, d );
+      SetFieldOfMatrixGroup( g, f );
+      SetSize( g, 1 );
+      SetInvariantQuadraticFormFromMatrix( g, s );
+      return g;
+
+    elif d = 3 then
 
       # The isomorphic symplectic group is $SL(2,<q>)$.
       if q = 2 then
@@ -1351,7 +1369,7 @@ InstallMethod( GeneralOrthogonalGroupCons,
     elif e = 0  then
         g := OzeroEven( d, q );
 
-    # O+(2,q) = D_2(q-1)
+    # O+(2,q) = D_{2(q-1)}
     elif e = +1 and d = 2  then
         g := Oplus2(q);
 
@@ -1367,7 +1385,7 @@ InstallMethod( GeneralOrthogonalGroupCons,
     elif e = +1 and q mod 2 = 1  then
         g := OpmOdd( +1, d, q );
 
-    # O-(2,q) = D_2(q+1)
+    # O-(2,q) = D_{2(q+1)}
     elif e = -1 and d = 2  then
          g := Ominus2(q);
 
@@ -1450,10 +1468,13 @@ InstallMethod( SpecialOrthogonalGroupCons,
         gens:= Reversed( gens );
       fi;
 
-      Assert( 1, Length( gens ) = 2 and IsOne( DeterminantMat( gens[1] ) ) );
-
       # Construct the group.
-      U:= GroupWithGenerators( [ gens[1], gens[1]^gens[2], gens[2]^2 ] );
+      if d = 1 then
+        U:= GroupWithGenerators( [], One( G ) );
+      else
+        Assert( 1, Length( gens ) = 2 and IsOne( DeterminantMat( gens[1] ) ) );
+        U:= GroupWithGenerators( [ gens[1], gens[1]^gens[2], gens[2]^2 ] );
+      fi;
 
       # Set the group order.
       SetSize( U, Size( G ) / 2 );
@@ -1467,9 +1488,7 @@ InstallMethod( SpecialOrthogonalGroupCons,
       SetInvariantBilinearForm( U, InvariantBilinearForm( G ) );
       SetInvariantQuadraticForm( U, InvariantQuadraticForm( G ) );
       SetIsFullSubgroupGLorSLRespectingQuadraticForm( U, true );
-      if q mod 2 = 1 then
-        SetIsFullSubgroupGLorSLRespectingBilinearForm( U, true );
-      fi;
+      SetIsFullSubgroupGLorSLRespectingBilinearForm( U, true );
       G:= U;
 
     fi;
@@ -1497,8 +1516,9 @@ BindGlobal( "OmegaZero", function( d, q )
     # <d> must be odd
     if d mod 2 = 0 then
       Error( "<d> must be odd" );
-    elif d < 3 then
-      Error( "<d> must be at least 3" );
+    elif d = 1 then
+      # The group is trivial.
+      return SO( d, q );
     elif q mod 2 = 0 then
       # For even q, the generators claimed in [RylandsTalor98] are wrong:
       # For (d,q) = (5,2), the matrices generate only S4(2)' not S4(2).
@@ -1721,9 +1741,26 @@ BindGlobal( "OmegaMinus", function( d, q )
     # <d> must be even
     if d mod 2 = 1 then
       Error( "<d> must be even" );
-    elif d < 4 then
-      # The construction in the paper does not apply to the case d = 2
-      Error( "<d> = 2 is not supported" );
+    elif d = 2 then
+      # The construction in the Rylands/Taylor paper does not apply
+      # to the case d = 2.
+      # The group 'Ominus2( q ) = GO(-1,2,q)' is a dihedral group
+      # of order 2*(q+1).
+      g:= Ominus2( q );
+      h:= GeneratorsOfGroup( g )[1];
+      Assert( 1, Order( h ) = q+1 );
+      if IsEvenInt( q ) then
+        # For even q, 'GO(-1,2,q)' is equal to 'SO(-1,2,q)',
+        # and 'Omega(-1,2,q)' is its unique subgroup of index two.
+        s:= GroupWithGenerators( [ h ] );
+      else
+        # For odd q, the group 'SO(-1,2,q)' is cyclic of order q+1,
+        # and 'Omega(-1,2,q)' is its unique subgroup of index two.
+        s:= GroupWithGenerators( [ h^2 ] );
+      fi;
+      SetInvariantBilinearForm( s, InvariantBilinearForm( g ) );
+      SetInvariantQuadraticForm( s, InvariantQuadraticForm( g ) );
+      return s;
     fi;
     f:= GF(q);
     o:= One( f );
