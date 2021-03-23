@@ -14,6 +14,7 @@
 #
 # For each such pull request (PR), this script extracts from GitHub its title, number and
 # labels, using the GitHub API via the PyGithub package (https://github.com/PyGithub/PyGithub).
+# To help to track the progress, it will output the number of the currently processed PR.
 # For API requests using Basic Authentication or OAuth, you can make up to 5,000 requests
 # per hour (https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting).
 # As of March 2021 this script consumes about 3400 API calls and runs for about 25 minutes.
