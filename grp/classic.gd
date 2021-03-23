@@ -432,7 +432,8 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  odd, and <M>1</M> if <A>q</A> is even.)
 ##  Also interesting is the group Omega( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  see <Ref Oper="Omega" Label="construct an orthogonal group"/>,
-##  which is always of index <M>2</M> in SO( <A>e</A>, <A>d</A>, <A>q</A> ).
+##  which is of index <M>2</M> in SO( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  except in the case <M><A>d</A> = 1</M>.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special orthogonal group itself.
@@ -652,7 +653,8 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  (see&nbsp;<Ref Attr="InvariantQuadraticForm"/>) specified by <A>e</A>,
 ##  and that have square spinor norm in odd characteristic
 ##  or Dickson invariant <M>0</M> in even characteristic, respectively,
-##  in the category given by the filter <A>filt</A>. For odd <A>q</A>,
+##  in the category given by the filter <A>filt</A>. For odd <A>q</A>
+##  and <M><A>d</A> \geq 2</M>,
 ##  this group has always index two in the corresponding special orthogonal group,
 ##  which will be conjugate in <M>GL(d,q)</M> to the group returned by SO( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  see <Ref Func="SpecialOrthogonalGroup"/>, but may fix a different form (see <Ref Sect="Classical Groups"/>).

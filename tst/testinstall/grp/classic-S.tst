@@ -37,6 +37,12 @@ gap> SO(IsPermGroup,3,5);
 Perm_SO(0,3,5)
 
 #
+gap> IsTrivial( SO(1,3) );
+true
+gap> IsTrivial( SO(1,4) );
+true
+
+#
 gap> SO(3);
 Error, usage: SpecialOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> )
 gap> SO(3,6);

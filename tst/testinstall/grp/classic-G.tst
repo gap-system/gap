@@ -62,6 +62,12 @@ gap> GO(IsPermGroup,3,5);
 Perm_GO(0,3,5)
 
 #
+gap> IsTrivial( GO(1,3) );
+false
+gap> IsTrivial( GO(1,4) );
+true
+
+#
 gap> GO(3);
 Error, usage: GeneralOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> )
 gap> GO(3,6);
@@ -130,6 +136,10 @@ gap> GammaL(3,6);
 Error, <subfield> must be a prime or a finite field
 
 #
+gap> Omega(1,2);
+GO(0,1,2)
+gap> Omega(1,3);
+SO(0,1,3)
 gap> Omega(3,2);
 GO(0,3,2)
 gap> Omega(3,3);
@@ -150,6 +160,10 @@ gap> Omega(+1,4,3);
 Omega(+1,4,3)
 
 #
+gap> Omega(-1,2,2);
+Omega(-1,2,2)
+gap> Omega(-1,2,3);
+Omega(-1,2,3)
 gap> Omega(-1,4,2);
 Omega(-1,4,2)
 gap> Omega(-1,4,3);
@@ -170,12 +184,8 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `OmegaCons' on 4 arguments
 
 #
-gap> Omega(1,2);
-Error, <d> must be at least 3
 gap> Omega(2,2);
 Error, sign <e> = 0 but dimension <d> is even
-gap> Omega(-1,2,2);
-Error, <d> = 2 is not supported
 
 #
 gap> STOP_TEST("classic-G.tst", 1);
