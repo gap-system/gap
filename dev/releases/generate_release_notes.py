@@ -211,8 +211,10 @@ def changes_overview(prs,startdate,rel_type):
     unsorted_file.write("### Uncategorized PR" + "\n")
     removelist = []
     for k in prs:
-        #if not "release notes: use title" in item[2]:
-        if not "release notes: added" in prs[k]["labels"]:
+        # we need to use both old "release notes: added" label and
+        # the newly introduced in "release notes: use title" label
+        # since both label may appear in GAP 4.12.0 changes overview
+        if not ("release notes: added" in prs[k]["labels"] or "release notes: use title" in prs[k]["labels"]):
             unsorted_file.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
     for item in removelist:
