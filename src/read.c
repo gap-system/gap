@@ -1175,12 +1175,12 @@ typedef struct {
 **                   {',' ('readwrite'|'readonly') <Ident> } ( '...' )
 **
 **  is_atomic: Is this an atomic function?
-**  symbol: The end symbol of the arglist (usually S_RBRACK, but S_RBRACE
+**  symbol: The end symbol of the arglist (usually S_RPAREN, but S_RBRACE
 **          for lambda functions).
 **  symbolstr: symbol as an ascii string
 **
-**  This function assumes the opening bracket is already read, and is
-**  responsible for reading the closing bracket.
+**  This function assumes the opening parenthesis or brace is already read,
+**  and is responsible for reading the closing parenthesis or brace.
 */
 
 static ArgList ReadFuncArgList(ReaderState * rs,
@@ -1440,7 +1440,7 @@ static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
 {
     Match_(rs, S_LBRACE, "{", follow);
 
-    ArgList args = ReadFuncArgList(rs, follow, 0, S_RBRACE, ")");
+    ArgList args = ReadFuncArgList(rs, follow, 0, S_RBRACE, "}");
 
     /* match away the '->'                                                 */
     Match_(rs, S_MAPTO, "->", follow);

@@ -65,6 +65,22 @@ rec("a":=1);
     ^^^
 
 #
+# ReadFuncArgList
+#
+gap> function(a,) end;;
+Syntax error: identifier expected in stream:1
+function(a,) end;;
+           ^
+gap> function(a end;;
+Syntax error: ) expected in stream:1
+function(a end;;
+           ^^^
+gap> {a -> a;
+Syntax error: } expected in stream:1
+{a -> a;
+   ^^
+
+#
 # ReadFactor
 #
 gap> 2^3^4;
