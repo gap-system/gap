@@ -231,19 +231,6 @@ InstallMethod( \+, "for an 8 bit vector of char 2 and a GF2 vector",
     fi;
 end);
 
-#############################################################################
-##
-#M  `PlainListCopyOp( <vec> ) 
-##
-##  Make the vector into a plain list (in place)
-##
-
-InstallMethod( PlainListCopyOp, "for an 8 bit vector",
-        true, [IsSmallList and Is8BitVectorRep], 0,
-        function (v)
-    PLAIN_VEC8BIT(v);
-    return v;
-end);
 
 #############################################################################
 ##

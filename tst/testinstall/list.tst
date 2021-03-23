@@ -309,6 +309,44 @@ gap> l;
 gap> TNAM_OBJ(l);
 "plain list (rectangular table)"
 
+# Check PlainListCopy
+gap> checkPlainListCopy := function(l)
+>   local copy, tnum;
+>   tnum := TNUM_OBJ(l);
+>   copy := PlainListCopy(l);
+>   return IsPlistRep(copy) and l = copy and
+>          not IsIdenticalObj(l,copy) and TNUM_OBJ(l) = tnum;
+> end;;
+gap> checkPlainListCopy([]);
+true
+gap> checkPlainListCopy([1, ,()]);
+true
+gap> checkPlainListCopy([1..5]);
+true
+gap> checkPlainListCopy([10,8..-4]);
+true
+gap> checkPlainListCopy("");
+true
+gap> checkPlainListCopy("abc");
+true
+gap> checkPlainListCopy(ListWithIdenticalEntries(3, false));
+true
+gap> checkPlainListCopy(NewZeroVector(IsGF2VectorRep, GF(2), 10));
+true
+gap> checkPlainListCopy(NewZeroVector(Is8BitVectorRep, GF(3), 10));
+true
+gap> PlainListCopy(6);
+Error, PlainListCopy: <list> must be a small list (not the integer 6)
+gap> PlainListCopy((1,2,3));
+Error, PlainListCopy: <list> must be a small list (not a permutation (small))
+#@if IsHPCGAP
+gap> PlainListCopy(Group((1,2)));
+Error, PlainListCopy: <list> must be a small list (not an atomic component object)
+#@else
+gap> PlainListCopy(Group((1,2)));
+Error, PlainListCopy: <list> must be a small list (not a component object)
+#@fi
+
 # Check TNUM behaviours
 gap> x := [1,,"cheese"];;
 gap> x[2] := 2;;

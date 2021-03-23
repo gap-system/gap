@@ -1590,6 +1590,12 @@ Obj PLAIN_LIST_COPY(Obj list)
     return res;
 }
 
+Obj FuncPlainListCopy(Obj self, Obj list)
+{
+    RequireSmallList(SELF_NAME, list);
+    return PLAIN_LIST_COPY(list);
+}
+
 
 /****************************************************************************
 **
@@ -1856,6 +1862,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_1ARGS(IS_SSORT_LIST_DEFAULT, list),
     GVAR_FUNC_1ARGS(IS_POSS_LIST_DEFAULT, list),
     GVAR_FUNC_3ARGS(POS_LIST_DEFAULT, list, obj, start),
+    GVAR_FUNC_1ARGS(PlainListCopy, list),
     { 0, 0, 0, 0, 0 }
 
 };
