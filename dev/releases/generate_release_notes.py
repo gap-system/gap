@@ -41,6 +41,8 @@ import json
 import os.path
 from github import Github
 from datetime import datetime
+import utils
+
 
 #############################################################################
 #
@@ -251,15 +253,9 @@ def changes_overview(prs,startdate,rel_type):
 
 def main(rel_type):
 
-    # Authentication and checking current API capacity
-    # TODO: for now this will do, use Sergio's code later
-    with open("/Users/alexk/.github_shell_token", "r") as f:
-        accessToken=f.read().replace("\n", "")
-    g=Github(accessToken)
-
-    orgName = "gap-system"
-    repoName = "gap"
-    repo = g.get_repo( orgName + "/" + repoName)
+    utils.initialize_github()
+    g = utils.GITHUB_INSTANCE
+    repo = utils.CURRENT_REPO
     
     # There is a GitHub API capacity of 5000 per hour i.e. that a maximum of 5000 requests can be made to GitHub per hour.
     # Therefore, the following line indicates how many requests are currently still available
