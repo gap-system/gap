@@ -31,8 +31,8 @@ BindGlobal("DirectProductOfPermGroupsWithMovedPoints",
 
         # find old domain, new domain, and conjugating permutation
         grp  := grps[i];
-        old  := pnts[i];
-        new  := [deg+1..deg+Length(old)];
+        old  := Immutable(pnts[i]);
+        new  := MakeImmutable([deg+1..deg+Length(old)]);
         perm := MappingPermListList( old, new );
         deg  := deg + Length(old);
         Add( oldgrps, grp );
