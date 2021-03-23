@@ -75,6 +75,20 @@ def usage():
 def get_prs(repo,startdate):
     """Retrieves data for PRs matching selection criteria and puts them in a dictionary,
        which is then saved in a json file, and also returned for immediate use."""
+    # The output `prs` is a dictionary with keys being PR numbers, and values being
+    # dictionaries with keys "title", "closed_at" and "labels", for example:
+    #
+    # "3355": {
+    #     "title": "Allow packages to use ISO 8601 dates in their PackageInfo.g",
+    #     "closed_at": "2021-02-20T15:44:48",
+    #     "labels": [
+    #         "gapdays2019-spring",
+    #         "gapsingular2019",
+    #         "kind: enhancement",
+    #         "release notes: to be added"
+    #     ]
+    # },
+  
     prs = {}
     all_pulls = repo.get_pulls(state="closed", sort="created", direction="desc", base="master")
     # We need to run this over the whole list of PRs. Sorting by creation date descending
@@ -163,7 +177,6 @@ def changes_overview(prs,startdate,rel_type):
     f.write("### " + "New features and major changes" + "\n\n")
     removelist = []
     for k in prs:
-        # The format of an entry of list is: ["title of PR", "Link" (Alternative the PR number can be used), [ list of labels ] ]
         if "release notes: highlight" in prs[k]["labels"]:
             f.write(pr_to_md(k, prs[k]["title"]))
             removelist.append(k)
