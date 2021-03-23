@@ -53,7 +53,7 @@ history_start_date = "2019-09-09"
 
 # the date of the last minor release (later, we may need to have more precise timestamp
 # - maybe extracted from the corresponding release tag)
-minor_branch_start_date = "2020-03-01" # next day after the minor release
+minor_branch_start_date = "2021-03-03" # next day after the minor release (starts at midnight)
 # question: what if it was merged into master before 4.11.1, but backported after?
 # Hopefully, before publishing 4.11.1 we have backported everything that had to be
 # backported, so this was not the case.
