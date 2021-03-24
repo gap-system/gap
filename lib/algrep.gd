@@ -836,6 +836,7 @@ DeclareCategoryCollections( "IsTensorElement" );
 #O  TensorProduct( <list> )
 #O  TensorProduct( <V>, <W>, ... )
 ##
+##  <#GAPDoc Label="TensorProduct">
 ##  <ManSection>
 ##  <Oper Name="TensorProduct" Arg='list'
 ##   Label="for a list of vector spaces"/>
@@ -862,8 +863,19 @@ DeclareCategoryCollections( "IsTensorElement" );
 ##  This does not mean that all tensor products have the
 ##  same zero element: zeros of different tensor products have different
 ##  families.
+##  <Example><![CDATA[
+##  gap> V:=TensorProduct(Rationals^2, Rationals^3);
+##  <vector space over Rationals, with 6 generators>
+##  gap> Basis(V);
+##  Basis( <vector space over Rationals, with 6 generators>,
+##  [ 1*([ 0, 1 ]<x>[ 0, 0, 1 ]), 1*([ 0, 1 ]<x>[ 0, 1, 0 ]), 
+##    1*([ 0, 1 ]<x>[ 1, 0, 0 ]), 1*([ 1, 0 ]<x>[ 0, 0, 1 ]), 
+##    1*([ 1, 0 ]<x>[ 0, 1, 0 ]), 1*([ 1, 0 ]<x>[ 1, 0, 0 ]) ] )
+##  ]]></Example>
+##  See also <Ref Oper="KroneckerProduct"/>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "TensorProductOp", [ IsList, IsVectorSpace ] );
 DeclareGlobalFunction( "TensorProduct" );
@@ -926,6 +938,7 @@ DeclareCategoryCollections( "IsWedgeElement" );
 ##
 #O  ExteriorPower( <V>, <k> )
 ##
+##  <#GAPDoc Label="ExteriorPower">
 ##  <ManSection>
 ##  <Oper Name="ExteriorPower" Arg='V, k'/>
 ##
@@ -948,8 +961,17 @@ DeclareCategoryCollections( "IsWedgeElement" );
 ##  This does not mean that all exterior powers have the
 ##  same zero element: zeros of different exterior powers have different
 ##  families.
+##  <Example><![CDATA[
+##  gap> V:=ExteriorPower(Rationals^3, 2);
+##  <vector space of dimension 3 over Rationals>
+##  gap> Basis(V);
+##  Basis( <vector space of dimension 3 over Rationals>, [ 
+##    1*([ 0, 1, 0 ]/\[ 0, 0, 1 ]), 1*([ 1, 0, 0 ]/\[ 0, 0, 1 ]), 
+##    1*([ 1, 0, 0 ]/\[ 0, 1, 0 ]) ] )
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ExteriorPower", [ IsLeftModule, IsInt ] );
 
@@ -1004,14 +1026,26 @@ DeclareCategoryCollections( "IsSymmetricPowerElement" );
 ##
 #O  SymmetricPower( <V>, <k> )
 ##
+##  <#GAPDoc Label="SymmetricPower">
 ##  <ManSection>
 ##  <Oper Name="SymmetricPower" Arg='V, k'/>
 ##
 ##  <Description>
 ##  Here <A>V</A> must be a vector space. This function returns the <A>k</A>-th
 ##  symmetric power of <A>V</A>.
+##  <Example><![CDATA[
+##  gap> V:=SymmetricPower(Rationals^3, 2);
+##  <vector space over Rationals, with 6 generators>
+##  gap> Basis(V);
+##  Basis( <vector space over Rationals, with 6 generators>,
+##  [ 1*([ 0, 0, 1 ].[ 0, 0, 1 ]), 1*([ 0, 1, 0 ].[ 0, 0, 1 ]), 
+##    1*([ 0, 1, 0 ].[ 0, 1, 0 ]), 1*([ 1, 0, 0 ].[ 0, 0, 1 ]), 
+##    1*([ 1, 0, 0 ].[ 0, 1, 0 ]), 1*([ 1, 0, 0 ].[ 1, 0, 0 ])
+##   ] )
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 

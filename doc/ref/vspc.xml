@@ -183,6 +183,17 @@
 <#Include Label="CheckForHandlingByNiceBasis">
 
 </Section>
+
+
+<Section Label="Tensor Products and Exterior and Symmetric Powers">
+<Heading>Tensor Products and Exterior and Symmetric Powers</Heading>
+
+<#Include Label="TensorProduct">
+<#Include Label="ExteriorPower">
+<#Include Label="SymmetricPower">
+
+</Section>
+
 </Chapter>
 
 
