@@ -527,19 +527,23 @@ end );
 ##
 ##  If <mat-grp> does not know whether it is finite,
 ##  there is currently no concurrent method,
-##  thus no rank shift is necessary in the first method installation.
+##  thus no rank shift is necessary for the method installation.
 ##
 ##  If <mat-grp> knows to be finite, we want our method to beat the one for
-##  'IsGroup and IsFinite and IsHandledByNiceMonomorphism',
-##  so we install it with the same rank shift as that method.
-##  (Note that 'IsHandledByNiceMonomorphism' is implied by
-##  'IsMatrixGroup and IsFinite'.)
+##  'IsGroup and IsFinite and IsHandledByNiceMonomorphism'.
 ##
-##  Installing just one method (with requirement 'IsMatrixGroup') would be
-##  difficult since we do not know the rank of 'IsGroup and IsFinite'.
+##  Installing just *one* method (with requirement 'IsMatrixGroup') would be
+##  possible via (dynamic) upranking,
+##  but here we install our method twice, with the different requirements
+##  'IsMatrixGroup' and 'IsMatrixGroup and IsFinite'.
+##  (Note that 'IsHandledByNiceMonomorphism' is implied by the latter,
+##  and that we apply the same downranking in the second installation
+##  that happens in the installation of the method for
+##  'IsGroup and IsFinite and IsHandledByNiceMonomorphism';
+##  we could get rid of the two downrankings, but this might affect code
+##  that is not distributed with GAP.)
 ##
-InstallMethod( IsomorphismPermGroup,"matrix group",
-  [ IsMatrixGroup ],
+BindGlobal( "IsomorphismPermGroupForMatrixGroup",
 function(G)
 local map;
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
@@ -560,24 +564,18 @@ local map;
 end);
 
 InstallMethod( IsomorphismPermGroup,
-    "finite matrix group",
-    [ IsMatrixGroup and IsFinite ], 5-NICE_FLAGS,
-    function( G )
-    local map;
+    "matrix group",
+    [ IsMatrixGroup ],
+    IsomorphismPermGroupForMatrixGroup );
 
-    if HasNiceMonomorphism( G ) and
-       IsPermGroup( Range( NiceMonomorphism( G ) ) ) then
-      map:= NiceMonomorphism( G );
-      if IsIdenticalObj( Source( map ), G ) then
-        return map;
-      fi;
-      return GeneralRestrictedMapping( map, G, Image( map, G ) );
-    else
-      map:= NicomorphismOfGeneralMatrixGroup( G, false, false );
-      SetNiceMonomorphism( G, map );
-      return map;
-    fi;
-end );
+InstallMethod( IsomorphismPermGroup,
+    "finite matrix group",
+    [ IsMatrixGroup and IsFinite and IsHandledByNiceMonomorphism ],
+    # The downranking is compatible with that for the method for
+    # 'IsGroup and IsFinite and IsHandledByNiceMonomorphism'
+    # (see 'lib/grpnice.gi').
+    5-NICE_FLAGS,
+    IsomorphismPermGroupForMatrixGroup );
 
 
 #############################################################################
