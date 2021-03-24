@@ -29,54 +29,50 @@ InstallMethod( SymplecticGroupCons,
     f := GF(q);
     z := PrimitiveRoot( f );
     o := One( f );
-#T introduce variable d_2 = d/2 ?
 
     # if the dimension is two it is a special linear group
     if d = 2 then
         g := SL( 2, q );
-#T no form for SL(2,q) if constructed like this?
-#T better add the form in the SL(2,q) call
 
-    # construct the generators
     else
 
-        # SP(4,2)
+        # Sp(4,2)
         if d = 4 and q = 2  then
             mat1 := [ [1,0,1,1], [1,0,0,1], [0,1,0,1], [1,1,1,1] ] * o;
             mat2 := [ [0,0,1,0], [1,0,0,0], [0,0,0,1], [0,1,0,0] ] * o;
 
-        # SP(d,q)
+        # Sp(d,q)
         else
             mat1 := IdentityMat( d, f );
-            mat2 := List( 0 * mat1, ShallowCopy );
-            for i  in [ 2 .. d/2 ]      do mat2[i][i-1]:= o;  od;
-            for i  in [ d/2+1 .. d-1 ]  do mat2[i][i+1]:= o;  od;
+            mat2 := NullMat( d, d, f );
+            for i  in [ 2 .. d/2 ]      do mat2[i,i-1]:= o;  od;
+            for i  in [ d/2+1 .. d-1 ]  do mat2[i,i+1]:= o;  od;
 
             if q mod 2 = 1  then
-                mat1[  1][    1] := z;
-                mat1[  d][    d] := z^-1;
-                mat2[  1][    1] := o;
-                mat2[  1][d/2+1] := o;
-                mat2[d-1][  d/2] := o;
-                mat2[  d][  d/2] := -o;
+                mat1[  1,    1] := z;
+                mat1[  d,    d] := z^-1;
+                mat2[  1,    1] := o;
+                mat2[  1,d/2+1] := o;
+                mat2[d-1,  d/2] := o;
+                mat2[  d,  d/2] := -o;
 
             elif q <> 2  then
-                mat1[    1][    1] := z;
-                mat1[  d/2][  d/2] := z;
-                mat1[d/2+1][d/2+1] := z^-1;
-                mat1[    d][    d] := z^-1;
-                mat2[    1][d/2-1] := o;
-                mat2[    1][  d/2] := o;
-                mat2[    1][d/2+1] := o;
-                mat2[d/2+1][  d/2] := o;
-                mat2[    d][  d/2] := o;
+                mat1[    1,    1] := z;
+                mat1[  d/2,  d/2] := z;
+                mat1[d/2+1,d/2+1] := z^-1;
+                mat1[    d,    d] := z^-1;
+                mat2[    1,d/2-1] := o;
+                mat2[    1,  d/2] := o;
+                mat2[    1,d/2+1] := o;
+                mat2[d/2+1,  d/2] := o;
+                mat2[    d,  d/2] := o;
 
             else
-                mat1[    1][  d/2] := o;
-                mat1[    1][    d] := o;
-                mat1[d/2+1][    d] := o;
-                mat2[    1][d/2+1] := o;
-                mat2[    d][  d/2] := o;
+                mat1[    1,  d/2] := o;
+                mat1[    1,    d] := o;
+                mat1[d/2+1,    d] := o;
+                mat2[    1,d/2+1] := o;
+                mat2[    d,  d/2] := o;
             fi;
         fi;
 
@@ -85,7 +81,7 @@ InstallMethod( SymplecticGroupCons,
         # avoid to call 'Group' because this would check invertibility ...
         g := GroupWithGenerators( [ mat1, mat2 ] );
         SetName( g, Concatenation("Sp(",String(d),",",String(q),")") );
-        SetDimensionOfMatrixGroup( g, Length( mat1 ) );
+        SetDimensionOfMatrixGroup( g, d );
         SetFieldOfMatrixGroup( g, f );
 
         # add the size
@@ -99,10 +95,10 @@ InstallMethod( SymplecticGroupCons,
     fi;
 
     # construct the form
-    c := List( 0 * One( g ), ShallowCopy );
+    c := NullMat( d, d, f );
     for i  in [ 1 .. d/2 ]  do
-        c[i][d-i+1] := o;
-        c[d/2+i][d/2-i+1] := -o;
+        c[i,d-i+1] := o;
+        c[d/2+i,d/2-i+1] := -o;
     od;
     SetInvariantBilinearForm( g,
         rec( matrix:= ImmutableMatrix( f, c, true ) ) );
@@ -144,7 +140,7 @@ InstallMethod( GeneralUnitaryGroupCons,
 
      if n > 1 then
        mat1:= IdentityMat( n, f );
-       mat2:= List( 0 * mat1, ShallowCopy );
+       mat2:= NullMat( n, n, f );
      fi;
 
      if   n = 1 then
@@ -156,40 +152,40 @@ InstallMethod( GeneralUnitaryGroupCons,
        # 'e' is mapped to '-e' under the Frobenius mapping.
        e:= Z(q^2) - Z(q^2)^q;
        if q = 2 then
-         mat1[1][1]:= z;
-         mat1[2][2]:= z;
-         mat1[1][2]:= z;
-         mat2[1][2]:= o;
-         mat2[2][1]:= o;
+         mat1[1,1]:= z;
+         mat1[2,2]:= z;
+         mat1[1,2]:= z;
+         mat2[1,2]:= o;
+         mat2[2,1]:= o;
        else
-         mat1[1][1]:= z;
-         mat1[2][2]:= z^-q;
-         mat2[1][1]:= -o;
-         mat2[1][2]:= e;
-         mat2[2][1]:= -e^-1;
+         mat1[1,1]:= z;
+         mat1[2,2]:= z^-q;
+         mat2[1,1]:= -o;
+         mat2[1,2]:= e;
+         mat2[2,1]:= -e^-1;
        fi;
 
      elif n mod 2 = 0 then
        if q mod 2 = 1 then e:= z^( (q+1)/2 ); else e:= o; fi;
-       mat1[1][1]:= z;
-       mat1[n][n]:= z^-q;
-       for i in [ 2 .. n/2 ]     do mat2[ i ][ i-1 ]:= o; od;
-       for i in [ n/2+1 .. n-1 ] do mat2[ i ][ i+1 ]:= o; od;
-       mat2[ 1 ][ 1 ]:= o;
-       mat2[1][n/2+1]:= e;
-       mat2[n-1][n/2]:= e^-1;
-       mat2[n][ n/2 ]:= -e^-1;
+       mat1[1,1]:= z;
+       mat1[n,n]:= z^-q;
+       for i in [ 2 .. n/2 ]     do mat2[ i, i-1 ]:= o; od;
+       for i in [ n/2+1 .. n-1 ] do mat2[ i, i+1 ]:= o; od;
+       mat2[ 1, 1 ]:= o;
+       mat2[1,n/2+1]:= e;
+       mat2[n-1,n/2]:= e^-1;
+       mat2[n, n/2 ]:= -e^-1;
      else
-       mat1[(n-1)/2][(n-1)/2]:= z;
-       mat1[(n-1)/2+2][(n-1)/2+2]:= z^-q;
-       for i in [ 1 .. (n-1)/2-1 ] do mat2[ i ][ i+1 ]:= o; od;
-       for i in [ (n-1)/2+3 .. n ] do mat2[ i ][ i-1 ]:= o; od;
-       mat2[(n-1)/2][  1  ]:=  -(1+z^q/z)^-1;
-       mat2[(n-1)/2][(n-1)/2+1]:= -o;
-       mat2[(n-1)/2][  n  ]:=  o;
-       mat2[(n-1)/2+1][  1  ]:= -o;
-       mat2[(n-1)/2+1][(n-1)/2+1]:= -o;
-       mat2[(n-1)/2+2][  1  ]:=  o;
+       mat1[(n-1)/2,(n-1)/2]:= z;
+       mat1[(n-1)/2+2,(n-1)/2+2]:= z^-q;
+       for i in [ 1 .. (n-1)/2-1 ] do mat2[ i, i+1 ]:= o; od;
+       for i in [ (n-1)/2+3 .. n ] do mat2[ i, i-1 ]:= o; od;
+       mat2[(n-1)/2,  1  ]:=  -(1+z^q/z)^-1;
+       mat2[(n-1)/2,(n-1)/2+1]:= -o;
+       mat2[(n-1)/2,  n  ]:=  o;
+       mat2[(n-1)/2+1,  1  ]:= -o;
+       mat2[(n-1)/2+1,(n-1)/2+1]:= -o;
+       mat2[(n-1)/2+2,  1  ]:=  o;
      fi;
 
      mat1:=ImmutableMatrix(f,mat1,true);
@@ -203,7 +199,7 @@ InstallMethod( GeneralUnitaryGroupCons,
      # Avoid to call 'Group' because this would check invertibility ...
      g:= GroupWithGenerators( gens );
      SetName( g, Concatenation("GU(",String(n),",",String(q),")") );
-     SetDimensionOfMatrixGroup( g, Length( mat1 ) );
+     SetDimensionOfMatrixGroup( g, n );
      SetFieldOfMatrixGroup( g, f );
 
      # Add the size.
@@ -253,7 +249,7 @@ InstallMethod( SpecialUnitaryGroupCons,
      else
 
        mat1:= IdentityMat( n, f );
-       mat2:= List( 0 * mat1, ShallowCopy );
+       mat2:= NullMat( n, n, f );
 
        if   n = 2 then
 
@@ -261,46 +257,46 @@ InstallMethod( SpecialUnitaryGroupCons,
          # 'e' is mapped to '-e' under the Frobenius mapping.
          e:= Z(q^2) - Z(q^2)^q;
          if q <= 3 then
-           mat1[1][2]:= e;
-           mat2[1][2]:= e;
-           mat2[2][1]:= -e^-1;
+           mat1[1,2]:= e;
+           mat2[1,2]:= e;
+           mat2[2,1]:= -e^-1;
          else
-           mat1[1][1]:= z^(q+1);
-           mat1[2][2]:= z^(-q-1);
-           mat2[1][1]:= -o;
-           mat2[1][2]:= e;
-           mat2[2][1]:= -e^-1;
+           mat1[1,1]:= z^(q+1);
+           mat1[2,2]:= z^(-q-1);
+           mat2[1,1]:= -o;
+           mat2[1,2]:= e;
+           mat2[2,1]:= -e^-1;
          fi;
 
        elif n mod 2 = 0 then
 
-         mat1[1][1]:= z;
-         mat1[n][n]:= z^-q;
-         mat1[2][2]:= z^-1;
-         mat1[ n-1 ][ n-1 ]:= z^q;
+         mat1[1,1]:= z;
+         mat1[n,n]:= z^-q;
+         mat1[2,2]:= z^-1;
+         mat1[ n-1, n-1 ]:= z^q;
 
          if q mod 2 = 1 then e:= z^( (q+1)/2 ); else e:= o; fi;
-         for i in [ 2 .. n/2 ]     do mat2[ i ][ i-1 ]:= o; od;
-         for i in [ n/2+1 .. n-1 ] do mat2[ i ][ i+1 ]:= o; od;
-         mat2[ 1 ][ 1 ]:= o;
-         mat2[1][n/2+1]:= e;
-         mat2[n-1][n/2]:= e^-1;
-         mat2[n][ n/2 ]:= -e^-1;
+         for i in [ 2 .. n/2 ]     do mat2[ i, i-1 ]:= o; od;
+         for i in [ n/2+1 .. n-1 ] do mat2[ i, i+1 ]:= o; od;
+         mat2[ 1, 1 ]:= o;
+         mat2[1,n/2+1]:= e;
+         mat2[n-1,n/2]:= e^-1;
+         mat2[n, n/2 ]:= -e^-1;
 
        elif n <> 1 then
 
-         mat1[  (n-1)/2  ][  (n-1)/2  ]:= z;
-         mat1[ (n-1)/2+1 ][ (n-1)/2+1 ]:= z^q/z;
-         mat1[ (n-1)/2+2 ][ (n-1)/2+2 ]:= z^-q;
+         mat1[ (n-1)/2  , (n-1)/2  ]:= z;
+         mat1[ (n-1)/2+1, (n-1)/2+1 ]:= z^q/z;
+         mat1[ (n-1)/2+2, (n-1)/2+2 ]:= z^-q;
 
-         for i in [ 1 .. (n-1)/2-1 ] do mat2[ i ][ i+1 ]:= o; od;
-         for i in [ (n-1)/2+3 .. n ] do mat2[ i ][ i-1 ]:= o; od;
-         mat2[(n-1)/2][    1    ]:=  -(1+z^q/z)^-1;
-         mat2[(n-1)/2][(n-1)/2+1]:= -o;
-         mat2[(n-1)/2][    n    ]:=  o;
-         mat2[(n-1)/2+1][   1   ]:= -o;
-         mat2[(n-1)/2+1][(n-1)/2+1]:= -o;
-         mat2[(n-1)/2+2][  1  ]:=  o;
+         for i in [ 1 .. (n-1)/2-1 ] do mat2[ i, i+1 ]:= o; od;
+         for i in [ (n-1)/2+3 .. n ] do mat2[ i, i-1 ]:= o; od;
+         mat2[(n-1)/2,    1    ]:=  -(1+z^q/z)^-1;
+         mat2[(n-1)/2,(n-1)/2+1]:= -o;
+         mat2[(n-1)/2,    n    ]:=  o;
+         mat2[(n-1)/2+1,   1   ]:= -o;
+         mat2[(n-1)/2+1,(n-1)/2+1]:= -o;
+         mat2[(n-1)/2+2,  1  ]:=  o;
        fi;
 
      fi;
@@ -316,7 +312,7 @@ InstallMethod( SpecialUnitaryGroupCons,
      # Avoid to call 'Group' because this would check invertibility ...
      g:= GroupWithGenerators( gens );
      SetName( g, Concatenation("SU(",String(n),",",String(q),")") );
-     SetDimensionOfMatrixGroup( g, Length( mat1 ) );
+     SetDimensionOfMatrixGroup( g, n );
      SetFieldOfMatrixGroup( g, f );
 
      # Add the size.
@@ -361,33 +357,31 @@ end );
 #F  Oplus45() . . . . . . . . . . . . . . . . . . . . . . . . . . . . O+_4(5)
 ##
 BindGlobal( "Oplus45", function()
-    local   f,  id,  tau2,  tau,  phi,  delta,  eichler,  g;
+    local   f,  tau2,  tau,  phi,  delta,  eichler,  g;
 
-    # identity matrix over <f>
     f  := GF(5);
-    id := Immutable( IdentityMat( 4, f ) );
 
     # construct TAU2: tau(x1-x2)
-    tau2 := List( 0*id, ShallowCopy );
-    tau2[1][1] := One( f );
-    tau2[2][2] := One( f );
-    tau2[3][4] := One( f );
-    tau2[4][3] := One( f );
+    tau2 := NullMat( 4, 4, f );
+    tau2[1,1] := One( f );
+    tau2[2,2] := One( f );
+    tau2[3,4] := One( f );
+    tau2[4,3] := One( f );
 
     # construct TAU: tau(x1+x2)
-    tau := List( 0*id, ShallowCopy );
-    tau[1][1] := One( f );
-    tau[2][2] := One( f );
-    tau[3][4] := -One( f );
-    tau[4][3] := -One( f );
+    tau := NullMat( 4, 4, f );
+    tau[1,1] := One( f );
+    tau[2,2] := One( f );
+    tau[3,4] := -One( f );
+    tau[4,3] := -One( f );
 
     # construct PHI: phi(2)
-    phi := List( id, ShallowCopy );
-    phi[1][1] := 2*One( f );
-    phi[2][2] := 3*One( f );
+    phi := IdentityMat( 4, f );
+    phi[1,1] := 2*One( f );
+    phi[2,2] := 3*One( f );
 
     # construct DELTA: u <-> v
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( 4, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct eichler transformation
@@ -419,40 +413,38 @@ end );
 ##  <q> must be 3, <d> at least 6,  beta is 2
 ##
 BindGlobal( "Opm3", function( s, d )
-    local   f,  id,  theta,  i,  theta2,  phi,  eichler,  g,  delta;
+    local   f,  theta,  i,  theta2,  phi,  eichler,  g,  delta;
 
-    # identity matrix over <f>
     f  := GF(3);
-    id := Immutable( IdentityMat( d, f ) );
 
     # construct DELTA: u <-> v, x -> x
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct THETA: x2 -> ... -> xk -> x2
-    theta := List( 0*id, ShallowCopy );
-    theta[1][1] := One( f );
-    theta[2][2] := One( f );
-    theta[3][3] := One( f );
+    theta := NullMat( d, d, f );
+    theta[1,1] := One( f );
+    theta[2,2] := One( f );
+    theta[3,3] := One( f );
     for i  in [ 4 .. d-1 ]  do
-        theta[i][i+1] := One( f );
+        theta[i,i+1] := One( f );
     od;
-    theta[d][4] := One( f );
+    theta[d,4] := One( f );
 
     # construct THETA2: x2 -> x1 -> x3 -> x2
-    theta2 := List( id, ShallowCopy );
+    theta2 := IdentityMat( d, f );
     theta2{[3..5]}{[3..5]} := [[0,1,1],[-1,-1,1],[1,-1,1]]*One( f );
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := 2*One( f );
-    phi[2][2] := (2*One( f ))^-1;
+    phi := IdentityMat( d, f );
+    phi[1,1] := 2*One( f );
+    phi[2,2] := (2*One( f ))^-1;
 
     # construct the eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[2][1] := -One( f );
-    eichler[2][4] := -One( f );
-    eichler[4][1] := 2*One( f );
+    eichler := IdentityMat( d, f );
+    eichler[2,1] := -One( f );
+    eichler[2,4] := -One( f );
+    eichler[4,1] := 2*One( f );
 
     # construct the group without calling 'Group'
     g := [ phi*theta2, theta*eichler*delta ];
@@ -462,9 +454,9 @@ BindGlobal( "Opm3", function( s, d )
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
-    delta[3][3] := One( f )*2;
+    delta[3,3] := One( f )*2;
     delta := ImmutableMatrix( f, delta, true );
     SetInvariantQuadraticFormFromMatrix( g, delta );
 
@@ -489,40 +481,38 @@ end );
 ##  <q> must be 3 or 5, <d> at least 6,  beta is 1
 ##
 BindGlobal( "OpmSmall", function( s, d, q )
-    local   f,  id,  theta,  i,  theta2,  phi,  eichler,  g,  delta;
+    local   f,  theta,  i,  theta2,  phi,  eichler,  g,  delta;
 
-    # identity matrix over <f>
     f  := GF(q);
-    id := Immutable( IdentityMat( d, f ) );
 
     # construct DELTA: u <-> v, x -> x
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct THETA: x2 -> ... -> xk -> x2
-    theta := List( 0*id, ShallowCopy );
-    theta[1][1] := One( f );
-    theta[2][2] := One( f );
-    theta[3][3] := One( f );
+    theta := NullMat( d, d, f );
+    theta[1,1] := One( f );
+    theta[2,2] := One( f );
+    theta[3,3] := One( f );
     for i  in [ 4 .. d-1 ]  do
-        theta[i][i+1] := One( f );
+        theta[i,i+1] := One( f );
     od;
-    theta[d][4] := One( f );
+    theta[d,4] := One( f );
 
     # construct THETA2: x2 -> x1 -> x3 -> x2
-    theta2 := List( id, ShallowCopy );
+    theta2 := IdentityMat( d, f );
     theta2{[3..5]}{[3..5]} := [[0,0,1],[1,0,0],[0,1,0]]*One( f );
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := 2*One( f );
-    phi[2][2] := (2*One( f ))^-1;
+    phi := IdentityMat( d, f );
+    phi[1,1] := 2*One( f );
+    phi[2,2] := (2*One( f ))^-1;
 
     # construct the eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[2][1] := -One( f );
-    eichler[2][4] := -One( f );
-    eichler[4][1] := 2*One( f );
+    eichler := IdentityMat( d, f );
+    eichler[2,1] := -One( f );
+    eichler[2,4] := -One( f );
+    eichler[4,1] := 2*One( f );
 
     # construct the group without calling 'Group'
     g := [ phi*theta2, theta*eichler*delta ];
@@ -532,9 +522,9 @@ BindGlobal( "OpmSmall", function( s, d, q )
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
-    delta[3][3] := One( f );
+    delta[3,3] := One( f );
     delta := ImmutableMatrix( f, delta, true );
     SetInvariantQuadraticFormFromMatrix( g, delta );
 
@@ -557,7 +547,7 @@ end );
 #F  OpmOdd( <s>, <d>, <q> ) . . . . . . . . . . . . . . . . . . O<s>_<d>(<q>)
 ##
 BindGlobal( "OpmOdd", function( s, d, q )
-    local   f,  w,  beta,  epsilon,  id,  eb1,  tau,  theta,  i,  phi,
+    local   f,  w,  beta,  epsilon,  eb1,  tau,  theta,  i,  phi,
             delta,  eichler,  g;
 
     # <d> must be at least 4
@@ -624,41 +614,38 @@ BindGlobal( "OpmOdd", function( s, d, q )
         epsilon := PrimitiveRoot( f );
     fi;
 
-    # identity matrix over <f>
-    id := Immutable( IdentityMat( d, f ) );
-
     # construct the reflection TAU_epsilon*x1+x2
     eb1 := epsilon^2*beta+1;
-    tau := List( id, ShallowCopy );
-    tau[3][3] := 1-2*beta*epsilon^2/eb1;
-    tau[3][4] := -2*beta*epsilon/eb1;
-    tau[4][3] := -2*epsilon/eb1;
-    tau[4][4] := 1-2/eb1;
+    tau := IdentityMat( d, f );
+    tau[3,3] := 1-2*beta*epsilon^2/eb1;
+    tau[3,4] := -2*beta*epsilon/eb1;
+    tau[4,3] := -2*epsilon/eb1;
+    tau[4,4] := 1-2/eb1;
 
     # construct THETA
-    theta := List( 0*id, ShallowCopy );
-    theta[1][1] := One( f );
-    theta[2][2] := One( f );
-    theta[3][3] := One( f );
+    theta := NullMat( d, d, f );
+    theta[1,1] := One( f );
+    theta[2,2] := One( f );
+    theta[3,3] := One( f );
     for i  in [ 4 .. d-1 ]  do
-        theta[i][i+1] := One( f );
+        theta[i,i+1] := One( f );
     od;
-    theta[d][4] := -One( f );
+    theta[d,4] := -One( f );
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := PrimitiveRoot( f );
-    phi[2][2] := PrimitiveRoot( f )^-1;
+    phi := IdentityMat( d, f );
+    phi[1,1] := PrimitiveRoot( f );
+    phi[2,2] := PrimitiveRoot( f )^-1;
 
     # construct DELTA: u <-> v, x -> x
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct the eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[2][1] := -One( f );
-    eichler[2][4] := -One( f );
-    eichler[4][1] := 2*One( f );
+    eichler := IdentityMat( d, f );
+    eichler[2,1] := -One( f );
+    eichler[2,4] := -One( f );
+    eichler[4,1] := 2*One( f );
 
     # construct the group without calling 'Group'
     g := [ phi, theta*tau*eichler*delta ];
@@ -668,9 +655,9 @@ BindGlobal( "OpmOdd", function( s, d, q )
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
-    delta[3][3] := beta;
+    delta[3,3] := beta;
     delta := ImmutableMatrix( f, delta, true );
     SetInvariantQuadraticFormFromMatrix( g, delta );
 
@@ -721,7 +708,7 @@ end );
 #F  Oplus4Even( <q> ) . . . . . . . . . . . . . . . . . . . . . . . O+_4(<q>)
 ##
 BindGlobal( "Oplus4Even", function( q )
-    local   f,  id,  rho,  delta,  phi,  eichler,  g;
+    local   f,  rho,  delta,  phi,  eichler,  g;
 
     # <q> must be even
     if q mod 2 = 1  then
@@ -729,21 +716,18 @@ BindGlobal( "Oplus4Even", function( q )
     fi;
     f := GF(q);
 
-    # identity matrix over <f>
-    id := Immutable( IdentityMat( 4, f ) );
-
     # construct RHO: x1 <-> y1
-    rho := List( id, ShallowCopy );
+    rho := IdentityMat( 4, f );
     rho{[3,4]}{[3,4]} := [[0,1],[1,0]] * One( f );
 
     # construct DELTA: u <-> v
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( 4, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := PrimitiveRoot( f );
-    phi[2][2] := PrimitiveRoot( f )^-1;
+    phi := IdentityMat( 4, f );
+    phi[1,1] := PrimitiveRoot( f );
+    phi[2,2] := PrimitiveRoot( f )^-1;
 
     # construct eichler transformation
     eichler := [[1,0,0,0],[0,1,-1,0],[0,0,1,0],[1,0,0,1]] * One( f );
@@ -772,7 +756,7 @@ end );
 #F  OplusEven( <d>, <q> ) . . . . . . . . . . . . . . . . . . . . O+_<d>(<q>)
 ##
 BindGlobal( "OplusEven", function( d, q )
-    local   f,  id,  k,  phi,  delta,  theta,  i,  delta2,  eichler,
+    local   f,  k,  phi,  delta,  theta,  i,  delta2,  eichler,
             rho,  g;
 
     # <d> and <q> must be even
@@ -787,67 +771,64 @@ BindGlobal( "OplusEven", function( d, q )
     fi;
     f := GF(q);
 
-    # identity matrix over <f>
-    id := Immutable( IdentityMat( d, f ) );
-
     # V = H | H_1 | ... | H_k
     k := (d-2) / 2;
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := PrimitiveRoot( f );
-    phi[2][2] := PrimitiveRoot( f )^-1;
+    phi := IdentityMat( d, f );
+    phi[1,1] := PrimitiveRoot( f );
+    phi[2,2] := PrimitiveRoot( f )^-1;
 
     # construct DELTA: u <-> v, x -> x
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct THETA: x_2 -> x_3 -> .. -> x_k -> y_2 -> .. -> y_k -> x_2
-    theta := List( 0*id, ShallowCopy );
+    theta := NullMat( d, d, f );
     for i  in [ 1 .. 4 ]  do
-        theta[i][i] := One( f );
+        theta[i,i] := One( f );
     od;
     for i  in [ 2 .. k-1 ]  do
-        theta[1+2*i][3+2*i] := One( f );
-        theta[2+2*i][4+2*i] := One( f );
+        theta[1+2*i,3+2*i] := One( f );
+        theta[2+2*i,4+2*i] := One( f );
     od;
-    theta[1+2*k][6] := One( f );
-    theta[2+2*k][5] := One( f );
+    theta[1+2*k,6] := One( f );
+    theta[2+2*k,5] := One( f );
 
     # (k even) construct DELTA2: x_i <-> y_i, 1 <= i <= k-1
     if k mod 2 = 0  then
-        delta2 := List( 0*id, ShallowCopy );
+        delta2 := NullMat( d, d, f );
         delta2{[1,2]}{[1,2]} := [[1,0],[0,1]] * One( f );
         for i  in [ 1 .. k ]  do
-            delta2[1+2*i][2+2*i] := One( f );
-            delta2[2+2*i][1+2*i] := One( f );
+            delta2[1+2*i,2+2*i] := One( f );
+            delta2[2+2*i,1+2*i] := One( f );
         od;
 
     # (k odd) construct DELTA2: x_1 <-> y_1, x_i <-> x_i+1, y_i <-> y_i+1
     else
-        delta2 := List( 0*id, ShallowCopy );
+        delta2 := NullMat( d, d, f );
         delta2{[1,2]}{[1,2]} := [[1,0],[0,1]] * One( f );
         delta2{[3,4]}{[3,4]} := [[0,1],[1,0]] * One( f );
         for i  in [ 2, 4 .. k-1 ]  do
-            delta2[1+2*i][3+2*i] := One( f );
-            delta2[3+2*i][1+2*i] := One( f );
-            delta2[2+2*i][4+2*i] := One( f );
-            delta2[4+2*i][2+2*i] := One( f );
+            delta2[1+2*i,3+2*i] := One( f );
+            delta2[3+2*i,1+2*i] := One( f );
+            delta2[2+2*i,4+2*i] := One( f );
+            delta2[4+2*i,2+2*i] := One( f );
         od;
     fi;
 
     # construct eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[4][6] := One( f );
-    eichler[5][3] := -One( f );
+    eichler := IdentityMat( d, f );
+    eichler[4,6] := One( f );
+    eichler[5,3] := -One( f );
 
     # construct RHO = THETA * EICHLER
     rho := theta*eichler;
 
     # construct second eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[2][5] := -One( f );
-    eichler[6][1] := One( f );
+    eichler := IdentityMat( d, f );
+    eichler[2,5] := -One( f );
+    eichler[6,1] := One( f );
 
     # there seems to be something wrong in I/E for p=2
     if k mod 2 = 0  then
@@ -869,9 +850,9 @@ BindGlobal( "OplusEven", function( d, q )
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
-    delta := List( 0*id, ShallowCopy );
+    delta := NullMat( d, d, f );
     for i  in [ 1 .. d/2 ]  do
-        delta[2*i-1][2*i] := One( f );
+        delta[2*i-1,2*i] := One( f );
     od;
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, delta, true ) );
 
@@ -937,7 +918,7 @@ end );
 #F  Ominus4Even( <q> )  . . . . . . . . . . . . . . . . . . . . . . O-_4(<q>)
 ##
 BindGlobal( "Ominus4Even", function( q )
-    local f, id, rho, delta, phi, R, x, t, eichler, g;
+    local f, rho, delta, phi, R, x, t, eichler, g;
 
     # <q> must be even
     if q mod 2 = 1  then
@@ -945,21 +926,18 @@ BindGlobal( "Ominus4Even", function( q )
     fi;
     f := GF(q);
 
-    # identity matrix over <f>
-    id := Immutable( IdentityMat( 4, f ) );
-
     # construct RHO: x1 <-> y1
-    rho := List( id, ShallowCopy );
+    rho := IdentityMat( 4, f );
     rho{[3,4]}{[3,4]} := [[0,1],[1,0]] * One( f );
 
     # construct DELTA: u <-> v
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( 4, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := PrimitiveRoot( f );
-    phi[2][2] := PrimitiveRoot( f )^-1;
+    phi := IdentityMat( 4, f );
+    phi[1,1] := PrimitiveRoot( f );
+    phi[2,2] := PrimitiveRoot( f )^-1;
 
     # find x^2+x+t that is irreducible over <f>
     R:= PolynomialRing( f, 1 );
@@ -998,7 +976,7 @@ end );
 #F  OminusEven( <d>, <q> )  . . . . . . . . . . . . . . . . . . . O-_<d>(<q>)
 ##
 BindGlobal( "OminusEven", function( d, q )
-    local f, id, k, phi, delta, theta, i, delta2, eichler, rho, g, t, R, x;
+    local f, k, phi, delta, theta, i, delta2, eichler, rho, g, t, R, x;
 
     # <d> and <q> must be odd
     if d mod 2 = 1  then
@@ -1010,52 +988,49 @@ BindGlobal( "OminusEven", function( d, q )
     fi;
     f := GF(q);
 
-    # identity matrix over <f>
-    id := Immutable( IdentityMat( d, f ) );
-
     # V = H | H_1 | ... | H_k
     k := (d-2) / 2;
 
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := PrimitiveRoot( f );
-    phi[2][2] := PrimitiveRoot( f )^-1;
+    phi := IdentityMat( d, f );
+    phi[1,1] := PrimitiveRoot( f );
+    phi[2,2] := PrimitiveRoot( f )^-1;
 
     # construct DELTA: u <-> v, x -> x
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct THETA: x_2 -> x_3 -> .. -> x_k -> y_2 -> .. -> y_k -> x_2
-    theta := List( 0*id, ShallowCopy );
+    theta := NullMat( d, d, f );
     for i  in [ 1 .. 4 ]  do
-        theta[i][i] := One( f );
+        theta[i,i] := One( f );
     od;
     for i  in [ 2 .. k-1 ]  do
-        theta[1+2*i][3+2*i] := One( f );
-        theta[2+2*i][4+2*i] := One( f );
+        theta[1+2*i,3+2*i] := One( f );
+        theta[2+2*i,4+2*i] := One( f );
     od;
-    theta[1+2*k][6] := One( f );
-    theta[2+2*k][5] := One( f );
+    theta[1+2*k,6] := One( f );
+    theta[2+2*k,5] := One( f );
 
     # (k even) construct DELTA2: x_i <-> y_i, 1 <= i <= k-1
     if k mod 2 = 0  then
-        delta2 := List( 0*id, ShallowCopy );
+        delta2 := NullMat( d, d, f );
         delta2{[1,2]}{[1,2]} := [[1,0],[0,1]] * One( f );
         for i  in [ 1 .. k ]  do
-            delta2[1+2*i][2+2*i] := One( f );
-            delta2[2+2*i][1+2*i] := One( f );
+            delta2[1+2*i,2+2*i] := One( f );
+            delta2[2+2*i,1+2*i] := One( f );
         od;
 
     # (k odd) construct DELTA2: x_1 <-> y_1, x_i <-> x_i+1, y_i <-> y_i+1
     else
-        delta2 := List( 0*id, ShallowCopy );
+        delta2 := NullMat( d, d, f );
         delta2{[1,2]}{[1,2]} := [[1,0],[0,1]] * One( f );
         delta2{[3,4]}{[3,4]} := [[0,1],[1,0]] * One( f );
         for i  in [ 2, 4 .. k-1 ]  do
-            delta2[1+2*i][3+2*i] := One( f );
-            delta2[3+2*i][1+2*i] := One( f );
-            delta2[2+2*i][4+2*i] := One( f );
-            delta2[4+2*i][2+2*i] := One( f );
+            delta2[1+2*i,3+2*i] := One( f );
+            delta2[3+2*i,1+2*i] := One( f );
+            delta2[2+2*i,4+2*i] := One( f );
+            delta2[4+2*i,2+2*i] := One( f );
         od;
     fi;
 
@@ -1070,18 +1045,18 @@ BindGlobal( "OminusEven", function( d, q )
     t := PrimitiveRoot( f )^t;
 
     # construct Eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[4][6] := One( f );
-    eichler[5][3] := -One( f );
-    eichler[5][6] := -t;
+    eichler := IdentityMat( d, f );
+    eichler[4,6] := One( f );
+    eichler[5,3] := -One( f );
+    eichler[5,6] := -t;
 
     # construct RHO = THETA * EICHLER
     rho := theta*eichler;
 
     # construct second eichler transformation
-    eichler := List( id, ShallowCopy );
-    eichler[2][5] := -One( f );
-    eichler[6][1] := One( f );
+    eichler := IdentityMat( d, f );
+    eichler[2,5] := -One( f );
+    eichler[6,1] := One( f );
 
     # there seems to be something wrong in I/E for p=2
     if k mod 2 = 0  then
@@ -1103,12 +1078,12 @@ BindGlobal( "OminusEven", function( d, q )
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
-    delta := List( 0*id, ShallowCopy );
+    delta := NullMat( d, d, f );
     for i  in [ 1 .. d/2 ]  do
-        delta[2*i-1][2*i] := One( f );
+        delta[2*i-1,2*i] := One( f );
     od;
-    delta[3][3] := t;
-    delta[4][4] := t;
+    delta[3,3] := t;
+    delta[4,4] := t;
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, delta, true ) );
 
     # set the size
@@ -1133,7 +1108,7 @@ end );
 ##  characteristic. The discriminant of the quadratic form is -(2<b>)^(<d>-2)
 ##
 BindGlobal( "OzeroOdd", function( d, q, b )
-    local   id,  phi,  delta,  rho,  i,  eichler,  g,  s,  f,  q2,  q2i;
+    local   phi,  delta,  rho,  i,  eichler,  g,  s,  f,  q2,  q2i;
 
     # <d> and <q> must be odd
     if d mod 2 = 0  then
@@ -1154,29 +1129,26 @@ BindGlobal( "OzeroOdd", function( d, q, b )
       return g;
     fi;
 
-    # identity matrix over <f>
-    id := Immutable( IdentityMat( d, f ) );
-
     # construct PHI: u -> au, v -> a^-1v, x -> x
-    phi := List( id, ShallowCopy );
-    phi[1][1] := PrimitiveRoot( f );
-    phi[2][2] := PrimitiveRoot( f )^-1;
+    phi := IdentityMat( d, f );
+    phi[1,1] := PrimitiveRoot( f );
+    phi[2,2] := PrimitiveRoot( f )^-1;
 
     # construct DELTA: u <-> v, x -> x
-    delta := List( id, ShallowCopy );
+    delta := IdentityMat( d, f );
     delta{[1,2]}{[1,2]} := [[0,1],[1,0]]*One( f );
 
     # construct RHO: u -> u, v -> v, x_i -> x_i+1
-    rho := List( 0*id, ShallowCopy );
-    rho[1][1] := One( f );
-    rho[2][2] := One( f );
+    rho := NullMat( d, d, f );
+    rho[1,1] := One( f );
+    rho[2,2] := One( f );
     for i  in [ 3 .. d-1 ]  do
-        rho[i][i+1] := One( f );
+        rho[i,i+1] := One( f );
     od;
-    rho[d][3] := One( f );
+    rho[d,3] := One( f );
 
     # construct eichler transformation
-    eichler := List( id, ShallowCopy );
+    eichler := IdentityMat( d, f );
     eichler{[1..3]}{[1..3]} := [[1,0,0],[-b,1,-1],[2*b,0,1]] * One( f );
 
     # construct the group without calling 'Group'
@@ -1197,7 +1169,7 @@ BindGlobal( "OzeroOdd", function( d, q, b )
     SetSize( g, 2 * q^((d-1)^2/4) * s );
 
     # construct the forms
-    s := List( b*id, ShallowCopy );
+    s := b * IdentityMat( d, f );
     s{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, s, true ) );
 
@@ -1220,7 +1192,7 @@ end );
 ##  This group is *not* equal to the symplectic group constructed with the
 ##  function `Sp',
 ##  since the bilinear form of the orthogonal group is the one used in the
-##  book of Carter and not the one used for `SP'.
+##  book of Carter and not the one used for `Sp'.
 ##  (Note that our matrices are transposed, relative to the ones given by
 ##  Carter, because the group shall act on a *row* space.)
 ##
@@ -1270,7 +1242,7 @@ BindGlobal( "OzeroEven", function( d, q )
 
     elif d = 5 and q = 2  then
 
-      # The isomorphic symplectic group is $SP(4,2)$.
+      # The isomorphic symplectic group is $Sp(4,2)$.
       mat1:= ImmutableMatrix( f, [ [o,n,n,n,n], [o,n,o,n,o], [o,n,o,o,o],
                                    [n,o,n,n,o], [n,o,o,o,o] ],true );
       mat2:= ImmutableMatrix( f, [ [o,n,n,n,n], [n,n,o,n,n], [n,n,n,o,n],
@@ -1279,27 +1251,27 @@ BindGlobal( "OzeroEven", function( d, q )
     else
 
       mat1:= IdentityMat( d, f );
-      mat2:= List( 0 * mat1, ShallowCopy );
-      mat2[1][1]:= o;
-      mat2[d][2]:= o;
+      mat2:= NullMat( d, d, f );
+      mat2[1,1]:= o;
+      mat2[d,2]:= o;
       for i in [ 2 .. d-1 ] do
-        mat2[i][i+1]:= o;
+        mat2[i,i+1]:= o;
       od;
 
       if q = 2 then
-        mat1[(d+1)/2][      1]:= o;
-        mat1[(d+1)/2][      2]:= o;
-        mat1[(d+1)/2][      d]:= o;
-        mat1[(d+3)/2][      d]:= o;
+        mat1[(d+1)/2,      1]:= o;
+        mat1[(d+1)/2,      2]:= o;
+        mat1[(d+1)/2,      d]:= o;
+        mat1[(d+3)/2,      d]:= o;
       else
-        mat1[      2][      2]:= z;
-        mat1[(d+1)/2][(d+1)/2]:= z;
-        mat1[(d+3)/2][(d+3)/2]:= z^-1;
-        mat1[      d][      d]:= z^-1;
-        mat2[(d+1)/2][      1]:= o;
-        mat2[(d+1)/2][      2]:= o;
-        mat2[(d+1)/2][      3]:= o;
-        mat2[(d+3)/2][      2]:= o;
+        mat1[      2,      2]:= z;
+        mat1[(d+1)/2,(d+1)/2]:= z;
+        mat1[(d+3)/2,(d+3)/2]:= z^-1;
+        mat1[      d,      d]:= z^-1;
+        mat2[(d+1)/2,      1]:= o;
+        mat2[(d+1)/2,      2]:= o;
+        mat2[(d+1)/2,      3]:= o;
+        mat2[(d+3)/2,      2]:= o;
       fi;
 
     fi;
@@ -1309,7 +1281,7 @@ BindGlobal( "OzeroEven", function( d, q )
 
     # avoid to call 'Group' because this would check invertibility ...
     g:= GroupWithGenerators( [ mat1, mat2 ] );
-    SetDimensionOfMatrixGroup( g, Length( mat1 ) );
+    SetDimensionOfMatrixGroup( g, d );
     SetFieldOfMatrixGroup( g, f );
     SetIsSubgroupSL( g, true );
 
@@ -1323,10 +1295,10 @@ BindGlobal( "OzeroEven", function( d, q )
     SetSize( g, q^(((d-1)/2)^2) * size );
 
     # construct the forms
-    s := List( 0 * One( g ), ShallowCopy );
-    s[1][1]:= o;
+    s := NullMat( d, d, f );
+    s[1,1]:= o;
     for i in [ 2 .. (d+1)/2 ] do
-      s[(d-1)/2+i][i]:= o;
+      s[(d-1)/2+i,i]:= o;
     od;
     s:= ImmutableMatrix( f, s, true );
     SetInvariantQuadraticFormFromMatrix( g, s );
@@ -1544,19 +1516,19 @@ BindGlobal( "OmegaZero", function( d, q )
       fi;
 
       n:= NullMat( d, d, f );
-      n[ m+2 ][1]:= mo;
-      n[m][d]:= mo;
-      n[ m+1 ][ m+1 ]:= -o;
+      n[m+2, 1]:= mo;
+      n[  m, d]:= mo;
+      n[m+1, m+1]:= -o;
       for i in [ 1 .. m-1 ] do
-        n[i][i+1]:= o;
-        n[ d+1-i ][ d-i ]:= o;
+        n[i,i+1]:= o;
+        n[ d+1-i, d-i ]:= o;
       od;
 
       # $x = x_{\alpha_1}(1)$
       x:= IdentityMat( d, f );
-      x[m][ m+1 ]:= 2*o;
-      x[ m+1 ][ m+2 ]:= -o;
-      x[m][ m+2 ]:= -o;
+      x[m, m+1 ]:= 2*o;
+      x[ m+1, m+2 ]:= -o;
+      x[m, m+2 ]:= -o;
 
       if q <= 3 then
         # the matrices $x$ and $n$
@@ -1565,10 +1537,10 @@ BindGlobal( "OmegaZero", function( d, q )
         # the matrices $h$ and $x n$
         xi:= Z(q);
         h:= IdentityMat( d, f );
-        h[1][1]:= xi;
-        h[m][m]:= xi;
-        h[ m+2 ][ m+2 ]:= xi^-1;
-        h[d][d]:= xi^-1;
+        h[1,1]:= xi;
+        h[m,m]:= xi;
+        h[ m+2, m+2 ]:= xi^-1;
+        h[d,d]:= xi^-1;
         g:= [ h, x*n ];
       fi;
 
@@ -1652,32 +1624,32 @@ BindGlobal( "OmegaPlus", function( d, q )
       fi;
 
       n:= NullMat( d, d, f );
-      n[ m+2 ][1]:= mo;
-      n[ m-1 ][d]:= mo;
-      n[m][ m+1 ]:= o;
-      n[ m+1 ][m]:= o;
+      n[ m+2,1]:= mo;
+      n[ m-1,d]:= mo;
+      n[m, m+1 ]:= o;
+      n[ m+1,m]:= o;
       for i in [ 1 .. m-2 ] do
-        n[i][ i+1 ]:= o;
-        n[ d+1-i ][ d-i ]:= o;
+        n[i, i+1 ]:= o;
+        n[ d+1-i, d-i ]:= o;
       od;
 
       if m mod 2 = 0 then
         x1:= IdentityMat( d, f );
         if q = 2 then
-          x1[ m-1 ][ m+1 ]:= -o;
-          x1[m][ m+2 ]:= o;
+          x1[ m-1, m+1 ]:= -o;
+          x1[m, m+2 ]:= o;
         else
-          x1[ m+2 ][m]:= o;
-          x1[ m+1 ][ m-1 ]:= -o;
+          x1[ m+2, m]:= o;
+          x1[ m+1, m-1 ]:= -o;
         fi;
         x2:= IdentityMat( d, f );
-        x2[ m-2 ][ m-1 ]:= o;
-        x2[ m+2 ][ m+3 ]:= -o;
+        x2[ m-2, m-1 ]:= o;
+        x2[ m+2, m+3 ]:= -o;
         x:= x1 * x2;
       else
         x:= IdentityMat( d, f );
-        x[ m-1 ][ m+1 ]:= -o;
-        x[m][ m+2 ]:= o;
+        x[ m-1, m+1 ]:= -o;
+        x[m, m+2 ]:= o;
       fi;
 
       if ( m mod 2 = 0 and q = 2 ) or ( m mod 2 = 1 and q <= 3 ) then
@@ -1686,14 +1658,14 @@ BindGlobal( "OmegaPlus", function( d, q )
       else
         # the matrices $h$ and $x n$
         h:= IdentityMat( d, f );
-        h[ m-1 ][ m-1 ]:= xi;
-        h[ m+2 ][ m+2 ]:= xi^-1;
+        h[ m-1, m-1 ]:= xi;
+        h[ m+2, m+2 ]:= xi^-1;
         if m mod 2 = 0 then
-          h[ m ][ m ]:= xi^-1;
-          h[ m+1 ][ m+1 ]:= xi;
+          h[ m, m ]:= xi^-1;
+          h[ m+1, m+1 ]:= xi;
         else
-          h[ m ][ m ]:= xi;
-          h[ m+1 ][ m+1 ]:= xi^-1;
+          h[ m, m ]:= xi;
+          h[ m+1, m+1 ]:= xi^-1;
         fi;
         g:= [ h, x*n ];
       fi;
@@ -1777,8 +1749,8 @@ BindGlobal( "OmegaMinus", function( d, q )
     nubar:= nu^q;
 
     h:= IdentityMat( d, f );
-    h[m][m]:= nu * nubar;
-    h[ m+3 ][ m+3 ]:= (nu * nubar)^-1;
+    h[m,m]:= nu * nubar;
+    h[ m+3, m+3 ]:= (nu * nubar)^-1;
     h{ [ m+1 .. m+2 ] }{ [ m+1 .. m+2 ] }:= [
         [-1,nu^-1 + nubar^-1],
         [-nu-nubar, 1 + nu*nubar^-1 + nu^-1*nubar]] * o;
@@ -1788,14 +1760,14 @@ BindGlobal( "OmegaMinus", function( d, q )
                                          [0,0,0,1]] * o;
 
     n:= NullMat( d, d, f );
-    n[ m+3 ][1]:= mo;
-    n[m][d]:= mo;
-    n[ m+1 ][ m+1 ]:= -o;
-    n[ m+2 ][ m+1 ]:= -nu - nubar;
-    n[ m+2 ][ m+2 ]:= o;
+    n[ m+3,1]:= mo;
+    n[ m,d]:= mo;
+    n[ m+1, m+1 ]:= -o;
+    n[ m+2, m+1 ]:= -nu - nubar;
+    n[ m+2, m+2 ]:= o;
     for i in [ 1 .. m-1 ] do
-      n[i][ i+1 ]:= o;
-      n[ d+1-i ][ d-i ]:= o;
+      n[i, i+1 ]:= o;
+      n[ d+1-i, d-i ]:= o;
     od;
 
     g:= [ h, x*n ];
@@ -1911,22 +1883,23 @@ InstallMethod( Omega,
 #F  WreathProductOfMatrixGroup( <M>, <P> )  . . . . . . . . .  wreath product
 ##
 BindGlobal( "WreathProductOfMatrixGroup", function( M, P )
-    local   m,  d,  id,  gens,  b,  ran,  raN,  mat,  gen,  G;
+    local   m,  d,  f,  id,  gens,  b,  ran,  raN,  mat,  gen,  G;
 
     m := DimensionOfMatrixGroup( M );
     d := LargestMovedPoint( P );
-    id := IdentityMat( m * d, DefaultFieldOfMatrixGroup( M ) );
+    f := DefaultFieldOfMatrixGroup( M );
+    id := IdentityMat( m * d, f );
     gens := [  ];
     for b  in [ 1 .. d ]  do
         ran := ( b - 1 ) * m + [ 1 .. m ];
         for mat  in GeneratorsOfGroup( M )  do
-            gen := StructuralCopy( id );
+            gen := IdentityMat( m * d, f );
             gen{ ran }{ ran } := mat;
             Add( gens, gen );
         od;
     od;
     for gen  in GeneratorsOfGroup( P )  do
-        mat := StructuralCopy( id );
+        mat := IdentityMat( m * d, f );
         for b  in [ 1 .. d ]  do
             ran := ( b - 1 ) * m + [ 1 .. m ];
             raN := ( b^gen - 1 ) * m + [ 1 .. m ];
