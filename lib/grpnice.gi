@@ -570,8 +570,10 @@ PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
 ##
 InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
   [IsGroup and IsFinite and IsHandledByNiceMonomorphism],
-  # this is intended to be better than the generic ``action on element''
-  # method. However for example for matrix groups there are better methods
+  # This is intended to be better than the generic ``action on element''
+  # method. However for example for matrix groups there are better methods.
+  # The downranking is compatible with that for the method for finite
+  # matrix groups in 'lib/grpmat.gi'.
   -NICE_FLAGS+5,
 function(g)
 local mon,iso;
