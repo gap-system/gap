@@ -836,6 +836,7 @@ DeclareCategoryCollections( "IsTensorElement" );
 #O  TensorProduct( <list> )
 #O  TensorProduct( <V>, <W>, ... )
 ##
+##  <#GAPDoc Label="TensorProduct">
 ##  <ManSection>
 ##  <Oper Name="TensorProduct" Arg='list'
 ##   Label="for a list of vector spaces"/>
@@ -864,6 +865,7 @@ DeclareCategoryCollections( "IsTensorElement" );
 ##  families.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "TensorProductOp", [ IsList, IsVectorSpace ] );
 DeclareGlobalFunction( "TensorProduct" );
@@ -926,6 +928,7 @@ DeclareCategoryCollections( "IsWedgeElement" );
 ##
 #O  ExteriorPower( <V>, <k> )
 ##
+##  <#GAPDoc Label="ExteriorPower">
 ##  <ManSection>
 ##  <Oper Name="ExteriorPower" Arg='V, k'/>
 ##
@@ -950,6 +953,7 @@ DeclareCategoryCollections( "IsWedgeElement" );
 ##  families.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "ExteriorPower", [ IsLeftModule, IsInt ] );
 
@@ -1004,6 +1008,7 @@ DeclareCategoryCollections( "IsSymmetricPowerElement" );
 ##
 #O  SymmetricPower( <V>, <k> )
 ##
+##  <#GAPDoc Label="SymmetricPower">
 ##  <ManSection>
 ##  <Oper Name="SymmetricPower" Arg='V, k'/>
 ##
@@ -1012,6 +1017,7 @@ DeclareCategoryCollections( "IsSymmetricPowerElement" );
 ##  symmetric power of <A>V</A>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 
