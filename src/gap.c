@@ -448,7 +448,7 @@ static Obj FuncID_FUNC(Obj self, Obj val1)
 static Obj FuncRETURN_FIRST(Obj self, Obj args)
 {
     if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
-        ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
+        ErrorMayQuit("RETURN_FIRST requires at least one argument",0,0);
 
     return ELM_PLIST(args, 1);
 }

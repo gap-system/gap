@@ -14,7 +14,7 @@ Error, CreateThread: Needs at least one function argument
 gap> CreateThread(1);
 Error, CreateThread: Needs at least one function argument
 gap> CreateThread(x->x);
-Error, CreateThread: <func> expects 1 arguments, but got 0
+Error, CreateThread: <func> expects 1 argument, but got 0
 gap> WaitThread(fail);
 Error, WaitThread: <thread> must be a thread object (not the value 'fail')
 gap> KillThread(fail);
