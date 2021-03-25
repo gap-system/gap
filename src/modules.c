@@ -520,11 +520,19 @@ static Obj ValidatedArgList(const char * name, int nargs, const char * argStr)
 {
     Obj args = ArgStringToList(argStr);
     int len = LEN_PLIST(args);
-    if (nargs >= 0 && len != nargs)
-        fprintf(stderr,
-                "#W %s takes %d arguments, but argument string is '%s'"
-                " which implies %d arguments\n",
-                name, nargs, argStr, len);
+    if (nargs >= 0 && len != nargs) {
+        if (nargs == 1) {
+            fprintf(stderr,
+                    "#W %s takes 1 argument, but argument string is '%s' "
+                    "which implies %d arguments\n",
+                    name, argStr, len);
+        } else if (len == 1) {
+            fprintf(stderr,
+                    "#W %s takes %d arguments, but argument string is '%s' "
+                    "which implies 1 argument\n",
+                    name, nargs, argStr);
+        }
+    }
     return args;
 }
 

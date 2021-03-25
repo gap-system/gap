@@ -638,7 +638,10 @@ static void ParseCommandLineOptions(int argc, const char * argv[], int phase)
             buf[0] = options[i].minargs + '0';
             buf[1] = '\0';
             fputs(buf, stderr);
-            fputs(" arguments\n", stderr);
+            if (options[i].minargs == 1)
+                fputs("argument\n", stderr);
+            else
+                fputs("arguments\n", stderr);
             usage();
         }
 
