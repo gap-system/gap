@@ -102,7 +102,7 @@ end);
 
 
 BindGlobal("SMTX_AddEqns",function ( eqns, newmat, newvec)
-local n, zero, weights, mat, vec, NextPositionProperty, ReduceRow, t,
+local n, zero, weights, mat, vec, ReduceRow, t,
       newweight, newrow, newrhs, i, l, k;
 
 # Add a bunch of equations to the system of equations in <eqns>.  Each
@@ -121,16 +121,6 @@ local n, zero, weights, mat, vec, NextPositionProperty, ReduceRow, t,
   mat := eqns.mat;
   vec := eqns.vec;
 
-  NextPositionProperty := function (list, func, start )
-  local   i;
-    for i  in [ start .. Length( list ) ]  do
-      if func( list[ i ] )  then
-	return i;
-      fi;
-    od;
-    return fail;
-  end;
-
   # reduce the (lhs,rhs) against the semi-echelonised current matrix,
   # and return either: (1) the reduced rhs if the lhs reduces to zero,
   # or (2) a list containing the new echelon weight, the new row and
@@ -138,16 +128,17 @@ local n, zero, weights, mat, vec, NextPositionProperty, ReduceRow, t,
   # equation should placed.
   ReduceRow := function (lhs, rhs)
   local lead, i, z;
-    lead := PositionProperty(lhs, i->i<>zero);
-    if lead = fail then
+    lead := PositionNonZero(lhs);
+    Assert(0, n = Length(lhs));
+    if lead > n then
       return rhs;
     fi;
     for i in [1..Length(weights)] do
       if weights[i] = lead then
 	z := lhs[lead];
 	lhs := lhs - z * mat[i]; rhs := rhs - z * vec[i];
-	lead := NextPositionProperty(lhs, i->i<>zero, lead);
-	if lead = fail then
+	lead := PositionNonZero(lhs, lead);
+	if lead > n then
 	  return rhs;
 	fi;
       elif weights[i] > lead then
@@ -376,8 +367,8 @@ local gens, pos, settled, oldlen, i, j;
   gens:=V.generators;
 
   v:=EchResidueCoeffs(U, ech, v,2);
-  pos:=PositionProperty(v, i->i<>zero);
-  if pos = fail then
+  pos:=PositionNonZero(v);
+  if pos > Length(v) then
     return U;
   fi;
   Add(U, v/v[pos]); Add(ech, pos);
@@ -388,8 +379,8 @@ local gens, pos, settled, oldlen, i, j;
     for i in [settled+1..Length(U)] do
       for j in [1..Length(gens)] do
 	v:=EchResidueCoeffs(U, ech, (U[i] * gens[j]),2);
-	pos:=PositionProperty(v, i->i<>zero);
-	if pos <> fail then
+	pos:=PositionNonZero(v);
+	if pos <= Length(v) then
 	  Add(U, v/v[pos]); Add(ech, pos);
 	fi;
       od;
@@ -719,13 +710,13 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
     x:=EchResidueCoeffs(U, echu, v0,2);
 
     # normalise <x> (ie get a 1 in leading position)
-    pos:=PositionProperty(x, i->i<>zero);
+    pos:=PositionNonZero(x);
     z:=x[pos];
     x:=x / z; 
     v0:=v0 / z;
 
     # we know that <v0> has to map into the subspace <M> of <W>. 
-    echm:=List(M, y -> PositionProperty(y, i->i<>zero));
+    echm:=List(M, PositionNonZero);
     t:=Length(M);
 
     # now we start building extension of semi-echelonised basis for
@@ -818,8 +809,8 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 	  # 
 	  #     x = v0 * a[i] + uu
 
-	  pos:=PositionProperty(x, i->i<>zero);
-	  if pos <> fail then
+	  pos:=PositionNonZero(x);
+	  if pos <= Length(x) then
 
 	    # new semi-ech basis element <x>
 
