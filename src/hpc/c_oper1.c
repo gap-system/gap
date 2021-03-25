@@ -1,7 +1,7 @@
 #ifndef AVOID_PRECOMPILED
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-76837766"
+#define FILE_CRC  "33466517"
 
 /* global variables used in handlers */
 static GVar G_REREADING;
@@ -771,6 +771,32 @@ static Obj  HdlrFunc3 (
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* if IS_IDENTICAL_OBJ( opr, method ) then */
+ t_3 = GF_IS__IDENTICAL__OBJ;
+ if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
+  t_2 = CALL_2ARGS( t_3, a_opr, a_method );
+ }
+ else {
+  t_2 = DoOperation2Args( CallFuncListOper, t_3, NewPlistFromArgs( a_opr, a_method ) );
+ }
+ CHECK_FUNC_RESULT( t_2 );
+ CHECK_BOOL( t_2 );
+ t_1 = (Obj)(UInt)(t_2 != False);
+ if ( t_1 ) {
+  
+  /* Error( "Cannot install an operation as a method for itself" ); */
+  t_1 = GF_Error;
+  t_2 = MakeString( "Cannot install an operation as a method for itself" );
+  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+   CALL_1ARGS( t_1, t_2 );
+  }
+  else {
+   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  }
+  
+ }
+ /* fi */
  
  /* lk := WRITE_LOCK( METHODS_OPERATION_REGION ); */
  t_2 = GF_WRITE__LOCK;
@@ -3790,8 +3816,8 @@ static Obj  HdlrFunc7 (
    t_6 = NewFunction( NameFunc[8], 1, ArgStringToList("obj"), HdlrFunc8 );
    SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
    t_7 = NewFunctionBody();
-   SET_STARTLINE_BODY(t_7, 694);
-   SET_ENDLINE_BODY(t_7, 712);
+   SET_STARTLINE_BODY(t_7, 698);
+   SET_ENDLINE_BODY(t_7, 716);
    SET_FILENAME_BODY(t_7, FileName);
    SET_BODY_FUNC(t_6, t_7);
    if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4494,8 +4520,8 @@ static Obj  HdlrFunc11 (
   t_1 = NewFunction( NameFunc[12], 1, ArgStringToList("key"), HdlrFunc12 );
   SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
   t_2 = NewFunctionBody();
-  SET_STARTLINE_BODY(t_2, 891);
-  SET_ENDLINE_BODY(t_2, 895);
+  SET_STARTLINE_BODY(t_2, 895);
+  SET_ENDLINE_BODY(t_2, 899);
   SET_FILENAME_BODY(t_2, FileName);
   SET_BODY_FUNC(t_1, t_2);
   ASS_LVAR( 2, t_1 );
@@ -4613,8 +4639,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[13], 1, ArgStringToList("D"), HdlrFunc13 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 912);
- SET_ENDLINE_BODY(t_7, 912);
+ SET_STARTLINE_BODY(t_7, 916);
+ SET_ENDLINE_BODY(t_7, 916);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4722,8 +4748,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[14], 2, ArgStringToList("D,key"), HdlrFunc14 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 934);
- SET_ENDLINE_BODY(t_7, 957);
+ SET_STARTLINE_BODY(t_7, 938);
+ SET_ENDLINE_BODY(t_7, 961);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4790,8 +4816,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[15], 2, ArgStringToList("D,key"), HdlrFunc15 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 967);
- SET_ENDLINE_BODY(t_7, 975);
+ SET_STARTLINE_BODY(t_7, 971);
+ SET_ENDLINE_BODY(t_7, 979);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -4871,8 +4897,8 @@ static Obj  HdlrFunc11 (
  t_6 = NewFunction( NameFunc[16], 3, ArgStringToList("D,key,obj"), HdlrFunc16 );
  SET_ENVI_FUNC( t_6, STATE(CurrLVars) );
  t_7 = NewFunctionBody();
- SET_STARTLINE_BODY(t_7, 984);
- SET_ENDLINE_BODY(t_7, 997);
+ SET_STARTLINE_BODY(t_7, 988);
+ SET_ENDLINE_BODY(t_7, 1001);
  SET_FILENAME_BODY(t_7, FileName);
  SET_BODY_FUNC(t_6, t_7);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5290,8 +5316,8 @@ static Obj  HdlrFunc17 (
  t_4 = NewFunction( NameFunc[18], -1, ArgStringToList("arg"), HdlrFunc18 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();
- SET_STARTLINE_BODY(t_5, 1063);
- SET_ENDLINE_BODY(t_5, 1079);
+ SET_STARTLINE_BODY(t_5, 1067);
+ SET_ENDLINE_BODY(t_5, 1083);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5444,6 +5470,9 @@ static Obj  HdlrFunc1 (
  
  /* BIND_GLOBAL( "INSTALL_METHOD_FLAGS", function ( opr, info, rel, flags, baserank, method )
       local methods, narg, i, k, tmp, replace, match, j, lk, rank;
+      if IS_IDENTICAL_OBJ( opr, method ) then
+          Error( "Cannot install an operation as a method for itself" );
+      fi;
       lk := WRITE_LOCK( METHODS_OPERATION_REGION );
       if IS_FUNCTION( baserank ) then
           rank := baserank(  );
@@ -5548,7 +5577,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
  SET_STARTLINE_BODY(t_4, 147);
- SET_ENDLINE_BODY(t_4, 289);
+ SET_ENDLINE_BODY(t_4, 293);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5567,8 +5596,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[4], -1, ArgStringToList("arg"), HdlrFunc4 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 338);
- SET_ENDLINE_BODY(t_4, 340);
+ SET_STARTLINE_BODY(t_4, 342);
+ SET_ENDLINE_BODY(t_4, 344);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5587,8 +5616,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[5], -1, ArgStringToList("arg"), HdlrFunc5 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 365);
- SET_ENDLINE_BODY(t_4, 367);
+ SET_STARTLINE_BODY(t_4, 369);
+ SET_ENDLINE_BODY(t_4, 371);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5782,8 +5811,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[6], 2, ArgStringToList("arglist,check"), HdlrFunc6 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 378);
- SET_ENDLINE_BODY(t_4, 633);
+ SET_STARTLINE_BODY(t_4, 382);
+ SET_ENDLINE_BODY(t_4, 637);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5845,8 +5874,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[7], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc7 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 652);
- SET_ENDLINE_BODY(t_3, 716);
+ SET_STARTLINE_BODY(t_3, 656);
+ SET_ENDLINE_BODY(t_3, 720);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5864,8 +5893,8 @@ static Obj  HdlrFunc1 (
  t_2 = NewFunction( NameFunc[9], 6, ArgStringToList("name,filter,getter,setter,tester,mutflag"), HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 719);
- SET_ENDLINE_BODY(t_3, 725);
+ SET_STARTLINE_BODY(t_3, 723);
+ SET_ENDLINE_BODY(t_3, 729);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5897,8 +5926,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[10], 2, ArgStringToList("list,elm"), HdlrFunc10 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 738);
- SET_ENDLINE_BODY(t_4, 762);
+ SET_STARTLINE_BODY(t_4, 742);
+ SET_ENDLINE_BODY(t_4, 766);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -5986,8 +6015,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[11], 4, ArgStringToList("name,domreq,keyreq,keytest"), HdlrFunc11 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 887);
- SET_ENDLINE_BODY(t_4, 998);
+ SET_STARTLINE_BODY(t_4, 891);
+ SET_ENDLINE_BODY(t_4, 1002);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -6042,8 +6071,8 @@ static Obj  HdlrFunc1 (
  t_3 = NewFunction( NameFunc[17], -1, ArgStringToList("arg"), HdlrFunc17 );
  SET_ENVI_FUNC( t_3, STATE(CurrLVars) );
  t_4 = NewFunctionBody();
- SET_STARTLINE_BODY(t_4, 1033);
- SET_ENDLINE_BODY(t_4, 1080);
+ SET_STARTLINE_BODY(t_4, 1037);
+ SET_ENDLINE_BODY(t_4, 1084);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -6080,8 +6109,8 @@ static Obj  HdlrFunc1 (
  t_1 = NewFunction( NameFunc[19], 3, ArgStringToList("obj,name,val"), HdlrFunc19 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 1096);
- SET_ENDLINE_BODY(t_2, 1096);
+ SET_STARTLINE_BODY(t_2, 1100);
+ SET_ENDLINE_BODY(t_2, 1100);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_CHECK__REPEATED__ATTRIBUTE__SET, t_1 );
@@ -6397,7 +6426,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_STATIC,
  .name        = "GAPROOT/lib/oper1.g",
- .crc         = -76837766,
+ .crc         = 33466517,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,
