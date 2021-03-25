@@ -655,38 +655,68 @@ DeclareAttribute("NilpotencyDegree", IsSemigroup);
 DeclareOperation("IsSubsemigroup", [IsSemigroup, IsSemigroup]);
 
 DeclareProperty("IsBand", IsSemigroup);
+
 DeclareProperty("IsBrandtSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsBrandtSemigroup);
+
 DeclareProperty("IsCliffordSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsCliffordSemigroup);
+
 DeclareProperty("IsCommutativeSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsCommutativeSemigroup);
+
 DeclareProperty("IsCompletelyRegularSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsCompletelyRegularSemigroup);
+
 DeclareProperty("IsCompletelySimpleSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsCompletelySimpleSemigroup);
+
 DeclareProperty("IsGroupAsSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsGroupAsSemigroup);
+
 DeclareProperty("IsIdempotentGenerated", IsSemigroup);
+
 DeclareProperty("IsLeftZeroSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsLeftZeroSemigroup);
+
 DeclareProperty("IsMonogenicSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsMonogenicSemigroup);
+
 DeclareProperty("IsMonoidAsSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsMonoidAsSemigroup);
+
 DeclareProperty("IsNilpotentSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsNilpotentSemigroup);
+
 DeclareProperty("IsOrthodoxSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsOrthodoxSemigroup);
+
 DeclareProperty("IsRectangularBand", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsRectangularBand);
+
 DeclareProperty("IsRightZeroSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsRightZeroSemigroup);
+
 DeclareProperty("IsSemiband", IsSemigroup);
 InstallTrueMethod(IsSemigroup, IsSemiband);
 
 DeclareProperty("IsSemilattice", IsSemigroup);
+
 DeclareProperty("IsZeroSemigroup", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsZeroSemigroup);
 
 InstallTrueMethod(IsMonoidAsSemigroup, IsMagmaWithOne and IsSemigroup);
 InstallTrueMethod(IsGroupAsSemigroup, IsMagmaWithInverses and IsSemigroup);
 InstallTrueMethod(IsGroupAsSemigroup, IsInverseSemigroup and IsSimpleSemigroup and IsFinite);
 InstallTrueMethod(IsGroupAsSemigroup, IsCommutative and IsSimpleSemigroup);
-InstallTrueMethod(IsBand, IsSemilattice);
+InstallTrueMethod(IsBand, IsSemilattice and IsSemigroup);
 InstallTrueMethod(IsBrandtSemigroup, IsInverseSemigroup and IsZeroSimpleSemigroup);
-InstallTrueMethod(IsCliffordSemigroup, IsSemilattice);
+InstallTrueMethod(IsCliffordSemigroup, IsSemilattice and IsSemigroup);
 InstallTrueMethod(IsCompletelyRegularSemigroup, IsCliffordSemigroup);
 InstallTrueMethod(IsCompletelyRegularSemigroup, IsSimpleSemigroup);
 InstallTrueMethod(IsCompletelySimpleSemigroup, IsSimpleSemigroup and IsFinite);
-InstallTrueMethod(IsIdempotentGenerated, IsBand);
-InstallTrueMethod(IsInverseSemigroup, IsSemilattice);
+InstallTrueMethod(IsIdempotentGenerated, IsBand and IsSemigroup);
+InstallTrueMethod(IsInverseSemigroup, IsSemilattice and IsSemigroup);
 InstallTrueMethod(IsInverseSemigroup, IsCliffordSemigroup);
 InstallTrueMethod(IsInverseSemigroup, IsGroupAsSemigroup);
 InstallTrueMethod(IsLeftZeroSemigroup, IsInverseSemigroup and IsTrivial);
@@ -695,7 +725,7 @@ InstallTrueMethod(IsRegularSemigroup, IsSimpleSemigroup);
 InstallTrueMethod(IsOrthodoxSemigroup, IsInverseSemigroup);
 InstallTrueMethod(IsRightZeroSemigroup, IsInverseSemigroup and IsTrivial);
 InstallTrueMethod(IsSemiband, IsIdempotentGenerated and IsSemigroup);
-InstallTrueMethod(IsSemilattice, IsCommutative and IsBand);
+InstallTrueMethod(IsSemilattice, IsSemigroup and IsCommutative and IsBand);
 InstallTrueMethod(IsSimpleSemigroup, IsGroupAsSemigroup);
 InstallTrueMethod(IsZeroSemigroup, IsInverseSemigroup and IsTrivial);
 
