@@ -670,6 +670,8 @@ DeclareProperty("IsOrthodoxSemigroup", IsSemigroup);
 DeclareProperty("IsRectangularBand", IsSemigroup);
 DeclareProperty("IsRightZeroSemigroup", IsSemigroup);
 DeclareProperty("IsSemiband", IsSemigroup);
+InstallTrueMethod(IsSemigroup, IsSemiband);
+
 DeclareProperty("IsSemilattice", IsSemigroup);
 DeclareProperty("IsZeroSemigroup", IsSemigroup);
 
@@ -692,7 +694,7 @@ InstallTrueMethod(IsRegularSemigroup, IsInverseSemigroup);
 InstallTrueMethod(IsRegularSemigroup, IsSimpleSemigroup);
 InstallTrueMethod(IsOrthodoxSemigroup, IsInverseSemigroup);
 InstallTrueMethod(IsRightZeroSemigroup, IsInverseSemigroup and IsTrivial);
-InstallTrueMethod(IsSemiband, IsIdempotentGenerated);
+InstallTrueMethod(IsSemiband, IsIdempotentGenerated and IsSemigroup);
 InstallTrueMethod(IsSemilattice, IsCommutative and IsBand);
 InstallTrueMethod(IsSimpleSemigroup, IsGroupAsSemigroup);
 InstallTrueMethod(IsZeroSemigroup, IsInverseSemigroup and IsTrivial);
