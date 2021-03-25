@@ -908,11 +908,11 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixObj and IsMutable ] );
 
 #############################################################################
 ##
-#O  CopySubVector( <dst>, <dcols>, <src>, <scols> )
+#O  CopySubVector( <src>, <dst>, <scols>, <dcols> )
 ##
 ##  <#GAPDoc Label="CopySubVector">
 ##  <ManSection>
-##  <Oper Name="CopySubVector" Arg='dst, dcols, src, scols'/>
+##  <Oper Name="CopySubVector" Arg='src, dst, scols, dcols'/>
 ##
 ##  <Returns>nothing</Returns>
 ##
@@ -936,7 +936,8 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixObj and IsMutable ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "CopySubVector",
-    [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList ] );
+    [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ] );
+
 
 
 #############################################################################
@@ -1786,14 +1787,6 @@ DeclareConstructor( "NewCompanionMatrix",
 #O  NewRowVector( ... )
 ##
 DeclareSynonym( "NewRowVector", NewVector );
-
-
-#############################################################################
-##
-#O  CopySubVector( ... )
-##
-DeclareOperation( "CopySubVector",
-    [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ] );
 
 
 #############################################################################
