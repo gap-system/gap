@@ -29,4 +29,10 @@ gap> List([2..7],
 gap> TestGens(Group((1,2,3),(4,5,6)));;
 gap> TestGens(Group((1,2,3)(4,5,6)));;
 gap> TestGens(Group((2,4,6),(1,3,5),(1,3)));;
+gap> m := StabChainBaseStrongGenerators(
+>    [1,3..1999],
+>    List([1,3..1999], x -> (x,x+1)),
+>    ());;
+gap> Log(SizeStabChain(m), 2) = 1000;
+true
 gap> STOP_TEST("stabchain.tst", 1);
