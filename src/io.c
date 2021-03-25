@@ -1089,18 +1089,12 @@ static Char GetLine(TypInputFile * input)
 static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
 {
   Obj                     str;
-  UInt                    lstr;
   if ( output->isstream ) {
     /* special handling of string streams, where we can copy directly */
     if (output->isstringstream) {
       str = CONST_ADDR_OBJ(output->stream)[1];
       ConvString(str);
-      lstr = GET_LEN_STRING(str);
-      GROW_STRING(str, lstr+len);
-      memcpy(CHARS_STRING(str) + lstr, line, len);
-      SET_LEN_STRING(str, lstr + len);
-      *(CHARS_STRING(str) + lstr + len) = '\0';
-      CHANGED_BAG(str);
+      AppendCStr(str, line, len);
       return;
     }
 
