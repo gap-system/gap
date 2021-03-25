@@ -1085,28 +1085,24 @@ static Char GetLine(TypInputFile * input)
 **  knows the length of <line>, so it is not necessary to compute it again
 **  with the inefficient C- strlen.  (FL)
 */
-
 static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
 {
-  Obj                     str;
-  if ( output->isstream ) {
-    /* special handling of string streams, where we can copy directly */
+    Obj str;
+
     if (output->isstringstream) {
-      str = CONST_ADDR_OBJ(output->stream)[1];
-      ConvString(str);
-      AppendCStr(str, line, len);
-      return;
+        // special handling of string streams, where we can copy directly
+        str = CONST_ADDR_OBJ(output->stream)[1];
+        ConvString(str);
+        AppendCStr(str, line, len);
     }
-
-    /* Space for the null is allowed for in GAP strings */
-    str = MakeImmStringWithLen(line, len);
-
-    /* now delegate to library level */
-    CALL_2ARGS( WriteAllFunc, output->stream, str );
-  }
-  else {
-    SyFputs( line, output->file );
-  }
+    else if (output->isstream) {
+        // delegate to library level
+        str = MakeImmStringWithLen(line, len);
+        CALL_2ARGS(WriteAllFunc, output->stream, str);
+    }
+    else {
+        SyFputs(line, output->file);
+    }
 }
 
 
