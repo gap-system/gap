@@ -1,4 +1,7 @@
+#@local l1, v1, v0, v3
 gap> START_TEST("ZeroVector.tst");
+
+#
 gap> l1 := [1,2,3,4,5,6];
 [ 1, 2, 3, 4, 5, 6 ]
 gap> v1 := Vector(IsPlistVectorRep, Rationals, l1);
@@ -7,6 +10,8 @@ gap> v0 := ZeroVector( 15, v1 );
 <plist vector over Rationals of length 15>
 gap> Unpack( v0 );
 [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+
+#
 gap> v3 := Vector(GF(5), l1*One(GF(5)));
 [ Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0 ]
 gap> v0 := ZeroVector( 12, v3 );
@@ -16,4 +21,12 @@ gap> Unpack( v0 );
   0*Z(5), 0*Z(5), 0*Z(5) ]
 gap> ZeroVector(2,[Z(2^9)^22,Z(2^9)^503]);
 [ 0*Z(2), 0*Z(2) ]
-gap> STOP_TEST("ZeroVector.tst",1);
+
+#
+gap> ZeroVector(5, [1,2]);
+[ 0, 0, 0, 0, 0 ]
+gap> ZeroVector(5, [[1,2]]);
+[ 0, 0, 0, 0, 0 ]
+
+#
+gap> STOP_TEST("ZeroVector.tst");
