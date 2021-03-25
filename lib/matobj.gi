@@ -653,8 +653,8 @@ InstallMethod( ExtractSubMatrix,
 
 InstallMethod( CopySubVector,
     "generic method for vector objects",
-  [ IsVectorObj and IsMutable, IsList, IsVectorObj, IsList ],
-  function(dst, dcols, src, scols)
+  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
+  function(src, dst, scols, dcols)
     local i;
     if not Length( dcols ) = Length( scols ) then
       Error( "source and destination index lists must be of equal length" );
@@ -1544,13 +1544,6 @@ InstallMethod( DimensionsMat,
     "for a matrix object",
     [ IsMatrixObj ],
     M -> [ NumberRows( M ), NumberColumns( M ) ] );
-
-InstallMethod( CopySubVector,
-    "generic method for vector objects",
-    [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
-    function( src, dst, scols, dcols )
-    CopySubVector( dst, dcols, src, scols );
-    end );
 
 InstallOtherMethod( Randomize,
     "for random source as 2nd argument: switch arguments",
