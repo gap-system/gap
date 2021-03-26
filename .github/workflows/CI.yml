@@ -208,10 +208,10 @@ jobs:
             doc/*/*.html
             doc/*/*.css
             doc/*/*.js
-      - name: "Gather coverage"
+      - name: "Gather coverage data"
         run: ${{ matrix.extra }} bash dev/ci-gather-coverage.sh
-      - name: "Upload coverage data to codecov"
-        run: ${{ matrix.extra }} bash dev/ci-run-codecov.sh
+      - name: "Upload coverage data"
+        run: ${{ matrix.extra }} bash dev/ci-upload-coverage.sh
       # - uses: codecov/codecov-action@v1
 
       # TODO: fix coveralls integration

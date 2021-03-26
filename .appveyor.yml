@@ -51,4 +51,4 @@ test_script:
 on_success:
   # make sure to use AppVeyor's Python (not Cygwin's) in the next step
   - bash -lc "export PATH="/cygdrive/c/Python27:/cygdrive/c/Python27/Scripts:$PATH" ; cd $APPVEYOR_BUILD_FOLDER && ./dev/ci-gather-coverage.sh"
-  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./dev/ci-run-codecov.sh"
+  - bash -lc "cd $APPVEYOR_BUILD_FOLDER && ./dev/ci-upload-coverage.sh"

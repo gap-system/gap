@@ -114,11 +114,3 @@ then
 
   python dev/ci-coveralls-merge.py
 fi
-
-# upload to coveralls.io
-# TODO: perhaps fold into python script?
-if [[ -f merged-coveralls.json ]]
-then
-  curl -F json_file=@merged-coveralls.json "https://coveralls.io/api/v1/jobs"
-fi
-
