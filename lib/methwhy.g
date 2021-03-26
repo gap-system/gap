@@ -150,7 +150,7 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
   fams:=[];
   for i in args do
     if IsFilter(i) then
-      Add(flags,FLAGS_FILTER(i));
+      Add(flags,WITH_IMPS_FLAGS(FLAGS_FILTER(i)));
       Add(fams,fail);
     elif IsType(i) then
       Add(flags,i![2]);
