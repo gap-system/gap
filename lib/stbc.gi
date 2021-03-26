@@ -396,23 +396,29 @@ end);
 #F  StabChainBaseStrongGenerators( <base>, <sgs>[, <one>] )
 ##
 InstallGlobalFunction(StabChainBaseStrongGenerators,function(arg)
-local   base,sgs,one,S,  T,  pnt;
+local   base,sgs,one,S,  T,  pnt, genlabels;
 
-    base:=arg[1];
-    sgs:=arg[2];
+    base:=PlainListCopy(arg[1]);
+    sgs:=PlainListCopy(arg[2]);
     if Length(arg)=3 then
       one:=arg[3];
     else
       one:= One(arg[2][1]);
     fi;
-    S := EmptyStabChain( [  ], one );
+    S := EmptyStabChain( sgs, one );
+    # Skip the identity in genlabels
+    Assert(2, S.labels[1] = ());
+    genlabels := PlainListCopy([2..Length(S.labels)]);
     T := S;
     for pnt  in base  do
         InsertTrivialStabilizer( T, pnt );
-        AddGeneratorsExtendSchreierTree( T, sgs );
-        sgs := Filtered( sgs, g -> pnt ^ g = pnt );
+        T.genlabels := genlabels;
+        T.generators := T.labels{T.genlabels};
+        AGEST(T.orbit, T.genlabels, T.labels, T.translabels, T.transversal, T.genlabels);
+        genlabels := Filtered(genlabels, x -> pnt^sgs[x] = pnt);
         T := T.stabilizer;
     od;
+
     return S;
 end);
     
