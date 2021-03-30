@@ -2248,7 +2248,7 @@ InstallMethod( Unpack, "for a gf2 matrix",
   end );
 InstallMethod( Unpack, "for a gf2 vector",
   [IsGF2VectorRep],
-  function( v ) return AsPlist(v); end );
+  AsPlist );
 
 InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],

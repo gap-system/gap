@@ -1101,7 +1101,7 @@ InstallMethod( Unpack, "for an 8bit matrix",
   end );
 InstallMethod( Unpack, "for an 8bit vector",
   [Is8BitVectorRep],
-  function( v ) return AsPlist(v); end );
+  AsPlist );
 
 InstallOtherMethod( KroneckerProduct, "for two 8bit matrices", # priority to kernel code, if matrices have same field
   [Is8BitMatrixRep and IsMatrix, Is8BitMatrixRep and IsMatrix], 1,
