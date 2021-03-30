@@ -617,7 +617,7 @@ InstallOtherMethod( AsPlist,
     function(l)
     l:=AsList(l);
     if not IsPlistRep(l) then
-      l:=List([1..Length(l)],i->l[i]); # explicit copy for objects that claim to
+      l:=PlainListCopy(l); # explicit copy for objects that claim to
                                        # be constant time access but not plists.
     fi;
     return l;
