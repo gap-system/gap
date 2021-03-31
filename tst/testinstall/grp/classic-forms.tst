@@ -21,14 +21,12 @@ gap> CheckBilinearForm := function(G)
 >               g -> g*M*TransposedMat(g) = M);
 > end;;
 gap> CheckQuadraticForm := function(G)
->   local M, Q, V, vecs;
+>   local M, Q;
 >   M := InvariantBilinearForm(G).matrix;
 >   Q := InvariantQuadraticForm(G).matrix;
->   V := FieldOfMatrixGroup(G)^DegreeOfMatrixGroup(G);
->   vecs:=List([1..100], i->Random(V));
->   return (Q+TransposedMat(Q) = M) and ForAll(vecs,
->          v->ForAll(GeneratorsOfGroup(G),
->               g -> v*Q*v = (v*g)*Q*(v*g)));
+>   return (Q+TransposedMat(Q) = M) and
+>          ForAll(GeneratorsOfGroup(G),
+>            g -> RespectsQuadraticForm(Q, g));
 > end;;
 gap> frob := function(g,aut)
 >   return List(g,row->List(row,x->x^aut));
