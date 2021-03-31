@@ -789,10 +789,55 @@ InstallMethod(IsSubgroupSL,"determinant test for generators",
   [IsMatrixGroup and HasGeneratorsOfGroup],
     G -> ForAll(GeneratorsOfGroup(G),i->IsOne(DeterminantMat(i))) );
 
+
+#############################################################################
+##
+#M  RespectsQuadraticForm( <Q>, <M> ) . . . . . . . . . .  is form invariant?
+##
+##  Let <Q> be the matrix of a quadratic form, and let <M> be a matrix of the
+##  same dimensions.
+##  The value of the form at the vector $v$ is $v <Q> v^{tr}$.
+##  If we define the matrix $i<Q>'$ by
+##  $<Q>'[i,i] = <Q>[i,i]$,
+##  $<Q>'[i,j] = 0$ for $i > j$,
+##  $<Q>'[i,j] = <Q>[i,j] + <Q>[j,i]$ for $i < j$,
+##  then $v <Q> v^{tr} = v <Q>' v^{tr}$ holds for all $v$.
+##  By definition, <M> leaves the form invariant
+##  if $v <M> <Q> <M>^{tr} v^{tr} = v <Q> v^{tr}$ holds for all $v$.
+##  This happens if and only if $(<M> <Q> <M>^{tr})' = <Q>'$ holds.
+##  (For the "only if" part,
+##  take the $i$-th standard basis vector $e_i$ to check the equality
+##  of the $i$-th diagonal element,
+##  and take $e_i + e_j$ to check the equality of the entry in position
+##  $(i,j)$.)
+##
+BindGlobal( "RespectsQuadraticForm", function( Q, M )
+    local Qimg;
+
+    Qimg:= M * Q * TransposedMat( M );
+    return ForAll( [ 1 .. NumberRows( M ) ],
+               i -> Q[i,i] = Qimg[i,i] and
+                    ForAll( [ 1 .. i-1 ],
+                        j -> Q[i,j] + Q[j,i] = Qimg[i,j] + Qimg[j,i] ) );
+    end );
+
+
 #############################################################################
 ##
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
+InstallMethod( \in, "respecting quadratic form", IsElmsColls,
+    [ IsMatrix, IsFullSubgroupGLorSLRespectingQuadraticForm ],
+    NICE_FLAGS,  # this method is better than the one using a nice monom.;
+                 # it has the same rank as the method based on the inv.
+                 # bilinear form, which is cheaper to check,
+                 # thus we install the current method first
+    function( mat, G )
+    return IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
+       and ( not IsSubgroupSL( G ) or IsOne( DeterminantMat( mat ) ) )
+       and RespectsQuadraticForm( InvariantQuadraticForm( G ).matrix, mat );
+    end );
+
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
     [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
     NICE_FLAGS,  # this method is better than the one using a nice monom.

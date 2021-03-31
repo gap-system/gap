@@ -1,6 +1,8 @@
 #
 # Tests for the "general" group constructors: GL, GO, GU, GammaL
 #
+#@local G, H, d, q, S, grps
+
 gap> START_TEST("classic-G.tst");
 
 #
@@ -186,6 +188,38 @@ Error, no 1st choice method found for `OmegaCons' on 4 arguments
 #
 gap> Omega(2,2);
 Error, sign <e> = 0 but dimension <d> is even
+
+# Membership tests in GL, SL, GO, SO, GU, SU, Sp can be delegated
+# to the tests of the stored respected forms and therefore are cheap.
+gap> for d in [ 1 .. 10 ] do
+>   for q in Filtered( [ 2 .. 30 ], IsPrimePowerInt ) do
+>     G:= GL(d,q);
+>     S:= SL(d,q);
+>     if Size( G ) <> Size( S ) and
+>        ForAll( GeneratorsOfGroup( G ), g -> g in S ) then
+>       Error( "wrong membership test" );
+>     fi;
+>     grps:= [];
+>     if Length( Factors( q ) ) mod 2 = 0 then
+>       Append( grps, [ GU(d, RootInt( q )), SU(d, RootInt( q )) ] );
+>     fi;
+>     if d mod 2 = 0 then
+>       Append( grps, [ GO(-1,d,q), GO(1,d,q) ] );
+>       Add( grps, Sp(d,q) );
+>     else
+>       Add( grps, GO(d,q) );
+>     fi;
+>     if ForAny( grps,
+>            U -> ( Size( U ) < Size( G ) and
+>                   ForAll( GeneratorsOfGroup( G ), g -> g in U ) ) or
+>                 ( Size( U ) < Size( S ) and
+>                   ForAll( GeneratorsOfGroup( S ), g -> g in U ) ) or
+>                 ForAny( [ 1 .. 20 ],
+>                         i -> not PseudoRandom( U ) in U ) ) then
+>       Error( "wrong membership test" );
+>     fi;
+>   od;
+> od;
 
 #
 gap> STOP_TEST("classic-G.tst", 1);
