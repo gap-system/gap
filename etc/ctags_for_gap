@@ -3,8 +3,8 @@
 --regex-GAP=/([a-zA-Z0-9_]+) *:= *function/\1/f,function/
 --regex-GAP=/BindGlobal *\( *"([a-zA-Z0-9_]+)"/\1/v,value/
 --regex-GAP=/BIND_GLOBAL *\( *"([a-zA-Z0-9_]+)"/\1/v,value/
---regex-GAP=/InstallMethod *\( *([a-zA-Z0-9_]+) *,/\1/m,method/
---regex-GAP=/InstallOtherMethod *\( *([a-zA-Z0-9_]+) *,/\1/m,method/
+--regex-GAP=/InstallMethod *\( *"?([a-zA-Z0-9_]+)"? *,/\1/m,method/
+--regex-GAP=/InstallOtherMethod *\( *"?([a-zA-Z0-9_]+)"? *,/\1/m,method/
 --regex-GAP=/InstallGlobalFunction *\( *"?([a-zA-Z0-9_]+)"? *,/\1/g,gfunction/
 --regex-GAP=/InstallValue *\( *([a-zA-Z0-9_]+) *,/\1/v,value/
 --regex-GAP=/InstallTrueMethod *\( *([a-zA-Z0-9_]+) *,/\1/t,truemethod/
