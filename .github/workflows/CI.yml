@@ -5,9 +5,19 @@ on:
   - push
   - pull_request
 
+env:
+  CFLAGS: "--coverage -O2 -g"
+  CXXFLAGS: "--coverage -O2 -g"
+  LDFLAGS: "--coverage"
+  # default config flags: enable debug asserts
+  CONFIGFLAGS: "--enable-debug"
+  COVERALLS_PARALLEL: true
+
 jobs:
-  test:
+  test-unix:
     name: ${{ matrix.test-suites }} - ${{ matrix.extra }} - ${{ matrix.os }}
+    # Don't run this twice on PRs for branches pushed to the same repository
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -143,13 +153,8 @@ jobs:
           # TODO: restore Slack notifications for failed CI branch builds
 
     env:
-      CFLAGS: "--coverage -O2 -g"
-      CXXFLAGS: "--coverage -O2 -g"
-      LDFLAGS: "--coverage"
-      # default config flags: enable debug asserts
-      CONFIGFLAGS: "--enable-debug"
-      COVERALLS_PARALLEL: true
       TEST_SUITES: ${{ matrix.test-suites }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -223,7 +228,7 @@ jobs:
       #    parallel: true
 
 #  finish:
-#    needs: test
+#    needs: test-unix
 #    runs-on: ubuntu-18.04
 #    steps:
 #      - name: Coveralls Finished
@@ -231,3 +236,40 @@ jobs:
 #        with:
 #          github-token: ${{ secrets.github_token }}
 #          parallel-finished: true
+
+  # Based on https://github.com/mit-plv/fiat-crypto/blob/master/.github/workflows/coq-windows.yml
+  test-cygwin:
+    name: cygwin64 - testinstall
+    # Don't run this twice on PRs for branches pushed to the same repository
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: windows-latest
+
+    env:
+      TEST_SUITES: testinstall
+
+    steps:
+      # This sets git to use UNIX line endings. While GAP should allow Windows
+      # line endings in GAP files, we currently can't build GAP if the whole
+      # source has Windows line endings
+      - name: "Set git to use UNIX-style line endings"
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - uses: actions/checkout@v2
+
+      - uses: gap-actions/setup-cygwin-for-gap@v1
+
+      # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) without changing directory
+      - name: "Compile GAP and download packages"
+        shell: cmd
+        run: |
+          @ECHO ON
+          SET CHERE_INVOKING=1
+          C:\cygwin64\bin\bash -l -c "bash dev/ci-prepare.sh"
+
+      - name: "Run tests"
+        shell: cmd
+        run: |
+          SET CHERE_INVOKING=1
+          C:\cygwin64\bin\bash -l -c "bash dev/ci.sh"
