@@ -1877,6 +1877,10 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     SetIsomorphismPermGroup(fp,new);
   fi;
 
+  if HasIsSolvableGroup(r.group) then
+    SetIsSolvableGroup(fp,IsSolvableGroup(r.group));
+  fi;
+
   return fp;
 end);
 
