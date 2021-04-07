@@ -1,13 +1,17 @@
 # 2006/08/28 (FL)
 gap> time1 := 0;;
+gap> CollectGarbage(true);
 gap> for j in [1..20] do
 > l:=List([1..100000],i->[i]);
+> CollectGarbage(false);
 > t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
 > time1 := time1 + (t2-t1);
 > od;
 gap> time2 := 0;;
+gap> CollectGarbage(true);
 gap> for j in [1..20] do
 > l := Immutable( List([1..100000],i->[i]) );
+> CollectGarbage(false);
 > t1:=Runtime(); for i in [1..100000] do a := PositionSorted(l,[i]); od; t2:=Runtime();
 > time2 := time2 + (t2-t1);
 > od;
