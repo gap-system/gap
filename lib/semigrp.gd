@@ -277,11 +277,10 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 
 #############################################################################
 ##
-#F  FreeSemigroup( [<wfilt>,]<rank> )
-#F  FreeSemigroup( [<wfilt>,]<rank>, <name> )
-#F  FreeSemigroup( [<wfilt>,]<name1>, <name2>, ... )
-#F  FreeSemigroup( [<wfilt>,]<names> )
-#F  FreeSemigroup( [<wfilt>,]infinity, <name>, <init> )
+#F  FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+#F  FreeSemigroup( [<wfilt>, ]<name1>[, <name2>, ...] )
+#F  FreeSemigroup( [<wfilt>, ]<names> )
+#F  FreeSemigroup( [<wfilt>, ]infinity[, <name>[, <init>]] )
 ##
 ##  <#GAPDoc Label="FreeSemigroup">
 ##  <ManSection>
@@ -292,17 +291,18 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##   Label="for various names"/>
 ##  <Func Name="FreeSemigroup" Arg='[wfilt, ]names'
 ##   Label="for a list of names"/>
-##  <Func Name="FreeSemigroup" Arg='[wfilt, ]infinity, name, init'
+##  <Func Name="FreeSemigroup" Arg='[wfilt, ]infinity[, name[, init]]'
 ##   Label="for infinitely many generators"/>
 ##
 ##  <Description>
 ##  Called with a positive integer <A>rank</A>,
 ##  <Ref Func="FreeSemigroup" Label="for given rank"/> returns
 ##  a free semigroup on <A>rank</A> generators.
-##  If the optional argument <A>name</A> is given then the generators are
+##  If the optional argument <A>name</A> (a string) is given,
+##  then the generators are
 ##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
 ##  that is, each name is the concatenation of the string <A>name</A> and an
-##  integer from <C>1</C> to <A>range</A>.
+##  integer from <C>1</C> to <A>rank</A>.
 ##  The default for <A>name</A> is the string <C>"s"</C>.
 ##  <P/>
 ##  Called in the second form,
