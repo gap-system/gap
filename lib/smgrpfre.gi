@@ -377,50 +377,113 @@ InstallMethod( GeneratorsSmallest,
 
 #############################################################################
 ##
-#F  FreeSemigroup( <rank> )
-#F  FreeSemigroup( <rank>, <name> )
-#F  FreeSemigroup( <name1>, <name2>, ... )
-#F  FreeSemigroup( <names> )
-#F  FreeSemigroup( infinity, <name>, <init> )
+#F  FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+#F  FreeSemigroup( [<wfilt>, ]<name1>[, <name2>, ...] )
+#F  FreeSemigroup( [<wfilt>, ]<names> )
+#F  FreeSemigroup( [<wfilt>, ]infinity[, <name>[, <init>]] )
 ##
 InstallGlobalFunction( FreeSemigroup, function( arg )
     local names,      # list of generators names
           F,          # family of free semigroup element objects
           zarg,
           lesy,       # filter for letter or syllable words family
-          S;          # free semigroup, result
+          S,          # free semigroup, result
+          err,        # string; helpful error message
+          form,       # string: assumed argument form of call to FreeSemigroup
+          rank,
+          name,
+          init;
 
   lesy:=IsLetterWordsFamily; # default:
-  if IsFilter(arg[1]) then
+  if not IsEmpty(arg) and IsFilter(arg[1]) then
     lesy:=arg[1];
     zarg:=arg{[2..Length(arg)]};
   else
     zarg:=arg;
   fi;
 
-    # Get and check the argument list, and construct names if necessary.
-    if   Length( zarg ) = 1 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( "s" );
-    elif Length( zarg ) = 2 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( zarg[2] );
-    elif Length( zarg ) = 3 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( zarg[2], zarg[3] );
-    elif Length( zarg ) = 1 and IsInt( zarg[1] ) and 0 < zarg[1] then
-      names:= List( [ 1 .. zarg[1] ],
-                    i -> Concatenation( "s", String(i) ) );
-      MakeImmutable( names );
-    elif Length( zarg ) = 2 and IsInt( zarg[1] ) and 0 < zarg[1] then
-      names:= List( [ 1 .. zarg[1] ],
-                    i -> Concatenation( zarg[2], String(i) ) );
-      MakeImmutable( names );
-    elif 1 <= Length( zarg ) and ForAll( zarg, IsString ) then
-      names:= zarg;
-    elif Length( zarg ) = 1 and IsList( zarg[1] )
-                            and not IsEmpty( zarg[1] )
-                            and ForAll( zarg[1], IsString ) then
-      names:= zarg[1];
+    # Process and validate the argument list, constructing names if necessary
+    err := "";
+
+    if Length( zarg ) = 0 or zarg[1] = 0
+        or (Length(zarg) = 1 and IsList( zarg[1] ) and IsEmpty( zarg[1] )) then
+      Error("free semigroups of rank zero are not supported");
+
+    # FreeSemigroup( <rank>[, <name> ] )
+    elif IsPosInt( zarg[1] ) and Length( zarg ) <= 2 then
+
+      # Get default and optional arguments
+      rank := zarg[1];
+      if Length( zarg ) = 1 then
+        name := "s";
+      else
+        name := zarg[2];
+      fi;
+
+      # Error checking
+      if not IsString( name ) then
+        form := "<rank>, <name>";
+        err := "<name> must be a string";
+
+      # Construct names
+      else
+        names:= List( [ 1 .. rank ], i -> Concatenation( name, String(i) ) );
+        MakeImmutable( names );
+      fi;
+
+    # FreeSemigroup( <name1>[, <name2>, ...] ), or a list of such arguments
+    elif ForAll( zarg, IsString ) or Length( zarg ) = 1 and IsList( zarg[1] ) then
+      if Length( zarg ) = 1 and not IsString( zarg[1] ) then
+        form := "[ <name1>, <name2>, ... ]";
+        names:= zarg[1];
+      else
+        form := "<name1>, <name2>, ...";
+        names:= zarg;
+      fi;
+      if not ForAll( names, s -> IsString(s) and not IsEmpty(s) ) then
+        err := "the names must be nonempty strings";
+      fi;
+
+    # FreeSemigroup( infinity[, <name>[, <init>]] )
+    elif zarg[1] = infinity and Length( zarg ) <= 3 then
+
+      # Get default and optional arguments
+      name := "s";
+      init := [];
+      if Length( zarg ) = 3 then
+        form := "infinity, <name>, <init>";
+        name := zarg[2];
+        init := zarg[3];
+      elif Length( zarg ) = 2 then
+        form := "infinity, <name>";
+        name := zarg[2];
+      fi;
+
+      # Error checking
+      if not IsString( name ) then
+        err := "<name> must be a string";
+      fi;
+      if not ( IsList( init ) and ForAll( init, s -> IsString(s) and not IsEmpty(s) ) ) then
+        if not IsEmpty(err) then
+          Append(err, " and ");
+        fi;
+        Append(err, "<init> must be a list of nonempty strings");
+      fi;
+
+      # Construct names
+      if IsEmpty(err) then
+        names:= InfiniteListOfNames( name, init );
+      fi;
+
     else
-      Error("usage: FreeSemigroup(<name1>,<name2>..),FreeSemigroup(<rank>)");
+      ErrorNoReturn("""usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+              FreeSemigroup( [<wfilt>, ]<name1>[, <name2>, ...] )
+              FreeSemigroup( [<wfilt>, ]<names> )
+              FreeSemigroup( [<wfilt>, ]infinity[, <name>[, <init>]] )""");
+    fi;
+
+    if not IsEmpty(err) then
+      ErrorNoReturn(StringFormatted("FreeSemigroup( {} ): {}", form, err));
     fi;
 
     # deal with letter words family types
@@ -457,6 +520,7 @@ InstallGlobalFunction( FreeSemigroup, function( arg )
     SetIsFreeSemigroup(S,true);
     SetIsWholeFamily( S, true );
     SetIsTrivial( S, false );
+    SetIsCommutative( S, Length(names) = 1 );
     return S;
 end );
 
