@@ -186,6 +186,11 @@ run_configure_and_make() {
   if [[ -x autogen.sh && ! -x configure ]]
   then
     ./autogen.sh
+    # (Hopefully) temporary fix for Autoconf 2.71
+    if [[ $(which autoreconf) && ! -x config.sub ]]
+    then
+      autoreconf -f -i
+    fi
   fi
   if [[ -x configure ]]
   then
