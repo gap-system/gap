@@ -898,7 +898,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
           if testpair = false then
             # This dependency is not satisfied.
             test:= false;
-            LogPackageLoadingMessage( PACKAGE_INFO,
+            LogPackageLoadingMessage( PACKAGE_WARNING,
                 Concatenation( "PackageAvailabilityInfo: dependency '",
                     name2, "' is not satisfied" ), inforec.PackageName );
             if not checkall then
