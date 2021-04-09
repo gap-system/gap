@@ -78,6 +78,10 @@ then
         "Type: cd ../pkg; ../bin/BuildPackages.sh"
 fi
 
+if [ "x$PARALLEL" = "xyes" ] && [ "x$STRICT" = "xyes" ]; then
+  error "The options --strict and --parallel cannot be used simultaneously"
+fi
+
 if [ "x$PARALLEL" = "xyes" ]; then
   export MAKEFLAGS="${MAKEFLAGS:--j3}"
 fi;
@@ -268,7 +272,7 @@ build_one_package() {
 date >> "$LOGDIR/fail.log"
 for PKG in "${PACKAGES[@]}"
 do 
-  ( 
+  (  # start a background process
   # cut off the ending slash (if exists)
   PKG="${PKG%/}"
   # cut off everything before the first slash to only keep the package name
@@ -306,6 +310,7 @@ do
     warning "$PKG does not seem to be a package directory, skipping"
   fi
   ) &
+  BUILD_PID=$!
   if [ "x$PARALLEL" = "xyes" ]; then
     # If more than 4 background jobs are running, wait for one to finish (if
     # <wait -n> is available) or for all to finish (if only <wait> is available)
@@ -314,7 +319,10 @@ do
     fi
   else
     # wait for this package to finish building
-    wait
+    if ! wait $BUILD_PID && [[ $STRICT = yes ]]
+    then
+      exit 1
+    fi
   fi;
 done
 # Wait until all packages are built, if in parallel
