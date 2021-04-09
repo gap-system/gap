@@ -84,6 +84,7 @@ jobs:
                     singular
                     "
 
+          # this job also tests GAP without readline
           - os: macos-latest
             test-suites: "docomp testinstall"
             extra: "BOOTSTRAP_MINIMAL=yes"
@@ -183,7 +184,7 @@ jobs:
                    sudo apt-get update
                    sudo apt-get install "${packages[@]}"
                elif [ "$RUNNER_OS" == "macOS" ]; then
-                   brew install gmp readline zlib
+                   brew install gmp zlib
                else
                    echo "$RUNNER_OS not supported"
                    exit 1
