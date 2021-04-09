@@ -875,13 +875,14 @@ end );
 #F  Ominus2( <q> )  . . . . . . . . . . . . . . . . . . . . . . . . O-_2(<q>)
 ##
 BindGlobal( "Ominus2", function( q )
-    local z, f, R, x, t, n, e, bc, m2, m1, g;
+    local z, f, one, R, x, t, n, e, bc, m2, m1, g;
 
     # construct the root
     z := Z(q);
 
     # find $x^2+x+t$ that is irreducible over GF(`q')
     f:= GF( q );
+    one:= One( z );
     R:= PolynomialRing( f );
     x:= Indeterminate( f );
     t:= z^First( [ 0 .. q-2 ], u -> Length( Factors( R, x^2+x+z^u ) ) = 1 );
@@ -892,21 +893,28 @@ BindGlobal( "Ominus2", function( q )
     e := 4*t-1;
 
     # construct base change
-    bc := [ [ n[1]/e, 1/e ], [ n[2], z^0 ] ];
+    bc := [ [ n[1]/e, 1/e ], [ n[2], one ] ];
 
     # matrix of order 2
-    m2 := [ [ -1, 0 ], [ -1, 1 ] ] * z^0;
+    m2 := [ [ -1, 0 ], [ -1, 1 ] ] * one;
 
     # matrix of order q+1 (this will lie in $GF(q)^{d \times d}$)
     z  := Z(q^2)^(q-1);
     m1 := bc^-1 * [[z,0*z],[0*z,z^-1]] * bc;
+    if IsCoeffsModConwayPolRep( z ) then
+      # Write all relevant field elements explicitly over GF(q).
+      m1[1,1]:= FFECONWAY.WriteOverSmallestField( m1[1,1] );
+      m1[1,2]:= FFECONWAY.WriteOverSmallestField( m1[1,2] );
+      m1[2,1]:= FFECONWAY.WriteOverSmallestField( m1[2,1] );
+      m1[2,2]:= FFECONWAY.WriteOverSmallestField( m1[2,2] );
+    fi;
 
     # and return the group
     m1:=ImmutableMatrix(GF(q),m1,true);
     m2:=ImmutableMatrix(GF(q),m2,true);
     g := GroupWithGenerators( [ m1, m2 ] );
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-      [ [ 1, 1 ], [ 0, t ] ] * z^0, true ) );
+      [ [ 1, 1 ], [ 0, t ] ] * one, true ) );
     SetSize( g, 2*(q+1) );
 
     return g;
@@ -1708,7 +1716,8 @@ BindGlobal( "OmegaPlus", function( d, q )
 #F  OmegaMinus( <d>, <q> )  . . . . . . . . . . . . . . . \Omega^-_{<d>}(<q>)
 ##
 BindGlobal( "OmegaMinus", function( d, q )
-    local f, o, m, xi, mo, nu, nubar, h, x, n, i, g, s,q2, q2i;
+    local f, o, m, xi, mo, nu, nubar, nutrace, nuinvtrace, nunorm, h, x, n,
+          i, g, s, q2, q2i;
 
     # <d> must be even
     if d mod 2 = 1 then
@@ -1747,23 +1756,32 @@ BindGlobal( "OmegaMinus", function( d, q )
 
     nu:= Z(q^2);
     nubar:= nu^q;
+    nutrace:= nu + nubar;
+    nuinvtrace:= nu^-1 + nubar^-1;
+    nunorm:= nu * nubar;
+    if IsCoeffsModConwayPolRep( nu ) then
+      # Write all relevant field elements explicitly over GF(q).
+      nutrace:= FFECONWAY.WriteOverSmallestField( nutrace );
+      nuinvtrace:= FFECONWAY.WriteOverSmallestField( nuinvtrace );
+      nunorm:= FFECONWAY.WriteOverSmallestField( nunorm );
+    fi;
 
     h:= IdentityMat( d, f );
-    h[m,m]:= nu * nubar;
-    h[ m+3, m+3 ]:= (nu * nubar)^-1;
+    h[m,m]:= nunorm;
+    h[ m+3, m+3 ]:= nunorm^-1;
     h{ [ m+1 .. m+2 ] }{ [ m+1 .. m+2 ] }:= [
-        [-1,nu^-1 + nubar^-1],
-        [-nu-nubar, 1 + nu*nubar^-1 + nu^-1*nubar]] * o;
+        [-1, nuinvtrace],
+        [-nutrace, nutrace * nuinvtrace - o]] * o;
     x:= IdentityMat( d, f );
     x{ [ m .. m+3 ] }{ [ m .. m+3 ] }:= [[1,1,0,1],[0,1,0,2],
-                                         [0,0,1,nu+nubar],
+                                         [0,0,1,nutrace],
                                          [0,0,0,1]] * o;
 
     n:= NullMat( d, d, f );
     n[ m+3,1]:= mo;
     n[ m,d]:= mo;
     n[ m+1, m+1 ]:= -o;
-    n[ m+2, m+1 ]:= -nu - nubar;
+    n[ m+2, m+1 ]:= -nutrace;
     n[ m+2, m+2 ]:= o;
     for i in [ 1 .. m-1 ] do
       n[i, i+1 ]:= o;
@@ -1797,7 +1815,7 @@ BindGlobal( "OmegaMinus", function( d, q )
     for i in [ 1 .. m-1 ] do
       x[i,d-i+1] := o;
     od;
-    x[m,d-m+1] := -nu - nubar;
+    x[m,d-m+1] := -nutrace;
     x[m,d-m] := -o;
     x[m+1,d-m+1] := -xi;
     x:= ImmutableMatrix( f, x, true );
