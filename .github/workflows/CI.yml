@@ -86,7 +86,7 @@ jobs:
 
           - os: macos-latest
             test-suites: "docomp testinstall"
-            extra: "BOOTSTRAP_MINIMAL=yes"
+            extra: "BOOTSTRAP_MINIMAL=yes NO_COVERAGE=1"
 
           # test creating the manual
           # TODO: make the resulting HTML and PDF files available as build
