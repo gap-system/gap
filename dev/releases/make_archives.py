@@ -69,7 +69,7 @@ all_packages_tarball = f"{all_packages}.tar.gz"
 req_packages = f"packages-required-v{gapversion}" # a subset of the above
 req_packages_tarball = f"{req_packages}.tar.gz"
 
-# Exporting repository content into tmp 
+# Exporting repository content into tmp
 notice("Exporting repository content via `git archive`")
 rawbasename = "gap-raw"
 rawgap_tarfile = f"{tmpdir}/{rawbasename}.tar"
@@ -89,7 +89,7 @@ notice("Processing exported content")
 with working_directory(tmpdir + "/" + basename):
     # This sets the version, release day and year of the release we are
     # creating.
-    notice("Patch configure.ac")
+    notice("Patching configure.ac")
     patchfile("configure.ac", r"m4_define\(\[gap_version\],[^\n]+", r"m4_define([gap_version], ["+gapversion+"])")
     patchfile("configure.ac", r"m4_define\(\[gap_releaseday\],[^\n]+", r"m4_define([gap_releaseday], ["+commit_date+"])")
     patchfile("configure.ac", r"m4_define\(\[gap_releaseyear\],[^\n]+", r"m4_define([gap_releaseyear], ["+commit_year+"])")
@@ -119,7 +119,7 @@ with working_directory(tmpdir + "/" + basename):
     download_with_sha256(PKG_BOOTSTRAP_URL+PKG_MINIMAL, "../"+req_packages_tarball)
     download_with_sha256(PKG_BOOTSTRAP_URL+PKG_FULL, "../"+all_packages_tarball)
 
-    notice("Extract the packages")
+    notice("Extracting package tarballs")
     with tarfile.open("../"+all_packages_tarball) as tar:
         tar.extractall(path="pkg")
 
@@ -130,11 +130,13 @@ with working_directory(tmpdir + "/" + basename):
     # now create the file package-infos.json
     # We first build the json package, then create the package-infos.json, then
     # clean up the json package again.
+    notice("Compiling json package")
     path_to_json_package = glob.glob(f'{tmpdir}/{basename}/pkg/json*')[0]
     with working_directory(path_to_json_package):
         subprocess.run(["./configure"], check=True)
         subprocess.run(["make"], check=True)
 
+    notice("Constructing package_infos json file")
     package_infos = subprocess.run(["./bin/gap.sh", "-r", "--quiet", "--quitonbreak",
                                     "dev/releases/PackageInfos-to-JSON.g"],
                                     check=True, capture_output=True, text=True)
@@ -144,13 +146,14 @@ with working_directory(tmpdir + "/" + basename):
         with gzip.open("package-infos.json.gz", 'wb') as file:
             file.write(package_infos.encode('utf-8'))
 
+    notice("Cleaning up the json package")
     with working_directory(path_to_json_package):
         subprocess.run(["make", "clean"], check=True)
         subprocess.run(["rm", "-rf", "bin/", "Makefile"],
                        check=True)
 
 
-    notice("Building the manuals")
+    notice("Building GAP's manuals")
     run_with_log(["make", "doc"], "gapdoc", "building the manuals")
 
     notice("Removing unwanted version-controlled files")
@@ -173,7 +176,7 @@ with working_directory(tmpdir + "/" + basename):
             pass
 
 
-    notice("Remove generated files we don't want for distribution")
+    notice("Removing generated files we don't want to distribute")
     run_with_log(["make", "distclean"], "make-distclean", "make distclean")
 
 
@@ -184,6 +187,8 @@ for filename in [all_packages, req_packages, basename, basename + "-core"]:
     manifest_list.append(filename + ".tar.gz")
     manifest_list.append(filename + ".zip")
 
+# Create the remaining archives
+notice("Creating remaining GAP and package archives")
 with working_directory(tmpdir):
     filename = f"{basename}.tar.gz"
     notice(f"Creating {filename}")
@@ -205,7 +210,7 @@ with working_directory(tmpdir):
     notice(f"Creating {filename}")
     shutil.make_archive(req_packages, 'zip', ".",  req_packages)
 
-    notice("Remove packages")
+    notice("Removing packages to facilitate creating the GAP core archives")
     shutil.rmtree(basename + "/pkg")
 
     filename = f"{basename}-core.tar.gz"
@@ -221,7 +226,7 @@ with working_directory(tmpdir):
             file.write(sha256file(filename))
 
     manifest_filename = "MANIFEST"
-    notice(f"Creating manifest {manifest_filename}")
+    notice(f"Creating the manifest, with name {manifest_filename}")
     with open(manifest_filename, 'w') as manifest:
         for filename in manifest_list:
             manifest.write(f"{filename}\n")
