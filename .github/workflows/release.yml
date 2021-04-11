@@ -4,26 +4,32 @@
 #
 # For builds triggered by a tag, the tag is turned into a GitHub release and
 # the produced archives are attached to that.
-name: release
+name: "Wrap releases"
 
-# Trigger the workflow on push or pull request
 on:
+  workflow_dispatch:
   pull_request:
   push:
     tags: v[1-9]+.[0-9]+.[0-9]+
     branches:
       - master
       - stable-*
+  schedule:
+    # Every day at 3:33 AM UTC
+    - cron:  '33 3 * * *'
+
+env:
+  NO_COVERAGE: 1
+  BOOTSTRAP_MINIMAL: yes
 
 jobs:
-  release:
-    name: Release
+  unix:
+    name: "Create UNIX archives and data"
     # Don't run this twice on PRs for branches pushed to the same repository
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
-    env:
-      NO_COVERAGE: "1"
-      BOOTSTRAP_MINIMAL: "yes"
+    outputs:
+      cygwin-matrix: ${{ steps.set-cygwin-matrix.outputs.matrix }}
 
     steps:
       - uses: actions/checkout@v2
@@ -39,7 +45,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v2
       - name: "Install Python modules"
-        run: pip3 install PyGithub requests python-dateutil
+        run: pip3 install PyGithub python-dateutil
       - name: "Install latex"
         run: sudo apt-get install texlive texlive-latex-extra texlive-extra-utils texlive-fonts-extra
       - name: "Configure GAP"
@@ -65,5 +71,184 @@ jobs:
       - name: "Make GitHub release"
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: python -u ./dev/releases/make_github_release.py ${GITHUB_REF#refs/tags/} tmp/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Decide which Cygwin installers to build next"
+        id: set-cygwin-matrix
+        run: |
+          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+            CYGWIN_MATRIX='{"arch":["x86_64"]}'
+          else
+            CYGWIN_MATRIX='{"arch":["x86_64","x86"]}'
+          fi
+          echo "Setting Cygwin matrix: $CYGWIN_MATRIX"
+          echo "::set-output name=matrix::$CYGWIN_MATRIX"
+
+  cygwin:
+    name: "Create Windows ${{ matrix.arch }} installer"
+    needs: unix
+    runs-on: windows-latest
+    env:
+      CHERE_INVOKING: 1
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.unix.outputs.cygwin-matrix) }}
+
+    steps:
+      # If the event is a pushed release tag v1.2.3, then VERSION=1.2.3
+      # If the event is a PR #123, then VERSION=pr-123
+      # Otherwise VERSION=branch, where <branch> is either the pushed branch, or
+      # the branch selected for workflow_dispatch, or master (for a cron job).
+      # In all cases, the GAP to be wrapped is put into gap-$VERSION/
+      #
+      # The name of this directory is currently required for the sage-windows
+      # script, which is passed the value of $VERSION (via SAGE_VERSION)
+      #
+      # If the event is a pushed release tag, then we are wrapping a version of
+      # GAP that already has its packages in place and all manuals compiled.
+      # Therefore sage-windows only needs to compile GAP and the packages.
+      #
+      # Otherwise, (currently) we are wrapping a cloned version of GAP.
+      # In none of these cases do we build GAP's manuals, because it's too slow.
+      # If the event is a PR, then we `make bootstrap-pkg-minimal` to save time
+      # (none of the required packages requires compilation).
+      # If the event is a pushed branch, then we `make bootstrap-pkg-full`.
+      # Compiling these packages takes a long time.
+      - name: "Set some environment variables according to the GitHub context"
+        shell: bash
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            COMPILEGAP="make -j2"
+            GAPDEV_DIR="gap-dev"
+          else
+            if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
+               VERSION=${GITHUB_REF#refs/pull/}
+               VERSION="pr-${VERSION%/merge}"
+               COMPILEGAP="make -j2 && make bootstrap-pkg-minimal"
+            elif [[ $GITHUB_REF == refs/heads/* ]]; then
+              VERSION=${GITHUB_REF#refs/heads/}
+              COMPILEGAP="make -j2 && make bootstrap-pkg-full"
+            else
+              echo "Unrecognised GitHub situation"
+              exit 1
+            fi
+            GAPDEV_DIR="gap-$VERSION"
+          fi
+
+          echo "Using data: VERSION=$VERSION / GAPDEV_DIR=$GAPDEV_DIR / COMPILEGAP=$COMPILEGAP"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "GAPDEV_DIR=$GAPDEV_DIR" >> $GITHUB_ENV
+          echo "SAGE_RUN_CONFIGURE_CMD=\"cd \$(SAGE_ROOT) && ${COMPILEGAP}\"" >> $GITHUB_ENV
+
+      # In all cases, we currently need to clone GAP for its release scripts.
+      #
+      # If the GitHub event is a pushed release tag, then we compile/wrap a GAP
+      # tarball that we download from the GitHub release that was just created
+      # and uploaded by the preceding 'unix' job.
+      #
+      # Otherwise, we compile and wrap the appropriate GAP development clone
+      # into the installer.
+      #
+      # Alternatively, we could upload the desired GAP tarball via the
+      # 'actions/upload-artifact' action in the preceding 'unix' job, and then
+      # use this in all cases in this 'cygwin' job. This would save some
+      # repeated work and hence time, and unify the code here slightly.
+      #
+      # Furthermore, this would remove the need for the
+      # download_release_archive.py script, and if we would also remove the need
+      # for the upload_file_to_github_release.py script, as described below,
+      # then we would no longer need access to the GAP release scripts in this
+      # job at all. Therefore, in all cases, we would be able to remove:
+      # * Clone GAP
+      # * Copy GAP's release scripts
+      # * Set up Python and its modules
+      #   - Although we would still need a way to create the EXE checksum files
+      # * The existence of the GAPDEV_DIR environment variable
+      # * The existence of the COMPILEGAP environment variable, because in all
+      #   cases it would be just "make -j2", since the downloaded release
+      #   artifact would/could already contain the appropriate packages.
+
+      - name: "Clone GAP"
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.GAPDEV_DIR }}
+
+      - name: "Copy GAP's release scripts to a safe place"
+        shell: bash
+        run: cp -rp ${GAPDEV_DIR}/dev/releases .
+
+      - uses: actions/setup-python@v2
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: "Install required Python modules"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: pip3 install PyGithub
+
+      # We could probably use either a GitHub Action from the GitHub Marketplace
+      # to download the appropriate GAP tarball from the GitHub release, rather
+      # than creating and using the Python file.  This would probably mean that
+      # we lose the ability to verify checksums, but that is probably fine.
+      - name: "Download the appropriate GAP release tarball"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        shell: bash
+        run: |
+          python -u ./releases/download_release_archive.py v${VERSION} gap-${VERSION}.tar.gz .
+          tar -zxf gap-${VERSION}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # TODO When the PR https://github.com/ChrisJefferson/sage-windows/pull/1
+      # is merged, then should be updated to ChrisJefferson/sage-windows.
+      # Ultimately, this repository should be owned by one of the GAP-related
+      # organisations, and perhaps ultimately it could/should be re-integrated
+      # with the original sagemath/sage-windows repository.
+      - name: "Clone the Windows installer maker scripts"
+        uses: actions/checkout@v2
+        with:
+          repository: wilfwilson/sage-windows
+          ref: master
+          path: sage-windows
+
+      - uses: gap-actions/setup-cygwin-for-gap@v1
+
+      # Currently, the sage-windows/release_gap.sh script wraps the GAP
+      # contained in gap-$VERSION, and outputs its installer to
+      # sage-windows/Output/gap-${{ env.VERSION }}-$ARCH.exe
+      #
+      # TODO:
+      # * Investigate how to speed this up. e.g. if we don't need to compile
+      #   GAP's manuals then could we perhaps avoid installing TeXLive?
+      # * Investigate splitting release_gap.sh into multiple scripts so that
+      #   this big step can be split up into multiple steps
+      - name: "Compile GAP and its packages, and create the installer"
+        shell: C:\cygwin64\bin\bash.exe --login --norc -o igncr '{0}'
+        run: |
+          cd $GITHUB_WORKSPACE/sage-windows
+          bash release_gap.sh
+        env:
+          ARCH: ${{ matrix.arch }}
+          SAGE_BUILD_DOC_CMD: '"true"'
+          SAGE_VERSION: ${{ env.VERSION }}
+
+      # Artifacts live for 1 day, i.e. until the next cron job runs.
+      - name: "Upload the installer as an artifact"
+        if: ${{ github.event_name == 'schedule' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: gap-${{ env.VERSION }}-${{ matrix.arch }}.exe
+          path: sage-windows/Output/gap-${{ env.VERSION }}-${{ matrix.arch }}.exe
+          retention-days: 1
+
+      # To reduce code, we could use an Action from the GitHub Marketplace to
+      # upload to the release, rather than use our own script.  We would still
+      # have to create the .sha256 file, and upload it here too.
+      - name: "Upload the installer to the GitHub release"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        shell: bash
+        run: |
+          python -u ./releases/upload_files_to_github_release.py v${VERSION} sage-windows/Output/gap-${{ env.VERSION }}-${{ matrix.arch }}.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
