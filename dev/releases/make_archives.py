@@ -85,6 +85,7 @@ with tarfile.open(rawgap_tarfile) as tar:
 os.remove(rawgap_tarfile)
 
 notice("Processing exported content")
+manifest_list = [] # collect names of assets to be uploaded to GitHub release
 
 with working_directory(tmpdir + "/" + basename):
     # This sets the version, release day and year of the release we are
@@ -104,6 +105,11 @@ with working_directory(tmpdir + "/" + basename):
     notice("Building GAP")
     run_with_log(["make", "-j8"], "make")
 
+    # TODO should we verify somewhere that an actual release vX.Y.Z is made from
+    # a stable branch, with branchname=stable-X.Y? Or will this be checked
+    # somewhere else in practice, and it would just be an annoyance for people
+    # wanting to test these scripts in the master branch?
+
     # extract some values from the build system
     branchname = get_makefile_var("PKG_BRANCH")
     PKG_BOOTSTRAP_URL = get_makefile_var("PKG_BOOTSTRAP_URL")
@@ -114,22 +120,20 @@ with working_directory(tmpdir + "/" + basename):
     notice(f"PKG_MINIMAL = {PKG_MINIMAL}")
     notice(f"PKG_FULL = {PKG_FULL}")
 
-    # Downloading, building and extracting pkgs manuals
     notice("Downloading package tarballs")   # ... outside of the directory we just created
-    download_with_sha256(PKG_BOOTSTRAP_URL+PKG_MINIMAL, "../"+req_packages_tarball)
-    download_with_sha256(PKG_BOOTSTRAP_URL+PKG_FULL, "../"+all_packages_tarball)
+    download_with_sha256(PKG_BOOTSTRAP_URL+PKG_MINIMAL, tmpdir+"/"+req_packages_tarball)
+    download_with_sha256(PKG_BOOTSTRAP_URL+PKG_FULL, tmpdir+"/"+all_packages_tarball)
+    manifest_list.append(req_packages_tarball)
+    manifest_list.append(all_packages_tarball)
 
     notice("Extracting package tarballs")
-    with tarfile.open("../"+all_packages_tarball) as tar:
+    with tarfile.open(tmpdir+"/"+all_packages_tarball) as tar:
         tar.extractall(path="pkg")
+    with tarfile.open(tmpdir+"/"+req_packages_tarball) as tar:
+        tar.extractall(path=tmpdir+"/"+req_packages)
 
-    # TODO: at this point we could generate a JSON file which collects the metadata of
-    # all packages, and upload that as part of the release, too; this file would be rather
-    # useful for updating the website, and also for the PackageManager
-    # (Why JSON? Because GAP, Python and many more can easily process it.)
-    # now create the file package-infos.json
-    # We first build the json package, then create the package-infos.json, then
-    # clean up the json package again.
+    # Now create the file package-infos.json.  We first build the json package,
+    # then create the file, then clean up the json package again.
     notice("Compiling json package")
     path_to_json_package = glob.glob(f'{tmpdir}/{basename}/pkg/json*')[0]
     with working_directory(path_to_json_package):
@@ -140,17 +144,16 @@ with working_directory(tmpdir + "/" + basename):
     package_infos = subprocess.run(["./bin/gap.sh", "-r", "--quiet", "--quitonbreak",
                                     "dev/releases/PackageInfos-to-JSON.g"],
                                     check=True, capture_output=True, text=True)
-    package_infos = package_infos.stdout
-
     with working_directory(tmpdir):
         with gzip.open("package-infos.json.gz", 'wb') as file:
-            file.write(package_infos.encode('utf-8'))
+            file.write(package_infos.stdout.encode('utf-8'))
+        manifest_list.append("package-infos.json.gz")
 
     notice("Cleaning up the json package")
     with working_directory(path_to_json_package):
         subprocess.run(["make", "clean"], check=True)
-        subprocess.run(["rm", "-rf", "bin/", "Makefile"],
-                       check=True)
+        shutil.rmtree("bin")
+        os.remove("Makefile")
 
 
     notice("Building GAP's manuals")
@@ -159,10 +162,10 @@ with working_directory(tmpdir + "/" + basename):
     notice("Removing unwanted version-controlled files")
     badfiles = [
     ".codecov.yml",
+    ".ctags",
     ".gitattributes",
     ".gitignore",
     ".mailmap",
-    ".travis.yml",
     ]
 
     shutil.rmtree("benchmark")
@@ -180,57 +183,41 @@ with working_directory(tmpdir + "/" + basename):
     run_with_log(["make", "distclean"], "make-distclean", "make distclean")
 
 
-# create the archives
-# If you create additional archives, make sure to add them to manifest_list!
-manifest_list = ["package-infos.json.gz"]
-for filename in [all_packages, req_packages, basename, basename + "-core"]:
-    manifest_list.append(filename + ".tar.gz")
-    manifest_list.append(filename + ".zip")
+# Create an archive in the current directory with shutil.make_archive, and
+# record the filename of the new archive in <manifest_list>.
+# The arguments of this function match those to shutil.make_archive.
+def make_and_record_archive(name, compression, root_dir, base_dir):
+    # Deduce file extension from compression
+    if compression == "gztar":
+        ext = ".tar.gz"
+    elif compression == "zip":
+        ext = ".zip"
+    else:
+        error(f"unknown compression type {compression} (not gztar or zip)")
+
+    filename = f"{name}{ext}"
+    notice(f"Creating {filename}")
+    shutil.make_archive(name, compression, root_dir, base_dir)
+    manifest_list.append(filename)
 
 # Create the remaining archives
 notice("Creating remaining GAP and package archives")
 with working_directory(tmpdir):
-    filename = f"{basename}.tar.gz"
-    notice(f"Creating {filename}")
-    shutil.make_archive(basename, 'gztar', ".", basename)
-
-    filename = f"{basename}.zip"
-    notice(f"Creating {filename}")
-    shutil.make_archive(basename, 'zip', ".", basename)
-
-    filename = all_packages + '.zip'
-    notice(f"Creating {filename}")
-    shutil.make_archive(all_packages, 'zip', basename,  "pkg")
-
-    notice("Extract required packages")
-    with tarfile.open(req_packages_tarball) as tar:
-        tar.extractall(path=req_packages)
-
-    filename = req_packages + '.zip'
-    notice(f"Creating {filename}")
-    shutil.make_archive(req_packages, 'zip', ".",  req_packages)
-
+    make_and_record_archive(basename, "gztar", ".", basename)
+    make_and_record_archive(basename, "zip",   ".", basename)
+    make_and_record_archive(all_packages, "zip", basename, "pkg")
+    make_and_record_archive(req_packages, "zip", ".", req_packages)
     notice("Removing packages to facilitate creating the GAP core archives")
     shutil.rmtree(basename + "/pkg")
+    make_and_record_archive(basename + "-core", "gztar", ".", basename)
+    make_and_record_archive(basename + "-core", "zip",   ".", basename)
 
-    filename = f"{basename}-core.tar.gz"
-    notice(f"Creating {filename}")
-    shutil.make_archive(basename+"-core", 'gztar', ".", basename)
-
-    filename = f"{basename}-core.zip"
-    notice(f"Creating {filename}")
-    shutil.make_archive(basename+"-core", 'zip', ".", basename)
-
-    for filename in manifest_list:
-        with open(filename+".sha256", 'w') as file:
-            file.write(sha256file(filename))
-
+    # If you create additional archives, make sure to add them to manifest_list!
     manifest_filename = "MANIFEST"
     notice(f"Creating the manifest, with name {manifest_filename}")
     with open(manifest_filename, 'w') as manifest:
         for filename in manifest_list:
             manifest.write(f"{filename}\n")
-            manifest.write(f"{filename}.sha256\n")
 
 # The end
 notice("DONE")

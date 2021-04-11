@@ -97,17 +97,20 @@ def download(url, dst):
     if res.returncode != 0:
         error('failed downloading ' + url)
 
+def compare_checksum_with_checksumfile(filename):
+    with open(filename + ".sha256", "r") as f:
+        expected_checksum = f.read().strip()
+    actual_checksum = sha256file(filename)
+    if expected_checksum != actual_checksum:
+        error(f"checksum for '{filename}' expected to be {expected_checksum} but got {actual_checksum}")
+
 # download file at the given URL to path `dst` unless we detect
 # that the file in the given URL was already downloaded to path `dst`
 def download_with_sha256(url, dst):
     download(url + ".sha256", dst + ".sha256")
-    with open(dst + ".sha256", "r") as f:
-        expected_checksum = f.read().strip()
     if not os.path.isfile(dst):
         download(url, dst)
-    actual_checksum = sha256file(dst)
-    if expected_checksum != actual_checksum:
-        error(f"checksum for 'dst' expected to be {expected_checksum} but got {actual_checksum}")
+    compare_checksum_with_checksumfile(dst)
 
 # Run what ever <args> command and create appropriate log file
 def run_with_log(args, name, msg = None):
@@ -118,6 +121,13 @@ def run_with_log(args, name, msg = None):
             subprocess.run(args, check=True, stdout=subprocess.PIPE, stderr=fp)
         except subprocess.CalledProcessError:
             error(msg+" failed. See "+name+".log.")
+
+def is_possible_gap_release_tag(tag):
+    return re.fullmatch( r"v[1-9]+\.[0-9]+\.[0-9]+", tag) != None
+
+def verify_is_possible_gap_release_tag(tag):
+    if not is_possible_gap_release_tag(tag):
+        error(f"{tag} does not look like the tag of a GAP release version")
 
 # Error checked git fetch of tags
 def safe_git_fetch_tags():
@@ -172,3 +182,34 @@ def initialize_github(token=None):
         CURRENT_REPO = GITHUB_INSTANCE.get_repo(CURRENT_REPO_NAME)
     except github.GithubException:
         error("Error: the access token may be incorrect")
+
+# Given the <filename> of a file that does not end with .sha256, create or get
+# the corresponding sha256 checksum file <filename>.sha256, (comparing checksums
+# just to be safe, in the latter case). Then upload the files <filename> and
+# <filename>.sha256 as assets to the GitHub <release>.
+# Files already ending in ".sha256" are ignored.
+def upload_asset_with_checksum(release, filename):
+    if not os.path.isfile(filename):
+        error(f"{filename} not found")
+
+    if filename.endswith(".sha256"):
+        notice(f"Skipping provided checksum file {filename}")
+        return
+
+    notice(f"Processing {filename}")
+
+    checksum_filename = filename + ".sha256"
+    if os.path.isfile(checksum_filename):
+        notice("Comparing actual checksum with pre-existing checksum file")
+        compare_checksum_with_checksumfile(filename)
+    else:
+        notice("Writing new checksum file")
+        with open(checksum_filename, "w") as checksumfile:
+            checksumfile.write(sha256file(filename))
+
+    for file in [filename, checksum_filename]:
+        try:
+            notice(f"Uploading {file}")
+            release.upload_asset(file)
+        except github.GithubException:
+            error("Error: The upload failed")
