@@ -8,23 +8,16 @@
 # If we do import * from utils, then initialize_github can't overwrite the
 # global GITHUB_INSTANCE and CURRENT_REPO variables.
 import utils
-import github
-import os
 import sys
-import re
 
 if len(sys.argv) != 3:
     utils.error("usage: "+sys.argv[0]+" <tag_name> <path_to_release>")
 
-utils.verify_git_clean()
-
 TAG_NAME = sys.argv[1]
 PATH_TO_RELEASE = sys.argv[2]
 
-if re.fullmatch( r"v[1-9]+\.[0-9]+\.[0-9]+", TAG_NAME) == None:
-    utils.error("This does not look like a release version")
-
-# Initialize GITHUB_INSTANCE and CURRENT_REPO
+utils.verify_git_clean()
+utils.verify_is_possible_gap_release_tag(TAG_NAME)
 utils.initialize_github()
 
 # Error if the tag TAG_NAME hasn't been pushed to CURRENT_REPO yet.
@@ -65,9 +58,5 @@ with utils.working_directory(PATH_TO_RELEASE):
 
     # Upload all assets to release
     utils.notice("Uploading release assets")
-    try:
-        for filename in manifest:
-            utils.notice("Uploading " + filename)
-            RELEASE.upload_asset(filename)
-    except github.GithubException:
-        utils.error("Error: The upload failed")
+    for filename in manifest:
+        utils.upload_asset_with_checksum(RELEASE, filename)
