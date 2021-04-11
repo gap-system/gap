@@ -53,11 +53,18 @@ with utils.working_directory(PATH_TO_RELEASE):
     manifest_filename = "MANIFEST"
     with open(manifest_filename, 'r') as manifest_file:
         manifest = manifest_file.read().splitlines()
+
+    utils.notice(f"Contents of {manifest_filename}:")
+    for filename in manifest:
+        print(filename)
+
     # Now check that TAG_NAME and the created archives belong together
     main_archive_name = "gap-" + TAG_NAME[1:] + ".tar.gz"
     if not main_archive_name in manifest:
-        utils.error(f"Expected a file {main_archive_name} but it does not exist!")
+        utils.error(f"Expected to find {main_archive_name} in MANIFEST, but did not!")
+
     # Upload all assets to release
+    utils.notice("Uploading release assets")
     try:
         for filename in manifest:
             utils.notice("Uploading " + filename)
