@@ -2,9 +2,8 @@
 
 # Continous integration testing script
 
-# This is used for AppVeyor, Travis CI and GitHub Actions integration.
-# In addition, it can be run manually, to simulate what happens in the
-# CI environment locally (say, for debugging purposes).
+# It can also be run manually, to simulate locally what happens in the
+# CI environment (say, for debugging purposes).
 
 set -ex
 

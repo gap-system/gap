@@ -1,5 +1,4 @@
 [![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg?branch=master)](https://github.com/gap-system/gap/actions?query=workflow%3ACI+branch%3Amaster)
-[![AppVeyor build Status](https://ci.appveyor.com/api/projects/status/mvut0lq6x9idfrye/branch/master?svg=true)](https://ci.appveyor.com/project/gap-system/gap/branch/master)
 [![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/master/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/gap-system/gap/badge.svg?branch=master)](https://coveralls.io/github/gap-system/gap?branch=master)
 

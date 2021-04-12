@@ -155,7 +155,6 @@ with working_directory(tmpdir + "/" + basename):
 
     notice("Removing unwanted version-controlled files")
     badfiles = [
-    ".appveyor.yml",
     ".codecov.yml",
     ".gitattributes",
     ".gitignore",

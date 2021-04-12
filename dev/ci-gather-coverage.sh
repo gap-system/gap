@@ -84,11 +84,6 @@ if IsBound(env.GITHUB_ACTIONS) then
         #service_job_id := env.GITHUB_RUN_ID,
         service_branch := env.GITHUB_REF{[Length("refs/heads/")..Length(env.GITHUB_REF)]},
         commit_sha := env.GITHUB_SHA,
-#         service_build_url := Concatenation(
-#             "https://ci.appveyor.com/project/",
-#             env.APPVEYOR_REPO_NAME,
-#             "/build/",
-#             env.APPVEYOR_BUILD_VERSION),
     );
 
     # GITHUB_REF has the form refs/pull/12345/merge
