@@ -1778,11 +1778,10 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . reps of conjugacy classes of
 #F                                                          maximal subgroups
 ##
-InstallMethod(TryMaximalSubgroupClassReps,"using lattice",true,[IsGroup],0,
+InstallMethod(CalcMaximalSubgroupClassReps,"using lattice",true,[IsGroup],0,
 function (G)
     local   maxs,lat;
 
-    TryMaxSubgroupTainter(G);
     if ValueOption("nolattice")=true then return fail;fi;
     #AH special AG treatment
     if not HasIsSolvableGroup(G) and IsSolvableGroup(G) then
@@ -3033,11 +3032,6 @@ InstallMethod(TomDataAlmostSimpleRecognition,"generic",true,
   [IsGroup],0,
 function(G)
 local T,t,hom,inf,nam,i,aut;
-  # avoid the isomorphism test falling back
-  if ValueOption("cheap")=true and IsInt(ValueOption("intersize")) and
-  ValueOption("intersize")<=Size(G) then
-    return fail;
-  fi;
 
   T:=PerfectResiduum(G);
   inf:=DataAboutSimpleGroup(T);
@@ -3090,6 +3084,12 @@ end);
 
 InstallGlobalFunction(TomDataMaxesAlmostSimple,function(G)
 local recog,m;
+  # avoid the isomorphism test falling back
+  if ValueOption("cheap")=true and IsInt(ValueOption("intersize")) and
+  ValueOption("intersize")<=Size(G) then
+    return fail;
+  fi;
+
   recog:=TomDataAlmostSimpleRecognition(G);
   if recog=fail then
     return fail;

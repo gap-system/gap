@@ -1234,11 +1234,13 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##
 DeclareAttribute("MaximalSubgroupClassReps",IsGroup);
 
+# functions to calculate maximal subgroups (or fail if not possible)
+DeclareOperation("CalcMaximalSubgroupClassReps",[IsGroup]);
+DeclareGlobalFunction("TryMaximalSubgroupClassReps");
 # utility attribute: Allow use with limiting options, so could hold `fail'.
-DeclareAttribute("TryMaximalSubgroupClassReps",IsGroup,"mutable");
+DeclareAttribute("StoredPartialMaxSubs",IsGroup,"mutable");
 
 # utility function in maximal subgroups code
-DeclareGlobalFunction("TryMaxSubgroupTainter");
 DeclareGlobalFunction("DoMaxesTF");
 
 # make this an operation to allow for overloading and TryNextMethod();

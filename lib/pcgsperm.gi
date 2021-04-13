@@ -1424,11 +1424,10 @@ end);
 ##
 ##  method for solvable perm groups -- it is cheaper to translate to a pc
 ##  group
-InstallMethod( TryMaximalSubgroupClassReps,"solvable perm group",true, 
+InstallMethod( CalcMaximalSubgroupClassReps,"solvable perm group",true, 
     [ IsPermGroup and CanEasilyComputePcgs and IsFinite ], 0,
 function(G)
 local hom,m;
-  TryMaxSubgroupTainter(G);
   hom:=IsomorphismPcGroup(G);
   m:=MaximalSubgroupClassReps(Image(hom));
   List(m,Size); # force

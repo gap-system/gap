@@ -92,6 +92,11 @@ local erg,nerg,perm,i,e,c,sel;
     nerg:=[];
     for e in erg do
       sel:=Filtered(Difference([1..Length(from)],Union(e)),x->from[x]<=i);
+      c:=NrCombinations(sel);
+      if c>10^7 then 
+        Info(InfoPerformance,1,"Performance warning: Trying ",c,
+          " combinations");
+      fi;
       for c in Combinations(sel) do
         if Sum(from{c})=i then
           Add(nerg,Concatenation(e,[c]));
