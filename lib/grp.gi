@@ -1460,24 +1460,7 @@ InstallMethod(MaximalSubgroupClassReps,"default, catch dangerous options",
   true,[IsGroup],0,
 function(G)
 local H,a,m,i,l;
-  # easy case, go without options
-  if not HasTryMaximalSubgroupClassReps(G) then
-    return TryMaximalSubgroupClassReps(G:
-           # as if options were unset
-           cheap:=fail,intersize:=fail,inmax:=fail,nolattice:=fail);
-  fi;
-
-  # hard case -- `Try` is stored
-  if not IsBound(G!.maxsubtrytaint) or G!.maxsubtrytaint=false then
-    # stored and untainted, just go on
-    return TryMaximalSubgroupClassReps(G); 
-  fi;
-
-  # compute anew for new group to avoid taint
-  H:=Group(GeneratorsOfGroup(G),One(G));
-  for i in [Size,IsNaturalAlternatingGroup,IsNaturalSymmetricGroup] do
-    if Tester(i)(G) then Setter(i)(H,i(G));fi;
-  od;
+  # use ``try'' and set flags so that a known partial result is not used
   m:=TryMaximalSubgroupClassReps(H:
           cheap:=false,intersize:=false,inmax:=false,nolattice:=false);
   l:=[];
@@ -1488,21 +1471,54 @@ local H,a,m,i,l;
   od;
 
   # now we know list is untained, store 
-  SetTryMaximalSubgroupClassReps(G,l);
   return l;
 
 end);
 
-InstallMethod(TryMaximalSubgroupClassReps,"fetch known correct data",true,
-    [IsGroup and HasMaximalSubgroupClassReps],SUM_FLAGS,
-    MaximalSubgroupClassReps);
-
-InstallGlobalFunction(TryMaxSubgroupTainter,function(G)
-  if ForAny(["cheap","intersize","inmax","nolattice"],
-       x->not ValueOption(x) in [fail,false]) then
-       G!.maxsubtrytaint:=true;
+# handle various options and flags
+InstallGlobalFunction(TryMaximalSubgroupClassReps,
+function(G)
+local cheap,nolattice,intersize,attr,kill,i,flags,sup,sub,l;
+  if HasMaximalSubgroupClassReps(G) then
+    return MaximalSubgroupClassReps(G);
   fi;
+  # the four possible options
+  cheap:=ValueOption("cheap");
+  if cheap=fail then cheap:=false;fi;
+  nolattice:=ValueOption("nolattice");
+  if nolattice=fail then nolattice:=false;fi;
+  intersize:=ValueOption("intersize");
+  if intersize=fail then intersize:=false;fi;
+  #inmax:=ValueOption("inmax"); # should have no impact on validity of stored
+  attr:=StoredPartialMaxSubs(G);
+  # now find whether any stored information matches and which ones would be
+  # superseded
+  kill:=[];
+  for i in [1..Length(attr)] do
+    flags:=attr[i][1];
+    # could use this stored result
+    sup:=flags[3]=false or (IsInt(intersize) and intersize<=flags[3]);
+    # would supersede the stored result
+    sub:=intersize=false or (IsInt(flags[3]) and intersize>=flags[3]);
+    sup:=sup and (cheap or not flags[1]); 
+    sub:=sub and (not cheap or flags[1]);
+    sup:=sup and (nolattice or not flags[2]);
+    sub:=sub and (not nolattice or flags[2]);
+    if sup then return attr[i][2];fi; # use stored
+    if sub then AddSet(kill,i);fi; # use stored
+  od;
+  l:=CalcMaximalSubgroupClassReps(G);
+  Add(attr,Immutable([[cheap,nolattice,intersize],l]));
+  # finally kill superseded ones (by replacing with last, which possibly was
+  # just added)
+  for i in Reversed(Set(kill)) do
+    attr[i]:=attr[Length(attr)];
+    Unbind(attr[Length(attr)]);
+  od;
+  return l;
 end);
+
+InstallMethod(StoredPartialMaxSubs,"set",true,[IsGroup],0,x->[]);
 
 #############################################################################
 ##

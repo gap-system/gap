@@ -2476,7 +2476,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
   return max;
 end);
 
-InstallMethod( TryMaximalSubgroupClassReps, "symmetric", true,
+InstallMethod( CalcMaximalSubgroupClassReps, "symmetric", true,
     [ IsNaturalSymmetricGroup and IsFinite], OVERRIDENICE,
 function ( G )
 local m;
@@ -2488,7 +2488,7 @@ local m;
   fi;
 end);
 
-InstallMethod( TryMaximalSubgroupClassReps, "alternating", true,
+InstallMethod( CalcMaximalSubgroupClassReps, "alternating", true,
     [ IsNaturalAlternatingGroup and IsFinite], OVERRIDENICE,
 function ( G )
 local m;
