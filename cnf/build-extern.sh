@@ -30,3 +30,4 @@ $MAKE -C "$builddir" install
 
 # TODO: insert command to check whether make needs to be called at all?
 echo "=== DONE building $pkg ==="
+exit 0
