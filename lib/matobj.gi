@@ -518,30 +518,6 @@ InstallGlobalFunction( ConcatenationOfVectors,
     return res;
   end );
 
-InstallGlobalFunction( MakeVector,
-    function( list, R... )
-    local filt;
-
-    if Length( R ) = 0 then
-      R:= DefaultField( list );
-    elif Length( R ) <> 1 then
-      Error( "usage: MakeVector( <list>[, <basedomain>] )" );
-      return fail;
-    else
-      R:= R[1];
-    fi;
-
-    if IsFinite( R ) and IsField( R ) and Size( R ) = 2 then
-      filt:= IsGF2VectorRep;
-    elif IsFinite( R ) and IsField( R ) and Size( R ) <= 256 then
-      filt:= Is8BitVectorRep;
-    else
-      filt:= IsPlistVectorRep;
-    fi;
-
-    return NewVector( filt, R, list );
-    end );
-
 InstallMethod( TraceMat,
     "for a matrix object",
     [ IsMatrixObj ],
