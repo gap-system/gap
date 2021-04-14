@@ -147,6 +147,9 @@ InstallGlobalFunction( SLPOfElms,
   function(elms)
     # Returns a straight line program to write elm as in the original 
     # generators.
+    if ForAny(elms{[2..Length(elms)]}, x -> not IsIdenticalObj(elms[1]!.slp, x!.slp)) then
+        ErrorNoReturn("SLPOfElms: the slp components of all elements must be identical");
+    fi;
     return IntermediateResultsOfSLPWithoutOverwrite( 
                [elms[1]!.slp.prog,elms[1]!.slp.nogens], List(elms,x->x!.n) );
   end);
@@ -184,6 +187,9 @@ InstallMethod( \*, "objects with memory", true,
   function(a,b)
     local r,slp;
     slp := a!.slp;
+    if not IsIdenticalObj(a!.slp, b!.slp) then
+        ErrorNoReturn("\\* for objects with memory: a!.slp and b!.slp must be identical");
+    fi;
     if a!.n = 0 then   # the identity!
         r := rec(slp := slp, n := b!.n, el := b!.el);
     elif b!.n = 0 then   # the identity!
