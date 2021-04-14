@@ -23,13 +23,6 @@
 
 set -e
 
-# Is someone trying to run us from inside the 'bin' directory?
-if [[ -f gapicon.bmp ]]
-then
-  error "This script must be run from inside the pkg directory" \
-        "Type: cd ../pkg; ../bin/BuildPackages.sh"
-fi
-
 CURDIR="$(pwd)"
 GAPROOT="$(cd .. && pwd)"
 COLORS=yes
@@ -63,22 +56,6 @@ while [[ "$#" -ge 1 ]]; do
   esac
 done
 
-if [ "x$PARALLEL" = "xyes" ]; then
-  export MAKEFLAGS="${MAKEFLAGS:--j3}"
-fi;
-
-# If user specified no packages to build, build all packages in subdirectories.
-if [[ ${#PACKAGES[@]} == 0 ]]
-then
-  # Put package directory names into a bash array to avoid issues with
-  # spaces in filenames. This code will still break if there are newlines
-  # in the name.
-  old_IFS=$IFS
-  IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g))
-  IFS=$old_IFS
-  PACKAGES=( "${PACKAGES[@]%/PackageInfo.g}" )
-fi
-
 # Some helper functions for printing user messages
 if [[ "x$COLORS" = xyes ]]
 then
@@ -94,6 +71,28 @@ else
   std_error() { printf "%s\n" "$@" ; }
 fi
 
+# Is someone trying to run us from inside the 'bin' directory?
+if [[ -f BuildPackages.sh ]]
+then
+  error "This script must be run from inside the pkg directory" \
+        "Type: cd ../pkg; ../bin/BuildPackages.sh"
+fi
+
+if [ "x$PARALLEL" = "xyes" ]; then
+  export MAKEFLAGS="${MAKEFLAGS:--j3}"
+fi;
+
+# If user specified no packages to build, build all packages in subdirectories.
+if [[ ${#PACKAGES[@]} == 0 ]]
+then
+  # Put package directory names into a bash array to avoid issues with
+  # spaces in filenames. This code will still break if there are newlines
+  # in the name.
+  old_IFS=$IFS
+  IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g))
+  IFS=$old_IFS
+  PACKAGES=( "${PACKAGES[@]%/PackageInfo.g}" )
+fi
 
 notice "Using GAP root $GAPROOT"
 
