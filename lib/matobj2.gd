@@ -629,30 +629,42 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 
 #############################################################################
 ##
+#O  ZeroVector( <filt>, <R>, <len> )
+#O  ZeroVector( <R>, <len> )
 #O  ZeroVector( <len>, <v> )
 #O  ZeroVector( <len>, <M> )
 ##
 ##  <#GAPDoc Label="VectorObj_ZeroVector">
 ##  <ManSection>
 ##  <Heading>ZeroVector</Heading>
-##  <Oper Name="ZeroVector" Arg="l,v" Label="for length and vector object"/>
-##  <Oper Name="ZeroVector" Arg="l,M" Label="for length and matrix object"/>
+##  <Oper Name="ZeroVector" Arg="filt,R,len" Label="for filter, base domain and length"/>
+##  <Oper Name="ZeroVector" Arg="R,len" Label="for base domain and length"/>
+##  <Oper Name="ZeroVector" Arg="len,v" Label="for length and vector object"/>
+##  <Oper Name="ZeroVector" Arg="len,M" Label="for length and matrix object"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##  <Description>
-##  For a vector object <A>v</A> and a nonnegative integer <A>l</A>,
-##  this operation returns a new mutable vector object of length <A>l</A>
+##  For a filter <A>filt</A>, a semiring <A>R</A> and a nonnegative integer <A>len</A>,
+##  this operation returns a new mutable vector object of length <A>len</A> over <A>R</A>
+##  in the representation <A>filt</A> containing only zeros.
+##  <P/>
+##  If only <A>R</A> and <A>len</A> are given, then GAP guesses a suitable representation.
+##  <P/>
+##  For a vector object <A>v</A> and a nonnegative integer <A>len</A>,
+##  this operation returns a new mutable vector object of length <A>len</A>
 ##  in the same representation as <A>v</A> containing only zeros.
 ##  <P/>
-##  For a matrix object <A>M</A> and a nonnegative integer <A>l</A>,
+##  For a matrix object <A>M</A> and a nonnegative integer <A>len</A>,
 ##  this operation returns a new mutable zero vector object of length
-##  <A>l</A> in the representation given by the
+##  <A>len</A> in the representation given by the
 ##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
 ##  of <A>M</A>, provided that such a representation exists.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
+DeclareOperation( "ZeroVector", [ IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsInt, IsVectorObj ] );
 DeclareOperation( "ZeroVector", [ IsInt, IsMatrixObj ] );
 
@@ -1867,9 +1879,11 @@ DeclareOperation( "[]:=", [ IsMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 ##    And what about 'NullMat'/'ZeroMatrix' and
 ##    'IdentityMat'/'IdentityMatrix'?)
 ##
+##  - Are the argument names sensible and consistent? For example we sometimes
+##    write "rep" and sometimes "filt" for the same thing.
+##    And we sometimes write "rows, colss", other times "ncols", or "m,n", or...
+##
 ##  - Are the operations for vector and matrix objects consistent?
-##    For example, there are variants 'ZeroMatrix( [filt, ]R, m, n )'
-##    but no variants 'ZeroVector( [filt, ]R, l )'.
 ##
 ##  - How is 'WeightOfVector' related to 'WeightVecFFE', 'DistanceVecFFE'?
 ##    Should just 'WeightOfVector' be documented?
