@@ -222,13 +222,16 @@ end);
 
 #############################################################################
 ##
-#M  NewZeroVector( <filt>, <R>, <n> )
+#M  ZeroVector( <filt>, <R>, <len> )
+#M  ZeroVector( <R>, <len> )
 ##
-InstallMethod( NewZeroVector,
-    "for filter, semiring, integer",
-    [ IsVectorObj, IsSemiring, IsInt ],
-    { filt, R, n } -> NewVector( filt, R, ListWithIdenticalEntries( n,
-                                              Zero( R ) ) ) );
+InstallMethod( ZeroVector,
+    [ IsOperation, IsSemiring, IsInt ],
+    NewZeroVector );
+
+InstallMethod( ZeroVector,
+    [ IsSemiring, IsInt ],
+    {R, len} -> NewZeroVector(DefaultVectorRepForBaseDomain(R), R, len) );
 
 
 #############################################################################
