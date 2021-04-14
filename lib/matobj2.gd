@@ -854,28 +854,6 @@ DeclareOperation( "ChangedBaseDomain", [ IsMatrixObj, IsSemiring ] );
 
 ############################################################################
 ##
-##  <ManSection>
-##  <Func Name="MakeVector" Arg='list[,R]'/>
-##
-##  <Description>
-##  This is a convenience function for creating a vector object defined over
-##  the base domain <A>R</A> from the dense list <A>list</A> of intended
-##  entries.
-##  If <A>R</A> is not given then a guess is made, based on the possible
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> values
-##  known to the function.
-##  <P/>
-##  This is not guaranteed to be efficient.
-##  In library or package code, one should better use
-##  <Ref Oper="NewVector"/> or <Ref Oper="Vector"/>.
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "MakeVector" );
-
-
-############################################################################
-##
 #O  Randomize( [Rs, ]v )
 #O  Randomize( [Rs, ]M )
 ##
@@ -1880,15 +1858,6 @@ DeclareOperation( "[]:=", [ IsMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 ##  - Replace 'ChangedBaseDomain' (which is defined for both vector and
 ##    matrix objects) by 'VectorWithChangedBaseDomain',
 ##    'MatrixWithChangedBasedDomain'?
-##
-##  - The function 'MakeVector' is left undocumented for the moment.
-##    Note that 'Vector' also supports variants for the 'MakeVector'
-##    situation, and the strategies of the two are not compatible,
-##    which may lead to confusion:
-##    'MakeVector' knows a set of possible 'ConstructingFilter' values,
-##    whereas 'Vector' asks 'DefaultScalarDomainOfMatrixList' and
-##    'DefaultVectorRepForBaseDomain'.
-##    Does this make sense?
 ##
 ##  - Is the ordering of arguments sensible and consistent?
 ##    (For example,
