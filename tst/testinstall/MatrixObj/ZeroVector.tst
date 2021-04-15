@@ -5,9 +5,9 @@ gap> ReadGapRoot("tst/testinstall/MatrixObj/testmatobj.g");
 # IsGF2VectorRep
 #
 gap> TestZeroVector(IsGF2VectorRep, GF(2), 3);
-Error, Assertion failure
+<a GF2 vector of length 3>
 gap> TestZeroVector(IsGF2VectorRep, GF(2), 0);
-Error, Assertion failure
+<a GF2 vector of length 0>
 
 # test error handling
 gap> TestZeroVector(IsGF2VectorRep, GF(2), -1);
@@ -19,15 +19,15 @@ Error, IsGF2VectorRep only supported over GF(2)
 # Is8BitVectorRep
 #
 gap> TestZeroVector(Is8BitVectorRep, GF(3), 3);
-Error, Assertion failure
+[ 0*Z(3), 0*Z(3), 0*Z(3) ]
 gap> TestZeroVector(Is8BitVectorRep, GF(3), 0);
-Error, Z: <q> must be a positive prime power (not the integer 1)
+< mutable compressed vector length 0 over GF(3) >
 
 #
 gap> TestZeroVector(Is8BitVectorRep, GF(251), 3);
-Error, Assertion failure
+[ 0*Z(251), 0*Z(251), 0*Z(251) ]
 gap> TestZeroVector(Is8BitVectorRep, GF(251), 0);
-Error, Z: <q> must be a positive prime power (not the integer 1)
+< mutable compressed vector length 0 over GF(251) >
 
 # test error handling
 gap> TestZeroVector(Is8BitVectorRep, GF(3), -1);
