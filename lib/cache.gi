@@ -96,7 +96,7 @@ function(cache, key, maker)
         # so use that instead
         val:= cache[2][ pos ];
       else
-        Add( cache[1], key, pos );
+        Add( cache[1], Immutable( key ), pos );
         Add( cache[2], val, pos );
       fi;
     od;
@@ -129,7 +129,7 @@ function(cache, key, maker)
       # so use that instead
       val:= cache[2][ pos ];
     else
-      Add( cache[1], key, pos );
+      Add( cache[1], Immutable( key ), pos );
       Add( cache[2], val, pos );
     fi;
 
