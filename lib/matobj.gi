@@ -383,20 +383,19 @@ InstallMethod( Matrix,
 InstallMethod( ZeroMatrix,
   [IsInt, IsInt, IsMatrixObj],
   function( rows, cols, example )
-    return ZeroMatrix( ConstructingFilter(example), BaseDomain(example), rows, cols );
+    return NewZeroMatrix( ConstructingFilter(example), BaseDomain(example), rows, cols );
   end );
 
 InstallMethod( ZeroMatrix,
   [IsSemiring, IsInt, IsInt],
   function( basedomain, rows, cols )
-    return ZeroMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, rows, cols );
+    return NewZeroMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, rows, cols );
   end );
 
 InstallMethod( ZeroMatrix,
   [IsOperation, IsSemiring, IsInt, IsInt],
   function( rep, basedomain, rows, cols )
-    # TODO: urge matrixobj implementors to overload this
-    return NewMatrix( rep, basedomain, cols, ListWithIdenticalEntries( rows * cols, Zero(basedomain) ) );
+    return NewZeroMatrix( rep, basedomain, rows, cols );
   end );
 
 #
@@ -405,22 +404,24 @@ InstallMethod( ZeroMatrix,
 InstallMethod( IdentityMatrix,
   [IsInt, IsMatrixObj],
   function( dim, example )
-    return IdentityMatrix( ConstructingFilter(example), BaseDomain(example), dim );
+    return NewIdentityMatrix( ConstructingFilter(example), BaseDomain(example), dim );
   end );
 
 InstallMethod( IdentityMatrix,
   [IsSemiring, IsInt],
   function( basedomain, dim )
-    return IdentityMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, dim );
+    return NewIdentityMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, dim );
   end );
 
 InstallMethod( IdentityMatrix,
   [IsOperation, IsSemiring, IsInt],
   function( rep, basedomain, dim )
-    # TODO: avoid using IdentityMat eventually
-    return NewMatrix( rep, basedomain, dim, IdentityMat( dim, basedomain ) );
+    return NewIdentityMatrix( rep, basedomain, dim );
   end );
 
+#
+#
+#
 InstallMethod( CompanionMatrix,
     "for a polynomial and a matrix",
   [ IsUnivariatePolynomial, IsMatrixObj ],

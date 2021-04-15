@@ -2450,32 +2450,10 @@ InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
     return v;
   end );
 
-InstallMethod( ZeroMatrix, "for a compressed gf2 matrix",
-  [IsInt, IsInt, IsGF2MatrixRep],
-  function( rows, cols, m )
-    local l,i,x;
-    l := [];
-    x := m[1];
-    for i in [1..rows] do
-        Add(l,ZeroVector(cols,x));
-    od;
-    ConvertToMatrixRepNC(l,2);
-    return l;
-  end );
-
 InstallMethod( NewZeroVector, "for IsGF2VectorRep, GF(2), and an int",
   [ IsGF2VectorRep, IsField and IsFinite, IsInt ],
   function( filter, f, i )
     return ZERO_GF2VEC_2(i);
-  end );
-
-InstallMethod( IdentityMatrix, "for a compressed gf2 matrix",
-  [IsInt, IsGF2MatrixRep],
-  function(rows,m)
-    local n;
-    n := IdentityMat(rows,GF(2));
-    ConvertToMatrixRepNC(n,2);
-    return n;
   end );
 
 InstallMethod( NewMatrix, "for IsGF2MatrixRep, GF(2), an int, and a list",

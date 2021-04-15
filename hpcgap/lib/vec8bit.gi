@@ -1151,18 +1151,6 @@ InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
     return v;
   end );
 
-InstallMethod( ZeroMatrix, "for a compressed 8bit matrix",
-  [IsInt, IsInt, Is8BitMatrixRep],
-  function( rows, cols, m )
-    local l,i;
-    l := [];
-    for i in [1..rows] do
-        Add(l,ZeroVector(cols,m[1]));
-    od;
-    ConvertToMatrixRep(l);
-    return l;
-  end );
-
 InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an int, and a list",
   [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsList ],
   function( filter, f, rl, l )
@@ -1183,16 +1171,6 @@ InstallMethod( NewZeroMatrix, "for Is8BitMatrixRep, GF(q), and two ints",
     od;
     ConvertToMatrixRep(m,Size(f));
     return m;
-  end );
-
-InstallMethod( IdentityMatrix, "for a compressed 8bit matrix",
-  [IsInt, Is8BitMatrixRep],
-  function(rows,m)
-    local f,n;
-    f := BaseField(m);
-    n := IdentityMat(rows,f);
-    ConvertToMatrixRep(n,Size(f));
-    return n;
   end );
 
 InstallMethod( NewIdentityMatrix, "for Is8BitMatrixRep, GF(q), and an int",
