@@ -378,14 +378,12 @@ DeclareSynonym( "CF", CyclotomicField );
 ##  <Var Name="ABELIAN_NUMBER_FIELDS"/>
 ##
 ##  <Description>
-##  At position <A>n</A>, those fields with conductor <A>n</A> are stored
-##  that are not cyclotomic fields.
+##  Stores abelian number fields that are not cyclotomic fields.
 ##  The list for cyclotomic fields is <C>CYCLOTOMIC_FIELDS</C>.
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "ABELIAN_NUMBER_FIELDS",
-    "list of lists, at position [1][n] stabilizers, at [2][n] the fields" );
+DeclareGlobalVariable( "ABELIAN_NUMBER_FIELDS" );
 InstallFlushableValue( ABELIAN_NUMBER_FIELDS, [ [], [] ] );
 if IsHPCGAP then
     ShareSpecialObj(ABELIAN_NUMBER_FIELDS);
