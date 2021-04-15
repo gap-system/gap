@@ -1094,13 +1094,10 @@ InstallMethod( BaseField, "for a compressed 8bit vector",
 InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    local v;
     if not Size(f) in [3..256] then
         Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
     fi;
-    v := ShallowCopy(l);
-    ConvertToVectorRep(v,Size(f));
-    return v;
+    return CopyToVectorRep(l,Size(f));
   end );
 
 InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
