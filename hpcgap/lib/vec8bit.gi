@@ -1176,18 +1176,14 @@ InstallMethod( NewZeroMatrix, "for Is8BitMatrixRep, GF(q), and two ints",
 
 InstallMethod( NewIdentityMatrix, "for Is8BitMatrixRep, GF(q), and an int",
   [ Is8BitMatrixRep, IsField and IsFinite, IsInt ],
-  function( filter, f, rows )
-    local m,i,o;
-    m := 0*[1..rows];
-    o := One(f);
-    m[1] := NewZeroVector(Is8BitVectorRep,f,rows);
-    for i in [2..rows] do
-        m[i] := ShallowCopy(m[1]);
-        m[i][i] := o;
+  function( filter, basedomain, dim )
+    local mat, one, i;
+    mat := NewZeroMatrix(filter, basedomain, dim, dim);
+    one := One(basedomain);
+    for i in [1..dim] do
+        mat[i,i] := one;
     od;
-    m[1][1] := o;
-    ConvertToMatrixRep(m,Size(f));
-    return m;
+    return mat;
   end );
 
 InstallMethod( ChangedBaseDomain, "for an 8bit vector and a finite field",
