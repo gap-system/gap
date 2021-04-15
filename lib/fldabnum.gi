@@ -244,25 +244,16 @@ InstallGlobalFunction( AbelianNumberField, function ( N, stabilizer )
     fi;
 
     # The standard field is required.  Look whether it is already stored.
-    if not IsBound( ABELIAN_NUMBER_FIELDS[1][N] ) then
-      ABELIAN_NUMBER_FIELDS[1][N]:= [];
-      ABELIAN_NUMBER_FIELDS[2][N]:= [];
-    fi;
-    pos:= Position( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
-    if pos <> fail then
-      return ABELIAN_NUMBER_FIELDS[2][N][ pos ];
-    fi;
+    return GET_FROM_SORTED_CACHE( ABELIAN_NUMBER_FIELDS, [N, stabilizer], function()
 
     # Construct the field.
     F:= AbelianNumberFieldByReducedGaloisStabilizerInfo( Rationals,
             N, stabilizer );
 
-    # Store the field.
-    Add( ABELIAN_NUMBER_FIELDS[1][N], stabilizer );
-    Add( ABELIAN_NUMBER_FIELDS[2][N], F );
-
     # Return the number field.
     return F;
+
+    end );
 end );
 
 
