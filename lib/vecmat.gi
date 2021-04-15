@@ -2480,18 +2480,14 @@ InstallMethod( NewZeroMatrix, "for IsGF2MatrixRep, GF(2), and two ints",
 
 InstallMethod( NewIdentityMatrix, "for IsGF2MatrixRep, GF(2), and an int",
   [ IsGF2MatrixRep, IsField and IsFinite, IsInt ],
-  function( filter, f, rows )
-    local m,i,o;
-    m := 0*[1..rows];
-    o := Z(2);
-    m[1] := NewZeroVector(IsGF2VectorRep,f,rows);
-    for i in [2..rows] do
-        m[i] := ShallowCopy(m[1]);
-        m[i,i] := o;
+  function( filter, basedomain, dim )
+    local mat, one, i;
+    mat := NewZeroMatrix(filter, basedomain, dim, dim);
+    one := One(basedomain);
+    for i in [1..dim] do
+        mat[i,i] := one;
     od;
-    m[1,1] := o;
-    ConvertToMatrixRep(m,2);
-    return m;
+    return mat;
   end );
 
 InstallMethod( ChangedBaseDomain, "for a gf2 vector and a finite field",

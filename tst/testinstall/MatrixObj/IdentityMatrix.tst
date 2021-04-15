@@ -14,7 +14,8 @@ ger -1)
 
 # test error handling
 gap> TestIdentityMatrix(IsGF2MatrixRep, GF(3), 2);
-Error, Assertion failure
+Error, SET_MAT_ELM_GF2MAT: assigned element must be a GF(2) element (not an ff\
+e)
 
 #
 # Is8BitMatrixRep
@@ -101,7 +102,7 @@ gap> IdentityMatrix(Integers mod 4, -1);
 gap> IdentityMatrix(GF(2), 2);
 <a 2x2 matrix over GF2>
 gap> IdentityMatrix(GF(2), 0);
-<a 1x1 matrix over GF2>
+[ <a GF2 vector of length 0> ]
 gap> IdentityMatrix(GF(2), -1);
 Error, ZERO_GF2VEC_2: <len> must be a non-negative small integer (not the inte\
 ger -1)
@@ -110,7 +111,7 @@ ger -1)
 gap> IdentityMatrix(GF(3), 2);
 [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ]
 gap> IdentityMatrix(GF(3), 0);
-[ [ Z(3)^0 ] ]
+[ [  ] ]
 gap> IdentityMatrix(GF(3), -1);
 Error, ListWithIdenticalEntries: <n> must be a non-negative small integer (not\
  the integer -1)
@@ -119,7 +120,7 @@ Error, ListWithIdenticalEntries: <n> must be a non-negative small integer (not\
 gap> IdentityMatrix(GF(4), 2);
 [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ]
 gap> IdentityMatrix(GF(4), 0);
-[ [ Z(2)^0 ] ]
+[ [  ] ]
 gap> IdentityMatrix(GF(4), -1);
 Error, ListWithIdenticalEntries: <n> must be a non-negative small integer (not\
  the integer -1)

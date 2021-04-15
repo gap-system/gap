@@ -118,19 +118,14 @@ InstallMethod( NewZeroMatrix,
 InstallMethod( NewIdentityMatrix,
   "for IsPlistMatrixRep, a ring, and an int",
   [ IsPlistMatrixRep, IsRing, IsInt ],
-  function( filter, basedomain, rows )
-    local filterVectors, m, e, i;
-    filterVectors := IsPlistVectorRep;
-    m := 0*[1..rows];
-    e := NewVector(filterVectors, basedomain, []);
-    for i in [1..rows] do
-        m[i] := ZeroVector( rows, e );
-        m[i][i] := One(basedomain);
+  function( filter, basedomain, dim )
+    local mat, one, i;
+    mat := NewZeroMatrix(filter, basedomain, dim, dim);
+    one := One(basedomain);
+    for i in [1..dim] do
+        mat[i,i] := one;
     od;
-    m := [basedomain,e,rows,m];
-    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
-                       filter and IsMutable), m );
-    return m;
+    return mat;
   end );
 
 
