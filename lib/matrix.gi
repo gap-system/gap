@@ -1258,6 +1258,7 @@ end );
 InstallOtherMethod( BaseDomain,
     "generic method for a row vector",
     [ IsRowVector ],
+    -SUM_FLAGS,
     DefaultRing );
 
 InstallOtherMethod( OneOfBaseDomain,
