@@ -1296,6 +1296,10 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             # or possibly a totally bad list
             vc := ShallowCopy(v);
             common := FFECONWAY.WriteOverSmallestCommonField(vc);
+            #
+            # FFECONWAY.WriteOverSmallestCommonField returns an integer or fail.
+            # When integer is returned, it also may modify entries of vc
+            #
             if common = fail or common  > 256 then
                 #
                 # vector needs a field > 256, so can't be compressed
@@ -1303,8 +1307,8 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 #
                 return true;
             fi;
-            # SWITCH_OBJ changes the mutability of v, so we make
-            # sure that if v is immutable it stays immutable.
+            # Switching the object below can change the mutability of v, so we
+            # make sure that if v is immutable it stays immutable.
             if not IsMutable(v) then
                 MakeImmutable(vc);
             fi;
@@ -1751,7 +1755,6 @@ InstallOtherMethod( ImmutableVector,"empty",[IsObject,IsEmpty],0,
 function(f,v)
   return Immutable(v);
 end);
-
 
 #############################################################################
 ##

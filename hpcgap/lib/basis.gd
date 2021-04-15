@@ -498,7 +498,7 @@ DeclareOperation( "Coefficients", [ IsBasis, IsVector ] );
 ##
 ##  <Description>
 ##  If <A>B</A> is a basis object (see <Ref Filt="IsBasis"/>)
-##  or a homogeneous list of length <M>n</M>
+##  or a homogeneous list of length <M>n</M>,
 ##  and <A>coeff</A> is a row vector of the same length,
 ##  <Ref Oper="LinearCombination"/> returns the vector
 ##  <M>\sum_{{i = 1}}^n <A>coeff</A>[i] * <A>B</A>[i]</M>.

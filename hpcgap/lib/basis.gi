@@ -83,6 +83,11 @@ InstallMethod( Length,
     [ IsBasis ],
     B -> Length( BasisVectors( B ) ) );
 
+InstallMethod( NumberRows,
+    "for a basis that is a matrix",
+    [ IsBasis and IsMatrix ],
+    B -> Length( BasisVectors( B ) ) );
+
 
 #############################################################################
 ##

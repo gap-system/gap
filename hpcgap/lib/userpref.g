@@ -224,7 +224,7 @@ BindGlobal( "DeclareUserPreference", function( record )
     # Check the mandatory components.
     for name in [ "name", "description", "default" ] do
       if not IsBound( record.( name ) ) then
-        Error( "<record>.", name, " must be be bound" );
+        Error( "<record>.", name, " must be bound" );
       fi;
     od;
     if not ( IsString( record.name ) or

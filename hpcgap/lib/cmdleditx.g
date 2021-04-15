@@ -110,7 +110,7 @@ end);
 # init empty history
 BindGlobal("CommandLineHistory", [1]);
 LockAndMigrateObj(CommandLineHistory, CommandLineRegion);
-MaxCommandLineHistory := 0;
+MaxCommandLineHistory := 1000;
 
 # history position from previous line
 LastPosCLH := 1;
@@ -214,7 +214,7 @@ BindGlobal("CommandLineHistoryHandler", function(l)
     return ["", 1, l[5]];
   else
     Error("Cannot handle command line history with key ", key);
-  fi;  
+  fi;
   od;
 end);
 

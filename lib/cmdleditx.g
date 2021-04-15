@@ -256,10 +256,10 @@ BindGlobal("ReadCommandLineHistory", function(arg)
   if IsString(s) then
     s := SplitString(s,"","\n");
     MaxCommandLineHistory := UserPreference("HistoryMaxLines");
-    if not IsInt(MaxCommandLineHistory) then 
+    if not IsInt(MaxCommandLineHistory) then
       MaxCommandLineHistory := 0;
     fi;
-    if MaxCommandLineHistory > 0 and 
+    if MaxCommandLineHistory > 0 and
        Length(s) + Length(hist) - 1 > MaxCommandLineHistory then
       n := MaxCommandLineHistory + 1 - Length(hist);
       s := s{[Length(s)-n+1..Length(s)]};
@@ -346,6 +346,7 @@ GAPInfo.History.AddLine := function(l)
   Add(hist.Lines, l);
   hist.Pos := Length(hist.Lines) + 1;
 end;
+
 GAPInfo.History.PrevLine := function(start)
   local hist, len, pos, first;
   hist := GAPInfo.History;
