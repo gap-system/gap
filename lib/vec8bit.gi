@@ -1111,7 +1111,7 @@ InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
         Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
     fi;
     v := ListWithIdenticalEntries(i,Zero(f));
-    ConvertToVectorRep(v,Size(f));
+    CONV_VEC8BIT(v,Size(f));
     return v;
   end );
 
@@ -1142,7 +1142,7 @@ InstallMethod( NewZeroMatrix, "for Is8BitMatrixRep, GF(q), and two ints",
     for i in [2..rows] do
         m[i] := ShallowCopy(m[1]);
     od;
-    ConvertToMatrixRep(m,Size(f));
+    ConvertToMatrixRepNC(m,Size(f));
     return m;
   end );
 

@@ -7,7 +7,7 @@ gap> ReadGapRoot("tst/testinstall/MatrixObj/testmatobj.g");
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 2, 3);
 <a 2x3 matrix over GF2>
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 2, 0);
-Error, Assertion failure
+<a 2x0 matrix over GF2>
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 0, 3); # TODO
 Error, IsGF2MatrixRep with zero rows not yet supported
 
@@ -27,7 +27,7 @@ Error, IsGF2MatrixRep only supported over GF(2)
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 2, 3);
 [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 2, 0);
-Error, Assertion failure
+[ [  ], [  ] ]
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 
@@ -35,7 +35,7 @@ Error, Is8BitMatrixRep with zero rows not yet supported
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 3);
 [ [ 0*Z(251), 0*Z(251), 0*Z(251) ], [ 0*Z(251), 0*Z(251), 0*Z(251) ] ]
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 0);
-Error, Assertion failure
+[ [  ], [  ] ]
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 
@@ -106,7 +106,7 @@ gap> ZeroMatrix(GF(2), 2, 3);
 gap> ZeroMatrix(GF(2), 0, 3);
 Error, IsGF2MatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(2), 2, 0);
-[ <a GF2 vector of length 0>, <a GF2 vector of length 0> ]
+<a 2x0 matrix over GF2>
 
 #
 gap> ZeroMatrix(GF(3), 2, 3);

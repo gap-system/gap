@@ -21,13 +21,13 @@ Error, IsGF2VectorRep only supported over GF(2)
 gap> TestZeroVector(Is8BitVectorRep, GF(3), 3);
 Error, Assertion failure
 gap> TestZeroVector(Is8BitVectorRep, GF(3), 0);
-Error, Assertion failure
+Error, Z: <q> must be a positive prime power (not the integer 1)
 
 #
 gap> TestZeroVector(Is8BitVectorRep, GF(251), 3);
 Error, Assertion failure
 gap> TestZeroVector(Is8BitVectorRep, GF(251), 0);
-Error, Assertion failure
+Error, Z: <q> must be a positive prime power (not the integer 1)
 
 # test error handling
 gap> TestZeroVector(Is8BitVectorRep, GF(3), -1);
@@ -100,7 +100,7 @@ Error, ZeroVector: length must be non-negative
 gap> ZeroVector(GF(3), 2);
 [ 0*Z(3), 0*Z(3) ]
 gap> ZeroVector(GF(3), 0);
-[  ]
+< mutable compressed vector length 0 over GF(3) >
 gap> ZeroVector(GF(3), -1);
 Error, ZeroVector: length must be non-negative
 
@@ -108,7 +108,7 @@ Error, ZeroVector: length must be non-negative
 gap> ZeroVector(GF(4), 2);
 [ 0*Z(2), 0*Z(2) ]
 gap> ZeroVector(GF(4), 0);
-[  ]
+< mutable compressed vector length 0 over GF(4) >
 gap> ZeroVector(GF(4), -1);
 Error, ZeroVector: length must be non-negative
 
