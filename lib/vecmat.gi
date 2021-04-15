@@ -2441,11 +2441,8 @@ InstallMethod( BaseField, "for a compressed gf2 vector",
 InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    local v;
     if Size(f) <> 2 then Error("IsGF2VectorRep only supported over GF(2)"); fi;
-    v := ShallowCopy(l);
-    ConvertToVectorRepNC(v,2);
-    return v;
+    return CopyToVectorRep(l,2);
   end );
 
 InstallMethod( NewZeroVector, "for IsGF2VectorRep, GF(2), and an int",
