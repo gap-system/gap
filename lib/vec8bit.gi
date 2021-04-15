@@ -1095,6 +1095,9 @@ InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
     local v;
+    if not Size(f) in [3..256] then
+        Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
+    fi;
     v := ShallowCopy(l);
     ConvertToVectorRep(v,Size(f));
     return v;
@@ -1104,6 +1107,9 @@ InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
   [ Is8BitVectorRep, IsField and IsFinite, IsInt ],
   function( filter, f, i )
     local v;
+    if not Size(f) in [3..256] then
+        Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
+    fi;
     v := ListWithIdenticalEntries(i,Zero(f));
     ConvertToVectorRep(v,Size(f));
     return v;
@@ -1113,6 +1119,9 @@ InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an int, and a list",
   [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsList ],
   function( filter, f, rl, l )
     local m;
+    if not Size(f) in [3..256] then
+        Error("Is8BitMatrixRep only supports base fields with 3 to 256 elements");
+    fi;
     m := List(l,ShallowCopy);
     ConvertToMatrixRep(m,Size(f));
     return m;
@@ -1122,6 +1131,12 @@ InstallMethod( NewZeroMatrix, "for Is8BitMatrixRep, GF(q), and two ints",
   [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsInt ],
   function( filter, f, rows, cols )
     local m,i;
+    if not Size(f) in [3..256] then
+        Error("Is8BitMatrixRep only supports base fields with 3 to 256 elements");
+    fi;
+    if rows = 0 then
+        Error("Is8BitMatrixRep with zero rows not yet supported");
+    fi;
     m := 0*[1..rows];
     m[1] := NewZeroVector(Is8BitVectorRep,f,cols);
     for i in [2..rows] do

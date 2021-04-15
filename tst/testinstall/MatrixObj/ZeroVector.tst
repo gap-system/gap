@@ -11,10 +11,9 @@ Error, Assertion failure
 
 # test error handling
 gap> TestZeroVector(IsGF2VectorRep, GF(2), -1);
-Error, ZERO_GF2VEC_2: <len> must be a non-negative small integer (not the inte\
-ger -1)
+Error, ZeroVector: length must be non-negative
 gap> TestZeroVector(IsGF2VectorRep, GF(3), 3);
-Error, Assertion failure
+Error, IsGF2VectorRep only supported over GF(2)
 
 #
 # Is8BitVectorRep
@@ -32,12 +31,11 @@ Error, Assertion failure
 
 # test error handling
 gap> TestZeroVector(Is8BitVectorRep, GF(3), -1);
-Error, ListWithIdenticalEntries: <n> must be a non-negative small integer (not\
- the integer -1)
+Error, ZeroVector: length must be non-negative
 gap> TestZeroVector(Is8BitVectorRep, GF(2), 3);
-Error, Assertion failure
+Error, Is8BitVectorRep only supports base fields with 3 to 256 elements
 gap> TestZeroVector(Is8BitVectorRep, GF(257), 3);
-Error, Assertion failure
+Error, Is8BitVectorRep only supports base fields with 3 to 256 elements
 
 #
 # IsPlistVectorRep
@@ -67,7 +65,7 @@ gap> TestZeroVector(IsPlistVectorRep, Integers mod 4, 0);
 
 # test error handling
 gap> TestZeroVector(IsPlistVectorRep, Rationals, -1);
-Error, Assertion failure
+Error, ZeroVector: length must be non-negative
 
 #
 # Test ZeroVector variant which "guesses" a suitable representation, i.e.:
@@ -80,7 +78,7 @@ gap> ZeroVector(Integers, 2);
 gap> ZeroVector(Integers, 0);
 <plist vector over Integers of length 0>
 gap> ZeroVector(Integers, -1);
-<plist vector over Integers of length 0>
+Error, ZeroVector: length must be non-negative
 
 #
 gap> ZeroVector(Integers mod 4, 2);
@@ -88,7 +86,7 @@ gap> ZeroVector(Integers mod 4, 2);
 gap> ZeroVector(Integers mod 4, 0);
 <plist vector over (Integers mod 4) of length 0>
 gap> ZeroVector(Integers mod 4, -1);
-<plist vector over (Integers mod 4) of length 0>
+Error, ZeroVector: length must be non-negative
 
 #
 gap> ZeroVector(GF(2), 2);
@@ -96,8 +94,7 @@ gap> ZeroVector(GF(2), 2);
 gap> ZeroVector(GF(2), 0);
 <a GF2 vector of length 0>
 gap> ZeroVector(GF(2), -1);
-Error, ZERO_GF2VEC_2: <len> must be a non-negative small integer (not the inte\
-ger -1)
+Error, ZeroVector: length must be non-negative
 
 #
 gap> ZeroVector(GF(3), 2);
@@ -105,8 +102,7 @@ gap> ZeroVector(GF(3), 2);
 gap> ZeroVector(GF(3), 0);
 [  ]
 gap> ZeroVector(GF(3), -1);
-Error, ListWithIdenticalEntries: <n> must be a non-negative small integer (not\
- the integer -1)
+Error, ZeroVector: length must be non-negative
 
 #
 gap> ZeroVector(GF(4), 2);
@@ -114,8 +110,7 @@ gap> ZeroVector(GF(4), 2);
 gap> ZeroVector(GF(4), 0);
 [  ]
 gap> ZeroVector(GF(4), -1);
-Error, ListWithIdenticalEntries: <n> must be a non-negative small integer (not\
- the integer -1)
+Error, ZeroVector: length must be non-negative
 
 #
 gap> STOP_TEST("ZeroVector.tst");
