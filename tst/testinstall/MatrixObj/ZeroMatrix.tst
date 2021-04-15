@@ -27,7 +27,7 @@ Error, IsGF2MatrixRep only supported over GF(2)
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 2, 3);
 [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 2, 0);
-[ [  ], [  ] ]
+< mutable compressed matrix 2x0 over GF(3) >
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 
@@ -35,7 +35,7 @@ Error, Is8BitMatrixRep with zero rows not yet supported
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 3);
 [ [ 0*Z(251), 0*Z(251), 0*Z(251) ], [ 0*Z(251), 0*Z(251), 0*Z(251) ] ]
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 0);
-[ [  ], [  ] ]
+< mutable compressed matrix 2x0 over GF(251) >
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 
@@ -114,7 +114,7 @@ gap> ZeroMatrix(GF(3), 2, 3);
 gap> ZeroMatrix(GF(3), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(3), 2, 0);
-[ [  ], [  ] ]
+< mutable compressed matrix 2x0 over GF(3) >
 
 #
 gap> ZeroMatrix(GF(4), 2, 3);
@@ -122,7 +122,7 @@ gap> ZeroMatrix(GF(4), 2, 3);
 gap> ZeroMatrix(GF(4), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(4), 2, 0);
-[ [  ], [  ] ]
+< mutable compressed matrix 2x0 over GF(4) >
 
 #
 gap> STOP_TEST("ZeroMatrix.tst");

@@ -150,7 +150,7 @@ InstallMethod( ViewObj, "for a compressed MatFFE",
     local r,c;
     r := m![1];
     c := LEN_VEC8BIT(m![2]);
-    if r*c > 25 then
+    if r*c > 25 or r = 0 or c = 0 then
         Print("< ");
         if not IsMutable(m) then
             Print("im");
