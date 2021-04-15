@@ -2445,6 +2445,7 @@ InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
   [ IsGF2VectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
     local v;
+    if Size(f) <> 2 then Error("IsGF2VectorRep only supported over GF(2)"); fi;
     v := ShallowCopy(l);
     ConvertToVectorRepNC(v,2);
     return v;
@@ -2453,6 +2454,7 @@ InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
 InstallMethod( NewZeroVector, "for IsGF2VectorRep, GF(2), and an int",
   [ IsGF2VectorRep, IsField and IsFinite, IsInt ],
   function( filter, f, i )
+    if Size(f) <> 2 then Error("IsGF2VectorRep only supported over GF(2)"); fi;
     return ZERO_GF2VEC_2(i);
   end );
 
@@ -2460,6 +2462,7 @@ InstallMethod( NewMatrix, "for IsGF2MatrixRep, GF(2), an int, and a list",
   [ IsGF2MatrixRep, IsField and IsFinite, IsInt, IsList ],
   function( filter, f, rl, l )
     local m;
+    if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
     m := List(l,ShallowCopy);
     ConvertToMatrixRep(m,2);
     return m;
@@ -2469,6 +2472,10 @@ InstallMethod( NewZeroMatrix, "for IsGF2MatrixRep, GF(2), and two ints",
   [ IsGF2MatrixRep, IsField and IsFinite, IsInt, IsInt ],
   function( filter, f, rows, cols )
     local m,i;
+    if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
+    if rows = 0 then
+        Error("IsGF2MatrixRep with zero rows not yet supported");
+    fi;
     m := 0*[1..rows];
     m[1] := NewZeroVector(IsGF2VectorRep,f,cols);
     for i in [2..rows] do

@@ -226,12 +226,18 @@ end);
 #M  ZeroVector( <R>, <len> )
 ##
 InstallMethod( ZeroVector,
-    [ IsOperation, IsSemiring, IsInt ],
-    NewZeroVector );
+  [ IsOperation, IsSemiring, IsInt ],
+  function( rep, basedomain, len )
+    if len < 0 then Error("ZeroVector: length must be non-negative"); fi;
+    return NewZeroVector( rep, basedomain, len );
+  end );
 
 InstallMethod( ZeroVector,
-    [ IsSemiring, IsInt ],
-    {R, len} -> NewZeroVector(DefaultVectorRepForBaseDomain(R), R, len) );
+  [ IsSemiring, IsInt ],
+  function( basedomain, len )
+    if len < 0 then Error("ZeroVector: length must be non-negative"); fi;
+    return NewZeroVector( DefaultVectorRepForBaseDomain(basedomain), basedomain, len );
+  end );
 
 
 #############################################################################
@@ -383,18 +389,21 @@ InstallMethod( Matrix,
 InstallMethod( ZeroMatrix,
   [IsInt, IsInt, IsMatrixObj],
   function( rows, cols, example )
+    if rows < 0 or cols < 0 then Error("ZeroMatrix: the number of rows and cols must be non-negative"); fi;
     return NewZeroMatrix( ConstructingFilter(example), BaseDomain(example), rows, cols );
   end );
 
 InstallMethod( ZeroMatrix,
   [IsSemiring, IsInt, IsInt],
   function( basedomain, rows, cols )
+    if rows < 0 or cols < 0 then Error("ZeroMatrix: the number of rows and cols must be non-negative"); fi;
     return NewZeroMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, rows, cols );
   end );
 
 InstallMethod( ZeroMatrix,
   [IsOperation, IsSemiring, IsInt, IsInt],
   function( rep, basedomain, rows, cols )
+    if rows < 0 or cols < 0 then Error("ZeroMatrix: the number of rows and cols must be non-negative"); fi;
     return NewZeroMatrix( rep, basedomain, rows, cols );
   end );
 
@@ -404,18 +413,21 @@ InstallMethod( ZeroMatrix,
 InstallMethod( IdentityMatrix,
   [IsInt, IsMatrixObj],
   function( dim, example )
+    if dim < 0 then Error("IdentityMatrix: the dimension must be non-negative"); fi;
     return NewIdentityMatrix( ConstructingFilter(example), BaseDomain(example), dim );
   end );
 
 InstallMethod( IdentityMatrix,
   [IsSemiring, IsInt],
   function( basedomain, dim )
+    if dim < 0 then Error("IdentityMatrix: the dimension must be non-negative"); fi;
     return NewIdentityMatrix( DefaultMatrixRepForBaseDomain(basedomain), basedomain, dim );
   end );
 
 InstallMethod( IdentityMatrix,
   [IsOperation, IsSemiring, IsInt],
   function( rep, basedomain, dim )
+    if dim < 0 then Error("IdentityMatrix: the dimension must be non-negative"); fi;
     return NewIdentityMatrix( rep, basedomain, dim );
   end );
 

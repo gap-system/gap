@@ -9,18 +9,17 @@ gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 2, 3);
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 2, 0);
 Error, Assertion failure
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 0, 3); # TODO
-Error, Assertion failure
+Error, IsGF2MatrixRep with zero rows not yet supported
 
 # test error handling
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), -1, 3);
-Error, Assertion failure
+Error, ZeroMatrix: the number of rows and cols must be non-negative
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(2), 2, -1);
-Error, ZERO_GF2VEC_2: <len> must be a non-negative small integer (not the inte\
-ger -1)
+Error, ZeroMatrix: the number of rows and cols must be non-negative
 
 # test error handling
 gap> TestZeroMatrix(IsGF2MatrixRep, GF(3), 2, 3);
-Error, Assertion failure
+Error, IsGF2MatrixRep only supported over GF(2)
 
 #
 # Is8BitMatrixRep
@@ -30,7 +29,7 @@ gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 2, 3);
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 2, 0);
 Error, Assertion failure
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(3), 0, 3);
-Error, Assertion failure
+Error, Is8BitMatrixRep with zero rows not yet supported
 
 #
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 3);
@@ -38,13 +37,13 @@ gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 3);
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 2, 0);
 Error, Assertion failure
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(251), 0, 3);
-Error, Assertion failure
+Error, Is8BitMatrixRep with zero rows not yet supported
 
 # test error handling
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(2), 2, 3);
-Error, Assertion failure
+Error, Is8BitMatrixRep only supports base fields with 3 to 256 elements
 gap> TestZeroMatrix(Is8BitMatrixRep, GF(257), 2, 3);
-Error, Assertion failure
+Error, Is8BitMatrixRep only supports base fields with 3 to 256 elements
 
 #
 # IsPlistMatrixRep
@@ -105,7 +104,7 @@ gap> ZeroMatrix(Integers mod 4, 2, 0);
 gap> ZeroMatrix(GF(2), 2, 3);
 <a 2x3 matrix over GF2>
 gap> ZeroMatrix(GF(2), 0, 3);
-<a 1x3 matrix over GF2>
+Error, IsGF2MatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(2), 2, 0);
 [ <a GF2 vector of length 0>, <a GF2 vector of length 0> ]
 
@@ -113,7 +112,7 @@ gap> ZeroMatrix(GF(2), 2, 0);
 gap> ZeroMatrix(GF(3), 2, 3);
 [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
 gap> ZeroMatrix(GF(3), 0, 3);
-[ [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
+Error, Is8BitMatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(3), 2, 0);
 [ [  ], [  ] ]
 
@@ -121,7 +120,7 @@ gap> ZeroMatrix(GF(3), 2, 0);
 gap> ZeroMatrix(GF(4), 2, 3);
 [ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2) ] ]
 gap> ZeroMatrix(GF(4), 0, 3);
-[ [ 0*Z(2), 0*Z(2), 0*Z(2) ] ]
+Error, Is8BitMatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(4), 2, 0);
 [ [  ], [  ] ]
 
