@@ -16,7 +16,7 @@
 #F  AllMonicPolynomialCoeffsOfDegree( <n>, <q> )  . . . . . all coefficient 
 #F  lists of monic polynomials over GF(<q>) of degree <n> 
 ##  
-AllMonicPolynomialCoeffsOfDegree := function(n, q)
+BindGlobal("AllMonicPolynomialCoeffsOfDegree", function(n, q)
 local   fq,  one,  res,  a;
   
   fq := AsSortedList(GF(q));
@@ -28,7 +28,7 @@ local   fq,  one,  res,  a;
   od;
   
   return res;
-end;
+end );
 
 #############################################################################
 ##
@@ -37,18 +37,18 @@ end;
 ##  
 #V  IRR_POLS_OVER_GF_CACHE:  a cache for the following function
 ##  
-IRR_POLS_OVER_GF_CACHE := [];
-AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
+IRR_POLS_OVER_GF_CACHE := [ [], [] ];
+if IsHPCGAP then
+    ShareSpecialObj( IRR_POLS_OVER_GF_CACHE );
+fi;
+
+DeclareGlobalName("AllIrreducibleMonicPolynomialCoeffsOfDegree");
+BindGlobal("AllIrreducibleMonicPolynomialCoeffsOfDegree", function(n, q)
+  return GET_FROM_SORTED_CACHE( IRR_POLS_OVER_GF_CACHE, [q,n], function( )
   local   l,  zero,  i,  r,  p, new, neverdiv;
-  if not IsBound(IRR_POLS_OVER_GF_CACHE[q]) then
-    IRR_POLS_OVER_GF_CACHE[q] := [];
-  fi;
-  if IsBound(IRR_POLS_OVER_GF_CACHE[q][n]) then
-    return IRR_POLS_OVER_GF_CACHE[q][n];
-  fi;
   
-  # this is for going around converting coefficients to polynomials 
-  # and using the \mod operator for divisibility tests
+  # this auxiliary function is for going around converting coefficients 
+  # to polynomials and using the \mod operator for divisibility tests
   # (I found a speedup factor of about 6 in the example n=9, q=3) 
   neverdiv := function(r, p)
     local   lr,  lp,  rr,  pp;
@@ -78,9 +78,10 @@ AllIrreducibleMonicPolynomialCoeffsOfDegree := function(n, q)
     l := new;
   od;
   
-  IRR_POLS_OVER_GF_CACHE[q][n] := Immutable(l);
-  return IRR_POLS_OVER_GF_CACHE[q][n];  
-end;
+  return Immutable(l);
+  end );
+
+end );
 
 #############################################################################
 ##
