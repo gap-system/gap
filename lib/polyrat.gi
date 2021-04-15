@@ -137,14 +137,13 @@ BindGlobal("ApproximateRoot",function(arg)
 local r,e,f,store,maker;
   r:=arg[1];
   e:=arg[2];
-
-  store:= e<=10 and IsInt(r) and 0<=r and r<=100;
-
   if Length(arg)>2 then
     f:=arg[3];
   else
     f:=10;
   fi; 
+
+  store:= e<=10 and IsInt(r) and 0<=r and r<=100 and f=10;
 
   maker := function()
   local x,nf,lf,c,letzt;
