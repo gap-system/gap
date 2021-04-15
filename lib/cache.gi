@@ -92,7 +92,7 @@ function(cache, key, maker)
     atomic readwrite cache do
       pos:= POSITION_SORTED_LIST( cache[1], key );
       if pos <= Length( cache[1] ) and cache[1][pos] = key then
-        # oops, another thread computed the value in the meantime;
+        # oops, something else computed the value in the meantime;
         # so use that instead
         val:= cache[2][ pos ];
       else
@@ -120,9 +120,18 @@ function(cache, key, maker)
     # Compute new value.
     val := maker();
 
-    # Store the value.
-    Add( cache[1], key, pos );
-    Add( cache[2], val, pos );
+    # Store the value. Need to recompute pos as the maker function may have
+    # changed the cache, eg. by recursively calling itself (resp. its "parent
+    # function", the one containing the call to GET_FROM_SORTED_CACHE)
+    pos:= POSITION_SORTED_LIST( cache[1], key );
+    if pos <= Length( cache[1] ) and cache[1][pos] = key then
+      # oops, something else computed the value in the meantime;
+      # so use that instead
+      val:= cache[2][ pos ];
+    else
+      Add( cache[1], key, pos );
+      Add( cache[2], val, pos );
+    fi;
 
     # Return the value.
     return val;
