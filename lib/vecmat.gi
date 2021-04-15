@@ -2476,12 +2476,11 @@ InstallMethod( NewZeroMatrix, "for IsGF2MatrixRep, GF(2), and two ints",
     if rows = 0 then
         Error("IsGF2MatrixRep with zero rows not yet supported");
     fi;
-    m := 0*[1..rows];
-    m[1] := NewZeroVector(IsGF2VectorRep,f,cols);
-    for i in [2..rows] do
-        m[i] := ShallowCopy(m[1]);
+    m := EmptyPlist(rows);
+    for i in [1..rows] do
+        m[i] := ZERO_GF2VEC_2(cols);
     od;
-    ConvertToMatrixRep(m,2);
+    ConvertToMatrixRepNC(m,2);
     return m;
   end );
 
