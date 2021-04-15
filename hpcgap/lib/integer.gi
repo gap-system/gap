@@ -425,7 +425,7 @@ end);
 InstallMethod( CoefficientsQadic, "for two integers", 
     true, [ IsInt, IsInt ], 0,
 function( i, q )
-    local   v;
+    local i1, res, l, qq, i2;
     if q <= 1 then
         Error("2nd argument of CoefficientsQadic should be greater than 1\n");
     fi;
@@ -435,12 +435,34 @@ function( i, q )
         TryNextMethod();
     fi;
     # represent the integer <i> as <q>-adic number
-    v := [];
-    while i > 0  do
-        Add( v, RemInt( i, q ) );
-        i := QuoInt( i, q );
-    od;
-    return v;
+    if i = 0 then
+        return [];
+    elif i < q then
+        return [i];
+    elif i < q^2 then
+        i1 := QuoInt(i, q);
+        return [i - i1*q, i1];
+    elif Log2Int(q)*100 > Log2Int(i) then
+        # straight forward loop for result length < 100
+        res := [];
+        while i > 0 do
+          i1 := QuoInt(i, q);
+          Add(res, i - i1*q);
+          i := i1;
+        od;
+    else
+        # divide and conquer method for large i
+        l := QuoInt(LogInt(i, q), 2)+1;
+        qq := q^l;
+        i2 := QuoInt(i,qq);
+        i1 := i - i2*qq;
+        res := CoefficientsQadic(i1, q);
+        while Length(res) < l do
+          Add(res, 0);
+        od;
+        Append(res, CoefficientsQadic(i2, q));
+    fi;
+    return res;
 end);
 
 

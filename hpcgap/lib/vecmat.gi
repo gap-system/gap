@@ -1307,8 +1307,8 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 #
                 return true;
             fi;
-            # Switching the object below can change the mutability of
-            # v, hence restore it
+            # Switching the object below can change the mutability of v, so we
+            # make sure that if v is immutable it stays immutable.
             if not IsMutable(v) then
                 MakeImmutable(vc);
             fi;
