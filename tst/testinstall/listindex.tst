@@ -324,21 +324,48 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `[]:=' on 3 arguments
 
 # Indexing into plain lists
-gap> l := [[]];;
-gap> l[1,2] := 4;
+gap> l := [,[,4]];
+[ , [ , 4 ] ]
+gap> l[0,1];  # row is out of bounds
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `MatElm' on 3 arguments
+gap> l[1,1];  # row is in bounds but missing
+Error, Matrix Element: <mat>[1] must have an assigned value
+gap> l[2,1];  # row is there but entry is missing
+Error, Matrix Element: <mat>[2,1] must have an assigned value
+gap> l[3,1];  # row is out of bounds
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `MatElm' on 3 arguments
+gap> l[2,0];  # column is out of bounds
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `MatElm' on 3 arguments
+gap> l[2,2];  # OK
+4
+gap> l[2,3];  # column is out of bounds
+Error, List Element: <list>[3] must have an assigned value
+gap> l[2,2] := 4;
 4
 gap> l;
-[ [ , 4 ] ]
-gap> l[1,1] := 3;;
+[ , [ , 4 ] ]
+gap> l[0,1] := 3; # error, row out of bounds
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `SetMatElm' on 4 arguments
+gap> l[1,1] := 3; # error, row is missing
+Error, Matrix Assignment: <mat>[1] must have an assigned value
+gap> l[2,1] := 3; # OK
+3
+gap> l[3,1] := 3; # error, row out of bounds
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `SetMatElm' on 4 arguments
 gap> l;
-[ [ 3, 4 ] ]
+[ , [ 3, 4 ] ]
 gap> l[2,1];
-Error, List Element: <list>[2] must have an assigned value
-gap> MakeImmutable(l[1]);;
-gap> l[1,1] := 2;;
+3
+gap> MakeImmutable(l[2]);;
+gap> l[2,1] := 2;;
 Error, List Assignment: <list> must be a mutable list
 gap> l;
-[ [ 3, 4 ] ]
+[ , [ 3, 4 ] ]
 
 # that's all, folks
 gap> STOP_TEST( "listindex.tst", 1);
