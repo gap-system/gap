@@ -480,14 +480,22 @@ static Obj ElmMatOper;
 
 Obj ELM_MAT(Obj mat, Obj row, Obj col)
 {
+    Obj elm;
     if (IS_POS_INTOBJ(row) && IS_POS_INTOBJ(col) && IS_PLIST(mat)) {
         Int r = INT_INTOBJ(row);
         if (r <= LEN_PLIST(mat)) {
             Obj rowlist = ELM_PLIST(mat, r);
             Int c = INT_INTOBJ(col);
 
+            if (!rowlist)
+                ErrorMayQuit("Matrix Element: <mat>[%d] must have an assigned value",
+                             (Int)r, (Int)c);
             if (IS_PLIST(rowlist) && c <= LEN_PLIST(rowlist)) {
-                return ELM_PLIST(rowlist, c);
+                elm = ELM_PLIST(rowlist, c);
+                if (!elm)
+                    ErrorMayQuit("Matrix Element: <mat>[%d,%d] must have an assigned value",
+                                 (Int)r, (Int)c);
+                return elm;
             }
 
             // fallback to generic list access code (also triggers error if
@@ -496,7 +504,7 @@ Obj ELM_MAT(Obj mat, Obj row, Obj col)
         }
     }
 
-    Obj elm = DoOperation3Args(ElmMatOper, mat, row, col);
+    elm = DoOperation3Args(ElmMatOper, mat, row, col);
     if (elm == 0) {
         ErrorMayQuit("Matrix access method must return a value", 0, 0);
     }
@@ -840,6 +848,9 @@ void ASS_MAT(Obj mat, Obj row, Obj col, Obj obj)
             Obj rowlist = ELM_PLIST(mat, r);
             Int c = INT_INTOBJ(col);
 
+            if (!rowlist)
+                ErrorMayQuit("Matrix Assignment: <mat>[%d] must have an assigned value",
+                             (Int)r, (Int)c);
             ASS_LIST(rowlist, c, obj);
             return;
         }
