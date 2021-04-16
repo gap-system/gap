@@ -118,6 +118,8 @@ has to be taken.)
 <#Include Label="WreathProductImprimitiveAction">
 <#Include Label="WreathProductProductAction">
 <#Include Label="KuKGenerators">
+<#Include Label="ListWreathProductElement">
+<#Include Label="WreathProductElementList">
 
 </Section>
 
