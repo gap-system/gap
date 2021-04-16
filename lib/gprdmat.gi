@@ -440,6 +440,65 @@ local  info, degI, dimA, zero, projFunc;
   return info.projection;
 end);
 
+#############################################################################
+##
+#M  ListWreathProductElementNC( <G>, <x> )
+##
+InstallMethod( ListWreathProductElementNC, "matrix wreath product", true,
+ [ IsMatrixGroup and HasWreathProductInfo, IsObject, IsBool], 0,
+function(G, x, testDecomposition)
+  local info, degI, dimA, h, list, i, j, k, zeroMat;
+
+  info := WreathProductInfo(G);
+  degI := info.degI;
+  dimA := info.dimA;
+
+  # The top group element
+  h := x ^ Projection(G);
+  if h = fail then
+    return fail;
+  fi;
+  list := EmptyPlist(degI + 1);
+  list[degI + 1] := h;
+  if testDecomposition then
+    # ZeroMatrix does not accept IsPlistRep
+    if IsPlistRep(x) then
+      zeroMat := NullMat(dimA, dimA, info.field);
+    else
+      zeroMat := ZeroMatrix(dimA, dimA, x);
+    fi;
+  fi;
+  for i in [1 .. degI] do
+      j := i ^ h;
+      list[i] := ExtractSubMatrix(x, [dimA * (i - 1) + 1 .. dimA * i], [dimA * (j - 1) + 1 .. dimA * j]);
+      if testDecomposition then
+        for k in [1 .. degI] do
+          if k = j then
+            continue;
+          fi;
+          if ExtractSubMatrix(x, [dimA * (i - 1) + 1 .. dimA * i], [dimA * (k - 1) + 1 .. dimA * k]) <> zeroMat then
+            return fail;
+          fi;
+        od;
+      fi;
+  od;
+  return list;
+end);
+
+#############################################################################
+##
+#M  WreathProductElementListNC(<G>, <list>)
+##
+InstallMethod( WreathProductElementListNC, "matrix wreath product", true,
+ [ IsMatrixGroup and HasWreathProductInfo, IsList ], 0,
+function(G, list)
+  local info;
+
+  info := WreathProductInfo(G);
+  # TODO: Remove `MatrixByBlockMatrix` when `BlockMatrix` supports the MatObj interface.
+  return MatrixByBlockMatrix(BlockMatrix(List([1 .. info.degI], i -> [i, i ^ list[info.degI + 1], list[i]]), info.degI, info.degI));
+end);
+
 # tensor wreath -- dimension d^e This is not a faithful representation of
 # the tensor product if the matrix group has a center.
 DeclareGlobalFunction("TensorWreathProduct");

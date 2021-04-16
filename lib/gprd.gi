@@ -898,6 +898,73 @@ end);
 
 #############################################################################
 ##
+#M  ListWreathProductElement(<G>, <x>[, <testMembership>])
+##
+InstallGlobalFunction( ListWreathProductElement,
+function(G, x, testDecomposition...)
+  local info;
+  if Length(testDecomposition) = 0 then
+    testDecomposition := true;
+  elif Length(testDecomposition) = 1 then
+    testDecomposition := testDecomposition[1];
+  elif Length(testDecomposition) > 1 then
+    ErrorNoReturn("too many arguments");
+  fi;
+  if not HasWreathProductInfo(G) then
+    ErrorNoReturn("usage: <G> must be a wreath product");
+  fi;
+  return ListWreathProductElementNC(G, x, testDecomposition);
+end);
+
+InstallMethod( ListWreathProductElementNC, "generic wreath product", true,
+ [ HasWreathProductInfo, IsWreathProductElement, IsBool ], 0,
+function(G, x, testDecomposition)
+  local info, list, i;
+  info := WreathProductInfo(G);
+  list := EmptyPlist(info!.degI + 1);
+  for i in [1 .. info!.degI + 1] do
+    list[i] := StructuralCopy(x![i]);
+  od;
+  return list;
+end);
+
+#############################################################################
+##
+#M  WreathProductElementList(<G>, <list>)
+##
+InstallGlobalFunction( WreathProductElementList,
+function(G, list)
+  local info, i;
+
+  if not HasWreathProductInfo(G) then
+    ErrorNoReturn("usage: <G> must be a wreath product");
+  fi;
+  info := WreathProductInfo(G);
+  if Length(list) <> info.degI + 1 then
+    ErrorNoReturn("usage: <list> must have ",
+                  "length 1 + <WreathProductInfo(G).degI>");
+  fi;
+  for i in [1 .. info.degI] do
+    if not list[i] in info.groups[1] then
+      ErrorNoReturn("usage: <list{[1 .. Length(list) - 1]}> must contain ",
+                    "elements of <WreathProductInfo(G).groups[1]>");
+    fi;
+  od;
+  if not list[info.degI + 1] in info.groups[2] then
+    ErrorNoReturn("usage: <list[Length(list)]> must be ",
+                  "an element of <WreathProductInfo(G).groups[2]>");
+  fi;
+  return WreathProductElementListNC(G, list);
+end);
+
+InstallMethod( WreathProductElementListNC, "generic wreath product", true,
+ [ HasWreathProductInfo, IsList ], 0,
+function(G, list)
+  return Objectify(FamilyObj(One(G))!.defaultType, StructuralCopy(list));
+end);
+
+#############################################################################
+##
 #M  PrintObj(<x>)
 ##
 InstallMethod(PrintObj,"wreath elements",true,[IsWreathProductElement],0,

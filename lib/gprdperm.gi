@@ -858,6 +858,82 @@ end);
         
 #############################################################################
 ##
+#M  ListWreathProductElementNC( <G>, <x> )
+##
+InstallMethod( ListWreathProductElementNC, "perm wreath product", true,
+ [ IsPermGroup and HasWreathProductInfo, IsObject, IsBool ], 0,
+function(G, x, testDecomposition)
+  local info, list, h, f, degK, i, j, constPoints, imageComponents, comp, restPerm;
+
+  info := WreathProductInfo(G);
+  # The top group element
+  h := x ^ Projection(G);
+  if h = fail then
+    return fail;
+  fi;
+  # The product of the base group elements
+  f := x * Image(Embedding(G, info.degI + 1), h) ^ (-1);
+  list := EmptyPlist(info!.degI + 1);
+  list[info.degI + 1] := h;
+  # Imprimitive Action, tuple (i, j) corresponds
+  # to point i + degK * (j - 1)
+  if IsBound(info.permimpr) and info.permimpr then
+    for i in [1 .. info.degI] do
+        restPerm := RESTRICTED_PERM(f, info.components[i], testDecomposition);
+        if restPerm = fail then
+          return fail;
+        fi;
+        list[i] := restPerm ^ info.perms[i];
+    od;
+  # Primitive Action, tuple (t_1, ..., t_degI) corresponds
+  # to point Sum_{i=1}^degI t_i * degK ^ (i - 1)
+  elif IsBound(info.productType) and info.productType then
+    degK := NrMovedPoints(info.groups[1]);
+    # constPoints correspond to [1, 1, 1, ...], [2, 2, 2, ...], ...
+    constPoints := List([0 .. degK - 1], i -> Sum([0 .. info.degI - 1],
+                                                  j -> i * degK ^ j)) + 1;
+    # imageComponents = [ [1 ^ f_1, 1 ^ f_2, 1 ^ f_3, ...],
+    #                     [2 ^ f_1, 2 ^ f_2, 2 ^ f_3, ...], ... ]
+    imageComponents := List(OnTuples(constPoints, f) - 1,
+                            p -> CoefficientsQadic(p, degK) + 1);
+    # The qadic expansion has no "trailing" zeros. Thus we need to append them.
+    # For example if (1, ..., 1) ^ (f_1, ..., f_m) = (1, ..., 1),
+    # we have imageComponents[1] = CoefficientsQadic(0, degK) + 1 = [].
+    # Note that we append 1's instead of 0's,
+    # since we already transformed the result of the qadic expansion
+    # from [{0, ..., degK - 1}, ...] to [{1, ..., degK}, ...].
+    for i in [1 .. degK] do
+      comp := imageComponents[i];
+      Append(comp, ListWithIdenticalEntries(info.degI - Length(comp), 1));
+    od;
+    for j in [1 .. info.degI] do
+      list[j] := PermList(List([1 .. degK], i -> imageComponents[i,j]));
+      if list[j] = fail then
+        return fail;
+      fi;
+    od;
+  else
+    ErrorNoReturn("Error: cannot determine which action ",
+                  "was used for wreath product");
+  fi;
+  return list;
+end);
+
+#############################################################################
+##
+#M  WreathProductElementListNC(<G>, <list>)
+##
+InstallMethod( WreathProductElementListNC, "perm wreath product", true,
+ [ IsPermGroup and HasWreathProductInfo, IsList ], 0,
+function(G, list)
+  local info;
+
+  info := WreathProductInfo(G);
+  return Product(List([1 .. info.degI + 1], i -> list[i] ^ Embedding(G, i)));
+end);
+
+#############################################################################
+##
 #F  WreathProductProductAction( <G>, <H> )   wreath product in product action
 ##
 InstallGlobalFunction( WreathProductProductAction, function( G, H )

@@ -566,3 +566,66 @@ InstallTrueMethod(IsGeneratorsOfMagmaWithInverses,
 
 DeclareRepresentation("IsWreathProductElementDefaultRep",
   IsWreathProductElement and IsPositionalObjectRep,[]);
+
+#############################################################################
+##
+#F  ListWreathProductElement
+#O  ListWreathProductElementNC
+##
+##  <#GAPDoc Label="ListWreathProductElement">
+##  <ManSection>
+##  <Func Name="ListWreathProductElement" Arg='G, x[, testDecomposition]'/>
+##  <Oper Name="ListWreathProductElementNC" Arg='G, x, testDecomposition'/>
+##
+##  <Description>
+##  Let <A>x</A> be an element of a wreath product <A>G</A>
+##  where <M>G = K \wr H</M> and <M>H</M> acts
+##  as a finite permutation group of degree <M>m</M>.
+##  We can identify the element <A>x</A> with a tuple <M>(f_1, \ldots, f_m; h)</M>,
+##  where <M>f_i \in K</M> is the <M>i</M>-th base component of <A>x</A>
+##  and <M>h \in H</M> is the top component of <A>x</A>.
+##  <P/>
+##  <Ref Func="ListWreathProductElement"/> returns a list <M>[f_1, \ldots, f_m, h]</M>
+##  containing the components of <A>x</A> or <K>fail</K> if <A>x</A> cannot be decomposed in the wreath product.
+##  <P/>
+##  If ommited, the argument <A>testDecomposition</A> defaults to true.
+##  If <A>testDecomposition</A> is true, <Ref Func="ListWreathProductElement"/> makes additional tests to ensure
+##  that the computed decomposition of <A>x</A> is correct,
+##  i.e. it checks that <A>x</A> is an element of the parent wreath product of <A>G</A>:
+##  <P/>
+##  If <M>K \leq \mathop{Sym}(l)</M>, this ensures that <M>x \in \mathop{Sym}(l) \wr \mathop{Sym}(m)</M>
+##  where the parent wreath product is considered in the same action as <A>G</A>,
+##  i.e. either in imprimitive action or product action.
+##  <P/>
+##  If <M>K \leq \mathop{GL}(n,q)</M>, this ensures that <M>x \in \mathop{GL}(n,q) \wr \mathop{Sym}(m)</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ListWreathProductElement" );
+DeclareOperation( "ListWreathProductElementNC", [HasWreathProductInfo, IsObject, IsBool] );
+
+#############################################################################
+##
+#F  WreathProductElementList
+#O  WreathProductElementListNC
+##
+##  <#GAPDoc Label="WreathProductElementList">
+##  <ManSection>
+##  <Func Name="WreathProductElementList" Arg='G, list'/>
+##  <Oper Name="WreathProductElementListNC" Arg='G, list'/>
+##
+##  <Description>
+##  Let <A>list</A> be equal to <M>[f_1, \ldots, f_m, h]</M> and <A>G</A> be a wreath product
+##  where <M>G = K \wr H</M>, <M>H</M> acts
+##  as a finite permutation group of degree <M>m</M>,
+##  <M>f_i \in K</M> and <M>h \in H</M>.
+##  <P/>
+##  <Ref Func="WreathProductElementList"/> returns the element <M>x \in G</M>
+##  identified by the tuple <M>(f_1, \ldots, f_m; h)</M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "WreathProductElementList" );
+DeclareOperation( "WreathProductElementListNC", [HasWreathProductInfo, IsList] );
