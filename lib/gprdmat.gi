@@ -406,14 +406,38 @@ end );
 InstallOtherMethod( Projection,"matrix wreath product", true,
   [ IsMatrixGroup and HasWreathProductInfo ],0,
 function( W )
-local  info,proj,H;
+local  info, degI, dimA, zero, projFunc;
   info := WreathProductInfo( W );
   if IsBound( info.projection ) then return info.projection; fi;
 
-  proj:=Error("TODO");
+  degI := info.degI;
+  dimA := info.dimA;
+  zero := Zero(info.field);
 
-  info.projection:=proj;
-  return proj;
+  projFunc := function(x)
+    local topImages, k, l, a;
+    topImages := [];
+    for k in [1 .. degI] do
+      for l in [1 .. degI] do
+        for a in [1 .. dimA] do
+          if x[dimA * (k - 1) + a, dimA * (l - 1) + a] <> zero then
+            Add(topImages, l);
+            break;
+          fi;
+        od;
+        if Length(topImages) = k then
+          break;
+        fi;
+      od;
+      if Length(topImages) <> k then
+        return fail;
+      fi;
+    od;
+    return PermList(topImages);
+  end;
+
+  info.projection := GroupHomomorphismByFunction(W, info.groups[2], projFunc);
+  return info.projection;
 end);
 
 # tensor wreath -- dimension d^e This is not a faithful representation of
