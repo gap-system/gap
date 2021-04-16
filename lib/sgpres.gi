@@ -3585,12 +3585,16 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
       od;
       r:=AssocWordByLetterRep(fam,Concatenation(r,[-i]));
       AddRelator(pres,r);
-      TzSearch(pres);
+      #TzSearch(pres); Do *not* search, as this might kill the relator we
+      #just added.
       TzEliminate(pres,i);
     od;
     Assert(1,Length(GeneratorsOfPresentation(pres))=subnum);
     
   fi;
+  r:=List(GeneratorsOfPresentation(pres){[1..subnum]},
+    x->LetterRepAssocWord(x)[1]);
+  pres!.primarywords:=r;
   r:=List(GeneratorsOfPresentation(pres){
       [subnum+1..Length(GeneratorsOfPresentation(pres))]},
         x->LetterRepAssocWord(x)[1]);
