@@ -805,18 +805,50 @@ end );
 InstallOtherMethod( Projection,"perm wreath product", true,
   [ IsPermGroup and HasWreathProductInfo ],0,
 function( W )
-local  info,proj,H;
+local  info, proj, H, degI, degK, constPoints, projFunc;
   info := WreathProductInfo( W );
   if IsBound( info.projection ) then return info.projection; fi;
 
+  # Imprimitive Action, tuple (i, j) corresponds
+  # to point i + degK * (j - 1)
   if IsBound(info.permimpr) and info.permimpr=true then
     proj:=ActionHomomorphism(W,info.components,OnSets,"surjective");
+  # Primitive Action, tuple (t_1, ..., t_degI) corresponds
+  # to point Sum_{i=1}^degI t_i * degK ^ (i - 1)
   else
-    H:=info.groups[2];
-    proj:=List(info.basegens,i->One(H));
-    proj:=GroupHomomorphismByImagesNC(W,H,
-      Concatenation(info.basegens,info.hgens),
-      Concatenation(proj,GeneratorsOfGroup(H)));
+    degI := info.degI;
+    degK := NrMovedPoints(info.groups[1]);
+    # constPoints correspond to [1, 1, ...] and the one-vectors with a 2 in each position,
+    # i.e. [2, 1, 1, ...], [1, 2, 1, ...], [1, 1, 2, ...], ...
+    constPoints := Concatenation([0], List([0 .. degI - 1], i -> degK ^ i)) + 1;
+    projFunc := function(x)
+      local imageComponents, i, comp, topImages;
+      # Let x = (f_1, ..., f_m; h).
+      # imageComponents = [ [1 ^ f_1, 1 ^ f_2, 1 ^ f_3, ...] ^ (1, h)
+      #                     [2 ^ f_1, 1 ^ f_2, 1 ^ f_3, ...] ^ (1, h),
+      #                     [1 ^ f_1, 2 ^ f_2, 1 ^ f_3, ...] ^ (1, h), ... ]
+      # So we just need to check where the bit differs from the first point
+      # in order to compute the action of the top element h.
+      imageComponents := List(OnTuples(constPoints, x) - 1,
+                              p -> CoefficientsQadic(p, degK) + 1);
+      # The qadic expansion has no "trailing" zeros. Thus we need to append them.
+      # For example if (1, ..., 1) ^ (f_1, ..., f_m) = (1, ..., 1),
+      # we have imageComponents[1] = CoefficientsQadic(0, degK) + 1 = [].
+      # Note that we append 1's instead of 0's,
+      # since we already transformed the result of the qadic expansion
+      # from [{0, ..., degK - 1}, ...] to [{1, ..., degK}, ...].
+      for i in [1 .. degI + 1] do
+        comp := imageComponents[i];
+        Append(comp, ListWithIdenticalEntries(degI - Length(comp), 1));
+      od;
+      # For some reason, the action of the top component is in reverse order,
+      # i.e. [ p[m], ..., p[1] ] ^ (1, h) = [ p[m ^ (h ^ -1)], ..., p[1 ^ (h ^ -1)] ]
+      topImages := List([0 .. degI - 1], i -> PositionProperty([0 .. degI - 1],
+                        j -> imageComponents[1, degI - j] <>
+                             imageComponents[degI - i + 1, degI - j]));
+      return PermList(topImages);
+    end;
+    proj := GroupHomomorphismByFunction(W, info.groups[2], projFunc);
   fi;
   SetKernelOfMultiplicativeGeneralMapping(proj,info.base);
 
