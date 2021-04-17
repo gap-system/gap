@@ -2025,12 +2025,10 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
             func    := meths[i + nargs + 2],
             rank    := meths[i + nargs + 3],
             info    := meths[i + nargs + 4],
+            location := meths[i + nargs + 5],
             rankbase := meths[i + nargs + 6],
             );
         ADD_LIST(result, m);
-        if IsBound(meths[i + nargs + 5]) then
-            m.location := meths[i + nargs + 5];
-        fi;
     od;
     return result;
 end );

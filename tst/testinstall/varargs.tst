@@ -88,7 +88,7 @@ function ( opr, info, rel, flags, baserank, method )
 end
 gap> Display(InstallMethod);
 function ( arg... )
-    <<compiled GAP code>> from GAPROOT/lib/oper1.g:338
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:331
 end
 gap> [1..2];
 [ 1, 2 ]
