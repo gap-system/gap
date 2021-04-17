@@ -31,7 +31,6 @@ local type,fam,methods,i,j,flag,erg;
   fam:=FamilyObj(obj);
   methods:=METHODS_OPERATION(attr,1);
   for i in [1..LEN_LIST(methods)/(1+BASE_SIZE_METHODS_OPER_ENTRY)] do
-#    nam:=methods[5*(i-1)+5]; # name
     j:=(1+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1);
     flag:=true;
     flag:=flag and IS_SUBSET_FLAGS(type![2],methods[j+2]);
@@ -57,15 +56,8 @@ end;
 VMETHOD_PRINT_INFO := function ( methods, i, arity)
     local offset;
     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
-    Print("#I  ", methods[offset+4]);
-    if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
-        Print(" at ", methods[offset+5][1], ":", methods[offset+5][2]);
-    elif FILENAME_FUNC(methods[offset+2]) <> fail then
-        Print(" at ",
-              FILENAME_FUNC(methods[offset+2]), ":",
-              STARTLINE_FUNC(methods[offset+2]));
-    fi;
-    Print("\n");
+    Print("#I  ", methods[offset+4],
+          " at ", methods[offset+5][1], ":", methods[offset+5][2], "\n");
 end;
 
 #############################################################################
@@ -75,13 +67,6 @@ end;
 NEXT_VMETHOD_PRINT_INFO := function ( methods, i, arity)
     local offset;
     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
-    Print("#I Trying next: ", methods[offset+4]);
-    if BASE_SIZE_METHODS_OPER_ENTRY >= 5 then
-        Print(" at ", methods[offset+5][1], ":", methods[offset+5][2]);
-    elif FILENAME_FUNC(methods[offset+2]) <> fail then
-        Print(" at ",
-              FILENAME_FUNC(methods[offset+2]), ":",
-              STARTLINE_FUNC(methods[offset+2]));
-    fi;
-    Print("\n");
+    Print("#I Trying next: ", methods[offset+4],
+          " at ", methods[offset+5][1], ":", methods[offset+5][2], "\n");
 end;
