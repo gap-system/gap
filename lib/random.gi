@@ -57,7 +57,11 @@ InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
 end);
 
 InstallMethod(Random, [IsRandomSource, IsList], function(rs, list)
-  return list[Random(rs, 1, Length(list))];
+    local nr;
+    repeat
+      nr:= Random( rs, 1, Length( list ) );
+    until IsBound( list[ nr ] );
+    return list[ nr ];
 end);
 
 # A print method.
@@ -123,15 +127,21 @@ InstallMethod(Reset, [IsGAPRandomSource, IsObject], function(rs, seed)
 end);
 
 InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
-  local rx, rn;
+  local rx, rn, nr;
   if Length(list) < 2^28 then
     rx := rs!.R_X;
-    rn := rs!.R_N mod 55 + 1;
-    rs!.R_N := rn;
-    rx[rn] := (rx[rn] + rx[(rn+30) mod 55+1]) mod R_228;
-    return list[ QUO_INT( rx[rn] * LEN_LIST(list), -R_228 ) + 1 ];
+    repeat
+      rn := rs!.R_N mod 55 + 1;
+      rs!.R_N := rn;
+      rx[rn] := (rx[rn] + rx[(rn+30) mod 55+1]) mod R_228;
+      nr:= QUO_INT( rx[rn] * LEN_LIST(list), -R_228 ) + 1;
+    until IsBound( list[ nr ] );
+    return list[ nr ];
   else
-    return list[Random(rs, 1, Length(list))];
+    repeat
+      nr:= Random( rs, 1, Length( list ) );
+    until IsBound( list[ nr ] );
+    return list[ nr ];
   fi;
 end);
 
@@ -201,18 +211,18 @@ InstallMethod(Reset, [IsMersenneTwister, IsObject], function(rs, seed)
   return old;
 end);
 
-InstallMethod(Random, [IsMersenneTwister, IsList], function(rs, list)
-  return list[Random(rs, 1, Length(list))];
-end);
+# We do not need a 'Random' method for 'IsMersenneTwister' and a list,
+# the default method for 'IsRandomSource' is enough.
 
 InstallMethod(Random, [IsMersenneTwister, IsInt, IsInt], function(rs, a, b)
   local d, nrbits, res;
   d := b-a+1;
-  if d < 0 then
+  if d <= 0 then
     return fail;
-  elif d = 0 then
-    return a;
   fi;
+  # Here we could return 'a' in the case 'd = 1'.
+  # However, this would change the sequence of random numbers
+  # w.r.t. earlier GAP versions.
   nrbits := Log2Int(d) + 1;
   repeat
     res := RandomIntegerMT(rs!.state, nrbits);
@@ -233,7 +243,11 @@ fi;
 # twister
 InstallMethod( Random, "for an internal list",
     [ IsList and IsInternalRep ], 100, function(l) 
-  return l[Random(GlobalMersenneTwister, 1, Length(l))]; 
+    local nr;
+    repeat
+      nr:= Random( GlobalMersenneTwister, 1, Length( l ) );
+    until IsBound( l[ nr ] );
+    return l[ nr ];
 end );
 
 InstallMethod( Random,

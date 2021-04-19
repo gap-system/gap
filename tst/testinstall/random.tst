@@ -8,6 +8,7 @@ gap> randomTest([1..100], RandomList);
 gap> randomTest("abcdef", RandomList);
 gap> randomTest(BlistList([1..100],[1,3..99]), RandomList);
 gap> randomTest([1], RandomList);
+gap> randomTest( [ 1,,,,,,, 2 ], RandomList );
 
 #
 # fields and rings
@@ -150,6 +151,21 @@ gap> randomTest([1..2], Random);
 gap> randomTest([0, 10..1000], Random);
 gap> randomTest("cheese", Random);
 gap> randomTest([1,-6,"cheese", Group(())], Random);
+gap> randomTest( [ 1,,,,,,, 2 ], Random );
+
+# non-dense lists (there should not be an error)
+gap> List( [ 1 .. 1000 ], i -> Random( [ 1,,,,,,, 2 ] ) );;
+gap> List( [ 1 .. 1000 ],
+>          i -> Random( RandomSource( IsMersenneTwister ), [ 1,,,,,,, 2 ] ) );;
+
+# unusual bounds
+gap> R:= RandomSource( IsMersenneTwister );;
+gap> Random( R, 1, -1 ) = fail;
+true
+gap> Random( R, 1, 0 ) = fail;
+true
+gap> Random( R, 1, 1 ) = 1;
+true
 
 #
 gap> randomTest(PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]), Random, function(x,y) return IsPadicExtensionNumber(x); end);

@@ -254,7 +254,7 @@ InstallMethod( RepresentativeSmallest,
 # RandomList is not an operation to avoid the (often expensive) cost of
 # dispatch for lists
 InstallGlobalFunction( RandomList, function(args...)
-  local len, source, list;
+  local len, source, list, nr;
   len := Length(args);
   if len = 1 then
     source := GlobalMersenneTwister;
@@ -266,7 +266,11 @@ InstallGlobalFunction( RandomList, function(args...)
     Error(" Usage: RandomList([rs], list))");
   fi;
 
-  return list[Random(source, 1, Length(list))];
+  repeat
+    nr:= Random( source, 1, Length( list ) );
+  until IsBound( list[ nr ] );
+
+  return list[ nr ];
 end );
 
 
