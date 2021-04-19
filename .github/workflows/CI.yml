@@ -247,33 +247,25 @@ jobs:
 
     env:
       TEST_SUITES: testinstall
+      # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) without changing directory
+      CHERE_INVOKING: 1
 
     steps:
-      # This sets git to use UNIX line endings. While GAP should allow Windows
-      # line endings in GAP files, we currently can't build GAP if the whole
-      # source has Windows line endings
-      - name: "Set git to use UNIX-style line endings"
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-
       - uses: actions/checkout@v2
 
       - uses: gap-actions/setup-cygwin-for-gap@v1
 
-      # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) without changing directory
       - name: "Compile GAP and download packages"
-        shell: cmd
-        run: |
-          @ECHO ON
-          SET CHERE_INVOKING=1
-          C:\cygwin64\bin\bash -l -c "bash dev/ci-prepare.sh"
+        # Run cygwin's bash.
+        # --login: make a login shell (so PATH is set up)
+        # -o igncr: Accept windows line endings
+        # {0} : Pass any extra arguments from CI
+        shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
+        run: bash dev/ci-prepare.sh
 
       - name: "Run tests"
-        shell: cmd
-        run: |
-          SET CHERE_INVOKING=1
-          C:\cygwin64\bin\bash -l -c "bash dev/ci.sh"
+        shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
+        run: bash dev/ci.sh
 
   slack-notification-on-failure:
     name: Send slack notification on CI failure
