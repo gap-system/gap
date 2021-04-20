@@ -188,6 +188,12 @@ gap> Length(ConjugacyClassesSubgroups(SymmetricGroup(7):NoPrecomputedData));
 #I  Using (despite option) data library of perfect groups, as the perfect
 #I  subgroups otherwise cannot be obtained!
 96
+gap> g:=SimpleGroup("3D4(2)");;
+gap> hs:=List(IsomorphicSubgroups(g,SymmetricGroup(4)),Image);;
+gap> h:=First(hs,x->48=Length(Orbits(x,MovedPoints(g))));;
+gap> sub:=IntermediateSubgroups(g,h);;
+gap> Length(sub.subgroups);
+19
 
 # thats all, folks
 gap> STOP_TEST( "grplatt.tst", 1);
