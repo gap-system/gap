@@ -3053,6 +3053,9 @@ InstallMethod( RankAction,"via ophom",
     local   hom;
 
     hom := ActionHomomorphism( G, D, gens, acts, act );
+    if NrMovedPoints(Image(hom))<>Length(D) then
+      Error("RankAction: action must be transitive");
+    fi;
     return RankAction( Image( hom ), [ 1 .. Length( D ) ] );
 end );
 
@@ -3064,12 +3067,24 @@ InstallMethod( RankAction,
       IsList,
       IsFunction ], 0,
     function( G, D, gens, acts, act )
+    local S,olen;
     if    act <> OnPoints
        or not IsIdenticalObj( gens, acts )  then
         TryNextMethod();
     fi;
-    return Length( OrbitsDomain( Stabilizer( G, D, D[ 1 ], act ),
-                   D, act ) );
+
+    if IsFinite(G) then
+      S:=Stabilizer( G, D, D[ 1 ], act);
+      olen:=IndexNC(G,S);
+    else
+      S:=OrbitStabilizer(G,D,D[1],gens,acts,act);
+      olen:=Length(S.orbit);
+      S:=S.stabilizer;
+    fi;
+    if olen<>Length(D) then
+      Error("RankAction: action must be transitive");
+    fi;
+    return Length( OrbitsDomain( S, D, act ) );
 end );
 
 InstallMethod( RankAction,

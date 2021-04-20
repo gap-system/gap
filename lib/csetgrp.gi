@@ -81,39 +81,13 @@ local c,i;
 end );
 
 
-# Brute-force algorithms that gives (as indices) all ways how to sum subsets
-# of `from` to obtain `to`
-BindGlobal("AllSubsetSummations",function(to,from)
-local erg,nerg,perm,i,e,c,sel;
-  erg:=[[]];
-  to:=ShallowCopy(to);
-  perm:=Sortex(to)^-1;
-  for i in to do
-    nerg:=[];
-    for e in erg do
-      sel:=Filtered(Difference([1..Length(from)],Union(e)),x->from[x]<=i);
-      c:=NrCombinations(sel);
-      if c>10^7 then 
-        Info(InfoPerformance,1,"Performance warning: Trying ",c,
-          " combinations");
-      fi;
-      for c in Combinations(sel) do
-        if Sum(from{c})=i then
-          Add(nerg,Concatenation(e,[c]));
-        fi;
-      od;
-    od;
-    erg:=nerg;
-  od;
-  return List(erg,x->Permuted(x,perm));
-end);
-
 # Find element in G to conjugate B into A
 # call with G,A,B;
 InstallGlobalFunction(DoConjugateInto,function(g,a,b,onlyone)
 local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
   gens,conjugate;
 
+  Info(InfoCoset,2,"call DoConjugateInto ",Size(g)," ",Size(a)," ",Size(b));
   conjugate:=function(act,asub,genl,nr)
   local i,dc,j,z,r,r2,found;
     found:=[];
@@ -182,28 +156,32 @@ local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
     clb:=List(Orbits(b,MovedPoints(g)),Set);
     # no improvement if all orbits of a are fixed
     if ForAny(cla,x->ForAny(GeneratorsOfGroup(g),y->OnSets(x,y)<>x)) then
-      r:=AllSubsetSummations(List(cla,Length),List(clb,Length));
-      dc:=[];
-      for i in r do
-        k:=List(i,x->Union(clb{x}));
-        k:=RepresentativeAction(g,k,cla,OnTuplesSets);
-        if k<>fail then
-          Add(dc,[i,k]);
-        fi;
-      od;
-      if Length(dc)>0 then g:=Stabilizer(g,cla,OnTuplesSets);fi;
-      rep:=[];
-      for i in dc do
-        r:=DoConjugateInto(g,a,b^i[2],onlyone);
-        if onlyone then
-          if r<>fail then return i[2]*r;fi;
-        else
-          if r<>fail then Append(rep,List(r,x->i[2]*x));fi;
-        fi;
-      od;
-      if onlyone then return fail; #otherwise would have found and stopped
-      else return rep;fi;
-
+      r:=AllSubsetSummations(List(cla,Length),List(clb,Length),10^5);
+      if r=fail then
+        Info(InfoCoset,1,"Too many subset combinations");
+      else
+        Info(InfoCoset,1,"Testing ",Length(r)," combinations");
+        dc:=[];
+        for i in r do
+          k:=List(i,x->Union(clb{x}));
+          k:=RepresentativeAction(g,k,cla,OnTuplesSets);
+          if k<>fail then
+            Add(dc,[i,k]);
+          fi;
+        od;
+        if Length(dc)>0 then g:=Stabilizer(g,cla,OnTuplesSets);fi;
+        rep:=[];
+        for i in dc do
+          r:=DoConjugateInto(g,a,b^i[2],onlyone);
+          if onlyone then
+            if r<>fail then return i[2]*r;fi;
+          else
+            if r<>fail then Append(rep,List(r,x->i[2]*x));fi;
+          fi;
+        od;
+        if onlyone then return fail; #otherwise would have found and stopped
+        else return rep;fi;
+      fi;
     else
       # orbits are fixed. Make sure b is so
       if ForAny(clb,x->not ForAny(cla,y->IsSubset(y,x))) then

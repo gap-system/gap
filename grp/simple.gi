@@ -956,150 +956,46 @@ end);
 
 InstallOtherMethod(DataAboutSimpleGroup,true,[IsRecord],0,
 function(id)
-local
-nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
+local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
+      multElabel;
 
   shortname:=function(gp)
   local s;
     if IsCyclic(gp) then
       return String(Size(gp));
+    elif IdGroup(gp)=[4,2] then
+      return "2^2";
+    elif IdGroup(gp)=[6,1] then
+      return "3.2";
+    elif IdGroup(gp)=[8,3] then
+      return "2^2.2";
+    elif IdGroup(gp)=[9,2] then
+      return "3^2";
+    elif IdGroup(gp)=[18,3] then
+      return "3^2.2";
     elif Size(gp)<=31 or Size(gp) in [33..47] then
       s:=StructureDescription(gp);
       s:=Filtered(s,x->not x in "C ");
+      if Length(s)>3 and s{[Length(s)-2..Length(s)]}="xS3" then
+        s:=Concatenation(s{[1..Length(s)-3]},".3.2");
+      fi;
       return s;
     else
       Error("name not yet found");
     fi;
   end;
 
-#note: Extensions are up to isomorphism, not with embedding questions. Thus
-#no distinction of ' extensions!
-
-  # possible automorphism extensions for Chevalley groups
-  EFactors:=function(d,f,g)
-  local dd,df,dg,r,myprod,gal,i,s,j,ddn;
-
-    if g>2 then 
-      # so triality is involved
-
-      # do a few basic cases first 
-      if d=1 and f=1 and g=6 then
-        # subgroup classes S_3
-        dd:=[ [ 1, "1" ], [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
-        return dd;
-      elif d=1 and f=2 and g=6 then
-        # subgroup classes 2\times S_3 (since S3 cannot act on C2)
-        dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 2, "2_3" ],
-              [ 3, "3" ], [ 4, "2x2" ], [ 6, "6" ], [6,"S3_1"],
-              [ 6, "S3_2" ], [ 12, "D12" ] ];
-      elif d=4 and f=1 and g=6 then
-        # subgroup classes S_4 
-        dd:=[ [ 1, "1" ], [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
-              [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
-              [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ], 
-              [ 24, "S4" ] ];
-        return dd;
-      else
-        Info(InfoWarning, "DataAboutSimpleGroup: mixed triality not yet done");
-        return fail;
+  multElabel:=function()
+  local a,b,j;
+    for a in e do
+      b:=Filtered(e,x->x[2]=a[2]);
+      if Length(b)>1 then
+        for j in [1..Length(b)] do
+          b[j][2]:=Concatenation(b[j][2],"_",String(j));
+        od;
       fi;
-    fi;
-
-    if f>1 then
-      dd:=PrimitiveElement(GF(prime^f))^((prime^f-1)/d);
-      dd:=List([0..d-1],x->dd^x); # Powers;
-      gal:=GaloisGroup(GF(prime^f));
-      gal:=SmallGeneratingSet(gal);
-      if Length(gal)>1 then Error("not small generators");fi;
-      gal:=gal[1];
-      gal:=List([0..f-1],x->Permutation(gal^x,dd));
-    fi;
-
-    myprod:=function(c1,c2)
-    local d2,g1,f1;
-      d2:=c2[1];
-      if c1[3]>0 and d2>0 then
-        d2:=((d2+1)^gal[c1[3]+1])-1;
-      fi;
-
-      if c1[2]=1 then
-        # g-action
-        d2:=-d2 mod d;
-      fi;
-
-      if g=1 then
-        g1:=0;
-      else
-        g1:=(c1[2]+c2[2]) mod g;
-      fi;
-
-      if f=1 then
-        f1:=0;
-      else
-        f1:=(c1[3]+c2[3]) mod f;
-      fi;
-      f1:=[(c1[1]+d2) mod d,g1,f1];
-#Print(c1,"*",c2,"=",f1,"\n");
-      return f1;
-
-    end;
-
-    r:=[];
-    if Number([d,g,f],i->i>1)>1 then
-      # form group
-      dd:=Cartesian([0..d-1],[0..g-1],[0..f-1]);
-      dd:=List(dd,x->List(dd,y->Position(dd,myprod(y,x))));
-      dd:=List(dd,PermList);
-      dd:=Group(dd);
-      if Size(dd)<>d*f*g then Error("wrong automorphism order");fi;
-      dd:=List(ConjugacyClassesSubgroups(dd),Representative);
-      ddn:=[];
-      for i in dd do
-        if IsCyclic(i) then
-          Add(ddn,String(Size(i)));
-        else
-          r:="";
-          s:=Reversed(ElementaryAbelianSeriesLargeSteps(i));
-          for j in [2..Length(s)] do
-            if Length(r)>0 then
-              Add(r,'.');
-            fi;
-            j:=AbelianInvariants(s[j]/s[j-1]);
-            Append(r,String(j[1]));
-            if Length(j)>1 then
-              Add(r,'^');
-              Append(r,String(Length(j)));
-            fi;
-          od;
-          Add(ddn,r);
-        fi;
-      od;
-      r:=[];
-      for i in [1..Length(dd)] do
-        if Number(ddn,x->x=ddn[i])=1 then
-          Add(r,[Size(dd[i]),ddn[i]]);
-        else
-          Add(r,[Size(dd[i]),Concatenation(ddn[i],"_",
-            String(Number(ddn{[1..i]},x->x=ddn[i])))]);
-        fi;
-      od;
-      
-      return r;
-    fi;
-
-    if d>1 then
-      dd:=DivisorsInt(d);
-      r:=List(dd,i->[i,String(i)]);
-    fi;
-    if f>1 then
-      df:=DivisorsInt(f);
-      r:=List(df,i->[i,String(i)]);
-    fi;
-    if g>1 then
-      dg:=DivisorsInt(g);
-      r:=List(dg,i->[i,String(i)]);
-    fi;
-    return Filtered(r,i->i[1]>1);
+    od;
+    Sort(e);
   end;
 
   # fix O5 to SP4
@@ -1118,7 +1014,9 @@ nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
     fi;
   fi;
 
-  e:=[];
+  efactors:=fail;
+  e:=fail;
+
   classical:=fail;
   if id.series="Spor" then
     nam:=id.name;
@@ -1149,6 +1047,8 @@ nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
     if nam in ["M12","M22","HS","McL","He","Fi22","F3+","HN","Suz","ON",
                "J2","J3"] then
       e:=[[2,"2"]];
+    else
+      e:=[];
     fi;
   elif id.series="A" then
     nam:=Concatenation("A",String(par));
@@ -1161,14 +1061,14 @@ nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
     classical:=["L",par[1],par[2]];
     nam:=Concatenation("L",String(par[1]),"(",String(par[2]),")");
     if par[1]=2 then
-      e:=EFactors(Gcd(2,par[2]-1),expo,1);
+      efactors:=[Gcd(2,par[2]-1),expo,1];
     else
-      e:=EFactors(Gcd(par[1],par[2]-1),expo,2);
+      efactors:=[Gcd(par[1],par[2]-1),expo,2];
     fi;
   elif id.series="2A" then
     classical:=["U",par[1]+1,par[2]];
     nam:=Concatenation("U",String(par[1]+1),"(",String(par[2]),")");
-    e:=EFactors(Gcd(par[1]+1,par[2]+1),2*expo,1);
+    efactors:=[Gcd(par[1]+1,par[2]+1),2*expo,1];
   elif id.series="B" then
     classical:=["O",2*par[1]+1,par[2]];
     nam:=Concatenation("O",String(2*par[1]+1),"(",String(par[2]),")");
@@ -1176,61 +1076,59 @@ nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
       nam:="U4(2)"; # library name
     fi;
     if par[1]=2 and prime=2 then
-      e:=EFactors(Gcd(2,par[2]-1),expo,2);
+      efactors:=[Gcd(2,par[2]-1),expo,2];
     else
-      e:=EFactors(Gcd(2,par[2]-1),expo,1);
+      efactors:=[Gcd(2,par[2]-1),expo,1];
     fi;
   elif id.series="2B" then
     nam:=Concatenation("Sz(",String(par),")");
-    e:=EFactors(1,expo,1);
+    efactors:=[1,expo,1];
   elif id.series="C" then
     classical:=["S",2*par[1],par[2]];
     nam:=Concatenation("S",String(par[1]*2),"(",String(par[2]),")");
-    #if par[1]=2 and prime=2 then
-    #  e:=EFactors(Gcd(2,par[2]-1),expo,2);
-    #else
-    #  e:=EFactors(Gcd(2,par[2]-1),expo,1);
-    #fi;
-    # efactors finds wrong structure
-    e:=fail;
+    if par[1]=2 and prime=2 then
+      efactors:=[Gcd(2,par[2]-1),expo,2];
+    else
+      efactors:=[Gcd(2,par[2]-1),expo,1];
+    fi;
   elif id.series="D" then
     classical:=["O+",2*par[1],par[2]];
     nam:=Concatenation("O",String(par[1]*2),"+(",String(par[2]),")");
     if par[1]=4 then
-      e:=EFactors(Gcd(2,par[2]-1)^2,expo,6);
+      efactors:=[Gcd(2,par[2]-1)^2,expo,6];
     elif IsEvenInt(par[1]) then
-      e:=EFactors(Gcd(2,par[2]-1)^2,expo,2);
+      efactors:=[Gcd(2,par[2]-1)^2,expo,2];
     else
-      e:=EFactors(Gcd(4,par[2]^par[1]-1),expo,2);
+      efactors:=[Gcd(4,par[2]^par[1]-1),expo,2];
     fi;
   elif id.series="2D" then
     classical:=["O-",2*par[1],par[2]];
     nam:=Concatenation("O",String(par[1]*2),"-(",String(par[2]),")");
 
-    e:=EFactors(Gcd(4,par[2]^par[1]+1),2*expo,1);
+    efactors:=[Gcd(4,par[2]^par[1]+1),2*expo,1];
 
   elif id.series="F" then
     nam:=Concatenation("F4(",String(par),")");
     if prime=2 then
-      e:=EFactors(1,expo,2);
+      efactors:=[1,expo,2];
     else
-      e:=EFactors(1,expo,1);
+      efactors:=[1,expo,1];
     fi;
 
   elif id.series="G" then
     nam:=Concatenation("G2(",String(par),")");
     if prime=3 then
-      e:=EFactors(1,expo,2);
+      efactors:=[1,expo,2];
     else
-      e:=EFactors(1,expo,1);
+      efactors:=[1,expo,1];
     fi;
 
   elif id.series="3D" then
     nam:=Concatenation("3D4(",String(par),")");
-    e:=EFactors(1,3*expo,1);
+    efactors:=[1,3*expo,1];
   elif id.series="2G" then
     nam:=Concatenation("R(",String(par),")");
-    e:=EFactors(1,expo,1);
+    efactors:=[1,expo,1];
   elif id.series="2F" and id.parameter=2 then
     # special case for tits' group before sorting out further 2F4's
     nam:="2F4(2)'";
@@ -1241,66 +1139,64 @@ nam,e,EFactors,par,expo,prime,result,aut,i,classical,classaut,shortname;
     e:=fail;
   fi;
 
-  # get extensions
-  if IsList(e) then 
-    # kill trivial extension if given
-    e:=Filtered(e,x->x[1]>1);
-
-    # get size of full outer automorphisms
-    aut:=[1,nam];
-    for i in e do
-      if i[1]>aut[1] then
-        aut:=i;
-      fi;
-    od;
-  else
-    aut:=false;
-  fi;
-
+  aut:=fail;
+  classaut:=fail;
   if classical<>fail then
     classaut:=OuterAutoSimplePres(classical[1],classical[2],classical[3]);
     if classaut<>fail then
+      if efactors<>fail and Size(classaut)<>Product(efactors) then
+        Error("outer automorphism efactor fail");
+      fi;
       if IdGroup(classaut)=[4,2] then
         # subgroup classes V4
-        i:=[[2,"2_1"],[2,"2_2"],[2,"2_3"],[4,"2^2"]];
+        e:=[[2,"2_1"],[2,"2_2"],[2,"2_3"],[4,"2^2"]];
       elif IdGroup(classaut)=[6,1] then
         # subgroup classes S_3
-        i:=[  [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
+        e:=[  [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
       elif IdGroup(classaut)=[12,4] then
         # subgroup classes 2\times S_3 (since S3 cannot act on C2)
-        i:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 2, "2_3" ],
-              [ 3, "3" ], [ 4, "2x2" ], [ 6, "6" ], [6,"S3_1"],
-              [ 6, "S3_2" ], [ 12, "D12" ] ];
+        e:=[ [ 2, "2_1" ], [ 2, "2_2" ], [ 2, "2_3" ], [ 3, "3" ],
+             [ 4, "2^2" ], [ 6, "3.2_1" ], [ 6, "3.2_2" ], [ 6, "6" ],
+             [ 12, "3.2^2" ] ];
       elif IdGroup(classaut)=[24,12] then
         # subgroup classes S_4 
-        i:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
+        e:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
               [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
               [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ], 
               [ 24, "S4" ] ];
       else
-        i:=List(ConjugacyClassesSubgroups(classaut),Representative);
-        i:=Filtered(i,x->Size(x)>1);
-        i:=List(i,x->[Size(x),shortname(x)]);
-      fi;
-      if e<>fail then
-        if Collected(List(i,x->x[1]))<>Collected(List(e,x->x[1])) then
-          Error("outer automorphism disagreement error");
-        fi;
-      else
-        e:=i;
-        aut:=First(e,x->x[1]=Size(classaut));
+        e:=List(ConjugacyClassesSubgroups(classaut),Representative);
+        e:=Filtered(e,x->Size(x)>1);
+        e:=List(e,x->[Size(x),shortname(x)]);
+        multElabel();
       fi;
     fi;
+  elif e=fail and efactors<>fail then
+    classaut:=AbelianGroup(efactors);
+    e:=List(ConjugacyClassesSubgroups(classaut),Representative);
+    e:=Filtered(e,x->Size(x)>1);
+    e:=List(e,x->[Size(x),shortname(x)]);
+    multElabel();
   fi;
+  if e=fail then Error("eh?");fi;
 
+  if aut=fail then
+    if Length(e)=0 then
+      aut:=[1,"1"];
+    else
+      aut:=Maximum(e);
+    fi;
+  fi;
 
   result:=rec(idSimple:=id,
               tomName:=nam,
               allExtensions:=e,
+              fullAutGroup:=aut,
               classicalId:=ClassicalIsomorphismTypeFiniteSimpleGroup(id));
-  if aut<>false then
-    result.fullAutGroup:=aut;
+  if classaut<>fail then
+    result.outerAutomorphismGroup:=classaut;
   fi;
+  if efactors<>fail then result.efactors:=efactors;fi;
 
   return result;
 end);

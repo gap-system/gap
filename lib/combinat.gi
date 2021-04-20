@@ -2772,3 +2772,100 @@ InstallGlobalFunction(Bernoulli,
         end
     )
 ));
+
+
+InstallGlobalFunction(AllLinearDiophantineSolutions,function(w,count,s)
+local g,i,a,sol,l,r,pos;
+  if Length(w)=0 then return [];fi;
+  g:=Gcd(w);
+  if s mod g<>0 then
+    return [];
+  fi;
+  if Length(w)=1 then return [[s/w[1]]];fi;
+  # kill gcd to keep numbers small
+  w:=List(w,x->x/g);
+  s:=s/g;
+
+  sol:=[];
+  l:=0*w; # zero out
+  r:=s;
+  pos:=1;
+  while l[1]>=0 do
+    a:=Minimum(count[pos],QuoInt(r,w[pos]));
+    l[pos]:=a;
+    r:=r-a*w[pos];
+    if pos=Length(l) then
+      # solution?
+      if r=0 then Add(sol,ShallowCopy(l));fi; 
+      # now go back and decrement prior
+      r:=r+l[pos]*w[pos];
+      l[pos]:=-1;
+      while pos>0 and l[pos]<0 do
+        pos:=pos-1;
+        if (pos>0 and l[pos]>=0) then
+          l[pos]:=l[pos]-1;
+          if l[pos]>=0 then
+            r:=r+w[pos];
+          fi;
+        fi;
+      od;
+
+      if pos>0 then
+        pos:=pos+1; # next value to calc
+      fi;
+
+    else
+      pos:=pos+1;
+    fi;
+  od;
+  return sol;
+end);
+
+# Brute-force algorithms that gives (as indices) all ways how to sum subsets
+# of `from` to obtain `to`
+InstallGlobalFunction(AllSubsetSummations,function(arg)
+local to,from,limit,erg,nerg,perm,i,e,c,sel,sz,dio,part,d,j,k,kk,ac,lc,nc;
+  to:=arg[1];
+  from:=arg[2];
+  if Length(arg)>2 then limit:=arg[3];
+  else limit:=infinity;fi;
+  erg:=[[]];
+  to:=ShallowCopy(to);
+  perm:=Sortex(to)^-1;
+  for i in to do
+    nerg:=[];
+    for e in erg do
+      sel:=Filtered(Difference([1..Length(from)],Union(e)),x->from[x]<=i);
+
+      sz:=Collected(from{sel});
+      part:=List(sz,x->Filtered(sel,y->from[y]=x[1]));
+      dio:=AllLinearDiophantineSolutions(List(sz,x->x[1]),List(sz,x->x[2]),i);
+      c:=[];
+      for d in dio do
+        ac:=[[]];
+        for j in [1..Length(d)] do
+          lc:=Combinations(part[j],d[j]);
+          nc:=[];
+          for k in ac do
+            for kk in lc do
+              Add(nc,Union(k,kk));
+            od;
+          od;
+          ac:=nc;
+        od;
+    #Print(Position(erg,e),"/",Length(erg),"d:",d,"->",Length(ac),"\n");
+        Append(c,ac);
+        if Length(c)>limit then return fail;fi;
+      od;
+
+      if Length(nerg)+Length(c)>limit then return fail;fi;
+      for j in c do
+        Add(nerg,Concatenation(e,[j]));
+      od;
+
+    od;
+    erg:=nerg;
+  od;
+  return List(erg,x->Permuted(x,perm));
+end);
+

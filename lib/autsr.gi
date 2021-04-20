@@ -691,7 +691,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
       comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim,
-      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma,nosucl,nosuf;
+      scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma,nosucl,nosuf,rlgf;
 
   # criterion for when to force degree reduction
   isBadPermrep:=function(g)
@@ -799,6 +799,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
   ff:=FittingFreeLiftSetup(G);
   r:=ff.radical;
+  rlgf:=LGFirst(SpecialPcgs(r));
   # find series through r
 
   # derived and then primes and then elementary abelian
@@ -1270,13 +1271,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      Size(A)>10^8 and AbelianRank(r)<10 and ValueOption("noradicalaut")<>true
+      Size(A)>10^8 
       #(
       ## potentially large GL
       #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
       ## automorphism size really grew from B/C-bit
       ##Size(A)/Size(AQP)*Index(AQP,sub)>10^10) )
-     then
+      ## do so for all factors
+     and ForAll([2..Length(rlgf)],x->rlgf[x]-rlgf[x-1]<10)
+     and ValueOption("noradicalaut")<>true then
 
       if rada=fail then
 	if IsElementaryAbelian(r) and Size(r)>1 then
