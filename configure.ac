@@ -60,7 +60,13 @@ AC_CANONICAL_HOST
 dnl
 dnl Check for working C and C++ compiler; insist on C99 and C++11 support
 dnl
-AC_PROG_CC_C99
+dnl In autoconf <= 2.69, we use AC_PROG_CC_C99; in autoconf >= 2.70, this
+dnl is deprecated, and AC_PROG_CC subsumes it. We have to use some M4 code
+dnl to deal with this in way that retains support for autoconf 2.69 while
+dnl avoiding warnings in autoconf >= 2.70
+m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), -1,
+    [AC_PROG_CC_C99],
+    [AC_PROG_CC])
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX(11)
 
