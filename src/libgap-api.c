@@ -247,6 +247,66 @@ Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[])
     return result;
 }
 
+Obj GAP_CallFunc0Args(Obj func)
+{
+    Obj result;
+
+    if (TNUM_OBJ(func) == T_FUNCTION) {
+        result = CALL_0ARGS(func);
+    }
+    else {
+        Obj list = NewEmptyPlist();
+        result = DoOperation2Args(CallFuncListOper, func, list);
+    }
+
+    return result;
+}
+
+Obj GAP_CallFunc1Args(Obj func, Obj a1)
+{
+    Obj result;
+
+    if (TNUM_OBJ(func) == T_FUNCTION) {
+        result = CALL_1ARGS(func, a1);
+    }
+    else {
+        Obj list = NewPlistFromArgs(a1);
+        result = DoOperation2Args(CallFuncListOper, func, list);
+    }
+
+    return result;
+}
+
+Obj GAP_CallFunc2Args(Obj func, Obj a1, Obj a2)
+{
+    Obj result;
+
+    if (TNUM_OBJ(func) == T_FUNCTION) {
+        result = CALL_2ARGS(func, a1, a2);
+    }
+    else {
+        Obj list = NewPlistFromArgs(a1, a2);
+        result = DoOperation2Args(CallFuncListOper, func, list);
+    }
+
+    return result;
+}
+
+Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3)
+{
+    Obj result;
+
+    if (TNUM_OBJ(func) == T_FUNCTION) {
+        result = CALL_3ARGS(func, a1, a2, a3);
+    }
+    else {
+        Obj list = NewPlistFromArgs(a1, a2, a3);
+        result = DoOperation2Args(CallFuncListOper, func, list);
+    }
+
+    return result;
+}
+
 
 ////
 //// floats

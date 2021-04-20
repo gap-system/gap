@@ -272,6 +272,18 @@ Obj GAP_CallFuncList(Obj func, Obj args);
 // as an array <args> with <narg> entries.
 Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
 
+// Call the GAP object <func> as a function with 0 arguments.
+Obj GAP_CallFunc0Args(Obj func);
+
+// Call the GAP object <func> as a function with 1 argument.
+Obj GAP_CallFunc1Args(Obj func, Obj a1);
+
+// Call the GAP object <func> as a function with 2 arguments.
+Obj GAP_CallFunc2Args(Obj func, Obj a1, Obj a2);
+
+// Call the GAP object <func> as a function with 3 arguments.
+Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3);
+
 
 ////
 //// floats
