@@ -140,8 +140,8 @@ GAPInput
     # affect the out of tree build, nor should they be removed by `make clean`
     mkdir -p $SRCDIR/build/deps/src
     mkdir -p $SRCDIR/build/obj/src
-    echo "garbage content !!!" > $SRCDIR/${bool_d}
-    echo "garbage content !!!" > $SRCDIR/${bool_lo}
+    echo "garbage content 1" > $SRCDIR/${bool_d}
+    echo "garbage content 2" > $SRCDIR/${bool_lo}
 
     # test: `make clean` works and afterwards we can still `make`; in particular
     # build/config.h must be regenerated before any actual compilation
@@ -151,7 +151,7 @@ GAPInput
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
     ! fgrep "bool.c.d:" ${bool_d} > /dev/null
-    ! fgrep "garbage content:" ${bool_lo} > /dev/null
+    ! fgrep "garbage content" ${bool_lo} > /dev/null
 
     # verify our "garbage" files are still there
     test -f $SRCDIR/${bool_d}
@@ -165,19 +165,23 @@ GAPInput
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
     ! fgrep "bool.c.d:" ${bool_d} > /dev/null
-    ! fgrep "garbage content:" ${bool_lo} > /dev/null
+    ! fgrep "garbage content" ${bool_lo} > /dev/null
 
     # test: `make` should regenerate removed *.d files (and then also regenerate the
     # corresponding *.lo file, which we verify by overwriting it with garbage)
-    rm ${bool_d}
-    echo "garbage content !!!" > ${bool_lo}
-    make > /dev/null 2>&1
-    test -f ${bool_d}
+    # NOTE: This check was disabled and the corresponding code removed from the
+    # build system, as sadly it caused all kinds of issues which were far more
+    # annoying than the fringe problem they fixed. If we ever come up with a better
+    # implementation for this, the test below can be re-enabled
+    #rm ${bool_d}
+    #echo "garbage content 3" > ${bool_lo}
+    #make > /dev/null 2>&1
+    #test -f ${bool_d}
 
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
     ! fgrep "bool.c.d:" ${bool_d} > /dev/null
-    ! fgrep "garbage content:" ${bool_lo} > /dev/null
+    ! fgrep "garbage content" ${bool_lo} > /dev/null
 
     # test: running `make` a second time should produce no output
     test -z "$(make)"
@@ -186,7 +190,7 @@ GAPInput
     # a target that doesn't depend on sources. We verify this by replacing the source
     # code with garbage
     mv $SRCDIR/src/bool.h book.h.bak
-    echo "garbage content !!!" > $SRCDIR/src/bool.h
+    echo "garbage content 4" > $SRCDIR/src/bool.h
     make print-OBJS  # should print something but not error out
     mv book.h.bak $SRCDIR/src/bool.h
 
