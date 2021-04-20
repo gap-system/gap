@@ -299,6 +299,6 @@ jobs:
         uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522
         if: steps.should_notify.outputs.should_send_message == 'yes'
         with:
-          status: ${{ steps.should_notify.outputs.last_status }}
+          status: ${{ steps.should_notify.outputs.current_status }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
