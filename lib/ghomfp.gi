@@ -871,7 +871,7 @@ local aug,w,p,pres,f,fam,G,trace;
 
     pres:=NEWTC_PresentationMTC(aug,0,nam);
   fi;
-  # check that we have the exat generators as we want and no rearrangement
+  # check that we have the exact generators as we want and no rearrangement
   # or so happened.
   Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens) 
     and pres!.primarywords=[1..Length(gens)]);
