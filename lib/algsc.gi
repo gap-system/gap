@@ -689,26 +689,9 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 ##
 #V  QuaternionAlgebraData
 ##
-InstallFlushableValue( QuaternionAlgebraData, [] );
+InstallFlushableValue( QuaternionAlgebraData, [ [], [] ] );
 if IsHPCGAP then
     ShareSpecialObj( QuaternionAlgebraData );
-
-    BindGlobal("StoreQuaternionAlgebraData", function( a, b, F, A )
-      local stored;
-      atomic readwrite QuaternionAlgebraData do
-        stored:= First( QuaternionAlgebraData,
-                        t -> t[1] = a and t[2] = b and
-                             IsIdenticalObj( t[3], FamilyObj( F ) ) );
-        if stored = fail then
-          # Store the data for the next call.
-          Add( QuaternionAlgebraData, MakeImmutable([ a, b, FamilyObj( F ), A ]) );
-        else
-          A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
-          SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
-        fi;
-      od;
-      return A;
-    end);
 fi;
 
 
@@ -744,16 +727,8 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     fi;
 
     # Generators in the right family may be already available.
-    atomic readonly QuaternionAlgebraData do
-      stored:= First( QuaternionAlgebraData,
-                      t ->     t[1] = a and t[2] = b
-                           and IsIdenticalObj( t[3], FamilyObj( F ) ) );
-    od;
-    if stored <> fail then
-      A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored[4] ), "basis" );
-      SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
-    else
-
+    stored := GET_FROM_SORTED_CACHE( QuaternionAlgebraData, [ a, b, FamilyObj( F ) ],
+    function()
       # Construct a filter describing element properties,
       # which will be stored in the family.
       filter:= IsSCAlgebraObj and IsQuaternion;
@@ -780,15 +755,12 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
               filter );
       SetFilterObj( A, IsAlgebraWithOne );
 #T better introduce AlgebraWithOneByStructureConstants?
+      return A;
+    end );
 
-      # Store the data for the next call.
-      if IsHPCGAP then
-        A := StoreQuaternionAlgebraData( a, b, F, A );
-      else
-        Add( QuaternionAlgebraData, [ a, b, FamilyObj( F ), A ] );
-      fi;
-
-    fi;
+    A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored ), "basis" );
+    SetGeneratorsOfAlgebra( A, GeneratorsOfAlgebraWithOne( A ) );
+    SetIsFullSCAlgebra( A, true );
 
     # A quaternion algebra with negative parameters over a real field
     # is a division ring.
