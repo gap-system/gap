@@ -688,11 +688,14 @@ DeclareOperation( "Position", [ IsList, IsObject, IS_INT ] );
 ##  <#GAPDoc Label="Positions">
 ##  <ManSection>
 ##  <Func Name="Positions" Arg='list, obj'/>
-##  <Oper Name="PositionsOp" Arg='list, obj'/>
 ##
 ##  <Description>
 ##  returns the set of positions of <E>all</E> occurrences of <A>obj</A> in
 ##  <A>list</A>.
+##  <P/>
+##  Developers who wish to adapt this for custom list types need to
+##  install suitable methods for the operation <C>PositionsOp</C>.
+##  <Index Key="PositionsOp"><C>PositionsOp</C></Index>
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Positions([1,2,1,2,3,2,2],2);
@@ -704,6 +707,7 @@ DeclareOperation( "Position", [ IsList, IsObject, IS_INT ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  We catch plain lists by a function to avoid method selection:
 DeclareGlobalFunction( "Positions" );
 DeclareOperation( "PositionsOp", [ IsList, IsObject ] );
 
@@ -786,7 +790,6 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  <Func Name="PositionSorted" Arg='list, elm[, func]'/>
 ##
 ##  <Description>
-##  <Index Key="PositionSortedOp"><C>PositionSortedOp</C></Index>
 ##  Called with two arguments, <Ref Func="PositionSorted"/> returns
 ##  the position of the element <A>elm</A> in the sorted list <A>list</A>.
 ##  <P/>
@@ -816,8 +819,9 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 ##  for testing whether a list is sorted,
 ##  see&nbsp;<Ref Prop="IsSortedList"/> and <Ref Prop="IsSSortedList"/>.
 ##  <P/>
-##  Specialized functions for certain kinds of lists must be installed 
-##  as methods for the operation <C>PositionSortedOp</C>.
+##  Developers who wish to adapt this for custom list types need to
+##  install suitable methods for the operation <C>PositionSortedOp</C>.
+##  <Index Key="PositionSortedOp"><C>PositionSortedOp</C></Index>
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> PositionSorted( [1,4,5,5,6,7], 0 );
@@ -839,10 +843,6 @@ DeclareOperation( "PositionNthOccurrence", [ IsList, IsObject, IS_INT ] );
 DeclareGlobalFunction( "PositionSorted" );
 DeclareOperation( "PositionSortedOp", [ IsList, IsObject ] );
 DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );
-#T originally was
-#T DeclareOperation( "PositionSorted", [ IsHomogeneousList, IsObject ] );
-#T note the problem with inhomogeneous lists that may be sorted
-#T (although they cannot store this and claim that they are not sorted)
 
 
 #############################################################################
@@ -854,7 +854,6 @@ DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );
 ##  <Func Name="PositionSortedBy" Arg='list, val, func'/>
 ##
 ##  <Description>
-##  <Index Key="PositionSortedByOp"><C>PositionSortedByOp</C></Index>
 ##  This function returns the same value that would be returned by
 ##  <C>PositionSorted(List(list, func), val)</C>, but computes it in
 ##  a more efficient way.
@@ -879,8 +878,9 @@ DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );
 ##  <Ref Func="PositionSortedBy"/> uses binary search.
 ##  Each <C>func(list[i])</C> is computed at most once.
 ##  <P/>
-##  Specialized functions for certain kinds of lists must be installed
-##  as methods for the operation <C>PositionSortedByOp</C>.
+##  Developers who wish to adapt this for custom list types need to
+##  install suitable methods for the operation <C>PositionSortedByOp</C>.
+##  <Index Key="PositionSortedByOp"><C>PositionSortedByOp</C></Index>
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> PositionSortedBy( [ "", "ab", ], -1, Length );
@@ -898,6 +898,7 @@ DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  We catch plain lists by a function to avoid method selection:
 DeclareGlobalFunction( "PositionSortedBy" );
 DeclareOperation("PositionSortedByOp", [ IsList, IsObject, IsFunction ]);
 
@@ -1549,6 +1550,10 @@ DeclareOperation( "Flat", [ IsList ] );
 ##  which can also be formulated in terms of the <C>{}</C> operator
 ##  (see&nbsp;<Ref Sect="List Assignment"/>).
 ##  <P/>
+##  Developers who wish to adapt this for custom list types need to
+##  install suitable methods for the operation <C>ReversedOp</C>.
+##  <Index Key="ReversedOp"><C>ReversedOp</C></Index>
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Reversed( [ 1, 4, 9, 5, 6, 7 ] );
 ##  [ 7, 6, 5, 9, 4, 1 ]
@@ -1557,25 +1562,10 @@ DeclareOperation( "Flat", [ IsList ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  We catch internal lists by a function to avoid method selection:
 DeclareGlobalFunction( "Reversed" );
-
-
-#############################################################################
-##
-#O  ReversedOp( <list> )  . . . . . . . . . .  reverse the elements in a list
-##
-##  <ManSection>
-##  <Oper Name="ReversedOp" Arg='list'/>
-##
-##  <Description>
-##  <Ref Oper="ReversedOp"/> is the operation called by
-##  <Ref Func="Reversed"/> if <A>list</A> is not an internal list.
-##  (Note that it would not make sense to turn this into an attribute
-##  because the result shall be mutable.)
-##  </Description>
-##  </ManSection>
-##
 DeclareOperation( "ReversedOp", [ IsDenseList ] );
+
 
 #############################################################################
 ##
@@ -2110,6 +2100,10 @@ DeclareGlobalFunction( "IteratorList" );
 ##  position of the first element in a list that satisfies a certain
 ##  property.
 ##  <P/>
+##  Developers who wish to adapt this for custom list types need to
+##  install suitable methods for the operation <C>FirstOp</C>.
+##  <Index Key="FirstOp"><C>FirstOp</C></Index>
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> First( [10^7..10^8], IsPrime );
 ##  10000019
@@ -2125,22 +2119,8 @@ DeclareGlobalFunction( "IteratorList" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  We catch internal lists by a function to avoid method selection:
 DeclareGlobalFunction( "First" );
-
-
-#############################################################################
-##
-#O  FirstOp( <list>[, <func>] )
-##
-##  <ManSection>
-##  <Oper Name="FirstOp" Arg='list[, func]'/>
-##
-##  <Description>
-##  <Ref Oper="FirstOp"/> is the operation called by <Ref Func="First"/>
-##  if <A>list</A> is not an internally represented list.
-##  </Description>
-##  </ManSection>
-##
 DeclareOperation( "FirstOp", [ IsListOrCollection ] );
 DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 
@@ -2163,6 +2143,10 @@ DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 ##  If <A>func</A> returns <K>false</K> for all elements of <A>list</A>
 ##  then <Ref Func="Last"/> returns <K>fail</K>.
 ##  <P/>
+##  Developers who wish to adapt this for custom list types need to
+##  install suitable methods for the operation <C>LastOp</C>.
+##  <Index Key="LastOp"><C>LastOp</C></Index>
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Last( [10^7..10^8], IsPrime );
 ##  99999989
@@ -2178,22 +2162,8 @@ DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  We catch internal lists by a function to avoid method selection:
 DeclareGlobalFunction( "Last" );
-
-
-#############################################################################
-##
-#O  LastOp( <list>[, <func>] )
-##
-##  <ManSection>
-##  <Oper Name="LastOp" Arg='list[, func]'/>
-##
-##  <Description>
-##  <Ref Oper="LastOp"/> is the operation called by <Ref Func="Last"/>
-##  if <A>list</A> is not an internally represented list.
-##  </Description>
-##  </ManSection>
-##
 DeclareOperation( "LastOp", [ IsListOrCollection ] );
 DeclareOperation( "LastOp", [ IsListOrCollection, IsFunction ] );
 
