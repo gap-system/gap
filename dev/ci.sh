@@ -40,22 +40,15 @@ do
   testpackages)
     cd $SRCDIR/pkg
 
-    # skip linboxing because it hasn't compiled for years
-    rm -rf linboxing*
-    # skip pargap: no MPI present (though we could fix that), and it currently does not
-    # build with the GAP master branch
-    rm -rf pargap*
     # skip PolymakeInterface: no polynmake installed (TODO: is there a polymake package we can use)
     rm -rf PolymakeInterface*
     # skip xgap: no X11 headers, and no means to test it
     rm -rf xgap*
+    # skip itc because it requires xgap
+    rm -rf itc*
 
     # HACK to work out timestamp issues with anupq
     touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
-
-    # HACK: workaround GMP 5 bug causing "error: '::max_align_t' has not been declared",
-    # see <https://gcc.gnu.org/gcc-4.9/porting_to.html>
-    printf "%s\n" 1 i "#include <stddef.h>" . w | ed float*/src/mp_poly.C
 
     # reset CFLAGS, CXXFLAGS, LDFLAGS before compiling packages, to prevent
     # them from being compiled with coverage gathering, because
@@ -71,17 +64,6 @@ do
         exit 1
     else
         echo "All packages were built successfully"
-
-        #
-        # Now that we built packages, we try to load them.
-        # For this, we need to skip a few additional packages which cannot
-        # be loaded in the test environment.
-        #
-        # skip xgap as it can only be loaded in a GAP session started via
-        # special helper script, *and* it requires X Window
-        rm -rf xgap*
-        # also skip itc because it requires xgap
-        rm -rf itc*
 
         cd ..
         # Load GAP (without packages) and save workspace to speed up test.

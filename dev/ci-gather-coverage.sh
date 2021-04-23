@@ -28,12 +28,25 @@ then
 fi
 BUILDDIR=$PWD
 
+# We need to compile the profiling package in order to generate coverage
+# reports; and also the IO package, as the profiling package depends on it.
+pushd "$SRCDIR/pkg"
+
+# Compile io and profiling packages
+# we deliberately reset CFLAGS, CXXFLAGS, LDFLAGS to prevent them from being
+# compiled with coverage gathering, because otherwise gcov may confuse
+# IO's src/io.c with GAP's.
+CFLAGS= CXXFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
+
+popd
+
+
 # Get dir for coverage results
 COVDIR=coverage
 ls -l "$COVDIR" # for debugging
 
 # generate library coverage reports
-$GAP -a 500M -m 500M -q <<GAPInput
+$GAP -q <<GAPInput
 if LoadPackage("profiling") <> true then
     Print("ERROR: could not load profiling package");
     ForceQuitGap(1);
