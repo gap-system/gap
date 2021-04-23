@@ -191,10 +191,14 @@ jobs:
                fi
                python -m pip install gcovr
 
-      - name: "Compile GAP and download packages"
-        run: ${{ matrix.extra }} bash dev/ci-prepare.sh
+      - name: "Configure GAP"
+        run: ${{ matrix.extra }} dev/ci-configure-gap.sh
+      - name: "Build GAP"
+        run: ${{ matrix.extra }} dev/ci-build-gap.sh
+      - name: "Download packages"
+        run: ${{ matrix.extra }} dev/ci-download-pkgs.sh
       - name: "Run tests"
-        run: ${{ matrix.extra }} bash dev/ci.sh
+        run: ${{ matrix.extra }} dev/ci.sh
       - name: "Upload pdf manuals"
         if: ${{ matrix.test-suites == 'makemanuals' }}
         uses: actions/upload-artifact@v2
@@ -215,9 +219,9 @@ jobs:
             doc/*/*.css
             doc/*/*.js
       - name: "Gather coverage data"
-        run: ${{ matrix.extra }} bash dev/ci-gather-coverage.sh
+        run: ${{ matrix.extra }} dev/ci-gather-coverage.sh
       - name: "Upload coverage data"
-        run: ${{ matrix.extra }} bash dev/ci-upload-coverage.sh
+        run: ${{ matrix.extra }} dev/ci-upload-coverage.sh
       # - uses: codecov/codecov-action@v1
 
       # TODO: fix coveralls integration
@@ -255,17 +259,23 @@ jobs:
 
       - uses: gap-actions/setup-cygwin-for-gap@v1
 
-      - name: "Compile GAP and download packages"
-        # Run cygwin's bash.
+        # The following actions use cygwin's bash.
         # --login: make a login shell (so PATH is set up)
         # -o igncr: Accept windows line endings
         # {0} : Pass any extra arguments from CI
-        shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
-        run: bash dev/ci-prepare.sh
 
+      - name: "Configure GAP"
+        shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
+        run: dev/ci-configure-gap.sh
+      - name: "Build GAP"
+        shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
+        run: dev/ci-build-gap.sh
+      - name: "Download packages"
+        shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
+        run: dev/ci-download-pkgs.sh
       - name: "Run tests"
         shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
-        run: bash dev/ci.sh
+        run: dev/ci.sh
 
   slack-notification-on-failure:
     name: Send slack notification on CI failure
