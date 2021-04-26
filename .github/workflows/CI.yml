@@ -219,9 +219,13 @@ jobs:
             doc/*/*.js
       - name: "Gather coverage data"
         run: ${{ matrix.extra }} dev/ci-gather-coverage.sh
-      - name: "Upload coverage data"
-        run: ${{ matrix.extra }} dev/ci-upload-coverage.sh
-      # - uses: codecov/codecov-action@v1
+      - name: "Upload coverage data to Codecov"
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: "!./pkg/**,!./extern/**"
+          gcov_path_exclude: "./pkg/**"
+
 
   # Based on https://github.com/mit-plv/fiat-crypto/blob/master/.github/workflows/coq-windows.yml
   test-cygwin:
