@@ -31,13 +31,7 @@ BUILDDIR=$PWD
 # We need to compile the profiling package in order to generate coverage
 # reports; and also the IO package, as the profiling package depends on it.
 pushd "$SRCDIR/pkg"
-
-# Compile io and profiling packages
-# we deliberately reset CFLAGS, CXXFLAGS, LDFLAGS to prevent them from being
-# compiled with coverage gathering, because otherwise gcov may confuse
-# IO's src/io.c with GAP's.
-CFLAGS= CXXFLAGS= LDFLAGS= "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
-
+"$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" io* profiling*
 popd
 
 
