@@ -11,7 +11,6 @@ env:
   LDFLAGS: "--coverage"
   # default config flags: enable debug asserts
   CONFIGFLAGS: "--enable-debug"
-  COVERALLS_PARALLEL: true
 
 jobs:
   test-unix:
@@ -223,24 +222,6 @@ jobs:
       - name: "Upload coverage data"
         run: ${{ matrix.extra }} dev/ci-upload-coverage.sh
       # - uses: codecov/codecov-action@v1
-
-      # TODO: fix coveralls integration
-      #- name: Coveralls Parallel
-      #  uses: coverallsapp/github-action@master
-      #  with:
-      #    github-token: ${{ secrets.github_token }}
-      #    flag-name: run-${{ matrix.test_number }}
-      #    parallel: true
-
-#  finish:
-#    needs: test-unix
-#    runs-on: ubuntu-18.04
-#    steps:
-#      - name: Coveralls Finished
-#        uses: coverallsapp/github-action@master
-#        with:
-#          github-token: ${{ secrets.github_token }}
-#          parallel-finished: true
 
   # Based on https://github.com/mit-plv/fiat-crypto/blob/master/.github/workflows/coq-windows.yml
   test-cygwin:
