@@ -5128,27 +5128,28 @@ end);
 InstallMethod(FpElementNFFunction,true,[IsElementOfFpGroupFamily],0,
 # default reduction -- 
 function(fam)
-local iso,k,id,f;
-  # first try whether the group is ``small''
-  iso:=FPFaithHom(fam);
-  if iso<>fail and Size(Image(iso))<50000 then
-    k:=ImagesSource(iso);
-  #return function(w)
-  #  if not w in FreeGroupOfFpGroup(Source(iso)) then Error("flasch");fi;
-  #  w:=ElementOfFpGroup(fam,w);
-  #  Print("wa=",w,"\n");
-  #  w:=ImageElm(iso,w);
-  #  Print("wb=",w,"\n");
-  #  w:=Factorization(k,w);
-  #  Print("wc=",w,"\n");
-  #  return UnderlyingElement(w);
-  #end;
-    return w->UnderlyingElement(Factorization(k,Image(iso,ElementOfFpGroup(fam,w))));
+local iso,k,id,f,ran,g;
+  g:=CollectionsFamily(fam)!.wholeGroup;
+  if not (HasIsomorphismFpMonoid(g) and
+    HasReducedConfluentRewritingSystem(Image(IsomorphismFpMonoid(g)))) then
+    # first try whether the group is ``small''
+    iso:=FPFaithHom(fam);
+    if iso<>fail and Size(Image(iso))<50000 then
+      k:=ImagesSource(iso);
+      return w->UnderlyingElement(Factorization(k,
+        Image(iso,ElementOfFpGroup(fam,w))));
+    fi;
   fi;
-  iso:=IsomorphismFpMonoidGeneratorsFirst(CollectionsFamily(fam)!.wholeGroup);
-  f:=FreeMonoidOfFpMonoid(Range(iso));
-  k:=ReducedConfluentRewritingSystem(Range(iso),
-	BasicWreathProductOrdering(f,GeneratorsOfMonoid(f)));
+
+  iso:=IsomorphismFpMonoidGeneratorsFirst(g);
+  ran:=Range(iso);
+  f:=FreeMonoidOfFpMonoid(ran);
+  if HasReducedConfluentRewritingSystem(ran) then
+    k:=ReducedConfluentRewritingSystem(ran);
+  else
+    k:=ReducedConfluentRewritingSystem(ran,
+          BasicWreathProductOrdering(f,GeneratorsOfMonoid(f)));
+  fi;
   id:=UnderlyingElement(Image(iso,One(fam)));
   return w->MonwordToGroupword(UnderlyingElement(One(fam)),
 	       ReducedForm(k,GroupwordToMonword(id,w)));
