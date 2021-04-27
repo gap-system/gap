@@ -1501,7 +1501,8 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold;
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold,
+      mon,ord,mn,melmvec;
 
   # function to evaluate product (as integer list) in gens (and their
   # inverses invs) with corresponding action mats
@@ -1518,17 +1519,124 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       fi;
     od;
     return new;
-
   end;
 
-
+  melmvec:=function(v)
+  local i,a,w;
+    w:=One(f);
+    for i in [1..Length(v)] do
+      a:=Int(v[i]);
+      if prime=2 or a*2<prime then
+        w:=w*gens[2*i-1+mn]^a;
+      else
+        a:=prime-a;
+        w:=w*gens[2*i+mn]^a;
+      fi;
+    od;
+    return w;
+  end;
 
   r:=arg[1];
   z:=arg[2];
   ogens:=GeneratorsOfGroup(r.presentation.group);
-
-  str:=List(ogens,String);
   dim:=r.module.dimension;
+  prime:=Size(r.module.field);
+
+  if ValueOption("normalform")<>true then
+    mon:=fail;
+  else
+    # Construct the monoid and rewriting system, as this is cheap to do but
+    # will allow for reduced multiplication. Do so before the group, so there is no
+    # issue about overwriting variables that might be needed later
+    mon:=Image(r.monhom);
+    str:=List(GeneratorsOfMonoid(mon),String);
+    mn:=Length(str);
+    for i in [1..dim] do
+      Add(str,Concatenation("m",String(i)));
+      Add(str,Concatenation("m",String(i),"^-1"));
+    od;
+    f:=FreeMonoid(str);
+    gens:=GeneratorsOfMonoid(f);
+
+    rels:=[];
+    # inverse rules
+    for i in [1,3..Length(gens)-1] do
+      Add(rels,[gens[i]*gens[i+1],One(f)]);
+      Add(rels,[gens[i+1]*gens[i],One(f)]);
+    od;
+    # rules with tails
+    for i in [1..Length(r.presentation.monrulpos)] do
+      new:=RelationsOfFpMonoid(mon)[r.presentation.monrulpos[i]];
+      new:=List(new,x->MappedWord(x,FreeGeneratorsOfFpMonoid(mon),gens{[1..mn]}));
+      new[2]:=new[2]*melmvec(z{[(i-1)*dim+1..i*dim]});
+      Add(rels,new);
+    od;
+
+    if r.presentation.killrelators<>[] then Error("TODO killrelators");fi;
+
+    # elementary abelian
+    for i in [mn+1,mn+3..Length(str)-1] do
+      if prime=2 then
+        Add(rels,[gens[i]^2,One(f)]);
+        Add(rels,[gens[i+1],gens[i]]);
+      else
+        j:=QuoInt(prime+1,2); # power that changes the exponent sign
+        Add(rels,[gens[i]^j,gens[i+1]^(j-1)]);
+        Add(rels,[gens[i+1]^j,gens[i]^(j-1)]);
+      fi;
+      for j in [i+2..Length(str)] do
+        Add(rels,[gens[j]*gens[i],gens[i]*gens[j]]);
+        Add(rels,[gens[j]*gens[i+1],gens[i+1]*gens[j]]);
+      od;
+    od;
+    # module rules
+    for i in [1..mn] do
+      for j in [mn+1..Length(str)] do
+        new:=r.module.generators[QuoInt(i+1,2)];
+        if IsEvenInt(i) then new:=new^-1; fi;
+        new:=new[QuoInt(j-mn+1,2)];
+        if IsEvenInt(j) then new:=-new;fi;
+        Add(rels,[gens[j]*gens[i],gens[i]*melmvec(new)]);
+      od;
+    od;
+    if HasReducedConfluentRewritingSystem(mon) then
+      ord:=OrderingOfRewritingSystem(ReducedConfluentRewritingSystem(mon));
+      if HasLevelsOfGenerators(ord) then
+        ord:=WreathProductOrdering(f,
+          Concatenation(LevelsOfGenerators(ord)+1,
+                        ListWithIdenticalEntries(2*dim,1)));
+      else
+        ord:=WreathProductOrdering(f,
+          Concatenation(ListWithIdenticalEntries(mn,2),
+                        ListWithIdenticalEntries(2*dim,1)));
+      fi;
+    else
+      ord:=WreathProductOrdering(f,
+        Concatenation(ListWithIdenticalEntries(mn,2),
+                      ListWithIdenticalEntries(2*dim,1)));
+    fi;
+
+    # if there is any [x^2,1] relation, this means the inverse needs to be
+    # mapped to the generator. (This will have been skipped in the
+    # monrulpos.)
+    for i in rels do
+      if Length(i[2])=0 and Length(i[1])=2 
+        and Length(Set(LetterRepAssocWord(i[1])))=1 then
+        new:=LetterRepAssocWord(i[1])[1];
+        if IsOddInt(new) then
+          Add(rels,[gens[new+1],gens[new]]);
+        fi;
+      fi;
+    od;
+
+    mon:=FactorFreeMonoidByRelations(f,rels);
+    new:=KnuthBendixRewritingSystem(FamilyObj(One(mon)),ord);
+    MakeConfluent(new);  # will add rules to kill inverses, if needed
+    SetReducedConfluentRewritingSystem(mon,new);
+  fi;
+
+  # now construct the group
+  str:=List(ogens,String);
   zerob:=ImmutableVector(r.module.field,
     ListWithIdenticalEntries(dim,Zero(r.module.field)));
   n:=Length(ogens);
@@ -1560,7 +1668,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
   od;
 
   for i in [n+1..Length(gens)] do
-    Add(rels,gens[i]^r.prime);
+    Add(rels,gens[i]^prime);
     for j in [i+1..Length(gens)] do
       Add(rels,Comm(gens[i],gens[j]));
     od;
@@ -1572,10 +1680,14 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     od;
   od;
   fp:=f/rels;
-  prime:=Size(r.module.field);
   SetSize(fp,Size(r.group)*prime^r.module.dimension);
   simi:=fail;
   wasbold:=false;
+
+  if mon<>fail then
+    rels:=MakeFpGroupToMonoidHomType1(fp,mon);
+    SetReducedMultiplication(fp);
+  fi;
 
   if Length(arg)>2 and arg[3]=true then
     if IsZero(z) and MTX.IsIrreducible(r.module) then
