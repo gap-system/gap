@@ -1029,7 +1029,7 @@ local hom;
   return hom;
 end);
 
-BindGlobal("MakeFpGroupToMonoidHomType1",function(fp,m)
+InstallGlobalFunction(MakeFpGroupToMonoidHomType1,function(fp,m)
 local fam,mfam,fpfam,mfpfam,hom;
   fam:=FamilyObj(UnderlyingElement(One(fp)));
   mfam:=FamilyObj(UnderlyingElement(One(m)));

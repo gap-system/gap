@@ -1352,5 +1352,8 @@ DeclareGlobalFunction("StringFactorizationWord");
 # used to test whether abeliniazation can be mapped in GQuotients
 DeclareGlobalFunction("CanMapFiniteAbelianInvariants");
 
+# map fpgrp->fpmon creator
+DeclareGlobalFunction("MakeFpGroupToMonoidHomType1");
+
 # used in homomorphisms
 DeclareGlobalName("TRIVIAL_FP_GROUP");
