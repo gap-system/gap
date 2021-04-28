@@ -1000,7 +1000,8 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
 
   # fix O5 to SP4
   if id.series="B" and id.parameter[1]=2 then
-    id:=rec(name:=id.name,series:="C",parameter:=id.parameter);
+    id:=rec(name:=id.name,series:="C",parameter:=id.parameter,
+      shortname:=Concatenation("S4(",String(id.parameter[2]),")"));
   fi;
 
   if IsBound(id.parameter) then
