@@ -234,11 +234,8 @@ end );
 ##
 InstallMethod( \^,
     "rws-element ^ int",
-    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsInt ],
-    0,
-
 function( left, right )
     local   fam;
 
