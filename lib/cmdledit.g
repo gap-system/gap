@@ -700,28 +700,38 @@ BindKeysToGAPHandler("\022");
 BindGlobal("SaveCommandLineHistory", function(arg)
   local  fnam, append, hist, out;
 
-  if Length(arg) > 0 then
+  if Length(arg) = 1 then
+    if IsString(arg[1]) then
+      fnam := arg[1];
+      append := false;
+    elif arg[1] in [false, true] then
+      append := arg[1];
+    fi;
+  elif Length(arg) = 2 then
     fnam := arg[1];
-  else
+    append := arg[2];
+  elif Length(arg) > 2 then
+    ErrorNoReturn("Usage: SaveCommandLineHistory([fname, ][app])");
+  fi;
+  if not IsBound(fname) then
     if IsExistingFile(GAPInfo.UserGapRoot) then
       fnam := Concatenation(GAPInfo.UserGapRoot, "/history");
     else
       fnam := UserHomeExpand("~/.gap_hist");
     fi;
   fi;
-  if true in arg then
-    append := true;
-  else
-    append := false;
-  fi;
   hist := GAPInfo.History.Lines;
+  hist := hist{[GAPInfo.History.StartPosition + 1
+                .. Length(GAPInfo.History.Lines)]};
   out := OutputTextFile(fnam, append);
   if out = fail then
     return fail;
   fi;
   SetPrintFormattingStatus(out, false);
   WriteAll(out,JoinStringsWithSeparator(hist,"\n"));
-  WriteAll(out,"\n");
+  if Length(hist) > 0 then
+    WriteAll(out,"\n");
+  fi;
   CloseStream(out);
   return Length(hist);
 end);

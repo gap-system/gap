@@ -43,6 +43,7 @@ BIND_GLOBAL( "GAPInfo", rec(
 
     # caches of functions that are needed also with a workspace
     AtExitFuncs:= [],
+    AtExitArgs:= [],
     PostRestoreFuncs:= [],
 
     TestData:= rec(),
@@ -180,6 +181,7 @@ if IsHPCGAP then
     GAPInfo := AtomicRecord(GAPInfo);
     MakeReadOnlyGVar("GAPInfo");
     GAPInfo.AtExitFuncs:= AtomicList([]);
+    GAPInfo.AtExitArgs:= AtomicList([]);
     GAPInfo.PostRestoreFuncs:= AtomicList([]);
     GAPInfo.TestData:= ThreadLocalRecord( rec() );
     APPEND_LIST_INTR(GAPInfo.CommandLineOptionData, [

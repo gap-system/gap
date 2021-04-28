@@ -25,19 +25,29 @@ InstallAtExit( function()
 end);
 
 BIND_GLOBAL("PROGRAM_CLEAN_UP", function()
-    local f, funcs;
+    local funcs, arguments, f, a;
     if IsBound( GAPInfo.AtExitFuncs ) and IsList( GAPInfo.AtExitFuncs ) then
         if IsHPCGAP then
             funcs := FromAtomicList(GAPInfo.AtExitFuncs);
+            arguments := FromAtomicList(GAPInfo.AtExitArgs);
         else
             funcs := GAPInfo.AtExitFuncs;
+            arguments := GAPInfo.AtExitArgs;
         fi;
         while not IsEmpty(funcs) do
             f := Remove(funcs);
+            # funcs and arguments should have the same length
+            if IsEmpty(arguments) then
+                ErrorNoReturn("GAPInfo.AtExitArgs corrupt!");
+            fi;
+            a := Remove(arguments);
             if IsFunction(f) then
-                CALL_WITH_CATCH(f,[]);
+                CALL_WITH_CATCH(f, a);
             fi;
         od;
+        if not IsEmpty(arguments) then
+            ErrorNoReturn("GAPInfo.AtExitArgs corrupt!");
+        fi;
     fi;
 end);
 
