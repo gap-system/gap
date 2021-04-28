@@ -2085,7 +2085,6 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   i:=Length(rels);
   Info(InfoFpGroup,2,"have ",i," rules");
   a:=KnuthBendixRewritingSystem(f/rels,ord);
-  #Error("HUH2");
   MakeConfluent(a);
   Info(InfoFpGroup,1,"confluent RWS ",i," -> ",Length(Rules(a)),"\n");
   b:=f/Rules(a); # make once more for the fp monoid.
@@ -2221,7 +2220,8 @@ function(G)
 local a,f,iso;
 
   a:=DataAboutSimpleGroup(G);
-  if not IsBound(a.classicalId) then
+  if not IsBound(a.classicalId) 
+    or ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
     TryNextMethod();
   fi;
   iso:=ShallowCopy(a.idSimple);
