@@ -179,12 +179,17 @@ modulo 32.
 for many collections of objects. 
 On a lower level these methods use <E>random sources</E> which provide 
 random integers and random choices from lists. 
+<P/>
+See <Ref Filt="IsRandomSource"/> for the user interface for random sources,
+and Section <Ref Subsect="Implementing new kinds of random sources"/>
+for information about developing new kinds of random sources.
 
 <#Include Label="IsRandomSource">
 <#Include Label="Random">
 <#Include Label="State">
 <#Include Label="IsGlobalRandomSource">
 <#Include Label="RandomSource">
+<#Include Label="RandomSource_develop">
 
 </Section>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

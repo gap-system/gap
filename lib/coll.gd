@@ -1613,8 +1613,8 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 
 #############################################################################
 ##
-#O  Random( <C> ) . . . . . . . . . .  random element of a list or collection
-#O  Random( <list> )  . . . . . . . .  random element of a list or collection
+#O  Random( <C> ) . . . . . . . . . . random element of a nonempty collection
+#O  Random( <list> )  . . . . . . .  random element of a dense, nonempty list
 #O  Random( <from>, <to> )
 ##
 ##  <#GAPDoc Label="Random:coll">
@@ -1627,17 +1627,29 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  <Index Key="Random"><Ref Oper="Random" 
 ##                           Label="for a list or collection"/></Index> 
 ##  <Ref Oper="Random" Label="for a list or collection"/> returns a
-##  (pseudo-)random element of the list or collection <A>listorcoll</A>.
+##  (pseudo-)random element of the dense, nonempty list or nonempty
+##  collection <A>listorcoll</A>.
+##  The behaviour for non-dense or empty lists, and for empty collections
+##  (see <Ref Filt="IsDenseList"/>, <Ref Prop="IsEmpty"/>)
+##  is undefined.
 ##  <P/>
 ##  As lists or ranges are restricted in length (<M>2^{28}-1</M> or 
 ##  <M>2^{60}-1</M> depending on your system), the second form returns a
 ##  random integer in the range <A>from</A> to <A>to</A> (inclusive) for
 ##  arbitrary integers <A>from</A> and <A>to</A>.
+##  The behaviour in the case that <A>from</A> is larger than <A>to</A>
+##  is undefined.
+##  <P/>
+##  See Section <Ref Sect="Random Sources"/> for more about computing
+##  random elements, in particular for
+##  <Ref Oper="Random" Label="for random source and list"/> methods
+##  that take a random source as the first argument.
 ##  <P/>
 ##  The distribution of elements returned by
 ##  <Ref Oper="Random" Label="for a list or collection"/> depends
 ##  on the argument.
-##  For a list the distribution is uniform (all elements are equally likely).
+##  For a dense, nonempty list the distribution is uniform (all elements are
+##  equally likely).
 ##  The same holds usually for finite collections that are
 ##  not lists.
 ##  For infinite collections some reasonable distribution is used.
@@ -1669,6 +1681,8 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+# We keep the declaration for non-dense lists
+# in order not to break existing code.
 DeclareOperation( "Random", [ IsListOrCollection ] );
 DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 
@@ -1695,7 +1709,7 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 
 #############################################################################
 ##
-#F  RandomList( <list> )
+#F  RandomList( [<rs>, ]<list> )
 ##
 ##  <#GAPDoc Label="RandomList">
 ##  <ManSection>
@@ -1707,11 +1721,24 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  <Ref Func="RandomList"/> returns a (pseudo-)random element with equal
 ##  distribution.
 ##  <P/>
-##  The random source <A>rs</A> is used to choose a random number.
+##  The random source <A>rs</A> (see <Ref Sect="Random Sources"/>)
+##  is used to choose a random number.
 ##  If <A>rs</A> is absent,
 ##  this function uses the <Ref Var="GlobalMersenneTwister"/> to produce the
 ##  random elements (a source of high quality random numbers).
 ##  <P/>
+##  <Example><![CDATA[
+##  gap> RandomList( [ 1 .. 6 ] );
+##  3
+##  gap> elms:= AsList( Group( (1,2,3) ) );;
+##  gap> RandomList( elms );  RandomList( elms );
+##  (1,2,3)
+##  (1,3,2)
+##  gap> rs:= RandomSource( IsMersenneTwister, 1 );
+##  <RandomSource in IsMersenneTwister>
+##  gap> RandomList( rs, elms );
+##  (1,2,3)
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

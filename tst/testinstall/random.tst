@@ -1,4 +1,4 @@
-#@local R,a,rm,g,orbs,orb,getOneInt
+#@local R,a,rm,g,orbs,orb,i,getOneInt
 gap> START_TEST("random.tst");
 gap> ReadGapRoot( "tst/testrandom.g" );
 
@@ -150,6 +150,20 @@ gap> randomTest([1..2], Random);
 gap> randomTest([0, 10..1000], Random);
 gap> randomTest("cheese", Random);
 gap> randomTest([1,-6,"cheese", Group(())], Random);
+
+# unusual bounds
+gap> R:= RandomSource( IsMersenneTwister );;
+gap> Random( R, 1, -1 ) = fail;
+true
+gap> Random( R, 1, 0 ) = fail;
+true
+gap> Random( R, 1, 1 ) = 1;
+true
+
+# only dense lists are supported
+gap> for i in [ 1 .. 1000 ] do Random( R, [1,,,,,,,,,,2] ); od;
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Random' on 2 arguments
 
 #
 gap> randomTest(PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]), Random, function(x,y) return IsPadicExtensionNumber(x); end);

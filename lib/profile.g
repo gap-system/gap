@@ -1069,8 +1069,8 @@ end);
 ##
 START_TEST := function( name )
     FlushCaches();
-    Reset(GlobalRandomSource, 1);
-    Reset(GlobalMersenneTwister, 1);
+    Reset(GlobalRandomSource);
+    Reset(GlobalMersenneTwister);
     CollectGarbage(true);
     GAPInfo.TestData.START_TIME := Runtime();
     GAPInfo.TestData.START_NAME := name;

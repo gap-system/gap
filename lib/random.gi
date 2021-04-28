@@ -56,7 +56,8 @@ InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
   fi;
 end);
 
-InstallMethod(Random, [IsRandomSource, IsList], function(rs, list)
+InstallMethod(Random, [IsRandomSource, IsList and IsDenseList],
+  function(rs, list)
   return list[Random(rs, 1, Length(list))];
 end);
 
@@ -122,7 +123,8 @@ InstallMethod(Reset, [IsGAPRandomSource, IsObject], function(rs, seed)
   return old;
 end);
 
-InstallMethod(Random, [IsGAPRandomSource, IsList], function(rs, list)
+InstallMethod(Random, [IsGAPRandomSource, IsList and IsDenseList],
+  function(rs, list)
   local rx, rn;
   if Length(list) < 2^28 then
     rx := rs!.R_X;
@@ -201,18 +203,18 @@ InstallMethod(Reset, [IsMersenneTwister, IsObject], function(rs, seed)
   return old;
 end);
 
-InstallMethod(Random, [IsMersenneTwister, IsList], function(rs, list)
-  return list[Random(rs, 1, Length(list))];
-end);
+# We do not need a 'Random' method for 'IsMersenneTwister' and a dense list,
+# the default method for 'IsRandomSource' is enough.
 
 InstallMethod(Random, [IsMersenneTwister, IsInt, IsInt], function(rs, a, b)
   local d, nrbits, res;
   d := b-a+1;
-  if d < 0 then
+  if d <= 0 then
     return fail;
-  elif d = 0 then
-    return a;
   fi;
+  # Here we could return 'a' in the case 'd = 1'.
+  # However, this would change the sequence of random numbers
+  # w.r.t. earlier GAP versions.
   nrbits := Log2Int(d) + 1;
   repeat
     res := RandomIntegerMT(rs!.state, nrbits);
@@ -231,9 +233,9 @@ fi;
 
 # default random method for lists and pairs of integers using the Mersenne
 # twister
-InstallMethod( Random, "for an internal list",
-    [ IsList and IsInternalRep ], 100, function(l) 
-  return l[Random(GlobalMersenneTwister, 1, Length(l))]; 
+InstallMethod( Random, "for a dense internal list",
+    [ IsList and IsDenseList and IsInternalRep ], 100, function(l)
+  return l[Random(GlobalMersenneTwister, 1, Length(l))];
 end );
 
 InstallMethod( Random,
