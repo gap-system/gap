@@ -27,7 +27,7 @@ ExamplesReportDiff := function(inp, expout, found, fnam, line, time)
             loc := InputTextString(Concatenation(tstf[i]{[6..Length(tstf[i])]}, ";"));
             res := READ_COMMAND_REAL(loc, false);
             if res[1] = true then
-                fnam := Concatenation(fnam,res[2][1],":",res[2][2]);
+                fnam := Concatenation(fnam,res[2][1],":",String(res[2][2]));
             fi;
         fi;
     fi;
