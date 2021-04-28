@@ -74,21 +74,9 @@ gap> function(a,b....) end;
 Syntax error: ) expected in stream:1
 function(a,b....) end;
                ^
-gap> f := function(a,b..) end;
-Syntax error: Three dots required for variadic argument list in stream:1
-f := function(a,b..) end;
-                 ^^
 gap> Display(RETURN_FIRST);
 function ( first, rest... )
     <<kernel code>> from src/gap.c:RETURN_FIRST
-end
-gap> Print(INSTALL_METHOD_FLAGS,"\n");
-function ( opr, info, rel, flags, baserank, method )
-    <<compiled GAP code>> from GAPROOT/lib/oper1.g:147
-end
-gap> Display(InstallMethod);
-function ( arg... )
-    <<compiled GAP code>> from GAPROOT/lib/oper1.g:331
 end
 gap> [1..2];
 [ 1, 2 ]
