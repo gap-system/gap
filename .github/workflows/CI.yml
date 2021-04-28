@@ -28,14 +28,15 @@ jobs:
         # base test: fast first test
         os: [ubuntu-18.04]
         test-suites: ["testinstall"]
+        extra: [""]
 
         # add a few extra tests
         include:
           - os: ubuntu-18.04
-            test-suites: "docomp teststandard"
+            test-suites: "teststandard"
 
           - os: ubuntu-18.04
-            test-suites: "docomp teststandard"
+            test-suites: "teststandard"
             extra: "ABI=32 CONFIGFLAGS=\"\""
 
           # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI,
@@ -43,7 +44,7 @@ jobs:
           # hours (!) to complete instead of 25 minutes. So for now we just
           # run testinstall.
           - os: ubuntu-18.04
-            test-suites: "docomp testinstall"
+            test-suites: "testinstall"
             extra: "HPCGAP=yes ABI=64"
 
           # compile packages and run GAP tests
@@ -89,7 +90,7 @@ jobs:
 
           # this job also tests GAP without readline
           - os: macos-latest
-            test-suites: "docomp testinstall"
+            test-suites: "testinstall"
             extra: "BOOTSTRAP_MINIMAL=yes"
 
           # test creating the manual
@@ -132,7 +133,7 @@ jobs:
           # when compiled with valgrind support. We do not actually run any
           # tests using valgrind, as it is too slow.
           - os: ubuntu-18.04
-            test-suites: "docomp testbuildsys testinstall"
+            test-suites: "testbuildsys testinstall"
             extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
                     CONFIGFLAGS=\"--enable-valgrind\""
             packages: "valgrind"
@@ -140,7 +141,7 @@ jobs:
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
           - os: ubuntu-18.04
-            test-suites: "docomp testbuildsys testinstall"
+            test-suites: "testbuildsys testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test error reporting and compiling as well as libgap

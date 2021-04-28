@@ -98,15 +98,6 @@ GAPInput
     fi
     ;;
 
-  docomp)
-    # run gap compiler to verify the src/c_*.c files are up to date,
-    # and also get coverage on the compiler
-    make docomp
-
-    # detect if there are any diffs
-    git diff --exit-code -- src
-    ;;
-
   testbuildsys)
     # use parallel make if possible to speed up things a bit
     export MAKEFLAGS="${MAKEFLAGS:--j3}"
