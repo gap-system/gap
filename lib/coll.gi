@@ -248,7 +248,7 @@ InstallMethod( RepresentativeSmallest,
 ##
 ##  The default function for random selection in a finite collection computes
 ##  an enumerator of <C> and selects a random element of this list using the
-##  function `RandomList', which is a pseudo random number generator.
+##  function `RandomList', which uses a pseudo random number generator.
 ##
 
 # RandomList is not an operation to avoid the (often expensive) cost of
@@ -263,7 +263,7 @@ InstallGlobalFunction( RandomList, function(args...)
     source := args[1];
     list := args[2];
   else
-    Error(" Usage: RandomList([rs], list))");
+    Error( "usage: RandomList( [<rs>], <list> ) for a dense list <list>" );
   fi;
 
   return list[Random(source, 1, Length(list))];
