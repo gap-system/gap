@@ -183,6 +183,22 @@ function(rws)
   fi;
 end);
 
+# use bit lists to reduce the numbers of rules to test
+# this should ultimately become part of the kernel routine
+BindGlobal("ReduceLetterRepWordsRewSysNew",function(tzrules,w,geli,bits)
+local old,pat,cf;
+  if geli=false then
+    return ReduceLetterRepWordsRewSys(tzrules,w);
+  fi;
+  repeat
+    old:=w;
+    pat:=BlistList(geli,Set(w));
+    w:=ReduceLetterRepWordsRewSys(tzrules{Filtered([1..Length(tzrules)],
+      x->IsSubsetBlist(pat,bits[1][x]))},w);
+  until old=w;
+  return w;
+end);
+
 
 #############################################################################
 ##
@@ -299,8 +315,10 @@ function(kbrws,v)
       #use rules available to reduce both sides of rule
       u:=s[1];
       s:=s{[2..Length(s)]};
-      a:=ReduceLetterRepWordsRewSys(kbrws!.tzrules,u[1]);
-      b:=ReduceLetterRepWordsRewSys(kbrws!.tzrules,u[2]);
+      a:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,u[1],
+        geli,kbrws!.bitrules);
+      b:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,u[2],
+        geli,kbrws!.bitrules);
 
       #if both sides reduce to different words
       #have to adjoin a new rule to the set of rules
