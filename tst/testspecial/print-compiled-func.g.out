@@ -1,0 +1,9 @@
+gap> Print(INSTALL_METHOD_FLAGS,"\n");
+function ( opr, info, rel, flags, baserank, method )
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:LINE
+end
+gap> Display(InstallMethod);
+function ( arg... )
+    <<compiled GAP code>> from GAPROOT/lib/oper1.g:LINE
+end
+gap> QUIT;

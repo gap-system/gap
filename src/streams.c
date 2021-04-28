@@ -435,10 +435,9 @@ Int READ_GAP_ROOT ( const Char * filename )
     // try to find compiled version of the GAP file
     if (SyUseModule) {
         // This code section covers transparently loading GAC compiled
-        // versions of GAP source files, by running code similar to
-        // that in FuncLOAD_STAT. For example, lib/oper1.g is compiled
-        // into C code which is stored in src/c_oper1.c; when reading
-        // lib/oper1.g, we instead will load its compiled version.
+        // versions of GAP source files, by running code similar to that in
+        // FuncLOAD_STAT. For example, lib/oper1.g is compiled into C code;
+        // when reading lib/oper1.g, we instead load its compiled version.
         Char module[GAP_PATH_MAX];
         strxcpy(module, "GAPROOT/", sizeof(module));
         strxcat(module, filename, sizeof(module));
