@@ -3,15 +3,12 @@
 # This script regenerates src/c_$1.c from lib/$1.g, but touching
 # the C file only when it changed
 
-# usage:  GAP-C_GEN srcdir dstdir stem gapbin
+# usage:  GAP-C_GEN gapfile cfile stem gapbin
 
-srcdir=$(cd "$1"; pwd)
-dstdir=$(cd "$2"; pwd)
+GAP_FILE="$1"
+C_FILE="$2"
 STEM="$3"
 GAPBIN="$4"
-
-GAP_FILE="$srcdir/$STEM.g"
-C_FILE="$dstdir/c_$STEM.c"
 
 if ! test -r "$GAP_FILE"
 then
@@ -32,6 +29,6 @@ if cmp -s "$C_FILE.tmp" "$C_FILE"
 then
     rm "$C_FILE.tmp"
 else
-    echo "Updating $C_FILE"
+    echo "   GAC     $GAP_FILE => $C_FILE"
     mv "$C_FILE.tmp" "$C_FILE"
 fi
