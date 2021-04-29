@@ -267,12 +267,12 @@ jobs:
         shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
         run: dev/ci.sh
 
-  slack-notification-on-failure:
-    name: Send slack notification on CI failure
+  slack-notification:
+    name: Send Slack notification on status change
     needs:
       - test-unix
       - test-cygwin
-    if: ${{ always() && github.event_name == 'push' && github.repository == 'gap-system/gap' }}
+    if: ${{ always() && github.event_name != 'pull_request' && github.repository == 'gap-system/gap' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -289,7 +289,7 @@ jobs:
           notify_on_changed_status: true
       - name: Send slack notification
         uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522
-        if: steps.should_notify.outputs.should_send_message == 'yes'
+        if: ${{ steps.should_notify.outputs.should_send_message == 'yes' }}
         with:
           status: ${{ steps.should_notify.outputs.current_status }}
         env:
