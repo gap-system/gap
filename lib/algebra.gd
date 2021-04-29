@@ -1782,7 +1782,7 @@ DeclareCategoryCollections( "IsQuaternionCollection" );
 ##  <M>e e = e</M>, <M>e i = i e = i</M>, <M>e j = j e = j</M>,
 ##  <M>e k = k e = k</M>, <M>i i = <A>a</A> e</M>, <M>i j = - j i = k</M>,
 ##  <M>i k = - k i = <A>a</A> j</M>, <M>j j = <A>b</A> e</M>,
-##  <M>j k = - k j = <A>b</A> i</M>, <M>k k = - <A>a</A> <A>b</A> e</M>.
+##  <M>k j = - j k = <A>b</A> i</M>, <M>k k = - <A>a</A> <A>b</A> e</M>.
 ##  The default value for both <A>a</A> and <A>b</A> is
 ##  <M>-1 \in F</M>.
 ##  <P/>
