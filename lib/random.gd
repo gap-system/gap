@@ -98,7 +98,7 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 #O  Reset( <rs>[, <seed>] )  . . . . . . . . . . . . .  reset a random source
 ##
 ##  <#GAPDoc Label="State">
-##  <ManSection>
+##  <ManSection Label="State and Reset for Random Sources">
 ##  <Heading>State and Reset for Random Sources</Heading>
 ##  <Oper Name="State" Arg='rs'/>
 ##  <Oper Name="Reset" Arg='rs[, seed]'/>
@@ -118,9 +118,11 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 ##  otherwise it does nothing.
 ##  Here <A>seed</A> can be an output of <Ref Oper="State"/> and then
 ##  <A>rs</A> gets reset to that state.
-##  Also integers are allowed as <A>seed</A>.
-##  Without the <A>seed</A> argument the default <M><A>seed</A> = 1</M> is
-##  used.
+##  For historical reasons, random sources accept integer values as
+##  <A>seed</A>.
+##  We recommend that new code should not rely on this; always use the output
+##  of a prior call to <Ref Oper="State"/> as <A>seed</A>, or omit it.
+##  Without the <A>seed</A> argument a fixed default seed is used.
 ##  <Ref Oper="Reset"/> returns the state of <A>rs</A> before the call.
 ##  <P/>
 ##  Most methods for <Ref Oper="Random" Label="for a list or collection"/>
@@ -217,8 +219,7 @@ fi;
 
 #############################################################################
 ##  
-#O  RandomSource( <cat> )
-#O  RandomSource( <cat>, <seed> )
+#O  RandomSource( <cat>[, <seed>] )
 ##
 ##  <#GAPDoc Label="RandomSource">
 ##  <ManSection>
@@ -231,7 +232,8 @@ fi;
 ##  Section <Ref Subsect="Kinds of Random Sources"/>.
 ##  <P/>
 ##  An optional <A>seed</A> can be given to specify the initial state.
-##  It can be an integer or a type specific data structure.
+##  For details,
+##  see Section <Ref Subsect="State and Reset for Random Sources"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> rs1 := RandomSource(IsMersenneTwister);
@@ -269,21 +271,24 @@ DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 ##  If one wants to implement a new kind of random sources then
 ##  the first step is the declaration of a new category <C>C</C>, say,
 ##  that implies <Ref Filt="IsRandomSource"/>, analogous to the categories
-##  listed in Section <Ref Subsect="Kinds of Random Sources"/>.
+##  listed in Section <Ref Subsect="Kinds of Random Sources"/>,
+##  as follows.
+##  <P/>
+##  <C>DeclareCategory( "C", IsRandomSource );</C>.
 ##  <P/>
 ##  Then the following method installations are needed.
 ##  <P/>
 ##  <Index Key="Init"><C>Init</C> (initialize a random source object)</Index>
-##  <C>InstallMethod( Init, [ C, IsObject ], function( prers, seed_or_state )
+##  <C>InstallMethod( Init, [ C, IsObject ], function( prers, seed )
 ##  ... end );</C>
 ##  <P/>
 ##  Here <C>prers</C> is an empty component object (which has already the
-##  filter <C>C</C>), and <C>seed_or_state</C> is an integer or a state value
+##  filter <C>C</C>), and <C>seed</C> is an integer or a state value
 ##  as returned by <Ref Oper="State"/> that describes the initial state of
 ##  the random source.
 ##  The function should fill in the actual data and then return the
 ##  (now initialized) object <C>prers</C>.
-##  The default used for <C>seed_or_state</C> is the integer <C>1</C>.
+##  The default used for <C>seed</C> is the integer <C>1</C>.
 ##  A given state value need not be copied by the function.
 ##  <P/>
 ##  <C>InstallMethod( Random, [ C, IsInt, IsInt ], function( rs, low, high )
@@ -304,11 +309,11 @@ DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 ##  <Ref Oper="State"/>;
 ##  otherwise <Ref Func="ReturnFail"/> should be installed.
 ##  <P/>
-##  <C>InstallMethod( Reset, [ C, IsObject ], function( rs, seed_or_state )
+##  <C>InstallMethod( Reset, [ C, IsObject ], function( rs, seed )
 ##  ... end );</C>
 ##  <P/>
 ##  If <C>rs</C> supports resetting then the function must reinitialize
-##  <C>rs</C> to the integer or <Ref Oper="State"/> value <C>seed_or_state</C>
+##  <C>rs</C> to the integer or <Ref Oper="State"/> value <C>seed</C>
 ##  and must return the <Ref Oper="State"/> value of <C>rs</C> before these
 ##  changes; if resetting is not supported then <Ref Func="ReturnNothing"/>
 ##  should be installed.
@@ -316,10 +321,11 @@ DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 ##  Note that the generic unary <Ref Oper="Reset"/> method uses the default
 ##  seed <C>1</C>.
 ##  <P/>
-##  An example of an implementation as described here is given by the
-##  random sources with defining filter <C>IsRealRandomSource</C>,
-##  see <Ref Meth="RandomSource" BookName="io"/> in the &GAP; package
-##  <Package>IO</Package>.
+##  Examples of implementations as described here are given by the
+##  random sources with defining filter <Ref Filt="IsMersenneTwister"/>
+##  or <C>IsRealRandomSource</C>.
+##  (For the latter, see <Ref Meth="RandomSource" BookName="io"/>
+##  in the &GAP; package <Package>IO</Package>.)
 ##  </Subsection>
 ##  <#/GAPDoc>
 
