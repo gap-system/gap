@@ -1270,6 +1270,7 @@ void            ElmListLevel (
     Obj                 row;
     Obj                 col;
 
+    RequirePlainList("List Elements", lists);
 
     /* if <level> is one, perform the replacements                         */
     if ( level == 1 ) {
@@ -1351,16 +1352,7 @@ void            ElmsListLevel (
     Obj                 elm;            /* selected elements from <list>   */
     Int                 i;              /* loop variable                   */
 
-    /* Workaround for issue #312: Accessing a two-level sublist
-       of a compressed FFE vector could lead to crashes because
-       FuncELMS_VEC8BIT and FuncELMS_GF2VEC may return lists which are
-       not plists. This boils down to a conflict between the documented
-       behavior and requirements of ElmsListLevel and ElmsListFuncs.
-       Resolving this properly requires some more discussion. But until
-       then, this change at least prevents hard crashes. */
-    if (!IS_PLIST(lists)) {
-        RequireArgument("List Elements", lists, "must be a list");
-    }
+    RequirePlainList("List Elements", lists);
 
     /* if <level> is one, perform the replacements                         */
     if ( level == 1 ) {
@@ -1433,7 +1425,7 @@ void            AssListLevel (
     Obj                 row;
     Obj                 col;
 
-    /* check <objs>                                                        */
+    RequirePlainList("List Assignments", lists);
     RequireDenseList("List Assignments", objs);
     RequireSameLength("List Assignments", objs, lists);
 
@@ -1516,7 +1508,7 @@ void            AsssListLevel (
     Obj                 obj;            /* one value from <objs>           */
     Int                 i;              /* loop variable                   */
 
-    /* check <objs>                                                        */
+    RequirePlainList("List Assignments", lists);
     RequireDenseList("List Assignments", objs);
     RequireSameLength("List Assignments", objs, lists);
 
