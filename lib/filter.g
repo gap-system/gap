@@ -315,12 +315,24 @@ end );
 ##
 ##  <#GAPDoc Label="NewFilter">
 ##  <ManSection>
-##  <Func Name="NewFilter" Arg="name[, rank]"/>
+##  <Func Name="NewFilter" Arg="name[, implied][, rank]"/>
 ##
 ##  <Description>
 ##  <Ref Func="NewFilter"/> returns a simple filter with name <A>name</A>
 ##  (see&nbsp;<Ref Sect="Other Filters"/>).
-##  The optional second argument <A>rank</A> denotes the incremental rank
+##  <P/>
+##  The optional argument <A>implied</A>, if given, must be a filter,
+##  meaning that for each object in the new filter, also <A>implied</A>
+##  will be set.
+##  Note that resetting the new filter with <Ref Func="ResetFilterObj"/>
+##  does <E>not</E> reset <A>implied</A>.
+##  If the new filter is intended to be set or reset manually for existing
+##  objects then the argument <A>implied</A> will cause trouble;
+##  if the filter is not intended to be set or reset manually then perhaps
+##  calling <Ref Func="NewCategory"/> is more appropriate than
+##  calling <Ref Func="NewFilter"/>.
+##  <P/>
+##  The optional argument <A>rank</A> denotes the incremental rank
 ##  (see&nbsp;<Ref Sect="Filters"/>) of the filter,
 ##  the default value is 1.
 ##  <P/>
@@ -383,7 +395,7 @@ end );
 ##
 ##  <#GAPDoc Label="DeclareFilter">
 ##  <ManSection>
-##  <Func Name="DeclareFilter" Arg="name[, rank]"/>
+##  <Func Name="DeclareFilter" Arg="name[, implied][, rank]"/>
 ##
 ##  <Description>
 ##  does the same as <Ref Func="NewFilter"/>
