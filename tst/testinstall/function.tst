@@ -1,4 +1,4 @@
-#@local f,g,h,l,mh,r,x,makeCounter
+#@local f,g,h,l,mh,r,x,makeCounter,funcloop
 gap> START_TEST("function.tst");
 gap> IsKernelFunction(IsKernelFunction);
 true
@@ -222,4 +222,45 @@ gap> h();
 [ 7, 8, 9 ]
 
 #
+# Test functions can be evaluated, printed to a string, and re-parsed
+gap> funcloop := function(func)
+> local syntax, strA, strB, syntaxB;
+> syntax := SYNTAX_TREE(func);
+> strA := String(func);
+> strB := String(EvalString(strA));
+> syntaxB := SYNTAX_TREE(EvalString(strB));
+> if strA <> strB then Error("Function did not round-trip as String"); fi;
+> # Remove name of functions
+> Unbind(syntax.name); Unbind(syntaxB.name);
+> if syntax <> syntaxB then Error("Function did not round-trip as SyntaxTree"); fi;
+> Print(strA,"\n");
+> end;;
+gap> funcloop(x -> x + x);
+function ( x ) return x + x; end
+gap> funcloop(x -> (x + x) + x);
+function ( x ) return x + x + x; end
+gap> funcloop(x -> x + (x + x));
+function ( x ) return x + (x + x); end
+gap> funcloop(x -> x = x);
+function ( x ) return x = x; end
+gap> funcloop(x -> (x = x) = x);
+function ( x ) return (x = x) = x; end
+gap> funcloop(x -> x = (x = x));
+function ( x ) return x = (x = x); end
+gap> funcloop(x -> (x < x) < x);
+function ( x ) return (x < x) < x; end
+gap> funcloop(x -> (x < x) > x);
+function ( x ) return (x < x) > x; end
+gap> funcloop(x -> (x in x) in x);
+function ( x ) return (x in x) in x; end
+gap> funcloop(x -> x in (x in x));
+function ( x ) return x in (x in x); end
+gap> funcloop(x -> (x and x) in x);
+function ( x ) return (x and x) in x; end
+gap> funcloop(x -> x and (x in x));
+function ( x ) return x and x in x; end
+gap> funcloop(x -> (x in x) and x);
+function ( x ) return x in x and x; end
+gap> funcloop(x -> x in (x and x));
+function ( x ) return x in (x and x); end
 gap> STOP_TEST("function.tst", 1);

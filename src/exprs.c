@@ -1331,6 +1331,7 @@ static void PrintBinop(Expr expr)
 {
     UInt                oldPrec;        /* old precedence level           */
     const Char *        op;             /* operand                         */
+    BOOL                printEqPrec = FALSE; /* Print() at equal precedence */
     /* remember the current precedence level                              */
     oldPrec = PrintPrecedence;
 
@@ -1353,9 +1354,16 @@ static void PrintBinop(Expr expr)
     case EXPR_POW:    op = "^";    PrintPrecedence = 16;  break;
     default:       op = "<bogus-operator>";   break;
     }
+    // The logical operators (=|<>|<|>|<=|>=|in) need brackets at
+    // equal precedence level
+    if (PrintPrecedence == 8) {
+        printEqPrec = TRUE;
+    }
 
     /* if necessary print the opening parenthesis                          */
-    if ( oldPrec > PrintPrecedence ) Pr("%>(%>", 0, 0);
+    if (oldPrec > PrintPrecedence ||
+        (oldPrec == PrintPrecedence && printEqPrec))
+        Pr("%>(%>", 0, 0);
     else Pr("%2>", 0, 0);
 
     /* print the left operand                                              */
@@ -1381,7 +1389,9 @@ static void PrintBinop(Expr expr)
     PrintPrecedence--;
 
     /* if necessary print the closing parenthesis                          */
-    if ( oldPrec > PrintPrecedence ) Pr("%2<)", 0, 0);
+    if (oldPrec > PrintPrecedence ||
+        (oldPrec == PrintPrecedence && printEqPrec))
+        Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
 
     /* restore the old precedence level                                   */
