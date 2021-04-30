@@ -81,10 +81,10 @@ function(fun)
     local  s, stream;
     s := "";
     stream := OutputTextString(s, true);
+    SetPrintFormattingStatus(stream, false);
     PrintTo(stream, fun);
     CloseStream(stream);
-    NormalizeWhitespace(s);
-    return MakeImmutable(s);
+    return ReplacedString(s, "\n", " ");
 end);
 
 BIND_GLOBAL( "VIEW_STRING_OPERATION",
