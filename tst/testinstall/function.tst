@@ -1,4 +1,4 @@
-#@local f,g,h,l,mh,r,x,makeCounter,funcloop
+#@local f,g,h,l,mh,r,x,makeCounter,funcloop,funcstr
 gap> START_TEST("function.tst");
 gap> IsKernelFunction(IsKernelFunction);
 true
@@ -137,6 +137,34 @@ gap> Print({x,y} -> x + y, "\n");
 function ( x, y )
     return x + y;
 end
+gap> String({x,y} -> x + y);
+"function ( x, y ) return x + y; end"
+
+# Test nesting
+gap> Print(function(x) if x then if x then while x do od; fi; fi; end, "\n");
+function ( x )
+    if x then
+        if x then
+            while x do
+                ;
+            od;
+        fi;
+    fi;
+    return;
+end
+gap> String(function(x) if x then if x then while x do od; fi; fi; end);
+"function ( x ) if x then if x then while x do ; od; fi; fi; return; end"
+
+# Check strings in functions
+gap> Print({x} -> "a     b","\n");
+function ( x )
+    return "a     b";
+end
+gap> String({x} -> "a     b");
+"function ( x ) return \"a     b\"; end"
+gap> funcstr := Concatenation("function ( x ) return \"a", ListWithIdenticalEntries(1000, ' '),"b\"; end");;
+gap> String(EvalString(funcstr)) = funcstr;
+true
 gap> f := ({x,y} -> x + y);
 function( x, y ) ... end
 gap> f(2,3);
