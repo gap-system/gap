@@ -253,8 +253,11 @@ static void * SyAnonMMap(size_t size)
     size = SyRoundUpToPagesize(size);
     membufSize = size;
 
-    unlink("/dev/shm/gapmem");
-    int fd = open("/dev/shm/gapmem", O_RDWR | O_CREAT | O_EXCL, 0600);
+    char filename[100] = {0};
+    snprintf(filename, sizeof(filename), "/dev/shm/gapmem.%d", getpid());
+    int fd = open(filename, O_RDWR | O_CREAT | O_EXCL, 0600);
+    unlink(filename);
+
     if (fd < 0) {
         Panic("Fatal error setting up multiheap");
     }
