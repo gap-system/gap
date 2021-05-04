@@ -262,33 +262,31 @@ BindGlobal("SMTX_NullspaceEqns",function(e)
 #
 # This function is a modified version NullspaceMat in matrix.g
 
-local mat, m, n, zero, one, empty, i, k, nullspace, row,mi;
+local mat, n, one, zerovec, i, k, nullspace, row;
 
   SMTX_KillAbovePivotsEqns(e);
   mat := e.mat;
 
-  m := Length(mat);
   n := e.dim;
-  zero := Zero(e.field);
   one  := One(e.field);
 
-  # insert empty rows to bring the leading term of each row on the diagonal
-  empty := ListWithIdenticalEntries(n,zero);
-  empty := ImmutableVector(e.field,empty);
-  i := 1;
-  while i <= Length(mat)  do
-    if i < n  and mat[i][i] = zero  then
-      mi:=Minimum(Length(mat),n-1);
-      for k in [mi,mi-1..i]  do
-	mat[k+1] := mat[k];
-      od;
-      mat[i] := empty;
-    fi;
-    i := i+1;
-  od;
-  for i  in [ Length(mat)+1 .. n ]  do
-    mat[i] := empty;
-  od;
+  # insert zero rows to bring the leading term of each row on the diagonal
+  if mat = [] then
+    mat := ZeroMatrix(e.field, n, n);
+  else
+    zerovec := MakeImmutable(ZeroVector(n, mat));
+    i := 1;
+    while i <= NrRows(mat) do
+      if i < n and IsZero(mat[i,i]) then
+        Add(mat, zerovec, i);
+      fi;
+      i := i+1;
+    od;
+    for i  in [ NrRows(mat)+1 .. n ]  do
+      Add(mat, zerovec);
+    od;
+    ConvertToMatrixRep(mat);
+  fi;
 
   # The following comment from NullspaceMat:
   # 'mat' now  looks  like  [ [1,2,0,2], [0,0,0,0], [0,0,1,3], [0,0,0,0] ],
@@ -296,11 +294,10 @@ local mat, m, n, zero, one, empty, i, k, nullspace, row,mi;
   # by replacing this 0 by a -1, in  this  example  [2,-1,0,0], [2,0,3,-1].
   nullspace := [];
   for k in [1..n] do
-    if mat[k][k] = zero  then
-      row := [];
-      for i  in [1..k-1]  do row[i] := -mat[i][k];  od;
+    if IsZero(mat[k,k])  then
+      row := ZeroVector(n, mat);
+      for i  in [1..k-1]  do row[i] := -mat[i,k];  od;
       row[k] := one;
-      for i  in [k+1..n]  do row[i] := zero;  od;
       Add( nullspace, row );
     fi;
   od;

@@ -1,4 +1,4 @@
-#@local F, e, M, v
+#@local F, e, M, v, N
 gap> START_TEST("meatauto.tst");
 
 #
@@ -19,8 +19,10 @@ gap> e := SMTX_NewEqns(M, v);
 rec( dim := 3, failed := false, field := GF(2), index := [  ], 
   mat := [ <a GF2 vector of length 3>, <a GF2 vector of length 3> ], 
   vec := [ 0*Z(2), Z(2)^0 ], weights := [ 1, 2 ] )
-gap> SMTX_NullspaceEqns(e);
-[ [ Z(2)^0, 0*Z(2), Z(2)^0 ] ]
+gap> N := SMTX_NullspaceEqns(e);
+[ <a GF2 vector of length 3> ]
+gap> N = [ [ Z(2)^0, 0*Z(2), Z(2)^0 ] ];
+true
 
 #
 gap> F := GF(5);;
