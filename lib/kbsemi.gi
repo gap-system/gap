@@ -199,6 +199,14 @@ local old,pat,cf;
   return w;
 end);
 
+InstallOtherMethod(AddRule,
+  "Fallback Method, call AddRuleReduced", true,
+  [ IsKnuthBendixRewritingSystem and IsMutable 
+     and IsKnuthBendixRewritingSystemRep, IsList ], -1,
+function(kbrws,v)
+  Info(InfoWarning,1,"Fallback method -- calling `AddRuleReduced` instead");
+  AddRuleReduced(kbrws,v);
+end);
 
 #############################################################################
 ##
@@ -217,11 +225,18 @@ end);
 ##  See Sims: "Computation with finitely presented groups".
 ##
 InstallOtherMethod(AddRuleReduced,
-"for a Knuth Bendix rewriting system and a rule", true,
-[ IsKnuthBendixRewritingSystem and IsMutable and IsKnuthBendixRewritingSystemRep, IsList ], 0,
+  "for a Knuth Bendix rewriting system and a rule", true,
+  [ IsKnuthBendixRewritingSystem and IsMutable 
+     and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
   local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,geli,abi;
+
+    # allow to give rule also as words in free monoid
+    if ForAll(v,IsAssocWord) and
+      IsIdenticalObj(kbrws!.freefam,FamilyObj(v[1])) then
+      v:=List(v,LetterRepAssocWord);
+    fi;
 
     ptc:=IsBound(kbrws!.pairs2check);
     if IsBound(kbrws!.bitrules) then
