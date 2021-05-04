@@ -577,7 +577,7 @@ SetPackageInfo( rec(
   PackageDoc := rec(
       BookName  := "test",
       SixFile   := "doc/manual.six",
-      Autoload  := true ),
+  ),
   Dependencies := rec(
       GAP       := "4.9",
       NeededOtherPackages := [ ["GAPDoc", "1.6"] ],
