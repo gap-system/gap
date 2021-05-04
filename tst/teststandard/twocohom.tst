@@ -47,6 +47,18 @@ gap> ConfluentMonoidPresentationForGroup(p);;
 gap> Length(ConjugacyClasses(p));
 119
 
+# Extensions nonsolvable
+gap> g:=Group((1,2,3,4,5),(3,4,5));;
+gap> mats:=[[[0,1,0,0],[0,0,1,0],[0,0,0,1],[2,2,2,2]],
+> [[1,0,0,0],[0,1,1,0],[0,0,0,1],[0,0,2,2]]];;
+gap> mo:=GModuleByMats(mats*Z(3)^0,GF(3));;
+gap> Length(Extensions(g,mo));
+3
+gap> cp:=CompatiblePairs(g,mo);
+<group of size 240 with 4 generators>
+gap> Length(ExtensionRepresentatives(g,mo,cp));
+2
+
 # routines used for rewriting
 gap> WeylGroupFp("A",3);
 <fp group on the generators [ s1, s2, s3 ]>

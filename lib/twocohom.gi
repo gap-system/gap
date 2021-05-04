@@ -1029,7 +1029,11 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   
   eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
-  eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
+  if Length(eqs)=0 then
+    eqs:=IdentityMat(Length(rules),field);
+  else
+    eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
+  fi;
 
   # Now get Coboundaries
 
@@ -1985,8 +1989,12 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
 
     fi;
     # if we used factor perm rep, be bolder
-    new:=new*SmallerDegreePermutationRepresentation(p:cheap:=wasbold<>true);
-    SetIsomorphismPermGroup(fp,new);
+    if IsPermGroup(p) then
+      new:=new*SmallerDegreePermutationRepresentation(p:cheap:=wasbold<>true);
+      SetIsomorphismPermGroup(fp,new);
+    elif IsPcGroup(p) then
+      SetIsomorphismPcGroup(fp,new);
+    fi;
   fi;
 
   if HasIsSolvableGroup(r.group) then
@@ -2012,3 +2020,28 @@ local bas,ran,mats,o;
   o:=List(o,x->x[1]*coh.cohomology);
   return o;
 end);
+
+#############################################################################
+##
+#M  Extensions( G, M )
+##
+InstallOtherMethod(Extensions,"generic method for finite groups",
+    true,[IsGroup and IsFinite,IsObject],
+    -RankFilter(IsGroup and IsFinite),
+function(G,M)
+local coh;
+  coh:=TwoCohomologyGeneric(G,M);
+  return List(Elements(VectorSpace(coh.module.field,coh.cohomology)),
+    x->FpGroupCocycle(coh,x,true:normalform));
+end);
+
+InstallOtherMethod(ExtensionRepresentatives,"generic method for finite groups",
+  true,[IsGroup and IsFinite,IsObject,IsGroup],
+    -RankFilter(IsGroup and IsFinite),
+function(G,M,P)
+local coh;
+  coh:=TwoCohomologyGeneric(G,M);
+  return List(CompatiblePairOrbitRepsGeneric(P,coh),
+    x->FpGroupCocycle(coh,x,true:normalform));
+end);
+
