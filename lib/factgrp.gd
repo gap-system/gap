@@ -130,8 +130,10 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##
 ##  <#GAPDoc Label="FactorCosetAction">
 ##  <ManSection>
-##  <Oper Name="FactorCosetAction" Arg='G, U[, N]'/>
-##  <Oper Name="FactorCosetAction" Arg='G, L'/>
+##  <Oper Name="FactorCosetAction" Arg='G, U[, N]'
+##    Label="for a group and subgroup"/>
+##  <Oper Name="FactorCosetAction" Arg='G, L'
+##    Label="for a group and list of subgroups"/>
 ##
 ##  <Description>
 ##  This command computes the action of the group <A>G</A> on the
