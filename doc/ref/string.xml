@@ -153,7 +153,10 @@ The following special character sequences are currently defined.
 For any other sequence starting with a backslash, the backslash is ignored.
 <P/>
 <List>
-<Mark><C>\n</C></Mark>
+<Mark>
+<Index Key='\\n'><C>\n</C></Index>
+<Index>newline character</Index>
+<C>\n</C></Mark>
 <Item>
     <E>newline character</E>.
     This is the character that, at least on UNIX systems,
