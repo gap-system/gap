@@ -231,11 +231,35 @@ AC_ARG_WITH([gc],
       [specify which garbage collector to use (default: gasman; for HPC-GAP: boehm)])],
     [],
     [with_gc=default])
+
+dnl
+dnl User setting: whether to link against Julia
+dnl
+dnl This comes here as it interacts with the garbage collector settings.
+dnl The actual handling of with_julia comes at a later point.
+dnl
+AC_ARG_WITH([julia],
+  [AS_HELP_STRING([--with-julia@<:@=PATH@:>@],
+    [specify a julia binary or a prefix for a julia binary])],
+  [],[
+    AS_IF([test "x$with_gc" = xjulia],
+    [
+      with_julia=yes
+    ],
+    [
+      with_julia=no
+    ])
+  ])
+
+
+dnl handle the garbage collector setting
 AC_MSG_CHECKING([which garbage collector to use])
 AS_IF([test "x$with_gc" = xyes], [with_gc=default])
 AS_IF([test "x$with_gc" = xdefault],
     [
-    AS_IF([test "x$enable_hpcgap" = xyes], [with_gc=boehm], [with_gc=gasman])
+    with_gc=gasman
+    AS_IF([test "x$enable_hpcgap" = xyes], [with_gc=boehm])
+    AS_IF([test "x$with_julia" != xno], [with_gc=julia])
     ])
 AS_CASE([$with_gc],
     [none|no],  [AC_MSG_ERROR([cannot run GAP without a garbage collector])],
@@ -679,19 +703,6 @@ AC_SUBST([READLINE_LIBS])
 
 
 dnl Find julia
-AC_ARG_WITH([julia],
-  [AS_HELP_STRING([--with-julia@<:@=PATH@:>@],
-    [specify a julia binary or a prefix for a julia binary])],
-  [],[
-    AS_IF([test "x$with_gc" = xjulia],
-    [
-      with_julia=yes
-    ],
-    [
-      with_julia=no
-    ])
-  ])
-
 AS_IF([test "x$with_julia" != xno ],[
   AS_IF([test -x "$with_julia" && test ! -d "$with_julia" ],
   [
