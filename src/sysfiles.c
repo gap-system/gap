@@ -992,10 +992,6 @@ static void syAnswerIntr(int signr)
         SyExit( 1 );
     }
 
-    /* reinstall 'syAnswerIntr' as signal handler                          */
-    signal( SIGINT, syAnswerIntr );
-    siginterrupt( SIGINT, 0 );
-
     /* remember time of this interrupt                                     */
     syLastIntr = nowIntr;
 
@@ -1008,11 +1004,12 @@ static void syAnswerIntr(int signr)
 
 void SyInstallAnswerIntr ( void )
 {
-    if ( signal( SIGINT, SIG_IGN ) != SIG_IGN )
-    {
-        signal( SIGINT, syAnswerIntr );
-        siginterrupt( SIGINT, 0 );
-    }
+    struct sigaction sa;
+
+    sa.sa_handler = syAnswerIntr;
+    sigemptyset(&(sa.sa_mask));
+    sa.sa_flags = SA_RESTART;
+    sigaction( SIGINT, &sa, NULL );
 }
 
 
@@ -2941,7 +2938,6 @@ UInt SyExecuteProcess (
     int                     status;                 /* do not use `Int'    */
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
-    sig_handler_t           *func;
     sig_handler_t           * volatile func2;
 
 
@@ -2955,7 +2951,7 @@ UInt SyExecuteProcess (
      * was set to the default or 'ignore'. In these cases (or if SIG_ERR is
      * returned), just use a null signal hander - the default on most systems
      * is to do nothing */
-    if(func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
+    if (func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
       func2 = &NullSignalHandler;
 
     /* clone the process                                                   */
@@ -2970,24 +2966,25 @@ UInt SyExecuteProcess (
         FreezeStdin = 1;
 
         /* ignore a CTRL-C                                                 */
-        func = signal( SIGINT, SIG_IGN );
+        struct sigaction sa;
+        struct sigaction oldsa;
+
+        sa.sa_handler = SIG_IGN;
+        sigemptyset(&(sa.sa_mask));
+        sa.sa_flags = 0;
+        sigaction(SIGINT, &sa, &oldsa);
 
         /* wait for some action                                            */
         wait_pid = waitpid( pid, &status, 0 );
         FreezeStdin = 0;
-        if ( wait_pid == -1 ) {
-            signal( SIGINT, func );
-            (*func2)(SIGCHLD);
-            return -1;
-        }
-
-        if ( WIFSIGNALED(status) ) {
-            signal( SIGINT, func );
-            (*func2)(SIGCHLD);
-            return -1;
-        }
-        signal( SIGINT, func );
+        sigaction(SIGINT, &oldsa, NULL);
         (*func2)(SIGCHLD);
+        if ( wait_pid == -1 ) {
+            return -1;
+        }
+        if ( WIFSIGNALED(status) ) {
+            return -1;
+        }
         return WEXITSTATUS(status);
     }
 
