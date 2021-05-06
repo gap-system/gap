@@ -121,9 +121,28 @@ endif
 SOURCES_NOCOMP := $(SOURCES)
 SOURCES_NOCOMP += src/compstat_empty.c
 
+SOURCE_C_OPER1 := build/c_oper1.c
+SOURCE_C_TYPE1 := build/c_type1.c
+ifeq ($(HPCGAP),yes)
+  ifneq ("$(wildcard src/hpc/c_oper1.c)","")
+  SOURCE_C_OPER1 := src/hpc/c_oper1.c
+  endif
+
+  ifneq ("$(wildcard src/hpc/c_type1.c)","")
+  SOURCE_C_TYPE1 := src/hpc/c_type1.c
+  endif
+else
+  ifneq ("$(wildcard src/c_oper1.c)","")
+  SOURCE_C_OPER1 := src/c_oper1.c
+  endif
+
+  ifneq ("$(wildcard src/c_type1.c)","")
+  SOURCE_C_TYPE1 := src/c_type1.c
+  endif
+endif
+
+SOURCES += $(SOURCE_C_OPER1) $(SOURCE_C_TYPE1)
 SOURCES += src/compstat.c
-SOURCES += build/c_oper1.c
-SOURCES += build/c_type1.c
 
 SOURCES_ALL := $(SOURCES)
 SOURCES_ALL += src/compstat_empty.c

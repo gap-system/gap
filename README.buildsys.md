@@ -180,6 +180,55 @@ is searched first for files, and only if no matching file is found there does
 GAP also search in `GAPROOT/lib`.
 
 
+## Cross compilation
+
+The GAP build system supports cross compilation by leveraging the GNU autoconf
+support for this (please consult the GNU autoconf manual for details).
+When building GAP from a release archive, everything should just work.
+
+However, for development versions of GAP built directly from its git sources,
+there is a complication: GAP uses a few C source files which are the output of
+the GAP-to-C compiler `gac`, which in turn needs a working `gap` executable.
+This requires a bootstrapping process, which works because GAP can actually be
+built and used without those files, they are merely a performance
+optimization. So what our build system does is to first compile a version of
+GAP without those files, then run that to generate those files (if they are
+missing or not up-to-date). Then finally the actual GAP executable is created.
+
+Unfortunately, this poses a problem for cross compilation, as the first GAP
+executable needs to be run on the machine compiling GAP, and hence must be
+built for that architecture, while the second is supposed to run on a
+different target architecture.
+
+To resolve this obstacle, you need to build GAP twice: first for the build
+system. Then copy the files `build/c_*.c` into the `src` directory. Now you
+can build GAP a second time, for the target architecture. Here is a minimal
+example to illustrate this:
+
+    ./configure && make             # build native GAP
+    cp build/c_*.c src              # copy the generated code
+    make clean
+    ./configure --host=TARGET_ARCH  # build for target architecture
+    make
+
+Note that this is really a minimalistic example; for actual cross compilation,
+you may need to provide further flags to the `configure` script and/or set
+environment variables, e.g. to ensure it finds dependencies like GMP or GNU
+readline, or to specify an installation prefix, and so on.
+
+One final remark: the generated files differ for HPC-GAP. If you want to cross
+compile HPC-GAP, you need to generate them with HPC-GAP, and place them into
+`src/hpc` instead of `src`, like in this example:
+
+
+    ./configure --enable-hpcgap
+    make
+    cp build/c_*.c src/hpc/
+    make clean
+    ./configure --host=TARGET_ARCH  --enable-hpcgap
+    make
+
+
 ## Open tasks
 
 There are many things that still need to be done in the new build system. For
