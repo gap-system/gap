@@ -110,6 +110,22 @@ with working_directory(tmpdir + "/" + basename):
     # somewhere else in practice, and it would just be an annoyance for people
     # wanting to test these scripts in the master branch?
 
+    # build HPC-GAP so we can get its c_oper1.c and c_type1.c for redistribution
+    notice("Building HPC-GAP")
+    os.mkdir("hpcgap-build")
+    with working_directory("hpcgap-build"):
+        run_with_log(["../configure", "--enable-hpcgap"], "../configure-hpcgap")
+        run_with_log(["make", "-j8"], "../make-hpcgap")
+
+    notice("Copy GAP-to-C compilation results")
+    shutil.copy("build/c_oper1.c", "src")
+    shutil.copy("build/c_type1.c", "src")
+    shutil.copy("hpcgap-build/build/c_oper1.c", "src/hpc")
+    shutil.copy("hpcgap-build/build/c_type1.c", "src/hpc")
+
+    notice("Removing HPC-GAP build directory")
+    shutil.rmtree("hpcgap-build")
+
     # extract some values from the build system
     branchname = get_makefile_var("PKG_BRANCH")
     PKG_BOOTSTRAP_URL = get_makefile_var("PKG_BOOTSTRAP_URL")
