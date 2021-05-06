@@ -59,6 +59,13 @@ gap> cp:=CompatiblePairs(g,mo);
 gap> Length(ExtensionRepresentatives(g,mo,cp));
 2
 
+# New code for Pc groups
+gap> g:=AbelianGroup([2,2]);;
+gap> mo:=TrivialModule(2,GF(2));;
+gap> coh:=TwoCohomologyGeneric(g,mo);;
+gap> List(Elements(VectorSpace(GF(2),coh.cohomology)),
+> x->FpGroupCocycle(coh,x,true:normalform));;
+
 # routines used for rewriting
 gap> WeylGroupFp("A",3);
 <fp group on the generators [ s1, s2, s3 ]>
