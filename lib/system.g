@@ -55,6 +55,7 @@ BIND_GLOBAL( "GAPInfo", rec(
     CommandLineOptionData := [
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
       rec( long := "version", default := false, help := ["print the GAP version and exit"] ),
+      rec( long := "print-gaproot", default := false, help := ["print the primary GAP root and exit"] ),
       rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
       rec( short:= "q", long := "quiet", default := false, help := ["enable/disable quiet mode"] ),
       rec( short:= "e", default := false, help := ["disable/enable quitting on <ctrl>-D"] ),
@@ -483,6 +484,19 @@ CallAndInstallPostRestore( function()
        "  Boolean options toggle the current value each time they are called.\n",
        "  Default actions are indicated first.\n",
        "\n" );
+      QuitGap();
+    fi;
+
+    # Evaluate the '--print-gaproot' option.
+    if GAPInfo.CommandLineOptions.( "print-gaproot" ) then
+      for line in GAPInfo.RootPaths do
+        value:= SHALLOW_COPY_OBJ( line );
+        APPEND_LIST_INTR( value, "sysinfo.gap" );
+        if IsExistingFile( value ) then
+          PRINT_TO( "*errout*", line );
+          break;
+        fi;
+      od;
       QuitGap();
     fi;
 end );
