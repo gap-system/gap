@@ -73,7 +73,7 @@
 **
 **  1) From our initial trace, we don't know if a line has a statement on
 **     it to be executed! Therefore we also provide the ability to store the
-**     line of each created statement, so we can chck which lines have code
+**     line of each created statement, so we can check which lines have code
 **     on them.
 **
 **  2) If we wait until the user can run HookedLine, they have missed
@@ -96,7 +96,7 @@
 **  ever evaluated and it appears to never be executed. We special case this
 **  if ForRange, by marking the range as evaluated.
 **
-**  We purposesfully ignore EXPR_TRUE and EXPR_FALSE, which represent the
+**  We purposefully ignore EXPR_TRUE and EXPR_FALSE, which represent the
 **  constants 'true' and 'false', as they are often read but not 'executed'.
 **  We already ignored all integer and float constants anyway.
 **  However, the main reason this was added is that GAP represents 'else'
@@ -196,7 +196,7 @@ static void outputVersionInfo(void)
             "  \"TimeType\": \"%s\"}\n",
             profileState.OutputRepeats ? "false" : "true",
             timeTypeNames[profileState.tickMethod]);
-    // Explictly flush, so this information is in the file
+    // Explicitly flush, so this information is in the file
     // even if GAP crashes
     fflush(profileState.Stream);
 }
@@ -286,7 +286,7 @@ static void HookedLineOutput(Obj func, char type)
               (int)profileState.lastNotOutputted.fileID);
     }
 
-    // We output 'File' here for compatability with
+    // We output 'File' here for compatibility with
     // profiling v1.3.0 and earlier, FileId provides the same information
     // in a more useful and compact form.
     fprintf(profileState.Stream, "{\"Type\":\"%c\",\"Fun\":\"%s\",\"Line\":%"
@@ -381,7 +381,7 @@ void InformProfilingThatThisIsAForkedGAP(void)
     HashLock(&profileState);
     if (profileState.status == Profile_Active) {
         char filenamecpy[GAP_PATH_MAX];
-        // Allow 20 chracters to allow space for .%d.gz
+        // Allow 20 characters to allow space for .%d.gz
         const int SUPPORTED_PATH_LEN = GAP_PATH_MAX - 20;
         if(strlen(profileState.filename) > SUPPORTED_PATH_LEN) {
            Panic("Filename can be at most %d character when forking", SUPPORTED_PATH_LEN);

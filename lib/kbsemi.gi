@@ -628,7 +628,7 @@ end);
 ##  using a supplied reduction ordering.
 ##
 ##  We also allow using a function giving the ordering 
-##  to assure compatability with gap4.2
+##  to assure compatibility with gap4.2
 ##  In that case the function <lteq> should be the less than or equal
 ##  function of a reduction ordering (no checking is performed)
 ##

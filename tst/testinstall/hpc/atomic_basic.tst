@@ -1,6 +1,6 @@
 #############################################################################
 ##
-##  This test checks the 'atomic' statement for compatability with original
+##  This test checks the 'atomic' statement for compatibility with original
 ##  GAP. It does not do any interesting thread-safe behaviour
 ##
 #@local L,M,f,g,h,h2,h3,h4,h5,x

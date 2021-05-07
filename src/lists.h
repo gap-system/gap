@@ -528,7 +528,7 @@ void ASS_MAT(Obj list, Obj row, Obj col, Obj obj);
 *F  ASSS_LIST(<list>,<poss>,<objs>) . . . . assign several elements to a list
 *V  AsssListFuncs[<type>] . . . . . . . . . . .  table of assignment function
 **
-**  'ASSS_LIST'  assignes the objects from  the list  <objs> at the positions
+**  'ASSS_LIST'  assigns the objects from  the list  <objs> at the positions
 **  given in the  list <poss> to the list  <list>.  Note that  the assignment
 **  may  change  the length or  the  representation of  <list>.   An error is
 **  signalled if  <list> is  not  a list.   It  is the  responsibility of the

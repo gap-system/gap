@@ -430,7 +430,7 @@ static void PrintPRec(Obj rec)
 **  in not necessarily sorted order in the kernel. It is automatically
 **  called on the first read access if necessary. See the top of "precord.c"
 **  for a comment on lazy sorting.
-**  The second argument remains for backwards compatability with packages
+**  The second argument remains for backwards compatibility with packages
 **  and should always be 0.
 **
 */

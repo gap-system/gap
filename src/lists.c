@@ -128,10 +128,10 @@ static BOOL IsSmallListObject(Obj obj)
 **    therefore  ranges  are no  longer  *internal*  objects,  they  are  now
 **    external objects (NOT YET IMPLEMENTED)
 **
-**  - the for/list assignment has to be carefull to catch the special case of
+**  - the for/list assignment has to be careful to catch the special case of
 **    a range constructor with small integer bounds
 **
-**  - the list access/assigment is a binary operation (NOT YET IMPLEMENTED)
+**  - the list access/assignment is a binary operation (NOT YET IMPLEMENTED)
 **
 **  - the conversion/test functions are split into three different functions
 **    (NOT YET IMPLEMENTED)

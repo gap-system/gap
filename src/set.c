@@ -716,11 +716,11 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
 **
 *F  FuncSUBTR_SET( <self>, <set1>, <set2> ) . . subtract one set from another
 **
-**  'FuncSUBTR_SET' implements the internal function 'SubstractSet'.
+**  'FuncSUBTR_SET' implements the internal function 'SubtractSet'.
 **
-**  'SubstractSet( <set1>, <set2> )'
+**  'SubtractSet( <set1>, <set2> )'
 **
-**  'SubstractSet' changes the  set <set1> so  that it becomes the difference
+**  'SubtractSet' changes the  set <set1> so  that it becomes the difference
 **  of <set1> and <set2>.  The difference is the set of the elements that are
 **  in <set1> but not in <set2>.  So 'SubtractSet' removes  (see "RemoveSet")
 **  all elements from <set1> that are in <set2>.   <set2> may  be a list that
