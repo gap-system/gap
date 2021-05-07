@@ -162,7 +162,7 @@ InstallMethod( IsAssociative,
 
 #############################################################################
 ##
-#M  IsCommutative( <M> )  . . . . . . . . test whether a magma is commutative
+#M  IsCommutative( <M> )  . . . . .  test whether a collection is commutative
 ##
 InstallImmediateMethod( IsCommutative,
     IsMagma and IsAssociative and HasGeneratorsOfMagma, 0,
@@ -196,6 +196,26 @@ InstallMethod( IsCommutative,true,
       TryNextMethod();
     fi;
     end );
+
+InstallMethod( IsCommutative,
+    "for a collection",
+    [ IsCollection ],
+    function( C )
+      local elms, n, x, y, i, j;
+
+      elms:= Enumerator( C );
+      n := Length( elms );
+      for i in [ 1 .. n ] do
+        for j in [ i + 1 .. n ] do
+          x := elms[ i ];
+          y := elms[ j ];
+          if x * y <> y * x then
+            return false;
+          fi;
+        od;
+      od;
+      return true;
+    end);
 
 InstallMethod( IsCommutative,
     "for a magma",
