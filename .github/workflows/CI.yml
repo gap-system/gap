@@ -186,6 +186,7 @@ jobs:
                        packages+=(gcc-multilib g++-multilib)
                    fi
                    sudo apt-get update
+                   sudo apt-get remove libzmq5 || : # workaround https://github.com/actions/virtual-environments/issues/3317
                    sudo apt-get install "${packages[@]}"
                elif [ "$RUNNER_OS" == "macOS" ]; then
                    brew install gmp zlib
