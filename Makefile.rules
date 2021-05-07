@@ -429,6 +429,7 @@ build/gap-nocomp$(EXEEXT): $(OBJS_NOCOMP) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-O
 build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 	@$(MKDIR_P) $(@D)
 	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $< $@ $(basename $(notdir $<)) build/gap-nocomp$(EXEEXT)
+.PRECIOUS: build/c_%.c
 
 
 ########################################################################
