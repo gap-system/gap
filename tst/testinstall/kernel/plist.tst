@@ -27,6 +27,14 @@ gap> a[2];
 gap> a[3];
 Error, List Element: <list>[3] must have an assigned value
 
+# AssPlistEmpty
+gap> TNAM_OBJ([Z(2)]);
+"plain list of small finite field elements"
+gap> TNAM_OBJ([Z(2),1]);
+"dense plain list"
+gap> TNAM_OBJ([1,Z(2)]);
+"dense plain list"
+
 # ASS_PLIST_DEFAULT
 gap> ASS_PLIST_DEFAULT(fail, fail, fail);
 Error, List Assignment: <pos> must be a positive small integer (not the value \
