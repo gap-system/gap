@@ -4,6 +4,15 @@
 gap> START_TEST("kernel/range.tst");
 
 #
+# ElmsRange
+#
+
+# catch edge case: empty subrange is turned into a plist, and
+# that should have the right TNUM
+gap> TNAM_OBJ([1..10]{[]});
+"empty plain list"
+
+#
 # UnbRange
 #
 

@@ -600,8 +600,13 @@ Obj ElmsListDefault (
     Int                 inc;            /* increment in a range            */
     Int                 i;              /* loop variable                   */
 
+    /* select no element                                                   */
+    if ( LEN_LIST(poss) == 0 ) {
+        elms = NewEmptyPlist();
+    }
+
     /* general code                                                        */
-    if ( ! IS_RANGE(poss) ) {
+    else if ( ! IS_RANGE(poss) ) {
 
         /* get the length of <positions>                                   */
         /* OK because all positions lists are small                        */
