@@ -214,7 +214,6 @@ DeclareGlobalFunction("EmptyBinaryRelation");
 ##  <#GAPDoc Label="AsBinaryRelationOnPoints">
 ##  <ManSection>
 ##  <Heading>AsBinaryRelationOnPoints</Heading>
-##  <Heading>AsBinaryRelationOnPoints</Heading>
 ##  <Func Name="AsBinaryRelationOnPoints" Arg='trans'
 ##   Label="for a transformation"/>
 ##  <Func Name="AsBinaryRelationOnPoints" Arg='perm'
