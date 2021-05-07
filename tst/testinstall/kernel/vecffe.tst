@@ -94,17 +94,6 @@ false
 gap> IS_VECFFE([Z(3)]);
 true
 
-# ensure we get to test a T_PLIST_FFE
-gap> v:=[Z(2)];;
-gap> TNAM_OBJ(v);
-"plain list"
-gap> IS_VECFFE(v); # this retypes the plist to T_PLIST_FFE
-true
-gap> TNAM_OBJ(v);
-"plain list of small finite field elements"
-gap> IS_VECFFE(v);
-true
-
 #
 # COMMON_FIELD_VECFFE
 #

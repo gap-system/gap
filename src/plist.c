@@ -1744,16 +1744,6 @@ void AssPlistEmpty (
         AssBlist( list, pos, val );
     }
 
-    /* catch FFE                                                           */
-    else if ( IS_FFE(val) ) {
-
-      /* early in initialization, the type of the empty list may not be
-         available, in which case we must NOT call method selection */
-      if (TYPE_LIST_EMPTY_MUTABLE != 0)
-        AssListObject( list, pos, val );
-      else
-        AssPlistXXX( list, pos, val );
-    }
 #ifdef HPCGAP
     else if (!CheckReadAccess(val)) {
         RetypeBag( list, T_PLIST );
@@ -1763,14 +1753,18 @@ void AssPlistEmpty (
     /* catch constants                                                     */
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         AssPlistXXX( list, pos, val );
-        /* fix up type */
-        SET_FILT_LIST(list, FN_IS_DENSE);
-        if ( !IS_MUTABLE_OBJ( val) )
-          {
-            SET_FILT_LIST(list, FN_IS_HOMOG);
-            if ( IS_CYC(val) )
-              RetypeBag( list, T_PLIST_CYC);
-          }
+
+        // fix up type
+        if (IS_CYC(val))
+            RetypeBag(list, T_PLIST_CYC_SSORT);
+        else if (IS_FFE(val))
+            RetypeBag(list, T_PLIST_FFE);
+        else {
+            SET_FILT_LIST(list, FN_IS_DENSE);
+            if (!IS_MUTABLE_OBJ(val)) {
+                SET_FILT_LIST(list, FN_IS_HOMOG);
+            }
+        }
     }
 
 

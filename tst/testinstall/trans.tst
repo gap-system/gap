@@ -1263,8 +1263,8 @@ gap> f := AsTransformation((1,2)(3,65537));;
 gap> h := INV_KER_TRANS([1, 2], f);
 Transformation( [ 2, 1 ] )
 gap> h := INV_KER_TRANS([1, 2], [1]);
-Error, INV_KER_TRANS: <f> must be a transformation (not a plain list of cyclot\
-omics)
+Error, INV_KER_TRANS: <f> must be a transformation (not a strictly-sorted plai\
+n list of cyclotomics)
 
 # IS_IDEM_TRANS
 gap> IS_IDEM_TRANS(IdentityTransformation);
