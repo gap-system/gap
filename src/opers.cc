@@ -444,7 +444,7 @@ static Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2)
 
 /****************************************************************************
 **
-*F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> ) . . .  substract a flags list
+*F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> ) . . . . subtract a flags list
 */
 static Obj FuncSUB_FLAGS(Obj self, Obj flags1, Obj flags2)
 {
@@ -945,7 +945,7 @@ static Obj FuncWITH_IMPS_FLAGS_STAT(Obj self)
 
 /****************************************************************************
 **
-*V  Countlags  . . . . . . . . . . . . . . . . . . . . next free flag number
+*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
 */
 static Int CountFlags;
 
@@ -3245,7 +3245,7 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
         return 0;
     }
 
-    /* if the attribute is already there *do not* chage it                 */
+    // if the attribute is already there *do not* change it
     tmp = ENVI_FUNC(self);
     tester = ELM_PLIST( tmp, 2 );
     flag2  = INT_INTOBJ( FLAG2_FILT(tester) );

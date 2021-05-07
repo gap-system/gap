@@ -55,7 +55,7 @@ fi;
 ##  Then we have `<ffe> + <rat> = <rat> + <ffe> = <ffe> + <new>',
 ##  and `<ffe> \* <rat> = <rat> \* <ffe> = <ffe> \* <new>'.
 ##  As usual, difference and quotient are defined as sum and product,
-##  with the second argument replaced by its additive and mutliplicative
+##  with the second argument replaced by its additive and multiplicative
 ##  inverse, respectively.
 ##
 ##  (It would be possible to install these methods in the kernel tables,
@@ -797,7 +797,7 @@ InstallMethod( Order,
     function ( z )
     local   ord,        # order of <z>, result
             chr,        # characteristic of <F> (and <z>)
-            deg;        # degree of <z> over the primefield
+            deg;        # degree of <z> over the prime field
 
     # compute the order
     if IsZero( z )   then

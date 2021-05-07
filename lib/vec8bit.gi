@@ -188,7 +188,7 @@ InstallMethod(ShallowCopy, "for a compressed VecFFE",
 #M  <vec1> + <vec2>
 ##
 ##  The method installation enforced same
-##  characteristic. Compatability of fields and vector lengths is
+##  characteristic. Compatibility of fields and vector lengths is
 ##  handled in the method
 
 InstallMethod( \+, "for two 8 bit vectors in same characteristic",

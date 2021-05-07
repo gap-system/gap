@@ -460,7 +460,7 @@ static void AssRange(Obj list, Int pos, Obj val)
 **
 *F  AsssRange(<list>,<poss>,<vals>) . . .  assign several elements to a range
 **
-**  'AsssRange' assignes the  values  from the list  <vals>  at the positions
+**  'AsssRange' assigns the  values  from the list  <vals>  at the positions
 **  given in the  list <poss> to the range  <list>.  It is the responsibility
 **  of the caller to  ensure that <poss> is dense  and contains only positive
 **  integers, that <poss> and <vals> have the same length, and that <vals> is

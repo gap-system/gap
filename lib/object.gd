@@ -636,7 +636,7 @@ DeclareOperation( "IsInternallyConsistent", [ IsObject ] );
 ##  <Description>
 ##  For debugging purposes, it may be useful to install immediate methods
 ##  that raise an error if an object lies in a filter which is impossible.
-##  For example, if a matrix is in the two fiters <C>IsOrdinaryMatrix</C> and
+##  For example, if a matrix is in the two filters <C>IsOrdinaryMatrix</C> and
 ##  <C>IsLieMatrix</C> then apparently something went wrong.
 ##  Since we can install these immediate methods only for attributes
 ##  (and not for the operation <Ref Oper="IsInternallyConsistent"/>),

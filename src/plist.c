@@ -21,7 +21,7 @@
 **  integer.  The second entry is the identifier of the  first element of the
 **  list.  The third  entry is  the identifier  of the second  element of the
 **  list, and so on.  If  the physical length  of a list  is greater than the
-**  logical, there will be unused entries at the end  of the list, comtaining
+**  logical, there will be unused entries at the end  of the list, containing
 **  0.  The physical length  might be greater than  the logical,  because the
 **  physical size of a  list is increased by at  least 25\%, to avoid doing
 **  this too often.
@@ -290,7 +290,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         if ( ktnumFirst >= T_PLIST_HOM ||
              ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
 
-          /* entry is a homogenous list, so this miught be a table */
+          /* entry is a homogenous list, so this might be a table */
           isTable = 1;
 
           /* also check for rectangularity, unless this would be expensive */
@@ -1791,7 +1791,7 @@ void AssPlistEmpty (
 **
 *F  AsssPlist(<list>,<poss>,<vals>) . . . . assign several elements to a list
 **
-**  'AsssPlist' assignes the   values from the list  <vals>  at the positions
+**  'AsssPlist' assigns the   values from the list  <vals>  at the positions
 **  given in the list <poss> to the list <list>.  It is the responsibility of
 **  the caller  to  ensure that <poss> is   dense and contains  only positive
 **  integers, that <poss> and <vals> have the same length, and that <vals> is
@@ -2038,7 +2038,7 @@ static BOOL IsSSortPlist(Obj list)
       /* we got to the end, so there were no holes */
       SET_FILT_LIST( list, FN_IS_DENSE);
 
-      /* and we know about homoheneity */
+      /* and we know about homogeneity */
       if ( ! areMut ) {
         if (isHom)
           SET_FILT_LIST( list, FN_IS_HOMOG);
@@ -2460,9 +2460,9 @@ static void MakeImmutablePlistNoMutElms(Obj list)
 **
 *F  FuncIsRectangularTablePlist( <plist> )
 **
-**  Determine whether a PLIST is a rectangulat table, set the TNUM
-**  appropriately. This is a mathod for IsRectangularTable, so the
-**  method selection has alrewady checked that the list is a table
+**  Determine whether a PLIST is a rectangular table, set the TNUM
+**  appropriately. This is a method for IsRectangularTable, so the
+**  method selection has already checked that the list is a table
 **  and should not bother to call us, unless we do not already know whether
 **  it is rectangular
 */

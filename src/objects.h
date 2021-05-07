@@ -471,7 +471,7 @@ enum {
 *F  ID_TYPE( <type> ) . . . . . . . . . . . . . . . . . . . . .  id of a type
 **
 **  'ID_TYPE' returns the ID of  a type.  Warning: if  GAP runs out of ID  it
-**  will renumber all IDs.  Therefore the  corresponding routine must excatly
+**  will renumber all IDs.  Therefore the  corresponding routine must exactly
 **  know where such numbers are stored.
 */
 #define ID_TYPE(type) ELM_PLIST(type, POS_NUMB_TYPE)

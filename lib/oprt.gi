@@ -570,7 +570,7 @@ InstallGlobalFunction( ActionHomomorphism, function( arg )
          and IsBound( arg[ 2 ]!.actionHomomorphism )
          and IsActionHomomorphism( arg[ 2 ]!.actionHomomorphism )
          and Source( arg[ 2 ]!.actionHomomorphism ) = arg[ 1 ]  then
-        return arg[ 2 ]!.actionHomomorphism;  # GAP-3 compatability
+        return arg[ 2 ]!.actionHomomorphism;  # GAP-3 compatibility
     else
         if IsFunction( arg[ Length( arg ) ] )  then  p := 1;
                                                else  p := 0;  fi;

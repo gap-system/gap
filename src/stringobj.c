@@ -1006,7 +1006,7 @@ static void AssString(Obj list, Int pos, Obj val)
 **
 *F  AsssString(<list>,<poss>,<vals>)  . . assign several elements to a string
 **
-**  'AsssString' assignes the  values from the  list <vals> at the  positions
+**  'AsssString' assigns the  values from the  list <vals> at the  positions
 **  given in the list <poss> to the string  <list>.  It is the responsibility
 **  of the caller to ensure that  <poss> is dense  and contains only positive
 **  integers, that <poss> and <vals> have the same length, and that <vals> is

@@ -243,7 +243,7 @@ end );
 
 
 #########################################################################
-# For backwards compatability, we make the canonical version of an option
+# For backwards compatibility, we make the canonical version of an option
 # its short version if it exists.
 #
 # Set up a map to tell us the canonical name of any command line option
