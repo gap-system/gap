@@ -53,6 +53,7 @@ and&nbsp;<Ref Sect="Matrices over Finite Fields"/>).
 <#Include Label="IntFFESymm">
 <#Include Label="IntVecFFE">
 <#Include Label="AsInternalFFE">
+<#Include Label="RootFFE">
 
 </Section>
 
