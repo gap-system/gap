@@ -133,12 +133,11 @@ InstallMethod( IsTrivial,
 
 #############################################################################
 ##
-#M  IsAssociative( <M> )  . . . . . . . . test whether a magma is associative
+#M  IsAssociative( <M> )  . . . . .  test whether a collection is associative
 ##
 InstallMethod( IsAssociative,
-    "for a magma",
-    true,
-    [ IsMagma ], 0,
+    "for a collection",
+    [ IsCollection ],
     function( M )
 
     local elms,      # list of elements
