@@ -400,9 +400,9 @@ Transformation( [ 2, 1, 2, 1, 1, 2 ] )</Log>
 
  <ManSection>
    <Var Name="IdentityTransformation"/>
-   <Returns>The identity transformation.</Returns>
    <Description>
-     Returns the identity transformation, which has degree <C>0</C>. 
+     This variable is bound to the identity transformation, 
+     which has degree <C>0</C>. 
      <Example><![CDATA[
 gap> IdentityTransformation;
 IdentityTransformation
