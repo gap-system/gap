@@ -226,13 +226,17 @@ BIND_GLOBAL( "TYPES_STRING",
           NewType( StringFamily, IsString and IsStringRep ), 
           # T_STRING + IMMUTABLE
           
-          ~[1], # T_STRING_NSORT
-          
-          ~[2], # T_STRING_NSORT + IMMUTABLE
+          NewType (StringFamily, IsString and IsStringRep and
+                  HasIsSSortedList and IsMutable ),
+          # T_STRING_NSORT
           
           NewType (StringFamily, IsString and IsStringRep and
+                  HasIsSSortedList ),
+          # T_STRING_NSORT +IMMUTABLE
+
+          NewType (StringFamily, IsString and IsStringRep and
                   IsSSortedList and IsMutable ),
-          # T_STRING_SSORT 
+          # T_STRING_SSORT
           
           NewType (StringFamily, IsString and IsStringRep and
                   IsSSortedList )

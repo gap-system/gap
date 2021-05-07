@@ -78,6 +78,34 @@ gap> REVNEG_STRING(1);
 Error, REVNEG_STRING: <val> must be a string (not the integer 1)
 
 #
+# TypeString
+#
+
+# Verify that sorted strings remember their sorting status
+gap> s:="abc";
+"abc"
+gap> HasIsSSortedList(s);
+false
+gap> IsSSortedList(s);
+true
+gap> TNAM_OBJ(s);
+"list (string,ssort)"
+gap> HasIsSSortedList(s);
+true
+
+# Verify that unsorted strings remember their sorting status
+gap> s:="cba";
+"cba"
+gap> HasIsSSortedList(s);
+false
+gap> IsSSortedList(s);
+false
+gap> TNAM_OBJ(s);
+"list (string,nsort)"
+gap> HasIsSSortedList(s);
+true
+
+#
 gap> CONV_STRING(1);
 Error, CONV_STRING: <string> must be a string (not the integer 1)
 
