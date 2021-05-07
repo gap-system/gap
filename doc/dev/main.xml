@@ -6,6 +6,7 @@
  <!ENTITY GASMAN "<Package>GASMAN</Package>">
  <!ENTITY master "<K>master</K>">
  <!ENTITY stable "<K>stable</K>">
+<#Include SYSTEM "../versiondata">
  <!ENTITY testing "<K>testing</K>">]
 >
 
@@ -35,7 +36,7 @@ among the developers before they are committed, called <E>proposals</E>;
 there is a concept of <E>modules</E> where  parts of the
 &GAP; system are assigned to specified maintainers.
 </Abstract>
-    <Copyright> 2005-2015, The &GAP; Group</Copyright>
+    <Copyright> &copyright; (2005-&RELEASEYEAR;) The &GAP; Group</Copyright>
 </TitlePage>
 
 <TableOfContents/>
