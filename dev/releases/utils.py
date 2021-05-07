@@ -118,7 +118,7 @@ def run_with_log(args, name, msg = None):
         msg = name
     with open("../"+name+".log", "w") as fp:
         try:
-            subprocess.run(args, check=True, stdout=subprocess.PIPE, stderr=fp)
+            subprocess.run(args, check=True, stdout=fp, stderr=fp)
         except subprocess.CalledProcessError:
             error(msg+" failed. See "+name+".log.")
 
