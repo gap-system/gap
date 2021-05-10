@@ -175,6 +175,7 @@ DeclareOperation( "SemigroupByGenerators", [ IsCollection ] );
 ##
 ##  <Description>
 ##  If <A>C</A> is a collection whose elements form a semigroup
+##  under <Ref Oper="\*"/>
 ##  (see&nbsp;<Ref Filt="IsSemigroup"/>) then <Ref Oper="AsSemigroup"/>
 ##  returns this semigroup.
 ##  Otherwise <K>fail</K> is returned.
