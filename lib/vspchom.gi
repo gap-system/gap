@@ -317,8 +317,7 @@ BindGlobal( "MakeImagesInfoLinearGeneralMappingByImages", function( map )
                                         x -> LinearCombination( B, x ) ) );
       map!.corelations         := Immutable( ech.relations );
       map!.imagesbasispreimage := Immutable( List( ech.coeffs,
-                                        x -> LinearCombination( x,
-                                                 mapi[2] ) ) );
+                                    x -> LinearCombination( mapi[2], x ) ) );
 
     fi;
 end );
