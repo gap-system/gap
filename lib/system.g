@@ -83,7 +83,7 @@ BIND_GLOBAL( "GAPInfo", rec(
                      "Putting ';' on the start/end of list appends",
                      "directories to the end/start of existing list",
                      "of root paths" ] ),
-      rec( short:= "r", default := false, help := ["disable/enable user GAP root dir GAPInfo.UserGapRoot"] ),
+      rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
       rec( short:= "A", default := false, help := ["disable/enable autoloading of suggested", "GAP packages"] ),
       rec( short:= "D", default := false, help := ["enable/disable debugging the loading of files"] ),
       rec( short:= "M", default := false, help := ["disable/enable loading of compiled modules"] ),
@@ -114,7 +114,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( long := "systemfile", default := "", arg := "<file>",
            help := [ "Read this file after 'lib/system.g'" ] ),
       rec( long := "bare", default := false,
-           help := [ "Attempt to start GAP without even needed packages", "(developer tool)" ] ),
+           help := [ "Attempt to start GAP without even needed", "packages (developer tool)" ] ),
       ,
       rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the expression <expr>"] ),
     ],
@@ -415,13 +415,13 @@ CallAndInstallPostRestore( function()
     padspace := function(strlen, len)
       local i;
       for i in [strlen+1..len] do
-        PRINT_TO("*errout*", " ");
+        PRINT_TO("*stdout*", " ");
       od;
     end;
 
     # Evaluate the `-h' option.
     if GAPInfo.CommandLineOptions.h then
-      PRINT_TO( "*errout*",
+      PRINT_TO( "*stdout*",
         "usage: gap [OPTIONS] [FILES]\n",
         "       run the Groups, Algorithms and Programming system, Version ",
         GAPInfo.KernelVersion, "\n\n" );
@@ -433,52 +433,52 @@ CallAndInstallPostRestore( function()
 
           # At least one of opt.short or opt.long must be bound
           if(IsBound(opt.short)) then
-            PRINT_TO("*errout*", " -", opt.short);
+            PRINT_TO("*stdout*", " -", opt.short);
             if(IsBound(opt.long)) then
-              PRINT_TO("*errout*", ", --", opt.long);
+              PRINT_TO("*stdout*", ", --", opt.long);
               padspace(4+LENGTH(opt.long), 18);
             else
               padspace(0, 18);
             fi;
             if(IsBound(opt.arg)) then
-              PRINT_TO("*errout*", " ", opt.arg);
+              PRINT_TO("*stdout*", " ", opt.arg);
               padspace(LENGTH(opt.arg)+1, 8);
             else
               padspace(0, 8);
             fi;
           else
-            PRINT_TO("*errout*", "   ");
+            PRINT_TO("*stdout*", "   ");
             # opt.short unbound, opt.long bound
 
-            PRINT_TO("*errout*", "  --", opt.long);
+            PRINT_TO("*stdout*", "  --", opt.long);
             padspace(4+LENGTH(opt.long), 18);
             if(IsBound(opt.arg)) then
-              PRINT_TO("*errout*", " ", opt.arg);
+              PRINT_TO("*stdout*", " ", opt.arg);
               padspace(LENGTH(opt.arg)+1, 8);
             else
               padspace(0, 8);
             fi;
           fi;
           if IsBound(opt.long) and LENGTH(opt.long) > 14 then
-            PRINT_TO("*errout*", "\n");
+            PRINT_TO("*stdout*", "\n");
             padspace(0, 3+18+8+3);
           else
-            PRINT_TO("*errout*", "   ");
+            PRINT_TO("*stdout*", "   ");
           fi;
 
-          PRINT_TO("*errout*", opt.help[1], "\n");
+          PRINT_TO("*stdout*", opt.help[1], "\n");
           for j in [2..LENGTH(opt.help)] do
             padspace(0, 3+18+8+3 + 2);
-            PRINT_TO("*errout*", opt.help[j],"\n");
+            PRINT_TO("*stdout*", opt.help[j],"\n");
           od;
         else
           if not IsBound(GAPInfo.CommandLineOptionData[i]) then
-            PRINT_TO( "*errout*", "\n" );
+            PRINT_TO( "*stdout*", "\n" );
           fi;
         fi;
       od;
 
-      PRINT_TO("*errout*",
+      PRINT_TO("*stdout*",
        "\n",
        "  Boolean options toggle the current value each time they are called.\n",
        "  Default actions are indicated first.\n",
