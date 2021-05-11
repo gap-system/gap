@@ -99,16 +99,18 @@ end );
 
 #############################################################################
 ##
-#M  IsGeneratorsOfMagmaWithInverses( <elms> ) a collection of magma by 
-##   multiplication table elements will always be acceptable
-##   as generators, provided each one individually has an inverse.    
+#M  IsGeneratorsOfMagmaWithInverses( <elms> )
+##
+##  Under the assumption that the multiplication for <elms> is associative
+##  (cf. the discussion for issue 4480),
+##  a collection of magma by multiplication table elements will always be
+##  acceptable as generators, provided each one individually has an inverse.
 ##    
-
 InstallMethod( IsGeneratorsOfMagmaWithInverses, 
         "for a collection of magma by mult table elements",
         [IsCollection],
         function(c)
-    if ForAll(c, x-> IsMagmaByMultiplicationTableObj(x) and IsMultiplicativeElementWithInverse(x)) then
+    if ForAll(c, x-> IsMagmaByMultiplicationTableObj(x) and Inverse(x) <> fail) then
         return true;
     fi;
     TryNextMethod();

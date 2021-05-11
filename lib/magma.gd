@@ -459,6 +459,8 @@ DeclareAttribute( "GeneratorsOfMagmaWithInverses", IsMagmaWithInverses );
 ##  inverses, and <K>false</K> otherwise.
 ##  </Description>
 ##  </ManSection>
+#TODO: Decide: Is this property meaningful in nonassociative situations?
+##     (cf. the discussion for issue 4480)
 ##
 DeclareProperty( "IsGeneratorsOfMagmaWithInverses", IsListOrCollection );
 
