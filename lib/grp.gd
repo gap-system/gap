@@ -3686,6 +3686,7 @@ DeclareGlobalFunction("MakeGroupyType");
 ##
 ##  <#GAPDoc Label="Group">
 ##  <ManSection>
+##  <Heading>Group</Heading>
 ##  <Func Name="Group" Arg='gen, ...' Label="for several generators"/>
 ##  <Func Name="Group" Arg='gens[, id]'
 ##   Label="for a list of generators (and an identity element)"/>
