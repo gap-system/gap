@@ -493,11 +493,12 @@ CallAndInstallPostRestore( function()
         value:= SHALLOW_COPY_OBJ( line );
         APPEND_LIST_INTR( value, "sysinfo.gap" );
         if IsExistingFile( value ) then
-          PRINT_TO( "*errout*", line );
-          break;
+          PRINT_TO( "*stdout*", line );
+          QuitGap(0);
         fi;
       od;
-      QuitGap();
+      PRINT_TO( "*errout*", "failed to determine primary GAP root" );
+      QuitGap(1);
     fi;
 end );
 
