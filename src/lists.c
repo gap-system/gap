@@ -1064,6 +1064,16 @@ static Obj PropIS_SSORT_LIST(Obj self, Obj obj)
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
 
+static Obj PropSetIS_SSORT_LIST(Obj self, Obj obj, Obj val)
+{
+    UInt tnum = TNUM_OBJ(obj);
+    if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM)
+        SET_FILT_LIST(obj, (val == True) ? FN_IS_SSORT : FN_IS_NSORT);
+    else
+        DoSetProperty(IsSSortListProp, obj, val);
+    return 0;
+}
+
 static BOOL IsSSortListDefault(Obj list)
 {
     Int                 lenList;
@@ -1131,6 +1141,8 @@ static Obj PropIS_POSS_LIST(Obj self, Obj obj)
 {
     return (IS_POSS_LIST(obj) ? True : False);
 }
+
+#define PropSetIS_POSS_LIST DoSetProperty
 
 static BOOL IsPossListDefault(Obj list)
 {
@@ -1826,7 +1838,7 @@ static StructGVarProp GVarProps [] = {
 
     GVAR_PROP(IS_SSORT_LIST, "obj", &IsSSortListProp),
     GVAR_PROP(IS_POSS_LIST, "obj", &IsPossListProp),
-    { 0, 0, 0, 0, 0 }
+    { 0, 0, 0, 0, 0, 0, 0 }
 
 };
 
