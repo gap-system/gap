@@ -1939,10 +1939,28 @@ static Obj FuncDEBUG_TNUM_NAMES(Obj self)
         START_SYMBOLIC_TNUM(FIRST_PACKAGE_TNUM);
 #ifdef HPCGAP
         START_SYMBOLIC_TNUM(FIRST_SHARED_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_ATOMIC_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_ATOMIC_LIST_TNUM);
+        START_SYMBOLIC_TNUM(FIRST_ATOMIC_RECORD_TNUM);
 #endif
         const char *name = TNAM_TNUM(k);
         Pr("%3d: %s", k, (Int)indentStr);
         Pr("%s%s\n", (Int)indentStr, (Int)(name ? name : "."));
+        if (name == 0 && k >= FIRST_PACKAGE_TNUM) {
+            // scan ahead and skip over all unused package slots
+            int i = k + 1;
+            while (i <= LAST_PACKAGE_TNUM && TNAM_TNUM(i) == 0)
+                i++;
+            i--;
+            if (i > k + 1)
+                Pr("...  %s%s.\n", (Int)indentStr, (Int)indentStr);
+            if (i > k) {
+                Pr("%3d: %s", i, (Int)indentStr);
+                Pr("%s.\n", (Int)indentStr, 0);
+            }
+            k = i;
+        }
+
         STOP_SYMBOLIC_TNUM(LAST_MULT_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_CONSTANT_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_RECORD_TNUM);
@@ -1950,10 +1968,13 @@ static Obj FuncDEBUG_TNUM_NAMES(Obj self)
         STOP_SYMBOLIC_TNUM(LAST_LIST_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_OBJSET_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_IMM_MUT_TNUM);
-        STOP_SYMBOLIC_TNUM(LAST_EXTERNAL_TNUM);
         STOP_SYMBOLIC_TNUM(LAST_PACKAGE_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_EXTERNAL_TNUM);
 #ifdef HPCGAP
         STOP_SYMBOLIC_TNUM(LAST_SHARED_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_ATOMIC_RECORD_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_ATOMIC_LIST_TNUM);
+        STOP_SYMBOLIC_TNUM(LAST_ATOMIC_TNUM);
 #endif
         STOP_SYMBOLIC_TNUM(LAST_REAL_TNUM);
     }
