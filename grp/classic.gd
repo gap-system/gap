@@ -66,10 +66,9 @@
 ##  Note that due to the different sources for the generators,
 ##  the invariant forms for the groups <M>\Omega(e,d,q)</M> are in general
 ##  different from the forms for SO<M>(e,d,q)</M> and GO<M>(e,d,q)</M>.
-##  <!--
-##  If the <Package>Forms</Package> is loaded then compatible groups can be
-##  created by specifying the desired form, see the examples below.
-##  -->
+##  If the <Package>Forms</Package> package is loaded then compatible groups
+##  can be created by specifying the desired form,
+##  see the sections below.
 ##  <#/GAPDoc>
 ##
 
@@ -193,13 +192,17 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 
 #############################################################################
 ##
-#F  GeneralOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q> ) .  gen. orthog. group
-#F  GO( [<filt>, ][<e>, ]<d>, <q> )
+#F  GeneralOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+#F  GeneralOrthogonalGroup( [<filt>, ]<form> )
+#F  GO( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+#F  GO( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="GeneralOrthogonalGroup">
 ##  <ManSection>
-##  <Func Name="GeneralOrthogonalGroup" Arg='[filt, ][e, ]d, q'/>
-##  <Func Name="GO" Arg='[filt, ][e, ]d, q'/>
+##  <Func Name="GeneralOrthogonalGroup" Arg='[filt, ][e, ]d, q[, form]'/>
+##  <Func Name="GeneralOrthogonalGroup" Arg='[filt, ]form'/>
+##  <Func Name="GO" Arg='[filt, ][e, ]d, q[, form]'/>
+##  <Func Name="GO" Arg='[filt, ]form'/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the
@@ -215,9 +218,15 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general orthogonal group itself.
 ##  <P/>
-##  <!--
-##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
-##  specify the desired invariant quadratic form respected by the group. -->
+##  If the <Package>Forms</Package> package is loaded then
+##  the desired quadratic form can be specified via <A>form</A>,
+##  which can be either a matrix
+##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
+##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
+##  (and then this form is taken).
+##  If <A>form</A> is not given then a default is chosen as described in the
+##  introduction to Section <Ref Sect="Classical Groups"/>.
+##  <P/>
 ##  Note that in&nbsp;<Cite Key="KleidmanLiebeck90"/>,
 ##  GO is defined as the stabilizer
 ##  <M>\Delta(V, F, \kappa)</M> of the quadratic form, up to scalars,
@@ -227,19 +236,59 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "GeneralOrthogonalGroup", function ( arg )
-  if   Length( arg ) = 2 then
+  if   Length( arg ) = 1 then
+    # form (matrix, form object, or group with stored form)
+    return GeneralOrthogonalGroupCons( IsMatrixGroup, arg[1] );
+  elif Length( arg ) = 2 and IsInt( arg[1] ) then
+    # (d, q) or (d, R)
     return GeneralOrthogonalGroupCons( IsMatrixGroup, 0, arg[1], arg[2] );
   elif Length( arg ) = 3 and IsInt(arg[1]) and IsInt(arg[2]) and
     (IsInt(arg[3]) or IsRing(arg[3])) then
+    # (e, d, q) or (e, d, R)
     return GeneralOrthogonalGroupCons( IsMatrixGroup,arg[1],arg[2],arg[3] );
+  elif Length( arg ) = 3 and IsInt(arg[1]) and
+    (IsInt(arg[2]) or IsRing(arg[2])) and
+    (IsMatrixObj(arg[3]) or
+     (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[3])) or
+     HasInvariantQuadraticForm(arg[3])) then
+    # (d, q, form) or (d, R, form)
+    return GeneralOrthogonalGroupCons( IsMatrixGroup,0,arg[1],arg[2],arg[3] );
+  elif Length( arg ) = 4 and IsInt(arg[1]) and IsInt(arg[2]) and
+    (IsInt(arg[3]) or IsRing(arg[3])) and
+    (IsMatrixObj(arg[4]) or
+     (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[4])) or
+     HasInvariantQuadraticForm(arg[4])) then
+    # (e, d, q, form) or (e, d, R, form)
+    return GeneralOrthogonalGroupCons( IsMatrixGroup,arg[1],arg[2],arg[3],arg[4] );
   elif IsOperation( arg[1] ) then
-    if   Length( arg ) = 3 then
+    if   Length( arg ) = 2 then
+      # (filter, form)
+      return GeneralOrthogonalGroupCons( arg[1], arg[2] );
+    elif Length( arg ) = 3 then
+      # (filter, d, q) or (filter, d, R)
       return GeneralOrthogonalGroupCons( arg[1], 0, arg[2], arg[3] );
-    elif Length( arg ) = 4 then
+    elif Length( arg ) = 4 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsInt(arg[4]) or IsRing(arg[4])) then
+      # (filter, e, d, q) or (filter, e, d, R)
       return GeneralOrthogonalGroupCons( arg[1], arg[2], arg[3], arg[4] );
+    elif Length( arg ) = 4 and IsInt(arg[2]) and
+      (IsInt(arg[3]) or IsRing(arg[3])) and
+      (IsMatrixObj(arg[4]) or
+       (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[4])) or
+       HasInvariantQuadraticForm(arg[4])) then
+      # (filter, d, q, form) or (filter, d, R, form)
+      return GeneralOrthogonalGroupCons( arg[1], 0, arg[2], arg[3], arg[4] );
+    elif Length( arg ) = 5 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsInt(arg[4]) or IsRing(arg[4])) and
+      (IsMatrixObj(arg[5]) or
+       (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[5])) or
+       HasInvariantQuadraticForm(arg[5])) then
+      # (filter, e, d, q, form) or (filter, e, d, GF(q), form)
+      return GeneralOrthogonalGroupCons( arg[1],arg[2],arg[3],arg[4],arg[5] );
     fi;
   fi;
-  Error( "usage: GeneralOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> )" );
+  Error( "usage: GeneralOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q>[, <form>] )\n",
+         "or GeneralOrthogonalGroup( [<filter>, ]<form> )" );
 end );
 
 DeclareSynonym( "GO", GeneralOrthogonalGroup );
@@ -262,13 +311,17 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 
 #############################################################################
 ##
-#F  GeneralUnitaryGroup( [<filt>, ]<d>, <q> ) . . . . . general unitary group
-#F  GU( [<filt>, ]<d>, <q> )
+#F  GeneralUnitaryGroup( [<filt>, ]<d>, <q>[, <form>] )
+#F  GeneralUnitaryGroup( [<filt>, ]<form> )
+#F  GU( [<filt>, ]<d>, <q>[, <form>] )
+#F  GU( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="GeneralUnitaryGroup">
 ##  <ManSection>
-##  <Func Name="GeneralUnitaryGroup" Arg='[filt, ]d, q'/>
-##  <Func Name="GU" Arg='[filt, ]d, q'/>
+##  <Func Name="GeneralUnitaryGroup" Arg='[filt, ]d, q[, form]'/>
+##  <Func Name="GeneralUnitaryGroup" Arg='[filt, ]form'/>
+##  <Func Name="GU" Arg='[filt, ]d, q[, form]'/>
+##  <Func Name="GU" Arg='[filt, ]form'/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the general unitary group
@@ -280,9 +333,15 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general unitary group itself.
 ##  <P/>
-##  <!--
-##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
-##  specify the desired invariant sesquilinear form respected by the group. -->
+##  If the <Package>Forms</Package> package is loaded then
+##  the desired sesquilinear form can be specified via <A>form</A>,
+##  which can be either a matrix
+##  or a form object in <Ref Filt="IsHermitianForm" BookName="Forms"/>
+##  or a group with stored <Ref Attr="InvariantSesquilinearForm"/> value
+##  (and then this form is taken).
+##  If <A>form</A> is not given then a default is chosen as described in the
+##  introduction to Section <Ref Sect="Classical Groups"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> GeneralUnitaryGroup( 3, 5 );
 ##  GU(3,5)
@@ -292,17 +351,35 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "GeneralUnitaryGroup", function ( arg )
-
-  if Length( arg ) = 2 then
+  if Length( arg ) = 1 then
+    # form (matrix, form object, or group with stored form)
+    return GeneralUnitaryGroupCons( IsMatrixGroup, arg[1] );
+  elif Length( arg ) = 2 and IsInt( arg[1] ) then
+    # (d, q)
     return GeneralUnitaryGroupCons( IsMatrixGroup, arg[1], arg[2] );
+  elif Length( arg ) = 3 and IsInt(arg[1]) and IsInt(arg[2]) and
+    (IsMatrixObj(arg[3]) or
+     (IsBoundGlobal( "IsHermitianForm" ) and ValueGlobal( "IsHermitianForm" )(arg[3])) or
+     HasInvariantSesquilinearForm(arg[3])) then
+    # (d, q, form)
+    return GeneralUnitaryGroupCons( IsMatrixGroup, arg[1], arg[2], arg[3] );
   elif IsOperation( arg[1] ) then
-
-    if Length( arg ) = 3 then
+    if Length( arg ) = 2 then
+      # filter, form
+      return GeneralUnitaryGroupCons( arg[1], arg[2] );
+    elif Length( arg ) = 3 then
+      # filter, d, q
       return GeneralUnitaryGroupCons( arg[1], arg[2], arg[3] );
+    elif Length( arg ) = 4 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsMatrixObj(arg[4]) or
+       (IsBoundGlobal( "IsHermitianForm" ) and ValueGlobal( "IsHermitianForm" )(arg[4])) or
+       HasInvariantSesquilinearForm(arg[4])) then
+      # (filter, d, q, form)
+      return GeneralUnitaryGroupCons( arg[1], arg[2], arg[3], arg[4] );
     fi;
   fi;
-  Error( "usage: GeneralUnitaryGroup( [<filter>, ]<d>, <q> )" );
-
+  Error( "usage: GeneralUnitaryGroup( [<filter>, ]<d>, <q>[, <form>] )\n",
+         "or GeneralUnitaryGroup( [<filter>, ]<form> )" );
 end );
 
 DeclareSynonym( "GU", GeneralUnitaryGroup );
@@ -413,16 +490,20 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 
 #############################################################################
 ##
-#F  SpecialOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q> ) . spec. orthog. group
-#F  SO( [<filt>, ][<e>, ]<d>, <q> )
+#F  SpecialOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+#F  SpecialOrthogonalGroup( [<filt>, ]<form> )
+#F  SO( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+#F  SO( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="SpecialOrthogonalGroup">
 ##  <ManSection>
-##  <Func Name="SpecialOrthogonalGroup" Arg='[filt, ][e, ]d, q'/>
-##  <Func Name="SO" Arg='[filt, ][e, ]d, q'/>
+##  <Func Name="SpecialOrthogonalGroup" Arg='[filt, ][e, ]d, q[, form]'/>
+##  <Func Name="SpecialOrthogonalGroup" Arg='[filt, ]form'/>
+##  <Func Name="SO" Arg='[filt, ][e, ]d, q[, form]'/>
+##  <Func Name="SO" Arg='[filt, ]form'/>
 ##
 ##  <Description>
-##  <Ref Func="SpecialOrthogonalGroup"/> returns a group isomorphic to the 
+##  constructs a group isomorphic to the
 ##  special orthogonal group SO( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  which is the subgroup of all those matrices in the general orthogonal
 ##  group (see&nbsp;<Ref Func="GeneralOrthogonalGroup"/>) that have
@@ -438,9 +519,15 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special orthogonal group itself.
 ##  <P/>
-##  <!--
-##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
-##  specify the desired invariant quadratic form respected by the group. -->
+##  If the <Package>Forms</Package> package is loaded then
+##  the desired quadratic form can be specified via <A>form</A>,
+##  which can be either a matrix
+##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
+##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
+##  (and then this form is taken).
+##  If <A>form</A> is not given then a default is chosen as described in the
+##  introduction to Section <Ref Sect="Classical Groups"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> GeneralOrthogonalGroup( 3, 7 );
 ##  GO(0,3,7)
@@ -454,21 +541,59 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "SpecialOrthogonalGroup", function ( arg )
-
-  if   Length( arg ) = 2 then
+  if   Length( arg ) = 1 then
+    # form (matrix, form object, or group with stored form)
+    return SpecialOrthogonalGroupCons( IsMatrixGroup, arg[1] );
+  elif Length( arg ) = 2 and IsInt( arg[1] ) then
+    # (d, q) or (d, R)
     return SpecialOrthogonalGroupCons( IsMatrixGroup, 0, arg[1], arg[2] );
   elif Length( arg ) = 3 and IsInt(arg[1]) and IsInt(arg[2]) and
     (IsInt(arg[3]) or IsRing(arg[3])) then
+    # (e, d, q) or (e, d, GF(q))
     return SpecialOrthogonalGroupCons( IsMatrixGroup,arg[1],arg[2],arg[3] );
+  elif Length( arg ) = 3 and IsInt(arg[1]) and
+    (IsInt(arg[2]) or IsRing(arg[2])) and
+    (IsMatrixObj(arg[3]) or
+     (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[3])) or
+     HasInvariantQuadraticForm(arg[3])) then
+    # (d, q, form) or (d, GF(q), form)
+    return SpecialOrthogonalGroupCons( IsMatrixGroup,0,arg[1],arg[2],arg[3] );
+  elif Length( arg ) = 4 and IsInt(arg[1]) and IsInt(arg[2]) and
+    (IsInt(arg[3]) or IsRing(arg[3])) and
+    (IsMatrixObj(arg[4]) or
+     (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[4])) or
+     HasInvariantQuadraticForm(arg[4])) then
+    # (e, d, q, form) or (e, d, GF(q), form)
+    return SpecialOrthogonalGroupCons( IsMatrixGroup,arg[1],arg[2],arg[3],arg[4] );
   elif IsOperation( arg[1] ) then
-    if   Length( arg ) = 3 then
+    if   Length( arg ) = 2 then
+      # filter, form
+      return SpecialOrthogonalGroupCons( arg[1], arg[2] );
+    elif Length( arg ) = 3 then
+      # filter, d, q
       return SpecialOrthogonalGroupCons( arg[1], 0, arg[2], arg[3] );
-    elif Length( arg ) = 4 then
+    elif Length( arg ) = 4 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsInt(arg[4]) or IsRing(arg[4])) then
+      # (filter, e, d, q) or (filter, e, d, R)
       return SpecialOrthogonalGroupCons( arg[1], arg[2], arg[3], arg[4] );
+    elif Length( arg ) = 4 and IsInt(arg[2]) and
+      (IsInt(arg[3]) or IsRing(arg[3])) and
+      (IsMatrixObj(arg[4]) or
+       (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[4])) or
+      HasInvariantQuadraticForm(arg[4])) then
+      # (filter, d, q, form) or (filter, d, R, form)
+      return SpecialOrthogonalGroupCons( arg[1], 0, arg[2], arg[3], arg[4] );
+    elif Length( arg ) = 5 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsInt(arg[4]) or IsRing(arg[4])) and
+      (IsMatrixObj(arg[5]) or
+       (IsBoundGlobal( "IsQuadraticForm" ) and ValueGlobal( "IsQuadraticForm" )(arg[5])) or
+       HasInvariantQuadraticForm(arg[5])) then
+      # (filter, e, d, q, form) or (filter, e, d, GF(q), form)
+      return SpecialOrthogonalGroupCons( arg[1],arg[2],arg[3],arg[4],arg[5] );
     fi;
   fi;
-  Error( "usage: SpecialOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> )" );
-
+  Error( "usage: SpecialOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q>[, <form>] )\n",
+         "or SpecialOrthogonalGroup( [<filter>, ]<form> )" );
 end );
 
 DeclareSynonym( "SO", SpecialOrthogonalGroup );
@@ -491,18 +616,22 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 
 #############################################################################
 ##
-#F  SpecialUnitaryGroup( [<filt>, ]<d>, <q> ) . . . . . general unitary group
-#F  SU( [<filt>, ]<d>, <q> )
+#F  SpecialUnitaryGroup( [<filt>, ]<d>, <q>[, <form>] )
+#F  SpecialUnitaryGroup( [<filt>, ]<form> )
+#F  SU( [<filt>, ]<d>, <q>[, <form>] )
+#F  SU( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="SpecialUnitaryGroup">
 ##  <ManSection>
-##  <Func Name="SpecialUnitaryGroup" Arg='[filt, ]d, q'/>
-##  <Func Name="SU" Arg='[filt, ]d, q'/>
+##  <Func Name="SpecialUnitaryGroup" Arg='[filt, ]d, q[, form]'/>
+##  <Func Name="SpecialUnitaryGroup" Arg='[filt, ]form'/>
+##  <Func Name="SU" Arg='[filt, ]d, q[, form]'/>
+##  <Func Name="SU" Arg='[filt, ]form'/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the special unitary group
-##  GU(<A>d</A>, <A>q</A>) of those <M><A>d</A> \times <A>d</A></M> matrices
-##  over the field with <M><A>q</A>^2</M> elements
+##  SU( <A>d</A>, <A>q</A> ) of those <M><A>d</A> \times <A>d</A></M>
+##  matrices over the field with <M><A>q</A>^2</M> elements
 ##  whose determinant is the identity of the field and that respect a fixed
 ##  nondegenerate sesquilinear form,
 ##  in the category given by the filter <A>filt</A>.
@@ -510,9 +639,15 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special unitary group itself.
 ##  <P/>
-##  <!--
-##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
-##  specify the desired invariant sesquilinear form respected by the group. -->
+##  If the <Package>Forms</Package> package is loaded then
+##  the desired sesquilinear form can be specified via <A>form</A>,
+##  which can be either a matrix
+##  or a form object in <Ref Filt="IsHermitianForm" BookName="Forms"/>
+##  or a group with stored <Ref Attr="InvariantSesquilinearForm"/> value
+##  (and then this form is taken).
+##  If <A>form</A> is not given then a default is chosen as described in the
+##  introduction to Section <Ref Sect="Classical Groups"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> SpecialUnitaryGroup( 3, 5 );
 ##  SU(3,5)
@@ -522,17 +657,35 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "SpecialUnitaryGroup", function ( arg )
-
-  if Length( arg ) = 2 then
+  if Length( arg ) = 1 then
+    # form (matrix, form object, or group with stored form)
+    return SpecialUnitaryGroupCons( IsMatrixGroup, arg[1] );
+  elif Length( arg ) = 2 and IsInt( arg[1] ) then
+    # (d, q)
     return SpecialUnitaryGroupCons( IsMatrixGroup, arg[1], arg[2] );
+  elif Length( arg ) = 3 and IsInt(arg[1]) and IsInt(arg[2]) and
+    (IsMatrixObj(arg[3]) or
+     (IsBoundGlobal( "IsHermitianForm" ) and ValueGlobal( "IsHermitianForm" )(arg[3])) or
+     HasInvariantSesquilinearForm(arg[3])) then
+    # (d, q, form)
+    return SpecialUnitaryGroupCons( IsMatrixGroup, arg[1], arg[2], arg[3] );
   elif IsOperation( arg[1] ) then
-
-    if Length( arg ) = 3 then
+    if Length( arg ) = 2 then
+      # filter, form
+      return SpecialUnitaryGroupCons( arg[1], arg[2] );
+    elif Length( arg ) = 3 then
+      # filter, d, q
       return SpecialUnitaryGroupCons( arg[1], arg[2], arg[3] );
+    elif Length( arg ) = 4 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsMatrixObj(arg[4]) or
+       (IsBoundGlobal( "IsHermitianForm" ) and ValueGlobal( "IsHermitianForm" )(arg[4])) or
+       HasInvariantSesquilinearForm(arg[4])) then
+      # (filter, d, q, form)
+      return SpecialUnitaryGroupCons( arg[1], arg[2], arg[3], arg[4] );
     fi;
   fi;
-  Error( "usage: SpecialUnitaryGroup( [<filter>, ]<d>, <q> )" );
-
+  Error( "usage: SpecialUnitaryGroup( [<filter>, ]<d>, <q>[, <form>] )\n",
+         "or SpecialUnitaryGroup( [<filter>, ]<form> )" );
 end );
 
 DeclareSynonym( "SU", SpecialUnitaryGroup );
@@ -555,25 +708,34 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 
 #############################################################################
 ##
-#F  SymplecticGroup( [<filt>, ]<d>, <q> ) . . . . . . . . .  symplectic group
-#F  Sp( [<filt>, ]<d>, <q> )
-#F  SP( [<filt>, ]<d>, <q> )
+#F  SymplecticGroup( [<filt>, ]<d>, <q>[, <form>] ) . . . .  symplectic group
+#F  SymplecticGroup( [<filt>, ]<form> ) . . . . . . . . . .  symplectic group
+#F  Sp( [<filt>, ]<d>, <q>[, <form>] )
+#F  Sp( [<filt>, ]<form> )
+#F  SP( [<filt>, ]<d>, <q>[, <form>] )
+#F  SP( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="SymplecticGroup">
 ##  <ManSection>
 ##  <Heading>SymplecticGroup</Heading>
-##  <Func Name="SymplecticGroup" Arg='[filt, ]d, q'
+##  <Func Name="SymplecticGroup" Arg='[filt, ]d, q[, form]'
 ##   Label="for dimension and field size"/>
-##  <Func Name="SymplecticGroup" Arg='[filt, ]d, ring'
+##  <Func Name="SymplecticGroup" Arg='[filt, ]d, ring[, form]'
 ##   Label="for dimension and a ring"/>
-##  <Func Name="Sp" Arg='[filt, ]d, q'
+##  <Func Name="SymplecticGroup" Arg='[filt, ]form'
+##   Label="for form"/>
+##  <Func Name="Sp" Arg='[filt, ]d, q[, form]'
 ##   Label="for dimension and field size"/>
-##  <Func Name="Sp" Arg='[filt, ]d, ring'
+##  <Func Name="Sp" Arg='[filt, ]d, ring[, form]'
 ##   Label="for dimension and a ring"/>
-##  <Func Name="SP" Arg='[filt, ]d, q'
+##  <Func Name="Sp" Arg='[filt, ]form'
+##   Label="for form"/>
+##  <Func Name="SP" Arg='[filt, ]d, q[, form]'
 ##   Label="for dimension and field size"/>
-##  <Func Name="SP" Arg='[filt, ]d, ring'
+##  <Func Name="SP" Arg='[filt, ]d, ring[, form]'
 ##   Label="for dimension and a ring"/>
+##  <Func Name="SP" Arg='[filt, ]form'
+##   Label="for form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the symplectic group
@@ -586,12 +748,20 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the symplectic group itself.
 ##  <P/>
-##  At the moment finite fields or residue class rings 
-##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power are
+##  At the moment finite fields or residue class rings
+##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power, are
 ##  supported.
-##  <!--
-##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
-##  specify the desired invariant symplectic form respected by the group. -->
+##  <P/>
+##  If the <Package>Forms</Package> package is loaded and the arguments
+##  describe a matrix group over a finite field then
+##  the desired bilinear form can be specified via <A>form</A>,
+##  which can be either a matrix
+##  or a form object in <Ref Filt="IsBilinearForm" BookName="Forms"/>
+##  or a group with stored <Ref Attr="InvariantBilinearForm"/> value
+##  (and then this form is taken).
+##  If <A>form</A> is not given then a default is chosen as described in the
+##  introduction to Section <Ref Sect="Classical Groups"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> SymplecticGroup( 4, 2 );
 ##  Sp(4,2)
@@ -605,17 +775,36 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  <#/GAPDoc>
 ##
 BindGlobal( "SymplecticGroup", function ( arg )
-
-  if Length( arg ) = 2 then
+  if Length( arg ) = 1 then
+    # form (matrix, form object, or group with stored form)
+    return SymplecticGroupCons( IsMatrixGroup, arg[1] );
+  elif Length( arg ) = 2 and IsInt( arg[1] ) then
+    # (d, q) or (d, R)
     return SymplecticGroupCons( IsMatrixGroup, arg[1], arg[2] );
+  elif Length( arg ) = 3 and IsInt(arg[1]) and
+    (IsInt(arg[2]) or IsRing(arg[2])) and
+    (IsMatrixObj(arg[3]) or
+     (IsBoundGlobal( "IsBilinearForm" ) and ValueGlobal( "IsBilinearForm" )(arg[3])) or
+     HasInvariantBilinearForm(arg[3])) then
+    # (d, q, form)
+    return SymplecticGroupCons( IsMatrixGroup, arg[1], arg[2], arg[3] );
   elif IsOperation( arg[1] ) then
-
-    if Length( arg ) = 3 then
+    if Length( arg ) = 2 then
+      # (filter, form)
+      return SymplecticGroupCons( arg[1], arg[2] );
+    elif Length( arg ) = 3 then
+      # (filter, d, q)
       return SymplecticGroupCons( arg[1], arg[2], arg[3] );
+    elif Length( arg ) = 4 and IsInt(arg[2]) and IsInt(arg[3]) and
+      (IsMatrixObj(arg[4]) or
+       (IsBoundGlobal( "IsBilinearForm" ) and ValueGlobal( "IsBilinearForm" )(arg[4])) or
+       HasInvariantBilinearForm(arg[4])) then
+      # (filter, d, q, form)
+      return SymplecticGroupCons( arg[1], arg[2], arg[3], arg[4] );
     fi;
   fi;
-  Error( "usage: SymplecticGroup( [<filter>, ]<d>, <q> )" );
-
+  Error( "usage: SymplecticGroup( [<filter>, ]<d>, <q>[, <form>] )\n",
+         "or SymplecticGroup( [<filter>, ]<form> )" );
 end );
 
 DeclareSynonym( "Sp", SymplecticGroup );
@@ -638,12 +827,15 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 
 #############################################################################
 ##
-#O  Omega( [<filt>, ][<e>, ]<d>, <q> )
+#O  Omega( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+#O  Omega( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="Omega_orthogonal_groups">
 ##  <ManSection>
-##  <Oper Name="Omega" Arg='[filt, ][e, ]d, q'
+##  <Oper Name="Omega" Arg='[filt, ][e, ]d, q[, form]'
 ##   Label="construct an orthogonal group"/>
+##  <Oper Name="Omega" Arg='[filt, ]form'
+##   Label="construct an orthogonal group for a given quadratic form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the
@@ -653,11 +845,14 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  (see&nbsp;<Ref Attr="InvariantQuadraticForm"/>) specified by <A>e</A>,
 ##  and that have square spinor norm in odd characteristic
 ##  or Dickson invariant <M>0</M> in even characteristic, respectively,
-##  in the category given by the filter <A>filt</A>. For odd <A>q</A>
-##  and <M><A>d</A> \geq 2</M>,
-##  this group has always index two in the corresponding special orthogonal group,
-##  which will be conjugate in <M>GL(d,q)</M> to the group returned by SO( <A>e</A>, <A>d</A>, <A>q</A> ),
-##  see <Ref Func="SpecialOrthogonalGroup"/>, but may fix a different form (see <Ref Sect="Classical Groups"/>).
+##  in the category given by the filter <A>filt</A>.
+##  <P/>
+##  For odd <A>q</A> and <M><A>d</A> \geq 2</M>, this group has always
+##  index two in the corresponding special orthogonal group,
+##  which will be conjugate in <M>GL(d,q)</M> to the group returned by
+##  SO( <A>e</A>, <A>d</A>, <A>q</A> ),
+##  see <Ref Func="SpecialOrthogonalGroup"/>,
+##  but may fix a different form (see <Ref Sect="Classical Groups"/>).
 ##  <P/>
 ##  The value of <A>e</A> must be <M>0</M> for odd <A>d</A> (and can
 ##  optionally be omitted in this case), respectively one of <M>1</M> or
@@ -666,9 +861,15 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  and the returned group is the group
 ##  <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ) itself.
 ##  <P/>
-##  <!--
-##  If the &GAP; package <Package>Forms</Package> is loaded then one can also
-##  specify the desired invariant quadratic form respected by the group. -->
+##  If the <Package>Forms</Package> package is loaded then
+##  the desired quadratic form can be specified via <A>form</A>,
+##  which can be either a matrix
+##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
+##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
+##  (and then this form is taken).
+##  If <A>form</A> is not given then a default is chosen as described in the
+##  introduction to Section <Ref Sect="Classical Groups"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:= Omega( 3, 5 );  StructureDescription( g );
 ##  Omega(0,3,5)
@@ -770,7 +971,7 @@ DeclareConstructor( "SpecialSemilinearGroupCons",
 ##  <Ref Func="SpecialSemilinearGroup"/> returns a group isomorphic to the
 ##  special semilinear group <M>\Sigma</M>L( <A>d</A>, <A>q</A> ) of those
 ##  semilinear mappings of the vector space
-##  <C>GF( </C><A>q</A><C> )^</C><A>d</A> 
+##  <C>GF( </C><A>q</A><C> )^</C><A>d</A>
 ##  (see <Ref Func="GeneralSemilinearGroup"/>)
 ##  whose linear part has determinant one.
 ##  <P/>
