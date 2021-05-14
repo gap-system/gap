@@ -223,37 +223,6 @@ enum TNUM {
     // last mutable/immutable TNUM
     END_ENUM_RANGE(LAST_IMM_MUT_TNUM),
 
-    // external types
-    START_ENUM_RANGE(FIRST_EXTERNAL_TNUM),
-        T_COMOBJ,
-        T_POSOBJ,
-        T_DATOBJ,
-        T_WPOBJ,
-#ifdef HPCGAP
-        T_ACOMOBJ,
-        T_APOSOBJ,
-#endif
-
-        // package TNUMs, for use by kernel extensions
-        //
-        // The value of LAST_REAL_TNUM must not exceed 254.
-        // This restricts the value for LAST_PACKAGE_TNUM indirectly. It is
-        // difficult to describe the largest possible value with a formula,
-        // as LAST_REAL_TNUM itself changes depending LAST_PACKAGE_TNUM, and
-        // the fact that some TNUMs are forced to be even causes additional
-        // jumps; increasing LAST_PACKAGE_TNUM by 1 can lead to
-        // LAST_REAL_TNUM growing by 2. So we simply hand-pick
-        // LAST_PACKAGE_TNUM as the largest value that does not trigger the
-        // GAP_STATIC_ASSERT following this enum.
-        FIRST_PACKAGE_TNUM,
-#ifdef HPCGAP
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 153,
-#else
-        LAST_PACKAGE_TNUM   = FIRST_PACKAGE_TNUM + 167,
-#endif
-
-    END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
-
 #ifdef HPCGAP
     START_ENUM_RANGE(FIRST_SHARED_TNUM),
         // primitive types
@@ -266,20 +235,36 @@ enum TNUM {
         T_BARRIER,
         T_SYNCVAR,
         // atomic lists and records, thread local records
-    START_ENUM_RANGE(FIRST_ATOMIC_TNUM),
-    START_ENUM_RANGE(FIRST_ATOMIC_LIST_TNUM),
-        T_FIXALIST,
-        T_ALIST,
-    END_ENUM_RANGE(LAST_ATOMIC_LIST_TNUM),
-    START_ENUM_RANGE(FIRST_ATOMIC_RECORD_TNUM),
-        T_AREC,
-        T_AREC_INNER,
-        T_TLREC,
-        T_TLREC_INNER,
-    END_ENUM_RANGE(LAST_ATOMIC_RECORD_TNUM),
-    END_ENUM_RANGE(LAST_ATOMIC_TNUM),
+        START_ENUM_RANGE(FIRST_ATOMIC_TNUM),
+            START_ENUM_RANGE(FIRST_ATOMIC_LIST_TNUM),
+                T_FIXALIST,
+                T_ALIST,
+            END_ENUM_RANGE(LAST_ATOMIC_LIST_TNUM),
+            START_ENUM_RANGE(FIRST_ATOMIC_RECORD_TNUM),
+                T_AREC,
+                T_AREC_INNER,
+                T_TLREC,
+                T_TLREC_INNER,
+            END_ENUM_RANGE(LAST_ATOMIC_RECORD_TNUM),
+        END_ENUM_RANGE(LAST_ATOMIC_TNUM),
     END_ENUM_RANGE(LAST_SHARED_TNUM),
 #endif
+
+    // external types
+    START_ENUM_RANGE(FIRST_EXTERNAL_TNUM),
+        T_COMOBJ,
+        T_POSOBJ,
+        T_DATOBJ,
+        T_WPOBJ,
+#ifdef HPCGAP
+        T_ACOMOBJ,
+        T_APOSOBJ,
+#endif
+        // package TNUMs, for use by kernel extensions
+        FIRST_PACKAGE_TNUM,
+        LAST_PACKAGE_TNUM = 253,
+
+    END_ENUM_RANGE(LAST_EXTERNAL_TNUM),
 
     END_ENUM_RANGE(LAST_REAL_TNUM),
 
