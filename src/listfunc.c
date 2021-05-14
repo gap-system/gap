@@ -102,19 +102,20 @@ static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
   Int ipos;
   if (pos == (Obj)0)
     ipos = -1;
-  else if (IS_INTOBJ(pos) && INT_INTOBJ(pos) > 0)
+  else if (IS_POS_INTOBJ(pos))
     ipos = INT_INTOBJ(pos);
   else {
     DoOperation3Args( self, list,  obj, pos);
     return (Obj) 0;
   }
+  UInt tnum = TNUM_OBJ(list);
   if ( IS_PLIST( list ) ) {
     AddPlist3( list, obj, ipos );
-  } else if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
+  } else if ( FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM ) {
     AddList3( list, obj, ipos );
 #ifdef HPCGAP
   // Only support adding to end of atomic lists
-  } else if ( TNUM_OBJ(list) == T_ALIST && pos == (Obj)0 ) {
+  } else if ( tnum == T_ALIST && pos == (Obj)0 ) {
     AddAList( list, obj );
 #endif
   } else {
