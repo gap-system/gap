@@ -357,20 +357,16 @@ make_compstat () {
         echo     "/* made by 'gac', can be thrown away */"
         echo     "#include \"compiled.h\""
 
-        echo     "#ifndef AVOID_PRECOMPILED"
         echo     "extern StructInitInfo * Init__type1 ( void );"
         echo     "extern StructInitInfo * Init__oper1( void );"
-        echo     "#endif"
 
         for name in ${names}; do
             echo "extern StructInitInfo * Init__${name} ( void );"
         done
 
         echo     "InitInfoFunc CompInitFuncs[] = {"
-        echo     "#ifndef AVOID_PRECOMPILED"
         echo     "    Init__type1,"
         echo     "    Init__oper1,"
-        echo     "#endif"
 
         for name in ${names}; do
             echo "    Init__${name},"
