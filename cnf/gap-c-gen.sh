@@ -17,12 +17,10 @@ then
 fi
 
 # invoke GAP in compiler mode
-echo "#ifndef AVOID_PRECOMPILED" > "$C_FILE.tmp"
-"$GAPBIN" -C "*stdout*" \
+"$GAPBIN" -E -C "$C_FILE.tmp" \
           "$GAP_FILE" \
           "Init_$STEM" \
           GAPROOT/lib/$STEM.g >> "$C_FILE.tmp"
-echo "#endif" >> "$C_FILE.tmp"
 
 # if the new file differs from the old one, overwrite
 if cmp -s "$C_FILE.tmp" "$C_FILE"
