@@ -741,8 +741,6 @@ void InitSystem (
     }
 #endif
 
-    InitSysFiles();
-
     if (handleSignals) {
         SyInstallAnswerIntr();
     }
@@ -816,11 +814,20 @@ void InitSystem (
         }
           
       }
-    /* adjust SyUseReadline if no readline support available or for XGAP  */
 #if !defined(HAVE_LIBREADLINE)
+    // don't use readline of readline is not available (obviously)
+    // so that e.g. the GAP banner reports this correctly.
     SyUseReadline = 0;
+#else
+    // don't use readline if in Window mode (e.g. for XGAP)
+    if (SyWindow)
+        SyUseReadline = 0;
+    // don't use readline if stdin is not attached to a terminal
+    else if (!isatty(fileno(stdin)))
+        SyUseReadline = 0;
 #endif
-    if (SyWindow) SyUseReadline = 0;
+
+    InitSysFiles();
 
     /* now that the user has had a chance to give -x and -y,
        we determine the size of the screen ourselves */
