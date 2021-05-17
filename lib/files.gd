@@ -564,63 +564,42 @@ end );
 
 #############################################################################
 ##
-#F  LoadDynamicModule( <filename> [, <crc> ] )  . . . . . . . . load a module
+#F  LoadDynamicModule( <filename> ) . . . . . .  try to load a dynamic module
 ##
 ##  <ManSection>
-##  <Func Name="LoadDynamicModule" Arg='filename [, crc ]'/>
+##  <Func Name="LoadDynamicModule" Arg='filename'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "LoadDynamicModule", function( arg )
+BIND_GLOBAL( "LoadDynamicModule", function( filename )
 
-    if Length(arg) = 1  then
-        if not LOAD_DYN( arg[1], false )  then
-            Error( "no support for dynamic loading" );
-        fi;
-    elif Length(arg) = 2  then
-        if not LOAD_DYN( arg[1], arg[2] )  then
-            Error( "<crc> mismatch (or no support for dynamic loading)" );
-        fi;
-    else
-        Error( "usage: LoadDynamicModule( <filename> [, <crc> ] )" );
+    if not LOAD_DYN( filename )  then
+        Error( "no support for dynamic loading" );
     fi;
 
 end );
 
 #############################################################################
 ##
-#F  LoadStaticModule( <filename> [, <crc> ] )   . . . . . . . . load a module
+#F  LoadStaticModule( <filename> ) . . . . . . .  try to load a static module
 ##
 ##  <ManSection>
-##  <Func Name="LoadStaticModule" Arg='filename [, crc ]'/>
+##  <Func Name="LoadStaticModule" Arg='filename'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "LoadStaticModule", function( arg )
+BIND_GLOBAL( "LoadStaticModule", function( filename )
 
-    if Length(arg) = 1  then
-        if not arg[1] in SHOW_STAT() then
-            Error( "unknown static module ", arg[1] );
-        fi;
+    if not filename in SHOW_STAT() then
+        Error( "unknown static module ", filename );
+    fi;
 
-        if not LOAD_STAT( arg[1], false )  then
-            Error( "loading static module ", arg[1], " failed" );
-        fi;
-    elif Length(arg) = 2  then
-        if not arg[1] in SHOW_STAT() then
-            Error( "unknown static module ", arg[1] );
-        fi;
-
-        if not LOAD_STAT( arg[1], arg[2] )  then
-            Error( "loading static module ", arg[1],
-                   " failed, possible crc mismatch" );
-        fi;
-    else
-        Error( "usage: LoadStaticModule( <filename> [, <crc> ] )" );
+    if not LOAD_STAT( filename )  then
+        Error( "loading static module ", filename, " failed" );
     fi;
 
 end );

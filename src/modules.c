@@ -232,14 +232,11 @@ static Int SyLoadModule(const Char * name, InitInfoFunc * func)
 
 /****************************************************************************
 **
-*F  FuncLOAD_DYN( <self>, <name>, <crc> ) . . .  try to load a dynamic module
+*F  FuncLOAD_DYN( <self>, <name> ) . . . . . . . try to load a dynamic module
 */
-static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
+static Obj FuncLOAD_DYN(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
-    if (!IS_INTOBJ(crc) && crc != False) {
-        RequireArgument(SELF_NAME, crc, "must be a small integer or 'false'");
-    }
 
 #if !defined(HAVE_DLOPEN)
     /* no dynamic library support                                          */
@@ -279,17 +276,6 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
     if (info->type % 10 > 2)
         ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0, 0);
 
-    /* check the crc value                                                 */
-    if (crc != False) {
-        if (INT_INTOBJ(crc) != info->crc) {
-            if (SyDebugLoading) {
-                Pr("#I  LOAD_DYN: crc values do not match, gap %d, dyn %d\n",
-                   INT_INTOBJ(crc), info->crc);
-            }
-            return False;
-        }
-    }
-
     ActivateModule(info);
     RecordLoadedModule(info, 0, CONST_CSTR_STRING(filename));
 
@@ -300,16 +286,13 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename, Obj crc)
 
 /****************************************************************************
 **
-*F  FuncLOAD_STAT( <self>, <name>, <crc> )  . . . . try to load static module
+*F  FuncLOAD_STAT( <self>, <name> ) . . . . . . . try to load a static module
 */
-static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
+static Obj FuncLOAD_STAT(Obj self, Obj filename)
 {
     StructInitInfo * info = 0;
 
     RequireStringRep(SELF_NAME, filename);
-    if (!IS_INTOBJ(crc) && crc != False) {
-        RequireArgument(SELF_NAME, crc, "must be a small integer or 'false'");
-    }
 
     /* try to find the module                                              */
     info = LookupStaticModule(CONST_CSTR_STRING(filename));
@@ -319,17 +302,6 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename, Obj crc)
                0);
         }
         return False;
-    }
-
-    /* check the crc value                                                 */
-    if (crc != False) {
-        if (INT_INTOBJ(crc) != info->crc) {
-            if (SyDebugLoading) {
-                Pr("#I  LOAD_STAT: crc values do not match, gap %d, stat %d\n",
-                   INT_INTOBJ(crc), info->crc);
-            }
-            return False;
-        }
     }
 
     ActivateModule(info);
@@ -1079,8 +1051,8 @@ void ModulesPostRestore(void)
 */
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(GAP_CRC, filename),
-    GVAR_FUNC_2ARGS(LOAD_DYN, filename, crc),
-    GVAR_FUNC_2ARGS(LOAD_STAT, filename, crc),
+    GVAR_FUNC_1ARGS(LOAD_DYN, filename),
+    GVAR_FUNC_1ARGS(LOAD_STAT, filename),
     GVAR_FUNC_0ARGS(SHOW_STAT),
     GVAR_FUNC_0ARGS(LoadedModules),
     GVAR_FUNC_0ARGS(ExportToKernelFinished),
