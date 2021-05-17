@@ -243,7 +243,7 @@ GAPInfo.UseReadline := true;
 ##  are considered as word boundaries. The function is then installed as a 
 ##  macro and bound to the key sequence <B>Esc</B> <B>Q</B>. 
 ##  <P/>
-##  <Example>
+##  <Log>
 ##  gap> EditAddQuotes := function(l)
 ##  >   local str, pos, i, j, new;
 ##  >   str := l[3];
@@ -264,7 +264,7 @@ GAPInfo.UseReadline := true;
 ##  gap> InstallReadlineMacro("addquotes", EditAddQuotes);
 ##  gap> invl := InvocationReadlineMacro("addquotes");;
 ##  gap> ReadlineInitLine(Concatenation("\"\\eQ\":\"",invl,"\""));;
-##  </Example>
+##  </Log>
 ##  </Subsection>
 ##  
 ##  </Section>
