@@ -1898,6 +1898,27 @@ InstallMethod( Omega,
 
 #############################################################################
 ##
+#M  Omega( [<filt>, ][<e>, ]<d>, <F_q> )
+##
+InstallMethod( Omega,
+    [ IsPosInt, IsField and IsFinite ],
+    { d, R } -> OmegaCons( IsMatrixGroup, 0, d, Size( R ) ) );
+
+InstallMethod( Omega,
+    [ IsInt, IsPosInt, IsField and IsFinite ],
+    { e, d, R } -> OmegaCons( IsMatrixGroup, e, d, Size( R ) ) );
+
+InstallMethod( Omega,
+    [ IsFunction, IsPosInt, IsField and IsFinite ],
+    { filt, d, R } -> OmegaCons( filt, 0, d, Size( R ) ) );
+
+InstallMethod( Omega,
+    [ IsFunction, IsInt, IsPosInt, IsField and IsFinite ],
+    { filt, e, d, R } -> OmegaCons( filt, e, d, Size( R ) ) );
+
+
+#############################################################################
+##
 #F  WreathProductOfMatrixGroup( <M>, <P> )  . . . . . . . . .  wreath product
 ##
 BindGlobal( "WreathProductOfMatrixGroup", function( M, P )
@@ -1951,5 +1972,5 @@ PermConstructor(SpecialUnitaryGroupCons,[IsPermGroup,IsInt,IsObject],
 PermConstructor(SymplecticGroupCons,[IsPermGroup,IsInt,IsObject],
   IsMatrixGroup and IsFinite);
 
-PermConstructor(OmegaCons,[IsPermGroup,IsInt,IsObject],
+PermConstructor(OmegaCons,[IsPermGroup,IsInt,IsInt,IsObject],
   IsMatrixGroup and IsFinite);
