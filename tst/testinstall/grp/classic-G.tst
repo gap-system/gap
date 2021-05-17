@@ -71,7 +71,9 @@ true
 
 #
 gap> GO(3);
-Error, usage: GeneralOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> )
+Error, usage: GeneralOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+or GeneralOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+or GeneralOrthogonalGroup( [<filt>, ]<form> )
 gap> GO(3,6);
 Error, <subfield> must be a prime or a finite field
 gap> GO(-1,3,5);
@@ -109,7 +111,8 @@ GU(3,5)
 gap> GU(IsPermGroup,3,4);
 Perm_GU(3,4)
 gap> GU(3);
-Error, usage: GeneralUnitaryGroup( [<filter>, ]<d>, <q> )
+Error, usage: GeneralUnitaryGroup( [<filt>, ]<d>, <q>[, <form>] )
+or GeneralUnitaryGroup( [<filt>, ]<form> )
 gap> GU(3,6);
 Error, <subfield> must be a prime or a finite field
 
@@ -150,6 +153,8 @@ gap> Omega(5,2);
 GO(0,5,2)
 gap> Omega(5,3);
 Omega(0,5,3)
+gap> Omega( 5, GF(3) );
+Omega(0,5,3)
 
 #
 gap> Omega(+1,2,2);
@@ -159,6 +164,8 @@ Omega(+1,2,3)
 gap> Omega(+1,4,2);
 Omega(+1,4,2)
 gap> Omega(+1,4,3);
+Omega(+1,4,3)
+gap> Omega( +1, 4, GF(3) );
 Omega(+1,4,3)
 
 #
@@ -172,18 +179,18 @@ gap> Omega(-1,4,3);
 Omega(-1,4,3)
 
 #
+gap> Omega( IsPermGroup, 5, GF(3) );
+Perm_Omega(0,5,3)
+gap> Omega( IsPermGroup, +1, 4, GF(3) );
+Perm_Omega(+1,4,3)
+
+#
 gap> Omega(0,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Omega' on 2 arguments
 gap> Omega(-1,0,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Omega' on 3 arguments
-gap> Omega(IsPermGroup,3,2);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OmegaCons' on 4 arguments
-gap> Omega(IsPermGroup,0,3,2);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OmegaCons' on 4 arguments
 
 #
 gap> Omega(2,2);
