@@ -148,25 +148,14 @@ with <Ref Func="LoadDynamicModule"/>.
 </Subsection>
 
 <ManSection>
-<Func Name="LoadDynamicModule" Arg='filename[, crc]'/>
+<Func Name="LoadDynamicModule" Arg='filename'/>
 
 <Description>
 To load a compiled file, the command <Ref Func="LoadDynamicModule"/> is used.
-This command loads <A>filename</A> as module. If given, the CRC checksum 
-<A>crc</A> must match the value of the module (see <Ref Sect="CrcFile"/>).
+This command loads <A>filename</A> as module.
 <P/>
 <Log><![CDATA[
 gap> LoadDynamicModule("./test.so");
-gap> CrcFile("test.so");
-2906458206
-gap> LoadDynamicModule("./test.so",1);
-Error, <crc> mismatch (or no support for dynamic loading) called from
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
-brk> quit;
-gap> LoadDynamicModule("./test.so",2906458206);
 ]]></Log>
 <P/>
 On some operating systems, once you have loaded a dynamic module with
