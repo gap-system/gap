@@ -1202,20 +1202,12 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
   /* '\01', increment indentation level                                  */
   if ( ch == '\01' ) {
-
-    if (!stream->format)
-      return;
-
     /* add hint to break line  */
     addLineBreakHint(stream, stream->pos, 16*stream->indent, 1);
   }
 
   /* '\02', decrement indentation level                                  */
   else if ( ch == '\02' ) {
-
-    if (!stream->format)
-      return;
-
     /* if this is a better place to split the line remember it         */
     addLineBreakHint(stream, stream->pos, 16*stream->indent, -1);
   }
@@ -1249,12 +1241,11 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
     /* and dump it from the buffer */
     stream->pos = 0;
-    if (stream->format)
-      {
-        /* indent for next line                                         */
-        for ( i = 0;  i < stream->indent; i++ )
-          stream->line[ stream->pos++ ] = ' ';
-      }
+
+    /* indent for next line                                         */
+    for ( i = 0;  i < stream->indent; i++ )
+      stream->line[ stream->pos++ ] = ' ';
+
     /* reset line break hints                                       */
     stream->hints[0] = -1;
 
