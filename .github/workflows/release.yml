@@ -24,7 +24,7 @@ env:
 
 jobs:
   unix:
-    name: "Create UNIX archives and data"
+    name: "Create Unix archives and data"
     # Don't run this twice on PRs for branches pushed to the same repository
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
@@ -58,15 +58,17 @@ jobs:
         run: python -u ./dev/releases/make_archives.py
 
       - name: "Upload artifacts"
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') && failure() }}
+        if: ${{ (!startsWith(github.ref, 'refs/tags/v') && failure()) || github.event_name == 'schedule' }}
         # Warning: the result is a single .zip file (so things are compressed twice)
         # To keep things from exploding, we only upload a subset of all generated files
         uses: actions/upload-artifact@v2
         with:
+          name: "GAP release tarballs"
           path: |
             tmp/gap-*.tar.gz*
             tmp/*json*
             !tmp/gap-*-core.tar.gz*
+          retention-days: 1
 
       - name: "Make GitHub release"
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
