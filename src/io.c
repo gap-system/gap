@@ -1857,9 +1857,13 @@ static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
     TypOutputFile * output = IO()->Output;
     if (!output)
         ErrorMayQuit("SET_PRINT_FORMATTING_STDOUT called while no output is opened\n", 0, 0);
-    while (output->prev)
+    while (output->prev) {
+        // *stdout* is always file '1'
+        if (output->file == 1) {
+            output->format = (val != False);
+        }
         output = output->prev;
-    output->format = (val != False);
+    }
     return val;
 }
 
