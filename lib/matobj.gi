@@ -620,6 +620,21 @@ InstallMethod( ExtractSubMatrix,
     [ IsMatrixObj, IsList, IsList ],
     { M, rowpos, colpos } -> Matrix( Unpack( M ){ rowpos }{ colpos }, M ) );
 
+# Hack from recog package
+InstallOtherMethod( ExtractSubMatrix, "hack: for lists of compressed vectors",
+[ IsList, IsList, IsList ],
+function( m, poss1, poss2 )
+  local i,n;
+  n := [];
+  for i in poss1 do
+      Add(n,ShallowCopy(m[i]{poss2}));
+  od;
+  if IsFFE(m[1,1]) then
+      ConvertToMatrixRep(n);
+  fi;
+  return n;
+end );
+
 InstallMethod( CopySubVector,
     "generic method for vector objects",
   [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
