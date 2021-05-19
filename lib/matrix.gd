@@ -59,7 +59,7 @@ DeclareGlobalFunction("PrintArray");
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrix );
+DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrixObj );
 
 
 #############################################################################
