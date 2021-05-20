@@ -1158,7 +1158,7 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 ##
 ##  <#GAPDoc Label="IteratorOfPartitionsSet">
 ##  <ManSection>
-##  <Func Name="IteratorOfPartitionsSet" Arg='<set> [, <k> [ <flag> ] ]'/>
+##  <Func Name="IteratorOfPartitionsSet" Arg='set [, k [ flag ] ]'/>
 ##
 ##  <Description>
 ##  <Ref Func="IteratorOfPartitionsSet" /> returns an iterator
