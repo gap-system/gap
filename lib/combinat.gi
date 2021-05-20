@@ -2500,7 +2500,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet, function( s )
       return out;
     end;
 
-    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ) );
+    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s );
 
     isDone := iter -> iter!.next = false;
 

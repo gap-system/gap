@@ -2,7 +2,7 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-#@local i,iter,list,n,pn,it
+#@local i,iter,list,n,pn1,pn2,it
 gap> START_TEST("combinat.tst");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
@@ -461,30 +461,22 @@ gap> NrRestrictedPartitions( 100, [2,3,5,7,11,13,17], 10 );
 
 #F  IteratorOfPartitions( <n> )
 gap> for n in [ 1 .. 15 ] do
->      pn:= Partitions( n );
->      iter:= IteratorOfPartitions( n );
->      list:= [];
->      for i in [ 1 .. Length( pn ) ] do
->        Add( list, NextIterator( iter ) );
->      od;
->      if not IsDoneIterator( iter ) then
+>      pn1:= Partitions( n );
+>      pn2:= List( IteratorOfPartitions( n ) );
+>      if Length(pn1) <> Length(pn2) then
 >        Error( "wrong number of elements" );
->      elif pn <> list then
+>      elif pn1 <> pn2 then
 >        Error( "different elements" );
 >      fi;
 >    od;
 
 #F  IteratorOfPartitionsSet( <set> )
 gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..13]] do
->      pn:= PartitionsSet( s );
->      iter:= IteratorOfPartitionsSet( s );
->      list:= [];
->      for i in [ 1 .. Length( pn ) ] do
->        Add( list, NextIterator( iter ) );
->      od;
->      if not IsDoneIterator( iter ) then
+>      pn1:= PartitionsSet( s );
+>      pn2:= List( IteratorOfPartitionsSet( s ) );
+>      if Length(pn1) <> Length(pn2) then
 >        Error( "wrong number of elements" );
->      elif Set(pn) <> Set(list) then
+>      elif Set(pn1) <> Set(pn2) then
 >        Error( "different elements" );
 >      fi;
 >    od;
