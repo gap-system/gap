@@ -1620,7 +1620,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "IsLexicographicallyLess" );
+DeclareSynonym( "IsLexicographicallyLess", \< );
 
 
 #############################################################################

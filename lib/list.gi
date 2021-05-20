@@ -2385,23 +2385,6 @@ InstallOtherMethod( StableSort,
     [ IsList, IsFunction ],
     SORT_MUTABILITY_ERROR_HANDLER );
 
-#############################################################################
-##
-#F  IsLexicographicallyLess( <list1>, <list2> )
-##
-InstallGlobalFunction( IsLexicographicallyLess, function( list1, list2 )
-    local len, i;
-    len:= Minimum( Length( list1 ), Length( list2 ) );
-    for i in [ 1 .. len ]  do
-      if list1[i] < list2[i] then
-        return true;
-      elif list2[i] < list1[i] then
-        return false;
-      fi;
-    od;
-    return len < Length( list2 );
-end );
-
 
 #############################################################################
 ##
