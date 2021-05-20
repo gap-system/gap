@@ -1154,17 +1154,19 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 
 #############################################################################
 ##
-#F  IteratorOfPartitionsSet( <set> )
+#F  IteratorOfPartitionsSet( <set> [, <k> [ <flag> ] ] )
 ##
 ##  <#GAPDoc Label="IteratorOfPartitionsSet">
 ##  <ManSection>
-##  <Func Name="IteratorOfPartitionsSet" Arg='set'/>
+##  <Func Name="IteratorOfPartitionsSet" Arg='<set> [, <k> [ <flag> ] ]'/>
 ##
 ##  <Description>
 ##  <Ref Func="IteratorOfPartitionsSet" /> returns an iterator
 ##  (see&nbsp;<Ref Sect="Iterators"/>) for all unordered partitions of the
 ##  set <A>set</A> into pairwise disjoint nonempty sets
-##  (see <Ref Func="PartitionsSet"/>).
+##  (see <Ref Func="PartitionsSet"/>). If <A>k</A> given, only partitions of
+##  size <A>k</A> are computed. If flag is also given, then partions of size
+##  at most <A>k</A> are computed.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

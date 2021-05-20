@@ -487,6 +487,35 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..13]] do
 >      elif Set(pn) <> Set(list) then
 >        Error( "different elements" );
 >      fi;
+>      for k in [1 .. Size(s)] do
+>        pn:= PartitionsSet( s, k );
+>        iter:= IteratorOfPartitionsSet( s, k );
+>        list:= [];
+>        for i in [ 1 .. Length( pn ) ] do
+>          Add( list, NextIterator( iter ) );
+>        od;
+>        if not IsDoneIterator( iter ) then
+>          Error( "wrong number of elements" );
+>        elif Set(pn) <> Set(list) then
+>          Error( "different elements" );
+>        fi;
+>      od; 
+>      for k in [1 .. Size(s)] do
+>        pn:= [];;
+>        for x in [0 .. k] do
+>          pn := Concatenation( pn, PartitionsSet( s, x ) );
+>        od;
+>        iter:= IteratorOfPartitionsSet( s, k, true);
+>        list:= [];
+>        for i in [ 1 .. Length( pn ) ] do
+>          Add( list, NextIterator( iter ) );
+>        od;
+>        if not IsDoneIterator( iter ) then
+>          Error( "wrong number of elements" );
+>        elif Set(pn) <> Set(list) then
+>          Error( "different elements" );
+>        fi;
+>      od;
 >    od;
 
 #F  Lucas(<P>,<Q>,<k>)  . . . . . . . . . . . . . . value of a lucas sequence
