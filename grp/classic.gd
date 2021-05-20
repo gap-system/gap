@@ -224,6 +224,13 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
 ##  (and then this form is taken).
+##  <P/>
+##  A given <A>form</A> determines <A>e</A> and <A>d</A>, and also <A>q</A>
+##  except if <A>form</A> is a matrix that does not store its
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  These parameters can be entered, and an error is signalled if they do
+##  not fit to the given <A>form</A>.
+##  <P/>
 ##  If <A>form</A> is not given then a default is chosen as described in the
 ##  introduction to Section <Ref Sect="Classical Groups"/>.
 ##  <P/>
@@ -334,6 +341,13 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  or a form object in <Ref Filt="IsHermitianForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantSesquilinearForm"/> value
 ##  (and then this form is taken).
+##  <P/>
+##  A given <A>form</A> determines <A>d</A>, and also <A>q</A>
+##  except if <A>form</A> is a matrix that does not store its
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  These parameters can be entered, and an error is signalled if they do
+##  not fit to the given <A>form</A>.
+##  <P/>
 ##  If <A>form</A> is not given then a default is chosen as described in the
 ##  introduction to Section <Ref Sect="Classical Groups"/>.
 ##  <P/>
@@ -521,6 +535,13 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
 ##  (and then this form is taken).
+##  <P/>
+##  A given <A>form</A> determines <A>e</A> and <A>d</A>, and also <A>q</A>
+##  except if <A>form</A> is a matrix that does not store its
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  These parameters can be entered, and an error is signalled if they do
+##  not fit to the given <A>form</A>.
+##  <P/>
 ##  If <A>form</A> is not given then a default is chosen as described in the
 ##  introduction to Section <Ref Sect="Classical Groups"/>.
 ##  <P/>
@@ -620,6 +641,13 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  or a form object in <Ref Filt="IsHermitianForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantSesquilinearForm"/> value
 ##  (and then this form is taken).
+##  <P/>
+##  A given <A>form</A> determines <A>d</A>, and also <A>q</A>
+##  except if <A>form</A> is a matrix that does not store its
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  These parameters can be entered, and an error is signalled if they do
+##  not fit to the given <A>form</A>.
+##  <P/>
 ##  If <A>form</A> is not given then a default is chosen as described in the
 ##  introduction to Section <Ref Sect="Classical Groups"/>.
 ##  <P/>
@@ -730,6 +758,13 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  or a form object in <Ref Filt="IsBilinearForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantBilinearForm"/> value
 ##  (and then this form is taken).
+##  <P/>
+##  A given <A>form</A> determines and <A>d</A>, and also <A>q</A>
+##  except if <A>form</A> is a matrix that does not store its
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  These parameters can be entered, and an error is signalled if they do
+##  not fit to the given <A>form</A>.
+##  <P/>
 ##  If <A>form</A> is not given then a default is chosen as described in the
 ##  introduction to Section <Ref Sect="Classical Groups"/>.
 ##  <P/>
@@ -841,6 +876,13 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
 ##  (and then this form is taken).
+##  <P/>
+##  A given <A>form</A> determines <A>e</A> and <A>d</A>, and also <A>q</A>
+##  except if <A>form</A> is a matrix that does not store its
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  These parameters can be entered, and an error is signalled if they do
+##  not fit to the given <A>form</A>.
+##  <P/>
 ##  If <A>form</A> is not given then a default is chosen as described in the
 ##  introduction to Section <Ref Sect="Classical Groups"/>.
 ##  <P/>
@@ -857,6 +899,8 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  gap> g:= Omega( IsPermGroup, 1, 6, 2 );  StructureDescription( g );
 ##  Perm_Omega(+1,6,2)
 ##  "A8"
+##  gap> IsSubset( GO( 3, 5 ), Omega( 3, 5 ) );  # different forms!
+##  false
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
