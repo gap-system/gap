@@ -2465,7 +2465,7 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 ##  tight, and setting $a_j=0$ for all $j>i$.
 ##
 InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
-    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess, isDone, shallowCopy, s, size, ;
+    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess, isDone, shallowCopy, s, size ;
 
     nextIterator := function(iter)
       local j, max, part, m, out, i;
