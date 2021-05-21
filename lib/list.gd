@@ -1599,29 +1599,6 @@ DeclareOperation( "ReversedOp", [ IsDenseList ] );
 ##  
 DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 
-#############################################################################
-##
-#F  IsLexicographicallyLess( <list1>, <list2> )
-##
-##  <#GAPDoc Label="IsLexicographicallyLess">
-##  <ManSection>
-##  <Func Name="IsLexicographicallyLess" Arg='list1, list2'/>
-##
-##  <Description>
-##  Let <A>list1</A> and <A>list2</A> be two dense, but not necessarily
-##  homogeneous lists
-##  (see&nbsp;<Ref Filt="IsDenseList"/>, <Ref Filt="IsHomogeneousList"/>),
-##  such that for each <M>i</M>, the entries in both lists at position
-##  <M>i</M> can be compared via <C>&lt;</C>.
-##  <Ref Func="IsLexicographicallyLess"/> returns <K>true</K> if <A>list1</A>
-##  is smaller than <A>list2</A> w.r.t.&nbsp;lexicographical ordering,
-##  and <K>false</K> otherwise.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareSynonym( "IsLexicographicallyLess", \< );
-
 
 #############################################################################
 ##

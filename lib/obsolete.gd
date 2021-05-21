@@ -722,3 +722,28 @@ end);
 DeclareObsoleteSynonym("GAP_EXIT_CODE", "GapExitCode", 2);
 DeclareObsoleteSynonym("QUIT_GAP", "QuitGap", 2);
 DeclareObsoleteSynonym("FORCE_QUIT_GAP", "ForceQuitGap", 2);
+
+
+#############################################################################
+##
+#F  IsLexicographicallyLess( <list1>, <list2> )
+##
+##  <#GAPDoc Label="IsLexicographicallyLess">
+##  <ManSection>
+##  <Func Name="IsLexicographicallyLess" Arg='list1, list2'/>
+##
+##  <Description>
+##  Let <A>list1</A> and <A>list2</A> be two dense, but not necessarily
+##  homogeneous lists
+##  (see&nbsp;<Ref Filt="IsDenseList"/>, <Ref Filt="IsHomogeneousList"/>),
+##  such that for each <M>i</M>, the entries in both lists at position
+##  <M>i</M> can be compared via <C>&lt;</C>.
+##  <Ref Func="IsLexicographicallyLess"/> returns <K>true</K> if <A>list1</A>
+##  is smaller than <A>list2</A> w.r.t.&nbsp;lexicographical ordering,
+##  and <K>false</K> otherwise.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  Not used in any redistributed package (05/2021)
+DeclareObsoleteSynonym( "IsLexicographicallyLess", "<" );
