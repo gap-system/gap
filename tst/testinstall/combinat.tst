@@ -503,7 +503,7 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..13]] do
 >      for k in [1 .. Size(s)] do
 >        pn:= [];;
 >        for x in [0 .. k] do
->          pn := Concatenation( pn, PartitionsSet( s, x ) );
+>          Append( pn, PartitionsSet( s, x ) );
 >        od;
 >        iter:= IteratorOfPartitionsSet( s, k, true);
 >        list:= [];
