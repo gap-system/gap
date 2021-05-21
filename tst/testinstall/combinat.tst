@@ -2,7 +2,7 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-#@local i,iter,list,n,pn,it
+#@local i,iter,list,n,pn,it,k
 gap> START_TEST("combinat.tst");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
@@ -474,7 +474,7 @@ gap> for n in [ 1 .. 15 ] do
 >      fi;
 >    od;
 
-#F  IteratorOfPartitionsSet( <set> )
+#F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
 gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..13]] do
 >      pn:= PartitionsSet( s );
 >      iter:= IteratorOfPartitionsSet( s );
