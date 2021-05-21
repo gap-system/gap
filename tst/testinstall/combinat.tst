@@ -501,7 +501,7 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..13]] do
 >        fi;
 >      od; 
 >      for k in [1 .. Size(s)] do
->        pn:= [];;
+>        pn:= [];
 >        for x in [0 .. k] do
 >          Append( pn, PartitionsSet( s, x ) );
 >        od;
