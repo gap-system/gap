@@ -158,7 +158,7 @@ DeclareSynonym("AbstractWordTzWord",AssocWordByLetterRep);
 ##  generator is to write
 ##  <C>GeneratorsOfPresentation(P)[Length(GeneratorsOfPresentation(P))]</C>.
 ##  <Example><![CDATA[
-##  gap> G := PerfectGroup( 120 );;
+##  gap> G := PerfectGroup(IsFpGroup, 120 );;
 ##  gap> H := Subgroup( G, [ G.1^G.2, G.3 ] );;
 ##  gap> P := PresentationSubgroup( G, H );
 ##  <presentation with 4 gens and 7 rels of total length 21>
