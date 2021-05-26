@@ -208,19 +208,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # TODO When the PR https://github.com/ChrisJefferson/sage-windows/pull/1
-      # is merged, then should be updated to ChrisJefferson/sage-windows.
-      # Ultimately, this repository should be owned by one of the GAP-related
-      # organisations, and perhaps ultimately it could/should be re-integrated
+      # The following repository should eventually be owned by a GAP-related
+      # organisation, and perhaps ultimately it could/should be re-integrated
       # with the original sagemath/sage-windows repository.
       - name: "Clone the Windows installer maker scripts"
         uses: actions/checkout@v2
         with:
-          repository: wilfwilson/sage-windows
+          repository: ChrisJefferson/sage-windows
           ref: master
           path: sage-windows
 
-      - uses: gap-actions/setup-cygwin-for-gap@v1
+      - uses: gap-actions/setup-cygwin@v1
 
       # Currently, the sage-windows/release_gap.sh script wraps the GAP
       # contained in gap-$VERSION, and outputs its installer to
