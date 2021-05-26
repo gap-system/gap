@@ -566,12 +566,24 @@ end );
 ##
 #F  LoadDynamicModule( <filename> ) . . . . . .  try to load a dynamic module
 ##
+##  <#GAPDoc Label="LoadDynamicModule">
 ##  <ManSection>
 ##  <Func Name="LoadDynamicModule" Arg='filename'/>
 ##
 ##  <Description>
+##  To load a compiled file, the command <Ref Func="LoadDynamicModule"/> is
+##  used. This command loads <A>filename</A> as module.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> LoadDynamicModule("./test.so");
+##  ]]></Log>
+##  <P/>
+##  On some operating systems, once you have loaded a dynamic module with a
+##  certain filename, loading another with the same filename will have no
+##  effect, even if the file on disk has changed.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "LoadDynamicModule", function( filename )
 
@@ -602,6 +614,119 @@ BIND_GLOBAL( "LoadStaticModule", function( filename )
         Error( "loading static module ", filename, " failed" );
     fi;
 
+end );
+
+
+#############################################################################
+##
+#F  IsKernelExtensionAvailable( <pkgname> [, <modname> ] )
+##
+##  <#GAPDoc Label="IsKernelExtensionAvailable">
+##  <ManSection>
+##  <Func Name="IsKernelExtensionAvailable" Arg='pkgname[, modname]'/>
+##
+##  <Description>
+##  For use by packages: Search for a loadable kernel module inside package
+##  <A>pkgname</A> with name <A>modname</A> and return <K>true</K> if found,
+##  otherwise <K>false</K>.
+##  If <A>modname</A> is omitted, then <A>pkgname</A> is used instead. Note
+##  that package names are case insensitive, but <A>modname</A> is not.
+##  <P/>
+##  This function first appeared in GAP 4.12. It is typically called in the
+##  <C>AvailabilityTest</C> function of a package
+##  (see <Ref Subsect="Test for the Existence of GAP Package Binaries"/>).
+##  <Log><![CDATA[
+##  gap> IsKernelExtensionAvailable("myPackageWithKernelExtension");
+##  true
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "IsKernelExtensionAvailable", function( pkgname, modname... )
+    local fname;
+
+    if Length(modname) = 0 then
+        modname := pkgname;
+    elif Length(modname) = 1 then
+        modname := modname[1];
+    else
+        Error( "usage: IsKernelExtensionAvailable( <pkgname> [, <modname> ] )" );
+    fi;
+
+    if modname in SHOW_STAT() then
+        return true;
+    fi;
+    fname := Filename(DirectoriesPackagePrograms(pkgname), Concatenation(modname, ".so"));
+    if fname <> fail then
+        return IS_LOADABLE_DYN(fname);
+    fi;
+    return false;
+end );
+
+
+#############################################################################
+##
+#F  LoadKernelExtension( <pkgname> [, <modname> ] )
+##
+##  <#GAPDoc Label="LoadKernelExtension">
+##  <ManSection>
+##  <Func Name="LoadKernelExtension" Arg='pkgname[, modname]'/>
+##
+##  <Description>
+##  For use by packages: Search for a loadable kernel module inside package
+##  <A>pkgname</A> with name <A>modname</A>, and load it if found.
+##  If <A>modname</A> is omitted, then <A>pkgname</A> is used instead. Note
+##  that package names are case insensitive, but <A>modname</A> is not.
+##  <P/>
+##  This function first appeared in GAP 4.12. It is typically called in the
+##  <F>init.g</F> file of a package.
+##  <P/>
+##  Previously, packages with a kernel module typically used code like this:
+##  <Listing><![CDATA[
+##  path := Filename(DirectoriesPackagePrograms("SomePackage"), "SomePackage.so");
+##  if path <> fail then
+##    LoadDynamicModule(path);
+##  fi;
+##  ]]></Listing>
+##  That can now be replaced by the following, which also produces more
+##  helpful error messages for the user:
+##  <Listing><![CDATA[
+##  LoadKernelExtension("SomePackage");
+##  ]]></Listing>
+##  For packages where the name of the kernel extension is not identical to
+##  that of the package, you can either rename the kernel extension to have a
+##  matching name (recommended if you only have a single kernel extension in
+##  your package, which is how we recommend to set up things anyway), or else
+##  use the two argument version:
+##  <Log><![CDATA[
+##  LoadKernelExtension("SomePackage", "kext"); # this will look for kext.so
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "LoadKernelExtension", function( pkgname, modname... )
+    local fname;
+
+    if Length(modname) = 0 then
+        modname := pkgname;
+    elif Length(modname) = 1 then
+        modname := modname[1];
+    else
+        Error( "usage: LoadKernelExtension( <pkgname> [, <modname> ] )" );
+    fi;
+
+    if modname in SHOW_STAT() then
+        LoadStaticModule(modname);
+        return true;
+    fi;
+    fname := Filename(DirectoriesPackagePrograms(pkgname), Concatenation(modname, ".so"));
+    if fname <> fail then
+        LoadDynamicModule(fname);
+        return true;
+    fi;
+    return false;
 end );
 
 
