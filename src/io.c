@@ -1285,12 +1285,12 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
       /* if we are going to split at the end of the line, and we are
          formatting discard blanks */
-      if ( stream->format && spos == stream->pos && ch == ' ' ) {
+      if ( !SyLineWrappingDisabled && stream->format && spos == stream->pos && ch == ' ' ) {
         ;
       }
 
       /* full line, acceptable split position                              */
-      else if ( stream->format && spos != 0 ) {
+      else if ( !SyLineWrappingDisabled && stream->format && spos != 0 ) {
 
         /* add character to the line, terminate it                         */
         stream->line[ stream->pos++ ] = ch;
@@ -1329,7 +1329,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
       /* full line, no split position                                       */
       else {
 
-        if (stream->format)
+        if ( !SyLineWrappingDisabled && stream->format )
           {
             /* append a '\',*/
             stream->line[ stream->pos++ ] = '\\';
@@ -1343,7 +1343,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         stream->pos = 0;
         stream->line[ stream->pos++ ] = ch;
 
-        if (stream->format)
+        if ( !SyLineWrappingDisabled && stream->format )
           stream->hints[0] = -1;
       }
 
