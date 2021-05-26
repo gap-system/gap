@@ -131,19 +131,6 @@ gap> GAP_CRC("foobar");
 0
 
 #
-gap> LOAD_DYN(fail);
-Error, LOAD_DYN: <filename> must be a string (not the value 'fail')
-
-#
-gap> LOAD_STAT(fail);
-Error, LOAD_STAT: <filename> must be a string (not the value 'fail')
-gap> LOAD_STAT("foobar");
-false
-
-#
-gap> LoadedModules();;
-
-#
 gap> GASMAN();
 Error, usage: GASMAN( "display"|"displayshort"|"clear"|"collect"|"message"|"pa\
 rtial" )
@@ -186,7 +173,7 @@ gap> Sleep(0);
 gap> Sleep(1);
 
 #
-gap>    MicroSleep(fail);
+gap> MicroSleep(fail);
 Error, MicroSleep: <msecs> must be a small integer (not the value 'fail')
 gap> MicroSleep(0);
 gap> MicroSleep(1);

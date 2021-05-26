@@ -143,26 +143,20 @@ $ gap4/bin/i386-ibm-linux-gcc2/gac -d test.c
 ]]></Log>
 <P/>
 This will produce a file <F>test.so</F>, which then can be loaded into &GAP;
-with <Ref Func="LoadDynamicModule"/>.
+with <Ref Func="LoadKernelExtension"/>. If the kernel module is required
+for the package to work, then its <F>PackageInfo.g</F> should define
+a <C>AvailabilityTest</C> which calls <Ref Func="IsKernelExtensionAvailable"/>,
+see <Ref Subsect="Test for the Existence of GAP Package Binaries"/> for details.
+<P/>
+Note that before GAP 4.12, <Ref Func="LoadDynamicModule"/> was used for this.
+It is still available and in fact <Ref Func="LoadKernelExtension"/> call it;
+but the latter provides a higher level abstraction and is more convenient to use.
 
 </Subsection>
 
-<ManSection>
-<Func Name="LoadDynamicModule" Arg='filename'/>
-
-<Description>
-To load a compiled file, the command <Ref Func="LoadDynamicModule"/> is used.
-This command loads <A>filename</A> as module.
-<P/>
-<Log><![CDATA[
-gap> LoadDynamicModule("./test.so");
-]]></Log>
-<P/>
-On some operating systems, once you have loaded a dynamic module with
-a certain filename, loading another with the same filename will have
-no effect, even if the file on disk has changed.
-</Description>
-</ManSection>
+<#Include Label="IsKernelExtensionAvailable">
+<#Include Label="LoadKernelExtension">
+<#Include Label="LoadDynamicModule">
 
 <Subsection Label="The PackageInfo.g File">
 <Heading>The PackageInfo.g File</Heading>
@@ -1279,6 +1273,25 @@ only run under UNIX (and not e.g. under Windows), or may not compile with
 some compilers or default compiler options.
 See&nbsp;<Ref Sect="Testing for the System Architecture"/>
 for information on how to test for the architecture.
+<P/>
+Package using a kernel module (see <Ref Subsect="Kernel modules"/>),
+one may use a test like this:
+<Listing><![CDATA[
+...
+AvailabilityTest := function()
+    # see if example.so exists and is a loadable kernel extension
+    if IsKernelExtensionAvailable("example") then
+      LogPackageLoadingMessage( PACKAGE_WARNING,
+          [ "The kernel extension `example' is unavailable,",
+            "perhaps it needs to be recompiled?",
+            "See the installation instructions;",
+            "type: ?Installing the Example package" ] );
+      return false;
+    fi;
+    return true;
+  end,
+...
+]]></Listing>
 <P/>
 <Index Key="LogPackageLoadingMessage"><C>LogPackageLoadingMessage</C></Index>
 Last but not least: do not print anything in the <C>AvailabilityTest</C> 

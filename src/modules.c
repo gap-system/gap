@@ -205,31 +205,65 @@ StructInitInfo * LookupStaticModule(const char * name)
 **  This function attempts to load a compiled module <name>.
 **  If successful, it returns 0, and sets <func> to a pointer to the init
 **  function of the module. In case of an error, <func> is set to 0, and the
-**  return value indicates which error occurred.
+**  return value is a pointer to a string with more information.
 */
 #ifdef HAVE_DLOPEN
-static Int SyLoadModule(const Char * name, InitInfoFunc * func)
+static const char * SyLoadModule(const Char * name, InitInfoFunc * func)
 {
-    void *          init;
-    void *          handle;
-
-    *func = 0;
-
-    handle = dlopen( name, RTLD_LAZY | RTLD_LOCAL);
-    if ( handle == 0 ) {
-      Pr("#W dlopen() error: %s\n", (long) dlerror(), 0);
-      return 1;
+    void * handle = dlopen(name, RTLD_LAZY | RTLD_LOCAL);
+    if (handle == 0) {
+        *func = 0;
+        return dlerror();
     }
 
-    init = dlsym( handle, "Init__Dynamic" );
-    if ( init == 0 )
-      return 3;
+    *func = (InitInfoFunc)dlsym(handle, "Init__Dynamic");
+    if (*func == 0)
+        return "symbol 'Init__Dynamic' not found";
 
-    *func = (InitInfoFunc) init;
     return 0;
 }
 #endif
 
+
+/****************************************************************************
+**
+*F  FuncIS_LOADABLE_DYN( <self>, <name> ) . test if a dyn. module is loadable
+*/
+static Obj FuncIS_LOADABLE_DYN(Obj self, Obj filename)
+{
+    RequireStringRep(SELF_NAME, filename);
+
+#if !defined(HAVE_DLOPEN)
+    return False;
+#else
+
+    InitInfoFunc init;
+
+    // try to load the module
+    SyLoadModule(CONST_CSTR_STRING(filename), &init);
+    if (init == 0)
+        return False;
+
+    // get the description structure
+    StructInitInfo * info = (*init)();
+    if (info == 0)
+        return False;
+
+    // info->type should not be larger than kernel version
+    if (info->type / 10 > GAP_KERNEL_API_VERSION)
+        return False;
+
+    // info->type should not have an older major version
+    if (info->type / 10000 < GAP_KERNEL_MAJOR_VERSION)
+        return False;
+
+    // info->type % 10 should be 0, 1 or 2, for the 3 types of module
+    if (info->type % 10 > 2)
+        return False;
+
+    return True;
+#endif
+}
 
 
 /****************************************************************************
@@ -250,14 +284,12 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename)
 
     InitInfoFunc init;
 
-    /* try to read the module                                              */
-    Int res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
-    if (res == 1)
-        ErrorQuit("module '%g' not found", (Int)filename, 0);
-    else if (res == 3)
-        ErrorQuit("symbol 'Init_Dynamic' not found", 0, 0);
+    // try to read the module
+    const char * res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
+    if (res)
+        ErrorQuit("failed to load dynamic module %g, %s", (Int)filename, (Int)res);
 
-    /* get the description structure                                       */
+    // get the description structure
     StructInitInfo * info = (*init)();
     if (info == 0)
         ErrorQuit("call to init function failed", 0, 0);
@@ -857,17 +889,13 @@ void LoadModules(void)
                 InitInfoFunc init;
 
 #ifdef HAVE_DLOPEN
-                int res = SyLoadModule(buf, &init);
-                if (res != 0) {
-                    Panic("Failed to load needed dynamic module %s, error "
-                          "code %d\n",
-                          buf, res);
+                const char * res = SyLoadModule(buf, &init);
+                if (init == 0) {
+                    Panic("failed to load dynamic module %s, %s\n", buf, res);
                 }
                 info = (*init)();
                 if (info == 0) {
-                    Panic("Failed to init needed dynamic module %s, error "
-                          "code %d\n",
-                          buf, res);
+                    Panic("failed to init dynamic module %s\n", buf);
                 }
 #else
                 Panic("workspace require dynamic module %s, but dynamic "
@@ -1053,6 +1081,7 @@ void ModulesPostRestore(void)
 */
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(GAP_CRC, filename),
+    GVAR_FUNC_1ARGS(IS_LOADABLE_DYN, filename),
     GVAR_FUNC_1ARGS(LOAD_DYN, filename),
     GVAR_FUNC_1ARGS(LOAD_STAT, filename),
     GVAR_FUNC_0ARGS(SHOW_STAT),
