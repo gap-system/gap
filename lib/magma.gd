@@ -485,14 +485,16 @@ DeclareAttribute( "TrivialSubmagmaWithOne", IsMagmaWithOne );
 
 #############################################################################
 ##
-#P  IsAssociative( <M> )  . . . . . . . . test whether a magma is associative
+#P  IsAssociative( <M> )  . . . . .  test whether a collection is associative
 ##
 ##  <#GAPDoc Label="IsAssociative">
 ##  <ManSection>
 ##  <Prop Name="IsAssociative" Arg='M'/>
 ##
 ##  <Description>
-##  A magma <A>M</A> is <E>associative</E> if for all elements
+##  A collection <A>M</A> of elements that can be multiplied via
+##  <Ref Oper="\*"/>
+##  is <E>associative</E> if for all elements
 ##  <M>a, b, c \in</M> <A>M</A> the equality
 ##  <M>(a</M><C> * </C><M>b)</M><C> * </C><M>c =
 ##  a</M><C> * </C><M>(b</M><C> * </C><M>c)</M> holds.
@@ -507,10 +509,9 @@ DeclareAttribute( "TrivialSubmagmaWithOne", IsMagmaWithOne );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsAssociative", IsMagma );
+DeclareProperty( "IsAssociative", IsCollection );
 
-InstallTrueMethod( IsAssociative,
-    IsAssociativeElementCollection and IsMagma );
+InstallTrueMethod( IsAssociative, IsAssociativeElementCollection );
 
 InstallSubsetMaintenance( IsAssociative,
     IsMagma and IsAssociative, IsMagma );
@@ -523,7 +524,7 @@ InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 
 #############################################################################
 ##
-#P  IsCommutative( <M> )  . . . . . . . . test whether a magma is commutative
+#P  IsCommutative( <M> )  . . . . .  test whether a collection is commutative
 #P  IsAbelian( <M> )
 ##
 ##  <#GAPDoc Label="IsCommutative">
@@ -532,7 +533,9 @@ InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 ##  <Prop Name="IsAbelian" Arg='M'/>
 ##
 ##  <Description>
-##  A magma <A>M</A> is <E>commutative</E> if for all elements
+##  A collection <A>M</A> of elements that can be multiplied via
+##  <Ref Oper="\*"/>
+##  is <E>commutative</E> if for all elements
 ##  <M>a, b \in</M> <A>M</A> the
 ##  equality <M>a</M><C> * </C><M>b = b</M><C> * </C><M>a</M> holds.
 ##  <Ref Prop="IsAbelian"/> is a synonym of <Ref Prop="IsCommutative"/>.
@@ -544,12 +547,11 @@ InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsCommutative", IsMagma );
+DeclareProperty( "IsCommutative", IsCollection );
 
 DeclareSynonymAttr( "IsAbelian", IsCommutative );
 
-InstallTrueMethod( IsCommutative,
-    IsCommutativeElementCollection and IsMagma );
+InstallTrueMethod( IsCommutative, IsCommutativeElementCollection );
 
 InstallSubsetMaintenance( IsCommutative,
     IsMagma and IsCommutative, IsMagma );

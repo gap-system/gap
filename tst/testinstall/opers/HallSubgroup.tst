@@ -18,7 +18,7 @@ gap> List(HallSubgroup(G, [2,3]), IdGroup);
 [ [ 24, 12 ], [ 24, 12 ] ]
 
 #
-gap> G:=PerfectGroup(60,1);
+gap> G:=PerfectGroup(IsFpGroup,60,1);
 A5
 gap> IsFpGroup(G);
 true

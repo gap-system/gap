@@ -136,7 +136,7 @@ InstallMethod( Display,
 ##
 InstallMethod( IsGeneralizedCartanMatrix,
     "for a matrix",
-    [ IsMatrix ],
+    [ IsMatrixObj ],
     function( A )
 
     local n, i, j;

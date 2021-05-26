@@ -428,12 +428,13 @@ InstallGlobalFunction( PerfectGroup, function(arg)
 local func,sz,p;
   PerfGrpLoad(0); # force loading
   if not IsFunction(arg[1]) then 
-    func:=IsSubgroupFpGroup;
+    func:=IsPermGroup;
     sz:=arg;
   else
     func:=arg[1];
     sz:=arg{[2..Length(arg)]};
   fi;
+  if func=IsFpGroup then func:=IsSubgroupFpGroup;fi;
   # list given
   if Length(sz)=1 then
     if not IsList(sz[1]) then

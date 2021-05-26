@@ -544,6 +544,10 @@ InstallMethod( AsSemigroup,
     function ( D )
     local   S,  L;
 
+    if not IsAssociative( D ) then
+      return fail;
+    fi;
+
     D := AsSSortedList( D );
     L := ShallowCopy( D );
     S := Submagma( SemigroupByGenerators( D ), [] );

@@ -131,19 +131,13 @@ gap> GAP_CRC("foobar");
 0
 
 #
-gap> LOAD_DYN(fail, fail);
+gap> LOAD_DYN(fail);
 Error, LOAD_DYN: <filename> must be a string (not the value 'fail')
-gap> LOAD_DYN("foobar", fail);
-Error, LOAD_DYN: <crc> must be a small integer or 'false' (not the value 'fail\
-')
 
 #
-gap> LOAD_STAT(fail, fail);
+gap> LOAD_STAT(fail);
 Error, LOAD_STAT: <filename> must be a string (not the value 'fail')
-gap> LOAD_STAT("foobar", fail);
-Error, LOAD_STAT: <crc> must be a small integer or 'false' (not the value 'fai\
-l')
-gap> LOAD_STAT("foobar", false);
+gap> LOAD_STAT("foobar");
 false
 
 #

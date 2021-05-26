@@ -1658,7 +1658,6 @@ with possibly slightly different meaning for lists and non-list collections.
 <#Include Label="Flat">
 <#Include Label="Reversed">
 <#Include Label="Shuffle">
-<#Include Label="IsLexicographicallyLess">
 <#Include Label="Apply">
 <#Include Label="Perform">
 <#Include Label="PermListList">

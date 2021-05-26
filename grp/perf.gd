@@ -165,7 +165,7 @@ DeclareSynonym("NrPerfectLibraryGroups",NumberPerfectLibraryGroups);
 ##  <Ref Filt="IsSubgroupFpGroup"/>.
 ##  In the latter case, the  generators and relators used coincide with those
 ##  given in&nbsp;<Cite Key="HP89"/>.
-##  The default filter is <Ref Filt="IsSubgroupFpGroup"/>.
+##  The default filter is <Ref Filt="IsPermGroup"/>.
 ##  <Example><![CDATA[
 ##  gap> G := PerfectGroup(IsPermGroup,6048,1);
 ##  U3(3)

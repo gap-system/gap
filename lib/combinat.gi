@@ -2465,7 +2465,8 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 ##  tight, and setting $a_j=0$ for all $j>i$.
 ##
 InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
-    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess, isDone, shallowCopy, s, size ;
+    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess, isDone,
+        shallowCopy, shallowCopy2, s, size ;
 
     nextIterator := function(iter)
       local j, max, part, m, out, i;
@@ -2579,7 +2580,8 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
       od;
     end;
 
-    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ) );
+    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s );
+    shallowCopy2 := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s, sz := iter!.sz );
 
     isDone := iter -> iter!.next = false;
 
@@ -2608,7 +2610,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
       return IteratorByFunctions( rec(
         IsDoneIterator := isDone,
         NextIterator := nextIteratorGivenSize,
-        ShallowCopy := shallowCopy,
+        ShallowCopy := shallowCopy2,
         s := Immutable(s),
         next := ListWithIdenticalEntries(Size(s), 0),
         sz := size));
@@ -2630,7 +2632,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
         return IteratorByFunctions( rec(
           IsDoneIterator := isDone,
           NextIterator := nextIteratorGivenSizeOrLess,
-          ShallowCopy := shallowCopy,
+          ShallowCopy := shallowCopy2,
           s := Immutable(s),
           next := ListWithIdenticalEntries(Size(s), 0),
           sz := size));
@@ -2638,7 +2640,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
         return IteratorByFunctions( rec(
           IsDoneIterator := isDone,
           NextIterator := nextIteratorGivenSize,
-          ShallowCopy := shallowCopy,
+          ShallowCopy := shallowCopy2,
           s := Immutable(s),
           next := ListWithIdenticalEntries(Size(s), 0),
           sz := size));

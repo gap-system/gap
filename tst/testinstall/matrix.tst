@@ -1,4 +1,26 @@
 #
+gap> IsGeneralizedCartanMatrix(NullMat(3, 3));
+false
+gap> IsGeneralizedCartanMatrix(NullMat(1, 3));
+Error, <A> must be a square matrix
+gap> IsGeneralizedCartanMatrix([[1,1],[1,1]]);
+false
+gap> IsGeneralizedCartanMatrix([[2,1],[1,2]]);
+false
+gap> IsGeneralizedCartanMatrix([[2,1],[0,2]]);
+false
+gap> IsGeneralizedCartanMatrix([[2,0],[1,2]]);
+false
+gap> IsGeneralizedCartanMatrix([[2,0],[0,2]]);
+true
+gap> IsGeneralizedCartanMatrix([[2,-1],[-1,2]]);
+true
+gap> IsGeneralizedCartanMatrix([[2,-1],[-2,2]]);
+true
+gap> IsGeneralizedCartanMatrix([[2,-2],[-2,2]]);
+true
+
+#
 gap> IsDiagonalMat(NullMat(3, 3));
 true
 gap> IsDiagonalMat(NullMat(1, 3));

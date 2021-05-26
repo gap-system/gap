@@ -95,7 +95,7 @@ InstallGlobalFunction( BlockMatrix, function( arg )
         Add( newblocks, block );
       fi;
     od;
-    Sort( newblocks, IsLexicographicallyLess );
+    Sort( newblocks );
     i:=1;
     while i+1<=Length(newblocks) do
       if newblocks[i][1] = newblocks[ i+1 ][1] and
@@ -337,7 +337,7 @@ InstallMethod( \+,
        and bm1!.cpb = bm2!.cpb then
 
       blocks:= Concatenation( bm1!.blocks, bm2!.blocks );
-      Sort( blocks, IsLexicographicallyLess );
+      Sort( blocks );
       pos:= 1;
       i:= 1;
       while i < Length( blocks ) do

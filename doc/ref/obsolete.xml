@@ -27,10 +27,6 @@ We decided to change the names to avoid confusion with the term
 <P/>
 Here are some examples of such name changes.
 <P/>
-<Index Key="Operation"><C>Operation</C></Index>
-<Index Key="RepresentativeOperation"><C>RepresentativeOperation</C></Index>
-<Index Key="OperationHomomorphism"><C>OperationHomomorphism</C></Index>
-<Index Key="FunctionOperation"><C>FunctionOperation</C></Index>
 <Table Align="l|l">
 <Row>
   <Item><E>OLD</E></Item>
@@ -38,20 +34,24 @@ Here are some examples of such name changes.
 </Row>
 <HorLine/>
 <Row>
-  <Item><C>Operation</C></Item>
+  <Item><C>Operation</C><Index Key="Operation"><C>Operation</C></Index></Item>
   <Item><Ref Func="Action" Label="for a group, an action domain, etc."/></Item>
 </Row>
 <Row>
-  <Item><C>RepresentativeOperation</C></Item>
+  <Item><C>RepresentativeOperation</C><Index Key="RepresentativeOperation"><C>RepresentativeOperation</C></Index></Item>
   <Item><Ref Func="RepresentativeAction"/></Item>
 </Row>
 <Row>
-  <Item><C>OperationHomomorphism</C></Item>
+  <Item><C>OperationHomomorphism</C><Index Key="OperationHomomorphism"><C>OperationHomomorphism</C></Index></Item>
   <Item><Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/></Item>
 </Row>
 <Row>
-  <Item><C>FunctionOperation</C></Item>
+  <Item><C>FunctionOperation</C><Index Key="FunctionOperation"><C>FunctionOperation</C></Index></Item>
   <Item><Ref Attr="FunctionAction"/></Item>
+</Row>
+<Row>
+  <Item><C>IsLexicographicallyLess</C><Index Key="IsLexicographicallyLess"><C>IsLexicographicallyLess</C></Index></Item>
+  <Item><Ref Attr="\&lt;"/></Item>
 </Row>
 </Table>
 
