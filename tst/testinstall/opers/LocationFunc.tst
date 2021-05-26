@@ -1,5 +1,9 @@
 gap> START_TEST("LocationFunc.tst");
 
+#
+gap> LocationFunc(fail);
+Error, <func> must be a function
+
 # regular GAP function
 gap> f:=x->x;;
 gap> LocationFunc(f);
@@ -23,6 +27,14 @@ true
 # proper kernel function
 gap> LocationFunc(APPEND_LIST_INTR);
 "src/listfunc.c:APPEND_LIST_INTR"
+
+# String is an attribute, so no information is stored
+gap> LocationFunc( String );
+fail
+
+# functions created from a syntax tree have no location
+gap> LocationFunc(SYNTAX_TREE_CODE(SYNTAX_TREE(x->x)));
+fail
 
 #
 gap> STOP_TEST("LocationFunc.tst", 1);

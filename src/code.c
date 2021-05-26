@@ -211,7 +211,7 @@ void SET_GAPNAMEID_BODY(Obj body, UInt val)
 Obj GET_LOCATION_BODY(Obj body)
 {
     Obj location = BODY_HEADER(body)->startline_or_location;
-    return IS_STRING_REP(location) ? location : 0;
+    return (location && IS_STRING_REP(location)) ? location : 0;
 }
 
 void SET_LOCATION_BODY(Obj body, Obj val)
