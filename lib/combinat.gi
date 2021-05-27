@@ -2464,9 +2464,13 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 ##  by incrementing $a_i$ for the largest $i$ such that the inequality is not
 ##  tight, and setting $a_j=0$ for all $j>i$.
 ##
-InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
-    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess, isDone,
-        shallowCopy, shallowCopy2, s, size ;
+InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
+    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess,
+        isDone, shallowCopy, k, r;
+
+    if not IsSet(s) then
+      Error( "<s> must be a set" );
+    fi;
 
     nextIterator := function(iter)
       local j, max, part, m, out, i;
@@ -2580,74 +2584,41 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( arg )
       od;
     end;
 
-    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s );
-    shallowCopy2 := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s, sz := iter!.sz );
+    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s, sz := iter!.sz );
 
     isDone := iter -> iter!.next = false;
 
-    if Length( arg ) = 1 then
-      if not IsSet(arg[1]) then
-        Error( "<s> must be a set" );
-      fi;
-      s:=arg[1];;
-      return IteratorByFunctions( rec(
-        IsDoneIterator := isDone,
-        NextIterator := nextIterator,
-        ShallowCopy := shallowCopy,
-        s := Immutable(s),
-        next := ListWithIdenticalEntries(Size(s), 0)));
-    elif Length( arg ) = 2 then
-      if not IsSet(arg[1]) then
-        Error( "<s> must be a set" );
-      fi;
-      s:=arg[1];;
-      if not IsInt(arg[2]) then
+    r := rec(
+            IsDoneIterator := isDone,
+            NextIterator := nextIterator,
+            ShallowCopy := shallowCopy,
+            s := Immutable(s),
+            next := ListWithIdenticalEntries(Size(s), 0),
+            sz := fail,
+         );
+
+    if Length( arg ) = 1 or Length( arg ) = 2 then
+      k := arg[1];
+      if not IsInt(k) then
         Error("usage: <k> must be an integer");
-      elif arg[2]<1 or arg[2] > Length(arg[1]) then
+      elif k<1 or k > Length(s) then
         Error("usage: <k> must be between 1 and size of <s>");
       fi;
-      size:=arg[2];;
-      return IteratorByFunctions( rec(
-        IsDoneIterator := isDone,
-        NextIterator := nextIteratorGivenSize,
-        ShallowCopy := shallowCopy2,
-        s := Immutable(s),
-        next := ListWithIdenticalEntries(Size(s), 0),
-        sz := size));
-    elif Length( arg ) = 3 then
-      if not IsSet(arg[1]) then
-        Error( "<s> must be a set" );
+      r.sz := k;
+      r.NextIterator := nextIteratorGivenSize;
+
+      if Length( arg ) = 2 then
+        if arg[2] = true then
+          r.NextIterator := nextIteratorGivenSizeOrLess;
+        elif arg[2] <> false then
+          Error("usage: <flag> must be true or false");
+        fi;
       fi;
-      s:=arg[1];;
-      if not IsInt(arg[2]) then
-        Error("usage: <k> must be an integer");
-      elif arg[2]<1 or arg[2] > Length(arg[1]) then
-        Error("usage: <k> must be between 1 and size of <s>");
-      fi;
-      size:=arg[2];;
-      if not arg[3] in [true, false] then
-        Error("usage: <flag> must be true or false");
-      fi;
-      if arg[3] = true then
-        return IteratorByFunctions( rec(
-          IsDoneIterator := isDone,
-          NextIterator := nextIteratorGivenSizeOrLess,
-          ShallowCopy := shallowCopy2,
-          s := Immutable(s),
-          next := ListWithIdenticalEntries(Size(s), 0),
-          sz := size));
-      else
-        return IteratorByFunctions( rec(
-          IsDoneIterator := isDone,
-          NextIterator := nextIteratorGivenSize,
-          ShallowCopy := shallowCopy2,
-          s := Immutable(s),
-          next := ListWithIdenticalEntries(Size(s), 0),
-          sz := size));
-      fi;
-    else
+    elif Length( arg ) = 1 or Length( arg ) = 2 then
       Error( "usage: IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )" );
     fi;
+
+    return IteratorByFunctions(r);
   end);
 
 
