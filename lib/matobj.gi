@@ -1603,7 +1603,7 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and 
         return fail;
     fi;
   
-    for i in [1..NrColumns(mat)] do
+    for i in [1..NrCols(mat)] do
         mat[row,i] := scalar * mat[row,i];
     od;
     
@@ -1624,7 +1624,7 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and 
   
 #    CopyMat := ShallowCopy(mat);
   
-#    for i in [1..NrColumns(mat)] do
+#    for i in [1..NrCols(mat)] do
 #        CopyMat[row,i] := scalar * CopyMat[row,i];
 #    od;
     
@@ -1659,8 +1659,8 @@ InstallMethod( MultMatrixColumn, "for a mutable matrix object, one column number
     local i;
     
     # Checks
-    if not( 0 < row and row < NrColumns(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrColumns(mat) ");
+    if not( 0 < column and column < NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
         return fail;
     fi;
   
@@ -1729,7 +1729,7 @@ InstallMethod( MultMatrixRowRight, "for a mutable matrix object, one row number,
         return fail;
     fi;
   
-    for i in [1..NrColumns(mat)] do
+    for i in [1..NrCols(mat)] do
         mat[row,i] := mat[row,i] * scalar;
     od;
     
@@ -1760,8 +1760,8 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column nu
     local i;
     
     # Checks
-    if not( 0 < row and row < NrColumns(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrColumns(mat) ");
+    if not( 0 < column and column < NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
         return fail;
     fi;
   
@@ -1836,7 +1836,7 @@ InstallMethod( AddMatrixRows, "for a mutable matrix object, one row number, seco
  
     if row1 <> row2 then
         
-        for i in [1..NrColumns(mat)] do
+        for i in [1..NrCols(mat)] do
             mat[row1,i] := mat[row1,i] + scalar * mat[row2,i];
         od;
         
@@ -1911,7 +1911,7 @@ InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row number,
  
     if row1 <> row2 then
         
-        for i in [1..NrColumns(mat)] do
+        for i in [1..NrCols(mat)] do
             mat[row1,i] := mat[row1,i] + mat[row2,i] * scalar;
         od;
         
@@ -1947,12 +1947,12 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
     local i;
     
     # Checks
-    if not( 0 < column1 and column1 < NrColumns(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrColumns(mat) ");
+    if not( 0 < column1 and column1 < NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
         return fail;
     fi;
-    if not( 0 < column2 and column2 < NrColumns(mat) ) then
-        Print("The third argument row has to fulfill 0 < row < NrColumns(mat) ");
+    if not( 0 < column2 and column2 < NrCols(mat) ) then
+        Print("The third argument row has to fulfill 0 < row < NrCols(mat) ");
         return fail;
     fi;
  
@@ -1994,12 +1994,12 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
     local i;
     
     # Checks
-    if not( 0 < column1 and column1 < NrColumns(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrColumns(mat) ");
+    if not( 0 < column1 and column1 < NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
         return fail;
     fi;
-    if not( 0 < column2 and column2 < NrColumns(mat) ) then
-        Print("The third argument row has to fulfill 0 < row < NrColumns(mat) ");
+    if not( 0 < column2 and column2 < NrCols(mat) ) then
+        Print("The third argument row has to fulfill 0 < row < NrCols(mat) ");
         return fail;
     fi;
  
@@ -2080,7 +2080,7 @@ InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row number, sec
             return fail;
         fi;
         
-        for i in [1..NrColumns(mat)] do
+        for i in [1..NrCols(mat)] do
             temp := mat[row1,i];
             mat[row1,i] := mat[row2,i];
             mat[row2,i] := temp;
@@ -2118,12 +2118,12 @@ InstallMethod( SwapMatrixColumns, "for a mutable matrix object, one column numbe
     if column1 <> column2 then
     
         # Checks
-        if not( 0 < column1 and column1 < NrColumns(mat) ) then
-            Print("The second argument row has to fulfill 0 < row < NrColumns(mat) ");
+        if not( 0 < column1 and column1 < NrCols(mat) ) then
+            Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
             return fail;
         fi;
-        if not( 0 < column2 and column2 < NrColumns(mat) ) then
-            Print("The third argument row has to fulfill 0 < row < NrColumns(mat) ");
+        if not( 0 < column2 and column2 < NrCols(mat) ) then
+            Print("The third argument row has to fulfill 0 < row < NrCols(mat) ");
             return fail;
         fi;
         
