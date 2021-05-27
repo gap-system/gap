@@ -136,7 +136,7 @@ InstallMethod( Display,
 ##
 InstallMethod( IsGeneralizedCartanMatrix,
     "for a matrix",
-    [ IsMatrixObj ],
+    [ IsMatrixOrMatrixObj ],
     function( A )
 
     local n, i, j;
@@ -172,7 +172,7 @@ InstallMethod( IsGeneralizedCartanMatrix,
 ##
 InstallMethod( IsDiagonalMatrix,
     "for a matrix",
-    [ IsMatrixObj ],
+    [ IsMatrixOrMatrixObj ],
     function( mat )
     local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
@@ -186,7 +186,7 @@ InstallMethod( IsDiagonalMatrix,
     return true;
     end);
 
-InstallTrueMethod( IsDiagonalMatrix, IsMatrixObj and IsEmptyMatrix );
+InstallTrueMethod( IsDiagonalMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
 
 
 #############################################################################
@@ -213,7 +213,7 @@ InstallOtherMethod( IsDiagonalMatrix, [ IsList and IsEmpty ], x -> true );
 ##
 InstallMethod( IsUpperTriangularMatrix,
     "for a matrix",
-    [ IsMatrixObj ],
+    [ IsMatrixOrMatrixObj ],
     function( mat )
     local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
@@ -234,7 +234,7 @@ InstallMethod( IsUpperTriangularMatrix,
 ##
 InstallMethod( IsLowerTriangularMatrix,
     "for a matrix",
-    [ IsMatrixObj ],
+    [ IsMatrixOrMatrixObj ],
     function( mat )
     local  i, j, z;
     z:=ZeroOfBaseDomain(mat);
@@ -3087,7 +3087,7 @@ mat -> []);
 #M  UpperSubdiagonal( <mat>, <pos> )
 ##
 InstallMethod( UpperSubdiagonal,
-    [ IsMatrixObj, IsPosInt ],
+    [ IsMatrixOrMatrixObj, IsPosInt ],
 function( mat, l )
     return List( [ 1 .. Minimum( NrRows( mat ), NrCols( mat ) - l ) ],
                  i -> mat[ i, l+i ] );
@@ -4015,7 +4015,7 @@ InstallMethod( DefaultScalarDomainOfMatrixList,
     function(l)
     local B, i,j,k,fg,f;
     # try to find out the field
-    if Length( l ) = 0 or ForAny( l, i -> not IsMatrixObj( i ) ) then
+    if Length( l ) = 0 or ForAny( l, i -> not IsMatrixOrMatrixObj( i ) ) then
       Error( "<l> must be a nonempty list of matrices" );
     elif ForAll( l, HasBaseDomain ) then
       B:= BaseDomain( l[1] );
@@ -4399,7 +4399,7 @@ end);
 
 InstallMethod( \^,
     "for matrices, use char. poly. for large exponents",
-    [ IsMatrixObj, IsPosInt ], POW_MAT_INT );
+    [ IsMatrixOrMatrixObj, IsPosInt ], POW_MAT_INT );
 
 InstallGlobalFunction(RationalCanonicalFormTransform,function(mat)
 local cr,R,x,com,nf,matt,p,i,j,di,d,v;

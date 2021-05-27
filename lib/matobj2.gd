@@ -53,12 +53,23 @@
 ##  <Q>matrix objects</Q> respectively.
 ##  <P/>
 ##  (Of course the terminology is somewhat confusing:
-##  An abstract matrix should be thought of as represented by
-##  a matrix object; it can be detected from the filter
-##  <Ref Filt="IsMatrixObj"/>, whereas the filter <Ref Filt="IsMatrix"/>
-##  denotes matrices represented by lists of lists.
-##  We regard the objects in <Ref Filt="IsMatrix"/> as special cases of
-##  objects in <Ref Filt="IsMatrixObj"/>.)
+##  An <Q>abstract matrix</Q> in &GAP; can be represented either by a list of
+##  lists or by a matrix object.
+##  It can be detected from the filter <Ref Filt="IsMatrixOrMatrixObj"/>;
+##  this is the union of the filters <Ref Filt="IsMatrix"/>
+##  &ndash;which denotes those matrices that are represented by lists of
+##  lists&ndash;
+##  and the filter <Ref Filt="IsMatrixObj"/>
+##  &ndash;which defines <Q>proper</Q> matrix objects in the above sense.
+##  In particular, we do <E>not</E> regard the objects in
+##  <Ref Filt="IsMatrix"/> as special cases of objects in
+##  <Ref Filt="IsMatrixObj"/>, or vice versa.
+##  Thus one can install specific methods for all three situations:
+##  just for <Q>proper</Q> matrix objects, just for matrices represented
+##  by lists of lists, or for both kinds of matrices.
+##  For example, a &GAP; package may decide to accept only <Q>proper</Q>
+##  matrix objects as arguments of its functions, or it may try to support
+##  also objects in <Ref Filt="IsMatrix"/> as far as this is possible.)
 ##  <P/>
 ##  We want to be able to write (efficient) code that is independent of the
 ##  actual representation (in the sense of &GAP;'s representation filters,
@@ -159,7 +170,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "BaseDomain", IsVectorObj );
-DeclareAttribute( "BaseDomain", IsMatrixObj );
+DeclareAttribute( "BaseDomain", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -191,10 +202,10 @@ DeclareAttribute( "BaseDomain", IsMatrixObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "NumberRows", IsMatrixObj );
+DeclareAttribute( "NumberRows", IsMatrixOrMatrixObj );
 DeclareSynonymAttr( "NrRows", NumberRows );
 
-DeclareAttribute( "NumberColumns", IsMatrixObj );
+DeclareAttribute( "NumberColumns", IsMatrixOrMatrixObj );
 DeclareSynonymAttr( "NrCols", NumberColumns );
 
 
@@ -234,10 +245,10 @@ DeclareSynonymAttr( "NrCols", NumberColumns );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "OneOfBaseDomain", IsVectorObj );
-DeclareAttribute( "OneOfBaseDomain", IsMatrixObj );
+DeclareAttribute( "OneOfBaseDomain", IsMatrixOrMatrixObj );
 
 DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
-DeclareAttribute( "ZeroOfBaseDomain", IsMatrixObj );
+DeclareAttribute( "ZeroOfBaseDomain", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -283,7 +294,7 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "ConstructingFilter", IsVectorObj );
-DeclareAttribute( "ConstructingFilter", IsMatrixObj );
+DeclareAttribute( "ConstructingFilter", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -307,7 +318,7 @@ DeclareAttribute( "ConstructingFilter", IsMatrixObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "CompatibleVectorFilter", IsMatrixObj );
+DeclareAttribute( "CompatibleVectorFilter", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -464,7 +475,7 @@ DeclareOperation( "ListOp", [ IsVectorObj, IsFunction ] );
 ##  because its result would be immutable.
 ##
 DeclareOperation( "Unpack", [ IsVectorObj ] );
-DeclareOperation( "Unpack", [ IsMatrixObj ] );
+DeclareOperation( "Unpack", [ IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -666,7 +677,7 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsInt, IsVectorObj ] );
-DeclareOperation( "ZeroVector", [ IsInt, IsMatrixObj ] );
+DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -822,13 +833,13 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareConstructor( "NewMatrix", [ IsMatrixObj, IsSemiring, IsInt, IsList] );
+DeclareConstructor( "NewMatrix", [ IsMatrixOrMatrixObj, IsSemiring, IsInt, IsList] );
 
 DeclareConstructor( "NewZeroMatrix",
-    [ IsMatrixObj, IsSemiring, IsInt, IsInt ] );
+    [ IsMatrixOrMatrixObj, IsSemiring, IsInt, IsInt ] );
 
 DeclareConstructor( "NewIdentityMatrix",
-    [ IsMatrixObj, IsSemiring, IsInt ] );
+    [ IsMatrixOrMatrixObj, IsSemiring, IsInt ] );
 
 
 #############################################################################
@@ -861,7 +872,7 @@ DeclareConstructor( "NewIdentityMatrix",
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "ChangedBaseDomain", [ IsVectorObj, IsSemiring ] );
-DeclareOperation( "ChangedBaseDomain", [ IsMatrixObj, IsSemiring ] );
+DeclareOperation( "ChangedBaseDomain", [ IsMatrixOrMatrixObj, IsSemiring ] );
 
 
 ############################################################################
@@ -892,8 +903,8 @@ DeclareOperation( "ChangedBaseDomain", [ IsMatrixObj, IsSemiring ] );
 ##
 DeclareOperation( "Randomize", [ IsVectorObj and IsMutable ] );
 DeclareOperation( "Randomize", [ IsRandomSource, IsVectorObj and IsMutable ] );
-DeclareOperation( "Randomize", [ IsMatrixObj and IsMutable ] );
-DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixObj and IsMutable ] );
+DeclareOperation( "Randomize", [ IsMatrixOrMatrixObj and IsMutable ] );
+DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutable ] );
 
 
 #############################################################################
@@ -981,7 +992,7 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExtractSubMatrix", [ IsMatrixObj, IsList, IsList ] );
+DeclareOperation( "ExtractSubMatrix", [ IsMatrixOrMatrixObj, IsList, IsList ] );
 
 
 #############################################################################
@@ -1001,7 +1012,7 @@ DeclareOperation( "ExtractSubMatrix", [ IsMatrixObj, IsList, IsList ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MutableCopyMatrix", [ IsMatrixObj ] );
+DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -1028,7 +1039,7 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixObj ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "CopySubMatrix",
-    [ IsMatrixObj, IsMatrixObj, IsList, IsList, IsList, IsList ] );
+    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ] );
 
 
 #############################################################################
@@ -1057,7 +1068,7 @@ DeclareOperation( "CopySubMatrix",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperationKernel( "MatElm", [ IsMatrixObj, IS_INT, IS_INT ], ELM_MAT );
+DeclareOperationKernel( "MatElm", [ IsMatrixOrMatrixObj, IS_INT, IS_INT ], ELM_MAT );
 DeclareSynonym( "[,]", ELM_MAT );
 
 
@@ -1090,7 +1101,7 @@ DeclareSynonym( "[,]", ELM_MAT );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperationKernel( "SetMatElm", [ IsMatrixObj, IsInt, IsInt, IsObject ],
+DeclareOperationKernel( "SetMatElm", [ IsMatrixOrMatrixObj, IsInt, IsInt, IsObject ],
     ASS_MAT );
 #T We want to require also 'IsMutable' for the first argument,
 #T but some package may have installed methods without this requirement.
@@ -1136,7 +1147,7 @@ DeclareSynonym( "[,]:=", ASS_MAT );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ZeroMatrix", [ IsInt, IsInt, IsMatrixObj ] );
+DeclareOperation( "ZeroMatrix", [ IsInt, IsInt, IsMatrixOrMatrixObj ] );
 DeclareOperation( "ZeroMatrix", [ IsSemiring, IsInt, IsInt ] );
 DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 
@@ -1175,7 +1186,7 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "IdentityMatrix", [ IsInt, IsMatrixObj ] );
+DeclareOperation( "IdentityMatrix", [ IsInt, IsMatrixOrMatrixObj ] );
 DeclareOperation( "IdentityMatrix", [ IsSemiring, IsInt ] );
 DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 
@@ -1219,7 +1230,7 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  to a possible constructor 'NewCompanionMatrix'.)
 ##
 DeclareOperation( "CompanionMatrix",
-    [ IsUnivariatePolynomial, IsMatrixObj ] );
+    [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ] );
 DeclareOperation( "CompanionMatrix",
     [ IsOperation, IsUnivariatePolynomial, IsSemiring ] );
 
@@ -1306,13 +1317,13 @@ DeclareOperation( "CompanionMatrix",
 ##
 DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsList, IsInt ] );
 DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsList ] );
-DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsMatrixObj ] );
+DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsMatrixOrMatrixObj ] );
 DeclareOperation( "Matrix", [ IsSemiring, IsList, IsInt ] );
 DeclareOperation( "Matrix", [ IsSemiring, IsList ] );
-DeclareOperation( "Matrix", [ IsSemiring, IsMatrixObj ] );
-DeclareOperation( "Matrix", [ IsList, IsInt, IsMatrixObj ] );
-DeclareOperation( "Matrix", [ IsList, IsMatrixObj ] );
-DeclareOperation( "Matrix", [ IsMatrixObj, IsMatrixObj ] );
+DeclareOperation( "Matrix", [ IsSemiring, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsList, IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsList, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ] );
 DeclareOperation( "Matrix", [ IsList, IsInt ] );
 DeclareOperation( "Matrix", [ IsList ]);
 
@@ -1340,7 +1351,7 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "CompatibleVector", [ IsMatrixObj ] );
+DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
 
 
 ############################################################################
@@ -1372,7 +1383,7 @@ DeclareOperation( "CompatibleVector", [ IsMatrixObj ] );
 ##  entering a template vector as the second argument is not an option
 ##  in this situation.
 ##
-DeclareAttribute( "RowsOfMatrix", IsMatrixObj );
+DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -1671,7 +1682,7 @@ DeclareOperation( "ListOp", [ IsRowListMatrix, IsFunction ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsEmptyMatrix", IsMatrixObj );
+DeclareProperty( "IsEmptyMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -1696,7 +1707,7 @@ DeclareProperty( "IsEmptyMatrix", IsMatrixObj );
 # In the following sense matrices behave like lists:
 ############################################################################
 
-DeclareOperation( "[]", [IsMatrixObj,IsPosInt] );  # <mat>, <pos>
+DeclareOperation( "[]", [IsMatrixOrMatrixObj,IsPosInt] );  # <mat>, <pos>
 # This is guaranteed to return a vector object that has the property
 # that changing it changes <pos>th row (?) of the matrix <mat>!
 # A matrix which is not a row-lists internally has to create an intermediate object that refers to some
@@ -1744,7 +1755,7 @@ DeclareSynonym( "IsRowVectorObj", IsVectorObj );
 ##  only for backwards compatibility with existing code:
 ##  <matobj> -> [ NrRows( <matobj> ), NrCols( <matobj> ) ]
 ##
-DeclareAttribute( "DimensionsMat", IsMatrixObj );
+DeclareAttribute( "DimensionsMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -1754,7 +1765,7 @@ DeclareAttribute( "DimensionsMat", IsMatrixObj );
 ##
 ##  They had been used in older versions.
 ##
-DeclareAttribute( "Length", IsMatrixObj );
+DeclareAttribute( "Length", IsMatrixOrMatrixObj );
 DeclareSynonymAttr( "RowLength", NumberColumns );
 
 
@@ -1769,7 +1780,7 @@ DeclareSynonymAttr( "RowLength", NumberColumns );
 ##  We should use 'CompanionMatrix' instead of 'NewCompanionMatrix'.
 ##
 DeclareConstructor( "NewCompanionMatrix",
-    [ IsMatrixObj, IsUnivariatePolynomial, IsSemiring ] );
+    [ IsMatrixOrMatrixObj, IsUnivariatePolynomial, IsSemiring ] );
 
 
 #############################################################################
@@ -1786,7 +1797,7 @@ DeclareSynonym( "NewRowVector", NewVector );
 ##  for backwards compatibility with the cvec package
 ##
 DeclareOperation( "Randomize", [ IsVectorObj and IsMutable, IsRandomSource ] );
-DeclareOperation( "Randomize", [ IsMatrixObj and IsMutable, IsRandomSource ] );
+DeclareOperation( "Randomize", [ IsMatrixOrMatrixObj and IsMutable, IsRandomSource ] );
 
 
 #############################################################################
@@ -1794,8 +1805,8 @@ DeclareOperation( "Randomize", [ IsMatrixObj and IsMutable, IsRandomSource ] );
 #O  <matobj>[ <i>, <j> ]
 #O  <matobj>[ <i>, <j> ]:= <obj>
 ##
-DeclareOperation( "[]", [ IsMatrixObj, IsPosInt, IsPosInt ] );
-DeclareOperation( "[]:=", [ IsMatrixObj, IsPosInt, IsPosInt, IsObject ] );
+DeclareOperation( "[]", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ] );
+DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 
 
 #############################################################################
