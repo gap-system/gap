@@ -103,10 +103,16 @@ InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true,
 ##
 #M  InducedPcgs( <pcgs>,<G> )
 ##
-InstallMethod( InducedPcgs, "cache pcgs", true, [ IsPcgs,IsGroup ], 0,
-function(pcgs, G )
+InstallGlobalFunction( InducedPcgs, function(pcgs, G)
   local cache, i, igs;
   
+  if not IsPcgs(pcgs) then
+     Error("InducedPcgs: <pcgs> must be a pcgs");
+  fi;
+  if not IsGroup(G) then
+     Error("InducedPcgs: <G> must be a group");
+  fi;
+
   pcgs := ParentPcgs (pcgs);
   cache := ComputedInducedPcgses(G);
   i := 1;
@@ -135,10 +141,6 @@ function(pcgs, G )
   
   return igs;
 end );
-
-atomic readwrite OPERATIONS_REGION do
-ADD_LIST(WRAPPER_OPERATIONS, InducedPcgs);
-od;
 
 #############################################################################
 ##
