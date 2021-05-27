@@ -2464,15 +2464,9 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 ##  by incrementing $a_i$ for the largest $i$ such that the inequality is not
 ##  tight, and setting $a_j=0$ for all $j>i$.
 ##
-InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
-    local nextIterator, nextIteratorGivenSize, nextIteratorGivenSizeOrLess,
-        isDone, shallowCopy, k, r;
+BindGlobal( "IsDoneIterator_PartitionsSet", iter -> ( iter!.next = false ) );
 
-    if not IsSet(s) then
-      Error( "<s> must be a set" );
-    fi;
-
-    nextIterator := function(iter)
+BindGlobal( "NextIterator_PartitionsSet", function( iter )
       local j, max, part, m, out, i;
       if Length(iter!.s) = 0 then
         iter!.next := false;
@@ -2501,9 +2495,9 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
         Add(out[part[i]+1], iter!.s[i]);
       od;
       return out;
-    end;
+    end );
 
-    nextIteratorGivenSize := function(iter)
+BindGlobal( "NextIterator_PartitionsSetGivenSize", function( iter )
       local j, max, part, m, out, i;
       if Length(iter!.s) = 0 or Length(iter!.s)<iter!.sz then
         iter!.next := false;
@@ -2546,9 +2540,9 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
           fi;
         fi;
       od;
-    end;
+    end );
 
-    nextIteratorGivenSizeOrLess := function(iter)
+BindGlobal( "NextIterator_PartitionsSetGivenSizeOrLess", function( iter )
       local j, max, part, m, out, i;
       if Length(iter!.s) = 0 or Length(iter!.s)<iter!.sz then
         iter!.next := false;
@@ -2582,16 +2576,22 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
         fi;
         return out;
       od;
-    end;
+    end );
 
-    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s, sz := iter!.sz );
+BindGlobal( "ShallowCopy_PartitionsSet",
+    iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s, sz := iter!.sz ) );
 
-    isDone := iter -> iter!.next = false;
+InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
+    local k, r;
+
+    if not IsSet(s) then
+      Error( "<s> must be a set" );
+    fi;
 
     r := rec(
-            IsDoneIterator := isDone,
-            NextIterator := nextIterator,
-            ShallowCopy := shallowCopy,
+            IsDoneIterator := IsDoneIterator_PartitionsSet,
+            NextIterator := NextIterator_PartitionsSet,
+            ShallowCopy := ShallowCopy_PartitionsSet,
             s := Immutable(s),
             next := ListWithIdenticalEntries(Size(s), 0),
             sz := fail,
@@ -2605,11 +2605,11 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
         Error("usage: <k> must be between 1 and size of <s>");
       fi;
       r.sz := k;
-      r.NextIterator := nextIteratorGivenSize;
+      r.NextIterator := NextIterator_PartitionsSetGivenSize;
 
       if Length( arg ) = 2 then
         if arg[2] = true then
-          r.NextIterator := nextIteratorGivenSizeOrLess;
+          r.NextIterator := NextIterator_PartitionsSetGivenSizeOrLess;
         elif arg[2] <> false then
           Error("usage: <flag> must be true or false");
         fi;
