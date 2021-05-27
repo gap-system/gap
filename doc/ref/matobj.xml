@@ -291,17 +291,13 @@ for your new type of vector or matrix objects.)
 <Heading>Basic operations for row/column reductions</Heading>
 
 <#Include Label="MultMatrixRow">
-<#Include Label="MultMatrixRowLeft">
 <#Include Label="MultMatrixRowRight">
 <#Include Label="MultMatrixColumn">
 <#Include Label="MultMatrixColumnLeft">
-<#Include Label="MultMatrixColumnRight">
 <#Include Label="AddMatrixRows">
-<#Include Label="AddMatrixRowsLeft">
 <#Include Label="AddMatrixRowsRight">
 <#Include Label="AddMatrixColumns">
 <#Include Label="AddMatrixColumnsLeft">
-<#Include Label="AddMatrixColumnsRight">
 <#Include Label="SwapMatrixRows">
 <#Include Label="SwapMatrixColumns">
 
