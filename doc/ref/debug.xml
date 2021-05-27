@@ -141,7 +141,7 @@ creates a new info class with name <A>name</A>.
 <Description>
 creates a new info class with name <A>name</A> and binds it to the global
 variable <A>name</A>. The variable must previously be writable, and is made 
-readonly by this function.
+read-only by this function.
 </Description>
 </ManSection>
 <P/>

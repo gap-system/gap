@@ -109,8 +109,9 @@ end );
 ##  <Func Name="DeclareCategory" Arg='name, super[, rank]'/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewCategory"/>
-##  and additionally makes the variable <A>name</A> read-only.
+##  does the same as <Ref Func="NewCategory"/> and then binds
+##  the result to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -265,8 +266,9 @@ end );
 ##  <Func Name="DeclareRepresentation" Arg='name, super, slots [,req]'/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewRepresentation"/>
-##  and additionally makes the variable <A>name</A> read-only.
+##  does the same as <Ref Func="NewRepresentation"/> and then binds
+##  the result to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
