@@ -1598,8 +1598,8 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and 
     local i;
     
     # Checks
-    if not( 0 < row and row < NrRows(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrRows(mat) ");
+    if not( 0 < row and row <= NrRows(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrRows(mat) ");
         return fail;
     fi;
   
@@ -1659,8 +1659,8 @@ InstallMethod( MultMatrixColumn, "for a mutable matrix object, one column number
     local i;
     
     # Checks
-    if not( 0 < column and column < NrCols(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
+    if not( 0 < column and column <= NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrCols(mat) ");
         return fail;
     fi;
   
@@ -1724,8 +1724,8 @@ InstallMethod( MultMatrixRowRight, "for a mutable matrix object, one row number,
       local i;
     
     # Checks
-    if not( 0 < row and row < NrRows(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrRows(mat) ");
+    if not( 0 < row and row <= NrRows(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrRows(mat) ");
         return fail;
     fi;
   
@@ -1760,8 +1760,8 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column nu
     local i;
     
     # Checks
-    if not( 0 < column and column < NrCols(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
+    if not( 0 < column and column <= NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrCols(mat) ");
         return fail;
     fi;
   
@@ -1825,12 +1825,12 @@ InstallMethod( AddMatrixRows, "for a mutable matrix object, one row number, seco
     local i;
     
     # Checks
-    if not( 0 < row1 and row1 < NrRows(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrRows(mat) ");
+    if not( 0 < row1 and row1 <= NrRows(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrRows(mat) ");
         return fail;
     fi;
-    if not( 0 < row2 and row2 < NrRows(mat) ) then
-        Print("The third argument row has to fulfill 0 < row < NrRows(mat) ");
+    if not( 0 < row2 and row2 <= NrRows(mat) ) then
+        Print("The third argument row has to fulfill 0 < row <= NrRows(mat) ");
         return fail;
     fi;
  
@@ -1900,12 +1900,12 @@ InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row number,
     local i;
     
     # Checks
-    if not( 0 < row1 and row1 < NrRows(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrRows(mat) ");
+    if not( 0 < row1 and row1 <= NrRows(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrRows(mat) ");
         return fail;
     fi;
-    if not( 0 < row2 and row2 < NrRows(mat) ) then
-        Print("The third argument row has to fulfill 0 < row < NrRows(mat) ");
+    if not( 0 < row2 and row2 <= NrRows(mat) ) then
+        Print("The third argument row has to fulfill 0 < row <= NrRows(mat) ");
         return fail;
     fi;
  
@@ -1947,12 +1947,12 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
     local i;
     
     # Checks
-    if not( 0 < column1 and column1 < NrCols(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
+    if not( 0 < column1 and column1 <= NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrCols(mat) ");
         return fail;
     fi;
-    if not( 0 < column2 and column2 < NrCols(mat) ) then
-        Print("The third argument row has to fulfill 0 < row < NrCols(mat) ");
+    if not( 0 < column2 and column2 <= NrCols(mat) ) then
+        Print("The third argument row has to fulfill 0 < row <= NrCols(mat) ");
         return fail;
     fi;
  
@@ -1994,12 +1994,12 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
     local i;
     
     # Checks
-    if not( 0 < column1 and column1 < NrCols(mat) ) then
-        Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
+    if not( 0 < column1 and column1 <= NrCols(mat) ) then
+        Print("The second argument row has to fulfill 0 < row <= NrCols(mat) ");
         return fail;
     fi;
-    if not( 0 < column2 and column2 < NrCols(mat) ) then
-        Print("The third argument row has to fulfill 0 < row < NrCols(mat) ");
+    if not( 0 < column2 and column2 <= NrCols(mat) ) then
+        Print("The third argument row has to fulfill 0 < row <= NrCols(mat) ");
         return fail;
     fi;
  
@@ -2071,12 +2071,12 @@ InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row number, sec
     if row1 <> row2 then
     
         # Checks
-        if not( 0 < row1 and row1 < NrRows(mat) ) then
-            Print("The second argument row has to fulfill 0 < row < NrRows(mat) ");
+        if not( 0 < row1 and row1 <= NrRows(mat) ) then
+            Print("The second argument row has to fulfill 0 < row <= NrRows(mat) ");
             return fail;
         fi;
-        if not( 0 < row2 and row2 < NrRows(mat) ) then
-            Print("The third argument row has to fulfill 0 < row < NrRows(mat) ");
+        if not( 0 < row2 and row2 <= NrRows(mat) ) then
+            Print("The third argument row has to fulfill 0 < row <= NrRows(mat) ");
             return fail;
         fi;
         
@@ -2118,12 +2118,12 @@ InstallMethod( SwapMatrixColumns, "for a mutable matrix object, one column numbe
     if column1 <> column2 then
     
         # Checks
-        if not( 0 < column1 and column1 < NrCols(mat) ) then
-            Print("The second argument row has to fulfill 0 < row < NrCols(mat) ");
+        if not( 0 < column1 and column1 <= NrCols(mat) ) then
+            Print("The second argument row has to fulfill 0 < row <= NrCols(mat) ");
             return fail;
         fi;
-        if not( 0 < column2 and column2 < NrCols(mat) ) then
-            Print("The third argument row has to fulfill 0 < row < NrCols(mat) ");
+        if not( 0 < column2 and column2 <= NrCols(mat) ) then
+            Print("The third argument row has to fulfill 0 < row <= NrCols(mat) ");
             return fail;
         fi;
         
