@@ -1926,3 +1926,26 @@ DeclareOperation( "[]:=", [ IsMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 ##    and the available methods have to be adjusted.
 ##
 
+
+############################################################################
+# Elementary matrix operations
+############################################################################
+
+############################################################################
+##
+## TODO DESCRIPTION
+##
+DeclareOperation( "MultMatrixRow", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixColumn", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixRowLeft", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixColumnRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixColumns", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "SwapMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt ] );
+DeclareOperation( "SwapMatrixColumns", [ IsMatrixObj and IsMutable, IsInt, IsInt ] );
