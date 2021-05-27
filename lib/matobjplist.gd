@@ -29,7 +29,7 @@
 ##  in a row list matrix
 ##  (see Section <Ref Subsect="Operations for Row List Matrix Objects"/>).
 ##  It is internally represented as a positional object
-##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 2 entries:
+##  (see <Ref Filt="IsPositionalObjectRep"/> that stores two entries:
 ##  <Enum>
 ##  <Item>
 ##    its base domain
@@ -63,14 +63,15 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##  a list of its rows, in the sense defined in
 ##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
 ##  It is internally represented as a positional object
-##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 4 entries:
+##  (see <Ref Filt="IsPositionalObjectRep"/> that stores four entries:
 ##  <Enum>
 ##  <Item>
 ##    its base domain
 ##    (see <Ref Attr="BaseDomain" Label="for a matrix object"/>),
 ##  </Item>
 ##  <Item>
-##    an empty vector in the representation of each row, 
+##    the number of rows
+##    (see <Ref Attr="NumberRows" Label="for a matrix object"/>), and
 ##  </Item>
 ##  <Item>
 ##    the number of columns
@@ -94,24 +95,16 @@ DeclareRepresentation( "IsPlistMatrixRep",
 
 
 # Some constants for matrix access:
-BindGlobal( "BDPOS", 1 );
-BindGlobal( "EMPOS", 2 );
-BindGlobal( "RLPOS", 3 );
-BindGlobal( "ROWSPOS", 4 );
+# TODO rename these so that one can quickly see that they belong to IsPlist*Rep
+BindConstant( "BDPOS", 1 );
+BindConstant( "NUM_ROWS_POS", 2 );
+BindConstant( "NUM_COLS_POS", 3 );
+BindConstant( "ROWSPOS", 4 );
 
 # For vector access:
-#BindGlobal( "BDPOS", 1 );   # see above
-BindGlobal( "ELSPOS", 2 );
+#BindConstant( "BDPOS", 1 );   # see above
+BindConstant( "ELSPOS", 2 );
 
 # Two filters to speed up some methods:
 DeclareFilter( "IsIntVector" );
 DeclareFilter( "IsFFEVector" );
-
-############################################################################
-# Constructors:
-############################################################################
-
-#T Should this be documented?
-#T It seems to be just an auxiliary function for the documented constructors.
-DeclareGlobalFunction( "MakePlistVectorType" );
-
