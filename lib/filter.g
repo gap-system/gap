@@ -398,8 +398,9 @@ end );
 ##  <Func Name="DeclareFilter" Arg="name[, implied][, rank]"/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewFilter"/>
-##  and additionally makes the variable <A>name</A> read-only.
+##  does the same as <Ref Func="NewFilter"/> and then binds
+##  the result to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -888,8 +888,9 @@ end );
 ##  <Func Name="DeclareOperation" Arg='name, filters'/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewOperation"/> and
-##  additionally makes the variable <A>name</A> read-only.
+##  does the same as <Ref Func="NewOperation"/> and then binds
+##  the new operation to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1019,8 +1020,9 @@ end );
 ##  <Func Name="DeclareConstructor" Arg='name, filters'/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewConstructor"/> and
-##  additionally makes the variable <A>name</A> read-only.
+##  does the same as <Ref Func="NewConstructor"/> and then binds
+##  the result to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
 ##  <P/>
 ##  Note that for operations which are constructors special rules with respect
 ##  to applicability and rank of the corresponding methods apply
@@ -1355,9 +1357,10 @@ end );
 ##  <Func Name="DeclareAttribute" Arg='name, filter[, "mutable"][, rank]'/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewAttribute"/>,
-##  additionally makes the variable <A>name</A> read-only
-##  and also binds read-only global variables with names
+##  does the same as <Ref Func="NewAttribute"/> and then binds
+##  the result to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
+##  It also binds read-only global variables with names
 ##  <C>Has<A>name</A></C> and <C>Set<A>name</A></C>
 ##  for the tester and setter of the attribute (see Section
 ##  <Ref Sect="Setter and Tester for Attributes"/>).
@@ -1610,9 +1613,10 @@ end );
 ##  <Func Name="DeclareProperty" Arg='name, filter [,rank]'/>
 ##
 ##  <Description>
-##  does the same as <Ref Func="NewProperty"/>,
-##  additionally makes the variable <A>name</A> read-only
-##  and also binds read-only global variables with names
+##  does the same as <Ref Func="NewProperty"/> and then binds
+##  the result to the global variable <A>name</A>. The variable
+##  must previously be writable, and is made read-only by this function.
+##  It also binds read-only global variables with names
 ##  <C>Has<A>name</A></C> and <C>Set<A>name</A></C>
 ##  for the tester and setter of the property (see Section
 ##  <Ref Sect="Setter and Tester for Attributes"/>).
