@@ -91,12 +91,13 @@ DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
 ##  <Filt Name="IsMatrixOrMatrixObj" Arg='obj' Type="category"/>
 ##
 ##  <Description>
-##  This filter is the <Q>common roof</Q> for <Ref Filt="IsMatrix"/> and
-##  <Ref Filt="IsMatrixObj"/>.
+##  Several functions are defined for objects in <Ref Filt="IsMatrix"/> and
+##  objects in <Ref Filt="IsMatrixObj"/>.
+##  All these objects lie in the filter <Ref Filt="IsMatrixOrMatrixObj"/>.
 ##  It should be used in situations where an object can be either a list of
 ##  lists in <Ref Filt="IsMatrix"/> or a <Q>proper</Q> matrix object in
 ##  <Ref Filt="IsMatrixObj"/>,
-##  for example as requirement in the installation of a method for such an
+##  for example as a requirement in the installation of a method for such an
 ##  argument.
 ##  <P/>
 ##  <Example><![CDATA[
