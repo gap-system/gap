@@ -147,6 +147,10 @@
 ##  Therefore it may be useful to set the filter
 ##  <Ref Filt="IsNoImmediateMethodsObject"/> in the definition of new kinds
 ##  of vector and matrix objects.
+##  <P/>
+##  For information on how to implement new <Ref Filt="IsMatrixObj"/> and
+##  <Ref Filt="IsVectorObj"/> representations see Section
+##  <Ref Sect="Implementing New Vector and Matrix Objects Types"/>.
 ##  <#/GAPDoc>
 ##
 

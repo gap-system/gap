@@ -208,21 +208,20 @@ All rows of a matrix must have the same length and the same base domain.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Operations for Vector and Matrix Objects, without Defaults">
-<Heading>Operations for Vector and Matrix Objects, without Defaults</Heading>
+<Section Label="Implementing New Vector and Matrix Objects Types">
+<Heading>Implementing New Vector and Matrix Objects Types</Heading>
 
 Here we list those operations for vector and matrix objects
 for which no default methods can be installed.
 When one implements a new type of vector or matrix objects
 then one has to install specific methods at least for these operations,
 in order to make the objects behave as described in this chapter.
-(Of course, it is advisable to install specific methods also for other
+It is advisable to install specific methods also for other
 operations, for performance reasons.
 The installations of default methods can be found in the file
-<F>lib/matobj.gi</F> of the &GAP; distribution,
-just check for which operations it makes sense to overload them
-for your new type of vector or matrix objects.)
-
+<F>lib/matobj.gi</F> of the &GAP; distribution.
+There one can check for which operations it makes sense to overload them
+for the new type of vector or matrix objects.
 <P/>
 
 <E>Vector objects</E>
