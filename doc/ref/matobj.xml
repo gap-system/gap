@@ -32,6 +32,7 @@ More can be added as soon as there is need for them.
 
 <#Include Label="IsVectorObj">
 <#Include Label="IsMatrixObj">
+<#Include Label="IsMatrixOrMatrixObj">
 <#Include Label="IsRowListMatrix">
 
 </Section>

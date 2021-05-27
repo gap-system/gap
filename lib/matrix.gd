@@ -59,7 +59,7 @@ DeclareGlobalFunction("PrintArray");
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrixObj );
+DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -87,7 +87,7 @@ DeclareProperty( "IsGeneralizedCartanMatrix", IsMatrixObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsDiagonalMatrix", IsMatrixObj );
+DeclareProperty( "IsDiagonalMatrix", IsMatrixOrMatrixObj );
 
 DeclareSynonym( "IsDiagonalMat", IsDiagonalMatrix );
 
@@ -117,7 +117,7 @@ DeclareSynonym( "IsDiagonalMat", IsDiagonalMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsUpperTriangularMatrix", IsMatrixObj );
+DeclareProperty( "IsUpperTriangularMatrix", IsMatrixOrMatrixObj );
 
 DeclareSynonym( "IsUpperTriangularMat", IsUpperTriangularMatrix );
 
@@ -147,7 +147,7 @@ DeclareSynonym( "IsUpperTriangularMat", IsUpperTriangularMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsLowerTriangularMatrix", IsMatrixObj );
+DeclareProperty( "IsLowerTriangularMatrix", IsMatrixOrMatrixObj );
 
 DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 
@@ -321,7 +321,7 @@ DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DeterminantMatrix", IsMatrixObj );
+DeclareAttribute( "DeterminantMatrix", IsMatrixOrMatrixObj );
 DeclareSynonymAttr( "DeterminantMat", DeterminantMatrix );
 
 
@@ -353,7 +353,7 @@ DeclareSynonymAttr( "DeterminantMat", DeterminantMatrix );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "DeterminantMatrixDestructive",
-    [ IsMatrixObj and IsMutable] );
+    [ IsMatrixOrMatrixObj and IsMutable] );
 DeclareSynonym( "DeterminantMatDestructive", DeterminantMatrixDestructive );
 
 
@@ -375,7 +375,7 @@ DeclareSynonym( "DeterminantMatDestructive", DeterminantMatrixDestructive );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "DeterminantMatrixDivFree", [ IsMatrixObj ] );
+DeclareOperation( "DeterminantMatrixDivFree", [ IsMatrixOrMatrixObj ] );
 DeclareSynonym( "DeterminantMatDivFree", DeterminantMatrixDivFree );
 
 
@@ -767,7 +767,7 @@ DeclareGlobalFunction( "OrderMatTrial" );
 ##  <#/GAPDoc>
 #T suitable definition? example for a 'fail' result?
 ##
-DeclareAttribute( "RankMatrix", IsMatrixObj );
+DeclareAttribute( "RankMatrix", IsMatrixOrMatrixObj );
 DeclareSynonymAttr( "RankMat", RankMatrix );
 
 
@@ -788,7 +788,7 @@ DeclareSynonymAttr( "RankMat", RankMatrix );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "RankMatrixDestructive", [ IsMatrixObj and IsMutable ]);
+DeclareOperation( "RankMatrixDestructive", [ IsMatrixOrMatrixObj and IsMutable ]);
 DeclareSynonymAttr( "RankMatDestructive", RankMatrixDestructive );
 
 
@@ -1013,12 +1013,12 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "TransposedMatImmutable", IsMatrixObj );
+DeclareAttribute( "TransposedMatImmutable", IsMatrixOrMatrixObj );
 
 DeclareSynonymAttr( "TransposedMatAttr", TransposedMatImmutable );
 DeclareSynonymAttr( "TransposedMat", TransposedMatImmutable );
 
-DeclareOperation( "TransposedMatMutable", [ IsMatrixObj ] );
+DeclareOperation( "TransposedMatMutable", [ IsMatrixOrMatrixObj ] );
 DeclareSynonym( "TransposedMatOp", TransposedMatMutable );
 DeclareSynonym( "MutableTransposedMat", TransposedMatMutable ); # needed?
 
@@ -1137,7 +1137,7 @@ DeclareOperation( "InverseMatMod", [ IsMatrix, IsObject ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "KroneckerProduct", [ IsMatrixObj, IsMatrixObj ] );
+DeclareOperation( "KroneckerProduct", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ] );
 #T state how mutable the result is!
 
 
@@ -1309,7 +1309,7 @@ DeclareOperation( "TriangulizeMat", [ IsMatrix and IsMutable ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "UpperSubdiagonal", [ IsMatrixObj, IsPosInt ] );
+DeclareOperation( "UpperSubdiagonal", [ IsMatrixOrMatrixObj, IsPosInt ] );
 
 
 #############################################################################
@@ -1846,7 +1846,7 @@ DeclareGlobalFunction( "SimultaneousEigenvalues" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "TraceMatrix", IsMatrixObj );
+DeclareAttribute( "TraceMatrix", IsMatrixOrMatrixObj );
 DeclareSynonymAttr( "TraceMat", TraceMatrix );
 
 

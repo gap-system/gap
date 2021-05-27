@@ -881,7 +881,7 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     function( matlist )
     local nrows, ncols;
 
-    if IsList( matlist ) and ForAll( matlist, IsMatrixObj ) then
+    if IsList( matlist ) and ForAll( matlist, IsMatrixOrMatrixObj ) then
       nrows:= NumberRows( matlist[1] );
       ncols:= NumberColumns( matlist[1] );
       return nrows = ncols and
