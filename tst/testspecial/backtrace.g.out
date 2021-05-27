@@ -313,7 +313,7 @@ brk> WhereWithVars();
 brk> quit;
 gap> 
 gap> # Verify issue #2656 is fixed
-gap> InstallMethod( \[\,\], [ IsMatrixObj, IsPosInt, IsPosInt ],
+gap> InstallMethod( \[\,\], [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ],
 >     { m, row, col } -> ELM_LIST( m, row, col ) );
 gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
