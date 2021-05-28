@@ -1574,12 +1574,10 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
 
 ############################################################################
 ##
-#O  MultMatrixRow( <M>, <row>, <scalar> )
-##
 ##  <#GAPDoc Label="MultMatrixRow">
 ##  <ManSection>
-##  <Oper Name="MultMatrixRow" Arg='mat,i,elm' Label=""/>
-##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm' Label=""/>
+##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1588,7 +1586,7 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
 ##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
 ##  <A>elm</A> from the left in-place.
 ##  <P/>
-##  <C>MultMatrixRowLeft</C> is a synonym for <C>MultMatrixRow</C>.
+##  <Ref Oper="MultMatrixRowLeft"/> is a synonym of <Ref Oper="MultMatrixRow"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1612,12 +1610,10 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and 
 
 ############################################################################
 ##
-#O  MultMatrixColumn( <M>, <row>, <scalar> )
-##
 ##  <#GAPDoc Label="MultMatrixColumn">
 ##  <ManSection>
-##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm' Label=""/>
-##  <Oper Name="MultMatrixColumnRight" Arg='mat,i,elm' Label=""/>
+##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixColumnRight" Arg='mat,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1626,7 +1622,7 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and 
 ##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
 ##  <A>elm</A> from the right in-place.
 ##  <P/>
-##  <C>MultMatrixColumnRight</C> is a synonym for <C>MultMatrixColumn</C>.
+##  <Ref Oper="MultMatrixColumnRight"/> is a synonym of <Ref Oper="MultMatrixColumn"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1650,11 +1646,9 @@ InstallMethod( MultMatrixColumn, "for a mutable matrix object, one column number
 
 ############################################################################
 ##
-#O  MultMatrixRowRight( <M>, <row>, <scalar> )
-##
 ##  <#GAPDoc Label="MultMatrixRowRight">
 ##  <ManSection>
-##  <Oper Name="MultMatrixRowRight" Arg='mat,i,elm' Label=""/>
+##  <Oper Name="MultMatrixRowRight" Arg='mat,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1684,11 +1678,9 @@ InstallMethod( MultMatrixRowRight, "for a mutable matrix object, one row number,
 
 ############################################################################
 ##
-#O  MultMatrixColumnLeft( <M>, <row>, <scalar> )
-##
 ##  <#GAPDoc Label="MultMatrixColumnLeft">
 ##  <ManSection>
-##  <Oper Name="MultMatrixColumnLeft" Arg='mat,i,elm' Label=""/>
+##  <Oper Name="MultMatrixColumnLeft" Arg='mat,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1719,12 +1711,10 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column nu
 
 ############################################################################
 ##
-#M  AddMatrixRows( <M>, <row1>, <row2>, <scalar> )
-##
 ##  <#GAPDoc Label="AddMatrixRows">
 ##  <ManSection>
-##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm' Label=""/>
-##  <Oper Name="AddMatrixRowsLeft" Arg='mat,i,j,elm' Label=""/>
+##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixRowsLeft" Arg='mat,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1733,7 +1723,7 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column nu
 ##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
 ##  <P/>
-##  <C>AddMatrixRowsLeft</C> is a synonym for <C>AddMatrixRows</C>.
+##  <Ref Oper="AddMatrixRowsLeft"/> is a synonym of <Ref Oper="AddMatrixRows"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1760,11 +1750,9 @@ InstallMethod( AddMatrixRows, "for a mutable matrix object, one row number, seco
 
 ############################################################################
 ##
-#O  AddMatrixRowsRight( <M>, <row1>, <row2>, <scalar> )
-##
 ##  <#GAPDoc Label="AddMatrixRowsRight">
 ##  <ManSection>
-##  <Oper Name="AddMatrixRowsRight" Arg='mat,i,j,elm' Label=""/>
+##  <Oper Name="AddMatrixRowsRight" Arg='mat,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1797,12 +1785,10 @@ InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row number,
 
 ############################################################################
 ##
-#O  AddMatrixColumns( <M>, <column1>, <column2>, <scalar> )
-##
 ##  <#GAPDoc Label="AddMatrixColumns">
 ##  <ManSection>
-##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm' Label=""/>
-##  <Oper Name="AddMatrixColumnsRight" Arg='mat,i,j,elm' Label=""/>
+##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixColumnsRight" Arg='mat,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1811,7 +1797,7 @@ InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row number,
 ##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
 ##  <P/>
-##  <C>AddMatrixColumnsRight</C> is a synonym for <C>AddMatrixColumns</C>.
+##  <Ref Oper="AddMatrixColumnsRight"/> is a synonym of <Ref Oper="AddMatrixColumns"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1837,11 +1823,9 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
 
 ############################################################################
 ##
-#O  AddMatrixColumnsLeft( <M>, <column1>, <column2>, <scalar> )
-##
 ##  <#GAPDoc Label="AddMatrixColumnsLeft">
 ##  <ManSection>
-##  <Oper Name="AddMatrixColumnsLeft" Arg='mat,i,j,elm' Label=""/>
+##  <Oper Name="AddMatrixColumnsLeft" Arg='mat,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1875,11 +1859,9 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
 
 ############################################################################
 ##
-#O  SwapMatrixRows( <M>, <row1>, <row2> )
-##
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
-##  <Oper Name="SwapMatrixRows" Arg='mat,i,j' Label=""/>
+##  <Oper Name="SwapMatrixRows" Arg='mat,i,j'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1919,11 +1901,9 @@ InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row number, sec
 
 ############################################################################
 ##
-#O  SwapMatrixColumns( <M>, <column1>, <column2> )
-##
 ##  <#GAPDoc Label="SwapMatrixColumns">
 ##  <ManSection>
-##  <Oper Name="SwapMatrixColumns" Arg='mat,i,j' Label=""/>
+##  <Oper Name="SwapMatrixColumns" Arg='mat,i,j'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
