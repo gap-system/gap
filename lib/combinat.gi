@@ -2614,7 +2614,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
           Error("usage: <flag> must be true or false");
         fi;
       fi;
-    elif Length( arg ) = 1 or Length( arg ) = 2 then
+    elif Length( arg ) > 2 then
       Error( "usage: IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )" );
     fi;
 
@@ -2977,4 +2977,3 @@ local to,from,limit,erg,nerg,perm,i,e,c,sel,sz,dio,part,d,j,k,kk,ac,lc,nc;
   od;
   return List(erg,x->Permuted(x,perm));
 end);
-
