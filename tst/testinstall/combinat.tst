@@ -460,6 +460,8 @@ gap> NrRestrictedPartitions( 100, [2,3,5,7,11,13,17], 10 );
 125
 
 #F  IteratorOfPartitions( <n> )
+gap> IteratorOfPartitions(fail);
+Error, <n> must be a positive integer
 gap> for n in [ 1 .. 15 ] do
 >      pn1:= Partitions( n );
 >      pn2:= List( IteratorOfPartitions( n ) );
@@ -471,6 +473,16 @@ gap> for n in [ 1 .. 15 ] do
 >    od;
 
 #F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
+gap> IteratorOfPartitionsSet();
+Error, Function: number of arguments must be at least 1 (not 0)
+gap> IteratorOfPartitionsSet(fail);
+Error, <s> must be a set
+gap> IteratorOfPartitionsSet([],-1);
+Error, usage: <k> must be between 1 and size of <s>
+gap> IteratorOfPartitionsSet([1],1,fail);
+Error, usage: <flag> must be true or false
+gap> IteratorOfPartitionsSet([1],1,true,"too many");
+Error, usage: IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
 gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
 >      pn1:= PartitionsSet( s );
 >      pn2:= List( IteratorOfPartitionsSet( s ) );
