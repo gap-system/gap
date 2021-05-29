@@ -1930,22 +1930,197 @@ DeclareOperation( "[]:=", [ IsMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 ############################################################################
 # Elementary matrix operations
 ############################################################################
-
+#
 ############################################################################
 ##
-## TODO DESCRIPTION
+##  <#GAPDoc Label="MultMatrixRow">
+##  <ManSection>
+##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
+##  <A>elm</A> from the left in-place.
+##  <P/>
+##  <Ref Oper="MultMatrixRowLeft"/> is a synonym of <Ref Oper="MultMatrixRow"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "MultMatrixRow", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixRowLeft", MultMatrixRow);
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixRowRight">
+##  <ManSection>
+##  <Oper Name="MultMatrixRowRight" Arg='mat,i,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
+##  <A>elm</A> from the right in-place.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ]);
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixColumn">
+##  <ManSection>
+##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixColumnRight" Arg='mat,i,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
+##  <A>elm</A> from the right in-place.
+##  <P/>
+##  <Ref Oper="MultMatrixColumnRight"/> is a synonym of <Ref Oper="MultMatrixColumn"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "MultMatrixColumn", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
-DeclareSynonym( "MultMatrixRowRight", MultMatrixColumn);
+DeclareSynonym( "MultMatrixColumnRight",  MultMatrixColumn);
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixColumnLeft">
+##  <ManSection>
+##  <Oper Name="MultMatrixColumnLeft" Arg='mat,i,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
+##  <A>elm</A> from the left in-place.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
-DeclareOperation( "MultMatrixColumnRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixRows">
+##  <ManSection>
+##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixRowsLeft" Arg='mat,i,j,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
+##  <P/>
+##  <Ref Oper="AddMatrixRowsLeft"/> is a synonym of <Ref Oper="AddMatrixRows"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "AddMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixRowsLeft", AddMatrixRows);
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixRowsRight">
+##  <ManSection>
+##  <Oper Name="AddMatrixRowsRight" Arg='mat,i,j,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the right.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixColumns">
+##  <ManSection>
+##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixColumnsRight" Arg='mat,i,j,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
+##  <P/>
+##  <Ref Oper="AddMatrixColumnsRight"/> is a synonym of <Ref Oper="AddMatrixColumns"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "AddMatrixColumns", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixColumnsRight", AddMatrixColumns);
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixColumnsLeft">
+##  <ManSection>
+##  <Oper Name="AddMatrixColumnsLeft" Arg='mat,i,j,elm'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the left.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="SwapMatrixRows">
+##  <ManSection>
+##  <Oper Name="SwapMatrixRows" Arg='mat,i,j'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Swaps the <A>i</A>-th row and <A>j</A>-th row of a mutable matrix <A>mat</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "SwapMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="SwapMatrixColumns">
+##  <ManSection>
+##  <Oper Name="SwapMatrixColumns" Arg='mat,i,j'/>
+##  
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Swaps the <A>i</A>-th column and <A>j</A>-th column of a mutable matrix <A>mat</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareOperation( "SwapMatrixColumns", [ IsMatrixObj and IsMutable, IsInt, IsInt ] );

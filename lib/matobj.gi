@@ -1572,34 +1572,10 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
 # Elementary matrix operations
 ############################################################################
 
-############################################################################
-##
-##  <#GAPDoc Label="MultMatrixRow">
-##  <ManSection>
-##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
-##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
-##  <A>elm</A> from the left in-place.
-##  <P/>
-##  <Ref Oper="MultMatrixRowLeft"/> is a synonym of <Ref Oper="MultMatrixRow"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and a scalar",
+InstallMethod( MultMatrixRow, "for a mutable matrix object, one row index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < row and row <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument <row> has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
   
     for i in [1..NrCols(mat)] do
         mat[row,i] := scalar * mat[row,i];
@@ -1607,68 +1583,25 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row number, and 
     
   end );
 
-
 ############################################################################
-##
-##  <#GAPDoc Label="MultMatrixColumn">
-##  <ManSection>
-##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm'/>
-##  <Oper Name="MultMatrixColumnRight" Arg='mat,i,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
-##  <A>elm</A> from the right in-place.
-##  <P/>
-##  <Ref Oper="MultMatrixColumnRight"/> is a synonym of <Ref Oper="MultMatrixColumn"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( MultMatrixColumn, "for a mutable matrix object, one column number, and a scalar",
+
+InstallMethod( MultMatrixColumn, "for a mutable matrix object, one column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, column, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < column and column <= NrCols(mat) ) then
-        ErrorNoReturn("the second argument column has to fulfill 0 < column <= NrCols(mat) ");
-    fi;
   
     for i in [1..NrRows(mat)] do
         mat[i,column] := mat[i,column] * scalar;
     od;
     
   end );
-  
 
 ############################################################################
-##
-##  <#GAPDoc Label="MultMatrixRowRight">
-##  <ManSection>
-##  <Oper Name="MultMatrixRowRight" Arg='mat,i,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
-##  <A>elm</A> from the right in-place.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( MultMatrixRowRight, "for a mutable matrix object, one row number, and a scalar",
+
+InstallMethod( MultMatrixRowRight, "for a mutable matrix object, one row index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
       local i;
-    
-    # Checks
-    if not( 0 < row and row <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
   
     for i in [1..NrCols(mat)] do
         mat[row,i] := mat[row,i] * scalar;
@@ -1677,30 +1610,11 @@ InstallMethod( MultMatrixRowRight, "for a mutable matrix object, one row number,
   end );
 
 ############################################################################
-##
-##  <#GAPDoc Label="MultMatrixColumnLeft">
-##  <ManSection>
-##  <Oper Name="MultMatrixColumnLeft" Arg='mat,i,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
-##  <A>elm</A> from the left in-place.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column number, and a scalar",
+
+InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, column, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < column and column <= NrCols(mat) ) then
-        ErrorNoReturn("the second argument column has to fulfill 0 < column <= NrCols(mat) ");
-    fi;
   
     for i in [1..NrRows(mat)] do
         mat[i,column] := scalar * mat[i,column];
@@ -1708,74 +1622,25 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column nu
     
   end );
 
-
 ############################################################################
-##
-##  <#GAPDoc Label="AddMatrixRows">
-##  <ManSection>
-##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm'/>
-##  <Oper Name="AddMatrixRowsLeft" Arg='mat,i,j,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
-##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
-##  <P/>
-##  <Ref Oper="AddMatrixRowsLeft"/> is a synonym of <Ref Oper="AddMatrixRows"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( AddMatrixRows, "for a mutable matrix object, one row number, second row number, and a scalar",
+
+InstallMethod( AddMatrixRows, "for a mutable matrix object, one row index, second row index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < row1 and row1 <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
-    if not( 0 < row2 and row2 <= NrRows(mat) ) then
-        ErrorNoReturn("the third argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
 
     for i in [1..NrCols(mat)] do
         mat[row1,i] := mat[row1,i] + scalar * mat[row2,i];
     od;
 
   end );
-  
+ 
+ ############################################################################
 
-############################################################################
-##
-##  <#GAPDoc Label="AddMatrixRowsRight">
-##  <ManSection>
-##  <Oper Name="AddMatrixRowsRight" Arg='mat,i,j,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
-##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the right.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row number, second row number, and a scalar",
+InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row index, second row index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < row1 and row1 <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
-    if not( 0 < row2 and row2 <= NrRows(mat) ) then
-        ErrorNoReturn("the third argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
  
     for i in [1..NrCols(mat)] do
         mat[row1,i] := mat[row1,i] + mat[row2,i] * scalar;
@@ -1784,36 +1649,11 @@ InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row number,
   end );
 
 ############################################################################
-##
-##  <#GAPDoc Label="AddMatrixColumns">
-##  <ManSection>
-##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm'/>
-##  <Oper Name="AddMatrixColumnsRight" Arg='mat,i,j,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
-##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
-##  <P/>
-##  <Ref Oper="AddMatrixColumnsRight"/> is a synonym of <Ref Oper="AddMatrixColumns"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number, second column number, and a scalar",
+
+InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column index, second column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, column1, column2, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < column1 and column1 <= NrCols(mat) ) then
-        ErrorNoReturn("the second argument column has to fulfill 0 < column <= NrCols(mat) ");
-    fi;
-    if not( 0 < column2 and column2 <= NrCols(mat) ) then
-        ErrorNoReturn("the third argument column has to fulfill 0 < column <= NrCols(mat) ");
-    fi;
 
     for i in [1..NrRows(mat)] do
         mat[i,column1] := mat[i,column1] + mat[i,column2] * scalar;
@@ -1822,120 +1662,48 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number
   end );
 
 ############################################################################
-##
-##  <#GAPDoc Label="AddMatrixColumnsLeft">
-##  <ManSection>
-##  <Oper Name="AddMatrixColumnsLeft" Arg='mat,i,j,elm'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
-##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the left.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column number, second column number, and a scalar",
+
+InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column index, second column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, column1, column2, scalar )
     local i;
-    
-    # Checks
-    if not( 0 < column1 and column1 <= NrCols(mat) ) then
-        ErrorNoReturn("the second argument column has to fulfill 0 < column <= NrCols(mat) ");
-    fi;
-    if not( 0 < column2 and column2 <= NrCols(mat) ) then
-        ErrorNoReturn("the third argument column has to fulfill 0 < column <= NrCols(mat) ");
-    fi;
 
     for i in [1..NrRows(mat)] do
         mat[i,column1] := mat[i,column1] + scalar * mat[i,column2] ;
     od;
-      
-  end );
-  
 
-############################################################################
-##
-##  <#GAPDoc Label="SwapMatrixRows">
-##  <ManSection>
-##  <Oper Name="SwapMatrixRows" Arg='mat,i,j'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Swaps the <A>i</A>-th row and <A>j</A>-th row of a mutable matrix <A>mat</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row number, second row number",
+  end );
+
+############################################################################  
+
+InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row index, second row index",
   [ IsMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
     local temp, i;
     
     if row1 <> row2 then
-    
-        # Checks
-        if not( 0 < row1 and row1 <= NrRows(mat) ) then
-            ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-        fi;
-        if not( 0 < row2 and row2 <= NrRows(mat) ) then
-            ErrorNoReturn("the third argument row has to fulfill 0 < row <= NrRows(mat) ");
-        fi;
-        
         for i in [1..NrCols(mat)] do
             temp := mat[row1,i];
             mat[row1,i] := mat[row2,i];
             mat[row2,i] := temp;
-        od;
-        
+        od; 
     fi;
-    
-    
+
   end );
 
-
 ############################################################################
-##
-##  <#GAPDoc Label="SwapMatrixColumns">
-##  <ManSection>
-##  <Oper Name="SwapMatrixColumns" Arg='mat,i,j'/>
-##  
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Swaps the <A>i</A>-th column and <A>j</A>-th column of a mutable matrix <A>mat</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-InstallMethod( SwapMatrixColumns, "for a mutable matrix object, one column number, second column number",
+
+InstallMethod( SwapMatrixColumns, "for a mutable matrix object, one column index, second column index",
   [ IsMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, column1, column2 )
     local temp, i;
     
     if column1 <> column2 then
-    
-        # Checks
-        if not( 0 < column1 and column1 <= NrCols(mat) ) then
-            ErrorNoReturn("the second argument column has to fulfill 0 < column <= NrCols(mat) ");
-        fi;
-        if not( 0 < column2 and column2 <= NrCols(mat) ) then
-            ErrorNoReturn("the third argument column has to fulfill 0 < column <= NrCols(mat) ");
-        fi;
-        
         for i in [1..NrRows(mat)] do
             temp := mat[i,column1];
             mat[i,column1] := mat[i,column2];
             mat[i,column2] := temp;
-        od;
-        
+        od; 
     fi;
-    
     
   end );
