@@ -1663,7 +1663,7 @@ InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column index,
 
 ############################################################################
 
-InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column index, second column index, and a scalar",
+InstallMethod( AddMatrixColumnsLeft, "for a mutable matrix object, one column index, second column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, column1, column2, scalar )
     local i;

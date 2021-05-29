@@ -1297,11 +1297,6 @@ InstallMethod( NewCompanionMatrix,
 InstallMethod( MultMatrixRow, "for a mutable IsRowListMatrix, one row number, and a scalar",
   [ IsRowListMatrix and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
-    
-    # Checks
-    if not( 0 < row and row <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
   
     mat[row] := scalar * mat[row];
     
@@ -1315,12 +1310,6 @@ InstallMethod( MultMatrixRow, "for a mutable IsRowListMatrix, one row number, an
 InstallMethod( MultMatrixRowRight, "for a mutable IsRowListMatrix, one row number, and a scalar",
   [ IsRowListMatrix and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
-      local i;
-    
-    # Checks
-    if not( 0 < row and row <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
   
     mat[row] := mat[row] * scalar;
     
@@ -1334,15 +1323,6 @@ InstallMethod( MultMatrixRowRight, "for a mutable IsRowListMatrix, one row numbe
 InstallMethod( AddMatrixRows, "for a mutable IsRowListMatrix, one row number, second row number, and a scalar",
   [ IsRowListMatrix and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
-    local i;
-    
-    # Checks
-    if not( 0 < row1 and row1 <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
-    if not( 0 < row2 and row2 <= NrRows(mat) ) then
-        ErrorNoReturn("the third argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
 
     mat[row1] := mat[row1] + scalar * mat[row2];
 
@@ -1356,15 +1336,6 @@ InstallMethod( AddMatrixRows, "for a mutable IsRowListMatrix, one row number, se
 InstallMethod( AddMatrixRowsRight, "for a mutable IsRowListMatrix, one row number, second row number, and a scalar",
   [ IsRowListMatrix and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
-    local i;
-    
-    # Checks
-    if not( 0 < row1 and row1 <= NrRows(mat) ) then
-        ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
-    if not( 0 < row2 and row2 <= NrRows(mat) ) then
-        ErrorNoReturn("the third argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
  
     mat[row1] := mat[row1] + mat[row2] * scalar;
 
@@ -1377,15 +1348,7 @@ InstallMethod( AddMatrixRowsRight, "for a mutable IsRowListMatrix, one row numbe
 InstallMethod( SwapMatrixRows, "for a mutable IsRowListMatrix, one row number, second row number",
   [ IsRowListMatrix and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
-    local temp, i;
-
-    # Checks
-    if not( 0 < row1 and row1 <= NrRows(mat) ) then
-      ErrorNoReturn("the second argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
-    if not( 0 < row2 and row2 <= NrRows(mat) ) then
-        ErrorNoReturn("the third argument row has to fulfill 0 < row <= NrRows(mat) ");
-    fi;
+    local temp;
   
     temp := mat[row1];
     mat[row1] := mat[row2];
