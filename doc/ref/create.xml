@@ -118,7 +118,7 @@ that is, <M>a_n = n/2</M> if <M>n</M> is even,
 and <M>a_n = (1-n)/2</M> otherwise.
 <P/>
 <Log><![CDATA[
-IsIntegersIteratorCompRep := NewRepresentation( "IsIntegersIteratorRep",
+DeclareRepresentation( "IsIntegersIteratorCompRep",
     IsComponentObjectRep, [ "counter" ] );
 ]]></Log>
 <P/>
@@ -220,7 +220,7 @@ See&nbsp;<Ref Sect="Component Objects"/> for an implementation using component o
 and more details.
 <P/>
 <Log><![CDATA[
-IsIntegersIteratorPosRep := NewRepresentation( "IsIntegersIteratorRep",
+DeclareRepresentation( "IsIntegersIteratorPosRep",
     IsPositionalObjectRep, [ 1 ] );
 ]]></Log>
 <P/>
@@ -236,7 +236,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
-                               and IsIntegersIteratorRep ),
+                               and IsIntegersIteratorPosRep ),
                       [ 0 ] );
     end );
 ]]></Log>

@@ -277,7 +277,7 @@ DeclareOperation("LookupDictionary",[IsDictionary,IsObject]);
 
 DeclareSynonym("GetHashEntry",LookupDictionary);
 
-IsDictionaryDefaultRep:=NewRepresentation("IsDictionaryDefaultRep",
+DeclareRepresentation("IsDictionaryDefaultRep",
   IsDictionary and IsNonAtomicComponentObjectRep,[]);
 
 #############################################################################
@@ -294,9 +294,9 @@ IsDictionaryDefaultRep:=NewRepresentation("IsDictionaryDefaultRep",
 ##  </Description>
 ##  </ManSection>
 ##
-IsListDictionary:=NewRepresentation("IsListDictionary",IsDictionaryDefaultRep,
+DeclareRepresentation("IsListDictionary",IsDictionaryDefaultRep,
   ["entries"] );
-IsListLookupDictionary:=NewRepresentation("IsListLookupDictionary",
+DeclareRepresentation("IsListLookupDictionary",
   IsListDictionary and IsLookupDictionary,
   ["entries"] );
 
@@ -328,9 +328,9 @@ DeclareOperation( "ListKeyEnumerator", [ IsListDictionary ] );
 ##  </Description>
 ##  </ManSection>
 ##
-IsSortDictionary:=NewRepresentation("IsSortDictionary",IsListDictionary,
+DeclareRepresentation("IsSortDictionary",IsListDictionary,
   ["entries"] );
-IsSortLookupDictionary:=NewRepresentation("IsSortLookupDictionary",
+DeclareRepresentation("IsSortLookupDictionary",
   IsSortDictionary and IsListLookupDictionary and IsLookupDictionary,
   ["entries"] );
 
@@ -349,9 +349,9 @@ IsSortLookupDictionary:=NewRepresentation("IsSortLookupDictionary",
 ##  </Description>
 ##  </ManSection>
 ##
-IsPositionDictionary:=NewRepresentation("IsPositionDictionary",
+DeclareRepresentation("IsPositionDictionary",
   IsDictionaryDefaultRep,["domain","blist"] );
-IsPositionLookupDictionary:=NewRepresentation("IsPositionLookupDictionary",
+DeclareRepresentation("IsPositionLookupDictionary",
   IsPositionDictionary and IsLookupDictionary,
   ["domain","blist","vals"] );
 
