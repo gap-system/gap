@@ -32,6 +32,7 @@ INSTALL_METHOD := false;
 BIND_GLOBAL( "INFO_DEBUG", function( arg )
     Print( "#I  " );
     CALL_FUNC_LIST( Print, arg{ [ 2 .. LEN_LIST( arg ) ] } );
+    Print( "\n" );
 end );
 
 
