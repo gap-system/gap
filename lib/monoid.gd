@@ -267,3 +267,10 @@ DeclareGlobalFunction( "FreeMonoid" );
 ##  <#/GAPDoc>
 ##
 DeclareProperty( "IsFinitelyGeneratedMonoid", IsMonoid );
+InstallTrueMethod( IsMonoid, IsFinitelyGeneratedMonoid );
+
+# make IsFinitelyGeneratedMonoid equivalent to IsMonoid and IsFinitelyGeneratedMagma
+InstallTrueMethod( IsFinitelyGeneratedMonoid, IsMonoid and IsFinitelyGeneratedMagma );
+InstallTrueMethod( HasIsFinitelyGeneratedMonoid, IsMonoid and HasIsFinitelyGeneratedMagma );
+InstallTrueMethod( IsFinitelyGeneratedMagma, IsFinitelyGeneratedMonoid );
+InstallTrueMethod( HasIsFinitelyGeneratedMagma, HasIsFinitelyGeneratedMonoid );

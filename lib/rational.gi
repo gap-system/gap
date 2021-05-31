@@ -26,6 +26,7 @@ SetConductor( Rationals, 1 );
 SetDimension( Rationals, 1 );
 SetGaloisStabilizer( Rationals, [ 1 ] );
 SetGeneratorsOfLeftModule( Rationals, [ 1 ] );
+SetIsFinitelyGeneratedMagma( Rationals, false );
 SetIsWholeFamily( Rationals, false );
 
 
@@ -46,6 +47,7 @@ SetDimension( GaussianRationals, 2 );
 SetDegreeOverPrimeField( GaussianRationals, 2 );
 SetGaloisStabilizer( GaussianRationals, [ 1 ] );
 SetGeneratorsOfLeftModule( GaussianRationals, [ 1, E(4) ] );
+SetIsFinitelyGeneratedMagma( GaussianRationals, false );
 SetIsWholeFamily( GaussianRationals, false );
 
 

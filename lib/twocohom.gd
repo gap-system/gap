@@ -304,7 +304,7 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##  [ [ 3888, 1 ], [ 6480, 1 ], [ 7776, 1 ], [ 19440, 1 ] ]
 ##  gap> p:=FpGroupCocycle(coh,coh.cohomology[1],true:normalform);;
 ##  gap> p.7*p.1; # i.e. m1*F1, but in normal form
-##  F1*m2^-1
+##  F1*m4
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

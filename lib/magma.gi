@@ -244,6 +244,38 @@ InstallMethod( IsCommutative,
 
 #############################################################################
 ##
+#P  IsFinitelyGeneratedMagma( <M> ) . . . . test whether a magma is fin. gen.
+##
+InstallMethod( IsFinitelyGeneratedMagma,
+    [ IsMagma and HasGeneratorsOfMagma ],
+    function( M )
+    if IsFinite( GeneratorsOfMagma( M ) ) then
+      return true;
+    fi;
+    TryNextMethod();
+    end );
+
+InstallMethod( IsFinitelyGeneratedMagma,
+    [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ],
+    function( M )
+    if IsFinite( GeneratorsOfMagmaWithOne( M ) ) then
+      return true;
+    fi;
+    TryNextMethod();
+    end );
+
+InstallMethod( IsFinitelyGeneratedMagma,
+    [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ],
+    function( M )
+    if IsFinite( GeneratorsOfMagmaWithInverses( M ) ) then
+      return true;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
 #M  Centralizer( <M>, <elm> ) . . . . .  centralizer of an element in a magma
 #M  Centralizer( <M>, <N> ) . . . . . . . . centralizer of a magma in a magma
 ##
