@@ -22,40 +22,32 @@
 ##
 #R  IsSingleCollectorRep( <obj> )
 ##
-DeclareRepresentation(
-    "IsSingleCollectorRep",
-    IsPositionalObjectRep, [1..SCP_AVECTOR],
-    IsPowerConjugateCollector and IsFinite );
+DeclareRepresentation( "IsSingleCollectorRep",
+    IsPositionalObjectRep );
 
 
 #############################################################################
 ##
 #R  Is8BitsSingleCollectorRep( <obj> )
 ##
-DeclareRepresentation(
-    "Is8BitsSingleCollectorRep",
-    IsSingleCollectorRep, [],
-    IsPowerConjugateCollector and IsFinite );
+DeclareRepresentation( "Is8BitsSingleCollectorRep",
+    IsSingleCollectorRep );
 
 
 #############################################################################
 ##
 #R  Is16BitsSingleCollectorRep( <obj> )
 ##
-DeclareRepresentation(
-    "Is16BitsSingleCollectorRep",
-    IsSingleCollectorRep, [],
-    IsPowerConjugateCollector and IsFinite );
+DeclareRepresentation( "Is16BitsSingleCollectorRep",
+    IsSingleCollectorRep );
 
 
 #############################################################################
 ##
 #R  Is32BitsSingleCollectorRep( <obj> )
 ##
-DeclareRepresentation(
-    "Is32BitsSingleCollectorRep",
-    IsSingleCollectorRep, [],
-    IsPowerConjugateCollector and IsFinite );
+DeclareRepresentation( "Is32BitsSingleCollectorRep",
+    IsSingleCollectorRep );
 
 
 #############################################################################

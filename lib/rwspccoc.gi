@@ -17,10 +17,8 @@
 ##
 #R  IsCombinatorialCollectorRep( <obj> )  . . . . . . . . . . . . declaration
 ##
-DeclareRepresentation(
-    "IsCombinatorialCollectorRep",
-    IsSingleCollectorRep, [1..SCP_CLASS],
-    IsPowerConjugateCollector and IsFinite );
+DeclareRepresentation( "IsCombinatorialCollectorRep",
+    IsSingleCollectorRep );
 
 
 #############################################################################

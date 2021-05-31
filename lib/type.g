@@ -331,19 +331,19 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentation( "IsInternalRep", IS_OBJECT, [], IS_OBJECT );
-DeclareRepresentation( "IsPositionalObjectRep", IS_OBJECT, [], IS_OBJECT );
-DeclareRepresentation( "IsComponentObjectRep", IS_OBJECT, [], IS_OBJECT );
-DeclareRepresentation( "IsDataObjectRep", IS_OBJECT, [], IS_OBJECT );
+DeclareRepresentation( "IsInternalRep", IS_OBJECT );
+DeclareRepresentation( "IsPositionalObjectRep", IS_OBJECT );
+DeclareRepresentation( "IsComponentObjectRep", IS_OBJECT );
+DeclareRepresentation( "IsDataObjectRep", IS_OBJECT );
 
 # the following are for HPC-GAP, but we also provide them in plain GAP, to
 # make it easier to write code which works in both.
 DeclareRepresentation( "IsNonAtomicComponentObjectRep",
-        IsComponentObjectRep, [], IS_OBJECT); 
+        IsComponentObjectRep );
 DeclareRepresentation( "IsReadOnlyPositionalObjectRep",
-        IsPositionalObjectRep, [], IS_OBJECT); 
+        IsPositionalObjectRep );
 DeclareRepresentation( "IsAtomicPositionalObjectRep",
-        IsPositionalObjectRep, [], IS_OBJECT); 
+        IsPositionalObjectRep );
 
 #############################################################################
 ##
@@ -404,8 +404,7 @@ DeclareRepresentation( "IsAtomicPositionalObjectRep",
 ##  (In earlier versions of GAP, a rule had been stated in a code file,
 ##  but this rule was not part of the manuals.)
 ##
-DeclareRepresentation( "IsAttributeStoringRep",
-    IsComponentObjectRep, [], IS_OBJECT );
+DeclareRepresentation( "IsAttributeStoringRep", IsComponentObjectRep );
 
 
 #############################################################################
@@ -420,15 +419,11 @@ DeclareCategory( "IsFamilyOfFamilies", IsFamily );
 DeclareCategory( "IsFamilyOfTypes"   , IsFamily );
 
 DeclareRepresentation( "IsFamilyDefaultRep",
-                            IsComponentObjectRep,
+                            IsComponentObjectRep );
 #T why not `IsAttributeStoringRep' ?
-                            "NAME,REQ_FLAGS,IMP_FLAGS,TYPES,TYPES_LIST_FAM",
-#T add nTypes, HASH_SIZE
-                            IsFamily );
 
 DeclareRepresentation( "IsTypeDefaultRep",
-                            IsPositionalObjectRep,
-                            "", IsType );
+                            IsPositionalObjectRep );
 
 if IsHPCGAP then
     BIND_GLOBAL( "FamilyOfFamilies", AtomicRecord( rec() ) );
