@@ -1,4 +1,4 @@
-#@local S4,V4,irr,l
+#@local S4,V4,irr,l, tbl, v
 gap> START_TEST("ctblfuns.tst");
 gap> S4:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )
@@ -27,4 +27,42 @@ gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(CharacterTable(g) mod
 true
 gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(TableOfMarks(g)));
 true
+
+# Up to GAP 4.11.1, the following returned 'fail' results.
+gap> tbl:= CharacterTable( "J1" );;
+gap> List( Filtered( Irr( tbl ), x -> x[1] = 120 ),
+>          x -> SizeOfFieldOfDefinition( x, 71 ) );
+[ 357911, 357911, 357911 ]
+
+# other situations for 'SizeOfFieldOfDefinition'
+gap> SizeOfFieldOfDefinition( 17, 2 );
+2
+gap> SizeOfFieldOfDefinition( E(7), 2 );
+8
+gap> SizeOfFieldOfDefinition( [ E(7) ], 2 );
+8
+gap> SizeOfFieldOfDefinition( E(7) / 2, 2 );
+fail
+gap> SizeOfFieldOfDefinition( E(8), 2 );
+fail
+gap> SizeOfFieldOfDefinition( E(4), 5 );
+5
+gap> SizeOfFieldOfDefinition( EX(63), 2 );
+2
+gap> SizeOfFieldOfDefinition( GaloisCyc( EX(63), -1 ), 2 );
+4
+gap> v:= Conjugates( CF(8), E(8) + 4*E(8)^3 );;
+gap> SizeOfFieldOfDefinition( v, 3 );
+3
+gap> v = List( v, x -> GaloisCyc( x, 3 ) );
+false
+gap> ForAll( ( v - List( v, x -> GaloisCyc( x, 3 ) ) ) / 3, IsCycInt );
+true
+gap> SizeOfFieldOfDefinition( EC(19), 71 );
+#I  the Conway polynomial of degree 18 for p = 71 is not known
+fail
+gap> SizeOfFieldOfDefinition( Z(25), 5 );
+Error, <val> must be a cyclotomic or a list of cyclotomics
+
+#
 gap> STOP_TEST( "ctblfuns.tst", 1);
