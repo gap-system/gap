@@ -166,11 +166,11 @@ end );
 
 #############################################################################
 ##
-#F  NewRepresentation( <name>, <super>, <slots>[, <req>] )  .  representation
+#F  NewRepresentation( <name>, <super>[, <slots>[, <req>]] )  .  representation
 ##
 ##  <#GAPDoc Label="NewRepresentation">
 ##  <ManSection>
-##  <Func Name="NewRepresentation" Arg='name, super, slots[, req]'/>
+##  <Func Name="NewRepresentation" Arg='name, super[, slots[, req]]'/>
 ##
 ##  <Description>
 ##  <Ref Func="NewRepresentation"/> returns a new representation <A>rep</A>
@@ -190,25 +190,13 @@ end );
 ##  see&nbsp;<Ref Sect="Component Objects"/>
 ##  and&nbsp;<Ref Sect="Positional Objects"/> for the details.
 ##  <P/>
-##  The third argument <A>slots</A> is a list either of integers or of
-##  strings.
-##  In the former case,
-##  <A>rep</A> must be <Ref Filt="IsPositionalObjectRep"/> or a
-##  subrepresentation of it, and <A>slots</A> tells what positions of the
-##  objects in the representation <A>rep</A> may be bound.
-##  In the latter case,
-##  <A>rep</A> must be <Ref Filt="IsComponentObjectRep"/> or a
-##  subrepresentation of, and <A>slots</A> lists the admissible names of
-##  components that objects in the representation <A>rep</A> may have.
-##  The admissible positions resp. component names of <A>super</A> need not
-##  be listed in <A>slots</A>.
+##  The optional third and fourth arguments <A>slots</A> and <A>req</A> are
+##  (and always were) unused and are only provided for backwards
+##  compatibility. Note that <A>slots</A> was required (but still unused)
+##  before GAP 4.12.
 ##  <P/>
 ##  The incremental rank (see&nbsp;<Ref Sect="Filters"/>)
 ##  of <A>rep</A> is 1.
-##  <P/>
-##  Note that for objects in the representation <A>rep</A>,
-##  of course some of the component names and positions reserved via
-##  <A>slots</A> may be unbound.
 ##  <P/>
 ##  Examples for the use of <Ref Func="NewRepresentation"/> can be found
 ##  in&nbsp;<Ref Sect="Component Objects"/>,
@@ -218,15 +206,15 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "NewRepresentation", function ( arg )
+BIND_GLOBAL( "NewRepresentation", function ( name, super, arg... )
     local   rep, filt;
 
     # Do *not* create a new representation when the file is reread.
     if REREADING then
         atomic readonly CATS_AND_REPS, readwrite FILTER_REGION do
             for filt in CATS_AND_REPS do
-                if NAME_FUNC(FILTERS[filt]) = arg[1] then
-                    Print("#W NewRepresentation \"",arg[1],"\" in Reread. ");
+                if NAME_FUNC(FILTERS[filt]) = name then
+                    Print("#W NewRepresentation \"",name,"\" in Reread. ");
                     Print("Change of Super-rep not handled\n");
                     return FILTERS[filt];
                 fi;
@@ -235,13 +223,10 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     fi;
 
     # Create the filter.
-    if LEN_LIST(arg) = 3  then
-        rep := NEW_FILTER( arg[1] );
-    elif LEN_LIST(arg) = 4  then
-        rep := NEW_FILTER( arg[1] );
-    else
-        Error("usage: NewRepresentation( <name>, <super>, <slots> [, <req> ] )");
+    if LEN_LIST(arg) > 2 then
+        Error("usage: NewRepresentation( <name>, <super>[, <slots> [, <req> ]] )");
     fi;
+    rep := NEW_FILTER( name );
 
     # Do some administrational work.
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
@@ -250,7 +235,7 @@ BIND_GLOBAL( "NewRepresentation", function ( arg )
     od;
 
     # Do not call this before adding 'rep' to 'FILTERS'.
-    InstallTrueMethodNewFilter( arg[2], rep );
+    InstallTrueMethodNewFilter( super, rep );
 
     # Return the filter.
     return rep;
@@ -259,11 +244,11 @@ end );
 
 #############################################################################
 ##
-#F  DeclareRepresentation( <name>, <super>, <slots> [,<req>] )
+#F  DeclareRepresentation( <name>, <super>[, <slots>[, <req>]] )
 ##
 ##  <#GAPDoc Label="DeclareRepresentation">
 ##  <ManSection>
-##  <Func Name="DeclareRepresentation" Arg='name, super, slots [,req]'/>
+##  <Func Name="DeclareRepresentation" Arg='name, super[, slots[, req]]'/>
 ##
 ##  <Description>
 ##  does the same as <Ref Func="NewRepresentation"/> and then binds
