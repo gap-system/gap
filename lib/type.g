@@ -123,33 +123,26 @@ end );
 
 #############################################################################
 ##
-#F  DeclareRepresentationKernel( <name>, <super>, <slots> [,<req>], <filt> )
+#F  DeclareRepresentationKernel( <name>, <super>, <filt> )
 ##
 ##  <ManSection>
-##  <Func Name="DeclareRepresentationKernel" Arg='name, super, slots [,req], filt'/>
+##  <Func Name="DeclareRepresentationKernel" Arg='name, super, filt'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
-    local   rep, filt;
+BIND_GLOBAL( "DeclareRepresentationKernel", function ( name, super, rep )
+    local   filt;
     atomic readwrite CATS_AND_REPS, FILTER_REGION do
         if REREADING then
             for filt in CATS_AND_REPS do
-                if NAME_FUNC(FILTERS[filt]) = arg[1] then
-                    Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
+                if NAME_FUNC(FILTERS[filt]) = name then
+                    Print("#W DeclareRepresentationKernel \"",name,"\" in Reread. ");
                     Print("Change of Super-rep not handled\n");
                     return FILTERS[filt];
                 fi;
             od;
-        fi;
-        if LEN_LIST(arg) = 4  then
-            rep := arg[4];
-        elif LEN_LIST(arg) = 5  then
-            rep := arg[5];
-        else
-            Error("usage: DeclareRepresentation( <name>, <super>, <slots> [, <req> ] )");
         fi;
         atomic readwrite CATS_AND_REPS, FILTER_REGION do
             ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
@@ -157,9 +150,9 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
         od;
 
     od;
-    InstallTrueMethod( arg[2], rep );
-    BIND_GLOBAL( arg[1], rep );
-    SET_NAME_FUNC( rep, arg[1] );
+    InstallTrueMethod( super, rep );
+    BIND_GLOBAL( name, rep );
+    SET_NAME_FUNC( rep, name );
 end );
 
 
