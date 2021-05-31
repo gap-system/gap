@@ -348,7 +348,6 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  ratfun.gi    Rational Functions  Alexander Hulpke
  ratfunul.gi  Rational Functions  Alexander Hulpke
  rational.gi
- readsl.g
  record.g
  reesmat.gd
  reesmat.gi
@@ -398,10 +397,6 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  smgrpfre.gi
  solmxgrp.gd
  solmxgrp.gi
- sparselist.gd
- sparselistgen.gi
- sparselistsorted.gi
- sparsevectorsorted.gi
  stbcbckt.gd  Partition Backtrack algorithm  Alexander Hulpke
  stbcbckt.gi  Partition Backtrack algorithm  Alexander Hulpke
  stbc.gd      Stabilizer Chains  Ákos Seress, Alexander Hulpke
