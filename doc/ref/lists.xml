@@ -1688,12 +1688,24 @@ with possibly slightly different meaning for lists and non-list collections.
 
 The following functions are generalizations of
 <Ref Func="List" Label="for a collection"/>,
-<Ref Oper="Set"/>, <Ref Func="Sum"/>, and <Ref Func="Product"/>.
+<Ref Oper="Set"/>,
+<Ref Func="Sum"/>,
+<Ref Func="Product"/>,
+<Ref Func="ForAll"/>,
+<Ref Func="ForAny"/>,
+<Ref Func="Filtered"/>,
+<Ref Func="Number"/>,
+and <Ref Func="Perform"/>.
 
 <#Include Label="ListX">
 <#Include Label="SetX">
 <#Include Label="SumX">
 <#Include Label="ProductX">
+<#Include Label="ForAllX">
+<#Include Label="ForAnyX">
+<#Include Label="FilteredX">
+<#Include Label="NumberX">
+<#Include Label="PerformX">
 
 </Section>
 
