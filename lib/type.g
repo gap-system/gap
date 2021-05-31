@@ -225,6 +225,13 @@ BIND_GLOBAL( "NewRepresentation", function ( name, super, arg... )
     # Create the filter.
     if LEN_LIST(arg) > 2 then
         Error("usage: NewRepresentation( <name>, <super>[, <slots> [, <req> ]] )");
+    elif LEN_LIST(arg) > 0 then
+        INFO_OBSOLETE(3, "starting with GAP 4.12, the third argument <slots> is unused",
+            " in ", INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
+        if LEN_LIST(arg) = 2 then
+            INFO_OBSOLETE(2, "the fourth argument <req> is unused",
+                " in ", INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
+        fi;
     fi;
     rep := NEW_FILTER( name );
 

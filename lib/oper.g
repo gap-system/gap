@@ -38,6 +38,28 @@ end );
 
 #############################################################################
 ##
+#F  INFO_OBSOLETE( <level>, ... )
+##
+##  <ManSection>
+##  <Func Name="INFO_OBSOLETE" Arg='level, ...'/>
+##
+##  <Description>
+##  This will delegate to the proper info class <C>InfoObsolete</C>
+##  as soon as the info classes are available.
+##  </Description>
+##  </ManSection>
+##
+BIND_GLOBAL( "INFO_OBSOLETE", function( arg )
+    if GAPInfo.CommandLineOptions.O then
+        Print( "#I  " );
+        CALL_FUNC_LIST( Print, arg{ [ 2 .. LEN_LIST( arg ) ] } );
+        Print( "\n" );
+    fi;
+end );
+
+
+#############################################################################
+##
 #V  CATS_AND_REPS
 ##
 ##  <ManSection>

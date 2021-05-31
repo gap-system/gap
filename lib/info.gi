@@ -471,5 +471,22 @@ end);
 ##  Warnings can be disabled entirely by setting its level to 0, and further
 ##  warnings can be switched on by setting its level to 2.
 ##
-DeclareInfoClass( "InfoObsolete" );
-SetInfoLevel(InfoObsolete,1);
+##  Also deal with INFO_OBSOLETE, similar to INFO_DEBUG / InfoDebug earlier in
+##  this file.
+##
+if not IsBound( InfoObsolete ) then
+  DeclareInfoClass( "InfoObsolete" );
+  SetInfoLevel( InfoObsolete, 1 );
+
+  MAKE_READ_WRITE_GLOBAL( "INFO_OBSOLETE" );
+  INFO_OBSOLETE:= function( arg )
+    local string, i;
+
+    string:= [];
+    for i in [ 2 .. LEN_LIST( arg ) ] do
+      APPEND_LIST_INTR( string, arg[i] );
+    od;
+    Info( InfoObsolete, arg[1], string );
+  end;
+  MAKE_READ_ONLY_GLOBAL( "INFO_OBSOLETE" );
+fi;
