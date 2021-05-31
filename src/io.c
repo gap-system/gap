@@ -1872,6 +1872,16 @@ static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
     return val;
 }
 
+static Obj FuncPRINT_FORMATTING_STDOUT(Obj self)
+{
+    TypOutputFile * output = IO()->Output;
+    if (!output)
+        ErrorMayQuit("PRINT_FORMATTING_STDOUT called while no output is opened\n", 0, 0);
+    while (output->prev)
+        output = output->prev;
+    return output->format ? True : False;
+}
+
 static Obj FuncIS_INPUT_TTY(Obj self)
 {
     GAP_ASSERT(IO()->Input);
@@ -1902,6 +1912,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_0ARGS(INPUT_FILENAME),
     GVAR_FUNC_0ARGS(INPUT_LINENUMBER),
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_STDOUT, format),
+    GVAR_FUNC_0ARGS(PRINT_FORMATTING_STDOUT),
     GVAR_FUNC_0ARGS(IS_INPUT_TTY),
     GVAR_FUNC_0ARGS(IS_OUTPUT_TTY),
     GVAR_FUNC_0ARGS(GET_FILENAME_CACHE),
