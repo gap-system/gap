@@ -382,7 +382,7 @@ implementation one would have to design this as well, but it does not affect
 the declarations this chapter is about).
 <P/>
 <Log><![CDATA[
-IsPermutationGroupByRelations:=NewRepresentation(
+DeclareRepresentation(
   "IsPermutationGroupByRelations",
   IsComponentObjectRep and IsAttributeStoringRep and IsPermGroup,
   ["degree","relations"]);
