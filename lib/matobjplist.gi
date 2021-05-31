@@ -512,13 +512,6 @@ InstallMethod( NumberColumns, "for a plist matrix",
     return m![NUM_COLS_POS];
   end );
 
-InstallMethod( DimensionsMat, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return [NrRows(m),NrCols(m)];
-  end );
-
-
 ############################################################################
 # Representation preserving constructors:
 ############################################################################
@@ -796,10 +789,11 @@ InstallMethod( \+, "for two plist matrices",
     else
         ty := TypeObj(a);
     fi;
-    # FIXME: why do we blindly copy the number of columns from the first argument?
+    # TODO: why do we blindly copy the number of columns from the first argument?
     # Either need to verify dimensions match, or, if we want to allow adding
     # arbitrary matrices, then we must use the maximum of the number of columns
     # here, no?
+    # TODO: should we check and enforce the the basedomains are identical?
     return Objectify(ty,[a![BDPOS],a![NUM_ROWS_POS],a![NUM_COLS_POS],
                          a![ROWSPOS]+b![ROWSPOS]]);
   end );
@@ -940,15 +934,16 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( TransposedMatMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    local trans;
+    local trans, res;
     # FIXME/TODO: implement this generic, or optimized for IsPlistMatrixRep?
     # Right now, we do the latter:
     trans := TransposedMatMutable(m![ROWSPOS]);
 
- 
-    # FIXME: using TypeObj(m) below is probably wrong, as it
-    # may set IsMutable incorrectly
-    return Objectify(TypeObj(m),[m![BDPOS],NrCols(m),NrRows(m),trans]);
+    res := Objectify(TypeObj(m),[m![BDPOS],NrCols(m),NrRows(m),trans]);
+    if not IsMutable(m) then
+        SetFilterObj(res,IsMutable);
+    fi;
+    return res;
   end );
 
 InstallMethod( TransposedMatImmutable, "for a plist matrix",
