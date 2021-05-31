@@ -4606,7 +4606,7 @@ DeclareGlobalFunction( "NormalSubgroupClasses" );
 ##    Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ), 
 ##    Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ) ]
 ##  gap> kernel:= KernelOfCharacter( irr[3] );
-##  Group([ (1,2)(3,4), (1,3)(2,4) ])
+##  Group([ (1,2)(3,4), (1,4)(2,3) ])
 ##  gap> SetName(kernel,"V4");
 ##  gap> HasNormalSubgroupClassesInfo( tbl );
 ##  true

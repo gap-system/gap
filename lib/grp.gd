@@ -219,7 +219,11 @@ InstallTrueMethod( IsGroup, IsFinitelyGeneratedGroup );
 InstallFactorMaintenance( IsFinitelyGeneratedGroup,
     IsGroup and IsFinitelyGeneratedGroup, IsObject, IsGroup );
 
-InstallTrueMethod( IsFinitelyGeneratedGroup, IsGroup and IsFinite );
+# make IsFinitelyGeneratedGroup equivalent to IsGroup and IsFinitelyGeneratedMagma
+InstallTrueMethod( IsFinitelyGeneratedGroup, IsGroup and IsFinitelyGeneratedMagma );
+InstallTrueMethod( HasIsFinitelyGeneratedGroup, IsGroup and HasIsFinitelyGeneratedMagma );
+InstallTrueMethod( IsFinitelyGeneratedMagma, IsFinitelyGeneratedGroup );
+InstallTrueMethod( HasIsFinitelyGeneratedMagma, HasIsFinitelyGeneratedGroup );
 
 #############################################################################
 ##
