@@ -2487,7 +2487,92 @@ DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  <Func Name="FoldLeftX" Arg='gens, func, init[, abortValue]'/>
 ##
 ##  <Description>
-##  TODO
+##  <Ref Func="FoldLeftX"/> is a generalization of <Ref Func="FoldLeft"/>
+##  which applies an accumulation function <A>func</A> to a bunch of
+##  inputs which are derived from <A>gens</A>.
+##  <P/>
+##  Specifically, let <C>n</A> denote the length of <A>gens</A>. Then
+##  each of the entries <A>gens</A><C>[1]</C>, <M>\ldots</M> <A>gens</A><C>[n]</C>
+##  must be one of the following:
+##  <List>
+##  <Mark>a list or collection</Mark>
+##  <Item>
+##      this introduces a new for-loop in the sequence of nested
+##      for-loops and if-statements;
+##  </Item>
+##  <Mark>a function returning a list or collection</Mark>
+##  <Item>
+##      this introduces a new for-loop in the sequence of nested
+##      for-loops and if-statements, where the loop-range depends on
+##      the values of the outer loop-variables; or
+##  </Item>
+##  <Mark>a function returning <K>true</K> or <K>false</K></Mark>
+##  <Item>
+##      this introduces a new if-statement in the sequence of nested
+##      for-loops and if-statements.
+##  </Item>
+##  </List>
+##  <P/>
+##  The argument <A>func</A> must be a binary function, whose first
+##  argument is an accumulator variable, and the second argument is
+##  the tuple of values of the loop-variables.
+##
+# TODO: continue editing after this point
+# TODO: document initial as initial accumulator value
+# TODO: document abortValue
+# TODO: perhaps explain how to implement ListX via FoldLeftX as one of
+#       the examples?
+#
+##
+##  <P/>
+##  Thus <C>ListX( <A>list</A>, <A>func</A> )</C> is the same as
+##  <C>List( <A>list</A>, <A>func</A> )</C>,
+##  and <C>ListX( <A>list</A>, <A>func</A>, x -> x )</C> is the same as
+##  <C>Filtered( <A>list</A>, <A>func</A> )</C>.
+##  <P/>
+##  As a more elaborate example, assume <A>arg1</A> is a list or collection,
+##  <A>arg2</A> is a function returning <K>true</K> or <K>false</K>,
+##  <A>arg3</A> is a function returning a list or collection, and
+##  <A>arg4</A> is another function returning <K>true</K> or <K>false</K>,
+##  then
+##  <P/>
+##  <C><A>result</A> := ListX( <A>arg1</A>, <A>arg2</A>, <A>arg3</A>,
+##  <A>arg4</A>, <A>func</A> );</C>
+##  <P/>
+##  is equivalent to
+##  <P/>
+##  <Listing><![CDATA[
+##  result := [];
+##  for v1 in arg1 do
+##    if arg2( v1 ) then
+##      for v2 in arg3( v1 ) do
+##        if arg4( v1, v2 ) then
+##          Add( result, func( v1, v2 ) );
+##        fi;
+##      od;
+##    fi;
+##  od;
+##  ]]></Listing>
+##  <P/>
+##  The following example shows how <Ref Func="ListX"/> can be used to
+##  compute all pairs and all strictly sorted pairs of elements in a list.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> l:= [ 1, 2, 3, 4 ];;
+##  gap> pair:= function( x, y ) return [ x, y ]; end;;
+##  gap> ListX( l, l, pair );
+##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ], 
+##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
+##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
+##  ]]></Example>
+##  <P/>
+##  In the following example, <Ref Oper="\&lt;"/> is the comparison
+##  operation:
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ListX( l, l, \<, pair );
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2495,17 +2580,6 @@ DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  TODO: document FoldLeftX (based on ListX documentation?)
 ##
 DeclareGlobalFunction( "FoldLeftX" );
-
-
-#############################################################################
-##
-##  TODO: document the following
-##
-DeclareGlobalFunction( "ForAllX" );
-DeclareGlobalFunction( "ForAnyX" );
-DeclareGlobalFunction( "FilteredX" );
-DeclareGlobalFunction( "NumberX" );
-DeclareGlobalFunction( "PerformX" );
 
 
 #############################################################################
@@ -2967,6 +3041,102 @@ DeclareGlobalFunction( "SumX" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ProductX" );
+
+
+#############################################################################
+##
+#O  ForAllX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="ForAllX">
+##  <ManSection>
+##  <Func Name="ForAllX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="ForAllX"/> returns <K>true</A> if all elements are
+##  <K>true</A> in the list obtained by calling <Ref Func="ListX"/> with the
+##  same arguments. Otherwise <K>false</A> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ForAllX" );
+
+
+#############################################################################
+##
+#O  ForAnyX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="ForAnyX">
+##  <ManSection>
+##  <Func Name="ForAnyX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="ForAnyX"/> returns <K>true</A> if any element is
+##  <K>true</A> in the list obtained by calling <Ref Func="ListX"/> with the
+##  same arguments. Otherwise <K>false</A> is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ForAnyX" );
+
+
+#############################################################################
+##
+#O  FilteredX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="FilteredX">
+##  <ManSection>
+##  <Func Name="FilteredX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="FilteredX"/> returns the TODO of the elements in the list
+##  obtained by <Ref Func="ListX"/> when this is called with the same
+##  arguments.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+## TODO: perhaps better to document this in terms of FoldLeftX
+DeclareGlobalFunction( "FilteredX" );
+
+
+#############################################################################
+##
+#O  NumberX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="NumberX">
+##  <ManSection>
+##  <Func Name="NumberX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="NumberX"/> returns the TODO of the elements in the list
+##  obtained by <Ref Func="ListX"/> when this is called with the same
+##  arguments.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "NumberX" );
+
+
+#############################################################################
+##
+#O  PerformX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="PerformX">
+##  <ManSection>
+##  <Func Name="PerformX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="PerformX"/> works like <Ref Func="ListX"/> except that it
+##  returns nothing and ignores the return values of <A>func</A>.
+##  arguments.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PerformX" );
 
 
 #############################################################################
