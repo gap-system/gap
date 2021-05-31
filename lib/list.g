@@ -406,7 +406,7 @@ DeclareCategoryKernel( "IsRange",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsRangeRep",                                   
-    IsInternalRep, [], IS_OBJECT, IS_RANGE_REP );
+    IsInternalRep, IS_RANGE_REP );
 
 
 #############################################################################
@@ -613,7 +613,7 @@ DeclareCategoryKernel( "IsBlist", IsHomogeneousList, IS_BLIST );
 ##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsBlistRep",
-    IsInternalRep, [], IS_OBJECT, IS_BLIST_REP );
+    IsInternalRep, IS_BLIST_REP );
 BIND_GLOBAL( "ConvertToBlistRep", IS_BLIST_CONV );
 
 
