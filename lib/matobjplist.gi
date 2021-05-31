@@ -750,14 +750,9 @@ InstallMethod( Display, "for a plist matrix", [ IsPlistMatrixRep ],
     local i;
     Print("<");
     if not IsMutable(m) then Print("immutable "); fi;
-    Print(NrRows(m),"x",NrCols(m),"-matrix over ",m![BDPOS],":\n");
+    Print(NrRows(m),"x",NrCols(m),"-matrix over ",m![BDPOS],": [\n");
     for i in [1..NrRows(m)] do
-        if i = 1 then
-            Print("[");
-        else
-            Print(" ");
-        fi;
-        Print(m![ROWSPOS][i],"\n");
+        Print(" ",m![ROWSPOS][i],"\n");
     od;
     Print("]>\n");
   end );
