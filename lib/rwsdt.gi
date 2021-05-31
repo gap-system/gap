@@ -16,11 +16,8 @@
 ##
 #R  IsDeepThoughtCollectorRep( <obj> )
 ##
-DeclareRepresentation(
-         "IsDeepThoughtCollectorRep",
-         IsPositionalObjectRep,   
-         [1..PC_DEFAULT_TYPE],
-         IsPowerConjugateCollector);
+DeclareRepresentation( "IsDeepThoughtCollectorRep",
+         IsPositionalObjectRep);
 
 
 

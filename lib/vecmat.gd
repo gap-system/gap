@@ -38,10 +38,9 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation(
-    "IsGF2VectorRep",
-    IsDataObjectRep and IsVectorObj, [],
-    IsRowVector );
+DeclareRepresentation( "IsGF2VectorRep",
+    IsDataObjectRep and IsVectorObj );
+
 
 #############################################################################
 ##
@@ -216,10 +215,8 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##
 #R  IsGF2MatrixRep( <obj> ) . . . . . . . . . . . . . . . . . matrix over GF2
 ##
-DeclareRepresentation(
-    "IsGF2MatrixRep",
-    IsPositionalObjectRep and IsRowListMatrix, [],
-    IsMatrix );
+DeclareRepresentation( "IsGF2MatrixRep",
+    IsPositionalObjectRep and IsRowListMatrix );
 
 
 #############################################################################
