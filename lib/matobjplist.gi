@@ -18,10 +18,9 @@
 # Constructors:
 ############################################################################
 
-InstallMethod( NewVector, "for IsPlistVectorRep, a semiring, and a list",
-  [ IsPlistVectorRep, IsSemiring, IsList ],
-  function( filter, basedomain, l )
-    local typ;
+BindGlobal( "MakeIsPlistVectorRep",
+  function( basedomain, list )
+    local filter, typ;
     filter := IsPlistVectorRep and IsMutable;
     if HasCanEasilyCompareElements(Representative(basedomain)) and
        CanEasilyCompareElements(Representative(basedomain)) then
@@ -33,14 +32,23 @@ InstallMethod( NewVector, "for IsPlistVectorRep, a semiring, and a list",
         filter := filter and IsFFEVector;
     fi;
     typ := NewType(FamilyObj(basedomain), filter);
-    return Objectify(typ, [ basedomain, ShallowCopy(l) ]);
+    return Objectify(typ, [ basedomain, list ]);
+  end );
+
+
+InstallMethod( NewVector, "for IsPlistVectorRep, a semiring, and a list",
+  [ IsPlistVectorRep, IsSemiring, IsList ],
+  function( filter, basedomain, list )
+    list := ShallowCopy( list );
+    return MakeIsPlistVectorRep( basedomain, list );
   end );
 
 InstallMethod( NewZeroVector, "for IsPlistVectorRep, a semiring, and an int",
   [ IsPlistVectorRep, IsSemiring, IsInt ],
-  function( filter, basedomain, l )
-    l := ListWithIdenticalEntries(l,Zero(basedomain));
-    return NewVector( filter, basedomain, l );
+  function( filter, basedomain, len )
+    local list;
+    list := ListWithIdenticalEntries(len, Zero(basedomain));
+    return MakeIsPlistVectorRep( basedomain, list );
   end );
 
 InstallMethod( NewMatrix,
@@ -544,9 +552,97 @@ InstallMethod( IdentityMatrix, "for an integer and a plist matrix",
     return res;
   end );
 
-# FIXME: does ShallowCopy even make sense for a matrixobj???
+
+############################################################################
+# A selection of list operations:
+############################################################################
+
+InstallOtherMethod( \[\], "for a plist matrix and a positive integer",
+#T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
+#T we can use 'InstallMethod'.
+  [ IsRowPlistMatrixRep, IsPosInt ],
+  function( m, i )
+    Info(InfoPerformance, 1, "for best performance avoid m[i]; e.g. use m[i,j] instead of m[i][j]");
+    # TODO: should we cache these row vectors?
+    return MakeIsPlistVectorRep( m![BDPOS], m![ROWSPOS][i] );
+  end );
+
+InstallMethod( \[\]\:\=,
+  "for a plist matrix, a positive integer, and a plist vector",
+  [ IsRowPlistMatrixRep and IsMutable, IsPosInt, IsPlistVectorRep ],
+  function( m, i, v )
+    # TODO: verify that basedomain matches and that Length(v) = NrCols(m) ?
+    m![ROWSPOS][i] := v![ELSPOS];
+    # FIXME: really just assign the content, so that from now on any change to
+    # the vector object <v> will modify the i-th row of <m>??? yes, this
+    # emulates the old way of things, but it's also dangerous, and often leads to
+    # bugs; perhaps we should instead make a copy / copy over the data only?
+  end );
+
+InstallMethod( \{\}, "for a plist matrix and a list",
+  [ IsRowPlistMatrixRep, IsList ],
+  function( m, p )
+    local l;
+    l := m![ROWSPOS]{p};
+    return Objectify(TypeObj(m),[m![BDPOS],m![NUM_ROWS_POS],m![NUM_COLS_POS],l]);
+  end );
+
+InstallMethod( Add, "for a plist matrix and a plist vector",
+  [ IsRowPlistMatrixRep and IsMutable, IsPlistVectorRep ],
+  function( m, v )
+    Add(m![ROWSPOS],v);
+  end );
+
+InstallMethod( Add, "for a plist matrix, a plist vector, and a pos. int",
+  [ IsRowPlistMatrixRep and IsMutable, IsPlistVectorRep, IsPosInt ],
+  function( m, v, p )
+    Add(m![ROWSPOS],v,p);
+  end );
+
+InstallMethod( Remove, "for a plist matrix",
+  [ IsRowPlistMatrixRep and IsMutable ],
+  m -> Remove( m![ROWSPOS] ) );
+
+InstallMethod( Remove, "for a plist matrix, and a position",
+  [ IsRowPlistMatrixRep and IsMutable, IsPosInt ],
+  function( m, p )
+    Remove( m![ROWSPOS],p );
+  end );
+#T must return the removed row if it was bound
+
+InstallMethod( IsBound\[\], "for a plist matrix, and a position",
+  [ IsRowPlistMatrixRep, IsPosInt ],
+  function( m, p )
+    # TODO: move this to the generic IsRowListMatrix interface?
+    return p <= NrRows(m);
+  end );
+
+InstallMethod( Unbind\[\], "for a plist matrix, and a position",
+  [ IsRowPlistMatrixRep and IsMutable, IsPosInt ],
+  function( m, p )
+    # TODO: move this to the generic IsRowListMatrix interface?
+    if p <> NrRows(m) then
+        ErrorNoReturn("Unbind\\[\\]: Matrices must stay dense, you cannot Unbind here");
+    fi;
+    Remove(m);
+  end );
+
+InstallMethod( \{\}\:\=, "for a plist matrix, a list, and a plist matrix",
+  [ IsRowPlistMatrixRep and IsMutable, IsList,
+    IsRowPlistMatrixRep ],
+  function( m, pp, n )
+    # TODO: verify that basedomain matches and that Length(v) = NrCols(m) ?
+    m![ROWSPOS]{pp} := n![ROWSPOS];
+  end );
+
+InstallMethod( Append, "for two plist matrices",
+  [ IsRowPlistMatrixRep and IsMutable, IsRowPlistMatrixRep ],
+  function( m, n )
+    Append(m![ROWSPOS],n![ROWSPOS]);
+  end );
+
 InstallMethod( ShallowCopy, "for a plist matrix",
-  [ IsPlistMatrixRep ],
+  [ IsRowPlistMatrixRep ],
   function( m )
     local res;
     res := Objectify(TypeObj(m),[m![BDPOS],m![NUM_ROWS_POS],m![NUM_COLS_POS],

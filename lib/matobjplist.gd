@@ -59,34 +59,48 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> describes
-##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
-##  a list of its rows, in the sense defined in
-##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
-##  It is internally represented as a positional object
-##  (see <Ref Filt="IsPositionalObjectRep"/> that stores four entries:
-##  <Enum>
-##  <Item>
-##    its base domain
-##    (see <Ref Attr="BaseDomain" Label="for a matrix object"/>),
-##  </Item>
-##  <Item>
-##    the number of rows
-##    (see <Ref Attr="NumberRows" Label="for a matrix object"/>), and
-##  </Item>
-##  <Item>
-##    the number of columns
-##    (see <Ref Attr="NumberColumns" Label="for a matrix object"/>), and
-##  </Item>
-##  <Item>
-##    a plain list (see <Ref Filt="IsPlistRep"/> of its rows,
-##    each of them being an object in <Ref Filt="IsPlistVectorRep"/>.
-##  </Item>
-##  </Enum>
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that internal stores its
+##  entries as a classic GAP matrix, that is as a plain list (see
+##  <Ref Filt="IsPlistRep"/>) of plain lists. Therefore any such GAP matrix
+##  can be represented as a <Ref Filt="IsPlistMatrixRep"/>, making this
+##  representation very versatile, and a good place to start if one wants to
+##  adapt code which previously produced such classic GAP matrices to instead
+##  produce matrix objects.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  Implementation note: a matrix in IsPlistMatrixRep is internally
+##  represented as a positional object that stores four entries:
+##  - its base domain
+#   - the number of rows
+##  - the number of columns
+##  - a plain list of its rows, each also a plain list
 DeclareRepresentation( "IsPlistMatrixRep",
+        IsListMatrix and IsPositionalObjectRep
+    and IsNoImmediateMethodsObject
+    and HasNumberRows and HasNumberColumns
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
+    [] );
+
+
+#############################################################################
+##
+##  <#GAPDoc Label="IsRowPlistMatrixRep">
+##  <ManSection>
+##  <Filt Name="IsRowPlistMatrixRep" Arg='obj' Type="representation"/>
+##
+##  <Description>
+##  An object <A>obj</A> in <Ref Filt="IsRowPlistMatrixRep"/> describes
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
+##  a list of its rows, in the sense defined in
+##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
+##  Its rows can be accessed as objects in <Ref Filt="IsPlistVectorRep"/>,
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareRepresentation( "IsRowPlistMatrixRep",
         IsRowListMatrix and IsPositionalObjectRep
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
