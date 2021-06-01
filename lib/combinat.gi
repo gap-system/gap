@@ -2597,7 +2597,9 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
       if not IsInt(k) then
         Error("usage: <k> must be an integer");
       elif k<1 or k > Length(s) then
-        Error("usage: <k> must be between 1 and size of <s>");
+        if s <> [] or k <> 0 then
+          r.next:=false;
+        fi;
       fi;
       r.sz := k;
       r.NextIterator := NextIterator_PartitionsSetGivenSize;
