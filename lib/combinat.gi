@@ -2595,7 +2595,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
     if Length( arg ) = 1 or Length( arg ) = 2 then
       k := arg[1];
       if not IsInt(k) then
-        Error("usage: <k> must be an integer");
+        r.next:=false;
       elif k<1 or k > Length(s) then
         if s <> [] or k <> 0 then
           r.next:=false;
