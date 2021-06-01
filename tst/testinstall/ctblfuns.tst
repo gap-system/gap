@@ -29,10 +29,13 @@ gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(TableOfMarks(g)));
 true
 
 # Up to GAP 4.11.1, the following returned 'fail' results.
-gap> tbl:= CharacterTable( "J1" );;
-gap> List( Filtered( Irr( tbl ), x -> x[1] = 120 ),
->          x -> SizeOfFieldOfDefinition( x, 71 ) );
-[ 357911, 357911, 357911 ]
+gap> if IsPackageMarkedForLoading( "ctbllib", "" ) then
+>   tbl:= CharacterTable( "J1" );;
+>   if fail in List( Filtered( Irr( tbl ), x -> x[1] = 120 ),
+>                    x -> SizeOfFieldOfDefinition( x, 71 ) ) then
+>     Error( "SizeOfFieldOfDefinition test failed" );
+>   fi;
+> fi;
 
 # other situations for 'SizeOfFieldOfDefinition'
 gap> SizeOfFieldOfDefinition( 17, 2 );
