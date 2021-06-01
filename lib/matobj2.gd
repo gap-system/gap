@@ -141,6 +141,12 @@
 ##  However, row list matrices behave nearly like lists of row vectors
 ##  that insist on being dense and containing only vectors of the same
 ##  length and with the same base domain.
+##  <P/>
+##  Vector and matrix objects are not likely to benefit from &GAP;'s
+##  immediate methods (see section <Ref Sect="Immediate Methods"/>).
+##  Therefore it may be useful to set the filter
+##  <Ref Filt="IsNoImmediateMethodsObject"/> in the definition of new kinds
+##  of vector and matrix objects.
 ##  <#/GAPDoc>
 ##
 
