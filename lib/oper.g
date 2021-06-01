@@ -210,16 +210,23 @@ fi;
 ##
 #F  IsNoImmediateMethodsObject(<obj>)
 ##
+##  <#GAPDoc Label="IsNoImmediateMethodsObject">
 ##  <ManSection>
-##  <Func Name="IsNoImmediateMethodsObject" Arg='obj'/>
+##  <Filt Name="IsNoImmediateMethodsObject" Arg='obj'/>
 ##
 ##  <Description>
-##  If this filter is set immediate methods will be ignored for <A>obj</A>. This
-##  can be crucial for performance for objects like PCGS, of which many are
-##  created, which are collections, but for which all those immediate
-##  methods for <C>IsTrivial</C> et cetera do not really make sense.
+##  If this filter is set immediate methods will be ignored for <A>obj</A>.
+##  This can be crucial for performance for objects like pcgs
+##  (see Section <Ref Sect="Polycyclic Generating Systems"/>), of which many
+##  are created, which are collections, but for which all those immediate
+##  methods for <Ref Prop="IsTrivial"/> et cetera do not really make sense.
+##  Other examples of objects in <Ref Filt="IsNoImmediateMethodsObject"/> are
+##  compressed vectors and matrices over small finite fields,
+##  see the sections <Ref Subsect="Row Vectors over Finite Fields"/> and
+##  <Ref Subsect="Matrices over Finite Fields"/>.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL("IsNoImmediateMethodsObject",
   NewFilter("IsNoImmediateMethodsObject"));

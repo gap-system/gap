@@ -323,6 +323,7 @@ For attributes and properties,
 one can install also <E>immediate methods</E>.
 
 <#Include Label="InstallImmediateMethod">
+<#Include Label="IsNoImmediateMethodsObject">
 
 </Section>
 
