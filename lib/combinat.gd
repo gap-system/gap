@@ -1164,9 +1164,11 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 ##  <Ref Func="IteratorOfPartitionsSet" /> returns an iterator
 ##  (see&nbsp;<Ref Sect="Iterators"/>) for all unordered partitions of the
 ##  set <A>set</A> into pairwise disjoint nonempty sets
-##  (see <Ref Func="PartitionsSet"/>). If <A>k</A> given, only partitions of
-##  size <A>k</A> are computed. If flag is also given, then partions of size
-##  at most <A>k</A> are computed.
+##  (see <Ref Func="PartitionsSet"/>).
+##  If <A>k</A> given and <A>flag</A> is omitted or equal to <K>false</K>,
+##  then only partitions of size <A>k</A> are computed.
+##  If <A>k</A> is given and <A>flag</A> is equal to <K>true</K>,
+##  then only partitions of size at most <A>k</A> are computed.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1572,4 +1574,3 @@ DeclareGlobalFunction("AllLinearDiophantineSolutions");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("AllSubsetSummations");
-
