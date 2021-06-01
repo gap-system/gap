@@ -485,17 +485,17 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
 >      pn1:= PartitionsSet( s );
 >      pn2:= List( IteratorOfPartitionsSet( s ) );
 >      if Length(pn1) <> Length(pn2) then
->        Error( "wrong number of elements" );
+>        Error( "wrong number of elements for s = ", s );
 >      elif Set(pn1) <> Set(pn2) then
->        Error( "different elements" );
+>        Error( "different elements for s = ", s );
 >      fi;
 >      for k in [0 .. Size(s)+1] do
 >        pn1:= PartitionsSet( s, k );
 >        pn2:= List( IteratorOfPartitionsSet( s, k ) );
 >        if Length(pn1) <> Length(pn2) then
->          Error( "wrong number of elements" );
+>          Error( "wrong number of elements for s = ", s, ", k = ", k );
 >        elif Set(pn1) <> Set(pn2) then
->          Error( "different elements" );
+>          Error( "different elements for s = ", s, ", k = ", k );
 >        fi;
 >      od; 
 >      for k in [0 .. Size(s) + 1] do
@@ -505,9 +505,9 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
 >        od;
 >        pn2:= List( IteratorOfPartitionsSet( s, k, true ) );
 >        if Length(pn1) <> Length(pn2) then
->          Error( "wrong number of elements" );
+>          Error( "wrong number of elements for s = ", s, ", k <= ", k );
 >        elif Set(pn1) <> Set(pn2) then
->          Error( "different elements" );
+>          Error( "different elements for s = ", s, ", k <= ", k );
 >        fi;
 >      od;
 >    od;
