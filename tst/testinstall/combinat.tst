@@ -477,8 +477,6 @@ gap> IteratorOfPartitionsSet();
 Error, Function: number of arguments must be at least 1 (not 0)
 gap> IteratorOfPartitionsSet(fail);
 Error, <s> must be a set
-gap> IteratorOfPartitionsSet([],-1);
-Error, usage: <k> must be between 1 and size of <s>
 gap> IteratorOfPartitionsSet([1],1,fail);
 Error, usage: <flag> must be true or false
 gap> IteratorOfPartitionsSet([1],1,true,"too many");
@@ -491,7 +489,7 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
 >      elif Set(pn1) <> Set(pn2) then
 >        Error( "different elements" );
 >      fi;
->      for k in [1 .. Size(s)] do
+>      for k in [0 .. Size(s)+1] do
 >        pn1:= PartitionsSet( s, k );
 >        pn2:= List( IteratorOfPartitionsSet( s, k ) );
 >        if Length(pn1) <> Length(pn2) then
@@ -500,7 +498,7 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
 >          Error( "different elements" );
 >        fi;
 >      od; 
->      for k in [1 .. Size(s)] do
+>      for k in [0 .. Size(s) + 1] do
 >        pn1:= [];
 >        for x in [0 .. k] do
 >          Append( pn1, PartitionsSet( s, x ) );
