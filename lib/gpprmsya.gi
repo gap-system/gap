@@ -1200,6 +1200,10 @@ local b, bl,prop;
   return List(b,x->Set(Orbit(G,Set(dom{x}),OnSets)));
 end);
 
+# Calculate subgroup of Sn/An that must contain the normalizer. Then a
+# subsequent backtrack search is in a smaller group and thus much faster.
+# Parameters: Overgroup (must be symmetric or alternating, otherwise just
+# returns this overgroup), subgroup.
 InstallGlobalFunction(NormalizerParentSA,function(s,u)
 local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll,
 syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
@@ -1207,7 +1211,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
   dom:=Set(MovedPoints(s));
   issym:=IsNaturalSymmetricGroup(s);
   if not IsSubset(dom,MovedPoints(u)) or
-    ((not issym) and ForAny(GeneratorsOfGroup(u),x->SignPerm(x)=-1)) then
+    (not issym and (not IsNaturalAlternatingGroup(s) or
+      ForAny(GeneratorsOfGroup(u),x->SignPerm(x)=-1))) then
     return s; # cannot get parent, as not contained
   fi;
   # get orbits
