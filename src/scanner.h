@@ -342,17 +342,4 @@ void Match(ScannerState * s,
            TypSymbolSet   skipto);
 
 
-/****************************************************************************
-**
-*F  ScanForFloatAfterDotHACK()
-**
-**  This function is called by 'ReadLiteral' if it encounters a single dot in
-**  form the of the symbol 'S_DOT'. The only legal way this could happen is
-**  if the dot is the start of a float literal like '.123'. As the scanner
-**  cannot detect this without being context aware, we must provide this
-**  function to allow the reader to signal to the scanner about this.
-*/
-void ScanForFloatAfterDotHACK(ScannerState * s);
-
-
 #endif // GAP_SCANNER_H
