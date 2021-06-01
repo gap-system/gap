@@ -2596,21 +2596,21 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
       k := arg[1];
       if not IsInt(k) then
         Error("IteratorOfPartitionsSet: <k> must be an integer");
-      elif k<1 or k > Length(s) then
-        if s <> [] or k <> 0 then
-          r.next:=false;
-        fi;
       fi;
-      r.sz := k;
       r.NextIterator := NextIterator_PartitionsSetGivenSize;
 
       if Length( arg ) = 2 then
         if arg[2] = true then
           r.NextIterator := NextIterator_PartitionsSetGivenSizeOrLess;
+          k := Minimum(k, Length(s));
         elif arg[2] <> false then
           Error("IteratorOfPartitionsSet: <flag> must be true or false");
         fi;
       fi;
+      if k<0 or (k=0 and s <> []) or (k > Length(s)) then
+        r.next:=false;
+      fi;
+      r.sz := k;
     elif Length( arg ) > 2 then
       Error( "usage: IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )" );
     fi;
