@@ -2,7 +2,7 @@ gap> START_TEST("PerfectGroups.tst");
 
 #
 gap> Sum(SizesPerfectGroups(),NrPerfectGroups);
-6030
+15768
 gap> l:=[61440, 86016, 122880, 172032, 245760, 344064, 368640, 491520,
 > 688128, 737280, 983040 ];;
 gap> List(l,NrPerfectGroups);

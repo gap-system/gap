@@ -13,7 +13,7 @@ gap> NumberPerfectLibraryGroups(60^6);
 0
 
 #
-gap> SizesPerfectGroups();
+gap> Filtered(SizesPerfectGroups(),x->x<=10^6);
 [ 1, 60, 120, 168, 336, 360, 504, 660, 720, 960, 1080, 1092, 1320, 1344, 
   1920, 2160, 2184, 2448, 2520, 2688, 3000, 3420, 3600, 3840, 4080, 4860, 
   4896, 5040, 5376, 5616, 5760, 6048, 6072, 6840, 7200, 7500, 7560, 7680, 
@@ -85,11 +85,7 @@ gap> DisplayInformationPerfectGroups(967680,4);
 #
 gap> SizeNumbersPerfectGroups("A8");
 [ [ 20160, 4 ], [ 40320, 3 ], [ 322560, 4 ], [ 322560, 5 ], [ 645120, 4 ], 
-  [ 645120, 5 ] ]
-gap> SizeNumbersPerfectGroups(3,"A7",2,3);
-[ [ 453600, 1 ], [ 907200, 1 ], [ 907200, 2 ], [ 907200, 3 ], [ 907200, 4 ] ]
-gap> SizeNumbersPerfectGroups("A7",18);
-[ [ 453600, 1 ], [ 907200, 1 ], [ 907200, 2 ], [ 907200, 3 ], [ 907200, 4 ] ]
+  [ 645120, 5 ], [ 1209600, 1 ], [ 1290240, 1 ] ]
 gap> SizeNumbersPerfectGroups("A8",-1);
 Error, illegal order of abelian factor
 gap> SizeNumbersPerfectGroups("S8");

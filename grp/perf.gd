@@ -92,11 +92,11 @@ DeclareAttribute("PerfectIdentification", IsGroup );
 ##  <Func Name="SizesPerfectGroups" Arg=''/>
 ##
 ##  <Description>
-##  This is the ordered list of all numbers up to <M>10^6</M> that occur as
+##  This is the ordered list of all numbers up to <M>2\cdot 10^6</M> that occur as
 ##  sizes of perfect groups.
-##  One can iterate over the perfect groups library with:
+##  One can iterate over part of the perfect groups library with:
 ##  <Example><![CDATA[
-##  gap> for n in SizesPerfectGroups() do
+##  gap> for n in Intersection([100..500],SizesPerfectGroups()) do
 ##  >      for k in [1..NrPerfectGroups(n)] do
 ##  >        pg := PerfectGroup(n,k);
 ##  >      od;
@@ -173,6 +173,10 @@ DeclareSynonym("NrPerfectLibraryGroups",NumberPerfectLibraryGroups);
 ##  A5 2^1 19^2 C 19^1
 ##  gap> NrMovedPoints(G);
 ##  6859
+##  gap> G:=PerfectGroup(1866240,12);
+##  PG1866240.12
+##  gap> NrMovedPoints(G);
+##  270
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

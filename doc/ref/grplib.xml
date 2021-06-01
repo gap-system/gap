@@ -328,8 +328,8 @@ It returns <K>fail</K> if no such group exists in the library.
 
 <Index>perfect groups</Index>
 The &GAP; library of finite  perfect groups provides, up to isomorphism, a
-list of all perfect groups whose sizes are less than  <M>10^6</M>. 
-The groups of most of these orders have been enumerated by
+list of all perfect groups whose sizes are less than  <M>2\cdot 10^6</M>. 
+The groups of orders up to <M>10^6</M> have been enumerated by
 Derek&nbsp;F. Holt and Wilhelm Plesken and
 published in their  book    <Q>Perfect Groups</Q> <Cite Key="HP89"/>.
 For orders <M>n = 86016</M>,  368640,  or  737280 this work only counted the
@@ -350,7 +350,7 @@ type <M>A_6</M> and the one of order 962280 -- were found by Jack Schmidt in
 2005. Two groups of order 243000 and one each of orders 729000, 871200, 878460
 were found in 2020 by Alexander Hulpke.
 <P/>
-The perfect groups of size less than <M>10^6</M> which had not been
+The perfect groups of size less than <M>2\cdot 10^6</M> which had not been
 classified in the work of Holt and Plesken have been enumerated by Alexander
 Hulpke. They are stored directly and provide less construction information
 in their names.
