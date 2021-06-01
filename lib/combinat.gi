@@ -2580,7 +2580,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
     local k, r;
 
     if not IsSet(s) then
-      Error( "<s> must be a set" );
+      Error( "IteratorOfPartitionsSet: <s> must be a set" );
     fi;
 
     r := rec(
@@ -2595,7 +2595,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
     if Length( arg ) = 1 or Length( arg ) = 2 then
       k := arg[1];
       if not IsInt(k) then
-        r.next:=false;
+        Error("IteratorOfPartitionsSet: <k> must be an integer");
       elif k<1 or k > Length(s) then
         if s <> [] or k <> 0 then
           r.next:=false;
@@ -2608,7 +2608,7 @@ InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
         if arg[2] = true then
           r.NextIterator := NextIterator_PartitionsSetGivenSizeOrLess;
         elif arg[2] <> false then
-          Error("usage: <flag> must be true or false");
+          Error("IteratorOfPartitionsSet: <flag> must be true or false");
         fi;
       fi;
     elif Length( arg ) > 2 then

@@ -476,9 +476,11 @@ gap> for n in [ 1 .. 15 ] do
 gap> IteratorOfPartitionsSet();
 Error, Function: number of arguments must be at least 1 (not 0)
 gap> IteratorOfPartitionsSet(fail);
-Error, <s> must be a set
+Error, IteratorOfPartitionsSet: <s> must be a set
+gap> IteratorOfPartitionsSet([],fail);
+Error, IteratorOfPartitionsSet: <k> must be an integer
 gap> IteratorOfPartitionsSet([1],1,fail);
-Error, usage: <flag> must be true or false
+Error, IteratorOfPartitionsSet: <flag> must be true or false
 gap> IteratorOfPartitionsSet([1],1,true,"too many");
 Error, usage: IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
 gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
