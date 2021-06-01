@@ -2450,11 +2450,6 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 ##
 #F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ]  )
 ##
-##  All unordered partitions of the set <A>set</A> into pairwise disjoint
-##  nonempty sets. If <A>k</A> is given, then all unordered partitions of
-##  size <A>k</A> of the set <A>set</A> are given. If additonally <A>flag</A>
-##  is true, then all partitons of size at most <A>k</A> are given.
-##
 ##  If $B_0, B_1, \ldots, B_m$ are subsets forming a partition of
 ##  $\{1, 2, \ldots, n\}$, then the partition can be described by the 
 ##  restricted growth string $a_1 a_2 \ldots a_n$, where $a_i = j$ if 
