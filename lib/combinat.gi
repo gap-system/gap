@@ -2448,10 +2448,7 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 
 #############################################################################
 ##
-#F  IteratorOfPartitionsSet( <set> )
-##
-##  all unordered partitions of the set <A>set</A> into pairwise disjoint
-##  nonempty sets.
+#F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ]  )
 ##
 ##  If $B_0, B_1, \ldots, B_m$ are subsets forming a partition of
 ##  $\{1, 2, \ldots, n\}$, then the partition can be described by the 
@@ -2462,14 +2459,9 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 ##  by incrementing $a_i$ for the largest $i$ such that the inequality is not
 ##  tight, and setting $a_j=0$ for all $j>i$.
 ##
-InstallGlobalFunction( IteratorOfPartitionsSet, function( s )
-    local nextIterator, isDone, m, out, i, shallowCopy;
+BindGlobal( "IsDoneIterator_PartitionsSet", iter -> ( iter!.next = false ) );
 
-    if not IsSet(s) then
-      Error( "<s> must be a set" );
-    fi;
-
-    nextIterator := function(iter)
+BindGlobal( "NextIterator_PartitionsSet", function( iter )
       local j, max, part, m, out, i;
       if Length(iter!.s) = 0 then
         iter!.next := false;
@@ -2498,18 +2490,132 @@ InstallGlobalFunction( IteratorOfPartitionsSet, function( s )
         Add(out[part[i]+1], iter!.s[i]);
       od;
       return out;
-    end;
+    end );
 
-    shallowCopy := iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s );
+BindGlobal( "NextIterator_PartitionsSetGivenSize", function( iter )
+      local j, max, part, m, out, i;
+      if Length(iter!.s) = 0 or Length(iter!.s)<iter!.sz then
+        iter!.next := false;
+        return [];
+      fi;
+      part := StructuralCopy(iter!.next);
+      while true do
+        j := Size(iter!.next);
+        # Compute next restricted growth string using a_i \leq Max({a_0 .. a_{i-1}})+1
+        while j > 1 do
+          # iterate in the same manner, but now we do not exceed sz-1
+          max := Minimum(Maximum(iter!.next{[1 .. j-1]}), iter!.sz-2);
+          if iter!.next[j] <= max then
+            iter!.next[j] := iter!.next[j]+1;
+            m := Maximum(iter!.next)+1;
+            break;
+          else
+            iter!.next[j] := 0;
+            j := j-1;
+          fi;
+        od;
+        m := Maximum(part)+1;
+        # Convert restricted growth string to partition of set
+        out := List([1 .. m], t -> []);
+        for i in [1 .. Size(part)] do
+          Add(out[part[i]+1], iter!.s[i]);
+        od;
+        # this is the final iteration if in the next iteration we cycle through to the start again
+        if ForAll([2 .. Size(iter!.next)], t -> iter!.next[t]=0) then
+          iter!.next := false;
+          return out;
+        fi;
+        # If the size of the partition equals sz we return, otherwise it is too small,
+        # and we continue to iterate until the next partition of the correct size is found
+        if Maximum(iter!.next)+1 = iter!.sz then
+          if m = iter!.sz then
+            return out;
+          else
+            part := StructuralCopy(iter!.next);
+          fi;
+        fi;
+      od;
+    end );
 
-    isDone := iter -> iter!.next = false;
+BindGlobal( "NextIterator_PartitionsSetGivenSizeOrLess", function( iter )
+      local j, max, part, m, out, i;
+      if Length(iter!.s) = 0 or Length(iter!.s)<iter!.sz then
+        iter!.next := false;
+        return [];
+      fi;
+      part := StructuralCopy(iter!.next);
+      while true do
+        j := Size(iter!.next);
+        # Compute next restricted growth string using a_i \leq Max({a_0 .. a_{i-1}})+1
+        while j > 1 do
+          max := Minimum(Maximum(iter!.next{[1 .. j-1]}), iter!.sz-2);
+          if iter!.next[j] <= max then
+            iter!.next[j] := iter!.next[j]+1;
+            m := Maximum(iter!.next)+1;
+            break;
+          else
+            iter!.next[j] := 0;
+            j := j-1;
+          fi;
+        od;
+        m := Maximum(part)+1;
+        # Convert restricted growth string to partition of set
+        out := List([1 .. m], t -> []);
+        for i in [1 .. Size(part)] do
+          Add(out[part[i]+1], iter!.s[i]);
+        od;
+        # this is the final iteration if in the next iteration we cycle through to the start again
+        if ForAll([2 .. Size(iter!.next)], t -> iter!.next[t]=0) then
+          iter!.next := false;
+          return out;
+        fi;
+        return out;
+      od;
+    end );
 
-    return IteratorByFunctions( rec(
-      IsDoneIterator := isDone,
-      NextIterator := nextIterator,
-      ShallowCopy := shallowCopy,
-      s := Immutable(s),
-      next := ListWithIdenticalEntries(Size(s), 0) ) );
+BindGlobal( "ShallowCopy_PartitionsSet",
+    iter -> rec( next := ShallowCopy( iter!.next ), s := iter!.s, sz := iter!.sz ) );
+
+InstallGlobalFunction( IteratorOfPartitionsSet , function( s, arg... )
+    local k, r;
+
+    if not IsSet(s) then
+      Error( "IteratorOfPartitionsSet: <s> must be a set" );
+    fi;
+
+    r := rec(
+            IsDoneIterator := IsDoneIterator_PartitionsSet,
+            NextIterator := NextIterator_PartitionsSet,
+            ShallowCopy := ShallowCopy_PartitionsSet,
+            s := Immutable(s),
+            next := ListWithIdenticalEntries(Size(s), 0),
+            sz := fail,
+         );
+
+    if Length( arg ) = 1 or Length( arg ) = 2 then
+      k := arg[1];
+      if not IsInt(k) then
+        Error("IteratorOfPartitionsSet: <k> must be an integer");
+      fi;
+      r.NextIterator := NextIterator_PartitionsSetGivenSize;
+
+      if Length( arg ) = 2 then
+        if arg[2] = true then
+          r.NextIterator := NextIterator_PartitionsSetGivenSizeOrLess;
+          k := Minimum(k, Length(s));
+        elif arg[2] <> false then
+          Error("IteratorOfPartitionsSet: <flag> must be true or false");
+        fi;
+      fi;
+      if k<0 or (k=0 and s <> []) or (k > Length(s)) then
+        r.next:=false;
+      fi;
+      r.sz := k;
+    elif Length( arg ) > 2 then
+      Error( "usage: IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )" );
+    fi;
+
+    return IteratorByFunctions(r);
   end);
 
 
@@ -2868,4 +2974,3 @@ local to,from,limit,erg,nerg,perm,i,e,c,sel,sz,dio,part,d,j,k,kk,ac,lc,nc;
   od;
   return List(erg,x->Permuted(x,perm));
 end);
-
