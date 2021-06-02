@@ -1348,6 +1348,11 @@ InstallMethod( AddMatrixRowsRight, "for a mutable IsRowListMatrix, one row numbe
 InstallMethod( SwapMatrixRows, "for a mutable IsRowListMatrix, one row number, second row number",
   [ IsRowListMatrix and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
-    mat{[row1,row2]} := mat{[row2,row1]};
+    local temp;
+
+    temp := mat[row1];
+    mat[row1] := mat[row2];
+    mat[row2] := temp;
+    #mat{[row1,row2]} := mat{[row2,row1]};
 
   end );
