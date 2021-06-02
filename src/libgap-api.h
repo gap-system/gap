@@ -374,18 +374,31 @@ Obj GAP_NewPlist(Int capacity);
 //// matrix obj
 ////
 
+// Note that the meaning of the following filters is not self-explanatory,
+// see the chapter "Vector and Matrix Objects" in the GAP Reference Manual.
+// `GAP_IsMatrixOrMatrixObj` checks whether the argument is an abstract
+// 2-dim. array; such objects admit access to entries via `GAP_ElmMat`,
+// one can ask for the numbers of rows and columns via `GAP_NrRows` and
+// `GAP_NrCols`, respectively, etc.
+// `GAP_IsMatrix` checks for special cases that are nonempty list of lists
+// with additional properties; often these are plain lists.
+// `GAP_IsMatrixObj` checks for special cases that are not plain lists.
+
 // Returns 1 if <obj> is a GAP matrix or matrix obj, 0 if not.
 int GAP_IsMatrixOrMatrixObj(Obj obj);
+
+// Returns 1 if <obj> is a GAP matrix, 0 if not.
+int GAP_IsMatrix(Obj obj);
 
 // Returns 1 if <obj> is a GAP matrix obj, 0 if not.
 int GAP_IsMatrixObj(Obj obj);
 
-// Returns the number of rows of the given GAP matrix obj.
-// If <mat> is not a GAP matrix obj, an error may be raised.
+// Returns the number of rows of the given GAP matrix or matrix obj.
+// If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 UInt GAP_NrRows(Obj mat);
 
-// Returns the number of columns of the given GAP matrix obj.
-// If <mat> is not a GAP matrix obj, an error may be raised.
+// Returns the number of columns of the given GAP matrix or matrix obj.
+// If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 UInt GAP_NrCols(Obj mat);
 
 // Assign <val> at position <pos> into the GAP matrix obj <mat>.
