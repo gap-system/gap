@@ -1811,8 +1811,8 @@ DeclareOperation( "Randomize", [ IsMatrixOrMatrixObj and IsMutable, IsRandomSour
 #O  <matobj>[ <i>, <j> ]
 #O  <matobj>[ <i>, <j> ]:= <obj>
 ##
-DeclareOperation( "[]", [ IsMatrixObj, IsPosInt, IsPosInt ] );
-DeclareOperation( "[]:=", [ IsMatrixObj, IsPosInt, IsPosInt, IsObject ] );
+DeclareOperation( "[]", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ] );
+DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 
 
 ############################################################################
