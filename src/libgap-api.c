@@ -412,6 +412,7 @@ Obj GAP_NewPlist(Int capacity)
 ////
 
 static Obj IsMatrixOrMatrixObjFilt;
+static Obj IsMatrixFilt;
 static Obj IsMatrixObjFilt;
 static Obj NrRowsAttr;
 static Obj NrColsAttr;
@@ -420,6 +421,12 @@ static Obj NrColsAttr;
 int GAP_IsMatrixOrMatrixObj(Obj obj)
 {
     return obj && DoFilter(IsMatrixOrMatrixObjFilt, obj) == True;
+}
+
+// Returns 1 if <obj> is a GAP matrix, 0 if not.
+int GAP_IsMatrix(Obj obj)
+{
+    return obj && DoFilter(IsMatrixFilt, obj) == True;
 }
 
 // Returns 1 if <obj> is a GAP matrix obj, 0 if not.
@@ -436,17 +443,17 @@ UInt GAP_NrRows(Obj mat)
     return UInt_ObjInt(nrows);
 }
 
-// Returns the number of columns of the given GAP matrix obj.
-// If <mat> is not a GAP matrix obj, an error may be raised.
+// Returns the number of columns of the given GAP matrix or matrix obj.
+// If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 UInt GAP_NrCols(Obj mat)
 {
     Obj ncols = CALL_1ARGS(NrColsAttr, mat);
     return UInt_ObjInt(ncols);
 }
 
-// Assign <val> at position <pos> into the GAP matrix obj <mat>.
+// Assign <val> at the <row>, <col> into the GAP matrix or matrix obj <mat>.
 // If <val> is zero, then this unbinds the list entry.
-// If <mat> is not a GAP matrix obj, an error may be raised.
+// If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val)
 {
     Obj r = ObjInt_UInt(row);
@@ -456,8 +463,8 @@ void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val)
 
 // Returns the element at the <row>, <col> in the GAP matrix obj <mat>.
 // Returns 0 if <row> or <col> are out of bounds, i.e., if either
-// is zero, or larger than the number of rows respectively columns of the list.
-// If <mat> is not a GAP matrix obj, an error may be raised.
+// is zero, or larger than the number of rows respectively columns of <mat>.
+// If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 Obj GAP_ElmMat(Obj mat, UInt row, UInt col)
 {
     Obj r = ObjInt_UInt(row);
@@ -616,6 +623,7 @@ void GAP_Error_Postjmp_Returning_(void)
 static Int InitKernel(StructInitInfo * module)
 {
     InitFopyGVar("IsMatrixOrMatrixObj", &IsMatrixOrMatrixObjFilt);
+    InitFopyGVar("IsMatrix", &IsMatrixFilt);
     InitFopyGVar("IsMatrixObj", &IsMatrixObjFilt);
     InitFopyGVar("NrRows", &NrRowsAttr);
     InitFopyGVar("NrCols", &NrColsAttr);

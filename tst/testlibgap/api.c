@@ -68,10 +68,13 @@ void matrices(void)
 
     assert(!GAP_IsMatrixOrMatrixObj(mat));   // empty list, not yet a matrix
     assert(!GAP_IsMatrixObj(mat));
+    assert(!GAP_IsMatrix(mat));
     assert(!GAP_IsMatrixOrMatrixObj(0));
     assert(!GAP_IsMatrixObj(0));
+    assert(!GAP_IsMatrix(0));
     assert(!GAP_IsMatrixOrMatrixObj(val));
     assert(!GAP_IsMatrixObj(val));
+    assert(!GAP_IsMatrix(val));
 
     row = GAP_NewPlist(2);
     GAP_AssList(row, 1, INTOBJ_INT(1));
@@ -79,8 +82,10 @@ void matrices(void)
     GAP_AssList(mat, 1, row);
     assert(!GAP_IsMatrixOrMatrixObj(row));
     assert(!GAP_IsMatrixObj(row));
+    assert(!GAP_IsMatrix(row));
     assert(GAP_IsMatrixOrMatrixObj(mat));
     assert(!GAP_IsMatrixObj(mat));   // list of lists, not proper matrix object
+    assert(GAP_IsMatrix(mat));
 
     GAP_AssMat(mat, 1, 1, val);
     ret = GAP_ElmMat(mat, 1, 1);
