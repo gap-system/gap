@@ -374,6 +374,9 @@ Obj GAP_NewPlist(Int capacity);
 //// matrix obj
 ////
 
+// Returns 1 if <obj> is a GAP matrix or matrix obj, 0 if not.
+int GAP_IsMatrixOrMatrixObj(Obj obj);
+
 // Returns 1 if <obj> is a GAP matrix obj, 0 if not.
 int GAP_IsMatrixObj(Obj obj);
 

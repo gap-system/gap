@@ -495,8 +495,10 @@ BIND_GLOBAL( "INSTALL_METHOD",
       if opr in WRAPPER_OPERATIONS then
         INFO_DEBUG( 1,
               "a method is installed for the wrapper operation ",
-              NAME_FUNC( opr ), "\n",
-              "#I  probably it should be installed for (one of) its\n",
+              NAME_FUNC( opr ), " in ",
+              INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()),
+              "\n",
+              "#I  it should probably be installed for (one of) its\n",
               "#I  underlying operation(s)" );
       fi;
 
@@ -584,7 +586,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
             if match and reqs<>oreqs then
               INFO_DEBUG( 1,
                     "method installed for ", NAME_FUNC(opr), 
-                    " matches more than one declaration" );
+                    " matches more than one declaration in ",
+                    INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
             fi;
           fi;
         od;

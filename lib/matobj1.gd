@@ -26,7 +26,6 @@
 ##  <Filt Name="IsVectorObj" Arg='obj' Type="category"/>
 ##
 ##  <Description>
-##  <P/>
 ##  The idea behind <E>vector objects</E> is that one wants to deal with
 ##  objects like coefficient lists of fixed length over a given domain
 ##  <M>R</M>, say, which can be added and can be multiplied from the left
@@ -83,6 +82,59 @@
 ##  <#/GAPDoc>
 ##
 DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
+
+
+#############################################################################
+##
+##  <#GAPDoc Label="IsMatrixOrMatrixObj">
+##  <ManSection>
+##  <Filt Name="IsMatrixOrMatrixObj" Arg='obj' Type="category"/>
+##
+##  <Description>
+##  Several functions are defined for objects in <Ref Filt="IsMatrix"/> and
+##  objects in <Ref Filt="IsMatrixObj"/>.
+##  All these objects lie in the filter <Ref Filt="IsMatrixOrMatrixObj"/>.
+##  It should be used in situations where an object can be either a list of
+##  lists in <Ref Filt="IsMatrix"/> or a <Q>proper</Q> matrix object in
+##  <Ref Filt="IsMatrixObj"/>,
+##  for example as a requirement in the installation of a method for such an
+##  argument.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m:= IdentityMat( 2, GF(2) );;
+##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
+##  true
+##  false
+##  true
+##  gap> m:= NewIdentityMatrix( IsPlistMatrixRep, GF(2), 2 );;
+##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
+##  false
+##  true
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsMatrixOrMatrixObj", IsVector and IsScalar and IsCopyable );
+
+
+#############################################################################
+##
+##  Note that we cannot get this implication already in the declaration of
+##  'IsMatrix' because both 'IsVector' and 'IsMatrix' are declared in
+##  'lib/arith.gd',
+##  and 'IsMatrixOrMatrixObj' --which shall be in the middle--
+##  is declared in 'lib/matobj1.gd'.)
+##
+#T Do we want an analogous setup also for objects in 'IsRowVector' (which are
+#T plain lists) and objects in 'IsVectorObj'?
+#T (For some operations, such as 'WeightOfVector' or 'DistanceOfVectors',
+#T this implication would make sense, but in fact the default methods for
+#T 'WeightVecFFE' and 'DistanceVecFFE' are installed with requirement
+#T 'IsList'.)
+##
+InstallTrueMethod( IsMatrixOrMatrixObj, IsMatrix );
 
 
 #############################################################################
@@ -168,27 +220,7 @@ DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsMatrixObj", IsVector and IsScalar and IsCopyable );
-
-
-#############################################################################
-##
-##  We want that objects in 'IsMatrix' (which are plain lists of lists)
-##  are also in 'IsMatrixObj', in order to be able to install generic methods
-##  that cover also the case of 'IsMatrix'.
-##  Note that we cannot get this implication already in the declaration of
-##  'IsMatrix' because both 'IsVector' and 'IsMatrix' are declared in
-##  'lib/arith.gd', and 'IsMatrixObj' --which shall be in the middle-- is
-##  declared in 'lib/matobj1.gd'.)
-##
-#T Do we want that objects in 'IsRowVector' (which are plain lists)
-#T are also in 'IsVectorObj'?
-#T (For some operations, such as 'WeightOfVector' or 'DistanceOfVectors',
-#T this implication would make sense, but in fact the default methods for
-#T 'WeightVecFFE' and 'DistanceVecFFE' are installed with requirement
-#T 'IsList'.)
-##
-InstallTrueMethod( IsMatrixObj, IsMatrix );
+DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 
 
 #############################################################################

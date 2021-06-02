@@ -129,7 +129,7 @@ InstallMethod( IsSubset,
 ##
 InstallMethod( Subfields,
     "for finite field of FFEs",
-    [ IsField and IsFFECollection ],
+    [ IsField and IsFinite and IsFFECollection ],
     function( F )
     local d, p;
     d:= DegreeOverPrimeField( F );

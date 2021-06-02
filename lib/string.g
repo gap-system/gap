@@ -125,7 +125,7 @@ InstallTrueMethod( IsString, IsCharCollection and IsList );
 ##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsStringRep",
-    IsInternalRep, [], IS_OBJECT, IS_STRING_REP );
+    IsInternalRep, IS_STRING_REP );
 
 
 #############################################################################

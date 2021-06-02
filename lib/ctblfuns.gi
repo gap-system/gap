@@ -4425,6 +4425,27 @@ end );
 ##
 #F  SizeOfFieldOfDefinition( <val>, <p> )
 ##
+##  Typically, <val> is a (Brauer) character, that is, a list of cyclotomic
+##  integers with conductor coprime to <p>, which is closed under Galois
+##  conjugacy.
+##  In this situation, the size of the field of definition is the smallest
+##  power <q> of <p> such that the difference of <val> and its image under
+##  the Galois automorphism 'GaloisCyc( ., <q> )' is divisible by <p> in the
+##  ring of cyclotomic integers.
+##  (This follows with the same number theoretic argument that is used in the
+##  proof of <Cite Key="Isa76" Where="Theorem 15.18."/>.)
+##
+##  If <val> is not closed under Galois automorphisms then the result depends
+##  on the definition of the reduction from cyclotomics to finite fields,
+##  and in general there is no way to avoid computing the reduction of <val>.
+##  For example, if we assume the reduction w.r.t. Conway polynomials then
+##  the reduction of the value 'EX(63)' in characteristic 2 lies in the prime
+##  field, whereas the reduction of its complex conjugate does not lie in the
+##  prime field.
+##  If we choose a different reduction homomorphism
+##  (for example, if we choose other polynomials to define the fields)
+##  then the situation may be the other way round.
+##
 ##  If the coefficients of the Zumbroich basis representation of the
 ##  difference $\alpha^{\ast p} - \alpha$ are divisible by $p$
 ##  then $\alpha$ is mapped to an element of the prime field under
@@ -4433,37 +4454,54 @@ end );
 ##  automorphism $\ast p$ or that all coefficients of $\alpha$
 ##  are divisible by $p$.)
 ##
-##  Otherwise, I do not know a better way to compute the size than explicitly
-##  computing the reductions.
-##
 InstallGlobalFunction( SizeOfFieldOfDefinition, function( val, p )
-    local values, entry;
+    local closed, values, entry, q;
+
+    closed:= false;
 
     # The first argument may be a cyclotomic or a list of cyclotomics.
     if   IsInt( val ) then
       return p;
     elif IsCyc( val ) then
-      if DenominatorCyc( val ) mod p = 0 then
-        return fail;
-      fi;
-      values:= [ val ];
-    elif IsList( val ) and IsCyclotomicCollection( val ) then
-      values:= [];
-      for entry in val do
-        if   not IsRat( entry ) then
-          Add( values, entry );
-        elif DenominatorCyc( entry ) mod p = 0 then
-          return fail;
-        fi;
-      od;
-    else
+      val:= [ val ];
+    elif IsClassFunction( val ) then
+      # This is expected to be the typical situation.
+      # We know in advance that 'val' is closed under Galois conjugacy.
+      closed:= true;
+      val:= ValuesOfClassFunction( val );
+    elif not ( IsList( val ) and IsCyclotomicCollection( val ) ) then
       Error( "<val> must be a cyclotomic or a list of cyclotomics" );
     fi;
 
+    values:= [];
+    for entry in val do
+      if DenominatorCyc( entry ) mod p = 0 or
+         Conductor( entry ) mod p = 0 then
+        return fail;
+      elif not IsRat( entry ) then
+        Add( values, entry );
+      fi;
+    od;
+
     if ForAll( values, x -> IsCycInt( ( GaloisCyc( x, p ) - x ) / p ) ) then
+      # All reductions lie in the prime field.
       return p;
+    elif closed then
+      # It is sufficient to look at powers of the map '*p'.
+      q:= p;
+      while true do
+        q:= q * p;
+        if ForAll( values,
+                   x -> IsCycInt( ( GaloisCyc( x, q ) - x ) / p ) ) then
+          return q;
+        fi;
+      od;
     fi;
 
+    # We have no better idea than to reduce each value.
+    # (Well, we could check whether 'values' is perhaps closed under
+    # Galois conjugacy, or check some generalization of this condition,
+    # but this is probably not worth the effort.)
     values:= List( values, x -> FrobeniusCharacterValue( x, p ) );
     if fail in values then
       return fail;

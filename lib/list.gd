@@ -82,7 +82,7 @@ BIND_GLOBAL( "ListsFamily", NewFamily( "ListsFamily", IsList ) );
 ##  <#/GAPDoc>
 ##
 DeclareRepresentationKernel( "IsPlistRep",
-    IsInternalRep, [], IS_OBJECT, IS_PLIST_REP );
+    IsInternalRep, IS_PLIST_REP );
 
 
 #############################################################################

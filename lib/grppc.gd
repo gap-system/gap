@@ -156,7 +156,7 @@ DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 ##
 ##  <#GAPDoc Label="InducedPcgs">
 ##  <ManSection>
-##  <Oper Name="InducedPcgs" Arg='pcgs, grp'/>
+##  <Func Name="InducedPcgs" Arg='pcgs, grp'/>
 ##
 ##  <Description>
 ##  computes a pcgs for <A>grp</A> which is induced by <A>pcgs</A>.
@@ -170,7 +170,7 @@ DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
+DeclareGlobalFunction( "InducedPcgs" );
 
 #############################################################################
 ##

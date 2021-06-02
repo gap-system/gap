@@ -3481,8 +3481,10 @@ void InitSysFiles(void)
     setbuf(stderr, (char *)0);
 
 #ifdef HAVE_LIBREADLINE
-    rl_readline_name = "GAP";
-    rl_initialize ();
+    if (SyUseReadline) {
+        rl_readline_name = "GAP";
+        rl_initialize();
+    }
 #endif
 }
 

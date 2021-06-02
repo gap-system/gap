@@ -272,6 +272,7 @@ local mat, n, one, zerovec, i, k, nullspace, row;
 
   # insert zero rows to bring the leading term of each row on the diagonal
   if mat = [] then
+    if n=0 then return [];fi;
     mat := ZeroMatrix(e.field, n, n);
   else
     zerovec := MakeImmutable(ZeroVector(n, mat));

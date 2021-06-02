@@ -182,7 +182,7 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
       Print("#I  Method ",i,": ``",nam,"''");
       if IsBound(m.location) then
         Print(" at ", m.location[1], ":", m.location[2]);
-      elif LocationFunc(oper) <> "" then
+      elif LocationFunc(oper) <> fail then
         Print(" at ",LocationFunc(oper));
       fi;
       Print(", value: ");
@@ -217,7 +217,7 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
 	  Print("#I  Method ",i,": ``",nam,"''");
           if IsBound(m.location) then
             Print(" at ", m.location[1], ":", m.location[2]);
-	  elif LocationFunc(oper) <> "" then
+	  elif LocationFunc(oper) <> fail then
 	    Print(" at ",LocationFunc(oper));
 	  fi;
 	  Print(" , value: ");

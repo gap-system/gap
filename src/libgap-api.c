@@ -411,9 +411,16 @@ Obj GAP_NewPlist(Int capacity)
 //// matrix obj
 ////
 
+static Obj IsMatrixOrMatrixObjFilt;
 static Obj IsMatrixObjFilt;
 static Obj NrRowsAttr;
 static Obj NrColsAttr;
+
+// Returns 1 if <obj> is a GAP matrix or matrix obj, 0 if not.
+int GAP_IsMatrixOrMatrixObj(Obj obj)
+{
+    return obj && DoFilter(IsMatrixOrMatrixObjFilt, obj) == True;
+}
 
 // Returns 1 if <obj> is a GAP matrix obj, 0 if not.
 int GAP_IsMatrixObj(Obj obj)
@@ -608,6 +615,7 @@ void GAP_Error_Postjmp_Returning_(void)
 */
 static Int InitKernel(StructInitInfo * module)
 {
+    InitFopyGVar("IsMatrixOrMatrixObj", &IsMatrixOrMatrixObjFilt);
     InitFopyGVar("IsMatrixObj", &IsMatrixObjFilt);
     InitFopyGVar("NrRows", &NrRowsAttr);
     InitFopyGVar("NrCols", &NrColsAttr);

@@ -2737,18 +2737,26 @@ DeclareGlobalFunction( "ZevDataValue" );
 ##  and a prime integer <A>p</A>, <Ref Func="SizeOfFieldOfDefinition"/>
 ##  returns the size of the smallest finite field
 ##  in characteristic <A>p</A> that contains the <A>p</A>-modular reduction
-##  of <A>val</A>.
+##  of <A>val</A> if this can be determined, and <K>fail</K> otherwise.
 ##  <P/>
-##  The reduction map is defined as in&nbsp;<Cite Key="JLPW95"/>,
+##  The latter happens if <A>val</A> is not closed under Galois conjugacy
+##  and if the <A>p</A>-modular reduction of some value cannot be determined
+##  via the function <Ref Func="FrobeniusCharacterValue"/>.
+##  Note that the reduction map is defined as in&nbsp;<Cite Key="JLPW95"/>,
 ##  that is, the complex <M>(<A>p</A>^d-1)</M>-th root of unity
 ##  <M>\exp(<A>p</A>^d-1)</M> is mapped to the residue class of the
 ##  indeterminate, modulo the ideal spanned by the Conway polynomial
 ##  (see&nbsp;<Ref Func="ConwayPolynomial"/>) of degree <M>d</M> over the
 ##  field with <M>p</M> elements.
 ##  <P/>
-##  If <A>val</A> is a Brauer character then the value returned is the size
-##  of the smallest finite field in characteristic <A>p</A> over which the
-##  corresponding representation lives.
+##  If <A>val</A> is closed under Galois conjugacy then the result can be
+##  determined without explicitly computing the <A>p</A>-modular reduction
+##  of <A>val</A>.
+##  This happens for example if <A>val</A> is a Brauer character.
+##  <P/>
+##  If <A>val</A> is an irreducible Brauer character then the value returned
+##  is the size of the smallest finite field in characteristic <A>p</A>
+##  over which the corresponding representation lives.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
