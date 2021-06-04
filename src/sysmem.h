@@ -33,7 +33,8 @@
 **  is often a reasonable value. It is usually changed with the '-o'
 **  option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags' below.
+**  This is used in the function 'SyAllocBags' below and can be
+**  disabled using DisableMemoryLimits.
 */
 extern Int SyStorMax;
 
@@ -48,6 +49,7 @@ typedef enum {
 } SyStorEnum;
 extern SyStorEnum SyStorOverrun;
 
+
 /****************************************************************************
 **
 *V  SyStorKill . . . . . . . . . . . . . . . . . . maximal size of workspace
@@ -59,7 +61,8 @@ extern SyStorEnum SyStorOverrun;
 **  This is per default disabled (i.e. = 0).
 **  Can be changed with the '-K' option in the script that starts GAP.
 **
-**  This is used in the function 'SyAllocBags' below.
+**  This is used in the function 'SyAllocBags' below and can be
+**  disabled using DisableMemoryLimits.
 */
 extern Int SyStorKill;
 

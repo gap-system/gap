@@ -899,6 +899,32 @@ static Obj FuncTotalMemoryAllocated(Obj self)
 
 /****************************************************************************
 **
+*F  SyDisableMemoryLimits() . . . . .  Disable limits on workspace size
+**
+**  By default GASMAN limits the size of the workspace using SyStorMax and
+**  SyStorKill. This disables those checks.
+*/
+static Obj FuncDisableMemoryLimits(Obj self)
+{
+#ifdef SYS_IS_64_BIT
+    int64_t max_mem = INT64_MAX;
+#else
+    int32_t max_mem = INT32_MAX;
+#endif
+
+#if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
+    SyStorKill = max_mem;
+#endif
+
+#if defined(USE_GASMAN)
+    SyStorMax = max_mem;
+#endif
+
+    return 0;
+}
+
+/****************************************************************************
+**
 *F  FuncSIZE_OBJ( <self>, <obj> ) . . . .  expert function 'SIZE_OBJ'
 **
 **  'SIZE_OBJ( <obj> )' returns 0 for immediate objects, and otherwise
@@ -1283,6 +1309,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(ID_FUNC, object),
     GVAR_FUNC(RETURN_FIRST, -2, "first, rest"),
     GVAR_FUNC(RETURN_NOTHING, -1, "object"),
+    GVAR_FUNC_0ARGS(DisableMemoryLimits),
     GVAR_FUNC(GASMAN, -1, "args"),
 #ifdef USE_GASMAN
     GVAR_FUNC_0ARGS(GASMAN_STATS),
