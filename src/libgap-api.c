@@ -420,19 +420,19 @@ static Obj NrColsAttr;
 // Returns 1 if <obj> is a GAP matrix or matrix obj, 0 if not.
 int GAP_IsMatrixOrMatrixObj(Obj obj)
 {
-    return obj && DoFilter(IsMatrixOrMatrixObjFilt, obj) == True;
+    return obj && CALL_1ARGS(IsMatrixOrMatrixObjFilt, obj) == True;
 }
 
 // Returns 1 if <obj> is a GAP matrix, 0 if not.
 int GAP_IsMatrix(Obj obj)
 {
-    return obj && DoFilter(IsMatrixFilt, obj) == True;
+    return obj && CALL_1ARGS(IsMatrixFilt, obj) == True;
 }
 
 // Returns 1 if <obj> is a GAP matrix obj, 0 if not.
 int GAP_IsMatrixObj(Obj obj)
 {
-    return obj && DoFilter(IsMatrixObjFilt, obj) == True;
+    return obj && CALL_1ARGS(IsMatrixObjFilt, obj) == True;
 }
 
 // Returns the number of rows of the given GAP matrix obj.
