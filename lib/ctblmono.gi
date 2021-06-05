@@ -2176,6 +2176,76 @@ InstallMethod( IsMinimalNonmonomial,
     return false;
 end );
 
+InstallMethod( IsMinimalNonmonomial,
+    "for a non-solvable group",
+    [ IsGroup ],
+    function( K )
+
+    local info, q, p, f;
+
+    if IsSolvableGroup(K) then
+      TryNextMethod();
+    fi;
+
+    # Monomial groups are solvable. A minimal-nonmonomial group by
+    # definition has every proper quotient and every proper subgroup
+    # monomial, hence a non-solvable minimal-nonmonomial group must
+    # have every proper subgroup and every proper quotient be solvable.
+    # If [G,G] were proper, it would have to be solvable, and thus G
+    # solvable, hence G is perfect. If G had any proper normal subgroups
+    # then the quotient would have to be both perfect and solvable, so
+    # G must be simple.
+    if not IsSimpleGroup(K) then
+      return false;
+    fi;
+
+    # Indeed, it must be minimal simple as classified by Corollary 1 in
+    # Thompson's 1968 N-Groups paper, doi:10.1090/S0002-9904-1968-11953-6
+    # * PSL(2,2^f) for f prime, and all such are minimal-non-M groups
+    # * PSL(2,3^f) for f an odd prime, and all such are minimal-non-M groups
+    # * PSL(2,p) for p a prime congruent to 2 or 3 mod 5, and all such are m-n-M
+    # * PSL(3,3) which is NOT a minimal-non-M group (contains SL(2,3))
+    # * Sz(2^f) for f an odd prime, and all such are minimal-non-M groups
+    #
+    # The minimal-non-M part follows from the fact that metabelian groups
+    # are monomial groups.
+    # * For PSL(2,q) Dickson classified their subgroups; the maximal ones are
+    #   either metabelian (hence monomial) or non-solvable; but this latter case
+    #   is ruled out here by being minimal simple; hence these groups are minimal
+    #   non-monomial.
+    # * For PSL(3,3) a subgroup isomorphic to SL(2,3) is not an M-group
+    # * For Sz(q), Suzuki 1960 shows that maximal subgroups are either the
+    #   normalizer H of a Sylow 2-group Q, or one of a few metabelian groups.
+    #   The characters of H are calculated in section 11, page 126, and
+    #   are all induced from the monomial group Q.
+    #   As an induced character can only be irreducible if the original
+    #   character was irreducible, and every irreducible of Q is induced
+    #   from a linear, and induction from that subgroup of Q and then to
+    #   H is the same as induction directly to H, we get that every
+    #   character of H is induced from a linear character (q-1 from H itself,
+    #   1 from Q, and 2 from a subgroup of Q). I.e., H is monomial.
+    #
+    info := IsomorphismTypeInfoFiniteSimpleGroup(K);
+    if info.series = "A" then
+      return info.parameter = 5; # A5 = PSL(2,4) is minimal non-monomial
+    elif info.series = "L" then
+      if info.parameter[1] = 2 then # GAP reports PSL(3,2)=PSL(2,7) as [2,7]
+        q := info.parameter[2];
+        p := SmallestRootInt(q);
+        f := LogInt(q,p);
+        if p = 2 and IsPrimeInt(f) then return true;
+        elif p = 3 and IsOddInt(f) and IsPrimeInt(f) then return true;
+        elif p = q and 0 = (p^2+1) mod 5 then return true;
+        fi;
+      fi;
+    elif info.series = "2B" then
+      q := info.parameter;
+      f := LogInt(q,2);
+      return IsPrimeInt(f);
+    fi;
+    return false;
+end);
+
 
 #############################################################################
 ##
