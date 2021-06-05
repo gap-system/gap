@@ -833,6 +833,261 @@ extension of the language does not break any old code.
 
 </Section>
 
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Function">
+<Heading>Function</Heading>
+
+<Index Subkey="definition of">functions</Index>
+<Index Key="end"><K>end</K></Index>
+<Index Key="local"><K>local</K></Index>
+<Index>recursion</Index>
+<Index Subkey="recursive">functions</Index>
+<Index>environment</Index><Index>body</Index>
+<C>function( [ <A>arg-ident</A> {, <A>arg-ident</A>} ] )</C>
+<P/>
+<C>&nbsp;&nbsp;[local  <A>loc-ident</A> {, <A>loc-ident</A>} ; ]</C>
+<P/>
+<C>&nbsp;&nbsp;<A>statements</A></C>
+<P/>
+<C>end</C>
+<P/>
+A function
+literal can be assigned to a variable or to a list element or a record
+component.
+Later this function can be called as described in <Ref Sect="Function Calls"/>.
+<P/>
+The following is an example of a function definition.  It is a function
+to compute values of the Fibonacci sequence (see <Ref Func="Fibonacci"/>).
+<P/>
+<Example><![CDATA[
+gap> fib := function ( n )
+>     local f1, f2, f3, i;
+>     f1 := 1; f2 := 1;
+>     for i in [3..n] do
+>       f3 := f1 + f2;
+>       f1 := f2;
+>       f2 := f3;
+>     od;
+>     return f2;
+>   end;;
+gap> List( [1..10], fib );
+[ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
+]]></Example>
+<P/>
+Because for each of the formal arguments <A>arg-ident</A> and for each of the
+formal locals <A>loc-ident</A> a new variable is allocated when the function
+is called (see <Ref Sect="Function Calls"/>),
+it is possible that a function calls itself.
+This is usually called <E>recursion</E>.
+The following is a recursive function that computes values of the Fibonacci
+sequence.
+<P/>
+<Example><![CDATA[
+gap> fib := function ( n )
+>     if n < 3 then
+>       return 1;
+>     else
+>       return fib(n-1) + fib(n-2);
+>     fi;
+>   end;;
+gap> List( [1..10], fib );
+[ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
+]]></Example>
+<P/>
+Note that the recursive version needs <C>2 * fib(<A>n</A>)-1</C> steps
+to compute <C>fib(<A>n</A>)</C>,
+while the iterative version of <C>fib</C> needs only <C><A>n</A>-2</C> steps.
+Both are not optimal however, the library function <Ref Func="Fibonacci"/>
+only needs about <C>Log(<A>n</A>)</C> steps.
+<P/>
+<Index Subkey="with a variable number of arguments">functions</Index>
+<Index Key="arg" Subkey="special function argument"><C>arg</C></Index>
+As noted in Section&nbsp;<Ref Sect="Function Calls"/>,
+the case where a function's last argument is followed by <C>...</C> is special.
+It provides a way of defining  a  function  with  a  variable  number  of
+arguments. The values of the actual arguments are computed and the
+first ones are assigned to the new variables corresponding to the
+formal arguments before the last argument, if any. The values of all the
+remaining actual arguments are stored  in  a  list
+and this list is assigned to the new variable corresponding to the final formal
+argument. There are  two  typical  scenarios  for  wanting  such  a
+possibility:  having  optional  arguments  and  having  any   number   of
+arguments.
+<P/>
+The  following  example  shows  one  way  that  the  function
+<Ref Oper="Position"/> might be encoded  and  demonstrates  the
+<Q>optional argument</Q> scenario.
+<P/>
+<Example><![CDATA[
+gap> position := function ( list, obj, arg... )
+>     local pos;
+>     if 0 = Length(arg) then
+>       pos := 0;
+>     else
+>       pos := arg[1];
+>     fi;
+>     repeat
+>       pos := pos + 1;
+>       if pos > Length(list) then
+>         return fail;
+>       fi;
+>     until list[pos] = obj;
+>     return pos;
+>    end;
+function( list, obj, arg... ) ... end
+gap> position([1, 4, 2], 4);
+2
+gap> position([1, 4, 2], 3);
+fail
+gap> position([1, 4, 2], 4, 2);
+fail
+]]></Example>
+<P/>
+The following  example  demonstrates  the  <Q>any  number  of  arguments</Q>
+scenario.
+<P/>
+<Example><![CDATA[
+gap> sum := function ( l... )
+>     local total, x;
+>     total := 0;
+>     for x in l do
+>       total := total + x;
+>     od;
+>     return total;
+>    end;
+function( l... ) ... end
+gap> sum(1, 2, 3);
+6
+gap> sum(1, 2, 3, 4);
+10
+gap> sum();
+0
+]]></Example>
+<P/>
+The user should compare the above with the  &GAP; function <Ref Func="Sum"/>
+which, for example, may take a list argument and optionally
+an initial element (which zero should the sum of an empty list return?).
+<P/>
+GAP will also special case a function with a single argument with the name
+<C>arg</C> as function with a variable length list of arguments, as if the
+user had written <C>arg...</C>.
+<P/>
+Note that if a function <A>f</A> is defined as above
+then <C>NumberArgumentsFunction(<A>f</A>)</C> returns
+minus the number of formal arguments (including the final argument)
+(see&nbsp;<Ref Oper="NumberArgumentsFunction"/>).
+<P/>
+Using the <C>...</C> notation on a function <A>f</A> with only a single
+named argument tells &GAP; that when it encounters <A>f</A> that it should
+form a list out of the arguments of <A>f</A>.
+What if one wishes to do the <Q>opposite</Q>:
+tell &GAP; that a list should be <Q>unwrapped</Q> and passed as several
+arguments to a function.
+The function <Ref Oper="CallFuncList"/> is provided for this purpose.
+<P/>
+Also see Chapter&nbsp;<Ref Chap="Functions"/>.
+<P/>
+<Index Subkey="definition by arrow notation">functions</Index>
+<Index>arrow notation for functions</Index>
+<C>{ <A>arg-list</A> } -> <A>expr</A></C>
+<P/>
+This is a shorthand for
+<P/>
+<C>function ( <A>arg-list</A> ) return <A>expr</A>; end.</C>
+<P/>
+<A>arg-list</A> is a (possibly empty) argument list. Any arguments list
+which would be valid for a normal GAP function is also valid here (including
+variadic arguments).
+<P/>
+The following gives a couple of examples of a typical use of such a function
+<P/>
+<Example><![CDATA[
+gap> Sum( List( [1..100], {x} -> x^2 ) );
+338350
+gap> list := [3, 5, 2, 1, 3];;
+gap> Sort(list, {x,y} -> x > y);
+gap> list;
+[ 5, 3, 3, 2, 1 ]
+gap> f := {x,y...} -> y;;
+gap> f(1,2,3,4);
+[ 2, 3, 4 ]
+gap> f := {} -> 2;
+function(  ) ... end
+gap> Print(f);
+function (  )
+    return 2;
+end
+gap> f();
+2
+]]></Example>
+<P/>
+The <C>{</C> and <C>}</C> may be omitted for
+functions with one argument:
+<Example><![CDATA[
+gap> Sum( List( [1..100], {x} -> x^2 ) );
+338350
+gap> Sum( List( [1..100], x -> x^2 ) );
+338350
+]]></Example>
+
+<P/>
+When the definition of a function <A>fun1</A> is evaluated inside another
+function <A>fun2</A>,
+&GAP; binds all the identifiers inside the function <A>fun1</A> that
+are identifiers of an argument or a local of <A>fun2</A> to the corresponding
+variable.
+This set of bindings is called the environment of the function <A>fun1</A>.
+When <A>fun1</A> is called, its body is executed in this environment.
+The following implementation of a simple stack uses this.
+Values can be pushed onto the stack and then later be popped off again.
+The interesting thing here is that the functions <C>push</C> and <C>pop</C>
+in the record returned by <C>Stack</C> access the local variable <C>stack</C>
+of <C>Stack</C>.
+When <C>Stack</C> is called, a new variable for the identifier <C>stack</C>
+is created.
+When the function definitions of <C>push</C> and <C>pop</C> are then
+evaluated (as part of the <K>return</K> statement) each reference to
+<C>stack</C> is bound to this new variable.
+Note also that the two stacks <C>A</C> and <C>B</C> do not interfere,
+because each call of <C>Stack</C> creates a new variable for <C>stack</C>.
+<P/>
+<Example><![CDATA[
+gap> Stack := function ()
+>     local  stack;
+>     stack := [];
+>     return rec(
+>       push := function ( value )
+>         Add( stack, value );
+>       end,
+>       pop := function ()
+>         local  value;
+>         value := stack[Length(stack)];
+>         Unbind( stack[Length(stack)] );
+>         return value;
+>       end
+>     );
+>  end;;
+gap> A := Stack();;
+gap> B := Stack();;
+gap> A.push( 1 ); A.push( 2 ); A.push( 3 );
+gap> B.push( 4 ); B.push( 5 ); B.push( 6 );
+gap> A.pop(); A.pop(); A.pop();
+3
+2
+1
+gap> B.pop(); B.pop(); B.pop();
+6
+5
+4
+]]></Example>
+<P/>
+This feature should be used rarely, since its implementation in &GAP; is
+not very efficient.
+
+</Section>
+
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Function Calls">
 <Heading>Function Calls</Heading>
@@ -1748,260 +2003,6 @@ It is an error to use this statement other than inside a loop.
 gap> continue;
 Syntax error: 'continue' statement not enclosed in a loop
 ]]></Log>
-
-</Subsection>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Subsection Label="Function">
-<Heading>Function</Heading>
-
-<Index Subkey="definition of">functions</Index>
-<Index Key="end"><K>end</K></Index>
-<Index Key="local"><K>local</K></Index>
-<Index>recursion</Index>
-<Index Subkey="recursive">functions</Index>
-<Index>environment</Index><Index>body</Index>
-<C>function( [ <A>arg-ident</A> {, <A>arg-ident</A>} ] )</C>
-<P/>
-<C>&nbsp;&nbsp;[local  <A>loc-ident</A> {, <A>loc-ident</A>} ; ]</C>
-<P/>
-<C>&nbsp;&nbsp;<A>statements</A></C>
-<P/>
-<C>end</C>
-<P/>
-A function is in fact a literal and not a statement. Such a function
-literal can be assigned to a variable or to a list element or a record
-component.
-Later this function can be called as described in <Ref Sect="Function Calls"/>.
-<P/>
-The following is an example of a function definition.  It is a function
-to compute values of the Fibonacci sequence (see <Ref Func="Fibonacci"/>).
-<P/>
-<Example><![CDATA[
-gap> fib := function ( n )
->     local f1, f2, f3, i;
->     f1 := 1; f2 := 1;
->     for i in [3..n] do
->       f3 := f1 + f2;
->       f1 := f2;
->       f2 := f3;
->     od;
->     return f2;
->   end;;
-gap> List( [1..10], fib );
-[ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
-]]></Example>
-<P/>
-Because for each of the formal arguments <A>arg-ident</A> and for each of the
-formal locals <A>loc-ident</A> a new variable is allocated when the function
-is called (see <Ref Sect="Function Calls"/>),
-it is possible that a function calls itself.
-This is usually called <E>recursion</E>.
-The following is a recursive function that computes values of the Fibonacci
-sequence.
-<P/>
-<Example><![CDATA[
-gap> fib := function ( n )
->     if n < 3 then
->       return 1;
->     else
->       return fib(n-1) + fib(n-2);
->     fi;
->   end;;
-gap> List( [1..10], fib );
-[ 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ]
-]]></Example>
-<P/>
-Note that the recursive version needs <C>2 * fib(<A>n</A>)-1</C> steps
-to compute <C>fib(<A>n</A>)</C>,
-while the iterative version of <C>fib</C> needs only <C><A>n</A>-2</C> steps.
-Both are not optimal however, the library function <Ref Func="Fibonacci"/>
-only needs about <C>Log(<A>n</A>)</C> steps.
-<P/>
-<Index Subkey="with a variable number of arguments">functions</Index>
-<Index Key="arg" Subkey="special function argument"><C>arg</C></Index>
-As noted in Section&nbsp;<Ref Sect="Function Calls"/>,
-the case where a function's last argument is followed by <C>...</C> is special.
-It provides a way of defining  a  function  with  a  variable  number  of
-arguments. The values of the actual arguments are computed and the
-first ones are assigned to the new variables corresponding to the
-formal arguments before the last argument, if any. The values of all the
-remaining actual arguments are stored  in  a  list
-and this list is assigned to the new variable corresponding to the final formal
-argument. There are  two  typical  scenarios  for  wanting  such  a
-possibility:  having  optional  arguments  and  having  any   number   of
-arguments.
-<P/>
-The  following  example  shows  one  way  that  the  function
-<Ref Oper="Position"/> might be encoded  and  demonstrates  the
-<Q>optional argument</Q> scenario.
-<P/>
-<Example><![CDATA[
-gap> position := function ( list, obj, arg... )    
->     local pos;
->     if 0 = Length(arg) then
->       pos := 0;
->     else
->       pos := arg[1];
->     fi;
->     repeat
->       pos := pos + 1;
->       if pos > Length(list) then
->         return fail;
->       fi;
->     until list[pos] = obj;
->     return pos;
->    end;
-function( list, obj, arg... ) ... end
-gap> position([1, 4, 2], 4);
-2
-gap> position([1, 4, 2], 3);
-fail
-gap> position([1, 4, 2], 4, 2);
-fail
-]]></Example>
-<P/>
-The following  example  demonstrates  the  <Q>any  number  of  arguments</Q>
-scenario.
-<P/>
-<Example><![CDATA[
-gap> sum := function ( l... )
->     local total, x;
->     total := 0;
->     for x in l do
->       total := total + x;
->     od;
->     return total;
->    end;
-function( l... ) ... end
-gap> sum(1, 2, 3);
-6
-gap> sum(1, 2, 3, 4);
-10
-gap> sum();
-0
-]]></Example>
-<P/>
-The user should compare the above with the  &GAP; function <Ref Func="Sum"/>
-which, for example, may take a list argument and optionally
-an initial element (which zero should the sum of an empty list return?).
-<P/>
-GAP will also special case a function with a single argument with the name
-<C>arg</C> as function with a variable length list of arguments, as if the
-user had written <C>arg...</C>.
-<P/>
-Note that if a function <A>f</A> is defined as above
-then <C>NumberArgumentsFunction(<A>f</A>)</C> returns
-minus the number of formal arguments (including the final argument)
-(see&nbsp;<Ref Oper="NumberArgumentsFunction"/>).
-<P/>
-Using the <C>...</C> notation on a function <A>f</A> with only a single
-named argument tells &GAP; that when it encounters <A>f</A> that it should
-form a list out of the arguments of <A>f</A>.
-What if one wishes to do the <Q>opposite</Q>:
-tell &GAP; that a list should be <Q>unwrapped</Q> and passed as several
-arguments to a function.
-The function <Ref Oper="CallFuncList"/> is provided for this purpose.
-<P/>
-Also see Chapter&nbsp;<Ref Chap="Functions"/>.
-<P/>
-<Index Subkey="definition by arrow notation">functions</Index>
-<Index>arrow notation for functions</Index>
-<C>{ <A>arg-list</A> } -> <A>expr</A></C>
-<P/>
-This is a shorthand for
-<P/>
-<C>function ( <A>arg-list</A> ) return <A>expr</A>; end.</C>
-<P/>
-<A>arg-list</A> is a (possibly empty) argument list. Any arguments list
-which would be valid for a normal GAP function is also valid here (including
-variadic arguments).
-<P/>
-The following gives a couple of examples of a typical use of such a function
-<P/>
-<Example><![CDATA[
-gap> Sum( List( [1..100], {x} -> x^2 ) );
-338350
-gap> list := [3, 5, 2, 1, 3];;
-gap> Sort(list, {x,y} -> x > y);
-gap> list;
-[ 5, 3, 3, 2, 1 ]
-gap> f := {x,y...} -> y;;
-gap> f(1,2,3,4);
-[ 2, 3, 4 ]
-gap> f := {} -> 2;
-function(  ) ... end
-gap> Print(f);
-function (  )
-    return 2;
-end
-gap> f();
-2
-]]></Example>
-<P/>
-The <C>{</C> and <C>}</C> may be omitted for
-functions with one argument:
-<Example><![CDATA[
-gap> Sum( List( [1..100], {x} -> x^2 ) );
-338350
-gap> Sum( List( [1..100], x -> x^2 ) );
-338350
-]]></Example>
-
-<P/>
-When the definition of a function <A>fun1</A> is evaluated inside another
-function <A>fun2</A>,
-&GAP; binds all the identifiers inside the function <A>fun1</A> that
-are identifiers of an argument or a local of <A>fun2</A> to the corresponding
-variable.
-This set of bindings is called the environment of the function <A>fun1</A>.
-When <A>fun1</A> is called, its body is executed in this environment.
-The following implementation of a simple stack uses this.
-Values can be pushed onto the stack and then later be popped off again.
-The interesting thing here is that the functions <C>push</C> and <C>pop</C>
-in the record returned by <C>Stack</C> access the local variable <C>stack</C>
-of <C>Stack</C>.
-When <C>Stack</C> is called, a new variable for the identifier <C>stack</C>
-is created.
-When the function definitions of <C>push</C> and <C>pop</C> are then
-evaluated (as part of the <K>return</K> statement) each reference to
-<C>stack</C> is bound to this new variable.
-Note also that the two stacks <C>A</C> and <C>B</C> do not interfere,
-because each call of <C>Stack</C> creates a new variable for <C>stack</C>.
-<P/>
-<Example><![CDATA[
-gap> Stack := function ()
->     local  stack;
->     stack := [];
->     return rec(
->       push := function ( value )
->         Add( stack, value );
->       end,
->       pop := function ()
->         local  value;
->         value := stack[Length(stack)];
->         Unbind( stack[Length(stack)] );
->         return value;
->       end
->     );
->  end;;
-gap> A := Stack();;
-gap> B := Stack();;
-gap> A.push( 1 ); A.push( 2 ); A.push( 3 );
-gap> B.push( 4 ); B.push( 5 ); B.push( 6 );
-gap> A.pop(); A.pop(); A.pop();
-3
-2
-1
-gap> B.pop(); B.pop(); B.pop();
-6
-5
-4
-]]></Example>
-<P/>
-This feature should be used rarely, since its implementation in &GAP; is
-not very efficient.
 
 </Subsection>
 
