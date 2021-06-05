@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
-#
-# This script is intended to implement step 4 of
-# <https://hackmd.io/AWds-AnZT72XXsbA0oVC6A>, i.e.
-# create the archives that form the gap release.
-
-# The version of the gap release is taken from the Makefile variable
-# GAP_BUILD_VERSION.
-
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+##  This script create the archives that form a GA{} release.
+##  
+##  The version of the gap release is taken from the Makefile variable
+##  GAP_BUILD_VERSION.
+##  
 from utils import *
 
 import glob
