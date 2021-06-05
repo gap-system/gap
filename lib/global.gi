@@ -47,7 +47,7 @@ DeclareInfoClass("InfoGlobal");
 InstallGlobalFunction( IsValidIdentifier, function(str)
     return ForAll(str, c -> c in IdentifierLetters) and
            ForAny(str, c -> not (c in "0123456789")) and
-           not str in ALL_KEYWORDS();
+           not str in GAPInfo.Keywords;
 end);
 
 #############################################################################

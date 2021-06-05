@@ -27,6 +27,7 @@
 #include "gapstate.h"
 #include "gaputils.h"
 #include "gvars.h"
+#include "listfunc.h"
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
@@ -1444,6 +1445,9 @@ static Obj FuncALL_KEYWORDS(Obj self)
         Obj s = MakeImmString(AllKeywords[i]);
         ASS_LIST(l, i+1, s);
     }
+    SortDensePlist(l);
+    SET_FILT_LIST(l, FN_IS_HOMOG);
+    SET_FILT_LIST(l, FN_IS_SSORT);
     MakeImmutable(l);
     return l;
 }
