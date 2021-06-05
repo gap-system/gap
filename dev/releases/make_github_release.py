@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
-
-# This script is intended to implement step 6 of
-# <https://hackmd.io/AWds-AnZT72XXsbA0oVC6A>, i.e.
-# it makes a github release and uploads all tar balls as assets.
-# The name of the target repository CURRENT_REPO_NAME is defined in utils.py.
-
-# If we do import * from utils, then initialize_github can't overwrite the
-# global GITHUB_INSTANCE and CURRENT_REPO variables.
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+##  This script makes a github release and uploads all tar balls as assets.
+##  The name of the target repository CURRENT_REPO_NAME is defined in
+##  utils.py.
+##
+##  If we do import * from utils, then initialize_github can't overwrite the
+##  global GITHUB_INSTANCE and CURRENT_REPO variables.
+##
 import utils
 import sys
 

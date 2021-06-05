@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
-
-# This script is supposed to upload the files at <path_to_file1> [...] to the
-# GitHub release at utils.CURRENT_REPO with the tag <tag_name>.
-
-# It checks that each <path_to_file1> (etc) is a file, that <tag_name> is a
-# release, and that there are not already any files with the same name attached
-# to the release.
-
+#############################################################################
+##
+##  This file is part of GAP, a system for computational discrete algebra.
+##
+##  Copyright of GAP belongs to its developers, whose names are too numerous
+##  to list here. Please refer to the COPYRIGHT file for details.
+##
+##  SPDX-License-Identifier: GPL-2.0-or-later
+##
+##  This script is supposed to upload the files at <path_to_file1> [...] to
+##  the GitHub release at utils.CURRENT_REPO with the tag <tag_name>.
+##
+##  It checks that each <path_to_file1> (etc) is a file, that <tag_name> is a
+##  release, and that there are not already any files with the same name
+##  attached to the release.
+##
 import os
 import sys
 import utils
