@@ -374,14 +374,19 @@ This sequence is another expression whose value is the integer <M>12</M>.
 The process of finding the value of an expression is done by the interpreter
 and is called the <E>evaluation</E> of the expression.
 <P/>
-Variables, function calls, and integer, permutation, string, function, list,
-and record literals
-(see <Ref Sect="Variables"/>, <Ref Sect="Function Calls"/>,
-<Ref Chap="Integers"/>, <Ref Chap="Permutations"/>,
-<Ref Chap="Strings and Characters"/>, <Ref Sect="Function"/>,
-<Ref Chap="Lists"/>, <Ref Chap="Records"/>),
-are the simplest cases of expressions.
-<P/>
+The simplest cases of expressions are the following:
+<List>
+<Item>variables (see Section&nbsp;<Ref Sect="Variables"/>),</Item>
+<Item>function literals (see Section&nbsp;<Ref Sect="Function"/>),</Item>
+<Item>function calls (see Section&nbsp;<Ref Sect="Function Calls"/>),</Item>
+<Item>integer literals (see Chapter&nbsp;<Ref Chap="Integers"/>),</Item>
+<Item>floating point literals (see Chapter&nbsp;<Ref Chap="Floats"/>),</Item>
+<Item>permutation literals (see Chapter&nbsp;<Ref Chap="Permutations"/>),</Item>
+<Item>string literals (see Chapter&nbsp;<Ref Chap="Strings and Characters"/>),</Item>
+<Item>character literals (see Chapter&nbsp;<Ref Chap="Strings and Characters"/>),</Item>
+<Item>list literals (see Chapter&nbsp;<Ref Chap="Lists"/>), and</Item>
+<Item>record literals (see Chapter&nbsp;<Ref Chap="Records"/>).</Item>
+</List>
 Expressions, for example the simple expressions mentioned above, can be
 combined with the operators to form more complex expressions. Of course
 those expressions can then be combined further with the operators to form
@@ -405,7 +410,67 @@ gap> 2 * 2 + 9 = Fibonacci(7) and Fibonacci(13) in Primes;
 true
 ]]></Example>
 <P/>
-For the precedence of operators, see&nbsp;<Ref Sect="Comparisons"/>.
+
+The following table lists all operators by precedence, from highest to
+lowest, and also indicates whether the operator is left associative (aka
+left-to-right) or right associative (aka right-to-left) or neither.
+
+<Index>precedence</Index>
+<Index>associativity</Index>
+<Table Align="ll">
+<Row>
+  <Item><E>operator</E></Item>
+  <Item><E>associativity</E></Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><E>arithmetic (see&nbsp;<Ref Sect="Arithmetic Operators"/>)</E></Item>
+  <Item></Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;<C>^</C></Item>
+  <Item>none</Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;unary <C>+</C>, unary <C>-</C></Item>
+  <Item>right-to-left</Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;<C>*</C>, <C>/</C>, <K>mod</K></Item>
+  <Item>left-to-right</Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;binary <C>+</C>, binary <C>-</C></Item>
+  <Item>left-to-right</Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><E>comparison (see&nbsp;<Ref Sect="Comparisons"/>)</E></Item>
+  <Item></Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;<C>=</C>, <C>&lt;></C>, <C>&lt;</C>, <C>&lt;=</C>, <C>></C>, <C>>=</C>, and <K>in</K></Item>
+  <Item>none</Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><E>logical (see&nbsp;<Ref Sect="Operations for Booleans"/>)</E></Item>
+  <Item></Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;<K>not</K></Item>
+  <Item>right-to-left</Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;<K>and</K></Item>
+  <Item>left-to-right</Item>
+</Row>
+<Row>
+  <Item>&nbsp;&nbsp;&nbsp;&nbsp;<K>or</K></Item>
+  <Item>left-to-right</Item>
+</Row>
+</Table>
+
 
 </Section>
 
@@ -835,7 +900,7 @@ this formal argument or formal local, and evaluates to the value of this
 variable.
 <P/>
 If during the execution of the body of the function a <K>return</K> statement
-with an expression (see <Ref Sect="Return (With or without Value)"/>)
+with an expression (see <Ref Sect="Return"/>)
 is executed, execution of the body is
 terminated and the value of the function call is the value of the
 expression of the <K>return</K>. If during the execution of the body a
@@ -1129,15 +1194,19 @@ see&nbsp;<Ref Sect="Arithmetic Operations for Elements"/>.
 <Heading>Statements</Heading>
 
 <Index>execution</Index>
-Assignments (see <Ref Sect="Assignments"/>),
-Procedure calls (see <Ref Sect="Procedure Calls"/>),
-<K>if</K> statements (see <Ref Sect="If"/>),
-<K>while</K> (see <Ref Sect="While"/>),
-<K>repeat</K> (see <Ref Sect="Repeat"/>) and
-<K>for</K> loops (see <Ref Sect="For"/>),
-and the <K>return</K> statement
-(see <Ref Sect="Return (With or without Value)"/>)
-are called <E>statements</E>.
+&GAP; programs consist of a sequence of so-called  <E>statements</E>.
+The following types of statements exist:
+<List>
+  <Item>Assignments (see Section&nbsp;<Ref Sect="Assignments"/>),</Item>
+  <Item>Procedure calls (see Section&nbsp;<Ref Sect="Procedure Calls"/>),</Item>
+  <Item><K>if</K> statements (see Section&nbsp;<Ref Sect="If"/>),</Item>
+  <Item><K>while</K> loops (see Section&nbsp;<Ref Sect="While"/>),</Item>
+  <Item><K>repeat</K> loops (see Section&nbsp;<Ref Sect="Repeat"/>),</Item>
+  <Item><K>for</K> loops (see Section&nbsp;<Ref Sect="For"/>),</Item>
+  <Item><K>break</K> statements (see Section&nbsp;<Ref Sect="Break"/>),</Item>
+  <Item><K>continue</K> statements (see Section&nbsp;<Ref Sect="Continue"/>), and</Item>
+  <Item><K>return</K> statements (see Section&nbsp;<Ref Sect="Return"/>).</Item>
+</List>
 They can be entered interactively or be part of a function definition.
 Every statement must be terminated by a semicolon.
 <P/>
@@ -1173,11 +1242,10 @@ used as an empty statement sequence. In fact an empty statement
 sequence as in <C>for i in [ 1 .. 2 ] do od</C> is also permitted and is
 silently translated into the sequence containing just a semicolon.
 
-</Section>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Assignments">
+<Subsection Label="Assignments">
 <Heading>Assignments</Heading>
 
 <Index Subkey="variable">assignment</Index>
@@ -1241,11 +1309,11 @@ The error message says that it is possible to return an appropriate value,
 and the returned string <C>"hello"</C> is used by <C>f2</C> instead of the
 missing return value of <C>f1</C>.
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Procedure Calls">
+<Subsection Label="Procedure Calls">
 <Heading>Procedure Calls</Heading>
 
 <Index>procedure call</Index>
@@ -1279,11 +1347,11 @@ a value and produce some effect.
 An example is <Ref Oper="Sortex"/> which sorts a list
 and returns the corresponding permutation of the entries.
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="If">
+<Subsection Label="If">
 <Heading>If</Heading>
 
 <Index Key="fi"><K>fi</K></Index>
@@ -1365,11 +1433,11 @@ gap> s;  # the sign of i
 1
 ]]></Example>
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="While">
+<Subsection Label="While">
 <Heading>While</Heading>
 
 <Index Subkey="while">loop</Index>
@@ -1417,11 +1485,11 @@ gap> s;
 A <K>while</K> loop may be left prematurely using <K>break</K>,
 see <Ref Sect="Break"/>.
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Repeat">
+<Subsection Label="Repeat">
 <Heading>Repeat</Heading>
 
 <Index Subkey="repeat">loop</Index>
@@ -1472,11 +1540,11 @@ gap> s;
 A <K>repeat</K> loop may be left prematurely using <K>break</K>,
 see <Ref Sect="Break"/>.
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="For">
+<Subsection Label="For">
 <Heading>For</Heading>
 
 <Index Subkey="for">loop</Index>
@@ -1615,11 +1683,11 @@ see <Ref Sect="Break"/>. This
 combines especially well with a loop over an iterator, as a way of
 searching through a domain for an element with some useful property.
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Break">
+<Subsection Label="Break">
 <Heading>Break</Heading>
 
 <Index Subkey="leaving">loops</Index>
@@ -1647,11 +1715,11 @@ gap> break;
 Syntax error: 'break' statement not enclosed in a loop
 ]]></Log>
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Continue">
+<Subsection Label="Continue">
 <Heading>Continue</Heading>
 
 <Index Subkey="restarting">loops</Index>
@@ -1681,11 +1749,11 @@ gap> continue;
 Syntax error: 'continue' statement not enclosed in a loop
 ]]></Log>
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Function">
+<Subsection Label="Function">
 <Heading>Function</Heading>
 
 <Index Subkey="definition of">functions</Index>
@@ -1935,11 +2003,11 @@ gap> B.pop(); B.pop(); B.pop();
 This feature should be used rarely, since its implementation in &GAP; is
 not very efficient.
 
-</Section>
+</Subsection>
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Return (With or without Value)">
+<Subsection Label="Return">
 <Heading>Return (With or without Value)</Heading>
 
 <Index Key="return" Subkey="no value"><K>return</K></Index>
@@ -1967,6 +2035,8 @@ What happens with the value <A>expr</A> depends on the particular error.
 <P/>
 For examples of <K>return</K> statements, see the functions <C>fib</C> and
 <C>Stack</C> in Section&nbsp;<Ref Sect="Function"/>.
+
+</Subsection>
 
 </Section>
 
