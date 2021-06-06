@@ -160,4 +160,21 @@ if IsHPCGAP then
     MakeReadOnlyObj( IEEE754FLOAT );
 fi;
 
+InstallMethod(NewFloat, [IsIEEE754FloatRep,IsRat], -1, function(filter,obj)
+    local num, den;
+    num := NumeratorRat(obj);
+    den := DenominatorRat(obj);
+    # TODO: improve this so that e.g. (10^309 - 1) / 10^309 is converted accurately
+    return NewFloat(filter, QuoInt(num, den)) + NewFloat(filter, RemInt(num, den)) / NewFloat(filter, den);
+end);
+
+InstallMethod(MakeFloat, [IsIEEE754FloatRep,IsRat], -1, function(filter,obj)
+    local num, den;
+    num := NumeratorRat(obj);
+    den := DenominatorRat(obj);
+    # TODO: improve this so that e.g. (10^309 - 1) / 10^309 is converted accurately
+    return MakeFloat(filter, QuoInt(num, den)) + MakeFloat(filter, RemInt(num, den)) / MakeFloat(filter, den);
+end);
+
+
 SetFloats(IEEE754FLOAT);
