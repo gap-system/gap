@@ -36,7 +36,6 @@
 ##  are equal with respect to <Ref Oper="\="/> if they have the same
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value,
 ##  the same <Ref Attr="BaseDomain" Label="for a vector object"/> value,
-##  the same dimensions,
 ##  the same length,
 ##  and the same entries.
 ##  <P/>
@@ -46,7 +45,6 @@
 ##  the same <Ref Attr="BaseDomain" Label="for a matrix object"/> value,
 ##  the same dimensions,
 ##  and the same entries.
-##  It is <Q>not</Q> necessary that the objects have the same base domain.
 ##  <P/>
 ##  We do <E>not</E> state a general rule how vector and matrix objects
 ##  shall behave w.r.t. the comparison by <Ref Oper="\&lt;"/>.
@@ -986,7 +984,7 @@ InstallMethod( MultVectorRight,
 ##  are those of the <A>n</A>-th power of <A>M</A>.
 ##  If <A>n</A> is zero then <A>M</A><C>^</C><A>n</A> is an identity matrix,
 ##  and if <A>n</A> is a negative integer and <A>M</A> is invertible then
-##  <A>M</A><C>^</C><A>n</A> is the <C>-</C><A>n</A>-th power of the
+##  <A>M</A><C>^</C><A>n</A> is the (<C>-</C><A>n</A>)-th power of the
 ##  inverse of <A>M</A>.
 ##  <P/>
 ##  All this is defined only if the matrix objects have the same dimensions and

@@ -463,7 +463,6 @@ DeclareOperation( "ListOp", [ IsVectorObj, IsFunction ] );
 ##  <Oper Name="Unpack" Arg="v" Label="for a vector object"/>
 ##  <Oper Name="Unpack" Arg="M" Label="for a matrix object"/>
 ##
-##  <Returns>A plain list</Returns>
 ##  <Description>
 ##  Returns a new mutable plain list (see <Ref Filt="IsPlistRep"/>)
 ##  containing the entries of the vector object <A>v</A> or the matrix object
@@ -548,10 +547,10 @@ DeclareOperation( "ExtractSubVector", [ IsVectorObj, IsList ] );
 ##
 ##  <#GAPDoc Label="MatObj_AddVector">
 ##  <ManSection>
-##  <Oper Name="AddVector" Arg='dst, src[, from, to]'
+##  <Oper Name="AddVector" Arg='dst, src[, mul[, from, to]]'
 ##   Label="for two vector objects"/>
 ##  <Oper Name="AddVector" Arg='dst, mul, src[, from, to]'
-##   Label="for a vector object"/>
+##   Label="for two vector objects and a scalar"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
@@ -606,7 +605,7 @@ DeclareOperation( "AddVector",
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  These operations multiply <A>mul</A> with <A>vec</A> in-place
+##  These operations multiply <A>vec</A> by <A>mul</A> in-place
 ##  where <Ref Oper="MultVectorLeft" Label="for a vector object"/>
 ##  multiplies with <A>mul</A> from the left
 ##  and <Ref Oper="MultVectorRight" Label="for a vector object"/>
@@ -829,7 +828,7 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewIdentityMatrix"/> returns a mutable identity
-##  matrix object with <A>m</A> rows and <A>n</A> columns
+##  matrix object with <A>m</A> rows and columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
@@ -924,15 +923,15 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For two vector objects <A>dst</A> and <A>src</A>,
+##  For two vector objects <A>src</A> and <A>dst</A>,
 ##  such that <A>dst</A> is mutable,
-##  and two lists <A>dcols</A> and <A>scols</A> of positions,
+##  and two lists <A>scols</A> and <A>dcols</A> of positions,
 ##  <Ref Oper="CopySubVector"/> assigns the entries
 ##  <A>src</A><C>{ </C><A>scols</A><C> }</C>
 ##  (see <Ref Oper="ExtractSubVector"/>)
 ##  to the positions <A>dcols</A> in <A>dst</A>,
 ##  but without creating an intermediate object and thus
-##  &ndash;at least in special cases&ndash;
+##  &ndash; at least in special cases &ndash;
 ##  much more efficiently.
 ##  <P/>
 ##  For certain objects like compressed vectors this might be significantly
@@ -1035,7 +1034,7 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 ##  Does <C><A>dst</A>{<A>drows</A>}{<A>dcols</A>} :=
 ##  <A>src</A>{<A>srows</A>}{<A>scols</A>}</C>
 ##  without creating an intermediate object and thus
-##  &ndash;at least in special cases&ndash;
+##  &ndash; at least in special cases &ndash;
 ##  much more efficiently.
 ##  For certain objects like compressed vectors this might be
 ##  significantly more efficient if <A>scols</A> and <A>dcols</A> are
@@ -1351,8 +1350,8 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
 ##  of <A>M</A> (provided that such a representation exists).
 ##  <P/>
-##  The idea is that there should be an efficient way to multiply <M>v</M>
-##  and <A>M</A>.
+##  The idea is that there should be an efficient way to 
+##  form the product <A>vM</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1436,7 +1435,7 @@ DeclareOperation( "[]", [ IsRowListMatrix, IsPosInt ] );
 ##
 ##  <Description>
 ##  If <A>mat</A> is a row list matrix, <A>vec</A> is a vector object
-##  that can occur as a row in <A>rowlistmat</A>
+##  that can occur as a row in <A>mat</A>
 ##  (that is, <A>vec</A> has the same base domain, the right length,
 ##  and the right vector representation),
 ##  and if <A>pos</A> is a positive integer not larger than
