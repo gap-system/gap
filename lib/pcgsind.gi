@@ -1349,10 +1349,6 @@ function( pcgs, elm )
     local   pa,  map,  id,  exp,  ros,  d,  ll,  lr,lc;
 
     pa  := ParentPcgs(pcgs);
-    if HasIsCanonicalPcgs(pcgs) and IsCanonicalPcgs(pcgs) then
-      exp:=ExponentsOfPcElement(pa,elm){pcgs!.depthsInParent};
-      return exp;
-    fi;
     map := pcgs!.depthMapFromParent;
     lc  := LeadCoeffsIGS(pcgs);
     id  := OneOfPcgs(pcgs);
