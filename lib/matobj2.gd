@@ -1352,7 +1352,7 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##  of <A>M</A> (provided that such a representation exists).
 ##  <P/>
 ##  The idea is that there should be an efficient way to 
-##  form the product <M>vM</M>.
+##  form the product <M>v</M><A>M</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
