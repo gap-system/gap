@@ -63,29 +63,25 @@ InstallGlobalFunction( "SetDefaultInfoOutput", function( out )
   MakeReadOnlyGlobal("DefaultInfoOutput");
 end);
 
+
+BIND_GLOBAL( "PrintWithoutFormatting", function ( arg )
+    local old;
+    old := PrintFormattingStatus("*current*");
+    SetPrintFormattingStatus("*current*", false);
+    CallFuncList(Print, arg);
+    SetPrintFormattingStatus("*current*", old);
+end );
+
+
 InstallGlobalFunction( "DefaultInfoHandler", function( infoclass, level, list )
-  local out, fun, s;
+  local out, s;
   out := InfoOutput(infoclass);
   if out = "*Print*" then
-    if IsBoundGlobal( "PrintFormattedString" ) then
-      fun := function(s)
-        if (IsString(s) and Length(s) > 0 or IsStringRep(s)) and
-          #XXX this is a temporary hack, we would need a
-          # IsInstalledGlobal instead of IsBoundGlobal here
-                 NARG_FUNC(ValueGlobal("PrintFormattedString")) <> -1 then
-          ValueGlobal( "PrintFormattedString" )(s);
-        else
-          Print(s);
-        fi;
-      end;
-    else
-      fun := Print;
-    fi;
-    fun("#I  ");
+    PrintWithoutFormatting("#I  ");
     for s in list do
-      fun(s);
+      PrintWithoutFormatting(s);
     od;
-    fun("\n");
+    PrintWithoutFormatting("\n");
   else
     AppendTo(out, "#I  ");
     for s in list do
