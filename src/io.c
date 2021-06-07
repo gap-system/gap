@@ -97,6 +97,10 @@ struct IOModuleState {
 
     TypOutputFile DefaultOutput;
 
+#ifdef HPCGAP
+    Obj DefaultOutputStream;
+    Obj DefaultInputStream;
+#endif
 
     Int NoSplitLine;
 };
@@ -282,7 +286,7 @@ static GVarDescriptor DEFAULT_OUTPUT_STREAM;
 static UInt OpenDefaultInput(TypInputFile * input)
 {
   Obj func, stream;
-  stream = TLS(DefaultInput);
+  stream = IO()->DefaultInputStream;
   if (stream)
       return OpenInputStream(input, stream, FALSE);
   func = GVarOptFunction(&DEFAULT_INPUT_STREAM);
@@ -293,14 +297,14 @@ static UInt OpenDefaultInput(TypInputFile * input)
     ErrorQuit("DEFAULT_INPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
     return OpenInput(input, CONST_CSTR_STRING(stream));
-  TLS(DefaultInput) = stream;
+  IO()->DefaultInputStream = stream;
   return OpenInputStream(input, stream, FALSE);
 }
 
 static UInt OpenDefaultOutput(TypOutputFile * output)
 {
   Obj func, stream;
-  stream = TLS(DefaultOutput);
+  stream = IO()->DefaultOutputStream;
   if (stream)
     return OpenOutputStream(output, stream);
   func = GVarOptFunction(&DEFAULT_OUTPUT_STREAM);
@@ -311,7 +315,7 @@ static UInt OpenDefaultOutput(TypOutputFile * output)
     ErrorQuit("DEFAULT_OUTPUT_STREAM() did not return a stream", 0, 0);
   if (IsStringConv(stream))
     return OpenOutput(output, CONST_CSTR_STRING(stream), FALSE);
-  TLS(DefaultOutput) = stream;
+  IO()->DefaultOutputStream = stream;
   return OpenOutputStream(output, stream);
 }
 #endif
@@ -356,7 +360,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
     /* Handle *defin*; redirect *errin* to *defin* if the default
      * channel is already open. */
     if (streq(filename, "*defin*") ||
-        (streq(filename, "*errin*") && TLS(DefaultInput)))
+        (streq(filename, "*errin*") && IO()->DefaultInputStream))
         return OpenDefaultInput(input);
 #endif
 
@@ -903,7 +907,7 @@ UInt CloseOutput(TypOutputFile * output)
     /* refuse to close the initial output file '*stdout*'                  */
 #ifdef HPCGAP
     if (output->prev == 0 && output->isstream &&
-        TLS(DefaultOutput) == output->stream)
+        IO()->DefaultOutputStream == output->stream)
         return 0;
 #else
     if (output->prev == 0)
