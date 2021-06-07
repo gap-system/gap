@@ -691,7 +691,7 @@ local s,l;
   fi;
   s:=Size(G);
   PerfGrpLoad(0);
-  if s>=10^6 or s in PERFRec.notKnown then
+  if NumberPerfectLibraryGroups(s) = 0 then
     Print("#W  No information about size ",s," available\n");
     return fail;
   fi;
