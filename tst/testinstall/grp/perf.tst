@@ -98,6 +98,9 @@ gap> PerfectIdentification(AlternatingGroup(4));
 fail
 gap> PerfectIdentification(AlternatingGroup(8));
 [ 20160, 4 ]
+gap> PerfectIdentification(PSL(5,2));
+#W  No information about size 9999360 available
+fail
 
 #
 # construct some perfect groups which exercise the different construction methods
