@@ -463,6 +463,7 @@ DeclareOperation( "ListOp", [ IsVectorObj, IsFunction ] );
 ##  <Oper Name="Unpack" Arg="v" Label="for a vector object"/>
 ##  <Oper Name="Unpack" Arg="M" Label="for a matrix object"/>
 ##
+##  <Returns>A plain list</Returns>
 ##  <Description>
 ##  Returns a new mutable plain list (see <Ref Filt="IsPlistRep"/>)
 ##  containing the entries of the vector object <A>v</A> or the matrix object
@@ -828,7 +829,7 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewIdentityMatrix"/> returns a mutable identity
-##  matrix object with <A>m</A> rows and columns
+##  matrix object with <A>n</A> rows and columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
@@ -931,7 +932,7 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  (see <Ref Oper="ExtractSubVector"/>)
 ##  to the positions <A>dcols</A> in <A>dst</A>,
 ##  but without creating an intermediate object and thus
-##  &ndash; at least in special cases &ndash;
+##  &ndash;at least in special cases&ndash;
 ##  much more efficiently.
 ##  <P/>
 ##  For certain objects like compressed vectors this might be significantly
@@ -1034,7 +1035,7 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 ##  Does <C><A>dst</A>{<A>drows</A>}{<A>dcols</A>} :=
 ##  <A>src</A>{<A>srows</A>}{<A>scols</A>}</C>
 ##  without creating an intermediate object and thus
-##  &ndash; at least in special cases &ndash;
+##  &ndash;at least in special cases&ndash;
 ##  much more efficiently.
 ##  For certain objects like compressed vectors this might be
 ##  significantly more efficient if <A>scols</A> and <A>dcols</A> are
@@ -1351,7 +1352,7 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##  of <A>M</A> (provided that such a representation exists).
 ##  <P/>
 ##  The idea is that there should be an efficient way to 
-##  form the product <A>vM</A>.
+##  form the product <M>vM</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
