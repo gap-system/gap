@@ -974,6 +974,8 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  If as argument <A>stream</A> the string <C>"*stdout*"</C> is given, these
 ##  functions refer to the formatting status of the standard output (so usually
 ##  the users terminal screen).<P/>
+##  If as argument <A>stream</A> the string <C>"*current*"</C> is given, these
+##  functions refer to the formatting status of the currently active output.<P/>
 ##  These functions do not influence the behaviour of the low level functions 
 ##  <Ref Oper="WriteByte"/>, 
 ##  <Ref Oper="WriteLine"/> or  <Ref Oper="WriteAll"/> which always write

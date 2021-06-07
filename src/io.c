@@ -55,6 +55,7 @@ static Obj IsOutputStringStream;
 static Obj PrintPromptHook = 0;
 Obj EndLineHook = 0;
 static Obj PrintFormattingStatus;
+static Obj SetPrintFormattingStatus;
 
 /****************************************************************************
 **
@@ -1888,6 +1889,25 @@ static Obj FuncPRINT_FORMATTING_STDOUT(Obj self)
     return 0;
 }
 
+static Obj FuncSET_PRINT_FORMATTING_CURRENT(Obj self, Obj val)
+{
+    TypOutputFile * output = IO()->Output;
+    if (!output)
+        ErrorMayQuit("SET_PRINT_FORMATTING_CURRENT called while no output is open", 0, 0);
+    output->format = (val != False);
+    if (output->stream)
+        CALL_2ARGS(SetPrintFormattingStatus, output->stream, val);
+    return 0;
+}
+
+static Obj FuncPRINT_FORMATTING_CURRENT(Obj self)
+{
+    TypOutputFile * output = IO()->Output;
+    if (!output)
+        ErrorMayQuit("PRINT_FORMATTING_CURRENT called while no output is open", 0, 0);
+    return output->format ? True : False;
+}
+
 static Obj FuncIS_INPUT_TTY(Obj self)
 {
     GAP_ASSERT(IO()->Input);
@@ -1919,6 +1939,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_0ARGS(INPUT_LINENUMBER),
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_STDOUT, format),
     GVAR_FUNC_0ARGS(PRINT_FORMATTING_STDOUT),
+    GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_CURRENT, format),
+    GVAR_FUNC_0ARGS(PRINT_FORMATTING_CURRENT),
     GVAR_FUNC_0ARGS(IS_INPUT_TTY),
     GVAR_FUNC_0ARGS(IS_OUTPUT_TTY),
     GVAR_FUNC_0ARGS(GET_FILENAME_CACHE),
@@ -1978,6 +2000,7 @@ static Int InitKernel (
     InitCopyGVar( "PrintPromptHook", &PrintPromptHook );
     InitCopyGVar( "EndLineHook", &EndLineHook );
     InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
+    InitFopyGVar( "SetPrintFormattingStatus", &SetPrintFormattingStatus);
 
     InitHdlrFuncsFromTable( GVarFuncs );
     return 0;
