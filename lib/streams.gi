@@ -1221,24 +1221,26 @@ InstallMethod( SetPrintFormattingStatus, "output text file",
     fi;
 end);
 
-##  formatting status for stdout
+##  formatting status for stdout or current output
 InstallOtherMethod( PrintFormattingStatus, "for stdout", [IsString],
 function(str)
-  if str <> "*stdout*" then
-    Error("Only the string \"*stdout*\" is recognized by this method.");
+  if str = "*stdout*" then
+    return PRINT_FORMATTING_STDOUT();
+  elif str = "*current*" then
+    return PRINT_FORMATTING_CURRENT();
+  else
+    Error("Only the strings \"*stdout*\" and  \"*current*\" are recognized by this method.");
   fi;
-  return PRINT_FORMATTING_STDOUT();
 end);
 
 InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
 function(str, status)
-  if str <> "*stdout*" then
-    Error("Only the string \"*stdout*\" is recognized by this method.");
-  fi;
-  if status = false then
-    SET_PRINT_FORMATTING_STDOUT(false);
+  if str = "*stdout*" then
+    SET_PRINT_FORMATTING_STDOUT(status);
+  elif str = "*current*" then
+    SET_PRINT_FORMATTING_CURRENT(status);
   else
-    SET_PRINT_FORMATTING_STDOUT(true);
+    Error("Only the strings \"*stdout*\" and  \"*current*\" are recognized by this method.");
   fi;
 end);
 
