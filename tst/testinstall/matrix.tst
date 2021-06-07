@@ -89,9 +89,9 @@ gap> IsLowerTriangularMat([[1,0],[1,1],[1,1]]);
 true
 
 #
-gap> m := Z(5)^0 * [[0, 1], [1, 0]];;
+gap> m := Z(5)^0 * [[0, 1], [Z(25), 0]];;
 gap> m := GeneratorsWithMemory([m])[1];;
-gap> BaseDomain(m) = GF(5);
+gap> BaseDomain(m) = GF(25);
 true
 gap> NrRows(m);
 2

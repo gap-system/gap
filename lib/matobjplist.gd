@@ -29,7 +29,7 @@
 ##  in a row list matrix
 ##  (see Section <Ref Subsect="Operations for Row List Matrix Objects"/>).
 ##  It is internally represented as a positional object
-##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 2 entries:
+##  (see <Ref Filt="IsPositionalObjectRep"/> that stores two entries:
 ##  <Enum>
 ##  <Item>
 ##    its base domain
@@ -45,7 +45,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPlistVectorRep",
-   IsVectorObj and IsPositionalObjectRep, [] );
+   IsVectorObj and IsPositionalObjectRep and IsNoImmediateMethodsObject, [] );
 
 
 #############################################################################
@@ -56,55 +56,58 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> describes
-##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
-##  a list of its rows, in the sense defined in
-##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
-##  It is internally represented as a positional object
-##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 4 entries:
-##  <Enum>
-##  <Item>
-##    its base domain
-##    (see <Ref Attr="BaseDomain" Label="for a matrix object"/>),
-##  </Item>
-##  <Item>
-##    an empty vector in the representation of each row,,
-##  </Item>
-##  <Item>
-##    the number of columns
-##    (see <Ref Attr="NumberColumns" Label="for a matrix object"/>), and
-##  </Item>
-##  <Item>
-##    a plain list (see <Ref Filt="IsPlistRep"/> of its rows,
-##    each of them being an object in <Ref Filt="IsPlistVectorRep"/>.
-##  </Item>
-##  </Enum>
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that internal stores its
+##  entries as a classic GAP matrix, that is as a plain list (see
+##  <Ref Filt="IsPlistRep"/>) of plain lists. Therefore any such GAP matrix
+##  can be represented as a <Ref Filt="IsPlistMatrixRep"/>, making this
+##  representation very versatile, and a good place to start if one wants to
+##  adapt code which previously produced such classic GAP matrices to instead
+##  produce matrix objects.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+##  Implementation note: a matrix in IsPlistMatrixRep is internally
+##  represented as a positional object that stores four entries:
+##  - its base domain
+#   - the number of rows
+##  - the number of columns
+##  - a plain list of its rows, each also a plain list
 DeclareRepresentation( "IsPlistMatrixRep",
-   IsRowListMatrix and IsPositionalObjectRep, [] );
+   IsMatrixObj and IsPositionalObjectRep and IsNoImmediateMethodsObject, [] );
+
+
+#############################################################################
+##
+##  <#GAPDoc Label="IsRowPlistMatrixRep">
+##  <ManSection>
+##  <Filt Name="IsRowPlistMatrixRep" Arg='obj' Type="representation"/>
+##
+##  <Description>
+##  An object <A>obj</A> in <Ref Filt="IsRowPlistMatrixRep"/> describes
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
+##  a list of its rows, in the sense defined in
+##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
+##  Its rows can be accessed as objects in <Ref Filt="IsPlistVectorRep"/>,
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareRepresentation( "IsRowPlistMatrixRep",
+   IsRowListMatrix and IsPlistMatrixRep, [] );
 
 
 # Some constants for matrix access:
-BindGlobal( "BDPOS", 1 );
-BindGlobal( "EMPOS", 2 );
-BindGlobal( "RLPOS", 3 );
-BindGlobal( "ROWSPOS", 4 );
+# TODO rename these so that one can quickly see that they belong to IsPlist*Rep
+BindConstant( "BDPOS", 1 );
+BindConstant( "NUM_ROWS_POS", 2 );
+BindConstant( "NUM_COLS_POS", 3 );
+BindConstant( "ROWSPOS", 4 );
 
 # For vector access:
-#BindGlobal( "BDPOS", 1 );   # see above
-BindGlobal( "ELSPOS", 2 );
+#BindConstant( "BDPOS", 1 );   # see above
+BindConstant( "ELSPOS", 2 );
 
 # Two filters to speed up some methods:
 DeclareFilter( "IsIntVector" );
 DeclareFilter( "IsFFEVector" );
-
-############################################################################
-# Constructors:
-############################################################################
-
-#T Should this be documented?
-#T It seems to be just an auxiliary function for the documented constructors.
-DeclareGlobalFunction( "MakePlistVectorType" );
-
