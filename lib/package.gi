@@ -1395,7 +1395,7 @@ InstallGlobalFunction( LoadPackageDocumentation, function( arg )
 ##
 BindGlobal( "LoadPackage_ReadImplementationParts",
     function( secondrun, banner )
-    local pair, info, bannerstring, fun, u, pkgname, namespace;
+    local pair, info, bannerstring, u, pkgname, namespace;
 
     for pair in secondrun do
       namespace := pair[1].PackageName;
@@ -1433,15 +1433,9 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
           bannerstring:= DefaultPackageBannerString( info );
         fi;
 
-        # Be aware of umlauts, accents etc. in the banner.
-        if IsBoundGlobal( "Unicode" ) and IsBoundGlobal( "Encode" ) then
-          # The GAPDoc package is completely loaded.
-          fun:= ValueGlobal( "PrintFormattedString" );
-          fun( bannerstring );
-        else
-          # GAPDoc is not available, simply print the banner string as is.
-          Print( bannerstring );
-        fi;
+        # Suppress output formatting to avoid troubles with umlauts,
+        # accents etc. in the banner.
+        PrintWithoutFormatting( bannerstring );
       od;
     fi;
     end );

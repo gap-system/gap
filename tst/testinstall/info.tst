@@ -56,7 +56,6 @@ Error, usage : Info(<selectors>, <level>, ...)
 gap> ShowUsedInfoClasses(true);
 gap> Info(InfoTest2, 2, "apple");
 #I Would print info with SetInfoLevel(InfoTest2,2)
-#I Would print info with SetInfoLevel(InfoGlobal,3)
 #I  apple
 gap> Info(InfoTest1 + InfoTest2, 2, "apple");
 #I Would print info with SetInfoLevel(InfoTest1,2)
