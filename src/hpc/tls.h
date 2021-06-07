@@ -90,10 +90,6 @@ typedef struct ThreadLocalStorage
   /* From read.c */
   jmp_buf threadExit;
 
-  /* From scanner.c */
-  Obj DefaultOutput;
-  Obj DefaultInput;
-
   /* Profiling */
   UInt CountActive;
   UInt LocksAcquired;
