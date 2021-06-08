@@ -1573,7 +1573,7 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
 # Elementary matrix operations
 ############################################################################
 
-InstallMethod( MultMatrixRow, "for a mutable matrix object, one row index, and a scalar",
+InstallMethod( MultMatrixRowLeft, "for a mutable matrix object, one row index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
     local i;
@@ -1586,7 +1586,7 @@ InstallMethod( MultMatrixRow, "for a mutable matrix object, one row index, and a
 
 ############################################################################
 
-InstallMethod( MultMatrixColumn, "for a mutable matrix object, one column index, and a scalar",
+InstallMethod( MultMatrixColumnRight, "for a mutable matrix object, one column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, column, scalar )
     local i;
@@ -1625,7 +1625,7 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, one column in
 
 ############################################################################
 
-InstallMethod( AddMatrixRows, "for a mutable matrix object, one row index, second row index, and a scalar",
+InstallMethod( AddMatrixRowsLeft, "for a mutable matrix object, one row index, second row index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
     local i;
@@ -1651,7 +1651,7 @@ InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, one row index, 
 
 ############################################################################
 
-InstallMethod( AddMatrixColumns, "for a mutable matrix object, one column index, second column index, and a scalar",
+InstallMethod( AddMatrixColumnsRight, "for a mutable matrix object, one column index, second column index, and a scalar",
   [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, column1, column2, scalar )
     local i;

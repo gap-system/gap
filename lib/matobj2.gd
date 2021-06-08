@@ -1823,8 +1823,8 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 ##
 ##  <#GAPDoc Label="MultMatrixRow">
 ##  <ManSection>
-##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
 ##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1833,13 +1833,13 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 ##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
 ##  <A>elm</A> from the left in-place.
 ##  <P/>
-##  <Ref Oper="MultMatrixRowLeft"/> is a synonym of <Ref Oper="MultMatrixRow"/>.
+##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. This was chosen because linear combinations of rows of matrices are usually written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultMatrixRow", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
-DeclareSynonym( "MultMatrixRowLeft", MultMatrixRow);
+DeclareOperation( "MultMatrixRowLeft", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 
 ############################################################################
 ##
@@ -1863,8 +1863,8 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsOb
 ##
 ##  <#GAPDoc Label="MultMatrixColumn">
 ##  <ManSection>
-##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm'/>
 ##  <Oper Name="MultMatrixColumnRight" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1873,13 +1873,13 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsOb
 ##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
 ##  <A>elm</A> from the right in-place.
 ##  <P/>
-##  <Ref Oper="MultMatrixColumnRight"/> is a synonym of <Ref Oper="MultMatrixColumn"/>.
+##  <Ref Oper="MultMatrixColumn"/> is a synonym of <Ref Oper="MultMatrixColumnRight"/>. This was chosen because linear combinations of columns of matrices are usually written as <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultMatrixColumn", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
-DeclareSynonym( "MultMatrixColumnRight",  MultMatrixColumn);
+DeclareOperation( "MultMatrixColumnRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 
 ############################################################################
 ##
@@ -1903,8 +1903,8 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, Is
 ##
 ##  <#GAPDoc Label="AddMatrixRows">
 ##  <ManSection>
-##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm'/>
 ##  <Oper Name="AddMatrixRowsLeft" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1913,13 +1913,13 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, Is
 ##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
 ##  <P/>
-##  <Ref Oper="AddMatrixRowsLeft"/> is a synonym of <Ref Oper="AddMatrixRows"/>.
+##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>. This was chosen because linear combinations of rows of matrices are usually written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AddMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
-DeclareSynonym( "AddMatrixRowsLeft", AddMatrixRows);
+DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 
 ############################################################################
 ##
@@ -1943,8 +1943,8 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsIn
 ##
 ##  <#GAPDoc Label="AddMatrixColumns">
 ##  <ManSection>
-##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm'/>
 ##  <Oper Name="AddMatrixColumnsRight" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
@@ -1953,13 +1953,13 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsIn
 ##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
 ##  <P/>
-##  <Ref Oper="AddMatrixColumnsRight"/> is a synonym of <Ref Oper="AddMatrixColumns"/>.
+##  <Ref Oper="AddMatrixColumns"/> is a synonym of <Ref Oper="AddMatrixColumnsRight"/>. This was chosen because linear combinations of columns of matrices are usually written as <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AddMatrixColumns", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
-DeclareSynonym( "AddMatrixColumnsRight", AddMatrixColumns);
+DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 
 ############################################################################
 ##
