@@ -386,7 +386,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       if Length(param)=1 and param[1]>4 then
         g:=AlternatingGroup(param[1]);
         SetName(g,Concatenation("A",String(param[1])));
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       else
         Error("illegal parameter for alternating groups");
@@ -415,7 +415,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
           g:=[,,"J3","J4"];
           g:=DoAtlasrepGroup([g[param[1]]]);
         fi;
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       else
         Error("illegal parameter for Janko groups");
@@ -430,7 +430,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
         else
           g:=DoAtlasrepGroup(["Co1"]);
         fi;
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       else
         Error("illegal parameter for Conway groups");
@@ -441,7 +441,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
         s:=Concatenation("Fi",String(param[1]));
         if param[1] = 24 then Append(s,"'"); fi;
         g:=DoAtlasrepGroup([s]);
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       else
         Error("illegal parameter for Fischer groups");
@@ -449,13 +449,13 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     elif str="SUZ" or str="SZ" or str="SUZUKI" then
       if Length(param)=0 and str="SUZ" then
         g:=PrimitiveGroup(1782,1);
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       elif Length(param)=1 and param[1]>7 and
         PrimeDivisors(param[1])=[2] and IsOddInt(LogInt(param[1],2)) then
         g:=SuzukiGroup(IsPermGroup,param[1]);
         SetName(g,Concatenation("Sz(",String(param),")"));
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       else
         Error("illegal parameter for Suzuki groups");
@@ -465,7 +465,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
         PrimeDivisors(param[1])=[3] and IsOddInt(LogInt(param[1],3)) then
         g:=ReeGroup(IsMatrixGroup,param[1]);
         SetName(g,Concatenation("Ree(",String(param[1]),")"));
-        SetIsSimpleGroup(g,true);
+        SetIsNonabelianSimpleGroup(g,true);
         return g;
       else
         Error("illegal parameter for Ree groups");
@@ -495,7 +495,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       g:=Group(GeneratorsOfGroup(g));
       SetSize(g,s);
       SetName(g,"2F(4,2)'");
-      SetIsSimpleGroup(g,true);
+      SetIsNonabelianSimpleGroup(g,true);
       return g;
     fi;
   fi;
@@ -669,7 +669,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
   if s<>fail and not HasName(g) then
     SetName(g,s);
   fi;
-  SetIsSimpleGroup(g,true);
+  SetIsNonabelianSimpleGroup(g,true);
   return g;
 
 end);

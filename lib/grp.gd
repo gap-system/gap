@@ -629,8 +629,13 @@ InstallTrueMethod( IsPerfectGroup, IsGroup and IsTrivial );
 ##
 DeclareProperty( "IsSimpleGroup", IsGroup );
 InstallTrueMethod( IsGroup and IsNonTrivial, IsSimpleGroup );
+
 DeclareSynonymAttr( "IsNonabelianSimpleGroup", IsSimpleGroup and IsPerfectGroup );
+# ... implies not abelian, not nilpotent (also not solvable, but
+# HasIsSolvableGroup only gets defined later)
 InstallTrueMethod( HasIsAbelian, IsNonabelianSimpleGroup );
+InstallTrueMethod( HasIsNilpotentGroup, IsNonabelianSimpleGroup );
+#InstallTrueMethod( HasIsSolvableGroup, IsNonabelianSimpleGroup );
 
 InstallIsomorphismMaintenance( IsSimpleGroup, IsGroup, IsGroup );
 
@@ -812,7 +817,11 @@ InstallFactorMaintenance( IsSolvableGroup,
 InstallTrueMethod( IsSolvableGroup, IsMonomialGroup );
 InstallTrueMethod( IsSolvableGroup, IsSupersolvableGroup );
 
+# nontrivial solvable groups are not perfect
 InstallTrueMethod( HasIsPerfectGroup, IsGroup and IsSolvableGroup and IsNonTrivial );
+
+# nonabelian simple groups are not solvable
+InstallTrueMethod( HasIsSolvableGroup, IsNonabelianSimpleGroup );
 
 
 #############################################################################

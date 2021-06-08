@@ -26,7 +26,7 @@ gap> IsMinimalNonmonomial(PSL(3,3));
 false
 gap> IsMinimalNonmonomial(Sz(8));
 true
-gap> g := Sz(512);; SetIsSolvableGroup(g,false);; IsMinimalNonmonomial(g);
+gap> IsMinimalNonmonomial(Sz(2^9));
 false
 
 # To avoid more silly mistakes, the following tests were also run
