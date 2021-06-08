@@ -614,7 +614,7 @@ DeclareOperation( "AddVector",
 ##  <P/>
 ##  Note that <Ref Oper="MultVector" Label="for a vector object"/>
 ##  is just a synonym for
-##  <Ref Oper="MultVectorLeft" Label="for a vector object"/>.
+##  <Ref Oper="MultVectorLeft" Label="for a vector object"/>. This was chosen because vectors in GAP are by default row vectors and scalar multiplication is usually written as <M>a \cdot v = a \cdot [v_1,...v_n] = [a\cdot v_1,...a\cdot v_n]<M/> with scalars being applied from the left.
 ##  <P/>
 ##  If the optional parameters <A>from</A> and <A>to</A> are given then
 ##  only the index range <C>[<A>from</A>..<A>to</A>]</C> is guaranteed to be
