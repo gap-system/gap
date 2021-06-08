@@ -79,7 +79,8 @@ local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
   SetFieldOfMatrixGroup(G,f);
   SetIsFinite(G,true);
   SetSize(G,q^3*(q-1)*(q^3+1));
-  if q > 3 then SetIsSimpleGroup(G,true); fi;
+  SetIsSimpleGroup(G, q > 3);
+  SetIsPerfectGroup(G, q > 3);
   return G;
 end );
 

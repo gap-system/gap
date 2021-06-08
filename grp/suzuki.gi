@@ -55,7 +55,8 @@ function ( filter, q )
   SetFieldOfMatrixGroup(G,f);
   SetIsFinite(G,true);
   SetSize(G,q^2*(q-1)*(q^2+1));
-  if q > 2 then SetIsSimpleGroup(G,true); fi;
+  SetIsSimpleGroup(G, q > 2);
+  SetIsPerfectGroup(G, q > 2);
   return G;
 end );
 
@@ -96,6 +97,7 @@ function ( filter, q )
   G := Action(SuzukiGroupCons(IsMatrixGroup,q),Ovoid,OnLines);
   SetName(G,Concatenation("Sz(",String(q),")"));
   SetSize(G,q^2*(q-1)*(q^2+1));
-  if q > 2 then SetIsSimpleGroup(G,true); fi;
+  SetIsSimpleGroup(G, q > 2);
+  SetIsPerfectGroup(G, q > 2);
   return G;
 end );
