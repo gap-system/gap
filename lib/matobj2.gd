@@ -614,7 +614,10 @@ DeclareOperation( "AddVector",
 ##  <P/>
 ##  Note that <Ref Oper="MultVector" Label="for a vector object"/>
 ##  is just a synonym for
-##  <Ref Oper="MultVectorLeft" Label="for a vector object"/>. This was chosen because vectors in GAP are by default row vectors and scalar multiplication is usually written as <M>a \cdot v = a \cdot [v_1,...v_n] = [a\cdot v_1,...a\cdot v_n]<M/> with scalars being applied from the left.
+##  <Ref Oper="MultVectorLeft" Label="for a vector object"/>. This was chosen because vectors in
+##  GAP are by default row vectors and scalar multiplication is usually written as
+##  <M>a \cdot v = a \cdot [v_1,...,v_n] = [a\cdot v_1,...,a\cdot v_n]</M> with scalars being
+##  applied from the left.
 ##  <P/>
 ##  If the optional parameters <A>from</A> and <A>to</A> are given then
 ##  only the index range <C>[<A>from</A>..<A>to</A>]</C> is guaranteed to be
@@ -1833,7 +1836,9 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 ##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
 ##  <A>elm</A> from the left in-place.
 ##  <P/>
-##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. This was chosen because linear combinations of rows of matrices are usually written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
+##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. This was chosen
+##  because linear combinations of rows of matrices are usually written as
+##  <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1873,7 +1878,9 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsOb
 ##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
 ##  <A>elm</A> from the right in-place.
 ##  <P/>
-##  <Ref Oper="MultMatrixColumn"/> is a synonym of <Ref Oper="MultMatrixColumnRight"/>. This was chosen because linear combinations of columns of matrices are usually written as <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
+##  <Ref Oper="MultMatrixColumn"/> is a synonym of <Ref Oper="MultMatrixColumnRight"/>. This was
+##  chosen because linear combinations of columns of matrices are usually written as
+##  <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1913,7 +1920,9 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, Is
 ##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
 ##  <P/>
-##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>. This was chosen because linear combinations of rows of matrices are usually written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
+##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>. This was chosen
+##  because linear combinations of rows of matrices are usually written as
+##  <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1953,7 +1962,9 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsIn
 ##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
 ##  <P/>
-##  <Ref Oper="AddMatrixColumns"/> is a synonym of <Ref Oper="AddMatrixColumnsRight"/>. This was chosen because linear combinations of columns of matrices are usually written as <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
+##  <Ref Oper="AddMatrixColumns"/> is a synonym of <Ref Oper="AddMatrixColumnsRight"/>. This was
+##  chosen because linear combinations of columns of matrices are usually written as
+##  <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
