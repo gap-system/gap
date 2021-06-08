@@ -254,3 +254,33 @@ jobs:
           python -u ./releases/upload_files_to_github_release.py v${VERSION} sage-windows/Output/gap-${{ env.VERSION }}-${{ matrix.arch }}.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # The following job is duplicated in CI.yml - keep the two in sync.
+  # (except for their different 'needs' components).
+  slack-notification:
+    name: Send Slack notification on status change
+    needs:
+      - unix
+      - cygwin
+    if: ${{ always() && github.event_name != 'pull_request' && github.repository == 'gap-system/gap' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get branch name
+        id: get-branch
+        run: echo ::set-output name=branch::${GITHUB_REF#refs/*/}
+      - name: Determine whether CI status changed
+        uses: gap-actions/should-i-notify-action@v1
+        id: should_notify
+        with:
+          branch: ${{ steps.get-branch.outputs.branch }}
+          needs_context: ${{ toJson(needs) }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          notify_on_changed_status: true
+      - name: Send slack notification
+        uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522
+        if: ${{ steps.should_notify.outputs.should_send_message == 'yes' }}
+        with:
+          status: ${{ steps.should_notify.outputs.current_status }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
