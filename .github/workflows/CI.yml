@@ -241,6 +241,8 @@ jobs:
           files: "!./pkg/**,!./extern/**"
           gcov_path_exclude: "./pkg/**"
 
+  # The following job is duplicated in release.yml - keep the two in sync.
+  # (except for their different 'needs' components).
   slack-notification:
     name: Send Slack notification on status change
     needs:
