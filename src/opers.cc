@@ -638,6 +638,46 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
     return flags;
 }
 
+/****************************************************************************
+**
+*/
+template <Int len>
+static Obj LookupHashTable(Obj ht, Int hash, Obj flags)
+{
+    for (int hash_loop = 0; hash_loop < 3; ++hash_loop) {
+        if (ELM_PLIST(ht, hash * 2 + 1) == flags) {
+            return ELM_PLIST(ht, hash * 2 + 2);
+        }
+        hash = (hash * 311 + 61) % len;
+    }
+    return 0;
+}
+
+template <Int len>
+static void StoreHashTable(Obj ht, Int hash, Obj new_flags, Obj new_with)
+{
+    Obj old_with, old_flags;
+
+    // add to hash table, shuffling old values along (last one falls off)
+    for (int hash_loop = 0; hash_loop < 3; ++hash_loop) {
+        old_flags = ELM_PLIST(ht, hash * 2 + 1);
+        old_with = ELM_PLIST(ht, hash * 2 + 2);
+
+        SET_ELM_PLIST(ht, hash * 2 + 1, new_flags);
+        SET_ELM_PLIST(ht, hash * 2 + 2, new_with);
+
+        if (!old_flags)
+            break;
+
+        new_flags = old_flags;
+        new_with = old_with;
+        hash = (hash * 311 + 61) % len;
+    }
+
+    CHANGED_BAG(ht);
+}
+
+
 static Obj HIDDEN_IMPS;
 static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
@@ -686,7 +726,6 @@ static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
     {
         SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i, 0);
         SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i + 1, 0);
-        CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
     }
   }
 #ifdef HPCGAP
@@ -713,29 +752,23 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #endif
     Int changed, i, lastand, stop;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
-    Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
-    Int hash = base_hash;
-    Int hash_loop = 0;
+    Int hash =
+        INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
     Obj cacheval;
-    Obj old_with, old_flags, new_with, new_flags;
     Obj with = flags;
-    
-    for(hash_loop = 0; hash_loop < 3; ++hash_loop)
-    {
-      cacheval = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+1);
-      if(cacheval && cacheval == flags) {
-        Obj ret = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash*2+2);
+
+    cacheval = LookupHashTable<HIDDEN_IMPS_CACHE_LENGTH>(
+        WITH_HIDDEN_IMPS_FLAGS_CACHE, hash, flags);
+    if (cacheval) {
 #ifdef HPCGAP
         RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
 #ifdef COUNT_OPERS
         WITH_HIDDEN_IMPS_HIT++;
 #endif
-        return ret;
-      }
-      hash = (hash * 311 + 61) % HIDDEN_IMPS_CACHE_LENGTH;
+        return cacheval;
     }
-    
+
 #ifdef COUNT_OPERS
     WITH_HIDDEN_IMPS_MISS++;
 #endif
@@ -757,28 +790,9 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
       }
     }
 
-    /* add to hash table, shuffling old values along (last one falls off) */
-    hash = base_hash;
+    StoreHashTable<HIDDEN_IMPS_CACHE_LENGTH>(WITH_HIDDEN_IMPS_FLAGS_CACHE,
+                                             hash, with, flags);
 
-    new_with = with;
-    new_flags = flags;
-
-    for (hash_loop = 0; hash_loop < 3; ++hash_loop) {
-        old_flags = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1);
-        old_with = ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2);
-
-        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
-        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
-
-        if (!old_flags)
-            break;
-
-        new_flags = old_flags;
-        new_with = old_with;
-        hash = (hash * 311 + 61) % HIDDEN_IMPS_CACHE_LENGTH;
-    }
-
-    CHANGED_BAG(WITH_HIDDEN_IMPS_FLAGS_CACHE);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
@@ -825,35 +839,28 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
     RequireFlags(SELF_NAME, flags);
 
-    Int changed, lastand, i, j, stop, imps_length;
-    Int base_hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
-    Int hash = base_hash;
-    Int hash_loop = 0;
-    Obj cacheval;
-    Obj old_with, old_flags, new_with, new_flags;
-    Obj with = flags;
-    Obj imp;
-    Obj trues;
-    
 #ifdef HPCGAP
     RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
-    for(hash_loop = 0; hash_loop < 3; ++hash_loop)
-    {
-      cacheval = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1);
-      if(cacheval && cacheval == flags) {
-        Obj ret = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
+    Int changed, lastand, i, j, stop, imps_length;
+    Int hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
+    Obj cacheval;
+    Obj with = flags;
+    Obj imp;
+    Obj trues;
+
+    cacheval = LookupHashTable<IMPS_CACHE_LENGTH>(WITH_IMPS_FLAGS_CACHE, hash,
+                                                  flags);
+    if (cacheval) {
 #ifdef HPCGAP
         RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
 #ifdef COUNT_OPERS
         WITH_IMPS_FLAGS_HIT++;
 #endif
-        return ret;
-      }
-      hash = (hash * 311 + 61) % IMPS_CACHE_LENGTH;
+        return cacheval;
     }
-    
+
 #ifdef COUNT_OPERS
     WITH_IMPS_FLAGS_MISS++;
 #endif
@@ -893,28 +900,9 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
       }
     }
 
-    /* add to hash table, shuffling old values along (last one falls off) */
-    hash = base_hash;
-    
-    new_with = with;
-    new_flags = flags;
+    StoreHashTable<IMPS_CACHE_LENGTH>(WITH_IMPS_FLAGS_CACHE, hash, with,
+                                      flags);
 
-    for (hash_loop = 0; hash_loop < 3; ++hash_loop) {
-        old_flags = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+1);
-        old_with = ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash*2+2);
-
-        SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 1, new_flags);
-        SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, hash * 2 + 2, new_with);
-
-        if (!old_flags)
-            break;
-
-        new_flags = old_flags;
-        new_with = old_with;
-        hash = (hash * 311 + 61) % IMPS_CACHE_LENGTH;
-    }
-
-    CHANGED_BAG(WITH_IMPS_FLAGS_CACHE);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
