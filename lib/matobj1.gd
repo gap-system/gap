@@ -240,6 +240,10 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##  and different row list matrices may share rows.
 ##  Row access just gives a reference to the row object, without copying
 ##  the row.
+##  <P/>
+##  Matrix objects in <Ref Filt="IsRowListMatrix"/> are <E>not</E>
+##  necessarily in <Ref Filt="IsList"/>,
+##  and then they need not obey the general rules for lists.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
