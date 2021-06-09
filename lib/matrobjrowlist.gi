@@ -18,7 +18,7 @@
 ##
 #M  MultMatrixRow( <M>, <row>, <scalar> )
 ##
-InstallMethod( MultMatrixRowLeft, "for a mutable IsRowListMatrix, one row number, and a scalar",
+InstallMethod( MultMatrixRowLeft, "for a mutable IsRowListMatrix, a row number, and a scalar",
   [ IsRowListMatrix and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
   
@@ -31,7 +31,7 @@ InstallMethod( MultMatrixRowLeft, "for a mutable IsRowListMatrix, one row number
 ##
 #M  MultMatrixRowRight( <M>, <row>, <scalar> )
 ##
-InstallMethod( MultMatrixRowRight, "for a mutable IsRowListMatrix, one row number, and a scalar",
+InstallMethod( MultMatrixRowRight, "for a mutable IsRowListMatrix, a row number, and a scalar",
   [ IsRowListMatrix and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
   
