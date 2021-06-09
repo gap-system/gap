@@ -73,11 +73,8 @@ InstallMethod( \=,
 
 InstallMethod( \=,
     "for two matrix objects",
-    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ],
+    [ IsMatrixObj, IsMatrixObj ],
     function( M1, M2 )
-    if IsList( M1 ) and IsList( M2 ) then
-      TryNextMethod();
-    fi;
     return ConstructingFilter( M1 ) = ConstructingFilter( M2 ) and
            BaseDomain( M1 ) = BaseDomain( M2 ) and
            NumberRows( M1 ) = NumberRows( M2 ) and
@@ -250,7 +247,7 @@ InstallMethod( ZeroVector,
                                  BaseDomain( v ), len ) );
 
 InstallMethod( ZeroVector,
-    "for length and matrix object",
+    "for length and matrix or matrix object",
     [ IsInt, IsMatrixOrMatrixObj ],
     { len, M } -> NewZeroVector( CompatibleVectorFilter( M ),
                                  BaseDomain( M ), len ) );
@@ -285,13 +282,8 @@ InstallMethod( Matrix,
   end );
 
 InstallMethod( Matrix,
-    [ IsOperation, IsSemiring, IsMatrixOrMatrixObj ],
-    function( filt, R, mat )
-    if IsPlistRep( mat ) then
-      TryNextMethod();
-    fi;
-    return NewMatrix( filt, R, NrCols( mat ), Unpack( mat ) );
-    end );
+    [ IsOperation, IsSemiring, IsMatrixObj ],
+    { filt, R, mat } -> NewMatrix( filt, R, NrCols( mat ), Unpack( mat ) ) );
 # TODO: can we do better? encourage MatrixObj implementors to overload this?
 
 InstallMethod( Matrix,
@@ -310,14 +302,9 @@ InstallMethod( Matrix,
     end );
 
 InstallMethod( Matrix,
-    [ IsSemiring, IsMatrixOrMatrixObj ],
-    function( R, M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return NewMatrix( DefaultMatrixRepForBaseDomain( R ),
-                      R, NrCols( M ), Unpack( M ) );
-    end );
+    [ IsSemiring, IsMatrixObj ],
+    { R, M } -> NewMatrix( DefaultMatrixRepForBaseDomain( R ),
+                           R, NrCols( M ), Unpack( M ) ) );
 # TODO: can we do better? encourage MatrixObj implementors to overload this?
 
 #
@@ -371,11 +358,8 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
   end );
 
 InstallMethod( Matrix,
-  [IsMatrixOrMatrixObj, IsMatrixOrMatrixObj],
+  [IsMatrixObj, IsMatrixOrMatrixObj],
     function( mat, example )
-    if IsPlistRep( mat ) then
-      TryNextMethod();
-    fi;
     # TODO: can we avoid using Unpack? resp. make this more efficient
     # perhaps adjust NewMatrix to take an IsMatrixOrMatrixObj?
     return NewMatrix( ConstructingFilter(example), BaseDomain(example), NrCols(mat), Unpack(mat) );
@@ -433,7 +417,7 @@ InstallMethod( IdentityMatrix,
 #
 #
 InstallMethod( CompanionMatrix,
-    "for a polynomial and a matrix",
+    "for a polynomial and a matrix or matrix object",
   [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ],
   function( po, m )
     local l, n, q, ll, i, one;
@@ -533,7 +517,7 @@ InstallGlobalFunction( ConcatenationOfVectors,
   end );
 
 InstallMethod( TraceMat,
-    "for a matrix object",
+    "for a matrix or matrix object",
     [ IsMatrixOrMatrixObj ],
     function( M )
     local s, i;
@@ -633,13 +617,8 @@ InstallMethod( ExtractSubVector,
 
 InstallMethod( ExtractSubMatrix,
     "generic method for a matrix object and two lists",
-    [ IsMatrixOrMatrixObj, IsList, IsList ],
-    function( M, rowpos, colpos )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M ){ rowpos }{ colpos }, M );
-    end );
+    [ IsMatrixObj, IsList, IsList ],
+    { M, rowpos, colpos } -> Matrix( Unpack( M ){ rowpos }{ colpos }, M ) );
 
 InstallMethod( CopySubVector,
     "generic method for vector objects",
@@ -667,7 +646,7 @@ InstallMethod( ChangedBaseDomain,
     { v, R } -> Vector( R, v ) );
 
 InstallMethod( ChangedBaseDomain,
-    "for a matrix object and a semiring",
+    "for a matrix or matrix object and a semiring",
     [ IsMatrixOrMatrixObj, IsSemiring ],
     { M, R } -> Matrix( R, M ) );
 
@@ -690,7 +669,7 @@ InstallMethodWithRandomSource( Randomize,
 end );
 
 InstallMethodWithRandomSource( Randomize,
-  "for a random source and a matrix object",
+  "for a random source and a mutable matrix or matrix object",
   [ IsRandomSource, IsMatrixOrMatrixObj and IsMutable ],
   function( rs, mat )
     local basedomain, i, j;
@@ -999,70 +978,39 @@ InstallMethod( MultVectorRight,
 ##
 InstallMethod( \+,
     "for two matrix objects",
-    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ],
+    [ IsMatrixObj, IsMatrixObj ],
     -SUM_FLAGS,
-    function( M1, M2 )
-    if IsPlistRep( M1 ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M1 ) + Unpack( M2 ), M1 );
-#T infinite recursion for plist M2 and non-plist M1?
-    end );
+    { M1, M2 } -> Matrix( Unpack( M1 ) + Unpack( M2 ), M1 ) );
 
 InstallMethod( \-,
     "for two matrix objects",
-    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ],
+    [ IsMatrixObj, IsMatrixObj ],
     -SUM_FLAGS,
-    function( M1, M2 )
-    if IsPlistRep( M1 ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M1 ) - Unpack( M2 ), M1 );
-    end );
+    { M1, M2 } -> Matrix( Unpack( M1 ) - Unpack( M2 ), M1 ) );
 
 InstallMethod( \*,
     "for two ordinary matrix objects (ordinary matrix product)",
-    [ IsMatrixOrMatrixObj and IsOrdinaryMatrix, IsMatrixOrMatrixObj and IsOrdinaryMatrix ],
+    [ IsMatrixObj and IsOrdinaryMatrix, IsMatrixObj and IsOrdinaryMatrix ],
     -SUM_FLAGS,
-    function( M1, M2 )
-    if IsList( M1 ) or IsList( M2 ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M1 ) * Unpack( M2 ), M1 );
-    end );
+    { M1, M2 } -> Matrix( Unpack( M1 ) * Unpack( M2 ), M1 ) );
 
 InstallMethod( \*,
     "for matrix object and scalar",
-    [ IsMatrixOrMatrixObj, IsScalar ],
+    [ IsMatrixObj, IsScalar ],
     -SUM_FLAGS,
-    function( M, s )
-    if IsList( M ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M ) * s, M );
-    end );
+    { M, s } -> Matrix( Unpack( M ) * s, M ) );
 
 InstallMethod( \*,
     "for scalar and matrix object",
-    [ IsScalar, IsMatrixOrMatrixObj ],
+    [ IsScalar, IsMatrixObj ],
     -SUM_FLAGS,
-    function( s, M )
-    if IsList( M ) then
-      TryNextMethod();
-    fi;
-    return Matrix( s * Unpack( M ), M );
-    end );
+    { s, M } -> Matrix( s * Unpack( M ), M ) );
 
 InstallMethod( \/,
     "for matrix object and scalar",
-    [ IsMatrixOrMatrixObj, IsScalar ],
+    [ IsMatrixObj, IsScalar ],
     -SUM_FLAGS,
-    function( M, s )
-    if IsList( M ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M ) / s, M );
-    end );
+    { M, s } -> Matrix( Unpack( M ) / s, M ) );
 
 #T no default methods should be needed for M^n, n an integer!
 
@@ -1089,25 +1037,15 @@ InstallMethod( \/,
 ##  it is recommended to use the multiplication <Ref Oper="\*"/> directly.
 ##
 InstallMethod( \*,
-    [ IsVectorObj, IsMatrixOrMatrixObj ],
-    function( v, M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return Vector( Unpack( v ) * Unpack( M ), v );
-    end );
+    [ IsVectorObj, IsMatrixObj ],
+    { v, M } -> Vector( Unpack( v ) * Unpack( M ), v ) );
 
 InstallMethod( \*,
-    [ IsMatrixOrMatrixObj, IsVectorObj ],
-    function( M, v )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return Vector( Unpack( M ) * Unpack( v ), v );
-    end );
+    [ IsMatrixObj, IsVectorObj ],
+    { M, v } -> Vector( Unpack( M ) * Unpack( v ), v ) );
 
 InstallOtherMethod( \^,
-    [ IsVectorObj, IsMatrixOrMatrixObj ],
+    [ IsVectorObj, IsMatrixObj ],
     \* );
 
 
@@ -1138,12 +1076,7 @@ InstallMethod( ShallowCopy,
 InstallMethod( MutableCopyMatrix,
     [ IsMatrixOrMatrixObj ],
     -SUM_FLAGS,
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return Matrix( Unpack( M ), M );
-    end );
+    M -> Matrix( Unpack( M ), M ) );
 
 
 #############################################################################
@@ -1326,14 +1259,8 @@ InstallMethod( Characteristic,
 ##  are already installed more generally.
 ##
 InstallMethod( AdditiveInverseMutable,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return Matrix( AdditiveInverseMutable( Unpack( M ) ), M );
-    fi;
-    end );
+    [ IsMatrixObj ],
+    M -> Matrix( AdditiveInverseMutable( Unpack( M ) ), M ) );
 
 InstallMethod( AdditiveInverseSameMutability,
     [ IsMatrixOrMatrixObj ],
@@ -1346,14 +1273,8 @@ InstallMethod( AdditiveInverseSameMutability,
     end );
 
 InstallMethod( ZeroMutable,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return Matrix( ZeroMutable( Unpack( M ) ), M );
-    fi;
-    end );
+    [ IsMatrixObj ],
+    M -> Matrix( ZeroMutable( Unpack( M ) ), M ) );
 
 InstallMethod( ZeroSameMutability,
     [ IsMatrixOrMatrixObj ],
@@ -1366,14 +1287,8 @@ InstallMethod( ZeroSameMutability,
     end );
 
 InstallMethod( OneMutable,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return Matrix( OneMutable( Unpack( M ) ), M );
-    fi;
-    end );
+    [ IsMatrixObj ],
+    M -> Matrix( OneMutable( Unpack( M ) ), M ) );
 
 InstallMethod( OneSameMutability,
     [ IsMatrixOrMatrixObj ],
@@ -1386,14 +1301,8 @@ InstallMethod( OneSameMutability,
     end );
 
 InstallMethod( InverseMutable,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    else
-      return Matrix( InverseMutable( Unpack( M ) ), M );
-    fi;
-    end );
+    [ IsMatrixObj ],
+    M -> Matrix( InverseMutable( Unpack( M ) ), M ) );
 
 InstallMethod( InverseSameMutability,
     [ IsMatrixOrMatrixObj ],
@@ -1406,22 +1315,12 @@ InstallMethod( InverseSameMutability,
     end );
 
 InstallMethod( IsZero,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return IsZero( Unpack( M ) );
-    end );
+    [ IsMatrixObj ],
+    M -> IsZero( Unpack( M ) ) );
 
 InstallMethod( IsOne,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return IsOne( Unpack( M ) );
-    end );
+    [ IsMatrixObj ],
+    M -> IsOne( Unpack( M ) ) );
 
 InstallMethod( Characteristic,
     [ IsMatrixOrMatrixObj ],
@@ -1484,17 +1383,12 @@ InstallMethod( DisplayString,
     ViewStringForMatrixObj );
 
 InstallMethod( String,
-    [ IsMatrixOrMatrixObj ],
-    function( M )
-    if IsPlistRep( M ) then
-      TryNextMethod();
-    fi;
-    return Concatenation( "NewMatrix( ",
+    [ IsMatrixObj ],
+    M -> Concatenation( "NewMatrix( ",
                NameFunction( ConstructingFilter( M ) ), ", ",
                String( BaseDomain( M ) ), ", ",
                String( NumberColumns( M ) ), ", ",
-               String( Unpack( M ) ), " )" );
-    end );
+               String( Unpack( M ) ), " )" ) );
 
 
 ############################################################################
@@ -1502,7 +1396,7 @@ InstallMethod( String,
 #M  CompatibleVector( <M> )
 ##
 InstallMethod( CompatibleVector,
-    "for a matrix object",
+    "for a matrix or matrix object",
     [ IsMatrixOrMatrixObj ],
     M -> NewZeroVector( CompatibleVectorFilter( M ), BaseDomain( M ),
                         NumberRows( M ) ) );
@@ -1513,7 +1407,7 @@ InstallMethod( CompatibleVector,
 #M  RowsOfMatrix( <M> )
 ##
 InstallMethod( RowsOfMatrix,
-    "for a matrix object",
+    "for a matrix or matrix object",
     [ IsMatrixOrMatrixObj ],
     function( M )
     local R, f;
@@ -1532,7 +1426,7 @@ InstallMethod( RowsOfMatrix,
 ##
 
 InstallMethod( DimensionsMat,
-    "for a matrix object",
+    "for a matrix or matrix object",
     [ IsMatrixOrMatrixObj ],
     M -> [ NumberRows( M ), NumberColumns( M ) ] );
 
@@ -1542,7 +1436,7 @@ InstallOtherMethod( Randomize,
     { obj, rs } -> Randomize( rs, obj ) );
 
 InstallMethod( Length,
-    "for a matrix object",
+    "for a matrix or matrix object",
     [ IsMatrixOrMatrixObj ],
     -SUM_FLAGS,
     NumberRows );
@@ -1555,15 +1449,10 @@ InstallMethod( Length,
 InstallMethod( \[\,\], "for a matrix object and two positions",
   [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ],
   {} -> -RankFilter(IsMatrixOrMatrixObj),
-  function( m, row, col )
-    return ELM_LIST( m, row, col );
-  end );
+  ELM_LIST );
 
 InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
   [ IsMatrixOrMatrixObj and IsMutable, IsPosInt, IsPosInt, IsObject ],
   {} -> -RankFilter(IsMatrixOrMatrixObj),
-  function( m, row, col, obj )
-    ASS_LIST( m, row, col, obj );
-  end );
-
+  ASS_LIST );
 
