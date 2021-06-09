@@ -69,7 +69,7 @@ InstallMethod( AddMatrixRowsRight, "for a mutable IsRowListMatrix, two row numbe
 ##
 #M  SwapMatrixRows( <M>, <row1>, <row2> )
 ##
-InstallMethod( SwapMatrixRows, "for a mutable IsRowListMatrix, one row number, second row number",
+InstallMethod( SwapMatrixRows, "for a mutable IsRowListMatrix, and two row numbers",
   [ IsRowListMatrix and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
     local temp;

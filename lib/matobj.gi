@@ -1677,7 +1677,7 @@ InstallMethod( AddMatrixColumnsLeft, "for a mutable matrix object, two column nu
 
 ############################################################################  
 
-InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row number, second row index",
+InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
   [ IsMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
     local temp, i;
@@ -1694,7 +1694,7 @@ InstallMethod( SwapMatrixRows, "for a mutable matrix object, one row number, sec
 
 ############################################################################
 
-InstallMethod( SwapMatrixColumns, "for a mutable matrix object, one column number, second column index",
+InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column numbers",
   [ IsMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, column1, column2 )
     local temp, i;
