@@ -66,18 +66,13 @@ make.
 In addition to the general copyright for &GAP; set forth above,
 the following terms apply to the versions of &GAP; for Windows.
 <P/>
-The <Package>Cygwin</Package> API library is also covered by the GNU GPL. 
-The executable we provide is linked against this library (and in the process 
-includes GPL'd <Package>Cygwin</Package> glue code). This means that the 
-executable falls under the GPL too, which it does anyhow.
-<P/>
-The <F>cyggcc_s-1.dll</F>, <F>cygncurses-10.dll</F>, <F>cygncursesw-10.dll</F>,
-<F>cygpanel-10.dll</F>, <F>cygpopt-0.dll</F>, <F>cygreadline7.dll</F>,
-<F>cygstart.exe</F>, <F>cygwin1.dll</F>, <F>libW11.dll</F>, <F>mintty.exe</F> 
-and <F>regtool.exe</F> are taken unmodified from the 
-<Package>Cygwin</Package> distribution. They are copyright by RedHat Software
-and released under the GPL. For more information on <Package>Cygwin</Package>,
-see <URL>https://www.cygwin.com</URL>.
+&GAP; for Windows is packaged with several packages from
+<Package>Cygwin</Package> (<URL>https://cygwin.com</URL>).
+Files from <Package>Cygwin</Package> are provided under their respective
+licenses, which are included in the installation.
+The &GAP; for Windows executables that we distribute are themselves released
+under the terms of the GNU General Public License (GNU GPL);
+either version 2 of the License, or (at your option) any later version.
 <P/>
 Please contact <Email>support@gap-system.org</Email> if you need further information.
 
