@@ -2044,16 +2044,34 @@ fi;
 
 # TODO: document this?!
 BIND_GLOBAL("MethodsOperation", function(oper, nargs)
-    local meths, len, result, i, m;
+    local early, meths, len, result, i, m;
 
+    early := EARLY_METHOD(oper, nargs);
     meths := METHODS_OPERATION(oper, nargs);
-    if meths = fail then
+    if early = fail and meths = fail then
         return fail;
     fi;
-    len := BASE_SIZE_METHODS_OPER_ENTRY + nargs;
     result := [];
+    if early <> fail then
+        m := rec(
+            early   := true,
+            #famPred := meths[i + 1],
+            #argFilt := meths{[i + 2 .. i + nargs + 1]},
+            func    := early,
+            rank    := infinity,
+            info    := "early method",
+            #location := ["TODO",0],
+            rankbase := infinity,
+            );
+        ADD_LIST(result, m);
+        if meths = fail then
+            return result;
+        fi;
+    fi;
+    len := BASE_SIZE_METHODS_OPER_ENTRY + nargs;
     for i in [0, len .. LENGTH(meths) - len] do
         m := rec(
+            early   := false,
             famPred := meths[i + 1],
             argFilt := meths{[i + 2 .. i + nargs + 1]},
             func    := meths[i + nargs + 2],

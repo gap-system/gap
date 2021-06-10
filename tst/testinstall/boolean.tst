@@ -79,13 +79,13 @@ gap> IsAssociative and true;
 Error, <oper2> must be a filter (not the value 'true')
 gap> IsAssociative and Center;
 Error, <oper2> must be a filter (not a function)
-gap> IsAssociative and FirstOp;
+gap> IsAssociative and First;
 Error, <oper2> must be a filter (not a function)
 gap> true and IsAssociative;
 Error, <expr> must be 'true' or 'false' (not a function)
 gap> Center and IsAssociative;
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
-gap> FirstOp and IsAssociative;
+gap> First and IsAssociative;
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> IsAssociative and IsAssociative;
 <Property "IsAssociative">
@@ -111,13 +111,13 @@ gap> function() return IsAssociative and true; end();
 Error, <oper2> must be a filter (not the value 'true')
 gap> function() return IsAssociative and Center; end();
 Error, <oper2> must be a filter (not a function)
-gap> function() return IsAssociative and FirstOp; end();
+gap> function() return IsAssociative and First; end();
 Error, <oper2> must be a filter (not a function)
 gap> function() return true and IsAssociative; end();
 Error, <expr> must be 'true' or 'false' (not a function)
 gap> function() return Center and IsAssociative; end();
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
-gap> function() return FirstOp and IsAssociative; end();
+gap> function() return First and IsAssociative; end();
 Error, <expr> must be 'true' or 'false' or a filter (not a function)
 gap> function() return IsAssociative and IsAssociative; end();
 <Property "IsAssociative">

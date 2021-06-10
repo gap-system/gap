@@ -303,7 +303,7 @@ method for conjugacy classes is slower than just explicit calculation of
 the elements. However, &GAP; is reluctant to construct explicit element
 lists, because for really large groups this direct method is infeasible.
 <P/>
-Note also the function <Ref Func="First" BookName="ref"/>,
+Note also the function <Ref Oper="First" BookName="ref"/>,
 used to find the first element in a list which passes some test.
 <P/>
 In this example,

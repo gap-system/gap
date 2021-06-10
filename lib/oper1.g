@@ -362,6 +362,48 @@ BIND_GLOBAL( "InstallOtherMethod",
 
 #############################################################################
 ##
+#F  InstallEarlyMethod( <opr>,<method> )
+##
+##  <#GAPDoc Label="InstallEarlyMethod">
+##  <ManSection>
+##  <Func Name="InstallEarlyMethod" Arg="opr,method"/>
+##
+##  <Description>
+##  installs a special "early" function method <A>method</A> for the
+##  operation <A>opr</A>. An early method is special in that it bypasses
+##  method dispatch, and is always the first method to be called when
+##  invoking the operation.
+##  <P/>
+##  This can be used to avoid method selection overhead for certain special
+##  cases, i.e., as an optimization. Overall, we recommend to use this
+##  feature very sparingly, as it is tool with sharp edges: for example, any
+##  inputs that are handled by an early method can not be intercepted by a
+##  regular method, no matter how high its rank is; this can preclude other
+##  kinds of optimizations.
+##  <P/>
+##  Also, unlike regular methods, no checks are performed on the arguments.
+##  Not even the required filters for the operation are tested, so early
+##  methods must be careful in validating their inputs.
+##  This also means that any operation can have at most one such early
+##  method for each arity (i.e., one early method taking 1 argument, one
+##  early method taking 2 arguments, etc.).
+##  <P/>
+##  If an early method determines that it is not applicable, it can resume
+##  regular method dispatch by invoking <Ref Func="TryNextMethod"/>.
+##  <P/>
+##  For an example application of early methods, they are used by
+##  <Ref Oper="First"/> to deal with internal lists, for which computing
+##  the exact type (needed for method selection) can be very expensive.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "InstallEarlyMethod", INSTALL_EARLY_METHOD );
+#TODO; store location info somehow
+#MakeImmutable([INPUT_FILENAME(), READEVALCOMMAND_LINENUMBER, INPUT_LINENUMBER()])
+
+#############################################################################
+##
 #F  INSTALL_METHOD( <arglist>, <check> )  . . . . . . . . .  install a method
 ##
 DeclareGlobalFunction( "EvalString" );

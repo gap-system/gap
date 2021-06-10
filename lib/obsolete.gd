@@ -747,3 +747,12 @@ DeclareObsoleteSynonym("FORCE_QUIT_GAP", "ForceQuitGap", 2);
 ##
 ##  Not used in any redistributed package (05/2021)
 DeclareObsoleteSynonym( "IsLexicographicallyLess", "<" );
+
+
+#############################################################################
+##
+##  We can't use DeclareObsoleteSynonym for FirstOp, because this would break
+##  code installing methods for it, and the `fr` package does just that.
+##
+##  Still used in fr (06/2021)
+DeclareSynonym( "FirstOp", First );

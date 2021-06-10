@@ -961,7 +961,7 @@ DeclareGlobalFunction( "PositionSet" );
 ##  490
 ##  ]]></Example>
 ##  <P/>
-##  <Ref Func="First"/> allows you to extract the first element of a list
+##  <Ref Oper="First"/> allows you to extract the first element of a list
 ##  that satisfies a certain property.
 ##  </Description>
 ##  </ManSection>
@@ -2061,25 +2061,26 @@ DeclareGlobalFunction( "IteratorList" );
 ##
 ##  <#GAPDoc Label="First">
 ##  <ManSection>
-##  <Func Name="First" Arg='list[, func]'/>
+##  <Oper Name="First" Arg='list[, func]'/>
 ##
 ##  <Description>
-##  <Ref Func="First"/> returns the first element of the list <A>list</A>
+##  <Ref Oper="First"/> returns the first element of the list <A>list</A>
 ##  for which the unary function <A>func</A> returns <K>true</K>;
 ##  if <A>func</A> is not given, the first element is returned.
 ##  <A>list</A> may contain holes.
 ##  <A>func</A> must return either <K>true</K> or <K>false</K> for each
 ##  element of <A>list</A>, otherwise an error is signalled.
 ##  If <A>func</A> returns <K>false</K> for all elements of <A>list</A>
-##  then <Ref Func="First"/> returns <K>fail</K>.
+##  then <Ref Oper="First"/> returns <K>fail</K>.
 ##  <P/>
 ##  <Ref Oper="PositionProperty"/> allows you to find the
 ##  position of the first element in a list that satisfies a certain
 ##  property.
 ##  <P/>
-##  Developers who wish to adapt this for custom list types need to
-##  install suitable methods for the operation <C>FirstOp</C>.
-##  <Index Key="FirstOp"><C>FirstOp</C></Index>
+##  Before &GAP; 4.12, developers who wished to adapt this for custom
+##  list types needed to install suitable methods for the operation
+##  <C>FirstOp</C>. This is still possible for backwards compatibility,
+##  but <C>FirstOp</C> now is just a synonym for <Ref Oper="First"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> First( [10^7..10^8], IsPrime );
@@ -2095,11 +2096,8 @@ DeclareGlobalFunction( "IteratorList" );
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
-##  We catch internal lists by a function to avoid method selection:
-DeclareGlobalFunction( "First" );
-DeclareOperation( "FirstOp", [ IsListOrCollection ] );
-DeclareOperation( "FirstOp", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "First", [ IsListOrCollection ] );
+DeclareOperation( "First", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
