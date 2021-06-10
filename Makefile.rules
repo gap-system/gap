@@ -20,6 +20,14 @@ all: gap$(EXEEXT) gac libgap.la CITATION doc/versiondata
 default: all
 .PHONY: default
 
+# GAP_BIN_DIR is either the directory in which GAP is built (if GAP is not yet installed),
+# or else the ${bindir} in which the gap executable can be found
+# FIXME: is that really what we want? perhaps better to document what this is
+# meant to be used for (and what not)
+GAP_BIN_DIR = $(abs_builddir)
+
+# TODO/FIXME: document this
+GAP_LIB_DIR = $(abs_srcdir)
 
 ########################################################################
 # Source files
@@ -155,46 +163,49 @@ SOURCES_ALL += src/compstat_empty.c
 # contain warning flags, and uses absolute include paths.
 ########################################################################
 
+GAP_COMMON_CPPFLAGS =
+
 GAP_CPPFLAGS =
 GAP_PKG_CPPFLAGS =
+GAP_INSTALL_CPPFLAGS =
 
 # First add include paths
 
 # The "build/" directory contains generated header files and thus is
 # placed into the list of include directories.
+# When GAP is installed, this is merged into the $includedir
 GAP_CPPFLAGS += -I$(builddir)/build
-GAP_PKG_CPPFLAGS += -I$(abs_builddir)/build
+GAP_PKG_CPPFLAGS += -I$(GAP_BIN_DIR)/build
 
 # The other source files are relative to the srcdir
 GAP_CPPFLAGS += -I$(srcdir)/src
-GAP_PKG_CPPFLAGS += -I$(abs_srcdir)/src
+GAP_PKG_CPPFLAGS += -I$(GAP_LIB_DIR)/src
+GAP_INSTALL_CPPFLAGS += -I${includedir}/gap
 
 # For backwards compatibility with certain packages and their kernel
-# extensions, also add the root of the srcdir to the package CPPFLAGS
-GAP_PKG_CPPFLAGS += -I$(abs_srcdir)
+# extensions, also add the root of the srcdir to the package CPPFLAGS. When
+# GAP is installed, this is instead achieved by a symlink named `src` inside
+# ${includedir}/gap which points pack to its parent.
+GAP_PKG_CPPFLAGS += -I$(GAP_LIB_DIR)
 
-# Add DEFS (from autoconf, contains -D flags)
-GAP_CPPFLAGS += $(DEFS)
-GAP_PKG_CPPFLAGS += $(DEFS)
+# Add DEFS (from autoconf, contains -D flags) to common flags
+GAP_COMMON_CPPFLAGS += $(DEFS)
 
-# Add flags for dependencies
-GAP_CPPFLAGS += $(GMP_CPPFLAGS)
-GAP_CPPFLAGS += $(ZLIB_CPPFLAGS)
-GAP_CPPFLAGS += $(READLINE_CPPFLAGS)
-GAP_CPPFLAGS += $(JULIA_CPPFLAGS)
-GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
-GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
+# Add flags for dependencies to common flags
+GAP_COMMON_CPPFLAGS += $(GMP_CPPFLAGS)
+GAP_COMMON_CPPFLAGS += $(ZLIB_CPPFLAGS)
+GAP_COMMON_CPPFLAGS += $(READLINE_CPPFLAGS)
+GAP_COMMON_CPPFLAGS += $(JULIA_CPPFLAGS)
+GAP_COMMON_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
+GAP_COMMON_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
-GAP_PKG_CPPFLAGS += $(GMP_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(ZLIB_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(READLINE_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(JULIA_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
+# Add user provided flags to common flags
+GAP_COMMON_CPPFLAGS += $(CPPFLAGS)
 
-# Finally add user provided flags
-GAP_CPPFLAGS += $(CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(CPPFLAGS)
+# Add common flags
+GAP_CPPFLAGS += $(GAP_COMMON_CPPFLAGS)
+GAP_PKG_CPPFLAGS += $(GAP_COMMON_CPPFLAGS)
+GAP_INSTALL_CPPFLAGS += $(GAP_COMMON_CPPFLAGS)
 
 
 ########################################################################
@@ -488,13 +499,33 @@ clean:
 
 ########################################################################
 # Rules for 'make install'
+#
+#
+# WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING
+#
+# The following code is incomplete. Parts of it may already be useful
+# for authors of GAP packages, which is why install-bin etc. are exposed
+# as separate targets. However, these are very little tested right now,
+# so use at your own peril -- that said, if you find any issues with
+# them NOT COVERED BELOW or have suggestions for improvements, please
+# contact us.
+#
+# Among the things that are known to be missing (no need to inform us
+# about it) are:
+#  - installing the `gac` script
+#  - installing packages (this one is a bit tricky, depending on what
+#    assumptions you are willing to make or require)
+#  - the install sysinfo.gap is not yet fully adapted, some FLAGS in it
+#    still need to be adjusted to not contain build paths
+#  - 
 ########################################################################
 
 LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
 
-install:
-	@echo "Error, 'make install' has not yet been implemented"
-	exit 1
+install: install-bin install-gaproot install-headers install-libgap
+	@echo "+-----------------------------------------------------------------------+"
+	@echo "| WARNING, 'make install' support is incomplete! Use at your own peril! |"
+	@echo "+-----------------------------------------------------------------------+"
 
 # the following is wrapper script which is installed by the install-bin target
 define gap_wrapper
@@ -503,7 +534,7 @@ exec "$(bindir)/gap.real" -l "$(datarootdir)/gap" "$$@"
 endef
 export gap_wrapper
 
-install-bin:
+install-bin: gap
 	@echo "Warning, 'make install-bin' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 0755 gap $(DESTDIR)$(bindir)/gap.real
@@ -514,16 +545,21 @@ install-bin:
 	# putting that path to it into gac)
 	#$(INSTALL) gac $(DESTDIR)$(bindir)
 
+# the following lines adjust variables for the installed sysinfo.gap
+install-gaproot: GAP_BIN_DIR = $(bindir)
+install-gaproot: GAP_LIB_DIR = $(datarootdir)/gap
+install-gaproot: GAP_PKG_CPPFLAGS = $(GAP_INSTALL_CPPFLAGS)
 install-gaproot:
 	@echo "Warning, 'make install-gaproot' is incomplete"
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
-	# TODO: update paths and FLAGS in sysinfo.gap
-	$(INSTALL) -m 0644 sysinfo.gap $(DESTDIR)$(datarootdir)/gap
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(GAP_LIB_DIR)
+	$(INSTALL) -m 0644 sysinfo.gap $(DESTDIR)$(GAP_LIB_DIR)
+	@echo "$$sysinfo_gap" >$(DESTDIR)$(GAP_LIB_DIR)/sysinfo.gap
+
 	# the following lines should not use `cp -r`, which is not quite portable,
 	# and which also may not deal with file permissions correctly
-	cp -r $(srcdir)/doc $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
-	cp -r $(srcdir)/grp $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
-	cp -r $(srcdir)/lib $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
+	cp -r $(srcdir)/doc $(DESTDIR)$(GAP_LIB_DIR)/
+	cp -r $(srcdir)/grp $(DESTDIR)$(GAP_LIB_DIR)/
+	cp -r $(srcdir)/lib $(DESTDIR)$(GAP_LIB_DIR)/
 	# TODO: what about CITATION, CONTRIBUTING.md, COPYRIGHT, INSTALL.md,
 	# LICENSE, README* ? Copy them also here? Or into some other path?
 	# TODO: also copy bin/BuildPackage.sh, as it is very useful?
@@ -552,6 +588,8 @@ install-headers:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
 	# TODO: take care of config.h, this is difficult
+	# HACK to support packages which still do `#include "src/compiled.h"`
+	ln -sfh . $(DESTDIR)$(includedir)/gap/src
 
 install-libgap: libgap.la
 	@echo "Warning, 'make install-libgap' is incomplete"
@@ -751,8 +789,8 @@ GAP_LIBTOOL_AGE=$(GAP_LIBTOOL_AGE)
 GAP_KERNEL_MAJOR_VERSION=$(GAP_KERNEL_MAJOR_VERSION)
 GAP_KERNEL_MINOR_VERSION=$(GAP_KERNEL_MINOR_VERSION)
 
-GAP_BIN_DIR="$(abs_builddir)"
-GAP_LIB_DIR="$(abs_srcdir)"
+GAP_BIN_DIR="$(GAP_BIN_DIR)"
+GAP_LIB_DIR="$(GAP_LIB_DIR)"
 
 GAP="$(abs_builddir)/bin/gap.sh"
 GAC="$(abs_builddir)/gac"
@@ -774,10 +812,36 @@ JULIA_LIBS="$(JULIA_LIBS)"
 endef
 export sysinfo_gap
 
+# FIXME: sysinfo.gap refactoring:
+# - split GAP_CPPFLAGS and move parts of them to GAP_INCLUDE_FLAGS,
+#   to make them easier to adjust for installation?
+# - get rid of GAP_OBJS by removing the "static link" feature from gac;
+#   i.e., retain comp_static but don't let it go till linking
+# - rename GAParch (but keep it for backwards compat)
+# - because of GAParch, we can't actually install sysinfo.gap into $prefix/lib
+#   it seems we may need at least two root dirs for installations, too;
+#   one which contains "sysinfo.gap" and other arch dependent files, and
+#   which is where one points configure scripts at; and one which contains
+#   the stuff which is portable; say
+#     GAP_BIN_DIR=$prefix/lib/gap/    contains sysinfo.gap, gap, gac
+#     GAP_LIB_DIR=$prefix/share/gap/  contains doc, grp, lib, ...
+#   Note how "lib" means two different things above...
+#
+#  So far, we can still "model" this quite well with sysinfo.gap; but I
+#  wonder if one day we might need to add provisions for more than two GAPROOTs ?
 all: sysinfo.gap
 sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS cnf/GAP-CXXFLAGS cnf/GAP-LDFLAGS cnf/GAP-LIBS
 	@rm -f sysinfo.gap	# in case this is a symlink created by an older version of the build system
 	@echo "$$sysinfo_gap" >sysinfo.gap
+
+foobar: GAP_BIN_DIR = /foobar/
+#foobar: export quux := $(sysinfo_gap)
+
+sysinfo_gap:
+	echo "$$sysinfo_gap"
+
+foobar:
+	echo "$$sysinfo_gap"
 
 
 ########################################################################
