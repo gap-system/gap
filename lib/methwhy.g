@@ -24,7 +24,7 @@
 ##  </ManSection>
 ##
 BindGlobal("Print_Value_SFF",function(val)
-  if val>SUM_FLAGS then
+  if val>SUM_FLAGS and val < infinity then
     Print(QuoInt(val,SUM_FLAGS),"*SUM_FLAGS");
     val:=val mod SUM_FLAGS;
     if val>0 then
@@ -191,7 +191,7 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     fi;
     flag:=true;
     j:=1;
-    while j<=narg and (flag or verbos>3) do
+    while j<=narg and (flag or verbos>3) and not m.early do
       if j=1 and isconstructor then
 	flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
       else
@@ -212,7 +212,7 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
       j:=j+1;
     od;
     if flag then
-      if fams=fail or CallFuncList(m.famPred,fams) then
+      if m.early or fams=fail or CallFuncList(m.famPred,fams) then
 	if verbos=1 then
 	  Print("#I  Method ",i,": ``",nam,"''");
           if IsBound(m.location) then

@@ -52,6 +52,9 @@ typedef struct {
     // cache of an operation
     Obj cache[MAX_OPER_ARGS+1];
 
+    //
+    Obj earlyMethod[MAX_OPER_ARGS+1];
+
     // small integer encoding a set of bit flags with information about the
     // operation, see OperExtras below
     //

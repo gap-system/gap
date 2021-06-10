@@ -1812,6 +1812,37 @@ static Int OperationMiss;
 static Int OperationNext;
 #endif
 
+template <Int n>
+static Obj
+CallNArgs(Obj method, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+{
+    switch (n) {
+    case 0:
+        return CALL_0ARGS(method);
+        break;
+    case 1:
+        return CALL_1ARGS(method, a1);
+        break;
+    case 2:
+        return CALL_2ARGS(method, a1, a2);
+        break;
+    case 3:
+        return CALL_3ARGS(method, a1, a2, a3);
+        break;
+    case 4:
+        return CALL_4ARGS(method, a1, a2, a3, a4);
+        break;
+    case 5:
+        return CALL_5ARGS(method, a1, a2, a3, a4, a5);
+        break;
+    case 6:
+        return CALL_6ARGS(method, a1, a2, a3, a4, a5, a6);
+        break;
+    default:
+        GAP_ASSERT(0);
+    }
+    return 0; // redundant, but silences a warning
+}
 
 template <Int n, BOOL verbose, BOOL constructor>
 static Obj
@@ -1826,6 +1857,13 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     Int prec;
     Obj method;
     Obj res;
+
+    Obj earlyMethod = CONST_OPER(oper)->earlyMethod[n];
+    if (earlyMethod) {
+        res = CallNArgs<n>(earlyMethod, a1, a2, a3, a4, a5, a6);
+        if (res != TRY_NEXT_METHOD)
+            return res;
+    }
 
     switch (n) {
     case 6:
@@ -1943,32 +1981,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
         }
 
         /* call this method */
-        switch (n) {
-        case 0:
-            res = CALL_0ARGS(method);
-            break;
-        case 1:
-            res = CALL_1ARGS(method, a1);
-            break;
-        case 2:
-            res = CALL_2ARGS(method, a1, a2);
-            break;
-        case 3:
-            res = CALL_3ARGS(method, a1, a2, a3);
-            break;
-        case 4:
-            res = CALL_4ARGS(method, a1, a2, a3, a4);
-            break;
-        case 5:
-            res = CALL_5ARGS(method, a1, a2, a3, a4, a5);
-            break;
-        case 6:
-            res = CALL_6ARGS(method, a1, a2, a3, a4, a5, a6);
-            break;
-        default:
-            res = 0; // redundant, but silences a warning later on
-            GAP_ASSERT(0);
-        }
+        res = CallNArgs<n>(method, a1, a2, a3, a4, a5, a6);
     } while (res == TRY_NEXT_METHOD);
 
     return res;
@@ -3210,6 +3223,48 @@ static Obj FuncSET_METHODS_OPERATION(Obj self, Obj oper, Obj narg, Obj meths)
 
 /****************************************************************************
 **
+*F  FuncINSTALL_EARLY_METHOD( <self>, <oper>, <func> ) . install early method
+*/
+static Obj FuncINSTALL_EARLY_METHOD(Obj self, Obj oper, Obj func)
+{
+    RequireOperation(oper);
+    RequireFunction(SELF_NAME, func);
+    if ( IS_OPERATION(func) ) {
+        ErrorQuit("<func> must not be an operation", 0, 0);
+    }
+
+    int n = NARG_FUNC(func);
+    if (n < 0)
+        ErrorQuit("<func> must not be variadic", 0, 0);
+    if (n > MAX_OPER_ARGS)
+        ErrorQuit("<func> must take at most %d arguments", MAX_OPER_ARGS, 0);
+
+    if ( (REREADING != True) &&
+         (CONST_OPER(oper)->earlyMethod[n] != 0) ) {
+        ErrorQuit("early method already installed", 0, 0);
+    }
+
+
+    OPER(oper)->earlyMethod[n] = func;
+    CHANGED_BAG(oper);
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncEARLY_METHOD( <self>, <oper>, <narg> ) . . . . . . . get early method
+*/
+static Obj FuncEARLY_METHOD(Obj self, Obj oper, Obj narg)
+{
+    RequireOperation(oper);
+    int n = GetBoundedInt(SELF_NAME, narg, 0, MAX_OPER_ARGS);
+    Obj method = CONST_OPER(oper)->earlyMethod[n];
+    return method ? method : Fail;
+}
+
+/****************************************************************************
+**
 *F  FuncSETTER_FUNCTION( <self>, <name>, <filter> )  default attribute setter
 */
 static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
@@ -3570,6 +3625,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_2ARGS(METHODS_OPERATION, oper, narg),
     GVAR_FUNC_3ARGS(SET_METHODS_OPERATION, oper, narg, meths),
     GVAR_FUNC_2ARGS(CHANGED_METHODS_OPERATION, oper, narg),
+    GVAR_FUNC_2ARGS(INSTALL_EARLY_METHOD, oper, func),
+    GVAR_FUNC_2ARGS(EARLY_METHOD, oper, narg),
     GVAR_FUNC_1ARGS(NEW_FILTER, name),
     GVAR_FUNC_1ARGS(NEW_OPERATION, name),
     GVAR_FUNC_1ARGS(NEW_CONSTRUCTOR, name),

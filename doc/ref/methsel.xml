@@ -165,6 +165,7 @@ For declaring that a filter is implied by other filters there is
 
 <#Include Label="InstallMethod">
 <#Include Label="InstallOtherMethod">
+<#Include Label="InstallEarlyMethod">
 <#Include Label="InstallMethodWithRandomSource">
 
 </Section>

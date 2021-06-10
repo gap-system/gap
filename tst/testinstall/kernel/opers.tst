@@ -242,6 +242,42 @@ Error, SET_METHODS_OPERATION: <narg> must be an integer between 0 and 6 (not t\
 he integer 7)
 
 #
+gap> oper := NewOperation("foobar", [IsList]);
+<Operation "foobar">
+gap> INSTALL_EARLY_METHOD(fail, fail);
+Error, INSTALL_EARLY_METHOD: <oper> must be an operation (not the value 'fail'\
+)
+gap> INSTALL_EARLY_METHOD(oper, fail);
+Error, INSTALL_EARLY_METHOD: <func> must be a function (not the value 'fail')
+gap> INSTALL_EARLY_METHOD(oper, oper);
+Error, <func> must not be an operation
+gap> InstallMethod(oper, [IsPlistRep], function(l) Print("IsPlistRep method\n"); end);
+gap> oper([1,2,3]);
+IsPlistRep method
+gap> INSTALL_EARLY_METHOD(oper, function(l) Print("early method\n"); TryNextMethod(); end);
+gap> oper([1,2,3]);
+early method
+IsPlistRep method
+gap> INSTALL_EARLY_METHOD(oper, ReturnTrue);
+Error, <func> must not be variadic
+gap> INSTALL_EARLY_METHOD(oper, {a,b,c,d,e,f,g} -> fail);
+Error, <func> must take at most 6 arguments
+gap> INSTALL_EARLY_METHOD(oper, x -> fail);
+Error, early method already installed
+
+#
+gap> EARLY_METHOD(fail, fail);
+Error, EARLY_METHOD: <oper> must be an operation (not the value 'fail')
+gap> EARLY_METHOD(oper, -1);
+Error, EARLY_METHOD: <narg> must be an integer between 0 and 6 (not the intege\
+r -1)
+gap> EARLY_METHOD(oper, 7);
+Error, EARLY_METHOD: <narg> must be an integer between 0 and 6 (not the intege\
+r 7)
+gap> List([0..6], n -> EARLY_METHOD(oper, n));
+[ fail, function( l ) ... end, fail, fail, fail, fail, fail ]
+
+#
 gap> f:=SETTER_FUNCTION("foobar", IsPGroup);;
 gap> f(fail, false);
 Error, <obj> must be a component object
