@@ -644,6 +644,7 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
 template <Int len>
 static Obj LookupHashTable(Obj ht, Int hash, Obj flags)
 {
+    GAP_ASSERT(TNUM_OBJ(flags) == T_FLAGS);
     for (int hash_loop = 0; hash_loop < 3; ++hash_loop) {
         if (ELM_PLIST(ht, hash * 2 + 1) == flags) {
             return ELM_PLIST(ht, hash * 2 + 2);
@@ -654,9 +655,10 @@ static Obj LookupHashTable(Obj ht, Int hash, Obj flags)
 }
 
 template <Int len>
-static void StoreHashTable(Obj ht, Int hash, Obj new_flags, Obj new_with)
+static void StoreHashTable(Obj ht, Int hash, Obj new_with, Obj new_flags)
 {
     Obj old_with, old_flags;
+    GAP_ASSERT(TNUM_OBJ(new_flags) == T_FLAGS);
 
     // add to hash table, shuffling old values along (last one falls off)
     for (int hash_loop = 0; hash_loop < 3; ++hash_loop) {
