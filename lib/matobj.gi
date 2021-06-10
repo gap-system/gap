@@ -1274,7 +1274,7 @@ InstallMethod( AdditiveInverseSameMutability,
 
 InstallMethod( ZeroMutable,
     [ IsMatrixObj ],
-    M -> Matrix( ZeroMutable( Unpack( M ) ), M ) );
+    M -> ZeroMatrix( NumberRows( M ), NumberColumns( M ), M ) );
 
 InstallMethod( ZeroSameMutability,
     [ IsMatrixOrMatrixObj ],
@@ -1288,7 +1288,7 @@ InstallMethod( ZeroSameMutability,
 
 InstallMethod( OneMutable,
     [ IsMatrixObj ],
-    M -> Matrix( OneMutable( Unpack( M ) ), M ) );
+    M -> IdentityMatrix( NumberRows( M ), M ) );
 
 InstallMethod( OneSameMutability,
     [ IsMatrixOrMatrixObj ],
