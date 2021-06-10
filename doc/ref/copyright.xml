@@ -66,16 +66,6 @@ make.
 In addition to the general copyright for &GAP; set forth above,
 the following terms apply to the versions of &GAP; for Windows.
 <P/>
-The executable of &GAP; for Windows that we distribute was compiled with
-the <C>gcc</C> compiler supplied with <Package>Cygwin</Package> installation
-(<URL>https://cygwin.com/</URL>).
-<P/>
-The GNU C compiler is
-<P/>
-<E>Copyright &copyright; 2010 Free Software Foundation, Inc.</E>
-<P/>
-under the terms of the GNU General Public License (GPL).
-<P/>
 The <Package>Cygwin</Package> API library is also covered by the GNU GPL. 
 The executable we provide is linked against this library (and in the process 
 includes GPL'd <Package>Cygwin</Package> glue code). This means that the 
