@@ -167,6 +167,10 @@ gap> FreeGroup("bacon", "eggs", "beans");
 <free group on the generators [ bacon, eggs, beans ]>
 gap> FreeGroup("shed");
 <free group on the generators [ shed ]>
+gap> FreeGroup("shed", "shed");
+Error, FreeGroup( <name1>, <name2>, ... ): the names must be distinct
+gap> FreeGroup("a", "b", "c", "d", "b", "e", "f");
+Error, FreeGroup( <name1>, <name2>, ... ): the names must be distinct
 
 # FreeGroup( [ <name1>, <name2>, ... ] )
 gap> FreeGroup(InfiniteListOfNames("a"));

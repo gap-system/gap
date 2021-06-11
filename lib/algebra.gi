@@ -3322,6 +3322,10 @@ BindGlobal( "FreeAlgebraConstructor", function( name, magma )
                  "or ", name, "( <R>, <name1>, ... )" );
     fi;
 
+    if not IsDuplicateFreeList(names) then
+      Error( "the given generator names must be distinct" );
+    fi;
+
     M := magma( names );
 
     # Construct the algebra as free magma algebra of a free magma over `R'.

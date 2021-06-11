@@ -1253,6 +1253,7 @@ DeclareAttribute(
 ##  <C>FreeLieAlgebra( <A>R</A>, <A>name1</A>, <A>name2</A>,...)</C> returns
 ##  a free Lie algebra over <A>R</A> with generators named <A>name1</A>,
 ##  <A>name2</A>, and so on.
+##  Note that any provided generator names must be distinct.
 ##  The elements of a free Lie algebra are written on the Hall-Lyndon
 ##  basis.
 ##  <Example><![CDATA[

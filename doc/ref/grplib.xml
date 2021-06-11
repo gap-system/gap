@@ -106,7 +106,7 @@ It is possible to influence this naming with the option <C>generatorNames</C>,
 see Section&nbsp;<Ref Sect="Function Call With Options"/>.
 If this option holds a string, then the generators are named with this
 string and sequential numbers starting with <C>1</C>.
-If this option holds a list of sufficient length consisting of
+If this option holds a list of sufficient length consisting of distinct
 nonempty strings, then the generator names are taken from this list, in order.
 <P/>
 <Example><![CDATA[
