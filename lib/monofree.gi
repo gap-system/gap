@@ -284,7 +284,9 @@ InstallMethod( ViewObj,
     "for a free monoid containing the whole family",
     [ IsMonoid and IsAssocWordCollection and IsWholeFamily ],
     function( M )
-    if GAPInfo.ViewLength * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
+    if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
+      Print( "<free monoid of rank zero>" );
+    elif GAPInfo.ViewLength * 10 < Length( GeneratorsOfMagmaWithOne( M ) ) then
       Print( "<free monoid with ", Length( GeneratorsOfMagmaWithOne( M ) ),
              " generators>" );
     else

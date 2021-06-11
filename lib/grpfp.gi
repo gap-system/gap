@@ -5729,4 +5729,4 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup,
   [ IsFpGroup and IsAbelian ],
   IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
-BindGlobal("TRIVIAL_FP_GROUP",FreeGroup(0,"TrivGp")/[]);
+BindGlobal( "TRIVIAL_FP_GROUP", FreeGroup(0) / [] );
