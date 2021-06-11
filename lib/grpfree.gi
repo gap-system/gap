@@ -591,7 +591,9 @@ InstallMethod( ViewObj,
     [ IsFreeGroup ],
 function(G)
   if IsGroupOfFamily(G) then
-    if Length(GeneratorsOfGroup(G)) > GAPInfo.ViewLength * 10 then
+    if IsEmpty(GeneratorsOfGroup(G)) then
+      Print("<free group of rank zero>");
+    elif Length(GeneratorsOfGroup(G)) > GAPInfo.ViewLength * 10 then
       Print("<free group with ",Length(GeneratorsOfGroup(G))," generators>");
     else
       Print("<free group on the generators ",GeneratorsOfGroup(G),">");
