@@ -231,8 +231,10 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##
 ##  <Description>
 ##  A <E>row list matrix object</E> is a matrix object
-##  (see <Ref Filt="IsMatrixObj"/>) which admits access to their rows,
-##  via list access <Ref Oper="\[\]"/>.
+##  (see <Ref Filt="IsMatrixObj"/>) <M>M</M> which admits access to its rows,
+##  that is, list access <M>M[i]</M> (see <Ref Oper="\[\]"/>) yields
+##  the <M>i</M>-th row of <M>M</M>,
+##  for <M>1 \leq i \leq</M> <C>NumberRows( </C><M>M</M><C> )</C>.
 ##  <P/>
 ##  All rows are <Ref Filt="IsVectorObj"/> objects in the same
 ##  representation.
