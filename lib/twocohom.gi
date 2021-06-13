@@ -1723,16 +1723,20 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       if IsPermGroup(p) then
         mindeg:=Minimum(List(Orbits(p,MovedPoints(p)),Length));
       fi;
+      it:=fail;
       while Size(p)<Size(fp) do
         # we allow do go immediately to normal subgroup of index up to 4.
         # This reduces search space
-        if p=r.group then
-          # re-use the first quotient, helps with repeated subgroups iterator
-          it:=DescSubgroupIterator(p:skip:=LogInt(Size(p),2));
-        else
-          it:=DescSubgroupIterator(r.group:skip:=LogInt(Size(p),2));
-        fi;
         repeat
+          if it=fail then
+            # re-use the first quotient, helps with repeated subgroups iterator
+            if p=r.group then
+              it:=DescSubgroupIterator(r.group:skip:=LogInt(Size(p),2));
+            else
+              it:=DescSubgroupIterator(p:skip:=LogInt(Size(p),2));
+            fi;
+          fi;
+
           wasbold:=false;
           m:=NextIterator(it);
           # catch case of large permdegree, try naive first
@@ -1982,6 +1986,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
              Size(p)/Size(i)," at degree ",NrMovedPoints(p));
         hom:=false; # we don't have hom cheaply any longer as group changed.
         # this is not an issue if module is irreducible
+        it:=fail; simi:=fail; # cleanout info for first factor
       od;
       quot:=sim*quot;
       new:=GroupHomomorphismByImages(fp,p,GeneratorsOfGroup(fp),
