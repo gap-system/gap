@@ -2421,7 +2421,7 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
     fi;
 
     Info(InfoLattice,1,"Subgroup ",i,", Order ",Size(subs[i]),": ",Length(m),
-      " maxes");
+      " maxes. So far found ",Length(subs)," ratio ",EvalF(i/Length(subs)));
     for j in m do
       Info(InfoLattice,2,"Max index ",Index(subs[i],j));
       # maximals must be self-normalizing or normal
