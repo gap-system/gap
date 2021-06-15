@@ -2469,7 +2469,7 @@ InstallGlobalFunction( ClosureSubgroupNC, function(arg)
 local G,obj,close;
     G:=arg[1];
     obj:=arg[2];
-    if IsTrivial(G) and IsGroup(obj) then
+    if HasIsTrivial(G) and IsTrivial(G) and IsGroup(obj) then
       obj:=AsSubgroup(Parent(G),obj);
     fi;
     if not HasParent( G ) then
