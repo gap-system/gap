@@ -107,6 +107,13 @@ extern UInt SyNrRowsLocked;
 
 /****************************************************************************
 **
+*V  SyLineWrappingDisabled . . . . . . . . .  do not wrap lines when printing
+**
+*/
+extern UInt SyLineWrappingDisabled;
+
+/****************************************************************************
+**
 *V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
 **
 **  'SyQuit' determines whether GAP should print the prompt and  the  banner.

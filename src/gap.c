@@ -560,6 +560,23 @@ static Obj FuncSizeScreen(Obj self, Obj args)
 
 /****************************************************************************
 **
+*F  FuncSetGlobalLineWrappingStatus( <self>, <args> )  . . . .  internal function 'SetGlobalLineWrappingStatus'
+**
+*/
+static Obj FuncSetGlobalLineWrappingStatus(Obj self, Obj val)
+{
+
+  RequireTrueOrFalse(SELF_NAME, val);
+
+  SyLineWrappingDisabled = (val == False);
+
+  return 0;
+
+}
+
+
+/****************************************************************************
+**
 *F  FuncWindowCmd( <self>, <args> ) . . . . . . . .  execute a window command
 */
 static Obj WindowCmdString;
@@ -1280,6 +1297,7 @@ static Obj FuncAssertionLevel(Obj self)
 static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC(SizeScreen, -1, "args"),
+    GVAR_FUNC_1ARGS(SetGlobalLineWrappingStatus, val),
     GVAR_FUNC_1ARGS(ID_FUNC, object),
     GVAR_FUNC(RETURN_FIRST, -2, "first, rest"),
     GVAR_FUNC(RETURN_NOTHING, -1, "object"),
