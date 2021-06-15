@@ -4209,7 +4209,7 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
       for i in [ 2 .. m ] do
         lastvalue:= ProductCoeffs( y, lastvalue );
         ReduceCoeffs( lastvalue, conwaypol );
-#T bad that ReduceCoeffs does not predict how it deals with trailing zeros
+        ShrinkRowVector( lastvalue );
         PadCoeffs( lastvalue, k, zero );
         fieldbase[i]:= lastvalue;
         ConvertToVectorRepNC( fieldbase[i], p );
@@ -4217,7 +4217,6 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
 
       value:= ValuePol( SolutionMatDestructive( fieldbase, value ),
                         Z( p, m ) );
-
     fi;
 
     # Return the Frobenius character value.
