@@ -158,8 +158,17 @@ end );
 InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
     local   orb,  pimg,  img,  vert,  s,  t,  index,
             block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
-            ss,  tt,t1,t1lim;
+            ss,  tt,t1,t1lim,found,tl,vimg;
     
+    # iterated image
+    vimg:=function(point,list)
+    local i;
+      for i in list do
+        point:=point^i;
+      od;
+      return point;
+    end;
+
     Info(InfoCoset,5,"AddCosetInfoStabChain [",
           SizeStabChain(G),",",SizeStabChain(U),"]");
     if IsEmpty( G.genlabels )  then
@@ -273,17 +282,34 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
 
 		      # do all points
 		      if t1<t-1 then
-			vert := G.orbit{ [ 1 .. t - 1 ] };
-			img := G.orbit[ t ];
-			while img <> G.orbit[ 1 ]  do
-			    vert := OnTuples( vert, G.transversal[ img ] );
-			    img  := img           ^ G.transversal[ img ];
-			od;
-			if ForAll( [ t1+1 .. t - 1 ], i -> not IsBound
-			  ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
+                        img := G.orbit[ t ];
+                        if t<=10*t1lim then
+                          vert := G.orbit{ [ 1 .. t - 1 ] };
+                          while img <> G.orbit[ 1 ]  do
+                              vert := OnTuples( vert, G.transversal[ img ] );
+                              img  := img           ^ G.transversal[ img ];
+                          od;
+                          found:=ForAll( [ t1+1 .. t - 1 ], i -> not IsBound
+                            ( U.translabels[ pimg[ vert[ i ] ] ] ) );
+                        else
+                          # avoid calculating tons of images of a long list
+                          # instead calculate images on the fly
+                          # this implicitly assumes that, if we get to so
+                          # long a list, failure will happen quickly.
+                          tl:=[];
+                          while img <> G.orbit[ 1 ]  do
+                              Add(tl,G.transversal[img]);
+                              img  := img           ^ G.transversal[ img ];
+                          od;
+                          found:=ForAll( [ t1+1 .. t - 1 ], i -> not IsBound
+                            ( U.translabels[ pimg[ vimg(G.orbit[ i ],tl) ] ] ) );
+                        fi;
+
+                        if found then
 			    U.repsStab[ t ][ s ] := true;
 			    index := index + lenflock;
 			fi;
+
 		      else
                         U.repsStab[ t ][ s ] := true;
                         index := index + lenflock;
