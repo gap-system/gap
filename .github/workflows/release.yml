@@ -40,7 +40,9 @@ jobs:
       # in this action; instead an unannotated tag with the same is present;
       # resolve this by force-fetching tags
       - name: "Force fetch tags"
-        run: git fetch --tags --force
+        run: |
+          git fetch --tags --force
+          git fetch https://github.com/gap-system/gap --tags --force
 
       - name: "Set up Python"
         uses: actions/setup-python@v2
