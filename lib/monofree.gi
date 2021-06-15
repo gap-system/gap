@@ -176,102 +176,50 @@ InstallMethod( GeneratorsSmallest,
 
 #############################################################################
 ##
-#F  FreeMonoid( <rank> )
-#F  FreeMonoid( <rank>, <name> )
-#F  FreeMonoid( <name1>, <name2>, ... )
-#F  FreeMonoid( <names> )
-#F  FreeMonoid( infinity, <name>, <init> )
+#F  FreeMonoid( [<wfilt>, ]<rank>[, <name>] )
+#F  FreeMonoid( [<wfilt>, ][<name1>[, <name2>[, ...]]] )
+#F  FreeMonoid( [<wfilt>, ]<names> )
+#F  FreeMonoid( [<wfilt>, ]infinity[, <name>][, <init>] )
 ##
 InstallGlobalFunction( FreeMonoid, function( arg )
-    local names,      # list of generators names
+    local rank,       # number of generators
           F,          # family of free monoid element objects
-          zarg,
-          lesy,       # filter for letter or syllable words family
-          M;          # free monoid, result
+          M,          # free monoid, result
+          processed;
 
-  lesy:=IsLetterWordsFamily; # default
-  if IsFilter(arg[1]) then
-    lesy:=arg[1];
-    zarg:=arg{[2..Length(arg)]};
-  else
-    zarg:=arg;
-  fi;
-
-    # Get and check the argument list, and construct names if necessary.
-    if   Length( zarg ) = 1 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( "m" );
-    elif Length( zarg ) = 2 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( zarg[2] );
-    elif Length( zarg ) = 3 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( zarg[2], zarg[3] );
-    elif Length( zarg ) = 1 and IsInt( zarg[1] ) and 0 <= zarg[1] then
-      names:= List( [ 1 .. zarg[1] ],
-                    i -> Concatenation( "m", String(i) ) );
-      MakeImmutable( names );
-    elif Length( zarg ) = 2 and IsInt( zarg[1] ) and 0 <= zarg[1] then
-      names:= List( [ 1 .. zarg[1] ],
-                    i -> Concatenation( zarg[2], String(i) ) );
-      MakeImmutable( names );
-    elif Length( zarg ) = 1 and IsList( zarg[1] ) and IsEmpty( zarg[1] ) then
-      names:= zarg[1];
-    elif 1 <= Length( zarg ) and ForAll( zarg, IsString ) then
-      names:= zarg;
-    elif Length( zarg ) = 1 and IsList( zarg[1] )
-                            and ForAll( zarg[1], IsString ) then
-      names:= zarg[1];
-    else
-      Error("usage: FreeMonoid(<name1>,<name2>..) or FreeMonoid(<rank>)");
-    fi;
-
-    # deal with letter words family types
-    if lesy=IsLetterWordsFamily then
-      if Length(names)>127 then
-	lesy:=IsWLetterWordsFamily;
-      else
-	lesy:=IsBLetterWordsFamily;
-      fi;
-    elif lesy=IsBLetterWordsFamily and Length(names)>127 then
-      lesy:=IsWLetterWordsFamily;
-    fi;
+    processed := FreeXArgumentProcessor( "FreeMonoid", "m", arg, true, true );
+    rank := Length( processed.names );
 
     # Construct the family of element objects of our monoid.
-    F:= NewFamily( "FreeMonoidElementsFamily", IsAssocWordWithOne,
-			  CanEasilySortElements, # the free monoid can.
-			  CanEasilySortElements # the free monoid can.
-			  and lesy);
+    F:= NewFamily( "FreeMonoidElementsFamily",
+          IsAssocWordWithOne,
+          CanEasilySortElements,
+          CanEasilySortElements and processed.lesy );
 
     # Install the data (names, no. of bits available for exponents, types).
-    StoreInfoFreeMagma( F, names, IsAssocWordWithOne );
+    StoreInfoFreeMagma( F, processed.names, IsAssocWordWithOne );
 
     # Make the monoid
-    if IsEmpty( names ) then
+    if rank = 0 then
       M:= MonoidByGenerators( [], One(F) );
-      SetIsFinite(M, true);
-      SetIsTrivial(M, true);
-      SetIsCommutative(M, true);
-    elif IsFinite( names ) then
-      M:= MonoidByGenerators( List( [ 1 .. Length( names ) ],
+    elif rank < infinity then
+      M:= MonoidByGenerators( List( [ 1 .. rank ],
                               i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
-      SetIsTrivial( M, false );
-      if Length(names) > 1 then
-          SetIsCommutative(M, false);
-      fi;
     else
       M:= MonoidByGenerators( InfiniteListOfGenerators( F ) );
-      SetIsTrivial( M, false );
-      SetIsFinite( M, false );
-      SetIsCommutative(M, false );
-      SetIsFinitelyGeneratedMonoid(M, false);
     fi;
 
+    # store the whole monoid in the family
+    FamilyObj(M)!.wholeMonoid:= M;
+    F!.freeMonoid:=M;
     SetIsFreeMonoid( M, true);
     SetIsWholeFamily( M, true );
 
-		# store the whole monoid in the family
-    FamilyObj(M)!.wholeMonoid:= M;
-    F!.freeMonoid:=M;
+    SetIsTrivial( M, rank = 0 );
+    SetIsFinite( M, rank = 0 );
+    SetIsFinitelyGeneratedMonoid(M, rank < infinity );
+    SetIsCommutative( M, rank <= 1 );
 
-    # Return the free monoid.
     return M;
 end );
 

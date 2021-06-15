@@ -101,12 +101,14 @@ calculations.
 
 <Subsection Label="Generator Names">
 <Heading>Generator Names</Heading>
-For groups created as finitely presented groups, including polycyclic groups, the
-generators are labelled, by default, with a letter and a number. Using the
-option <C>generatorNames</C> it is possible to influcence this naming. If
-this option holds a string, the generators are named with this string and
-numbers, if a list of strings of sufficient length is given, the generator
-names are taken from this list of strings.
+For groups created as finitely presented groups, including polycyclic groups,
+the generators are labelled, by default, with a letter and a number.
+It is possible to influence this naming with the option <C>generatorNames</C>,
+see Section&nbsp;<Ref Sect="Function Call With Options"/>.
+If this option holds a string, then the generators are named with this
+string and sequential numbers starting with <C>1</C>.
+If this option holds a list of sufficient length consisting of
+nonempty strings, then the generator names are taken from this list, in order.
 <P/>
 <Example><![CDATA[
 gap> GeneratorsOfGroup(AbelianGroup([5,7]));

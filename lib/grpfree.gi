@@ -416,117 +416,53 @@ InstallMethod( GeneratorsSmallest,
 
 #############################################################################
 ##
-#F  FreeGroup( <rank> ) . . . . . . . . . . . . . .  free group of given rank
-#F  FreeGroup( <rank>, <name> )
-#F  FreeGroup( <name1>, <name2>, ... )
-#F  FreeGroup( <names> )
-#F  FreeGroup( infinity, <name>, <init> )
+#F  FreeGroup( [<wfilt>,]<rank>[, <name>] ) . . . .  free group of given rank
+#F  FreeGroup( [<wfilt>,][<name1>[, <name2>[, ...]]] )
+#F  FreeGroup( [<wfilt>,]<names> )
+#F  FreeGroup( [<wfilt>,]infinity[, <name>][, <init>] )
 ##
 InstallGlobalFunction( FreeGroup, function ( arg )
-    local names,      # list of generators names
-          opt,
-          zarg,
-          lesy,       # filter for letter or syllable words family
+    local rank,       # number of generators
           F,          # family of free group element objects
-          G;          # free group, result
+          G,          # free group, result
+          processed;
 
-    if ValueOption("FreeGroupFamilyType")="syllable" then
-      lesy:=IsSyllableWordsFamily; # optional -- used in PQ
-    else
-      lesy:=IsLetterWordsFamily; # default
-    fi;
-    if IsFilter(arg[1]) then
-      lesy:=arg[1];
-      zarg:=arg{[2..Length(arg)]};
-    else
-      zarg:=arg;
-    fi;
-
-    # Get and check the argument list, and construct names if necessary.
-    if   Length( zarg ) = 1 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( "f" );
-    elif Length( zarg ) = 2 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( zarg[2] );
-    elif Length( zarg ) = 3 and zarg[1] = infinity then
-      names:= InfiniteListOfNames( zarg[2], zarg[3] );
-    elif Length( zarg ) = 1 and IsInt( zarg[1] ) and 0 <= zarg[1] then
-      names:= List( [ 1 .. zarg[1] ],
-                    i -> Concatenation( "f", String(i) ) );
-      MakeImmutable( names );
-    elif Length( zarg ) = 2 and IsInt( zarg[1] ) and 0 <= zarg[1] then
-      names:= List( [ 1 .. zarg[1] ],
-                    i -> Concatenation( zarg[2], String(i) ) );
-    elif Length( zarg ) = 1 and IsList( zarg[1] ) and IsEmpty( zarg[1] ) then
-      names:= zarg[1];
-    elif 1 <= Length( zarg ) and ForAll( zarg, IsString ) then
-      names:= zarg;
-    elif Length( zarg ) = 1 and IsList( zarg[1] )
-                            and ForAll( zarg[1], IsString ) then
-      names:= zarg[1];
-    else
-      Error("usage: FreeGroup(<name1>,<name2>..) or FreeGroup(<rank>)");
-    fi;
-
-    opt:=ValueOption("generatorNames");
-    if opt<>fail then
-      if IsString(opt) then
-      names:= List( [ 1 .. Length(names) ],
-                    i -> Concatenation( opt, String(i) ) );
-      elif IsList(opt) and ForAll(opt,IsString) 
-        and Length(names)<=Length(opt) then
-        names:=opt{[1..Length(names)]};
-        MakeImmutable( names );
-      else
-        Error("Cannot process `generatorNames` option");
-      fi;
-    fi;
-
-    # deal with letter words family types
-    if lesy=IsLetterWordsFamily then
-      if Length(names)>127 then
-        lesy:=IsWLetterWordsFamily;
-      else
-        lesy:=IsBLetterWordsFamily;
-      fi;
-    elif lesy=IsBLetterWordsFamily and Length(names)>127 then
-      lesy:=IsWLetterWordsFamily;
-    fi;
+    processed := FreeXArgumentProcessor( "FreeGroup", "f", arg, true, true );
+    rank := Length( processed.names );
 
     # Construct the family of element objects of our group.
-    F:= NewFamily( "FreeGroupElementsFamily", IsAssocWordWithInverse
-                                              and IsElementOfFreeGroup,
-  			  CanEasilySortElements, # the free group can.
-  			  CanEasilySortElements # the free group can.
-  			  and lesy);
+    F := NewFamily( "FreeGroupElementsFamily",
+                    IsAssocWordWithInverse and IsElementOfFreeGroup,
+                    CanEasilySortElements,
+                    CanEasilySortElements and processed.lesy );
 
     # Install the data (names, no. of bits available for exponents, types).
-    StoreInfoFreeMagma( F, names, IsAssocWordWithInverse
-                                  and IsElementOfFreeGroup );
+    StoreInfoFreeMagma( F, processed.names, IsAssocWordWithInverse and
+                                            IsElementOfFreeGroup );
 
     # Make the group.
-    if IsEmpty( names ) then
+    if rank = 0 then
       G:= GroupByGenerators( [], One( F ) );
-    elif IsFinite( names ) then
-      G:= GroupByGenerators( List( [ 1 .. Length( names ) ],
+    elif rank < infinity then
+      G:= GroupByGenerators( List( [ 1 .. rank ],
                                    i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
     else
       G:= GroupByGenerators( InfiniteListOfGenerators( F ) );
-      SetIsFinitelyGeneratedGroup( G, false );
     fi;
 
     SetIsWholeFamily( G, true );
 
-    # Store whether the group is trivial / abelian / solvable
-    SetIsTrivial( G, Length( names ) = 0 );
-    SetIsAbelian( G, Length( names ) <= 1 );
-    SetIsSolvableGroup( G, Length( names ) <= 1 );
+    # Store whether group is finitely generated / trivial / abelian / solvable.
+    SetIsFinitelyGeneratedGroup( G, rank < infinity );
+    SetIsTrivial( G, rank = 0 );
+    SetIsAbelian( G, rank <= 1 );
+    SetIsSolvableGroup( G, rank <= 1 );
 
     # Store the whole group in the family.
     FamilyObj(G)!.wholeGroup := G;
     F!.freeGroup:=G;
     SetFilterObj(G,IsGroupOfFamily);
 
-    # Return the free group.
     return G;
 end );
 

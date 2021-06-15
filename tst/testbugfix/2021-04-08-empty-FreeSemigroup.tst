@@ -1,11 +1,31 @@
 # See https://github.com/gap-system/gap/issues/1385
 gap> FreeSemigroup();
-Error, free semigroups of rank zero are not supported
+#I  FreeSemigroup cannot make an object with no generators
+Error, usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+              FreeSemigroup( [<wfilt>, ]<name1>[, <name2>[, ...]] )
+              FreeSemigroup( [<wfilt>, ]<names> )
+              FreeSemigroup( [<wfilt>, ]infinity[, <name>][, <init>] )
 gap> FreeSemigroup([]);
-Error, free semigroups of rank zero are not supported
+#I  FreeSemigroup cannot make an object with no generators
+Error, usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+              FreeSemigroup( [<wfilt>, ]<name1>[, <name2>[, ...]] )
+              FreeSemigroup( [<wfilt>, ]<names> )
+              FreeSemigroup( [<wfilt>, ]infinity[, <name>][, <init>] )
 gap> FreeSemigroup("");
-Error, free semigroups of rank zero are not supported
+#I  FreeSemigroup cannot make an object with no generators
+Error, usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+              FreeSemigroup( [<wfilt>, ]<name1>[, <name2>[, ...]] )
+              FreeSemigroup( [<wfilt>, ]<names> )
+              FreeSemigroup( [<wfilt>, ]infinity[, <name>][, <init>] )
 gap> FreeSemigroup(0);
-Error, free semigroups of rank zero are not supported
+#I  FreeSemigroup cannot make an object with no generators
+Error, usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+              FreeSemigroup( [<wfilt>, ]<name1>[, <name2>[, ...]] )
+              FreeSemigroup( [<wfilt>, ]<names> )
+              FreeSemigroup( [<wfilt>, ]infinity[, <name>][, <init>] )
 gap> FreeSemigroup(0, "name");
-Error, free semigroups of rank zero are not supported
+#I  FreeSemigroup cannot make an object with no generators
+Error, usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
+              FreeSemigroup( [<wfilt>, ]<name1>[, <name2>[, ...]] )
+              FreeSemigroup( [<wfilt>, ]<names> )
+              FreeSemigroup( [<wfilt>, ]infinity[, <name>][, <init>] )

@@ -468,52 +468,27 @@ end );
 
 #############################################################################
 ##
-#F  FreeMagma( <rank> )
-#F  FreeMagma( <rank>, <name> )
-#F  FreeMagma( <name1>, <name2>, ... )
+#F  FreeMagma( <rank>[, <name>] )
+#F  FreeMagma( <name1>[, <name2>[, ...]] )
 #F  FreeMagma( <names> )
-#F  FreeMagma( infinity, <name>, <init> )
+#F  FreeMagma( infinity[, <name>][, <init>] )
 ##
-InstallGlobalFunction( FreeMagma,
-    function( arg )
-    local   names,      # list of generators names
-            F,          # family of free magma element objects
-            M;          # free magma, result
+InstallGlobalFunction( FreeMagma, function( arg )
+    local processed,
+          F,          # family of free magma element objects
+          M;          # free magma, result
 
-    # Get and check the argument list, and construct names if necessary.
-    if   Length( arg ) = 1 and arg[1] = infinity then
-      names:= InfiniteListOfNames( "x" );
-    elif Length( arg ) = 2 and arg[1] = infinity then
-      names:= InfiniteListOfNames( arg[2] );
-    elif Length( arg ) = 3 and arg[1] = infinity then
-      names:= InfiniteListOfNames( arg[2], arg[3] );
-    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
-      names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( "x", String(i) ) );
-      MakeImmutable( names );
-    elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
-      names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( arg[2], String(i) ) );
-      MakeImmutable( names );
-    elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
-      names:= arg;
-    elif Length( arg ) = 1 and IsList( arg[1] )
-                           and not IsEmpty( arg[1] )
-                           and ForAll( arg[1], IsString ) then
-      names:= arg[1];
-    else
-      Error("usage: FreeMagma(<name1>,<name2>..),FreeMagma(<rank>)");
-    fi;
+    processed := FreeXArgumentProcessor( "FreeMagma", "x", arg, false, false );
 
     # Construct the family of element objects of our magma.
     F:= NewFamily( "FreeMagmaElementsFamily", IsNonassocWord );
 
     # Store the names and the default type.
-    F!.names:= names;
+    F!.names:= processed.names;
     F!.defaultType:= NewType( F, IsNonassocWord and IsBracketRep );
 
     # Make the magma.
-    if IsFinite( names ) then
+    if IsFinite( processed.names ) then
       M:= MagmaByGenerators( MagmaGeneratorsOfFamily( F ) );
     else
       M:= MagmaByGenerators( InfiniteListOfGenerators( F ) );
@@ -527,43 +502,20 @@ end );
 
 #############################################################################
 ##
-#F  FreeMagmaWithOne( <rank> )
-#F  FreeMagmaWithOne( <rank>, <name> )
-#F  FreeMagmaWithOne( <name1>, <name2>, ... )
+#F  FreeMagmaWithOne( <rank>[, <name>] )
+#F  FreeMagmaWithOne( [<name1>[, <name2>[, ...]]] )
 #F  FreeMagmaWithOne( <names> )
-#F  FreeMagmaWithOne( infinity, <name>, <init> )
+#F  FreeMagmaWithOne( infinity[, <name>][, <init>] )
 ##
 InstallGlobalFunction( FreeMagmaWithOne,
     function( arg )
-    local   names,      # list of generators names
-            F,          # family of free magma element objects
-            M;          # free magma, result
+    local names,      # list of generators names
+          F,          # family of free magma element objects
+          M,          # free magma, result
+          processed;
 
-    # Get and check the argument list, and construct names if necessary.
-    if   Length( arg ) = 1 and arg[1] = infinity then
-      names:= InfiniteListOfNames( "x" );
-    elif Length( arg ) = 2 and arg[1] = infinity then
-      names:= InfiniteListOfNames( arg[2] );
-    elif Length( arg ) = 3 and arg[1] = infinity then
-      names:= InfiniteListOfNames( arg[2], arg[3] );
-    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
-      names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( "x", String(i) ) );
-      MakeImmutable( names );
-    elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
-      names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( arg[2], String(i) ) );
-      MakeImmutable( names );
-    elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
-      names:= arg;
-    elif Length( arg ) = 1 and IsList( arg[1] )
-                           and not IsEmpty( arg[1])
-                           and ForAll( arg[1], IsString ) then
-      names:= arg[1];
-    else
-      Error( "usage: FreeMagmaWithOne(<name1>,<name2>..),",
-             "FreeMagmaWithOne(<rank>)" );
-    fi;
+    processed := FreeXArgumentProcessor( "FreeMagmaWithOne", "x", arg, false, true );
+    names := processed.names;
 
     # Handle the trivial case.
     if IsEmpty( names ) then
