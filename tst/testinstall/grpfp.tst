@@ -1,4 +1,4 @@
-#@local a,b,c2,e,f,g,iter,l,s,F,rels
+#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;
 gap> c2:= f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];;
@@ -107,6 +107,13 @@ gap> rels:=ParseRelators(F,"a2,b3,c4,abC");
 [ a^2, b^3, c^4, a*b*c^-1 ]
 gap> IsomorphismSimplifiedFpGroup(F/rels);
 [ a, b, c ] -> [ c*b^-1, b, c ]
+
+# ClosureSubgroupNC will not force a triviality or membership test
+# if we do not know anything.
+gap> f:=FreeGroup(3);;
+gap> g:=f/[f.1*f.2,f.2^2,(f.2*f.3)^7];;
+gap> sub:=SubgroupNC(g,[g.1*g.2^3]);;
+gap> ClosureSubgroupNC(sub,g.3);;
 
 #
 gap> STOP_TEST( "grpfp.tst", 1);
