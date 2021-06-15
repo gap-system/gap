@@ -1456,3 +1456,142 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
   {} -> -RankFilter(IsMatrixOrMatrixObj),
   ASS_LIST );
 
+############################################################################
+# Elementary matrix operations
+############################################################################
+
+InstallMethod( MultMatrixRowLeft, "for a mutable matrix object, a row number, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  function( mat, row, scalar )
+    local i;
+  
+    for i in [1..NrCols(mat)] do
+        mat[row,i] := scalar * mat[row,i];
+    od;
+    
+  end );
+
+############################################################################
+
+InstallMethod( MultMatrixColumnRight, "for a mutable matrix object, a column number, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  function( mat, column, scalar )
+    local i;
+  
+    for i in [1..NrRows(mat)] do
+        mat[i,column] := mat[i,column] * scalar;
+    od;
+    
+  end );
+
+############################################################################
+
+InstallMethod( MultMatrixRowRight, "for a mutable matrix object, a row number, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  function( mat, row, scalar )
+      local i;
+  
+    for i in [1..NrCols(mat)] do
+        mat[row,i] := mat[row,i] * scalar;
+    od;
+    
+  end );
+
+############################################################################
+
+InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, a column number, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  function( mat, column, scalar )
+    local i;
+  
+    for i in [1..NrRows(mat)] do
+        mat[i,column] := scalar * mat[i,column];
+    od;
+    
+  end );
+
+############################################################################
+
+InstallMethod( AddMatrixRowsLeft, "for a mutable matrix object, two row numbers, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  function( mat, row1, row2, scalar )
+    local i;
+
+    for i in [1..NrCols(mat)] do
+        mat[row1,i] := mat[row1,i] + scalar * mat[row2,i];
+    od;
+
+  end );
+ 
+ ############################################################################
+
+InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, two row numbers, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  function( mat, row1, row2, scalar )
+    local i;
+ 
+    for i in [1..NrCols(mat)] do
+        mat[row1,i] := mat[row1,i] + mat[row2,i] * scalar;
+    od;
+
+  end );
+
+############################################################################
+
+InstallMethod( AddMatrixColumnsRight, "for a mutable matrix object, two column numbers, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  function( mat, column1, column2, scalar )
+    local i;
+
+    for i in [1..NrRows(mat)] do
+        mat[i,column1] := mat[i,column1] + mat[i,column2] * scalar;
+    od;
+
+  end );
+
+############################################################################
+
+InstallMethod( AddMatrixColumnsLeft, "for a mutable matrix object, two column numbers, and a scalar",
+  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  function( mat, column1, column2, scalar )
+    local i;
+
+    for i in [1..NrRows(mat)] do
+        mat[i,column1] := mat[i,column1] + scalar * mat[i,column2] ;
+    od;
+
+  end );
+
+############################################################################  
+
+InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
+  [ IsMatrixObj and IsMutable, IsInt, IsInt ],
+  function( mat, row1, row2 )
+    local temp, i;
+    
+    if row1 <> row2 then
+        for i in [1..NrCols(mat)] do
+            temp := mat[row1,i];
+            mat[row1,i] := mat[row2,i];
+            mat[row2,i] := temp;
+        od; 
+    fi;
+
+  end );
+
+############################################################################
+
+InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column numbers",
+  [ IsMatrixObj and IsMutable, IsInt, IsInt ],
+  function( mat, column1, column2 )
+    local temp, i;
+    
+    if column1 <> column2 then
+        for i in [1..NrRows(mat)] do
+            temp := mat[i,column1];
+            mat[i,column1] := mat[i,column2];
+            mat[i,column2] := temp;
+        od; 
+    fi;
+    
+  end );

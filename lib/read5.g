@@ -108,6 +108,7 @@ ReadLib( "fldabnum.gi" );
 ReadLib( "padics.gi"   );
 
 ReadLib( "matobj.gi"   );
+ReadLib( "matrobjrowlist.gi"   );
 ReadLib( "vecmat.gi"   );
 ReadLib( "vec8bit.gi"  );
 ReadLib( "mat8bit.gi"  );

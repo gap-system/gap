@@ -286,5 +286,22 @@ for the new type of vector or matrix objects.
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Basic operations for row/column reductions">
+<Heading>Basic operations for row/column reductions</Heading>
+
+<#Include Label="MultMatrixRow">
+<#Include Label="MultMatrixRowRight">
+<#Include Label="MultMatrixColumn">
+<#Include Label="MultMatrixColumnLeft">
+<#Include Label="AddMatrixRows">
+<#Include Label="AddMatrixRowsRight">
+<#Include Label="AddMatrixColumns">
+<#Include Label="AddMatrixColumnsLeft">
+<#Include Label="SwapMatrixRows">
+<#Include Label="SwapMatrixColumns">
+
+</Section>
+
 </Chapter>
 
