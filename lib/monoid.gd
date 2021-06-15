@@ -184,62 +184,127 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 
 #############################################################################
 ##
-#F  FreeMonoid( [<wfilt>,]<rank> )
-#F  FreeMonoid( [<wfilt>,]<rank>, <name> )
-#F  FreeMonoid( [<wfilt>,]<name1>, <name2>, ... )
+#F  FreeMonoid( [<wfilt>,]<rank>[, <name>] )
+#F  FreeMonoid( [<wfilt>,][<name1>[, <name2>[, ...]]] )
 #F  FreeMonoid( [<wfilt>,]<names> )
-#F  FreeMonoid( [<wfilt>,]infinity, <name>, <init> )
+#F  FreeMonoid( [<wfilt>,]infinity[, <name>][, <init>] )
 ##
 ##  <#GAPDoc Label="FreeMonoid">
 ##  <ManSection>
 ##  <Heading>FreeMonoid</Heading>
 ##  <Func Name="FreeMonoid" Arg='[wfilt, ]rank[, name]'
 ##   Label="for given rank"/>
-##  <Func Name="FreeMonoid" Arg='[wfilt, ]name1, name2, ...'
+##  <Func Name="FreeMonoid" Arg='[wfilt, ][name1[, name2[, ...]]]'
 ##   Label="for various names"/>
 ##  <Func Name="FreeMonoid" Arg='[wfilt, ]names'
 ##   Label="for a list of names"/>
-##  <Func Name="FreeMonoid" Arg='[wfilt, ]infinity, name, init'
+##  <Func Name="FreeMonoid" Arg='[wfilt, ]infinity[, name][, init]'
 ##   Label="for infinitely many generators"/>
 ##
 ##  <Description>
-##  Called with a positive integer <A>rank</A>,
-##  <Ref Func="FreeMonoid" Label="for given rank"/> returns
-##  a free monoid on <A>rank</A> generators.
-##  If the optional argument <A>name</A> is given then the generators are
-##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
-##  that is, each name is the concatenation of the string <A>name</A> and an
-##  integer from <C>1</C> to <A>range</A>.
-##  The default for <A>name</A> is the string <C>"m"</C>.
-##  <P/>
-##  Called in the second form,
-##  <Ref Func="FreeMonoid" Label="for various names"/> returns
-##  a free monoid on as many generators as arguments, printed as
-##  <A>name1</A>, <A>name2</A> etc.
-##  <P/>
-##  Called in the third form,
-##  <Ref Func="FreeMonoid" Label="for a list of names"/> returns
-##  a free monoid on as many generators as the length of the list
-##  <A>names</A>, the <M>i</M>-th generator being printed as
-##  <A>names</A><C>[</C><M>i</M><C>]</C>.
-##  <P/>
-##  Called in the fourth form,
-##  <Ref Func="FreeMonoid" Label="for infinitely many generators"/>
-##  returns a free monoid on infinitely many generators, where the first
-##  generators are printed by the names in the list <A>init</A>,
-##  and the other generators by <A>name</A> and an appended number.
-##  <P/>
-##  If the extra argument <A>wfilt</A> is given, it must be either
-##  <Ref Filt="IsSyllableWordsFamily"/> or <Ref Filt="IsLetterWordsFamily"/>
-##  or <Ref Filt="IsWLetterWordsFamily"/> or
-##  <Ref Filt="IsBLetterWordsFamily"/>.
-##  This filter then specifies the representation used for the elements of
+##  <C>FreeMonoid</C> returns a free monoid. The number of
+##  generators, and the labels given to the generators, can be specified in
+##  several different ways.
+##  Warning: the labels of generators are only an aid for printing,
+##  and do not necessarily distinguish generators;
+##  see the examples at the end of
+##  <Ref Func="FreeSemigroup" Label="for given rank"/>
+##  for more information.
+##  <List>
+##    <Mark>
+##      1: For a given rank, and an optional generator name prefix
+##    </Mark>
+##    <Item>
+##      Called with a nonnegative integer <A>rank</A>,
+##      <Ref Func="FreeMonoid" Label="for given rank"/> returns
+##      a free monoid on <A>rank</A> generators.
+##      The optional argument <A>name</A> must be a string;
+##      its default value is <C>"m"</C>. <P/>
+##
+##      If <A>name</A> is not given but the <C>generatorNames</C> option is,
+##      then this option is respected as described in
+##      Section&nbsp;<Ref Sect="Generator Names"/>. <P/>
+##
+##      Otherwise, the generators of the returned free monoid are labelled
+##      <A>name</A><C>1</C>, ..., <A>name</A><C>k</C>,
+##      where <C>k</C> is the value of <A>rank</A>. <P/>
+##    </Item>
+##    <Mark>2: For given generator names</Mark>
+##    <Item>
+##      Called with various nonempty strings,
+##      <Ref Func="FreeMonoid" Label="for various names"/> returns
+##      a free monoid on as many generators as arguments, which are labelled
+##      <A>name1</A>, <A>name2</A>, etc.
+##    </Item>
+##    <Mark>3: For a given list of generator names</Mark>
+##    <Item>
+##      Called with a finite list <A>names</A> of
+##      nonempty strings,
+##      <Ref Func="FreeMonoid" Label="for a list of names"/> returns
+##      a free monoid on <C>Length(<A>names</A>)</C> generators, whose
+##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
+##    </Item>
+##    <Mark>
+##      4: For the rank <K>infinity</K>,
+##         an optional default generator name prefix,
+##         and an optional finite list of generator names
+##    </Mark>
+##    <Item>
+##      Called in the fourth form,
+##      <Ref Func="FreeMonoid" Label="for infinitely many generators"/>
+##      returns a free monoid on infinitely many generators.
+##      The optional argument <A>name</A> must be a string; its default value is
+##      <C>"m"</C>,
+##      and the optional argument <A>init</A> must be a finite list of
+##      nonempty strings; its default value is an empty list.
+##      The generators are initially labelled according to the list <A>init</A>,
+##      followed by
+##      <A>name</A><C>i</C> for each <C>i</C> in the range from
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##    </Item>
+##  </List>
+##
+##  If the optional first argument <A>wfilt</A> is given, then it must be either
+##  <C>IsSyllableWordsFamily</C>, <C>IsLetterWordsFamily</C>,
+##  <C>IsWLetterWordsFamily</C>, or <C>IsBLetterWordsFamily</C>.
+##  This filter specifies the representation used for the elements of
 ##  the free monoid
 ##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
 ##  If no such filter is given, a letter representation is used.
 ##  <P/>
 ##  For more on associative words see 
 ##  Chapter&nbsp;<Ref Chap="Associative Words"/>.
+##
+##  <Example><![CDATA[
+##  gap> FreeMonoid(5);
+##  <free monoid on the generators [ m1, m2, m3, m4, m5 ]>
+##  gap> FreeMonoid(4, "gen");
+##  <free monoid on the generators [ gen1, gen2, gen3, gen4 ]>
+##  gap> FreeMonoid(3 : generatorNames := "turbo");
+##  <free monoid on the generators [ turbo1, turbo2, turbo3 ]>
+##  gap> FreeMonoid(2 : generatorNames := ["u", "v", "w"]);
+##  <free monoid on the generators [ u, v ]>
+##  gap> FreeMonoid(); FreeMonoid(0); FreeMonoid([]);
+##  <free monoid of rank zero>
+##  <free monoid of rank zero>
+##  <free monoid of rank zero>
+##  gap> FreeMonoid("a", "b", "c");
+##  <free monoid on the generators [ a, b, c ]>
+##  gap> FreeMonoid(["x", "y"]);
+##  <free monoid on the generators [ x, y ]>
+##  gap> FreeMonoid(infinity);
+##  <free monoid with infinity generators>
+##  gap> F := FreeMonoid(infinity, "g", ["a", "b"]);
+##  <free monoid with infinity generators>
+##  gap> GeneratorsOfMonoid(F){[1..4]};
+##  [ a, b, g3, g4 ]
+##  gap> GeneratorsOfMonoid(FreeMonoid(infinity, "gen")){[1..3]};
+##  [ gen1, gen2, gen3 ]
+##  gap> GeneratorsOfMonoid(FreeMonoid(infinity, [ "f", "g" ])){[1..3]};
+##  [ f, g, m3 ]
+##  gap> FreeMonoid(IsSyllableWordsFamily, 50);
+##  <free monoid with 50 generators>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -279,59 +279,96 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 #############################################################################
 ##
 #F  FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
-#F  FreeSemigroup( [<wfilt>, ]<name1>[, <name2>, ...] )
+#F  FreeSemigroup( [<wfilt>, ]<name1>[, <name2>[, ...]] )
 #F  FreeSemigroup( [<wfilt>, ]<names> )
-#F  FreeSemigroup( [<wfilt>, ]infinity[, <name>[, <init>]] )
+#F  FreeSemigroup( [<wfilt>, ]infinity[, <name>][, <init>] )
 ##
 ##  <#GAPDoc Label="FreeSemigroup">
 ##  <ManSection>
 ##  <Heading>FreeSemigroup</Heading>
 ##  <Func Name="FreeSemigroup" Arg='[wfilt, ]rank[, name]'
 ##   Label="for given rank"/>
-##  <Func Name="FreeSemigroup" Arg='[wfilt, ]name1, name2, ...'
+##  <Func Name="FreeSemigroup" Arg='[wfilt, ]name1[, name2[, ...]]'
 ##   Label="for various names"/>
 ##  <Func Name="FreeSemigroup" Arg='[wfilt, ]names'
 ##   Label="for a list of names"/>
-##  <Func Name="FreeSemigroup" Arg='[wfilt, ]infinity[, name[, init]]'
+##  <Func Name="FreeSemigroup" Arg='[wfilt, ]infinity[, name][, init]'
 ##   Label="for infinitely many generators"/>
 ##
 ##  <Description>
-##  Called with a positive integer <A>rank</A>,
-##  <Ref Func="FreeSemigroup" Label="for given rank"/> returns
-##  a free semigroup on <A>rank</A> generators.
-##  If the optional argument <A>name</A> (a string) is given,
-##  then the generators are
-##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
-##  that is, each name is the concatenation of the string <A>name</A> and an
-##  integer from <C>1</C> to <A>rank</A>.
-##  The default for <A>name</A> is the string <C>"s"</C>.
-##  <P/>
-##  Called in the second form,
-##  <Ref Func="FreeSemigroup" Label="for various names"/> returns
-##  a free semigroup on as many generators as arguments, printed as
-##  <A>name1</A>, <A>name2</A> etc.
-##  <P/>
-##  Called in the third form,
-##  <Ref Func="FreeSemigroup" Label="for a list of names"/> returns
-##  a free semigroup on as many generators as the length of the list
-##  <A>names</A>, the <M>i</M>-th generator being printed as
-##  <A>names</A><M>[i]</M>.
-##  <P/>
-##  Called in the fourth form,
-##  <Ref Func="FreeSemigroup" Label="for infinitely many generators"/>
-##  returns a free semigroup on infinitely many generators, where the first
-##  generators are printed by the names in the list <A>init</A>,
-##  and the other generators by <A>name</A> and an appended number.
-##  <P/>
-##  If the extra argument <A>wfilt</A> is given, it must be either
-##  <Ref Filt="IsSyllableWordsFamily"/> or <Ref Filt="IsLetterWordsFamily"/>
-##  or <Ref Filt="IsWLetterWordsFamily"/> or
-##  <Ref Filt="IsBLetterWordsFamily"/>.
-##  This filter then specifies the representation used for the elements of
+##  <C>FreeSemigroup</C> returns a free semigroup. The number of
+##  generators, and the labels given to the generators, can be specified in
+##  several different ways.
+##  Warning: the labels of generators are only an aid for printing,
+##  and do not necessarily distinguish generators;
+##  see the examples at the end for more information.
+##  <List>
+##    <Mark>
+##      1: For a given rank, and an optional generator name prefix
+##    </Mark>
+##    <Item>
+##      Called with a positive integer <A>rank</A>,
+##      <Ref Func="FreeSemigroup" Label="for given rank"/> returns
+##      a free semigroup on <A>rank</A> generators.
+##      The optional argument <A>name</A> must be a string;
+##      its default value is <C>"s"</C>. <P/>
+##
+##      If <A>name</A> is not given but the <C>generatorNames</C> option is,
+##      then this option is respected as described in
+##      Section&nbsp;<Ref Sect="Generator Names"/>. <P/>
+##
+##      Otherwise, the generators of the returned free semigroup are labelled
+##      <A>name</A><C>1</C>, ..., <A>name</A><C>k</C>,
+##      where <C>k</C> is the value of <A>rank</A>. <P/>
+##    </Item>
+##    <Mark>2: For given generator names</Mark>
+##    <Item>
+##      Called with various (at least one) nonempty strings,
+##      <Ref Func="FreeSemigroup" Label="for various names"/> returns
+##      a free semigroup on as many generators as arguments, which are labelled
+##      <A>name1</A>, <A>name2</A>, etc.
+##    </Item>
+##    <Mark>3: For a given list of generator names</Mark>
+##    <Item>
+##      Called with a nonempty finite list <A>names</A> of
+##      nonempty strings,
+##      <Ref Func="FreeSemigroup" Label="for a list of names"/> returns
+##      a free semigroup on <C>Length(<A>names</A>)</C> generators, whose
+##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
+##    </Item>
+##    <Mark>
+##      4: For the rank <K>infinity</K>,
+##         an optional default generator name prefix,
+##         and an optional finite list of generator names
+##    </Mark>
+##    <Item>
+##      Called in the fourth form,
+##      <Ref Func="FreeSemigroup" Label="for infinitely many generators"/>
+##      returns a free semigroup on infinitely many generators.
+##      The optional argument <A>name</A> must be a string; its default value is
+##      <C>"s"</C>,
+##      and the optional argument <A>init</A> must be a finite list of
+##      nonempty strings; its default value is an empty list.
+##      The generators are initially labelled according to the list <A>init</A>,
+##      followed by
+##      <A>name</A><C>i</C> for each <C>i</C> in the range from
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>; such a label is not
+##      allowed to appear in <A>init</A>.
+##    </Item>
+##  </List>
+##
+##  If the optional first argument <A>wfilt</A> is given, then it must be either
+##  <C>IsSyllableWordsFamily</C>, <C>IsLetterWordsFamily</C>,
+##  <C>IsWLetterWordsFamily</C>, or <C>IsBLetterWordsFamily</C>.
+##  This filter specifies the representation used for the elements of
 ##  the free semigroup
 ##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
 ##  If no such filter is given, a letter representation is used.
 ##  <P/>
+##
+##  For more on associative words see 
+##  Chapter&nbsp;<Ref Chap="Associative Words"/>.  <P/>
+##
 ##  <Example><![CDATA[
 ##  gap> f1 := FreeSemigroup( 3 );
 ##  <free semigroup on the generators [ s1, s2, s3 ]>
@@ -342,20 +379,32 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  <free semigroup on the generators [ gen1, gen2 ]>
 ##  gap> f4 := FreeSemigroup( ["gen1" , "gen2"] );
 ##  <free semigroup on the generators [ gen1, gen2 ]>
+##  gap> FreeSemigroup( 3 : generatorNames := "boom" );
+##  <free semigroup on the generators [ boom1, boom2, boom3 ]>
+##  gap> FreeSemigroup( 2 : generatorNames := [ "u", "v", "w" ] );
+##  <free semigroup on the generators [ u, v ]>
+##  gap> FreeSemigroup( infinity ) ;
+##  <free semigroup on the generators [ s1, s2, ... ]>
+##  gap> F := FreeSemigroup( infinity, "g", [ "a", "b" ]);
+##  <free semigroup on the generators [ a, b, ... ]>
+##  gap> GeneratorsOfSemigroup( F ){[1..4]};
+##  [ a, b, g3, g4 ]
+##  gap> GeneratorsOfSemigroup( FreeSemigroup( infinity, "gen" ) ){[1..3]};
+##  [ gen1, gen2, gen3 ]
+##  gap> GeneratorsOfSemigroup( FreeSemigroup( infinity, [ "f" ] ) ){[1..3]};
+##  [ f, s2, s3 ]
+##  gap> FreeSemigroup(IsSyllableWordsFamily, 5);
+##  <free semigroup on the generators [ s1, s2, s3, s4, s5 ]>
 ##  ]]></Example>
-##  <P/>
-##  For more on associative words see 
-##  Chapter&nbsp;<Ref Chap="Associative Words"/>.
 ##  <P/>
 ##  Each free object defines a unique alphabet (and a unique family of words).
 ##  Its generators are the letters of this alphabet,
-##  thus words of length one.
-##  <P/>
+##  thus words of length one. <P/>
 ##  <Example><![CDATA[
-##  gap> FreeGroup( 5 );
-##  <free group on the generators [ f1, f2, f3, f4, f5 ]>
-##  gap> FreeGroup( "a", "b" );
-##  <free group on the generators [ a, b ]>
+##  gap> FreeSemigroup( 5 );
+##  <free semigroup on the generators [ s1, s2, s3, s4, s5 ]>
+##  gap> FreeMonoid( "a", "b" );
+##  <free monoid on the generators [ a, b ]>
 ##  gap> FreeGroup( infinity );
 ##  <free group with infinity generators>
 ##  gap> FreeSemigroup( "x", "y" );
@@ -370,18 +419,20 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  names for the letters.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> f:= FreeGroup( "x", "x" );  gens:= GeneratorsOfGroup( f );;
+##  gap> f := FreeGroup( "x", "x" );
 ##  <free group on the generators [ x, x ]>
+##  gap> gens := GeneratorsOfGroup( f );
+##  [ x, x ]
 ##  gap> gens[1] = gens[2];
 ##  false
 ##  gap> f:= FreeGroup( "f1*f2", "f2^-1", "Group( [ f1, f2 ] )" );
 ##  <free group on the generators [ f1*f2, f2^-1, Group( [ f1, f2 ] ) ]>
 ##  gap> gens:= GeneratorsOfGroup( f );;
-##  gap> gens[1]*gens[2];
+##  gap> gens[1] * gens[2];
 ##  f1*f2*f2^-1
-##  gap> gens[1]/gens[3];
+##  gap> gens[1] / gens[3];
 ##  f1*f2*Group( [ f1, f2 ] )^-1
-##  gap> gens[3]/gens[1]/gens[2];
+##  gap> gens[3] / gens[1] / gens[2];
 ##  Group( [ f1, f2 ] )*f1*f2^-1*f2^-1^-1
 ##  ]]></Example>
 ##  </Description>

@@ -771,48 +771,109 @@ DeclareGlobalFunction("FreeXArgumentProcessor");
 #############################################################################
 ##
 #F  FreeMagma( <rank>[, <name>] )
-#F  FreeMagma( <name1>, <name2>, ... )
+#F  FreeMagma( <name1>[, <name2>[, ...]] )
 #F  FreeMagma( <names> )
-#F  FreeMagma( infinity, <name>, <init> )
+#F  FreeMagma( infinity[, <name>][, <init>] )
 ##
 ##  <#GAPDoc Label="FreeMagma">
 ##  <ManSection>
 ##  <Heading>FreeMagma</Heading>
 ##  <Func Name="FreeMagma" Arg='rank[, name]'
 ##   Label="for given rank"/>
-##  <Func Name="FreeMagma" Arg='name1, name2, ...'
+##  <Func Name="FreeMagma" Arg='name1[, name2[, ...]]'
 ##   Label="for various names"/>
 ##  <Func Name="FreeMagma" Arg='names'
 ##   Label="for a list of names"/>
-##  <Func Name="FreeMagma" Arg='infinity, name, init'
+##  <Func Name="FreeMagma" Arg='infinity[, name][, init]'
 ##   Label="for infinitely many generators"/>
 ##
 ##  <Description>
-##  Called with a positive integer <A>rank</A>,
-##  <Ref Func="FreeMagma" Label="for given rank"/> returns
-##  a free magma on <A>rank</A> generators.
-##  If the optional argument <A>name</A> is given then the generators are
-##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
-##  that is, each name is the concatenation of the string <A>name</A> and an
-##  integer from <C>1</C> to <A>range</A>.
-##  The default for <A>name</A> is the string <C>"m"</C>.
-##  <P/>
-##  Called in the second form,
-##  <Ref Func="FreeMagma" Label="for various names"/> returns
-##  a free magma on as many generators as arguments, printed as
-##  <A>name1</A>, <A>name2</A> etc.
-##  <P/>
-##  Called in the third form,
-##  <Ref Func="FreeMagma" Label="for a list of names"/> returns
-##  a free magma on as many generators as the length of the list
-##  <A>names</A>, the <M>i</M>-th generator being printed as
-##  <A>names</A><C>[</C><M>i</M><C>]</C>.
-##  <P/>
-##  Called in the fourth form,
-##  <Ref Func="FreeMagma" Label="for infinitely many generators"/>
-##  returns a free magma on infinitely many generators, where the first
-##  generators are printed by the names in the list <A>init</A>,
-##  and the other generators by <A>name</A> and an appended number.
+##  <C>FreeMagma</C> returns a free magma. The number of
+##  generators, and the labels given to the generators, can be specified in
+##  several different ways.
+##  Warning: the labels of generators are only an aid for printing,
+##  and do not necessarily distinguish generators;
+##  see the examples at the end of
+##  <Ref Func="FreeSemigroup" Label="for given rank"/>
+##  for more information.
+##  <List>
+##    <Mark>
+##      1: For a given rank, and an optional generator name prefix
+##    </Mark>
+##    <Item>
+##      Called with a positive integer <A>rank</A>,
+##      <Ref Func="FreeMagma" Label="for given rank"/> returns
+##      a free magma on <A>rank</A> generators.
+##      The optional argument <A>name</A> must be a string;
+##      its default value is <C>"x"</C>. <P/>
+##
+##      If <A>name</A> is not given but the <C>generatorNames</C> option is,
+##      then this option is respected as described in
+##      Section&nbsp;<Ref Sect="Generator Names"/>. <P/>
+##
+##      Otherwise, the generators of the returned free magma are labelled
+##      <A>name</A><C>1</C>, ..., <A>name</A><C>k</C>,
+##      where <C>k</C> is the value of <A>rank</A>. <P/>
+##    </Item>
+##    <Mark>2: For given generator names</Mark>
+##    <Item>
+##      Called with various (at least one) nonempty strings,
+##      <Ref Func="FreeMagma" Label="for various names"/> returns
+##      a free magma on as many generators as arguments, which are labelled
+##      <A>name1</A>, <A>name2</A>, etc.
+##    </Item>
+##    <Mark>3: For a given list of generator names</Mark>
+##    <Item>
+##      Called with a finite nonempty list <A>names</A> of
+##      nonempty strings,
+##      <Ref Func="FreeMagma" Label="for a list of names"/> returns
+##      a free magma on <C>Length(<A>names</A>)</C> generators, whose
+##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
+##    </Item>
+##    <Mark>
+##      4: For the rank <K>infinity</K>,
+##         an optional default generator name prefix,
+##         and an optional finite list of generator names
+##    </Mark>
+##    <Item>
+##      Called in the fourth form,
+##      <Ref Func="FreeMagma" Label="for infinitely many generators"/>
+##      returns a free magma on infinitely many generators.
+##      The optional argument <A>name</A> must be a string; its default value is
+##      <C>"x"</C>,
+##      and the optional argument <A>init</A> must be a finite list of
+##      nonempty strings; its default value is an empty list.
+##      The generators are initially labelled according to the list <A>init</A>,
+##      followed by
+##      <A>name</A><C>i</C> for each <C>i</C> in the range from
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##    </Item>
+##  </List>
+##  <Example><![CDATA[
+##  gap> FreeMagma( 4 );
+##  <free magma on the generators [ x1, x2, x3, x4 ]>
+##  gap> FreeMagma( 3, "a" );
+##  <free magma on the generators [ a1, a2, a3 ]>
+##  gap> FreeMagma( "a", "b" );
+##  <free magma on the generators [ a, b ]>
+##  gap> FreeMagma( [ "a", "b" ] );
+##  <free magma on the generators [ a, b ]>
+##  gap> FreeMagma( infinity );
+##  <free magma with infinity generators>
+##  gap> F := FreeMagma( infinity, "gen" );;
+##  gap> GeneratorsOfMagma( F ){[ 1 .. 4 ]};
+##  [ gen1, gen2, gen3, gen4 ]
+##  gap> F := FreeMagma( infinity, [ "z", "a" ] );;
+##  gap> GeneratorsOfMagma( F ){[ 1 .. 3 ]};
+##  [ z, a, x3 ]
+##  gap> F := FreeMagma( infinity, "y", [ "z", "a" ] );;
+##  gap> GeneratorsOfMagma( F ){[ 1 .. 4 ]};
+##  [ z, a, y3, y4 ]
+##  gap> FreeMagma( 3 : generatorNames := "elt" );
+##  <free magma on the generators [ elt1, elt2, elt3 ]>
+##  gap> FreeMagma( 2 : generatorNames := [ "u", "v", "w" ] );
+##  <free magma on the generators [ u, v ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -823,74 +884,110 @@ DeclareGlobalFunction( "FreeMagma" );
 #############################################################################
 ##
 #F  FreeMagmaWithOne( <rank>[, <name>] )
-#F  FreeMagmaWithOne( <name1>, <name2>, ... )
+#F  FreeMagmaWithOne( [<name1>[, <name2>[, ...]]] )
 #F  FreeMagmaWithOne( <names> )
-#F  FreeMagmaWithOne( infinity, <name>, <init> )
+#F  FreeMagmaWithOne( infinity[, <name>][, <init>] )
 ##
 ##  <#GAPDoc Label="FreeMagmaWithOne">
 ##  <ManSection>
 ##  <Heading>FreeMagmaWithOne</Heading>
 ##  <Func Name="FreeMagmaWithOne" Arg='rank[, name]'
 ##   Label="for given rank"/>
-##  <Func Name="FreeMagmaWithOne" Arg='name1, name2, ...'
+##  <Func Name="FreeMagmaWithOne" Arg='[name1[, name2[, ...]]]'
 ##   Label="for various names"/>
 ##  <Func Name="FreeMagmaWithOne" Arg='names'
 ##   Label="for a list of names"/>
-##  <Func Name="FreeMagmaWithOne" Arg='infinity, name, init'
+##  <Func Name="FreeMagmaWithOne" Arg='infinity[, name][, init]'
 ##   Label="for infinitely many generators"/>
 ##
 ##  <Description>
-##  Called with a positive integer <A>rank</A>,
-##  <Ref Func="FreeMagmaWithOne" Label="for given rank"/> returns
-##  a free magma-with-one on <A>rank</A> generators.
-##  If the optional argument <A>name</A> is given then the generators are
-##  printed as <A>name</A><C>1</C>, <A>name</A><C>2</C> etc.,
-##  that is, each name is the concatenation of the string <A>name</A> and an
-##  integer from <C>1</C> to <A>range</A>.
-##  The default for <A>name</A> is the string <C>"m"</C>.
-##  <P/>
-##  Called in the second form,
-##  <Ref Func="FreeMagmaWithOne" Label="for various names"/> returns
-##  a free magma-with-one on as many generators as arguments, printed as
-##  <A>name1</A>, <A>name2</A> etc.
-##  <P/>
-##  Called in the third form,
-##  <Ref Func="FreeMagmaWithOne" Label="for a list of names"/> returns
-##  a free magma-with-one on as many generators as the length of the list
-##  <A>names</A>, the <M>i</M>-th generator being printed as
-##  <A>names</A><C>[</C><M>i</M><C>]</C>.
-##  <P/>
-##  Called in the fourth form,
-##  <Ref Func="FreeMagmaWithOne" Label="for infinitely many generators"/>
-##  returns a free magma-with-one on infinitely many generators, where the
-##  first generators are printed by the names in the list <A>init</A>,
-##  and the other generators by <A>name</A> and an appended number.
-##  <P/>
+##  <C>FreeMagmaWithOne</C> returns a free magma-with-one. The number of
+##  generators, and the labels given to the generators, can be specified in
+##  several different ways.
+##  Warning: the labels of generators are only an aid for printing,
+##  and do not necessarily distinguish generators;
+##  see the examples at the end of
+##  <Ref Func="FreeSemigroup" Label="for given rank"/>
+##  for more information.
+##  <List>
+##    <Mark>
+##      1: For a given rank, and an optional generator name prefix
+##    </Mark>
+##    <Item>
+##      Called with a nonnegative integer <A>rank</A>,
+##      <Ref Func="FreeMagmaWithOne" Label="for given rank"/> returns
+##      a free magma-with-one on <A>rank</A> generators.
+##      The optional argument <A>name</A> must be a string;
+##      its default value is <C>"x"</C>. <P/>
+##
+##      If <A>name</A> is not given but the <C>generatorNames</C> option is,
+##      then this option is respected as described in
+##      Section&nbsp;<Ref Sect="Generator Names"/>. <P/>
+##
+##      Otherwise, the generators of the returned free magma-with-one are
+##      labelled <A>name</A><C>1</C>, ..., <A>name</A><C>k</C>,
+##      where <C>k</C> is the value of <A>rank</A>. <P/>
+##    </Item>
+##    <Mark>2: For given generator names</Mark>
+##    <Item>
+##      Called with various nonempty strings,
+##      <Ref Func="FreeMagmaWithOne" Label="for various names"/> returns
+##      a free magma-with-one on as many generators as arguments, which are
+##      labelled <A>name1</A>, <A>name2</A>, etc.
+##    </Item>
+##    <Mark>3: For a given list of generator names</Mark>
+##    <Item>
+##      Called with a finite list <A>names</A> of
+##      nonempty strings,
+##      <Ref Func="FreeMagmaWithOne" Label="for a list of names"/> returns
+##      a free magma-with-one on <C>Length(<A>names</A>)</C> generators, whose
+##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
+##    </Item>
+##    <Mark>
+##      4: For the rank <K>infinity</K>,
+##         an optional default generator name prefix,
+##         and an optional finite list of generator names
+##    </Mark>
+##    <Item>
+##      Called in the fourth form,
+##      <Ref Func="FreeMagmaWithOne" Label="for infinitely many generators"/>
+##      returns a free magma-with-one on infinitely many generators.
+##      The optional argument <A>name</A> must be a string; its default value is
+##      <C>"x"</C>,
+##      and the optional argument <A>init</A> must be a finite list of
+##      nonempty strings; its default value is an empty list.
+##      The generators are initially labelled according to the list <A>init</A>,
+##      followed by
+##      <A>name</A><C>i</C> for each <C>i</C> in the range from
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##    </Item>
+##  </List>
 ##  <Example><![CDATA[
-##  gap> FreeMagma( 3 );
-##  <free magma on the generators [ x1, x2, x3 ]>
-##  gap> FreeMagma( "a", "b" );
-##  <free magma on the generators [ a, b ]>
-##  gap> FreeMagma( infinity );
-##  <free magma with infinity generators>
-##  gap> FreeMagmaWithOne( 3 );
-##  <free magma-with-one on the generators [ x1, x2, x3 ]>
+##  gap> FreeMagmaWithOne( 4 );
+##  <free magma-with-one on the generators [ x1, x2, x3, x4 ]>
+##  gap> FreeMagmaWithOne( 3, "a" );
+##  <free magma-with-one on the generators [ a1, a2, a3 ]>
 ##  gap> FreeMagmaWithOne( "a", "b" );
+##  <free magma-with-one on the generators [ a, b ]>
+##  gap> FreeMagmaWithOne( [ "a", "b" ] );
 ##  <free magma-with-one on the generators [ a, b ]>
 ##  gap> FreeMagmaWithOne( infinity );
 ##  <free magma-with-one with infinity generators>
-##  ]]></Example>
-##  <P/>
-##  Remember that the names of generators used for printing
-##  do not necessarily distinguish letters of the alphabet;
-##  so it is possible to create arbitrarily weird
-##  situations by choosing strange letter names.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> m:= FreeMagma( "x", "x" );  gens:= GeneratorsOfMagma( m );;
-##  <free magma on the generators [ x, x ]>
-##  gap> gens[1] = gens[2];
-##  false
+##  gap> F := FreeMagmaWithOne( infinity, "gen" );;
+##  gap> GeneratorsOfMagmaWithOne( F ){[ 1 .. 4 ]};
+##  [ gen1, gen2, gen3, gen4 ]
+##  gap> F := FreeMagmaWithOne( infinity, [ "z", "a" ] );;
+##  gap> GeneratorsOfMagmaWithOne( F ){[ 1 .. 3 ]};
+##  [ z, a, x3 ]
+##  gap> F := FreeMagmaWithOne( infinity, "y", [ "z", "a" ] );;
+##  gap> GeneratorsOfMagmaWithOne( F ){[ 1 .. 4 ]};
+##  [ z, a, y3, y4 ]
+##  gap> FreeMagmaWithOne( 0 );
+##  <free group of rank zero>
+##  gap> FreeMagmaWithOne( 3 : generatorNames := "elt" );
+##  <free magma-with-one on the generators [ elt1, elt2, elt3 ]>
+##  gap> FreeMagmaWithOne( 2 : generatorNames := [ "u", "v", "w" ] );
+##  <free magma-with-one on the generators [ u, v ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
