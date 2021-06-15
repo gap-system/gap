@@ -105,6 +105,8 @@ struct IOModuleState {
 #endif
 
     Int NoSplitLine;
+
+    BOOL PrintFormattingForStdout;
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
@@ -831,7 +833,10 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
-    output->format = TRUE;
+    if (streq(filename, "*stdout*"))
+        output->format = IO()->PrintFormattingForStdout;
+    else
+        output->format = TRUE;
     output->indent = 0;
 
     /* variables related to line splitting, very bad place to split        */
@@ -1868,25 +1873,20 @@ static Obj FuncINPUT_LINENUMBER(Obj self)
 
 static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
 {
+    BOOL format = (val != False);
     TypOutputFile * output = IO()->Output;
     while (output) {
         if (!output->stream && output->file == 1)
-            output->format = (val != False);
+            output->format = format;
         output = output->prev;
     }
+    IO()->PrintFormattingForStdout = format;
     return 0;
 }
 
 static Obj FuncPRINT_FORMATTING_STDOUT(Obj self)
 {
-    TypOutputFile * output = IO()->Output;
-    while (output) {
-        if (!output->stream && output->file == 1)
-            return output->format ? True : False;
-        output = output->prev;
-    }
-    ErrorMayQuit("PRINT_FORMATTING_STDOUT called while stdout is not open", 0, 0);
-    return 0;
+    return IO()->PrintFormattingForStdout ? True : False;
 }
 
 static Obj FuncSET_PRINT_FORMATTING_CURRENT(Obj self, Obj val)
@@ -1974,6 +1974,7 @@ static Int InitKernel (
     IO()->Output = 0;
     IO()->InputLog = 0;
     IO()->OutputLog = 0;
+    IO()->PrintFormattingForStdout = TRUE;
 
     OpenOutput(&IO()->DefaultOutput, "*stdout*", FALSE);
 
