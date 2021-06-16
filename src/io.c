@@ -107,6 +107,7 @@ struct IOModuleState {
     Int NoSplitLine;
 
     BOOL PrintFormattingForStdout;
+    BOOL PrintFormattingForErrout;
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
@@ -835,6 +836,8 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     output->pos = 0;
     if (streq(filename, "*stdout*"))
         output->format = IO()->PrintFormattingForStdout;
+    else if (streq(filename, "*errout*"))
+        output->format = IO()->PrintFormattingForErrout;
     else
         output->format = TRUE;
     output->indent = 0;
@@ -1889,6 +1892,24 @@ static Obj FuncPRINT_FORMATTING_STDOUT(Obj self)
     return IO()->PrintFormattingForStdout ? True : False;
 }
 
+static Obj FuncSET_PRINT_FORMATTING_ERROUT(Obj self, Obj val)
+{
+    BOOL format = (val != False);
+    TypOutputFile * output = IO()->Output;
+    while (output) {
+        if (!output->stream && output->file == 3)
+            output->format = format;
+        output = output->prev;
+    }
+    IO()->PrintFormattingForErrout = format;
+    return 0;
+}
+
+static Obj FuncPRINT_FORMATTING_ERROUT(Obj self)
+{
+    return IO()->PrintFormattingForErrout ? True : False;
+}
+
 static Obj FuncSET_PRINT_FORMATTING_CURRENT(Obj self, Obj val)
 {
     TypOutputFile * output = IO()->Output;
@@ -1939,6 +1960,8 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_0ARGS(INPUT_LINENUMBER),
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_STDOUT, format),
     GVAR_FUNC_0ARGS(PRINT_FORMATTING_STDOUT),
+    GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_ERROUT, format),
+    GVAR_FUNC_0ARGS(PRINT_FORMATTING_ERROUT),
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_CURRENT, format),
     GVAR_FUNC_0ARGS(PRINT_FORMATTING_CURRENT),
     GVAR_FUNC_0ARGS(IS_INPUT_TTY),
@@ -1975,6 +1998,7 @@ static Int InitKernel (
     IO()->InputLog = 0;
     IO()->OutputLog = 0;
     IO()->PrintFormattingForStdout = TRUE;
+    IO()->PrintFormattingForErrout = TRUE;
 
     OpenOutput(&IO()->DefaultOutput, "*stdout*", FALSE);
 

@@ -1226,10 +1226,12 @@ InstallOtherMethod( PrintFormattingStatus, "for stdout", [IsString],
 function(str)
   if str = "*stdout*" then
     return PRINT_FORMATTING_STDOUT();
+  elif str = "*errout*" then
+    return PRINT_FORMATTING_ERROUT();
   elif str = "*current*" then
     return PRINT_FORMATTING_CURRENT();
   else
-    Error("Only the strings \"*stdout*\" and  \"*current*\" are recognized by this method.");
+    Error("Only the strings \"*stdout*\", \"*errout*\" and  \"*current*\" are recognized by this method.");
   fi;
 end);
 
@@ -1237,10 +1239,12 @@ InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
 function(str, status)
   if str = "*stdout*" then
     SET_PRINT_FORMATTING_STDOUT(status);
+  elif str = "*errout*" then
+    SET_PRINT_FORMATTING_ERROUT(status);
   elif str = "*current*" then
     SET_PRINT_FORMATTING_CURRENT(status);
   else
-    Error("Only the strings \"*stdout*\" and  \"*current*\" are recognized by this method.");
+    Error("Only the strings \"*stdout*\", \"*errout*\" and  \"*current*\" are recognized by this method.");
   fi;
 end);
 
