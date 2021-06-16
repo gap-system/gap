@@ -232,7 +232,10 @@ end;
   APPEND_LIST(no_method_found,NAME_FUNC(INF.Operation));
   APPEND_LIST(no_method_found,"' on ");
   APPEND_LIST(no_method_found,STRING_INT(LENGTH(INF.Arguments)));
-  APPEND_LIST(no_method_found," arguments");
+  APPEND_LIST(no_method_found," argument");
+  if LENGTH(INF.Arguments) <> 1 then
+    APPEND_LIST(no_method_found,"s");
+  fi;
 
   linebreak := true;
   for i in [ 1 .. LENGTH(INF.Arguments) ] do

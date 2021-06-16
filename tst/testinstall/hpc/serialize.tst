@@ -168,7 +168,7 @@ gap> TNAM_OBJ(x);
 "positional object"
 gap> SerializeToNativeString(x);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
+Error, no 1st choice method found for `SerializableRepresentation' on 1 argument
 
 #
 # data object
@@ -201,7 +201,7 @@ gap> TNAM_OBJ(G);
 "atomic component object"
 gap> SerializeToNativeString(G);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
+Error, no 1st choice method found for `SerializableRepresentation' on 1 argument
 
 #
 # TODO: atomic positional object
