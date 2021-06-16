@@ -1896,14 +1896,6 @@ The level can be changed in a running session using 'SetInfoLevel'."
 InstallGlobalFunction( AutoloadPackages, function()
     local banner, msg, pair, excludedpackages, name, record;
 
-#T remove this as soon as `BANNER' is not used anymore in packages
-if IsBoundGlobal( "BANNER" ) then
-  banner:= ValueGlobal( "BANNER" );
-  MakeReadWriteGlobal( "BANNER" );
-  UnbindGlobal( "BANNER" );
-fi;
-BindGlobal( "BANNER", false );
-
     if GAPInfo.CommandLineOptions.L = "" then
       msg:= "entering AutoloadPackages (no workspace)";
     else
@@ -1961,12 +1953,6 @@ BindGlobal( "BANNER", false );
       GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
     fi;
     Unbind( GAPInfo.delayedImplementationParts );
-#T remove this as soon as `BANNER' is not used anymore in packages
-MakeReadWriteGlobal( "BANNER" );
-UnbindGlobal( "BANNER" );
-if IsBound( banner ) then
-  BindGlobal( "BANNER", banner );
-fi;
 
     # Load suggested packages of GAP (suppressing banners).
     if   GAPInfo.CommandLineOptions.A then
