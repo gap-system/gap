@@ -20,3 +20,14 @@ Display(x -> x);
 SetPrintFormattingStatus("*current*", old);;
 PrintFormattingStatus("*current*");
 
+# test formatting status for errout
+1/0; # trigger a break loop
+old := PrintFormattingStatus("*errout*");
+SetPrintFormattingStatus("*errout*", false);
+PrintFormattingStatus("*errout*");
+Display(x -> x);
+SetPrintFormattingStatus("*errout*", true);
+PrintFormattingStatus("*errout*");
+Display(x -> x);
+SetPrintFormattingStatus("*errout*", old);;
+PrintFormattingStatus("*errout*");

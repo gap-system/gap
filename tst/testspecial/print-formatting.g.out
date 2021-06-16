@@ -40,4 +40,28 @@ gap> SetPrintFormattingStatus("*current*", old);;
 gap> PrintFormattingStatus("*current*");
 true
 gap> 
-gap> QUIT;
+gap> # test formatting status for errout
+gap> 1/0; # trigger a break loop
+Error, Rational operations: <divisor> must not be zero
+not in any function at *stdin*:25
+type 'quit;' to quit to outer loop
+brk> old := PrintFormattingStatus("*errout*");
+true
+brk> SetPrintFormattingStatus("*errout*", false);
+brk> PrintFormattingStatus("*errout*");
+false
+brk> Display(x -> x);
+function ( x )
+return x;
+end
+brk> SetPrintFormattingStatus("*errout*", true);
+brk> PrintFormattingStatus("*errout*");
+true
+brk> Display(x -> x);
+function ( x )
+    return x;
+end
+brk> SetPrintFormattingStatus("*errout*", old);;
+brk> PrintFormattingStatus("*errout*");
+true
+brk> QUIT;
