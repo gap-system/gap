@@ -35,9 +35,6 @@ struct TypInputFile {
     // pointer to the previously active input
     struct TypInputFile * prev;
 
-    // non-zero if input comes from a stream
-    BOOL isstream;
-
     // non-zero if input come from a string stream
     BOOL isstringstream;
 
@@ -113,7 +110,6 @@ struct TypOutputFile {
     // pointer to the previously active output
     struct TypOutputFile * prev;
 
-    BOOL isstream;
     BOOL isstringstream;
     Obj  stream;
     Int  file;

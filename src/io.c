@@ -373,7 +373,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
     /* enter the file identifier and the file name                         */
     memset(input, 0, sizeof(TypInputFile));
     input->prev = IO()->Input;
-    input->isstream = FALSE;
+    input->stream = 0;
     input->file = file;
 
     // enable echo for stdin and errin
@@ -411,8 +411,8 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     /* enter the file identifier and the file name                         */
     memset(input, 0, sizeof(TypInputFile));
     input->prev = IO()->Input;
-    input->isstream = TRUE;
     input->stream = stream;
+    input->file = -1;
     input->isstringstream = (CALL_1ARGS(IsInputStringStream, stream) == True);
     if (input->isstringstream) {
         input->sline = CONST_ADDR_OBJ(stream)[2];
@@ -421,7 +421,6 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     else {
         input->sline = 0;
     }
-    input->file = -1;
     input->echo = echo;
     strlcpy(input->name, "stream", sizeof(input->name));
     input->gapnameid = 0;
@@ -460,7 +459,7 @@ UInt CloseInput(TypInputFile * input)
     GAP_ASSERT(input == IO()->Input);
 
     // close the input file
-    if (!input->isstream) {
+    if (!input->stream) {
         SyFclose(input->file);
     }
 
@@ -510,7 +509,7 @@ UInt OpenLog (
 
     /* try to open the file                                                */
     IO()->OutputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
-    IO()->OutputLogFileOrStream.isstream = FALSE;
+    IO()->OutputLogFileOrStream.stream = 0;
     if (IO()->OutputLogFileOrStream.file == -1)
         return 0;
 
@@ -537,7 +536,6 @@ UInt OpenLogStream (
         return 0;
 
     /* try to open the file                                                */
-    IO()->OutputLogFileOrStream.isstream = TRUE;
     IO()->OutputLogFileOrStream.stream = stream;
     IO()->OutputLogFileOrStream.file = -1;
 
@@ -568,7 +566,7 @@ UInt CloseLog ( void )
         return 0;
 
     /* close the logfile                                                   */
-    if (!IO()->InputLog->isstream) {
+    if (!IO()->InputLog->stream) {
         SyFclose(IO()->InputLog->file);
     }
     IO()->InputLog = 0;
@@ -604,7 +602,7 @@ UInt OpenInputLog (
 
     /* try to open the file                                                */
     IO()->InputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
-    IO()->InputLogFileOrStream.isstream = FALSE;
+    IO()->InputLogFileOrStream.stream = 0;
     if (IO()->InputLogFileOrStream.file == -1)
         return 0;
 
@@ -630,7 +628,6 @@ UInt OpenInputLogStream (
         return 0;
 
     /* try to open the file                                                */
-    IO()->InputLogFileOrStream.isstream = TRUE;
     IO()->InputLogFileOrStream.stream = stream;
     IO()->InputLogFileOrStream.file = -1;
 
@@ -663,7 +660,7 @@ UInt CloseInputLog ( void )
         return 0;
 
     /* close the logfile                                                   */
-    if (!IO()->InputLog->isstream) {
+    if (!IO()->InputLog->stream) {
         SyFclose(IO()->InputLog->file);
     }
 
@@ -699,7 +696,7 @@ UInt OpenOutputLog (
 
     /* try to open the file                                                */
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
-    IO()->OutputLogFileOrStream.isstream = FALSE;
+    IO()->OutputLogFileOrStream.stream = 0;
     IO()->OutputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
     if (IO()->OutputLogFileOrStream.file == -1)
         return 0;
@@ -727,7 +724,6 @@ UInt OpenOutputLogStream (
 
     /* try to open the file                                                */
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
-    IO()->OutputLogFileOrStream.isstream = TRUE;
     IO()->OutputLogFileOrStream.stream = stream;
     IO()->OutputLogFileOrStream.file = -1;
 
@@ -760,7 +756,7 @@ UInt CloseOutputLog ( void )
         return 0;
 
     /* close the logfile                                                   */
-    if (!IO()->OutputLog->isstream) {
+    if (!IO()->OutputLog->stream) {
         SyFclose(IO()->OutputLog->file);
     }
 
@@ -830,7 +826,7 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     /* put the file on the stack, start at position 0 on an empty line     */
     output->prev = IO()->Output;
     IO()->Output = output;
-    output->isstream = FALSE;
+    output->stream = 0;
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
@@ -860,9 +856,9 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     /* put the file on the stack, start at position 0 on an empty line     */
     output->prev = IO()->Output;
     IO()->Output = output;
-    output->isstream = TRUE;
     output->isstringstream = (CALL_1ARGS(IsOutputStringStream, stream) == True);
     output->stream = stream;
+    output->file = -1;
     output->line[0] = '\0';
     output->pos = 0;
     output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
@@ -907,7 +903,7 @@ UInt CloseOutput(TypOutputFile * output)
 
     /* refuse to close the initial output file '*stdout*'                  */
 #ifdef HPCGAP
-    if (output->prev == 0 && output->isstream &&
+    if (output->prev == 0 && output->stream &&
         IO()->DefaultOutputStream == output->stream)
         return 0;
 #else
@@ -917,7 +913,7 @@ UInt CloseOutput(TypOutputFile * output)
 
     /* flush output and close the file                                     */
     Pr("%c", (Int)'\03', 0);
-    if (!output->isstream) {
+    if (!output->stream) {
         SyFclose(output->file);
     }
 
@@ -958,7 +954,7 @@ static Int GetLine2(TypInputFile * input)
     Char * buffer = input->line + 1;
     UInt   length = sizeof(input->line) - 1;
 
-    if ( input->isstream ) {
+    if ( input->stream ) {
         if (input->sline == 0 ||
             (IS_STRING_REP(input->sline) &&
              GET_LEN_STRING(input->sline) <= input->spos)) {
@@ -1035,7 +1031,7 @@ static Char GetLine(TypInputFile * input)
     /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
     /* if the GAP function `PrintPromptHook' is defined then it is called  */
     /* for printing the prompt, see also `EndLineHook'                     */
-    if (!input->isstream) {
+    if (!input->stream) {
         if (input->file == 0 && SyQuiet) {
             Pr("%c", (Int)'\03', 0);
         }
@@ -1100,7 +1096,7 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
         ConvString(str);
         AppendCStr(str, line, len);
     }
-    else if (output->isstream) {
+    else if (output->stream) {
         // delegate to library level
         str = MakeImmStringWithLen(line, len);
         CALL_2ARGS(WriteAllFunc, output->stream, str);
@@ -1128,7 +1124,7 @@ static void PutLineTo(TypOutputFile * stream, UInt len)
   PutLine2( stream, stream->line, len );
 
   /* if necessary echo it to the logfile                                */
-  if (IO()->OutputLog != 0 && !stream->isstream) {
+  if (IO()->OutputLog != 0 && !stream->stream) {
       if (stream->file == 1 || stream->file == 3) {
           PutLine2(IO()->OutputLog, stream->line, len);
       }
@@ -1883,7 +1879,7 @@ static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
 static Obj FuncIS_INPUT_TTY(Obj self)
 {
     GAP_ASSERT(IO()->Input);
-    if (IO()->Input->isstream)
+    if (IO()->Input->stream)
         return False;
     return SyBufIsTTY(IO()->Input->file) ? True : False;
 }
@@ -1891,7 +1887,7 @@ static Obj FuncIS_INPUT_TTY(Obj self)
 static Obj FuncIS_OUTPUT_TTY(Obj self)
 {
     GAP_ASSERT(IO()->Output);
-    if (IO()->Output->isstream)
+    if (IO()->Output->stream)
         return False;
     return SyBufIsTTY(IO()->Output->file) ? True : False;
 }
