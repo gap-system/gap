@@ -36,13 +36,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      # when an annotated tag is pushed, then for some reason we don't see it
-      # in this action; instead an unannotated tag with the same is present;
-      # resolve this by force-fetching tags
+      # When an annotated tag is pushed, then for some reason we don't see it
+      # in this action; instead an unannotated tag with the same name is
+      # present, we resolve this by force-fetching tags.
+      # But we first fetch tags from gap-system/gap, so that our scripts should
+      # know about all of the 'usual' tags.
+      # Only then do we fetch tags from the current fork, which will overwrite
+      # any of those from gap-system/gap that conflict.
       - name: "Force fetch tags"
         run: |
-          git fetch --tags --force
           git fetch https://github.com/gap-system/gap --tags --force
+          git fetch --tags --force
 
       - name: "Set up Python"
         uses: actions/setup-python@v2
