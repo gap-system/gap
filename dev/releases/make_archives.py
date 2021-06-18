@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import json
 
 # Insist on Python >= 3.6 for f-strings and other goodies
 if sys.version_info < (3,6):
@@ -170,9 +171,10 @@ with working_directory(tmpdir + "/" + basename):
         json_output = subprocess.run(
                 ["./bin/gap.sh", "-r", "--quiet", "--quitonbreak", f"dev/releases/{x[1]}.g"],
                 check=True, capture_output=True, text=True)
+        formatted_json = json.dumps(json.loads(json_output.stdout), indent=2)
         with working_directory(tmpdir):
             with gzip.open(f"{x[0]}.json.gz", 'wb') as file:
-                file.write(json_output.stdout.encode('utf-8'))
+                file.write(formatted_json.encode('utf-8'))
             manifest_list.append(f"{x[0]}.json.gz")
 
     notice("Cleaning up the json package")
