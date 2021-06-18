@@ -406,30 +406,30 @@ end );
 InstallOtherMethod( Projection,"matrix wreath product", true,
   [ IsMatrixGroup and HasWreathProductInfo ],0,
 function( W )
-local  info, degI, dimA, zero, projFunc;
+local  info, degI, dimA, projFunc;
   info := WreathProductInfo( W );
   if IsBound( info.projection ) then return info.projection; fi;
 
   degI := info.degI;
   dimA := info.dimA;
-  zero := Zero(info.field);
 
   projFunc := function(x)
-    local topImages, k, l, a;
-    topImages := [];
-    for k in [1 .. degI] do
-      for l in [1 .. degI] do
-        for a in [1 .. dimA] do
-          if x[dimA * (k - 1) + a, dimA * (l - 1) + a] <> zero then
-            Add(topImages, l);
-            break;
-          fi;
-        od;
-        if Length(topImages) = k then
+    local topImages, i, j, zeroMat;
+    # ZeroMatrix does not accept IsPlistRep
+    if IsPlistRep(x) then
+      zeroMat := NullMat(dimA, dimA, info.field);
+    else
+      zeroMat := ZeroMatrix(dimA, dimA, x);
+    fi;
+    topImages := EmptyPlist(degI);
+    for i in [1 .. degI] do
+      for j in [1 .. degI] do
+        if ExtractSubMatrix(x, [dimA * (i - 1) + 1 .. dimA * i], [dimA * (j - 1) + 1 .. dimA * j]) <> zeroMat then
+          topImages[i] := j;
           break;
         fi;
       od;
-      if Length(topImages) <> k then
+      if not IsBound(topImages[i]) then
         return fail;
       fi;
     od;
