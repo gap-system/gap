@@ -154,32 +154,32 @@ with working_directory(tmpdir + "/" + basename):
     with tarfile.open(tmpdir+"/"+req_packages_tarball) as tar:
         tar.extractall(path=tmpdir+"/"+req_packages)
 
-    # Now create the file package-infos.json.  We first build the json package,
-    # then create the file, then clean up the json package again.
+    notice("Building GAP's manuals")
+    run_with_log(["make", "doc"], "gapdoc", "building the manuals")
+
+    # Now we create the files package-infos.json and help-links.json. We build
+    # the json package, create the files, then clean up the package again.
     notice("Compiling json package")
     path_to_json_package = glob.glob(f'{tmpdir}/{basename}/pkg/json*')[0]
     with working_directory(path_to_json_package):
         subprocess.run(["./configure"], check=True)
         subprocess.run(["make"], check=True)
 
-    notice("Constructing package_infos json file")
-    package_infos = subprocess.run(["./bin/gap.sh", "-r", "--quiet", "--quitonbreak",
-                                    "dev/releases/PackageInfos-to-JSON.g"],
-                                    check=True, capture_output=True, text=True)
-    with working_directory(tmpdir):
-        with gzip.open("package-infos.json.gz", 'wb') as file:
-            file.write(package_infos.stdout.encode('utf-8'))
-        manifest_list.append("package-infos.json.gz")
+    for x in [ ["package-infos", "PackageInfos-to-JSON"], ["help-links", "HelpLinks-to-JSON"] ]:
+        notice(f"Constructing {x[0]} JSON file")
+        json_output = subprocess.run(
+                ["./bin/gap.sh", "-r", "--quiet", "--quitonbreak", f"dev/releases/{x[1]}.g"],
+                check=True, capture_output=True, text=True)
+        with working_directory(tmpdir):
+            with gzip.open(f"{x[0]}.json.gz", 'wb') as file:
+                file.write(json_output.stdout.encode('utf-8'))
+            manifest_list.append(f"{x[0]}.json.gz")
 
     notice("Cleaning up the json package")
     with working_directory(path_to_json_package):
         subprocess.run(["make", "clean"], check=True)
         shutil.rmtree("bin")
         os.remove("Makefile")
-
-
-    notice("Building GAP's manuals")
-    run_with_log(["make", "doc"], "gapdoc", "building the manuals")
 
     notice("Removing unwanted version-controlled files")
     badfiles = [
