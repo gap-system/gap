@@ -106,19 +106,19 @@ jobs:
 
     steps:
       # If the event is a pushed release tag v1.2.3, then VERSION=1.2.3
-      # If the event is a PR #123, then VERSION=pr-123
+      # If the event is for the pull request #123, then VERSION=pr-123
       # Otherwise VERSION=branch, where <branch> is either the pushed branch, or
       # the branch selected for workflow_dispatch, or master (for a cron job).
       # In all cases, the GAP to be wrapped is put into gap-$VERSION/
       #
-      # The name of this directory is currently required for the sage-windows
-      # script, which is passed the value of $VERSION (via SAGE_VERSION)
+      # The sage-windows script requires the GAP directory to be named this way.
+      # The value $VERSION is passed to the sage-windows script as SAGE_VERSION.
       #
       # If the event is a pushed release tag, then we are wrapping a version of
       # GAP that already has its packages in place and all manuals compiled.
       # Therefore sage-windows only needs to compile GAP and the packages.
       #
-      # Otherwise, (currently) we are wrapping a cloned version of GAP.
+      # Otherwise, we wrap a cloned version of GAP.
       # In none of these cases do we build GAP's manuals, because it's too slow.
       # If the event is a PR, then we `make bootstrap-pkg-minimal` to save time
       # (none of the required packages requires compilation).
@@ -127,26 +127,36 @@ jobs:
       - name: "Set some environment variables according to the GitHub context"
         shell: bash
         run: |
+          COMPILEGAP="make -j2"
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
-            COMPILEGAP="make -j2"
-            GAPDEV_DIR="gap-dev"
+            VERSION=${GITHUB_REF#refs/tags/v} # Remove prefix "v" from tag name
           else
             if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-               VERSION=${GITHUB_REF#refs/pull/}
-               VERSION="pr-${VERSION%/merge}"
-               COMPILEGAP="make -j2 && make bootstrap-pkg-minimal"
+              COMPILEGAP="${COMPILEGAP} && make bootstrap-pkg-minimal"
+              # Extract the PR number from GITHUB_REF
+              VERSION=${GITHUB_REF#refs/pull/} # Remove prefix "refs/pull/"
+              VERSION="pr-${VERSION%/merge}"   # Remove suffix "/merge"
             elif [[ $GITHUB_REF == refs/heads/* ]]; then
-              VERSION=${GITHUB_REF#refs/heads/}
-              COMPILEGAP="make -j2 && make bootstrap-pkg-full"
+              COMPILEGAP="${COMPILEGAP} && make bootstrap-pkg-full"
+              VERSION=${GITHUB_REF#refs/heads/} # Remove prefix "refs/heads/"
             else
               echo "Unrecognised GitHub situation"
               exit 1
             fi
+          fi
+
+          # Replace any "/" characters by "-" in the version name.
+          # This variable eventually becomes part of a filename, and a "/" will
+          # eventually break something in the release_gap.sh script.
+          VERSION=${VERSION//\//-}
+
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            GAPDEV_DIR="gap-dev"
+          else
             GAPDEV_DIR="gap-$VERSION"
           fi
 
-          echo "Using data: VERSION=$VERSION / GAPDEV_DIR=$GAPDEV_DIR / COMPILEGAP=$COMPILEGAP"
+          echo "Using: VERSION=$VERSION / GAPDEV_DIR=$GAPDEV_DIR / COMPILEGAP=$COMPILEGAP"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "GAPDEV_DIR=$GAPDEV_DIR" >> $GITHUB_ENV
           echo "SAGE_RUN_CONFIGURE_CMD=\"cd \$(SAGE_ROOT) && ${COMPILEGAP}\"" >> $GITHUB_ENV
