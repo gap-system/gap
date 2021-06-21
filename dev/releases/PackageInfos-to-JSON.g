@@ -1,3 +1,8 @@
+# Temporary hack to make sure that the record components in the JSON file are
+# sorted, to increase stability in the output between GAP versions.
+# Remove once https://github.com/gap-packages/json/pull/24 is merged+released.
+InstallMethod(RecNames, [IsRecord and IsInternalRep], x -> AsSSortedList(REC_NAMES(x)));
+
 LoadPackage("json");
 
 InstallMethod(_GapToJsonStreamInternal,
