@@ -62,19 +62,36 @@ jobs:
         run: dev/ci-download-pkgs.sh
       - name: "Make archives"
         run: python -u ./dev/releases/make_archives.py
+      - name: "Record the GAP build version"
+        id: get-build
+        run: |
+          # Remove the leading "tmp/" and the trailing "-core.tar.gz"
+          BUILD=`ls tmp/gap-*-core.tar.gz | cut -c 5-`
+          echo "::set-output name=name::${BUILD%-core.tar.gz}"
 
-      - name: "Upload artifacts"
+      # Upload the main GAP .tar.gz file (which includes packages).
+      # We only upload this tarball in order to minimise our demand on GitHub's
+      # resources, and that is why we also only upload these for the daily cron
+      # jobs, and in the case of an error on making a release.
+      #
+      # The artifact lives for 1 day; i.e. typically until the next cron job runs.
+      #
+      # Warning: the result is a single .zip file (so things are compressed twice).
+      - name: "Upload GAP tarball"
         if: ${{ (!startsWith(github.ref, 'refs/tags/v') && failure()) || github.event_name == 'schedule' }}
-        # Warning: the result is a single .zip file (so things are compressed twice)
-        # To keep things from exploding, we only upload a subset of all generated files
         uses: actions/upload-artifact@v2
         with:
-          name: "GAP release tarballs"
-          path: |
-            tmp/gap-*.tar.gz*
-            tmp/*json*
-            !tmp/gap-*-core.tar.gz*
+          name: ${{ steps.get-build.outputs.name }}.tar.gz
+          path: tmp/${{ steps.get-build.outputs.name }}.tar.gz
           retention-days: 1
+
+      # Always upload metadata, and keep longer, since it is much smaller.
+      - name: "Upload JSON metadata"
+        uses: actions/upload-artifact@v2
+        with:
+          name: "JSON metadata"
+          path: tmp/*json.gz
+          retention-days: 7
 
       - name: "Make GitHub release"
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
