@@ -1,14 +1,19 @@
+gap> #############################################################################
+gap> ##
+gap> ##  Test UpEnv and DownEnv, and what happens when they are asked to go beyond
+gap> ##  the first/last active execution context.
+gap> ##
 gap> f:=lvl -> 1/lvl + f(lvl-1);
 function( lvl ) ... end
 gap> f(7);
 Error, Rational operations: <divisor> must not be zero in
-  1 / lvl at *stdin*:2 called from 
-f( lvl - 1 ) at *stdin*:2 called from
-f( lvl - 1 ) at *stdin*:2 called from
-f( lvl - 1 ) at *stdin*:2 called from
-f( lvl - 1 ) at *stdin*:2 called from
-f( lvl - 1 ) at *stdin*:2 called from
-...  at *stdin*:3
+  1 / lvl at *stdin*:7 called from 
+f( lvl - 1 ) at *stdin*:7 called from
+f( lvl - 1 ) at *stdin*:7 called from
+f( lvl - 1 ) at *stdin*:7 called from
+f( lvl - 1 ) at *stdin*:7 called from
+f( lvl - 1 ) at *stdin*:7 called from
+...  at *stdin*:8
 type 'quit;' to quit to outer loop
 brk> UpEnv(1); lvl;
 0
@@ -26,10 +31,23 @@ brk> UpEnv(3); lvl;
 3
 brk> DownEnv(2); lvl;
 5
+brk> 
+brk> #############################################################################
+brk> ##
+brk> ##  Reading a file without an error should have no effect on the execution
+brk> ##  context. In particular, setting lvl there does not affect it in the
+brk> ##  current execution context, but rather sets a global variable; likewise
+brk> ##  unbinding lvl has no effect here.
+brk> ##
 brk> Read("good.g");
 All is well
 brk> lvl;
 5
+brk> 
+brk> #############################################################################
+brk> ##
+brk> ##  start a fresh execution context
+brk> ##
 brk> Read("top-level-error.g");
 Error, foo called from
 not in any function at top-level-error.g:1
@@ -37,7 +55,7 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk_2> Where(20);
 not in any function at *errin*:1
-brk_2> lvl;
+brk_2> lvl; # since `Read` started a fresh execution context, we can't access lvl here
 Error, Variable: 'lvl' must have a value
 not in any function at *errin*:2
 brk_2> quit;
