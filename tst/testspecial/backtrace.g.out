@@ -1,3 +1,9 @@
+gap> #############################################################################
+gap> ##
+gap> ##  This file tests Where and WhereWithVars, and in particular how backtraces
+gap> ##  are reported for different kinds of statements; there used to be various
+gap> ##  bugs related to that in the past.
+gap> ##
 gap> f := function() 
 >   local l;
 >   l := 0 * [1..6];
@@ -7,16 +13,16 @@ function(  ) ... end
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `[]:=' on 3 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l[[ 1 .. 3 ]] := 1; at *stdin*:5 called from
+l[[ 1 .. 3 ]] := 1; at *stdin*:11 called from
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:7
+ called from read-eval loop at *stdin*:13
 type 'quit;' to quit to outer loop
 brk> Where();
-l[[ 1 .. 3 ]] := 1; at *stdin*:5 called from
+l[[ 1 .. 3 ]] := 1; at *stdin*:11 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
-l[[ 1 .. 3 ]] := 1; at *stdin*:5
+l[[ 1 .. 3 ]] := 1; at *stdin*:11
   arguments: <none>
   local variables:
     l := [ 0, 0, 0, 0, 0, 0 ]
@@ -25,47 +31,11 @@ l[[ 1 .. 3 ]] := 1; at *stdin*:5
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
-gap> 
+gap> #############################################################################
 gap> f:=function() if true = 1/0 then return 1; fi; return 2; end;;
 gap> f();
 Error, Rational operations: <divisor> must not be zero in
-  1 / 0 at *stdin*:9 called from 
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:10
-type 'quit;' to quit to outer loop
-brk> Where();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> 
-gap> f:=function() local x; if x then return 1; fi; return 2; end;;
-gap> f();
-Error, Variable: 'x' must have an assigned value in
-  if x then
-    return 1;
-fi; at *stdin*:12 called from 
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:13
-type 'quit;' to quit to outer loop
-brk> Where();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> 
-gap> f:=function() if 1 then return 1; fi; return 2; end;;
-gap> f();
-Error, <expr> must be 'true' or 'false' (not the integer 1) in
-  if 1 then
-    return 1;
-fi; at *stdin*:15 called from 
+  1 / 0 at *stdin*:15 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:16
 type 'quit;' to quit to outer loop
@@ -77,14 +47,12 @@ brk> WhereWithVars();
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
-gap> 
-gap> f:=function() if 1 < 0 then return 1; elif 1 then return 2; fi; return 3; end;;
+gap> #############################################################################
+gap> f:=function() local x; if x then return 1; fi; return 2; end;;
 gap> f();
-Error, <expr> must be 'true' or 'false' (not the integer 1) in
-  if 1 < 0 then
+Error, Variable: 'x' must have an assigned value in
+  if x then
     return 1;
-elif 1 then
-    return 2;
 fi; at *stdin*:18 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:19
@@ -97,13 +65,13 @@ brk> WhereWithVars();
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
-gap> 
-gap> f:=function() while 1 do return 1; od; return 2; end;;
+gap> #############################################################################
+gap> f:=function() if 1 then return 1; fi; return 2; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not the integer 1) in
-  while 1 do
+  if 1 then
     return 1;
-od; at *stdin*:21 called from 
+fi; at *stdin*:21 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:22
 type 'quit;' to quit to outer loop
@@ -115,27 +83,65 @@ brk> WhereWithVars();
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
+gap> #############################################################################
+gap> f:=function() if 1 < 0 then return 1; elif 1 then return 2; fi; return 3; end;;
+gap> f();
+Error, <expr> must be 'true' or 'false' (not the integer 1) in
+  if 1 < 0 then
+    return 1;
+elif 1 then
+    return 2;
+fi; at *stdin*:24 called from 
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:25
+type 'quit;' to quit to outer loop
+brk> Where();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
 gap> 
+gap> #############################################################################
+gap> f:=function() while 1 do return 1; od; return 2; end;;
+gap> f();
+Error, <expr> must be 'true' or 'false' (not the integer 1) in
+  while 1 do
+    return 1;
+od; at *stdin*:27 called from 
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:28
+type 'quit;' to quit to outer loop
+brk> Where();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> 
+gap> #############################################################################
 gap> f:=function() local i; for i in 1 do return 1; od; return 2; end;;
 gap> f();
 Error, You cannot loop over the integer 1 did you mean the range [1..1] at GAPROOT/lib/integer.gi:LINE called from
 for i in 1 do
     return 1;
-od; at *stdin*:24 called from
+od; at *stdin*:30 called from
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:25
+ called from read-eval loop at *stdin*:31
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
 for i in 1 do
     return 1;
-od; at *stdin*:24 called from
+od; at *stdin*:30 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
 for i in 1 do
     return 1;
-od; at *stdin*:24
+od; at *stdin*:30
   arguments: <none>
   local variables:
     i := <unassigned>
@@ -144,97 +150,9 @@ od; at *stdin*:24
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
-gap> 
+gap> #############################################################################
 gap> f:=function() local i; for i in true do return 1; od; return 2; end;;
 gap> f();
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
-for i in true do
-    return 1;
-od; at *stdin*:27 called from
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:28
-type 'quit;' to quit to outer loop
-brk> Where();
-for i in true do
-    return 1;
-od; at *stdin*:27 called from
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-for i in true do
-    return 1;
-od; at *stdin*:27
-  arguments: <none>
-  local variables:
-    i := <unassigned>
- called from
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> f:=function(x) local i,j; for i in true do return 1; od; return 2; end;;
-gap> f([1,2,3]);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
-for i in true do
-    return 1;
-od; at *stdin*:29 called from
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:30
-type 'quit;' to quit to outer loop
-brk> Where();
-for i in true do
-    return 1;
-od; at *stdin*:29 called from
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-for i in true do
-    return 1;
-od; at *stdin*:29
-  arguments:
-    x := [ 1, 2, 3 ]
-  local variables:
-    i := <unassigned>
-    j := <unassigned>
- called from
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> f:=function(x) local i,j; Unbind(x); for i in true do return 1; od; return 2; end;;
-gap> f([1,2,3]);
-Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
-for i in true do
-    return 1;
-od; at *stdin*:31 called from
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:32
-type 'quit;' to quit to outer loop
-brk> Where();
-for i in true do
-    return 1;
-od; at *stdin*:31 called from
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-for i in true do
-    return 1;
-od; at *stdin*:31
-  arguments:
-    x := <unassigned>
-  local variables:
-    i := <unassigned>
-    j := <unassigned>
- called from
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> f:=function(x) local i,j; Unbind(x); j := 4; for i in true do return 1; od; return 2; end;;
-gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
 for i in true do
@@ -253,6 +171,94 @@ brk> WhereWithVars();
 for i in true do
     return 1;
 od; at *stdin*:33
+  arguments: <none>
+  local variables:
+    i := <unassigned>
+ called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> 
+gap> f:=function(x) local i,j; for i in true do return 1; od; return 2; end;;
+gap> f([1,2,3]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+for i in true do
+    return 1;
+od; at *stdin*:35 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:36
+type 'quit;' to quit to outer loop
+brk> Where();
+for i in true do
+    return 1;
+od; at *stdin*:35 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+for i in true do
+    return 1;
+od; at *stdin*:35
+  arguments:
+    x := [ 1, 2, 3 ]
+  local variables:
+    i := <unassigned>
+    j := <unassigned>
+ called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> 
+gap> f:=function(x) local i,j; Unbind(x); for i in true do return 1; od; return 2; end;;
+gap> f([1,2,3]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+for i in true do
+    return 1;
+od; at *stdin*:37 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:38
+type 'quit;' to quit to outer loop
+brk> Where();
+for i in true do
+    return 1;
+od; at *stdin*:37 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+for i in true do
+    return 1;
+od; at *stdin*:37
+  arguments:
+    x := <unassigned>
+  local variables:
+    i := <unassigned>
+    j := <unassigned>
+ called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> 
+gap> f:=function(x) local i,j; Unbind(x); j := 4; for i in true do return 1; od; return 2; end;;
+gap> f([1,2,3]);
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+for i in true do
+    return 1;
+od; at *stdin*:39 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:40
+type 'quit;' to quit to outer loop
+brk> Where();
+for i in true do
+    return 1;
+od; at *stdin*:39 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+for i in true do
+    return 1;
+od; at *stdin*:39
   arguments:
     x := <unassigned>
   local variables:
@@ -268,39 +274,7 @@ gap> f();
 Error, <expr> must be 'true' or 'false' (not the integer 1) in
   repeat
     x := 1;
-until 1; at *stdin*:35 called from 
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:36
-type 'quit;' to quit to outer loop
-brk> Where();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> 
-gap> f:=function() local x; Assert(0, 1); return 2; end;;
-gap> f();
-Error, Assert: <cond> must be 'true' or 'false' (not the integer 1) in
-  Assert( 0, 1 ); at *stdin*:38 called from 
-<function "f">( <arguments> )
- called from read-eval loop at *stdin*:39
-type 'quit;' to quit to outer loop
-brk> Where();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:1
-brk> WhereWithVars();
-<function "f">( <arguments> )
- called from read-eval loop at *errin*:2
-brk> quit;
-gap> 
-gap> 
-gap> f:=function() local x; Assert(0, 1, "hello"); return 2; end;;
-gap> f();
-Error, Assert: <cond> must be 'true' or 'false' (not the integer 1) in
-  Assert( 0, 1, "hello" ); at *stdin*:41 called from 
+until 1; at *stdin*:41 called from 
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:42
 type 'quit;' to quit to outer loop
@@ -312,32 +286,67 @@ brk> WhereWithVars();
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
-gap> # Verify issue #2656 is fixed
+gap> #############################################################################
+gap> f:=function() local x; Assert(0, 1); return 2; end;;
+gap> f();
+Error, Assert: <cond> must be 'true' or 'false' (not the integer 1) in
+  Assert( 0, 1 ); at *stdin*:44 called from 
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:45
+type 'quit;' to quit to outer loop
+brk> Where();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> 
+gap> #############################################################################
+gap> f:=function() local x; Assert(0, 1, "hello"); return 2; end;;
+gap> f();
+Error, Assert: <cond> must be 'true' or 'false' (not the integer 1) in
+  Assert( 0, 1, "hello" ); at *stdin*:47 called from 
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:48
+type 'quit;' to quit to outer loop
+brk> Where();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> WhereWithVars();
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> 
+gap> #############################################################################
+gap> ##
+gap> ##  Verify issue #2656 is fixed
+gap> ##
 gap> InstallMethod( \[\,\], [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ],
 >     { m, row, col } -> ELM_LIST( m, row, col ) );
 gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
 Error, List Element: <list>[2] must have an assigned value in
   return m[i][j]; at GAPROOT/lib/matrix.gi:LINE called from 
-ELM_LIST( m, row, col ) at *stdin*:45 called from
-return l[2, 1]; at *stdin*:46 called from
+ELM_LIST( m, row, col ) at *stdin*:54 called from
+return l[2, 1]; at *stdin*:55 called from
 <function "f">( <arguments> )
- called from read-eval loop at *stdin*:47
+ called from read-eval loop at *stdin*:56
 type 'quit;' to quit to outer loop
 brk> Where();
-ELM_LIST( m, row, col ) at *stdin*:45 called from
-return l[2, 1]; at *stdin*:46 called from
+ELM_LIST( m, row, col ) at *stdin*:54 called from
+return l[2, 1]; at *stdin*:55 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
-ELM_LIST( m, row, col ) at *stdin*:45
+ELM_LIST( m, row, col ) at *stdin*:54
   arguments:
     m := [ [ 1 ] ]
     row := 2
     col := 1
   local variables: <none>
  called from
-return l[2, 1]; at *stdin*:46
+return l[2, 1]; at *stdin*:55
   arguments: <none>
   local variables: <none>
  called from
@@ -345,12 +354,15 @@ return l[2, 1]; at *stdin*:46
  called from read-eval loop at *errin*:2
 brk> quit;
 gap> 
-gap> # verify issue #1373 is fixed
+gap> #############################################################################
+gap> ##
+gap> ##  Verify issue #1373 is fixed
+gap> ##
 gap> InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
 Error, FLAGS_FILTER: <oper> must be an operation (not a function) in
   <<compiled GAP code>> from GAPROOT/lib/oper1.g:LINE in function INSTALL_METHOD called from 
 <<compiled GAP code>> from GAPROOT/lib/oper1.g:LINE in function InstallMethod called from
 <function "InstallMethod">( <arguments> )
- called from read-eval loop at *stdin*:49
+ called from read-eval loop at *stdin*:61
 type 'quit;' to quit to outer loop
 brk> QUIT;
