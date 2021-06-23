@@ -76,3 +76,15 @@ gap> List(MethodsOperation(IsMyProperty, 1), x->x.info);
 #
 gap> RedispatchOnCondition();
 Error, Usage: RedispatchOnCondition(oper[,info],fampred,reqs,cond,val)
+
+# Check install methods for operations which do not return a value
+gap> MyMutAttribute := NewAttribute( "MyMutAttribute", IsObject, "mutable" );
+<Attribute "MyMutAttribute">
+gap> MyAttribute := NewAttribute( "MyAttribute", IsObject);
+<Attribute "MyAttribute">
+gap> InstallMethod(MyAttribute, "for a perm group", [IsPermGroup], function(x) end);
+gap> InstallMethod(MyMutAttribute, "for a perm group", [IsPermGroup], function(x) end);
+gap> MyAttribute(Group((1,2,3)));
+Error, Method for an attribute must return a value
+gap> MyMutAttribute(Group((1,2,3)));
+Error, Method for an attribute must return a value
