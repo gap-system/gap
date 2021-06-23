@@ -2428,7 +2428,9 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
-    
+    if (val == 0) {
+        ErrorMayQuit("Method for an attribute must return a value", 0, 0);
+    }
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
@@ -2473,7 +2475,9 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
-    
+    if (val == 0) {
+        ErrorMayQuit("Method for an attribute must return a value", 0, 0);
+    }
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
