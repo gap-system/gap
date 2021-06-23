@@ -505,7 +505,8 @@ InstallMethod( ViewObj,
     [ IsFreeLeftModule and HasGeneratorsOfLeftModule ],
     function( V )
     Print( "<free left module over ", LeftActingDomain( V ), ", with ",
-           Length( GeneratorsOfLeftModule( V ) ), " generators>" );
+           Pluralize( Length( GeneratorsOfLeftModule( V ) ), "generator" ),
+           ">" );
     end );
 
 InstallMethod( ViewObj,

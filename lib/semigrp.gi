@@ -436,15 +436,9 @@ function(S)
                                           Representative(h))) / Size(h);
         nrR := Size(GreensLClassOfElement(AssociatedSemigroup(D),
                                           Representative(h))) / Size(h);
-        Print("[H size = ", Size(h), ", ", nrL, " L-class");
-        if nrL > 1 then
-            Print("es");
-        fi;
-        Print(", ", nrR, " R-class");
-        if nrR > 1 then
-            Print("es");
-        fi;
-        Print("]\n");
+        Print("[H size = ", Size(h), ", ",
+              Pluralize(nrL, "L-class"), ", ", Pluralize(nrR, "R-class"),
+              "]\n");
     end;
 
     #########################################################################

@@ -7,7 +7,7 @@
 # be empty, and then it isn't a IsMagmaWithInverses.
 #
 gap> amgm:=AdditiveMagma([0]);
-<additive magma with 1 generators>
+<additive magma with 1 generator>
 gap> Size(amgm);
 1
 gap> IsTrivial(amgm);

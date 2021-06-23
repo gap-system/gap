@@ -20,7 +20,7 @@ gap> IsNonGaussianMatrixSpace( z );
 false
 gap> v:= LeftModuleByGenerators( GF(9),
 >            [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> IsGaussianMatrixSpace( v );
 true
 gap> IsNonGaussianMatrixSpace( v );
@@ -30,7 +30,7 @@ gap> v = LeftModuleByGenerators( GF(9),
 true
 gap> w:= LeftModuleByGenerators( GF(9),
 >            [ LieObject( [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> IsGaussianMatrixSpace( w );
 false
 gap> IsNonGaussianMatrixSpace( w );

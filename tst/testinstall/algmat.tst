@@ -7,20 +7,20 @@ gap> Ring( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 >            [ [ 0*Z(9), Z(27) ], [ Z(3)^0, Z(3) ] ] ] );
 <algebra over GF(3), with 2 generators>
 gap> Ring( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-<free left module over Integers, and ring, with 1 generators>
+<free left module over Integers, and ring, with 1 generator>
 gap> Ring( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
 <free left module over Integers, and ring, with 2 generators>
 gap> RingWithOne( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 >                  [ [ 0*Z(9), Z(27) ], [ Z(3)^0, Z(3) ] ] ] );
 <algebra-with-one over GF(3), with 2 generators>
 gap> RingWithOne( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-<free left module over Integers, and ring-with-one, with 1 generators>
+<free left module over Integers, and ring-with-one, with 1 generator>
 gap> RingWithOne( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
 <free left module over Integers, and ring-with-one, with 2 generators>
 gap> mat:= [ [ 1, E(4) ], [ 1, 1 ] ];
 [ [ 1, E(4) ], [ 1, 1 ] ]
 gap> r:= DefaultRing( [ mat ] );
-<algebra over Rationals, with 1 generators>
+<algebra over Rationals, with 1 generator>
 gap> mat in r;
 true
 
@@ -41,14 +41,14 @@ true
 gap> Dimension( a );
 24
 gap> b:= Algebra( Rationals, [ [ [ 1, E(5) ], [ E(5), 0 ] ] ] );
-<algebra over Rationals, with 1 generators>
+<algebra over Rationals, with 1 generator>
 gap> IsNonGaussianMatrixSpace( b );
 true
 gap> Dimension( b );
 8
 gap> c:= Algebra( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
 >                     [ [ 0, 0 ], [ 0, 0 ] ] );
-<algebra over CF(5), with 1 generators>
+<algebra over CF(5), with 1 generator>
 gap> IsGaussianMatrixSpace( c );
 true
 gap> Dimension( c );
@@ -79,14 +79,14 @@ true
 gap> Dimension( ua );
 24
 gap> ub:= AlgebraWithOne( Rationals, [ [ [ 1, E(5) ], [ E(5), 0 ] ] ] );
-<algebra-with-one over Rationals, with 1 generators>
+<algebra-with-one over Rationals, with 1 generator>
 gap> IsNonGaussianMatrixSpace( ub );
 true
 gap> Dimension( ub );
 8
 gap> uc:= AlgebraWithOne( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
 >                     [ [ 0, 0 ], [ 0, 0 ] ] );
-<algebra-with-one over CF(5), with 1 generators>
+<algebra-with-one over CF(5), with 1 generator>
 gap> IsGaussianMatrixSpace( uc );
 true
 gap> Dimension( uc );
@@ -192,7 +192,7 @@ gap> IsAlgebra( f );
 true
 gap> u:= Algebra( GF(2),
 >         [ [ [ 1, 1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] * Z(2) ] );
-<algebra over GF(2), with 1 generators>
+<algebra over GF(2), with 1 generator>
 gap> Dimension( u );
 2
 gap> IsSubset( f, u );
@@ -203,7 +203,7 @@ gap> Dimension( cenu );
 5
 gap> v:= FreeLeftModule( GF(2),
 >         [ [ [ 1, 1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] * Z(2) ] );
-<vector space over GF(2), with 1 generators>
+<vector space over GF(2), with 1 generator>
 gap> Dimension( v );
 1
 gap> IsSubset( f, v );

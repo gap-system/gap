@@ -182,7 +182,8 @@ InstallMethod( ViewObj,
     [ IsVectorSpace and HasGeneratorsOfLeftModule ],
     function( V )
     Print( "<vector space over ", LeftActingDomain( V ), ", with ",
-           Length( GeneratorsOfLeftModule( V ) ), " generators>" );
+           Pluralize( Length( GeneratorsOfLeftModule( V ) ), "generator" ),
+           ">" );
     end );
 
 InstallMethod( ViewObj,

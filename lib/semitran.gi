@@ -269,6 +269,7 @@ function(S)
       return elt in S;
     end,
 
+    # n is either 0 or >= 2, so do not use Pluralize on "pts" in the following
     PrintObj:=function(enum)
       Print("<enumerator of full transformation semigroup on ", n," pts>");
     end));

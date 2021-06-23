@@ -68,20 +68,22 @@ InstallMethod( ViewObj,
     "for an add. magma with generators",
     [ IsAdditiveMagma and HasGeneratorsOfAdditiveMagma ],
     function( A )
-    Print( "<additive magma with ",
-           Length( GeneratorsOfAdditiveMagma( A ) ), " generators>" );
+    local nrgens;
+    nrgens := Length( GeneratorsOfAdditiveMagma( A ) );
+    Print( "<additive magma with ", Pluralize( nrgens, "generator" ), ">" );
     end );
 
 InstallMethod( ViewObj,
     "for an add. magma-with-zero with generators",
     [ IsAdditiveMagmaWithZero and HasGeneratorsOfAdditiveMagmaWithZero ],
     function( A )
-    if IsEmpty( GeneratorsOfAdditiveMagmaWithZero( A ) ) then
+    local nrgens;
+    nrgens := GeneratorsOfAdditiveMagmaWithZero( A );
+    if nrgens = 0 then
       Print( "<trivial additive magma-with-zero>" );
     else
       Print( "<additive magma-with-zero with ",
-             Length( GeneratorsOfAdditiveMagmaWithZero( A ) ),
-             " generators>" );
+             Pluralize( nrgens, "generator" ), ">" );
     fi;
     end );
 
@@ -89,12 +91,13 @@ InstallMethod( ViewObj,
     "for an add. magma-with-inverses with generators",
     [ IsAdditiveGroup and HasGeneratorsOfAdditiveGroup ],
     function( A )
-    if IsEmpty( GeneratorsOfAdditiveGroup( A ) ) then
+    local nrgens;
+    nrgens := GeneratorsOfAdditiveGroup( A );
+    if nrgens = 0 then
       Print( "<trivial additive magma-with-inverses>" );
     else
       Print( "<additive magma-with-inverses with ",
-             Length( GeneratorsOfAdditiveGroup( A ) ),
-             " generators>" );
+             Pluralize( nrgens, "generator" ), ">" );
     fi;
     end );
 

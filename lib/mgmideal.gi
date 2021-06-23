@@ -94,8 +94,9 @@ InstallMethod( ViewObj,
     true,
     [ IsLeftMagmaIdeal and HasGeneratorsOfLeftMagmaIdeal ], 0,
     function( S )
-    Print( "<LeftMagmaIdeal with ", Length( GeneratorsOfLeftMagmaIdeal( S ) ),
-           " generators>" );
+    Print( "<LeftMagmaIdeal with ",
+           Pluralize( Length( GeneratorsOfLeftMagmaIdeal( S ) ), "generator" ),
+           ">" );
     end );
 
 ##  right
@@ -114,8 +115,9 @@ InstallMethod( ViewObj,
     true,
     [ IsRightMagmaIdeal and HasGeneratorsOfRightMagmaIdeal ], 0,
     function( S )
-    Print( "<RightMagmaIdeal with ", Length( GeneratorsOfRightMagmaIdeal( S ) ),
-           " generators>" );
+    Print( "<RightMagmaIdeal with ",
+           Pluralize( Length( GeneratorsOfRightMagmaIdeal( S ) ), "generator" ),
+           ">" );
     end );
 
 
@@ -134,8 +136,9 @@ InstallMethod( ViewObj,
     true,
     [ IsMagmaIdeal and HasGeneratorsOfMagmaIdeal ], 0,
     function( S )
-    Print( "<MagmaIdeal with ", Length( GeneratorsOfMagmaIdeal( S ) ),
-           " generators>" );
+    Print( "<MagmaIdeal with ",
+           Pluralize( Length( GeneratorsOfMagmaIdeal( S ) ), "generator" ),
+           ">" );
     end );
 
 

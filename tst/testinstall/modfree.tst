@@ -1,11 +1,11 @@
 #@local c,enum,f,i,iter,l,len,u,v,v1,v2,w
 gap> START_TEST("modfree.tst");
 gap> u:= LeftModuleByGenerators( GF(3), [ [ Z(3), 0*Z(3) ] ] );
-<vector space over GF(3), with 1 generators>
+<vector space over GF(3), with 1 generator>
 gap> v:= LeftModuleByGenerators( GF(2), [ [ Z(2), Z(2) ], [ Z(4), Z(4) ] ] );
 <vector space over GF(2), with 2 generators>
 gap> w:= LeftModuleByGenerators( GF(4), [ [ Z(2), Z(2) ] ] );
-<vector space over GF(2^2), with 1 generators>
+<vector space over GF(2^2), with 1 generator>
 gap> u = v;
 false
 gap> v = u;

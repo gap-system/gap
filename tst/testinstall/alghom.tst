@@ -87,11 +87,11 @@ gap> ExampleRing := function(n)
 gap> R := ExampleRing(4);
 <ring with 2 generators>
 gap> id:=Ideal(R,[4*R.1-R.2]);
-<two-sided ideal in <ring with 2 generators>, (1 generators)>
+<two-sided ideal in <ring with 2 generators>, (1 generator)>
 gap> Elements(id);
 [ 0*e, 4*e+x, 8*e, 12*e+x ]
 gap> Q:=R/id;
-<ring with 1 generators>
+<ring with 1 generator>
 gap> Elements(Q);
 [ 0*q1, q1, 2*q1, 3*q1, 4*q1, 5*q1, 6*q1, -q1 ]
 gap> STOP_TEST( "alghom.tst", 1);

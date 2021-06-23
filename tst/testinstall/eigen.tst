@@ -8,6 +8,6 @@ x_1^4+x_1^3-x_1-Z(3)^0
 gap> GeneralisedEigenvalues(GF(3), A );
 [ x_1+Z(3)^0, x_1-Z(3)^0 ]
 gap> GeneralisedEigenspaces(GF(3),A);
-[ <vector space over GF(3), with 1 generators>, 
+[ <vector space over GF(3), with 1 generator>, 
   <vector space over GF(3), with 3 generators> ]
 gap> STOP_TEST( "eigen.tst", 1);

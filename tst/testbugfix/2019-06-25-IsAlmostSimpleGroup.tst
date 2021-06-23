@@ -9,7 +9,7 @@ true
 
 #
 gap> G:=CyclicGroup(5);
-<pc group of size 5 with 1 generators>
+<pc group of size 5 with 1 generator>
 gap> IsAlmostSimpleGroup(G);
 false
 gap> IsSimpleGroup(G);

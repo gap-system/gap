@@ -677,9 +677,9 @@ DeclareAttribute( "FaithfulModule", IsAlgebra );
 ##  gap> A:= Rationals^[3,3];;
 ##  gap> V:= LeftAlgebraModuleByGenerators( A, \*, [ [ 1, 0, 0 ] ] );;
 ##  gap> B:= Subalgebra( A, [ Basis(A)[1] ] );
-##  <algebra over Rationals, with 1 generators>
+##  <algebra over Rationals, with 1 generator>
 ##  gap> W:= ModuleByRestriction( V, B );
-##  <left-module over <algebra over Rationals, with 1 generators>>
+##  <left-module over <algebra over Rationals, with 1 generator>>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

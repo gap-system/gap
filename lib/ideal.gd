@@ -116,7 +116,7 @@
 ##  <Example><![CDATA[
 ##  gap> R:= Integers;;
 ##  gap> I:= Ideal( R, [ 2 ] );
-##  <two-sided ideal in Integers, (1 generators)>
+##  <two-sided ideal in Integers, (1 generator)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -183,7 +183,7 @@ DeclareGlobalFunction( "RightIdealNC" );
 ##  gap> A:= FullMatrixAlgebra( Rationals, 3 );
 ##  ( Rationals^[ 3, 3 ] )
 ##  gap> I:= Ideal( A, [ Random( A ) ] );
-##  <two-sided ideal in ( Rationals^[ 3, 3 ] ), (1 generators)>
+##  <two-sided ideal in ( Rationals^[ 3, 3 ] ), (1 generator)>
 ##  gap> IsTwoSidedIdeal( A, I );
 ##  true
 ##  ]]></Example>

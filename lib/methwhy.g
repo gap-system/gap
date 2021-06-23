@@ -167,11 +167,11 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
 
   methods:=MethodsOperation(oper,narg);
   if verbos > 0 then
-    Print("#I  Searching Method for ",NameFunction(oper)," with ",narg,
-	  " arguments:\n");
+    Print("#I  Searching Method for ",NameFunction(oper)," with ",
+          Pluralize(narg, "argument"), ":\n");
   fi;
   if verbos > 0 then 
-    Print("#I  Total: ", Length(methods)," entries\n");
+    Print("#I  Total: ", Pluralize(Length(methods), "entry"), "\n");
   fi;
   for i in [1..Length(methods)] do
     m := methods[i];
@@ -403,9 +403,9 @@ end);
 ##  <Log><![CDATA[
 ##  gap> ShowDeclarationsOfOperation(IsFinite);
 ##  Available declarations for operation <Property "IsFinite">:
-##    1: GAPROOT/lib/coll.gd:1451 with 1 arguments, and filters [ IsListOrCollection ]
-##    2: GAPROOT/lib/float.gd:212 with 1 arguments, and filters [ IsFloat ]
-##    3: GAPROOT/lib/ctbl.gd:1195 with 1 arguments, and filters [ IsNearlyCharacterTable ]
+##    1: GAPROOT/lib/coll.gd:1451 with 1 argument, and filters [ IsListOrCollection ]
+##    2: GAPROOT/lib/float.gd:212 with 1 argument, and filters [ IsFloat ]
+##    3: GAPROOT/lib/ctbl.gd:1195 with 1 argument, and filters [ IsNearlyCharacterTable ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>

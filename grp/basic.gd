@@ -253,11 +253,11 @@ DeclareConstructor( "CyclicGroupCons", [ IsGroup, IsInt ] );
 ##  gap> CyclicGroup(IsPermGroup,12);
 ##  Group([ (1,2,3,4,5,6,7,8,9,10,11,12) ])
 ##  gap> matgrp1:= CyclicGroup( IsMatrixGroup, 12 );
-##  <matrix group of size 12 with 1 generators>
+##  <matrix group of size 12 with 1 generator>
 ##  gap> FieldOfMatrixGroup( matgrp1 );
 ##  Rationals
 ##  gap> matgrp2:= CyclicGroup( IsMatrixGroup, GF(2), 12 );
-##  <matrix group of size 12 with 1 generators>
+##  <matrix group of size 12 with 1 generator>
 ##  gap> FieldOfMatrixGroup( matgrp2 );
 ##  GF(2)
 ##  ]]></Example>

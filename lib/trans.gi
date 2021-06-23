@@ -435,6 +435,7 @@ function(f)
     fi;
   fi;
   deg := DegreeOfTransformation(f);
+  # deg is either 0 or >= 2, so do not use Pluralize on "pts" in the following
   return STRINGIFY("\><transformation on ", deg, " pts with rank ",
                    RankOfTransformation(f, deg), ">\<");
 end);

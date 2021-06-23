@@ -17,7 +17,7 @@ gap> IsNonGaussianMatrixSpace( z );
 false
 gap> v:= LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> IsGaussianMatrixSpace( v );
 true
 gap> IsNonGaussianMatrixSpace( v );
@@ -27,7 +27,7 @@ gap> v = LeftModuleByGenerators( GF(9),
 true
 gap> w:= LeftModuleByGenerators( GF(9),
 >            [ [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ] );
-<vector space over GF(3^2), with 1 generators>
+<vector space over GF(3^2), with 1 generator>
 gap> IsGaussianMatrixSpace( w );
 false
 gap> IsNonGaussianMatrixSpace( w );
@@ -377,7 +377,7 @@ true
 ##  8. Methods for mutable bases of non-Gaussian matrix spaces
 ##
 gap> mb:= MutableBasis( Rationals, [ [ [ E(4) ] ] ] );
-<mutable basis over Rationals, 1 vectors>
+<mutable basis over Rationals, 1 vector>
 gap> CloseMutableBasis( mb, [ [ E(3) ] ] );
 true
 gap> CloseMutableBasis( mb, [ [ E(3)+E(4) ] ] );

@@ -441,6 +441,6 @@ InstallMethod( ViewObj,
     "for a semigroup ideal with known generators",
     [ IsMagmaIdeal and IsSemigroupIdeal and HasGeneratorsOfMagmaIdeal ],
     function( S )
-    Print( "<semigroup ideal with ", Length(GeneratorsOfMagmaIdeal( S )),
-           " generators>" );
+    Print( "<semigroup ideal with ",
+           Pluralize( Length(GeneratorsOfMagmaIdeal( S )), "generator" ), ">");
     end );

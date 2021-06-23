@@ -207,7 +207,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> au:=AutomorphismGroup(n);;
 ##  gap> au:=First(AsSet(au),i->Order(i)=3);;
 ##  gap> au:=Group(au);
-##  <group with 1 generators>
+##  <group with 1 generator>
 ##  gap> IsGroupOfAutomorphisms(au);
 ##  true
 ##  gap> SemidirectProduct(au,n);

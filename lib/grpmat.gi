@@ -713,19 +713,19 @@ InstallMethod( ViewObj,
     "for a matrix group with stored generators",
     [ IsMatrixGroup and HasGeneratorsOfGroup ],
 function(G)
-local gens;
+local gens, nrgens;
   gens:=GeneratorsOfGroup(G);
-  if Length(gens)>0 and
-     Length(gens) * DimensionOfMatrixGroup(G)^2 / GAPInfo.ViewLength > 8 then
+  nrgens:=Length(gens);
+  if nrgens>0 and
+     nrgens * DimensionOfMatrixGroup(G)^2 / GAPInfo.ViewLength > 8 then
     Print("<matrix group");
     if HasSize(G) then
       Print(" of size ",Size(G));
     fi;
-    Print(" with ",Length(GeneratorsOfGroup(G)),
-          " generators>");
+    Print(" with ", Pluralize(nrgens, "generator"), ">");
   else
     Print("Group(");
-    ViewObj(GeneratorsOfGroup(G));
+    ViewObj(gens);
     Print(")");
   fi;
 end);

@@ -410,7 +410,7 @@ DeclareGlobalFunction( "DefaultRing" );
 ##  gap> R:= Integers;
 ##  Integers
 ##  gap> S:= Subring( R, [ 4, 6 ] );
-##  <ring with 1 generators>
+##  <ring with 1 generator>
 ##  gap> Parent( S );
 ##  Integers
 ##  ]]></Example>
@@ -749,7 +749,7 @@ InstallFactorMaintenance( IsZeroMultiplicationRing,
 ##  gap> Units( GaussianIntegers );
 ##  [ -1, 1, -E(4), E(4) ]
 ##  gap> Units( GF( 16 ) );
-##  <group of size 15 with 1 generators>
+##  <group of size 15 with 1 generator>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
