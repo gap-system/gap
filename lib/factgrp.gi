@@ -692,7 +692,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
+totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
   G:=arg[1];
   N:=arg[2];
@@ -774,6 +774,12 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 
   badcores:=[];
   badi:=BADINDEX;
+  hard:=ValueOption("hard");
+  if hard=fail then
+    hard:=100000;
+  elif hard=true then
+    hard:=10000;
+  fi;
   totalcnt:=0;
   interupt:=false;
   cnt:=20;
@@ -804,7 +810,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i;
 	fi;
 	totalcnt:=totalcnt+1;
 	if KnownNaturalHomomorphismsPool(G,N) and
-	  Minimum(IndexNC(G,v),knowi)<100000 
+	  Minimum(IndexNC(G,v),knowi)<hard 
 	     and 5*totalcnt>Minimum(IndexNC(G,v),knowi,1000) then
 	  # interupt if we're already quite good
 	  interupt:=true;

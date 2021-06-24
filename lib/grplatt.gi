@@ -3295,14 +3295,13 @@ local l,N,t,gens,i,c,o,rep,r,sub,gen;
   fi;
 end);
 
-InstallMethod(MinimalFaithfulPermutationDegree,"use lattice",true,
-  [IsGroup and IsFinite],0,
-function(G)
+BindGlobal("DoMinimalFaithfulPermutationDegree",
+function(G,dorep)
 local c,n,deg,ind,core,i,j,sum;
   if Size(G)=1 then
     # option allows to calculate actual representation -- maybe access under
     # different name
-    if ValueOption("representation")<>true then
+    if dorep=false then
       return 1;
     else
       return GroupHomomorphismByImages(G,Group(()),[One(G)],[()]);
@@ -3344,7 +3343,7 @@ local c,n,deg,ind,core,i,j,sum;
 
   od;
 
-  if ValueOption("representation")<>true then
+  if dorep=false then
     return deg[Length(n)][1]; # smallest degree
   fi;
   # calculate the representation
@@ -3361,6 +3360,23 @@ local c,n,deg,ind,core,i,j,sum;
 
   return GroupHomomorphismByImages(G,ind,GeneratorsOfGroup(G),sum);
 
+end);
+
+InstallMethod(MinimalFaithfulPermutationDegree,"use lattice",true,
+  [IsGroup and IsFinite],0,
+function(G)
+  if ValueOption("representation")=true then
+    Error("Use of the `representation` option discontinued,\n",
+    "Use `MinimalFaithfulPermutationRepresentation` instead");
+    return MinimalFaithfulPermutationRepresentation(G);
+  fi;
+  return DoMinimalFaithfulPermutationDegree(G,false);
+end);
+
+InstallMethod(MinimalFaithfulPermutationRepresentation,"use lattice",true,
+  [IsGroup and IsFinite],0,
+function(G)
+  return DoMinimalFaithfulPermutationDegree(G,true);
 end);
 
 

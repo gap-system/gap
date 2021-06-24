@@ -134,6 +134,21 @@ function(G,dom,all)
   fi;
   savemem:=ValueOption("savemem");
   n:=Length(dom);
+  if n>20 and ForAll(dom,x->IsSubset(G,x)) 
+    and NrMovedPoints(G)>1000 
+    and NrMovedPoints(G)*1000>Size(G) then
+
+    b:=SmallerDegreePermutationRepresentation(G:cheap);
+    if NrMovedPoints(Range(b))<NrMovedPoints(G) then
+#Print("Degreduce ",NrMovedPoints(G)," => ",NrMovedPoints(Range(b)),"\n");
+      dom:=SubgroupsOrbitsAndNormalizers(Image(b,G),
+        List(dom,x->Image(b,x)),all);
+      dom:=List(dom,x->rec(pos:=x.pos,normalizer:=PreImage(b,x.normalizer),
+        representative:=PreImage(b,x.representative)));
+      return dom;
+    fi;
+  fi;
+
   l:=n;
   o:=[];
   # determine some points that distinguish groups

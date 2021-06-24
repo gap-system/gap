@@ -512,13 +512,18 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  <#GAPDoc Label="MinimalFaithfulPermutationDegree">
 ##  <ManSection>
 ##  <Oper Name="MinimalFaithfulPermutationDegree" Arg='G'/>
+##  <Oper Name="MinimalFaithfulPermutationRepresentation" Arg='G'/>
 ##
 ##  <Description>
-##  For  a finite group <A>G</A> this operation calculates the least
+##  For  a finite group <A>G</A>,
+##  <Ref Oper="MinimalFaithfulPermutationDegree"/>
+##  calculates the least
 ##  positive integer <M>n=\mu(G)</M> such that <A>G</A> is isomorphic to a
 ##  subgroup of the symmetric group of degree <M>n</M>.
 ##  This can require calculating the whole subgroup lattice.
-##  If the option `representation` is given, the operation returns the
+##  The operation
+##  <Ref Oper="MinimalFaithfulPermutationRepresentation"/>
+##  returns a
 ##  corresponding isomorphism.
 ##  <Example><![CDATA[
 ##  gap> MinimalFaithfulPermutationDegree(SmallGroup(96,3));
@@ -526,7 +531,7 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  gap> g:=TransitiveGroup(10,32);;
 ##  gap> MinimalFaithfulPermutationDegree(g);
 ##  6
-##  gap> map:=MinimalFaithfulPermutationDegree(g:representation);;
+##  gap> map:=MinimalFaithfulPermutationRepresentation(g);;
 ##  gap> Size(Image(map));
 ##  720
 ##  ]]></Example>
@@ -535,6 +540,8 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  <#/GAPDoc>
 ##
 DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
+DeclareOperation("MinimalFaithfulPermutationRepresentation",
+  [IsGroup and IsFinite]);
 
 #############################################################################
 ##
