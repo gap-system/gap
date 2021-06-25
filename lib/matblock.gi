@@ -43,7 +43,7 @@
 ##  \enditems
 ##
 DeclareRepresentation( "IsBlockMatrixRep",
-    IsComponentObjectRep,
+    IsComponentObjectRep and IsMatrix,
     [ "blocks", "zero", "nrb", "ncb", "rpb", "cpb" ] );
 
 
