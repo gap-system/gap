@@ -43,7 +43,7 @@ ApplicableMethod := fail;
 ##
 HANDLE_METHOD_NOT_FOUND := function ( INF )
   local no_method_found, linebreak, ShowArguments, ShowArgument, ShowDetails, ShowMethods, 
-             ShowOtherMethods, i;
+             ShowOtherMethods, argument_index;
 
 
 #############################################################################
@@ -235,14 +235,14 @@ end;
   APPEND_LIST(no_method_found," arguments");
 
   linebreak := true;
-  for i in [ 1 .. LENGTH(INF.Arguments) ] do
-    if INF.Arguments[i] = fail then
+  for argument_index in [ 1 .. LENGTH(INF.Arguments) ] do
+    if INF.Arguments[argument_index] = fail then
       if linebreak then
         APPEND_LIST(no_method_found, "\n");
         linebreak := false;
       fi; 
       APPEND_LIST(no_method_found, "The ");
-      APPEND_LIST(no_method_found, Ordinal(i));
+      APPEND_LIST(no_method_found, Ordinal(argument_index));
       APPEND_LIST(no_method_found, " argument is 'fail' which might point to an earlier problem\n" );
     fi;
   od;
