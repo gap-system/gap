@@ -799,14 +799,14 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 
 #############################################################################
 ##
-#O  NewMatrix( <filt>, <R>, <ncols>, <list> )
+#O  NewMatrix( <filt>, <R>, <list>, <ncols> )
 #O  NewZeroMatrix( <filt>, <R>, <m>, <n> )
 #O  NewIdentityMatrix( <filt>, <R>, <n> )
 ##
 ##  <#GAPDoc Label="NewMatrix">
 ##  <ManSection>
 ##  <Heading>NewMatrix, NewZeroMatrix, NewIdentityMatrix</Heading>
-##  <Constr Name="NewMatrix" Arg='filt,R,ncols,list'/>
+##  <Constr Name="NewMatrix" Arg='filt,R,list,ncols'/>
 ##  <Constr Name="NewZeroMatrix" Arg='filt,R,m,n'/>
 ##  <Constr Name="NewIdentityMatrix" Arg='filt,R,n'/>
 ##
@@ -846,7 +846,7 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareConstructor( "NewMatrix", [ IsMatrixOrMatrixObj, IsSemiring, IsInt, IsList] );
+DeclareConstructor( "NewMatrix", [ IsMatrixOrMatrixObj, IsSemiring, IsList, IsInt] );
 
 DeclareConstructor( "NewZeroMatrix",
     [ IsMatrixOrMatrixObj, IsSemiring, IsInt, IsInt ] );

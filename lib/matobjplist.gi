@@ -60,9 +60,9 @@ InstallMethod( NewZeroVector, "for IsPlistVectorRep, a ring, and an int",
   end );
 
 InstallMethod( NewMatrix,
-  "for IsPlistMatrixRep, a ring, an int, and a list",
-  [ IsPlistMatrixRep, IsRing, IsInt, IsList ],
-  function( filter, basedomain, rl, l )
+  "for IsPlistMatrixRep, a ring, a list, and an int",
+  [ IsPlistMatrixRep, IsRing, IsList, IsInt ],
+  function( filter, basedomain, l, rl )
     local nd, filterVectors, m, e, filter2, i;
 
     # If applicable then replace a flat list 'l' by a nested list
@@ -875,9 +875,9 @@ InstallMethod( String, "for plist matrix", [ IsPlistMatrixRep ],
         Append(st,String(m![BDPOS]));
         Append(st,",");
     fi;
-    Append(st,String(NumberColumns(m)));
-    Add(st,',');
     Append(st,String(Unpack(m)));
+    Add(st,',');
+    Append(st,String(NumberColumns(m)));
     Add(st,')');
     return st;
   end );
@@ -1254,8 +1254,8 @@ InstallMethod( ChangedBaseDomain, "for a plist vector, and a domain",
 InstallMethod( ChangedBaseDomain, "for a plist matrix, and a domain",
   [ IsPlistMatrixRep, IsRing ],
   function( m, r )
-    return NewMatrix(IsPlistMatrixRep, r, NumberColumns(m),
-                     List(m![ROWSPOS], x-> x![ELSPOS]));
+    return NewMatrix(IsPlistMatrixRep, r, 
+                     List(m![ROWSPOS], x-> x![ELSPOS]), NumberColumns(m) );
   end );
 
 InstallMethod( CompatibleVector, "for a plist matrix",
@@ -1276,7 +1276,7 @@ InstallMethod( NewCompanionMatrix,
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
-    ll := NewMatrix(IsPlistMatrixRep,bd,n,[]);
+    ll := NewMatrix(IsPlistMatrixRep,bd,[],n);
     l := Vector(-l{[1..n]},CompatibleVector(ll));
     for i in [1..n-1] do
         Add(ll,ZeroMutable(l));
