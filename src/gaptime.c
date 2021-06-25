@@ -24,8 +24,8 @@
 #include "sysfiles.h"
 #include "system.h"
 
+#include <errno.h>
 #include <stddef.h>
-#include <sys/errno.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
