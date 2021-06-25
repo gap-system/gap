@@ -1,3 +1,7 @@
 gap> Print("All is well\n");
 All is well
+gap> # Mess with lvl to check that it doesn't affect the execution context elsewhere.
+gap> lvl := 42;
+42
+gap> Unbind(lvl);
 gap> QUIT;
