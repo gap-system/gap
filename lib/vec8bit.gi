@@ -1112,9 +1112,9 @@ InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
     return v;
   end );
 
-InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an int, and a list",
-  [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsList ],
-  function( filter, f, rl, l )
+InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an list, and an int",
+  [ Is8BitMatrixRep, IsField and IsFinite, IsList, IsInt ],
+  function( filter, f, l, rl )
     local m;
     if not Size(f) in [3..256] then
         Error("Is8BitMatrixRep only supports base fields with 3 to 256 elements");
@@ -1214,7 +1214,7 @@ InstallMethod( NewCompanionMatrix,
     fi;
     l := -l{[1..n]};
     ConvertToVectorRep(l,Size(bd));
-    ll := NewMatrix(ty,bd,n,[l]);
+    ll := NewMatrix(ty,bd,[l],n);
     for i in [1..n-1] do
         Add(ll,ZeroMutable(l),i);
         ll[i][i+1] := one;

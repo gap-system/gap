@@ -2455,9 +2455,9 @@ InstallMethod( NewZeroVector, "for IsGF2VectorRep, GF(2), and an int",
     return ZERO_GF2VEC_2(i);
   end );
 
-InstallMethod( NewMatrix, "for IsGF2MatrixRep, GF(2), an int, and a list",
-  [ IsGF2MatrixRep, IsField and IsFinite, IsInt, IsList ],
-  function( filter, f, rl, l )
+InstallMethod( NewMatrix, "for IsGF2MatrixRep, GF(2), a list, and an int",
+  [ IsGF2MatrixRep, IsField and IsFinite, IsList, IsInt ],
+  function( filter, f, l, rl )
     local m;
     if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
     m := List(l,ShallowCopy);
@@ -2552,7 +2552,7 @@ InstallMethod( NewCompanionMatrix,
     fi;
     l := -l{[1..n]};
     ConvertToVectorRep(l,2);
-    ll := NewMatrix(ty,bd,n,[l]);
+    ll := NewMatrix(ty,bd,[l],n);
     for i in [1..n-1] do
         Add(ll,ZeroMutable(l),i);
         ll[i,i+1] := one;

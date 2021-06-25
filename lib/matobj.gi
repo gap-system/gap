@@ -269,7 +269,7 @@ InstallMethod( ZeroVector,
 ##
 InstallMethod( Matrix,
   [ IsOperation, IsSemiring, IsList, IsInt ],
-  { filt, R, list, nrCols } -> NewMatrix( filt, R, nrCols, list ) );
+  { filt, R, list, nrCols } -> NewMatrix( filt, R, list, nrCols ) );
 
 InstallMethod( Matrix,
     [ IsOperation, IsSemiring, IsList ],
@@ -278,18 +278,18 @@ InstallMethod( Matrix,
       Error( "<list> must be not empty; ",
              "to create empty matrices, please specify nrCols");
     fi;
-    return NewMatrix( filt, R, Length( list[1] ), list );
+    return NewMatrix( filt, R, list, Length( list[1] ) );
   end );
 
 InstallMethod( Matrix,
     [ IsOperation, IsSemiring, IsMatrixObj ],
-    { filt, R, mat } -> NewMatrix( filt, R, NrCols( mat ), Unpack( mat ) ) );
+    { filt, R, mat } -> NewMatrix( filt, R, Unpack( mat ), NrCols( mat ) ) );
 # TODO: can we do better? encourage MatrixObj implementors to overload this?
 
 InstallMethod( Matrix,
     [ IsSemiring, IsList, IsInt ],
     { R, list, nrCols } -> NewMatrix( DefaultMatrixRepForBaseDomain( R ),
-                                      R, nrCols, list ) );
+                                      R, list, nrCols ) );
 
 InstallMethod( Matrix,
     [ IsSemiring, IsList ],
@@ -298,13 +298,13 @@ InstallMethod( Matrix,
       Error( "list must be not empty" );
     fi;
     return NewMatrix( DefaultMatrixRepForBaseDomain( R ),
-                      R, Length( list[1] ), list );
+                      R, list, Length( list[1] ) );
     end );
 
 InstallMethod( Matrix,
     [ IsSemiring, IsMatrixObj ],
     { R, M } -> NewMatrix( DefaultMatrixRepForBaseDomain( R ),
-                           R, NrCols( M ), Unpack( M ) ) );
+                           R, Unpack( M ), NrCols( M ) ) );
 # TODO: can we do better? encourage MatrixObj implementors to overload this?
 
 #
@@ -318,7 +318,7 @@ InstallMethod( Matrix,
     if Length(list[1]) = 0 then Error("list[1] must be not empty, please specify base domain explicitly"); fi;
     basedomain := DefaultScalarDomainOfMatrixList([list]);
     rep := DefaultMatrixRepForBaseDomain(basedomain);
-    return NewMatrix( rep, basedomain, nrCols, list );
+    return NewMatrix( rep, basedomain, list, nrCols );
   end );
 
 InstallMethod( Matrix,
@@ -333,7 +333,7 @@ InstallMethod( Matrix,
     fi;
     R:= DefaultScalarDomainOfMatrixList( [ list ] );
     rep := DefaultMatrixRepForBaseDomain( R );
-    return NewMatrix( rep, R , Length( list[1] ), list );
+    return NewMatrix( rep, R , list, Length( list[1] ) );
   end );
 
 #
@@ -342,7 +342,7 @@ InstallMethod( Matrix,
 InstallMethod( Matrix,
   [IsList, IsInt, IsMatrixOrMatrixObj],
   function( list, nrCols, example )
-    return NewMatrix( ConstructingFilter(example), BaseDomain(example), nrCols, list );
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), list, nrCols );
   end );
 
 InstallMethod( Matrix, "generic convenience method with 2 args",
@@ -354,7 +354,7 @@ InstallMethod( Matrix, "generic convenience method with 2 args",
     if not (IsList(list[1]) or IsVectorObj(list[1])) then
         ErrorNoReturn("Matrix: flat data not supported in two-argument version");
     fi;
-    return NewMatrix( ConstructingFilter(example), BaseDomain(example), Length(list[1]), list );
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), list, Length(list[1]) );
   end );
 
 InstallMethod( Matrix,
@@ -362,7 +362,7 @@ InstallMethod( Matrix,
     function( mat, example )
     # TODO: can we avoid using Unpack? resp. make this more efficient
     # perhaps adjust NewMatrix to take an IsMatrixOrMatrixObj?
-    return NewMatrix( ConstructingFilter(example), BaseDomain(example), NrCols(mat), Unpack(mat) );
+    return NewMatrix( ConstructingFilter(example), BaseDomain(example), Unpack(mat), NrCols(mat) );
   end );
 
 #
@@ -1402,8 +1402,8 @@ InstallMethod( String,
     M -> Concatenation( "NewMatrix( ",
                NameFunction( ConstructingFilter( M ) ), ", ",
                String( BaseDomain( M ) ), ", ",
-               String( NumberColumns( M ) ), ", ",
-               String( Unpack( M ) ), " )" ) );
+               String( Unpack( M ) ), ", ",
+               String( NumberColumns( M ) ), ", " ) );
 
 
 ############################################################################
