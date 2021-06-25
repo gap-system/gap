@@ -668,7 +668,7 @@ DeclareAttribute( "AsInternalFFE", IsFFE);
 ##
 ##  <Description>
 ##  <Ref Func="RootFFE"/> returns a finite field element 
-##  <A>r</A> from <F> whose <A>k</A>-th power is <A>z</A>.
+##  <A>r</A> from <A>F</A> whose <A>k</A>-th power is <A>z</A>.
 ##  If no such element exists
 ##  then
 ##  <K>fail</K> is returned.
