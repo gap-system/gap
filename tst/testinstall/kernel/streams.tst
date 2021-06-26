@@ -8,6 +8,20 @@ gap> LastSystemError();
 rec( message := "no error", number := 0 )
 
 #
+gap> str := "";;
+gap> out := OutputTextString(str, false);;
+gap> SetPrintFormattingStatus(out, false);
+gap> CALL_WITH_STREAM(fail, fail, fail);
+Error, CALL_WITH_STREAM: <stream> must be an output stream (not the value 'fai\
+l')
+gap> CALL_WITH_STREAM(out, fail, fail);
+Error, CALL_WITH_STREAM: <args> must be a small list (not the value 'fail')
+gap> CALL_WITH_STREAM(out, Display, [ [[1,2],[3,4]] ]);
+gap> CloseStream(out);
+gap> str;
+"[ [  1,  2 ],\n  [  3,  4 ] ]\n"
+
+#
 gap> CLOSE_LOG_TO();
 Error, LogTo: cannot close the logfile
 gap> LOG_TO(fail);

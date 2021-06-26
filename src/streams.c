@@ -506,6 +506,34 @@ Int READ_GAP_ROOT ( const Char * filename )
 
 /****************************************************************************
 **
+*F  FuncCALL_WITH_STREAM( <stream>, <func>, <args> )
+**
+**  Temporarily set the active output stream to <stream>, then call the
+**  function <func> with the arguments in the list <args>. This can for
+**  example be used to capture the output of a function into a string.
+*/
+static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
+{
+    RequireOutputStream(SELF_NAME, stream);
+    RequireSmallList(SELF_NAME, args);
+
+    TypOutputFile output = { 0 };
+    if (!OpenOutputStream(&output, stream)) {
+        ErrorQuit("CALL_WITH_STREAM: cannot open stream for output", 0, 0);
+    }
+
+    Obj result = CallFuncList(func, args);
+
+    if (!CloseOutput(&output)) {
+        ErrorQuit("CALL_WITH_STREAM: cannot close output", 0, 0);
+    }
+
+    return result;
+}
+
+
+/****************************************************************************
+**
 *F  FuncCLOSE_LOG_TO()  . . . . . . . . . . . . . . . . . . . .  stop logging
 **
 **  'FuncCLOSE_LOG_TO' implements a method for 'LogTo'.
@@ -1739,13 +1767,15 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_1ARGS(READ, input),
     GVAR_FUNC_1ARGS(READ_NORECOVERY, input),
-    GVAR_FUNC_4ARGS(READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
+    GVAR_FUNC_4ARGS(
+        READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
     GVAR_FUNC_2ARGS(READ_STREAM_LOOP, stream, catchstderrout),
     GVAR_FUNC_3ARGS(
         READ_STREAM_LOOP_WITH_CONTEXT, stream, catchstderrout, context),
     GVAR_FUNC_1ARGS(READ_AS_FUNC, input),
     GVAR_FUNC_1ARGS(READ_GAP_ROOT, filename),
+    GVAR_FUNC_3ARGS(CALL_WITH_STREAM, stream, func, args),
     GVAR_FUNC_1ARGS(LOG_TO, filename),
     GVAR_FUNC_1ARGS(LOG_TO_STREAM, filename),
     GVAR_FUNC_0ARGS(CLOSE_LOG_TO),
