@@ -6,6 +6,7 @@ set -e
 # It reads gapfile.g, then runs the function 'runtest'
 gap="$1"
 gfile="$2"
+outfile="$3"
 
 # It provides the following features:
 # 1) Stop GAP from attaching to the terminal (which it will
@@ -13,7 +14,8 @@ gfile="$2"
 # 2) Combine stderr and stdout
 # 3) Rewrite the root of gap with the string GAPROOT,
 #    so the output is usable on other machines
-GAPROOT=$(cd ../..; pwd)
+GAPROOT=$("$gap" --print-gaproot)
 echo "Read(\"$gfile\"); runtest();" |
     "$gap" -r -A -q -b -x 200 2>&1 |
-    sed "s:${GAPROOT//:/\\:}:GAPROOT:g"
+    sed "s:${GAPROOT//:/\\:}:GAPROOT/:g" > $outfile.tmp
+mv $outfile.tmp $outfile
