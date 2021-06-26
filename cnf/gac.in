@@ -53,8 +53,6 @@
 ##   -k|--gap-compiler
 ##
 
-SHELL="@SHELL@"
-
 # absolute path of the directory in which GAP was compiled
 abs_top_builddir="@abs_top_builddir@"
 
@@ -67,7 +65,7 @@ libdir="@libdir@"
 # path to the GAP executable
 gap_compiler="${abs_top_builddir}/gap"
 
-libtool="$SHELL ${abs_top_builddir}/libtool"
+libtool="@SHELL@ ${abs_top_builddir}/libtool"
 
 # read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, etc.
 . "${abs_top_builddir}/sysinfo.gap"
@@ -94,6 +92,7 @@ fi
 #F  gap_compile <output> <input> <module-name> <identifier>
 ##
 gap_compile () {
+    mkdir -p $(dirname $1)
     echo ${gap_compiler} -C $1 $2 $3 $4
     ${gap_compiler} -C "$1" "$2" "$3" "$4"
 }
@@ -104,6 +103,7 @@ gap_compile () {
 #F  c_compile   <output> <input> <options>
 ##
 c_compile () {
+    mkdir -p $(dirname $1)
     echo ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
     ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
@@ -114,6 +114,7 @@ c_compile () {
 #F  cxx_compile <output> <input> <options>
 ##
 cxx_compile () {
+    mkdir -p $(dirname $1)
     echo ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
     ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
@@ -124,6 +125,7 @@ cxx_compile () {
 #F  c_link_dyn <output> <input>
 ##
 c_link_dyn () {
+    mkdir -p $(dirname $1)
     echo ${c_dyn_linker} ${GAP_LDFLAGS} -o $1 $2 ${c_addlibs}
     output_la=${1%.so}.la
     output_dir=$(dirname $1)
@@ -144,6 +146,7 @@ c_link_dyn () {
 #F  c_link <output> <inputs_o>
 ##
 c_link () {
+    mkdir -p $(dirname $1)
     echo ${c_linker} ${GAP_LDFLAGS} -o $1 $2 ${GAP_LIBS}
     ${c_linker} ${GAP_LDFLAGS} -o $1 $2 ${GAP_LIBS} || exit 1
 }
