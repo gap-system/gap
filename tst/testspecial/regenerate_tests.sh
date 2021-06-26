@@ -9,6 +9,10 @@ GAPDIR=${GAPDIR:-../..}
 gap="$GAPDIR/bin/gap.sh"
 
 echo This script should only be run with a 64-bit GAP
-for gfile in *.g 64bit/*.g; do
-    ./run_gap.sh "${gap}" "${gfile}"
-done
+if command -v parallel >/dev/null 2>&1 ; then
+    parallel --bar ./run_gap.sh "${gap}" ::: *.g 64bit/*.g
+else
+    for gfile in *.g 64bit/*.g; do
+        ./run_gap.sh "${gap}" "${gfile}"
+    done
+fi
