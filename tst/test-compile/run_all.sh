@@ -16,32 +16,37 @@ for gfile in *.g; do
     echo "Now testing ${gfile}"
 
     echo "  now interpreting ${gfile} ..."
-    if ! diff -u -b "${gfile}.out" <(./run_interpreted.sh "${gap}" "${gfile}"); then
+    ./run_interpreted.sh "${gap}" "${gfile}" "${gfile}.bad"
+    if ! diff -u -b "${gfile}.out" "${gfile}.bad"; then
         echo "ERROR: ${gfile} failed without compiling"
         retvalue=1
-    fi;
+    fi
 
     echo "  now compiling ${gfile} dynamically ..."
-    if ! diff -u  -b "${gfile}.out" <(./run_compiled_dynamic.sh "${gap}" "${gac}" "${gfile}"); then
+    ./run_compiled_dynamic.sh "${gap}" "${gac}" "${gfile}" > "${gfile}.bad"
+    if ! diff -u  -b "${gfile}.out" "${gfile}.bad"; then
         echo "ERROR: ${gfile} failed with compiling and dynamic linking"
         retvalue=1
-    fi;
+    fi
     if ! git diff --exit-code -- ${gfile}.dynamic.c; then
         echo "ERROR: ${gfile}.dynamic.c changed unexpectedly"
         retvalue=1
-    fi;
+    fi
+    rm -f "${gfile}.bad"
 
     echo "  now compiling ${gfile} statically ..."
-    if ! diff -u -b "${gfile}.out" <(./run_compiled_static.sh "${gac}" "${gfile}"); then
+    ./run_compiled_static.sh "${gap}" "${gac}" "${gfile}" > "${gfile}.bad"
+    if ! diff -u -b "${gfile}.out" "${gfile}.bad"; then
         echo "ERROR: ${gfile} failed with compiling and static linking"
         retvalue=1
-    fi;
+    fi
     if ! git diff --exit-code -- ${gfile}.static.c; then
         echo "ERROR: ${gfile}.static.c changed unexpectedly"
         retvalue=1
-    fi;
+    fi
+    rm -f "${gfile}.bad"
     echo
 
-done;
+done
 exit ${retvalue}
 

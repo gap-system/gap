@@ -14,7 +14,7 @@ gfile="$3"
 # 2) Combine stderr and stdout
 # 3) Rewrite the root of gap with the string GAPROOT,
 #    so the output is usable on other machines
-GAPROOT=$(cd ../..; pwd)
+GAPROOT=$("$gap" --print-gaproot)
 # Clean any old files around
 rm -rf .libs "$gfile.comp"*
 
@@ -24,6 +24,6 @@ rm -rf .libs "$gfile.comp"*
 
 echo "LoadDynamicModule(\"./$gfile.comp.so\"); runtest();" |
     "$gap" -r -A -q -b -x 200 2>&1 |
-    sed "s:${GAPROOT//:/\\:}:GAPROOT:g"
+    sed "s:${GAPROOT//:/\\:}:GAPROOT/:g"
 
 rm -rf .libs "$gfile.comp"*

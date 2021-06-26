@@ -16,7 +16,7 @@ else
     tocheck="*.g"
 fi;
 for gfile in $tocheck; do
-    ./run_gap.sh "${gap}" "${gfile}" > "${gfile}.bad"
+    ./run_gap.sh "${gap}" "${gfile}" "${gfile}.bad"
     if ! diff -b "${gfile}.out" "${gfile}.bad"; then
         echo "${gfile}" failed
         retvalue=1

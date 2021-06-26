@@ -10,5 +10,5 @@ gap="$GAPDIR/bin/gap.sh"
 
 echo This script should only be run with a 64-bit GAP
 for gfile in *.g 64bit/*.g; do
-    ./run_gap.sh "${gap}" "${gfile}" > "${gfile}.out"
+    ./run_gap.sh "${gap}" "${gfile}"
 done
