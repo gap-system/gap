@@ -2116,7 +2116,8 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
         rlres = readline(STATE(Prompt));
     }
     else {
-      printf("\n");fflush(stdout);
+      //printf("\n");fflush(stdout);
+      Pr("\n",0,0);
       line[0] = '\0';
       return (Char*)0;
     }

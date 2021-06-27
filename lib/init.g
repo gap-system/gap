@@ -421,7 +421,7 @@ end );
 
 BindGlobal( "ShowKernelInformation", function()
   local sysdate, linelen, indent, btop, vert, bbot, print_info,
-        config, str, gap;
+        config, str, gap, old;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -457,7 +457,7 @@ BindGlobal( "ShowKernelInformation", function()
 
   indent := "             ";
   if GAPInfo.TermEncoding = "UTF-8" then
-    btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
+    btop := "┌───────┐"; vert := "│"; bbot := "└───────┘";
   else
     btop := "*********"; vert := "*"; bbot := btop;
   fi;
@@ -466,10 +466,18 @@ BindGlobal( "ShowKernelInformation", function()
   else
     gap := "GAP";
   fi;
+  # Turn off print formatting temporarily to avoid line wrapping caused by our
+  # possible use of unicode characters in btop and bbot which confuses the
+  # code in io.c tracking the current cursor position: those Unicode
+  # characters consist of multiple bytes each, which that code does not take
+  # into account.
+  old := PRINT_FORMATTING_CURRENT();
+  SET_PRINT_FORMATTING_CURRENT(false);
   Print( " ",btop,"   ",gap," ", GAPInfo.BuildVersion,
          sysdate, "\n",
          " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
          " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+  SET_PRINT_FORMATTING_CURRENT(old);
   if IsHPCGAP then
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
@@ -697,8 +705,17 @@ end );
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     Print ("and packages ...\n");
 fi;
-CallAndInstallPostRestore( AutoloadPackages );
 
+# HACK: load packages, then patch GAPDoc's PrintFormattedString to
+# simply call GAP's PrintWithoutFormatting. Future versions of GAPDoc
+# will likely already contain this change, but for now, this allows
+# us to stay compatible with older GAPDoc versions, too.
+CallAndInstallPostRestore( function()
+  AutoloadPackages();
+  MakeReadWriteGlobal("PrintFormattedString");
+  UnbindGlobal("PrintFormattedString");
+  BindGlobal("PrintFormattedString", PrintWithoutFormatting);
+end );
 
 ############################################################################
 ##

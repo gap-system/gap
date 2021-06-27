@@ -116,6 +116,7 @@ struct TypOutputFile {
 
     char line[MAXLENOUTPUTLINE];
     Int  pos;
+    Int  column;
     BOOL format;
     Int  indent;
 
