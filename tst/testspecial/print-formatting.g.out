@@ -19,31 +19,10 @@ gap> SetPrintFormattingStatus("*stdout*", old);;
 gap> PrintFormattingStatus("*stdout*");
 true
 gap> 
-gap> # test formatting status for current output
-gap> old := PrintFormattingStatus("*current*");
-true
-gap> SetPrintFormattingStatus("*current*", false);
-gap> PrintFormattingStatus("*current*");
-false
-gap> Display(x -> x);
-function ( x )
-return x;
-end
-gap> SetPrintFormattingStatus("*current*", true);
-gap> PrintFormattingStatus("*current*");
-true
-gap> Display(x -> x);
-function ( x )
-    return x;
-end
-gap> SetPrintFormattingStatus("*current*", old);;
-gap> PrintFormattingStatus("*current*");
-true
-gap> 
 gap> # test formatting status for errout
 gap> 1/0; # trigger a break loop
 Error, Rational operations: <divisor> must not be zero
-not in any function at *stdin*:25
+not in any function at *stdin*:14
 type 'quit;' to quit to outer loop
 brk> old := PrintFormattingStatus("*errout*");
 true
