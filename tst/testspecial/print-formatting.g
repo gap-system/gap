@@ -9,17 +9,6 @@ Display(x -> x);
 SetPrintFormattingStatus("*stdout*", old);;
 PrintFormattingStatus("*stdout*");
 
-# test formatting status for current output
-old := PrintFormattingStatus("*current*");
-SetPrintFormattingStatus("*current*", false);
-PrintFormattingStatus("*current*");
-Display(x -> x);
-SetPrintFormattingStatus("*current*", true);
-PrintFormattingStatus("*current*");
-Display(x -> x);
-SetPrintFormattingStatus("*current*", old);;
-PrintFormattingStatus("*current*");
-
 # test formatting status for errout
 1/0; # trigger a break loop
 old := PrintFormattingStatus("*errout*");

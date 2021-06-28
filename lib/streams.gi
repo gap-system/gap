@@ -1228,10 +1228,8 @@ function(str)
     return PRINT_FORMATTING_STDOUT();
   elif str = "*errout*" then
     return PRINT_FORMATTING_ERROUT();
-  elif str = "*current*" then
-    return PRINT_FORMATTING_CURRENT();
   else
-    Error("Only the strings \"*stdout*\", \"*errout*\" and  \"*current*\" are recognized by this method.");
+    Error("Only the strings \"*stdout*\" and \"*errout*\" are recognized by this method.");
   fi;
 end);
 
@@ -1241,10 +1239,8 @@ function(str, status)
     SET_PRINT_FORMATTING_STDOUT(status);
   elif str = "*errout*" then
     SET_PRINT_FORMATTING_ERROUT(status);
-  elif str = "*current*" then
-    SET_PRINT_FORMATTING_CURRENT(status);
   else
-    Error("Only the strings \"*stdout*\", \"*errout*\" and  \"*current*\" are recognized by this method.");
+    Error("Only the strings \"*stdout*\" and \"*errout*\" are recognized by this method.");
   fi;
 end);
 

@@ -37,6 +37,7 @@
 #include "sysfiles.h"
 #include "sysopt.h"
 #include "sysstr.h"
+#include "trycatch.h"
 
 #ifdef HPCGAP
 #include "hpc/aobjects.h"
@@ -1910,23 +1911,38 @@ static Obj FuncPRINT_FORMATTING_ERROUT(Obj self)
     return IO()->PrintFormattingForErrout ? True : False;
 }
 
-static Obj FuncSET_PRINT_FORMATTING_CURRENT(Obj self, Obj val)
+/****************************************************************************
+**
+*F  FuncCALL_WITH_FORMATTING_STATUS( <status>, <func>, <args> )
+**
+**  Temporarily set the formatting status of the active output stream to
+**  <status>, then call the function <func> with the arguments in <args>.
+*/
+static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj args)
 {
-    TypOutputFile * output = IO()->Output;
-    if (!output)
-        ErrorMayQuit("SET_PRINT_FORMATTING_CURRENT called while no output is open", 0, 0);
-    output->format = (val != False);
-    if (output->stream)
-        CALL_2ARGS(SetPrintFormattingStatus, output->stream, val);
-    return 0;
-}
+    RequireTrueOrFalse(SELF_NAME, status);
+    RequireSmallList(SELF_NAME, args);
 
-static Obj FuncPRINT_FORMATTING_CURRENT(Obj self)
-{
     TypOutputFile * output = IO()->Output;
     if (!output)
-        ErrorMayQuit("PRINT_FORMATTING_CURRENT called while no output is open", 0, 0);
-    return output->format ? True : False;
+        ErrorMayQuit("CALL_WITH_FORMATTING_STATUS called while no output is open", 0, 0);
+
+    BOOL old = output->format;
+    output->format = (status != False);
+
+    Obj result;
+    GAP_TRY
+    {
+        result = CallFuncList(func, args);
+    }
+    GAP_CATCH
+    {
+        output->format = old;
+        GAP_THROW();
+    }
+
+    output->format = old;
+    return result;
 }
 
 static Obj FuncIS_INPUT_TTY(Obj self)
@@ -1962,8 +1978,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_0ARGS(PRINT_FORMATTING_STDOUT),
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_ERROUT, format),
     GVAR_FUNC_0ARGS(PRINT_FORMATTING_ERROUT),
-    GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_CURRENT, format),
-    GVAR_FUNC_0ARGS(PRINT_FORMATTING_CURRENT),
+    GVAR_FUNC_3ARGS(CALL_WITH_FORMATTING_STATUS, status, func, args),
     GVAR_FUNC_0ARGS(IS_INPUT_TTY),
     GVAR_FUNC_0ARGS(IS_OUTPUT_TTY),
     GVAR_FUNC_0ARGS(GET_FILENAME_CACHE),

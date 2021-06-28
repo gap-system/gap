@@ -65,11 +65,7 @@ end);
 
 
 BIND_GLOBAL( "PrintWithoutFormatting", function ( arg )
-    local old;
-    old := PrintFormattingStatus("*current*");
-    SetPrintFormattingStatus("*current*", false);
-    CallFuncList(Print, arg);
-    SetPrintFormattingStatus("*current*", old);
+    CALL_WITH_FORMATTING_STATUS(false, Print, arg);
 end );
 
 
