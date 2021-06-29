@@ -128,20 +128,32 @@ DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 ##  <Attr Name="RecNames" Arg='record'/>
 ##
 ##  <Description>
-##  returns a list of strings corresponding to the names of the record
-##  components of the record <A>record</A>.
+##  returns a duplicate-free list of strings corresponding to the names of
+##  the record components of the record <A>record</A>.
+##  <P/>
+##  The list is sorted by <Ref Func="RNamObj" Label="for a string"/>
+##  for reasons of efficiency; see <Ref Oper="SortBy"/>.
+##  Therefore the ordering is consistent within one &GAP; session,
+##  but it is not necessarily consistent across different sessions.
+##  To obtain a result that is consistent across &GAP; sessions,
+##  apply <Ref Oper="Set"/> to the returned list.
+##  <P/>
+##  Note that given a string <C>name</C> containing the name of a record
+##  component, you can access the record component via
+##  <C><A>record</A>.(name)</C>,
+##  see Sections&nbsp;<Ref Sect="Accessing Record Elements"/>
+##  and&nbsp;<Ref Sect="Record Assignment"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> r := rec( a := 1, b := 2 );;
 ##  gap> Set(RecNames( r )); # 'Set' because ordering depends on GAP session
 ##  [ "a", "b" ]
+##  gap> Set(RecNames( r ), x -> r.(x));
+##  [ 1, 2 ]
 ##  ]]></Example>
 ##  <P/>
-##  Note that you cannot use the string result in the ordinary way to access
-##  or change a record component.
-##  You can use the <C><A>record</A>.(<A>name</A>)</C> construct for that,
-##  see <Ref Sect="Accessing Record Elements"/> and
-##  <Ref Sect="Record Assignment"/>.
+##  Note that it is most efficient to assign components to a (new or old)
+##  record in the order given by <Ref Attr="RecNames" Style="Text"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
