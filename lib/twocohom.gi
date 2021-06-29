@@ -1027,7 +1027,6 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     od;
   od;
 
-  
   eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
   if Length(eqs)=0 then
     eqs:=IdentityMat(Length(rules),field);
@@ -1068,7 +1067,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
           Append(new,v1-v2);
         od;
         new:=ImmutableVector(field,new);
-        Assert(0,SolutionMat(eqs,new)<>fail);
+        Assert(0,(Length(eqs)>0 and SolutionMat(eqs,new)<>fail) or IsZero(new));
         Add(bds,new);
       od;
     fi;
