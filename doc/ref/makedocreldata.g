@@ -70,6 +70,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/function.g",
     "../../lib/galois.gd",
     "../../lib/gasman.gd",
+    "../../lib/gaussian.gd",
     "../../lib/ghom.gd",
     "../../lib/ghomfp.gd",
     "../../lib/ghompcgs.gd",

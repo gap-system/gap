@@ -60,6 +60,28 @@ end );
 
 #############################################################################
 ##
+#V  CYCLOTOMIC_FIELDS
+##
+##  <ManSection>
+##  <Func Name="CYCLOTOMIC_FIELDS" Arg='n'/>
+##
+##  <Description>
+##  Returns the <A>n</A>-th cyclotomic field.
+##  </Description>
+##  </ManSection>
+##
+BindGlobal( "CYCLOTOMIC_FIELDS",
+    MemoizePosIntFunction(
+        function(xtension)
+            return AbelianNumberFieldByReducedGaloisStabilizerInfo( Rationals,
+                   xtension, [ 1 ] );
+        end,
+    rec( defaults := [ Rationals, Rationals,, GaussianRationals ] ) )
+);
+
+
+#############################################################################
+##
 #F  CyclotomicField( <n> )  . . . . . . .  create the <n>-th cyclotomic field
 #F  CyclotomicField( <gens> )
 #F  CyclotomicField( <subfield>, <n> )
