@@ -72,28 +72,6 @@ SetIsWholeFamily( PositiveIntegers, false );
 
 #############################################################################
 ##
-#V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
-##
-BindGlobal( "GaussianIntegers", Objectify( NewType(
-    CollectionsFamily(CyclotomicsFamily),
-    IsGaussianIntegers and IsAttributeStoringRep ),
-    rec() ) );
-
-SetLeftActingDomain( GaussianIntegers, Integers );
-SetName( GaussianIntegers, "GaussianIntegers" );
-SetString( GaussianIntegers, "GaussianIntegers" );
-SetIsLeftActedOnByDivisionRing( GaussianIntegers, false );
-SetSize( GaussianIntegers, infinity );
-SetGeneratorsOfRing( GaussianIntegers, [ E(4) ] );
-SetGeneratorsOfLeftModule( GaussianIntegers, [ 1, E(4) ] );
-SetIsFinitelyGeneratedMagma( GaussianIntegers, false );
-SetUnits( GaussianIntegers, [ -1, 1, -E(4), E(4) ] );
-SetIsWholeFamily( GaussianIntegers, false );
-
-
-#############################################################################
-##
-
 #R  IsCanonicalBasisIntegersRep
 ##
 DeclareRepresentation(

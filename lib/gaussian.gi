@@ -23,6 +23,48 @@
 
 #############################################################################
 ##
+#V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
+##
+BindGlobal( "GaussianIntegers", Objectify( NewType(
+    CollectionsFamily(CyclotomicsFamily),
+    IsGaussianIntegers and IsAttributeStoringRep ),
+    rec() ) );
+
+SetLeftActingDomain( GaussianIntegers, Integers );
+SetName( GaussianIntegers, "GaussianIntegers" );
+SetString( GaussianIntegers, "GaussianIntegers" );
+SetIsLeftActedOnByDivisionRing( GaussianIntegers, false );
+SetSize( GaussianIntegers, infinity );
+SetGeneratorsOfRing( GaussianIntegers, [ E(4) ] );
+SetGeneratorsOfLeftModule( GaussianIntegers, [ 1, E(4) ] );
+SetIsFinitelyGeneratedMagma( GaussianIntegers, false );
+SetUnits( GaussianIntegers, [ -1, 1, -E(4), E(4) ] );
+SetIsWholeFamily( GaussianIntegers, false );
+
+
+#############################################################################
+##
+#V  GaussianRationals . . . . . . . . . . . . . . field of Gaussian rationals
+##
+BindGlobal( "GaussianRationals", Objectify( NewType(
+    CollectionsFamily( CyclotomicsFamily ),
+    IsGaussianRationals and IsAttributeStoringRep ), rec() ) );
+SetName( GaussianRationals, "GaussianRationals" );
+SetLeftActingDomain( GaussianRationals, Rationals );
+SetIsPrimeField( GaussianRationals, false );
+SetIsCyclotomicField( GaussianRationals, true );
+SetSize( GaussianRationals, infinity );
+SetConductor( GaussianRationals, 4 );
+SetDimension( GaussianRationals, 2 );
+SetDegreeOverPrimeField( GaussianRationals, 2 );
+SetGaloisStabilizer( GaussianRationals, [ 1 ] );
+SetGeneratorsOfLeftModule( GaussianRationals, [ 1, E(4) ] );
+SetIsFinitelyGeneratedMagma( GaussianRationals, false );
+SetIsWholeFamily( GaussianRationals, false );
+
+
+#############################################################################
+##
 #M  \in( <n>, GaussianIntegers )  . . . membership test for Gaussian integers
 ##
 ##  Gaussian integers are of the form `<a> + <b> * E(4)', where <a> and <b>
@@ -46,7 +88,7 @@ InstallMethod( Basis,
     [ IsGaussianIntegers ], CANONICAL_BASIS_FLAGS,
     CanonicalBasis );
 
-    
+
 #############################################################################
 ##
 #M  CanonicalBasis( GaussianIntegers )  . . . . . . . . for Gaussian integers
@@ -77,7 +119,7 @@ InstallMethod( CanonicalBasis,
     return B;
     end );
 
-    
+
 #############################################################################
 ##
 #M  Coefficients( <B>, <z> )  . for the canon. basis of the Gaussian integers

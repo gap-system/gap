@@ -166,48 +166,6 @@ DeclareOperation( "RoundCycDown" , [ IsCyclotomic ] );
 DeclareGlobalFunction( "CoeffsCyc" );
 
 
-#############################################################################
-##
-#F  IsGaussInt( <x> ) . . . . . . . . test if an object is a Gaussian integer
-##
-##  <#GAPDoc Label="IsGaussInt">
-##  <ManSection>
-##  <Func Name="IsGaussInt" Arg='x'/>
-##
-##  <Description>
-##  <Ref Func="IsGaussInt"/> returns <K>true</K> if the object <A>x</A> is
-##  a Gaussian integer (see&nbsp;<Ref Var="GaussianIntegers"/>),
-##  and <K>false</K> otherwise.
-##  Gaussian integers are of the form <M>a + b</M><C>*E(4)</C>,
-##  where <M>a</M> and <M>b</M> are integers.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "IsGaussInt" );
-
-
-#############################################################################
-##
-#F  IsGaussRat( <x> ) . . . . . . .  test if an object is a Gaussian rational
-##
-##  <#GAPDoc Label="IsGaussRat">
-##  <ManSection>
-##  <Func Name="IsGaussRat" Arg='x'/>
-##
-##  <Description>
-##  <Ref Func="IsGaussRat"/> returns <K>true</K> if the object <A>x</A> is
-##  a Gaussian rational (see&nbsp;<Ref Var="GaussianRationals"/>),
-##  and <K>false</K> otherwise.
-##  Gaussian rationals are of the form <M>a + b</M><C>*E(4)</C>,
-##  where <M>a</M> and <M>b</M> are rationals.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "IsGaussRat" );
-
-
 ##############################################################################
 ##
 #F  DescriptionOfRootOfUnity( <root> )

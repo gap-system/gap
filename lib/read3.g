@@ -64,6 +64,7 @@ ReadLib( "liefam.gd"   );
 ReadLib( "algrep.gd"   );
 ReadLib( "lierep.gd"   );
 ReadLib( "integer.gd"  );
+ReadLib( "gaussian.gd"  );
 ReadLib( "numtheor.gd" );
 ReadLib( "primality.gd");
 ReadLib( "contfrac.gd" );
