@@ -522,7 +522,16 @@ static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
         ErrorQuit("CALL_WITH_STREAM: cannot open stream for output", 0, 0);
     }
 
-    Obj result = CallFuncList(func, args);
+    Obj result;
+    GAP_TRY
+    {
+        result = CallFuncList(func, args);
+    }
+    GAP_CATCH
+    {
+        CloseOutput(&output);
+        GAP_THROW();
+    }
 
     if (!CloseOutput(&output)) {
         ErrorQuit("CALL_WITH_STREAM: cannot close output", 0, 0);
