@@ -654,8 +654,7 @@ files yourself.
 The `-win.zip archive` already contains `*.bat` files which will work if GAP
 is installed in the standard location, which is `C:\gap-4.X.Y`. To install GAP
 there, the archive must be extracted to the main directory of the `C:` drive.
-(If you do not have permissions or sufficient free space to create directories
-there, see the section "Expert Windows Installation" below). Make sure that
+Make sure that
 you specify extraction to the `C:\` folder (with no extra directory name --
 the directory `gap-4.X.Y` is part of the archive) to avoid extraction
 in a wrong place or in a separate directory.
@@ -673,10 +672,10 @@ Note that `gap.bat` will open two windows - one actually running GAP and an
 auxiliary one, which may be minimised but should not be closed (otherwise the
 GAP session will be terminated).
 
-If you need to install GAP in a non-standard directory under Windows, we advice
+If you need to install GAP in a non-standard directory under Windows, we advise
 to use the Windows `.exe` installers which will adjust all paths in batch files
-during the installation. Whenever you use a Windows installer or install GAP f
-rom the `-win.zip` archive, you should avoid paths with spaces, e.g. do not use
+during the installation. Whenever you use a Windows installer or install GAP
+from the `-win.zip` archive, you should avoid paths with spaces, e.g. do not use
 `C:\My Programs\gap-4.X.Y`. If you need to install GAP on another logical drive,
 say `E:`, the easiest way would be just to use `E:\gap-4.X.Y`.
 
