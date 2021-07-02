@@ -1546,12 +1546,14 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
 
         # replace all occurrences of gen by word^-1.
         if TzOptions(T).printLevel >= 2 then
-            Print( "#I  eliminating ", gens[num], " = " );
-            if gen > 0 then
-                Print( AbstractWordTietzeWord( word, gens )^-1, "\n");
-            else
-                Print( AbstractWordTietzeWord( word, gens ), "\n" );
-           fi;
+          Print( "#I  eliminating ", gens[num], " = " );
+          if Length(word)>500 then
+            Print("<word of length ",Length(word)," >\n");
+          elif gen > 0 then
+              Print( AbstractWordTietzeWord( word, gens )^-1, "\n");
+          else
+              Print( AbstractWordTietzeWord( word, gens ), "\n" );
+          fi;
         fi;
         TzSubstituteGen( tietze, -gen, word );
 
@@ -1641,7 +1643,9 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
             # replace all occurrences of gen by word^-1.
             if TzOptions(T).printLevel >= 2 then
                 Print( "#I  eliminating ", gens[num], " = " );
-                if gen > 0 then
+                if Length(word)>500 then
+                  Print("<word of length ",Length(word)," >\n");
+                elif gen > 0 then
                     Print( AbstractWordTietzeWord( word, gens )^-1, "\n" );
                 else
                     Print( AbstractWordTietzeWord( word, gens ), "\n" );
@@ -1764,7 +1768,9 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
         # replace all occurrences of gen by word^-1.
         if TzOptions(T).printLevel >= 2 then
             Print( "#I  eliminating ", gens[num], " = " );
-            if gen > 0 then
+            if Length(word)>500 then
+              Print("<word of length ",Length(word)," >\n");
+            elif gen > 0 then
                 Print( AbstractWordTietzeWord( word, gens )^-1, "\n" );
             else
                 Print( AbstractWordTietzeWord( word, gens ), "\n" );
