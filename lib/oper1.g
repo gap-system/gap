@@ -147,6 +147,10 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
     function( opr, info, rel, flags, baserank, method )
     local   methods,  narg,  i,  k,  tmp, replace, match, j, lk, rank;
 
+    if IS_IDENTICAL_OBJ(opr, method) then
+        Error("Cannot install an operation as a method for itself");
+    fi;
+
     if IsHPCGAP then
         # TODO: once the GAP compiler supports 'atomic', use that
         # to replace the explicit locking and unlocking here.
