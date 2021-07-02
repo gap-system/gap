@@ -2320,6 +2320,28 @@ InstallGlobalFunction( TzGo, function ( arg )
 
 end );
 
+# reduce presentation in generators (for MTC)
+InstallGlobalFunction(TzGoElim,function(T,downto)
+local tietze,len,olen;
+  TzTestInitialSetup(T); # run `1Or2Relators' if not yet done
+  tietze := T!.tietze;
+
+  len:=tietze[TZ_TOTAL];
+  olen:=len+1;
+  while tietze[TZ_NUMGENS]-tietze[TZ_NUMREDUNDS]>downto and olen<>len do
+    TzSearch(T);
+    TzEliminateGens(T);
+    if not tietze[TZ_MODIFIED] then TzSearchEqual(T);fi;
+    olen:=len;
+    len:=tietze[TZ_TOTAL];
+    if TzOptions(T).printLevel>0 then  TzPrintStatus(T,true); fi;
+  od;
+  olen:=TzOptions(T).loopLimit;
+  TzOptions(T).loopLimit:=5;
+  TzGo(T); # cleanup
+  TzOptions(T).loopLimit:=olen;
+end);
+
 
 #############################################################################
 ##
