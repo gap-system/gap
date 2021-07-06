@@ -648,5 +648,34 @@ Error, <iter> is exhausted
 gap> IsDoneIterator(it);
 true
 
+# Sublist search
+gap> a:=[4,2,3,1,5,2,4,2,1,4,1,4,1,4,2,1,5,1,2,1,4,5,1,2,4];;
+gap> PositionSublist(a,[4,2,1,4,1,4,1,4]);
+7
+gap> PositionSublist(a,[4,2,1,4,1,4,1,4],7);
+fail
+gap> PositionSublist(a,[4]);
+1
+gap> PositionSublist(a,[2,4]);
+6
+gap> PositionSublist(a,[2,4],6);
+24
+gap> PositionSublist(a,[2,4],24);
+fail
+gap> PositionSublist(a,[2,4,1]);
+fail
+gap> PositionSublist(a,[4,2,1]);
+7
+gap> PositionSublist(a,[4,2,1],6);
+7
+gap> PositionSublist(a,[4,2,1],7);
+14
+gap> PositionSublist(a,[4,2,1],14);
+fail
+gap> PositionSublist(a,[]);
+1
+gap> PositionSublist(a,[],1);
+2
+
 #
 gap> STOP_TEST("list.tst");

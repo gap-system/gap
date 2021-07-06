@@ -1773,9 +1773,11 @@ InstallMethod( PositionSublist,
   
   n:=Length(list);
   m:=Length(sub);
+  start:=Position(list, sub[1], start);
+
   # trivial case
-  if m = 1 then
-    return Position(list, sub[1], start);
+  if m = 1 or start = fail then
+    return start;
   fi;
 
   # string-match algorithm, cf. Manber, section 6.7
@@ -1792,27 +1794,26 @@ InstallMethod( PositionSublist,
 
   if Maximum(next) * 3 < m then
     # in this case reduce overhead and use naive loop
-    m := Length(sub);
+    i := start;
     max := n - m + 1;
-    c := sub[1];
-    for i in [start+1..max] do
-      if c = list[i] then
-        for j in [2..m] do
-          if list[i+j-1] <> sub[j] then
-            j := 0;
-            break;
-          fi;
-        od;
-        if j <> 0 then
-          return i;
+    while i<>fail and i <= max do
+      for j in [2..m] do
+        if list[i+j-1] <> sub[j] then
+          j := 0;
+          break;
         fi;
+      od;
+      if j <> 0 then
+        return i;
       fi;
+      i:=Position(list, sub[1], i);
     od;
     return fail;
+
   fi;
    
   # otherwise repeat with Manber
-  i:=Maximum(1,start+1); # to catch index 0
+  i:=start;
   j:=1;
   while i<=n do
     if sub[j]=list[i] then
@@ -1822,7 +1823,7 @@ InstallMethod( PositionSublist,
       j:=next[j]+1;
       if j=0 then
         j:=1;
-	i:=i+1;
+        i:=i+1;
       fi;
     fi;
     if j=m+1 then
