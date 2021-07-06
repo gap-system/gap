@@ -423,11 +423,11 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 
 #############################################################################
 ##
-#F  LowLayerSubgroups( [<act>,],<G>, <lim> [,<cond> [,<dosub>]] )
+#F  LowLayerSubgroups( [<act>,]<G>, <lim> [,<cond> [,<dosub>]] )
 ##
 ##  <#GAPDoc Label="LowLayerSubgroups">
 ##  <ManSection>
-##  <Func Name="LowLayerSubgroups" Arg='act, G, lim, cond, dosub'/>
+##  <Func Name="LowLayerSubgroups" Arg='[act,]G,lim [,cond,dosub]'/>
 ##
 ##  <Description>
 ##  This function computes representatives of the conjugacy classes of
@@ -441,6 +441,16 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 ##  performance reasons).
 ##  In the example below, the result would be the same with leaving out the
 ##  fourth function, but calculation this way is slightly faster.
+##  <Example><![CDATA[
+##  gap> g:=SymmetricGroup(12);;
+##  gap> l:=LowLayerSubgroups(g,2,x->Size(x)>100000,x->Size(x)>200000);;
+##  gap> Collected(List(l,Size));
+##  [ [ 100800, 1 ], [ 120960, 1 ], [ 161280, 1 ], [ 241920, 1 ], [ 302400, 3 ],
+##    [ 322560, 1 ], [ 483840, 3 ], [ 518400, 3 ], [ 604800, 1 ], [ 725760, 1 ],
+##    [ 967680, 1 ], [ 1036800, 1 ], [ 1088640, 3 ], [ 2177280, 1 ],
+##    [ 3628800, 3 ], [ 7257600, 1 ], [ 19958400, 1 ], [ 39916800, 1 ],
+##    [ 239500800, 1 ], [ 479001600, 1 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

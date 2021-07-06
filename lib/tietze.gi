@@ -1546,12 +1546,14 @@ InstallGlobalFunction( TzEliminateFromTree, function ( T )
 
         # replace all occurrences of gen by word^-1.
         if TzOptions(T).printLevel >= 2 then
-            Print( "#I  eliminating ", gens[num], " = " );
-            if gen > 0 then
-                Print( AbstractWordTietzeWord( word, gens )^-1, "\n");
-            else
-                Print( AbstractWordTietzeWord( word, gens ), "\n" );
-           fi;
+          Print( "#I  eliminating ", gens[num], " = " );
+          if Length(word)>500 then
+            Print("<word of length ",Length(word)," >\n");
+          elif gen > 0 then
+              Print( AbstractWordTietzeWord( word, gens )^-1, "\n");
+          else
+              Print( AbstractWordTietzeWord( word, gens ), "\n" );
+          fi;
         fi;
         TzSubstituteGen( tietze, -gen, word );
 
@@ -1641,7 +1643,9 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
             # replace all occurrences of gen by word^-1.
             if TzOptions(T).printLevel >= 2 then
                 Print( "#I  eliminating ", gens[num], " = " );
-                if gen > 0 then
+                if Length(word)>500 then
+                  Print("<word of length ",Length(word)," >\n");
+                elif gen > 0 then
                     Print( AbstractWordTietzeWord( word, gens )^-1, "\n" );
                 else
                     Print( AbstractWordTietzeWord( word, gens ), "\n" );
@@ -1764,7 +1768,9 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
         # replace all occurrences of gen by word^-1.
         if TzOptions(T).printLevel >= 2 then
             Print( "#I  eliminating ", gens[num], " = " );
-            if gen > 0 then
+            if Length(word)>500 then
+              Print("<word of length ",Length(word)," >\n");
+            elif gen > 0 then
                 Print( AbstractWordTietzeWord( word, gens )^-1, "\n" );
             else
                 Print( AbstractWordTietzeWord( word, gens ), "\n" );
@@ -2319,6 +2325,28 @@ InstallGlobalFunction( TzGo, function ( arg )
     fi;
 
 end );
+
+# reduce presentation in generators (for MTC)
+InstallGlobalFunction(TzGoElim,function(T,downto)
+local tietze,len,olen;
+  TzTestInitialSetup(T); # run `1Or2Relators' if not yet done
+  tietze := T!.tietze;
+
+  len:=tietze[TZ_TOTAL];
+  olen:=len+1;
+  while tietze[TZ_NUMGENS]-tietze[TZ_NUMREDUNDS]>downto and olen<>len do
+    TzSearch(T);
+    TzEliminateGens(T);
+    if not tietze[TZ_MODIFIED] then TzSearchEqual(T);fi;
+    olen:=len;
+    len:=tietze[TZ_TOTAL];
+    if TzOptions(T).printLevel>0 then  TzPrintStatus(T,true); fi;
+  od;
+  olen:=TzOptions(T).loopLimit;
+  TzOptions(T).loopLimit:=5;
+  TzGo(T); # cleanup
+  TzOptions(T).loopLimit:=olen;
+end);
 
 
 #############################################################################

@@ -2272,7 +2272,6 @@ local t,j;
   return t;
 end);
 
-
 # New implemention of the Modified Todd-Coxeter (MTC) algorithm, based on
 # Chapter 5  of the "Handbook of Computational Group Theory", by Derek F.
 # Holt (referred # to as "Handbook" from here on). Function names after the
@@ -2490,9 +2489,27 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
 
   # decide whether secondary generators will be introduced
   Sekundant:=function(w)
+  local i,p,c,ws;
     if Length(w)<=1 or DATA.useAddition then
       return w;
     fi;
+    ws:=Set(w);
+    repeat
+      c:=false;
+      for i in [Length(DATA.subgens)+1..DATA.secount] do
+        if ForAll(DATA.secondary[i],x->x in ws) then
+          p:=PositionSublist(w,DATA.secondary[i]);
+          while p<>fail do 
+            w:=Concatenation(w{[1..p-1]},
+              [i],w{[p+Length(DATA.secondary[i])..Length(w)]});
+            ws:=Set(w);
+            c:=true;
+            p:=PositionSublist(w,DATA.secondary[i],Maximum(0,p-Length(DATA.secondary[i])));
+          od;
+        fi;
+      od;
+    until c=false;
+
     DATA.secount:=DATA.secount+1;
     DATA.secondary[DATA.secount]:=w;
     return [DATA.secount];
@@ -3050,7 +3067,6 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
   # words we want to trace early (as they might reduce the number of
   # definitions
   if trace<>false then
-    #trace:=Concatenation(trace,ri); #don't seem to help
     for w in trace do
       if IsList(w[1]) then
         w:=w[1]; # get word from value
@@ -3200,7 +3216,7 @@ end;
 # Options: limit, quiet (return fail if run out of space)
 # cyclic (if given and 1 generator do special case of cyclic rewriting)
 InstallGlobalFunction(NEWTC_CosetEnumerator,function(arg)
-local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,timerFunc;
+local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,timerFunc,addtrace;
   
   timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
 
@@ -3243,9 +3259,12 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
       if first=true then
         first:=e.defcount;
         Info(InfoFpGroup,1,"optimize definition sequence");
+      else
+        Info(InfoFpGroup,2,"Now ",e.defcount," defs");
       fi;
-      Append(trace,Filtered(e.collapse,x->x[2]>2));
-      SortBy(trace,x->-x[2]);
+      addtrace:=Filtered(e.collapse,x->x[2]>2);
+      Append(trace,addtrace);
+      SortBy(trace,x->[Length(x[1]),-x[2]]);
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,false,trace:
           # that's what we had last time -- no need to whine
           limit:=e.limit);
@@ -3398,7 +3417,7 @@ local rels,r,i,w,subnum;
       fi;
     od;
   od;
-  CompletionBar(InfoFpGroup,2,"Coset Loop: ",0);
+  CompletionBar(InfoFpGroup,2,"Coset Loop: ",false);
 
   return rels;
 end;
@@ -3530,7 +3549,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
         fi;
       od;
     od;
-    CompletionBar(InfoFpGroup,2,"Coset Loop: ",0);
+    CompletionBar(InfoFpGroup,2,"Coset Loop: ",false);
   fi;
 
   # add definitions of secondary generators
@@ -3549,7 +3568,9 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
     TzSearch(pres);
     TzOptions(pres).lengthLimit:=pres!.tietze[TZ_TOTAL]+1;
   fi;
-  TzGoGo(pres);
+  #TzGoGo(pres);
+  TzOptions(pres).eliminationsLimit:=5;
+  TzGoElim(pres,subnum);
   if IsEvenInt(parameter) and Length(GeneratorsOfPresentation(pres))>subnum then
     warn:=true;
     # Help Tietze with elimination
@@ -3589,7 +3610,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
       #just added.
       TzEliminate(pres,i);
     od;
-    Assert(1,Length(GeneratorsOfPresentation(pres))=subnum);
+    Assert(0,Length(GeneratorsOfPresentation(pres))=subnum);
     
   fi;
   r:=List(GeneratorsOfPresentation(pres){[1..subnum]},

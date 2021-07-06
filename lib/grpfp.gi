@@ -3518,7 +3518,7 @@ end );
 ##  is automatically cyclically reduced).
 ##
 InstallGlobalFunction( RelatorRepresentatives, function ( rels )
-local reps, word, length, fam, reversed, cyc, min, g, rel, i;
+local reps, word, length, fam, reversed, cyc, min, g, rel, i,j;
 
     reps := [ ];
 
@@ -3566,18 +3566,26 @@ local reps, word, length, fam, reversed, cyc, min, g, rel, i;
       if length>0 then
 	# invert the exponents to their negative values in order to get
 	# an appropriate lexicographical ordering of the relators.
+        word:=-word;
 	fam:=FamilyObj( rel );
-	reversed:=AssocWordByLetterRep(fam,-word);
+	reversed:=AssocWordByLetterRep(fam,word);
 
 	# find the minimal cyclic permutation
 	cyc:=reversed;
 	min:=cyc;
 	if cyc^-1<min then min:=cyc^-1;fi;
-	for i in [1..length] do
-	  g:=AssocWordByLetterRep(fam,word{[i]});
-	  cyc:=cyc^g;
+        i:=1;
+        while i<=length do
+          j:=1;
+          while j<Length(word) and word[j]=word[j+1] do j:=j+1;od;
+          word:=Concatenation(word{[j+1..Length(word)]},word{[1..j]});
+	  cyc:=AssocWordByLetterRep(fam,word);
 	  if cyc<min then min:=cyc;fi;
 	  if cyc^-1<min then min:=cyc^-1;fi;
+          i:=i+j;
+	  #g:=AssocWordByLetterRep(fam,word{[i]});
+	  #g:=Subword(cyc,1,1);
+	  #cyc:=cyc^g;
 	od;
 
 	# if the relator is new, add it to the representatives

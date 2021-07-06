@@ -525,8 +525,8 @@ DeclareGlobalFunction("PresentationRegularPermutationGroupNC");
 ##  gap> TzPrintRelators( P );
 ##  #I  1. f2^3
 ##  #I  2. f1^6
-##  #I  3. (f1^-1*f2^-1)^6
-##  #I  4. f1*f2*f1^-1*f2^-1*f1*f2^-1*f1^-1*f2*f1*f2^-1*f1^-1*f2^-1
+##  #I  3. (f1*f2)^6
+##  #I  4. f1*f2*f1^-1*f2*f1*f2^-1*f1^-1*f2*f1*f2*f1^-1*f2^-1
 ##  #I  5. f1^-3*f2*f1*f2*(f1^-1*f2^-1)^2*f1^-2*f2
 ##  ]]></Example>
 ##  <P/>
@@ -549,10 +549,10 @@ DeclareGlobalFunction("PresentationRegularPermutationGroupNC");
 ##  gap> G := FpGroupPresentation( P );
 ##  <fp group on the generators [ a, b, c ]>
 ##  gap> RelatorsOfFpGroup( G );
-##  [ c^2, b^4, (a*c)^3, (a*b^-2)^3, a^11, 
-##    a^2*b*a^-2*b^-1*(b^-1*a)^2*a*b^-1, (a*(b*a^-1)^2*b^-1)^2, 
-##    a^2*b*a^2*b^-2*a^-1*b*(a^-1*b^-1)^2, 
-##    (a*b)^2*a^2*b^-1*a^-1*b^-1*a*c*b*c, a^2*(a^2*b)^2*a^-2*c*a*b*a^-1*c 
+##  [ c^2, b^4, (a*c)^3, (a*b^-2)^3, a^11,
+##    a^2*b*a^-2*b^-1*(b^-1*a)^2*a*b^-1, (a*(b*a^-1)^2*b^-1)^2,
+##    a^2*b*a^2*b^-2*a^-1*b*(a^-1*b^-1)^2,
+##    a^2*b^-1*a^-1*b^-1*a*c*b*c*(a*b)^2, a^2*(a^2*b)^2*a^-2*c*a*b*a^-1*c
 ##   ]
 ##  ]]></Example>
 ##  <P/>
@@ -1088,6 +1088,23 @@ SimplifyPresentation := TzGo;
 ##
 DeclareGlobalFunction("TzGoGo");
 
+############################################################################
+##
+#F  TzGoElim(<P>,<len>)
+##
+##  <#GAPDoc Label="TzGoElim">
+##  <ManSection>
+##  <Func Name="TzGoElim" Arg='P,len'/>
+##
+##  <Description>
+##  A variant for the TzGoXXX functions for the MTC. Tries to reduce down to
+##  <C>len</C> generators and does not try so hard to reduce.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("TzGoElim");
+
 
 #############################################################################
 ##
@@ -1295,10 +1312,10 @@ DeclareGlobalFunction("TzNewGenerator");
 ##  #I  relators:
 ##  #I  1.  2  [ 3, 3 ]
 ##  #I  2.  4  [ 2, 2, 2, 2 ]
-##  #I  3.  4  [ -2, 3, -2, 3 ]
+##  #I  3.  4  [ 2, 3, 2, 3 ]
 ##  #I  4.  5  [ 1, 1, 1, 1, 1 ]
 ##  #I  5.  5  [ 1, 1, 2, 1, -2 ]
-##  #I  6.  8  [ -1, 3, 1, 3, -1, 2, 2, 3 ]
+##  #I  6.  8  [ 1, -2, -2, 3, 1, 3, -1, 3 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1598,9 +1615,9 @@ DeclareGlobalFunction("TzPrintOptions");
 ##  a word of length 2 to be substituted.
 ##  <Example><![CDATA[
 ##  gap> TzPrintPairs( P, 3 );
-##  #I  1.  3  occurrences of  f2 * f3
-##  #I  2.  2  occurrences of  f2^-1 * f3
-##  #I  3.  2  occurrences of  f1 * f3
+##  #I  1.  3  occurrences of  f2^-1 * f3
+##  #I  2.  2  occurrences of  f2 * f3
+##  #I  3.  2  occurrences of  f1^-1 * f3
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1647,10 +1664,10 @@ DeclareGlobalFunction("TzPrintPresentation");
 ##  gap> TzPrintRelators( P );
 ##  #I  1. f3^2
 ##  #I  2. f2^4
-##  #I  3. (f2^-1*f3)^2
+##  #I  3. (f2*f3)^2
 ##  #I  4. f1^5
 ##  #I  5. f1^2*f2*f1*f2^-1
-##  #I  6. f1^-1*f3*f1*f3*f1^-1*f2^2*f3
+##  #I  6. f1*f2^-2*f3*f1*f3*f1^-1*f3
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

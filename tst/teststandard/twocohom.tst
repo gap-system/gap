@@ -65,6 +65,10 @@ gap> mo:=TrivialModule(2,GF(2));;
 gap> coh:=TwoCohomologyGeneric(g,mo);;
 gap> List(Elements(VectorSpace(GF(2),coh.cohomology)),
 > x->FpGroupCocycle(coh,x,true:normalform));;
+gap> g:=CyclicGroup(3);;
+gap> mo:=GModuleByMats([[[0,1],[1,1]]]*Z(2),GF(2));;
+gap> TwoCohomologyGeneric(g,mo).cohomology;
+[  ]
 
 # routines used for rewriting
 gap> WeylGroupFp("A",3);
