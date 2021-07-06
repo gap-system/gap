@@ -106,20 +106,25 @@ def download(url, dst):
     if res.returncode != 0:
         error('failed downloading ' + url)
 
-def compare_checksum_with_checksumfile(filename):
+def file_matches_checksumfile(filename):
     with open(filename + ".sha256", "r") as f:
         expected_checksum = f.read().strip()
-    actual_checksum = sha256file(filename)
-    if expected_checksum != actual_checksum:
+    return expected_checksum == sha256file(filename)
+
+def verify_via_checksumfile(filename):
+    if not file_matches_checksumfile(filename):
         error(f"checksum for '{filename}' expected to be {expected_checksum} but got {actual_checksum}")
 
-# download file at the given URL to path `dst` unless we detect
-# that the file in the given URL was already downloaded to path `dst`
+# Download file at the given URL to path `dst`, unless we detect that a file
+# already exists at `dst` with the expected checksum.
 def download_with_sha256(url, dst):
     download(url + ".sha256", dst + ".sha256")
-    if not os.path.isfile(dst):
-        download(url, dst)
-    compare_checksum_with_checksumfile(dst)
+    if os.path.isfile(dst):
+        if file_matches_checksumfile(dst):
+            return
+        notice(f"{dst} exists but does not match the checksumfile; redownloading")
+    download(url, dst)
+    verify_via_checksumfile(dst)
 
 # Run what ever <args> command and create appropriate log file
 def run_with_log(args, name, msg = None):
@@ -210,7 +215,7 @@ def upload_asset_with_checksum(release, filename):
     checksum_filename = filename + ".sha256"
     if os.path.isfile(checksum_filename):
         notice("Comparing actual checksum with pre-existing checksum file")
-        compare_checksum_with_checksumfile(filename)
+        verify_via_checksumfile(filename)
     else:
         notice("Writing new checksum file")
         with open(checksum_filename, "w") as checksumfile:
