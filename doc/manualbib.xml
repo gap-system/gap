@@ -5538,4 +5538,24 @@
   <other type="doi">10.2307/2005583</other>
 </article></entry>
 
+<entry id="BHRD2013"><book>
+  <author>
+    <name><first>John N.</first><last>Bray</last></name>
+    <name><first>Derek F.</first><last>Holt</last></name>
+    <name><first>Colva M.</first><last>Roney-Dougal</last></name>
+  </author>  
+  <title>The maximal subgroups of the low-dimensional finite classical groups</title>
+  <publisher>Cambridge University Press</publisher>
+  <year>2013</year>
+  <volume>407</volume>
+  <series>London Mathematical Society Lecture Note Series</series>
+  <address>Cambridge</address>
+  <isbn>978-0-521-13860-4</isbn>
+  <mrnumber>3098485</mrnumber>
+  <mrclass>20G40 (20E28)</mrclass>
+  <mrreviewer>Nadia P. Mazza</mrreviewer>
+  <other type="pages">xiv+438</other>
+  <other type="doi">10.1017/CBO9781139192576</other>
+</book></entry>
+
 </file>
