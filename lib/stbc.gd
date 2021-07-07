@@ -216,20 +216,33 @@ DeclareGlobalName( "DefaultStabChainOptions" );
 
 #############################################################################
 ##
-#F  StabChainBaseStrongGenerators( <base>, <sgs>, <one> )
+#F  StabChainBaseStrongGenerators( <base>, <sgs>[, <one>] )
 ##
 ##  <#GAPDoc Label="StabChainBaseStrongGenerators">
 ##  <ManSection>
-##  <Func Name="StabChainBaseStrongGenerators" Arg='base, sgs, one'/>
+##  <Func Name="StabChainBaseStrongGenerators" Arg='base, sgs[, one]'/>
 ##
 ##  <Description>
 ##  Let <A>base</A> be a base for a permutation group <M>G</M>, and let
 ##  <A>sgs</A> be a strong generating set for <M>G</M> with respect to
 ##  <A>base</A>; <A>one</A> must be the appropriate identity element of
 ##  <M>G</M> (see <Ref Attr="One"/>, in most cases this will be <C>()</C>).
-##  This function constructs a stabilizer chain without the need to find
+##  This function constructs a stabilizer chain corresponding to the given
+##  base and strong generating set without the need to find
 ##  Schreier generators;
 ##  so this is much faster than the other algorithms.
+##  <P/>
+##  If <A>sgs</A> is nonempty, then the argument <A>one</A> is optional;
+##  if not given, then the <Ref Attr="One" Style="Text"/> of
+##  <C><A>sgs</A>[1]</C> is taken as the identity element.
+##  <Example><![CDATA[
+##  gap> sc := StabChainBaseStrongGenerators([1,2], [(1,3,4), (2,3,4)], ());
+##  <stabilizer chain record, Base [ 1, 2 ], Orbit length 4, Size: 12>
+##  gap> GroupStabChain(sc) = AlternatingGroup(4);
+##  true
+##  gap> StabChainBaseStrongGenerators([1,3], [(1,2),(3,4)]);
+##  <stabilizer chain record, Base [ 1, 3 ], Orbit length 2, Size: 4>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
