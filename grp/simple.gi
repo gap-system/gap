@@ -887,7 +887,7 @@ local id;
   return DataAboutSimpleGroup(id);
 end);
 
-# Tables for outer automorphisms from Bray/Holt/Roney-Dougal, p. 36/37
+# Tables for outer automorphisms from Bray/Holt/Roney-Dougal p. 36/37 [BHRD2013]
 BindGlobal("OuterAutoSimplePres",function(class,n,q)
 local p,e,f,rels,gp;
   class:=UppercaseString(class);
