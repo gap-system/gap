@@ -58,8 +58,9 @@ gap> t:=CopyToVectorRep(v,4);
 [ Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ]
 gap> RepresentationsOfObject(t);
 [ "IsDataObjectRep", "Is8BitVectorRep" ]
-gap> F:=GF(2^17);;
-gap> v:=Filtered(F,x -> x in GF(256));
+gap> F:=GF(2^25);;
+gap> p:=PrimitiveElement(F);;
+gap> v:=[0*p, p^0];
 [ 0z, z0 ]
 gap> IS_VECFFE(v);
 false
@@ -77,8 +78,9 @@ gap> z1=z2;
 true
 gap> List([z,z1,z2],x -> IsIdenticalObj(v,x));
 [ false, false, false ]
-gap> F:=GF(41^3);;
-gap> v:=Filtered(F,x -> x in GF(41));;
+gap> F:=GF(41^5);;
+gap> p:=PrimitiveElement(F)^((41^5-1)/(41-1));;
+gap> v:=Concatenation([0*p],List([0..39],x->p^x));;
 gap> IS_VECFFE(v);
 false
 gap> IsFFECollection(v);
