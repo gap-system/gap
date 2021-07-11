@@ -40,9 +40,13 @@
 #include <julia.h>
 #include <julia_gcext.h>
 
+#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) <= 106
+
 // import jl_get_current_task from julia_internal.h, which unfortunately
 // isn't installed as part of a typical Julia installation
 JL_DLLEXPORT jl_value_t *jl_get_current_task(void);
+
+#endif
 
 // jl_n_threads is not defined in Julia headers, but its existence is relied
 // on in the Base module. Thus, defining it as extern ought to be portable.
@@ -212,9 +216,14 @@ static int             FullGC;
 static UInt            startTime, totalTime;
 
 
+
 void SetJuliaTLS(void)
 {
+#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) <= 106
     JuliaTLS = jl_get_ptls_states();
+#else
+    JuliaTLS = jl_get_current_task()->ptls;
+#endif
 }
 
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
@@ -525,6 +534,13 @@ static void MarkFromList(PtrArray * arr)
 
 static TaskInfoTree * task_stacks = NULL;
 
+#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) >= 106
+
+#define set_safe_restore(x) jl_set_safe_restore(x)
+#define get_safe_restore()  jl_get_safe_restore()
+
+#else
+
 // We need to access the safe_restore member of the Julia TLS. Unfortunately,
 // its offset changes with the Julia version. In order to be able to produce
 // a single gap executable resp. libgap shared library which works across
@@ -594,6 +610,7 @@ static void SetupSafeRestoreHandlers(void)
     get_safe_restore = get_safe_restore_with_offset;
     set_safe_restore = set_safe_restore_with_offset;
 }
+#endif
 
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
 {
@@ -734,6 +751,9 @@ static void GapRootScanner(int full)
     }
 }
 
+#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) >= 106
+#define active_task_stack jl_active_task_stack
+#else
 static void (*active_task_stack)(jl_task_t *task,
                                  char **active_start, char **active_end,
                                  char **total_start, char **total_end);
@@ -768,6 +788,7 @@ active_task_stack_fallback(jl_task_t *task,
         *active_end = *active_start + size;
     }
 }
+#endif
 
 static void GapTaskScanner(jl_task_t * task, int root_task)
 {
@@ -913,6 +934,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_init();
 
     SetJuliaTLS();
+#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) < 106
     SetupSafeRestoreHandlers();
 
     // With Julia >= 1.6 we want to use `jl_active_task_stack` as introduced
@@ -922,6 +944,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     if (!active_task_stack) {
         active_task_stack = active_task_stack_fallback;
     }
+#endif
 
     is_threaded = jl_n_threads > 1;
 
