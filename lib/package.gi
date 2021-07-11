@@ -1838,13 +1838,9 @@ InstallGlobalFunction( InstalledPackageVersion, function( name )
 DeclareUserPreference( rec(
   name:= "PackagesToLoad",
   description:= [
-    "A list of names of packages which should be loaded during startup. \
-For backwards compatibility, the default lists most of packages \
-that were autoloaded in GAP 4.4 (add or remove packages as you like)."
+    "A list of names of packages which should be loaded during startup."
     ],
-  default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga", 
-              "irredsol", "laguna", "polenta", "polycyclic", "resclasses", 
-              "sophus", "tomlib" ],
+  default:= [ "atlasrep", "autpgrp", "factint", "fga", "tomlib" ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );
