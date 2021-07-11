@@ -164,12 +164,12 @@ static ssize_t echoandcheck(int fid, const char *buf, size_t count)
   else {
       ret = write(syBuf[fid].echo, buf, count);
       if (ret < 0) {
-          if (syBuf[fid].fp == fileno(stdout) || syBuf[fid].fp == fileno(stderr)) {
+          if (syBuf[fid].echo == fileno(stdout) || syBuf[fid].echo == fileno(stderr)) {
               Panic("Could not write to stdout/stderr.");
           } else {
               ErrorQuit("Could not write to file descriptor %d, see "
                         "'LastSystemError();'\n",
-                        syBuf[fid].fp, 0);
+                        syBuf[fid].echo, 0);
           }
       }
   }
