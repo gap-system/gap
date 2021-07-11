@@ -13,24 +13,34 @@
 
 #include "common.h"
 
-typedef void (*SerializationFunction)(Obj obj);
-typedef Obj (*DeserializationFunction)(UInt tnum);
+typedef struct SerializerState SerializerState;
+typedef struct DeserializerState DeserializerState;
+
+typedef void (*SerializationFunction)(SerializerState * state, Obj obj);
+typedef Obj (*DeserializationFunction)(DeserializerState * state, UInt tnum);
 
 typedef struct SerializerInterface {
-  void (*WriteTNum)(UInt tnum);
-  void (*WriteByte)(UChar tnum);
-  void (*WriteByteBlock)(Obj obj, UInt offset, UInt len);
-  void (*WriteImmediateObj)(Obj obj);
+    void (*WriteTNum)(SerializerState * state, UInt tnum);
+    void (*WriteByte)(SerializerState * state, UChar tnum);
+    void (*WriteByteBlock)(SerializerState * state,
+                           Obj               obj,
+                           UInt              offset,
+                           UInt              len);
+    void (*WriteImmediateObj)(SerializerState * state, Obj obj);
 } SerializerInterface;
 
+
 typedef struct DeserializerInterface {
-  UInt (*ReadTNum)(void);
-  UChar (*ReadByte)(void);
-  UInt (*ReadByteBlockLength)(void);
-  void (*ReadByteBlockData)(Obj obj, UInt offset, UInt len);
-  Obj (*ReadImmediateObj)(void);
+    UInt (*ReadTNum)(DeserializerState * state);
+    UChar (*ReadByte)(DeserializerState * state);
+    UInt (*ReadByteBlockLength)(DeserializerState * state);
+    void (*ReadByteBlockData)(DeserializerState * state,
+                              Obj                 obj,
+                              UInt                offset,
+                              UInt                len);
+    Obj (*ReadImmediateObj)(DeserializerState * state);
 } DeserializerInterface;
 
-StructInitInfo * InitInfoSerialize ( void );
+StructInitInfo * InitInfoSerialize(void);
 
 #endif /* GAP_SERIALIZE_H */
