@@ -1,4 +1,6 @@
 #@if IsHPCGAP
+gap> START_TEST("hpc/serialize.tst");
+
 #
 # Test the HPC-GAP serialization code
 #
@@ -81,14 +83,14 @@ gap> CheckSerialization((1,65537)^2); # identity as T_PERM4
 #
 gap> t:=Transformation( [ 10, 11 ],[ 11, 12 ] );;
 gap> SerializeToNativeString(t);
-Error, Cannot serialize object of type transformation (small)
+Error, Cannot serialize objects of type transformation (small), tnum 9
 
 #
 # TODO: partial permutations
 #
 gap> p:=PartialPerm([1,5],[20,2]);;
 gap> SerializeToNativeString(p);
-Error, Cannot serialize object of type partial perm (small)
+Error, Cannot serialize objects of type partial perm (small), tnum 11
 
 #
 # booleans
@@ -168,7 +170,8 @@ gap> TNAM_OBJ(x);
 "positional object"
 gap> SerializeToNativeString(x);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
+Error, no 1st choice method found for `SerializableRepresentation' on 1 argume\
+nts
 
 #
 # data object
@@ -201,7 +204,8 @@ gap> TNAM_OBJ(G);
 "atomic component object"
 gap> SerializeToNativeString(G);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `SerializableRepresentation' on 1 arguments
+Error, no 1st choice method found for `SerializableRepresentation' on 1 argume\
+nts
 
 #
 # TODO: atomic positional object
@@ -211,11 +215,11 @@ Error, no 1st choice method found for `SerializableRepresentation' on 1 argument
 # input validation
 #
 gap> DeserializeNativeString("");
-Error, Bad deserialization input
+Error, ReadBytesNativeString: Bad deserialization input
 gap> DeserializeNativeString("\000");
-Error, Bad deserialization input
+Error, ReadBytesNativeString: Bad deserialization input
 gap> DeserializeNativeString("\000\377");
-Error, Bad deserialization input
+Error, DeserializeInt: Bad deserialization input (n = 255)
 gap> DeserializeNativeString("\000\205");
 1
 
@@ -223,18 +227,40 @@ gap> DeserializeNativeString("\000\205");
 # verify that stuff that gets serialized twice is
 # deserialized into the same object each time
 #
+# FIXME: this is currently wrong for most TNUMs <= LAST_CONSTANT_TNUM
+#
 gap> CheckRepeatedSerialization := function(y)
 >   CheckSerializationGeneric([y, y], x->IsIdenticalObj(x[1], x[2]));
 >   CheckSerializationGeneric(rec(a:=y,b:=y), x->IsIdenticalObj(x.a, x.b));
 > end;;
-gap> CheckRepeatedSerialization("abc");
-gap> CheckRepeatedSerialization([1,2,3]);
-gap> CheckRepeatedSerialization(2^100); # FIXME
+gap> CheckRepeatedSerialization(1); # T_INT
+gap> CheckRepeatedSerialization(2^100); # T_INTPOS # FIXME buggy
 Error, Serialization error: [ 1267650600228229401496703205376, 
   1267650600228229401496703205376 ] versus [ 1267650600228229401496703205376, 
   1267650600228229401496703205376 ]
-gap> CheckRepeatedSerialization(1.23); # FIXME
-Error, Serialization error: [ 1.23, 1.23 ] versus [ 1.23, 1.23 ]
-gap> CheckRepeatedSerialization(2/3); # FIXME
+gap> CheckRepeatedSerialization(-2^100); # T_INTNEG # FIXME buggy
+Error, Serialization error: [ -1267650600228229401496703205376, 
+  -1267650600228229401496703205376 ] versus 
+[ -1267650600228229401496703205376, -1267650600228229401496703205376 ]
+gap> CheckRepeatedSerialization(2/3); # T_RAT # FIXME buggy
 Error, Serialization error: [ 2/3, 2/3 ] versus [ 2/3, 2/3 ]
+gap> CheckRepeatedSerialization(E(4)); # T_CYC # FIXME buggy
+Error, Serialization error: [ E(4), E(4) ] versus [ E(4), E(4) ]
+gap> CheckRepeatedSerialization(Z(2)); # T_FFE
+gap> CheckRepeatedSerialization(1.23); # T_MACFLOAT # FIXME buggy
+Error, Serialization error: [ 1.23, 1.23 ] versus [ 1.23, 1.23 ]
+gap> CheckRepeatedSerialization((1,2,3)); # T_PERM2 # FIXME buggy
+Error, Serialization error: [ (1,2,3), (1,2,3) ] versus [ (1,2,3), (1,2,3) ]
+gap> CheckRepeatedSerialization((80000,80001)); # T_PERM4 # FIXME buggy
+Error, Serialization error: [ (80000,80001), (80000,80001) ] versus 
+[ (80000,80001), (80000,80001) ]
+gap> # TODO: T_TRANS2
+gap> # TODO: T_TRANS4
+gap> # TODO: T_PPERM2
+gap> # TODO: T_PPERM4
+gap> CheckRepeatedSerialization("abc"); # T_STRING
+gap> CheckRepeatedSerialization([1,2,3]); # T_PLIST
 #@fi
+
+#
+gap> STOP_TEST("hpc/serialize.tst", 1);

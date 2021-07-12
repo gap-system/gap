@@ -49,11 +49,6 @@ static SerializationFunction   SerializationFuncByTNum[256];
 static DeserializationFunction DeserializationFuncByTNum[256];
 
 
-static void DeserializationError(void)
-{
-    ErrorQuit("Bad deserialization input", 0, 0);
-}
-
 /* Native string serialization */
 
 static void
@@ -112,7 +107,7 @@ ReadBytesNativeString(DeserializerState * state, void * addr, UInt size)
     UInt max = GET_LEN_STRING(str);
     UInt off = state->index;
     if (off + size > max)
-        DeserializationError();
+        ErrorQuit("ReadBytesNativeString: Bad deserialization input", 0, 0);
     memcpy(addr, CONST_CSTR_STRING(str) + off, size);
     state->index += size;
 }
@@ -138,7 +133,7 @@ static UInt ReadByteBlockLengthNativeString(DeserializerState * state)
     /* The following is to prevent out-of-memory errors on malformed input,
      * where incorrect values can result in huge length values: */
     if (len + state->index > GET_LEN_STRING(state->obj))
-        DeserializationError();
+        ErrorQuit("ReadByteBlockLengthNativeString: Bad deserialization input", 0, 0);
     return len;
 }
 
@@ -316,7 +311,7 @@ static Obj DeserializeInt(DeserializerState * state, UInt tnum)
         return INTOBJ_INT(n);
     default:
         if (n)
-            DeserializationError();
+            ErrorQuit("DeserializeInt: Bad deserialization input (n = %d)", n, 0);
         return ReadImmediateObj(state);
     }
 }
@@ -434,7 +429,7 @@ static Obj DeserializeBool(DeserializerState * state, UInt tnum)
     case 2:
         return Fail;
     default:
-        DeserializationError();
+        ErrorQuit("DeserializeBool: Bad deserialization input %d", (Int)byte, 0);
         return (Obj)0; /* flow control hint */
     }
 }
@@ -757,7 +752,7 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
             type = ELM_REC(GVarObj(&DESERIALIZATION_TAG_STRING_GVar), rnam);
         }
         if (!type || TNUM_OBJ(type) != T_POSOBJ)
-            DeserializationError();
+            ErrorQuit("DeserializeTypedObj: Failed to deserialize type", 0, 0);
         switch (tnum) {
         case T_DATOBJ:
             len = ReadByteBlockLength(state);
@@ -767,15 +762,15 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
         case T_POSOBJ:
             result = DeserializeObj(state);
             if (!IS_PLIST(result))
-                DeserializationError();
+                ErrorQuit("DeserializeTypedObj: expected plist, got %s", (Int)TNAM_OBJ(result), 0);
             break;
         case T_PREC:
             result = DeserializeObj(state);
             if (TNUM_OBJ(result) != T_COMOBJ)
-                DeserializationError();
+                ErrorQuit("DeserializeTypedObj: expected component object, got %s", (Int)TNAM_OBJ(result), 0);
             break;
         default:
-            DeserializationError();
+            ErrorQuit("DeserializeTypedObj: unexpected tnum %d (%s)", tnum, (Int)TNAM_TNUM(tnum));
             return (Obj)0; /* flow control hint */
         }
         SET_TYPE_OBJ(result, type);
@@ -784,7 +779,7 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
         /* continue on to the more general deserialization method */
         break;
     default:
-        DeserializationError();
+        ErrorQuit("DeserializeTypedObj: unexpected tagtnum ", tagtnum, (Int)TNAM_TNUM(tagtnum));
         return (Obj)0; /* flow control hint */
     }
     namelen = ReadByteBlockLength(state);
@@ -818,10 +813,10 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
     }
     deserialization_rec = GVarObj(&DESERIALIZER_GVar);
     if (!deserialization_rec)
-        DeserializationError();
+        ErrorQuit("DeserializeTypedObj: failed to retrieve deserialization_rec", 0, 0);
     func = ELM_REC(deserialization_rec, rnam);
     if (!func || TNUM_OBJ(func) != T_FUNCTION)
-        DeserializationError();
+        ErrorQuit("DeserializeTypedObj: deserialization_rec has bad function", 0, 0);
     result = CallFuncList(func, args);
     return result;
 }
@@ -968,25 +963,20 @@ static Obj DeserializeBackRef(DeserializerState * state, UInt tnum)
     UInt ref = BACKREF_OBJ(ReadImmediateObj(state));
     if (!ref) /* special case for unbound entries */
         return (Obj)0;
-    if (ref > LEN_PLIST(state->stack))
-        DeserializationError();
+    UInt len = LEN_PLIST(state->stack);
+    if (ref > len)
+        ErrorQuit("DeserializeBackRef: ref %d exceeds stack size %d", ref, len);
     return ELM_PLIST(state->stack, ref);
 }
 
 static void SerializeError(SerializerState * state, Obj obj)
 {
-    char         buf[16];
-    const Char * type = TNAM_OBJ(obj);
-    if (!type) {
-        sprintf(buf, "<%d>", (int)TNUM_OBJ(obj));
-        type = buf;
-    }
-    ErrorQuit("Cannot serialize object of type %s", (UInt)type, 0);
+    ErrorQuit("Cannot serialize objects of type %s, tnum %d", (Int)TNAM_OBJ(obj), (Int)TNUM_OBJ(obj));
 }
 
 static Obj DeserializeError(DeserializerState * state, UInt tnum)
 {
-    DeserializationError();
+    ErrorQuit("Cannot deserialize objects of type %s, tnum %d", (Int)TNAM_TNUM(tnum), (Int)tnum);
     return Fail;
 }
 
