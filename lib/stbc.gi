@@ -398,12 +398,20 @@ end);
 InstallGlobalFunction(StabChainBaseStrongGenerators,function(arg)
 local   base,sgs,one,S,  T,  pnt, genlabels;
 
+    if not Length(arg) in [2, 3]
+        or not ForAll([1, 2], i -> IsHomogeneousList(arg[i])) then
+      ErrorNoReturn("usage: ",
+                    "StabChainBaseStrongGenerators(<base>, <sgs>[, <one>])");
+    fi;
     base:=PlainListCopy(arg[1]);
     sgs:=PlainListCopy(arg[2]);
     if Length(arg)=3 then
       one:=arg[3];
+    elif not IsEmpty(sgs) then
+      one:= One(sgs[1]);
     else
-      one:= One(arg[2][1]);
+      ErrorNoReturn("the identity element must be given as the third argument ",
+                    "when the second argument <sgs> is empty");
     fi;
     S := EmptyStabChain( sgs, one );
     # Skip the identity in genlabels
