@@ -161,6 +161,30 @@ DeclareGlobalFunction("NormalizerParentSA");
 
 #############################################################################
 ##
+#F NormalizerOfSimpleGroupInSymmetricGroup( <T>, [,<aut>]) )
+##
+## <ManSection>
+## <Func Name="NormalizerOfSimpleGroupInSymmetricGroup" Arg='T [,aut]'/>
+##
+## <Description>
+## Let <C>G</C> be the symmetric group on the moved points of <A>T</A>.
+## For a non-abelian finite simple group <A>T</A>, this function returns the
+## normalizer of <A>T</A> in <C>G</C>.
+## To this end it determines which elements of the outer automorphism group of
+## <A>T</A> can be induced by conjugation with elements of <C>G</C>.<P/>
+##
+## The optional argument <A>aut</A>, must be the automorphism group of
+## <A>T</A>. If <A>aut</A> is not given and <A>T</A> does not know its
+## automorphism group, then computing its automorphism group might be very
+## slow. Note that it is not checked whether <A>aut</A> is indeed
+## the automorphism group of <A>T</A>.<P/>
+##
+## The generating set for the normalizer might be big. Thus calling
+## <Ref Attr="SmallGeneratingSet"/> on the result might be sensible.
+##
+DeclareGlobalName("NormalizerOfSimpleGroupInSymmetricGroup");
+#############################################################################
+##
 #F  MaximalSubgroupsSymmAlt( <grp> [,<onlyprimitive>] )
 ##
 ##  <ManSection>

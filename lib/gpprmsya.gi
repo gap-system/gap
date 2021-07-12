@@ -1423,6 +1423,49 @@ local P;
   fi;
 end);
 
+
+BindGlobal( "NormalizerOfSimpleGroupInSymmetricGroup",
+function( T, aut... )
+    local centraliser, out_reps, rep, lifts;
+    if IsAbelian( T ) then 
+        ErrorNoReturn("<T> must be a non-abelian group");
+    elif Length( aut ) = 1 then
+        aut := aut[ 1 ];
+    elif Length( aut ) > 1 then
+        ErrorNoReturn( "Usage: ",
+        "RepresentativesOuterAutomorphismGroup(T,",
+        "[aut, [,ordercenter]]);" );
+    fi;
+    #T is a non-abelian simple group, so |Z(T)|=1
+    if Length( aut ) = 0 then
+      out_reps := RepresentativesOuterAutomorphismGroup( T );
+    else
+      out_reps := RepresentativesOuterAutomorphismGroup(
+         T, aut, 1 );
+    fi;
+    lifts := [ ];
+    #TODO: Only add lifts that are not already contained in the
+    #already found partial normaliser.
+    for rep in out_reps do
+        if IsConjugatorAutomorphism( rep ) then
+            Add( lifts, ConjugatorOfConjugatorIsomorphism( rep ) );
+        fi;
+    od;
+    # TODO: Info
+    Print("#I: Computed all lifts.\n");
+    if IsPrimitive( T ) then
+        centraliser := TrivialGroup( IsPermGroup );
+    else
+        #TODO: Warning: Undocumented function. Maybe from Serres: Thm 6.1.6?
+        centraliser := CentralizerTransSymmCSPG(T, StabChainMutable(T));
+    fi;
+    return Group( Concatenation(
+        GeneratorsOfGroup( T ),
+        GeneratorsOfGroup( centraliser ),
+        lifts
+    ) );
+end);
+DeclareSynonym("NormaliserOfSimpleGroupInSymmetricGroup", NormalizerOfSimpleGroupInSymmetricGroup);
 InstallMethod( NormalizerOp, "subgp of natural symmetric group",
     IsIdenticalObj, [ IsNaturalSymmetricGroup, IsPermGroup ], 0,
     DoNormalizerSA);
