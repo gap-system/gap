@@ -1461,7 +1461,7 @@ InstallMethod(MaximalSubgroupClassReps,"default, catch dangerous options",
 function(G)
 local H,a,m,i,l;
   # use ``try'' and set flags so that a known partial result is not used
-  m:=TryMaximalSubgroupClassReps(H:
+  m:=TryMaximalSubgroupClassReps(G:
           cheap:=false,intersize:=false,inmax:=false,nolattice:=false);
   l:=[];
   for i in m do
