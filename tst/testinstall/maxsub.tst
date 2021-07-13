@@ -10,9 +10,11 @@ gap> SortedList(List(msc, IndexInParent));
 
 #
 gap> G := GL(2,4);;
-gap> #msc:=MaximalSubgroupClassReps(G); # FIXME: GAP cannot currently do this in reasonable time
-gap> #ForAll(msc, H -> Parent(H) = G);
-gap> #SortedList(List(msc, IndexInParent));
+gap> msc:=MaximalSubgroupClassReps(G);;
+gap> ForAll(msc, H -> Parent(H) = G);
+true
+gap> SortedList(List(msc, IndexInParent));
+[ 3, 5, 6, 10 ]
 
 #
 gap> G := GL(2,5);;

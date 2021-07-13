@@ -686,11 +686,12 @@ GroupSeriesMethodByNiceMonomorphism( LowerCentralSeriesOfGroup,
 #M  MaximalSubgroupClassReps( <G> )
 ##
 InstallOtherMethod( CalcMaximalSubgroupClassReps,
-  "handled by nice monomorphism, transfer tainter", true, [IsGroup], 0,
+  "handled by nice monomorphism, transfer tainter",
+  [IsGroup and IsHandledByNiceMonomorphism],
 function( G )
 local   nice,  img,  sub,i;
   nice := NiceMonomorphism(G);
-  img  := ShallowCopy(TryMaximalSubgroupClassReps( NiceObject(G) ));
+  img  := ShallowCopy(CalcMaximalSubgroupClassReps( NiceObject(G) ));
   for i in [1..Length(img)] do
     sub  := GroupByNiceMonomorphism( nice, img[i] );
     SetParent( sub, G );
