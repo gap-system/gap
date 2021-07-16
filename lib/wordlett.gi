@@ -588,7 +588,7 @@ InstallMethod( MappedWord,
   "for a letter assoc. word, a homogeneous list, and a list",IsElmsCollsX,
   [ IsAssocWord and IsLetterAssocWordRep, IsAssocWordCollection, IsList ],
 function( x, gens1, gens2 )
-local i,l,fam,e,m,mm,a,p,egen;
+local i,l,fam,e,m,mm,p,inv;
 
   if IsEmpty( gens1) then
     return x;
@@ -601,8 +601,8 @@ local i,l,fam,e,m,mm,a,p,egen;
   l:=Length(x);
 
   gens1:= List( gens1, LetterRepAssocWord );
-  if not ForAll( gens1, i -> Length( i ) = 1 and i[1] > 0 ) then
-    Error( "<gens1> must be proper generators" );
+  if not ForAll( gens1, i -> Length( i ) = 1 ) then
+    Error( "<gens1> must be proper generators or inverses" );
   fi;
   gens1:= List( gens1, i -> i[1] );
   IsSSortedList(gens1);
@@ -633,35 +633,50 @@ local i,l,fam,e,m,mm,a,p,egen;
     fi;
   fi;
 
-  e:=[];
-  egen:=function(nr)
-    if not IsBound(e[nr]) then
-      e[nr]:=AssocWordByLetterRep(fam,[nr]);
+  # List of given, or computed, inverses
+  inv:=[];
+  for i in [1..Length(gens1)] do
+    p:=Position(gens1,-gens1[i]);
+    if p<>fail then
+      inv[i]:=gens2[p];
+    elif gens1[i]>0 then
+      if x[1]=-gens1[i] or Number(x,j->j=-gens1[i])>1 then
+        # if it is a generator and its inverse occurs at least twice,
+        # or its inverse occurs in the first position, then
+        # (pre)-compute the inverse (otherwise just rely on the / operator
+        # which can be slightly faster than inverse+product)
+        inv[i]:=Inverse(gens2[i]);
+      fi;
     fi;
-    return e[nr];
-  end;
-  a:=AbsInt(x[1]);
-  p:= Position(gens1,a);
-  if p=fail then
-    m:=egen(a);
-  else
-    m:=gens2[p];
-  fi;
-  if SignInt(x[1])<0 then
-    m:=Inverse(m);
-  fi;
-  for i in [2..Length(x)] do
-    a:=AbsInt(x[i]);
-    p:= Position(gens1,a);
-    if p=fail then
-      mm:=egen(a);
-    else
+  od;
+
+  m:=fail;
+  for i in [1..Length(x)] do
+    p:= Position(gens1,x[i]);
+    if p<>fail then
       mm:=gens2[p];
-    fi;
-    if SignInt(x[i])<0 then
-      m:=m/mm;
+    elif x[i]<0 then
+      # was the inverse give/precomputed
+      p:= Position(gens1,-x[i]);
+      if p=fail then 
+        # unmapped letter gen
+        mm:=AssocWordByLetterRep(fam,[x[i]]);
+      elif IsBound(inv[p]) then
+        mm:=inv[p];
+      else
+        mm:=fail; # to flag that division will happen
+      fi;
     else
+      # unmapped letter gen
+      mm:=AssocWordByLetterRep(fam,[x[i]]);
+    fi;
+    
+    if m=fail then
+      m:=mm; 
+    elif mm<>fail then
       m:=m*mm;
+    else
+      m:=m/gens2[p];
     fi;
   od;
 
