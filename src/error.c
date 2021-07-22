@@ -314,14 +314,7 @@ static Obj FuncSetUserHasQuit(Obj Self, Obj value)
 
 /****************************************************************************
 **
-*F RegisterBreakloopObserver( <func> )
-**
-** Register a function which will be called when the break loop is entered
-** and left. Function should take a single Int argument which will be 1 when
-** break loop is entered, 0 when leaving.
-**
-** Note that it is also possible to leave the break loop (or any GAP code)
-** by longjmping. This should be tracked with RegisterSyLongjmpObserver.
+*F  RegisterBreakloopObserver( <func> )
 */
 
 static intfunc signalBreakFuncList[16];

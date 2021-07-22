@@ -19,6 +19,7 @@
 
 #include <string.h>    // for memcpy
 
+
 /****************************************************************************
 **
 *T  TryCatchMode
@@ -26,9 +27,9 @@
 *F  RegisterTryCatchHandler()
 *F  InvokeTryCatchHandler()
 **
-**  The function RegisterTryCatchObserver() allows the installation of
+**  The function RegisterTryCatchHandler() allows the installation of
 **  global exception handlers that are being called whenever GAP_TRY or
-**  CALL_WITH_CATCH() code is executed. It returns 1 if installing the
+**  GAP_CATCH code is executed. It returns 1 if installing the
 **  handler was successful, 0 otherwise. Installation can only fail if one
 **  attempts to install more handlers than the allotted maximum (currently
 **  16).
@@ -36,7 +37,7 @@
 **  The mode parameter of the handler function signals whether it has been
 **  called at the beginning of the section, at the end of the section
 **  without an error being raised, or at the end of a section with an error
-**  being raised, respectively. The function InvokeTryCatchObserver() is
+**  being raised, respectively. The function InvokeTryCatchHandler() is
 **  used to invoke those handlers as needed.
 */
 typedef enum { TryEnter = 0, TryLeave = 1, TryCatch = 2 } TryCatchMode;
@@ -45,7 +46,6 @@ typedef void (*TryCatchHandler)(TryCatchMode mode);
 
 int  RegisterTryCatchHandler(TryCatchHandler func);
 void InvokeTryCatchHandler(TryCatchMode mode);
-
 
 /****************************************************************************
 **
@@ -70,12 +70,10 @@ void InvokeTryCatchHandler(TryCatchMode mode);
 **
 **  WARNING: it is not safe to use `return` inside a GAP_TRY block; doing so
 **  would leave STATE(ReadJmpError) in an inconsistent state, which can lead
-**  to crashes on.
+**  to crashes later on.
 **
-**  For the same reason, GAP_TRY must ALWAYS be used followed by a GAP_CATCH
-**  block. To help catch violations of this rule, we introduce the variable
-**  gap__j which is then exclusively used in GAP_CATCH. Failure to use
-**  GAP_CATCH then triggers an "unused variable" compiler warning.
+**  Note that any GAP_TRY must ALWAYS be followed by a GAP_CATCH block.
+**  Failure to do so triggers an "unused variable" compiler warning.
 **
 **  The implementation of these two macros (ab)uses for loops to run code
 **  at the start resp. end of the following code block; in order to have
