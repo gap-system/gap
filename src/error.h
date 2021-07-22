@@ -27,7 +27,7 @@
 **  break loop is entered, 0 when leaving.
 **
 **  Note that it is also possible to leave the break loop (or any GAP code)
-**  by longjmping. This should be tracked with RegisterSyLongjmpObserver.
+**  by longjmping. This should be tracked with RegisterThrowObserver.
 */
 
 typedef void (*intfunc)(Int);

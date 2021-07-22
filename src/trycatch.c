@@ -9,33 +9,22 @@
 **
 */
 
-#include "sysjmp.h"
-
 #include "trycatch.h"
 
+#include "gaputils.h"
 
-/****************************************************************************
-**
-*F  RegisterSyLongjmpObserver( <func> )
-**
-**  Register a function to be called before longjmp is called.
-**  Returns 1 on success, 0 if the table of functions is already full.
-**  This function is idempotent -- if a function is passed multiple times
-**  it is still only registered once.
-*/
+#include <stdio.h>
 
-enum { signalSyLongjmpFuncsLen = 16 };
+static ThrowObserver throwObservers[16];
 
-static voidfunc signalSyLongjmpFuncs[signalSyLongjmpFuncsLen];
-
-int RegisterSyLongjmpObserver(voidfunc func)
+int RegisterThrowObserver(ThrowObserver func)
 {
-    for (int i = 0; i < signalSyLongjmpFuncsLen; ++i) {
-        if (signalSyLongjmpFuncs[i] == func) {
+    for (int i = 0; i < ARRAY_SIZE(throwObservers); ++i) {
+        if (throwObservers[i] == func) {
             return 1;
         }
-        if (signalSyLongjmpFuncs[i] == 0) {
-            signalSyLongjmpFuncs[i] = func;
+        if (throwObservers[i] == 0) {
+            throwObservers[i] = func;
             return 1;
         }
     }
@@ -68,7 +57,8 @@ void InvokeTryCatchHandler(TryCatchMode mode)
 
 void GAP_THROW(void)
 {
-    for (int i = 0; i < signalSyLongjmpFuncsLen && signalSyLongjmpFuncs[i]; ++i)
-        (signalSyLongjmpFuncs[i])();
+    int depth = STATE(TryCatchDepth);
+    for (int i = 0; i < ARRAY_SIZE(throwObservers) && throwObservers[i]; ++i)
+        (throwObservers[i])(depth);
     _longjmp(STATE(ReadJmpError), 1);
 }

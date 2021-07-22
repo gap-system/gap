@@ -69,6 +69,9 @@ typedef struct GAPState {
     UInt  MethodCacheSize;
 #endif
 
+    // for use by GAP_TRY / GAP_CATCH and related code
+    int TryCatchDepth;
+
     /* From gap.c */
     Obj  ThrownObject;
     UInt UserHasQuit;
