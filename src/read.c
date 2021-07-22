@@ -39,22 +39,14 @@
 /****************************************************************************
 **
 *S  TRY_IF_NO_ERROR
-*S  CATCH_ERROR
 **
 **  To deal with errors found by the reader, we implement a kind of exception
-**  handling using setjmp, with the help of these two macros. See also
+**  handling using setjmp, with the help of this macro. See also
 **  GAP_TRY and GAP_CATCH in trycatch.h for two closely related macros.
 **
-**  To use these constructs, write code like this:
+**  To use this construct, write code like this:
 **    TRY_IF_NO_ERROR {
 **       ... code which might trigger reader error ...
-**    }
-**  or
-**    TRY_IF_NO_ERROR {
-**       ... code which might trigger reader error ...
-**    }
-**    CATCH_ERROR {
-**       ... error handler ...
 **    }
 **
 **  Then, if the reader encounters an error, or if the interpretation of an
@@ -68,24 +60,30 @@
 **  and for this reason it is crucial that all calls from the reader into
 **  the interpreter are wrapped into 'TRY_IF_NO_ERROR' blocks.
 **
-**  Note that while you can in principle nest TRY_IF_NO_ERROR constructs, to
-**  do this correctly, you must backup ReadJmpError before TRY_IF_NO_ERROR,
-**  and restore it in a matching CATCH_ERROR block.
+**  The above is the first major difference between 'TRY_IF_NO_ERROR' and the
+**  related GAP_TRY macro. The second is that unlike GAP_TRY / GAP_CATCH,
+**  the TRY_IF_NO_ERROR macro does not save and restore the jump buffer.
+**  Rather this is only done at the top level in 'ReadEvalCommand', for
+**  performance reasons (saving and restoring a jump buffer is expensive)
+**
+**  As a result, it is not safe to nest TRY_IF_NO_ERROR constructs without
+**  extra precautions. So in general it is best to not invoke any code
+**  which again uses TRY_IF_NO_ERROR from inside a TRY_IF_NO_ERROR block.
+**  This is automatically ensured if one just calls interpreter functions,
+**  as the interpreter does not use TRY_IF_NO_ERROR.
 */
 /* TL: extern jmp_buf ReadJmpError; */
 
-#define TRY_IF_NO_ERROR \
-    if (!rs->s.NrError) { \
-        volatile Int recursionDepth = GetRecursionDepth();  \
-        if (_setjmp(STATE(ReadJmpError))) { \
-            SetRecursionDepth(recursionDepth);  \
-            rs->s.NrError++; \
-        }\
-    }\
-    if (!rs->s.NrError)
 
-#define CATCH_ERROR \
-    else
+#define TRY_IF_NO_ERROR                                                      \
+    if (!rs->s.NrError) {                                                    \
+        volatile Int recursionDepth = GetRecursionDepth();                   \
+        if (_setjmp(STATE(ReadJmpError))) {                                  \
+            SetRecursionDepth(recursionDepth);                               \
+            rs->s.NrError++;                                                 \
+        }                                                                    \
+    }                                                                        \
+    if (!rs->s.NrError)
 
 
 struct ReaderState {
@@ -1293,9 +1291,6 @@ static void ReadFuncExprBody(ReaderState * rs,
                              Int            startLine)
 {
     volatile UInt nr;           // number of statements
-    volatile UInt nrError;      // copy of <rs->s.NrError>
-
-    nrError = rs->s.NrError;
 
     // push the new local variables list
     PushPlist(rs->StackNams, args.nams);
@@ -1316,7 +1311,7 @@ static void ReadFuncExprBody(ReaderState * rs,
     }
     else {
 #ifdef HPCGAP
-        if (nrError == 0)
+        if (rs->s.NrError == 0)
             SET_LCKS_FUNC(CURR_FUNC(), args.locks);
 #endif
         // <Statements>
@@ -1330,11 +1325,6 @@ static void ReadFuncExprBody(ReaderState * rs,
     // end interpreting the function expression
     TRY_IF_NO_ERROR {
         IntrFuncExprEnd(&rs->intr, nr);
-    }
-    CATCH_ERROR {
-        // an error has occurred *after* the 'IntrFuncExprEnd'
-        if (nrError == 0)
-            IntrAbortCoding(&rs->intr);
     }
 
     // pop the new local variables list
@@ -2085,9 +2075,6 @@ static void ReadIf(ReaderState * rs, TypSymbolSet follow)
 static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
-
-    nrError   = rs->s.NrError;
 
     /* 'for'                                                               */
     TRY_IF_NO_ERROR { IntrForBegin(&rs->intr, rs->StackNams); }
@@ -2121,14 +2108,6 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
     TRY_IF_NO_ERROR {
         IntrForEnd(&rs->intr, rs->StackNams);
     }
-    CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrForBegin'                */
-        /* If we hadn't actually come out of coding the body, we need
-           to recover. Otherwise it was probably an error in executing the
-           body and we just return */
-        if (nrError == 0)
-            IntrAbortCoding(&rs->intr);
-    }
 }
 
 
@@ -2146,9 +2125,6 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
-
-    nrError   = rs->s.NrError;
 
     /* 'while' <Expr>  'do'                                                */
     TRY_IF_NO_ERROR { IntrWhileBegin(&rs->intr, rs->StackNams); }
@@ -2167,14 +2143,6 @@ static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
     Match_(rs, S_OD, "while parsing a 'while' loop: statement or 'od'", follow);
     TRY_IF_NO_ERROR {
         IntrWhileEnd(&rs->intr, rs->StackNams);
-    }
-    CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrWhileBegin'              */
-        /* If we hadn't actually come out of coding the body, we need
-           to recover. Otherwise it was probably an error in executing the
-           body and we just return */
-        if (nrError == 0)
-            IntrAbortCoding(&rs->intr);
     }
 }
 
@@ -2196,13 +2164,9 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
     volatile UInt       nexprs;         /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
 #ifdef HPCGAP
     volatile int        lockSP;         /* lock stack */
-#endif
 
-    nrError   = rs->s.NrError;
-#ifdef HPCGAP
     lockSP    = RegionLockSP();
 #endif
 
@@ -2242,14 +2206,6 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
     TRY_IF_NO_ERROR {
         IntrAtomicEnd(&rs->intr, rs->StackNams);
     }
-    CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrAtomicBegin'             */
-        /* If we hadn't actually come out of coding the body, we need
-           to recover. Otherwise it was probably an error in executing the
-           body and we just return */
-        if (nrError == 0)
-            IntrAbortCoding(&rs->intr);
-    }
 #ifdef HPCGAP
     /* This is a no-op if IntrAtomicEnd(&rs->intr) succeeded, otherwise it restores
      * locks to where they were before. */
@@ -2272,9 +2228,6 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
 static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
-    volatile UInt       nrError;        /* copy of <rs->s.NrError>        */
-
-    nrError   = rs->s.NrError;
 
     /* 'repeat'                                                            */
     TRY_IF_NO_ERROR { IntrRepeatBegin(&rs->intr, rs->StackNams); }
@@ -2292,14 +2245,6 @@ static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
     ReadExpr(rs, follow, 'r');
     TRY_IF_NO_ERROR {
         IntrRepeatEnd(&rs->intr, rs->StackNams);
-    }
-    CATCH_ERROR {
-        /* an error has occurred *after* the 'IntrRepeatBegin'             */
-        /* If we hadn't actually come out of coding the body, we need
-           to recover. Otherwise it was probably an error in executing the
-           body and we just return */
-        if (nrError == 0)
-            IntrAbortCoding(&rs->intr);
     }
 }
 
@@ -2766,9 +2711,6 @@ UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
     /* fake the 'end;'                                                     */
     TRY_IF_NO_ERROR {
         IntrFuncExprEnd(&rs->intr, nr);
-    }
-    CATCH_ERROR {
-        IntrAbortCoding(&rs->intr);
     }
 
     /* end the interpreter                                                 */
