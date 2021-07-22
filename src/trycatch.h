@@ -17,6 +17,7 @@
 #include "gapstate.h"
 #include "system.h"    // for NORETURN
 
+#include <setjmp.h>
 #include <string.h>    // for memcpy
 
 
@@ -82,26 +83,40 @@ void InvokeTryCatchHandler(TryCatchMode mode);
 **  iteration step are set to 0 to prevent further loop iterations.
 */
 #define GAP_TRY                                                              \
-    int          gap__i, gap__j;                                             \
-    jmp_buf      gap__jmp_buf;                                               \
-    volatile Int gap__recursionDepth = GetRecursionDepth();                  \
-    memcpy(gap__jmp_buf, STATE(ReadJmpError), sizeof(jmp_buf));              \
+    int             gap__i, gap__j;                                          \
+    GAP_TryCatchEnv gap__env;                                                \
+    gap_safe_trycatch(&gap__env);                                            \
     InvokeTryCatchHandler(TryEnter);                                         \
     if (!_setjmp(STATE(ReadJmpError)))                                       \
         for (gap__i = 1; gap__i; gap__i = 0,                                 \
             InvokeTryCatchHandler(TryLeave),                                 \
-            gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth))
+            gap_restore_trycatch(&gap__env))
 
 #define GAP_CATCH                                                            \
     else for (gap__j = 1, InvokeTryCatchHandler(TryCatch),                   \
-              gap_restore_trycatch(gap__jmp_buf, gap__recursionDepth);       \
+              gap_restore_trycatch(&gap__env);                               \
               gap__j; gap__j = 0)
 
+typedef struct {
+    volatile int tryCatchDepth;
+    volatile Int recursionDepth;
+    jmp_buf      jb;
+} GAP_TryCatchEnv;
+
 // helper function for use by GAP_TRY and GAP_CATCH
-static inline int gap_restore_trycatch(jmp_buf jb, int recursionDepth)
+static inline int gap_safe_trycatch(GAP_TryCatchEnv * env)
 {
-    memcpy(STATE(ReadJmpError), jb, sizeof(jmp_buf));
-    SetRecursionDepth(recursionDepth);
+    memcpy(env->jb, STATE(ReadJmpError), sizeof(jmp_buf));
+    env->recursionDepth = GetRecursionDepth();
+    env->tryCatchDepth = STATE(TryCatchDepth)++;
+    return 0;
+}
+
+static inline int gap_restore_trycatch(GAP_TryCatchEnv * env)
+{
+    memcpy(STATE(ReadJmpError), env->jb, sizeof(jmp_buf));
+    SetRecursionDepth(env->recursionDepth);
+    STATE(TryCatchDepth) = env->tryCatchDepth;
     return 0;
 }
 
@@ -113,5 +128,20 @@ static inline int gap_restore_trycatch(jmp_buf jb, int recursionDepth)
 **  caught via `GAP_TRY` and `GAP_CATCH`.
 */
 void GAP_THROW(void) NORETURN;
+
+
+/****************************************************************************
+**
+*F  RegisterThrowObserver( <func> )
+**
+**  Register a function to be called each time GAP_THROW is called.
+**  Returns 1 on success, 0 if the table of functions is already full.
+**  This function is idempotent -- if a function is passed multiple times
+**  it is still only registered once.
+*/
+typedef void (*ThrowObserver)(int depth);
+
+int RegisterThrowObserver(ThrowObserver func);
+
 
 #endif

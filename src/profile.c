@@ -26,8 +26,8 @@
 #include "plist.h"
 #include "stringobj.h"
 #include "sysfiles.h"
-#include "sysjmp.h"
 #include "sysstr.h"
+#include "trycatch.h"
 #include "vars.h"
 
 #include "hpc/thread.h"
@@ -201,7 +201,7 @@ static void outputVersionInfo(void)
     fflush(profileState.Stream);
 }
 
-static void ProfileRegisterLongJmpOccurred(void)
+static void ProfileRegisterLongJmpOccurred(int depth)
 {
     profileState.LongJmpOccurred = 1;
 }
@@ -625,7 +625,7 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
     ActivateHooks(&profileHooks);
 
     profileState.status = Profile_Active;
-    RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
+    RegisterThrowObserver(ProfileRegisterLongJmpOccurred);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
@@ -752,7 +752,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
     }
 
     profileState.status = Profile_Active;
-    RegisterSyLongjmpObserver(ProfileRegisterLongJmpOccurred);
+    RegisterThrowObserver(ProfileRegisterLongJmpOccurred);
     profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
