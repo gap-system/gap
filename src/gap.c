@@ -290,7 +290,6 @@ static Obj Shell(Obj    context,
     
     /* handle quit command or <end-of-file>                            */
     else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      SetRecursionDepth(0);
       STATE(UserHasQuit) = 1;
       break;
     }
