@@ -102,7 +102,6 @@ static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
 
     /* handle quit command                                 */
     else if (status == STATUS_QUIT) {
-        SetRecursionDepth(0);
         STATE(UserHasQuit) = 1;
     }
     else if (status == STATUS_QQUIT) {
@@ -329,7 +328,6 @@ static void READ_INNER(TypInputFile * input)
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
           break;
         else if (status == STATUS_QUIT) {
-          SetRecursionDepth(0);
           STATE(UserHasQuit) = 1;
           break;
         }

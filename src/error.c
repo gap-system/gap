@@ -306,8 +306,6 @@ static Obj FuncJUMP_TO_CATCH(Obj self, Obj payload)
 static Obj FuncSetUserHasQuit(Obj Self, Obj value)
 {
     STATE(UserHasQuit) = INT_INTOBJ(value);
-    if (STATE(UserHasQuit))
-        SetRecursionDepth(0);
     return 0;
 }
 
