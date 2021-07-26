@@ -157,13 +157,8 @@ static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
 */
 Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
 {
-    ExecStatus status;
-    UInt       dualSemicolon;
-    Obj        result, resultList;
-    Obj        copy;
-    Obj        evalResult;
-    Obj        outstream = 0;
-    Obj        outstreamString = 0;
+    volatile Obj outstream = 0;
+    volatile Obj outstreamString = 0;
 
     RequireInputStream("READ_ALL_COMMANDS", instream);
 
@@ -184,18 +179,25 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
         return Fail;
     }
 
-    resultList = NEW_PLIST(T_PLIST, 16);
+    volatile Obj resultList = NEW_PLIST(T_PLIST, 16);
+    BOOL rethrow = FALSE;
 
-    do {
-        if (outstream) {
-            // Clean in case there has been any output
-            SET_LEN_STRING(outstreamString, 0);
-        }
+    GAP_TRY
+    {
+        while (1) {
+            if (outstream) {
+                // Clean in case there has been any output
+                SET_LEN_STRING(outstreamString, 0);
+            }
 
-        status = ReadEvalCommand(0, &input, &evalResult, &dualSemicolon);
+            UInt dualSemicolon;
+            Obj  evalResult;
 
-        if (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))) {
-            result = NEW_PLIST(T_PLIST, 5);
+            ExecStatus status = ReadEvalCommand(0, &input, &evalResult, &dualSemicolon);
+            if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
+                break;
+
+            Obj result = NEW_PLIST(T_PLIST, 5);
             AssPlist(result, 1, False);
             PushPlist(resultList, result);
 
@@ -217,19 +219,23 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             if (capture == True) {
                 // Flush output
                 Pr("\03", 0, 0);
-                copy = CopyToStringRep(outstreamString);
+                Obj copy = CopyToStringRep(outstreamString);
                 SET_LEN_STRING(outstreamString, 0);
                 AssPlist(result, 5, copy);
             }
         }
-    } while (!(status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)));
-    // FIXME: the above should be in a big GAP_TRY so that we can CloseOutput
-    // before we rethrow
-    // FIXME: actually how does that work right now?!? does it?!?
+    }
+    GAP_CATCH
+    {
+        rethrow = TRUE;
+    }
 
     if (outstream)
         CloseOutput(&output);
     CloseInput(&input);
+
+    if (rethrow)
+        GAP_THROW();
 
     return resultList;
 }
