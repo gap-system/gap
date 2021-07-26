@@ -185,39 +185,51 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         }
     }
 
-    Obj func = FUNC_LVARS(context);
-    GAP_ASSERT(func);
-    Stat call = STAT_LVARS(context);
-    Obj  body = BODY_FUNC(func);
-    if (IsKernelFunction(func)) {
-        PrintKernelFunction(func);
-        Obj funcname = NAME_FUNC(func);
-        if (funcname) {
-            Pr(" in function %g", (Int)funcname, 0);
+    BOOL rethrow = FALSE;
+    GAP_TRY
+    {
+        Obj func = FUNC_LVARS(context);
+        GAP_ASSERT(func);
+        Stat call = STAT_LVARS(context);
+        Obj  body = BODY_FUNC(func);
+        if (IsKernelFunction(func)) {
+            PrintKernelFunction(func);
+            Obj funcname = NAME_FUNC(func);
+            if (funcname) {
+                Pr(" in function %g", (Int)funcname, 0);
+            }
         }
-    }
-    else if (call < OFFSET_FIRST_STAT ||
-             call > SIZE_BAG(body) - sizeof(StatHeader)) {
-        Pr("<corrupted statement> ", 0, 0);
-    }
-    else {
-        Obj currLVars = SWITCH_TO_OLD_LVARS(context);
+        else if (call < OFFSET_FIRST_STAT ||
+                 call > SIZE_BAG(body) - sizeof(StatHeader)) {
+            Pr("<corrupted statement> ", 0, 0);
+        }
+        else {
+            Obj currLVars = SWITCH_TO_OLD_LVARS(context);
 
-        Int type = TNUM_STAT(call);
-        Obj filename = GET_FILENAME_BODY(body);
-        if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
-            PrintStat(call);
-            Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+            Int type = TNUM_STAT(call);
+            Obj filename = GET_FILENAME_BODY(body);
+            if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
+                PrintStat(call);
+                Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+            }
+            else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
+                PrintExpr(call);
+                Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+            }
+            SWITCH_TO_OLD_LVARS(currLVars);
         }
-        else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
-            PrintExpr(call);
-            Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
-        }
-        SWITCH_TO_OLD_LVARS(currLVars);
+    }
+    GAP_CATCH
+    {
+        rethrow = TRUE;
     }
 
     /* HACK: close the output again */
     CloseOutput(&output);
+
+    if (rethrow)
+        GAP_THROW();
+
     return 0;
 }
 
