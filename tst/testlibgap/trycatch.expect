@@ -6,13 +6,19 @@ gap> MakeReadWriteGVar("ERROR_OUTPUT");
 gap> ERROR_OUTPUT := MakeImmutable("*stdout*");;
 
 gap> Display(CALL_WITH_CATCH(function() return 314; end, []));;
-Entering GAP_TRY section
-Leaving GAP_TRY section
+1: Entering GAP_TRY section
+1: Leaving GAP_TRY section
 [ true, 314 ]
 
 gap> Display(CALL_WITH_CATCH(function() return [][1]; end, []));;
-Entering GAP_TRY section
-Error, List Element: <list>[1] must have an assigned value
-Caught error in GAP_TRY section
+1: Entering GAP_TRY section
+2: Entering GAP_TRY section
+2: Leaving GAP_TRY section
+Error, 2: Entering GAP_TRY section
+2: Leaving GAP_TRY section
+List Element: <list>[1] must have an assigned value2: Entering GAP_TRY section
+
+2: Leaving GAP_TRY section
+1: Caught error in GAP_TRY section
 [ false, 0 ]
 
