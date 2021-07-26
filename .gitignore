@@ -94,6 +94,7 @@ doc/gapmacrodoc.idx
 /tst/testlibgap/basic
 /tst/testlibgap/wscreate
 /tst/testlibgap/wsload
+/tst/testlibgap/trycatch
 /tst/testlibgap/*.out
 
 /tst/testkernel/dstruct
