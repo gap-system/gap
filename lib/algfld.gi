@@ -65,7 +65,7 @@ end;
 InstallMethod(AlgebraicElementsFamily,"generic",true,
   [IsField,IsUnivariatePolynomial,IsBool],0,
 function(f,p,check)
-local fam,i,cof,red,rchar,impattr,deg,tmp;
+  local fam, i, impattr, rchar, deg, neg, red, z, new, c;
   if check and not IsIrreducibleRingElement(PolynomialRing(f,
              [IndeterminateNumberOfLaurentPolynomial(p)]),p) then
     Error("<p> must be irreducible over f");
@@ -106,27 +106,25 @@ local fam,i,cof,red,rchar,impattr,deg,tmp;
   fam!.indeterminateName:=MakeImmutable("a");
 
   # reductions
-  #red:=IdentityMat(deg,fam!.oneCoefficient);
-  red:=[];
-  for i in [deg..2*deg-2] do
-    cof:=ListWithIdenticalEntries(i,fam!.zeroCoefficient);
-    Add(cof,fam!.oneCoefficient);
-    if rchar>0 then
-      if IsHPCGAP then
-        tmp := CopyToVectorRep(cof,rchar); # rchar is <= 256
-        if tmp <> fail then
-          cof := tmp;
-        fi;
-      else
-        ConvertToVectorRep(cof,rchar);
+  neg := -fam!.polCoeffs{[1..deg]};
+  if not IsOne(fam!.polCoeffs[deg+1]) then
+    neg := fam!.polCoeffs[deg+1]^-1 * neg;
+  fi;
+  red := [neg];
+  z := 0*neg;
+  for i in [1..deg-2] do
+    new := ShiftedCoeffs(red[i], 1);
+    if Length(new) > deg then
+      c := Remove(new);
+      if not IsZero(c) then
+        new := new + c*neg;
       fi;
+    elif Length(new) < deg then
+      Append(new, z{[1..deg-Length(new)]});
     fi;
-    ReduceCoeffs(cof,fam!.polCoeffs);
-    while Length(cof)<deg do
-      Add(cof,fam!.zeroCoefficient);
-    od;
-    Add(red,cof{[1..deg]});
+    Add(red, new);
   od;
+
   red:=ImmutableMatrix(fam!.baseField,red);
   fam!.reductionMat:=red;
   fam!.prodlen:=Length(red);
