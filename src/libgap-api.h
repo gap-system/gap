@@ -379,6 +379,15 @@ Obj GAP_ElmList(Obj list, UInt pos);
 // Returns a new empty plain list with capacity <capacity>
 Obj GAP_NewPlist(Int capacity);
 
+// Returns a new range with <len> elements, starting at <low>, and proceeding
+// in increments of <inc>. So the final element in the range will be equal to
+// <high> := <low> + <inc> * (<len> - 1).
+//
+// Note that <inc> must be non-zero, and all three arguments as
+// well as the value <high> must fit into a GAP small integer.
+// If any of these conditions is violated, then GAP_Fail is returned.
+Obj GAP_NewRange(Int len, Int low, Int inc);
+
 
 ////
 //// matrix obj

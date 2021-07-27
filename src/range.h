@@ -31,18 +31,10 @@
 **
 *F  NEW_RANGE() . . . . . . . . . . . . . . . . . . . . . .  make a new range
 **
-**  'NEW_RANGE' returns a new range.  Note that  you must set the length, the
-**  low value, and the increment before you can use the range.
+**  'NEW_RANGE' returns a new range.
 */
-EXPORT_INLINE Obj NEW_RANGE_NSORT(void)
-{
-    return NewBag(T_RANGE_NSORT, 3 * sizeof(Obj));
-}
+Obj NEW_RANGE(Int len, Int low, Int inc);
 
-EXPORT_INLINE Obj NEW_RANGE_SSORT(void)
-{
-    return NewBag(T_RANGE_SSORT, 3 * sizeof(Obj));
-}
 
 /****************************************************************************
 **
