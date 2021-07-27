@@ -1289,11 +1289,12 @@ cnf/GAP-OBJS: FORCE
 # should we need to.
 ########################################################################
 
-GVF = $(srcdir)/cnf/GAP-VERSION-FILE
+GVF = cnf/GAP-VERSION-FILE
 
 # the GAP-VERSION-FILE contains the raw version, nothing else
 $(GVF): FORCE
-	@cd $(srcdir) && $(SHELL) cnf/gap-version-gen.sh $(GAP_VERSION)
+	@$(MKDIR_P) $(@D)
+	@$(SHELL) $(srcdir)/cnf/gap-version-gen.sh $(GAP_VERSION)
 -include $(GVF)
 
 # generate build/gap_version.c
