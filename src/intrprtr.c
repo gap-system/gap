@@ -2221,13 +2221,7 @@ void IntrListExprEnd(
                            0, 0);
             }
 
-            if ( 0 < inc )
-                list = NEW_RANGE_SSORT();
-            else
-                list = NEW_RANGE_NSORT();
-            SET_LEN_RANGE( list, (high-low) / inc + 1 );
-            SET_LOW_RANGE( list, low );
-            SET_INC_RANGE( list, inc );
+            list = NEW_RANGE((high - low) / inc + 1, low, inc);
         }
 
         /* push the list again                                             */

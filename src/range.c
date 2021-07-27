@@ -97,6 +97,22 @@ static Obj TypeRangeSSort(Obj list)
 }
 
 
+Obj NEW_RANGE(Int len, Int low, Int inc)
+{
+    Obj range;
+
+    if (0 < inc)
+        range = NewBag(T_RANGE_SSORT, 3 * sizeof(Obj));
+    else
+        range = NewBag(T_RANGE_NSORT, 3 * sizeof(Obj));
+    SET_LEN_RANGE(range, len);
+    SET_LOW_RANGE(range, low);
+    SET_INC_RANGE(range, inc);
+
+    return range;
+}
+
+
 #if !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
@@ -394,14 +410,8 @@ static Obj ElmsRange(Obj list, Obj poss)
         }
 
         /* make the result range                                           */
-        if ( 0 < inc * GET_INC_RANGE(list) )
-            elms = NEW_RANGE_SSORT();
-        else
-            elms = NEW_RANGE_NSORT();
-        SET_LEN_RANGE( elms, lenPoss );
-        SET_LOW_RANGE( elms, INT_INTOBJ( GET_ELM_RANGE( list, pos ) ) );
-        SET_INC_RANGE( elms, inc * GET_INC_RANGE( list ) );
-
+        inc *= GET_INC_RANGE(list);
+        elms = NEW_RANGE(lenPoss, INT_INTOBJ( GET_ELM_RANGE( list, pos ) ), inc);
     }
 
     return elms;
@@ -765,10 +775,7 @@ Obj Range2Check (
         SET_ELM_PLIST( range, 1, first );
     }
     else {
-        range = NEW_RANGE_SSORT();
-        SET_LEN_RANGE( range, (l-f) + 1 );
-        SET_LOW_RANGE( range, f );
-        SET_INC_RANGE( range, 1 );
+        range = NEW_RANGE((l-f) + 1, f, 1);
     }
     return range;
 }
@@ -805,13 +812,7 @@ Obj Range3Check (
         SET_ELM_PLIST( range, 1, first );
     }
     else {
-        if ( 0 < i )
-            range = NEW_RANGE_SSORT();
-        else
-            range = NEW_RANGE_NSORT();
-        SET_LEN_RANGE( range, (l - f) / i + 1 );
-        SET_LOW_RANGE( range, f );
-        SET_INC_RANGE( range, i );
+        range = NEW_RANGE((l - f) / i + 1, f, i);
     }
     return range;
 }

@@ -59,6 +59,42 @@ void lists(void)
     assert(ret == 0);
 }
 
+void ranges(void)
+{
+    const int len = 5;
+    int i;
+    Obj r, val;
+
+    r = GAP_NewRange(len, 1, 1); // [1..5]
+    assert(GAP_IsList(r));
+    assert(GAP_LenList(r) == len);
+    for (i = 1; i <= len; ++i) {
+        val = GAP_ElmList(r, i);
+        assert(GAP_IsSmallInt(val));
+        assert(GAP_EQ(val, GAP_NewObjIntFromInt(i)));
+    }
+
+    r = GAP_NewRange(len, 1, 3); // [1,4..16]
+    assert(GAP_IsList(r));
+    assert(GAP_LenList(r) == len);
+    for (i = 1; i <= len; ++i) {
+        val = GAP_ElmList(r, i);
+        assert(GAP_IsSmallInt(val));
+        assert(GAP_EQ(val, GAP_NewObjIntFromInt(1 + (i-1) * 3)));
+    }
+
+
+    r = GAP_NewRange(len, 10, -2); // [10,8..2]
+    assert(GAP_IsList(r));
+    assert(GAP_LenList(r) == len);
+    for (i = 1; i <= len; ++i) {
+        val = GAP_ElmList(r, i);
+        assert(GAP_IsSmallInt(val));
+        assert(GAP_EQ(val, GAP_NewObjIntFromInt(10 - 2*(i-1))));
+    }
+
+}
+
 void matrices(void)
 {
     Obj mat, val, row, ret;
@@ -211,6 +247,10 @@ int main(int argc, char ** argv)
 
     printf("# Testing lists... ");
     lists();
+    printf("success\n");
+
+    printf("# Testing ranges... ");
+    ranges();
     printf("success\n");
 
     printf("# Testing matrices... ");

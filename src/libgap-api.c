@@ -33,6 +33,7 @@
 #include "opers.h"
 #include "plist.h"
 #include "precord.h"
+#include "range.h"
 #include "records.h"
 #include "streams.h"
 #include "stringobj.h"
@@ -414,6 +415,22 @@ Obj GAP_ElmList(Obj list, UInt pos)
 Obj GAP_NewPlist(Int capacity)
 {
     return NEW_PLIST(T_PLIST_EMPTY, capacity);
+}
+
+static BOOL fitsInIntObj(Int i)
+{
+    return INT_INTOBJ_MIN <= i && i <= INT_INTOBJ_MAX;
+}
+
+Obj GAP_NewRange(Int len, Int low, Int inc)
+{
+    if (!inc) return GAP_Fail;
+    if (!fitsInIntObj(len)) return GAP_Fail;
+    if (!fitsInIntObj(low)) return GAP_Fail;
+    if (!fitsInIntObj(inc)) return GAP_Fail;
+    Int high = low + (len - 1) * inc;
+    if (!fitsInIntObj(high)) return GAP_Fail;
+    return NEW_RANGE(len, low, inc);
 }
 
 

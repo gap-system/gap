@@ -980,13 +980,7 @@ static Obj EvalRangeExpr(Expr expr)
              ErrorQuit("Range: the length of a range must be a small integer",
                         0, 0);
         }
-        if ( 0 < inc )
-            range = NEW_RANGE_SSORT();
-        else
-            range = NEW_RANGE_NSORT();
-        SET_LEN_RANGE( range, (high-low) / inc + 1 );
-        SET_LOW_RANGE( range, low );
-        SET_INC_RANGE( range, inc );
+        range = NEW_RANGE((high - low) / inc + 1, low, inc);
     }
 
     /* return the range                                                    */
