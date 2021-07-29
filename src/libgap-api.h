@@ -314,8 +314,8 @@ int GAP_IsSmallInt(Obj obj);
 int GAP_IsLargeInt(Obj obj);
 
 
-// Construct an integer object from the limbs at which <limbs> points (for a
-// definition of "limbs", please consult the comment at the top of
+// Construct a GAP integer object from the limbs at which <limbs> points (for
+// a definition of "limbs", please consult the comment at the top of
 // `integer.c`). The absolute value of <size> determines the number of limbs.
 // If <size> is zero, then `INTOBJ_INT(0)` is returned. Otherwise, the sign
 // of the returned integer object is determined by the sign of <size>.
@@ -324,6 +324,16 @@ int GAP_IsLargeInt(Obj obj);
 // i.e., it will discard any leading zeros; and if the integer fits into a
 // small integer, it will be returned as such.
 Obj GAP_MakeObjInt(const UInt * limbs, Int size);
+
+// Return a GAP integer object with value equal to <val>.
+Obj GAP_NewObjIntFromInt(Int val);
+
+// Return an integer equal to the given GAP integer object. If <obj> is not
+// a GAP integer, or does not fit into an Int, an error is raised.
+//
+// If `GAP_IsSmallInt(obj)` return 1, then it is guaranteed that this will
+// succeed and no error is raised.
+Int GAP_ValueInt(Obj);
 
 // If <obj> is a GAP integer, returns the number of limbs needed to store the
 // integer, times the sign. If <obj> is the integer 0, then 0 is returned. If

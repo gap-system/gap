@@ -124,6 +124,8 @@ void integers(void)
     assert(GAP_IsInt(i1));
     assert(GAP_IsSmallInt(i1));
     assert(!GAP_IsLargeInt(i1));
+    assert(GAP_EQ(i1, GAP_NewObjIntFromInt(0)));
+    assert(GAP_ValueInt(i1) == 0);
 
     const UInt limbs2[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
     i2 = GAP_MakeObjInt(limbs2, -8);
