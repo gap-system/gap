@@ -66,9 +66,9 @@
 ##  Note that due to the different sources for the generators,
 ##  the invariant forms for the groups <M>\Omega(e,d,q)</M> are in general
 ##  different from the forms for SO<M>(e,d,q)</M> and GO<M>(e,d,q)</M>.
-##  If the <Package>Forms</Package> package is loaded then compatible groups
-##  can be created by specifying the desired form,
-##  see the sections below.
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded then compatible groups can be created by specifying the desired
+##  form, see the sections below.
 ##  <#/GAPDoc>
 ##
 
@@ -218,8 +218,8 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general orthogonal group itself.
 ##  <P/>
-##  If the <Package>Forms</Package> package is loaded then
-##  the desired quadratic form can be specified via <A>form</A>,
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded then the desired quadratic form can be specified via <A>form</A>,
 ##  which can be either a matrix
 ##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
@@ -335,9 +335,9 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the general unitary group itself.
 ##  <P/>
-##  If the <Package>Forms</Package> package is loaded then
-##  the desired sesquilinear form can be specified via <A>form</A>,
-##  which can be either a matrix
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded then the desired sesquilinear form can be specified via
+##  <A>form</A>, which can be either a matrix
 ##  or a form object in <Ref Filt="IsHermitianForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantSesquilinearForm"/> value
 ##  (and then this form is taken).
@@ -529,8 +529,8 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special orthogonal group itself.
 ##  <P/>
-##  If the <Package>Forms</Package> package is loaded then
-##  the desired quadratic form can be specified via <A>form</A>,
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded then the desired quadratic form can be specified via <A>form</A>,
 ##  which can be either a matrix
 ##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
@@ -635,9 +635,9 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special unitary group itself.
 ##  <P/>
-##  If the <Package>Forms</Package> package is loaded then
-##  the desired sesquilinear form can be specified via <A>form</A>,
-##  which can be either a matrix
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded then the desired sesquilinear form can be specified via
+##  <A>form</A>, which can be either a matrix
 ##  or a form object in <Ref Filt="IsHermitianForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantSesquilinearForm"/> value
 ##  (and then this form is taken).
@@ -751,8 +751,8 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power, are
 ##  supported.
 ##  <P/>
-##  If the <Package>Forms</Package> package is loaded and the arguments
-##  describe a matrix group over a finite field then
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded and the arguments describe a matrix group over a finite field then
 ##  the desired bilinear form can be specified via <A>form</A>,
 ##  which can be either a matrix
 ##  or a form object in <Ref Filt="IsBilinearForm" BookName="Forms"/>
@@ -870,8 +870,8 @@ DeclareConstructor( "OmegaCons", [ IsGroup, IsInt, IsPosInt, IsPosInt ] );
 ##  and the returned group is the group
 ##  <M>\Omega</M>( <A>e</A>, <A>d</A>, <A>q</A> ) itself.
 ##  <P/>
-##  If the <Package>Forms</Package> package is loaded then
-##  the desired quadratic form can be specified via <A>form</A>,
+##  If version at least 1.2.6 of the <Package>Forms</Package> package is
+##  loaded then the desired quadratic form can be specified via <A>form</A>,
 ##  which can be either a matrix
 ##  or a form object in <Ref Filt="IsQuadraticForm" BookName="Forms"/>
 ##  or a group with stored <Ref Attr="InvariantQuadraticForm"/> value
