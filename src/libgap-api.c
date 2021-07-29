@@ -355,6 +355,16 @@ Obj GAP_MakeObjInt(const UInt * limbs, Int size)
     return MakeObjInt(limbs, size);
 }
 
+Obj GAP_NewObjIntFromInt(Int val)
+{
+    return ObjInt_Int(val);
+}
+
+Int GAP_ValueInt(Obj obj)
+{
+    return Int_ObjInt(obj);
+}
+
 Int GAP_SizeInt(Obj obj)
 {
     RequireInt("GAP_SizeInt", obj);
