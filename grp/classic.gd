@@ -252,7 +252,7 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "DescribesInvariantQuadraticForm",
-    obj -> IsMatrixObj( obj ) or
+    obj -> IsMatrixOrMatrixObj( obj ) or
            ( IsBoundGlobal( "IsQuadraticForm" ) and
              ValueGlobal( "IsQuadraticForm" )( obj ) ) or
            ( IsGroup( obj ) and HasInvariantQuadraticForm( obj ) ) );
@@ -362,7 +362,7 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  <#/GAPDoc>
 ##
 BindGlobal( "DescribesInvariantHermitianForm",
-    obj -> IsMatrixObj( obj ) or
+    obj -> IsMatrixOrMatrixObj( obj ) or
            ( IsBoundGlobal( "IsHermitianForm" ) and
              ValueGlobal( "IsHermitianForm" )( obj ) ) or
            ( IsGroup( obj ) and HasInvariantSesquilinearForm( obj ) ) );
@@ -783,7 +783,7 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  <#/GAPDoc>
 ##
 BindGlobal( "DescribesInvariantBilinearForm",
-    obj -> IsMatrixObj( obj ) or
+    obj -> IsMatrixOrMatrixObj( obj ) or
            ( IsBoundGlobal( "IsBilinearForm" ) and
              ValueGlobal( "IsBilinearForm" )( obj ) ) or
            ( IsGroup( obj ) and HasInvariantBilinearForm( obj ) ) );
