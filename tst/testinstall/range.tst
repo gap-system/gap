@@ -1,15 +1,83 @@
-#@local g,ranges,x,y,z,a,f
+#@local TestPrintRangeRep,g,ranges,x,y,z,a,f
 gap> START_TEST("range.tst");
 
 #
 gap> [0..0];
 [ 0 ]
+gap> [0..1];
+[ 0, 1 ]
+gap> [0..2];
+[ 0 .. 2 ]
+gap> [0,2..2];
+[ 0, 2 ]
+gap> [0,2..4];
+[ 0, 2 .. 4 ]
 gap> [0..-1];
 [  ]
+gap> [0..-2];
+[  ]
+gap> [0,-1..-1];
+[ 0, -1 ]
+gap> [0,-1..-2];
+[ 0, -1 .. -2 ]
 gap> [-5..5];
 [ -5 .. 5 ]
 gap> [-5,-3..5];
 [ -5, -3 .. 5 ]
+
+#
+gap> TestPrintRangeRep:=function(r)
+>    Assert(0, IsRangeRep(r));
+>    Print("Display: "); Display(r);
+>    Print("DisplayString: ", DisplayString(r));
+>    Print("ViewObj: "); ViewObj(r); Print("\n");
+>    Print("ViewString: ", ViewString(r), "\n");
+>    Print("PrintObj: ", r, "\n");
+>    Print("PrintString: ", PrintString(r), "\n");
+>    Print("String: ", String(r), "\n");
+>  end;;
+
+#
+gap> TestPrintRangeRep([0..1]);
+Display: [ 0 .. 1 ]
+DisplayString: <object>
+ViewObj: [ 0, 1 ]
+ViewString: [ 0, 1 ]
+PrintObj: [ 0 .. 1 ]
+PrintString: [ 0 .. 1 ]
+String: [ 0 .. 1 ]
+gap> TestPrintRangeRep([0..2]);
+Display: [ 0 .. 2 ]
+DisplayString: <object>
+ViewObj: [ 0 .. 2 ]
+ViewString: [ 0, 1, 2 ]
+PrintObj: [ 0 .. 2 ]
+PrintString: [ 0 .. 2 ]
+String: [ 0 .. 2 ]
+gap> TestPrintRangeRep([0,2..4]);
+Display: [ 0, 2 .. 4 ]
+DisplayString: <object>
+ViewObj: [ 0, 2 .. 4 ]
+ViewString: [ 0, 2, 4 ]
+PrintObj: [ 0, 2 .. 4 ]
+PrintString: [ 0, 2 .. 4 ]
+String: [ 0, 2 .. 4 ]
+gap> TestPrintRangeRep([0,-1..-2]);
+Display: [ 0, -1 .. -2 ]
+DisplayString: <object>
+ViewObj: [ 0, -1 .. -2 ]
+ViewString: [ 0, -1, -2 ]
+PrintObj: [ 0, -1 .. -2 ]
+PrintString: [ 0, -1 .. -2 ]
+String: [ 0, -1 .. -2 ]
+gap> TestPrintRangeRep([0,-1..-1]);
+Display: [ 0, -1 .. -1 ]
+DisplayString: <object>
+ViewObj: [ 0, -1 ]
+ViewString: [ 0, -1 ]
+PrintObj: [ 0, -1 .. -1 ]
+PrintString: [ 0, -1 .. -1 ]
+String: [ 0, -1 .. -1 ]
 
 #
 gap> 0 in [0..0];
