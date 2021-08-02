@@ -78,6 +78,17 @@ true
 gap> READ_COMMAND_REAL(true, fail);
 Error, READ_COMMAND_REAL: <stream> must be an input stream (not the value 'tru\
 e')
+gap> READ_COMMAND_REAL(InputTextString("1+1;"), false);
+[ true, 2 ]
+gap> READ_COMMAND_REAL(InputTextString("/1;"), false); # intentional syntax error
+Syntax error: expression expected in stream:1
+/1;
+^
+[ true ]
+gap> READ_COMMAND_REAL(InputTextString("quit;"), false);
+[ true ]
+gap> READ_COMMAND_REAL(InputTextString("QUIT;"), false);
+[ false ]
 
 #
 gap> READ(fail);
