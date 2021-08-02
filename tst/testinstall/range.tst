@@ -40,7 +40,7 @@ gap> TestPrintRangeRep:=function(r)
 #
 gap> TestPrintRangeRep([0..1]);
 Display: [ 0 .. 1 ]
-DisplayString: <object>
+DisplayString: [ 0 .. 1 ]
 ViewObj: [ 0, 1 ]
 ViewString: [ 0, 1 ]
 PrintObj: [ 0 .. 1 ]
@@ -48,31 +48,31 @@ PrintString: [ 0 .. 1 ]
 String: [ 0 .. 1 ]
 gap> TestPrintRangeRep([0..2]);
 Display: [ 0 .. 2 ]
-DisplayString: <object>
+DisplayString: [ 0 .. 2 ]
 ViewObj: [ 0 .. 2 ]
-ViewString: [ 0, 1, 2 ]
+ViewString: [ 0 .. 2 ]
 PrintObj: [ 0 .. 2 ]
 PrintString: [ 0 .. 2 ]
 String: [ 0 .. 2 ]
 gap> TestPrintRangeRep([0,2..4]);
 Display: [ 0, 2 .. 4 ]
-DisplayString: <object>
+DisplayString: [ 0, 2 .. 4 ]
 ViewObj: [ 0, 2 .. 4 ]
-ViewString: [ 0, 2, 4 ]
+ViewString: [ 0, 2 .. 4 ]
 PrintObj: [ 0, 2 .. 4 ]
 PrintString: [ 0, 2 .. 4 ]
 String: [ 0, 2 .. 4 ]
 gap> TestPrintRangeRep([0,-1..-2]);
 Display: [ 0, -1 .. -2 ]
-DisplayString: <object>
+DisplayString: [ 0, -1 .. -2 ]
 ViewObj: [ 0, -1 .. -2 ]
-ViewString: [ 0, -1, -2 ]
+ViewString: [ 0, -1 .. -2 ]
 PrintObj: [ 0, -1 .. -2 ]
 PrintString: [ 0, -1 .. -2 ]
 String: [ 0, -1 .. -2 ]
 gap> TestPrintRangeRep([0,-1..-1]);
 Display: [ 0, -1 .. -1 ]
-DisplayString: <object>
+DisplayString: [ 0, -1 .. -1 ]
 ViewObj: [ 0, -1 ]
 ViewString: [ 0, -1 ]
 PrintObj: [ 0, -1 .. -1 ]

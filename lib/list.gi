@@ -382,6 +382,34 @@ local   str,ls, i;
   return str;
 end );
 
+InstallMethod( DisplayString,
+    "for a range",
+    [ IsRange ],
+    range -> Concatenation( String( range ), "\n" ) );
+
+InstallMethod( ViewString,
+    "for a range",
+    [ IsRange ],
+    function( list )
+    local   str;
+    str := "[ ";
+    Append( str, String( list[1] ) );
+    if Length( list ) > 1 then
+      if Length(list) = 2 or list[2] - list[1] <> 1 then
+        Append( str, ", " );
+        Append( str, String( list[2] ) );
+      fi;
+      if Length(list) > 2 then
+        Append( str, " .. " );
+        Append( str, String( list[ Length( list ) ] ) );
+      fi;
+    fi;
+    Append( str, " ]" );
+    Assert(0, IsStringRep(str));
+    ConvertToStringRep( str );
+    return str;
+    end );
+
 InstallMethod( String,
     "for a range",
     [ IsRange ],
@@ -3829,7 +3857,7 @@ LIST_WITH_IDENTICAL_ENTRIES );
 ##  and in the 'ViewString' method for finite lists.
 ##
 InstallMethod( ViewObj,
-    "for finite lists",
+    "for a finite list",
     [ IsList and IsFinite ],
     {} -> RankFilter(IsList) + 1 - RankFilter(IsList and IsFinite),
 function( list )
@@ -3857,7 +3885,7 @@ function( list )
 end );
 
 InstallMethod( ViewObj,
-    "for ranges",
+    "for a range",
     [ IsList and IsFinite and IsRange ],
     function( list )
     Print( "[ " );
