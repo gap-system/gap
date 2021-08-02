@@ -84,33 +84,6 @@ static UInt OpenInputFileOrStream(const char *   funcname,
                       "must be a string or an input stream");
 }
 
-static Int READ_COMMAND(TypInputFile * input, Obj *evalResult)
-{
-    ExecStatus    status;
-
-    status = ReadEvalCommand(0, input, evalResult, 0);
-    if( status == STATUS_EOF )
-        return 0;
-
-    if ( STATE(UserHasQuit) || STATE(UserHasQUIT) )
-        return 0;
-    
-    /* handle return-value or return-void command                          */
-    if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-        Pr("'return' must not be used in file read-eval loop\n", 0, 0);
-    }
-
-    /* handle quit command                                 */
-    else if (status == STATUS_QUIT) {
-        STATE(UserHasQuit) = 1;
-    }
-    else if (status == STATUS_QQUIT) {
-        STATE(UserHasQUIT) = 1;
-    }
-
-    return 1;
-}
-
 /****************************************************************************
 **
 *F  FuncREAD_ALL_COMMANDS( <self>, <instream>, <echo>, <capture>,
@@ -256,41 +229,32 @@ static Obj FuncREAD_ALL_COMMANDS(
 */
 static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
 {
-    Int status;
     Obj result;
     Obj evalResult;
 
     RequireInputStream(SELF_NAME, stream);
 
-    result = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST(result, 1);
-    SET_ELM_PLIST(result, 1, False);
+    result = NEW_PLIST(T_PLIST, 2);
+    AssPlist(result, 1, False);
 
-    /* try to open the file                                                */
+    // open the stream, read a command, and close it again
     TypInputFile input = { 0 };
     if (!OpenInputStream(&input, stream, echo == True)) {
         return result;
     }
-
-    status = READ_COMMAND(&input, &evalResult);
-
+    ExecStatus status = ReadEvalCommand(0, &input, &evalResult, 0);
     CloseInput(&input);
 
-    if( status == 0 ) return result;
+    if (status & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF))
+        return result;
+    else if (STATE(UserHasQuit) || STATE(UserHasQUIT))
+        return result;
+    else if (status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID))
+        Pr("'return' must not be used in file read-eval loop\n", 0, 0);
 
-    if (STATE(UserHasQUIT)) {
-      STATE(UserHasQUIT) = 0;
-      return result;
-    }
-
-    if (STATE(UserHasQuit)) {
-      STATE(UserHasQuit) = 0;
-    }
-    
-    SET_ELM_PLIST(result, 1, True);
+    AssPlist(result, 1, True);
     if (evalResult) {
-        SET_LEN_PLIST(result, 2);
-        SET_ELM_PLIST(result, 2, evalResult);
+        AssPlist(result, 2, evalResult);
     }
     return result;
 }
