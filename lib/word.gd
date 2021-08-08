@@ -343,8 +343,8 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  The lists <A>gens</A> and <A>imgs</A> must of course have the same length.
 ##  <P/>
 ##  <Ref Oper="MappedWord"/> needs to do some preprocessing to get internal
-##  generator numbers etc. When mapping many (several thousand) words, an
-##  explicit loop over the words syllables might be faster.
+##  generator numbers etc. When mapping many (several thousand) words, a
+##  dedicated loop might be faster.
 ##  <P/>
 ##  For example, if the elements in <A>imgs</A> are all
 ##  <E>associative words</E>
@@ -355,6 +355,10 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  In this situation, the special case that the lists <A>gens</A>
 ##  and <A>imgs</A> have only length <M>1</M> is handled more efficiently by
 ##  <Ref Oper="EliminatedWord"/>.
+##  <P/>
+##  If the word is from a free group, it is permitted to give inverses of
+##  (some) of the generators as extra generators. This can speed up the
+##  execution by removing the need to calculate inverses anew.
 ##  <Example><![CDATA[
 ##  gap> m:= FreeMagma( "a", "b" );;  gens:= GeneratorsOfMagma( m );;
 ##  gap> a:= gens[1];  b:= gens[2];
@@ -371,6 +375,8 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  gap> w:= a^5*b*a^2/b^4*a;
 ##  a^5*b*a^2*b^-4*a
 ##  gap> MappedWord( w, [ a, b ], [ (1,2), (1,2,3,4) ] );
+##  (1,3,4,2)
+##  gap> MappedWord( w, [ a, b, b^-1 ], [ (1,2), (1,2,3,4), (1,4,3,2) ] );
 ##  (1,3,4,2)
 ##  gap> (1,2)^5*(1,2,3,4)*(1,2)^2/(1,2,3,4)^4*(1,2);
 ##  (1,3,4,2)

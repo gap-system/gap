@@ -892,7 +892,7 @@ end );
 ##
 BindGlobal( "MappedWordSyllableAssocWord", function( x, gens1, gens2 )
 
-local i, mapped, exp,ex2,p,fameq;
+local i, mapped, exp,ex2,p,fameq,invimg,sel,elm;
 
     x:= ExtRepOfObj( x );
 
@@ -914,15 +914,23 @@ local i, mapped, exp,ex2,p,fameq;
     fameq:=FamilyObj(gens1[1])=FamilyObj(gens2[1]);
 
     gens1:= List( gens1, ExtRepOfObj );
-    if not ForAll( gens1, i -> Length( i ) = 2 and i[2] = 1 ) then
-      Error( "<gens1> must be proper generators" );
+    sel:=Filtered([1..Length(gens1)],i->Length(gens1[i])=2 and gens1[i][2]=1);
+    p:=Difference([1..Length(gens1)],sel);
+    if not ForAll( gens1{p},i -> Length( i ) = 2 and i[2] = -1 ) then
+      Error( "<gens1> must be proper generators or inverses" );
     fi;
+    mapped:=gens2{p};
+    p:=gens1{p};
+    gens1:=gens1{sel};
+    gens2:=gens2{sel};
+
     gens1:= List( gens1, x -> x[1] );
     IsSSortedList(gens1);
 
     if ex2 <> fail then
+      ex2:=ex2{sel};
 
-      # special treatment
+      # special treatment for words. No need to do inverses extra
       exp:= List( ex2, i -> i[2] );
       ex2:= List( ex2, i -> i[1] );
       mapped:= [];
@@ -953,22 +961,42 @@ local i, mapped, exp,ex2,p,fameq;
       return mapped;
     fi;
 
+    invimg:=List(gens1,x->fail);
+    if Length(p)>0 then
+      for i in [1..Length(p)] do
+        invimg[Position(gens1,p[i][1])]:=mapped[i];
+      od;
+    fi;
+
     # the hard case
     p:= Position( gens1, x[1] );
+    exp:=x[2];
+    elm:=gens2[p];
+    if exp<0 and p<>fail and invimg[p]<>fail then
+      exp:=-exp;
+      elm:=invimg[p];
+    fi;
     if p = fail then
       mapped:= ObjByExtRep( FamilyObj( gens2[1] ), [ x[1], x[2] ] );
     else
-      mapped:= gens2[p] ^ x[2];
+      mapped:= elm ^ exp;
     fi;
     for i in [ 4,6 .. Length( x ) ] do
       exp:= x[ i ];
       if exp <> 0 then
 	p:= Position( gens1, x[ i-1 ] );
+        elm:=gens2[p];
+      fi;
+      if exp<0 and p<>fail and invimg[p]<>fail then
+        exp:=-exp;
+        elm:=invimg[p];
+      fi;
+      if exp <> 0 then
 	if p = fail then
 	  mapped:= mapped * ObjByExtRep( FamilyObj( gens2[1] ),
 					  [ x[ i-1 ], x[i] ] );
 	else
-	  mapped:= mapped * gens2[p] ^ exp;
+	  mapped:= mapped * elm ^ exp;
 	fi;
       fi;
     od;
