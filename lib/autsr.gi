@@ -1018,6 +1018,14 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	    ser[i+1]:=PreImage(hom,N);
 	    Info(InfoMorph,2,"insert2");
 	  fi;
+          N:=ser[i+1]; # the added normal
+          if rada<>fail 
+             and ForAny(GeneratorsOfGroup(rada),x->N<>Image(x,N)) then
+            Info(InfoMorph,3,"radical automorphism stabilizer");
+            SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
+            NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+            rada:=Stabilizer(rada,N,asAutom);
+          fi;
 	fi;
       fi;
     until split or fratsim;
@@ -1302,6 +1310,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	    if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
 	      Info(InfoMorph,3,"radical automorphism stabilizer");
 	      NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+              SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
 	      rada:=Stabilizer(rada,k,asAutom);
 	    fi;
 	  od;

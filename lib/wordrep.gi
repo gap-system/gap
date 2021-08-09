@@ -1610,8 +1610,9 @@ local i;
 end);
 
 InstallGlobalFunction(WordProductLetterRep,function(arg)
-local l,r,i,j,b,p;
+local l,r,i,j,b,p,lc;
   l:=arg[1];
+  lc:=false;
   for p in [2..Length(arg)] do
     r:=arg[p];
     b:=Length(r);
@@ -1625,10 +1626,18 @@ local l,r,i,j,b,p;
       od;
       if j>b then
 	l:=l{[1..i]};
+        lc:=true;
       elif i=0 then
 	l:=r{[j..b]};
+        lc:=true;
       else
-	l:=Concatenation(l{[1..i]},r{[j..b]});
+        if j=1 and lc then
+          # No cancellation, and l was changed already: Append
+          Append(l,r);
+        else
+          l:=Concatenation(l{[1..i]},r{[j..b]});
+          lc:=true;
+        fi;
       fi;
     fi;
   od;

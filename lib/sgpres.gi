@@ -2500,7 +2500,7 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
         if ForAll(DATA.secondary[i],x->x in ws) then
           p:=PositionSublist(w,DATA.secondary[i]);
           while p<>fail do 
-            w:=Concatenation(w{[1..p-1]},
+            w:=WordProductLetterRep(w{[1..p-1]},
               [i],w{[p+Length(DATA.secondary[i])..Length(w)]});
             ws:=Set(w);
             c:=true;
@@ -3352,28 +3352,67 @@ local DATA,start,w,offset,c,i,j;
 end;
 
 NEWTC_ReplacedStringCyclic:=function(s,r)
-local p,new,start;
-  if Length(s)<Length(r) then
+local p,new,start,half;
+  if Length(s)<Length(r) or Length(r)=0 then
     return s;
   fi;
-  # TODO: Replace cyclically, that is allow the substring to hang out over the
-  # end and start again. This is easiest done by having a cylci version of
-  # `PositionSublist'.
   p:=PositionSublist(s,r);
   if p<>fail then
     new:=s{[1..p-1]};
     start:=p+Length(r);
     p:=PositionSublist(s,r,start);
     while p<>fail do
-      new:=WordProductLetterRep(new,s{[start..p-1]});
+      if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
+	Append(new,s{[start..p-1]});
+      else
+	new:=WordProductLetterRep(new,s{[start..p-1]});
+      fi;
       start:=p+Length(r);
       p:=PositionSublist(s,r,start);
     od;
-    new:=WordProductLetterRep(new,s{[start..Length(s)]});
-    return new;
+    if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
+      Append(new,s{[start..Length(s)]});
+    else
+      new:=WordProductLetterRep(new,s{[start..Length(s)]});
+    fi;
   else
-    return s;
+    new:=s;
   fi;
+
+  if Length(r)=1 then
+    return new; # no overlap or so possible
+  fi;
+
+  # Now cyclic reduction means that r overlaps tail to front. Thus either
+  # the second half of r occurs in the front or the front half of r occurs
+  # in the end of s.
+
+  half:=QuoInt(Length(r),2)+1;
+  p:=PositionSublist(new,r{[half..Length(r)]});
+  if p<>fail and p<half then
+    if new{[1..p-1]}=r{[half-p+1..half-1]} 
+      and new{[Length(new)-half+p+1..Length(new)]}=r{[1..half-p]} then
+
+      new:=new{[Length(r)-half+p+1..Length(new)-half+p]};
+    fi;
+  elif p<>fail then
+    # second half arises later. Does also first half arise -- if so we need
+    # to go through once more
+    if new{[p-half+1..p-1]}=r{[1..half-1]} then
+      return NEWTC_ReplacedStringCyclic(new,r);
+    fi;
+  fi;
+
+  p:=PositionSublist(new,r{[1..half-1]});
+  if p<>fail and p>=Length(new)-Length(r)+1 
+    and new{[p..Length(new)]}=r{[1..Length(new)-p+1]} 
+    and p>Length(new)+p-1 and
+    new{[1..Length(r)-Length(new)+p-1]}=r{[Length(new)-p+2..Length(r)]} then
+
+    new:=new{[Length(r)-Length(new)+p..p-1]};
+  fi;
+
+  return new;
 end;
 
 
