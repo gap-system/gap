@@ -153,78 +153,6 @@ end);
 
 #############################################################################
 ##
-#M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
-##
-InstallMethod( ReadAllLine, "iostream,boolean,function",
-        [ IsInputOutputStream, IsBool, IsFunction ],
-    function(iostream, nofail, IsAllLine)
-    local line, fd, moreOfline;
-    line := READ_IOSTREAM_NOWAIT(iostream![1], 1);
-    if nofail or line <> fail then
-        fd := FileDescriptorOfStream(iostream);
-        if line = fail then
-          line := "";
-        fi;
-        while not IsAllLine(line) do
-            UNIXSelect([fd], [], [], fail, fail);
-            moreOfline := ReadLine(iostream);
-            if moreOfline = fail then
-              Error("failed to find any more of line (iostream dead?)\n");
-            fi;
-            Append(line, moreOfline);
-        od;
-    fi;
-    return line;
-end);
-
-InstallOtherMethod( ReadAllLine, "iostream,boolean",
-        [ IsInputOutputStream, IsBool ],
-    function(iostream, nofail)
-    return ReadAllLine(iostream, nofail,
-                       line -> 0 < Length(line) and line[Length(line)] = '\n');
-end);
-
-InstallOtherMethod( ReadAllLine, "iostream,function",
-        [ IsInputOutputStream, IsFunction ],
-    function(iostream, IsAllLine)
-    return ReadAllLine(iostream, false, IsAllLine);
-end);
-
-InstallOtherMethod( ReadAllLine, "iostream",
-        [ IsInputOutputStream ],
-    iostream -> ReadAllLine(iostream, false)
-);
-
-# For an input stream that is not an input/output stream it's really
-# inappropriate to call ReadAllLine. We provide the functionality of
-# ReadLine only, in this case.
-InstallMethod( ReadAllLine, "stream,boolean,function",
-        [ IsInputStream, IsBool, IsFunction ],
-    function(stream, nofail, IsAllLine)
-    return ReadLine(stream); #ignore other arguments
-end);
-
-InstallOtherMethod( ReadAllLine, "stream,boolean",
-        [ IsInputStream, IsBool ],
-    function(stream, nofail)
-    return ReadLine(stream); #ignore other argument
-end);
-
-InstallOtherMethod( ReadAllLine, "stream,function",
-        [ IsInputStream, IsFunction ],
-    function(stream, IsAllLine)
-    return ReadLine(stream); #ignore other argument
-end);
-
-InstallOtherMethod( ReadAllLine, "stream",
-        [ IsInputStream ], ReadLine
-);
-
-
-
-
-#############################################################################
-##
 #M  Read( <input-stream> )	. . . . . . . . . .  read stream as GAP input
 ##
 InstallOtherMethod( Read,
@@ -1542,6 +1470,75 @@ InstallMethod( ReadLine, "iostream",
     return sofar;
 end);
 
+
+#############################################################################
+##
+#M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
+##
+InstallMethod( ReadAllLine, "iostream,boolean,function",
+        [ IsInputOutputStream, IsBool, IsFunction ],
+    function(iostream, nofail, IsAllLine)
+    local line, fd, moreOfline;
+    line := READ_IOSTREAM_NOWAIT(iostream![1], 1);
+    if nofail or line <> fail then
+        fd := FileDescriptorOfStream(iostream);
+        if line = fail then
+          line := "";
+        fi;
+        while not IsAllLine(line) do
+            UNIXSelect([fd], [], [], fail, fail);
+            moreOfline := ReadLine(iostream);
+            if moreOfline = fail then
+              Error("failed to find any more of line (iostream dead?)\n");
+            fi;
+            Append(line, moreOfline);
+        od;
+    fi;
+    return line;
+end);
+
+InstallOtherMethod( ReadAllLine, "iostream,boolean",
+        [ IsInputOutputStream, IsBool ],
+    function(iostream, nofail)
+    return ReadAllLine(iostream, nofail,
+                       line -> 0 < Length(line) and line[Length(line)] = '\n');
+end);
+
+InstallOtherMethod( ReadAllLine, "iostream,function",
+        [ IsInputOutputStream, IsFunction ],
+    function(iostream, IsAllLine)
+    return ReadAllLine(iostream, false, IsAllLine);
+end);
+
+InstallOtherMethod( ReadAllLine, "iostream",
+        [ IsInputOutputStream ],
+    iostream -> ReadAllLine(iostream, false)
+);
+
+# For an input stream that is not an input/output stream it's really
+# inappropriate to call ReadAllLine. We provide the functionality of
+# ReadLine only, in this case.
+InstallMethod( ReadAllLine, "stream,boolean,function",
+        [ IsInputStream, IsBool, IsFunction ],
+    function(stream, nofail, IsAllLine)
+    return ReadLine(stream); #ignore other arguments
+end);
+
+InstallOtherMethod( ReadAllLine, "stream,boolean",
+        [ IsInputStream, IsBool ],
+    function(stream, nofail)
+    return ReadLine(stream); #ignore other argument
+end);
+
+InstallOtherMethod( ReadAllLine, "stream,function",
+        [ IsInputStream, IsFunction ],
+    function(stream, IsAllLine)
+    return ReadLine(stream); #ignore other argument
+end);
+
+InstallOtherMethod( ReadAllLine, "stream",
+        [ IsInputStream ], ReadLine
+);
 
 
 #############################################################################
