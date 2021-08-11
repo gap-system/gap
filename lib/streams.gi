@@ -707,6 +707,17 @@ function( stream, pos )
     return SEEK_POSITION_FILE( stream![1], pos );
 end );
 
+#############################################################################
+##
+#M  FileDescriptorOfStream( <input-text-file> )
+##
+
+InstallMethod(FileDescriptorOfStream,
+        [IsInputTextStream and IsInputTextFileRep],
+        function(stream)
+    return FD_OF_FILE(stream![1]);
+end);
+
 
 #############################################################################
 ##
@@ -1128,6 +1139,17 @@ end );
 
 #############################################################################
 ##
+#M  FileDescriptorOfStream( <output-text-file> )
+##
+
+InstallMethod(FileDescriptorOfStream,
+        [IsOutputTextStream and IsOutputTextFileRep],
+        function(stream)
+    return FD_OF_FILE(stream![1]);
+end);
+
+#############################################################################
+##
 #M  PrintFormattingStatus( <output-text-file> )
 ##
 InstallMethod( PrintFormattingStatus, "output text file",
@@ -1476,7 +1498,7 @@ end);
 #M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
 ##
 InstallMethod( ReadAllLine, "iostream,boolean,function",
-        [ IsInputOutputStream, IsBool, IsFunction ],
+        [ IsInputOutputStreamByPtyRep and IsInputOutputStream, IsBool, IsFunction ],
     function(iostream, nofail, IsAllLine)
     local line, fd, moreOfline;
     line := READ_IOSTREAM_NOWAIT(iostream![1], 1);
@@ -1495,6 +1517,12 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
         od;
     fi;
     return line;
+end);
+
+InstallMethod( ReadAllLine, "iostream,boolean,function",
+        [ IsInputOutputStream, IsBool, IsFunction ],
+    function(iostream, nofail, IsAllLine)
+    ErrorNoReturn("not implemented");
 end);
 
 InstallOtherMethod( ReadAllLine, "iostream,boolean",
@@ -1518,6 +1546,8 @@ InstallOtherMethod( ReadAllLine, "iostream",
 # For an input stream that is not an input/output stream it's really
 # inappropriate to call ReadAllLine. We provide the functionality of
 # ReadLine only, in this case.
+# TODO: actually, why do we do this??? it seems better to simply produce
+# an error in this case?
 InstallMethod( ReadAllLine, "stream,boolean,function",
         [ IsInputStream, IsBool, IsFunction ],
     function(stream, nofail, IsAllLine)
@@ -1692,18 +1722,6 @@ end);
 ##
 #M  FileDescriptorOfStream( <iostream-by-pty> )
 ##
-
-InstallMethod(FileDescriptorOfStream,
-        [IsInputTextStream and IsInputTextFileRep],
-        function(stream)
-    return FD_OF_FILE(stream![1]);
-end);
-
-InstallMethod(FileDescriptorOfStream,
-        [IsOutputTextStream and IsOutputTextFileRep],
-        function(stream)
-    return FD_OF_FILE(stream![1]);
-end);
 
 InstallMethod(FileDescriptorOfStream,
         [IsInputOutputStreamByPtyRep and IsInputOutputStream],
