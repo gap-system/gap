@@ -3763,7 +3763,7 @@ GAP 4.5.4 release:
 
 ## GAP 4.5.4 (June 2012)
 
-This is the first public release of GAP 4.56.
+This is the first public release of GAP 4.5.
 
 This chapter lists most important changes between GAP 4.4.12 and the
 first public release of GAP 4.5. It also contains information about
