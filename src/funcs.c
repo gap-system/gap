@@ -83,32 +83,6 @@ void SetRecursionDepth(Int depth)
 
 /****************************************************************************
 **
-*F ExecProccallOpts( <call> ). . execute a procedure call with options
-**
-** Calls with options are wrapped in an outer statement, which is
-** handled here
-*/
-
-static Obj PushOptions;
-static Obj PopOptions;
-
-static UInt ExecProccallOpts(Stat call)
-{
-  Obj opts;
-  
-  opts = EVAL_EXPR(READ_STAT(call, 0));
-  CALL_1ARGS(PushOptions, opts);
-
-  EXEC_STAT(READ_STAT(call, 1));
-
-  CALL_0ARGS(PopOptions);
-  
-  return 0;
-}
-
-
-/****************************************************************************
-**
 *F  ExecProccall0args(<call>)  .  execute a procedure call with 0    arguments
 *F  ExecProccall1args(<call>)  .  execute a procedure call with 1    arguments
 *F  ExecProccall2args(<call>)  .  execute a procedure call with 2    arguments
@@ -125,7 +99,10 @@ static UInt ExecProccallOpts(Stat call)
 **  resulting from the procedure call, which in fact is always 0.
 */
 
-static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
+static Obj PushOptions;
+static Obj PopOptions;
+
+static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, Stat opts)
 {
     Obj func;
     Obj a[6] = { 0 };
@@ -134,7 +111,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
 
     // evaluate the function
     func = EVAL_EXPR( FUNC_CALL( call ) );
- 
+
     // evaluate the arguments
     if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
         for (UInt i = 1; i <= nr; i++) {
@@ -150,6 +127,10 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
             SET_ELM_PLIST(args, i, argi);
             CHANGED_BAG(args);
         }
+    }
+
+    if (opts) {
+        CALL_1ARGS(PushOptions, EVAL_EXPR(opts));
     }
 
     // call the function
@@ -190,20 +171,43 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call)
         GAP_THROW();
     }
 
-    if (ignoreResult) {
-        return 0;
-    }
-
-    if (result == 0) {
+    if (!ignoreResult && result == 0) {
         ErrorMayQuit("Function Calls: <func> must return a value", 0, 0);
     }
+
+    if (opts) {
+        CALL_0ARGS(PopOptions);
+    }
+
     return result;
+}
+
+
+/****************************************************************************
+**
+*F  ExecProccallOpts( <call> ). . execute a procedure call with options
+**
+**  Calls with options are wrapped in an outer statement, which is
+**  handled here
+*/
+
+static UInt ExecProccallOpts(Stat call)
+{
+    Expr opts = READ_STAT(call, 0);
+    Expr real_call = READ_STAT(call, 1);
+    UInt type = TNUM_STAT(real_call);
+    GAP_ASSERT(/*STAT_PROCCALL_0ARGS <= type && */type <= STAT_PROCCALL_XARGS);
+    UInt narg = (type - STAT_PROCCALL_0ARGS);
+
+    EvalOrExecCall(1, narg, real_call, opts);
+
+    return 0;
 }
 
 
 static UInt ExecProccall0args(Stat call)
 {
-    EvalOrExecCall(1, 0, call);
+    EvalOrExecCall(1, 0, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -211,7 +215,7 @@ static UInt ExecProccall0args(Stat call)
 
 static UInt ExecProccall1args(Stat call)
 {
-    EvalOrExecCall(1, 1, call);
+    EvalOrExecCall(1, 1, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -219,7 +223,7 @@ static UInt ExecProccall1args(Stat call)
 
 static UInt ExecProccall2args(Stat call)
 {
-    EvalOrExecCall(1, 2, call);
+    EvalOrExecCall(1, 2, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -227,7 +231,7 @@ static UInt ExecProccall2args(Stat call)
 
 static UInt ExecProccall3args(Stat call)
 {
-    EvalOrExecCall(1, 3, call);
+    EvalOrExecCall(1, 3, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -235,7 +239,7 @@ static UInt ExecProccall3args(Stat call)
 
 static UInt ExecProccall4args(Stat call)
 {
-    EvalOrExecCall(1, 4, call);
+    EvalOrExecCall(1, 4, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -243,7 +247,7 @@ static UInt ExecProccall4args(Stat call)
 
 static UInt ExecProccall5args(Stat call)
 {
-    EvalOrExecCall(1, 5, call);
+    EvalOrExecCall(1, 5, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -251,7 +255,7 @@ static UInt ExecProccall5args(Stat call)
 
 static UInt ExecProccall6args(Stat call)
 {
-    EvalOrExecCall(1, 6, call);
+    EvalOrExecCall(1, 6, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -262,7 +266,7 @@ static UInt ExecProccallXargs(Stat call)
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
     // to allow the compiler to perform better optimizations
     // (as we know that the number of arguments is >= 7 here)
-    EvalOrExecCall(1, 7, call);
+    EvalOrExecCall(1, 7, call, 0);
 
     // return 0 (to indicate that no leave-statement was executed)
     return 0;
@@ -270,26 +274,20 @@ static UInt ExecProccallXargs(Stat call)
 
 /****************************************************************************
 **
-*F EvalFunccallOpts( <call> ). . evaluate a function call with options
+*F  EvalFunccallOpts( <call> ). . evaluate a function call with options
 **
-** Calls with options are wrapped in an outer statement, which is
-** handled here
+**  Calls with options are wrapped in an outer statement, which is
+**  handled here
 */
 
 static Obj EvalFunccallOpts(Expr call)
 {
-  Obj opts;
-  Obj res;
-
-
-  opts = EVAL_EXPR(READ_STAT(call, 0));
-  CALL_1ARGS(PushOptions, opts);
-
-  res = EVAL_EXPR(READ_STAT(call, 1));
-
-  CALL_0ARGS(PopOptions);
-  
-  return res;
+    Expr opts = READ_STAT(call, 0);
+    Expr real_call = READ_STAT(call, 1);
+    UInt type = TNUM_STAT(real_call);
+    GAP_ASSERT(EXPR_FUNCCALL_0ARGS <= type && type <= EXPR_FUNCCALL_XARGS);
+    UInt narg = (type - EXPR_FUNCCALL_0ARGS);
+    return EvalOrExecCall(0, narg, real_call, opts);
 }
 
 
@@ -311,37 +309,37 @@ static Obj EvalFunccallOpts(Expr call)
 
 static Obj EvalFunccall0args(Expr call)
 {
-    return EvalOrExecCall(0, 0, call);
+    return EvalOrExecCall(0, 0, call, 0);
 }
 
 static Obj EvalFunccall1args(Expr call)
 {
-    return EvalOrExecCall(0, 1, call);
+    return EvalOrExecCall(0, 1, call, 0);
 }
 
 static Obj EvalFunccall2args(Expr call)
 {
-    return EvalOrExecCall(0, 2, call);
+    return EvalOrExecCall(0, 2, call, 0);
 }
 
 static Obj EvalFunccall3args(Expr call)
 {
-    return EvalOrExecCall(0, 3, call);
+    return EvalOrExecCall(0, 3, call, 0);
 }
 
 static Obj EvalFunccall4args(Expr call)
 {
-    return EvalOrExecCall(0, 4, call);
+    return EvalOrExecCall(0, 4, call, 0);
 }
 
 static Obj EvalFunccall5args(Expr call)
 {
-    return EvalOrExecCall(0, 5, call);
+    return EvalOrExecCall(0, 5, call, 0);
 }
 
 static Obj EvalFunccall6args(Expr call)
 {
-    return EvalOrExecCall(0, 6, call);
+    return EvalOrExecCall(0, 6, call, 0);
 }
 
 static Obj EvalFunccallXargs(Expr call)
@@ -349,7 +347,7 @@ static Obj EvalFunccallXargs(Expr call)
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_EXPR(call)))
     // to allow the compiler to perform better optimizations
     // (as we know that the number of arguments is >= 7 here)
-    return EvalOrExecCall(0, 7, call);
+    return EvalOrExecCall(0, 7, call, 0);
 }
 
 
