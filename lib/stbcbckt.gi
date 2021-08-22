@@ -2484,7 +2484,7 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
         E := First( GeneratorsOfGroup( E ), gen -> Order( gen ) <> 1 );
         F := First( GeneratorsOfGroup( F ), gen -> Order( gen ) <> 1 );
         return RepOpElmTuplesPermGroup( true, G, [ E ], [ F ], L, R );
-    elif IsAbelian(E) and IsCyclic(F) then
+    elif IsCyclic(E) then
       # special case of cyclic groups
       if not IsCyclic(F) then return fail;fi;
       if Length( arg ) > 3  then
@@ -2500,7 +2500,6 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
 	if found<>fail then return found;fi;
       od;
       return fail;
-      Error("hier");
     fi;
     # `Suborbits' uses all points. (AH, 7/17/02)
     mpG:=MovedPoints(GeneratorsOfGroup(G));
