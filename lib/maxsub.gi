@@ -558,10 +558,14 @@ local m,id,epi,H;
       epi:=IsomorphismGroups(G,H);
       m:=List(m,x->PreImage(epi,x));
       return m;
-    elif id.idSimple.series="L" then
-      m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
+    elif Length(id.idSimple.parameter)=2 
+      and ForAll(id.idSimple.parameter,IsInt) then
+      # ClassicalMaximals will fail if it can't find
+      m:=ClassicalMaximals(id.idSimple.series,
+        id.idSimple.parameter[1],id.idSimple.parameter[2]);
       if m<>fail then
-	epi:=EpimorphismFromClassical(G:classicepiuseiso:=true);
+	epi:=EpimorphismFromClassical(G:classicepiuseiso:=true,
+          usemaximals:=false);
 	if epi<>fail then
 	  m:=List(m,x->SubgroupNC(Range(epi),
 	      List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
