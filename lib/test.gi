@@ -128,7 +128,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
     elif StartsWith(lines[i], ">\t") then
         testError("Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space");
     elif Length(outp) > 0 then
-      if foundcmd then
+      if foundcmd and not ForAll(lines[i], c -> c = ' ' or c = '\t') then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
       Append(outp[Length(outp)], lines[i]);
