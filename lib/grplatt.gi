@@ -1247,6 +1247,27 @@ InstallMethod(LatticeSubgroups, "for the trivial group", true,
   0,
   G -> LatticeFromClasses(G,[G^G]));
 
+InstallMethod( LatticeSubgroups,
+    "via nice monomorphism",
+    [ IsGroup and IsFinite and IsHandledByNiceMonomorphism ],
+    # This method should be ranked below the "via radical" method
+    # but above the "cyclic extension" method.
+    {} -> - RankFilter( IsHandledByNiceMonomorphism ) + 1/2,
+    function( G )
+    local hom, lattice, classes;
+
+    hom:= NiceMonomorphism( G );
+    lattice:= LatticeSubgroups( Image( hom ) );
+    classes:= List( ConjugacyClassesSubgroups( lattice ),
+                    C -> ConjugacyClassSubgroups( G,
+                             PreImage( hom, Representative( C ) ) ) );
+
+    # It can be assumed that the list is sorted.
+    return Objectify( NewType( FamilyObj( classes ), IsLatticeSubgroupsRep ),
+                      rec( conjugacyClassesSubgroups:= classes,
+                           group:= G ) );
+    end );
+
 RedispatchOnCondition( LatticeSubgroups, true,
     [ IsGroup ], [ IsFinite ], 0 );
 
