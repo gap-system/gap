@@ -220,14 +220,7 @@ DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
 ##  gap> mo:=GModuleByMats(mats,GF(3));;
 ##  gap> coh:=TwoCohomologyGeneric(g,mo);;
 ##  gap> coh.cocycles;
-##  [ < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) >,
-##    < immutable compressed vector length 44 over GF(3) > ]
+##  < immutable compressed matrix 8x44 over GF(3) >
 ##  gap> coh.coboundaries;
 ##  [ < immutable compressed vector length 44 over GF(3) >,
 ##    < immutable compressed vector length 44 over GF(3) >,
@@ -303,9 +296,11 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##  gap> Collected(List(MaximalSubgroupClassReps(g2),Size));
 ##  [ [ 3888, 1 ], [ 6480, 1 ], [ 7776, 1 ], [ 19440, 1 ] ]
 ##  gap> p:=FpGroupCocycle(coh,coh.cohomology[1],true:normalform);;
+##  ]]></Example>
+##  <Log><![CDATA[
 ##  gap> p.7*p.1; # i.e. m1*F1, but in normal form
 ##  F1*m4
-#  ]]></Example>
+##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
