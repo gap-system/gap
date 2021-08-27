@@ -1225,9 +1225,12 @@ local H,d,id,hom,field,C,dom,orbs;
   else
     H:=G;
   fi;
-  d:=DataAboutSimpleGroup(H);
-  id:=d.idSimple;
-  if not id.series in ["L","2A","C"] then
+  id:=ValueOption("forcetype");
+  if id=fail then
+    d:=DataAboutSimpleGroup(H);
+    id:=d.idSimple;
+  fi;
+  if not id.series in ["L","2A","C","D","2D","B"] then
     return fail;
   fi;
 
@@ -1248,6 +1251,15 @@ local H,d,id,hom,field,C,dom,orbs;
     C:=SP(2*id.parameter[1],id.parameter[2]);
   elif id.series="2A" then
     C:=SU(id.parameter[1]+1,id.parameter[2]);
+  elif id.series="D" then
+    C:=SO(1,2*id.parameter[1],id.parameter[2]);
+    C:=DerivedSubgroup(C);
+  elif id.series="2D" then
+    C:=SO(-1,2*id.parameter[1],id.parameter[2]);
+    C:=DerivedSubgroup(C);
+  elif id.series="B" then
+    C:=SO(0,2*id.parameter[1]+1,id.parameter[2]);
+    C:=DerivedSubgroup(C);
   else
     Error("not yet done");
   fi;
@@ -1265,6 +1277,7 @@ local H,d,id,hom,field,C,dom,orbs;
       fi;
     fi;
   fi;
+
 
   # build isom
   dom:=NormedRowVectors(DefaultFieldOfMatrixGroup(C)^DimensionOfMatrixGroup(C));

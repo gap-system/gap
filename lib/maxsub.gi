@@ -540,9 +540,9 @@ function(G)
   return MaxesByLattice(G);
 end);
 
-InstallMethod(MaxesAlmostSimple,"table of marks and linear",true,[IsGroup],0,
+InstallMethod(MaxesAlmostSimple,"table of marks and classical",true,[IsGroup],0,
 function(G)
-local m,id,epi,H;
+local m,id,epi,H,ids,ft;
 
   # does the table of marks have it?
   m:=TomDataMaxesAlmostSimple(G);
@@ -551,17 +551,33 @@ local m,id,epi,H;
   if IsNonabelianSimpleGroup(G) then 
     # following is stopgap for L
     id:=DataAboutSimpleGroup(G);
-    if id.idSimple.series="A" then
+    ids:=id.idSimple;
+    if ids.series="A" then
       Info(InfoPerformance,1,"Alternating recognition needed!");
-      H:=AlternatingGroup(id.idSimple.parameter);
+      H:=AlternatingGroup(ids.parameter);
       m:=MaximalSubgroupClassReps(H); # library, natural
       epi:=IsomorphismGroups(G,H);
       m:=List(m,x->PreImage(epi,x));
       return m;
-    elif id.idSimple.series="L" then
-      m:=ClassicalMaximals("L",id.idSimple.parameter[1],id.idSimple.parameter[2]);
+    elif IsBound(ids.parameter) and IsList(ids.parameter) 
+      and Length(ids.parameter)=2 and ForAll(ids.parameter,IsInt) then
+
+      # O(odd,2) is stored as SP(odd-1,2)
+      if ids.series="B" and ids.parameter[2]=2 then
+        ids:=rec(name:=ids.name,parameter:=ids.parameter,series:="C",
+        shortname:=ids.shortname);
+        ft:=ids;
+      else 
+        ft:=fail;
+      fi;
+
+      # ClassicalMaximals will fail if it can't find
+      m:=ClassicalMaximals(ids.series,
+        ids.parameter[1],ids.parameter[2]);
       if m<>fail then
-	epi:=EpimorphismFromClassical(G:classicepiuseiso:=true);
+	epi:=EpimorphismFromClassical(G:classicepiuseiso:=true,
+          forcetype:=ft,
+          usemaximals:=false);
 	if epi<>fail then
 	  m:=List(m,x->SubgroupNC(Range(epi),
 	      List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));

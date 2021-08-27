@@ -213,5 +213,12 @@ gap> g:= Group( [                                # the group 2.J_2
 gap> Length( ConjugacyClassesSubgroups( g ) );
 245
 
+# Use stored maximals
+gap> g:=SimpleGroup("O+(6,5)");;
+gap> Size(g);
+7254000000
+gap> l:=LowLayerSubgroups(g,2);;Length(l);
+73
+
 # thats all, folks
 gap> STOP_TEST( "grplatt.tst" );
