@@ -1130,15 +1130,13 @@ Remember that a variable is a location in a &GAP; program
 that points to a value. Thus for  each formal argument and for each
 formal local such a location is allocated.
 <P/>
-Next the arguments <A>arg-expr</A>s are evaluated, and the values are assigned
+Next the arguments <A>arg-expr</A>s are evaluated from left to right,
+and the values are assigned
 to the newly created variables corresponding to the formal arguments. Of
 course the first value is assigned to the new variable corresponding to
 the first formal argument, the second  value  is assigned to the new
 variable corresponding  to  the second  formal argument, and  so on.
-However, &GAP; does not make any guarantee about the order in which the
-arguments are evaluated. They might be evaluated left to right, right to
-left, or in any other order, but each argument is evaluated once. An
-exception again occurs if the last formal argument has
+An exception again occurs if the last formal argument has
 the name <C>arg</C>. In this case the values of all the actual
 arguments not assigned to the other formal parameters are
 stored in  a list and this  list is assigned to the  new variable
@@ -1200,6 +1198,8 @@ are separated from the actual arguments by a colon <C>:</C> and have much
 the same syntax as the components of a record expression. The one
 exception to this is that a component name may appear without a value,
 in which case the value <K>true</K> is silently inserted.
+<P/>
+Options are evaluated from left to right, but only after all arguments have been evaluated.
 <P/>
 The following example shows a call to <Ref Attr="Size"/> passing the options
 <C>hard</C> (with the value <K>true</K>)
