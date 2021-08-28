@@ -13,6 +13,10 @@
 #ifndef LIBGAP_API_H
 #define LIBGAP_API_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "system.h"
 
 #include <setjmp.h>
@@ -501,5 +505,9 @@ Int GAP_ValueOfChar(Obj obj);
 
 // Returns the GAP character object with value <obj>.
 Obj GAP_CharWithValue(UChar obj);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
