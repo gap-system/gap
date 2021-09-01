@@ -1094,6 +1094,10 @@ InstallOtherMethod( Transitivity,
       # The trivial group is transitive on the empty set,
       # but has transitivity zero.
       return 0;
+    elif IsNaturalSymmetricGroup( G ) then
+      return n;
+    elif IsNaturalAlternatingGroup( G ) then
+      return n - 2;
     fi;
     t:= 0;
     size:= Size( G );
