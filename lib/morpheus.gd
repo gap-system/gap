@@ -500,6 +500,7 @@ DeclareGlobalFunction("IsomorphismAbelianGroups");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("IsomorphismGroups");
+DeclareGlobalFunction("IsomorphismSimpleGroups");
 
 #############################################################################
 ##

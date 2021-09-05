@@ -1,4 +1,3 @@
-#
 ###########################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
@@ -2614,6 +2613,196 @@ InstallMethod( InnerAutomorphismGroup,
     end );
 
 
+InstallGlobalFunction(IsomorphismSimpleGroups,function(g,h)
+local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
+  rootClasses,findElm,isFull,trans,prim;
+
+  rootClasses:=function(tbl,a)
+  local p,r,i,j;
+    p:=List(Set(Factors(Size(tbl))),x->PowerMap(tbl,x));
+    r:=[a];
+    for i in [1..NrConjugacyClasses(tbl)] do
+      for j in p do
+        if j[i] in r then
+          AddSet(r,i);
+        fi;
+      od;
+    od;
+    return r;
+  end;
+
+  findElm:=function(gp,o,z,r)
+  local a,e;
+    repeat
+      a:=PseudoRandom(gp);
+      e:=Order(a);
+      if e in r then
+        a:=a^QuoInt(e,o);
+        if z=fail or Size(Centralizer(gp,a))=z then
+          return a;
+        fi;
+      fi;
+    until false;
+  end;
+
+  isFull:=function(gp)
+    if trans and not IsTransitive(gp,MovedPoints(g)) then return false;fi;
+    if prim and not IsPrimitive(gp,MovedPoints(g)) then return false;fi;
+    return Size(gp)=Size(g);
+  end;
+
+  # work in perm if possible
+  if IsPermGroup(h) and not IsPermGroup(g) then
+    iso:=IsomorphismSimpleGroups(h,g);
+    if iso<>fail then iso:=InverseGeneralMapping(iso);fi;
+    return iso;
+  fi;
+
+  if not (Size(g)=Size(h) and IsSimpleGroup(g) and IsSimpleGroup(h)) then
+    return fail;
+  fi;
+  d:=DataAboutSimpleGroup(g);
+  if d.idSimple<>DataAboutSimpleGroup(h).idSimple then
+    return false;
+  fi;
+
+  trans:=IsPermGroup(g) and IsTransitive(g,MovedPoints(g));
+  prim:=IsPermGroup(g) and IsPrimitive(g,MovedPoints(g));
+
+  # is a standard generator finder known?
+  if IsPackageMarkedForLoading("atlasrep","")=true
+    and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+    p:=CallFuncList(ValueGlobal("AtlasProgram"),[d.tomName,1,"find"]);
+    if p<>fail then
+      a:=CallFuncList(ValueGlobal("ResultOfBBoxProgram"),[p.program,g]);
+      b:=CallFuncList(ValueGlobal("ResultOfBBoxProgram"),[p.program,h]);
+      iso:=GroupHomomorphismByImagesNC(g,h,a,b);
+      Assert(2,IsMapping(iso));
+      SetIsInjective(iso,true);
+      SetIsSurjective(iso,true);
+      return iso;
+    fi;
+  fi;
+  gens:=fail;
+  if IsPackageMarkedForLoading("ctbllib","")=true then 
+    c:=CharacterTable(d.tomName);
+    if c<>fail then
+      o:=OrdersClassRepresentatives(c);
+      s:=SizesConjugacyClasses(c);
+      # order two, unique class order, smallest
+      two:=Filtered([1..Length(o)],x->o[x]=2);
+      a:=s{two};
+      a:=Collected(a);
+      if ForAny(a,x->x[2]=1) then
+        a:=List(Filtered(a,x->x[2]=1),x->x[1]);
+        two:=Filtered(two,x->s[x] in a);
+      fi;
+      SortBy(two,x->s[x]);
+      two:=two[1]; 
+      z:=Size(c)/s[two]; # centralizer order
+      r:=rootClasses(c,two);
+      rt:=Set(o{r});
+      e:=fail;
+
+      a:=Set(o); # orders
+      m:=Concatenation(Reversed(Filtered(a,x->IsPrimeInt(x) and x<100)),
+                       Reversed(Filtered(a,x->not IsPrimeInt(x) and x<100)),
+                       Filtered(a,x->x>100));
+
+      while gens=fail do
+        e:=m[1];
+        a:=Filtered([1..Length(o)],x->o[x]=e);
+        m:=m{[2..Length(m)]};
+        # only largest class order for this element order
+        SortBy(a,x->-s[x]);
+        a:=Filtered(a,x->s[x]=s[a[1]]);
+        if (Length(Set(s{a}))=1 and Size(c)/Sum(s{a})<100) then
+          y:=Size(c)/s[a[1]]; # centralizer order
+          r:=rootClasses(c,a[1]);
+          re:=Set(o{r});
+          gens:=[findElm(g,2,z,rt),findElm(g,e,y,re)];
+          cnt:=0;
+          while not isFull(SubgroupNC(g,gens)) and cnt<20 do
+            gens[2]:=gens[2]^PseudoRandom(g);
+            cnt:=cnt+1;
+          od;
+          if cnt=20 then gens:=fail;fi;
+        fi;
+      od;
+    fi;
+  fi;
+  if gens=fail then
+    # not found by table or other -- try a 2/something ad-hoc
+    rt:=[2,4..Size(g)];
+    gens:=[findElm(g,2,fail,rt)];
+    z:=Size(Centralizer(g,gens[1]));
+
+    # try a larger, but not huge prime. Thus avoid Singer cycles 
+    # which have small centralizers and thus long orbits
+    m:=Maximum(Filtered(Factors(Size(g)),x->x<100));
+    cnt:=0;
+    repeat
+      gens[2]:=findElm(g,m,fail,[m,2*m..Size(g)]);
+      if isFull(SubgroupNC(g,gens)) then 
+        b:=gens;
+        y:=Size(Centralizer(g,gens[2]));
+      else 
+        b:=fail;
+      fi;
+      cnt:=cnt+1;
+    until b<>fail or 2^cnt>Size(g);
+
+    cnt:=2;
+    while b=fail or y>z*2^(QuoInt(cnt,2)) do
+      cnt:=cnt+1;
+      gens[2]:=PseudoRandom(g);
+      if isFull(SubgroupNC(g,gens)) then 
+        b:=gens;
+        y:=Size(Centralizer(g,gens[2]));
+      fi;
+    od;
+    gens:=b;
+    e:=Order(gens[2]);
+    re:=[e,2*e..Size(g)];
+    y:=Size(Centralizer(g,gens[2]));
+  fi;
+  Info(InfoMorph,1,"generators ",List(gens,Order));
+  o:=List(MorFroWords(gens),Order);
+  lim:=QuoInt(Size(g),z*y); # how many try unless fails
+  if e>100 then
+    lim:=lim*QuoInt(e,100)*Phi(e);
+  fi;
+
+  # now try at most 10 times for a pair as given
+  for cnt in [1..4*LogInt(Size(g),10)] do
+    a:=findElm(h,2,z,rt);
+    c:=0;
+    repeat
+      repeat
+        # the centralizer test is more expensive than element orders
+        b:=findElm(h,e,fail,re);
+        c:=c+1;
+        m:=MorFroWords([a,b]);
+      until (ForAll([1..Length(o)],x->Order(m[x])=o[x])
+        and Size(Centralizer(h,b))=y) or c>lim;
+      if c<=lim then
+        Info(InfoMorph,2,"testing ...");
+        iso:=GroupHomomorphismByImages(g,h,gens,[a,b]);
+        if IsMapping(iso) then
+          SetIsInjective(iso,true);
+          SetIsSurjective(iso,true);
+          return iso;
+        fi;
+      elif lim<2000 then
+        lim:=lim*2;
+      fi;
+    until c>lim;
+  od;
+
+  return fail;
+end);
+
+
 #############################################################################
 ##
 #F  IsomorphismGroups(<G>,<H>) . . . . . . . . . .  isomorphism from G onto H
@@ -2649,6 +2838,26 @@ local m;
     fi;
   fi;
 
+  if IsSimpleGroup(G) then
+    m:=IsomorphismSimpleGroups(G,H);
+    if m=false then return fail;fi;
+    if m<>fail then return m;fi;
+  fi;
+    
+  if Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) 
+    and (not IsSolvableGroup(G))
+    and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
+      # the solvable radical method got better, so force if the radical of
+      # the group is a good part
+      # sizeable radical
+      or Size(RadicalGroup(G))^2>Size(G)
+      or ValueOption("forcetest")=true) and 
+      ValueOption("forcetest")<>"old" then
+    # In place until a proper implementation of Cannon/Holt isomorphism is
+    # done
+    return PatheticIsomorphism(G,H);
+  fi;
+
   if Size(G)<>Size(H) then
     return fail;
   elif ID_AVAILABLE(Size(G)) <> fail
@@ -2667,19 +2876,6 @@ local m;
 	<>Collected(List(ConjugacyClasses(H),
 	  x->[Order(Representative(x)),Size(x)])) then
     return fail;
-  fi;
-
-  if Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) 
-    and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
-      # the solvable radical method got better, so force if the radical of
-      # the group is a good part
-      # sizeable radical
-      or Size(RadicalGroup(G))^2>Size(G)
-      or ValueOption("forcetest")=true) and 
-      ValueOption("forcetest")<>"old" then
-    # In place until a proper implementation of Cannon/Holt isomorphism is
-    # done
-    return PatheticIsomorphism(G,H);
   fi;
 
   m:=Morphium(G,H,false);
