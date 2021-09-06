@@ -2705,13 +2705,6 @@ local l,mark,i,b,M,no,cnt,j,q,As,a,hom,c,p,ap,prea,prestab,new,sz,k,h;
 	    od;
 	    Info(InfoLattice,1,"now found ",Length(l)," subgroups");
 	  od;
-	  #if
-	  #  Length(new)<>Length(SubgroupsOrbitsAndNormalizers(prestab,oc,false))
-	  #  then
-          #  Error("hier");
-	  #fi;
-
-	  #fi;
 	fi;
       od;
 
