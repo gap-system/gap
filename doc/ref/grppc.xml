@@ -248,6 +248,9 @@ groups, see Chapter <Ref Sect="Quotient Methods"/> for further information.
 <P/>
 Another way is to create and manipulate a collector of a pc group by hand
 and to use it to define a pc group.
+This is the most technical way and has little error checking and thus is
+intended mostly for experts who want to create a pc presentation in a
+particular way.
 &GAP; provides different collectors for different collecting strategies;
 at the moment, there are two collectors to choose from:
 the single collector for finite pc groups (see <Ref Oper="SingleCollector"/>)
@@ -296,7 +299,8 @@ of the collector <A>coll</A>.
 <P/>
 For <A>i</A> <M>&lt;</M> <A>j</A>,
 <Ref Oper="SetConjugate"/> sets the conjugate <M>f_j^{{f_i}}</M> to equal
-<A>w</A>, which is assumed to be a word in <M>f_{{i+1}}, \ldots, f_n</M>.
+<A>w</A>, which is assumed to be a canonical word in <M>f_{{i+1}}, \ldots, f_n</M>.
+No check of the arguments is performed.
 </Description>
 </ManSection>
 
@@ -309,8 +313,9 @@ of the collector <A>coll</A>.
 <P/>
 For <A>i</A> <M>&lt;</M> <A>j</A>,
 <Ref Oper="SetCommutator"/> sets the commutator of <M>f_j</M> and <M>f_i</M>
-to equal <A>w</A>, which is assumed to be a word in
+to equal <A>w</A>, which is assumed to be a canonical word in
 <M>f_{{i+1}}, \ldots, f_n</M>.
+No check of the arguments is performed.
 </Description>
 </ManSection>
 
@@ -323,7 +328,8 @@ of the collector <A>coll</A>,
 and let <M>r_i</M> be the corresponding relative orders.
 <P/>
 <Ref Oper="SetPower"/> sets the power <M>f_i^{{r_i}}</M> to equal <A>w</A>,
-which is assumed to be a word in <M>f_{{i+1}}, \ldots, f_n</M>.
+which is assumed to be a canonical word in <M>f_{{i+1}}, \ldots, f_n</M>.
+No check of the arguments is performed.
 </Description>
 </ManSection>
 

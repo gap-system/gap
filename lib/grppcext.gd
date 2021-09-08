@@ -116,11 +116,11 @@ DeclareGlobalFunction( "EXReducePermutationActionPairs" );
 
 #############################################################################
 ##
-#F  CompatiblePairs( <G>, <M>[, <D>] )
+#F  CompatiblePairs( [<A>,] <G>, <M>[, <D>] )
 ##
 ##  <#GAPDoc Label="CompatiblePairs">
 ##  <ManSection>
-##  <Func Name="CompatiblePairs" Arg='G, M[, D]'/>
+##  <Func Name="CompatiblePairs" Arg='[A,] G, M[, D]'/>
 ##
 ##  <Description>
 ##  returns the group of compatible pairs of the group <A>G</A> with the 
@@ -130,6 +130,9 @@ DeclareGlobalFunction( "EXReducePermutationActionPairs" );
 ##  The optional argument <A>D</A> should be a subgroup of
 ##  Aut(<A>G</A>) <M>\times</M> Aut(<A>M</A>).
 ##  If it is given, then only the compatible pairs in <A>D</A> are computed.
+##  If a group <A>A</A> of automorphisms of <A>G</A> is given as optional
+##  first argument, it is used in place of the full automorphism group of
+##  <A>G</A>, avoiding the need to compute this automorphism group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -708,7 +708,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
       findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,genkill,
       c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos,
-      nonone,predict,lenpre,jv;
+      nonone,predict,lenpre,jv,olen;
 
 
   # collect the word in factor group
@@ -955,10 +955,12 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   dim:=Length(zero);
   nvars:=dim*Length(hastail); #Number of variables
 
-  eqs:=[];
 #rk:=0;
   zeroq:=ImmutableVector(field,ListWithIdenticalEntries(nvars,Zero(field)));
+  eqs:=MutableBasis(field,[],zeroq);
+  olen:=[-1,0];
   for i in [1..Length(rules)] do
+    Info(InfoCoh,1,"First rule ",i,", ",Length(BasisVectors(eqs))," equations");
     l1:=rules[i][1];
     len1:=Length(l1);
     for j in [1..Length(rules)] do
@@ -967,7 +969,6 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       for o in [1..m-1] do # possible overlap Length
         start:=len1-o;
         if ForAll([1..o],k->l1[start+k]=l2[k]) then
-#Print("Overlap ",l1," ",l2," ",o,"\n");
 
           # apply l1 first
           new:=Concatenation(rules[i][2],l2{[o+1..Length(l2)]});
@@ -1001,36 +1002,45 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
               fi;
             od;
             for k in c do
-              if not IsZero(k) then
-                if model<>fail and not IsZero(solvec*k) then
-                  Error("model does not fit");
-                fi;
-                AddSet(eqs,ImmutableVector(field,k));
-              fi;
+
+	      if model<>fail and not IsZero(solvec*k) then
+		Error("model does not fit");
+	      fi;
+	      #AddSet(eqs,ImmutableVector(field,k));
+	      #k:=SiftedVector(eqs,ImmutableVector(field,k));
+  #Add(alleeqs,ImmutableVector(field,k));
+	      k:=SiftedVector(eqs,k);
+	      if not IsZero(k) then
+		CloseMutableBasis(eqs,ImmutableVector(field,k));
+
+	      fi;
+
             od;
           fi;
-
-#          if Length(eqs)>0 then
-#            c:=RankMat(eqs);
-#          else
-#            c:=rk;
-#          fi;
-#          if c>rk then rk:=c;
-#            Print("Overlap ",l1," ",l2," ",o," does reduce further:",
-#              Length(eqs[1])-rk,"\n");
-#          else
-#            Print(">>Overlap ",l1," ",l2," ",o," does not reduce further\n");
-#          fi;
 
         fi;
       od;
     od;
+    Add(olen,Length(BasisVectors(eqs)));
+    if Length(olen)>3 and 
+      # if twice stayed the same after increase
+      olen[Length(olen)]=olen[Length(olen)-2] and
+      olen[Length(olen)]<>olen[Length(olen)-3] then
+
+      k:=List(BasisVectors(eqs),ShallowCopy);;
+      TriangulizeMat(k);
+      eqs:=MutableBasis(field,
+	List(k,x->ImmutableVector(field,x)),zeroq);
+    fi;
+
   od;
 
-  eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
+  #eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
+  eqs:=ShallowCopy(BasisVectors(eqs));
   if Length(eqs)=0 then
     eqs:=IdentityMat(Length(rules),field);
   else
+    eqs:=ImmutableMatrix(field,eqs);
     eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
   fi;
 
@@ -1730,10 +1740,16 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
           if it=fail then
             # re-use the first quotient, helps with repeated subgroups iterator
             if p=r.group then
-              it:=DescSubgroupIterator(r.group:skip:=LogInt(Size(p),2));
+              m:=r.group;
             else
-              it:=DescSubgroupIterator(p:skip:=LogInt(Size(p),2));
+              m:=p;
             fi;
+            # avoid working hard for outer automorphisms
+            e:=Filtered(DerivedSeriesOfGroup(m),
+              # roughly 5 for 1000, 30 for 10^6, 170 for 10^9
+              x->IndexNC(m,x)^4<=Size(m));
+            m:=e[Length(e)];
+            it:=DescSubgroupIterator(m:skip:=LogInt(Size(p),2));
           fi;
 
           wasbold:=false;
