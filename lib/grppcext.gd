@@ -132,7 +132,7 @@ DeclareGlobalFunction( "EXReducePermutationActionPairs" );
 ##  If it is given, then only the compatible pairs in <A>D</A> are computed.
 ##  If a group <A>A</A> of automorphisms of <A>G</A> is given as optional
 ##  first argument, it is used in place of the full automorphism group of
-##  <A>G</A>, avoiding the need to copmpute this automorphism group.
+##  <A>G</A>, avoiding the need to compute this automorphism group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
