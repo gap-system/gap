@@ -2063,7 +2063,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     od;
   od;
 
-  # group relators to make sure its the proper group
+  # group relators to make sure it's the proper group
   for i in RelatorsOfFpGroup(gp) do
     # split in two -- not optimal, want to get minimal offset
     j:=Length(i);
