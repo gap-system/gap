@@ -3510,29 +3510,53 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
   if limit<20 then limit:=1;fi;
   maxer:=function(sub)
   local m,a,b,len,sz,i,j,k,r,tb;
-    #Print("call maxer for ",Size(sub)," |l|=",Length(l)," |process|=",Length(process),"\n");
-    if bound>1 and prime^(Length(AbelianInvariants(sub))-3)>bound then
-      i:=0;
-      repeat
-        m:=BoundedIndexAbelianized(G,sub,bound*prime^i);
-        i:=i+1;
-      until Size(m)<Size(sub);
-      if Size(m)^2<Size(sub) then
-        m:=MaximalSubgroupClassReps(sub:cheap:=false);
-      else
-        # add maxes not containing derived
-        if IsSolvableGroup(sub) then
-          i:=IsomorphismPcGroup(sub);
-          a:=DerivedSubgroup(Image(i));
-          a:=Filtered(MaximalSubgroupClassReps(Image(i)),
-            x->not IsSubset(x,a));
-          a:=List(a,x->PreImage(i,x));
-        else
-          a:=DerivedSubgroup(sub);
-          a:=Filtered(MaximalSubgroupClassReps(sub),
-            x->not IsSubset(x,a));
+    Info(InfoLattice,1,"call maxer for ",Size(sub)," |l|=",Length(l),
+      " |process|=",Length(process));
+    if bound>1 then
+      # nonabelian indices
+      a:=CompositionSeries(sub);
+      m:=1;
+      for i in [2..Length(a)] do
+        if IndexNC(a[i-1],a[i])>m and 
+          not HasAbelianFactorGroup(a[i-1],a[i]) then
+          m:=Maximum(IndexNC(a[i-1],a[i]),m);
         fi;
-        m:=Concatenation([m],a);
+      od;
+      # big (hope simple) bits
+      if m>=10^7 and (not IsPerfectGroup(sub)) 
+        # proper abelian factor
+        and IndexNC(sub,PerfectResiduum(sub)) in [2..bound] 
+        # not all abelian is direct factor
+        and IndexNC(sub,
+          ClosureGroup(PerfectResiduum(sub),RadicalGroup(sub)))>1 then
+        m:=MaximalSubgroupClassReps(
+          ClosureGroup(PerfectResiduum(sub),RadicalGroup(sub)):cheap:=false);
+      elif bound>1 and prime^(Length(AbelianInvariants(sub))-3)>bound then
+        i:=0;
+        repeat
+          m:=BoundedIndexAbelianized(G,sub,bound*prime^i);
+          i:=i+1;
+        until Size(m)<Size(sub);
+        if Size(m)^2<Size(sub) then
+          m:=MaximalSubgroupClassReps(sub:cheap:=false);
+        else
+          # add maxes not containing derived
+          if IsSolvableGroup(sub) then
+            i:=IsomorphismPcGroup(sub);
+            a:=DerivedSubgroup(Image(i));
+            a:=Filtered(MaximalSubgroupClassReps(Image(i)),
+              x->not IsSubset(x,a));
+            a:=List(a,x->PreImage(i,x));
+          else
+            a:=DerivedSubgroup(sub);
+            a:=Filtered(MaximalSubgroupClassReps(sub),
+              x->not IsSubset(x,a));
+          fi;
+          m:=Concatenation([m],a);
+        fi;
+
+      else
+        m:=MaximalSubgroupClassReps(sub:cheap:=false);
       fi;
     else
       m:=MaximalSubgroupClassReps(sub:cheap:=false);
