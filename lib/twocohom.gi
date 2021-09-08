@@ -1023,7 +1023,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     od;
     Add(olen,Length(BasisVectors(eqs)));
     if Length(olen)>3 and 
-      # if twice stayed teh same after increase
+      # if twice stayed the same after increase
       olen[Length(olen)]=olen[Length(olen)-2] and
       olen[Length(olen)]<>olen[Length(olen)-3] then
 
