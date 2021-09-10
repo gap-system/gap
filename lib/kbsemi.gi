@@ -62,7 +62,7 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
         q[i]:=[q[i][2],q[i][1]];
       fi;
     od;
-    return Set(q);
+    return Unique(q);
   end;
 
   # generates the list of all pairs (x,y) 

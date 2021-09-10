@@ -4,16 +4,8 @@ gap> F:=FreeGroup(2);
 gap> mhom:=IsomorphismFpMonoid(F);;
 gap> mon:=Image(mhom);
 <fp monoid on the generators [ f1, f1^-1, f2, f2^-1 ]>
-gap> k:=KnuthBendixRewritingSystem(mon);
-Knuth Bendix Rewriting System for Monoid( [ f1, f1^-1, f2, f2^-1 
- ] ) with rules 
-[ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ], 
-  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ] ]
-gap> k1:=ShallowCopy(k);
-Knuth Bendix Rewriting System for Monoid( [ f1, f1^-1, f2, f2^-1 
- ] ) with rules 
-[ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ], 
-  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ] ]
+gap> k:=KnuthBendixRewritingSystem(mon);;
+gap> k1:=ShallowCopy(k);;
 gap> MakeKnuthBendixRewritingSystemConfluent(k1);
 gap> k = k1;
 true
@@ -61,13 +53,7 @@ gap> IsConfluent(kbrws);
 false
 gap> IsReduced(kbrws);
 true
-gap> kbrws2 := ShallowCopy(kbrws);
-Knuth Bendix Rewriting System for Monoid( [ f1, f1^-1, f2, f2^-1 
- ] ) with rules 
-[ [ f1^2, <identity ...> ], [ f1*f1^-1, <identity ...> ], 
-  [ f1^-1*f1, <identity ...> ], [ f2^2, <identity ...> ], 
-  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ], 
-  [ (f1*f2)^6, <identity ...> ] ]
+gap> kbrws2 := ShallowCopy(kbrws);;
 gap> kbrws = kbrws2;
 true
 gap> IsConfluent(kbrws2);
