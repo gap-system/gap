@@ -946,7 +946,7 @@ function( G, series, str )
         fi;
         H     := Image( hom );
 
-        gensH := Set( GeneratorsOfGroup( H ) );
+        gensH := GeneratorsOfGroup( H );
         gensH := Filtered( gensH, x -> x <> One(H) );
         preiH := List( gensH, x -> PreImagesRepresentative( hom, x ) );
         c     := Length( gensH );
