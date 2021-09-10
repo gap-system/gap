@@ -1515,7 +1515,7 @@ InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
       tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold,
-      mon,ord,mn,melmvec;
+      mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
 
   # function to evaluate product (as integer list) in gens (and their
   # inverses invs) with corresponding action mats
@@ -1549,6 +1549,17 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     return w;
   end;
 
+  # formal inverse of module element
+  formalinverse:=function(w)
+  local l,i;
+    l:=[];
+    for i in Reversed(LetterRepAssocWord(w)) do
+      if IsEvenInt(i) then Add(l,i-1);
+      else Add(l,i+1);fi;
+    od;
+    return AssocWordByLetterRep(FamilyObj(w),l);
+  end;
+
   r:=arg[1];
   z:=arg[2];
   ogens:=GeneratorsOfGroup(r.presentation.group);
@@ -1562,6 +1573,14 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     # will allow for reduced multiplication. Do so before the group, so there is no
     # issue about overwriting variables that might be needed later
     mon:=Image(r.monhom);
+    ofgens:=FreeGeneratorsOfFpMonoid(mon);
+    fffam:=FamilyObj(One(FreeMonoidOfFpMonoid(mon)));
+    frew:=ReducedConfluentRewritingSystem(mon);
+    # generators that get killed. Do not use in RHS
+    killgens:=Filtered(GeneratorsOfMonoid(mon),x->UnderlyingElement(x)<>
+      ReducedForm(frew,UnderlyingElement(x)));
+    killgens:=Union(List(killgens,x->LetterRepAssocWord(UnderlyingElement(x))));
+
     str:=List(GeneratorsOfMonoid(mon),String);
     mn:=Length(str);
     for i in [1..dim] do
@@ -1577,17 +1596,8 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       Add(rels,[gens[i]*gens[i+1],One(f)]);
       Add(rels,[gens[i+1]*gens[i],One(f)]);
     od;
-    # rules with tails
-    for i in [1..Length(r.presentation.monrulpos)] do
-      new:=RelationsOfFpMonoid(mon)[r.presentation.monrulpos[i]];
-      new:=List(new,x->MappedWord(x,FreeGeneratorsOfFpMonoid(mon),gens{[1..mn]}));
-      new[2]:=new[2]*melmvec(z{[(i-1)*dim+1..i*dim]});
-      Add(rels,new);
-    od;
 
-    if r.presentation.killrelators<>[] then Error("TODO killrelators");fi;
-
-    # elementary abelian
+    # module is elementary abelian
     for i in [mn+1,mn+3..Length(str)-1] do
       if prime=2 then
         Add(rels,[gens[i]^2,One(f)]);
@@ -1602,16 +1612,40 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
         Add(rels,[gens[j]*gens[i+1],gens[i+1]*gens[j]]);
       od;
     od;
+
     # module rules
     for i in [1..mn] do
-      for j in [mn+1..Length(str)] do
-        new:=r.module.generators[QuoInt(i+1,2)];
-        if IsEvenInt(i) then new:=new^-1; fi;
-        new:=new[QuoInt(j-mn+1,2)];
-        if IsEvenInt(j) then new:=-new;fi;
-        Add(rels,[gens[j]*gens[i],gens[i]*melmvec(new)]);
-      od;
+      if not i in killgens then
+        for j in [mn+1..Length(str)] do
+          new:=r.module.generators[QuoInt(i+1,2)];
+          if IsEvenInt(i) then new:=new^-1; fi;
+          new:=new[QuoInt(j-mn+1,2)];
+          if IsEvenInt(j) then new:=-new;fi;
+          Add(rels,[gens[j]*gens[i],gens[i]*melmvec(new)]);
+        od;
+      fi;
     od;
+
+    # rules with tails
+    for i in [1..Length(r.presentation.monrulpos)] do
+      new:=RelationsOfFpMonoid(mon)[r.presentation.monrulpos[i]];
+      new:=List(new,x->MappedWord(x,ofgens,gens{[1..mn]}));
+      new[2]:=new[2]*melmvec(z{[(i-1)*dim+1..i*dim]});
+      Add(rels,new);
+    od;
+
+    # Any killed generators -- use just the same word expression
+    if r.presentation.killrelators<>[] then 
+      for i in Filtered(killgens,IsOddInt) do
+        new:=AssocWordByLetterRep(fffam,[i]);
+        new:=[new,ReducedForm(frew,new)];
+        new:=List(new,x->MappedWord(x,
+          ofgens,gens{[1..mn]}));
+        Add(rels,new);
+        RemoveSet(killgens,i);
+      od;
+    fi;
+
     if HasReducedConfluentRewritingSystem(mon) then
       ord:=OrderingOfRewritingSystem(ReducedConfluentRewritingSystem(mon));
       if HasLevelsOfGenerators(ord) then
@@ -1642,10 +1676,26 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
       fi;
     od;
 
+    # temporary build to be able to reduce
     mon:=FactorFreeMonoidByRelations(f,rels);
-    new:=KnuthBendixRewritingSystem(FamilyObj(One(mon)),ord);
-    MakeConfluent(new);  # will add rules to kill inverses, if needed
-    SetReducedConfluentRewritingSystem(mon,new);
+    rws:=KnuthBendixRewritingSystem(FamilyObj(One(mon)),ord);
+
+    # handle inverses that get killed
+    for i in killgens do
+      new:=AssocWordByLetterRep(fffam,[i]);
+      new:=ReducedForm(frew,new); # what is it in the factor?
+      new:=MappedWord(new,ofgens,gens{[1..mn]});
+      # now left multiply with non-inverse generator
+      j:=ReducedForm(rws,gens[i-1]*new); #must be a tail.
+      j:=ReducedForm(rws,formalinverse(j)); # invert
+      Add(rels,[gens[i],new*j]);
+    od;
+
+    mon:=FactorFreeMonoidByRelations(f,rels);
+    rws:=KnuthBendixRewritingSystem(FamilyObj(One(mon)),ord:isconfluent);
+    ReduceRules(rws);
+    MakeConfluent(rws);  # will add rules to kill inverses, if needed
+    SetReducedConfluentRewritingSystem(mon,rws);
   fi;
 
   # now construct the group
