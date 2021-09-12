@@ -57,15 +57,17 @@
 ##  they may be removed when they don't seem to be used any more.
 ##  <P/>
 ##  Information about obsolete names is printed by <Ref Func="Info"/> using the
-##  InfoObsolete Info class. By default InfoObsolete is set to 1. Newly
+##  <Ref InfoClass="InfoObsolete"/> Info class.
+##  By default <Ref InfoClass="InfoObsolete"/> is set to 1. Newly
 ##  obsoleted identifiers should at first be outputted at info level 2. Once they
 ##  have been removed from all packages, they should then be moved to info level
 ##  1, so they are visible to normal users, for at least one major release before
 ##  being removed.
 ##  <P/>
-##  The functions DeclareObsoleteSynonym and DeclareObsoleteSynonymAttr take
+##  The functions <C>DeclareObsoleteSynonym</C> and
+##  <C>DeclareObsoleteSynonymAttr</C> take
 ##  an optional final paremeter, specifying the info level at which the given
-##  obsolete symbol should be reported. It defaults to 1.
+##  obsolete symbol should be reported. It defaults to 2 and 1, respectively.
 ##  <P/>
 ##  The obsolete &GAP; code is collected in two library files,
 ##  <F>lib/obsolete.gd</F> and <F>lib/obsolete.gi</F>.
