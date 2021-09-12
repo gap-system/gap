@@ -716,7 +716,7 @@ InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
 ##  true
 ##  gap> IsAlmostSimpleGroup( SymmetricGroup( 3 ) );
 ##  false
-##  gap> IsAlmostSimpleGroup( SL( 2, 5 ) );            
+##  gap> IsAlmostSimpleGroup( SL( 2, 5 ) );
 ##  false
 ##  ]]></Example>
 ##  </Description>
@@ -728,6 +728,43 @@ InstallTrueMethod( IsGroup and IsNonTrivial, IsAlmostSimpleGroup );
 
 # nonabelian simple groups are almost simple
 InstallTrueMethod( IsAlmostSimpleGroup, IsNonabelianSimpleGroup );
+
+#############################################################################
+##
+#P  IsQuasisimpleGroup( <G> )
+##
+##  <#GAPDoc Label="IsQuasisimpleGroup">
+##  <ManSection>
+##  <Prop Name="IsQuasisimpleGroup" Arg='G'/>
+##
+##  <Description>
+##  A group <A>G</A> is <E>quasisimple</E> if <A>G</A> is perfect
+##  (see <Ref Prop="IsPerfectGroup"/>)
+##  and if <A>G</A><M>/Z(</M><A>G</A><M>)</M> is simple
+##  (see <Ref Prop="IsSimpleGroup"/>), where <M>Z(</M><A>G</A><M>)</M>
+##  is the centre of <A>G</A> (see <Ref Attr="Centre"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsQuasisimpleGroup( AlternatingGroup( 5 ) );
+##  true
+##  gap> IsQuasisimpleGroup( SymmetricGroup( 5 ) );
+##  false
+##  gap> IsQuasisimpleGroup( SL( 2, 5 ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsQuasisimpleGroup", IsGroup );
+InstallTrueMethod( IsGroup and IsNonTrivial, IsQuasisimpleGroup );
+
+# Nonabelian simple groups are quasisimple, quasisimple groups are perfect.
+InstallTrueMethod( IsQuasisimpleGroup, IsNonabelianSimpleGroup );
+InstallTrueMethod( IsPerfectGroup, IsQuasisimpleGroup );
+
+# We can expect that people will try the name with capital s.
+DeclareSynonymAttr( "IsQuasiSimpleGroup", IsQuasisimpleGroup );
 
 #############################################################################
 ##

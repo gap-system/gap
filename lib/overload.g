@@ -233,6 +233,22 @@ InstallMethod( IsAlmostSimple, [ IsOrdinaryTable ],
 
 #############################################################################
 ##
+#O  IsQuasisimple( <obj> )
+##
+##  is `true' if <obj> is a quasisimple group
+##  or a quasisimple character table or ...
+##
+DeclareOperation( "IsQuasisimple", [ IsObject ] );
+
+DeclareSynonym( "IsQuasiSimple", IsQuasisimple );
+
+InstallMethod( IsQuasisimple, [ IsGroup ], IsQuasisimpleGroup );
+InstallMethod( IsQuasisimple, [ IsOrdinaryTable ],
+    IsQuasisimpleCharacterTable );
+
+
+#############################################################################
+##
 #O  IsSolvable( <obj> )
 ##
 ##  is `true' if <obj> is a solvable group or ...

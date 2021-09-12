@@ -1340,6 +1340,17 @@ InstallMethod( IsAlmostSimpleCharacterTable,
 
 #############################################################################
 ##
+#M  IsQuasisimpleCharacterTable( <tbl> )  . . for an ordinary character table
+##
+InstallMethod( IsQuasisimpleCharacterTable,
+    "for an ordinary character table",
+    [ IsOrdinaryTable ],
+    ordtbl -> IsPerfectCharacterTable( ordtbl ) and
+       IsSimpleCharacterTable( ordtbl / ClassPositionsOfCentre( ordtbl ) ) );
+
+
+#############################################################################
+##
 #M  IsSolvableCharacterTable( <tbl> ) . . . . for an ordinary character table
 ##
 InstallMethod( IsSolvableCharacterTable,

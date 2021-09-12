@@ -322,5 +322,12 @@ gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfSupersolvableResiduum( t );
 [ 1, 5, 6 ]
 
+# test another bugfix ('IsSimple' does not imply 'IsPerfect')
+gap> t:= CharacterTable( CyclicGroup( 2 ) );;
+gap> IsSimpleCharacterTable( t );
+true
+gap> IsPerfectCharacterTable( t );
+false
+
 ##
 gap> STOP_TEST( "ctbl.tst" );

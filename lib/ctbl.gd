@@ -1093,6 +1093,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 #P  IsMonomial( <tbl> )
 #P  IsNilpotent( <tbl> )
 #P  IsPerfect( <tbl> )
+#P  IsQuasisimple( <tbl> )
 #P  IsSimple( <tbl> )
 #P  IsSporadicSimple( <tbl> )
 #P  IsSupersolvable( <tbl> )
@@ -1114,6 +1115,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <Prop Name="IsMonomial" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsNilpotent" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsPerfect" Arg='tbl' Label="for a character table"/>
+##  <Prop Name="IsQuasisimple" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsSimple" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsSolvable" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsSporadicSimple" Arg='tbl' Label="for a character table"/>
@@ -1133,37 +1135,40 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <Example><![CDATA[
 ##  gap> tables:= [ CharacterTable( CyclicGroup( 3 ) ),
 ##  >               CharacterTable( SymmetricGroup( 4 ) ),
-##  >               CharacterTable( AlternatingGroup( 5 ) ) ];;
+##  >               CharacterTable( AlternatingGroup( 5 ) ),
+##  >               CharacterTable( SL( 2, 5 ) ) ];;
 ##  gap> List( tables, AbelianInvariants );
-##  [ [ 3 ], [ 2 ], [  ] ]
+##  [ [ 3 ], [ 2 ], [  ], [  ] ]
 ##  gap> List( tables, CommutatorLength );
-##  [ 1, 1, 1 ]
+##  [ 1, 1, 1, 1 ]
 ##  gap> List( tables, Exponent );
-##  [ 3, 12, 30 ]
+##  [ 3, 12, 30, 60 ]
 ##  gap> List( tables, IsAbelian );
-##  [ true, false, false ]
+##  [ true, false, false, false ]
 ##  gap> List( tables, IsAlmostSimple );
-##  [ false, false, true ]
+##  [ false, false, true, false ]
 ##  gap> List( tables, IsCyclic );
-##  [ true, false, false ]
+##  [ true, false, false, false ]
 ##  gap> List( tables, IsFinite );
-##  [ true, true, true ]
+##  [ true, true, true, true,  ]
 ##  gap> List( tables, IsMonomial );
-##  [ true, true, false ]
+##  [ true, true, false, false ]
 ##  gap> List( tables, IsNilpotent );
-##  [ true, false, false ]
+##  [ true, false, false, false ]
 ##  gap> List( tables, IsPerfect );
-##  [ false, false, true ]
+##  [ false, false, true, true ]
+##  gap> List( tables, IsQuasisimple );
+##  [ false, false, true, true ]
 ##  gap> List( tables, IsSimple );
-##  [ true, false, true ]
+##  [ true, false, true, false ]
 ##  gap> List( tables, IsSolvable );
-##  [ true, true, false ]
+##  [ true, true, false, false ]
 ##  gap> List( tables, IsSupersolvable );
-##  [ true, false, false ]
+##  [ true, false, false, false ]
 ##  gap> List( tables, NrConjugacyClasses );
-##  [ 3, 5, 5 ]
+##  [ 3, 5, 5, 9 ]
 ##  gap> List( tables, Size );
-##  [ 3, 24, 60 ]
+##  [ 3, 24, 60, 120 ]
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "C5" ) );
 ##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5" 
 ##   )
@@ -1205,6 +1210,7 @@ DeclareAttributeSuppCT( "Size", IsNearlyCharacterTable, [] );
 #P  IsMonomialCharacterTable( <tbl> )
 #P  IsNilpotentCharacterTable( <tbl> )
 #P  IsPerfectCharacterTable( <tbl> )
+#P  IsQuasisimpleCharacterTable( <tbl> )
 #P  IsSimpleCharacterTable( <tbl> )
 #P  IsSolvableCharacterTable( <tbl> )
 #P  IsSporadicSimpleCharacterTable( <tbl> )
@@ -1216,6 +1222,7 @@ DeclareAttributeSuppCT( "Size", IsNearlyCharacterTable, [] );
 ##  <Prop Name="IsMonomialCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsNilpotentCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsPerfectCharacterTable" Arg='tbl'/>
+##  <Prop Name="IsQuasisimpleCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSimpleCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSolvableCharacterTable" Arg='tbl'/>
 ##  <Prop Name="IsSolubleCharacterTable" Arg='tbl'/>
@@ -1235,6 +1242,8 @@ DeclarePropertySuppCT( "IsAlmostSimpleCharacterTable",
 DeclarePropertySuppCT( "IsMonomialCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsNilpotentCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsPerfectCharacterTable", IsNearlyCharacterTable );
+DeclarePropertySuppCT( "IsQuasisimpleCharacterTable",
+    IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsSimpleCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsSolvableCharacterTable", IsNearlyCharacterTable );
 DeclarePropertySuppCT( "IsSporadicSimpleCharacterTable",
@@ -1253,7 +1262,7 @@ InstallTrueMethod( IsMonomialCharacterTable,
 InstallTrueMethod( IsNilpotentCharacterTable,
     IsOrdinaryTable and IsAbelian );
 InstallTrueMethod( IsPerfectCharacterTable,
-    IsOrdinaryTable and IsSimpleCharacterTable );
+    IsOrdinaryTable and IsQuasisimpleCharacterTable );
 InstallTrueMethod( IsSimpleCharacterTable,
     IsOrdinaryTable and IsSporadicSimpleCharacterTable );
 InstallTrueMethod( IsSolvableCharacterTable,
