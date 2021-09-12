@@ -18,7 +18,7 @@ gap> NrMovedPoints(g);Size(g);
 325
 1018368000
 gap> s:=Stabilizer(g,1);;
-gap> s1:=Complementclasses(s,RadicalGroup(s));;
+gap> s1:=Complementclasses(s,SolvableRadical(s));;
 gap> s1:=s1[1];;Size(s1);
 4080
 gap> n1:= Normalizer( g, s1 );;  Size( n1 );

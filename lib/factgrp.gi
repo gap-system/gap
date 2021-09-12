@@ -1674,7 +1674,7 @@ local proj,h,pool;
   fi;
 
   DoCheapActionImages(G);
-  if HasRadicalGroup(G) and N=RadicalGroup(G) then
+  if HasSolvableRadical(G) and N=SolvableRadical(G) then
     h:=GetNaturalHomomorphismsPool(G,N);
   fi;
 

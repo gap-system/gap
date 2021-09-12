@@ -2039,25 +2039,26 @@ DeclareAttribute( "ComputedAgemos", IsGroup, "mutable" );
 
 #############################################################################
 ##
-#A  RadicalGroup( <G> )
+#A  SolvableRadical( <G> )
 ##
-##  <#GAPDoc Label="RadicalGroup">
+##  <#GAPDoc Label="SolvableRadical">
 ##  <ManSection>
-##  <Attr Name="RadicalGroup" Arg='G'/>
+##  <Attr Name="SolvableRadical" Arg='G'/>
 ##
 ##  <Description>
-##  is the radical of <A>G</A>, i.e., the largest solvable normal subgroup of <A>G</A>.
+##  is the solvable radical of the group <A>G</A>,
+##  i.e., the largest solvable normal subgroup of <A>G</A>.
 ##  <Example><![CDATA[
-##  gap> RadicalGroup(SL(2,5));
+##  gap> rad:= SolvableRadical( SL(2,5) );
 ##  <group of 2x2 matrices of size 2 over GF(5)>
-##  gap> Size(last);
+##  gap> Size( rad );
 ##  2
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "RadicalGroup", IsGroup );
+DeclareAttribute( "SolvableRadical", IsGroup );
 
 
 #############################################################################

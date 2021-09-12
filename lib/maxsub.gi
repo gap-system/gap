@@ -999,7 +999,7 @@ for mm in lmax do mm!.type:="4a";od;
   for i in maxes do
     a2:=PreImage(ff.factorhom,i);
     if d then
-      SetRadicalGroup(a2,PreImage(ff.factorhom,RadicalGroup(i)));
+      SetSolvableRadical(a2,PreImage(ff.factorhom,SolvableRadical(i)));
     fi;
     Add(lmax,a2);
   od;

@@ -1539,16 +1539,15 @@ end );
 
 #############################################################################
 ##
-#M  RadicalGroup()  . . . . . . . . . . . . .  radical of a permutation group
+#M  SolvableRadical( <G> )  . . . . . solvable radical of a permutation group
 ##
 ##  the radical is the maximal solvable normal subgroup
 ##  output of routine: the subgroup radical of workgroup
 ##  reference: Luks-Seress
 ##
-InstallMethod( RadicalGroup,
-    " for a permutation group",
-    true,
-    [ IsPermGroup ], 0,
+InstallMethod( SolvableRadical,
+    "for a permutation group",
+    [ IsPermGroup ],
     function(workgroup)
     local   n,          # degree of workgroup
             G,          # a factor group of workgroup
@@ -1766,7 +1765,7 @@ InstallMethod( RadicalGroup,
     solvable:=SubgroupNC(workgroup,solvable);
     g:=Group(map,());
     SetSize(g,Index(workgroup,solvable));
-    SetRadicalGroup(g,TrivialSubgroup(g));
+    SetSolvableRadical(g,TrivialSubgroup(g));
     map:=GroupHomomorphismByImagesNC(workgroup,g,
                                      GeneratorsOfGroup(workgroup),map);
     SetKernelOfMultiplicativeGeneralMapping(map,solvable);

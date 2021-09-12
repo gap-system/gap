@@ -1629,9 +1629,9 @@ InstallMethod( ComputedOmegas, [ IsGroup ], 0, G -> [  ] );
 
 #############################################################################
 ##
-#M  RadicalGroup( <G> ) . . . . . . . . . . . . . . . . .  radical of a group
+#M  SolvableRadical( <G> ) .  . . . . . . . . . . solvable radical of a group
 ##
-InstallMethod(RadicalGroup,
+InstallMethod( SolvableRadical,
   "factor out Fitting subgroup",
   [IsGroup and IsFinite],
 function(G)
@@ -1642,10 +1642,10 @@ function(G)
   return PreImage(f,RadicalGroup(Image(f)));
 end);
 
-RedispatchOnCondition( RadicalGroup, true, [IsGroup], [IsFinite], 0);
+RedispatchOnCondition( SolvableRadical, true, [IsGroup], [IsFinite], 0);
 
-InstallMethod( RadicalGroup,
-    "solvable group is its own radical",
+InstallMethod( SolvableRadical,
+    "solvable group is its own solvable radical",
     [ IsGroup and IsSolvableGroup ], 100,
     IdFunc );
 

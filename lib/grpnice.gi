@@ -790,9 +790,9 @@ end );
 
 #############################################################################
 ##
-#M  RadicalGroup( <G> ) . . . . . . . . . . . . . . . . .  radical of a group
+#M  SolvableRadical( <G> )  . . . . . . . . . . . solvable radical of a group
 ##
-SubgroupMethodByNiceMonomorphism( RadicalGroup,
+SubgroupMethodByNiceMonomorphism( SolvableRadical,
     [ IsGroup ] );
 
 #############################################################################

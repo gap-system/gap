@@ -2513,10 +2513,10 @@ RadicalSymmAlt:=function(G)
   fi;
 end;
 
-InstallMethod( RadicalGroup, "symmetric", true,
+InstallMethod( SolvableRadical, "symmetric", true,
     [ IsNaturalSymmetricGroup and IsFinite], 0,RadicalSymmAlt);
 
-InstallMethod( RadicalGroup, "alternating", true,
+InstallMethod( SolvableRadical, "alternating", true,
     [ IsNaturalAlternatingGroup and IsFinite], 0,RadicalSymmAlt);
 
 InstallMethod(NormalSubgroups,
