@@ -258,7 +258,7 @@ other elements of the group) can be computed by the operation
 <#Include Label="FrattiniSubgroup">
 <#Include Label="PrefrattiniSubgroup">
 <#Include Label="PerfectResiduum">
-<#Include Label="RadicalGroup">
+<#Include Label="SolvableRadical">
 <#Include Label="Socle">
 <#Include Label="SupersolvableResiduum">
 <#Include Label="PRump">

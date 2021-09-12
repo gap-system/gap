@@ -966,7 +966,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
 	List(GeneratorsOfGroup(G),x->ImagesRepresentative(ff.factorhom,x)));
       b:=Image(hom,ff.radical);
-      SetRadicalGroup(Q,b);
+      SetSolvableRadical(Q,b);
       AddNaturalHomomorphismsPool(Q,b,q);
 
       # Use known maximals for Frattini

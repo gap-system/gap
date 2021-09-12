@@ -330,9 +330,9 @@ end );
 
 #############################################################################
 ##
-#M  RadicalGroup( <G> ) . . . . . . . . . . . . . . using TF method
+#M  SolvableRadical( <G> ) . . . . . . . . . . . . . . using TF method
 ##
-InstallMethod( RadicalGroup, "TF method, use tree",true,
+InstallMethod( SolvableRadical, "TF method, use tree",
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
 function(G)
 local f;
