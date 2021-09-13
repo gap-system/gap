@@ -989,6 +989,15 @@ InstallMethod( IsSingleValued, true,
     function( hom )
     local   sch;
     
+  # force stabilizer chain -- might get CoKernel for free
+  if not HasStabChainMutable(hom) then
+    StabChainMutable(hom);
+  fi;
+
+  if IsBound(hom!.CoKernelOfMultiplicativeGeneralMapping) then
+    return IsTrivial(CoKernelOfMultiplicativeGeneralMapping(hom));
+  fi;
+
     for sch in CoKernelGensIterator( hom )  do
         if sch <> One( sch )  then
             return false;
