@@ -1150,7 +1150,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  gap> List( tables, IsCyclic );
 ##  [ true, false, false, false ]
 ##  gap> List( tables, IsFinite );
-##  [ true, true, true, true,  ]
+##  [ true, true, true, true ]
 ##  gap> List( tables, IsMonomial );
 ##  [ true, true, false, false ]
 ##  gap> List( tables, IsNilpotent );
@@ -1629,8 +1629,8 @@ DeclareAttributeSuppCT( "CharacterParameters", IsNearlyCharacterTable,
 ##  "A5"
 ##  gap> tbl:= CharacterTable( Group( () ) );;
 ##  gap> Identifier( tbl );  Identifier( tbl mod 2 );
-##  "CT8"
-##  "CT8mod2"
+##  "CT9"
+##  "CT9mod2"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
