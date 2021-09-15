@@ -762,20 +762,6 @@ DeclareSynonym( "FirstOp", First );
 ##
 #A  RadicalGroup( <G> )
 ##
-##  <ManSection>
-##  <Attr Name="RadicalGroup" Arg='G'/>
-##
-##  <Description>
-##  is the radical of <A>G</A>, i.e., the largest solvable normal subgroup of <A>G</A>.
-##  <Example><![CDATA[
-##  gap> RadicalGroup(SL(2,5));
-##  <group of 2x2 matrices of size 2 over GF(5)>
-##  gap> Size(last);
-##  2
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##
-##  'RadicalGroup' was documented until version 4.11.1.
+##  'RadicalGroup' was renamed in GAP 4.12.
 ##
 DeclareObsoleteSynonym( "RadicalGroup", "SolvableRadical" );
