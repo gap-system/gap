@@ -17,7 +17,7 @@ InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
 local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
   
-  r:=RadicalGroup(G);
+  r:=SolvableRadical(G);
   if Size(r)=1 then
     hom:=IdentityMapping(G);
   else
@@ -482,7 +482,7 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
   # it seems to be cleaner (and avoids deferring abelian factors) if we
   # factor out the radical first. (Note: The radical method for perm groups
   # stores the nat hom.!)
-  r:=RadicalGroup(G);
+  r:=SolvableRadical(G);
 
   if Size(r)=1 then
     return [[r],false];

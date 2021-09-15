@@ -1639,7 +1639,7 @@ function(G)
   F := FittingSubgroup(G);
   if IsTrivial(F) then return F; fi;
   f := NaturalHomomorphismByNormalSubgroupNC(G,F);
-  return PreImage(f,RadicalGroup(Image(f)));
+  return PreImage(f,SolvableRadical(Image(f)));
 end);
 
 RedispatchOnCondition( SolvableRadical, true, [IsGroup], [IsFinite], 0);
@@ -3169,7 +3169,7 @@ InstallMethod( StructuralSeriesOfGroup, "generic",true,[IsGroup and IsFinite],0,
 function(G)
 local ser,r,nat,f,Pker,d,i,j,u,loc,p;
   ser:=[];
-  r:=RadicalGroup(G);
+  r:=SolvableRadical(G);
   ser:=[G];
   if Size(r)<Size(G) then
     nat:=NaturalHomomorphismByNormalSubgroupNC(G,r);

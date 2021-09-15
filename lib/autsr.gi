@@ -577,7 +577,7 @@ local cs,nr,u,no,un,S,rad,res,ise,uno;
 
   # now build along composition series
 
-  rad:=RadicalGroup(G);
+  rad:=SolvableRadical(G);
   # composition series through perfect residuum seems to work better
   # Possible reason: Simple composition factors arise as inner
   # automorphisms. Moving the perfect residuum (if smaller) in the series,
@@ -1177,7 +1177,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # try to find some further generators
     if Size(AQP)/Size(Aperm)>100 then
-      for j in SpecialPcgs(RadicalGroup(AQP)) do
+      for j in SpecialPcgs(SolvableRadical(AQP)) do
 	cond(j);
       od;
       for j in GeneratorsOfGroup(AQP) do
@@ -1450,7 +1450,7 @@ end);
 BindGlobal("AGSRModuleLayerSeries",function(g)
 local s,l,r,i,j,sy,hom,p,pcgs;
   s:=ShallowCopy(DerivedSeriesOfGroup(g));
-  r:=RadicalGroup(s[Length(s)]);
+  r:=SolvableRadical(s[Length(s)]);
   if Size(r)>1 then # cannot be last, as solvable
     Append(s,DerivedSeriesOfGroup(r));
   fi;

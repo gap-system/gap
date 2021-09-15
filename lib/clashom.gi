@@ -2398,7 +2398,7 @@ local r,	#radical
       ntrihom:=true;
       f:=Image(hom);
       # if lift setup is inherited, f might not be trivial-fitting
-      if Size(RadicalGroup(f))>1 then
+      if Size(SolvableRadical(f))>1 then
         # this is proper recursion
         cl:=ConjugacyClasses(f:onlysizes:=false);
         cl:=List(cl,x->[Representative(x),Centralizer(x)]);

@@ -221,7 +221,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
   od;
 
   # use canonical reps?
-  if Size(RadicalGroup(D.group))>1 then
+  if Size(SolvableRadical(D.group))>1 then
     D.usefitfree:=true;
     D.nocanonize:=[];
     D.faclaimg:=[];

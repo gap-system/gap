@@ -263,7 +263,7 @@ function(g,str,N)
 
   if ValueOption("rewrite")=true then
     # try to go through radical (image) and pick generators split in radical factor
-    rad:=ClosureGroup(RadicalGroup(g),N);
+    rad:=ClosureGroup(SolvableRadical(g),N);
     ser:=[];
     gens:=[];
     if Size(rad)<Size(g) then

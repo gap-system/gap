@@ -867,7 +867,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
       if cnt<10 and Size(cor)>Size(N) and IndexNC(G,u)*2<knowi and
 	ValueOption("inmax")=fail then
-	if IsSubset(RadicalGroup(u),N) and Size(N)<Size(RadicalGroup(u)) then
+	if IsSubset(SolvableRadical(u),N) and Size(N)<Size(SolvableRadical(u)) then
 	  # only affine ones are needed, rest will have wrong kernel
 	  max:=DoMaxesTF(u,["1"]:inmax,cheap);
 	else
@@ -1396,7 +1396,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
     DoCheapActionImages(G);
 
     # find smallish layer actions
-    oo:=ClosureGroup(RadicalGroup(G),N);
+    oo:=ClosureGroup(SolvableRadical(G),N);
     dom:=ChiefSeriesThrough(G,[oo,N]);
     dom:=Filtered(dom,x->IsSubset(oo,x) and IsSubset(x,N));
 

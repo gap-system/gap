@@ -1353,7 +1353,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       D,params,might,bo;
   if IsSolvableGroup(G) then
     return [TrivialSubgroup(G)];
-  elif Size(RadicalGroup(G))>1 and (IsPermGroup(G) or IsMatrixGroup(G)) then
+  elif Size(SolvableRadical(G))>1 and (IsPermGroup(G) or IsMatrixGroup(G)) then
     D:=LatticeViaRadical(G,IsPerfectGroup);
     D:=List(D!.conjugacyClassesSubgroups,Representative);
     if simple then
@@ -2333,7 +2333,7 @@ local n,i,s;
   # deal with large EA socle factor for fitting free
 
   # this could be a bit shorter.
-  if Size(RadicalGroup(G))=1 then
+  if Size(SolvableRadical(G))=1 then
     n:=NormalSubgroups(PerfectResiduum(G));
     n:=Filtered(n,x->IsNormal(G,x));
   else

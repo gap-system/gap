@@ -490,7 +490,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
   # try action on elements, through orbits on classes
   auo:=Group(Filtered(GeneratorsOfGroup(au),x->not IsInnerAutomorphism(x)),One(au));
 
-  if IsPermGroup(g) and Size(RadicalGroup(g))^2>Size(g) then
+  if IsPermGroup(g) and Size(SolvableRadical(g))^2>Size(g) then
     FittingFreeLiftSetup(g);
     preproc:=x->TFCanonicalClassRepresentative(g,[Representative(x)])[1][2];
     postproc:=rep->ConjugacyClass(g,rep);
@@ -718,7 +718,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
 
   Info(InfoMorph,3,Length(o)," class orbits");
 
-  if Size(RadicalGroup(g))=1 and IsNonabelianSimpleGroup(Socle(g)) then
+  if Size(SolvableRadical(g))=1 and IsNonabelianSimpleGroup(Socle(g)) then
     Info(InfoMorph,2,"Try ARG");
     img:=AutomorphismRepresentingGroup(g,GeneratorsOfGroup(au));
     # make a hom from auts to perm group
@@ -2492,10 +2492,10 @@ local A;
       # change.
       A:=AutomorphismGroupSolvableGroup(G);
     fi;
-  elif Size(RadicalGroup(G))=1 and IsPermGroup(G) then
+  elif Size(SolvableRadical(G))=1 and IsPermGroup(G) then
     # essentially a normalizer when suitably embedded 
     A:=AutomorphismGroupFittingFree(G);
-  elif Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) then
+  elif Size(SolvableRadical(G))>1 and CanComputeFittingFree(G) then
     A:=AutomGrpSR(G);
   else
     A:=AutomorphismGroupMorpheus(G);
