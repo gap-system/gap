@@ -54,7 +54,17 @@ jobs:
       - name: "Install Python modules"
         run: pip3 install PyGithub python-dateutil
       - name: "Install latex"
-        run: sudo apt-get install texlive texlive-latex-extra texlive-extra-utils texlive-fonts-extra
+        run: |
+          packages=(
+            texlive-latex-base
+            texlive-latex-recommended
+            texlive-latex-extra
+            texlive-extra-utils
+            texlive-fonts-recommended
+            texlive-fonts-extra
+          )
+          sudo apt-get update
+          sudo apt-get install "${packages[@]}"
       - name: "Configure GAP"
         run: dev/ci-configure-gap.sh
       - name: "Build GAP"
