@@ -1629,7 +1629,7 @@ InstallMethod( ComputedOmegas, [ IsGroup ], 0, G -> [  ] );
 
 #############################################################################
 ##
-#M  SolvableRadical( <G> ) .  . . . . . . . . . . solvable radical of a group
+#M  SolvableRadical( <G> )  . . . . . . . . . . . solvable radical of a group
 ##
 InstallMethod( SolvableRadical,
   "factor out Fitting subgroup",

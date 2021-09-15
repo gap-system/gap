@@ -152,6 +152,7 @@ Here are some further name changes.
 <Index Key="NormedVectors"><C>NormedVectors</C></Index>
 <Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index>
 <Index Key="MutableNullMat"><C>MutableNullMat</C></Index>
+<Index Key="RadicalGroup"><C>RadicalGroup</C></Index>
 <Table Align="l|l">
 <Row>
   <Item><E>OLD</E></Item>
@@ -177,6 +178,10 @@ Here are some further name changes.
 <Row>
   <Item><C>MultRowVector</C></Item>
   <Item><Ref Oper="MultVectorLeft"/></Item>
+</Row>
+<Row>
+  <Item><C>RadicalGroup</C></Item>
+  <Item><Ref Attr="SolvableRadical"/></Item>
 </Row>
 </Table>
 
