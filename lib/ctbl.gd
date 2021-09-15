@@ -2044,7 +2044,7 @@ DeclareAttribute( "ClassPositionsOfFittingSubgroup", IsOrdinaryTable );
 ##  <Attr Name="ClassPositionsOfSolvableRadical" Arg='ordtbl'/>
 ##
 ##  <Description>
-##  corresponds to <Ref Attr="RadicalGroup"/>
+##  corresponds to <Ref Attr="SolvableRadical"/>
 ##  for the group of the ordinary character table <A>ordtbl</A>.
 ##  <P/>
 ##  <Example><![CDATA[

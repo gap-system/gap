@@ -237,11 +237,11 @@ DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
 ##  <fp group of size 4860 on the generators [ F1, F2, F3, m1, m2, m3, m4 ]>
 ##  gap> g1:=Image(IsomorphismPermGroup(g1));
 ##  <permutation group with 7 generators>
-##  gap> Length(ComplementClassesRepresentatives(g1,RadicalGroup(g1)));
+##  gap> Length(ComplementClassesRepresentatives(g1,SolvableRadical(g1)));
 ##  3
 ##  gap> g2:=Image(IsomorphismPermGroup(g2));
 ##  <permutation group with 7 generators>
-##  gap> Length(ComplementClassesRepresentatives(g2,RadicalGroup(g2)));
+##  gap> Length(ComplementClassesRepresentatives(g2,SolvableRadical(g2)));
 ##  0
 ##  ]]></Example>
 ##  </Description>

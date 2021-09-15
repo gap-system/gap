@@ -1603,7 +1603,7 @@ InstallMethod( SolvableRadical,
 	if Length(f)<3 or ForAll(f,i->i[2]=1) then
 	  Info(InfoGroup,1,"solvable kernel size ",f);
 	  # OK, transfer result back
-	  k:=RadicalGroup(Image(hom));
+	  k:=SolvableRadical(Image(hom));
 	  solvable:=PreImage(hom,k);
 	  map:=hom*NaturalHomomorphismByNormalSubgroup(Image(hom),k);
 	  SetKernelOfMultiplicativeGeneralMapping(map,solvable);

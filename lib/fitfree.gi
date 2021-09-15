@@ -203,7 +203,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
   U!.cachedFFS:=[[ffs,r]];
 
   # FittingFreeLiftSetup for U, if correct
-  if Size(RadicalGroup(Image(rest,U)))=1 then
+  if Size(SolvableRadical(Image(rest,U)))=1 then
     if ipcgs=MappingGeneratorsImages(ffs.pcisom)[1] then
       pcisom:=ffs.pcisom;
     else

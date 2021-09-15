@@ -474,7 +474,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
   #TODO use socle of radical factor
 
   uf:=Image(sus.rest);
-  ufr:=RadicalGroup(uf);
+  ufr:=SolvableRadical(uf);
   Info(InfoFitFree,1,"Radsize= ",Size(ufr)," index ",Index(uf,ufr));
 
   uff:=SmallGeneratingSet(uf);

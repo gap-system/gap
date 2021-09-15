@@ -106,7 +106,7 @@ function( G, fampcgs,pcgs,fphom,words,wordgens,wordimgs)
       #z:=Size(Group(wordimgs,()))*Product(RelativeOrders(reps));
       reps:=SubgroupByFittingFreeData( G, ggens, wordimgs,reps);
       #SetSize(reps,z);
-#if IsSubset(reps,RadicalGroup(G)) then Error("radicalA");fi;
+#if IsSubset(reps,SolvableRadical(G)) then Error("radicalA");fi;
       reps!.classsize:=Size(ocr.oneCoboundaries);
       Add(cls,reps);
     od;
@@ -311,7 +311,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
 	  K:=Concatenation(spec{index},modu);
 	  K:=InducedPcgsByGenerators(ff.pcgs,K);
 	  K:=SubgroupByFittingFreeData(G,gensK,mgi[2]{sel},K);
-  #if IsSubset(K,RadicalGroup(G)) then Error("radicalB");fi;
+  #if IsSubset(K,SolvableRadical(G)) then Error("radicalB");fi;
 	  #cl := ConjugacyClassSubgroups( G, K );
 	  #SetSize( cl, p^(Length(pcgsF)-Length(modu)) );
 	  #Add( max, cl );
@@ -336,10 +336,10 @@ local m,f,i;
   i:=HasIsSolvableGroup(G); # remember if the group knew about its solvability
   if IsTrivial(G) then
     return G;
-  elif IsTrivial(RadicalGroup(G)) then
+  elif IsTrivial(SolvableRadical(G)) then
     return TrivialSubgroup(G);
   fi;
-  f:=RadicalGroup(G);
+  f:=SolvableRadical(G);
 
   # computing the radical also determines if the group is solvable; if
   # it is, and if solvability was not known before, redispatch, to give
@@ -842,7 +842,7 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
   od;
 
   ff:=FittingFreeLiftSetup(G);
-  if Size(RadicalGroup(Image(ff.factorhom)))>1 then
+  if Size(SolvableRadical(Image(ff.factorhom)))>1 then
     # we can't use an inherited setup
     q:=Size(G);
     G:=Group(GeneratorsOfGroup(G));
