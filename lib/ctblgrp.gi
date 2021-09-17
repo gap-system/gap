@@ -2056,11 +2056,16 @@ end );
 ##
 #F  DixonSplit(<D>) . .  calculate matrix,split spaces and obtain characters
 ##
-InstallGlobalFunction( DixonSplit, function(D)
-local r,i,j,ch,ra,bsm,
+InstallGlobalFunction( DixonSplit, function(arg)
+local D,r,i,j,ch,ra,bsm,
       gens;
 
-  bsm:=BestSplittingMatrix(D);
+  D:=arg[1];
+  if Length(arg)>1 then
+    bsm:=arg[2];
+  else
+    bsm:=BestSplittingMatrix(D);
+  fi;
   if bsm<>fail then
     SplitStep(D,bsm);
   fi;
