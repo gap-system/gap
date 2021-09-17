@@ -1225,7 +1225,11 @@ local aug,r,sec,t,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
     Add(img,m);
   od;
   aug.primaryImages:=img;
-  sec:=List(sec,x->LinearCombinationPcgs(img,x));
+  if ForAll(img,IsOne) then
+    sec:=List(sec,x->img[1]);
+  else
+    sec:=List(sec,x->LinearCombinationPcgs(img,x));
+  fi;
   aug.secondaryImages:=sec;
 
   m:=List(aug.primaryGeneratorWords,x->ElementOfFpGroup(FamilyObj(One(u)),x));
