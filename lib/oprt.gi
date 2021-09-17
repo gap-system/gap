@@ -1355,19 +1355,21 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
       fi;
       p:=stopat;
       while p<=Length(orb) do
-	img := act( orb[ p ], acts[ i ] );
-	MakeImmutable(img);
-	q:=LookupDictionary(dict,img);
-	if q<=p then
-	  sch := getrep( p ) * gens[ i ] / getrep( q );
-	  if not sch in stb then
-	    stb:=ClosureSubgroupNC(stb,sch);
-	    if Size(G)/Size(stb)=Length(orb) then
-	      p:=Length(orb); #done
-	    fi;
-	  fi;
-	fi;
-	p:=p+1;
+        i:=1;
+        while i<=Length(gens) do
+          img := act( orb[ p ], acts[ i ] );
+          MakeImmutable(img);
+          q:=LookupDictionary(dict,img);
+          sch := getrep( p ) * gens[ i ] / getrep( q );
+          if not sch in stb then
+            stb:=ClosureSubgroupNC(stb,sch);
+            if Size(G)/Size(stb)=Length(orb) then
+              p:=Length(orb);i:=Length(gens); #done
+            fi;
+          fi;
+          i:=i+1;
+        od;
+        p:=p+1;
       od;
       #Error("after");
     fi;
