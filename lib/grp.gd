@@ -1938,9 +1938,9 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Description>
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
-##  gap> g:=SymmetricGroup(4);; NormalSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
-##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
+##  gap> g:=SymmetricGroup(4);;
+##  gap> List( NormalSubgroups(g), StructureDescription );
+##  [ "S4", "A4", "C2 x C2", "1" ]
 ##  gap> g:=AbelianGroup([2,2]);; NormalSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([ f2 ]),
 ##    Group([ f1*f2 ]), Group([ f1 ]), Group([  ]) ]
@@ -1966,9 +1966,9 @@ DeclareAttribute( "NormalSubgroups", IsGroup );
 ##  returns a list of all characteristic subgroups of <A>G</A>, that is
 ##  subgroups that are invariant under all automorphisms.
 ##  <Example><![CDATA[
-##  gap> g:=SymmetricGroup(4);; CharacteristicSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##  gap> g:=SymmetricGroup(4);;
+##  gap> List( CharacteristicSubgroups(g), StructureDescription );
+##  [ "S4", "A4", "C2 x C2", "1" ]
 ##  gap> g:=AbelianGroup([2,2]);; CharacteristicSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([  ]) ]
 ##  ]]></Example>
