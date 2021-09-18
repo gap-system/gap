@@ -548,6 +548,16 @@ InstallMethod( IsAlmostSimpleGroup,
 
 #############################################################################
 ##
+#P  IsQuasisimpleGroup( <G> )
+##
+InstallMethod( IsQuasisimpleGroup,
+    "for a group",
+    [ IsGroup ],
+    G -> IsPerfectGroup( G ) and IsSimpleGroup( G / Centre( G ) ) );
+
+
+#############################################################################
+##
 #M  IsSolvableGroup( <G> )  . . . . . . . . . . . test if a group is solvable
 ##
 ##  By the Feit–Thompson odd order theorem, every group of odd order is

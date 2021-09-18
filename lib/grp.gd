@@ -716,7 +716,7 @@ InstallIsomorphismMaintenance( IsSporadicSimpleGroup, IsGroup, IsGroup );
 ##  true
 ##  gap> IsAlmostSimpleGroup( SymmetricGroup( 3 ) );
 ##  false
-##  gap> IsAlmostSimpleGroup( SL( 2, 5 ) );            
+##  gap> IsAlmostSimpleGroup( SL( 2, 5 ) );
 ##  false
 ##  ]]></Example>
 ##  </Description>
@@ -728,6 +728,43 @@ InstallTrueMethod( IsGroup and IsNonTrivial, IsAlmostSimpleGroup );
 
 # nonabelian simple groups are almost simple
 InstallTrueMethod( IsAlmostSimpleGroup, IsNonabelianSimpleGroup );
+
+#############################################################################
+##
+#P  IsQuasisimpleGroup( <G> )
+##
+##  <#GAPDoc Label="IsQuasisimpleGroup">
+##  <ManSection>
+##  <Prop Name="IsQuasisimpleGroup" Arg='G'/>
+##
+##  <Description>
+##  A group <A>G</A> is <E>quasisimple</E> if <A>G</A> is perfect
+##  (see <Ref Prop="IsPerfectGroup"/>)
+##  and if <A>G</A><M>/Z(</M><A>G</A><M>)</M> is simple
+##  (see <Ref Prop="IsSimpleGroup"/>), where <M>Z(</M><A>G</A><M>)</M>
+##  is the centre of <A>G</A> (see <Ref Attr="Centre"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsQuasisimpleGroup( AlternatingGroup( 5 ) );
+##  true
+##  gap> IsQuasisimpleGroup( SymmetricGroup( 5 ) );
+##  false
+##  gap> IsQuasisimpleGroup( SL( 2, 5 ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsQuasisimpleGroup", IsGroup );
+InstallTrueMethod( IsGroup and IsNonTrivial, IsQuasisimpleGroup );
+
+# Nonabelian simple groups are quasisimple, quasisimple groups are perfect.
+InstallTrueMethod( IsQuasisimpleGroup, IsNonabelianSimpleGroup );
+InstallTrueMethod( IsPerfectGroup, IsQuasisimpleGroup );
+
+# We can expect that people will try the name with capital s.
+DeclareSynonymAttr( "IsQuasiSimpleGroup", IsQuasisimpleGroup );
 
 #############################################################################
 ##
@@ -1901,9 +1938,9 @@ DeclareAttribute( "MinimalNormalSubgroups", IsGroup );
 ##  <Description>
 ##  returns a list of all normal subgroups of <A>G</A>.
 ##  <Example><![CDATA[
-##  gap> g:=SymmetricGroup(4);; NormalSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ),
-##    Group([ (1,4)(2,3), (1,2)(3,4) ]), Group(()) ]
+##  gap> g:=SymmetricGroup(4);;
+##  gap> List( NormalSubgroups(g), StructureDescription );
+##  [ "S4", "A4", "C2 x C2", "1" ]
 ##  gap> g:=AbelianGroup([2,2]);; NormalSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([ f2 ]),
 ##    Group([ f1*f2 ]), Group([ f1 ]), Group([  ]) ]
@@ -1929,9 +1966,9 @@ DeclareAttribute( "NormalSubgroups", IsGroup );
 ##  returns a list of all characteristic subgroups of <A>G</A>, that is
 ##  subgroups that are invariant under all automorphisms.
 ##  <Example><![CDATA[
-##  gap> g:=SymmetricGroup(4);; CharacteristicSubgroups(g);
-##  [ Sym( [ 1 .. 4 ] ), Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
+##  gap> g:=SymmetricGroup(4);;
+##  gap> List( CharacteristicSubgroups(g), StructureDescription );
+##  [ "S4", "A4", "C2 x C2", "1" ]
 ##  gap> g:=AbelianGroup([2,2]);; CharacteristicSubgroups(g);
 ##  [ <pc group of size 4 with 2 generators>, Group([  ]) ]
 ##  ]]></Example>
@@ -3270,8 +3307,8 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##  gap> PCentralSeries(g,2);
 ##  [ <pc group of size 12 with 3 generators>, Group([ y3, y*y3 ]), Group([ y*y3 ]) ]
 ##  gap> g:=SymmetricGroup(4);;
-##  gap> PCentralSeries(g,2);
-##  [ Sym( [ 1 .. 4 ] ), Group([ (1,2,3), (2,3,4) ]) ]
+##  gap> List(PCentralSeries(g,2), StructureDescription);
+##  [ "S4", "A4" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

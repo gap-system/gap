@@ -342,6 +342,7 @@ as they depend on a parameter.
 <#Include Label="IsMonomialGroup">
 <#Include Label="IsSimpleGroup">
 <#Include Label="IsAlmostSimpleGroup">
+<#Include Label="IsQuasisimpleGroup">
 <#Include Label="IsomorphismTypeInfoFiniteSimpleGroup">
 <#Include Label="SimpleGroup">
 <#Include Label="SimpleGroupsIterator">
