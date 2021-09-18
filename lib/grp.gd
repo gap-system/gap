@@ -3306,8 +3306,8 @@ DeclareOperation("CentralizerModulo", [IsGroup,IsGroup,IsObject]);
 ##  gap> PCentralSeries(g,2);
 ##  [ <pc group of size 12 with 3 generators>, Group([ y3, y*y3 ]), Group([ y*y3 ]) ]
 ##  gap> g:=SymmetricGroup(4);;
-##  gap> PCentralSeries(g,2);
-##  [ Sym( [ 1 .. 4 ] ), Group([ (1,2,3), (2,3,4) ]) ]
+##  gap> List(PCentralSeries(g,2), StructureDescription);
+##  [ "S4", "A4" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
