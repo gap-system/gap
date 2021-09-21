@@ -253,7 +253,7 @@ end);
 DeclareGlobalFunction("MatWreathProduct");
 
 InstallGlobalFunction(MatWreathProduct,function(A,B)
-local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range;
+local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
   f:=DefaultFieldOfMatrixGroup(A);
   n:=DimensionOfMatrixGroup(A);
   m:=LargestMovedPoint(B);
@@ -271,7 +271,8 @@ local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range;
     od;
     emb[j]:=Agens;
   od;
-  Agens:=emb[1];
+  orbs := OrbitsDomain(B);
+  Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
 
   Bgens:=List(GeneratorsOfGroup(B),
 	  x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
