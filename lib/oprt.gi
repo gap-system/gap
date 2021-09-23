@@ -1836,8 +1836,9 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
 
   xset := ExternalSet( G, orb, gens, acts, act);
-  if IsMatrix(start) and (act=OnPoints or act=OnRight or act=OnLines) then
-    # act on vectors -- if we have a basis we have a base
+  if IsMatrix(start) and (act=OnPoints or act=OnRight) then
+    # act on vectors -- if we have a basis we have a base for ordinary
+    # action
     p:=RankMat(start);
     if p=Length(start[1]) then
       SetBaseOfGroup( xset, start );
@@ -1853,6 +1854,29 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
 	fi;
       od;
       SetBaseOfGroup( xset, start );
+    fi;
+  elif IsMatrix(start) and act=OnLines then
+    # projective action also needs all-1 vector.
+    img:=1+Zero(start); 
+
+    if img in orb then
+      start:=ShallowCopy(start);
+      p:=RankMat(start);
+      Add(start,img);
+      if p=Length(start[1]) then
+        SetBaseOfGroup( xset, start );
+      elif RankMat(orb{[1..Minimum(Length(orb),200)]})=Length(start[1]) then
+        i:=0;
+        # we know we will be successful
+        while p<Length(start[1]) do
+          i:=i+1;
+          if RankMat(Concatenation(start,[orb[i]]))>p then
+            Add(start,orb[i]);
+            p:=p+1;
+          fi;
+        od;
+        SetBaseOfGroup( xset, start );
+      fi;
     fi;
   fi;
 
