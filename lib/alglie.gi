@@ -2917,7 +2917,7 @@ InstallMethod( RootSystem,
 
         V:= Basis( VectorSpace( F, j, "basis" ), j );
         M:= List( j, x -> Coefficients( V, i*x ) );
-        facs:= Factors( MinimalPolynomial( F, M ) );
+        facs:= Factors( PolynomialRing( F ), MinimalPolynomial( F, M ) );
 
         for l in facs do
           V:= NullspaceMat( Value( l, M ) );
