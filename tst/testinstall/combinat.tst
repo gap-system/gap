@@ -2,7 +2,8 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-#@local i,n,pn1,pn2,it,k,x,s
+#@local n,mset,comb1,comb2,comb3,it,pn1,pn2,s,k,x
+
 gap> START_TEST("combinat.tst");
 
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
@@ -473,7 +474,7 @@ gap> NrRestrictedPartitions( 100, [2,3,5,7,11,13,17], 10 );
 
 #F  IteratorOfPartitions( <n> )
 gap> IteratorOfPartitions(fail);
-Error, <n> must be a positive integer
+Error, <n> must be a nonnegative integer
 gap> for n in [ 0 .. 15 ] do
 >      pn1:= Partitions( n );
 >      pn2:= List( IteratorOfPartitions( n ) );
