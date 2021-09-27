@@ -118,6 +118,18 @@ gap> NrCombinations( [1,2,3,3,4,4,5,5,5,6,6,6,7,7,7,7] );
 gap> NrCombinations( [1,2,3,3,4,4,5,5,5,6,6,6,7,7,7,7,8,8,8,8], 8 );
 1558
 
+#F  IteratorOfCombinations( <mset>[, <k>] )
+#F  EnumeratorOfCombinations( <mset> )
+gap> for n in [ 0 .. 10 ] do
+>      mset:= Union( [ 1 .. n ], [ 1 .. n ] );
+>      comb1:= Combinations( mset );
+>      comb2:= List( IteratorOfCombinations( mset ) );
+>      comb3:= EnumeratorOfCombinations( mset );
+>      if Length( Set( [ comb1, comb2, comb3 ], SortedList ) ) <> 1 then
+>        Error( "different elements" );
+>      fi;
+>    od;
+
 #F  Arrangements( <mset> )  . . . . set of ordered combinations of a multiset
 gap> Arrangements( [] );
 [ [  ] ]
@@ -462,7 +474,7 @@ gap> NrRestrictedPartitions( 100, [2,3,5,7,11,13,17], 10 );
 #F  IteratorOfPartitions( <n> )
 gap> IteratorOfPartitions(fail);
 Error, <n> must be a positive integer
-gap> for n in [ 1 .. 15 ] do
+gap> for n in [ 0 .. 15 ] do
 >      pn1:= Partitions( n );
 >      pn2:= List( IteratorOfPartitions( n ) );
 >      if Length(pn1) <> Length(pn2) then

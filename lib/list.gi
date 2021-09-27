@@ -777,7 +777,6 @@ InstallGlobalFunction( IteratorList, function ( list )
 
     iter := rec(
                 list := list,
-#T call `Immutable'?
                 pos  := 0,
                 len := Length(list),
                 IsDoneIterator := IsDoneIterator_List,

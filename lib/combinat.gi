@@ -363,8 +363,10 @@ InstallGlobalFunction(IteratorOfCombinations,  function(mset, arg...)
                                          IteratorOfCombinations(mset, k)));
   fi;
   k := arg[1];
-  if k > Length(mset) then
+  if k > len then
     return IteratorList([]);
+  elif len = 0 then
+    return TrivialIterator( [] );
   fi;
   c := Collected(mset);
   max := List(c, a-> a[2]);
@@ -2418,8 +2420,10 @@ BindGlobal( "ShallowCopy_Partitions",
     iter -> rec( n:= iter!.n, next:= ShallowCopy( iter!.next ) ) );
 
 InstallGlobalFunction( "IteratorOfPartitions", function( n )
-    if not IsPosInt( n ) then
-      Error( "<n> must be a positive integer" );
+    if n = 0 then
+      return TrivialIterator( [] );
+    elif not IsPosInt( n ) then
+      Error( "<n> must be a nonnegative integer" );
     fi;
     return IteratorByFunctions( rec(
              IsDoneIterator := IsDoneIterator_Partitions,
