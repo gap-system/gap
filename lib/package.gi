@@ -2517,7 +2517,7 @@ InstallGlobalFunction( SuggestUpgrades, function( suggestedversions )
     RemoveSet( suggestedversions, entry );
 
     # Deal with present packages which are not distributed.
-    inform := Difference(NamesOfComponents(GAPInfo.PackagesInfo),
+    inform := Difference(RecNames(GAPInfo.PackagesInfo),
               List(suggestedversions, x-> LowercaseString(x[1])));
     if not IsEmpty( inform ) then
       PrintTo(out,  "#I  The following GAP packages are present but not ",
