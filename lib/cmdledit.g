@@ -950,26 +950,21 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
         i := i-1;
       od;
       cmps := SplitString(l[3]{[i+1..pos]},"","!.");
+      r := fail;
       if Length(cmps) > 0 and cmps[1] in idbnd then
         r := ValueGlobal(cmps[1]);
-        if not (IsRecord(r) or IsComponentObjectRep(r)) then
-          r := fail;
-        else
-          for j in [2..Length(cmps)] do
-            if IsBound(r!.(cmps[j])) then
-              r := r!.(cmps[j]);
-              if IsRecord(r) or IsComponentObjectRep(r) then
-                continue;
-              fi;
-            fi;
+        for j in [2..Length(cmps)] do
+          if IsRecord(r) and IsBound(r.(cmps[j])) then
+            r := r.(cmps[j]);
+          elif IsComponentObjectRep(r) and IsBound(r!.(cmps[j])) then
+            r := r!.(cmps[j]);
+          else
             r := fail;
             break;
-          od;
-        fi;
-      else
-        r := fail;
+          fi;
+        od;
       fi;
-      if r <> fail then
+      if IsRecord(r) or IsComponentObjectRep(r) then
         cf.tabrec := r;
       fi;
     fi;
@@ -977,7 +972,11 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   # now produce the searchlist
   if IsBound(cf.tabrec) then
     # the first two <TAB> hits try existing component names only first
-    searchlist := ShallowCopy(NamesOfComponents(cf.tabrec));
+    if IsRecord(cf.tabrec) then
+      searchlist := ShallowCopy(RecNames(cf.tabrec));
+    else
+      searchlist := ShallowCopy(NamesOfComponents(cf.tabrec));
+    fi;
     if cf.tabcount > 2 then
       Append(searchlist, ALL_RNAMES());
     fi;

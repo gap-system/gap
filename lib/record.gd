@@ -173,7 +173,7 @@ DeclareAttribute( "RecNames", IsRecord );
 ##  <Ref Func="NamesOfComponents"/> returns a list of strings,
 ##  which are the names of components currently bound in <A>comobj</A>.
 ##  <P/>
-##  For a record <A>comobj</A>,
+##  For a record <A>comobj</A> in internal representation,
 ##  <Ref Func="NamesOfComponents"/> returns the result of
 ##  <Ref Attr="RecNames"/>.
 ##  </Description>

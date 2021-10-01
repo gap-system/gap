@@ -141,7 +141,7 @@ BindGlobal( "ColorPrompt", function(arg)
          PrePrompt := function() end
        );
   if Length(arg) > 1 and IsRecord(arg[2]) then
-    for a in NamesOfComponents(arg[2]) do
+    for a in RecNames(arg[2]) do
       r.(a) := arg[2].(a);
     od;
   fi;
