@@ -1,7 +1,7 @@
 #
 # Tests for the "general" group constructors: GL, GO, GU, GammaL
 #
-#@local G, H, d, q, S, grps
+#@local G, H, d, q, S, grps, gens, w, form, g
 
 gap> START_TEST("classic-G.tst");
 
@@ -195,6 +195,21 @@ Error, no 1st choice method found for `Omega' on 3 arguments
 #
 gap> Omega(2,2);
 Error, sign <e> = 0 but dimension <d> is even
+
+#
+gap> G := Omega(1,4,3);;
+gap> gens := GeneratorsOfGroup(G);;
+gap> form := G!.InvariantBilinearForm.matrix;;
+gap> SpinorNorm(form,gens[1]) = One(GF(3));
+true
+gap> SpinorNorm(form,gens[2]) = One(GF(3));
+true
+gap> w := PrimitiveElement(GF(3));;
+gap> g := IdentityMat(4,GF(3));;
+gap> g[1,1] := w^3;;
+gap> g[4,4] := w^(-3);;
+gap> SpinorNorm(form,g) = One(GF(3));
+false
 
 # Membership tests in GL, SL, GO, SO, GU, SU, Sp can be delegated
 # to the tests of the stored respected forms and therefore are cheap.

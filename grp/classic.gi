@@ -1915,6 +1915,102 @@ InstallMethod( Omega,
 InstallMethod( Omega,
     [ IsFunction, IsInt, IsPosInt, IsField and IsFinite ],
     { filt, e, d, R } -> OmegaCons( filt, e, d, Size( R ) ) );
+    
+    
+#############################################################################
+##
+#F  WallForm( <form>, <m> ) . . . . . . . . . . . . . compute the wall of <m>
+##
+# Computes the Wall Form of a matrix. The defintition can be found in
+# [Taylor, page 163].
+BindGlobal( "WallForm", function( form, m )
+    local id,  w,  b,  p,  i,  x,  j;
+
+    # first argument should really be something useful
+    id := One( m );
+
+    # compute a base for Image(id-m), use the most stupid algorithm
+    w := id - m;
+    b := [];
+    p := [];
+    for i  in [ 1 .. Length(w) ]  do
+        if Length(b) = 0  then
+            if w[i] <> 0*w[i]  then
+                Add( b, w[i] );
+                Add( p, i );
+            fi;
+        elif RankMat(b) <> RankMat(Concatenation(b,[w[i]]))  then
+            Add( b, w[i] );
+            Add( p, i );
+        fi;
+    od;
+
+    # compute the form
+    x := List( b, x -> [] );
+    for i  in [ 1 .. Length(b) ]  do
+        for j  in [ 1 .. Length(b) ]  do
+            x[i][j] := id[p[i]] * form * b[j];
+        od;
+    od;
+
+    # and return
+    return rec( base := b, pos := p, form := x );
+
+end );
+
+
+#############################################################################
+##
+#F  IsSquare( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
+##   in <fld>
+##
+# Input: Field fld, e element of fld
+# Output: true if e is a square element in fld. Otherwise false.
+BindGlobal( "IsSquare", function( fld, e )
+    local char, q;
+    
+    char := Characteristic(fld);
+    # If the characteristic of fld is equal to 2, we know that every element is a
+    # sqare. Hence, we can return true.
+    if char = 2 then
+        return true;
+    fi;
+    q := Size(fld);
+    
+    # If the characteristic of fld is not 2, we know that there are exactly
+    # (q+1)/2 elements which are a square (Huppert LA, Theorem 2.5.4). Now observe
+    # that for a square element e we have that e^((q-1)/2) = 1. And, thus, the
+    # polynomial X^((q-1)/2) - 1 has already (q-1)/2 different roots (every square
+    # except 0). Hence, for a non-square element e' we have that (e')^((q-1)/2) <> 1
+    # which proves the lines below.
+    if e^((q-1)/2) = One(fld) then
+        return true;
+    else
+        return false;
+    fi;
+    
+end );
+
+
+#############################################################################
+##
+#F  SpinorNorm( <form>, <m> ) . . . . . . . .  compute the spinor norm of <m>
+##
+# Output: 1 if the discriminant of the Wall form of <m> is (F^*)^2.
+#          Otherwise -1.
+# The defintition can be found in [Taylor, page 163].
+BindGlobal( "SpinorNorm", function( form, m )
+    local one;
+    one := One(m[1][1]);
+    if IsOne(m) then return one; fi;
+    
+    if IsSquare(FieldOfMatrixList([m]), DeterminantMat( WallForm(form,m).form )) then
+        return one;
+    else
+        return -1 * one;
+    fi;
+end );
+
 
 
 #############################################################################
