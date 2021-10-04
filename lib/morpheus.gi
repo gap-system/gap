@@ -2674,6 +2674,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
     p:=CallFuncList(ValueGlobal("AtlasProgram"),[d.tomName,1,"find"]);
     if p<>fail then
+      Info(InfoMorph,1,"Isomorphism simple: Atlas");
       a:=CallFuncList(ValueGlobal("ResultOfBBoxProgram"),[p.program,g]);
       b:=CallFuncList(ValueGlobal("ResultOfBBoxProgram"),[p.program,h]);
       iso:=GroupHomomorphismByImagesNC(g,h,a,b);
@@ -2687,6 +2688,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
   if IsPackageMarkedForLoading("ctbllib","")=true then 
     c:=CharacterTable(d.tomName);
     if c<>fail then
+      Info(InfoMorph,1,"Isomorphism simple: ctbl");
       o:=OrdersClassRepresentatives(c);
       s:=SizesConjugacyClasses(c);
       # order two, unique class order, smallest
@@ -2732,6 +2734,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     fi;
   fi;
   if gens=fail then
+    Info(InfoMorph,1,"Isomorphism simple: ad-hoc");
     # not found by table or other -- try a 2/something ad-hoc
     rt:=[2,4..Size(g)];
     gens:=[findElm(g,2,fail,rt)];
@@ -2775,6 +2778,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
 
   # now try at most 10 times for a pair as given
   for cnt in [1..4*LogInt(Size(g),10)] do
+    Info(InfoMorph,1,"Try pair ",cnt);
     a:=findElm(h,2,z,rt);
     c:=0;
     repeat

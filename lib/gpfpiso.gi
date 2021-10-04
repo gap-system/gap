@@ -71,7 +71,7 @@ InstallOtherMethod( IsomorphismFpGroup,"for nonabelian simple permutation groups
   true, [IsPermGroup and IsNonabelianSimpleGroup,IsString],0,
 function(G,str)
 local l,iso,fp,stbc,gens;
-  # use the perfect groups library
+  # use the perfect groups library (as far as hand-created)
   PerfGrpLoad(Size(G));
   if Size(G)<10^6 and IsRecord(PERFRec) and
      ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true and
@@ -1264,9 +1264,9 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       dept:=List(dept,x->Position(diff,x));
     fi;
 
-    if AssertionLevel()>1 and ForAny(rules,x->x[2]<>reduce(x[2])) then
-      Error("irreduced right");
-    fi;
+#    if AssertionLevel()>1 and ForAny(rules,x->x[2]<>reduce(x[2])) then
+#      Error("irreduced right");
+#    fi;
 
     # inverses are true inverses, also for extension
     for i in [1..Length(gens)] do

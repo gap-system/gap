@@ -1004,6 +1004,8 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
       shortname:=Concatenation("S4(",String(id.parameter[2]),")"));
   fi;
 
+  # fix 
+
   if IsBound(id.parameter) then
     par:=id.parameter;
     if IsList(par) then
