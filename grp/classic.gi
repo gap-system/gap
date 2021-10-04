@@ -1919,21 +1919,24 @@ InstallMethod( Omega,
 
 #############################################################################
 ##
-#F  WallForm( <form>, <m> ) . . . . . . . . . . . . . compute the wall of <m>
+#F  WallForm( <form>, <m>, <fld> ) . . . . . . . . . . . compute the wall of <m>
 ##
+# Input: <m> is an element of the orthogonal group which is given by the form <form>,
+#        <fld> is the finite field of the orthogonal group (in which <m> is defined)
+# Output: The Wall Form of <m> correpsponding to <form>
 # Computes the Wall Form of a matrix. The definition can be found in
 # [Taylor, page 163].
 BindGlobal( "WallForm", function( form, m, fld )
     local id,  w,  b,  p,  i,  x,  j, d;
 
-    # first argument should really be something useful
     id := One( m );
 
-    # compute a base for Image(id-m), use the most stupid algorithm
+    # compute a base for Image(id-m) which is a subset of the rows of (id - m)
+    # We also store the index of the rows (corresponding to w) in p
     w := id - m;
     b := [];
     p := [];
-    for i  in [ 1 .. Length(w) ]  do
+    for i in [ 1 .. Length(w) ]  do
         if Length(b) = 0  then
             if w[i] <> 0*w[i]  then
                 Add( b, w[i] );
@@ -1962,8 +1965,8 @@ end );
 
 #############################################################################
 ##
-#F  IsSquareWithoutZero( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
-##   in <fld>
+#F  IsSquareWithoutZero( fld, e) . . . . . . . . . . . Tests whether <e> (not zero) is a
+##   square element in <fld>
 ##
 # Input: Finite field fld, e element of fld with e <> 0
 # Output: true if e is a square element in fld. Otherwise false.
@@ -2009,10 +2012,12 @@ end );
 
 #############################################################################
 ##
-#F  SpinorNorm( <form>, <m> ) . . . . . . . .  compute the spinor norm of <m>
+#F  SpinorNorm( <form>, <m>, <fld> ) . . . . . . . .  compute the spinor norm of <m>
 ##
-# Output: 1 if the discriminant of the Wall form of <m> is (F^*)^2.
-#          Otherwise -1.
+# Input: <m> is an element of the orthogonal group which is given by the form <form>,
+#        <fld> is the finite field of the orthogonal group (in which <m> is defined)
+# Output: One(fld) if the discriminant of the Wall form of <m> is (F^*)^2.
+#          Otherwise -1 * One(fld).
 # The definition can be found in [Taylor, page 163].
 BindGlobal( "SpinorNorm", function( form, m, fld )
     local one;
