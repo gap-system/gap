@@ -1915,16 +1915,16 @@ InstallMethod( Omega,
 InstallMethod( Omega,
     [ IsFunction, IsInt, IsPosInt, IsField and IsFinite ],
     { filt, e, d, R } -> OmegaCons( filt, e, d, Size( R ) ) );
-    
-    
+
+
 #############################################################################
 ##
 #F  WallForm( <form>, <m> ) . . . . . . . . . . . . . compute the wall of <m>
 ##
 # Computes the Wall Form of a matrix. The definition can be found in
 # [Taylor, page 163].
-BindGlobal( "WallForm", function( form, m )
-    local id,  w,  b,  p,  i,  x,  j;
+BindGlobal( "WallForm", function( form, m, fld )
+    local id,  w,  b,  p,  i,  x,  j, d;
 
     # first argument should really be something useful
     id := One( m );
@@ -1946,9 +1946,10 @@ BindGlobal( "WallForm", function( form, m )
     od;
 
     # compute the form
-    x := List( b, x -> [] );
-    for i  in [ 1 .. Length(b) ]  do
-        for j  in [ 1 .. Length(b) ]  do
+    d := Length(b);
+    x := NullMat(d,d,fld);
+    for i  in [ 1 .. d ]  do
+        for j  in [ 1 .. d ]  do
             x[i,j] := form[p[i]] * b[j];
         od;
     od;
@@ -1964,7 +1965,7 @@ end );
 #F  IsSquareWithoutZero( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
 ##   in <fld>
 ##
-# Input: Field fld, e element of fld
+# Input: Finite field fld, e element of fld with e <> 0
 # Output: true if e is a square element in fld. Otherwise false.
 BindGlobal( "IsSquareWithoutZero", function( fld, e )
     local char, q;
@@ -1993,7 +1994,7 @@ end );
 #F  IsSquare( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
 ##   in <fld>
 ##
-# Input: Field fld, e element of fld
+# Input: Finite field fld, e element of fld
 # Output: true if e is a square element in fld. Otherwise false.
 BindGlobal( "IsSquare", function( fld, e )
     
@@ -2013,12 +2014,12 @@ end );
 # Output: 1 if the discriminant of the Wall form of <m> is (F^*)^2.
 #          Otherwise -1.
 # The definition can be found in [Taylor, page 163].
-BindGlobal( "SpinorNorm", function( form, m )
+BindGlobal( "SpinorNorm", function( form, m, fld )
     local one;
     one := OneOfBaseDomain(m);
     if IsOne(m) then return one; fi;
     
-    if IsSquare(FieldOfMatrixList([m]), DeterminantMat( WallForm(form,m).form )) then
+    if IsSquareWithoutZero(fld, DeterminantMat( WallForm(form,m,fld).form )) then
         return one;
     else
         return -1 * one;
