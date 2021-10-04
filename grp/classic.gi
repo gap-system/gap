@@ -1921,7 +1921,7 @@ InstallMethod( Omega,
 ##
 #F  WallForm( <form>, <m> ) . . . . . . . . . . . . . compute the wall of <m>
 ##
-# Computes the Wall Form of a matrix. The defintition can be found in
+# Computes the Wall Form of a matrix. The definition can be found in
 # [Taylor, page 163].
 BindGlobal( "WallForm", function( form, m )
     local id,  w,  b,  p,  i,  x,  j;
@@ -1949,7 +1949,7 @@ BindGlobal( "WallForm", function( form, m )
     x := List( b, x -> [] );
     for i  in [ 1 .. Length(b) ]  do
         for j  in [ 1 .. Length(b) ]  do
-            x[i][j] := id[p[i]] * form * b[j];
+            x[i,j] := form[p[i]] * b[j];
         od;
     od;
 
@@ -1967,11 +1967,29 @@ end );
 # Input: Field fld, e element of fld
 # Output: true if e is a square element in fld. Otherwise false.
 BindGlobal( "IsSquare", function( fld, e )
+    
+    if IsZero(e) then
+        return true;
+    else
+        return IsSquareWithoutZero(fld,e);
+    fi;
+    
+end );
+
+
+#############################################################################
+##
+#F  IsSquareWithoutZero( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
+##   in <fld>
+##
+# Input: Field fld, e element of fld
+# Output: true if e is a square element in fld. Otherwise false.
+BindGlobal( "IsSquareWithoutZero", function( fld, e )
     local char, q;
     
     char := Characteristic(fld);
     # If the characteristic of fld is equal to 2, we know that every element is a
-    # sqare. Hence, we can return true.
+    # square. Hence, we can return true.
     if char = 2 then
         return true;
     fi;
@@ -1982,12 +2000,8 @@ BindGlobal( "IsSquare", function( fld, e )
     # that for a square element e we have that e^((q-1)/2) = 1. And, thus, the
     # polynomial X^((q-1)/2) - 1 has already (q-1)/2 different roots (every square
     # except 0). Hence, for a non-square element e' we have that (e')^((q-1)/2) <> 1
-    # which proves the lines below.
-    if e^((q-1)/2) = One(fld) then
-        return true;
-    else
-        return false;
-    fi;
+    # which proves the line below.
+    return IsOne(e^((q-1)/2));
     
 end );
 
@@ -1998,10 +2012,10 @@ end );
 ##
 # Output: 1 if the discriminant of the Wall form of <m> is (F^*)^2.
 #          Otherwise -1.
-# The defintition can be found in [Taylor, page 163].
+# The definition can be found in [Taylor, page 163].
 BindGlobal( "SpinorNorm", function( form, m )
     local one;
-    one := One(m[1][1]);
+    one := OneOfBaseDomain(m);
     if IsOne(m) then return one; fi;
     
     if IsSquare(FieldOfMatrixList([m]), DeterminantMat( WallForm(form,m).form )) then
