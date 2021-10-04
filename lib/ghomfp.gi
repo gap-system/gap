@@ -485,6 +485,7 @@ local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;
     gi:=ImagesRepresentative(beta,g);
     l:=[];
     for i in [1..d] do
+      Info(InfoFpGroup,3,"KuK coset ",i," @",g);
       l[i]:=ImagesRepresentative(pemb,
                        ImagesRepresentative(alpha,r[i]*g/r[i^gi]));
     od;
