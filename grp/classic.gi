@@ -1961,24 +1961,6 @@ end );
 
 #############################################################################
 ##
-#F  IsSquare( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
-##   in <fld>
-##
-# Input: Field fld, e element of fld
-# Output: true if e is a square element in fld. Otherwise false.
-BindGlobal( "IsSquare", function( fld, e )
-    
-    if IsZero(e) then
-        return true;
-    else
-        return IsSquareWithoutZero(fld,e);
-    fi;
-    
-end );
-
-
-#############################################################################
-##
 #F  IsSquareWithoutZero( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
 ##   in <fld>
 ##
@@ -2002,6 +1984,24 @@ BindGlobal( "IsSquareWithoutZero", function( fld, e )
     # except 0). Hence, for a non-square element e' we have that (e')^((q-1)/2) <> 1
     # which proves the line below.
     return IsOne(e^((q-1)/2));
+    
+end );
+
+
+#############################################################################
+##
+#F  IsSquare( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
+##   in <fld>
+##
+# Input: Field fld, e element of fld
+# Output: true if e is a square element in fld. Otherwise false.
+BindGlobal( "IsSquare", function( fld, e )
+    
+    if IsZero(e) then
+        return true;
+    else
+        return IsSquareWithoutZero(fld,e);
+    fi;
     
 end );
 
