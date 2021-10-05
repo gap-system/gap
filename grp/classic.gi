@@ -1965,12 +1965,12 @@ end );
 
 #############################################################################
 ##
-#F  IsSquareWithoutZero( fld, e) . . . . . . . . . . . Tests whether <e> (not zero) is a
+#F  IsSquareWithoutZeroFFE( fld, e) . . . . . . . . . . . Tests whether <e> (not zero) is a
 ##   square element in <fld>
 ##
 # Input: Finite field fld, e element of fld with e <> 0
 # Output: true if e is a square element in fld. Otherwise false.
-BindGlobal( "IsSquareWithoutZero", function( fld, e )
+BindGlobal( "IsSquareWithoutZeroFFE", function( fld, e )
     local char, q;
     
     char := Characteristic(fld);
@@ -1994,17 +1994,17 @@ end );
 
 #############################################################################
 ##
-#F  IsSquare( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
+#F  IsSquareFFE( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
 ##   in <fld>
 ##
 # Input: Finite field fld, e element of fld
 # Output: true if e is a square element in fld. Otherwise false.
-BindGlobal( "IsSquare", function( fld, e )
+BindGlobal( "IsSquareFFE", function( fld, e )
     
     if IsZero(e) then
         return true;
     else
-        return IsSquareWithoutZero(fld,e);
+        return IsSquareWithoutZeroFFE(fld,e);
     fi;
     
 end );
@@ -2024,7 +2024,7 @@ BindGlobal( "SpinorNorm", function( form, m, fld )
     one := OneOfBaseDomain(m);
     if IsOne(m) then return one; fi;
     
-    if IsSquareWithoutZero(fld, DeterminantMat( WallForm(form,m,fld).form )) then
+    if IsSquareWithoutZeroFFE(fld, DeterminantMat( WallForm(form,m,fld).form )) then
         return one;
     else
         return -1 * one;
