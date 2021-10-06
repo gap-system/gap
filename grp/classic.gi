@@ -1919,15 +1919,14 @@ InstallMethod( Omega,
 
 #############################################################################
 ##
-#F  WallForm( <form>, <m>, <fld> ) . . . . . . . . . . . compute the wall of <m>
+#F  WallForm( <form>, <m>, <fld> ) . . .  compute Wall form of <m> wrt <form>
 ##
-# Input: <m> is an element of the orthogonal group which is given by the form <form>,
-#        <fld> is the finite field of the orthogonal group (in which <m> is defined)
-# Output: The Wall Form of <m> correpsponding to <form>
-# Computes the Wall Form of a matrix. The definition can be found in
-# [Taylor, page 163].
+##  Return the Wall form of <m>, where <m> is a matrix over the finite field
+##  <fld> which is orthogonal with respect to the bilinear form <form>, also
+##  given as a matrix.
+##  For the definition of Wall forms, see [Taylor, page 163].
 BindGlobal( "WallForm", function( form, m, fld )
-    local id,  w,  b,  p,  i,  x,  j, d;
+    local id,  w,  b,  p,  i,  x,  j, d, rank;
 
     id := One( m );
 
@@ -1936,15 +1935,15 @@ BindGlobal( "WallForm", function( form, m, fld )
     w := id - m;
     b := [];
     p := [];
+    rank := 0;
     for i in [ 1 .. Length(w) ]  do
-        if Length(b) = 0  then
-            if w[i] <> 0*w[i]  then
-                Add( b, w[i] );
-                Add( p, i );
-            fi;
-        elif RankMat(b) <> RankMat(Concatenation(b,[w[i]]))  then
-            Add( b, w[i] );
+        # add a new row and see if that increases the rank
+        Add( b, w[i] );
+        if RankMat(b) > rank then
             Add( p, i );
+            rank := rank + 1;
+        else
+            Remove( b ); # rank was not increased, so remove the added row again
         fi;
     od;
 
@@ -1965,12 +1964,12 @@ end );
 
 #############################################################################
 ##
-#F  IsSquareWithoutZeroFFE( fld, e) . . . . . . . . . . . Tests whether <e> (not zero) is a
+#F  IsNonZeroSquareFFE( fld, e) . . . . . Tests whether <e> (not zero) is a
 ##   square element in <fld>
 ##
-# Input: Finite field fld, e element of fld with e <> 0
-# Output: true if e is a square element in fld. Otherwise false.
-BindGlobal( "IsSquareWithoutZeroFFE", function( fld, e )
+## Input: Finite field fld, e element of fld with e <> 0
+## Output: true if e is a square element in fld. Otherwise false.
+BindGlobal( "IsNonZeroSquareFFE", function( fld, e )
     local char, q;
     
     char := Characteristic(fld);
@@ -2004,7 +2003,7 @@ BindGlobal( "IsSquareFFE", function( fld, e )
     if IsZero(e) then
         return true;
     else
-        return IsSquareWithoutZeroFFE(fld,e);
+        return IsNonZeroSquareFFE(fld,e);
     fi;
     
 end );
@@ -2012,19 +2011,19 @@ end );
 
 #############################################################################
 ##
-#F  SpinorNorm( <form>, <m>, <fld> ) . . . . . . . .  compute the spinor norm of <m>
+#F  SpinorNorm( <form>, <m>, <fld> ) . . . . .  compute the spinor norm of <m>
 ##
-# Input: <m> is an element of the orthogonal group which is given by the form <form>,
-#        <fld> is the finite field of the orthogonal group (in which <m> is defined)
-# Output: One(fld) if the discriminant of the Wall form of <m> is (F^*)^2.
-#          Otherwise -1 * One(fld).
-# The definition can be found in [Taylor, page 163].
+## Input: <m> is an element of the orthogonal group which is given by the form <form>,
+##        <fld> is the finite field of the orthogonal group (in which <m> is defined)
+## Output: One(fld) if the discriminant of the Wall form of <m> is (F^*)^2.
+##          Otherwise -1 * One(fld).
+## The definition can be found in [Taylor, page 163].
 BindGlobal( "SpinorNorm", function( form, m, fld )
     local one;
     one := OneOfBaseDomain(m);
     if IsOne(m) then return one; fi;
     
-    if IsSquareWithoutZeroFFE(fld, DeterminantMat( WallForm(form,m,fld).form )) then
+    if IsNonZeroSquareFFE(fld, DeterminantMat( WallForm(form,m,fld).form )) then
         return one;
     else
         return -1 * one;
