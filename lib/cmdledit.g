@@ -880,7 +880,7 @@ BindGlobal("STANDARD_EXTENDERS", rec(
 # C-i: Completion as GAP level function
 GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     local cf, pos, word, wordplace, idbnd, i, cmps, r, searchlist, cand, c, j,
-          completeFilter, completeExtender, extension;
+          completeFilter, completeExtender, extension, hasbang;
 
       completeFilter := function(filterlist, partial)
         local pref, lowpartial;
@@ -919,17 +919,14 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   else 
     cf.tabcount := 1;
     Unbind(cf.tabrec);
+    Unbind(cf.tabbang);
     Unbind(cf.tabcompnam);
   fi;
   pos := l[4]-1;
   # in whitespace in beginning of line \t is just inserted
-  while pos > 0 and l[3][pos] in " \t" do
-    pos := pos-1;
-  od;
-  if pos = 0 then
+  if ForAll([1..pos], i -> l[3][i] in " \t") then
      return ["\t"];
   fi;
-  pos := l[4]-1;
   # find word to complete
   while pos > 0 and l[3][pos] in IdentifierLetters do 
     pos := pos-1;
@@ -945,18 +942,32 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     cf.tabcompnam := true;
     if cf.tabcount = 1 then
       # try to find name of component object
-      i := pos;
-      while i > 0 and (l[3][i] in IdentifierLetters or l[3][i] in ".!") do
+      cmps := SplitString(l[3], ".");
+      hasbang := [];
+      i := Length(cmps);
+      while i > 0 do
+        # distinguish '.' from '!.' and record for each component which was used
+        if Last(cmps[i]) = '!' then
+            hasbang[i] := true;
+            Remove(cmps[i]); # remove the trailing '!'
+        else
+            hasbang[i] := false;
+        fi;
+        NormalizeWhitespace(cmps[i]);
+        if not IsValidIdentifier(cmps[i]) then
+            break;
+        fi;
         i := i-1;
       od;
-      cmps := SplitString(l[3]{[i+1..pos]},"","!.");
+      hasbang := hasbang{[i+1..Length(cmps)]};
+      cmps := cmps{[i+1..Length(cmps)]};
       r := fail;
       if Length(cmps) > 0 and cmps[1] in idbnd then
         r := ValueGlobal(cmps[1]);
         for j in [2..Length(cmps)] do
-          if IsRecord(r) and IsBound(r.(cmps[j])) then
+          if not hasbang[j-1] and IsBound(r.(cmps[j])) then
             r := r.(cmps[j]);
-          elif IsComponentObjectRep(r) and IsBound(r!.(cmps[j])) then
+          elif hasbang[j-1] and IsBound(r!.(cmps[j])) then
             r := r!.(cmps[j]);
           else
             r := fail;
@@ -966,16 +977,17 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
       fi;
       if IsRecord(r) or IsComponentObjectRep(r) then
         cf.tabrec := r;
+        cf.tabbang := hasbang[Length(cmps)];
       fi;
     fi;
   fi;
   # now produce the searchlist
   if IsBound(cf.tabrec) then
     # the first two <TAB> hits try existing component names only first
-    if IsRecord(cf.tabrec) then
-      searchlist := ShallowCopy(RecNames(cf.tabrec));
-    else
+    if cf.tabbang then
       searchlist := ShallowCopy(NamesOfComponents(cf.tabrec));
+    else
+      searchlist := ShallowCopy(RecNames(cf.tabrec));
     fi;
     if cf.tabcount > 2 then
       Append(searchlist, ALL_RNAMES());
