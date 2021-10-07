@@ -1924,9 +1924,7 @@ InstallMethod( Omega,
 ##  Return the Wall form of <m>, where <m> is a matrix over the finite field
 ##  <fld> which is orthogonal with respect to the bilinear form <form>, also
 ##  given as a matrix.
-##  For the definition of Wall forms, see [The Geometry of the Classical Groups,
-##  Donald E. Taylor, Sigma Series in pure Mathematics Volume 9,
-##  ISBN 3-88538-009-9, page 163].
+##  For the definition of Wall forms, see [Tay92, page 163].
 BindGlobal( "WallForm", function( form, m, fld )
     local id,  w,  b,  p,  i,  x,  j, d, rank;
 
@@ -2019,9 +2017,7 @@ end );
 ##         <fld> is the finite field of the orthogonal group (in which <m> is defined)
 ##  Output: One(fld) if the discriminant of the Wall form of <m> is (F^*)^2.
 ##          Otherwise -1 * One(fld).
-##  The definition can be found in [The Geometry of the Classical Groups,
-##  Donald E. Taylor, Sigma Series in pure Mathematics Volume 9,
-##  ISBN 3-88538-009-9, page 163].
+##  The definition can be found in [Tay92, page 163].
 BindGlobal( "SpinorNorm", function( form, m, fld )
     local one;
     one := OneOfBaseDomain(m);

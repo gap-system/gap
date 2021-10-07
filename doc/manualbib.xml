@@ -5558,4 +5558,20 @@
   <other type="doi">10.1017/CBO9781139192576</other>
 </book></entry>
 
+<entry id="Tay92"><book>
+  <author>
+    <name><first>Donald E.</first><last>Taylor</last></name>
+  </author>
+  <title>The geometry of the classical groups</title>
+  <publisher>Heldermann Verlag, Berlin</publisher>
+  <year>1992</year>
+  <volume>9</volume>
+  <series>Sigma Series in Pure Mathematics</series>
+  <isbn>3-88538-009-9</isbn>
+  <mrnumber>1189139</mrnumber>
+  <mrclass>20E32 (20E34 20E42 20G40 51E24)</mrclass>
+  <mrreviewer>Gernot Stroth</mrreviewer>
+  <other type="pages">xii+229</other>
+</book></entry>
+
 </file>
