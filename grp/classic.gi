@@ -1967,8 +1967,8 @@ end );
 #F  IsNonZeroSquareFFE( fld, e) . . . . . Tests whether <e> (not zero) is a
 ##   square element in <fld>
 ##
-## Input: Finite field fld, e element of fld with e <> 0
-## Output: true if e is a square element in fld. Otherwise false.
+## For an finite field element <e> (not zero) of <fld> this function returns
+## true if <e> is a square element in <fld> and otherwise false.
 BindGlobal( "IsNonZeroSquareFFE", function( fld, e )
     local char, q;
     
@@ -1996,8 +1996,8 @@ end );
 #F  IsSquareFFE( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
 ##   in <fld>
 ##
-# Input: Finite field fld, e element of fld
-# Output: true if e is a square element in fld. Otherwise false.
+## For an finite field element <e> of <fld> this function returns
+## true if <e> is a square element in <fld> and otherwise false.
 BindGlobal( "IsSquareFFE", function( fld, e )
     
     if IsZero(e) then
@@ -2013,11 +2013,12 @@ end );
 ##
 #F  SpinorNorm( <form>, <m>, <fld> ) . . . . .  compute the spinor norm of <m>
 ##
-##  Input: <m> is an element of the orthogonal group which is given by the form <form>,
-##         <fld> is the finite field of the orthogonal group (in which <m> is defined)
-##  Output: One(fld) if the discriminant of the Wall form of <m> is (F^*)^2.
-##          Otherwise -1 * One(fld).
-##  The definition can be found in [Tay92, page 163].
+##
+## For a matrix <m> over the finite field <fld> which is orthogonal with
+## respect to the bilinear form <form>, also given as a matrix, this function
+## returns One(fld) if the discriminant of the Wall form of <m> is (F^*)^2 and
+## otherwise -1 * One(fld).
+## For the definition of Wall forms, see [Tay92, page 163].
 BindGlobal( "SpinorNorm", function( form, m, fld )
     local one;
     one := OneOfBaseDomain(m);
