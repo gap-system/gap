@@ -1,7 +1,7 @@
 #
 # Tests for the "general" group constructors: GL, GO, GU, GammaL
 #
-#@local G, H, d, q, S, grps, gens, w, form, g
+#@local G, H, d, q, S, grps, gens, w, form, g, fld
 
 gap> START_TEST("classic-G.tst");
 
