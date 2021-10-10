@@ -196,7 +196,19 @@ Error, no 1st choice method found for `Omega' on 3 arguments
 gap> Omega(2,2);
 Error, sign <e> = 0 but dimension <d> is even
 
-#
+# Tests for IsSquare
+gap> fld := GF(3^2);;
+gap> IsSquareFFE(fld,Zero(fld));
+true
+gap> IsSquareFFE(fld,Z(3^2)^6);
+true
+gap> IsSquareFFE(fld,Z(3^2)^7);
+false
+gap> fld := GF(2^2);;
+gap> IsSquareFFE(fld,PseudoRandom(fld));
+true
+
+# Tests for SpinorNorm
 gap> G := Omega(1,4,3);;
 gap> gens := GeneratorsOfGroup(G);;
 gap> form := G!.InvariantBilinearForm.matrix;;
