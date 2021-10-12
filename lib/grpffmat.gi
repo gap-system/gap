@@ -53,6 +53,8 @@ InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
 function(l)
 local   deg,  i,  j,  char,m;
 if Length(l)=0 then Error("list must be nonempty");fi;
+  # IsFFECollCollColl guarantees that the matrices are over the same
+  # characteristic.
   deg  := 1;
   for i in l  do
     # treat compact matrices quickly
