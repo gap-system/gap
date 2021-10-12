@@ -1919,6 +1919,111 @@ InstallMethod( Omega,
 
 #############################################################################
 ##
+#F  WallForm( <form>, <m> ) . . .  compute Wall form of <m> wrt <form>
+##
+##  Return the Wall form of <m>, where <m> is a matrix which is orthogonal
+##  with respect to the bilinear form <form>, also given as a matrix.
+##  For the definition of Wall forms, see [Tay92, page 163].
+BindGlobal( "WallForm", function( form, m )
+    local id,  w,  b,  p,  i,  x,  j, d, rank;
+
+    id := One( m );
+
+    # compute a base for Image(id-m) which is a subset of the rows of (id - m)
+    # We also store the index of the rows (corresponding to w) in p
+    w := id - m;
+    b := [];
+    p := [];
+    rank := 0;
+    for i in [ 1 .. Length(w) ]  do
+        # add a new row and see if that increases the rank
+        Add( b, w[i] );
+        if RankMat(b) > rank then
+            Add( p, i );
+            rank := rank + 1;
+        else
+            Remove( b ); # rank was not increased, so remove the added row again
+        fi;
+    od;
+
+    # compute the form
+    d := Length(b);
+    x := NullMat(d,d,DefaultFieldOfMatrix(m));
+    for i  in [ 1 .. d ]  do
+        for j  in [ 1 .. d ]  do
+            x[i,j] := form[p[i]] * b[j];
+        od;
+    od;
+
+    # and return
+    return rec( base := b, pos := p, form := x );
+
+end );
+
+
+#############################################################################
+##
+#F  IsSquareFFE( fld, e) . . . . . . . Tests whether <e> is a square in <fld>
+##
+## For an finite field element <e> of <fld> this function returns
+## true if <e> is a square element in <fld> and otherwise false.
+BindGlobal( "IsSquareFFE", function( fld, e )
+    local char, q;
+    
+    if IsZero(e) then
+        return true;
+    else
+        char := Characteristic(fld);
+        # If the characteristic of fld is equal to 2, we know that every element is a
+        # square. Hence, we can return true.
+        if char = 2 then
+            return true;
+        fi;
+        q := Size(fld);
+        
+        # If the characteristic of fld is not 2, we know that there are exactly
+        # (q+1)/2 elements which are a square (Huppert LA, Theorem 2.5.4). Now observe
+        # that for a square element e we have that e^((q-1)/2) = 1. And, thus, the
+        # polynomial X^((q-1)/2) - 1 has already (q-1)/2 different roots (every square
+        # except 0). Hence, for a non-square element e' we have that (e')^((q-1)/2) <> 1
+        # which proves the line below.
+        return IsOne(e^((q-1)/2));
+    fi;
+    
+end );
+
+
+#############################################################################
+##
+#F  SpinorNorm( <form>, <fld>, <m> ) . . . . . compute the spinor norm of <m>
+##
+##
+## For a matrix <m> over the finite field <fld> of odd characteristic which
+## is orthogonal with respect to the bilinear form <form>, also given as a
+## matrix, this function returns One(fld) if the discriminant of the
+## Wall form of <m> is (F^*)^2 and otherwise -1 * One(fld).
+## For the definition of Wall forms, see [Tay92, page 163].
+BindGlobal( "SpinorNorm", function( form, fld, m )
+    local one;
+    
+    if Characteristic(fld) = 2 then
+        Error("The characteristic of <fld> needs to be odd.");
+    fi;
+    
+    one := OneOfBaseDomain(m);
+    if IsOne(m) then return one; fi;
+    
+    if IsSquareFFE(fld, DeterminantMat( WallForm(form,m).form )) then
+        return one;
+    else
+        return -1 * one;
+    fi;
+end );
+
+
+
+#############################################################################
+##
 #F  WreathProductOfMatrixGroup( <M>, <P> )  . . . . . . . . .  wreath product
 ##
 BindGlobal( "WreathProductOfMatrixGroup", function( M, P )
