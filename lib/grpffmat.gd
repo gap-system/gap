@@ -188,3 +188,5 @@ DeclareGlobalFunction("NrConjugacyClassesSLIsogeneous");
 DeclareGlobalFunction("NrConjugacyClassesSUIsogeneous");
 
 DeclareGlobalFunction("ClassesProjectiveImage");
+
+DeclareGlobalName("NonemptyGeneratorsOfGroup");

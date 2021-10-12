@@ -22,14 +22,7 @@ InstallMethod( FieldOfMatrixGroup,
     0,
 
 function( grp )
-    local   gens;
-
-    gens := GeneratorsOfGroup(grp);
-    if Length(gens)=0 then
-      return FieldOfMatrixList([One(grp)]);
-    else
-      return FieldOfMatrixList(gens);
-    fi;
+    return FieldOfMatrixList(NonemptyGeneratorsOfGroup(grp));
 end );
 
 #############################################################################
