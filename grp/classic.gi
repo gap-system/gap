@@ -1919,13 +1919,12 @@ InstallMethod( Omega,
 
 #############################################################################
 ##
-#F  WallForm( <form>, <m>, <fld> ) . . .  compute Wall form of <m> wrt <form>
+#F  WallForm( <form>, <m> ) . . .  compute Wall form of <m> wrt <form>
 ##
-##  Return the Wall form of <m>, where <m> is a matrix over the finite field
-##  <fld> which is orthogonal with respect to the bilinear form <form>, also
-##  given as a matrix.
+##  Return the Wall form of <m>, where <m> is a matrix which is orthogonal
+##  with respect to the bilinear form <form>, also given as a matrix.
 ##  For the definition of Wall forms, see [Tay92, page 163].
-BindGlobal( "WallForm", function( form, m, fld )
+BindGlobal( "WallForm", function( form, m )
     local id,  w,  b,  p,  i,  x,  j, d, rank;
 
     id := One( m );
@@ -1949,7 +1948,7 @@ BindGlobal( "WallForm", function( form, m, fld )
 
     # compute the form
     d := Length(b);
-    x := NullMat(d,d,fld);
+    x := NullMat(d,d,DefaultFieldOfMatrix(m));
     for i  in [ 1 .. d ]  do
         for j  in [ 1 .. d ]  do
             x[i,j] := form[p[i]] * b[j];
@@ -1964,46 +1963,32 @@ end );
 
 #############################################################################
 ##
-#F  IsNonZeroSquareFFE( fld, e) . . . . . Tests whether <e> (not zero) is a
-##   square element in <fld>
-##
-## For an finite field element <e> (not zero) of <fld> this function returns
-## true if <e> is a square element in <fld> and otherwise false.
-BindGlobal( "IsNonZeroSquareFFE", function( fld, e )
-    local char, q;
-    
-    char := Characteristic(fld);
-    # If the characteristic of fld is equal to 2, we know that every element is a
-    # square. Hence, we can return true.
-    if char = 2 then
-        return true;
-    fi;
-    q := Size(fld);
-    
-    # If the characteristic of fld is not 2, we know that there are exactly
-    # (q+1)/2 elements which are a square (Huppert LA, Theorem 2.5.4). Now observe
-    # that for a square element e we have that e^((q-1)/2) = 1. And, thus, the
-    # polynomial X^((q-1)/2) - 1 has already (q-1)/2 different roots (every square
-    # except 0). Hence, for a non-square element e' we have that (e')^((q-1)/2) <> 1
-    # which proves the line below.
-    return IsOne(e^((q-1)/2));
-    
-end );
-
-
-#############################################################################
-##
 #F  IsSquareFFE( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
 ##   in <fld>
 ##
 ## For an finite field element <e> of <fld> this function returns
 ## true if <e> is a square element in <fld> and otherwise false.
 BindGlobal( "IsSquareFFE", function( fld, e )
+    local char, q;
     
     if IsZero(e) then
         return true;
     else
-        return IsNonZeroSquareFFE(fld,e);
+        char := Characteristic(fld);
+        # If the characteristic of fld is equal to 2, we know that every element is a
+        # square. Hence, we can return true.
+        if char = 2 then
+            return true;
+        fi;
+        q := Size(fld);
+        
+        # If the characteristic of fld is not 2, we know that there are exactly
+        # (q+1)/2 elements which are a square (Huppert LA, Theorem 2.5.4). Now observe
+        # that for a square element e we have that e^((q-1)/2) = 1. And, thus, the
+        # polynomial X^((q-1)/2) - 1 has already (q-1)/2 different roots (every square
+        # except 0). Hence, for a non-square element e' we have that (e')^((q-1)/2) <> 1
+        # which proves the line below.
+        return IsOne(e^((q-1)/2));
     fi;
     
 end );
@@ -2014,17 +1999,22 @@ end );
 #F  SpinorNorm( <form>, <m>, <fld> ) . . . . .  compute the spinor norm of <m>
 ##
 ##
-## For a matrix <m> over the finite field <fld> which is orthogonal with
-## respect to the bilinear form <form>, also given as a matrix, this function
-## returns One(fld) if the discriminant of the Wall form of <m> is (F^*)^2 and
-## otherwise -1 * One(fld).
+## For a matrix <m> over the finite field <fld> of odd characteristic which
+## is orthogonal with respect to the bilinear form <form>, also given as a
+## matrix, this function returns One(fld) if the discriminant of the
+## Wall form of <m> is (F^*)^2 and otherwise -1 * One(fld).
 ## For the definition of Wall forms, see [Tay92, page 163].
-BindGlobal( "SpinorNorm", function( form, m, fld )
+BindGlobal( "SpinorNorm", function( form, fld, m )
     local one;
+    
+    if Characteristic(fld) = 2 then
+        Error("The characteristic of <fld> needs to be odd.");
+    fi;
+    
     one := OneOfBaseDomain(m);
     if IsOne(m) then return one; fi;
     
-    if IsNonZeroSquareFFE(fld, DeterminantMat( WallForm(form,m,fld).form )) then
+    if IsSquareFFE(fld, DeterminantMat( WallForm(form,m).form )) then
         return one;
     else
         return -1 * one;

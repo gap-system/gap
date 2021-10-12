@@ -212,17 +212,17 @@ true
 gap> G := Omega(1,4,3);;
 gap> gens := GeneratorsOfGroup(G);;
 gap> form := G!.InvariantBilinearForm.matrix;;
-gap> SpinorNorm(form,gens[1],GF(3));
+gap> SpinorNorm(form,GF(3),gens[1]);
 Z(3)^0
-gap> SpinorNorm(form,gens[2],GF(3));
+gap> SpinorNorm(form,GF(3),gens[2]);
 Z(3)^0
 gap> w := PrimitiveElement(GF(3));;
 gap> g := IdentityMat(4,GF(3));;
-gap> SpinorNorm(form,g,GF(3));
+gap> SpinorNorm(form,GF(3),g);
 Z(3)^0
 gap> g[1,1] := w^3;;
 gap> g[4,4] := w^(-3);;
-gap> SpinorNorm(form,g,GF(3));
+gap> SpinorNorm(form,GF(3),g);
 Z(3)
 
 # Membership tests in GL, SL, GO, SO, GU, SU, Sp can be delegated
