@@ -1963,8 +1963,7 @@ end );
 
 #############################################################################
 ##
-#F  IsSquareFFE( fld, e) . . . . . . . . . . . Tests whether <e> is a square element
-##   in <fld>
+#F  IsSquareFFE( fld, e) . . . . . . . Tests whether <e> is a square in <fld>
 ##
 ## For an finite field element <e> of <fld> this function returns
 ## true if <e> is a square element in <fld> and otherwise false.
@@ -1996,7 +1995,7 @@ end );
 
 #############################################################################
 ##
-#F  SpinorNorm( <form>, <m>, <fld> ) . . . . .  compute the spinor norm of <m>
+#F  SpinorNorm( <form>, <fld>, <m> ) . . . . . compute the spinor norm of <m>
 ##
 ##
 ## For a matrix <m> over the finite field <fld> of odd characteristic which
