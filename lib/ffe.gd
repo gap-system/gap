@@ -208,7 +208,7 @@
 ##  object in <Ref Filt="IsFFE"/>.
 ##  All finite field elements of the same characteristic form a family in
 ##  &GAP; (see&nbsp;<Ref Sect="Families"/>).
-##  Any collection of finite field elements
+##  Any collection of finite field elements of the same characteristic
 ##  (see&nbsp;<Ref Filt="IsCollection"/>) lies in
 ##  <Ref Filt="IsFFECollection"/>, and a collection of such collections
 ##  (e.g., a matrix of finite field elements) lies in
