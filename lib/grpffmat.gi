@@ -53,6 +53,11 @@ InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
 function(l)
 local   deg,  i,  j,  char,m;
 if Length(l)=0 then Error("list must be nonempty");fi;
+  # Only handle those MatrixObj matrices which are handled efficiently.
+  if ForAny(l, x -> IsMatrixObj(x) and not IsGF2MatrixRep(x)
+                        and not Is8BitMatrixRep(x)) then
+    TryNextMethod();
+  fi;
   # IsFFECollCollColl guarantees that the matrices are over the same
   # characteristic.
   deg  := 1;
