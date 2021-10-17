@@ -18,6 +18,20 @@
 
 #include "debug.h"
 
+// check if we are on a 64 or 32 bit machine; in the former
+// case, define SYS_IS_64_BIT.
+// also define SIZEOF_VOID_P for backwards compatibility with some
+// GAP packages that expect it
+#if INTPTR_MAX == INT64_MAX
+#define SYS_IS_64_BIT 1
+#define SIZEOF_VOID_P 8
+#elif INTPTR_MAX == INT32_MAX
+#undef SYS_IS_64_BIT
+#define SIZEOF_VOID_P 4
+#else
+#error Unknown pointer size or missing size macros!
+#endif
+
 // check that the pointer size detected by configure matches that of the
 // current compiler; this helps prevent kernel extensions from being
 // compiled with the wrong ABI

@@ -227,9 +227,9 @@ EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
 #else
 
 #ifdef SYS_IS_64_BIT
-typedef Int4 HalfInt;
+#define HalfInt Int4
 #else
-typedef Int2 HalfInt;
+#define HalfInt Int2
 #endif
 
 EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
@@ -256,6 +256,7 @@ EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
 
     return (Obj)0;
 }
+#undef HalfInt
 #endif
 
 #define PROD_INTOBJS(o, l, r) ((o) = prod_intobjs((Int)(l), (Int)(r)))
