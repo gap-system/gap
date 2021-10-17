@@ -896,15 +896,9 @@ case "$host_os" in
         AC_CONFIG_FILES([bin/gapcmd.bat:cnf/cygwin/gapcmd.bat.in], [chmod +x bin/gapcmd.bat])
     ])
     ;;
-  *darwin*)
-    AC_DEFINE([SYS_IS_DARWIN], [1], [define if this is the Darwin port])
-    DARWIN=yes
-    ;;
 esac
 
 AC_SUBST([SYS_IS_CYGWIN32], [$CYGWIN])
-SYS_IS_DARWIN=$DARWIN
-AC_SUBST([SYS_IS_DARWIN])
 
 
 dnl
