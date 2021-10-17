@@ -881,7 +881,6 @@ esac
 
 case "$host_os" in
   *cygwin*)
-    AC_DEFINE([SYS_IS_CYGWIN32], [1], [define if this is the Cygwin32 port])
     CYGWIN=yes
 
     AS_IF([test "x$enable_compat_mode" = xyes],[
