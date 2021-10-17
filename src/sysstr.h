@@ -68,7 +68,7 @@ EXPORT_INLINE BOOL streq(const char * s1, const char * s2)
 
 /****************************************************************************
 **
-*F  strlcpy( <dst>, <src>, <len> )
+*F  gap_strlcpy( <dst>, <src>, <len> )
 **
 **  Copy <src> to buffer <dst> of size <len>. At most <len>-1 characters will
 **  be copied. Afterwards, <dst> is always 'NUL' terminated
@@ -81,13 +81,11 @@ EXPORT_INLINE BOOL streq(const char * s1, const char * s2)
 **  but not by all, so we provide a fallback implementation for those
 **  systems that lack it.
 */
-#ifndef HAVE_STRLCPY
-size_t strlcpy(char * dst, const char * src, size_t len);
-#endif
+size_t gap_strlcpy(char * dst, const char * src, size_t len);
 
 /****************************************************************************
 **
-*F  strlcat( <dst>, <src>, <len> )
+*F  gap_strlcat( <dst>, <src>, <len> )
 **
 **  Appends <src> to buffer <dst> of size <len> (unlike 'strncat', <len> is
 **  the full size of <dst>, not space left).
@@ -101,9 +99,7 @@ size_t strlcpy(char * dst, const char * src, size_t len);
 **  but not by all, so we provide a fallback implementation for those
 **  systems that lack it.
 */
-#ifndef HAVE_STRLCAT
-size_t strlcat(char * dst, const char * src, size_t len);
-#endif
+size_t gap_strlcat(char * dst, const char * src, size_t len);
 
 /****************************************************************************
 **

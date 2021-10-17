@@ -677,8 +677,8 @@ UInt GVarName (
     if (*cns) {   /* only if a namespace is set */
         len = strlen(name);
         if (name[len-1] == NSCHAR) {
-            strlcpy(gvarbuf, name, 512);
-            strlcat(gvarbuf, cns, sizeof(gvarbuf));
+            gap_strlcpy(gvarbuf, name, 512);
+            gap_strlcat(gvarbuf, cns, sizeof(gvarbuf));
             name = gvarbuf;
         }
     }
@@ -721,7 +721,7 @@ UInt GVarName (
         gvar = INTOBJ_INT(numGVars);
         SET_ELM_PLIST( TableGVars, pos, gvar );
         if (name != gvarbuf)
-            strlcpy(gvarbuf, name, sizeof(gvarbuf));
+            gap_strlcpy(gvarbuf, name, sizeof(gvarbuf));
         string = MakeImmString(gvarbuf);
 
 #ifdef USE_GVAR_BUCKETS

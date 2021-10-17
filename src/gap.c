@@ -375,7 +375,7 @@ static Obj FuncSHELL(Obj self,
   if (GET_LEN_STRING(prompt) > 80)
     ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
   promptBuffer[0] = '\0';
-  strlcat(promptBuffer, CONST_CSTR_STRING(prompt), sizeof(promptBuffer));
+  gap_strlcat(promptBuffer, CONST_CSTR_STRING(prompt), sizeof(promptBuffer));
 
   if (preCommandHook == False)
     preCommandHook = 0;
@@ -744,7 +744,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
                 if ( TNAM_TNUM(k) != 0 ) {
                     Char buf[41];
                     buf[0] = '\0';
-                    strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
+                    gap_strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0);
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -769,7 +769,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
                       InfoBags[k].sizeAll != 0) ) {
                     Char buf[41];
                     buf[0] = '\0';
-                    strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
+                    gap_strlcat( buf, TNAM_TNUM(k), sizeof(buf) );
                     Pr("%40s ",    (Int)buf, 0);
                     Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
                                    (Int)(InfoBags[k].sizeLive/1024));
@@ -1502,7 +1502,7 @@ void InitializeGap (
                     char    buf[41];
 
                     buf[0] = '\0';
-                    strlcat( buf, TNAM_TNUM(i), sizeof(buf) );
+                    gap_strlcat( buf, TNAM_TNUM(i), sizeof(buf) );
                     Pr("#W  %36s ",    (Int)buf, 0);
                     Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
                        (Int)(InfoBags[i].sizeLive/1024));

@@ -221,8 +221,8 @@ void Match(ScannerState * s,
 
     /* else generate an error message and skip to a symbol in <skipto>     */
     else {
-        strlcpy( errmsg, msg, sizeof(errmsg) );
-        strlcat( errmsg, " expected", sizeof(errmsg) );
+        gap_strlcpy( errmsg, msg, sizeof(errmsg) );
+        gap_strlcat( errmsg, " expected", sizeof(errmsg) );
         SyntaxError(s, errmsg);
         while (!IS_IN(s->Symbol, skipto))
             s->Symbol = NextSymbol(s);

@@ -1188,10 +1188,10 @@ Obj NewAndFilter (
     s = CSTR_STRING(str);
     s[0] = '(';
     s[1] = 0;
-    strlcat(s, CONST_CSTR_STRING(NAME_FUNC(oper1)), str_len);
-    strlcat(s, " and ", str_len);
-    strlcat(s, CONST_CSTR_STRING(NAME_FUNC(oper2)), str_len);
-    strlcat(s, ")", str_len);
+    gap_strlcat(s, CONST_CSTR_STRING(NAME_FUNC(oper1)), str_len);
+    gap_strlcat(s, " and ", str_len);
+    gap_strlcat(s, CONST_CSTR_STRING(NAME_FUNC(oper2)), str_len);
+    gap_strlcat(s, ")", str_len);
     SET_LEN_STRING(str, str_len - 1);
 
     getter = NewFunctionT( T_FUNCTION, sizeof(OperBag), str, 1,

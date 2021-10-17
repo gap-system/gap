@@ -675,8 +675,8 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
     }
 
     // set up <namegz>
-    strlcpy(namegz, name, sizeof(namegz));
-    if (strlcat(namegz, ".gz", sizeof(namegz)) >= sizeof(namegz)) {
+    gap_strlcpy(namegz, name, sizeof(namegz));
+    if (gap_strlcat(namegz, ".gz", sizeof(namegz)) >= sizeof(namegz)) {
         // buffer was not big enough, give up
         namegz[0] = '\0';
     }
@@ -2100,11 +2100,11 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
   }
   /* maybe add to history, we use key 0 for this function */
   GAP_rl_func(0, 0);
-  strlcpy(line, rlres, length);
+  gap_strlcpy(line, rlres, length);
   // FIXME: handle the case where rlres contains more than length
   // characters better?
   free(rlres);
-  strlcat(line, "\n", length);
+  gap_strlcat(line, "\n", length);
 
   /* send the whole line (unclipped) to the window handler               */
   syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
@@ -3061,8 +3061,8 @@ Int SyIsReadableFile ( const Char * name )
       /* we might be able to read the file via zlib */
 
       /* beware of buffer overflows */
-      if ( strlcpy(xname, name, sizeof(xname)) < sizeof(xname) &&
-            strlcat(xname, ".gz", sizeof(xname))  < sizeof(xname) ) {
+      if ( gap_strlcpy(xname, name, sizeof(xname)) < sizeof(xname) &&
+            gap_strlcat(xname, ".gz", sizeof(xname))  < sizeof(xname) ) {
         res = access(xname, R_OK);
       }
 

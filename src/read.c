@@ -743,7 +743,7 @@ static LHSRef ReadVar(ReaderState * rs, TypSymbolSet follow)
         ref.type = R_GVAR;
         // we do not want to call GVarName on this value until after we
         // have checked if this is the argument to a lambda function
-        strlcpy(varname, rs->s.Value, sizeof(varname));
+        gap_strlcpy(varname, rs->s.Value, sizeof(varname));
     }
 
     // match away the identifier, now that we know the variable

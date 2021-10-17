@@ -962,9 +962,6 @@ AC_CHECK_FUNCS([setitimer])
 dnl check for functions dealing with virtual memory
 AC_CHECK_FUNCS([vm_allocate sbrk madvise sysconf])
 
-dnl check for functions dealing with strings and integers
-AC_CHECK_FUNCS([strlcpy strlcmp strlcat])
-
 dnl check for large-file support (for accessing files whose sizes or inodes require 64bits)
 AC_SYS_LARGEFILE
 

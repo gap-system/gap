@@ -13,10 +13,7 @@
 
 #include "sysstr.h"
 
-
-#ifndef HAVE_STRLCPY
-
-size_t strlcpy(char * dst, const char * src, size_t len)
+size_t gap_strlcpy(char * dst, const char * src, size_t len)
 {
     /* Keep a copy of the original src. */
     const char * const orig_src = src;
@@ -48,12 +45,7 @@ size_t strlcpy(char * dst, const char * src, size_t len)
     return src - orig_src - 1;
 }
 
-#endif /* !HAVE_STRLCPY */
-
-
-#ifndef HAVE_STRLCAT
-
-size_t strlcat(char * dst, const char * src, size_t len)
+size_t gap_strlcat(char * dst, const char * src, size_t len)
 {
     /* Keep a copy of the original dst. */
     const char * const orig_dst = dst;
@@ -85,18 +77,16 @@ size_t strlcat(char * dst, const char * src, size_t len)
     return (dst - orig_dst) + strlen(src);
 }
 
-#endif /* !HAVE_STRLCAT */
-
 size_t strxcpy(char * dst, const char * src, size_t len)
 {
-    size_t res = strlcpy(dst, src, len);
+    size_t res = gap_strlcpy(dst, src, len);
     assert(res < len);
     return res;
 }
 
 size_t strxcat(char * dst, const char * src, size_t len)
 {
-    size_t res = strlcat(dst, src, len);
+    size_t res = gap_strlcat(dst, src, len);
     assert(res < len);
     return res;
 }

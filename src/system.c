@@ -304,8 +304,8 @@ find_yourself(const char * argv0, char * result, size_t resultsize)
     else if (strchr(argv0, '/')) {
         if (!getcwd(tmpbuf, sizeof(tmpbuf)))
             return;
-        strlcat(tmpbuf, "/", sizeof(tmpbuf));
-        strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+        gap_strlcat(tmpbuf, "/", sizeof(tmpbuf));
+        gap_strlcat(tmpbuf, argv0, sizeof(tmpbuf));
         if (realpath(tmpbuf, result) && !access(result, F_OK)) {
             return;    // success
         }
@@ -313,12 +313,12 @@ find_yourself(const char * argv0, char * result, size_t resultsize)
     // executable name, like 'gap'
     else {
         char pathenv[GAP_PATH_MAX], *saveptr, *pathitem;
-        strlcpy(pathenv, getenv("PATH"), sizeof(pathenv));
+        gap_strlcpy(pathenv, getenv("PATH"), sizeof(pathenv));
         pathitem = strtok_r(pathenv, ":", &saveptr);
         for (; pathitem; pathitem = strtok_r(NULL, ":", &saveptr)) {
-            strlcpy(tmpbuf, pathitem, sizeof(tmpbuf));
-            strlcat(tmpbuf, "/", sizeof(tmpbuf));
-            strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+            gap_strlcpy(tmpbuf, pathitem, sizeof(tmpbuf));
+            gap_strlcat(tmpbuf, "/", sizeof(tmpbuf));
+            gap_strlcat(tmpbuf, argv0, sizeof(tmpbuf));
             if (realpath(tmpbuf, result) && !access(result, F_OK)) {
                 return;    // success
             }
