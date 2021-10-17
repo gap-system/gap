@@ -48,7 +48,7 @@
 
 #include <sys/stat.h>
 
-#ifdef SYS_IS_DARWIN
+#ifdef __MACH__
 // Workaround: TRUE / FALSE are also defined by the OS X Mach-O headers
 #define ENUM_DYLD_BOOL
 #include <mach-o/dyld.h>
@@ -338,7 +338,7 @@ static void SetupGAPLocation(const char * argv0)
     char locBuf[GAP_PATH_MAX] = "";
     Int4 length = 0;
 
-#ifdef SYS_IS_DARWIN
+#if defined(__APPLE__) && defined(__MACH__)
     uint32_t len = sizeof(locBuf);
     if (_NSGetExecutablePath(locBuf, &len) != 0) {
         *locBuf = 0;    // reset buffer after error

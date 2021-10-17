@@ -340,7 +340,7 @@ void SyMAdviseFree(void)
      * Maybe we do want to do this until it breaks to avoid questions
      * by users...
      */
-#if !defined(NO_DIRTY_OSX_MMAP_TRICK) && defined(SYS_IS_DARWIN)
+#if !defined(NO_DIRTY_OSX_MMAP_TRICK) && defined(__APPLE__)
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
         Panic("OS X trick to free pages did not work!");
@@ -585,10 +585,6 @@ static UInt *** SyFreeBags_(UInt size)
 */
 #ifdef HAVE_VM_ALLOCATE
 
-#if (defined(SYS_IS_DARWIN) && SYS_IS_DARWIN) || defined(__gnu_hurd__)
-#define task_self mach_task_self
-#endif
-
 static vm_address_t syBase;
 
 static UInt *** SyAllocBags_(UInt size)
@@ -604,7 +600,7 @@ static UInt *** SyAllocBags_(UInt size)
     /* allocate memory anywhere on first call                              */
     else if ( 0 < size && syBase == 0 ) {
         GAP_ASSERT(syWorksize == 0);
-        if ( vm_allocate(task_self(),&syBase,size*1024,TRUE) == KERN_SUCCESS ) {
+        if ( vm_allocate(mach_task_self(),&syBase,size*1024,TRUE) == KERN_SUCCESS ) {
             ret = (UInt***) syBase;
         }
     }
@@ -613,7 +609,7 @@ static UInt *** SyAllocBags_(UInt size)
     else {
         vm_address_t adr;
         adr = (vm_address_t)( (char*) syBase + syWorksize*1024 );
-        if ( vm_allocate(task_self(),&adr,size*1024,FALSE) == KERN_SUCCESS ) {
+        if ( vm_allocate(mach_task_self(),&adr,size*1024,FALSE) == KERN_SUCCESS ) {
             ret = (UInt***) ( (char*) syBase + syWorksize*1024 );
         }
     }
@@ -645,7 +641,7 @@ static UInt *** SyFreeBags_(UInt size)
     else if (syWorksize >= size && syWorksize - size >= SyStorMin) {
         vm_address_t adr;
         adr = (vm_address_t)( (char*) syBase + (syWorksize-size)*1024 );
-        if ( vm_deallocate(task_self(),adr,size*1024) == KERN_SUCCESS ) {
+        if ( vm_deallocate(mach_task_self(),adr,size*1024) == KERN_SUCCESS ) {
             ret = (UInt***)( (char*) syBase + syWorksize*1024 );
 
             syWorksize -= size;
