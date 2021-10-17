@@ -19,11 +19,15 @@
 // updated to not need it.
 #include <stdio.h>
 
+// HACK: most (all?) GAP packages with a kernel extension include compiled.h
+// to get all GAP headers. They should ultimately all switch to including
+// gap_all.h; however that header has only been available since GAP 4.11.0, so
+// it will take some time for packages to make the switch.
+#include "gap_all.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "gap_all.h"
 
 extern Obj InfoDecision;
 
