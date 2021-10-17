@@ -38,6 +38,13 @@
 GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 
 
+// check for cygwin
+#if defined(__CYGWIN__) || defined(__CYGWIN32__)
+// for historical reasons, the macro we define is called SYS_IS_CYGWIN32
+#define SYS_IS_CYGWIN32 1
+#endif
+
+
 #ifdef USE_GASMAN
 #define GAP_ENABLE_SAVELOAD
 #endif
