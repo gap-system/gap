@@ -620,7 +620,7 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
         Panic("Failed to open '%s' for profiling output.\n", filename);
     }
 
-    strlcpy(profileState.filename, filename, GAP_PATH_MAX);
+    gap_strlcpy(profileState.filename, filename, GAP_PATH_MAX);
 
     ActivateHooks(&profileHooks);
 
@@ -744,7 +744,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
 
     fopenMaybeCompressed(CONST_CSTR_STRING(filename), &profileState);
 
-    strlcpy(profileState.filename, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
+    gap_strlcpy(profileState.filename, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
 
     if(profileState.Stream == 0) {
       HashUnlock(&profileState);

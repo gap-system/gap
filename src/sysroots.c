@@ -54,9 +54,9 @@ Char * SyFindGapRootFile(const Char * filename, Char * buf, size_t size)
 {
     for (int k = 0; k < ARRAY_SIZE(SyGapRootPaths); k++) {
         if (SyGapRootPaths[k][0]) {
-            if (strlcpy(buf, SyGapRootPaths[k], size) >= size)
+            if (gap_strlcpy(buf, SyGapRootPaths[k], size) >= size)
                 continue;
-            if (strlcat(buf, filename, size) >= size)
+            if (gap_strlcat(buf, filename, size) >= size)
                 continue;
             if (SyIsReadableFile(buf) == 0) {
                 return buf;
@@ -181,7 +181,7 @@ void SySetGapRootPath(const Char * string)
 #ifdef HPCGAP
         // for each root <ROOT> to be added, we first add <ROOT/hpcgap> as a root
         if (n < MAX_GAP_DIRS) {
-            strlcpy(SyGapRootPaths[n], SyGapRootPaths[n - 1],
+            gap_strlcpy(SyGapRootPaths[n], SyGapRootPaths[n - 1],
                     sizeof(SyGapRootPaths[n]));
         }
         strxcat(SyGapRootPaths[n - 1], "hpcgap/",

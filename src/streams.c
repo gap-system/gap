@@ -968,7 +968,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
     RequireStringRep(SELF_NAME, filename);
 
     /* Copy to avoid garbage collection moving string                      */
-    strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
+    gap_strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
     /* try to open the file                                                */
     return READ_GAP_ROOT(filenamecpy) ? True : False;
 }

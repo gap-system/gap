@@ -387,7 +387,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
     else
         input->echo = FALSE;
 
-    strlcpy(input->name, filename, sizeof(input->name));
+    gap_strlcpy(input->name, filename, sizeof(input->name));
     input->gapnameid = 0;
 
     // start with an empty line
@@ -427,7 +427,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
         input->sline = 0;
     }
     input->echo = echo;
-    strlcpy(input->name, "stream", sizeof(input->name));
+    gap_strlcpy(input->name, "stream", sizeof(input->name));
     input->gapnameid = 0;
 
     // start with an empty line
@@ -951,7 +951,7 @@ void SetPrompt(const char * prompt)
 {
     if (SyQuiet)
         prompt = "";
-    strlcpy(STATE(Prompt), prompt, sizeof(STATE(Prompt)));
+    gap_strlcpy(STATE(Prompt), prompt, sizeof(STATE(Prompt)));
 }
 
 

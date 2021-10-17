@@ -522,24 +522,24 @@ void RequireArgumentEx(const char * funcname,
     Int  arg1 = 0;
 
     if (funcname) {
-        strlcat(msgbuf, funcname, sizeof(msgbuf));
-        strlcat(msgbuf, ": ", sizeof(msgbuf));
+        gap_strlcat(msgbuf, funcname, sizeof(msgbuf));
+        gap_strlcat(msgbuf, ": ", sizeof(msgbuf));
     }
     if (argname) {
-        strlcat(msgbuf, argname, sizeof(msgbuf));
-        strlcat(msgbuf, " ", sizeof(msgbuf));
+        gap_strlcat(msgbuf, argname, sizeof(msgbuf));
+        gap_strlcat(msgbuf, " ", sizeof(msgbuf));
     }
-    strlcat(msgbuf, msg, sizeof(msgbuf));
+    gap_strlcat(msgbuf, msg, sizeof(msgbuf));
     if (IS_INTOBJ(op)) {
-        strlcat(msgbuf, " (not the integer %d)", sizeof(msgbuf));
+        gap_strlcat(msgbuf, " (not the integer %d)", sizeof(msgbuf));
         arg1 = INT_INTOBJ(op);
     }
     else if (op == True)
-        strlcat(msgbuf, " (not the value 'true')", sizeof(msgbuf));
+        gap_strlcat(msgbuf, " (not the value 'true')", sizeof(msgbuf));
     else if (op == False)
-        strlcat(msgbuf, " (not the value 'false')", sizeof(msgbuf));
+        gap_strlcat(msgbuf, " (not the value 'false')", sizeof(msgbuf));
     else if (op == Fail)
-        strlcat(msgbuf, " (not the value 'fail')", sizeof(msgbuf));
+        gap_strlcat(msgbuf, " (not the value 'fail')", sizeof(msgbuf));
     else {
         const char * tnam = TNAM_OBJ(op);
         // heuristic to choose between 'a' and 'an': use 'an' before a vowel
@@ -547,9 +547,9 @@ void RequireArgumentEx(const char * funcname,
         // "an FFE", so we add a special case for that as well
         if (TNUM_OBJ(op) == T_FFE || tnam[0] == 'a' || tnam[0] == 'e' ||
             tnam[0] == 'i' || tnam[0] == 'o' || tnam[0] == 'u')
-            strlcat(msgbuf, " (not an %s)", sizeof(msgbuf));
+            gap_strlcat(msgbuf, " (not an %s)", sizeof(msgbuf));
         else
-            strlcat(msgbuf, " (not a %s)", sizeof(msgbuf));
+            gap_strlcat(msgbuf, " (not a %s)", sizeof(msgbuf));
         arg1 = (Int)tnam;
     }
 
