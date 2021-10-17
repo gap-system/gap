@@ -103,7 +103,9 @@ static Obj ObjInt_UIntInv( UInt i );
 
 
 /* debugging */
-#ifndef DEBUG_GMP
+#ifdef GAP_KERNEL_DEBUG
+#define DEBUG_GMP 1
+#else
 #define DEBUG_GMP 0
 #endif
 

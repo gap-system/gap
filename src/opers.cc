@@ -50,6 +50,9 @@ extern "C" {
 
 } // extern "C"
 
+#ifdef GAP_KERNEL_DEBUG
+#define COUNT_OPERS
+#endif
 
 #ifndef __has_cpp_attribute         // For backwards compatibility
 #define __has_cpp_attribute(x) 0
