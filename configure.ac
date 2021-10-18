@@ -30,6 +30,7 @@ dnl <https://www.gnu.org/software/libtool/manual/html_node/Versioning.html>
 m4_define([libtool_current], [8])
 m4_define([libtool_age], [0])
 
+m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
 
 AC_INIT([GAP],
         gap_version,
@@ -217,10 +218,10 @@ AC_MSG_RESULT([$enable_hpcgap])
 AC_SUBST([HPCGAP], [$enable_hpcgap])
 AS_IF([test "x$enable_hpcgap" = xyes],
     [
-    AC_DEFINE([HPCGAP], [1], [define if building HPC-GAP])
+    GAP_DEFINE([HPCGAP=1])
 
     # HACK, see https://github.com/fingolfin/gap/issues/9
-    AC_DEFINE([MAX_GC_THREADS], [4], [maximum number of GC threads])
+    GAP_DEFINE([MAX_GC_THREADS=4])
     ])
 
 dnl
@@ -264,15 +265,15 @@ AS_IF([test "x$with_gc" = xdefault],
 AS_CASE([$with_gc],
     [none|no],  [AC_MSG_ERROR([cannot run GAP without a garbage collector])],
     [boehm],    [AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
-                 AC_DEFINE([USE_BOEHM_GC],  [1], [define as 1 if Boehm GC is used])
+                 GAP_DEFINE([USE_BOEHM_GC=1])
                 ],
     [gasman],   [AS_IF([test "x$enable_hpcgap" = xyes],
                     [AC_MSG_ERROR([GASMAN cannot be used with HPC-GAP])])
                  AC_SUBST([GC_SOURCES], ["src/gasman.c src/sysmem.c"])
-                 AC_DEFINE([USE_GASMAN],    [1], [define as 1 if GASMAN is used])
+                 GAP_DEFINE([USE_GASMAN=1])
                 ],
     [julia],    [AC_SUBST([GC_SOURCES], [src/julia_gc.c])
-                 AC_DEFINE([USE_JULIA_GC],  [1], [define as 1 if the Julia GC is used])
+                 GAP_DEFINE([USE_JULIA_GC=1])
                 ],
     [*],        [AC_MSG_ERROR([Invalid gc method '$with_gc', use default|none|gasman|boehm|julia])],
     )
@@ -299,7 +300,7 @@ enable_macos_tls_asm=default
 AS_IF([[test "x$enable_native_tls" == "xyes"]], [
         case "$host" in
             x86_64-apple-darwin*)
-                AC_DEFINE([USE_PTHREAD_TLS], [1], [define as 1 if using pthread_getspecific])
+                GAP_DEFINE([USE_PTHREAD_TLS=1])
                 dnl
                 dnl Test if we can optimize pthread_getspecific() calls via
                 dnl inline assembly on macOS.
@@ -363,8 +364,7 @@ int main() {
 }
                     ]])],
                     dnl => Test succeeded
-                    [AC_DEFINE([USE_MACOS_PTHREAD_TLS_ASM], [1],
-                        [define as 1 if macOS assembly implementation supported])
+                    [GAP_DEFINE([USE_MACOS_PTHREAD_TLS_ASM=1])
                     AC_MSG_RESULT([[yes (macOS assembly)]])
                     enable_macos_tls_asm=yes
                     ],
@@ -379,7 +379,7 @@ int main() {
             ;;
             *)
                 dnl => Any other OS, --with-native-tls specified
-                AC_DEFINE([USE_NATIVE_TLS], [1], [define as 1 if using native TLS])
+                GAP_DEFINE([USE_NATIVE_TLS=1])
                 AC_MSG_RESULT([yes])
             ;;
         esac
@@ -402,8 +402,7 @@ __attribute__((pure))
 void * pthread_getspecific(pthread_key_t key);
 ]])], [
     AC_MSG_RESULT(yes)
-    AC_DEFINE([ALLOW_PURE_PTHREAD_GETSPECIFIC], [1],
-        [define as 1 if pthread_getspecific() can be declared pure])
+    GAP_DEFINE([ALLOW_PURE_PTHREAD_GETSPECIFIC=1])
 ], [
     AC_MSG_RESULT(no)
 ])
@@ -421,8 +420,8 @@ AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
 
 AS_IF([test "x$enable_debug" != "xno"],
-    [AC_DEFINE([GAP_KERNEL_DEBUG], [1], [define if building in debug mode])
-     AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])],
+    [GAP_DEFINE([GAP_KERNEL_DEBUG=1])
+     GAP_DEFINE([GAP_PRINT_BACKTRACE=1])],
 )
 
 dnl
@@ -455,7 +454,7 @@ AC_MSG_CHECKING([whether to enable memory checking])
 AC_MSG_RESULT([$enable_memory_checking])
 
 AS_IF([test "x$enable_memory_checking" != "xno"],
-  [AC_DEFINE([GAP_MEM_CHECK], [1], [define if building with memory checking])]
+  [GAP_DEFINE([GAP_MEM_CHECK=1])]
 )
 
 dnl
@@ -468,7 +467,7 @@ AC_MSG_CHECKING([whether to enable valgrind extensions to GASMAN])
 AC_MSG_RESULT([$enable_valgrind])
 
 AS_IF([test "x$enable_valgrind" != "xno"],
-  [AC_DEFINE([GAP_MEMORY_CANARY], [1], [define if building with valgrind extensions])]
+  [GAP_DEFINE([GAP_MEMORY_CANARY=1])]
 )
 
 if test "x$enable_valgrind" != "xno" -a "x$enable_memory_checking" != "xno"; then
@@ -988,6 +987,8 @@ AS_IF([test "x$enable_macos_tls_asm" = xno],[
 dnl
 dnl Output everything
 dnl
+AC_SUBST([GAP_DEFINES], [$GAP_DEFINES])
+
 AC_CONFIG_FILES([GNUmakefile])
 AC_CONFIG_FILES([CITATION])
 AC_CONFIG_FILES([doc/make_doc], [chmod +x doc/make_doc])
