@@ -173,9 +173,9 @@ GAP_PKG_CPPFLAGS += -I$(abs_srcdir)/src
 # extensions, also add the root of the srcdir to the package CPPFLAGS
 GAP_PKG_CPPFLAGS += -I$(abs_srcdir)
 
-# Add DEFS (from autoconf, contains -D flags)
-GAP_CPPFLAGS += $(DEFS)
-GAP_PKG_CPPFLAGS += $(DEFS)
+# Add GAP_DEFINES (from autoconf, contains -D flags)
+GAP_CPPFLAGS += $(GAP_DEFINES)
+GAP_PKG_CPPFLAGS += $(GAP_DEFINES)
 
 # Add flags for dependencies
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
