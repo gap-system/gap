@@ -574,11 +574,6 @@ AC_SUBST([GMP_CPPFLAGS])
 AC_SUBST([GMP_LDFLAGS])
 AC_SUBST([GMP_LIBS])
 
-dnl Some packages check the USE_GMP flag; retain it for now to
-dnl allow these packages to work correctly for now. We should
-dnl remove this eventually.
-AC_DEFINE([USE_GMP], [1], [for backwards compatibility])
-
 
 dnl Find zlib
 AC_ARG_WITH([zlib],
