@@ -393,6 +393,7 @@ dnl
 dnl Test if pthread_getspecific() can be overridden as
 dnl __attribute__((pure)).
 dnl
+AS_IF([test "x$enable_hpcgap" = xyes],[
 AC_MSG_CHECKING([[whether pthread_getspecific() can be made pure]])
 AC_COMPILE_IFELSE(
     [AC_LANG_SOURCE([[
@@ -405,6 +406,7 @@ void * pthread_getspecific(pthread_key_t key);
         [define as 1 if pthread_getspecific() can be declared pure])
 ], [
     AC_MSG_RESULT(no)
+])
 ])
 
 dnl
