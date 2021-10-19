@@ -160,6 +160,11 @@ GAPInput
     # test: running `make` a second time should produce no output
     test -z "$(make)"
 
+    # audit config.h
+    pushd $SRCDIR
+    dev/audit-config-h.sh
+    popd
+
     # test: touching all source files does *not* trigger a rebuild if we make
     # a target that doesn't depend on sources. We verify this by replacing the source
     # code with garbage
