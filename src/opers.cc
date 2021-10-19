@@ -1169,7 +1169,6 @@ Obj NewAndFilter (
 
     Int                 str_len;
     Obj                 str;
-    char*               s;
 
     RequireFilter(0, oper1, "<oper1>");
     RequireFilter(0, oper2, "<oper2>");
@@ -1185,14 +1184,12 @@ Obj NewAndFilter (
 
     str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
     str = NEW_STRING(str_len);
-    s = CSTR_STRING(str);
-    s[0] = '(';
-    s[1] = 0;
-    gap_strlcat(s, CONST_CSTR_STRING(NAME_FUNC(oper1)), str_len);
-    gap_strlcat(s, " and ", str_len);
-    gap_strlcat(s, CONST_CSTR_STRING(NAME_FUNC(oper2)), str_len);
-    gap_strlcat(s, ")", str_len);
-    SET_LEN_STRING(str, str_len - 1);
+    SET_LEN_STRING(str, 0);
+    AppendCStr(str, "(", 1);
+    AppendString(str, NAME_FUNC(oper1));
+    AppendCStr(str, " and ", 5);
+    AppendString(str, NAME_FUNC(oper2));
+    AppendCStr(str, ")", 1);
 
     getter = NewFunctionT( T_FUNCTION, sizeof(OperBag), str, 1,
                            ArglistObj, (ObjFunc)DoAndFilter );
