@@ -16,39 +16,7 @@
 #define GAP_MODULES_H
 
 #include "common.h"
-
-/****************************************************************************
-**
-*V  GAP_KERNEL_API_VERSION
-**
-**  'GAP_KERNEL_API_VERSION' gives the version of the GAP kernel. This value
-**  is used to check if kernel modules were built with a compatible kernel.
-**  This version is not the same as, and not connected to, the GAP version.
-**
-**  This is stored as
-**  'GAP_KERNEL_MAJOR_VERSION*1000 + GAP_KERNEL_MINOR_VERSION'.
-**
-**  The algorithm used is the following:
-**
-**  The kernel will not load a module compiled for a newer kernel.
-**
-**  The kernel will not load a module compiled for a different major version.
-**
-**  The kernel version is set in `configure.ac`. As a rule, when new
-**  backwards-compatible functionality is added, the major version stays the
-**  same and the minor version is incremented. When a backwards-incompatible
-**  change is made, the major version is increased and the minor version reset
-**  to zero.
-**
-**  The kernel version is a macro so it can be used by packages for
-**  conditional compilation of code using new kernel functionality.
-*/
-
-// GAP_KERNEL_MAJOR_VERSION and GAP_KERNEL_MINOR_VERSION are defined in
-// config.h
-
-#define GAP_KERNEL_API_VERSION                                               \
-    ((GAP_KERNEL_MAJOR_VERSION)*1000 + (GAP_KERNEL_MINOR_VERSION))
+#include "version.h"
 
 enum {
     /** builtin module */

@@ -15,7 +15,6 @@
 
 #include "system.h"
 
-#include "gap_version.h"
 #include "gaputils.h"
 #ifdef GAP_MEM_CHECK
 #include "gasman_intern.h"
@@ -25,6 +24,7 @@
 #include "sysopt.h"
 #include "sysroots.h"
 #include "sysstr.h"
+#include "version.h"
 
 #ifdef HPCGAP
 #include "hpc/misc.h"

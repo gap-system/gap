@@ -75,6 +75,7 @@ extern "C" {
 #include "trycatch.h"
 #include "vars.h"
 #include "vector.h"
+#include "version.h"
 #include "weakptr.h"
 
 #ifdef HPCGAP

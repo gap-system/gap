@@ -64,7 +64,7 @@ make
 * `extern/`: External libraries we bundle with GAP (such as GMP) are
   put in here.
 
-* `build/`: Generated code (such as `config.h` and `gap_version.c`) is put
+* `build/`: Generated code (such as `config.h` and `version.c`) is put
   into this directory.
 
 * `build/obj/`: All `*.o` resp. `*.lo` files are placed into this directory.

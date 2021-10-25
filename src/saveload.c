@@ -18,7 +18,6 @@
 #include "calls.h"
 #include "error.h"
 #include "finfield.h"
-#include "gap_version.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
 #endif
@@ -31,6 +30,7 @@
 #include "sysfiles.h"
 #include "sysopt.h"
 #include "sysstr.h"
+#include "version.h"
 
 #include <stdio.h>
 #include <unistd.h>

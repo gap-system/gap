@@ -115,7 +115,7 @@ GAPInput
     mkdir -p $SRCDIR/build/obj/src
     echo "garbage content 1" > $SRCDIR/${bool_d}
     echo "garbage content 2" > $SRCDIR/${bool_lo}
-    echo "garbage content 3" > $SRCDIR/build/gap_version.c
+    echo "garbage content 3" > $SRCDIR/build/version.c
 
     # test: `make clean` works and afterwards we can still `make`; in particular
     # build/config.h must be regenerated before any actual compilation
