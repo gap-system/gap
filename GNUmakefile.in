@@ -188,10 +188,15 @@ sysconfdir = @sysconfdir@
 # out-of-tree builds without accidentally picking up e.g. *.o files from the
 # wrong tree. Wee still have to be careful about build/config.h, though.
 #
-vpath %.h $(srcdir)
-vpath %.c $(srcdir)
-vpath %.cc $(srcdir)
-vpath %.s $(srcdir)
+vpath src/%.h $(srcdir)
+vpath src/%.c $(srcdir)
+vpath src/%.cc $(srcdir)
+vpath src/%.s $(srcdir)
+
+vpath src/hpc/%.h $(srcdir)
+vpath src/hpc/%.c $(srcdir)
+vpath src/hpc/%.cc $(srcdir)
+vpath src/hpc/%.s $(srcdir)
 
 
 #
