@@ -62,20 +62,18 @@ enum {
 
 #if __has_attribute(always_inline)
 #define HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE 1
-#else
-#undef HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE
 #endif
 
 #if __has_attribute(noreturn)
 #define HAVE_FUNC_ATTRIBUTE_NORETURN 1
-#else
-#undef HAVE_FUNC_ATTRIBUTE_NORETURN
 #endif
 
 #if __has_attribute(noinline)
 #define HAVE_FUNC_ATTRIBUTE_NOINLINE 1
-#else
-#undef HAVE_FUNC_ATTRIBUTE_NOINLINE
+#endif
+
+#if __has_attribute(format)
+#define HAVE_FUNC_ATTRIBUTE_FORMAT 1
 #endif
 
 #endif
