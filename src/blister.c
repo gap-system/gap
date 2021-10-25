@@ -84,6 +84,8 @@
 #include "saveload.h"
 #include "set.h"
 
+#include "config.h"
+
 
 #define RequireBlist(funcname, op)                                           \
     RequireArgumentCondition(funcname, op, IsBlistConv(op),                  \

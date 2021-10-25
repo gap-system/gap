@@ -38,6 +38,8 @@
 #include "sysstr.h"
 #include "vars.h"
 
+#include "config.h"
+
 #ifdef HAVE_DLOPEN
 #include <dlfcn.h>
 #endif

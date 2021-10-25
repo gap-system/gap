@@ -35,6 +35,8 @@
 #include "sysfiles.h"
 #include "vars.h"
 
+#include "config.h"
+
 #ifdef USE_GASMAN
 #include "sysmem.h"
 #endif

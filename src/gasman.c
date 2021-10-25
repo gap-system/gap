@@ -124,6 +124,8 @@
 
 #include "bags.inc"
 
+#include "config.h"
+
 #include <setjmp.h>
 #include <string.h>
 

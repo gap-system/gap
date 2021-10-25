@@ -58,6 +58,8 @@
 #include "boehm_gc.h"
 #endif
 
+#include "config.h"
+
 #include <gmp.h>
 
 static Obj Error;

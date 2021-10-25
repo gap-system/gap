@@ -79,6 +79,8 @@
 #include "stats.h"
 #include "stringobj.h"
 
+#include "config.h"
+
 
 /* TODO: Remove after Ward2 */
 #ifndef WARD_ENABLED

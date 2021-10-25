@@ -11,6 +11,9 @@
 **  file and stream operations.
 */
 
+// ensure we can access large files
+#define _FILE_OFFSET_BITS 64
+
 #include "sysfiles.h"
 
 #include "bool.h"
@@ -34,6 +37,8 @@
 #include "system.h"
 
 #include "hpc/thread.h"
+
+#include "config.h"
 
 #include <assert.h>
 #include <errno.h>
