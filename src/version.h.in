@@ -1,0 +1,106 @@
+/****************************************************************************
+**
+**  This file is part of GAP, a system for computational discrete algebra.
+**
+**  Copyright of GAP belongs to its developers, whose names are too numerous
+**  to list here. Please refer to the COPYRIGHT file for details.
+**
+**  SPDX-License-Identifier: GPL-2.0-or-later
+**
+**  This file contains the GAP kernel version
+*/
+
+#ifndef GAP_VERSION_H
+#define GAP_VERSION_H
+
+#include "common.h"
+
+
+/****************************************************************************
+**
+**  GAP_KERNEL_MAJOR_VERSION
+**
+**  The major version of the kernel ABI
+*/
+#define GAP_KERNEL_MAJOR_VERSION @GAP_KERNEL_MAJOR_VERSION@
+
+
+/****************************************************************************
+**
+**  GAP_KERNEL_MINOR_VERSION
+**
+**  The minor version of the kernel ABI
+*/
+#define GAP_KERNEL_MINOR_VERSION @GAP_KERNEL_MINOR_VERSION@
+
+
+/****************************************************************************
+**
+**  GAP_KERNEL_API_VERSION
+**
+**  'GAP_KERNEL_API_VERSION' gives the version of the GAP kernel. This value
+**  is used to check if kernel modules were built with a compatible kernel.
+**  This version is not the same as, and not connected to, the GAP version.
+**
+**  This is stored as
+**  'GAP_KERNEL_MAJOR_VERSION*1000 + GAP_KERNEL_MINOR_VERSION'.
+**
+**  The algorithm used is the following:
+**
+**  The kernel will not load a module compiled for a newer kernel.
+**
+**  The kernel will not load a module compiled for a different major version.
+**
+**  The kernel version is set in `configure.ac`. As a rule, when new
+**  backwards-compatible functionality is added, the major version stays the
+**  same and the minor version is incremented. When a backwards-incompatible
+**  change is made, the major version is increased and the minor version reset
+**  to zero.
+**
+**  The kernel version is a macro so it can be used by packages for
+**  conditional compilation of code using new kernel functionality.
+*/
+#define GAP_KERNEL_API_VERSION                                               \
+    ((GAP_KERNEL_MAJOR_VERSION)*1000 + (GAP_KERNEL_MINOR_VERSION))
+
+
+/****************************************************************************
+**
+*V  SyKernelVersion . . . . . . . . . . . . . . . . . . kernel version number
+**
+**  'SyKernelVersion' is something like "4.37.2" or "4.37dev".
+*/
+extern const char * SyKernelVersion;
+
+
+/****************************************************************************
+**
+*V  SyReleaseDay . . . . . . . . . . . . . . release date of this GAP version
+**
+**  'SyReleaseDay' is the date of the release, e.g. "19-Jun-2019"; for
+**  development versions, this is set to "today".
+*/
+extern const char * SyReleaseDay;
+
+
+/****************************************************************************
+**
+*V  SyBuildVersion . . . . . . . . . . . . . . . . . source version for build
+**
+**  'SyBuildVersion' is identical to 'SyKernelVersion' for release versions.
+**  For development versions, it is something like "4.37dev-302-g09161ee".
+*/
+extern const char * SyBuildVersion;
+
+
+/****************************************************************************
+**
+*V  SyBuildDateTime . . . . . . . . . . . . . . . date the build was compiled
+**
+**  'SyBuildDateTime' is identical to 'SyReleaseDay' for release versions.
+**  For development versions, it is something like "2020-01-30 09:48:08" in
+**  local time.
+*/
+extern const char * SyBuildDateTime;
+
+#endif // GAP_VERSION_H

@@ -18,7 +18,6 @@
 #include "compiler.h"
 #include "error.h"
 #include "funcs.h"
-#include "gap_version.h"
 #include "gapstate.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
@@ -43,6 +42,7 @@
 #include "sysstr.h"
 #include "trycatch.h"
 #include "vars.h"
+#include "version.h"
 
 #ifdef HPCGAP
 #include "hpc/misc.h"

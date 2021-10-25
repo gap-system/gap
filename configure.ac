@@ -809,9 +809,6 @@ gap_kernel_minor_version=libtool_age
 AC_SUBST([gap_kernel_major_version])
 AC_SUBST([gap_kernel_minor_version])
 
-AC_DEFINE_UNQUOTED([GAP_KERNEL_MAJOR_VERSION], $gap_kernel_major_version, [The major version of the kernel ABI])
-AC_DEFINE_UNQUOTED([GAP_KERNEL_MINOR_VERSION], $gap_kernel_minor_version, [The minor version of the kernel ABI])
-
 dnl
 dnl User setting: Compatibility mode (on by default)
 dnl

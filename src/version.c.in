@@ -10,7 +10,7 @@
 **  This file contains the GAP build version
 */
 
-#include "gap_version.h"
+#include "version.h"
 
 
 /****************************************************************************
