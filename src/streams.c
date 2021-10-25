@@ -38,6 +38,8 @@
 #include "trycatch.h"
 #include "vars.h"
 
+#include "config.h"
+
 #include <dirent.h>
 #include <errno.h>
 #include <stdlib.h>

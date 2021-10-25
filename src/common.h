@@ -11,8 +11,6 @@
 #ifndef GAP_COMMON_H
 #define GAP_COMMON_H
 
-#include "config.h"
-
 #include <assert.h>
 #include <stdint.h>
 

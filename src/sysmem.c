@@ -19,6 +19,8 @@
 #include "sysfiles.h"
 #include "sysopt.h"
 
+#include "config.h"
+
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>
 #endif

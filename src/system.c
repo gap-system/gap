@@ -38,6 +38,8 @@
 #include "boehm_gc.h"
 #endif
 
+#include "config.h"
+
 #include <assert.h>
 #include <fcntl.h>
 #include <stdarg.h>

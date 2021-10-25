@@ -130,7 +130,6 @@ far off.
 
 Compatibility mode does the following things:
 
-* create `sysinfo.gap` file in the build dir
 * create a symlink `sysinfo.gap-default$ABI` pointing at `sysinfo.gap`
 * create a `bin/$GAPARCH/config.h` symlink pointing at `build/config.h`
 * create a `bin/$GAPARCH/gac` symlink pointing at `gac`
@@ -249,13 +248,6 @@ support for free. While it does indeed provide various parts of the puzzle,
 from our perspective those are mostly the easy ones (they may be tedious, but
 are not conceptually difficult). The real obstacles for `make install` support
 are unfortunately not resolved by using `automake`. Among these are:
-- dealing with installing the generated `config.h`. This file should ideally
-  not be installed at all and to this end not be included from any other
-  headers. But note that in GAP, currently *all* headers need to include
-  config.h directly or indirectly... Alternatively one can attempt to use
-  something like `AX_PREFIX_CONFIG_H`, but this, too, has its pitfalls
-- removing dependencies on compiler specific features in the headers and API,
-  mainly as introduced by `config.h`
 - making `gac` installable; in particular installing a version of GNU
   libtool needed by `gac`
 - The probably hardest problem of them all is coming up with a sane way for
