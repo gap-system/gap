@@ -716,13 +716,17 @@ local   emb, info;
 	  info.basegens[i]));
       fi;
     elif i=info.degI+1 then
-      emb:= GroupHomomorphismByImagesNC(info.I,W,GeneratorsOfGroup(info.I),
-                                        info.hgens);
-      emb:= GroupHomomorphismByImagesNC(info.groups[2],W,
-             GeneratorsOfGroup(info.groups[2]),
-             List(GeneratorsOfGroup(info.groups[2]),
-	          i->ImageElm(emb,ImageElm(info.alpha,i))));
-      SetIsInjective(emb,true);
+      if IsBound(info.productType) and info.productType=true then
+        emb:= GroupHomomorphismByImagesNC(info.I,W,GeneratorsOfGroup(info.I),
+                                          info.hgens);
+        emb:= GroupHomomorphismByImagesNC(info.groups[2],W,
+              GeneratorsOfGroup(info.groups[2]),
+              List(GeneratorsOfGroup(info.groups[2]),
+              i->ImageElm(emb,ImageElm(info.alpha,i))));
+        SetIsInjective(emb,true);
+      else
+        emb := Objectify( info.embeddingType , rec( component := i ) );
+      fi;
     else
       Error("no embedding <i> defined");
     fi;
@@ -739,7 +743,15 @@ end );
 ##
 InstallMethod( Source,"perm wreath product embedding",
   true, [ IsEmbeddingWreathProductPermGroup ], 0,
-    emb -> WreathProductInfo( Range( emb ) ).groups[1] );
+    function(emb)
+      local info;
+      info := WreathProductInfo( Range( emb ) );
+      if emb!.component = info.degI + 1 then
+        return info.groups[2];
+      else
+        return info.groups[1];
+      fi;
+    end);
 
 #############################################################################
 ##
@@ -750,7 +762,35 @@ InstallMethod( ImagesRepresentative,
         [ IsEmbeddingImprimitiveWreathProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
-    return g ^ WreathProductInfo( Range( emb ) ).perms[ emb!.component ];
+    local info, degI, x, shift, domI, degG, i, k, l;
+    info := WreathProductInfo(Range(emb));
+    degI := info.degI;
+    if emb!.component = degI + 1 then
+      x := g ^ info.alpha;
+      domI := MovedPoints(Range(info.alpha));
+      # force trivial group to act on 1 point
+      if IsEmpty( domI )  then
+        domI := [ 1 ];
+      fi;
+      degG := Length(MovedPoints(info.groups[1]));
+      # force trivial group to act on 1 point
+      if degG = 0 then
+        degG := 1;
+      fi;
+      shift := [];
+      for i  in [1 .. degI ]  do
+        k := Position(domI, domI[i] ^ x);
+        if k = fail then
+          return fail;
+        fi;
+        for l  in [1 .. degG]  do
+          shift[(i - 1) * degG + l] := (k - 1) * degG + l;
+        od;
+      od;
+      return PermList(shift);
+    else
+      return g ^ info.perms[emb!.component];
+    fi;
 end );
 
 #############################################################################
@@ -764,11 +804,15 @@ InstallMethod( PreImagesRepresentative,
     function( emb, g )
     local info;
     info := WreathProductInfo( Range( emb ) );
-    if not g in info.base then
-      return fail;
+    if emb!.component = info.degI + 1 then
+      return g ^ Projection(Range(emb));
+    else
+      if not g in info.base then
+        return fail;
+      fi;
+      return RestrictedPermNC( g, info.components[ emb!.component ] )
+            ^ (info.perms[ emb!.component ] ^ -1);
     fi;
-    return RestrictedPermNC( g, info.components[ emb!.component ] )
-           ^ (info.perms[ emb!.component ] ^ -1);
 end );
 
 
