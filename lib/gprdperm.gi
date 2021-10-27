@@ -863,7 +863,7 @@ end);
 InstallMethod( ListWreathProductElementNC, "perm wreath product", true,
  [ IsPermGroup and HasWreathProductInfo, IsObject, IsBool ], 0,
 function(G, x, testDecomposition)
-  local info, list, h, f, degK, i, j, constPoints, imageComponents, comp, restPerm;
+  local info, list, h, hIm, f, degK, i, j, constPoints, imageComponents, comp, restPerm;
 
   info := WreathProductInfo(G);
   # The top group element
@@ -871,8 +871,12 @@ function(G, x, testDecomposition)
   if h = fail then
     return fail;
   fi;
+  hIm := ImageElm(Embedding(G, info.degI + 1), h);
+  if hIm = fail then
+    return fail;
+  fi;
   # The product of the base group elements
-  f := x * Image(Embedding(G, info.degI + 1), h) ^ (-1);
+  f := x * hIm ^ (-1);
   list := EmptyPlist(info!.degI + 1);
   list[info.degI + 1] := h;
   # Imprimitive Action, tuple (i, j) corresponds
