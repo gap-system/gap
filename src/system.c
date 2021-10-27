@@ -865,8 +865,8 @@ void InitSystem (
     /* the users home directory                                            */
     if ( getenv("HOME") != 0 ) {
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
-# if defined(SYS_IS_DARWIN) && SYS_IS_DARWIN
-        /* On Darwin, add .gap to the sys roots, but leave */
+# if defined(__APPLE__)
+        /* On Mac OS, add .gap to the sys roots, but leave */
         /* DotGapPath at $HOME/Library/Preferences/GAP     */
         strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
         if (!IgnoreGapRC) {
