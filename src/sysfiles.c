@@ -3223,7 +3223,7 @@ Obj SyIsDir ( const Char * name )
 *F  SyReadStringFile( <fid> ) . . . . . . . . read file content into a string
 **
 */
-Obj SyReadStringFile(Int fid)
+static Obj SyReadStringFile(Int fid)
 {
     Char            buf[32769];
     Int             ret, len;
@@ -3297,23 +3297,17 @@ static Obj SyReadStringFileStat(Int fid)
         return Fail;
     }
 }
+#endif
 
 Obj SyReadStringFid(Int fid)
 {
-    if (syBuf[fid].type != raw_socket) {
-        return SyReadStringFile(fid);
-    } else {
+#if !defined(SYS_IS_CYGWIN32)
+    if (syBuf[fid].type == raw_socket) {
         return SyReadStringFileStat(fid);
     }
-}
-
-#else
-
-Obj SyReadStringFid(Int fid) {
+#endif
     return SyReadStringFile(fid);
 }
-
-#endif
 
 
 #ifdef USE_CUSTOM_MEMMOVE

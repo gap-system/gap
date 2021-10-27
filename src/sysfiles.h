@@ -455,16 +455,9 @@ Char * SyFgetsSemiBlock(Char * line, UInt length, Int fid);
  **
  *F SyReadStringFid( <fid> )
  **   - read file given by <fid> into a string
- *F SyReadStringFile( <fid> )
- **   - read file given by <fid> into a string, only rely on read()
- *F SyReadStringFileStat( <fid> )
- **   - read file given by <fid> into a string, use stat() to determine
- **     size of file before reading. This does not work for pipes
  */
 
 Obj SyReadStringFid(Int fid);
-Obj SyReadStringFile(Int fid);
-Obj SyReadStringFileGeneric(Int fid);
 
 
 // A bug in memmove() provided by glibc 2.21 to 2.27 on 32-bit systems can lead
