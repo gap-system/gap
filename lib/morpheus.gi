@@ -2634,7 +2634,11 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
   findElm:=function(gp,o,z,r)
   local a,e;
     repeat
-      a:=PseudoRandom(gp);
+      if IsSubgroupFpGroup(gp) then
+        a:=Random(gp);
+      else
+        a:=PseudoRandom(gp);
+      fi;
       e:=Order(a);
       if e in r then
         a:=a^QuoInt(e,o);
@@ -2725,7 +2729,11 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
           gens:=[findElm(g,2,z,rt),findElm(g,e,y,re)];
           cnt:=0;
           while not isFull(SubgroupNC(g,gens)) and cnt<20 do
-            gens[2]:=gens[2]^PseudoRandom(g);
+            if IsSubgroupFpGroup(g) then
+              gens[2]:=gens[2]^Random(g);
+            else
+              gens[2]:=gens[2]^PseudoRandom(g);
+            fi;
             cnt:=cnt+1;
           od;
           if cnt=20 then gens:=fail;fi;
@@ -2758,7 +2766,11 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     cnt:=2;
     while b=fail or y>z*2^(QuoInt(cnt,2)) do
       cnt:=cnt+1;
-      gens[2]:=PseudoRandom(g);
+      if IsSubgroupFpGroup(g) then
+        gens[2]:=Random(g);
+      else
+        gens[2]:=PseudoRandom(g);
+      fi;
       if isFull(SubgroupNC(g,gens)) then 
         b:=gens;
         y:=Size(Centralizer(g,gens[2]));
