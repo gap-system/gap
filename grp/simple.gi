@@ -1074,7 +1074,11 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
     efactors:=[Gcd(par[1]+1,par[2]+1),2*expo,1];
   elif id.series="B" then
     classical:=["O",2*par[1]+1,par[2]];
-    nam:=Concatenation("O",String(2*par[1]+1),"(",String(par[2]),")");
+    if IsEvenInt(par[2]) then
+      nam:=Concatenation("S",String(2*par[1]),"(",String(par[2]),")");
+    else
+      nam:=Concatenation("O",String(2*par[1]+1),"(",String(par[2]),")");
+    fi;
     if par[1]=2 and par[2]=3 then
       nam:="U4(2)"; # library name
     fi;
