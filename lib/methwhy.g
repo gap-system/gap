@@ -412,7 +412,7 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ShowDeclarationsOfOperation",function(oper)
-    local locs, reqs, i, r;
+    local locs, reqs, i, r, f;
     if not IsOperation(oper) then
         Error("<oper> must be an operation");
     fi;
@@ -422,8 +422,13 @@ BIND_GLOBAL("ShowDeclarationsOfOperation",function(oper)
         return;
     fi;
     reqs := GET_OPER_FLAGS(oper);
+    f := function(filt)
+             filt:=NamesFilter(filt);
+             if Length(filt) = 0 then filt := ["IsObject"]; fi;
+             return filt;
+         end;
     for i in [1.. Length(locs)] do
-        r := List(reqs[i], r -> JoinStringsWithSeparator(NamesFilter(r), " and \c"));
+        r := List(reqs[i], r -> JoinStringsWithSeparator(f(r), " and \c"));
         Print(String(i, 3), ": ", locs[i][1], "\c:", locs[i][2], "\c",
               " with ", Length(reqs[i]), "\c",
               " arguments, and filters [ ", "\c",

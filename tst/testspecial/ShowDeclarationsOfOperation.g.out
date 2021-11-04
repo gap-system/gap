@@ -1,0 +1,5 @@
+gap> ShowDeclarationsOfOperation(Position);
+Available declarations for operation <Operation "Position">:
+  1: GAPROOT/lib/list.gd:LINE with 2 arguments, and filters [ IsList, IsObject ]
+  2: GAPROOT/lib/list.gd:LINE with 3 arguments, and filters [ IsList, IsObject, IsInt ]
+gap> QUIT;
