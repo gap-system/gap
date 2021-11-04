@@ -746,8 +746,10 @@ InstallMethod( Source,"perm wreath product embedding",
     function(emb)
       local info;
       info := WreathProductInfo( Range( emb ) );
+      # Embedding into top group
       if emb!.component = info.degI + 1 then
         return info.groups[2];
+      # Embedding into a component of the base group
       else
         return info.groups[1];
       fi;
@@ -765,32 +767,33 @@ InstallMethod( ImagesRepresentative,
     local info, degI, x, shift, domI, degG, i, k, l;
     info := WreathProductInfo(Range(emb));
     degI := info.degI;
-    if emb!.component = degI + 1 then
-      x := g ^ info.alpha;
-      domI := MovedPoints(Range(info.alpha));
-      # force trivial group to act on 1 point
-      if IsEmpty( domI )  then
-        domI := [ 1 ];
-      fi;
-      degG := Length(MovedPoints(info.groups[1]));
-      # force trivial group to act on 1 point
-      if degG = 0 then
-        degG := 1;
-      fi;
-      shift := [];
-      for i  in [1 .. degI ]  do
-        k := Position(domI, domI[i] ^ x);
-        if k = fail then
-          return fail;
-        fi;
-        for l  in [1 .. degG]  do
-          shift[(i - 1) * degG + l] := (k - 1) * degG + l;
-        od;
-      od;
-      return PermList(shift);
-    else
+    # Embedding into a component of the base group
+    if emb!.component <> degI + 1 then
       return g ^ info.perms[emb!.component];
     fi;
+    # Embedding into top group
+    x := g ^ info.alpha;
+    domI := MovedPoints(Range(info.alpha));
+    # force trivial group to act on 1 point
+    if IsEmpty( domI )  then
+      domI := [ 1 ];
+    fi;
+    degG := NrMovedPoints(info.groups[1]);
+    # force trivial group to act on 1 point
+    if degG = 0 then
+      degG := 1;
+    fi;
+    shift := [];
+    for i  in [1 .. degI]  do
+      k := Position(domI, domI[i] ^ x);
+      if k = fail then
+        return fail;
+      fi;
+      for l  in [1 .. degG]  do
+        shift[(i - 1) * degG + l] := (k - 1) * degG + l;
+      od;
+    od;
+    return PermList(shift);
 end );
 
 #############################################################################
@@ -804,15 +807,16 @@ InstallMethod( PreImagesRepresentative,
     function( emb, g )
     local info;
     info := WreathProductInfo( Range( emb ) );
+    # Embedding into top group
     if emb!.component = info.degI + 1 then
       return g ^ Projection(Range(emb));
-    else
-      if not g in info.base then
-        return fail;
-      fi;
-      return RestrictedPermNC( g, info.components[ emb!.component ] )
-            ^ (info.perms[ emb!.component ] ^ -1);
     fi;
+    # Embedding into component of base group
+    if not g in info.base then
+      return fail;
+    fi;
+    return RestrictedPermNC( g, info.components[ emb!.component ] )
+          ^ (info.perms[ emb!.component ] ^ -1);
 end );
 
 
