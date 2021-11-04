@@ -5,7 +5,7 @@ gap> START_TEST("kernel/bool.tst");
 
 # TypeBool
 gap> t:=TypeObj(true);
-<Type: (BooleanFamily, [ IsBool, IsInternalRep ]), data: fail,>
+<Type: (BooleanFamily, [ IsBool, IsInternalRep ]), data: fail>
 gap> IsIdenticalObj(t, TypeObj(false));
 true
 gap> IsIdenticalObj(t, TypeObj(fail));

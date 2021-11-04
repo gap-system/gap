@@ -40,12 +40,11 @@ function(flags, max)
     local names;
 
     names := NamesFilter(flags);
-    names := names{[1..Minimum(Length(names), max)]};
-    names := JoinStringsWithSeparator(names, ", ");
-
-    if Length(NamesFilter(flags)) > max then
-        Append(names, ", ...");
+    if Length(names) > max then
+        names := names{[1..max]};
+        Add(names, "...");
     fi;
+    names := JoinStringsWithSeparator(names, ", ");
 
     return Concatenation("[ ", names, " ]");
 end);
@@ -113,7 +112,7 @@ function ( type )
 
     data := type![POS_DATA_TYPE];
     if data <> false  then
-        Append(res, STRINGIFY(", data: ", data, "," ) );
+        Append(res, STRINGIFY(", data: ", data ) );
     fi;
     Append(res, ">");
     return res;
