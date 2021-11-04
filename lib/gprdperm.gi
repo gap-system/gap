@@ -610,6 +610,7 @@ local	G,H,	    # factors
     if IsEmpty( domI )  then
         domI := [ 1 ];
     fi;
+    domI := MakeImmutable(Set(domI));
     degI := Length( domI );
 
     # make the generators of the direct product of <deg> copies of <G>
@@ -674,6 +675,7 @@ local	G,H,	    # factors
       basegens:=basegens,
       I      := I,
       degI   := degI,
+      domI   := domI,
       hgens  := hgens,
       components := components,
       embeddingType := NewType(
@@ -773,11 +775,7 @@ InstallMethod( ImagesRepresentative,
     fi;
     # Embedding into top group
     x := g ^ info.alpha;
-    domI := MovedPoints(Range(info.alpha));
-    # force trivial group to act on 1 point
-    if IsEmpty( domI )  then
-      domI := [ 1 ];
-    fi;
+    domI := info.domI;
     degG := NrMovedPoints(info.groups[1]);
     # force trivial group to act on 1 point
     if degG = 0 then
