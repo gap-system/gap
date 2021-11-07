@@ -1572,25 +1572,58 @@ end);
 # rewriting systems for simple groups based on BN pairs, following 
 # (Schmidt,  Finite groups have short rewriting systems. Computational group
 # theory and the theory of groups, II, 185–200, Contemp. Math., 511.)
-BindGlobal("SplitBNRewritingPresentation",function(group,borel,weyl)
+BindGlobal("SplitBNRewritingPresentation",function(group,borel,weyl,newstyle)
 local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   lev,ord,monb,mons,gp,trawo,trawou,hom,tst,dc,dcreps,act,decomp,ranb,ranw,
   nofob,nofow,reduce,pcgs,can,pri,stb,addrule,invmap,jj,wo,pciso,
   borelelm,borelran,borelreduce,bpairs,brws,specialborelreduce,
   rt,dcnums,rti,sel,maketzf,mytzf,borela,pc,bpcgs,noncomm,noncelm,
-  wgens,weylword,borelword,coxrels,ha,directerr;
+  wgens,weylword,borelword,coxrels,ha,directerr,bhom;
 
   specialborelreduce:=false;
+  if Size(ClosureGroup(borel,weyl))<Size(group) then return fail;fi;
   ha:=Intersection(borel,weyl);
   dc:=DoubleCosets(group,borel,borel);
 
-  # use exactly the generators of borel
-  bpcgs:=PcgsByPcSequence(FamilyObj(One(borel)),GeneratorsOfGroup(borel));
-  pc:=PcGroupWithPcgs(bpcgs);
-  pciso:=GroupHomomorphismByImages(borel,pc,bpcgs,FamilyPcgs(pc));
+  if newstyle then
 
-  cb:=ConfluentMonoidPresentationForGroup(pc);
+    # use exactly the generators of borel
+    bpcgs:=PcgsByPcSequence(FamilyObj(One(borel)),GeneratorsOfGroup(borel));
+    pc:=PcGroupWithPcgs(bpcgs);
+    pciso:=GroupHomomorphismByImages(borel,pc,bpcgs,FamilyPcgs(pc));
+
+    cb:=ConfluentMonoidPresentationForGroup(pc);
+  else
+    if Size(Intersection(borel,weyl))>1 then
+      # can we fix this?
+      # asume weyl is not too large
+      cs:=Concatenation(List(ConjugacyClassesSubgroups(weyl),AsList));;
+      SortBy(cs,x->-Size(x));
+      l:=false;
+      i:=1;
+      while l=false and i<=Length(cs) do
+        if Size(Intersection(borel,cs[i]))=1 and Size(cs[i])>=Length(dc)
+          and Size(ClosureGroup(borel,cs[i]))=Size(group) and 
+          Length(Set(Elements(cs[i]),
+            x->PositionProperty(dc,y->x in y)))=Length(dc) then
+          Info(InfoFpGroup,1,"replaced weyl candidate with better subgroup\n");
+          l:=cs[i];
+        fi;
+        i:=i+1;
+      od;
+      if l<>false then
+        weyl:=l;
+      fi;
+    fi;
+
+    # Use SpecialPcgs for borel
+
+    pciso:=IsomorphismSpecialPcGroup(borel);
+    cb:=ConfluentMonoidPresentationForGroup(Range(pciso));
+  fi;
+
   brws:=ReducedConfluentRewritingSystem(Range(cb.monhom));
+
   # force going to pc group, as this will give better ordering
   isob:=GroupHomomorphismByFunction(borel,Range(cb.fphom),
     x->ImagesRepresentative(cb.fphom,ImagesRepresentative(pciso,x)),
@@ -1601,7 +1634,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   wgens:=GeneratorsOfGroup(weyl);
 
   bgens:=List(GeneratorsOfGroup(b),x->PreImagesRepresentative(isob,x));
-  if bgens<>GeneratorsOfGroup(borel) then Error("gens");fi;
+  if newstyle and bgens<>GeneratorsOfGroup(borel) then Error("gens");fi;
 
   bpairs:=Concatenation(List(bgens,x->[x,x^-1]));
   monoid:=Range(cb.monhom);
@@ -1729,26 +1762,37 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     return PreImagesRepresentative(cb.monhom,x);
   end;
 
+  if newstyle then
 
-  if IsBound(weyl!.epiweyl) then
-    cs:=GroupHomomorphismByImages(weyl,weyl!.epiweyl,
-      GeneratorsOfGroup(weyl),GeneratorsOfGroup(weyl!.epiweyl));
-    if Size(ha)>1 then
-      w:=CompositionSeriesThrough(weyl,[ha]);
-      w:=Concatenation([weyl],Filtered(w,x->IsSubset(ha,x)));
-      cs:=IsomorphismFpGroupBySubnormalSeries(weyl,w,"w":knownfactor:=cs);
+    if IsBound(weyl!.epiweyl) then
+      cs:=GroupHomomorphismByImages(weyl,weyl!.epiweyl,
+        GeneratorsOfGroup(weyl),GeneratorsOfGroup(weyl!.epiweyl));
+      if Size(ha)>1 then
+        w:=CompositionSeriesThrough(weyl,[ha]);
+        w:=Concatenation([weyl],Filtered(w,x->IsSubset(ha,x)));
+        cs:=IsomorphismFpGroupBySubnormalSeries(weyl,w,"w":knownfactor:=cs);
+      fi;
+    else
+      cs:=IsomorphismFpGroupByGenerators(weyl,wgens);
     fi;
-  else
-    cs:=IsomorphismFpGroupByGenerators(weyl,wgens);
-  fi;
-  w:=IsomorphismFpMonoid(Range(cs));
-  k:=KnuthBendixRewritingSystem(Range(w));
-  MakeConfluent(k);
-  k:=Rules(k);
-  w:=FreeMonoidOfFpMonoid(Range(w))/k;
-  w:=MakeFpGroupToMonoidHomType1(Range(cs),w);
+    w:=IsomorphismFpMonoid(Range(cs));
+    k:=KnuthBendixRewritingSystem(Range(w));
+    MakeConfluent(k);
+    k:=Rules(k);
+    w:=FreeMonoidOfFpMonoid(Range(w))/k;
+    w:=MakeFpGroupToMonoidHomType1(Range(cs),w);
 
-  cs:=rec(fphom:=cs,monhom:=w);
+    cs:=rec(fphom:=cs,monhom:=w);
+  else
+    cs:=IsomorphismFpGroupForWeyl(weyl);
+    if cs<>fail then
+      cs:=rec(fphom:=cs,monhom:=IsomorphismFpMonoid(Range(cs)));
+    else
+      cs:=ConfluentMonoidPresentationForGroup(weyl);
+    fi;
+
+  fi;
+
   isos:=cs.fphom;
   w:=Range(isos);
   a:=MappingGeneratorsImages(isos)[1];
@@ -1807,15 +1851,18 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     return CanonicalRightCosetElement(borel,r*g);
   end;
 
+  bhom:=GroupHomomorphismByImages(borel,Group(borela),bgens,borela);
+  Assert(0,bhom<>fail);
   decomp:=function(elm)
   local pos,rep;
     if elm in borel then return [elm,One(borel),One(borel)];fi;
     #pos:=PositionProperty(dc,y->elm in y);
     pos:=rti[PositionCanonical(rt,elm)];
-    #rep:=RepresentativeAction(borel,CanonicalRightCosetElement(borel,elm),
-    #       CanonicalRightCosetElement(borel,dcreps[pos]),act);
-    rep:=RepresentativeAction(borel,PositionCanonical(rt,elm),
-           PositionCanonical(rt,dcreps[pos]),bgens,borela,OnPoints);
+    #rep:=RepresentativeAction(borel,PositionCanonical(rt,elm),
+    #       PositionCanonical(rt,dcreps[pos]),bgens,borela,OnPoints);
+    rep:=PreImagesRepresentative(bhom,
+      RepresentativeAction(Range(bhom),PositionCanonical(rt,elm),
+           PositionCanonical(rt,dcreps[pos])));
     rep:=[elm*rep/dcreps[pos],dcreps[pos],rep^-1];
     Assert(0,rep[1] in borel);
     return rep;
@@ -1857,7 +1904,8 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   rels:=[];
   mytzf:=maketzf(rels);
 
-  directerr:=true;
+  if newstyle then directerr:=true;fi;
+
   addrule:=function(rule)
   local left,right,let,old,p;
     left:=reduce(rule[1],rels,mytzf);
@@ -1903,6 +1951,15 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
              Subword(rule[2],1,Length(rule[2])-1)];
     od;
 
+# are they now redundant?
+left:=reduce(rule[1],rels,mytzf);
+right:=reduce(rule[2],rels,mytzf);
+if IsLessThanUnder(ord,right,left) then
+  rule:=[left,right];
+else
+  rule:=[right,left];
+fi;
+if rule[1]=rule[2] then return;fi;
 
     Add(rels,rule);
     rule:=List(rule,LetterRepAssocWord);
@@ -1912,7 +1969,6 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     else
       Add(mytzf[p],rule);
     fi;
-    #if Length(rels)>10 then Error("KKK"); else mytzf:=maketzf(rels); fi;
   end;
 
   lev:=ShallowCopy(LevelsOfGenerators(cb.ordering));
@@ -1961,618 +2017,65 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     invmap[LetterRepAssocWord(trawo(i))[1]]:=trawo(i^-1);
   od;
 
-  weylword:=w->MappedWord(nofow(Image(cs.fphom,w)),
-        GeneratorsOfGroup(Range(cs.fphom)),
-        GeneratorsOfGroup(gp){[Length(GeneratorsOfGroup(Range(isob)))+1
-          ..Length(GeneratorsOfGroup(gp))]});
-  borelword:=w->MappedWord(nofob(Image(isob,w)),GeneratorsOfGroup(Range(isob)),
-        GeneratorsOfGroup(gp){[1..Length(GeneratorsOfGroup(Range(isob)))]});
+  if newstyle then
 
-  coxrels:=[];
-  if Size(ha)>1 then
-    for i in Pcgs(ha) do
-      a:=[weylword(i),borelword(i)];
-      Info(InfoFpGroup,2,"intersection:",a);
-      a:=List(a,x->trawou(x));
-      addrule(a);
-    od;
-    b:=IsomorphismFpMonoid(weyl!.epiweyl);
-    k:=KnuthBendixRewritingSystem(Range(b));
-    MakeConfluent(k);
-    for i in Rules(k) do
-      a:=List(i,LetterRepAssocWord);
-      if ForAll(a,x->ForAll(x,IsOddInt)) then
-        #Relation does not involve inverses
-        # write with weyl numbers
-        a:=List(a,x->List(x,y->(y+1)/2));
-        Add(coxrels,a);
-      fi;
-    od;
-  else
-    for i in RelationsOfFpMonoid(mons) do
-      a:=List(i,LetterRepAssocWord);
-      if ForAll(a,x->ForAll(x,IsOddInt)) then
-        #Relation does not involve inverses
-        # write with weyl numbers
-        a:=List(a,x->List(x,y->(y+1)/2));
-        Add(coxrels,a);
-      fi;
-    od;
-  fi;
+    weylword:=w->MappedWord(nofow(Image(cs.fphom,w)),
+          GeneratorsOfGroup(Range(cs.fphom)),
+          GeneratorsOfGroup(gp){[Length(GeneratorsOfGroup(Range(isob)))+1
+            ..Length(GeneratorsOfGroup(gp))]});
+    borelword:=w->MappedWord(nofob(Image(isob,w)),GeneratorsOfGroup(Range(isob)),
+          GeneratorsOfGroup(gp){[1..Length(GeneratorsOfGroup(Range(isob)))]});
 
-  directerr:=false;
-  for i in RelationsOfFpMonoid(monb) do
-    addrule(List(i,x->MappedWord(x,FreeGeneratorsOfFpMonoid(monb),
-      gens{[1..l]})));
-  od;
-
-  for i in RelationsOfFpMonoid(mons) do
-    addrule(List(i,x->MappedWord(x,FreeGeneratorsOfFpMonoid(mons),
-      gens{[l+1..Length(gens)]})));
-  od;
-  #directerr:=true;
-
-  noncomm:=List(wgens,x->[]);
-  # To use standard wreath product order, move borel to the right.
-
-  # relations b*w->w*b'
-  for i in [1..Length(wgens)] do
-    pri:=wgens[i];
-    for jj in [1..Length(bgens)] do
-      j:=bgens[jj];
-      k:=j^pri;
-      if k in borel then
-        a:=weylword(pri);
-        b:=borelword(j);
-        k:=borelword(k);
-        a:=[b*a,a*k];
+    coxrels:=[];
+    if Size(ha)>1 then
+      for i in Pcgs(ha) do
+        a:=[weylword(i),borelword(i)];
+        Info(InfoFpGroup,2,"intersection:",a);
         a:=List(a,x->trawou(x));
         addrule(a);
-      else
-        Add(noncomm[i],jj);
-      fi;
-    od;
-  od;
+      od;
+      b:=IsomorphismFpMonoid(weyl!.epiweyl);
+      k:=KnuthBendixRewritingSystem(Range(b));
+      MakeConfluent(k);
+      for i in Rules(k) do
+        a:=List(i,LetterRepAssocWord);
+        if ForAll(a,x->ForAll(x,IsOddInt)) then
+          #Relation does not involve inverses
+          # write with weyl numbers
+          a:=List(a,x->List(x,y->(y+1)/2));
+          Add(coxrels,a);
+        fi;
+      od;
+    else
+      for i in RelationsOfFpMonoid(mons) do
+        a:=List(i,LetterRepAssocWord);
+        if ForAll(a,x->ForAll(x,IsOddInt)) then
+          #Relation does not involve inverses
+          # write with weyl numbers
+          a:=List(a,x->List(x,y->(y+1)/2));
+          Add(coxrels,a);
+        fi;
+      od;
+    fi;
 
-  noncelm:=List(noncomm,x->Elements(Group(bgens{x})));
+    directerr:=false;
+  else
 
-  # relations   b*x*w -> x^(b^-1)*reduced(b*w) if xw  does not transform
-  for i in [1..Length(wgens)] do
-    for jj in Difference(noncelm[i],[One(group)]) do # non-mappable
-      for j in [1..Minimum(noncomm[i])-1] do # earlier generators
-        a:=weylword(wgens[i]);
-        pri:=borelword(bgens[j])*a;
-        pri:=reduce(trawou(pri),rels,mytzf); 
-        a:=[trawou(borelword(bgens[j])*borelword(jj)*a),
-            trawou(borelword(jj^Inverse(bgens[j])))*pri];
+    j:=Intersection(borel,weyl);
+    if Size(j)>1 then
+      for i in Pcgs(j) do
+        a:=[
+        MappedWord(Image(cs.fphom,i),GeneratorsOfGroup(Range(cs.fphom)),
+          GeneratorsOfGroup(gp){[Length(GeneratorsOfGroup(Range(isob)))+1
+            ..Length(GeneratorsOfGroup(gp))]}),
+        MappedWord(Image(isob,i),GeneratorsOfGroup(Range(isob)),
+          GeneratorsOfGroup(gp){[1..Length(GeneratorsOfGroup(Range(isob)))]})
+            ];
+        Info(InfoFpGroup,2,"intersection:",a);
+        a:=List(a,x->trawo(UnderlyingElement(x)));
         addrule(a);
       od;
-    od;
-  od;
-
-  # modified coxeter relations with blocking borels in between
-  # normalize using bn-pairs
-  for pri in coxrels do
-    pri:=pri[1];
-    a:=List(pri,x->trawou(weylword(wgens[x])));
-    for jj in Cartesian(noncelm{pri{[2..Length(pri)]}}) do
-      if not ForAll(jj,IsOne) then
-        b:=wgens[pri[1]]*Product([1..Length(jj)],x->jj[x]*wgens[pri[x+1]]);
-        j:=decomp(b);
-        j:=[borelword(j[1]),weylword(j[2]),borelword(j[3])];
-        k:=List(jj,x->trawou(borelword(x)));
-        b:=a[1]*Product([1..Length(jj)],x->k[x]*a[x+1]);
-        j:=j[1]*j[2]*j[3];
-        b:=[b,trawou(j)];
-        addrule(b);
-      fi;
-    od;
-  od;
-
-  # group relators to make sure it's the proper group
-  for i in RelatorsOfFpGroup(gp) do
-    # split in two -- not optimal, want to get minimal offset
-    j:=Length(i);
-    if IsEvenInt(j) then
-      j:=QuoInt(j+1,2);
-      a:=[Subword(i,1,j),Subword(i,j+1,Length(i))^-1];
-      if a[1]=a[2] then
-        a:=[Subword(i,1,j+1),Subword(i,j+2,Length(i))^-1];
-      fi;
-    else
-      j:=QuoInt(j+1,2);
-      a:=[Subword(i,1,j),Subword(i,j+1,Length(i))^-1];
     fi;
-    a:=List(a,trawo);
-    if IsLessThanUnder(ord,a[1],a[2]) then
-      a:=Reversed(a);
-    fi;
-    addrule(a);
-  od;
-
-  l:=[];
-  for i in FreeGeneratorsOfFpGroup(gp) do
-    Add(l,i);
-    Add(l,i^-1);
-  od;
-  tst:=List(rels,x->List(x,w->MappedWord(w,GeneratorsOfMonoid(f),l)));
-  tst:=List(tst,x->x[1]/x[2]);
-  Assert(2,Size(FreeGroupOfFpGroup(gp)/tst)=Size(group));
-
-  # back-reduce
-  repeat
-    jj:=[];
-    a:=true;
-    i:=1;
-    while i<=Length(rels) do
-      if IsSubset(borelran,Union(List(rels[i],LetterRepAssocWord))) then
-        specialborelreduce:=false;
-      fi;
-      l:=rels{Difference([1..Length(rels)],[i])};
-      mytzf:=maketzf(l);
-      tst:=[reduce(rels[i][1],l,mytzf),reduce(rels[i][2],l,mytzf)];
-      if tst<>rels[i] then
-        Add(jj,i);
-        rels:=l; # note that tzf is already set
-        if tst[1]<>tst[2] then
-          addrule(tst);
-        fi;
-        a:=false;
-        #i:=Length(rels); #just continue
-      fi;
-      specialborelreduce:=true;
-      i:=i+1;
-    od;
-    Info(InfoFpGroup,2,"rulereduce ",jj);
-  until a;
-
-  i:=Length(rels);
-  Info(InfoFpGroup,2,"have ",i," rules");
-  a:=KnuthBendixRewritingSystem(f/rels,ord);
-  MakeConfluent(a);
-  Info(InfoFpGroup,1,"confluent RWS ",i," -> ",Length(Rules(a)),"\n");
-  b:=f/Rules(a); # make once more for the fp monoid.
-  SetReducedConfluentRewritingSystem(b,a);
-
-  l:=[];
-  for i in FreeGeneratorsOfFpGroup(gp) do
-    Add(l,i);
-    Add(l,i^-1);
-  od;
-  tst:=List(rels,x->List(x,w->MappedWord(w,GeneratorsOfMonoid(f),l)));
-  tst:=List(tst,x->x[1]/x[2]);
-  #if Size(FreeGroupOfFpGroup(gp)/tst)<>Size(group) then Error("wrong2!");fi;
-
-  b!.rewritingSystem:=a;
-  hom:=MagmaIsomorphismByFunctionsNC(gp,b,
-      function(w)
-        local l,i;
-        l:=[];
-        for i in LetterRepAssocWord(UnderlyingElement(w)) do
-          if i>0 then Add(l,2*i-1);
-          else Add(l,-2*i);fi;
-        od;
-        return ElementOfFpMonoid(FamilyObj(One(b)),
-                AssocWordByLetterRep(FamilyObj(One(f)),l));
-      end,
-      function(w)
-        local g,i,x;
-        g:=[];
-        for i in LetterRepAssocWord(UnderlyingElement(w)) do
-          if IsOddInt(i) then x:=(i+1)/2;
-          else x:=-i/2;fi;
-          # word must be freely cancelled
-          if Length(g)>0 and x=-g[Length(g)] then
-            Unbind(g[Length(g)]);
-          else Add(g,x); fi;
-        od;
-        return ElementOfFpGroup(FamilyObj(One(gp)),
-                AssocWordByLetterRep(FamilyObj(One(FreeGroupOfFpGroup(gp))),g));
-      end);
-  SetIsomorphismFpMonoid(gp,hom);
-  SetIsBijective(hom,true);
-  return iso;
-end);
-
-# Vaguer version but does not require so nice an input.
-BindGlobal("BNnyRewritingPresentation",function(group,borel,weyl)
-local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
-  lev,ord,monb,mons,gp,trawo,hom,tst,dc,dcreps,act,decomp,ranb,ranw,
-  nofob,nofow,reduce,pcgs,can,pri,stb,addrule,invmap,jj,wo,pciso,
-  borelelm,borelran,borelreduce,bpairs,brws,specialborelreduce,
-  rt,dcnums,rti,sel,maketzf,mytzf,borela;
-
-  specialborelreduce:=false;
-  if Size(ClosureGroup(borel,weyl))<Size(group) then return fail;fi;
-  dc:=DoubleCosets(group,borel,borel);
-
-  if Size(Intersection(borel,weyl))>1 then
-    # can we fix this?
-    # asume weyl is not too large
-    cs:=Concatenation(List(ConjugacyClassesSubgroups(weyl),AsList));;
-    SortBy(cs,x->-Size(x));
-    l:=false;
-    i:=1;
-    while l=false and i<=Length(cs) do
-      if Size(Intersection(borel,cs[i]))=1 and Size(cs[i])>=Length(dc)
-        and Size(ClosureGroup(borel,cs[i]))=Size(group) and 
-        Length(Set(Elements(cs[i]),
-          x->PositionProperty(dc,y->x in y)))=Length(dc) then
-        Info(InfoFpGroup,1,"replaced weyl candidate with better subgroup\n");
-        l:=cs[i];
-      fi;
-      i:=i+1;
-    od;
-    if l<>false then
-      weyl:=l;
-    fi;
-  fi;
-  
-  # Use SpecialPcgs for borel
-
-  pciso:=IsomorphismSpecialPcGroup(borel);
-  cb:=ConfluentMonoidPresentationForGroup(Range(pciso));
-  brws:=ReducedConfluentRewritingSystem(Range(cb.monhom));
-  # force going to pc group, as this will give better ordering
-  isob:=GroupHomomorphismByFunction(borel,Range(cb.fphom),
-    x->ImagesRepresentative(cb.fphom,ImagesRepresentative(pciso,x)),
-    x->PreImagesRepresentative(pciso,PreImagesRepresentative(cb.fphom,x)));
-
-  b:=Range(isob);
-
-
-  bgens:=List(GeneratorsOfGroup(b),x->PreImagesRepresentative(isob,x));
-  bpairs:=Concatenation(List(bgens,x->[x,x^-1]));
-  monoid:=Range(cb.monhom);
-
-  borelran:=[]; # initially no special borelran
-
-  # borel-only reduction to deal with large primes
-  borelreduce:=function(w)
-  local i,j,need;
-    i:=1;
-    repeat
-      # find borel range 
-      while i<Length(w) and not (w[i] in borelran) do
-        i:=i+1;
-      od;
-      if i<Length(w) and w[i+1] in borelran then
-        j:=i;
-        need:=false;
-        while j+1<=Length(w) and w[j+1] in borelran do
-          j:=j+1;
-          if need=false and QuoInt(w[j-1]+1,2)=QuoInt(w[j]+1,2) # element and inverse
-            or w[j]<w[j-1] # wrong order
-            then need:=true;
-          fi;
-        od;
-        if need then
-          need:=w{[i..j]};
-          need:=Product(bpairs{need});
-          need:=ImagesRepresentative(cb.monhom,ImagesRepresentative(isob,need));
-          need:=UnderlyingElement(need);
-          if Length(need)>0 then 
-            need:=ReducedForm(brws,need);
-          fi;
-          w:=Concatenation(w{[1..i-1]},LetterRepAssocWord(need),w{[j+1..Length(w)]});
-          i:=i+Length(need);
-        else
-          i:=j+1;
-        fi;
-      else
-        if i<Length(w) then i:=i+2;fi;
-      fi;
-    until i>=Length(w);
-    return w;
-  end;
-
-  maketzf:=function(rules)
-  local tzf,tzrules,p,i;
-    tzrules:=List(rules,x->List(x,LetterRepAssocWord));
-    tzf:=[];
-    for i in tzrules do
-      p:=i[1][1];
-      if not IsBound(tzf[p]) then
-        tzf[p]:=[i];
-      else
-        Add(tzf[p],i);
-      fi;
-    od;
-    return tzf;
-  end;
-
-  reduce:=function(wo,rules,tzf)
-  local w,fam,red,i,j,p,ww,sp;
-    #Print("Reduce ",wo,"\n");
-    fam:=FamilyObj(wo);
-    # is it in big monoid?
-
-    w:=LetterRepAssocWord(wo);
-    sp:=specialborelreduce and fam=FamilyObj(One(f)) and ForAny(w,x->x in borelran);
-
-    if tzf=fail then
-      tzf:=maketzf(rules);
-    fi;
-
-    # collect from the right
-    if sp then
-      w:=borelreduce(w);
-    fi;
-    p:=Length(w);
-    while p>0 do
-      if IsBound(tzf[w[p]]) then
-
-	red:=tzf[w[p]];
-	i:=1;
-	while i<=Length(red) do
-	  if p+Length(red[i][1])-1<=Length(w) then
-	    j:=2;
-	    while j<=Length(red[i][1]) and w[p+j-1]=red[i][1][j] do
-	      j:=j+1;
-	    od;
-	    if j>Length(red[i][1]) then
-	      # replace
-	      w:=Concatenation(w{[1..p-1]},red[i][2],
-		w{[p+Length(red[i][1])..Length(w)]});
-              #Print("intermed ",red[i],":",AssocWordByLetterRep(fam,w),"\n");
-	      p:=Minimum(p+Length(red[i][2]),Length(w));
-              if sp then
-                ww:=borelreduce(w);
-                if ww<>w then
-                  w:=ww;
-                  p:=Length(w);
-                fi;
-
-              fi;
-              
-	      i:=Length(red);
-	    fi;
-	  fi;
-	  i:=i+1;
-	od;
-
-      fi;
-      p:=p-1;
-    od;
-
-    w:=AssocWordByLetterRep(fam,w);
-    #Print("To ",w,"\n");
-    #if sp and w<>oreduce(wo,rules) then Error("baeh!");fi;
-    return w;
-  end;
-
-  nofob:=function(x)
-    x:=UnderlyingElement(ImagesRepresentative(cb.monhom,x));
-    x:=reduce(x,RelationsOfFpMonoid(monoid),fail);
-    x:=ElementOfFpMonoid(FamilyObj(One(monoid)),x);
-    return PreImagesRepresentative(cb.monhom,x);
-  end;
-
-  cs:=IsomorphismFpGroupForWeyl(weyl);
-  if cs<>fail then
-    cs:=rec(fphom:=cs,monhom:=IsomorphismFpMonoid(Range(cs)));
-  else
-    cs:=ConfluentMonoidPresentationForGroup(weyl);
-  fi;
-  isos:=cs.fphom;
-  w:=Range(isos);
-  a:=MappingGeneratorsImages(isos)[1];
-
-  nofow:=function(x)
-    x:=UnderlyingElement(ImagesRepresentative(cs.monhom,x));
-    x:=reduce(x,RelationsOfFpMonoid(Range(cs.monhom)),fail);
-    x:=ElementOfFpMonoid(FamilyObj(One(Range(cs.monhom))),x);
-    return PreImagesRepresentative(cs.monhom,x);
-  end;
-
-  gens:=bgens;
-  l:=Length(gens);
-  gens:=Concatenation(gens,a);
-
-  # identify double cosets
-  rt:=RightTransversal(group,borel);
-  # perm action of parent
-  a:=Group(SmallGeneratingSet(group)); # so nothing stores
-  borela:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
-  iso:=EpimorphismFromFreeGroup(a);
-  borela:=List(GeneratorsOfGroup(borel),x->MappedWord(PreImagesRepresentative(iso,x),MappingGeneratorsImages(iso)[1],borela));
-  act:=Group(borela,());
-
-  #dcnums:=OrbitsDomain(borel,[1..Length(rt)],
-  #  function(num,elm) return PositionCanonical(rt,rt[num]*elm);end);
-  dcnums:=OrbitsDomain(act,[1..Length(rt)]);
-  dcnums:=List(dcnums,x->Immutable(Set(x)));
-  rti:=[];
-  for i in [1..Length(dc)] do
-    a:=PositionCanonical(rt,Representative(dc[i]));
-    a:=PositionProperty(dcnums,x->a in x);
-    for j in dcnums[a] do
-      rti[j]:=i;
-    od;
-  od;
-  dcnums:=false; # clean memory
-  iso:=false;
-  act:=false;
-
-  # BN decomposition
-  dcreps:=[];
-  for i in AsList(weyl) do
-    #a:=PositionProperty(dc,y->i in y);
-    a:=rti[PositionCanonical(rt,i)];
-    if not IsBound(dcreps[a]) then dcreps[a]:=i;fi;
-  od;
-
-  if not ForAll([1..Length(dc)],x->IsBound(dcreps[x])) then
-    Error("weyl does not cover dc");
-  fi;
-
-  iso:=IsomorphismFpGroupByGenerators(group,gens);
-
-  act:=function(r,g)
-    return CanonicalRightCosetElement(borel,r*g);
-  end;
-
-  decomp:=function(elm)
-  local pos,rep;
-    if elm in borel then return [elm,One(borel),One(borel)];fi;
-    #pos:=PositionProperty(dc,y->elm in y);
-    pos:=rti[PositionCanonical(rt,elm)];
-    #rep:=RepresentativeAction(borel,CanonicalRightCosetElement(borel,elm),
-    #       CanonicalRightCosetElement(borel,dcreps[pos]),act);
-    rep:=RepresentativeAction(borel,PositionCanonical(rt,elm),
-           PositionCanonical(rt,dcreps[pos]),GeneratorsOfGroup(borel),borela,OnPoints);
-    rep:=[elm*rep/dcreps[pos],dcreps[pos],rep^-1];
-    Assert(0,rep[1] in borel);
-    return rep;
-  end;
-
-  # now build new presentation
-  a:=[];
-  for i in [1..Length(GeneratorsOfGroup(b))] do
-    Add(a,Concatenation("b",String(i)));
-  od;
-  borelran:=[1..Length(a)];
-  for i in [1..Length(GeneratorsOfGroup(w))] do
-    Add(a,Concatenation("w",String(i)));
-  od;
-
-  f:=FreeGroup(a);
-  gens:=FreeGeneratorsOfFpGroup(f);
-  rels:=[];
-  # take the relators of both groups
-  ranb:=gens{[1..l]};
-  for i in RelatorsOfFpGroup(b) do
-    Add(rels,MappedWord(i,FreeGeneratorsOfFpGroup(b),ranb));
-  od;
-  ranw:=gens{[l+1..Length(gens)]};
-  for i in RelatorsOfFpGroup(w) do
-    Add(rels,MappedWord(i,FreeGeneratorsOfFpGroup(w),ranw));
-  od;
-
-  # throw in relators for the whole group, so we guarantee a presentation
-  Append(rels,List(RelatorsOfFpGroup(Range(iso)),
-    w->MappedWord(w,FreeGeneratorsOfFpGroup(Range(iso)),gens)));
-  gp:=f/rels;
-
-  iso:=GroupHomomorphismByImagesNC(group,gp,MappingGeneratorsImages(iso)[1],
-         GeneratorsOfGroup(gp));
-  SetIsBijective(iso,true);
-
-  # now combine monoid presentations
-  rels:=[];
-  mytzf:=maketzf(rels);
-
-  addrule:=function(rule)
-  local left,right,let,old,p;
-    left:=reduce(rule[1],rels,mytzf);
-    right:=reduce(rule[2],rels,mytzf);
-    if IsLessThanUnder(ord,right,left) then
-      rule:=[left,right];
-    else
-      rule:=[right,left];
-    fi;
-    if rule[1]=rule[2] then return;fi;
-    # try to shift
-  old:=rule;
-    let:=LetterRepAssocWord(rule[1])[1];
-    left:=Subword(rule[1],2,Length(rule[1]));
-    right:=reduce(invmap[let]*rule[2],rels,mytzf);
-    while IsLessThanUnder(ord,right,left) do
-      rule:=[left,right];
-      let:=LetterRepAssocWord(rule[1])[1];
-      left:=Subword(rule[1],2,Length(rule[1]));
-      right:=reduce(invmap[let]*rule[2],rels,mytzf);
-    od;
-    let:=LetterRepAssocWord(rule[1])[Length(rule[1])];
-    left:=Subword(rule[1],1,Length(rule[1])-1);
-    right:=reduce(rule[2]*invmap[let],rels,mytzf);
-    while IsLessThanUnder(ord,right,left) do
-      rule:=[left,right];
-      let:=LetterRepAssocWord(rule[1])[Length(rule[1])];
-      left:=Subword(rule[1],1,Length(rule[1])-1);
-      right:=reduce(rule[2]*invmap[let],rels,mytzf);
-    od;
-
-    # delete common letters at start/end
-    while Length(rule[2])>0 and Subword(rule[1],1,1)=Subword(rule[2],1,1) do
-      rule:=[Subword(rule[1],2,Length(rule[1])),
-             Subword(rule[2],2,Length(rule[2]))];
-    od;
-    while Length(rule[2])>0 and Subword(rule[1],Length(rule[1]),Length(rule[1]))
-        =Subword(rule[2],Length(rule[2]),Length(rule[2])) do
-      rule:=[Subword(rule[1],1,Length(rule[1])-1),
-             Subword(rule[2],1,Length(rule[2])-1)];
-    od;
-
-
-    Add(rels,rule);
-    rule:=List(rule,LetterRepAssocWord);
-    p:=rule[1][1];
-    if not IsBound(mytzf[p]) then
-      mytzf[p]:=[rule];
-    else
-      Add(mytzf[p],rule);
-    fi;
-  end;
-
-  lev:=ShallowCopy(LevelsOfGenerators(cb.ordering));
-  monb:=monoid;
-  mons:=Range(cs.monhom);
-  l:=Length(GeneratorsOfMonoid(monb));
-  a:=[];
-  for i in [1..l/2] do
-    Add(a,Concatenation("b",String(i)));
-    Add(a,Concatenation("B",String(i)));
-  od;
-  borelran:=[1..Length(a)];
-  for i in [1..Length(MappingGeneratorsImages(isos)[2])] do
-    Add(a,Concatenation("w",String(i)));
-    Add(a,Concatenation("W",String(i)));
-  od;
-  f:=FreeMonoid(a);
-
-  # translate from fp word to monoid word
-  trawo:=function(w)
-  local a,i;
-    w:=LetterRepAssocWord(w);
-    a:=[];
-    for i in w do
-      if i>0 then
-        Add(a,2*i-1); 
-      else
-        Add(a,-2*i); 
-      fi;
-    od;
-    a:=AssocWordByLetterRep(FamilyObj(One(f)),a);
-    return a;
-  end;
-
-  lev:=Concatenation(lev,
-    ListWithIdenticalEntries(Length(GeneratorsOfMonoid(mons)),Maximum(lev)+1));
-
-  ord:=WreathProductOrdering(f,lev);
-  gens:=GeneratorsOfMonoid(f);
-
-  invmap:=[];
-  j:=FreeGeneratorsOfFpGroup(gp);
-  for i in Concatenation(j,List(j,x->x^-1)) do
-    invmap[LetterRepAssocWord(trawo(i))[1]]:=trawo(i^-1);
-  od;
-
-  j:=Intersection(borel,weyl);
-  if Size(j)>1 then
-    for i in Pcgs(j) do
-      a:=[
-      MappedWord(Image(cs.fphom,i),GeneratorsOfGroup(Range(cs.fphom)),
-        GeneratorsOfGroup(gp){[Length(GeneratorsOfGroup(Range(isob)))+1
-          ..Length(GeneratorsOfGroup(gp))]}),
-      MappedWord(Image(isob,i),GeneratorsOfGroup(Range(isob)),
-        GeneratorsOfGroup(gp){[1..Length(GeneratorsOfGroup(Range(isob)))]})
-          ];
-      Info(InfoFpGroup,2,"intersection:",a);
-      a:=List(a,x->trawo(UnderlyingElement(x)));
-      addrule(a);
-    od;
   fi;
 
   for i in RelationsOfFpMonoid(monb) do
@@ -2584,112 +2087,175 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     addrule(List(i,x->MappedWord(x,FreeGeneratorsOfFpMonoid(mons),
       gens{[l+1..Length(gens)]})));
   od;
+  directerr:=false;
 
+  if newstyle then
 
-  # BN-style reductions
-  pcgs:=List(GeneratorsOfGroup(b),x->PreImagesRepresentative(isob,x));
-  # remove powers
-  pcgs:=pcgs{
-    Filtered([1..Length(pcgs)],i->not ForAny([1..i-1],
-        j->Order(pcgs[i])=Order(pcgs[j])
-          and ForAny([1..Order(pcgs[j])],o->pcgs[j]^o=pcgs[i]))) };
-  pcgs:=PcgsByPcSequence(FamilyObj(()),pcgs);
+    noncomm:=List(wgens,x->[]);
+    # To use standard wreath product order, move borel to the right.
 
-  specialborelreduce:=true;
-  wo:=Filtered(w,x->not IsOne(x));
-  for i in wo do
+    # relations b*w->w*b'
+    for i in [1..Length(wgens)] do
+      pri:=wgens[i];
+      for jj in [1..Length(bgens)] do
+        j:=bgens[jj];
+        k:=j^pri;
+        if k in borel then
+          a:=weylword(pri);
+          b:=borelword(j);
+          k:=borelword(k);
+          a:=[b*a,a*k];
+          a:=List(a,x->trawou(x));
+          addrule(a);
+        else
+          Add(noncomm[i],jj);
+        fi;
+      od;
+    od;
 
-    # which elements b*i can we write as i*\tilde b. Then b^i=\tilde b, that
-    # is b\in B\cvap B^(i^-1)
-    pri:=PreImagesRepresentative(isos,i);
-    stb:=Intersection(borel,borel^(pri^-1));
-    Info(InfoFpGroup,2,i," ",Size(stb));
+    noncelm:=List(noncomm,x->Elements(Group(bgens{x})));
 
-    if Size(stb)>1 then 
-      can:=CanonicalPcgs(InducedPcgs(pcgs,stb));
-      #can:=Filtered(Elements(stb),x->not IsOne(x));
-      for j in can do
-        #for jj in borel do # Also products borel*stb
-        for jj in List(RightTransversal(borel,stb),Inverse) do
-          k:=trawo(MappedWord(UnderlyingElement(i),FreeGeneratorsOfFpGroup(w),
-            ranw));
-          #Print("e.g. ",ImagesRepresentative(isob,jj*j)," => ",
-          #        nofob(ImagesRepresentative(isob,jj*j)),"\n");
-          a:=[  trawo(MappedWord(UnderlyingElement(
-                  nofob(ImagesRepresentative(isob,jj*j))),
-                  FreeGeneratorsOfFpGroup(b),ranb))*k,
-              trawo(MappedWord(UnderlyingElement(
-                  nofob(ImagesRepresentative(isob,jj))),
-                  FreeGeneratorsOfFpGroup(b),ranb))*
-              k*trawo(MappedWord(UnderlyingElement(
-                  nofob(ImagesRepresentative(isob,j^pri))),
-                  FreeGeneratorsOfFpGroup(b),ranb))];
-          #if not IsLessThanUnder(ord,a[2],a[1]) then Error("ord!");fi;
-          #tst:=List(a,LetterRepAssocWord);
-          #if not ForAny(rels,x->
+    # relations   b*x*w -> x^(b^-1)*reduced(b*w) if xw  does not transform
+    for i in [1..Length(wgens)] do
+      for jj in Difference(noncelm[i],[One(group)]) do # non-mappable
+        for j in [1..Minimum(noncomm[i])-1] do # earlier generators
+          a:=weylword(wgens[i]);
+          pri:=borelword(bgens[j])*a;
+          pri:=reduce(trawou(pri),rels,mytzf); 
+          a:=[trawou(borelword(bgens[j])*borelword(jj)*a),
+              trawou(borelword(jj^Inverse(bgens[j])))*pri];
+          addrule(a);
+        od;
+      od;
+    od;
+
+    # modified coxeter relations with blocking borels in between
+    # normalize using bn-pairs
+    for pri in coxrels do
+      pri:=pri[1];
+      a:=List(pri,x->trawou(weylword(wgens[x])));
+      for jj in Cartesian(noncelm{pri{[2..Length(pri)]}}) do
+        if not ForAll(jj,IsOne) then
+          b:=wgens[pri[1]]*Product([1..Length(jj)],x->jj[x]*wgens[pri[x+1]]);
+          j:=decomp(b);
+          j:=[borelword(j[1]),weylword(j[2]),borelword(j[3])];
+          k:=List(jj,x->trawou(borelword(x)));
+          b:=a[1]*Product([1..Length(jj)],x->k[x]*a[x+1]);
+          j:=j[1]*j[2]*j[3];
+          b:=[b,trawou(j)];
+          addrule(b);
+        fi;
+      od;
+    od;
+  else
+
+    # BN-style reductions
+    pcgs:=List(GeneratorsOfGroup(b),x->PreImagesRepresentative(isob,x));
+    # remove powers
+    pcgs:=pcgs{
+      Filtered([1..Length(pcgs)],i->not ForAny([1..i-1],
+          j->Order(pcgs[i])=Order(pcgs[j])
+            and ForAny([1..Order(pcgs[j])],o->pcgs[j]^o=pcgs[i]))) };
+    pcgs:=PcgsByPcSequence(FamilyObj(()),pcgs);
+
+    specialborelreduce:=true;
+    wo:=Filtered(w,x->not IsOne(x));
+    for i in wo do
+
+      # which elements b*i can we write as i*\tilde b. Then b^i=\tilde b, that
+      # is b\in B\cvap B^(i^-1)
+      pri:=PreImagesRepresentative(isos,i);
+      stb:=Intersection(borel,borel^(pri^-1));
+      Info(InfoFpGroup,2,i," ",Size(stb));
+
+      if Size(stb)>1 then 
+        can:=CanonicalPcgs(InducedPcgs(pcgs,stb));
+        #can:=Filtered(Elements(stb),x->not IsOne(x));
+        for j in can do
+          #for jj in borel do # Also products borel*stb
+          for jj in List(RightTransversal(borel,stb),Inverse) do
+            k:=trawo(MappedWord(UnderlyingElement(i),FreeGeneratorsOfFpGroup(w),
+              ranw));
+            #Print("e.g. ",ImagesRepresentative(isob,jj*j)," => ",
+            #        nofob(ImagesRepresentative(isob,jj*j)),"\n");
+            a:=[  trawo(MappedWord(UnderlyingElement(
+                    nofob(ImagesRepresentative(isob,jj*j))),
+                    FreeGeneratorsOfFpGroup(b),ranb))*k,
+                trawo(MappedWord(UnderlyingElement(
+                    nofob(ImagesRepresentative(isob,jj))),
+                    FreeGeneratorsOfFpGroup(b),ranb))*
+                k*trawo(MappedWord(UnderlyingElement(
+                    nofob(ImagesRepresentative(isob,j^pri))),
+                    FreeGeneratorsOfFpGroup(b),ranb))];
+            #if not IsLessThanUnder(ord,a[2],a[1]) then Error("ord!");fi;
+            #tst:=List(a,LetterRepAssocWord);
+            #if not ForAny(rels,x->
+            #      PositionSublist(tst[1],LetterRepAssocWord(x[1]))<>fail) then
+              addrule(a);
+            #fi;
+          od;
+        od;
+      fi;
+    od;
+
+    # avoid running through too many elements in borel
+    if Size(borel)<100 then borelelm:=AsList(borel);
+    else
+      a:=Pcgs(borel);
+      pri:=RelativeOrders(a);
+      k:=[];
+      for i in [1..Length(a)] do
+        k[i]:=[];
+        for j in [0..LogInt(QuoInt(pri[i],2),5)] do
+          k[i]:=Union(k[i],5^j*[-2..2]);
+        od;
+        k[i]:=Intersection(k[i],[-QuoInt(pri[i],2)..QuoInt(pri[i],2)]);
+        k[i]:=List(k[i],x->a[i]^x);
+      od;
+      borelelm:=Set(Cartesian(k),x->Product(x));
+    
+    fi;
+
+    for i in wo do
+      Info(InfoFpGroup,3,"borelrun ",Position(wo,i)," of ",Length(wo));
+
+      # rewrite i*b*j as \tilde b*k*\hat b.
+      pri:=PreImagesRepresentative(isos,i);
+      stb:=Intersection(borel^pri,borel);
+
+      for j in wo do
+        Info(InfoFpGroup,2,"DC:",i,", ",j," from ",Length(rels));
+        for k in borelelm do #RightTransversal(borel,stb) do
+          a:=PreImagesRepresentative(isos,i)*k*
+            PreImagesRepresentative(isos,j);
+          a:=decomp(a);
+          a:=[nofob(ImagesRepresentative(isob,a[1])),
+              nofow(ImagesRepresentative(isos,a[2])),
+              nofob(ImagesRepresentative(isob,a[3]))];
+          a:=[MappedWord(UnderlyingElement(a[1]),FreeGeneratorsOfFpGroup(b),ranb),
+              MappedWord(UnderlyingElement(a[2]),FreeGeneratorsOfFpGroup(w),ranw),
+              MappedWord(UnderlyingElement(a[3]),FreeGeneratorsOfFpGroup(b),ranb)
+              ];
+          a:=List(a,trawo);
+          a:=[
+          trawo(MappedWord(UnderlyingElement(i),FreeGeneratorsOfFpGroup(w),ranw))
+          *trawo(MappedWord(UnderlyingElement(
+            nofob(ImagesRepresentative(isob,k))),
+            FreeGeneratorsOfFpGroup(b),ranb))*
+          trawo(MappedWord(UnderlyingElement(j),FreeGeneratorsOfFpGroup(w),ranw)),
+          Product(a)];
+          tst:=List(a,LetterRepAssocWord);
+          #if ForAny(rels,x->
           #      PositionSublist(tst[1],LetterRepAssocWord(x[1]))<>fail) then
             addrule(a);
           #fi;
         od;
       od;
-    fi;
-  od;
-
-  # avoid running through too many elements in borel
-  if Size(borel)<100 then borelelm:=AsList(borel);
-  else
-    a:=Pcgs(borel);
-    pri:=RelativeOrders(a);
-    k:=[];
-    for i in [1..Length(a)] do
-      k[i]:=[];
-      for j in [0..LogInt(QuoInt(pri[i],2),5)] do
-        k[i]:=Union(k[i],5^j*[-2..2]);
-      od;
-      k[i]:=Intersection(k[i],[-QuoInt(pri[i],2)..QuoInt(pri[i],2)]);
-      k[i]:=List(k[i],x->a[i]^x);
     od;
-    borelelm:=Set(Cartesian(k),x->Product(x));
-   
   fi;
 
-  for i in wo do
-
-    # rewrite i*b*j as \tilde b*k*\hat b.
-    pri:=PreImagesRepresentative(isos,i);
-    stb:=Intersection(borel^pri,borel);
-
-    for j in wo do
-      Info(InfoFpGroup,2,"DC:",i,", ",j," from ",Length(rels));
-      for k in borelelm do #RightTransversal(borel,stb) do
-        a:=PreImagesRepresentative(isos,i)*k*
-          PreImagesRepresentative(isos,j);
-        a:=decomp(a);
-        a:=[nofob(ImagesRepresentative(isob,a[1])),
-            nofow(ImagesRepresentative(isos,a[2])),
-            nofob(ImagesRepresentative(isob,a[3]))];
-        a:=[MappedWord(UnderlyingElement(a[1]),FreeGeneratorsOfFpGroup(b),ranb),
-            MappedWord(UnderlyingElement(a[2]),FreeGeneratorsOfFpGroup(w),ranw),
-            MappedWord(UnderlyingElement(a[3]),FreeGeneratorsOfFpGroup(b),ranb)
-            ];
-        a:=List(a,trawo);
-        a:=[
-        trawo(MappedWord(UnderlyingElement(i),FreeGeneratorsOfFpGroup(w),ranw))
-        *trawo(MappedWord(UnderlyingElement(
-          nofob(ImagesRepresentative(isob,k))),
-          FreeGeneratorsOfFpGroup(b),ranb))*
-        trawo(MappedWord(UnderlyingElement(j),FreeGeneratorsOfFpGroup(w),ranw)),
-        Product(a)];
-        tst:=List(a,LetterRepAssocWord);
-        #if ForAny(rels,x->
-        #      PositionSublist(tst[1],LetterRepAssocWord(x[1]))<>fail) then
-          addrule(a);
-        #fi;
-      od;
-    od;
-  od;
-
-  # group relators to make sure its the proper group
+  # group relators to make sure it's the proper group
+  Info(InfoFpGroup,3,"grouprelators");
   for i in RelatorsOfFpGroup(gp) do
     # split in two -- not optimal, want to get minimal offset
     j:=Length(i);
@@ -2720,6 +2286,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   Assert(2,Size(FreeGroupOfFpGroup(gp)/tst)=Size(group));
 
   # back-reduce
+  Info(InfoFpGroup,3,"backreduce");
   repeat
     jj:=[];
     a:=true;
@@ -2745,8 +2312,6 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     od;
     Info(InfoFpGroup,2,"rulereduce ",jj);
   until a;
-
-
 
   i:=Length(rels);
   Info(InfoFpGroup,2,"have ",i," rules");
@@ -2795,7 +2360,6 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   SetIsBijective(hom,true);
   return iso;
 end);
-
 
 # creator function for data in grp/simplrerew.grp -- for documentation
 #ConfluentRewritingData:=function(hom)
@@ -2971,13 +2535,16 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
     if c<>sy then Error("sylow generators");fi;
     gens:=Reversed(gens);
 
-    if IsPrimePowerInt(Index(borel,sy)) then
+    if Size(borel)=Size(sy) then
+      iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
+      return IsomorphismGroups(G,Source(iso))*iso;
+    elif IsPrimePowerInt(Index(borel,sy)) then
       gens:=Concatenation(Pcgs(SylowSubgroup(borel,
         SmallestPrimeDivisor(IndexNC(borel,sy)))),gens);
       a:=Group(gens);
       if Size(a)<Size(borel) then Error("wrong");
       else borel:=a;fi;
-      iso:=SplitBNRewritingPresentation(group,borel,weyl);
+      iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
       return IsomorphismGroups(G,Source(iso))*iso;
     fi;
 
@@ -3018,7 +2585,7 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
   else
     TryNextMethod();
   fi;
-  iso:=BNnyRewritingPresentation(group,borel,weyl);
+  iso:=SplitBNRewritingPresentation(group,borel,weyl,false);
   return IsomorphismGroups(G,Source(iso))*iso;
 end);
 
@@ -3041,7 +2608,7 @@ local p,dat,lev,l,sub,c,s,r,dc;
       if Length(r)>0 then
         s:=r[1];
       fi;
-      r:=BNnyRewritingPresentation(G,l,s);
+      r:=SplitBNRewritingPresentation(G,l,s,false);
       if r<>fail then return r;fi;
     fi;
   fi;
@@ -3067,7 +2634,7 @@ local p,dat,lev,l,sub,c,s,r,dc;
         and Size(ClosureGroup(l,s))=Size(G) and 
         Length(Set(Elements(s),
           x->PositionProperty(dc,y->x in y)))=Length(dc) then
-        r:=BNnyRewritingPresentation(G,l,s);
+        r:=SplitBNRewritingPresentation(G,l,s,false);
         if r<>fail then return r;fi;
       fi;
     od;
