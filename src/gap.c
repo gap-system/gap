@@ -168,218 +168,212 @@ static Obj FuncSHELL(Obj self,
                      Obj prompt_,
                      Obj preCommandHook)
 {
-  Char promptBuffer[81];
+    Char promptBuffer[81];
 
-  if (!IS_LVARS_OR_HVARS(context))
-    RequireArgument(SELF_NAME, context, "must be a local variables bag");
+    if (!IS_LVARS_OR_HVARS(context))
+        RequireArgument(SELF_NAME, context, "must be a local variables bag");
 
-  RequireTrueOrFalse(SELF_NAME, canReturnVoid_);
-  RequireTrueOrFalse(SELF_NAME, canReturnObj_);
-  RequireTrueOrFalse(SELF_NAME, breakLoop_);
-  RequireStringRep(SELF_NAME, prompt_);
-  if (GET_LEN_STRING(prompt_) > 80)
-    ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
-  promptBuffer[0] = '\0';
-  gap_strlcat(promptBuffer, CONST_CSTR_STRING(prompt_), sizeof(promptBuffer));
+    RequireTrueOrFalse(SELF_NAME, canReturnVoid_);
+    RequireTrueOrFalse(SELF_NAME, canReturnObj_);
+    RequireTrueOrFalse(SELF_NAME, breakLoop_);
+    RequireStringRep(SELF_NAME, prompt_);
+    if (GET_LEN_STRING(prompt_) > 80)
+        ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80",
+                     0, 0);
+    promptBuffer[0] = '\0';
+    gap_strlcat(promptBuffer, CONST_CSTR_STRING(prompt_),
+                sizeof(promptBuffer));
 
-  if (preCommandHook == False)
-    preCommandHook = 0;
-  else if (!IS_FUNC(preCommandHook))
-    RequireArgument(SELF_NAME, preCommandHook, "must be function or false");
+    if (preCommandHook == False)
+        preCommandHook = 0;
+    else if (!IS_FUNC(preCommandHook))
+        RequireArgument(SELF_NAME, preCommandHook,
+                        "must be function or false");
 
-  BOOL   canReturnVoid = (canReturnVoid_ == True);
-  BOOL   canReturnObj = (canReturnObj_ == True);
-  BOOL   breakLoop = (breakLoop_ == True);
-  Char * prompt = promptBuffer;
+    BOOL   canReturnVoid = (canReturnVoid_ == True);
+    BOOL   canReturnObj = (canReturnObj_ == True);
+    BOOL   breakLoop = (breakLoop_ == True);
+    Char * prompt = promptBuffer;
 
-  const Char * inFile;
-  const Char * outFile;
-  BOOL setTime = !breakLoop;
-  BOOL catchQUIT = !breakLoop;
-  UInt time = 0;
-  UInt8 mem = 0;
-  UInt status;
-  Obj evalResult;
-  UInt dualSemicolon;
-  UInt oldPrintObjState;
-  Obj res;
-  Int oldErrorLLevel = STATE(ErrorLLevel);
-  STATE(ErrorLLevel) = 0;
-  Int oldRecursionDepth = GetRecursionDepth();
-
-  if (breakLoop) {
-    inFile = "*errin*";
-    outFile = "*errout*";
-  }
-#ifdef HPCGAP
-  else if (ThreadUI) {
-    inFile = "*defin*";
-    outFile = "*defout*";
-  }
-#endif
-  else {
-    inFile = "*stdin*";
-    outFile = "*stdout*";
-  }
-
-  /* read-eval-print loop                                                */
-  TypOutputFile output = { 0 };
-  if (!OpenOutput(&output, outFile, FALSE))
-      ErrorQuit("SHELL: can't open outfile %s",(Int)outFile,0);
-
-  TypInputFile input = { 0 };
-  if (!OpenInput(&input, inFile))
-    {
-      CloseOutput(&output);
-      ErrorQuit("SHELL: can't open infile %s",(Int)inFile,0);
-    }
-
-  oldPrintObjState = SetPrintObjState(0);
-
-  while ( 1 ) {
-
-    /* start the stopwatch                                             */
-    if (setTime) {
-          time = SyTime();
-          mem = SizeAllBags;
-    }
-
-    /* read and evaluate one command                                   */
-    SetPrompt(prompt);
-    SetPrintObjState(0);
-    ResetOutputIndent();
-    SetRecursionDepth(0);
-      
-    /* here is a hook: */
-    if (preCommandHook) {
-      if (!IS_FUNC(preCommandHook))
-        {
-                  Pr("#E CommandHook was non-function, ignoring\n", 0, 0);
-        }
-      else
-        {
-          Call0ArgsInNewReader(preCommandHook);
-          /* Recover from a potential break loop: */
-          SetPrompt(prompt);
-        }
-    }
-
-    // update ErrorLVars based on ErrorLLevel
-    //
-    // It is slightly wasteful to do this every time, but that's OK since this
-    // code is only used for interactive input, and the time it takes a user
-    // to press the return key is something like a thousand times greater than
-    // the time it takes to execute this loop.
-    Int depth = STATE(ErrorLLevel);
-    Obj errorLVars = context;
+    const Char * inFile;
+    const Char * outFile;
+    BOOL         setTime = !breakLoop;
+    BOOL         catchQUIT = !breakLoop;
+    UInt         time = 0;
+    UInt8        mem = 0;
+    UInt         status;
+    Obj          evalResult;
+    UInt         dualSemicolon;
+    UInt         oldPrintObjState;
+    Obj          res;
+    Int          oldErrorLLevel = STATE(ErrorLLevel);
     STATE(ErrorLLevel) = 0;
-    while (0 < depth && !IsBottomLVars(errorLVars) &&
-           !IsBottomLVars(PARENT_LVARS(errorLVars))) {
-        errorLVars = PARENT_LVARS(errorLVars);
-        STATE(ErrorLLevel)++;
-        depth--;
+    Int oldRecursionDepth = GetRecursionDepth();
+
+    if (breakLoop) {
+        inFile = "*errin*";
+        outFile = "*errout*";
     }
-    STATE(ErrorLVars) = errorLVars;
-
-    /* now  read and evaluate and view one command  */
-    status = ReadEvalCommand(errorLVars, &input, &evalResult, &dualSemicolon);
-    if (STATE(UserHasQUIT))
-      break;
-
-
-    /* handle ordinary command                                         */
-    if ( status == STATUS_END && evalResult != 0 ) {
-
-      /* remember the value in 'last'    */
-      UpdateLast(evalResult);
-
-      /* print the result                                            */
-      if ( ! dualSemicolon ) {
-        ViewObjHandler( evalResult );
-      }
-            
+#ifdef HPCGAP
+    else if (ThreadUI) {
+        inFile = "*defin*";
+        outFile = "*defout*";
+    }
+#endif
+    else {
+        inFile = "*stdin*";
+        outFile = "*stdout*";
     }
 
-    /* handle return-value or return-void command                      */
-    else if (status & STATUS_RETURN_VAL) 
-      if(canReturnObj)
-        break;
-      else
-        Pr( "'return <object>' cannot be used in this read-eval-print loop\n",
-            0, 0);
+    /* read-eval-print loop                                                */
+    TypOutputFile output = { 0 };
+    if (!OpenOutput(&output, outFile, FALSE))
+        ErrorQuit("SHELL: can't open outfile %s", (Int)outFile, 0);
 
-    else if (status & STATUS_RETURN_VOID) 
-      if(canReturnVoid ) 
-        break;
-      else
-        Pr( "'return' cannot be used in this read-eval-print loop\n",
-            0, 0);
-    
-    /* handle quit command or <end-of-file>                            */
-    else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
-      STATE(UserHasQuit) = 1;
-      break;
-    }
-        
-    /* handle QUIT */
-    else if (status & (STATUS_QQUIT)) {
-      STATE(UserHasQUIT) = 1;
-      break;
-    }
-        
-    /* stop the stopwatch                                          */
-    if (setTime) {
-        UpdateTime(time);
-        AssGVarWithoutReadOnlyCheck(MemoryAllocated,
-                                ObjInt_Int8(SizeAllBags - mem));
+    TypInputFile input = { 0 };
+    if (!OpenInput(&input, inFile)) {
+        CloseOutput(&output);
+        ErrorQuit("SHELL: can't open infile %s", (Int)inFile, 0);
     }
 
-    if (STATE(UserHasQuit))
-      {
-        FlushRestOfInputLine(&input);
-        STATE(UserHasQuit) = 0;        /* quit has done its job if we are here */
-      }
+    oldPrintObjState = SetPrintObjState(0);
 
-  }
-  
-  SetPrintObjState(oldPrintObjState);
-  CloseInput(&input);
-  CloseOutput(&output);
-  STATE(ErrorLLevel) = oldErrorLLevel;
-  SetRecursionDepth(oldRecursionDepth);
+    while (1) {
 
-  if (STATE(UserHasQUIT))
-    {
-      if (catchQUIT)
-        {
-          STATE(UserHasQuit) = 0;
-          STATE(UserHasQUIT) = 0;
-          AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
-          return Fail;
+        /* start the stopwatch                                             */
+        if (setTime) {
+            time = SyTime();
+            mem = SizeAllBags;
         }
-      else
-        GAP_THROW();
+
+        /* read and evaluate one command                                   */
+        SetPrompt(prompt);
+        SetPrintObjState(0);
+        ResetOutputIndent();
+        SetRecursionDepth(0);
+
+        /* here is a hook: */
+        if (preCommandHook) {
+            if (!IS_FUNC(preCommandHook)) {
+                Pr("#E CommandHook was non-function, ignoring\n", 0, 0);
+            }
+            else {
+                Call0ArgsInNewReader(preCommandHook);
+                /* Recover from a potential break loop: */
+                SetPrompt(prompt);
+            }
+        }
+
+        // update ErrorLVars based on ErrorLLevel
+        //
+        // It is slightly wasteful to do this every time, but that's OK since
+        // this code is only used for interactive input, and the time it takes
+        // a user to press the return key is something like a thousand times
+        // greater than the time it takes to execute this loop.
+        Int depth = STATE(ErrorLLevel);
+        Obj errorLVars = context;
+        STATE(ErrorLLevel) = 0;
+        while (0 < depth && !IsBottomLVars(errorLVars) &&
+               !IsBottomLVars(PARENT_LVARS(errorLVars))) {
+            errorLVars = PARENT_LVARS(errorLVars);
+            STATE(ErrorLLevel)++;
+            depth--;
+        }
+        STATE(ErrorLVars) = errorLVars;
+
+        /* now  read and evaluate and view one command  */
+        status =
+            ReadEvalCommand(errorLVars, &input, &evalResult, &dualSemicolon);
+        if (STATE(UserHasQUIT))
+            break;
+
+
+        /* handle ordinary command                                         */
+        if (status == STATUS_END && evalResult != 0) {
+
+            /* remember the value in 'last'    */
+            UpdateLast(evalResult);
+
+            /* print the result                                            */
+            if (!dualSemicolon) {
+                ViewObjHandler(evalResult);
+            }
+        }
+
+        /* handle return-value or return-void command                      */
+        else if (status & STATUS_RETURN_VAL)
+            if (canReturnObj)
+                break;
+            else
+                Pr("'return <object>' cannot be used in this read-eval-print "
+                   "loop\n",
+                   0, 0);
+
+        else if (status & STATUS_RETURN_VOID)
+            if (canReturnVoid)
+                break;
+            else
+                Pr("'return' cannot be used in this read-eval-print loop\n",
+                   0, 0);
+
+        /* handle quit command or <end-of-file>                            */
+        else if (status & (STATUS_EOF | STATUS_QUIT)) {
+            STATE(UserHasQuit) = 1;
+            break;
+        }
+
+        /* handle QUIT */
+        else if (status & (STATUS_QQUIT)) {
+            STATE(UserHasQUIT) = 1;
+            break;
+        }
+
+        /* stop the stopwatch                                          */
+        if (setTime) {
+            UpdateTime(time);
+            AssGVarWithoutReadOnlyCheck(MemoryAllocated,
+                                        ObjInt_Int8(SizeAllBags - mem));
+        }
+
+        if (STATE(UserHasQuit)) {
+            FlushRestOfInputLine(&input);
+            STATE(UserHasQuit) = 0; /* quit has done its job if we are here */
+        }
     }
 
-  STATE(UserHasQuit) = 0;
-  if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
-    {
-      return Fail;
+    SetPrintObjState(oldPrintObjState);
+    CloseInput(&input);
+    CloseOutput(&output);
+    STATE(ErrorLLevel) = oldErrorLLevel;
+    SetRecursionDepth(oldRecursionDepth);
+
+    if (STATE(UserHasQUIT)) {
+        if (catchQUIT) {
+            STATE(UserHasQuit) = 0;
+            STATE(UserHasQUIT) = 0;
+            AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
+            return Fail;
+        }
+        else
+            GAP_THROW();
     }
-  if (status & STATUS_RETURN_VOID)
-    {
-      res = NewEmptyPlist();
-      return res;
+
+    STATE(UserHasQuit) = 0;
+    if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)) {
+        return Fail;
     }
-  if (status & STATUS_RETURN_VAL)
-    {
-      res = NEW_PLIST(T_PLIST_HOM,1);
-      SET_LEN_PLIST(res,1);
-      SET_ELM_PLIST(res,1,evalResult);
-      return res;
+    if (status & STATUS_RETURN_VOID) {
+        res = NewEmptyPlist();
+        return res;
     }
-  assert(0); 
-  return (Obj) 0;
+    if (status & STATUS_RETURN_VAL) {
+        res = NEW_PLIST(T_PLIST_HOM, 1);
+        SET_LEN_PLIST(res, 1);
+        SET_ELM_PLIST(res, 1, evalResult);
+        return res;
+    }
+    assert(0);
+    return (Obj)0;
 }
 
 int realmain( int argc, char * argv[] )
