@@ -160,13 +160,38 @@ void ViewObjHandler ( Obj obj )
 static UInt QUITTINGGVar;
 
 
-static Obj Shell(Obj    context,
-                 BOOL   canReturnVoid,
-                 BOOL   canReturnObj,
-                 BOOL   breakLoop,
-                 Char * prompt,
-                 Obj    preCommandHook)
+static Obj FuncSHELL(Obj self,
+                     Obj context,
+                     Obj canReturnVoid_,
+                     Obj canReturnObj_,
+                     Obj breakLoop_,
+                     Obj prompt_,
+                     Obj preCommandHook)
 {
+  Char promptBuffer[81];
+
+  if (!IS_LVARS_OR_HVARS(context))
+    RequireArgument(SELF_NAME, context, "must be a local variables bag");
+
+  RequireTrueOrFalse(SELF_NAME, canReturnVoid_);
+  RequireTrueOrFalse(SELF_NAME, canReturnObj_);
+  RequireTrueOrFalse(SELF_NAME, breakLoop_);
+  RequireStringRep(SELF_NAME, prompt_);
+  if (GET_LEN_STRING(prompt_) > 80)
+    ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
+  promptBuffer[0] = '\0';
+  gap_strlcat(promptBuffer, CONST_CSTR_STRING(prompt_), sizeof(promptBuffer));
+
+  if (preCommandHook == False)
+    preCommandHook = 0;
+  else if (!IS_FUNC(preCommandHook))
+    RequireArgument(SELF_NAME, preCommandHook, "must be function or false");
+
+  BOOL   canReturnVoid = (canReturnVoid_ == True);
+  BOOL   canReturnObj = (canReturnObj_ == True);
+  BOOL   breakLoop = (breakLoop_ == True);
+  Char * prompt = promptBuffer;
+
   const Char * inFile;
   const Char * outFile;
   BOOL setTime = !breakLoop;
@@ -355,41 +380,6 @@ static Obj Shell(Obj    context,
     }
   assert(0); 
   return (Obj) 0;
-}
-
-
-static Obj FuncSHELL(Obj self,
-                     Obj context,
-                     Obj canReturnVoid,
-                     Obj canReturnObj,
-                     Obj breakLoop,
-                     Obj prompt,
-                     Obj preCommandHook)
-{
-  Char promptBuffer[81];
-  Obj res;
-
-  if (!IS_LVARS_OR_HVARS(context))
-    RequireArgument(SELF_NAME, context, "must be a local variables bag");
-  
-  RequireTrueOrFalse(SELF_NAME, canReturnVoid);
-  RequireTrueOrFalse(SELF_NAME, canReturnObj);
-  RequireTrueOrFalse(SELF_NAME, breakLoop);
-  RequireStringRep(SELF_NAME, prompt);
-  if (GET_LEN_STRING(prompt) > 80)
-    ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80", 0, 0);
-  promptBuffer[0] = '\0';
-  gap_strlcat(promptBuffer, CONST_CSTR_STRING(prompt), sizeof(promptBuffer));
-
-  if (preCommandHook == False)
-    preCommandHook = 0;
-  else if (!IS_FUNC(preCommandHook))
-    RequireArgument(SELF_NAME, preCommandHook, "must be function or false");
-
-  res = Shell(context, canReturnVoid == True, canReturnObj == True,
-              breakLoop == True, promptBuffer, preCommandHook);
-
-  return res;
 }
 
 int realmain( int argc, char * argv[] )
