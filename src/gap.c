@@ -1336,9 +1336,6 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init the completion function                                        */
-    InitGlobalBag( &STATE(ThrownObject), "src/gap.c:ThrownObject"      );
-
     /* list of exit functions                                              */
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
 
@@ -1472,7 +1469,6 @@ void InitializeGap (
 #endif
              (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN));
 
-    STATE(ThrownObject) = 0;
     STATE(UserHasQUIT) = 0;
     STATE(UserHasQuit) = 0;
     STATE(JumpToCatchCallback) = 0;
