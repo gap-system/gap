@@ -168,6 +168,9 @@ static Obj FuncSHELL(Obj self,
                      Obj prompt,
                      Obj preCommandHook)
 {
+    //
+    // validate all arguments
+    //
     if (!IS_LVARS_OR_HVARS(context))
         RequireArgument(SELF_NAME, context, "must be a local variables bag");
 
@@ -185,17 +188,11 @@ static Obj FuncSHELL(Obj self,
         RequireArgument(SELF_NAME, preCommandHook,
                         "must be function or false");
 
+    //
+    // open input and output streams
+    //
     const Char * inFile;
     const Char * outFile;
-    UInt         time = 0;
-    UInt8        mem = 0;
-    UInt         status;
-    Obj          evalResult;
-    UInt         dualSemicolon;
-    UInt         oldPrintObjState;
-    Int          oldErrorLLevel = STATE(ErrorLLevel);
-    STATE(ErrorLLevel) = 0;
-    Int oldRecursionDepth = GetRecursionDepth();
 
     if (breakLoop == True) {
         inFile = "*errin*";
@@ -212,7 +209,6 @@ static Obj FuncSHELL(Obj self,
         outFile = "*stdout*";
     }
 
-    /* read-eval-print loop                                                */
     TypOutputFile output = { 0 };
     if (!OpenOutput(&output, outFile, FALSE))
         ErrorQuit("SHELL: can't open outfile %s", (Int)outFile, 0);
@@ -223,9 +219,26 @@ static Obj FuncSHELL(Obj self,
         ErrorQuit("SHELL: can't open infile %s", (Int)inFile, 0);
     }
 
-    oldPrintObjState = SetPrintObjState(0);
+    //
+    // save some state
+    //
+    Int  oldErrorLLevel = STATE(ErrorLLevel);
+    Int  oldRecursionDepth = GetRecursionDepth();
+    UInt oldPrintObjState = SetPrintObjState(0);
 
+    //
+    // return values of ReadEvalCommand
+    //
+    UInt status;
+    Obj  evalResult;
+
+    //
+    // start the REPL (read-eval-print loop)
+    //
+    STATE(ErrorLLevel) = 0;
     while (1) {
+        UInt  time = 0;
+        UInt8 mem = 0;
 
         /* start the stopwatch                                             */
         if (breakLoop == False) {
@@ -263,20 +276,20 @@ static Obj FuncSHELL(Obj self,
         }
         STATE(ErrorLVars) = errorLVars;
 
-        /* now  read and evaluate and view one command  */
+        // read and evaluate one command (statement or expression)
+        UInt dualSemicolon;
         status =
             ReadEvalCommand(errorLVars, &input, &evalResult, &dualSemicolon);
+
+        // if the user called some code which QUIT then bail out (the case
+        // where the statement we just processed was `QUIT` is handled below,
+        // see STATUS_QQUIT)
         if (STATE(UserHasQUIT))
             break;
 
-
         /* handle ordinary command                                         */
         if (status == STATUS_END && evalResult != 0) {
-
-            /* remember the value in 'last'    */
             UpdateLast(evalResult);
-
-            /* print the result                                            */
             if (!dualSemicolon) {
                 ViewObjHandler(evalResult);
             }
@@ -321,12 +334,18 @@ static Obj FuncSHELL(Obj self,
         }
     }
 
+    //
+    // cleanup: restore state, close input/output streams
+    //
     SetPrintObjState(oldPrintObjState);
+    SetRecursionDepth(oldRecursionDepth);
+    STATE(ErrorLLevel) = oldErrorLLevel;
     CloseInput(&input);
     CloseOutput(&output);
-    STATE(ErrorLLevel) = oldErrorLLevel;
-    SetRecursionDepth(oldRecursionDepth);
 
+    //
+    // handle QUIT
+    //
     if (STATE(UserHasQUIT)) {
         // If we are in a break loop, throw so that the next higher up
         // read&eval loop can process the QUIT
@@ -344,7 +363,11 @@ static Obj FuncSHELL(Obj self,
     }
 
     STATE(UserHasQuit) = 0;
-    if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT)) {
+    //
+    // handle the remaining status codes; note that `STATUS_QQUIT` is handled
+    // above, as part of the `UserHasQUIT` handling
+    //
+    if (status & (STATUS_EOF | STATUS_QUIT)) {
         return Fail;
     }
     if (status & STATUS_RETURN_VOID) {
