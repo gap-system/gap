@@ -254,14 +254,9 @@ static Obj FuncSHELL(Obj self,
 
         /* here is a hook: */
         if (preCommandHook) {
-            if (!IS_FUNC(preCommandHook)) {
-                Pr("#E CommandHook was non-function, ignoring\n", 0, 0);
-            }
-            else {
-                Call0ArgsInNewReader(preCommandHook);
-                /* Recover from a potential break loop: */
-                SetPrompt(prompt);
-            }
+            Call0ArgsInNewReader(preCommandHook);
+            // Recover from a potential break loop:
+            SetPrompt(prompt);
         }
 
         // update ErrorLVars based on ErrorLLevel
