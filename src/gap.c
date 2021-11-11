@@ -327,6 +327,7 @@ static Obj Shell(Obj    context,
     {
       if (catchQUIT)
         {
+          STATE(UserHasQuit) = 0;
           STATE(UserHasQUIT) = 0;
           AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
           return Fail;
@@ -335,6 +336,7 @@ static Obj Shell(Obj    context,
         GAP_THROW();
     }
 
+  STATE(UserHasQuit) = 0;
   if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
     {
       return Fail;
@@ -387,7 +389,6 @@ static Obj FuncSHELL(Obj self,
   res = Shell(context, canReturnVoid == True, canReturnObj == True,
               breakLoop == True, promptBuffer, preCommandHook);
 
-  STATE(UserHasQuit) = 0;
   return res;
 }
 
