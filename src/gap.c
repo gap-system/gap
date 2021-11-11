@@ -284,21 +284,19 @@ static Obj FuncSHELL(Obj self,
         }
 
         /* handle return-value or return-void command                      */
-        else if (status & STATUS_RETURN_VAL)
+        else if (status & STATUS_RETURN_VAL) {
             if (canReturnObj == True)
                 break;
-            else
-                Pr("'return <object>' cannot be used in this read-eval-print "
-                   "loop\n",
-                   0, 0);
-
-        else if (status & STATUS_RETURN_VOID)
+            Pr("'return <object>' cannot be used in this read-eval-print "
+               "loop\n",
+               0, 0);
+        }
+        else if (status & STATUS_RETURN_VOID) {
             if (canReturnVoid == True)
                 break;
-            else
-                Pr("'return' cannot be used in this read-eval-print loop\n",
-                   0, 0);
-
+            Pr("'return' cannot be used in this read-eval-print loop\n", 0,
+               0);
+        }
         /* handle quit command or <end-of-file>                            */
         else if (status & (STATUS_EOF | STATUS_QUIT)) {
             STATE(UserHasQuit) = 1;
@@ -331,14 +329,19 @@ static Obj FuncSHELL(Obj self,
     SetRecursionDepth(oldRecursionDepth);
 
     if (STATE(UserHasQUIT)) {
-        if (breakLoop == False) {
-            STATE(UserHasQuit) = 0;
-            STATE(UserHasQUIT) = 0;
-            AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
-            return Fail;
-        }
-        else
+        // If we are in a break loop, throw so that the next higher up
+        // read&eval loop can process the QUIT
+        if (breakLoop == True)
             GAP_THROW();
+
+        // If we are the topmost REPL, then indicating we are QUITing to the
+        // GAP language level, and simply end the loop. This implicitly
+        // assumes that the only places using SHELL() are the primary REPL and
+        // break loops.
+        STATE(UserHasQuit) = 0;
+        STATE(UserHasQUIT) = 0;
+        AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
+        return Fail;
     }
 
     STATE(UserHasQuit) = 0;
