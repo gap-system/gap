@@ -361,7 +361,9 @@ static Obj FuncSHELL(Obj self,
         SET_ELM_PLIST(res, 1, evalResult);
         return res;
     }
-    assert(0);
+
+    Panic("SHELL: unhandled status %d, this code should never be reached",
+          (int)status);
     return (Obj)0;
 }
 
