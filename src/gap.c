@@ -193,7 +193,6 @@ static Obj FuncSHELL(Obj self,
     Obj          evalResult;
     UInt         dualSemicolon;
     UInt         oldPrintObjState;
-    Obj          res;
     Int          oldErrorLLevel = STATE(ErrorLLevel);
     STATE(ErrorLLevel) = 0;
     Int oldRecursionDepth = GetRecursionDepth();
@@ -349,14 +348,10 @@ static Obj FuncSHELL(Obj self,
         return Fail;
     }
     if (status & STATUS_RETURN_VOID) {
-        res = NewEmptyPlist();
-        return res;
+        return NewEmptyPlist();
     }
     if (status & STATUS_RETURN_VAL) {
-        res = NEW_PLIST(T_PLIST_HOM, 1);
-        SET_LEN_PLIST(res, 1);
-        SET_ELM_PLIST(res, 1, evalResult);
-        return res;
+        return NewPlistFromArgs(evalResult);
     }
 
     Panic("SHELL: unhandled status %d, this code should never be reached",
