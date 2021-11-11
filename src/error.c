@@ -613,6 +613,9 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
+    STATE(ThrownObject) = 0;
+    InitGlobalBag( &STATE(ThrownObject), "src/gap.c:ThrownObject"      );
+
     // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
