@@ -165,24 +165,19 @@ static Obj FuncSHELL(Obj self,
                      Obj canReturnVoid_,
                      Obj canReturnObj_,
                      Obj breakLoop_,
-                     Obj prompt_,
+                     Obj prompt,
                      Obj preCommandHook)
 {
-    Char promptBuffer[81];
-
     if (!IS_LVARS_OR_HVARS(context))
         RequireArgument(SELF_NAME, context, "must be a local variables bag");
 
     RequireTrueOrFalse(SELF_NAME, canReturnVoid_);
     RequireTrueOrFalse(SELF_NAME, canReturnObj_);
     RequireTrueOrFalse(SELF_NAME, breakLoop_);
-    RequireStringRep(SELF_NAME, prompt_);
-    if (GET_LEN_STRING(prompt_) > 80)
+    RequireStringRep(SELF_NAME, prompt);
+    if (GET_LEN_STRING(prompt) > 80)
         ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80",
                      0, 0);
-    promptBuffer[0] = '\0';
-    gap_strlcat(promptBuffer, CONST_CSTR_STRING(prompt_),
-                sizeof(promptBuffer));
 
     if (preCommandHook == False)
         preCommandHook = 0;
@@ -193,7 +188,6 @@ static Obj FuncSHELL(Obj self,
     BOOL   canReturnVoid = (canReturnVoid_ == True);
     BOOL   canReturnObj = (canReturnObj_ == True);
     BOOL   breakLoop = (breakLoop_ == True);
-    Char * prompt = promptBuffer;
 
     const Char * inFile;
     const Char * outFile;
@@ -247,7 +241,7 @@ static Obj FuncSHELL(Obj self,
         }
 
         /* read and evaluate one command                                   */
-        SetPrompt(prompt);
+        SetPrompt(CONST_CSTR_STRING(prompt));
         SetPrintObjState(0);
         ResetOutputIndent();
         SetRecursionDepth(0);
@@ -256,7 +250,7 @@ static Obj FuncSHELL(Obj self,
         if (preCommandHook) {
             Call0ArgsInNewReader(preCommandHook);
             // Recover from a potential break loop:
-            SetPrompt(prompt);
+            SetPrompt(CONST_CSTR_STRING(prompt));
         }
 
         // update ErrorLVars based on ErrorLLevel
