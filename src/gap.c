@@ -162,18 +162,18 @@ static UInt QUITTINGGVar;
 
 static Obj FuncSHELL(Obj self,
                      Obj context,
-                     Obj canReturnVoid_,
-                     Obj canReturnObj_,
-                     Obj breakLoop_,
+                     Obj canReturnVoid,
+                     Obj canReturnObj,
+                     Obj breakLoop,
                      Obj prompt,
                      Obj preCommandHook)
 {
     if (!IS_LVARS_OR_HVARS(context))
         RequireArgument(SELF_NAME, context, "must be a local variables bag");
 
-    RequireTrueOrFalse(SELF_NAME, canReturnVoid_);
-    RequireTrueOrFalse(SELF_NAME, canReturnObj_);
-    RequireTrueOrFalse(SELF_NAME, breakLoop_);
+    RequireTrueOrFalse(SELF_NAME, canReturnVoid);
+    RequireTrueOrFalse(SELF_NAME, canReturnObj);
+    RequireTrueOrFalse(SELF_NAME, breakLoop);
     RequireStringRep(SELF_NAME, prompt);
     if (GET_LEN_STRING(prompt) > 80)
         ErrorMayQuit("SHELL: <prompt> must be a string of length at most 80",
@@ -185,14 +185,8 @@ static Obj FuncSHELL(Obj self,
         RequireArgument(SELF_NAME, preCommandHook,
                         "must be function or false");
 
-    BOOL   canReturnVoid = (canReturnVoid_ == True);
-    BOOL   canReturnObj = (canReturnObj_ == True);
-    BOOL   breakLoop = (breakLoop_ == True);
-
     const Char * inFile;
     const Char * outFile;
-    BOOL         setTime = !breakLoop;
-    BOOL         catchQUIT = !breakLoop;
     UInt         time = 0;
     UInt8        mem = 0;
     UInt         status;
@@ -204,7 +198,7 @@ static Obj FuncSHELL(Obj self,
     STATE(ErrorLLevel) = 0;
     Int oldRecursionDepth = GetRecursionDepth();
 
-    if (breakLoop) {
+    if (breakLoop == True) {
         inFile = "*errin*";
         outFile = "*errout*";
     }
@@ -235,7 +229,7 @@ static Obj FuncSHELL(Obj self,
     while (1) {
 
         /* start the stopwatch                                             */
-        if (setTime) {
+        if (breakLoop == False) {
             time = SyTime();
             mem = SizeAllBags;
         }
@@ -291,7 +285,7 @@ static Obj FuncSHELL(Obj self,
 
         /* handle return-value or return-void command                      */
         else if (status & STATUS_RETURN_VAL)
-            if (canReturnObj)
+            if (canReturnObj == True)
                 break;
             else
                 Pr("'return <object>' cannot be used in this read-eval-print "
@@ -299,7 +293,7 @@ static Obj FuncSHELL(Obj self,
                    0, 0);
 
         else if (status & STATUS_RETURN_VOID)
-            if (canReturnVoid)
+            if (canReturnVoid == True)
                 break;
             else
                 Pr("'return' cannot be used in this read-eval-print loop\n",
@@ -318,7 +312,7 @@ static Obj FuncSHELL(Obj self,
         }
 
         /* stop the stopwatch                                          */
-        if (setTime) {
+        if (breakLoop == False) {
             UpdateTime(time);
             AssGVarWithoutReadOnlyCheck(MemoryAllocated,
                                         ObjInt_Int8(SizeAllBags - mem));
@@ -337,7 +331,7 @@ static Obj FuncSHELL(Obj self,
     SetRecursionDepth(oldRecursionDepth);
 
     if (STATE(UserHasQUIT)) {
-        if (catchQUIT) {
+        if (breakLoop == False) {
             STATE(UserHasQuit) = 0;
             STATE(UserHasQUIT) = 0;
             AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
