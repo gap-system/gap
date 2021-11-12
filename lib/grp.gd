@@ -2848,8 +2848,10 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##
 ##  <Description>
 ##  returns the image of the <C>NaturalHomomorphismByNormalSubgroup(<A>G</A>,<A>N</A>)</C>.
-##  The homomorphism will be returned by calling the function
-##  <C>NaturalHomomorphism</C> on the result.
+##  This function is provided for compatibility with older code, but if a
+##  connection between group and factor is desired, users need to start by
+##  obtaining the <C>NaturalHomomorphismByNormalSubgroup</C> in the first
+##   place.
 ##  The <C>NC</C> version does not test whether <A>N</A> is normal in <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;n:=Subgroup(g,[(1,2)(3,4),(1,3)(2,4)]);;
@@ -2857,8 +2859,7 @@ DeclareOperation( "CosetTableNormalClosure", [ IsGroup, IsGroup ] );
 ##  [ (1,2,3,4), (1,2) ] -> [ f1*f2, f1 ]
 ##  gap> Size(ImagesSource(hom));
 ##  6
-##  gap> FactorGroup(g,n);;
-##  gap> StructureDescription(last);
+##  gap> StructureDescription(Image(hom,g));
 ##  "S3"
 ##  ]]></Example>
 ##  </Description>
@@ -2877,8 +2878,9 @@ DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
 ##  <Oper Name="NaturalHomomorphism" Arg='F'/>
 ##
 ##  <Description>
-##  For a group <A>F</A> obtained via <C>FactorGroup</C>, this operation
-##  returns the natural homomorphism onto <A>F</A>
+##  This function is obsolete now and will give an error message. Users
+##  should use <C>NaturalHomomorphismByNormalSubgroup</C> in the first place to
+##  get the homomorphism and then get the factor group as the image.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

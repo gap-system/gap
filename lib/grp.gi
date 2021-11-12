@@ -2669,6 +2669,7 @@ function( G, N )
 local hom,F,new;
   hom:=NaturalHomomorphismByNormalSubgroupNC( G, N );
   F:=ImagesSource(hom);
+  #TODO: Remove the !.nathom component
   if not IsBound(F!.nathom) then
     F!.nathom:=hom;
   else
@@ -2681,16 +2682,6 @@ local hom,F,new;
   fi;
   return F;
 end );
-
-InstallMethod( NaturalHomomorphism, "for a group with natural homomorphism stored",
-    [ IsGroup ],
-function(G)
-  if IsBound(G!.nathom) then
-    return G!.nathom;
-  else
-    Error("no natural homomorphism stored");
-  fi;
-end);
 
 InstallOtherMethod( \/,
     "generic method for two groups",
