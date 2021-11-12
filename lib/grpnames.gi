@@ -152,6 +152,7 @@ InstallMethod( NormalComplementNC,
           Gf,   # = G/T = N x B/B'
           Nf,   # = NT/T
           Bf,   # abelian complement to Nf in Gf ( = B/B')
+          nat,
           BfF;  # Direct factors of Bf
 
     # if <N> is trivial then the only complement is <G>
@@ -164,13 +165,15 @@ InstallMethod( NormalComplementNC,
 
     # if G/N is abelian
     elif HasAbelianFactorGroup(G, N) then
-      F := FactorGroupNC(G, N);
+      nat:=NaturalHomomorphismByNormalSubgroupNC(G,N);
+      #F := FactorGroupNC(G, N);
+      F:=Image(nat,G);
       b := [];
       l := [];
       i:=0;
       for gF in IndependentGeneratorsOfAbelianGroup(F) do
         i := i+1;
-        g := PreImagesRepresentative(NaturalHomomorphism(F), gF);
+        g := PreImagesRepresentative(nat, gF);
         R := RightCoset(N, g);
         # DirectFactorsOfGroup already computed Center and RationalClasses
         # when calling NormalComplement
@@ -224,15 +227,18 @@ InstallMethod( NormalComplementNC,
     else
       T := CommutatorSubgroup(Centralizer(G, N), G);
       if not IsTrivial(T) and IsTrivialNormalIntersection(G, T, N) then
-        Gf := FactorGroupNC(G, T);
-        Nf := Image(NaturalHomomorphism(Gf), N);
+        #Gf := FactorGroupNC(G, T);
+        #Nf := Image(NaturalHomomorphism(Gf), N);
+        nat:=NaturalHomomorphismByNormalSubgroupNC(G, T);
+        Gf:=Image(nat,G);
+        Nf:=Image(nat,N);
         # not quite sure if this check is needed
         if HasAbelianFactorGroup(Gf, Nf) then
           Bf := NormalComplementNC(Gf, Nf);
           if Bf = fail then
             return fail;
           else
-            B := PreImage(NaturalHomomorphism(Gf), Bf);
+            B := PreImage(nat, Bf);
             return B;
           fi;
         else

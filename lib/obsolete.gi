@@ -1029,6 +1029,21 @@ end );
 BindGlobal("R_N", fail);
 BindGlobal("R_X", fail);
 
+# Moved to obsolete in Nov. 2021 for 4.12
+InstallMethod( NaturalHomomorphism, "for a group with natural homomorphism stored",
+    [ IsGroup ],
+function(G)
+  Info(InfoWarning,0,"The use of `NaturalHomomorphism` for a `FactorGroup`\n",
+    "has been deprecated, as it caused side-effects.\n",
+    "Proceed at risk!");
+
+  if IsBound(G!.nathom) then
+    return G!.nathom;
+  else
+    Error("no natural homomorphism stored");
+  fi;
+end);
+
 
 
 #############################################################################
