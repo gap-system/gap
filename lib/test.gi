@@ -222,11 +222,7 @@ InstallGlobalFunction(RunTests, function(arg)
     res := "";
     fres := OutputTextString(res, false);
     t := Runtime();
-    if localbag <> false then
-        READ_STREAM_LOOP_WITH_CONTEXT(s, fres, localbag);
-    else
-        READ_STREAM_LOOP(s, fres);
-    fi;
+    READ_STREAM_LOOP(s, fres, localbag);
     t := Runtime() - t;
     CloseStream(fres);
     CloseStream(s);
