@@ -166,8 +166,10 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         }
     }
     if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
-        // the function must have called READ() and the user quit from
-        // a break loop inside it
+        // the function must have called READ() and the user quit from a break loop
+        // inside it; or a file containing a `QUIT` statement was read at the top
+        // execution level (e.g. in init.g, before the primary REPL starts) after
+        // which the function was called, and now we are returning from that
         GAP_THROW();
     }
 

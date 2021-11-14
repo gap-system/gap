@@ -275,12 +275,12 @@ static void READ_INNER(TypInputFile * input)
     if (STATE(UserHasQuit))
       {
         Pr("Warning: Entering READ with UserHasQuit set, this should never happen, resetting",0,0);
-        STATE(UserHasQuit) = 0;
+        STATE(UserHasQuit) = FALSE;
       }
     if (STATE(UserHasQUIT))
       {
         Pr("Warning: Entering READ with UserHasQUIT set, this should never happen, resetting",0,0);
-        STATE(UserHasQUIT) = 0;
+        STATE(UserHasQUIT) = FALSE;
       }
     AssGVarWithoutReadOnlyCheck( LastReadValueGVar, 0);
 
@@ -300,11 +300,11 @@ static void READ_INNER(TypInputFile * input)
         else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
           break;
         else if (status == STATUS_QUIT) {
-          STATE(UserHasQuit) = 1;
+          STATE(UserHasQuit) = TRUE;
           break;
         }
         else if (status == STATUS_QQUIT) {
-          STATE(UserHasQUIT) = 1;
+          STATE(UserHasQUIT) = TRUE;
           break;
         }
         if (evalResult)
@@ -886,7 +886,7 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj inputObj)
         ErrorQuit("Panic: READ_NORECOVERY cannot close input", 0, 0);
     }
     if (STATE(UserHasQuit)) {
-        STATE(UserHasQuit) = 0;    // stop recovery here
+        STATE(UserHasQuit) = FALSE;    // stop recovery here
         return Fail;
     }
     return True;

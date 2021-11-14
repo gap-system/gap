@@ -403,8 +403,10 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
       else                { val = CALL_XARGS( func, args ); }
 
       if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
-        /* the procedure must have called READ() and the user quit
-           from a break loop inside it */
+        // the procedure must have called READ() and the user quit from a break loop
+        // inside it; or a file containing a `QUIT` statement was read at the top
+        // execution level (e.g. in init.g, before the primary REPL starts) after
+        // which the procedure was called, and now we are returning from that
         GAP_THROW();
       }
     }
