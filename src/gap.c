@@ -316,7 +316,6 @@ static Obj FuncSHELL(Obj self,
         }
         /* handle quit command or <end-of-file>                            */
         else if (status & (STATUS_EOF | STATUS_QUIT)) {
-            STATE(UserHasQuit) = TRUE;
             break;
         }
 
@@ -371,7 +370,6 @@ static Obj FuncSHELL(Obj self,
         return Fail;
     }
 
-    STATE(UserHasQuit) = FALSE;
     //
     // handle the remaining status codes; note that `STATUS_QQUIT` is handled
     // above, as part of the `UserHasQUIT` handling
