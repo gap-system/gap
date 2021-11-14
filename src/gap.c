@@ -281,11 +281,16 @@ static Obj FuncSHELL(Obj self,
         status =
             ReadEvalCommand(errorLVars, &input, &evalResult, &dualSemicolon);
 
-        // if the user called some code which QUIT then bail out (the case
-        // where the statement we just processed was `QUIT` is handled below,
-        // see STATUS_QQUIT)
+        // if the input we just processed *indirectly* executed a `QUIT` statement
+        // (e.g. by reading a file via `READ`) then bail out
         if (STATE(UserHasQUIT))
             break;
+
+        // if the statement we just processed itself was `QUIT`, also bail out
+        if (status & STATUS_QQUIT) {
+            STATE(UserHasQUIT) = TRUE;
+            break;
+        }
 
         /* handle ordinary command                                         */
         if (status == STATUS_END && evalResult != 0) {
@@ -311,13 +316,7 @@ static Obj FuncSHELL(Obj self,
         }
         /* handle quit command or <end-of-file>                            */
         else if (status & (STATUS_EOF | STATUS_QUIT)) {
-            STATE(UserHasQuit) = 1;
-            break;
-        }
-
-        /* handle QUIT */
-        else if (status & (STATUS_QQUIT)) {
-            STATE(UserHasQUIT) = 1;
+            STATE(UserHasQuit) = TRUE;
             break;
         }
 
@@ -329,8 +328,18 @@ static Obj FuncSHELL(Obj self,
         }
 
         if (STATE(UserHasQuit)) {
+            // If we get here, then some code invoked indirectly by the
+            // command we just processed was aborted via `quit` (most likely:
+            // `quit` was entered in a break loop). Stop processing any
+            // further input in the current line of input. Thus if the input
+            // is `f(); g();` and executing `f()` triggers a break loop that
+            // the user aborts via `quit`, then we won't try to execute `g()`
+            // anymore.
+            //
+            // So in a sense we are (ab)using `UserHasQuit` to see if an error
+            // occurred.
             FlushRestOfInputLine(&input);
-            STATE(UserHasQuit) = 0; /* quit has done its job if we are here */
+            STATE(UserHasQuit) = FALSE;
         }
     }
 
@@ -356,13 +365,13 @@ static Obj FuncSHELL(Obj self,
         // GAP language level, and simply end the loop. This implicitly
         // assumes that the only places using SHELL() are the primary REPL and
         // break loops.
-        STATE(UserHasQuit) = 0;
-        STATE(UserHasQUIT) = 0;
+        STATE(UserHasQuit) = FALSE;
+        STATE(UserHasQUIT) = FALSE;
         AssGVarWithoutReadOnlyCheck(QUITTINGGVar, True);
         return Fail;
     }
 
-    STATE(UserHasQuit) = 0;
+    STATE(UserHasQuit) = FALSE;
     //
     // handle the remaining status codes; note that `STATUS_QQUIT` is handled
     // above, as part of the `UserHasQUIT` handling
@@ -1023,7 +1032,7 @@ static Obj FuncQuitGap(Obj self, Obj args)
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: QuitGap( [ <return value> ] )", 0, 0);
   }
-  STATE(UserHasQUIT) = 1;
+  STATE(UserHasQUIT) = TRUE;
   GAP_THROW();
   return (Obj)0; 
 }
@@ -1460,8 +1469,8 @@ void InitializeGap (
 #endif
              (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN));
 
-    STATE(UserHasQUIT) = 0;
-    STATE(UserHasQuit) = 0;
+    STATE(UserHasQUIT) = FALSE;
+    STATE(UserHasQuit) = FALSE;
     STATE(JumpToCatchCallback) = 0;
 
     // get info structures for the built in modules

@@ -2749,7 +2749,7 @@ Obj Call0ArgsInNewReader(Obj f)
     volatile Obj  result = 0;
 
     // initialize everything
-    STATE(UserHasQuit) = 0;
+    STATE(UserHasQuit) = FALSE;
     oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
     GAP_TRY
@@ -2782,7 +2782,7 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
     volatile Obj  result = 0;
 
     // initialize everything
-    STATE(UserHasQuit) = 0;
+    STATE(UserHasQuit) = FALSE;
     oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
     GAP_TRY

@@ -72,15 +72,30 @@ typedef struct GAPState {
     // for use by GAP_TRY / GAP_CATCH and related code
     int TryCatchDepth;
 
-    /* From gap.c */
-    Obj  ThrownObject;
-    UInt UserHasQuit;
-    UInt UserHasQUIT;
-    Obj  ErrorLVars;        // ErrorLVars as modified by DownEnv / UpEnv
-    Int  ErrorLLevel;       // record where on the stack ErrorLVars is relative to the top
-    void (*JumpToCatchCallback)(void); // This callback is called in FuncJUMP_TO_CATCH,
-                                   // this is not used by GAP itself but by programs
-                                   // that use GAP as a library to handle errors
+    // Set by `FuncJUMP_TO_CATCH` to the value of its second argument, and
+    // and then later extracted by `CALL_WITH_CATCH`. Not currently used by
+    // the GAP kernel itself, as far as I can tell.
+    Obj ThrownObject;
+
+    // Set to TRUE when a read-eval-loop encounters a `quit` statement.
+    BOOL UserHasQuit;
+
+    // Set to TRUE when a read-eval-loop encounters a `QUIT` statement.
+    BOOL UserHasQUIT;
+
+    // Set by the primary read-eval loop in `FuncSHELL`, based on the value of
+    // `ErrorLLevel`. Also, `ReadEvalCommand` saves and restores this value
+    // before executing code.
+    Obj ErrorLVars;
+
+    // Records where on the stack `ErrorLVars` is relative to the top; this is
+    // modified by `FuncDownEnv` / `FuncUpEnv`, and ultimately used and
+    // controlled by the primary read-eval loop in `FuncSHELL`.
+    Int ErrorLLevel;
+
+    // This callback is called in FuncJUMP_TO_CATCH, this is not used by GAP
+    // itself but by programs that use GAP as a library to handle errors
+    void (*JumpToCatchCallback)(void);
 
     /* From info.c */
     Int ShowUsedInfoClassesActive;
