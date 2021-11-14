@@ -900,15 +900,20 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj inputObj)
 **  Read data from <instream> in a read-eval-view loop and write all output
 **  to <outstream>.
 */
-static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
-                                             Obj instream,
-                                             Obj outstream,
-                                             Obj context)
+static Obj FuncREAD_STREAM_LOOP(Obj self,
+                                Obj instream,
+                                Obj outstream,
+                                Obj context)
 {
     Int res;
 
     RequireInputStream(SELF_NAME, instream);
     RequireOutputStream(SELF_NAME, outstream);
+    if (context == False)
+        context = 0;
+    else if (!IS_LVARS_OR_HVARS(context))
+        RequireArgument(SELF_NAME, context, "must be a local variables bag "
+                                            "or the value 'false'");
 
     TypInputFile input = { 0 };
     if (!OpenInputStream(&input, instream, FALSE)) {
@@ -933,11 +938,6 @@ static Obj FuncREAD_STREAM_LOOP_WITH_CONTEXT(Obj self,
     GAP_ASSERT(res);
 
     return res ? True : False;
-}
-
-static Obj FuncREAD_STREAM_LOOP(Obj self, Obj stream, Obj catcherrstdout)
-{
-    return FuncREAD_STREAM_LOOP_WITH_CONTEXT(self, stream, catcherrstdout, 0);
 }
 
 
@@ -1749,9 +1749,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_4ARGS(
         READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
-    GVAR_FUNC_2ARGS(READ_STREAM_LOOP, stream, catchstderrout),
-    GVAR_FUNC_3ARGS(
-        READ_STREAM_LOOP_WITH_CONTEXT, stream, catchstderrout, context),
+    GVAR_FUNC_3ARGS(READ_STREAM_LOOP, stream, catchstderrout, context),
     GVAR_FUNC_1ARGS(READ_AS_FUNC, input),
     GVAR_FUNC_1ARGS(READ_GAP_ROOT, filename),
     GVAR_FUNC_3ARGS(CALL_WITH_STREAM, stream, func, args),

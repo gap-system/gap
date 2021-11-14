@@ -124,12 +124,12 @@ gap> READ_NORECOVERY(InputTextString(""));
 true
 
 #
-gap> READ_STREAM_LOOP_WITH_CONTEXT(fail, fail, fail);
-Error, READ_STREAM_LOOP_WITH_CONTEXT: <instream> must be an input stream (not \
-the value 'fail')
-gap> READ_STREAM_LOOP_WITH_CONTEXT(InputTextString(""), fail, fail);
-Error, READ_STREAM_LOOP_WITH_CONTEXT: <outstream> must be an output stream (no\
-t the value 'fail')
+gap> READ_STREAM_LOOP(fail, fail, fail);
+Error, READ_STREAM_LOOP: <instream> must be an input stream (not the value 'fa\
+il')
+gap> READ_STREAM_LOOP(InputTextString(""), fail, fail);
+Error, READ_STREAM_LOOP: <outstream> must be an output stream (not the value '\
+fail')
 
 #
 gap> READ_AS_FUNC(fail);
