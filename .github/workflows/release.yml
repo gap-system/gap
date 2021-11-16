@@ -18,6 +18,12 @@ on:
     # Every day at 3:33 AM UTC
     - cron:  '33 3 * * *'
 
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: only if it is a pull request build.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
 env:
   NO_COVERAGE: 1
   BOOTSTRAP_MINIMAL: yes
