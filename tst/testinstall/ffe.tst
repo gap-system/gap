@@ -1,5 +1,5 @@
 #@local Rochambeau,e,F,f1,f2,f3,p,pol,qs,r,x,bigPrime,z,odds,evens
-#@local r1,r2,r3,sf1,sf2,sf3,q,q2
+#@local r1,r2,r3,sf1,sf2,sf3,q,q2,Fp,fields,C,coeffs,B
 gap> START_TEST("ffe.tst");
 
 #
@@ -160,6 +160,37 @@ gap> F:=LargeGaloisField(bigPrime,2);
 GF(1152921504606847009^2)
 gap> Z(bigPrime,2) = PrimitiveElement(F);
 true
+
+#
+# Check that `Coefficients` returns objects of the right type.
+#
+gap> p:= NextPrimeInt( 10^6 );;
+gap> fields:= [ GF(3), GF(3^2), GF(p), LargeGaloisField( p, 2 ) ];;
+gap> Fp:= LargeGaloisField( p );;
+gap> pol:= UnivariatePolynomial( Fp, [ 912543, 810, 1 ] * One( Fp ) );;
+gap> Add( fields, GF( Fp, pol ) );
+gap> List( fields, IsFFECollection );
+[ true, true, true, true, false ]
+gap> List( fields, F -> IsSubset( F, LeftActingDomain( F ) ) );
+[ true, true, true, true, false ]
+gap> for F in fields do
+>      Fp:= LeftActingDomain( F );
+>      C:= CanonicalBasis( F );
+>      coeffs:= Coefficients( C, One( F ) );
+>      if not IsSubset( Fp, coeffs ) then
+>        Error( F );
+>      fi;
+>      B:= Basis( F, BasisVectors( C ) );
+>      coeffs:= Coefficients( B, One( F ) );
+>      if not IsSubset( Fp, coeffs ) then
+>        Error( F );
+>      fi;
+>      B:= BasisNC( F, BasisVectors( C ) );
+>      coeffs:= Coefficients( B, One( F ) );
+>      if not IsSubset( Fp, coeffs ) then
+>        Error( F );
+>      fi;
+>    od;
 
 #
 # comparing FFEs
