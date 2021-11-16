@@ -336,57 +336,6 @@ Obj READ_AS_FUNC(TypInputFile * input)
 }
 
 
-static void READ_TEST_OR_LOOP(Obj context, TypInputFile * input)
-{
-    UInt                type;
-    UInt                oldtime;
-    UInt                dualSemicolon;
-    UInt                oldPrintObjState;
-
-    /* get the starting time                                               */
-    oldtime = SyTime();
-    oldPrintObjState = SetPrintObjState(0);
-
-    /* now do the reading                                                  */
-    while ( 1 ) {
-
-        /* read and evaluate the command                                   */
-        SetPrintObjState(0);
-        Obj evalResult;
-        type = ReadEvalCommand(context, input, &evalResult, &dualSemicolon);
-
-        /* stop the stopwatch                                              */
-        UpdateTime(oldtime);
-
-        /* handle ordinary command                                         */
-        if ( type == 0 && evalResult != 0 ) {
-
-            /* remember the value in 'last' and the time in 'time'         */
-            UpdateLast(evalResult);
-
-            /* print the result                                            */
-            if ( ! dualSemicolon ) {
-                ViewObjHandler( evalResult );
-            }
-        }
-
-        /* handle return-value or return-void command                      */
-        else if ( type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
-            Pr("'return' must not be used in file read-eval loop\n", 0, 0);
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF) ) {
-            break;
-        }
-        // FIXME: what about STATUS_ERROR
-
-    }
-
-    SetPrintObjState(oldPrintObjState);
-}
-
-
 /****************************************************************************
 **
 *F  READ_GAP_ROOT( <filename> ) . . .  read from gap root, dyn-load or static
@@ -912,8 +861,9 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     if (context == False)
         context = 0;
     else if (!IS_LVARS_OR_HVARS(context))
-        RequireArgument(SELF_NAME, context, "must be a local variables bag "
-                                            "or the value 'false'");
+        RequireArgument(SELF_NAME, context,
+                        "must be a local variables bag "
+                        "or the value 'false'");
 
     TypInputFile input = { 0 };
     if (!OpenInputStream(&input, instream, FALSE)) {
@@ -928,7 +878,50 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     }
 
     LockCurrentOutput(TRUE);
-    READ_TEST_OR_LOOP(context, &input);
+
+    // get the starting time
+    UInt oldtime = SyTime();
+    UInt oldPrintObjState = SetPrintObjState(0);
+
+    // now do the reading
+    while (1) {
+        UInt type;
+        Obj  evalResult;
+        UInt dualSemicolon;
+
+        // read and evaluate the command
+        SetPrintObjState(0);
+        type = ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
+
+        // stop the stopwatch
+        UpdateTime(oldtime);
+
+        // handle ordinary command
+        if (type == 0 && evalResult != 0) {
+
+            // remember the value in 'last' and the time in 'time'
+            UpdateLast(evalResult);
+
+            // print the result
+            if (!dualSemicolon) {
+                ViewObjHandler(evalResult);
+            }
+        }
+
+        // handle return-value or return-void command
+        else if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
+            Pr("'return' must not be used in file read-eval loop\n", 0, 0);
+        }
+
+        // handle quit command or <end-of-file>
+        else if (type & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF)) {
+            break;
+        }
+        // FIXME: what about STATUS_ERROR
+    }
+
+    SetPrintObjState(oldPrintObjState);
+
     LockCurrentOutput(FALSE);
 
     res = CloseInput(&input);
