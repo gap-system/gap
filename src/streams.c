@@ -847,7 +847,8 @@ static Obj FuncREAD_NORECOVERY(Obj self, Obj inputObj)
 *F  FuncREAD_STREAM_LOOP( <self>, <instream>, <outstream> ) . . read a stream
 **
 **  Read data from <instream> in a read-eval-view loop and write all output
-**  to <outstream>.
+**  to <outstream>. This is used by the GAP function `RunTests` and hence
+**  indirectly for implementing `Test` and `TestDirectory`,
 */
 static Obj FuncREAD_STREAM_LOOP(Obj self,
                                 Obj instream,
@@ -880,7 +881,6 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     LockCurrentOutput(TRUE);
 
     // get the starting time
-    UInt oldtime = SyTime();
     UInt oldPrintObjState = SetPrintObjState(0);
 
     // now do the reading
@@ -888,6 +888,7 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
         UInt type;
         Obj  evalResult;
         UInt dualSemicolon;
+        UInt oldtime = SyTime();
 
         // read and evaluate the command
         SetPrintObjState(0);
@@ -897,12 +898,8 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
         UpdateTime(oldtime);
 
         // handle ordinary command
-        if (type == 0 && evalResult != 0) {
-
-            // remember the value in 'last' and the time in 'time'
+        if (type == STATUS_END && evalResult != 0) {
             UpdateLast(evalResult);
-
-            // print the result
             if (!dualSemicolon) {
                 ViewObjHandler(evalResult);
             }
@@ -917,7 +914,6 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
         else if (type & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF)) {
             break;
         }
-        // FIXME: what about STATUS_ERROR
     }
 
     SetPrintObjState(oldPrintObjState);
