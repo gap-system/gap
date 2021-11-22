@@ -200,7 +200,7 @@ GAP_PKG_CPPFLAGS += $(CPPFLAGS)
 ########################################################################
 # C compiler flags
 ########################################################################
-GAP_CFLAGS =
+GAP_CFLAGS = $(ABI_CFLAGS)
 
 ifeq ($(HPCGAP),yes)
 GAP_CFLAGS += $(PTHREAD_CFLAGS)
@@ -213,7 +213,7 @@ GAP_CFLAGS += $(CFLAGS)
 ########################################################################
 # C++ compiler flags
 ########################################################################
-GAP_CXXFLAGS =
+GAP_CXXFLAGS = $(ABI_CFLAGS)
 
 ifeq ($(HPCGAP),yes)
 GAP_CXXFLAGS += $(PTHREAD_CFLAGS)
@@ -226,7 +226,7 @@ GAP_CXXFLAGS += $(CXXFLAGS)
 ########################################################################
 # Linker flags
 ########################################################################
-GAP_LDFLAGS =
+GAP_LDFLAGS = $(ABI_CFLAGS)
 
 # Add flags for dependencies
 GAP_LDFLAGS += $(GMP_LDFLAGS)
