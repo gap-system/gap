@@ -3,6 +3,11 @@ name: CI
 # Trigger the workflow on push or pull request
 on:
   workflow_dispatch:
+    inputs:
+      # see https://github.com/marketplace/actions/debugging-with-tmate
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'
+        type: boolean
   pull_request:
   push:
   schedule:
@@ -217,6 +222,9 @@ jobs:
         run: ${{ matrix.extra }} dev/ci-build-gap.sh
       - name: "Download packages"
         run: ${{ matrix.extra }} dev/ci-download-pkgs.sh
+      - name: "Setup tmate session"
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
       - name: "Run tests"
         run: ${{ matrix.extra }} dev/ci.sh
       - name: "Upload pdf manuals"
