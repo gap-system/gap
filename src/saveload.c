@@ -298,6 +298,7 @@ void SaveSubObj( Obj subobj )
            (Bag *)PTR_BAG(subobj) < MptrEndBags)
     {
       Pr("#W bad bag id %d found, 0 saved\n", (Int)subobj, 0);
+      GAP_ASSERT(0);
       SaveUInt(0);
     }
   else
