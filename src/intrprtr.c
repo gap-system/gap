@@ -126,7 +126,7 @@ static Obj VoidReturnMarker;
 
 static void PushFunctionVoidReturn(IntrState * intr)
 {
-    PushPlist(intr->StackObj, (Obj)&VoidReturnMarker);
+    PushPlist(intr->StackObj, VoidReturnMarker);
 }
 
 static void PushVoidObj(IntrState * intr)
@@ -138,7 +138,7 @@ static Obj PopObj(IntrState * intr)
 {
     Obj val = PopPlist(intr->StackObj);
 
-    if (val == (Obj)&VoidReturnMarker) {
+    if (val == VoidReturnMarker) {
         ErrorQuit("Function call: <func> must return a value", 0, 0);
     }
 
@@ -152,7 +152,7 @@ static Obj PopVoidObj(IntrState * intr)
     Obj val = PopPlist(intr->StackObj);
 
     // Treat a function which returned no value the same as 'void'
-    if (val == (Obj)&VoidReturnMarker) {
+    if (val == VoidReturnMarker) {
         val = 0;
     }
 
@@ -4163,7 +4163,13 @@ static Int InitKernel (
     /* Ensure that the value in '~' does not get garbage collected         */
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
 
+    InitGlobalBag( &VoidReturnMarker, "VoidReturnMarker");
+
+    // Create a bag which is not used anywhere else
+    VoidReturnMarker = NEW_STRING(0);
+
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
+
 
     /* The work of handling Options is also delegated*/
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
