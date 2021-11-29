@@ -21,6 +21,7 @@
 
 #include "io.h"
 
+#include "ariths.h"
 #include "bool.h"
 #include "calls.h"
 #include "error.h"
@@ -53,6 +54,9 @@ static Obj ReadLineFunc;
 static Obj WriteAllFunc;
 static Obj IsInputStringStream;
 static Obj IsOutputStringStream;
+static Obj PositionStream;
+static Obj SeekPositionStream;
+
 static Obj PrintPromptHook = 0;
 Obj EndLineHook = 0;
 static Obj PrintFormattingStatus;
@@ -463,13 +467,26 @@ UInt CloseInput(TypInputFile * input)
     GAP_ASSERT(input);
     GAP_ASSERT(input == IO()->Input);
 
-    // close the input file
-    if (!input->stream) {
-        SyFclose(input->file);
-    }
-
     // revert to previous input
     IO()->Input = input->prev;
+
+    if (input->stream) {
+        // if the input stream supports seeking, update its position to
+        // reflect the actual state of things: we may have read and buffered
+        // more bytes than we actually processed
+        int offset = strlen(input->ptr);
+        // check for EOF
+        if (input->ptr[0] == '\377' && input->ptr[1] == '\0')
+            offset = 0;
+        if (offset) {
+            Obj pos = CALL_1ARGS(PositionStream, input->stream);
+            C_DIFF_FIA(pos, pos, INTOBJ_INT(offset));
+            CALL_2ARGS(SeekPositionStream, input->stream, pos);
+        }
+    } else {
+        // close the input file
+        SyFclose(input->file);
+    }
 
     // don't keep GAP objects alive unnecessarily
     input->stream = 0;
@@ -2037,6 +2054,8 @@ static Int InitKernel (
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
     ImportFuncFromLibrary( "IsInputTextStringRep", &IsInputStringStream );
     ImportFuncFromLibrary( "IsOutputTextStringRep", &IsOutputStringStream );
+    ImportFuncFromLibrary( "PositionStream", &PositionStream );
+    ImportFuncFromLibrary( "SeekPositionStream", &SeekPositionStream );
     InitCopyGVar( "PrintPromptHook", &PrintPromptHook );
     InitCopyGVar( "EndLineHook", &EndLineHook );
     InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
