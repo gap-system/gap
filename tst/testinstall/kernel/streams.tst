@@ -75,11 +75,36 @@ gap> CLOSE_OUTPUT_LOG_TO();
 true
 
 #
+# READ_COMMAND_REAL
+#
 gap> READ_COMMAND_REAL(true, fail);
 Error, READ_COMMAND_REAL: <stream> must be an input stream (not the value 'tru\
 e')
-gap> READ_COMMAND_REAL(InputTextString("1+1;"), false);
+
+#
+gap> stream:=InputTextString("1+1;");
+InputTextString(0,4)
+gap> READ_COMMAND_REAL(stream, false); stream;
 [ true, 2 ]
+InputTextString(4,4)
+gap> READ_COMMAND_REAL(stream, false); stream;
+[ false ]
+InputTextString(4,4)
+
+#
+gap> stream := InputTextString("1+1;2+2;");
+InputTextString(0,8)
+gap> READ_COMMAND_REAL(stream, false); stream;
+[ true, 2 ]
+InputTextString(4,8)
+gap> READ_COMMAND_REAL(stream, false); stream;
+[ true, 4 ]
+InputTextString(8,8)
+gap> READ_COMMAND_REAL(stream, false); stream;
+[ false ]
+InputTextString(8,8)
+
+#
 gap> READ_COMMAND_REAL(InputTextString("/1;"), false); # intentional syntax error
 Syntax error: expression expected in stream:1
 /1;
