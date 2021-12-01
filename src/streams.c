@@ -165,7 +165,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
                 SET_LEN_STRING(outstreamString, 0);
             }
 
-            UInt dualSemicolon;
+            BOOL dualSemicolon;
             Obj  evalResult;
 
             ExecStatus status = ReadEvalCommand(0, &input, &evalResult, &dualSemicolon);
@@ -887,7 +887,7 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     while (1) {
         UInt type;
         Obj  evalResult;
-        UInt dualSemicolon;
+        BOOL dualSemicolon;
         UInt oldtime = SyTime();
 
         // read and evaluate the command

@@ -277,7 +277,7 @@ static Obj FuncSHELL(Obj self,
         STATE(ErrorLVars) = errorLVars;
 
         // read and evaluate one command (statement or expression)
-        UInt dualSemicolon;
+        BOOL dualSemicolon;
         status =
             ReadEvalCommand(errorLVars, &input, &evalResult, &dualSemicolon);
 

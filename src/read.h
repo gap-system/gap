@@ -37,7 +37,7 @@
 UInt ReadEvalCommand(Obj            context,
                      TypInputFile * input,
                      Obj *          evalResult,
-                     UInt *         dualSemicolon);
+                     BOOL *         dualSemicolon);
 
 
 /****************************************************************************
