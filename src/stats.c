@@ -88,17 +88,6 @@ UInt            (* ExecStatFuncs[256]) ( Stat stat );
 
 /****************************************************************************
 **
-*V  ReturnObjStat . . . . . . . . . . . . . . . .  result of return-statement
-**
-**  'ReturnObjStat'  is   the result of the   return-statement  that was last
-**  executed.  It is set  in  'ExecReturnObj' and  used in the  handlers that
-**  interpret functions.
-*/
-/* TL: Obj             ReturnObjStat; */
-
-
-/****************************************************************************
-**
 *F  ExecUnknownStat(<stat>) . . . . . executor for statements of unknown type
 **
 **  'ExecUnknownStat' is the executor that is called if an attempt is made to
