@@ -56,7 +56,12 @@ typedef struct GAPState {
     char Prompt[80];
 
     /* From stats.c */
+
+    // `ReturnObjStat` is the result of the return-statement that was last
+    // executed. It is set in `ExecReturnObj` and used in the handlers that
+    // interpret functions.
     Obj  ReturnObjStat;
+
     UInt (**CurrExecStatFuncs)(Stat);
 
     /* From code.c */
