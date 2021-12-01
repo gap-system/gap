@@ -326,10 +326,10 @@ Obj READ_AS_FUNC(TypInputFile * input)
 {
     /* now do the reading                                                  */
     Obj evalResult;
-    UInt type = ReadEvalFile(input, &evalResult);
+    ExecStatus status = ReadEvalFile(input, &evalResult);
 
     /* get the function                                                    */
-    Obj func = (type == 0) ? evalResult : Fail;
+    Obj func = (status == STATUS_END) ? evalResult : Fail;
 
     /* return the function                                                 */
     return func;
@@ -405,13 +405,13 @@ Int READ_GAP_ROOT ( const Char * filename )
     TypInputFile input = { 0 };
     if (OpenInput(&input, path)) {
         while (1) {
-            UInt type = ReadEvalCommand(0, &input, 0, 0);
+            ExecStatus status = ReadEvalCommand(0, &input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
-            if (type == STATUS_RETURN) {
+            if (status == STATUS_RETURN) {
                 Pr("'return' must not be used in file", 0, 0);
             }
-            else if (type & (STATUS_QUIT | STATUS_EOF)) {
+            else if (status & (STATUS_QUIT | STATUS_EOF)) {
                 break;
             }
         }
@@ -885,20 +885,20 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
 
     // now do the reading
     while (1) {
-        UInt type;
         Obj  evalResult;
         BOOL dualSemicolon;
         UInt oldtime = SyTime();
 
         // read and evaluate the command
         SetPrintObjState(0);
-        type = ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
+        ExecStatus status =
+            ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
 
         // stop the stopwatch
         UpdateTime(oldtime);
 
         // handle ordinary command
-        if (type == STATUS_END && evalResult != 0) {
+        if (status == STATUS_END && evalResult != 0) {
             UpdateLast(evalResult);
             if (!dualSemicolon) {
                 ViewObjHandler(evalResult);
@@ -906,12 +906,12 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
         }
 
         // handle return-value or return-void command
-        else if (type == STATUS_RETURN) {
+        else if (status == STATUS_RETURN) {
             Pr("'return' must not be used in file read-eval loop\n", 0, 0);
         }
 
         // handle quit command or <end-of-file>
-        else if (type & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF)) {
+        else if (status & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF)) {
             break;
         }
     }
