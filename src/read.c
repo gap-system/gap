@@ -2511,9 +2511,9 @@ ExecStatus ReadEvalCommand(Obj            context,
                            Obj *          evalResult,
                            BOOL *         dualSemicolon)
 {
-    volatile ExecStatus          type;
-    volatile Obj                 tilde;
-    volatile Obj                 errorLVars;
+    volatile ExecStatus status;
+    volatile Obj        tilde;
+    volatile Obj        errorLVars;
     jmp_buf           readJmpError;
 #ifdef HPCGAP
     int                 lockSP;
@@ -2606,7 +2606,7 @@ ExecStatus ReadEvalCommand(Obj            context,
         *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
 
     // end the interpreter
-    type = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
@@ -2629,7 +2629,7 @@ ExecStatus ReadEvalCommand(Obj            context,
     ClearError();
 
     /* return whether a return-statement or a quit-statement were executed */
-    return type;
+    return status;
 }
 
 /****************************************************************************
@@ -2644,7 +2644,7 @@ ExecStatus ReadEvalCommand(Obj            context,
 */
 UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
 {
-    volatile ExecStatus type;
+    volatile ExecStatus status;
     volatile Obj        tilde;
     jmp_buf           readJmpError;
     volatile UInt       nr;
@@ -2714,7 +2714,7 @@ UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
     }
 
     /* end the interpreter                                                 */
-    type = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
@@ -2731,7 +2731,7 @@ UInt ReadEvalFile(TypInputFile * input, Obj * evalResult)
     ClearError();
 
     /* return whether a return-statement or a quit-statement were executed */
-    return type;
+    return status;
 }
 
 
