@@ -2509,7 +2509,7 @@ static void RecreateStackNams(ReaderState * rs, Obj context)
 ExecStatus ReadEvalCommand(Obj            context,
                            TypInputFile * input,
                            Obj *          evalResult,
-                           UInt *         dualSemicolon)
+                           BOOL *         dualSemicolon)
 {
     volatile ExecStatus          type;
     volatile Obj                 tilde;
