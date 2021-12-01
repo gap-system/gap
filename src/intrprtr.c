@@ -217,23 +217,23 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
 
 /****************************************************************************
 **
-*F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
-*F  IntrEnd(<error>,<result>)  . . . . . . . . . . . . .  stop an interpreter
+*F  IntrBegin(<intr>) . . . . . . . . . . . . . . . . .  start an interpreter
+*F  IntrEnd(<intr>,<error>,<result>)  . . . . . . . . . . stop an interpreter
 **
 **  'IntrBegin' starts a new interpreter.
 **
-**  'IntrEnd' stops the current interpreter.
+**  'IntrEnd' stops the given interpreter.
 **
 **  If <error>  is non-zero a  syntax error was found by  the reader, and the
 **  interpreter only clears up the mess.
 **
 **  If 'IntrEnd' returns 'STATUS_END', then no return-statement or
-**  quit-statement was interpreted. If 'IntrEnd' returns 'STATUS_RETURN_VAL',
-**  then a return-value-statement was interpreted and in this case the return
-**  value is assigned to the address <result> points at (but only if <result>
-**  is not 0). If 'IntrEnd' returns 'STATUS_RETURN_VOID', then a
-**  return-void-statement was interpreted. If 'IntrEnd' returns 'STATUS_QUIT',
-**  then a quit-statement was interpreted.
+**  quit-statement was interpreted. If 'IntrEnd' returns 'STATUS_RETURN',
+**  then a return-statement was interpreted. If a value was returned, and the
+**  <result> is non-zero, then the returned value is assigned to the address
+**  <result> points at. If 'IntrEnd' returns 'STATUS_QUIT', then a
+**  quit-statement was interpreted. If 'IntrEnd' returns 'STATUS_QQUIT', then
+**  a QUIT-statement was interpreted.
 */
 void IntrBegin(IntrState * intr)
 {
@@ -1076,8 +1076,8 @@ void IntrReturnObj(IntrState * intr)
     SET_LEN_PLIST(intr->StackObj, 0);
     PushObj(intr, val);
 
-    /* indicate that a return-value-statement was interpreted              */
-    intr->returning = STATUS_RETURN_VAL;
+    // indicate that a return-statement was interpreted
+    intr->returning = STATUS_RETURN;
 }
 
 
@@ -1103,8 +1103,8 @@ void IntrReturnVoid(IntrState * intr)
     SET_LEN_PLIST(intr->StackObj, 0);
     PushVoidObj(intr);
 
-    /* indicate that a return-void-statement was interpreted               */
-    intr->returning = STATUS_RETURN_VOID;
+    // indicate that a return-statement was interpreted
+    intr->returning = STATUS_RETURN;
 }
 
 
