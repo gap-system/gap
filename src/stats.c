@@ -64,13 +64,21 @@ extern inline Obj EXEC_CURR_FUNC(void)
     return result;
 }
 
+// The next macro is used in loop bodies to handle 'break', 'continue' and
+// 'return' statements. Note that here, during execution, `status` can only
+// take on the value STATUS_BREAK, STATUS_CONTINUE, STATUS_RETURN, and
+// STATUS_END; while STATUS_EOF, STATUS_ERROR, STATUS_QUIT, STATUS_QQUIT are
+// impossible.
+//
+// The checks are arranged so that the most frequent cases (i.e. a statement
+// which is not break/continue/return) is handled first.
 #define EXEC_STAT_IN_LOOP(stat)                                              \
     {                                                                        \
         UInt status = EXEC_STAT(stat);                                       \
-        if (status != 0) {                                                   \
+        if (status != STATUS_END) {                                          \
             if (status == STATUS_CONTINUE)                                   \
                 continue;                                                    \
-            return (status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID));      \
+            return (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;   \
         }                                                                    \
     }
 
@@ -943,12 +951,13 @@ static UInt ExecAssert3Args(Stat stat)
 **
 **  'ExecRetval' executes the return-value-statement <stat>.
 **
-**  This    is  done  by  setting  'ReturnObjStat'    to   the  value of  the
-**  return-value-statement, and returning   1 (to tell   the calling executor
-**  that a return-value-statement was executed).
+**  This is done by setting 'STATE(ReturnObjStat)' to the value of the
+**  return-value-statement, and returning 'STATUS_RETURN' (to tell the
+**  calling executor that a return-statement was executed).
 **
 **  A return-value-statement is a statement of type 'STAT_RETURN_OBJ' with
-**  one slot. This slot points to the expression of the return-value-statement.
+**  one slot. This slot points to the expression whose value is to be
+**  returned.
 */
 static UInt ExecReturnObj(Stat stat)
 {
@@ -959,11 +968,8 @@ static UInt ExecReturnObj(Stat stat)
     }
 #endif
 
-    /* evaluate the expression                                             */
     STATE(ReturnObjStat) = EVAL_EXPR(READ_STAT(stat, 0));
-
-    /* return up to function interpreter                                   */
-    return STATUS_RETURN_VAL;
+    return STATUS_RETURN;
 }
 
 
@@ -974,8 +980,9 @@ static UInt ExecReturnObj(Stat stat)
 **  'ExecReturnVoid'   executes  the return-void-statement <stat>,  i.e., the
 **  return-statement that returns not value.
 **
-**  This  is done by   returning 2  (to tell    the calling executor  that  a
-**  return-void-statement was executed).
+**  This is done by setting 'STATE(ReturnObjStat)' to zero, and returning
+**  'STATUS_RETURN' (to tell the calling executor that a return-statement was
+**  executed).
 **
 **  A return-void-statement is a statement of type 'STAT_RETURN_VOID' with no
 **  slots.
@@ -989,11 +996,8 @@ static UInt ExecReturnVoid(Stat stat)
     }
 #endif
 
-    /* set 'STATE(ReturnObjStat)' to void                                         */
     STATE(ReturnObjStat) = 0;
-
-    /* return up to function interpreter                                   */
-    return STATUS_RETURN_VOID;
+    return STATUS_RETURN;
 }
 
 UInt (* IntrExecStatFuncs[256]) ( Stat stat );

@@ -176,7 +176,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             AssPlist(result, 1, False);
             PushPlist(resultList, result);
 
-            if (!(status & STATUS_ERROR)) {
+            if (status != STATUS_ERROR) {
 
                 AssPlist(result, 1, True);
                 AssPlist(result, 3, dualSemicolon ? True : False);
@@ -251,7 +251,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
         return result;
     else if (STATE(UserHasQuit) || STATE(UserHasQUIT))
         return result;
-    else if (status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID))
+    else if (status == STATUS_RETURN)
         Pr("'return' must not be used in file read-eval loop\n", 0, 0);
 
     AssPlist(result, 1, True);
@@ -292,7 +292,7 @@ static void READ_INNER(TypInputFile * input)
             break;
 
         /* handle return-value or return-void command                      */
-        if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
+        if (status == STATUS_RETURN) {
             Pr("'return' must not be used in file read-eval loop\n", 0, 0);
         }
 
@@ -408,7 +408,7 @@ Int READ_GAP_ROOT ( const Char * filename )
             UInt type = ReadEvalCommand(0, &input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
                 break;
-            if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
+            if (type == STATUS_RETURN) {
                 Pr("'return' must not be used in file", 0, 0);
             }
             else if (type & (STATUS_QUIT | STATUS_EOF)) {
@@ -906,7 +906,7 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
         }
 
         // handle return-value or return-void command
-        else if (type & (STATUS_RETURN_VAL | STATUS_RETURN_VOID)) {
+        else if (type == STATUS_RETURN) {
             Pr("'return' must not be used in file read-eval loop\n", 0, 0);
         }
 

@@ -36,12 +36,13 @@ extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
 **  'EXEC_STAT' executes the statement <stat>.
 **
 **  If   this  causes   the  execution  of   a  return-value-statement,  then
-**  'EXEC_STAT' returns 'STATUS_RETURN_VAL', and the return value is stored
+**  'EXEC_STAT' returns 'STATUS_RETURN', and the return value is stored
 **  in 'STATE(ReturnObjStat)'. If a return-void-statement is executed, then
-**  'EXEC_STAT' returns 'STATUS_RETURN_VOID'. If a break-statement is
-**  executed (which cannot happen if <stat> is the body of a function), then
-**  'EXEC_STAT' returns 'STATUS_BREAK'. Otherwise 'EXEC_STAT' returns
-**  'STATUS_END'.
+**  'EXEC_STAT' returns 'STATUS_RETURN' and sets 'STATE(ReturnObjStat)' to
+**  zero. If a break-statement is executed (which cannot happen if <stat> is
+**  the body of a function), then 'EXEC_STAT' returns 'STATUS_BREAK', and
+**  similarly for a continue-statement 'STATUS_CONTINUE' is returned.
+**  Otherwise 'EXEC_STAT' returns 'STATUS_END'.
 **
 **  'EXEC_STAT'  causes  the  execution  of  <stat>  by dispatching   to  the
 **  executor, i.e., to the  function that executes statements  of the type of

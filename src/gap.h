@@ -56,15 +56,14 @@ void ViewObjHandler(Obj obj);
 typedef UInt ExecStatus;
 
 enum {
-    STATUS_END         =  0,    // ran off the end of the code
-    STATUS_RETURN_VAL  =  1,    // value returned
-    STATUS_RETURN_VOID =  2,    // void returned
-    STATUS_BREAK       =  4,    // 'break' statement
-    STATUS_QUIT        =  8,    // quit command
-    STATUS_CONTINUE    =  8,    // 'continue' statement
-    STATUS_EOF         = 16,    // End of file
-    STATUS_ERROR       = 32,    // error
-    STATUS_QQUIT       = 64,    // QUIT command
+    STATUS_END      = 0,    // ran off the end of the code
+    STATUS_RETURN   = 1<<0, // 'return' statement
+    STATUS_BREAK    = 1<<1, // 'break' statement
+    STATUS_CONTINUE = 1<<2, // 'continue' statement
+    STATUS_QUIT     = 1<<3, // 'quit' statement
+    STATUS_QQUIT    = 1<<4, // 'QUIT' statement
+    STATUS_EOF      = 1<<5, // end of file while parsing
+    STATUS_ERROR    = 1<<6, // syntax error while parsing
 };
 
 

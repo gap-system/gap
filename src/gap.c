@@ -301,14 +301,14 @@ static Obj FuncSHELL(Obj self,
         }
 
         /* handle return-value or return-void command                      */
-        else if (status & STATUS_RETURN_VAL) {
+        else if (status == STATUS_RETURN && evalResult != 0) {
             if (canReturnObj == True)
                 break;
             Pr("'return <object>' cannot be used in this read-eval-print "
                "loop\n",
                0, 0);
         }
-        else if (status & STATUS_RETURN_VOID) {
+        else if (status == STATUS_RETURN && evalResult == 0) {
             if (canReturnVoid == True)
                 break;
             Pr("'return' cannot be used in this read-eval-print loop\n", 0,
@@ -377,11 +377,8 @@ static Obj FuncSHELL(Obj self,
     if (status & (STATUS_EOF | STATUS_QUIT)) {
         return Fail;
     }
-    if (status & STATUS_RETURN_VOID) {
-        return NewEmptyPlist();
-    }
-    if (status & STATUS_RETURN_VAL) {
-        return NewPlistFromArgs(evalResult);
+    if (status == STATUS_RETURN) {
+        return evalResult ? NewPlistFromArgs(evalResult) : NewEmptyPlist();
     }
 
     Panic("SHELL: unhandled status %d, this code should never be reached",
