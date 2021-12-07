@@ -567,10 +567,12 @@ InstallMethod( ListOp,
   local result, i, len;
   len := Length(vec);
   result := [];
-  result[len] := vec[len];
-  for i in [ 1 .. len - 1 ] do
-    result[i] := vec[i];
-  od;
+  if 0 < len then
+    result[len] := vec[len];
+    for i in [ 1 .. len - 1 ] do
+      result[i] := vec[i];
+    od;
+  fi;
   return result;
 end );
 #T delegation question -- use {}? or Unpack?
@@ -582,10 +584,12 @@ InstallMethod( ListOp,
   local result, i, len;
   len := Length(vec);
   result := [];
-  result[len] := func(vec[len]);
-  for i in [ 1 .. len - 1 ] do
-    result[i] := func(vec[i]);
-  od;
+  if 0 < len then
+    result[len] := func(vec[len]);
+    for i in [ 1 .. len - 1 ] do
+      result[i] := func(vec[i]);
+    od;
+  fi;
   return result;
 end );
 
