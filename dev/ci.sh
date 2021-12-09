@@ -47,6 +47,14 @@ do
     # skip itc because it requires xgap
     rm -rf itc*
 
+rm -rf CaratInterface
+rm -rf semigroups*
+rm -rf NormalizInterface*
+rm -rf ZeroMQInterface*
+
+#rm -rf float*
+#git clone https://github.com/fingolfin/float
+
     # HACK to work out timestamp issues with anupq
     touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
 
@@ -73,7 +81,7 @@ do
         PrintTo("packagenames", JoinStringsWithSeparator( SortedList(RecNames( GAPInfo.PackagesInfo )),"\n") );
         QuitGap(0);
 GAPInput
-        for pkg in $(cat packagenames)
+        for pkg in "float"
         do
             $GAP -q -L testpackagesload.wsp <<GAPInput
             Print("-----------------------------------------------------\n");

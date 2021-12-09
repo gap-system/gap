@@ -46,112 +46,13 @@ jobs:
         shell: [bash]
         test-suites:
           [
-            # base test: fast first test
-            "testinstall",
-
-            "teststandard",
-
-            # run tests contained in the manual
-            "testmanuals",
-
-            # test error reporting and compiling as well as libgap
-            "testspecial test-compile testlibgap testkernel",
 
             # compile packages and run GAP tests
             # don't use --enable-debug to prevent the tests from taking too long
             "testpackages testinstall-loadall",
 
-            # test creating the manual
-            # TODO: make the resulting HTML and PDF files available as build
-            # artifacts so that one can read the latest documentation (or even
-            # preview doc changes for PRs). Use the `upload-artifact` action and
-            # make it conditional. Or perhaps move the `makemanuals` job into
-            # a separate workflow job?
-            "makemanuals",
           ]
-        extra: [""]
-
-        # add a few extra tests
-        include:
-          - os: ubuntu-18.04
-            shell: bash
-            test-suites: "teststandard"
-            extra: "ABI=32 CONFIGFLAGS=\"\""
-
-          # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI,
-          # but somehow when running on GitHub Actions, it takes almost 4
-          # hours (!) to complete instead of 25 minutes. So for now we just
-          # run testinstall.
-          - os: ubuntu-18.04
-            shell: bash
-            test-suites: "testinstall"
-            extra: "HPCGAP=yes ABI=64"
-
-          # compile packages and run GAP tests in 32 bit mode
-          # it seems profiling is having trouble collecting the coverage data
-          # here, so we use NO_COVERAGE=1
-          - os: ubuntu-18.04
-            shell: bash
-            test-suites: "testpackages testinstall-loadall"
-            extra: "ABI=32 NO_COVERAGE=1"
-
-          # this job also tests GAP without readline
-          - os: macos-latest
-            shell: bash
-            test-suites: "testinstall"
-            extra: "BOOTSTRAP_MINIMAL=yes"
-
-          # run bugfix regression tests
-          # Also turn on '--enable-memory-checking' to make sure GAP compiles
-          # with the flag enabled. We do not actually test the memory
-          # checking, as this slows down GAP too much.
-          # Also check ubuntu-latest works.
-          - os: ubuntu-latest
-            shell: bash
-            test-suites: "testbugfix"
-            extra: "CONFIGFLAGS=\"--enable-memory-checking\""
-
-          # out of tree builds -- these are mainly done to verify that the
-          # build system work in this scenario. Since we don't expect the test
-          # results to vary compared to the in-tree builds, we turn off
-          # coverage reporting by setting NO_COVERAGE=1; this has the extra
-          # benefit of also running the tests at least once with the
-          # ReproducibleBehaviour option turned off.
-
-          # The '--enable-valgrind' checks that GAP builds and runs correctly
-          # when compiled with valgrind support. We do not actually run any
-          # tests using valgrind, as it is too slow.
-          - os: ubuntu-18.04
-            shell: bash
-            test-suites: "testbuildsys testinstall"
-            extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
-                    CONFIGFLAGS=\"--enable-valgrind\""
-            packages: "valgrind"
-
-          # same as above, but in 32 bit mode, also turn off debugging (see
-          # elsewhere in this file for an explanation).
-          - os: ubuntu-18.04
-            shell: bash
-            test-suites: "testbuildsys testinstall"
-            extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
-
-          # test Julia integration
-          - os: ubuntu-18.04
-            shell: bash
-            test-suites: "testinstall"
-            extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
-
-          - os: windows-latest
-            # The 'run' steps in this job use Cygwin's bash, once it is set up.
-            #   --login: make a login shell (so PATH is set up)
-            #   -o igncr: Accept windows line endings
-            #   {0} : Pass any extra arguments from CI
-            shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
-            test-suites: "testinstall"
-
-          # TODO: add back big endian test (we had s390x on Travis)
-          # TODO: add back test with an older GCC, e.g. 4.7
-          # TODO: restore Slack notifications for failed CI branch builds
+        extra: [ "ABI=32 NO_COVERAGE=1"]
 
     env:
       TEST_SUITES: ${{ matrix.test-suites }}
