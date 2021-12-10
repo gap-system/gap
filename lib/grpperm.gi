@@ -2023,7 +2023,8 @@ local  i, j, U, gens,o,v,a,sel,mintry,orb,orp,isok;
 
   # store orbit data
   orb:=Set(Orbits(G,MovedPoints(G)),Set);
-  orp:=Filtered([1..Length(orb)],x->IsPrimitive(Action(G,orb[x])));
+  # longer primitive orbits
+  orp:=Filtered([1..Length(orb)],x->Length(orb[x])>100 and IsPrimitive(Action(G,orb[x])));
 
   isok:=function(U)
     if Length(MovedPoints(G))>Length(MovedPoints(U)) or
