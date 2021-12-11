@@ -26,6 +26,10 @@
 ##  and whose restriction to <A>obj</A> is injective.
 ##  The concrete morphism (and also the image group) will depend on the
 ##  representation of <A>obj</A>.
+##  <P/>
+##  WARNING: The domain of the homomorphism may be larger than <A>obj</A>.
+##  To obtain the image of <A>obj</A> under the homomorphism, use
+##  <Ref Attr="NiceObject"/>; see there for an example where it matters.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -49,7 +53,7 @@ InstallSubsetMaintenance( NiceMonomorphism,
 ##  This filter indicates that a mappping has been installed as the
 ##  <Ref Func="NiceMonomorphism"/> value of an object.
 ##  (Such mappings may need to be handled specially
-##  because they should not refer to the <Ref Func="NiceMonomorphism"/> value
+##  because they should not refer to the <Ref Attr="NiceMonomorphism"/> value
 ##  of the source again.)
 ##  </Description>
 ##  </ManSection>
