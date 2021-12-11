@@ -452,7 +452,7 @@ InstallMethod(HallSubgroupOp,"via niceomorphism",true,
 function(g,l)
 local mon,h;
    mon:=NiceMonomorphism(g);
-   h:=HallSubgroup(ImagesSet(mon,g),l);
+   h:=HallSubgroup(NiceObject(g),l);
    if h = fail then
        return fail;
    elif IsList(h) then
@@ -580,10 +580,8 @@ local mon,iso;
   mon:=NiceMonomorphism(g);
   if not IsIdenticalObj(Source(mon),g) then
     mon:=RestrictedNiceMonomorphism(mon,g);
-    iso:=IsomorphismPermGroup(Image(mon,g));
-  else
-    iso:=IsomorphismPermGroup(NiceObject(g));
   fi;
+  iso:=IsomorphismPermGroup(NiceObject(g));
   if iso=fail then
     return fail;
   else
