@@ -1257,7 +1257,7 @@ InstallMethod( LatticeSubgroups,
     local hom, lattice, classes;
 
     hom:= NiceMonomorphism( G );
-    lattice:= LatticeSubgroups( Image( hom ) );
+    lattice:= LatticeSubgroups( NiceObject( G ) );
     classes:= List( ConjugacyClassesSubgroups( lattice ),
                     C -> ConjugacyClassSubgroups( G,
                              PreImage( hom, Representative( C ) ) ) );

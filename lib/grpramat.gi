@@ -251,7 +251,9 @@ function( G )
 
     # if not rational, use the nice monomorphism into a rational matrix group
     if not IsRationalMatrixGroup( G ) then
-        return IsFinite( Image( NiceMonomorphism( G ) ) );
+        # the following does not use NiceObject(G) as the only method for
+        # that currently requires IsHandledByNiceMonomorphism
+        return IsFinite( Image( NiceMonomorphism( G ), G ) );
     fi;
 
     # if not integer, choose basis in which it is integer

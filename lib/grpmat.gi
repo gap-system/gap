@@ -551,7 +551,7 @@ local map;
     if IsIdenticalObj(Source(map),G) then
       return map;
     fi;
-    return GeneralRestrictedMapping(map,G,Image(map,G));
+    return GeneralRestrictedMapping(map,G,NiceObject(G));
   else
     if not HasIsFinite(G) then
       Info(InfoWarning,1,

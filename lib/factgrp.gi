@@ -520,7 +520,7 @@ InstallMethod(FactorCosetAction,"by right transversal operation, Niceo",
 function(G,U)
 local hom;
   hom:=RestrictedNiceMonomorphism(NiceMonomorphism(G),G);
-  return hom*DoFactorCosetAction(Image(hom,G),Image(hom,U));
+  return hom*DoFactorCosetAction(NiceObject(G),Image(hom,U));
 end);
 
 InstallOtherMethod(FactorCosetAction,
@@ -529,7 +529,7 @@ InstallOtherMethod(FactorCosetAction,
 function(G,U,N)
 local hom;
   hom:=RestrictedNiceMonomorphism(NiceMonomorphism(G),G);
-  return hom*DoFactorCosetAction(Image(hom,G),Image(hom,U),Image(hom,N));
+  return hom*DoFactorCosetAction(NiceObject(G),Image(hom,U),Image(hom,N));
 end);
 
 # action on lists of subgroups
@@ -1630,7 +1630,7 @@ InstallMethod(FindActionKernel,"Niceo",IsIdenticalObj,
 function(G,N)
 local hom,hom2;
   hom:=NiceMonomorphism(G);
-  hom2:=GenericFindActionKernel(Image(hom,G),Image(hom,N));
+  hom2:=GenericFindActionKernel(NiceObject(G),Image(hom,N));
   if hom2<>fail then
     return hom*hom2;
   else
