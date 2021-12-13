@@ -65,7 +65,7 @@ rm -rf ZeroMQInterface*
     unset CFLAGS
     unset CXXFLAGS
     unset LDFLAGS
-    if ! "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR"
+    if ! "$SRCDIR/bin/BuildPackages.sh" --strict --with-gaproot="$BUILDDIR" float*
     then
         echo "Some packages failed to build:"
         cat "log/fail.log"
