@@ -46,13 +46,26 @@ jobs:
         shell: [bash]
         test-suites:
           [
+            # base test: fast first test
+            "testinstall",
 
-            # compile packages and run GAP tests
-            # don't use --enable-debug to prevent the tests from taking too long
-            "testpackages testinstall-loadall",
+            "teststandard",
+
+            # run tests contained in the manual
+            "testmanuals",
 
           ]
-        extra: [ "ABI=32 NO_COVERAGE=1"]
+        extra: [ ""]
+
+        # add a few extra tests
+        include:
+          # compile packages and run GAP tests in 32 bit mode
+          # it seems profiling is having trouble collecting the coverage data
+          # here, so we use NO_COVERAGE=1
+          - os: ubuntu-18.04
+            shell: bash
+            test-suites: "testpackages testinstall-loadall"
+            extra: "ABI=32 NO_COVERAGE=1"
 
     env:
       TEST_SUITES: ${{ matrix.test-suites }}
