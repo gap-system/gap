@@ -3528,9 +3528,9 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
         and IndexNC(sub,PerfectResiduum(sub)) in [2..bound] 
         # not all abelian is direct factor
         and IndexNC(sub,
-          ClosureGroup(PerfectResiduum(sub),RadicalGroup(sub)))>1 then
+          ClosureGroup(PerfectResiduum(sub),SolvableRadical(sub)))>1 then
         m:=MaximalSubgroupClassReps(
-          ClosureGroup(PerfectResiduum(sub),RadicalGroup(sub)):cheap:=false);
+          ClosureGroup(PerfectResiduum(sub),SolvableRadical(sub)):cheap:=false);
       elif bound>1 and prime^(Length(AbelianInvariants(sub))-3)>bound then
         i:=0;
         repeat

@@ -2860,13 +2860,13 @@ local m;
     if m<>fail then return m;fi;
   fi;
     
-  if Size(RadicalGroup(G))>1 and CanComputeFittingFree(G) 
+  if Size(SolvableRadical(G))>1 and CanComputeFittingFree(G) 
     and not (IsSolvableGroup(G) and Size(G)<=2000)
     and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
       # the solvable radical method got better, so force if the radical of
       # the group is a good part
       # sizeable radical
-      or Size(RadicalGroup(G))^2>Size(G)
+      or Size(SolvableRadical(G))^2>Size(G)
       or ValueOption("forcetest")=true) and 
       ValueOption("forcetest")<>"old" then
     # In place until a proper implementation of Cannon/Holt isomorphism is
