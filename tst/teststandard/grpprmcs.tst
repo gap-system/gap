@@ -1810,6 +1810,5 @@ gap> g:=PerfectGroup(IsPermGroup,10752,3);;
 gap> g:=Group(GeneratorsOfGroup(g));;
 gap> iso:=IsomorphismFpGroupByCompositionSeries(g);;
 gap> iso:=IsomorphismFpGroup(g);;
-gap> ImagesRepresentative(iso,Product(GeneratorsOfGroup(g)));
-F3*F4*F5*F2*F1^-1*F2^2*(F1*F2^-1)^2
+gap> rep:=ImagesRepresentative(iso,Product(GeneratorsOfGroup(g)));;
 gap> STOP_TEST( "grpprmcs.tst", 1);
