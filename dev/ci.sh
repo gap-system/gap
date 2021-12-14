@@ -52,7 +52,9 @@ rm -rf semigroups*
 rm -rf NormalizInterface*
 rm -rf ZeroMQInterface*
 
-#rm -rf float*
+rm -rf float*
+wget https://github.com/gap-packages/float/releases/download/v1.0.2/float-1.0.2.tar.gz
+tar xvf float-1.0.2.tar.gz
 #git clone https://github.com/fingolfin/float
 
     # HACK to work out timestamp issues with anupq
