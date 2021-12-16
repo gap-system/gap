@@ -62,8 +62,7 @@
 ##
 DeclareRepresentation(
     "IsInputTextStringRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -79,8 +78,7 @@ DeclareRepresentation(
 ##
 DeclareRepresentation(
     "IsOutputTextStringRep",
-    IsPositionalObjectRep,
-    ["string", "format"] );
+    IsPositionalObjectRep );
 
 
 #############################################################################

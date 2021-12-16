@@ -699,7 +699,7 @@ end );
 ##  buffers created and used within the kernel and containing binary data only
 ##
 
-DeclareRepresentation( "IsKernelDataObjectRep", IsDataObjectRep, []);
+DeclareRepresentation( "IsKernelDataObjectRep", IsDataObjectRep );
 
 BIND_GLOBAL( "TYPE_KERNEL_OBJECT",
           NewType(NewFamily("KernelObjectFamily", IsObject),

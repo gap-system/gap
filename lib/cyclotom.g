@@ -235,7 +235,7 @@ BIND_GLOBAL( "CyclotomicsFamily",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation( "IsSmallIntRep", IsInternalRep, [] );
+DeclareRepresentation( "IsSmallIntRep", IsInternalRep );
 
 
 #############################################################################

@@ -340,7 +340,7 @@ DeclareAttribute( "CycleStructurePerm", IsPerm );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation( "IsPerm2Rep", IsInternalRep, [] );
+DeclareRepresentation( "IsPerm2Rep", IsInternalRep );
 
 
 #############################################################################
@@ -354,7 +354,7 @@ DeclareRepresentation( "IsPerm2Rep", IsInternalRep, [] );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation( "IsPerm4Rep", IsInternalRep, [] );
+DeclareRepresentation( "IsPerm4Rep", IsInternalRep );
 
 
 #############################################################################

@@ -409,9 +409,7 @@ InstallMethod( PrintObj,
 #F  EnumeratorByFunctions( <D>, <record> )
 #F  EnumeratorByFunctions( <Fam>, <record> )
 ##
-DeclareRepresentation( "IsEnumeratorByFunctionsRep", IsComponentObjectRep,
-    [ "ElementNumber", "NumberElement", "Length", "IsBound\\[\\]",
-      "Membership", "AsList", "ViewObj", "PrintObj" ] );
+DeclareRepresentation( "IsEnumeratorByFunctionsRep", IsComponentObjectRep );
 
 DeclareSynonym( "IsEnumeratorByFunctions",
     IsEnumeratorByFunctionsRep and IsDenseList and IsDuplicateFreeList );
@@ -911,13 +909,9 @@ InstallOtherMethod( NextIterator,
 #F  IteratorByFunctions( <record> )
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsIteratorByFunctionsRep", IsNonAtomicComponentObjectRep,
-    [ "NextIterator", "IsDoneIterator", "ShallowCopy",
-    , "ViewObj", "PrintObj"] );
+DeclareRepresentation( "IsIteratorByFunctionsRep", IsNonAtomicComponentObjectRep );
 else
-DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep,
-    [ "NextIterator", "IsDoneIterator", "ShallowCopy",
-    , "ViewObj", "PrintObj"] );
+DeclareRepresentation( "IsIteratorByFunctionsRep", IsComponentObjectRep );
 fi;
 
 DeclareSynonym( "IsIteratorByFunctions",

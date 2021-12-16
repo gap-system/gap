@@ -42,7 +42,7 @@
 ##  INFODATA_HANDLER        optional, handler function taking three arguments
 ##  INFODATA_OUTPUT         optional, output stream
 
-DeclareRepresentation("IsInfoClassListRep", IsAtomicPositionalObjectRep,[]);
+DeclareRepresentation("IsInfoClassListRep", IsAtomicPositionalObjectRep);
 
 # A list of all created InfoClassListReps
 INFO_CLASSES := [];

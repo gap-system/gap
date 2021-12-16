@@ -853,8 +853,7 @@ DeclareOperation( "RepresentationsOfObject", [ IsObject ] );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation( "IsPackedElementDefaultRep", IsAtomicPositionalObjectRep,
-    [ 1 ] );
+DeclareRepresentation( "IsPackedElementDefaultRep", IsAtomicPositionalObjectRep );
 
 #############################################################################
 ##
