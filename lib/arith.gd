@@ -2122,7 +2122,7 @@ DeclareProperty( "IsUFDFamily", IsFamily );
 ##  </ManSection>
 ##
 DeclareRepresentation("IsAdditiveElementAsMultiplicativeElementRep",
-  IsPositionalObjectRep and IsMultiplicativeElement,[]);
+  IsPositionalObjectRep and IsMultiplicativeElement);
 
 
 #############################################################################

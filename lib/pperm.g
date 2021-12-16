@@ -17,8 +17,8 @@ DeclareCategoryCollections( "IsPartialPermCollection" );
 BIND_GLOBAL("PartialPermFamily", NewFamily("PartialPermFamily",
  IsPartialPerm, CanEasilySortElements, CanEasilySortElements));
 
-DeclareRepresentation( "IsPPerm2Rep", IsInternalRep, [] );
-DeclareRepresentation( "IsPPerm4Rep", IsInternalRep, [] );
+DeclareRepresentation( "IsPPerm2Rep", IsInternalRep );
+DeclareRepresentation( "IsPPerm4Rep", IsInternalRep );
 
 BIND_GLOBAL("TYPE_PPERM2", NewType(PartialPermFamily,
  IsPartialPerm and IsPPerm2Rep));
