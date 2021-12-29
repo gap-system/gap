@@ -973,10 +973,10 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     }
 
     // create and store data type for master pointers
-    datatype_mptr = jl_new_foreign_type(jl_symbol("MPtr"), module, parent,
+    datatype_mptr = jl_new_foreign_type(jl_symbol("GapObj"), module, parent,
                                         MPtrMarkFunc, NULL, 1, 0);
     GAP_ASSERT(jl_is_datatype(datatype_mptr));
-    jl_set_const(module, jl_symbol("MPtr"), (jl_value_t *)datatype_mptr);
+    jl_set_const(module, jl_symbol("GapObj"), (jl_value_t *)datatype_mptr);
 
     // create and store data type for small bags
     datatype_bag = jl_new_foreign_type(jl_symbol("Bag"), module, jl_any_type,
