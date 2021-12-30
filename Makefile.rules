@@ -43,7 +43,7 @@ SOURCES += src/dt.c
 SOURCES += src/dteval.c
 SOURCES += src/error.c
 SOURCES += src/exprs.c
-SOURCES += src/ffdata.c
+SOURCES += build/ffdata.c
 SOURCES += src/finfield.c
 SOURCES += src/funcs.c
 SOURCES += src/gap.c
@@ -340,6 +340,8 @@ DEPFLAGS = -MQ $(OBJFILE) -MMD -MP -MF $(DEPFILE)
 # DEPFILE and OBJFILE above)
 ########################################################################
 
+obj_deps = libtool build/config.h build/version.h build/ffdata.h
+
 # Build rule for C++ source files
 #
 # We disable support for exceptions and RTTI as we don't use them and they
@@ -347,13 +349,13 @@ DEPFLAGS = -MQ $(OBJFILE) -MMD -MP -MF $(DEPFILE)
 # careful to not put these into GAP_CXXFLAGS, as kernel extensions may want to
 # use GAP_CXXFLAGS but also may need to interface with C++ code in
 # libraries that use exceptions.
-build/obj/%.cc.lo: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS libtool build/config.h build/version.h
+build/obj/%.cc.lo: %.cc cnf/GAP-CXXFLAGS cnf/GAP-CPPFLAGS $(obj_deps)
 	@$(MKDIR_P) build/obj/$(*D) build/deps/$(*D)
 	$(QUIET_CXX)$(LIBTOOL) --mode=compile --tag CXX $(CXX) $(DEPFLAGS) $(GAP_CXXFLAGS) -fno-exceptions -fno-rtti $(WARN_CXXFLAGS) $(GAP_CPPFLAGS) -c $< -o $(OBJFILE)
 	@echo "$<:" >> $(DEPFILE)
 
 # Build rule for C source files
-build/obj/%.c.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS libtool build/config.h build/version.h
+build/obj/%.c.lo: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS $(obj_deps)
 	@$(MKDIR_P) build/obj/$(*D) build/deps/$(*D)
 	$(QUIET_CC)$(LIBTOOL) --mode=compile --tag CC $(CC) $(DEPFLAGS) $(GAP_CFLAGS) $(WARN_CFLAGS) $(GAP_CPPFLAGS) -c $< -o $(OBJFILE)
 	@echo "$<:" >> $(DEPFILE)
@@ -436,14 +438,16 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 # The "ffdata" target regenerates src/ffdata.{c,h} using etc/ffgen.c
 ########################################################################
 
-ffgen: etc/ffgen.c
+ffgen: $(srcdir)/etc/ffgen.c src/common.h build/config.h
 	$(QUIET_CC)$(CC) -Wall -Wextra $< -o $@
 
-ffdata: ffgen
-	./ffgen -h > $(abs_srcdir)/src/ffdata.h
-	./ffgen -c > $(abs_srcdir)/src/ffdata.c
+build/ffdata.h: ffgen
+	@$(MKDIR_P) $(@D)
+	./ffgen -h > $@
 
-.PHONY: ffdata
+build/ffdata.c: ffgen
+	@$(MKDIR_P) $(@D)
+	./ffgen -c > $@
 
 
 ########################################################################
