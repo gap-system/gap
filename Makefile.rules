@@ -439,16 +439,10 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 ########################################################################
 
 ffgen: $(srcdir)/etc/ffgen.c src/common.h build/config.h
-	$(QUIET_CC)$(CC) -Wall -Wextra $< -o $@
+	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
 
-build/ffdata.h: ffgen
-	@$(MKDIR_P) $(@D)
-	./ffgen -h > $@
-
-build/ffdata.c: ffgen
-	@$(MKDIR_P) $(@D)
-	./ffgen -c > $@
-
+build/ffdata.h build/ffdata.c: ffgen
+	./ffgen -b build/ffdata
 
 ########################################################################
 # The "tags" target regenerates the tags file using Exuberant Ctags

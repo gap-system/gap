@@ -2,6 +2,8 @@
    finfield.c
  */
 
+#include "common.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +16,7 @@ unsigned char is_ff[MAX_FF + 1];
 unsigned      deg[MAX_FF + 1];
 unsigned      ch[MAX_FF + 1];
 unsigned      num_ff;
+unsigned      max_deg;
 
 void make_primes()
 {
@@ -39,8 +42,17 @@ void make_ff()
                 ch[j] = i;
                 num_ff++;
             }
+            if (d > 0 && d - 1 > max_deg)
+                max_deg = d - 1;
         }
     }
+}
+
+unsigned int needed_bits(unsigned int x)
+{
+    if (x == 0)
+        return 0;
+    return 1 + needed_bits(x >> 1);
 }
 
 void emit_code(FILE * dest, int header)
@@ -51,13 +63,20 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, "#ifndef GAP_FFDATA_H\n");
         fprintf(dest, "#define GAP_FFDATA_H\n");
         fprintf(dest, "\n");
+        fprintf(dest, "#include \"common.h\"\n");
+        fprintf(dest, "\n");
         fprintf(dest, "enum {\n");
-        fprintf(dest, "    NUM_SHORT_FINITE_FIELDS = %d\n", num_ff);
+        fprintf(dest, "    NUM_SHORT_FINITE_FIELDS = %d,\n", num_ff);
+        fprintf(dest, "    MAXSIZE_GF_INTERNAL = %d,\n", MAX_FF);
+        fprintf(dest, "    DEGREE_LARGEST_INTERNAL_FF = %d,\n", max_deg);
+        fprintf(dest, "    FIELD_BITS_FFE = %d,\n", needed_bits(num_ff));
+        fprintf(dest, "    VAL_BITS_FFE = %d\n", needed_bits(MAX_FF - 1));
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "extern const unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        fprintf(dest, "extern const unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        fprintf(dest, "extern const unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const UInt4 SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const UInt1 DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const UInt4 CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "\n");
         fprintf(dest, "\n");
         fprintf(dest, "#endif // GAP_FFDATA_H\n");
     }
@@ -68,7 +87,7 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, " * to find them. Indices start at 1.\n");
         fprintf(dest, " */\n");
         fprintf(dest, "\n");
-        fprintf(dest, "const unsigned char DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const UInt1 DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %3d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
@@ -83,13 +102,13 @@ void emit_code(FILE * dest, int header)
             fprintf(dest, "\n");
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "const unsigned long CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
-        fprintf(dest, " %6d,", 0);
+        fprintf(dest, "const UInt4 CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, " %9d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
-                fprintf(dest, "%6d,", ch[i]);
+                fprintf(dest, "%9d,", ch[i]);
                 j++;
-                j %= 8;
+                j %= 6;
                 if (!j)
                     fprintf(dest, "\n ");
             }
@@ -98,13 +117,13 @@ void emit_code(FILE * dest, int header)
             fprintf(dest, "\n");
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "const unsigned long SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
-        fprintf(dest, " %6d,", 0);
+        fprintf(dest, "const UInt4 SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, " %9d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
-                fprintf(dest, "%6d,", i);
+                fprintf(dest, "%9d,", i);
                 j++;
-                j %= 8;
+                j %= 6;
                 if (!j)
                     fprintf(dest, "\n ");
             }
@@ -114,6 +133,22 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, "};\n");
     }
 }
+
+
+void emit_code_to_file_by_basename(int header, char * basename)
+{
+    char * filename = malloc(strlen(basename) + 3);
+    strcpy(filename, basename);
+    strcat(filename, header ? ".h" : ".c");
+    FILE * f = fopen(filename, "w");
+    if (!f) {
+        perror("opening output file");
+        exit(EXIT_FAILURE);
+    }
+    emit_code(f, header);
+    fclose(f);
+}
+
 
 int main(int argc, char * argv[])
 {
@@ -126,10 +161,17 @@ int main(int argc, char * argv[])
         emit_code(stdout, 1);
     else if (!strcmp(opt, "c") || !strcmp(opt, ".c") || !strcmp(opt, "-c"))
         emit_code(stdout, 0);
+    else if (!strcmp(opt, "-b") && argc > 2) {
+        char * basename = argv[2];
+        emit_code_to_file_by_basename(0, basename);
+        emit_code_to_file_by_basename(1, basename);
+    }
     else {
-        fprintf(stderr, "Usage: ffgen [-h|-c]\n");
+        fprintf(stderr, "Usage: ffgen [-h|-c|-b basename]\n");
         fprintf(stderr, "  -h for header file\n");
         fprintf(stderr, "  -c for C source file\n");
+        fprintf(stderr,
+                "  -b basename, makes both as basename.c and basename.h\n");
         return 1;
     }
     return 0;
