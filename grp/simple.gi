@@ -1018,6 +1018,7 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
   fi;
 
   efactors:=fail;
+  classaut:=fail;
   e:=fail;
 
   classical:=fail;
@@ -1118,6 +1119,8 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
     nam:=Concatenation("F4(",String(par),")");
     if prime=2 then
       efactors:=[1,expo,2];
+      # outer automorphism group is cyclic
+      classaut:=CyclicGroup(2*expo);
     else
       efactors:=[1,expo,1];
     fi;
@@ -1126,6 +1129,8 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
     nam:=Concatenation("G2(",String(par),")");
     if prime=3 then
       efactors:=[1,expo,2];
+      # outer automorphism group is cyclic
+      classaut:=CyclicGroup(2*expo);
     else
       efactors:=[1,expo,1];
     fi;
@@ -1147,7 +1152,6 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
   fi;
 
   aut:=fail;
-  classaut:=fail;
   if classical<>fail then
     classaut:=OuterAutoSimplePres(classical[1],classical[2],classical[3]);
     if classaut<>fail then
@@ -1179,7 +1183,23 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
       fi;
     fi;
   elif e=fail and efactors<>fail then
-    classaut:=AbelianGroup(efactors);
+
+# outer automorphism group -- also being described through efactors.
+# Atlas of Finite Groups (Chapter 3, Section 3) says:
+#
+#The outer automorphism group is a semidirect product (in this order) of
+#groups of orders d (diagonal automorphisms), f (field automorphisms), and g
+#(graph automorphisms modulo field automorphisms), except that for
+#B_2(2^f), G_2(3^f), F_4(2^f)
+# Note that B2 is handled as C2 -- symplectic
+
+    if not IsGroup(classaut) then
+      if Number(efactors,x->x>1)>1 then
+        Error("Code currently does not support more than one efactor,\n",
+          "Group could be nonabelian");
+      fi;
+      classaut:=AbelianGroup(efactors);
+    fi;
     e:=List(ConjugacyClassesSubgroups(classaut),Representative);
     e:=Filtered(e,x->Size(x)>1);
     e:=List(e,x->[Size(x),shortname(x)]);
