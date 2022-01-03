@@ -1194,6 +1194,10 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
 # Note that B2 is handled as C2 -- symplectic
 
     if not IsGroup(classaut) then
+      if Number(efactors,x->x>1)>1 then
+        Error("Code currently does not support more than one efactor,\n",
+          "Group could be nonabelian");
+      fi;
       classaut:=AbelianGroup(efactors);
     fi;
     e:=List(ConjugacyClassesSubgroups(classaut),Representative);
