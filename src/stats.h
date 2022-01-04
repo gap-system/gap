@@ -27,7 +27,7 @@
 **  the function  that should  be  called  if a  statement   of that type  is
 **  executed.
 */
-extern  UInt            (* ExecStatFuncs[256]) ( Stat stat );
+extern ExecStatFunc ExecStatFuncs[256];
 
 /****************************************************************************
 **
@@ -64,8 +64,7 @@ Obj EXEC_CURR_FUNC(void);
 **  when the normal control flow needs to be interrupted by an external
 **  event.
 */
-
-extern UInt (* IntrExecStatFuncs[256]) ( Stat stat );
+extern ExecStatFunc IntrExecStatFuncs[256];
 
 
 /****************************************************************************
@@ -118,7 +117,7 @@ void PrintStat(Stat stat);
 **  statements a pointer to the  printer for statements  of this type,  i.e.,
 **  the function that should be called to print statements of this type.
 */
-extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
+extern PrintStatFunc PrintStatFuncs[256];
 
 
 /****************************************************************************

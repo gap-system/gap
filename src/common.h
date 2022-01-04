@@ -244,4 +244,19 @@ typedef struct TypInputFile TypInputFile;
 typedef struct TypOutputFile TypOutputFile;
 
 
+/****************************************************************************
+**
+*T  EvalBoolFunc
+*T  EvalExprFunc
+*T  ExecStatFunc
+*T  PrintStatFunc
+*T  PrintExprFunc
+*/
+typedef Obj (*EvalBoolFunc)(Expr);
+typedef Obj (*EvalExprFunc)(Expr);
+typedef UInt (*ExecStatFunc)(Stat);
+typedef void (*PrintStatFunc)(Stat);
+typedef void (*PrintExprFunc)(Expr);
+
+
 #endif // GAP_COMMON_H

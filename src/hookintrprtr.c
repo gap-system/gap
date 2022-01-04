@@ -39,13 +39,13 @@ static Int PrintHookActive;
 ** store the correct values and are never changed.
 */
 
-UInt (*OriginalExecStatFuncsForHook[256])(Stat stat);
+ExecStatFunc OriginalExecStatFuncsForHook[256];
 
-Obj (*OriginalEvalExprFuncsForHook[256])(Expr expr);
-Obj (*OriginalEvalBoolFuncsForHook[256])(Expr expr);
+EvalExprFunc OriginalEvalExprFuncsForHook[256];
+EvalBoolFunc OriginalEvalBoolFuncsForHook[256];
 
-void (*OriginalPrintStatFuncsForHook[256])(Stat stat);
-void (*OriginalPrintExprFuncsForHook[256])(Expr expr);
+PrintStatFunc OriginalPrintStatFuncsForHook[256];
+PrintExprFunc OriginalPrintExprFuncsForHook[256];
 
 /****************************************************************************
 **
@@ -53,52 +53,52 @@ void (*OriginalPrintExprFuncsForHook[256])(Expr expr);
 ** ensuring they are set up correctly if any hooks are already active.
 */
 
-void InstallEvalBoolFunc(Int pos, Obj (*expr)(Expr))
+void InstallEvalBoolFunc(Int pos, EvalBoolFunc f)
 {
-    OriginalEvalBoolFuncsForHook[pos] = expr;
+    OriginalEvalBoolFuncsForHook[pos] = f;
     HashLock(&activeHooks);
     if (!HookActiveCount) {
-        EvalBoolFuncs[pos] = expr;
+        EvalBoolFuncs[pos] = f;
     }
     HashUnlock(&activeHooks);
 }
 
-void InstallEvalExprFunc(Int pos, Obj (*expr)(Expr))
+void InstallEvalExprFunc(Int pos, EvalExprFunc f)
 {
-    OriginalEvalExprFuncsForHook[pos] = expr;
+    OriginalEvalExprFuncsForHook[pos] = f;
     HashLock(&activeHooks);
     if (!HookActiveCount) {
-        EvalExprFuncs[pos] = expr;
+        EvalExprFuncs[pos] = f;
     }
     HashUnlock(&activeHooks);
 }
 
-void InstallExecStatFunc(Int pos, UInt (*stat)(Stat))
+void InstallExecStatFunc(Int pos, ExecStatFunc f)
 {
-    OriginalExecStatFuncsForHook[pos] = stat;
+    OriginalExecStatFuncsForHook[pos] = f;
     HashLock(&activeHooks);
     if (!HookActiveCount) {
-        ExecStatFuncs[pos] = stat;
+        ExecStatFuncs[pos] = f;
     }
     HashUnlock(&activeHooks);
 }
 
-void InstallPrintStatFunc(Int pos, void (*stat)(Stat))
+void InstallPrintStatFunc(Int pos, PrintStatFunc f)
 {
-    OriginalPrintStatFuncsForHook[pos] = stat;
+    OriginalPrintStatFuncsForHook[pos] = f;
     HashLock(&activeHooks);
     if(!PrintHookActive) {
-        PrintStatFuncs[pos] = stat;
+        PrintStatFuncs[pos] = f;
     }
     HashUnlock(&activeHooks);
 }
 
-void InstallPrintExprFunc(Int pos, void (*expr)(Expr))
+void InstallPrintExprFunc(Int pos, PrintExprFunc f)
 {
-    OriginalPrintExprFuncsForHook[pos] = expr;
+    OriginalPrintExprFuncsForHook[pos] = f;
     HashLock(&activeHooks);
     if(!PrintHookActive) {
-        PrintExprFuncs[pos] = expr;
+        PrintExprFuncs[pos] = f;
     }
     HashUnlock(&activeHooks);
 }

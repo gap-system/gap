@@ -67,7 +67,7 @@ EXPORT_INLINE Obj OBJ_INTEXPR(Expr expr)
 **  i.e., the function that should be  called to evaluate expressions of this
 **  type.
 */
-extern Obj (*EvalExprFuncs[256])(Expr expr);
+extern EvalExprFunc EvalExprFuncs[256];
 
 
 /****************************************************************************
@@ -109,7 +109,7 @@ EXPORT_INLINE Obj EVAL_EXPR(Expr expr)
 **  i.e., a pointer to  a function which  is  guaranteed to return a  boolean
 **  value that should be called to evaluate expressions of this type.
 */
-extern Obj (*EvalBoolFuncs[256])(Expr expr);
+extern EvalBoolFunc EvalBoolFuncs[256];
 
 
 /****************************************************************************
@@ -149,7 +149,7 @@ void PrintRecExpr1(Expr expr); /* needed for printing
 **  expressions a pointer to the printer for expressions  of this type, i.e.,
 **  the function that should be called to print expressions of this type.
 */
-extern  void            (* PrintExprFuncs [256] ) ( Expr expr );
+extern PrintExprFunc PrintExprFuncs[256];
 
 
 /****************************************************************************
