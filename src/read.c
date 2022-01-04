@@ -2506,10 +2506,10 @@ static void RecreateStackNams(ReaderState * rs, Obj context)
 **  will be set to 1 if the command was followed by a double semicolon, else
 **  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
 */
-ExecStatus ReadEvalCommand(Obj            context,
-                           TypInputFile * input,
-                           Obj *          evalResult,
-                           BOOL *         dualSemicolon)
+UInt ReadEvalCommand(Obj            context,
+                     TypInputFile * input,
+                     Obj *          evalResult,
+                     BOOL *         dualSemicolon)
 {
     volatile ExecStatus status;
     volatile Obj        tilde;
