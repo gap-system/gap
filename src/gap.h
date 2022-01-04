@@ -48,23 +48,18 @@ void ViewObjHandler(Obj obj);
 *T  ExecStatus . . . .  type of status values returned by read, eval and exec
 **                      subroutines, explaining why evaluation, or execution
 **                      has terminated.
-**
-**  Values are powers of two; this is used to test a given status for
-**  multiple possible values simultaneously.
 */
 
-typedef UInt ExecStatus;
-
-enum {
-    STATUS_END      = 0,    // ran off the end of the code
-    STATUS_RETURN   = 1<<0, // 'return' statement
-    STATUS_BREAK    = 1<<1, // 'break' statement
-    STATUS_CONTINUE = 1<<2, // 'continue' statement
-    STATUS_QUIT     = 1<<3, // 'quit' statement
-    STATUS_QQUIT    = 1<<4, // 'QUIT' statement
-    STATUS_EOF      = 1<<5, // end of file while parsing
-    STATUS_ERROR    = 1<<6, // syntax error while parsing
-};
+typedef enum {
+    STATUS_END,       // ran off the end of the code
+    STATUS_RETURN,    // 'return' statement
+    STATUS_BREAK,     // 'break' statement
+    STATUS_CONTINUE,  // 'continue' statement
+    STATUS_QUIT,      // 'quit' statement
+    STATUS_QQUIT,     // 'QUIT' statement
+    STATUS_EOF,       // end of file while parsing
+    STATUS_ERROR,     // syntax error while parsing
+} ExecStatus;
 
 
 /****************************************************************************

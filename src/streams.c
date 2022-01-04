@@ -169,7 +169,8 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             Obj  evalResult;
 
             ExecStatus status = ReadEvalCommand(0, &input, &evalResult, &dualSemicolon);
-            if (status & (STATUS_EOF | STATUS_QUIT | STATUS_QQUIT))
+            if (status == STATUS_EOF || status == STATUS_QUIT ||
+                status == STATUS_QQUIT)
                 break;
 
             Obj result = NEW_PLIST(T_PLIST, 5);
@@ -247,7 +248,8 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     ExecStatus status = ReadEvalCommand(0, &input, &evalResult, 0);
     CloseInput(&input);
 
-    if (status & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF))
+    if (status == STATUS_EOF || status == STATUS_QUIT ||
+        status == STATUS_QQUIT)
         return result;
     else if (STATE(UserHasQuit) || STATE(UserHasQUIT))
         return result;
@@ -297,7 +299,7 @@ static void READ_INNER(TypInputFile * input)
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( status  & (STATUS_ERROR | STATUS_EOF)) 
+        else if (status == STATUS_EOF || status == STATUS_ERROR)
           break;
         else if (status == STATUS_QUIT) {
           STATE(UserHasQuit) = TRUE;
@@ -411,7 +413,7 @@ Int READ_GAP_ROOT ( const Char * filename )
             if (status == STATUS_RETURN) {
                 Pr("'return' must not be used in file", 0, 0);
             }
-            else if (status & (STATUS_QUIT | STATUS_EOF)) {
+            else if (status == STATUS_EOF || status == STATUS_QUIT) {
                 break;
             }
         }
@@ -911,7 +913,8 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
         }
 
         // handle quit command or <end-of-file>
-        else if (status & (STATUS_QUIT | STATUS_QQUIT | STATUS_EOF)) {
+        else if (status == STATUS_EOF || status == STATUS_QUIT ||
+                 status == STATUS_QQUIT) {
             break;
         }
     }
