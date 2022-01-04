@@ -16,11 +16,11 @@
 
 #include "common.h"
 
-void InstallEvalBoolFunc(Int, Obj (*)(Expr));
-void InstallEvalExprFunc(Int, Obj (*)(Expr));
-void InstallExecStatFunc(Int, UInt (*)(Stat));
-void InstallPrintStatFunc(Int, void (*)(Stat));
-void InstallPrintExprFunc(Int, void (*)(Expr));
+void InstallEvalBoolFunc(Int, EvalBoolFunc);
+void InstallEvalExprFunc(Int, EvalExprFunc);
+void InstallExecStatFunc(Int, ExecStatFunc);
+void InstallPrintStatFunc(Int, PrintStatFunc);
+void InstallPrintExprFunc(Int, PrintExprFunc);
 
 
 /****************************************************************************
@@ -31,13 +31,13 @@ void InstallPrintExprFunc(Int, void (*)(Expr));
 ** These are provided for interpreter hooks to call the original methods.
 */
 
-extern UInt (*OriginalExecStatFuncsForHook[256])(Stat stat);
+extern ExecStatFunc OriginalExecStatFuncsForHook[256];
 
-extern Obj (*OriginalEvalExprFuncsForHook[256])(Expr expr);
-extern Obj (*OriginalEvalBoolFuncsForHook[256])(Expr expr);
+extern EvalExprFunc OriginalEvalExprFuncsForHook[256];
+extern EvalBoolFunc OriginalEvalBoolFuncsForHook[256];
 
-extern void (*OriginalPrintStatFuncsForHook[256])(Stat stat);
-extern void (*OriginalPrintExprFuncsForHook[256])(Expr expr);
+extern PrintStatFunc OriginalPrintStatFuncsForHook[256];
+extern PrintExprFunc OriginalPrintExprFuncsForHook[256];
 
 
 /****************************************************************************

@@ -62,7 +62,7 @@ typedef struct GAPState {
     // interpret functions.
     Obj  ReturnObjStat;
 
-    UInt (**CurrExecStatFuncs)(Stat);
+    ExecStatFunc * CurrExecStatFuncs;
 
     /* From code.c */
     void * PtrBody;

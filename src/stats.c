@@ -91,7 +91,7 @@ extern inline Obj EXEC_CURR_FUNC(void)
 **  the function  that should  be  called  if a  statement   of that type  is
 **  executed.
 */
-UInt            (* ExecStatFuncs[256]) ( Stat stat );
+ExecStatFunc ExecStatFuncs[256];
 
 
 /****************************************************************************
@@ -1000,7 +1000,7 @@ static UInt ExecReturnVoid(Stat stat)
     return STATUS_RETURN;
 }
 
-UInt (* IntrExecStatFuncs[256]) ( Stat stat );
+ExecStatFunc IntrExecStatFuncs[256];
 
 static inline Int BreakLoopPending(void)
 {
@@ -1168,7 +1168,7 @@ void            PrintStat (
 **  statements a pointer to the  printer for statements  of this type,  i.e.,
 **  the function that should be called to print statements of this type.
 */
-void            (* PrintStatFuncs[256] ) ( Stat stat );
+PrintStatFunc PrintStatFuncs[256];
 
 
 /****************************************************************************

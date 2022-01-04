@@ -49,7 +49,7 @@
 **  i.e., the function that should be  called to evaluate expressions of this
 **  type.
 */
-Obj             (* EvalExprFuncs [256]) ( Expr expr );
+EvalExprFunc EvalExprFuncs[256];
 
 
 /****************************************************************************
@@ -61,7 +61,7 @@ Obj             (* EvalExprFuncs [256]) ( Expr expr );
 **  i.e., a pointer to  a function which  is  guaranteed to return a  boolean
 **  value that should be called to evaluate expressions of this type.
 */
-Obj             (* EvalBoolFuncs [256]) ( Expr expr );
+EvalBoolFunc EvalBoolFuncs[256];
 
 
 /****************************************************************************
@@ -1216,7 +1216,7 @@ void            PrintExpr (
 **  expressions a pointer to the printer for expressions  of this type, i.e.,
 **  the function that should be called to print expressions of this type.
 */
-void            (* PrintExprFuncs[256] ) ( Expr expr );
+PrintExprFunc PrintExprFuncs[256];
 
 
 /****************************************************************************
