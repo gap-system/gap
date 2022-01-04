@@ -246,6 +246,25 @@ typedef struct TypOutputFile TypOutputFile;
 
 /****************************************************************************
 **
+*T  ExecStatus . . . .  type of status values returned by read, eval and exec
+**                      subroutines, explaining why evaluation, or execution
+**                      has terminated.
+*/
+
+typedef enum {
+    STATUS_END,         // ran off the end of the code
+    STATUS_RETURN,      // 'return' statement
+    STATUS_BREAK,       // 'break' statement
+    STATUS_CONTINUE,    // 'continue' statement
+    STATUS_QUIT,        // 'quit' statement
+    STATUS_QQUIT,       // 'QUIT' statement
+    STATUS_EOF,         // end of file while parsing
+    STATUS_ERROR,       // syntax error while parsing
+} ExecStatus;
+
+
+/****************************************************************************
+**
 *T  EvalBoolFunc
 *T  EvalExprFunc
 *T  ExecStatFunc
@@ -254,7 +273,7 @@ typedef struct TypOutputFile TypOutputFile;
 */
 typedef Obj (*EvalBoolFunc)(Expr);
 typedef Obj (*EvalExprFunc)(Expr);
-typedef UInt (*ExecStatFunc)(Stat);
+typedef ExecStatus (*ExecStatFunc)(Stat);
 typedef void (*PrintStatFunc)(Stat);
 typedef void (*PrintExprFunc)(Expr);
 

@@ -159,7 +159,7 @@ void FreeLVarsBag(Bag bag)
 **  'ExecAssLVar' executes the local  variable assignment statement <stat> to
 **  the local variable that is referenced in <stat>.
 */
-static UInt ExecAssLVar(Stat stat)
+static ExecStatus ExecAssLVar(Stat stat)
 {
     Obj                 rhs;            /* value of right hand side        */
 
@@ -167,17 +167,15 @@ static UInt ExecAssLVar(Stat stat)
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     ASS_LVAR(READ_STAT(stat, 0), rhs);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecUnbLVar(Stat stat)
+static ExecStatus ExecUnbLVar(Stat stat)
 {
     /* unbind the local variable                                           */
     ASS_LVAR(READ_STAT(stat, 0), (Obj)0);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -307,7 +305,7 @@ Obj NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 **  'ExecAssHVar' executes the higher variable assignment statement <stat> to
 **  the higher variable that is referenced in <stat>.
 */
-static UInt ExecAssHVar(Stat stat)
+static ExecStatus ExecAssHVar(Stat stat)
 {
     Obj                 rhs;            /* value of right hand side        */
 
@@ -315,17 +313,15 @@ static UInt ExecAssHVar(Stat stat)
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     ASS_HVAR(READ_STAT(stat, 0), rhs);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecUnbHVar(Stat stat)
+static ExecStatus ExecUnbHVar(Stat stat)
 {
     /* unbind the higher variable                                          */
     ASS_HVAR(READ_STAT(stat, 0), 0);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -413,7 +409,7 @@ static void PrintIsbHVar(Expr expr)
 **  'ExecAssGVar' executes the global variable assignment statement <stat> to
 **  the global variable that is referenced in <stat>.
 */
-static UInt ExecAssGVar(Stat stat)
+static ExecStatus ExecAssGVar(Stat stat)
 {
     Obj                 rhs;            /* value of right hand side        */
 
@@ -421,17 +417,15 @@ static UInt ExecAssGVar(Stat stat)
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     AssGVar(READ_STAT(stat, 0), rhs);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecUnbGVar(Stat stat)
+static ExecStatus ExecUnbGVar(Stat stat)
 {
     /* unbind the global variable                                          */
     AssGVar(READ_STAT(stat, 0), (Obj)0);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -518,7 +512,7 @@ static void PrintIsbGVar(Expr expr)
 **  'ExecAssList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
-static UInt ExecAssList(Expr stat)
+static ExecStatus ExecAssList(Expr stat)
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
@@ -555,8 +549,7 @@ static UInt ExecAssList(Expr stat)
         ASSB_LIST(list, pos, rhs);
     }
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 /****************************************************************************
 **
@@ -565,7 +558,7 @@ static UInt ExecAssList(Expr stat)
 **  'ExecAssMat' executes the matrix assignment statement <stat> of the form
 **  '<mat>[<row>,<col>] := <rhs>;'.
 */
-static UInt ExecAssMat(Expr stat)
+static ExecStatus ExecAssMat(Expr stat)
 {
     // evaluate the matrix (checking is done by 'ASS_MAT')
     Obj mat = EVAL_EXPR(READ_STAT(stat, 0));
@@ -579,8 +572,7 @@ static UInt ExecAssMat(Expr stat)
 
     ASS_MAT(mat, row, col, rhs);
 
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -591,7 +583,7 @@ static UInt ExecAssMat(Expr stat)
 **  'ExecAsssList' executes the list assignment statement  <stat> of the form
 **  '<list>{<positions>} := <rhss>;'.
 */
-static UInt ExecAsssList(Expr stat)
+static ExecStatus ExecAsssList(Expr stat)
 {
     Obj                 list;           /* list, left operand              */
     Obj                 poss;           /* positions, left operand         */
@@ -612,8 +604,7 @@ static UInt ExecAsssList(Expr stat)
     /* assign the right hand sides to several elements of the list         */
     ASSS_LIST( list, poss, rhss );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -631,7 +622,7 @@ static UInt ExecAsssList(Expr stat)
 **  a  list, and 'ExecAssListLevel' assigns the  element '<rhss>[<i>]' to the
 **  list '<list>[<i>]' at <position>.
 */
-static UInt ExecAssListLevel(Expr stat)
+static ExecStatus ExecAssListLevel(Expr stat)
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 pos;            /* position, left operand          */
@@ -661,8 +652,7 @@ static UInt ExecAssListLevel(Expr stat)
     /* assign the right hand sides to the elements of several lists        */
     AssListLevel( lists, ixs, rhss, level );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -680,7 +670,7 @@ static UInt ExecAssListLevel(Expr stat)
 **  a list, and 'ExecAsssListLevel' assigns the elements '<rhss>[<i>]' to the
 **  list '<list>[<i>]' at the positions <positions>.
 */
-static UInt ExecAsssListLevel(Expr stat)
+static ExecStatus ExecAsssListLevel(Expr stat)
 {
     Obj                 lists;          /* lists, left operand             */
     Obj                 poss;           /* position, left operand          */
@@ -704,8 +694,7 @@ static UInt ExecAsssListLevel(Expr stat)
     /* assign the right hand sides to several elements of several lists    */
     AsssListLevel( lists, poss, rhss, level );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -716,7 +705,7 @@ static UInt ExecAsssListLevel(Expr stat)
 **  'ExecUnbList'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
-static UInt ExecUnbList(Expr stat)
+static ExecStatus ExecUnbList(Expr stat)
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
@@ -746,10 +735,8 @@ static UInt ExecUnbList(Expr stat)
       SET_LEN_PLIST(ixs, narg);
       UNBB_LIST(list, ixs);
     }
-    
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1133,7 +1120,7 @@ static void PrintElmsList(Expr expr)
 **  'ExecAssRecName' executes the record  assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-static UInt ExecAssRecName(Stat stat)
+static ExecStatus ExecAssRecName(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1151,8 +1138,7 @@ static UInt ExecAssRecName(Stat stat)
     /* assign the right hand side to the element of the record             */
     ASS_REC( record, rnam, rhs );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1163,7 +1149,7 @@ static UInt ExecAssRecName(Stat stat)
 **  'ExecAssRecExpr'  executes the record assignment  statement <stat> of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-static UInt ExecAssRecExpr(Stat stat)
+static ExecStatus ExecAssRecExpr(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1181,8 +1167,7 @@ static UInt ExecAssRecExpr(Stat stat)
     /* assign the right hand side to the element of the record             */
     ASS_REC( record, rnam, rhs );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1193,7 +1178,7 @@ static UInt ExecAssRecExpr(Stat stat)
 **  'ExecUnbRecName' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
-static UInt ExecUnbRecName(Stat stat)
+static ExecStatus ExecUnbRecName(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1207,8 +1192,7 @@ static UInt ExecUnbRecName(Stat stat)
     /* unbind the element of the record                                    */
     UNB_REC( record, rnam );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1219,7 +1203,7 @@ static UInt ExecUnbRecName(Stat stat)
 **  'ExecUnbRecExpr' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
-static UInt ExecUnbRecExpr(Stat stat)
+static ExecStatus ExecUnbRecExpr(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1233,8 +1217,7 @@ static UInt ExecUnbRecExpr(Stat stat)
     /* unbind the element of the record                                    */
     UNB_REC( record, rnam );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1461,7 +1444,7 @@ static void PrintIsbRecExpr(Expr expr)
 **  'ExecAssPosObj'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
-static UInt ExecAssPosObj(Expr stat)
+static ExecStatus ExecAssPosObj(Expr stat)
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
@@ -1481,8 +1464,7 @@ static UInt ExecAssPosObj(Expr stat)
     /* special case for plain list                                         */
     AssPosObj(list, p, rhs);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1493,7 +1475,7 @@ static UInt ExecAssPosObj(Expr stat)
 **  'ExecUnbPosObj'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
-static UInt ExecUnbPosObj(Expr stat)
+static ExecStatus ExecUnbPosObj(Expr stat)
 {
     Obj                 list;           /* list, left operand              */
     Obj                 pos;            /* position, left operand          */
@@ -1509,8 +1491,7 @@ static UInt ExecUnbPosObj(Expr stat)
     /* unbind the element                                                  */
     UnbPosObj(list, p);
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1641,7 +1622,7 @@ static void PrintIsbPosObj(Expr expr)
 **  'ExecAssComObjName' executes the  record assignment statement <stat> of the
 **  form '<record>.<name> := <rhs>;'.
 */
-static UInt ExecAssComObjName(Stat stat)
+static ExecStatus ExecAssComObjName(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1659,8 +1640,7 @@ static UInt ExecAssComObjName(Stat stat)
     /* assign the right hand side to the element of the record             */
     AssComObj( record, rnam, rhs );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1671,7 +1651,7 @@ static UInt ExecAssComObjName(Stat stat)
 **  'ExecAssComObjExpr' executes the record assignment  statement <stat> of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-static UInt ExecAssComObjExpr(Stat stat)
+static ExecStatus ExecAssComObjExpr(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1689,8 +1669,7 @@ static UInt ExecAssComObjExpr(Stat stat)
     /* assign the right hand side to the element of the record             */
     AssComObj( record, rnam, rhs );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1701,7 +1680,7 @@ static UInt ExecAssComObjExpr(Stat stat)
 **  'ExecUnbComObjName' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
-static UInt ExecUnbComObjName(Stat stat)
+static ExecStatus ExecUnbComObjName(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1715,8 +1694,7 @@ static UInt ExecUnbComObjName(Stat stat)
     /* unbind the element of the record                                    */
     UnbComObj( record, rnam );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
@@ -1727,7 +1705,7 @@ static UInt ExecUnbComObjName(Stat stat)
 **  'ExecUnbComObjExpr' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
-static UInt ExecUnbComObjExpr(Stat stat)
+static ExecStatus ExecUnbComObjExpr(Stat stat)
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -1741,8 +1719,7 @@ static UInt ExecUnbComObjExpr(Stat stat)
     /* unbind the element of the record                                    */
     UnbComObj( record, rnam );
 
-    /* return 0 (to indicate that no leave-statement was executed)         */
-    return 0;
+    return STATUS_END;
 }
 
 
