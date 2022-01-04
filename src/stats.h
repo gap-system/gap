@@ -48,7 +48,7 @@ extern ExecStatFunc ExecStatFuncs[256];
 **  executor, i.e., to the  function that executes statements  of the type of
 **  <stat>.
 */
-UInt EXEC_STAT(Stat stat);
+ExecStatus EXEC_STAT(Stat stat);
 
 // Executes the current function and returns its return value
 // if the last statement was STAT_RETURN_OBJ, or null if the last

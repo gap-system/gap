@@ -34,10 +34,10 @@
 **  will be set to 1 if the command was followed by a double semicolon, else
 **  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
 */
-UInt ReadEvalCommand(Obj            context,
-                     TypInputFile * input,
-                     Obj *          evalResult,
-                     BOOL *         dualSemicolon);
+ExecStatus ReadEvalCommand(Obj            context,
+                           TypInputFile * input,
+                           Obj *          evalResult,
+                           BOOL *         dualSemicolon);
 
 
 /****************************************************************************
@@ -50,7 +50,7 @@ UInt ReadEvalCommand(Obj            context,
 **  It does not expect the first symbol of its input already read and reads
 **  to the end of the input (unless an error happens).
 */
-UInt ReadEvalFile(TypInputFile * input, Obj * evalResult);
+ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult);
 
 
 /****************************************************************************

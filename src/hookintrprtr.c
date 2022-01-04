@@ -103,7 +103,7 @@ void InstallPrintExprFunc(Int pos, PrintExprFunc f)
     HashUnlock(&activeHooks);
 }
 
-static UInt ProfileExecStatPassthrough(Stat stat)
+static ExecStatus ProfileExecStatPassthrough(Stat stat)
 {
     GAP_HOOK_LOOP(visitStat, stat);
     return OriginalExecStatFuncsForHook[TNUM_STAT(stat)](stat);

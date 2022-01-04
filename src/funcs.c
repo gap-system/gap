@@ -193,7 +193,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
 **  handled here
 */
 
-static UInt ExecProccallOpts(Stat call)
+static ExecStatus ExecProccallOpts(Stat call)
 {
     Expr opts = READ_STAT(call, 0);
     Expr real_call = READ_STAT(call, 1);
@@ -203,75 +203,59 @@ static UInt ExecProccallOpts(Stat call)
 
     EvalOrExecCall(1, narg, real_call, opts);
 
-    return 0;
+    return STATUS_END;
 }
 
 
-static UInt ExecProccall0args(Stat call)
+static ExecStatus ExecProccall0args(Stat call)
 {
     EvalOrExecCall(1, 0, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccall1args(Stat call)
+static ExecStatus ExecProccall1args(Stat call)
 {
     EvalOrExecCall(1, 1, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccall2args(Stat call)
+static ExecStatus ExecProccall2args(Stat call)
 {
     EvalOrExecCall(1, 2, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccall3args(Stat call)
+static ExecStatus ExecProccall3args(Stat call)
 {
     EvalOrExecCall(1, 3, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccall4args(Stat call)
+static ExecStatus ExecProccall4args(Stat call)
 {
     EvalOrExecCall(1, 4, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccall5args(Stat call)
+static ExecStatus ExecProccall5args(Stat call)
 {
     EvalOrExecCall(1, 5, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccall6args(Stat call)
+static ExecStatus ExecProccall6args(Stat call)
 {
     EvalOrExecCall(1, 6, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
-static UInt ExecProccallXargs(Stat call)
+static ExecStatus ExecProccallXargs(Stat call)
 {
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
     // to allow the compiler to perform better optimizations
     // (as we know that the number of arguments is >= 7 here)
     EvalOrExecCall(1, 7, call, 0);
-
-    // return 0 (to indicate that no leave-statement was executed)
-    return 0;
+    return STATUS_END;
 }
 
 /****************************************************************************

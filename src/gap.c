@@ -229,7 +229,7 @@ static Obj FuncSHELL(Obj self,
     //
     // return values of ReadEvalCommand
     //
-    UInt status;
+    ExecStatus status;
     Obj  evalResult;
 
     //

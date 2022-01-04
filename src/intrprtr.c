@@ -59,9 +59,9 @@
 static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 {
     if (!intr->coding) {
-        InterpreterHook(GetInputFilenameID(GetCurrentInput()),
-                        intr->startLine,
-                        intr->returning || (intr->ignoring > ignoreLevel));
+        InterpreterHook(
+            GetInputFilenameID(GetCurrentInput()), intr->startLine,
+            intr->returning != STATUS_END || (intr->ignoring > ignoreLevel));
     }
     intr->startLine = 0;
 }
@@ -75,7 +75,7 @@ static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 
 // Need to
 #define SKIP_IF_RETURNING_NO_PROFILE_HOOK()                                  \
-    if (intr->returning > 0) {                                               \
+    if (intr->returning != STATUS_END) {                                     \
         return;                                                              \
     }
 
@@ -245,7 +245,7 @@ void IntrBegin(IntrState * intr)
     GAP_ASSERT(intr->coding == 0);
 
     /* no return-statement was yet interpreted                             */
-    intr->returning = 0;
+    intr->returning = STATUS_END;
 }
 
 ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
@@ -590,7 +590,7 @@ Int IntrIfEndBody(IntrState * intr, UInt nr)
     INTERPRETER_PROFILE_HOOK(intr, 0);
 
     /* ignore or code                                                      */
-    if (intr->returning > 0) {
+    if (intr->returning != STATUS_END) {
         return 0;
     }
     if (intr->ignoring > 0) {
