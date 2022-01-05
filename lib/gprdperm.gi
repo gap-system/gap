@@ -861,7 +861,7 @@ local  info, proj, H, degI, degK, constPoints, projFunc;
     proj:=ActionHomomorphism(W,info.components,OnSets,"surjective");
   # Primitive Action, tuple (t_1, ..., t_degI) corresponds
   # to point Sum_{i=1}^degI t_i * degK ^ (i - 1)
-  else
+  elif IsBound(info.productType) and info.productType=true then
     degI := info.degI;
     degK := NrMovedPoints(info.groups[1]);
     # constPoints correspond to [1, 1, ...] and the one-vectors with a 2 in each position,
@@ -895,6 +895,12 @@ local  info, proj, H, degI, degK, constPoints, projFunc;
       return PermList(topImages);
     end;
     proj := GroupHomomorphismByFunction(W, info.groups[2], projFunc);
+  else # weird cases where we use `hom` for the construction of the wreath product
+    H:=info.groups[2];
+    proj:=List(info.basegens,i->One(H));
+    proj:=GroupHomomorphismByImagesNC(W,H,
+      Concatenation(info.basegens,info.hgens),
+      Concatenation(proj,GeneratorsOfGroup(H)));
   fi;
   SetKernelOfMultiplicativeGeneralMapping(proj,info.base);
 
