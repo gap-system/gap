@@ -250,12 +250,10 @@ jobs:
       - name: "Gather coverage data"
         run: ${{ matrix.extra }} dev/ci-gather-coverage.sh
       - name: "Upload coverage data to Codecov"
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
         if: ${{ runner.os != 'Windows' }} # FIXME/HACK: skip this on Windows, it runs forever
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: "!./pkg/**,!./extern/**"
-          gcov_path_exclude: "./pkg/**"
 
   # The following job is duplicated in release.yml - keep the two in sync.
   # (except for their different 'needs' components).

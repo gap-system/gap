@@ -9,12 +9,6 @@
 
 set -ex
 
-# If we don't care about code coverage, do nothing
-if [[ -n ${NO_COVERAGE} ]]
-then
-    exit 0
-fi
-
 SRCDIR=${SRCDIR:-$PWD}
 
 # Make sure any Error() immediately exits GAP with exit code 1.
@@ -27,6 +21,15 @@ then
   cd "$BUILDDIR"
 fi
 BUILDDIR=$PWD
+
+# run gcov (always, even if NO_COVERAGE is set)
+find build -type f -name '*.gcno' -exec gcov -pb {} +
+
+# If we don't care about code coverage, do nothing
+if [[ -n ${NO_COVERAGE} ]]
+then
+    exit 0
+fi
 
 # We need to compile the profiling package in order to generate coverage
 # reports; and also the IO package, as the profiling package depends on it.
