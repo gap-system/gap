@@ -11,7 +11,7 @@
 ##
 #W  gac, the GAP compiler
 ##
-##  gac [-d] [-c|-C] [-o <output>] {-f<option>} <input>...
+##  gac [-d] [-c|-C] [-o <output>] <input>...
 ##
 ##  'gac'  compiles the input files.   Input files  must be  GAP  source code
 ##  (suffix '.g' or '.gap'),  C source code (suffix '.c'),  or compiled  code
@@ -29,10 +29,6 @@
 ##
 ##  If '-C is given, then 'gac' only compiles the input files to C code, which 
 ##  will require compilation and linking to be usable.
-##
-##  If '-r' is given, then statically compiled files will be assumed to be given
-##  by pathnames relative to the GAP root, and will be compiled for automatic loading
-##  when files are sought relative to the GAP root.
 ##
 ##  The option '-o <output>' tells 'gac' to name the output file <output>.
 ##
@@ -55,9 +51,6 @@
 
 # absolute path of the directory in which GAP was compiled
 abs_top_builddir="@abs_top_builddir@"
-
-# path of the directory the GAP sources contained in
-abs_top_srcdir="@abs_top_srcdir@"
 
 #
 libdir="@libdir@"
@@ -251,10 +244,6 @@ process_gap_file () {
   gap_compile_name=$input  
   if [ $comp_mode = "comp_static" ]; then
     gap_compile_id=Init_${name}
-    if [ $comp_static_root_relative = "yes" ]; then
-        gap_compile_in=${abs_top_srcdir}/$input;
-        gap_compile_name=GAPROOT/$input;
-    fi
   else
     gap_compile_id=Init_Dynamic
   fi
@@ -290,13 +279,12 @@ trap "clean_up" 2 3
 ##  parse the arguments
 ##
 if [ $# = 0 ]; then
-    echo "usage: $0 [-d|-r] [-c|-C] [-o <output>] <input>..."
+    echo "usage: $0 [-d] [-c|-C] [-o <output>] <input>..."
     exit 1
 fi
 
 comp_mode="comp_static"
 comp_howfar="link"
-comp_static_root_relative="no"
 output=""
 inputs=""
 savetemps="false"
@@ -312,12 +300,7 @@ while [ $# -gt 0 ]; do
 
     -o|--output)          shift; output="$1";;
   
-    -r)                   comp_static_root_relative="yes";;
-
     -save-temps)          savetemps="true";;
-
-    -f*)                  echo "$0: no such option '$1'"
-                          exit 1;;
 
     -k|--gap-compiler)    shift; gap_compiler="$1";;
 
