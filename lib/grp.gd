@@ -1127,9 +1127,9 @@ DeclareOperation( "CompositionSeriesThrough", [IsGroup,IsList] );
 ##   ]
 ##  gap> DisplayCompositionSeries(Group((1,2,3,4,5,6,7),(1,2)));
 ##  G (2 gens, size 5040)
-##   | Z(2)
+##   | C2
 ##  S (5 gens, size 2520)
-##   | A(7)
+##   | A7
 ##  1 (0 gens, size 1)
 ##  ]]></Example>
 ##  </Description>

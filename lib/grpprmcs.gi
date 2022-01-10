@@ -39,7 +39,7 @@ end;
 #F  DisplayCompositionSeries( <S> ) . . . . . . . . . . . .  display function
 ##
 InstallGlobalFunction( DisplayCompositionSeries, function( S )
-    local   f,  i;
+    local   f,  i,s;
 
     # ok, we accept groups too
     if IsGroup( S )  then
@@ -53,7 +53,13 @@ InstallGlobalFunction( DisplayCompositionSeries, function( S )
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
       f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
-      Print( " | ",IsomorphismTypeInfoFiniteSimpleGroup(f).name,"\n");
+      s:=IsomorphismTypeInfoFiniteSimpleGroup(f);
+      if IsBound(s.shortname) then
+        s:=s.shortname;
+      else
+        s:=s.name;
+      fi;
+      Print( " | ",s,"\n");
       if i < Length(S)  then
 	Print( GroupString( S[i], "S" ), "\n" );
       else

@@ -54,9 +54,9 @@ gap> Size(autd8);
 8
 gap> DisplayCompositionSeries(AutomorphismGroup(SymmetricGroup(3)));
 G (size 6)
- | Z(2)
+ | C2
 S (1 gens, size 3)
- | Z(3)
+ | C3
 1 (size 1)
 
 # that's all, folks
