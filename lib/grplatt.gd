@@ -441,6 +441,9 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 ##  performance reasons).
 ##  In the example below, the result would be the same with leaving out the
 ##  fourth function, but calculation this way is slightly faster.
+##  If an inital argument <A>act</A> is given, it must be a group
+##  containing and normalizing <A>G</A>,
+##  and representatives for classes under the action of this group are chosen.
 ##  <Example><![CDATA[
 ##  gap> g:=SymmetricGroup(12);;
 ##  gap> l:=LowLayerSubgroups(g,2,x->Size(x)>100000,x->Size(x)>200000);;
