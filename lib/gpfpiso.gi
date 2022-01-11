@@ -36,6 +36,12 @@ local G,gens,nam;
   return IsomorphismFpGroupByGeneratorsNC(G,gens,nam);
 end);
 
+InstallOtherMethod(IsomorphismFpGroupByGeneratorsNC,"supply name",
+  IsIdenticalObj,[IsGroup,IsList],0,
+function(G,gens)
+  return IsomorphismFpGroupByGeneratorsNC(G,gens,"F");
+end);
+  
 InstallOtherMethod( IsomorphismFpGroupByCompositionSeries,
                     "supply name", true, [IsGroup], 0,
 function( G )
