@@ -225,8 +225,13 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo;
   cnt:=Length(t);
   Info(InfoMeatAxe,1,"Expect ",cnt," absolute irreps");
 
-
   n:=LargestMovedPoint(G);
+  if n<=1 then
+    # trivial group
+    return [GeneratorsOfGroup(G),
+            [GModuleByMats(List(GeneratorsOfGroup(G),x->IdentityMat(1,field)),
+              field)]];
+  fi;
   mats:=List(GeneratorsOfGroup(G),x->PermutationMat(x,n,field));
   n:=Length(mats);
   mo:=GModuleByMats(mats,field);
