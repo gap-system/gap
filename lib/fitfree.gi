@@ -1398,6 +1398,36 @@ local l;
   fi;
 end);
 
+
+#############################################################################
+##
+#M  SylowSubgroupOp( <G>, <pi> )
+##
+## Fitting free approach
+##
+InstallMethod( SylowSubgroupOp, "fitting free",true,
+  [ IsGroup and CanComputeFittingFree,IsPosInt ],
+  -1, # deliberate lower ranking to amke sure this method only runs in cases
+  # in which no more specialized method is installed. Once the method has
+  # been used more broadly, and performance is better understood, this can
+  # be changed to 0
+function(G,pi)
+local l;
+  if Set(Factors(Size(G)))=[pi] then 
+    SetIsPGroup(G,true);
+    SetPrimePGroup(G, pi);
+    return G;
+  fi;
+  l:=HallViaRadical(G,[pi]);
+  if Length(l)=1 then
+    SetIsPGroup(l[1],true);
+    SetPrimePGroup(l[1],pi);
+    return l[1];
+  else
+    Error("There can be only one class");
+  fi;
+end);
+
 InstallMethod(ChiefSeriesTF,"fitting free",true,
   [IsGroup and CanComputeFittingFree ],0,
 function(G)
