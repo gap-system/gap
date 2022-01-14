@@ -1027,7 +1027,7 @@ end );
 #M  Normalizer( <pc-group>, <pc-group> )
 ##
 InstallMethod( NormalizerOp, "for groups with home pcgs", IsIdenticalObj,
-    [ IsGroup and HasHomePcgs, IsGroup and HasHomePcgs ], 
+    [ IsGroup and HasHomePcgs and CanComputeFittingFree, IsGroup and HasHomePcgs ], 
     1, #better than the next method
 function( g, u )
     local   home,  norm,  pcgs;
