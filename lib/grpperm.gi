@@ -2291,6 +2291,9 @@ end);
 InstallMethod(SocleTypePrimitiveGroup,"primitive permgroups",true,
   [IsPermGroup],0,function(G)
 local s,cs,t,id,r;
+  if not IsPrimitive(G) then 
+    ErrorNoReturn("<G> must be primitive on its moved points");
+  fi;
   s:=Socle(G);
   cs:=CompositionSeries(s);
   t:=cs[Length(cs)-1];
