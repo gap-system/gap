@@ -2998,6 +2998,7 @@ InstallMethod( CentralizerOp, "TF method:elm",IsCollsElms,
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
   IsMultiplicativeElementWithInverse ], OVERRIDENICE,
 function( G, e )
+local ffs;
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
   if not e in G then 
     # TODO: form larger group containing e.
@@ -3005,7 +3006,9 @@ function( G, e )
   fi;
   e:=TFCanonicalClassRepresentative(G,[e])[1];
   if e=fail then TryNextMethod();fi;
-  return SubgroupByFittingFreeData(G,e[6],e[7],e[5]);
+  ffs:=FittingFreeLiftSetup(G);
+  return SubgroupByFittingFreeData(G,e[6],e[7],
+    InducedPcgsByGenerators(ffs.pcgs,e[5]));
 end );
 
 #############################################################################
