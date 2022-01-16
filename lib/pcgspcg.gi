@@ -879,6 +879,7 @@ InstallMethod( DepthOfPcElement, "unsorted pcgs", IsCollsElms,
 function( pcgs, elm )
     local   pfa,  pcs,  new,  dep,  id,  dg;
 
+    if not IsBound(pcgs!.sortingPcgs) then TryNextMethod();fi;
     pfa := pcgs!.sortingPcgs;
     pcs := pcgs!.sortedPcSequence;
     new := pcgs!.newDepths;
@@ -932,6 +933,7 @@ function( pcgs, elm, pos )
         return 0;
     fi;
 
+    if not IsBound(pcgs!.sortingPcgs) then TryNextMethod();fi;
     pfa := pcgs!.sortingPcgs;
     relords:=RelativeOrders(pfa);
     pcs := pcgs!.sortedPcSequence;
@@ -1036,6 +1038,7 @@ function( pcgs, elm )
         return exp;
     fi;
 
+    if not IsBound(pcgs!.sortingPcgs) then TryNextMethod();fi;
     pfa := pcgs!.sortingPcgs;
     relords:=RelativeOrders(pfa);
     pcs := pcgs!.sortedPcSequence;
@@ -1112,6 +1115,7 @@ function( pcgs, elm,range )
         return exp{range};
     fi;
 
+    if not IsBound(pcgs!.sortingPcgs) then TryNextMethod();fi;
     max:=Maximum(range);
     pfa := pcgs!.sortingPcgs;
     relords:=RelativeOrders(pfa);
@@ -1239,6 +1243,7 @@ function( pcgs, elm )
         return fail;
     fi;
 
+    if not IsBound(pcgs!.sortingPcgs) then TryNextMethod();fi;
     pfa := pcgs!.sortingPcgs;
     relords:=RelativeOrders(pfa);
     pcs := pcgs!.sortedPcSequence;
