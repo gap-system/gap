@@ -115,5 +115,11 @@ gap> g:=f/[f.1*f.2,f.2^2,(f.2*f.3)^7];;
 gap> sub:=SubgroupNC(g,[g.1*g.2^3]);;
 gap> ClosureSubgroupNC(sub,g.3);;
 
+# homomorphisms on trivial fp group with no generators
+gap> F:=FreeGroup(2);;
+gap> G:=F/[F.1,F.2];;
+gap> F:=GroupHomomorphismByImagesNC(G,G,[],[]);;
+gap> ImagesRepresentative(F,G.1);;
+
 #
 gap> STOP_TEST( "grpfp.tst", 1);

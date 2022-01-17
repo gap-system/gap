@@ -245,6 +245,11 @@ InstallMethod( ImagesRepresentative, "map from (sub)fp group, rewrite",
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, word )
 local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
+  # catch trivial group
+  if HasMappingGeneratorsImages(hom) 
+    and Length(MappingGeneratorsImages(hom)[1])=0 then
+    return One(Range(hom));
+  fi;
   # get a coset table
   aug:=CosetTableFpHom(hom);
   r:=One(Range(hom));
