@@ -713,7 +713,7 @@ static ExecStatus ExecUnbList(Expr stat)
     Int narg;
     Int i;
 
-    /* evaluate the list (checking is done by 'LEN_LIST')                  */
+    /* evaluate the list (checking is done by 'UNB_LIST')                  */
     list = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
     if (narg == 1) {
@@ -1439,20 +1439,20 @@ static void PrintIsbRecExpr(Expr expr)
 
 /****************************************************************************
 **
-*F  ExecAssPosObj(<ass>)  . . . . . . . . . . .  assign to an element of a list
+*F  ExecAssPosObj(<ass>)  . . . . . . . . .  assign to an element of a posobj
 **
-**  'ExecAssPosObj'  executes the list  assignment statement <stat> of the form
-**  '<list>[<position>] := <rhs>;'.
+**  'ExecAssPosObj' executes the posobj assignment statement <stat> of the
+**  form '<posobj>[<position>] := <rhs>;'.
 */
 static ExecStatus ExecAssPosObj(Expr stat)
 {
-    Obj                 list;           /* list, left operand              */
+    Obj                 posobj;         // posobj, left operand
     Obj                 pos;            /* position, left operand          */
     Int                 p;              /* position, as a C integer        */
     Obj                 rhs;            /* right hand side, right operand  */
 
-    /* evaluate the list (checking is done by 'ASS_LIST')                  */
-    list = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate the posobj (checking is done by 'AssPosObj')
+    posobj = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
@@ -1461,8 +1461,8 @@ static ExecStatus ExecAssPosObj(Expr stat)
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* special case for plain list                                         */
-    AssPosObj(list, p, rhs);
+    // special case for plain posobj
+    AssPosObj(posobj, p, rhs);
 
     return STATUS_END;
 }
@@ -1470,26 +1470,26 @@ static ExecStatus ExecAssPosObj(Expr stat)
 
 /****************************************************************************
 **
-*F  ExecUnbPosObj(<ass>)  . . . . . . . . . . . . . unbind an element of a list
+*F  ExecUnbPosObj(<ass>)  . . . . . . . . . . . unbind an element of a posobj
 **
-**  'ExecUnbPosObj'  executes the list   unbind  statement <stat> of the   form
-**  'Unbind( <list>[<position>] );'.
+**  'ExecUnbPosObj' executes the posobj unbind statement <stat> of the form
+**  'Unbind( <posobj>[<position>] );'.
 */
 static ExecStatus ExecUnbPosObj(Expr stat)
 {
-    Obj                 list;           /* list, left operand              */
+    Obj                 posobj;         // posobj, left operand
     Obj                 pos;            /* position, left operand          */
     Int                 p;              /* position, as a C integer        */
 
-    /* evaluate the list (checking is done by 'LEN_LIST')                  */
-    list = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate the posobj (checking is done by 'UnbPosObj')
+    posobj = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_STAT(stat, 1));
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
     /* unbind the element                                                  */
-    UnbPosObj(list, p);
+    UnbPosObj(posobj, p);
 
     return STATUS_END;
 }
@@ -1497,27 +1497,27 @@ static ExecStatus ExecUnbPosObj(Expr stat)
 
 /****************************************************************************
 **
-*F  EvalElmPosObj(<expr>) . . . . . . . . . . . . . select an element of a list
+*F  EvalElmPosObj(<expr>) . . . . . . . . . . . select an element of a posobj
 **
-**  'EvalElmPosObj' evaluates the list  element expression  <expr> of the  form
-**  '<list>[<position>]'.
+**  'EvalElmPosObj' evaluates the posobj element expression <expr> of the
+**  form '<posobj>[<position>]'.
 */
 static Obj EvalElmPosObj(Expr expr)
 {
     Obj                 elm;            /* element, result                 */
-    Obj                 list;           /* list, left operand              */
+    Obj                 posobj;         // posobj, left operand
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
 
-    /* evaluate the list (checking is done by 'ELM_LIST')                  */
-    list = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate the posobj (checking is done by 'ElmPosObj')
+    posobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
-    /* special case for plain lists (use generic code to signal errors)    */
-    elm = ElmPosObj(list, p);
+    // special case for plain posobjs (use generic code to signal errors)
+    elm = ElmPosObj(posobj, p);
 
     /* return the element                                                  */
     return elm;
@@ -1526,27 +1526,27 @@ static Obj EvalElmPosObj(Expr expr)
 
 /****************************************************************************
 **
-*F  EvalIsbPosObj(<expr>) . . . . . . . . test if an element of a list is bound
+*F  EvalIsbPosObj(<expr>) . . . . . . test if an element of a posobj is bound
 **
-**  'EvalElmPosObj'  evaluates the list  isbound expression  <expr> of the form
-**  'IsBound( <list>[<position>] )'.
+**  'EvalElmPosObj' evaluates the posobj isbound expression <expr> of the
+**  form 'IsBound( <posobj>[<position>] )'.
 */
 static Obj EvalIsbPosObj(Expr expr)
 {
     Obj                 isb;            /* isbound, result                 */
-    Obj                 list;           /* list, left operand              */
+    Obj                 posobj;         // posobj, left operand
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
 
-    /* evaluate the list (checking is done by 'ISB_LIST')                  */
-    list = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate the posobj (checking is done by 'IsbPosObj')
+    posobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* evaluate and check the position                                     */
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     /* get the result                                                      */
-    isb = IsbPosObj(list, p) ? True : False;
+    isb = IsbPosObj(posobj, p) ? True : False;
 
     return isb;
 }
@@ -1554,10 +1554,10 @@ static Obj EvalIsbPosObj(Expr expr)
 
 /****************************************************************************
 **
-*F  PrintAssPosObj(<stat>)  . . . . print an assignment to an element of a list
+*F  PrintAssPosObj(<stat>) . .  print an assignment to an element of a posobj
 **
-**  'PrintAssPosObj' prints the list  assignment statement  <stat> of the  form
-**  '<list>[<position>] := <rhs>;'.
+**  'PrintAssPosObj' prints the posobj assignment statement <stat> of the
+**  form '<posobj>[<position>] := <rhs>;'.
 **
 **  Linebreaks are preferred before the ':='.
 */
@@ -1587,10 +1587,10 @@ static void PrintUnbPosObj(Stat stat)
 
 /****************************************************************************
 **
-*F  PrintElmPosObj(<expr>)  . . . . . print a selection of an element of a list
+*F  PrintElmPosObj(<expr>) . . .  print a selection of an element of a posobj
 **
-**  'PrintElmPosObj'   prints the list element   expression  <expr> of the form
-**  '<list>[<position>]'.
+**  'PrintElmPosObj' prints the posobj element expression <expr> of the form
+**  '<posobj>[<position>]'.
 **
 **  Linebreaks are preferred after the '['.
 */
@@ -1617,19 +1617,19 @@ static void PrintIsbPosObj(Expr expr)
 
 /****************************************************************************
 **
-*F  ExecAssComObjName(<stat>) . . . . . . . .  assign to an element of a record
+*F  ExecAssComObjName(<stat>) . . . . . . .  assign to an element of a comobj
 **
-**  'ExecAssComObjName' executes the  record assignment statement <stat> of the
-**  form '<record>.<name> := <rhs>;'.
+**  'ExecAssComObjName' executes the comobj assignment statement <stat> of
+**  the form '<comobj>!.<name> := <rhs>;'.
 */
 static ExecStatus ExecAssComObjName(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     UInt                rnam;           /* name, left operand              */
     Obj                 rhs;            /* rhs, right operand              */
 
-    /* evaluate the record (checking is done by 'ASS_REC')                 */
-    record = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate the comobj (checking is done by 'AssComObj')
+    comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
     rnam = READ_STAT(stat, 1);
@@ -1637,8 +1637,8 @@ static ExecStatus ExecAssComObjName(Stat stat)
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* assign the right hand side to the element of the record             */
-    AssComObj( record, rnam, rhs );
+    // assign the right hand side to the element of the comobj
+    AssComObj(comobj, rnam, rhs);
 
     return STATUS_END;
 }
@@ -1646,28 +1646,28 @@ static ExecStatus ExecAssComObjName(Stat stat)
 
 /****************************************************************************
 **
-*F  ExecAssComObjExpr(<stat>) . . . . . . . .  assign to an element of a record
+*F  ExecAssComObjExpr(<stat>) . . . . . . .  assign to an element of a comobj
 **
-**  'ExecAssComObjExpr' executes the record assignment  statement <stat> of the
-**  form '<record>.(<name>) := <rhs>;'.
+**  'ExecAssComObjExpr' executes the comobj assignment statement <stat> of
+**  the form '<comobj>.(<name>) := <rhs>;'.
 */
 static ExecStatus ExecAssComObjExpr(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     UInt                rnam;           /* name, left operand              */
     Obj                 rhs;            /* rhs, right operand              */
 
-    /* evaluate the record (checking is done by 'ASS_REC')                 */
-    record = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate the comobj (checking is done by 'AssComObj')
+    comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a comobj name
     rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
     /* evaluate the right hand side                                        */
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* assign the right hand side to the element of the record             */
-    AssComObj( record, rnam, rhs );
+    // assign the right hand side to the element of the comobj
+    AssComObj(comobj, rnam, rhs);
 
     return STATUS_END;
 }
@@ -1675,24 +1675,24 @@ static ExecStatus ExecAssComObjExpr(Stat stat)
 
 /****************************************************************************
 **
-*F  ExecUnbComObjName(<stat>) . . . . . . . . . . unbind an element of a record
+*F  ExecUnbComObjName(<stat>) . . . . . . . . . unbind an element of a comobj
 **
-**  'ExecUnbComObjName' executes the record unbind statement <stat> of the form
-**  'Unbind( <record>.<name> );'.
+**  'ExecUnbComObjName' executes the comobj unbind statement <stat> of the
+**  form 'Unbind( <comobj>.<name> );'.
 */
 static ExecStatus ExecUnbComObjName(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     UInt                rnam;           /* name, left operand              */
 
-    /* evaluate the record (checking is done by 'UNB_REC')                 */
-    record = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate the comobj (checking is done by 'UnbComObj')
+    comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
     /* get the name (stored immediately in the statement)                  */
     rnam = READ_STAT(stat, 1);
 
-    /* unbind the element of the record                                    */
-    UnbComObj( record, rnam );
+    // unbind the element of the comobj
+    UnbComObj(comobj, rnam);
 
     return STATUS_END;
 }
@@ -1700,24 +1700,24 @@ static ExecStatus ExecUnbComObjName(Stat stat)
 
 /****************************************************************************
 **
-*F  ExecUnbComObjExpr(<stat>) . . . . . . . . . . unbind an element of a record
+*F  ExecUnbComObjExpr(<stat>) . . . . . . . . . unbind an element of a comobj
 **
-**  'ExecUnbComObjExpr' executes the record unbind statement <stat> of the form
-**  'Unbind( <record>.(<name>) );'.
+**  'ExecUnbComObjExpr' executes the comobj unbind statement <stat> of the
+**  form 'Unbind( <comobj>.(<name>) );'.
 */
 static ExecStatus ExecUnbComObjExpr(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     UInt                rnam;           /* name, left operand              */
 
-    /* evaluate the record (checking is done by 'UNB_REC')                 */
-    record = EVAL_EXPR(READ_STAT(stat, 0));
+    // evaluate the comobj (checking is done by 'UnbComObj')
+    comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a comobj name
     rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
-    /* unbind the element of the record                                    */
-    UnbComObj( record, rnam );
+    // unbind the element of the comobj
+    UnbComObj(comobj, rnam);
 
     return STATUS_END;
 }
@@ -1725,25 +1725,25 @@ static ExecStatus ExecUnbComObjExpr(Stat stat)
 
 /****************************************************************************
 **
-*F  EvalElmComObjName(<expr>) . . . . . . . . . . . . . select a record element
+*F  EvalElmComObjName(<expr>) . . . . . . . . . . . . select a comobj element
 **
-**  'EvalElmComObjName' evaluates the  record element expression  <expr> of the
-**  form '<record>.<name>'.
+**  'EvalElmComObjName' evaluates the comobj element expression <expr> of the
+**  form '<comobj>.<name>'.
 */
 static Obj EvalElmComObjName(Expr expr)
 {
     Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
     UInt                rnam;           /* the name, right operand         */
 
-    /* evaluate the record (checking is done by 'ELM_REC')                 */
-    record = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate the comobj (checking is done by 'ElmComObj')
+    comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
     rnam = READ_EXPR(expr, 1);
 
-    /* select the element of the record                                    */
-    elm = ElmComObj( record, rnam );
+    // select the element of the comobj
+    elm = ElmComObj(comobj, rnam);
 
     /* return the element                                                  */
     return elm;
@@ -1752,25 +1752,25 @@ static Obj EvalElmComObjName(Expr expr)
 
 /****************************************************************************
 **
-*F  EvalElmComObjExpr(<expr>) . . . . . . . . . . . . . select a record element
+*F  EvalElmComObjExpr(<expr>) . . . . . . . . . . . . select a comobj element
 **
-**  'EvalElmComObjExpr' evaluates the  record element expression  <expr> of the
-**  form '<record>.(<name>)'.
+**  'EvalElmComObjExpr' evaluates the comobj element expression <expr> of the
+**  form '<comobj>.(<name>)'.
 */
 static Obj EvalElmComObjExpr(Expr expr)
 {
     Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
     UInt                rnam;           /* the name, right operand         */
 
-    /* evaluate the record (checking is done by 'ELM_REC')                 */
-    record = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate the comobj (checking is done by 'ElmComObj')
+    comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a comobj name
     rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
-    /* select the element of the record                                    */
-    elm = ElmComObj( record, rnam );
+    // select the element of the comobj
+    elm = ElmComObj(comobj, rnam);
 
     /* return the element                                                  */
     return elm;
@@ -1779,25 +1779,25 @@ static Obj EvalElmComObjExpr(Expr expr)
 
 /****************************************************************************
 **
-*F  EvalIsbComObjName(<expr>) . . . . . . . . test if a record element is bound
+*F  EvalIsbComObjName(<expr>) . . . . . . . test if a comobj element is bound
 **
-**  'EvalIsbComObjName' evaluates  the record isbound  expression <expr> of the
-**  form 'IsBound( <record>.<name> )'.
+**  'EvalIsbComObjName' evaluates the comobj isbound expression <expr> of the
+**  form 'IsBound( <comobj>.<name> )'.
 */
 static Obj EvalIsbComObjName(Expr expr)
 {
     Obj                 isb;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
     UInt                rnam;           /* the name, right operand         */
 
-    /* evaluate the record (checking is done by 'ISB_REC')                 */
-    record = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate the comobj (checking is done by 'IsbComObj')
+    comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
     /* get the name (stored immediately in the expression)                 */
     rnam = READ_EXPR(expr, 1);
 
-    /* select the element of the record                                    */
-    isb = IsbComObj( record, rnam ) ? True : False;
+    // select the element of the comobj
+    isb = IsbComObj(comobj, rnam) ? True : False;
 
     return isb;
 }
@@ -1805,25 +1805,25 @@ static Obj EvalIsbComObjName(Expr expr)
 
 /****************************************************************************
 **
-*F  EvalIsbComObjExpr(<expr>) . . . . . . . . test if a record element is bound
+*F  EvalIsbComObjExpr(<expr>) . . . . . . . test if a comobj element is bound
 **
-**  'EvalIsbComObjExpr'  evaluates the record isbound  expression <expr> of the
-**  form 'IsBound( <record>.(<name>) )'.
+**  'EvalIsbComObjExpr' evaluates the comobj isbound expression <expr> of the
+**  form 'IsBound( <comobj>.(<name>) )'.
 */
 static Obj EvalIsbComObjExpr(Expr expr)
 {
     Obj                 isb;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
     UInt                rnam;           /* the name, right operand         */
 
-    /* evaluate the record (checking is done by 'ISB_REC')                 */
-    record = EVAL_EXPR(READ_EXPR(expr, 0));
+    // evaluate the comobj (checking is done by 'IsbComObj')
+    comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a comobj name
     rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
-    /* select the element of the record                                    */
-    isb = IsbComObj( record, rnam ) ? True : False;
+    // select the element of the comobj
+    isb = IsbComObj(comobj, rnam) ? True : False;
 
     return isb;
 }
@@ -1831,10 +1831,10 @@ static Obj EvalIsbComObjExpr(Expr expr)
 
 /****************************************************************************
 **
-*F  PrintAssComObjName(<stat>)  . print an assignment to an element of a record
+*F  PrintAssComObjName(<stat>) . print an assignment to an element of a comobj
 **
-**  'PrintAssComObjName' prints the  record assignment statement <stat>  of the
-**  form '<record>.<name> := <rhs>;'.
+**  'PrintAssComObjName' prints the comobj assignment statement <stat> of the
+**  form '<comobj>.<name> := <rhs>;'.
 */
 static void PrintAssComObjName(Stat stat)
 {
@@ -1862,10 +1862,10 @@ static void PrintUnbComObjName(Stat stat)
 
 /****************************************************************************
 **
-*F  PrintAssComObjExpr(<stat>)  . print an assignment to an element of a record
+*F  PrintAssComObjExpr(<stat>) . print an assignment to an element of a comobj
 **
-**  'PrintAssComObjExpr' prints the  record assignment statement <stat>  of the
-**  form '<record>.(<name>) := <rhs>;'.
+**  'PrintAssComObjExpr' prints the comobj assignment statement <stat> of the
+**  form '<comobj>.(<name>) := <rhs>;'.
 */
 static void PrintAssComObjExpr(Stat stat)
 {
@@ -1893,10 +1893,10 @@ static void PrintUnbComObjExpr(Stat stat)
 
 /****************************************************************************
 **
-*F  PrintElmComObjName(<expr>)  . . print a selection of an element of a record
+*F  PrintElmComObjName(<expr>) .  print a selection of an element of a comobj
 **
-**  'PrintElmComObjName' prints the  record  element expression <expr> of   the
-**  form '<record>.<name>'.
+**  'PrintElmComObjName' prints the comobj element expression <expr> of the
+**  form '<comobj>.<name>'.
 */
 static void PrintElmComObjName(Expr expr)
 {
@@ -1921,10 +1921,10 @@ static void PrintIsbComObjName(Expr expr)
 
 /****************************************************************************
 **
-*F  PrintElmComObjExpr(<expr>)  . . print a selection of an element of a record
+*F  PrintElmComObjExpr(<expr>) .  print a selection of an element of a comobj
 **
-**  'PrintElmComObjExpr' prints the record   element expression <expr>  of  the
-**  form '<record>.(<name>)'.
+**  'PrintElmComObjExpr' prints the comobj element expression <expr> of the
+**  form '<comobj>.(<name>)'.
 */
 static void PrintElmComObjExpr(Expr expr)
 {

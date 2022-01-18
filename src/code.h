@@ -1316,7 +1316,7 @@ void CodeIsbRecExpr(void);
 
 /****************************************************************************
 **
-*F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
+*F  CodeAssPosObj() . . . . . . . . . . . . . . . code assignment to a posobj
 */
 void CodeAssPosObj(void);
 
@@ -1325,7 +1325,7 @@ void CodeUnbPosObj(void);
 
 /****************************************************************************
 **
-*F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
+*F  CodeElmPosObj() . . . . . . . . . . . . . . .  code selection of a posobj
 */
 void CodeElmPosObj(void);
 
@@ -1334,8 +1334,8 @@ void CodeIsbPosObj(void);
 
 /****************************************************************************
 **
-*F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a record
-*F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a comobj
+*F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a comobj
 */
 void CodeAssComObjName(UInt rnam);
 
@@ -1348,8 +1348,8 @@ void CodeUnbComObjExpr(void);
 
 /****************************************************************************
 **
-*F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a record
-*F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a comobj
+*F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a comobj
 */
 void CodeElmComObjName(UInt rnam);
 

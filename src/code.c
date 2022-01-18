@@ -2746,12 +2746,12 @@ void CodeIsbRecExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
+*F  CodeAssPosObj() . . . . . . . . . . . . . . . code assignment to a posobj
 */
 void CodeAssPosObj ( void )
 {
     Stat                ass;            /* assignment, result              */
-    Expr                list;           /* list expression                 */
+    Expr                posobj;         // posobj expression
     Expr                pos;            /* position expression             */
     Expr                rhsx;           /* right hand side expression      */
 
@@ -2766,9 +2766,9 @@ void CodeAssPosObj ( void )
     pos = PopExpr();
     WRITE_STAT(ass, 1, pos);
 
-    /* enter the list expression                                           */
-    list = PopExpr();
-    WRITE_STAT(ass, 0, list);
+    // enter the posobj expression
+    posobj = PopExpr();
+    WRITE_STAT(ass, 0, posobj);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2781,7 +2781,7 @@ void CodeAssPosObj ( void )
 */
 void CodeUnbPosObj ( void )
 {
-    Expr                list;           /* list expression                 */
+    Expr                posobj;         // posobj expression
     Expr                pos;            /* position expression             */
     Stat                ass;            /* unbind, result                  */
 
@@ -2792,9 +2792,9 @@ void CodeUnbPosObj ( void )
     pos = PopExpr();
     WRITE_STAT(ass, 1, pos);
 
-    /* enter the list expression                                           */
-    list = PopExpr();
-    WRITE_STAT(ass, 0, list);
+    // enter the posobj expression
+    posobj = PopExpr();
+    WRITE_STAT(ass, 0, posobj);
 
     /* push the unbind                                                     */
     PushStat( ass );
@@ -2803,12 +2803,12 @@ void CodeUnbPosObj ( void )
 
 /****************************************************************************
 **
-*F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
+*F  CodeElmPosObj() . . . . . . . . . . . . . . .  code selection of a posobj
 */
 void CodeElmPosObj ( void )
 {
     Expr                ref;            /* reference, result               */
-    Expr                list;           /* list expression                 */
+    Expr                posobj;         // posobj expression
     Expr                pos;            /* position expression             */
 
     /* allocate the reference                                              */
@@ -2818,9 +2818,9 @@ void CodeElmPosObj ( void )
     pos = PopExpr();
     WRITE_EXPR(ref, 1, pos);
 
-    /* enter the list expression                                           */
-    list = PopExpr();
-    WRITE_EXPR(ref, 0, list);
+    // enter the posobj expression
+    posobj = PopExpr();
+    WRITE_EXPR(ref, 0, posobj);
 
     /* push the reference                                                  */
     PushExpr( ref );
@@ -2834,7 +2834,7 @@ void CodeElmPosObj ( void )
 void CodeIsbPosObj ( void )
 {
     Expr                ref;            /* isbound, result                 */
-    Expr                list;           /* list expression                 */
+    Expr                posobj;         // posobj expression
     Expr                pos;            /* position expression             */
 
     /* allocate the isbound                                                */
@@ -2844,9 +2844,9 @@ void CodeIsbPosObj ( void )
     pos = PopExpr();
     WRITE_EXPR(ref, 1, pos);
 
-    /* enter the list expression                                           */
-    list = PopExpr();
-    WRITE_EXPR(ref, 0, list);
+    // enter the posobj expression
+    posobj = PopExpr();
+    WRITE_EXPR(ref, 0, posobj);
 
     /* push the isbound                                                    */
     PushExpr( ref );
@@ -2855,14 +2855,13 @@ void CodeIsbPosObj ( void )
 
 /****************************************************************************
 **
-*F  CodeAssComObjName( <rnam> ) . . . . . . . . . code assignment to a record
-*F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjName( <rnam> ) . . . . . . . . . code assignment to a comobj
+*F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a comobj
 */
-void            CodeAssComObjName (
-    UInt                rnam )
+void CodeAssComObjName(UInt rnam)
 {
     Stat                stat;           /* assignment, result              */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
     Expr                rhsx;           /* right hand side expression      */
 
     /* allocate the assignment                                             */
@@ -2875,18 +2874,18 @@ void            CodeAssComObjName (
     /* enter the name                                                      */
     WRITE_STAT(stat, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_STAT(stat, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_STAT(stat, 0, comobj);
 
     /* push the assignment                                                 */
     PushStat( stat );
 }
 
-void            CodeAssComObjExpr ( void )
+void CodeAssComObjExpr(void)
 {
     Stat                stat;           /* assignment, result              */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
     Expr                rnam;           /* name expression                 */
     Expr                rhsx;           /* right hand side expression      */
 
@@ -2901,19 +2900,18 @@ void            CodeAssComObjExpr ( void )
     rnam = PopExpr();
     WRITE_STAT(stat, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_STAT(stat, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_STAT(stat, 0, comobj);
 
     /* push the assignment                                                 */
     PushStat( stat );
 }
 
-void            CodeUnbComObjName (
-    UInt                rnam )
+void CodeUnbComObjName(UInt rnam)
 {
     Stat                stat;           /* unbind, result                  */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
 
     /* allocate the unbind                                                 */
     stat = NewStat( STAT_UNB_COMOBJ_NAME, 2 * sizeof(Stat) );
@@ -2921,18 +2919,18 @@ void            CodeUnbComObjName (
     /* enter the name                                                      */
     WRITE_STAT(stat, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_STAT(stat, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_STAT(stat, 0, comobj);
 
     /* push the unbind                                                     */
     PushStat( stat );
 }
 
-void            CodeUnbComObjExpr ( void )
+void CodeUnbComObjExpr(void)
 {
     Stat                stat;           /* unbind, result                  */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
     Expr                rnam;           /* name expression                 */
 
     /* allocate the unbind                                                 */
@@ -2942,9 +2940,9 @@ void            CodeUnbComObjExpr ( void )
     rnam = PopExpr();
     WRITE_STAT(stat, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_STAT(stat, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_STAT(stat, 0, comobj);
 
     /* push the unbind                                                     */
     PushStat( stat );
@@ -2953,14 +2951,13 @@ void            CodeUnbComObjExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeElmComObjName( <rnam> ) . . . . . . . . .  code selection of a record
-*F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjName( <rnam> ) . . . . . . . . .  code selection of a comobj
+*F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a comobj
 */
-void CodeElmComObjName (
-    UInt                rnam )
+void CodeElmComObjName(UInt rnam)
 {
     Expr                expr;           /* reference, result               */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
 
     /* allocate the reference                                              */
     expr = NewExpr( EXPR_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
@@ -2968,19 +2965,19 @@ void CodeElmComObjName (
     /* enter the name                                                      */
     WRITE_EXPR(expr, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_EXPR(expr, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_EXPR(expr, 0, comobj);
 
     /* push the reference                                                  */
     PushExpr( expr );
 }
 
-void CodeElmComObjExpr ( void )
+void CodeElmComObjExpr(void)
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
 
     /* allocate the reference                                              */
     expr = NewExpr( EXPR_ELM_COMOBJ_EXPR, 2 * sizeof(Expr) );
@@ -2989,9 +2986,9 @@ void CodeElmComObjExpr ( void )
     rnam = PopExpr();
     WRITE_EXPR(expr, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_EXPR(expr, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_EXPR(expr, 0, comobj);
 
     /* push the reference                                                  */
     PushExpr( expr );
@@ -3002,11 +2999,10 @@ void CodeElmComObjExpr ( void )
 **
 *F  CodeIsbComObjName( <rname> )  . . . . .  code bound com object name check
 */
-void CodeIsbComObjName (
-    UInt                rnam )
+void CodeIsbComObjName(UInt rnam)
 {
     Expr                expr;           /* isbound, result                 */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
 
     /* allocate the isbound                                                */
     expr = NewExpr( EXPR_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
@@ -3014,9 +3010,9 @@ void CodeIsbComObjName (
     /* enter the name                                                      */
     WRITE_EXPR(expr, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_EXPR(expr, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_EXPR(expr, 0, comobj);
 
     /* push the isbound                                                    */
     PushExpr( expr );
@@ -3026,11 +3022,11 @@ void CodeIsbComObjName (
 **
 *F  CodeIsbComObjExpr() . . . . . . . . . .  code bound com object expr check
 */
-void CodeIsbComObjExpr ( void )
+void CodeIsbComObjExpr(void)
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expression               */
+    Expr                comobj;         // comobj expression
 
     /* allocate the isbound                                                */
     expr = NewExpr( EXPR_ISB_COMOBJ_EXPR, 2 * sizeof(Expr) );
@@ -3039,9 +3035,9 @@ void CodeIsbComObjExpr ( void )
     rnam = PopExpr();
     WRITE_EXPR(expr, 1, rnam);
 
-    /* enter the record expression                                         */
-    rec = PopExpr();
-    WRITE_EXPR(expr, 0, rec);
+    // enter the comobj expression
+    comobj = PopExpr();
+    WRITE_EXPR(expr, 0, comobj);
 
     /* push the isbound                                                    */
     PushExpr( expr );
