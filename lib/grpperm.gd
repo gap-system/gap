@@ -463,8 +463,7 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  <Ref Attr="IsomorphismTypeInfoFiniteSimpleGroup" Label="for a group"/>),
 ##  and <C>width</C> for the number of direct factors.
 ##  <P/>
-##  If <A>G</A> does not have a faithful primitive action,
-##  the result is undefined.
+##  If <A>G</A> does not act primitively on its moved points, an error is returned. 
 ##  <Example><![CDATA[
 ##  gap> g:=AlternatingGroup(5);;
 ##  gap> h:=DirectProduct(g,g);;
