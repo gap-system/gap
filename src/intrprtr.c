@@ -3531,11 +3531,11 @@ void IntrIsbRecExpr(IntrState * intr)
 
 /****************************************************************************
 **
-*F  IntrAssPosObj() . . . . . . . . . . . . .  interpret assignment to a list
+*F  IntrAssPosObj() . . . . . . . . . . . .  interpret assignment to a posobj
 */
 void IntrAssPosObj(IntrState * intr)
 {
-    Obj                 list;           /* list                            */
+    Obj                 posobj;         // posobj
     Obj                 pos;            /* position                        */
     Int                 p;              /* position, as a C integer        */
     Obj                 rhs;            /* right hand side                 */
@@ -3556,11 +3556,11 @@ void IntrAssPosObj(IntrState * intr)
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
-    /* get the list (checking is done by 'ASS_LIST')                       */
-    list = PopObj(intr);
+    // get the posobj (checking is done by 'AssPosObj')
+    posobj = PopObj(intr);
 
-    /* assign to the element of the list                                   */
-    AssPosObj( list, p, rhs );
+    // assign to the element of the posobj
+    AssPosObj(posobj, p, rhs);
 
     /* push the right hand side again                                      */
     PushObj(intr, rhs);
@@ -3568,7 +3568,7 @@ void IntrAssPosObj(IntrState * intr)
 
 void IntrUnbPosObj(IntrState * intr)
 {
-    Obj                 list;           /* list                            */
+    Obj                 posobj;         // posobj
     Obj                 pos;            /* position                        */
     Int                 p;              /* position, as a C integer        */
 
@@ -3585,11 +3585,11 @@ void IntrUnbPosObj(IntrState * intr)
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
-    /* get the list (checking is done by 'UNB_LIST')                       */
-    list = PopObj(intr);
+    // get the posobj (checking is done by 'UnbPosObj')
+    posobj = PopObj(intr);
 
     /* unbind the element                                                  */
-    UnbPosObj( list, p );
+    UnbPosObj(posobj, p);
 
     /* push void                                                           */
     PushVoidObj(intr);
@@ -3598,12 +3598,12 @@ void IntrUnbPosObj(IntrState * intr)
 
 /****************************************************************************
 **
-*F  IntrElmPosObj() . . . . . . . . . . . . . . interpret selection of a list
+*F  IntrElmPosObj() . . . . . . . . . . . . . interpret selection of a posobj
 */
 void IntrElmPosObj(IntrState * intr)
 {
     Obj                 elm;            /* element, result                 */
-    Obj                 list;           /* list, left operand              */
+    Obj                 posobj;         // posobj, left operand
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
 
@@ -3620,11 +3620,11 @@ void IntrElmPosObj(IntrState * intr)
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
-    /* get the list (checking is done by 'ELM_LIST')                       */
-    list = PopObj(intr);
+    // get the posobj (checking is done by 'ElmPosObj')
+    posobj = PopObj(intr);
 
-    /* get the element of the list                                         */
-    elm = ElmPosObj( list, p );
+    // get the element of the posobj
+    elm = ElmPosObj(posobj, p);
 
     /* push the element                                                    */
     PushObj(intr, elm);
@@ -3633,7 +3633,7 @@ void IntrElmPosObj(IntrState * intr)
 void IntrIsbPosObj(IntrState * intr)
 {
     Obj                 isb;            /* isbound, result                 */
-    Obj                 list;           /* list, left operand              */
+    Obj                 posobj;         // posobj, left operand
     Obj                 pos;            /* position, right operand         */
     Int                 p;              /* position, as C integer          */
 
@@ -3650,11 +3650,11 @@ void IntrIsbPosObj(IntrState * intr)
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
-    /* get the list (checking is done by 'ISB_LIST')                       */
-    list = PopObj(intr);
+    // get the posobj (checking is done by 'IsbPosObj')
+    posobj = PopObj(intr);
 
     /* get the result                                                      */
-    isb = IsbPosObj( list, p ) ? True : False;
+    isb = IsbPosObj(posobj, p) ? True : False;
 
     /* push the result                                                     */
     PushObj(intr, isb);
@@ -3663,12 +3663,12 @@ void IntrIsbPosObj(IntrState * intr)
 
 /****************************************************************************
 **
-*F  IntrAssComObjName(<rnam>) . . . . . . .  interpret assignment to a record
-*F  IntrAssComObjExpr() . . . . . . . . . .  interpret assignment to a record
+*F  IntrAssComObjName(<rnam>) . . . . . . .  interpret assignment to a comobj
+*F  IntrAssComObjExpr() . . . . . . . . . .  interpret assignment to a comobj
 */
 void IntrAssComObjName(IntrState * intr, UInt rnam)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     Obj                 rhs;            /* rhs, right operand              */
 
     /* ignore or code                                                      */
@@ -3683,11 +3683,11 @@ void IntrAssComObjName(IntrState * intr, UInt rnam)
     /* get the right hand side                                             */
     rhs = PopObj(intr);
 
-    /* get the record (checking is done by 'ASS_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'AssComObj')
+    comobj = PopObj(intr);
 
-    /* assign the right hand side to the element of the record             */
-    AssComObj( record, rnam, rhs );
+    // assign the right hand side to the element of the comobj
+    AssComObj(comobj, rnam, rhs);
 
     /* push the assigned value                                             */
     PushObj(intr, rhs);
@@ -3695,7 +3695,7 @@ void IntrAssComObjName(IntrState * intr, UInt rnam)
 
 void IntrAssComObjExpr(IntrState * intr)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     UInt                rnam;           /* name, left operand              */
     Obj                 rhs;            /* rhs, right operand              */
 
@@ -3711,14 +3711,14 @@ void IntrAssComObjExpr(IntrState * intr)
     /* get the right hand side                                             */
     rhs = PopObj(intr);
 
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a comobj name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'ASS_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'AssComObj')
+    comobj = PopObj(intr);
 
-    /* assign the right hand side to the element of the record             */
-    AssComObj( record, rnam, rhs );
+    // assign the right hand side to the element of the comobj
+    AssComObj(comobj, rnam, rhs);
 
     /* push the assigned value                                             */
     PushObj(intr, rhs);
@@ -3726,7 +3726,7 @@ void IntrAssComObjExpr(IntrState * intr)
 
 void IntrUnbComObjName(IntrState * intr, UInt rnam)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -3737,11 +3737,11 @@ void IntrUnbComObjName(IntrState * intr, UInt rnam)
     }
 
 
-    /* get the record (checking is done by 'UNB_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'UnbComObj')
+    comobj = PopObj(intr);
 
-    /* unbind the element of the record                                    */
-    UnbComObj( record, rnam );
+    // unbind the element of the comobj
+    UnbComObj(comobj, rnam);
 
     /* push void                                                           */
     PushVoidObj(intr);
@@ -3749,7 +3749,7 @@ void IntrUnbComObjName(IntrState * intr, UInt rnam)
 
 void IntrUnbComObjExpr(IntrState * intr)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 comobj;         // comobj, left operand
     UInt                rnam;           /* name, left operand              */
 
     /* ignore or code                                                      */
@@ -3761,14 +3761,14 @@ void IntrUnbComObjExpr(IntrState * intr)
     }
 
 
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a comobj name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'UNB_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'UnbComObj')
+    comobj = PopObj(intr);
 
-    /* unbind the element of the record                                    */
-    UnbComObj( record, rnam );
+    // unbind the element of the comobj
+    UnbComObj(comobj, rnam);
 
     /* push void                                                           */
     PushVoidObj(intr);
@@ -3777,13 +3777,13 @@ void IntrUnbComObjExpr(IntrState * intr)
 
 /****************************************************************************
 **
-*F  IntrElmComObjName(<rnam>) . . . . . . . . interpret selection of a record
-*F  IntrElmComObjExpr() . . . . . . . . . . . interpret selection of a record
+*F  IntrElmComObjName(<rnam>) . . . . . . . . interpret selection of a comobj
+*F  IntrElmComObjExpr() . . . . . . . . . . . interpret selection of a comobj
 */
 void IntrElmComObjName(IntrState * intr, UInt rnam)
 {
     Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -3793,12 +3793,11 @@ void IntrElmComObjName(IntrState * intr, UInt rnam)
         return;
     }
 
+    // get the comobj (checking is done by 'ElmComObj')
+    comobj = PopObj(intr);
 
-    /* get the record (checking is done by 'ELM_REC')                      */
-    record = PopObj(intr);
-
-    /* select the element of the record                                    */
-    elm = ElmComObj( record, rnam );
+    // select the element of the comobj
+    elm = ElmComObj(comobj, rnam);
 
     /* push the element                                                    */
     PushObj(intr, elm);
@@ -3807,7 +3806,7 @@ void IntrElmComObjName(IntrState * intr, UInt rnam)
 void IntrElmComObjExpr(IntrState * intr)
 {
     Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
     UInt                rnam;           /* the name, right operand         */
 
     /* ignore or code                                                      */
@@ -3818,15 +3817,14 @@ void IntrElmComObjExpr(IntrState * intr)
         return;
     }
 
-
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a comobj name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'ELM_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'ElmComObj')
+    comobj = PopObj(intr);
 
-    /* select the element of the record                                    */
-    elm = ElmComObj( record, rnam );
+    // select the element of the comobj
+    elm = ElmComObj(comobj, rnam);
 
     /* push the element                                                    */
     PushObj(intr, elm);
@@ -3835,7 +3833,7 @@ void IntrElmComObjExpr(IntrState * intr)
 void IntrIsbComObjName(IntrState * intr, UInt rnam)
 {
     Obj                 isb;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
 
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -3845,12 +3843,11 @@ void IntrIsbComObjName(IntrState * intr, UInt rnam)
         return;
     }
 
-
-    /* get the record (checking is done by 'ISB_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'IsbComObj')
+    comobj = PopObj(intr);
 
     /* get the result                                                      */
-    isb = IsbComObj( record, rnam ) ? True : False;
+    isb = IsbComObj(comobj, rnam) ? True : False;
 
     /* push the result                                                     */
     PushObj(intr, isb);
@@ -3859,7 +3856,7 @@ void IntrIsbComObjName(IntrState * intr, UInt rnam)
 void IntrIsbComObjExpr(IntrState * intr)
 {
     Obj                 isb;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 comobj;         // the comobj, left operand
     UInt                rnam;           /* the name, right operand         */
 
     /* ignore or code                                                      */
@@ -3870,15 +3867,14 @@ void IntrIsbComObjExpr(IntrState * intr)
         return;
     }
 
-
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a comobj name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'ISB_REC')                      */
-    record = PopObj(intr);
+    // get the comobj (checking is done by 'IsbComObj')
+    comobj = PopObj(intr);
 
     /* get the result                                                      */
-    isb = IsbComObj( record, rnam ) ? True : False;
+    isb = IsbComObj(comobj, rnam) ? True : False;
 
     /* push the result                                                     */
     PushObj(intr, isb);
