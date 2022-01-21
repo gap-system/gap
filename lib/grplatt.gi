@@ -1932,6 +1932,7 @@ local G,	# group
 	    fi;
 	    ocr.factorfphom:=j!.lattfpres;
 	    Assert(3,KernelOfMultiplicativeGeneralMapping(ocr.factorfphom)=M);
+            SetSize(Image(ocr.factorfphom),Size(j)/Size(M));
 
 	    # we want only normal complements. Therefore the 1-Coboundaries must
 	    # be trivial. We compute these first.
@@ -1977,8 +1978,11 @@ local G,	# group
 			      MappingGeneratorsImages(ocr.factorfphom)[2],
 			      List(GeneratorsOfGroup(M),
 				x->One(Range(ocr.factorfphom)))));
-
+                    
 		  fi;
+                  #SetSize(Image(qhom),Size(Image(ocr.factorfphom)));
+                  SetKernelOfMultiplicativeGeneralMapping(qhom,M);
+
 		  Assert(2,GroupHomomorphismByImages(Source(qhom),Range(qhom),
 		    MappingGeneratorsImages(qhom)[1],
 		    MappingGeneratorsImages(qhom)[2])<>fail);
@@ -1994,7 +1998,7 @@ local G,	# group
 		    # action on the factor
 		    lc:=[];
 		    for i in [1..Length(l)] do
-		      lc[i]:=ImagesRepresentative(qhom,l[i]^(elm^-1));
+		      lc[i]:=ImagesRepresentative(qhom,l[i]^(elm^-1):noshort);
 		      l[i]:=l[i]^elm;
 		    od;
 		    # other generators for same complement, these should be
@@ -3156,7 +3160,7 @@ end);
 #F  LowLayerSubgroups( [<act>,] <G>, <lim> [,<cond> [,<dosub>]] )
 ##
 InstallGlobalFunction(LowLayerSubgroups,function(arg)
-local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
+local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg;
   act:=arg[1];
   if IsGroup(act) and IsGroup(arg[2]) then
     offset:=2;
@@ -3176,6 +3180,7 @@ local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
   fi;
 
   all:=[G];
+  alln:=[G]; # Normalizers
   m:=[G];
   for i in [1..lim] do
     Info(InfoLattice,1,"Layer ",i,": ",Length(m)," groups");
@@ -3196,13 +3201,43 @@ local act,offset,G,lim,cond,dosub,all,m,i,j,new,old;
     m:=[];
     # any conjugate before?
     for j in new do
-      old:=Filtered(all,x->Size(x)=Size(j));
-      if ForAll(old,x->RepresentativeAction(act,x,j)=fail) then
+      jn:=Normalizer(act,j);
+      old:=Filtered([1..Length(all)],x->
+        Size(all[x])=Size(j) and Size(alln[x])=Size(jn));
+      old:=all{old};
+      if Length(old)>1 then
+        # do we go through normalizer transversal
+        if QuoInt(IndexNC(act,jn),Length(old))<1000 
+          or not (IsPermGroup(G) or IsPcGroup(G)) then
+          t:=RightTransversal(act,jn);
+          k:=1;
+          while k<=Length(t) do
+            conjg:=t[k];
+            conjg:=List(GeneratorsOfGroup(j),x->x^conjg);
+            if ForAny(old,x->ForAll(conjg,y->y in x)) then
+              # conjugate --  delete and stop
+              j:=fail;
+              old:=fail;
+              k:=Length(t); # exit loop
+            fi;
+            k:=k+1;
+          od;
+
+        fi;
+        # delete so no further test
+        if old<>fail then
+          old:=[];
+        fi;
+      fi;
+      # test if candidates left
+      if old<>fail and ForAll(old,x->RepresentativeAction(act,x,j)=fail) then
         Add(m,j);
       fi;
     od;
-    m:=List(SubgroupsOrbitsAndNormalizers(act,m,false),x->x.representative);
+    m:=SubgroupsOrbitsAndNormalizers(act,m,false);
     Info(InfoLattice,1,"Layer ",i,": ",Length(m)," new");
+    Append(alln,List(m,x->x.normalizer));
+    m:=List(m,x->x.representative);
     Append(all,m);
   od;
   return all;
