@@ -1187,6 +1187,9 @@ InstallGlobalFunction(HELP, function( str )
   local origstr, nwostr, p, book, books, move, add;
 
   origstr := ShallowCopy(str);
+  while Last( origstr ) = ';' do
+    Remove( origstr );
+  od;
   nwostr := NormalizedWhitespace(origstr);
   
   # extract the book
