@@ -386,34 +386,39 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
   abort:=false;
   havetest:=[];
 
-  worked:=SubgroupProperty(G,
-    function(elm)
-      if abort then
-        return true; # are we bailing out since it behaves too badly?
-      fi;
-      # would it contribute to avoid outside S?
-      if elm in avoid or
-        ForAny(Set(Factors(Order(elm))),e->elm^e in avoid and not elm^e in S)
-      then 
-        # cannot be good
-        return false;
-      fi;
-
-      tstcnt:=tstcnt+1;
-      AddSet(havetest,elm);
-      if cond(elm) then
-        S:=ClosureGroup(S,elm); # remember
-        Info(InfoMorph,3,"New element ",IndexNC(G,S));
-        b:=0;
-        return true;
-      else
-        b:=b+1;
-        if b>clim then
-          abort:=true;
+  if IsPermGroup(G) then
+    worked:=SubgroupProperty(G,
+      function(elm)
+        if abort then
+          return true; # are we bailing out since it behaves too badly?
         fi;
-        return false;
-      fi;
-    end,S);
+        # would it contribute to avoid outside S?
+        if elm in avoid or
+          ForAny(Set(Factors(Order(elm))),e->elm^e in avoid and not elm^e in S)
+        then 
+          # cannot be good
+          return false;
+        fi;
+
+        tstcnt:=tstcnt+1;
+        AddSet(havetest,elm);
+        if cond(elm) then
+          S:=ClosureGroup(S,elm); # remember
+          Info(InfoMorph,3,"New element ",IndexNC(G,S));
+          b:=0;
+          return true;
+        else
+          b:=b+1;
+          if b>clim then
+            abort:=true;
+          fi;
+          return false;
+        fi;
+      end,S);
+  else
+    worked:=S;
+    abort:=true;
+  fi;
 
   if abort=false then 
     # we actually found the subgroup
@@ -512,6 +517,10 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
 
     repeat
       good:=false;
+      u:=Filtered(GeneratorsOfGroup(G),x->cond(x) and not x in S);
+      for i in u do
+        S:=ClosureGroup(S,i);
+      od;
 
       # try to prove no supergroup works
       t:=RightTransversal(G,S:noascendingchain); # don't try to be clever in
@@ -520,7 +529,7 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
       b:=RepresentativesMinimalBlocks(a,MovedPoints(a));
       Info(InfoMorph,3,"Above are ",Length(b)," blocks");
 
-      if Length(b)*10>IndexNC(G,S) then
+      if IsPermGroup(G) and Length(b)*10>IndexNC(G,S) then
         # there are too many blocks. Direct test is cheaper!
         S:=SubgroupProperty(G,locond,S);
       else
@@ -555,17 +564,22 @@ local cs,nr,u,no,un,S,rad,res,ise,uno;
   # step.
   nr:=2^LogInt(Size(G),1000)+Length(Factors(Size(G)));
   u:=[];
-  S:=SubgroupProperty(G,
-    function(elm)
-      if nr<0 then return true;fi;
-      nr:=nr-1;
-      if cond(elm) then
-        Add(u,elm);
-        return true;
-      else
-        return false;
-      fi;
-    end,Sorig);
+  if IsPermGroup(G) then
+    S:=SubgroupProperty(G,
+      function(elm)
+        if nr<0 then return true;fi;
+        nr:=nr-1;
+        if cond(elm) then
+          Add(u,elm);
+          return true;
+        else
+          return false;
+        fi;
+      end,Sorig);
+  else
+    u:=Filtered(GeneratorsOfGroup(G),cond);
+    nr:=-1;
+  fi;
 
   if nr>=0 then # succeeded (small index case)
     return S;
@@ -585,15 +599,17 @@ local cs,nr,u,no,un,S,rad,res,ise,uno;
   # does not need to be found through search through complements)
   res:=PerfectResiduum(G);
 
-  nr:=[Core(G,S),NormalClosure(G,S)];
+  nr:=Unique([Core(G,S),NormalClosure(G,S)]);
 
   # refine with perfect residuum
   no:=Intersection(nr[1],res);
   if not no in nr then Add(nr,no);fi;
-  no:=ClosureGroup(nr[2],res);
-  if not no in nr then Add(nr,no);fi;
-  no:=Intersection(nr[2],ClosureGroup(nr[1],res));
-  if not no in nr then Add(nr,no);fi;
+  if Length(nr)>1 then
+    no:=ClosureGroup(nr[2],res);
+    if not no in nr then Add(nr,no);fi;
+    no:=Intersection(nr[2],ClosureGroup(nr[1],res));
+    if not no in nr then Add(nr,no);fi;
+  fi;
 
   cs:=CompositionSeriesThrough(G,nr);
 
