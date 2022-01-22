@@ -1280,7 +1280,7 @@ one may use a test like this:
 ...
 AvailabilityTest := function()
     # see if example.so exists and is a loadable kernel extension
-    if IsKernelExtensionAvailable("example") then
+    if not IsKernelExtensionAvailable("example") then
       LogPackageLoadingMessage( PACKAGE_WARNING,
           [ "The kernel extension `example' is unavailable,",
             "perhaps it needs to be recompiled?",
