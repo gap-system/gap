@@ -2716,10 +2716,15 @@ end );
 ##
 #M  SetEarns( <G>, fail ) . . . . . . . . . . . . . . . . .  never set `fail'
 ##
-InstallOtherMethod( SetEarns,"never set fail",
-    true, [ IsGroup, IsBool ], 0,
-function( G, failval )
+# the following is the system setter for `Earns'.
+SET_EARNS := SETTER_FUNCTION(
+    "Earns", HasEarns );
+
+InstallOtherMethod( SetEarns,"deduce not primitive affine",
+    true, [ IsGroup, IsList and IsEmpty ], 0,
+function( G, emptylist )
     Setter( IsPrimitiveAffine )( G, false );
+    SET_EARNS(G,emptylist);
 end );
 
 
@@ -2732,7 +2737,7 @@ InstallMethod( IsPrimitiveAffine,"primitive and earns",
     OrbitsishReq, 0,
     function( G, D, gens, acts, act )
     return     IsPrimitive( G, D, gens, acts, act )
-           and Earns( G, D, gens, acts, act ) <> fail;
+           and Earns( G, D, gens, acts, act ) <> [];
 end );
 
 

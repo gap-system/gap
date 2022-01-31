@@ -916,7 +916,7 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
 
     n := Length( D );
     if not IsPrimePowerInt( n )  then
-        return fail;
+        return [];
     elif not IsPrimitive( G, D )  then
         TryNextMethod();
     fi;
@@ -942,7 +942,7 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
 
     # If <G> is regular, it must be cyclic of prime order.
     if IsTrivial( G1 )  then
-        return G;
+        return [G];
     fi;
 
     # If <G> is not a Frobenius group ...
@@ -954,13 +954,13 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
                 Gamma := Filtered( D, p -> ForAll( GeneratorsOfGroup( G2 ),
                                  g -> p ^ g = p ) );
                 if PrimeDivisors( Length( Gamma ) ) <> [ p ]  then
-                    return fail;
+                    return [];
                 fi;
                 C := Centralizer( G, G2 );
                 f := ActionHomomorphism( C, Gamma,"surjective" );
                 P := PCore( ImagesSource( f ), p );
                 if not IsTransitive( P, [ 1 .. Length( Gamma ) ] )  then
-                    return fail;
+                    return [];
                 fi;
                 gens := [  ];
                 for gen  in GeneratorsOfGroup( Centre( P ) )  do
@@ -976,9 +976,9 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
                         if z <> One( C )  then
                             M := SolvableNormalClosurePermGroup( G, [ z ] );
                             if M <> fail  and  Size( M ) = n  then
-                                return M;
+                                return [M];
                             else
-                                return fail;
+                                return [];
                             fi;
                         fi;
                     od;
@@ -989,7 +989,7 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
                 # This is unnecessary  if   you trust the   classification of
                 # finite simple groups.
                 if Size( Q ) > p ^ ( d - 1 )  then
-                    return fail;
+                    return [];
                 fi;
 
                 R := ClosureGroup( Q, gens );
@@ -1004,10 +1004,10 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
                 for z  in Q0  do
                     M := SolvableNormalClosurePermGroup( G, [ y * z ] );
                     if M <> fail  and  Size( M ) = n  then
-                        return M;
+                        return [M];
                     fi;
                 od;
-                return fail;
+                return [];
             fi;
         fi;
     od;
@@ -1017,7 +1017,7 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
     x := First( GeneratorsOfGroup( G ), gen -> alpha ^ gen <> alpha );
     z := Comm( a, a ^ x );
     M := SolvableNormalClosurePermGroup( G, [ z ] );
-    return M;
+    return [M];
 
 end );
 
