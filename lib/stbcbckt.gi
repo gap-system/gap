@@ -1958,6 +1958,13 @@ InstallGlobalFunction( NextLevelRegularGroups, function( P, rbase )
     
 end );
 
+BindGlobal("STBCTEARNS",function(G,Omega)
+  G:=Earns(G,Omega);
+  if Length(G)=0 then return fail;
+  elif Length(G)=1 then return G[1];
+  else Error("more than one Earns");fi;
+end);
+
 #############################################################################
 ##
 #F  RBaseGroupsBloxPermGroup( ... ) . . . . .  opr. on groups respecting blox
@@ -2021,10 +2028,10 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
         AddGeneratorsExtendSchreierTree( rbase.regorb,
                 GeneratorsOfGroup( E ) );
     elif IsPrimitive( E, Omega )  then
-        reg := Earns( E, Omega );
+        reg := STBCTEARNS( E, Omega );
         if reg <> fail  then
             Info( InfoBckt, 1, "Subgroup is affine" );
-            rbase.reggrp := Earns;
+            rbase.reggrp := STBCTEARNS;
             rbase.regorb := EmptyStabChain( [  ], One( reg ),
                                     Omega[ 1 ] );
             AddGeneratorsExtendSchreierTree( rbase.regorb,

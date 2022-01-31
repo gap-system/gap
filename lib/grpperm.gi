@@ -1650,8 +1650,8 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     
     # Affine groups first.
     L := Earns( G, Omega );
-    if L <> fail  then
-        return L;
+    if L <> []  then
+        return L[1];
     fi;
     
     deg := Length( Omega );
