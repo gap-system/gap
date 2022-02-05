@@ -69,7 +69,7 @@ if Length(covs) > 0 then
         IsReadableFile(file[1]) );
 
     Print("Outputting JSON for Codecov...\n");
-    OutputJsonCoverage(r, "gap-coverage.json");;
+    OutputJsonCoverage(r, "coverage-final.json");;
 else
     # Don't error, because we might want to gather
     # gcov coverage, so just inform that we didn't find
