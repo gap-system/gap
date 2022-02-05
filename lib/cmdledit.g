@@ -964,7 +964,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
       r := fail;
       if Length(cmps) > 0 and cmps[1] in idbnd then
         r := ValueGlobal(cmps[1]);
-        for j in [2..Length(cmps)] do
+        for j in [2..Length(cmps)-1] do
           if not hasbang[j-1] and IsBound(r.(cmps[j])) then
             r := r.(cmps[j]);
           elif hasbang[j-1] and IsBound(r!.(cmps[j])) then
