@@ -942,7 +942,11 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     cf.tabcompnam := true;
     if cf.tabcount = 1 then
       # try to find name of component object
-      cmps := SplitString(l[3], ".");
+      i := pos;
+      while i > 0 and (l[3][i] in IdentifierLetters or l[3][i] in ".!") do
+        i := i-1;
+      od;
+      cmps := SplitString(l[3]{[i+1..pos]}, ".");
       hasbang := [];
       i := Length(cmps);
       while i > 0 do
