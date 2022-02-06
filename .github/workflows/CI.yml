@@ -55,7 +55,7 @@ jobs:
             "testmanuals",
 
             # test error reporting and compiling as well as libgap
-            "testspecial test-compile testlibgap testkernel",
+            "testexpect testspecial test-compile testlibgap testkernel",
 
             # compile packages and run GAP tests
             # don't use --enable-debug to prevent the tests from taking too long
@@ -175,7 +175,7 @@ jobs:
                    if [[ $TEST_SUITES == *testbuildsys* ]] ; then
                        sudo apt-get remove libgmp-dev libreadline-dev zlib1g-dev
                    else
-                       packages+=(libgmp-dev libreadline-dev zlib1g-dev)
+                       packages+=(libgmp-dev libreadline-dev zlib1g-dev expect)
                    fi
                    if [[ $TEST_SUITES == *testpackages* ]] ; then
                        packages+=(            # For:

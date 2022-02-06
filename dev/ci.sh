@@ -228,6 +228,11 @@ GAPInput
     make testkernel
     ;;
 
+  testexpect)
+    actual=/tmp/gaptest.expect.actual
+    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b  --cover $COVDIR/${TEST_SUITE}.coverage" $SRCDIR/dev/gaptest.expect
+    ;;
+
   *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
