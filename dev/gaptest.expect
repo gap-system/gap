@@ -1,0 +1,41 @@
+set timeout 3
+
+# from https://serverfault.com/a/981762
+expect_before {
+    timeout { puts " TIMEOUT "; exit 2 }
+    eof     { puts " EOF ";     exit 1 }
+}
+
+expect "gap> "
+send -- "var := rec(member := true, data1 := 1, data2 := 2);;\r"
+
+# test tab completing "v" to "var"
+expect "gap> "
+send -- "v\t"
+expect "ar"
+send -- "\t"
+expect "var"
+send -- ";\r"
+expect "rec"
+
+# test tab completing "var.d" to "var.data" to "var.data1" or "var.data2"
+expect "gap> "
+send -- "var.d\t"
+expect "ata"
+send -- "\t"
+expect "data1  data2"
+send -- "1;\r"
+expect "1"
+
+# the same, but now with some code right before "var.d"
+expect "gap> "
+send -- "ReturnTrue(var.d"
+send -- "\t"
+expect "ata"
+send -- "\t"
+expect "data1  data2"
+send -- "1);\r"
+expect "true"
+
+
+exit
