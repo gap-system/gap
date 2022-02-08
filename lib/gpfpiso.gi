@@ -1904,6 +1904,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   rels:=[];
   mytzf:=maketzf(rels);
 
+  directerr:=false;
   if newstyle then directerr:=true;fi;
 
   addrule:=function(rule)

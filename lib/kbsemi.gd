@@ -131,3 +131,37 @@ DeclareGlobalFunction("ReduceWordUsingRewritingSystem");
 ##  </ManSection>
 ##
 DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );
+
+# utility functions for identifying applicable rules through a DAG
+############################################################################
+##
+#F  EmptyKBDAG(<genids>)
+##
+## takes a list of generator id's (signed integers, used to check how far
+## indices have to be shifted) and returns a record that represents such
+## a DAG. 
+DeclareGlobalFunction("EmptyKBDAG");
+
+############################################################################
+##
+#F  AddRuleKBDAG(<dag>,<left>,<index>)
+##
+##  Adds rule with given left side to the DAG at given index position 
+DeclareGlobalFunction("AddRuleKBDAG");
+
+############################################################################
+##
+#F  DeleteRuleKBDAG(<dag>,<left>,<index>)
+##
+## removes a rule with given left side (sgtored at position <index> from the
+## DAG. Index numbers of all rules with higher index number will be shifted
+##  one down.
+DeclareGlobalFunction("DeleteRuleKBDAG");
+
+############################################################################
+##
+#F  RuleAtPosKBDAG(<dag>,<w>,<p>)
+##
+## returns the index position of the rule that applies at position <p> in
+##  word <w> (or `fail` if no rule applies.
+DeclareGlobalFunction("RuleAtPosKBDAG");
