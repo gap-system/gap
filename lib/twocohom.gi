@@ -706,9 +706,9 @@ InstallMethod( TwoCohomologyGeneric,"generic, using rewriting system",true,
 function(G,mo)
 local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
-      findtail,colltz,mapped,mapped2,onemat,zerovec,dict,max,mal,s,p,genkill,
+      findtail,colltz,mapped,mapped2,onemat,zerovec,max,mal,s,p,genkill,
       c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos,
-      nonone,predict,lenpre,jv,olen;
+      nonone,lenpre,jv,olen,dag;
 
 
   # collect the word in factor group
@@ -720,19 +720,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     while i<=Length(a) do
 
       # does a rule apply at position i?
-      j:=0;
-      s:=0;
-      mm:=Minimum(mal,Length(a)-i+1);
-      while j<mm do
-        s:=s*max+a[i+j];
-        if s<=lenpre then
-          p:=predict[s];
-        else
-          p:=LookupDictionary(dict,s);
-        fi;
-        if IsInt(p) then break; fi;
-        j:=j+1;
-      od;
+      p:=RuleAtPosKBDAG(dag,a,i);
 
       if IsInt(p) then
         a:=Concatenation(a{[1..i-1]},tzrules[p][2],
@@ -767,20 +755,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     while i<=Length(wrd) do
 
       # does a rule apply at position i?
-      j:=0;
-      s:=0;
-      mm:=Minimum(mal,Length(wrd)-i+1);
-      p:=true;
-      while j<mm and p<>fail do
-        s:=s*max+wrd[i+j];
-        if s<=lenpre then
-          p:=predict[s];
-        else
-          p:=LookupDictionary(dict,s);
-        fi;
-        if IsInt(p) and rulpos[p]<>fail then break; fi;
-        j:=j+1;
-      od;
+      p:=RuleAtPosKBDAG(dag,wrd,i);
 
       if IsInt(p) and rulpos[p]<>fail then
         p:=rulpos[p];
@@ -831,36 +806,11 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     tzrules:=List(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord));
 #  fi;
 
-  # build data structure to find rule applicable at given position. Assumes
-  # that rule set is reduced.
-  max:=Maximum(Union(List(tzrules,x->x[1])))+1;
+  dag:=EmptyKBDAG(Union(List(GeneratorsOfMonoid(FreeMonoidOfFpMonoid(mon)),
+    LetterRepAssocWord)));
   mal:=Maximum(List(tzrules,x->Length(x[1])));
-
-  # leaving out integers makes it a sort dictionary, which behaves better 
-  # for the few entries we typically look up
-  #dict:=NewDictionary(max,Integers,true);
-  dict:=NewDictionary(max,true); 
-  lenpre:=20000;
-  predict:=ListWithIdenticalEntries(lenpre,fail);
-  AddDictionary(dict,0,true);
-  for i in [1..mal] do
-    p:=Filtered([1..Length(tzrules)],x->Length(tzrules[x][1])=i);
-    for j in p do
-      s:=0;
-      for k in [1..i] do
-        s:=s*max+tzrules[j][1][k];
-        if k<i then
-          jv:=true;
-        else
-          jv:=j;
-        fi;
-        if s<=lenpre then
-          predict[s]:=jv;
-        else
-          AddDictionary(dict,s,jv);
-        fi;
-      od;
-    od;
+  for i in [1..Length(tzrules)] do
+    AddRuleKBDAG(dag,tzrules[i][1],i);
   od;
 
   gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
@@ -1130,19 +1080,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     while i<=Length(wrd) do
 
       # does a rule apply at position i?
-      j:=0;
-      s:=0;
-      mm:=Minimum(mal,Length(wrd)-i+1);
-      while j<mm do
-        s:=s*max+wrd[i+j];
-        if s<=lenpre then
-          p:=predict[s];
-        else
-          p:=LookupDictionary(dict,s);
-        fi;
-        if IsInt(p) and rulpos[p]<>fail then break; fi;
-        j:=j+1;
-      od;
+      p:=RuleAtPosKBDAG(dag,wrd,i);
 
       if IsInt(p) and rulpos[p]<>fail then
         p:=rulpos[p];
@@ -1209,19 +1147,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       while i<=Length(wrd) do
 
         # does a rule apply at position i?
-        j:=0;
-        s:=0;
-        mm:=Minimum(mal,Length(wrd)-i+1);
-        while j<mm do
-          s:=s*max+wrd[i+j];
-          if s<=lenpre then
-            p:=predict[s];
-          else
-            p:=LookupDictionary(dict,s);
-          fi;
-          if IsInt(p) and rulpos[p]<>fail then break; fi;
-          j:=j+1;
-        od;
+        p:=RuleAtPosKBDAG(dag,wrd,i);
 
         if IsInt(p) and rulpos[p]<>fail then
           p:=rulpos[p];

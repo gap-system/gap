@@ -12,6 +12,142 @@
 ##  and monoids.
 ##  
 
+InstallGlobalFunction(EmptyKBDAG,function(genids)
+local offset,deadend;
+  offset:=Minimum(genids);
+  deadend:=ListWithIdenticalEntries(Maximum(genids)-offset+1,fail);
+  # index shifting so we always start at 1
+  if offset>0 then offset:=offset-1;
+  else offset:=1-offset;fi;
+  return rec(IsKBDAG:=true,
+    genids:=genids,
+    offset:=offset,
+    deadend:=deadend,
+    backpoint:=[],
+    dag:=ShallowCopy(deadend));
+end);
+
+InstallGlobalFunction(AddRuleKBDAG,function(d,left,idx)
+local offset,node,j,a;
+  offset:=d.offset;
+  node:=d.dag;
+  for j in [1..Length(left)] do
+    a:=left[j]+offset;
+    if node[a]=fail then
+      if j=Length(left) then
+        # store index position
+        d.backpoint[idx]:=[node,a];
+        node[a]:=idx;
+        return true;
+      else
+        node[a]:=ShallowCopy(d.deadend); # at least one symbol more
+        node:=node[a];
+      fi;
+    elif IsList(node[a]) then 
+      if j<Length(left) then
+        node:=node[a]; # go to next letter
+      else
+        # rule would reduce existing LHS
+        return fail;
+      fi;
+    else
+      #LHS could have been reduced with existing rules
+      return false;
+    fi;
+  od;
+  return true;
+end);
+
+InstallGlobalFunction(DeleteRuleKBDAG, function(d,left,idx)
+local backpoint,i,a,node,offset;
+  backpoint:=d.backpoint;
+  backpoint[idx][1][backpoint[idx][2]]:=fail; # #rule indicator is gone
+  for i in [idx+1..Length(backpoint)] do
+    a:=backpoint[i][2];
+#if backpoint[i][1][a]<>i then Error("poss");fi;
+    backpoint[i][1][a]:=backpoint[i][1][a]-1; # decrease index numbers
+    backpoint[i-1]:=backpoint[i]; # and correct back pointers
+  od;
+  Unbind(backpoint[Length(backpoint)]);
+  # now trace through the word and kill nodes that are all fail
+
+  offset:=d.offset;
+  a:=Length(left)-2;
+  while a>-1 do
+    node:=d.dag;
+    for i in [1..a] do
+      node:=node[left[i]+offset];
+    od;
+    # where are we at length a+1?
+    if node[left[a+1]+offset]=d.deadend then
+      node[left[a+1]+offset]:=fail;
+    else
+      a:=0;
+    fi;
+    a:=a-1;
+  od;
+  
+end);
+
+InstallGlobalFunction(RuleAtPosKBDAG,function(d,w,p)
+local node,q;
+  node:=d.dag;
+  q:=p;
+  while IsList(node) and q<=Length(w) do
+    node:=node[w[q]+d.offset];
+    q:=q+1;
+  od;
+  if IsInt(node) then
+    return node; # the rule number to apply
+  else
+    # fail or list -- no rule applies
+    return fail;
+  fi;
+end);
+
+BindGlobal("VerifyKBDAG",function(d,tzrules)
+local offset,node,j,a,idx,left,recurse;
+  if Length(d!.backpoint)<>Length(tzrules) then Error("len");fi;
+  offset:=d.offset;
+  for idx in [1..Length(tzrules)] do
+    left:=tzrules[idx][1];
+
+    node:=d.dag;
+    for j in [1..Length(left)] do
+      a:=left[j]+offset;
+      if node[a]=fail then
+        Error("not stored");
+      elif j=Length(left) then
+        # end -- check
+        if d.backpoint[idx]<>[node,a] or node[a]<>idx then Error("data!"); fi;
+      else
+        if not IsList(node[a]) then Error("too short");fi;
+        node:=node[a]; # go to next letter
+      fi;
+    od;
+  od;
+
+  recurse:=function(n)
+  local i,flag;
+    if not IsList(n) then
+      return;
+    else
+      flag:=true;
+      for i in n do
+        if IsList(i) then 
+          recurse(i);
+          flag:=false;
+        elif IsInt(i) then
+          flag:=false;
+        fi;
+      od;
+      if flag and n<>d.dag then Error("stored fail list");fi;
+    fi;
+  end;
+
+  recurse(d.dag);
+end);
+
 ############################################################################
 ##
 #R  IsKnuthBendixRewritingSystemRep(<obj>)
@@ -125,8 +261,7 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
     freefam:=freefam,
     generators:=gens));
 
-  kbrws!.bitrules:=List([1,2],nr->
-    List(kbrws!.tzrules,y->BlistList([1..Length(gens)],Set(y[nr]))));
+  kbrws!.kbdag:=EmptyKBDAG(Concatenation(List(gens,LetterRepAssocWord)));
 
   if ValueOption("isconfluent")=true then
     kbrws!.createdconfluent:=true;
@@ -171,9 +306,6 @@ function(rws)
   else
     Unbind(rws!.pairs2check);
   fi;
-  if IsBound(rws!.bitrules) then
-    rws!.bitrules:=[[],[]];
-  fi;
   rws!.reduced := true;
   for v in r do
     AddRuleReduced(rws, v);
@@ -185,17 +317,28 @@ end);
 
 # use bit lists to reduce the numbers of rules to test
 # this should ultimately become part of the kernel routine
-BindGlobal("ReduceLetterRepWordsRewSysNew",function(tzrules,w,geli,bits)
-local old,pat,cf;
-  if geli=false then
+BindGlobal("ReduceLetterRepWordsRewSysNew",function(tzrules,w,dag)
+local old,pat,cf,has,n,p;
+  if not IsRecord(dag) then
     return ReduceLetterRepWordsRewSys(tzrules,w);
   fi;
+
   repeat
-    old:=w;
-    pat:=BlistList(geli,Set(w));
-    w:=ReduceLetterRepWordsRewSys(tzrules{Filtered([1..Length(tzrules)],
-      x->IsSubsetBlist(pat,bits[1][x]))},w);
-  until old=w;
+    has:=false;
+    p:=1;
+    while p<=Length(w) do
+      # find the rule applying at the position in the dag
+      n:=RuleAtPosKBDAG(dag,w,p);
+      if n<>fail then
+        # now apply rule
+        w:=Concatenation(w{[1..p-1]},tzrules[n][2],
+          w{[p+Length(tzrules[n][1])..Length(w)]});
+        has:=true;
+        p:=0; # B/c p+1 at end
+      fi;
+      p:=p+1;
+    od;
+  until has=false;
   return w;
 end);
 
@@ -230,7 +373,20 @@ InstallOtherMethod(AddRuleReduced,
      and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
-  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,geli,abi;
+  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,kbdag,abi;
+
+    # the fr package assigns initial tzrules on its own, this messes up
+    # the dag structure. Delete ...
+    if IsBound(kbrws!.kbdag) and Length(kbrws!.kbdag.backpoint)<>Length(kbrws!.tzrules) then
+      Info(InfoPerformance,2,
+       "Cannot use dag for lookup since rules were assigned directly");
+      #a:=EmptyKBDAG(kbrws!.kbdag.genids);
+      #kbrws!.kbdag:=a;
+      #for b in [1..Length(kbrws!.tzrules)] do
+      #  AddRuleKBDAG(a,kbrws!.tzrules[b][1],b);
+      #od;
+      Unbind(kbrws!.kbdag);
+    fi;
 
     # allow to give rule also as words in free monoid
     if ForAll(v,IsAssocWord) and
@@ -239,29 +395,36 @@ function(kbrws,v)
     fi;
 
     ptc:=IsBound(kbrws!.pairs2check);
-    if IsBound(kbrws!.bitrules) then
-      geli:=[1..Length(kbrws!.generators)];
+
+    if IsBound(kbrws!.kbdag) then
+      kbdag:=kbrws!.kbdag;
     else
-      geli:=false;
+      kbdag:=fail;
     fi;
 
     #given a Knuth Bendix Rewriting System, kbrws,
     #removes rule i of the set of rules of kbrws and    
     #modifies the list pairs2check in such a way that the previous indexes 
     #are modified so they correspond to same pairs as before
-    remove_rule:=function(i,kbrws)
+    remove_rule:=function(i)
       local j,q,a,k,l;
-  
-      #first remove rule from the set of rules
-      q:=kbrws!.tzrules{[1..i-1]};
-      Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
-      kbrws!.tzrules:=q;
 
-      if IsBound(kbrws!.bitrules) then
-        l:=Concatenation([1..i-1],[i+1..Length(kbrws!.bitrules[1])]);
-        kbrws!.bitrules[1]:=kbrws!.bitrules[1]{l};
-        kbrws!.bitrules[2]:=kbrws!.bitrules[2]{l};
+      if kbdag<>fail then
+        # update lookup structure
+        DeleteRuleKBDAG(kbdag,kbrws!.tzrules[i][1],i);
       fi;
+
+      #remove rule from the set of rules
+      #q:=kbrws!.tzrules{[1..i-1]};
+      #Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
+      #kbrws!.tzrules:=q;
+      q:=kbrws!.tzrules;
+      for j in [i+1..Length(q)] do
+        q[j-1]:=q[j];
+      od;
+      Unbind(q[Length(q)]);
+
+      #VerifyKBDAG(kbdag,kbrws!.tzrules);
 
       if ptc then
         #delete pairs of indexes that include i
@@ -284,7 +447,6 @@ function(kbrws,v)
       fi;
     end;
 
-
     #given a Knuth Bendix Rewriting System this function returns it
     #with the given extra rule adjoined to the set of rules
     #and the necessary pairs adjoined to pairs2check 
@@ -296,11 +458,11 @@ function(kbrws,v)
 
       #insert rule 
       Add(kbrws!.tzrules,u);
-      if IsBound(kbrws!.bitrules) then
-        Add(kbrws!.bitrules[1],BlistList(geli,Set(u[1])));
-        Add(kbrws!.bitrules[2],BlistList(geli,Set(u[2])));
+      if kbdag<>fail then
+        l:=AddRuleKBDAG(kbdag,u[1],Length(kbrws!.tzrules));
+        if l<>true then Error("rulesubset"); fi;
       fi;
-
+      #VerifyKBDAG(kbdag,kbrws!.tzrules);
     
       if ptc then
         #insert new pairs
@@ -326,14 +488,13 @@ function(kbrws,v)
     #while the stack is non empty
     while not(IsEmpty(s)) do
     
+    #VerifyKBDAG(kbdag,kbrws!.tzrules);
       #pop the first rule from the stack
       #use rules available to reduce both sides of rule
       u:=s[1];
       s:=s{[2..Length(s)]};
-      a:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,u[1],
-        geli,kbrws!.bitrules);
-      b:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,u[2],
-        geli,kbrws!.bitrules);
+      a:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,u[1],kbdag);
+      b:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,u[2],kbdag);
 
       #if both sides reduce to different words
       #have to adjoin a new rule to the set of rules
@@ -348,44 +509,44 @@ function(kbrws,v)
         if c then
           c:=a; a:=b; b:=c;
         fi;
-        add_rule([a,b],kbrws);
-        kbrws!.reduced := false;
 
-        if geli<>false then
-          abi:=BlistList(geli,Set(a));
-        fi;
-    
         #Now we have to check if by adjoining this rule
         #any of the other active ones become redudant
 
-        k:=1; n:=Length(kbrws!.tzrules)-1;
-        while k in [1..n] do
+        n:=Length(kbrws!.tzrules); 
+        # go descending to avoid having to reindex
+        for k in [n,n-1..1] do
           
           #if lhs of rule k contains lhs of new rule
           #as a subword then we delete rule k
           #but add it to the stack, since it has to still hold
 
-          if (geli=false or IsSubsetBlist(kbrws!.bitrules[1][k],abi)) 
-            and PositionSublist(kbrws!.tzrules[k][1],a,0)<>fail then
-          #if PositionWord(kbrws!.rules[k][1],a,1)<>fail then
+          if  PositionSublist(kbrws!.tzrules[k][1],a,0)<>fail then
             Add(s,kbrws!.tzrules[k]);
-            remove_rule(k,kbrws);
+            remove_rule(k);
             n:=Length(kbrws!.tzrules)-1;
-            k:=k-1;
+          fi;
+        od;
+        #VerifyKBDAG(kbdag,kbrws!.tzrules);
 
+        # and store new rule
+        add_rule([a,b],kbrws);
+        kbrws!.reduced := false;
+
+        n:=Length(kbrws!.tzrules); 
+        for k in [n,n-1..1] do
           #else if rhs of rule k contains the new rule 
           #as a subword then we use the new rule
-          #to irreduce that rhs
-          elif (geli=false or IsSubsetBlist(kbrws!.bitrules[2][k],abi)) 
-            and PositionSublist(kbrws!.tzrules[k][2],a,0)<>fail then
-          #elif PositionWord(kbrws!.rules[k][2],a,1)<>fail then
+          #to reduce that rhs
+          if  PositionSublist(kbrws!.tzrules[k][2],a,0)<>fail then
             kbrws!.tzrules[k][2]:=
-              ReduceLetterRepWordsRewSys(kbrws!.tzrules, kbrws!.tzrules[k][2]);
+              ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,
+                kbrws!.tzrules[k][2],kbdag);
           fi;
-          k:=k+1;
-      
         od;
+
       fi;
+
     od;
     kbrws!.reduced := true;
 end);
@@ -877,8 +1038,8 @@ local new;
                   ordering :=kbrws!.ordering,
                   freefam := kbrws!.freefam,
                   tzordering := kbrws!.tzordering));
-  if IsBound(kbrws!.bitrules) then
-    new!.bitrules:=List(kbrws!.bitrules,ShallowCopy);
+  if IsBound(kbrws!.kbdag) then
+    new!.kbdag:=StructuralCopy(kbrws!.kbdag);
   fi;
   return new;
 end);
