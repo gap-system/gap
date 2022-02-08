@@ -807,7 +807,7 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
     fi;
   od;
 
-  Info(InfoCharacterTable,1,"Dimensions: ",List(raeume,i->i.dim));
+  Info(InfoCharacterTable,1,"Dimensions: ",Collected(List(raeume,i->i.dim)));
   D.raeume:=raeume;
   return true;
 end);
