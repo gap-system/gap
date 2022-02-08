@@ -492,7 +492,7 @@ yielding smaller spaces and several irreducible characters.
 <Example><![CDATA[
 gap> DixonSplit( d );
 #I  Matrix 2,Representative of Order 3,Centralizer: 5832
-#I  Dimensions: [ 1, 2, 1, 4, 12, 1, 1, 2, 1, 2, 1 ]
+#I  Dimensions: [ [ 1, 6 ], [ 2, 3 ], [ 4, 1 ], [ 12, 1 ] ]
 #I  Two-dim space split
 #I  Two-dim space split
 #I  Two-dim space split
