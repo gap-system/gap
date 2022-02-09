@@ -55,21 +55,22 @@ typedef Obj (* ArithMethod2) ( Obj opL, Obj opR );
 
 /****************************************************************************
 **
-*V  ZeroFuncs[<type>] . . . . . . . . . . . . . . . . . table of zero methods
+*V  ZeroSameMutFuncs[<type>] . . . . . . . . . . . . . .table of zero methods
 */
-extern ArithMethod1 ZeroFuncs[LAST_REAL_TNUM + 1];
+extern ArithMethod1 ZeroSameMutFuncs[LAST_REAL_TNUM + 1];
 
 
 /****************************************************************************
 **
-*F  ZERO( <op> )  . . . . . . . . . . . . . . . . . . . . . zero of an object
+*F  ZERO_SAMEMUT( <op> ) . . . . . . . zero of an object retaining mutability
 **
-**  'ZERO' returns the zero of the object <op>.
+**  'ZERO_SAMEMUT' returns the zero of the object <op> with the same
+**  mutability level as <op>
 */
-EXPORT_INLINE Obj ZERO(Obj op)
+EXPORT_INLINE Obj ZERO_SAMEMUT(Obj op)
 {
     UInt tnum = TNUM_OBJ(op);
-    return (*ZeroFuncs[tnum])(op);
+    return (*ZeroSameMutFuncs[tnum])(op);
 }
 
 

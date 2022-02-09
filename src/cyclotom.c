@@ -2115,7 +2115,7 @@ static Int InitKernel (
     LtFuncs[   T_CYC    ][ T_RAT    ] = LtCycNot;
 
     /* install the unary arithmetic methods                                */
-    ZeroFuncs[ T_CYC ] = ZeroCyc;
+    ZeroSameMutFuncs[T_CYC] = ZeroCyc;
     ZeroMutFuncs[ T_CYC ] = ZeroCyc;
     AInvFuncs[ T_CYC ] = AInvCyc;
     AInvMutFuncs[ T_CYC ] = AInvCyc;

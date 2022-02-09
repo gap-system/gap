@@ -844,7 +844,7 @@ static Obj ZeroMutVecFFE(Obj vec)
     assert(len);
     res  = NEW_PLIST(T_PLIST_FFE, len);
     SET_LEN_PLIST(res, len);
-    z = ZERO(ELM_PLIST(vec, 1));
+    z = ZERO_SAMEMUT(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
         SET_ELM_PLIST(res, i, z);
     return res;
@@ -861,7 +861,7 @@ static Obj ZeroVecFFE(Obj vec)
     assert(len);
     res  = NEW_PLIST(TNUM_OBJ(vec), len);
     SET_LEN_PLIST(res, len);
-    z = ZERO(ELM_PLIST(vec, 1));
+    z = ZERO_SAMEMUT(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
         SET_ELM_PLIST(res, i, z);
     return res;
@@ -953,7 +953,7 @@ static Int InitKernel (
         DiffFuncs[  t1   ][ T_FFE ] = DiffVecFFEFFE;
         ProdFuncs[ T_FFE ][  t1   ] = ProdFFEVecFFE;
         ProdFuncs[  t1   ][ T_FFE ] = ProdVecFFEFFE;
-        ZeroFuncs[  t1   ] = ZeroVecFFE;
+        ZeroSameMutFuncs[t1] = ZeroVecFFE;
         ZeroMutFuncs[  t1   ] = ZeroMutVecFFE;
     }
 

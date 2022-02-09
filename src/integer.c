@@ -1494,7 +1494,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
 
   /* if the integer is zero, return the neutral element of the operand     */
   if ( n == INTOBJ_INT(0) ) {
-    res = ZERO( op );
+    res = ZERO_SAMEMUT( op );
   }
   
   /* if the integer is one, return the object if immutable -
@@ -1502,7 +1502,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
      ensure correct mutability propagation                                 */
   else if ( n == INTOBJ_INT(1) ) {
     if (IS_MUTABLE_OBJ(op))
-      res = SUM(ZERO(op),op);
+      res = SUM(ZERO_SAMEMUT(op),op);
     else
       res = op;
   }
@@ -2860,7 +2860,7 @@ static Int InitKernel ( StructInitInfo * module )
   
   /* install the unary arithmetic methods                                  */
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
-    ZeroFuncs[ t1 ] = ZeroInt;
+    ZeroSameMutFuncs[ t1 ] = ZeroInt;
     ZeroMutFuncs[ t1 ] = ZeroInt;
     AInvFuncs[ t1 ] = AInvInt;
     AInvMutFuncs[ t1 ] = AInvInt;

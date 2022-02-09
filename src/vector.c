@@ -696,7 +696,7 @@ static Int InitKernel (
 
     /* install the arithmetic operation methods                            */
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT + IMMUTABLE; t1++) {
-        ZeroFuncs[ t1 ] = ZeroVector;
+        ZeroSameMutFuncs[t1] = ZeroVector;
         ZeroMutFuncs[ t1 ] = ZeroMutVector;
 
         for (t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT + IMMUTABLE; t2++) {

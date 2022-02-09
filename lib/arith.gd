@@ -1460,7 +1460,7 @@ DeclareOperationKernel( "ZeroMutable", [ IsAdditiveElementWithZero ],
 DeclareSynonym( "ZeroOp", ZeroMutable );
 
 DeclareOperationKernel( "ZeroSameMutability", [ IsAdditiveElementWithZero ],
-    ZERO );
+    ZERO_SAMEMUT );
 DeclareSynonym( "ZeroSM", ZeroSameMutability );
 
 
