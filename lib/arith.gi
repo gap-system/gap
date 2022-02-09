@@ -88,17 +88,21 @@ InstallOtherMethod( Zero,
 #T which takes less than 1 microsecond on my system.
 #T         Steve
 
+
+#############################################################################
+##
+#M  ZeroSameMutability( <obj> ) . . . . . . . . . . for an (immutable) object
+##
+##  This method is applicable for example to domains.
+##
 InstallOtherMethod( ZeroSameMutability,
     "for an (immutable) object",
     [ IsObject ],
-    function(elm)
-    local z;
-    if IsMutable( elm ) then
+    function( obj )
+    if IsMutable( obj ) then
       TryNextMethod();
     fi;
-    z:= ZeroAttr( elm );
-    MakeImmutable( z );
-    return z;
+    return ZeroAttr( obj );
     end );
 
 
@@ -295,17 +299,21 @@ InstallMethod( OneOp,
     return one;
     end );
 
+
+#############################################################################
+##
+#M  OneSameMutability( <obj> )  . . . . . . . . . . for an (immutable) object
+##
+##  This method is applicable for example to domains.
+##
 InstallOtherMethod( OneSameMutability,
     "for an (immutable) object",
     [ IsObject ],
-    function( elm )
-    local o;
-    if IsMutable( elm ) then
+    function( obj )
+    if IsMutable( obj ) then
       TryNextMethod();
     fi;
-    o:= OneMutable( elm );
-    MakeImmutable( o );
-    return o;
+    return OneImmutable( obj );
     end );
 
 
