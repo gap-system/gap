@@ -298,10 +298,10 @@ static Obj FuncSUM_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
 *F  ZeroListDefault(<list>) . . . . . . . . . . . . . . . . .  zero of a list
 **
 **  'ZeroList' is the extended dispatcher for the zero involving lists.  That
-**  is, whenever zero for a list is called and  'ZeroFuncs' does not point to
-**  a special function, then 'ZeroList' is called.  'ZeroList' determines the
-**  extended   type of the  operand  and then  dispatches through 'ZeroFuncs'
-**  again.
+**  is, whenever zero for a list is called and 'ZeroSameMutFuncs' does not
+**  point to a special function, then 'ZeroList' is called. 'ZeroList'
+**  determines the extended type of the operand and then dispatches through
+**  'ZeroSameMutFuncs' again.
 **
 **  'ZeroListDefault' is a generic function for the zero.
 */
@@ -326,7 +326,7 @@ static Obj ZeroListDefault(Obj list)
       {
         Obj tmp = ELM0_LIST( list, i);
         if (tmp) {
-          tmp = ZERO(tmp);
+          tmp = ZERO_SAMEMUT(tmp);
           SET_ELM_PLIST( res, i,tmp );
           CHANGED_BAG( res);
         }
@@ -442,7 +442,7 @@ static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
   len = LEN_LIST(mat);
   if (len == 0)
     return NewImmutableEmptyPlist();
-  zrow = ZERO(ELM_LIST(mat,1));
+  zrow = ZERO_SAMEMUT(ELM_LIST(mat,1));
   CheckedMakeImmutable(zrow);
   res = NEW_PLIST_IMM(T_PLIST_TAB_RECT, len);
   SET_LEN_PLIST(res,len);
@@ -1023,7 +1023,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
       break;
 
     case 2:
-      zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      zero = ZERO_SAMEMUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
       one  = ONE( zero );
       ctype = rtype = T_PLIST;
       break;
@@ -1126,7 +1126,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         break;
 
       case 2:
-        zero = ZERO( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        zero = ZERO_SAMEMUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
         one  = ONE( zero );
         ctype = rtype = T_PLIST;
         break;
@@ -1510,7 +1510,7 @@ static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
   len = LEN_LIST(vec);
   RequireSameLength("<vec> * <mat>", vec, mat);
   elt = ELMW_LIST(vec,1);
-  z = ZERO(elt);
+  z = ZERO_SAMEMUT(elt);
   for (i = 1; i <= len; i++)
     {
       elt = ELMW_LIST(vec,i);
@@ -1527,7 +1527,7 @@ static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
         }
     }
   if (res == (Obj)0)
-    res = ZERO(ELMW_LIST(mat,1));
+    res = ZERO_SAMEMUT(ELMW_LIST(mat,1));
   if (!IS_MUTABLE_OBJ(vec) && !IS_MUTABLE_OBJ(mat))
     CheckedMakeImmutable(res);
   return res;
@@ -1569,8 +1569,8 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
   }
 
   /* get the zero and the one                                            */
-  zerov = ZERO( ELMW_LIST(mat, 1));
-  zero = ZERO( ELMW_LIST( ELMW_LIST( mat, 1 ), 1 ) );
+  zerov = ZERO_SAMEMUT(ELMW_LIST(mat, 1));
+  zero = ZERO_SAMEMUT(ELMW_LIST(ELMW_LIST(mat, 1), 1));
   one  = ONE( zero );
     
   /* set up res (initially the identity) and matcopy */
@@ -2121,8 +2121,8 @@ static Int InitKernel (
     }
 
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {
-            ZeroFuncs[t1] = ZeroListDefault;
-            ZeroMutFuncs[t1] = ZeroListMutDefault;
+        ZeroSameMutFuncs[t1] = ZeroListDefault;
+        ZeroMutFuncs[t1] = ZeroListMutDefault;
     }
 
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {

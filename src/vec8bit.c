@@ -5191,7 +5191,7 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
     }
     if (deterp) {
         if (rank < nrows)
-            deter = ZERO(deter);
+            deter = ZERO_SAMEMUT(deter);
         else if (sign == -1)
             deter = AINV(deter);
         *deterp = deter;

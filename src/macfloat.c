@@ -631,7 +631,7 @@ static Int InitKernel (
         EqFuncs[T_MACFLOAT][t] = EqFuncs[t][T_MACFLOAT] = EqObject;
 
     /* install the unary arithmetic methods                                */
-    ZeroFuncs[ T_MACFLOAT ] = ZeroMacfloat;
+    ZeroSameMutFuncs[T_MACFLOAT] = ZeroMacfloat;
     ZeroMutFuncs[ T_MACFLOAT ] = ZeroMacfloat;
     AInvMutFuncs[ T_MACFLOAT ] = AInvMacfloat;
     OneFuncs [ T_MACFLOAT ] = OneMacfloat;

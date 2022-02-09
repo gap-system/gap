@@ -1554,7 +1554,7 @@ static Int InitKernel (
     LtFuncs[   T_FFE ][ T_FFE ] = LtFFE;
 
     /* install the arithmetic methods                                      */
-    ZeroFuncs[ T_FFE ] = ZeroFFE;
+    ZeroSameMutFuncs[T_FFE] = ZeroFFE;
     ZeroMutFuncs[ T_FFE ] = ZeroFFE;
     AInvFuncs[ T_FFE ] = AInvFFE;
     AInvMutFuncs[ T_FFE ] = AInvFFE;

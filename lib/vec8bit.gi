@@ -430,7 +430,7 @@ InstallMethod( ZeroOp, "for an 8 bit vector",
 
 #############################################################################
 ##
-#M  ZEROOp( <vec> )
+#M  ZeroSameMutability( <vec> )
 ##
 ##  A  zero vector of the same field and length and mutability
 ##

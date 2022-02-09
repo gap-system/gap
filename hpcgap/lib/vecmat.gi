@@ -308,7 +308,7 @@ InstallMethod( ZeroOp,
 
 #############################################################################
 ##
-#M  ZEROOp( <gf2vec> )  . . . . . . . . . . . same mutability zero GF2 vector
+#M  ZeroSameMutability( <gf2vec> ) . . . . .  same mutability zero GF2 vector
 ##
 InstallMethod( ZeroSameMutability,
     "for GF2 vector, mutable",
@@ -988,10 +988,8 @@ end );
 
 #############################################################################
 ##
-#M  ZEROOp( <gf2mat> )  . . . . . . . . . . . . . . . matching mutability
+#M  ZeroSameMutability( <gf2mat> ) . . . . . . . . . . .  matching mutability
 ##
-##
-
 InstallMethod( ZeroSameMutability,
     "for GF2 Matrix",
     true,

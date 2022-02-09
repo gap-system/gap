@@ -33,64 +33,62 @@
 
 /****************************************************************************
 **
-*V  ZeroFuncs[ <type> ] . . . . . . . . . . . . . . . . table of zero methods
+*V  ZeroSameMutFuncs[ <type> ] . . . . . . . . . . . .  table of zero methods
 */
-ArithMethod1 ZeroFuncs [LAST_REAL_TNUM+1];
+ArithMethod1 ZeroSameMutFuncs[LAST_REAL_TNUM + 1];
 
 
 /****************************************************************************
 **
-*F  ZeroObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
+*F  ZeroSameMutObject( <obj> ) . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj ZEROOp;
+static Obj ZeroSameMutabilityOp;
 
-static Obj ZeroObject(Obj obj)
-
+static Obj ZeroSameMutObject(Obj obj)
 {
-  Obj val;
-  val = DoOperation1Args( ZEROOp, obj );
-  RequireValue("ZEROOp", val);
-  return val;
+    Obj val;
+    val = DoOperation1Args(ZeroSameMutabilityOp, obj);
+    RequireValue("ZeroSameMutability", val);
+    return val;
 }
 
 
 /****************************************************************************
 **
-*F  VerboseZeroObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*F  VerboseZeroSameMutObject( <obj> ) . . . . . . . . .  call verbose methsel
 */
-static Obj VerboseZeroObject(Obj obj)
-
+static Obj VerboseZeroSameMutObject(Obj obj)
 {
-  Obj val;
-  val = DoVerboseOperation1Args( ZEROOp, obj );
-  RequireValue("ZEROOp", val);
-  return val;
+    Obj val;
+    val = DoVerboseOperation1Args(ZeroSameMutabilityOp, obj);
+    RequireValue("ZeroSameMutability", val);
+    return val;
 }
 
 
 /****************************************************************************
 **
-*F  InstallZeroObject( <verb> ) . . . . . . . . . . . .  install zero methods
+*F  InstallZeroSameMutObject( <verb> ) . . . . . . . . . install zero methods
 */
-static void InstallZeroObject ( Int verb )
+static void InstallZeroSameMutObject(Int verb)
 {
     UInt                t1;             /* type of left  operand           */
     ArithMethod1        func;           /* zero function                   */
 
-    func = ( verb ? VerboseZeroObject : ZeroObject );
+    func = (verb ? VerboseZeroSameMutObject : ZeroSameMutObject);
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
-        ZeroFuncs[t1] = func;
+        ZeroSameMutFuncs[t1] = func;
     }
 }
 
 
 /****************************************************************************
 **
-*F  FuncZERO( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'ZERO'
+*F  FuncZERO_SAMEMUT( <self>, <obj> ) . . . . . . . . . . call 'ZERO_SAMEMUT'
 */
-static Obj FuncZERO(Obj self, Obj obj)
+static Obj FuncZERO_SAMEMUT(Obj self, Obj obj)
 {
-    return ZERO(obj);
+    return ZERO_SAMEMUT(obj);
 }
 
 /****************************************************************************
@@ -102,7 +100,7 @@ ArithMethod1 ZeroMutFuncs [LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  ZeroMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . .  call methsel
+*F  ZeroMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . call methsel
 */
 static Obj ZeroOp;
 
@@ -118,7 +116,7 @@ static Obj ZeroMutObject(Obj obj)
 
 /****************************************************************************
 **
-*F  VerboseZeroMutObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*F  VerboseZeroMutObject( <obj> ) . . . . . . . . . . .  call verbose methsel
 */
 static Obj VerboseZeroMutObject(Obj obj)
 
@@ -1357,7 +1355,7 @@ static void InstallModObject ( Int verb )
     }
 }
 
-DEFINE_OP_WRAPPER1(ZeroFuncs);
+DEFINE_OP_WRAPPER1(ZeroSameMutFuncs);
 DEFINE_OP_WRAPPER1(ZeroMutFuncs);
 DEFINE_OP_WRAPPER1(AInvFuncs);
 DEFINE_OP_WRAPPER1(AInvMutFuncs);
@@ -1377,7 +1375,7 @@ DEFINE_OP_WRAPPER2(ModFuncs);
 
 static void InstallArithWrappers(void)
 {
-    INSTALL_OP_WRAPPER(ZeroFuncs);
+    INSTALL_OP_WRAPPER(ZeroSameMutFuncs);
     INSTALL_OP_WRAPPER(ZeroMutFuncs);
     INSTALL_OP_WRAPPER(AInvFuncs);
     INSTALL_OP_WRAPPER(AInvMutFuncs);
@@ -1428,8 +1426,9 @@ void ChangeArithDoOperations(Obj oper, Int verb)
     if ( oper == InvOp  )  { InstallInvObject(verb);  }
     if ( oper == OneOp  )  { InstallOneObject(verb);  }
     if ( oper == AInvOp )  { InstallAInvObject(verb); }
-    if ( oper == ZEROOp )  { InstallZeroObject(verb); }
-
+    if (oper == ZeroSameMutabilityOp) {
+        InstallZeroSameMutObject(verb);
+    }
     if (oper == InverseSameMutabilityOp) {
         InstallInvSameMutObject(verb);
     }
@@ -1463,7 +1462,7 @@ static StructGVarOper GVarOpers[] = {
     GVAR_OPER_2ARGS(POW, opL, opR, &PowOper),
     GVAR_OPER_2ARGS(COMM, opL, opR, &CommOper),
     GVAR_OPER_2ARGS(MOD, opL, opR, &ModOper),
-    GVAR_OPER_1ARGS(ZERO, op, &ZEROOp),
+    GVAR_OPER_1ARGS(ZERO_SAMEMUT, op, &ZeroSameMutabilityOp),
     GVAR_OPER_1ARGS(ZERO_MUT, op, &ZeroOp),
     GVAR_OPER_1ARGS(AINV, op, &AInvOp),
     GVAR_OPER_1ARGS(AINV_MUT, op, &AdditiveInverseOp),
@@ -1508,12 +1507,12 @@ static Int InitKernel (
 
     InstallArithWrappers();
 
-    /* make and install the 'ZERO' arithmetic operation                    */
+    /* make and install the 'ZERO_SAMEMUT' arithmetic operation            */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(ZeroFuncs[t1] == 0);
-        ZeroFuncs[t1] = ZeroObject;
+        assert(ZeroSameMutFuncs[t1] == 0);
+        ZeroSameMutFuncs[t1] = ZeroSameMutObject;
     }
-    InstallZeroObject(0);
+    InstallZeroSameMutObject(0);
 
     /* make and install the 'ZERO_MUT' arithmetic operation                */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {

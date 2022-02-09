@@ -286,13 +286,13 @@ gap> for m in binary do InstallMethod(m, [cat, cat], 2, ReturnNothing); od;
 
 #
 gap> 0*a;
-Error, ZEROOp: method should have returned a value
+Error, ZeroSameMutability: method should have returned a value
 gap> Zero(a);
 Error, Method for an attribute must return a value
 gap> ZeroMutable(a);
 Error, ZeroOp: method should have returned a value
 gap> ZeroSameMutability(a);
-Error, ZEROOp: method should have returned a value
+Error, ZeroSameMutability: method should have returned a value
 gap> -a;
 Error, AInvOp: method should have returned a value
 gap> AdditiveInverse(a);
@@ -348,7 +348,7 @@ gap> TraceMethods(meths);
 gap> 0*a;
 #I  *: zero integer * additive element with zero
 #I  ZeroSameMutability
-Error, ZEROOp: method should have returned a value
+Error, ZeroSameMutability: method should have returned a value
 gap> Zero(a);
 #I  ZeroImmutable
 Error, Method for an attribute must return a value
@@ -357,7 +357,7 @@ gap> ZeroMutable(a);
 Error, ZeroOp: method should have returned a value
 gap> ZeroSameMutability(a);
 #I  ZeroSameMutability
-Error, ZEROOp: method should have returned a value
+Error, ZeroSameMutability: method should have returned a value
 gap> -a;
 #I  AdditiveInverseSameMutability
 Error, AInvOp: method should have returned a value

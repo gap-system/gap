@@ -75,7 +75,8 @@ gap> testTrace({} -> Inverse([[1,0],[0,1]]));
 rec( AInv := rec( integer := 4 ), 
   Inv := rec( ("dense plain list") := 1, integer := 2 ), 
   Mod := rec( integer := rec( integer := 1 ) ), One := rec( integer := 1 ), 
-  Prod := rec( integer := rec( integer := 8 ) ), Zero := rec( integer := 1 ) )
+  Prod := rec( integer := rec( integer := 8 ) ), 
+  ZeroSameMut := rec( integer := 1 ) )
 gap> testTrace({} -> 55/2 mod 7);
 rec( Mod := rec( rational := rec( integer := 1 ) ), 
   Quo := rec( integer := rec( integer := 1 ) ) )
@@ -97,7 +98,7 @@ rec( One := rec( rational := 1 ),
 gap> testTrace({} -> OneMutable([[1,2],[3,4]]));
 rec( Mod := rec( integer := rec( integer := 1 ) ), 
   One := rec( ("dense plain list") := 1, integer := 1 ), 
-  Zero := rec( integer := 1 ) )
+  ZeroSameMut := rec( integer := 1 ) )
 gap> testTrace({} -> ZeroMutable(1/2));
 rec( Quo := rec( integer := rec( integer := 1 ) ), 
   ZeroMut := rec( rational := 1 ) )
