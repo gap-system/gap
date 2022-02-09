@@ -4268,9 +4268,9 @@ static Int InitKernel(StructInitInfo * module)
 
     /* install the 'ONE' function for transformations */
     OneFuncs[T_TRANS2] = OneTrans;
-    OneMutFuncs[T_TRANS2] = OneTrans;
+    OneSameMut[T_TRANS2] = OneTrans;
     OneFuncs[T_TRANS4] = OneTrans;
-    OneMutFuncs[T_TRANS4] = OneTrans;
+    OneSameMut[T_TRANS4] = OneTrans;
 
     return 0;
 }

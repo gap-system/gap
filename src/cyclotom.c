@@ -2120,9 +2120,9 @@ static Int InitKernel (
     AInvFuncs[ T_CYC ] = AInvCyc;
     AInvMutFuncs[ T_CYC ] = AInvCyc;
     OneFuncs [ T_CYC ] = OneCyc;
-    OneMutFuncs [ T_CYC ] = OneCyc;
+    OneSameMut[T_CYC] = OneCyc;
     InvFuncs [ T_CYC ] = InvCyc;
-    InvMutFuncs [ T_CYC ] = InvCyc;
+    InvSameMutFuncs[T_CYC] = InvCyc;
 
     /* install the arithmetic methods                                      */
     SumFuncs[  T_CYC    ][ T_CYC    ] = SumCyc;

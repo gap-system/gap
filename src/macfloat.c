@@ -635,7 +635,7 @@ static Int InitKernel (
     ZeroMutFuncs[ T_MACFLOAT ] = ZeroMacfloat;
     AInvMutFuncs[ T_MACFLOAT ] = AInvMacfloat;
     OneFuncs [ T_MACFLOAT ] = OneMacfloat;
-    OneMutFuncs [ T_MACFLOAT ] = OneMacfloat;
+    OneSameMut[T_MACFLOAT] = OneMacfloat;
     InvFuncs [ T_MACFLOAT ] = InvMacfloat;
 
     /* install binary arithmetic methods */

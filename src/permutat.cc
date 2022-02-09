@@ -2886,14 +2886,14 @@ static Int InitKernel (
     /* install the 'ONE' function for permutations                         */
     OneFuncs[ T_PERM2 ] = OnePerm;
     OneFuncs[ T_PERM4 ] = OnePerm;
-    OneMutFuncs[ T_PERM2 ] = OnePerm;
-    OneMutFuncs[ T_PERM4 ] = OnePerm;
+    OneSameMut[T_PERM2] = OnePerm;
+    OneSameMut[T_PERM4] = OnePerm;
 
     /* install the 'INV' function for permutations                         */
     InvFuncs[ T_PERM2 ] = InvPerm<UInt2>;
     InvFuncs[ T_PERM4 ] = InvPerm<UInt4>;
-    InvMutFuncs[ T_PERM2 ] = InvPerm<UInt2>;
-    InvMutFuncs[ T_PERM4 ] = InvPerm<UInt4>;
+    InvSameMutFuncs[T_PERM2] = InvPerm<UInt2>;
+    InvSameMutFuncs[T_PERM4] = InvPerm<UInt4>;
 
     return 0;
 }

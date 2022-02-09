@@ -1653,7 +1653,7 @@ DeclareOperationKernel( "OneMutable", [ IsMultiplicativeElementWithOne ],
 DeclareSynonym( "OneOp", OneMutable);
 
 DeclareOperationKernel( "OneSameMutability",
-    [ IsMultiplicativeElementWithOne ], ONE_MUT );
+    [ IsMultiplicativeElementWithOne ], ONE_SAMEMUT );
 DeclareSynonym( "OneSM", OneSameMutability);
 
 
@@ -1739,7 +1739,7 @@ DeclareOperationKernel( "InverseMutable",
 DeclareSynonym( "InverseOp", InverseMutable );
 
 DeclareOperationKernel( "InverseSameMutability",
-    [ IsMultiplicativeElementWithInverse ], INV_MUT );
+    [ IsMultiplicativeElementWithInverse ], INV_SAMEMUT );
 DeclareSynonym( "InverseSM", InverseSameMutability );
 
 

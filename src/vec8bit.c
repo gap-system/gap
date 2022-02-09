@@ -3742,8 +3742,9 @@ static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
 static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
 {
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
-        ErrorMayQuit("INVOp: matrix must be square, not %d by %d",
-                     LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
+        ErrorMayQuit(
+            "InverseSameMutability: matrix must be square, not %d by %d",
+            LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
     }
 
     return InverseMat8Bit(mat, 1);
