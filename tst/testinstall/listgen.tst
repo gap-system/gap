@@ -71,7 +71,7 @@ gap> SortParallel( [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ], l,
 gap> l;
 [ 10, 8, 7, 9, 6, 5, 2, 1, 4, 3 ]
 gap> l :=  [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ];;
-gap> SortBy(l,AINV);
+gap> SortBy(l,AdditiveInverseSameMutability);
 gap> l;
 [ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
 gap> l2 := [ 2, 3, 4, 1, 5, 10, 9, 7, 8, 6 ];;

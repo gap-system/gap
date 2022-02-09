@@ -289,7 +289,7 @@ InstallMethod( IsZero,
     [ IsNullMapMatrix ],
     x -> true);
 
-InstallMethod( ZERO,
+InstallMethod( ZeroSameMutability,
     "for null map matrix",
     [ IsNullMapMatrix ],
     null -> null );
@@ -301,7 +301,7 @@ InstallMethod( \+,
     return null;
 end );
 
-InstallMethod( AINV,
+InstallMethod( AdditiveInverseSameMutability,
     "for a null map matrix",
     [ IsNullMapMatrix ],
     null -> null );

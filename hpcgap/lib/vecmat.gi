@@ -1005,12 +1005,12 @@ function( mat )
     if 0 < new[1]   then
         if  IsMutable(mat![2]) then
             for i in [ 1 .. new[1] ]  do
-                zero := ZERO(mat![2]);
+                zero := ZeroSameMutability(mat![2]);
                 SetFilterObj(zero, IsLockedRepresentationVector);
                 Add( new, zero );
             od;
         else
-            zero := ZERO(mat![2]);
+            zero := ZeroSameMutability(mat![2]);
             SetFilterObj(zero, IsLockedRepresentationVector);
             for i in [ 1 .. new[1] ]  do
                 Add( new, zero );
