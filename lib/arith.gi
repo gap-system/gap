@@ -68,16 +68,16 @@ InstallMethod( NestingDepthM,
 ##
 #M  Zero( <elm> ) . . . . . . . . . . . . . . . .  for an add.-elm.-with-zero
 ##
-##  `ZeroOp' guarantees that its results are *new* objects,
+##  `ZeroMutable' guarantees that its results are *new* objects,
 ##  so we may call `MakeImmutable'.
 #T This should be installed for `IsAdditiveElementWithZero',
 #T but at least in the compatibility mode we need it also for records ...
 ##
 InstallOtherMethod( Zero,
-    "for any object (call `ZERO')",
+    "for any object (call `ZeroMutable')",
     [ IsObject ],
     function( elm )
-    elm:= ZERO_MUT( elm );
+    elm:= ZeroMutable( elm );
     MakeImmutable( elm );
     return elm;
     end );
@@ -189,16 +189,16 @@ InstallMethod( IsZero,
 ##
 #M  AdditiveInverse( <elm> )
 ##
-##  `AdditiveInverseOp' guarantees that its results are *new* objects,
+##  `AdditiveInverseMutable' guarantees that its results are *new* objects,
 ##  so we may call `MakeImmutable'.
 #T This should be installed for `IsAdditiveElementWithInverse',
 #T but at least in the compatibility mode we need it also for records ...
 ##
 InstallOtherMethod( AdditiveInverse,
-    "for any object (call `AINV')",
+    "for any object (call `AdditiveInverseMutable')",
     [ IsObject ],
     function( elm )
-    elm:= AINV_MUT( elm );
+    elm:= AdditiveInverseMutable( elm );
     MakeImmutable( elm );
     return elm;
     end );
@@ -513,9 +513,9 @@ InstallMethod( LieBracket,
 ##
 ##  `PROD_INT_OBJ' is a kernel function that first checks whether <int> is
 ##  equal to one of
-##  `0' (then `ZERO' is called),
+##  `0' (then `ZeroSameMutability' is called),
 ##  `1' (then a copy of <elm> is returned), or
-##  `-1' (then `AINV' is called).
+##  `-1' (then `AdditiveInverseSameMutability' is called).
 ##  Otherwise if <int> is negative then the product of the additive inverses
 ##  of <int> and <elm> is computed,
 ##  where the product with positive <int> is formed by repeated doubling.
