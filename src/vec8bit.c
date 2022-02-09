@@ -3689,7 +3689,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
                 row2 = ELM_PLIST(cmat, k);
                 byte = CONST_BYTES_VEC8BIT(row2)[off];
                 if (byte != 0 && (x = gettab[byte + 256 * pos]) != 0) {
-                    xn = AINV(ffefelt[x]);
+                    xn = AINV_SAMEMUT(ffefelt[x]);
                     AddVec8BitVec8BitMultInner(row2, row2, row, xn, i, len);
                     row2 = ELM_PLIST(inv, k + 1);
                     AddVec8BitVec8BitMultInner(row2, row2, row1, xn, 1, len);
@@ -4845,7 +4845,7 @@ static void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
             if (p == 2)
                 xn = x;
             else
-                xn = feltffe[VAL_FFE(AINV(ffefelt[x]))];
+                xn = feltffe[VAL_FFE(AINV_SAMEMUT(ffefelt[x]))];
             multab = SCALAR_FIELDINFO_8BIT(info) + 256 * xn;
             vrs = ELM_PLIST(vrshifted, 1 + i % elts);
             lrs = LEN_VEC8BIT(vrs);
@@ -5034,7 +5034,7 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
                 byte = CONST_BYTES_VEC8BIT(row)[(j - 1) / elts];
                 if (byte &&
                     zero != (x = gettab[byte + 256 * ((j - 1) % elts)])) {
-                    y = AINV(convtab1[x]);
+                    y = AINV_SAMEMUT(convtab1[x]);
                     AddVec8BitVec8BitMultInner(
                         row, row, ELM_PLIST(vectors, h), y, 1, ncols);
                     if (TransformationsNeeded)
@@ -5174,14 +5174,15 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
                     row2 = ELM_PLIST(mat, j);
                     if ((x2 = getcol[CONST_BYTES_VEC8BIT(row2)[byte]]))
                         AddVec8BitVec8BitMultInner(row2, row2, row,
-                                                   AINV(convtab[x2]), workcol,
-                                                   ncols);
+                                                   AINV_SAMEMUT(convtab[x2]),
+                                                   workcol, ncols);
                 }
             for (j = workrow + 1; j <= nrows; j++) {
                 row2 = ELM_PLIST(mat, j);
                 if ((x2 = getcol[CONST_BYTES_VEC8BIT(row2)[byte]]))
-                    AddVec8BitVec8BitMultInner(
-                        row2, row2, row, AINV(convtab[x2]), workcol, ncols);
+                    AddVec8BitVec8BitMultInner(row2, row2, row,
+                                               AINV_SAMEMUT(convtab[x2]),
+                                               workcol, ncols);
             }
         }
         if (TakeInterrupt()) {
@@ -5193,7 +5194,7 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
         if (rank < nrows)
             deter = ZERO_SAMEMUT(deter);
         else if (sign == -1)
-            deter = AINV(deter);
+            deter = AINV_SAMEMUT(deter);
         *deterp = deter;
     }
     return rank;

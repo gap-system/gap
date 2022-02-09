@@ -294,13 +294,13 @@ Error, ZeroOp: method should have returned a value
 gap> ZeroSameMutability(a);
 Error, ZeroSameMutability: method should have returned a value
 gap> -a;
-Error, AInvOp: method should have returned a value
+Error, AdditiveInverseSameMutability: method should have returned a value
 gap> AdditiveInverse(a);
 Error, Method for an attribute must return a value
 gap> AdditiveInverseMutable(a);
 Error, AdditiveInverseOp: method should have returned a value
 gap> AdditiveInverseSameMutability(a);
-Error, AInvOp: method should have returned a value
+Error, AdditiveInverseSameMutability: method should have returned a value
 gap> a^0;
 Error, OneSameMutability: method should have returned a value
 gap> One(a);
@@ -360,7 +360,7 @@ gap> ZeroSameMutability(a);
 Error, ZeroSameMutability: method should have returned a value
 gap> -a;
 #I  AdditiveInverseSameMutability
-Error, AInvOp: method should have returned a value
+Error, AdditiveInverseSameMutability: method should have returned a value
 gap> AdditiveInverse(a);
 #I  AdditiveInverseImmutable
 Error, Method for an attribute must return a value
@@ -369,7 +369,7 @@ gap> AdditiveInverseMutable(a);
 Error, AdditiveInverseOp: method should have returned a value
 gap> AdditiveInverseSameMutability(a);
 #I  AdditiveInverseSameMutability
-Error, AInvOp: method should have returned a value
+Error, AdditiveInverseSameMutability: method should have returned a value
 gap> a^0;
 #I  ^: for mult. element-with-one, and zero
 #I  OneSameMutability

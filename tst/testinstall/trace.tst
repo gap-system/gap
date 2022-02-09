@@ -58,7 +58,7 @@ rec( Sum := rec( ("dense plain list") := rec( ("dense plain list") := 1 ),
 gap> testTrace({} -> 2^(3,4,5));
 rec( Pow := rec( integer := rec( ("permutation (small)") := 1 ) ) )
 gap> testTrace({} -> [4,3] - [2,3]);
-rec( AInv := rec( ("dense plain list") := 1, integer := 2 ), 
+rec( AInvSameMut := rec( ("dense plain list") := 1, integer := 2 ), 
   Diff := rec( ("dense plain list") := rec( ("dense plain list") := 1 ) ), 
   Sum := rec( ("dense plain list") := rec( ("dense plain list") := 1 ), 
       integer := rec( integer := 2 ) ) )
@@ -72,7 +72,7 @@ rec( AInvMut := rec( rational := 1 ),
 gap> testTrace({} -> AdditiveInverse([2,3,4]));
 rec( AInvMut := rec( integer := 3, ("plain list of cyclotomics") := 1 ) )
 gap> testTrace({} -> Inverse([[1,0],[0,1]]));
-rec( AInv := rec( integer := 4 ), 
+rec( AInvSameMut := rec( integer := 4 ), 
   Inv := rec( ("dense plain list") := 1, integer := 2 ), 
   Mod := rec( integer := rec( integer := 1 ) ), One := rec( integer := 1 ), 
   Prod := rec( integer := rec( integer := 8 ) ), 

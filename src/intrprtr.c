@@ -1643,7 +1643,7 @@ void IntrAInv(IntrState * intr)
     opL = PopObj(intr);
 
     /* compute the additive inverse                                        */
-    val = AINV( opL );
+    val = AINV_SAMEMUT(opL);
 
     /* push the result                                                     */
     PushObj(intr, val);

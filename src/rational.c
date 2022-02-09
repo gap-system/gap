@@ -854,7 +854,7 @@ static Int InitKernel (
 
     /* install the arithmetic operations                                   */
     ZeroSameMutFuncs[T_RAT] = ZeroRat;
-    AInvFuncs[ T_RAT    ] = AInvRat;
+    AInvSameMutFuncs[T_RAT] = AInvRat;
     AInvMutFuncs[ T_RAT    ] = AInvRat;
     OneFuncs [ T_RAT    ] = OneRat;
     OneSameMut[T_RAT] = OneRat;

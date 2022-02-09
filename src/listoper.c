@@ -458,9 +458,9 @@ static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
 **
 **  'AInvList' is the extended dispatcher for  the additive inverse involving
 **  lists.  That is, whenever  the additive inverse for  lists is called  and
-**  'AInvFuncs' does not   point to a   special function, then  'AInvList' is
-**  called.  'AInvList' determines the extended  type of the operand and then
-**  dispatches through 'AInvFuncs' again.
+**  'AInvSameMutFuncs' does not point to a special function, then 'AInvList'
+**  is called.'AInvList' determines the extended type of the operand and then
+**  dispatches through 'AInvSameMutFuncs' again.
 **
 **  'AInvListDefault' is a generic function for the additive inverse.
 */
@@ -540,7 +540,7 @@ static Obj AInvListDefault(Obj list)
     for ( i = 1; i <= len; i++ ) {
         elm = ELM0_LIST( list, i );
         if (elm) {
-          elm = AINV( elm );
+          elm = AINV_SAMEMUT( elm );
           SET_ELM_PLIST( res, i, elm );
           CHANGED_BAG( res );
         }
@@ -745,7 +745,7 @@ Obj             DiffListList (
             if (mutD)
               elmD = AINV_MUT(elmR);
             else
-              elmD = AINV(elmR);
+              elmD = AINV_SAMEMUT(elmR);
           }
         else
           elmD = 0;
@@ -1189,7 +1189,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
             if (mut < 2)
               elm = AINV_MUT( ELM_PLIST( row2, k ) );
             else
-              elm = AINV( ELM_PLIST( row2, k ) );
+              elm = AINV_SAMEMUT( ELM_PLIST( row2, k ) );
             if ( i != k-len && ! EQ(elm,zero) ) {
                 for ( l = 1; l <= 2*len; l++ ) {
                     elm2 = PROD( elm, ELM_PLIST( row, l ) );
@@ -1635,7 +1635,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
           y = ELMW_LIST(row3,i);
           if (!EQ(y,zero))
             {
-              yi = AINV(y);
+              yi = AINV_SAMEMUT(y);
               CALL_3ARGS(AddRowVectorOp, row3, row, yi);
               CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
             }
@@ -1646,7 +1646,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
           y = ELMW_LIST(row3,i);
           if (!EQ(y,zero))
             {
-              yi = AINV(y);
+              yi = AINV_SAMEMUT(y);
               CALL_3ARGS(AddRowVectorOp, row3, row, yi);
               CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
             }
@@ -2126,8 +2126,8 @@ static Int InitKernel (
     }
 
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1 ++ ) {
-            AInvFuncs[t1] = AInvListDefault;
-            AInvMutFuncs[t1] = AInvMutListDefault;
+        AInvSameMutFuncs[t1] = AInvListDefault;
+        AInvMutFuncs[t1] = AInvMutListDefault;
     }
 
     /* No kernel installations for One or Inverse any more */

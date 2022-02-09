@@ -1556,7 +1556,7 @@ static Int InitKernel (
     /* install the arithmetic methods                                      */
     ZeroSameMutFuncs[T_FFE] = ZeroFFE;
     ZeroMutFuncs[ T_FFE ] = ZeroFFE;
-    AInvFuncs[ T_FFE ] = AInvFFE;
+    AInvSameMutFuncs[T_FFE] = AInvFFE;
     AInvMutFuncs[ T_FFE ] = AInvFFE;
     OneFuncs [ T_FFE ] = OneFFE;
     OneSameMut[T_FFE] = OneFFE;

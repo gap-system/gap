@@ -997,7 +997,7 @@ static Obj AInvCyc(Obj op)
     for ( i = 1; i < len; i++ ) {
         if ( ! IS_INTOBJ( cfs[i] ) || cfs[i] == INTOBJ_MIN ) {
             CHANGED_BAG( res );
-            prd = AINV( cfs[i] );
+            prd = AINV_SAMEMUT(cfs[i]);
             cfs = CONST_COEFS_CYC(op);
             exs = CONST_EXPOS_CYC(op,len);
             cfp = COEFS_CYC(res);
@@ -2117,7 +2117,7 @@ static Int InitKernel (
     /* install the unary arithmetic methods                                */
     ZeroSameMutFuncs[T_CYC] = ZeroCyc;
     ZeroMutFuncs[ T_CYC ] = ZeroCyc;
-    AInvFuncs[ T_CYC ] = AInvCyc;
+    AInvSameMutFuncs[T_CYC] = AInvCyc;
     AInvMutFuncs[ T_CYC ] = AInvCyc;
     OneFuncs [ T_CYC ] = OneCyc;
     OneSameMut[T_CYC] = OneCyc;
