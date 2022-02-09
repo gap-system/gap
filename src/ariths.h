@@ -180,22 +180,22 @@ EXPORT_INLINE Obj ONE(Obj op)
 
 /****************************************************************************
 **
-*V  OneMutFuncs[<type>]  . . . . . .table of mutability preservingone methods
+*V  OneSameMut[<type>] . . . . . . table of mutability preserving one methods
 */
-extern ArithMethod1 OneMutFuncs[LAST_REAL_TNUM + 1];
+extern ArithMethod1 OneSameMut[LAST_REAL_TNUM + 1];
 
 
 /****************************************************************************
 **
-*F  ONE_MUT( <op> )    . . . . . . . .  one of an object retaining mutability
+*F  ONE_SAMEMUT( <op> ) . . . . . . . . one of an object retaining mutability
 **
-**  'ONE_MUT' returns the one of the object <op> with the same
+**  'ONE_SAMEMUT' returns the one of the object <op> with the same
 **  mutability level as <op>.
 */
-EXPORT_INLINE Obj ONE_MUT(Obj op)
+EXPORT_INLINE Obj ONE_SAMEMUT(Obj op)
 {
     UInt tnum = TNUM_OBJ(op);
-    return (*OneMutFuncs[tnum])(op);
+    return (*OneSameMut[tnum])(op);
 }
 
 
@@ -221,21 +221,22 @@ EXPORT_INLINE Obj INV(Obj op)
 
 /****************************************************************************
 **
-*V  InvMutFuncs[<type>]  .. .table of mutability preserving inverse functions
+*V  InvSameMutFuncs[<type>]  table of mutability preserving inverse functions
 */
-extern ArithMethod1 InvMutFuncs[LAST_REAL_TNUM + 1];
+extern ArithMethod1 InvSameMutFuncs[LAST_REAL_TNUM + 1];
 
 
 /****************************************************************************
 **
-*F  INV_MUT( <op> ) . . . . . . . . inverse of an object retaining mutability
+*F  INV_SAMEMUT( <op> ) . . . . . . inverse of an object retaining mutability
 **
-**  'INV_MUT' returns the multiplicative inverse of the object <op>.
+**  'INV_SAMEMUT' returns the multiplicative inverse of the object <op> with
+**  the same mutability level as <op>.
 */
-EXPORT_INLINE Obj INV_MUT(Obj op)
+EXPORT_INLINE Obj INV_SAMEMUT(Obj op)
 {
     UInt tnum = TNUM_OBJ(op);
-    return (*InvMutFuncs[tnum])(op);
+    return (*InvSameMutFuncs[tnum])(op);
 }
 
 

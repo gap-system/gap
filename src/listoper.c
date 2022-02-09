@@ -1004,7 +1004,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
     switch (mut) {
     case 0:
       zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-      one  = ONE_MUT( zero );
+      one = ONE_SAMEMUT(zero);
       CheckedMakeImmutable(zero);
       CheckedMakeImmutable(one);
       ctype = rtype = T_PLIST+IMMUTABLE;
@@ -1012,7 +1012,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
       
     case 1:
       zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-      one  = ONE_MUT( zero );
+      one = ONE_SAMEMUT(zero);
       if (IS_MUTABLE_OBJ(mat))
         {
           ctype = T_PLIST;
@@ -1107,7 +1107,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
       {
       case 0:
         zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-        one  = ONE_MUT( zero );
+        one = ONE_SAMEMUT(zero);
         ctype = rtype = T_PLIST+IMMUTABLE;
         CheckedMakeImmutable(zero);
         CheckedMakeImmutable(one);
@@ -1115,7 +1115,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         
       case 1:
         zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
-        one  = ONE_MUT( zero );
+        one = ONE_SAMEMUT(zero);
         if (IS_MUTABLE_OBJ(mat))
           {
             ctype = T_PLIST;
@@ -1174,7 +1174,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         SET_ELM_PLIST( res, i, ELM_PLIST( res, k-len ) );
         SET_ELM_PLIST( res, k-len, row );
         if (mut < 2)
-          elm2 = INV_MUT( ELM_PLIST( row, k ) );
+          elm2 = INV_SAMEMUT( ELM_PLIST( row, k ) );
         else
           elm2 = INV( ELM_PLIST( row, k ) );
         for ( l = 1; l <= 2*len; l++ ) {

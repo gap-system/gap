@@ -857,16 +857,16 @@ static Int InitKernel (
     AInvFuncs[ T_RAT    ] = AInvRat;
     AInvMutFuncs[ T_RAT    ] = AInvRat;
     OneFuncs [ T_RAT    ] = OneRat;
-    OneMutFuncs [ T_RAT    ] = OneRat;
+    OneSameMut[T_RAT] = OneRat;
     InvFuncs [ T_INT    ] = InvRat;
     InvFuncs [ T_INTPOS ] = InvRat;
     InvFuncs [ T_INTNEG ] = InvRat;
     InvFuncs [ T_RAT    ] = InvRat;
-    InvMutFuncs [ T_INT    ] = InvRat;
-    InvMutFuncs [ T_INTPOS ] = InvRat;
-    InvMutFuncs [ T_INTNEG ] = InvRat;
-    InvMutFuncs [ T_RAT    ] = InvRat;
-    
+    InvSameMutFuncs[T_INT] = InvRat;
+    InvSameMutFuncs[T_INTPOS] = InvRat;
+    InvSameMutFuncs[T_INTNEG] = InvRat;
+    InvSameMutFuncs[T_RAT] = InvRat;
+
     SumFuncs [ T_RAT    ][ T_RAT    ] = SumRat;
     SumFuncs [ T_INT    ][ T_RAT    ] = SumRat;
     SumFuncs [ T_INTPOS ][ T_RAT    ] = SumRat;

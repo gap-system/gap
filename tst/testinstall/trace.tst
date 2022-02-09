@@ -84,7 +84,7 @@ rec(
   Comm := 
     rec( ("transformation (small)") := rec( ("transformation (small)") := 1 ) 
      ), Inv := rec( ("transformation (small)") := 1 ), 
-  InvMut := rec( ("transformation (small)") := 1 ), 
+  InvSameMut := rec( ("transformation (small)") := 1 ), 
   LQuo := 
     rec( ("transformation (small)") := rec( ("transformation (small)") := 1 ) 
      ), 
@@ -104,7 +104,7 @@ rec( Quo := rec( integer := rec( integer := 1 ) ),
 gap> testTrace({} -> ZeroMutable([[1,2],[3,4]]));
 rec( ZeroMut := rec( ("dense plain list") := 3, integer := 4 ) )
 gap> testTrace({} -> LeftQuotient(4,2));
-rec( InvMut := rec( integer := 1 ), 
+rec( InvSameMut := rec( integer := 1 ), 
   LQuo := rec( integer := rec( integer := 1 ) ), 
   Prod := rec( rational := rec( integer := 1 ) ) )
 gap> STOP_TEST("trace.tst", 1);

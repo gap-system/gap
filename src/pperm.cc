@@ -3930,14 +3930,14 @@ static Int InitKernel(StructInitInfo * module)
     /* install the one function for partial perms */
     OneFuncs[T_PPERM2] = OnePPerm;
     OneFuncs[T_PPERM4] = OnePPerm;
-    OneMutFuncs[T_PPERM2] = OnePPerm;
-    OneMutFuncs[T_PPERM4] = OnePPerm;
+    OneSameMut[T_PPERM2] = OnePPerm;
+    OneSameMut[T_PPERM4] = OnePPerm;
 
     /* install the inverse functions for partial perms */
     InvFuncs[T_PPERM2] = InvPPerm2;
     InvFuncs[T_PPERM4] = InvPPerm4;
-    InvMutFuncs[T_PPERM2] = InvPPerm2;
-    InvMutFuncs[T_PPERM4] = InvPPerm4;
+    InvSameMutFuncs[T_PPERM2] = InvPPerm2;
+    InvSameMutFuncs[T_PPERM4] = InvPPerm4;
 
     return 0;
 }

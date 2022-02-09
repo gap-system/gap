@@ -302,21 +302,21 @@ Error, AdditiveInverseOp: method should have returned a value
 gap> AdditiveInverseSameMutability(a);
 Error, AInvOp: method should have returned a value
 gap> a^0;
-Error, ONEOp: method should have returned a value
+Error, OneSameMutability: method should have returned a value
 gap> One(a);
 Error, Method for an attribute must return a value
 gap> OneMutable(a);
 Error, OneOp: method should have returned a value
 gap> OneSameMutability(a);
-Error, ONEOp: method should have returned a value
+Error, OneSameMutability: method should have returned a value
 gap> a^-1;
-Error, INVOp: method should have returned a value
+Error, InverseSameMutability: method should have returned a value
 gap> Inverse(a);
 Error, Method for an attribute must return a value
 gap> InverseMutable(a);
 Error, InvOp: method should have returned a value
 gap> InverseSameMutability(a);
-Error, INVOp: method should have returned a value
+Error, InverseSameMutability: method should have returned a value
 gap> a = b;
 false
 gap> a < b;
@@ -373,7 +373,7 @@ Error, AInvOp: method should have returned a value
 gap> a^0;
 #I  ^: for mult. element-with-one, and zero
 #I  OneSameMutability
-Error, ONEOp: method should have returned a value
+Error, OneSameMutability: method should have returned a value
 gap> One(a);
 #I  OneImmutable
 Error, Method for an attribute must return a value
@@ -382,11 +382,11 @@ gap> OneMutable(a);
 Error, OneOp: method should have returned a value
 gap> OneSameMutability(a);
 #I  OneSameMutability
-Error, ONEOp: method should have returned a value
+Error, OneSameMutability: method should have returned a value
 gap> a^-1;
 #I  ^: for mult. element-with-inverse, and negative integer
 #I  InverseSameMutability
-Error, INVOp: method should have returned a value
+Error, InverseSameMutability: method should have returned a value
 gap> Inverse(a);
 #I  InverseImmutable
 Error, Method for an attribute must return a value
@@ -395,7 +395,7 @@ gap> InverseMutable(a);
 Error, InvOp: method should have returned a value
 gap> InverseSameMutability(a);
 #I  InverseSameMutability
-Error, INVOp: method should have returned a value
+Error, InverseSameMutability: method should have returned a value
 gap> a = b;
 #I  =
 false

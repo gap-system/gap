@@ -1648,7 +1648,7 @@ static Obj PowObjInt(Obj op, Obj n)
 
   /* if the integer is zero, return the neutral element of the operand   */
   if ( n == INTOBJ_INT(0) ) {
-    return ONE_MUT( op );
+    return ONE_SAMEMUT( op );
   }
   
   /* if the integer is one, return a copy of the operand                 */
@@ -1658,12 +1658,12 @@ static Obj PowObjInt(Obj op, Obj n)
   
   /* if the integer is minus one, return the inverse of the operand      */
   else if ( n == INTOBJ_INT(-1) ) {
-    res = INV_MUT( op );
+    res = INV_SAMEMUT( op );
   }
   
   /* if the integer is negative, invert the operand and the integer      */
   else if ( IS_NEG_INT(n) ) {
-    res = INV_MUT( op );
+    res = INV_SAMEMUT( op );
     if ( res == Fail ) {
       ErrorMayQuit("Operations: <obj> must have an inverse", 0, 0);
     }
@@ -2865,7 +2865,7 @@ static Int InitKernel ( StructInitInfo * module )
     AInvFuncs[ t1 ] = AInvInt;
     AInvMutFuncs[ t1 ] = AInvInt;
     OneFuncs [ t1 ] = OneInt;
-    OneMutFuncs [ t1 ] = OneInt;
+    OneSameMut[t1] = OneInt;
   }
 
     /* install the default power methods                                   */
