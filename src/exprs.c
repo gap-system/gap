@@ -496,7 +496,7 @@ static Obj EvalSum(Expr expr)
 **  value, i.e., the  additive inverse of  the operand.  'EvalAInv' is called
 **  from 'EVAL_EXPR' to evaluate expressions of type 'EXPR_AINV'.
 **
-**  'EvalAInv' evaluates the operand and then calls the 'AINV' macro.
+**  'EvalAInv' evaluates the operand and then calls the 'AINV_SAMEMUT' macro.
 */
 static Obj EvalAInv(Expr expr)
 {
@@ -510,7 +510,7 @@ static Obj EvalAInv(Expr expr)
 
     /* compute the additive inverse                                        */
     SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
-    val = AINV( opL );
+    val = AINV_SAMEMUT(opL);
 
     /* return the value                                                    */
     return val;

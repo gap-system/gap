@@ -335,7 +335,7 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
         for (; i <= lenR; i++) {
             elmR = ptrR[i];
             if (! IS_INTOBJ(elmR) || ! DIFF_INTOBJS(elmD, INTOBJ_INT(0), elmR)) {
-                elmD = AINV(elmR);
+                elmD = AINV_SAMEMUT(elmR);
                 ptrR = CONST_ADDR_OBJ(vecR);
                 ptrD = ADDR_OBJ(vecD);
                 ptrD[i] = elmD;

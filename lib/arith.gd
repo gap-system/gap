@@ -1540,7 +1540,7 @@ DeclareOperationKernel( "AdditiveInverseMutable",
 DeclareSynonym( "AdditiveInverseOp", AdditiveInverseMutable);
 
 DeclareOperationKernel( "AdditiveInverseSameMutability", 
-    [ IsAdditiveElementWithInverse ], AINV );
+    [ IsAdditiveElementWithInverse ], AINV_SAMEMUT );
 DeclareSynonym( "AdditiveInverseSM", AdditiveInverseSameMutability);
 
 

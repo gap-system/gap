@@ -1509,16 +1509,16 @@ static Obj ProdIntObj ( Obj n, Obj op )
   
   /* if the integer is minus one, return the inverse of the operand        */
   else if ( n == INTOBJ_INT(-1) ) {
-    res = AINV( op );
+    res = AINV_SAMEMUT( op );
   }
   
   /* if the integer is negative, invert the operand and the integer        */
   else if ( IS_NEG_INT(n) ) {
-    res = AINV( op );
+    res = AINV_SAMEMUT( op );
     if ( res == Fail ) {
       ErrorMayQuit("Operations: <obj> must have an additive inverse", 0, 0);
     }
-    res = PROD( AINV( n ), res );
+    res = PROD(AINV_SAMEMUT(n), res);
   }
 
   /* if the integer is small, compute the product by repeated doubling     */
@@ -1667,7 +1667,7 @@ static Obj PowObjInt(Obj op, Obj n)
     if ( res == Fail ) {
       ErrorMayQuit("Operations: <obj> must have an inverse", 0, 0);
     }
-    res = POW( res, AINV( n ) );
+    res = POW(res, AINV_SAMEMUT(n));
   }
   
   /* if the integer is small, compute the power by repeated squaring     */
@@ -2862,7 +2862,7 @@ static Int InitKernel ( StructInitInfo * module )
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     ZeroSameMutFuncs[ t1 ] = ZeroInt;
     ZeroMutFuncs[ t1 ] = ZeroInt;
-    AInvFuncs[ t1 ] = AInvInt;
+    AInvSameMutFuncs[t1] = AInvInt;
     AInvMutFuncs[ t1 ] = AInvInt;
     OneFuncs [ t1 ] = OneInt;
     OneSameMut[t1] = OneInt;

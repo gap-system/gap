@@ -156,11 +156,12 @@ static Obj FuncZERO_MUT(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*V  AInvFuncs[ <type> ] . . . . . . . . . . table of additive inverse methods
-*V  AInvMutFuncs[ <type> ] . .  . . . . . . table of additive inverse methods
+*V  AInvSameMutFuncs[ <type> ] . . . . . .  table of additive inverse methods
+**                                          which preserve mutability
+*V  AInvMutFuncs[ <type> ] . . . . . . . .  table of additive inverse methods
 **                                          which return mutable results
 */
-ArithMethod1 AInvFuncs [LAST_REAL_TNUM+1];
+ArithMethod1 AInvSameMutFuncs[LAST_REAL_TNUM + 1];
 ArithMethod1 AInvMutFuncs[ LAST_REAL_TNUM + 1];
 
 
@@ -168,58 +169,58 @@ ArithMethod1 AInvMutFuncs[ LAST_REAL_TNUM + 1];
 **
 *F  AInvObj( <obj> )  . . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj AInvOp;
+static Obj AdditiveInverseSameMutabilityOp;
 
-static Obj AInvObject(Obj obj)
+static Obj AInvSameMutObject(Obj obj)
 {
-  Obj val;
-  val = DoOperation1Args( AInvOp, obj );
-  RequireValue("AInvOp", val);
-  return val;
+    Obj val;
+    val = DoOperation1Args(AdditiveInverseSameMutabilityOp, obj);
+    RequireValue("AdditiveInverseSameMutability", val);
+    return val;
 }
 
 
 /****************************************************************************
 **
-*F  VerboseAInvObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*F  VerboseAInvSameMutObject( <obj> ) . . . . . . . . .  call verbose methsel
 */
-static Obj VerboseAInvObject(Obj obj)
+static Obj VerboseAInvSameMutObject(Obj obj)
 {
-  Obj val;
-  val = DoVerboseOperation1Args( AInvOp, obj );
-  RequireValue("AInvOp", val);
-  return val;
+    Obj val;
+    val = DoVerboseOperation1Args(AdditiveInverseSameMutabilityOp, obj);
+    RequireValue("AdditiveInverseSameMutability", val);
+    return val;
 }
 
 
 /****************************************************************************
 **
-*F  InstallAInvObject( <verb> ) . . . . . .  install additive inverse methods
+*F  InstallAInvSameMutObject( <verb> ) . . . install additive inverse methods
 */
-static void InstallAInvObject(Int verb)
+static void InstallAInvSameMutObject(Int verb)
 {
     UInt                t1;             /* type of left  operand           */
     ArithMethod1        func;           /* ainv function                   */
 
-    func = ( verb ? VerboseAInvObject : AInvObject );
+    func = (verb ? VerboseAInvSameMutObject : AInvSameMutObject);
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
-        AInvFuncs[t1] = func;
+        AInvSameMutFuncs[t1] = func;
     }
 }
 
 
 /****************************************************************************
 **
-*F  FuncAINV( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'AINV'
+*F  FuncAINV_SAMEMUT( <self>, <obj> ) . . . . . . . . . .  call 'AINV_SAMEMUT'
 */
-static Obj FuncAINV(Obj self, Obj obj)
+static Obj FuncAINV_SAMEMUT(Obj self, Obj obj)
 {
-    return AINV(obj);
+    return AINV_SAMEMUT(obj);
 }
 
 /****************************************************************************
 **
-*F  AInvMutObject( <obj> )  . .. . . . . . . . . . . . . . . . .  call methsel
+*F  AInvMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . call methsel
 */
 static Obj AdditiveInverseOp;
 
@@ -234,7 +235,7 @@ static Obj AInvMutObject(Obj obj)
 
 /****************************************************************************
 **
-*F  VerboseAInvMutObject( <obj> )  . . . . . . . . . . . .  call verbose methsel
+*F  VerboseAInvMutObject( <obj> )  . . . . . . . . . . . call verbose methsel
 */
 static Obj VerboseAInvMutObject(Obj obj)
 {
@@ -263,7 +264,7 @@ static void InstallAInvMutObject(Int verb)
 
 /****************************************************************************
 **
-*F  FuncAINV_MUT( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'AINV'
+*F  FuncAINV_MUT( <self>, <obj> ) . . . . . . . . . . . . . . call 'AINV_MUT'
 */
 static Obj FuncAINV_MUT(Obj self, Obj obj)
 {
@@ -805,13 +806,13 @@ ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 
 /****************************************************************************
 **
-*F  DiffDefault( <opL>, <opR> ) . . . . . . . . . . . . call 'SUM' and 'AINV'
+*F  DiffDefault( <opL>, <opR> ) . . . . . . . . call 'SUM' and 'AINV_SAMEMUT'
 */
 static Obj DiffDefault(Obj opL, Obj opR)
 {
     Obj                 tmp;
 
-    tmp = AINV( opR );
+    tmp = AINV_SAMEMUT(opR);
     return SUM( opL, tmp );
 }
 
@@ -1357,7 +1358,7 @@ static void InstallModObject ( Int verb )
 
 DEFINE_OP_WRAPPER1(ZeroSameMutFuncs);
 DEFINE_OP_WRAPPER1(ZeroMutFuncs);
-DEFINE_OP_WRAPPER1(AInvFuncs);
+DEFINE_OP_WRAPPER1(AInvSameMutFuncs);
 DEFINE_OP_WRAPPER1(AInvMutFuncs);
 DEFINE_OP_WRAPPER1(OneFuncs);
 DEFINE_OP_WRAPPER1(OneSameMut);
@@ -1377,7 +1378,7 @@ static void InstallArithWrappers(void)
 {
     INSTALL_OP_WRAPPER(ZeroSameMutFuncs);
     INSTALL_OP_WRAPPER(ZeroMutFuncs);
-    INSTALL_OP_WRAPPER(AInvFuncs);
+    INSTALL_OP_WRAPPER(AInvSameMutFuncs);
     INSTALL_OP_WRAPPER(AInvMutFuncs);
     INSTALL_OP_WRAPPER(OneFuncs);
     INSTALL_OP_WRAPPER(InvFuncs);
@@ -1425,7 +1426,9 @@ void ChangeArithDoOperations(Obj oper, Int verb)
 
     if ( oper == InvOp  )  { InstallInvObject(verb);  }
     if ( oper == OneOp  )  { InstallOneObject(verb);  }
-    if ( oper == AInvOp )  { InstallAInvObject(verb); }
+    if (oper == AdditiveInverseSameMutabilityOp) {
+        InstallAInvSameMutObject(verb);
+    }
     if (oper == ZeroSameMutabilityOp) {
         InstallZeroSameMutObject(verb);
     }
@@ -1464,7 +1467,7 @@ static StructGVarOper GVarOpers[] = {
     GVAR_OPER_2ARGS(MOD, opL, opR, &ModOper),
     GVAR_OPER_1ARGS(ZERO_SAMEMUT, op, &ZeroSameMutabilityOp),
     GVAR_OPER_1ARGS(ZERO_MUT, op, &ZeroOp),
-    GVAR_OPER_1ARGS(AINV, op, &AInvOp),
+    GVAR_OPER_1ARGS(AINV_SAMEMUT, op, &AdditiveInverseSameMutabilityOp),
     GVAR_OPER_1ARGS(AINV_MUT, op, &AdditiveInverseOp),
     GVAR_OPER_1ARGS(ONE, op, &OneOp),
     GVAR_OPER_1ARGS(ONE_SAMEMUT, op, &OneSameMutabilityOp),
@@ -1521,12 +1524,12 @@ static Int InitKernel (
     }
     InstallZeroMutObject(0);
 
-    /* make and install the 'AINV' arithmetic operation                    */
+    /* make and install the 'AINV_SAMEMUT' arithmetic operation            */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
-        assert(AInvFuncs[t1] == 0);
-        AInvFuncs[t1] = AInvObject;
+        assert(AInvSameMutFuncs[t1] == 0);
+        AInvSameMutFuncs[t1] = AInvSameMutObject;
     }
-    InstallAInvObject(0);
+    InstallAInvSameMutObject(0);
 
     /* make and install the 'AINV_MUT' arithmetic operation                */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {

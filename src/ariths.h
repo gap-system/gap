@@ -96,21 +96,22 @@ EXPORT_INLINE Obj ZERO_MUT(Obj op)
 
 /****************************************************************************
 **
-*V  AInvFuncs[<type>] . . . . . . . . . . . table of additive inverse methods
+*V  AInvSameMutFuncs[<type>] . . . . . . .  table of additive inverse methods
 */
-extern ArithMethod1 AInvFuncs[LAST_REAL_TNUM + 1];
+extern ArithMethod1 AInvSameMutFuncs[LAST_REAL_TNUM + 1];
 
 
 /****************************************************************************
 **
-*F  AINV( <op> )  . . . . . . . . . . . . . . . additive inverse of an object
+*F  AINV_SAMEMUT( <op> ) . . . . . . . . . . . . additive inverse of an object
 **
-**  'AINV' returns the additive inverse of the object <op>.
+**  'AINV_SAMEMUT' returns the additive inverse of the object <op> with the
+**  same mutability level as <op>
 */
-EXPORT_INLINE Obj AINV(Obj op)
+EXPORT_INLINE Obj AINV_SAMEMUT(Obj op)
 {
     UInt tnum = TNUM_OBJ(op);
-    return (*AInvFuncs[tnum])(op);
+    return (*AInvSameMutFuncs[tnum])(op);
 }
 
 
