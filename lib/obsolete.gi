@@ -1045,10 +1045,37 @@ function(G)
 end);
 
 
-
 #############################################################################
 ##
 #F  TmpNameAllArchs( )
 ##
 ##  Still used in guava (10/2019)
 DeclareObsoleteSynonym( "TmpNameAllArchs", "TmpName" );
+
+#############################################################################
+##
+#F  ZERO
+##
+##  Still used in Modules (02/2022)
+BindGlobal( "ZERO", ZeroSameMutability );
+
+#############################################################################
+##
+#F  AINV
+##
+##  Still used in corelg, float, fr, liering, qpa, quagroup (02/2022)
+BindGlobal( "AINV", AdditiveInverseSameMutability );
+
+#############################################################################
+##
+#F  ONE_MUT
+##
+##  Not used in any redistributed package (02/2022)
+BindGlobal( "ONE_MUT", OneSameMutability );
+
+#############################################################################
+##
+#F  INV_MUT
+##
+##  Still used in float (02/2022)
+BindGlobal( "INV_MUT", InverseSameMutability );
