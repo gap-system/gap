@@ -445,7 +445,7 @@ fi;
 DeclareUserPreference( rec(
   name:= ["HistoryMaxLines", "SaveAndRestoreHistory"],
   description:= [
-    "HistoryMaxLines is the maximal amount of input lines held in GAPs \
+    "HistoryMaxLines is the maximal amount of input lines held in GAP's \
 command line history.",
     "If SaveAndRestoreHistory is true then GAP saves its command line history \
 before terminating a GAP session, and prepends the stored history when GAP is \

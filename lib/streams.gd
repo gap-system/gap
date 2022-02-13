@@ -971,7 +971,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  For non-text streams, it returns <K>false</K>.
 ##  If as argument <A>stream</A> the string <C>"*stdout*"</C> is given, these
 ##  functions refer to the formatting status of the standard output (so usually
-##  the users terminal screen).<P/>
+##  the user's terminal screen).<P/>
 ##  Similarly, the string <C>"*errout*"</C> refers to the formatting status
 ##  of the standard error output, which influences how error messages are
 ##  printed.<P/>

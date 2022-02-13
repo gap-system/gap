@@ -287,7 +287,7 @@ end );
 ##
 ##  <#GAPDoc Label="DeclareCategoryCollections">
 ##  <ManSection>
-##  <Func Name="DeclareCategoryCollections" Arg='filter'/>
+##  <Func Name="DeclareCategoryCollections" Arg='name'/>
 ##
 ##  <Description>
 ##  Calls <Ref Func="CategoryCollections"/> on the category that is bound to

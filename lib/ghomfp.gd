@@ -300,13 +300,14 @@ DeclareAttribute("EpimorphismFromFreeGroup",IsGroup);
 ##
 ##  <Description>
 ##  Let <A>hom</A> a homomorphism from a finitely presented group <M>G</M>
-##  to a finite group <M>H</M> and <M><A>U</A>\le H</M>. This function will -- if it
-##  exists -- return a subgroup <M>S\le<A>G</A></M>, such that the core of
-##  <M>S</M> is properly
-##  contained in the kernel of <A>hom</A> as well as in <M>V'</M>, where <M>V</M> is the
-##  pre-image of <A>U</A> under <A>hom</A>.  Thus <M>S</M> exposes a larger quotient
-##  of <M>G</M>.
-##  If no such subgroup exists, <A>fail</A> is returned.
+##  to a finite group <M>H</M> and <M><A>U</A> \leq H</M>.
+##  This function will &ndash;if it exists&ndash; return a subgroup
+##  <M>S \leq <A>G</A></M>, such that the core of <M>S</M> is properly
+##  contained in the kernel of <A>hom</A> as well as in the derived subgroup
+##  of <M>V</M>,
+##  where <M>V</M> is the pre-image of <A>U</A> under <A>hom</A>.
+##  Thus <M>S</M> exposes a larger quotient of <M>G</M>.
+##  If no such subgroup exists, <K>fail</K> is returned.
 ##  <Example><![CDATA[
 ##  gap> f:=FreeGroup("x","y","z");;
 ##  gap> g:=f/ParseRelators(f,"x^3=y^3=z^5=(xyx^2y^2)^2=(xz)^2=(yz^3)^2=1");
