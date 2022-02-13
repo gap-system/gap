@@ -521,14 +521,31 @@ InstallMethod( \^,
     "for class function and group element",
     [ IsClassFunction, IsMultiplicativeElementWithInverse ],
     function( chi, g )
-    local tbl, G;
+    local tbl, G, mtbl, pi, fus, inv, imgs;
+
     tbl:= UnderlyingCharacterTable( chi );
     if HasUnderlyingGroup( tbl ) then
+      # 'chi' is an ordinary character.
       G:= UnderlyingGroup( tbl );
       if IsElmsColls( FamilyObj( g ), FamilyObj( G ) ) then
         return ClassFunctionSameType( tbl, chi,
                Permuted( ValuesOfClassFunction( chi ),
                          CorrespondingPermutations( tbl, chi, [ g ] )[1] ) );
+      fi;
+    elif HasOrdinaryCharacterTable( tbl ) then
+      # 'chi' is a Brauer character.
+      mtbl:= tbl;
+      tbl:= OrdinaryCharacterTable( mtbl );
+      if HasUnderlyingGroup( tbl ) then
+        G:= UnderlyingGroup( tbl );
+        if IsElmsColls( FamilyObj( g ), FamilyObj( G ) ) then
+          pi:= CorrespondingPermutations( tbl, [ g ] )[1]^-1;
+          fus:= GetFusionMap( mtbl, tbl );
+          inv:= InverseMap( fus );
+          imgs:= List( [ 1 .. Length( fus ) ], i -> inv[ fus[i]^pi ] );
+          return ClassFunctionSameType( mtbl, chi,
+                 ValuesOfClassFunction( chi ){ imgs } );
+        fi;
       fi;
     fi;
     TryNextMethod();
@@ -579,20 +596,34 @@ InstallOtherMethod( \^,
 InstallOtherMethod( \^,
     [ IsMultiplicativeElementWithInverse, IsClassFunction ],
     function( g, chi )
-    local tbl, ccl, i;
+    local tbl, mtbl, ccl, i;
+
     tbl:= UnderlyingCharacterTable( chi );
-    if not HasUnderlyingGroup( tbl ) then
+    if HasOrdinaryCharacterTable( tbl ) then
+      # 'chi' is a Brauer character.
+      mtbl:= tbl;
+      tbl:= OrdinaryCharacterTable( mtbl );
+      if not HasUnderlyingGroup( tbl ) then
+        Error( "table <tbl> of <chi> does not store its group" );
+      elif not g in UnderlyingGroup( tbl )
+           or Order( g ) mod UnderlyingCharacteristic( mtbl ) = 0 then
+        Error( "<g> must be p-regular and lie in the underlying group of <chi>" );
+      else
+        ccl:= ConjugacyClasses( tbl ){ GetFusionMap( mtbl, tbl ) };
+      fi;
+    elif not HasUnderlyingGroup( tbl ) then
       Error( "table <tbl> of <chi> does not store its group" );
-    elif g in UnderlyingGroup( tbl ) then
-      ccl:= ConjugacyClasses( tbl );
-      for i in [ 1 .. Length( ccl ) ] do
-        if g in ccl[i] then
-          return ValuesOfClassFunction( chi )[i];
-        fi;
-      od;
-    else
+    elif not g in UnderlyingGroup( tbl ) then
       Error( "<g> must lie in the underlying group of <chi>" );
+    else
+      ccl:= ConjugacyClasses( tbl );
     fi;
+
+    for i in [ 1 .. Length( ccl ) ] do
+      if g in ccl[i] then
+        return ValuesOfClassFunction( chi )[i];
+      fi;
+    od;
     end );
 
 

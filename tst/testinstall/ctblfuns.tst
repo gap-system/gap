@@ -1,4 +1,4 @@
-#@local S4,V4,irr,l, tbl, v
+#@local S4,V4,irr,l, tbl, v, g, h, t, chi, t5, irr5
 gap> START_TEST("ctblfuns.tst");
 gap> S4:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )
@@ -66,6 +66,24 @@ gap> SizeOfFieldOfDefinition( EC(19), 71 );
 fail
 gap> SizeOfFieldOfDefinition( Z(25), 5 );
 Error, <val> must be a cyclotomic or a list of cyclotomics
+
+#
+gap> S4:= SymmetricGroup( 4 );;
+gap> V4:= PCore( S4, 2 );;
+gap> t:= CharacterTable( V4 );;
+gap> irr:= Irr( t );;
+gap> List( irr, chi -> Position( irr, chi^S4.1 ) );
+[ 1, 3, 2, 4 ]
+gap> chi:= irr[2];;
+gap> chi = List( ConjugacyClasses( V4 ), x -> Representative(x)^chi );
+true
+gap> t5:= t mod 5;;
+gap> irr5:= Irr( t5 );;
+gap> List( irr5, chi -> Position( irr5, chi^S4.1 ) );
+[ 1, 3, 2, 4 ]
+gap> chi:= irr5[2];;
+gap> chi = List( ConjugacyClasses( V4 ), x -> Representative(x)^chi );
+true
 
 #
 gap> STOP_TEST( "ctblfuns.tst", 1);
