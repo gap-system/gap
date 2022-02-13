@@ -644,7 +644,7 @@ DeclareAttribute( "IndeterminateNumberOfUnivariateRationalFunction",
 ##  <Description>
 ##  constructs a Laurent polynomial over the coefficients
 ##  family <A>fam</A> and in the indeterminate <A>ind</A> (defaulting to 1)
-##  with the coefficients given by <A>coefs</A> and valuation <A>val</A>.
+##  with the coefficients given by <A>cofs</A> and valuation <A>val</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -969,7 +969,7 @@ BindGlobal("DEGREE_ZERO_LAURPOL",Ninfinity);
 ##  <Description>
 ##  constructs an univariate polynomial over the coefficients family
 ##  <A>fam</A> and in the indeterminate <A>ind</A> with the coefficients given by
-##  <A>coefs</A>. This function should be used in algorithms to create
+##  <A>cofs</A>. This function should be used in algorithms to create
 ##  polynomials as it avoids overhead associated with
 ##  <Ref Oper="UnivariatePolynomial"/>.
 ##  </Description>
@@ -990,7 +990,7 @@ DeclareOperation( "UnivariatePolynomialByCoefficients",
 ##
 ##  <Description>
 ##  constructs an univariate polynomial over the ring <A>ring</A> in the
-##  indeterminate <A>ind</A> with the coefficients given by <A>coefs</A>.
+##  indeterminate <A>ind</A> with the coefficients given by <A>cofs</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -1615,7 +1615,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
 ##  In the one argument form <Ref Oper="Sort"/> uses the operator <C>&lt;</C>
 ##  to compare the elements.
-##  (If the list is not homogeneous it is the users responsibility to ensure
+##  (If the list is not homogeneous it is the user's responsibility to ensure
 ##  that <C>&lt;</C> is defined for all element pairs,
 ##  see&nbsp;<Ref Sect="Comparison Operations for Elements"/>)
 ##  In the two argument form <Ref Oper="Sort"/> uses the function <A>func</A>

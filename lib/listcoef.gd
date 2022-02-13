@@ -186,7 +186,7 @@ DeclareOperation(
 ##  This operation changes <A>list1</A> to the coefficient list of the product
 ##  of <A>pol2</A> with <A>pol3</A>.
 ##  This operation changes <A>list1</A> which therefore must be a mutable list.
-##  The operations returns the position of the last non-zero entry of the
+##  The operation returns the position of the last non-zero entry of the
 ##  result but is not guaranteed to remove trailing zeroes.
 ##  </Description>
 ##  </ManSection>
@@ -313,7 +313,7 @@ DeclareOperation(
 ##  which must be a positive integer.
 ##  This operation changes <A>list1</A> which therefore must be a mutable
 ##  list.
-##  The operations returns the position of the last non-zero entry of the
+##  The operation returns the position of the last non-zero entry of the
 ##  result but is not guaranteed to remove trailing zeroes.
 ##  <Example><![CDATA[
 ##  gap> l:=[1,2,3,4];;m:=[5,6,7];;ReduceCoeffsMod(l,m,3);

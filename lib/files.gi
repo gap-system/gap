@@ -238,7 +238,7 @@ InstallMethod( ReadAsFunction,
 DeclareUserPreference( rec(
   name:= [ "Editor", "EditorOptions" ],
   description:= [
-    "Determines the editor and options (used by GAPs 'Edit' command).  \
+    "Determines the editor and options (used by GAP's 'Edit' command).  \
 Under Mac OS X, the value \"open\" for Editor will work. For further options, \
 see the GAP help for 'Edit'.  \
 If you want to use the editor defined in your (shell) environment then \

@@ -333,11 +333,9 @@ InstallMethod( String,
 ##  <ManSection>
 ##  <Func Name="UserHomeExpand" Arg='str'/>
 ##  <Description>
-##
 ##  If the string <A>str</A> starts with a <C>'~'</C> character this
 ##  function returns a new string with the leading <C>'~'</C> substituted by
-##  the users home directory as stored in <C>GAPInfo.UserHome</C>.
-##  
+##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
 ##  </Description>
 ##  </ManSection>

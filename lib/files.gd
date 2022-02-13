@@ -83,14 +83,14 @@ DeclareOperation( "Directory", [ IsString ] );
 ##  <Func Name="DirectoryHome" Arg=''/>
 ##
 ##  <Description>
-##  returns a directory object for the users home directory, defined as a
+##  returns a directory object for the user's home directory, defined as a
 ##  directory in which the user will typically have full read and write
 ##  access.
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
-##
+##  <P/>
 ##  Under Unix systems (including Mac OS X) this will be the
-##  usual user home directory. Under Windows it will the users 
+##  usual user home directory. Under Windows it will be the user's
 ##  <C>My Documents</C> folder (or the appropriate name under different
 ##  languages).
 ##  </Description>
@@ -108,15 +108,15 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##  <Func Name="DirectoryDesktop" Arg=''/>
 ##
 ##  <Description>
-##  returns a directory object for the users desktop directory as defined on
+##  returns a directory object for the user's desktop directory as defined on
 ##  many modern operating systems. 
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
-##
+##  <P/>
 ##  Under Unix systems (including Mac OS X) this will be the
-##  <C>Desktop</C> directory in the users home directory if it exists, and
-##  the users home directory otherwise. 
-##  Under Windows it will the users <C>Desktop</C> folder
+##  <C>Desktop</C> directory in the user's home directory if it exists, and
+##  the user's home directory otherwise.
+##  Under Windows it will be the user's <C>Desktop</C> folder
 ##  (or the appropriate name under different
 ##  languages).
 ##  </Description>
