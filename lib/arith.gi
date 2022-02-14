@@ -13,11 +13,32 @@
 ##
 
 
+#############################################################################
+##
+##  The GAP Reference Manual defines 'One' only for an argument in
+##  'IsMultiplicativeElementWithOne' or 'IsDomain'.
+##  The following method tries to extend this definition to collections of
+##  'IsMultiplicativeElementWithOne' objects that aren't domains,
+##  by delegating to a representative of the collection.
+##
+##  This causes a logical problem if the collection is itself in
+##  'IsMultiplicativeElementWithOne', because of a different meaning.
+##  Such a situation occurs in the case of a group character,
+##  for which 'One' shall return not '1' but the trivial character.
+##
+##  It would be good if we could eventually get rid of this method.
+##
 InstallOtherMethod(One, "for a multiplicative element with one collection", 
 [IsMultiplicativeElementWithOneCollection], 
 function(coll)
+  if IsMultiplicativeElementWithOne( coll ) then
+    # The fact that 'coll' is an element counts more
+    # than the fact that 'coll' is a collection of elements.
+    TryNextMethod();
+  fi;
   return One(Representative(coll));
 end);
+
 
 #############################################################################
 ##
