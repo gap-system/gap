@@ -86,4 +86,9 @@ gap> chi = List( ConjugacyClasses( V4 ), x -> Representative(x)^chi );
 true
 
 #
+gap> chi:= TrivialCharacter( SymmetricGroup(1) );;
+gap> chi = chi^0;
+true
+
+#
 gap> STOP_TEST( "ctblfuns.tst", 1);
