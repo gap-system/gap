@@ -498,7 +498,7 @@ InstallMethod(SemigroupByGenerators,
 "for a collection",
 [IsCollection],
 function(gens)
-  local S, pos;
+  local S, pos, one;
 
   S := Objectify(NewType(FamilyObj(gens), IsSemigroup
                                              and IsAttributeStoringRep), rec());
@@ -508,12 +508,13 @@ function(gens)
   if IsMultiplicativeElementWithOneCollection(gens)
       and CanEasilyCompareElements(gens)
       and IsFinite(gens) then
-    pos := Position(gens, One(gens));
+    one := One(Representative(gens));
+    pos := Position(gens, one);
     if pos <> fail then
       SetFilterObj(S, IsMonoid);
-      if Length(gens) = 1 then # Length(gens) <> 0 since One(gens) in gens
+      if Length(gens) = 1 then # Length(gens) <> 0 since one in gens
         SetIsTrivial(S, true);
-      elif not IsPartialPermCollection(gens) or One(gens) =
+      elif not IsPartialPermCollection(gens) or one =
         One(gens{Concatenation([1 .. pos - 1], [pos + 1 .. Length(gens)])}) then
         # if gens = [PartialPerm([1, 2]), PartialPerm([1])], then removing the One
         # = gens[1] from this, it is not possible to recreate the semigroup using
