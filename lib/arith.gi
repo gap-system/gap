@@ -12,13 +12,6 @@
 ##  allow certain arithmetical operations.
 ##
 
-
-InstallOtherMethod(One, "for a multiplicative element with one collection", 
-[IsMultiplicativeElementWithOneCollection], 
-function(coll)
-  return One(Representative(coll));
-end);
-
 #############################################################################
 ##
 #M  IsImpossible( <matrix> )

@@ -216,14 +216,14 @@ function(s)
   
   n := DegreeOfTransformationSemigroup(s);
 
-  if n = 0 and HasIsTrivial(s) and IsTrivial(s) then 
+  if n = 0 then 
     return true;
   elif HasSize(s) then
-    return Size(s)=n^n;
+    return Size(s) = n ^ n;
   fi;
 
-  t:=FullTransformationSemigroup(DegreeOfTransformationSemigroup(s));
-  return ForAll(GeneratorsOfSemigroup(t), x-> x in s);
+  t := FullTransformationSemigroup(n);
+  return ForAll(GeneratorsOfSemigroup(t), x -> x in s);
 end);
 
 #

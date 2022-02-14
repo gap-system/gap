@@ -282,21 +282,27 @@ gap>
 #T# Checking for correct non-removal of one from generating sets in
 # SemigroupByGenerators JDM
 gap> S := Semigroup(PartialPerm([1]));
-<trivial partial perm group of rank 1 with 1 generator>
+<commutative partial perm semigroup of rank 1 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `GeneratorsOfMagmaWithOne' on 1 argument\
+s
 gap> GeneratorsOfInverseSemigroup(S);
 [ <identity partial perm on [ 1 ]> ]
 gap> GeneratorsOfInverseMonoid(S);
-[ <identity partial perm on [ 1 ]> ]
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 2nd choice method found for `GeneratorsOfInverseMonoid' on 1 argumen\
+ts
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<commutative transformation semigroup of degree 0 with 1 generator>
 gap> GeneratorsOfSemigroup(S);
 [ IdentityTransformation ]
 gap> GeneratorsOfMonoid(S);
-[ IdentityTransformation ]
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `GeneratorsOfMagmaWithOne' on 1 argument\
+s
 
 #T# Checking for correct non-removal of one from generating sets in
 # MonoidByGenerators JDM
