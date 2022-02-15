@@ -12,7 +12,7 @@ gap> x := PartialPerm([1]);
 gap> y := PartialPerm([0]);
 <empty partial perm>
 gap> S := Semigroup(x, y);
-<partial perm monoid of rank 1 with 2 generators>
+<partial perm semigroup of rank 1 with 2 generators>
 gap> D := ShallowCopy(GreensDClasses(S));;
 gap> Sort(D, sort);
 gap> D;
@@ -21,7 +21,7 @@ gap> D;
 gap> Elements(S);
 [ <empty partial perm>, <identity partial perm on [ 1 ]> ]
 gap> S := Semigroup(x, y);
-<partial perm monoid of rank 1 with 2 generators>
+<partial perm semigroup of rank 1 with 2 generators>
 gap> Elements(S);
 [ <empty partial perm>, <identity partial perm on [ 1 ]> ]
 gap> D := ShallowCopy(GreensDClasses(S));;
@@ -42,7 +42,7 @@ gap> D;
 
 #
 gap> S := Semigroup(x, y);
-<partial perm monoid of rank 1 with 2 generators>
+<partial perm semigroup of rank 1 with 2 generators>
 gap> FroidurePinExtendedAlg(S);
 gap> LeftCayleyGraphSemigroup(S);
-[ [ 1 ], [ 1 ] ]
+[ [ 1, 1 ], [ 1, 2 ] ]

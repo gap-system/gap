@@ -69,7 +69,7 @@ InstallMethod( ViewString,
 InstallOtherMethod(MonoidByGenerators, "for a collection",
 [IsCollection],
 function(gens)
-  local M, pos;
+  local M, pos, one;
 
   M := Objectify(NewType(FamilyObj(gens), IsMonoid
                                           and IsAttributeStoringRep), rec());
@@ -77,13 +77,14 @@ function(gens)
 
   if CanEasilyCompareElements(gens) and IsFinite(gens)
       and IsMultiplicativeElementWithOneCollection(gens) then
-    SetOne(M, One(gens));
-    pos := Position(gens, One(gens));
+    one := One(Representative(gens));
+    SetOne(M, one);
+    pos := Position(gens, one);
     if pos <> fail then
       SetGeneratorsOfMagma(M, gens);
-      if Length(gens) = 1 then # Length(gens) <> 0 since One(gens) in gens
+      if Length(gens) = 1 then # Length(gens) <> 0 since one in gens
         SetIsTrivial(M, true);
-      elif not IsPartialPermCollection(gens) or One(gens) =
+      elif not IsPartialPermCollection(gens) or one =
           One(gens{Concatenation([1 .. pos - 1], [pos + 1 .. Length(gens)])}) then
         # if gens = [PartialPerm([1,2]), PartialPerm([1])], then removing the One
         # = gens[1] from this, it is not possible to recreate the semigroup using
@@ -93,7 +94,7 @@ function(gens)
         Remove(gens, pos);
       fi;
     else
-      SetGeneratorsOfMagma(M, Concatenation([One(gens)], gens));
+      SetGeneratorsOfMagma(M, Concatenation([one], gens));
     fi;
   fi;
 

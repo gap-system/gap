@@ -46,7 +46,7 @@ true
 # gap> Print(Semigroup(IdentityTransformation));
 # Test SemigroupViewStringPrefix
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<commutative transformation semigroup of degree 0 with 1 generator>
 
 # Test < 
 gap> T := Semigroup(Transformation([2, 3, 1]));
@@ -140,7 +140,7 @@ gap> S := Group(IdentityTransformation);
 gap> GeneratorsOfGroup(S);
 [ IdentityTransformation ]
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<commutative transformation semigroup of degree 0 with 1 generator>
 
 # Test IsomorphismPermGroup for an H-class
 gap> S := FullTransformationMonoid(4);;
@@ -160,15 +160,15 @@ Error, the argument must be a positive integer
 
 # Test IsFullTransformationMonoid 
 gap> S := Semigroup(GeneratorsOfSemigroup(FullTransformationMonoid(3)));
-<transformation monoid of degree 3 with 3 generators>
+<transformation semigroup of degree 3 with 4 generators>
 gap> IsFullTransformationSemigroup(S);
 true
 gap> S := Semigroup(IdentityTransformation);
-<trivial transformation group of degree 0 with 1 generator>
+<commutative transformation semigroup of degree 0 with 1 generator>
 gap> IsFullTransformationSemigroup(S);
 true
 gap> S := Semigroup(GeneratorsOfSemigroup(FullTransformationMonoid(3)));
-<transformation monoid of degree 3 with 3 generators>
+<transformation semigroup of degree 3 with 4 generators>
 gap> Size(S);
 27
 gap> IsFullTransformationSemigroup(S);
@@ -245,7 +245,7 @@ gap> MultiplicativeNeutralElement(S);
 m1
 gap> IsomorphismTransformationSemigroup(S);
 MappingByFunction( <semigroup of size 3, with 3 generators>, <transformation 
- monoid of size 3, degree 3 with 2 generators>
+ semigroup of size 3, degree 3 with 3 generators>
  , function( x ) ... end, function( x ) ... end )
 gap> BruteForceIsoCheck(last);
 true
@@ -362,7 +362,7 @@ gap> MultiplicativeNeutralElement(S);
 m1
 gap> AntiIsomorphismTransformationSemigroup(S);
 MappingByFunction( <semigroup of size 3, with 3 generators>, <transformation 
- monoid of degree 3 with 2 generators>
+ semigroup of degree 3 with 3 generators>
  , function( x ) ... end, function( x ) ... end )
 gap> BruteForceAntiIsoCheck(last);
 true

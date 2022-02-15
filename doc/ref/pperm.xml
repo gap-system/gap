@@ -1551,11 +1551,11 @@ multiplicative neutral element (i.e. an identity element) but not to satisfy
 <Example><![CDATA[
 gap> f := PartialPerm( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] );;
 gap> S := Semigroup(f, One(f));
-<commutative partial perm monoid of rank 9 with 1 generator>
+<partial perm semigroup of rank 9 with 2 generators>
 gap> IsMonoid(S);
-true
+false
 gap> IsPartialPermMonoid(S);
-true]]></Example>
+false]]></Example>
 
 Note that unlike transformation semigroups, the <Ref Attr="One"/> of a partial permutation semigroup must coincide with the multiplicative neutral element, if either exists.<P/>
 
