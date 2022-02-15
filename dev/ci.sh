@@ -47,9 +47,6 @@ do
     # skip itc because it requires xgap
     rm -rf itc*
 
-    # HACK: skip float until 1.0.2 is released, as it crashes in the 32bit builds
-    rm -rf float-1.0.1
-
     # HACK to work out timestamp issues with anupq
     touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
 
