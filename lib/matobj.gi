@@ -147,6 +147,8 @@ function( basedomain )
         return IsGF2VectorRep;
     elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
         return Is8BitVectorRep;
+    elif IsFinite(basedomain) and IsZmodnZObj(Zero(basedomain)) then
+      return IsZmodnZVectorRep;
     fi;
     return IsPlistVectorRep;
 end);
@@ -156,6 +158,8 @@ function( basedomain )
         return IsGF2MatrixRep;
     elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
         return Is8BitMatrixRep;
+    elif IsFinite(basedomain) and IsZmodnZObj(Zero(basedomain)) then
+      return IsZmodnZMatrixRep;
     fi;
     return IsPlistMatrixRep;
 end);
@@ -1344,6 +1348,8 @@ InstallMethod( IsOne,
 InstallMethod( Characteristic,
     [ IsMatrixOrMatrixObj ],
     M -> Characteristic( BaseDomain( M ) ) );
+
+InstallOtherMethod(DefaultFieldOfMatrix,[IsMatrixOrMatrixObj],BaseDomain);
 
 
 #############################################################################

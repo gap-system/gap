@@ -113,6 +113,7 @@ ReadLib( "vecmat.gi"   );
 ReadLib( "vec8bit.gi"  );
 ReadLib( "mat8bit.gi"  );
 ReadLib( "matobjplist.gi" );
+ReadLib( "matobjnz.gi" );
 ReadLib( "meataxe.gi"  );
 ReadLib( "meatauto.gi" );
 
