@@ -209,11 +209,11 @@ static Obj FuncSHELL(Obj self,
         outFile = "*stdout*";
     }
 
-    TypOutputFile output = { 0 };
+    TypOutputFile output;
     if (!OpenOutput(&output, outFile, FALSE))
         ErrorQuit("SHELL: can't open outfile %s", (Int)outFile, 0);
 
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInput(&input, inFile)) {
         CloseOutput(&output);
         ErrorQuit("SHELL: can't open infile %s", (Int)inFile, 0);
@@ -398,7 +398,7 @@ int realmain( int argc, char * argv[] )
                                    read of init.g  somehow*/
     /* maybe compile in which case init.g got skipped */
     if ( SyCompilePlease ) {
-      TypInputFile input = { 0 };
+      TypInputFile input;
       if ( ! OpenInput(&input, SyCompileInput) ) {
         return 1;
       }

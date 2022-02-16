@@ -138,7 +138,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     RequireInputStream("READ_ALL_COMMANDS", instream);
 
     /* try to open the streams */
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInputStream(&input, instream, echo == True)) {
         return Fail;
     }
@@ -148,7 +148,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
         outstream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
                                      outstreamString, True);
     }
-    TypOutputFile output = { 0 };
+    TypOutputFile output;
     if (outstream && !OpenOutputStream(&output, outstream)) {
         CloseInput(&input);
         return Fail;
@@ -241,7 +241,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     AssPlist(result, 1, False);
 
     // open the stream, read a command, and close it again
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInputStream(&input, stream, echo == True)) {
         return result;
     }
@@ -404,7 +404,7 @@ Int READ_GAP_ROOT ( const Char * filename )
         Pr("#I  READ_GAP_ROOT: loading '%s' as GAP file\n", (Int)filename, 0);
     }
 
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (OpenInput(&input, path)) {
         while (1) {
             ExecStatus status = ReadEvalCommand(0, &input, 0, 0);
@@ -438,7 +438,7 @@ static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
     RequireOutputStream(SELF_NAME, stream);
     RequireSmallList(SELF_NAME, args);
 
-    TypOutputFile output = { 0 };
+    TypOutputFile output;
     if (!OpenOutputStream(&output, stream)) {
         ErrorQuit("CALL_WITH_STREAM: cannot open stream for output", 0, 0);
     }
@@ -682,7 +682,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     /* first entry is the file or stream                                   */
     destination = ELM_LIST(args, 1);
 
-    TypOutputFile output = { 0 };
+    TypOutputFile output;
 
     /* try to open the output and handle failures                          */
     if (file) {
@@ -803,7 +803,7 @@ static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 */
 static Obj FuncREAD(Obj self, Obj inputObj)
 {
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
@@ -827,7 +827,7 @@ static Obj FuncREAD(Obj self, Obj inputObj)
 */
 static Obj FuncREAD_NORECOVERY(Obj self, Obj inputObj)
 {
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
@@ -868,12 +868,12 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
                         "must be a local variables bag "
                         "or the value 'false'");
 
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInputStream(&input, instream, FALSE)) {
         return False;
     }
 
-    TypOutputFile output = { 0 };
+    TypOutputFile output;
     if (!OpenOutputStream(&output, outstream)) {
         res = CloseInput(&input);
         GAP_ASSERT(res);
@@ -939,7 +939,7 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
 */
 static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
 {
-    TypInputFile input = { 0 };
+    TypInputFile input;
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
