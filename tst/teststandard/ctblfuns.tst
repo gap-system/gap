@@ -52,5 +52,8 @@ gap> FrobeniusCharacterValue( 82*E(16)+E(16)^5, 269 );
 gap> FrobeniusCharacterValue( E(16), 269 );
 162+256z+143z2+219z3
 
+# Dixon-Schneider test that also exercises MatrixObjects over Z/nZ
+gap> Irr(MathieuGroup(24));;
+
 #
 gap> STOP_TEST( "ctblfuns.tst" );
