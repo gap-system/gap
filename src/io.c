@@ -373,7 +373,6 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
         return 0;
 
     /* enter the file identifier and the file name                         */
-    memset(input, 0, sizeof(TypInputFile));
     input->prev = IO()->Input;
     input->stream = 0;
     input->file = file;
@@ -392,6 +391,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
     input->line[1] = '\0';    // empty line buffer
     input->ptr = input->line + 1;
     input->number = 1;
+    input->lastErrorLine = 0;
 
     IO()->Input = input;
 
@@ -411,7 +411,6 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     GAP_ASSERT(input);
 
     /* enter the file identifier and the file name                         */
-    memset(input, 0, sizeof(TypInputFile));
     input->prev = IO()->Input;
     input->stream = stream;
     input->file = -1;
@@ -432,6 +431,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     input->line[1] = '\0';    // empty line buffer
     input->ptr = input->line + 1;
     input->number = 1;
+    input->lastErrorLine = 0;
 
     IO()->Input = input;
 
@@ -841,6 +841,7 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     /* put the file on the stack, start at position 0 on an empty line     */
     output->prev = IO()->Output;
     IO()->Output = output;
+    output->isstringstream = FALSE;
     output->stream = 0;
     output->file = file;
     output->line[0] = '\0';
