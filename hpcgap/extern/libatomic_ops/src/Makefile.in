@@ -245,7 +245,8 @@ CCAS = @CCAS@
 CCASDEPMODE = @CCASDEPMODE@
 CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS = @CFLAGS@ $(CFLAGS_EXTRA)
+CFLAGS_EXTRA = @CFLAGS_EXTRA@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -345,6 +346,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -357,15 +359,25 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# Info (current:revision:age) for the Libtool versioning system.
+# These numbers should be updated at most once just before the release,
+# and, optionally, at most once during the development (after the release).
+LIBATOMIC_OPS_VER_INFO = 2:1:1
+LIBATOMIC_OPS_GPL_VER_INFO = 2:2:1
 AM_CFLAGS = @PICFLAG@
 AM_CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src
 include_HEADERS = atomic_ops.h atomic_ops_stack.h atomic_ops_malloc.h
 lib_LTLIBRARIES = libatomic_ops.la libatomic_ops_gpl.la
 @NEED_ASM_FALSE@libatomic_ops_la_SOURCES = atomic_ops.c
 @NEED_ASM_TRUE@libatomic_ops_la_SOURCES = atomic_ops.c atomic_ops_sysdeps.S
-libatomic_ops_la_LDFLAGS = -version-info 1:3:0 -no-undefined
+libatomic_ops_la_LDFLAGS = -version-info $(LIBATOMIC_OPS_VER_INFO) \
+                            -no-undefined
+
 libatomic_ops_gpl_la_SOURCES = atomic_ops_stack.c atomic_ops_malloc.c
-libatomic_ops_gpl_la_LDFLAGS = -version-info 1:3:0 -no-undefined
+libatomic_ops_gpl_la_LDFLAGS = -version-info $(LIBATOMIC_OPS_GPL_VER_INFO) \
+                                -no-undefined
+
 libatomic_ops_gpl_la_LIBADD = libatomic_ops.la
 EXTRA_DIST = Makefile.msft atomic_ops/sysdeps/README \
         atomic_ops/generalize-arithm.template \
@@ -434,9 +446,11 @@ nobase_private_HEADERS = atomic_ops/ao_version.h \
           atomic_ops/sysdeps/gcc/m68k.h \
           atomic_ops/sysdeps/gcc/mips.h \
           atomic_ops/sysdeps/gcc/powerpc.h \
+          atomic_ops/sysdeps/gcc/riscv.h \
           atomic_ops/sysdeps/gcc/s390.h \
           atomic_ops/sysdeps/gcc/sh.h \
           atomic_ops/sysdeps/gcc/sparc.h \
+          atomic_ops/sysdeps/gcc/tile.h \
           atomic_ops/sysdeps/gcc/x86.h \
         \
           atomic_ops/sysdeps/hpc/hppa.h \

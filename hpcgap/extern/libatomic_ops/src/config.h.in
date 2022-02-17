@@ -6,12 +6,11 @@
 /* Assume Windows Server 2003, Vista or later target (only VC/x86) */
 #undef AO_ASSUME_VISTA
 
-/* Assume hardware compare-and-swap functionality available on target (only
-   VC/x86) */
-#undef AO_ASSUME_WINDOWS98
-
 /* Assume target is not old AMD Opteron chip (only x86_64) */
 #undef AO_CMPXCHG16B_AVAILABLE
+
+/* Define to avoid C11 atomic intrinsics even if available. */
+#undef AO_DISABLE_GCC_ATOMICS
 
 /* Force test_and_set to use SWP instruction instead of LDREX/STREX (only arm
    v6+) */
@@ -28,6 +27,11 @@
 
 /* Assume ancient MS VS Win32 headers (only VC/arm v6+, VC/x86) */
 #undef AO_OLD_STYLE_INTERLOCKED_COMPARE_EXCHANGE
+
+/* Prefer C11 atomic intrinsics over assembly-based implementation even in
+   case of inefficient implementation (do not use assembly for any atomic_ops
+   primitive if C11/GCC atomic intrinsics available) */
+#undef AO_PREFER_BUILTIN_ATOMICS
 
 /* Prefer generalized definitions to direct assembly-based ones */
 #undef AO_PREFER_GENERALIZED

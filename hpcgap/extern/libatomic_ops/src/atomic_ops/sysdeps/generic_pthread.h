@@ -33,9 +33,17 @@
         /* This is not necessarily compatible with the native           */
         /* implementation.  But those can't be safely mixed anyway.     */
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 /* We define only the full barrier variants, and count on the           */
 /* generalization section below to fill in the rest.                    */
 extern pthread_mutex_t AO_pt_lock;
+
+#ifdef __cplusplus
+  } /* extern "C" */
+#endif
 
 AO_INLINE void
 AO_nop_full(void)

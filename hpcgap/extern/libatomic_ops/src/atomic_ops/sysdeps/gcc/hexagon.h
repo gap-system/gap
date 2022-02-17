@@ -9,6 +9,19 @@
  * modified is included with the above copyright notice.
  */
 
+#if AO_CLANG_PREREQ(3, 9) && !defined(AO_DISABLE_GCC_ATOMICS)
+  /* Probably, it could be enabled for earlier clang versions as well.  */
+
+  /* As of clang-3.9, __GCC_HAVE_SYNC_COMPARE_AND_SWAP_n are missing.   */
+# define AO_GCC_FORCE_HAVE_CAS
+
+# define AO_GCC_HAVE_double_SYNC_CAS
+# include "../standard_ao_double_t.h"
+
+# include "generic.h"
+
+#else /* AO_DISABLE_GCC_ATOMICS */
+
 #include "../all_aligned_atomic_load_store.h"
 
 #include "../test_and_set_t_is_ao_t.h"
@@ -35,10 +48,10 @@ AO_fetch_and_add(volatile AO_t *addr, AO_t incr)
   AO_t newval;
   __asm__ __volatile__(
      "1:\n"
-     "  %0 = memw_locked(%3);\n"        /* load and reserve            */
-     "  %1 = add (%0,%4);\n"            /* increment                   */
-     "  memw_locked(%3,p1) = %1;\n"     /* store conditional           */
-     "  if (!p1) jump 1b;\n"            /* retry if lost reservation   */
+     "  %0 = memw_locked(%3);\n"        /* load and reserve             */
+     "  %1 = add (%0,%4);\n"            /* increment                    */
+     "  memw_locked(%3,p1) = %1;\n"     /* store conditional            */
+     "  if (!p1) jump 1b;\n"            /* retry if lost reservation    */
      : "=&r"(oldval), "=&r"(newval), "+m"(*addr)
      : "r"(addr), "r"(incr)
      : "memory", "p1");
@@ -54,14 +67,14 @@ AO_test_and_set(volatile AO_TS_t *addr)
 
   __asm__ __volatile__(
      "1:\n"
-     "  %0 = memw_locked(%2);\n"        /* load and reserve            */
+     "  %0 = memw_locked(%2);\n"        /* load and reserve             */
      "  {\n"
-     "    p2 = cmp.eq(%0,#0);\n"        /* if load is not zero,        */
-     "    if (!p2.new) jump:nt 2f; \n"  /* we are done                 */
+     "    p2 = cmp.eq(%0,#0);\n"        /* if load is not zero,         */
+     "    if (!p2.new) jump:nt 2f;\n"   /* we are done                  */
      "  }\n"
-     "  memw_locked(%2,p1) = %3;\n"     /* else store conditional      */
-     "  if (!p1) jump 1b;\n"            /* retry if lost reservation   */
-     "2:\n"                             /* oldval is zero if we set    */
+     "  memw_locked(%2,p1) = %3;\n"     /* else store conditional       */
+     "  if (!p1) jump 1b;\n"            /* retry if lost reservation    */
+     "2:\n"                             /* oldval is zero if we set     */
      : "=&r"(oldval), "+m"(*addr)
      : "r"(addr), "r"(locked_value)
      : "memory", "p1", "p2");
@@ -81,7 +94,7 @@ AO_test_and_set(volatile AO_TS_t *addr)
       "  %0 = memw_locked(%3);\n"       /* load and reserve             */
       "  {\n"
       "    p2 = cmp.eq(%0,%4);\n"       /* if load is not equal to      */
-      "    if (!p2.new) jump:nt 2f; \n" /* old, fail                    */
+      "    if (!p2.new) jump:nt 2f;\n"  /* old, fail                    */
       "  }\n"
       "  memw_locked(%3,p1) = %5;\n"    /* else store conditional       */
       "  if (!p1) jump 1b;\n"           /* retry if lost reservation    */
@@ -103,13 +116,13 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 
   __asm__ __volatile__(
      "1:\n"
-     "  %0 = memw_locked(%2);\n"        /* load and reserve            */
+     "  %0 = memw_locked(%2);\n"        /* load and reserve             */
      "  {\n"
-     "    p2 = cmp.eq(%0,%3);\n"        /* if load is not equal to     */
-     "    if (!p2.new) jump:nt 2f; \n"  /* old_val, fail               */
+     "    p2 = cmp.eq(%0,%3);\n"        /* if load is not equal to      */
+     "    if (!p2.new) jump:nt 2f;\n"   /* old_val, fail                */
      "  }\n"
-     "  memw_locked(%2,p1) = %4;\n"     /* else store conditional      */
-     "  if (!p1) jump 1b;\n"            /* retry if lost reservation   */
+     "  memw_locked(%2,p1) = %4;\n"     /* else store conditional       */
+     "  if (!p1) jump 1b;\n"            /* retry if lost reservation    */
      "2:\n"
      : "=&r" (__oldval), "+m"(*addr)
      : "r" (addr), "r" (old_val), "r" (new_val)
@@ -120,3 +133,8 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 #define AO_HAVE_fetch_compare_and_swap
 
 #define AO_T_IS_INT
+
+#endif /* AO_DISABLE_GCC_ATOMICS */
+
+#undef AO_GCC_FORCE_HAVE_CAS
+#undef AO_GCC_HAVE_double_SYNC_CAS

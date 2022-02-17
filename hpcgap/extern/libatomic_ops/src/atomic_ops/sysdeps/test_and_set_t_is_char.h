@@ -23,13 +23,29 @@
 /*
  * These are common definitions for architectures on which test_and_set
  * operates on byte sized quantities, the "clear" value contains
- * all zeroes, and the "set" value contains all ones.
+ * all zeroes, and the "set" value contains all ones typically.
  */
 
-#define AO_TS_t unsigned char
-typedef enum {AO_BYTE_TS_clear = 0, AO_BYTE_TS_set = 0xff} AO_BYTE_TS_val;
+#ifndef AO_GCC_ATOMIC_TEST_AND_SET
+# define AO_TS_SET_TRUEVAL 0xff
+#elif defined(__GCC_ATOMIC_TEST_AND_SET_TRUEVAL) \
+      && !defined(AO_PREFER_GENERALIZED)
+# define AO_TS_SET_TRUEVAL __GCC_ATOMIC_TEST_AND_SET_TRUEVAL
+#else
+# define AO_TS_SET_TRUEVAL 1 /* true */
+#endif
+
+typedef enum {
+  AO_BYTE_TS_clear = 0,
+  AO_BYTE_TS_set = AO_TS_SET_TRUEVAL
+} AO_BYTE_TS_val;
+
 #define AO_TS_VAL_t AO_BYTE_TS_val
 #define AO_TS_CLEAR AO_BYTE_TS_clear
 #define AO_TS_SET AO_BYTE_TS_set
 
+#define AO_TS_t unsigned char
+
 #define AO_CHAR_TS_T 1
+
+#undef AO_TS_SET_TRUEVAL

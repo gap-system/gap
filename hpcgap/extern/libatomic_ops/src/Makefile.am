@@ -1,5 +1,14 @@
+
+# Info (current:revision:age) for the Libtool versioning system.
+# These numbers should be updated at most once just before the release,
+# and, optionally, at most once during the development (after the release).
+LIBATOMIC_OPS_VER_INFO = 2:1:1
+LIBATOMIC_OPS_GPL_VER_INFO = 2:2:1
+
 AM_CFLAGS=@PICFLAG@
 AM_CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src
+
+CFLAGS += $(CFLAGS_EXTRA)
 
 include_HEADERS = atomic_ops.h atomic_ops_stack.h atomic_ops_malloc.h
 lib_LTLIBRARIES = libatomic_ops.la libatomic_ops_gpl.la
@@ -8,10 +17,12 @@ libatomic_ops_la_SOURCES = atomic_ops.c atomic_ops_sysdeps.S
 else
 libatomic_ops_la_SOURCES = atomic_ops.c
 endif
-libatomic_ops_la_LDFLAGS = -version-info 1:3:0 -no-undefined
+libatomic_ops_la_LDFLAGS = -version-info $(LIBATOMIC_OPS_VER_INFO) \
+                            -no-undefined
 
 libatomic_ops_gpl_la_SOURCES = atomic_ops_stack.c atomic_ops_malloc.c
-libatomic_ops_gpl_la_LDFLAGS = -version-info 1:3:0 -no-undefined
+libatomic_ops_gpl_la_LDFLAGS = -version-info $(LIBATOMIC_OPS_GPL_VER_INFO) \
+                                -no-undefined
 libatomic_ops_gpl_la_LIBADD = libatomic_ops.la
 
 EXTRA_DIST = Makefile.msft atomic_ops/sysdeps/README \
@@ -80,9 +91,11 @@ nobase_private_HEADERS = atomic_ops/ao_version.h \
           atomic_ops/sysdeps/gcc/m68k.h \
           atomic_ops/sysdeps/gcc/mips.h \
           atomic_ops/sysdeps/gcc/powerpc.h \
+          atomic_ops/sysdeps/gcc/riscv.h \
           atomic_ops/sysdeps/gcc/s390.h \
           atomic_ops/sysdeps/gcc/sh.h \
           atomic_ops/sysdeps/gcc/sparc.h \
+          atomic_ops/sysdeps/gcc/tile.h \
           atomic_ops/sysdeps/gcc/x86.h \
         \
           atomic_ops/sysdeps/hpc/hppa.h \

@@ -15,36 +15,69 @@
  * FIXME:  This should probably make finer distinctions.  SGI MIPS is
  * much more strongly ordered, and in fact closer to sequentially
  * consistent.  This is really aimed at modern embedded implementations.
- * It looks to me like this assumes a 32-bit ABI.  -HB
  */
-
-#include "../all_aligned_atomic_load_store.h"
-
-#include "../test_and_set_t_is_ao_t.h"
 
 /* Data dependence does not imply read ordering.  */
 #define AO_NO_DD_ORDERING
+
+/* #include "../standard_ao_double_t.h" */
+/* TODO: Implement double-wide operations if available. */
+
+#if (AO_GNUC_PREREQ(4, 9) || AO_CLANG_PREREQ(3, 5)) \
+    && !defined(AO_DISABLE_GCC_ATOMICS)
+  /* Probably, it could be enabled even for earlier gcc/clang versions. */
+
+  /* As of clang-3.6/mips[64], __GCC_HAVE_SYNC_COMPARE_AND_SWAP_n missing. */
+# if defined(__clang__)
+#   define AO_GCC_FORCE_HAVE_CAS
+# endif
+
+# include "generic.h"
+
+#else /* AO_DISABLE_GCC_ATOMICS */
+
+# include "../test_and_set_t_is_ao_t.h"
+# include "../all_aligned_atomic_load_store.h"
+
+# if !defined(_ABI64) || _MIPS_SIM != _ABI64
+#   define AO_T_IS_INT
+#   if __mips_isa_rev >= 6
+      /* Encoding of ll/sc in mips rel6 differs from that of mips2/3. */
+#     define AO_MIPS_SET_ISA  ""
+#   else
+#     define AO_MIPS_SET_ISA  "       .set mips2\n"
+#   endif
+#   define AO_MIPS_LL_1(args) "       ll " args "\n"
+#   define AO_MIPS_SC(args)   "       sc " args "\n"
+# else
+#   if __mips_isa_rev >= 6
+#     define AO_MIPS_SET_ISA  ""
+#   else
+#     define AO_MIPS_SET_ISA  "       .set mips3\n"
+#   endif
+#   define AO_MIPS_LL_1(args) "       lld " args "\n"
+#   define AO_MIPS_SC(args)   "       scd " args "\n"
+# endif /* _MIPS_SIM == _ABI64 */
 
 #ifdef AO_ICE9A1_LLSC_WAR
   /* ICE9 rev A1 chip (used in very few systems) is reported to */
   /* have a low-frequency bug that causes LL to fail.           */
   /* To workaround, just issue the second 'LL'.                 */
-# define AO_MIPS_LL_FIX(args_str) \
-      "       ll   " args_str "\n"
+# define AO_MIPS_LL(args) AO_MIPS_LL_1(args) AO_MIPS_LL_1(args)
 #else
-# define AO_MIPS_LL_FIX(args_str) ""
+# define AO_MIPS_LL(args) AO_MIPS_LL_1(args)
 #endif
 
 AO_INLINE void
 AO_nop_full(void)
 {
   __asm__ __volatile__(
-      "       .set push           \n"
-      "       .set mips2          \n"
-      "       .set noreorder      \n"
-      "       .set nomacro        \n"
-      "       sync                \n"
-      "       .set pop              "
+      "       .set push\n"
+      AO_MIPS_SET_ISA
+      "       .set noreorder\n"
+      "       .set nomacro\n"
+      "       sync\n"
+      "       .set pop"
       : : : "memory");
 }
 #define AO_HAVE_nop_full
@@ -58,16 +91,16 @@ AO_fetch_and_add(volatile AO_t *addr, AO_t incr)
 
   __asm__ __volatile__(
       "       .set push\n"
-      "       .set mips2\n"
+      AO_MIPS_SET_ISA
       "       .set noreorder\n"
       "       .set nomacro\n"
-      "1:     ll   %0, %2\n"
-      AO_MIPS_LL_FIX("%0, %2")
+      "1: "
+      AO_MIPS_LL("%0, %2")
       "       addu %1, %0, %3\n"
-      "       sc   %1, %2\n"
+      AO_MIPS_SC("%1, %2")
       "       beqz %1, 1b\n"
       "       nop\n"
-      "       .set pop "
+      "       .set pop"
       : "=&r" (result), "=&r" (temp), "+m" (*addr)
       : "Ir" (incr)
       : "memory");
@@ -83,16 +116,16 @@ AO_test_and_set(volatile AO_TS_t *addr)
 
   __asm__ __volatile__(
       "       .set push\n"
-      "       .set mips2\n"
+      AO_MIPS_SET_ISA
       "       .set noreorder\n"
       "       .set nomacro\n"
-      "1:     ll   %0, %2\n"
-      AO_MIPS_LL_FIX("%0, %2")
+      "1: "
+      AO_MIPS_LL("%0, %2")
       "       move %1, %3\n"
-      "       sc   %1, %2\n"
+      AO_MIPS_SC("%1, %2")
       "       beqz %1, 1b\n"
       "       nop\n"
-      "       .set pop "
+      "       .set pop"
       : "=&r" (oldval), "=&r" (temp), "+m" (*addr)
       : "r" (1)
       : "memory");
@@ -111,19 +144,19 @@ AO_test_and_set(volatile AO_TS_t *addr)
     register int temp;
 
     __asm__ __volatile__(
-        "       .set push           \n"
-        "       .set mips2          \n"
-        "       .set noreorder      \n"
-        "       .set nomacro        \n"
-        "1:     ll      %0, %1      \n"
-        AO_MIPS_LL_FIX("%0, %1")
-        "       bne     %0, %4, 2f  \n"
-        "       move    %0, %3      \n"
-        "       sc      %0, %1      \n"
-        "       .set pop            \n"
-        "       beqz    %0, 1b      \n"
-        "       li      %2, 1       \n"
-        "2:                           "
+        "       .set push\n"
+        AO_MIPS_SET_ISA
+        "       .set noreorder\n"
+        "       .set nomacro\n"
+        "1: "
+        AO_MIPS_LL("%0, %1")
+        "       bne     %0, %4, 2f\n"
+        "       move    %0, %3\n"
+        AO_MIPS_SC("%0, %1")
+        "       .set pop\n"
+        "       beqz    %0, 1b\n"
+        "       li      %2, 1\n"
+        "2:"
         : "=&r" (temp), "+m" (*addr), "+r" (was_equal)
         : "r" (new_val), "r" (old)
         : "memory");
@@ -140,14 +173,14 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old, AO_t new_val)
 
   __asm__ __volatile__(
       "       .set push\n"
-      "       .set mips2\n"
+      AO_MIPS_SET_ISA
       "       .set noreorder\n"
       "       .set nomacro\n"
-      "1:     ll   %0, %2\n"
-      AO_MIPS_LL_FIX("%0, %2")
+      "1: "
+      AO_MIPS_LL("%0, %2")
       "       bne  %0, %4, 2f\n"
       "       move %1, %3\n"
-      "       sc   %1, %2\n"
+      AO_MIPS_SC("%1, %2")
       "       beqz %1, 1b\n"
       "       nop\n"
       "       .set pop\n"
@@ -159,12 +192,14 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old, AO_t new_val)
 }
 #define AO_HAVE_fetch_compare_and_swap
 
-/* #include "../standard_ao_double_t.h" */
-/* TODO: Implement double-wide operations if available. */
+#endif /* AO_DISABLE_GCC_ATOMICS */
 
 /* CAS primitives with acquire, release and full semantics are  */
 /* generated automatically (and AO_int_... primitives are       */
 /* defined properly after the first generalization pass).       */
 
-/* FIXME: 32-bit ABI is assumed.    */
-#define AO_T_IS_INT
+#undef AO_GCC_FORCE_HAVE_CAS
+#undef AO_MIPS_LL
+#undef AO_MIPS_LL_1
+#undef AO_MIPS_SC
+#undef AO_MIPS_SET_ISA

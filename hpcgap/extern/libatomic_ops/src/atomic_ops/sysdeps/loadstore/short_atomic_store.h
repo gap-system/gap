@@ -28,7 +28,7 @@ AO_INLINE void
 AO_short_store(volatile unsigned/**/short *addr, unsigned/**/short new_val)
 {
 # ifdef AO_ACCESS_short_CHECK_ALIGNED
-    assert(((size_t)addr & (sizeof(*addr) - 1)) == 0);
+    AO_ASSERT_ADDR_ALIGNED(addr);
 # endif
   *(unsigned/**/short *)addr = new_val;
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
  * Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
  * Copyright (c) 1999-2003 by Hewlett-Packard Company. All rights reserved.
- *
+ * Copyright (c) 2009-2016 Ivan Maidanski
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -87,7 +87,6 @@ AO_short_fetch_and_add_full (volatile unsigned short *p, unsigned short incr)
 #define AO_HAVE_short_fetch_and_add_full
 
 #ifndef AO_PREFER_GENERALIZED
-  /* Really only works for 486 and later */
   AO_INLINE void
   AO_and_full (volatile AO_t *p, AO_t value)
   {
@@ -177,10 +176,11 @@ AO_fetch_compare_and_swap_full(volatile AO_t *addr, AO_t old_val,
                                            AO_t old_val1, AO_t old_val2,
                                            AO_t new_val1, AO_t new_val2)
     {
+      AO_t dummy;   /* an output for clobbered edx */
       char result;
 
       __asm__ __volatile__ ("lock; cmpxchg8b %0; setz %1"
-                        : "+m" (*addr), "=a" (result)
+                        : "+m" (*addr), "=a" (result), "=d" (dummy)
                         : "d" (old_val2), "a" (old_val1),
                           "c" (new_val2), "b" (new_val1)
                         : "memory");
@@ -216,9 +216,11 @@ AO_fetch_compare_and_swap_full(volatile AO_t *addr, AO_t old_val,
                                             AO_t old_val1, AO_t old_val2,
                                             AO_t new_val1, AO_t new_val2)
     {
+      AO_t dummy;
       char result;
+
       __asm__ __volatile__ ("lock; cmpxchg16b %0; setz %1"
-                        : "+m" (*addr), "=a" (result)
+                        : "+m" (*addr), "=a" (result), "=d" (dummy)
                         : "d" (old_val2), "a" (old_val1),
                           "c" (new_val2), "b" (new_val1)
                         : "memory");

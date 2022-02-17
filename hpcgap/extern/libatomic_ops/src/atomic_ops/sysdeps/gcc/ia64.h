@@ -279,3 +279,9 @@ AO_short_fetch_compare_and_swap_release(volatile unsigned short *addr,
 
 /* TODO: Add compare_and_swap_double as soon as there is widely         */
 /* available hardware that implements it.                               */
+
+#undef AO_IN_ADDR
+#undef AO_LEN
+#undef AO_MASK
+#undef AO_OUT_ADDR
+#undef AO_SWIZZLE

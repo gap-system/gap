@@ -5,18 +5,19 @@
 # only AO_pause (used by atomic_ops_stack).
 # And we rely on a pre-built test_atomic_include.h and generalize-small.h,
 # since we can't rely on sed.  But we don't keep test_atomic_include.h in
-# the development repository any longer, so if you want to do "make check"
+# the development repository any longer, so if you want to run all tests
 # for the sources obtained from the repository then
-# do "autoreconf -vif; ./configure; make check" in Cygwin first.
+# type "./autogen.sh && ./configure && make -j && make clean" in Cygwin first.
+# Otherwise type "nmake -f Makefile.msft check-noautogen" to run only the
+# tests not requiring the source auto-generation.
 # Win32 clients only need to include the header files.
 # To install, copy atomic_ops.h and the atomic_ops/... tree to your favorite
 # include directory.
 
-#MY_CPU=X86
-#CPU=$(MY_CPU)
 #!include <ntwin32.mak>
 
-CFLAGS=-O2 -W3 -DAO_ASSUME_WINDOWS98
+CFLAGS_EXTRA=
+CFLAGS=-O2 -W3 $(CFLAGS_EXTRA)
 
 LIB_OBJS=atomic_ops.obj atomic_ops_malloc.obj atomic_ops_stack.obj
 
@@ -37,8 +38,9 @@ libatomic_ops_gpl.lib: $(LIB_OBJS)
 test_atomic: ..\tests\test_atomic.c ..\tests\test_atomic_include.h
 	cl $(CFLAGS) -I. ..\tests\test_atomic.c /Fo.\test_atomic
 
-test_atomic_w95: ..\tests\test_atomic.c ..\tests\test_atomic_include.h
-	cl -W3 -O2 -I. ..\tests\test_atomic.c /Fo.\test_atomic_w95
+test_atomic_generalized: ..\tests\test_atomic.c ..\tests\test_atomic_include.h
+	cl $(CFLAGS) -DAO_PREFER_GENERALIZED -I. ..\tests\test_atomic.c \
+	    /Fo.\test_atomic_generalized
 
 test_malloc: ..\tests\test_malloc.c libatomic_ops_gpl.lib
 	cl $(CFLAGS) -I. ..\tests\test_malloc.c /Fo.\test_malloc \
@@ -48,11 +50,12 @@ test_stack: ..\tests\test_stack.c libatomic_ops_gpl.lib
 	cl $(CFLAGS) -I. ..\tests\test_stack.c /Fo.\test_stack \
 	    libatomic_ops_gpl.lib
 
-check: test_atomic test_atomic_w95 test_malloc test_stack
-	@echo "The following will print lots of 'Missing ...' messages"
-	test_atomic_w95
+check: test_atomic test_atomic_generalized check-noautogen
 	@echo "The following will print some 'Missing ...' messages"
 	test_atomic
+	test_atomic_generalized
+
+check-noautogen: test_malloc test_stack
 	test_malloc
 	test_stack
 

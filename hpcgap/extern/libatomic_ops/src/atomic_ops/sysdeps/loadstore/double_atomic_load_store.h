@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2004 Hewlett-Packard Development Company, L.P.
+ * Copyright (c) 2013 Ivan Maidanski
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +31,7 @@ AO_double_load(const volatile AO_double_t *addr)
   AO_double_t result;
 
 # ifdef AO_ACCESS_double_CHECK_ALIGNED
-    assert(((size_t)addr & (sizeof(AO_double_t) - 1)) == 0);
+    AO_ASSERT_ADDR_ALIGNED(addr);
 # endif
   /* Cast away the volatile in case it adds fence semantics.  */
   result.AO_whole = ((const AO_double_t *)addr)->AO_whole;
@@ -42,7 +43,7 @@ AO_INLINE void
 AO_double_store(volatile AO_double_t *addr, AO_double_t new_val)
 {
 # ifdef AO_ACCESS_double_CHECK_ALIGNED
-    assert(((size_t)addr & (sizeof(AO_double_t) - 1)) == 0);
+    AO_ASSERT_ADDR_ALIGNED(addr);
 # endif
   ((AO_double_t *)addr)->AO_whole = new_val.AO_whole;
 }

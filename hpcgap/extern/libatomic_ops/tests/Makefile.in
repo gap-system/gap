@@ -88,12 +88,13 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_PTHREAD_H_FALSE@TESTS = test_atomic$(EXEEXT) test_stack$(EXEEXT) \
-@HAVE_PTHREAD_H_FALSE@	test_malloc$(EXEEXT)
-@HAVE_PTHREAD_H_TRUE@TESTS = test_atomic$(EXEEXT) \
-@HAVE_PTHREAD_H_TRUE@	test_atomic_pthreads$(EXEEXT) \
-@HAVE_PTHREAD_H_TRUE@	test_stack$(EXEEXT) test_malloc$(EXEEXT)
-check_PROGRAMS = $(am__EXEEXT_1)
+check_PROGRAMS = test_atomic$(EXEEXT) test_atomic_generalized$(EXEEXT) \
+	test_stack$(EXEEXT) test_malloc$(EXEEXT) $(am__EXEEXT_1)
+@HAVE_PTHREAD_H_TRUE@am__append_1 = test_atomic_pthreads$(EXEEXT)
+@HAVE_PTHREAD_H_TRUE@am__append_2 = test_atomic_pthreads-test_atomic.o
+@HAVE_PTHREAD_H_TRUE@am__append_3 = test_atomic_pthreads
+@ENABLE_SHARED_TRUE@am__append_4 = $(top_builddir)/src/libatomic_ops.la
+@ENABLE_SHARED_TRUE@am__append_5 = $(top_builddir)/src/libatomic_ops.la
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -107,11 +108,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_PTHREAD_H_FALSE@am__EXEEXT_1 = test_atomic$(EXEEXT) \
-@HAVE_PTHREAD_H_FALSE@	test_stack$(EXEEXT) test_malloc$(EXEEXT)
-@HAVE_PTHREAD_H_TRUE@am__EXEEXT_1 = test_atomic$(EXEEXT) \
-@HAVE_PTHREAD_H_TRUE@	test_atomic_pthreads$(EXEEXT) \
-@HAVE_PTHREAD_H_TRUE@	test_stack$(EXEEXT) test_malloc$(EXEEXT)
+@HAVE_PTHREAD_H_TRUE@am__EXEEXT_1 = test_atomic_pthreads$(EXEEXT)
 am_test_atomic_OBJECTS = test_atomic.$(OBJEXT)
 test_atomic_OBJECTS = $(am_test_atomic_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -121,25 +118,28 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am__test_atomic_pthreads_SOURCES_DIST = test_atomic.c
-am__objects_1 = test_atomic_pthreads-test_atomic.$(OBJEXT)
-@HAVE_PTHREAD_H_TRUE@am_test_atomic_pthreads_OBJECTS =  \
-@HAVE_PTHREAD_H_TRUE@	$(am__objects_1)
-test_atomic_pthreads_OBJECTS = $(am_test_atomic_pthreads_OBJECTS)
+am__objects_1 = test_atomic_generalized-test_atomic.$(OBJEXT)
+am_test_atomic_generalized_OBJECTS = $(am__objects_1)
+test_atomic_generalized_OBJECTS =  \
+	$(am_test_atomic_generalized_OBJECTS)
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
 	$(top_builddir)/src/libatomic_ops.la
+test_atomic_generalized_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am__test_atomic_pthreads_SOURCES_DIST = test_atomic.c
+am__objects_2 = test_atomic_pthreads-test_atomic.$(OBJEXT)
+@HAVE_PTHREAD_H_TRUE@am_test_atomic_pthreads_OBJECTS =  \
+@HAVE_PTHREAD_H_TRUE@	$(am__objects_2)
+test_atomic_pthreads_OBJECTS = $(am_test_atomic_pthreads_OBJECTS)
 @HAVE_PTHREAD_H_TRUE@test_atomic_pthreads_DEPENDENCIES =  \
 @HAVE_PTHREAD_H_TRUE@	$(am__DEPENDENCIES_2)
 am_test_malloc_OBJECTS = test_malloc.$(OBJEXT)
 test_malloc_OBJECTS = $(am_test_malloc_OBJECTS)
 test_malloc_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libatomic_ops_gpl.la \
-	$(top_builddir)/src/libatomic_ops.la
+	$(top_builddir)/src/libatomic_ops_gpl.la $(am__append_4)
 am_test_stack_OBJECTS = test_stack.$(OBJEXT)
 test_stack_OBJECTS = $(am_test_stack_OBJECTS)
 test_stack_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/src/libatomic_ops_gpl.la \
-	$(top_builddir)/src/libatomic_ops.la
+	$(top_builddir)/src/libatomic_ops_gpl.la $(am__append_5)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -174,9 +174,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(test_atomic_SOURCES) $(test_atomic_pthreads_SOURCES) \
-	$(test_malloc_SOURCES) $(test_stack_SOURCES)
+SOURCES = $(test_atomic_SOURCES) $(test_atomic_generalized_SOURCES) \
+	$(test_atomic_pthreads_SOURCES) $(test_malloc_SOURCES) \
+	$(test_stack_SOURCES)
 DIST_SOURCES = $(test_atomic_SOURCES) \
+	$(test_atomic_generalized_SOURCES) \
 	$(am__test_atomic_pthreads_SOURCES_DIST) \
 	$(test_malloc_SOURCES) $(test_stack_SOURCES)
 am__can_run_installinfo = \
@@ -423,7 +425,8 @@ CCAS = @CCAS@
 CCASDEPMODE = @CCASDEPMODE@
 CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS = @CFLAGS@ $(CFLAGS_EXTRA)
+CFLAGS_EXTRA = @CFLAGS_EXTRA@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -523,6 +526,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -546,21 +550,26 @@ AM_CPPFLAGS = \
         -I$(top_builddir)/src -I$(top_srcdir)/src \
         -I$(top_builddir)/tests -I$(top_srcdir)/tests
 
+TESTS = test_atomic$(EXEEXT) test_atomic_generalized$(EXEEXT) \
+	test_stack$(EXEEXT) test_malloc$(EXEEXT) $(am__append_1)
+TEST_OBJS = test_atomic.o test_atomic_generalized-test_atomic.o \
+	test_stack.o test_malloc.o $(am__append_2)
 @HAVE_PTHREAD_H_TRUE@test_atomic_pthreads_SOURCES = $(test_atomic_SOURCES)
 @HAVE_PTHREAD_H_TRUE@test_atomic_pthreads_CPPFLAGS = -DAO_USE_PTHREAD_DEFS $(AM_CPPFLAGS)
 @HAVE_PTHREAD_H_TRUE@test_atomic_pthreads_LDADD = $(test_atomic_LDADD)
 test_atomic_SOURCES = test_atomic.c
 test_atomic_LDADD = $(THREADDLLIBS) $(top_builddir)/src/libatomic_ops.la
+test_atomic_generalized_SOURCES = $(test_atomic_SOURCES)
+test_atomic_generalized_CPPFLAGS = \
+        -DAO_PREFER_GENERALIZED -DAO_TEST_EMULATION $(AM_CPPFLAGS)
+
+test_atomic_generalized_LDADD = $(test_atomic_LDADD)
 test_stack_SOURCES = test_stack.c
 test_stack_LDADD = $(THREADDLLIBS) \
-        $(top_builddir)/src/libatomic_ops_gpl.la \
-        $(top_builddir)/src/libatomic_ops.la
-
+	$(top_builddir)/src/libatomic_ops_gpl.la $(am__append_5)
 test_malloc_SOURCES = test_malloc.c
 test_malloc_LDADD = $(THREADDLLIBS) \
-        $(top_builddir)/src/libatomic_ops_gpl.la \
-        $(top_builddir)/src/libatomic_ops.la
-
+	$(top_builddir)/src/libatomic_ops_gpl.la $(am__append_4)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -609,6 +618,10 @@ test_atomic$(EXEEXT): $(test_atomic_OBJECTS) $(test_atomic_DEPENDENCIES) $(EXTRA
 	@rm -f test_atomic$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_atomic_OBJECTS) $(test_atomic_LDADD) $(LIBS)
 
+test_atomic_generalized$(EXEEXT): $(test_atomic_generalized_OBJECTS) $(test_atomic_generalized_DEPENDENCIES) $(EXTRA_test_atomic_generalized_DEPENDENCIES) 
+	@rm -f test_atomic_generalized$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_atomic_generalized_OBJECTS) $(test_atomic_generalized_LDADD) $(LIBS)
+
 test_atomic_pthreads$(EXEEXT): $(test_atomic_pthreads_OBJECTS) $(test_atomic_pthreads_DEPENDENCIES) $(EXTRA_test_atomic_pthreads_DEPENDENCIES) 
 	@rm -f test_atomic_pthreads$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_atomic_pthreads_OBJECTS) $(test_atomic_pthreads_LDADD) $(LIBS)
@@ -628,6 +641,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_atomic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_atomic_generalized-test_atomic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_atomic_pthreads-test_atomic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_malloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_stack.Po@am__quote@
@@ -652,6 +666,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+test_atomic_generalized-test_atomic.o: test_atomic.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_atomic_generalized_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_atomic_generalized-test_atomic.o -MD -MP -MF $(DEPDIR)/test_atomic_generalized-test_atomic.Tpo -c -o test_atomic_generalized-test_atomic.o `test -f 'test_atomic.c' || echo '$(srcdir)/'`test_atomic.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_atomic_generalized-test_atomic.Tpo $(DEPDIR)/test_atomic_generalized-test_atomic.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test_atomic.c' object='test_atomic_generalized-test_atomic.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_atomic_generalized_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_atomic_generalized-test_atomic.o `test -f 'test_atomic.c' || echo '$(srcdir)/'`test_atomic.c
+
+test_atomic_generalized-test_atomic.obj: test_atomic.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_atomic_generalized_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_atomic_generalized-test_atomic.obj -MD -MP -MF $(DEPDIR)/test_atomic_generalized-test_atomic.Tpo -c -o test_atomic_generalized-test_atomic.obj `if test -f 'test_atomic.c'; then $(CYGPATH_W) 'test_atomic.c'; else $(CYGPATH_W) '$(srcdir)/test_atomic.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_atomic_generalized-test_atomic.Tpo $(DEPDIR)/test_atomic_generalized-test_atomic.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test_atomic.c' object='test_atomic_generalized-test_atomic.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_atomic_generalized_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_atomic_generalized-test_atomic.obj `if test -f 'test_atomic.c'; then $(CYGPATH_W) 'test_atomic.c'; else $(CYGPATH_W) '$(srcdir)/test_atomic.c'; fi`
 
 test_atomic_pthreads-test_atomic.o: test_atomic.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_atomic_pthreads_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_atomic_pthreads-test_atomic.o -MD -MP -MF $(DEPDIR)/test_atomic_pthreads-test_atomic.Tpo -c -o test_atomic_pthreads-test_atomic.o `test -f 'test_atomic.c' || echo '$(srcdir)/'`test_atomic.c
@@ -873,6 +901,13 @@ test_atomic.log: test_atomic$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_atomic_generalized.log: test_atomic_generalized$(EXEEXT)
+	@p='test_atomic_generalized$(EXEEXT)'; \
+	b='test_atomic_generalized'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test_stack.log: test_stack$(EXEEXT)
 	@p='test_stack$(EXEEXT)'; \
 	b='test_stack'; \
@@ -1072,6 +1107,16 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
+# Run the tests directly (without test-driver):
+.PHONY: check-without-test-driver
+check-without-test-driver: $(TESTS)
+	@echo "The following will print some 'Missing ...' messages"
+	./test_atomic$(EXEEXT)
+	./test_atomic_generalized$(EXEEXT)
+	./test_stack$(EXEEXT)
+	./test_malloc$(EXEEXT)
+	test ! -f test_atomic_pthreads$(EXEEXT) || ./test_atomic_pthreads$(EXEEXT)
+
 test_atomic_include.h: test_atomic_include.template
 	mkdir -p `dirname $@`
 	sed -e s:XX::g $? > $@
@@ -1082,6 +1127,7 @@ test_atomic_include.h: test_atomic_include.template
 	sed -e s:XX:_full:g $? >> $@
 	sed -e s:XX:_release_write:g $? >> $@
 	sed -e s:XX:_acquire_read:g $? >> $@
+	sed -e s:XX:_dd_acquire_read:g $? >> $@
 
 list_atomic.c: list_atomic.template
 	mkdir -p `dirname $@`
@@ -1139,6 +1185,9 @@ list_atomic.i: list_atomic.c
 # Verify list_atomic.c syntax:
 list_atomic.o: list_atomic.c
 	$(COMPILE) -c -o $@ $?
+
+# Just compile all tests (without linking and execution):
+check-nolink-local: $(TEST_OBJS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

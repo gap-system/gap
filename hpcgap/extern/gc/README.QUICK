@@ -2,6 +2,7 @@ Copyright 1988, 1989 Hans-J. Boehm, Alan J. Demers
 Copyright (c) 1991-1995 by Xerox Corporation.  All rights reserved.
 Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
 Copyright (c) 1999-2001 by Hewlett-Packard. All rights reserved.
+Copyright (c) 2009-2019 Ivan Maidanski
 
 THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
 OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -26,10 +27,8 @@ For the version number, see README.md or include/gc_version.h files.
 
 INSTALLATION:
 Under UN*X, Linux:
-Alternative 1 (the old way): type "make test" in this directory.
-        Link against gc.a.  With the most recent GC distributions
-        you may have to type "make -f Makefile.direct test" or
-        copy Makefile.direct to Makefile first.
+Alternative 1 (the old way): type "make -f Makefile.direct check".
+        Link against gc.a.
 
 Alternative 2 (the new way): type
         "./configure --prefix=<dir>; make; make check; make install".
@@ -42,23 +41,21 @@ copy the appropriate makefile to MAKEFILE, read it, and type "nmake test".
 installed, and suitably configured.)
 Read the machine specific README.XXX in the doc directory if one exists.
 
-If you need thread support, you will need to follow the special
-platform-dependent instructions (win32), or define GC_THREADS
-as described in doc/README.macros, or possibly use
---enable-threads=posix when running the configure script.
+If you need thread support, you should define GC_THREADS as described in
+doc/README.macros (configure defines this implicitly unless --disable-threads
+option is given).
 
 If you wish to use the cord (structured string) library with the stand-alone
-Makefile.direct, type "make cords", after copying to "Makefile".
-(This requires an ANSI C compiler.  You may
-need to redefine CC in the Makefile. The CORD_printf implementation in
+Makefile.direct, type "make -f Makefile.direct cords".  (You may need to
+override CC specified in the Makefile. The CORD_printf implementation in
 cordprnt.c is known to be less than perfectly portable.  The rest of the
-package should still work.)
+package should still work.)  See include/cord.h for the API.
 
 If you wish to use the collector from C++, type "make c++", or use
 --enable-cplusplus with the configure script.   With Makefile.direct,
 these ones add further files to gc.a and to the include subdirectory.
-With the alternate build process,this generates libgccpp.
-See cord/cord.h and include/gc_cpp.h.
+With the alternate build process, this generates libgccpp.
+See include/gc_cpp.h.
 
 TYPICAL USE:
 Include "gc.h" from the include subdirectory.  Link against the
@@ -70,7 +67,7 @@ instead of GC_MALLOC.
 Define GC_DEBUG before including gc.h for additional checking.
 
 More documentation on the collector interface can be found in README.md,
-doc/gcinterface.html, include/gc.h, and other files in the doc directory.
+doc/gcinterface.md, include/gc.h, and other files in the doc directory.
 
 WARNINGS:
 

@@ -1,8 +1,8 @@
-.TH GC_MALLOC 1L "2 October 2003"
+.TH BDWGC 3 "15 Aug 2018"
 .SH NAME
 GC_malloc, GC_malloc_atomic, GC_free, GC_realloc, GC_enable_incremental, GC_register_finalizer, GC_malloc_ignore_off_page, GC_malloc_atomic_ignore_off_page, GC_set_warn_proc \- Garbage collecting malloc replacement
 .SH SYNOPSIS
-#include "gc.h"
+#include <gc.h>
 .br
 void * GC_malloc(size_t size);
 .br
@@ -11,7 +11,7 @@ void GC_free(void *ptr);
 void * GC_realloc(void *ptr, size_t size);
 .br
 .sp
-cc ... gc.a
+cc ... -lgc
 .LP
 .SH DESCRIPTION
 .I GC_malloc
@@ -31,7 +31,7 @@ versions of the routines to be substituted by defining GC_DEBUG before
 including gc.h.
 .LP
 See the documentation in the include files gc_cpp.h and gc_allocator.h,
-as well as the gcinterface.html file in the distribution,
+as well as the gcinterface.md file in the distribution,
 for an alternate, C++ specific interface to the garbage collector.
 Note that C++ programs generally
 need to be careful to ensure that all allocated memory (whether via new,
@@ -91,7 +91,7 @@ Other facilities not discussed here include limited facilities to support increm
 .SH "SEE ALSO"
 The README and gc.h files in the distribution.  More detailed definitions of the functions exported by the collector are given there.  (The above list is not complete.)
 .LP
-The web site at http://www.hboehm.info/gc/ .
+The web site at http://www.hboehm.info/gc/ (or https://github.com/ivmai/bdwgc/).
 .LP
 Boehm, H., and M. Weiser, "Garbage Collection in an Uncooperative Environment",
 "Software Practice & Experience", September 1988, pp. 807-820.
@@ -100,4 +100,4 @@ The malloc(3) man page.
 .LP
 .SH AUTHOR
 Hans-J. Boehm (boehm@acm.org).
-Some of the code was written by others, most notably Alan Demers.
+Some of the code was written by others (see the AUTHORS file for the details), most notably by Alan Demers, and, recently, Ivan Maidanski.

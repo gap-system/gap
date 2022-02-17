@@ -25,16 +25,12 @@ SET(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove when CMake >= 2.8.4 is required
 
 PROJECT(gc)
 
+INCLUDE(CTest)
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 ADD_DEFINITIONS("-D_CRT_SECURE_NO_DEPRECATE
-                 -DALL_INTERIOR_POINTERS")
-
-IF(APPLE)
-    IF("${CMAKE_OSX_ARCHITECTURES}" STREQUAL "")
-        SET(CMAKE_OSX_ARCHITECTURES "ppc;i386;x86_64" CACHE STRING "Build architectures for Mac OS X" FORCE)
-    ENDIF()
-ENDIF(APPLE)
+                 -DALL_INTERIOR_POINTERS -DNO_EXECUTE_PERMISSION")
 
 #LIBATOMIC #TODO
 #ADD_LIBRARY(atomic_ops STATIC )
@@ -48,9 +44,8 @@ INCLUDE_DIRECTORIES(libatomic_ops/src)
 
 SET(SRC alloc.c reclaim.c allchblk.c misc.c mach_dep.c os_dep.c
         mark_rts.c headers.c mark.c obj_map.c blacklst.c finalize.c
-        new_hblk.c dbg_mlc.c malloc.c stubborn.c dyn_load.c
-        typd_mlc.c ptr_chck.c gc_cpp.cc mallocx.c checksums.c
-        thread_local_alloc.c)
+        new_hblk.c dbg_mlc.c malloc.c dyn_load.c typd_mlc.c ptr_chck.c
+        mallocx.c)
 SET(LIBS)
 OPTION(enable_threads "TODO" NO)
 IF(enable_threads)
@@ -60,7 +55,11 @@ IF(enable_threads)
         SET(LIBS ${LIBS} ${Threads_LIBRARIES})
 ENDIF(enable_threads)
 
-OPTION(enable_parallel_mark "Parallelize marking and free list construction" NO)
+OPTION(enable_handle_fork "Attempt to ensure a usable collector after fork()" ON)
+
+OPTION(enable_thread_local_alloc "Turn on thread-local allocation optimization" ON)
+
+OPTION(enable_parallel_mark "Parallelize marking and free list construction" ON)
 
 #IF(Threads_FOUND)
 #       ADD_DEFINITIONS("")
@@ -68,152 +67,175 @@ OPTION(enable_parallel_mark "Parallelize marking and free list construction" NO)
 #       MESSAGE("Parallel mark requires enable_threads ON" )
 #ENDIF(Threads_FOUND)
 
-IF(enable_parallel_mark)
-ENDIF(enable_parallel_mark)
+#OPTION(enable_cplusplus "install C++ support" ON)
+SET(SRC ${SRC} gc_cpp.cc)
 
-OPTION(enable_cplusplus "install C++ support" NO)
-
-SET(_HOST ${CMAKE_HOST_SYSTEM_PROCESSOR}--${CMAKE_SYSTEM}) #FIXME missing the vendor field.Use lowercase
-
+SET(_HOST ${CMAKE_HOST_SYSTEM_PROCESSOR}--${CMAKE_SYSTEM}) #FIXME missing the vendor field.
 STRING(TOLOWER ${_HOST} HOST)
 MESSAGE("HOST = ${HOST}")
 
-#Thread Detection. Relying on cmake for lib an includes.
+# Thread Detection.  Relying on cmake for lib and includes.
 #TODO check cmake detection
 IF(CMAKE_USE_PTHREADS_INIT)
-        SET(SRC ${SRC} pthread_start.c pthread_support.c pthread_stop_world.c)
-        IF( HOST MATCHES x86-.*-linux.*|ia64-.*-linux.*|i586-.*-linux.*|i686-.*-linux.*|x86_64-.*-linux.*|alpha-.*-linux.*|sparc.*-.*-linux.*)
-                ADD_DEFINITIONS("-DGC_LINUX_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
-                IF (${enable_parallel_mark})
-                        ADD_DEFINITIONS("-DPARALLEL_MARK")
-                ENDIF()
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
+        SET(SRC ${SRC} gc_dlopen.c pthread_start.c pthread_stop_world.c
+                pthread_support.c)
+        # Common defines for most POSIX platforms.
+        IF( HOST MATCHES .*-.*-aix.*|.*-.*-android.*|.*-.*-cygwin.*|.*-.*-darwin.*|.*-.*-.*freebsd.*|.*-.*-haiku.*|.*-.*-gnu.*|.*-.*-hpux11.*|.*-.*-irix.*|.*-.*-.*linux.*|.*-.*-msys.*|.*-.*-nacl.*|.*-.*-netbsd.*|.*-.*-openbsd.*|.*-.*-osf.*|.*-.*-solaris.*)
+                ADD_DEFINITIONS("-DGC_THREADS -D_REENTRANT")
+                IF(enable_parallel_mark)
+                    ADD_DEFINITIONS("-DPARALLEL_MARK")
+                ENDIF(enable_parallel_mark)
+                IF(enable_thread_local_alloc)
+                    ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
+                    SET(SRC ${SRC} specific.c thread_local_alloc.c)
+                ENDIF(enable_thread_local_alloc)
                 MESSAGE("Explicit GC_INIT() calls may be required.")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-linux.*)
-                ADD_DEFINITIONS("-DGC_LINUX_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-aix.*)
-                ADD_DEFINITIONS("-DGC_AIX_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
         ENDIF()
         IF ( HOST MATCHES .*-.*-hpux11.*)
                 MESSAGE("Only HP/UX 11 POSIX threads are supported.")
-                ADD_DEFINITIONS("-DGC_HPUX_THREADS")
                 ADD_DEFINITIONS("-D_POSIX_C_SOURCE=199506L") #TODO test -DVAR=value. Alternative is COMPILE_DEFINITIONS property
-                IF (${enable_parallel_mark})
-                        ADD_DEFINITIONS("-DPARALLEL_MARK")
-                ENDIF()
-                MESSAGE("Explicit GC_INIT() calls may be required.")
-                ADD_DEFINITIONS("-D_REENTRANT") #TODO
         ENDIF()
         IF ( HOST MATCHES .*-.*-hpux10.*)
-                MESSAGE("Only HP/UX 11 POSIX threads are supported.")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-openbsd.*)
-                ADD_DEFINITIONS("-DGC_OPENBSD_THREADS")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-freebsd.*)
-                MESSAGE("FreeBSD does not yet fully support threads with Boehm GC.")
-                ADD_DEFINITIONS("-DGC_FREEBSD_THREADS")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-kfreebsd.*-gnu)
-                ADD_DEFINITIONS("-DGC_FREEBSD_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
-                IF (${enable_parallel_mark})
-                        ADD_DEFINITIONS("-DPARALLEL_MARK")
-                ENDIF()
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
-                ADD_DEFINITIONS("-DUSE_COMPILER_TLS")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-gnu.*)
-                ADD_DEFINITIONS("-DGC_GNU_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
+                MESSAGE("HP/UX 10 POSIX threads are not supported.")
         ENDIF()
         IF ( HOST MATCHES .*-.*-netbsd.*)
                 MESSAGE("Only on NetBSD 2.0 or later.")
-                ADD_DEFINITIONS("-DGC_NETBSD_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
                 ADD_DEFINITIONS("-D_PTHREADS")
         ENDIF()
-        IF ( HOST MATCHES .*-.*-solaris.*)
-                ADD_DEFINITIONS("-DGC_SOLARIS_THREADS")
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
-#TODO
-#       if test "$GCC" != yes; then
-#          CFLAGS="$CFLAGS -O"
-#          need_atomic_ops_asm=true
-#        fi
-
+        IF( HOST MATCHES .*-.*-android.*)
+                # Android NDK does not provide pthread_atfork.
+        ELSEIF( HOST MATCHES .*-.*-aix.*|.*-.*-cygwin.*|.*-.*-freebsd.*|.*-.*-haiku.*|.*-.*-hpux11.*|.*-.*-irix.*|.*-.*-kfreebsd.*-gnu|.*-.*-.*linux.*|.*-.*-netbsd.*|.*-.*-openbsd.*|.*-.*-osf.*|.*-.*-solaris.*)
+                IF(enable_handle_fork)
+                    ADD_DEFINITIONS("-DHANDLE_FORK")
+                ENDIF(enable_handle_fork)
         ENDIF()
-        IF ( HOST MATCHES .*-.*-irix.*)
-                ADD_DEFINITIONS("-DGC_IRIX_THREADS")
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-cygwin.*)
-                ADD_DEFINITIONS("-DGC_THREADS")
-                IF (${enable_parallel_mark})
-                        ADD_DEFINITIONS("-DPARALLEL_MARK")
-                ENDIF()
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
-
-#TODO
-#       win32_threads=true
+        IF ( HOST MATCHES .*-.*-cygwin.*|.*-.*-msys.*)
+                SET(SRC ${SRC} win32_threads.c)
         ENDIF()
         IF ( HOST MATCHES .*-.*-darwin.*)
-                ADD_DEFINITIONS("-DGC_DARWIN_THREADS")
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
-                MESSAGE("Explicit GC_INIT() calls may be required.")
+                IF(enable_handle_fork)
+                    # The incremental mode conflicts with fork handling.
+                    IF(enable_parallel_mark)
+                        ADD_DEFINITIONS("-DHANDLE_FORK")
+                    ENDIF(enable_parallel_mark)
+                ENDIF(enable_handle_fork)
                 SET(SRC ${SRC} darwin_stop_world.c)
-                IF (${enable_parallel_mark})
-                       ADD_DEFINITIONS("-DPARALLEL_MARK")
-                ENDIF()
                 #TODO
                 #darwin_threads=true
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-osf*)
-                ADD_DEFINITIONS("-DGC_OSF1_THREADS")
-                IF (${enable_parallel_mark})
-                        ADD_DEFINITIONS("-DPARALLEL_MARK")
-                        ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
-                        MESSAGE("Explicit GC_INIT() calls may be required.")
-                        # May want to enable it in other cases, too.
-                        # Measurements haven't yet been done.
-                ENDIF()
-        ENDIF()
-        IF ( HOST MATCHES .*-.*-linux.*)
-                ADD_DEFINITIONS("-DGC_LINUX_THREADS")
-                ADD_DEFINITIONS("-D_REENTRANT")
         ENDIF()
 ENDIF(CMAKE_USE_PTHREADS_INIT)
 
 IF(CMAKE_USE_WIN32_THREADS_INIT)
         ADD_DEFINITIONS("-DGC_THREADS")
-        #win32_threads=true   TODO
-        IF (${enable_parallel_mark})
+        IF(enable_parallel_mark)
                 ADD_DEFINITIONS("-DPARALLEL_MARK")
-                ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
+                IF(enable_thread_local_alloc)
+                    ADD_DEFINITIONS("-DTHREAD_LOCAL_ALLOC")
+                    SET(SRC ${SRC} thread_local_alloc.c)
+                ENDIF(enable_thread_local_alloc)
         ENDIF()
         ADD_DEFINITIONS("-DEMPTY_GETENV_RESULTS") #TODO test
         SET(SRC ${SRC} win32_threads.c)
 ENDIF(CMAKE_USE_WIN32_THREADS_INIT)
 
-OPTION(enable_gcj_support "Support for gcj" NO)
+OPTION(enable_gcj_support "Support for gcj" ON)
 IF(enable_gcj_support)
         ADD_DEFINITIONS("-DGC_GCJ_SUPPORT")
+        IF(enable_threads)
+                ADD_DEFINITIONS("-DGC_ENABLE_SUSPEND_THREAD")
+        ENDIF(enable_threads)
+        SET(SRC ${SRC} gcj_mlc.c)
 ENDIF(enable_gcj_support)
 
+OPTION(enable_disclaim "Support alternative finalization interface" ON)
+IF(enable_disclaim)
+    ADD_DEFINITIONS("-DENABLE_DISCLAIM")
+    SET(SRC ${SRC} fnlz_mlc.c)
+ENDIF(enable_disclaim)
+
+OPTION(enable_java_finalization "Support for java finalization" ON)
+IF(enable_java_finalization)
+    ADD_DEFINITIONS("-DJAVA_FINALIZATION")
+ENDIF(enable_java_finalization)
+
+OPTION(enable_atomic_uncollectable "Support for atomic uncollectible allocation" ON)
+IF(enable_atomic_uncollectable)
+    ADD_DEFINITIONS("-DGC_ATOMIC_UNCOLLECTABLE")
+ENDIF(enable_atomic_uncollectable)
+
+OPTION(enable_gc_debug "Support for pointer back-tracing" NO)
+IF(enable_gc_debug)
+    ADD_DEFINITIONS("-DDBG_HDRS_ALL -DKEEP_BACK_PTRS")
+    IF (HOST MATCHES ia64-.*-linux.*|i586-.*-linux.*|i686-.*-linux.*|x86-.*-linux.*|x86_64-.*-linux.*)
+        ADD_DEFINITIONS("-DMAKE_BACK_GRAPH")
+        ADD_DEFINITIONS("-DSAVE_CALL_COUNT=8")
+        SET(SRC ${SRC} backgraph.c)
+    ENDIF()
+    IF (HOST MATCHES i.86-.*-dgux.*)
+        ADD_DEFINITIONS("-DMAKE_BACK_GRAPH")
+        SET(SRC ${SRC} backgraph.c)
+    ENDIF()
+ENDIF(enable_gc_debug)
+
+OPTION(enable_redirect_malloc "Redirect malloc and friends to GC routines" NO)
+IF(enable_redirect_malloc)
+    IF(enable_gc_debug)
+        ADD_DEFINITIONS("-DREDIRECT_MALLOC=GC_debug_malloc_replacement")
+        ADD_DEFINITIONS("-DREDIRECT_REALLOC=GC_debug_realloc_replacement")
+        ADD_DEFINITIONS("-DREDIRECT_FREE=GC_debug_free")
+    ELSE(enable_gc_debug)
+        ADD_DEFINITIONS("-DREDIRECT_MALLOC=GC_malloc")
+    ENDIF(enable_gc_debug)
+    ADD_DEFINITIONS("-DGC_USE_DLOPEN_WRAP")
+ENDIF(enable_redirect_malloc)
+
+OPTION(enable_mmap "Use mmap instead of sbrk to expand the heap" NO)
+
+OPTION(enable_munmap "Return page to the OS if empty for N collections" ON)
+IF(enable_munmap)
+    ADD_DEFINITIONS("-DUSE_MMAP -DUSE_MUNMAP")
+ELSEIF(enable_mmap)
+    ADD_DEFINITIONS("-DUSE_MMAP")
+ENDIF()
+
+OPTION(enable_dynamic_loading "Enable tracing of dynamic library data roots" ON)
+IF(NOT enable_dynamic_loading)
+    ADD_DEFINITIONS("-DIGNORE_DYNAMIC_LOADING")
+ENDIF()
+
+OPTION(enable_register_main_static_data "Perform the initial guess of data root sets" ON)
+IF(NOT enable_register_main_static_data)
+    ADD_DEFINITIONS("-DGC_DONT_REGISTER_MAIN_STATIC_DATA")
+ENDIF()
+
+OPTION(enable_large_config "Optimize for large heap or root set" NO)
+IF(enable_large_config)
+    ADD_DEFINITIONS("-DLARGE_CONFIG")
+ENDIF(enable_large_config)
+
+OPTION(enable_gc_assertions "Enable collector-internal assertion checking" NO)
+IF(enable_gc_assertions)
+    ADD_DEFINITIONS("-DGC_ASSERTIONS")
+ENDIF(enable_gc_assertions)
+
+OPTION(enable_threads_discovery "Enable threads discovery in GC" ON)
+IF(NOT enable_threads_discovery)
+    ADD_DEFINITIONS("-DGC_NO_THREADS_DISCOVERY")
+ENDIF()
+
+OPTION(enable_checksums "Report erroneously cleared dirty bits" NO)
+IF(enable_checksums)
+    IF(enable_munmap OR enable_threads)
+        MESSAGE("CHECKSUMS not compatible with USE_MUNMAP or threads")
+    ENDIF()
+    ADD_DEFINITIONS("-DCHECKSUMS")
+    SET(SRC ${SRC} checksums.c)
+ENDIF(enable_checksums)
 
 ADD_LIBRARY(          gc-lib   STATIC      ${SRC})
 SET_TARGET_PROPERTIES(gc-lib   PROPERTIES
                       COMPILE_DEFINITIONS GC_NOT_DLL)
 #TODO TARGET_LINK_LIBRARIES(...  ...  ${LIBS})
-
-ADD_LIBRARY(          gcmt-lib STATIC      ${SRC})
-SET_TARGET_PROPERTIES(gcmt-lib PROPERTIES
-                      COMPILE_DEFINITIONS GC_NOT_DLL)
 
 ADD_LIBRARY(          gcmt-dll  SHARED     ${SRC})
 

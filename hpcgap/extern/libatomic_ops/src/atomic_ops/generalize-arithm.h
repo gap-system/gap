@@ -133,6 +133,7 @@
 /* corresponding compare_and_swap variants to minimize adding barriers. */
 #if defined(AO_HAVE_char_compare_and_swap_full) \
     && !defined(AO_HAVE_char_fetch_and_add_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/char
   AO_char_fetch_and_add_full(volatile unsigned/**/char *addr, unsigned/**/char incr)
   {
@@ -151,6 +152,7 @@
 
 #if defined(AO_HAVE_char_compare_and_swap_acquire) \
     && !defined(AO_HAVE_char_fetch_and_add_acquire)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/char
   AO_char_fetch_and_add_acquire(volatile unsigned/**/char *addr, unsigned/**/char incr)
   {
@@ -169,6 +171,7 @@
 
 #if defined(AO_HAVE_char_compare_and_swap_release) \
     && !defined(AO_HAVE_char_fetch_and_add_release)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/char
   AO_char_fetch_and_add_release(volatile unsigned/**/char *addr, unsigned/**/char incr)
   {
@@ -187,6 +190,7 @@
 
 #if defined(AO_HAVE_char_compare_and_swap) \
     && !defined(AO_HAVE_char_fetch_and_add)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/char
   AO_char_fetch_and_add(volatile unsigned/**/char *addr, unsigned/**/char incr)
   {
@@ -600,6 +604,7 @@
 /* char_and */
 #if defined(AO_HAVE_char_compare_and_swap_full) \
     && !defined(AO_HAVE_char_and_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_char_and_full(volatile unsigned/**/char *addr, unsigned/**/char value)
   {
@@ -682,6 +687,7 @@
 /* char_or */
 #if defined(AO_HAVE_char_compare_and_swap_full) \
     && !defined(AO_HAVE_char_or_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_char_or_full(volatile unsigned/**/char *addr, unsigned/**/char value)
   {
@@ -763,6 +769,7 @@
 /* char_xor */
 #if defined(AO_HAVE_char_compare_and_swap_full) \
     && !defined(AO_HAVE_char_xor_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_char_xor_full(volatile unsigned/**/char *addr, unsigned/**/char value)
   {
@@ -978,6 +985,7 @@
 /* corresponding compare_and_swap variants to minimize adding barriers. */
 #if defined(AO_HAVE_short_compare_and_swap_full) \
     && !defined(AO_HAVE_short_fetch_and_add_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/short
   AO_short_fetch_and_add_full(volatile unsigned/**/short *addr, unsigned/**/short incr)
   {
@@ -996,6 +1004,7 @@
 
 #if defined(AO_HAVE_short_compare_and_swap_acquire) \
     && !defined(AO_HAVE_short_fetch_and_add_acquire)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/short
   AO_short_fetch_and_add_acquire(volatile unsigned/**/short *addr, unsigned/**/short incr)
   {
@@ -1014,6 +1023,7 @@
 
 #if defined(AO_HAVE_short_compare_and_swap_release) \
     && !defined(AO_HAVE_short_fetch_and_add_release)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/short
   AO_short_fetch_and_add_release(volatile unsigned/**/short *addr, unsigned/**/short incr)
   {
@@ -1032,6 +1042,7 @@
 
 #if defined(AO_HAVE_short_compare_and_swap) \
     && !defined(AO_HAVE_short_fetch_and_add)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned/**/short
   AO_short_fetch_and_add(volatile unsigned/**/short *addr, unsigned/**/short incr)
   {
@@ -1445,6 +1456,7 @@
 /* short_and */
 #if defined(AO_HAVE_short_compare_and_swap_full) \
     && !defined(AO_HAVE_short_and_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_short_and_full(volatile unsigned/**/short *addr, unsigned/**/short value)
   {
@@ -1527,6 +1539,7 @@
 /* short_or */
 #if defined(AO_HAVE_short_compare_and_swap_full) \
     && !defined(AO_HAVE_short_or_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_short_or_full(volatile unsigned/**/short *addr, unsigned/**/short value)
   {
@@ -1608,6 +1621,7 @@
 /* short_xor */
 #if defined(AO_HAVE_short_compare_and_swap_full) \
     && !defined(AO_HAVE_short_xor_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_short_xor_full(volatile unsigned/**/short *addr, unsigned/**/short value)
   {
@@ -1823,6 +1837,7 @@
 /* corresponding compare_and_swap variants to minimize adding barriers. */
 #if defined(AO_HAVE_int_compare_and_swap_full) \
     && !defined(AO_HAVE_int_fetch_and_add_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned
   AO_int_fetch_and_add_full(volatile unsigned *addr, unsigned incr)
   {
@@ -1841,6 +1856,7 @@
 
 #if defined(AO_HAVE_int_compare_and_swap_acquire) \
     && !defined(AO_HAVE_int_fetch_and_add_acquire)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned
   AO_int_fetch_and_add_acquire(volatile unsigned *addr, unsigned incr)
   {
@@ -1859,6 +1875,7 @@
 
 #if defined(AO_HAVE_int_compare_and_swap_release) \
     && !defined(AO_HAVE_int_fetch_and_add_release)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned
   AO_int_fetch_and_add_release(volatile unsigned *addr, unsigned incr)
   {
@@ -1877,6 +1894,7 @@
 
 #if defined(AO_HAVE_int_compare_and_swap) \
     && !defined(AO_HAVE_int_fetch_and_add)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE unsigned
   AO_int_fetch_and_add(volatile unsigned *addr, unsigned incr)
   {
@@ -2290,6 +2308,7 @@
 /* int_and */
 #if defined(AO_HAVE_int_compare_and_swap_full) \
     && !defined(AO_HAVE_int_and_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_int_and_full(volatile unsigned *addr, unsigned value)
   {
@@ -2372,6 +2391,7 @@
 /* int_or */
 #if defined(AO_HAVE_int_compare_and_swap_full) \
     && !defined(AO_HAVE_int_or_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_int_or_full(volatile unsigned *addr, unsigned value)
   {
@@ -2453,6 +2473,7 @@
 /* int_xor */
 #if defined(AO_HAVE_int_compare_and_swap_full) \
     && !defined(AO_HAVE_int_xor_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_int_xor_full(volatile unsigned *addr, unsigned value)
   {
@@ -2668,6 +2689,7 @@
 /* corresponding compare_and_swap variants to minimize adding barriers. */
 #if defined(AO_HAVE_compare_and_swap_full) \
     && !defined(AO_HAVE_fetch_and_add_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE AO_t
   AO_fetch_and_add_full(volatile AO_t *addr, AO_t incr)
   {
@@ -2686,6 +2708,7 @@
 
 #if defined(AO_HAVE_compare_and_swap_acquire) \
     && !defined(AO_HAVE_fetch_and_add_acquire)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE AO_t
   AO_fetch_and_add_acquire(volatile AO_t *addr, AO_t incr)
   {
@@ -2704,6 +2727,7 @@
 
 #if defined(AO_HAVE_compare_and_swap_release) \
     && !defined(AO_HAVE_fetch_and_add_release)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE AO_t
   AO_fetch_and_add_release(volatile AO_t *addr, AO_t incr)
   {
@@ -2722,6 +2746,7 @@
 
 #if defined(AO_HAVE_compare_and_swap) \
     && !defined(AO_HAVE_fetch_and_add)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE AO_t
   AO_fetch_and_add(volatile AO_t *addr, AO_t incr)
   {
@@ -3135,6 +3160,7 @@
 /* and */
 #if defined(AO_HAVE_compare_and_swap_full) \
     && !defined(AO_HAVE_and_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_and_full(volatile AO_t *addr, AO_t value)
   {
@@ -3217,6 +3243,7 @@
 /* or */
 #if defined(AO_HAVE_compare_and_swap_full) \
     && !defined(AO_HAVE_or_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_or_full(volatile AO_t *addr, AO_t value)
   {
@@ -3298,6 +3325,7 @@
 /* xor */
 #if defined(AO_HAVE_compare_and_swap_full) \
     && !defined(AO_HAVE_xor_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_xor_full(volatile AO_t *addr, AO_t value)
   {

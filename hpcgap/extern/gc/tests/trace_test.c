@@ -14,22 +14,35 @@ struct treenode {
 } * root[10];
 
 struct treenode * mktree(int i) {
-  struct treenode * r = GC_MALLOC(sizeof(struct treenode));
-  if (0 == i) return 0;
-  if (1 == i) r = GC_MALLOC_ATOMIC(sizeof(struct treenode));
+  struct treenode * r = GC_NEW(struct treenode);
+  struct treenode *x, *y;
+  if (0 == i)
+    return 0;
+  if (1 == i)
+    r = (struct treenode *)GC_MALLOC_ATOMIC(sizeof(struct treenode));
   if (r == NULL) {
     fprintf(stderr, "Out of memory\n");
     exit(1);
   }
-  r -> x = mktree(i-1);
-  r -> y = mktree(i-1);
+  x = mktree(i - 1);
+  y = mktree(i - 1);
+  r -> x = x;
+  r -> y = y;
+  if (i != 1) {
+    GC_END_STUBBORN_CHANGE(r);
+    GC_reachable_here(x);
+    GC_reachable_here(y);
+  }
   return r;
 }
 
 int main(void)
 {
   int i;
+
   GC_INIT();
+  if (GC_get_find_leak())
+    printf("This test program is not designed for leak detection mode\n");
   for (i = 0; i < 10; ++i) {
     root[i] = mktree(12);
   }

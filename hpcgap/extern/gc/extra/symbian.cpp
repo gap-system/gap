@@ -6,12 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 
 int GC_get_main_symbian_stack_base()
-    {
+{
     TThreadStackInfo aInfo;
     TInt err = RThread().StackInfo(aInfo);
     if ( !err )
@@ -22,10 +20,10 @@ int GC_get_main_symbian_stack_base()
         {
         return 0;
         }
-    }
+}
 
 char* GC_get_private_path_and_zero_file()
-    {
+{
     // always on c: drive
     RFs fs;
     fs.Connect();
@@ -45,11 +43,10 @@ char* GC_get_private_path_and_zero_file()
 
     size_t size = path8.Length() + 1;
     char* copyChar = (char*) malloc( size );
-    memcpy( copyChar, path8.PtrZ(), size );
+    if (copyChar)
+        memcpy( copyChar, path8.PtrZ(), size );
 
     return copyChar; // ownership passed
-    }
+}
 
-#ifdef __cplusplus
-    }
-#endif
+} /* extern "C" */

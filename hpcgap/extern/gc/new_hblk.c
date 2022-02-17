@@ -18,14 +18,14 @@
 /*
  * This file contains the functions:
  *      ptr_t GC_build_flXXX(h, old_fl)
- *      void GC_new_hblk(size)
+ *      void GC_new_hblk(size, kind)
  */
 
 #include <stdio.h>
 
 #ifndef SMALL_CONFIG
   /* Build a free list for size 2 (words) cleared objects inside        */
-  /* hblk h.  Set the last link to be ofl.  Return a pointer tpo the    */
+  /* hblk h.  Set the last link to be ofl.  Return a pointer to the     */
   /* first free list entry.                                             */
   STATIC ptr_t GC_build_fl_clear2(struct hblk *h, ptr_t ofl)
   {
@@ -187,5 +187,5 @@ GC_INNER void GC_new_hblk(size_t gran, int kind)
   /* Build the free list */
       GC_obj_kinds[kind].ok_freelist[gran] =
         GC_build_fl(h, GRANULES_TO_WORDS(gran), clear,
-                    GC_obj_kinds[kind].ok_freelist[gran]);
+                    (ptr_t)GC_obj_kinds[kind].ok_freelist[gran]);
 }

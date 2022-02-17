@@ -13,7 +13,7 @@ are normally built.  On Windows, read README_win32.txt instead.
 are implemented by header files included from it.  It is sometimes
 necessary, and always recommended to also link against libatomic_ops.a.
 To use the almost non-blocking stack or malloc implementations,
-see the corresponding README files, and also link against libatomic_gpl.a
+see the corresponding README files, and also link against libatomic_ops_gpl.a
 before linking against libatomic_ops.a.
 
 OVERVIEW:
@@ -25,10 +25,10 @@ by synthesis).  This is an attempt to replace various existing files with
 similar goals, since they usually do not handle differences in memory
 barrier styles with sufficient generality.
 
-If this is included after defining AO_REQUIRE_CAS, then the package
-will make an attempt to emulate compare-and-swap in a way that (at least
-on Linux) should still be async-signal-safe.  As a result, most other
-atomic operations will then be defined using the compare-and-swap
+If this is included after defining AO_REQUIRE_CAS, then the package makes
+an attempt to emulate [fetch_]compare_and_swap* (single-width) in a way that,
+at least on Linux, should still be async-signal-safe.  As a result, most
+other atomic operations may then be defined using the compare-and-swap
 emulation.  This emulation is slow, since it needs to disable signals.
 And it needs to block in case of contention.  If you care about performance
 on a platform that can't directly provide compare-and-swap, there are
@@ -48,31 +48,25 @@ to use.  Current real implementations appear to be much better behaved.)
 We of course are in no position to guarantee that future processors
 (even HPs) will continue to behave this way, though we hope they will.
 
-This is a work in progress.  Corrections/additions for other platforms are
-greatly appreciated.  It passes rudimentary tests on X86, Itanium, and
-Alpha.
+Corrections/additions for other platforms are greatly appreciated.
 
 OPERATIONS:
 
-Most operations operate on values of type AO_t, which are unsigned integers
-whose size matches that of pointers on the given architecture.  Exceptions
-are:
+Most operations handle values of type AO_t, which are unsigned integers
+whose size matches that of pointers on the given architecture.  Additionally,
+on most supported architectures the operations are also implemented to handle
+smaller integers types; such operations are indicated by the appropriate size
+prefix:
+- char_... Operates on unsigned char values;
+- short_... Operates on unsigned short values;
+- int_... Operates on unsigned int values.
 
-- AO_test_and_set operates on AO_TS_t, which is whatever size the hardware
-supports with good performance.  In some cases this is the length of a cache
-line.  In some cases it is a byte.  In many cases it is equivalent to AO_t.
+The notable exception is AO_test_and_set operating only on AO_TS_t, which is
+whatever size the hardware supports with good performance.  In some cases this
+is the length of a cache line, in some other cases it is a byte.  In many
+cases AO_TS_t is equivalent to AO_t.
 
-- A few operations are implemented on smaller or larger size integers.
-Such operations are indicated by the appropriate prefix:
-
-AO_char_... Operates on unsigned char values.
-AO_short_... Operates on unsigned short values.
-AO_int_... Operates on unsigned int values.
-
-(Currently a very limited selection of these is implemented.  We're
-working on it.)
-
-The defined operations are all of the form AO_[<size>_]<op><barrier>(<args>).
+The defined operations are all of the form AO_[<size>]<op><barrier>(<args>).
 
 The <op> component specifies an atomic memory operation.  It may be
 one of the following, where the corresponding argument and result types
@@ -98,11 +92,12 @@ void xor(volatile AO_t *addr, AO_t value)
         Atomically 'xor' value into *addr.
 int compare_and_swap(volatile AO_t * addr, AO_t old_val, AO_t new_val)
         Atomically compare *addr to old_val, and replace *addr by new_val
-        if the first comparison succeeds.  Returns nonzero if the comparison
-        succeeded and *addr was updated.
+        if the first comparison succeeds; returns nonzero if the comparison
+        succeeded and *addr was updated; cannot fail spuriously.
 AO_t fetch_compare_and_swap(volatile AO_t * addr, AO_t old_val, AO_t new_val)
         Atomically compare *addr to old_val, and replace *addr by new_val
-        if the first comparison succeeds; returns the original value of *addr.
+        if the first comparison succeeds; returns the original value of *addr;
+        cannot fail spuriously.
 AO_TS_VAL_t test_and_set(volatile AO_TS_t * addr)
         Atomically read the binary value at *addr, and set it.  AO_TS_VAL_t
         is an enumeration type which includes two values AO_TS_SET and
@@ -138,7 +133,22 @@ int compare_and_swap_double(volatile AO_double_t * addr,
 where AO_double_t is a structure containing AO_val1 and AO_val2 fields,
 both of type AO_t.  For compare_and_swap_double, we compare against
 the val1 field.  AO_double_t exists only if AO_HAVE_double_t
-is defined.
+is defined.  If this type is available then the following operation is
+provided for convenience, fully equivalent to compare_double_and_swap_double:
+
+int double_compare_and_swap(volatile AO_double_t * addr,
+                            AO_double_t old_val, AO_double_t new_val)
+
+Please note that AO_double_t (and AO_stack_t) variables should be properly
+aligned (8-byte alignment on 32-bit targets, 16-byte alignment on 64-bit ones)
+otherwise the behavior of a double-wide atomic primitive might be undefined
+(or an assertion violation might occur) if such a misaligned variable is
+passed (as a reference) to the primitive.  Global and static variables should
+already have proper alignment automatically but automatic variables (i.e.
+located on the stack) might be misaligned because the stack might be
+word-aligned (e.g. 4-byte stack alignment is the default one for x86).
+Luckily, stack-allocated AO variables operated atomically are used rarely
+in practice.
 
 ORDERING CONSTRAINTS:
 
@@ -160,7 +170,9 @@ _read: Subsequent reads must become visible after reads included in
        the atomic operation or preceding it.  Rarely useful for clients?
 _write: Earlier writes become visible before writes during or after
         the atomic operation.  Rarely useful for clients?
-_full: Ordered with respect to both earlier and later memory ops.
+_full: The associated operation is ordered with respect to both earlier and
+       later memory ops.  If the associated operation is nop, then this orders
+       all earlier memory operations with respect to subsequent ones.
        AO_store_full or AO_nop_full are the normal ways to force a store
        to be ordered with respect to a later load.
 _release_write: Ordered with respect to earlier writes.  This is
@@ -183,8 +195,8 @@ _dd_acquire_read: Ordered with respect to later reads that are data
 We assume that if a store is data-dependent on a previous load, then
 the two are always implicitly ordered.
 
-It is possible to test whether AO_<op><barrier> is available on the
-current platform by checking whether AO_HAVE_<op>_<barrier> is defined
+It is possible to test whether AO_[<size>]<op><barrier> is available on the
+target platform by checking whether AO_HAVE_[<size>]<op><barrier> is defined
 as a macro.
 
 Note that we generally don't implement operations that are either
@@ -212,10 +224,6 @@ constraints, and if and how we can guarantee sequential consistency.
 Dd_acquire_read is very hard or impossible to define in a way that cannot
 be invalidated by reasonably standard compiler transformations.
 
-There is probably no good reason to provide operations on standard
-integer types, since those may have the wrong alignment constraints.
-
-
 Example:
 
 If you want to initialize an object, and then "publish" a pointer to it
@@ -227,12 +235,6 @@ retrieve it in other threads with AO_acquire_read(p).
 Platform notes:
 
 All X86: We quietly assume 486 or better.
-
-Microsoft compilers:
-Define AO_ASSUME_WINDOWS98 to get access to hardware compare-and-swap
-functionality.  This relies on the InterlockedCompareExchange() function
-which was apparently not supported in Windows95.  (There may be a better
-way to get access to this.)
 
 Gcc on x86:
 Define AO_USE_PENTIUM4_INSTRS to use the Pentium 4 mfence instruction.

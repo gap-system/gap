@@ -3,17 +3,19 @@
 /* Define to recognise all pointers to the interior of objects. */
 #undef ALL_INTERIOR_POINTERS
 
-/* Define to enable atomic uncollectible allocation. */
-#undef ATOMIC_UNCOLLECTABLE
+/* AO load, store and/or test-and-set primitives are implemented in
+   libatomic_ops using locks. */
+#undef BASE_ATOMIC_OPS_EMULATED
+
+/* Erroneously cleared dirty bits checking. Use only for debugging of the
+   incremental collector. */
+#undef CHECKSUMS
 
 /* See doc/README.macros. */
 #undef DARWIN_DONT_PARSE_STACK
 
 /* Define to force debug headers on all objects. */
 #undef DBG_HDRS_ALL
-
-/* Define to enable support for DB/UX threads. */
-#undef DGUX_THREADS
 
 /* Define to enable eCos target support. */
 #undef ECOS
@@ -24,62 +26,44 @@
 /* Define to enable alternative finalization interface. */
 #undef ENABLE_DISCLAIM
 
-/* Define to support IBM AIX threads. */
-#undef GC_AIX_THREADS
-
 /* Define to enable internal debug assertions. */
 #undef GC_ASSERTIONS
 
-/* Define to support Darwin pthreads. */
-#undef GC_DARWIN_THREADS
+/* Define to enable atomic uncollectible allocation. */
+#undef GC_ATOMIC_UNCOLLECTABLE
 
-/* Define to enable support for DB/UX threads on i386. */
-#undef GC_DGUX386_THREADS
+/* Use C11 (GCC) atomic intrinsics instead of libatomic_ops primitives. */
+#undef GC_BUILTIN_ATOMIC
 
 /* Define to build dynamic libraries with only API symbols exposed. */
 #undef GC_DLL
 
-/* Define to support FreeBSD pthreads. */
-#undef GC_FREEBSD_THREADS
+/* Skip the initial guess of data root sets. */
+#undef GC_DONT_REGISTER_MAIN_STATIC_DATA
+
+/* Define to turn on GC_suspend_thread support. */
+#undef GC_ENABLE_SUSPEND_THREAD
 
 /* Define to include support for gcj. */
 #undef GC_GCJ_SUPPORT
 
-/* Define to support GNU pthreads. */
-#undef GC_GNU_THREADS
-
 /* Define if backtrace information is supported. */
 #undef GC_HAVE_BUILTIN_BACKTRACE
-
-/* Define to support HP/UX 11 pthreads. */
-#undef GC_HPUX_THREADS
 
 /* Enable Win32 DllMain-based approach of threads registering. */
 #undef GC_INSIDE_DLL
 
-/* Define to support Irix pthreads. */
-#undef GC_IRIX_THREADS
+/* Missing execinfo.h header. */
+#undef GC_MISSING_EXECINFO_H
 
-/* Define to support pthreads on Linux. */
-#undef GC_LINUX_THREADS
+/* Missing sigsetjmp function. */
+#undef GC_NO_SIGSETJMP
 
-/* Define to support NetBSD pthreads. */
-#undef GC_NETBSD_THREADS
-
-/* Define to support OpenBSD pthreads. */
-#undef GC_OPENBSD_THREADS
-
-/* Define to support Tru64 pthreads. */
-#undef GC_OSF1_THREADS
+/* Disable threads discovery in GC. */
+#undef GC_NO_THREADS_DISCOVERY
 
 /* Read environment variables from the GC 'env' file. */
 #undef GC_READ_ENV_FILE
-
-/* Define to support rtems-pthreads. */
-#undef GC_RTEMS_PTHREADS
-
-/* Define to support Solaris pthreads. */
-#undef GC_SOLARIS_THREADS
 
 /* Define to support platform-specific threads. */
 #undef GC_THREADS
@@ -102,11 +86,8 @@
 /* The minor version number of this GC release. */
 #undef GC_VERSION_MINOR
 
-/* Define to support pthreads-win32. */
+/* Define to support pthreads-win32 or winpthreads. */
 #undef GC_WIN32_PTHREADS
-
-/* Define to support Win32 threads. */
-#undef GC_WIN32_THREADS
 
 /* Define to install pthread_atfork() handlers by default. */
 #undef HANDLE_FORK
@@ -117,8 +98,14 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* Define to 1 if you have the `dl_iterate_phdr' function. */
+#undef HAVE_DL_ITERATE_PHDR
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* libatomic_ops AO_or primitive implementation is lock-free. */
+#undef HAVE_LOCKFREE_AO_OR
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
@@ -143,6 +130,10 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Do not define DYNAMIC_LOADING even if supported (i.e., build the collector
+   with disabled tracing of dynamic library data roots). */
+#undef IGNORE_DYNAMIC_LOADING
 
 /* See doc/README.macros. */
 #undef JAVA_FINALIZATION
@@ -170,6 +161,9 @@
 
 /* Define to make the collector not allocate executable memory by default. */
 #undef NO_EXECUTE_PERMISSION
+
+/* Missing getcontext function. */
+#undef NO_GETCONTEXT
 
 /* Prohibit installation of pthread_atfork() handlers. */
 #undef NO_HANDLE_FORK

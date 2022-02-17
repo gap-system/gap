@@ -312,6 +312,7 @@
 #if defined(AO_HAVE_XSIZE_compare_and_swap_read) \
     && !defined(AO_HAVE_XSIZE_load_read)
 # define AO_XSIZE_CAS_BASED_LOAD_READ
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE XCTYPE
   AO_XSIZE_load_read(const volatile XCTYPE *addr)
   {
@@ -342,6 +343,7 @@
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap_full) \
     && !defined(AO_HAVE_XSIZE_load_full)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE XCTYPE
   AO_XSIZE_load_full(const volatile XCTYPE *addr)
   {
@@ -359,6 +361,7 @@
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap_acquire) \
     && !defined(AO_HAVE_XSIZE_load_acquire)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE XCTYPE
   AO_XSIZE_load_acquire(const volatile XCTYPE *addr)
   {
@@ -375,6 +378,7 @@
 #endif
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap) && !defined(AO_HAVE_XSIZE_load)
+  AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE XCTYPE
   AO_XSIZE_load(const volatile XCTYPE *addr)
   {
@@ -447,6 +451,7 @@
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap_write) \
     && !defined(AO_HAVE_XSIZE_store_write)
+  AO_ATTR_NO_SANITIZE_MEMORY AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_XSIZE_store_write(volatile XCTYPE *addr, XCTYPE new_val)
   {
@@ -476,6 +481,7 @@
 #endif
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap) && !defined(AO_HAVE_XSIZE_store)
+  AO_ATTR_NO_SANITIZE_MEMORY AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_XSIZE_store(volatile XCTYPE *addr, XCTYPE new_val)
   {
@@ -491,6 +497,7 @@
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap_release) \
     && !defined(AO_HAVE_XSIZE_store_release)
+  AO_ATTR_NO_SANITIZE_MEMORY AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_XSIZE_store_release(volatile XCTYPE *addr, XCTYPE new_val)
   {
@@ -506,6 +513,7 @@
 
 #if defined(AO_HAVE_XSIZE_compare_and_swap_full) \
     && !defined(AO_HAVE_XSIZE_store_full)
+  AO_ATTR_NO_SANITIZE_MEMORY AO_ATTR_NO_SANITIZE_THREAD
   AO_INLINE void
   AO_XSIZE_store_full(volatile XCTYPE *addr, XCTYPE new_val)
   {

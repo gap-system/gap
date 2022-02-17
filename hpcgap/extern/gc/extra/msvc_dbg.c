@@ -22,13 +22,16 @@
 
 #if !defined(_M_AMD64) && defined(_MSC_VER)
 
-/* X86_64 is currently missing some meachine-dependent code below.  */
+/* X86_64 is currently missing some machine-dependent code below.  */
 
 #define GC_BUILD
 #include "private/msvc_dbg.h"
 #include "gc.h"
 
-#define WIN32_LEAN_AND_MEAN
+#ifndef WIN32_LEAN_AND_MEAN
+# define WIN32_LEAN_AND_MEAN 1
+#endif
+#define NOSERVICE
 #include <windows.h>
 
 #pragma pack(push, 8)
@@ -47,7 +50,7 @@ typedef GC_word word;
         typedef ULONG        ULONG_ADDR;
 #endif
 
-static HANDLE GetSymHandle()
+static HANDLE GetSymHandle(void)
 {
   static HANDLE symHandle = NULL;
   if (!symHandle) {
@@ -158,8 +161,8 @@ size_t GetStackFramesFromContext(HANDLE hProcess, HANDLE hThread,
 #elif defined(_M_ALPHA64)
   machineType                 = IMAGE_FILE_MACHINE_ALPHA64;
   stackFrame.AddrPC.Offset    = context->Fir;
-#else
-#error Unknown CPU
+#elif !defined(CPPCHECK)
+# error Unknown CPU
 #endif
   for (frameIndex = 0; frameIndex < maxFrames; ) {
     BOOL bRet = StackWalk(machineType, hProcess, hThread, &stackFrame,
@@ -209,6 +212,11 @@ size_t GetModuleNameFromStack(size_t skip, char* moduleName, size_t size)
   return 0;
 }
 
+union sym_namebuf_u {
+  IMAGEHLP_SYMBOL sym;
+  char symNameBuffer[sizeof(IMAGEHLP_SYMBOL) + MAX_SYM_NAME];
+};
+
 size_t GetSymbolNameFromAddress(void* address, char* symbolName, size_t size,
                                 size_t* offsetBytes)
 {
@@ -216,10 +224,8 @@ size_t GetSymbolNameFromAddress(void* address, char* symbolName, size_t size,
   if (offsetBytes) *offsetBytes = 0;
   __try {
     ULONG_ADDR dwOffset = 0;
-    union {
-      IMAGEHLP_SYMBOL sym;
-      char symNameBuffer[sizeof(IMAGEHLP_SYMBOL) + MAX_SYM_NAME];
-    } u;
+    union sym_namebuf_u u;
+
     u.sym.SizeOfStruct  = sizeof(u.sym);
     u.sym.MaxNameLength = sizeof(u.symNameBuffer) - sizeof(u.sym);
 
@@ -308,8 +314,8 @@ size_t GetDescriptionFromAddress(void* address, const char* format,
   char*const begin = buffer;
   char*const end = buffer + size;
   size_t line_number = 0;
-  char   str[128];
 
+  (void)format;
   if (size) {
     *buffer = 0;
   }
@@ -317,7 +323,9 @@ size_t GetDescriptionFromAddress(void* address, const char* format,
   size = (GC_ULONG_PTR)end < (GC_ULONG_PTR)buffer ? 0 : end - buffer;
 
   if (line_number) {
-    wsprintf(str, "(%d) : ", line_number);
+    char str[128];
+
+    wsprintf(str, "(%d) : ", (int)line_number);
     if (size) {
       strncpy(buffer, str, size)[size - 1] = 0;
     }
@@ -328,7 +336,7 @@ size_t GetDescriptionFromAddress(void* address, const char* format,
   if (size) {
     strncpy(buffer, "at ", size)[size - 1] = 0;
   }
-  buffer += strlen("at ");
+  buffer += sizeof("at ") - 1;
   size = (GC_ULONG_PTR)end < (GC_ULONG_PTR)buffer ? 0 : end - buffer;
 
   buffer += GetSymbolNameFromAddress(address, buffer, size, NULL);
@@ -337,12 +345,10 @@ size_t GetDescriptionFromAddress(void* address, const char* format,
   if (size) {
     strncpy(buffer, " in ", size)[size - 1] = 0;
   }
-  buffer += strlen(" in ");
+  buffer += sizeof(" in ") - 1;
   size = (GC_ULONG_PTR)end < (GC_ULONG_PTR)buffer ? 0 : end - buffer;
 
   buffer += GetModuleNameFromAddress(address, buffer, size);
-  size = (GC_ULONG_PTR)end < (GC_ULONG_PTR)buffer ? 0 : end - buffer;
-
   return buffer - begin;
 }
 
@@ -350,16 +356,19 @@ size_t GetDescriptionFromStack(void* const frames[], size_t count,
                                const char* format, char* description[],
                                size_t size)
 {
-  char*const begin = (char*)description;
-  char*const end = begin + size;
-  char* buffer = begin + (count + 1) * sizeof(char*);
+  const GC_ULONG_PTR begin = (GC_ULONG_PTR)description;
+  const GC_ULONG_PTR end = begin + size;
+  GC_ULONG_PTR buffer = begin + (count + 1) * sizeof(char*);
   size_t i;
+
   for (i = 0; i < count; ++i) {
-    if (description) description[i] = buffer;
-    size = (GC_ULONG_PTR)end < (GC_ULONG_PTR)buffer ? 0 : end - buffer;
-    buffer += 1 + GetDescriptionFromAddress(frames[i], NULL, buffer, size);
+    if (description)
+      description[i] = (char*)buffer;
+    buffer += 1 + GetDescriptionFromAddress(frames[i], format, (char*)buffer,
+                                            end < buffer ? 0 : end - buffer);
   }
-  if (description) description[count] = NULL;
+  if (description)
+    description[count] = NULL;
   return buffer - begin;
 }
 
@@ -374,8 +383,14 @@ char** backtrace_symbols(void*const* addresses, int count)
 {
   size_t size = GetDescriptionFromStack(addresses, count, NULL, NULL, 0);
   char** symbols = (char**)malloc(size);
-  GetDescriptionFromStack(addresses, count, NULL, symbols, size);
+  if (symbols != NULL)
+    GetDescriptionFromStack(addresses, count, NULL, symbols, size);
   return symbols;
 }
 
-#endif /* !_M_AMD64 */
+#else
+
+  extern int GC_quiet;
+        /* ANSI C does not allow translation units to be empty. */
+
+#endif /* _M_AMD64 */

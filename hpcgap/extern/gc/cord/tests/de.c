@@ -15,7 +15,7 @@
  * A really simple-minded text editor based on cords.
  * Things it does right:
  *      No size bounds.
- *      Inbounded undo.
+ *      Unbounded undo.
  *      Shouldn't crash no matter what file you invoke it on (e.g. /vmunix)
  *              (Make sure /vmunix is not writable before you try this.)
  *      Scrolls horizontally.
@@ -37,13 +37,18 @@
 #endif
 #include <ctype.h>
 
-#if (defined(__BORLANDC__) || defined(__CYGWIN__)) && !defined(WIN32)
+#if (defined(__BORLANDC__) || defined(__CYGWIN__) || defined(__MINGW32__) \
+     || defined(__NT__) || defined(_WIN32)) && !defined(WIN32)
     /* If this is DOS or win16, we'll fail anyway.      */
     /* Might as well assume win32.                      */
 #   define WIN32
 #endif
 
 #if defined(WIN32)
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN 1
+#  endif
+#  define NOSERVICE
 #  include <windows.h>
 #  include "de_win.h"
 #elif defined(MACINTOSH)
@@ -133,22 +138,26 @@ void prune_map(void)
     do {
         current_map_size++;
         if (map -> line < start_line - LINES && map -> previous != 0) {
-            map -> previous = map -> previous -> previous;
+            line_map pred = map -> previous -> previous;
+
+            GC_PTR_STORE_AND_DIRTY(&map->previous, pred);
         }
         map = map -> previous;
     } while (map != 0);
 }
 
 /* Add mapping entry */
-void add_map(int line, size_t pos)
+void add_map(int line_arg, size_t pos)
 {
     line_map new_map = GC_NEW(struct LineMapRep);
+    line_map cur_map;
 
     if (NULL == new_map) OUT_OF_MEMORY;
     if (current_map_size >= MAX_MAP_SIZE) prune_map();
-    new_map -> line = line;
+    new_map -> line = line_arg;
     new_map -> pos = pos;
-    new_map -> previous = current_map;
+    cur_map = current_map;
+    GC_PTR_STORE_AND_DIRTY(&new_map->previous, cur_map);
     current_map = new_map;
     current_map_size++;
 }
@@ -164,7 +173,6 @@ size_t line_pos(int i, int *c)
 {
     int j;
     size_t cur;
-    size_t next;
     line_map map = current_map;
 
     while (map -> line > i) map = map -> previous;
@@ -176,10 +184,11 @@ size_t line_pos(int i, int *c)
         if (++j > current_map -> line) add_map(j, cur);
     }
     if (c != 0) {
-        next = CORD_chr(current, cur, '\n');
+        size_t next = CORD_chr(current, cur, '\n');
+
         if (next == CORD_NOT_FOUND) next = current_len - 1;
         if (next < cur + *c) {
-            *c = next - cur;
+            *c = (int)(next - cur);
         }
         cur += *c;
     }
@@ -194,7 +203,11 @@ void add_hist(CORD s)
     new_file -> file_contents = current = s;
     current_len = CORD_len(s);
     new_file -> previous = now;
-    if (now != 0) now -> map = current_map;
+    GC_END_STUBBORN_CHANGE(new_file);
+    if (now != NULL) {
+        now -> map = current_map;
+        GC_END_STUBBORN_CHANGE(now);
+    }
     now = new_file;
 }
 
@@ -216,7 +229,6 @@ int screen_size = 0;
 /* terribly appropriate for tabs.                                                                       */
 void replace_line(int i, CORD s)
 {
-    register int c;
     CORD_pos p;
 #   if !defined(MACINTOSH)
         size_t len = CORD_len(s);
@@ -237,14 +249,15 @@ void replace_line(int i, CORD s)
         move(i, 0); clrtoeol(); move(i,0);
 
         CORD_FOR (p, s) {
-            c = CORD_pos_fetch(p) & 0x7f;
+            int c = CORD_pos_fetch(p) & 0x7f;
+
             if (iscntrl(c)) {
                 standout(); addch(c + 0x40); standend();
             } else {
                 addch(c);
             }
         }
-        screen[i] = s;
+        GC_PTR_STORE_AND_DIRTY(screen + i, s);
     }
 }
 #else
@@ -271,7 +284,7 @@ CORD retrieve_line(CORD s, size_t pos, unsigned column)
 
     CORD retrieve_screen_line(int i)
     {
-        register size_t pos;
+        size_t pos;
 
         invalidate_map(dis_line + LINES);       /* Prune search */
         pos = line_pos(dis_line + i, 0);
@@ -283,12 +296,12 @@ CORD retrieve_line(CORD s, size_t pos, unsigned column)
 /* Display the visible section of the current file       */
 void redisplay(void)
 {
-    register int i;
+    int i;
 
     invalidate_map(dis_line + LINES);   /* Prune search */
     for (i = 0; i < LINES; i++) {
         if (need_redisplay == ALL || need_redisplay == i) {
-            register size_t pos = line_pos(dis_line + i, 0);
+            size_t pos = line_pos(dis_line + i, 0);
 
             if (pos == CORD_NOT_FOUND) break;
             replace_line(i, retrieve_line(current, pos, dis_col));
@@ -347,7 +360,8 @@ void fix_pos(void)
 {
     int my_col = col;
 
-    if ((size_t)line > current_len) line = current_len;
+    if ((size_t)line > current_len)
+        line = (int)current_len;
     file_pos = line_pos(line, &my_col);
     if (file_pos == CORD_NOT_FOUND) {
         for (line = current_map -> line, file_pos = current_map -> pos;
@@ -428,7 +442,7 @@ void do_command(int c)
                 if (file_pos > new_pos) break;
                 line++;
             }
-            col = new_pos - line_pos(line, 0);
+            col = (int)(new_pos - line_pos(line, 0));
             file_pos = new_pos;
             fix_cursor();
         } else {
@@ -459,7 +473,8 @@ void do_command(int c)
             locate_mode = 1;
             break;
           case TOP:
-            line = col = file_pos = 0;
+            line = col = 0;
+            file_pos = 0;
             break;
           case UP:
             if (line != 0) {
@@ -490,7 +505,7 @@ void do_command(int c)
                 break;
             }
             col--; file_pos--;
-            /* fall through: */
+            /* FALLTHRU */
           case DEL:
             if (file_pos == current_len-1) break;
                 /* Can't delete trailing newline */
@@ -552,9 +567,11 @@ void generic_init(void)
     if ((f = fopen(arg_file_name, "rb")) == NULL) {
         initial = "\n";
     } else {
+        size_t len;
+
         initial = CORD_from_file(f);
-        if (initial == CORD_EMPTY
-            || CORD_fetch(initial, CORD_len(initial)-1) != '\n') {
+        len = CORD_len(initial);
+        if (0 == len || CORD_fetch(initial, len - 1) != '\n') {
             initial = CORD_cat(initial, "\n");
         }
     }
@@ -562,6 +579,7 @@ void generic_init(void)
     add_hist(initial);
     now -> map = current_map;
     now -> previous = now;  /* Can't back up further: beginning of the world */
+    GC_END_STUBBORN_CHANGE(now);
     need_redisplay = ALL;
     fix_cursor();
 }
@@ -578,7 +596,11 @@ int main(int argc, char **argv)
         cshow(stdout);
         argc = ccommand(&argv);
 #   endif
+    GC_set_find_leak(0); /* app is not for testing leak detection mode */
     GC_INIT();
+#   ifndef NO_INCREMENTAL
+      GC_enable_incremental();
+#   endif
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s file\n", argv[0]);
@@ -591,7 +613,7 @@ int main(int argc, char **argv)
     arg_file_name = argv[1];
     buf = GC_MALLOC_ATOMIC(8192);
     if (NULL == buf) OUT_OF_MEMORY;
-    setvbuf(stdout, buf, _IOFBF, 8192);
+    setvbuf(stdout, (char *)buf, _IOFBF, 8192);
     initscr();
     noecho(); nonl(); cbreak();
     generic_init();

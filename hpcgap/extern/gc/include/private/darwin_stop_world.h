@@ -25,6 +25,8 @@
 #include <mach/mach.h>
 #include <mach/thread_act.h>
 
+EXTERN_C_BEGIN
+
 struct thread_stop_info {
   mach_port_t mach_thread;
   ptr_t stack_ptr; /* Valid only when thread is in a "blocked" state.   */
@@ -37,10 +39,15 @@ struct thread_stop_info {
 #ifdef MPROTECT_VDB
   GC_INNER void GC_mprotect_stop(void);
   GC_INNER void GC_mprotect_resume(void);
+# ifndef GC_NO_THREADS_DISCOVERY
+    GC_INNER void GC_darwin_register_mach_handler_thread(mach_port_t thread);
+# endif
 #endif
 
 #if defined(PARALLEL_MARK) && !defined(GC_NO_THREADS_DISCOVERY)
   GC_INNER GC_bool GC_is_mach_marker(thread_act_t);
 #endif
+
+EXTERN_C_END
 
 #endif

@@ -20,8 +20,6 @@
  * to answer questions such as "who is pointing to this" or
  * "why is this object being retained by the collector"
  *
- * This API assumes that we have an ANSI C compiler.
- *
  * Most of these calls yield useful information on only after
  * a garbage collection.  Usually the client will first force
  * a full collection and then gather information, preferably
@@ -92,7 +90,7 @@ GC_API void GC_CALL GC_generate_random_backtrace(void);
 GC_API void GC_CALL GC_print_backtrace(void *) GC_ATTR_NONNULL(1);
 
 #ifdef __cplusplus
-  } /* end of extern "C" */
+  } /* extern "C" */
 #endif
 
 #endif /* GC_BACKPTR_H */

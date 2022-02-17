@@ -13,21 +13,35 @@
 
 # include "gc.h"    /* For GC_INIT() only */
 # include "cord.h"
+
+# include <stdarg.h>
 # include <string.h>
 # include <stdio.h>
 # include <stdlib.h>
+
 /* This is a very incomplete test of the cord package.  It knows about  */
 /* a few internals of the package (e.g. when C strings are returned)    */
-/* that real clients shouldn't rely on.                 */
+/* that real clients shouldn't rely on.                                 */
 
 # define ABORT(string) \
     { fprintf(stderr, "FAILED: %s\n", string); abort(); }
+
+#if defined(CPPCHECK)
+# undef CORD_iter
+# undef CORD_next
+# undef CORD_pos_fetch
+# undef CORD_pos_to_cord
+# undef CORD_pos_to_index
+# undef CORD_pos_valid
+# undef CORD_prev
+#endif
 
 int count;
 
 int test_fn(char c, void * client_data)
 {
-    if (client_data != (void *)13) ABORT("bad client data");
+    if (client_data != (void *)(GC_word)13)
+        ABORT("bad client data");
     if (count < 64*1024+1) {
         if ((count & 1) == 0) {
             if (c != 'b') ABORT("bad char");
@@ -52,8 +66,7 @@ char id_cord_fn(size_t i, void * client_data)
 void test_basics(void)
 {
     CORD x = CORD_from_char_star("ab");
-    register int i;
-    char c;
+    size_t i;
     CORD y;
     CORD_pos p;
 
@@ -69,7 +82,8 @@ void test_basics(void)
     if (CORD_len(x) != 128*1024+1) ABORT("bad length");
 
     count = 0;
-    if (CORD_iter5(x, 64*1024-1, test_fn, CORD_NO_FN, (void *)13) == 0) {
+    if (CORD_iter5(x, 64*1024-1, test_fn, CORD_NO_FN,
+                   (void *)(GC_word)13) == 0) {
         ABORT("CORD_iter5 failed");
     }
     if (count != 64*1024 + 2) ABORT("CORD_iter5 failed");
@@ -77,7 +91,7 @@ void test_basics(void)
     count = 0;
     CORD_set_pos(p, x, 64*1024-1);
     while(CORD_pos_valid(p)) {
-        (void) test_fn(CORD_pos_fetch(p), (void *)13);
+        (void)test_fn(CORD_pos_fetch(p), (void *)(GC_word)13);
     CORD_next(p);
     }
     if (count != 64*1024 + 2) ABORT("Position based iteration failed");
@@ -101,7 +115,8 @@ void test_basics(void)
     if (CORD_len(x) != 128*1024+1) ABORT("bad length");
 
     count = 0;
-    if (CORD_iter5(x, 64*1024-1, test_fn, CORD_NO_FN, (void *)13) == 0) {
+    if (CORD_iter5(x, 64*1024-1, test_fn, CORD_NO_FN,
+                   (void *)(GC_word)13) == 0) {
         ABORT("CORD_iter5 failed");
     }
     if (count != 64*1024 + 2) ABORT("CORD_iter5 failed");
@@ -114,18 +129,30 @@ void test_basics(void)
     i = 0;
     CORD_set_pos(p, y, i);
     while(CORD_pos_valid(p)) {
-        c = CORD_pos_fetch(p);
-        if(c != i) ABORT("Traversal of function node failed");
-    CORD_next(p); i++;
+        char c = CORD_pos_fetch(p);
+
+        if ((size_t)(unsigned char)c != i)
+            ABORT("Traversal of function node failed");
+        CORD_next(p);
+        i++;
     }
     if (i != 13) ABORT("Bad apparent length for function node");
+#   if defined(CPPCHECK)
+        /* TODO: Actually test these functions. */
+        CORD_prev(p);
+        (void)CORD_pos_to_cord(p);
+        (void)CORD_pos_to_index(p);
+        (void)CORD_iter(CORD_EMPTY, test_fn, NULL);
+        (void)CORD_riter(CORD_EMPTY, test_fn, NULL);
+        CORD_dump(y);
+#   endif
 }
 
 void test_extras(void)
 {
 #   define FNAME1 "cordtst1.tmp" /* short name (8+3) for portability */
 #   define FNAME2 "cordtst2.tmp"
-    register int i;
+    int i;
     CORD y = "abcdefghijklmnopqrstuvwxyz0123456789";
     CORD x = "{}";
     CORD u, w, z;
@@ -206,6 +233,28 @@ void test_extras(void)
     }
 }
 
+int wrap_vprintf(CORD format, ...)
+{
+    va_list args;
+    int result;
+
+    va_start(args, format);
+    result = CORD_vprintf(format, args);
+    va_end(args);
+    return result;
+}
+
+int wrap_vfprintf(FILE * f, CORD format, ...)
+{
+    va_list args;
+    int result;
+
+    va_start(args, format);
+    result = CORD_vfprintf(f, format, args);
+    va_end(args);
+    return result;
+}
+
 #if defined(__DJGPP__) || defined(__STRICT_ANSI__)
   /* snprintf is missing in DJGPP (v2.0.3) */
 #else
@@ -251,6 +300,10 @@ void test_printf(void)
 #   endif
     result2[sizeof(result2) - 1] = '\0';
     if (CORD_cmp(result, result2) != 0)ABORT("CORD_sprintf goofed 5");
+    /* TODO: Better test CORD_[v][f]printf.     */
+    (void)CORD_printf(CORD_EMPTY);
+    (void)wrap_vfprintf(stdout, CORD_EMPTY);
+    (void)wrap_vprintf(CORD_EMPTY);
 }
 
 int main(void)
@@ -259,6 +312,11 @@ int main(void)
         printf("cordtest:\n");
 #   endif
     GC_INIT();
+#   ifndef NO_INCREMENTAL
+      GC_enable_incremental();
+#   endif
+    if (GC_get_find_leak())
+        printf("This test program is not designed for leak detection mode\n");
     test_basics();
     test_extras();
     test_printf();

@@ -31,9 +31,16 @@
 
 #include "atomic_ops.h"
 
-#if !defined(AO_HAVE_compare_double_and_swap_double) \
-    && !defined(AO_HAVE_compare_double_and_swap) \
-    && defined(AO_HAVE_compare_and_swap)
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
+#ifdef AO_USE_ALMOST_LOCK_FREE
+  /* Use the almost-non-blocking implementation regardless of the       */
+  /* double-word CAS availability.                                      */
+#elif !defined(AO_HAVE_compare_double_and_swap_double) \
+      && !defined(AO_HAVE_compare_double_and_swap) \
+      && defined(AO_HAVE_compare_and_swap)
 # define AO_USE_ALMOST_LOCK_FREE
 #else
   /* If we have no compare-and-swap operation defined, we assume        */
@@ -98,7 +105,7 @@ typedef struct AO__stack_aux {
 /* link fields in nodes, and nothing about the rest of the      */
 /* stack elements.  Link fields hold an AO_t, which is not      */
 /* necessarily a real pointer.  This converts the AO_t to a     */
-/* real (AO_t *) which is either o, or points at the link       */
+/* real (AO_t *) which is either NULL, or points at the link    */
 /* field in the next node.                                      */
 #define AO_REAL_NEXT_PTR(x) (AO_t *)((x) & ~AO_BIT_MASK)
 
@@ -151,11 +158,20 @@ AO_INLINE void AO_stack_init(AO_stack_t *list)
 #ifndef AO_HAVE_double_t
   /* Can happen if we're using CAS emulation, since we don't want to    */
   /* force that here, in case other atomic_ops clients don't want it.   */
+# ifdef __cplusplus
+    } /* extern "C" */
+# endif
 # include "atomic_ops/sysdeps/standard_ao_double_t.h"
+# ifdef __cplusplus
+    extern "C" {
+# endif
 #endif
 
 typedef volatile AO_double_t AO_stack_t;
 /* AO_val1 is version, AO_val2 is pointer.      */
+/* Note: AO_stack_t variables are not intended to be local ones,        */
+/* otherwise it is the client responsibility to ensure they have        */
+/* double-word alignment.                                               */
 
 #define AO_STACK_INITIALIZER AO_DOUBLE_T_INITIALIZER
 
@@ -183,6 +199,10 @@ AO_t * AO_stack_pop_acquire(AO_stack_t *list);
 #if defined(AO_HAVE_stack_pop_acquire) && !defined(AO_HAVE_stack_pop)
 # define AO_stack_pop(l) AO_stack_pop_acquire(l)
 # define AO_HAVE_stack_pop
+#endif
+
+#ifdef __cplusplus
+  } /* extern "C" */
 #endif
 
 #endif /* !AO_STACK_H */

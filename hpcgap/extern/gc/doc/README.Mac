@@ -126,7 +126,7 @@ o 68K Linker
 
 Prefix Files to configure the GC sources
 ----------------------------------------
-The Codewarrior equivalent of commandline compilers -DNAME=X is to use
+The Codewarrior equivalent of command-line compilers -DNAME=X is to use
 prefix-files. A TEXT file that is automatically #included before the first byte
 of every source file. I used these:
 
@@ -161,7 +161,7 @@ of every source file. I used these:
   #define ALL_INTERIOR_POINTERS // follows interior pointers.
 //#define DONT_ADD_BYTE_AT_END  // disables the padding if defined.
 //#define SMALL_CONFIG          // whether to use a smaller heap.
-  #define ATOMIC_UNCOLLECTABLE  // GC_malloc_atomic_uncollectable()
+  #define GC_ATOMIC_UNCOLLECTABLE // GC_malloc_atomic_uncollectable()
 
   // define either or none as per personal preference
   //   used in malloc.c
@@ -196,7 +196,7 @@ struct gc_private_assert_intsize_{ char x[ sizeof(int)>=4 ? 1 : 0 ]; };
 #endif
 ---- ( cut here ) ----  end of gc_prefix_common.h  -----------------
 
-Files to  build the GC libraries:
+Files to build the GC libraries:
 --------------------------------
     allchblk.c
     alloc.c
@@ -217,7 +217,6 @@ Files to  build the GC libraries:
     os_dep.c   -- contains MacOS code
     ptr_chck.c
     reclaim.c
-    stubborn.c
     typd_mlc.c
     gc++.cc    -- this is 'gc_cpp.cc' with less 'inline' and
                -- throw std::bad_alloc when out of memory
@@ -271,7 +270,7 @@ action! malloc will call GC_malloc and free GC_free, new/delete too. You
 don't have to call free or delete. You may have to be a bit cautious about
 delete if you're freeing other resources than RAM. See gc_cpp.h. You can
 also keep coding as always with delete/free. That works too. If you want,
-"include <gc.h> and tweak it's use a bit.
+include "gc.h" and tweak its use a bit.
 
 == Symantec SPM ==
 
@@ -282,31 +281,6 @@ needs to know where the global data is. Use the files 'datastart.c' and
 at the bottom  of your project so that all data is surrounded. This is not
 needed in Codewarrior because it provides intrinsic variables
 __datastart__, __data_end__ that wraps all globals.
-
-== Source Changes (GC 4.12a2) ==
-
-Very few. Just one tiny in the GC, not strictly needed.
-- test_cpp.cc
-  made the first lines of main() look like this:
-  ------------
-  int main( int argc, char* argv[] ) {
-  #endif
-  #if macintosh                             // MacOS
-    char* argv_[] = {"test_cpp","10"};      //   doesn't
-    argv=argv_;                             //     have a
-    argc = sizeof(argv_)/sizeof(argv_[0]);  //       commandline
-  #endif                                    //
-
-  int i, iters, n;
-  # ifndef __GNUC__
-   alloc dummy_to_fool_the_compiler_into_doing_things_it_currently_cant_handle;
-  ------------
-
-- config.h [now gcconfig.h]
-  __MWERKS__ does not have to mean MACOS. You can use Codewarrior to
-  build a Win32 or BeOS library and soon a Rhapsody library. You may
-  have to change that #if...
-
 
 
    It worked for me, hope it works for you.

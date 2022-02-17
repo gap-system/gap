@@ -12,8 +12,12 @@
  * by adding a lock.
  */
 
+#ifndef GC_SPECIFIC_H
+#define GC_SPECIFIC_H
+
 #include <errno.h>
-#include "atomic_ops.h"
+
+EXTERN_C_BEGIN
 
 /* Called during key creation or setspecific.           */
 /* For the GC we already hold lock.                     */
@@ -29,15 +33,27 @@
 #define HASH(p) \
           ((unsigned)((((word)(p)) >> 8) ^ (word)(p)) & (TS_HASH_SIZE - 1))
 
+#ifdef GC_ASSERTIONS
+  /* Thread-local storage is not guaranteed to be scanned by GC.        */
+  /* We hide values stored in "specific" entries for a test purpose.    */
+  typedef GC_hidden_pointer ts_entry_value_t;
+# define TS_HIDE_VALUE(p) GC_HIDE_POINTER(p)
+# define TS_REVEAL_PTR(p) GC_REVEAL_POINTER(p)
+#else
+  typedef void * ts_entry_value_t;
+# define TS_HIDE_VALUE(p) (p)
+# define TS_REVEAL_PTR(p) (p)
+#endif
+
 /* An entry describing a thread-specific value for a given thread.      */
 /* All such accessible structures preserve the invariant that if either */
-/* thread is a valid pthread id or qtid is a valid "quick tread id"     */
+/* thread is a valid pthread id or qtid is a valid "quick thread id"    */
 /* for a thread, then value holds the corresponding thread specific     */
 /* value.  This invariant must be preserved at ALL times, since         */
 /* asynchronous reads are allowed.                                      */
 typedef struct thread_specific_entry {
         volatile AO_t qtid;     /* quick thread id, only for cache */
-        void * value;
+        ts_entry_value_t value;
         struct thread_specific_entry *next;
         pthread_t thread;
 } tse;
@@ -76,7 +92,9 @@ typedef tsd * GC_key_t;
 #define GC_key_create(key, d) GC_key_create_inner(key)
 GC_INNER int GC_key_create_inner(tsd ** key_ptr);
 GC_INNER int GC_setspecific(tsd * key, void * value);
-GC_INNER void GC_remove_specific(tsd * key);
+#define GC_remove_specific(key) \
+                        GC_remove_specific_after_fork(key, pthread_self())
+GC_INNER void GC_remove_specific_after_fork(tsd * key, pthread_t t);
 
 /* An internal version of getspecific that assumes a cache miss.        */
 GC_INNER void * GC_slow_getspecific(tsd * key, word qtid,
@@ -92,7 +110,11 @@ GC_INLINE void * GC_getspecific(tsd * key)
     GC_ASSERT(qtid != INVALID_QTID);
     if (EXPECT(entry -> qtid == qtid, TRUE)) {
       GC_ASSERT(entry -> thread == pthread_self());
-      return entry -> value;
+      return TS_REVEAL_PTR(entry -> value);
     }
     return GC_slow_getspecific(key, qtid, entry_ptr);
 }
+
+EXTERN_C_END
+
+#endif /* GC_SPECIFIC_H */

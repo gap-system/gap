@@ -132,7 +132,8 @@
 # endif /* AO_HAVE_compare_and_swap_full */
 
 # if (defined(AO_AO_TS_T) && defined(AO_HAVE_compare_and_swap_acquire)) \
-     || (defined(AO_CHAR_TS_T) && defined(AO_HAVE_char_compare_and_swap_acquire))
+     || (defined(AO_CHAR_TS_T) \
+         && defined(AO_HAVE_char_compare_and_swap_acquire))
     AO_INLINE AO_TS_VAL_t
     AO_test_and_set_acquire(volatile AO_TS_t *addr)
     {
@@ -145,7 +146,8 @@
 # endif /* AO_HAVE_compare_and_swap_acquire */
 
 # if (defined(AO_AO_TS_T) && defined(AO_HAVE_compare_and_swap_release)) \
-     || (defined(AO_CHAR_TS_T) && defined(AO_HAVE_char_compare_and_swap_release))
+     || (defined(AO_CHAR_TS_T) \
+         && defined(AO_HAVE_char_compare_and_swap_release))
     AO_INLINE AO_TS_VAL_t
     AO_test_and_set_release(volatile AO_TS_t *addr)
     {
@@ -187,11 +189,12 @@
 # define AO_HAVE_nop_full
 #endif
 
-#if defined(AO_HAVE_nop_acquire)
-# error AO_nop_acquire is useless: dont define.
+#if defined(AO_HAVE_nop_acquire) && !defined(CPPCHECK)
+# error AO_nop_acquire is useless: do not define.
 #endif
-#if defined(AO_HAVE_nop_release)
-# error AO_nop_release is useless: dont define.
+
+#if defined(AO_HAVE_nop_release) && !defined(CPPCHECK)
+# error AO_nop_release is useless: do not define.
 #endif
 
 #if defined(AO_HAVE_nop_full) && !defined(AO_HAVE_nop_read)
@@ -322,6 +325,40 @@
      return AO_double_compare_and_swap(addr, old_w, new_w);
    }
 #  define AO_HAVE_compare_double_and_swap_double
+# endif
+# if defined(AO_HAVE_double_compare_and_swap_acquire) \
+     && !defined(AO_HAVE_compare_double_and_swap_double_acquire)
+    AO_INLINE int
+    AO_compare_double_and_swap_double_acquire(volatile AO_double_t *addr,
+                                              AO_t old_val1, AO_t old_val2,
+                                              AO_t new_val1, AO_t new_val2)
+    {
+      AO_double_t old_w;
+      AO_double_t new_w;
+      old_w.AO_val1 = old_val1;
+      old_w.AO_val2 = old_val2;
+      new_w.AO_val1 = new_val1;
+      new_w.AO_val2 = new_val2;
+      return AO_double_compare_and_swap_acquire(addr, old_w, new_w);
+    }
+#   define AO_HAVE_compare_double_and_swap_double_acquire
+# endif
+# if defined(AO_HAVE_double_compare_and_swap_release) \
+     && !defined(AO_HAVE_compare_double_and_swap_double_release)
+    AO_INLINE int
+    AO_compare_double_and_swap_double_release(volatile AO_double_t *addr,
+                                              AO_t old_val1, AO_t old_val2,
+                                              AO_t new_val1, AO_t new_val2)
+    {
+      AO_double_t old_w;
+      AO_double_t new_w;
+      old_w.AO_val1 = old_val1;
+      old_w.AO_val2 = old_val2;
+      new_w.AO_val1 = new_val1;
+      new_w.AO_val2 = new_val2;
+      return AO_double_compare_and_swap_release(addr, old_w, new_w);
+    }
+#   define AO_HAVE_compare_double_and_swap_double_release
 # endif
 # if defined(AO_HAVE_double_compare_and_swap_full) \
      && !defined(AO_HAVE_compare_double_and_swap_double_full)
@@ -673,4 +710,20 @@
                                           new_val.AO_val1, new_val.AO_val2);
   }
 # define AO_HAVE_double_compare_and_swap_full
+#endif
+
+#ifndef AO_HAVE_double_compare_and_swap_dd_acquire_read
+  /* Duplicated from generalize-small because double CAS might be       */
+  /* defined after the include.                                         */
+# ifdef AO_NO_DD_ORDERING
+#   if defined(AO_HAVE_double_compare_and_swap_acquire_read)
+#     define AO_double_compare_and_swap_dd_acquire_read(addr, old, new_val) \
+                AO_double_compare_and_swap_acquire_read(addr, old, new_val)
+#     define AO_HAVE_double_compare_and_swap_dd_acquire_read
+#   endif
+# elif defined(AO_HAVE_double_compare_and_swap)
+#   define AO_double_compare_and_swap_dd_acquire_read(addr, old, new_val) \
+                AO_double_compare_and_swap(addr, old, new_val)
+#   define AO_HAVE_double_compare_and_swap_dd_acquire_read
+# endif /* !AO_NO_DD_ORDERING */
 #endif

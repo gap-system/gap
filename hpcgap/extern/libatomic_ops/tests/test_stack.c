@@ -43,7 +43,7 @@
 
 #include "atomic_ops_stack.h" /* includes atomic_ops.h as well */
 
-#if (defined(_WIN32_WCE) || defined(__MINGW32CE__)) && !defined(abort)
+#if (defined(_WIN32_WCE) || defined(__MINGW32CE__)) && !defined(AO_HAVE_abort)
 # define abort() _exit(-1) /* there is no abort() in WinCE */
 #endif
 
@@ -51,27 +51,31 @@
 # define MAX_NTHREADS 100
 #endif
 
+#ifndef DEFAULT_NTHREADS
+# define DEFAULT_NTHREADS 16 /* must be <= MAX_NTHREADS */
+#endif
+
 #ifdef NO_TIMES
 # define get_msecs() 0
-#elif defined(USE_WINTHREADS) || defined(AO_USE_WIN32_PTHREADS)
+#elif (defined(USE_WINTHREADS) || defined(AO_USE_WIN32_PTHREADS)) \
+      && !defined(CPPCHECK)
 # include <sys/timeb.h>
-  long long get_msecs(void)
+  unsigned long get_msecs(void)
   {
     struct timeb tb;
 
     ftime(&tb);
-    return (long long)tb.time * 1000 + tb.millitm;
+    return (unsigned long)tb.time * 1000 + tb.millitm;
   }
 #else /* Unix */
 # include <time.h>
 # include <sys/time.h>
-  /* Need 64-bit long long support */
-  long long get_msecs(void)
+  unsigned long get_msecs(void)
   {
     struct timeval tv;
 
     gettimeofday(&tv, 0);
-    return (long long)tv.tv_sec * 1000 + tv.tv_usec/1000;
+    return (unsigned long)tv.tv_sec * 1000 + tv.tv_usec/1000;
   }
 #endif /* !NO_TIMES */
 
@@ -87,7 +91,7 @@ void add_elements(int n)
   list_element * le;
   if (n == 0) return;
   add_elements(n-1);
-  le = malloc(sizeof(list_element));
+  le = (list_element *)malloc(sizeof(list_element));
   if (le == 0)
     {
       fprintf(stderr, "Out of memory\n");
@@ -97,6 +101,7 @@ void add_elements(int n)
   AO_stack_push(&the_list, (AO_t *)le);
 }
 
+#ifdef VERBOSE
 void print_list(void)
 {
   list_element *p;
@@ -106,6 +111,7 @@ void print_list(void)
        p = (list_element *)AO_REAL_NEXT_PTR(p -> next))
     printf("%d\n", p -> data);
 }
+#endif /* VERBOSE */
 
 static char marks[MAX_NTHREADS * (MAX_NTHREADS + 1) / 2 + 1];
 
@@ -173,16 +179,16 @@ volatile AO_t ops_performed = 0;
 #endif
 {
   list_element * t[MAX_NTHREADS + 1];
-  int index = (int)(size_t)arg;
-  int i;
+  unsigned index = (unsigned)(size_t)arg;
+  unsigned i;
 # ifdef VERBOSE
-    int j = 0;
+    unsigned j = 0;
 
-    printf("starting thread %d\n", index);
+    printf("starting thread %u\n", index);
 # endif
   while (fetch_and_add(&ops_performed, index + 1) + index + 1 < LIMIT)
     {
-      for (i = 0; i < index + 1; ++i)
+      for (i = 0; i <= index; ++i)
         {
           t[i] = (list_element *)AO_stack_pop(&the_list);
           if (0 == t[i])
@@ -191,7 +197,7 @@ volatile AO_t ops_performed = 0;
               abort();
             }
         }
-      for (i = 0; i < index + 1; ++i)
+      for (i = 0; i <= index; ++i)
         {
           AO_stack_push(&the_list, (AO_t *)t[i]);
         }
@@ -200,7 +206,7 @@ volatile AO_t ops_performed = 0;
 #     endif
     }
 # ifdef VERBOSE
-    printf("finished thread %d: %d total ops\n", index, j);
+    printf("finished thread %u: %u total ops\n", index, j);
 # endif
   return 0;
 }
@@ -218,7 +224,9 @@ int main(int argc, char **argv)
   int exper_n;
 
   if (1 == argc)
-    max_nthreads = 4;
+    {
+      max_nthreads = DEFAULT_NTHREADS;
+    }
   else if (2 == argc)
     {
       max_nthreads = atoi(argv[1]);
@@ -236,7 +244,7 @@ int main(int argc, char **argv)
   for (exper_n = 0; exper_n < N_EXPERIMENTS; ++ exper_n)
     for (nthreads = 1; nthreads <= max_nthreads; ++nthreads)
       {
-        int i;
+        unsigned i;
 #       ifdef USE_WINTHREADS
           DWORD thread_id;
           HANDLE thread[MAX_NTHREADS];
@@ -244,7 +252,7 @@ int main(int argc, char **argv)
           pthread_t thread[MAX_NTHREADS];
 #       endif
         int list_length = nthreads*(nthreads+1)/2;
-        long long start_time;
+        unsigned long start_time;
         list_element * le;
 
 #       ifdef VERBOSE
@@ -259,7 +267,7 @@ int main(int argc, char **argv)
 #       endif
         ops_performed = 0;
         start_time = get_msecs();
-        for (i = 1; i < nthreads; ++i) {
+        for (i = 1; (int)i < nthreads; ++i) {
           int code;
 
 #         ifdef USE_WINTHREADS
@@ -278,7 +286,7 @@ int main(int argc, char **argv)
         /* We use the main thread to run one test.  This allows gprof   */
         /* profiling to work, for example.                              */
         run_one_test(0);
-        for (i = 1; i < nthreads; ++i) {
+        for (i = 1; (int)i < nthreads; ++i) {
           int code;
 
 #         ifdef USE_WINTHREADS
@@ -292,10 +300,10 @@ int main(int argc, char **argv)
             abort();
           }
         }
-        times[nthreads][exper_n] = (unsigned long)(get_msecs() - start_time);
+        times[nthreads][exper_n] = get_msecs() - start_time;
   #     ifdef VERBOSE
-          printf("%d %lu\n", nthreads,
-                 (unsigned long)(get_msecs() - start_time));
+          printf("nthreads=%d, time_ms=%lu\n",
+                 nthreads, times[nthreads][exper_n]);
           printf("final list (should be reordered initial list):\n");
           print_list();
   #     endif
@@ -313,8 +321,8 @@ int main(int argc, char **argv)
                LIMIT, LIMIT, nthreads);
 #       ifndef NO_TIMES
           for (exper_n = 0; exper_n < N_EXPERIMENTS; ++exper_n) {
-#           if defined(VERBOSE)
-              printf(" [%lu]", times[nthreads][exper_n]);
+#           ifdef VERBOSE
+              printf(" [%lums]", times[nthreads][exper_n]);
 #           endif
             sum += times[nthreads][exper_n];
           }

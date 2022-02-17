@@ -22,7 +22,7 @@ instead of features.  In many cases, this is a mistake.
 Many of the tested configuration macros are at least somewhat defined in
 either include/private/gcconfig.h or in Makefile.direct.  Here is an attempt
 at documenting these macros:  (Thanks to Walter Bright for suggesting
-this.  This is a work in progress)
+this.)
 
 MACRO           EXPLANATION
 -----           -----------
@@ -43,6 +43,10 @@ GC_NO_THREAD_REDIRECTS  Tested by gc.h.  Prevents redirection of thread
 GC_NO_THREAD_DECLS      Tested by gc.h.  MS Windows only.  Do not declare
                 Windows thread creation routines and do not include windows.h.
 
+GC_DONT_INCLUDE_WINDOWS_H   Tested by gc.h.  MS Windows only.  Do not include
+                windows.h from gc.h (but Windows-specific thread creation
+                routines are declared).
+
 GC_UNDERSCORE_STDCALL   Tested by gc.h.  Explicitly prefix exported/imported
                 WINAPI (__stdcall) symbols with '_' (underscore).  Could be
                 used with MinGW (for x86) compiler (in conjunction with
@@ -52,6 +56,10 @@ _ENABLE_ARRAYNEW
                 #define'd by the Digital Mars C++ compiler when
                 operator new[] and delete[] are separately
                 overloadable. Used in gc_cpp.h.
+
+GC_NO_INLINE_STD_NEW    Tested by gc_cpp.cc and gc_cpp.h.  MS Windows only.
+                Define the system-wide new and delete operators in gccpp.dll
+                instead of providing an inline version of the operators.
 
 _DLL            Tested by gc_config_macros.h. Defined by Visual C++ if runtime
                 dynamic libraries are in use.  Used (only if none of GC_DLL,
@@ -116,38 +124,48 @@ GC_THREADS      Should set the appropriate one of the below macros,
   except GC_WIN32_PTHREADS, which must be set explicitly.  Tested by gc.h.
 
 GC_SOLARIS_THREADS      Enables support for Solaris pthreads.
-  Must also define _REENTRANT.
+  Must also define _REENTRANT.  Deprecated, use GC_THREADS instead.
 
 GC_IRIX_THREADS         Enables support for Irix pthreads.  See README.sgi.
+  Deprecated, use GC_THREADS instead.
 
 GC_HPUX_THREADS         Enables support for HP/UX 11 pthreads.
   Also requires _REENTRANT or _POSIX_C_SOURCE=199506L. See README.hp.
+  Deprecated, use GC_THREADS instead.
 
 GC_LINUX_THREADS        Enables support for Xavier Leroy's Linux threads
-  or NPTL threads. See README.linux.  _REENTRANT may also be required.
+  or NPTL threads.  See README.linux.  _REENTRANT may also be required.
+  Deprecated, use GC_THREADS instead.
 
-GC_OSF1_THREADS         Enables support for Tru64 pthreads.
+GC_OSF1_THREADS         Enables support for Tru64 pthreads.  Deprecated, use
+  GC_THREADS instead.
 
-GC_FREEBSD_THREADS      Enables support for FreeBSD pthreads.
-  Appeared to run into some underlying thread problems.
+GC_FREEBSD_THREADS      Enables support for FreeBSD pthreads.  Appeared to run
+  into some underlying thread problems.  Deprecated, use GC_THREADS instead.
 
-GC_NETBSD_THREADS       Enables support for NetBSD pthreads.
+GC_NETBSD_THREADS       Enables support for NetBSD pthreads.  Deprecated, use
+  GC_THREADS instead.
 
-GC_OPENBSD_THREADS      Enables support for OpenBSD pthreads.
+GC_OPENBSD_THREADS      Enables support for OpenBSD pthreads.  Deprecated,
+  use GC_THREADS instead.
 
-GC_DARWIN_THREADS       Enables support for Mac OS X pthreads.
+GC_DARWIN_THREADS       Enables support for Mac OS X pthreads.  Deprecated,
+  use GC_THREADS instead.
 
-GC_AIX_THREADS  Enables support for IBM AIX threads.
+GC_AIX_THREADS  Enables support for IBM AIX threads.  Deprecated, use
+  GC_THREADS instead.
 
 GC_DGUX386_THREADS      Enables support for DB/UX on I386 threads.
-  See README.DGUX386.  (Probably has not been tested recently.)
+  See README.DGUX386.  (Probably has not been tested recently.)  Deprecated,
+  use GC_THREADS instead.
 
 GC_WIN32_THREADS        Enables support for Win32 threads.  That makes sense
-  for this Makefile only under Cygwin.
+  for Makefile (and Makefile.direct) only under Cygwin or MinGW.  Deprecated,
+  use GC_THREADS instead.
 
-GC_WIN32_PTHREADS       Enables support for pthreads-win32.  This cannot be
-  enabled automatically by GC_THREADS, which would assume Win32 native
-  threads.
+GC_WIN32_PTHREADS       Enables support for pthreads-win32 (or other
+  non-Cygwin pthreads library for Windows).  This cannot be enabled
+  automatically by GC_THREADS, which would assume Win32 native threads.
 
 PTW32_STATIC_LIB        Causes the static version of the Mingw pthreads
   library to be used.  Requires GC_WIN32_PTHREADS.
@@ -164,6 +182,8 @@ SMALL_CONFIG    Tries to tune the collector for small heap sizes,
   collection no longer works in this case.  Also, removes some
   statistic-printing code.  Turns off some optimization algorithms (like data
   prefetching in the mark routine).
+
+NO_CLOCK        Do not use system clock.  Disables some statistic printing.
 
 GC_DISABLE_INCREMENTAL  Turn off the incremental collection support.
 
@@ -188,10 +208,11 @@ DONT_ADD_BYTE_AT_END    Meaningful only with ALL_INTERIOR_POINTERS or
 
 NO_EXECUTE_PERMISSION   May cause some or all of the heap to not
   have execute permission, i.e. it may be impossible to execute
-  code from the heap.  Currently this only affects the incremental
-  collector on UNIX machines.  It may greatly improve its performance,
-  since this may avoid some expensive cache synchronization.  Alternatively,
-  GC_set_pages_executable can be called at the process initialization time.
+  code from the heap.  Affects the incremental collector and memory unmapping.
+  It may greatly improve the performance, since this may avoid some expensive
+  cache synchronization.  Portable clients should call
+  GC_set_pages_executable(1) at the process initialization time if the
+  execute permission is required.
 
 GC_NO_OPERATOR_NEW_ARRAY        Declares that the C++ compiler does not
   support the  new syntax "operator new[]" for allocating and deleting arrays.
@@ -231,6 +252,8 @@ IGNORE_FREE     Turns calls to free into a no-op.  Only useful with
 NO_DEBUGGING    Removes GC_dump and the debugging routines it calls.
   Reduces code size slightly at the expense of debuggability.
 
+GC_DUMP_REGULARLY       Generate regular debugging dumps.
+
 DEBUG_THREADS   Turn on printing additional thread-support debugging
   information.
 
@@ -251,9 +274,11 @@ FINALIZE_ON_DEMAND      Causes finalizers to be run only in response
   In 5.0 this became runtime adjustable, and this only determines the
   initial value of GC_finalize_on_demand.
 
-GC_NO_FINALIZATION      Exclude finalization support (for smaller code size)
+GC_NO_FINALIZATION      Exclude finalization support (for smaller code size).
 
-ATOMIC_UNCOLLECTABLE    Includes code for GC_malloc_atomic_uncollectable.
+GC_TOGGLE_REFS_NOT_NEEDED       Exclude toggle-refs support.
+
+GC_ATOMIC_UNCOLLECTABLE Includes code for GC_malloc_atomic_uncollectable.
   This is useful if either the vendor malloc implementation is poor,
   or if REDIRECT_MALLOC is used.
 
@@ -339,14 +364,12 @@ SAVE_CALL_NARGS=<n>     Set the number of functions arguments to be saved
   with each call frame.  Default is zero.  Ignored if we don't know how to
   retrieve arguments on the platform.
 
-CHECKSUMS       Reports on erroneously clear dirty bits, and unexpectedly
-  altered stubborn objects, at substantial performance cost.  Use only for
-  debugging of the incremental collector.  Not compatible with USE_MUNMAP
-  or threads.
+CHECKSUMS       Reports on erroneously clear dirty bits (at a substantial
+  performance cost).  Use only for debugging of the incremental collector.
+  Not compatible with USE_MUNMAP or threads.
 
 GC_GCJ_SUPPORT  Includes support for gcj (and possibly other systems
   that include a pointer to a type descriptor in each allocated object).
-  Building this way requires an ANSI C compiler.
 
 USE_I686_PREFETCH       Causes the collector to issue Pentium III style
   prefetch instructions.  No effect except on X86 Linux platforms.
@@ -386,8 +409,20 @@ USE_COMPILER_TLS        Causes thread local allocation to use
   default in HP/UX.  It may help performance on recent Linux installations.
   (It failed for me on RedHat 8, but appears to work on RedHat 9.)
 
+GC_ATTR_TLS_FAST        Use specific attributes for GC_thread_key like
+  __attribute__((tls_model("local-exec"))).
+
 PARALLEL_MARK   Allows the marker to run in multiple threads.  Recommended
   for multiprocessors.
+
+GC_BUILTIN_ATOMIC       Use C11 (GCC) atomic intrinsics instead of
+  libatomic_ops primitives.
+
+GC_ALWAYS_MULTITHREADED     Force multi-threaded mode at GC initialization.
+  (Turns GC_allow_register_threads into a no-op routine.)
+
+GC_ENABLE_SUSPEND_THREAD (Linux only)   Turn on thread suspend/resume API
+support.
 
 GC_WINMAIN_REDIRECT (Win32 only)        Redirect (rename) an application
   WinMain to GC_WinMain; implement the "real" WinMain which starts a new
@@ -426,10 +461,6 @@ MAKE_BACK_GRAPH         Enable GC_PRINT_BACK_HEIGHT environment variable.
 GC_PRINT_BACK_HEIGHT    Permanently turn on back-height printing mode
   (useful when NO_GETENV).  See the similar environment variable description
   in README.environment.  Requires MAKE_BACK_GRAPH defined.
-
-STUBBORN_ALLOC  Allows allocation of "hard to change" objects, and thus
-  makes incremental collection easier.  Was enabled by default until 6.0.
-  Rarely used, to my knowledge.
 
 HANDLE_FORK (Unix and Cygwin only)      Attempt by default to make GC_malloc()
   work in a child process fork()'ed from a multi-threaded parent.  Not fully
@@ -548,14 +579,14 @@ GC_FULL_FREQ=<value>    Set alternate default number of partial collections
 NO_CANCEL_SAFE (Posix platforms with threads only)      Don't bother trying
   to make the collector safe for thread cancellation; cancellation is not
   used.  (Note that if cancellation is used anyway, threads may end up
-  getting cancelled in unexpected places.)  Even without this option,
+  getting canceled in unexpected places.)  Even without this option,
   PTHREAD_CANCEL_ASYNCHRONOUS is never safe with the collector.  (We could
   argue about its safety without the collector.)
 
 UNICODE (Win32 only)    Use the Unicode variant ('W') of the Win32 API instead
   of ANSI/ASCII one ('A').  Useful for WinCE.
 
-PLATFORM_ANDROID (or __ANDROID__)       Compile for Android NDK platform.
+HOST_ANDROID (or __ANDROID__)   Compile for Android NDK platform.
 
 SN_TARGET_PS3           Compile for Sony PS/3.
 

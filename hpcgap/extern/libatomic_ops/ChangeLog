@@ -1,355 +1,631 @@
 
+== [7.6.12] 2021-09-13 ==
+
+* Allow to generalize bool-CAS for sparc (gcc)
+* Declare argument of AO_load_next with const in atomic_ops_stack
+* Describe double_compare_and_swap operation in README_details
+* Document CAS operations better in README_details
+* Fix gcc/sunc x86 AO_compare_double_and_swap_double missing side effect
+* Fix library name in README_details
+* Fix link fail caused by missing GCC char/short atomic primitives on riscv64
+* Fix size of local variable passed to cas[x] (gcc/sparc)
+* Implement fetch-CAS for sparc (gcc)
+* Refactor gcc x86 memory constraints
+* Refine and reformat description of size prefix in README_details
+* Remove outdated notes in README_details
+* Replace x86 setz instruction by asm flag output operand (gcc)
+* Support MSYS host (configure)
+* Turn off compare_double_and_swap_double_full PIC hack for GCC 5+ (x86)
+* Update README_win32 to match Makefile.msft
+* Use GCC atomic intrinsics for s390x (clang 8.0+ and gcc 5.4+)
+* Use __alignof__ instead of sizeof in atomic variable alignment assertions
+* Workaround assertion violation in AO_load/store on m68k
+
+
+== [7.6.10] 2019-03-01 ==
+
+* Eliminate 'my_chunk_ptr-AO_initial_heap out of bounds' cppcheck warning
+* Fix 'AO_*_TS_T is not defined' compiler warnings (GCC-8)
+* Fix 'duplicate symbol' error for test_malloc/stack with static libs (OS X)
+* Workaround 'argument to function assert is always 1' cppcheck warnings
+
+
+== [7.6.8] 2018-12-11 ==
+
+* Eliminate 'casting signed to bigger unsigned int' CSA warning (test_stack)
+* Eliminate 'redundant blank line at start/end of block' CodeFactor warning
+* Fix 'Cannot implement CAS_full on this architecture' build error (nios2)
+* Fix a typo in arm_v6.h
+* Support aarch64-ilp32 (GCC) and UWP/arm64 (MS VC) targets
+* Undefine AO_ARM_HAVE_* private macros after their usage
+* Use standalone private macro to guard against AO_GCC_BARRIER redefinition
+* Workaround 'condition my_chunk_ptr is always false' cppcheck false positive
+
+
+== [7.6.6] 2018-08-07 ==
+
+* COPYING: sync with FSF's gpl-2.0.txt
+* Fix 'undefined reference to __atomic_load/store/cas_16' error (gcc-7/x64)
+* Fix a typo in the overview section of README
+* Fix comments style in configure.ac and Makefile.am
+* Update copyright information in README and some header files
+
+
+== [7.6.4] 2018-03-27 ==
+
+* Add RISC-V support
+* Convert atomic_ops_malloc.c and tests to valid C++ code
+* Eliminate 'function is never used' cppcheck warning for load_before_cas
+* Eliminate 'using argument that points at uninitialized var' cppcheck error
+* Fix 'AO_pt_lock undefined' error if cross-compiling manually (MinGW)
+* Fix public headers inclusion from clients C++ code
+* Remove gcc/nios2.h file (include gcc/generic.h directly for nios2)
+* Support MIPS rel6
+
+
+== [7.6.2] 2017-12-24 ==
+
+* Allow to alter DEFAULT/MAX_NTHREADS values in test_malloc/stack
+* Allow to select almost-non-blocking stack implementation explicitly
+* Annotate AO_malloc with 'alloc_size' and 'malloc' attributes
+* Avoid misleading 'AO_t undefined' error if wrong atomic_ops.h included
+* Define AO_TS_SET to 1 (true) if GCC atomic_test_and_set is used
+* Disable workaround in stack_pop_acquire that was needed for ancient Clang
+* Do not define AO_GCC_FORCE_HAVE_CAS for Clang 3.8+ (Aarch64)
+* Do not disallow to define double_load using built-in atomics (Aarch64)
+* Do not expose AO_GCC_FORCE_HAVE_CAS macro to client code (GCC)
+* Do not install documentation if configure --disable-docs (new option)
+* Do not produce .tar.bz2 distribution file (configure)
+* Eliminate '-pedantic is not an option that controls warnings' GCC message
+* Eliminate data race in cons() of test_malloc
+* Eliminate GCC-5 ASan global-buffer-overflow false positive for AO_stack_bl
+* Fill in allocated memory with values depending on thread id (test_malloc)
+* Fix 'bad register name %sil' assembler error (GCC-4.4/x86)
+* Fix 'unknown attribute no_sanitize' compiler warning for GCC
+* Fix AO_malloc for sizes near CHUNK_SIZE
+* Fix memory leak in test_malloc
+* Fix test failures for Clang-3.8 and older (Aarch64)
+* Fix test_stack failure if AO_PREFER_BUILTIN_ATOMICS (GCC/Aarch64)
+* Fix typo in AO_REAL_NEXT_PTR comment
+* Increase the default number of threads to 16 in test_malloc/stack
+* Mark unallocated/freed memory as inaccessible using ASan functionality
+* New macro (DONT_USE_MMAP) to support testing as if mmap() is unavailable
+* New macro to select stack implementation based on CAS-double
+* Place no_sanitize attributes in a GCC-compliant way
+* Prevent too long run of test_atomic_generalized (especially with TSan)
+* Simplify '#if' expressions in gcc/x86.h (code refactoring)
+* Test smallest allocation of large type (test_malloc)
+* Use __builtin_expect in atomic_ops_malloc
+* Use built-in atomics for load/store/CAS for Clang by default (Aarch64)
+* Use double-word atomic intrinsics for recent Clang versions (gcc/x86.h)
+* Use GCC atomic intrinsics for Hexagon (clang 3.9+)
+* Use generalized double-wide load/store if AO_PREFER_GENERALIZED (Aarch64)
+* Workaround 'unused result' code defects in atomic_ops.c, list_atomic
+* Workaround Thread Sanitizer (TSan) false positive warnings
+Also, includes 7.4.8 changes
+
+
+== [7.6.0] 2017-05-19 ==
+
+* Add *_and/or/xor* and *_[fetch_]compare_and_swap* tests to test_atomic
+* Add asm-based and/or/xor implementation for char/short/int (gcc/x86)
+* Add asm-based char/short/int CAS implementation for gcc/x86[_64]
+* Add configure '--disable-atomic-intrinsics' option
+* Add dd_acquire_read case to test_atomic
+* Add initial nios2 architecture support
+* Add Makefile target (check-nolink) to compile all source without linking
+* Add Makefile target to run all tests without test-driver
+* Add test_atomic_generalized to Makefile and Makefile.msft
+* Allow alternate CC (CROSS_CC) for AC_TRY_COMPILE (configure)
+* Always define word-wide CAS for x86 (MS VC++ 8+)
+* Avoid atomic_compare_exchange_n if no __GCC_HAVE_SYNC_COMPARE_AND_SWAP_n
+* Avoid extra nop_full in stack_pop_acquire if atomic intrinsics used (x86)
+* Basic support of TILE-Gx and TILEPro CPUs
+* Code refactoring of int-wide primitives in gcc/x86.h
+* Define AO_TS_SET as __GCC_ATOMIC_TEST_AND_SET_TRUEVAL if applicable
+* Define CLANG/GNUC_PREREQ macros to check gcc/clang minimum version
+* Do not define print_list() unless used (tests)
+* Eliminate 'condition sizeof(long)>4 is always true' cppcheck style warning
+* Eliminate 'ISO C90 does not support long long' compiler pedantic warning
+* Eliminate 'scope of variable can be reduced' cppcheck warnings
+* Eliminate redundant lwsync 2nd call in CAS_full on fail (gcc/PowerPC)
+* Fix 'unknown attribute no_sanitize' compiler warning (clang prior to v3.8)
+* Fix 'variable new value is never used' cppcheck style warning
+* Fix missing double_compare_and_swap_dd_acquire_read
+* Fix reporting about missing and/or/xor_dd_acquire_read (test_atomic)
+* Hide AO_locks symbol
+* Implement AO_CLEAR using C11 atomic intrinsic (GCC)
+* Implement CAS_acquire/release/full using __atomic_compare_exchange_n (gcc)
+* Implement char and/or/xor and short CAS for msftc ARM and X86[_64]
+* Implement char CAS and char/short add for msftc X86[_64] (VS 2013+)
+* Implement compiler_barrier using C11 __atomic_signal_fence (GCC)
+* Implement int CAS/inc/dec for msftc/x86_64
+* Implement short inc/dec directly for msftc ARM and X86[_64]
+* Initial ibmc/powerpc (xlc) support
+* New configure option (--enable-werror) to treat warnings as compiler errors
+* New macro AO_PREFER_BUILTIN_ATOMICS to rely on C11 atomics fully (AArch64)
+* Refine AO_nop_write comment for ARM big.LITTLE architecture
+* Refine configure messages when checking for compiler options
+* Refine documentation about _full memory ordering suffix
+* Refine README how to build the library source from the repository
+* Relax shareability domain for dmb st in AO_nop_write (ARM/AArch64)
+* Remove redundant include windows.h from headers (msftc/x86[_64])
+* Remove spaces at EOLn in asm code
+* Report gcc/clang pedantic warnings (configure)
+* Support NaCl/arm
+* Suppress 'ISO C does not support __int128 type' GCC/Clang pedantic warning
+* Test store/CAS emulation explicitly
+* Update shared libraries version info to 2:0:1
+* Use GCC atomic intrinsics for PowerPC 32/64 (GCC 4.8+ and clang 3.8+)
+* Use GCC atomic intrinsics for x86, x64, ARM, MIPS (gcc 4.9+, clang 3.5+)
+* Use generalized double-wide load/store if AO_PREFER_GENERALIZED (gcc/x86)
+* Workaround '#error' cppcheck error messages
+* Workaround 'condition always true', 'unused stored value' cppcheck warnings
+* Workaround 'function is never used' cppcheck style warnings
+* Workaround 'obsolescent ftime called' cppcheck style warning (POSIX)
+* Workaround 'overflow in pointer subtraction' cppcheck warning
+* Workaround 'shifting 32-bit value by 32 bits undefined' cppcheck warning
+* Workaround 'uninitialized memory use' code analyzer false warning (tests)
+* Workaround 'uninitialized variable' cppcheck error in hpc/hppa.h
+* Workaround 'value of macro is unknown' cppcheck information messages
+* Workaround a bug in double-wide intrinsics of Clang/x64 with ASan enabled
+* Workaround MSan warning about uninitialized data read by generalized store
+Also, includes 7.4.6 changes
+
+
+== [7.4.16] 2021-09-13 ==
+
+* Fix gcc/sunc x86 AO_compare_double_and_swap_double missing side effect
+* Fix library name in README_details
+* Fix size of local variable passed to cas[x] (gcc/sparc)
+* Workaround assertion violation in AO_load/store on m68k
+
+
+== [7.4.14] 2019-03-01 ==
+
+* Fix 'AO_*_TS_T is not defined' compiler warnings (GCC-8)
+
+
+== [7.4.12] 2018-12-11 ==
+
+* COPYING: sync with FSF's gpl-2.0.txt
+* Fix a typo in arm_v6.h
+* Fix a typo in the overview section of README
+* Support ILP32 in AArch64 assembly routines (GCC)
+* Support UWP/arm64 target
+
+
+== [7.4.10] 2017-12-22 ==
+
+* Fix AO_malloc for sizes near CHUNK_SIZE
+* Fix memory leak in test_malloc
+* Fix typo in AO_REAL_NEXT_PTR comment
+
+
+== [7.4.8] 2017-10-18 ==
+
+* Fix 'missing select.h', 'undefined sigprocmask' compiler errors (Hexagon)
+* Update README about bugs reporting and new releases notification
+* Workaround misspelling in GCC to detect ARMv6KZ platform
+
+
+== [7.4.6] 2017-05-18 ==
+
+* Add assertion that double-wide CAS target is aligned (msftc/x86[_64])
+* Add configure --enable-gcov option (enable code coverage analysis)
+* Code refactoring of gcc/powerpc.h to avoid code duplication
+* Eliminate 'cast to long from void*' compiler warning in test_atomic
+* Eliminate 'implicit declaration of close' warning in 'strict ANSI' mode
+* Eliminate 'missing braces around initializer' gcc warning (hppa)
+* Eliminate 'printf format specifies type void*' GCC pedantic warnings
+* Eliminate 'value shift followed by expansion' false code defect warning
+* Enable limited testing in Makefile.msft without Cygwin
+* Fix (delete) comment for AO_and_full (x86)
+* Fix block_all_signals compilation in 'strict ANSI' mode
+* Fix missing .exe for test filenames in Makefile (MinGW)
+* Fix missing printed value names (test_stack)
+* Implement fetch-CAS for s390[x] (gcc)
+* Move libraries version info to the beginning of Makefile.am
+* Refine documentation in Makefile.msft how to run all tests (MS VC)
+* Refine README about library downloading
+* Rename doc/README.txt to doc/README_details.txt
+* Support AIX/ppc (gcc)
+* Support CFLAGS_EXTRA to pass extra user-defined compiler flags (make)
+* Support n32 ABI for mips64
+* Update shared libraries version info for 7.4.6+ (to 1:4:0)
+* Use 'inline code' format for commands in README.md
+* Use LLD and SCD instructions on mips64
+* Workaround 'resource leak' false positives in AO_malloc, add_elements
+* Workaround 'uninitialized memory use' MemorySanitizer warning (test_atomic)
+Also, includes 7.2h changes
+
+
 == [7.4.4] 2016-05-24 ==
 
-* Eliminate 'signed-to-unsigned value extension' compiler warning in malloc.
-* Eliminate 'variable set but not used' Cppcheck warnings in test_stack.
-* Fix GCC 5.x compatibility for AArch64 double-wide primitives.
-* Fix makefile preventing AO_pause undefined in libatomic_ops_gpl.
-* Fix missing casts to match printf format specifier in test_atomic.
-* Fix missing output folder on making auto-generated test files (Automake).
-* Fix typo in configure.ac (in description of AO_ASM_X64_AVAILABLE).
-* Minor fix of code alignment in mips AO_compare_and_swap.
-* Remove TODO file.
-* Restore contribution info in ChangeLog for authors not listed in git log.
-Also, includes 7.2g changes.
+* Eliminate 'signed-to-unsigned value extension' compiler warning in malloc
+* Eliminate 'variable set but not used' Cppcheck warnings in test_stack
+* Fix GCC 5.x compatibility for AArch64 double-wide primitives
+* Fix makefile preventing AO_pause undefined in libatomic_ops_gpl
+* Fix missing casts to match printf format specifier in test_atomic
+* Fix missing output folder on making auto-generated test files (Automake)
+* Fix typo in configure.ac (in description of AO_ASM_X64_AVAILABLE)
+* Minor fix of code alignment in mips AO_compare_and_swap
+* Remove TODO file
+* Restore contribution info in ChangeLog for authors not listed in git log
+Also, includes 7.2g changes
 
 
 == [7.4.2] 2014-05-02 ==
 
-* Fix a typo in doc/README.txt (remove redundant "an" article).
-* Update emails/links due to project site transition.
-Also, includes 7.2f changes.
+* Fix a typo in doc/README.txt (remove redundant "an" article)
+* Update emails/links due to project site transition
+Also, includes 7.2f changes
 
 
 == [7.4.0] 2013-11-17 ==
 
-* Add and/or/xor entries to list_atomic (tests).
-* Add char/short/int/AO_double_t and dd_acquire cases to list_atomic (tests).
-* Add compile-time assertion for size of 'standard' AO_double_t.
-* Add double_store pthread-based implementation and tests.
-* Add generalized CAS primitives of char/short/int size.
-* Add generalized atomic and/or/xor operations for char/short/int types.
-* Add generalized fetch_and_add_acquire/release (for ARMv6+).
-* Add generic implementation of double_load primitives.
-* Add information about AO_ASSUME_VISTA to README_win32.
-* Add internal header containing only char/short/int/AO_t atomic loads.
-* Add load/store primitives generalization based on CAS.
-* Add lock-based implementation of char/short/int_fetch_compare_and_swap.
-* Add makefile rule to test list_atomic.template syntax (tests).
-* Add missing 'const' in aligned-atomic XSIZE_load implementation.
-* Add missing double_compare_and_swap to generalization.
-* Add missing generalization of no-barrier CAS in template.
-* Add negative double-CAS test cases to test_atomic_include (tests).
-* Add test_stack to Makefile.msft (tests).
-* Adjust fprintf arguments type matching specifier in test_stack (tests).
-* Adjust included filenames in atomic_ops_malloc and test_stack.
-* Adjust quotes in echo command of Makefile.msft (Win32).
-* Always use 'mfence' for nop_full if target CPU supports SSE2 (gcc/x86).
-* Better document configure THREADDLLIBS variable.
-* Cast away volatile on dereference in CAS-based generalization primitives.
-* Change policy regarding version numbers ("micro" part instead of "alpha").
-* Convert README to Markdown format.
-* Define AO_NO_PTHREADS in configure if no pthreads (Win32 and VxWorks).
-* Define AO_int_X operations for ARM and avr32.
-* Define double-wide ordered loads/stores for x86.
-* Define int_and/or/xor primitives in ao_t_is_int header.
-* Define nop_full as compiler barrier for pre-ARMv6 single-core case.
-* Do not duplicate BUILT_SOURCES entries in nobase_private_HEADERS (Makefile).
-* Do not include standard_ao_double_t.h where double-CAS is unimplemented.
-* Do not report absence of meaningless nop, load and store in test_atomic.
-* Do not use deprecated AO_T and AO_TS_T (tests).
-* Eliminate 'missing initializer' warning for AO_stack_t value initializer.
-* Eliminate 64-bit compiler warnings in atomic_ops_malloc.
-* Eliminate arithmetic shifts in double-CAS (gcc/arm, msftc/x86).
-* Eliminate warning for fetch_and_add argument in test_atomic_include (tests).
-* Enable Makefile.msft for Win64.
-* Enable build using toolchain without pthreads.
-* Enable double_compare_and_swap for non-cpp code (msftc/x86.h).
-* Enable generalization of all variants of CAS via fetch_compare_and_swap.
-* Enable test_stack for pthreads-w32 and Win32 with native threads.
-* Fix generalized AO_char/short_compare_and_swap args (missing 'unsigned').
-* Fix makefile sed rule for list_atomic (tests).
-* Fix missing abort() usage in atomic_ops_malloc and tests on WinCE.
-* Generalize compare_double_and_swap_double using double_compare_and_swap.
-* Generalize double_load/store for x86_64 (GCC).
-* Generate ao_t_is_int, 'loadstore' headers from templates.
-* Generate generalized AO_t load/store/fetch_and_add primitives from template.
-* Generate ordered_loads/stores_only headers from templates.
-* Group all X_acquire_release_volatile.h and X_[aligned_]atomic_load_store.h.
-* Implement and/or/xor, AO_double_load for ARM.
-* Implement atomic store using direct write by default on ARMv6+.
-* Implement char/short/int-wide primitives using GCC built-in atomic/sync.
-* Implement char/short/int_fetch_and_add for msftc/x86[_64] (Win32).
-* Implement char/short_fetch_and_add, char/short_load for ARMv6+ (GCC).
-* Implement char/short_store primitives at aligned addresses for ARM.
-* Implement compare_double_and_swap_double for SunCC/x86.
-* Implement double_load/store based on guaranteed x86 access atomicity.
-* Implement double_store for ARMv7 using LDREXD/STREXD.
-* Implement load/store via simple LDR/STR for ARMv6+ (msftc).
-* Implement nop_full/write using 'dmb' instruction if available (gcc/arm).
-* Improve debug printing in test_stack (tests).
-* Log messages to stdout instead of stderr (tests).
-* Make AO_ASSUME_VISTA also enables Win98 code in msftc/x86.h (Win32).
-* Minimize gcc/generic-arithm template by factoring out barriers.
-* Move 'unsigned' keyword to XCTYPE in generalize-small template.
-* Move default compiler options to CFLAGS in Makefile.msft (Win32).
-* Move definitions of ordered loads/stores to inner separate headers.
-* Move gcc-generic AO_t-wide primitives to generic-small/arithm headers.
-* Move generalized arithmetical primitives to 'generalize-arithm' template.
-* Optimize AO_spin manually to minimize compiler influence on its duration.
-* Parameterize list_atomic template with XSIZE (tests).
-* Perform only few list reversals in test_malloc if AO based on pthreads.
-* Put autogen.sh to 'dist' package (Automake).
-* Remote duplicate definition of test_and_set_acquire in generalize.h.
-* Remove X_aligned_atomic_load_store headers and template.
-* Remove duplicate AO_spin and AO_pause definition in atomic_ops_stack.
-* Remove gcc/x86_64.h eliminating code duplication of gcc/x86.h.
-* Remove nested AO_USE_PTHREAD_DEFS macro check in atomic_ops.h (gcc/arm).
-* Remove redundant 'cc' clobber for LDREXD instruction (gcc/arm).
-* Remove store_full from msftc/arm.h in favor of generalized primitive.
-* Remove sunc/x86_64.h eliminating code duplication of sunc/x86.h.
-* Remove unsafe emulation-based implementation of double CAS (SunCC/x86_64).
-* Remove useless 'perror' call in run_parallel.h (tests).
-* Reorder AO_double_t union elements for AO_DOUBLE_T_INITIALIZER portability.
-* Replace atomic_load_store.template with atomic_load and atomic_store ones.
-* Replace some FIXME items with TODO in atomic_ops.c and sysdeps headers.
-* Specify fetch_and_add/sub1 result as unused in test_atomic (tests).
-* Support AArch64 (64-bit ARM) target (GCC).
-* Support ARMv8 target (gcc/arm).
-* Test double_compare_and_swap in test_atomic (tests).
-* Use AO_ prefix for internal functions in arm_v6.h, hppa.h.
-* Use __atomic GCC built-in to implement generic double-wide CAS.
-* Use built-in __sync CAS for double-CAS if AO_USE_SYNC_CAS_BUILTIN for x86.
-* Workaround GCC 4.4.3 warning reported for 'val' of list_atomic.c (tests).
-Also, includes 7.2e changes.
+* Add and/or/xor entries to list_atomic (tests)
+* Add char/short/int/AO_double_t and dd_acquire cases to list_atomic (tests)
+* Add compile-time assertion for size of 'standard' AO_double_t
+* Add double_store pthread-based implementation and tests
+* Add generalized CAS primitives of char/short/int size
+* Add generalized atomic and/or/xor operations for char/short/int types
+* Add generalized fetch_and_add_acquire/release (for ARMv6+)
+* Add generic implementation of double_load primitives
+* Add information about AO_ASSUME_VISTA to README_win32
+* Add internal header containing only char/short/int/AO_t atomic loads
+* Add load/store primitives generalization based on CAS
+* Add lock-based implementation of char/short/int_fetch_compare_and_swap
+* Add makefile rule to test list_atomic.template syntax (tests)
+* Add missing 'const' in aligned-atomic XSIZE_load implementation
+* Add missing double_compare_and_swap to generalization
+* Add missing generalization of no-barrier CAS in template
+* Add negative double-CAS test cases to test_atomic_include (tests)
+* Add test_stack to Makefile.msft (tests)
+* Adjust fprintf arguments type matching specifier in test_stack (tests)
+* Adjust included filenames in atomic_ops_malloc and test_stack
+* Adjust quotes in echo command of Makefile.msft (Win32)
+* Always use 'mfence' for nop_full if target CPU supports SSE2 (gcc/x86)
+* Better document configure THREADDLLIBS variable
+* Cast away volatile on dereference in CAS-based generalization primitives
+* Change policy regarding version numbers ("micro" part instead of "alpha")
+* Convert README to Markdown format
+* Define AO_NO_PTHREADS in configure if no pthreads (Win32 and VxWorks)
+* Define AO_int_X operations for ARM and avr32
+* Define double-wide ordered loads/stores for x86
+* Define int_and/or/xor primitives in ao_t_is_int header
+* Define nop_full as compiler barrier for pre-ARMv6 single-core case
+* Do not duplicate BUILT_SOURCES entries in nobase_private_HEADERS (Makefile)
+* Do not include standard_ao_double_t.h where double-CAS is unimplemented
+* Do not report absence of meaningless nop, load and store in test_atomic
+* Do not use deprecated AO_T and AO_TS_T (tests)
+* Eliminate 'missing initializer' warning for AO_stack_t value initializer
+* Eliminate 64-bit compiler warnings in atomic_ops_malloc
+* Eliminate arithmetic shifts in double-CAS (gcc/arm, msftc/x86)
+* Eliminate warning for fetch_and_add argument in test_atomic_include (tests)
+* Enable Makefile.msft for Win64
+* Enable build using toolchain without pthreads
+* Enable double_compare_and_swap for non-cpp code (msftc/x86.h)
+* Enable generalization of all variants of CAS via fetch_compare_and_swap
+* Enable test_stack for pthreads-w32 and Win32 with native threads
+* Fix generalized AO_char/short_compare_and_swap args (missing 'unsigned')
+* Fix makefile sed rule for list_atomic (tests)
+* Fix missing abort() usage in atomic_ops_malloc and tests on WinCE
+* Generalize compare_double_and_swap_double using double_compare_and_swap
+* Generalize double_load/store for x86_64 (GCC)
+* Generate ao_t_is_int, 'loadstore' headers from templates
+* Generate generalized AO_t load/store/fetch_and_add primitives from template
+* Generate ordered_loads/stores_only headers from templates
+* Group all X_acquire_release_volatile.h and X_[aligned_]atomic_load_store.h
+* Implement and/or/xor, AO_double_load for ARM
+* Implement atomic store using direct write by default on ARMv6+
+* Implement char/short/int-wide primitives using GCC built-in atomic/sync
+* Implement char/short/int_fetch_and_add for msftc/x86[_64] (Win32)
+* Implement char/short_fetch_and_add, char/short_load for ARMv6+ (GCC)
+* Implement char/short_store primitives at aligned addresses for ARM
+* Implement compare_double_and_swap_double for SunCC/x86
+* Implement double_load/store based on guaranteed x86 access atomicity
+* Implement double_store for ARMv7 using LDREXD/STREXD
+* Implement load/store via simple LDR/STR for ARMv6+ (msftc)
+* Implement nop_full/write using 'dmb' instruction if available (gcc/arm)
+* Improve debug printing in test_stack (tests)
+* Log messages to stdout instead of stderr (tests)
+* Make AO_ASSUME_VISTA also enables Win98 code in msftc/x86.h (Win32)
+* Minimize gcc/generic-arithm template by factoring out barriers
+* Move 'unsigned' keyword to XCTYPE in generalize-small template
+* Move default compiler options to CFLAGS in Makefile.msft (Win32)
+* Move definitions of ordered loads/stores to inner separate headers
+* Move gcc-generic AO_t-wide primitives to generic-small/arithm headers
+* Move generalized arithmetical primitives to 'generalize-arithm' template
+* Optimize AO_spin manually to minimize compiler influence on its duration
+* Parameterize list_atomic template with XSIZE (tests)
+* Perform only few list reversals in test_malloc if AO based on pthreads
+* Put autogen.sh to 'dist' package (Automake)
+* Remote duplicate definition of test_and_set_acquire in generalize.h
+* Remove X_aligned_atomic_load_store headers and template
+* Remove duplicate AO_spin and AO_pause definition in atomic_ops_stack
+* Remove gcc/x86_64.h eliminating code duplication of gcc/x86.h
+* Remove nested AO_USE_PTHREAD_DEFS macro check in atomic_ops.h (gcc/arm)
+* Remove redundant 'cc' clobber for LDREXD instruction (gcc/arm)
+* Remove store_full from msftc/arm.h in favor of generalized primitive
+* Remove sunc/x86_64.h eliminating code duplication of sunc/x86.h
+* Remove unsafe emulation-based implementation of double CAS (SunCC/x86_64)
+* Remove useless 'perror' call in run_parallel.h (tests)
+* Reorder AO_double_t union elements for AO_DOUBLE_T_INITIALIZER portability
+* Replace atomic_load_store.template with atomic_load and atomic_store ones
+* Replace some FIXME items with TODO in atomic_ops.c and sysdeps headers
+* Specify fetch_and_add/sub1 result as unused in test_atomic (tests)
+* Support AArch64 (64-bit ARM) target (GCC)
+* Support ARMv8 target (gcc/arm)
+* Test double_compare_and_swap in test_atomic (tests)
+* Use AO_ prefix for internal functions in arm_v6.h, hppa.h
+* Use __atomic GCC built-in to implement generic double-wide CAS
+* Use built-in __sync CAS for double-CAS if AO_USE_SYNC_CAS_BUILTIN for x86
+* Workaround GCC 4.4.3 warning reported for 'val' of list_atomic.c (tests)
+Also, includes 7.2e changes
 
 
 == [7.3alpha2] 2012-05-11 ==
 
-* Add '-no-undefined' to LDFLAGS in src/Makefile.am.
-* Add AO_and, AO_xor atomic operations.
-* Add AO_fetch_compare_and_swap primitives.
-* Add and fill in AUTHORS, TODO files.
-* Add autogen.sh file.
-* Adjust AO_..._H macros in public headers.
-* Code refactoring of gcc/arm.h by introducing AO_ARM_HAVE_x macros.
-* Define AO macros for libatomic_ops version identification.
-* Do not define NDEBUG if '--enable-assertions' passed to configure.
-* Eliminate compiler warnings in various functions and macros.
-* Generalize AO_compare_and_swap primitives via AO_fetch_compare_and_swap.
+* Add '-no-undefined' to LDFLAGS in src/Makefile.am
+* Add AO_and, AO_xor atomic operations
+* Add AO_fetch_compare_and_swap primitives
+* Add and fill in AUTHORS, TODO files
+* Add autogen.sh file
+* Adjust AO_..._H macros in public headers
+* Code refactoring of gcc/arm.h by introducing AO_ARM_HAVE_x macros
+* Define AO macros for libatomic_ops version identification
+* Do not define NDEBUG if '--enable-assertions' passed to configure
+* Eliminate compiler warnings in various functions and macros
+* Generalize AO_compare_and_swap primitives via AO_fetch_compare_and_swap
 * Generalize acquire/release/full CAS primitives for MIPS
-* Implement fetch_and_add, test_and_set primitives for MIPS.
-* Improve Makefile for MS VC++; pass '-W3' option to MS compiler.
+* Implement fetch_and_add, test_and_set primitives for MIPS
+* Improve Makefile for MS VC++; pass '-W3' option to MS compiler
 * Include ao_t_is_int.h from atomic_ops.h after first generalization pass
-* Merge all Makefile.am files in src tree.
-* Minor code refactoring of atomic_ops.c, generic_pthread.h.
-* Minor configure build improvements (e.g., ensure proper autoconf version).
-* Place only major per-release changes description to ChangeLog (this file).
-* Recognize AO_PREFER_GENERALIZED macro to favor generalization over assembly.
-* Remove all auto-generated files except for generalize-small.h from the repo.
-* Remove duplicate doc/COPYING and empty NEWS files.
-* Replace atomic_ops_malloc static mmap-related empty functions with macros.
-* Replace pointer relational comparisons with non-pointer ones.
-* Require autoconf 2.61 instead of v2.64.
-* Show extra compiler warnings (GCC only).
-* Turn off AO primitives inlining if AO_NO_INLINE defined.
-* Use __builtin_expect in CAS failure loop condition checks (GCC only).
-Also, includes 7.2 changes.
+* Merge all Makefile.am files in src tree
+* Minor code refactoring of atomic_ops.c, generic_pthread.h
+* Minor configure build improvements (e.g., ensure proper autoconf version)
+* Place only major per-release changes description to ChangeLog (this file)
+* Recognize AO_PREFER_GENERALIZED macro to favor generalization over assembly
+* Remove all auto-generated files except for generalize-small.h from the repo
+* Remove duplicate doc/COPYING and empty NEWS files
+* Replace atomic_ops_malloc static mmap-related empty functions with macros
+* Replace pointer relational comparisons with non-pointer ones
+* Require autoconf 2.61 instead of v2.64
+* Show extra compiler warnings (GCC only)
+* Turn off AO primitives inlining if AO_NO_INLINE defined
+* Use __builtin_expect in CAS failure loop condition checks (GCC only)
+Also, includes 7.2 changes
+
+
+== [7.2j] 2021-09-12 ==
+
+* Fix a typo in arm_v6.h
+* Fix asm constraints of primitives in sunc/x86_64.h
+* Fix gcc/sunc x86 AO_compare_double_and_swap_double missing side effect
+* Fix library name in README details
+* Fix size of local variable passed to cas[x] (gcc/sparc)
+* Workaround assertion violation in AO_load/store on m68k
+
+
+== [7.2i] 2017-12-21 ==
+
+* Fix 'missing select.h', 'undefined sigprocmask' compiler errors (Hexagon)
+* Fix AO_malloc for sizes near CHUNK_SIZE
+* Fix typo in AO_REAL_NEXT_PTR comment
+
+
+== [7.2h] 2017-05-17 ==
+
+* Add 'clean' target to Makefile.msft
+* Enable Makefile.msft for Win64
+* Exclude 'check' from nmake all (Makefile.msft)
+* Fix 'Cannot implement CAS_full on this architecture' build error (cris)
+* Fix 'doc' files installation folder
+* Fix (improve) AO_REQUIRE_CAS description in README
+* Fix AO_SIZE_MAX definition (Linux/musl-gcc)
+* Fix assertions style in test_atomic_include
+* Fix size value wrap around in AO_malloc_large
+* Fix test_atomic failure caused unaligned AO_double_t access (x86)
+* Fix type of general AO_TS_INITIALIZER
+* Fix typo in comments in gcc/arm.h
+* Fix typos in 'error' pragma messages
+* Workaround test_stack failure on AIX/ppc
 
 
 == [7.2g] 2016-05-23 ==
 
-* Add disclaimer to README to favor C11/C++14 atomics over libatomic_ops use.
-* Regenerate configure files using official libtool release (v2.4.2).
-* Remove inclusion of acquire_release_volatile.h on MIPS.
-* Remove obsolete information from README about C++0x standard future.
-* Update links due to project site transition.
+* Add disclaimer to README to favor C11/C++14 atomics over libatomic_ops use
+* Regenerate configure files using official libtool release (v2.4.2)
+* Remove inclusion of acquire_release_volatile.h on MIPS
+* Remove obsolete information from README about C++0x standard future
+* Update links due to project site transition
 
 
 == [7.2f] 2014-05-02 ==
 
-* Fix a typo in doc/README.txt (remove redundant "an" article).
-* Regenerate configure files by new automake (v1.14.1), libtool (v2.4.2.418).
+* Fix a typo in doc/README.txt (remove redundant "an" article)
+* Regenerate configure files by new automake (v1.14.1), libtool (v2.4.2.418)
 
 
 == [7.2e] 2013-11-10 ==
 
-* Fix (remove) invalid include of read_ordered.h for ARM.
-* Fix AM_CONFIG_HEADER in configure for autoconf-2.69-1.
-* Fix AO_pause sleep delay for particular argument values (Win32).
-* Fix ARMv7 LDREXD/STREXD double-wide operand specification (GCC/Clang).
-* Fix LDREXD/STREXD use for pre-Clang3.3/arm.
-* Fix README regarding _acquire_read barrier.
-* Fix XSIZE_load/store definition order in generalize-small template.
-* Fix asm constraint of CAS memory operand for gcc/alpha, clang-3.1/mips.
-* Fix asm constraints of primitives in sunc/x86.h.
-* Fix cmpxchg16b-based compare_double_and_swap_double for SunCC/x86_64.
-* Fix compare_double_and_swap_double and double_ptr_storage for gcc/x32.
-* Fix compare_double_and_swap_double for clang3.0/x86 in PIC mode.
-* Fix compare_double_and_swap_double_full definition condition in emul_cas.
-* Fix generalize-small template adding missed CAS-based fetch_and_add.
-* Fix generalized fetch_and_add function.
-* Fix missing compiler barrier in nop_full for uniprocessor ARM.
-* Fix ordered_except_wr header inclusion for s390.
-* Fix return type of AO_int_X primitives defined in ao_t_is_int header.
-* Fix return type of char/short/int_load_read() in read_ordered.h.
-* Fix template-based headers regeneration order in src/Makefile.
-* Fix typos in ao_t_is_int, atomic_ops.h, generalize.h, msftc/arm.h comments.
-* Fix variable type to match printf format specifier in test_stack.
-* Fix visibility and initial value of 'dummy' variable in atomic_ops_stack.
-* Terminate tests with abort after error reported.
+* Fix (remove) invalid include of read_ordered.h for ARM
+* Fix AM_CONFIG_HEADER in configure for autoconf-2.69-1
+* Fix AO_pause sleep delay for particular argument values (Win32)
+* Fix ARMv7 LDREXD/STREXD double-wide operand specification (GCC/Clang)
+* Fix LDREXD/STREXD use for pre-Clang3.3/arm
+* Fix README regarding _acquire_read barrier
+* Fix XSIZE_load/store definition order in generalize-small template
+* Fix asm constraint of CAS memory operand for gcc/alpha, clang-3.1/mips
+* Fix asm constraints of primitives in sunc/x86.h
+* Fix cmpxchg16b-based compare_double_and_swap_double for SunCC/x86_64
+* Fix compare_double_and_swap_double and double_ptr_storage for gcc/x32
+* Fix compare_double_and_swap_double for clang3.0/x86 in PIC mode
+* Fix compare_double_and_swap_double_full definition condition in emul_cas
+* Fix generalize-small template adding missed CAS-based fetch_and_add
+* Fix generalized fetch_and_add function
+* Fix missing compiler barrier in nop_full for uniprocessor ARM
+* Fix ordered_except_wr header inclusion for s390
+* Fix return type of AO_int_X primitives defined in ao_t_is_int header
+* Fix return type of char/short/int_load_read() in read_ordered.h
+* Fix template-based headers regeneration order in src/Makefile
+* Fix typos in ao_t_is_int, atomic_ops.h, generalize.h, msftc/arm.h comments
+* Fix variable type to match printf format specifier in test_stack
+* Fix visibility and initial value of 'dummy' variable in atomic_ops_stack
+* Terminate tests with abort after error reported
 
 
 == [7.2d] 2012-08-09 ==
 
-* Fix AO_compare_double_and_swap_double_full for gcc-4.2.1/x86 in PIC mode.
-* Fix AO_compiler_barrier missing parentheses.
-* Fix missing 'unsigned' for generalized AO_char/short_fetch_and_add result.
+* Fix AO_compare_double_and_swap_double_full for gcc-4.2.1/x86 in PIC mode
+* Fix AO_compiler_barrier missing parentheses
+* Fix missing 'unsigned' for generalized AO_char/short_fetch_and_add result
 
 
 == [7.2] 2012-05-11 ==
 
-* Add atomic_ops.pc.in and atomic_ops-uninstalled.pc.in to pkgconfig folder.
-* Define and use AO_PTRDIFF_T in tests for casts between pointer and integer.
-* Fix AO_compare_and_swap return type for s390 and PowerPC.
-* Fix AO_compare_double_and_swap_double_full for gcc/x86 (PIC mode).
-* Fix AO_stack_push_release to workaround bug in clang-1.1/x86 compiler.
-* Fix AO_test_and_setXX in tests/list_atomic.template.
-* Fix AO_test_and_set_full (gcc/x86[_64].h) to work-around a bug in LLVM v2.7.
-* Fix AO_test_and_set_full on m68k.
-* Fix __ARM_ARCH_5__ macro handling for Android NDK (ARMv7).
-* Fix configure for Cygwin, mingw-w64/32.
-* Fix configure to define __PIC__ macro explicitly if needed (GCC).
-* Fix double_ptr_storage definition for GCC pre-v4 (x86_64).
-* Fix for x32 by removing 'q' suffix in x86-64 instructions.
+* Add atomic_ops.pc.in and atomic_ops-uninstalled.pc.in to pkgconfig folder
+* Define and use AO_PTRDIFF_T in tests for casts between pointer and integer
+* Fix AO_compare_and_swap return type for s390 and PowerPC
+* Fix AO_compare_double_and_swap_double_full for gcc/x86 (PIC mode)
+* Fix AO_stack_push_release to workaround bug in clang-1.1/x86 compiler
+* Fix AO_test_and_setXX in tests/list_atomic.template
+* Fix AO_test_and_set_full (gcc/x86[_64].h) to work-around a bug in LLVM v2.7
+* Fix AO_test_and_set_full on m68k
+* Fix __ARM_ARCH_5__ macro handling for Android NDK (ARMv7)
+* Fix configure for Cygwin, mingw-w64/32
+* Fix configure to define __PIC__ macro explicitly if needed (GCC)
+* Fix double_ptr_storage definition for GCC pre-v4 (x86_64)
+* Fix for x32 by removing 'q' suffix in x86-64 instructions
 * Fix generalization for IA-64 (regarding AO_or, AO_..._read/write primitives)
-* Fix generalized AO_<type>_fetch_and_add() return type.
-* Fix test_atomic_include for the case of missing CAS primitive.
-* Fix test_malloc - allocate less memory in case of missing mmap.
-* Implement the basic atomic primitives for the hexagon CPU.
+* Fix generalized AO_<type>_fetch_and_add() return type
+* Fix test_atomic_include for the case of missing CAS primitive
+* Fix test_malloc - allocate less memory in case of missing mmap
+* Implement the basic atomic primitives for the hexagon CPU
 
 
 == [7.2alpha6] 2011-06-14 ==
 
-* Add missing AO_HAVE_ macros.
-* Add support of avr32 CPU.
-* Better support of various models of ARM.
-* Disable AO_compare_double_and_swap_double_full for SunCC x86 as not working.
-* Enable ARM Thumb-2 mode.
-* Fix AO_test_and_set_full for SunCC (x86).
-* Fix bugs in tests.
-* Fix clobbers in AO_compare_and_swap_full (x86.h).
-* Fix typos in identifiers and comments.
-* Improve AO_sync for PowerPC.
-* Improve make scripts (configure.ac).
-* Make get_mmaped() in atomic_ops_malloc.c more portable.
-* Support Intel compiler.
-* Support NaCl target.
-* Suppress compiler warnings in various places.
-* Test more predefined macros (ARM, PowerPC).
-* Use assembly code only for MS VC if available (x86_64).
-* Use built-in __sync_bool_compare_and_swap if available (x86_64).
-* Workaround bugs in LLVM GCC and SunCC regarding XCHG (x86, x86_64).
+* Add missing AO_HAVE_ macros
+* Add support of avr32 CPU
+* Better support of various models of ARM
+* Disable AO_compare_double_and_swap_double_full for SunCC x86 as not working
+* Enable ARM Thumb-2 mode
+* Fix AO_test_and_set_full for SunCC (x86)
+* Fix bugs in tests
+* Fix clobbers in AO_compare_and_swap_full (x86.h)
+* Fix typos in identifiers and comments
+* Improve AO_sync for PowerPC
+* Improve make scripts (configure.ac)
+* Make get_mmaped() in atomic_ops_malloc.c more portable
+* Support Intel compiler
+* Support NaCl target
+* Suppress compiler warnings in various places
+* Test more predefined macros (ARM, PowerPC)
+* Use assembly code only for MS VC if available (x86_64)
+* Use built-in __sync_bool_compare_and_swap if available (x86_64)
+* Workaround bugs in LLVM GCC and SunCC regarding XCHG (x86, x86_64)
 
 
 == [7.2alpha4] 2009-12-02 ==
 
-* Fix typos in comments, identifiers and documentation.
-* Implement AO_compare_and_swap_full for SPARC.
-* Refine ARM-specific code.
-* Refine code and comments for MS VC.
-* Regenerate make scripts.
-* Share common code for all 32-bit CPUs (MS VC).
-* Support DigitalMars and Watcom compilers.
-* Support MS VC for ARM (WinCE).
-* Support SH CPU.
-* Support win32-pthreads.
-* Support x86 and x86_64 for SunCC compiler.
+* Fix typos in comments, identifiers and documentation
+* Implement AO_compare_and_swap_full for SPARC
+* Refine ARM-specific code
+* Refine code and comments for MS VC
+* Regenerate make scripts
+* Share common code for all 32-bit CPUs (MS VC)
+* Support DigitalMars and Watcom compilers
+* Support MS VC for ARM (WinCE)
+* Support SH CPU
+* Support win32-pthreads
+* Support x86 and x86_64 for SunCC compiler
 
 
 == [7.2alpha2] 2009-05-27 ==
 
-* Add MIPS support.
-* Add better support for m68k.
-* Add "const" to first parameter of load calls.
-* Add parentheses around address argument for various macros.
-* Add some platform-specific documentation to INSTALL.
-* Add untested 64-bit support for PowerPC.
-* Fix AO_compare_and_swap_double_acquire.
-* Fix AO_int_fetch_and_add_full (x86_64).
-* Fix comments.
-* Fix s390 include paths.
-* Fix use of lwz instruction (PowerPC).
-* Refine clobbers (PowerPC).
-* Remove outdated info about Windows support in README.
-* Replace K&R-style function definition with ANSI C one.
-* add AO_compare_double_and_swap_double for ARMv6.
-* gcc/powerpc.h: Consider __NO_LWSYNC__.
+* Add MIPS support
+* Add better support for m68k
+* Add "const" to first parameter of load calls
+* Add parentheses around address argument for various macros
+* Add some platform-specific documentation to INSTALL
+* Add untested 64-bit support for PowerPC
+* Fix AO_compare_and_swap_double_acquire
+* Fix AO_int_fetch_and_add_full (x86_64)
+* Fix comments
+* Fix s390 include paths
+* Fix use of lwz instruction (PowerPC)
+* Refine clobbers (PowerPC)
+* Remove outdated info about Windows support in README
+* Replace K&R-style function definition with ANSI C one
+* add AO_compare_double_and_swap_double for ARMv6
+* gcc/powerpc.h: Consider __NO_LWSYNC__
 
 
 == [7.1] 2008-02-11 ==
 
-* Add test_and_set, AO_double_compare_and_swap generalizations.
-* Conditionally add compare_double_and_swap_double (x86).
-* Conditionally add compare_double_and_swap_double (x86).
-* Fix AO_compare_double_and_swap_double_full (x86) for PIC mode.
-* Fix AO_load_acquire for PowerPC.
-* Fix double-width CAS (x86).
-* Refine README (add more warnings about data dependencies).
-* Refine double_ptr_storage type definition.
-* Support ARMv6+ in GCC.
-* Support ArmCC compiler.
-* Use _InterlockedExchangeAdd for MS VC (x86).
+* Add test_and_set, AO_double_compare_and_swap generalizations
+* Conditionally add compare_double_and_swap_double (x86)
+* Conditionally add compare_double_and_swap_double (x86)
+* Fix AO_compare_double_and_swap_double_full (x86) for PIC mode
+* Fix AO_load_acquire for PowerPC
+* Fix double-width CAS (x86)
+* Refine README (add more warnings about data dependencies)
+* Refine double_ptr_storage type definition
+* Support ARMv6+ in GCC
+* Support ArmCC compiler
+* Use _InterlockedExchangeAdd for MS VC (x86)
 
 
 == [7.0] 2007-06-28 ==
 
-* Add 64-bit version of AO_load_acquire for PowerPC (by Luca Barbato).
-* Add support of x86 and x86_64 for MS VC.
-* Do not assume that "mfence" is always present (x86.h).
-* Fix ARM AO_test_and_set_full.
-* Include windows.h (MS VC).
-* Update README to reflect C++0x effort.
+* Add 64-bit version of AO_load_acquire for PowerPC (by Luca Barbato)
+* Add support of x86 and x86_64 for MS VC
+* Do not assume that "mfence" is always present (x86.h)
+* Fix ARM AO_test_and_set_full
+* Include windows.h (MS VC)
+* Update README to reflect C++0x effort
 
 
 == [1.2] 2006-07-11 ==
 
-* Add prototypes to suppress compiler warnings.
-* Add simple VxWorks support.
-* Fix InterlockedCompareExchange proto usage.
-* Fix typos (ia64).
-* Include all_acquire_release_volatile.h and all_atomic_load_store.h (ia64).
-* Initial support for 64-bit targets.
-* Use "=q" for AO_test_and_set_full (x86).
-* Use inline assembler to generate "mfence" and byte sized XCHG.
-* Use new intrinsics available in MSVC 2003 and MSVC 2005.
+* Add prototypes to suppress compiler warnings
+* Add simple VxWorks support
+* Fix InterlockedCompareExchange proto usage
+* Fix typos (ia64)
+* Include all_acquire_release_volatile.h and all_atomic_load_store.h (ia64)
+* Initial support for 64-bit targets
+* Use "=q" for AO_test_and_set_full (x86)
+* Use inline assembler to generate "mfence" and byte sized XCHG
+* Use new intrinsics available in MSVC 2003 and MSVC 2005
 
 
 == [1.1] 2005-09-27 ==
 
-* Add and use read_ordered.h.
-* Change function naming from "byte" to "char".
-* Fix AO_test_and_set for ARM; define AO_CAN_EMUL_CAS.
+* Add and use read_ordered.h
+* Change function naming from "byte" to "char"
+* Fix AO_test_and_set for ARM; define AO_CAN_EMUL_CAS
 
 
 == [1.0] 2005-03-21 ==
 
-* Add atomic_ops primitives for different sized data.
-* Add compare_double_and_swap_double and compare_and_swap_double.
-* Add gcc/cris.h (originally comes from Hans-Peter Nilsson).
-* Add gcc/m68k.h (contributed by Tony Mantler).
-* Add gcc/powerpc.h (with help of Maged Michael, Doug Lea, Roger Hoover).
-* Add initial support for atomic_ops for VC++/Windows/X86 and HP/UX.
-* Add minimal support for the Sun SPARC compiler.
-* Add support for platforms that require out-of-line assembly code.
-* Add support of int-wide operations on platforms with int-sized pointers.
-* Added libatomic_ops_gpl library with support for lock-free stack and malloc.
-* Change atomic_ops include file structure.
-* Change most platforms to use byte-wide test-and-set locations.
-* Define AO_CLEAR, __ldcw[_align] macros in gcc/hppa.h (by Carlos O'Donell).
-* Fix various bugs.
-* Install under "atomic_ops" instead of "ao".
-* Remove compiler_barrier workaround for gcc 3.4+.
-* Renamed various types to end in _t.
-* Replace AO_HAVE_NOP_FULL with AO_HAVE_nop_full (by Ranko Zivojnovic).
-* Use autoconf, automake.
+* Add atomic_ops primitives for different sized data
+* Add compare_double_and_swap_double and compare_and_swap_double
+* Add gcc/cris.h (originally comes from Hans-Peter Nilsson)
+* Add gcc/m68k.h (contributed by Tony Mantler)
+* Add gcc/powerpc.h (with help of Maged Michael, Doug Lea, Roger Hoover)
+* Add initial support for atomic_ops for VC++/Windows/X86 and HP/UX
+* Add minimal support for the Sun SPARC compiler
+* Add support for platforms that require out-of-line assembly code
+* Add support of int-wide operations on platforms with int-sized pointers
+* Added libatomic_ops_gpl library with support for lock-free stack and malloc
+* Change atomic_ops include file structure
+* Change most platforms to use byte-wide test-and-set locations
+* Define AO_CLEAR, __ldcw[_align] macros in gcc/hppa.h (by Carlos O'Donell)
+* Fix various bugs
+* Install under "atomic_ops" instead of "ao"
+* Remove compiler_barrier workaround for gcc 3.4+
+* Renamed various types to end in _t
+* Replace AO_HAVE_NOP_FULL with AO_HAVE_nop_full (by Ranko Zivojnovic)
+* Use autoconf, automake

@@ -80,6 +80,9 @@ AO_test_and_set_full(volatile AO_TS_t * addr)
   register unsigned int ret;
   register unsigned long a = (unsigned long)AO_ldcw_align(addr);
 
+# if defined(CPPCHECK)
+    ret = 0; /* to void 'uninitialized variable' warning */
+# endif
   AO_ldcw(a, ret);
   return (AO_TS_VAL_t)ret;
 }
@@ -94,3 +97,8 @@ AO_pa_clear(volatile AO_TS_t * addr)
   *a = 1;
 }
 #define AO_CLEAR(addr) AO_pa_clear(addr)
+#define AO_HAVE_CLEAR
+
+#undef AO_PA_LDCW_ALIGNMENT
+#undef AO_ldcw
+#undef AO_ldcw_align

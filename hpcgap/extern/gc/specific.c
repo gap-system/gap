@@ -27,11 +27,13 @@ GC_INNER int GC_key_create_inner(tsd ** key_ptr)
 {
     int i;
     int ret;
-    tsd * result = (tsd *)MALLOC_CLEAR(sizeof(tsd));
+    tsd * result;
 
+    GC_ASSERT(I_HOLD_LOCK());
     /* A quick alignment check, since we need atomic stores */
     GC_ASSERT((word)(&invalid_tse.next) % sizeof(tse *) == 0);
-    if (0 == result) return ENOMEM;
+    result = (tsd *)MALLOC_CLEAR(sizeof(tsd));
+    if (NULL == result) return ENOMEM;
     ret = pthread_mutex_init(&result->lock, NULL);
     if (ret != 0) return ret;
     for (i = 0; i < TS_CACHE_SIZE; ++i) {
@@ -46,13 +48,13 @@ GC_INNER int GC_key_create_inner(tsd ** key_ptr)
     return 0;
 }
 
-/* Called with the lock held.   */
 GC_INNER int GC_setspecific(tsd * key, void * value)
 {
     pthread_t self = pthread_self();
     int hash_val = HASH(self);
     volatile tse * entry;
 
+    GC_ASSERT(I_HOLD_LOCK());
     GC_ASSERT(self != INVALID_THREADID);
     GC_dont_gc++; /* disable GC */
     entry = (volatile tse *)MALLOC_CLEAR(sizeof(tse));
@@ -63,35 +65,50 @@ GC_INNER int GC_setspecific(tsd * key, void * value)
     /* Could easily check for an existing entry here.   */
     entry -> next = key->hash[hash_val].p;
     entry -> thread = self;
-    entry -> value = value;
+    entry -> value = TS_HIDE_VALUE(value);
     GC_ASSERT(entry -> qtid == INVALID_QTID);
     /* There can only be one writer at a time, but this needs to be     */
     /* atomic with respect to concurrent readers.                       */
     AO_store_release(&key->hash[hash_val].ao, (AO_t)entry);
-    pthread_mutex_unlock(&(key -> lock));
+    GC_dirty((/* no volatile */ void *)entry);
+    GC_dirty(key->hash + hash_val);
+    if (pthread_mutex_unlock(&key->lock) != 0)
+      ABORT("pthread_mutex_unlock failed (setspecific)");
     return 0;
 }
 
-/* Remove thread-specific data for this thread.  Should be called on    */
-/* thread exit.                                                         */
-GC_INNER void GC_remove_specific(tsd * key)
+/* Remove thread-specific data for a given thread.  This function is    */
+/* called at fork from the child process for all threads except for the */
+/* survived one.  GC_remove_specific() should be called on thread exit. */
+GC_INNER void GC_remove_specific_after_fork(tsd * key, pthread_t t)
 {
-    pthread_t self = pthread_self();
-    unsigned hash_val = HASH(self);
+    unsigned hash_val = HASH(t);
     tse *entry;
-    tse **link = &key->hash[hash_val].p;
+    tse *prev = NULL;
 
+#   ifdef CAN_HANDLE_FORK
+      /* Both GC_setspecific and GC_remove_specific should be called    */
+      /* with the allocation lock held to ensure the consistency of     */
+      /* the hash table in the forked child.                            */
+      GC_ASSERT(I_HOLD_LOCK());
+#   endif
     pthread_mutex_lock(&(key -> lock));
-    entry = *link;
-    while (entry != NULL && entry -> thread != self) {
-      link = &(entry -> next);
-      entry = *link;
+    entry = key->hash[hash_val].p;
+    while (entry != NULL && !THREAD_EQUAL(entry->thread, t)) {
+      prev = entry;
+      entry = entry->next;
     }
     /* Invalidate qtid field, since qtids may be reused, and a later    */
     /* cache lookup could otherwise find this entry.                    */
     if (entry != NULL) {
       entry -> qtid = INVALID_QTID;
-      *link = entry -> next;
+      if (NULL == prev) {
+        key->hash[hash_val].p = entry->next;
+        GC_dirty(key->hash + hash_val);
+      } else {
+        prev->next = entry->next;
+        GC_dirty(prev);
+      }
       /* Atomic! concurrent accesses still work.        */
       /* They must, since readers don't lock.           */
       /* We shouldn't need a volatile access here,      */
@@ -105,11 +122,15 @@ GC_INNER void GC_remove_specific(tsd * key)
     /* cache lookup, which should still be examining deallocated memory.*/
     /* This can only happen if the concurrent access is from another    */
     /* thread, and hence has missed the cache, but still...             */
+#   ifdef LINT2
+      GC_noop1((word)entry);
+#   endif
 
     /* With GC, we're done, since the pointers from the cache will      */
     /* be overwritten, all local pointers to the entries will be        */
     /* dropped, and the entry will then be reclaimed.                   */
-    pthread_mutex_unlock(&(key -> lock));
+    if (pthread_mutex_unlock(&key->lock) != 0)
+      ABORT("pthread_mutex_unlock failed (remove_specific after fork)");
 }
 
 /* Note that even the slow path doesn't lock.   */
@@ -121,7 +142,7 @@ GC_INNER void * GC_slow_getspecific(tsd * key, word qtid,
     tse *entry = key->hash[hash_val].p;
 
     GC_ASSERT(qtid != INVALID_QTID);
-    while (entry != NULL && entry -> thread != self) {
+    while (entry != NULL && !THREAD_EQUAL(entry->thread, self)) {
       entry = entry -> next;
     }
     if (entry == NULL) return NULL;
@@ -134,7 +155,7 @@ GC_INNER void * GC_slow_getspecific(tsd * key, word qtid,
     *cache_ptr = entry;
         /* Again this is safe since pointer assignments are     */
         /* presumed atomic, and either pointer is valid.        */
-    return entry -> value;
+    return TS_REVEAL_PTR(entry -> value);
 }
 
 #ifdef GC_ASSERTIONS
@@ -151,14 +172,16 @@ GC_INNER void * GC_slow_getspecific(tsd * key, word qtid,
     for (i = 0; i < TS_HASH_SIZE; ++i) {
       for (p = key->hash[i].p; p != 0; p = p -> next) {
         if (!GC_is_marked(GC_base(p))) {
-          ABORT_ARG1("Unmarked thread-specific-data entry", " at %p", p);
+          ABORT_ARG1("Unmarked thread-specific-data entry",
+                     " at %p", (void *)p);
         }
       }
     }
     for (i = 0; i < TS_CACHE_SIZE; ++i) {
       p = key -> cache[i];
       if (p != &invalid_tse && !GC_is_marked(GC_base(p))) {
-        ABORT_ARG1("Unmarked cached thread-specific-data entry", " at %p", p);
+        ABORT_ARG1("Unmarked cached thread-specific-data entry",
+                   " at %p", (void *)p);
       }
     }
   }
