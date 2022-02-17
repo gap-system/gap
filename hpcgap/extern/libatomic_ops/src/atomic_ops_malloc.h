@@ -30,15 +30,52 @@
 
 #include <stddef.h> /* for size_t */
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 #ifdef AO_STACK_IS_LOCK_FREE
 # define AO_MALLOC_IS_LOCK_FREE
 #endif
 
+#ifndef AO_ATTR_MALLOC
+# if AO_GNUC_PREREQ(3, 1)
+#   define AO_ATTR_MALLOC __attribute__((__malloc__))
+# elif defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(__EDG__)
+#   define AO_ATTR_MALLOC \
+                __declspec(allocator) __declspec(noalias) __declspec(restrict)
+# elif defined(_MSC_VER) && _MSC_VER >= 1400
+#   define AO_ATTR_MALLOC __declspec(noalias) __declspec(restrict)
+# else
+#   define AO_ATTR_MALLOC /* empty */
+# endif
+#endif
+
+#ifndef AO_ATTR_ALLOC_SIZE
+# ifdef __clang__
+#   if __has_attribute(__alloc_size__)
+#     define AO_ATTR_ALLOC_SIZE(argnum) \
+                __attribute__((__alloc_size__(argnum)))
+#   else
+#     define AO_ATTR_ALLOC_SIZE(argnum) /* empty */
+#   endif
+# elif AO_GNUC_PREREQ(4, 3) && !defined(__ICC)
+#   define AO_ATTR_ALLOC_SIZE(argnum) __attribute__((__alloc_size__(argnum)))
+# else
+#   define AO_ATTR_ALLOC_SIZE(argnum) /* empty */
+# endif
+#endif
+
 void AO_free(void *);
 
+AO_ATTR_MALLOC AO_ATTR_ALLOC_SIZE(1)
 void * AO_malloc(size_t);
 
 /* Allow use of mmap to grow the heap.  No-op on some platforms.        */
 void AO_malloc_enable_mmap(void);
+
+#ifdef __cplusplus
+  } /* extern "C" */
+#endif
 
 #endif /* !AO_MALLOC_H */

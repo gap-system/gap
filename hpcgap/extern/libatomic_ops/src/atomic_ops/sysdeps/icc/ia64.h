@@ -203,3 +203,5 @@ AO_int_fetch_compare_and_swap_release(volatile unsigned int *addr,
   return _InterlockedCompareExchange_rel(addr, new_val, old_val);
 }
 #define AO_HAVE_int_fetch_compare_and_swap_release
+
+#undef AO_INTEL_PTR_t

@@ -104,8 +104,6 @@ CLEAN :
 	-@erase ".\Release\ptr_chck.sbr"
 	-@erase ".\Release\reclaim.obj"
 	-@erase ".\Release\reclaim.sbr"
-	-@erase ".\Release\stubborn.obj"
-	-@erase ".\Release\stubborn.sbr"
 	-@erase ".\Release\typd_mlc.obj"
 	-@erase ".\Release\typd_mlc.sbr"
 	-@erase ".\Release\win32_threads.obj"
@@ -121,7 +119,9 @@ CPP=cl.exe
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I include /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /FR /YX /c
 CPP_PROJ=/nologo /MD /W3 /EHsc /O2 /I include /D "NDEBUG" /D "WIN32"\
- /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /D "_CRT_SECURE_NO_DEPRECATE"\
+ /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "ENABLE_DISCLAIM"\
+ /D "GC_ATOMIC_UNCOLLECTABLE" /D "GC_THREADS" /D "JAVA_FINALIZATION"\
+ /D "NO_EXECUTE_PERMISSION" /D "_CRT_SECURE_NO_DEPRECATE"\
  /FR"$(INTDIR)/" /Fp"$(INTDIR)/gc.pch"\
  /I./libatomic_ops/src /Fo"$(INTDIR)/" /c
 CPP_OBJS=.\Release/
@@ -178,7 +178,6 @@ BSC32_SBRS=\
 	".\Release\os_dep.sbr"\
 	".\Release\ptr_chck.sbr"\
 	".\Release\reclaim.sbr"\
-	".\Release\stubborn.sbr"\
 	".\Release\typd_mlc.sbr"\
 	".\Release\msvc_dbg.copied.sbr"\
 	".\Release\win32_threads.sbr"
@@ -218,7 +217,6 @@ LINK32_OBJS=\
 	".\Release\os_dep.obj"\
 	".\Release\ptr_chck.obj"\
 	".\Release\reclaim.obj"\
-	".\Release\stubborn.obj"\
 	".\Release\typd_mlc.obj"\
 	".\Release\msvc_dbg.copied.obj"\
 	".\Release\win32_threads.obj"
@@ -294,8 +292,6 @@ CLEAN :
 	-@erase ".\Debug\ptr_chck.sbr"
 	-@erase ".\Debug\reclaim.obj"
 	-@erase ".\Debug\reclaim.sbr"
-	-@erase ".\Debug\stubborn.obj"
-	-@erase ".\Debug\stubborn.sbr"
 	-@erase ".\Debug\typd_mlc.obj"
 	-@erase ".\Debug\typd_mlc.sbr"
 	-@erase ".\Debug\vc40.idb"
@@ -313,10 +309,11 @@ CPP=cl.exe
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I include /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /FR /YX /c
 CPP_PROJ=/nologo /MDd /W3 /Gm /EHsc /Zi /Od /I include /D "_DEBUG"\
- /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS"\
- /D "GC_ASSERTIONS" /D "GC_THREADS" /D "_CRT_SECURE_NO_DEPRECATE"\
- /FR"$(INTDIR)/" /Fp"$(INTDIR)/gc.pch" /Fo"$(INTDIR)/"\
- /I./libatomic_ops/src /Fd"$(INTDIR)/" /c
+ /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "ENABLE_DISCLAIM"\
+ /D "GC_ASSERTIONS" /D "GC_ATOMIC_UNCOLLECTABLE" /D "GC_THREADS"\
+ /D "JAVA_FINALIZATION" /D "NO_EXECUTE_PERMISSION"\
+ /D "_CRT_SECURE_NO_DEPRECATE" /FR"$(INTDIR)/" /Fp"$(INTDIR)/gc.pch"\
+ /Fo"$(INTDIR)/" /I./libatomic_ops/src /Fd"$(INTDIR)/" /c
 CPP_OBJS=.\Debug/
 CPP_SBRS=.\Debug/
 
@@ -371,7 +368,6 @@ BSC32_SBRS=\
 	".\Debug\os_dep.sbr"\
 	".\Debug\ptr_chck.sbr"\
 	".\Debug\reclaim.sbr"\
-	".\Debug\stubborn.sbr"\
 	".\Debug\typd_mlc.sbr"\
 	".\Debug\msvc_dbg.copied.sbr"\
 	".\Debug\win32_threads.sbr"
@@ -411,7 +407,6 @@ LINK32_OBJS=\
 	".\Debug\os_dep.obj"\
 	".\Debug\ptr_chck.obj"\
 	".\Debug\reclaim.obj"\
-	".\Debug\stubborn.obj"\
 	".\Debug\typd_mlc.obj"\
 	".\Debug\msvc_dbg.copied.obj"\
 	".\Debug\win32_threads.obj"
@@ -453,8 +448,8 @@ CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I include /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /YX /c
 CPP_PROJ=/nologo /MD /W3 /EHsc /O2 /I include /D "NDEBUG" /D "WIN32" /D "_WINDOWS"\
- /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /D "_CRT_SECURE_NO_DEPRECATE"\
- /I./libatomic_ops/src /Fp"$(INTDIR)/gctest.pch"\
+ /D "ALL_INTERIOR_POINTERS" /D "ENABLE_DISCLAIM" /D "GC_THREADS"\
+ /D "_CRT_SECURE_NO_DEPRECATE" /I./libatomic_ops/src /Fp"$(INTDIR)/gctest.pch"\
  /Fo"$(INTDIR)/" /c
 CPP_OBJS=.\gctest\Release/
 CPP_SBRS=.\.
@@ -541,7 +536,8 @@ CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /FR /YX /c
 CPP_PROJ=/nologo /MDd /W3 /Gm /EHsc /Zi /Od /I include /D "_DEBUG" /D "WIN32" /D "_WINDOWS"\
- /D "ALL_INTERIOR_POINTERS" /D "GC_THREADS" /D "_CRT_SECURE_NO_DEPRECATE" /FR"$(INTDIR)/"\
+ /D "ALL_INTERIOR_POINTERS" /D "ENABLE_DISCLAIM" /D "GC_THREADS"\
+ /D "_CRT_SECURE_NO_DEPRECATE" /FR"$(INTDIR)/"\
  /I./libatomic_ops/src /Fp"$(INTDIR)/gctest.pch" /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c
 CPP_OBJS=.\gctest\Debug/
 CPP_SBRS=.\gctest\Debug/
@@ -632,7 +628,8 @@ CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I "." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /YX /c
 CPP_PROJ=/nologo /MD /W3 /EHsc /O2 /I "." /I include /D "NDEBUG" /D "WIN32" /D "_WINDOWS"\
- /D "ALL_INTERIOR_POINTERS" /I./libatomic_ops/src /Fp"$(INTDIR)/cord.pch" /Fo"$(INTDIR)/" /c
+ /D "ALL_INTERIOR_POINTERS" /D "ENABLE_DISCLAIM"\
+ /I./libatomic_ops/src /Fp"$(INTDIR)/cord.pch" /Fo"$(INTDIR)/" /c
 CPP_OBJS=.\cord\Release/
 CPP_SBRS=.\.
 
@@ -724,7 +721,7 @@ CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
 # ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "ALL_INTERIOR_POINTERS" /YX /c
 CPP_PROJ=/nologo /MDd /W3 /Gm /EHsc /Zi /Od /I "." /I include /D "_DEBUG" /D "WIN32" /D "_WINDOWS"\
- /D "ALL_INTERIOR_POINTERS" /Fp"$(INTDIR)/cord.pch"\
+ /D "ALL_INTERIOR_POINTERS" /D "ENABLE_DISCLAIM" /Fp"$(INTDIR)/cord.pch"\
  /I./libatomic_ops/src /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c
 CPP_OBJS=.\cord\Debug/
 CPP_SBRS=.\.
@@ -1235,54 +1232,6 @@ NODEP_CPP_ALLCH=\
 ".\Debug\allchblk.obj" : $(SOURCE) $(DEP_CPP_ALLCH) "$(INTDIR)"
 
 ".\Debug\allchblk.sbr" : $(SOURCE) $(DEP_CPP_ALLCH) "$(INTDIR)"
-
-
-!ENDIF
-
-# End Source File
-################################################################################
-# Begin Source File
-
-SOURCE=.\stubborn.c
-
-!IF  "$(CFG)" == "gc - Win32 Release"
-
-DEP_CPP_STUBB=\
-	".\include\private\gcconfig.h"\
-	".\include\gc.h"\
-	".\include\private\gc_hdrs.h"\
-	".\include\private\gc_priv.h"\
-	{$(INCLUDE)}"\sys\TYPES.H"\
-
-NODEP_CPP_STUBB=\
-	".\th\PCR_Th.h"\
-	".\th\PCR_ThCrSec.h"\
-	".\th\PCR_ThCtl.h"\
-
-
-".\Release\stubborn.obj" : $(SOURCE) $(DEP_CPP_STUBB) "$(INTDIR)"
-
-".\Release\stubborn.sbr" : $(SOURCE) $(DEP_CPP_STUBB) "$(INTDIR)"
-
-
-!ELSEIF  "$(CFG)" == "gc - Win32 Debug"
-
-DEP_CPP_STUBB=\
-	".\include\private\gcconfig.h"\
-	".\include\gc.h"\
-	".\include\private\gc_hdrs.h"\
-	".\include\private\gc_priv.h"\
-	{$(INCLUDE)}"\sys\TYPES.H"\
-
-NODEP_CPP_STUBB=\
-	".\th\PCR_Th.h"\
-	".\th\PCR_ThCrSec.h"\
-	".\th\PCR_ThCtl.h"\
-
-
-".\Debug\stubborn.obj" : $(SOURCE) $(DEP_CPP_STUBB) "$(INTDIR)"
-
-".\Debug\stubborn.sbr" : $(SOURCE) $(DEP_CPP_STUBB) "$(INTDIR)"
 
 
 !ENDIF

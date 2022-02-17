@@ -28,7 +28,7 @@ AO_INLINE void
 AO_XSIZE_store(volatile XCTYPE *addr, XCTYPE new_val)
 {
 # ifdef AO_ACCESS_XSIZE_CHECK_ALIGNED
-    assert(((size_t)addr & (sizeof(*addr) - 1)) == 0);
+    AO_ASSERT_ADDR_ALIGNED(addr);
 # endif
   *(XCTYPE *)addr = new_val;
 }

@@ -10,17 +10,19 @@ int main(void) {
   unsigned long last_heap_size = 0;
 
   GC_INIT();
+  if (GC_get_find_leak())
+    printf("This test program is not designed for leak detection mode\n");
 
   for (i = 0; i < COUNT; i++) {
-    int **p = GC_MALLOC(sizeof(int *));
-    int *q = GC_MALLOC_ATOMIC(sizeof(int));
+    int **p = GC_NEW(int *);
+    int *q = (int*)GC_MALLOC_ATOMIC(sizeof(int));
 
     if (p == 0 || *p != 0) {
       fprintf(stderr, "GC_malloc returned garbage (or NULL)\n");
       exit(1);
     }
 
-    *p = GC_REALLOC(q, 2 * sizeof(int));
+    *p = (int*)GC_REALLOC(q, 2 * sizeof(int));
 
     if (i % 10 == 0) {
       unsigned long heap_size = (unsigned long)GC_get_heap_size();

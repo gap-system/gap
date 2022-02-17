@@ -14,8 +14,6 @@
 
 # ifdef PCR
 /*
- * Note that POSIX PCR requires an ANSI C compiler.  Hence we are allowed
- * to make the same assumption here.
  * We wrap all of the allocator functions to avoid questions of
  * compatibility between the prototyped and nonprototyped versions of the f
  */
@@ -65,19 +63,21 @@ typedef struct {
   PCR_Any ed_client_data;
 } enumerate_data;
 
-void GC_enumerate_block(struct hblk *h; enumerate_data * ed)
+void GC_enumerate_block(struct hblk *h, enumerate_data * ed)
 {
-    register hdr * hhdr;
-    register int sz;
+    hdr * hhdr;
+    size_t sz;
     ptr_t p;
     ptr_t lim;
     word descr;
+
+# if !defined(CPPCHECK)
 #   error This code was updated without testing.
 #   error and its precursor was clearly broken.
-
+# endif
     hhdr = HDR(h);
     descr = hhdr -> hb_descr;
-    sz = hhdr -> hb_sz;
+    sz = (size_t)hhdr->hb_sz;
     if (descr != 0 && ed -> ed_pointerfree
         || descr == 0 && !(ed -> ed_pointerfree)) return;
     lim = (ptr_t)(h+1) - sz;
@@ -149,6 +149,8 @@ PCR_GC_Setup(void)
 {
     return PCR_ERes_okay;
 }
+
+extern GC_bool GC_quiet;
 
 PCR_ERes
 PCR_GC_Run(void)

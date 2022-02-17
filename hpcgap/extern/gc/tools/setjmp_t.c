@@ -46,7 +46,12 @@ int getpagesize(void)
     return((int)(result[0]));
 }
 #elif defined(MSWIN32) || defined(MSWINCE) || defined(CYGWIN32)
+# ifndef WIN32_LEAN_AND_MEAN
+#   define WIN32_LEAN_AND_MEAN 1
+# endif
+# define NOSERVICE
 # include <windows.h>
+
   int getpagesize(void)
   {
     SYSTEM_INFO sysinfo;
@@ -55,29 +60,41 @@ int getpagesize(void)
   }
 #endif
 
-struct {
+struct a_s {
   char a_a;
   char * a_b;
 } a;
 
-int * nested_sp(void)
+word nested_sp(void)
 {
+# if GC_GNUC_PREREQ(4, 0)
+    return (word)__builtin_frame_address(0);
+# else
     volatile word sp;
     sp = (word)(&sp);
-    return (int *)sp;
+    return sp;
+# endif
 }
+
+/* To prevent nested_sp inlining. */
+word (*volatile nested_sp_fn)(void) = nested_sp;
+
+int g(int x);
 
 int main(void)
 {
     volatile word sp;
     unsigned ps = GETPAGESIZE();
-    jmp_buf b;
+    JMP_BUF b;
     register int x = (int)strlen("a");  /* 1, slightly disguised */
-    static int y = 0;
+    static volatile int y = 0;
 
     sp = (word)(&sp);
     printf("This appears to be a %s running %s\n", MACH_TYPE, OS_TYPE);
-    if ((word)nested_sp() < sp) {
+#   if defined(CPPCHECK)
+      (void)nested_sp(); /* to workaround a bug in cppcheck */
+#   endif
+    if (nested_sp_fn() < sp) {
       printf("Stack appears to grow down, which is the default.\n");
       printf("A good guess for STACKBOTTOM on this machine is 0x%lx.\n",
              ((unsigned long)sp + ps) & ~(ps-1));
@@ -90,7 +107,7 @@ int main(void)
     printf("Note that this may vary between machines of ostensibly\n");
     printf("the same architecture (e.g. Sun 3/50s and 3/80s).\n");
     printf("On many machines the value is not fixed.\n");
-    printf("A good guess for ALIGNMENT on this machine is %ld.\n",
+    printf("A good guess for ALIGNMENT on this machine is %lu.\n",
            (unsigned long)((word)(&(a.a_b)) - (word)(&a)));
 
     printf("The following is a very dubious test of one root marking"
@@ -100,10 +117,10 @@ int main(void)
     x = 2*x-1;
     printf("\n");
     x = 2*x-1;
-    setjmp(b);
+    (void)SETJMP(b);
     if (y == 1) {
       if (x == 2) {
-        printf("Setjmp-based generic mark_regs code probably wont work.\n");
+        printf("Setjmp-based generic mark_regs code probably won't work.\n");
         printf("But we rarely try that anymore.  If you have getcontect()\n");
         printf("this probably doesn't matter.\n");
       } else if (x == 1) {
@@ -114,7 +131,7 @@ int main(void)
     }
     y++;
     x = 2;
-    if (y == 1) longjmp(b,1);
+    if (y == 1) LONGJMP(b, 1);
     printf("Some GC internal configuration stuff: \n");
     printf("\tWORDSZ = %lu, ALIGNMENT = %d, GC_GRANULE_BYTES = %d\n",
            (unsigned long)WORDSZ, ALIGNMENT, GC_GRANULE_BYTES);
@@ -136,6 +153,7 @@ int main(void)
 #   ifdef PARALLEL_MARK
       printf("Parallel marking enabled.\n");
 #   endif
+    (void)g(x);
     return(0);
 }
 

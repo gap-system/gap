@@ -43,6 +43,10 @@
 # include "standard_ao_double_t.h"
 #endif
 
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 AO_t AO_fetch_compare_and_swap_emulation(volatile AO_t *addr, AO_t old_val,
                                          AO_t new_val);
 
@@ -76,3 +80,7 @@ void AO_store_full_emulation(volatile AO_t *addr, AO_t val);
 #undef AO_HAVE_store_full
 #define AO_store_full(addr, val) AO_store_full_emulation(addr, val)
 #define AO_HAVE_store_full
+
+#ifdef __cplusplus
+  } /* extern "C" */
+#endif

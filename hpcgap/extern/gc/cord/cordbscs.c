@@ -42,7 +42,6 @@ oom_fn CORD_oom_fn = (oom_fn) 0;
 
 typedef unsigned long word;
 
-typedef union {
     struct Concatenation {
         char null;
         char header;
@@ -54,7 +53,8 @@ typedef union {
         word len;
         CORD left;      /* length(left) > 0     */
         CORD right;     /* length(right) > 0    */
-    } concatenation;
+    };
+
     struct Function {
         char null;
         char header;
@@ -63,14 +63,20 @@ typedef union {
         word len;
         CORD_fn fn;
         void * client_data;
-    } function;
+    };
+
     struct Generic {
         char null;
         char header;
         char depth;
         char left_len;
         word len;
-    } generic;
+    };
+
+typedef union {
+    struct Concatenation concatenation;
+    struct Function function;
+    struct Generic generic;
     char string[1];
 } CordRep;
 
@@ -108,7 +114,7 @@ typedef union {
 /* indentation level n.                                                 */
 void CORD_dump_inner(CORD x, unsigned n)
 {
-    register size_t i;
+    size_t i;
 
     for (i = 0; i < (size_t)n; i++) {
         fputs("  ", stdout);
@@ -123,17 +129,17 @@ void CORD_dump_inner(CORD x, unsigned n)
         if (x[i] != '\0') fputs("...", stdout);
         putchar('\n');
     } else if (IS_CONCATENATION(x)) {
-        register struct Concatenation * conc =
-                                &(((CordRep *)x) -> concatenation);
+        struct Concatenation * conc = &(((CordRep *)x) -> concatenation);
+
         printf("Concatenation: %p (len: %d, depth: %d)\n",
-               x, (int)(conc -> len), (int)(conc -> depth));
+               (void *)x, (int)(conc -> len), (int)(conc -> depth));
         CORD_dump_inner(conc -> left, n+1);
         CORD_dump_inner(conc -> right, n+1);
-    } else /* function */{
-        register struct Function * func =
-                                &(((CordRep *)x) -> function);
+    } else /* function */ {
+        struct Function * func = &(((CordRep *)x) -> function);
+
         if (IS_SUBSTR(x)) printf("(Substring) ");
-        printf("Function: %p (len: %d): ", x, (int)(func -> len));
+        printf("Function: %p (len: %d): ", (void *)x, (int)(func -> len));
         for (i = 0; i < 20 && i < func -> len; i++) {
             putchar((*(func -> fn))(i, func -> client_data));
         }
@@ -151,9 +157,9 @@ void CORD_dump(CORD x)
 
 CORD CORD_cat_char_star(CORD x, const char * y, size_t leny)
 {
-    register size_t result_len;
-    register size_t lenx;
-    register int depth;
+    size_t result_len;
+    size_t lenx;
+    int depth;
 
     if (x == CORD_EMPTY) return(y);
     if (leny == 0) return(x);
@@ -161,10 +167,16 @@ CORD CORD_cat_char_star(CORD x, const char * y, size_t leny)
         lenx = strlen(x);
         result_len = lenx + leny;
         if (result_len <= SHORT_LIMIT) {
-            register char * result = GC_MALLOC_ATOMIC(result_len+1);
+            char * result = (char *)GC_MALLOC_ATOMIC(result_len + 1);
 
             if (result == 0) OUT_OF_MEMORY;
-            memcpy(result, x, lenx);
+#           ifdef LINT2
+                memcpy(result, x, lenx + 1);
+#           else
+                memcpy(result, x, lenx);
+                                /* No need to copy the terminating zero */
+                                /* as result[lenx] is written below.    */
+#           endif
             memcpy(result + lenx, y, leny);
             result[result_len] = '\0';
             return((CORD) result);
@@ -172,16 +184,17 @@ CORD CORD_cat_char_star(CORD x, const char * y, size_t leny)
             depth = 1;
         }
     } else {
-        register CORD right;
-        register CORD left;
-        register char * new_right;
-        register size_t right_len;
+        CORD right;
+        CORD left;
+        char * new_right;
 
         lenx = LEN(x);
 
         if (leny <= SHORT_LIMIT/2
             && IS_CONCATENATION(x)
             && CORD_IS_STRING(right = ((CordRep *)x) -> concatenation.right)) {
+            size_t right_len;
+
             /* Merge y into right part of x. */
             if (!CORD_IS_STRING(left = ((CordRep *)x) -> concatenation.left)) {
                 right_len = lenx - LEN(left);
@@ -192,7 +205,7 @@ CORD CORD_cat_char_star(CORD x, const char * y, size_t leny)
             }
             result_len = right_len + leny;  /* length of new_right */
             if (result_len <= SHORT_LIMIT) {
-                new_right = GC_MALLOC_ATOMIC(result_len + 1);
+                new_right = (char *)GC_MALLOC_ATOMIC(result_len + 1);
                 if (new_right == 0) OUT_OF_MEMORY;
                 memcpy(new_right, right, right_len);
                 memcpy(new_right + right_len, y, leny);
@@ -215,17 +228,17 @@ CORD CORD_cat_char_star(CORD x, const char * y, size_t leny)
     }
     {
       /* The general case; lenx, result_len is known: */
-        register struct Concatenation * result;
+        struct Concatenation * result = GC_NEW(struct Concatenation);
 
-        result = GC_NEW(struct Concatenation);
-        if (result == 0) OUT_OF_MEMORY;
+        if (NULL == result) OUT_OF_MEMORY;
         result->header = CONCAT_HDR;
-        result->depth = depth;
+        result->depth = (char)depth;
         if (lenx <= MAX_LEFT_LEN)
             result->left_len = (unsigned char)lenx;
-        result->len = result_len;
+        result->len = (word)result_len;
         result->left = x;
-        result->right = y;
+        GC_PTR_STORE_AND_DIRTY((void *)&result->right, y);
+        GC_reachable_here(x);
         if (depth >= MAX_DEPTH) {
             return(CORD_balance((CORD)result));
         } else {
@@ -237,9 +250,9 @@ CORD CORD_cat_char_star(CORD x, const char * y, size_t leny)
 
 CORD CORD_cat(CORD x, CORD y)
 {
-    register size_t result_len;
-    register int depth;
-    register size_t lenx;
+    size_t result_len;
+    int depth;
+    size_t lenx;
 
     if (x == CORD_EMPTY) return(y);
     if (y == CORD_EMPTY) return(x);
@@ -249,7 +262,7 @@ CORD CORD_cat(CORD x, CORD y)
         lenx = strlen(x);
         depth = DEPTH(y) + 1;
     } else {
-        register int depthy = DEPTH(y);
+        int depthy = DEPTH(y);
 
         lenx = LEN(x);
         depth = DEPTH(x) + 1;
@@ -257,17 +270,17 @@ CORD CORD_cat(CORD x, CORD y)
     }
     result_len = lenx + LEN(y);
     {
-        register struct Concatenation * result;
+        struct Concatenation * result = GC_NEW(struct Concatenation);
 
-        result = GC_NEW(struct Concatenation);
-        if (result == 0) OUT_OF_MEMORY;
+        if (NULL == result) OUT_OF_MEMORY;
         result->header = CONCAT_HDR;
-        result->depth = depth;
+        result->depth = (char)depth;
         if (lenx <= MAX_LEFT_LEN)
             result->left_len = (unsigned char)lenx;
-        result->len = result_len;
+        result->len = (word)result_len;
         result->left = x;
-        result->right = y;
+        GC_PTR_STORE_AND_DIRTY((void *)&result->right, y);
+        GC_reachable_here(x);
         if (depth >= MAX_DEPTH) {
             return(CORD_balance((CORD)result));
         } else {
@@ -277,41 +290,44 @@ CORD CORD_cat(CORD x, CORD y)
 }
 
 
-
-CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len)
+static CordRep *CORD_from_fn_inner(CORD_fn fn, void * client_data, size_t len)
 {
-    if (len <= 0) return(0);
+    if (len == 0) return(0);
     if (len <= SHORT_LIMIT) {
-        register char * result;
-        register size_t i;
+        char * result;
+        size_t i;
         char buf[SHORT_LIMIT+1];
-        register char c;
 
         for (i = 0; i < len; i++) {
-            c = (*fn)(i, client_data);
+            char c = (*fn)(i, client_data);
+
             if (c == '\0') goto gen_case;
             buf[i] = c;
         }
 
-        result = GC_MALLOC_ATOMIC(len+1);
+        result = (char *)GC_MALLOC_ATOMIC(len + 1);
         if (result == 0) OUT_OF_MEMORY;
         memcpy(result, buf, len);
         result[len] = '\0';
-        return((CORD) result);
+        return (CordRep *)result;
     }
   gen_case:
     {
-        register struct Function * result;
+        struct Function * result = GC_NEW(struct Function);
 
-        result = GC_NEW(struct Function);
-        if (result == 0) OUT_OF_MEMORY;
+        if (NULL == result) OUT_OF_MEMORY;
         result->header = FN_HDR;
         /* depth is already 0 */
-        result->len = len;
+        result->len = (word)len;
         result->fn = fn;
-        result->client_data = client_data;
-        return((CORD) result);
+        GC_PTR_STORE_AND_DIRTY(&result->client_data, client_data);
+        return (CordRep *)result;
     }
+}
+
+CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len)
+{
+    return (/* const */ CORD) CORD_from_fn_inner(fn, client_data, len);
 }
 
 size_t CORD_len(CORD x)
@@ -330,15 +346,15 @@ struct substr_args {
 
 char CORD_index_access_fn(size_t i, void * client_data)
 {
-    register struct substr_args *descr = (struct substr_args *)client_data;
+    struct substr_args *descr = (struct substr_args *)client_data;
 
     return(((char *)(descr->sa_cord))[i + descr->sa_index]);
 }
 
 char CORD_apply_access_fn(size_t i, void * client_data)
 {
-    register struct substr_args *descr = (struct substr_args *)client_data;
-    register struct Function * fn_cord = &(descr->sa_cord->function);
+    struct substr_args *descr = (struct substr_args *)client_data;
+    struct Function * fn_cord = &(descr->sa_cord->function);
 
     return((*(fn_cord->fn))(i + descr->sa_index, fn_cord->client_data));
 }
@@ -349,16 +365,16 @@ char CORD_apply_access_fn(size_t i, void * client_data)
 /* Assumes i >= 0 and i + n < length(x).                                */
 CORD CORD_substr_closure(CORD x, size_t i, size_t n, CORD_fn f)
 {
-    register struct substr_args * sa = GC_NEW(struct substr_args);
-    CORD result;
+    struct substr_args * sa = GC_NEW(struct substr_args);
+    CordRep * result;
 
     if (sa == 0) OUT_OF_MEMORY;
-    sa->sa_cord = (CordRep *)x;
     sa->sa_index = i;
-    result = CORD_from_fn(f, (void *)sa, n);
-    if (result == CORD_EMPTY) return CORD_EMPTY; /* n == 0 */
-    ((CordRep *)result) -> function.header = SUBSTR_HDR;
-    return (result);
+    GC_PTR_STORE_AND_DIRTY(&sa->sa_cord, x);
+    result = CORD_from_fn_inner(f, (void *)sa, n);
+    if ((CORD)result != CORD_EMPTY && 0 == result -> function.null)
+        result -> function.header = SUBSTR_HDR;
+    return (CORD)result;
 }
 
 # define SUBSTR_LIMIT (10 * SHORT_LIMIT)
@@ -373,7 +389,7 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
         if (n > SUBSTR_LIMIT) {
             return(CORD_substr_closure(x, i, n, CORD_index_access_fn));
         } else {
-            register char * result = GC_MALLOC_ATOMIC(n+1);
+            char * result = (char *)GC_MALLOC_ATOMIC(n + 1);
 
             if (result == 0) OUT_OF_MEMORY;
             strncpy(result, x+i, n);
@@ -381,13 +397,10 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
             return(result);
         }
     } else if (IS_CONCATENATION(x)) {
-        register struct Concatenation * conc
-                        = &(((CordRep *)x) -> concatenation);
-        register size_t left_len;
-        register size_t right_len;
+        struct Concatenation * conc = &(((CordRep *)x) -> concatenation);
+        size_t left_len = LEFT_LEN(conc);
+        size_t right_len = conc -> len - left_len;
 
-        left_len = LEFT_LEN(conc);
-        right_len = conc -> len - left_len;
         if (i >= left_len) {
             if (n == right_len) return(conc -> right);
             return(CORD_substr_checked(conc -> right, i - left_len, n));
@@ -396,9 +409,9 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
             return(CORD_substr_checked(conc -> left, i, n));
         } else {
             /* Need at least one character from each side. */
-            register CORD left_part;
-            register CORD right_part;
-            register size_t left_part_len = left_len - i;
+            CORD left_part;
+            CORD right_part;
+            size_t left_part_len = left_len - i;
 
             if (i == 0) {
                 left_part = conc -> left;
@@ -417,8 +430,8 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
         if (n > SUBSTR_LIMIT) {
             if (IS_SUBSTR(x)) {
                 /* Avoid nesting substring nodes.       */
-                register struct Function * f = &(((CordRep *)x) -> function);
-                register struct substr_args *descr =
+                struct Function * f = &(((CordRep *)x) -> function);
+                struct substr_args *descr =
                                 (struct substr_args *)(f -> client_data);
 
                 return(CORD_substr_closure((CORD)descr->sa_cord,
@@ -429,21 +442,21 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
             }
         } else {
             char * result;
-            register struct Function * f = &(((CordRep *)x) -> function);
+            struct Function * f = &(((CordRep *)x) -> function);
             char buf[SUBSTR_LIMIT+1];
-            register char * p = buf;
-            register char c;
-            register int j;
-            register int lim = i + n;
+            char * p = buf;
+            size_t j;
+            size_t lim = i + n;
 
             for (j = i; j < lim; j++) {
-                c = (*(f -> fn))(j, f -> client_data);
+                char c = (*(f -> fn))(j, f -> client_data);
+
                 if (c == '\0') {
                     return(CORD_substr_closure(x, i, n, CORD_apply_access_fn));
                 }
                 *p++ = c;
             }
-            result = GC_MALLOC_ATOMIC(n+1);
+            result = (char *)GC_MALLOC_ATOMIC(n + 1);
             if (result == 0) OUT_OF_MEMORY;
             memcpy(result, buf, n);
             result[n] = '\0';
@@ -454,11 +467,9 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
 
 CORD CORD_substr(CORD x, size_t i, size_t n)
 {
-    register size_t len = CORD_len(x);
+    size_t len = CORD_len(x);
 
-    if (i >= len || n <= 0) return(0);
-        /* n < 0 is impossible in a correct C implementation, but       */
-        /* quite possible  under SunOS 4.X.                             */
+    if (i >= len || n == 0) return(0);
     if (i + n > len) n = len - i;
     return(CORD_substr_checked(x, i, n));
 }
@@ -469,7 +480,7 @@ int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
 {
     if (x == 0) return(0);
     if (CORD_IS_STRING(x)) {
-        register const char *p = x+i;
+        const char *p = x+i;
 
         if (*p == '\0') ABORT("2nd arg to CORD_iter5 too big");
         if (f2 != CORD_NO_FN) {
@@ -482,12 +493,10 @@ int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
             return(0);
         }
     } else if (IS_CONCATENATION(x)) {
-        register struct Concatenation * conc
-                        = &(((CordRep *)x) -> concatenation);
-
+        struct Concatenation * conc = &(((CordRep *)x) -> concatenation);
 
         if (i > 0) {
-            register size_t left_len = LEFT_LEN(conc);
+            size_t left_len = LEFT_LEN(conc);
 
             if (i >= left_len) {
                 return(CORD_iter5(conc -> right, i - left_len, f1, f2,
@@ -499,9 +508,9 @@ int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
         }
         return(CORD_iter5(conc -> right, 0, f1, f2, client_data));
     } else /* function */ {
-        register struct Function * f = &(((CordRep *)x) -> function);
-        register size_t j;
-        register size_t lim = f -> len;
+        struct Function * f = &(((CordRep *)x) -> function);
+        size_t j;
+        size_t lim = f -> len;
 
         for (j = i; j < lim; j++) {
             if ((*f1)((*(f -> fn))(j, f -> client_data), client_data)) {
@@ -522,11 +531,11 @@ int CORD_riter4(CORD x, size_t i, CORD_iter_fn f1, void * client_data)
 {
     if (x == 0) return(0);
     if (CORD_IS_STRING(x)) {
-        register const char *p = x + i;
-        register char c;
+        const char *p = x + i;
 
         for(;;) {
-            c = *p;
+            char c = *p;
+
             if (c == '\0') ABORT("2nd arg to CORD_riter4 too big");
             if ((*f1)(c, client_data)) return(1);
             if (p == x) break;
@@ -534,12 +543,10 @@ int CORD_riter4(CORD x, size_t i, CORD_iter_fn f1, void * client_data)
         }
         return(0);
     } else if (IS_CONCATENATION(x)) {
-        register struct Concatenation * conc
-                        = &(((CordRep *)x) -> concatenation);
-        register CORD left_part = conc -> left;
-        register size_t left_len;
+        struct Concatenation * conc = &(((CordRep *)x) -> concatenation);
+        CORD left_part = conc -> left;
+        size_t left_len = LEFT_LEN(conc);
 
-        left_len = LEFT_LEN(conc);
         if (i >= left_len) {
             if (CORD_riter4(conc -> right, i - left_len, f1, client_data)) {
                 return(1);
@@ -549,8 +556,8 @@ int CORD_riter4(CORD x, size_t i, CORD_iter_fn f1, void * client_data)
             return(CORD_riter4(left_part, i, f1, client_data));
         }
     } else /* function */ {
-        register struct Function * f = &(((CordRep *)x) -> function);
-        register size_t j;
+        struct Function * f = &(((CordRep *)x) -> function);
+        size_t j;
 
         for (j = i; ; j--) {
             if ((*f1)((*(f -> fn))(j, f -> client_data), client_data)) {
@@ -602,26 +609,27 @@ typedef ForestElement Forest [ MAX_DEPTH ];
 
 void CORD_init_min_len(void)
 {
-    register int i;
-    register size_t last, previous, current;
+    int i;
+    size_t last, previous;
 
     min_len[0] = previous = 1;
     min_len[1] = last = 2;
     for (i = 2; i < MAX_DEPTH; i++) {
-        current = last + previous;
+        size_t current = last + previous;
+
         if (current < last) /* overflow */ current = last;
         min_len[i] = current;
         previous = last;
         last = current;
     }
-    CORD_max_len = last - 1;
+    CORD_max_len = (int)last - 1;
     min_len_init = 1;
 }
 
 
 void CORD_init_forest(ForestElement * forest, size_t max_len)
 {
-    register int i;
+    int i;
 
     for (i = 0; i < MAX_DEPTH; i++) {
         forest[i].c = 0;
@@ -637,9 +645,9 @@ void CORD_init_forest(ForestElement * forest, size_t max_len)
 /* This node should not be counted in the statement of the invariants.  */
 void CORD_add_forest(ForestElement * forest, CORD x, size_t len)
 {
-    register int i = 0;
-    register CORD sum = CORD_EMPTY;
-    register size_t sum_len = 0;
+    int i = 0;
+    CORD sum = CORD_EMPTY;
+    size_t sum_len = 0;
 
     while (len > min_len[i + 1]) {
         if (forest[i].c != 0) {
@@ -673,7 +681,7 @@ void CORD_add_forest(ForestElement * forest, CORD x, size_t len)
 
 CORD CORD_concat_forest(ForestElement * forest, size_t expected_len)
 {
-    register int i = 0;
+    int i = 0;
     CORD sum = 0;
     size_t sum_len = 0;
 
@@ -692,15 +700,14 @@ CORD CORD_concat_forest(ForestElement * forest, size_t expected_len)
 /* of the final tree.                                           */
 void CORD_balance_insert(CORD x, size_t len, ForestElement * forest)
 {
-    register int depth;
+    int depth;
 
     if (CORD_IS_STRING(x)) {
         CORD_add_forest(forest, x, len);
     } else if (IS_CONCATENATION(x)
                && ((depth = DEPTH(x)) >= MAX_DEPTH
                    || len < min_len[depth])) {
-        register struct Concatenation * conc
-                        = &(((CordRep *)x) -> concatenation);
+        struct Concatenation * conc = &(((CordRep *)x) -> concatenation);
         size_t left_len = LEFT_LEN(conc);
 
         CORD_balance_insert(conc -> left, left_len, forest);
@@ -714,7 +721,7 @@ void CORD_balance_insert(CORD x, size_t len, ForestElement * forest)
 CORD CORD_balance(CORD x)
 {
     Forest forest;
-    register size_t len;
+    size_t len;
 
     if (x == 0) return(0);
     if (CORD_IS_STRING(x)) return(x);
@@ -733,19 +740,18 @@ CORD CORD_balance(CORD x)
 /* P contains a prefix of the  path to cur_pos. Extend it to a full     */
 /* path and set up leaf info.                                           */
 /* Return 0 if past the end of cord, 1 o.w.                             */
-void CORD__extend_path(register CORD_pos p)
+void CORD__extend_path(CORD_pos p)
 {
-     register struct CORD_pe * current_pe = &(p[0].path[p[0].path_len]);
-     register CORD top = current_pe -> pe_cord;
-     register size_t pos = p[0].cur_pos;
-     register size_t top_pos = current_pe -> pe_start_pos;
-     register size_t top_len = GEN_LEN(top);
+     struct CORD_pe * current_pe = &(p[0].path[p[0].path_len]);
+     CORD top = current_pe -> pe_cord;
+     size_t pos = p[0].cur_pos;
+     size_t top_pos = current_pe -> pe_start_pos;
+     size_t top_len = GEN_LEN(top);
 
      /* Fill in the rest of the path. */
        while(!CORD_IS_STRING(top) && IS_CONCATENATION(top)) {
-         register struct Concatenation * conc =
-                        &(((CordRep *)top) -> concatenation);
-         register size_t left_len;
+         struct Concatenation * conc = &(((CordRep *)top) -> concatenation);
+         size_t left_len;
 
          left_len = LEFT_LEN(conc);
          current_pe++;
@@ -771,37 +777,48 @@ void CORD__extend_path(register CORD_pos p)
        if (pos >= top_pos + top_len) p[0].path_len = CORD_POS_INVALID;
 }
 
-char CORD__pos_fetch(register CORD_pos p)
+char CORD__pos_fetch(CORD_pos p)
 {
     /* Leaf is a function node */
-    struct CORD_pe * pe = &((p)[0].path[(p)[0].path_len]);
-    CORD leaf = pe -> pe_cord;
-    register struct Function * f = &(((CordRep *)leaf) -> function);
+    struct CORD_pe * pe;
+    CORD leaf;
+    struct Function * f;
 
-    if (!IS_FUNCTION(leaf)) ABORT("CORD_pos_fetch: bad leaf");
+    if (!CORD_pos_valid(p))
+        ABORT("CORD_pos_fetch: invalid argument");
+    pe = &p[0].path[p[0].path_len];
+    leaf = pe -> pe_cord;
+    if (!IS_FUNCTION(leaf))
+        ABORT("CORD_pos_fetch: bad leaf");
+    f = &((CordRep *)leaf)->function;
     return ((*(f -> fn))(p[0].cur_pos - pe -> pe_start_pos, f -> client_data));
 }
 
-void CORD__next(register CORD_pos p)
+void CORD__next(CORD_pos p)
 {
-    register size_t cur_pos = p[0].cur_pos + 1;
-    register struct CORD_pe * current_pe = &((p)[0].path[(p)[0].path_len]);
-    register CORD leaf = current_pe -> pe_cord;
+    size_t cur_pos = p[0].cur_pos + 1;
+    struct CORD_pe * current_pe;
+    CORD leaf;
+
+    if (!CORD_pos_valid(p))
+        ABORT("CORD_next: invalid argument");
+    current_pe = &p[0].path[p[0].path_len];
+    leaf = current_pe -> pe_cord;
 
     /* Leaf is not a string or we're at end of leaf */
     p[0].cur_pos = cur_pos;
     if (!CORD_IS_STRING(leaf)) {
         /* Function leaf        */
-        register struct Function * f = &(((CordRep *)leaf) -> function);
-        register size_t start_pos = current_pe -> pe_start_pos;
-        register size_t end_pos = start_pos + f -> len;
+        struct Function * f = &(((CordRep *)leaf) -> function);
+        size_t start_pos = current_pe -> pe_start_pos;
+        size_t end_pos = start_pos + f -> len;
 
         if (cur_pos < end_pos) {
           /* Fill cache and return. */
-            register size_t i;
-            register size_t limit = cur_pos + FUNCTION_BUF_SZ;
-            register CORD_fn fn = f -> fn;
-            register void * client_data = f -> client_data;
+            size_t i;
+            size_t limit = cur_pos + FUNCTION_BUF_SZ;
+            CORD_fn fn = f -> fn;
+            void * client_data = f -> client_data;
 
             if (limit > end_pos) {
                 limit = end_pos;
@@ -834,9 +851,9 @@ void CORD__next(register CORD_pos p)
     CORD__extend_path(p);
 }
 
-void CORD__prev(register CORD_pos p)
+void CORD__prev(CORD_pos p)
 {
-    register struct CORD_pe * pe = &(p[0].path[p[0].path_len]);
+    struct CORD_pe * pe = &(p[0].path[p[0].path_len]);
 
     if (p[0].cur_pos == 0) {
         p[0].path_len = CORD_POS_INVALID;
@@ -850,7 +867,7 @@ void CORD__prev(register CORD_pos p)
     /* Pop the stack until we find two concatenation nodes with the     */
     /* different start position: this implies we were in right part.    */
     {
-        register struct CORD_pe * current_pe = &((p)[0].path[(p)[0].path_len]);
+        struct CORD_pe * current_pe = &((p)[0].path[(p)[0].path_len]);
 
         while (p[0].path_len > 0
                && current_pe[0].pe_start_pos == current_pe[-1].pe_start_pos) {
@@ -869,9 +886,9 @@ void CORD__prev(register CORD_pos p)
 #undef CORD_pos_to_cord
 #undef CORD_pos_valid
 
-char CORD_pos_fetch(register CORD_pos p)
+char CORD_pos_fetch(CORD_pos p)
 {
-    if (p[0].cur_start <= p[0].cur_pos && p[0].cur_pos < p[0].cur_end) {
+    if (p[0].cur_end != 0) {
         return(p[0].cur_leaf[p[0].cur_pos - p[0].cur_start]);
     } else {
         return(CORD__pos_fetch(p));
@@ -880,7 +897,7 @@ char CORD_pos_fetch(register CORD_pos p)
 
 void CORD_next(CORD_pos p)
 {
-    if (p[0].cur_pos < p[0].cur_end - 1) {
+    if (p[0].cur_pos + 1 < p[0].cur_end) {
         p[0].cur_pos++;
     } else {
         CORD__next(p);

@@ -100,7 +100,6 @@ AO_fetch_compare_and_swap_release(volatile AO_t *addr, AO_t old_val,
   _Asm_mov_to_ar(_AREG_CCV, old_val, _UP_MEM_FENCE);
   return _Asm_cmpxchg(AO_T_SIZE, _SEM_REL, addr,
                       new_val, _LDHINT_NONE, _UP_MEM_FENCE);
-
 }
 #define AO_HAVE_fetch_compare_and_swap_release
 
@@ -111,7 +110,6 @@ AO_char_fetch_compare_and_swap_acquire(volatile unsigned char *addr,
   _Asm_mov_to_ar(_AREG_CCV, old_val, _DOWN_MEM_FENCE);
   return _Asm_cmpxchg(_SZ_B, _SEM_ACQ, addr,
                       new_val, _LDHINT_NONE, _DOWN_MEM_FENCE);
-
 }
 #define AO_HAVE_char_fetch_compare_and_swap_acquire
 
@@ -122,7 +120,6 @@ AO_char_fetch_compare_and_swap_release(volatile unsigned char *addr,
   _Asm_mov_to_ar(_AREG_CCV, old_val, _UP_MEM_FENCE);
   return _Asm_cmpxchg(_SZ_B, _SEM_REL, addr,
                       new_val, _LDHINT_NONE, _UP_MEM_FENCE);
-
 }
 #define AO_HAVE_char_fetch_compare_and_swap_release
 
@@ -134,7 +131,6 @@ AO_short_fetch_compare_and_swap_acquire(volatile unsigned short *addr,
   _Asm_mov_to_ar(_AREG_CCV, old_val, _DOWN_MEM_FENCE);
   return _Asm_cmpxchg(_SZ_B, _SEM_ACQ, addr,
                       new_val, _LDHINT_NONE, _DOWN_MEM_FENCE);
-
 }
 #define AO_HAVE_short_fetch_compare_and_swap_acquire
 
@@ -146,10 +142,12 @@ AO_short_fetch_compare_and_swap_release(volatile unsigned short *addr,
   _Asm_mov_to_ar(_AREG_CCV, old_val, _UP_MEM_FENCE);
   return _Asm_cmpxchg(_SZ_B, _SEM_REL, addr,
                       new_val, _LDHINT_NONE, _UP_MEM_FENCE);
-
 }
 #define AO_HAVE_short_fetch_compare_and_swap_release
 
 #ifndef __LP64__
 # define AO_T_IS_INT
 #endif
+
+#undef AO_T_FASIZE
+#undef AO_T_SIZE

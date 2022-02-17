@@ -15,6 +15,10 @@
 # include "config.h"
 #endif
 
+#ifdef DONT_USE_MMAP /* for testing */
+# undef HAVE_MMAP
+#endif
+
 #define AO_REQUIRE_CAS
 #include "atomic_ops_malloc.h"
 
@@ -27,7 +31,20 @@
 # include <pthread.h>
 #endif
 
-#if (defined(_WIN32_WCE) || defined(__MINGW32CE__)) && !defined(abort)
+#if defined(AO_ADDRESS_SANITIZER) && !defined(AO_NO_MALLOC_POISON)
+  /* #include "sanitizer/asan_interface.h" */
+  void __asan_poison_memory_region(void *, size_t);
+  void __asan_unpoison_memory_region(void *, size_t);
+# define ASAN_POISON_MEMORY_REGION(addr, size) \
+                __asan_poison_memory_region(addr, size)
+# define ASAN_UNPOISON_MEMORY_REGION(addr, size) \
+                __asan_unpoison_memory_region(addr, size)
+#else
+# define ASAN_POISON_MEMORY_REGION(addr, size) (void)0
+# define ASAN_UNPOISON_MEMORY_REGION(addr, size) (void)0
+#endif /* !AO_ADDRESS_SANITIZER */
+
+#if (defined(_WIN32_WCE) || defined(__MINGW32CE__)) && !defined(AO_HAVE_abort)
 # define abort() _exit(-1) /* there is no abort() in WinCE */
 #endif
 
@@ -85,12 +102,15 @@ static volatile AO_t initial_heap_ptr = (AO_t)AO_initial_heap;
 #endif
 
 #ifdef USE_MMAP_ANON
-# ifdef MAP_ANONYMOUS
+# if defined(CPPCHECK)
+#   define OPT_MAP_ANON 0x20 /* taken from linux */
+# elif defined(MAP_ANONYMOUS)
 #   define OPT_MAP_ANON MAP_ANONYMOUS
 # else
 #   define OPT_MAP_ANON MAP_ANON
 # endif
 #else
+# include <unistd.h> /* for close() */
 # define OPT_MAP_ANON 0
 #endif
 
@@ -125,31 +145,48 @@ static char *get_mmaped(size_t sz)
     if (zero_fd == -1)
       return 0;
 # endif
-  result = mmap(0, sz, PROT_READ | PROT_WRITE,
-                GC_MMAP_FLAGS | OPT_MAP_ANON, zero_fd, 0/* offset */);
+  result = (char *)mmap(0, sz, PROT_READ | PROT_WRITE,
+                        GC_MMAP_FLAGS | OPT_MAP_ANON,
+                        zero_fd, 0 /* offset */);
 # ifndef USE_MMAP_ANON
     close(zero_fd);
 # endif
-  if (result == MAP_FAILED)
-    result = 0;
+  if (AO_EXPECT_FALSE(result == MAP_FAILED))
+    result = NULL;
   return result;
 }
+
+#ifndef SIZE_MAX
+# include <limits.h>
+#endif
+#if defined(SIZE_MAX) && !defined(CPPCHECK)
+# define AO_SIZE_MAX ((size_t)SIZE_MAX)
+            /* Extra cast to workaround some buggy SIZE_MAX definitions. */
+#else
+# define AO_SIZE_MAX (~(size_t)0)
+#endif
+
+/* Saturated addition of size_t values.  Used to avoid value wrap       */
+/* around on overflow.  The arguments should have no side effects.      */
+#define SIZET_SAT_ADD(a, b) \
+    (AO_EXPECT_FALSE((a) >= AO_SIZE_MAX - (b)) ? AO_SIZE_MAX : (a) + (b))
 
 /* Allocate an object of size (incl. header) of size > CHUNK_SIZE.      */
 /* sz includes space for an AO_t-sized header.                          */
 static char *
 AO_malloc_large(size_t sz)
 {
- char * result;
- /* The header will force us to waste ALIGNMENT bytes, incl. header.    */
-   sz += ALIGNMENT;
- /* Round to multiple of CHUNK_SIZE.    */
-   sz = (sz + CHUNK_SIZE - 1) & ~(CHUNK_SIZE - 1);
- result = get_mmaped(sz);
- if (result == 0) return 0;
- result += ALIGNMENT;
- ((AO_t *)result)[-1] = (AO_t)sz;
- return result;
+  char *result;
+  /* The header will force us to waste ALIGNMENT bytes, incl. header.   */
+  /* Round to multiple of CHUNK_SIZE.                                   */
+  sz = SIZET_SAT_ADD(sz, ALIGNMENT + CHUNK_SIZE - 1) & ~(CHUNK_SIZE - 1);
+  assert(sz > LOG_MAX_SIZE);
+  result = get_mmaped(sz);
+  if (AO_EXPECT_FALSE(NULL == result))
+    return NULL;
+  result += ALIGNMENT;
+  ((AO_t *)result)[-1] = (AO_t)sz;
+  return result;
 }
 
 static void
@@ -192,17 +229,20 @@ get_chunk(void)
                                     (AO_t)initial_ptr, (AO_t)my_chunk_ptr);
       }
 
-    if (my_chunk_ptr - AO_initial_heap > AO_INITIAL_HEAP_SIZE - CHUNK_SIZE)
+    if (AO_EXPECT_FALSE((AO_t)my_chunk_ptr
+            > (AO_t)(AO_initial_heap + AO_INITIAL_HEAP_SIZE - CHUNK_SIZE))) {
+      /* We failed.  The initial heap is used up.       */
+      my_chunk_ptr = get_mmaped(CHUNK_SIZE);
+#     if !defined(CPPCHECK)
+        assert(((AO_t)my_chunk_ptr & (ALIGNMENT-1)) == 0);
+#     endif
       break;
+    }
     if (AO_compare_and_swap(&initial_heap_ptr, (AO_t)my_chunk_ptr,
                             (AO_t)(my_chunk_ptr + CHUNK_SIZE))) {
-      return my_chunk_ptr;
+      break;
     }
   }
-
-  /* We failed.  The initial heap is used up.   */
-  my_chunk_ptr = get_mmaped(CHUNK_SIZE);
-  assert (!((AO_t)my_chunk_ptr & (ALIGNMENT-1)));
   return my_chunk_ptr;
 }
 
@@ -220,6 +260,8 @@ static void add_chunk_as(void * chunk, unsigned log_sz)
   assert (CHUNK_SIZE >= sz);
   limit = (size_t)CHUNK_SIZE - sz;
   for (ofs = ALIGNMENT - sizeof(AO_t); ofs <= limit; ofs += sz) {
+    ASAN_POISON_MEMORY_REGION((char *)chunk + ofs + sizeof(AO_t),
+                              sz - sizeof(AO_t));
     AO_stack_push(&AO_free_list[log_sz], (AO_t *)((char *)chunk + ofs));
   }
 }
@@ -235,16 +277,29 @@ static const unsigned char msbs[16] = {
 static unsigned msb(size_t s)
 {
   unsigned result = 0;
-  unsigned v;
   if ((s & 0xff) != s) {
-    /* The following is a tricky code ought to be equivalent to         */
-    /* "(v = s >> 32) != 0" but suppresses warnings on 32-bit arch's.   */
-    if (sizeof(size_t) > 4 && (v = s >> (sizeof(size_t) > 4 ? 32 : 0)) != 0)
-      {
-        s = v;
-        result += 32;
-      }
-    if ((s >> 16) != 0)
+#   if (__SIZEOF_SIZE_T__ == 8) && !defined(CPPCHECK)
+      unsigned v = (unsigned)(s >> 32);
+      if (AO_EXPECT_FALSE(v != 0))
+        {
+          s = v;
+          result += 32;
+        }
+#   elif __SIZEOF_SIZE_T__ == 4
+      /* No op. */
+#   else
+      unsigned v;
+      /* The following is a tricky code ought to be equivalent to       */
+      /* "(v = s >> 32) != 0" but suppresses warnings on 32-bit arch's. */
+#     define SIZEOF_SIZE_T_GT_4 (sizeof(size_t) > 4)
+      if (SIZEOF_SIZE_T_GT_4
+          && (v = (unsigned)(s >> (SIZEOF_SIZE_T_GT_4 ? 32 : 0))) != 0)
+        {
+          s = v;
+          result += 32;
+        }
+#   endif /* !defined(__SIZEOF_SIZE_T__) */
+    if (AO_EXPECT_FALSE((s >> 16) != 0))
       {
         s >>= 16;
         result += 16;
@@ -270,38 +325,48 @@ AO_malloc(size_t sz)
   AO_t *result;
   unsigned log_sz;
 
-  if (sz > CHUNK_SIZE)
+  if (AO_EXPECT_FALSE(sz > CHUNK_SIZE - sizeof(AO_t)))
     return AO_malloc_large(sz);
   log_sz = msb(sz + (sizeof(AO_t) - 1));
+  assert(log_sz <= LOG_MAX_SIZE);
+  assert(((size_t)1 << log_sz) >= sz + sizeof(AO_t));
   result = AO_stack_pop(AO_free_list+log_sz);
-  while (0 == result) {
+  while (AO_EXPECT_FALSE(NULL == result)) {
     void * chunk = get_chunk();
-    if (0 == chunk) return 0;
+
+    if (AO_EXPECT_FALSE(NULL == chunk))
+      return NULL;
     add_chunk_as(chunk, log_sz);
     result = AO_stack_pop(AO_free_list+log_sz);
   }
   *result = log_sz;
 # ifdef AO_TRACE_MALLOC
-    fprintf(stderr, "%x: AO_malloc(%lu) = %p\n",
-                    (int)pthread_self(), (unsigned long)sz, result+1);
+    fprintf(stderr, "%p: AO_malloc(%lu) = %p\n",
+            (void *)pthread_self(), (unsigned long)sz, (void *)(result + 1));
 # endif
+  ASAN_UNPOISON_MEMORY_REGION(result + 1, sz);
   return result + 1;
 }
 
 void
 AO_free(void *p)
 {
-  char *base = (char *)p - sizeof(AO_t);
+  AO_t *base;
   int log_sz;
 
-  if (0 == p) return;
-  log_sz = (int)(*(AO_t *)base);
+  if (AO_EXPECT_FALSE(NULL == p))
+    return;
+
+  base = (AO_t *)p - 1;
+  log_sz = (int)(*base);
 # ifdef AO_TRACE_MALLOC
-    fprintf(stderr, "%x: AO_free(%p sz:%lu)\n", (int)pthread_self(), p,
-            (unsigned long)(log_sz > LOG_MAX_SIZE? log_sz : (1 << log_sz)));
+    fprintf(stderr, "%p: AO_free(%p sz:%lu)\n", (void *)pthread_self(), p,
+            log_sz > LOG_MAX_SIZE ? (unsigned)log_sz : 1UL << log_sz);
 # endif
-  if (log_sz > LOG_MAX_SIZE)
-    AO_free_large(p);
-  else
-    AO_stack_push(AO_free_list+log_sz, (AO_t *)base);
+  if (AO_EXPECT_FALSE(log_sz > LOG_MAX_SIZE)) {
+    AO_free_large((char *)p);
+  } else {
+    ASAN_POISON_MEMORY_REGION(base + 1, ((size_t)1 << log_sz) - sizeof(AO_t));
+    AO_stack_push(AO_free_list + log_sz, base);
+  }
 }

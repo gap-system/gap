@@ -9,7 +9,8 @@
 # modified is included with the above copyright notice.
 
 # Common libs to _LDADD for all tests.
-test_ldadd = $(top_builddir)/libgc.la $(EXTRA_TEST_LIBS)
+test_ldadd = $(nodist_libgc_la_OBJECTS) $(top_builddir)/libgc.la \
+            $(EXTRA_TEST_LIBS)
 
 TESTS += gctest$(EXEEXT)
 check_PROGRAMS += gctest
@@ -49,19 +50,20 @@ TESTS += staticrootstest$(EXEEXT)
 check_PROGRAMS += staticrootstest
 staticrootstest_SOURCES = tests/staticrootstest.c
 staticrootstest_CFLAGS = -DSTATICROOTSLIB2
-staticrootstest_LDADD = $(test_ldadd) libstaticrootslib_test.la \
-                        libstaticrootslib2_test.la
+staticrootstest_LDADD = $(nodist_libgc_la_OBJECTS) $(EXTRA_TEST_LIBS) \
+                        libstaticrootslib_test.la libstaticrootslib2_test.la
 check_LTLIBRARIES += libstaticrootslib_test.la libstaticrootslib2_test.la
 libstaticrootslib_test_la_SOURCES = tests/staticrootslib.c
 libstaticrootslib_test_la_LIBADD = $(test_ldadd)
-libstaticrootslib_test_la_LDFLAGS = -version-info 1:3:0 -no-undefined \
-                                    -rpath /nowhere
+libstaticrootslib_test_la_LDFLAGS = -no-undefined -rpath /nowhere
 libstaticrootslib_test_la_DEPENDENCIES = $(top_builddir)/libgc.la
 libstaticrootslib2_test_la_SOURCES = tests/staticrootslib.c
 libstaticrootslib2_test_la_LIBADD = $(test_ldadd)
 libstaticrootslib2_test_la_CFLAGS = -DSTATICROOTSLIB2
-libstaticrootslib2_test_la_LDFLAGS = -version-info 1:3:0 -no-undefined \
-                                     -rpath /nowhere
+libstaticrootslib2_test_la_LDFLAGS = -no-undefined -rpath /nowhere
+if ENABLE_SHARED
+staticrootstest_LDADD += $(top_builddir)/libgc.la
+endif
 
 if KEEP_BACK_PTRS
 TESTS += tracetest$(EXEEXT)
@@ -71,6 +73,13 @@ tracetest_LDADD = $(test_ldadd)
 endif
 
 if THREADS
+
+TESTS += test_atomic_ops$(EXEEXT)
+check_PROGRAMS += test_atomic_ops
+test_atomic_ops_SOURCES = tests/test_atomic_ops.c
+# Really should need only $(ATOMIC_OPS_LIBS)
+test_atomic_ops_LDADD = $(test_ldadd) $(THREADDLLIBS)
+
 TESTS += threadleaktest$(EXEEXT)
 check_PROGRAMS += threadleaktest
 threadleaktest_SOURCES = tests/thread_leak_test.c
@@ -90,6 +99,7 @@ TESTS += initsecondarythread_test$(EXEEXT)
 check_PROGRAMS += initsecondarythread_test
 initsecondarythread_test_SOURCES = tests/initsecondarythread.c
 initsecondarythread_test_LDADD = $(test_ldadd) $(THREADDLLIBS)
+
 endif
 
 if CPLUSPLUS
@@ -99,12 +109,19 @@ test_cpp_SOURCES = tests/test_cpp.cc
 if AVOID_CPP_LIB
 test_cpp_LDADD = gc_cpp.o $(test_ldadd) $(CXXLIBS)
 else
-test_cpp_LDADD = libgccpp.la $(test_ldadd) $(CXXLIBS)
+test_cpp_LDADD = libgccpp.la $(nodist_libgc_la_OBJECTS) \
+                $(EXTRA_TEST_LIBS) $(CXXLIBS)
+## In case of static libraries build, libgc.a is already referenced in
+## dependency_libs attribute of libgccpp.la file.
+if ENABLE_SHARED
+test_cpp_LDADD += $(top_builddir)/libgc.la
+endif
 endif
 endif
 
 if ENABLE_DISCLAIM
-TESTS += disclaim_test
+
+TESTS += disclaim_test$(EXEEXT)
 check_PROGRAMS += disclaim_test
 disclaim_test_SOURCES = tests/disclaim_test.c
 disclaim_test_LDADD = $(test_ldadd)
@@ -112,8 +129,40 @@ if THREADS
 disclaim_test_LDADD += $(THREADDLLIBS)
 endif
 
-TESTS += disclaim_bench
+TESTS += disclaim_bench$(EXEEXT)
 check_PROGRAMS += disclaim_bench
 disclaim_bench_SOURCES = tests/disclaim_bench.c
 disclaim_bench_LDADD = $(test_ldadd)
+
+TESTS += disclaim_weakmap_test$(EXEEXT)
+check_PROGRAMS += disclaim_weakmap_test
+disclaim_weakmap_test_SOURCES = tests/disclaim_weakmap_test.c
+disclaim_weakmap_test_LDADD = $(test_ldadd)
+if THREADS
+disclaim_weakmap_test_LDADD += $(THREADDLLIBS)
 endif
+
+endif
+
+# Run the tests directly (without test-driver):
+.PHONY: check-without-test-driver
+check-without-test-driver: $(TESTS)
+	./gctest$(EXEEXT)
+	./hugetest$(EXEEXT)
+	./leaktest$(EXEEXT)
+	./middletest$(EXEEXT)
+	./realloc_test$(EXEEXT)
+	./smashtest$(EXEEXT)
+	./staticrootstest$(EXEEXT)
+	test ! -f disclaim_bench$(EXEEXT) || ./disclaim_bench$(EXEEXT)
+	test ! -f disclaim_test$(EXEEXT) || ./disclaim_test$(EXEEXT)
+	test ! -f disclaim_weakmap_test$(EXEEXT) || ./disclaim_weakmap_test$(EXEEXT)
+	test ! -f initsecondarythread_test$(EXEEXT) \
+	  || ./initsecondarythread_test$(EXEEXT)
+	test ! -f test_atomic_ops$(EXEEXT) || ./test_atomic_ops$(EXEEXT)
+	test ! -f threadkey_test$(EXEEXT) || ./threadkey_test$(EXEEXT)
+	test ! -f threadleaktest$(EXEEXT) || ./threadleaktest$(EXEEXT)
+	test ! -f subthreadcreate_test$(EXEEXT) || ./subthreadcreate_test$(EXEEXT)
+	test ! -f test_cpp$(EXEEXT) || ./test_cpp$(EXEEXT)
+	test ! -f tracetest$(EXEEXT) || ./tracetest$(EXEEXT)
+	./cordtest$(EXEEXT)

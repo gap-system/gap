@@ -16,6 +16,14 @@
 #define MISSING(name) \
   printf("Missing: %s\n", #name "XX")
 
+#if defined(CPPCHECK)
+  void list_atomicXX(void);
+  void char_list_atomicXX(void);
+  void short_list_atomicXX(void);
+  void int_list_atomicXX(void);
+  void double_list_atomicXX(void);
+#endif
+
 void test_atomicXX(void)
 {
   AO_t x;
@@ -28,17 +36,24 @@ void test_atomicXX(void)
 # if defined(AO_HAVE_double_compare_and_swapXX) \
      || defined(AO_HAVE_double_loadXX) \
      || defined(AO_HAVE_double_storeXX)
-    AO_double_t old_w;
+    static AO_double_t old_w; /* static to avoid misalignment */
     AO_double_t new_w;
 # endif
 # if defined(AO_HAVE_compare_and_swap_doubleXX) \
      || defined(AO_HAVE_compare_double_and_swap_doubleXX) \
      || defined(AO_HAVE_double_compare_and_swapXX)
-    AO_double_t w;
+    static AO_double_t w; /* static to avoid misalignment */
     w.AO_val1 = 0;
     w.AO_val2 = 0;
 # endif
 
+# if defined(CPPCHECK)
+    list_atomicXX();
+    char_list_atomicXX();
+    short_list_atomicXX();
+    int_list_atomicXX();
+    double_list_atomicXX();
+# endif
 # if defined(AO_HAVE_nopXX)
     AO_nopXX();
 # elif !defined(AO_HAVE_nop) || !defined(AO_HAVE_nop_full) \
@@ -46,8 +61,12 @@ void test_atomicXX(void)
     MISSING(AO_nop);
 # endif
 # if defined(AO_HAVE_storeXX)
+#   if (defined(AO_MEMORY_SANITIZER) || defined(LINT2)) \
+       && defined(AO_PREFER_GENERALIZED)
+      *(volatile AO_t *)&x = 0; /* initialize to avoid false warning */
+#   endif
     AO_storeXX(&x, 13);
-    TA_assert (x == 13);
+    TA_assert(x == 13);
 # else
 #   if !defined(AO_HAVE_store) || !defined(AO_HAVE_store_full) \
        || !defined(AO_HAVE_store_release) \
@@ -66,9 +85,9 @@ void test_atomicXX(void)
     MISSING(AO_load);
 # endif
 # if defined(AO_HAVE_test_and_setXX)
-    assert(AO_test_and_setXX(&z) == AO_TS_CLEAR);
-    assert(AO_test_and_setXX(&z) == AO_TS_SET);
-    assert(AO_test_and_setXX(&z) == AO_TS_SET);
+    TA_assert(AO_test_and_setXX(&z) == AO_TS_CLEAR);
+    TA_assert(AO_test_and_setXX(&z) == AO_TS_SET);
+    TA_assert(AO_test_and_setXX(&z) == AO_TS_SET);
     AO_CLEAR(&z);
 # else
     MISSING(AO_test_and_set);
@@ -92,6 +111,10 @@ void test_atomicXX(void)
     --x;
 # endif
 # if defined(AO_HAVE_short_storeXX)
+#   if (defined(AO_MEMORY_SANITIZER) || defined(LINT2)) \
+       && defined(AO_PREFER_GENERALIZED)
+      *(volatile short *)&s = 0;
+#   endif
     AO_short_storeXX(&s, 13);
 # else
 #   if !defined(AO_HAVE_short_store) || !defined(AO_HAVE_short_store_full) \
@@ -129,7 +152,12 @@ void test_atomicXX(void)
     MISSING(AO_short_fetch_and_sub1);
     --s;
 # endif
+  TA_assert(*(volatile short *)&s == 13);
 # if defined(AO_HAVE_char_storeXX)
+#   if (defined(AO_MEMORY_SANITIZER) || defined(LINT2)) \
+       && defined(AO_PREFER_GENERALIZED)
+      *(volatile char *)&b = 0;
+#   endif
     AO_char_storeXX(&b, 13);
 # else
 #   if !defined(AO_HAVE_char_store) || !defined(AO_HAVE_char_store_full) \
@@ -166,7 +194,12 @@ void test_atomicXX(void)
     MISSING(AO_char_fetch_and_sub1);
     --b;
 # endif
+  TA_assert(*(volatile char *)&b == 13);
 # if defined(AO_HAVE_int_storeXX)
+#   if (defined(AO_MEMORY_SANITIZER) || defined(LINT2)) \
+       && defined(AO_PREFER_GENERALIZED)
+      *(volatile int *)&zz = 0;
+#   endif
     AO_int_storeXX(&zz, 13);
 # else
 #   if !defined(AO_HAVE_int_store) || !defined(AO_HAVE_int_store_full) \
@@ -203,6 +236,7 @@ void test_atomicXX(void)
     MISSING(AO_int_fetch_and_sub1);
     --zz;
 # endif
+  TA_assert(*(volatile int *)&zz == 13);
 # if defined(AO_HAVE_compare_and_swapXX)
     TA_assert(!AO_compare_and_swapXX(&x, 14, 42));
     TA_assert(x == 13);
@@ -210,41 +244,241 @@ void test_atomicXX(void)
     TA_assert(x == 42);
 # else
     MISSING(AO_compare_and_swap);
-    if (x == 13) x = 42;
+    if (*(volatile AO_t *)&x == 13) x = 42;
 # endif
 # if defined(AO_HAVE_orXX)
     AO_orXX(&x, 66);
     TA_assert(x == 106);
 # else
-    MISSING(AO_or);
+#   if !defined(AO_HAVE_or) || !defined(AO_HAVE_or_acquire) \
+       || !defined(AO_HAVE_or_acquire_read) || !defined(AO_HAVE_or_full) \
+       || !defined(AO_HAVE_or_read) || !defined(AO_HAVE_or_release) \
+       || !defined(AO_HAVE_or_release_write) || !defined(AO_HAVE_or_write)
+      MISSING(AO_or);
+#   endif
     x |= 66;
 # endif
 # if defined(AO_HAVE_xorXX)
     AO_xorXX(&x, 181);
     TA_assert(x == 223);
 # else
-    MISSING(AO_xor);
+#   if !defined(AO_HAVE_xor) || !defined(AO_HAVE_xor_acquire) \
+       || !defined(AO_HAVE_xor_acquire_read) || !defined(AO_HAVE_xor_full) \
+       || !defined(AO_HAVE_xor_read) || !defined(AO_HAVE_xor_release) \
+       || !defined(AO_HAVE_xor_release_write) || !defined(AO_HAVE_xor_write)
+      MISSING(AO_xor);
+#   endif
     x ^= 181;
 # endif
 # if defined(AO_HAVE_andXX)
     AO_andXX(&x, 57);
     TA_assert(x == 25);
 # else
-    MISSING(AO_and);
+#   if !defined(AO_HAVE_and) || !defined(AO_HAVE_and_acquire) \
+       || !defined(AO_HAVE_and_acquire_read) || !defined(AO_HAVE_and_full) \
+       || !defined(AO_HAVE_and_read) || !defined(AO_HAVE_and_release) \
+       || !defined(AO_HAVE_and_release_write) || !defined(AO_HAVE_and_write)
+      MISSING(AO_and);
+#   endif
     x &= 57;
 # endif
 # if defined(AO_HAVE_fetch_compare_and_swapXX)
     TA_assert(AO_fetch_compare_and_swapXX(&x, 14, 117) == 25);
     TA_assert(x == 25);
     TA_assert(AO_fetch_compare_and_swapXX(&x, 25, 117) == 25);
-    TA_assert(x == 117);
 # else
     MISSING(AO_fetch_compare_and_swap);
     if (x == 25) x = 117;
 # endif
-# if defined(AO_HAVE_double_loadXX)
+  TA_assert(x == 117);
+# if defined(AO_HAVE_short_compare_and_swapXX)
+    TA_assert(!AO_short_compare_and_swapXX(&s, 14, 42));
+    TA_assert(s == 13);
+    TA_assert(AO_short_compare_and_swapXX(&s, 13, 42));
+    TA_assert(s == 42);
+# else
+    MISSING(AO_short_compare_and_swap);
+    if (*(volatile short *)&s == 13) s = 42;
+# endif
+# if defined(AO_HAVE_short_orXX)
+    AO_short_orXX(&s, 66);
+    TA_assert(s == 106);
+# else
+#   if !defined(AO_HAVE_short_or) || !defined(AO_HAVE_short_or_acquire) \
+       || !defined(AO_HAVE_short_or_acquire_read) \
+       || !defined(AO_HAVE_short_or_full) || !defined(AO_HAVE_short_or_read) \
+       || !defined(AO_HAVE_short_or_release) \
+       || !defined(AO_HAVE_short_or_release_write) \
+       || !defined(AO_HAVE_short_or_write)
+      MISSING(AO_short_or);
+#   endif
+    s |= 66;
+# endif
+# if defined(AO_HAVE_short_xorXX)
+    AO_short_xorXX(&s, 181);
+    TA_assert(s == 223);
+# else
+#   if !defined(AO_HAVE_short_xor) || !defined(AO_HAVE_short_xor_acquire) \
+       || !defined(AO_HAVE_short_xor_acquire_read) \
+       || !defined(AO_HAVE_short_xor_full) \
+       || !defined(AO_HAVE_short_xor_read) \
+       || !defined(AO_HAVE_short_xor_release) \
+       || !defined(AO_HAVE_short_xor_release_write) \
+       || !defined(AO_HAVE_short_xor_write)
+      MISSING(AO_short_xor);
+#   endif
+    s ^= 181;
+# endif
+# if defined(AO_HAVE_short_andXX)
+    AO_short_andXX(&s, 57);
+    TA_assert(s == 25);
+# else
+#   if !defined(AO_HAVE_short_and) || !defined(AO_HAVE_short_and_acquire) \
+       || !defined(AO_HAVE_short_and_acquire_read) \
+       || !defined(AO_HAVE_short_and_full) \
+       || !defined(AO_HAVE_short_and_read) \
+       || !defined(AO_HAVE_short_and_release) \
+       || !defined(AO_HAVE_short_and_release_write) \
+       || !defined(AO_HAVE_short_and_write)
+      MISSING(AO_short_and);
+#   endif
+    s &= 57;
+# endif
+# if defined(AO_HAVE_short_fetch_compare_and_swapXX)
+    TA_assert(AO_short_fetch_compare_and_swapXX(&s, 14, 117) == 25);
+    TA_assert(s == 25);
+    TA_assert(AO_short_fetch_compare_and_swapXX(&s, 25, 117) == 25);
+# else
+    MISSING(AO_short_fetch_compare_and_swap);
+    if (s == 25) s = 117;
+# endif
+  TA_assert(s == 117);
+# if defined(AO_HAVE_char_compare_and_swapXX)
+    TA_assert(!AO_char_compare_and_swapXX(&b, 14, 42));
+    TA_assert(b == 13);
+    TA_assert(AO_char_compare_and_swapXX(&b, 13, 42));
+    TA_assert(b == 42);
+# else
+    MISSING(AO_char_compare_and_swap);
+    if (*(volatile char *)&b == 13) b = 42;
+# endif
+# if defined(AO_HAVE_char_orXX)
+    AO_char_orXX(&b, 66);
+    TA_assert(b == 106);
+# else
+#   if !defined(AO_HAVE_char_or) || !defined(AO_HAVE_char_or_acquire) \
+       || !defined(AO_HAVE_char_or_acquire_read) \
+       || !defined(AO_HAVE_char_or_full) || !defined(AO_HAVE_char_or_read) \
+       || !defined(AO_HAVE_char_or_release) \
+       || !defined(AO_HAVE_char_or_release_write) \
+       || !defined(AO_HAVE_char_or_write)
+      MISSING(AO_char_or);
+#   endif
+    b |= 66;
+# endif
+# if defined(AO_HAVE_char_xorXX)
+    AO_char_xorXX(&b, 181);
+    TA_assert(b == 223);
+# else
+#   if !defined(AO_HAVE_char_xor) || !defined(AO_HAVE_char_xor_acquire) \
+       || !defined(AO_HAVE_char_xor_acquire_read) \
+       || !defined(AO_HAVE_char_xor_full) || !defined(AO_HAVE_char_xor_read) \
+       || !defined(AO_HAVE_char_xor_release) \
+       || !defined(AO_HAVE_char_xor_release_write) \
+       || !defined(AO_HAVE_char_xor_write)
+      MISSING(AO_char_xor);
+#   endif
+    b ^= 181;
+# endif
+# if defined(AO_HAVE_char_andXX)
+    AO_char_andXX(&b, 57);
+    TA_assert(b == 25);
+# else
+#   if !defined(AO_HAVE_char_and) || !defined(AO_HAVE_char_and_acquire) \
+       || !defined(AO_HAVE_char_and_acquire_read) \
+       || !defined(AO_HAVE_char_and_full) || !defined(AO_HAVE_char_and_read) \
+       || !defined(AO_HAVE_char_and_release) \
+       || !defined(AO_HAVE_char_and_release_write) \
+       || !defined(AO_HAVE_char_and_write)
+      MISSING(AO_char_and);
+#   endif
+    b &= 57;
+# endif
+# if defined(AO_HAVE_char_fetch_compare_and_swapXX)
+    TA_assert(AO_char_fetch_compare_and_swapXX(&b, 14, 117) == 25);
+    TA_assert(b == 25);
+    TA_assert(AO_char_fetch_compare_and_swapXX(&b, 25, 117) == 25);
+# else
+    MISSING(AO_char_fetch_compare_and_swap);
+    if (b == 25) b = 117;
+# endif
+  TA_assert(b == 117);
+# if defined(AO_HAVE_int_compare_and_swapXX)
+    TA_assert(!AO_int_compare_and_swapXX(&zz, 14, 42));
+    TA_assert(zz == 13);
+    TA_assert(AO_int_compare_and_swapXX(&zz, 13, 42));
+    TA_assert(zz == 42);
+# else
+    MISSING(AO_int_compare_and_swap);
+    if (*(volatile int *)&zz == 13) zz = 42;
+# endif
+# if defined(AO_HAVE_int_orXX)
+    AO_int_orXX(&zz, 66);
+    TA_assert(zz == 106);
+# else
+#   if !defined(AO_HAVE_int_or) || !defined(AO_HAVE_int_or_acquire) \
+       || !defined(AO_HAVE_int_or_acquire_read) \
+       || !defined(AO_HAVE_int_or_full) || !defined(AO_HAVE_int_or_read) \
+       || !defined(AO_HAVE_int_or_release) \
+       || !defined(AO_HAVE_int_or_release_write) \
+       || !defined(AO_HAVE_int_or_write)
+      MISSING(AO_int_or);
+#   endif
+    zz |= 66;
+# endif
+# if defined(AO_HAVE_int_xorXX)
+    AO_int_xorXX(&zz, 181);
+    TA_assert(zz == 223);
+# else
+#   if !defined(AO_HAVE_int_xor) || !defined(AO_HAVE_int_xor_acquire) \
+       || !defined(AO_HAVE_int_xor_acquire_read) \
+       || !defined(AO_HAVE_int_xor_full) || !defined(AO_HAVE_int_xor_read) \
+       || !defined(AO_HAVE_int_xor_release) \
+       || !defined(AO_HAVE_int_xor_release_write) \
+       || !defined(AO_HAVE_int_xor_write)
+      MISSING(AO_int_xor);
+#   endif
+    zz ^= 181;
+# endif
+# if defined(AO_HAVE_int_andXX)
+    AO_int_andXX(&zz, 57);
+    TA_assert(zz == 25);
+# else
+#   if !defined(AO_HAVE_int_and) || !defined(AO_HAVE_int_and_acquire) \
+       || !defined(AO_HAVE_int_and_acquire_read) \
+       || !defined(AO_HAVE_int_and_full) || !defined(AO_HAVE_int_and_read) \
+       || !defined(AO_HAVE_int_and_release) \
+       || !defined(AO_HAVE_int_and_release_write) \
+       || !defined(AO_HAVE_int_and_write)
+      MISSING(AO_int_and);
+#   endif
+    zz &= 57;
+# endif
+# if defined(AO_HAVE_int_fetch_compare_and_swapXX)
+    TA_assert(AO_int_fetch_compare_and_swapXX(&zz, 14, 117) == 25);
+    TA_assert(zz == 25);
+    TA_assert(AO_int_fetch_compare_and_swapXX(&zz, 25, 117) == 25);
+# else
+    MISSING(AO_int_fetch_compare_and_swap);
+    if (zz == 25) zz = 117;
+# endif
+  TA_assert(zz == 117);
+# if defined(AO_HAVE_double_loadXX) || defined(AO_HAVE_double_storeXX)
+    /* Initialize old_w even for store to workaround MSan warning.      */
     old_w.AO_val1 = 3316;
     old_w.AO_val2 = 2921;
+# endif
+# if defined(AO_HAVE_double_loadXX)
     new_w = AO_double_loadXX(&old_w);
     TA_assert(new_w.AO_val1 == 3316 && new_w.AO_val2 == 2921);
 # elif !defined(AO_HAVE_double_load) \

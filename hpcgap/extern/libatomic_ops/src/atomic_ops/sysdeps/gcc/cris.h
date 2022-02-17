@@ -38,7 +38,7 @@
  * http://developer.axis.com/doc/hardware/etrax100lx/prog_man/
  *      1_architectural_description.pdf
  *
- * Presumably many other primitives (notably CAS, including the double-
+ * TODO: Presumably many other primitives (notably CAS, including the double-
  * width versions) could be implemented in this manner, if someone got
  * around to it.
  */

@@ -23,7 +23,9 @@
 #include "../test_and_set_t_is_ao_t.h" /* Probably suboptimal */
 
 #if __TARGET_ARCH_ARM < 6
-Dont use with ARM instruction sets lower than v6
+# if !defined(CPPCHECK)
+#   error Do not use with ARM instruction sets lower than v6
+# endif
 #else
 
 #define AO_ACCESS_CHECK_ALIGNED
@@ -50,8 +52,8 @@ AO_nop_full(void)
 {
 # ifndef AO_UNIPROCESSOR
     unsigned int dest=0;
-    /* issue an data memory barrier (keeps ordering of memory transactions */
-    /* before and after this operation)                                    */
+    /* Issue a data memory barrier (keeps ordering of memory transactions  */
+    /* before and after this operation).                                   */
     __asm {
             mcr p15,0,dest,c7,c10,5
             };
@@ -98,7 +100,6 @@ __asm {
 #ifndef AO_PREFER_GENERALIZED
 AO_INLINE AO_TS_VAL_t
 AO_test_and_set(volatile AO_TS_t *addr) {
-
         AO_TS_VAL_t oldval;
         unsigned long tmp;
         unsigned long one = 1;

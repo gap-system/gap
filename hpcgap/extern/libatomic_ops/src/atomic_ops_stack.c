@@ -22,6 +22,18 @@
 #define AO_REQUIRE_CAS
 #include "atomic_ops_stack.h"
 
+/* This function call must be a part of a do-while loop with a CAS      */
+/* designating the condition of the loop (see the use cases below).     */
+#ifdef AO_THREAD_SANITIZER
+  AO_ATTR_NO_SANITIZE_THREAD
+  static void store_before_cas(AO_t *addr, AO_t value)
+  {
+    *addr = value;
+  }
+#else
+# define store_before_cas(addr, value) (void)(*(addr) = (value))
+#endif
+
 #ifdef AO_USE_ALMOST_LOCK_FREE
 
   void AO_pause(int); /* defined in atomic_ops.c */
@@ -46,9 +58,8 @@
 /* to be inserted.                                                      */
 /* Both list headers and link fields contain "perturbed" pointers, i.e. */
 /* pointers with extra bits "or"ed into the low order bits.             */
-void
-AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
-                                   AO_stack_aux *a)
+void AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
+                                        AO_stack_aux *a)
 {
   AO_t x_bits = (AO_t)x;
   AO_t next;
@@ -59,8 +70,8 @@ AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
 # if AO_BL_SIZE == 2
   {
     /* Start all loads as close to concurrently as possible. */
-    AO_t entry1 = AO_load(a -> AO_stack_bl);
-    AO_t entry2 = AO_load(a -> AO_stack_bl + 1);
+    AO_t entry1 = AO_load(&a->AO_stack_bl[0]);
+    AO_t entry2 = AO_load(&a->AO_stack_bl[1]);
     if (entry1 == x_bits || entry2 == x_bits)
       {
         /* Entry is currently being removed.  Change it a little.       */
@@ -77,7 +88,7 @@ AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
     int i;
     for (i = 0; i < AO_BL_SIZE; ++i)
       {
-        if (AO_load(a -> AO_stack_bl + i) == x_bits)
+        if (AO_load(&a->AO_stack_bl[i]) == x_bits)
           {
             /* Entry is currently being removed.  Change it a little.   */
               ++x_bits;
@@ -94,7 +105,7 @@ AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
   do
     {
       next = AO_load(list);
-      *x = next;
+      store_before_cas(x, next);
     }
   while (AO_EXPECT_FALSE(!AO_compare_and_swap_release(list, next, x_bits)));
 }
@@ -113,6 +124,21 @@ AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
 # define PRECHECK(a) (a) == 0 &&
 #else
 # define PRECHECK(a)
+#endif
+
+/* This function is used before CAS in the below AO_stack_pop() and the */
+/* data race (reported by TSan) is OK because it results in a retry.    */
+#ifdef AO_THREAD_SANITIZER
+  AO_ATTR_NO_SANITIZE_THREAD
+  static AO_t AO_load_next(const volatile AO_t *first_ptr)
+  {
+    /* Assuming an architecture on which loads of word type are atomic. */
+    /* AO_load cannot be used here because it cannot be instructed to   */
+    /* suppress the warning about the race.                             */
+    return *first_ptr;
+  }
+#else
+# define AO_load_next AO_load
 #endif
 
 AO_t *
@@ -143,7 +169,10 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
         }
     }
   assert(i < AO_BL_SIZE);
-  assert(a -> AO_stack_bl[i] == first);
+# ifndef AO_THREAD_SANITIZER
+    assert(a -> AO_stack_bl[i] == first);
+                                /* No actual race with the above CAS.   */
+# endif
   /* First is on the auxiliary black list.  It may be removed by        */
   /* another thread before we get to it, but a new insertion of x       */
   /* cannot be started here.                                            */
@@ -152,18 +181,21 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
   /* list.  Otherwise it's possible that a reinsertion of it was        */
   /* already started before we added the black list entry.              */
 # if defined(__alpha__) && (__GNUC__ == 4)
-    if (first != AO_load(list))
+    if (first != AO_load_acquire(list))
                         /* Workaround __builtin_expect bug found in     */
                         /* gcc-4.6.3/alpha causing test_stack failure.  */
 # else
-    if (AO_EXPECT_FALSE(first != AO_load(list)))
+    if (AO_EXPECT_FALSE(first != AO_load_acquire(list)))
+                        /* Workaround test failure on AIX, at least, by */
+                        /* using acquire ordering semantics for this    */
+                        /* load.  Probably, it is not the right fix.    */
 # endif
   {
     AO_store_release(a->AO_stack_bl+i, 0);
     goto retry;
   }
   first_ptr = AO_REAL_NEXT_PTR(first);
-  next = AO_load(first_ptr);
+  next = AO_load_next(first_ptr);
 # if defined(__alpha__) && (__GNUC__ == 4)
     if (!AO_compare_and_swap_release(list, first, next))
 # else
@@ -173,7 +205,9 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
     AO_store_release(a->AO_stack_bl+i, 0);
     goto retry;
   }
-  assert(*list != first);
+# ifndef AO_THREAD_SANITIZER
+    assert(*list != first); /* No actual race with the above CAS.       */
+# endif
   /* Since we never insert an entry on the black list, this cannot have */
   /* succeeded unless first remained on the list while we were running. */
   /* Thus its next link cannot have changed out from under us, and we   */
@@ -189,11 +223,38 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux * a)
 
 #else /* ! USE_ALMOST_LOCK_FREE */
 
+/* The functionality is the same as of AO_load_next but the atomicity   */
+/* is not needed.  The usage is similar to that of store_before_cas.    */
+#if defined(AO_THREAD_SANITIZER) \
+    && (defined(AO_HAVE_compare_and_swap_double) \
+        || defined(AO_HAVE_compare_double_and_swap_double))
+  /* TODO: If compiled by Clang (as of clang-4.0) with -O3 flag,        */
+  /* no_sanitize attribute is ignored unless the argument is volatile.  */
+# if defined(__clang__)
+#   define LOAD_BEFORE_CAS_VOLATILE volatile
+# else
+#   define LOAD_BEFORE_CAS_VOLATILE /* empty */
+# endif
+  AO_ATTR_NO_SANITIZE_THREAD
+  static AO_t load_before_cas(const LOAD_BEFORE_CAS_VOLATILE AO_t *addr)
+  {
+    return *addr;
+  }
+#else
+# define load_before_cas(addr) (*(addr))
+#endif
+
 /* Better names for fields in AO_stack_t */
 #define ptr AO_val2
 #define version AO_val1
 
-#if defined(AO_HAVE_compare_double_and_swap_double)
+#if defined(AO_HAVE_compare_double_and_swap_double) \
+    && !(defined(AO_STACK_PREFER_CAS_DOUBLE) \
+         && defined(AO_HAVE_compare_and_swap_double))
+
+#ifdef LINT2
+  volatile /* non-static */ AO_t AO_noop_sink;
+#endif
 
 void AO_stack_push_release(AO_stack_t *list, AO_t *element)
 {
@@ -201,18 +262,22 @@ void AO_stack_push_release(AO_stack_t *list, AO_t *element)
 
     do {
       next = AO_load(&(list -> ptr));
-      *element = next;
+      store_before_cas(element, next);
     } while (AO_EXPECT_FALSE(!AO_compare_and_swap_release(&(list -> ptr),
                                                       next, (AO_t)element)));
     /* This uses a narrow CAS here, an old optimization suggested       */
     /* by Treiber.  Pop is still safe, since we run into the ABA        */
     /* problem only if there were both intervening "pop"s and "push"es. */
     /* In that case we still see a change in the version number.        */
+#   ifdef LINT2
+      /* Instruct static analyzer that element is not lost. */
+      AO_noop_sink = (AO_t)element;
+#   endif
 }
 
 AO_t *AO_stack_pop_acquire(AO_stack_t *list)
 {
-#   ifdef __clang__
+#   if defined(__clang__) && !AO_CLANG_PREREQ(3, 5)
       AO_t *volatile cptr;
                         /* Use volatile to workaround a bug in          */
                         /* clang-1.1/x86 causing test_stack failure.    */
@@ -226,8 +291,9 @@ AO_t *AO_stack_pop_acquire(AO_stack_t *list)
       /* Version must be loaded first.  */
       cversion = AO_load_acquire(&(list -> version));
       cptr = (AO_t *)AO_load(&(list -> ptr));
-      if (cptr == 0) return 0;
-      next = *cptr;
+      if (NULL == cptr)
+        return NULL;
+      next = load_before_cas((AO_t *)cptr);
     } while (AO_EXPECT_FALSE(!AO_compare_double_and_swap_double_release(list,
                                         cversion, (AO_t)cptr,
                                         cversion+1, (AO_t)next)));
@@ -238,8 +304,7 @@ AO_t *AO_stack_pop_acquire(AO_stack_t *list)
 #elif defined(AO_HAVE_compare_and_swap_double)
 
 /* Needed for future IA64 processors.  No current clients? */
-
-#error Untested!  Probably doesnt work.
+/* TODO: Not tested thoroughly. */
 
 /* We have a wide CAS, but only does an AO_t-wide comparison.   */
 /* We can't use the Treiber optimization, since we only check   */
@@ -247,13 +312,14 @@ AO_t *AO_stack_pop_acquire(AO_stack_t *list)
 void AO_stack_push_release(AO_stack_t *list, AO_t *element)
 {
     AO_t version;
-    AO_t next_ptr;
 
     do {
+      AO_t next_ptr;
+
       /* Again version must be loaded first, for different reason.      */
       version = AO_load_acquire(&(list -> version));
       next_ptr = AO_load(&(list -> ptr));
-      *element = next_ptr;
+      store_before_cas(element, next_ptr);
     } while (!AO_compare_and_swap_double_release(
                            list, version,
                            version+1, (AO_t) element));
@@ -268,13 +334,14 @@ AO_t *AO_stack_pop_acquire(AO_stack_t *list)
     do {
       cversion = AO_load_acquire(&(list -> version));
       cptr = (AO_t *)AO_load(&(list -> ptr));
-      if (cptr == 0) return 0;
-      next = *cptr;
-    } while (!AO_compare_double_and_swap_double_release
-                    (list, cversion, (AO_t) cptr, cversion+1, next));
+      if (NULL == cptr)
+        return NULL;
+      next = load_before_cas(cptr);
+    } while (!AO_compare_double_and_swap_double_release(list,
+                                                cversion, (AO_t)cptr,
+                                                cversion+1, next));
     return cptr;
 }
-
 
 #endif /* AO_HAVE_compare_and_swap_double */
 

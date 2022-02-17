@@ -37,40 +37,39 @@
 # include "../test_and_set_t_is_ao_t.h"
 #endif
 
-#include <windows.h>
-        /* Seems like over-kill, but that's what MSDN recommends.       */
-        /* And apparently winbase.h is not always self-contained.       */
-
 /* Assume _MSC_VER >= 1400 */
 #include <intrin.h>
 
-#pragma intrinsic (_InterlockedExchangeAdd)
+#pragma intrinsic (_InterlockedCompareExchange)
 #pragma intrinsic (_InterlockedCompareExchange64)
 
 #ifndef AO_PREFER_GENERALIZED
 
+# pragma intrinsic (_InterlockedIncrement)
 # pragma intrinsic (_InterlockedIncrement64)
+# pragma intrinsic (_InterlockedDecrement)
 # pragma intrinsic (_InterlockedDecrement64)
+# pragma intrinsic (_InterlockedExchangeAdd)
 # pragma intrinsic (_InterlockedExchangeAdd64)
 
 AO_INLINE AO_t
 AO_fetch_and_add_full (volatile AO_t *p, AO_t incr)
 {
-  return _InterlockedExchangeAdd64((LONGLONG volatile *)p, (LONGLONG)incr);
+  return _InterlockedExchangeAdd64((__int64 volatile *)p, incr);
 }
 #define AO_HAVE_fetch_and_add_full
 
 AO_INLINE AO_t
 AO_fetch_and_add1_full (volatile AO_t *p)
 {
-  return _InterlockedIncrement64((LONGLONG volatile *)p) - 1;
+  return _InterlockedIncrement64((__int64 volatile *)p) - 1;
 }
 #define AO_HAVE_fetch_and_add1_full
 
 AO_INLINE AO_t
 AO_fetch_and_sub1_full (volatile AO_t *p)
 {
-  return _InterlockedDecrement64((LONGLONG volatile *)p) + 1;
+  return _InterlockedDecrement64((__int64 volatile *)p) + 1;
 }
 #define AO_HAVE_fetch_and_sub1_full
 #endif /* !AO_PREFER_GENERALIZED */
@@ -79,19 +78,134 @@ AO_INLINE AO_t
 AO_fetch_compare_and_swap_full(volatile AO_t *addr, AO_t old_val,
                                AO_t new_val)
 {
-  return (AO_t)_InterlockedCompareExchange64((LONGLONG volatile *)addr,
-                                        (LONGLONG)new_val, (LONGLONG)old_val);
+  return (AO_t)_InterlockedCompareExchange64((__int64 volatile *)addr,
+                                             new_val, old_val);
 }
 #define AO_HAVE_fetch_compare_and_swap_full
 
 AO_INLINE unsigned int
+AO_int_fetch_compare_and_swap_full(volatile unsigned int *addr,
+                                   unsigned int old_val, unsigned int new_val)
+{
+  return _InterlockedCompareExchange((long volatile *)addr, new_val, old_val);
+}
+#define AO_HAVE_int_fetch_compare_and_swap_full
+
+#ifndef AO_PREFER_GENERALIZED
+AO_INLINE unsigned int
 AO_int_fetch_and_add_full(volatile unsigned int *p, unsigned int incr)
 {
-  return _InterlockedExchangeAdd((LONG volatile *)p, incr);
+  return _InterlockedExchangeAdd((long volatile *)p, incr);
 }
 #define AO_HAVE_int_fetch_and_add_full
 
-#ifdef AO_ASM_X64_AVAILABLE
+  AO_INLINE unsigned int
+  AO_int_fetch_and_add1_full(volatile unsigned int *p)
+  {
+    return _InterlockedIncrement((long volatile *)p) - 1;
+  }
+# define AO_HAVE_int_fetch_and_add1_full
+
+  AO_INLINE unsigned int
+  AO_int_fetch_and_sub1_full(volatile unsigned int *p)
+  {
+    return _InterlockedDecrement((long volatile *)p) + 1;
+  }
+# define AO_HAVE_int_fetch_and_sub1_full
+#endif /* !AO_PREFER_GENERALIZED */
+
+#if _MSC_VER > 1400
+# pragma intrinsic (_InterlockedAnd8)
+# pragma intrinsic (_InterlockedCompareExchange16)
+# pragma intrinsic (_InterlockedOr8)
+# pragma intrinsic (_InterlockedXor8)
+
+  AO_INLINE void
+  AO_char_and_full(volatile unsigned char *p, unsigned char value)
+  {
+    _InterlockedAnd8((char volatile *)p, value);
+  }
+# define AO_HAVE_char_and_full
+
+  AO_INLINE void
+  AO_char_or_full(volatile unsigned char *p, unsigned char value)
+  {
+    _InterlockedOr8((char volatile *)p, value);
+  }
+# define AO_HAVE_char_or_full
+
+  AO_INLINE void
+  AO_char_xor_full(volatile unsigned char *p, unsigned char value)
+  {
+    _InterlockedXor8((char volatile *)p, value);
+  }
+# define AO_HAVE_char_xor_full
+
+  AO_INLINE unsigned short
+  AO_short_fetch_compare_and_swap_full(volatile unsigned short *addr,
+                                       unsigned short old_val,
+                                       unsigned short new_val)
+  {
+    return _InterlockedCompareExchange16((short volatile *)addr,
+                                         new_val, old_val);
+  }
+# define AO_HAVE_short_fetch_compare_and_swap_full
+
+# ifndef AO_PREFER_GENERALIZED
+#   pragma intrinsic (_InterlockedIncrement16)
+#   pragma intrinsic (_InterlockedDecrement16)
+
+    AO_INLINE unsigned short
+    AO_short_fetch_and_add1_full(volatile unsigned short *p)
+    {
+      return _InterlockedIncrement16((short volatile *)p) - 1;
+    }
+#   define AO_HAVE_short_fetch_and_add1_full
+
+    AO_INLINE unsigned short
+    AO_short_fetch_and_sub1_full(volatile unsigned short *p)
+    {
+      return _InterlockedDecrement16((short volatile *)p) + 1;
+    }
+#   define AO_HAVE_short_fetch_and_sub1_full
+# endif /* !AO_PREFER_GENERALIZED */
+#endif /* _MSC_VER > 1400 */
+
+#if _MSC_VER >= 1800 /* Visual Studio 2013+ */
+
+# pragma intrinsic (_InterlockedCompareExchange8)
+
+  AO_INLINE unsigned char
+  AO_char_fetch_compare_and_swap_full(volatile unsigned char *addr,
+                                      unsigned char old_val,
+                                      unsigned char new_val)
+  {
+    return _InterlockedCompareExchange8((char volatile *)addr,
+                                        new_val, old_val);
+  }
+# define AO_HAVE_char_fetch_compare_and_swap_full
+
+# ifndef AO_PREFER_GENERALIZED
+#   pragma intrinsic (_InterlockedExchangeAdd16)
+#   pragma intrinsic (_InterlockedExchangeAdd8)
+
+    AO_INLINE unsigned char
+    AO_char_fetch_and_add_full(volatile unsigned char *p, unsigned char incr)
+    {
+      return _InterlockedExchangeAdd8((char volatile *)p, incr);
+    }
+#   define AO_HAVE_char_fetch_and_add_full
+
+    AO_INLINE unsigned short
+    AO_short_fetch_and_add_full(volatile unsigned short *p,
+                                unsigned short incr)
+    {
+      return _InterlockedExchangeAdd16((short volatile *)p, incr);
+    }
+#   define AO_HAVE_short_fetch_and_add_full
+# endif /* !AO_PREFER_GENERALIZED */
+
+#elif defined(AO_ASM_X64_AVAILABLE)
 
   AO_INLINE unsigned char
   AO_char_fetch_and_add_full(volatile unsigned char *p, unsigned char incr)
@@ -116,6 +230,10 @@ AO_int_fetch_and_add_full(volatile unsigned int *p, unsigned int incr)
     }
   }
 # define AO_HAVE_short_fetch_and_add_full
+
+#endif /* _MSC_VER < 1800 && AO_ASM_X64_AVAILABLE */
+
+#ifdef AO_ASM_X64_AVAILABLE
 
 /* As far as we can tell, the lfence and sfence instructions are not    */
 /* currently needed or useful for cached memory accesses.               */
@@ -159,6 +277,8 @@ AO_compare_double_and_swap_double_full(volatile AO_double_t *addr,
                                        AO_t new_val1, AO_t new_val2)
 {
    __int64 comparandResult[2];
+
+   AO_ASSERT_ADDR_ALIGNED(addr);
    comparandResult[0] = old_val1; /* low */
    comparandResult[1] = old_val2; /* high */
    return _InterlockedCompareExchange128((volatile __int64 *)addr,

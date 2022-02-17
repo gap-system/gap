@@ -24,7 +24,14 @@
 /* short, and unsigned int loads and stores are atomic but only if data */
 /* is suitably aligned.                                                 */
 
-#define AO_ACCESS_CHECK_ALIGNED
+#if defined(__m68k__) && !defined(AO_ALIGNOF_SUPPORTED)
+  /* Even though AO_t is redefined in m68k.h, some clients use AO       */
+  /* pointer size primitives to access variables not declared as AO_t.  */
+  /* Such variables may have 2-byte alignment, while their sizeof is 4. */
+#else
+# define AO_ACCESS_CHECK_ALIGNED
+#endif
+
 /* Check for char type is a misnomer.   */
 #define AO_ACCESS_short_CHECK_ALIGNED
 #define AO_ACCESS_int_CHECK_ALIGNED

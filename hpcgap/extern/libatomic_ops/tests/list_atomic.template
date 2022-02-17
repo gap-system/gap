@@ -11,6 +11,8 @@
 
 /* The result will not link or run.                                     */
 
+#include <stdlib.h> /* for exit() */
+
 void XSIZE_list_atomicXX(void)
 {
 # if defined(AO_HAVE_XSIZE_loadXX) || defined(AO_HAVE_XSIZE_storeXX) \
@@ -31,7 +33,7 @@ void XSIZE_list_atomicXX(void)
     static XCTYPE newval /* = 0 */;
 # endif
 # if defined(AO_HAVE_test_and_setXX)
-    AO_TS_t ts;
+    AO_TS_t ts = AO_TS_INITIALIZER;
 # endif
 # if defined(AO_HAVE_XSIZE_fetch_and_addXX) || defined(AO_HAVE_XSIZE_andXX) \
      || defined(AO_HAVE_XSIZE_orXX) || defined(AO_HAVE_XSIZE_xorXX)
@@ -47,7 +49,7 @@ void XSIZE_list_atomicXX(void)
 
 # ifdef AO_HAVE_XSIZE_loadXX
     (void)"AO_XSIZE_loadXX(&val):";
-    AO_XSIZE_loadXX(&val);
+    (void)AO_XSIZE_loadXX(&val);
 # else
     (void)"No AO_XSIZE_loadXX";
 # endif
@@ -59,19 +61,19 @@ void XSIZE_list_atomicXX(void)
 # endif
 # ifdef AO_HAVE_XSIZE_fetch_and_addXX
     (void)"AO_XSIZE_fetch_and_addXX(&val, incr):";
-    AO_XSIZE_fetch_and_addXX(&val, incr);
+    (void)AO_XSIZE_fetch_and_addXX(&val, incr);
 # else
     (void)"No AO_XSIZE_fetch_and_addXX";
 # endif
 # ifdef AO_HAVE_XSIZE_fetch_and_add1XX
     (void)"AO_XSIZE_fetch_and_add1XX(&val):";
-    AO_XSIZE_fetch_and_add1XX(&val);
+    (void)AO_XSIZE_fetch_and_add1XX(&val);
 # else
     (void)"No AO_XSIZE_fetch_and_add1XX";
 # endif
 # ifdef AO_HAVE_XSIZE_fetch_and_sub1XX
     (void)"AO_XSIZE_fetch_and_sub1XX(&val):";
-    AO_XSIZE_fetch_and_sub1XX(&val);
+    (void)AO_XSIZE_fetch_and_sub1XX(&val);
 # else
     (void)"No AO_XSIZE_fetch_and_sub1XX";
 # endif
@@ -95,7 +97,8 @@ void XSIZE_list_atomicXX(void)
 # endif
 # ifdef AO_HAVE_XSIZE_compare_and_swapXX
     (void)"AO_XSIZE_compare_and_swapXX(&val, oldval, newval):";
-    AO_XSIZE_compare_and_swapXX(&val, oldval, newval);
+    if (!AO_XSIZE_compare_and_swapXX(&val, oldval, newval))
+      exit(1);
 # else
     (void)"No AO_XSIZE_compare_and_swapXX";
 # endif
@@ -103,14 +106,15 @@ void XSIZE_list_atomicXX(void)
   /* TODO: Add AO_compare_and_swap_doubleXX */
 # ifdef AO_HAVE_XSIZE_fetch_compare_and_swapXX
     (void)"AO_XSIZE_fetch_compare_and_swapXX(&val, oldval, newval):";
-    AO_XSIZE_fetch_compare_and_swapXX(&val, oldval, newval);
+    if (AO_XSIZE_fetch_compare_and_swapXX(&val, oldval, newval) != oldval)
+      exit(1);
 # else
     (void)"No AO_XSIZE_fetch_compare_and_swapXX";
 # endif
 
 # if defined(AO_HAVE_test_and_setXX)
     (void)"AO_test_and_setXX(&ts):";
-    AO_test_and_setXX(&ts);
+    (void)AO_test_and_setXX(&ts);
 # else
     (void)"No AO_test_and_setXX";
 # endif

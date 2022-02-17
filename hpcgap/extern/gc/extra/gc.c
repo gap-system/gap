@@ -4,6 +4,7 @@
  * Copyright (c) 1998 by Fergus Henderson.  All rights reserved.
  * Copyright (c) 2000-2009 by Hewlett-Packard Development Company.
  * All rights reserved.
+ * Copyright (c) 2009-2018 Ivan Maidanski
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -27,10 +28,13 @@
 /* for GC and the client otherwise GC_thread_exit_proc() is not         */
 /* guaranteed to be invoked (see the comments in pthread_start.c).      */
 
-
-#define GC_INNER STATIC
-#define GC_EXTERN GC_INNER
+#ifndef __cplusplus
+  /* static is desirable here for more efficient linkage.               */
+  /* TODO: Enable this in case of the compilation as C++ code.          */
+# define GC_INNER STATIC
+# define GC_EXTERN GC_INNER
                 /* STATIC is defined in gcconfig.h. */
+#endif
 
 /* Small files go first... */
 #include "../backgraph.c"
@@ -38,11 +42,9 @@
 #include "../checksums.c"
 #include "../gcj_mlc.c"
 #include "../headers.c"
-#include "../malloc.c"
 #include "../new_hblk.c"
 #include "../obj_map.c"
 #include "../ptr_chck.c"
-#include "../stubborn.c"
 
 #include "gc_inline.h"
 #include "../allchblk.c"
@@ -50,6 +52,7 @@
 #include "../dbg_mlc.c"
 #include "../finalize.c"
 #include "../fnlz_mlc.c"
+#include "../malloc.c"
 #include "../mallocx.c"
 #include "../mark.c"
 #include "../mark_rts.c"
@@ -65,7 +68,6 @@
 #include "../dyn_load.c"
 #include "../gc_dlopen.c"
 #include "../mach_dep.c"
-#include "../pcr_interface.c"
 #include "../pthread_stop_world.c"
 #include "../pthread_support.c"
 #include "../specific.c"
@@ -84,4 +86,4 @@
 # include "gc_pthread_redirects.h"
 #endif
 
-/* real_malloc.c, extra/MacOS.c, extra/msvc_dbg.c are not included. */
+/* The files from "extra" folder are not included. */

@@ -15,11 +15,13 @@
 #ifndef GC_HEADERS_H
 #define GC_HEADERS_H
 
-typedef struct hblkhdr hdr;
-
-#if CPP_WORDSZ != 32 && CPP_WORDSZ < 36
-        --> Get a real machine.
+#if CPP_WORDSZ != 32 && CPP_WORDSZ < 36 && !defined(CPPCHECK)
+# error Get a real machine
 #endif
+
+EXTERN_C_BEGIN
+
+typedef struct hblkhdr hdr;
 
 /*
  * The 2 level tree data structure that is used to find block headers.
@@ -61,11 +63,11 @@ typedef struct hblkhdr hdr;
 #ifdef COUNT_HDR_CACHE_HITS
   extern word GC_hdr_cache_hits; /* used for debugging/profiling */
   extern word GC_hdr_cache_misses;
-# define HC_HIT() ++GC_hdr_cache_hits
-# define HC_MISS() ++GC_hdr_cache_misses
+# define HC_HIT() (void)(++GC_hdr_cache_hits)
+# define HC_MISS() (void)(++GC_hdr_cache_misses)
 #else
-# define HC_HIT()
-# define HC_MISS()
+# define HC_HIT() /* empty */
+# define HC_MISS() /* empty */
 #endif
 
 typedef struct hce {
@@ -80,9 +82,10 @@ typedef struct hce {
 
 #define INIT_HDR_CACHE BZERO(hdr_cache, sizeof(hdr_cache))
 
-#define HCE(h) hdr_cache + (((word)(h) >> LOG_HBLKSIZE) & (HDR_CACHE_SIZE-1))
+#define HCE(h) \
+        (hdr_cache + (((word)(h) >> LOG_HBLKSIZE) & (HDR_CACHE_SIZE-1)))
 
-#define HCE_VALID_FOR(hce,h) ((hce) -> block_addr == \
+#define HCE_VALID_FOR(hce, h) ((hce) -> block_addr == \
                                 ((word)(h) >> LOG_HBLKSIZE))
 
 #define HCE_HDR(h) ((hce) -> hce_hdr)
@@ -98,22 +101,21 @@ typedef struct hce {
 #endif
 
 /* Set hhdr to the header for p.  Analogous to GET_HDR below,           */
-/* except that in the case of large objects, it                         */
-/* gets the header for the object beginning, if GC_all_interior_ptrs    */
-/* is set.                                                              */
+/* except that in the case of large objects, it gets the header for     */
+/* the object beginning if GC_all_interior_pointers is set.             */
 /* Returns zero if p points to somewhere other than the first page      */
 /* of an object, and it is not a valid pointer to the object.           */
-#define HC_GET_HDR(p, hhdr, source, exit_label) \
-        do { \
+#define HC_GET_HDR(p, hhdr, source) \
+        { /* cannot use do-while(0) here */ \
           hdr_cache_entry * hce = HCE(p); \
           if (EXPECT(HCE_VALID_FOR(hce, p), TRUE)) { \
             HC_HIT(); \
             hhdr = hce -> hce_hdr; \
           } else { \
             hhdr = HEADER_CACHE_MISS(p, hce, source); \
-            if (0 == hhdr) goto exit_label; \
+            if (NULL == hhdr) break; /* go to the enclosing loop end */ \
           } \
-        } while (0)
+        }
 
 typedef struct bi {
     hdr * index[BOTTOM_SZ];
@@ -173,28 +175,27 @@ typedef struct bi {
   /* Set bottom_indx to point to the bottom index for address p */
 # define GET_BI(p, bottom_indx) \
         do { \
-          register word hi = \
-              (word)(p) >> (LOG_BOTTOM_SZ + LOG_HBLKSIZE); \
-          register bottom_index * _bi = GC_top_index[TL_HASH(hi)]; \
+          REGISTER word hi = (word)(p) >> (LOG_BOTTOM_SZ + LOG_HBLKSIZE); \
+          REGISTER bottom_index * _bi = GC_top_index[TL_HASH(hi)]; \
           while (_bi -> key != hi && _bi != GC_all_nils) \
               _bi = _bi -> hash_link; \
           (bottom_indx) = _bi; \
         } while (0)
 # define GET_HDR_ADDR(p, ha) \
         do { \
-          register bottom_index * bi; \
+          REGISTER bottom_index * bi; \
           GET_BI(p, bi); \
           (ha) = &HDR_FROM_BI(bi, p); \
         } while (0)
 # define GET_HDR(p, hhdr) \
         do { \
-          register hdr ** _ha; \
+          REGISTER hdr ** _ha; \
           GET_HDR_ADDR(p, _ha); \
           (hhdr) = *_ha; \
         } while (0)
 # define SET_HDR(p, hhdr) \
         do { \
-          register hdr ** _ha; \
+          REGISTER hdr ** _ha; \
           GET_HDR_ADDR(p, _ha); \
           *_ha = (hhdr); \
         } while (0)
@@ -208,5 +209,7 @@ typedef struct bi {
 /* Get an HBLKSIZE aligned address closer to the beginning of the block */
 /* h.  Assumes hhdr == HDR(h) and IS_FORWARDING_ADDR(hhdr).             */
 #define FORWARDED_ADDR(h, hhdr) ((struct hblk *)(h) - (size_t)(hhdr))
+
+EXTERN_C_END
 
 #endif /* GC_HEADERS_H */

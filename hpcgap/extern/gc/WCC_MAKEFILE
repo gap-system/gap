@@ -1,7 +1,7 @@
 # Makefile for Watcom C/C++ 10.5, 10.6, 11.0 on NT, OS2 and DOS4GW.
 # May work with Watcom 10.0.
 
-# Uncoment one of the lines below for cross compilation.
+# Uncomment one of the lines below for cross compilation.
 SYSTEM=MSWIN32
 #SYSTEM=DOS4GW
 #SYSTEM=OS2
@@ -25,7 +25,7 @@ CPU=5
 OPTIM=-oneatx -s
 #OPTIM=-ohneatx -s
 
-DEFS=-DALL_INTERIOR_POINTERS #-DSMALL_CONFIG #-DGC_DEBUG
+DEFS=-DALL_INTERIOR_POINTERS -DENABLE_DISCLAIM -DGC_ATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DJAVA_FINALIZATION -DNO_EXECUTE_PERMISSION #-DSMALL_CONFIG
 
 
 #####
@@ -48,6 +48,7 @@ SYSTEM=Unknown
 SYSFLAG=-DDOS4GW -bt=dos
 !else ifdef MSWIN32
 SYSFLAG=-DMSWIN32 -bt=nt
+DEFS=$(DEFS) -DUSE_MUNMAP
 !else ifdef OS2
 SYSFLAG=-DOS2 -bt=os2
 !else
@@ -66,17 +67,16 @@ TEST_DLLFLAG=
 CC=wcc386
 CXX=wpp386
 
-# -DUSE_GENERIC is required !
-CFLAGS=-$(CPU)$(CALLING) $(OPTIM) -zp4 -zc $(SYSFLAG) $(DLLFLAG) -DUSE_GENERIC $(DEFS)
-CXXFLAGS= $(CFLAGS)
-TEST_CFLAGS=-$(CPU)$(CALLING) $(OPTIM) -zp4 -zc $(SYSFLAG) $(TEST_DLLFLAG) $(DEFS)
-TEST_CXXFLAGS= $(TEST_CFLAGS)
+CFLAGS=-$(CPU)$(CALLING) $(OPTIM) -iinclude -zp4 -zc $(SYSFLAG) $(DLLFLAG) $(DEFS)
+CXXFLAGS= $(CFLAGS) -xs
+TEST_CFLAGS=-$(CPU)$(CALLING) $(OPTIM) -iinclude -zp4 -zc $(SYSFLAG) $(TEST_DLLFLAG) $(DEFS)
+TEST_CXXFLAGS= $(TEST_CFLAGS) -xs
 
 OBJS= alloc.obj reclaim.obj allchblk.obj misc.obj &
       mach_dep.obj os_dep.obj mark_rts.obj headers.obj mark.obj &
       obj_map.obj blacklst.obj finalize.obj new_hblk.obj &
-      dbg_mlc.obj malloc.obj stubborn.obj dyn_load.obj &
-      typd_mlc.obj ptr_chck.obj mallocx.obj fnlz_mlc.obj
+      dbg_mlc.obj malloc.obj dyn_load.obj &
+      typd_mlc.obj ptr_chck.obj mallocx.obj fnlz_mlc.obj gcj_mlc.obj
 
 all: gc.lib gctest.exe test_cpp.exe
 
@@ -96,23 +96,12 @@ gc.dll: $(OBJS) .AUTODEPEND
 !endif
         @%append $*.lnk name $*
         @for %i in ($(OBJS)) do @%append $*.lnk file '%i'
-!ifeq CALLING s
-      @%append $*.lnk export GC_is_marked
-      @%append $*.lnk export GC_incr_bytes_allocd
-      @%append $*.lnk export GC_incr_bytes_freed
-      @%append $*.lnk export GC_generic_malloc_words_small
-!else
-      @%append $*.lnk export GC_is_marked_
-      @%append $*.lnk export GC_incr_bytes_allocd_
-      @%append $*.lnk export GC_incr_bytes_freed_
-      @%append $*.lnk export GC_generic_malloc_words_small_
-!endif
         *wlink @$*.lnk
 !else
 gc.lib: $(OBJS) gc_cpp.obj
         @%create $*.lb1
         @for %i in ($(OBJS)) do @%append $*.lb1 +'%i'
-      @%append $*.lb1 +'gc_cpp.obj'
+        @%append $*.lb1 +'gc_cpp.obj'
         *wlib -b -c -n -p=512 $@ @$*.lb1
 
 !endif
@@ -132,13 +121,6 @@ gctest.exe: test.obj gc.lib
         @%append $*.lnk name $*
         @%append $*.lnk file test.obj
         @%append $*.lnk library gc.lib
-!ifdef MAKE_AS_DLL
-!ifeq CALLING s
-      @%append $*.lnk import GC_is_marked gc
-!else
-      @%append $*.lnk import GC_is_marked_ gc
-!endif
-!endif
         *wlink @$*.lnk
 test_cpp.exe: test_cpp.obj gc.lib
         %create $*.lnk
@@ -154,26 +136,14 @@ test_cpp.exe: test_cpp.obj gc.lib
         @%append $*.lnk name $*
         @%append $*.lnk file test_cpp.obj
         @%append $*.lnk library gc.lib
-!ifdef MAKE_AS_DLL
-!ifeq CALLING s
-      @%append $*.lnk import GC_incr_bytes_allocd gc
-      @%append $*.lnk import GC_incr_bytes_freed gc
-      @%append $*.lnk import GC_generic_malloc_words_small gc
-!else
-      @%append $*.lnk import GC_incr_bytes_allocd_ gc
-      @%append $*.lnk import GC_incr_bytes_freed_ gc
-      @%append $*.lnk import GC_generic_malloc_words_small_ gc
-!endif
-!endif
         *wlink @$*.lnk
 
 gc_cpp.obj: gc_cpp.cc .AUTODEPEND
-        $(CXX) $(TEST_CXXFLAGS) -iinclude $*.cc
+        $(CXX) $(TEST_CXXFLAGS) $*.cc
 test.obj: tests\test.c .AUTODEPEND
-        $(CC) $(TEST_CFLAGS) $*.c
+        $(CC) $(TEST_CFLAGS) tests\test.c
 test_cpp.obj: tests\test_cpp.cc .AUTODEPEND
-        $(CXX) $(TEST_CXXFLAGS) -iinclude $*.cc
-
+        $(CXX) $(TEST_CXXFLAGS) tests\test_cpp.cc
 
 .c.obj: .AUTODEPEND
         $(CC) $(CFLAGS) $*.c

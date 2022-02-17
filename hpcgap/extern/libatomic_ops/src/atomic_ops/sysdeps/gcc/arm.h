@@ -2,7 +2,7 @@
  * Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
  * Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
  * Copyright (c) 1999-2003 by Hewlett-Packard Company. All rights reserved.
- *
+ * Copyright (c) 2008-2017 Ivan Maidanski
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -15,7 +15,20 @@
  *
  */
 
-#include "../test_and_set_t_is_ao_t.h" /* Probably suboptimal */
+#if (AO_GNUC_PREREQ(4, 8) || AO_CLANG_PREREQ(3, 5)) \
+    && !defined(AO_DISABLE_GCC_ATOMICS)
+  /* Probably, it could be enabled even for earlier gcc/clang versions. */
+# define AO_GCC_ATOMIC_TEST_AND_SET
+#endif
+
+#ifdef __native_client__
+  /* Mask instruction should immediately precede access instruction.    */
+# define AO_MASK_PTR(reg) "       bical " reg ", " reg ", #0xc0000000\n"
+# define AO_BR_ALIGN "       .align 4\n"
+#else
+# define AO_MASK_PTR(reg) /* empty */
+# define AO_BR_ALIGN /* empty */
+#endif
 
 #if defined(__thumb__) && !defined(__thumb2__)
   /* Thumb One mode does not have ARM "mcr", "swp" and some load/store  */
@@ -26,11 +39,13 @@
            "       bx      r3\n" \
            "      .align\n" \
            "      .arm\n" \
+           AO_BR_ALIGN \
            "4:\n"
 # define AO_THUMB_RESTORE_MODE \
            "       adr     r3, 5f + 1\n" \
            "       bx      r3\n" \
            "       .thumb\n" \
+           AO_BR_ALIGN \
            "5:\n"
 # define AO_THUMB_SWITCH_CLOBBERS "r3",
 #else
@@ -58,15 +73,15 @@
 # if !defined(__ARM_ARCH_6__) && !defined(__ARM_ARCH_6J__) \
      && !defined(__ARM_ARCH_6T2__) && !defined(__ARM_ARCH_6Z__) \
      && !defined(__ARM_ARCH_6ZT2__)
-#   if !defined(__ARM_ARCH_6K__) && !defined(__ARM_ARCH_6ZK__)
+#   if !defined(__ARM_ARCH_6K__) && !defined(__ARM_ARCH_6KZ__) \
+       && !defined(__ARM_ARCH_6ZK__)
       /* DMB is present in ARMv6M and ARMv7+.   */
 #     define AO_ARM_HAVE_DMB
 #   endif
 #   if (!defined(__thumb__) \
         || (defined(__thumb2__) && !defined(__ARM_ARCH_7__) \
             && !defined(__ARM_ARCH_7M__) && !defined(__ARM_ARCH_7EM__))) \
-       && (!defined(__clang__) || (__clang_major__ > 3) \
-            || (__clang_major__ == 3 && __clang_minor__ >= 3))
+       && (!defined(__clang__) || AO_CLANG_PREREQ(3, 3))
       /* LDREXD/STREXD present in ARMv6K/M+ (see gas/config/tc-arm.c).  */
       /* In the Thumb mode, this works only starting from ARMv7 (except */
       /* for the base and 'M' models).  Clang3.2 (and earlier) does not */
@@ -83,6 +98,29 @@
                 /* Note: ARMv6M is excluded due to no ARM mode support. */
                 /* Also, SWP is obsoleted for ARMv8+.                   */
 #endif /* !__thumb2__ */
+
+#if !defined(AO_UNIPROCESSOR) && defined(AO_ARM_HAVE_DMB) \
+    && !defined(AO_PREFER_BUILTIN_ATOMICS)
+  AO_INLINE void
+  AO_nop_write(void)
+  {
+    /* AO_THUMB_GO_ARM is empty. */
+    /* This will target the system domain and thus be overly            */
+    /* conservative as the CPUs (even in case of big.LITTLE SoC) will   */
+    /* occupy the inner shareable domain.                               */
+    /* The plain variant (dmb st) is theoretically slower, and should   */
+    /* not be needed.  That said, with limited experimentation, a CPU   */
+    /* implementation for which it actually matters has not been found  */
+    /* yet, though they should already exist.                           */
+    /* Anyway, note that the "st" and "ishst" barriers are actually     */
+    /* quite weak and, as the libatomic_ops documentation states,       */
+    /* usually not what you really want.                                */
+    __asm__ __volatile__("dmb ishst" : : : "memory");
+  }
+# define AO_HAVE_nop_write
+#endif /* AO_ARM_HAVE_DMB */
+
+#ifndef AO_GCC_ATOMIC_TEST_AND_SET
 
 #ifdef AO_UNIPROCESSOR
   /* If only a single processor (core) is used, AO_UNIPROCESSOR could   */
@@ -106,14 +144,6 @@
     __asm__ __volatile__("dmb" : : : "memory");
   }
 # define AO_HAVE_nop_full
-
-  AO_INLINE void
-  AO_nop_write(void)
-  {
-    /* AO_THUMB_GO_ARM is empty. */
-    __asm__ __volatile__("dmb st" : : : "memory");
-  }
-# define AO_HAVE_nop_write
 
 #elif defined(AO_ARM_HAVE_LDREX)
   /* ARMv6 is the first architecture providing support for a simple     */
@@ -139,14 +169,9 @@
   /* AO_nop_full() is emulated using AO_test_and_set_full().    */
 #endif /* !AO_UNIPROCESSOR && !AO_ARM_HAVE_LDREX */
 
-#ifdef AO_ARM_HAVE_LDREX
+#endif /* !AO_GCC_ATOMIC_TEST_AND_SET */
 
-  /* AO_t/char/short/int load is simple reading.                */
-  /* Unaligned accesses are not guaranteed to be atomic.        */
-# define AO_ACCESS_CHECK_ALIGNED
-# define AO_ACCESS_short_CHECK_ALIGNED
-# define AO_ACCESS_int_CHECK_ALIGNED
-# include "../all_atomic_only_load.h"
+#ifdef AO_ARM_HAVE_LDREX
 
   /* "ARM Architecture Reference Manual" (chapter A3.5.3) says that the */
   /* single-copy atomic processor accesses are all byte accesses, all   */
@@ -164,13 +189,28 @@
   /* arch/arm/kernel/entry-header.S of Linux.  Nonetheless, there is    */
   /* a doubt this was properly implemented in some ancient OS releases. */
 # ifdef AO_BROKEN_TASKSWITCH_CLREX
+
+#   define AO_SKIPATOMIC_store
+#   define AO_SKIPATOMIC_store_release
+#   define AO_SKIPATOMIC_char_store
+#   define AO_SKIPATOMIC_char_store_release
+#   define AO_SKIPATOMIC_short_store
+#   define AO_SKIPATOMIC_short_store_release
+#   define AO_SKIPATOMIC_int_store
+#   define AO_SKIPATOMIC_int_store_release
+
+#   ifndef AO_PREFER_BUILTIN_ATOMICS
+
     AO_INLINE void AO_store(volatile AO_t *addr, AO_t value)
     {
       int flag;
 
       __asm__ __volatile__("@AO_store\n"
         AO_THUMB_GO_ARM
-        "1:     ldrex %0, [%2]\n"
+        AO_BR_ALIGN
+        "1: " AO_MASK_PTR("%2")
+        "       ldrex %0, [%2]\n"
+        AO_MASK_PTR("%2")
         "       strex %0, %3, [%2]\n"
         "       teq %0, #0\n"
         "       bne 1b\n"
@@ -189,7 +229,10 @@
 
         __asm__ __volatile__("@AO_char_store\n"
           AO_THUMB_GO_ARM
-          "1:     ldrexb %0, [%2]\n"
+          AO_BR_ALIGN
+          "1: " AO_MASK_PTR("%2")
+          "       ldrexb %0, [%2]\n"
+          AO_MASK_PTR("%2")
           "       strexb %0, %3, [%2]\n"
           "       teq    %0, #0\n"
           "       bne 1b\n"
@@ -207,7 +250,10 @@
 
         __asm__ __volatile__("@AO_short_store\n"
           AO_THUMB_GO_ARM
-          "1:     ldrexh %0, [%2]\n"
+          AO_BR_ALIGN
+          "1: " AO_MASK_PTR("%2")
+          "       ldrexh %0, [%2]\n"
+          AO_MASK_PTR("%2")
           "       strexh %0, %3, [%2]\n"
           "       teq    %0, #0\n"
           "       bne 1b\n"
@@ -219,10 +265,27 @@
 #     define AO_HAVE_short_store
 #   endif /* AO_ARM_HAVE_LDREXBH */
 
-# else
+#   endif /* !AO_PREFER_BUILTIN_ATOMICS */
+
+# elif !defined(AO_GCC_ATOMIC_TEST_AND_SET)
 #   include "../loadstore/atomic_store.h"
     /* AO_int_store is defined in ao_t_is_int.h.    */
 # endif /* !AO_BROKEN_TASKSWITCH_CLREX */
+
+#endif /* AO_ARM_HAVE_LDREX */
+
+#ifndef AO_GCC_ATOMIC_TEST_AND_SET
+
+# include "../test_and_set_t_is_ao_t.h" /* Probably suboptimal  */
+
+#ifdef AO_ARM_HAVE_LDREX
+
+  /* AO_t/char/short/int load is simple reading.                */
+  /* Unaligned accesses are not guaranteed to be atomic.        */
+# define AO_ACCESS_CHECK_ALIGNED
+# define AO_ACCESS_short_CHECK_ALIGNED
+# define AO_ACCESS_int_CHECK_ALIGNED
+# include "../all_atomic_only_load.h"
 
 # ifndef AO_HAVE_char_store
 #   include "../loadstore/char_atomic_store.h"
@@ -255,7 +318,10 @@
 
     __asm__ __volatile__("@AO_test_and_set\n"
       AO_THUMB_GO_ARM
-      "1:     ldrex   %0, [%3]\n"
+      AO_BR_ALIGN
+      "1: " AO_MASK_PTR("%3")
+      "       ldrex   %0, [%3]\n"
+      AO_MASK_PTR("%3")
       "       strex   %1, %4, [%3]\n"
       "       teq     %1, #0\n"
       "       bne     1b\n"
@@ -276,8 +342,11 @@ AO_fetch_and_add(volatile AO_t *p, AO_t incr)
 
   __asm__ __volatile__("@AO_fetch_and_add\n"
     AO_THUMB_GO_ARM
-    "1:     ldrex   %0, [%5]\n"         /* get original         */
+    AO_BR_ALIGN
+    "1: " AO_MASK_PTR("%5")
+    "       ldrex   %0, [%5]\n"         /* get original         */
     "       add     %2, %0, %4\n"       /* sum up in incr       */
+    AO_MASK_PTR("%5")
     "       strex   %1, %2, [%5]\n"     /* store them           */
     "       teq     %1, #0\n"
     "       bne     1b\n"
@@ -297,8 +366,11 @@ AO_fetch_and_add1(volatile AO_t *p)
 
   __asm__ __volatile__("@AO_fetch_and_add1\n"
     AO_THUMB_GO_ARM
-    "1:     ldrex   %0, [%4]\n"         /* get original */
+    AO_BR_ALIGN
+    "1: " AO_MASK_PTR("%4")
+    "       ldrex   %0, [%4]\n"         /* get original */
     "       add     %1, %0, #1\n"       /* increment */
+    AO_MASK_PTR("%4")
     "       strex   %2, %1, [%4]\n"     /* store them */
     "       teq     %2, #0\n"
     "       bne     1b\n"
@@ -318,8 +390,11 @@ AO_fetch_and_sub1(volatile AO_t *p)
 
   __asm__ __volatile__("@AO_fetch_and_sub1\n"
     AO_THUMB_GO_ARM
-    "1:     ldrex   %0, [%4]\n"         /* get original */
+    AO_BR_ALIGN
+    "1: " AO_MASK_PTR("%4")
+    "       ldrex   %0, [%4]\n"         /* get original */
     "       sub     %1, %0, #1\n"       /* decrement */
+    AO_MASK_PTR("%4")
     "       strex   %2, %1, [%4]\n"     /* store them */
     "       teq     %2, #0\n"
     "       bne     1b\n"
@@ -338,8 +413,11 @@ AO_and(volatile AO_t *p, AO_t value)
 
   __asm__ __volatile__("@AO_and\n"
     AO_THUMB_GO_ARM
-    "1:     ldrex   %0, [%4]\n"
+    AO_BR_ALIGN
+    "1: " AO_MASK_PTR("%4")
+    "       ldrex   %0, [%4]\n"
     "       and     %1, %0, %3\n"
+    AO_MASK_PTR("%4")
     "       strex   %0, %1, [%4]\n"
     "       teq     %0, #0\n"
     "       bne     1b\n"
@@ -357,8 +435,11 @@ AO_or(volatile AO_t *p, AO_t value)
 
   __asm__ __volatile__("@AO_or\n"
     AO_THUMB_GO_ARM
-    "1:     ldrex   %0, [%4]\n"
+    AO_BR_ALIGN
+    "1: " AO_MASK_PTR("%4")
+    "       ldrex   %0, [%4]\n"
     "       orr     %1, %0, %3\n"
+    AO_MASK_PTR("%4")
     "       strex   %0, %1, [%4]\n"
     "       teq     %0, #0\n"
     "       bne     1b\n"
@@ -376,8 +457,11 @@ AO_xor(volatile AO_t *p, AO_t value)
 
   __asm__ __volatile__("@AO_xor\n"
     AO_THUMB_GO_ARM
-    "1:     ldrex   %0, [%4]\n"
+    AO_BR_ALIGN
+    "1: " AO_MASK_PTR("%4")
+    "       ldrex   %0, [%4]\n"
     "       eor     %1, %0, %3\n"
+    AO_MASK_PTR("%4")
     "       strex   %0, %1, [%4]\n"
     "       teq     %0, #0\n"
     "       bne     1b\n"
@@ -398,8 +482,11 @@ AO_xor(volatile AO_t *p, AO_t value)
 
     __asm__ __volatile__("@AO_char_fetch_and_add\n"
       AO_THUMB_GO_ARM
-      "1:     ldrexb  %0, [%5]\n"
+      AO_BR_ALIGN
+      "1: " AO_MASK_PTR("%5")
+      "       ldrexb  %0, [%5]\n"
       "       add     %2, %0, %4\n"
+      AO_MASK_PTR("%5")
       "       strexb  %1, %2, [%5]\n"
       "       teq     %1, #0\n"
       "       bne     1b\n"
@@ -419,8 +506,11 @@ AO_xor(volatile AO_t *p, AO_t value)
 
     __asm__ __volatile__("@AO_short_fetch_and_add\n"
       AO_THUMB_GO_ARM
-      "1:     ldrexh  %0, [%5]\n"
+      AO_BR_ALIGN
+      "1: " AO_MASK_PTR("%5")
+      "       ldrexh  %0, [%5]\n"
       "       add     %2, %0, %4\n"
+      AO_MASK_PTR("%5")
       "       strexh  %1, %2, [%5]\n"
       "       teq     %1, #0\n"
       "       bne     1b\n"
@@ -442,9 +532,12 @@ AO_xor(volatile AO_t *p, AO_t value)
 
     __asm__ __volatile__("@AO_compare_and_swap\n"
       AO_THUMB_GO_ARM
+      AO_BR_ALIGN
       "1:     mov     %0, #2\n"         /* store a flag */
+      AO_MASK_PTR("%3")
       "       ldrex   %1, [%3]\n"       /* get original */
       "       teq     %1, %4\n"         /* see if match */
+      AO_MASK_PTR("%3")
 #     ifdef __thumb2__
         /* TODO: Eliminate warning: it blocks containing wide Thumb */
         /* instructions are deprecated in ARMv8.                    */
@@ -457,7 +550,7 @@ AO_xor(volatile AO_t *p, AO_t value)
       : "=&r"(result), "=&r"(tmp), "+m"(*addr)
       : "r"(addr), "r"(old_val), "r"(new_val)
       : AO_THUMB_SWITCH_CLOBBERS "cc");
-    return !(result&2); /* if succeded, return 1, else 0 */
+    return !(result&2); /* if succeeded then return 1 else 0 */
   }
 # define AO_HAVE_compare_and_swap
 #endif /* !AO_GENERALIZE_ASM_BOOL_CAS */
@@ -470,9 +563,12 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 
   __asm__ __volatile__("@AO_fetch_compare_and_swap\n"
     AO_THUMB_GO_ARM
+    AO_BR_ALIGN
     "1:     mov     %0, #2\n"           /* store a flag */
+    AO_MASK_PTR("%3")
     "       ldrex   %1, [%3]\n"         /* get original */
     "       teq     %1, %4\n"           /* see if match */
+    AO_MASK_PTR("%3")
 #   ifdef __thumb2__
       "       it      eq\n"
 #   endif
@@ -503,6 +599,7 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 
     /* AO_THUMB_GO_ARM is empty. */
     __asm__ __volatile__("@AO_double_load\n"
+      AO_MASK_PTR("%1")
       "       ldrexd  %0, %H0, [%1]"
       : "=&r" (result.AO_whole)
       : "r" (addr)
@@ -520,7 +617,9 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
     do {
       /* AO_THUMB_GO_ARM is empty. */
       __asm__ __volatile__("@AO_double_store\n"
+        AO_MASK_PTR("%3")
         "       ldrexd  %0, %H0, [%3]\n"
+        AO_MASK_PTR("%3")
         "       strexd  %1, %4, %H4, [%3]"
         : "=&r" (old_val.AO_whole), "=&r" (status), "+m" (*addr)
         : "r" (addr), "r" (new_val.AO_whole)
@@ -539,6 +638,7 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
     do {
       /* AO_THUMB_GO_ARM is empty. */
       __asm__ __volatile__("@AO_double_compare_and_swap\n"
+        AO_MASK_PTR("%1")
         "       ldrexd  %0, %H0, [%1]\n" /* get original to r1 & r2 */
         : "=&r"(tmp)
         : "r"(addr)
@@ -546,12 +646,13 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
       if (tmp != old_val.AO_whole)
         break;
       __asm__ __volatile__(
+        AO_MASK_PTR("%2")
         "       strexd  %0, %3, %H3, [%2]\n" /* store new one if matched */
         : "=&r"(result), "+m"(*addr)
         : "r" (addr), "r" (new_val.AO_whole)
         : "cc");
     } while (AO_EXPECT_FALSE(result));
-    return !result;   /* if succeded, return 1 else 0 */
+    return !result;   /* if succeeded then return 1 else 0 */
   }
 # define AO_HAVE_double_compare_and_swap
 #endif /* AO_ARM_HAVE_LDREXD */
@@ -586,6 +687,7 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 
     __asm__ __volatile__("@AO_test_and_set_full\n"
       AO_THUMB_GO_ARM
+      AO_MASK_PTR("%3")
       "       swp %0, %2, [%3]\n"
                 /* Ignore GCC "SWP is deprecated for this architecture" */
                 /* warning here (for ARMv6+).                           */
@@ -599,3 +701,42 @@ AO_fetch_compare_and_swap(volatile AO_t *addr, AO_t old_val, AO_t new_val)
 #endif /* !AO_HAVE_test_and_set[_full] && AO_ARM_HAVE_SWP */
 
 #define AO_T_IS_INT
+
+#else /* AO_GCC_ATOMIC_TEST_AND_SET */
+
+# if defined(__clang__) && !defined(AO_ARM_HAVE_LDREX)
+    /* As of clang-3.8, it cannot compile __atomic_and/or/xor_fetch     */
+    /* library calls yet for pre ARMv6.                                 */
+#   define AO_SKIPATOMIC_ANY_and_ANY
+#   define AO_SKIPATOMIC_ANY_or_ANY
+#   define AO_SKIPATOMIC_ANY_xor_ANY
+# endif
+
+# ifdef AO_ARM_HAVE_LDREXD
+#   include "../standard_ao_double_t.h"
+# endif
+# include "generic.h"
+
+#endif /* AO_GCC_ATOMIC_TEST_AND_SET */
+
+#undef AO_ARM_HAVE_DMB
+#undef AO_ARM_HAVE_LDREX
+#undef AO_ARM_HAVE_LDREXBH
+#undef AO_ARM_HAVE_LDREXD
+#undef AO_ARM_HAVE_SWP
+#undef AO_BR_ALIGN
+#undef AO_MASK_PTR
+#undef AO_SKIPATOMIC_ANY_and_ANY
+#undef AO_SKIPATOMIC_ANY_or_ANY
+#undef AO_SKIPATOMIC_ANY_xor_ANY
+#undef AO_SKIPATOMIC_char_store
+#undef AO_SKIPATOMIC_char_store_release
+#undef AO_SKIPATOMIC_int_store
+#undef AO_SKIPATOMIC_int_store_release
+#undef AO_SKIPATOMIC_short_store
+#undef AO_SKIPATOMIC_short_store_release
+#undef AO_SKIPATOMIC_store
+#undef AO_SKIPATOMIC_store_release
+#undef AO_THUMB_GO_ARM
+#undef AO_THUMB_RESTORE_MODE
+#undef AO_THUMB_SWITCH_CLOBBERS

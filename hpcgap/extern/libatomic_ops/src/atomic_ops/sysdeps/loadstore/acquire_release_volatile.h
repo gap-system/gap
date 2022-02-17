@@ -31,13 +31,14 @@
 /* subexpressions across a volatile load; hence, we now add compiler    */
 /* barriers for gcc.                                                    */
 
-#ifndef AO_GCC_BARRIER
+#ifndef AO_HAVE_GCC_BARRIER
   /* TODO: Check GCC version (if workaround not needed for modern GCC). */
 # if defined(__GNUC__)
 #   define AO_GCC_BARRIER() AO_compiler_barrier()
 # else
 #   define AO_GCC_BARRIER() (void)0
 # endif
+# define AO_HAVE_GCC_BARRIER
 #endif
 
 AO_INLINE AO_t

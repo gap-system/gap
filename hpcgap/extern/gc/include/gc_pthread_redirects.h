@@ -18,6 +18,9 @@
 /* Our pthread support normally needs to intercept a number of thread   */
 /* calls.  We arrange to do that here, if appropriate.                  */
 
+#ifndef GC_PTHREAD_REDIRECTS_H
+#define GC_PTHREAD_REDIRECTS_H
+
 /* Included from gc.h only.  Included only if GC_PTHREADS.              */
 #if defined(GC_H) && defined(GC_PTHREADS)
 
@@ -31,17 +34,34 @@
 /* to thread specific data on the thread stack.                         */
 
 #ifndef GC_PTHREAD_REDIRECTS_ONLY
-# include <pthread.h>
 
+# include <pthread.h>
 # ifndef GC_NO_DLOPEN
 #   include <dlfcn.h>
+# endif
+# ifndef GC_NO_PTHREAD_SIGMASK
+#   include <signal.h>  /* needed anyway for proper redirection */
+# endif
+
+# ifdef __cplusplus
+    extern "C" {
+# endif
+
+# ifndef GC_SUSPEND_THREAD_ID
+#   define GC_SUSPEND_THREAD_ID pthread_t
+# endif
+
+# ifndef GC_NO_DLOPEN
     GC_API void *GC_dlopen(const char * /* path */, int /* mode */);
 # endif /* !GC_NO_DLOPEN */
 
 # ifndef GC_NO_PTHREAD_SIGMASK
-#   include <signal.h>
-    GC_API int GC_pthread_sigmask(int /* how */, const sigset_t *,
-                                  sigset_t * /* oset */);
+#   if defined(GC_PTHREAD_SIGMASK_NEEDED) \
+        || defined(_BSD_SOURCE) || defined(_GNU_SOURCE) \
+        || (_POSIX_C_SOURCE >= 199506L) || (_XOPEN_SOURCE >= 500)
+      GC_API int GC_pthread_sigmask(int /* how */, const sigset_t *,
+                                    sigset_t * /* oset */);
+#   endif
 # endif /* !GC_NO_PTHREAD_SIGMASK */
 
 # ifndef GC_PTHREAD_CREATE_CONST
@@ -59,10 +79,15 @@
     GC_API int GC_pthread_cancel(pthread_t);
 # endif
 
-# if defined(GC_PTHREAD_EXIT_ATTRIBUTE) && !defined(GC_PTHREAD_EXIT_DECLARED)
+# if defined(GC_HAVE_PTHREAD_EXIT) && !defined(GC_PTHREAD_EXIT_DECLARED)
 #   define GC_PTHREAD_EXIT_DECLARED
     GC_API void GC_pthread_exit(void *) GC_PTHREAD_EXIT_ATTRIBUTE;
 # endif
+
+# ifdef __cplusplus
+    } /* extern "C" */
+# endif
+
 #endif /* !GC_PTHREAD_REDIRECTS_ONLY */
 
 #if !defined(GC_NO_THREAD_REDIRECTS) && !defined(GC_USE_LD_WRAP)
@@ -88,10 +113,12 @@
 #   undef pthread_cancel
 #   define pthread_cancel GC_pthread_cancel
 # endif
-# ifdef GC_PTHREAD_EXIT_ATTRIBUTE
+# ifdef GC_HAVE_PTHREAD_EXIT
 #   undef pthread_exit
 #   define pthread_exit GC_pthread_exit
 # endif
 #endif /* !GC_NO_THREAD_REDIRECTS */
 
 #endif /* GC_PTHREADS */
+
+#endif /* GC_PTHREAD_REDIRECTS_H */

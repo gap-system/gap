@@ -28,7 +28,7 @@ AO_INLINE unsigned/**/char
 AO_char_load(const volatile unsigned/**/char *addr)
 {
 # ifdef AO_ACCESS_char_CHECK_ALIGNED
-    assert(((size_t)addr & (sizeof(*addr) - 1)) == 0);
+    AO_ASSERT_ADDR_ALIGNED(addr);
 # endif
   /* Cast away the volatile for architectures like IA64 where   */
   /* volatile adds barrier (fence) semantics.                   */

@@ -28,7 +28,7 @@ AO_INLINE void
 AO_int_store(volatile unsigned *addr, unsigned new_val)
 {
 # ifdef AO_ACCESS_int_CHECK_ALIGNED
-    assert(((size_t)addr & (sizeof(*addr) - 1)) == 0);
+    AO_ASSERT_ADDR_ALIGNED(addr);
 # endif
   *(unsigned *)addr = new_val;
 }

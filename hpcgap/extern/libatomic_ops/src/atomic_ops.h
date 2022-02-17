@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2003-2011 Hewlett-Packard Development Company, L.P.
+ * Copyright (c) 2008-2021 Ivan Maidanski
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -157,7 +158,23 @@
 /* The test_and_set primitive returns an AO_TS_VAL_t value.     */
 /* AO_TS_t is the type of an in-memory test-and-set location.   */
 
-#define AO_TS_INITIALIZER (AO_t)AO_TS_CLEAR
+#define AO_TS_INITIALIZER ((AO_TS_t)AO_TS_CLEAR)
+
+/* Convenient internal macro to test version of GCC.    */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# define AO_GNUC_PREREQ(major, minor) \
+            ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((major) << 16) + (minor))
+#else
+# define AO_GNUC_PREREQ(major, minor) 0 /* false */
+#endif
+
+/* Convenient internal macro to test version of Clang.  */
+#if defined(__clang__) && defined(__clang_major__)
+# define AO_CLANG_PREREQ(major, minor) \
+    ((__clang_major__ << 16) + __clang_minor__ >= ((major) << 16) + (minor))
+#else
+# define AO_CLANG_PREREQ(major, minor) 0 /* false */
+#endif
 
 /* Platform-dependent stuff:                                    */
 #if (defined(__GNUC__) || defined(_MSC_VER) || defined(__INTEL_COMPILER) \
@@ -169,12 +186,62 @@
 # define AO_INLINE static
 #endif
 
-#if __GNUC__ >= 3 && !defined(LINT2)
+#if AO_GNUC_PREREQ(3, 0) && !defined(LINT2)
 # define AO_EXPECT_FALSE(expr) __builtin_expect(expr, 0)
   /* Equivalent to (expr) but predict that usually (expr) == 0. */
 #else
 # define AO_EXPECT_FALSE(expr) (expr)
 #endif /* !__GNUC__ */
+
+#if defined(__has_feature)
+  /* __has_feature() is supported.      */
+# if __has_feature(address_sanitizer)
+#   define AO_ADDRESS_SANITIZER
+# endif
+# if __has_feature(memory_sanitizer)
+#   define AO_MEMORY_SANITIZER
+# endif
+# if __has_feature(thread_sanitizer)
+#   define AO_THREAD_SANITIZER
+# endif
+#else
+# ifdef __SANITIZE_ADDRESS__
+    /* GCC v4.8+ */
+#   define AO_ADDRESS_SANITIZER
+# endif
+#endif /* !__has_feature */
+
+#ifndef AO_ATTR_NO_SANITIZE_MEMORY
+# ifndef AO_MEMORY_SANITIZER
+#   define AO_ATTR_NO_SANITIZE_MEMORY /* empty */
+# elif AO_CLANG_PREREQ(3, 8)
+#   define AO_ATTR_NO_SANITIZE_MEMORY __attribute__((no_sanitize("memory")))
+# else
+#   define AO_ATTR_NO_SANITIZE_MEMORY __attribute__((no_sanitize_memory))
+# endif
+#endif /* !AO_ATTR_NO_SANITIZE_MEMORY */
+
+#ifndef AO_ATTR_NO_SANITIZE_THREAD
+# ifndef AO_THREAD_SANITIZER
+#   define AO_ATTR_NO_SANITIZE_THREAD /* empty */
+# elif AO_CLANG_PREREQ(3, 8)
+#   define AO_ATTR_NO_SANITIZE_THREAD __attribute__((no_sanitize("thread")))
+# else
+#   define AO_ATTR_NO_SANITIZE_THREAD __attribute__((no_sanitize_thread))
+# endif
+#endif /* !AO_ATTR_NO_SANITIZE_THREAD */
+
+#if (AO_GNUC_PREREQ(7, 5) || __STDC_VERSION__ >= 201112L) && !defined(LINT2)
+# define AO_ALIGNOF_SUPPORTED 1
+#endif
+
+#ifdef AO_ALIGNOF_SUPPORTED
+# define AO_ASSERT_ADDR_ALIGNED(addr) \
+    assert(((size_t)(addr) & (__alignof__(*(addr)) - 1)) == 0)
+#else
+# define AO_ASSERT_ADDR_ALIGNED(addr) \
+    assert(((size_t)(addr) & (sizeof(*(addr)) - 1)) == 0)
+#endif /* !AO_ALIGNOF_SUPPORTED */
 
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)
 # define AO_compiler_barrier() __asm__ __volatile__("" : : : "memory")
@@ -203,7 +270,7 @@
 #   include <machine/sys/inline.h>
 #   define AO_compiler_barrier() _Asm_sched_fence()
 # else
-    /* FIXME - We dont know how to do this.  This is a guess.   */
+    /* FIXME - We do not know how to do this.  This is a guess. */
     /* And probably a bad one.                                  */
     static volatile int AO_barrier_dummy;
 #   define AO_compiler_barrier() (void)(AO_barrier_dummy = AO_barrier_dummy)
@@ -231,65 +298,59 @@
     /* it might require specifying additional options (like -march)     */
     /* or additional link libraries (if -march is not specified).       */
 #   include "atomic_ops/sysdeps/gcc/x86.h"
-# endif /* __i386__ */
-# if defined(__x86_64__)
-#   if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2)) \
-       && !defined(AO_USE_SYNC_CAS_BUILTIN)
+# elif defined(__x86_64__)
+#   if AO_GNUC_PREREQ(4, 2) && !defined(AO_USE_SYNC_CAS_BUILTIN)
       /* It is safe to use __sync CAS built-in on this architecture.    */
 #     define AO_USE_SYNC_CAS_BUILTIN
 #   endif
 #   include "atomic_ops/sysdeps/gcc/x86.h"
-# endif /* __x86_64__ */
-# if defined(__ia64__)
+# elif defined(__ia64__)
 #   include "atomic_ops/sysdeps/gcc/ia64.h"
 #   define AO_GENERALIZE_TWICE
-# endif /* __ia64__ */
-# if defined(__hppa__)
+# elif defined(__hppa__)
 #   include "atomic_ops/sysdeps/gcc/hppa.h"
 #   define AO_CAN_EMUL_CAS
-# endif /* __hppa__ */
-# if defined(__alpha__)
+# elif defined(__alpha__)
 #   include "atomic_ops/sysdeps/gcc/alpha.h"
 #   define AO_GENERALIZE_TWICE
-# endif /* __alpha__ */
-# if defined(__s390__)
+# elif defined(__s390__)
 #   include "atomic_ops/sysdeps/gcc/s390.h"
-# endif /* __s390__ */
-# if defined(__sparc__)
+# elif defined(__sparc__)
 #   include "atomic_ops/sysdeps/gcc/sparc.h"
 #   define AO_CAN_EMUL_CAS
-# endif /* __sparc__ */
-# if defined(__m68k__)
+# elif defined(__m68k__)
 #   include "atomic_ops/sysdeps/gcc/m68k.h"
-# endif /* __m68k__ */
-# if defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) \
-     || defined(__powerpc64__) || defined(__ppc64__)
+# elif defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) \
+       || defined(__powerpc64__) || defined(__ppc64__) || defined(_ARCH_PPC)
 #   include "atomic_ops/sysdeps/gcc/powerpc.h"
-# endif /* __powerpc__ */
-# if defined(__aarch64__)
+# elif defined(__aarch64__)
 #   include "atomic_ops/sysdeps/gcc/aarch64.h"
 #   define AO_CAN_EMUL_CAS
-# endif /* __aarch64__ */
-# if defined(__arm__)
+# elif defined(__arm__)
 #   include "atomic_ops/sysdeps/gcc/arm.h"
 #   define AO_CAN_EMUL_CAS
-# endif /* __arm__ */
-# if defined(__cris__) || defined(CRIS)
+# elif defined(__cris__) || defined(CRIS)
 #   include "atomic_ops/sysdeps/gcc/cris.h"
+#   define AO_CAN_EMUL_CAS
 #   define AO_GENERALIZE_TWICE
-# endif
-# if defined(__mips__)
+# elif defined(__mips__)
 #   include "atomic_ops/sysdeps/gcc/mips.h"
-# endif /* __mips__ */
-# if defined(__sh__) || defined(SH4)
+# elif defined(__sh__) || defined(SH4)
 #   include "atomic_ops/sysdeps/gcc/sh.h"
 #   define AO_CAN_EMUL_CAS
-# endif /* __sh__ */
-# if defined(__avr32__)
+# elif defined(__avr32__)
 #   include "atomic_ops/sysdeps/gcc/avr32.h"
-# endif
-# if defined(__hexagon__)
+# elif defined(__hexagon__)
 #   include "atomic_ops/sysdeps/gcc/hexagon.h"
+# elif defined(__nios2__)
+#   include "atomic_ops/sysdeps/gcc/generic.h"
+#   define AO_CAN_EMUL_CAS
+# elif defined(__riscv)
+#   include "atomic_ops/sysdeps/gcc/riscv.h"
+# elif defined(__tile__)
+#   include "atomic_ops/sysdeps/gcc/tile.h"
+# else /* etc. */
+#   include "atomic_ops/sysdeps/gcc/generic.h"
 # endif
 #endif /* __GNUC__ && !AO_USE_PTHREAD_DEFS */
 
@@ -334,7 +395,7 @@
 
 #if defined(_MSC_VER) || defined(__DMC__) || defined(__BORLANDC__) \
         || (defined(__WATCOMC__) && defined(__NT__))
-# if defined(_AMD64_) || defined(_M_X64)
+# if defined(_AMD64_) || defined(_M_X64) || defined(_M_ARM64)
 #   include "atomic_ops/sysdeps/msftc/x86_64.h"
 # elif defined(_M_IX86) || defined(x86)
 #   include "atomic_ops/sysdeps/msftc/x86.h"
@@ -357,26 +418,28 @@
 # define AO_CAN_EMUL_CAS
 #endif
 
-#if defined(AO_REQUIRE_CAS) && !defined(AO_HAVE_compare_and_swap) \
+#if (defined(AO_REQUIRE_CAS) && !defined(AO_HAVE_compare_and_swap) \
     && !defined(AO_HAVE_fetch_compare_and_swap) \
     && !defined(AO_HAVE_compare_and_swap_full) \
     && !defined(AO_HAVE_fetch_compare_and_swap_full) \
     && !defined(AO_HAVE_compare_and_swap_acquire) \
-    && !defined(AO_HAVE_fetch_compare_and_swap_acquire)
+    && !defined(AO_HAVE_fetch_compare_and_swap_acquire)) || defined(CPPCHECK)
 # if defined(AO_CAN_EMUL_CAS)
 #   include "atomic_ops/sysdeps/emul_cas.h"
-# else
-#  error Cannot implement AO_compare_and_swap_full on this architecture.
+# elif !defined(CPPCHECK)
+#   error Cannot implement AO_compare_and_swap_full on this architecture.
 # endif
 #endif /* AO_REQUIRE_CAS && !AO_HAVE_compare_and_swap ... */
 
 /* The most common way to clear a test-and-set location         */
 /* at the end of a critical section.                            */
-#if defined(AO_AO_TS_T) && !defined(AO_CLEAR)
+#if defined(AO_AO_TS_T) && !defined(AO_HAVE_CLEAR)
 # define AO_CLEAR(addr) AO_store_release((AO_TS_t *)(addr), AO_TS_CLEAR)
+# define AO_HAVE_CLEAR
 #endif
-#if defined(AO_CHAR_TS_T) && !defined(AO_CLEAR)
+#if defined(AO_CHAR_TS_T) && !defined(AO_HAVE_CLEAR)
 # define AO_CLEAR(addr) AO_char_store_release((AO_TS_t *)(addr), AO_TS_CLEAR)
+# define AO_HAVE_CLEAR
 #endif
 
 /* The generalization section.  */

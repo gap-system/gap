@@ -9,15 +9,15 @@ updated 'Makefile', and hope it compiles fine.
 WHATS NEW:
 
 1.
-   Made a pretty big effort in preventing GCs allocating-functions from returning
-   chip-mem.
+   Made a pretty big effort in preventing GC allocating-functions from
+   returning chip-mem.
 
    The lower part of the new file AmigaOS.c does this in various ways, mainly by
    wrapping GC_malloc, GC_malloc_atomic, GC_malloc_uncollectable,
-   GC_malloc_atomic_uncollectable, GC_malloc_stubborn, GC_malloc_ignore_off_page
+   GC_malloc_atomic_uncollectable, GC_malloc_ignore_off_page
    and GC_malloc_atomic_ignore_off_page. GC_realloc is also wrapped, but
    doesn't do the same effort in preventing to return chip-mem.
-   Other allocating-functions (f.ex. GC_*_typed_) can probably be
+   Other allocating-functions (e.g., GC_*_typed) can probably be
    used without any problems, but beware that the warn hook will not be called.
    In case of problems, don't define GC_AMIGA_FASTALLOC.
 
@@ -48,7 +48,7 @@ WHATS NEW:
                  It is also the most important flag to set to prevent
                  GC from returning chip-mem. Beware that it slows down a lot
                  when a program is rapidly allocating/deallocating when
-                 theres either very little fast-memory left or verly little
+                 there's either very little fast-memory left or very little
                  chip-memory left. Its not a very common situation, but gctest
                  sometimes (very rare) use many minutes because of this.
 
@@ -62,7 +62,7 @@ WHATS NEW:
                          program, and prints out the info when the atexit-handler
                          is called.
 
-   My reccomendation is to set all this flags, except GC_AMIGA_PRINTSTATS and
+   My recommendation is to set all this flags, except GC_AMIGA_PRINTSTATS and
    GC_AMIGA_ONLYFAST.
 
    If your program demands high response-time, you should
@@ -70,7 +70,7 @@ WHATS NEW:
    GC_AMIGA_RETRY does not seem to slow down much.
 
    Also, when compiling up programs, and GC_AMIGA_FASTALLOC was not defined when
-   compilling gc, you can define GC_AMIGA_MAKINGLIB to avoid having these allocation-
+   compiling gc, you can define GC_AMIGA_MAKINGLIB to avoid having these allocation-
    functions wrapped. (see gc.h)
 
    Note that GC_realloc must not be called before any of
@@ -81,7 +81,7 @@ WHATS NEW:
    GC_AMIGA_FASTALLOC by letting the function go thru the new
    GC_amiga_allocwrapper_do function-pointer (see gc.h). Means that
    sending function-pointers, such as GC_malloc, GC_malloc_atomic, etc.,
-   for later to be called like f.ex this, (*GC_malloc_function_pointer)(size),
+   for later to be called, e.g., like this, (*GC_malloc_function_pointer)(size),
    will not wrap the function. This is normally not a big problem, unless
    all allocation function is called like this, which will cause the
    atexit un-allocating function never to be called. Then you either
@@ -91,7 +91,7 @@ WHATS NEW:
    There are probably better ways this problem could be handled, unfortunately,
    I didn't find any without rewriting or replacing a lot of the GC-code, which
    I really didn't want to. (Making new GC_malloc_* functions, and just
-   define f.ex GC_malloc as GC_amiga_malloc should work too).
+   defining, e.g., GC_malloc as GC_amiga_malloc should work too).
 
 
    New Amiga-specific function:
@@ -99,16 +99,16 @@ WHATS NEW:
      void GC_amiga_set_toany(void (*func)(void));
 
    'func' is a function that will be called right before gc has to change
-   allocation-method from MEMF_FAST to MEMF_ANY. Ie. when it is likely
+   allocation-method from MEMF_FAST to MEMF_ANY. I.e., when it is likely
    it will return chip-mem.
 
 
 2. A few small compiler-specific additions to make it compile with SAS/C again.
 
-3. Updated and rewritten the smakefile, so that it works again and that
+3. Updated and rewritten the SMakefile.amiga, so that it works again and that
    the "unnecessary" 'SCOPTIONS' files could be removed. Also included
    the cord-smakefile stuff in the main smakefile, so that the cord smakefile
-   could be removed too. By writing smake -f Smakefile.smk, both gc.lib and
+   could be removed too. By typing "smake -f SMakefile.amiga", both gc.lib and
    cord.lib will be made.
 
 
@@ -117,10 +117,7 @@ STILL MISSING:
 
 Programs can not be started from workbench, at least not for SAS/C. (Martin
 Tauchmanns note about that it now works with workbench is definitely wrong
-when concerning SAS/C). I guess it works if you use the old "#if 0'ed"-code,
-but I haven't tested it. I think the reason for MT to replace the
-"#if 0'ed"-code was only because it was a bit to SAS/C-specific. But I
-don't know. An iconx-script solves this problem anyway.
+when concerning SAS/C).  An iconx-script solves this problem.
 
 
 BEWARE!
@@ -249,10 +246,10 @@ the SAS/C commercial development system.
 
 In keeping with the porting philosophy outlined above, this port
 will not behave well with Amiga specific code. Especially not inter-
-process comms via messages, and setting up public structures like
+process communications via messages, and setting up public structures like
 Intuition objects or anything else in the system lists. For the
 time being the use of this library is limited to single threaded
-ANSI/POSIX  compliant or near-complient code. (ie. Stick to stdio
+ANSI/POSIX compliant or near-compliant code. (i.e., stick to stdio
 for now). Given this limitation there is currently no mechanism for
 allocating "CHIP" or "PUBLIC" memory under the garbage collector.
 I'll add this after giving it considerable thought. The major
@@ -263,7 +260,7 @@ If you allocate your own stack in client code, you will have to
 assign the pointer plus stack size to GC_stackbottom.
 
 The initial stack size of the target program can be compiled in by
-setting the __stack symbol (see SAS documentaion). It can be over-
+setting the __stack symbol (see SAS documentation). It can be over-
 ridden from the CLI by running the AmigaDOS "stack" program, or from
 the WorkBench by setting the stack size in the tool types window.
 
@@ -285,7 +282,7 @@ The library as it stands is compatible with the GigaMem commercial
 virtual memory software, and probably similar PD software.
 
 The performance of "gctest" on an Amiga 2630 (68030 @ 25Mhz)
-compares favourably with an HP9000 with similar architecture (a 325
+compares favorably with an HP9000 with similar architecture (a 325
 with a 68030 I think).
 
 -----------------------------------------------------------------------

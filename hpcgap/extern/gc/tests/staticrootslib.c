@@ -23,7 +23,7 @@ struct treenode {
 };
 
 static struct treenode *root[10] = { 0 };
-static struct treenode *root_nz[10] = { (void *)(GC_word)2 };
+static struct treenode *root_nz[10] = { (struct treenode *)(GC_word)2 };
 
 #ifdef STATICROOTSLIB2
 # define libsrl_getpelem libsrl_getpelem2
@@ -31,20 +31,35 @@ static struct treenode *root_nz[10] = { (void *)(GC_word)2 };
 
   GC_TEST_EXPORT_API struct treenode * libsrl_mktree(int i)
   {
-    struct treenode * r = GC_MALLOC(sizeof(struct treenode));
-    if (0 == i) return 0;
-    if (1 == i) r = GC_MALLOC_ATOMIC(sizeof(struct treenode));
+    struct treenode * r = GC_NEW(struct treenode);
+    if (0 == i)
+      return 0;
+    if (1 == i)
+      r = (struct treenode *)GC_MALLOC_ATOMIC(sizeof(struct treenode));
     if (r) {
-      r -> x = libsrl_mktree(i-1);
-      r -> y = libsrl_mktree(i-1);
+      struct treenode *x = libsrl_mktree(i - 1);
+      struct treenode *y = libsrl_mktree(i - 1);
+      r -> x = x;
+      r -> y = y;
+      if (i != 1) {
+        GC_END_STUBBORN_CHANGE(r);
+        GC_reachable_here(x);
+        GC_reachable_here(y);
+      }
     }
     return r;
   }
 
   GC_TEST_EXPORT_API void * libsrl_init(void)
   {
+#   ifdef TEST_MANUAL_VDB
+      GC_set_manual_vdb_allowed(1);
+#   endif
 #   ifndef STATICROOTSLIB_INIT_IN_MAIN
       GC_INIT();
+#   endif
+#   ifndef NO_INCREMENTAL
+      GC_enable_incremental();
 #   endif
     return GC_MALLOC(sizeof(struct treenode));
   }

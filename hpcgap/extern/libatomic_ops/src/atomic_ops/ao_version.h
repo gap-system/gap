@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2003-2004 Hewlett-Packard Development Company, L.P.
+ * Copyright (c) 2011-2018 Ivan Maidanski
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,5 +34,5 @@
 
 /* The version here should match that in configure.ac and README.       */
 #define AO_VERSION_MAJOR 7
-#define AO_VERSION_MINOR 4
-#define AO_VERSION_MICRO 4 /* 7.4.4 */
+#define AO_VERSION_MINOR 6
+#define AO_VERSION_MICRO 12 /* 7.6.12 */

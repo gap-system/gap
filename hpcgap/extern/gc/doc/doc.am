@@ -11,8 +11,8 @@
 ## Process this file with automake to produce Makefile.in.
 
 # installed documentation
-#
-dist_pkgdata_DATA = \
+if ENABLE_DOCS
+dist_doc_DATA = \
         AUTHORS \
         README.md \
         doc/README.DGUX386 \
@@ -24,7 +24,6 @@ dist_pkgdata_DATA = \
         doc/README.cmake \
         doc/README.cords \
         doc/README.darwin \
-        doc/README.dj \
         doc/README.environment \
         doc/README.ews4800 \
         doc/README.hp \
@@ -37,14 +36,16 @@ dist_pkgdata_DATA = \
         doc/README.uts \
         doc/README.win32 \
         doc/README.win64 \
-        doc/debugging.html \
-        doc/finalization.html \
-        doc/gc.man \
-        doc/gcdescr.html \
-        doc/gcinterface.html \
-        doc/leak.html \
-        doc/overview.html \
-        doc/porting.html \
-        doc/scale.html \
-        doc/simple_example.html \
-        doc/tree.html
+        doc/debugging.md \
+        doc/finalization.md \
+        doc/gcdescr.md \
+        doc/gcinterface.md \
+        doc/leak.md \
+        doc/overview.md \
+        doc/porting.md \
+        doc/scale.md \
+        doc/simple_example.md \
+        doc/tree.md
+
+dist_man3_MANS = doc/gc.man
+endif
