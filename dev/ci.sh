@@ -226,7 +226,6 @@ GAPInput
     ;;
 
   testexpect)
-    actual=/tmp/gaptest.expect.actual
     INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b  --cover $COVDIR/${TEST_SUITE}.coverage" $SRCDIR/dev/gaptest.expect
     ;;
 

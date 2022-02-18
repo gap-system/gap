@@ -1,4 +1,4 @@
-set timeout 3
+set timeout 10
 
 # from https://serverfault.com/a/981762
 expect_before {
@@ -8,6 +8,7 @@ expect_before {
 
 expect "gap> "
 send -- "var := rec(member := true, data1 := 1, data2 := 2);;\r"
+sleep 0.1
 
 # test tab completing "v" to "var"
 expect "gap> "
@@ -17,6 +18,7 @@ send -- "\t"
 expect "var"
 send -- ";\r"
 expect "rec"
+sleep 0.1
 
 # test tab completing "var.d" to "var.data" to "var.data1" or "var.data2"
 expect "gap> "
@@ -26,6 +28,7 @@ send -- "\t"
 expect "data1  data2"
 send -- "1;\r"
 expect "1"
+sleep 0.1
 
 # the same, but now with some code right before "var.d"
 expect "gap> "
