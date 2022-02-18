@@ -34,17 +34,6 @@ for gfile in *.g; do
     fi
     rm -f "${gfile}.bad"
 
-    echo "  now compiling ${gfile} statically ..."
-    ./run_compiled_static.sh "${gap}" "${gac}" "${gfile}" > "${gfile}.bad"
-    if ! diff -u -b "${gfile}.out" "${gfile}.bad"; then
-        echo "ERROR: ${gfile} failed with compiling and static linking"
-        retvalue=1
-    fi
-    if ! git diff --exit-code -- ${gfile}.static.c; then
-        echo "ERROR: ${gfile}.static.c changed unexpectedly"
-        retvalue=1
-    fi
-    rm -f "${gfile}.bad"
     echo
 
 done
