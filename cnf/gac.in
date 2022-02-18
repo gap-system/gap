@@ -93,23 +93,23 @@ gap_compile () {
 
 #############################################################################
 ##
-#F  c_compile   <output> <input> <options>
+#F  c_compile <output> <input>
 ##
 c_compile () {
     mkdir -p $(dirname $1)
-    echo ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
-    ${c_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
+    echo ${c_compiler} ${GAP_CFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2
+    ${c_compiler} ${GAP_CFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
 
 
 #############################################################################
 ##
-#F  cxx_compile <output> <input> <options>
+#F  cxx_compile <output> <input>
 ##
 cxx_compile () {
     mkdir -p $(dirname $1)
-    echo ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2
-    ${cxx_compiler} $3 -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
+    echo ${cxx_compiler} ${GAP_CXXFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2
+    ${cxx_compiler} ${GAP_CXXFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
 
 
@@ -188,7 +188,7 @@ process_c_file () {
     else 
        o_file=${name}.lo
     fi
-    c_compile $o_file $c_file "$GAP_CFLAGS"
+    c_compile $o_file $c_file
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
     fi 
@@ -213,7 +213,7 @@ process_cxx_file () {
   else
     o_file=${name}.lo
   fi
-  cxx_compile $o_file $cxx_file "$GAP_CXXFLAGS"
+  cxx_compile $o_file $cxx_file
   if [ $comp_howfar = "link" ]; then
     process_o_file $name $o_file
   fi
