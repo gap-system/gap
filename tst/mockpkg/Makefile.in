@@ -1,0 +1,9 @@
+#
+# Makefile rules for the mockpkg package
+#
+KEXT_NAME = mockpkg
+KEXT_SOURCES = src/mockpkg.c
+
+# include shared GAP package build system
+GAPPATH = @GAPPATH@
+include Makefile.gappkg

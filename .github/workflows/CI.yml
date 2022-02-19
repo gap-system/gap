@@ -55,7 +55,7 @@ jobs:
             "testmanuals",
 
             # test error reporting and compiling as well as libgap
-            "testexpect testspecial test-compile testlibgap testkernel",
+            "testexpect testmockpkg testspecial test-compile testlibgap testkernel",
 
             # compile packages and run GAP tests
             # don't use --enable-debug to prevent the tests from taking too long
@@ -98,7 +98,7 @@ jobs:
           # this job also tests GAP without readline
           - os: macos-latest
             shell: bash
-            test-suites: "testinstall"
+            test-suites: "testmockpkg testinstall"
             extra: "BOOTSTRAP_MINIMAL=yes"
 
           # run bugfix regression tests
@@ -123,7 +123,7 @@ jobs:
           # tests using valgrind, as it is too slow.
           - os: ubuntu-18.04
             shell: bash
-            test-suites: "testbuildsys testinstall"
+            test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
                     CONFIGFLAGS=\"--enable-valgrind\""
             packages: "valgrind"
@@ -132,7 +132,7 @@ jobs:
           # elsewhere in this file for an explanation).
           - os: ubuntu-18.04
             shell: bash
-            test-suites: "testbuildsys testinstall"
+            test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test Julia integration
@@ -147,7 +147,7 @@ jobs:
             #   -o igncr: Accept windows line endings
             #   {0} : Pass any extra arguments from CI
             shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
-            test-suites: "testinstall"
+            test-suites: "testmockpkg testinstall"
 
           # TODO: add back big endian test (we had s390x on Travis)
           # TODO: add back test with an older GCC, e.g. 4.7
