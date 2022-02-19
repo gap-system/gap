@@ -54,7 +54,7 @@ void InitSymbolTableKernel(SymbolTable *      symtab,
                            NewSymbolFunc      newSymbolFunc);
 
 // Initialize library part of a SymbolTable (to be called from InitLibrary)
-void InitSymbolTableLibrary(SymbolTable * symtab);
+void InitSymbolTableLibrary(SymbolTable * symtab, UInt initialSize);
 
 // Return the number of symbols contained in a SymbolTable (thread safe)
 int LengthSymbolTable(SymbolTable * symtab);

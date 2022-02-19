@@ -50,12 +50,12 @@ void InitSymbolTableKernel(SymbolTable *      symtab,
     InitGlobalBag(&symtab->table, cookieTable);
 }
 
-void InitSymbolTableLibrary(SymbolTable * symtab)
+void InitSymbolTableLibrary(SymbolTable * symtab, UInt initialSize)
 {
     GAP_ASSERT(symtab);
 
-    symtab->table = NEW_PLIST(T_PLIST, 14033);
-    SET_LEN_PLIST(symtab->table, 14033);
+    symtab->table = NEW_PLIST(T_PLIST, initialSize);
+    SET_LEN_PLIST(symtab->table, initialSize);
 #ifdef HPCGAP
     MakeBagPublic(symtab->table);
 #endif

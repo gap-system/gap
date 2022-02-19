@@ -529,7 +529,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    InitSymbolTableLibrary(&RNamSymbolTable);
+    InitSymbolTableLibrary(&RNamSymbolTable, 28069);
 
     /* make the list of names of record names                              */
     NamesRNam = NEW_PLIST( T_PLIST, 0 );

@@ -2003,7 +2003,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    InitSymbolTableLibrary(&FilenameSymbolTable);
+    InitSymbolTableLibrary(&FilenameSymbolTable, 7079);
     FilenameCache = NEW_PLIST(T_PLIST, 0);
 
     /* init filters and functions                                          */
