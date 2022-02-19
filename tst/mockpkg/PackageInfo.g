@@ -88,6 +88,7 @@ Dependencies := rec(
 
 AvailabilityTest := function()
   Print("oops, should not print here\n");
+  #return IsKernelExtensionAvailable("mockpkg");
   return true;
 end,
 

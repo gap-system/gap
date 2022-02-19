@@ -225,6 +225,18 @@ GAPInput
     make testkernel
     ;;
 
+  testmockpkg)
+    # test building a package kernel extension
+    cd "$SRCDIR/tst/mockpkg"
+    ./configure "$BUILDDIR"
+    make
+    # trick to make it easy to load the package in GAP
+    ln -s . pkg
+    # try to load the kernel extension
+    cd "$BUILDDIR"
+    $GAP -A --cover $COVDIR/testmockpkg.coverage -l "$SRCDIR/tst/mockpkg;" "$SRCDIR/tst/mockpkg/tst/testall.g"
+    ;;
+
   testexpect)
     INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b  --cover $COVDIR/${TEST_SUITE}.coverage" $SRCDIR/dev/gaptest.expect
     ;;
