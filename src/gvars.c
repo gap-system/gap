@@ -1567,7 +1567,7 @@ static Int PostSave (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    InitSymbolTableLibrary(&GVarSymbolTable);
+    InitSymbolTableLibrary(&GVarSymbolTable, 28069);
 
     /* make the error functions for 'AssGVar'                              */
     ErrorMustEvalToFuncFunc = NewFunctionC(
