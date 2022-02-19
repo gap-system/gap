@@ -46,6 +46,13 @@ ifndef GAP_KERNEL_MAJOR_VERSION
   KEXT_CXXFLAGS += -I$(GAP_LIB_DIR)/src
 endif
 
+# honor used supplied flags
+KEXT_CFLAGS += $(CPPFLAGS)
+KEXT_CFLAGS += $(CFLAGS)
+KEXT_CXXFLAGS += $(CPPFLAGS)
+KEXT_CXXFLAGS += $(CXXFLAGS)
+KEXT_LDFLAGS += $(LDFLAGS)
+
 # various derived settings
 KEXT_BINARCHDIR = bin/$(GAParch)
 KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
@@ -83,7 +90,7 @@ KEXT_OBJS = $(patsubst %.s,gen/%.lo, \
 ########################################################################
 ifneq ($(findstring $(MAKEFLAGS),s),s)
 ifndef V
-QUIET_GAC     = @echo "   GAC     $< => $@";
+QUIET_GAC     = @echo "   GAC     $< => $@";>/dev/null # keep the trailing space!
 endif
 endif
 
@@ -112,24 +119,24 @@ KEXT_DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.c Makefile
 	@mkdir -p $(@D)
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -p "$(CFLAGS)" -c $< -o $@
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 
 # build rule for C++ code
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.cc Makefile
 	@mkdir -p $(@D)
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -p "$(CXXFLAGS)" -c $< -o $@
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -c $< -o $@
 
 # build rule for assembler code
 # The dependency on Makefile ensures that re-running configure recompiles everything
 gen/%.lo: %.s Makefile
 	@mkdir -p $(@D)
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -p "$(CFLAGS)" -c $< -o $@
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 
 # build rule for linking all object files together into a kernel extension
 $(KEXT_SO): $(KEXT_OBJS)
 	@mkdir -p $(@D)
-	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -P "$(KEXT_LDFLAGS)" -P "$(LDFLAGS)" $(KEXT_OBJS) -o $@
+	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -P "$(KEXT_LDFLAGS)" $(KEXT_OBJS) -o $@
 
 # hook into `make clean`
 clean: clean-kext
@@ -137,7 +144,7 @@ clean-kext:
 	rm -rf $(KEXT_BINARCHDIR) gen
 
 # hook into `make distclean`
-distclean: clean-kext
+distclean: distclean-kext
 distclean-kext:
 	rm -rf bin gen Makefile
 	(cd doc && ./clean)
