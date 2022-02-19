@@ -22,6 +22,7 @@
 #include "opers.h"
 #include "plist.h"
 #include "stringobj.h"
+#include "symbols.h"
 
 #ifdef HPCGAP
 #include "hpc/thread.h"
@@ -29,7 +30,7 @@
 #endif
 
 
-static Obj HashRNam;
+static SymbolTable RNamSymbolTable;
 
 static Obj NamesRNam;
 
@@ -49,50 +50,9 @@ extern inline Obj NAME_RNAM(UInt rnam)
     return ELM_PLIST(NamesRNam, rnam);
 }
 
-
-#ifdef HPCGAP
-
-/****************************************************************************
-**
-*F  RNameLock . . . . . . . . . . . . . . . . . . . . .  lock for name table
-**
-**  'CountRnam' is the number of record names.
-*/
-static pthread_rwlock_t RNameLock;
-
-static void HPC_LockNames(int write)
+static void NewRNamCallback(SymbolTable * symtab, UInt id, Obj name)
 {
-  if (PreThreadCreation)
-    return;
-  if (write)
-    pthread_rwlock_wrlock(&RNameLock);
-  else
-    pthread_rwlock_rdlock(&RNameLock);
-}
-
-static void HPC_UnlockNames(void)
-{
-  if (!PreThreadCreation)
-    pthread_rwlock_unlock(&RNameLock);
-}
-
-#endif
-
-
-static inline UInt HashString( const Char * name )
-{
-    UInt hash = 0;
-    while ( *name ) {
-        hash = 65599 * hash + *name++;
-    }
-    return hash;
-}
-
-static inline int EqString(Obj str, const Char * name, UInt len)
-{
-    if (GET_LEN_STRING(str) != len)
-        return 0;
-    return memcmp(CONST_CSTR_STRING(str), name, len) == 0;
+    AssPlist(NamesRNam, id, name);
 }
 
 /****************************************************************************
@@ -104,99 +64,13 @@ static inline int EqString(Obj str, const Char * name, UInt len)
 */
 UInt RNamName(const Char * name)
 {
-    Obj                 rnam;           /* record name (as imm intobj)     */
-    UInt                pos;            /* hash position                   */
-    Char                namx [1024];    /* temporary copy of <name>        */
-    Obj                 string;         /* temporary string object <name>  */
-    Obj                 table;          /* temporary copy of <HashRNam>    */
-    Obj                 rnam2;          /* one element of <table>          */
-    UInt                i;              /* loop variable                   */
-    UInt                sizeRNam;
-
-    UInt len = strlen(name)
+    UInt len = strlen(name);
     if (len > 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
         ErrorQuit("Record names must consist of at most 1023 characters", 0, 0);
     }
 
-    /* start looking in the table at the following hash position           */
-    const UInt hash = HashString( name );
-
-#ifdef HPCGAP
-    HPC_LockNames(0); /* try a read lock first */
-#endif
-
-    /* look through the table until we find a free slot or the global      */
-    sizeRNam = LEN_PLIST(HashRNam);
-    pos = (hash % sizeRNam) + 1;
-    while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-         && !EqString( NAME_RNAM( INT_INTOBJ(rnam) ), name, len ) ) {
-        pos = (pos % sizeRNam) + 1;
-    }
-    if (rnam != 0) {
-#ifdef HPCGAP
-      HPC_UnlockNames();
-#endif
-      return INT_INTOBJ(rnam);
-    }
-#ifdef HPCGAP
-    if (!PreThreadCreation) {
-      HPC_UnlockNames(); /* switch to a write lock */
-      HPC_LockNames(1);
-      /* look through the table until we find a free slot or the global      */
-      sizeRNam = LEN_PLIST(HashRNam);
-      pos = (hash % sizeRNam) + 1;
-      while ( (rnam = ELM_PLIST( HashRNam, pos )) != 0
-           && !EqString( NAME_RNAM( INT_INTOBJ(rnam) ), name, len ) ) {
-          pos = (pos % sizeRNam) + 1;
-      }
-    }
-    if (rnam != 0) {
-      HPC_UnlockNames();
-      return INT_INTOBJ(rnam);
-    }
-#endif
-
-    /* if we did not find the global variable, make a new one and enter it */
-    /* (copy the name first, to avoid a stale pointer in case of a GC)     */
-    memcpy( namx, name, len );
-    namx[len] = 0;
-    string = MakeImmString(namx);
-
-    const UInt countRNam = PushPlist(NamesRNam, string);
-    rnam = INTOBJ_INT(countRNam);
-    SET_ELM_PLIST( HashRNam, pos, rnam );
-
-    /* if the table is too crowded, make a larger one, rehash the names     */
-    if ( sizeRNam < 3 * countRNam / 2 ) {
-        table = HashRNam;
-        sizeRNam = 2 * sizeRNam + 1;
-        HashRNam = NEW_PLIST( T_PLIST, sizeRNam );
-        SET_LEN_PLIST( HashRNam, sizeRNam );
-#ifdef HPCGAP
-        /* The list is briefly non-public, but this is safe, because
-         * the mutex protects it from being accessed by other threads.
-         */
-        MakeBagPublic(HashRNam);
-#endif
-        for ( i = 1; i <= (sizeRNam-1)/2; i++ ) {
-            rnam2 = ELM_PLIST( table, i );
-            if ( rnam2 == 0 )  continue;
-            string = NAME_RNAM( INT_INTOBJ(rnam2) );
-            pos = HashString( CONST_CSTR_STRING( string ) );
-            pos = (pos % sizeRNam) + 1;
-            while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
-                pos = (pos % sizeRNam) + 1;
-            }
-            SET_ELM_PLIST( HashRNam, pos, rnam2 );
-        }
-    }
-#ifdef HPCGAP
-    HPC_UnlockNames();
-#endif
-
-    /* return the record name                                              */
-    return INT_INTOBJ(rnam);
+    return LookupSymbol(&RNamSymbolTable, name);
 }
 
 
@@ -583,7 +457,9 @@ static Int InitKernel (
     InitGlobalBag( &NamesRNam, "src/records.c:NamesRNam" );
 
     /* make the hash list of record names                                  */
-    InitGlobalBag( &HashRNam, "src/records.c:HashRNam" );
+    InitSymbolTableKernel(&RNamSymbolTable, "src/records.c:RNamSymbolCount",
+                          "src/records.c:RNamSymbolTable", NAME_RNAM,
+                          NewRNamCallback);
 
     /* init filters and functions                                          */
     InitHdlrFiltsFromTable( GVarFilts );
@@ -653,17 +529,12 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
+    InitSymbolTableLibrary(&RNamSymbolTable);
+
     /* make the list of names of record names                              */
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
 #ifdef HPCGAP
     MakeBagPublic(NamesRNam);
-#endif
-
-    /* make the hash list of record names                                  */
-    HashRNam = NEW_PLIST( T_PLIST, 14033 );
-    SET_LEN_PLIST( HashRNam, 14033 );
-#ifdef HPCGAP
-    MakeBagPublic(HashRNam);
 #endif
 
     /* init filters and functions                                          */
