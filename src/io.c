@@ -35,6 +35,7 @@
 #include "read.h"
 #include "scanner.h"
 #include "stringobj.h"
+#include "symbols.h"
 #include "sysfiles.h"
 #include "sysopt.h"
 #include "sysstr.h"
@@ -69,6 +70,7 @@ static Obj SetPrintFormattingStatus;
 **  'FilenameCache' is a list of previously opened filenames.
 */
 static Obj FilenameCache;
+static SymbolTable FilenameSymbolTable;
 
 static ModuleStateOffset IOStateOffset = -1;
 
@@ -259,23 +261,14 @@ UInt GetInputFilenameID(TypInputFile * input)
     GAP_ASSERT(input);
     UInt gapnameid = input->gapnameid;
     if (gapnameid == 0) {
-        Obj filename = MakeImmString(GetInputFilename(input));
-#ifdef HPCGAP
-        // TODO/FIXME: adjust this code to work more like the corresponding
-        // code below for GAP?!?
-        gapnameid = AddAList(FilenameCache, filename);
-#else
-        Obj pos = POS_LIST(FilenameCache, filename, INTOBJ_INT(1));
-        if (pos == Fail) {
-            gapnameid = PushPlist(FilenameCache, filename);
-        }
-        else {
-            gapnameid = INT_INTOBJ(pos);
-        }
-#endif
-        input->gapnameid = gapnameid;
+        input->gapnameid = LookupSymbol(&FilenameSymbolTable, input->name);
     }
     return gapnameid;
+}
+
+static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
+{
+    AssPlist(FilenameCache, id, name);
 }
 
 Obj GetCachedFilename(UInt id)
@@ -2010,11 +2003,8 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-#ifdef HPCGAP
-    FilenameCache = NewAtomicList(T_ALIST, 0);
-#else
+    InitSymbolTableLibrary(&FilenameSymbolTable);
     FilenameCache = NEW_PLIST(T_PLIST, 0);
-#endif
 
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
@@ -2033,6 +2023,10 @@ static Int InitKernel (
     IO()->PrintFormattingForErrout = TRUE;
 
     OpenOutput(&IO()->DefaultOutput, "*stdout*", FALSE);
+
+    InitSymbolTableKernel(&FilenameSymbolTable, "FilenameSymbolCount",
+                          "FilenameSymbolTable", GetCachedFilename,
+                          AddCachedFilename);
 
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
