@@ -36,8 +36,6 @@ Obj NAME_RNAM(UInt rnam);
 */
 UInt RNamName(const Char * name);
 
-UInt RNamNameWithLen(const Char * name, UInt len);
-
 
 /****************************************************************************
 **

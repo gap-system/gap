@@ -79,10 +79,10 @@ static void HPC_UnlockNames(void)
 #endif
 
 
-static inline UInt HashString( const Char * name, UInt len )
+static inline UInt HashString( const Char * name )
 {
     UInt hash = 0;
-    while ( len-- > 0 ) {
+    while ( *name ) {
         hash = 65599 * hash + *name++;
     }
     return hash;
@@ -102,13 +102,7 @@ static inline int EqString(Obj str, const Char * name, UInt len)
 **  'RNamName' returns  the record name with the  name  <name> (which is  a C
 **  string).
 */
-UInt            RNamName (
-    const Char *        name )
-{
-    return RNamNameWithLen(name, strlen(name));
-}
-
-UInt RNamNameWithLen(const Char * name, UInt len)
+UInt RNamName(const Char * name)
 {
     Obj                 rnam;           /* record name (as imm intobj)     */
     UInt                pos;            /* hash position                   */
@@ -119,13 +113,14 @@ UInt RNamNameWithLen(const Char * name, UInt len)
     UInt                i;              /* loop variable                   */
     UInt                sizeRNam;
 
+    UInt len = strlen(name)
     if (len > 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
         ErrorQuit("Record names must consist of at most 1023 characters", 0, 0);
     }
 
     /* start looking in the table at the following hash position           */
-    const UInt hash = HashString( name, len );
+    const UInt hash = HashString( name );
 
 #ifdef HPCGAP
     HPC_LockNames(0); /* try a read lock first */
@@ -188,7 +183,7 @@ UInt RNamNameWithLen(const Char * name, UInt len)
             rnam2 = ELM_PLIST( table, i );
             if ( rnam2 == 0 )  continue;
             string = NAME_RNAM( INT_INTOBJ(rnam2) );
-            pos = HashString( CONST_CSTR_STRING( string ), GET_LEN_STRING( string) );
+            pos = HashString( CONST_CSTR_STRING( string ) );
             pos = (pos % sizeRNam) + 1;
             while ( ELM_PLIST( HashRNam, pos ) != 0 ) {
                 pos = (pos % sizeRNam) + 1;

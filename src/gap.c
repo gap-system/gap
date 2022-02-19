@@ -1105,7 +1105,8 @@ static Obj FuncKERNEL_INFO(Obj self)
             // FIXME: should we print a warning here?
             continue;
         }
-        r = RNamNameWithLen(environ[i], p - environ[i]);
+        Obj name = MakeStringWithLen(environ[i], p - environ[i]);
+        r = RNamName(CONST_CSTR_STRING(name));
         p++; /* Move pointer behind = character */
         AssPRec(tmp, r, MakeImmString(p));
     }
