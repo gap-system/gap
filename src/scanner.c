@@ -57,9 +57,9 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             Pr("Syntax warning: %s", (Int)msg, 0);
 
         // ... and the filename + line, unless it is '*stdin*'
-        if (!streq("*stdin*", GetInputFilename(s->input)))
-            Pr(" in %s:%d", (Int)GetInputFilename(s->input),
-               GetInputLineNumber(s->input));
+        Obj name = GetCachedFilename(GetInputFilenameID(s->input));
+        if (!streq("*stdin*", CONST_CSTR_STRING(name)))
+            Pr(" in %g:%d", (Int)name, GetInputLineNumber(s->input));
         Pr("\n", 0, 0);
 
         // print the current line

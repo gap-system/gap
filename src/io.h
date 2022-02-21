@@ -45,9 +45,6 @@ struct TypInputFile {
     // to 'SyFgets' and 'SyFclose' to identify this file
     Int file;
 
-    // the name of the file; this is only used in error messages
-    char name[256];
-
     //
     UInt gapnameid;
 
@@ -422,9 +419,6 @@ Char PEEK_CURR_CHAR(TypInputFile * input);
 // skip the rest of the current line, ignoring line continuations
 // (used to handle comments)
 void SKIP_TO_END_OF_LINE(TypInputFile * input);
-
-// get the filename of the current input
-const Char * GetInputFilename(TypInputFile * input);
 
 // get the number of the current line in the current thread's input
 Int GetInputLineNumber(TypInputFile * input);
