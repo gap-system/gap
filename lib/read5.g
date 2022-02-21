@@ -185,7 +185,6 @@ ReadLib( "stbcbckt.gi" );
 ReadLib( "stbcrand.gi" );
 ReadLib( "clas.gi"     );
 ReadLib( "claspcgs.gi" );
-ReadLib( "clasperm.gi" );
 ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );
 ReadLib( "csetpc.gi"   );
@@ -217,6 +216,7 @@ ReadLib( "grpnice.gi"  );
 ReadLib( "fitfree.gi"  );
 ReadLib( "permdeco.gi" );
 ReadLib( "clashom.gi"  );
+ReadLib( "clasperm.gi" );
 ReadLib( "maxsub.gi"   );
 ReadLib( "norad.gi"    );
 

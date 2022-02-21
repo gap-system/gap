@@ -2510,7 +2510,7 @@ local r,	#radical
     else
       d:=SubgroupByFittingFreeData(G,i[3],i[4],i[2]);
       Assert(2,Size(d)=i[5]);
-      Assert(2,Centralizer(G,i[1])=d);
+      Assert(2,Centralizer(G,i[1]:usebacktrack)=d);
       SetSize(d,i[5]);
       r:=ConjugacyClass(G,i[1],d);
       SetSize(r,Size(G)/i[5]);
@@ -2999,10 +2999,10 @@ InstallMethod( CentralizerOp, "TF method:elm",IsCollsElms,
   IsMultiplicativeElementWithInverse ], OVERRIDENICE,
 function( G, e )
 local ffs;
-  if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
-  if not e in G then 
-    # TODO: form larger group containing e.
-    TryNextMethod();
+  if IsPcGroup(G) 
+    or (IsPermGroup(G) and AttemptPermRadicalMethod(G,"CENT")<>true)
+    or not e in G then 
+      TryNextMethod();
   fi;
   e:=TFCanonicalClassRepresentative(G,[e])[1];
   if e=fail then TryNextMethod();fi;
@@ -3041,10 +3041,14 @@ InstallOtherMethod( RepresentativeActionOp, "TF Method on elements",
   OVERRIDENICE,
 function ( G, d, e, act )
 local c;
-  if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
-  if not (d in G and e in G) then 
-    # TODO: form larger group containing e.
-    TryNextMethod();
+  if IsPcGroup(G) 
+    or (IsPermGroup(G) and AttemptPermRadicalMethod(G,"CENT")<>true)
+    or not (d in G and e in G) then 
+      TryNextMethod();
+  fi;
+
+  if IsPermGroup(G) and CycleStructurePerm(d)<>CycleStructurePerm(e) then
+    return fail;
   fi;
 
   if act=OnPoints then #and d in G and e in G then

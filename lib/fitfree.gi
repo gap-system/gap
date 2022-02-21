@@ -13,6 +13,33 @@
 ##  matrix groups
 ##
 
+InstallGlobalFunction(AttemptPermRadicalMethod,function(G,T)
+local R;
+  if not IsPermGroup(G) then return fail;fi;
+
+  if not (HasFittingFreeLiftSetup(G) or HasSolvableRadical(G)) then 
+    # do not force radical method if it was not tried
+    return false;
+  fi;
+
+  # used in assertions
+  if ValueOption("usebacktrack")=true then return false;fi;
+
+  R:=RadicalGroup(G);
+
+  # any chance to apply it, and not too small?
+  if Size(R)=1 or Size(G)<10000 then return false; fi;
+
+  if T="CENT" then
+    # centralizer/element conjugacy -- degree compares well with radical
+    # factor, but 
+    return NrMovedPoints(G)^2>Size(G)/Size(R);
+  else
+    # Task not yet covered
+    return fail;
+  fi;
+end);
+
 InstallGlobalFunction(FittingFreeSubgroupSetup,function(G,U)
 local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
   ffs:=FittingFreeLiftSetup(G);
@@ -1464,4 +1491,5 @@ local ff,i,j,c,q,a,b,prev,sub,m,k;
   od;
   return c;
 end);
+
 

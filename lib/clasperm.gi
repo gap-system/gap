@@ -69,16 +69,26 @@ end );
 InstallMethod( \in,"perm class rep", IsElmsColls,
   [ IsPerm, IsConjugacyClassPermGroupRep ],
 function( g, cl )
-local   G;
+local   G,c;
 
+    if CycleStructurePerm(g)<>CycleStructurePerm(Representative(cl)) then
+      return false;
+    fi;
     if HasAsList(cl) or HasAsSSortedList(cl) then
       TryNextMethod();
     fi;
+
     G := ActingDomain( cl );
-    return RepOpElmTuplesPermGroup( true, ActingDomain( cl ),
-                   [ g ], [ Representative( cl ) ],
-                   TrivialSubgroup( G ),
-                   StabilizerOfExternalSet( cl ) ) <> fail;
+    if AttemptPermRadicalMethod(G,"CENT") and g in G  then
+      # use TF method
+      c:=TFCanonicalClassRepresentative(G,[g,Representative(cl)]:conjugacytest);
+      return c<>fail and c[1][2]=c[2][2];
+    else
+      return RepOpElmTuplesPermGroup( true, ActingDomain( cl ),
+                    [ g ], [ Representative( cl ) ],
+                    TrivialSubgroup( G ),
+                    StabilizerOfExternalSet( cl ) ) <> fail;
+    fi;
 end );
 
 
