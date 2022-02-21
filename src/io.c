@@ -231,12 +231,6 @@ void SKIP_TO_END_OF_LINE(TypInputFile * input)
 }
 
 
-const Char * GetInputFilename(TypInputFile * input)
-{
-    GAP_ASSERT(input);
-    return input->name;
-}
-
 Int GetInputLineNumber(TypInputFile * input)
 {
     GAP_ASSERT(input);
@@ -259,11 +253,7 @@ Int GetInputLinePosition(TypInputFile * input)
 UInt GetInputFilenameID(TypInputFile * input)
 {
     GAP_ASSERT(input);
-    UInt gapnameid = input->gapnameid;
-    if (gapnameid == 0) {
-        input->gapnameid = LookupSymbol(&FilenameSymbolTable, input->name);
-    }
-    return gapnameid;
+    return input->gapnameid;
 }
 
 static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
@@ -384,8 +374,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
     else
         input->echo = FALSE;
 
-    gap_strlcpy(input->name, filename, sizeof(input->name));
-    input->gapnameid = 0;
+    input->gapnameid = LookupSymbol(&FilenameSymbolTable, filename);
 
     // start with an empty line
     input->line[0] = '\0';    // init the pushback buffer
@@ -424,8 +413,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
         input->sline = 0;
     }
     input->echo = echo;
-    gap_strlcpy(input->name, "stream", sizeof(input->name));
-    input->gapnameid = 0;
+    input->gapnameid = LookupSymbol(&FilenameSymbolTable, "stream");
 
     // start with an empty line
     input->line[0] = '\0';    // init the pushback buffer
