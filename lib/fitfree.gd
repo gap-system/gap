@@ -31,7 +31,8 @@ DeclareInfoClass("InfoFitFree");
 ##
 ##  <Description>
 ##  This filter indicates whether algorithms using the TF-paradigm (Trivial
-##  Fitting) can be used for a group, that is whether a method for
+##  Fitting/Solvable Radical)
+##  can be used for a group, that is whether a method for
 ##  <Ref Func="FittingFreeLiftSetup"/> is available for <A>grp</A>.
 ##  Note that this filter may change its value from <K>false</K> to
 ##  <K>true</K>. 
@@ -48,6 +49,23 @@ InstallTrueMethod(IsGroup,CanComputeFittingFree);
 InstallTrueMethod(CanComputeFittingFree, IsPermGroup);
 InstallTrueMethod(CanComputeFittingFree, IsPcGroup);
 
+#############################################################################
+##
+#F  AttemptPermRadicalMethod( <grp>,<task> )
+##
+##  <#GAPDoc Label="AttemptPermRadicalMethod">
+##  <ManSection>
+##  <Func Name="AttemptPermRadicalMethod" Arg='grp,task'/>
+##
+##  <Description>
+##  Function that encodes (hard-coded) heuristics on whether it is worth to use
+##  Trivial-Fitting/Solvable Radical methods for problems in permutation
+##  groups in favor over backtrack solutions. Returns <K>fail</K> if decision
+##  cannot be made.
+##  The kind of problem is described by a string. Currently supported are
+##  <K>"CENT"</K> for centralizer/element conjugacy.
+##  </Description>
+DeclareGlobalFunction("AttemptPermRadicalMethod");
 
 
 #############################################################################
