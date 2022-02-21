@@ -1,4 +1,4 @@
-#@local G,molser,psi,x,y,tbl,irr,lin,deg3,ser,ser2
+#@local G,molser,psi,x,y,tbl,irr,lin,deg3,ser,ser2,m2
 gap> START_TEST("ctblmoli.tst");
 
 #
