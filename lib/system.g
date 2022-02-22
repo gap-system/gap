@@ -560,8 +560,8 @@ BIND_GLOBAL("ARCH_IS_WINDOWS",function()
     return false;
   fi;
   # Check if programs we need exist in their standard Cygwin locations
-  return not IsExistingFile("/usr/bin/sh") or
-         not IsExistingFile("/usr/bin/xdg-open");
+  return not (IsExistingFile("/usr/bin/sh") or IsExistingFile("/bin/sh")) or
+         not (IsExistingFile("/usr/bin/xdg-open") or IsExistingFile("/bin/xdg-open"));
 end);
 
 #############################################################################
