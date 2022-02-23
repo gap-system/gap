@@ -445,9 +445,9 @@ FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
   }
 
   /* check the arguments                                                 */
-  Int s = GetSmallInt("HASHKEY_BAG", seed);
+  Int s = GetSmallInt(SELF_NAME, seed);
 
-  Int offs = GetSmallInt("HASHKEY_BAG", offset);
+  Int offs = GetSmallInt(SELF_NAME, offset);
   if (offs < 0 || offs > SIZE_OBJ(obj)) {
       ErrorMayQuit("HashKeyBag: <offset> must be non-negative and less than "
                    "the bag size",
@@ -455,7 +455,7 @@ FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
   }
 
   /* maximal number of bytes to read */
-  Int imaxlen = GetSmallInt("HASHKEY_BAG", maxlen);
+  Int imaxlen = GetSmallInt(SELF_NAME, maxlen);
 
   n=SIZE_OBJ(obj)-offs;
 

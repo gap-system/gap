@@ -959,7 +959,7 @@ static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
     Obj  out;
 
     RequireTransformation(SELF_NAME, f);
-    i = GetPositiveSmallInt("PREIMAGES_TRANS_INT", pt) - 1;
+    i = GetPositiveSmallInt(SELF_NAME, pt) - 1;
 
     deg = DEG_TRANS(f);
 
@@ -2660,7 +2660,7 @@ static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
     UInt4 * ptseen;
 
     RequireTransformation(SELF_NAME, f);
-    cpt = GetPositiveSmallInt("COMPONENT_TRANS_INT", pt) - 1;
+    cpt = GetPositiveSmallInt(SELF_NAME, pt) - 1;
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 
@@ -2712,7 +2712,7 @@ static Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
     UInt4 * ptseen;
 
     RequireTransformation(SELF_NAME, f);
-    cpt = GetPositiveSmallInt("CYCLE_TRANS_INT", pt) - 1;
+    cpt = GetPositiveSmallInt(SELF_NAME, pt) - 1;
 
     deg = INT_INTOBJ(FuncDegreeOfTransformation(self, f));
 

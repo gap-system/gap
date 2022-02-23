@@ -2698,7 +2698,7 @@ static Obj FuncSCR_SIFT_HELPER(Obj self, Obj stb, Obj g, Obj n)
     if (!IS_PREC(stb))
         RequireArgument(SELF_NAME, stb, "must be a plain record");
     RequirePermutation(SELF_NAME, g);
-    UInt nn = GetSmallInt("SCR_SIFT_HELPER", n);
+    UInt nn = GetSmallInt(SELF_NAME, n);
 
     /* Setup the result, sort out which rep we are going to work in  */
     if (nn > 65535) {

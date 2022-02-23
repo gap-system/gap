@@ -1693,7 +1693,7 @@ static Obj FuncLEN_GF2VEC(Obj self, Obj list)
 */
 static Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 {
-    UInt p = GetSmallInt("ELM0_GF2VEC", pos);
+    UInt p = GetSmallInt(SELF_NAME, pos);
     if (LEN_GF2VEC(list) < p) {
         return Fail;
     }
@@ -1713,7 +1713,7 @@ static Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 */
 static Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 {
-    UInt p = GetSmallInt("ELM_GF2VEC", pos);
+    UInt p = GetSmallInt(SELF_NAME, pos);
     if (LEN_GF2VEC(list) < p) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      p, 0);
@@ -1835,7 +1835,7 @@ static Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
     RequireMutable("List Assignment", list, "list");
 
     // get the position
-    UInt p = GetSmallInt("ASS_GF2VEC", pos);
+    UInt p = GetSmallInt(SELF_NAME, pos);
 
     // if <elm> is Z(2) or 0*Z(2) and the position is OK, keep rep
     if (p <= LEN_GF2VEC(list) + 1) {
@@ -1897,7 +1897,7 @@ static Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
     RequireMutable("List Assignment", list, "list");
 
     // get the position
-    UInt p = GetSmallInt("ASS_GF2MAT", pos);
+    UInt p = GetSmallInt(SELF_NAME, pos);
 
     // if <elm> is a GF2 vector and the length is OK, keep the rep
     if (!IS_GF2VEC_REP(elm)) {
@@ -1940,7 +1940,7 @@ static Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
 */
 static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 {
-    UInt r = GetSmallInt("ELM_GF2MAT", row);
+    UInt r = GetSmallInt(SELF_NAME, row);
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_GF2MAT(mat));
@@ -1968,7 +1968,7 @@ static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    UInt p = GetSmallInt("UNB_GF2VEC", pos);
+    UInt p = GetSmallInt(SELF_NAME, pos);
 
     // if we unbind the last position keep the representation
     if (LEN_GF2VEC(list) < p) {
@@ -2001,7 +2001,7 @@ static Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
     RequireMutable("List Unbind", list, "matrix");
 
     // get the position
-    UInt p = GetSmallInt("UNB_GF2MAT", pos);
+    UInt p = GetSmallInt(SELF_NAME, pos);
 
     // if we unbind the last position keep the representation
     if (p > 1 && LEN_GF2MAT(list) < p) {
@@ -2462,9 +2462,9 @@ static Obj FuncPOSITION_NONZERO_GF2VEC3(Obj self, Obj vec, Obj zero, Obj from)
 static Obj FuncCOPY_SECTION_GF2VECS(
     Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany)
 {
-    Int ifrom = GetPositiveSmallInt("COPY_SECTION_GF2VECS", from);
-    Int ito = GetPositiveSmallInt("COPY_SECTION_GF2VECS", to);
-    Int ihowmany = GetSmallInt("COPY_SECTION_GF2VECS", howmany);
+    Int ifrom = GetPositiveSmallInt(SELF_NAME, from);
+    Int ito = GetPositiveSmallInt(SELF_NAME, to);
+    Int ihowmany = GetSmallInt(SELF_NAME, howmany);
 
     if (!IS_GF2VEC_REP(src)) {
         RequireArgument(SELF_NAME, src, "must be a GF2 vector");
@@ -3968,8 +3968,8 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 */
 static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 {
-    UInt r = GetPositiveSmallInt("MAT_ELM_GF2MAT", row);
-    UInt c = GetPositiveSmallInt("MAT_ELM_GF2MAT", col);
+    UInt r = GetPositiveSmallInt(SELF_NAME, row);
+    UInt c = GetPositiveSmallInt(SELF_NAME, col);
 
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
@@ -3995,8 +3995,8 @@ static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 static Obj
 FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
-    UInt r = GetPositiveSmallInt("SET_MAT_ELM_GF2MAT", row);
-    UInt c = GetPositiveSmallInt("SET_MAT_ELM_GF2MAT", col);
+    UInt r = GetPositiveSmallInt(SELF_NAME, row);
+    UInt c = GetPositiveSmallInt(SELF_NAME, col);
 
     if (LEN_GF2MAT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,

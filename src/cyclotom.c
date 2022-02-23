@@ -846,7 +846,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
 
 static Obj FuncSetCyclotomicsLimit(Obj self, Obj newlimit)
 {
-    UInt ulimit = GetPositiveSmallInt("SetCyclotomicsLimit", newlimit);
+    UInt ulimit = GetPositiveSmallInt(SELF_NAME, newlimit);
 
     if (ulimit < CyclotomicsLimit) {
         ErrorMayQuit("SetCyclotomicsLimit: <newlimit> must not be less than "

@@ -1925,7 +1925,7 @@ static Obj FuncAddAbelianRelator(Obj self,
     ptRels = BASE_PTR_PLIST(rels) - 1;
 
     /* get the length of the given relators list                           */
-    numrows = GetPositiveSmallInt("AddAbelianRelator", number);
+    numrows = GetPositiveSmallInt(SELF_NAME, number);
     if ( numrows < 1 || LEN_PLIST(rels) < numrows ) {
         ErrorQuit("inconsistent relator number", 0, 0);
     }

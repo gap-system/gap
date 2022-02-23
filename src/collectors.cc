@@ -1648,7 +1648,7 @@ static Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 static Obj FuncSET_SCOBJ_MAX_STACK_SIZE(Obj self, Obj size)
 {
     CollectorsState()->SC_MAX_STACK_SIZE =
-        GetPositiveSmallInt("SET_SCOBJ_MAX_STACK_SIZE", size);
+        GetPositiveSmallInt(SELF_NAME, size);
     return 0;
 }
 

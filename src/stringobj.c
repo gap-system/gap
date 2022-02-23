@@ -234,7 +234,7 @@ static Obj FuncCHAR_INT(Obj self, Obj val)
     Int             chr;
 
     /* get and check the integer value                                     */
-    chr = GetBoundedInt("CHAR_INT", val, 0, 255);
+    chr = GetBoundedInt(SELF_NAME, val, 0, 255);
 
     /* return the character                                                */
     return ObjsChar[chr];
@@ -265,7 +265,7 @@ static Obj FuncCHAR_SINT(Obj self, Obj val)
     Int chr;
 
     /* get and check the integer value                                     */
-    chr = GetBoundedInt("CHAR_SINT", val, -128, 127);
+    chr = GetBoundedInt(SELF_NAME, val, -128, 127);
 
     /* return the character                                                */
     return ObjsChar[CHAR_SINT(chr)];
