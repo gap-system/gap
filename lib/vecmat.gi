@@ -1560,8 +1560,14 @@ end);
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
 BindGlobal("DoImmutableMatrix", function(field,matrix,change)
-local sf, rep, ind, ind2, row, i,big,l;
-  if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
+local sf, rep, ind, ind2, row, i,big,l,nr;
+  if IsMatrixObj(matrix) then
+    if field=BaseDomain(matrix) then
+      return Immutable(matrix);
+    else
+      return ImmutableMatrix(field,Unpack(matrix));
+    fi;
+  elif not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
     Is8BitMatrixRep(matrix)) then
     # if empty or not list based, simply return `Immutable'.
     return Immutable(matrix);
@@ -1569,6 +1575,9 @@ local sf, rep, ind, ind2, row, i,big,l;
   if IsPosInt(field) then
     sf:=field;
   elif IsField(field) then
+    sf:=Size(field);
+  elif IsZmodnZObjNonprimeCollection(field) then
+    # slight abuse of ``field'' variable name
     sf:=Size(field);
   else
     # not a field
@@ -1586,10 +1595,16 @@ local sf, rep, ind, ind2, row, i,big,l;
     rep:=IsPlistRep;
   fi;
 
+  if IsPlistRep(matrix) and not ForAll(matrix,IsPlistRep) then
+    nr:=Length(matrix);
+  else
+    nr:=NrRows(matrix);
+  fi;
+
   # get the indices of the rows that need changing the representation.
   ind:=[]; # rows to convert
   ind2:=[]; # rows to rebuild 
-  for i in [1..NrRows(matrix)] do
+  for i in [1..nr] do
     if not rep(matrix[i]) then
       if big or IsLockedRepresentationVector(matrix[i]) 
         or (IsMutable(matrix[i]) and not change) then
@@ -1619,10 +1634,20 @@ local sf, rep, ind, ind2, row, i,big,l;
   fi;
 
   # rebuild some rows
-  if big then
-    for i in ind2 do
-      matrix[i]:=List(matrix[i],j->j); # plist conversion
-    od;
+  if IsZmodnZObjNonprimeCollection(field) then
+    matrix:=Matrix(field,matrix);
+    big:=true;
+  elif big then
+    if sf<>infinity and IsPrimeInt(sf) and sf>MAXSIZE_GF_INTERNAL then
+      if not (IsMatrixObj(matrix) and not IsMutable(matrix)) then
+        if field=sf then field:=Integers mod sf;fi;
+        matrix:=Matrix(field,matrix);
+      fi;
+    else
+      for i in ind2 do
+        matrix[i]:=List(matrix[i],j->j); # plist conversion
+      od;
+    fi;
   else
     for i in ind2 do
       row := ShallowCopy(matrix[i]);
@@ -1643,12 +1668,20 @@ local sf, rep, ind, ind2, row, i,big,l;
   return matrix;
 end);
 
-InstallMethod( ImmutableMatrix,"general,2",[IsObject,IsMatrix],0,
+InstallOtherMethod( ImmutableMatrix,"general,2",
+[IsObject,IsMatrixOrMatrixObj],0,
 function(f,m)
   return DoImmutableMatrix(f,m,false);
 end);
 
-InstallOtherMethod( ImmutableMatrix,"general,3",[IsObject,IsMatrix,IsBool],0,
+InstallOtherMethod( ImmutableMatrix,"List of vectors",
+[IsObject,IsList],0,
+function(f,m)
+  if not ForAll(m,x->IsList(x) or IsVector(x)) then TryNextMethod();fi;
+  return DoImmutableMatrix(f,m,false);
+end);
+
+InstallOtherMethod(ImmutableMatrix,"general,3",[IsObject,IsMatrixOrMatrixObj,IsBool],0,
   DoImmutableMatrix);
 
 InstallOtherMethod( ImmutableMatrix,"field,8bit",[IsField,Is8BitMatrixRep],0,
@@ -1703,7 +1736,25 @@ end);
 ##
 InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
+local sf;
+  if (IsInt(f) and f>MAXSIZE_GF_INTERNAL) or 
+     (IsField(f) and Size(f)>MAXSIZE_GF_INTERNAL) then
+    if IsInt(f) then
+      sf:=f;
+    else
+      sf:=Size(f);
+    fi;
+    if sf<>infinity and IsPrimeInt(sf) then
+      if f=sf then f:=Integers mod sf;fi;
+      return Immutable(Vector(f,v));
+    fi;
+  fi;
   ConvertToVectorRepNC(v,f);
+  return Immutable(v);
+end);
+
+InstallOtherMethod( ImmutableVector,"vectorObj,2",[IsObject,IsVectorObj],0,
+function(f,v)
   return Immutable(v);
 end);
 

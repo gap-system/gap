@@ -625,7 +625,7 @@ DeclareOperation( "TriangulizedNullspaceMatDestructive", [ IsMatrix and IsMutabl
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "GeneralisedEigenvalues", [ IsRing, IsMatrix ] );
+DeclareOperation( "GeneralisedEigenvalues", [ IsRing, IsMatrixOrMatrixObj ] );
 DeclareSynonym( "GeneralizedEigenvalues", GeneralisedEigenvalues );
 
 #############################################################################
@@ -644,7 +644,7 @@ DeclareSynonym( "GeneralizedEigenvalues", GeneralisedEigenvalues );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "GeneralisedEigenspaces", [ IsRing, IsMatrix ] );
+DeclareOperation( "GeneralisedEigenspaces", [ IsRing, IsMatrixOrMatrixObj ] );
 DeclareSynonym( "GeneralizedEigenspaces", GeneralisedEigenspaces );
 
 

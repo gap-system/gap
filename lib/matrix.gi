@@ -2174,14 +2174,14 @@ InstallMethod( NullspaceMatDestructive,
     [ IsOrdinaryMatrix  and IsMutable],
     mat -> SemiEchelonMatTransformationDestructive(mat).relations );
 
-InstallMethod( TriangulizedNullspaceMat,
-    "generic method for ordinary matrices",
-    [ IsOrdinaryMatrix ],
+InstallOtherMethod( TriangulizedNullspaceMat,
+    "generic method for matrices",
+    [ IsMatrixOrMatrixObj ],
     mat -> TriangulizedNullspaceMatDestructive( MutableCopyMatrix( mat ) ) );
 
-InstallMethod( TriangulizedNullspaceMatDestructive,
-    "generic method for ordinary matrices",
-    [ IsOrdinaryMatrix and IsMutable],
+InstallOtherMethod( TriangulizedNullspaceMatDestructive,
+    "generic method for matrices",
+    [ IsMatrixOrMatrixObj and IsMutable],
     function( mat )
     local ns;
     ns := SemiEchelonMatTransformationDestructive(mat).relations;
@@ -2258,8 +2258,8 @@ end );
 #M  GeneralisedEigenvalues( <F>, <A> )
 ##
 InstallMethod( GeneralisedEigenvalues,
-    "for a matrix",
-    [ IsField, IsMatrix ],
+    "for a matrix or matrix obj",
+    [ IsField, IsMatrixOrMatrixObj ],
     function( F, A )
         return Set( Factors( UnivariatePolynomialRing(F), MinimalPolynomial(F, A,1) ) );
     end );
@@ -2269,8 +2269,8 @@ InstallMethod( GeneralisedEigenvalues,
 #M  GeneralisedEigenspaces( <F>, <A> )
 ##
 InstallMethod( GeneralisedEigenspaces,
-    "for a matrix",
-    [ IsField, IsMatrix ],
+    "for a matrix or matrix obj",
+    [ IsField, IsMatrixOrMatrixObj ],
     function( F, A )
         return List( GeneralisedEigenvalues( F, A ), eval ->
             VectorSpace( F, TriangulizedNullspaceMat( Value( eval, A ) ) ) );
@@ -2488,6 +2488,9 @@ BindGlobal("DoSemiEchelonMatTransformationDestructive", function(f, mat )
     vectors := [];
 
     T         := IdentityMat( nrows, f );
+    if IsMatrixObj(mat) then
+      T:=Matrix(f,T);
+    fi;
     coeffs    := [];
     relations := [];
 
@@ -3260,6 +3263,17 @@ local m;
   TriangulizeMat(m);
   return m;
 end);
+
+InstallOtherMethod( TriangulizedMat,"list of vectore", [IsList],
+function ( mat )
+local m;
+  m:=MutableCopyMatrix(mat);
+  TriangulizeMat(m);
+  return m;
+end);
+
+
+
 
 InstallOtherMethod( TriangulizedMat, "for an empty list", [ IsList and IsEmpty ],
 mat -> []);
@@ -4043,15 +4057,40 @@ InstallGlobalFunction( DirectSumMat, function (arg)
       m:= arg[r]; r:=r+1;
     od;
     if m <> [ ] then
-      F:= DefaultField( m[1,1] );
+      r:=[];
+      for c in arg do
+        if HasBaseDomain(c) then
+          Add(r,BaseDomain(c));
+        else
+          Add(r,DefaultFieldOfMatrix(c));
+        fi;
+      od;
+      F:=r[1];
+      for c in r{[2..Length(r)]} do
+        if not IsSubset(F,c) then
+          if IsSubset(c,F) then
+            F:=c;
+          else
+            Error("build field/ring");
+          fi;
+        fi;
+      od;
+
     else
       F:= Rationals;
     fi;
-    res:=List(NullMat(Sum(arg,Length),Sum(arg,f),F),ShallowCopy);
+    res:=[Sum(arg,Length),Sum(arg,f)];
+    if ForAny(arg,IsMatrixObj) then
+      res:=ZeroMatrix(F,res[1],res[2]);
+    else
+      res:=List(NullMat(res[1],res[2],F),ShallowCopy);
+    fi;
     r:=0;
     c:=0;
     for m in arg do
-        res{r+[1..Length(m)]}{c+[1..f(m)]}:=m;
+        #res{r+[1..Length(m)]}{c+[1..f(m)]}:=m;
+        CopySubMatrix(m,res,[1..NrRows(m)],r+[1..Length(m)],
+          [1..NrCols(m)], c+[1..f(m)]);
         r:=r+Length(m);
         c:=c+f(m);
     od;

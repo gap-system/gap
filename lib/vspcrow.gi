@@ -1066,6 +1066,9 @@ InstallMethod( CanonicalBasis,
 
       # Make a copy to avoid changing the original argument.
       B:= List( GeneratorsOfLeftModule( V ), ShallowCopy );
+      if ForAny(B,IsVectorObj) then
+        B:=List(B,Unpack);
+      fi;
       m:= Length( B );
       n:= Length( B[1] );
 
