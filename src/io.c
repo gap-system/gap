@@ -373,6 +373,10 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
         return 0;
 
     /* enter the file identifier and the file name                         */
+#ifdef GAP_KERNEL_DEBUG
+    // paranoia: fill with garbage, to verify we initialize everything
+    memset(input, 0x47, sizeof(TypInputFile));
+#endif
     input->prev = IO()->Input;
     input->stream = 0;
     input->file = file;
@@ -411,6 +415,10 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     GAP_ASSERT(input);
 
     /* enter the file identifier and the file name                         */
+#ifdef GAP_KERNEL_DEBUG
+    // paranoia: fill with garbage, to verify we initialize everything
+    memset(input, 0x47, sizeof(TypInputFile));
+#endif
     input->prev = IO()->Input;
     input->stream = stream;
     input->file = -1;
@@ -839,6 +847,10 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
         return 0;
 
     /* put the file on the stack, start at position 0 on an empty line     */
+#ifdef GAP_KERNEL_DEBUG
+    // paranoia: fill with garbage, to verify we initialize everything
+    memset(output, 0x47, sizeof(TypOutputFile));
+#endif
     output->prev = IO()->Output;
     IO()->Output = output;
     output->isstringstream = FALSE;
@@ -875,6 +887,10 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     GAP_ASSERT(output);
 
     /* put the file on the stack, start at position 0 on an empty line     */
+#ifdef GAP_KERNEL_DEBUG
+    // paranoia: fill with garbage, to verify we initialize everything
+    memset(output, 0x47, sizeof(TypOutputFile));
+#endif
     output->prev = IO()->Output;
     IO()->Output = output;
     output->isstringstream = (CALL_1ARGS(IsOutputStringStream, stream) == True);
