@@ -896,7 +896,7 @@ static Obj FuncMakeImmutable(Obj self, Obj obj)
 
 static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 {
-    UInt         tnum = GetBoundedInt("GET_TNAM_FROM_TNUM", obj, 0, NUM_TYPES - 1);
+    UInt         tnum = GetBoundedInt(SELF_NAME, obj, 0, NUM_TYPES - 1);
     const char * name = TNAM_TNUM(tnum);
     return MakeImmString(name ? name : "<unnamed tnum>");
 }
@@ -1067,7 +1067,7 @@ void SetPrintObjIndex(Int index)
 
 static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
 {
-    SetPrintObjIndex(GetSmallInt("SET_PRINT_OBJ_INDEX", index));
+    SetPrintObjIndex(GetSmallInt(SELF_NAME, index));
     return 0;
 }
 

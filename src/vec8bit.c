@@ -796,7 +796,7 @@ static UInt LcmDegree(UInt d, UInt d1)
 */
 static Obj FuncCONV_VEC8BIT(Obj self, Obj list, Obj q)
 {
-    UInt iq = GetPositiveSmallInt("CONV_VEC8BIT", q);
+    UInt iq = GetPositiveSmallInt(SELF_NAME, q);
     ConvVec8Bit(list, iq);
     return 0;
 }
@@ -917,7 +917,7 @@ static Obj NewVec8Bit(Obj list, UInt q)
 */
 static Obj FuncCOPY_VEC8BIT(Obj self, Obj list, Obj q)
 {
-    UInt iq = GetPositiveSmallInt("COPY_VEC8BIT", q);
+    UInt iq = GetPositiveSmallInt(SELF_NAME, q);
     return NewVec8Bit(list, iq);
 }
 
@@ -1415,7 +1415,7 @@ static Obj FuncZERO_VEC8BIT(Obj self, Obj vec)
 
 static Obj FuncZERO_VEC8BIT_2(Obj self, Obj q, Obj len)
 {
-    UInt iq = GetPositiveSmallInt("ZERO_VEC8BIT_2", q);
+    UInt iq = GetPositiveSmallInt(SELF_NAME, q);
     RequireNonnegativeSmallInt(SELF_NAME, len);
     return ZeroVec8Bit(iq, INT_INTOBJ(len), 1);
 }
@@ -2665,7 +2665,7 @@ static Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    p = GetPositiveSmallInt("ELM0_VEC8BIT", pos);
+    p = GetPositiveSmallInt(SELF_NAME, pos);
     if (LEN_VEC8BIT(list) < p) {
         return Fail;
     }
@@ -2693,7 +2693,7 @@ static Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
     Obj  info;
     UInt elts;
 
-    p = GetPositiveSmallInt("ELM_VEC8BIT", pos);
+    p = GetPositiveSmallInt(SELF_NAME, pos);
     if (LEN_VEC8BIT(list) < p) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      p, 0);
@@ -3001,7 +3001,7 @@ static Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
     }
 
     // get the position
-    p = GetPositiveSmallInt("UNB_VEC8BIT", pos);
+    p = GetPositiveSmallInt(SELF_NAME, pos);
 
     // if we unbind the last position keep the representation
     if (LEN_VEC8BIT(list) < p) {
@@ -3295,7 +3295,7 @@ static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
     Obj  tmp;
     Obj  type;
 
-    UInt iq = GetPositiveSmallInt("CONV_MAT8BIT", q);
+    UInt iq = GetPositiveSmallInt(SELF_NAME, q);
     PLAIN_LIST(list);
     len = LEN_PLIST(list);
     mut = IS_MUTABLE_OBJ(list);
@@ -3783,7 +3783,7 @@ static Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj pos, Obj obj)
     UInt p;
     Obj  type;
 
-    p = GetPositiveSmallInt("ASS_MAT8BIT", pos);
+    p = GetPositiveSmallInt(SELF_NAME, pos);
 
     len = LEN_MAT8BIT(mat);
     if (!IS_VEC8BIT_REP(obj) && !IS_GF2VEC_REP(obj))
@@ -3875,7 +3875,7 @@ cantdo:
 */
 static Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos)
 {
-    UInt r = GetPositiveSmallInt("ELM_MAT8BIT", pos);
+    UInt r = GetPositiveSmallInt(SELF_NAME, pos);
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
                      LEN_MAT8BIT(mat));
@@ -5658,8 +5658,8 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 */
 static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 {
-    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row);
-    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col);
+    UInt r = GetPositiveSmallInt(SELF_NAME, row);
+    UInt c = GetPositiveSmallInt(SELF_NAME, col);
 
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
@@ -5684,8 +5684,8 @@ static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 static Obj
 FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
-    UInt r = GetPositiveSmallInt("MAT_ELM_MAT8BIT", row);
-    UInt c = GetPositiveSmallInt("MAT_ELM_MAT8BIT", col);
+    UInt r = GetPositiveSmallInt(SELF_NAME, row);
+    UInt c = GetPositiveSmallInt(SELF_NAME, col);
 
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,

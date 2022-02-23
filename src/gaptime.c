@@ -293,7 +293,7 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 */
 static Obj FuncSleep(Obj self, Obj secs)
 {
-    Int s = GetSmallInt("Sleep", secs);
+    Int s = GetSmallInt(SELF_NAME, secs);
 
     if (s > 0)
         sleep((UInt)s);
@@ -316,7 +316,7 @@ static Obj FuncSleep(Obj self, Obj secs)
 */
 static Obj FuncMicroSleep(Obj self, Obj msecs)
 {
-    Int s = GetSmallInt("MicroSleep", msecs);
+    Int s = GetSmallInt(SELF_NAME, msecs);
 
     if (s > 0)
         usleep((UInt)s);

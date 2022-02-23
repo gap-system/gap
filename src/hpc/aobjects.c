@@ -245,7 +245,7 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
     RequireArgument(SELF_NAME, list, "must be an atomic list");
   addr = CONST_ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
-  n = GetBoundedInt("GET_ATOMIC_LIST", index, 1, len);
+  n = GetBoundedInt(SELF_NAME, index, 1, len);
   MEMBAR_READ(); /* read barrier */
   return addr[n+1].obj;
 }
@@ -290,7 +290,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
     RequireArgument(SELF_NAME, list, "must be an atomic list");
   addr = ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
-  n = GetBoundedInt("SET_ATOMIC_LIST", index, 1, len);
+  n = GetBoundedInt(SELF_NAME, index, 1, len);
   addr[n+1].obj = value;
   CHANGED_BAG(list);
   MEMBAR_WRITE(); /* write barrier */
@@ -360,7 +360,7 @@ static Obj FuncATOMIC_ADDITION(Obj self, Obj list, Obj index, Obj inc)
   }
   addr = ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
-  n = GetBoundedInt("ATOMIC_ADDITION", index, 1, len);
+  n = GetBoundedInt(SELF_NAME, index, 1, len);
   RequireSmallInt(SELF_NAME, index);
   do
   {

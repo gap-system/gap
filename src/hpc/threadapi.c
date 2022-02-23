@@ -1611,7 +1611,7 @@ static BOOL IsBarrier(Obj obj)
 static Obj FuncStartBarrier(Obj self, Obj barrier, Obj count)
 {
     RequireBarrier(SELF_NAME, barrier);
-    Int c = GetSmallInt("StartBarrier", count);
+    Int c = GetSmallInt(SELF_NAME, count);
     StartBarrier(ObjPtr(barrier), c);
     return (Obj)0;
 }
@@ -1971,7 +1971,7 @@ static Obj FuncNEW_REGION(Obj self, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
         RequireArgument(SELF_NAME, name, "must be a string or fail");
-    Int p = GetSmallInt("NEW_REGION", prec);
+    Int p = GetSmallInt(SELF_NAME, prec);
     Region * region = NewRegion();
     region->prec = p;
     if (name != Fail)
@@ -2030,7 +2030,7 @@ static Obj FuncSHARE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
         RequireArgument(SELF_NAME, name, "must be a string or fail");
-    Int p = GetSmallInt("SHARE", prec);
+    Int p = GetSmallInt(SELF_NAME, prec);
     Region * region = NewRegion();
     region->prec = p;
 
@@ -2048,7 +2048,7 @@ static Obj FuncSHARE_RAW(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
         RequireArgument(SELF_NAME, name, "must be a string or fail");
-    Int p = GetSmallInt("SHARE_RAW", prec);
+    Int p = GetSmallInt(SELF_NAME, prec);
     Region * region = NewRegion();
     region->prec = p;
 
@@ -2066,7 +2066,7 @@ static Obj FuncSHARE_NORECURSE(Obj self, Obj obj, Obj name, Obj prec)
 {
     if (name != Fail && !IsStringConv(name))
         RequireArgument(SELF_NAME, name, "must be a string or fail");
-    Int p = GetSmallInt("SHARE_NORECURSE", prec);
+    Int p = GetSmallInt(SELF_NAME, prec);
     Region * region = NewRegion();
     region->prec = p;
     if (!MigrateObjects(1, &obj, region, 0))

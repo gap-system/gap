@@ -518,7 +518,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   }
   else {
     elm = ELMW_LIST(size,1);
-    len = GetSmallIntEx("SizeScreen", elm, "<x>");
+    len = GetSmallIntEx(SELF_NAME, elm, "<x>");
     if ( len < 20  )  len = 20;
     if ( MAXLENOUTPUTLINE < len )  len = MAXLENOUTPUTLINE;
   }
@@ -529,7 +529,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
     nr = 0;
   }
   else {
-    nr = GetSmallIntEx("SizeScreen", elm, "<y>");
+    nr = GetSmallIntEx(SELF_NAME, elm, "<y>");
     if ( nr < 10 )  nr = 10;
   }
 
