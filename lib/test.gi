@@ -1050,7 +1050,8 @@ elif LoadPackage( pkgname ) = fail then
 elif not IsBound( GAPInfo.PackagesInfo.(pkgname)[1].TestFile ) then
     Print("#I No standard tests specified in ", pkgname, " package, version ",
           GAPInfo.PackagesInfo.(pkgname)[1].Version,  "\n");
-    return fail;
+    # Since a TestFile is not required, technically we passed "all" tests
+    return true;
 else
     testfile := Filename( DirectoriesPackageLibrary( pkgname, "" ), 
                           GAPInfo.PackagesInfo.(pkgname)[1].TestFile );
