@@ -1387,12 +1387,15 @@ InstallGlobalFunction(PrintToFormatted, function(stream, s, data...)
 end);
 
 InstallGlobalFunction(StringFormatted, function(s, data...)
-    local str;
+    local str, stream;
     if not IsString(s) then
         ErrorNoReturn("Usage: StringFormatted(<string>, <data>...)");
     fi;
     str := "";
-    CallFuncList(PrintToFormatted, Concatenation([OutputTextString(str, false), s], data));
+    stream := OutputTextString(str, false);
+    SetPrintFormattingStatus(stream, false);
+
+    CallFuncList(PrintToFormatted, Concatenation([stream, s], data));
     return str;
 end);
 

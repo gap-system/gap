@@ -61,6 +61,20 @@ gap> StringFormatted("{a!}", rec(a := r1));
 gap> StringFormatted("abc{}def",[1,2]) = "abc[ 1, 2 ]def";
 true
 
+# Test long output
+gap> ListWithIdenticalEntries(1000, 'a') =
+> StringFormatted("{}", ListWithIdenticalEntries(1000, 'a'));
+true
+gap> ListWithIdenticalEntries(1000, 'a') =
+> StringFormatted("{}{}", ListWithIdenticalEntries(500, 'a'), ListWithIdenticalEntries(500, 'a'));
+true
+
+# Test line breaks
+gap>  StringFormatted("{}", "\>1\<") = "\>1\<";
+true
+gap>  StringFormatted("\>1\<") = "\>1\<";
+true
+
 # Test alternative functions
 gap> PrintFormatted();
 Error, Usage: PrintFormatted(<string>, <data>...)
