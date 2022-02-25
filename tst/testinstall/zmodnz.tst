@@ -419,9 +419,7 @@ gap> one:= One( A );
 [ [ ZmodnZObj( 1, 6 ), ZmodnZObj( 0, 6 ) ], 
   [ ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ) ] ]
 gap> G:= GroupWithGenerators( [ one ] );;
-gap> One( G );
-[ [ ZmodnZObj( 1, 6 ), ZmodnZObj( 0, 6 ) ], 
-  [ ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ) ] ]
+gap> One( G );;
 gap> m:=[[4,1],[1,5]] * ZmodnZObj(1,6);;
 gap> m in A; m in G;
 true

@@ -94,11 +94,11 @@ gap> ZeroMatrix(Integers, 2, 0);
 
 #
 gap> ZeroMatrix(Integers mod 4, 2, 3);
-<2x3-matrix over (Integers mod 4)>
+<matrix mod 4: [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]>
 gap> ZeroMatrix(Integers mod 4, 0, 3);
-<0x3-matrix over (Integers mod 4)>
+<0x3-matrix mod 4>
 gap> ZeroMatrix(Integers mod 4, 2, 0);
-<2x0-matrix over (Integers mod 4)>
+<2x0-matrix mod 4>
 
 #
 gap> ZeroMatrix(GF(2), 2, 3);
