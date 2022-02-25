@@ -82,9 +82,9 @@ Error, ZeroVector: length must be non-negative
 
 #
 gap> ZeroVector(Integers mod 4, 2);
-<zmodnz vector over (Integers mod 4) of length 2>
+<vector mod 4: [ 0, 0 ]>
 gap> ZeroVector(Integers mod 4, 0);
-<zmodnz vector over (Integers mod 4) of length 0>
+<vector mod 4 of length 0>
 gap> ZeroVector(Integers mod 4, -1);
 Error, ZeroVector: length must be non-negative
 
