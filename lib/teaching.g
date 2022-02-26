@@ -921,9 +921,9 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
 
   if not HasIsFinite(H) then
     Info(InfoPerformance,1,"Forcing finiteness test -- might not terminate");
-    if not IsFinite(H) then
-      Error("First argument must be finite group");
-    fi;
+  fi;
+  if not IsFinite(H) then
+    Error("the first argument must be a finite group");
   fi;
 
   if IsAbelian(G) and not IsAbelian(H) then
