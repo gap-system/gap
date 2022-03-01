@@ -124,26 +124,6 @@ else
 fi
 
 
-
-# detect whether GAP was built in 32bit mode
-# TODO: once all packages have adapted to the new build system,
-# this should no longer be necessary, as package build systems should
-# automatically adjust to 32bit mode.
-case "$GAP_ABI" in
-  32)
-    notice "Building with 32-bit ABI"
-    CONFIGFLAGS="CFLAGS=-m32 LDFLAGS=-m32 LOPTS=-m32 CXXFLAGS=-m32"
-    ;;
-  64)
-    notice "Building with 64-bit ABI"
-    CONFIGFLAGS=""
-    ;;
-  *)
-    error "Unsupported GAP ABI '$GAParch_abi'."
-    ;;
-esac
-
-
 LOGDIR=log
 mkdir -p "$LOGDIR"
 
@@ -200,7 +180,7 @@ Print(GAPInfo.PackageInfoCurrent.PackageName);
 GAPInput
 )
       local CONFIG_ARGS_FLAG_NAME="PACKAGE_CONFIG_ARGS_${PKG_NAME}"
-      echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS ${!CONFIG_ARGS_FLAG_NAME}
+      echo_run ./configure --with-gaproot="$GAPROOT" ${!CONFIG_ARGS_FLAG_NAME}
       echo_run "$MAKE" clean
     else
       echo_run ./configure "$GAPROOT"
