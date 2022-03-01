@@ -37,6 +37,8 @@
 
 #include "config.h"
 
+#ifndef GAP_DISABLE_SUBPROCESS_CODE
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -804,6 +806,60 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return result;
 }
 
+#else // !defined(GAP_DISABLE_SUBPROCESS_CODE)
+
+int CheckChildStatusChanged(int childPID, int status)
+{
+    return 0;
+}
+
+static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
+{
+    return Fail;
+}
+
+static Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
+{
+    return Fail;
+}
+
+static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
+{
+    return Fail;
+}
+
+static Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
+{
+    return Fail;
+}
+
+static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
+{
+    return 0;
+}
+
+static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
+{
+    return 0;
+}
+
+static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
+{
+    return 0;
+}
+
+static Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
+{
+    return Fail;
+}
+
+static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
+{
+    return Fail;
+}
+
+#endif
+
 
 /****************************************************************************
 **
@@ -841,6 +897,7 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
+#ifndef GAP_DISABLE_SUBPROCESS_CODE
     UInt i;
     PtyIOStreams[0].childPID = -1;
     for (i = 1; i < MAX_PTYS; i++) {
@@ -849,13 +906,15 @@ static Int InitKernel(StructInitInfo * module)
     }
     FreePtyIOStreams = MAX_PTYS - 1;
 
-    /* init filters and functions                                          */
-    InitHdlrFuncsFromTable(GVarFuncs);
-
 #if !defined(HPCGAP)
     /* Set up the trap to detect future dying children */
     signal(SIGCHLD, ChildStatusChanged);
 #endif
+
+#endif
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable(GVarFuncs);
 
     return 0;
 }
