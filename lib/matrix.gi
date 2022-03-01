@@ -4017,7 +4017,7 @@ InstallMethod( DefaultScalarDomainOfMatrixList,
     # try to find out the field
     if Length( l ) = 0 or ForAny( l, i -> not IsMatrixOrMatrixObj( i ) ) then
       Error( "<l> must be a nonempty list of matrices or matrix objects" );
-    elif ForAll( l, HasBaseDomain ) then
+    elif ForAll( l, HasBaseDomain ) or ForAll( l, IsMatrixObj ) then
       B:= BaseDomain( l[1] );
       if ForAll( l, x -> B = BaseDomain( x ) ) then
         return B;
