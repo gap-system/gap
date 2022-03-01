@@ -1280,9 +1280,19 @@ InstallOtherMethod( ConstructingFilter,
     v -> IsPlistRep );
 
 InstallOtherMethod( BaseDomain,
-    "generic method for a matrix that is a plain list",
+    "generic method for a plain list matrix",
     [ IsMatrix and IsPlistRep ],
-    mat -> BaseDomain( mat[1] ) );
+    mat -> BaseDomain( Concatenation( mat ) ) );
+
+InstallOtherMethod( BaseDomain,
+    "generic method for a plain list matrix over a finite field",
+    [ IsMatrix and IsPlistRep and IsFFECollColl ],
+    DefaultFieldOfMatrix );
+
+InstallOtherMethod( BaseDomain,
+    "generic method for a plain list over the cyclotomics",
+    [ IsMatrix and IsPlistRep and IsCyclotomicCollColl ],
+    DefaultFieldOfMatrix );
 
 InstallOtherMethod( OneOfBaseDomain,
     "generic method for a matrix that is a plain list",
