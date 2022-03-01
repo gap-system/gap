@@ -368,6 +368,14 @@ static Obj CallErrorInner(const Char * msg,
     // as one of the args could be a pointer into a Bag.
     Obj EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
 
+    if (!ErrorInner || !IS_FUNC(ErrorInner)) {
+        fprintf(stderr, "%s\n", CONST_CSTR_STRING(EarlyMsg));
+        if (!ErrorInner)
+            Panic("error handler not yet initialized");
+        else
+            Panic("error handler must be a function");
+    }
+
     Obj r = NEW_PREC(0);
     Obj l;
     Int i;
@@ -619,7 +627,7 @@ static Int InitKernel(StructInitInfo * module)
     // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
-    ImportFuncFromLibrary("ErrorInner", &ErrorInner);
+    ImportGVarFromLibrary("ErrorInner", &ErrorInner);
     ImportFuncFromLibrary("IsOutputStream", &IsOutputStream);
     ImportGVarFromLibrary("ERROR_OUTPUT", &ERROR_OUTPUT);
 
