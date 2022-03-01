@@ -2791,6 +2791,20 @@ void SySetErrorNo ( void )
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
+#ifdef GAP_DISABLE_SUBPROCESS_CODE
+
+UInt SyExecuteProcess (
+    Char *                  dir,
+    Char *                  prg,
+    Int                     in,
+    Int                     out,
+    Char *                  args[] )
+{
+    return 255;
+}
+
+#else
+
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
@@ -3027,6 +3041,7 @@ UInt SyExecuteProcess (
 
 #endif
 
+#endif // !GAP_DISABLE_SUBPROCESS_CODE
 
 /****************************************************************************
 **
