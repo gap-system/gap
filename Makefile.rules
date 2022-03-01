@@ -518,6 +518,18 @@ install-bin: gap
 	# putting that path to it into gac)
 	#$(INSTALL) gac $(DESTDIR)$(bindir)
 
+install-doc: doc
+	# TODO: should this depend on the 'doc' target? but that target is phony
+	# and will re-run each time it is invoked, which is not really what we want.
+	# TODO: Perhaps the following should be moved to a separate script `doc/install-doc`?
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/doc
+	for book in ref tut hpc dev ; do \
+		$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/doc/$$book ; \
+		for ext in css html js txt pdf six lab; do \
+			$(INSTALL) -m 0644  $(srcdir)/doc/$$book/*.$$ext $(DESTDIR)$(datarootdir)/gap/doc/$$book/ ; \
+		done \
+	done
+
 install-gaproot:
 	@echo "Warning, 'make install-gaproot' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
@@ -525,7 +537,6 @@ install-gaproot:
 	$(INSTALL) -m 0644 sysinfo.gap $(DESTDIR)$(datarootdir)/gap
 	# the following lines should not use `cp -r`, which is not quite portable,
 	# and which also may not deal with file permissions correctly
-	cp -r $(srcdir)/doc $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
 	cp -r $(srcdir)/grp $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
 	cp -r $(srcdir)/lib $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
 	# TODO: what about CITATION, CONTRIBUTING.md, COPYRIGHT, INSTALL.md,
@@ -564,7 +575,7 @@ install-libgap: libgap.la
 	$(LTINSTALL) libgap.la $(DESTDIR)$(libdir)
 
 
-.PHONY: install install-bin install-gaproot install-headers install-libgap
+.PHONY: install install-bin install-doc install-gaproot install-headers install-libgap
 
 ########################################################################
 # Building subprojects
