@@ -240,6 +240,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   else
     Error("illegal action");
   fi;
+  start:=List(start,x->ImmutableVector(field,x));
 
   zerov:=Zero(start[1]);
   zero:=zerov[1];
@@ -355,7 +356,13 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
 	if v<>zerov then
 	  Add(base,orb[i]);
 	  Add(partbas,ShallowCopy(orb[i]));
+          if ForAny(partbas,IsVectorObj) then
+            partbas:=Matrix(BaseDomain(partbas[1]),partbas);
+          fi;
 	  TriangulizeMat(partbas);
+          if IsMatrixObj(partbas) then
+            partbas:=ShallowCopy(RowsOfMatrix(partbas));
+          fi;
 	  heads:=List(partbas,PositionNonZero);
 	  if Length(partbas)>=dim then
 	    # full dimension reached

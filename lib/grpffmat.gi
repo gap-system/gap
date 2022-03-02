@@ -39,8 +39,14 @@ end );
 InstallMethod(FieldOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(l)
-local   deg,  i,  j,  char;
+local   deg,  i,  j,  char,B;
   if Length(l)=0 then Error("list must be nonempty");fi;
+  if ForAll( l, HasBaseDomain ) then
+    B:= BaseDomain( l[1] );
+    if ForAll( l, x -> B = BaseDomain( x ) ) then
+      return B;
+    fi;
+  fi;
   deg  := 1;
   for i  in l  do
     for j  in i  do
@@ -58,8 +64,15 @@ end);
 InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(l)
-local   deg,  i,  j,  char,m;
-if Length(l)=0 then Error("list must be nonempty");fi;
+local   deg,  i,  j,  char,m,B;
+  if Length(l)=0 then Error("list must be nonempty");fi;
+  if ForAll( l, HasBaseDomain ) then
+    B:= BaseDomain( l[1] );
+    if ForAll( l, x -> B = BaseDomain( x ) ) then
+      return B;
+    fi;
+  fi;
+
   deg  := 1;
   for i in l  do
     # treat compact matrices quickly

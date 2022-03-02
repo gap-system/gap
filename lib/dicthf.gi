@@ -110,14 +110,21 @@ local f,n,bytelen,data,qq,i;
     return function(v)
            local x,sy,p;
               sy := 0;
-              for x in v do
-                p := Position(f, x);
+              if IsZmodnZVectorRep(v) then
+                for x in v![ELSPOS] do
+                  sy := n*sy + (x-1);
+                od;
+              else
+                for x in v do
+                  p := Position(f, x);
 # want to be quick: Assume no failures
-#               if p = fail then
-#                   Error("NumberFFVector: Vector not over specified field");
-#               fi;
-                sy := n*sy + (p-1);
-              od;
+#                 if p = fail then
+#                     Error("NumberFFVector: Vector not over specified field");
+#                 fi;
+                  sy := n*sy + (p-1);
+                od;
+              fi;
+
             return sy;
            end;
   fi;

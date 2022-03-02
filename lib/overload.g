@@ -121,7 +121,7 @@ InstallMethod( DerivedSeries, [ IsGroup ], DerivedSeriesOfGroup );
 ##
 DeclareOperation( "Determinant", [ IsObject ] );
 
-InstallMethod( Determinant, [ IsMatrix ], DeterminantMat );
+InstallMethod( Determinant, [ IsMatrixOrMatrixObj ], DeterminantMat );
 InstallMethod( Determinant, [ IsClassFunction ], DeterminantOfCharacter );
 
 
