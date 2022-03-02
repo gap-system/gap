@@ -3906,7 +3906,7 @@ local   fgens,      # generators of the free group
   # handle free and trivial group
   if 0 = Length( fgens ) then
       return 1;
-  elif 0 = Length(rels) then
+  elif Length( fgens ) > Length(rels) then
       return infinity;
 
   # handle nontrivial fp group by computing the index of its trivial
