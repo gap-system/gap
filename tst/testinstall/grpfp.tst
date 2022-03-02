@@ -1,4 +1,4 @@
-#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub
+#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;
 gap> c2:= f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];;
@@ -105,8 +105,13 @@ gap> SimplifiedFpGroup(F/[GeneratorsOfGroup(F)[1]]);
 gap> F:=FreeGroup("a","b","c");;
 gap> rels:=ParseRelators(F,"a2,b3,c4,abC");
 [ a^2, b^3, c^4, a*b*c^-1 ]
-gap> IsomorphismSimplifiedFpGroup(F/rels);
+gap> g:=F/rels;;
+gap> Size(g);
+24
+gap> iso:=IsomorphismSimplifiedFpGroup(g);
 [ a, b, c ] -> [ c*b^-1, b, c ]
+gap> HasSize(Image(iso));
+true
 
 # ClosureSubgroupNC will not force a triviality or membership test
 # if we do not know anything.

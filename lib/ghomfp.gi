@@ -951,6 +951,7 @@ local H, pres,map,mapi,opt;
 
   # reconvert the Tietze presentation to a group presentation.
   H := FpGroupPresentation( pres );
+  UseIsomorphismRelation( G, H );
 
   if Length(GeneratorsOfGroup(H))>0 then
     map:=List(TzImagesOldGens(pres),
