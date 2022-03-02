@@ -42,7 +42,13 @@ local f,typ,lc;
   
   # slightly better to do this after the Length has been determined
   if IsFFECollection(coeff) and IS_PLIST_REP(coeff) then
-    coeff := ImmutableVector(DefaultRing(coeff), coeff);
+    f:=DefaultRing(coeff);
+    if IsFinite(f) and Size(f)>MAXSIZE_GF_INTERNAL then
+      # do not pack Zmodnz objects into vectors
+      coeff := Immutable(coeff);
+    else
+      coeff := ImmutableVector(f, coeff);
+    fi;
   fi;
 
   

@@ -69,13 +69,20 @@ InstallMethod( NewZeroVector, "for IsZmodnZVectorRep, a ring, and an int",
   end );
 
 InstallMethod( ViewObj, "for a zmodnz vector", [ IsZmodnZVectorRep ],
-  function( v )
+function( v )
+local l;
     if not IsMutable(v) then
         Print("<immutable ");
     else
         Print("<");
     fi;
-    Print("zmodnz vector over ",v![BDPOS]," of length ",Length(v![ELSPOS]),">");
+    Print("vector mod ",Size(v![BDPOS]));
+    l:=Length(v![ELSPOS]);
+    if 0<l and l<=8 then
+      Print(": ",v![ELSPOS],">");
+    else
+      Print(" of length ",Length(v![ELSPOS]),">");
+    fi;
   end );
 
 InstallMethod( PrintObj, "for a zmodnz vector", [ IsZmodnZVectorRep ],
@@ -394,6 +401,25 @@ local i,m;
     for i in [1..Length(a)] do if a[i]<0 then a[i]:=a[i] mod m;fi;od;
   fi;
 end );
+
+InstallOtherMethod( AddRowVector, "for plist, zmodnz vector, and a scalar",
+  [ IsPlistRep and IsMutable, IsZmodnZVectorRep, IsObject ],
+function( a, b, s )
+local i,m;
+  if not ForAll(a,IsModulusRep) then TryNextMethod();fi;
+  for i in [1..Length(a)] do
+    a[i]:=a[i]+b[i]*s;
+  od;
+end);
+
+InstallOtherMethod( AddRowVector, "for plist, plist vector, and a scalar",
+  [ IsPlistRep and IsMutable, IsPlistVectorRep, IsObject ],
+function( a, b, s )
+local i,m;
+  for i in [1..Length(a)] do
+    a[i]:=a[i]+b[i]*s;
+  od;
+end);
 
 InstallMethod( AddRowVector,
   "for two zmodnz vectors, a scalar, and two positions",
@@ -731,9 +757,16 @@ InstallMethod( Matrix, "for a list and a zmodnz matrix",
 
 InstallMethod( ViewObj, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
   function( m )
+  local l;
     Print("<");
     if not IsMutable(m) then Print("immutable "); fi;
-    Print(Length(m![ROWSPOS]),"x",m![RLPOS],"-matrix over ",m![BDPOS],">");
+    l:=[Length(m![ROWSPOS]),m![RLPOS]];
+    if Product(l)<=9 and Product(l)<>0 then
+      Print("matrix mod ",Size(m![BDPOS]),": ",
+        List(m![ROWSPOS],x->x![ELSPOS]),">");
+    else
+      Print(l[1],"x",l[2],"-matrix mod ",Size(m![BDPOS]),">");
+    fi;
   end );
 
 InstallMethod( PrintObj, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
@@ -1046,11 +1079,31 @@ InstallMethod( \*, "for two zmodnz matrices",IsIdenticalObj,
     return Objectify( ty, [a![BDPOS],a![EMPOS],b![RLPOS],l] );
   end );
 
+InstallMethod(\*,"for zmodnz matrix and ordinary matrix",IsIdenticalObj,
+  [IsZmodnZMatrixRep,IsMatrix],
+function(a,b)
+  return Matrix(BaseDomain(a),List(RowsOfMatrix(a),x->x*b));
+end);
+
+
 InstallMethod( \=, "for two zmodnz matrices",IsIdenticalObj,
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],
   function( a, b )
     return EQ_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS]);
   end );
+
+InstallMethod( \=, "for zmodnz matrix and matrix",IsIdenticalObj,
+  [ IsZmodnZMatrixRep, IsMatrix ],
+  function( a, b )
+    return Unpack(a)=b;
+  end );
+
+InstallMethod( \=, "for matrix and zmodnz matrix",IsIdenticalObj,
+  [ IsMatrix, IsZmodnZMatrixRep ],
+  function( a, b )
+    return a=Unpack(b);
+  end );
+
 
 InstallMethod( \<, "for two zmodnz matrices",IsIdenticalObj,
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],
@@ -1302,9 +1355,7 @@ InstallMethod( TransposedMatImmutable, "for a zmodnz matrix",
     return n;
   end );
 
-InstallMethod( \*, "for a zmodnz vector and a zmodnz matrix",
-  IsElmsColls, [ IsZmodnZVectorRep, IsZmodnZMatrixRep ],
-  function( v, m )
+ZMZVECMAT:=function( v, m )
     local i,res,s,r;
     r:=BaseDomain(v);
     # do arithmetic over Z first so that we reduce only once
@@ -1325,11 +1376,17 @@ InstallMethod( \*, "for a zmodnz vector and a zmodnz matrix",
         MakeImmutable(res);
     fi;
     return res;
-  end );
+  end;
 
-InstallOtherMethod( \*, "for a plist vector and a zmodnz matrix",
-  IsElmsColls, [ IsList, IsZmodnZMatrixRep ],
-  function( v, m )
+InstallMethod( \*, "for a zmodnz vector and a zmodnz matrix",
+  IsElmsColls, [ IsZmodnZVectorRep, IsZmodnZMatrixRep ],
+  ZMZVECMAT);
+
+InstallOtherMethod( \^, "for a zmodnz vector and a zmodnz matrix",
+  IsElmsColls, [ IsZmodnZVectorRep, IsZmodnZMatrixRep ],
+  ZMZVECMAT);
+
+PLISTVECZMZMAT:=function( v, m )
     local i,res,s,r;
     r:=BaseDomain(m);
     # do arithmetic over Z first so that we reduce only once
@@ -1350,7 +1407,42 @@ InstallOtherMethod( \*, "for a plist vector and a zmodnz matrix",
         MakeImmutable(res);
     fi;
     return res;
-  end );
+  end;
+
+InstallOtherMethod( \*, "for a plist vector and a zmodnz matrix",
+  IsElmsColls, [ IsList, IsZmodnZMatrixRep ],
+  PLISTVECZMZMAT);
+
+InstallOtherMethod( \^, "for a plist vector and a zmodnz matrix",
+  IsElmsColls, [ IsList, IsZmodnZMatrixRep ],
+  PLISTVECZMZMAT);
+
+ZMZVECTIMESPLISTMAT:=function( v, m )
+    local i,res,s,r;
+    r:=BaseDomain(v);
+    # do arithmetic over Z first so that we reduce only once
+    res:=ListWithIdenticalEntries(Length(m[1]),Zero(r));
+    for i in [1..Length(v)] do
+      s := v[i];
+      if not IsZero(s) then
+        AddRowVector(res,m[i],s);
+      fi;
+    od;
+    res:=Vector(r,res);
+
+    if not IsMutable(v) and not IsMutable(m) then
+        MakeImmutable(res);
+    fi;
+    return res;
+  end;
+
+InstallOtherMethod( \*, "for a zmodnz vector and plist matrix",
+  IsElmsColls, [ IsZmodnZVectorRep, IsMatrix ],
+  ZMZVECTIMESPLISTMAT);
+
+InstallOtherMethod( \^, "for a zmodnz vector and plist matrix",
+  IsElmsColls, [ IsZmodnZVectorRep, IsMatrix ],
+  ZMZVECTIMESPLISTMAT);
 
 InstallMethod( CompatibleVector, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
