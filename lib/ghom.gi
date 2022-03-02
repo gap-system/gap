@@ -1552,6 +1552,17 @@ RedispatchOnCondition(IsomorphismPcGroup,true,[IsGroup],[IsFinite],0);
 ##
 #F  GroupHomomorphismByFunction( <D>, <E>, <fun> )
 #F  GroupHomomorphismByFunction( <D>, <E>, <fun>, <invfun> )
+#F  GroupHomomorphismByFunction( <D>, <E>, <fun>, false, <prefun> )
+##
+##  The five argument version (independent of the actual value of the fourth
+##  argument) creates a mapping that is not necessarily bijective
+##  but for which <prefun> can be used to compute preimages.
+##
+##  For the three argument version,
+##  the filter 'IsPreimagesByAsGroupGeneralMappingByImages' is set in the
+##  mapping, which means that preimages will be computed by a group
+##  homomorphism constructed by mapping generators of <D> to their images
+##  under <fun>.
 ##
 InstallGlobalFunction( GroupHomomorphismByFunction, function ( arg )
 local map,type,prefun;
@@ -1565,9 +1576,7 @@ local map,type,prefun;
         prefun:=arg[5];
       else
         prefun:=fail;
-        if IsPermGroup(arg[2]) or IsPcGroup(arg[2]) then
-          type:=type and IsPreimagesByAsGroupGeneralMappingByImages;
-        fi;
+        type:= type and IsPreimagesByAsGroupGeneralMappingByImages;
       fi;
 
       # make the general mapping
