@@ -70,4 +70,12 @@ gap> GroupHomomorphismByImages(G, H, [(1,2)], [(1,2,3)]);
 fail
 gap> GroupHomomorphismByImages(G, H, [], []);
 fail
-gap> STOP_TEST( "mapphomo.tst", 1);
+
+# Check that group homomorphisms created by a function can compute preimages.
+gap> for G in [ SymmetricGroup(5), SmallGroup( 24, 12 ), GL(2,3) ] do
+>      hom:= GroupHomomorphismByFunction( G, G, x -> x );
+>      PreImagesRepresentative( hom, G.1 );
+>    od;
+
+#
+gap> STOP_TEST( "mapphomo.tst" );
