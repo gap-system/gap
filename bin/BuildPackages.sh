@@ -216,6 +216,7 @@ GAPInput
 build_one_package() {
   # requires one argument which is the package directory
   PKG="$1"
+  [[ $GITHUB_ACTIONS = true ]] && echo "::group::$PKG"
   echo ""
   date
   echo ""
@@ -266,6 +267,7 @@ build_one_package() {
       run_configure_and_make
     ;;
   esac
+  [[ $GITHUB_ACTIONS = true ]] && echo "::endgroup::"
   ) || build_fail
 }
 
