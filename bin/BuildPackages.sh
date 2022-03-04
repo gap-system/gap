@@ -93,7 +93,7 @@ then
   # spaces in filenames. This code will still break if there are newlines
   # in the name.
   old_IFS=$IFS
-  IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g))
+  IFS=$'\n' PACKAGES=($(find . -maxdepth 2 -type f -name PackageInfo.g | sort -f))
   IFS=$old_IFS
   PACKAGES=( "${PACKAGES[@]%/PackageInfo.g}" )
 fi
