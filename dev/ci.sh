@@ -236,6 +236,8 @@ GAPInput
     ;;
 
   testmockpkg)
+    # for debugging it is useful to know what sysinfo.gap contains at this point
+    cat "$BUILDDIR/sysinfo.gap"
     # test building a package kernel extension
     cd "$SRCDIR/tst/mockpkg"
     ./configure "$BUILDDIR"
