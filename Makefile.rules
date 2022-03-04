@@ -151,32 +151,32 @@ SOURCES_ALL += src/compstat_empty.c
 ########################################################################
 # Preprocessor flags
 #
-# GAP_CPPFLAGS is for the GAP build system, while GAP_PKG_CPPFLAGS is
+# GAP_CPPFLAGS is for the GAP build system, while SYSINFO_CPPFLAGS is
 # for use by gac, and for package build systems. The latter does not
 # contain warning flags, and uses absolute include paths.
 ########################################################################
 
 GAP_CPPFLAGS =
-GAP_PKG_CPPFLAGS =
+SYSINFO_CPPFLAGS =
 
 # First add include paths
 
 # The "build/" directory contains generated header files and thus is
 # placed into the list of include directories.
 GAP_CPPFLAGS += -I$(builddir)/build
-GAP_PKG_CPPFLAGS += -I$(abs_builddir)/build
+SYSINFO_CPPFLAGS += -I$(abs_builddir)/build
 
 # The other source files are relative to the srcdir
 GAP_CPPFLAGS += -I$(srcdir)/src
-GAP_PKG_CPPFLAGS += -I$(abs_srcdir)/src
+SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src
 
 # For backwards compatibility with certain packages and their kernel
 # extensions, also add the root of the srcdir to the package CPPFLAGS
-GAP_PKG_CPPFLAGS += -I$(abs_srcdir)
+SYSINFO_CPPFLAGS += -I$(abs_srcdir)
 
 # Add GAP_DEFINES (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(GAP_DEFINES)
-GAP_PKG_CPPFLAGS += $(GAP_DEFINES)
+SYSINFO_CPPFLAGS += $(GAP_DEFINES)
 
 # Add flags for dependencies
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
@@ -186,16 +186,13 @@ GAP_CPPFLAGS += $(JULIA_CPPFLAGS)
 GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
-GAP_PKG_CPPFLAGS += $(GMP_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(ZLIB_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(READLINE_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(JULIA_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
+# For packages, only libatomic headers are needed, as they are
+# used in hpc/atomic.h
+SYSINFO_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
 # Finally add user provided flags
 GAP_CPPFLAGS += $(CPPFLAGS)
-GAP_PKG_CPPFLAGS += $(CPPFLAGS)
+SYSINFO_CPPFLAGS += $(CPPFLAGS)
 
 
 ########################################################################
@@ -487,6 +484,25 @@ clean:
 
 ########################################################################
 # Rules for 'make install'
+#
+#
+# WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING
+#
+# The following code is incomplete. Parts of it may already be useful
+# for people who want to package GAP for their favorite software
+# distribution. This is why install-bin etc. are exposed as separate
+# targets. However, these have not yet been tested very extensively, so
+# use at your own peril -- that said, if you find any issues with them
+# NOT COVERED BELOW or have suggestions for improvements, please contact
+# us.
+#
+# Among the things that are known to be missing (no need to inform us
+# about it) are:
+#  - installing the `gac` script
+#  - installing packages (this one is tricky, depending on what assumptions
+#    one is willing to make or require; we may never support this here)
+#  - the installed sysinfo.gap is not yet fully adapted, and will be
+#    tweaked further
 ########################################################################
 
 LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
@@ -529,19 +545,42 @@ install-doc:
 		done \
 	done
 
-install-gaproot:
+# install most of the GAP "root" directory (containing arch independent files),
+# with a few exceptions: the `doc` dir is installed by `install-doc`, and
+# `install-sysinfo` creates `sysinfo.gap`
+install-gaproot: CITATION
 	@echo "Warning, 'make install-gaproot' is incomplete"
+	# create subdirectories
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
-	# TODO: update paths and FLAGS in sysinfo.gap
-	$(INSTALL) -m 0644 sysinfo.gap $(DESTDIR)$(datarootdir)/gap
-	# the following lines should not use `cp -r`, which is not quite portable,
-	# and which also may not deal with file permissions correctly
-	cp -r $(srcdir)/grp $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
-	cp -r $(srcdir)/lib $(DESTDIR)$(datarootdir)/gap/  # FIXME: don't use `cp -r`
-	# TODO: what about CITATION, CONTRIBUTING.md, COPYRIGHT, INSTALL.md,
-	# LICENSE, README* ? Copy them also here? Or into some other path?
-	# TODO: also copy bin/BuildPackage.sh, as it is very useful?
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/grp
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/lib
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/lib/hpc
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/pkg
+	# install GAP library files
+	$(INSTALL) -m 0644 grp/*.* $(DESTDIR)$(datarootdir)/gap/grp
+	$(INSTALL) -m 0644 lib/*.* $(DESTDIR)$(datarootdir)/gap/lib
+	$(INSTALL) -m 0644 lib/hpc/*.* $(DESTDIR)$(datarootdir)/gap/lib/hpc
+	# install various docs
+	$(INSTALL) -m 0644 CITATION $(DESTDIR)$(datarootdir)/gap/
+	$(INSTALL) -m 0644 $(srcdir)/CONTRIBUTING.md $(DESTDIR)$(datarootdir)/gap/
+	$(INSTALL) -m 0644 $(srcdir)/COPYRIGHT $(DESTDIR)$(datarootdir)/gap/
+	$(INSTALL) -m 0644 $(srcdir)/INSTALL.md $(DESTDIR)$(datarootdir)/gap/
+	$(INSTALL) -m 0644 $(srcdir)/LICENSE $(DESTDIR)$(datarootdir)/gap/
+	$(INSTALL) -m 0644 $(srcdir)/README.md $(DESTDIR)$(datarootdir)/gap/
+	# TODO: also install bin/BuildPackage.sh?
 
+# the following lines adjust variables for the installed sysinfo.gap
+install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
+install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
+install-sysinfo: SYSINFO_LIBS =
+install-sysinfo: SYSINFO_GAP = $(bindir)/gap
+install-sysinfo: SYSINFO_GAC = $(bindir)/gac
+install-sysinfo:
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
+	@echo "$$sysinfo_gap" > $(DESTDIR)$(libdir)/gap/sysinfo.gap
+	chmod 0644 $(DESTDIR)$(libdir)/gap/sysinfo.gap
+
+# install kernel headers
 install-headers:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
@@ -727,8 +766,19 @@ ifeq ($(HPCGAP),yes)
 $(SOURCES): $(EXTERN_FILES)
 endif
 
-
+#
 # regenerate sysinfo.gap if necessary
+#
+
+SYSINFO_GAP = $(abs_builddir)/gap
+SYSINFO_GAC = $(abs_builddir)/gac
+
+SYSINFO_CFLAGS = $(GAP_CFLAGS)
+SYSINFO_CXXFLAGS = $(GAP_CXXFLAGS)
+#SYSINFO_CPPFLAGS is already initialized at this point
+SYSINFO_LDFLAGS = $(GAP_LDFLAGS)
+SYSINFO_LIBS = $(GAP_LIBS)
+
 define sysinfo_gap
 # This file has been generated by the GAP build system,
 # DO NOT EDIT MANUALLY!
@@ -773,20 +823,20 @@ GAP_KERNEL_MAJOR_VERSION=$(GAP_KERNEL_MAJOR_VERSION)
 GAP_KERNEL_MINOR_VERSION=$(GAP_KERNEL_MINOR_VERSION)
 
 # GAP: path to the `gap` executable (may be a shell script)
-GAP="$(abs_builddir)/bin/gap.sh"
+GAP="$(SYSINFO_GAP)"
 
 # GAC: path to the `gac` executable (may be a shell script)
-GAC="$(abs_builddir)/gac"
+GAC="$(SYSINFO_GAC)"
 
 # Build flags for use by `gac` resp. build systems: these correspond to
 # the usual variables as used by e.g. autotools, with the added prefix `GAP_`.
 GAP_CC="$(CC)"
 GAP_CXX="$(CXX)"
-GAP_CFLAGS="$(GAP_CFLAGS)"
-GAP_CXXFLAGS="$(GAP_CXXFLAGS)"
-GAP_CPPFLAGS="$(GAP_PKG_CPPFLAGS)"
-GAP_LDFLAGS="$(GAP_LDFLAGS)"
-GAP_LIBS="$(GAP_LIBS)"
+GAP_CFLAGS="$(SYSINFO_CFLAGS)"
+GAP_CXXFLAGS="$(SYSINFO_CXXFLAGS)"
+GAP_CPPFLAGS="$(SYSINFO_CPPFLAGS)"
+GAP_LDFLAGS="$(SYSINFO_LDFLAGS)"
+GAP_LIBS="$(SYSINFO_LIBS)"
 endef
 export sysinfo_gap
 
