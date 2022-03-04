@@ -1025,5 +1025,4 @@ AC_CONFIG_FILES([GNUmakefile])
 AC_CONFIG_FILES([CITATION])
 AC_CONFIG_FILES([doc/make_doc], [chmod +x doc/make_doc])
 AC_CONFIG_FILES([doc/versiondata])
-AC_CONFIG_FILES([gac:cnf/gac.in], [chmod +x gac])
 AC_OUTPUT

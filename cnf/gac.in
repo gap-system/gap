@@ -49,34 +49,19 @@
 ##   -k|--gap-compiler
 ##
 
-# absolute path of the directory in which GAP was compiled
-abs_top_builddir="@abs_top_builddir@"
+# read sysinfo.gap, which sets GAP_CFLAGS, GAP_CPPFLAGS, etc.
+. "@SYSINFO_GAPROOT@/sysinfo.gap"
 
-#
-libdir="@libdir@"
-
-# path to the GAP executable
-gap_compiler="${abs_top_builddir}/gap"
-
-libtool="@SHELL@ ${abs_top_builddir}/libtool"
-
-# read sysinfo.gap, which should set GAP_CFLAGS, GAP_CPPFLAGS, etc.
-. "${abs_top_builddir}/sysinfo.gap"
-
-# These three should be filled in by the standard autoconf procedures
-c_compiler="$libtool --mode=compile $GAP_CC"
-cxx_compiler="$libtool --mode=compile $GAP_CXX"
-
-# These will need special care
-c_dyn_linker="$libtool --mode=link $GAP_CC -module -avoid-version -rpath $libdir"
+# Extract sysinfo settings...
+gap_compiler="${GAP}"
+c_compiler="${GAP_CC}"
+cxx_compiler="${GAP_CXX}"
+c_dyn_linker="${GAP_CC}"
 c_addlibs=""
 
-SYS_IS_CYGWIN32=@SYS_IS_CYGWIN32@
-if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
-    c_dyn_linker="$c_dyn_linker -no-undefined -version-info 0:0:0"
-    # FIXME: use correct DLL path (also after "make install")
-    c_dyn_linker="$c_dyn_linker -Wl,${abs_top_builddir}/bin/${GAParch}/gap.dll"
-fi
+GAP_CFLAGS="${GAP_CFLAGS} ${GAC_CFLAGS}"
+GAP_CXXFLAGS="${GAP_CXXFLAGS} ${GAC_CFLAGS}"
+GAP_LDFLAGS="${GAP_LDFLAGS} ${GAC_LDFLAGS}"
 
 
 # is output going to a terminal?
@@ -161,17 +146,7 @@ cxx_compile () {
 ##
 c_link_dyn () {
     mkdir -p $(dirname $1)
-    echo_and_run ${c_dyn_linker} ${GAP_LDFLAGS} -o "${1%.so}.la" $2 ${c_addlibs} || exit 1
-
-    output_dir=$(dirname $1)
-    if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
-        # GAP assumes shared libraries end in .so
-        for dllfile in $(cd $output_dir/.libs; ls *.dll); do
-            cp $output_dir/.libs/$dllfile $output_dir/${dllfile%.dll}.so
-        done
-    else
-        cp $output_dir/.libs/*.so $output_dir
-    fi;
+    echo_and_run ${c_dyn_linker} -o $1 $2 ${GAP_LDFLAGS} ${c_addlibs} || exit 1
 }
 
 
@@ -206,12 +181,12 @@ process_c_file () {
     c_file=$2
 
     if [ $comp_howfar != "object" ]; then
-       o_file=${gactmp}/$$_${name}.lo
+       o_file=${gactmp}/$$_${name}.o
        temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
     else 
-       o_file=${name}.lo
+       o_file=${name}.o
     fi
     c_compile $o_file $c_file
     if [ $comp_howfar = "link" ]; then
@@ -231,12 +206,12 @@ process_cxx_file () {
   cxx_file=$2
 
   if [ $comp_howfar != "object" ]; then
-    o_file=${gactmp}/$$_${name}.lo
+    o_file=${gactmp}/$$_${name}.o
     temps_o="${temps_o} ${o_file}"
   elif [ "X$output" != "X" ]; then
     o_file=$output
   else
-    o_file=${name}.lo
+    o_file=${name}.o
   fi
   cxx_compile $o_file $cxx_file
   if [ $comp_howfar = "link" ]; then
@@ -393,11 +368,17 @@ for input in ${inputs}; do
             name=$(basename ${input} .s)
             process_c_file $name $input;; # HACK: just use the C compiler
 
-        *.o) # look over '.o' source files
+        *.o) # add '.o' object files to the linker list
             name=$(basename ${input} .o)
             process_o_file $name $input;;
 
-        *.lo) # look over '.lo' source files
+        *.lo)
+            # for backwards compatibility, treat .lo files like .o files this
+            # is useful for package that use an old Makefile.gappkg which
+            # hardcodes the file extension .lo for object files created by
+            # gac. So this only works if the .lo files are honest object files
+            # with the wrong extension; it does *not* support linking .lo
+            # files created by GNU libtool.
             name=$(basename ${input} .lo)
             process_o_file $name $input;;
         esac
@@ -410,7 +391,7 @@ if [ $comp_howfar = "link" ]; then
         error "$0: static linking is not supported anymore, use -d / --dynamic"
     fi
 
-    if [ "X${output}" = "X" ]; then output="${name}.la"; fi
+    if [ "X${output}" = "X" ]; then output="${name}.so"; fi
     c_link_dyn ${output} "${objects}"
     
     if [ "$savetemps" = "true" ]; then
