@@ -537,7 +537,7 @@ install-bin: gap
 	@echo "Warning, 'make install-bin' is incomplete"
 	# install the real GAP executable as $(libdir)/gap/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
-	$(INSTALL) -m 0755 gap $(DESTDIR)$(libdir)/gap
+	$(INSTALL) -m 0755 -s gap $(DESTDIR)$(libdir)/gap
 	
 	# install a wrapper shell script invoking the real GAP executable as $(bindir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
@@ -609,7 +609,7 @@ install-headers:
 install-libgap: libgap.la
 	@echo "Warning, 'make install-libgap' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
-	$(LTINSTALL) libgap.la $(DESTDIR)$(libdir)
+	$(LTINSTALL) -s libgap.la $(DESTDIR)$(libdir)
 
 
 .PHONY: install install-bin install-doc install-gaproot install-headers install-libgap
