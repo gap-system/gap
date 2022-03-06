@@ -267,8 +267,7 @@ build_one_package() {
       run_configure_and_make
     ;;
   esac
-  [[ $GITHUB_ACTIONS = true ]] && echo "::endgroup::"
-  ) || build_fail
+  ) && ([[ $GITHUB_ACTIONS = true ]] && echo "::endgroup::") || build_fail
 }
 
 date >> "$LOGDIR/fail.log"
