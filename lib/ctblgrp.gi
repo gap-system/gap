@@ -1019,10 +1019,10 @@ SplitTwoSpace := function(D,raum)
     str:="Two orbit";
   fi;
   if NotFailed then
-    Info(InfoCharacterTable,1,str," space split");
+    Info(InfoCharacterTable,2,str," space split");
     return char;
   else
-    Info(InfoCharacterTable,1,str," split failed");
+    Info(InfoCharacterTable,2,str," split failed");
     raum.twofail:=true;
     return [];
   fi;
@@ -1314,11 +1314,11 @@ end;
 ##
 InstallGlobalFunction( BestSplittingMatrix, function(D)
 local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
-      orb,os,lim,ksl;
+      orb,os,lim,ksl,dmats;
 
   nu:=Zero(D.field);
-  requiredCols:=[];
-  splitBases:=[];
+  requiredCols:=List([1..D.klanz],x->[]);
+  splitBases:=List([1..D.klanz],x->[]);
   wert:=[];
   os:=ForAll(D.raeume,i->i.dim<20); #only small spaces left?
 
@@ -1332,8 +1332,13 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
   fi;
 
   ksl:=1;
+  # try matrics by class sizes
+  dmats:=[1..Length(D.classiz)];
+  SortParallel(ShallowCopy(D.classiz),dmats);
+  dmats:=Filtered(dmats,x->x in D.matrices);
+
   repeat
-    for n in D.matrices do
+    for n in dmats do
       requiredCols[n]:=[];
       splitBases[n]:=[];
       wert[n]:=0;
@@ -1407,14 +1412,32 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
 	    # compensate for the splitting process.
 	fi;
       fi;
+      # is there one that does all already? If so don't bother testing the
+      # rest, as we go by cost
+      if ForAll(D.raeume,x->IsBound(x.splits)) then
+        rc:=Intersection(List(D.raeume,x->Filtered([1..Length(x.splits)],
+          y->IsBound(x.splits[y]) and x.splits[y].split=true)));
+        if Length(rc)>0 then
+          for bw in rc do
+            if not IsBound(wert[bw]) or wert[bw]=0 then
+              wert[bw]:=Sum(D.raeume,x->x.splits[bw].val);
+            fi;
+            splitBases[bw]:=Union(splitBases[bw],[1..Length(D.raeume)]);
+            for bn in D.raeume do
+              requiredCols[bw]:=Union(requiredCols[bw],
+                                      bn.activeCols);
+            od;
+          od;
+          break;
+        fi;
+      fi;
     od;
 
     for r in D.raeume do
-      if IsBound(r.splits) and Number(r.splits)=1 then
+      if IsBound(r.splits) and Number(r.splits,x->x.split=true)=1 then
 	# is room split by only ONE matrix?(then we need this sooner or later)
-	# simulate: n:=PositionProperty(r.splits,IsBound);
 	n:=1;
-	while not IsBound(r.splits[n]) do
+	while not IsBound(r.splits[n]) or r.splits[n].split=false do
 	  n:=n+1;
 	od;
 	wert[n]:=wert[n]*10; #arbitrary increase of value
@@ -1426,7 +1449,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     # run through them in pl sequence
     for n in Filtered(D.permlist,i->i in D.matrices) do
       Info(InfoCharacterTable,3,n,":",Int(wert[n]));
-      if wert[n]>bw then
+      if IsBound(wert[n]) and wert[n]>bw then
 	bn:=n;
 	bw:=wert[n];
       fi;
@@ -2162,6 +2185,7 @@ local k,C,D,dsp;
   od;
 
   C:=DixontinI(D);
+  Assert(1,Length(C)=D.klanz);
   # SetIrr(OrdinaryCharacterTable(G),C);
   # (if `IrrDixonSchneider' is called explicitly,
   # we want to ignore the attribute)
