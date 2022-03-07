@@ -739,7 +739,6 @@ local  G,  home,  # the group and the home pcgs
   if candidates<>false then
     cls:=List(candidates, c -> cl);
     opr:=List(candidates, c -> One(G));
-    exp:=ListWithIdenticalEntries(Length(candidates), 1);
   else
     cls:=[cl];
   fi;
@@ -948,7 +947,7 @@ Error("This case disabled -- code not yet corrected");
         divi:=DivisorsInt(Size(G));
       fi;
       c:=Concatenation(c,List(divi,i->[i,0])); # to cope with `First'
-      Info(InfoClasses,2,List(divi,i->First(c,j->j[1]=i)[2]));
+      Info(InfoClasses,6,List(divi,i->First(c,j->j[1]=i)[2]));
     fi;
 
   od;
