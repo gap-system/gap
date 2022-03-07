@@ -3004,9 +3004,9 @@ local ffs,c;
     or not e in G then 
       TryNextMethod();
   fi;
-  c:=TFCanonicalClassRepresentative(G,[e])[1];
-  if c=fail then TryNextMethod();fi;
   ffs:=FittingFreeLiftSetup(G);
+  c:=TFCanonicalClassRepresentative(G,[e]:useradical:=false)[1];
+  if c=fail then TryNextMethod();fi;
   c:=SubgroupByFittingFreeData(G,c[6],c[7],
     InducedPcgsByGenerators(ffs.pcgs,c[5]))^Inverse(c[4]);
   Assert(2,ForAll(GeneratorsOfGroup(c),x->IsOne(Comm(x,e))));
@@ -3054,7 +3054,7 @@ local c;
   fi;
 
   if act=OnPoints then #and d in G and e in G then
-    c:=TFCanonicalClassRepresentative(G,[d,e]:conjugacytest);
+    c:=TFCanonicalClassRepresentative(G,[d,e]:conjugacytest,useradical:=false);
     if c=fail then
       return fail;
     else

@@ -23,7 +23,8 @@ local R;
   fi;
 
   # used in assertions
-  if ValueOption("usebacktrack")=true then return false;fi;
+  if ValueOption("usebacktrack")=true then return false;
+  elif ValueOption("useradical")=true then return true;fi;
 
   R:=RadicalGroup(G);
 
