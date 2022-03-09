@@ -667,8 +667,13 @@ local  G,  home,  # the group and the home pcgs
   fi;
 
   # is the series still large (and merits changing the pcgs)?
-  if Maximum(List([2..Length(eas)],x->IndexNC(eas[x-1],eas[x])))>2^15 then
-    step:=BoundedRefinementEANormalSeries(home,indstep,2^15);
+  if  Maximum(List([2..Length(eas)],x->IndexNC(eas[x-1],eas[x])))>2^15 then
+    if IsBound(G!.claspcgsRefinedSeries) then
+      step:=G!.claspcgsRefinedSeries;
+    else
+      step:=BoundedRefinementEANormalSeries(home,indstep,2^15);
+      G!.claspcgsRefinedSeries:=step;
+    fi;
     home:=step[1];
     indstep:=step[2];
     eas:=ChiefNormalSeriesByPcgs(home);
