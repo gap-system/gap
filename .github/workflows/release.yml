@@ -66,12 +66,10 @@ jobs:
             texlive-latex-base
             texlive-latex-recommended
             texlive-latex-extra
-            texlive-extra-utils
             texlive-fonts-recommended
-            texlive-fonts-extra
           )
           sudo apt-get update
-          sudo apt-get install "${packages[@]}"
+          sudo apt-get install --no-install-recommends "${packages[@]}"
       - name: "Configure GAP"
         run: dev/ci-configure-gap.sh
       - name: "Build GAP"
