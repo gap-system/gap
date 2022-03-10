@@ -199,9 +199,7 @@ jobs:
                          texlive-latex-base
                          texlive-latex-recommended
                          texlive-latex-extra
-                         texlive-extra-utils
                          texlive-fonts-recommended
-                         texlive-fonts-extra
                        )
                    fi
                    if [[ $ABI == 32 ]] ; then
@@ -212,7 +210,7 @@ jobs:
                        packages+=(gcc-multilib g++-multilib)
                    fi
                    sudo apt-get update
-                   sudo apt-get install "${packages[@]}"
+                   sudo apt-get install --no-install-recommends "${packages[@]}"
                elif [ "$RUNNER_OS" == "macOS" ]; then
                    brew install gmp zlib
                fi
