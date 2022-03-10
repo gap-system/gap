@@ -983,7 +983,14 @@ static Int GetLine2(TypInputFile * input)
         if (input->sline == 0 ||
             (IS_STRING_REP(input->sline) &&
              GET_LEN_STRING(input->sline) <= input->spos)) {
-            input->sline = CALL_1ARGS( ReadLineFunc, input->stream );
+            // If we are in the process of quitting, we cannot call
+            // GAP functions, so we just return EOF.
+            if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
+                input->sline = Fail;
+            }
+            else {
+                input->sline = CALL_1ARGS(ReadLineFunc, input->stream);
+            }
             input->spos  = 0;
         }
         if ( input->sline == Fail || ! IS_STRING(input->sline) ) {

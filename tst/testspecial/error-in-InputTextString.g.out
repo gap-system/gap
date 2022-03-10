@@ -1,0 +1,9 @@
+gap> READ_NORECOVERY(InputTextString("Print(1 + [()]);"));
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `+' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
+<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
+ called from read-eval loop at stream:1
+type 'quit;' to quit to outer loop
+brk> quit;
+fail
+gap> QUIT;
