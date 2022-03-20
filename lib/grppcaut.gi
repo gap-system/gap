@@ -1249,6 +1249,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	  fi;
 	  if actbase<>fail then
 	    e:=List(actbase,x->quotimg(H,pcgsH,x));
+            IsGroupOfAutomorphismsFiniteGroup(A);
 	    NiceMonomorphism(A:autactbase:=e);
 	  fi;
 
@@ -1463,6 +1464,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
 	  tmp:=Size(A);
 	  if actbase<>fail then
 	    e:=List(actbase,x->quotimg(H,pcgsH,x));
+            IsGroupOfAutomorphismsFiniteGroup(A);
 	    NiceMonomorphism(A:autactbase:=e);
 	  fi;
 	  for e in B do
