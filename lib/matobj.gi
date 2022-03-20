@@ -296,11 +296,7 @@ InstallMethod( Matrix,
                                       R, nrCols, list ) );
 
 InstallMethod( Matrix,
-    [ IsSemiring, IsList ],
-# rank higher than a method in the semigroups package, which otherwise jumps
-# in and causes an error when testing
-# line 318 of semigroups-3.4.0/gap/elements/semiringmat.gi
-20,
+    [ IsSemiring, IsList ], 0,
     function( R, list )
     if Length(list) = 0 then
       Error( "list must be not empty" );
