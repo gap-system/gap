@@ -267,7 +267,13 @@ build_one_package() {
       run_configure_and_make
     ;;
   esac
-  ) && ([[ $GITHUB_ACTIONS = true ]] && echo "::endgroup::") || build_fail
+  ) &&
+  (  # start subshell
+  if [[ $GITHUB_ACTIONS = true ]]
+  then
+    echo "::endgroup::"
+  fi
+  ) || build_fail
 }
 
 date >> "$LOGDIR/fail.log"
