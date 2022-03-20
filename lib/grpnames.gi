@@ -1202,8 +1202,14 @@ InstallMethod( AlternatingDegree,
   function ( G )
     if not IsFinite(G) then TryNextMethod(); fi;
     if IsNaturalAlternatingGroup(G) then return DegreeAction(G); fi;
-    if IsAlternatingGroup(G) then return AlternatingDegree(G);
-                             else return fail; fi;
+    if not IsAlternatingGroup(G) then return fail; fi;
+    if HasAlternatingDegree(G) then return AlternatingDegree(G); fi;
+
+    if Size(G) = 1 then return 0;
+    elif Size(G) = 3 then return 3;
+    elif Size(G) = 12 then return 4;
+    else return IsomorphismTypeInfoFiniteSimpleGroup(G).parameter;
+    fi;
   end );
 
 #############################################################################
@@ -1238,7 +1244,8 @@ InstallMethod( IsSymmetricGroup,
     # special treatment of small cases
     if Size(G)<=2 then SetSymmetricDegree(G,Size(G)); return true;
     elif Size(G)=6 and not IsAbelian(G) then
-      SetSymmetricDegree(G,3);return true;
+      SetSymmetricDegree(G,3);
+      return true;
     fi;
 
     G1 := DerivedSubgroup(G);
@@ -1274,8 +1281,17 @@ InstallMethod( SymmetricDegree,
   function ( G )
     if not IsFinite(G) then TryNextMethod(); fi;
     if IsNaturalSymmetricGroup(G) then return DegreeAction(G); fi;
-    if IsSymmetricGroup(G) then return SymmetricDegree(G);
-                           else return fail; fi;
+    if not IsSymmetricGroup(G) then return fail; fi;
+    # calling IsSymmetricGroup may have computed the SymmetricDegree
+    if HasSymmetricDegree(G) then return SymmetricDegree(G); fi;
+
+    # special treatment of small cases
+    if Size(G)<=2 then
+      return Size(G);
+    elif Size(G)=6 then
+      return 3;
+    fi;
+    return AlternatingDegree(DerivedSubgroup(G));
   end );
 
 #############################################################################
