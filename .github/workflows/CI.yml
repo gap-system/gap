@@ -217,6 +217,13 @@ jobs:
                fi
                python -m pip install gcovr
 
+      # Setup ccache, to speed up repeated compilation of the same binaries
+      # (i.e., GAP and the packages)
+      - name: "Setup ccache"
+        if: ${{ runner.os != 'Windows' }}
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          update_packager_index: false
       - name: "Configure GAP"
         run: ${{ matrix.extra }} dev/ci-configure-gap.sh
       - name: "Build GAP"
