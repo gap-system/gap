@@ -870,11 +870,10 @@ Error("This case disabled -- code not yet corrected");
           if cls[q].representative /
              cl.representative in K then
             c:=candidates[q] ^ opr[q];
-            i:=PositionSorted(cl.candidates, c);
-            if  i > Length(cl.candidates)
-               or cl.candidates[i]<>c then
-              Add(cl.candidates, c,i);
-              Add(team, [q], i);
+            i:=Position(cl.candidates, c);
+            if i=fail then
+              Add(cl.candidates, c);
+              Add(team, [q]);
             else
               Add(team[i], q);
             fi;
@@ -977,6 +976,297 @@ Error("This case disabled -- code not yet corrected");
   fi;
   return cls;
 end);
+
+#############################################################################
+##
+#F  MultiClassIdsPc(<dat>, <candidates>)
+##
+InstallGlobalFunction(MultiClassIdsPc, function(dat,candidates)
+local  G,home,  # the group and the home pcgs
+       H,Hp,	# acting group
+       liftkerns,
+       first,
+       levdat,leda,
+       allcl,
+       mode,    # LSB: ratCl | power | test :MSB
+       eas,     # elementary abelian series in <G>
+       step,    # counter looping over <eas>
+       K,  L,   # members of <eas>
+       indstep,	# indice normal steps
+       Ldep,	# depth of L in pcgs
+       Kp,mK,Lp,mL, # induced and modulo pcgs's
+       LcapH,KcapH, # intersections
+       N,   cent,   # elementary abelian factor, for affine action
+       cls, newcls, # classes in range/source of homomorphism
+       cli,	# index
+       news,    # new classes obtained in step
+       cl,      # class looping over <cls>
+       opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
+       team,    # team of candidates with same image modulo <K>
+       blist,pos,q, # these control grouping of <cls> into <team>s
+       p,       # prime dividing $|G|$
+       i,c,   # loop variables
+       nexpo,	# N-Exponents of the elements of N conjugated
+       allcent;	# DivisorsInt(Size(G)) (used for Info)
+  
+  G:=dat.group; 
+  mode:=0;
+
+  # <candidates> is a list  of elements whose classes  will be output  (but
+  # with canonical representatives), see comment  above. Or <candidates> is
+  # just one element, from whose output class the  centralizer will be read
+  # off.
+  H:=G;
+
+  cls:=ShallowCopy(candidates);
+  
+  if IsBound(dat.eas) then
+    eas:=dat.eas;
+    indstep:=dat.indstep;
+    home:=dat.home;
+    cent:=dat.cent;
+    levdat:=dat.levdat;
+    allcl:=dat.allcl;
+  else
+    # Calculate a (central)  elementary abelian series  with all pcgs induced
+    # w.r.t. <homepcgs>.
+
+    if IsPrimePowerInt(Size(G)) then
+      p:=PrimePGroup(G);
+      home:=PcgsPCentralSeriesPGroup(G);
+      eas:=PCentralNormalSeriesByPcgsPGroup(home);
+
+      cent:=ReturnTrue;
+    else
+      home:=PcgsElementaryAbelianSeries(G);
+      eas:=EANormalSeriesByPcgs(home);
+
+      # AH, 26-4-99: Test centrality not via `in' but via exponents
+      cent:=function(pcgs,grpg,Npcgs,dep)
+            local i,j;
+              for i in grpg do
+                for j in Npcgs do
+                  if DepthOfPcElement(pcgs,Comm(j,i))<dep then
+                    return false;
+                  fi;
+                od;
+              od;
+              return true;
+            end;
+    fi;
+
+    indstep:=IndicesEANormalSteps(home);
+
+    # is the series large (but can be rectified)?
+    step:=IndicesEANormalStepsBounded(home,2^15);
+    if indstep<>step then
+      indstep:=step;
+      eas:=List(indstep,x->SubgroupByPcgs(GroupOfPcgs(home),
+        InducedPcgsByPcSequence(home,home{[x..Length(home)]})));
+    fi;
+
+    # is the series still large (and merits changing the pcgs)?
+    if  Maximum(List([2..Length(eas)],x->IndexNC(eas[x-1],eas[x])))>2^15 then
+      step:=BoundedRefinementEANormalSeries(home,indstep,2^15);
+      home:=step[1];
+      indstep:=step[2];
+      eas:=ChiefNormalSeriesByPcgs(home);
+    fi;
+
+    # make steps larger if possible
+    L:=[Length(eas)];
+    for step in [Length(eas)-1,Length(eas)-2..1] do
+      if (Size(eas[step])/Size(eas[L[Length(L)]])>2^15 and not step+1 in L) or not HasElementaryAbelianFactorGroup(eas[step],eas[L[Length(L)]]) then
+        Add(L,step+1);
+      fi;
+    od;
+    Add(L,1);
+    L:=Reversed(L);
+    indstep:=indstep{L};
+    eas:=eas{L};
+
+    dat.home:=home;
+    dat.eas:=eas;
+    dat.indstep:=indstep;
+    dat.cent:=cent;
+    levdat:=List(eas,x->rec());
+    dat.levdat:=levdat;
+
+    Info(InfoClasses,1,"Series of sizes ",List(eas,Size));
+
+    allcl:=[];
+    dat.allcl:=allcl;
+
+  fi;
+
+  # check to which factors we want to lift
+
+  liftkerns:=[];
+
+  # Initialize the algorithm for the trivial group.
+  step:=1;
+
+  L:=eas[step];
+  leda:=levdat[step];
+  if IsBound(leda.Lp) then
+    Lp:=leda.Lp;
+    mL:=leda.mL;
+  else
+    Lp:=InducedPcgs(home,L);
+    mL:=ModuloPcgsByPcSequenceNC(home, home, Lp);
+    leda.Lp:=Lp;
+    leda.mL:=mL;
+  fi;
+
+  cl:=rec(representative:=One(G),
+	  centralizer:=H,
+	  centralizerpcgs:=InducedPcgs(home,H),
+	  cengen:=InducedPcgs(home,H));
+
+  if candidates<>false then
+    cls:=List(candidates, c -> cl);
+    opr:=List(candidates, c -> One(G));
+  else
+    cls:=[cl];
+  fi;
+
+  if not IsBound(allcl[step]) then allcl[step]:=[ShallowCopy(cl)];fi;
+
+  # Now go back through the factors by all groups in the elementary abelian
+  # series.
+  first:=true;
+  for step  in [2 .. Length(eas)]  do
+
+
+    Info(InfoClasses,1,"Step ",step,", ",Length(cls)," classes to lift");
+
+    # We apply the homomorphism principle to the homomorphism G/L -> G/K.
+
+    # The  actual   computations  are all  done   in <G>,   factors are
+    # represented by modulo pcgs.
+    Ldep:=indstep[step];
+
+    K:=eas[step-1];
+    L:=eas[step];
+
+    mK:=mL;
+
+    leda:=levdat[step];
+    if IsBound(leda.Lp) then
+      Lp:=leda.Lp;
+      N:=leda.N;
+      mL:=leda.mL;
+      allcent:=leda.allcent;
+      nexpo:=leda.nexpo;
+    else
+      Lp:=InducedPcgs(home,L);
+      Kp:=InducedPcgs(home,K);
+      N:=Kp mod Lp;  # modulo pcgs representing the kernel
+      mL:=ModuloPcgsByPcSequenceNC(home, home, Lp);
+      leda.Lp:=Lp;
+      leda.N:=N;
+      leda.mL:=mL;
+
+      allcent:=cent(home,home,N,Ldep);
+      if allcent=false then
+        nexpo:=LinearOperationLayer(home{[1..indstep[step-1]-1]},N);
+      else
+        nexpo:=fail;
+      fi;
+      leda.allcent:=allcent;
+      leda.nexpo:=nexpo;
+
+    fi;
+
+    if IsBound(allcl[step]) then
+      # allcl[step-1] has data
+      for i in cls do
+        q:=PositionProperty(allcl[step-1],x->x.representative=i.representative);
+        i.centralizerpcgs:=allcl[step-1][q].centralizerpcgs;
+        i.cengen:=i.centralizerpcgs!.pcSequence;
+      od;
+    else
+      for i in cls do
+        if IsBound(i.cengen) and not IsBound(i.centralizerpcgs) then
+          i.centralizerpcgs:=InducedPcgsByPcSequence(home,i.cengen);
+          i.cengen:=i.centralizerpcgs!.pcSequence;
+        fi;
+      od;
+    fi;
+
+    first:=false;
+
+    N!.capH:=N;
+    
+    # Identification of classes.
+
+    blist:=BlistList([1 .. Length(cls)], []);
+    pos:=Position(blist, false);
+    while pos<>fail  do
+      
+      # Find a team of candidates with same image under <modK>.
+      cl:=cls[pos];
+      cl.candidates:=[];
+      team:=[];
+      q:=pos;
+      while q<>fail  do
+        if q=pos or cls[q].representative /
+            cl.representative in K then
+          c:=candidates[q] ^ opr[q];
+          i:=Position(cl.candidates, c);
+          if i=fail then
+            Add(cl.candidates, c);
+            Add(team, [q]);
+          else
+            Add(team[i], q);
+          fi;
+          blist[q]:=true;
+        fi;
+        q:=Position(blist, false, q);
+      od;
+
+      # Now   <cl> is   a  class  modulo  <K>  (possibly   with
+      # `<cl>.candidates'  a list of  elements  mapping  into  this
+      # class modulo <K>). Let <newcls>  be  a list of all  classes
+      # modulo <L> that  map to <cl>  modulo <K>  (resp. a list  of
+      # classes to which   the list `<cl>.candidates'   maps modulo
+      # <K>,  together  with   `operator's and   `exponent's  as in
+      # (c^o^e=r)).
+      if allcent then
+        # generic central
+        Info(InfoClasses,5,"central case 1");
+        newcls:=CentralStepClEANS(home,H, G, N, cl,false);
+      elif cent(home,cl.centralizerpcgs, N, Ldep) then
+        # central in this case
+        Info(InfoClasses,5,"central case 2");
+        newcls:=CentralStepClEANS(home,H, G, N, cl,false);
+      else
+        Info(InfoClasses,5,"general case");
+        newcls:=GeneralStepClEANS(home, H, G, N, nexpo, cl,false);
+      fi;
+      
+      # Update <cls>, <opr> and <exp>.
+      for i  in [1 .. Length(team)]  do
+
+        for q  in team[i]  do
+          cls[q]:=newcls[i];
+          opr[q]:=opr[q] * newcls[i].operator;
+        od;
+      od;
+      
+      pos:=Position(blist, false, pos);
+    od;
+
+    if not IsBound(allcl[step]) then allcl[step]:=Unique(cls);fi;
+
+  od;
+
+  Assert(1,ForAll([1..Length(cls)],
+    i->candidates[i]^opr[i]=cls[i].representative));
+
+  return List(cls,x->x.representative);
+end);
+
 
 InstallGlobalFunction(CentralizerSizeLimitConsiderFunction,function(sz)
   return function(fhome,rep,cenp,K,L)
