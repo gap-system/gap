@@ -1408,7 +1408,7 @@ local pr,hom,pgens,pacts,pdopr,erg,cs,i,dict,orb,stb,rep,getrep,q,img,gen,
  
     pr:=PerfectResiduum(G);
     if IndexNC(G,pr)>3 then
-      hom:=GroupHomomorphismByImagesNC(G,Group(acts),gens,acts);;
+      hom:=GroupHomomorphismByImagesNC(G,GroupWithGenerators(acts),gens,acts);;
       pgens:=ShallowCopy(SmallGeneratingSet(pr));
       pacts:=List(pgens,x->ImagesRepresentative(hom,x));
       pdopr:=ShallowCopy(dopr);
