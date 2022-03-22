@@ -117,7 +117,7 @@ InstallGlobalFunction( InducedPcgs, function(pcgs, G)
   cache := ComputedInducedPcgses(G);
   i := 1;
   while i <= Length (cache) do
-     if IsIdenticalObj (cache[i], pcgs) then
+     if cache[i]= pcgs then
         return cache[i+1];
      fi;
      i := i + 2;
