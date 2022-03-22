@@ -356,6 +356,9 @@ DeclareGlobalFunction( "GeneralStepClEANS" );
 ##
 DeclareGlobalFunction( "ClassesSolvableGroup" );
 
+# faster version for character table code
+DeclareGlobalFunction("MultiClassIdsPc");
+
 #############################################################################
 ##
 #F  RationalClassesSolvableGroup(<G>, <mode> [,<opt>])  . . . . .
