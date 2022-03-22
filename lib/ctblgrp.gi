@@ -692,7 +692,7 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
       D.ClassMatrixColumn(D,M,bestMat,col);
     od;
 
-    M:=M*o;
+    M:=Matrix(D.field,Unpack(M)*o);
 
     # note,that we will have calculated yet one!
     D.maycent:=true;
@@ -1314,7 +1314,7 @@ end;
 ##
 InstallGlobalFunction( BestSplittingMatrix, function(D)
 local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
-      orb,os,lim,ksl,dmats;
+      orb,os,lim,ksl,dmats,imp;
 
   nu:=Zero(D.field);
   requiredCols:=List([1..D.klanz],x->[]);
@@ -1342,6 +1342,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
       requiredCols[n]:=[];
       splitBases[n]:=[];
       wert[n]:=0;
+      imp:=false;
 
       # only take classes small enough
       if D.classiz[n]<=lim and
@@ -1364,6 +1365,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
 	    else
 	      b:=DxNiceBasis(D,r);
 	      split:=ForAny(b{[2..r.dim]},i->i[n]<>nu);
+              imp:=imp or split;
 	      if split then
 		if r.dim<4 then
 		  # very small spaces will split nearly perfect
@@ -1414,7 +1416,9 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
       fi;
       # is there one that does all already? If so don't bother testing the
       # rest, as we go by cost
-      if ForAll(D.raeume,x->IsBound(x.splits)) then
+      if imp and Length(D.raeume)<=20
+        and ForAll(D.raeume,x->IsBound(x.splits)) then
+
         rc:=Intersection(List(D.raeume,x->Filtered([1..Length(x.splits)],
           y->IsBound(x.splits[y]) and x.splits[y].split=true)));
         if Length(rc)>0 then
@@ -1728,7 +1732,7 @@ DoubleCentralizerOrbit := function(D,c1,c2)
     often:=List(trans,i->Length(i));
     return [List(trans,i->i[1]),often];
   else
-    Info(InfoCharacterTable,2,"using DoubleCosets;");
+    Info(InfoCharacterTable,3,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
     l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
     s1:=Size(cent);
@@ -1801,7 +1805,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
             # were these classes detected weakly ?
             e:=M[i[1],t];
             if e>0 then
-              Info(InfoCharacterTable,2,"GaloisIdentification ",i,": ",e);
+              Info(InfoCharacterTable,3,"GaloisIdentification ",i,": ",e);
             fi;
             for j in i do
               M[j,t]:=e/Length(i);
