@@ -170,6 +170,7 @@ jobs:
       - name: "Install dependencies"
         run: |
                ${{ matrix.extra }}
+               echo "${{ matrix.extra }}" > extra.flags
                if [ "$RUNNER_OS" == "Linux" ]; then
                    packages=(${{ matrix.packages }})
                    if [[ $TEST_SUITES == *testbuildsys* ]] ; then
@@ -224,6 +225,7 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           update_packager_index: false
+          override_cache_key: setup-ccache_${{ runner.os }}_${{ hashFiles('extra.flags') }}_${{ github.ref }}
       - name: "Configure GAP"
         run: ${{ matrix.extra }} dev/ci-configure-gap.sh
       - name: "Build GAP"
