@@ -1328,18 +1328,7 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   else
     home:=PcgsElementaryAbelianSeries(G);
     eas:=EANormalSeriesByPcgs(home);
-    # AH, 26-4-99: Test centrality not via `in' but via exponents
-    cent:=function(pcgs,grpg,Npcgs,dep)
-	  local i,j;
-	    for i in grpg do
-	      for j in Npcgs do
-		if DepthOfPcElement(pcgs,Comm(j,i))<dep then
-		  return false;
-		fi;
-	      od;
-	    od;
-	    return true;
-	  end;
+    cent:=PcClassFactorCentralityTest;
 
   fi;
   indstep:=IndicesEANormalSteps(home);

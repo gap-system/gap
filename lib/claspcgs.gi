@@ -509,6 +509,22 @@ local  classes,    # classes to be constructed, the result
     return classes;
 end );
 
+# Test whether <Npcgs> is central in <grpg> modulo depth in <pcgs>.
+# This test is faster than membership with `in'. It is used in pc
+# class/centralizer computation
+InstallGlobalFunction(PcClassFactorCentralityTest,
+    function(pcgs,grpg,Npcgs,dep)
+	  local i,j;
+	    for i in grpg do
+	      for j in Npcgs do
+	        if DepthOfPcElement(pcgs,Comm(j,i))<dep then
+		  return false;
+		fi;
+	      od;
+	    od;
+	    return true;
+          end);
+
 #############################################################################
 ##
 #F  ClassesSolvableGroup(<G>, <mode> [,<opt>])  . . . . .
@@ -617,7 +633,7 @@ local  G,  home,  # the group and the home pcgs
 
     cent:=false;
 
-  elif IsPrimePowerInt(Size(G)) then
+  elif IsPGroup(G) then
     p:=PrimePGroup(G);
     home:=PcgsPCentralSeriesPGroup(G);
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
@@ -643,18 +659,7 @@ local  G,  home,  # the group and the home pcgs
   fi;
 
   if cent=false then
-    # AH, 26-4-99: Test centrality not via `in' but via exponents
-    cent:=function(pcgs,grpg,Npcgs,dep)
-	  local i,j;
-	    for i in grpg do
-	      for j in Npcgs do
-	        if DepthOfPcElement(pcgs,Comm(j,i))<dep then
-		  return false;
-		fi;
-	      od;
-	    od;
-	    return true;
-          end;
+    cent:=PcClassFactorCentralityTest;
   fi;
   indstep:=IndicesEANormalSteps(home);
 
@@ -1031,7 +1036,7 @@ local  G,home,  # the group and the home pcgs
     # Calculate a (central)  elementary abelian series  with all pcgs induced
     # w.r.t. <homepcgs>.
 
-    if IsPrimePowerInt(Size(G)) then
+    if IsPGroup(G) then
       p:=PrimePGroup(G);
       home:=PcgsPCentralSeriesPGroup(G);
       eas:=PCentralNormalSeriesByPcgsPGroup(home);
@@ -1041,18 +1046,7 @@ local  G,home,  # the group and the home pcgs
       home:=PcgsElementaryAbelianSeries(G);
       eas:=EANormalSeriesByPcgs(home);
 
-      # AH, 26-4-99: Test centrality not via `in' but via exponents
-      cent:=function(pcgs,grpg,Npcgs,dep)
-            local i,j;
-              for i in grpg do
-                for j in Npcgs do
-                  if DepthOfPcElement(pcgs,Comm(j,i))<dep then
-                    return false;
-                  fi;
-                od;
-              od;
-              return true;
-            end;
+      cent:=PcClassFactorCentralityTest;
     fi;
 
     indstep:=IndicesEANormalSteps(home);
@@ -1428,7 +1422,7 @@ local  G,  home,  # the group and the home pcgs
       return ForAll(N, k -> ForAll
         (InducedPcgs(home,cl.centralizer), c -> Comm(k, c) in L));
     end;
-  elif IsPrimePowerInt(Size(G)) then
+  elif IsPGroup(G) then
     p:=PrimePGroup(G);
     home:=PcgsPCentralSeriesPGroup(G);
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
