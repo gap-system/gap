@@ -223,7 +223,8 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           update_packager_index: false
-          override_cache_key: setup-ccache_${{ runner.os }}_${{ hashFiles('extra.flags') }}_${{ github.ref }}
+          override_cache_key: ${{ runner.os }}-${{ hashFiles('extra.flags') }}-${{ github.ref }}
+          override_cache_key_fallback: ${{ runner.os }}-${{ hashFiles('extra.flags') }}
       - name: "Configure GAP"
         run: ${{ matrix.extra }} dev/ci-configure-gap.sh
       - name: "Build GAP"
