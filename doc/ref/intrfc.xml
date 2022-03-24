@@ -415,6 +415,7 @@ local g
   g:=Objectify(NewType(CollectionsFamily(PermutationsFamily),
 		       IsPermutationGroupByRelations),
                rec(degree:=degree,relations:=relations));
+  return g;
 end;
 ]]></Log>
 <P/>
