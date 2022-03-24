@@ -251,6 +251,8 @@ DeclareGlobalFunction("OrbitSplit");
 ##
 DeclareGlobalFunction("DxSplitDegree");
 
+DeclareGlobalFunction("DxOnedimCleanout");
+
 
 #############################################################################
 ##

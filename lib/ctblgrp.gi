@@ -688,7 +688,6 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
 
     Add(D.yetmats,bestMat);
     for col in bestMatCol do
-      Info(InfoCharacterTable,2,"Computing column ",col,":");
       D.ClassMatrixColumn(D,M,bestMat,col);
     od;
 
@@ -1732,7 +1731,7 @@ DoubleCentralizerOrbit := function(D,c1,c2)
     often:=List(trans,i->Length(i));
     return [List(trans,i->i[1]),often];
   else
-    Info(InfoCharacterTable,3,"using DoubleCosets;");
+    #Info(InfoCharacterTable,3,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
     l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
     s1:=Size(cent);
@@ -1769,14 +1768,16 @@ StandardClassMatrixColumn := function(D,M,r,t)
 	  for i in D.classrange do
 	    M[i^p,t]:=M[i,c];
 	  od;
-	  Info(InfoCharacterTable,2,"by GaloisImage");
+          Info(InfoCharacterTable,2,"Computing column ",t,
+            " : by GaloisImage");
 	  return;
 	fi;
       fi;
     fi;
 
     T:=DoubleCentralizerOrbit(D,r,t);
-    Info(InfoCharacterTable,2,Length(T[1])," instead of ",D.classiz[r]);
+    Info(InfoCharacterTable,2,"Computing column ",t," :",
+      Length(T[1])," instead of ",D.classiz[r]);
 
     if IsDxLargeGroup(D.group) then
       # if r and t are unique,the conjugation test can be weak (i.e. up to
@@ -2061,25 +2062,9 @@ local G,     # group
   return D;
 end );
 
-
-#############################################################################
-##
-#F  DixonSplit(<D>) . .  calculate matrix,split spaces and obtain characters
-##
-InstallGlobalFunction( DixonSplit, function(arg)
-local D,r,i,j,ch,ra,bsm,
-      gens;
-
-  D:=arg[1];
-  if Length(arg)>1 then
-    bsm:=arg[2];
-  else
-    bsm:=BestSplittingMatrix(D);
-  fi;
-  if bsm<>fail then
-    SplitStep(D,bsm);
-  fi;
-
+InstallGlobalFunction(DxOnedimCleanout,function(D)
+local i,j,r,ch,kill,gens,ra;
+  kill:=false;
   for i in [1..Length(D.raeume)] do
     r:=D.raeume[i];
     if r.dim=1 then
@@ -2101,14 +2086,38 @@ local D,r,i,j,ch,ra,bsm,
         Add(D.irreducibles,j);
       od;
       Unbind(D.raeume[i]);
+      kill:=true;
     fi;
   od;
-  # Throw away lifted spaces
-  ra:=[];
-  for i in D.raeume do
-    Add(ra,i);
-  od;
-  D.raeume:=ra;
+  if kill then
+    # Throw away lifted spaces
+    ra:=[];
+    for i in D.raeume do
+      Add(ra,i);
+    od;
+    D.raeume:=ra;
+  fi;
+end);
+
+#############################################################################
+##
+#F  DixonSplit(<D>) . .  calculate matrix,split spaces and obtain characters
+##
+InstallGlobalFunction( DixonSplit, function(arg)
+local D,bsm;
+
+  D:=arg[1];
+  if Length(arg)>1 then
+    bsm:=arg[2];
+  else
+    bsm:=BestSplittingMatrix(D);
+  fi;
+  if bsm<>fail then
+    SplitStep(D,bsm);
+  fi;
+
+  DxOnedimCleanout(D);
+
   CombinatoricSplit(D);
   return bsm;
 end );
