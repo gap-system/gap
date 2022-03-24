@@ -32,13 +32,15 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
 	for i in D.classrange do
 	  M[i^p][t]:=M[i][c];
 	od;
-	Info(InfoCharacterTable,2,"by GaloisImage");
+        Info(InfoCharacterTable,2,"Computing column ",t,
+          " : by GaloisImage");
 	return;
       fi;
     fi;
 
     T:=DoubleCentralizerOrbit(D,r,t);
-    Info(InfoCharacterTable,2,Length(T[1])," instead of ",D.classiz[r]);
+    Info(InfoCharacterTable,2,"Computing column ",t," :",
+      Length(T[1])," instead of ",D.classiz[r]);
 
     for i in [1..Length(T[1])] do
       T[1][i]:=T[1][i]*z;
