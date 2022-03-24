@@ -286,6 +286,7 @@ DeclareGlobalFunction( "CentralStepRatClPGroup" );
 DeclareGlobalFunction( "CentralStepClEANS" );
 DeclareGlobalFunction( "CorrectConjugacyClass" );
 DeclareGlobalFunction( "GeneralStepClEANS" );
+DeclareGlobalFunction("PcClassFactorCentralityTest");
 
 #############################################################################
 ##
