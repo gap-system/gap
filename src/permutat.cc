@@ -201,7 +201,9 @@ static void PrintPerm(Obj perm)
             ptSeen[p] = 1;
             isId = FALSE;
             Pr(fmt1,(Int)(p+1), 0);
+            /* restore pointer, in case Pr caused a garbage collection */
             ptPerm = CONST_ADDR_PERM<T>(perm);
+            ptSeen = ADDR_TMP_PERM<T>();
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 ptSeen[q] = 1;
                 Pr(fmt2,(Int)(q+1), 0);
