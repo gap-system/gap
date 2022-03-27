@@ -277,6 +277,18 @@ gap> IsMutable( ComputedIndicators( t ) );
 true
 gap> ForAny( ComputedIndicators( t ), IsMutable );
 false
+gap> t:= CharacterTable( CyclicGroup( 2 ) );;
+gap> SetIdentifier( t, "C2" );
+gap> ComputedIndicators( t )[2]:= [ Unknown(), Unknown() ];;
+gap> Display( t, rec( indicator:= true ) );
+C2
+
+        2  1  1
+
+          1a 2a
+       2
+X.1    ?   1  1
+X.2    ?   1 -1
 gap> PrimeBlocks( t, 2 );;
 gap> Length( ComputedPrimeBlockss( t ) );
 2

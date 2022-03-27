@@ -5189,6 +5189,8 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
                  Print( String( "+", iw[j] ) );
                elif indic[j][i] = -1 then
                  Print( String( "-", iw[j] ) );
+               else
+                 Print( String( "?", iw[j] ) );
                fi;
             else
                if indic[j][i] = 0 then
