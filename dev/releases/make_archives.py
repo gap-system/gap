@@ -125,6 +125,8 @@ with working_directory(tmpdir + "/" + basename):
         run_with_log(["make", "-j8"], "../make-hpcgap")
 
     notice("Copy GAP-to-C compilation results")
+    shutil.copy("build/ffdata.c", "src")
+    shutil.copy("build/ffdata.h", "src")
     shutil.copy("build/c_oper1.c", "src")
     shutil.copy("build/c_type1.c", "src")
     shutil.copy("hpcgap-build/build/c_oper1.c", "src/hpc")
