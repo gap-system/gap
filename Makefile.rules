@@ -589,7 +589,7 @@ install-headers:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
 	# Create a symlink to support packages using `#include "src/compiled.h"`
-	ln -sfh . $(DESTDIR)$(includedir)/gap/src
+	ln -sfn . $(DESTDIR)$(includedir)/gap/src
 
 install-libgap: libgap.la
 	@echo "Warning, 'make install-libgap' is incomplete"
