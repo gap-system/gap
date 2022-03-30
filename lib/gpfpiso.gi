@@ -1569,6 +1569,92 @@ local iso,n,fn,sz,bigcount,tryweyl;
   return fail;
 end);
 
+BindGlobal("CanoDC",function(chain,sub,orep)
+local i,j,u,o,r,stb,m,g,img,p,rep,b,expand,dict,act,gens,gf,writestab;
+  
+  expand:=function(n)
+  local e;
+    e:=r[n][2];
+    while r[n][1]<>0 do
+      n:=r[n][1];
+      e:=r[n][2]*e;
+    od;
+    return e;
+  end;
+
+  writestab:=function()
+  local p,k;
+    p:=stb;
+    if Length(p)>3 then
+      # permute randomly
+      p:=p{FLOYDS_ALGORITHM(
+        GlobalMersenneTwister,Length(stb),false)};
+    fi;
+    stb:=SubgroupNC(sub,p{[1..Minimum(3,Length(p))]});
+    for k in p{[4..Length(p)]} do
+      stb:=ClosureSubgroupNC(stb,k);
+    od;
+  end;
+
+  b:=One(sub);
+  rep:=orep;
+  for i in [Length(chain)-1,Length(chain)-2..1] do
+    u:=chain[i];
+    act:=function(e,g) return CanonicalRightCosetElement(u,e*g);end;
+
+    # orbit/rep stabilizer
+    o:=[CanonicalRightCosetElement(u,rep)];
+    dict:=NewDictionary(rep,true,chain[Length(chain)]);
+    AddDictionary(dict,o[1],1);
+    r:=[[0,One(sub)]];
+    stb:=[];
+    #stb:=TrivialSubgroup(sub);
+    j:=1;
+    m:=1;
+    gens:=GeneratorsOfGroup(sub);
+    gf:=true;
+    while j<=Length(o) and Length(o)*Size(stb)<Size(sub) do
+      if gf and Length(o)>40 then
+        gf:=false;
+        gens:=SmallGeneratingSet(sub);
+      fi;
+      for g in gens do
+        img:=act(o[j],g);
+        #p:=Position(o,img);
+        p:=LookupDictionary(dict,img);
+        if p=fail then
+          Add(o,img);
+          AddDictionary(dict,img,Length(o));
+          Add(r,[j,g]);
+          #Add(r,[0,r[j][2]*g]);
+          if img<o[m] then m:=Length(o); fi;
+        elif IsList(stb) then
+          AddSet(stb,expand(j)*g/expand(p));
+          if Length(o)>20 then
+            writestab();
+          fi;
+        else
+          stb:=ClosureSubgroupNC(stb,expand(j)*g/expand(p));
+        fi;
+      od;
+
+      j:=j+1;
+    od;
+
+    b:=b*expand(m);
+    j:=expand(m);
+    rep:=rep*j;
+
+    if i>1 then
+      if IsList(stb) then writestab();fi;
+      sub:=stb^j;
+    fi;
+
+  od;
+  return [o[m],b];
+end);
+
+
 # rewriting systems for simple groups based on BN pairs, following 
 # (Schmidt,  Finite groups have short rewriting systems. Computational group
 # theory and the theory of groups, II, 185–200, Contemp. Math., 511.)
@@ -1577,8 +1663,9 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   lev,ord,monb,mons,gp,trawo,trawou,hom,tst,dc,dcreps,act,decomp,ranb,ranw,
   nofob,nofow,reduce,pcgs,can,pri,stb,addrule,invmap,jj,wo,pciso,
   borelelm,borelran,borelreduce,bpairs,brws,specialborelreduce,
-  rt,dcnums,rti,sel,maketzf,mytzf,borela,pc,bpcgs,noncomm,noncelm,
-  wgens,weylword,borelword,coxrels,ha,directerr,bhom;
+  rdag,mdag,wdag,dcnum,dcfix,
+  rt,dcnums,rti,sel,maketzf,mytzf,csetperm,pc,bpcgs,noncomm,noncelm,
+  wgens,weylword,borelword,coxrels,ha,directerr,bhom,ac,relab,ostab,dcr,single;
 
   specialborelreduce:=false;
   if Size(ClosureGroup(borel,weyl))<Size(group) then return fail;fi;
@@ -1695,8 +1782,8 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     return tzf;
   end;
 
-  reduce:=function(wo,rules,tzf)
-  local w,fam,red,i,j,p,ww,sp;
+  reduce:=function(wo,rules,dag,tzf)
+  local w,fam,red,i,j,p,ww,sp,has;
     #Print("Reduce ",wo,"\n");
     fam:=FamilyObj(wo);
     # is it in big monoid?
@@ -1704,50 +1791,69 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     w:=LetterRepAssocWord(wo);
     sp:=specialborelreduce and fam=FamilyObj(One(f)) and ForAny(w,x->x in borelran);
 
-    if tzf=fail then
-      tzf:=maketzf(rules);
-    fi;
-
-    # collect from the right
+    # collect from the left
     if sp then
       w:=borelreduce(w);
     fi;
-    p:=Length(w);
-    while p>0 do
-      if IsBound(tzf[w[p]]) then
 
-	red:=tzf[w[p]];
-	i:=1;
-	while i<=Length(red) do
-	  if p+Length(red[i][1])-1<=Length(w) then
-	    j:=2;
-	    while j<=Length(red[i][1]) and w[p+j-1]=red[i][1][j] do
-	      j:=j+1;
-	    od;
-	    if j>Length(red[i][1]) then
-	      # replace
-	      w:=Concatenation(w{[1..p-1]},red[i][2],
-		w{[p+Length(red[i][1])..Length(w)]});
-              #Print("intermed ",red[i],":",AssocWordByLetterRep(fam,w),"\n");
-	      p:=Minimum(p+Length(red[i][2]),Length(w));
-              if sp then
-                ww:=borelreduce(w);
-                if ww<>w then
-                  w:=ww;
-                  p:=Length(w);
+    if dag<>fail then
+      repeat
+      has:=false;
+        p:=1;
+        while p<=Length(w) do
+          i:=RuleAtPosKBDAG(dag,w,p);
+          if i<>fail then
+            has:=true;
+            # replace
+            w:=Concatenation(w{[1..p-1]},LetterRepAssocWord(rules[i][2]),
+              w{[p+Length(rules[i][1])..Length(w)]});
+            if sp then
+              w:=borelreduce(w);
+            fi;
+            p:=0;
+          fi;
+          p:=p+1;
+        od;
+      until has=false;
+
+    else
+      p:=Length(w);
+      while p>0 do
+        if IsBound(tzf[w[p]]) then
+
+          red:=tzf[w[p]];
+          i:=1;
+          while i<=Length(red) do
+            if p+Length(red[i][1])-1<=Length(w) then
+              j:=2;
+              while j<=Length(red[i][1]) and w[p+j-1]=red[i][1][j] do
+                j:=j+1;
+              od;
+              if j>Length(red[i][1]) then
+                # replace
+                w:=Concatenation(w{[1..p-1]},red[i][2],
+                  w{[p+Length(red[i][1])..Length(w)]});
+                #Print("intermed ",red[i],":",AssocWordByLetterRep(fam,w),"\n");
+                p:=Minimum(p+Length(red[i][2]),Length(w));
+                if sp then
+                  ww:=borelreduce(w);
+                  if ww<>w then
+                    w:=ww;
+                    p:=Length(w);
+                  fi;
+
                 fi;
-
+                
+                i:=Length(red);
               fi;
-              
-	      i:=Length(red);
-	    fi;
-	  fi;
-	  i:=i+1;
-	od;
+            fi;
+            i:=i+1;
+          od;
 
-      fi;
-      p:=p-1;
-    od;
+        fi;
+        p:=p-1;
+      od;
+    fi;
 
     w:=AssocWordByLetterRep(fam,w);
     #Print("To ",w,"\n");
@@ -1757,10 +1863,17 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
 
   nofob:=function(x)
     x:=UnderlyingElement(ImagesRepresentative(cb.monhom,x));
-    x:=reduce(x,RelationsOfFpMonoid(monoid),fail);
+    x:=reduce(x,RelationsOfFpMonoid(monoid),mdag,fail);
     x:=ElementOfFpMonoid(FamilyObj(One(monoid)),x);
     return PreImagesRepresentative(cb.monhom,x);
   end;
+
+  mdag:=EmptyKBDAG(Union(List(FreeGeneratorsOfFpMonoid(monoid),
+    LetterRepAssocWord)));
+  a:=RelationsOfFpMonoid(monoid);
+  for i in [1..Length(a)] do
+    AddRuleKBDAG(mdag,LetterRepAssocWord(a[i][1]),i);
+  od;
 
   if newstyle then
 
@@ -1793,80 +1906,205 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
 
   fi;
 
-  isos:=cs.fphom;
-  w:=Range(isos);
-  a:=MappingGeneratorsImages(isos)[1];
-
   nofow:=function(x)
     x:=UnderlyingElement(ImagesRepresentative(cs.monhom,x));
-    x:=reduce(x,RelationsOfFpMonoid(Range(cs.monhom)),fail);
+    x:=reduce(x,RelationsOfFpMonoid(Range(cs.monhom)),wdag,fail);
     x:=ElementOfFpMonoid(FamilyObj(One(Range(cs.monhom))),x);
     return PreImagesRepresentative(cs.monhom,x);
   end;
+
+  wdag:=EmptyKBDAG(Union(List(FreeGeneratorsOfFpMonoid(Range(cs.monhom)),
+    LetterRepAssocWord)));
+  a:=RelationsOfFpMonoid(Range(cs.monhom));
+  for i in [1..Length(a)] do
+    AddRuleKBDAG(wdag,LetterRepAssocWord(a[i][1]),i);
+  od;
+
+  isos:=cs.fphom;
+  w:=Range(isos);
+  a:=MappingGeneratorsImages(isos)[1];
 
   gens:=bgens;
   l:=Length(gens);
   gens:=Concatenation(gens,a);
 
-  # identify double cosets
-  rt:=RightTransversal(group,borel);
-  # perm action of parent
-  a:=Group(SmallGeneratingSet(group)); # so nothing stores
-  borela:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
-  iso:=EpimorphismFromFreeGroup(a);
-  borela:=List(bgens,x->MappedWord(PreImagesRepresentative(iso,x),MappingGeneratorsImages(iso)[1],borela));
-  act:=Group(borela,());
+  ac:=AscendingChain(group,borel);
 
-  #dcnums:=OrbitsDomain(borel,[1..Length(rt)],
-  #  function(num,elm) return PositionCanonical(rt,rt[num]*elm);end);
+  Info(InfoFpGroup,1,List(ac,Size));
+
+  single:=IndexNC(group,borel)<10^7;
+
+  while Length(ac)>2 and
+    IndexNC(ac[Length(ac)],ac[Length(ac)-2])<10^7 do
+    ac:=ac{Difference([1..Length(ac)],[Length(ac)-1])};
+  od;
+
+  i:=Length(ac)-1;
+  while i>2 do
+    if IndexNC(ac[i],ac[i-2])<=100 then
+      ac:=ac{Difference([1..Length(ac)],[i-1])};
+    fi;
+    i:=i-1;
+  od;
+
+  # perm action of group on top, small gen set
+  rt:=RightTransversal(group,ac[Length(ac)-1]);
+  a:=Group(SmallGeneratingSet(group)); # so nothing stores
+  csetperm:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
+  iso:=EpimorphismFromFreeGroup(a);
+  csetperm:=List(bgens,x->MappedWord(PreImagesRepresentative(iso,x),
+    MappingGeneratorsImages(iso)[1],csetperm));
+  act:=Group(csetperm,());
+
+  bhom:=GroupHomomorphismByImagesNC(borel,act,bgens,csetperm);
+  #Assert(0,bhom<>fail);
+
+  # reps for each coset
   dcnums:=OrbitsDomain(act,[1..Length(rt)]);
   dcnums:=List(dcnums,x->Immutable(Set(x)));
+
+  # ensure that weyl is rep
+  for i in weyl do
+    a:=PositionCanonical(rt,i);
+    j:=PositionProperty(dcnums,x->a in x);
+    if dcnums[j][1]<>a then
+      dcnums[j]:=Concatenation([a],Difference(dcnums[j],[a]));
+    fi;
+  od;
+
+  # index the orbit nr.
   rti:=[];
-  for i in [1..Length(dc)] do
-    a:=PositionCanonical(rt,Representative(dc[i]));
-    a:=PositionProperty(dcnums,x->a in x);
-    for j in dcnums[a] do
+  ostab:=[];
+  for i in [1..Length(dcnums)] do
+    for j in dcnums[i] do
       rti[j]:=i;
     od;
+    a:=Stabilizer(borel,dcnums[i][1],bgens,csetperm,OnPoints);
+    a:=SubgroupNC(borel,SmallGeneratingSet(a));
+    ostab[i]:=a;
   od;
-  dcnums:=false; # clean memory
-  iso:=false;
-  act:=false;
+  ac:=ac{[1..Length(ac)-1]}; # remove top step
+  Info(InfoFpGroup,1,List(ac,Size));
 
-  # BN decomposition
+  Assert(0,single=(Length(ac)=1));
+
+  dcr:=function(elm)
+  local a,b,rep;
+    a:=PositionCanonical(rt,elm);
+    b:=rti[a];
+    rep:=RepresentativeAction(Image(bhom),a,dcnums[b][1]);
+    rep:=PreImagesRepresentative(bhom,rep);
+    if single then
+      a:=[CanonicalRightCosetElement(ac[1],rt[dcnums[b][1]]),rep];
+    else
+      a:=CanoDC(ac,ostab[b],elm*rep);
+      a:=[a[1],rep*a[2]];
+    fi;
+    if relab then
+      b:=Position(dcnum,a[1]);
+      a:=[dcreps[b],a[2]*dcfix[b]];
+    fi;
+    return a;
+  end;
+
+  # the calculated reps
+  relab:=false;
+  dcfix:=List(dc,x->One(group));
+  dcnum:=fail;
+  dcnum:=List(dc,x->dcr(Representative(x))[1]);
+
+  # ensure the Weyl group is the reps
   dcreps:=[];
   for i in AsList(weyl) do
-    #a:=PositionProperty(dc,y->i in y);
-    a:=rti[PositionCanonical(rt,i)];
-    if not IsBound(dcreps[a]) then dcreps[a]:=i;fi;
+
+    j:=dcr(i);
+    a:=Position(dcnum,j[1]);
+    if not IsBound(dcreps[a]) then dcreps[a]:=i; fi;
+    dcfix[a]:=j[2]^-1; # mapping calculated to weyl elt
   od;
 
   if not ForAll([1..Length(dc)],x->IsBound(dcreps[x])) then
     Error("weyl does not cover dc");
   fi;
 
-  iso:=IsomorphismFpGroupByGenerators(group,gens);
+  relab:=true;
 
-  act:=function(r,g)
-    return CanonicalRightCosetElement(borel,r*g);
-  end;
-
-  bhom:=GroupHomomorphismByImages(borel,Group(borela),bgens,borela);
-  Assert(0,bhom<>fail);
   decomp:=function(elm)
-  local pos,rep;
+  local pos,rep,a;
     if elm in borel then return [elm,One(borel),One(borel)];fi;
-    #pos:=PositionProperty(dc,y->elm in y);
-    pos:=rti[PositionCanonical(rt,elm)];
-    #rep:=RepresentativeAction(borel,PositionCanonical(rt,elm),
-    #       PositionCanonical(rt,dcreps[pos]),bgens,borela,OnPoints);
-    rep:=PreImagesRepresentative(bhom,
-      RepresentativeAction(Range(bhom),PositionCanonical(rt,elm),
-           PositionCanonical(rt,dcreps[pos])));
-    rep:=[elm*rep/dcreps[pos],dcreps[pos],rep^-1];
+
+    a:=dcr(elm);
+    rep:=a[2];
+
+    rep:=[elm*rep/a[1],a[1],rep^-1];
     Assert(0,rep[1] in borel);
     return rep;
   end;
+
+  iso:=IsomorphismFpGroupByGenerators(group,gens);
+
+#  else # alternative, old, code
+#    # identify double cosets
+#    rt:=RightTransversal(group,borel);
+#
+#    # perm action of group, small gen set
+#    a:=Group(SmallGeneratingSet(group)); # so nothing stores
+#    csetperm:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
+#    iso:=EpimorphismFromFreeGroup(a);
+#    csetperm:=List(bgens,x->MappedWord(PreImagesRepresentative(iso,x),MappingGeneratorsImages(iso)[1],csetperm));
+#    act:=Group(csetperm,());
+#
+#    bhom:=GroupHomomorphismByImagesNC(borel,act,bgens,csetperm);
+#    #Assert(0,bhom<>fail);
+#
+#    dcnums:=OrbitsDomain(act,[1..Length(rt)]);
+#    dcnums:=List(dcnums,x->Immutable(Set(x)));
+#    rti:=[];
+#    for i in [1..Length(dc)] do
+#      a:=PositionCanonical(rt,Representative(dc[i]));
+#      a:=PositionProperty(dcnums,x->a in x);
+#      for j in dcnums[a] do
+#        rti[j]:=i;
+#      od;
+#    od;
+#    dcnums:=false; # clean memory
+#    iso:=false;
+#    act:=false;
+#
+#    # BN decomposition
+#    dcreps:=[];
+#    for i in AsList(weyl) do
+#      #a:=PositionProperty(dc,y->i in y);
+#      a:=rti[PositionCanonical(rt,i)];
+#      if not IsBound(dcreps[a]) then dcreps[a]:=i;fi;
+#    od;
+#
+#    if not ForAll([1..Length(dc)],x->IsBound(dcreps[x])) then
+#      Error("weyl does not cover dc");
+#    fi;
+#
+#    iso:=IsomorphismFpGroupByGenerators(group,gens);
+#
+#    act:=function(r,g)
+#      return CanonicalRightCosetElement(borel,r*g);
+#    end;
+#
+#    decomp:=function(elm)
+#    local pos,rep;
+#      if elm in borel then return [elm,One(borel),One(borel)];fi;
+#      #pos:=PositionProperty(dc,y->elm in y);
+#      pos:=rti[PositionCanonical(rt,elm)];
+#      #rep:=RepresentativeAction(borel,PositionCanonical(rt,elm),
+#      #       PositionCanonical(rt,dcreps[pos]),bgens,csetperm,OnPoints);
+#      rep:=PreImagesRepresentative(bhom,
+#        RepresentativeAction(Range(bhom),PositionCanonical(rt,elm),
+#            PositionCanonical(rt,dcreps[pos])));
+#      rep:=[elm*rep/dcreps[pos],dcreps[pos],rep^-1];
+#      Assert(0,rep[1] in borel);
+#      return rep;
+#    end;
+#  fi;
+
 
   # now build new presentation
   a:=[];
@@ -1902,15 +2140,17 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
 
   # now combine monoid presentations
   rels:=[];
-  mytzf:=maketzf(rels);
+mytzf:=maketzf(rels);
+  mytzf:=fail;
 
   directerr:=false;
   if newstyle then directerr:=true;fi;
 
   addrule:=function(rule)
-  local left,right,let,old,p;
-    left:=reduce(rule[1],rels,mytzf);
-    right:=reduce(rule[2],rels,mytzf);
+  local left,right,let,old,p,trule,j,stack;
+    stack:=[];
+    left:=reduce(rule[1],rels,rdag,mytzf);
+    right:=reduce(rule[2],rels,rdag,mytzf);
     if left=right then return;fi;
     if IsLessThanUnder(ord,right,left) then
       rule:=[left,right];
@@ -1924,21 +2164,21 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   old:=rule;
     let:=LetterRepAssocWord(rule[1])[1];
     left:=Subword(rule[1],2,Length(rule[1]));
-    right:=reduce(invmap[let]*rule[2],rels,mytzf);
+    right:=reduce(invmap[let]*rule[2],rels,rdag,mytzf);
     while IsLessThanUnder(ord,right,left) do
       rule:=[left,right];
       let:=LetterRepAssocWord(rule[1])[1];
       left:=Subword(rule[1],2,Length(rule[1]));
-      right:=reduce(invmap[let]*rule[2],rels,mytzf);
+      right:=reduce(invmap[let]*rule[2],rels,rdag,mytzf);
     od;
     let:=LetterRepAssocWord(rule[1])[Length(rule[1])];
     left:=Subword(rule[1],1,Length(rule[1])-1);
-    right:=reduce(rule[2]*invmap[let],rels,mytzf);
+    right:=reduce(rule[2]*invmap[let],rels,rdag,mytzf);
     while IsLessThanUnder(ord,right,left) do
       rule:=[left,right];
       let:=LetterRepAssocWord(rule[1])[Length(rule[1])];
       left:=Subword(rule[1],1,Length(rule[1])-1);
-      right:=reduce(rule[2]*invmap[let],rels,mytzf);
+      right:=reduce(rule[2]*invmap[let],rels,rdag,mytzf);
     od;
 
     # delete common letters at start/end
@@ -1953,8 +2193,8 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     od;
 
 # are they now redundant?
-left:=reduce(rule[1],rels,mytzf);
-right:=reduce(rule[2],rels,mytzf);
+left:=reduce(rule[1],rels,rdag,mytzf);
+right:=reduce(rule[2],rels,rdag,mytzf);
 if IsLessThanUnder(ord,right,left) then
   rule:=[left,right];
 else
@@ -1962,13 +2202,39 @@ else
 fi;
 if rule[1]=rule[2] then return;fi;
 
+    trule:=List(rule,LetterRepAssocWord);
+    if rdag<>fail then
+      p:=AddRuleKBDAG(rdag,trule[1],Length(rels)+1);
+      if p=fail then 
+        # need to reduce rules
+        left:=Filtered([1..Length(rels)],
+          x->PositionSublist(LetterRepAssocWord(rels[x][1]),trule[1])<>fail);
+        left:=Reversed(left);
+        for p in left do
+          Add(stack,rels[p]);
+          DeleteRuleKBDAG(rdag,LetterRepAssocWord(rels[p][1]),p);
+          for j in [p+1..Length(rels)] do
+            rels[j-1]:=rels[j];
+          od;
+          Unbind(rels[Length(rels)]);
+        od;
+        p:=AddRuleKBDAG(rdag,trule[1],Length(rels)+1);
+      elif p=false then Error("could be reduced");fi;
+    fi;
     Add(rels,rule);
-    rule:=List(rule,LetterRepAssocWord);
-    p:=rule[1][1];
-    if not IsBound(mytzf[p]) then
-      mytzf[p]:=[rule];
-    else
-      Add(mytzf[p],rule);
+    if mytzf<>fail then
+      p:=trule[1][1];
+      if not IsBound(mytzf[p]) then
+        mytzf[p]:=[trule];
+      else
+        Add(mytzf[p],trule);
+      fi;
+    fi;
+    if Length(stack)>0 then
+#Print("deleted ",Length(stack)," rules @",Length(rels),"\n");
+      for j in stack do
+        addrule(j);
+      od;
     fi;
   end;
 
@@ -1987,6 +2253,7 @@ if rule[1]=rule[2] then return;fi;
     Add(a,Concatenation("W",String(i)));
   od;
   f:=FreeMonoid(a);
+  rdag:=EmptyKBDAG(Union(List(GeneratorsOfMonoid(f),LetterRepAssocWord)));
 
   # translate from fp word to monoid word
   trawo:=function(w)
@@ -2122,7 +2389,7 @@ if rule[1]=rule[2] then return;fi;
         for j in [1..Minimum(noncomm[i])-1] do # earlier generators
           a:=weylword(wgens[i]);
           pri:=borelword(bgens[j])*a;
-          pri:=reduce(trawou(pri),rels,mytzf); 
+          pri:=reduce(trawou(pri),rels,rdag,mytzf); 
           a:=[trawou(borelword(bgens[j])*borelword(jj)*a),
               trawou(borelword(jj^Inverse(bgens[j])))*pri];
           addrule(a);
@@ -2286,6 +2553,8 @@ if rule[1]=rule[2] then return;fi;
   tst:=List(tst,x->x[1]/x[2]);
   Assert(2,Size(FreeGroupOfFpGroup(gp)/tst)=Size(group));
 
+  rdag:=fail;
+
   # back-reduce
   Info(InfoFpGroup,3,"backreduce");
   repeat
@@ -2298,7 +2567,7 @@ if rule[1]=rule[2] then return;fi;
       fi;
       l:=rels{Difference([1..Length(rels)],[i])};
       mytzf:=maketzf(l);
-      tst:=[reduce(rels[i][1],l,mytzf),reduce(rels[i][2],l,mytzf)];
+      tst:=[reduce(rels[i][1],l,fail,mytzf),reduce(rels[i][2],l,fail,mytzf)];
       if tst<>rels[i] then
         Add(jj,i);
         rels:=l; # note that tzf is already set
@@ -2478,7 +2747,7 @@ end);
 InstallMethod(IsomorphismFpGroupForRewriting,"simple groups: L and C",
   [IsSimpleGroup and IsFinite],0,
 function(G)
-local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
+local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens,gl;
 
   a:=DataAboutSimpleGroup(G);
   if not IsBound(a.classicalId) then
@@ -2518,6 +2787,7 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
     a:=Image(act,a);
     a!.epiweyl:=weyl;
     weyl:=a;
+
     sy:=SylowSubgroup(borel,SmallestPrimeDivisor(f));
     ucs:=Reversed(PCentralSeries(sy));
 
@@ -2533,10 +2803,11 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
         c:=ClosureGroup(c,i);
       fi;
     od;
-    if c<>sy then Error("sylow generators");fi;
+    if c<>sy then Error("sylow (A) generators");fi;
     gens:=Reversed(gens);
 
     if Size(borel)=Size(sy) then
+      borel:=Group(gens);
       iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
       return IsomorphismGroups(G,Source(iso))*iso;
     elif IsPrimePowerInt(Index(borel,sy)) then
@@ -2547,6 +2818,8 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
       else borel:=a;fi;
       iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
       return IsomorphismGroups(G,Source(iso))*iso;
+    else
+      Error("can't do yet");
     fi;
 
   elif a.idSimple.series="C" or
@@ -2559,9 +2832,19 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
     act:=group!.actionHomomorphism;
 
     g:=Source(act);
-    sy:=SylowSubgroup(g,SmallestPrimeDivisor(f));
+    # get sylow subgroup as intersection with GL-Sylow so it is upper
+    # triangular
+    gl:=GL(2*d,f);
+    sy:=SylowSubgroup(gl,SmallestPrimeDivisor(f));
+    sy:=Intersection(g,sy);
+    if Gcd(Size(sy),Size(g)/Size(sy))<>1 then 
+      Info(InfoWarning,1,"Sylow intersection did not work");
+      sy:=SylowSubgroup(g,SmallestPrimeDivisor(f));
+    fi;
+
     sy:=Image(act,sy);
     borel:=Normalizer(group,sy);
+    borel:=Group(Pcgs(borel));
 
     # Weyl
     weyl:=SymmetricGroup(d);
@@ -2576,12 +2859,65 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens;
       fi;
       Add(a,c);
     od;
-    weyl:=List(a,x->ImagesRepresentative(act,x));
     b:=PermutationMat((d,d+1),2*d,GF(f));
     b[d+1]:=-b[d+1];
-    Add(weyl,ImagesRepresentative(act,b));
-    weyl:=Group(weyl);
+    Add(a,b);
+    a:=Group(a);
+    a:=Image(act,a);
+    weyl:=WeylGroupFp("B",d);
+    Size(weyl);
+    c:=GQuotients(a,weyl)[1];
+    a:=SubgroupNC(group,List(GeneratorsOfGroup(weyl),
+      x->PreImagesRepresentative(c,x)));
+    Size(a);
+    a!.epiweyl:=weyl;
+    weyl:=a;
     if group<>ClosureGroup(borel,weyl) then Error("wrong BN");fi;
+
+#   cannot yet do the refined process, as its not yet the right weyl
+#   candidate
+#
+#    sy:=SylowSubgroup(borel,SmallestPrimeDivisor(f));
+#    ucs:=Reversed(PCentralSeries(sy));
+#
+#    #gens:=IndependentGeneratorsOfAbelianGroup(Centre(sy));
+#    #gens:=Concatenation(List(gens,x->Filtered(Orbit(weyl,x),x->x in sy)));
+#    gens:=Union(Orbit(weyl,Centre(sy)));
+#    i:=1;
+#    while not IsSubset(Group(gens),sy) do
+#      i:=i+1;
+#      gens:=Union(Orbit(weyl,ucs[i]));
+#    od;
+#
+#    gens:=Difference(gens,[One(sy)]);
+#    SortBy(gens,x->PositionProperty(ucs,y->x in y));
+#    a:=gens;
+#    c:=TrivialSubgroup(sy);
+#    gens:=[];
+#    for i in a do
+#      if not i in c and IsNormal(ClosureGroup(c,i),c) then
+#        Add(gens,i);
+#        c:=ClosureGroup(c,i);
+#      fi;
+#    od;
+#    if c<>sy then Error("sylow (B) generators");fi;
+#    gens:=Reversed(gens);
+#
+#    if Size(borel)=Size(sy) then
+#      borel:=Group(gens);
+#      iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
+#      return IsomorphismGroups(G,Source(iso))*iso;
+#    elif IsPrimePowerInt(Index(borel,sy)) then
+#      gens:=Concatenation(Pcgs(SylowSubgroup(borel,
+#        SmallestPrimeDivisor(IndexNC(borel,sy)))),gens);
+#      a:=Group(gens);
+#      if Size(a)<Size(borel) then Error("wrong");
+#      else borel:=a;fi;
+#      iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
+#      return IsomorphismGroups(G,Source(iso))*iso;
+#    else
+#      Error("can't do yet");
+#    fi;
 
   else
     TryNextMethod();
