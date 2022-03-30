@@ -1666,7 +1666,9 @@ InstallMethod( ScalarProduct,
     x2:= ValuesOfClassFunction( x2 );
     scpr:= 0;
     for i in [ 1 .. Length( x1 ) ] do
-      scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+      if x1[i]<>0 and x2[i]<>0 then
+        scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+      fi;
     od;
     return scpr / Size( tbl );
     end );
@@ -3269,18 +3271,24 @@ InstallMethod( ReducedClassFunctions,
 
     for i in [ 1 .. Length( reducibles ) ] do
       single:= reducibles[i];
-      for j in [ 1 .. upper[i] ] do
+
+      j:=1;
+      while j<=upper[i] do
         scpr:= ScalarProduct( ordtbl, single, constituents[j] );
         if IsInt( scpr ) then
           scpr:= Int( scpr / normsquare[j] );
           if scpr <> 0 then
             single:= single - scpr * constituents[j];
+            if ForAll(single,x->x=0) then
+              j:=upper[i];
+            fi;
           fi;
         else
           Info( InfoCharacterTable, 1,
                 "ReducedClassFunctions: scalar product of X[", j,
                 "] with Y[", i, "] not integral (ignore)" );
         fi;
+        j:=j+1;
       od;
       if ForAny( single, x -> x <> 0 ) then
         if single[1] < 0 then
