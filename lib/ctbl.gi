@@ -3920,55 +3920,63 @@ InstallMethod( IndicatorOp,
     "for a Brauer character table and <n> = 2",
     [ IsBrauerTable, IsHomogeneousList, IsPosInt ],
     function( modtbl, ibr, n )
-    local ordtbl,
-          irr,
-          ordindicator,
-          fus,
-          indicator,
-          i,
-          j,
-          odd;
+    local indicator, princ, i, ordtbl, irr, ordindicator, fus, j, odd;
+
+    indicator:= [];
 
     if   n <> 2 then
       Error( "for Brauer table <modtbl> only for <n> = 2" );
+    elif ibr <> Irr( modtbl ) then
+      Error( "only for <ibr> equal to Irr(<modtbl>)" );
     elif UnderlyingCharacteristic( modtbl ) = 2 then
-      Error( "for Brauer table <modtbl> only in odd characteristic" );
-    fi;
-
-    ordtbl:= OrdinaryCharacterTable( modtbl );
-    irr:= Irr( ordtbl );
-    ordindicator:= Indicator( ordtbl, irr, 2 );
-    fus:= GetFusionMap( modtbl, ordtbl );
-
-    # compute indicators block by block
-    indicator:= [];
-
-    for i in BlocksInfo( modtbl ) do
-      if not IsBound( i.decmat ) then
-        i.decmat:= Decomposition( ibr{ i.modchars },
-                         List( irr{ i.ordchars },
-                               x -> x{ fus } ), "nonnegative" );
-      fi;
-      for j in [ 1 .. Length( i.modchars ) ] do
-        if ForAny( ibr[ i.modchars[j] ],
-                   x -> not IsInt(x) and GaloisCyc(x,-1) <> x ) then
-
-          # indicator of a Brauer character is 0 iff it has
-          # at least one nonreal value
-          indicator[ i.modchars[j] ]:= 0;
-
+      # In general, we cannot compute the indicator character-theoretically,
+      # we apply necessary conditions.
+      princ:= BlocksInfo( modtbl )[1].modchars;
+      for i in [ 1 .. Length( ibr ) ] do
+        if ibr[i] <> ComplexConjugate( ibr[i] ) then
+          # Non-real characters have indicator 0.
+          indicator[i]:= 0;
+        elif not i in princ then
+          # Real characters outside the principal block have indicator 1.
+          indicator[i]:= 1;
+        elif Set( ibr[i] ) = [ 1 ] then
+          # The trivial character is defined to have indicator 1.
+          indicator[i]:= 1;
         else
-
-          # indicator is equal to the indicator of any real ordinary
-          # character containing it as constituent, with odd multiplicity
-          odd:= Filtered( [ 1 .. Length( i.decmat ) ],
-                          x -> i.decmat[x][j] mod 2 <> 0 );
-          odd:= List( odd, x -> ordindicator[ i.ordchars[x] ] );
-          indicator[ i.modchars[j] ]:= First( odd, x -> x <> 0 );
-
+          # Set 'Unknown()' for all other characters.
+          indicator[i]:= Unknown();
         fi;
       od;
-    od;
+    else
+      ordtbl:= OrdinaryCharacterTable( modtbl );
+      irr:= Irr( ordtbl );
+      ordindicator:= Indicator( ordtbl, irr, 2 );
+      fus:= GetFusionMap( modtbl, ordtbl );
+
+      # compute indicators block by block
+      for i in BlocksInfo( modtbl ) do
+        if not IsBound( i.decmat ) then
+          i.decmat:= Decomposition( ibr{ i.modchars },
+                           List( irr{ i.ordchars },
+                                 x -> x{ fus } ), "nonnegative" );
+        fi;
+        for j in [ 1 .. Length( i.modchars ) ] do
+          if ForAny( ibr[ i.modchars[j] ],
+                     x -> not IsInt(x) and GaloisCyc(x,-1) <> x ) then
+            # indicator of a Brauer character is 0 iff it has
+            # at least one nonreal value
+            indicator[ i.modchars[j] ]:= 0;
+          else
+            # indicator is equal to the indicator of any real ordinary
+            # character containing it as constituent, with odd multiplicity
+            odd:= Filtered( [ 1 .. Length( i.decmat ) ],
+                            x -> i.decmat[x][j] mod 2 <> 0 );
+            odd:= List( odd, x -> ordindicator[ i.ordchars[x] ] );
+            indicator[ i.modchars[j] ]:= First( odd, x -> x <> 0 );
+          fi;
+        od;
+      od;
+    fi;
 
     return indicator;
     end );
