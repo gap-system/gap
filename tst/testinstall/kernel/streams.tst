@@ -111,7 +111,7 @@ Syntax error: expression expected in stream:1
 ^
 [ true ]
 gap> READ_COMMAND_REAL(InputTextString("quit;"), false);
-[ false ]
+[ true ]
 gap> READ_COMMAND_REAL(InputTextString("QUIT;"), false);
 [ false ]
 
