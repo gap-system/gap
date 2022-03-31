@@ -248,8 +248,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     ExecStatus status = ReadEvalCommand(0, &input, &evalResult, 0);
     CloseInput(&input);
 
-    if (status == STATUS_EOF || status == STATUS_QUIT ||
-        status == STATUS_QQUIT)
+    if (status == STATUS_EOF || status == STATUS_QQUIT)
         return result;
     else if (STATE(UserHasQuit) || STATE(UserHasQUIT))
         return result;
