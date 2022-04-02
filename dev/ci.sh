@@ -96,6 +96,7 @@ GAPInput
             $GAP -q -L testpackagesload.wsp <<GAPInput
             Print("-----------------------------------------------------\n");
             Print("Loading $pkg ... \n");
+            SetInfoLevel(InfoPackageLoading, PACKAGE_DEBUG);
             if LoadPackage("$pkg",false) = true then
               Print("PASS: $pkg\n\n");
             else
