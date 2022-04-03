@@ -275,7 +275,7 @@ DeclareGlobalFunction("SubgroupsSolvableGroup");
 ##  <Func Name="SizeConsiderFunction" Arg='size'/>
 ##
 ##  <Description>
-##  This function returns a function <C>consider</C> of four arguments
+##  This function returns a function <C>consider</C> of five arguments
 ##  that can be used in <Ref Func="SubgroupsSolvableGroup"/> for
 ##  the option <C>consider</C> to compute subgroups whose sizes are divisible
 ##  by <A>size</A>.
@@ -306,7 +306,7 @@ DeclareGlobalFunction("SizeConsiderFunction");
 ##  <Func Name="ExactSizeConsiderFunction" Arg='size'/>
 ##
 ##  <Description>
-##  This function returns a function <C>consider</C> of four arguments
+##  This function returns a function <C>consider</C> of five arguments
 ##  that can be used in <Ref Func="SubgroupsSolvableGroup"/> for
 ##  the option <C>consider</C> to compute subgroups whose sizes are exactly
 ##  <A>size</A>.
