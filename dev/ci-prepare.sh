@@ -84,7 +84,7 @@ then
   rm -rf io*
   time git clone https://github.com/gap-packages/io
 
-  rm -rf profiling-*
+  rm -rf profiling*
   time git clone https://github.com/gap-packages/profiling
 
   # Compile io and profiling packages
