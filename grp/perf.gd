@@ -122,10 +122,9 @@ DeclareGlobalFunction("SizesPerfectGroups");
 ##
 ##  <Description>
 ##  returns the number of non-isomorphic perfect groups of size <A>size</A> for
-##  each positive integer  <A>size</A> up to <M>10^6</M> except for the eight  sizes
-##  listed at the beginning  of  this section for  which the number is not
-##  yet known. For these values as well as for any argument out of range it
-##  returns <K>fail</K>.
+##  each positive integer <A>size</A> up to <M>2\cdot10^6</M>. Additionally, for
+##  odd <A>size</A> an answer is returned (odd order groups are solvable).
+##  For any other argument out of range it returns <K>fail</K>.
 ##  <A>NrPerfectGroups</A> is a synonym for <Ref Func="NumberPerfectGroups"/>.
 ##  Moreover <A>NumberPerfectLibraryGroups</A> (and its synonym <A>NrPerfectLibraryGroups</A>)
 ##  exist for historical reasons, and return 0 instead of fail for arguments
