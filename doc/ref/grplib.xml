@@ -33,8 +33,8 @@ initially knows the following groups:
  a library of groups of small order (see&nbsp;<Ref BookName="smallgrp" Chap="The Small Groups Library"/>),
 </Item>
 <Item>
-  the  finite perfect  groups of   size  at most <M>10^6</M>
-    (excluding 11 sizes) (see&nbsp;<Ref Sect="Finite Perfect Groups"/>).
+  the  finite perfect  groups of   size  at most <M>2\cdot 10^6</M>
+  (see&nbsp;<Ref Sect="Finite Perfect Groups"/>).
 </Item>
 <Item>
   the  primitive  permutation groups of degree
