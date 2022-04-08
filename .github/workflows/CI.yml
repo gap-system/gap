@@ -136,7 +136,7 @@ jobs:
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test Julia integration
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             shell: bash
             test-suites: "testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
