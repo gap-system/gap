@@ -612,7 +612,7 @@ end;
 ##
 InstallMethod( MinimalGeneratingSet,
     "pcgs computable groups using special pcgs",
-    true, [ IsPcGroup and IsFinite ], 0,
+    true, [ IsSolvableGroup and IsFinite and CanEasilyComputePcgs], 0,
 
 function( G )
     local spec, weights, first, m, mingens, i, start, next, j,
@@ -662,13 +662,8 @@ end );
 #M  SmallGeneratingSet(<G>) 
 ##
 InstallMethod(SmallGeneratingSet,"using minimal generating set",true,
-  [IsPcGroup and IsFinite],0,
-function (G)
-  if Length(Pcgs(G))>14 then
-    TryNextMethod();
-  fi;
-  return MinimalGeneratingSet(G);
-end);
+  [IsSolvableGroup and IsFinite and CanEasilyComputePcgs],0,
+  MinimalGeneratingSet);
 
 #############################################################################
 ##
