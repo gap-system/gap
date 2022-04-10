@@ -1490,59 +1490,77 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
 ############################################################################
 
 InstallMethod( MultMatrixRowLeft, "for a mutable matrix object, a row number, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
     local i;
-  
+
     for i in [1..NrCols(mat)] do
         mat[row,i] := scalar * mat[row,i];
     od;
-    
+
+  end );
+
+InstallEarlyMethod( MultMatrixRowLeft,
+  function( mat, i, scalar )
+    if IsPlistRep(mat) then
+      mat[i] := scalar * mat[i];
+    else
+      TryNextMethod();
+    fi;
   end );
 
 ############################################################################
 
 InstallMethod( MultMatrixColumnRight, "for a mutable matrix object, a column number, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, column, scalar )
     local i;
-  
+
     for i in [1..NrRows(mat)] do
         mat[i,column] := mat[i,column] * scalar;
     od;
-    
+
   end );
 
 ############################################################################
 
 InstallMethod( MultMatrixRowRight, "for a mutable matrix object, a row number, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
       local i;
-  
+
     for i in [1..NrCols(mat)] do
         mat[row,i] := mat[row,i] * scalar;
     od;
-    
+
+  end );
+
+InstallEarlyMethod( MultMatrixRowRight,
+  function( mat, i, scalar )
+    if IsPlistRep(mat) then
+      mat[i] := mat[i] * scalar;
+    else
+      TryNextMethod();
+    fi;
   end );
 
 ############################################################################
 
 InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, a column number, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsObject ],
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
   function( mat, column, scalar )
     local i;
-  
+
     for i in [1..NrRows(mat)] do
         mat[i,column] := scalar * mat[i,column];
     od;
-    
+
   end );
 
 ############################################################################
 
 InstallMethod( AddMatrixRowsLeft, "for a mutable matrix object, two row numbers, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
     local i;
 
@@ -1551,24 +1569,42 @@ InstallMethod( AddMatrixRowsLeft, "for a mutable matrix object, two row numbers,
     od;
 
   end );
- 
+
+InstallEarlyMethod( AddMatrixRowsLeft,
+  function( mat, i, j, scalar )
+    if IsPlistRep(mat) then
+      mat[i] := mat[i] + scalar * mat[j];
+    else
+      TryNextMethod();
+    fi;
+  end );
+
  ############################################################################
 
 InstallMethod( AddMatrixRowsRight, "for a mutable matrix object, two row numbers, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
     local i;
- 
+
     for i in [1..NrCols(mat)] do
         mat[row1,i] := mat[row1,i] + mat[row2,i] * scalar;
     od;
 
   end );
 
+InstallEarlyMethod( AddMatrixRowsRight,
+  function( mat, i, j, scalar )
+    if IsPlistRep(mat) then
+      mat[i] := mat[i] + mat[j] * scalar;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
 ############################################################################
 
 InstallMethod( AddMatrixColumnsRight, "for a mutable matrix object, two column numbers, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, column1, column2, scalar )
     local i;
 
@@ -1578,49 +1614,99 @@ InstallMethod( AddMatrixColumnsRight, "for a mutable matrix object, two column n
 
   end );
 
+InstallEarlyMethod( AddMatrixColumnsRight,
+  function( mat, i, j, scalar )
+    local row;
+    if IsPlistRep(mat) then
+      for row in mat do
+          row[i] := row[i] + row[j] * scalar;
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
 ############################################################################
 
 InstallMethod( AddMatrixColumnsLeft, "for a mutable matrix object, two column numbers, and a scalar",
-  [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, column1, column2, scalar )
     local i;
 
     for i in [1..NrRows(mat)] do
-        mat[i,column1] := mat[i,column1] + scalar * mat[i,column2] ;
+        mat[i,column1] := mat[i,column1] + scalar * mat[i,column2];
     od;
 
   end );
 
-############################################################################  
+InstallEarlyMethod( AddMatrixColumnsLeft,
+  function( mat, i, j, scalar )
+    local row;
+    if IsPlistRep(mat) then
+      for row in mat do
+          row[i] := row[i] + scalar * row[j];
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+############################################################################
 
 InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
-  [ IsMatrixObj and IsMutable, IsInt, IsInt ],
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
     local temp, i;
-    
+
     if row1 <> row2 then
         for i in [1..NrCols(mat)] do
             temp := mat[row1,i];
             mat[row1,i] := mat[row2,i];
             mat[row2,i] := temp;
-        od; 
+        od;
     fi;
 
+  end );
+
+InstallEarlyMethod( SwapMatrixRows,
+  function( mat, i, j )
+    local tmp;
+    if IsPlistRep(mat) then
+      tmp := mat[i];
+      mat[i] := mat[j];
+      mat[j] := tmp;
+    else
+      TryNextMethod();
+    fi;
   end );
 
 ############################################################################
 
 InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column numbers",
-  [ IsMatrixObj and IsMutable, IsInt, IsInt ],
+  [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, column1, column2 )
     local temp, i;
-    
+
     if column1 <> column2 then
         for i in [1..NrRows(mat)] do
             temp := mat[i,column1];
             mat[i,column1] := mat[i,column2];
             mat[i,column2] := temp;
-        od; 
+        od;
     fi;
-    
+
+  end );
+
+InstallEarlyMethod( SwapMatrixColumns,
+  function( mat, i, j )
+    local row, tmp;
+    if IsPlistRep(mat) then
+      for row in mat do
+        tmp := row[i];
+        row[i] := row[j];
+        row[j] := tmp;
+      od;
+    else
+      TryNextMethod();
+    fi;
   end );

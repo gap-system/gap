@@ -1,6 +1,42 @@
 gap> START_TEST("ElementaryMatrices.tst");
 
 #
+gap> ReadGapRoot("tst/testinstall/MatrixObj/testmatobj.g");
+
+#
+gap> TestElementaryTransforms( [[2,4,5],[7,11,-4],[-3,20,0]], -1 );
+gap> TestElementaryTransforms( Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]), -1 );
+
+#
+gap> F := GF(2);;
+gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> ConvertToMatrixRep(mat);;  # proper matrix obj
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+
+#
+gap> F := GF(3);;
+gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> ConvertToMatrixRep(mat);;  # proper matrix obj
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+
+#
+gap> F := GF(4);;
+gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> ConvertToMatrixRep(mat);;  # proper matrix obj
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+
+#
+gap> F := GF(5);;
+gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> ConvertToMatrixRep(mat);;  # proper matrix obj
+gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+
+##########
+#
 gap> mat := Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]);;
 gap> SwapMatrixRows(mat,1,3);
 gap> mat= Matrix( [ [ -3, 20, 0 ], [ 7, 11, -4 ], [ 2, 4, 5 ] ]);
