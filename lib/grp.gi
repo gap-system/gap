@@ -107,21 +107,21 @@ end);
 ##
 #M  MinimalGeneratingSet(<G>) . . . . . . . . . . . . . for groups
 ##
-InstallMethod(MinimalGeneratingSet,"solvable group via pc",true,
-  [IsGroup],0,
+InstallMethod(MinimalGeneratingSet,"test solvable and 2-generator noncyclic",
+  true, [IsGroup and IsFinite],0,
 function(G)
 local i;
-  if not IsSolvableGroup(G) then
-    if IsGroup(G) and HasGeneratorsOfGroup(G)
+  if not HasIsSolvableGroup(G) and IsSolvableGroup(G) and
+  CanEasilyComputePcgs(G)  then
+    # discovered solvable -- redo
+    return MinimalGeneratingSet(G);
+  elif not IsSolvableGroup(G) then
+    if IsGroup(G) and (not IsCyclic(G)) and HasGeneratorsOfGroup(G)
         and Length(GeneratorsOfGroup(G)) = 2 then
       return GeneratorsOfGroup(G);
     fi;
     TryNextMethod();
   fi;
-  i:=IsomorphismPcGroup(G);
-  G:=Image(i,G);
-  G:=MinimalGeneratingSet(G);
-  return List(G,j->PreImagesRepresentative(i,j));
 end);
 
 #############################################################################
