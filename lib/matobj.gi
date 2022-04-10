@@ -1527,6 +1527,18 @@ InstallMethod( MultMatrixColumnRight, "for a mutable matrix object, a column num
 
   end );
 
+InstallEarlyMethod( MultMatrixColumnRight,
+  function( mat, i, scalar )
+    local row;
+    if IsPlistRep(mat) then
+      for row in mat do
+          row[i] := row[i] * scalar;
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
 ############################################################################
 
 InstallMethod( MultMatrixRowRight, "for a mutable matrix object, a row number, and a scalar",
@@ -1560,6 +1572,18 @@ InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, a column numb
         mat[i,column] := scalar * mat[i,column];
     od;
 
+  end );
+
+InstallEarlyMethod( MultMatrixColumnLeft,
+  function( mat, i, scalar )
+    local row;
+    if IsPlistRep(mat) then
+      for row in mat do
+          row[i] := scalar * row[i];
+      od;
+    else
+      TryNextMethod();
+    fi;
   end );
 
 ############################################################################
