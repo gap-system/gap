@@ -1847,7 +1847,7 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultMatrixRowLeft", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixRowLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 
 ############################################################################
@@ -1866,7 +1866,7 @@ DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ]);
+DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ]);
 
 ############################################################################
 ##
@@ -1889,7 +1889,7 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixObj and IsMutable, IsInt, IsOb
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultMatrixColumnRight", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixColumnRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 
 ############################################################################
@@ -1908,7 +1908,7 @@ DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 
 ############################################################################
 ##
@@ -1931,7 +1931,7 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixObj and IsMutable, IsInt, Is
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 
 ############################################################################
@@ -1950,7 +1950,7 @@ DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 
 ############################################################################
 ##
@@ -1973,7 +1973,7 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixObj and IsMutable, IsInt, IsIn
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 
 ############################################################################
@@ -1992,7 +1992,7 @@ DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 
 ############################################################################
 ##
@@ -2009,7 +2009,7 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixObj and IsMutable, IsInt, Is
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SwapMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt ] );
+DeclareOperation( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ] );
 
 ############################################################################
 ##
@@ -2026,4 +2026,4 @@ DeclareOperation( "SwapMatrixRows", [ IsMatrixObj and IsMutable, IsInt, IsInt ] 
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SwapMatrixColumns", [ IsMatrixObj and IsMutable, IsInt, IsInt ] );
+DeclareOperation( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ] );
