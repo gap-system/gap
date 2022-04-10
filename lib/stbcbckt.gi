@@ -2955,24 +2955,41 @@ end );
 InstallMethod( Intersection2, "perm groups", IsIdenticalObj,
   [ IsPermGroup, IsPermGroup ], 0,
 function( G, H )
-local   Omega,  P,  rbase,  L,mg,mh,i;
-    
+local   Omega, P, rbase, L, mg, mh, IsFinished, mg_minus_mh, mh_minus_mg;
+
     if IsIdenticalObj( G, H )  then
       return G;
     fi;
-    
-    # align the acting domains
-    mg:=MovedPoints(G);
-    mh:=MovedPoints(H);
-    Omega := Intersection(mg,mh);
 
-    # no two points moved in common?
-    if Length(Omega)<=1 then
-      return TrivialSubgroup(Parent(G));
-    fi;
+    # iterate taking stabilizer until G and H have the same set of moved points
+    while(true)
+    do
+      # align the acting domains
+      mg:=MovedPoints(G);
+      mh:=MovedPoints(H);
+      Omega := Intersection(mg,mh);
 
-    G:=Stabilizer(G,Difference(mg,mh),OnTuples);
-    H:=Stabilizer(H,Difference(mh,mg),OnTuples);
+      # no two points moved in common?
+      if Length(Omega)<=1 then
+        return TrivialSubgroup(Parent(G));
+      fi;
+
+      IsFinished:=true;
+      mg_minus_mh:=Difference(mg,mh);
+      if Length(mg_minus_mh) > 0 then
+        G:=Stabilizer(G,mg_minus_mh,OnTuples);
+        IsFinished:=false;
+      fi;
+      mh_minus_mg:=Difference(mh,mg);
+      if Length(mh_minus_mg) > 0 then
+        H:=Stabilizer(H,mh_minus_mg,OnTuples);
+        IsFinished:=false;
+      fi;
+
+      if IsFinished then
+        break;
+      fi;
+    od;
 
     if IsSubset(G,H) then
       return H;
