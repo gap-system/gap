@@ -2974,20 +2974,15 @@ local   Omega, P, rbase, L, mg, mh, IsFinished, mg_minus_mh, mh_minus_mg;
         return TrivialGroup(IsPermGroup);
       fi;
 
-      IsFinished:=true;
       mg_minus_mh:=Difference(mg,mh);
       if Length(mg_minus_mh) > 0 then
         G:=Stabilizer(G,mg_minus_mh,OnTuples);
-        IsFinished:=false;
+        continue;
       fi;
       mh_minus_mg:=Difference(mh,mg);
       if Length(mh_minus_mg) > 0 then
         H:=Stabilizer(H,mh_minus_mg,OnTuples);
-        IsFinished:=false;
-      fi;
-
-      if IsFinished then
-        break;
+        continue;
       fi;
     od;
 
