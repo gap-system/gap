@@ -2962,8 +2962,7 @@ local   Omega, P, rbase, L, mg, mh, IsFinished, mg_minus_mh, mh_minus_mg;
     fi;
 
     # iterate taking stabilizer until G and H have the same set of moved points
-    while(true)
-    do
+    while true do
       # align the acting domains
       mg:=MovedPoints(G);
       mh:=MovedPoints(H);
