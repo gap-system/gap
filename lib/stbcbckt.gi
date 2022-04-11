@@ -2971,7 +2971,7 @@ local   Omega, P, rbase, L, mg, mh, IsFinished, mg_minus_mh, mh_minus_mg;
 
       # no two points moved in common?
       if Length(Omega)<=1 then
-        return TrivialSubgroup(Parent(G));
+        return Group(());
       fi;
 
       IsFinished:=true;
