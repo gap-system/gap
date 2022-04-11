@@ -2955,7 +2955,7 @@ end );
 InstallMethod( Intersection2, "perm groups", IsIdenticalObj,
   [ IsPermGroup, IsPermGroup ], 0,
 function( G, H )
-local   Omega, P, rbase, L, mg, mh, IsFinished, mg_minus_mh, mh_minus_mg;
+local   Omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 
     if IsIdenticalObj( G, H )  then
       return G;
