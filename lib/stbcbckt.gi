@@ -2955,7 +2955,7 @@ end );
 InstallMethod( Intersection2, "perm groups", IsIdenticalObj,
   [ IsPermGroup, IsPermGroup ], 0,
 function( G, H )
-local   Omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
+local   omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 
     if IsIdenticalObj( G, H )  then
       return G;
@@ -2966,10 +2966,10 @@ local   Omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
       # align the acting domains
       mg:=MovedPoints(G);
       mh:=MovedPoints(H);
-      Omega := Intersection(mg,mh);
+      omega := Intersection(mg,mh);
 
       # no two points moved in common?
-      if Length(Omega)<=1 then
+      if Length(omega)<=1 then
         return TrivialGroup(IsPermGroup);
       fi;
 
@@ -2983,6 +2983,7 @@ local   Omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
         H:=Stabilizer(H,mh_minus_mg,OnTuples);
         continue;
       fi;
+      break;
     od;
 
     if IsSubset(G,H) then
@@ -3011,8 +3012,8 @@ local   Omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 #      fi;
 #    od;
 
-    P := OrbitsPartition( H, Omega );
-    rbase := EmptyRBase( [ G, H ], Omega, P );
+    P := OrbitsPartition( H, omega );
+    rbase := EmptyRBase( [ G, H ], omega, P );
     rbase.nextLevel := NextRBasePoint;
     
     # L := SubgroupNC( G, Concatenation

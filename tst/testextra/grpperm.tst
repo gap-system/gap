@@ -110,6 +110,8 @@ Alt( [ 3 .. 5 ] )
 gap> Intersection(Group( (1,2,3), (4,5,6), (11,12,13), (11,12,14) ),
                   Group( (1,7,8), (4,9,11), (10,12), (13,14) ));
 Group(())
+gap> Intersection(Group((1,2), (3,4)), Group((3,4),(5,6)));
+Group( (3,4) )
 gap> s := SymmetricGroup(100);
 Sym( [ 1 .. 100 ] )
 gap> Stabilizer(s,3,OnPoints);
