@@ -721,17 +721,11 @@ AS_IF([test "x$with_julia" != xno ],[
   JL_SHARE=$($JULIA --startup-file=no -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
   AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
 
-  AC_MSG_CHECKING([for JULIA_CPPFLAGS])
-  JULIA_CPPFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
-  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CPPFLAGS from julia-config.jl])])
-  JULIA_CPPFLAGS=${JULIA_CPPFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C++ code
-  # remove apostrophes, they mess up quoting when used in shell code(although
-  # they are fine inside of Makefiles); this could cause problems if any
-  # paths involve spaces, but then we likely will haves problem in other
-  # places; in any case, if anybody ever cares about this, we can work on
-  # finding a better solution.
-  JULIA_CPPFLAGS=${JULIA_CPPFLAGS//\'/}
-  AC_MSG_RESULT([${JULIA_CPPFLAGS}])
+  AC_MSG_CHECKING([for JULIA_CFLAGS])
+  JULIA_CFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
+  JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
+  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CFLAGS from julia-config.jl])])
+  AC_MSG_RESULT([${JULIA_CFLAGS}])
 
   AC_MSG_CHECKING([for JULIA_LDFLAGS])
   JULIA_LDFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --ldflags)
@@ -742,6 +736,7 @@ AS_IF([test "x$with_julia" != xno ],[
   AC_MSG_CHECKING([for JULIA_LIBS])
   JULIA_LIBS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --ldlibs)
   AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LIBS from julia-config.jl])])
+  # remove apostrophes, they confuse libtool in some cases.
   JULIA_LIBS=${JULIA_LIBS//\'/}
   AC_MSG_RESULT([${JULIA_LIBS}])
 ],
@@ -752,7 +747,7 @@ AS_IF([test "x$with_julia" != xno ],[
   ])
 ])
 AC_SUBST([JULIA])
-AC_SUBST([JULIA_CPPFLAGS])
+AC_SUBST([JULIA_CFLAGS])
 AC_SUBST([JULIA_LDFLAGS])
 AC_SUBST([JULIA_LIBS])
 
