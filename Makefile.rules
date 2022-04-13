@@ -196,7 +196,6 @@ SYSINFO_CPPFLAGS += $(GAP_DEFINES)
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
 GAP_CPPFLAGS += $(ZLIB_CPPFLAGS)
 GAP_CPPFLAGS += $(READLINE_CPPFLAGS)
-GAP_CPPFLAGS += $(JULIA_CPPFLAGS)
 GAP_CPPFLAGS += $(BOEHM_GC_CPPFLAGS)
 GAP_CPPFLAGS += $(LIBATOMIC_OPS_CPPFLAGS)
 
@@ -213,13 +212,18 @@ SYSINFO_CPPFLAGS += $(CPPFLAGS)
 # C compiler flags
 ########################################################################
 GAP_CFLAGS = $(ABI_CFLAGS)
+SYSINFO_CFLAGS = $(ABI_CFLAGS)
 
 ifeq ($(HPCGAP),yes)
 GAP_CFLAGS += $(PTHREAD_CFLAGS)
+SYSINFO_CFLAGS += $(PTHREAD_CFLAGS)
 endif
+
+GAP_CFLAGS += $(JULIA_CFLAGS) # not added to SYSINFO_CFLAGS
 
 # Finally add user provided CFLAGS
 GAP_CFLAGS += $(CFLAGS)
+SYSINFO_CFLAGS += $(CFLAGS)
 
 
 ########################################################################
@@ -788,7 +792,7 @@ endif
 SYSINFO_GAP = $(abs_builddir)/gap
 SYSINFO_GAC = $(abs_builddir)/gac
 
-SYSINFO_CFLAGS = $(GAP_CFLAGS)
+#SYSINFO_CFLAGS is already initialized at this point
 SYSINFO_CXXFLAGS = $(GAP_CXXFLAGS)
 #SYSINFO_CPPFLAGS is already initialized at this point
 SYSINFO_LDFLAGS = $(GAP_LDFLAGS)
