@@ -26,7 +26,7 @@ local R;
   if ValueOption("usebacktrack")=true then return false;
   elif ValueOption("useradical")=true then return true;fi;
 
-  R:=RadicalGroup(G);
+  R:=SolvableRadical(G);
 
   # any chance to apply it, and not too small?
   if Size(R)=1 or Size(G)<10000 then return false; fi;
