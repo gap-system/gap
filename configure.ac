@@ -718,6 +718,11 @@ AS_IF([test "x$with_julia" != xno ],[
   ])
   AS_IF([test "x$JULIA" = x],[ AC_MSG_ERROR([no julia executable found]) ])
 
+  AC_MSG_CHECKING([for Julia version])
+  JULIA_VERSION=$(${JULIA} --startup-file=no -e 'print("$(VERSION.major).$(VERSION.minor)")')
+  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain Julia version])])
+  AC_MSG_RESULT([${JULIA_VERSION}])
+
   JL_SHARE=$($JULIA --startup-file=no -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
   AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
 
@@ -747,6 +752,7 @@ AS_IF([test "x$with_julia" != xno ],[
   ])
 ])
 AC_SUBST([JULIA])
+AC_SUBST([JULIA_VERSION])
 AC_SUBST([JULIA_CFLAGS])
 AC_SUBST([JULIA_LDFLAGS])
 AC_SUBST([JULIA_LIBS])
@@ -804,23 +810,54 @@ AC_SUBST([gap_kernel_major_version])
 AC_SUBST([gap_kernel_minor_version])
 
 dnl
-dnl User setting: Compatibility mode (on by default)
+dnl Determine the GAPARCH string, used by package build systems and more
 dnl
+
+AC_MSG_CHECKING([the GAPARCH])
+
+dnl The "host" identifier is the start
+case "$host_os" in
+  *darwin*)
+    # On macOS / Darwin, override the config.guess result, which includes
+    # the minor versions of macOS, which has no benefit but is painful as
+    # every patch update of the OS may result in all packages having to be
+    # recompiled. So instead of e.g. `darwin21.2.0` (for macOS 12.2.0) and
+    # `darwin21.4.0` (for macOS 12.3.1), use just `darwin21`, and so on.
+    GAPARCH="$host_cpu-$host_vendor-${host_os%%.*.*}"
+    ;;
+  *)
+    GAPARCH="$host"
+    ;;
+esac
+
+dnl Append primary build variant
 AS_IF(
   [test "x$enable_hpcgap" = xyes],
-     [GAPARCH="$host-hpcgap${ABI}-kv${gap_kernel_major_version}"],
+     [GAPARCH="$GAPARCH-hpcgap"],
   [test "x$with_julia" != xno],
-     [GAPARCH="$host-julia${ABI}-kv${gap_kernel_major_version}"],
+     [GAPARCH="$GAPARCH-julia${JULIA_VERSION}-"],
   # else
-     [GAPARCH="$host-default${ABI}-kv${gap_kernel_major_version}"])
-AS_IF([test "x$ARCHEXT" != "x"],
-  [GAPARCH="$GAPARCH-$ARCHEXT"])
-AS_IF([test "x$ARCH" != "x"],
-  [GAPARCH="$ARCH"])
+     [GAPARCH="$GAPARCH-default"])
 
-AC_DEFINE_UNQUOTED([GAPARCH], ["$GAPARCH"], [for backwards compatibility])
+dnl Append ABI (for historical reasons, we don't insert a dash before it)
+GAPARCH="${GAPARCH}${ABI}"
+
+dnl Append kernel version
+GAPARCH="${GAPARCH}-kv${gap_kernel_major_version}"
+
+dnl Allow user to extend the GAPARCH with some extra key
+AS_IF([test "x$ARCHEXT" != "x"], [GAPARCH="$GAPARCH-$ARCHEXT"])
+
+dnl Allow user to completely override the GAPARCH (should be used sparingly!)
+AS_IF([test "x$ARCH" != "x"], [GAPARCH="$ARCH"])
+
+AC_MSG_RESULT([${GAPARCH}])
+AC_DEFINE_UNQUOTED([GAPARCH], ["$GAPARCH"], [the GAP architecture, for kernel extensions])
 AC_SUBST([GAPARCH])
 
+dnl
+dnl User setting: Compatibility mode (on by default)
+dnl
 AC_ARG_ENABLE([compat-mode],
     [AS_HELP_STRING([--disable-compat-mode], [enable compatibility mode])],
     [],
