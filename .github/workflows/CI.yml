@@ -225,6 +225,8 @@ jobs:
           update_packager_index: false
           override_cache_key: ${{ runner.os }}-${{ hashFiles('extra.flags') }}-${{ github.ref }}
           override_cache_key_fallback: ${{ runner.os }}-${{ hashFiles('extra.flags') }}
+      - name: "Workaround GitHub security concerns" # see https://github.com/gap-system/gap/issues/4861
+        run: git config --global --add safe.directory $PWD
       - name: "Configure GAP"
         run: ${{ matrix.extra }} dev/ci-configure-gap.sh
       - name: "Build GAP"
