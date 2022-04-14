@@ -280,13 +280,6 @@ static void ChildStatusChanged(int whichsig)
     HashUnlock(PtyIOStreams);
 
 #if !defined(HPCGAP)
-    /* Collect up any other zombie children */
-    do {
-        retcode = waitpid(-1, &status, WNOHANG);
-        if (retcode == -1 && errno != ECHILD)
-            Pr("#E Unexpected waitpid error %d\n", errno, 0);
-    } while (retcode != 0 && retcode != -1);
-
     signal(SIGCHLD, ChildStatusChanged);
 #endif
 }
