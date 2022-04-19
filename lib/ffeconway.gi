@@ -158,7 +158,7 @@ InstallOtherMethod(ZOp,
         function(p,d)
     local   q;
     if not IsPrimeInt(p) then
-        Error("Z: <p> must be a prime");
+        Error("Z: <p> must be a prime (not the integer ", p, ")");
     fi;
     q := p^d;
     if q <= MAXSIZE_GF_INTERNAL or d =1 then
@@ -178,7 +178,7 @@ InstallMethod(ZOp,
     d := LogInt(q,p);
     Assert(1, q=p^d);
     if not IsPrimeInt(p) then
-        Error("Z: <q> must be a positive prime power");
+        Error("Z: <q> must be a positive prime power (not the integer ", q, ")");
     fi;
     if d > 1 then
         return FFECONWAY.ZNC(p,d);

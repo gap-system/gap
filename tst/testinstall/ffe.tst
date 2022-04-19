@@ -25,6 +25,8 @@ gap> Z(-2);
 Error, Z: <q> must be a positive prime power (not the integer -2)
 gap> Z(6);
 Error, Z: <q> must be a positive prime power (not the integer 6)
+gap> Z(65537*65539);
+Error, Z: <q> must be a positive prime power (not the integer 4295229443)
 
 # variant with two arguments
 gap> Z(0,1);
@@ -65,13 +67,13 @@ Error, Z: <p> must be a prime (not the integer 9)
 gap> Z(9,2);
 Error, Z: <p> must be a prime (not the integer 9)
 gap> Z(2^16,1);
-Error, Z: <p> must be a prime
+Error, Z: <p> must be a prime (not the integer 65536)
 gap> Z(2^16,2);
-Error, Z: <p> must be a prime
+Error, Z: <p> must be a prime (not the integer 65536)
 gap> Z(2^17,1);
-Error, Z: <p> must be a prime
+Error, Z: <p> must be a prime (not the integer 131072)
 gap> Z(2^17,2);
-Error, Z: <p> must be a prime
+Error, Z: <p> must be a prime (not the integer 131072)
 
 # Invoking Z(p,d) with p not a prime used to crash gap, which we fixed.
 # However, invocations like `Z(4,5)` still would erroneously trigger the
