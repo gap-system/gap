@@ -565,24 +565,32 @@ install-doc:
 # `install-sysinfo` creates `sysinfo.gap`
 install-gaproot: CITATION
 	@echo "Warning, 'make install-gaproot' is incomplete"
+	# TODO: also install bin/BuildPackage.sh?
 	# create subdirectories
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/grp
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/lib
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/lib/hpc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/pkg
+	
 	# install GAP library files
-	$(INSTALL) -m 0644 grp/*.* $(DESTDIR)$(datarootdir)/gap/grp
-	$(INSTALL) -m 0644 lib/*.* $(DESTDIR)$(datarootdir)/gap/lib
-	$(INSTALL) -m 0644 lib/hpc/*.* $(DESTDIR)$(datarootdir)/gap/lib/hpc
-	# install various docs
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/hpcgap
+	for dir in grp lib lib/hpc hpcgap/lib hpcgap/lib/hpc hpcgap/lib/distributed ; do \
+	  $(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/$$dir ; \
+	  $(INSTALL) -m 0644 $(srcdir)/$$dir/*.g* $(DESTDIR)$(datarootdir)/gap/$$dir ; \
+	done
+	
+	# install various files in the root dir
 	$(INSTALL) -m 0644 CITATION $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/CONTRIBUTING.md $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/COPYRIGHT $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/INSTALL.md $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/LICENSE $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/README.md $(DESTDIR)$(datarootdir)/gap/
-	# TODO: also install bin/BuildPackage.sh?
+	
+	# install helpers for developers
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/etc
+	$(INSTALL) -m 0644 $(srcdir)/etc/convert.pl $(DESTDIR)$(datarootdir)/gap/etc/
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/etc/vim
+	$(INSTALL) -m 0644 $(srcdir)/etc/vim/*.* $(DESTDIR)$(datarootdir)/gap/etc/vim/
+
 
 # the following lines adjust variables for the installed sysinfo.gap
 install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
