@@ -1130,7 +1130,7 @@ local cs,	# chief series of G
   # we will give classes always by their representatives in G and
   # centralizers by their full preimages in G.
 
-  cs:= ChiefSeriesOfGroup( G );
+  cs:= ChiefSeriesThrough( G,[Socle(G)] );
 
   # the first step is always simple
   if HasAbelianFactorGroup(G,cs[2]) then
@@ -1719,8 +1719,6 @@ BindGlobal("LiftClassesEANonsolvGeneral",
   
   # Construct matrices for the affine operation on $N/[h,N]$.
   Info(InfoHomClass,4,"space=",Size(field),"^",r);
-  if Size(field)^r>3*10^8 then Error("too large");fi;
-  aff := ExtendedVectors( field ^ r );
 
   gens:=Concatenation(cl[2],Npcgs,cl[3]); # all generators
   gpsz:=cl[5];
@@ -1745,7 +1743,9 @@ BindGlobal("LiftClassesEANonsolvGeneral",
     Add( imgs, M );
   od;
 
-#if Size(field)^r>10^7 then Error("BIG");fi;
+
+  if Size(field)^r>3*10^8 then Error("too large");fi;
+  aff := ExtendedVectors( field ^ r );
 
   # now compute orbits, being careful to get stabilizers in steps
   #orbreps:=[];
