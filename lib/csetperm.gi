@@ -548,3 +548,148 @@ function(a,b)
   return CanonicalRepresentativeOfExternalSet(a)
          <CanonicalRepresentativeOfExternalSet(b);
 end);
+
+
+
+InstallMethod(Intersection2, "perm groups", IsIdenticalObj,
+  [IsRightCoset and IsPermCollection,IsRightCoset and IsPermCollection],0,
+function(cos1,cos2)
+    local H1, H2, x1, x2, shift, sigma, listMoved_H1, listMoved_H2, listMoved_H12, listMoved_sigma, theInt, set2, set1, eRepr, set2_img, set1_img, H1_sigma, H2_sigma, test, H12, swap, eCos, rho, cosTest, diff12, diff21, fset1, fset2;
+    # We set int = cos1 cap cos2 = H1 x1 cap H2 x2
+    H1:=ActingDomain(cos1);
+    H2:=ActingDomain(cos2);
+    x1:=Representative(cos1);
+    x2:=Representative(cos2);
+    shift:=x1;
+    sigma:=x2 / x1;
+    # Initial very easy check
+    listMoved_H1:=MovedPoints(H1);
+    listMoved_H2:=MovedPoints(H2);
+    listMoved_H12:=Union(listMoved_H1, listMoved_H2);
+    listMoved_sigma:=MovedPoints(sigma);
+    if not IsSubset(listMoved_H12, listMoved_sigma) then
+        return [];
+    fi;
+    # We pass it, now getting into the hard computation
+    theInt:=Intersection(H1, H2);
+    # Reducing as much as possible in advance
+    while true do
+        listMoved_H1:=MovedPoints(H1);
+        listMoved_H2:=MovedPoints(H2);
+        listMoved_H12:=Union(listMoved_H1, listMoved_H2);
+        listMoved_sigma:=MovedPoints(sigma);
+        # First exclusion case
+        if not IsSubset(listMoved_H12, listMoved_sigma) then
+            return [];
+        fi;
+        # Easy reductions: points that are moved by sigma outside of one group allow us to reduce the problem
+        diff12:=Difference(listMoved_H1, listMoved_H2);
+        diff21:=Difference(listMoved_H2, listMoved_H1);
+        set2:=Intersection(diff21, listMoved_sigma);
+        if Length(set2) > 0 then
+            set2_img:=OnTuples(set2, Inverse(sigma));
+            eRepr:=RepresentativeAction(H2, set2, set2_img, OnTuples);
+            if eRepr=fail then
+                return [];
+            fi;
+            sigma:=eRepr * sigma;
+            H2:=Stabilizer(H2, set2, OnTuples);
+            continue;
+        fi;
+        set1:=Intersection(diff12, listMoved_sigma);
+        if Length(set1) > 0 then
+            # int = (H1 \cap H2 sigma) shift
+            #     = (H1 sigma^{-1} \cap H2) sigma shift
+            #     = (stab(H1) repr sigma^{-1} \cap H2) sigma shift
+            #     = (stab(H1) \cap H2 sigma repr^{-1} )    repr shift
+            set1_img:=OnTuples(set1, sigma);
+            eRepr:=RepresentativeAction(H1, set1, set1_img, OnTuples);
+            if eRepr=fail then
+                return [];
+            fi;
+            H1:=Stabilizer(H1, set1, OnTuples);
+            sigma:=sigma / eRepr;
+            shift:=eRepr * shift;
+            continue;
+        fi;
+        # easy termination criterion
+        if sigma in H2 then
+            return RightCoset(theInt, shift);
+        fi;
+        if sigma in H1 then
+            # int = (H1 \cap H2 sigma) shift
+            #     = (H1 sigma^{-1} \cap H2) sigma shift
+            return RightCoset(theInt, sigma * shift);
+        fi;
+        # reduction on sets which is easy
+        fset1:=Difference(listMoved_H1, Union(listMoved_H2, listMoved_sigma));
+        if Length(fset1) > 0 then
+            H1:=Stabilizer(H1, fset1, OnTuples);
+            continue;
+        fi;
+        fset2:=Difference(listMoved_H2, Union(listMoved_H1, listMoved_sigma));
+        if Length(fset2) > 0 then
+            H2:=Stabilizer(H2, fset2, OnTuples);
+            continue;
+        fi;
+        # More general but more expensive than previous check
+        H1_sigma:=ClosureGroup(H1, sigma);
+        if not IsSubgroup(H1_sigma, H2) then
+            H2:=Intersection(H1_sigma, H2);
+            continue;
+        fi;
+        H2_sigma:=ClosureGroup(H2, sigma);
+        if not IsSubgroup(H2_sigma, H1) then
+            H1:=Intersection(H2_sigma, H1);
+            continue;
+        fi;
+        # No more reduction tricks available
+        break;
+    od;
+    # A final termination criterion
+    H12:=ClosureGroup(H1, H2);
+    if not sigma in H12 then
+        return [];
+    fi;
+    # We are now inspired by the algorithm from
+    # Lazlo Babai, Coset Intersection in Moderately Exponential Time
+    #
+    # We use the algorithm from Page 10 of coset analysis and we reformulate
+    # it here in order to avoid errors:
+    # --- The naive algorithm for computing H1 \cap H2 sigma is to iterate
+    # over elements of H1 and testing if one belongs to H2 sigma. If we find
+    # one such z then the result is the coset RightCoset(theInt, z). If not
+    # then it is empty.
+    # --- Since the result is independent of the cosets theInt, what we can
+    # do is iterate over the RightCosets(H1, theInt). The algorithm is the
+    # one of Proposition 3.2
+    # for r in RightCosets(H1, theInt) do
+    #   if r in H1*sigma then
+    #     return RightCoset(theInt, r * shift)
+    #   fi;
+    # od;
+    # --- (TODO for future work): The question is how to make it faster.
+    # One idea is to use an ascending chain between theInt and H1.
+    # Section 3.4 of above paper gives statement related to that but not a
+    # useful algorithm. The question deserves further exploration.
+    #
+    # We select the smallest group for that computation in order to have
+    # as few cosets as possible
+    if Order(H2) < Order(H1) then
+        # int = (H1 \cap H2 sigma) shift
+        #     = (H1 sigma^{-1} \cap H2) sigma shift
+        swap:=H1;
+        H1:=H2;
+        H2:=swap;
+        shift:=sigma * shift;
+        sigma:=Inverse(sigma);
+    fi;
+    # So now Order(H1) <= Order(H2)
+    cosTest:=RightCoset(H2, sigma);
+    for rho in RightTransversal(H1, theInt) do
+        if rho in cosTest then
+            return RightCoset(theInt, rho * shift);
+        fi;
+    od;
+    return [];
+end);
