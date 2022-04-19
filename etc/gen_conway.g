@@ -48,7 +48,7 @@ ConwayPolForCCodeNice := function(p,h,align)
     return Concatenation(substring);
 end;
 
-MAX := 2^16;
+MAX := 2^24;
 align := 4 + LogInt(MAX, 10);
 
 polynomials_as_strings_of_numbers := [];
