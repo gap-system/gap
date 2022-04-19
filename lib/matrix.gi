@@ -2185,6 +2185,11 @@ InstallOtherMethod( TriangulizedNullspaceMatDestructive,
     function( mat )
     local ns;
     ns := SemiEchelonMatTransformationDestructive(mat).relations;
+    if IsPlistRep(ns) and Length(ns)>0 
+      # filter for vector objects, not compressed FF vectors
+      and ForAll(ns,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
+      ns:=Matrix(BaseDomain(mat),ns);
+    fi;
     TriangulizeMat(ns);
     return ns;
 end );
@@ -2272,8 +2277,15 @@ InstallMethod( GeneralisedEigenspaces,
     "for a matrix or matrix obj",
     [ IsField, IsMatrixOrMatrixObj ],
     function( F, A )
-        return List( GeneralisedEigenvalues( F, A ), eval ->
-            VectorSpace( F, TriangulizedNullspaceMat( Value( eval, A ) ) ) );
+    local M,S,eval;
+      S:=[];
+      for eval in GeneralisedEigenvalues(F,A) do
+        M:=TriangulizedNullspaceMat( Value( eval, A ) );
+        if IsMatrixObj(M) and not IsMatrix(M) then 
+          M:=RowsOfMatrix(M); fi;
+        Add(S,VectorSpace(F,M));
+      od;
+      return S;
     end );
 
 #############################################################################
@@ -2434,6 +2446,27 @@ InstallMethod( SemiEchelonMat,
         Add(copymat, vc);
     od;
     return SemiEchelonMatDestructive( copymat );
+end );
+
+InstallOtherMethod( SemiEchelonMat,
+    "generic method for list of vector objects",
+    [ IsList ],
+    function( mat )
+    local copymat, v, vc, f;
+    # filter for vector objects, not compressed FF vectors
+    if not (ForAll(mat,x->IsVectorObj(x) and not IsDataObjectRep(x))
+      and Length(mat)>0) then
+      TryNextMethod();
+    fi;
+    copymat := [];
+    if Length(mat)>0 then
+      f := BaseDomain(mat[1]);
+      for v in mat do
+          vc := ShallowCopy(v);
+          Add(copymat, vc);
+      od;
+    fi;
+    return SemiEchelonMatDestructive(Matrix(f, copymat ));
 end );
 
 
@@ -3023,7 +3056,7 @@ function( M1, M2 )
     return [ sum, int ];
 end );
 
-InstallOtherMethod( SumIntersectionMat,"MatricObject", IsIdenticalObj,
+InstallOtherMethod( SumIntersectionMat,"MatrixObject", IsIdenticalObj,
     [ IsMatrixObj, IsMatrixObj ],
 function( M1, M2 )
     local n,      # number of columns

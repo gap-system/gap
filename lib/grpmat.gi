@@ -356,7 +356,8 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
 	if v<>zerov then
 	  Add(base,orb[i]);
 	  Add(partbas,ShallowCopy(orb[i]));
-          if ForAny(partbas,IsVectorObj) then
+          # filter for vector objects, not compressed FF vectors
+          if ForAny(partbas,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
             partbas:=Matrix(BaseDomain(partbas[1]),partbas);
           fi;
 	  TriangulizeMat(partbas);
