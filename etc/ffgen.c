@@ -76,6 +76,14 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, "extern const UInt1 DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         fprintf(dest, "extern const UInt4 CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         fprintf(dest, "\n");
+        if (num_ff < 65536)
+            fprintf(dest, "typedef UInt2 FF;\n");
+        else
+            fprintf(dest, "typedef UInt4 FF;\n");
+        if (MAX_FF <= 65536)
+            fprintf(dest, "typedef UInt2 FFV;\n");
+        else
+            fprintf(dest, "typedef UInt4 FFV;\n");
         fprintf(dest, "\n");
         fprintf(dest, "#endif // GAP_FFDATA_H\n");
     }

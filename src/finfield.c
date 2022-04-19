@@ -1419,10 +1419,10 @@ static Obj FuncZ(Obj self, Obj q)
     FF                  ff;             /* the finite field                */
 
     /* check the argument                                                  */
-    if ( (IS_INTOBJ(q) && (INT_INTOBJ(q) > 65536)) ||
-         (TNUM_OBJ(q) == T_INTPOS))
-      return CALL_1ARGS(ZOp, q);
-    
+    if ((IS_INTOBJ(q) && (INT_INTOBJ(q) > MAXSIZE_GF_INTERNAL)) ||
+        (TNUM_OBJ(q) == T_INTPOS))
+        return CALL_1ARGS(ZOp, q);
+
     if ( !IS_INTOBJ(q) || INT_INTOBJ(q)<=1 ) {
         RequireArgument(SELF_NAME, q, "must be a positive prime power");
     }
@@ -1445,20 +1445,21 @@ static Obj FuncZ2(Obj self, Obj p, Obj d)
     if (ARE_INTOBJS(p, d)) {
         ip = INT_INTOBJ(p);
         id = INT_INTOBJ(d);
-        if (ip > 1 && id > 0 && id <= 16 && ip < 65536) {
+        if (ip > 1 && id > 0 && id <= DEGREE_LARGEST_INTERNAL_FF &&
+            ip <= MAXSIZE_GF_INTERNAL) {
             id1 = id;
             q = ip;
-            while (--id1 > 0 && q <= 65536)
+            while (--id1 > 0 && q <= MAXSIZE_GF_INTERNAL)
                 q *= ip;
-            if (q <= 65536) {
+            if (q <= MAXSIZE_GF_INTERNAL) {
                 /* get the finite field */
-                ff = FiniteField(ip, id);
+                ff = FiniteFieldBySize(q);
 
                 if (ff == 0 || CHAR_FF(ff) != ip)
                     RequireArgument(SELF_NAME, p, "must be a prime");
 
                 /* make the root */
-                return NEW_FFE(ff, (ip == 2 && id == 1 ? 1 : 2));
+                return NEW_FFE(ff, (q == 2) ? 1 : 2);
             }
         }
     }

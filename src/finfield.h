@@ -12,8 +12,10 @@
 **
 **  Finite fields  are an  important   domain in computational   group theory
 **  because the classical matrix groups are defined over those finite fields.
-**  In GAP we  support  small  finite  fields  with  up  to  65536  elements,
-**  larger fields can be realized  as polynomial domains over smaller fields.
+**  The GAP kernel supports elements of finite fields up to some fixed size
+**  limit stored in MAXSIZE_GF_INTERNAL. To change this limit for 32 resp.
+**  64 bit systems, edit `etc/ffgen.c`. Support for fields larger than this
+**  is implemented by the GAP library.
 **
 **  Elements in small finite fields are  represented  as  immediate  objects.
 **
@@ -24,10 +26,11 @@
 **  The least significant 3 bits of such an immediate object are always  010,
 **  flagging the object as an object of a small finite field.
 **
-**  The next 13 bits represent the small finite field where the element lies.
-**  They are simply an index into a global table of small finite fields.
+**  The next group of FIELD_BITS_FFE bits represent the small finite field
+**  where the element lies. They are simply an index into a global table of
+**  small finite fields, which is constructed at build time.
 **
-**  The most significant 16 bits represent the value of the element.
+**  The most significant VAL_BITS_FFE bits represent the value of the element.
 **
 **  If the  value is 0,  then the element is the  zero from the finite field.
 **  Otherwise the integer is the logarithm of this  element with respect to a
@@ -69,10 +72,14 @@
 **
 **  Small finite fields are represented by an  index  into  a  global  table.
 **
-**  Since there are  only  6542 (prime) + 93 (nonprime)  small finite fields,
-**  the index fits into a 'UInt2' (actually into 13 bits).
+**  Depending on the configuration it may be UInt2 or UInt4. The definition
+**  is in `ffdata.h` and is calculated by `etc/ffgen.c`
 */
-typedef UInt2       FF;
+GAP_STATIC_ASSERT(NUM_SHORT_FINITE_FIELDS <= (1<<(8*sizeof(FF))),
+                  "NUM_SHORT_FINITE_FIELDS too large for type FF");
+
+GAP_STATIC_ASSERT(FIELD_BITS_FFE + VAL_BITS_FFE + 3 <= 8*sizeof(Obj),
+                  "not enough bits in type Obj to store internal FFEs");
 
 
 /****************************************************************************
@@ -140,17 +147,11 @@ extern  Obj             SuccFF;
 **  Values of  elements  of  small  finite  fields  are  represented  by  the
 **  logarithm of the element with respect to the root plus one.
 **
-**  Since small finite fields contain at most 65536 elements,  the value fits
-**  into a 'UInt2'.
-**
-**  It may be possible to change this to 'UInt4' to allow small finite fields
-**  with more than  65536 elements.  The macros  and have been coded  in
-**  such a  way that they work  without problems.  The exception is 'POW_FFV'
-**  which  will only work if  the product of integers  of type 'FFV' does not
-**  cause an overflow.  And of course the successor table stored for a finite
-**  field will become quite large for fields with more than 65536 elements.
+**  Depending on the configuration, this type may be a UInt2 or UInt4.
+**  This type is actually defined in `ffdata.h` by `etc/ffgen.c`
 */
-typedef UInt2           FFV;
+GAP_STATIC_ASSERT(MAXSIZE_GF_INTERNAL <= (1<<(8*sizeof(FFV))),
+                  "MAXSIZE_GF_INTERNAL too large for type FFV");
 
 GAP_STATIC_ASSERT(sizeof(UInt) >= 2 * sizeof(FFV),
                   "Overflow possibility in POW_FFV");
@@ -288,8 +289,7 @@ EXPORT_INLINE FFV QUO_FFV(FFV a, FFV b, const FFV * f)
 **  in the range $0..order(f)-1$.
 **
 **  Finally 'POW_FFV' may only be used if the  product of two integers of the
-**  size of 'FFV'   does  not cause an  overflow,   i.e.  only if  'FFV'   is
-**  'unsigned short'.
+**  size of 'FFV' does not cause an overflow.
 **
 **  If the finite field element is 0 the power is also 0, otherwise  we  have
 **  $a^n ~ (z^{a-1})^n = z^{(a-1)*n} = z^{(a-1)*n % (o-1)} ~ (a-1)*n % (o-1)$
@@ -320,7 +320,7 @@ EXPORT_INLINE FFV POW_FFV(FFV a, UInt n, const FFV * f)
 EXPORT_INLINE FF FLD_FFE(Obj ffe)
 {
     GAP_ASSERT(IS_FFE(ffe));
-    return (FF)((((UInt)(ffe)) & 0xFFFF) >> 3);
+    return (FF)((UInt)(ffe) >> 3) & ((1 << FIELD_BITS_FFE) - 1);
 }
 
 
@@ -336,7 +336,8 @@ EXPORT_INLINE FF FLD_FFE(Obj ffe)
 EXPORT_INLINE FFV VAL_FFE(Obj ffe)
 {
     GAP_ASSERT(IS_FFE(ffe));
-    return (FFV)(((UInt)(ffe)) >> 16);
+    return (FFV)((UInt)(ffe) >> (3 + FIELD_BITS_FFE)) &
+           ((1 << VAL_BITS_FFE) - 1);
 }
 
 
@@ -351,7 +352,8 @@ EXPORT_INLINE FFV VAL_FFE(Obj ffe)
 EXPORT_INLINE Obj NEW_FFE(FF fld, FFV val)
 {
     GAP_ASSERT(val < SIZE_FF(fld));
-    return (Obj)(((UInt)(val) << 16) + ((UInt)(fld) << 3) + (UInt)0x02);
+    return (Obj)(((UInt)val << (3 + FIELD_BITS_FFE)) | ((UInt)fld << 3) |
+                 (UInt)0x02);
 }
 
 
