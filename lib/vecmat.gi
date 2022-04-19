@@ -1595,7 +1595,8 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
     rep:=IsPlistRep;
   fi;
 
-  if IsPlistRep(matrix) and not ForAll(matrix,IsPlistRep) then
+  # cannot use NrRows consistently, as input might be mixed format
+  if IsList(matrix) then
     nr:=Length(matrix);
   else
     nr:=NrRows(matrix);
