@@ -789,6 +789,43 @@ local a,r;
 end);
 
 
+InstallMethod(Intersection2, "general groups", IsIdenticalObj,
+              [IsRightCoset,IsRightCoset],
+function(cos1,cos2)
+    local swap, H1, H2, x1, x2, sigma, U, rho;
+    if Size(cos1) > Size(cos2) then
+        swap := cos1;
+        cos1 := cos2;
+        cos2 := swap;
+    fi;
+    H1:=ActingDomain(cos1);
+    H2:=ActingDomain(cos2);
+    x1:=Representative(cos1);
+    x2:=Representative(cos2);
+    sigma := x1 / x2;
+    if H1 = H2 then
+        if sigma in H1 then
+            return cos1;
+        else
+            return [];
+        fi;
+    fi;
+    # We want to compute the intersection of cos1 = H1*x1 with cos2 = H2*x2.
+    # This is equivalent to intersecting H1 with H2*x2/x1, which is either empty
+    # or equal to a coset U*rho, where U is the intersection of H1 and H2.
+    # In the non-empty case, the overall result then is U*rho*x1.
+    #
+    # To find U*rho, we iterate over all cosets of U in H1 and for each test
+    # if it is contained in H2*x2/x1, which is the case if and only if rho is
+    # in H2*x2/x1, if and only if rho/(x2/x1) = rho*x1/x2 is in H2
+    U:=Intersection(H1, H2);
+    for rho in RightTransversal(H1, U) do
+        if rho * sigma in H2 then
+            return RightCoset(U, rho * x1);
+        fi;
+    od;
+    return [];
+end);
 
 # disabled because of comparison incompatibilities
 #InstallMethod(\<,"RightCosets",IsIdenticalObj,[IsRightCoset,IsRightCoset],0,

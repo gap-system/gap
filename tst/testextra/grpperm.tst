@@ -99,19 +99,6 @@ gap> IsNaturalAlternatingGroup(g);
 true
 gap> 2*Size(g) = Factorial(999);
 true
-gap> Intersection(SymmetricGroup([1..5]),SymmetricGroup([3..8]));
-Sym( [ 3 .. 5 ] )
-gap> Intersection(SymmetricGroup([1..5]),AlternatingGroup([3..8]));
-Alt( [ 3 .. 5 ] )
-gap> Intersection(AlternatingGroup([1..5]),AlternatingGroup([3..8]));
-Alt( [ 3 .. 5 ] )
-gap> Intersection(AlternatingGroup([1..5]),SymmetricGroup([3..8]));
-Alt( [ 3 .. 5 ] )
-gap> Intersection(Group( (1,2,3), (4,5,6), (11,12,13), (11,12,14) ),
-                  Group( (1,7,8), (4,9,11), (10,12), (13,14) ));
-Group(())
-gap> Intersection(Group((1,2), (3,4)), Group((3,4),(5,6)));
-Group( (3,4) )
 gap> s := SymmetricGroup(100);
 Sym( [ 1 .. 100 ] )
 gap> Stabilizer(s,3,OnPoints);
