@@ -5263,57 +5263,66 @@ InstallGlobalFunction( PowerMapOfGroupWithInvariants,
           j,         # loop over `cand'
           c,         # one candidate
           pow,       # power of a representative
-          powinv;    # invariants of `pow'
+          powinv,    # invariants of `pow'
+          limit;     # do we limit calculation if exponent exceeds order?
 
     reps := List( ccl, Representative );
     ord  := List( reps, Order );
     invs := [];
     map  := [];
     nccl := Length( ccl );
+    limit:=ValueOption("onlyuptoorder")=true;
 
     # Loop over the classes
     for i in [ 1 .. nccl ] do
 
-      candord:= ord[i] / Gcd( ord[i], n );
-      cand:= Filtered( [ 1 .. nccl ], x -> ord[x] = candord );
-      if Length( cand ) = 1 then
-
-        # The image is unique, no membership test is necessary.
-        map[i]:= cand[1];
-
+      if ord[i]=1 then
+        # identity always maps to itself
+        map[i]:=i;
+      elif n>ord[i] and limit then
+        map[i]:=0;
       else
-
-        # We check the invariants.
-        pow:= Representative( ccl[i] )^n;
-        powinv:= List( invariants, fun -> fun( pow ) );
-        for c in cand do
-          if not IsBound( invs[c] ) then
-            invs[c]:= List( invariants, fun -> fun( reps[c] ) );
-          fi;
-        od;
-        cand:= Filtered( cand, c -> invs[c] = powinv );
-        len:= Length( cand );
-        if len = 1 then
+        candord:= ord[i] / Gcd( ord[i], n );
+        cand:= Filtered( [ 1 .. nccl ], x -> ord[x] = candord );
+        if Length( cand ) = 1 then
 
           # The image is unique, no membership test is necessary.
           map[i]:= cand[1];
 
         else
 
-          # We have to check all candidates except one.
-          for j in [ 1 .. len - 1 ] do
-            c:= cand[j];
-            if pow in ccl[c] then
-              map[i]:= c;
-              break;
+          # We check the invariants.
+          pow:= Representative( ccl[i] )^n;
+          powinv:= List( invariants, fun -> fun( pow ) );
+          for c in cand do
+            if not IsBound( invs[c] ) then
+              invs[c]:= List( invariants, fun -> fun( reps[c] ) );
             fi;
           od;
+          cand:= Filtered( cand, c -> invs[c] = powinv );
+          len:= Length( cand );
+          if len = 1 then
 
-          # The last candidate may be the right one.
-          if not IsBound( map[i] ) then
-            map[i]:= cand[ len ];
+            # The image is unique, no membership test is necessary.
+            map[i]:= cand[1];
+
+          else
+
+            # We have to check all candidates except one.
+            for j in [ 1 .. len - 1 ] do
+              c:= cand[j];
+              if pow in ccl[c] then
+                map[i]:= c;
+                break;
+              fi;
+            od;
+
+            # The last candidate may be the right one.
+            if not IsBound( map[i] ) then
+              map[i]:= cand[ len ];
+            fi;
+
           fi;
-
         fi;
 
       fi;

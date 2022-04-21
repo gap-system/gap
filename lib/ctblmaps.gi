@@ -37,14 +37,34 @@ InstallMethod( PowerMap,
     "for a character table, and an integer",
     [ IsNearlyCharacterTable, IsInt ],
     function( tbl, n )
-    local known, erg;
+    local known, erg,i,e,ord,a,p;
+
+    ord:=OrdersClassRepresentatives(tbl);
 
     if IsPosInt( n ) and IsSmallIntRep( n ) then
       known:= ComputedPowerMaps( tbl );
 
       # compute the <n>-th power map
       if not IsBound( known[n] ) then
-        erg:= PowerMapOp( tbl, n );
+        if ForAll(Filtered([1..n-1],IsPrimeInt),x->IsBound(known[x])) then
+          # do not exceed element order, we can fill these out easier
+          erg:= PowerMapOp( tbl, n:onlyuptoorder );
+          for i in [1..Length(erg)] do
+            if erg[i]=0 then
+              e:=n mod ord[i];
+              a:=i;
+              while e>1 do
+                p:=SmallestPrimeDivisor(e);
+                e:=e/p;
+                a:=known[p][a];
+              od;
+              erg[i]:=a;
+            fi;
+              
+          od;
+        else
+          erg:= PowerMapOp( tbl, n );
+        fi;
         known[n]:= MakeImmutable( erg );
       fi;
 
