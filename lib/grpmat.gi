@@ -914,7 +914,13 @@ local G,typ,f;
           gens,false,true);
 
   f:=DefaultScalarDomainOfMatrixList(gens);
-  gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
+  if ForAll(gens, x -> IsMatrixObj(x) and not IsGF2MatrixRep(x) and not
+                           Is8BitMatrixRep(x)) then
+    gens := List(gens, x -> Matrix(f, StructuralCopy(x)));
+    Perform(gens, MakeImmutable);
+  else
+    gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
+  fi;
 
   G:=rec();
   ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
