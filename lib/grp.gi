@@ -4554,6 +4554,7 @@ end );
 InstallGlobalFunction(MakeGroupyType,
 function(fam,filt,gens,id,isgroup)
 
+  filt:=filt and HasIsEmpty;  # having HasIsEmpty but not IsEmpty indicates "non-empty"
   if IsFinite(gens) then
     if isgroup then
       filt:=filt and IsFinitelyGeneratedGroup;
@@ -4574,10 +4575,41 @@ function(fam,filt,gens,id,isgroup)
         fi;
       fi;
     elif isgroup and Length(gens)<=1 then # cyclic not for magmas
-      filt:=filt and IsCyclic;
+      if Length(gens) = 0 then
+        filt:=filt and IsTrivial;
+      else
+        filt:=filt and IsCyclic;
+      fi;
     fi;
   fi;
   return NewType(fam,filt);
+end);
+
+InstallGlobalFunction(MakeGroupyObj,
+function(fam,filt,gens,id,attr...)
+  local isgroup, typ;
+  Assert(0, IsList(attr));
+  Assert(0, IsEvenInt(Length(attr)));
+
+  # set generators
+  Append(attr, [ GeneratorsOfMagmaWithInverses, gens ]);
+
+  # set one, if given
+  if not IsBool(id) then
+    Append(attr, [ One, id ]);
+  fi;
+
+  # make the type
+  filt := IsAttributeStoringRep and filt;
+  isgroup := IS_IMPLIED_BY(IsGroup, filt);
+  typ := MakeGroupyType(fam,filt,gens,id,isgroup);
+
+  if isgroup and IS_IMPLIED_BY(IsTrivial, typ) then
+    Append(attr, [ Size, 1 ]);
+  fi;
+
+  return CallFuncList(ObjectifyWithAttributes, Concatenation([rec(), typ], attr));
+
 end);
 
 #############################################################################
@@ -4599,15 +4631,7 @@ local G,typ;
   fi;
 
   gens:=AsList(gens);
-  typ:=MakeGroupyType(FamilyObj(gens),
-          IsGroup and IsAttributeStoringRep 
-          and HasIsEmpty and HasGeneratorsOfMagmaWithInverses,
-          gens,false,true);
-
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,gens);
-
-  return G;
+  return MakeGroupyObj(FamilyObj(gens), IsGroup, gens, false);
 end );
 
 InstallMethod( GroupWithGenerators,
@@ -4624,16 +4648,7 @@ local G,typ;
   fi;
 
   gens:=AsList(gens);
-  typ:=MakeGroupyType(FamilyObj(gens),
-          IsGroup and IsAttributeStoringRep 
-            and HasIsEmpty and HasGeneratorsOfMagmaWithInverses and HasOne,
-            gens,id,true);
-
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,gens,
-                          One,id);
-
-  return G;
+  return MakeGroupyObj(FamilyObj(gens), IsGroup, gens, id);
 end );
 
 InstallMethod( GroupWithGenerators,"method for empty list and element",
@@ -4643,16 +4658,7 @@ local G,fam,typ;
 
   fam:= CollectionsFamily( FamilyObj( id ) );
 
-  typ:=IsGroup and IsAttributeStoringRep
-        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial;
-  typ:=NewType(fam,typ);
-
-  G:= rec();
-  ObjectifyWithAttributes( G, typ,
-                            GeneratorsOfMagmaWithInverses, empty,
-                            One, id );
-
-  return G;
+  return MakeGroupyObj(fam, IsGroup, empty, id);
 end );
 
 

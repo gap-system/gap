@@ -915,17 +915,11 @@ function( gens )
 local G,typ,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
-  typ:=MakeGroupyType(FamilyObj(gens),
-          IsGroup and IsAttributeStoringRep
-            and HasGeneratorsOfMagmaWithInverses
-            and IsFinitelyGeneratedGroup and HasIsEmpty and IsFinite,
-          gens,false,true);
 
   f:=DefaultScalarDomainOfMatrixList(gens);
-  gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
+  gens:=List(gens,i->ImmutableMatrix(f,i));
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
+  G:=MakeGroupyObj(FamilyObj(gens), IsGroup and IsFinite, gens,false);
 
   if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
@@ -939,18 +933,12 @@ function( gens, id )
 local G,typ,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
-  typ:=MakeGroupyType(FamilyObj(gens), IsGroup and IsAttributeStoringRep 
-          and HasGeneratorsOfMagmaWithInverses and IsFinitelyGeneratedGroup
-          and HasIsEmpty and IsFinite and HasOne,
-          gens,id,true);
 
   f:=DefaultScalarDomainOfMatrixList(gens);
-  gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
+  gens:=List(gens,i->ImmutableMatrix(f,i));
   id:=ImmutableMatrix(f,id);
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                          One,id);
+  G:=MakeGroupyObj(FamilyObj(gens), IsGroup and IsFinite, gens,id);
 
   if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
@@ -959,21 +947,15 @@ end );
 
 InstallMethod( GroupWithGenerators,
   "empty list of matrices with identity", true,
-  [ IsList and IsEmpty,IsMultiplicativeElementWithInverse and IsFFECollColl],
+  [ IsList and IsEmpty,
+    IsMultiplicativeElementWithInverse and IsFFECollColl],
 function( gens, id )
 local G,fam,typ,f;
-
-  if not IsFinite(gens) then TryNextMethod(); fi;
-  typ:=MakeGroupyType(FamilyObj([id]), IsGroup and IsAttributeStoringRep 
-            and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial,
-            gens,id,true);
 
   f:=DefaultScalarDomainOfMatrixList([id]);
   id:=ImmutableMatrix(f,id);
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                          One,id);
+  G:=MakeGroupyObj(FamilyObj([id]), IsGroup and IsTrivial, gens,id);
 
   if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
@@ -988,17 +970,11 @@ function( gens )
 local G,typ,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
-  typ:=MakeGroupyType(FamilyObj(gens),
-          IsGroup and IsAttributeStoringRep
-            and HasGeneratorsOfMagmaWithInverses
-            and IsFinitelyGeneratedGroup and HasIsEmpty and IsFinite,
-          gens,false,true);
 
   f:=DefaultScalarDomainOfMatrixList(gens);
-  gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
+  gens:=List(gens,i->ImmutableMatrix(f,i));
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens));
+  G:=MakeGroupyObj(FamilyObj(gens), IsGroup and IsFinite, gens, false);
 
   if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
@@ -1013,18 +989,12 @@ function( gens, id )
 local G,typ,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
-  typ:=MakeGroupyType(FamilyObj(gens), IsGroup and IsAttributeStoringRep 
-          and HasGeneratorsOfMagmaWithInverses and IsFinitelyGeneratedGroup
-          and HasIsEmpty and IsFinite and HasOne,
-          gens,id,true);
 
   f:=DefaultScalarDomainOfMatrixList(gens);
-  gens:=List(Immutable(gens),i->ImmutableMatrix(f,i));
+  gens:=List(gens,i->ImmutableMatrix(f,i));
   id:=ImmutableMatrix(f,id);
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                          One,id);
+  G:=MakeGroupyObj(FamilyObj(gens), IsGroup and IsFinite, gens, id);
 
   if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
@@ -1038,17 +1008,10 @@ InstallMethod( GroupWithGenerators,
 function( gens, id )
 local G,fam,typ,f;
 
-  if not IsFinite(gens) then TryNextMethod(); fi;
-  typ:=MakeGroupyType(FamilyObj([id]), IsGroup and IsAttributeStoringRep 
-            and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial,
-            gens,id,true);
-
   f:=DefaultScalarDomainOfMatrixList([id]);
   id:=ImmutableMatrix(f,id);
 
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                          One,id);
+  G:=MakeGroupyObj(FamilyObj([id]), IsGroup and IsTrivial, gens, id);
 
   if IsField(f) then SetDefaultFieldOfMatrixGroup(G,f);fi;
 
