@@ -121,16 +121,12 @@ gap> PGU(3,6);
 Error, <subfield> must be a prime or a finite field
 
 #
-gap> PGammaL( 2, 5 );
-GL(2,5)
+gap> PGammaL( 2, 5 ) = PGL( 2, 5 );
+true
 gap> Size( PGammaL( 2, 25 ) );
 31200
-gap> Size( PGammaL( 1, 9 ) ) = Size( PGL( 1, 9 ) ) * 2;
-true
-gap> Size( PGammaL( 2, 9 ) ) = Size( PGL( 2, 9 ) ) * 2;
-true
-gap> Size( PGammaL( 3, 9 ) ) = Size( PGL( 3, 9 ) ) * 2;
-true
+gap> SetX( [1..3], [2, 3, 5], [1..3], {n, p, d} -> Size( PGammaL( n, p^d ) ) = Size( PGL( n, p^d ) ) * d );
+[ true ]
 gap> PGammaL( IsPermGroup, 3, 9) = PGammaL( 3, 9 );
 true
 gap> PGammaL( 3, GF(9) );

@@ -1413,8 +1413,8 @@ BindGlobal( "DECLARE_PROJECTIVE_SEMILINEAR_GROUPS_OPERATION",
       d:= Length( facts );
       p:= facts[1];
 
-      if d = 1 then
-        return lin;
+      if n = 1 then
+        return CyclicGroup( filt, d );
       fi;
 
       F:= GF( q );
@@ -1423,10 +1423,12 @@ BindGlobal( "DECLARE_PROJECTIVE_SEMILINEAR_GROUPS_OPERATION",
                    mat -> Permutation( mat, points, OnLines ) );
 
       # Apply the field automorphism to the normed vectors.
-      Apply( points, v -> ImmutableVector( F, List( v, x -> x^p ) ) );
-      indices:= [ 1 .. Length( points ) ];
-      SortParallel( points, indices );
-      Add( gens, PermList( indices ) );
+      if d > 1 then
+        Apply( points, v -> ImmutableVector( F, List( v, x -> x^p ) ) );
+        indices:= [ 1 .. Length( points ) ];
+        SortParallel( points, indices );
+        Add( gens, PermList( indices ) );
+      fi;
 
       g:= GroupWithGenerators( gens );
       SetSize( g, sizefun( n, q, d, lin ) );
