@@ -10,7 +10,7 @@
 
 #############################################################################
 ##
-#V  IdOfFilter
+#F  IdOfFilter
 ##
 ##  <#GAPDoc Label="IdOfFilter">
 ##  <ManSection>
@@ -53,7 +53,7 @@ BIND_GLOBAL( "IdOfFilterByName",
 
 #############################################################################
 ##
-#V  FilterByName
+#F  FilterByName
 ##
 ##  <#GAPDoc Label="FilterByName">
 ##  <ManSection>
@@ -69,3 +69,40 @@ BIND_GLOBAL( "IdOfFilterByName",
 ##
 BIND_GLOBAL( "FilterByName",
              name -> First(FILTERS, f -> NAME_FUNC(f) = name) );
+
+#############################################################################
+##
+#F  IS_IMPLIED_BY
+##
+##  <#GAPDoc Label="IS_IMPLIED_BY">
+##  <ManSection>
+##  <Func Name="IS_IMPLIED_BY" Arg="filt, prefilt"/>
+##
+##  <Description>
+##  Return true if the flags or filter <A>filt</A> is implied by <A>prefilt</A>,
+##  which can be either a filter, a flags object, or a type
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "IS_IMPLIED_BY",
+function (filt, prefilt)
+    local flags, preflags;
+
+    if IsFilter(filt) then
+        flags := FLAGS_FILTER(filt);
+    else
+        flags := filt;
+    fi;
+
+    if IsType(prefilt) then
+        preflags := FlagsType(prefilt);
+    elif IsFilter(prefilt) then
+        preflags := FLAGS_FILTER(prefilt);
+    else
+        preflags := prefilt;
+    fi;
+    preflags := WITH_IMPS_FLAGS(preflags);
+
+    return IS_SUBSET_FLAGS(preflags, flags);
+end );
