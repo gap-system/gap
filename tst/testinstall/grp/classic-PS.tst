@@ -67,16 +67,12 @@ gap> PSp(4,6);
 Error, <subfield> must be a prime or a finite field
 
 #
-gap> PSigmaL( 3, 5 );
-SL(3,5)
+gap> PSigmaL( 3, 5 ) = PSL(3,5);
+true
 gap> Size( PSigmaL( 3, 9 ) );
 84913920
-gap> Size( PSigmaL( 1, 9 ) ) = Size( PSL( 1, 9 ) ) * 2;
-true
-gap> Size( PSigmaL( 2, 9 ) ) = Size( PSL( 2, 9 ) ) * 2;
-true
-gap> Size( PSigmaL( 3, 9 ) ) = Size( PSL( 3, 9 ) ) * 2;
-true
+gap> SetX( [1..3], [2, 3, 5], [1..3], {n, p, d} -> Size( PSigmaL( n, p^d ) ) = Size( PSL( n, p^d ) ) * d );
+[ true ]
 gap> PSigmaL( IsPermGroup, 3, 9 ) = PSigmaL( 3, 9 );
 true
 gap> PSigmaL( 3, GF(9) );
