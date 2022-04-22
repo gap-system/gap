@@ -3102,6 +3102,12 @@ local filt;
     CHECK_REPEATED_ATTRIBUTE_SET(obj, "Size", sz);
     return;
   fi;
+
+  # some sanity checks
+  Assert(0, not HasIsEmpty(obj) or (IsEmpty(obj) = (sz=0)));
+  Assert(0, not HasIsTrivial(obj) or (IsTrivial(obj) = (sz=1)));
+  Assert(0, not HasIsFinite(obj) or (IsFinite(obj) = (sz<infinity)));
+
   if sz=0 then filt:=IsEmpty;
   elif sz=1 then filt:=IsTrivial;
   elif sz=infinity then filt:=IsNonTrivial and HasIsFinite;
