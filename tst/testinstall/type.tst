@@ -57,6 +57,14 @@ gap> IdOfFilter(IsNilpotent);
 fail
 
 #
+gap> IS_IMPLIED_BY(IsGroup, IsSolvableGroup);
+true
+gap> IS_IMPLIED_BY(IsGroup, IsGroup);
+true
+gap> IS_IMPLIED_BY(IsSolvableGroup, IsGroup);
+false
+
+#
 gap> atomic readonly FILTER_REGION do filters := Immutable(FILTERS); od;
 gap> ForAll([1..Length(filters)], id -> id = IdOfFilter(filters[id]));
 true
