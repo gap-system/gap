@@ -3731,6 +3731,8 @@ DeclareOperation( "GroupWithGenerators",
 # are not needed
 DeclareGlobalFunction("MakeGroupyType");
 
+DeclareGlobalFunction("MakeGroupyObj");
+
 
 #############################################################################
 ##

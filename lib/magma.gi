@@ -708,16 +708,7 @@ InstallOtherMethod( MagmaWithOneByGenerators,
 MakeMagmaWithInversesByFiniteGenerators:=function(family,gens)
 local M,typ,id,fam;
 
-  typ:=MakeGroupyType(family,
-            IsMagmaWithInverses and IsAttributeStoringRep 
-              and HasGeneratorsOfMagmaWithInverses
-              and HasIsEmpty,
-              gens,fail,false);
-
-  M:=rec();
-
-  ObjectifyWithAttributes( M,typ,
-    GeneratorsOfMagmaWithInverses, AsList( gens ));
+  M:=MakeGroupyObj(family, IsMagmaWithInverses, gens, fail);
 
   if HasIsAssociative( M ) and IsAssociative( M ) then
     SetIsFinitelyGeneratedGroup( M, true );

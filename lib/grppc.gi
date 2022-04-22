@@ -353,19 +353,12 @@ local G,fam,typ,id,pcgs;
 
   fam:=FamilyObj(gens);
   pcgs:=DefiningPcgs(ElementsFamily(fam));
+  id:=One(gens[1]);
 
   # pc groups are always finite and gens is finite.
-  typ:=MakeGroupyType(fam,
-        IsGroup and IsAttributeStoringRep and IsSolvableGroup
-          and HasIsEmpty and HasGeneratorsOfMagmaWithInverses
-          and IsFinite and IsFinitelyGeneratedGroup
-          and HasFamilyPcgs and HasHomePcgs and HasGeneralizedPcgs,
-        gens,One(gens[1]),true);
-
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                        FamilyPcgs,pcgs,HomePcgs,pcgs,GeneralizedPcgs,pcgs);
-  #SetGroupOfPcgs (pcgs, G); That cannot be true, as pcgs is the family pcgs
+  G:=MakeGroupyObj(fam, IsSolvableGroup and IsFinite,
+        AsList(gens),id,
+        FamilyPcgs,pcgs,HomePcgs,pcgs,GeneralizedPcgs,pcgs);
 
   return G;
 end );
@@ -384,19 +377,9 @@ local G,fam,typ,pcgs;
   pcgs:=DefiningPcgs(ElementsFamily(fam));
 
   # pc groups are always finite and gens is finite.
-  typ:=MakeGroupyType(fam,
-        IsGroup and IsAttributeStoringRep and IsSolvableGroup
-          and HasIsEmpty and HasGeneratorsOfMagmaWithInverses and HasOne
-          and IsFinite and IsFinitelyGeneratedGroup
-          and HasFamilyPcgs and HasHomePcgs and HasGeneralizedPcgs,
-        gens,id,true);
-
-  G:=rec();
-  ObjectifyWithAttributes(G,typ,GeneratorsOfMagmaWithInverses,AsList(gens),
-                        One,id,
-                        FamilyPcgs,pcgs,HomePcgs,pcgs,GeneralizedPcgs,pcgs);
-
-  #SetGroupOfPcgs (pcgs, G);
+  G:=MakeGroupyObj(fam, IsSolvableGroup and IsFinite,
+        AsList(gens),id,
+        FamilyPcgs,pcgs,HomePcgs,pcgs,GeneralizedPcgs,pcgs);
 
   return G;
 end );
@@ -411,22 +394,13 @@ function( empty, id )
 local G,fam,typ,pcgs;
 
   fam:= CollectionsFamily( FamilyObj( id ) );
-
-  # pc groups are always finite and gens is finite.
-  typ:=IsGroup and IsAttributeStoringRep 
-        and HasGeneratorsOfMagmaWithInverses and HasOne and IsTrivial
-        and HasFamilyPcgs and HasHomePcgs and HasGeneralizedPcgs;
-  typ:=NewType(fam,typ);
-
   pcgs:=DefiningPcgs(ElementsFamily(fam));
 
-  G:= rec();
-  ObjectifyWithAttributes( G, typ,
-                          GeneratorsOfMagmaWithInverses, empty,
-                          One, id,
-                          FamilyPcgs,pcgs,HomePcgs,pcgs,GeneralizedPcgs,pcgs);
+  # pc groups are always finite and gens is finite.
+  G:=MakeGroupyObj(fam, IsSolvableGroup and IsFinite,
+        empty,id,
+        FamilyPcgs,pcgs,HomePcgs,pcgs,GeneralizedPcgs,pcgs);
 
-  #SetGroupOfPcgs (pcgs, G);
   return G;
 end );
 
