@@ -1346,9 +1346,9 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> List( Irr( S4 ), CentreOfCharacter );
-##  [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()),
-##    Group([ (1,2)(3,4), (1,4)(2,3) ]), Group(()), Group([ (), (1,2), (1,
-##     2)(3,4), (1,2,3), (1,2,3,4) ]) ]
+##  [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()), 
+##    Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()), 
+##    Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1507,7 +1507,7 @@ DeclareOperation( "InertiaSubgroup",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> List( Irr( S4 ), KernelOfCharacter );
-##  [ Alt( [ 1 .. 4 ] ), Group(()), Group([ (1,2)(3,4), (1,4)(2,3) ]),
+##  [ Alt( [ 1 .. 4 ] ), Group(()), Group([ (1,2)(3,4), (1,3)(2,4) ]),
 ##    Group(()), Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
