@@ -29,6 +29,7 @@ COLORS=yes
 STRICT=no       # exit with non-zero exit code when encountering any failures
 PARALLEL=no
 PACKAGES=()
+NCORE=$(sudo dmidecode -t 4 | grep 'Core Enabled:' | awk '{a+=$NF}END{print a}')
 
 # If output does not go into a terminal (but rather into a log file),
 # turn off colors.
@@ -83,7 +84,7 @@ if [ "x$PARALLEL" = "xyes" ] && [ "x$STRICT" = "xyes" ]; then
 fi
 
 if [ "x$PARALLEL" = "xyes" ]; then
-  export MAKEFLAGS="${MAKEFLAGS:--j3}"
+  export MAKEFLAGS="${MAKEFLAGS:--j$NCORE}"
 fi;
 
 # If user specified no packages to build, build all packages in subdirectories.
@@ -321,7 +322,7 @@ do
   if [ "x$PARALLEL" = "xyes" ]; then
     # If more than 4 background jobs are running, wait for one to finish (if
     # <wait -n> is available) or for all to finish (if only <wait> is available)
-    if [[ $(jobs -r -p | wc -l) -gt 4 ]]; then
+    if [[ $(jobs -r -p | wc -l) -gt $((NCORE +1)) ]]; then
         wait -n 2>&1 >/dev/null || wait
     fi
   else
