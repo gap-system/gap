@@ -42,7 +42,8 @@ true
 # test intersecting cosets
 gap> Intersection(RightCoset(Group([ (1,2,3,4,5,6,7), (5,6,7) ]),(3,6)(4,7)),
 >                 RightCoset(Group([ (1,2,3,4,5,6,8), (1,3,2,6,4,5), (1,6)(2,3)(4,5)(7,8) ]),(1,7,6,8,3,5)));
-RightCoset(Group([ (2,6,7)(3,5,4), (1,2,4)(3,6,5) ]),(1,3,7,5)(4,6))
+RightCoset(Group([ (2,6,7)(3,5,4), (1,2,4)(3,6,5) ]),(1,3,7,5)(\
+4,6))
 gap> Intersection(RightCoset(Group([ (1,4)(2,5), (1,3,5)(2,4,6), (1,5)(2,4)(3,6) ]),(1,7,6,5)(3,4,8)),
 >                 RightCoset(Group([ (3,4), (5,6,7,8), (5,6) ]),(1,8,6,2)(3,7)));
 RightCoset(Group(()),(1,8,3,4,7,6,5,2))
