@@ -3131,20 +3131,13 @@ end );
 #end
 #M  TriangulizeMat( <mat> ) . . . . . bring a matrix in upper triangular form
 ##
-InstallMethod( TriangulizeMat,
-    "generic method for mutable matrices",
-    [ IsMatrix and IsMutable ],
-    function ( mat )
-    local m, n, i, j, k, row, zero, x, row2;
+
+TRIANGULIZE_MAT_GENERIC:=function ( mat, m, n, zero )
+local i, j, k, row, x, row2;
 
     Info( InfoMatrix, 1, "TriangulizeMat called" );
 
-    if not IsEmpty( mat ) then
-
-       # get the size of the matrix
-       m := NrRows(mat);
-       n := NrCols(mat);
-       zero := ZeroOfBaseDomain( mat );
+    if m>0 then
 
        # make sure that the rows are mutable
        for i in [ 1 .. m ] do
@@ -3201,79 +3194,34 @@ InstallMethod( TriangulizeMat,
     fi;
 
     Info( InfoMatrix, 1, "TriangulizeMat returns" );
-end );
+end;
+
+InstallMethod( TriangulizeMat,
+    "generic method for mutable matrices",
+    [ IsMatrix and IsMutable ],
+function(mat)
+  TRIANGULIZE_MAT_GENERIC(mat,NrRows(mat),NrCols(mat),
+    ZeroOfBaseDomain(mat));
+end);
 
 InstallOtherMethod( TriangulizeMat,
     "generic method for mutable matrix obj",
     [ IsMatrixObj and IsMutable ],
-    function ( mat )
-    local m, n, i, j, k, row, zero, x, row2;
+function(mat)
+  TRIANGULIZE_MAT_GENERIC(mat,NrRows(mat),NrCols(mat),
+    ZeroOfBaseDomain(mat));
+end);
 
-    Info( InfoMatrix, 1, "TriangulizeMat called" );
+InstallOtherMethod( TriangulizeMat,
+    "list of mutable vectors",
+    [ IsList and IsMutable ],
+function(mat)
+  if Length(mat)=0 or not ForAll(mat,x->IsRowVector(x) or IsVectorObj(x))
+    then TryNextMethod();fi;
+  TRIANGULIZE_MAT_GENERIC(mat,Length(mat),Length(mat[1]),
+    ZeroOfBaseDomain(mat[1]));
+end);
 
-    m := NrRows(mat);
-    if m>0 then
-
-       # get the size of the matrix
-       n := NrCols(mat);
-       zero := ZeroOfBaseDomain( mat );
-
-       # make sure that the rows are mutable
-       for i in [ 1 .. m ] do
-         if not IsMutable( mat[i] ) then
-           mat[i]:= ShallowCopy( mat[i] );
-         fi;
-       od;
-
-       # run through all columns of the matrix
-       i := 0;
-       for k  in [1..n]  do
-
-           # find a nonzero entry in this column
-           j := i + 1;
-           while j <= m and mat[j,k] = zero  do j := j + 1;  od;
-
-           # if there is a nonzero entry
-           if j <= m  then
-
-               # increment the rank
-               Info( InfoMatrix, 2, "  nonzero columns: ", k );
-               i := i + 1;
-
-               # make its row the current row and normalize it
-               row    := mat[j];
-               mat[j] := mat[i];
-               x:= Inverse( row[k] );
-               if x = fail then
-                 TryNextMethod();
-               fi;
-               MultVector( row, x );
-               mat[i] := row;
-
-               # clear all entries in this column
-               for j  in [1..i-1] do
-                   row2 := mat[j];
-                   x := row2[k];
-                   if   x <> zero  then
-                       AddRowVector( row2, row, - x );
-                   fi;
-               od;
-               for j  in [i+1..m] do
-                   row2 := mat[j];
-                   x := row2[k];
-                   if   x <> zero  then
-                       AddRowVector( row2, row, - x );
-                   fi;
-               od;
-
-           fi;
-
-       od;
-
-    fi;
-
-    Info( InfoMatrix, 1, "TriangulizeMat returns" );
-end );
 
 
 InstallOtherMethod( TriangulizeMat,
