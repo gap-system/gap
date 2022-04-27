@@ -3106,7 +3106,7 @@ local filt;
   # some sanity checks
   Assert(0, not HasIsEmpty(obj) or (IsEmpty(obj) = (sz=0)));
   Assert(0, not HasIsTrivial(obj) or (IsTrivial(obj) = (sz=1)));
-  Assert(0, not HasIsFinite(obj) or (IsFinite(obj) = (sz<infinity)));
+  Assert(0, not HasIsFinite(obj) or (IsFinite(obj) = (sz<>infinity)));
 
   if sz=0 then filt:=IsEmpty;
   elif sz=1 then filt:=IsTrivial;
