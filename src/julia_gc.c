@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 #include <julia.h>
+#include <julia_threads.h>  // for jl_get_ptls_states
 #include <julia_gcext.h>
 
 /****************************************************************************
@@ -209,11 +210,12 @@ static UInt            startTime, totalTime;
 
 void SetJuliaTLS(void)
 {
-#if (JULIA_VERSION_MAJOR * 100 + JULIA_VERSION_MINOR) <= 106
+    // In Julia >= 1.7 we are supposed to use `jl_get_current_task()->ptls`
+    // instead of calling `jl_get_ptls_states`. But then we depend on the
+    // offset of the member `ptls` of struct `jl_task_t` not changing, so
+    // calling jl_get_ptls_states() is safer.
     JuliaTLS = jl_get_ptls_states();
-#else
-    JuliaTLS = jl_get_current_task()->ptls;
-#endif
+//    JuliaTLS = jl_get_current_task()->ptls;
 }
 
 #if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
@@ -785,7 +787,7 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 // create Julia types for use in our allocations. The types will be stored
 // in the given 'module', and the MPtr type will be a subtype of 'parent'.
 //
-// If 'module' is NULL then a new module 'ForeignGAP' is created & exported.
+// If 'module' is NULL then 'jl_main_module' is used.
 // If 'parent' is NULL then 'jl_any_type' is used.
 void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
                                   jl_datatype_t * parent)
@@ -819,13 +821,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     // jl_gc_enable(0); /// DEBUGGING
 
     if (module == 0) {
-        jl_sym_t * sym = jl_symbol("ForeignGAP");
-        module = jl_new_module(sym);
-        module->parent = jl_main_module;
-        // make the module available in the Main module (this also ensures
-        // that it won't be GC'ed prematurely, and hence also our datatypes
-        // won't be GCed)
-        jl_set_const(jl_main_module, sym, (jl_value_t *)module);
+        module = jl_main_module;
     }
 
     if (parent == 0) {
