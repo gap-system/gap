@@ -301,13 +301,18 @@ InstallMethod( Matrix,
 # in and causes an error when testing
 # line 318 of semigroups-3.4.0/gap/elements/semiringmat.gi
 20,
-    function( R, list )
+function( R, list )
+local l;
     if Length(list) = 0 then
-      Error( "list must be not empty" );
+      TryNextMethod();
+    fi;
+    l:=Length(list[1]);
+    if ForAny([2..Length(list)],x->Length(list[x])<>l) then
+      TryNextMethod();
     fi;
     return NewMatrix( DefaultMatrixRepForBaseDomain( R ),
-                      R, Length( list[1] ), list );
-    end );
+                      R, l, list );
+end );
 
 InstallMethod( Matrix,
     [ IsSemiring, IsMatrixObj ],
