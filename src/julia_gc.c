@@ -207,6 +207,9 @@ static int             FullGC;
 static UInt            startTime, totalTime;
 
 
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
+JL_DLLEXPORT void *jl_get_ptls_states(void);
+#endif
 
 void SetJuliaTLS(void)
 {
