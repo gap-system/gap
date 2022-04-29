@@ -611,7 +611,7 @@ void GAP_LeaveStack_(void)
 
 void GAP_EnterDebugMessage_(char * message, char * file, int line)
 {
-    fprintf(stderr, "%s: %d; %s:%d\n", message, EnterStackCount, file, line);
+    fprintf(stderr, "%s: %d; %s:%d\n", message, (int)EnterStackCount, file, line);
 }
 
 int GAP_Error_Prejmp_(const char * file, int line)
