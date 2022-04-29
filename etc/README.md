@@ -19,6 +19,5 @@ The following are tools for people working on the GAP code base itself
 
 - `log2html.g`: Utility to convert GAP log files to XHTML 1.0 Strict.
 - `gaplog.css`: used by `log2html.g`
-- `emacs`: used to contain GAP integration for emacs
 - `vim`: GAP integration for vim
 - `xrmtcmd.c`: for use by the GAP help system on X-Window, to control `xdvi`
