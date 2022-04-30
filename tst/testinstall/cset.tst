@@ -39,7 +39,7 @@ false
 gap> IsRightCoset(RightCoset(MathieuGroup(12), (1,2,3)));
 true
 
-# test intersecting cosets
+# test intersecting permutation cosets
 gap> RightCoset(Group([ (), (2,7,6)(3,4,5), (1,2,7,5,6,4,3) ]),(1,3,7,5)(4,6)) =
 >    Intersection(RightCoset(Group([ (1,2,3,4,5,6,7), (5,6,7) ]),(3,6)(4,7)),
 >                 RightCoset(Group([ (1,2,3,4,5,6,8), (1,3,2,6,4,5), (1,6)(2,3)(4,5)(7,8) ]),(1,7,6,8,3,5)));
@@ -48,6 +48,21 @@ gap> RightCoset(Group(()),(1,8,3,4,7,6,5,2)) =
 >    Intersection(RightCoset(Group([ (1,4)(2,5), (1,3,5)(2,4,6), (1,5)(2,4)(3,6) ]),(1,7,6,5)(3,4,8)),
 >                 RightCoset(Group([ (3,4), (5,6,7,8), (5,6) ]),(1,8,6,2)(3,7)));
 true
+gap> [] = Intersection(RightCoset(SymmetricGroup(4), ()), RightCoset(SymmetricGroup([3..6]), (4,7)));
+true
+gap> [] = Intersection(RightCoset(Group([(1,2,3,4,5)]),(4,5)), RightCoset(AlternatingGroup(4),()));
+true
+gap> RightCoset(SymmetricGroup(5), (7,9)) =
+>    Intersection(RightCoset(SymmetricGroup(5), (1,2)(7,9)),
+>                 RightCoset(SymmetricGroup([3..7]), (7,9)));
+true
+gap> [] = Intersection(RightCoset(Group([(1,2,3,4,5)]),(1,4)(3,5)), RightCoset(SymmetricGroup(3),()));
+true
+gap> RightCoset(Group([(5,6)]),(4,5)) =
+>    Intersection(RightCoset(SymmetricGroup(6), ()),
+>                 RightCoset(SymmetricGroup([5..8]), (4,5)));
+true
+
 
 # test trivial cases
 gap> Intersection(RightCoset(Group([],()), ()), RightCoset(Group([],()), (1,2))) = [];
