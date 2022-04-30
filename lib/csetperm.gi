@@ -554,10 +554,20 @@ end);
 InstallMethod(Intersection2, "perm cosets", IsIdenticalObj,
   [IsRightCoset and IsPermCollection,IsRightCoset and IsPermCollection],0,
 function(cos1,cos2)
-    local H1, H2, x1, x2, shift, sigma, listMoved_H1, listMoved_H2, listMoved_H12, listMoved_sigma, grpInt, set2, set1, eRepr, set2_img, set1_img, H1_sigma, H2_sigma, test, H12, swap, eCos, rho, cosTest, diff12, diff21, fset1, fset2;
+    local H1, H2, x1, x2, shift, sigma, listMoved_H1, listMoved_H2,
+          listMoved_H12, listMoved_sigma, grpInt, set2, set1, eRepr,
+          set2_img, set1_img, H1_sigma, H2_sigma, test, H12, swap,
+          eCos, rho, cosTest, diff12, diff21, fset1, fset2;
     # We set cosInt = cos1 cap cos2 = H1 x1 cap H2 x2
     H1:=ActingDomain(cos1);
     H2:=ActingDomain(cos2);
+    if H1=H2 then
+        if cos1=cos2 then
+            return cos1;
+        else
+            return [];
+        fi;
+    fi;
     x1:=Representative(cos1);
     x2:=Representative(cos2);
     # We are using that

@@ -64,6 +64,13 @@ gap> RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]) =
 >    Intersection(RightCoset(Group([ [ [ -1, 0 ], [ 0, 1 ] ], [ [ 0, 1 ], [ 1, 0 ] ] ]), IdentityMat(2)),
 >                 RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]));
 true
+gap> RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]) =
+>    Intersection(RightCoset(Group([-IdentityMat(2)]),[[0,-1],[-1,0]]) =
+>                 RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]));
+true
+gap> [] = Intersection(RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]) =
+>                      RightCoset(Group([-IdentityMat(2)]),[[2,1],[1,2]]));
+true
 gap> matcyc := CyclicGroup(IsMatrixGroup, GF(3), 2);;
 gap> [] = Intersection(RightCoset(matcyc, [[0*Z(3), Z(3)], [Z(3), Z(3)^0]]),
 >                      RightCoset(matcyc, [[Z(3), Z(3)], [Z(3), 0*Z(3)]] ) );
