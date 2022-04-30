@@ -554,8 +554,8 @@ end);
 InstallMethod(Intersection2, "perm cosets", IsIdenticalObj,
   [IsRightCoset and IsPermCollection,IsRightCoset and IsPermCollection],0,
 function(cos1,cos2)
-    local H1, H2, x1, x2, shift, sigma, listMoved_H1, listMoved_H2, listMoved_H12, listMoved_sigma, theInt, set2, set1, eRepr, set2_img, set1_img, H1_sigma, H2_sigma, test, H12, swap, eCos, rho, cosTest, diff12, diff21, fset1, fset2;
-    # We set int = cos1 cap cos2 = H1 x1 cap H2 x2
+    local H1, H2, x1, x2, shift, sigma, listMoved_H1, listMoved_H2, listMoved_H12, listMoved_sigma, grpInt, set2, set1, eRepr, set2_img, set1_img, H1_sigma, H2_sigma, test, H12, swap, eCos, rho, cosTest, diff12, diff21, fset1, fset2;
+    # We set cosInt = cos1 cap cos2 = H1 x1 cap H2 x2
     H1:=ActingDomain(cos1);
     H2:=ActingDomain(cos2);
     x1:=Representative(cos1);
@@ -571,7 +571,7 @@ function(cos1,cos2)
         return [];
     fi;
     # We pass it, now getting into the hard computation
-    theInt:=Intersection(H1, H2);
+    grpInt:=Intersection(H1, H2);
     # Reducing as much as possible in advance
     while true do
         listMoved_H1:=MovedPoints(H1);
@@ -598,10 +598,10 @@ function(cos1,cos2)
         fi;
         set1:=Intersection(diff12, listMoved_sigma);
         if Length(set1) > 0 then
-            # int = (H1 \cap H2 sigma) shift
-            #     = (H1 sigma^{-1} \cap H2) sigma shift
-            #     = (stab(H1) repr sigma^{-1} \cap H2) sigma shift
-            #     = (stab(H1) \cap H2 sigma repr^{-1} )    repr shift
+            # cosInt = (H1 \cap H2 sigma) shift
+            #        = (H1 sigma^{-1} \cap H2) sigma shift
+            #        = (stab(H1) repr sigma^{-1} \cap H2) sigma shift
+            #        = (stab(H1) \cap H2 sigma repr^{-1} )    repr shift
             set1_img:=OnTuples(set1, sigma);
             eRepr:=RepresentativeAction(H1, set1, set1_img, OnTuples);
             if eRepr=fail then
@@ -614,12 +614,12 @@ function(cos1,cos2)
         fi;
         # easy termination criterion
         if sigma in H2 then
-            return RightCoset(theInt, shift);
+            return RightCoset(grpInt, shift);
         fi;
         if sigma in H1 then
-            # int = (H1 \cap H2 sigma) shift
-            #     = (H1 sigma^{-1} \cap H2) sigma shift
-            return RightCoset(theInt, sigma * shift);
+            # cosInt = (H1 \cap H2 sigma) shift
+            #        = (H1 sigma^{-1} \cap H2) sigma shift
+            return RightCoset(grpInt, sigma * shift);
         fi;
         # reduction on sets which is easy
         fset1:=Difference(listMoved_H1, Union(listMoved_H2, listMoved_sigma));
@@ -658,26 +658,26 @@ function(cos1,cos2)
     # it here in order to avoid errors:
     # --- The naive algorithm for computing H1 \cap H2 sigma is to iterate
     # over elements of H1 and testing if one belongs to H2 sigma. If we find
-    # one such z then the result is the coset RightCoset(theInt, z). If not
+    # one such z then the result is the coset RightCoset(grpInt, z). If not
     # then it is empty.
-    # --- Since the result is independent of the cosets theInt, what we can
-    # do is iterate over the RightCosets(H1, theInt). The algorithm is the
+    # --- Since the result is independent of the cosets grpInt, what we can
+    # do is iterate over the RightCosets(H1, grpInt). The algorithm is the
     # one of Proposition 3.2
-    # for r in RightCosets(H1, theInt) do
+    # for r in RightCosets(H1, grpInt) do
     #   if r in H1*sigma then
-    #     return RightCoset(theInt, r * shift)
+    #     return RightCoset(grpInt, r * shift)
     #   fi;
     # od;
     # --- (TODO for future work): The question is how to make it faster.
-    # One idea is to use an ascending chain between theInt and H1.
+    # One idea is to use an ascending chain between grpInt and H1.
     # Section 3.4 of above paper gives statement related to that but not a
     # useful algorithm. The question deserves further exploration.
     #
     # We select the smallest group for that computation in order to have
     # as few cosets as possible
     if Order(H2) < Order(H1) then
-        # int = (H1 \cap H2 sigma) shift
-        #     = (H1 sigma^{-1} \cap H2) sigma shift
+        # cosInt = (H1 \cap H2 sigma) shift
+        #        = (H1 sigma^{-1} \cap H2) sigma shift
         swap:=H1;
         H1:=H2;
         H2:=swap;
@@ -686,9 +686,9 @@ function(cos1,cos2)
     fi;
     # So now Order(H1) <= Order(H2)
     cosTest:=RightCoset(H2, sigma);
-    for rho in RightTransversal(H1, theInt) do
+    for rho in RightTransversal(H1, grpInt) do
         if rho in cosTest then
-            return RightCoset(theInt, rho * shift);
+            return RightCoset(grpInt, rho * shift);
         fi;
     od;
     return [];
