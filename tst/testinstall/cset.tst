@@ -48,9 +48,31 @@ gap> RightCoset(Group(()),(1,8,3,4,7,6,5,2)) =
 >    Intersection(RightCoset(Group([ (1,4)(2,5), (1,3,5)(2,4,6), (1,5)(2,4)(3,6) ]),(1,7,6,5)(3,4,8)),
 >                 RightCoset(Group([ (3,4), (5,6,7,8), (5,6) ]),(1,8,6,2)(3,7)));
 true
+
+# test intersection non-permutation cosets
 gap> RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]) =
 >    Intersection(RightCoset(Group([ [ [ -1, 0 ], [ 0, 1 ] ], [ [ 0, 1 ], [ 1, 0 ] ] ]), IdentityMat(2)),
 >                 RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]));
+true
+gap> matcyc := CyclicGroup(IsMatrixGroup, GF(3), 2);;
+gap> [] = Intersection(RightCoset(matcyc, [[0*Z(3), Z(3)], [Z(3), Z(3)^0]]),
+>                      RightCoset(matcyc, [[Z(3), Z(3)], [Z(3), 0*Z(3)]] ) );
+true
+gap> RightCoset(matcyc, [[0*Z(3), Z(3)], [Z(3), Z(3)^0]]) =
+>      Intersection(RightCoset(matcyc, [[0*Z(3), Z(3)], [Z(3), Z(3)^0]]),
+>                   RightCoset(matcyc, [[Z(3), Z(3)^0], [0*Z(3), Z(3)]] ) );
+true
+gap> rc1 := RightCoset(Group( [[0*Z(3), Z(3)], [Z(3), 0*Z(3)]], [[Z(3), Z(3)], [Z(3)^0, 0*Z(3)]],
+>   [[Z(3), 0*Z(3)], [0*Z(3), Z(3)]] ), [[Z(3), Z(3)^0], [Z(3)^0, Z(3)^0]]);;
+gap> rc2 := RightCoset(Group( [[Z(3), Z(3)], [0*Z(3), Z(3)^0]], [[0*Z(3), Z(3)], [Z(3)^0, 0*Z(3)]],
+>   [[Z(3), Z(3)], [Z(3), Z(3)^0]], [[Z(3), 0*Z(3)], [0*Z(3), Z(3)]]), [[0*Z(3), Z(3)], [Z(3)^0, Z(3)]]);;
+gap> RightCoset(Group( [[Z(3), Z(3)], [0*Z(3), Z(3)^0]], [[Z(3)^0, Z(3)^0], [0*Z(3), Z(3)]] ),[[0*Z(3), Z(3)^0], [Z(3), Z(3)^0]]) =
+>      Intersection(rc1, rc2);
+true
+gap> [] = Intersection(RightCoset(matcyc, One(matcyc)), rc1);
+true
+gap> RightCoset(Group( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ),
+> [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ]) = Intersection(RightCoset(matcyc, One(matcyc)), rc2);
 true
 
 #
