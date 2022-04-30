@@ -789,7 +789,7 @@ local a,r;
 end);
 
 
-InstallMethod(Intersection2, "general groups", IsIdenticalObj,
+InstallMethod(Intersection2, "general cosets", IsIdenticalObj,
               [IsRightCoset,IsRightCoset],
 function(cos1,cos2)
     local swap, H1, H2, x1, x2, sigma, U, rho;

@@ -49,6 +49,16 @@ gap> RightCoset(Group(()),(1,8,3,4,7,6,5,2)) =
 >                 RightCoset(Group([ (3,4), (5,6,7,8), (5,6) ]),(1,8,6,2)(3,7)));
 true
 
+# test trivial cases
+gap> Intersection(RightCoset(Group([],()), ()), RightCoset(Group([],()), (1,2))) = [];
+true
+gap> Intersection(RightCoset(Group((1,2,3)), ()), RightCoset(Group((1,2,3)), (1,2))) = [];
+true
+gap> Intersection(RightCoset(AlternatingGroup(6), ()), RightCoset(AlternatingGroup(6),(1,2))) = [];
+true
+gap> Intersection(RightCoset(AlternatingGroup([1..5]), (1,2)), RightCoset(AlternatingGroup([6..10]), (1,2))) = RightCoset(Group(()), (1,2));
+true
+
 # test intersection non-permutation cosets
 gap> RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]) =
 >    Intersection(RightCoset(Group([ [ [ -1, 0 ], [ 0, 1 ] ], [ [ 0, 1 ], [ 1, 0 ] ] ]), IdentityMat(2)),
