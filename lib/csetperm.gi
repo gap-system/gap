@@ -575,15 +575,6 @@ function(cos1,cos2)
     # where shift and sigma are defined as below:
     shift:=x1;
     sigma:=x2 / x1;
-    # Initial very easy check
-    listMoved_H1:=MovedPoints(H1);
-    listMoved_H2:=MovedPoints(H2);
-    listMoved_H12:=Union(listMoved_H1, listMoved_H2);
-    listMoved_sigma:=MovedPoints(sigma);
-    if not IsSubset(listMoved_H12, listMoved_sigma) then
-        return [];
-    fi;
-    # We pass it, now getting into the hard computation
     # Reducing as much as possible in advance
     while true do
         listMoved_H1:=MovedPoints(H1);
