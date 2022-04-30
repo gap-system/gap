@@ -584,7 +584,6 @@ function(cos1,cos2)
         return [];
     fi;
     # We pass it, now getting into the hard computation
-    grpInt:=Intersection(H1, H2);
     # Reducing as much as possible in advance
     while true do
         listMoved_H1:=MovedPoints(H1);
@@ -627,11 +626,13 @@ function(cos1,cos2)
         fi;
         # easy termination criterion
         if sigma in H2 then
+            grpInt:=Intersection(H1, H2);
             return RightCoset(grpInt, shift);
         fi;
         if sigma in H1 then
             # cosInt = (H1 \cap H2 sigma) shift
             #        = (H1 sigma^{-1} \cap H2) sigma shift
+            grpInt:=Intersection(H1, H2);
             return RightCoset(grpInt, sigma * shift);
         fi;
         # reduction on sets which is easy
@@ -699,6 +700,7 @@ function(cos1,cos2)
     fi;
     # So now Order(H1) <= Order(H2)
     cosTest:=RightCoset(H2, sigma);
+    grpInt:=Intersection(H1, H2);
     for rho in RightTransversal(H1, grpInt) do
         if rho in cosTest then
             return RightCoset(grpInt, rho * shift);
