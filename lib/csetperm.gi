@@ -560,6 +560,9 @@ function(cos1,cos2)
     H2:=ActingDomain(cos2);
     x1:=Representative(cos1);
     x2:=Representative(cos2);
+    # We are using that
+    #    H1*x1 \cap H2*x2 = (H1 \cap H2*x2/x1)*x1 = (H1 \cap H2*sigma)*shift,
+    # where shift and sigma are defined as below:
     shift:=x1;
     sigma:=x2 / x1;
     # Initial very easy check
