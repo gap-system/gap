@@ -1987,6 +1987,9 @@ local  i, j, U, gens,o,v,a,sel,mintry,orb,orp,isok;
 
   gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
 
+  if Length(GeneratorsOfGroup(G))<=Length(AbelianInvariants(G))+2 then
+    return GeneratorsOfGroup(G);
+  fi;
   # try pc methods first. The solvability test should not exceed cost, nor
   # the number of points.
   if #Length(MovedPoints(G))<50000 and 
