@@ -249,6 +249,10 @@ DeclareGlobalFunction("ApproximateSuborbitsStabilizerPermGroup");
 ##  computes a list of representatives of all block systems for a
 ##  permutation group <A>G</A> acting transitively on the points moved by the
 ##  group.
+##  <P/>
+##  Each representative in the returned list is sorted and contains the
+##  smallest point moved by <A>G</A>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> AllBlocks(g);
 ##  [ [ 1, 8 ], [ 1, 2, 3, 8 ], [ 1, 4, 5, 8 ], [ 1, 6, 7, 8 ], [ 1, 3 ], 
