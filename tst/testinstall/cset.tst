@@ -52,7 +52,7 @@ gap> [] = Intersection(RightCoset(SymmetricGroup(4), ()), RightCoset(SymmetricGr
 true
 gap> [] = Intersection(RightCoset(Group([(1,2,3,4,5)]),(4,5)), RightCoset(AlternatingGroup(4),()));
 true
-gap> RightCoset(SymmetricGroup(5), (7,9)) =
+gap> RightCoset(SymmetricGroup([3..5]), (7,9)) =
 >    Intersection(RightCoset(SymmetricGroup(5), (1,2)(7,9)),
 >                 RightCoset(SymmetricGroup([3..7]), (7,9)));
 true
@@ -62,7 +62,6 @@ gap> RightCoset(Group([(5,6)]),(4,5)) =
 >    Intersection(RightCoset(SymmetricGroup(6), ()),
 >                 RightCoset(SymmetricGroup([5..8]), (4,5)));
 true
-
 
 # test trivial cases
 gap> Intersection(RightCoset(Group([],()), ()), RightCoset(Group([],()), (1,2))) = [];
@@ -80,10 +79,10 @@ gap> RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]) =
 >                 RightCoset(Group([ [ [ -1, 0 ], [ 0, -1 ] ] ]),[[0,1],[1,0]]));
 true
 gap> RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]) =
->    Intersection(RightCoset(Group([-IdentityMat(2)]),[[0,-1],[-1,0]]) =
+>    Intersection(RightCoset(Group([-IdentityMat(2)]),[[0,-1],[-1,0]]),
 >                 RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]));
 true
-gap> [] = Intersection(RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]) =
+gap> [] = Intersection(RightCoset(Group([-IdentityMat(2)]),[[0,1],[1,0]]),
 >                      RightCoset(Group([-IdentityMat(2)]),[[2,1],[1,2]]));
 true
 gap> matcyc := CyclicGroup(IsMatrixGroup, GF(3), 2);;
