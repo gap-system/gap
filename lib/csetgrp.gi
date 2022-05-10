@@ -793,6 +793,11 @@ InstallMethod(Intersection2, "general cosets", IsIdenticalObj,
               [IsRightCoset,IsRightCoset],
 function(cos1,cos2)
     local swap, H1, H2, x1, x2, sigma, U, rho;
+    if Size(cos1) < 10 then
+        TryNextMethod();
+    elif Size(cos2) < 10 then
+        return Intersection2(cos2, cos1);
+    fi;
     if Size(cos1) > Size(cos2) then
         swap := cos1;
         cos1 := cos2;
@@ -803,7 +808,7 @@ function(cos1,cos2)
     x1:=Representative(cos1);
     x2:=Representative(cos2);
     sigma := x1 / x2;
-    if H1 = H2 then
+    if Size(H1) = Size(H2) and H1 = H2 then
         if sigma in H1 then
             return cos1;
         else
