@@ -62,6 +62,26 @@ gap> RightCoset(Group([(5,6)]),(4,5)) =
 >    Intersection(RightCoset(SymmetricGroup(6), ()),
 >                 RightCoset(SymmetricGroup([5..8]), (4,5)));
 true
+gap> RightCoset(SymmetricGroup(5), (1,4,5)) =
+>    Intersection(RightCoset(SymmetricGroup(5), ()),
+>                 RightCoset(SymmetricGroup(5), (1,2)));
+true
+gap> [] =
+>    Intersection(RightCoset(Group((1,2,3,4,5)), (1,2)),
+>                 RightCoset(Group((1,2,3,5,4)), ()));
+true
+gap> [] =
+>    Intersection(RightCoset(Group((1,2,3,4,5)), (1,2,3)),
+>                 RightCoset(Group((1,2,3,5,4)), ()));
+true
+gap> RightCoset(Group([ (1,2,3,5,4) ]),(1,2)) =
+>    Intersection(RightCoset(SymmetricGroup(7), ()),
+>                 RightCoset(Group((1,2,3,5,4)), (1,2)));
+true
+gap> [] =
+>    Intersection(RightCoset(SymmetricGroup([3..7]), ()),
+>                 RightCoset(Group((1,2,3,5,4)), (1,2)));
+true
 
 # test trivial cases
 gap> Intersection(RightCoset(Group([],()), ()), RightCoset(Group([],()), (1,2))) = [];
