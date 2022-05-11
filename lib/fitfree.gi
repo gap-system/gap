@@ -78,7 +78,12 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
   # in radical?
   if ForAll(MappingGeneratorsImages(rest)[2],IsOne) then
     ker:=U;
-    k:=InducedPcgsByGeneratorsNC(ffs.pcgs,GeneratorsOfGroup(U));
+    # trivial radical
+    if Length(ffs.pcgs)=0 then
+      k:=[];
+    else
+      k:=InducedPcgsByGeneratorsNC(ffs.pcgs,GeneratorsOfGroup(U));
+    fi;
   elif Length(ffs.pcgs)=0 then
     # no radical
     ker:=TrivialSubgroup(G);
@@ -1410,7 +1415,8 @@ end);
 ## Fitting free approach
 ##
 InstallMethod( HallSubgroupOp, "fitting free",true,
-    [ IsGroup and CanComputeFittingFree,IsList ],0,
+    [ IsGroup and IsFinite and CanComputeFittingFree,IsList ],
+    OVERRIDENICE,
 function(G,pi)
 local l;
   if CanEasilyComputePcgs(G) then
@@ -1434,13 +1440,12 @@ end);
 ## Fitting free approach
 ##
 InstallMethod( SylowSubgroupOp, "fitting free",true,
-  [ IsGroup and CanComputeFittingFree,IsPosInt ],
-  -1, # deliberate lower ranking to amke sure this method only runs in cases
-  # in which no more specialized method is installed. Once the method has
-  # been used more broadly, and performance is better understood, this can
-  # be changed to 0
+  [ IsGroup and IsFinite and CanComputeFittingFree,IsPosInt ],
+  OVERRIDENICE,
 function(G,pi)
 local l;
+  if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
+
   if Set(Factors(Size(G)))=[pi] then 
     SetIsPGroup(G,true);
     SetPrimePGroup(G, pi);
