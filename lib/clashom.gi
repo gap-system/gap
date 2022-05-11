@@ -2362,11 +2362,23 @@ local r,	#radical
   # factor out the radical first. (Note: The radical method for perm groups
   # stores the nat hom.!)
   ser:=FittingFreeLiftSetup(G);
-  radsize:=Product(RelativeOrders(ser.pcgs));
+  if Length(ser.pcgs)>0 then
+    radsize:=Product(RelativeOrders(ser.pcgs));
+  else
+    radsize:=1;
+  fi;
   len:=Length(ser.pcgs);
 
   if radsize=1 then
-    cl:=ConjugacyClassesFittingFreeGroup(G:onlysizes:=false);
+    hom:=ser.factorhom;
+    if IsPermGroup(Range(hom)) and not IsPermGroup(Source(hom)) then
+      f:=Image(hom,G);
+      cl:=ConjugacyClassesFittingFreeGroup(f:onlysizes:=false);
+      cl:=List(cl,x->[PreImagesRepresentative(hom,x[1]),
+        PreImage(hom,x[2])]);
+    else
+      cl:=ConjugacyClassesFittingFreeGroup(G:onlysizes:=false);
+    fi;
     ncl:=[];
     for i in cl do
       r:=ConjugacyClass(G,i[1],i[2]);
@@ -2818,7 +2830,11 @@ local r,	#radical
   # factor out the radical first. (Note: The radical method for perm groups
   # stores the nat hom.!)
   ser:=FittingFreeLiftSetup(G);
-  radsize:=Product(RelativeOrders(ser.pcgs));
+  if Length(ser.pcgs)>0 then
+    radsize:=Product(RelativeOrders(ser.pcgs));
+  else
+    radsize:=1;
+  fi;
   len:=Length(ser.pcgs);
 
   pcgs:=ser.pcgs;
@@ -2843,19 +2859,22 @@ local r,	#radical
     if radsize>1 then
       hom:=ser.factorhom;
       ntrihom:=true;
-      f:=Image(hom);
       # we need centralizers
       #fants:=Filtered(NormalSubgroups(f),x->Size(x)>1 and Size(x)<Size(f));
     else
       if IsPermGroup(G) then
 	hom:=SmallerDegreePermutationRepresentation(G:cheap);
 	ntrihom:=not IsOne(hom);;
+      elif IsPermGroup(Range(ser.factorhom))
+        and not IsPermGroup(Source(ser.factorhom)) then
+	ntrihom:=false;
+        hom:=ser.factorhom;
       else
         hom:=IdentityMapping(G);
 	ntrihom:=false;
       fi;
-      f:=Image(hom);
     fi;
+    f:=Image(hom,G);
     if not IsBound(f!.someClassReps) then
       f!.someClassReps:=[ConjugacyClass(f,One(f))]; # identity first
     fi;
@@ -2926,6 +2945,7 @@ local r,	#radical
       fi;
 
       r:=PreImagesRepresentative(hom,conj);
+
       d:=GeneratorsOfGroup(Centralizer(cl[j]));
       # Format for cl is:
       # 1:Element, 2: Conjugate element, 3: Element that will be canonical
@@ -2998,7 +3018,7 @@ InstallMethod( CentralizerOp, "TF method:elm",IsCollsElms,
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
   IsMultiplicativeElementWithInverse ], OVERRIDENICE,
 function( G, e )
-local ffs,c;
+local ffs,c,ind;
   if IsPcGroup(G) 
     or (IsPermGroup(G) and AttemptPermRadicalMethod(G,"CENT")<>true)
     or not e in G then 
@@ -3007,8 +3027,12 @@ local ffs,c;
   ffs:=FittingFreeLiftSetup(G);
   c:=TFCanonicalClassRepresentative(G,[e]:useradical:=false)[1];
   if c=fail then TryNextMethod();fi;
-  c:=SubgroupByFittingFreeData(G,c[6],c[7],
-    InducedPcgsByGenerators(ffs.pcgs,c[5]))^Inverse(c[4]);
+  if Length(ffs.pcgs)>0 then
+    ind:=InducedPcgsByGenerators(ffs.pcgs,c[5]);
+  else
+    ind:=[];
+  fi;
+  c:=SubgroupByFittingFreeData(G,c[6],c[7],ind)^Inverse(c[4]);
   Assert(2,ForAll(GeneratorsOfGroup(c),x->IsOne(Comm(x,e))));
   return c;
 end );
