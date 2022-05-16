@@ -535,16 +535,18 @@ end );
 ##  <Func Name="CrcFile" Arg='filename'/>
 ##
 ##  <Description>
-##  CRC (cyclic redundancy check) numbers provide a certain method of doing
-##  checksums. They are used by &GAP; to check whether
-##  files have changed.
+##  <Index>hash function</Index>
+##  <Index>checksum</Index>
+##  This function computes a CRC (cyclic redundancy check) number for the
+##  content of the file <A>filename</A>.
 ##  <P/>
-##  <Ref Func="CrcFile"/> computes a checksum value for the file with
-##  filename <A>filename</A> and returns this value as an integer.
-##  The function returns <K>fail</K> if a system error occurred,
+##  <Ref Func="CrcFile"/> computes a CRC (cyclic redundancy check) checksum
+##  value for the file with filename <A>filename</A> and returns this value
+##  as an integer. The function returns <K>fail</K> if an error occurred,
 ##  for example, if <A>filename</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.
+##  See also <Ref Func="CrcFile"/> and <Ref Func="HexSHA256"/>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> CrcFile( "lib/morpheus.gi" );
@@ -774,3 +776,33 @@ BIND_GLOBAL("CHARS_LALPHA",
   Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
 BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
   " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
+
+
+##  <#GAPDoc Label="HexSHA256">
+##  <ManSection>
+##  <Func Name="HexSHA256" Arg='string'/>
+##  <Func Name="HexSHA256" Arg='stream'/>
+##
+##  <Description>
+##  <Index>hash function</Index>
+##  <Index>checksum</Index>
+##  Return the SHA-256 cryptographic checksum of the bytes in <A>string</A>,
+##  resp. of the data in the input stream object <A>stream</A>
+##  (see Chapter&nbsp;<Ref Chap="Streams"/> to learn about streams)
+##  when read from the current position until EOF (end-of-file).
+##  <P/>
+##  The checksum is returned as string with 64 lowercase hexadecimal digits.
+##  <Example><![CDATA[
+##  gap> HexSHA256("abcd");
+##  "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589"
+##  gap> HexSHA256(InputTextString("abcd"));
+##  "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589"
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("HexSHA256");
+
+BIND_GLOBAL("GAP_SHA256_State_Type",
+           NewType(NewFamily("GAP_SHA256_State_Family"), IsObject) );
