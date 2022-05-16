@@ -83,6 +83,7 @@ SOURCES += src/records.c
 SOURCES += src/saveload.c
 SOURCES += src/scanner.c
 SOURCES += src/sctable.c
+SOURCES += src/sha256.c
 SOURCES += src/set.c
 SOURCES += src/stats.c
 SOURCES += src/streams.c

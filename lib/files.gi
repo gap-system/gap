@@ -402,3 +402,25 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
     end;
     return Dowork(dirname);
   end );
+
+InstallGlobalFunction( HexSHA256,
+function(str)
+    local s, res;
+
+    if IsString(str) then
+        str := CopyToStringRep(str);
+    elif IsInputStream(str) then
+        str := ReadAll(str);
+        # TODO: instead o reading the complete stream at once (which might be
+        # huge), it would be better to read it in chunks, say 16kb at a time.
+        # Alas, our streams API currently offers no way to do that.
+    else
+        ErrorNoReturn("<str> has to be a string or an input stream");
+    fi;
+
+    s := GAP_SHA256_INIT();
+    GAP_SHA256_UPDATE(s, str);
+    res := GAP_SHA256_FINAL(s);
+    res := Sum([0..7], i -> res[8-i]*2^(32*i));;
+    return LowercaseString(HexStringInt(res));
+end);

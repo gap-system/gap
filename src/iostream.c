@@ -916,7 +916,6 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-
 static Int InitLibrary(StructInitInfo * module)
 {
     /* init filters and functions                                          */

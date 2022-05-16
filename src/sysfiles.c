@@ -299,8 +299,10 @@ Int4 SyGAPCRC( const Char * name )
 <Returns>an integer</Returns>
 
 <Description>
-This function computes a cyclic redundancy check number from a string
-<A>str</A>. See also <Ref Func="CrcFile"/>.
+<Index>hash function</Index>
+<Index>checksum</Index>
+This function computes a CRC (cyclic redundancy check) number from a string
+<A>str</A>. See also <Ref Func="CrcFile"/> and <Ref Func="HexSHA256"/>.
 <Example>
 gap> CrcString("GAP example string");
 -50451670

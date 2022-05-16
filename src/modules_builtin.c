@@ -21,6 +21,7 @@
 #include "objccoll.h"
 #include "objset.h"
 #include "profile.h"
+#include "sha256.h"
 #include "syntaxtree.h"
 #include "tracing.h"
 #include "vec8bit.h"
@@ -142,6 +143,9 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     // libgap API
     InitInfoLibGapApi,
 #endif
+
+    // SHA256
+    InitSHA256,
 
     0
 };
