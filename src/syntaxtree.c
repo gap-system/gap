@@ -616,7 +616,7 @@ static UInt SyntaxTreeCodeFunc_Internal(Obj node)
     if (variadic == True) {
         narg = -narg;
     }
-    CodeFuncExprBegin(narg, nloc, nams, 0);
+    CodeFuncExprBegin(narg, nloc, nams, 0, 0);
     Obj  stat_rec = ElmRecST(EXPR_FUNC, node, "stats");
     Obj  body_stats = ElmRecST(EXPR_FUNC, stat_rec, "statements");
     UInt nr_stats = LEN_LIST(body_stats);
@@ -631,7 +631,7 @@ static Expr SyntaxTreeCodeFunc(Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFunc", node);
     UInt nr_stats = SyntaxTreeCodeFunc_Internal(node);
-    Expr funcexpr = CodeFuncExprEnd(nr_stats, 0);
+    Expr funcexpr = CodeFuncExprEnd(nr_stats, FALSE, 0);
     return funcexpr;
 }
 
@@ -640,7 +640,7 @@ static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
     RequirePlainRec(SELF_NAME, tree);
     CodeBegin();
     UInt nr_stats = SyntaxTreeCodeFunc_Internal(tree);
-    CodeFuncExprEnd(nr_stats, 0);
+    CodeFuncExprEnd(nr_stats, FALSE, 0);
     Obj func = CodeEnd(0);
     if (IsbPRec(tree, RNamName("name"))) {
         Obj name = ELM_REC(tree, RNamName("name"));

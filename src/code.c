@@ -795,6 +795,7 @@ void CodeFuncExprBegin (
     Int                 narg,
     Int                 nloc,
     Obj                 nams,
+    UInt                gapnameid,
     Int                 startLine)
 {
     Obj                 fexp;           /* function expression bag         */
@@ -820,7 +821,6 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    UInt gapnameid = GetInputFilenameID(GetCurrentInput());
     if (gapnameid)
         SET_GAPNAMEID_BODY(body, gapnameid);
     SET_STARTLINE_BODY(body, startLine);
@@ -839,7 +839,7 @@ void CodeFuncExprBegin (
     assert( stat1 == OFFSET_FIRST_STAT );
 }
 
-Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
+Expr CodeFuncExprEnd(UInt nr, BOOL pushExpr, Int endLine)
 {
     Expr                expr;           /* function expression, result     */
     Stat                stat1;          /* single statement of body        */
@@ -900,7 +900,7 @@ Expr CodeFuncExprEnd(UInt nr, UInt pushExpr)
 
     /* make the body smaller                                               */
     ResizeBag(BODY_FUNC(fexp), CS(OffsBody));
-    SET_ENDLINE_BODY(BODY_FUNC(fexp), GetInputLineNumber(GetCurrentInput()));
+    SET_ENDLINE_BODY(BODY_FUNC(fexp), endLine);
 
     /* switch back to the previous function                                */
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
