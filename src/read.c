@@ -1324,7 +1324,7 @@ static void ReadFuncExprBody(ReaderState * rs,
 
     // end interpreting the function expression
     TRY_IF_NO_ERROR {
-        IntrFuncExprEnd(&rs->intr, nr);
+        IntrFuncExprEnd(&rs->intr, nr, GetInputLineNumber(rs->s.input));
     }
 
     // pop the new local variables list
@@ -2558,7 +2558,7 @@ ExecStatus ReadEvalCommand(Obj            context,
 #endif
 
     AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"),
-            INTOBJ_INT(GetInputLineNumber(rs->s.input)));
+            INTOBJ_INT(GetInputLineNumber(input)));
 
     // remember the old execution state and start an execution environment
     Bag oldLVars =
@@ -2570,6 +2570,7 @@ ExecStatus ReadEvalCommand(Obj            context,
     STATE(ErrorLVars) = STATE(CurrLVars);
 
     IntrBegin(&rs->intr);
+    rs->intr.gapnameid = GetInputFilenameID(input);
 
     switch (rs->s.Symbol) {
     /* read an expression or an assignment or a procedure call             */
@@ -2684,6 +2685,7 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     Bag oldLVars = SWITCH_TO_BOTTOM_LVARS();
 
     IntrBegin(&rs->intr);
+    rs->intr.gapnameid = GetInputFilenameID(input);
 
     /* check for local variables                                           */
     nams = NEW_PLIST(T_PLIST, 0);
@@ -2695,7 +2697,7 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
 
     /* fake the 'function ()'                                              */
     IntrFuncExprBegin(&rs->intr, 0, nloc, nams,
-                      GetInputLineNumber(rs->s.input));
+                      GetInputLineNumber(input));
 
     /* read the statements                                                 */
     GAP_ASSERT(rs->LoopNesting == 0);
@@ -2710,7 +2712,7 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
 
     /* fake the 'end;'                                                     */
     TRY_IF_NO_ERROR {
-        IntrFuncExprEnd(&rs->intr, nr);
+        IntrFuncExprEnd(&rs->intr, nr, GetInputLineNumber(input));
     }
 
     /* end the interpreter                                                 */

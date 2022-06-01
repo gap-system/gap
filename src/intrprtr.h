@@ -49,6 +49,10 @@ struct IntrState {
     // profiling
     UInt startLine;
 
+    // The id of the file or stream from which the code being read originates
+    // from. Can be turned into a string object via `GetCachedFilename`.
+    UInt gapnameid;
+
     // 'StackObj' is the stack of values.
     Obj StackObj;
 };
@@ -152,7 +156,7 @@ void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr);
 void IntrFuncExprBegin(
     IntrState * intr, Int narg, Int nloc, Obj nams, Int startLine);
 
-void IntrFuncExprEnd(IntrState * intr, UInt nr);
+void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine);
 
 
 /****************************************************************************

@@ -1886,7 +1886,7 @@ static Obj FuncINPUT_FILENAME(Obj self)
     if (IO()->Input == 0)
         return MakeImmString("*defin*");
 
-    UInt gapnameid = GetInputFilenameID(GetCurrentInput());
+    UInt gapnameid = GetInputFilenameID(IO()->Input);
     return GetCachedFilename(gapnameid);
 }
 

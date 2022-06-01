@@ -60,7 +60,7 @@ static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 {
     if (!intr->coding) {
         InterpreterHook(
-            GetInputFilenameID(GetCurrentInput()), intr->startLine,
+            intr->gapnameid, intr->startLine,
             intr->returning != STATUS_END || (intr->ignoring > ignoreLevel));
     }
     intr->startLine = 0;
@@ -161,7 +161,7 @@ static Obj PopVoidObj(IntrState * intr)
 }
 
 
-static void StartFakeFuncExpr(IntrState * intr, Obj stackNams, Int startLine)
+static void StartFakeFuncExpr(IntrState * intr, Obj stackNams)
 {
     GAP_ASSERT(intr->coding == 0);
 
@@ -187,7 +187,7 @@ static void StartFakeFuncExpr(IntrState * intr, Obj stackNams, Int startLine)
         PushPlist(stackNams, nams);
     }
 
-    CodeFuncExprBegin(0, 0, nams, startLine);
+    CodeFuncExprBegin(0, 0, nams, intr->gapnameid, 0);
 }
 
 
@@ -196,7 +196,7 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding == 0);
 
     // code a function expression (with one statement in the body)
-    CodeFuncExprEnd(1, 1);
+    CodeFuncExprEnd(1, TRUE, 0);
 
     // switch back to immediate mode and get the function
     Obj func = CodeEnd(0);
@@ -450,10 +450,10 @@ void IntrFuncExprBegin(
     intr->coding++;
 
     /* code a function expression                                          */
-    CodeFuncExprBegin( narg, nloc, nams, startLine );
+    CodeFuncExprBegin( narg, nloc, nams, intr->gapnameid, startLine );
 }
 
-void IntrFuncExprEnd(IntrState * intr, UInt nr)
+void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
 {
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
@@ -463,7 +463,7 @@ void IntrFuncExprEnd(IntrState * intr, UInt nr)
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
-    CodeFuncExprEnd(nr, 1);
+    CodeFuncExprEnd(nr, TRUE, endLine);
 
     if (intr->coding == 0) {
         // switch back to immediate mode and get the function
@@ -676,7 +676,7 @@ void IntrForBegin(IntrState * intr, Obj stackNams)
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0)
-        StartFakeFuncExpr(intr, stackNams, 0);
+        StartFakeFuncExpr(intr, stackNams);
 
     intr->coding++;
 
@@ -767,7 +767,7 @@ void IntrWhileBegin(IntrState * intr, Obj stackNams)
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0)
-        StartFakeFuncExpr(intr, stackNams, 0);
+        StartFakeFuncExpr(intr, stackNams);
 
     intr->coding++;
 
@@ -878,8 +878,7 @@ void IntrAtomicBegin(IntrState * intr, Obj stackNams)
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0)
-        StartFakeFuncExpr(intr, stackNams,
-                          GetInputLineNumber(GetCurrentInput()));
+        StartFakeFuncExpr(intr, stackNams);
 
     intr->coding++;
 
@@ -958,8 +957,7 @@ void IntrRepeatBegin(IntrState * intr, Obj stackNams)
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0)
-        StartFakeFuncExpr(intr, stackNams,
-                          GetInputLineNumber(GetCurrentInput()));
+        StartFakeFuncExpr(intr, stackNams);
 
     intr->coding++;
 

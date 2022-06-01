@@ -884,8 +884,6 @@ static void StoreSymbolPosition(ScannerState * s)
 */
 static UInt NextSymbol(ScannerState * s)
 {
-    GAP_ASSERT(s->input == GetCurrentInput());
-
     // Record end of previous symbol's position
     StoreSymbolPosition(s);
 

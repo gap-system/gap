@@ -671,8 +671,10 @@ void CodeFuncCallEnd(UInt funccall, UInt options, UInt nr);
 
 /****************************************************************************
 **
-*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>,<startline>) . code function expression, begin
-*F  CodeFuncExprEnd(<nr>,<pushExpr>) . . . . .  code function expression, end
+*F  CodeFuncExprBegin(<narg>,<nloc>,<nams>,<gapnameid>,<startLine>)
+**                                        . . code function expression, begin
+*F  CodeFuncExprEnd(<nr>,<pushExpr>,<endLine>)
+**                                        . . . code function expression, end
 **
 **  'CodeFuncExprBegin'  is an action to code  a  function expression.  It is
 **  called when the reader encounters the beginning of a function expression.
@@ -685,9 +687,9 @@ void CodeFuncCallEnd(UInt funccall, UInt options, UInt nr);
 **  is the number of statements in the body of the function. If <pushExpr> is
 **  set, the current function expression is pushed on the expression stack.
 */
-void CodeFuncExprBegin(Int narg, Int nloc, Obj nams, Int startLine);
+void CodeFuncExprBegin(Int narg, Int nloc, Obj nams, UInt gapnameid, Int startLine);
 
-Expr CodeFuncExprEnd(UInt nr, UInt pushExpr);
+Expr CodeFuncExprEnd(UInt nr, BOOL pushExpr, Int endLine);
 
 /****************************************************************************
 **
