@@ -820,7 +820,9 @@ void CodeFuncExprBegin (
     CHANGED_BAG( fexp );
 
     /* record where we are reading from */
-    SET_GAPNAMEID_BODY(body, GetInputFilenameID(GetCurrentInput()));
+    UInt gapnameid = GetInputFilenameID(GetCurrentInput());
+    if (gapnameid)
+        SET_GAPNAMEID_BODY(body, gapnameid);
     SET_STARTLINE_BODY(body, startLine);
     CS(OffsBody) = sizeof(BodyHeader);
 

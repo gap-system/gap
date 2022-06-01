@@ -233,8 +233,7 @@ void SKIP_TO_END_OF_LINE(TypInputFile * input)
 
 Int GetInputLineNumber(TypInputFile * input)
 {
-    GAP_ASSERT(input);
-    return input->number;
+    return input ? input->number : 0;
 }
 
 const Char * GetInputLineBuffer(TypInputFile * input)
@@ -252,8 +251,7 @@ Int GetInputLinePosition(TypInputFile * input)
 
 UInt GetInputFilenameID(TypInputFile * input)
 {
-    GAP_ASSERT(input);
-    return input->gapnameid;
+    return input ? input->gapnameid : 0;
 }
 
 static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
