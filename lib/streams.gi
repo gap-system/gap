@@ -1311,19 +1311,20 @@ InstallGlobalFunction( InputFromUser,
 InstallGlobalFunction( OpenExternal, function(filename)
     local file;
     if ARCH_IS_MAC_OS_X() then
-      Exec(Concatenation("open \"",filename,"\""));
+      Exec2("open", filename);
     elif ARCH_IS_WINDOWS() then
-      Exec(Concatenation("cmd /c start \"",filename,"\""));
+      Exec2("cmd", "/c", "start", filename);
     elif ARCH_IS_WSL() then
       # If users pass a URL, make sure if does not get mangled.
       if ForAny(["https://", "http://"], {pre} -> StartsWith(filename, pre)) then
         file := filename;
       else
-        file := Concatenation("$(wslpath -a -w \"",filename,"\")");
+        file := "";
+        Exec2("wslpath", "-a", "-w", filename, OutputTextString(file, false));
       fi;
-      Exec(Concatenation("explorer.exe \"", file, "\""));
+      Exec2("explorer.exe", file);
     else
-      Exec(Concatenation("xdg-open \"",filename,"\""));
+      Exec2("xdg-open", filename);
     fi;
 end );
 
