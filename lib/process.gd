@@ -176,6 +176,12 @@ DeclareOperation( "Process",
 ##  gap> Exec( "rm foo" );
 ##  ]]></Log>
 ##  <P/>
+##  Because <A>cmd</A> is interpreted by a shell, it is difficult to pass
+##  arguments containing spaces or quotes reliably, and the exit code of the
+##  command is not available.
+##  For new code <Ref Func="RunProcess"/> is therefore usually the better
+##  choice.
+##  <P/>
 ##  <Ref Func="Exec"/> calls the more general operation <Ref Oper="Process"/>.
 ##  The function <Ref Func="Edit"/> should be used to call an editor from
 ##  within &GAP;.
@@ -184,3 +190,87 @@ DeclareOperation( "Process",
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Exec" );
+
+
+
+#############################################################################
+##
+#F  RunProcess( <cmd>[, <arg1>, ...][, <options>] ) . . . . . run a program
+##
+##  <#GAPDoc Label="RunProcess">
+##  <ManSection>
+##  <Func Name="RunProcess" Arg='cmd[, arg1, ..., argN][, options]'/>
+##
+##  <Description>
+##  <Ref Func="RunProcess"/> runs the program <A>cmd</A> with the arguments
+##  <A>arg1</A>, ..., <A>argN</A>, waits for it to terminate, and returns a
+##  record describing the outcome.
+##  <P/>
+##  If <A>cmd</A> contains no path separator, it is looked up in the
+##  directories returned by <Ref Func="DirectoriesSystemPrograms"/>;
+##  otherwise it is used as a path as-is.
+##  Each argument must be a string or an integer, the latter being converted
+##  via <Ref Attr="String"/>.
+##  <P/>
+##  No shell is involved: the arguments are handed to the program verbatim.
+##  There is thus no need to quote or escape arguments containing spaces or
+##  other special characters, and the behaviour does not depend on which
+##  shell happens to be installed.
+##  The flip side is that shell features are not available, so unlike
+##  <Ref Func="Exec"/> one cannot use redirections such as
+##  <C>&gt;/dev/null</C>, pipes, or wildcard expansion.
+##  <P/>
+##  The returned record always has the component <C>status</C>, the exit code
+##  of the program.
+##  A nonzero exit code is not treated as an error by
+##  <Ref Func="RunProcess"/>; it is up to the caller to check it.
+##  <P/>
+##  <Log><![CDATA[
+##  gap> res := RunProcess("echo", "GAP is great!");
+##  rec( output := "GAP is great!\n", status := 0 )
+##  gap> RunProcess("false").status;
+##  1
+##  ]]></Log>
+##  <P/>
+##  The optional final argument <A>options</A> is a record which may have the
+##  following components.
+##  <List>
+##  <Mark><C>directory</C></Mark>
+##  <Item>
+##    the directory in which the program is run, as a directory object
+##    (see&nbsp;<Ref Sect="Directories"/>);
+##    it defaults to <Ref Func="DirectoryCurrent"/>.
+##  </Item>
+##  <Mark><C>input</C></Mark>
+##  <Item>
+##    an input stream serving as the standard input of the program.
+##    By default the program receives no input at all; note that this differs
+##    from <Ref Func="Exec"/>, which passes on whatever the user types.
+##  </Item>
+##  <Mark><C>output</C></Mark>
+##  <Item>
+##    an output stream receiving the standard output of the program.
+##    By default the output is captured and returned in the <C>output</C>
+##    component of the result record; if this option is given, the result
+##    record has no <C>output</C> component.
+##  </Item>
+##  </List>
+##  <P/>
+##  <Log><![CDATA[
+##  gap> input := InputTextString("hello\n");;
+##  gap> RunProcess("sort", rec(input := input, output := OutputTextUser()));
+##  hello
+##  rec( status := 0 )
+##  ]]></Log>
+##  <P/>
+##  The standard error stream of the program is currently inherited from
+##  &GAP; and cannot be redirected or captured, since &GAP; has no support
+##  for this yet.
+##  <P/>
+##  <Ref Func="RunProcess"/> calls the more general operation
+##  <Ref Oper="Process"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "RunProcess" );
