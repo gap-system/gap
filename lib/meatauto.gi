@@ -895,7 +895,8 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       od;
       imv0c:=EchResidueCoeffs(M, echm, imv0,1);
       for l in [1..Length(v)] do
-	image:=imv0c * a[l];
+        if Length(imv0c)=0 then image:=[];
+        else image:=imv0c * a[l];fi;
 	if r > 0 then
 	  image:=image + EchResidueCoeffs(U, echu, u[l],1) * Uhom;
 	fi;
