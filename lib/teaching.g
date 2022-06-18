@@ -165,7 +165,7 @@ DeclareGlobalFunction("ShowAdditionTable");
 ##  <Func Name="CosetDecomposition" Arg='G,S'/>
 ##
 ##  <Description>
-##  For a finite group <A>G</A> and a subgroup <M><A>S</A>\le<A>G</A></M>
+##  For a finite group <A>G</A> and a subgroup <M><A>S</A> \leq <A>G</A></M>
 ##  this function returns a partition of the elements of <A>G</A> according to
 ##  the (right) cosets of <A>S</A>. The result is a list of lists, each sublist
 ##  corresponding to one coset. The first sublist is the elements list of the
