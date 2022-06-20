@@ -585,6 +585,13 @@ InstallMethod( CopySubVector, "for two zmodnz vectors and two lists",
     b![ELSPOS]{pb} := a![ELSPOS]{pa};
   end );
 
+InstallOtherMethod( ProductCoeffs,
+  "zmodmat: call PRODUCT_COEFFS_GENERIC_LISTS with lengths",
+    true, [ IsZmodnZVectorRep, IsZmodnZVectorRep], 0,
+function( l1, l2 )
+  return PRODUCT_COEFFS_GENERIC_LISTS(l1,Length(l1),l2,Length(l2));
+end);
+
 ############################################################################
 # Matrices
 ############################################################################
