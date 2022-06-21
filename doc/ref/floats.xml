@@ -257,7 +257,7 @@ contained in each other.
 <P/>
 
 Note the usual convention that intervals are compared as
-in <M>[a,b]\le[c,d]</M> if and only if <M>a\le c</M> and <M>b\le
+in <M>[a,b]\leq[c,d]</M> if and only if <M>a\leq c</M> and <M>b\leq
 d</M>.
 
 <#Include Label="Float-Intervals">
