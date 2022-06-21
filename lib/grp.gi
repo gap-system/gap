@@ -1277,6 +1277,11 @@ function(G)
   return exp;
 end);
 
+# ranked below the method for abelian groups
+InstallMethod( Exponent,
+    [ "IsGroup and IsFinite and HasConjugacyClasses" ],
+    G-> Lcm(List(ConjugacyClasses(G), c-> Order(Representative(c)))) );
+
 InstallMethod( Exponent,
     "method for finite abelian groups with generators",
     [ IsGroup and IsAbelian and HasGeneratorsOfGroup and IsFinite ],
