@@ -2038,30 +2038,33 @@ InstallMethod( IrrBaumClausen,
           info,           # result of `BaumClausenInfo'
           pcgs,           # value of `info.pcgs'
           lg,             # composition length
-          evl,            # list encoding exponents of class representatives
-          i, j, k,        # loop variables
-          exps,           # exponent vector of a group element
+          exps,           # exponents of class representatives
+          cr,             # exps sorted
+          dobylevel,      # generate matrices and traces of class reps
+          i, j, jj, k,    # loop variables
           t,              # intermediate representation value
           irreducibles,   # list of irreducible characters
           rep,            # loop over the representations
+          l,              # list of monomial matrices
           gcd,            # g.c.d. of the exponents in `rep'
           q,              # 
+          o,              # order of root of unity
+          e,              # exponent
           Ee,             # complex root of unity needed for `rep'
           chi,            # one character values list
           deg,            # character degree
           idmat,          # identity matrix
+          perm,           # entries of monomial matrix
+          diag,
           trace;          # trace of a matrix
 
     mulmoma:= function( a, b )
-      local prod, i;
+      local prod;
       prod:= rec( perm := b.perm{ a.perm },
                   diag := [] );
-      for i in [ 1 .. deg ] do
-        prod.diag[ b.perm[i] ]:= b.diag[ b.perm[i] ] + a.diag[i];
-      od;
+      prod.diag{b.perm} := b.diag{b.perm} + a.diag;
       return prod;
     end;
-
     tbl:= CharacterTable( G );
     ccl:= ConjugacyClasses( tbl );
     SetExponent( G, Exponent( tbl ) );
@@ -2092,40 +2095,43 @@ InstallMethod( IrrBaumClausen,
 
     # Compute the nonlinear irreducibles.
     if not IsEmpty( info.nonlin ) then
-      evl:= [];
-      for i in [ 2 .. Length( ccl ) ] do
-        t:= [];
-        for j in [ 1 .. lg ] do
-          for k in [ 1 .. exps[i][j] ] do
-            Add( t, j );
-          od;
-        od;
-        evl[ i-1 ]:= t;
-      od;
+      cr := SortedList(exps);
       for rep in info.nonlin do
         gcd:= GcdInt( Gcd( List( rep, x -> Gcd( x.diag ) ) ), info.exponent );
-        Ee:= E( info.exponent / gcd );
+        o := info.exponent / gcd;
         deg:= Length( rep[1].perm );
-        chi:= [ deg ];
         idmat:= rec( perm := [ 1 .. deg ], diag := [ 1 .. deg ] * 0 );
-        for j in evl do
-
-          # Compute the value of the representation at the representative.
-          t:= idmat;
-          for k in j do
-            t:= mulmoma( t, rep[k] );
+        Add(cr[1], deg);
+        l := List([1..lg], i-> idmat);
+        # We go through sorted list of exponents and reuse
+        # partial product from previous representative.
+        for i in [2..Length(cr)] do
+          j := 1;
+          while cr[i-1][j] = cr[i][j] do
+            j := j+1;
           od;
-
+          for k in [cr[i-1][j]+1..cr[i][j]] do
+            l[j] := mulmoma(l[j], rep[j]);
+          od;
+          for jj in [j+1..lg] do
+            l[jj] := l[jj-1];
+            for k in [1..cr[i][jj]] do
+              l[jj] := mulmoma(l[jj], rep[jj]);
+            od;
+          od;
           # Compute the character value.
-          trace:= 0;
+          trace:= 0*[1..o];
+          perm := l[lg].perm;
+          diag := l[lg].diag;
           for k in [ 1 .. deg ] do
-            if t.perm[k] = k then
-              trace:= trace + Ee^( t.diag[k] / gcd );
+            if perm[k] = k then
+              e := (diag[k] / gcd) mod o;
+              trace[e+1]:= trace[e+1] + 1; 
             fi;
           od;
-          Add( chi, trace );
-
+          Add(cr[i], CycList(trace));
         od;
+        chi := List(exps, Remove);
         Add( irreducibles, Character( tbl, chi ) );
       od;
     fi;
