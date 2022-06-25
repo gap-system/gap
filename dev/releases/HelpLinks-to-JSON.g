@@ -74,7 +74,6 @@ for x in NamesOfComponents(HELP_BOOKS_INFO) do
       path := "FAIL";
     else
       path := ReplacedString(path, fulldir, "");
-      path := ReplacedString(path, "_mj.html", ".html");
     fi;
 
     r.(bname).reference.(name) := path;
