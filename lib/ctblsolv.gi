@@ -16,6 +16,9 @@
 InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   local pcgs, D, hom, Gab, abinv, exp, e, Ee, genexp, 
         clexps, tab, irgens, a, lin, c, res, j, i, sz;
+  if Size(G) = 1 then
+    return [TrivialCharacter(G)];
+  fi;
   pcgs := Pcgs(G);
   D := DerivedSubgroup(G);
   hom := NaturalHomomorphismByNormalSubgroupNC(G, D);
