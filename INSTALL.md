@@ -596,34 +596,31 @@ might need a basic knowledge of Unix.
 
 The following are a couple of notes and remarks about this:
 
-First, note that you should get the Unix type GAP archives, i.e. one of
-`.zip`, `.tar.gz` or `.tar.bz2` archives, but not the `-win.zip` archive
-(you won't be able to compile the program as given in the `-win.zip` archive).
-
 To compile and run GAP you will have to open the Terminal application and
 type the necessary Unix commands into its window. The Terminal application
-can be found in the Utilities folder in the Applications folder.
+can be found in the `Utilities` folder in the `Applications` folder.
 
 Next, you will need a compiler and build tools like `make`. These tools are
 included in the "Xcode" application which is not installed by default on a
-new Mac. On all recent versions of macOS, you can install it for free via
-the App Store. Afterwards, you also need to run the following command from
-a terminal in order to make all required tools available via the command line:
+new Mac. On all recent versions of macOS, you can install the required tools
+by entering the following command into a terminal prompt (note that it will
+show a graphical prompt asking for confirmation, and may also require you
+to enter an administrator password).
 
      xcode-select --install
 
 You might want to consider using GNU readline by installing it via:
 
- * using Homebrew: `brew install readline`
- * using Fink: `fink install readline7`
- * using MacPorts: `port install readline`
+ * using Homebrew: `brew install gmp readline`
+ * using Fink: `fink install gmp readline7`
+ * using MacPorts: `port install gmp readline`
  
 After that you have to compile GAP and tell it where to find your installation of GNU readline
 using the following commands.
 
 For Homebrew, use these commands:
 
-    ./configure --with-readline=$(brew --prefix)/opt/readline
+    ./configure --with-gmp=$(brew --prefix) --with-readline=$(brew --prefix)/opt/readline
     make
 
 For Fink, use these commands:

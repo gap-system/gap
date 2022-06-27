@@ -199,8 +199,8 @@ This section is based on <https://lornajane.net/posts/2015/code-reviews-before-y
 
 ## Additional Resources
 
-* [GAP Tutorial](https://www.gap-system.org/Manuals/doc/tut/chap0.html)
-* [GAP Manual](https://www.gap-system.org/Manuals/doc/ref/chap0.html)
+* [GAP Tutorial](https://www.gap-system.org/Manuals/doc/tut/chap0_mj.html)
+* [GAP Manual](https://www.gap-system.org/Manuals/doc/ref/chap0_mj.html)
 * [GAP Homepage](https://www.gap-system.org/)
 * [GAP on GitHub: Quickstart](https://github.com/gap-system/gap-git-cheat-sheet/raw/master/gap-git-cheat-sheet.pdf)
 * [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
