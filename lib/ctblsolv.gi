@@ -11,6 +11,62 @@
 ##  This file contains character table methods for solvable groups.
 ##
 
+##  We take advantage of knowing conjugacy class representatives
+##  as words in generators.
+InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
+  local pcgs, D, hom, Gab, abinv, exp, e, Ee, genexp, 
+        clexps, tab, irgens, a, lin, c, res, j, i, sz;
+  pcgs := Pcgs(G);
+  D := DerivedSubgroup(G);
+  hom := NaturalHomomorphismByNormalSubgroupNC(G, D);
+  # G/D
+  Gab := Image(hom);
+  abinv := AbelianInvariants(Gab);
+  sz := Product(abinv);
+  # all character values are powers of e
+  exp := Lcm(abinv);
+  e := E(exp);
+  Ee := [1];
+  for i in [1..exp-1] do
+    Add(Ee, Ee[i]*e);
+  od;
+  # write generators of G mod D as in abelian generators of G/D
+  IndependentGeneratorsOfAbelianGroup(Gab);
+  genexp := List(pcgs, x-> IndependentGeneratorExponents(Gab, x^hom));
+  # exponent vectors of class representatives of G
+  clexps := List(ConjugacyClasses(G), 
+                 c-> ExponentsOfPcElement(pcgs, Representative(c)));
+  # irgens are the dual generators of G/D
+  tab := CharacterTable(G);
+  irgens := [];
+  for i in [1..Length(abinv)] do
+    a := exp/abinv[i];
+    Add(irgens, List(genexp, g-> g[i]*a));
+  od;
+  # now it is easy to find values of all linear characters on generators of G
+  # -> and so on class representatives
+  lin := 0*[1..Length(pcgs)];
+  res := [];
+  # c is the abinv-adic decomposition of i in [0..sz-1], used as
+  # coefficients of a linear combination of irgens
+  c := 0*[1..Length(abinv)];
+  for i in [1..sz] do
+    Add(res, Character(tab, Ee{((clexps * lin) mod exp)+1}));
+    if i < sz then
+      c[1] := c[1]+1;
+      lin := lin + irgens[1];
+      j := 1;
+      while c[j] >= abinv[j] do
+        c[j] := 0;
+        lin := lin - abinv[j]*irgens[j];
+        j := j+1;
+        c[j] := c[j]+1;
+        lin := lin + irgens[j];
+      od;
+    fi;
+  od;
+  return res;
+end);
 
 #############################################################################
 ##
@@ -664,136 +720,125 @@ end );
 ##  For every irreducible character the monomiality information is stored as
 ##  value of the attribute `TestMonomial'.
 ##
-InstallMethod( IrrConlon,
-    "for a group",
-    [ IsGroup ],
-    function( G )
-    local mulmoma,    # local function: multiply monomial matrices
-          ct,         # character table of `G'
-          ccl,        # conjugacy classes of `G'
-          Gpcgs,      # PCGS of `G'
-          irr,        # matrix of character values
-          irredinfo,  # monomiality info
-          evl,        # encode class representatives as words in `Gpcgs'
-          i,
-          t,
-          chi,
-          j,
-          mat,
-          k,
-          triple,
-          hom,
-          zi,
-          oz,
-          ee,
-          zp,
-          co,         # cosets
-          coreps,     # representatives of `co'
-          dim,
-          rep,        # matrix representation
-          bco,
-          p,
-          i1,         # loop variable in `mulmoma'
-          re;         # result of `mulmoma'
+InstallMethod( IrrConlon, [ "IsGroup" ],
+function( G )
+  local pcgs, clreps, ct, irr, tr, Cs, normal, N, hom, Cab, abgens, 
+        ind, coreps, evals, xg, K, sz, h, qu, genqu, multi, mods, 
+        ch, c, ms, vals, cval, k, C, x, g, t, i, j, r, tm, new;
+  pcgs := Pcgs(G);
+  # return no characters if G is not solvable
+  if pcgs = fail then
+    return [];
+  fi;
+  clreps := List( ConjugacyClasses( G ), Representative );
+  ct := CharacterTable( G );
+  irr := [];
+  # linear characters without covering triples
+  Append( irr, LinearCharacters( G ) );
+  tm := rec( isMonomial := true, comment := "linear character" );
+  for ch in irr do
+    SetTestMonomial( ch, tm );
+  od;
+  tm := rec( isMonomial := true, comment := "induced from given subgroup" );
 
-    # Compute the product of the monomial matrices `a' and `b';
-    # The diagonal elements are powers of a fixed `oz'-th root of unity.
-    mulmoma:= function( a, b )
-      re:= rec( perm:= [], diag:= [] );
-      for i1 in [ 1 .. Length( a.perm ) ] do
-        re.perm[i1]:= b.perm[ a.perm[i1] ];
-        re.diag[ b.perm[i1] ]:= ( b.diag[ b.perm[i1] ] + a.diag[i1] ) mod oz;
-      od;
-      return re;
-    end;
-
-    ct:= CharacterTable( G );
-    ccl:= ConjugacyClasses( ct );
-    Gpcgs:= Pcgs( G );
-    irr:= [];
-    irredinfo:= [ rec( inducedFrom:= rec( subgroup:= G, kernel:= G ) ) ];
-
-    # `evl' is a list describing representatives of the nontrivial
-    # conjugacy classes.
-    # the entry for the element $g.1^2*g.2^0*g.3^1$ is $[ 1, 1, 3 ]$.
-    evl:= [];
-    for i in [ 2 .. Length( ccl ) ] do
-      k:= ExponentsOfPcElement( Gpcgs, Representative( ccl[i] ) );
-      t:= [];
-      for j in [ 1 .. Length( k ) ] do
-        if 0 < k[j] then
-          Append( t, [ 1 .. k[j] ]*0 + j );
-        fi;
-      od;
-      Add( evl, t );
-    od;
-
-    for triple in CoveringTriplesCharacters( G, One( G ) ) do
-
-      hom:= NaturalHomomorphismByNormalSubgroupNC( triple[1], triple[2] );
-      zi:= ImagesRepresentative( hom, triple[3] );
-      oz:= Order( zi );
-      ee:= E( oz );
-      zp:= List( [ 1 .. oz ], x -> zi^x );
-      co:= RightCosets( G, triple[1] );
-      coreps:= List(  co, Representative );
-      dim:= Length( co );
-
-      # `rep' describes a matrix representation on a module with basis
-      # a transversal of the stabilizer in `G'.
-      # (The monomial matrices are the same as in `RepresentationsPGroup'.)
-      rep:= [];
-      for i in Gpcgs do
-        mat:= rec( perm:= [], diag:= [] );
-        for j in [ 1 .. dim ] do
-          bco:= co[j]*i;
-          p:= Position( co, bco, 0 );
-          Add( mat.perm, p );
-          mat.diag[p]:= Position( zp,
-              ImageElm( hom, coreps[j]*i*Inverse( coreps[p] ) ), 0 );
-        od;
-        Add( rep, mat );
-      od;
-
-      # Compute the representing matrices for class representatives,
-      # and their traces.
-      chi:= [ dim ];
-      for j in evl do
-        mat:= Iterated( rep{ j }, mulmoma );
-        t:= 0;
-        for k in [ 1 .. dim ] do
-          if mat.perm[k] = k then
-            t:= t + ee^mat.diag[k];
+  # we now only need the triples for proper subgroups
+  tr := Filtered( CoveringTriplesCharacters( G, One( G ) ), a-> a[1] <> G );
+  # subgroups to induce from
+  Cs := Set( List(tr, a-> a[1] ) );
+  for C in Cs do
+    # monomiality information
+    tm := ShallowCopy(tm);
+    tm.subgroup := C;
+    # only classes in N can have non-zero values
+    if IsNormal( G, C ) then
+      normal := true;
+      N := C;
+    else
+      normal := false;
+      N := NormalClosure( G, C );
+    fi;
+    # only linear characters of C are induced, need C/C'
+    hom := NaturalHomomorphismByNormalSubgroupNC( C, DerivedSubgroup( C ) );
+    Cab := Image( hom );
+    abgens := IndependentGeneratorsOfAbelianGroup( Cab );
+    # we compute the generic induced linear character from C,
+    # eigenvalues expressed as product of values on generators of C/C'
+    ind := [];
+    coreps := List( RightCosets( G, C ), Representative );
+    for x in clreps do
+      if x in N then
+        evals := [];
+        for g in coreps do
+          xg := x^g;
+          if normal or xg in C then
+            Add( evals, IndependentGeneratorExponents( Cab, xg^hom ));
           fi;
         od;
-        Add( chi, t );
-      od;
-
-      # Test if `chi' is known and add `chi' and its Galois-conjugates
-      # to the list.
-      # Also compute the monomiality information.
-      if not chi in irr then
-        chi:= GaloisMat( [ chi ] ).mat;
-        Append( irr, chi );
-        for j in chi do
-          Add( irredinfo, rec( subgroup:= triple[1], kernel:= triple[2] ) );
-        od;
+        Add( ind, evals );
+      else
+        Add( ind, 0 );
       fi;
-
     od;
-
-    # Construct the characters from their values lists,
-    # and set the monomiality info.
-    irr:= Concatenation( [ TrivialCharacter( G ) ],
-                         List( irr, chi -> Character( ct, chi ) ) );
-    for i in [ 1 .. Length( irr ) ] do
-      SetTestMonomial( irr[i], irredinfo[i] );
+    # now we evalute ind at the relevant linear characters of C
+    for t in tr do
+      if t[1] = C then
+        # C/K is cyclic of order sz
+        # this triple is for all characters of order sz with kernel K
+        K := t[2];
+        sz := Size( C ) / Size( K );
+        # find the characters with kernel K
+        #    (maybe better with Hermite normal form?)
+        h := NaturalHomomorphismByNormalSubgroupNC( Cab, 
+               SubgroupNC( Cab, List( GeneratorsOfGroup( K ), y-> y^hom ) ) );
+        qu := Image( h );
+        # if sz is not a prime power there are several generators
+        genqu := IndependentGeneratorsOfAbelianGroup( qu );
+        if Length(genqu) > 1 then
+          multi := true;
+          mods := List(genqu, Order);
+        else
+          multi := false;
+        fi;
+        ch := [];
+        for g in abgens do
+          c := IndependentGeneratorExponents( qu, g^h );
+          if multi then
+            Add( ch, ChineseRem( mods, c ) );
+          else
+            Add( ch, c[1] );
+          fi;
+        od;
+        # these multiples of ch are needed
+        ms := Filtered( [1..sz-1], m-> Gcd( m, sz ) = 1 );
+        vals := List( ms, m-> [] );
+        for i in [1..Length(ind)] do
+          if ind[i] = 0 then
+            for j in [ 1..Length(ms) ] do
+              Add( vals[j], 0 );
+            od;
+          else
+            cval := 0*[1..sz];
+            for r in ind[i] do
+              k := (r * ch) mod sz + 1;
+              cval[k] := cval[k] + 1;
+            od;
+            cval := CycList( cval );
+            Add( vals[1], cval );
+            for j in [2..Length(ms)] do
+              Add( vals[j], GaloisCyc( cval, ms[j] ) );
+            od;
+          fi;
+        od;
+        new := List( vals, l-> Character( ct, l ) );
+        for ch in new do
+          SetTestMonomial( ch, tm );
+        od;
+        Append( irr, new );
+      fi;
     od;
-
-    # Return the characters.
-    return irr;
-    end );
-
+  od;
+  return irr;
+end);
 
 #############################################################################
 ##
@@ -2090,8 +2135,15 @@ InstallMethod( IrrBaumClausen,
     gcd:= info.exponent / q;
     Ee:= E(q);
     Ee:= List( [ 0 .. q-1 ], i -> Ee^i );
-    irreducibles:= List( info.lin, rep ->
-        Character( tbl, Ee{ ( ( exps * rep ) / gcd mod q ) + 1 } ) );
+
+    if IsPcGroup( G ) then
+      # We can effiently compute the linear characters independently (and 
+      # take advantage if they were computed before)
+      irreducibles := ShallowCopy( LinearCharacters( G ) );
+    else
+      irreducibles:= List( info.lin, rep ->
+          Character( tbl, Ee{ ( ( exps * rep ) / gcd mod q ) + 1 } ) );
+    fi;
 
     # Compute the nonlinear irreducibles.
     if not IsEmpty( info.nonlin ) then
@@ -2129,6 +2181,8 @@ InstallMethod( IrrBaumClausen,
               trace[e+1]:= trace[e+1] + 1; 
             fi;
           od;
+          # We append the character values to the exponents lists
+          # and remove them (in the right order) after this loop.
           Add(cr[i], CycList(trace));
         od;
         chi := List(exps, Remove);
