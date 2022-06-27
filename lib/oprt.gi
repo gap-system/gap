@@ -2663,12 +2663,16 @@ end);
 ##
 #F  IsTransitive( <G>, <D>, <gens>, <acts>, <act> ) . . . . transitivity test
 ##
+##  We cannot assume that <G> acts on <D>.
+##  Thus it is in general not sufficient to check whether <D> is a subset of
+##  the <G>-orbit of a point in <D>, or whether <D> and this orbit have the
+##  same size.
+##
 InstallMethod( IsTransitive,
     "compare with orbit of element",
-    true,
-    OrbitsishReq, 0,
+    OrbitsishReq,
 function( G, D, gens, acts, act )
-    return Length(D)=0 or IsSubset( OrbitOp( G, D[ 1 ], gens, acts, act ), D );
+    return Length(D)=0 or IsEqualSet( OrbitOp( G, D[1], gens, acts, act ), D );
 end );
 
 
