@@ -79,29 +79,9 @@ Then to build GAP, first run this command to generate the `configure` script:
 
     ./autogen.sh
 
-Afterwards you can proceed similar to what is described in `INSTALL.md`, in
-particular enter the following commands to compile GAP itself (for macOS users,
-see below for a few additional hints):
-
-    ./configure
-    make
-
-For macOS users you may ned to tell GAP where it can find these dependencies.
-
-For Homebrew, use these commands:
-
-    ./configure --with-readline=/usr/local/opt/readline
-    make
-
-For Fink, use these commands:
-
-    ./configure CPPFLAGS=-I/sw/include LDFLAGS=-L/sw/lib
-    make
-
-For MacPorts, use these commands:
-
-    ./configure CPPFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib
-    make
+Afterwards you can proceed as described in `INSTALL.md`. If you are on macOS,
+we recommend that you take a look at section "GAP for macOS" of `INSTALL.md`
+for a few additional hints.
 
 
 ## Obtaining the GAP package distribution
