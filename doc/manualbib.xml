@@ -5495,7 +5495,7 @@
   <mrnumber>1820589 (2003a:20016)</mrnumber>
   <mrclass>20C25 (05E05 20C30)</mrclass>
   <mrreviewer>Tadeusz Józefiak</mrreviewer>
-  <url>http://dx.doi.org/10.1023/A:1003772419522</url>
+  <url>https://doi.org/10.1023/A:1003772419522</url>
   <other type="coden">IJTPBM</other>
   <other type="doi">10.1023/A:1003772419522</other>
   <other type="fjournal">International Journal of Theoretical Physics</other>
@@ -5519,8 +5519,8 @@
   <year>2010</year>
   <volume>38</volume>
   <pages>4545–4552</pages>
-  <url>http://dx.doi.org/10.1080/00927872.2010.490541</url>
-  <url>http://arxiv.org/abs/0911.3794</url>
+  <url>https://doi.org/10.1080/00927872.2010.490541</url>
+  <url>https://arxiv.org/abs/0911.3794</url>
   <other type="doi">10.1080/00927872.2010.490541</other>
 </article></entry>
 
@@ -5535,7 +5535,7 @@
   <year>1975</year>
   <volume>29</volume>
   <pages>620–647</pages>
-  <url>http://dx.doi.org/10.2307/2005583</url>
+  <url>https://doi.org/10.2307/2005583</url>
   <other type="doi">10.2307/2005583</other>
 </article></entry>
 

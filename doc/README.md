@@ -5,11 +5,11 @@ manuals that are maintained by the authors of the respective packages):
 * **HPC-GAP Reference Manual**
 
 These manuals are written in GAPDoc format, provided by the 
-[GAPDoc package](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/index.html). 
+[GAPDoc package](https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/index.html).
 Their source is contained in the directories `doc/tut`, `doc/ref` and `doc/hpc`
 respectively. Some documentation is also stored in the library files to be kept 
 close to the code it describes. It is included in the manual using the mechanism 
-documented [here](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/doc/chap4.html).
+documented [here](https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/doc/chap4.html).
 
 There is also a document describing [**Changes from Earlier Versions**](../CHANGES.md).
 

@@ -662,7 +662,7 @@ end);
 ##
 ##  For an overview on the theory of euclidean rings which are not domains,
 ##  see Pierre Samuel, "About Euclidean rings", J. Algebra, 1971 vol. 19 pp. 282-301.
-##  http://dx.doi.org/10.1016/0021-8693(71)90110-4
+##  https://doi.org/10.1016/0021-8693(71)90110-4
 
 InstallMethod( EuclideanDegree,
     "for Z/nZ and an element in Z/nZ",
