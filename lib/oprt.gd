@@ -1814,7 +1814,8 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  <P/>
 ##  <Index>transitive</Index>
 ##  We say that a  group <A>G</A> acts <E>transitively</E> on a domain
-##  <M>D</M> if and only if for every pair of points <M>d, e \in D</M>
+##  <M>D</M> if and only if <A>G</A> acts on <M>D</M> and for every pair of
+##  points <M>d, e \in D</M>
 ##  there is an element <M>g</M> in <A>G</A> such that <M>d^g = e</M>.
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
@@ -1823,6 +1824,21 @@ OrbitsishOperation( "Earns", OrbitsishReq, false, NewAttribute );
 ##  moved by it.
 ##  For example the group <M>\langle (2,3,4),(2,3) \rangle</M>
 ##  is transitive on the set <M>\{2, 3, 4\}</M>.
+##  <Example><![CDATA[
+##  gap> G:= Group( (2,3,4), (2,3) );;
+##  gap> IsTransitive( G, [ 2 .. 4 ] );
+##  true
+##  gap> IsTransitive( G, [ 2, 3 ] );   # G does not act on [ 2, 3 ]
+##  false
+##  gap> IsTransitive( G, [ 1 .. 4 ] );  # G has two orbits on [ 1 .. 4 ]
+##  false
+##  gap> IsTransitive( G );  # G is transitive on [ 2 .. 4 ]
+##  true
+##  gap> IsTransitive( SL(2, 3), NormedRowVectors( GF(3)^2 ) );
+##  false
+##  gap> IsTransitive( SL(2, 3), NormedRowVectors( GF(3)^2 ), OnLines );
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

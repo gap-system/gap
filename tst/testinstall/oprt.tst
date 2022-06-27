@@ -38,4 +38,9 @@ gap> IsTransitive(eo);
 true
 gap> Blocks(eo);
 [ [ 1, 5, 9 ], [ 2, 6, 10 ], [ 3, 7, 11 ], [ 4, 8, 12 ] ]
-gap> STOP_TEST( "oprt.tst", 1);
+gap> G:= Group( (2,3,4), (2,3) );;
+gap> IsTransitive( G, [ 2, 3 ] );
+false
+gap> Transitivity( G, [ 2, 3 ] );
+0
+gap> STOP_TEST( "oprt.tst" );
