@@ -161,6 +161,12 @@ UInt SyNrRowsLocked;
 
 /****************************************************************************
 **
+*V  SyLineWrappingDisabled . . . . . . . . .  do not wrap lines when printing
+*/
+UInt SyLineWrappingDisabled;
+
+/****************************************************************************
+**
 *V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . suppress prompt
 **
 **  'SyQuiet' determines whether GAP should print the prompt and the  banner.
@@ -702,6 +708,7 @@ void InitSystem (
     SyNrColsLocked = 0;
     SyNrRows = 0;
     SyNrRowsLocked = 0;
+    SyLineWrappingDisabled = 0;
     SyQuiet = 0;
     SyInitializing = 0;
 
