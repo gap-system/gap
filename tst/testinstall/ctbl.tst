@@ -171,6 +171,19 @@ CT2
 X.1    + 0   1 -1  1
 X.2    + 1   2  . -1
 X.3    + 1   1  1  1
+gap> Display( t, rec( indicator:= [ 1, 2 ] ) );
+CT2
+
+          2  1  1  .
+          3  1  .  1
+
+            1a 2a 3a
+         2P 1a 1a 3a
+         3P 1a 2a 1a
+       1 2
+X.1    0 +   1 -1  1
+X.2    0 +   2  . -1
+X.3    1 +   1  1  1
 gap> Display( t, rec( powermap:= false ) );
 CT2
 

@@ -4777,8 +4777,14 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           linelen,           # line length
           q,                 # quadratic cyc / powermap entry
           indicator,         # list of primes
-          indic,             # indicators
-          iw,                # width of indicator column
+          OD,                # show a column with orthog. discriminants
+          iw,                # width of indicator columns
+          indic,             # indicator values
+          oddata,            # orthog. discriminants
+          ind2,              # 2nd indicator
+          iwsum,             # total width of (OD and) indicator columns
+          entry,             # run over 'oddata'
+          pos,               # position in 'cnr'
           stringEntry,       # local function
           stringEntryData,   # data accessed by `stringEntry'
           cc,                # column number
@@ -4985,6 +4991,19 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       fi;
     od;
 
+    # print orthogonal discriminants (if available)
+    OD:= false;
+    if chars_from_irr then
+      for record in options do
+        if IsBound( record.OD ) then
+          if record.OD = true then
+            OD:= true;
+          fi;
+          break;
+        fi;
+      od;
+    fi;
+
     # (end of options handling)
 
     # line length
@@ -5015,28 +5034,56 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       od;
     fi;
 
-    # prepare indicator
+    # prepare indicator and OD
     # (compute the values if they are not stored but use stored values)
-    iw:= [ 0 ];
-    if indicator <> [] then
-      indic:= [];
-      for i in indicator do
-        if chars_from_irr and IsBound( ComputedIndicators( tbl )[i] ) then
-          indic[i]:= ComputedIndicators( tbl )[i]{ cnr };
-        else
-          indic[i]:= Indicator( tbl, Irr( tbl ){ cnr }, i );
-        fi;
-        if i = 2 then
-          iw[i]:= 2;
-        else
-          iw[i]:= Maximum( Length( String( Maximum( Set( indic[i] ) ) ) ),
-                           Length( String( Minimum( Set( indic[i] ) ) ) ),
-                           Length( String( i ) ) ) + 1;
-        fi;
-        iw[1]:= iw[1] + iw[i];
-      od;
-      iw[1]:= iw[1] + 1;
+    iw:= [];
+    indic:= [];
+    if OD then
+      if not 2 in indicator then
+        indicator:= Concatenation( [ 2 ], indicator );
+      fi;
+      indicator:= Concatenation( [ "OD" ], indicator );
     fi;
+    if indicator <> [] then
+      for i in [ 1 .. Length( indicator ) ] do
+        if indicator[i] = "OD" then
+          indic[1]:= ListWithIdenticalEntries( Length( cnr ), "" );
+          if IsBoundGlobal( "OrthogonalDiscriminants" ) then
+            oddata:= ValueGlobal( "OrthogonalDiscriminants" )( tbl );
+            for j in [ 1 .. Length( cnr ) ] do
+              if IsBound( oddata[ cnr[j] ] ) then
+                indic[1][j]:= oddata[ cnr[j] ];
+              fi;
+            od;
+          else
+            # Show '?' and empty strings.
+            ind2:= Indicator( tbl, Irr( tbl ){ cnr }, 2 );
+            for j in [ 1 .. Length( cnr ) ] do
+              if ( not ind2[ cnr[j] ] in [ -1, 0 ] ) and
+                 Irr( tbl )[ cnr[j] ][1] mod 2 = 0 then
+                indic[1][j]:= "?";
+              fi;
+            od;
+          fi;
+          iw[i]:= Maximum( 2, Maximum( List( indic[1], Length ) ) ) + 1;
+        else
+          if chars_from_irr and
+             IsBound( ComputedIndicators( tbl )[ indicator[i] ] ) then
+            indic[i]:= ComputedIndicators( tbl )[ indicator[i] ]{ cnr };
+          else
+            indic[i]:= Indicator( tbl, chars, indicator[i] );
+          fi;
+          if indicator[i] = 2 then
+            iw[i]:= 2;
+          else
+            iw[i]:= Maximum( Length( String( Maximum( Set( indic[i] ) ) ) ),
+                             Length( String( Minimum( Set( indic[i] ) ) ) ),
+                             Length( String( indicator[i] ) ) ) + 1;
+          fi;
+        fi;
+      od;
+    fi;
+    iwsum:= Sum( iw, 0 ) + 1;
 
     if Length( cnr ) = 0 then
       prin:= [ 3 ];
@@ -5061,7 +5108,7 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
        # determine number of cols for next page
        acol:= 0;
        if indicator <> [] then
-          prin[1]:= prin[1] + iw[1];
+          prin[1]:= prin[1] + iwsum;
        fi;
        len:= prin[1];
        while col+acol < ncols and len < linelen do
@@ -5173,10 +5220,10 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
        # empty column resp. indicators
        Print( "\n" );
        if indicator <> [] then
-          prin[1]:= prin[1] - iw[1];
+          prin[1]:= prin[1] - iwsum;
           Print( String( "", prin[1] ) );
-          for i in indicator do
-             Print( String( i, iw[i] ) );
+          for i in [ 1 .. Length( iw ) ] do
+             Print( String( indicator[i], iw[i] ) );
           od;
        fi;
 
@@ -5189,8 +5236,8 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           Print( String( charnames[i], -prin[1] ) );
 
           # indicators
-          for j in indicator do
-            if j = 2 then
+          for j in [ 1 .. Length( indicator ) ] do
+            if indicator[j] = 2 then
                if indic[j][i] = 0 then
                  Print( String( "o", iw[j] ) );
                elif indic[j][i] = 1 then
