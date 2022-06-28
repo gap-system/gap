@@ -2140,7 +2140,7 @@ InstallMethod( IrrBaumClausen,
     Ee:= List( [ 0 .. q-1 ], i -> Ee^i );
 
     if IsPcGroup( G ) then
-      # We can effiently compute the linear characters independently (and 
+      # We can efficiently compute the linear characters independently (and 
       # take advantage if they were computed before)
       irreducibles := ShallowCopy( LinearCharacters( G ) );
     else
