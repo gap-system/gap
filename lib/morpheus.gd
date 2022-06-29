@@ -304,7 +304,7 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  checks these for properties such as generating a given group,
 ##  or fulfilling relations.
 ##  This can be used to find small generating sets or all types of Morphisms.
-##  The element tuples are used only up to up to inner automorphisms as
+##  The element tuples are used only up to inner automorphisms as
 ##  all images can be obtained easily from them by conjugation while
 ##  running through all of them usually would take too long.
 ##  <P/>
