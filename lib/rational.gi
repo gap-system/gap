@@ -16,7 +16,7 @@
 ##
 #V  Rationals . . . . . . . . . . . . . . . . . . . . . .  field of rationals
 ##
-InstallValue( Rationals, Objectify( NewType(
+BindGlobal( "Rationals", Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
     IsRationals and IsAttributeStoringRep ), rec() ) );
 SetName( Rationals, "Rationals" );

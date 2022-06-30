@@ -213,8 +213,8 @@ if IsHPCGAP then
     MakeThreadLocal( "GlobalRandomSource" );
     MakeThreadLocal( "GlobalMersenneTwister" );
 else
-    DeclareGlobalVariable( "GlobalRandomSource" );
-    DeclareGlobalVariable( "GlobalMersenneTwister" );
+    DeclareGlobalName( "GlobalRandomSource" );
+    DeclareGlobalName( "GlobalMersenneTwister" );
 fi;
 
 #############################################################################

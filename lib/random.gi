@@ -156,7 +156,7 @@ if IsHPCGAP then
     BindThreadLocalConstructor("GlobalRandomSource", {} ->
        RandomSource(IsGAPRandomSource, GET_RANDOM_SEED_COUNTER()));
 else
-    InstallValue(GlobalRandomSource, RandomSource(IsGAPRandomSource, 1));
+    BindGlobal("GlobalRandomSource", RandomSource(IsGAPRandomSource, 1));
 fi;
 
 
@@ -228,7 +228,7 @@ if IsHPCGAP then
 BindThreadLocalConstructor("GlobalMersenneTwister", {} ->
     RandomSource(IsMersenneTwister, String(GET_RANDOM_SEED_COUNTER())));
 else
-InstallValue(GlobalMersenneTwister, RandomSource(IsMersenneTwister, "1"));
+BindGlobal("GlobalMersenneTwister", RandomSource(IsMersenneTwister, "1"));
 fi;
 
 # default random method for lists and pairs of integers using the Mersenne

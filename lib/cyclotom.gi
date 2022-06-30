@@ -19,6 +19,24 @@
 
 #############################################################################
 ##
+#V  Cyclotomics . . . . . . . . . . . . . . . . . .  field of all cyclotomics
+##
+BindGlobal( "Cyclotomics", Objectify( NewType(
+    CollectionsFamily( CyclotomicsFamily ),
+    IsField and IsAttributeStoringRep ),
+    rec() ) );
+SetName( Cyclotomics, "Cyclotomics" );
+SetLeftActingDomain( Cyclotomics, Rationals );
+SetIsFiniteDimensional( Cyclotomics, false );
+SetIsFinite( Cyclotomics, false );
+SetIsWholeFamily( Cyclotomics, true );
+SetDegreeOverPrimeField( Cyclotomics, infinity );
+SetDimension( Cyclotomics, infinity );
+SetRepresentative(Cyclotomics, 0);
+
+
+#############################################################################
+##
 #M  Conductor( <list> ) . . . . . . . . . . . . . . . . . . . . .  for a list
 ##
 ##  (This works not only for lists of cyclotomics but also for lists of
