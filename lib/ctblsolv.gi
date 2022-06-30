@@ -14,15 +14,15 @@
 ##  We take advantage of knowing conjugacy class representatives
 ##  as words in generators.
 InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
-  local pcgs, D, hom, Gab, abinv, exp, e, Ee, genexp, 
+  local pcgs, hom, Gab, abinv, exp, e, Ee, genexp, 
         clexps, tab, irgens, a, lin, c, res, j, i, sz;
   if Size(G) = 1 then
     return [TrivialCharacter(G)];
   fi;
   pcgs := Pcgs(G);
-  D := DerivedSubgroup(G);
-  hom := NaturalHomomorphismByNormalSubgroupNC(G, D);
-  # G/D
+  # this yields the homomorphism onto G/G'
+  hom := MaximalAbelianQuotient(G);
+  # G/G'
   Gab := Image(hom);
   abinv := AbelianInvariants(Gab);
   sz := Product(abinv);
@@ -33,13 +33,13 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   for i in [1..exp-1] do
     Add(Ee, Ee[i]*e);
   od;
-  # write generators of G mod D as in abelian generators of G/D
+  # write generators of G mod G' as in abelian generators of G/G'
   IndependentGeneratorsOfAbelianGroup(Gab);
   genexp := List(pcgs, x-> IndependentGeneratorExponents(Gab, x^hom));
   # exponent vectors of class representatives of G
   clexps := List(ConjugacyClasses(G), 
                  c-> ExponentsOfPcElement(pcgs, Representative(c)));
-  # irgens are the dual generators of G/D
+  # irgens are the dual generators of G/G'
   tab := CharacterTable(G);
   irgens := [];
   for i in [1..Length(abinv)] do
@@ -760,8 +760,8 @@ function( G )
       normal := false;
       N := NormalClosure( G, C );
     fi;
-    # only linear characters of C are induced, need C/C'
-    hom := NaturalHomomorphismByNormalSubgroupNC( C, DerivedSubgroup( C ) );
+    # only linear characters of C are induced, need homomorphism onto C/C'
+    hom := MaximalAbelianQuotient( C );
     Cab := Image( hom );
     abgens := IndependentGeneratorsOfAbelianGroup( Cab );
     # we compute the generic induced linear character from C,

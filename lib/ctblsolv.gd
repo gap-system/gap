@@ -359,7 +359,7 @@ DeclareGlobalFunction( "CoveringTriplesCharacters" );
 ##
 ##  <Description>
 ##  For a finite solvable group <A>G</A>,
-##  <Ref Attr="IrrConlon"/> returns a list of certain irreducible characters
+##  <Ref Attr="IrrConlon"/> returns a list of monomial irreducible characters
 ##  of <A>G</A>, among those all irreducibles that have the
 ##  supersolvable residuum of <A>G</A> in their kernels;
 ##  so if <A>G</A> is supersolvable,
