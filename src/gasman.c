@@ -243,6 +243,11 @@ static inline Bag *DATA(BagHeader *bag)
     return (Bag *)(bag + 1);
 }
 
+static inline void SET_PTR_BAG(Bag bag, Bag *val)
+{
+    GAP_ASSERT(bag != 0);
+    *(Bag**)bag = val;
+}
 
 /****************************************************************************
 **
