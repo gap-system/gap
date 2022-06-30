@@ -2822,7 +2822,7 @@ static Int InitKernel (
 
 static Int InitModuleState(void)
 {
-    STATE(ErrorLVars) = (UInt **)0;
+    STATE(ErrorLVars) = 0;
 
     return 0;
 }

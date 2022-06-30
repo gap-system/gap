@@ -220,7 +220,7 @@ void SyMAdviseFree(void);
 **  If the operating system does not support dynamic memory management, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
-UInt *** SyAllocBags(Int size, UInt need);
+void * SyAllocBags(Int size, UInt need);
 
 
 /****************************************************************************

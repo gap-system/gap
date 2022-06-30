@@ -133,6 +133,14 @@
 #include <sys/mman.h>
 #endif
 
+// fill in the data "behind" bags
+struct OpaqueBag {
+    void * body;
+};
+GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
+                  "sizeof(OpaqueBag) is wrong");
+
+
 /****************************************************************************
 **
 *F  WORDS_BAG( <size> ) . . . . . . . . . . words used by a bag of given size
@@ -791,7 +799,7 @@ BOOL IsWeakDeadBag(Bag bag)
     CANARY_DISABLE_VALGRIND();
     BOOL isWeakDeadBag = (((UInt)bag & (sizeof(Bag) - 1)) == 0) &&
                          (Bag)MptrBags <= bag && bag < (Bag)MptrEndBags &&
-                         (((UInt)*bag) & (sizeof(Bag) - 1)) == 1;
+                         ((UInt)bag->body & (sizeof(Bag) - 1)) == 1;
     CANARY_ENABLE_VALGRIND();
     return isWeakDeadBag;
 }
@@ -809,7 +817,7 @@ void CallbackForAllBags(void (*func)(Bag))
 {
     for (Bag bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
         CANARY_DISABLE_VALGRIND();
-        BOOL is_bag = IS_BAG_BODY(*bag);
+        BOOL is_bag = IS_BAG_BODY(bag->body);
         CANARY_ENABLE_VALGRIND();
         if (is_bag) {
             (*func)(bag);
@@ -1009,12 +1017,12 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
 void FinishedRestoringBags( void )
 {
   Bag p;
-/*  Bag *ptr; */
   YoungBags = AllocBags;
   FreeMptrBags = NextMptrRestoring;
+  // set up chain of unused master pointers
   for (p = NextMptrRestoring; p +1 < (Bag)MptrEndBags; p++)
-    *(Bag *)p = p+1;
-  *p = 0;
+    p->body = p+1;
+  p->body = 0;
   NrLiveBags = NrAllBags;
   SizeLiveBags = SizeAllBags;
   NrDeadBags = 0;
@@ -2461,22 +2469,21 @@ void CheckMasterPointers( void )
     Bag bag;
 
     // iterate over all bag identifiers
-    for (Bag * ptr = MptrBags; ptr < MptrEndBags; ptr++) {
-        bag = (Bag)ptr;
+    for (bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
 
         // weakly dead bag?
-        if (*ptr == (Bag)NewWeakDeadBagMarker ||
-            *ptr == (Bag)OldWeakDeadBagMarker)
+        if (bag->body == (Bag)NewWeakDeadBagMarker ||
+            bag->body == (Bag)OldWeakDeadBagMarker)
             continue;
 
         // part of chain of free master pointers?
-        if (*ptr == 0 || IS_BAG_ID(*ptr)) {
+        if (bag->body == 0 || IS_BAG_ID(bag->body)) {
             continue;
         }
 
         // none of the above, so it must be an active master pointer
         // otherwise, error out
-        if (!IS_BAG_BODY(*ptr))
+        if (!IS_BAG_BODY(bag->body))
             Panic("Bad master pointer detected");
 
         if (GET_MARK_BITS(LINK_BAG(bag))) {
@@ -2497,7 +2504,7 @@ void CheckMasterPointers( void )
     while (bag != 0) {
         if (!IS_BAG_ID(bag))
             Panic("Bad chain of free master pointers detected");
-        bag = (Bag)*bag;
+        bag = (Bag)bag->body;
     }
 }
 
