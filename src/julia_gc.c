@@ -52,15 +52,6 @@
 // the extent of any guard pages and skip them if needed.
 // #define SKIP_GUARD_PAGES
 
-// if SCAN_STACK_FOR_MPTRS_ONLY is defined, stack scanning will only
-// look for references to master pointers, but not bags themselves. This
-// should be safe, as GASMAN uses the same mechanism. It is also faster
-// and avoids certain complicated issues that can lead to crashes, and
-// is therefore the default. The option to scan for all pointers remains
-// available for the time being and should be considered to be
-// deprecated.
-#define SCAN_STACK_FOR_MPTRS_ONLY
-
 // if REQUIRE_PRECISE_MARKING is defined, we assume that all marking
 // functions are precise, i.e., they only invoke MarkBag on valid bags,
 // immediate objects or NULL pointers, but not on any other random data
@@ -229,46 +220,6 @@ void SetJuliaTLS(void)
 //    JuliaTLS = jl_get_current_task()->ptls;
 }
 
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-typedef struct {
-    void * addr;
-    size_t size;
-} MemBlock;
-
-static inline int CmpMemBlock(MemBlock m1, MemBlock m2)
-{
-    char * l1 = (char *)m1.addr;
-    char * r1 = l1 + m1.size;
-    char * l2 = (char *)m2.addr;
-    char * r2 = l2 + m2.size;
-    if (lt_ptr(r1, l1))
-        return -1;
-    if (!lt_ptr(l2, r2))
-        return 1;
-    return 0;
-}
-
-#define ELEM_TYPE MemBlock
-#define COMPARE CmpMemBlock
-
-#include "baltree.h"
-
-static size_t         bigval_startoffset;
-static MemBlockTree * bigvals;
-
-void alloc_bigval(void * addr, size_t size)
-{
-    MemBlock mem = { addr, size };
-    MemBlockTreeInsert(bigvals, mem);
-}
-
-void free_bigval(void * addr)
-{
-    MemBlock mem = { addr, 0 };
-    MemBlockTreeRemove(bigvals, mem);
-}
-#endif
-
 typedef void * Ptr;
 
 #define ELEM_TYPE Ptr
@@ -384,28 +335,18 @@ void MarkJuliaObj(void * obj)
 
 // Overview of conservative stack scanning
 //
-// A key aspect of conservative marking is that (1) we need to determine
-// whether a machine word is a pointer to a live object and (2) if it points
-// to the interior of the object, to determine its base address.
-//
-// For Julia's internal objects, we call back to Julia to find out the
-// necessary information. For external objects that we allocate ourselves in
-// `alloc_bigval()`, we use balanced binary trees (treaps) to determine that
-// information. Each node in such a tree contains an (address, size) pair
-// and we use the usual binary tree search to figure out whether there is a
-// node with an address range containing that address and, if so, returns
-// the `address` part of the pair.
+// A key aspect of conservative marking is that we need to determine whether a
+// machine word is a master pointer to a live object. We call back to Julia to
+// find out the necessary information.
 //
 // While at the C level, we will generally always have a reference to the
 // masterpointer, the presence of optimizing compilers, multiple threads, or
 // Julia tasks (= coroutines) means that we cannot necessarily rely on this
-// information; also, the `NewBag()` implementation may trigger a GC after
-// allocating the bag contents, but before allocating the master pointer.
+// information.
 //
 // As a consequence, we play it safe and assume that any word anywhere on
 // the stack (including Julia task stacks) that points to a master pointer
-// or the contents of a bag (including a location after the start of the
-// bag) indicates a valid reference that needs to be marked.
+// indicates a valid reference that needs to be marked.
 //
 // One additional concern is that Julia may opportunistically free a subset
 // of unreachable objects. Thus, with conservative stack scanning, it is
@@ -449,50 +390,13 @@ void MarkJuliaObj(void * obj)
 static void TryMark(void * p)
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
-    if (!p2) {
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-        // It is possible for p to point past the end of
-        // the object, so we subtract one word from the
-        // address. This is safe, as the object is preceded
-        // by a larger header.
-        MemBlock   tmp = { (char *)p - 1, 0 };
-        MemBlock * found = MemBlockTreeFind(bigvals, tmp);
-        if (found) {
-            p2 = (jl_value_t *)found->addr;
-            // It is possible for types to not be valid objects.
-            // Objects with such types are not normally made visible
-            // to the mark loop, so we need to avoid marking them
-            // during conservative stack scanning.
-            // While jl_gc_internal_obj_base_ptr(p) already eliminates this
-            // case, it can still happen for bigval_t objects, so
-            // we run an explicit check that the type is a valid
-            // object for these.
-            p2 = (jl_value_t *)((char *)p2 + bigval_startoffset);
-            jl_taggedvalue_t * hdr = jl_astaggedvalue(p2);
-            if (hdr->type != jl_gc_internal_obj_base_ptr(hdr->type))
-                return;
-        }
-#endif
-    }
-    else {
+    if (p2 && jl_typeis(p2, datatype_mptr)) {
+#ifndef REQUIRE_PRECISE_MARKING
         // Prepopulate the mark cache with references we know
         // are valid and in current use.
-#ifndef REQUIRE_PRECISE_MARKING
-        if (jl_typeis(p2, datatype_mptr))
-            MarkCache[MARK_HASH((UInt)p2)] = (Bag)p2;
+        MarkCache[MARK_HASH((UInt)p2)] = (Bag)p2;
 #endif
-    }
-    if (p2) {
-#ifdef SCAN_STACK_FOR_MPTRS_ONLY
-        if (jl_typeis(p2, datatype_mptr))
-            JMark(p2);
-#else
-        void * ty = jl_typeof(p2);
-        if (ty != datatype_mptr && ty != datatype_bag &&
-            ty != datatype_largebag && ty != jl_weakref_type)
-            return;
         JMark(p2);
-#endif
     }
 }
 
@@ -841,12 +745,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-    bigvals = MemBlockTreeMake();
-    jl_gc_set_cb_notify_external_alloc(alloc_bigval, 1);
-    jl_gc_set_cb_notify_external_free(free_bigval, 1);
-    bigval_startoffset = jl_gc_external_obj_hdr_size();
-#endif
     max_pool_obj_size = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
     jl_init();
@@ -990,10 +888,8 @@ Bag NewBag(UInt type, UInt size)
 
     if (is_threaded)
         SetJuliaTLS();
-#if defined(SCAN_STACK_FOR_MPTRS_ONLY)
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, 0);
-#endif
 
     BagHeader * header = AllocateBagMemory(type, alloc_size);
 
@@ -1002,15 +898,9 @@ Bag NewBag(UInt type, UInt size)
     header->size = size;
 
 
-#if !defined(SCAN_STACK_FOR_MPTRS_ONLY)
-    // allocate the new masterpointer
-    bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
-    SET_PTR_BAG(bag, DATA(header));
-#else
     // change the masterpointer to reference the new bag memory
     SET_PTR_BAG(bag, DATA(header));
     jl_gc_wb_back((void *)bag);
-#endif
 
     // return the identifier of the new bag
     return bag;
