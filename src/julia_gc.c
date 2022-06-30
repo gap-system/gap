@@ -159,6 +159,11 @@ static inline Bag * DATA(BagHeader * bag)
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }
 
+static inline void SET_PTR_BAG(Bag bag, Bag *val)
+{
+    GAP_ASSERT(bag != 0);
+    *(Bag**)bag = val;
+}
 
 static TNumExtraMarkFuncBags ExtraMarkFuncBags;
 

@@ -194,16 +194,14 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
     if (plen > INT_INTOBJ_MAX)
         plen = INT_INTOBJ_MAX;
 
-#ifdef USE_BOEHM_GC
+#if defined(USE_BOEHM_GC) && defined(HPCGAP)
     Obj copy = NewBag(T_WPOBJ, (plen+1) * sizeof(Obj));
     STORE_LEN_WPOBJ(copy, STORED_LEN_WPOBJ(wp));
 
     UInt i;
     for (i = 1; i <= STORED_LEN_WPOBJ(wp); i++) {
       volatile Obj tmp = ELM_WPOBJ(wp, i);
-#ifdef HPCGAP
       MEMBAR_READ();
-#endif
       if (IS_BAG_REF(tmp) && ELM_WPOBJ(wp, i)) {
         FORGET_WP(wp, i);
         REGISTER_WP(copy, i, tmp);
