@@ -897,6 +897,8 @@ end );
 ##  permutation equivalence, that is the permutation image of a group element
 ##  is given by the positions of points in <A>Omega</A>.)
 ##  <P/>
+##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
+##  <P/>
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
 ##  is not necessarily surjective (its 
@@ -1213,6 +1215,8 @@ DeclareGlobalFunction( "Action" );
 ##  described in <Ref Sect="Domains"/> and <Ref Chap="Collections"/>, or (to use
 ##  less memory but with a slower performance) an enumerator 
 ##  (see <Ref Attr="Enumerator"/> ) of this domain.
+##  <P/>
+##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3),(2,3,4));;
 ##  gap> e:=ExternalSet(g,[1..4]);
@@ -1252,15 +1256,17 @@ DeclareOperation("RestrictedExternalSet",[IsExternalSet,IsGroup]);
 
 #############################################################################
 ##
-#O  ExternalSubset(<G>,<xset>,<start>,[<gens>,<acts>,]<act>)
+#O  ExternalSubset(<G>,<Omega>,<start>,[<gens>,<acts>,]<act>)
 ##
 ##  <#GAPDoc Label="ExternalSubset">
 ##  <ManSection>
-##  <Oper Name="ExternalSubset" Arg='G,xset,start,[gens,acts,]act'/>
+##  <Oper Name="ExternalSubset" Arg='G,Omega,start,[gens,acts,]act'/>
 ##
 ##  <Description>
-##  constructs the external subset of <A>xset</A> on the union of orbits of the
-##  points in <A>start</A>.
+##  constructs the external subset of <A>Omega</A> on the union of orbits of
+##  the points in <A>start</A>.
+##  <P/>
+##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1283,6 +1289,8 @@ OrbitishFO( "ExternalSubset",
 ##  <Description>
 ##  constructs the external subset on the orbit of <A>pnt</A>. The
 ##  <Ref Attr="Representative"/> value of this external set is <A>pnt</A>.
+##  <P/>
+##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
 ##  <Example><![CDATA[
 ##  gap> e:=ExternalOrbit(g,g,(1,2,3));
 ##  (1,2,3)^G
@@ -1663,12 +1671,15 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##   Label="for an external set"/>
 ##
 ##  <Description>
-##  computes a block system for the action.
+##  computes a block system for the transitive (see
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
+##  action of <A>G</A> on <A>Omega</A>.
 ##  If <A>seed</A> is not given and the action is imprimitive,
 ##  a minimal nontrivial block system will be found.
 ##  If <A>seed</A> is given, a block system in which <A>seed</A>
 ##  is the subset of one block is computed.
-##  The action must be transitive.
+##  <P/>
+##  The result is undefined if the action is not transitive.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(8,3);
 ##  E(8)=2[x]2[x]2
@@ -1708,9 +1719,13 @@ OrbitishFO( "Blocks",
 ##
 ##  <Description>
 ##  returns a block system that is maximal (i.e., blocks are maximal with
-##  respect to inclusion) for the action of <A>G</A> on <A>Omega</A>.
+##  respect to inclusion) for the transitive (see
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
+##  action of <A>G</A> on <A>Omega</A>.
 ##  If <A>seed</A> is given, a block system is computed in which <A>seed</A>
 ##  is a subset of one block.
+##  <P/>
+##  The result is undefined if the action is not transitive.
 ##  <Example><![CDATA[
 ##  gap> MaximalBlocks(g,[1..8]);
 ##  [ [ 1, 2, 3, 8 ], [ 4 .. 7 ] ]
@@ -1748,7 +1763,11 @@ OrbitishFO( "MaximalBlocks",
 ##  <Description>
 ##  computes a list of block representatives for all minimal (i.e blocks are
 ##  minimal with respect to inclusion) nontrivial block systems for the
-##  action. 
+##  transitive (see
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
+##  action of <A>G</A> on <A>Omega</A>.
+##  <P/>
+##  The result is undefined if the action is not transitive.
 ##  <Example><![CDATA[
 ##  gap> RepresentativesMinimalBlocks(g,[1..8]);
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ], 
@@ -1867,7 +1886,9 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  or <K>false</K> otherwise.
 ##  <P/>
 ##  <Index>primitive</Index>
-##  An action is <E>primitive</E> if it is transitive and the action admits
+##  An action is <E>primitive</E> if it is transitive (see
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
+##  and the action admits
 ##  no nontrivial block systems. See&nbsp;<Ref Sect="Block Systems"/> for
 ##  the definition of block systems.
 ##  <P/>
@@ -2013,8 +2034,10 @@ OrbitsishOperation( "IsRegular", OrbitsishReq, false, NewProperty );
 ##   Label="for an external set"/>
 ##
 ##  <Description>
-##  returns the rank of a transitive action, i.e. the number of orbits of
-##  the point stabilizer.
+##  returns the rank of the transitive (see
+##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
+##  action of <A>G</A> on <A>Omega</A>, i. e., the number of orbits of
+##  any point stabilizer.
 ##  <Example><![CDATA[
 ##  gap> RankAction(g,Combinations([1..4],2),OnSets);
 ##  4
