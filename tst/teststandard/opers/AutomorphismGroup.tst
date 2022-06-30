@@ -39,5 +39,12 @@ gap> AutomorphismGroup(h);;
 gap> IsomorphismGroups(g,h:forcetest)<>fail;
 true
 
+# went wrong in 4.11
+gap> g:=Group((1,27)(2,26)(3,10)(4,12)(5,24)(6,25)(7,15)(8,21)(9,18)(11,22)
+>   (14,23)(16,19), (1,10,16,2,21)(3,27,11,26,19)(4,14,18,7,17)(5,24,23,20,9)
+>   (6,12,15,25,13));;
+gap> Size(AutomorphismGroup(g));
+1440
+
 #
 gap> STOP_TEST("AutomorphismGroup.tst",1);
