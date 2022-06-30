@@ -659,11 +659,11 @@ static UInt *** SyFreeBags_(UInt size)
 #endif
 
 
-UInt *** SyAllocBags(Int size, UInt need)
+void * SyAllocBags(Int size, UInt need)
 {
     GAP_ASSERT(size > 0);
 
-    UInt *** ret = INVALID_PTR;
+    void * ret = INVALID_PTR;
 
     /* first check if we would get above SyStorKill, if yes exit! */
     if (SyStorKill != 0 && SyStorKill < syWorksize + size) {
@@ -691,7 +691,7 @@ UInt *** SyAllocBags(Int size, UInt need)
         if (need) {
             Panic("cannot extend the workspace any more!");
         }
-        return (UInt***)0;
+        return 0;
     }
 
     // set the overrun flag if we became larger than SyStorMax

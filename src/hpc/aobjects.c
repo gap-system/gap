@@ -1580,7 +1580,7 @@ static Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *cu
       UInt *mptr[2];
       mptr[0] = (UInt *)contents;
       mptr[1] = 0;
-      ResizeBag(mptr, sizeof(Bag) * (n+1));
+      ResizeBag((Bag)mptr, sizeof(Bag) * (n+1));
       MEMBAR_WRITE();
       SET_PTR_BAG(obj, (void *)(mptr[0]));
     }

@@ -144,7 +144,7 @@ enum { FALSE = 0, TRUE = 1 };
 **
 **  (The documentation of 'Bag' is contained in 'gasman.h'.)
 */
-typedef UInt * *        Bag;
+typedef struct OpaqueBag * Bag;
 
 
 /****************************************************************************
