@@ -1651,24 +1651,6 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
-#V  Cyclotomics . . . . . . . . . . . . . . . . . .  field of all cyclotomics
-##
-InstallValue( Cyclotomics, Objectify( NewType(
-    CollectionsFamily( CyclotomicsFamily ),
-    IsField and IsAttributeStoringRep ),
-    rec() ) );
-SetName( Cyclotomics, "Cyclotomics" );
-SetLeftActingDomain( Cyclotomics, Rationals );
-SetIsFiniteDimensional( Cyclotomics, false );
-SetIsFinite( Cyclotomics, false );
-SetIsWholeFamily( Cyclotomics, true );
-SetDegreeOverPrimeField( Cyclotomics, infinity );
-SetDimension( Cyclotomics, infinity );
-SetRepresentative(Cyclotomics, 0);
-
-
-#############################################################################
-##
 ##  Automorphisms of abelian number fields
 ##
 

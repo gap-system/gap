@@ -243,7 +243,7 @@ InstallIsomorphismMaintenance( GaloisStabilizer,
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "Rationals", "field of rationals" );
+DeclareGlobalName( "Rationals" );
 
 DeclareSynonym( "IsRationals",
     IsCyclotomicCollection and IsField and IsPrimeField );
@@ -705,7 +705,7 @@ DeclareGlobalFunction( "LenstraBase" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "Cyclotomics", "domain of all cyclotomics" );
+DeclareGlobalName( "Cyclotomics" );
 
 
 #############################################################################
