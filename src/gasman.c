@@ -287,13 +287,32 @@ static inline Bag *DATA(BagHeader *bag)
 **  size of the  allocation area.  On the other hand each garbage  collection
 **  empties the young bags area.
 */
-Bag *                   MptrBags;
-Bag *                   MptrEndBags;
+static Bag *            MptrBags;
+static Bag *            MptrEndBags;
 static Bag *            OldBags;
-Bag *                   YoungBags;
-Bag *                   AllocBags;
+Bag *                   YoungBags;    // exported for CHANGED_BAG
+static Bag *            AllocBags;
 static UInt             AllocSizeBags;
 static Bag *            EndBags;
+
+
+UInt MASTER_POINTER_NUMBER(Bag bag)
+{
+    if (bag >= (Bag)MptrBags && bag < (Bag)MptrEndBags) {
+        return bag - (Bag)MptrBags + 1;
+    }
+    return 0;
+}
+
+Bag RESTORE_BAG_CONTENT_POINTER(UInt offset)
+{
+    return (Bag)MptrBags + offset - 1;
+}
+
+UInt GASMAN_USED_MEMORY(void)
+{
+    return AllocBags - MptrEndBags;
+}
 
 /* These macros, are (a) for more readable code, but more importantly
    (b) to ensure that unsigned subtracts and divides are used (since
@@ -518,6 +537,11 @@ static inline BOOL IS_BAG_ID(void * ptr)
 {
     return (((void *)MptrBags <= ptr) && (ptr < (void *)MptrEndBags) &&
             ((UInt)ptr & (sizeof(Bag) - 1)) == 0);
+}
+
+BOOL IS_VALID_BAG_ID(Bag bag)
+{
+    return IS_BAG_ID(bag) && (PTR_BAG(bag) >= MptrEndBags);
 }
 
 /****************************************************************************
