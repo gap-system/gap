@@ -44,13 +44,32 @@ BOOL IsWeakDeadBag(Bag bag);
 
 /****************************************************************************
 **
-**  Internal variables exported for the sake of the code in saveload.c
+**  IS_VALID_BAG_ID
+**
+**  This performs a stricter test than IS_BAG_REF does
+*/
+BOOL IS_VALID_BAG_ID(Bag bag);
+
+/****************************************************************************
+**
+**  MASTER_POINTER_NUMBER
 **
 */
-extern  Bag *                   MptrBags;
-extern  Bag *                   MptrEndBags;
-extern  Bag *                   AllocBags;
+UInt MASTER_POINTER_NUMBER(Bag bag);
 
+/****************************************************************************
+**
+**  RESTORE_BAG_CONTENT_POINTER
+**
+*/
+Bag RESTORE_BAG_CONTENT_POINTER(UInt offset);
+
+/****************************************************************************
+**
+**  GASMAN_USED_MEMORY
+**
+*/
+UInt GASMAN_USED_MEMORY(void);
 
 /****************************************************************************
 **

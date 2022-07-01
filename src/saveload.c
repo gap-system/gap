@@ -292,17 +292,14 @@ void SaveSubObj( Obj subobj )
     SaveUInt((UInt) subobj);
   else if (IS_FFE(subobj))
     SaveUInt((UInt) subobj);
-  else if ((((UInt)subobj & 3) != 0) || 
-           subobj < (Bag)MptrBags || 
-           subobj > (Bag)MptrEndBags ||
-           (Bag *)PTR_BAG(subobj) < MptrEndBags)
+  else if (IS_VALID_BAG_ID(subobj))
+    SaveUInt(((UInt)LINK_BAG(subobj)) << 2);
+  else
     {
       Pr("#W bad bag id %d found, 0 saved\n", (Int)subobj, 0);
       GAP_ASSERT(0);
       SaveUInt(0);
     }
-  else
-    SaveUInt(((UInt)LINK_BAG(subobj)) << 2);
 }
 
 Obj LoadSubObj( void )
@@ -310,10 +307,10 @@ Obj LoadSubObj( void )
   UInt word = LoadUInt();
   if (word == 0)
     return (Obj) 0;
-  if ((word & 0x3) == 1 || (word & 0x3) == 2)
+  if ((word & 0x3) != 0)
     return (Obj) word;
   else
-    return (Obj)(MptrBags + (word >> 2)-1);
+    return (Obj)RESTORE_BAG_CONTENT_POINTER(word >> 2);
 }
 
 #endif
@@ -529,7 +526,7 @@ static void WriteSaveHeader( void )
   }
   SaveUInt(GlobalBags.nr);
   SaveUInt(NextSaveIndex-1);
-  SaveUInt(AllocBags - MptrEndBags);
+  SaveUInt(GASMAN_USED_MEMORY());
 
   SaveCStr("Loaded Modules");
   SaveModules();
