@@ -1983,46 +1983,41 @@ end);
 InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
   [IsPermGroup],0,
 function (G)
-local  i, j, U, gens,o,v,a,sel,mintry,orb,orp,isok;
+local  i, j, U, gens,a,mintry,orb,orp,isok;
 
   gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
 
-  if Length(GeneratorsOfGroup(G))<=Length(AbelianInvariants(G))+2 then
-    return GeneratorsOfGroup(G);
+  # remove obvious redundancies...
+  # sort elements by descending order; trivial permutations
+  # at the end
+  SortBy(gens, g -> -Order(g));
+
+  i := 1;
+  while i < Length(gens) do
+    j := i + 1;
+    while j <= Length(gens) do
+      a:=LogPerm(gens[i], gens[j]);
+      if a = false then
+        j := j + 1;
+      else
+        Remove(gens, j);
+      fi;
+    od;
+    i := i + 1;
+  od;
+
+  if Length(gens)<=Length(AbelianInvariants(G))+2 then
+    return gens;
   fi;
-  # try pc methods first. The solvability test should not exceed cost, nor
+
+  # try pc methods. The solvability test should not exceed cost, nor
   # the number of points.
-  if #Length(MovedPoints(G))<50000 and 
+  if #Length(MovedPoints(G))<50000 and
    #((HasIsSolvableGroup(G) and IsSolvableGroup(G)) or IsAbelian(G))
-      IsSolvableGroup(G) 
+      IsSolvableGroup(G)
       and Length(gens)>3 then
     return MinimalGeneratingSet(G);
   fi;
-
-  # remove obvious redundancies
-  o:=List(gens,Order);
-  SortParallel(o,gens,function(a,b) return a>b;end);
-  sel:=Filtered([1..Length(gens)],x->o[x]>1);
-
-  for i in [1..Length(gens)] do
-    if i in sel then
-      #Print(i," ",sel,"\n");
-      for j in sel do
-        if j>i then
-	  a:=LogPerm(gens[i],gens[j]);
-	  if a=false then
-	    #Assert(1,not gens[j] in Group(gens[i]));
-	    a:=a; # avoid empty case
-	  else
-	    #Assert(1,gens[i]^a=gens[j]);
-	    #Print("Remove ",j," by ",i,"\n");
-	    RemoveSet(sel,j);
-	  fi;
-	fi;
-      od;
-    fi;
-  od;
-  gens:=gens{sel};
 
   # store orbit data
   orb:=Set(Orbits(G,MovedPoints(G)),Set);
