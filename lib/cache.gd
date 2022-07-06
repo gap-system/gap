@@ -113,11 +113,52 @@ InstallMethod( FlushCaches, "return method", [], function() end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-
 DeclareGlobalFunction("MemoizePosIntFunction");
+
+
+#############################################################################
+##
+#F  NEW_SORTED_CACHE(<flushable>)
+##
+##  Set up a cache object suitable for use with `GET_FROM_SORTED_CACHE`.
+##  If `flushable` is `true` (which is also the default), then the cache will
+##  be flushed whenever `FlushCaches` is called.
+##
+BIND_GLOBAL("NEW_SORTED_CACHE",
+function(flushable)
+    local cache;
+    cache := [ [], [] ];
+    if IsHPCGAP then
+        ShareSpecialObj(cache);
+    fi;
+    if flushable then
+        InstallMethod( FlushCaches, [],
+          function()
+              atomic readwrite cache do
+                cache[1] := MigrateObj([], cache);
+                cache[2] := MigrateObj([], cache);
+              od;
+              TryNextMethod();
+          end );
+    fi;
+    return cache;
+end);
+
 
 #############################################################################
 ##
 #F  GET_FROM_SORTED_CACHE(<cache>, <key>, <maker>)
+##
+##  Lookup the the given `key` inside `cache`, and return it. If the key is
+##  not yet in the cache, call the 0-argument function `maker`, store its
+##  return value under `key`, and return that value.
+##
+##  Internally, the cache is represented by a list of two lists. The first
+##  of the two lists contains the sorted keys; the second list contains the
+##  corresponding values. So if `cache[1][i]` equals `key`, then the
+##  associated value is stored in `cache[2][i]`.
+##
+##  The advantage of using this helper function is reduced code duplication,
+##  and thread safety when using HPC-GAP.
 ##
 DeclareGlobalFunction("GET_FROM_SORTED_CACHE");

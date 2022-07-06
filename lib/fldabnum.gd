@@ -361,12 +361,7 @@ DeclareSynonym( "CF", CyclotomicField );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "ABELIAN_NUMBER_FIELDS" );
-InstallFlushableValue( ABELIAN_NUMBER_FIELDS, [ [], [] ] );
-if IsHPCGAP then
-    ShareSpecialObj(ABELIAN_NUMBER_FIELDS);
-fi;
-
+BindGlobal( "ABELIAN_NUMBER_FIELDS", NEW_SORTED_CACHE(true) );
 
 #############################################################################
 ##

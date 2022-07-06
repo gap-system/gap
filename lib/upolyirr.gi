@@ -37,10 +37,7 @@ end );
 ##  
 #V  IRR_POLS_OVER_GF_CACHE:  a cache for the following function
 ##  
-IRR_POLS_OVER_GF_CACHE := [ [], [] ];
-if IsHPCGAP then
-    ShareSpecialObj( IRR_POLS_OVER_GF_CACHE );
-fi;
+BindGlobal( "IRR_POLS_OVER_GF_CACHE", NEW_SORTED_CACHE(false) );
 
 DeclareGlobalName("AllIrreducibleMonicPolynomialCoeffsOfDegree");
 BindGlobal("AllIrreducibleMonicPolynomialCoeffsOfDegree", function(n, q)

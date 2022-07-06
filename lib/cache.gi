@@ -71,8 +71,6 @@ function(func, extra...)
     end;
 end);
 
-if IsHPCGAP then
-
 InstallGlobalFunction(GET_FROM_SORTED_CACHE,
 function(cache, key, maker)
     local pos, val;
@@ -88,7 +86,9 @@ function(cache, key, maker)
     # Compute new value.
     val := maker();
 
-    # Store the value.
+    # Store the value. Need to recompute pos as the maker function may have
+    # changed the cache, eg. by recursively calling itself (resp. its "parent
+    # function", the one containing the call to GET_FROM_SORTED_CACHE)
     atomic readwrite cache do
       pos:= POSITION_SORTED_LIST( cache[1], key );
       if pos <= Length( cache[1] ) and cache[1][pos] = key then
@@ -104,37 +104,3 @@ function(cache, key, maker)
     # Return the value.
     return val;
 end);
-
-else
-
-InstallGlobalFunction(GET_FROM_SORTED_CACHE,
-function(cache, key, maker)
-    local pos, val;
-
-    # Check whether this has been stored already.
-    pos:= POSITION_SORTED_LIST( cache[1], key );
-    if pos <= Length( cache[1] ) and cache[1][pos] = key then
-      return cache[2][ pos ];
-    fi;
-
-    # Compute new value.
-    val := maker();
-
-    # Store the value. Need to recompute pos as the maker function may have
-    # changed the cache, eg. by recursively calling itself (resp. its "parent
-    # function", the one containing the call to GET_FROM_SORTED_CACHE)
-    pos:= POSITION_SORTED_LIST( cache[1], key );
-    if pos <= Length( cache[1] ) and cache[1][pos] = key then
-      # oops, something else computed the value in the meantime;
-      # so use that instead
-      val:= cache[2][ pos ];
-    else
-      Add( cache[1], Immutable( key ), pos );
-      Add( cache[2], val, pos );
-    fi;
-
-    # Return the value.
-    return val;
-end);
-
-fi;
