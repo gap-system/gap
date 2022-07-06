@@ -151,7 +151,7 @@ end );
 ##
 #M  CrystGroupDefaultAction . . . . . . . . . . . . . . RightAction initially
 ##
-InstallValue( CrystGroupDefaultAction, RightAction );
+BindGlobal( "CrystGroupDefaultAction", RightAction );
 
 #############################################################################
 ##

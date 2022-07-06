@@ -1647,6 +1647,8 @@ DeclareAttributeSuppCT( "Identifier", IsNearlyCharacterTable, [] );
 ##  <Var Name="LARGEST_IDENTIFIER_NUMBER"/>
 ##
 ##  <Description>
+##  list containing the largest identifier of an ordinary character table in
+##  the current session.
 ##  <!--  We have to use a list in order to admit
 ##    <C>DeclareGlobalVariable</C> and
 ##    <C>InstallFlushableValue</C>.
@@ -1656,12 +1658,10 @@ DeclareAttributeSuppCT( "Identifier", IsNearlyCharacterTable, [] );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "LARGEST_IDENTIFIER_NUMBER",
-    "list containing the largest identifier of an ordinary character table\
- in the current session" );
 if IsHPCGAP then
-    InstallValue( LARGEST_IDENTIFIER_NUMBER, FixedAtomicList([ 0 ]) );
+    BindGlobal( "LARGEST_IDENTIFIER_NUMBER", FixedAtomicList([ 0 ]) );
 else
+    DeclareGlobalVariable( "LARGEST_IDENTIFIER_NUMBER" );
     InstallFlushableValue( LARGEST_IDENTIFIER_NUMBER, [ 0 ] );
 fi;
 
