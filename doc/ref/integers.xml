@@ -71,6 +71,7 @@ in chapter&nbsp;<Ref Chap="Combinatorics"/>.
 <#Include Label="LogInt">
 <#Include Label="RootInt">
 <#Include Label="SmallestRootInt">
+<#Include Label="IsSquareInt">
 <#Include Label="ListOfDigits">
 
 <ManSection>
