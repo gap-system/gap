@@ -2719,7 +2719,7 @@ DeclareAttribute( "BrauerCharacterValue", IsMatrix );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "ZEV_DATA", "nested list of length 2" );
+BindGlobal( "ZEV_DATA", [ [], [] ] );
 DeclareGlobalFunction( "ZevData" );
 DeclareGlobalFunction( "ZevDataValue" );
 

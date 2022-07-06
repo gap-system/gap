@@ -4622,7 +4622,13 @@ InstallMethod( BrauerCharacterValue,
 ##
 #V  ZEV_DATA
 ##
-InstallFlushableValue( ZEV_DATA, [ [], [] ] );
+InstallMethod( FlushCaches,
+  [],
+  function()
+      ZEV_DATA[1] := [];
+      ZEV_DATA[2] := [];
+      TryNextMethod();
+  end );
 
 
 #############################################################################

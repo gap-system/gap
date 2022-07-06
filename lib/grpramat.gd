@@ -216,7 +216,7 @@ DeclareAttribute( "CentralizerInGLnZ", IsCyclotomicMatrixGroup );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalVariable( "CrystGroupDefaultAction" );
+DeclareGlobalName( "CrystGroupDefaultAction" );
 
 BindGlobal( "LeftAction",  Immutable( "LeftAction"  ) );
 BindGlobal( "RightAction", Immutable( "RightAction" ) );
