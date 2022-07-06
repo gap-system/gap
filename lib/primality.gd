@@ -76,16 +76,19 @@
 ##
 #F  IsSquareInt(<n>)
 ##
+##  <#GAPDoc Label="IsSquareInt">
 ##  <ManSection>
 ##  <Func Name="IsSquareInt" Arg='n'/>
 ##
 ##  <Description>
-##  <Ref Func="IsSquareInt"/> tests whether the (positive) integer <A>n</A>
-##  is square of an integer or not.
+##  <Ref Func="IsSquareInt"/> tests whether the integer <A>n</A> is the
+##  square of an integer or not.
 ##  This test is much faster than the simpler <C>RootInt</C><M>(n)^2=n</M>
-##  because of the initial residue tests.
+##  because it first tests whether <A>n</A> is a square residue modulo
+##  some small integers.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("IsSquareInt");
 
