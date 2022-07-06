@@ -1658,12 +1658,7 @@ DeclareAttributeSuppCT( "Identifier", IsNearlyCharacterTable, [] );
 ##  </Description>
 ##  </ManSection>
 ##
-if IsHPCGAP then
-    BindGlobal( "LARGEST_IDENTIFIER_NUMBER", FixedAtomicList([ 0 ]) );
-else
-    DeclareGlobalVariable( "LARGEST_IDENTIFIER_NUMBER" );
-    InstallFlushableValue( LARGEST_IDENTIFIER_NUMBER, [ 0 ] );
-fi;
+BindGlobal( "LARGEST_IDENTIFIER_NUMBER", FixedAtomicList([ 0 ]) );
 
 #############################################################################
 ##
