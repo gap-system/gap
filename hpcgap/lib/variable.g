@@ -63,37 +63,6 @@ end );
 
 #############################################################################
 ##
-#O  FlushCaches( ) . . . . . . . . . . . . . . . . . . . . . Clear all caches
-##
-##  <#GAPDoc Label="FlushCaches">
-##  <ManSection>
-##  <Oper Name="FlushCaches" Arg=""/>
-##
-##  <Description>
-##  <Ref Oper="FlushCaches"/> resets the value of each global variable that
-##  has been declared with <Ref Func="DeclareGlobalVariable"/> and for which
-##  the initial value has been set with <Ref Func="InstallFlushableValue"/>
-##  or <Ref Func="InstallFlushableValueFromFunction"/>
-##  to this initial value.
-##  <P/>
-##  <Ref Oper="FlushCaches"/> should be used only for debugging purposes,
-##  since the involved global variables include for example lists that store
-##  finite fields and cyclotomic fields used in the current &GAP; session,
-##  in order to avoid that these fields are constructed anew in each call
-##  to <Ref Func="GF" Label="for field size"/> and
-##  <Ref Func="CF" Label="for (subfield and) conductor"/>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "FlushCaches", [] );
-# This method is just that one method is callable. It is installed first, so
-# it will be last in line.
-InstallMethod( FlushCaches, "return method", [], function() end );
-
-
-#############################################################################
-##
 #F  DeclareGlobalVariable( <name>[, <description>] )
 ##
 ##  <#GAPDoc Label="DeclareGlobalVariable">
