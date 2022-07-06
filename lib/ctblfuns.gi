@@ -4620,19 +4620,6 @@ InstallMethod( BrauerCharacterValue,
 
 #############################################################################
 ##
-#V  ZEV_DATA
-##
-InstallMethod( FlushCaches,
-  [],
-  function()
-      ZEV_DATA[1] := [];
-      ZEV_DATA[2] := [];
-      TryNextMethod();
-  end );
-
-
-#############################################################################
-##
 #F  ZevDataValue( <q>, <n> )
 ##
 InstallGlobalFunction( ZevDataValue, function( q, n )
@@ -4755,50 +4742,21 @@ InstallGlobalFunction( ZevDataValue, function( q, n )
 #F  ZevData( <q>, <n> )
 #F  ZevData( <q>, <n>, <listofpairs> )
 ##
-InstallGlobalFunction( ZevData, function( arg )
-    local q,
-          n,
-          pos,
-          pos2;
+InstallGlobalFunction( ZevData, function( q, n, listofpairs... )
+    local aux, result;
 
-    q:= arg[1];
-    n:= arg[2];
+    aux := GET_FROM_SORTED_CACHE(ZEV_DATA, q, {} -> NEW_SORTED_CACHE(false));
 
-    pos:= Position( ZEV_DATA[1], q );
-    if pos = fail then
-      Add( ZEV_DATA[1], q );
-      Add( ZEV_DATA[2], [ [], [] ] );
-      pos:= Length( ZEV_DATA[1] );
-    fi;
-
-    pos2:= Position( ZEV_DATA[2][ pos ][1], n );
-    if pos2 = fail then
-      Add( ZEV_DATA[2][ pos ][1], n );
-      pos2:= Length( ZEV_DATA[2][ pos ][1] );
-    fi;
-
-    if Length( arg ) = 3 then
-
-      # Store the third argument at this position.
-      if IsBound( ZEV_DATA[2][ pos ][2][ pos2 ] ) then
-        if ZEV_DATA[2][ pos ][2][ pos2 ] = arg[3] then
-          Info( InfoWarning, 1,
-                "ZevData( ", q, ", ", n, " ) was already stored" );
-        else
-          Error( "incompatible ZevData( ", q, ", ", n, " )" );
-        fi;
+    if Length( listofpairs ) = 1 then
+      listofpairs := listofpairs[1];
+      result := GET_FROM_SORTED_CACHE(aux, n, {} -> Immutable(listofpairs));
+      if result <> listofpairs then
+        Error( "incompatible ZevData( ", q, ", ", n, " )" );
       fi;
-      ZEV_DATA[2][ pos ][2][ pos2 ]:= Immutable( arg[3] );
-      return arg[3];
+      return result;
 
     else
-
-      # Get the entry.
-      if not IsBound( ZEV_DATA[2][ pos ][2][ pos2 ] ) then
-        ZEV_DATA[2][ pos ][2][ pos2 ]:= ZevDataValue( q, n );
-      fi;
-      return ZEV_DATA[2][ pos ][2][ pos2 ];
-
+      return GET_FROM_SORTED_CACHE(aux, n, {} -> ZevDataValue( q, n ));
     fi;
 end );
 
