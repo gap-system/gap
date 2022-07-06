@@ -1388,7 +1388,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
         }
     }
 
-  if (dstmax > LEN_PLIST(dstlist))
+  if (dstmax >= LEN_PLIST(dstlist))
     {
       sptr = CONST_ADDR_OBJ(dstlist)+dstmax;
       ct = dstmax;

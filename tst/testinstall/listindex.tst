@@ -265,6 +265,15 @@ gap> CopyListEntries(l,2,2,l,3,2,2); l;
 gap> l := [1,2,3,4,5];;
 gap> CopyListEntries(l,1,1,l,3,2,2); l;
 [ 1, 2, 1, 4, 2 ]
+gap> l := [1,2,3,4,5];;
+gap> CopyListEntries([],1,1,l,1,1,5); l;
+[  ]
+gap> l := [1,2,3,4,5];;
+gap> CopyListEntries([],1,1,l,1,1,6); l;
+[  ]
+gap> l := [1,2,3,4,5];;
+gap> CopyListEntries([1,,,,,,7],1,1,l,1,1,6); l;
+[ 1 ]
 
 #
 gap> CopyListEntries();
