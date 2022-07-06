@@ -57,8 +57,12 @@ KEXT_LDFLAGS += $(LDFLAGS)
 KEXT_BINARCHDIR = bin/$(GAParch)
 KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
 
+# the following settings are provided by sysinfo.gap in GAP >= 4.12;
+# for compatibility with older GAP version (at least 4.9, 4.10, 4.11)
+# we try to "guess" suitable values here
 GAP ?= $(GAPPATH)/gap
 GAC ?= $(GAPPATH)/gac
+GAP_OBJEXT ?= lo
 
 # override KEXT_RECONF if your package needs a different invocation
 # for reconfiguring (e.g. `./config.status --recheck` for autoconf)
@@ -74,12 +78,12 @@ all: $(KEXT_SO)
 
 ########################################################################
 # Object files
-# For each file FOO.c in SOURCES, add gen/FOO.lo to KEXT_OBJS; similar
-# for .cc files
+# For each file FOO.c in SOURCES, add gen/FOO.$(GAP_OBJEXT) to KEXT_OBJS
+# and similar for .cc files
 ########################################################################
-KEXT_OBJS = $(patsubst %.s,gen/%.lo, \
-            $(patsubst %.cc,gen/%.lo, \
-            $(patsubst %.c,gen/%.lo, \
+KEXT_OBJS = $(patsubst %.s,gen/%.$(GAP_OBJEXT), \
+            $(patsubst %.cc,gen/%.$(GAP_OBJEXT), \
+            $(patsubst %.c,gen/%.$(GAP_OBJEXT), \
                 $(KEXT_SOURCES))))
 
 ########################################################################
@@ -100,7 +104,7 @@ endif
 ########################################################################
 
 # List of all (potential) dependency files, derived from KEXT_OBJS
-KEXT_DEPFILES = $(patsubst %.lo,%.d,$(KEXT_OBJS))
+KEXT_DEPFILES = $(patsubst %.$(GAP_OBJEXT),%.d,$(KEXT_OBJS))
 
 # Include the dependency tracking files
 -include $(KEXT_DEPFILES)
@@ -117,19 +121,19 @@ KEXT_DEPFLAGS = -MQ "$@" -MMD -MP -MF $(@D)/$(*F).d
 
 # build rule for C code
 # The dependency on Makefile ensures that re-running configure recompiles everything
-gen/%.lo: %.c Makefile
+gen/%.$(GAP_OBJEXT): %.c Makefile
 	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 
 # build rule for C++ code
 # The dependency on Makefile ensures that re-running configure recompiles everything
-gen/%.lo: %.cc Makefile
+gen/%.$(GAP_OBJEXT): %.cc Makefile
 	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CXXFLAGS)" -c $< -o $@
 
 # build rule for assembler code
 # The dependency on Makefile ensures that re-running configure recompiles everything
-gen/%.lo: %.s Makefile
+gen/%.$(GAP_OBJEXT): %.s Makefile
 	@mkdir -p $(@D)
 	$(QUIET_GAC)$(GAC) -d -p "$(KEXT_DEPFLAGS)" -p "$(KEXT_CFLAGS)" -c $< -o $@
 

@@ -856,7 +856,10 @@ GAP="$(SYSINFO_GAP)"
 # GAC: path to the `gac` executable (may be a shell script)
 GAC="$(SYSINFO_GAC)"
 
-# Build flags for use by `gac` resp. build systems: these correspond to
+# File extension used by object files created by GAC
+GAP_OBJEXT=lo
+
+# Build flags for use by `gac` resp. package build systems: these correspond to
 # the usual variables as used by e.g. autotools, with the added prefix `GAP_`.
 GAP_CC="$(CC)"
 GAP_CXX="$(CXX)"
