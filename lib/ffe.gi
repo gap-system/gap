@@ -25,21 +25,6 @@
 
 #############################################################################
 ##
-#V  GALOIS_FIELDS
-##
-##  global cache of finite fields `GF( <p>^<d> )', consisting of a pair of
-##  lists of equal size, the first list being a set of field sizes;
-##  the field of size $p^d$ is stored in `GALOIS_FIELDS[2][<pos>]' if and
-##  and only if `GALOIS_FIELDS[1][<pos>]' is equal to $p^d$
-##
-InstallFlushableValue( GALOIS_FIELDS, [ [], [] ] );
-if IsHPCGAP then
-  ShareSpecialObj( GALOIS_FIELDS );
-fi;
-
-
-#############################################################################
-##
 #M  \+( <ffe>, <rat> )
 #M  \+( <rat>, <ffe> )
 #M  \*( <ffe>, <rat> )

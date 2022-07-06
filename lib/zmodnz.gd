@@ -148,12 +148,7 @@ InstallTrueMethod(IsEuclideanRing, IsZmodnZObjNonprimeCollection and
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "Z_MOD_NZ",
-    "list of lists, at position [1][i] is n s.t. [2][i] is ZmodnZ(n)" );
-InstallFlushableValue( Z_MOD_NZ, [ [], [] ] );
-if IsHPCGAP then
-    ShareSpecialObj( Z_MOD_NZ );
-fi;
+BindGlobal( "Z_MOD_NZ", NEW_SORTED_CACHE(true) );
 
 
 #############################################################################

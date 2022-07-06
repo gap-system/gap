@@ -128,10 +128,7 @@ end);
 #F  ApproximateRoot(<num>,<n>[,<digits>]) . . approximate th n-th root of num
 ##   numerically with a denominator of 'digits' digits.
 ##
-APPROXROOTS:=[ [], [] ];
-if IsHPCGAP then
-  ShareSpecialObj(APPROXROOTS);
-fi;
+BIND_GLOBAL( "APPROXROOTS", NEW_SORTED_CACHE(false) );
 
 BindGlobal("ApproximateRoot",function(arg)
 local r,e,f,store,maker;

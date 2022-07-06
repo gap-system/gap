@@ -322,10 +322,8 @@ DeclareGlobalFunction( "FFEFamily" );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "FAMS_FFE_LARGE", [ [], [] ] );
-if IsHPCGAP then
-    ShareSpecialObj( FAMS_FFE_LARGE );
-fi;
+BIND_GLOBAL( "FAMS_FFE_LARGE", NEW_SORTED_CACHE(false) );
+
 
 #############################################################################
 ##
@@ -346,7 +344,7 @@ fi;
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "GALOIS_FIELDS" );
+BIND_GLOBAL( "GALOIS_FIELDS", NEW_SORTED_CACHE(true) );
 
 
 #############################################################################

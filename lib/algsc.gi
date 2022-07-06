@@ -687,16 +687,6 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 
 #############################################################################
 ##
-#V  QuaternionAlgebraData
-##
-InstallFlushableValue( QuaternionAlgebraData, [ [], [] ] );
-if IsHPCGAP then
-    ShareSpecialObj( QuaternionAlgebraData );
-fi;
-
-
-#############################################################################
-##
 #F  QuaternionAlgebra( <F>[, <a>, <b>] )
 ##
 InstallGlobalFunction( QuaternionAlgebra, function( arg )

@@ -1831,7 +1831,7 @@ DeclareGlobalFunction( "QuaternionAlgebra" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalVariable( "QuaternionAlgebraData" );
+BindGlobal( "QuaternionAlgebraData", NEW_SORTED_CACHE(true) );
 
 
 #############################################################################
