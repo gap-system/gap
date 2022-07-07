@@ -79,14 +79,59 @@ if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
 fi
 
 
+# is output going to a terminal?
+if test -t 1; then
+
+    # does the terminal support color?
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test $ncolors -ge 8; then
+        bold="$(tput bold)"
+        underline="$(tput smul)"
+        standout="$(tput smso)"
+        normal="$(tput sgr0)"
+        black="$(tput setaf 0)"
+        red="$(tput setaf 1)"
+        green="$(tput setaf 2)"
+        yellow="$(tput setaf 3)"
+        blue="$(tput setaf 4)"
+        magenta="$(tput setaf 5)"
+        cyan="$(tput setaf 6)"
+        white="$(tput setaf 7)"
+    fi
+fi
+
+notice() {
+    printf "${green}%s${normal}\n" "$*"
+}
+
+warning() {
+    printf "${yellow}WARNING: %s${normal}\n" "$*"
+}
+
+error() {
+    printf "${red}ERROR: %s${normal}\n" "$*" 1>&2
+    exit 1
+}
+
+
+#############################################################################
+##
+#F  echo_and_run
+##
+echo_and_run () {
+    cmd="$1" ; shift
+    echo "$cmd" "$@"
+    "$cmd" "$@"
+}
+
 #############################################################################
 ##
 #F  gap_compile <output> <input> <module-name> <identifier>
 ##
 gap_compile () {
     mkdir -p $(dirname $1)
-    echo ${gap_compiler} -C $1 $2 $3 $4
-    ${gap_compiler} -C "$1" "$2" "$3" "$4"
+    echo_and_run ${gap_compiler} -C "$1" "$2" "$3" "$4"
 }
 
 
@@ -96,8 +141,7 @@ gap_compile () {
 ##
 c_compile () {
     mkdir -p $(dirname $1)
-    echo ${c_compiler} ${GAP_CFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2
-    ${c_compiler} ${GAP_CFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
+    echo_and_run ${c_compiler} ${GAP_CFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
 
 
@@ -107,8 +151,7 @@ c_compile () {
 ##
 cxx_compile () {
     mkdir -p $(dirname $1)
-    echo ${cxx_compiler} ${GAP_CXXFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2
-    ${cxx_compiler} ${GAP_CXXFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
+    echo_and_run ${cxx_compiler} ${GAP_CXXFLAGS} -o $1 ${GAP_CPPFLAGS} -c $2 || exit 1
 }
 
 
@@ -118,10 +161,9 @@ cxx_compile () {
 ##
 c_link_dyn () {
     mkdir -p $(dirname $1)
-    echo ${c_dyn_linker} ${GAP_LDFLAGS} -o $1 $2 ${c_addlibs}
-    output_la=${1%.so}.la
+    echo_and_run ${c_dyn_linker} ${GAP_LDFLAGS} -o "${1%.so}.la" $2 ${c_addlibs} || exit 1
+
     output_dir=$(dirname $1)
-    ${c_dyn_linker} ${GAP_LDFLAGS} -o "$output_la" $2 ${c_addlibs} || exit 1
     if [ X"$SYS_IS_CYGWIN32" = X"yes" ] ; then
         # GAP assumes shared libraries end in .so
         for dllfile in $(cd $output_dir/.libs; ls *.dll); do
@@ -231,10 +273,9 @@ process_gap_file () {
   if [ $comp_howfar != "c_code" ]; then
     process_c_file $name $c_file
     if [ "$savetemps" = "true" ]; then
-        echo "Leaving C file " $c_file
+        notice "Leaving C file " $c_file
     else
-        echo rm -f $c_file
-        rm -f $c_file
+        echo_and_run rm -f $c_file
     fi
   fi
 }
@@ -245,10 +286,9 @@ process_gap_file () {
 ##
 clean_up () {
      if [ "$savetemps" = "true" ]; then
-        echo "Leaving files on cleanup: " ${temps_c} ${temps_o}
+        notice "Leaving files on cleanup: " ${temps_c} ${temps_o}
     else
-        echo rm -f ${temps_c} ${temps_o}
-        rm -f ${temps_c} ${temps_o}
+        echo_and_run rm -f ${temps_c} ${temps_o}
     fi
 }
 trap "clean_up" 2 3
@@ -259,8 +299,7 @@ trap "clean_up" 2 3
 ##  parse the arguments
 ##
 if [ $# = 0 ]; then
-    echo "usage: $0 [-d] [-c|-C] [-o <output>] <input>..."
-    exit 1
+    error "usage: $0 [-d] [-c|-C] [-o <output>] <input>..."
 fi
 
 comp_mode="comp_static"
@@ -296,16 +335,14 @@ while [ $# -gt 0 ]; do
     *.g|*.gap|*.gd|*.gi|*.c|*.cc|*.cpp|*.cxx|*.s|*.o|*.lo)
                           inputs="${inputs} $1";;
 
-    *)                    echo "$0: cannot handle this argument '$1'"
-                          exit 1;;
+    *)                    error "$0: cannot handle this argument '$1'";;
 
     esac
     shift
 done
 
 if [ "X${inputs}" = "X" ]; then
-    echo "$0: no input files given"
-    exit 1
+    error "$0: no input files given"
 fi
 
 
@@ -370,18 +407,16 @@ for input in ${inputs}; do
 # link phase
 if [ $comp_howfar = "link" ]; then
     if [ $comp_mode = "comp_static" ]; then
-        echo "$0: static linking is not supported anymore, use -d / --dynamic"
-        exit 1
+        error "$0: static linking is not supported anymore, use -d / --dynamic"
     fi
 
     if [ "X${output}" = "X" ]; then output="${name}.la"; fi
     c_link_dyn ${output} "${objects}"
     
     if [ "$savetemps" = "true" ]; then
-        echo "Leaving object files " ${temps_o}
+        notice "Leaving object files " ${temps_o}
     else
-        echo rm -f ${temps_o}
-        rm -f ${temps_o}
+        echo_and_run rm -f ${temps_o}
     fi
 fi
 
