@@ -1642,7 +1642,12 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
     if sf<>infinity and IsPrimeInt(sf) and sf>MAXSIZE_GF_INTERNAL then
       if not (IsMatrixObj(matrix) and not IsMutable(matrix)) then
         if field=sf then field:=Integers mod sf;fi;
-        matrix:=Matrix(field,matrix);
+##  Enable this later when the code for matrix objects over large prime fields
+##  is complete and tested.
+##          matrix:=Matrix(field,matrix);
+        for i in ind2 do
+          matrix[i]:=List(matrix[i],j->j); # plist conversion
+        od;
       fi;
     else
       for i in ind2 do
