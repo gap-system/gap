@@ -246,7 +246,7 @@ static inline Bag *DATA(BagHeader *bag)
 static inline void SET_PTR_BAG(Bag bag, Bag *val)
 {
     GAP_ASSERT(bag != 0);
-    *(Bag**)bag = val;
+    bag->body = val;
 }
 
 /****************************************************************************
@@ -2554,9 +2554,6 @@ void CheckMasterPointers( void )
 //
 void SwapMasterPoint(Bag bag1, Bag bag2)
 {
-    Bag * swapptr;
-    Bag   swapbag;
-
     if (bag1 == bag2)
         return;
 
@@ -2572,13 +2569,9 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
     }
 
     // get the pointers & swap them
-    swapptr = PTR_BAG(bag1);
-    SET_PTR_BAG(bag1, PTR_BAG(bag2));
-    SET_PTR_BAG(bag2, swapptr);
+    SWAP(UInt *, bag1->body, bag2->body);
 
     // Now swap links, so in the end the list will go
     // through the bags in the same order.
-    swapbag = LINK_BAG(bag1);
-    LINK_BAG(bag1) = LINK_BAG(bag2);
-    LINK_BAG(bag2) = swapbag;
+    SWAP(Bag, LINK_BAG(bag1), LINK_BAG(bag2));
 }

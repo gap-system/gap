@@ -318,11 +318,7 @@ EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
 }
 
 #if defined(USE_BOEHM_GC)
-EXPORT_INLINE void SET_PTR_BAG(Bag bag, Bag *val)
-{
-    GAP_ASSERT(bag != 0);
-    *(Bag**)bag = val;
-}
+void SET_PTR_BAG(Bag bag, Bag *val);
 #endif
 
 

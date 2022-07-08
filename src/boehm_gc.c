@@ -16,6 +16,7 @@
 #include "boehm_gc.h"
 
 #include "gapstate.h"
+#include "gaputils.h"
 #include "gasman.h"
 #include "objects.h"
 
@@ -39,6 +40,13 @@
 
 Int SyStorKill;
 
+// fill in the data "behind" bags
+struct OpaqueBag {
+    void * body;
+};
+GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
+                  "sizeof(OpaqueBag) is wrong");
+
 #ifndef WARD_ENABLED
 
 static inline Bag * DATA(BagHeader * bag)
@@ -46,6 +54,11 @@ static inline Bag * DATA(BagHeader * bag)
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }
 
+void SET_PTR_BAG(Bag bag, Bag *val)
+{
+    GAP_ASSERT(bag != 0);
+    bag->body = val;
+}
 
 /****************************************************************************
 **
@@ -356,7 +369,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
             old_mem = PTR_BAG(bag);
             old_mem = ((char *)old_mem) - sizeof(BagHeader);
             memcpy(new_mem, old_mem, size);
-            SET_PTR_BAG(bag, (void *)(((char *)new_mem) + sizeof(BagHeader)));
+            SET_PTR_BAG(bag, DATA(new_mem));
         }
     }
 #ifdef HPCGAP
@@ -539,10 +552,7 @@ void InitGlobalBag(Bag * addr, const Char * cookie)
 
 void SwapMasterPoint(Bag bag1, Bag bag2)
 {
-    Obj * ptr1 = PTR_BAG(bag1);
-    Obj * ptr2 = PTR_BAG(bag2);
-    SET_PTR_BAG(bag1, ptr2);
-    SET_PTR_BAG(bag2, ptr1);
+    SWAP(UInt *, bag1->body, bag2->body);
 }
 
 #endif // WARD_ENABLED
