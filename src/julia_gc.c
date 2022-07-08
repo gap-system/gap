@@ -43,6 +43,13 @@
 #include <julia_threads.h>  // for jl_get_ptls_states
 #include <julia_gcext.h>
 
+// fill in the data "behind" bags
+struct OpaqueBag {
+    void * body;
+};
+GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
+                  "sizeof(OpaqueBag) is wrong");
+
 /****************************************************************************
 **
 **  Various options controlling special features of the Julia GC code follow
@@ -162,7 +169,7 @@ static inline Bag * DATA(BagHeader * bag)
 static inline void SET_PTR_BAG(Bag bag, Bag *val)
 {
     GAP_ASSERT(bag != 0);
-    *(Bag**)bag = val;
+    bag->body = val;
 }
 
 static TNumExtraMarkFuncBags ExtraMarkFuncBags;
@@ -958,10 +965,7 @@ void InitGlobalBag(Bag * addr, const Char * cookie)
 
 void SwapMasterPoint(Bag bag1, Bag bag2)
 {
-    Obj * ptr1 = PTR_BAG(bag1);
-    Obj * ptr2 = PTR_BAG(bag2);
-    SET_PTR_BAG(bag1, ptr2);
-    SET_PTR_BAG(bag2, ptr1);
+    SWAP(UInt *, bag1->body, bag2->body);
 
     jl_gc_wb((void *)bag1, BAG_HEADER(bag1));
     jl_gc_wb((void *)bag2, BAG_HEADER(bag2));
