@@ -174,6 +174,8 @@ InstallMethod( Display, "for a plist vector", [ IsPlistVectorRep ],
     Print(v![ELSPOS],"\n>\n");
   end );
 
+InstallMethod( CompatibleVectorFilter, ["IsPlistMatrixRep"],
+  M -> IsPlistVectorRep );
 
 ############################################################################
 ############################################################################
@@ -1291,4 +1293,10 @@ InstallMethod( NewCompanionMatrix,
     Add(ll,l);
     return ll;
   end );
+
+# tell method selection that objects know their BaseDomain
+# (this should be in the first section above, but that causes
+# various "method matches more than one declaration" messages)
+InstallTrueMethod(HasBaseDomain, IsPlistVectorRep);
+InstallTrueMethod(HasBaseDomain, IsPlistMatrixRep);
 
