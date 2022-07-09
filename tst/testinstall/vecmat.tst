@@ -227,13 +227,17 @@ gap> F := Integers mod 6;; m := IdentityMat( 3, F );
   [ ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ), ZmodnZObj( 0, 6 ) ], 
   [ ZmodnZObj( 0, 6 ), ZmodnZObj( 0, 6 ), ZmodnZObj( 1, 6 ) ] ]
 gap> w := ImmutableMatrix( F, m );;
-gap> m = w;
-true
+
+#  these "=" tests contradict the definition of "=" in matobj.gi
+#  there is no method for IsPlist and IsMatrixObj in general
+#gap> m = w;
+#true
 gap> IsMutable(w);
 false
 gap> w := ImmutableMatrix( F, m, true );;
-gap> m = w;
-true
+
+#gap> m = w;
+#true
 gap> IsMutable(w);
 false
 
