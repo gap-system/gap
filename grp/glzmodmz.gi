@@ -171,7 +171,7 @@ local geni,m,slmats,gens,f,rels,i,j,k,l,mat,mat1,mats,id,nh,g;
 
   g := Group(slmats);
   mat := Concatenation(id{[nh+1..n]},-id{[1..nh]});
-  SetInvariantBilinearForm(g,rec(matrix:=mat));
+  SetInvariantBilinearForm(g,rec(matrix:=Matrix(ring,mat)));
   return g;
 end);
 
@@ -436,7 +436,7 @@ local oper,n,R,o,nrit,
     g:=Group(List(GeneratorsOfGroup(g),TransposedMat));
     SetSize(g,e);
   fi;
-  SetInvariantBilinearForm(g,rec(matrix:=f*oner));
+  SetInvariantBilinearForm(g,rec(matrix:=Matrix(R, f*oner)));
   
   return g;
 end);
