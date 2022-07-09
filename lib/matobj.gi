@@ -1721,3 +1721,14 @@ InstallEarlyMethod( SwapMatrixColumns,
       TryNextMethod();
     fi;
   end );
+
+
+############################################################################
+##  Fallback method for DeterminantMatrix
+InstallMethod(DeterminantMatrix, ["IsMatrixObj"],
+function( mat )
+  local unpack;
+  unpack := List(mat, List);
+  return DeterminantMat( unpack );
+end);
+
