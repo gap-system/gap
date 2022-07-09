@@ -88,9 +88,9 @@ Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> IdentityMatrix(Integers mod 4, 2);
-<matrix mod 4: [ [ 1, 0 ], [ 0, 1 ] ]>
+<2x2-matrix over (Integers mod 4)>
 gap> IdentityMatrix(Integers mod 4, 0);
-<0x0-matrix mod 4>
+<0x0-matrix over (Integers mod 4)>
 gap> IdentityMatrix(Integers mod 4, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
