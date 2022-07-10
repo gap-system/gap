@@ -214,8 +214,6 @@ GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
 */
 
 enum {
-    SIZE_MPTR_BAGS = 1,
-
     T_DUMMY = NUM_TYPES - 1,
 };
 
@@ -300,8 +298,8 @@ static inline void SET_PTR_BAG(Bag bag, Bag *val)
 **  size of the  allocation area.  On the other hand each garbage  collection
 **  empties the young bags area.
 */
-static Bag *            MptrBags;
-static Bag *            MptrEndBags;
+static Bag              MptrBags;
+static Bag              MptrEndBags;
 static Bag *            OldBags;
 Bag *                   YoungBags;    // exported for CHANGED_BAG
 static Bag *            AllocBags;
@@ -311,20 +309,20 @@ static Bag *            EndBags;
 
 UInt MASTER_POINTER_NUMBER(Bag bag)
 {
-    if (bag >= (Bag)MptrBags && bag < (Bag)MptrEndBags) {
-        return bag - (Bag)MptrBags + 1;
+    if (bag >= MptrBags && bag < MptrEndBags) {
+        return bag - MptrBags + 1;
     }
     return 0;
 }
 
 Bag RESTORE_BAG_CONTENT_POINTER(UInt offset)
 {
-    return (Bag)MptrBags + offset - 1;
+    return MptrBags + offset - 1;
 }
 
 UInt GASMAN_USED_MEMORY(void)
 {
-    return AllocBags - MptrEndBags;
+    return (Bag)AllocBags - MptrEndBags;
 }
 
 /* These macros, are (a) for more readable code, but more importantly
@@ -334,7 +332,7 @@ UInt GASMAN_USED_MEMORY(void)
    answer in units of a word (ie sizeof(UInt) bytes), which should
    therefore be small enough not to cause problems. */
 
-static inline UInt SpaceBetweenPointers(const Bag * a, const Bag * b)
+static inline UInt SpaceBetweenPointers(const void * a, const void * b)
 {
     GAP_ASSERT(b <= a);
     UInt res = (((UInt)((UInt)(a) - (UInt)(b))) / sizeof(Bag));
@@ -353,7 +351,7 @@ static inline UInt SpaceBetweenPointers(const Bag * a, const Bag * b)
 static int SanityCheckGasmanPointers(void)
 {
     return MptrBags <= MptrEndBags &&
-           MptrEndBags <= OldBags &&
+           MptrEndBags <= (Bag)OldBags &&
            OldBags <= YoungBags &&
            YoungBags <= AllocBags &&
            AllocBags <= EndBags;
@@ -554,7 +552,7 @@ static inline BOOL IS_BAG_ID(void * ptr)
 
 BOOL IS_VALID_BAG_ID(Bag bag)
 {
-    return IS_BAG_ID(bag) && (PTR_BAG(bag) >= MptrEndBags);
+    return IS_BAG_ID(bag) && (PTR_BAG(bag) >= OldBags);
 }
 
 /****************************************************************************
@@ -609,7 +607,7 @@ static void CANARY_ALLOW_ACCESS_ALL_BAGS(void)
 // Mark all bags as inaccessible
 static void CANARY_FORBID_ACCESS_ALL_BAGS(void)
 {
-    VALGRIND_MAKE_MEM_NOACCESS(MptrBags, (EndBags - MptrBags) * sizeof(Bag));
+    VALGRIND_MAKE_MEM_NOACCESS(MptrBags, SizeWorkspace * sizeof(Bag));
 }
 
 // Temporarily disable valgrind checking. This is used while creating bags or
@@ -803,7 +801,7 @@ BOOL IsWeakDeadBag(Bag bag)
 {
     CANARY_DISABLE_VALGRIND();
     BOOL isWeakDeadBag = (((UInt)bag & (sizeof(Bag) - 1)) == 0) &&
-                         (Bag)MptrBags <= bag && bag < (Bag)MptrEndBags &&
+                         MptrBags <= bag && bag < MptrEndBags &&
                          ((UInt)bag->body & (sizeof(Bag) - 1)) == 1;
     CANARY_ENABLE_VALGRIND();
     return isWeakDeadBag;
@@ -820,7 +818,7 @@ BOOL IsWeakDeadBag(Bag bag)
 */
 void CallbackForAllBags(void (*func)(Bag))
 {
-    for (Bag bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
+    for (Bag bag = MptrBags; bag < MptrEndBags; bag++) {
         CANARY_DISABLE_VALGRIND();
         BOOL is_bag = IS_BAG_BODY(bag->body);
         CANARY_ENABLE_VALGRIND();
@@ -975,12 +973,12 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
           if (SizeWorkspace < target)
             SyAllocBags(sizeof(Bag)*(target- SizeWorkspace)/1024, 1);
         }
-      EndBags = MptrBags + target;
+      EndBags = (Bag *)MptrBags + target;
     }
-  OldBags = MptrBags + nBags + (SizeWorkspace - nBags - maxSize)/8;
-  MptrEndBags = OldBags;
+  OldBags = (Bag *)MptrBags + nBags + (SizeWorkspace - nBags - maxSize)/8;
+  MptrEndBags = (Bag)OldBags;
   AllocBags = OldBags;
-  NextMptrRestoring = (Bag)MptrBags;
+  NextMptrRestoring = MptrBags;
   SizeAllBags = 0;
   NrAllBags = 0;
 }
@@ -999,7 +997,7 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
 
   NextMptrRestoring++;
 
-  if ((Bag *)NextMptrRestoring >= MptrEndBags)
+  if (NextMptrRestoring >= MptrEndBags)
     Panic("Overran Masterpointer area");
 
   for (i = 0; i < WORDS_BAG(size); i++)
@@ -1025,7 +1023,7 @@ void FinishedRestoringBags( void )
   YoungBags = AllocBags;
   FreeMptrBags = NextMptrRestoring;
   // set up chain of unused master pointers
-  for (p = NextMptrRestoring; p +1 < (Bag)MptrEndBags; p++)
+  for (p = NextMptrRestoring; p + 1 < MptrEndBags; p++)
     p->body = p+1;
   p->body = 0;
   NrLiveBags = NrAllBags;
@@ -1139,9 +1137,9 @@ static void MoveBagMemory(char * oldbase, char * newbase)
 {
     Int moveSize = (newbase - oldbase) / sizeof(Bag);
     // update the masterpointers
-    for (Bag * p = MptrBags; p < MptrEndBags; p++) {
-        if ((Bag)MptrEndBags <= *p)
-            *p += moveSize;
+    for (Bag bag = MptrBags; bag < MptrEndBags; bag++) {
+        if (MptrEndBags <= (Bag)bag->body)
+            bag->body = (Bag)bag->body + moveSize;
     }
 
     // update 'OldBags', 'YoungBags', 'AllocBags', and 'EndBags'
@@ -1259,9 +1257,6 @@ void SetStackBottomBags(void * StackBottom)
 
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
-    Bag *               p;              /* loop variable                   */
-    UInt                i;              /* loop variable                   */
-
     ClearGlobalBags();
 
     /* install the allocator and the abort function                        */
@@ -1274,7 +1269,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     initial_size    = (initial_size + 511) & ~(511);
     MptrBags = SyAllocBags( initial_size, 1 );
     GAP_ASSERT(MptrBags);
-    EndBags = MptrBags + 1024*(initial_size / sizeof(Bag*));
+    EndBags = (Bag *)MptrBags + 1024 * (initial_size / sizeof(Bag *));
 
     // In GAP_MEM_CHECK we want as few master pointers as possible, as we
     // have to loop over them very frequently.
@@ -1284,12 +1279,9 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     UInt initialBagCount = 1024*initial_size/8/sizeof(Bag*);
 #endif
     /* 1/8th of the storage goes into the masterpointer area               */
-    FreeMptrBags = (Bag)MptrBags;
-    for ( p = MptrBags;
-          p + 2*(SIZE_MPTR_BAGS) <= MptrBags+initialBagCount;
-          p += SIZE_MPTR_BAGS )
-    {
-        *p = (Bag)(p + SIZE_MPTR_BAGS);
+    FreeMptrBags = MptrBags;
+    for (Bag bag = MptrBags; bag + 1 < MptrBags + initialBagCount; bag++) {
+        bag->body = bag + 1;
     }
 
     /* the rest is for bags                                                */
@@ -1297,14 +1289,14 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     // Add a small gap between the end of the master pointers and OldBags
     // This is mainly here to ensure we do not break allowing OldBags and
     // MptrEndBags to differ.
-    OldBags   = MptrEndBags + 10;
+    OldBags   = (Bag *)MptrEndBags + 10;
     YoungBags = OldBags;
     AllocBags = OldBags;
 
     AllocSizeBags = 256;
 
     /* install the marking functions                                       */
-    for ( i = 0; i < NUM_TYPES; i++ )
+    for (UInt i = 0; i < NUM_TYPES; i++)
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
 
     /* Set ChangedBags to a proper initial value */
@@ -1954,16 +1946,11 @@ static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1);
 
 static UInt CollectBags_Mark(UInt FullBags)
 {
-    Bag                 first;          /* first bag on a linked list      */
-    UInt                nrLiveBags;     /* number of live new bags         */
-    UInt                sizeLiveBags;   /* total size of live new bags     */
-    UInt                i;              /* loop variable                   */
-
     /* prepare the list of marked bags for the future                      */
     MarkedBags = 0;
 
     /* mark from the static area                                           */
-    for ( i = 0; i < GlobalBags.nr; i++ )
+    for (int i = 0; i < GlobalBags.nr; i++)
         MarkBag( *GlobalBags.addr[i] );
 
     /* allow installing a custom marking function. This is used for integrating
@@ -1984,7 +1971,7 @@ static UInt CollectBags_Mark(UInt FullBags)
     /* mark the subbags of the changed old bags                            */
     while ( ChangedBags != 0 ) {
         // extract the head from the linked list
-        first = ChangedBags;
+        Bag first = ChangedBags;
         ChangedBags = LINK_BAG(first);
         LINK_BAG(first) = first;
 
@@ -2016,11 +2003,11 @@ static UInt CollectBags_Mark(UInt FullBags)
 
 
     /* tag all marked bags and mark their subbags                          */
-    nrLiveBags = 0;
-    sizeLiveBags = 0;
+    UInt nrLiveBags = 0;
+    UInt sizeLiveBags = 0;
     while ( MarkedBags != 0 ) {
         // extract the head from the linked list
-        first = MarkedBags;
+        Bag first = MarkedBags;
         MarkedBags = LINK_BAG(first);
         // Gasman in some places treats as bag where
         // CONST_PTR_BAG(bag) == YoungBags as a young bag, and in other
@@ -2213,7 +2200,7 @@ static UInt CollectBags_Sweep(UInt FullBags)
 static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 {
     UInt                done;           /* do we have to make a full gc    */
-    Bag *               p;              /* loop variable                   */
+    Bag                 bag;            /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
     // Check if this allocation would even fit into memory
@@ -2269,16 +2256,15 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
          also reorder the free masterpointer linked list
          to get more locality */
       FreeMptrBags = 0;
-      for (p = MptrBags; p < MptrEndBags; p+= SIZE_MPTR_BAGS)
-        {
-          Bag *mptr = (Bag *)*p;
+      for (bag = MptrBags; bag < MptrEndBags; bag++) {
+          Bag * mptr = bag->body;
           if ( mptr == OldWeakDeadBagMarker)
             NrHalfDeadBags--;
           if (mptr == OldWeakDeadBagMarker || IS_BAG_ID(mptr) || mptr == 0) {
-              *p = FreeMptrBags;
-              FreeMptrBags = (Bag)p;
-            }
-        }
+              bag->body = FreeMptrBags;
+              FreeMptrBags = bag;
+          }
+      }
 
 
         /* get the storage we absolutely need                              */
@@ -2333,19 +2319,17 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
             SyMemmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
 
             /* update the masterpointers                                   */
-            for ( p = MptrBags; p < MptrEndBags; p++ ) {
-              if ( (Bag)MptrEndBags <= *p)
-                    *p += i;
+            for (bag = MptrBags; bag < MptrEndBags; bag++) {
+                if (MptrEndBags <= (Bag)bag->body)
+                    bag->body = (Bag)bag->body + i;
             }
 
             /* link the new part of the masterpointer area                 */
-            for ( p = MptrEndBags;
-                  p + 2*SIZE_MPTR_BAGS <= MptrEndBags+i;
-                  p += SIZE_MPTR_BAGS ) {
-                *p = (Bag)(p + SIZE_MPTR_BAGS);
+            for (bag = MptrEndBags; bag + 1 < MptrEndBags + i; bag++) {
+                bag->body = bag + 1;
             }
-            *p = (Bag)FreeMptrBags;
-            FreeMptrBags = (Bag)MptrEndBags;
+            bag->body = FreeMptrBags;
+            FreeMptrBags = MptrEndBags;
 
             /* update 'MptrEndBags', 'OldBags', 'YoungBags', 'AllocBags', and 'stopBags'  */
             MptrEndBags += i;
@@ -2474,7 +2458,7 @@ void CheckMasterPointers( void )
     Bag bag;
 
     // iterate over all bag identifiers
-    for (bag = (Bag)MptrBags; bag < (Bag)MptrEndBags; bag++) {
+    for (bag = MptrBags; bag < MptrEndBags; bag++) {
 
         // weakly dead bag?
         if (bag->body == (Bag)NewWeakDeadBagMarker ||
