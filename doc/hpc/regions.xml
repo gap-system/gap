@@ -310,7 +310,7 @@ region may lock another region while accessing it.
       Arg='obj[, name]'/>
 
 <Description>
-<Ref Func="ShareLibraryObj"/> functions like <Ref Func="ShareObj"/>, except that the precedence of the region it creates is negative.
+<Ref Func="ShareSpecialObj"/> functions like <Ref Func="ShareObj"/>, except that the precedence of the region it creates is negative.
 It is thus exempt from normal ordering and deadlock checks.
 </Description>
 </ManSection>
