@@ -134,8 +134,8 @@ GAPInput
 
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
-    ! fgrep "bool.c.d:" ${bool_d} > /dev/null
-    ! fgrep "garbage content" ${bool_lo} > /dev/null
+    fgrep "bool.c.d:" ${bool_d} > /dev/null && exit 1
+    fgrep "garbage content" ${bool_lo} > /dev/null && exit 1
 
     # verify our "garbage" files are still there
     test -f $SRCDIR/${bool_d}
@@ -148,8 +148,8 @@ GAPInput
 
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
-    ! fgrep "bool.c.d:" ${bool_d} > /dev/null
-    ! fgrep "garbage content" ${bool_lo} > /dev/null
+    fgrep "bool.c.d:" ${bool_d} > /dev/null && exit 1
+    fgrep "garbage content" ${bool_lo} > /dev/null && exit 1
 
     # test: `make` should regenerate removed *.d files (and then also regenerate the
     # corresponding *.lo file, which we verify by overwriting it with garbage)
@@ -164,8 +164,8 @@ GAPInput
 
     # verify that deps file has a target for the .lo file but not for the .d file
     fgrep "bool.c.lo:" ${bool_d} > /dev/null
-    ! fgrep "bool.c.d:" ${bool_d} > /dev/null
-    ! fgrep "garbage content" ${bool_lo} > /dev/null
+    fgrep "bool.c.d:" ${bool_d} > /dev/null && exit 1
+    fgrep "garbage content" ${bool_lo} > /dev/null && exit 1
 
     # test: running `make` a second time should produce no output
     test -z "$(make)"
