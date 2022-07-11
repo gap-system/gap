@@ -548,28 +548,28 @@ clean:
 #
 # WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING
 #
-# The following code is incomplete. Parts of it may already be useful
-# for people who want to package GAP for their favorite software
-# distribution. This is why install-bin etc. are exposed as separate
-# targets. However, these have not yet been tested very extensively, so
-# use at your own peril -- that said, if you find any issues with them
-# NOT COVERED BELOW or have suggestions for improvements, please contact
-# us.
+# The following code has not yet been tested very extensively, so use at your
+# own peril -- that said, if you find any issues with them NOT COVERED BELOW
+# or have suggestions for improvements, please contact us.
 #
-# Among the things that are known to be missing (no need to inform us
-# about it) are:
-#  - installing the `gac` script
-#  - installing packages (this one is tricky, depending on what assumptions
-#    one is willing to make or require; we may never support this here)
-#  - the installed sysinfo.gap is not yet fully adapted, and will be
-#    tweaked further
+# The main thing that is missing (no need to inform us about it) is that it
+# does not install packages -- doing so is tricky, depending on what
+# assumptions one is willing to make or require; we may never support this
+# *here*; instead individual packages may gain a `make install`. How to
+# go about this exactly has not yet been decided.
+#
 ########################################################################
 
 LTINSTALL=$(LIBTOOL) --mode=install $(INSTALL)
 
-install:
-	@echo "Error, 'make install' has not yet been implemented"
-	exit 1
+install: install-bin install-doc install-gaproot install-sysinfo install-headers install-libgap
+	@echo "+--------------------------------------------------------------------------+"
+	@echo "| WARNING, 'make install' support is still experimental, and may be buggy. |"
+	@echo "| It also does not take care of installing GAP packages (and may never).   |"
+	@echo "|                                                                          |"
+	@echo "| If you observe any issues with 'make install', please report them to us  |"
+	@echo "| via support@gap-system.org or https://github.com/gap-system/gap/issues   |"
+	@echo "+--------------------------------------------------------------------------+"
 
 # the following is wrapper script which is installed by the install-bin target
 define gap_wrapper
@@ -639,7 +639,7 @@ install-gaproot: CITATION
 install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_LIBS =
-install-sysinfo: SYSINFO_GAP = $(bindir)/gap
+install-sysinfo: SYSINFO_GAP = $(libdir)/gap/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
 install-sysinfo:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
