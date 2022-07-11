@@ -25,6 +25,22 @@ COVDIR=coverage
 mkdir -p $COVDIR
 
 
+testmockpkg () {
+    # Try building and loading the mockpkg kernel extension
+    gap="$1"
+    gaproot="$2"
+    mockpkg_dir="$PWD"
+
+    ./configure "$gaproot"
+    make V=1
+    # trick to make it easy to load the package in GAP
+    rm -f pkg && ln -sf . pkg
+    # try to load the kernel extension
+    cd "$gaproot"
+    $gap -A -l "$mockpkg_dir;" "$mockpkg_dir/tst/testall.g"
+}
+
+
 for TEST_SUITE in $TEST_SUITES
 do
   # restore current directory before each test suite
@@ -190,6 +206,59 @@ GAPInput
     make check-manuals
     ;;
 
+  testmakeinstall)
+    # at this point GAPPREFIX should be set
+    test -n $GAPPREFIX  || (echo "GAPPREFIX must be set" ; exit 1)
+
+    # verify $GAPPREFIX does not yet exist
+    test ! -d $GAPPREFIX
+
+    # perform he installation
+    make install
+
+    # verify $GAPPREFIX now exists
+    test -d $GAPPREFIX
+
+    # verify `make install DESTDIR=...` produces identical content, just
+    # in a different directory
+    make install DESTDIR=/tmp/DESTDIR
+    diff -ru $DESTDIR/$GAPPREFIX $GAPPREFIX
+
+    # change directory to prevent the installed GAP from accidentally picking
+    # up files from the GAP source resp. build directory (wherever we are
+    # right now)
+    cd /
+
+    # test for the presence of bunch of important files
+    test -f $GAPPREFIX/bin/gap
+    test -f $GAPPREFIX/bin/gac
+    test -f $GAPPREFIX/include/gap/gap_all.h
+    test -f $GAPPREFIX/include/gap/version.h
+    test -f $GAPPREFIX/include/gap/src/compiled.h # for backwards compatibility
+    test -f $GAPPREFIX/lib/gap/sysinfo.gap
+    test -f $GAPPREFIX/share/gap/doc/ref/chap0_mj.html
+    test -f $GAPPREFIX/share/gap/grp/basic.gd
+    test -f $GAPPREFIX/share/gap/hpcgap/lib/hpc/tasks.g
+    test -f $GAPPREFIX/share/gap/lib/init.g
+
+    # check for references to the build, source or home directories
+    fgrep -r $BUILDDIR $GAPPREFIX && exit 1
+    fgrep -r $SRCDIR $GAPPREFIX && exit 1
+    fgrep -r $HOME $GAPPREFIX && exit 1
+
+    # HACK: symlink packages so we can start GAP
+    ln -s $SRCDIR/pkg $GAPPREFIX/share/gap/pkg
+
+    # test building and loading package kernel extension
+    cd "$SRCDIR/tst/mockpkg"
+    testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap"
+
+    # run testsuite for the resulting GAP, via a little HACK
+    # TODO: should we install the GAP test suite???
+    cp -R $SRCDIR/tst $GAPPREFIX/share/gap/
+    $GAPPREFIX/bin/gap $GAPPREFIX/share/gap/tst/testinstall.g
+    ;;
+
   testmanuals)
     # Start GAP with -O option to disable obsoletes. The test
     # will fail if there will be an error message, but warnings
@@ -238,15 +307,10 @@ GAPInput
   testmockpkg)
     # for debugging it is useful to know what sysinfo.gap contains at this point
     cat "$BUILDDIR/sysinfo.gap"
-    # test building a package kernel extension
+
+    # test building and loading a package kernel extension
     cd "$SRCDIR/tst/mockpkg"
-    ./configure "$BUILDDIR"
-    make
-    # trick to make it easy to load the package in GAP
-    ln -s . pkg
-    # try to load the kernel extension
-    cd "$BUILDDIR"
-    $GAP -A --cover $COVDIR/testmockpkg.coverage -l "$SRCDIR/tst/mockpkg;" "$SRCDIR/tst/mockpkg/tst/testall.g"
+    testmockpkg "$GAP --cover $COVDIR/testmockpkg.coverage" "$BUILDDIR"
     ;;
 
   testexpect)

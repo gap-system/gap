@@ -57,19 +57,20 @@ jobs:
             # compile packages and run GAP tests
             # don't use --enable-debug to prevent the tests from taking too long
             "testpackages testinstall-loadall",
-
-            # test creating the manual
-            # TODO: make the resulting HTML and PDF files available as build
-            # artifacts so that one can read the latest documentation (or even
-            # preview doc changes for PRs). Use the `upload-artifact` action and
-            # make it conditional. Or perhaps move the `makemanuals` job into
-            # a separate workflow job?
-            "makemanuals",
           ]
         extra: [""]
 
         # add a few extra tests
         include:
+          # test creating the manual
+          # also test `make install` here, as that wants the manual, too;
+          # and set NO_COVERAGE=1 to ensure the installed GAP binaries don't
+          # contain references to the build directory
+          - os: ubuntu-18.04
+            shell: bash
+            test-suites: "makemanuals testmakeinstall"
+            extra: "GAPPREFIX=/tmp/gapprefix CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
+
           - os: ubuntu-18.04
             shell: bash
             test-suites: "teststandard"

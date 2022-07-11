@@ -27,10 +27,8 @@ run the `autogen.sh` script first, which will generate the `configure`
 script. Afterwards, or if you are using a release version of GAP, you
 can follow the standard procedure:
 
-```
-./configure
-make
-```
+    ./configure
+    make
 
 
 == Overview of the files constituting the GAP build system
@@ -93,23 +91,19 @@ in your filesystem. A typical setup places the out-of-tree dirs into
 subdirectories of a "build" directory inside the srcdir. So you might
 have directories
 
-```
-   srcdir/build/default
-   srcdir/build/default32
-   srcdir/build/hpcgap
-   srcdir/build/hpcgap32
-   ...
-```
+    srcdir/build/default
+    srcdir/build/default32
+    srcdir/build/hpcgap
+    srcdir/build/hpcgap32
+    ...
 
 We will refer to this directory from now on as the "builddir".
 
 To initialize the out-of-tree build, change into the builddir and
 execute the configure script from the srcdir, like this:
 
-```
-cd $builddir
-$srcdir/configure
-```
+    cd $builddir
+    $srcdir/configure
 
 You can pass any additional options you like to configure, e.g. `ABI=32`
 or `--enable-hpcgap`.
