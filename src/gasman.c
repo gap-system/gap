@@ -245,12 +245,6 @@ static inline Bag *DATA(BagHeader *bag)
     return (Bag *)(bag + 1);
 }
 
-static inline void SET_PTR_BAG(Bag bag, Bag *val)
-{
-    GAP_ASSERT(bag != 0);
-    bag->body = val;
-}
-
 /****************************************************************************
 **
 *V  MptrBags  . . . . . . . . . . . . . . beginning of the masterpointer area
@@ -999,18 +993,17 @@ Bag NextBagRestoring( UInt type, UInt flags, UInt size )
   Bag bag;
   UInt i;
   BagHeader * header = (BagHeader *)AllocBags;
-  *(Bag **)NextMptrRestoring = AllocBags = DATA(header);
-  bag = NextMptrRestoring;
+  bag = NextMptrRestoring++;
+  bag->body = header;
   header->type = type;
   header->flags = flags;
   header->size = size;
-  header->link = NextMptrRestoring;
-
-  NextMptrRestoring++;
+  header->link = bag;
 
   if (NextMptrRestoring >= MptrEndBags)
     Panic("Overran Masterpointer area");
 
+  AllocBags = DATA(header);
   for (i = 0; i < WORDS_BAG(size); i++)
     *AllocBags++ = (Bag)0;
 
@@ -1408,7 +1401,7 @@ Bag NewBag (
     header->link = bag;
 
     // set the masterpointer
-    SET_PTR_BAG(bag, DATA(header));
+    bag->body = (UInt *)header;
 
     CANARY_ALLOW_ACCESS_BAG(bag);
 
@@ -1674,11 +1667,10 @@ UInt ResizeBag (
         CANARY_ENABLE_VALGRIND();
 
         // set the masterpointer
-        Bag * dst = DATA(newHeader);
-        SET_PTR_BAG(bag, dst);
+        bag->body = (UInt *)newHeader;
 
         // copy the contents of the bag
-        SyMemmove((void *)dst, (void *)DATA(header),
+        SyMemmove((void *)DATA(newHeader), (void *)DATA(header),
                 sizeof(Obj) * WORDS_BAG(old_size));
     }
 
@@ -2178,7 +2170,7 @@ static UInt CollectBags_Sweep(UInt FullBags)
             BagHeader * dstHeader = (BagHeader *)dst;
 
             // update identifier, copy bag header
-            SET_PTR_BAG( UNMARKED_ALIVE(header->link), DATA(dstHeader));
+            UNMARKED_ALIVE(header->link)->body = (UInt *)dstHeader;
             end = DATA(header) + WORDS_BAG( header->size );
             dstHeader->type = header->type;
             dstHeader->flags = header->flags;

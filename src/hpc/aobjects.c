@@ -1578,11 +1578,11 @@ static Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *cu
       // can't use ResizeBag() directly because of guards.
       // therefore we create a faux master pointer in the public region.
       UInt *mptr[2];
-      mptr[0] = (UInt *)contents;
-      mptr[1] = 0;
+      SET_PTR_BAG((Bag)mptr, contents);
+      SET_REGION((Bag)mptr, NULL);
       ResizeBag((Bag)mptr, sizeof(Bag) * (n+1));
       MEMBAR_WRITE();
-      SET_PTR_BAG(obj, (void *)(mptr[0]));
+      SET_PTR_BAG(obj, PTR_BAG((Bag)mptr));
     }
     // reread contents pointer
     HashUnlock(obj);
