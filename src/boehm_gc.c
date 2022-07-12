@@ -43,9 +43,14 @@ Int SyStorKill;
 // fill in the data "behind" bags
 struct OpaqueBag {
     void * body;
+#ifdef HPCGAP
+    void * region;
+#endif
+#if !defined(DISABLE_GC) && defined(TRACK_CREATOR)
+    void * func;
+    void * lvars;
+#endif
 };
-GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
-                  "sizeof(OpaqueBag) is wrong");
 
 #ifndef WARD_ENABLED
 
@@ -388,15 +393,13 @@ Bag NewBag(UInt type, UInt size)
 
     alloc_size = sizeof(BagHeader) + size;
 #ifndef DISABLE_GC
-#ifndef TRACK_CREATOR
-    bag = GC_malloc(2 * sizeof(Bag *));
-#else
-    bag = GC_malloc(4 * sizeof(Bag *));
+    bag = GC_malloc(sizeof(struct OpaqueBag));
+#ifdef TRACK_CREATOR
     if (STATE(PtrLVars)) {
-        bag[2] = (void *)CURR_FUNC();
+        bag->func = (void *)CURR_FUNC();
         if (!IsBottomLVars(STATE(CurrLVars))) {
             Obj plvars = PARENT_LVARS(STATE(CurrLVars));
-            bag[3] = (void *)(FUNC_LVARS(plvars));
+            bag->lvars = (void *)(FUNC_LVARS(plvars));
         }
     }
 #endif
@@ -438,7 +441,7 @@ Bag NewBag(UInt type, UInt size)
     BagHeader * header =
         AllocateBagMemory(TabMarkTypeBags[type], type, alloc_size);
 #else
-    bag = malloc(2 * sizeof(Bag *));
+    bag = malloc(sizeof(struct OpaqueBag));
     BagHeader * header = calloc(1, alloc_size);
 #endif /* DISABLE_GC */
 
