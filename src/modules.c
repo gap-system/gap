@@ -287,28 +287,31 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename)
     // try to read the module
     const char * res = SyLoadModule(CONST_CSTR_STRING(filename), &init);
     if (res)
-        ErrorQuit("failed to load dynamic module %g, %s", (Int)filename, (Int)res);
+        ErrorQuit("LOAD_DYN: failed to load kernel module %g, %s",
+                  (Int)filename, (Int)res);
 
     // get the description structure
     StructInitInfo * info = (*init)();
     if (info == 0)
-        ErrorQuit("call to init function failed", 0, 0);
+        ErrorQuit("LOAD_DYN: init function of kernel module %g failed",
+                  (Int)filename, 0);
 
     // info->type should not be larger than kernel version
     if (info->type / 10 > GAP_KERNEL_API_VERSION)
-        ErrorMayQuit("LOAD_DYN: kernel module built for newer "
-                     "version of GAP",
-                     0, 0);
+        ErrorMayQuit("LOAD_DYN: kernel module %g built for newer "
+                     "version %d of GAP",
+                     (Int)filename, info->type / 10);
 
     // info->type should not have an older major version
     if (info->type / 10000 < GAP_KERNEL_MAJOR_VERSION)
-        ErrorMayQuit("LOAD_DYN: kernel module built for older "
+        ErrorMayQuit("LOAD_DYN: kernel module %g built for older "
                      "version of GAP",
-                     0, 0);
+                     (Int)filename, 0);
 
     // info->type % 10 should be 0, 1 or 2, for the 3 types of module
     if (info->type % 10 > 2)
-        ErrorMayQuit("LOAD_DYN: Invalid kernel module", 0, 0);
+        ErrorMayQuit("LOAD_DYN: Invalid kernel module '%g'", (Int)filename,
+                     0);
 
     ActivateModule(info);
     RecordLoadedModule(info, 0, CONST_CSTR_STRING(filename));
