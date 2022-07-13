@@ -647,11 +647,11 @@ install-sysinfo:
 	chmod 0644 $(DESTDIR)$(libdir)/gap/sysinfo.gap
 
 # install kernel headers
-install-headers:
+install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
-	$(INSTALL) -m 0644 $(srcdir)/$(FFDATA_H) $(DESTDIR)$(includedir)/gap
-	$(INSTALL) -m 0644 $(srcdir)/build/version.h $(DESTDIR)$(includedir)/gap
+	$(INSTALL) -m 0644 $(builddir)/$(FFDATA_H) $(DESTDIR)$(includedir)/gap
+	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
 	# Create a symlink to support packages using `#include "src/compiled.h"`
