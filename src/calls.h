@@ -228,42 +228,42 @@ BOOL IsKernelFunction(Obj func);
 
 EXPORT_INLINE ObjFunc_0ARGS HDLR_0ARGS(Obj func)
 {
-    return (ObjFunc_0ARGS)HDLR_FUNC(func, 0);
+    return (ObjFunc_0ARGS)(void *)HDLR_FUNC(func, 0);
 }
 
 EXPORT_INLINE ObjFunc_1ARGS HDLR_1ARGS(Obj func)
 {
-    return (ObjFunc_1ARGS)HDLR_FUNC(func, 1);
+    return (ObjFunc_1ARGS)(void *)HDLR_FUNC(func, 1);
 }
 
 EXPORT_INLINE ObjFunc_2ARGS HDLR_2ARGS(Obj func)
 {
-    return (ObjFunc_2ARGS)HDLR_FUNC(func, 2);
+    return (ObjFunc_2ARGS)(void *)HDLR_FUNC(func, 2);
 }
 
 EXPORT_INLINE ObjFunc_3ARGS HDLR_3ARGS(Obj func)
 {
-    return (ObjFunc_3ARGS)HDLR_FUNC(func, 3);
+    return (ObjFunc_3ARGS)(void *)HDLR_FUNC(func, 3);
 }
 
 EXPORT_INLINE ObjFunc_4ARGS HDLR_4ARGS(Obj func)
 {
-    return (ObjFunc_4ARGS)HDLR_FUNC(func, 4);
+    return (ObjFunc_4ARGS)(void *)HDLR_FUNC(func, 4);
 }
 
 EXPORT_INLINE ObjFunc_5ARGS HDLR_5ARGS(Obj func)
 {
-    return (ObjFunc_5ARGS)HDLR_FUNC(func, 5);
+    return (ObjFunc_5ARGS)(void *)HDLR_FUNC(func, 5);
 }
 
 EXPORT_INLINE ObjFunc_6ARGS HDLR_6ARGS(Obj func)
 {
-    return (ObjFunc_6ARGS)HDLR_FUNC(func, 6);
+    return (ObjFunc_6ARGS)(void *)HDLR_FUNC(func, 6);
 }
 
 EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
 {
-    return (ObjFunc_1ARGS)HDLR_FUNC(func, 7);
+    return (ObjFunc_1ARGS)(void *)HDLR_FUNC(func, 7);
 }
 
 
