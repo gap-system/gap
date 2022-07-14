@@ -36,6 +36,12 @@ typedef struct GAPState {
     ThreadLocalStorage tls;
 #endif
 
+    // for Boehm GC
+#if defined(USE_BOEHM_GC)
+    #define MAX_GC_PREFIX_DESC 4
+    void ** FreeList[MAX_GC_PREFIX_DESC + 2];
+#endif
+
     /* From intrprtr.c */
     Obj  Tilde;
 
@@ -106,12 +112,6 @@ typedef struct GAPState {
     Int ShowUsedInfoClassesActive;
 
     UInt1 StateSlots[STATE_SLOTS_SIZE];
-
-/* Allocation */
-#if defined(USE_BOEHM_GC)
-#define MAX_GC_PREFIX_DESC 4
-    void ** FreeList[MAX_GC_PREFIX_DESC + 2];
-#endif
 } GAPState;
 
 #ifdef HPCGAP
