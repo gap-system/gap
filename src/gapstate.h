@@ -24,7 +24,7 @@
 #include <setjmp.h>
 
 enum {
-    STATE_SLOTS_SIZE = 32768,
+    STATE_SLOTS_SIZE = 32768 - 1024,
 
     MAX_VALUE_LEN = 1024,
 };
@@ -113,6 +113,10 @@ typedef struct GAPState {
 
     UInt1 StateSlots[STATE_SLOTS_SIZE];
 } GAPState;
+
+// for performance reasons, we strive to keep the GAPState size small enough
+// so that all its members can be access with a 16 bit signed offset
+GAP_STATIC_ASSERT(sizeof(GAPState) < 32768, "GAPState is too big");
 
 #ifdef HPCGAP
 
