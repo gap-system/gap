@@ -197,10 +197,10 @@ typedef struct {
     TypInputFile * input;
 
     // If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_FLOAT' then normally the
-    // variable 'Value' holds the name of the identifier, the digits of the
+    // variable 'Value' holds the name of the identifier or the digits of the
     // integer or float literal as a C string. For large integer or float
     // literals that do not fit into 'Value', instead 'ValueObj' holds the
-    // literal as a GAP string object
+    // literal as a GAP string object.
     //
     // Note that the size of identifiers in GAP is limited to 1023 characters,
     // hence identifiers are always stored in 'Value'. For this reason,

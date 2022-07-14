@@ -752,7 +752,7 @@ void MarkPRecSubBags(Obj bag)
     const Bag * data = CONST_PTR_BAG(bag);
     const UInt count = SIZE_BAG(bag) / sizeof(Bag);
 
-    // while data[0] is unused for regular precords, it used during copying
+    // data[0] is unused for regular precords, but it is used during copying
     // to store a pointer to the copy; moreover, this mark function is also
     // used for component objects, which store their type in slot 0
     MarkBag(data[0]);
