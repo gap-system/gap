@@ -772,12 +772,17 @@ function( G )
       if x in N then
         evals := [];
         for g in coreps do
-          xg := x^g;
+          xg := x^(g^-1);
           if normal or xg in C then
+            # if true then x^((cg)^-1) is in the same C-class for all c in C
             Add( evals, IndependentGeneratorExponents( Cab, xg^hom ));
           fi;
         od;
-        Add( ind, evals );
+        if Length(evals) > 0 then
+          Add( ind, evals );
+        else
+          Add( ind, 0 );
+        fi;
       else
         Add( ind, 0 );
       fi;
