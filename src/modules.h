@@ -154,19 +154,19 @@ static inline ObjFunc VALIDATE_FUNC_HELPER_6(ObjFunc_6ARGS f)
 }
 
 #define VALIDATE_FUNC_0ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_0(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_0(func) : (ObjFunc)(void *)func)
 #define VALIDATE_FUNC_1ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_1(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_1(func) : (ObjFunc)(void *)func)
 #define VALIDATE_FUNC_2ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_2(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_2(func) : (ObjFunc)(void *)func)
 #define VALIDATE_FUNC_3ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_3(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_3(func) : (ObjFunc)(void *)func)
 #define VALIDATE_FUNC_4ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_4(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_4(func) : (ObjFunc)(void *)func)
 #define VALIDATE_FUNC_5ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_5(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_5(func) : (ObjFunc)(void *)func)
 #define VALIDATE_FUNC_6ARGS(func)                                            \
-    (0 ? VALIDATE_FUNC_HELPER_6(func) : (ObjFunc)func)
+    (0 ? VALIDATE_FUNC_HELPER_6(func) : (ObjFunc)(void *)func)
 
 
 /****************************************************************************
@@ -322,7 +322,7 @@ typedef struct {
 // StructGVarFunc arrays
 #define GVAR_FUNC(name, nargs, args)                                         \
     {                                                                        \
-        #name, nargs, args, (ObjFunc)Func##name, __FILE__ ":" #name   \
+        #name, nargs, args, (ObjFunc)(void *)Func##name, __FILE__ ":" #name   \
     }
 
 // The following helper macros are similar to GVAR_FUNC, but perform stricter

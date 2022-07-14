@@ -163,7 +163,9 @@ typedef Bag Obj;
 **  'ObjFunc' is the type of a function returning an object.
 */
 #pragma GCC diagnostic push
+#ifndef __cplusplus
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#endif
 typedef Obj (* ObjFunc) (/*arguments*/);
 #pragma GCC diagnostic pop
 
