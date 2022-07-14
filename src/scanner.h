@@ -19,6 +19,10 @@
 
 #include "common.h"
 
+enum {
+    MAX_VALUE_LEN = 1024,
+};
+
 /****************************************************************************
 **
 *V  Symbol  . . . . . . . . . . . . . . . . .  current symbol read from input
@@ -205,7 +209,7 @@ typedef struct {
     // Note that the size of identifiers in GAP is limited to 1023 characters,
     // hence identifiers are always stored in 'Value'. For this reason,
     // 'GetIdent' truncates an identifier after that many characters.
-    char   Value[1024];
+    char   Value[MAX_VALUE_LEN];
 
     // For large integer or float literals that do not fit into 'Value',
     // instead 'ValueObj' holds the literal as a GAP string object. If the

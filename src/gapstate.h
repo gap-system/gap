@@ -25,8 +25,6 @@
 
 enum {
     STATE_SLOTS_SIZE = 32768 - 1024,
-
-    MAX_VALUE_LEN = 1024,
 };
 
 typedef struct GAPState {
