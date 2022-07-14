@@ -22,9 +22,6 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 env:
-  CFLAGS: "--coverage -O2 -g"
-  CXXFLAGS: "--coverage -O2 -g"
-  LDFLAGS: "--coverage"
   # default config flags: enable debug asserts
   CONFIGFLAGS: "--enable-debug"
   # CHERE_INVOKING=1 lets us start a 'login shell' (to set paths) in Windows without changing directory
@@ -166,6 +163,18 @@ jobs:
 
       - uses: gap-actions/setup-cygwin@v1
         if: ${{ runner.os == 'Windows' }}
+
+      - name: "Set up compiler and linker flags"
+        run: |
+               ${{ matrix.extra }}
+               if [[ -n ${NO_COVERAGE} ]] ; then
+                  echo "No coverage reporting"
+               else
+                  echo "Coverage reporting, updating compiler and linker flags"
+                  echo "CFLAGS=--coverage -O2 -g" >> $GITHUB_ENV
+                  echo "CXXFLAGS=--coverage -O2 -g" >> $GITHUB_ENV
+                  echo "LDFLAGS=--coverage" >> $GITHUB_ENV
+               fi
 
       - name: "Install dependencies"
         run: |
