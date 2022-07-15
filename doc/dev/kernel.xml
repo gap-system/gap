@@ -93,7 +93,7 @@ In the same file <F>string.c</F> find the list of functions to export
 called <C>GvarFuncs</C> and add to this list a table entry for <C>HELLO_WORLD</C>
 <Listing>
 <![CDATA[
-GVAR_FUNC(HELLO_WORLD, 0, ""),
+GVAR_FUNC_0ARGS(HELLO_WORLD),
 ]]>
 </Listing>
 containing respectively the string specifying the name of the function at the &GAP;
@@ -1243,8 +1243,8 @@ stored where objects are expected (eg in plain lists)</Item>
 */
 static StructGVarFunc GVarFuncs [] = {
 
-    GVAR_FUNC(QUO_INT, 2, "a, b"),
-    GVAR_FUNC(ABS_INT, 1, "n"),
+    GVAR_FUNC_2ARGS(QUO_INT, a, b),
+    GVAR_FUNC_1ARGS(ABS_INT, n),
     . . .
     { 0 }
 };

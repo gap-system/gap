@@ -7,7 +7,7 @@ Obj FuncTestCommand(Obj self)
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(TestCommand, 0, ""),
+    GVAR_FUNC_0ARGS(TestCommand),
     { 0 }
 };
 

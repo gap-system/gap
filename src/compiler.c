@@ -5447,9 +5447,9 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(COMPILE_FUNC, -1, "arg"),
+    GVAR_FUNC_XARGS(COMPILE_FUNC, -1, "arg"),
     { 0, 0, 0, 0, 0 }
 
 };

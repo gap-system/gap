@@ -599,8 +599,8 @@ void AssertionFailure(void)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(DownEnv, -1, "args"),
-    GVAR_FUNC(UpEnv, -1, "args"),
+    GVAR_FUNC_XARGS(DownEnv, -1, "args"),
+    GVAR_FUNC_XARGS(UpEnv, -1, "args"),
 
     GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
     GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),

@@ -1489,7 +1489,7 @@ static StructGVarOper GVarOpers [] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_2ARGS(APPEND_LIST_INTR, list1, list2),
     GVAR_FUNC_2ARGS(POSITION_SORTED_LIST, list, obj),
@@ -1509,7 +1509,9 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_2ARGS(OnSets, set, elm),
     GVAR_FUNC_2ARGS(OnRight, pnt, elm),
     GVAR_FUNC_2ARGS(OnLeftInverse, pnt, elm),
-    GVAR_FUNC(COPY_LIST_ENTRIES, -1, "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number"),
+    GVAR_FUNC_XARGS(COPY_LIST_ENTRIES,
+                    7,
+                    "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number"),
     GVAR_FUNC_1ARGS(STRONGLY_CONNECTED_COMPONENTS_DIGRAPH, digraph),
     GVAR_FUNC_2ARGS(LIST_WITH_IDENTICAL_ENTRIES, n, obj),
     { 0, 0, 0, 0, 0 }

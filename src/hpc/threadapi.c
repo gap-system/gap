@@ -2169,13 +2169,13 @@ static Obj FuncFORCE_MAKE_PUBLIC(Obj self, Obj obj)
 
 static Obj FuncMakeThreadLocal(Obj self, Obj var)
 {
-    char * name;
+    const char * name;
     UInt   gvar;
     if (!IsStringConv(var) || GET_LEN_STRING(var) == 0)
         RequireArgument(SELF_NAME, var, "must be a variable name");
-    name = CSTR_STRING(var);
+    name = CONST_CSTR_STRING(var);
     gvar = GVarName(name);
-    name = CSTR_STRING(NameGVar(gvar)); /* to apply namespace scopes where needed. */
+    name = CONST_CSTR_STRING(NameGVar(gvar)); // to apply namespace scopes where needed
     MakeThreadLocalVar(gvar, RNamName(name));
     return (Obj)0;
 }
@@ -2481,7 +2481,7 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(CreateThread, -1, "function"),
+    GVAR_FUNC_XARGS(CreateThread, -1, "function"),
     GVAR_FUNC_0ARGS(CurrentThread),
     GVAR_FUNC_1ARGS(ThreadID, thread),
     GVAR_FUNC_1ARGS(WaitThread, thread),
@@ -2506,18 +2506,18 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(IsThreadLocal, object),
     GVAR_FUNC_1ARGS(HaveWriteAccess, object),
     GVAR_FUNC_1ARGS(HaveReadAccess, object),
-    GVAR_FUNC(CreateSemaphore, -1, "[count]"),
+    GVAR_FUNC_XARGS(CreateSemaphore, -1, "[count]"),
     GVAR_FUNC_1ARGS(SignalSemaphore, semaphore),
     GVAR_FUNC_1ARGS(WaitSemaphore, semaphore),
     GVAR_FUNC_1ARGS(TryWaitSemaphore, semaphore),
-    GVAR_FUNC(CreateChannel, -1, "[size]"),
+    GVAR_FUNC_XARGS(CreateChannel, -1, "[size]"),
     GVAR_FUNC_1ARGS(DestroyChannel, channel),
     GVAR_FUNC_1ARGS(TallyChannel, channel),
     GVAR_FUNC_2ARGS(SendChannel, channel, obj),
     GVAR_FUNC_2ARGS(TransmitChannel, channel, obj),
     GVAR_FUNC_1ARGS(ReceiveChannel, channel),
-    GVAR_FUNC(ReceiveAnyChannel, -1, "channel list"),
-    GVAR_FUNC(ReceiveAnyChannelWithIndex, -1, "channel list"),
+    GVAR_FUNC_XARGS(ReceiveAnyChannel, -1, "channel list"),
+    GVAR_FUNC_XARGS(ReceiveAnyChannelWithIndex, -1, "channel list"),
     GVAR_FUNC_2ARGS(MultiReceiveChannel, channel, count),
     GVAR_FUNC_2ARGS(TryReceiveChannel, channel, obj),
     GVAR_FUNC_2ARGS(MultiSendChannel, channel, list),
@@ -2536,11 +2536,11 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(SyncRead, syncvar),
     GVAR_FUNC_1ARGS(SyncIsBound, syncvar),
     GVAR_FUNC_1ARGS(IS_LOCKED, obj),
-    GVAR_FUNC(LOCK, -1, "obj, ..."),
-    GVAR_FUNC(DO_LOCK, -1, "obj, ..."),
+    GVAR_FUNC_XARGS(LOCK, -1, "obj, ..."),
+    GVAR_FUNC_XARGS(DO_LOCK, -1, "obj, ..."),
     GVAR_FUNC_1ARGS(WRITE_LOCK, obj),
     GVAR_FUNC_1ARGS(READ_LOCK, obj),
-    GVAR_FUNC(TRYLOCK, -1, "obj, ..."),
+    GVAR_FUNC_XARGS(TRYLOCK, -1, "obj, ..."),
     GVAR_FUNC_1ARGS(UNLOCK, sp),
     GVAR_FUNC_0ARGS(CURRENT_LOCKS),
     GVAR_FUNC_1ARGS(REFINE_TYPE, obj),

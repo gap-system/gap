@@ -1065,13 +1065,13 @@ static StructBagNames BagNames[] = {
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(OBJ_SET, -1, "[list]"),
+    GVAR_FUNC_XARGS(OBJ_SET, -1, "[list]"),
     GVAR_FUNC_2ARGS(ADD_OBJ_SET, set, obj),
     GVAR_FUNC_2ARGS(REMOVE_OBJ_SET, set, obj),
     GVAR_FUNC_2ARGS(FIND_OBJ_SET, set, obj),
     GVAR_FUNC_1ARGS(CLEAR_OBJ_SET, set),
     GVAR_FUNC_1ARGS(OBJ_SET_VALUES, set),
-    GVAR_FUNC(OBJ_MAP, -1, "[list]"),
+    GVAR_FUNC_XARGS(OBJ_MAP, -1, "[list]"),
     GVAR_FUNC_3ARGS(ADD_OBJ_MAP, map, key, value),
     GVAR_FUNC_2ARGS(REMOVE_OBJ_MAP, map, obj),
     GVAR_FUNC_3ARGS(FIND_OBJ_MAP, map, obj, default),
