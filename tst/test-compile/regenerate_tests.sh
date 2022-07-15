@@ -12,5 +12,4 @@ for gfile in *.g; do
     echo "Regenerating ${gfile}.out ..."
     ./run_interpreted.sh "${gap}" "${gfile}" "${gfile}.out"
     "${gac}" -d -C -o "${gfile}.dynamic.c" "${gfile}"
-    "${gac}" -C -o "${gfile}.static.c" "${gfile}"
 done
