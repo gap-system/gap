@@ -352,10 +352,10 @@ Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
 
 // Table of functions to export
 static StructGVarFunc GVarFuncs[] = {
-    GVAR_FUNC(GAP_SHA256_INIT, 0, ""),
-    GVAR_FUNC(GAP_SHA256_UPDATE, 2, "state, bytes"),
-    GVAR_FUNC(GAP_SHA256_FINAL, 1, "state"),
-    GVAR_FUNC(GAP_SHA256_HMAC, 2, "key, text"),
+    GVAR_FUNC_0ARGS(GAP_SHA256_INIT),
+    GVAR_FUNC_2ARGS(GAP_SHA256_UPDATE, state, bytes),
+    GVAR_FUNC_1ARGS(GAP_SHA256_FINAL, state),
+    GVAR_FUNC_2ARGS(GAP_SHA256_HMAC, key, text),
 
     { 0 }    // Finish with an empty entry
 };

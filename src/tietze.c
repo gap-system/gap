@@ -1599,15 +1599,15 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_1ARGS(TzSortC, tietze),
     GVAR_FUNC_1ARGS(TzRenumberGens, tietze),
     GVAR_FUNC_1ARGS(TzReplaceGens, tietze),
     GVAR_FUNC_3ARGS(TzSubstituteGen, tietze, gennum, word),
-    GVAR_FUNC(TzOccurrences, -1, "args"),
-    GVAR_FUNC(TzOccurrencesPairs, -1, "args"),
-    GVAR_FUNC(TzSearchC, -1, "args"),
+    GVAR_FUNC_XARGS(TzOccurrences, -1, "arg..."),
+    GVAR_FUNC_XARGS(TzOccurrencesPairs, -1, "arg..."),
+    GVAR_FUNC_XARGS(TzSearchC, -1, "arg..."),
     GVAR_FUNC_2ARGS(REDUCE_LETREP_WORDS_REW_SYS, tzwords, word),
     { 0, 0, 0, 0, 0 }
 

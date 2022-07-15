@@ -2751,7 +2751,7 @@ static StructGVarFilt GVarFilts[] = {
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-static StructGVarFunc GVarFuncs [] = {
+static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_1ARGS(PermList, list),
     GVAR_FUNC_1ARGS(LARGEST_MOVED_POINT_PERM, perm),
@@ -2774,7 +2774,10 @@ static StructGVarFunc GVarFuncs [] = {
                     translabels,
                     transversal,
                     genblabels),
-    GVAR_FUNC(AGESTC, -1, "orbit, newlabels, cycles, labels, translabels, transversal, genlabels"),
+    GVAR_FUNC_XARGS(AGESTC,
+                    7,
+                    "orbit, newlabels, cycles, labels, translabels, "
+                    "transversal, genlabels"),
     GVAR_FUNC_2ARGS(MappingPermListList, src, dst),
     GVAR_FUNC_3ARGS(SCR_SIFT_HELPER, stabrec, perm, n),
     { 0, 0, 0, 0, 0 }

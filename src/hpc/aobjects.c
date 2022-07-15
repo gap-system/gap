@@ -1733,8 +1733,8 @@ static StructBagNames BagNames[] = {
 
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(AtomicList, -1, "list|count, obj"),
-    GVAR_FUNC(FixedAtomicList, -1, "list|count, obj"),
+    GVAR_FUNC_XARGS(AtomicList, -1, "list|count, obj"),
+    GVAR_FUNC_XARGS(FixedAtomicList, -1, "list|count, obj"),
     GVAR_FUNC_1ARGS(MakeFixedAtomicList, list),
     GVAR_FUNC_1ARGS(FromAtomicList, list),
     GVAR_FUNC_2ARGS(AddAtomicList, list, obj),
@@ -1745,7 +1745,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_3ARGS(ATOMIC_UNBIND, list, index, old),
 
     GVAR_FUNC_3ARGS(ATOMIC_ADDITION, list, index, inc),
-    GVAR_FUNC(AtomicRecord, -1, "[capacity]"),
+    GVAR_FUNC_XARGS(AtomicRecord, -1, "[capacity]"),
     GVAR_FUNC_1ARGS(IS_ATOMIC_LIST, object),
     GVAR_FUNC_1ARGS(IS_FIXED_ATOMIC_LIST, object),
     GVAR_FUNC_1ARGS(IS_ATOMIC_RECORD, object),
@@ -1754,7 +1754,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(UNBIND_ATOMIC_RECORD, record, field),
     GVAR_FUNC_1ARGS(FromAtomicRecord, record),
     GVAR_FUNC_1ARGS(FromAtomicComObj, record),
-    GVAR_FUNC(ThreadLocalRecord, -1, "record [, record]"),
+    GVAR_FUNC_XARGS(ThreadLocalRecord, -1, "record [, record]"),
     GVAR_FUNC_3ARGS(SetTLDefault, threadLocalRecord, name, value),
     GVAR_FUNC_3ARGS(SetTLConstructor, threadLocalRecord, name, function),
     GVAR_FUNC_1ARGS(MakeWriteOnceAtomic, obj),

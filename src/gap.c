@@ -1272,11 +1272,11 @@ static Obj FuncAssertionLevel(Obj self)
 */
 static StructGVarFunc GVarFuncs[] = {
 
-    GVAR_FUNC(SizeScreen, -1, "args"),
+    GVAR_FUNC_XARGS(SizeScreen, -1, "args"),
     GVAR_FUNC_1ARGS(ID_FUNC, object),
-    GVAR_FUNC(RETURN_FIRST, -2, "first, rest"),
-    GVAR_FUNC(RETURN_NOTHING, -1, "object"),
-    GVAR_FUNC(GASMAN, -1, "args"),
+    GVAR_FUNC_XARGS(RETURN_FIRST, -2, "first, rest"),
+    GVAR_FUNC_XARGS(RETURN_NOTHING, -1, "object"),
+    GVAR_FUNC_XARGS(GASMAN, -1, "args"),
 #ifdef USE_GASMAN
     GVAR_FUNC_0ARGS(GASMAN_STATS),
     GVAR_FUNC_0ARGS(GASMAN_MESSAGE_STATUS),
@@ -1293,9 +1293,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(OBJ_HANDLE, handle),
     GVAR_FUNC_1ARGS(HANDLE_OBJ, object),
     GVAR_FUNC_1ARGS(WindowCmd, args),
-    GVAR_FUNC(GapExitCode, -1, "exitCode"),
-    GVAR_FUNC(QuitGap, -1, "args"),
-    GVAR_FUNC(ForceQuitGap, -1, "args"),
+    GVAR_FUNC_XARGS(GapExitCode, -1, "exitCode"),
+    GVAR_FUNC_XARGS(QuitGap, -1, "args"),
+    GVAR_FUNC_XARGS(ForceQuitGap, -1, "args"),
     GVAR_FUNC_0ARGS(SHOULD_QUIT_ON_BREAK),
     GVAR_FUNC_6ARGS(SHELL,
                     context,
