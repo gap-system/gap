@@ -20,29 +20,13 @@
 
 #############################################################################
 ##
-#V  ClosedStreamType  . . . . . . . . . . . . . . . . type of a closed stream
-##
-ClosedStreamType := NewType(
-    StreamsFamily,
-    IsClosedStream );
-
-
-#############################################################################
-##
-#M  CloseStream( <stream> ) . . . . . . . . .  set type to <ClosedStreamType>
+#M  CloseStream( <stream> ) . . . . . . . . . . . . . . mark stream as closed
 ##
 InstallMethod( CloseStream,
     "non-process streams",
-    [ IsStream and IsComponentObjectRep],
+    [ IsStream ],
 function( stream )
-    SET_TYPE_COMOBJ( stream, ClosedStreamType );
-end );
-
-InstallMethod( CloseStream,
-    "non-process streams",
-    [ IsStream and IsPositionalObjectRep],
-function( stream )
-    SET_TYPE_POSOBJ( stream, ClosedStreamType );
+    SetFilterObj( stream, IsClosedStream );
 end );
 
 
@@ -52,7 +36,7 @@ end );
 ##
 InstallMethod( PrintObj,
     "closed stream",
-    [ IsClosedStream ],
+    [ IsClosedStream ], SUM_FLAGS,
 function( obj )
     Print( "closed-stream" );
 end );
@@ -586,7 +570,7 @@ function( stream )
     atomic InputTextFileStillOpen do
         RemoveSet( InputTextFileStillOpen, stream![1] );
     od;
-    SET_TYPE_POSOBJ( stream, ClosedStreamType );
+    SetFilterObj( stream, IsClosedStream );
 end );
 
 
@@ -1065,7 +1049,7 @@ function( stream )
     atomic OutputTextFileStillOpen do
         RemoveSet( OutputTextFileStillOpen, stream![1] );
     od;
-    SET_TYPE_POSOBJ( stream, ClosedStreamType );
+    SetFilterObj( stream, IsClosedStream );
 end );
 
 InstallAtExit( function()
