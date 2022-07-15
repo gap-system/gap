@@ -189,11 +189,36 @@ void GAP_CollectBags(BOOL full);
 //// program evaluation and execution
 ////
 
-// Evaluate a string of GAP commands.
+// GAP_EvalString attempts to execute all statements read from the string
+// <cmd> as if they occurred in a GAP source file that is read by the GAP
+// command `Read`. However, no break loops are triggered. If evaluation a
+// statement leads to an error, the next statement is executed, and so on.
+//
+// It returns a list of lists, each entry of which reflects the result of the
+// execution of one statement. Specifically, each entry is another list, each
+// having length at most five, with the entries having the following meaning:
+//
+// - The first entry is 'true' if the statement was executed successfully,
+//   and 'false' otherwise.
+//
+// - If the first entry is 'true', then the second entry is bound to the
+//   result of the statement if there was one, and unbound otherwise.
+//
+// - The third entry is 'true' if the statement ended in a dual semicolon,
+//   and 'false' otherwise.
+//
+// - The fourth entry currently is always unbound.
+//
+// - The fifth entry contains the captured output of the statement as a
+//   string, as well as the output of 'ViewObj' applied to the result value
+//   in second entry, if any (but only if there was no dual semicolon).
+//
+// This function is currently used in interactive tools such as the GAP
+// Jupyter kernel to execute cells and is likely to be replaced by a function
+// that can read a single command from a stream without losing the rest of
+// its content.
 //
 // To see an example of how to use this function see tst/testlibgap/basic.c
-//
-// TODO: properly document this function
 Obj GAP_EvalString(const char * cmd);
 
 
