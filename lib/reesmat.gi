@@ -251,7 +251,7 @@ function(S, mat)
    IsReesMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
 
   # store the type of the elements in the semigroup
-  type:=NewType(fam, IsReesMatrixSemigroupElement);
+  type:=NewType(fam, IsReesMatrixSemigroupElement and IsPositionalObjectRep);
   
   fam!.type:=type;
   SetTypeReesMatrixSemigroupElements(R, type); 
@@ -308,7 +308,7 @@ function(S, mat)
                  and IsAttributeStoringRep), rec());
 
   # store the type of the elements in the semigroup
-  type := NewType(fam, IsReesZeroMatrixSemigroupElement);
+  type := NewType(fam, IsReesZeroMatrixSemigroupElement and IsPositionalObjectRep);
 
   fam!.type := type;
   SetTypeReesMatrixSemigroupElements(R, type);

@@ -1191,7 +1191,7 @@ function( G, p, n, collector )
     
     ##  Now turn this into a new object.
     fam  := NewFamily( "QuotientSystem", IsQuotientSystem );
-    type := NewType( fam, IsPQuotientSystem and IsMutable );
+    type := NewType( fam, IsPQuotientSystem and IsMutable and IsComponentObjectRep );
     Objectify( type, qs );
 
     return qs;

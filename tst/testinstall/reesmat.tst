@@ -518,12 +518,12 @@ gap> UnderlyingSemigroup(T);
 # TypeReesMatrixSemigroupElements: for a Rees (0-)matrix semigroup
 gap> R := ReesZeroMatrixSemigroup(Group(()), [[()]]);;
 gap> TypeReesMatrixSemigroupElements(Semigroup(Representative(R)));
-<Type: (ReesZeroMatrixSemigroupElementsFamily, [ IsExtLElement, IsExtRElement,\
- IsMultiplicativeElement, ... ]), data: fail>
+<Type: (ReesZeroMatrixSemigroupElementsFamily, [ IsPositionalObjectRep, IsExtL\
+Element, IsExtRElement, ... ]), data: fail>
 gap> R := ReesMatrixSemigroup(Group(()), [[()]]);;
 gap> TypeReesMatrixSemigroupElements(Semigroup(Representative(R)));
-<Type: (ReesMatrixSemigroupElementsFamily, [ IsExtLElement, IsExtRElement, IsM\
-ultiplicativeElement, ... ]), data: fail>
+<Type: (ReesMatrixSemigroupElementsFamily, [ IsPositionalObjectRep, IsExtLElem\
+ent, IsExtRElement, ... ]), data: fail>
 
 # RMSElement global function
 gap> R := ReesZeroMatrixSemigroup(SymmetricGroup(2), [[(1,2), 0], [0, ()]]);;
