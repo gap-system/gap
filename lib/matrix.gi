@@ -274,7 +274,7 @@ end );
 ##
 #R  IsNullMapMatrix . . . . . . . . . . . . . . . . . . .  null map as matrix
 ##
-DeclareRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
+DeclareRepresentation( "IsNullMapMatrix", IsMatrix and IsPositionalObjectRep, [  ] );
 
 BindGlobal( "NullMapMatrix",
     Objectify( NewType( ListsFamily, IsNullMapMatrix ), [  ] ) );

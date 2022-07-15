@@ -74,7 +74,7 @@ DeclareCategory("IsMonomialOrdering",IsObject);
 ##  </ManSection>
 ##
 DeclareRepresentation("IsMonomialOrderingDefaultRep",
-  IsAttributeStoringRep and IsPositionalObjectRep and IsMonomialOrdering,[]);
+  IsAttributeStoringRep and IsMonomialOrdering,[]);
 
 BindGlobal("MonomialOrderingsFamily",
   NewFamily("MonomialOrderingsFamily",IsMonomialOrdering,IsMonomialOrdering));
