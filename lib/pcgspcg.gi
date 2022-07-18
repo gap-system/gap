@@ -723,7 +723,6 @@ InstallMethod( LeadingExponentOfPcElement,
 
 #############################################################################
 ##
-
 #M  CanonicalPcElement( <igs>, <32bits-word> )
 ##
 InstallMethod( CanonicalPcElement,

@@ -15,7 +15,6 @@
 
 #############################################################################
 ##
-
 #M  IsConfluent( <pc-group> )
 ##
 InstallOtherMethod( IsConfluent,
@@ -165,7 +164,6 @@ end );
 
 #############################################################################
 ##
-
 #R  IsNBitsPcWordRep
 ##
 DeclareRepresentation(
@@ -875,7 +873,6 @@ InstallMethod( \<,
 
 #############################################################################
 ##
-
 #F  SingleCollector_GroupRelators( ... )
 ##
 SingleCollector_GroupRelators := function(

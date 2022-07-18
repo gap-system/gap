@@ -711,7 +711,6 @@ end );
 
 #############################################################################
 ##
-
 #M  DepthOfPcElement( <modulo-pcgs>, <elm> )
 ##
 InstallOtherMethod( DepthOfPcElement,

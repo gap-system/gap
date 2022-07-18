@@ -92,7 +92,6 @@ end );
 
 #############################################################################
 ##
-
 #M  Comm( <elm-by-rws>, <elm-by-rws> )
 ##
 InstallMethod( Comm,
@@ -277,7 +276,6 @@ end );
 
 #############################################################################
 ##
-
 #M  MultiplicativeElementsWithInversesFamilyByRws( <rws> )
 ##
 InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
@@ -310,7 +308,6 @@ end );
 
 #############################################################################
 ##
-
 #M  GroupByRws( <rws> )
 ##
 InstallMethod( GroupByRws,

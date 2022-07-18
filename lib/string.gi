@@ -184,7 +184,6 @@ end);
 
 #############################################################################
 ##
-
 #F  HMSMSec( <sec> )  . . . . . . convert milliseconds into hour-min-sec-mill
 ##
 InstallGlobalFunction(HMSMSec , function ( sec )

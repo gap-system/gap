@@ -14,7 +14,6 @@
 
 #############################################################################
 ##
-
 #F  IsIdenticalObjFamiliesColObjObj( <rws>, <obj>, <obj> )
 ##
 IsIdenticalObjFamiliesColObjObj := function( a, b, c )
@@ -54,7 +53,6 @@ end;
 
 #############################################################################
 ##
-
 #F  FinitePolycyclicCollector_IsConfluent( <col> )
 ##
 FinitePolycyclicCollector_IsConfluent := function( col, failed )
@@ -166,7 +164,6 @@ end;
 
 #############################################################################
 ##
-
 #M  IsConfluent( <col> )
 ##
 
@@ -402,7 +399,6 @@ end );
 
 #############################################################################
 ##
-
 #M  CollectWord( <col>, <v>, <w> )
 ##
 InstallMethod( CollectWord,

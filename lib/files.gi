@@ -20,7 +20,6 @@ SetInfoLevel(InfoTempDirectories,1);
 
 #############################################################################
 ##
-
 #R  IsDirectoryRep  . . . . . . . . . . default representation of a directory
 ##
 if IsHPCGAP then
@@ -100,7 +99,6 @@ end );
 
 #############################################################################
 ##
-
 #M  Filename( <directory>, <string> ) . . . . . . . . . . . create a filename
 ##
 InstallMethod( Filename,

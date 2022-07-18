@@ -386,7 +386,6 @@ end );
 
 #############################################################################
 ##
-
 #F  TrivialPartition( <Omega> ) . . . . . . . . . one-cell partition of a set
 ##
 InstallGlobalFunction( TrivialPartition, function( Omega )

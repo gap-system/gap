@@ -14,7 +14,6 @@
 
 #############################################################################
 ##
-
 #V  FlagsFamily . . . . . . . . . . . . . . . . . . . . . . . family of flags
 ##
 BIND_GLOBAL( "FlagsFamily", NewFamily( "FlagsFamily", IsObject ) );
