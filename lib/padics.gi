@@ -502,7 +502,6 @@ end );
 
 #############################################################################
 ##
-
 #M  Zero( <pure-padic-family> )
 ##
 InstallOtherMethod( Zero,
@@ -564,7 +563,6 @@ end );
 
 #############################################################################
 ##
-
 #M  AdditiveInverseOp( <pure-padic> )
 ##
 InstallMethod( AdditiveInverseOp,
@@ -928,7 +926,6 @@ end );
 
 #############################################################################
 ##
-
 #M  Zero( <extended-padic-family> )
 ##
 InstallOtherMethod( Zero,
@@ -1030,7 +1027,6 @@ end );
 
 #############################################################################
 ##
-
 #M  AdditiveInverseOp( <extended-padic> )
 ##
 InstallMethod( AdditiveInverseOp,

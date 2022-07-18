@@ -325,7 +325,6 @@ end );
 
 #############################################################################
 ##
-
 #F  MaximalSubgroupClassesRepsLayer( <pcgs>, <layer> )
 ##
 MaximalSubgroupClassesRepsLayer := function( pcgs, l )

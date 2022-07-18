@@ -1024,7 +1024,6 @@ end );
 
 #############################################################################
 ##
-
 #M  ElementaryAbelianSubseries( <pcgs> )
 ##
 InstallMethod( ElementaryAbelianSubseries,
@@ -1232,7 +1231,6 @@ end );
 
 #############################################################################
 ##
-
 #M  CanonicalPcElement( <igs>, <elm> )
 ##
 CANONICAL_PC_ELEMENT := function( pcgs, elm )

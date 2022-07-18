@@ -299,7 +299,6 @@ end );
 
 #############################################################################
 ##
-
 #F  SCRMakeStabStrong( ... )  . . . . . . . . . . . . . . . . . . . . . local
 ##
 ##  heuristic stabilizer  chain  construction, with one random  subproduct on
@@ -1123,7 +1122,6 @@ end );
 
 #############################################################################
 ##
-
 #F  VerifyStabilizer( <S>, <z>, <missing>, <correct> )  . . . .  verification
 ##
 InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)

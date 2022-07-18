@@ -52,7 +52,6 @@ DeclareRepresentation( "Is32BitsSingleCollectorRep",
 
 #############################################################################
 ##
-
 #P  IsDefaultRhsTypeSingleCollector
 ##
 ##  This feature is set as soon as all right hand sides have the same type as
@@ -65,7 +64,6 @@ DeclareFilter( "IsDefaultRhsTypeSingleCollector" );
 
 #############################################################################
 ##
-
 #F  SingleCollector_CollectWord( <sc>, <v>, <w> )
 ##
 ##  'CollectWord' implements  a  single  collector  for a presentation  of  a
@@ -287,7 +285,6 @@ end;
 
 #############################################################################
 ##
-
 #M  Rules( <sc> )
 ##
 InstallMethod( Rules,
@@ -825,7 +822,6 @@ end );
 ##
 #############################################################################
 ##
-
 #M  SingleCollector( <fgrp>, <orders> )
 ##
 
@@ -1095,7 +1091,6 @@ end );
 
 #############################################################################
 ##
-
 #M  CollectWordOrFail( <sc>, <v>, <w> )
 ##
 
@@ -1456,7 +1451,6 @@ end );
 
 #############################################################################
 ##
-
 #M  ReducedComm( <sc>, <left>, <right> )
 ##
 

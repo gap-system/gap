@@ -1932,7 +1932,6 @@ end );
 
 #############################################################################
 ##
-
 #F  CentralizerNormalCSPG() . . . . . . . .  centralizer of a normal subgroup
 ##
 ##  computes the centralizer of a NORMAL subgroup N in G.

@@ -1005,7 +1005,6 @@ end;
 
 #############################################################################
 ##
-
 #M  NormalizerInHomePcgs( <pc-group> )
 ##
 InstallMethod( NormalizerInHomePcgs,

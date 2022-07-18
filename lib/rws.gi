@@ -14,7 +14,6 @@
 
 #############################################################################
 ##
-
 #M  AddGenerators( <rws>, <gens> )
 ##
 InstallMethod( AddGenerators,
@@ -134,7 +133,6 @@ InstallMethod( ReduceRules,
 
 #############################################################################
 ##
-
 #F  IsIdenticalObjFamiliesRwsObj( <rws>, <obj> )
 ##
 IsIdenticalObjFamiliesRwsObj := function( a, b )
@@ -163,7 +161,6 @@ end;
 
 #############################################################################
 ##
-
 #M  ReducedAdditiveInverse( <rws>, <obj> )
 ##
 InstallMethod( ReducedAdditiveInverse,

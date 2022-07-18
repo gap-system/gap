@@ -14,7 +14,6 @@
 
 #############################################################################
 ##
-
 #M  Process( <dir>, <prg>, <in-none>, <out-none>, <args> )  . . . . none/none
 ##
 InstallMethod( Process,
