@@ -164,6 +164,12 @@ jobs:
 
       - uses: gap-actions/setup-cygwin@v1
         if: ${{ runner.os == 'Windows' }}
+        with:
+          # HACK/FIXME/TODO: workaround for https://github.com/gap-system/gap/issues/4955
+          # which essentially removes xdg-utils ; its presence leads GAP to think the
+          # Cygwin environment is Unix, not Windows, which enables some tests which then
+          # hang.
+          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel'
 
       - name: "Set up compiler and linker flags"
         run: |
