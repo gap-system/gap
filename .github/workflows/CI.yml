@@ -33,6 +33,7 @@ jobs:
     # Don't run this twice on PRs for branches pushed to the same repository
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     defaults:
       run:
         shell: ${{ matrix.shell }}
