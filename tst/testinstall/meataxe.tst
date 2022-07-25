@@ -1,4 +1,4 @@
-#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs
+#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q
 gap> START_TEST("meataxe.tst");
 
 #
@@ -183,6 +183,69 @@ gap> Display(res[5]);
  . . . 1 . .
  . . . . 1 .
  . . . . . 1
+
+#
+# Tests for MTX.InvariantQuadraticForm and MTX.OrthogonalSign
+# (the documentation is a bit unorthodox)
+#
+# the easy cases:
+gap> mats:= GeneratorsOfGroup( GO( 1, 4, 3 ) );;
+gap> m:= GModuleByMats( mats, GF(3) );;
+gap> Q:= MTX.InvariantQuadraticForm( m );;
+gap> Q = TransposedMat( Q );  # bilinear form divided by 2
+true
+gap> MTX.OrthogonalSign( m );
+1
+gap> mats:= GeneratorsOfGroup( GO( -1, 4, 3 ) );;
+gap> m:= GModuleByMats( mats, GF(3) );;
+gap> Q:= MTX.InvariantQuadraticForm( m );;
+gap> Q = TransposedMat( Q );  # bilinear form divided by 2
+true
+gap> MTX.OrthogonalSign( m );
+-1
+gap> mats:= GeneratorsOfGroup( GO( 5, 3 ) );;
+gap> m:= GModuleByMats( mats, GF(3) );;
+gap> Q:= MTX.InvariantQuadraticForm( m );;
+gap> Q = TransposedMat( Q );  # bilinear form divided by 2
+true
+gap> MTX.OrthogonalSign( m );
+0
+gap> mats:= GeneratorsOfGroup( GO( 1, 4, 2 ) );;
+gap> m:= GModuleByMats( mats, GF(2) );;
+gap> Q:= MTX.InvariantQuadraticForm( m );;
+gap> IsLowerTriangularMat( Q );  # characteristic 2
+true
+gap> MTX.OrthogonalSign( m );
+1
+gap> mats:= GeneratorsOfGroup( GO( 5, 2 ) );;
+gap> m:= GModuleByMats( mats, GF(2) );;
+gap> MTX.InvariantQuadraticForm( m );
+Error, Argument of InvariantQuadraticForm is not an absolutely irreducible mod\
+ule
+gap> MTX.OrthogonalSign( m );
+Error, Argument of InvariantBilinearForm is not an absolutely irreducible modu\
+le
+gap> mats:= GeneratorsOfGroup( SP( 4, 2 ) );;
+gap> m:= GModuleByMats( mats, GF(2) );;
+gap> Q:= MTX.InvariantQuadraticForm( m );
+fail
+gap> MTX.OrthogonalSign( m );
+fail
+gap> g:= SU(4, 3);;
+gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(9) );;
+gap> MTX.InvariantBilinearForm( m );
+fail
+gap> MTX.InvariantQuadraticForm( m );
+fail
+
+# the subtle case: odd characteristic, antisymmetric bilinear form
+gap> mats:= GeneratorsOfGroup( SP( 4, 3 ) );;
+gap> m:= GModuleByMats( mats, GF(3) );;
+gap> Q:= MTX.InvariantQuadraticForm( m );;  # matrix for the zero form
+gap> Q = TransposedMat( Q );
+false
+gap> MTX.OrthogonalSign( m );
+fail
 
 #
 gap> STOP_TEST("meataxe.tst", 1);

@@ -597,17 +597,7 @@ or <K>fail</K> if no such form exists.
 </ManSection>
 
 
-<ManSection>
-<Func Name="MTX.InvariantQuadraticForm" Arg='module'/>
-
-<Description>
-returns an invariant quadratic form of <A>module</A>,
-or <K>fail</K> if no such form exists. If the characteristic of the field over
-which <A>module</A> is defined is not 2, then the invariant bilinear form (if
-any) divided by two will be returned. In characteristic 2, the form
-returned will be lower triangular.
-</Description>
-</ManSection>
+<#Include Label="MTX.InvariantQuadraticForm">
 
 
 <ManSection>
@@ -621,17 +611,7 @@ This is used by <Ref Func="MTX.InvariantQuadraticForm"/> in characteristic 2.
 </ManSection>
 
 
-<ManSection>
-<Func Name="MTX.OrthogonalSign" Arg='module'/>
-
-<Description>
-for an even dimensional module, returns 1 or -1, according as
-<C>MTX.InvariantQuadraticForm(<A>module</A>)</C> is of + or - type. For an odd
-dimensional module, returns 0. For a module with no invariant
-quadratic form, returns <K>fail</K>. This calculation uses an algorithm due
-to Jon Thackray.
-</Description>
-</ManSection>
+<#Include Label="MTX.OrthogonalSign">
 
 </Section>
 
