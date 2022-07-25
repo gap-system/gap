@@ -3413,10 +3413,50 @@ end;
 
 #############################################################################
 ##
-#F  InvariantQuadraticForm( module ) . . . .
+#F  MTX.InvariantQuadraticForm( <module> )
 ##
-## Look for an invariant quadratic form of the absolutely irreducible
-## GModule module. Return fail, or the matrix of the form.
+##  <#GAPDoc Label="MTX.InvariantQuadraticForm">
+##  <ManSection>
+##  <Func Name="MTX.InvariantQuadraticForm" Arg='module'/>
+##
+##  <Description>
+##  returns either the matrix of an invariant quadratic form of the
+##  absolutely irreducible module <A>module</A>, or <K>fail</K>.
+##  <P/>
+##  If the characteristic of <A>module</A> is odd then <K>fail</K> is
+##  returned if there is no nonzero invariant bilinear form,
+##  otherwise a matrix of the bilinear form
+##  divided by <M>2</M> is returned;
+##  note that this matrix may be antisymmetric and thus describe the zero
+##  quadratic form.
+##  If the characteristic of <A>module</A> is <M>2</M> then <K>fail</K> is
+##  returned if <A>module</A> does not admit a nonzero quadratic form,
+##  otherwise a lower triangular matrix describing the form is returned.
+##  <P/>
+##  An error is signalled if <A>module</A> is not absolutely irreducible.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> g:= SO(-1, 4, 2);;
+##  gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(2) );;
+##  gap> Display( MTX.InvariantQuadraticForm( m ) );
+##   . . . .
+##   1 . . .
+##   . . 1 .
+##   . . 1 1
+##  gap> g:= SP(4, 2);;
+##  gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(2) );;
+##  gap> MTX.InvariantQuadraticForm( m );
+##  fail
+##  gap> g:= SP(4, 3);;
+##  gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(3) );;
+##  gap> q:= MTX.InvariantQuadraticForm( m );;
+##  gap> q = - TransposedMat( q );  # antisymmetric inv. bilinear form
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 SMTX_InvariantQuadraticForm:=function( module  )
    local iso, bas, cgens, ciso, dim, f, z, x, i, j, qf, g, id, cqf, fix;
 
@@ -3483,23 +3523,47 @@ SMTX.InvariantQuadraticForm:=SMTX_InvariantQuadraticForm;
 
 #############################################################################
 ##
-#F  OrthogonalSign( module ) . . . .
+#F  MTX.OrthogonalSign( <module> ) . . . .
 ##
-## When an absolutely irreducible G-module has an invariant quadratic
-## form, this implies that it embeds in a General Orthogonal group. In
-## even dimension there are two non-isomorphic General Orthogonal groups
-## "plus" and "minus" type `GeneralOrthogonalGroup(+1,<n>,<q>)' and
-## `GeneralOrthogobalGroup(-1,<n>,<q>)' in GAP terms. This function
-## decides which one the module embeds into.
+##  <#GAPDoc Label="MTX.OrthogonalSign">
+##  <ManSection>
+##  <Func Name="MTX.OrthogonalSign" Arg='module'/>
 ##
-## It returns:
-##  fail if the module is not absolutely irreducible, or
-##       does not stabilize a quadratic form.
-##  0    otherwise, if the dimension of the module is odd
-##  +1 or -1 otherwise, according to which GO the module embeds in
+##  <Description>
+##  Let <A>module</A> be an absolutely irreducible <M>G</M>-module.
+##  If <A>module</A> does not fix a nondegenerate quadratic form
+##  see <Ref Func="MTX.InvariantQuadraticForm"/>
+##  then <K>fail</K> is returned.
+##  Otherwise the sign <M>\epsilon \in \{ -1, 0, 1 \}</M> is returned
+##  such that <M>G</M> embeds into the general orthogonal group
+##  <M>GO^{\epsilon}(d, q)</M> w.r.t. the invariant quadratic form,
+##  see <Ref Func="GeneralOrthogonalGroup"/>.
+##  That is, <C>0</C> is returned if <A>module</A> has odd dimension,
+##  and <C>1</C> or <C>-1</C> is returned if the orthogonal group has
+##  plus or minus type, respectively.
+##  <P/>
+##  An error is signalled if <A>module</A> is not absolutely irreducible.
+##  <P/>
+##  The <C>SMTX</C> implementation uses an algorithm due to Jon Thackray.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> mats:= GeneratorsOfGroup( GO(1,4,2) );;
+##  gap> MTX.OrthogonalSign( GModuleByMats( mats, GF(2) ) );
+##  1
+##  gap> mats:= GeneratorsOfGroup( GO(-1,4,2) );;
+##  gap> MTX.OrthogonalSign( GModuleByMats( mats, GF(2) ) );
+##  -1
+##  gap> mats:= GeneratorsOfGroup( GO(5,3) );;
+##  gap> MTX.OrthogonalSign( GModuleByMats( mats, GF(3) ) );
+##  0
+##  gap> mats:= GeneratorsOfGroup( SP(4,2) );;
+##  gap> MTX.OrthogonalSign( GModuleByMats( mats, GF(2) ) );
+##  fail
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-## This is an implementation of an algorithm by Jon Thackray
-
 SMTX.SetOrthogonalSign:=function(module,s)
   module.OrthogonalSign:=s;
 end;
@@ -3513,6 +3577,10 @@ SMTX_OrthogonalSign:=function(gm)
     b:=MTX.InvariantBilinearForm(gm);
     q:=MTX.InvariantQuadraticForm(gm);
     if q = fail then
+        return fail;
+    elif IsOddInt( Characteristic( gm.field ) ) and
+         q <> TransposedMat( q ) then
+        # There is no *nondegenerate* invariant quadratic form.
         return fail;
     fi;
     n:=Length(b);
