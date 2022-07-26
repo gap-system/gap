@@ -109,6 +109,7 @@ SOURCES += $(GC_SOURCES)
 
 ifeq ($(HPCGAP),yes)
   SOURCES += src/hpc/aobjects.c
+  SOURCES += src/hpc/cpu.c
   SOURCES += src/hpc/misc.c
   SOURCES += src/hpc/region.c
   SOURCES += src/hpc/serialize.c

@@ -28,6 +28,7 @@
 #endif
 
 #ifdef HPCGAP
+#include "hpc/cpu.h"
 #include "hpc/guards.h"
 #include "hpc/misc.h"
 #include "hpc/thread.h"

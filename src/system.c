@@ -27,6 +27,7 @@
 #include "version.h"
 
 #ifdef HPCGAP
+#include "hpc/cpu.h"
 #include "hpc/misc.h"
 #endif
 
@@ -695,6 +696,7 @@ void InitSystem (
     SyLineEdit = 1;
 #ifdef HPCGAP
     SyUseReadline = 0;
+    SyNumProcessors = SyCountProcessors();
 #else
     SyUseReadline = 1;
 #endif
