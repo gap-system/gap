@@ -1,4 +1,4 @@
-#@local neginf,posinf,r,nan,l,f,g
+#@local neginf,posinf,r,nan,l,f,g,a,b,e1,e2
 gap> START_TEST("float.tst");
 
 # make sure we are testing the built-in machine floats
@@ -31,6 +31,44 @@ gap> Float(infinity);
 inf
 gap> Float(-infinity);
 -inf
+
+#
+# Test converting rationals to machine floats
+#
+gap> f:=function(r, expected)
+>   local testExp;
+>   testExp:=function(actual, expected)
+>     if (actual - expected) > FLOAT.EPSILON then
+>       Error("expected ", expected, " but got ", actual);
+>     fi;
+>   end;
+>   testExp(Float(r), expected);
+>   testExp(Float(-r), -expected);
+>   testExp(NewFloat(IsIEEE754FloatRep, r), expected);
+>   testExp(NewFloat(IsIEEE754FloatRep, -r), -expected);
+>   testExp(MakeFloat(0.0, r), expected);
+>   testExp(MakeFloat(0.0, -r), -expected);
+> end;;
+gap> for a in [-1..1] do
+>      for b in [-1..1] do
+>        f( (10^309 + a) / (10^308 + b), 10.);
+>      od;
+>    od;
+gap> for a in [-1..1] do
+>      for b in [-1..1] do
+>        f( (10^309 + a) / (10^309 + b), 1.);
+>      od;
+>    od;
+gap> for e1 in [306..309] do for e2 in [306..309] do
+>      for a in [-1..1] do for b in [-1..1] do
+>        f( (10^e1 + a) / (10^e2 + b), 10.^(e1-e2));
+>      od; od;
+>    od; od;
+gap> for e1 in [1020..1025] do for e2 in [1020..1025] do
+>      for a in [-1..1] do for b in [-1..1] do
+>        f( (2^e1 + a) / (2^e2 + b), 2.^(e1-e2));
+>      od; od;
+>    od; od;
 
 #
 # input floats directly

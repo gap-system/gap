@@ -109,9 +109,8 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
         filter := arg[1];
     fi;
     
-    InstallMethod(NewFloat, [filter,IsRat], -1, function(filter,obj)
-        return NewFloat(filter,NumeratorRat(obj))/NewFloat(filter,DenominatorRat(obj));
-    end);
+    # we intentionally provide no default method for converting rationals, as
+    # implementing this accurately depends a lot on the specific floatean type
     
     InstallMethod(NewFloat, [filter,IsInfinity], -1, function(filter,obj)
         return Inverse(NewFloat(filter,0));
@@ -135,10 +134,6 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     
     InstallMethod(NewFloat, [filter,filter], -1, function(filter,obj)
         return obj; # floats are immutable, no harm to return the same one
-    end);
-    
-    InstallMethod(MakeFloat, [filter,IsRat], -1, function(filter,obj)
-        return MakeFloat(filter,NumeratorRat(obj))/MakeFloat(filter,DenominatorRat(obj));
     end);
     
     InstallMethod(MakeFloat, [filter,IsInfinity], -1, function(filter,obj)

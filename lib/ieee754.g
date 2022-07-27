@@ -160,4 +160,28 @@ if IsHPCGAP then
     MakeReadOnlyObj( IEEE754FLOAT );
 fi;
 
+InstallMethod(NewFloat, [IsIEEE754FloatRep,IsRat], -1, function(filter,obj)
+    local num, den, extra, N;
+    num := NumeratorRat(obj);
+    den := DenominatorRat(obj);
+    extra := QuoInt(num, den);
+    num := RemInt(num, den);
+    N := Log2Int(den);
+    # Avoid overflows in the conversion of numerator and denominator: if they
+    # are too big, shift them down until they (barely) fit. This hardcodes
+    # assumptions about the precision of IsIEEE754FloatRep. It also does not
+    # try to minimize the numerical error of the computation, but it should be
+    # at least reasonably close overall.
+    if N >= 1023 then
+        num := QuoInt(num, 2^(N-1022));
+        den := QuoInt(den, 2^(N-1022));
+    fi;
+    return NewFloat(filter, extra) + NewFloat(filter, num) / NewFloat(filter, den);
+end);
+
+InstallMethod(MakeFloat, [IsIEEE754FloatRep,IsRat], -1, function(filter,obj)
+    return NewFloat(IsIEEE754FloatRep, obj);
+end);
+
+
 SetFloats(IEEE754FLOAT);
