@@ -845,11 +845,15 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   makesubgroupclasses,cefastersize;
 
   #group order below which cyclic extension is usually faster
-  if IsPackageMarkedForLoading("tomlib","")=true then
+  # WORKAROUND: there is a disparity between the data format returned
+  # by CE and what this code expects. This could be resolved properly,
+  # but since most people will have tomlib loaded anyway, this doesn't
+  # seem worth the effort.
+  #if IsPackageMarkedForLoading("tomlib","")=true then
     cefastersize:=1; 
-  else
-    cefastersize:=40000; 
-  fi;
+  #else
+  #  cefastersize:=40000; 
+  #fi;
 
   makesubgroupclasses:=function(g,l)
   local i,m,c;
