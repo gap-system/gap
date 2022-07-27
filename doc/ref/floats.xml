@@ -106,7 +106,7 @@ or floating-point numbers. Floating-point numbers may
 also be created, in any floating-point representation, using
 <Ref Constr="NewFloat"/> as in <C>NewFloat(IsIEEE754FloatRep,355/113)</C>,
 by supplying the category filter of the desired new floating-point number;
-or using <Ref Oper="MakeFloat"/> as in <C>NewFloat(1.0,355/113)</C>,
+or using <Ref Oper="MakeFloat"/> as in <C>MakeFloat(1.0,355/113)</C>,
 by supplying a sample floating-point number.
 <P/>
 
