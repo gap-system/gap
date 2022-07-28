@@ -28,39 +28,40 @@ UInt SyNumProcessors = 4;
 **  SyCountProcessors() retrieves the number of active logical processors.
 */
 
-UInt SyCountProcessors(void) {
+UInt SyCountProcessors(void)
+{
 #ifdef NUM_CPUS
     return NUM_CPUS;
 #else
-    #if __linux__
-        return get_nprocs();
-    #else
-        const UInt fallback_cpus_number = 4;
-        #if _WIN32
-            #if _WIN32_WINNT >= _WIN32_WINNT_WIN7
-                return GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
-            #else
-                SYSTEM_INFO info;
-                GetSystemInfo(&info);
-                if(info.dwNumberOfProcessors < 1) {
-                    return fallback_cpus_number;
-                }
-                return info.dwNumberOfProcessors;
-            #endif
-        #elif __APPLE__
-            int nm[2] = {CTL_HW, HW_AVAILCPU};
-            size_t len = 4;
-            uint32_t count;
+#if __linux__
+    return get_nprocs();
+#else
+    const UInt fallback_cpus_number = 4;
+#if _WIN32
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+    return GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+#else
+    SYSTEM_INFO info;
+    GetSystemInfo(&info);
+    if (info.dwNumberOfProcessors < 1) {
+        return fallback_cpus_number;
+    }
+    return info.dwNumberOfProcessors;
+#endif
+#elif __APPLE__
+    int      nm[2] = { CTL_HW, HW_AVAILCPU };
+    size_t   len = 4;
+    uint32_t count;
 
-            sysctl(nm, 2, &count, &len, NULL, 0);
+    sysctl(nm, 2, &count, &len, NULL, 0);
 
-            if (count < 1) {
-                return fallback_cpus_number;
-            }
-            return count;
-        #else
-            return fallback_cpus_number;
-        #endif
-    #endif
+    if (count < 1) {
+        return fallback_cpus_number;
+    }
+    return count;
+#else
+    return fallback_cpus_number;
+#endif
+#endif
 #endif
 }
