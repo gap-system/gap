@@ -10,6 +10,20 @@
 
 #include "hpc/cpu.h"
 
+#ifndef NUM_CPUS
+#ifdef __linux__
+#include <sys/sysinfo.h>
+#elif _WIN32
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+#include <windows.h>
+#else
+#include <sysinfoapi.h>
+#endif
+#elif __APPLE__
+#include <sys/sysctl.h>
+#endif
+#endif
+
 /****************************************************************************
 **
 *V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
