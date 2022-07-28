@@ -13,12 +13,10 @@
 #ifndef NUM_CPUS
 #ifdef _POSIX_C_SOURCE
 #include <sys/unistd.h>
-#elif _WIN32
-#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+#elif _WIN32_WINNT >= _WIN32_WINNT_WIN7
 #include <windows.h>
-#else
+#elif _WIN32
 #include <sysinfoapi.h>
-#endif
 #endif
 #endif
 
@@ -51,21 +49,17 @@ UInt SyCountProcessors(void)
         return fallback_cpus_number;
     }
     return result;
-#else
-#if _WIN32
-#if _WIN32_WINNT >= _WIN32_WINNT_WIN7
+#elif _WIN32_WINNT >= _WIN32_WINNT_WIN7
     return GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
-#else
+#elif _WIN32
     SYSTEM_INFO info;
     GetSystemInfo(&info);
     if (info.dwNumberOfProcessors < 1) {
         return fallback_cpus_number;
     }
     return info.dwNumberOfProcessors;
-#endif
 #else
     return fallback_cpus_number;
-#endif
 #endif
 #endif
 }
