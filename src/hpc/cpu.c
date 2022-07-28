@@ -16,7 +16,7 @@
 #include <windows.h>
 #endif
 
-static const UInt FALLBACK_CPUS_NUMBER = 4;
+#define FALLBACK_CPUS_NUMBER 4
 
 /****************************************************************************
 **
