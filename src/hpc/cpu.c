@@ -41,7 +41,6 @@ UInt SyNumProcessors = 4;
 **
 **  SyCountProcessors() retrieves the number of active logical processors.
 */
-
 UInt SyCountProcessors(void)
 {
 #ifdef NUM_CPUS
