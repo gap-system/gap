@@ -26,14 +26,6 @@ UInt SyNumProcessors = 4;
 *F  SyCountProcessors() . . . . . . . . . . . . compute the number of CPUs.
 **
 **  SyCountProcessors() retrieves the number of active logical processors.
-**  In case of Linux, calls get_nprocs().
-**  In case of Windows 7 and higher, calls
-**  GetActiveProcessorCount(ALL_PROCESSOR_GROUPS).
-**  In case of older versions of Windows, tries to load the number of
-**  processors in current processor group via GetSystemInfo with proper
-**  arguments and falls back to the value of 4 in case of an error.
-**  In case of macOS, sysctl is called with HW_AVAILCPU flag.
-**  In case of other operating systems the value of 4 is returned.
 */
 
 UInt SyCountProcessors(void) {
