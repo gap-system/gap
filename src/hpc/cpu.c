@@ -11,16 +11,14 @@
 #include "hpc/cpu.h"
 
 #ifndef NUM_CPUS
-#ifdef __linux__
-#include <sys/sysinfo.h>
+#ifdef _POSIX_C_SOURCE
+#include <sys/unistd.h>
 #elif _WIN32
 #if _WIN32_WINNT >= _WIN32_WINNT_WIN7
 #include <windows.h>
 #else
 #include <sysinfoapi.h>
 #endif
-#elif __APPLE__
-#include <sys/sysctl.h>
 #endif
 #endif
 
@@ -46,10 +44,14 @@ UInt SyCountProcessors(void)
 #ifdef NUM_CPUS
     return NUM_CPUS;
 #else
-#if __linux__
-    return get_nprocs();
-#else
     const UInt fallback_cpus_number = 4;
+#if _POSIX_C_SOURCE
+    const int  result = sysconf(_SC_NPROCESSORS_ONLN);
+    if (result < 1) {
+        return fallback_cpus_number;
+    }
+    return result;
+#else
 #if _WIN32
 #if _WIN32_WINNT >= _WIN32_WINNT_WIN7
     return GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
@@ -61,17 +63,6 @@ UInt SyCountProcessors(void)
     }
     return info.dwNumberOfProcessors;
 #endif
-#elif __APPLE__
-    int      nm[2] = { CTL_HW, HW_AVAILCPU };
-    size_t   len = 4;
-    uint32_t count;
-
-    sysctl(nm, 2, &count, &len, NULL, 0);
-
-    if (count < 1) {
-        return fallback_cpus_number;
-    }
-    return count;
 #else
     return fallback_cpus_number;
 #endif
