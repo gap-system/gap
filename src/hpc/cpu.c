@@ -23,7 +23,7 @@ UInt SyNumProcessors = 4;
 
 /****************************************************************************
 **
-*F  SyCountProcessors() . . . . . . . . . . . . compute the number of CPUs.
+*F  SyCountProcessors() . . . . . . . . . . . . . . compute the number of CPUs
 **
 **  SyCountProcessors() retrieves the number of active logical processors.
 */
