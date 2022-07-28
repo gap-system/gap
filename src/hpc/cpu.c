@@ -15,8 +15,6 @@
 #include <sys/unistd.h>
 #elif _WIN32_WINNT >= _WIN32_WINNT_WIN7
 #include <windows.h>
-#elif _WIN32
-#include <sysinfoapi.h>
 #endif
 #endif
 
@@ -51,13 +49,6 @@ UInt SyCountProcessors(void)
     return result;
 #elif _WIN32_WINNT >= _WIN32_WINNT_WIN7
     return GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
-#elif _WIN32
-    SYSTEM_INFO info;
-    GetSystemInfo(&info);
-    if (info.dwNumberOfProcessors < 1) {
-        return fallback_cpus_number;
-    }
-    return info.dwNumberOfProcessors;
 #else
     return fallback_cpus_number;
 #endif
