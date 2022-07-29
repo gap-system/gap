@@ -29,17 +29,6 @@ UInt DeadlockCheck = 1;
 
 /****************************************************************************
 **
-*V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
-**
-*/
-#ifdef NUM_CPUS
-UInt SyNumProcessors = NUM_CPUS;
-#else
-UInt SyNumProcessors = 4;
-#endif
-
-/****************************************************************************
-**
 *V  SyNumGCThreads  . . . . . . . . . . . . . . . number of GC worker threads
 **
 */

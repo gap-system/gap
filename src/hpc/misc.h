@@ -17,6 +17,7 @@
 #error This header is only meant to be used with HPC-GAP
 #endif
 
+
 /****************************************************************************
 **
 *V  ThreadUI  . . . . . . . . . . . . . . . . . . . .  support UI for threads
@@ -30,13 +31,6 @@ extern UInt ThreadUI;
 **
 */
 extern UInt DeadlockCheck;
-
-/****************************************************************************
-**
-*V  SyNumProcessors  . . . . . . . . . . . . . . . . . number of logical CPUs
-**
-*/
-extern UInt SyNumProcessors;
 
 /****************************************************************************
 **
