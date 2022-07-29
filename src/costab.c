@@ -2225,6 +2225,19 @@ static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) /* rels */
 
 /****************************************************************************
 **
+*F  FuncNEW_LOWINDEX_DATA( <n> )
+**
+*/
+static Obj FuncNEW_LOWINDEX_DATA(Obj self, Obj n)
+{
+    Int len = GetSmallInt(SELF_NAME, n);
+    Obj rel = NewBag(T_DATOBJ, (len + 1) * sizeof(Obj));
+    SET_TYPE_DATOBJ(rel, TYPE_LOWINDEX_DATA);
+    return rel;
+}
+
+/****************************************************************************
+**
 *F  FuncTC_QUICK_SCAN( <c>,<o>,<alpha>,<w>)
 **
 */
@@ -2308,6 +2321,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_4ARGS(LOWINDEX_COSET_SCAN, table, relators, stack1, stack2),
     GVAR_FUNC_4ARGS(LOWINDEX_IS_FIRST, table, n, mu, nu),
     GVAR_FUNC_1ARGS(LOWINDEX_PREPARE_RELS, rels),
+    GVAR_FUNC_1ARGS(NEW_LOWINDEX_DATA, n),
     GVAR_FUNC_5ARGS(TC_QUICK_SCAN, table, offset, alpha, word, result),
     { 0, 0, 0, 0, 0 }
 
