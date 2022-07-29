@@ -2950,10 +2950,8 @@ j, ok, b,k,tr;
   stack2:=List([1..2*N],i->0);
 
   # these are scratch space for the kernel (partial permutations)
-  mu:=ListWithIdenticalEntries(N,0);
-  nu:=ListWithIdenticalEntries(N,0);
-  Objectify(TYPE_LOWINDEX_DATA,mu);
-  Objectify(TYPE_LOWINDEX_DATA,nu);
+  mu:=NEW_LOWINDEX_DATA(N);
+  nu:=NEW_LOWINDEX_DATA(N);
   
   tr:=[2*m,2*m-1..1];
 
