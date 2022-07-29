@@ -569,13 +569,6 @@ BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 
 
-BIND_GLOBAL( "IsNonAtomicComponentObjectRepFlags",
-        FLAGS_FILTER(IsNonAtomicComponentObjectRep));
-BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags",
-        FLAGS_FILTER(IsAtomicPositionalObjectRep));
-BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags",
-        FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
-
 #############################################################################
 ##
 #F  Objectify( <type>, <obj> )
@@ -592,26 +585,40 @@ BIND_GLOBAL( "Objectify", function ( type, obj )
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
+    flags := FlagsType(type);
     if IsHPCGAP then
-        flags := FlagsType(type);
         if IS_LIST( obj )  then
-            if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
+            if IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsAtomicPositionalObjectRep)) then
                 FORCE_SWITCH_OBJ( obj, FixedAtomicList(obj) );
             fi;
         elif IS_REC( obj )  then
             if IS_ATOMIC_RECORD(obj) then
-                if IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+                if IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsNonAtomicComponentObjectRep)) then
                     FORCE_SWITCH_OBJ( obj, FromAtomicRecord(obj) );
                 fi;
-            elif not IS_SUBSET_FLAGS(flags, IsNonAtomicComponentObjectRepFlags) then
+            elif not IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsNonAtomicComponentObjectRep)) then
                 FORCE_SWITCH_OBJ( obj, AtomicRecord(obj) );
             fi;
         fi;
     fi;
     if IS_LIST( obj )  then
+        #Assert(0, IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsPositionalObjectRep)));
+        Assert(0, not IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsComponentObjectRep)));
+        if not IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsPositionalObjectRep)) then
+            INFO_DEBUG(1, "Objectify: type does not imply IsPositionalObjectRep ",
+                 INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
+        fi;
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
+        #Assert(0, IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsComponentObjectRep)));
+        Assert(0, not IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsPositionalObjectRep)));
+        if not IS_SUBSET_FLAGS(flags, FLAGS_FILTER(IsComponentObjectRep)) then
+            INFO_DEBUG(1, "Objectify: type does not imply IsComponentObjectRep ",
+                 INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
+        fi;
         SET_TYPE_COMOBJ( obj, type );
+    else
+        Error("<obj> must be a list or a record");
     fi;
     if not ( IGNORE_IMMEDIATE_METHODS
              or IsNoImmediateMethodsObject(obj) ) then
