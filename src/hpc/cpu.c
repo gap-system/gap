@@ -10,9 +10,9 @@
 
 #include "hpc/cpu.h"
 
-#ifdef _POSIX_C_SOURCE
-#include <sys/unistd.h>
-#elif _WIN32_WINNT >= _WIN32_WINNT_WIN7
+#include <unistd.h>
+
+#if defined(_WIN32_WINNT) && _WIN32_WINNT >= _WIN32_WINNT_WIN7
 #include <windows.h>
 #endif
 
@@ -33,13 +33,13 @@ UInt SyNumProcessors = FALLBACK_CPUS_NUMBER;
 */
 UInt SyCountProcessors(void)
 {
-#if _POSIX_C_SOURCE
+#if defined(HAVE_SYSCONF) && defined(_SC_NPROCESSORS_ONLN)
     const int result = sysconf(_SC_NPROCESSORS_ONLN);
-    if (result < 1) {
-        return FALLBACK_CPUS_NUMBER;
+    if (result >= 1) {
+        return result;
     }
-    return result;
-#elif _WIN32_WINNT >= _WIN32_WINNT_WIN7
+    return FALLBACK_CPUS_NUMBER;
+#elif defined(_WIN32_WINNT) && _WIN32_WINNT >= _WIN32_WINNT_WIN7
     return GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
 #else
     return FALLBACK_CPUS_NUMBER;
