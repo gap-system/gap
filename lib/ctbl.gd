@@ -4696,7 +4696,8 @@ DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep,
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation( "IsGenericCharacterTableRep", IsNearlyCharacterTable,
+DeclareRepresentation( "IsGenericCharacterTableRep",
+     IsNearlyCharacterTable and IsComponentObjectRep,
      [
      "domain",
      "wholetable",

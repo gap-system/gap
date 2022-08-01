@@ -201,7 +201,8 @@ DeclareCategory( "IsInfBitsFamily", IsSyllableWordsFamily );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentation( "IsSyllableAssocWordRep", IsAssocWord, [] );
+DeclareRepresentation( "IsSyllableAssocWordRep",
+                       IsAssocWord and IsPositionalObjectRep, [] );
 
 #############################################################################
 ##
@@ -223,7 +224,8 @@ if IsHPCGAP then
 DeclareRepresentation( "IsLetterAssocWordRep", 
                        IsAssocWord and IsAtomicPositionalObjectRep, [] );
 else
-DeclareRepresentation( "IsLetterAssocWordRep", IsAssocWord, [] );
+DeclareRepresentation( "IsLetterAssocWordRep",
+                       IsAssocWord and IsPositionalObjectRep, [] );
 fi;
 
 #############################################################################
