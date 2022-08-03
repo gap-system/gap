@@ -2648,7 +2648,7 @@ Obj RESET_FILTER_OBJ;
 **
 **  DoSetProperty( <prop>, <obj>, <val> )
 */
-static Obj DoSetProperty(Obj self, Obj obj, Obj val)
+Obj DoSetProperty(Obj self, Obj obj, Obj val)
 {
     Int                 flag1;
     Int                 flag2;
@@ -2811,12 +2811,13 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F  NewProperty( <name>, <nams>, <hdlr> )
+*F  NewProperty( <name>, <nams>, <getHdlr>, <setHdlr> )
 */
 Obj NewProperty (
     Obj                 name,
     Obj                 nams,
-    ObjFunc_1ARGS       hdlr )
+    ObjFunc_1ARGS       getHdlr,
+    ObjFunc_2ARGS       setHdlr )
 {
     Obj                 getter;
     Obj                 setter;
@@ -2828,11 +2829,12 @@ Obj NewProperty (
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    setter = MakeSetter(name, flag1, flag2, DoSetProperty);
+    GAP_ASSERT(setHdlr);
+    setter = MakeSetter(name, flag1, flag2, setHdlr);
     tester = MakeTester(name, flag1, flag2);
 
-    GAP_ASSERT(hdlr);
-    getter = NewOperation(name, 1, nams, (ObjFunc)hdlr);
+    GAP_ASSERT(getHdlr);
+    getter = NewOperation(name, 1, nams, (ObjFunc)getHdlr);
 
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(flag2));
@@ -3078,7 +3080,7 @@ static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
 static Obj FuncNEW_PROPERTY(Obj self, Obj name)
 {
     RequireStringRep(SELF_NAME, name);
-    return NewProperty(name, 0, DoProperty);
+    return NewProperty(name, 0, DoProperty, DoSetProperty);
 }
 
 
