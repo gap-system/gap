@@ -646,30 +646,14 @@ local d,fam;
     ActingDomain,U,FunctionAction,OnLeftInverse,Representative,g,
     CanonicalRepresentativeDeterminatorOfExternalSet,
     RightCosetCanonicalRepresentativeDeterminator);
-  return d;
-end);
 
-InstallMethod(RightCoset,"use subgroup size",IsCollsElms,
-  [IsGroup and HasSize,IsObject],0,
-function(U,g)
-local d,fam,typ;
-  # noch tests...
-
-  fam:=FamilyObj(U);
-  typ:=NewType(fam,IsRightCosetDefaultRep and
-          HasActingDomain and HasFunctionAction and HasRepresentative
-          and HasCanonicalRepresentativeDeterminatorOfExternalSet);
-
-  d:=rec();
-  ObjectifyWithAttributes(d,typ,
-    ActingDomain,U,FunctionAction,OnLeftInverse,Representative,g,
-    CanonicalRepresentativeDeterminatorOfExternalSet,
-    RightCosetCanonicalRepresentativeDeterminator);
-  # We cannot set the size in the previous ObjectifyWithAttributes as there is
-  # a custom setter method (the one added in this commit). In such a case
-  # ObjectifyWith Attributes just does `Objectify` and calls all setters
-  # separately which is what we want to avoid here.
-  SetSize(d,Size(U)); 
+  if HasSize(U) then
+    # We cannot set the size in the previous ObjectifyWithAttributes as there
+    # is a custom setter method. In such a case ObjectifyWithAttributes just
+    # does `Objectify` and calls all setters separately which is what we want
+    # to avoid here.
+    SetSize(d,Size(U));
+  fi;
 
   return d;
 end);
