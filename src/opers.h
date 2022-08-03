@@ -603,6 +603,13 @@ Obj NewAttribute(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
 
 /****************************************************************************
 **
+**  DoSetProperty( <prop>, <obj>, <val> )
+*/
+Obj DoSetProperty(Obj self, Obj obj, Obj val);
+
+
+/****************************************************************************
+**
 *F  DoProperty( <self>, <obj> ) . . . . . . .  default handler for properties
 */
 Obj DoProperty(Obj self, Obj obj);
@@ -610,9 +617,9 @@ Obj DoProperty(Obj self, Obj obj);
 
 /****************************************************************************
 **
-*F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
+*F  NewProperty( <name>, <nams>, <getHdlr>, <setHdlr> ) . make a new property
 */
-Obj NewProperty(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
+Obj NewProperty(Obj name, Obj nams, ObjFunc_1ARGS getHdlr, ObjFunc_2ARGS setHdlr);
 
 
 /****************************************************************************

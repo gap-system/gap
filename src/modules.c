@@ -573,7 +573,7 @@ void InitGVarPropsFromTable(const StructGVarProp * tab)
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
         Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar(gvar, NewProperty(name, args, tab[i].handler));
+        AssReadOnlyGVar(gvar, NewProperty(name, args, tab[i].getter, tab[i].setter));
     }
 }
 
@@ -687,7 +687,8 @@ void InitHdlrPropsFromTable(const StructGVarProp * tab)
     Int i;
 
     for (i = 0; tab[i].name != 0; i++) {
-        InitHandlerFunc(tab[i].handler, tab[i].cookie);
+        InitHandlerFunc(tab[i].getter, tab[i].cookie1);
+        InitHandlerFunc(tab[i].setter, tab[i].cookie2);
         InitFopyGVar(tab[i].name, tab[i].property);
     }
 }

@@ -227,15 +227,18 @@ typedef struct {
     const Char * name;
     const Char * argument;
     Obj *        property;
-    ObjFunc_1ARGS handler;
-    const Char * cookie;
+    ObjFunc_1ARGS getter;
+    ObjFunc_2ARGS setter;
+    const Char * cookie1;
+    const Char * cookie2;
 } StructGVarProp;
 
 // GVAR_PROP a helper macro for quickly creating table entries in
 // StructGVarProp arrays
 #define GVAR_PROP(name, argument, filter)                                    \
     {                                                                        \
-        #name, argument, filter, Prop##name, __FILE__ ":" #name              \
+        #name, argument, filter, Prop##name, PropSet##name,                  \
+        __FILE__ ":" #name, __FILE__ ":Set" #name                            \
     }
 
 /****************************************************************************

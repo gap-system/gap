@@ -677,5 +677,28 @@ gap> PositionSublist(a,[]);
 gap> PositionSublist(a,[],1);
 2
 
+# Verify SetIsSSortedList works on plain lists. For background, see
+# <https://github.com/gap-system/gap/issues/4459>.
+gap> l:= [ 1, 3, 2 ];
+[ 1, 3, 2 ]
+gap> HasIsSSortedList( l );
+false
+gap> SetIsSSortedList( l, false );
+gap> HasIsSSortedList( l );
+true
+gap> IsSSortedList( l );
+false
+gap> HasIsSSortedList( l );
+true
+
+#
+gap> l:= [ 1, 3, 5 ];
+[ 1, 3, 5 ]
+gap> HasIsSSortedList( l );
+false
+gap> SetIsSSortedList( l, true );
+gap> HasIsSSortedList( l );
+true
+
 #
 gap> STOP_TEST("list.tst");
