@@ -66,10 +66,6 @@
 #include <spawn.h>
 #endif
 
-#ifdef SYS_IS_CYGWIN32
-#include <process.h>
-#endif
-
 #ifdef HAVE_SELECT
 #include <sys/time.h>
 #endif
@@ -566,110 +562,85 @@ cleanup:
 **  performed, the return  value of the process  is returned if the operation
 **  system supports such a concept.
 */
-
-/****************************************************************************
-**
-*f  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> )
-*/
-#if defined(HAVE_FORK) || defined(HAVE_VFORK)
-
-#ifndef WEXITSTATUS
-#define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
-#endif
-#ifndef WIFEXITED
-#define WIFEXITED(stat_val) (((stat_val)&255) == 0)
-#endif
-
-#ifdef SYS_IS_CYGWIN32
+#ifdef HAVE_POSIX_SPAWN
 
 static UInt
 SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
 {
-    int savestdin, savestdout;
-    Int tin, tout;
-    int res;
+    posix_spawn_file_actions_t file_actions;
 
-    // change the working directory
-    if (chdir(dir) == -1)
+    // setup file actions
+    if (posix_spawn_file_actions_init(&file_actions)) {
+        PErr("SyExecuteProcess: posix_spawn_file_actions_init failed");
         return -1;
+    }
 
     // if <in> is -1 open "/dev/null"
-    if (in == -1)
-        tin = open("/dev/null", O_RDONLY);
-    else
-        tin = SyBufFileno(in);
-    if (tin == -1)
-        return -1;
+    if (in == -1) {
+        if (posix_spawn_file_actions_addopen(&file_actions, 0, "/dev/null",
+                                             O_RDONLY, 0)) {
+            PErr("SyExecuteProcess: addopen(0, \"/dev/null\") failed");
+            posix_spawn_file_actions_destroy(&file_actions);
+            return -1;
+        }
+    }
+    else {
+        int tin = SyBufFileno(in);
+        if (tin != 0 &&
+            posix_spawn_file_actions_adddup2(&file_actions, tin, 0)) {
+            PErr("SyExecuteProcess: adddup2(child, 0) failed");
+            posix_spawn_file_actions_destroy(&file_actions);
+            return -1;
+        }
+    }
 
     // if <out> is -1 open "/dev/null"
-    if (out == -1)
-        tout = open("/dev/null", O_WRONLY);
-    else
-        tout = SyBufFileno(out);
-    if (tout == -1) {
-        if (in == -1)
-            close(tin);
+    if (out == -1) {
+        if (posix_spawn_file_actions_addopen(&file_actions, 1, "/dev/null",
+                                             O_WRONLY, 0)) {
+            PErr("SyExecuteProcess: addopen(0, \"/dev/null\") failed");
+            posix_spawn_file_actions_destroy(&file_actions);
+            return -1;
+        }
+    }
+    else {
+        int tout = SyBufFileno(out);
+        if (tout != 1 &&
+            posix_spawn_file_actions_adddup2(&file_actions, tout, 1)) {
+            PErr("SyExecuteProcess: adddup2(tout, 1) failed");
+            posix_spawn_file_actions_destroy(&file_actions);
+            return -1;
+        }
+    }
+
+    // spawn subprocess
+    pid_t pid;
+    if (posix_spawn_with_dir(&pid, prg, &file_actions, 0, args, environ,
+                             dir)) {
+        PErr("SyExecuteProcess: posix_spawn_with_dir failed");
         return -1;
     }
 
-    // set standard input to <in>, standard output to <out>
-    savestdin = -1;    // Just to please the compiler
-    if (tin != 0) {
-        savestdin = dup(0);
-        if (savestdin == -1 || dup2(tin, 0) == -1) {
-            if (out == -1)
-                close(tout);
-            if (in == -1)
-                close(tin);
-            return -1;
-        }
-        fcntl(0, F_SETFD, 0);
-    }
-
-    if (tout != 1) {
-        savestdout = dup(1);
-        if (savestdout == -1 || dup2(tout, 1) == -1) {
-            if (tin != 0) {
-                close(0);
-                dup2(savestdin, 0);
-                close(savestdin);
-            }
-            if (out == -1)
-                close(tout);
-            if (in == -1)
-                close(tin);
-            return -1;
-        }
-        fcntl(1, F_SETFD, 0);
-    }
-
+    // stop trying to read input
     FreezeStdin = 1;
-    // now try to execute the program
-    res = spawnve(_P_WAIT, prg, (const char * const *)args,
-                  (const char * const *)environ);
 
-    // Now repair the open file descriptors:
-    if (tout != 1) {
-        close(1);
-        dup2(savestdout, 1);
-        close(savestdout);
-    }
-    if (tin != 0) {
-        close(0);
-        dup2(savestdin, 0);
-        close(savestdin);
-    }
-    if (out == -1)
-        close(tout);
-    if (in == -1)
-        close(tin);
+    // wait for some action
+    int   status;
+    pid_t wait_pid = waitpid(pid, &status, 0);
 
+    // TODO: align this code to the other implementation...
+
+    // resume reading input, resume child handler
     FreezeStdin = 0;
 
-    // Report result:
-    if (res < 0)
+    // cleanup
+    posix_spawn_file_actions_destroy(&file_actions);
+
+    // Report result
+    if (wait_pid == -1 || WIFSIGNALED(status)) {
         return -1;
-    return WEXITSTATUS(res);
+    }
+    return WEXITSTATUS(status);
 }
 
 #else
@@ -791,8 +762,6 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     // this should not happen
     return -1;
 }
-#endif
-
 #endif
 
 #endif    // !GAP_DISABLE_SUBPROCESS_CODE

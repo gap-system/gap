@@ -1624,8 +1624,8 @@ static UInt syCTRO; // number of '<ctr>-O' pending
 static UInt syESCN; // number of '<Esc>-N' pending
 
 UInt FreezeStdin;    // When true, ignore if any new input from stdin
-                            // This is used to stop HPC-GAP from reading stdin
-                            // while forked subprocesses are running.
+                     // This is used to stop HPC-GAP from reading stdin
+                     // while forked subprocesses are running.
 
 
 #ifdef HAVE_SELECT
