@@ -354,10 +354,15 @@ static int posix_spawn_with_dir(pid_t *                      pid,
     // UPDATE: musl libc 1.1.24, glibc 2.29 and macOS 10.15 added preview
     // versions of these new APIs (with suffix `_np` to indicate it), so we
     // can actually start using them.
+    //
+    // UPDATE: the proposed change was accepted and applied to the draft of
+    // the next POSIX revision in mid-2020. When this will appear in public
+    // is anyones guess. On the upside, also OpenBSD, FreeBSD, and Solaris
+    // implement the _np versions of the API.
 
 #ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
     if (posix_spawn_file_actions_addchdir(file_actions, dir)) {
-        PErr("StartChildProcess: addchdir failed");
+        PErr("posix_spawn_with_dir: addchdir failed");
         return 1;
     }
 #else
@@ -371,11 +376,11 @@ static int posix_spawn_with_dir(pid_t *                      pid,
     // target executable.
     int oldwd = open(".", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
     if (oldwd == -1) {
-        PErr("StartChildProcess: cannot open current working directory");
+        PErr("posix_spawn_with_dir: cannot open current working directory");
         return 1;
     }
     if (chdir(dir) == -1) {
-        PErr("StartChildProcess: cannot change working "
+        PErr("posix_spawn_with_dir: cannot change working "
              "directory for subprocess");
         return 1;
     }

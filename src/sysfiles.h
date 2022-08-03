@@ -14,7 +14,7 @@
 #ifndef GAP_SYSFILES_H
 #define GAP_SYSFILES_H
 
-#include "system.h"
+#include "common.h"
 
 #include <stddef.h>
 
@@ -38,7 +38,6 @@ Obj SyGetOsRelease(void);
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
 */
 
@@ -442,20 +441,21 @@ Obj SyIsDir(const Char * name);
 
 void getwindowsize(void);
 
-/***************************************************************************
+/****************************************************************************
 **
-*F HasAvailableBytes( <fid> ) returns positive if  a subsequent read to <fid>
+*F  HasAvailableBytes( <fid> ) returns positive if  a subsequent read to <fid>
 **                            will read at least one byte without blocking
 */
 Int HasAvailableBytes(UInt fid);
 
 Char * SyFgetsSemiBlock(Char * line, UInt length, Int fid);
 
-/***************************************************************************
- **
- *F SyReadStringFid( <fid> )
- **   - read file given by <fid> into a string
- */
+/****************************************************************************
+**
+*F  SyReadStringFid( <fid> )
+**
+**   - read file given by <fid> into a string
+*/
 
 Obj SyReadStringFid(Int fid);
 

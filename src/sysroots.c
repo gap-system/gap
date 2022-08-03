@@ -16,6 +16,7 @@
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysstr.h"
+#include "system.h"
 
 #include <stdlib.h>
 
