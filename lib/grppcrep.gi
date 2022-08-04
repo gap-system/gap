@@ -18,8 +18,9 @@ MappedVector := function( exp, list )
     local elm, i;
 
     if Length( list ) = 0 then
-        Error("cannot compute this\n");
+        Error("cannot compute this");
     fi;
+    if IsFFE( exp[1] ) then exp := IntVecFFE(exp); fi;
     elm := list[1]^exp[1];
     for i in [2..Length(list)] do
         elm := elm * list[i]^exp[i];
