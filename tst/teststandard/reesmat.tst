@@ -1026,10 +1026,7 @@ MappingByFunction( <Rees matrix semigroup 3x3 over Group(())>,
  , function( object ) ... end, function( object ) ... end )
 gap> R:=ReesMatrixSubsemigroup(R, [1,3], Group(()), [2,3]);
 <Rees matrix semigroup 2x2 over Group(())>
-gap> f:=IsomorphismReesMatrixSemigroup(R);
-MappingByFunction( <Rees matrix semigroup 2x2 over Group(())>, 
-<Rees matrix semigroup 2x2 over Group(())>
- , function( u ) ... end, function( v ) ... end )
+gap> f:=IsomorphismReesMatrixSemigroup(R);;
 gap> ForAll(R, x-> ForAll(R, y-> x^f*y^f=(x*y)^f));
 true
 gap> g:=InverseGeneralMapping(f);;
