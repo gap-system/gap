@@ -9,25 +9,6 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
-#############################################################################
-##
-#F InducedActionFactor( mats, fac, low )
-# this function is used only in a package.
-##
-InducedActionFactor := function( mats, fac, low )
-    local sml, upp, d, i, b, t;
-    sml := List( mats, x -> [] );
-    upp := Concatenation( fac, low );
-    d   := Length( fac );
-    for i in [1..Length(mats)] do
-        for b in fac do
-            t := SolutionMat( upp, b*mats[i] ){[1..d]};
-            Add( sml[i], t );
-        od;
-    od;
-    return sml; 
-end;
-
 VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
   local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine,
   acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp,
