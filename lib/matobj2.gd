@@ -2009,7 +2009,7 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ] );
+DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_ROWS );
 
 ############################################################################
 ##
@@ -2026,4 +2026,4 @@ DeclareOperation( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, 
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ] );
+DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
