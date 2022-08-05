@@ -93,7 +93,7 @@ static Obj EvalUnknownExpr(Expr expr)
 **  are   not a priori    known  to evaluate  to a    boolean value  (such as
 **  function calls).
 */
-static Obj EvalUnknownBool(Expr expr)
+Obj EvalUnknownBool(Expr expr)
 {
     Obj                 val;            /* value, result                   */
 
@@ -165,6 +165,7 @@ static Obj EvalAnd(Expr expr)
     /* if the left operand is 'false', this is the result                  */
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
+
     if      ( opL == False ) {
         return opL;
     }
@@ -244,7 +245,6 @@ static Obj EvalEq(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (EQ( opL, opR ) ? True : False);
 
     /* return the value                                                    */
@@ -277,7 +277,6 @@ static Obj EvalNe(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (EQ( opL, opR ) ? False : True);
 
     /* return the value                                                    */
@@ -310,7 +309,6 @@ static Obj EvalLt(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opL, opR ) ? True : False);
 
     /* return the value                                                    */
@@ -343,7 +341,6 @@ static Obj EvalGe(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opL, opR ) ? False : True);
 
     /* return the value                                                    */
@@ -376,7 +373,6 @@ static Obj EvalGt(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opR, opL ) ? True : False);
 
     /* return the value                                                    */
@@ -409,7 +405,6 @@ static Obj EvalLe(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (LT( opR, opL ) ? False : True);
 
     /* return the value                                                    */
@@ -442,7 +437,6 @@ static Obj EvalIn(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* perform the test                                                    */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = (IN( opL, opR ) ? True : False);
 
     /* return the value                                                    */
@@ -478,7 +472,6 @@ static Obj EvalSum(Expr expr)
     if ( ! ARE_INTOBJS( opL, opR ) || ! SUM_INTOBJS( val, opL, opR ) ) {
 
         /* if that doesn't work, dispatch to the addition function         */
-        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
         val = SUM( opL, opR );
 
     }
@@ -509,8 +502,7 @@ static Obj EvalAInv(Expr expr)
     opL = EVAL_EXPR( tmp );
 
     /* compute the additive inverse                                        */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
-    val = AINV_SAMEMUT(opL);
+    val = AINV_SAMEMUT( opL );
 
     /* return the value                                                    */
     return val;
@@ -545,7 +537,6 @@ static Obj EvalDiff(Expr expr)
     if ( ! ARE_INTOBJS( opL, opR ) || ! DIFF_INTOBJS( val, opL, opR ) ) {
 
         /* if that doesn't work, dispatch to the subtraction function      */
-        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
         val = DIFF( opL, opR );
 
     }
@@ -583,7 +574,6 @@ static Obj EvalProd(Expr expr)
     if ( ! ARE_INTOBJS( opL, opR ) || ! PROD_INTOBJS( val, opL, opR ) ) {
 
         /* if that doesn't work, dispatch to the multiplication function   */
-        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
         val = PROD( opL, opR );
 
     }
@@ -618,7 +608,6 @@ static Obj EvalQuo(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the division function                                   */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = QUO( opL, opR );
 
     /* return the value                                                    */
@@ -651,7 +640,6 @@ static Obj EvalMod(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the remainder function                                  */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = MOD( opL, opR );
 
     /* return the value                                                    */
@@ -684,7 +672,6 @@ static Obj EvalPow(Expr expr)
     opR = EVAL_EXPR( tmp );
 
     /* dispatch to the powering function                                   */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
     val = POW( opL, opR );
 
     /* return the value                                                    */

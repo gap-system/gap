@@ -12,7 +12,7 @@ gap> f:=function(a)
 > end;;
 gap> f(1);
 Error, breakpoint at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:14
 you can 'quit;' to quit to outer loop, or
@@ -34,7 +34,7 @@ unbound_global;
 ^^^^^^^^^^^^^^
 Error, Variable: 'unbound_global' must have a value in
   Error( "breakpoint" ); at *stdin*:9 called from 
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:6
 brk> 
@@ -48,7 +48,7 @@ true
 brk> unbound_higher;
 Error, Variable: 'unbound_higher' must have an assigned value in
   Error( "breakpoint" ); at *stdin*:9 called from 
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:12
 type 'quit;' to quit to outer loop
@@ -64,7 +64,7 @@ true
 brk> unbound_local;
 Error, Variable: 'unbound_local' must have an assigned value in
   Error( "breakpoint" ); at *stdin*:9 called from 
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:17
 type 'quit;' to quit to outer loop
@@ -86,7 +86,7 @@ gap> h:=function(p)
 function( p ) ... end
 gap> f(1);
 Error, breakpoint at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:23
 you can 'quit;' to quit to outer loop, or
@@ -94,7 +94,7 @@ you can 'return;' to continue
 brk> h(2);
 Error, foobar at *stdin*:20 called from
 Error( "breakpoint" ); at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 you can 'quit;' to quit to outer loop, or
@@ -111,7 +111,7 @@ brk_2> unbound_higher;
 Error, Variable: <debug-variable-1-4> must have a value in
   Error( "foobar" ); at *stdin*:20 called from 
 Error( "breakpoint" ); at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:6
 brk_2> 
@@ -121,7 +121,7 @@ Error, Variable: <debug-variable-1-4> cannot be used here in
   <corrupted statement>  called from 
 Error( "foobar" ); at *stdin*:20 called from
 Error( "breakpoint" ); at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:9
 brk_2> function() return IsBound(unbound_higher); end;
@@ -129,7 +129,7 @@ Error, Variable: <debug-variable-1-4> cannot be used here in
   <corrupted statement>  called from 
 Error( "foobar" ); at *stdin*:20 called from
 Error( "breakpoint" ); at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:10
 brk_2> function() Unbind(unbound_higher); end;
@@ -137,7 +137,7 @@ Error, Variable: <debug-variable-1-4> cannot be used here in
   <corrupted statement>  called from 
 Error( "foobar" ); at *stdin*:20 called from
 Error( "breakpoint" ); at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:11
 brk_2> function() unbound_higher:=0; end;
@@ -145,7 +145,7 @@ Error, Variable: <debug-variable-1-4> cannot be used here in
   <corrupted statement>  called from 
 Error( "foobar" ); at *stdin*:20 called from
 Error( "breakpoint" ); at *stdin*:9 called from
-g( 10 ) at *stdin*:12 called from
+return g( 10 ) + y; at *stdin*:12 called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:12
 brk_2> QUIT;

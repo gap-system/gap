@@ -244,8 +244,6 @@ static ExecStatus ExecIfElse(Stat stat)
 
     }
 
-    SET_BRK_CALL_TO(stat);
-
     /* otherwise execute the else-branch body and leave                    */
     body = READ_STAT(stat, 3);
     return EXEC_STAT( body );
@@ -273,8 +271,6 @@ static ExecStatus ExecIfElif(Stat stat)
             return EXEC_STAT( body );
 
         }
-
-        SET_BRK_CALL_TO(stat);
     }
 
     return STATUS_END;
@@ -303,7 +299,6 @@ static ExecStatus ExecIfElifElse(Stat stat)
 
         }
 
-        SET_BRK_CALL_TO(stat);
     }
 
     /* otherwise execute the else-branch body and leave                    */
@@ -927,7 +922,6 @@ static ExecStatus ExecAssert3Args(Stat stat)
         if (cond == False) {
             message = EVAL_EXPR(READ_STAT(stat, 2));
             if ( message != (Obj) 0 ) {
-                SET_BRK_CALL_TO( stat );
                 if (IS_STRING_REP( message ))
                     PrintString1( message );
                 else

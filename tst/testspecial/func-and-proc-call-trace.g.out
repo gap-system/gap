@@ -125,7 +125,7 @@ gap> informfunc0 := function(l)
 gap> informfunc0([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l(  ) at *stdin*:44 called from
+Print( l(  ) ); at *stdin*:44 called from
 <function "informfunc0">( <arguments> )
  called from read-eval loop at *stdin*:46
 type 'quit;' to quit to outer loop
@@ -140,7 +140,7 @@ gap> informfunc1 := function(l)
 gap> informfunc1([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1 ) at *stdin*:49 called from
+Print( l( 1 ) ); at *stdin*:49 called from
 <function "informfunc1">( <arguments> )
  called from read-eval loop at *stdin*:51
 type 'quit;' to quit to outer loop
@@ -155,7 +155,7 @@ gap> informfunc2 := function(l)
 gap> informfunc2([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1, 2 ) at *stdin*:54 called from
+Print( l( 1, 2 ) ); at *stdin*:54 called from
 <function "informfunc2">( <arguments> )
  called from read-eval loop at *stdin*:56
 type 'quit;' to quit to outer loop
@@ -170,7 +170,7 @@ gap> informfunc3 := function(l)
 gap> informfunc3([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1, 2, 3 ) at *stdin*:59 called from
+Print( l( 1, 2, 3 ) ); at *stdin*:59 called from
 <function "informfunc3">( <arguments> )
  called from read-eval loop at *stdin*:61
 type 'quit;' to quit to outer loop
@@ -185,7 +185,7 @@ gap> informfunc4 := function(l)
 gap> informfunc4([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1, 2, 3, 4 ) at *stdin*:64 called from
+Print( l( 1, 2, 3, 4 ) ); at *stdin*:64 called from
 <function "informfunc4">( <arguments> )
  called from read-eval loop at *stdin*:66
 type 'quit;' to quit to outer loop
@@ -200,7 +200,7 @@ gap> informfunc5 := function(l)
 gap> informfunc5([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1, 2, 3, 4, 5 ) at *stdin*:69 called from
+Print( l( 1, 2, 3, 4, 5 ) ); at *stdin*:69 called from
 <function "informfunc5">( <arguments> )
  called from read-eval loop at *stdin*:71
 type 'quit;' to quit to outer loop
@@ -215,7 +215,7 @@ gap> informfunc6 := function(l)
 gap> informfunc6([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1, 2, 3, 4, 5, 6 ) at *stdin*:74 called from
+Print( l( 1, 2, 3, 4, 5, 6 ) ); at *stdin*:74 called from
 <function "informfunc6">( <arguments> )
  called from read-eval loop at *stdin*:76
 type 'quit;' to quit to outer loop
@@ -230,7 +230,7 @@ gap> informfuncmore := function(l)
 gap> informfuncmore([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments at GAPROOT/lib/methsel2.g:LINE called from
-l( 1, 2, 3, 4, 5, 6, 7 ) at *stdin*:79 called from
+Print( l( 1, 2, 3, 4, 5, 6, 7 ) ); at *stdin*:79 called from
 <function "informfuncmore">( <arguments> )
  called from read-eval loop at *stdin*:81
 type 'quit;' to quit to outer loop
