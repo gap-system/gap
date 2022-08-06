@@ -1146,6 +1146,11 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
   fi;
   dict:=NewDictionary(d,true,D);
 
+  if HasIsHandledByNiceMonomorphism(G) and IsHandledByNiceMonomorphism(G) then
+    # ensure a nice monomorphism for the parent has been computed
+    NiceMonomorphism(G);
+  fi;
+
   if IsBound(dopr.stabsub) then
     stabsub:=AsSubgroup(Parent(G),dopr.stabsub);
   else
