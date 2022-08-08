@@ -1124,7 +1124,7 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     # Add package name and version number.
     if IsBound( inforec.PackageName ) and IsBound( inforec.Version ) then
       Append( str, Concatenation(
-              "Loading  ", inforec.PackageName, " ", inforec.Version ) );
+              "Loading ", inforec.PackageName, " ", inforec.Version ) );
     fi;
 
     # Add the long title.

@@ -68,7 +68,7 @@ gap> pkginfo := rec(
 # just one author & maintainer
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth).
 Homepage: https://www.gap-system.org
 -----------------------------------------------------------------------------
@@ -80,7 +80,7 @@ gap> Add(pkginfo.Persons, rec( IsAuthor := false, IsMaintainer := true,
 >                           Email := "luke.skywalker@gap-system.org" ));
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth).
 maintained by:
    Lord Vader (https://www.gap-system.org/~darth) and
@@ -94,7 +94,7 @@ gap> Add(pkginfo.Persons, rec( IsAuthor := true, IsMaintainer := false,
 >                           FirstNames := "Leia", LastName := "Organa" ));
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth) and
    Leia Organa.
 maintained by:
@@ -110,7 +110,7 @@ gap> Add(pkginfo.Persons, rec( IsAuthor := false, IsMaintainer := false,
 >                           WWWHome := "https://www.gap-system.org/~yoda"));
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth) and
    Leia Organa.
 with contributions by:
@@ -126,7 +126,7 @@ Homepage: https://www.gap-system.org
 gap> for p in pkginfo.Persons do p.IsAuthor:=true; p.IsMaintainer:=true; od;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth),
    Luke Skywalker (luke.skywalker@gap-system.org),
    Leia Organa, and
@@ -139,7 +139,7 @@ Homepage: https://www.gap-system.org
 gap> for p in pkginfo.Persons do p.IsAuthor:=true; p.IsMaintainer:=false; od;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 by Lord Vader (https://www.gap-system.org/~darth),
    Luke Skywalker (luke.skywalker@gap-system.org),
    Leia Organa, and
@@ -152,7 +152,7 @@ Homepage: https://www.gap-system.org
 gap> for p in pkginfo.Persons do p.IsAuthor:=false; p.IsMaintainer:=true; od;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 maintained by:
    Lord Vader (https://www.gap-system.org/~darth),
    Luke Skywalker (luke.skywalker@gap-system.org),
@@ -166,7 +166,7 @@ Homepage: https://www.gap-system.org
 gap> for p in pkginfo.Persons do p.IsAuthor:=false; p.IsMaintainer:=false; od;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 with contributions by:
    Lord Vader (https://www.gap-system.org/~darth),
    Luke Skywalker (luke.skywalker@gap-system.org),
@@ -180,7 +180,7 @@ Homepage: https://www.gap-system.org
 gap> pkginfo.IssueTrackerURL := "https://issues.gap-system.org/";;
 gap> Display(DefaultPackageBannerString(pkginfo));
 -----------------------------------------------------------------------------
-Loading  TestPkg 1.0 (A test package)
+Loading TestPkg 1.0 (A test package)
 with contributions by:
    Lord Vader (https://www.gap-system.org/~darth),
    Luke Skywalker (luke.skywalker@gap-system.org),
