@@ -19,6 +19,16 @@
 ##
 
 
+# This is an internal filter mostly meant for declarations of methods that
+# are meant to apply to both VectorObj and MatrixObj implementations;
+# and possibly even old-style vector and matrix objects. We need this
+# because if we defined e.g. BaseDomain twice for IsVectorObj and for
+# IsMatrixObj, then the first definition incurs a "hidden implication"
+# which then later leads to "method matches more than one declaration" messages.
+# The proper fix is to remove hidden implication
+DeclareCategory( "IsVecOrMatObj", IsCopyable );
+
+
 #############################################################################
 ##
 ##  <#GAPDoc Label="IsVectorObj">
@@ -81,7 +91,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
+DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj );
 
 
 #############################################################################
@@ -116,7 +126,9 @@ DeclareCategory( "IsVectorObj", IsVector and IsCopyable );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsMatrixOrMatrixObj", IsVector and IsScalar and IsCopyable );
+# FIXME: why is this in the `IsVector` filter? That makes perhaps sense for
+# row matrices, but not in general?! So perhaps move it to IsRowListMatrix?
+DeclareCategory( "IsMatrixOrMatrixObj", IsVector and IsScalar and IsVecOrMatObj );
 
 
 #############################################################################

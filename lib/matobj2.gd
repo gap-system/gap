@@ -179,8 +179,9 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "BaseDomain", IsVectorObj );
-DeclareAttribute( "BaseDomain", IsMatrixOrMatrixObj );
+DeclareAttribute( "BaseDomain", IsVecOrMatObj );
+#DeclareAttribute( "BaseDomain", IsVectorObj );
+#DeclareAttribute( "BaseDomain", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -254,11 +255,13 @@ DeclareSynonymAttr( "NrCols", NumberColumns );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "OneOfBaseDomain", IsVectorObj );
-DeclareAttribute( "OneOfBaseDomain", IsMatrixOrMatrixObj );
+DeclareAttribute( "OneOfBaseDomain", IsVecOrMatObj );
+#DeclareAttribute( "OneOfBaseDomain", IsVectorObj );
+#DeclareAttribute( "OneOfBaseDomain", IsMatrixOrMatrixObj );
 
-DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
-DeclareAttribute( "ZeroOfBaseDomain", IsMatrixOrMatrixObj );
+DeclareAttribute( "ZeroOfBaseDomain", IsVecOrMatObj );
+#DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
+#DeclareAttribute( "ZeroOfBaseDomain", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -303,8 +306,9 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "ConstructingFilter", IsVectorObj );
-DeclareAttribute( "ConstructingFilter", IsMatrixOrMatrixObj );
+DeclareAttribute( "ConstructingFilter", IsVecOrMatObj );
+#DeclareAttribute( "ConstructingFilter", IsVectorObj );
+#DeclareAttribute( "ConstructingFilter", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -484,8 +488,9 @@ DeclareOperation( "ListOp", [ IsVectorObj, IsFunction ] );
 ##  Note that 'AsList' would not be suitable in the case of vector objects
 ##  because its result would be immutable.
 ##
-DeclareOperation( "Unpack", [ IsVectorObj ] );
-DeclareOperation( "Unpack", [ IsMatrixOrMatrixObj ] );
+DeclareOperation( "Unpack", [ IsVecOrMatObj ] );
+#DeclareOperation( "Unpack", [ IsVectorObj ] );
+#DeclareOperation( "Unpack", [ IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -689,8 +694,9 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 ##
 DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsSemiring, IsInt ] );
-DeclareOperation( "ZeroVector", [ IsInt, IsVectorObj ] );
-DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
+#DeclareOperation( "ZeroVector", [ IsInt, IsVectorObj ] );
+#DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -884,8 +890,9 @@ DeclareConstructor( "NewIdentityMatrix",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ChangedBaseDomain", [ IsVectorObj, IsSemiring ] );
-DeclareOperation( "ChangedBaseDomain", [ IsMatrixOrMatrixObj, IsSemiring ] );
+DeclareOperation( "ChangedBaseDomain", [ IsVecOrMatObj, IsSemiring ] );
+#DeclareOperation( "ChangedBaseDomain", [ IsVectorObj, IsSemiring ] );
+#DeclareOperation( "ChangedBaseDomain", [ IsMatrixOrMatrixObj, IsSemiring ] );
 
 
 ############################################################################
