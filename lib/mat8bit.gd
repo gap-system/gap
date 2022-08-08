@@ -17,7 +17,10 @@
 #R  Is8BitMatrixRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
 DeclareRepresentation( "Is8BitMatrixRep", 
-        IsPositionalObjectRep and IsRowListMatrix );
+        IsPositionalObjectRep and IsRowListMatrix
+    and IsNoImmediateMethodsObject
+    and HasNumberRows and HasNumberColumns
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
 
 
 #############################################################################
