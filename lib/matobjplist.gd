@@ -45,7 +45,10 @@
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPlistVectorRep",
-   IsVectorObj and IsPositionalObjectRep, [] );
+        IsVectorObj and IsPositionalObjectRep
+    and IsNoImmediateMethodsObject
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
+    [] );
 
 
 #############################################################################
@@ -83,7 +86,11 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPlistMatrixRep",
-   IsRowListMatrix and IsPositionalObjectRep, [] );
+        IsRowListMatrix and IsPositionalObjectRep
+    and IsNoImmediateMethodsObject
+    and HasNumberRows and HasNumberColumns
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
+    [] );
 
 
 # Some constants for matrix access:
