@@ -13,7 +13,15 @@
 # arithmetic. This way avoid always wrapping all entries separately
 
 DeclareRepresentation( "IsZmodnZVectorRep",
-   IsVectorObj and IsPositionalObjectRep and HasBaseDomain, [] );
+        IsVectorObj and IsPositionalObjectRep
+    and IsNoImmediateMethodsObject and HasBaseDomain
+    and HasOneOfBaseDomain and HasZeroOfBaseDomain
+    and HasNumberRows and HasNumberColumns,
+    [] );
 
 DeclareRepresentation( "IsZmodnZMatrixRep",
-   IsRowListMatrix and IsPositionalObjectRep and HasBaseDomain, [] );
+        IsRowListMatrix and IsPositionalObjectRep
+    and IsNoImmediateMethodsObject and HasBaseDomain
+    and HasOneOfBaseDomain and HasZeroOfBaseDomain
+    and HasNumberRows and HasNumberColumns,
+    [] );
