@@ -264,3 +264,111 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##
 DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 
+
+#############################################################################
+##
+#A  BaseDomain( <vector> )
+#A  BaseDomain( <matrix> )
+##
+##  <#GAPDoc Label="BaseDomain">
+##  <ManSection>
+##  <Heading>BaseDomain</Heading>
+##  <Attr Name="BaseDomain" Arg='vector' Label="for a vector object"/>
+##  <Attr Name="BaseDomain" Arg='matrix' Label="for a matrix object"/>
+##
+##  <Description>
+##  The vector object <A>vector</A> or matrix object <A>matrix</A>,
+##  respectively, is defined over the domain given by its
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> value.
+##  <P/>
+##  Note that not all entries of the object necessarily lie in
+##  its base domain with respect to
+##  <Ref Oper="\in" Label="for a collection"/>, see Section
+##  <Ref Sect="Concepts and Rules for Vector and Matrix Objects"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "BaseDomain", IsVecOrMatObj );
+#DeclareAttribute( "BaseDomain", IsVectorObj );
+#DeclareAttribute( "BaseDomain", IsMatrixOrMatrixObj );
+
+
+#############################################################################
+##
+#A  NumberRows( <M> )
+#A  NrRows( <M> )
+#A  NumberColumns( <M> )
+#A  NrCols( <M> )
+##
+##  <#GAPDoc Label="NumberRowsNumberColumns">
+##  <ManSection>
+##  <Heading>NumberRows and NumberColumns</Heading>
+##  <Attr Name="NumberRows" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="NrRows" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="NumberColumns" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="NrCols" Arg='M' Label="for a matrix object"/>
+##
+##  <Description>
+##  For a matrix object <A>M</A>,
+##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
+##  <Ref Attr="NumberColumns" Label="for a matrix object"/> store the
+##  number of rows and columns of <A>M</A>, respectively.
+##  <P/>
+##  <Ref Attr="NrRows" Label="for a matrix object"/> and
+##  <Ref Attr="NrCols" Label="for a matrix object"/> are synonyms of
+##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
+##  <Ref Attr="NumberColumns" Label="for a matrix object"/>, respectively.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "NumberRows", IsMatrixOrMatrixObj );
+DeclareSynonymAttr( "NrRows", NumberRows );
+
+DeclareAttribute( "NumberColumns", IsMatrixOrMatrixObj );
+DeclareSynonymAttr( "NrCols", NumberColumns );
+
+
+#############################################################################
+##
+#A  OneOfBaseDomain( <v> )
+#A  OneOfBaseDomain( <M> )
+#A  ZeroOfBaseDomain( <v> )
+#A  ZeroOfBaseDomain( <M> )
+##
+##  <#GAPDoc Label="OneOfBaseDomain">
+##  <ManSection>
+##  <Heading>OneOfBaseDomain and ZeroOfBaseDomain</Heading>
+##  <Attr Name="OneOfBaseDomain" Arg='v' Label="for a vector object"/>
+##  <Attr Name="OneOfBaseDomain" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="ZeroOfBaseDomain" Arg='v' Label="for a vector object"/>
+##  <Attr Name="ZeroOfBaseDomain" Arg='M' Label="for a matrix object"/>
+##
+##  <Description>
+##  These attributes return the identity element and the zero element
+##  of the <Ref Attr="BaseDomain" Label="for a vector object"/> value
+##  of the vector object <A>v</A> or the matrix object <A>M</A>,
+##  respectively.
+##  <P/>
+##  If <A>v</A> or <A>M</A>, respectively, is a plain list
+##  (see <Ref Filt="IsPlistRep"/>) then computing its
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> value can be
+##  regarded as expensive,
+##  whereas calling <Ref Attr="OneOfBaseDomain" Label="for a vector object"/>
+##  or <Ref Attr="ZeroOfBaseDomain" Label="for a vector object"/>
+##  can be regarded as cheap.
+##  If <A>v</A> or <A>M</A>, respectively, is not a plain list then
+##  one can also call <Ref Attr="BaseDomain" Label="for a vector object"/>
+##  first, without loss of performance.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "OneOfBaseDomain", IsVecOrMatObj );
+#DeclareAttribute( "OneOfBaseDomain", IsVectorObj );
+#DeclareAttribute( "OneOfBaseDomain", IsMatrixOrMatrixObj );
+
+DeclareAttribute( "ZeroOfBaseDomain", IsVecOrMatObj );
+#DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
+#DeclareAttribute( "ZeroOfBaseDomain", IsMatrixOrMatrixObj );
