@@ -4052,7 +4052,7 @@ InstallGlobalFunction( DirectSumMat, function (arg)
           if IsSubset(c,F) then
             F:=c;
           else
-            Error("build field/ring");
+            F:=Field(Concatenation(GeneratorsOfField(F),GeneratorsOfField(c)));
           fi;
         fi;
       od;

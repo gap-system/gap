@@ -136,5 +136,9 @@ false
 gap> IsConjugatorAutomorphism(hom);
 true
 
+# classes over larger field extension 
+gap> Length(ConjugacyClasses(PSL(2,64)));
+65
+
 #
 gap> STOP_TEST( "permgrp.tst", 1);
