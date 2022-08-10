@@ -138,10 +138,54 @@ gap> GASMAN(fail);
 Error, GASMAN: <cmd> must be a string (not the value 'fail')
 
 #
+gap> IsList(GASMAN_LIMITS());
+true
+
+#
+gap> IsInt(TOTAL_GC_TIME());
+true
+
+#
+gap> IsInt(TotalMemoryAllocated());
+true
+
+#
 gap> SIZE_OBJ(0);
 0
 gap> SIZE_OBJ(Z(2));
 0
+
+#
+gap> TNUM_OBJ(0);
+0
+gap> TNUM_OBJ(2^100);
+1
+gap> TNUM_OBJ(-2^100);
+2
+gap> TNUM_OBJ(1/2);
+3
+gap> TNUM_OBJ(Z(2));
+5
+gap> TNUM_OBJ(rec());
+20
+gap> TNUM_OBJ([]);
+34
+
+#
+gap> TNAM_OBJ(0);
+"integer"
+gap> TNAM_OBJ(2^100);
+"large positive integer"
+gap> TNAM_OBJ(-2^100);
+"large negative integer"
+gap> TNAM_OBJ(1/2);
+"rational"
+gap> TNAM_OBJ(Z(2));
+"ffe"
+gap> TNAM_OBJ(rec());
+"record (plain)"
+gap> TNAM_OBJ([]);
+"empty plain list"
 
 #
 gap> OBJ_HANDLE(-1);
