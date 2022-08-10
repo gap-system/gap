@@ -1562,6 +1562,7 @@ end);
 BindGlobal("DoImmutableMatrix", function(field,matrix,change)
 local sf, rep, ind, ind2, row, i,big,l,nr;
   if IsMatrixObj(matrix) then
+    # result is a matrix object iff 'matrix' is
     if field=BaseDomain(matrix) then
       return Immutable(matrix);
     else
@@ -1636,15 +1637,11 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
 
   # rebuild some rows
   if IsZmodnZObjNonprimeCollection(field) then
-    matrix:=Matrix(field,matrix);
     big:=true;
   elif big then
     if sf<>infinity and IsPrimeInt(sf) and sf>MAXSIZE_GF_INTERNAL then
       if not (IsMatrixObj(matrix) and not IsMutable(matrix)) then
         if field=sf then field:=Integers mod sf;fi;
-##  Enable this later when the code for matrix objects over large prime fields
-##  is complete and tested.
-##          matrix:=Matrix(field,matrix);
         for i in ind2 do
           matrix[i]:=List(matrix[i],j->j); # plist conversion
         od;
@@ -1742,17 +1739,19 @@ end);
 ##
 InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
-local sf;
-  if (IsInt(f) and f>MAXSIZE_GF_INTERNAL) or 
-     (IsField(f) and Size(f)>MAXSIZE_GF_INTERNAL) then
-    if IsInt(f) then
-      sf:=f;
+  if IsInt(f) then
+    if IsPrimePowerInt(f) then
+      f := GF(f);
     else
-      sf:=Size(f);
+      f := ZmodnZ(f);
     fi;
-    if sf<>infinity and IsPrimeInt(sf) then
-      if f=sf then f:=Integers mod sf;fi;
-      return Immutable(Vector(f,v));
+  fi;
+  if IsVectorObj(v) then
+    # result is a vector object iff 'v' is
+    if f=BaseDomain(v) then
+      return Immutable(v);
+    else
+      return Immutable(Vector(f,Unpack(v)));
     fi;
   fi;
   ConvertToVectorRepNC(v,f);
