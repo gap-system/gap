@@ -166,11 +166,16 @@ jobs:
       - uses: gap-actions/setup-cygwin@v1
         if: ${{ runner.os == 'Windows' }}
         with:
-          # HACK/FIXME/TODO: workaround for https://github.com/gap-system/gap/issues/4955
-          # which essentially removes xdg-utils ; its presence leads GAP to think the
-          # Cygwin environment is Unix, not Windows, which enables some tests which then
-          # hang.
-          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel'
+          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils'
+
+      # There are two cygwin installs on github actions (ours,
+      # and a preinstalled one which we can't use as not enough packages are installed.
+      # Due to conflicts between these two, we cannot spawn new Cygwin processes and
+      # then use IO between processes
+      - if: ${{ runner.os == 'Windows' }}
+        name: "Remove tests which do not work on github actions in Windows"
+        run: |
+               rm tst/testinstall/testunix/streamio.tst tst/testinstall/testunix/streams.tst
 
       - name: "Set up compiler and linker flags"
         run: |
