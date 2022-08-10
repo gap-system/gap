@@ -225,7 +225,10 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     RequireSmallList(SELF_NAME, list2);
 
     /* handle the case of strings now */
-    if (IS_STRING_REP(list1) && IS_STRING_REP(list2)) {
+    if (IS_STRING_REP(list1) && IS_STRING(list2)) {
+        if (!IS_STRING_REP(list2)) {
+            list2 = ImmutableString(list2);
+        }
         AppendString(list1, list2);
         return 0;
     }
