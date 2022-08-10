@@ -860,11 +860,11 @@ static Obj FuncGASMAN_LIMITS(Obj self)
   Obj list;
   list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
 #ifdef USE_GASMAN
-  ASS_LIST(list, 1, ObjInt_Int(SyStorMin));
-  ASS_LIST(list, 2, ObjInt_Int(SyStorMax));
+  AssPlist(list, 1, ObjInt_Int(SyStorMin));
+  AssPlist(list, 2, ObjInt_Int(SyStorMax));
 #endif
 #if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
-  ASS_LIST(list, 3, ObjInt_Int(SyStorKill));
+  AssPlist(list, 3, ObjInt_Int(SyStorKill));
 #endif
   return list;
 }
