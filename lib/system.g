@@ -33,6 +33,10 @@ BIND_GLOBAL( "GAPInfo", rec(
 # There is no SuggestedOtherPackages here because the default value of
 # the user preference PackagesToLoad does the job      
 
+    # If run with --bare, this means that the normal dependencies
+    # can still be found by the package manager
+    NonBareDependencies := ~.Dependencies,
+
     HasReadGAPRC:= false,
 
     # list of all reserved keywords
