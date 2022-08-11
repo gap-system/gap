@@ -1888,7 +1888,7 @@ The level can be changed in a running session using 'SetInfoLevel'."
   ) );
 
 InstallGlobalFunction( AutoloadPackages, function()
-    local banner, msg, pair, excludedpackages, name, record;
+    local banner, msg, pair, excludedpackages, name, record, neededPackages;
 
     if GAPInfo.CommandLineOptions.L = "" then
       msg:= "entering AutoloadPackages (no workspace)";
@@ -1907,19 +1907,26 @@ InstallGlobalFunction( AutoloadPackages, function()
 
     GAPInfo.delayedImplementationParts:= [];
 
+    # If --bare is specified, load no packages
+    if GAPInfo.CommandLineOptions.bare then
+      neededPackages := [];
+    else
+      neededPackages := GAPInfo.Dependencies.NeededOtherPackages;
+    fi;
+
     # Load the needed other packages (suppressing banners)
     # that are not yet loaded.
-    if ForAny( GAPInfo.Dependencies.NeededOtherPackages,
+    if ForAny( neededPackages,
                p -> not IsBound( GAPInfo.PackagesLoaded.( p[1] ) ) ) then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           Concatenation( [ "trying to load needed packages" ],
-              List( GAPInfo.Dependencies.NeededOtherPackages,
+              List( neededPackages,
                   pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
           "GAP" );
       if GAPInfo.CommandLineOptions.A then
         PushOptions( rec( OnlyNeeded:= true ) );
       fi;
-      for pair in GAPInfo.Dependencies.NeededOtherPackages do
+      for pair in neededPackages do
         if LoadPackage( pair[1], pair[2], false ) <> true then
           LogPackageLoadingMessage( PACKAGE_ERROR, Concatenation(
               "needed package ", pair[1], " cannot be loaded" ), "GAP" );
