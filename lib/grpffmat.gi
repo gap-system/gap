@@ -39,14 +39,8 @@ end );
 InstallMethod(FieldOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(l)
-local   deg,  i,  j,  char,B;
+local   deg,  i,  j,  char;
   if Length(l)=0 then Error("list must be nonempty");fi;
-  if ForAll( l, HasBaseDomain ) then
-    B:= BaseDomain( l[1] );
-    if ForAll( l, x -> B = BaseDomain( x ) ) then
-      return B;
-    fi;
-  fi;
   deg  := 1;
   for i  in l  do
     for j  in i  do
