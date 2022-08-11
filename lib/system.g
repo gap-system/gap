@@ -415,7 +415,6 @@ CallAndInstallPostRestore( function()
 
     if CommandLineOptions.bare then
       CommandLineOptions.A := true;
-      GAPInfo.Dependencies := MakeImmutable(rec( NeededOtherPackages := [] ));
     fi;
 
     MakeImmutable( CommandLineOptions );
