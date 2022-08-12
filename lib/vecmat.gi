@@ -1945,6 +1945,17 @@ end );
 
 #############################################################################
 ##
+#M  DegreeFFE( <ffe-mat> )
+##
+InstallOtherMethod( DegreeFFE,
+    "method for a matrix over GF(2)", true,
+    [ IsMatrix and IsFFECollColl and IsGF2MatrixRep ], 0,
+function( mat )
+  return 1;
+end );
+
+#############################################################################
+##
 #M  DegreeFFE( <vector> )
 ##
 InstallOtherMethod( DegreeFFE, "for GF(2) vectors", true,
