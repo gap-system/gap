@@ -1640,3 +1640,20 @@ local i, n, ords, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial returns ", cp);
     return cp;
 end );
+
+
+##
+
+InstallOtherMethod( DegreeFFE,
+    [ "IsZmodnZVectorRep" ],
+function(vec)
+    # TODO: check that modulus is a prime
+    return 1;
+end);
+
+InstallOtherMethod( DegreeFFE,
+    [ "IsZmodnZMatrixRep" ],
+function(vec)
+    # TODO: check that modulus is a prime
+    return 1;
+end);
