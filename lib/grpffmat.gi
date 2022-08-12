@@ -38,16 +38,16 @@ end );
 ##
 InstallMethod(FieldOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
-function(l)
-local   deg,  i,  j,  char;
-  if Length(l)=0 then Error("list must be nonempty");fi;
+function(list)
+local   deg,  mat,  row,  char;
+  if Length(list)=0 then Error("list must be nonempty");fi;
   deg  := 1;
-  for i  in l  do
-    for j  in i  do
-      deg := LcmInt( deg, DegreeFFE(j) );
+  for mat in list do
+    for row in mat do
+      deg := LcmInt( deg, DegreeFFE(row) );
     od;
   od;
-  char := Characteristic(l[1]);
+  char := Characteristic(list[1]);
   return GF(char^deg);
 end);
 
@@ -57,31 +57,30 @@ end);
 ##
 InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
-function(l)
-local   deg,  i,  j,  char,m,B;
-  if Length(l)=0 then Error("list must be nonempty");fi;
-  if ForAll( l, HasBaseDomain ) then
-    B:= BaseDomain( l[1] );
-    if ForAll( l, x -> B = BaseDomain( x ) ) then
+function(list)
+local   deg,  mat,  row,  char,  B;
+  if Length(list)=0 then Error("list must be nonempty");fi;
+  if ForAll( list, HasBaseDomain ) then
+    B:= BaseDomain( list[1] );
+    if ForAll( list, x -> B = BaseDomain( x ) ) then
       return B;
     fi;
   fi;
 
   deg  := 1;
-  for i in l  do
+  for mat in list do
     # treat compact matrices quickly
-    if IsGF2MatrixRep(i) then
+    if IsGF2MatrixRep(mat) then
       deg:=deg; # always in
-    elif Is8BitMatrixRep(i) then
-      j:=Q_VEC8BIT(i![2]);
-      deg:=LcmInt( deg, Length(Factors(j)));
+    elif Is8BitMatrixRep(mat) then
+      deg:=LcmInt( deg, Length(FactorsInt(Q_VEC8BIT(mat![2]))));
     else
-      for j  in i  do
-	deg := LcmInt( deg, DegreeFFE(j) );
+      for row in mat do
+        deg := LcmInt( deg, DegreeFFE(row) );
       od;
     fi;
   od;
-  char := Characteristic(l[1]);
+  char := Characteristic(list[1]);
   return GF(char^deg);
 end);
 
