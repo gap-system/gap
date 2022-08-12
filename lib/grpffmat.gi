@@ -39,13 +39,11 @@ end );
 InstallMethod(FieldOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(list)
-local   deg,  mat,  row,  char;
+local   deg,  mat,  char;
   if Length(list)=0 then Error("list must be nonempty");fi;
   deg  := 1;
   for mat in list do
-    for row in mat do
-      deg := LcmInt( deg, DegreeFFE(row) );
-    od;
+    deg := LcmInt( deg, DegreeFFE(mat) );
   od;
   char := Characteristic(list[1]);
   return GF(char^deg);
@@ -75,9 +73,7 @@ local   deg,  mat,  row,  char,  B;
     elif Is8BitMatrixRep(mat) then
       deg:=LcmInt( deg, Length(FactorsInt(Q_VEC8BIT(mat![2]))));
     else
-      for row in mat do
-        deg := LcmInt( deg, DegreeFFE(row) );
-      od;
+      deg := LcmInt( deg, DegreeFFE(mat) );
     fi;
   od;
   char := Characteristic(list[1]);
