@@ -1294,9 +1294,3 @@ InstallMethod( NewCompanionMatrix,
     return ll;
   end );
 
-# tell method selection that objects know their BaseDomain
-# (this should be in the first section above, but that causes
-# various "method matches more than one declaration" messages)
-InstallTrueMethod(HasBaseDomain, IsPlistVectorRep);
-InstallTrueMethod(HasBaseDomain, IsPlistMatrixRep);
-
