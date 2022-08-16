@@ -223,7 +223,6 @@ the corresponding modules and their maintainers, as given in dev/MODULES
  kbsemi.gd    Finitely presented monoids and semigroups  James Mitchell
  kbsemi.gi    Finitely presented monoids and semigroups  James Mitchell
  kernel.g
- lbutil.g
  liefam.gd
  liefam.gi
  lierep.gd    Lie algebras  Willem de Graaf

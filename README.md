@@ -54,7 +54,8 @@ least these:
 * GNU Libtool
 
 In addition, we recommend that you install at least the following optional
-dependencies:
+dependencies (if you do not, GAP will either build its own copies of these,
+slowing down the compilation process, or omit certain features):
 * Development headers for GMP, the GNU Multiple Precision Arithmetic Library
 * Development headers for zlib
 * Development headers for GNU Readline

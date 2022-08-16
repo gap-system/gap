@@ -1806,8 +1806,7 @@ and also including a copy of the full text of the license.
 <Section Label="Releasing a GAP Package">
 <Heading>Releasing a GAP Package</Heading>
 
-Currently, the &GAP; distribution provides archives in four different
-formats.
+The &GAP; distribution provides archives in several different formats.
 <P/>
 <List>
 <Mark><F>.tar.gz</F></Mark>
@@ -1822,11 +1821,6 @@ formats.
 <Item>
   an archive in <C>zip</C> format, where text files should have 
   UNIX style line breaks
-</Item>
-<Mark><F>-win.zip</F></Mark>
-<Item>
-  an archive in <C>zip</C> format, where text files should have 
-  Windows style line breaks
 </Item>
 </List>
 <P/>
@@ -1861,47 +1855,9 @@ Use the command <C>GAPDocManualLab( packagename );</C> to create this file
 for your help books if you use &GAPDoc;.)
 <P/>
 
-For packages which are redistributed via the &GAP; website, 
-we offer an automatic conversion of any of the formats listed 
-above to all the others (note that this, as well as wrapping 
-the &GAP; distribution as a single archive containing the 
-core system and all currently redistributed packages, will 
-change file timestamps, so one should not rely on them anywhere 
-in the package).
-<P/>
-
-To use the conversion and repackaging service, you can provide any of 
-the four archive formats or even more than one, however you should 
-adhere to the following rule: text files in <F>.tar.gz</F> 
-and <F>.tar.bz2</F> archives must have UNIX style line breaks, 
-while text files in <F>-win.zip</F> archives must have 
-DOS/Windows line breaks. 
-<P/>
-
-The package wrapping tools for the &GAP; distribution and webpages
-then will use a sensible list of file extensions to decide if a file 
-is a text file (being conservative, it may miss a few text files). 
-These rules may be prepended by the application of rules from the 
-<F>PackageInfo.g</F> file:
-<List>
-<Item>
-if it has a <C>.TextFiles</C> component, then consider the given files 
-as text files before &GAP; defaults will be applied;
-</Item>
-<Item>
-if it has a <C>.BinaryFiles</C> component, then consider given files 
-as binary files before &GAP; defaults will be applied;
-</Item>
-<Item>
-if it has a <C>.TextBinaryFilesPatterns</C> component, then apply it 
-before &GAP; defaults will be applied;
-</Item>
-</List>     
-<P/>
-
-Utility functions from the <F>lib/lbutil.g</F> file in &GAP;, namely
-<C>DosUnixLinebreaks</C>, <C>UnixDosLinebreaks</C>, <C>MacUnixLinebreaks</C>
-may be helpful. They are described in the comments to their source code.
+Note that wrapping the &GAP; distribution as a single archive containing
+the core system and all currently redistributed packages, will change
+file timestamps, so one should not rely on them anywhere in the package.
 <P/>
 
 For packages hosted on GitHub publishing package release and establishing its
@@ -1938,11 +1894,6 @@ the &GAP; distribution (this, the package will be <E>deposited</E>),
 also ; 
 </Item>
 </List>
-In the latter case we can also provide some services for producing several 
-archive formats from the archive you provide (e.g., you produce a <C>.tar.gz</C>
-version of your archive and we produce also a <C>.tar.bz2</C>, <C>.zip</C>
-and a <C>-win.zip</C> version from it). 
-<P/>
 Please also consider submitting your package to the &GAP; package refereeing 
 process (see <URL>https://www.gap-system.org/Contacts/submit.html</URL> for
 further information).
