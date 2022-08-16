@@ -109,9 +109,9 @@ permissions to read the files.)
 Windows
 -------
 
-If you are using the `.exe` installer, simply download and run it. It will
-offer a standard installation procedure, during which you will be able to
-select installation path.
+If you are using the `.exe` installer (which we strongly recommend),
+simply download and run it. It will offer a standard installation
+procedure, during which you will be able to select an installation path.
 
 Note that the path to the GAP directory must not contain spaces.
 For example, you may install it in a directory named like `C:\gap-4.X.Y`
@@ -123,10 +123,46 @@ it in a directory named like `C:\Users\alice\My Documents\gap-4.X.Y` or
 4 Compilation
 =============
 
-For the Windows version the unpacking process will already have put
-binaries in place. Under Unix you will have to compile such a binary
-yourself. (macOS users: please see section "GAP for macOS" below for
-additional information about compilation)
+For the Windows version the `.exe` installer will already have put
+binaries in place and nothing else needs to be done.
+
+Under Unix you will have to compile such a binary yourself, as described
+in this section. This also covers macOS, but please first review section
+"GAP for macOS" below for additional information about compilation
+specific to macOS.
+
+Prerequisites
+-------------
+
+In order to compile GAP, you need at least these:
+
+* a C compiler, e.g. GCC or Clang
+* a C++ compiler
+* GNU Make
+
+In addition, we recommend that you install at least the following optional
+dependencies (if you do not, GAP will either build its own copies of these,
+slowing down the compilation process, or omit certain features):
+* Development headers for GMP, the GNU Multiple Precision Arithmetic Library
+* Development headers for zlib
+* Development headers for GNU Readline
+
+On Ubuntu or Debian, you can install these with the following command:
+
+    sudo apt-get install build-essential autoconf libtool libgmp-dev libreadline-dev zlib1g-dev
+
+On macOS, please follow the instructions in section "GAP for macOS" below.
+
+On other operating systems, you will need to figure out equivalent commands
+to install the required dependencies.
+
+Note that several of the packages bundled with GAP have additional
+prerequisites.
+
+
+
+Compilation
+-----------
 
 Change to the directory `gap-4.X.Y` (which you just created by unpacking).
 To get started quickly you may simply build GAP with default settings
@@ -137,18 +173,30 @@ by issuing the two commands
 
 (note that on BSD systems you have to call `gmake` instead of `make`).
 
-Both will produce a lot of text output. You should end up with a shell
-script `bin/gap.sh` which you can use to start GAP. If you want, you can
-copy this script later to a directory that is listed in your search path.
+Both will produce a lot of text output. You should end up with an executable
+called `gap` which you can use to start GAP. In addition, there is a shell
+script `bin/gap.sh` which you can copy to a directory that is listed in your
+search path. (This shell script starts the `gap` executable and also passes
+an argument to it that indicates where the GAP library is).
 
 macOS users please note that this script must be started from within the
 Terminal Application. It is not possible to start GAP by clicking this
 script.
 
-If you get strange error messages from these commands, make sure that you
-got the Unix version of GAP (i.e. not the `-win.zip` format archive) and that
+If you get strange error messages from these commands, make sure that
 you extracted the archive on the same machine on which you compile. See
 also the section "Known Problems of the Configure Process" below.
+
+Note that starting with GAP 4.12, there is experimental support for installing
+GAP via `make install`. By default this attempts to install GAP into the
+`/usr` prefix, but this can be adjusted via the `--prefix` option for
+`configure`. This feature is still quite new and has not received extensive
+testing yet, and we mainly recommend it for use by people who wish to package
+GAP for a Linux distribution or similar. Note also that `make install` at this
+time only installs GAP itself; GAP packages still must be installed manually
+(which in many cases just means copying them into a suitable directory, e.g.
+`<GAPPREFIX>/share/gap/pkg/` -- we are still working on a good solution for
+packages that require compilation).
 
 
 5 Configure options
@@ -202,25 +250,19 @@ will not be used.
 Note that `--with-readline` is equivalent to `--with-readline=yes` and
 `--without-readline` is equivalent to `--with-readline=no`.
 
-There was an annoying bug in the readline library on macOS which made
-pasting text very slow. If you have that version of the readline library,
-this delay be avoided by pressing a key (e.g. space) during the paste, or
-you may prefer to build GAP without readline to avoid this issue entirely.
-
 Build 32-bit vs. 64-bit binaries
 --------------------------------
 
 GAP will attempt to build in 32-bit mode on 32-bit machines and in 64-bit
 mode on 64-bit machines. On a 64-bit machine, you can tell GAP to build in
-32-bit instead, if you wish. In that case, GMP will also be built in 32-bit
-mode. You can configure the build mode as follows:
+32-bit instead, if you know what you are doing. Note that we recommend *against* doing this
+for regular use, as these days the 64 bit version is much better tested and
+generally faster.
+
+If you wish to force GAP in 32-bit mode, you can do so by invoking
 
     ./configure ABI=32
-
-or
-
-    ./configure ABI=64
-
+    make
 
 The value of the argument determines the build mode GAP will attempt to
 use. Note that building in 64-bit mode on a 32-bit architecture is not
@@ -315,8 +357,7 @@ performing all tests from the `tst` directory.
 
     gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
 
-Again we recommend a computer with at least 1 GB of memory to run this
-test. It takes significantly longer to complete than `testinstall.g`,
+It takes significantly longer to complete than `testinstall.g`,
 but otherwise produces output similar to the `testinstall.g` test.
 
 Windows users should note that the Command Prompt user interface provided
@@ -428,9 +469,11 @@ their remedies. Also see the FAQ list on the GAP web pages at
 
 ### GAP starts with a warning `hmm, I cannot find lib/init.g`
 
-You either started only the binary or did not edit the shell script/batch
-file to give the correct library path. You must start the binary with the
-command line option
+This means that GAP cannot find its library. That can happen if you are using
+the shell script `gap.sh` respectively the batch file `gap.bat` but have moved
+the GAP home directory since you compiled GAP. To fix this, you can edit the
+shell script/batch file to give the correct library path. You must start the
+binary with the command line option
 
     -l <path>
 
@@ -465,17 +508,14 @@ extending the workspace is impossible. Start GAP with more memory using the
 
 In a 32-bit mode GAP is unable to use over 4 GB of memory. In fact, since
 some address space is needed for system purposes, it is likely that GAP
-sessions will be limited to 3 GB or even less.
+sessions will be limited to 3 GB or even less. There are other factors
+which can reduce this limit even further.
 
-Depending on the operating system, it also might be necessary to compile
-the GAP binary statically (i.e. to include all system libraries) to avoid
-collisions with system libraries located by default at an address within
-the workspace. (Under Linux for example, 1 GB is a typical limit.) You can
-compile a static binary using make static.
+We therefore recommend to always build and use GAP in 64-bit mode.
 
 ### Recompilation fails or the new binary crashes.
 
-Call make clean and restart the configure / make process completely from
+Call `make clean` and restart the `configure` / `make` process completely from
 scratch. (It is possible that the operating system and/or compiler got
 upgraded in the meantime and so the existing .o files cannot be used any
 longer.
@@ -499,7 +539,7 @@ languages. These drivers catch the ^ character to produce the French circumflex
 accent and do not pass it properly to GAP. For macOS users, as a workaround
 please refer to the section "GAP for macOS" below for information on
 how to install readline and section 5 on how to recompile GAP, for windows no
-fix is known. (One can type POW(a,b) for a^b.)
+fix is known. (One can type `POW(a,b)` for `a^b`.)
 
 ## Problems specific to Windows
 
@@ -555,7 +595,7 @@ that might affect the compilation (in particular `CC`, `CXX`, `CPP`, `LD`,
 
 Because of the large variety of different versions of Unix and different
 compilers it is possible that the configure process will not chose best
-possible optimisation level, but you might need to tell make about it.
+possible optimisation level, but you might need to tell `make` about it.
 
 If you want to compile GAP with further compiler options (for example
 specific processor optimisations) you will have to assign them to the
@@ -642,37 +682,10 @@ GAP and then it will run in this Terminal window.
 14 Expert Windows Installation
 ==============================
 
-Instead of using the `.exe` installer, you may use the `-win.zip archive`,
-which you may unpack with an appropriate extractor. The content of the
-latter archive is identical to the content of the former one, except that
-there is no installation procedure and you may have to edit the `*.bat`
-files yourself.
-
-The `-win.zip archive` already contains `*.bat` files which will work if GAP
-is installed in the standard location, which is `C:\gap-4.X.Y`. To install GAP
-there, the archive must be extracted to the main directory of the `C:` drive.
-Make sure that
-you specify extraction to the `C:\` folder (with no extra directory name --
-the directory `gap-4.X.Y` is part of the archive) to avoid extraction
-in a wrong place or in a separate directory.
-
-After extraction you can start GAP with one of the following files:
-
-    C:\gap-4.X.Y\bin\gap.bat       (recommended)
-    C:\gap-4.X.Y\bin\gapcmd.bat
-
-The `gap.bat` file will start GAP in the `mintty` shell. It allows for
-convenient copying and pasting (e.g. using mouse) and flexible customisation.
-Using its "Options" menu, accessible by the right-click on the pictogram in
-its top left corner, you may adjust the font and colour scheme as you prefer.
-Note that `gap.bat` will open two windows - one actually running GAP and an
-auxiliary one, which may be minimised but should not be closed (otherwise the
-GAP session will be terminated).
-
 If you need to install GAP in a non-standard directory under Windows, we advise
 to use the Windows `.exe` installers which will adjust all paths in batch files
 during the installation. Whenever you use a Windows installer or install GAP
-from the `-win.zip` archive, you should avoid paths with spaces, e.g. do not use
+from a source archive, you should avoid paths with spaces, e.g. do not use
 `C:\My Programs\gap-4.X.Y`. If you need to install GAP on another logical drive,
 say `E:`, the easiest way would be just to use `E:\gap-4.X.Y`.
 
