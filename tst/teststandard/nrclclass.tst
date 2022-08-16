@@ -1,0 +1,32 @@
+gap> START_TEST("nrclclass.tst");
+gap> NrConjugacyClassesGL(24,27);
+22528399544939174406067288580609952
+gap> NrConjugacyClassesGL(14,27);
+109418989131110078784
+gap> NrConjugacyClassesGU(16,8);
+375055786601640
+gap> NrConjugacyClassesSL(12,25);
+2483526895874346
+gap> NrConjugacyClassesSU(12,25);
+2491819137278352
+gap> NrConjugacyClassesPGL(10,107);
+1855803167385374844
+gap> NrConjugacyClassesPGU(10,107);
+1856130440668628222
+gap> NrConjugacyClassesPSL(22,89);
+3978091730042006823322155084728995353940
+gap> NrConjugacyClassesPSU(15,89);
+131943217708320656361053136
+gap> NrConjugacyClassesSU(15,89);
+1979148265624809845288822240
+gap> NrConjugacyClassesSLIsogeneous(22,67,1);
+225996505505835630054268815111866308348
+gap> NrConjugacyClassesSLIsogeneous(22,67,11);
+225996505505835630054268815111866300538
+gap> NrConjugacyClassesSUIsogeneous(6,101,1);
+10617335172
+gap> NrConjugacyClassesSUIsogeneous(6,101,3);
+10617334542
+gap> NrConjugacyClassesSUIsogeneous(6,101,2);
+10617314548
+gap> STOP_TEST("nrclclass.tst");
