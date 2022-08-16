@@ -86,6 +86,14 @@ prints the prompt. This is useful when, after a while, you get  tired  of
 the banner. This option can be repeated to enable the banner; each <C>-b</C>
 toggles the state of banner display.
 </Item>
+<Mark><Index Key="-c"><C>-c</C></Index>
+<C>-c </C><A>gapcode</A></Mark>
+<Item>
+tells &GAP; to execute the given &GAP; code as if it was entered into
+a temporary file which then is processed together with the other files
+given to GAP (see the explanation at the end of this list for further
+details on how filenames are processed). 
+</Item>
 <Mark><Index Key="-D"><C>-D</C></Index>
 <C>-D</C></Mark>
 <Item>
@@ -391,9 +399,10 @@ redirect the output to a printer, you may want to increase this value.
 <Item>
 Further arguments are taken as filenames of files that are read by &GAP;
 during startup, after the system  and private init   files are read,  but
-before the first prompt is  printed.
-The files are read in the order in which they appear on the command line.
-&GAP; only accepts up to 14 filenames on the command line.
+before the first prompt is  printed. Filenames ending with <C>.tst</C>
+are processed by <Ref Func="Test" />, all other files by <Ref Oper="Read" />.
+These files and also commands specified via the <C>-c</C> option are processed
+in the order in which they appear on the command line.
 If a file cannot be opened &GAP; will print an error message and will abort.
 </Item>
 </List>
