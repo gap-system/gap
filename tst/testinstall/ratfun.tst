@@ -202,6 +202,8 @@ gap> Gcd(DefaultRing(f),f,g);
 t^8*u-u
 gap> Gcd(f,g);
 t^8*u-u
+gap> Gcd(t, u/3);
+1
 
 #
 gap> STOP_TEST( "ratfun.tst", 1);

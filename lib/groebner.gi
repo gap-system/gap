@@ -1184,7 +1184,7 @@ local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
   for basis_elt in GB do
     coeff_t:=PolynomialCoefficientsOfPolynomial(basis_elt,t);
     if Length(coeff_t)=1 then 
-      return f*g/coeff_t[1];
+      return StandardAssociate(f*g/coeff_t[1]);
     fi;
   od;
   return One(F);
