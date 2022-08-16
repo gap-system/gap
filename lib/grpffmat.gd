@@ -99,15 +99,16 @@ DeclareGlobalFunction( "ConjugacyClassesOfNaturalGroup" );
 #F  Phi2( <n> ) . . . . . . . . . . . .  Modification of Euler's Phi function
 ##
 ##  <ManSection>
-##  <Func Name="Phi2" Arg='n'/>
+##  <Func Name="Phi2_Md" Arg='n'/>
 ##
 ##  <Description>
-##  This is needed for the computation of the class numbers of SL(n,q),
-##  PSL(n,q), SU(n,q) and PSU(n,q)
+##  This is a utility function for the computation of the class numbers of 
+##  SL(n,q), PSL(n,q), SU(n,q) and PSU(n,q). It is a variant of the Euler
+##  Phi function defined by Macdonald in <Cite Key="Mac81"/>.
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction("Phi2");
+DeclareGlobalFunction("Phi2_Md");
 
 #############################################################################
 ##

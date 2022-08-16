@@ -538,12 +538,12 @@ end);
 
 #############################################################################
 ##
-#F  Phi2( <n> ) . . . . . . . . . . . .  Modification of Euler's Phi function
+#F  Phi2_Md( <n> )  . . . . . . . . . .  Modification of Euler's Phi function
 ##
 ##  This is needed for the computation of the class numbers of SL(n,q),
-##  PSL(n,q), SU(n,q) and PSU(n,q)
+##  PSL(n,q), SU(n,q) and PSU(n,q). Defined by Macdonald in [Mac81].
 ##
-InstallGlobalFunction(Phi2,
+InstallGlobalFunction(Phi2_Md,
 n -> n^2 * Product(Set(Filtered(Factors(Integers,n), m -> m <> 1)),
                    p -> (1 - 1/p^2)));
 
@@ -571,7 +571,7 @@ InstallGlobalFunction(NrConjugacyClassesSLIsogeneous,
 function(n,q,f)
   return Sum(Cartesian(DivisorsInt(Gcd(  f,q - 1)),
                        DivisorsInt(Gcd(n/f,q - 1))),
-             d ->   Phi(d[1]) * Phi2(d[2]) 
+             d ->   Phi(d[1]) * Phi2_Md(d[2]) 
                   * NrConjugacyClassesGL(n/Product(d),q))/(q - 1);
 end);
 
@@ -601,7 +601,7 @@ InstallGlobalFunction(NrConjugacyClassesPSL,
 function(n,q)
   return Sum(Filtered(Cartesian(DivisorsInt(q - 1),DivisorsInt(q - 1)),
                       d -> n mod Product(d) = 0),
-             d -> Phi(d[1]) * Phi2(d[2])
+             d -> Phi(d[1]) * Phi2_Md(d[2])
                 * NrConjugacyClassesGL(n/Product(d),q)/(q - 1))/Gcd(n,q - 1);
 end);
 
@@ -629,7 +629,7 @@ InstallGlobalFunction(NrConjugacyClassesSUIsogeneous,
 function(n,q,f)
   return Sum(Cartesian(DivisorsInt(Gcd(  f,q + 1)),
                        DivisorsInt(Gcd(n/f,q + 1))),
-             d ->   Phi(d[1]) * Phi2(d[2]) 
+             d ->   Phi(d[1]) * Phi2_Md(d[2]) 
                   * NrConjugacyClassesGU(n/Product(d),q))/(q + 1);
 end);
 
@@ -659,7 +659,7 @@ InstallGlobalFunction(NrConjugacyClassesPSU,
 function(n,q)
   return Sum(Filtered(Cartesian(DivisorsInt(q + 1),DivisorsInt(q + 1)),
                       d -> n mod Product(d) = 0),
-             d -> Phi(d[1]) * Phi2(d[2])
+             d -> Phi(d[1]) * Phi2_Md(d[2])
                 * NrConjugacyClassesGU(n/Product(d),q)/(q + 1))/Gcd(n,q + 1);
 end);
 
