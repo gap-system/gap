@@ -96,7 +96,7 @@ The label "release notes: added" has already been attached to them.
 
 ### Other fixed bugs
 
-- [#3963](https://github.com/gap-system/gap/pull/3963) Provide automatic compression/decompression of filenames ending `.gz` (as is claimed for example in the documentation of `InputTextFile`)
+- [#3963](https://github.com/gap-system/gap/pull/3963) Provide automatic decompression of filenames ending `.gz` (as is in the documentation of `InputTextFile`)
 - [#3944](https://github.com/gap-system/gap/pull/3944) The error checking in `PartialPerm` has been corrected such that invalid inputs (numbers < 1) are detected
 - [#4006](https://github.com/gap-system/gap/pull/4006) Fix `gac` to ensure that binaries it creates on Linux can load and run, even if a GAP package with a compiled kernel extension (such as `IO`) is present
 
