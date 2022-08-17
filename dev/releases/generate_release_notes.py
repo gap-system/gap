@@ -110,7 +110,7 @@ def get_prs(repo,startdate):
         # flush stdout immediately, to see progress indicator
         sys.stdout.flush()
         if pr.merged:
-            if pr.closed_at > datetime.fromisoformat(history_start_date):
+            if pr.closed_at > datetime.fromisoformat(startdate):
                 # getting labels will cost further API calls - if the startdate is
                 # too far in the past, that may exceed the API capacity
                 labs = [lab.name for lab in list(pr.get_labels())]
