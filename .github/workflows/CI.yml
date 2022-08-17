@@ -203,7 +203,6 @@ jobs:
                    if [[ $TEST_SUITES == *testpackages* ]] ; then
                        packages+=(            # For:
                          4ti2                   # 4ti2Interface
-                         libboost-dev           # NormalizInterface
                          libcdd-dev             # CddInterface
                          libcurl4-openssl-dev   # curlInterface
                          libfplll-dev           # float
