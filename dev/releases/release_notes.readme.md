@@ -67,22 +67,7 @@ Currently the following labels are regarded as relevant for the creation of rele
   I think that these two labels are obsolete in the new workflow where one can automatically create the current state of the `CHANGES.md` section about the forthcoming release **at any time**.
 
 - The above labels describe whether a pull request is relevant at all, and if yes then how it is treated.
-  The following labels describe the ordering of the groups of pull requests and the subheadings of these groups.  Each pull request gets assigned to the **first** group/subheading that corresponds to one of its labels.
-
-| | subheading | labels | meaning |
-| - |------------- | ------- | -------- |
-| 1 | New features and major changes | `release notes: highlight` | PRs introducing changes that should be highlighted at the top of the release notes |
-| 2 | Fixed bugs that could lead to incorrect results | `kind: bug: wrong result` | PRs fixing bugs that result in mathematically or otherwise wrong results |
-| 3 | Removed or obsolete functionality | `topic: obsolete functionality` | PRs changing `lib/obsolete.g*` (move functions there or remove something from there) |
-| 4 | Fixed bugs that could lead to crashes or unexpected error messages | `kind: bug: crash` | PRs fixing bugs that may cause GAP to crash |
-| 4 | Fixed bugs that could lead to crashes or unexpected error messages | `kind: bug: unexpected error` | PRs fixing bugs that may cause GAP to run into an unexpected error |
-| 5 | Other fixed bugs | `kind: bug:` | PRs fixing bugs |
-| 6 | Improved and extended functionality | `kind: enhancement` OR `kind: new feature` OR `kind: performance` | PRs implementing enhancements |
-| 7 | Improvements in the experimental way to allow 3rd party code to link GAP as a library (libgap) | `topic: libgap` | PRs that are related to libgap |
-| 8 | Improvements in for the **Julia** integration | `topic: julia` | PRs that are related to the Julia integration |
-| 9 | Changed documentation | `topic: documentation` | PRs improving the documentation |
-| 10 | Packages | `topic: packages` | PRs related to package handling, or specific to a package (for packages w/o issue tracker) |
-| 11 | Other changes | `release notes: needed` OR `release notes: added` | PRs relevant for the release notes but without a label that fits --in each case, think about assigning such a label or introducing a new one |
+  The script `generate_release_notes.py` groups the pull request based on labels in a list called  `prioritylist`. Each pull request gets assigned to the **first** group/subheading that corresponds to one of its labels. This list can be adjusted over time as needed. Note that any such ordering is always a compromise, there is no best way to do it.
 
 - For empty groups of pull requests, the subheading need not appear in `CHANGES.md`.
 

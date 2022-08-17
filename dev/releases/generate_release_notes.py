@@ -173,18 +173,20 @@ def changes_overview(prs,startdate,rel_type):
     # one from this list it fits in.
     # See also <https://github.com/gap-system/gap/issues/4257>.
     prioritylist = [
-        ["release notes: highlight", "New features and major changes"],
+        ["release notes: highlight", "Highlights"],
+        ["topic: libgap", "Changes to the `libgap` interface"],
+        ["topic: julia", "Changes to the **Julia** integration"],
+        ["topic: gac", "Changes to the GAP compiler"],
+        ["topic: documentation", "Changes in the documentation"],
+        ["topic: performance", "Performance improvements"],
+        ["topic: HPC-GAP", "Changes to HPC-GAP"],
+        ["kind: new feature", "New features"],
+        ["kind: enhancement", "Improved and extended functionality"],
+        ["kind: removal or deprecation", "Removed or obsolete functionality"],
         ["kind: bug: wrong result", "Fixed bugs that could lead to incorrect results"],
         ["kind: bug: crash", "Fixed bugs that could lead to crashes"],
         ["kind: bug: unexpected error", "Fixed bugs that could lead to break loops"],
         ["kind: bug", "Other fixed bugs"],
-        ["kind: enhancement", "Improved and extended functionality"],
-        ["kind: new feature", "New features"], 
-        ["kind: performance", "Performance improvements"],
-        ["topic: libgap", "Improvements to the interface which allows 3rd party code to link GAP as a library"],
-        ["topic: julia", "Improvements in the support for using the **Julia** garbage collector"],
-        ["topic: documentation", "Changed documentation"],
-        ["topic: packages", "Packages"]
     ]
 
     # Could also introduce some consistency checks here for wrong combinations of labels
@@ -245,7 +247,7 @@ def changes_overview(prs,startdate,rel_type):
     # The remaining PRs have no "kind" or "topic" label from the priority list
     # (may have other "kind" or "topic" label outside the priority list).
     # Check their list in the release notes, and adjust labels if appropriate.
-    relnotes_file.write("### Other changes \n\n")
+    relnotes_file.write("### Other changes\n\n")
     for k in prs:
         relnotes_file.write(pr_to_md(k, prs[k]["title"]))
     relnotes_file.write("\n")

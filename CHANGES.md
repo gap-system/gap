@@ -1,83 +1,198 @@
 # GAP - history of changes
 
-<!--
+## GAP 4.12.0 (August 2022)
 
-The following is an unstructured list of all those merged pull requests
-for GAP 4.12.0 until February 17th, 2021, that are relevant for release notes.
-The label "release notes: added" has already been attached to them.
+### Highlights
 
-### New features and major changes
-
-- **Added the missing perfect groups of order up to a million**
+- **Added the missing perfect groups of order up to two million**
 
   Added perfect groups of orders that had been missing in the Holt/Plesken book
   (newly computed).
-  This increases the number of groups in the perfect groups library by a factor
-  close to 6.
+  This increases the number of groups in the perfect groups library from 1098
+  to 15768.
   Also added five groups that were found missing in the existing lists.
-  See PR [#3925](https://github.com/gap-system/gap/pull/3925) for details.
+  See PR [#3925](https://github.com/gap-system/gap/pull/3925) and [#4530](https://github.com/gap-system/gap/pull/4530) for details.
 
-- [#3628](https://github.com/gap-system/gap/pull/3628) When the info level of `InfoAttributes` is at least 3, warn about attempts to set an attribute value that is different from an already stored value
-- [#3643](https://github.com/gap-system/gap/pull/3643) The manual chapter "Vector and Matrix Objects", which had been marked as preliminary in earlier versions, is now regarded as official
-- [#3664](https://github.com/gap-system/gap/pull/3664) Removed `Matrix` as an attribute (the operation `Matrix` remains as it was)
-- [#3668](https://github.com/gap-system/gap/pull/3668) If several instances of a package, with the same version number, are found in the root directories, and if the first such instance cannot be loaded (because a compiled module is missing or does not fit) then the other instances are considered for being loaded.  In earlier versions, only the first instance of a given package version was considered
-- [#3693](https://github.com/gap-system/gap/pull/3693) Improve `ViewString` so strings are correctly escaped
-- [#3694](https://github.com/gap-system/gap/pull/3694) Deprecate undocumented extra arguments for DeclareGlobalFunction and InstallGlobalFunction
-- [#3695](https://github.com/gap-system/gap/pull/3695) Fix issue with test outputs which do not end with a newline when using the rewriteToFile option of Test
-- [#3702](https://github.com/gap-system/gap/pull/3702) Make TmpNameAllArchs obsolete by enhancing TmpName
-- [#3713](https://github.com/gap-system/gap/pull/3713) Add tracing and counting of built-in operations
-- [#3721](https://github.com/gap-system/gap/pull/3721) Add optimised SmallestMovedPoint implementation
-- [#3740](https://github.com/gap-system/gap/pull/3740) Speed up printing of large permutations
-- [#3747](https://github.com/gap-system/gap/pull/3747) Fix unexpected error when testing permutation groups for conjugacy
-- [#3759](https://github.com/gap-system/gap/pull/3759) Fix an issue with error reporting in parallel threads
-- [#3761](https://github.com/gap-system/gap/pull/3761) Fix bugs in HPC-GAP serialization code and improve its tests
-- [#3792](https://github.com/gap-system/gap/pull/3792) Use `Info` not `Print` in `Decomposition`
-- [#3796](https://github.com/gap-system/gap/pull/3796) Remove `-B` command line option for overriding the architecture
-- [#3808](https://github.com/gap-system/gap/pull/3808) Fixed a crash when using a constant global variable (created via `MakeConstantGlobal`) as index variable of a for loop
-- [#3822](https://github.com/gap-system/gap/pull/3822) HPC-GAP: Make the assertion level (which controls `Assert` statements) thread local
-- [#3858](https://github.com/gap-system/gap/pull/3858) Add `DeclareGlobalName` (to replace `DeclareGlobalVariable` where possible)
-- [#3861](https://github.com/gap-system/gap/pull/3861) The range of `SimpleGroupsIterator` has been extended to about 10^27
-- [#3862](https://github.com/gap-system/gap/pull/3862) Rename `QUIT_GAP`, `FORCE_QUIT_GAP` and `GAP_EXIT_CODE` to `QuitGap`, `ForceQuitGap` and `GapExitCode` (the old names remain available as synonyms)
-- [#3901](https://github.com/gap-system/gap/pull/3901) Allow function-call syntax for general mappings
-- [#3903](https://github.com/gap-system/gap/pull/3903) Bug Fix: `Cycles((),[])` now correctly returns `[]`
-- [#3911](https://github.com/gap-system/gap/pull/3911) PageSource now gives a hint, that ApplicableMethod can be used to find the methods installed for an operation
-- [#3912](https://github.com/gap-system/gap/pull/3912) Update of GMP from version 6.1.2 (December 2016) to version 6.2.0 (January 2020)
-- [#3914](https://github.com/gap-system/gap/pull/3914) Added the attribute `InnerAutomorphismGroup` for groups
-- [#3920](https://github.com/gap-system/gap/pull/3920) Admit `CentralIdempotentsOfAlgebra` for algebras without `One`
-- [#3931](https://github.com/gap-system/gap/pull/3931) Bug Fix: Do not ignore `#@` comments after a empty line at start of test file
-- [#3933](https://github.com/gap-system/gap/pull/3933) `libgap` (shared library): Added libtool versioning
-- [#3986](https://github.com/gap-system/gap/pull/3986) Add some missing methods for machine floats (`Sinh`, `Cosh`, `Tanh`, `Asinh`, `Acosh`, `Atanh`, `CubeRoot`, `Erf`, `Gamma`)
-- [#3992](https://github.com/gap-system/gap/pull/3992) Introduced a function `Pluralize` for strings
-- [#4000](https://github.com/gap-system/gap/pull/4000) NormalClosure: Accept a list of normal generators as second argument
-- [#4023](https://github.com/gap-system/gap/pull/4006) Improve float literal parsing, fix some inconsistencies in it
-- [#4026](https://github.com/gap-system/gap/pull/4026) For the buildsystem now only .d files that exist are included
-- [#4035](https://github.com/gap-system/gap/pull/4035) Normalize package name to all-lowercase in `DirectoriesPackagePrograms`
-- [#4037](https://github.com/gap-system/gap/pull/4037) Normalize package name to all-lowercase in `IsPackageLoaded` and `GAPInfo.PackagesInfo`
-- [#4074](https://github.com/gap-system/gap/pull/4074) Add `IteratorOfPartitionsSet` an iterator for all unordered partitions of a set into pairwise disjoint nonempty sets
-- [#4080](https://github.com/gap-system/gap/pull/4080) Allow registering global handlers for GAP_TRY/GAP_CATCH
-- [#4099](https://github.com/gap-system/gap/pull/4099) Passing a `.tst` file as argument to `gap` will now invoke `Test` on it, instead of trying to `Read` it (which will fail)
-- [#4104](https://github.com/gap-system/gap/pull/4104) Add `TaylorSeriesRationalFunction` and improve `Derivative` for univariate rational functions
-- [#4105](https://github.com/gap-system/gap/pull/4105) The function `OrderMod` now admits an optional third argument that is a multiple of the order one wants to compute
-- [#4108](https://github.com/gap-system/gap/pull/4108) Fix some unexpected error when inverting or computing random elements of algebraic extensions of finite fields of size > 256
-- [#4111](https://github.com/gap-system/gap/pull/4111) In `FreeGroup`, support the option `generatorNames` to prescribe the names of the generators
-- [#4126](https://github.com/gap-system/gap/pull/4126) Added a command line option `--version`
-- [#4128](https://github.com/gap-system/gap/pull/4128) Added `OutputGzipFile`, in order to create a gzip compressed file
-- [#4132](https://github.com/gap-system/gap/pull/4132) Fixed a long standing bug which prevented `SetPrintFormattingStatus( "*stdout*", false );` from working as expected
-- [#4142](https://github.com/gap-system/gap/pull/4142) Extend `BindConstant`, `MakeConstantGlobal` to all object types
-- [#4145](https://github.com/gap-system/gap/pull/4145) Improved some errors messages for various set operations (`AddSet`, `UniteSet`, ...)
-- [#4146](https://github.com/gap-system/gap/pull/4146) Fixed `Cite` w.r.t. the encoding used; let `BibEntry` always use encoding "UTF-8"
-- [#4168](https://github.com/gap-system/gap/pull/4168) Improved the documentation concerning GASMAN, added `CollectGarbage`
-- [#4186](https://github.com/gap-system/gap/pull/4186) Improved the performance of `CoeffientsQadic` for long results
-- [#4201](https://github.com/gap-system/gap/pull/4201) Support an optional `transformFunction` in `Test()`, similarto `compareFunction`
-- [#4206](https://github.com/gap-system/gap/pull/4206) Fixed `DirectoriesPackageLibrary`, `DirectoriesPackagePrograms` when they are called during package loading
-- [#4207](https://github.com/gap-system/gap/pull/4207) Added the group constructors `PGammaL`, `PSigmaL`, and their methods for permutation groups
-- [#4215](https://github.com/gap-system/gap/pull/4215) `libgap` API: Expose a minimal interface to the garbage collector, via `GAP_MarkBag`, `GAP_CollectBags`
-- [#4219](https://github.com/gap-system/gap/pull/4219) Fixed `IntermediateGroup`: For large indices, it might have returned `fail` although subgroups exist, instead of issuing an error message or warning about a hard calculation
-- [#4232](https://github.com/gap-system/gap/pull/4232) Iterators for lists: fixed `IsDoneIterator`, improved the performance
-- [#4239](https://github.com/gap-system/gap/pull/4239) Added missing comparison w.r.t. equality of something and an object with memory (`IsObjWithMemory`)
-- [#4245](https://github.com/gap-system/gap/pull/4245) Free (associative or Lie) algebras: admit non-fields as left acting domains, fixed the zero-dimensional case
+- **The windows installer for GAP has been completely rewritten**
 
--->
+  There are many changes and minor fixes, the most significant are:
+  - GAP can be installed globally into "Program Files".
+  - GAP can also be installed without admin access into the user's home directory.
+  - Almost all packages work, including those with kernel modules and external programs.
+  - The default directory for saving is the user's "Documents" folder.
+  - There is no longer possible to choose which packages are installed.
+  - Windows versions before 8 are no longer supported.
+
+### TODO
+
+TODO: inserted generated release notes here
+
+### Package distribution
+
+#### New packages redistributed with GAP
+
+- **classicpres** 1.22: Classical Group Presentations, by Alexander Hulpke, Eamonn O'Brien, Charles Leedham-Green, Madeleine Whybrow, Giovanni de Franceschi
+- **StandardFF** 0.9.4: Standard finite fields and cyclic generators, by Frank Lübeck
+- **UGALY** 4.0.3: Universal Groups Acting LocallY, by Khalil Hannouch, Stephan Tornier
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.12.0 distribution contains 154
+packages, of which 151 have been updated since GAP
+4.11.1. The full list of updated packages is given below:
+
+- [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2020.10-02 -> 2022.08-03
+- [**ACE**](https://gap-packages.github.io/ace): 5.3 -> 5.5
+- [**AClib**](https://gap-packages.github.io/aclib/): 1.3.2 -> 1.3.2
+- [**AGT**](https://gap-packages.github.io/agt): 0.2 -> 0.2
+- [**Alnuth**](https://gap-packages.github.io/alnuth): 3.1.2 -> 3.2.1
+- [**ANUPQ**](https://gap-packages.github.io/anupq/): 3.2.1 -> 3.2.6
+- [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.0 -> 2.1.4
+- [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2020.08.11 -> 2022.07.10
+- [**Automata**](https://gap-packages.github.io/automata/): 1.14 -> 1.15
+- [**AutomGrp**](https://gap-packages.github.io/automgrp): 1.3.2 -> 1.3.2
+- [**AutPGrp**](https://gap-packages.github.io/autpgrp/): 1.10.2 -> 1.11
+- [**Browse**](https://www.math.rwth-aachen.de/~Browse): 1.8.11 -> 1.8.14
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2020.10-01 -> 2022.08-05
+- [**CaratInterface**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 2.3.3 -> 2.3.4
+- [**CddInterface**](https://homalg-project.github.io/CddInterface): 2020.06.24 -> 2022.08.11
+- [**Circle**](https://gap-packages.github.io/circle): 1.6.3 -> 1.6.5
+- [**cohomolo**](https://gap-packages.github.io/cohomolo): 1.6.8 -> 1.6.10
+- [**Congruence**](https://gap-packages.github.io/congruence): 1.2.3 -> 1.2.4
+- [**CoReLG**](https://gap-packages.github.io/corelg/): 1.54 -> 1.56
+- [**CRIME**](https://gap-packages.github.io/crime/): 1.5 -> 1.6
+- [**CRISP**](http://www.icm.tu-bs.de/~bhoeflin/crisp/index.html): 1.4.5 -> 1.4.5
+- [**crypting**](https://gap-packages.github.io/crypting/): 0.10 -> 0.10
+- [**Cryst**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 4.1.23 -> 4.1.25
+- [**CrystCat**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 1.1.9 -> 1.1.10
+- [**CTblLib**](https://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib): 1.3.1 -> 1.3.4
+- [**Cubefree**](https://gap-packages.github.io/cubefree/): 1.18 -> 1.19
+- [**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.2.1 -> 2.2.3
+- [**cvec**](https://gap-packages.github.io/cvec): 2.7.4 -> 2.7.6
+- [**datastructures**](https://gap-packages.github.io/datastructures): 0.2.5 -> 0.2.7
+- [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.2 -> 1.0.5
+- [**DESIGN**](https://gap-packages.github.io/design): 1.7 -> 1.7
+- [**DifSets**](https://dylanpeifer.github.io/difsets): 2.3.1 -> 2.3.1
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.3.1 -> 1.5.3
+- [**EDIM**](http://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM): 1.3.5 -> 1.3.5
+- [**Example**](https://gap-packages.github.io/example): 4.2.1 -> 4.3.2
+- [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2020.10-02 -> 2022.03-01
+- [**FactInt**](https://gap-packages.github.io/FactInt): 1.6.3 -> 1.6.3
+- [**ferret**](https://gap-packages.github.io/ferret/): 1.0.3 -> 1.0.8
+- [**FGA**](http://www.icm.tu-bs.de/ag_algebra/software/FGA/): 1.4.0 -> 1.4.0
+- [**FinInG**](https://gap-packages.github.io/FinInG): 1.4.1 -> 1.5
+- [**float**](https://gap-packages.github.io/float/): 0.9.1 -> 1.0.3
+- [**FORMAT**](https://gap-packages.github.io/format/): 1.4.3 -> 1.4.3
+- [**Forms**](https://gap-packages.github.io/forms): 1.2.5 -> 1.2.8
+- [**FPLSA**](https://gap-packages.github.io/FPLSA): 1.2.4 -> 1.2.5
+- [**FR**](https://gap-packages.github.io/fr): 2.4.6 -> 2.4.10
+- [**Francy**](https://gap-packages.github.io/francy): 1.2.4 -> 1.2.4
+- [**fwtree**](https://gap-packages.github.io/fwtree/): 1.3 -> 1.3
+- [**GAPDoc**](http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc): 1.6.4 -> 1.6.5
+- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2020.10-02 -> 2022.08-04
+- [**GaussForHomalg**](https://homalg-project.github.io/pkg/GaussForHomalg): 2020.10-02 -> 2022.08-02
+- [**GBNP**](https://gap-packages.github.io/gbnp/): 1.0.3 -> 1.0.5
+- [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2020.10-01 -> 2022.05-01
+- [**genss**](https://gap-packages.github.io/genss): 1.6.6 -> 1.6.7
+- [**GradedModules**](https://homalg-project.github.io/pkg/GradedModules): 2020.10-02 -> 2022.03-01
+- [**GradedRingForHomalg**](https://homalg-project.github.io/pkg/GradedRingForHomalg): 2020.10-02 -> 2022.08-01
+- [**GRAPE**](https://gap-packages.github.io/grape): 4.8.3 -> 4.8.5
+- [**groupoids**](https://gap-packages.github.io/groupoids/): 1.68 -> 1.71
+- [**GrpConst**](https://gap-packages.github.io/grpconst/): 2.6.2 -> 2.6.2
+- [**Guarana**](https://gap-packages.github.io/guarana/): 0.96.2 -> 0.96.3
+- [**GUAVA**](https://gap-packages.github.io/guava): 3.15 -> 3.16
+- [**HAP**](https://gap-packages.github.io/hap): 1.29 -> 1.47
+- [**HAPcryst**](https://gap-packages.github.io/hapcryst/): 0.1.13 -> 0.1.15
+- [**hecke**](https://gap-packages.github.io/hecke/): 1.5.3 -> 1.5.3
+- [**HeLP**](https://gap-packages.github.io/HeLP): 3.5 -> 3.5
+- [**homalg**](https://homalg-project.github.io/pkg/homalg): 2020.10-02 -> 2022.08-03
+- [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2020.10-02 -> 2022.07-01
+- [**idrel**](https://gap-packages.github.io/idrel/): 2.43 -> 2.44
+- [**images**](https://gap-packages.github.io/images/): 1.3.0 -> 1.3.1
+- [**IntPic**](https://gap-packages.github.io/intpic): 0.2.4 -> 0.3.0
+- [**IO**](https://gap-packages.github.io/io): 4.7.0 -> 4.7.2
+- [**IO_ForHomalg**](https://homalg-project.github.io/pkg/IO_ForHomalg): 2020.10-02 -> 2022.03-01
+- [**IRREDSOL**](http://www.icm.tu-bs.de/~bhoeflin/irredsol/index.html): 1.4.1 -> 1.4.3
+- [**ITC**](https://gap-packages.github.io/itc/): 1.5 -> 1.5.1
+- [**json**](https://gap-packages.github.io/json/): 2.0.2 -> 2.1.0
+- [**JupyterKernel**](https://gap-packages.github.io/JupyterKernel/): 1.3 -> 1.4.1
+- [**JupyterViz**](https://nathancarter.github.io/jupyterviz): 1.5.1 -> 1.5.6
+- [**kan**](https://gap-packages.github.io/kan/): 1.32 -> 1.34
+- [**kbmag**](https://gap-packages.github.io/kbmag): 1.5.9 -> 1.5.9
+- [**LAGUNA**](https://gap-packages.github.io/laguna): 3.9.3 -> 3.9.5
+- [**LieAlgDB**](https://gap-packages.github.io/liealgdb/): 2.2.1 -> 2.2.1
+- [**LiePRing**](https://gap-packages.github.io/liepring/): 1.9.2 -> 2.7
+- [**LieRing**](https://gap-packages.github.io/liering/): 2.4.1 -> 2.4.2
+- [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2020.10-01 -> 2022.08-03
+- [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2020.10-02 -> 2022.03-01
+- [**loops**](https://gap-packages.github.io/loops/): 3.4.1 -> 3.4.2
+- [**lpres**](https://gap-packages.github.io/lpres): 1.0.1 -> 1.0.3
+- [**MajoranaAlgebras**](https://MWhybrow92.github.io/MajoranaAlgebras/): 1.4 -> 1.4
+- [**MapClass**](https://gap-packages.github.io/MapClass): 1.4.4 -> 1.4.5
+- [**matgrp**](http://www.math.colostate.edu/~hulpke/matgrp): 0.64 -> 0.64
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2020.10-04 -> 2022.08-02
+- [**ModIsom**](https://gap-packages.github.io/modisom/): 2.5.1 -> 2.5.3
+- [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2020.10-01 -> 2022.08-02
+- [**Modules**](https://homalg-project.github.io/pkg/Modules): 2020.10-02 -> 2022.08-03
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2020.10-01 -> 2022.08-03
+- [**NConvex**](https://homalg-project.github.io/NConvex): 2020.11-04 -> 2020.11-04
+- [**Nilmat**](https://gap-packages.github.io/nilmat): 1.4 -> 1.4.2
+- [**NoCK**](https://gap-packages.github.io/NoCK): 1.4 -> 1.5
+- [**NormalizInterface**](https://gap-packages.github.io/NormalizInterface): 1.1.0 -> 1.3.4
+- [**nq**](https://gap-packages.github.io/nq/): 2.5.4 -> 2.5.8
+- [**NumericalSgps**](https://gap-packages.github.io/numericalsgps): 1.2.2 -> 1.3.1
+- [**OpenMath**](https://gap-packages.github.io/openmath): 11.5.0 -> 11.5.1
+- [**orb**](https://gap-packages.github.io/orb): 4.8.3 -> 4.8.5
+- [**PackageManager**](https://gap-packages.github.io/PackageManager/): 1.1 -> 1.2
+- [**PatternClass**](https://gap-packages.github.io/PatternClass/): 2.4.2 -> 2.4.2
+- [**permut**](https://gap-packages.github.io/permut/): 2.0.3 -> 2.0.4
+- [**Polenta**](https://gap-packages.github.io/polenta/): 1.3.9 -> 1.3.10
+- [**Polycyclic**](https://gap-packages.github.io/polycyclic/): 2.16 -> 2.16
+- [**polymaking**](https://gap-packages.github.io/polymaking/): 0.8.2 -> 0.8.6
+- [**PrimGrp**](https://gap-packages.github.io/primgrp/): 3.4.1 -> 3.4.2
+- [**profiling**](https://gap-packages.github.io/profiling/): 2.3 -> 2.5.0
+- [**QPA**](https://folk.ntnu.no/oyvinso/QPA/): 1.31 -> 1.34
+- [**QuaGroup**](https://gap-packages.github.io/quagroup/): 1.8.2 -> 1.8.3
+- [**RadiRoot**](https://gap-packages.github.io/radiroot/): 2.8 -> 2.9
+- [**RCWA**](https://gap-packages.github.io/rcwa/): 4.6.4 -> 4.7.0
+- [**RDS**](https://gap-packages.github.io/rds/): 1.7 -> 1.8
+- [**recog**](https://gap-packages.github.io/recog): 1.3.2 -> 1.3.2
+- [**RepnDecomp**](https://gap-packages.github.io/RepnDecomp): 1.1.0 -> 1.2.1
+- [**Repsn**](https://gap-packages.github.io/repsn/): 3.1.0 -> 3.1.0
+- [**ResClasses**](https://gap-packages.github.io/resclasses/): 4.7.2 -> 4.7.3
+- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2020.11-01 -> 2022.07-01
+- [**SCO**](https://homalg-project.github.io/pkg/SCO): 2020.10-02 -> 2022.03-01
+- [**SCSCP**](https://gap-packages.github.io/scscp): 2.3.1 -> 2.3.1
+- [**Semigroups**](https://semigroups.github.io/Semigroups): 3.4.0 -> 5.0.2
+- [**SglPPow**](https://gap-packages.github.io/sglppow/): 2.1 -> 2.2
+- [**SgpViz**](https://gap-packages.github.io/sgpviz): 0.999.4 -> 0.999.5
+- [**simpcomp**](https://simpcomp-team.github.io/simpcomp): 2.1.10 -> 2.1.14
+- [**singular**](https://gap-packages.github.io/singular/): 2020.12.18 -> 2020.12.18
+- [**SLA**](https://gap-packages.github.io/sla/): 1.5.3 -> 1.5.3
+- [**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.4.2 -> 1.5
+- [**Smallsemi**](https://gap-packages.github.io/smallsemi/): 0.6.12 -> 0.6.13
+- [**SONATA**](https://gap-packages.github.io/sonata/): 2.9.1 -> 2.9.4
+- [**Sophus**](https://gap-packages.github.io/sophus/): 1.24 -> 1.27
+- [**SpinSym**](https://gap-packages.github.io/spinsym/): 1.5.2 -> 1.5.2
+- [**SymbCompCC**](https://gap-packages.github.io/SymbCompCC/): 1.3.1 -> 1.3.2
+- [**Thelma**](https://gap-packages.github.io/Thelma): 1.02 -> 1.3
+- [**TomLib**](https://gap-packages.github.io/tomlib): 1.2.9 -> 1.2.9
+- [**ToolsForHomalg**](https://homalg-project.github.io/pkg/ToolsForHomalg): 2020.10-03 -> 2022.08-02
+- [**Toric**](https://gap-packages.github.io/toric): 1.9.5 -> 1.9.5
+- [**ToricVarieties**](https://homalg-project.github.io/ToricVarieties_project/ToricVarieties): 2021.01.12 -> 2022.07.13
+- [**TransGrp**](https://www.math.colostate.edu/~hulpke/transgrp): 3.0 -> 3.6.3
+- [**Unipot**](https://gap-packages.github.io/unipot/): 1.4 -> 1.5
+- [**UnitLib**](https://gap-packages.github.io/unitlib): 4.0.0 -> 4.1.0
+- [**utils**](https://gap-packages.github.io/utils): 0.69 -> 0.76
+- [**uuid**](https://gap-packages.github.io/uuid/): 0.6 -> 0.7
+- [**walrus**](https://gap-packages.github.io/walrus): 0.999 -> 0.9991
+- [**Wedderga**](https://gap-packages.github.io/wedderga): 4.10.0 -> 4.10.2
+- [**XGAP**](https://gap-packages.github.io/xgap): 4.30 -> 4.31
+- [**XMod**](https://gap-packages.github.io/xmod/): 2.82 -> 2.88
+- [**XModAlg**](https://gap-packages.github.io/xmodalg/): 1.18 -> 1.22
+- [**YangBaxter**](https://gap-packages.github.io/YangBaxter): 0.9.0 -> 0.10.1
+- [**ZeroMQInterface**](https://gap-packages.github.io/ZeroMQInterface/): 0.12 -> 0.14
+
 
 ## GAP 4.11.1 (March 2021)
 
