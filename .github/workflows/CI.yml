@@ -210,7 +210,7 @@ jobs:
                          libmpc-dev             # float
                          libmpfi-dev            # float
                          libmpfr-dev            # float
-                         libncurses5-dev        # browse
+                         libncurses-dev         # browse
                          libzmq3-dev            # ZeroMQInterface
                          pari-gp                # alnuth
                          singular               # singular

@@ -157,8 +157,33 @@ On other operating systems, you will need to figure out equivalent commands
 to install the required dependencies.
 
 Note that several of the packages bundled with GAP have additional
-prerequisites.
+prerequisites. Here is an incomplete list of GAP packages and their requirements
+(excluding GMP, which many packages require):
 
+- 4ti2Interface
+  - Debian/Ubuntu: 4ti2
+  - Homebrew: (not currently available)
+- alnuth
+  - Debian/Ubuntu: pari-gp
+  - Homebrew: pari
+- browse
+  - Debian/Ubuntu: libncurses-dev
+  - Homebrew: ncurses
+- CddInterface
+  - Debian/Ubuntu: libcdd-dev
+  - Homebrew: cddlib
+- curlInterface
+  - Debian/Ubuntu: libcurl4-openssl-dev
+  - Homebrew: curl
+- float
+  - Debian/Ubuntu: libfplll-dev libmpc-dev libmpfi-dev libmpfr-dev
+  - Homebrew: fplll libmpc mpfi mpfr
+- singular
+  - Debian/Ubuntu: singular
+  - Homebrew: singular
+- ZeroMQInterface
+  - Debian/Ubuntu: libzmq3-dev
+  - Homebrew: zmq
 
 
 Compilation
