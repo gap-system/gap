@@ -495,7 +495,63 @@ new methods:
   mockpkg_Property( ... )*
 
 
-# Test the Cite() command
+# Test the Cite() command (output changed with GAPDoc 1.6.6)
+#@if CompareVersionNumbers(InstalledPackageVersion("gapdoc"), "1.6.6")
+gap> Cite("mockpkg");
+Please use one of the following samples
+to cite mockpkg version from this installation
+
+Text:
+
+[AAM18]  Author,  A., Author, R. and Maintainer, O., mockpkg, A mock package
+for   use   by  the  GAP  test  suite,  Version  0.1  (2018),  GAP  package,
+https://mockpkg.gap-system.org/.
+
+HTML:
+
+<p class='BibEntry'>
+[<span class='BibKey'>AAM18</span>]   <b class='BibAuthor'>Author, A., Author,\
+ R. and Maintainer, O.</b>,
+ <i class='BibTitle'>mockpkg, A mock package for use by the GAP test suite,
+         Version 0.1</i>
+ (<span class='BibYear'>2018</span>)<br />
+(<span class='BibNote'>GAP package</span>),
+<span class='BibHowpublished'><a href="https://mockpkg.gap-system.org/">https:\
+//mockpkg.gap-system.org/</a></span>.
+</p>
+
+BibXML:
+
+<entry id="mockpkg0.1"><misc>
+  <author>
+    <name><first>Active</first><last>Author</last></name>
+    <name><first>Retired</first><last>Author</last></name>
+    <name><first>Only</first><last>Maintainer</last></name>
+  </author>
+  <title><C>mockpkg</C>, A mock package for use by the GAP test suite,
+         <C>V</C>ersion 0.1</title>
+  <howpublished><URL>https://mockpkg.gap-system.org/</URL></howpublished>
+  <month>Mar</month>
+  <year>2018</year>
+  <note>GAP package</note>
+</misc></entry>
+
+BibTeX:
+
+@misc{ mockpkg0.1,
+  author =           {Author, A. and Author, R. and Maintainer, O.},
+  title =            {{mockpkg},  A  mock  package  for  use by the GAP test
+                      suite, {V}ersion 0.1},
+  month =            {Mar},
+  year =             {2018},
+  note =             {GAP package},
+  howpublished =     {\href                {https://mockpkg.gap-system.org/}
+                      {\texttt{https://mockpkg.gap-system.org/}}},
+  printedkey =       {AAM18}
+}
+
+
+#@else
 gap> Cite("mockpkg");
 Please use one of the following samples
 to cite mockpkg version from this installation
@@ -549,6 +605,8 @@ BibTeX:
   printedkey =       {AAM18}
 }
 
+
+#@fi
 
 #
 gap> TestPackageAvailability("non-existing-package");
