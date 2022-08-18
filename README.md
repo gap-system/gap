@@ -1,5 +1,5 @@
-[![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg?branch=master)](https://github.com/gap-system/gap/actions?query=workflow%3ACI+branch%3Amaster)
-[![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/master/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/master)
+[![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg?branch=stable-4.12)](https://github.com/gap-system/gap/actions?query=workflow%3ACI+branch%3Astable-4.12)
+[![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/stable-4.12/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/stable-4.12)
 
 # What is GAP?
 

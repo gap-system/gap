@@ -1296,7 +1296,7 @@ testkernel: ${KERNELTESTS}
 ########################################################################
 
 # change PKG_BRANCH to stable-X.Y in the stable branch
-PKG_BRANCH = master
+PKG_BRANCH = stable-4.12
 PKG_BOOTSTRAP_URL = https://github.com/gap-system/PackageDistro/releases/download/latest/
 PKG_MINIMAL = packages-required.tar.gz
 PKG_FULL = packages.tar.gz
