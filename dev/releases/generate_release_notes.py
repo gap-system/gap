@@ -234,23 +234,23 @@ def changes_overview(prs,startdate,rel_type):
     relnotes_file.write("## Release Notes \n\n")
 
     for priorityobject in prioritylist:
+        matches = [k for k in prs if priorityobject[0] in prs[k]["labels"]]
+        if len(matches) == 0:
+            continue
         relnotes_file.write("### " + priorityobject[1] + "\n\n")
-        removelist = []
-        for k in prs:
-            if priorityobject[0] in prs[k]["labels"]:
-                relnotes_file.write(pr_to_md(k, prs[k]["title"]))
-                removelist.append(k)
-        for item in removelist:
-            del prs[item]
+        for k in matches:
+            relnotes_file.write(pr_to_md(k, prs[k]["title"]))
+            del prs[k]
         relnotes_file.write("\n")
 
     # The remaining PRs have no "kind" or "topic" label from the priority list
     # (may have other "kind" or "topic" label outside the priority list).
     # Check their list in the release notes, and adjust labels if appropriate.
-    relnotes_file.write("### Other changes\n\n")
-    for k in prs:
-        relnotes_file.write(pr_to_md(k, prs[k]["title"]))
-    relnotes_file.write("\n")
+    if len(prs) > 0:
+        relnotes_file.write("### Other changes\n\n")
+        for k in prs:
+            relnotes_file.write(pr_to_md(k, prs[k]["title"]))
+        relnotes_file.write("\n")
     relnotes_file.close()
 
     relnotes_json.write("[")
