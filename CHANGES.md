@@ -2,6 +2,11 @@
 
 ## GAP 4.12.0 (August 2022)
 
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to keep it to changes which we think might
+affect some users directly.
+
 ### Highlights
 
 - **Added the missing perfect groups of order up to two million**
@@ -48,7 +53,6 @@
 
 ### Changes in the documentation
 
-- [#3643](https://github.com/gap-system/gap/pull/3643) Start the process of making vector and matrix objects official
 - [#4168](https://github.com/gap-system/gap/pull/4168) Improve the documentation concerning GASMAN, add `CollectGarbage`
 - [#4339](https://github.com/gap-system/gap/pull/4339) Document `TensorProduct`, `ExteriorPower` and `SymmetricPower` (they existed since at least GAP 4.4)
 - [#4438](https://github.com/gap-system/gap/pull/4438) Improve documentation for random sources
@@ -63,6 +67,8 @@
 - [#3740](https://github.com/gap-system/gap/pull/3740) Speed up printing of large permutations
 - [#4186](https://github.com/gap-system/gap/pull/4186) Speed up `CoefficientsQadic` for long results
 - [#4331](https://github.com/gap-system/gap/pull/4331) Speed up building stabchain from base and strong generators
+- [#4411](https://github.com/gap-system/gap/pull/4411) Speed up automorphism group and group isomorphism computations
+- [#4411](https://github.com/gap-system/gap/pull/4411) Speed up `IntermediateSubgroups` if the smaller subgroup has many orbits
 - [#4599](https://github.com/gap-system/gap/pull/4599) Speed up `PositionSublist` by using `Position` to search for first entry
 - [#4622](https://github.com/gap-system/gap/pull/4622) Speed up `AlgebraicExtension` and `AlgebraicExtensionNC` for larger degrees
 - [#4683](https://github.com/gap-system/gap/pull/4683) Speed up `Embedding` for wreath products
@@ -81,7 +87,6 @@
 ### New features
 
 - [#3858](https://github.com/gap-system/gap/pull/3858) Add `DeclareGlobalName`; together with `BindGlobal` it can be used to replace uses of `DeclareGlobalVariable` & `InstallValue` (which are not thread safe and have other dangers)
-- [#3861](https://github.com/gap-system/gap/pull/3861) Extend the range of precomputed simple groups from orders up to 10^18 to orders up to about 10^27
 - [#3914](https://github.com/gap-system/gap/pull/3914) Add `InnerAutomorphismGroup` attribute for groups
 - [#3992](https://github.com/gap-system/gap/pull/3992) Add `Pluralize` function for strings
 - [#4074](https://github.com/gap-system/gap/pull/4074) Add `IteratorOfPartitionsSet` an iterator for all unordered partitions of a set into pairwise disjoint nonempty sets
@@ -89,6 +94,7 @@
 - [#4126](https://github.com/gap-system/gap/pull/4126) Add command line option `--version`
 - [#4128](https://github.com/gap-system/gap/pull/4128) Add `OutputGzipFile`, in order to create a gzip compressed file
 - [#4207](https://github.com/gap-system/gap/pull/4207) Add group constructors `PGammaL`, `PSigmaL`, and their methods for permutation groups
+- [#4219](https://github.com/gap-system/gap/pull/4219) Add `CompositionSeriesThrough`
 - [#4249](https://github.com/gap-system/gap/pull/4249) Add `ARCH_IS_WSL` to detect Windows Subsystem for Linux
 - [#4295](https://github.com/gap-system/gap/pull/4295) Add `OpenExternal`, a function for opening files in the OS
 - [#4334](https://github.com/gap-system/gap/pull/4334) Add group constructors `PGO` and `PSO`
@@ -101,8 +107,10 @@
 
 - [#3355](https://github.com/gap-system/gap/pull/3355) Allow packages to use ISO 8601 dates in their `PackageInfo.g` files (so `YYYY-MM-DD` instead of `DD/MM/YYYY`)
 - [#3628](https://github.com/gap-system/gap/pull/3628) Add `Info` statement triggered when re-assigning already assigned attributes and the info level `InfoAttributes` is at least 3
+- [#3643](https://github.com/gap-system/gap/pull/3643) Start the process of making vector and matrix objects official
 - [#3668](https://github.com/gap-system/gap/pull/3668) Support several package instances with same version
 - [#3713](https://github.com/gap-system/gap/pull/3713) Add tracing and counting of built-in operations
+- [#3861](https://github.com/gap-system/gap/pull/3861) Extend the range of precomputed simple groups from orders up to 10^18 to orders up to about 10^27
 - [#3901](https://github.com/gap-system/gap/pull/3901) Allow function-call syntax for general mappings.
 - [#3920](https://github.com/gap-system/gap/pull/3920) Admit `CentralIdempotentsOfAlgebra` for algebras without `One`
 - [#3933](https://github.com/gap-system/gap/pull/3933) Add libtool versioning to libgap shared library
@@ -119,6 +127,7 @@
 - [#4146](https://github.com/gap-system/gap/pull/4146) Fix `Cite` to honor `GAPInfo.TermEncoding` for its printing; let `BibEntry` always use encoding "UTF-8"
 - [#4170](https://github.com/gap-system/gap/pull/4170) Improve `Test` to use colors to highlight failures and diffs
 - [#4201](https://github.com/gap-system/gap/pull/4201) Support optional `transformFunction` in `Test`, similar to `compareFunction`.
+- [#4231](https://github.com/gap-system/gap/pull/4231) Add `LoadKernelExtension`, `IsKernelExtensionAvailable`
 - [#4274](https://github.com/gap-system/gap/pull/4274) Enable color prompt by default
 - [#4275](https://github.com/gap-system/gap/pull/4275) Enable `SaveAndRestoreHistory` by default
 - [#4296](https://github.com/gap-system/gap/pull/4296) Allow function-call syntax for evaluating univariate polynomials
@@ -126,9 +135,9 @@
 - [#4333](https://github.com/gap-system/gap/pull/4333) Add `GO(1,q)`, `SO(1,q)`, `Omega(1,q)`, `Omega(-1,2,q)`
 - [#4361](https://github.com/gap-system/gap/pull/4361) Add `\in` method for `GO(e,d,q)` and `SO(e,d,q)` that is based on the stored invariant quadratic form
 - [#4366](https://github.com/gap-system/gap/pull/4366) Improve `(New)ZeroMatrix`, `(New)IdentityMatrix`, `(New)ZeroVector` to better reject invalid input
+- [#4373](https://github.com/gap-system/gap/pull/4373) Support `IsCommutative`/`IsAssociative` for `IsCollection`, rather than just for `IsMagma`
 - [#4483](https://github.com/gap-system/gap/pull/4483) Write `--help` output to `*stdout*` not `*errout*`
 - [#4489](https://github.com/gap-system/gap/pull/4489) The functions `GO`, `GU`, `Omega`, `SO`, `SU`, and `Sp` now allow to specify an invariant form for the group in question; the methods that do the work are provided by the Forms package
-- [#4502](https://github.com/gap-system/gap/pull/4502) Enhance `IteratorOfPartitonsSet` to be able to compute partitions of a given size, or less, via optional arguments
 - [#4506](https://github.com/gap-system/gap/pull/4506) Change the *default* representation for perfect groups to `IsPermGroup` (previously `IsFpGroup`)
 - [#4517](https://github.com/gap-system/gap/pull/4517) Add basic operations for row/column reductions in matrix objects
 - [#4528](https://github.com/gap-system/gap/pull/4528) Improve `SizeOfFieldOfDefinition` such that `fail` is no longer returned when the first argument is a (Brauer) character
@@ -149,6 +158,7 @@
 - [#3862](https://github.com/gap-system/gap/pull/3862) Rename `QUIT_GAP`, `FORCE_QUIT_GAP` and `GAP_EXIT_CODE` to `QuitGap`, `ForceQuitGap` and `GapExitCode` (the old names remain available as synonyms)
 - [#4493](https://github.com/gap-system/gap/pull/4493) Remove optional `crc` argument to `LoadDynamicModule` and `LoadStaticModule`
 - [#4504](https://github.com/gap-system/gap/pull/4504) Turn `IsLexicographicallyLess` into an obsolete synonym for `\<`
+- [#4519](https://github.com/gap-system/gap/pull/4519) Make third argument of `DeclareRepresentation` and `NewRepresentation` optional, and document that it and the fourth argument are (and always were) unused
 - [#4655](https://github.com/gap-system/gap/pull/4655) Rename `RadicalGroup` to `SolvableRadical` (the old name is still supported as an obsolete synonym)
 - [#4697](https://github.com/gap-system/gap/pull/4697) Disable `NaturalHomomorphism` for `FactorGroup`, as it has side effects (code using this should be rewritten to use `NaturalHomomorphismByNormalSubgroup` instead)
 
@@ -156,11 +166,13 @@
 
 - [#4035](https://github.com/gap-system/gap/pull/4035) Fix `DirectoriesPackagePrograms` to ignore case of package name, like `LoadPackage` does
 - [#4206](https://github.com/gap-system/gap/pull/4206) Fix `DirectoriesPackageLibrary`, `DirectoriesPackagePrograms` when they are called during package loading
-- [#4317](https://github.com/gap-system/gap/pull/4317) Fix `Cite` to again properly compute the year in which GAP was released
+- [#4219](https://github.com/gap-system/gap/pull/4219) Fix `IntermediateGroup` to not return `fail` if the index is large but subgroups exist
 - [#4320](https://github.com/gap-system/gap/pull/4320) Fix missing outer automorphisms of certain Chevalley groups of type O_n-(q), n>=8  even; this also fixes calculation of certain normalizers in S_n
 - [#4327](https://github.com/gap-system/gap/pull/4327) Fix `InvariantQuadraticForm` for `Omega(-1, 2*d, 2^n)`
 - [#4372](https://github.com/gap-system/gap/pull/4372) Fix argument checking in `FreeSemigroup`, prevent creation of inconsistent objects
+- [#4373](https://github.com/gap-system/gap/pull/4373) Fix `AsSemigroup` to reject non-associative inputs
 - [#4396](https://github.com/gap-system/gap/pull/4396) Fix computation of all maximal subgroups (under specific circumstances, an incomplete list was returned)
+- [#4411](https://github.com/gap-system/gap/pull/4411) Fix `RankAction` to reject intransitive actions instead of returning potentially misleading results
 - [#4482](https://github.com/gap-system/gap/pull/4482) Fix bug in `MakeImagesInfoLinearGeneralMappingByImages` that could lead to errors resp. wrong results if multiplication with coefficients from the right is not defined resp. not commutative
 - [#4634](https://github.com/gap-system/gap/pull/4634) Fix test for subgroup conjugacy for cyclic permutation groups (If A,B are cyclic conjugate subgroups of G, and A <= C, with C abelian, the error could have caused a claim of C being conjugate to B)
 - [#4660](https://github.com/gap-system/gap/pull/4660) Fix (rare) wrong result for stabilizer computations
@@ -175,9 +187,9 @@
 ### Fixed bugs that could lead to crashes
 
 - [#3808](https://github.com/gap-system/gap/pull/3808) Fix a crash when using a constant global variable (created via `MakeConstantGlobal`, such as `IsHPCGAP`) as index variable of a `for` loop
-- [#3825](https://github.com/gap-system/gap/pull/3825) Handle out of memory errors better
+- [#3825](https://github.com/gap-system/gap/pull/3825) Fix some crashes caused by running out of memory
 - [#4407](https://github.com/gap-system/gap/pull/4407) Fix crash when accessing `mat[i,j]` and `mat[i]` is unbound
-- [#4442](https://github.com/gap-system/gap/pull/4442) Fix crash when incorrectly accessing a compressed vector `v` via  `v{...}[...]` or `v{...}{...}` as  if it was a matrix 
+- [#4442](https://github.com/gap-system/gap/pull/4442) Fix crash when incorrectly accessing a compressed vector `v` via  `v{...}[...]` or `v{...}{...}` as if it was a matrix
 - [#4508](https://github.com/gap-system/gap/pull/4508) Fix crash in `LocationFunc` when the input has incomplete location information
 - [#4544](https://github.com/gap-system/gap/pull/4544) Forbid installing an operation as method for itself, as that leads to crashes
 - [#4579](https://github.com/gap-system/gap/pull/4579) Fix crash when methods for mutable attribute do not return a value
@@ -193,8 +205,8 @@
 - [#4108](https://github.com/gap-system/gap/pull/4108) Fix some unexpected error when inverting or computing random elements of algebraic extensions of finite fields of size > 256
 - [#4239](https://github.com/gap-system/gap/pull/4239) Add missing `\=` method for `IsMultiplicativeElement` and `IsObjWithMemory` (the other direction was already present)
 - [#4245](https://github.com/gap-system/gap/pull/4245) Admit non-fields as left acting domains for free (associative or Lie) algebras, and fix the zero-dimensional case
+- [#4411](https://github.com/gap-system/gap/pull/4411) Fix an assertion error in `AllHomomorphismClasses`
 - [#4427](https://github.com/gap-system/gap/pull/4427) Fix `QuaternionAlgebra` bug that caused `QuaternionAlgebra( [1], 2, 5 ).1` to error the second time it was invoked
-- [#4505](https://github.com/gap-system/gap/pull/4505) Fix `ShallowCopy` for `IteratorOfPartitionsSet`
 - [#4566](https://github.com/gap-system/gap/pull/4566) Fix an unexpected error in `FrobeniusCharacterValue` when the rows of the equation system have different lengths
 - [#4875](https://github.com/gap-system/gap/pull/4875) Fix an unexpected error when computing conjugacy classes in certain large permutation groups (and other improvements)
 
@@ -204,19 +216,13 @@
 - [#3931](https://github.com/gap-system/gap/pull/3931) Do not ignore `#@` comments after empty line at start of test file
 - [#4132](https://github.com/gap-system/gap/pull/4132) Fix a long standing bug which prevented `SetPrintFormattingStatus( "*stdout*", false );` from working as expected
 - [#4232](https://github.com/gap-system/gap/pull/4232) Fix a bug where calling `NextIterator` on a "done" list iterator caused it to seemingly switch back to "not done" status
+- [#4317](https://github.com/gap-system/gap/pull/4317) Fix `Cite` to again properly compute the year in which GAP was released
 - [#4386](https://github.com/gap-system/gap/pull/4386) Fix the broken `--strict` option to `BuildPackages.sh`, but only if `--parallel` is not also specified
 - [#4451](https://github.com/gap-system/gap/pull/4451) Fix printing of GAP code containing nested logical operators to correctly use parentheses (try e.g. `Print(x -> (x = x) = true);`)
 - [#4759](https://github.com/gap-system/gap/pull/4759) Fix `Earns` to always returns a list, as documented (and other improvements)
 - [#4794](https://github.com/gap-system/gap/pull/4794) Remove incorrect line breaks in the output of `StringFormatted`
 - [#4855](https://github.com/gap-system/gap/pull/4855) Fix `SubgroupsSolvableGroup` to honor `retnorm` option even for trivial groups
 - [#4928](https://github.com/gap-system/gap/pull/4928) Fix off-by-one error in `CopyListEntries` that could end up creating lists in which the last element is unbound
-
-### Other changes 
-
-- [#4184](https://github.com/gap-system/gap/pull/4184) Update bundled GMP to 6.2.1
-- [#4231](https://github.com/gap-system/gap/pull/4231) Add `LoadKernelExtension`, `IsKernelExtensionAvailable`
-- [#4519](https://github.com/gap-system/gap/pull/4519) Make third argument of `DeclareRepresentation` and `NewRepresentation` optional, and document that it and the fourth argument are (and always were) unused
-
 
 ### Package distribution
 
