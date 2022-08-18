@@ -70,6 +70,7 @@ def main(old_json_file, new_json_file):
     # Detect new packages
     #
     updated = new_json.keys() & old_json.keys()
+    updated = [p for p in updated if old_json[p]["Version"] != new_json[p]["Version"]]
     if len(updated) > 0:
         print(f"""
 #### Updated packages redistributed with GAP
