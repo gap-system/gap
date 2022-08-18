@@ -31,9 +31,9 @@ verify_git_clean()
 
 # TODO: verify that `./configure && make` were already run
 
-
-gapversion = "X.Y"
-nextgapversion = "X.(Y+1)"  # TODO: compute this
+gap_minor_version = 12  # TODO: this should be an argument or so?
+gapversion = f"4.{gap_minor_version}"
+nextgapversion = f"4.{gap_minor_version+1}"
 stable_branch = "stable-" + gapversion # TODO: how to specify this? probably have the version as argument?
 
 # TODO: error out if the branch already exists
@@ -42,8 +42,18 @@ stable_branch = "stable-" + gapversion # TODO: how to specify this? probably hav
 
 # TODO: Create a GitHub milestone for GAP X.Y.0 release.
 
+notice(f"Creating branch {stable_branch}")
 subprocess.run(["git", "branch", stable_branch], check=True)
 
+
+# list of files which (potentially) are updated
+files = [
+        "CITATION",
+        "configure.ac",
+        "doc/versiondata",
+        "Makefile.rules",
+        "README.md",
+        ]
 
 notice("Updating configure.ac on master branch")
 patchfile("configure.ac", r"m4_define\(\[gap_version\],[^\n]+", r"m4_define([gap_version], ["+nextgapversion+"dev])")
@@ -52,10 +62,10 @@ notice("Regenerate some files")
 run_with_log(["make", "CITATION", "doc/versiondata"], "make")
 
 notice("Commit master branch updates")
-subprocess.run(["git", "commit", "-A", "-m", "Start work on GAP "+nextgapversion], check=True)
+subprocess.run(["git", "commit", "-m", f"Start work on GAP {nextgapversion}", *files], check=True)
 
-notice(f"Tag master with v{nextgapversion}")
-subprocess.run(["git", "tag", "-m", "Start work on GAP "+nextgapversion, "v"+nextgapversion], check=True)
+notice(f"Tag master with v{nextgapversion}dev")
+subprocess.run(["git", "tag", "-m", f"Start work on GAP {nextgapversion}", f"v{nextgapversion}dev"], check=True)
 
 # TODO: push tags/commits? actually, we disabled direct pushes to
 # master, so perhaps we should have created the above commit on a pull
@@ -63,18 +73,22 @@ subprocess.run(["git", "tag", "-m", "Start work on GAP "+nextgapversion, "v"+nex
 # sha changes ... so perhaps better is that an admin temporarily
 # disables the branch protection rule so they can push
 subprocess.run(["git", "push"], check=True)
+subprocess.run(["git", "push", "--tags"], check=True)
 
 
 notice(f"Updating {stable_branch} branch")
-subprocess.run(["git", "checkout", stable_branch], check=True)
+subprocess.run(["git", "switch", stable_branch], check=True)
 
 notice("Patching files")
 patchfile("Makefile.rules", r"PKG_BRANCH = master", r"PKG_BRANCH = "+stable_branch)
 patchfile("README.md", r"master", r""+stable_branch)
-patchfile("configure.ac", r"m4_define\(\[gap_version\],[^\n]+", r"m4_define([gap_version], ["+gapversion+"dev])")
 
 notice("Regenerate some files")
 run_with_log(["make", "CITATION", "doc/versiondata"], "make")
 
 notice(f"Create start commit for {stable_branch} branch")
-subprocess.run(["git", "commit", "-A", "-m", f"Create {stable_branch} branch"], check=True)
+subprocess.run(["git", "commit", "-m", f"Create {stable_branch} branch", *files], check=True)
+
+# push to the server
+#
+#subprocess.run(["git", "push", "--set-upstream", "origin", stable_branch], check=True)
