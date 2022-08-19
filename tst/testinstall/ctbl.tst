@@ -360,8 +360,8 @@ gap> Indicator( t, 2 );
 [ 1, 1, 1, 1, 1 ]
 gap> Indicator( t mod 3, 2 );
 [ 1, 1, 1, 1 ]
-gap> ForAny( Indicator( t mod 2, 2 ), IsUnknown );
-true
+gap> Indicator( t mod 2, 2 );
+[ 1, 1 ]
 
 ##
 gap> STOP_TEST( "ctbl.tst" );
