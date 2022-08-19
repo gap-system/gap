@@ -3920,7 +3920,8 @@ InstallMethod( IndicatorOp,
     "for a Brauer character table and <n> = 2",
     [ IsBrauerTable, IsHomogeneousList, IsPosInt ],
     function( modtbl, ibr, n )
-    local indicator, princ, i, ordtbl, irr, ordindicator, fus, j, odd;
+    local indicator, princ, i, real, ordtbl, irr, ordindicator, dec, j, fus,
+          odd;
 
     indicator:= [];
 
@@ -3947,6 +3948,32 @@ InstallMethod( IndicatorOp,
           indicator[i]:= Unknown();
         fi;
       od;
+
+      # We use a criterion described in [GowWillems95, Lemma 1.2].
+      # The 2-modular restriction of an orthogonal (indicator '+')
+      # ordinary character preserves a quadratic form.
+      # If the trivial character is not a constituent of this restriction
+      # then any real constituent of this restriction that occurs with odd
+      # multiplicity has indicator +.
+      # (This argument determines for example the 2-modular indicators
+      # of solvable groups.)
+      real:= PositionsProperty( ibr, x -> x = ComplexConjugate( x ) );
+      if ForAny( indicator, IsUnknown ) then
+        ordtbl:= OrdinaryCharacterTable( modtbl );
+        ordindicator:= Indicator( ordtbl, 2 );
+        dec:= DecompositionMatrix( modtbl );
+        for i in [ 1 .. Length( dec ) ] do
+          if ordindicator[i] = 1 and dec[i][1] = 0 then
+            for j in Filtered( real, x -> IsOddInt( dec[i, x] ) ) do
+              if IsUnknown( indicator[j] ) then
+                indicator[j]:= 1;
+              else
+                Assert( 1, indicator[j] = 1 );
+              fi;
+            od;
+          fi;
+        od;
+      fi;
     else
       ordtbl:= OrdinaryCharacterTable( modtbl );
       irr:= Irr( ordtbl );
