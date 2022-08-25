@@ -25843,7 +25843,7 @@ local m,r,sz,i;
 end);
 
 
-BindGlobal("ClassicalMaximals",function(type,d,q)
+BindGlobal("ClassicalMaximalsLookup",function(type,d,q)
 local a,start,f,l,i,j,b,mats,p;
   a:=First(CLASMAXDATA,x->x[1]=type and x[2]=d and x[3]=q);
   if a=fail then 
@@ -25881,3 +25881,39 @@ local a,start,f,l,i,j,b,mats,p;
   return l;
 end);
 
+BindGlobal("ClassicalMaximals",function(type,d,q)
+local l,a,gf,conj,r,gp;
+
+  l:=fail;
+  # try to use package
+  if IsPackageMarkedForLoading("ClassicalMaximals","")=true
+    and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+    if type="L" and d=2 and q>4 then
+      l:=CallFuncList(ValueGlobal("ClassicalMaximalsGeneric"),[type,d,q]);
+      r:=RootInt(q,2);
+      if (IsPrime(q) and q mod 10 in [1,9]) or
+        (r^2=q and IsPrime(r) and r mod 10 in [3,7]) then
+
+        # are the SL(2,5) in class S included ? (Depends on package status)
+        if not ForAny(l,x->Size(x)=120 and IdGroup(x)=[120,5]) then
+          # An A5, and its GL-conjugate
+          gf:=GF(q);
+          a:=Filtered(IrreducibleModules(TransitiveGroup(24,201),gf)[2],
+            x->x.dimension=2);
+          a:=Group(a[1].generators);
+          Assert(1,Size(a)=120);
+          Add(l,a);
+          conj:=[[PrimitiveElement(gf),0],[0,1]]*One(gf);
+          Add(l,a^conj);
+        fi;
+      fi;
+    fi;
+  fi;
+
+  # is the data stored?
+  if l=fail then
+    l:=ClassicalMaximalsLookup(type,d,q);
+  fi;
+
+  return l;
+end);
