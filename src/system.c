@@ -52,7 +52,7 @@
 #include <sys/stat.h>
 
 #ifdef __MACH__
-// Workaround: TRUE / FALSE are also defined by the OS X Mach-O headers
+// Workaround: TRUE / FALSE are also defined by the macOS Mach-O headers
 #define ENUM_DYLD_BOOL
 #include <mach-o/dyld.h>
 #endif

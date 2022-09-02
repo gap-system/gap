@@ -572,7 +572,7 @@ end);
 ##  <Func Name="ARCH_IS_MAC_OS_X" Arg=''/>
 ##
 ##  <Description>
-##  tests whether &GAP; is running on Mac OS X. Note that on Mac OS X, also
+##  tests whether &GAP; is running on macOS. Note that on macOS, also
 ##  <Ref Func="ARCH_IS_UNIX"/> will be <K>true</K>.
 ##  </Description>
 ##  </ManSection>
@@ -592,7 +592,7 @@ end);
 ##  <Func Name="ARCH_IS_UNIX" Arg=''/>
 ##
 ##  <Description>
-##  tests whether &GAP; is running on a UNIX system (including Mac OS X).
+##  tests whether &GAP; is running on a UNIX system (including macOS).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

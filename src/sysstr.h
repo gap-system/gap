@@ -76,10 +76,6 @@ EXPORT_INLINE BOOL streq(const char * s1, const char * s2)
 **
 **  Returns 'strlen( <src> )'; hence if the return value is greater or equal
 **  than <len>, truncation occurred.
-**
-**  This function is provided by some systems (e.g. OpenBSD, Mac OS X),
-**  but not by all, so we provide a fallback implementation for those
-**  systems that lack it.
 */
 size_t gap_strlcpy(char * dst, const char * src, size_t len);
 
@@ -94,10 +90,6 @@ size_t gap_strlcpy(char * dst, const char * src, size_t len);
 **
 **  Returns initial length of <dst> plus 'strlen(<src>)'; hence if the return
 **  value is greater or equal than <len>, truncation occurred.
-**
-**  This function is provided by some systems (e.g. OpenBSD, Mac OS X),
-**  but not by all, so we provide a fallback implementation for those
-**  systems that lack it.
 */
 size_t gap_strlcat(char * dst, const char * src, size_t len);
 

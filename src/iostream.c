@@ -51,7 +51,7 @@
 
 #ifdef HAVE_OPENPTY
   #if defined(HAVE_UTIL_H)
-    #include <util.h>     /* for openpty() on Mac OS X, OpenBSD and NetBSD */
+    #include <util.h>     /* for openpty() on macOS, OpenBSD and NetBSD */
   #elif defined(HAVE_LIBUTIL_H)
     #include <libutil.h>  /* for openpty() on FreeBSD */
   #elif defined(HAVE_PTY_H)
@@ -154,7 +154,7 @@ static void KillChild(UInt stream)
 
 static UInt OpenPty(int * parent, int * child)
 {
-    /* openpty is available on OpenBSD, NetBSD and FreeBSD, Mac OS X,
+    /* openpty is available on OpenBSD, NetBSD and FreeBSD, macOS,
        Cygwin, Interix, OSF/1 4 and 5, and glibc (since 1998), and hence
        on most modern Linux systems. See also:
        https://www.gnu.org/software/gnulib/manual/html_node/openpty.html */
@@ -170,7 +170,7 @@ static UInt OpenPty(int * parent, int * child)
        UNIX system; indeed, according to gnulib, it is available on at
        least the following systems:
          - glibc >= 2.2.1 (released January 2001; but is a stub on GNU/Hurd),
-         - Mac OS X >= 10.4 (released April 2005),
+         - macOS >= 10.4 (released April 2005),
          - FreeBSD >= 5.1 (released June 2003),
          - NetBSD >= 3.0 (released December 2005),
          - AIX >= 5.2 (released October 2002),
