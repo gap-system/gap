@@ -1296,8 +1296,7 @@ and read in the edited file automatically.
 <Index Key="vim"><C>vim</C></Index>
 <Index Key="emacs"><C>emacs</C></Index>
 In the <F>etc</F> subdirectory of the &GAP; installation
-we provide some setup files for the editors <C>vim</C> and
-<C>emacs</C>/<C>xemacs</C>.
+we provide some setup files for the editor <C>vim</C>.
 <P/>
 <C>vim</C> is a powerful editor that understands the basic <C>vi</C> commands
 but provides much more functionality. You can find more information about it
@@ -1335,8 +1334,10 @@ augroup END
 See the headers  of the two mentioned files for  additional comments and
 adjust details according to  your personal taste.
 Send comments  and suggestions to <Email>support@gap-system.org</Email>.
-Setup files for <C>emacs</C>/<C>xemacs</C> are contained in the
-<F>etc/emacs</F> subdirectory.
+<P/>
+Users of <C>emacs</C>/<C>xemacs</C> may wish to take a look at the
+<URL Text="major-mode for editing GAP files">https://melpa.org/#/gap-mode</URL>
+by Ivan Andrus.
 
 </Section>
 
