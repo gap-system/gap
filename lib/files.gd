@@ -89,7 +89,7 @@ DeclareOperation( "Directory", [ IsString ] );
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##  <P/>
-##  Under Unix systems (including Mac OS X) this will be the
+##  Under Unix systems (including macOS) this will be the
 ##  usual user home directory. Under Windows it will be the user's
 ##  <C>My Documents</C> folder (or the appropriate name under different
 ##  languages).
@@ -113,7 +113,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##  <P/>
-##  Under Unix systems (including Mac OS X) this will be the
+##  Under Unix systems (including macOS) this will be the
 ##  <C>Desktop</C> directory in the user's home directory if it exists, and
 ##  the user's home directory otherwise.
 ##  Under Windows it will be the user's <C>Desktop</C> folder
@@ -751,7 +751,7 @@ end );
 ##  e.g., <F>/usr/bin/vim</F>.
 ##  On Windows you can use <C>edit.com</C>. 
 ##  <P/>
-##  Under Mac OS X, you should use
+##  Under macOS, you should use
 ##  <C>SetUserPreference("Editor", "open");</C>, this will open 
 ##  the file in the default editor. If you call 
 ##  <C>SetUserPreference("EditorOptions", ["-t"]);</C>, the file

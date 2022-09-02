@@ -251,14 +251,14 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 </Item>
 <Mark><C>"mac default browser"</C>, <C>"browser"</C>, <C>"safari"</C>, <C>"firefox"</C></Mark>
 <Item>
-  (for Mac OS X) If a book is available in HTML format this is shown
+  (for macOS) If a book is available in HTML format this is shown
   in a web browser. The options <C>"safari"</C> and <C>"firefox"</C> use 
   the corresponding browsers. The other two options use the program default browser
   (which can be set in Safari's preferences, in the "General" tab).
 </Item>
 <Mark><C>"xpdf"</C></Mark>
 <Item>
-  (on X-windows systems) If a book is available in pdf format it is shown
+  (on X window systems) If a book is available in pdf format it is shown
   with the onscreen viewer program <C>xpdf</C>
   (which must be installed on your system).
   This is a nice program, once it is running it is reused by &GAP; for the
@@ -277,7 +277,7 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 </Item>
 <Mark><C>"pdf viewer"</C>, <C>"skim"</C>, <C>"preview"</C>, <C>"adobe reader"</C></Mark>
 <Item>
-  (for Mac OS X) If a book is available in pdf format this is shown
+  (for macOS) If a book is available in pdf format this is shown
   in a pdf viewer. The options <C>"skim"</C>, <C>"preview"</C> and <C>"adobe reader"</C> use 
   the corresponding viewers. The other two options use the pdf viewer which you have 
   chosen to open pdf files from the Finder.

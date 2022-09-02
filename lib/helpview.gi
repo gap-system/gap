@@ -86,7 +86,7 @@ if ARCH_IS_WINDOWS() then
 
 
 elif ARCH_IS_MAC_OS_X() then
-  # html version using Mac OS X default browser
+  # html version using macOS default browser
   HELP_VIEWER_INFO.("mac default browser") := rec (
     type := "url", 
     show := function (url)
@@ -99,7 +99,7 @@ elif ARCH_IS_MAC_OS_X() then
   
   HELP_VIEWER_INFO.browser := HELP_VIEWER_INFO.("mac default browser");
 
-  # html version using Mac OS X browser Safari
+  # html version using macOS browser Safari
   HELP_VIEWER_INFO.safari := rec (
     type := "url", 
     show := function (url)
@@ -112,7 +112,7 @@ elif ARCH_IS_MAC_OS_X() then
             return;
         end);
 
-  # html version using Mac OS X browser Firefox
+  # html version using macOS browser Firefox
   HELP_VIEWER_INFO.firefox := rec (
     type := "url", 
     show := function (url)
@@ -199,7 +199,7 @@ elif ARCH_IS_MAC_OS_X() then
         end
     );
 
-else # UNIX but not Mac OS X
+else # UNIX but not macOS
 
   # Graphical systems handled differently in WSL and standard Linux
   if ARCH_IS_WSL() then

@@ -345,11 +345,11 @@ void SyMAdviseFree(void)
 #if !defined(NO_DIRTY_OSX_MMAP_TRICK) && defined(__APPLE__)
     if (mmap(from, size, PROT_NONE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        Panic("OS X trick to free pages did not work!");
+        Panic("macOS trick to free pages did not work!");
     }
     if (mmap(from, size, PROT_READ|PROT_WRITE,
             MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED, -1, 0) != from) {
-        Panic("OS X trick to free pages did not work!!");
+        Panic("macOS trick to free pages did not work!!");
     }
 #endif
 }
