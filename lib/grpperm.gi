@@ -1987,6 +1987,11 @@ local  i, j, U, gens,a,mintry,orb,orp,isok;
 
   gens := ShallowCopy(Set(GeneratorsOfGroup(G)));
 
+  # we can't do better than rank(G/G') generators...
+  if Length(gens)<=Length(AbelianInvariants(G)) then
+    return gens;
+  fi;
+
   # remove obvious redundancies...
   # sort elements by descending order; trivial permutations
   # at the end
@@ -2006,7 +2011,8 @@ local  i, j, U, gens,a,mintry,orb,orp,isok;
     i := i + 1;
   od;
 
-  if Length(gens)<=Length(AbelianInvariants(G))+2 then
+  # we can't do better than rank(G/G') generators...
+  if Length(gens)<=Length(AbelianInvariants(G)) then
     return gens;
   fi;
 
@@ -2017,6 +2023,11 @@ local  i, j, U, gens,a,mintry,orb,orp,isok;
       IsSolvableGroup(G)
       and Length(gens)>3 then
     return MinimalGeneratingSet(G);
+  fi;
+
+  # stop here if close to rank(G/G')
+  if Length(gens)<=Length(AbelianInvariants(G))+2 then
+    return gens;
   fi;
 
   # store orbit data
