@@ -40,5 +40,16 @@ expect "data1  data2"
 send -- "1);\r"
 expect "true"
 
+# test tab completion for a non-record component object
+expect "gap> "
+send -- "g:=SmallGroup(6,1);;\r"
+expect "gap> "
+send -- "g.\t"
+send -- "1;;\r"
+expect "gap> "
+send -- "g!.S\t"
+expect "ize"
+send -- ";;\r"
+expect "gap> "
 
 exit
