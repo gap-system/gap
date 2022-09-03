@@ -990,8 +990,10 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     # the first two <TAB> hits try existing component names only first
     if cf.tabbang then
       searchlist := ShallowCopy(NamesOfComponents(cf.tabrec));
-    else
+    elif IsRecord(cf.tabrec) then
       searchlist := ShallowCopy(RecNames(cf.tabrec));
+    else
+      searchlist := [];
     fi;
     if cf.tabcount > 2 then
       Append(searchlist, ALL_RNAMES());
