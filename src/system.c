@@ -280,6 +280,7 @@ void Panic_(const char * file, int line, const char * fmt, ...)
 *F * * * * * * * * * * finding location of executable * * * * * * * * * * * *
 */
 
+#ifndef SYS_DEFAULT_PATHS
 /****************************************************************************
 ** The function 'find_yourself' is based on code (C) 2015 Mark Whitis, under
 ** the MIT License : https://stackoverflow.com/a/34271901/928031
@@ -384,16 +385,6 @@ static void SetupGAPLocation(const char * argv0)
 
 /****************************************************************************
 **
-*F  SyDotGapPath()
-*/
-const Char * SyDotGapPath(void)
-{
-    return DotGapPath;
-}
-
-
-/****************************************************************************
-**
 *F  SySetInitialGapRootPaths( <string> )  . . . . .  set the root directories
 **
 **  Set up GAP's initial root paths, based on the location of the
@@ -426,6 +417,17 @@ static void SySetInitialGapRootPaths(void)
     // idea, and for backwards compatibility.
     // Note that GAPExecLocation must always end with a slash.
     SySetGapRootPath("./");
+}
+#endif
+
+
+/****************************************************************************
+**
+*F  SyDotGapPath()
+*/
+const Char * SyDotGapPath(void)
+{
+    return DotGapPath;
 }
 
 
