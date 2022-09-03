@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
         shell: [bash]
         test-suites:
           [
@@ -67,12 +67,12 @@ jobs:
           # also test `make install` here, as that wants the manual, too;
           # and set NO_COVERAGE=1 to ensure the installed GAP binaries don't
           # contain references to the build directory
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             shell: bash
             test-suites: "makemanuals testmakeinstall"
             extra: "GAPPREFIX=/tmp/gapprefix CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
 
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             shell: bash
             test-suites: "teststandard"
             extra: "ABI=32 CONFIGFLAGS=\"\""
@@ -81,7 +81,7 @@ jobs:
           # but somehow when running on GitHub Actions, it takes almost 4
           # hours (!) to complete instead of 25 minutes. So for now we just
           # run testinstall.
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             shell: bash
             test-suites: "testinstall"
             extra: "HPCGAP=yes ABI=64"
@@ -89,7 +89,7 @@ jobs:
           # compile packages and run GAP tests in 32 bit mode
           # it seems profiling is having trouble collecting the coverage data
           # here, so we use NO_COVERAGE=1
-          - os: ubuntu-18.04
+          - os: ubuntu-18.04  # TODO: in ubuntu-latest, the 32bit tests don't work...
             shell: bash
             test-suites: "testpackages testinstall-loadall"
             extra: "ABI=32 NO_COVERAGE=1"
@@ -120,7 +120,7 @@ jobs:
           # The '--enable-valgrind' checks that GAP builds and runs correctly
           # when compiled with valgrind support. We do not actually run any
           # tests using valgrind, as it is too slow.
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             shell: bash
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=64 BUILDDIR=out-of-tree
@@ -129,7 +129,7 @@ jobs:
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             shell: bash
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
