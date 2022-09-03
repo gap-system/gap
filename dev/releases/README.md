@@ -77,7 +77,7 @@ Before starting the release process, the scripts have the following dependencies
    - Fetches the GitHub releases data from `gap-system/gap`.
    - Deletes, modifies, and adds various JSON and HTML files according to this data.
 9. Inspect the changes, and commit and push them to the master branch to `gap-system/GapWWW`.
-10. Run `GapWWW`'s `etc/extract-manuals.py` script as internally documented, and move its resulting `Manuals` directory to the `~/test.gap-system.org` directory of the GAP web server, overwriting the existing one.
+10. Run `GapWWW`'s `etc/extract_manuals.py` script as internally documented, and move its resulting `Manuals` directory to the `~/test.gap-system.org` directory of the GAP web server, overwriting the existing one.
 11. Deploy <https://test.gap-system.org>, as described in the `README` of `GapWWW`.
 12. Check that <https://test.gap-system.org> is functioning as expected.
 13. Repeat the final three steps, but with `www` instead of `test`.
