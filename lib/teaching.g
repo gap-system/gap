@@ -197,9 +197,9 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3)); 
-##  [ [ (1,3,4,2), (1,3,4) ] -> [ (), () ],
-##    [ (1,3,4,2), (1,3,4) ] -> [ (1,2), () ],
-##    [ (1,3,4,2), (1,3,4) ] -> [ (2,3), (1,2,3) ] ]
+##  [ [ (2,4,3), (1,4,2,3) ] -> [ (), () ],
+##    [ (2,4,3), (1,4,2,3) ] -> [ (), (1,2) ],
+##    [ (2,4,3), (1,4,2,3) ] -> [ (1,2,3), (1,2) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -227,16 +227,16 @@ DeclareGlobalFunction("AllHomomorphismClasses");
 ##  <Ref Func="AllAutomorphisms"/> returns all bijective endomorphisms.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphisms(SymmetricGroup(3),SymmetricGroup(3));
-##  [ [ (1,2,3), (1,2) ] -> [ (), () ], 
-##    [ (1,2,3), (1,2) ] -> [ (), (1,2) ], 
-##    [ (1,2,3), (1,2) ] -> [ (), (2,3) ], 
-##    [ (1,2,3), (1,2) ] -> [ (), (1,3) ], 
-##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (1,2) ], 
-##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (2,3) ], 
-##    [ (1,2,3), (1,2) ] -> [ (1,3,2), (1,2) ], 
-##    [ (1,2,3), (1,2) ] -> [ (1,2,3), (1,3) ], 
-##    [ (1,2,3), (1,2) ] -> [ (1,3,2), (1,3) ], 
-##    [ (1,2,3), (1,2) ] -> [ (1,3,2), (2,3) ] ]
+##  [ [ (2,3), (1,2,3) ] -> [ (), () ],
+##    [ (2,3), (1,2,3) ] -> [ (1,2), () ],
+##    [ (2,3), (1,2,3) ] -> [ (2,3), () ],
+##    [ (2,3), (1,2,3) ] -> [ (1,3), () ],
+##    [ (2,3), (1,2,3) ] -> [ (2,3), (1,2,3) ],
+##    [ (2,3), (1,2,3) ] -> [ (1,3), (1,2,3) ],
+##    [ (2,3), (1,2,3) ] -> [ (1,3), (1,3,2) ],
+##    [ (2,3), (1,2,3) ] -> [ (1,2), (1,2,3) ],
+##    [ (2,3), (1,2,3) ] -> [ (2,3), (1,3,2) ],
+##    [ (2,3), (1,2,3) ] -> [ (1,2), (1,3,2) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -954,7 +954,11 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     repeat
       if cnt=0 then
 	# first the small gen syst.
-	gens:=SmallGeneratingSet(H);
+        if IsSolvableGroup(H) then
+          gens:=MinimalGeneratingSet(H);
+        else
+          gens:=SmallGeneratingSet(H);
+        fi;
 	sg:=Length(gens);
       else
 	# then something random

@@ -1746,8 +1746,11 @@ InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       gens,i,c,hom,free,elms,price,result,rels,inns,bcl,vsu;
 
-  IsSolvableGroup(G); # force knowledge
-  gens:=SmallGeneratingSet(G);
+  if IsSolvableGroup(G) then
+    gens:=MinimalGeneratingSet(G);
+  else
+    gens:=SmallGeneratingSet(G);
+  fi;
   len:=Length(gens);
   Gr:=MorRatClasses(G);
   Gcl:=MorMaxFusClasses(Gr);
