@@ -1057,12 +1057,14 @@ InstallMethod( NiceMonomorphism, "SeedFaithfulAction supersedes", true,
         [ IsGroup and IsHandledByNiceMonomorphism and
 	  HasSeedFaithfulAction], 1000,
 function(G)
-local b;
+  local b, hom;
   b:=SeedFaithfulAction(G);
   if b=fail then
     TryNextMethod();
   fi;
-  return MultiActionsHomomorphism(G,b.points,b.ops);
+  hom:= MultiActionsHomomorphism(G,b.points,b.ops);
+  SetIsInjective( hom, true );
+  return hom;
 end);
 
 
