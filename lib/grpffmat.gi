@@ -150,11 +150,10 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     # vector arrangement
     SetBaseOfGroup( xset, One( grp ));
     nice := ActionHomomorphism( xset,"surjective" );
+    SetIsInjective( nice, true );
     if not HasNiceMonomorphism(grp) then
       SetNiceMonomorphism(grp,nice);
     fi;
-    SetIsInjective( nice, true );
-    SetFilterObj(nice,IsNiceMonomorphism);
     # because we act on the full space we are canonical.
     SetIsCanonicalNiceMonomorphism(nice,true);
     if Size(V)>10^5 then 

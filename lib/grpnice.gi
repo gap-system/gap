@@ -114,6 +114,9 @@ InstallMethod( GroupByNiceMonomorphism,
 function( nice, grp )
     local   fam,  pre;
 
+    if not IsInjective( nice ) then
+      Error( "<nice> is not injective" );
+    fi;
     fam := FamilyObj( Source(nice) );
     pre := Objectify(NewType(fam,IsGroup and IsAttributeStoringRep), rec());
     SetIsHandledByNiceMonomorphism( pre, true );
