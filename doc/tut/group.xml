@@ -1211,6 +1211,12 @@ Reconstructing the
 automorphism group may of course result in the  loss of other information
 &GAP; had already gathered, besides the (not-so-)nice monomorphism.
 <P/>
+Prescribing a known map as the nice monomorphism of a group is possible
+only if this map knows that it is injective.
+In the above example, this is the case because the map is created as the
+composition of two maps (a nice monomorphism and an isomorphism)
+which know that they are injective.
+<P/>
 <E>Summary.</E>  In this section we have  seen  how calculations in groups
 can be carried  out in isomorphic  images in  nicer groups. We  have seen
 that &GAP;  pursues this technique  automatically for certain classes of

@@ -338,6 +338,14 @@ normally this can only be achieved by using the result of a call to
 <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
 or <Ref Func="GroupHomomorphismByFunction" Label="by function (and inverse function) between two domains"/>
 (see also section&nbsp;<Ref Sect="Efficiency of Homomorphisms"/>).
+<P/>
+It may happen that one knows a monomorphism <C>map</C> that is suitable as a
+nice monomorphism of a given group <C>G</C>,
+for example if <C>G</C> is a matrix group and <C>map</C> describes the
+faithful action of <C>G</C> on a small set of vectors.
+In such a case, one can prescribe this monomorphism via
+<C>SetNiceMonomorphism( G, map )</C>,
+provided that <C>map</C> stores that it is injective.
 
 <#Include Label="IsHandledByNiceMonomorphism">
 <#Include Label="NiceMonomorphism">

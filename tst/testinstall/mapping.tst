@@ -1,5 +1,5 @@
 #@local A,B,C,M,anticomp,com,comp,conj,d,g,g2,i,i2,inv,j,map,map1,map2
-#@local mapBijective,nice,res,t,t1,t2,tuples,hom,aut,dp
+#@local mapBijective,nice,res,t,t1,t2,tuples,vecs,hom,aut,dp
 gap> START_TEST("mapping.tst");
 
 # Init
@@ -419,9 +419,26 @@ true
 gap> IsInjective(res);        
 true
 
+# set NiceMonomorphism by hand (as suggested in the Tutorial)
+gap> g:= Group( [ [ [ 0, 1 ], [ 1, 0 ] ] ] );;
+gap> IsHandledByNiceMonomorphism( g );
+true
+gap> vecs:= Orbit( g, [ 1, 0 ], OnRight );;
+gap> hom:= ActionHomomorphism( g, vecs, OnRight );;
+gap> HasNiceMonomorphism( g );
+false
+gap> SetNiceMonomorphism( g, hom );
+Error, 'NiceMonomorphism' values must have the 'IsInjective' flag
+gap> IsInjective( hom );
+true
+gap> SetNiceMonomorphism( g, hom );
+gap> HasNiceMonomorphism( g );
+true
+
 # printing of identity mapping string in direct product element (PR #3753) 
 gap> String(IdentityMapping(SymmetricGroup(3)));
 "IdentityMapping( SymmetricGroup( [ 1 .. 3 ] ) )"
+gap> g := Group((1,2),(3,4));;
 gap> hom := GroupHomomorphismByImages(g,g,[(1,2),(3,4)],[(3,4),(1,2)]);
 [ (1,2), (3,4) ] -> [ (3,4), (1,2) ]
 gap> aut := Group(hom);;
@@ -433,4 +450,4 @@ gap> GeneratorsOfGroup(dp);
       [ (1,2), (3,4) ] -> [ (3,4), (1,2) ] ] ) ]
 
 #
-gap> STOP_TEST( "mapping.tst", 1);
+gap> STOP_TEST( "mapping.tst" );

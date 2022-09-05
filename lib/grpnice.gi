@@ -16,11 +16,22 @@
 ##
 #M  SetNiceMonomorphism(<G>,<hom>)
 ##
-##  This setter method is special because we want to tell every nice
-##  monomorphism that it is one.
+##  We install a special setter method because we have to make sure that only
+##  injective maps get stored as nice monomorphisms.
+##  More precisely, we the stored map must know that it is injective,
+##  otherwise computing its kernel may run into an infinite recursion.
+##  (The maps computed by 'NiceMonomorphism' have the 'IsInjective' flag,
+##  the test affects only those maps that shall be set by hand as
+##  nice monomorphisms.)
+##
+##  Besides this, we want to tell every nice monomorphism that it is one.
+##
 InstallMethod(SetNiceMonomorphism,"set `IsNiceomorphism' property",true,
   [IsGroup,IsGroupGeneralMapping],SUM_FLAGS+10, #override system setter
 function(G,hom)
+  if not ( HasIsInjective( hom ) and IsInjective( hom ) ) then
+    Error( "'NiceMonomorphism' values must have the 'IsInjective' flag" );
+  fi;
   SetFilterObj(hom,IsNiceMonomorphism);
   TryNextMethod();
 end);
