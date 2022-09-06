@@ -14,7 +14,6 @@ GAP INSTALLATION INSTRUCTIONS
 11. Known Problems of the Configure Process
 12. Optimisation and Compiler Options
 13. GAP for macOS
-14. Expert Windows Installation
 
 These are the installation instructions for the GAP source distribution
 on Unix (which covers Linux and macOS), and for the GAP binary distribution
@@ -702,28 +701,3 @@ For further information on how to use GNU readline, refer to section 5 above.
 
 Now simply follow the Unix installation instructions to compile and start
 GAP and then it will run in this Terminal window.
-
-
-14 Expert Windows Installation
-==============================
-
-If you need to install GAP in a non-standard directory under Windows, we advise
-to use the Windows `.exe` installers which will adjust all paths in batch files
-during the installation. Whenever you use a Windows installer or install GAP
-from a source archive, you should avoid paths with spaces, e.g. do not use
-`C:\My Programs\gap-4.X.Y`. If you need to install GAP on another logical drive,
-say `E:`, the easiest way would be just to use `E:\gap-4.X.Y`.
-
-If you need to edit a `*.bat` file to specify the path to your GAP installation
-manually, you will have to replace substrings `/c/gap-4.X.Y/` by the actual path
-to the GAP root directory in the Unix format, and substrings `C:\gap-4.X.Y\` by
-the actual path to the GAP root directory in the Windows format. Please avoid
-introducing new line breaks when editing (i.e. do not use a text editor which
-automatically wraps long lines).
-
-Please contact <support@gap-system.org> if you need further information.
-
-
-Wishing you fun and success using GAP,
-
-The GAP Group
