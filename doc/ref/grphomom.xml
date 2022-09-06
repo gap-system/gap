@@ -346,6 +346,9 @@ faithful action of <C>G</C> on a small set of vectors.
 In such a case, one can prescribe this monomorphism via
 <C>SetNiceMonomorphism( G, map )</C>,
 provided that <C>map</C> stores that it is injective.
+The latter can be achieved by calling <C>IsInjective( map )</C> or,
+if one is sure that <C>map</C> is injective and one wants to avoid the
+overhead of the test, by calling <C>SetIsInjective( map, true )</C>.
 
 <#Include Label="IsHandledByNiceMonomorphism">
 <#Include Label="NiceMonomorphism">
