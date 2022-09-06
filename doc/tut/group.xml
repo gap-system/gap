@@ -1216,6 +1216,11 @@ only if this map knows that it is injective.
 In the above example, this is the case because the map is created as the
 composition of two maps (a nice monomorphism and an isomorphism)
 which know that they are injective.
+In general, the injectivity flag of a map <C>map</C> gets set if one tests
+the property by calling <C>IsInjective( map )</C>;
+if one is sure that <C>map</C> is injective and wants to avoid the
+potentially expensive test then one can set the flag by explicitly
+calling <C>SetIsInjective( map, true )</C>.
 <P/>
 <E>Summary.</E>  In this section we have  seen  how calculations in groups
 can be carried  out in isomorphic  images in  nicer groups. We  have seen

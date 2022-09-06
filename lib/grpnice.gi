@@ -18,11 +18,8 @@
 ##
 ##  We install a special setter method because we have to make sure that only
 ##  injective maps get stored as nice monomorphisms.
-##  More precisely, we the stored map must know that it is injective,
+##  More precisely, the stored map must know that it is injective,
 ##  otherwise computing its kernel may run into an infinite recursion.
-##  (The maps computed by 'NiceMonomorphism' have the 'IsInjective' flag,
-##  the test affects only those maps that shall be set by hand as
-##  nice monomorphisms.)
 ##
 ##  Besides this, we want to tell every nice monomorphism that it is one.
 ##
@@ -114,8 +111,8 @@ InstallMethod( GroupByNiceMonomorphism,
 function( nice, grp )
     local   fam,  pre;
 
-    if not IsInjective( nice ) then
-      Error( "<nice> is not injective" );
+    if not ( HasIsInjective( nice ) and IsInjective( nice ) ) then
+      Error( "<nice> is not known to be injective" );
     fi;
     fam := FamilyObj( Source(nice) );
     pre := Objectify(NewType(fam,IsGroup and IsAttributeStoringRep), rec());
