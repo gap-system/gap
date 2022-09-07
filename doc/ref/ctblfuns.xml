@@ -127,6 +127,7 @@ true
 <#Include Label="DeterminantOfCharacter">
 <#Include Label="EigenvaluesChar">
 <#Include Label="Tensored">
+<#Include Label="TensorProduct_characters">
 
 </Section>
 
@@ -171,6 +172,8 @@ true
 <#Include Label="Symmetrizations">
 <#Include Label="SymmetricParts">
 <#Include Label="AntiSymmetricParts">
+<#Include Label="ExteriorPower_character">
+<#Include Label="SymmetricPower_character">
 <#Include Label="OrthogonalComponents">
 <#Include Label="SymplecticComponents">
 

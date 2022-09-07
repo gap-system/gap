@@ -1776,6 +1776,41 @@ DeclareOperation( "Tensored", [ IsHomogeneousList, IsHomogeneousList ] );
 
 #############################################################################
 ##
+#O  TensorProduct( <chi>, <psi> )
+##
+##  <#GAPDoc Label="TensorProduct_characters">
+##  <ManSection>
+##  <Oper Name="TensorProduct" Arg='chi, psi' Label="for characters"/>
+##
+##  <Description>
+##  For two characters <A>chi</A> and <A>psi</A> afforded by the modules
+##  <M>V</M> and <M>W</M>,
+##  <Ref Oper="TensorProduct" Label="for characters"/> returns the character
+##  that is afforded by the tensor product of <M>V</M> and <M>W</M>.
+##  <P/>
+##  The result can also be computed as <A>chi</A><C>*</C><A>psi</A>,
+##  see also <Ref Func="Tensored"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> t:= CharacterTable( "A5" );;
+##  gap> chi:= Irr( t )[2];
+##  Character( CharacterTable( "A5" ),
+##   [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] )
+##  gap> psi:= Irr( t )[3];
+##  Character( CharacterTable( "A5" ),
+##   [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] )
+##  gap> TensorProduct( chi, psi );
+##  Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "TensorProductOp", [ IsDenseList, IsClassFunction ] );
+
+
+#############################################################################
+##
 ##  9. Restricted and Induced Class Functions
 ##
 ##  <#GAPDoc Label="[7]{ctblfuns}">
@@ -2321,14 +2356,16 @@ DeclareGlobalFunction( "IrreducibleDifferences" );
 ##  where <M>a_k(\rho)</M> is the number of cycles of length <M>k</M>
 ##  in <M>\rho</M>.
 ##  <P/>
-##  For special kinds of symmetrizations,
-##  see&nbsp;<Ref Func="SymmetricParts"/>, <Ref Func="AntiSymmetricParts"/>,
-##  <Ref Func="MinusCharacter"/> and <Ref Func="OrthogonalComponents"/>,
-##  <Ref Func="SymplecticComponents"/>.
-##  <P/>
 ##  <E>Note</E> that the returned list may contain zero class functions,
 ##  and duplicates are not deleted.
 ##  <!-- describe the succession!!-->
+##  <P/>
+##  For special kinds of symmetrizations,
+##  see&nbsp;<Ref Func="SymmetricParts"/>, <Ref Func="AntiSymmetricParts"/>,
+##  <Ref Func="MinusCharacter"/> and <Ref Func="OrthogonalComponents"/>,
+##  <Ref Func="SymplecticComponents"/>,
+##  <Ref Oper="ExteriorPower" Label="for a character"/>,
+##  <Ref Oper="SymmetricPower" Label="for a character"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A5" );;
@@ -2376,6 +2413,7 @@ DeclareSynonym( "Symmetrisations", Symmetrizations );
 ##  (see&nbsp;<Ref Oper="Symmetrizations"/>).
 ##  <P/>
 ##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> SymmetricParts( tbl, Irr( tbl ), 3 );
 ##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
 ##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
@@ -2401,11 +2439,12 @@ DeclareGlobalFunction( "SymmetricParts" );
 ##  <Description>
 ##  <Index>exterior power</Index>
 ##  is the list of symmetrizations of the characters <A>characters</A>
-##  of the character table <A>tbl</A> with the alternating character of
+##  of the character table <A>tbl</A> with the sign character of
 ##  the symmetric group of degree <A>n</A>
 ##  (see&nbsp;<Ref Oper="Symmetrizations"/>).
 ##  <P/>
 ##  <Example><![CDATA[
+##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> AntiSymmetricParts( tbl, Irr( tbl ), 3 );
 ##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
 ##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
@@ -2418,6 +2457,76 @@ DeclareGlobalFunction( "SymmetricParts" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "AntiSymmetricParts" );
+
+
+#############################################################################
+##
+#O  ExteriorPower( <chi>, <n> )
+##
+##  <#GAPDoc Label="ExteriorPower_character">
+##  <ManSection>
+##  <Oper Name="ExteriorPower" Arg='chi, n' Label="for a character"/>
+##
+##  <Description>
+##  For a character <A>chi</A> afforded by the module <M>V</M>
+##  and a positive integer <A>n</A>,
+##  <Ref Oper="ExteriorPower" Label="for a character"/> returns the class
+##  function that is afforded by the <A>n</A>-th exterior power of <M>V</M>.
+##  <P/>
+##  This exterior power is the symmetrization of <A>chi</A> with the
+##  sign character of the symmetric group of degree <A>n</A>,
+##  see also <Ref Func="Symmetrizations"/> and
+##  <Ref Func="AntiSymmetricParts"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> t:= CharacterTable( "A5" );;
+##  gap> List( Irr( t ), chi -> ExteriorPower( chi, 3 ) );
+##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "ExteriorPower", [ IsClassFunction, IsPosInt ] );
+
+
+#############################################################################
+##
+#O  SymmetricPower( <chi>, <n> )
+##
+##  <#GAPDoc Label="SymmetricPower_character">
+##  <ManSection>
+##  <Oper Name="SymmetricPower" Arg='chi, n' Label="for a character"/>
+##
+##  <Description>
+##  For a character <A>chi</A> afforded by the module <M>V</M>
+##  and a positive integer <A>n</A>,
+##  <Ref Oper="SymmetricPower" Label="for a character"/> returns the class
+##  function that is afforded by the <A>n</A>-th symmetric power of <M>V</M>.
+##  <P/>
+##  This symmetric power is the symmetrization of <A>chi</A> with the
+##  trivial character of the symmetric group of degree <A>n</A>,
+##  see also <Ref Func="Symmetrizations"/> and
+##  <Ref Func="SymmetricParts"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> t:= CharacterTable( "A5" );;
+##  gap> List( Irr( t ), chi -> SymmetricPower( chi, 3 ) );
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
+##    Character( CharacterTable( "A5" ), [ 35, 3, 2, 0, 0 ] ) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "SymmetricPower", [ IsClassFunction, IsPosInt ] );
 
 
 #############################################################################
