@@ -2444,6 +2444,22 @@ InstallMethod( Tensored,
 
 #############################################################################
 ##
+#M  TensorProductOp( <chi>, <psi> )
+##
+InstallMethod( TensorProductOp,
+    "for a list of class functions and a class function",
+    [ IsDenseList, IsClassFunction ],
+    function( list, chi )
+    if Length( list ) = 0 then
+      return One( chi );
+    else
+      return Iterated( list, \* );
+    fi;
+    end );
+
+
+#############################################################################
+##
 ##  9. Restricted and Induced Class Functions
 ##
 
@@ -3923,6 +3939,30 @@ InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
     # Return the symmetrizations.
     return antisymmetricparts;
 end );
+
+
+#############################################################################
+##
+#M  ExteriorPower( <chi>, <n> )
+##
+InstallMethod( ExteriorPower,
+    "for a class function and a pos. integer",
+    [ IsClassFunction, IsPosInt ],
+    function( chi, n )
+    return AntiSymmetricParts( UnderlyingCharacterTable( chi ), [ chi ], n )[1];
+    end );
+
+
+#############################################################################
+##
+#M  SymmetricPower( <chi>, <n> )
+##
+InstallMethod( SymmetricPower,
+    "for a class function and a pos. integer",
+    [ IsClassFunction, IsPosInt ],
+    function( chi, n )
+    return SymmetricParts( UnderlyingCharacterTable( chi ), [ chi ], n )[1];
+    end );
 
 
 #############################################################################
