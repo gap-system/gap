@@ -717,37 +717,15 @@ end);
 #F  NextStepCentralizer( <gens>, <cent>, <pcgsF>, <field> )
 ##
 NextStepCentralizer := function( gens, cent, pcgsF, field )
-    local   g,  newgens,  matlist,  notcentral,  h,  comm,  null,  j,  elm;
-  
+    local g, matlist, null;
+
     for g in gens do
         if Length( cent ) = 0 then return []; fi;
-
-        newgens := [];
-        matlist := [];
-        notcentral := [];
-        for h in cent do
-            comm := ExponentsOfPcElement( pcgsF, Comm( h, g ) ) * One(field);
-            if comm = Zero( field ) * comm  then
-                Add( newgens, h );
-            else
-                Add( notcentral, h );
-                Add( matlist, comm );
-            fi;
-        od;
-       
-        if Length( matlist ) > 0  then
-    
-            # get nullspace
-            null := TriangulizedNullspaceMat( matlist );
-
-            # calculate elements corresponding to null
-            for j  in [1..Length(null)]  do
-                elm := PcElementByExponentsNC( pcgsF, notcentral, null[j] );
-                Add( newgens, elm );
-            od;
-        fi;
-        cent := newgens;
+        matlist := List( cent, x -> ExponentsOfPcElement(pcgsF, Comm(x,g)));
+        null := TriangulizedNullspaceMat(matlist*One(field));
+        cent := List( null, x -> PcElementByExponentsNC(pcgsF, cent, x));
     od;
+
     return cent;
 end;
 
