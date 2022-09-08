@@ -428,7 +428,8 @@ gap> hom:= ActionHomomorphism( g, vecs, OnRight );;
 gap> HasNiceMonomorphism( g );
 false
 gap> SetNiceMonomorphism( g, hom );
-Error, 'NiceMonomorphism' values must have the 'IsInjective' flag
+
+#Error, 'NiceMonomorphism' values must have the 'IsInjective' flag
 gap> IsInjective( hom );
 true
 gap> SetNiceMonomorphism( g, hom );
