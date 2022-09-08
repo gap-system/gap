@@ -20,15 +20,16 @@
 ##  injective maps get stored as nice monomorphisms.
 ##  More precisely, the stored map must know that it is injective,
 ##  otherwise computing its kernel may run into an infinite recursion.
+#T This can be activated only after changing some packages accordingly.
 ##
 ##  Besides this, we want to tell every nice monomorphism that it is one.
 ##
 InstallMethod(SetNiceMonomorphism,"set `IsNiceomorphism' property",true,
   [IsGroup,IsGroupGeneralMapping],SUM_FLAGS+10, #override system setter
 function(G,hom)
-  if not ( HasIsInjective( hom ) and IsInjective( hom ) ) then
-    Error( "'NiceMonomorphism' values must have the 'IsInjective' flag" );
-  fi;
+# if not ( HasIsInjective( hom ) and IsInjective( hom ) ) then
+#   Error( "'NiceMonomorphism' values must have the 'IsInjective' flag" );
+# fi;
   SetFilterObj(hom,IsNiceMonomorphism);
   TryNextMethod();
 end);
