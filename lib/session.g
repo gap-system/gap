@@ -30,7 +30,7 @@ BIND_GLOBAL("PROGRAM_CLEAN_UP", function()
         if IsHPCGAP then
             funcs := FromAtomicList(GAPInfo.AtExitFuncs);
         else
-            funcs := GAPInfo.AtExitFuncs;
+            funcs := ShallowCopy(GAPInfo.AtExitFuncs);
         fi;
         while not IsEmpty(funcs) do
             f := Remove(funcs);
