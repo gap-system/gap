@@ -703,6 +703,7 @@ DeclareOperation( "IsCentral", [ IsMagma, IsObject ] );
 ##
 ##  <#GAPDoc Label="Centralizer">
 ##  <ManSection>
+##  <Heading>Centralizer</Heading>
 ##  <Oper Name="Centralizer" Arg='M, elm'
 ##   Label="for a magma and an element"/>
 ##  <Oper Name="Centralizer" Arg='M, S'
