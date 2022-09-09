@@ -112,7 +112,7 @@ InstallMethod(MinimalGeneratingSet,"test solvable and 2-generator noncyclic",
 function(G)
 local i;
   if not HasIsSolvableGroup(G) and IsSolvableGroup(G) and
-  CanEasilyComputePcgs(G)  then
+     CanEasilyComputePcgs(G) then
     # discovered solvable -- redo
     return MinimalGeneratingSet(G);
   elif not IsSolvableGroup(G) then
@@ -120,8 +120,8 @@ local i;
         and Length(GeneratorsOfGroup(G)) = 2 then
       return GeneratorsOfGroup(G);
     fi;
-    TryNextMethod();
   fi;
+  TryNextMethod();
 end);
 
 #############################################################################
