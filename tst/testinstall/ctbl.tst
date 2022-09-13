@@ -252,6 +252,20 @@ CT2
 X.1                     1                 -1                  1
 X.2                     2                  .                 -1
 X.3                     1                  1                  1
+gap> Display( t,
+>        rec( characterField:= true ) );
+CT2
+
+         2  1  1  .
+         3  1  .  1
+
+           1a 2a 3a
+        2P 1a 1a 3a
+        3P 1a 2a 1a
+        d
+X.1     1   1 -1  1
+X.2     1   2  . -1
+X.3     1   1  1  1
 
 # viewing and printing of character tables with stored groups
 gap> t:= CharacterTable( DihedralGroup( 8 ) );;

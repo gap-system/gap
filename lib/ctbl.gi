@@ -4776,11 +4776,13 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           ncols,             # total number of columns
           linelen,           # line length
           q,                 # quadratic cyc / powermap entry
+          field_degrees,     # list of degrees of character fields
           indicator,         # list of primes
           OD,                # show a column with orthog. discriminants
           iw,                # width of indicator columns
           indic,             # indicator values
           oddata,            # orthog. discriminants
+          p,                 # characteristic
           ind2,              # 2nd indicator
           iwsum,             # total width of (OD and) indicator columns
           entry,             # run over 'oddata'
@@ -4978,6 +4980,17 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       fi;
     od;
 
+    # print degrees of character fields?
+    field_degrees:= false;
+    for record in options do
+      if IsBound( record.characterField ) then
+        if record.characterField = true then
+          field_degrees:= true;
+        fi;
+        break;
+      fi;
+    od;
+
     # print Frobenius-Schur indicators?
     indicator:= [];
     for record in options do
@@ -5044,15 +5057,29 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
       fi;
       indicator:= Concatenation( [ "OD" ], indicator );
     fi;
+    if field_degrees then
+      indicator:= Concatenation( [ "d" ], indicator );
+    fi;
     if indicator <> [] then
       for i in [ 1 .. Length( indicator ) ] do
-        if indicator[i] = "OD" then
-          indic[1]:= ListWithIdenticalEntries( Length( cnr ), "" );
+        if indicator[i] = "d" then
+          p:= UnderlyingCharacteristic( tbl );
+          if p = 0 then
+            indic[i]:= List( chars,
+                         x -> String( Dimension( Field( Rationals, x ) ) ) );
+          else
+            indic[i]:= List( chars,
+                         x -> String( Length( Factors( SizeOfFieldOfDefinition(
+                                ClassFunction( tbl, x ), p ) ) ) ) );
+          fi;
+          iw[i]:= Maximum( 2, Maximum( List( indic[i], Length ) ) ) + 1;
+        elif indicator[i] = "OD" then
+          indic[i]:= ListWithIdenticalEntries( Length( cnr ), "" );
           if IsBoundGlobal( "OrthogonalDiscriminants" ) then
             oddata:= ValueGlobal( "OrthogonalDiscriminants" )( tbl );
             for j in [ 1 .. Length( cnr ) ] do
               if IsBound( oddata[ cnr[j] ] ) then
-                indic[1][j]:= oddata[ cnr[j] ];
+                indic[i][j]:= oddata[ cnr[j] ];
               fi;
             od;
           else
@@ -5061,11 +5088,11 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
             for j in [ 1 .. Length( cnr ) ] do
               if ( not ind2[ cnr[j] ] in [ -1, 0 ] ) and
                  Irr( tbl )[ cnr[j] ][1] mod 2 = 0 then
-                indic[1][j]:= "?";
+                indic[i][j]:= "?";
               fi;
             od;
           fi;
-          iw[i]:= Maximum( 2, Maximum( List( indic[1], Length ) ) ) + 1;
+          iw[i]:= Maximum( 2, Maximum( List( indic[i], Length ) ) ) + 1;
         else
           if chars_from_irr and
              IsBound( ComputedIndicators( tbl )[ indicator[i] ] ) then
