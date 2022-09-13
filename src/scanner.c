@@ -653,7 +653,7 @@ static Char GetEscapedChar(ScannerState * s)
 static Char GetStr(ScannerState * s, Char c)
 {
     Obj  string = 0;
-    Char buf[1024];
+    Char buf[1024] = "";
     UInt i = 0;
 
     while (c != '"' && c != '\n' && c != '\377') {
