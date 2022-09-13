@@ -3421,6 +3421,11 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##    centralizer orders in a style similar to that used in the
 ##    &ATLAS; of Finite Groups&nbsp;<Cite Key="CCN85"/>,
 ##  </Item>
+##  <Mark><C>characterField</C></Mark>
+##  <Item>
+##    <K>true</K> to show the degrees of the character fields over the prime
+##    field, in a column with header <C>d</C>,
+##  </Item>
 ##  <Mark><C>chars</C></Mark>
 ##  <Item>
 ##    an integer or a list of integers to select a sublist of the
