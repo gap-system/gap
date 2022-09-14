@@ -156,7 +156,7 @@ distclean-kext:
 # hook into `make doc`
 doc: doc-kext
 doc-kext:
-	$(GAP) makedoc.g
+	$(GAP) --quitonbreak -b -q < makedoc.g
 
 # hook into `make check`
 check: check-kext
