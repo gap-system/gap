@@ -16,7 +16,7 @@
 ##  end;
 
 InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
-  local lines, inp, pos, outp, ign, commands, i, skipstate, checkifelseendif, foundcmd, testError;
+  local lines, inp, pos, outp, ign, commands, i, skipstate, checkifelsefi, foundcmd, testError;
   lines := SplitString(str, "\n", "");
   inp := [];
   pos := [];
@@ -31,8 +31,8 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
         ErrorNoReturn(s, " at ", fnam, ":", i);
     fi;
   end;
-  checkifelseendif := l -> ForAny(["#@if","#@else","#@fi"], x -> StartsWith(l, x));
-  # Set to true if we find a #@if, #@else or #@endif. Used to check these do not
+  checkifelsefi := l -> ForAny(["#@if","#@else","#@fi"], x -> StartsWith(l, x));
+  # Set to true if we find a #@if, #@else or #@fi. Used to check these do not
   # occur in the middle of a single input/output test block.
   foundcmd := false;
   # skipstate represents the current status of '#@if/#@else/#@fi'
@@ -44,7 +44,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
   # Code is executed whenever skipstate >= 0
   skipstate := 0;
   while i <= Length(lines) do
-    if checkifelseendif(lines[i]) then
+    if checkifelsefi(lines[i]) then
         foundcmd := true;
         Add(ign, i);
         if StartsWith(lines[i], "#@if") then
@@ -346,7 +346,7 @@ end);
 ##  <C>#@if</C> are used until either a <C>#@else</C> or <C>#@fi</C> is
 ##  reached. If a <C>#@else</C> is present then the code after the <C>#@else</C>
 ##  is used if and only if <C>EXPR</C> evaluated to <K>false</K>. Finally,
-##  once <C>#endif</C> is reached, evaluation continues normally.
+##  once <C>#fi</C> is reached, evaluation continues normally.
 ##  </Item>
 ##  </List>
 ##  By default the actual &GAP; output is compared exactly with the
