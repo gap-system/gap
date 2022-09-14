@@ -87,7 +87,10 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
       if ignorecomments = true then
         # ignore comment lines and empty lines at beginning of file
         Add(ign, i);
-        if Length(lines[i]) > 3 and lines[i]{[1..2]} = "#@" then
+        # execute `#@exec` immediately so `#@if` can depend on it
+        if StartsWith(lines[i], "#@exec") then
+          Read(InputTextString(Concatenation(lines[i]{[7..Length(lines[i])]}, ";\n")));
+        elif Length(lines[i]) > 3 and lines[i]{[1..2]} = "#@" then
           Add(commands, lines[i]);
         fi;
         i := i+1;
@@ -347,6 +350,11 @@ end);
 ##  reached. If a <C>#@else</C> is present then the code after the <C>#@else</C>
 ##  is used if and only if <C>EXPR</C> evaluated to <K>false</K>. Finally,
 ##  once <C>#fi</C> is reached, evaluation continues normally.
+##  <P/>
+##  Note that <C>EXPR</C> is evaluated after all <C>#@exec</C> lines have been
+##  executed but before any tests are run. Thus, it cannot depend on test
+##  results or packages loaded in tests, but it can depend on packages loaded
+##  via <C>#@exec</C>.
 ##  </Item>
 ##  </List>
 ##  By default the actual &GAP; output is compared exactly with the
@@ -648,8 +656,6 @@ InstallGlobalFunction("Test", function(arg)
       else
         opts.localdef := Concatenation(opts.localdef, ", ", line);
       fi;
-    elif StartsWith(line, "#@exec") then
-      Read(InputTextString(Concatenation(line{[7..Length(line)]}, ";\n")));
     else
       ErrorNoReturn("Invalid #@ test option: ", line);
     fi;
