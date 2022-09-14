@@ -19,4 +19,5 @@
 		fi; \
 		printf "./configure before make (please refer to INSTALL for details)\n" ; \
 	  fi
+	@exit 1
 all: .DEFAULT
