@@ -1664,7 +1664,7 @@ end );
 
 InstallMethod( Orbits, "for arbitrary domains", true, OrbitsishReq, 0,
 function( G, D, gens, acts, act )
-local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
+local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1,pc;
     
   sort:=Length(D)>0 and CanEasilySortElements(D[1]);
   plist:=IsPlistRep(D);
@@ -1691,7 +1691,10 @@ local   orbs, orb,sort,plist,pos,use,o,nc,ld,ld1;
       fi;
     else
       for o in orb do
-        use[PositionCanonical(D,o)]:=true;
+        pc:=PositionCanonical(D,o);
+        if pc <> fail then
+          use[pc]:=true;
+        fi;
       od;
       # not plist -- do not take difference as there may be special
       # `PositionCanonical' method.
