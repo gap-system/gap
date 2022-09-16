@@ -954,7 +954,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     repeat
       if cnt=0 then
 	# first the small gen syst.
-        if IsSolvableGroup(H) then
+        if IsSolvableGroup(H) and CanEasilyComputePcgs(H) then
           gens:=MinimalGeneratingSet(H);
         else
           gens:=SmallGeneratingSet(H);
