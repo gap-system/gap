@@ -1746,7 +1746,7 @@ InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       gens,i,c,hom,free,elms,price,result,rels,inns,bcl,vsu;
 
-  if IsSolvableGroup(G) then
+  if IsSolvableGroup(G) and CanEasilyComputePcgs(G) then
     gens:=MinimalGeneratingSet(G);
   else
     gens:=SmallGeneratingSet(G);
