@@ -307,6 +307,11 @@ function(rws)
     Unbind(rws!.pairs2check);
   fi;
   rws!.reduced := true;
+
+  if IsBound(rws!.kbdag) then
+    rws!.kbdag.stepback:=11;
+  fi;
+
   for v in r do
     AddRuleReduced(rws, v);
   od;
@@ -318,10 +323,13 @@ end);
 # use bit lists to reduce the numbers of rules to test
 # this should ultimately become part of the kernel routine
 BindGlobal("ReduceLetterRepWordsRewSysNew",function(tzrules,w,dag)
-local old,pat,cf,has,n,p;
+local old,pat,cf,has,n,p,back;
   if not IsRecord(dag) then
     return ReduceLetterRepWordsRewSys(tzrules,w);
   fi;
+  w:=ShallowCopy(w); # so we can replace
+  if IsBound(dag.stepback) then back:=dag.stepback;
+  else back:=11;fi;
 
   repeat
     has:=false;
@@ -331,10 +339,16 @@ local old,pat,cf,has,n,p;
       n:=RuleAtPosKBDAG(dag,w,p);
       if n<>fail then
         # now apply rule
-        w:=Concatenation(w{[1..p-1]},tzrules[n][2],
-          w{[p+Length(tzrules[n][1])..Length(w)]});
+        if Length(tzrules[n][1])=Length(tzrules[n][2]) then
+          w{[p..p+Length(tzrules[n][1])-1]}:=tzrules[n][2];
+        else
+          w:=Concatenation(w{[1..p-1]},tzrules[n][2],
+            w{[p+Length(tzrules[n][1])..Length(w)]});
+        fi;
         has:=true;
-        p:=0; # B/c p+1 at end
+        # step a bit back. It doesn't really matter, as we only terminate if
+        # we have once run through the whole list without doing any change.
+        p:=Maximum(0,p-back);
       fi;
       p:=p+1;
     od;
