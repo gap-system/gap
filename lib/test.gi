@@ -335,11 +335,21 @@ end);
 ##  <Mark>#@local identifierlist</Mark>
 ##  <Item>Run all the tests in the input as if it is in a function with local variable list
 ##  <C>identifierlist</C>, which is a comma-separated list of
-##  identifers. Multiple #@local lines may be used.
+##  identifiers. Multiple #@local lines may be used.
+##  These lines should <E>not</E> end with a comma or semicolon.
+##  If this option is used then an error will occur unless <E>all</E>
+##  the variables used are included in the local list.
+##  <P/>
+##  As an example, the <Package>Utils</Package> package has a test file
+##  <C>tst/iterator.tst</C> which starts with the lines:
+##  <Log><![CDATA[
+##  #@local  c3c3, cart, G, h, it1, it2, iter, iter0, iter4, iterL
+##  #@local  L, n, pairs0, pairs4, pairsL, s3, s4
+##  ]]></Log>
 ##  </Item>
 ##  <Mark>#@exec gapcode</Mark>
-##  <Item>Execute the code <C>gapcode</C> before any test in the input is run. This allows
-##  defining global variables when using <C>#@local</C>.
+##  <Item>Execute the code <C>gapcode</C> before any test in the input is run. 
+##  This allows defining global variables when using <C>#@local</C>.
 ##  </Item>
 ##  <Mark>#@if EXPR ...  [#@else] ... #@fi</Mark>
 ##  <Item>A <C>#@if</C> allows to conditionally skip parts of the test input depending on
@@ -355,6 +365,18 @@ end);
 ##  executed but before any tests are run. Thus, it cannot depend on test
 ##  results or packages loaded in tests, but it can depend on packages loaded
 ##  via <C>#@exec</C>.
+##  <P/>
+##  As an example, the &GAP; test suite contains the test file
+##  <C>tst/testinstall/pperm.tst</C> which contains the lines:
+##  <Log><![CDATA[
+##  #@if GAPInfo.BytesPerVariable = 8
+##  gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6) in [260581, 402746];
+##  true
+##  #@else
+##  gap> HASH_FUNC_FOR_PPERM(f, 10 ^ 6);
+##  953600
+##  #@fi
+##  ]]></Log>
 ##  </Item>
 ##  </List>
 ##  By default the actual &GAP; output is compared exactly with the
