@@ -703,7 +703,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       gens := List( gens, x -> MappedPcElement( x, Ggens, tup ) );
       gens := List( gens, x -> x ^ elm[2] );
       return gens;
-      #return Tuple( [tup[1], gens] );
+      #return DirectProductElement( [tup[1], gens] );
     end;
 
     if not IsPcgs(Ggens) then
@@ -719,7 +719,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
               GeneratorsOfGroup(Source(epi)), tup ) );
             gens := List( gens, x -> x ^ elm[2] );
             return gens;
-            #return Tuple( [tup[1], gens] );
+            #return DirectProductElement( [tup[1], gens] );
           end;
 
       elif Size(G)>20000 then

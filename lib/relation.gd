@@ -170,7 +170,7 @@ DeclareGlobalFunction("IdentityBinaryRelation");
 ##  This construction is similar to <Ref Func="GeneralMappingByElements"/>
 ##  where the source and range are the same set.
 ##  <Example><![CDATA[
-##  gap> r:=BinaryRelationByElements(Domain([1..3]),[Tuple([1,2]),Tuple([1,3])]);
+##  gap> r:=BinaryRelationByElements(Domain([1..3]),[DirectProductElement([1,2]),DirectProductElement([1,3])]);
 ##  <general mapping: Domain([ 1 .. 3 ]) -> Domain([ 1 .. 3 ]) >
 ##  ]]></Example>
 ##  </Description>
