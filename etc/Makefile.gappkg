@@ -193,14 +193,14 @@ gen/pkgconfig.h: gen/pkgconfig.h.stamp
 	@if test ! -f $@; then rm -f $<; else :; fi
 	@if test ! -f $@; then $(MAKE) $<; else :; fi
 
-gen/pkgconfig.h.stamp: gen/pkgconfig.h.in config.status
+gen/pkgconfig.h.stamp: src/pkgconfig.h.in config.status
 	@rm -f $@
 	@mkdir -p $(@D)
 	./config.status gen/pkgconfig.h
 	echo > $@
 
 ifneq ($(MAINTAINER_MODE),no)
-gen/pkgconfig.h.in: $(configure_deps)
+src/pkgconfig.h.in: $(configure_deps)
 	@if command -v autoheader >/dev/null 2>&1 ; then \
 	   mkdir -p $(@D) ; \
 	   echo "running autoheader" ; \
