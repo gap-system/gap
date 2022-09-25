@@ -48,6 +48,8 @@ extern "C" {
 
 #include <stdio.h>
 
+#include "config.h"
+
 } // extern "C"
 
 #ifdef GAP_KERNEL_DEBUG
