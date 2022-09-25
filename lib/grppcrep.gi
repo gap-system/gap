@@ -587,10 +587,8 @@ end );
 ##
 #M AbsolutIrreducibleModules( <G>, <F>, <dim> ). . . . . . .up to equivalence
 ##
-## <dim> is the limit of Dim( F ) * Dim( M ) for the modules M
-##
 InstallMethod( AbsolutIrreducibleModules,
-    "generic method for groups with pcgs",
+    "method for group with pcgs and finite prime field",
     true, 
     [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite and IsPrimeField, IsInt ],
     0,
@@ -598,7 +596,9 @@ InstallMethod( AbsolutIrreducibleModules,
 function( G, F, dim )
     local modus;
     modus := AbsAndIrredModules( G, F, dim );
-    return [modus[1],List( modus[2], x -> x.absirr )];
+    return [ modus[1],
+             Filtered( List( modus[2], x -> x.absirr ),
+                       x -> IsPrimeField( x.field ) ) ];
 end );
 
 #############################################################################

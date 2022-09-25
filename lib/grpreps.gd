@@ -22,10 +22,13 @@
 ##  <Oper Name="AbsolutIrreducibleModules" Arg='G, F, dim'/>
 ##
 ##  <Description>
-##  returns a list of length 2. The first entry is a generating system of
-##  <A>G</A>. The second entry is a list of all absolute irreducible modules of
-##  <A>G</A> over the field <A>F</A> in dimension <A>dim</A>, given as MeatAxe modules
+##  <Ref Oper="AbsolutelyIrreducibleModules"/> returns a list of length 2.
+##  The first entry is a generating system of the group <A>G</A>.
+##  The second entry is a list of all those absolutely irreducible modules of
+##  <A>G</A> that can be realized over the finite field <A>F</A>
+##  and have dimension at most <A>dim</A>, given as MeatAxe modules
 ##  (see&nbsp;<Ref Func="GModuleByMats" Label="for generators and a field"/>).
+##  <P/>
 ##  The other two names are just synonyms.
 ##  </Description>
 ##  </ManSection>
