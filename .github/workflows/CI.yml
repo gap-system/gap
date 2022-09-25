@@ -148,10 +148,6 @@ jobs:
             shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
             test-suites: "testmockpkg testinstall"
 
-          # TODO: add back big endian test (we had s390x on Travis)
-          # TODO: add back test with an older GCC, e.g. 4.7
-          # TODO: restore Slack notifications for failed CI branch builds
-
     env:
       TEST_SUITES: ${{ matrix.test-suites }}
 
