@@ -462,11 +462,14 @@ InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
 
 #############################################################################
 ##
-#M <scal> * <mat>
+#M  <ffe> * <mat>
+##
+##  If <ffe> lies in the field of <mat> then we return a matrix in
+##  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
 ##
 
-InstallMethod( \*, "scalar * 8 bit matrix", IsElmsCollColls, 
-        [           IsFFE, 
+InstallMethod( \*, "internal FFE * 8 bit matrix", IsElmsCollColls,
+        [           IsFFE and IsInternalRep,
                 Is8BitMatrixRep and IsMatrix
           ], 0,
         function(s,m)
@@ -486,15 +489,32 @@ InstallMethod( \*, "scalar * 8 bit matrix", IsElmsCollColls,
     return r;
 end);
 
+InstallMethod( \*, "FFE * 8 bit matrix", IsElmsCollColls,
+    [ IsFFE, Is8BitMatrixRep and IsMatrix ],
+    function( s, m )
+    if IsInternalRep( s ) then
+      TryNextMethod();
+    fi;
+    s:= AsInternalFFE( s );
+    if s = fail then
+      TryNextMethod();
+    fi;
+    return s * m;
+end);
+
+
 #############################################################################
 ##
-#M  <mat> * <scal>
+#M  <mat> * <ffe>
+##
+##  If <ffe> lies in the field of <mat> then we return a matrix in
+##  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
 ##
 
-InstallMethod( \*, "scalar * 8 bit matrix", IsCollCollsElms, 
+InstallMethod( \*, "8 bit matrix * internal FFE", IsCollCollsElms,
         [         
                 Is8BitMatrixRep and IsMatrix,
-                IsFFE
+                IsFFE and IsInternalRep
           ], 0,
         function(m,s)
     local q,i,l,r,pv;
@@ -513,6 +533,18 @@ InstallMethod( \*, "scalar * 8 bit matrix", IsCollCollsElms,
     return r;
 end);
 
+InstallMethod( \*, "8 bit matrix * FFE", IsCollCollsElms,
+    [ Is8BitMatrixRep and IsMatrix, IsFFE ],
+    function( m, s )
+    if IsInternalRep( s ) then
+      TryNextMethod();
+    fi;
+    s:= AsInternalFFE( s );
+    if s = fail then
+      TryNextMethod();
+    fi;
+    return m * s;
+end);
 
 
 #############################################################################
