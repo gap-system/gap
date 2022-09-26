@@ -1833,7 +1833,6 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
 {
   Int a;
   Int b;
-  Int cnt;
   Int max;
   Int blim;
   UInt deg;
@@ -1844,7 +1843,6 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
   a=INT_INTOBJ(ELM_PLIST(lst,1))-1;
   b=INT_INTOBJ(ELM_PLIST(lst,2))+1;
   max=INT_INTOBJ(ELM_PLIST(lst,3));
-  cnt=0;
   blim=b-max-1;
 
     deg=DEG_PERM<T>(g);
@@ -1868,7 +1866,6 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
         tmp=ELM_PLIST(Ppoints,a);
         SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
         SET_ELM_PLIST(Ppoints,b,tmp);
-        cnt++;
       }
     }
 
