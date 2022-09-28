@@ -71,7 +71,7 @@
 ##
 ##      I. Operations and methods for binary relations on points
 ##         1. ImagesElm (compatibility with GeneralMapping)
-##         2. PreImagesElm (compatibility with GeneralMapping)
+##         2. PreImagesElmNC (compatibility with GeneralMapping)
 ##         3. \=, \in, \<
 ##         4. \* for relations, transformations, and permutation
 ##         5. Set operations \+, \-  (union, difference)
@@ -92,7 +92,7 @@
 ##         4. MeetEquivalenceRelations
 ##         5. \=
 ##         6. ImagesElm (compatibility with GeneralMapping)
-##         7. PreImagesElm (compatibility with GeneralMapping)
+##         7. PreImagesElmNC (compatibility with GeneralMapping)
 ##         8. PrintObj
 ##
 ##      L. Constructors of equivalence classes
@@ -104,7 +104,7 @@
 ##         2. PrintObj, Enumerator
 ##         3. \<
 ##         4. ImagesRepresentative
-##         6. PreImagesRepresentative
+##         6. PreImagesRepresentativeNC
 ##
 ############################################################################
 ############################################################################
@@ -250,7 +250,7 @@ InstallMethod(IsSymmetricBinaryRelation,
                       List(Enumerator(UnderlyingRelation(m)),x->[x[1],x[2]])));
 
         for e in el do
-            if not PreImages(m,e)=Images(m,e) then
+            if not PreImagesNC(m,e)=Images(m,e) then
                 return false;
             fi;
         od;
@@ -312,7 +312,7 @@ InstallMethod(IsAntisymmetricBinaryRelation,
                   List(Enumerator(UnderlyingRelation(rel)),x->[x[1],x[2]])));
 
         for e in el do
-            i := IntersectionSet(PreImages(rel,e),Images(rel,e));
+            i := IntersectionSet(PreImagesNC(rel,e),Images(rel,e));
             if not IsEmpty(i) and not i=[e] then
                 return false;
             fi;
@@ -376,7 +376,7 @@ function(rel)
   for a in Source(rel) do
     for b in Source(rel) do
       # intersecting downsets
-      intersection := Intersection(PreImages(rel,b),PreImages(rel,a));
+      intersection := Intersection(PreImagesNC(rel,b),PreImagesNC(rel,a));
       # new relation on the intersection induced by the original relation
       nrel := PartialOrderByOrderingFunction(
                       Domain(intersection),
@@ -611,7 +611,7 @@ InstallMethod(HasseDiagramBinaryRelation,
             ##
             return Filtered(list,
               x->IsEmpty(Filtered(list, y-> (y <> x) and
-                                              (y in PreImagesElm(rel,x)))));
+                                            (y in PreImagesElmNC(rel,x)))));
         end;
 
         ## return the elements which cover x in rel
@@ -983,11 +983,11 @@ InstallMethod(ImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesElm( <rel>, <n> )
+#M  PreImagesElmNC( <rel>, <n> )
 ##
 ##  For binary relations over [1..n] represented as a list of images
 ##
-InstallMethod(PreImagesElm,
+InstallMethod(PreImagesElmNC,
         "for binary rels over [1..n] with images list",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
@@ -1781,9 +1781,9 @@ InstallMethod( ImagesRepresentative, "equivalence relations",
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <rel>, <elm> )  . . . for equivalence relations
+#M  PreImagesRepresentativeNC( <rel>, <elm> )  . . for equivalence relations
 ##
-InstallMethod( PreImagesRepresentative, "equivalence relations",
+InstallMethod( PreImagesRepresentativeNC, "equivalence relations",
         FamRangeEqFamElm, [IsEquivalenceRelation, IsObject], 0,
     function( map, elm )
         return elm;
@@ -1813,9 +1813,9 @@ InstallMethod( ImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesElm( <rel>, <elm> )     for equivalence relations with partition
+#M  PreImagesElmNC( <rel>, <elm> )   for equivalence relations with partition
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
         "equivalence relations with partition and element",
         FamRangeEqFamElm,
         [IsEquivalenceRelation and HasEquivalenceRelationPartition,

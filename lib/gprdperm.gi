@@ -169,9 +169,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentativeNC( <emb>, <g> ) . . . . . . . . . .  of embedding
 ##
-InstallMethod( PreImagesRepresentative, "perm direct product embedding",
+InstallMethod( PreImagesRepresentativeNC, "perm direct product embedding",
   FamRangeEqFamElm,
         [ IsEmbeddingDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ],
@@ -292,9 +292,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <prj>, <g> ) . . . . . . . . . . . of projection
+#M  PreImagesRepresentativeNC( <prj>, <g> ) . . . . . . . . . . of projection
 ##
-InstallMethod( PreImagesRepresentative,"perm direct product projection",
+InstallMethod( PreImagesRepresentativeNC,"perm direct product projection",
   FamRangeEqFamElm,
         [ IsProjectionDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
@@ -388,7 +388,7 @@ InstallMethod( SubdirectProductOp,"permgroup", true,
     # over the generators of the kernel of $phi_2$.
     gens := [];
     for gen  in GeneratorsOfGroup( G1 )  do
-        Add( gens, gen^emb1 * PreImagesRepresentative(phi2,gen^phi1)^emb2 );
+        Add( gens, gen^emb1*PreImagesRepresentativeNC(phi2,gen^phi1)^emb2 );
     od;
     for gen in GeneratorsOfGroup(
                    KernelOfMultiplicativeGeneralMapping( phi2 ) )  do
@@ -466,9 +466,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <prj>, <g> ) . . . . . . . . . . . of projection
+#M  PreImagesRepresentativeNC( <prj>, <g> ) . . . . . . . . . . of projection
 ##
-InstallMethod( PreImagesRepresentative,"perm subdirect product projection",
+InstallMethod( PreImagesRepresentativeNC,"perm subdirect product projection",
   FamRangeEqFamElm,
         [ IsProjectionSubdirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
@@ -487,11 +487,11 @@ InstallMethod( PreImagesRepresentative,"perm subdirect product projection",
 
     # compute the preimage
     if 1 = prj!.component  then
-        elm := img                                    ^ info.perms[1]
-             * PreImagesRepresentative(phi2,img^phi1) ^ info.perms[2];
+        elm := img                                      ^ info.perms[1]
+             * PreImagesRepresentativeNC(phi2,img^phi1) ^ info.perms[2];
     else
-        elm := img                                    ^ info.perms[2]
-             * PreImagesRepresentative(phi1,img^phi2) ^ info.perms[1];
+        elm := img                                      ^ info.perms[2]
+             * PreImagesRepresentativeNC(phi1,img^phi2) ^ info.perms[1];
     fi;
 
     # return the preimage
@@ -799,9 +799,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentativeNC( <emb>, <g> ) . . . . . . . . . .  of embedding
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
   "imprim perm wreath product embedding", FamRangeEqFamElm,
         [ IsEmbeddingImprimitiveWreathProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,

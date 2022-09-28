@@ -503,9 +503,9 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative, "method for pcgs hom",
+InstallMethod( PreImagesRepresentativeNC, "method for pcgs hom", 
   FamRangeEqFamElm,
   [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
@@ -627,9 +627,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . via depth map
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . via depth map
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentativeNC, FamRangeEqFamElm,
   [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
 local   exp;

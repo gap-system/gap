@@ -1918,9 +1918,9 @@ InstallMethod( PreImageElm,
 
 #############################################################################
 ##
-#M  PreImagesElm( <aut>, <cyc> )  . . . . . . for autom. of ab. number fields
+#M  PreImagesElmNC( <aut>, <cyc> )  . . . . . for autom. of ab. number fields
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for ANF automorphism and scalar",
     FamRangeEqFamElm,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
@@ -1932,9 +1932,9 @@ InstallMethod( PreImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesSet( <aut>, <field> )  . . . . . for autom. of ab. number fields
+#M  PreImagesSetNC( <aut>, <field> )  . . . . for autom. of ab. number fields
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for ANF automorphism and scalar",
     CollFamRangeEqFamElms,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsField ],
@@ -1945,9 +1945,9 @@ InstallMethod( PreImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <aut>, <cyc> ) . for autom. of ab. number fields
+#M  PreImagesRepresentativeNC( <aut>, <cyc> ) for autom. of ab. number fields
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for ANF automorphism and scalar",
     FamRangeEqFamElm,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],

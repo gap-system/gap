@@ -363,7 +363,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismList", function( oper, par )
       local nice;
       nice:= NiceMonomorphism( obj );
       return List( oper( NiceObject( obj ) ),
-                   x -> PreImagesRepresentative( nice, x ) );
+                   x -> PreImagesRepresentativeNC( nice, x ) );
     end );
 end );
 
