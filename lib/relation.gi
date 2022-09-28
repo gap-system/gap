@@ -1781,7 +1781,7 @@ InstallMethod( ImagesRepresentative, "equivalence relations",
 
 #############################################################################
 ##
-#M  PreImagesRepresentativeNC( <rel>, <elm> ) . . . for equivalence relations
+#M  PreImagesRepresentativeNC( <rel>, <elm> )  . . for equivalence relations
 ##
 InstallMethod( PreImagesRepresentativeNC, "equivalence relations",
         FamRangeEqFamElm, [IsEquivalenceRelation, IsObject], 0,
