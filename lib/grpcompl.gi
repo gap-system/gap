@@ -99,12 +99,12 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
        Length(MappingGeneratorsImages(fpi)[2])," generators");
   factorpres:=[FreeGeneratorsOfFpGroup(Range(fpi)),
                RelatorsOfFpGroup(Range(fpi)),
-               List(GeneratorsOfGroup(Range(fpi)),
-                    i->PreImagesRepresentative(fpi,i))];
-  Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentative(h,i))=i));
+	       List(GeneratorsOfGroup(Range(fpi)),
+	            i->PreImagesRepresentativeNC(fpi,i))];
+  Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentativeNC(h,i))=i));
   # initialize
   com:=[G];
-  comgens:=[List(factorpres[3],i->PreImagesRepresentative(h,i))];
+  comgens:=[List(factorpres[3],i->PreImagesRepresentativeNC(h,i))];
   cen:=[s[1]];
   ocrels:=false;
 

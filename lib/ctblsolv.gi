@@ -584,7 +584,7 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
                                            ImageElm( h, z ) ),
                 x -> [ PreImagesSet( h, x[1] ),
                        PreImagesSet( h, x[2] ),
-                       PreImagesRepresentative( h, x[3] ) ] );
+                       PreImagesRepresentativeNC( h, x[3] ) ] );
 
       if p = i then
 
@@ -624,7 +624,7 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
           Append( r, List( CoveringTriplesCharacters( c, zn ),
                            x -> [ PreImagesSet( h, x[1] ),
                                   PreImagesSet( h, x[2] ),
-                                  PreImagesRepresentative( h, x[3] ) ] ) );
+                                  PreImagesRepresentativeNC( h, x[3] ) ] ) );
         od;
         return r;
 
@@ -664,7 +664,7 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
             List( CoveringTriplesCharacters( img, ImageElm( h, z ) ),
                   x -> [ PreImagesSet( h, x[1] ),
                          PreImagesSet( h, x[2] ),
-                         PreImagesRepresentative( h, x[3] ) ] ) );
+                         PreImagesRepresentativeNC( h, x[3] ) ] ) );
       fi;
     od;
     return r;
@@ -1056,7 +1056,7 @@ InstallMethod( BaumClausenInfo,
       for i in [ 2 .. Length( ssr.ds ) ] do
         j:= NaturalHomomorphismByNormalSubgroupNC( ssr.ds[ i-1 ], ssr.ds[i] );
         Append( pcgs, List( SpecialPcgs( ImagesSource( j ) ),
-                            x -> PreImagesRepresentative( j, x ) ) );
+                            x -> PreImagesRepresentativeNC( j, x ) ) );
       od;
       Append( pcgs, SpecialPcgs( Last(ssr.ds) ) );
       G:= ImagesSource( hom );
@@ -1900,8 +1900,7 @@ InstallMethod( BaumClausenInfo,
       k:= Pcgs( kernel );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( kernel ) ),
                Concatenation( List( pcgs,
-                                    x -> PreImagesRepresentative( hom, x ) ),
-                              k ) );
+                   x -> PreImagesRepresentativeNC( hom, x ) ), k ) );
       k:= ListWithIdenticalEntries( Length( k ), 0 );
 
       linear:= List( linear, rep -> Concatenation( rep, k ) );

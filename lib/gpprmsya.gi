@@ -1265,7 +1265,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
     w:=AutomorphismGroup(b);
     opg:=NaturalHomomorphismByNormalSubgroupNC(w,
           InnerAutomorphismsAutomorphismGroup(w));
-    ll:=List(AsSSortedList(Image(opg)),x->PreImagesRepresentative(opg,x));
+    ll:=List(AsSSortedList(Image(opg)),x->PreImagesRepresentativeNC(opg,x));
     ll:=Filtered(ll,IsConjugatorAutomorphism);
     ll:=List(ll,ConjugatorInnerAutomorphism);
     pg:=b;

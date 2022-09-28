@@ -2147,7 +2147,7 @@ local e,        # EAS
   if iso<>false then
     V:=PreImage(iso,V);
     no:=PreImage(iso,no);
-    ce:=PreImagesRepresentative(iso,ce);
+    ce:=PreImagesRepresentativeNC(iso,ce);
   fi;
   return [V,no,ce];
 end );
@@ -2568,7 +2568,7 @@ local q, pcgs, sub, hom, f, ex, C;
   ex:=ExponentOfPGroupAndElm(f,q);
   while ex[1]>q do
     # take the element of highest order in f and take power of its preimage
-    ex:=PreImagesRepresentative(hom,ex[2]^q);
+    ex:=PreImagesRepresentativeNC(hom,ex[2]^q);
     sub:=NormalClosure(G,ClosureSubgroupNC(sub,ex));
     hom:=NaturalHomomorphismByNormalSubgroup(G,sub);
     f:=Range(hom);

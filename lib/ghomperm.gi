@@ -1152,7 +1152,7 @@ local r, fgens, gens, kg;
   fi;
   fgens:=ShallowCopy(GeneratorsOfGroup(r));
   gens:=List(fgens,
-             i->PreImagesRepresentativeNC(hom2,PreImagesRepresentativeNC(hom1,i)));
+         i->PreImagesRepresentativeNC(hom2,PreImagesRepresentativeNC(hom1,i)));
   kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping(hom2));
   Append(gens,kg);
   Append(fgens,List(kg,i->One(r)));

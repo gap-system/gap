@@ -1793,7 +1793,7 @@ local hom,gens;
   fi;
   hom:=IsomorphismPermGroup(G);
   gens:=IndependentGeneratorsOfAbelianGroup(Image(hom,G));
-  return List(gens,i->PreImagesRepresentative(hom,i));
+  return List(gens,i->PreImagesRepresentativeNC(hom,i));
 end);
 
 
@@ -2090,8 +2090,8 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
               # dual space of the module, w.r.t. `pcgs'.
               mg:= List( gs, x -> TransposedMat( List( pcgs,
                      y -> one * ExponentsOfPcElement( pcgs, Image( ph,
-                          Image( dh, PreImagesRepresentative(
-                           dh, PreImagesRepresentative(ph,y) )^x ) ) )))^-1);
+                          Image( dh, PreImagesRepresentativeNC(
+                           dh, PreImagesRepresentativeNC(ph,y) )^x ) ) )))^-1);
 #T inverting is not necessary, or?
               mg:= Filtered( mg, x -> x <> idm );
 
@@ -2141,7 +2141,7 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
 
                     # Construct a group element corresponding to
                     # the basis element of the submodule.
-                    Add( tmp2, PreImagesRepresentative( ph,
+                    Add( tmp2, PreImagesRepresentativeNC( ph,
                                    PcElementByExponentsNC( pcgs, v ) ) );
 
                   od;

@@ -319,7 +319,7 @@ local fam,hom;
   if hom=fail then
      TryNextMethod();
   fi;
-  return PreImagesRepresentative(hom,Random(rs, Image(hom,gp)));
+  return PreImagesRepresentativeNC(hom,Random(rs, Image(hom,gp)));
 end );
 
 #############################################################################
@@ -5490,10 +5490,10 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
                       IsRightTransversalFpGroupRep and IsList and
                       IsDuplicateFreeList and IsAttributeStoringRep ),
       rec( group := OG,
-        subgroup := U,
-        iso:=iso,
-        table:=T,
-        reps:=List(reps,i->PreImagesRepresentative(iso,i))));
+	subgroup := U,
+	iso:=iso,
+	table:=T,
+	reps:=List(reps,i->PreImagesRepresentativeNC(iso,i))));
   fi;
 
   ndef := 1;
@@ -5505,16 +5505,16 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
         #This assumes that reps[j] is already defined - but
         #this is true because T is 'standardized'
         ndef := ndef+1;
-        if ndef=index then
-          return Objectify( NewType( FamilyObj( OG ),
-                            IsRightTransversalFpGroupRep and IsList and
-                            IsDuplicateFreeList and IsAttributeStoringRep ),
-            rec( group := OG,
-              subgroup := U,
-              iso:=iso,
-              table:=T,
-              reps:=List(reps,i->PreImagesRepresentative(iso,i))));
-        fi;
+	if ndef=index then 
+	  return Objectify( NewType( FamilyObj( OG ),
+			    IsRightTransversalFpGroupRep and IsList and 
+			    IsDuplicateFreeList and IsAttributeStoringRep ),
+	    rec( group := OG,
+	      subgroup := U,
+	      iso:=iso,
+	      table:=T,
+	      reps:=List(reps,i->PreImagesRepresentativeNC(iso,i))));
+	fi;
       fi;
     od;
   od;

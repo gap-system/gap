@@ -715,7 +715,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
 
         # and obtain double coset reps
         reps := List( DoubleCosets( P, autU, autV ), Representative );
-        reps := List( reps, x -> PreImagesRepresentative( gamma, x ) );
+        reps := List( reps, x -> PreImagesRepresentativeNC( gamma, x ) );
 
         # loop over automorphisms
         for rep in reps do
@@ -724,9 +724,9 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
             gens := Concatenation( GeneratorsOfGroup( N ),
                                    GeneratorsOfGroup( M ) );
             for r in GeneratorsOfGroup( UN ) do
-                g := PreImagesRepresentative( pair[1], r );
+                g := PreImagesRepresentativeNC( pair[1], r );
                 h := Image( iso, Image( rep, r ) );
-                h := PreImagesRepresentative( pair[2], h );
+                h := PreImagesRepresentativeNC( pair[2], h );
                 Add( gens, g * h );
             od;
             S := SubgroupNC( D, gens );
@@ -1091,13 +1091,13 @@ local info,map,U,mapfun,P;
         U:=SubgroupNC(G,info.hgens);
       fi;
       map:=GroupHomomorphismByFunction(P,U,mapfun,
-        function(elm)
-          elm:=elm![n];
-          if n>info.degI then
-            elm:=PreImagesRepresentative(info.alpha,elm);
-          fi;
-          return elm;
-        end);
+	function(elm)
+	  elm:=elm![n];
+	  if n>info.degI then
+	    elm:=PreImagesRepresentativeNC(info.alpha,elm);
+	  fi;
+	  return elm;
+	end);
       info.embeddings[n]:=map;
     fi;
     return info.embeddings[n];
@@ -1118,7 +1118,7 @@ local info,map,np;
 
     map:=GroupHomomorphismByFunction(G,info.groups[2],
       function(elm)
-        return PreImagesRepresentative(info.alpha,elm![np]);
+	return PreImagesRepresentativeNC(info.alpha,elm![np]);
       end,
       false, # not bijective
       function(elm)
@@ -1179,7 +1179,7 @@ local giso,niso,P,gens,a,Go,No,i;
   N:=Image(niso,N);
   gens:=[];
   for i in GeneratorsOfGroup(G) do
-    i:=Image(aut,PreImagesRepresentative(giso,i));
+    i:=Image(aut,PreImagesRepresentativeNC(giso,i));
     i:=InducedAutomorphism(niso,i);
     Add(gens,i);
   od;
@@ -1220,9 +1220,9 @@ local Go,No,giso,niso,FG,GP,FN,NP,F,GI,NI,rels,i,j,P;
   N:=Image(niso,N);
 
   FG:=FreeGeneratorsOfFpGroup(G);
-  GP:=List(GeneratorsOfGroup(G),x->PreImagesRepresentative(giso,x));
+  GP:=List(GeneratorsOfGroup(G),x->PreImagesRepresentativeNC(giso,x));
   FN:=FreeGeneratorsOfFpGroup(N);
-  NP:=List(GeneratorsOfGroup(N),x->PreImagesRepresentative(niso,x));
+  NP:=List(GeneratorsOfGroup(N),x->PreImagesRepresentativeNC(niso,x));
 
   F:=FreeGroup(List(Concatenation(FG,FN),String));
   GI:=GeneratorsOfGroup(F){[1..Length(FG)]};

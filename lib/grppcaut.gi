@@ -437,7 +437,7 @@ local spec,s,n,M,
     if d = 1 then
         hom := IsomorphismPermGroup( B );
         pcgs := Pcgs( Image( hom ) );
-        pcs := List( pcgs, x -> PreImagesRepresentative( hom, x ) );
+        pcs := List( pcgs, x -> PreImagesRepresentativeNC( hom, x ) );
         TransferPcgsInfo( B, pcs, RelativeOrders( pcgs ) );
         return B;
     fi;
@@ -509,12 +509,12 @@ local spec,s,n,M,
     Info( InfoOverGr, 1, "computed normalizer of size ", Size(L));
 
     # go back to mat group
-    B := List( GeneratorsOfGroup(L), x -> PreImagesRepresentative(hom,x) );
+    B := List( GeneratorsOfGroup(L), x -> PreImagesRepresentativeNC(hom,x) );
     w := PrimitiveRoot(field)* Immutable( IdentityMat( d, field ) );
     B := SubgroupNC( S, Concatenation( B, [w] ) );
 
     if IsSolvableGroup( L ) then
-        pcgs := List( Pcgs(L), x -> PreImagesRepresentative( hom, x ) );
+        pcgs := List( Pcgs(L), x -> PreImagesRepresentativeNC( hom, x ) );
         Add( pcgs, w );
         rels := ShallowCopy( RelativeOrders( Pcgs(L) ) );
         Add( rels, p-1 );
@@ -536,7 +536,7 @@ BindGlobal( "CocycleSQ", function( epi, field )
     H     := Source( epi );
     F     := Image( epi );
     N     := KernelOfMultiplicativeGeneralMapping( epi );
-    pcsH  := List( Pcgs( F ), x -> PreImagesRepresentative( epi, x ) );
+    pcsH  := List( Pcgs( F ), x -> PreImagesRepresentativeNC( epi, x ) );
     pcsN  := Pcgs( N );
     pcgsH := PcgsByPcSequence( ElementsFamily( FamilyObj( H ) ),
                                Concatenation( pcsH, pcsN ) );
@@ -646,7 +646,7 @@ BindGlobal( "LiftInduciblePair", function( epi, ind, M, weight )
 
 
     pcgsF := Pcgs( F );
-    pcsH  := List( pcgsF, x -> PreImagesRepresentative( epi, x ) );
+    pcsH  := List( pcgsF, x -> PreImagesRepresentativeNC( epi, x ) );
     pcsN  := Pcgs( N );
     pcgsH := PcgsByPcSequence( ElementsFamily( FamilyObj( H ) ),
                                Concatenation( pcsH, pcsN ) );
@@ -656,7 +656,7 @@ BindGlobal( "LiftInduciblePair", function( epi, ind, M, weight )
     # use automorphism of F
     imgsF := List( pcgsF, x -> Image( ind[1], x ) );
     opmats := List( imgsF, x -> MappedPcElement( x, pcgsF, M.generators ) );
-    imgsF := List( imgsF, x -> PreImagesRepresentative( epi, x ) );
+    imgsF := List( imgsF, x -> PreImagesRepresentativeNC( epi, x ) );
 
     # use automorphism of N
     imgsN := List( pcsN, x -> ExponentsOfPcElement( pcsN, x ) );
@@ -1418,11 +1418,13 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
             hom  := ActionHomomorphism( xset, "surjective");
             P    := Image( hom );
             if IsSolvableGroup( P ) then
-                pcsA := List( Pcgs(P), x -> PreImagesRepresentative( hom, x ));
+                pcsA := List( Pcgs(P), 
+                              x -> PreImagesRepresentativeNC( hom, x ));
                 TransferPcgsInfo( A, pcsA, RelativeOrders( Pcgs(P) ) );
             else
                 imgs := SmallGeneratingSet( P );
-                gens := List( imgs, x -> PreImagesRepresentative( hom, x ) );
+                gens := List( imgs, 
+                              x -> PreImagesRepresentativeNC( hom, x ) );
                 tmp  := Size( A );
                 A := GroupByGenerators( gens, One( A ) );
                 SetSize( A, tmp );
@@ -1543,10 +1545,10 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
         imgs := [];
         for i in [1..Length(gensK)] do
             m := gensU[i]^n;
-            a := PreImagesRepresentative( hom, m );
+            a := PreImagesRepresentativeNC( hom, m );
             Add( imgs, a );
         od;
-        l := PreImagesRepresentative( iso, n );
+        l := PreImagesRepresentativeNC( iso, n );
         Append( imgs, List( gensF, x -> Image( l, x ) ) );
         new := GroupHomomorphismByImagesNC( G, G, gensG, imgs );
         SetIsBijective( new, true );

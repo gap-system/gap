@@ -955,7 +955,8 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       #k:=PreImage(hom,a);
       # make generators of homomorphism fit nicely to presentation
       gf:=IsomorphismFpGroup(a);
-      e:=List(MappingGeneratorsImages(gf)[1],x->PreImagesRepresentative(hom,x));
+      e:=List(MappingGeneratorsImages(gf)[1],
+           x->PreImagesRepresentativeNC(hom,x));
       # we cannot guarantee that the parent contains e, so no
       # ClosureSubgroup.
       k:=ClosureGroup(KernelOfMultiplicativeGeneralMapping(hom),e);
@@ -2773,7 +2774,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
     auts:=[];
     for i in GeneratorsOfGroup(n) do
       aut:=GroupHomomorphismByImages(f,f,gens,List(gens,x->
-            Image(hom,PreImagesRepresentative(hom,x)^i)));
+	    Image(hom,PreImagesRepresentativeNC(hom,x)^i)));
       SetIsBijective(aut,true);
       Add(auts,aut);
     od;
@@ -2825,35 +2826,35 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
         no:=NormalSubgroups(j[1]);
         no:=SubgroupsOrbitsAndNormalizers(j[2],no,false);
   #Print("Try",j," ",Length(no),"\n");
-        for k in no do
-          hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
-          f:=Image(hom);
-          if Size(f)<1000 and Size(f)<>512 and uselib then
-            myid:=ShallowCopy(IdGroup(f));
-          else
-            myid:=[Size(f),fail];
-          fi;
-          for s in subs do
-            for t in s[3] do # look over normals of subgroup
+	for k in no do
+	  hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
+	  f:=Image(hom);
+	  if Size(f)<1000 and Size(f)<>512 and uselib then
+	    myid:=ShallowCopy(IdGroup(f));
+	  else
+	    myid:=[Size(f),fail];
+	  fi;
+	  for s in subs do
+	    for t in s[3] do # look over normals of subgroup
               #Print(t,"\n");
-              if t{[3,4]}=myid then
-                if false and myid=[1,1] then
-                  #Print("direct\n");
-                  g:=Subgroup(D,Concatenation(GeneratorsOfGroup(j[1]),List(GeneratorsOfGroup(s[1]),x->Image(emb,x))));
-                  Add(nl,[g,Normalizer(D,g)]);
-                else
-                  iso:=IsomorphismGroups(f,t[6]);
-                  if iso<>fail then
-                    #Found isomorphic factor groups
-                    iso:=hom*iso;
-                    ind:=Subgroup(t[7],inducedfactorautos(k.normalizer,t[6],iso));
-                    for dc in DoubleCosetRepsAndSizes(t[7],ind,t[8]) do
-                      # form the subdirect product
-                      g:=List(GeneratorsOfGroup(j[1]),
-                            x->x*Image(emb,PreImagesRepresentative(t[5],
-                              Image(dc[1],Image(iso,x))) ));
-                      Append(g,List(GeneratorsOfGroup(t[1]),x->Image(emb,x)));
-                      g:=Subgroup(D,g);
+	      if t{[3,4]}=myid then
+		if false and myid=[1,1] then
+		  #Print("direct\n");
+		  g:=Subgroup(D,Concatenation(GeneratorsOfGroup(j[1]),List(GeneratorsOfGroup(s[1]),x->Image(emb,x))));
+		  Add(nl,[g,Normalizer(D,g)]);
+		else
+		  iso:=IsomorphismGroups(f,t[6]);
+		  if iso<>fail then
+		    #Found isomorphic factor groups
+		    iso:=hom*iso;
+		    ind:=Subgroup(t[7],inducedfactorautos(k.normalizer,t[6],iso));
+		    for dc in DoubleCosetRepsAndSizes(t[7],ind,t[8]) do
+		      # form the subdirect product
+		      g:=List(GeneratorsOfGroup(j[1]),
+			    x->x*Image(emb,PreImagesRepresentativeNC(t[5],
+			      Image(dc[1],Image(iso,x))) ));
+		      Append(g,List(GeneratorsOfGroup(t[1]),x->Image(emb,x)));
+		      g:=Subgroup(D,g);
 if Size(g)<>Size(j[1])*Size(s[1])/Size(f) then Error("sudi\n");fi;
                       Add(nl,[g,Normalizer(D,g)]);
                     od;

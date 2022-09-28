@@ -1583,7 +1583,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,pow,pos,i,j,k,gen,
   # not easily transfer to mod p.
   k:=Image(piso,TrivialSubgroup(D.galMorphisms));
   gpcgs:=Pcgs(k);
-  gals:=List(gpcgs,i->PreImagesRepresentative(piso,i));
+  gals:=List(gpcgs,i->PreImagesRepresentativeNC(piso,i));
   ord:=List(gpcgs,i->RelativeOrderOfPcElement(gpcgs,i));
   l:=Length(gpcgs);
 
