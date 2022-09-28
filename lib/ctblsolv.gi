@@ -582,8 +582,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       h:= NaturalHomomorphismByNormalSubgroupNC( G, P );
       r:= List( CoveringTriplesCharacters( ImagesSource( h ),
                                            ImageElm( h, z ) ),
-                x -> [ PreImagesSetNC( h, x[1] ),
-                       PreImagesSetNC( h, x[2] ),
+                x -> [ PreImagesSet( h, x[1] ),
+                       PreImagesSet( h, x[2] ),
                        PreImagesRepresentativeNC( h, x[3] ) ] );
 
       if p = i then
@@ -622,8 +622,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
             c:= Stabilizer( img, zn );
           fi;
           Append( r, List( CoveringTriplesCharacters( c, zn ),
-                           x -> [ PreImagesSetNC( h, x[1] ),
-                                  PreImagesSetNC( h, x[2] ),
+                           x -> [ PreImagesSet( h, x[1] ),
+                                  PreImagesSet( h, x[2] ),
                                   PreImagesRepresentativeNC( h, x[3] ) ] ) );
         od;
         return r;
@@ -663,8 +663,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
         img:= ImagesSource( h );
         Append( r,
             List( CoveringTriplesCharacters( img, ImageElm( h, z ) ),
-                  x -> [ PreImagesSetNC( h, x[1] ),
-                         PreImagesSetNC( h, x[2] ),
+                  x -> [ PreImagesSet( h, x[1] ),
+                         PreImagesSet( h, x[2] ),
                          PreImagesRepresentativeNC( h, x[3] ) ] ) );
       fi;
     od;
