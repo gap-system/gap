@@ -340,7 +340,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentativeNC( map, elm );
     if pre = fail then
       return [];
     else
@@ -367,7 +367,7 @@ InstallMethod( PreImagesSet,
     fi;
 
     genpreimages:= List(genpreimages,
-                      gen -> PreImagesRepresentative( map, gen ) );
+                      gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -395,7 +395,7 @@ InstallMethod( PreImagesSet,
 
     pre := SubgroupNC( Source( map ),
                     List( GeneratorsOfMagmaWithInverses( elms ),
-                          gen -> PreImagesRepresentative( map, gen ) ) );
+                          gen -> PreImagesRepresentativeNC( map, gen ) ) );
     UseIsomorphismRelation( elms, pre );
     return pre;
     end );
@@ -694,7 +694,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentativeNC( map, elm );
     if pre = fail then
       return [];
     else
@@ -715,7 +715,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfAdditiveGroup( elms ),
-                      gen -> PreImagesRepresentative( map, gen ) );
+                      gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -901,7 +901,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftModule( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -995,7 +995,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRing( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -1022,7 +1022,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRingWithOne( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;

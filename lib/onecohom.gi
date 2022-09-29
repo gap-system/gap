@@ -128,7 +128,7 @@ local  hom,fg,fpi,fpg,nt,fam;
     fpg:=FreeGeneratorsOfFpGroup(Range(hom));
     ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(hom))];
     ocr.generators:=List(GeneratorsOfGroup(Range(hom)),
-                          i->PreImagesRepresentative(hom,i));
+		          i->PreImagesRepresentativeNC(hom,i));
 
   else
     if (Index(ocr.group,nt)>Size(nt)^3
@@ -158,10 +158,11 @@ local  hom,fg,fpi,fpg,nt,fam;
       fi;
       fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
       ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),
-                      List(GeneratorsOfGroup(Range(fpi)),
-                            i->PreImagesRepresentative(fpi,i))];
+		      List(GeneratorsOfGroup(Range(fpi)),
+			    i->PreImagesRepresentativeNC(fpi,i))];
       if not IsBound(ocr.generators) then
-        ocr.generators:=List(ocr.factorpres[3],i->PreImagesRepresentative(hom,i));
+	ocr.generators:=List(ocr.factorpres[3],
+                            i->PreImagesRepresentativeNC(hom,i));
       fi;
 
 
@@ -191,7 +192,7 @@ local  hom,fg,fpi,fpg,nt,fam;
       fpi:=IsomorphismFpGroupByChiefSeriesFactor(ocr.group,"f",nt);
       fam:=FamilyObj(One(Range(fpi)));
       fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
-      ocr.generators:=List(fpg,i->PreImagesRepresentative(fpi,
+      ocr.generators:=List(fpg,i->PreImagesRepresentativeNC(fpi,
          ElementOfFpGroup(fam,i)));
       ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),ocr.generators];
     fi;

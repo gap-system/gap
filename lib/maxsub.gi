@@ -195,8 +195,8 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     fam:=FamilyObj(One(Range(fphom)));
     # just in case the stored group generators differ...
     wordfpgens:=List(wordgens,x->ElementOfFpGroup(fam,x));
-    wordpre:=List(wordfpgens,x->PreImagesRepresentative(ff.factorhom,
-              PreImagesRepresentative(fphom,x)));
+    wordpre:=List(wordfpgens,x->PreImagesRepresentativeNC(ff.factorhom,
+	      PreImagesRepresentativeNC(fphom,x)));
     fphom:=ff.factorhom*fphom;
     # no assertion as this is not a proper homomorphism, but an inverse
     # multiplicative map
@@ -513,7 +513,7 @@ local hom,embs,s,k,agens,ad,i,j,perm,dia,ggens,e,tgens,d,m,reco,emba,outs,id;
   m:=[];
   d:=SubgroupNC(w,d);
   for i in e do
-    j:=PreImagesRepresentative(hom,i^-1);
+    j:=PreImagesRepresentativeNC(hom,i^-1);
     Info(InfoLattice,2,"Orders:",Order(i),",",Order(j));
     j:=d^j;
     if donorm then
@@ -633,9 +633,9 @@ local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, s, p1,
   # get the ts corresponding to points
   proj:=Projection(w);
   projG:=RestrictedMapping(proj,G);
-  reps:=List([1..n],i->PreImagesRepresentative(projG,RepresentativeAction(Image(projG),1,i)));
+  reps:=List([1..n],i->PreImagesRepresentativeNC(projG,RepresentativeAction(Image(projG),1,i)));
   reps[n+1]:=
-    PreImagesRepresentative(proj,RepresentativeAction(Image(proj),[1..n],[n+1..2*n],OnSets));
+    PreImagesRepresentativeNC(proj,RepresentativeAction(Image(proj),[1..n],[n+1..2*n],OnSets));
   for i in [2..n] do
     j:=reps[i]*reps[n+1];
     reps[1^Image(proj,j)]:=j;
@@ -665,8 +665,8 @@ local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, s, p1,
     en1:=Embedding(wnew,1);
     en2:=Embedding(wnew,2);
     emb:=List(GeneratorsOfGroup(s),i->
-        Image(en1,PreImagesRepresentative(p1,RestrictedPerm(i,ts[1])))
-       *Image(en2,PreImagesRepresentative(p2,RestrictedPerm(i,ts[f]))) );
+        Image(en1,PreImagesRepresentativeNC(p1,RestrictedPerm(i,ts[1])))
+       *Image(en2,PreImagesRepresentativeNC(p2,RestrictedPerm(i,ts[f]))) );
     emb:=GroupHomomorphismByImages(s,wnew,GeneratorsOfGroup(s),emb);
     ma:=MaxesType3(wnew,Image(emb,s),a1,t1,2,false);
     for i in ma do
@@ -699,7 +699,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
 
   # type 4c
   reps:=List([1..n],
-             i->PreImagesRepresentative(fact,RepresentativeAction(fg,1,i)));
+	     i->PreImagesRepresentativeNC(fact,RepresentativeAction(fg,1,i)));
 
 
   # get the maximal subgroups of A, intersect with t to get the socle part
@@ -758,8 +758,8 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       #phi:=ActionHomomorphism(fg,u.orbit,OnSets);
       #ue:=Image(phi,fg);
       #reps:=List([1..nlb],i->RepresentativeAction(ue,1,i));
-      #reps:=List(reps,i->PreImagesRepresentative(phi,i));
-      #reps:=List(reps,i->PreImagesRepresentative(fact,i));
+      #reps:=List(reps,i->PreImagesRepresentativeNC(phi,i));
+      #reps:=List(reps,i->PreImagesRepresentativeNC(fact,i));
       #u:=u.stabilizer;
       uphi:=ActionHomomorphism(Image(fact,u),b);
 

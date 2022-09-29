@@ -143,46 +143,46 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
         for k in [i+1..i+po-1] do
           img:=act(orb[k],acts[j]);
   #F if LookupDictionary(d,img)<>fail then Error("err3");fi;
-          Add(orb,img);
-          AddDictionary(d,img,Length(orb));
-        od;
+	  Add(orb,img);
+	  AddDictionary(d,img,Length(orb));
+	od;
 
-        # should we give in?
-        if Length(orb)>brutelimit then
+	# should we give in?
+	if Length(orb)>brutelimit then
 
-          orb:=[];d:=1; #clean memory
+	  orb:=[];d:=1; #clean memory
+	  
+	  # projective action is fine, as we want to fix space
+	  Info(InfoFitFree,1,"act on whole space, fix in perm action");
+	  permact:=Action(GroupWithGenerators(Concatenation(acts,pcgsacts)),
+	    induce.allobj,induce.allact);
+	  i:=Concatenation(
+	    List([1..Length(gens)], x->DirectProductElement([gens[x],imgs[x]])),
+	    List(pcgs, x->DirectProductElement([x,One(imgs[1])])));
+	  pacthom:=GroupHomomorphismByImagesNC(GroupWithGenerators(i),permact,i,
+		    GeneratorsOfGroup(permact));
 
-          # projective action is fine, as we want to fix space
-          Info(InfoFitFree,1,"act on whole space, fix in perm action");
-          permact:=Action(GroupWithGenerators(Concatenation(acts,pcgsacts)),
-            induce.allobj,induce.allact);
-          i:=Concatenation(
-            List([1..Length(gens)], x->DirectProductElement([gens[x],imgs[x]])),
-            List(pcgs, x->DirectProductElement([x,One(imgs[1])])));
-          pacthom:=GroupHomomorphismByImagesNC(GroupWithGenerators(i),permact,i,
-                    GeneratorsOfGroup(permact));
+	  lpos:=List(induce.lvecs,x->Position(induce.allobj,x));
 
-          lpos:=List(induce.lvecs,x->Position(induce.allobj,x));
+	  # we don't care about the actual subgroup, just the inducing elements
+	  good:=[];
+	  goodi:=SubgroupProperty(induce.subact,
+		  function(x)
+		  local r;
+		    r:=RepresentativeAction(permact,lpos,Permuted(lpos,x),OnTuples);
+		    if r<>fail then Add(good,r);fi;
+		    return r<>fail;
+		  end);
+	  good:=List(good,x->PreImagesRepresentativeNC(pacthom,x));
 
-          # we don't care about the actual subgroup, just the inducing elements
-          good:=[];
-          SubgroupProperty(induce.subact,
-                  function(x)
-                  local r;
-                    r:=RepresentativeAction(permact,lpos,Permuted(lpos,x),OnTuples);
-                    if r<>fail then Add(good,r);fi;
-                    return r<>fail;
-                  end);
-          good:=List(good,x->PreImagesRepresentative(pacthom,x));
+	  good:=Filtered(good,x->not IsOne(x[2]));
 
-          good:=Filtered(good,x->not IsOne(x[2]));
+	  return rec(byinduced:=true,
+	    gens:=List(good,x->x[1]),imgs:=List(good,x->x[2]),
+	      pcgs:=Reversed(S));
 
-          return rec(byinduced:=true,
-            gens:=List(good,x->x[1]),imgs:=List(good,x->x[2]),
-              pcgs:=Reversed(S));
-
-        fi;
-
+	fi;
+	
       else
         # get stabilizing element
         blp:=QuoInt((pos-1),po)+1; # which block position are we?
@@ -416,10 +416,10 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
       glhom:=IsomorphismPermGroup(localgl);
       glperm:=Image(glhom);
       glact:=ActionHomomorphism(glperm,lvecs,
-        GeneratorsOfGroup(glperm),
-        List(GeneratorsOfGroup(glperm),
-          x->PreImagesRepresentative(glhom,x)),
-        OnLines,"surjective");
+	GeneratorsOfGroup(glperm),
+	List(GeneratorsOfGroup(glperm),
+	  x->PreImagesRepresentativeNC(glhom,x)),
+	OnLines,"surjective");
       stb:=Image(glact);
       for clu in localclust do
         stb:=Stabilizer(stb,clu,OnSets);
@@ -478,7 +478,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
   Info(InfoFitFree,1,"Radsize= ",Size(ufr)," index ",Index(uf,ufr));
 
   uff:=SmallGeneratingSet(uf);
-  ufg:=List(uff,x->PreImagesRepresentative(sus.rest,x));
+  ufg:=List(uff,x->PreImagesRepresentativeNC(sus.rest,x));
 
   n:=Normalizer(Image(factorhom),uf);
 
@@ -503,7 +503,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
     nf:=SmallGeneratingSet(n);
   fi;
 
-  ng:=List(nf,x->PreImagesRepresentative(factorhom,x));
+  ng:=List(nf,x->PreImagesRepresentativeNC(factorhom,x));
   np:=pcgs;
 
   up:=sus.pcgs;

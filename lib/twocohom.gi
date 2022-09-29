@@ -813,7 +813,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   od;
 
   gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
-    x->PreImagesRepresentative(fp,x));
+    x->PreImagesRepresentativeNC(fp,x));
 
   hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),
     GeneratorsOfGroup(G),mo.generators);
@@ -845,7 +845,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     else
       # Length of r[1] is 1. That is, this generator is not used!
       m:=First(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord)=r);
-      m:=List(m,x->PreImagesRepresentative(fm,ElementOfFpMonoid(FamilyObj(One(mon)),x)));
+      m:=List(m,x->PreImagesRepresentativeNC(fm,ElementOfFpMonoid(FamilyObj(One(mon)),x)));
       m:=List(m,UnderlyingElement); # free group elements/words
 
       if not IsOne(m[1]*Subword(m[2],1,1)) then
@@ -866,7 +866,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   model:=ValueOption("model");
   if model<>fail then
     q:=GQuotients(model,G)[1];
-    pre:=List(gens,x->PreImagesRepresentative(q,x));
+    pre:=List(gens,x->PreImagesRepresentativeNC(q,x));
     ker:=KernelOfMultiplicativeGeneralMapping(q);
     pcgs:=Pcgs(ker);
     l1:=GModuleByMats(LinearActionLayer(Group(pre),pcgs),mo.field);
@@ -880,7 +880,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     m:=GroupGeneralMappingByImagesNC(fpg,model,GeneratorsOfGroup(fpg),pre);
     mats:=List(GeneratorsOfMonoid(mon),
       x->ImagesRepresentative(m,
-      PreImagesRepresentative(fm,x))); #Elements for monoid generators
+      PreImagesRepresentativeNC(fm,x))); #Elements for monoid generators
     nonone:=[1..Length(mats)];
     pre:=mats;
     onemat:=One(G);
@@ -896,8 +896,8 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   zerovec:=Zero(onemat[1]);
 
   mats:=List(GeneratorsOfMonoid(mon),
-    x->ImagesRepresentative(hom,PreImagesRepresentative(fp,
-    PreImagesRepresentative(fm,x)))); # matrices for monoid generators
+    x->ImagesRepresentative(hom,PreImagesRepresentativeNC(fp,
+    PreImagesRepresentativeNC(fm,x)))); # matrices for monoid generators
   one:=One(mats[1]);
   nonone:=Filtered([1..Length(mats)],x->not IsOne(mats[x]));
   zero:=zerovec;
@@ -1046,7 +1046,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   one:=One(FreeGroupOfFpGroup(fpg));
 
   k:=List(GeneratorsOfMonoid(mon),
-    x->UnderlyingElement(PreImagesRepresentative(fm,x)));
+    x->UnderlyingElement(PreImagesRepresentativeNC(fm,x)));
   # matrix corresponding to monoid word
   mapped2:=function(list)
   local a,i;
@@ -1124,8 +1124,8 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     local a;
       if not IsBound(imagemonwords[nr]) then
         # apply automorphism
-        a:=PreImagesRepresentative(fm,GeneratorsOfMonoid(mon)[nr]);
-        a:=PreImagesRepresentative(fp,a);
+        a:=PreImagesRepresentativeNC(fm,GeneratorsOfMonoid(mon)[nr]);
+        a:=PreImagesRepresentativeNC(fp,a);
         a:=ImagesRepresentative(autom,a);
         a:=ImagesRepresentative(fp,a);
         a:=ImagesRepresentative(fm,a);

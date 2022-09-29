@@ -2602,7 +2602,7 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
 
     found:=PartitionBacktrack( G, Pr, true, rbase, data, L, R );
     if IsPerm(found) and map<>false then
-      found:=PreImagesRepresentative(map,found);
+      found:=PreImagesRepresentativeNC(map,found);
     fi;
     return found;
 end );
