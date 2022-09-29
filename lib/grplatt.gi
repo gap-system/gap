@@ -3737,3 +3737,36 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
              end));
 end);
 
+# Utility function 
+# MinimalInclusionsGroups(l)
+# returns a list of all inclusion indices [a,b] where l[a] is maximal subgroup
+# of l[b].
+InstallGlobalFunction(MinimalInclusionsGroups,function(l)
+local s,p,incl,cont,i,j,done;
+  # sort increasing size
+  s:=List(l,Size);
+  p:=Sortex(s);
+  l:=Permuted(l,p);
+  s:=List(l,Size);
+  incl:=[];
+  cont:=[];
+  for i in [Length(l),Length(l)-1..1] do
+    # those we know it will be in
+    done:=[i];
+    for j in [i+1..Length(l)] do
+      if not j in done and s[j]>s[i] and s[j] mod s[i]=0 then
+        if IsSubset(l[j],l[i]) then
+          Add(incl,[i,j]);
+          done:=Union(done,cont[j]); 
+        fi;
+      fi;
+    od;
+    cont[i]:=done;
+  od;
+  p:=p^-1;
+  incl:=List(incl,x->OnTuples(x,p));
+  Sort(incl);
+  return incl;
+end);
+
+

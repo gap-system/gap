@@ -140,5 +140,10 @@ true
 gap> Length(ConjugacyClasses(PSL(2,64)));
 65
 
+# MinimalGeneratingSet
+gap> AllTransitiveGroups(NrMovedPoints,12,
+> x->Length(MinimalGeneratingSet(x)),4);
+[ [3^4:2^3]E(4) ]
+
 #
 gap> STOP_TEST( "permgrp.tst", 1);
