@@ -142,6 +142,96 @@ function(G)
   fi;
 end);
 
+InstallOtherMethod(MinimalGeneratingSet,"finite groups",true,
+  [IsGroup and IsFinite],0,
+function(g)
+local r,i,j,u,f,q,n,lim,sel,nat,ok,mi;
+  if not HasIsSolvableGroup(g) and IsSolvableGroup(g) and
+     CanEasilyComputePcgs(g) then
+    return MinimalGeneratingSet(g);
+  fi;
+  # start at rank 2/abelian rank
+  n:=AbelianInvariants(g);
+  if Length(n)>0 then
+    r:=Maximum(List(Set(List(n,SmallestPrimeDivisor)),
+      x->Number(n,y->y mod x=0)));
+  else r:=0; fi;
+  r:=Maximum(r,2);
+  n:=false;
+  repeat
+    if Length(GeneratorsOfGroup(g))=r then
+      return GeneratorsOfGroup(g);
+    fi;
+    for i in [1..10^r] do
+      u:=SubgroupNC(g,List([1..r],x->Random(g)));
+      if Size(u)=Size(g) then return GeneratorsOfGroup(u);fi; # found
+    od;
+    f:=FreeGroup(r);
+    ok:=false;
+    if IsPerfectGroup(g) then
+      if n=false then
+        n:=ShallowCopy(NormalSubgroups(g));
+        # all perfect groups of order <15360 *are* 2-generated
+        lim:=15360;
+        n:=Filtered(n,x->IndexNC(g,x)>=lim and Size(x)>1);
+        SortBy(n,x->-Size(x));
+        mi:=MinimalInclusionsGroups(n);
+      fi;
+      i:=1;
+      while i<=Length(n) do
+        ok:=false;
+        # is factor randomly r-generated?
+        q:=2^r;
+        while ok=false and q>0 do
+          u:=n[i];
+          for j in [1..r] do
+            u:=ClosureGroup(u,Random(g));
+          od;
+          ok:=Size(u)=Size(g);
+          q:=q-1;
+        od;
+
+        if not ok then
+          # is factor a nonsplit extension with minimal normal -- if so rank
+          # stays the same, no new test
+
+          # minimal overnormals
+          sel:=List(Filtered(mi,x->x[1]=i),x->x[2]);
+          if Length(sel)>0 then
+            nat:=NaturalHomomorphismByNormalSubgroupNC(g,n[i]);
+            for j in sel do
+              if not ok then
+                # nonsplit extension (so pre-images will still generate)?
+                ok:=0=Length(
+                  ComplementClassesRepresentatives(Image(nat),Image(nat,n[j])));
+              fi;
+            od;
+          fi;
+        fi;
+
+        if not ok then
+          q:=GQuotients(f,g/n[i]:findall:=false);
+          if Length(q)=0 then 
+            # fail in quotient
+            i:=Length(n)+10;
+            Info(InfoGroup,2,"Rank ",r," fails in quotient\n");
+          fi;
+        fi;
+
+        i:=i+1;
+      od;
+
+    fi;
+    if n=false or i<=Length(n)+1 then
+      # still try group
+      q:=GQuotients(f,g:findall:=false);
+      if Length(q)>0 then return r;fi; # found
+    fi;
+    r:=r+1;
+  until false;
+end);
+
+
 #############################################################################
 ##
 #M  IsElementaryAbelian(<G>)  . . . . . test if a group is elementary abelian

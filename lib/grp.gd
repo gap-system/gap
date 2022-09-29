@@ -2181,12 +2181,10 @@ DeclareAttribute( "LargestElementGroup", IsGroup );
 ##  <Description>
 ##  returns a generating set of <A>G</A> of minimal possible length.
 ##  <P/>
-##  Note that &ndash;apart from special cases&ndash; currently there are only
-##  efficient methods known to compute minimal generating sets of finite
-##  solvable groups and of finitely generated nilpotent groups.
-##  Hence so far these are the only cases for which methods are available.
-##  The former case is covered by a method implemented in the &GAP; library,
-##  while the second case requires the package <Package>Polycyclic</Package>.
+##  Note that only methods for finite groups, solvable groups, or finitely
+##  generated nilpotent groups are available (the latter through the
+##  <Package>Polycyclic</Package> package) and that
+##  calculations for nonsolvable finite groups of higher rank can be expensive.
 ##  <P/>
 ##  If you do not really need a minimal generating set, but are satisfied
 ##  with getting a reasonably small set of generators, you better use

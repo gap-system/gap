@@ -577,3 +577,9 @@ DeclareOperation("MinimalFaithfulPermutationRepresentation",
 DeclareGlobalFunction("DescSubgroupIterator");
 
 DeclareGlobalFunction("SubgroupConditionAbove");
+
+# Utility function 
+# MinimalInclusionsGroups(l)
+# returns a list of all inclusion indices [a,b] where l[a] is maximal subgroup
+# of l[b].
+DeclareGlobalFunction("MinimalInclusionsGroups");
