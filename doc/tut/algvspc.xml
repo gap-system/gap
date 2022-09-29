@@ -207,7 +207,7 @@ gap> h:= NaturalHomomorphismBySubspace( V, W );
 <linear mapping by matrix, ( Rationals^4 ) -> ( Rationals^2 )>
 gap> Image( h, [ 1, 2, 3, 4 ] );
 [ 0, 0 ]
-gap> PreImagesRepresentative( h, [ 1, 0 ] );
+gap> PreImagesRepresentativeNC( h, [ 1, 0 ] );
 [ 1, 0, 0, 0 ]
 ]]></Example>
 
@@ -470,11 +470,11 @@ gap> AmodR:= ImagesSource( h );
 <algebra of dimension 3 over Rationals>
 gap> id:= CentralIdempotentsOfAlgebra( AmodR );
 [ v.3, v.2+(-3)*v.3, v.1+(-2)*v.2+(3)*v.3 ]
-gap> PreImagesRepresentative( h, id[1] );
+gap> PreImagesRepresentativeNC( h, id[1] );
 [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ]
-gap> PreImagesRepresentative( h, id[2] );
+gap> PreImagesRepresentativeNC( h, id[2] );
 [ [ 0, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 0 ] ]
-gap> PreImagesRepresentative( h, id[3] );
+gap> PreImagesRepresentativeNC( h, id[3] );
 [ [ 1, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
 ]]></Example>
 <P/>

@@ -486,7 +486,7 @@ gap> hom:=IsomorphismFpGroup(u);
 [ <[ [ 1, 1 ] ]|f2^-1*f1^-1> ] -> [ F1 ]
 gap> new:=Range(hom);
 <fp group on the generators [ F1 ]>
-gap> List(GeneratorsOfGroup(new),i->PreImagesRepresentative(hom,i));
+gap> List(GeneratorsOfGroup(new),i->PreImagesRepresentativeNC(hom,i));
 [ <[ [ 1, 1 ] ]|f2^-1*f1^-1> ]
 ]]></Example>
 <P/>
@@ -504,7 +504,7 @@ behave like ordinary words and no extra treatment should be necessary.
 <Example><![CDATA[
 gap> r:=Range(hom).1^10;
 F1^10
-gap> p:=PreImagesRepresentative(hom,r);
+gap> p:=PreImagesRepresentativeNC(hom,r);
 <[ [ 1, 10 ] ]|(f2^-1*f1^-1)^10>
 ]]></Example>
 

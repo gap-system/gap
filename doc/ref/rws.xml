@@ -174,7 +174,7 @@ gap> red:=ReducedForm(k,UnderlyingElement(melm));
 f1^-1^3*f2^-1*f1^2
 gap> melm:=ElementOfFpMonoid(FamilyObj(One(mon)),red);
 f1^-1^3*f2^-1*f1^2
-gap> gpelm:=PreImagesRepresentative(mhom,melm);
+gap> gpelm:=PreImagesRepresentativeNC(mhom,melm);
 f1^-3*f2^-1*f1^2
 gap> r=gpelm;
 true

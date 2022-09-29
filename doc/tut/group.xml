@@ -936,7 +936,7 @@ brk> quit;
 ]]></Log>
 <P/>
 <Example><![CDATA[
-gap> PreImagesRepresentative( hom, (1,2,3) );
+gap> PreImagesRepresentativeNC( hom, (1,2,3) );
 (1,4,2)
 gap> PreImage( hom, TrivialSubgroup(s3) );  # the kernel
 Group([ (1,4)(2,3), (1,3)(2,4) ])
@@ -1127,7 +1127,7 @@ Section&nbsp;<Ref Sect="Conjugacy Classes" BookName="ref"/>).
 gap> pcls := ConjugacyClasses( p );; gcls := [  ];;
 gap> for pc  in pcls  do
 >      gc:=ConjugacyClass(grp,
->                   PreImagesRepresentative(hom,Representative(pc)));
+>                   PreImagesRepresentativeNC(hom,Representative(pc)));
 >      SetStabilizerOfExternalSet(gc,PreImage(hom,
 >                                      StabilizerOfExternalSet(pc)));
 >      Add( gcls, gc );

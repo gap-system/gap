@@ -264,7 +264,7 @@ DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 ##  Group([ (1,2,3,4), (1,2) ])
 ##  gap> hom:=EpimorphismFromFreeGroup(g:names:=["x","y"]);
 ##  [ x, y ] -> [ (1,2,3,4), (1,2) ]
-##  gap> PreImagesRepresentative(hom,(1,4));
+##  gap> PreImagesRepresentativeNC(hom,(1,4));
 ##  y^-1*x^-1*(x^-1*y^-1)^2*x
 ##  ]]></Example>
 ##  <P/>
@@ -279,7 +279,7 @@ DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 ##  gap> puzzle := Group( perms );;Size( puzzle );
 ##  20922789888000
 ##  gap> hom:=EpimorphismFromFreeGroup(puzzle:names:=["a", "b", "c", "d"]);;
-##  gap> word := PreImagesRepresentative( hom, (1,2) );
+##  gap> word := PreImagesRepresentativeNC( hom, (1,2) );
 ##  a^-1*c*b*c^-1*a*b^-1*a^-2*c^-1*a*b^-1*c*b
 ##  gap> Length( word );
 ##  13
