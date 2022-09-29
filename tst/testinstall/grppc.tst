@@ -28,7 +28,7 @@ g3^g2 = g4
 g4^g2 = g3*g4
 all other pairs of generators commute
 gap> pcgs:=Pcgs(hh);;
-gap> ForAll(pcgs,i->PreImagesRepresentative(m,i) in h);
+gap> ForAll(pcgs,i->PreImagesRepresentativeNC(m,i) in h);
 true
 gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4,5,6,7)));;
 gap> i:=IsomorphismPcGroup(g);;

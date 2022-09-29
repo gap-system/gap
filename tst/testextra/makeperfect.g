@@ -244,8 +244,8 @@ local respp,cf,m,mpos,coh,fgens,comp,reps,v,new,isok,pema,pf,gens,nt,quot,
             List(GeneratorsOfGroup(new),x->ImagesRepresentative(pema,x)),
               Concatenation(
               List(GeneratorsOfGroup(Range(coh.fphom)),
-                x->PreImagesRepresentative(coh.fphom,x)),
-                ListWithIdenticalEntries(coh.module.dimension,
+                x->PreImagesRepresentativeNC(coh.fphom,x)),
+                ListWithIdenticalEntries(coh.module.dimension, 
                   One(coh.group))
                 ));
           qk:=KernelOfMultiplicativeGeneralMapping(quot);

@@ -74,7 +74,7 @@ fail
 # Check that group homomorphisms created by a function can compute preimages.
 gap> for G in [ SymmetricGroup(5), SmallGroup( 24, 12 ), GL(2,3) ] do
 >      hom:= GroupHomomorphismByFunction( G, G, x -> x );
->      PreImagesRepresentative( hom, G.1 );
+>      PreImagesRepresentativeNC( hom, G.1 );
 >    od;
 
 #
