@@ -1150,6 +1150,12 @@ static Obj FuncKERNEL_INFO(Obj self)
     AssPRec(res, r, False);
 #endif
 
+#ifdef WORDS_BIGENDIAN
+    AssPRec(res, RNamName("BIGENDIAN_CPU"), True);
+#else
+    AssPRec(res, RNamName("BIGENDIAN_CPU"), False);
+#endif
+
     MakeImmutable(res);
 
     return res;
