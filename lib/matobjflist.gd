@@ -24,7 +24,7 @@
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsFlistMatrixRep"/> describes
-##  a matrix object that stores the matrix entries as a flat lost. It is 
+##  a matrix object that stores the matrix entries as a flat list. It is 
 ##  internally represented as a positional object
 ##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 4 entries:
 ##  <Enum>
@@ -48,7 +48,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsFlistMatrixRep",
-        IsPositionalObjectRep
+        IsMatrixObj and IsMatrixOrMatrixObj and IsPositionalObjectRep
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
