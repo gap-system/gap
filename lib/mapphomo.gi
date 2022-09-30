@@ -340,7 +340,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentativeNC( map, elm );
+    pre:= PreImagesRepresentative( map, elm );
     if pre = fail then
       return [];
     else
@@ -367,7 +367,7 @@ InstallMethod( PreImagesSet,
     fi;
 
     genpreimages:= List(genpreimages,
-                      gen -> PreImagesRepresentativeNC( map, gen ) );
+                      gen -> PreImagesRepresentative( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -694,7 +694,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentativeNC( map, elm );
+    pre:= PreImagesRepresentative( map, elm );
     if pre = fail then
       return [];
     else
@@ -715,7 +715,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfAdditiveGroup( elms ),
-                      gen -> PreImagesRepresentativeNC( map, gen ) );
+                      gen -> PreImagesRepresentative( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -901,7 +901,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftModule( elms ),
-                         gen -> PreImagesRepresentativeNC( map, gen ) );
+                         gen -> PreImagesRepresentative( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -995,7 +995,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRing( elms ),
-                         gen -> PreImagesRepresentativeNC( map, gen ) );
+                         gen -> PreImagesRepresentative( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -1022,7 +1022,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRingWithOne( elms ),
-                         gen -> PreImagesRepresentativeNC( map, gen ) );
+                         gen -> PreImagesRepresentative( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;

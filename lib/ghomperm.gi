@@ -22,7 +22,7 @@ local genpreimages,  pre,kg,sz,ol,orb,pos,dom,one;
   genpreimages:=GeneratorsOfMagmaWithInverses( elms );
 
   genpreimages:= List(genpreimages,
-                    gen -> PreImagesRepresentativeNC( map, gen ) );
+                    gen -> PreImagesRepresentative( map, gen ) );
   if fail in genpreimages then
     TryNextMethod();
   fi;
