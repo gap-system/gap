@@ -3563,6 +3563,23 @@ end);
 ##
 #M  DomainForAction( <pnt>, <acts>,<act> )
 ##
+InstallMethod(DomainForAction,"permutations on lists of integers",true,
+  [IsList,IsListOrCollection and IsPermCollection,IsFunction],0,
+function(pnt,acts,act)
+  local m;
+  if not (Length(pnt)>0 and ForAll(pnt,IsPosInt) and
+    (act=OnSets or act=OnPoints or act=OnRight or act=\^)) then
+    TryNextMethod();
+  fi;
+  m:=Maximum(Maximum(pnt),LargestMovedPoint(acts));
+  # workaround to avoid creating formal objects of bounded tuples
+  return ["BoundedTuples",[1..m],Length(pnt)];
+end);
+
+#############################################################################
+##
+#M  DomainForAction( <pnt>, <acts>,<act> )
+##
 InstallMethod(DomainForAction,"default: fail",true,
   [IsObject,IsListOrCollection,IsFunction],0,
 function(pnt,acts,act)

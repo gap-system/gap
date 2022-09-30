@@ -51,7 +51,7 @@ BindGlobal("HashKeyWholeBag", {x,y} -> HASHKEY_BAG(x,y,0,-1));
 
 #############################################################################
 ##
-#M  DenseIntKey(<objcol>)
+#M  SparseIntKey(<objcol>)
 ##
 InstallMethod(SparseIntKey,"for finite Gaussian row spaces",true,
     [ IsFFECollColl and IsGaussianRowSpace,IsObject ], 0,
@@ -128,6 +128,25 @@ local f,n,bytelen,data,qq,i;
             return sy;
            end;
   fi;
+end);
+
+#############################################################################
+##
+#M  SparseIntKey(<objcol>)
+##
+InstallMethod(SparseIntKey,"for bounded tuples",true,
+    [ IsList,IsList and IsCyclotomicCollection ], 0,
+function(m,v)
+local c,t;
+  if Length(m)<>3 or m[1]<>"BoundedTuples" then
+    TryNextMethod();
+  fi;
+  t:=Maximum(m[2])+1;
+  c:=[1,Maximum(m[2])+1];
+  return function(a)
+    return a*c;
+  end;
+
 end);
 
 SparseIntKeyVecListAndMatrix:=function(d,m)
