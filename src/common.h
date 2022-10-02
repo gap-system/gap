@@ -47,11 +47,6 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 #endif
 
 
-// Some packages check the USE_GMP flag; retain it for now to allow these
-// packages to work correctly for now. We should remove this eventually.
-#define USE_GMP 1
-
-
 #ifdef USE_GASMAN
 #define GAP_ENABLE_SAVELOAD
 #endif
