@@ -1078,7 +1078,6 @@ DeclareOperation( "PreImagesRepresentativeNC",
     [ IsGeneralMapping, IsObject ] );
 DeclareSynonym( "PreImagesRepresentative", PreImagesRepresentativeNC );
 
-
 #############################################################################
 ##
 #O  PreImagesSet( <map>, <elms> )
