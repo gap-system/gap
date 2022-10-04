@@ -82,13 +82,15 @@ void ReportWrappedOperation2(const char * cname, Obj op1, Obj op2)
     ASS_LIST(pos, tnam2, val);
 }
 
+typedef void (*voidfunc)(void);
+
 typedef struct {
     voidfunc activate;
     voidfunc deactivate;
 } voidfuncs;
 
 // Store the list of operators which can have tracing enabled and disabled
-// 64 Controllers allows for future growth, but can be increased if the
+// 64 controllers allows for future growth, but can be increased if the
 // asserts below are ever triggered
 static voidfuncs Controllers[64];
 static int       TrackingActive;
