@@ -642,6 +642,7 @@ install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_LIBS =
 install-sysinfo: SYSINFO_GAP = $(libdir)/gap/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
+install-sysinfo: GMP_PREFIX =
 install-sysinfo:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
 	@echo "$$sysinfo_gap" > $(DESTDIR)$(libdir)/gap/sysinfo.gap
@@ -901,6 +902,11 @@ GAP_LIBS="$(SYSINFO_LIBS)"
 # Extra flags for use by `gac`
 GAC_CFLAGS="$(GAC_CFLAGS)"
 GAC_LDFLAGS="$(GAC_LDFLAGS)"
+
+# For packages: the search prefix for GMP used by GAP
+# (this is left empty when none was specified, or when
+# GAP is installed via 'make install')
+GMP_PREFIX="$(GMP_PREFIX)"
 endef
 export sysinfo_gap
 
