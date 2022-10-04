@@ -532,6 +532,7 @@ clean:
 	rm -f bin/gap.sh sysinfo.gap*
 	rm -f gap$(EXEEXT) gac ffgen
 	rm -f libgap.la
+	rm -f libgap.pc
 	rm -rf .libs
 	rm -f doc/wsp.g
 	rm -f cnf/GAP-*
@@ -660,6 +661,8 @@ install-libgap: libgap.la
 	@echo "Warning, 'make install-libgap' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(LTINSTALL) -s libgap.la $(DESTDIR)$(libdir)
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/pkgconfig
+	$(INSTALL) libgap.pc $(DESTDIR)$(libdir)/pkgconfig
 
 
 .PHONY: install install-bin install-doc install-gaproot install-headers install-libgap
