@@ -531,6 +531,7 @@ BUILD_GMP=no
 GMP_CPPFLAGS=
 GMP_LDFLAGS=
 GMP_LIBS="-lgmp"
+GMP_PREFIX=
 AS_CASE([$with_gmp],
   [builtin],[
     # user explicitly requested to use builtin GMP
@@ -543,6 +544,7 @@ AS_CASE([$with_gmp],
   [system],[with_gmp=yes],  dnl supported for backwards compatibility with old build system
   [yes],[],
   [*],[
+    GMP_PREFIX="${with_gmp}"
     GMP_CPPFLAGS="-I${with_gmp}/include"
     GMP_LDFLAGS="-L${with_gmp}/lib"
   ]
@@ -565,6 +567,7 @@ AS_IF([test $BUILD_GMP = no],
 # Use bundled GMP if requested
 AS_IF([test x$BUILD_GMP = xyes],[
   BUILD_GMP=yes
+  GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
   GMP_LDFLAGS='${abs_builddir}/extern/install/gmp/lib/libgmp.la'
   GMP_LIBS=
@@ -574,6 +577,7 @@ AC_SUBST([BUILD_GMP])
 AC_SUBST([GMP_CPPFLAGS])
 AC_SUBST([GMP_LDFLAGS])
 AC_SUBST([GMP_LIBS])
+AC_SUBST([GMP_PREFIX])
 
 
 dnl Find zlib
