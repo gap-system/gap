@@ -583,7 +583,7 @@ install-bin: gap
 	@echo "Warning, 'make install-bin' is incomplete"
 	# install the real GAP executable as $(libdir)/gap/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
-	$(INSTALL) -m 0755 -s gap $(DESTDIR)$(libdir)/gap
+	$(LTINSTALL) -s gap $(DESTDIR)$(libdir)/gap
 	
 	# install a wrapper shell script invoking the real GAP executable as $(bindir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
