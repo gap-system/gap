@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@prefix@/include
 
 Name: @PACKAGE_NAME@
-Description: C/C++ library powering GAP, a computer algebra system
+Description: Library containing the kernel of GAP, a computer algebra system
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lgap -lgmpxx -lgmp
 Cflags: -I${includedir}
