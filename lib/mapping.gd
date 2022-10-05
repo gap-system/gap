@@ -1250,6 +1250,7 @@ DeclareGlobalFunction( "PreImagesNC" );
 DeclareSynonym( "PreImages", PreImagesNC ); 
 
 
+
 #############################################################################
 ##
 #O  CompositionMapping2(<map2>,<map1>)  . . . composition of general mappings

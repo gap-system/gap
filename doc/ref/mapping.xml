@@ -1,6 +1,6 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %A  mapping.xml                  GAP documentation              Thomas Breuer -->
+<!-- %A  mapping.xml               GAP documentation        Thomas Breuer -->
 <!-- %% -->
 <!-- %% -->
 <!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
@@ -106,7 +106,7 @@ section&nbsp;<Ref Sect="General Mappings"/>.
 <#Include Label="PreImagesRange">
 <#Include Label="PreImagesElm">
 <#Include Label="PreImageElm">
-<#Include Label="PreImagesRepresentativeNC">
+<#Include Label="PreImagesRepresentative">
 <#Include Label="PreImagesSet">
 <#Include Label="PreImage">
 <#Include Label="PreImages">

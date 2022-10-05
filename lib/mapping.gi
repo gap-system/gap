@@ -359,7 +359,6 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
                    "PreImagesNC(<map>,<coll>)" );
 end );
 
-
 #############################################################################
 ##
 #F  CompositionMapping(<map1>,<map2>, ... ) . . . . . composition of mappings

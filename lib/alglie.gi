@@ -34,7 +34,7 @@ InstallMethod( LieUpperCentralSeries,
       # under the natural homomorphism.
       Add( S, C );
       hom:= NaturalHomomorphismByIdeal( L, C );
-      C:= PreImages( hom, LieCentre( Range( hom ) ) );
+      C:= PreImagesNC( hom, LieCentre( Range( hom ) ) );
 #T we would like to get ideals!
 #T is it possible to teach the hom. that the preimage of an ideal is an ideal?
 

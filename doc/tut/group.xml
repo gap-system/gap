@@ -1,12 +1,12 @@
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  group.tex                 GAP documentation             Thomas Breuer -->
-<!-- %W                                                         & Frank Celler -->
-<!-- %W                                                     & Martin Schönert -->
-<!-- %W                                                       & Heiko Theißen -->
+<!-- %W  group.tex           GAP documentation               Thomas Breuer -->
+<!-- %W                                                     & Frank Celler -->
+<!-- %W                                                  & Martin Schönert -->
+<!-- %W                                                    & Heiko Theißen -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 <!-- %% -->
 <!-- %%  This file contains a tutorial introduction to groups. -->
 <!-- %% -->
@@ -168,9 +168,9 @@ action domain of <C>norm</C>. (It only happens that both are subsets of the
 natural numbers.) We can now form  images and preimages under the natural
 homomorphism. The set of  preimages of an element under  <C>hom</C> is a coset
 modulo <C>elab</C>.
-We use the function <Ref Func="PreImages" BookName="ref"/> here because
-<C>hom</C> is not
-a bijection, so an  element of the range can   have several preimages  or
+We use one of the functions <Ref Func="PreImages" BookName="ref"/> 
+or <Ref Func="PreImagesNC" BookName="ref"/> here because <C>hom</C> is not
+a bijection, so an  element of the range can have several preimages or
 none at all.
 <P/>
 <Example><![CDATA[
@@ -179,7 +179,7 @@ Group([ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)
   (4,8) ])
 gap> x := (1,8,3,5,7,6,2);; Image( hom, x );
 (1,7,5,6,2,3,4)
-gap> coset := PreImages( hom, last );
+gap> coset := PreImagesNC( hom, last );
 RightCoset(Group([ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)
  (2,6)(3,7)(4,8) ]),(2,8,6,7,3,4,5))
 ]]></Example>
@@ -380,7 +380,7 @@ gap> ophom := ActionHomomorphism( a8, op );;
 gap> ophom2 := ActionHomomorphism( op, op2 );;
 gap> composition := ophom * ophom2;;
 gap> stab := Stabilizer( op2, 2 );;
-gap> preim := PreImages( composition, stab );
+gap> preim := PreImagesNC( composition, stab );
 Group([ (1,2,4), (6,7,8), (3,6,8), (5,8,6), (1,2)(3,8) ])
 ]]></Example>
 <P/>
@@ -676,7 +676,7 @@ Because we want to operate on the sets we have to pass
 gap> u8_56 := Stabilizer( a8_56, blocks[1], OnSets );;
 gap> Index( a8_56, u8_56 );
 8
-gap> u8b := PreImages( h56, u8_56 );; Index( a8, u8b );
+gap> u8b := PreImagesNC( h56, u8_56 );; Index( a8, u8b );
 8
 gap> IsConjugate( a8, u8, u8b );
 true
@@ -703,7 +703,7 @@ third subgroup.
 gap> seed:=First(AllBlocks(a8_56),x->Length(x)=2);;
 gap> blocks := Blocks( a8_56, [1..56], seed);;
 gap> u28_56 := Stabilizer( a8_56, seed, OnSets );;
-gap> u28 := PreImages( h56, u28_56 );;
+gap> u28 := PreImagesNC( h56, u28_56 );;
 gap> Index( a8, u28 );
 28
 ]]></Example>
@@ -942,18 +942,20 @@ gap> PreImage( hom, TrivialSubgroup(s3) );  # the kernel
 Group([ (1,4)(2,3), (1,3)(2,4) ])
 ]]></Example>
 <P/>
-This homomorphism  from <M>S_4</M> onto  <M>S_3</M>  is well known  from elementary
-group theory.  Images   of elements and  subgroups  under   <C>hom</C> can  be
+This homomorphism  from <M>S_4</M> onto <M>S_3</M> is well known from 
+elementary group theory.  
+Images of elements and subgroups under <C>hom</C> can be
 calculated with the function <Ref Func="Image" BookName="ref"/>.
-But since the mapping <C>hom</C> is  not bijective, we  cannot use the
-function <Ref Func="PreImage" BookName="ref"/> for  preimages   of
-elements  (they can have   several preimages). Instead,   we have  to use
-<Ref Func="PreImagesRepresentative" BookName="ref"/>,
-which  returns  one  preimage if at  least one
-exists (and would  return <K>fail</K> if none  exists, which  cannot occur for
+But since the mapping <C>hom</C> is not bijective, we cannot use the
+function <Ref Func="PreImage" BookName="ref"/> for preimages of elements 
+(they can have several preimages).  Instead, we have to use one of 
+<Ref Func="PreImagesRepresentative" BookName="ref"/> 
+or <Ref Func="PreImagesRepresentativeNC" BookName="ref"/>
+which returns one preimage if at least one exists 
+(and would return <K>fail</K> if none exists, which cannot occur for
 our surjective <C>hom</C>).
-On the other hand, we  can use <Ref Func="PreImage" BookName="ref"/> for the
-preimage of a set (which always exists, even if it  is empty).
+On the other hand, we can use <Ref Func="PreImage" BookName="ref"/> for the
+preimage of a set (which always exists, even if it is empty).
 <P/>
 Suppose we mistype the input when trying to construct a homomorphism as below.
 <P/>

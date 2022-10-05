@@ -255,7 +255,7 @@ gap> PreImagesSet( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
 gap> PreImagesSet( map, GF(3) );
 [ 0*Z(3), Z(3)^0 ]
-gap> PreImagesRepresentative( map, Z(3) );
+gap> PreImagesRepresentativeNC( map, Z(3) );
 Z(3)^0
 
 # ImageElm, ImagesSet for IsMapping
@@ -310,7 +310,7 @@ gap> PreImagesSet( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
 gap> PreImagesSet( map, GF(3) );
 [ 0*Z(3), Z(3)^0, Z(3) ]
-gap> PreImagesRepresentative( map, Z(3) );
+gap> PreImagesRepresentativeNC( map, Z(3) );
 0*Z(3)
 gap> ImagesSource( map );
 [ 0*Z(3), Z(3)^0, Z(3) ]
@@ -389,13 +389,13 @@ match, maybe <elm> is not contained in Range(<map>) or is not a homogeneous li\
 st or collection
 
 # PreImages
-gap> PreImages(x -> x, 1);
+gap> PreImagesNC(x -> x, 1);
 Error, <map> must be a general mapping
-gap> PreImages(mapBijective, Z(9));
+gap> PreImagesNC(mapBijective, Z(9));
 Error, <elm> must be an element of Range(<map>)
-gap> PreImages(mapBijective, [Z(3), Z(9)]);
+gap> PreImagesNC(mapBijective, [Z(3), Z(9)]);
 Error, the collection <elm> must be contained in Range(<map>)
-gap> PreImages(mapBijective, Z(5));
+gap> PreImagesNC(mapBijective, Z(5));
 Error, the families of the element or collection <elm> and Range(<map>) don't \
 match, maybe <elm> is not contained in Range(<map>) or is not a homogeneous li\
 st or collection
