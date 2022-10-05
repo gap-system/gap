@@ -6,5 +6,5 @@ includedir=@prefix@/include
 Name: @PACKAGE_NAME@
 Description: Library containing the kernel of GAP, a computer algebra system
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lgap -lgmpxx -lgmp
+Libs: -L${libdir} -lgap -lgmp
 Cflags: -I${includedir}
