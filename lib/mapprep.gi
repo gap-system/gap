@@ -1817,7 +1817,7 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <map>, <elm> )  . . . . . . . . . for restricted mapping
+#M  PreImagesElmNC( <map>, <elm> ) . . . . . . . . . . for restricted mapping
 ##
 InstallMethod( PreImagesElmNC,
     "for a restricted mapping, and an element",

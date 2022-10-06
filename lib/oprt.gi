@@ -3389,7 +3389,7 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
@@ -3431,7 +3431,7 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);

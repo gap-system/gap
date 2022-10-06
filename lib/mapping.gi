@@ -268,7 +268,7 @@ InstallGlobalFunction( PreImage, function ( arg )
         # preimage of a collection of elements <img> under <map>
         elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
           if not IsSubset( Range( map ), img ) then
-            ErrorNoReturn( "the collection <coll> must be contained in ",
+            ErrorNoReturn( "the collection <elm> must be contained in ",
                            "Range(<map>)" );
           fi;
 

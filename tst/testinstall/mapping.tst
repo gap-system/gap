@@ -249,7 +249,7 @@ gap> IsTotal( map );
 false
 gap> PreImageElm( map, Z(3) );
 Z(3)^0
-gap> PreImagesElm( map, Z(3) );
+gap> PreImagesElmNC( map, Z(3) );
 [ Z(3)^0 ]
 gap> PreImagesSetNC( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
@@ -304,7 +304,7 @@ gap> IsTotal( map );
 true
 gap> PreImageElm( map, Z(3) );
 0*Z(3)
-gap> PreImagesElm( map, Z(3) );
+gap> PreImagesElmNC( map, Z(3) );
 [ 0*Z(3) ]
 gap> PreImagesSetNC( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]

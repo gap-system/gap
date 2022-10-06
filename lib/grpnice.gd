@@ -398,7 +398,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
       img := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not ( img in ImagesSource( nice ) and
-               PreImagesRepresentative( nice, img ) = obj2 ) then
+               PreImagesRepresentativeNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       return oper( NiceObject( obj1 ), img );
@@ -441,7 +441,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismElmColl",
       img := ImagesRepresentative( nice, obj1 : actioncanfail:= true );
       if img = fail or
          not (img in ImagesSource( nice ) and
-              PreImagesRepresentative( nice, img ) = obj1) then
+              PreImagesRepresentativeNC( nice, img ) = obj1) then
         TryNextMethod();
       fi;
       return oper( img, NiceObject( obj2 ) );
@@ -525,7 +525,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollElm",
       img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not (img in ImagesSource( nice ) and
-              PreImagesRepresentative( nice, img ) = obj2) then
+              PreImagesRepresentativeNC( nice, img ) = obj2) then
         TryNextMethod();
       fi;
       img1 := oper( NiceObject( obj1 ), img );
@@ -637,7 +637,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
       img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not ( img in ImagesSource( nice ) and
-               PreImagesRepresentative (nice , img ) = obj2 ) then
+               PreImagesRepresentativeNC(nice , img ) = obj2 ) then
         TryNextMethod();
       fi;
       img1 := oper( NiceObject( obj1 ), img );
@@ -764,7 +764,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
       img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not ( img in ImagesSource( nice ) and
-               PreImagesRepresentative( nice, img ) = obj2 ) then
+               PreImagesRepresentativeNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       list := ShallowCopy( oper( NiceObject( obj1 ), img ) );
