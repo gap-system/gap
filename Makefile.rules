@@ -657,7 +657,7 @@ install-headers: $(FFDATA_H) build/version.h
 	# Create a symlink to support packages using `#include "src/compiled.h"`
 	ln -sfn . $(DESTDIR)$(includedir)/gap/src
 
-install-libgap: libgap.la
+install-libgap: libgap.la libgap.pc
 	@echo "Warning, 'make install-libgap' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(LTINSTALL) -s libgap.la $(DESTDIR)$(libdir)
@@ -1492,6 +1492,9 @@ build/stamp-h: $(srcdir)/src/config.h.in config.status
 	@rm -f build/stamp-h
 	$(SHELL) ./config.status build/config.h
 	echo > $@
+
+libgap.pc: $(srcdir)/libgap.pc.in config.status
+	@$(SHELL) ./config.status $@
 
 ifneq ($(MAINTAINER_MODE),no)
 $(srcdir)/src/config.h.in: $(configure_deps)
