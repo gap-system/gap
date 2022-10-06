@@ -631,7 +631,7 @@ install-gaproot: CITATION
 	
 	# install helpers for developers
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/etc
-	$(INSTALL) -m 0644 $(srcdir)/etc/convert.pl $(DESTDIR)$(datarootdir)/gap/etc/
+	$(INSTALL) -m 0755 $(srcdir)/etc/convert.pl $(DESTDIR)$(datarootdir)/gap/etc/
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/etc/vim
 	$(INSTALL) -m 0644 $(srcdir)/etc/vim/*.* $(DESTDIR)$(datarootdir)/gap/etc/vim/
 
