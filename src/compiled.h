@@ -14,11 +14,6 @@
 #ifndef GAP_COMPILED_H
 #define GAP_COMPILED_H
 
-// HACK: for backwards compatibility with packages that need it,
-// include stdio.h here. Should be removed once all packages are
-// updated to not need it.
-#include <stdio.h>
-
 // HACK: most (all?) GAP packages with a kernel extension include compiled.h
 // to get all GAP headers. They should ultimately all switch to including
 // gap_all.h; however that header has only been available since GAP 4.11.0, so
