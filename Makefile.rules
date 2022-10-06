@@ -597,7 +597,7 @@ install-doc:
 	# TODO: should this depend on the 'doc' target? but that target is phony
 	# and will re-run each time it is invoked, which is not really what we want.
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/doc
-	for book in ref tut hpc dev ; do \
+	for book in ref tut hpc ; do \
 		$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/doc/$$book ; \
 		for ext in css html js txt pdf six lab; do \
 			$(INSTALL) -m 0644  $(srcdir)/doc/$$book/*.$$ext $(DESTDIR)$(datarootdir)/gap/doc/$$book/ ; \
