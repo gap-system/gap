@@ -288,7 +288,7 @@ DeclareOperation( "ReadAsFunction", [ IsString ] );
 
 #############################################################################
 ##
-#F  DirectoryContents(<name>)
+#F  DirectoryContents(<dir>)
 ##
 ##  <#GAPDoc Label="DirectoryContents">
 ##  <ManSection>
@@ -299,7 +299,10 @@ DeclareOperation( "ReadAsFunction", [ IsString ] );
 ##  the directory <A>dir</A>. The argument <A>dir</A> can either be given as 
 ##  a string indicating the name of the directory or as a directory object
 ##  (see <Ref Filt="IsDirectory"/>).
-##  If the specified directory does not exist, <K>fail</K> is returned.
+##  If an error occurs (the specified directory does not exist or has no
+##  read permissions), <K>fail</K> is returned.
+##  In this case <Ref Func="LastSystemError"/> can be used to get information
+##  about the error.
 ##  <P/>
 ##  The ordering of the list entries can depend on the operating system.
 ##  <P/>
