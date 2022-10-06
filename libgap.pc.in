@@ -7,6 +7,6 @@ Name: @PACKAGE_NAME@
 Description: Library containing the kernel of GAP, a computer algebra system
 URL: https://www.gap-system.org
 Version: @PACKAGE_VERSION@
-Requires: gmp
+Requires.private: gmp
 Libs: -L${libdir} -lgap
 Cflags: -I${includedir}
