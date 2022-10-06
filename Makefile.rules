@@ -640,7 +640,7 @@ install-gaproot: CITATION
 install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_LIBS =
-install-sysinfo: SYSINFO_GAP = $(libdir)/gap/gap
+install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
 install-sysinfo: GMP_PREFIX =
 install-sysinfo:
