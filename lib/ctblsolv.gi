@@ -176,7 +176,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
 
     # `N' is a normal subgroup such that `N/<z>' is a chief factor of `G'
     # of order `i' which is a power of `p'.
-    N:= PreImagesSet( h, N );
+    N:= PreImagesSetNC( h, N );
     i:= Size( N ) / oz;
     p:= Factors( i )[1];
 
@@ -184,7 +184,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
 
       # `c' is a list of complement classes of `N' modulo `z'
       c:= List( ComplementClassesRepresentatives( ImagesSource( h ), ImagesSet( h, N ) ),
-                x -> PreImagesSet( h, x ) );
+                x -> PreImagesSetNC( h, x ) );
       r:= Centralizer( G, N );
       for L in c do
         if IsSubset( L, r ) then
@@ -563,7 +563,7 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       N:= ChiefSeriesUnderAction( img, N );
       N:= N[ Length( N ) - 1 ];
     fi;
-    N:= PreImagesSet( h, N );
+    N:= PreImagesSetNC( h, N );
 
     if not IsAbelian( N ) then
       Info( InfoCharacterTable, 2,
@@ -582,8 +582,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       h:= NaturalHomomorphismByNormalSubgroupNC( G, P );
       r:= List( CoveringTriplesCharacters( ImagesSource( h ),
                                            ImageElm( h, z ) ),
-                x -> [ PreImagesSet( h, x[1] ),
-                       PreImagesSet( h, x[2] ),
+                x -> [ PreImagesSetNC( h, x[1] ),
+                       PreImagesSetNC( h, x[2] ),
                        PreImagesRepresentativeNC( h, x[3] ) ] );
 
       if p = i then
@@ -622,8 +622,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
             c:= Stabilizer( img, zn );
           fi;
           Append( r, List( CoveringTriplesCharacters( c, zn ),
-                           x -> [ PreImagesSet( h, x[1] ),
-                                  PreImagesSet( h, x[2] ),
+                           x -> [ PreImagesSetNC( h, x[1] ),
+                                  PreImagesSetNC( h, x[2] ),
                                   PreImagesRepresentativeNC( h, x[3] ) ] ) );
         od;
         return r;
@@ -662,8 +662,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
         img:= ImagesSource( h );
         Append( r,
             List( CoveringTriplesCharacters( img, ImageElm( h, z ) ),
-                  x -> [ PreImagesSet( h, x[1] ),
-                         PreImagesSet( h, x[2] ),
+                  x -> [ PreImagesSetNC( h, x[1] ),
+                         PreImagesSetNC( h, x[2] ),
                          PreImagesRepresentativeNC( h, x[3] ) ] ) );
       fi;
     od;

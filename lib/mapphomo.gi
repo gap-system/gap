@@ -351,9 +351,9 @@ InstallMethod( PreImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) .  for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesSetNC( <map>, <elms> )  for s.p. gen. mapping resp. mult. & inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for s.p. general mapping respecting mult. & inv., and group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
@@ -384,7 +384,7 @@ InstallMethod( PreImagesSet,
     return pre;
     end );
 
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for injective s.p. mapping respecting mult. & inv., and group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and IsMapping and IsInjective and
@@ -705,9 +705,9 @@ InstallMethod( PreImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) for s.p. gen. mapping resp. add. & add.inv.
+#M  PreImagesSetNC( <map>, <elms> ) for s.p. gen. mapping resp. add. & add.inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for s.p. gen. mapping resp. add. & add.inv., and add. group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
@@ -890,9 +890,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) . . . .  for linear mapping and left module
+#M  PreImagesSetNC( <map>, <elms> ) . . .  for linear mapping and left module
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for linear mapping and left module",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -984,9 +984,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) . . . . . . . . for algebra hom. and FLMLOR
+#M  PreImagesSetNC( <map>, <elms> ) . . . . . . . for algebra hom. and FLMLOR
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for algebra hom. and FLMLOR",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -1010,9 +1010,9 @@ InstallMethod( PreImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> )  for alg.-with-one hom. and FLMLOR-with-one
+#M  PreImagesSetNC( <map>, <elms> ) for alg.-with-one hom. and FLMLOR-with-one
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for algebra-with-one hom. and FLMLOR-with-one",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses

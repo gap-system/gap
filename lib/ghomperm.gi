@@ -1579,10 +1579,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . . . . for const hom
+#M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . . . for const hom
 ##
-InstallMethod( PreImagesSetNC, "constituent homomorphism",CollFamRangeEqFamElms,
-        [ IsConstituentHomomorphism, IsPermGroup ], 0,
+InstallMethod( PreImagesSetNC, "constituent homomorphism", 
+        CollFamRangeEqFamElms, [ IsConstituentHomomorphism, IsPermGroup ], 0,
     function( hom, I )
     local   H,          # preimage of <I>, result
             K,          # kernel of <hom>

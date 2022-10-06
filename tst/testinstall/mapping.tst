@@ -251,9 +251,9 @@ gap> PreImageElm( map, Z(3) );
 Z(3)^0
 gap> PreImagesElm( map, Z(3) );
 [ Z(3)^0 ]
-gap> PreImagesSet( map, [ 0*Z(3), Z(3) ] );
+gap> PreImagesSetNC( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
-gap> PreImagesSet( map, GF(3) );
+gap> PreImagesSetNC( map, GF(3) );
 [ 0*Z(3), Z(3)^0 ]
 gap> PreImagesRepresentativeNC( map, Z(3) );
 Z(3)^0
@@ -306,9 +306,9 @@ gap> PreImageElm( map, Z(3) );
 0*Z(3)
 gap> PreImagesElm( map, Z(3) );
 [ 0*Z(3) ]
-gap> PreImagesSet( map, [ 0*Z(3), Z(3) ] );
+gap> PreImagesSetNC( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
-gap> PreImagesSet( map, GF(3) );
+gap> PreImagesSetNC( map, GF(3) );
 [ 0*Z(3), Z(3)^0, Z(3) ]
 gap> PreImagesRepresentativeNC( map, Z(3) );
 0*Z(3)

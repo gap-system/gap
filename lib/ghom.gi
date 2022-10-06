@@ -1238,9 +1238,9 @@ InstallMethod( PreImagesRepresentativeNC,
 
 #############################################################################
 ##
-#M  PreImagesSet( <hom>, <U> )  . . . . . . . . .  for conjugator isomorphism
+#M  PreImagesSetNC( <hom>, <U> )  . . . . . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for conjugator isomorphism, and group",
     CollFamRangeEqFamElms,
     [ IsConjugatorIsomorphism, IsGroup ], 0,

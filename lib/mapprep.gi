@@ -1836,7 +1836,7 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesSetNC( <map>, <elm> )  . . . . . . . . . for restricted mapping
+#M  PreImagesSetNC( <map>, <elm> ) . . . . . . . . . . for restricted mapping
 ##
 InstallMethod( PreImagesSetNC,
     "for a restricted mapping, and a collection",

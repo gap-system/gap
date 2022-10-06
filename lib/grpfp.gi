@@ -2031,11 +2031,11 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
   # instead of intersecting both preimages with s we only intersect the
   # intersection
 
-  u:=PreImagesSet(Projection(d,1),G!.sub);
+  u:=PreImagesSetNC(Projection(d,1),G!.sub);
   if HasSize(B) then
     SetSize(u,Size(G!.sub)*Size(B));
   fi;
-  v:=PreImagesSet(Projection(d,2),H!.sub);
+  v:=PreImagesSetNC(Projection(d,2),H!.sub);
   if HasSize(A) then
     SetSize(v,Size(H!.sub)*Size(A));
   fi;
@@ -3167,7 +3167,7 @@ InstallMethod( LowIndexSubgroupsFpGroupIterator,
             local u, v;
 
             u:= NextIterator( iter!.fullIterator );
-            v:= PreImagesSet( fpi, u );
+            v:= PreImagesSetNC( fpi, u );
             SetIndexInWholeGroup( v,
                 IndexInWholeGroup( G ) * IndexInWholeGroup( u ) );
             return v;
@@ -3236,7 +3236,7 @@ local fpi,u,l,i,a;
 
   l:=[];
   for i in u do
-    a:=PreImagesSet(fpi,i);
+    a:=PreImagesSetNC(fpi,i);
     SetIndexInWholeGroup(a,IndexInWholeGroup(G)*IndexInWholeGroup(i));
     Add(l,a);
   od;
@@ -3379,8 +3379,8 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   # get both subgroups in the direct product via the projections
   # instead of intersecting both preimages with s we only intersect the
   # intersection
-  u:=PreImagesSet(Projection(d,1),G!.sub);
-  v:=PreImagesSet(Projection(d,2),H!.sub);
+  u:=PreImagesSetNC(Projection(d,1),G!.sub);
+  v:=PreImagesSetNC(Projection(d,2),H!.sub);
   u:=Intersection(u,s);
   v:=Intersection(v,s);
 

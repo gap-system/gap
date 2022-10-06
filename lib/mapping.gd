@@ -753,7 +753,7 @@ DeclareAttribute( "ImagesSource", IsGeneralMapping );
 ##  <Description>
 ##  is the set of preimages of the range of the general mapping <A>map</A>.
 ##  <P/>
-##  <Ref Attr="PreImagesRange"/> delegates to <Ref Oper="PreImagesSet"/>,
+##  <Ref Attr="PreImagesRange"/> delegates to <Ref Oper="PreImagesSetNC"/>,
 ##  it is introduced only to store the preimage of <A>map</A> as attribute
 ##  value.
 ##  </Description>
@@ -1159,10 +1159,10 @@ DeclareSynonym( "PreImagesSet", PreImagesSetNC );
 ##  (If <A>coll</A> and the result are lists then the positions of
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
-##  <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>
-##  delegates to <Ref Attr="PreImagesRange"/> when
-##  called with one argument,
-##  and to <Ref Oper="PreImageElm"/> resp. <Ref Oper="PreImagesSet"/> when
+##  <Ref Func="PreImage" 
+##  Label="set of preimages of the range of a general mapping"/>
+##  delegates to <Ref Attr="PreImagesRange"/> when called with one argument, 
+##  and to <Ref Oper="PreImageElm"/> resp. <Ref Oper="PreImagesSetNC"/> when
 ##  called with two arguments.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the range of

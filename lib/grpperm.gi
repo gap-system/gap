@@ -1591,7 +1591,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
             O := Orbit( S, D[1] );
             f := ActionHomomorphism( S, O,"surjective" );
             T := SylowSubgroupPermGroup( Range( f ), p );
-            S := PreImagesSet( f, T );
+            S := PreImagesSetNC( f, T );
             SubtractSet( D, O );
         od;
         return S;
@@ -1604,7 +1604,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
         f := ActionHomomorphism( G, B, OnSets,"surjective" );
         T := SylowSubgroupPermGroup( Range( f ), p );
         if Size( T ) < Size( Range( f ) )  then
-            T := PreImagesSet( f, T );
+            T := PreImagesSetNC( f, T );
             S := SylowSubgroupPermGroup( T , p) ;
             return S;
         fi;
@@ -1629,7 +1629,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     Info(InfoGroup,1,"PermSylow: cycleaction");
     f := ActionHomomorphism( C, B, OnSets,"surjective" );
     T := SylowSubgroupPermGroup( Range( f ), p );
-    S := PreImagesSet( f, T );
+    S := PreImagesSetNC( f, T );
     return S;
 
 end );

@@ -613,7 +613,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
       img:=ImagesSet( nice, obj2 );
       if img = fail or
          not ( IsSubset( ImagesSource( nice ), img ) and
-               PreImagesSet( nice, img ) = obj2 ) then
+               PreImagesSetNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       img := oper( NiceObject( obj1 ), img );
