@@ -159,7 +159,7 @@ BindGlobal( "DefaultMatrixRepForBaseDomain",
 function( basedomain )
     if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
         return IsGF2MatrixRep;
-    elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 then
+    elif IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) <= 256 and IsFFECollection(basedomain) then
         return Is8BitMatrixRep;
 ##  This should be enabled when the code for 
 ##       IsZmodnZVectorRep/IsZmodnZMatrixRep
