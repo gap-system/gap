@@ -303,7 +303,7 @@ modes using "out of tree builds". For details, please refer to the file
 You are now at a point where you can start GAP for the first time. Unix
 users (including those on macOS) should type
 
-    ./bin/gap.sh
+    ./gap
 
 Windows users should start GAP with the batch file
 
