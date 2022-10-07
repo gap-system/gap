@@ -1355,18 +1355,16 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             return true;
         fi;
     elif q = 2 then
-        Assert(2, ForAll(v, elm -> elm in GF(2)));
         if common > 2 and common mod 2 = 0 then
             common := SMALLEST_FIELD_VECFFE(v);
         fi;
         if common <> 2 then
             Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
         fi;
-        CONV_GF2VEC(v);
+        CONV_GF2VEC(v); # safe to call this even with an invalid argument
         return 2;
     elif q <= 256 then
         if common <> q then 
-            Assert(2, ForAll(v, elm -> elm in GF(q)));
             if IsPlistRep(v) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(v);
             fi;
@@ -1374,6 +1372,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
             fi;
         fi;
+        Assert(2, ForAll(v, elm -> elm in GF(q)));
         CONV_VEC8BIT(v,q);
         return q;
     else    
