@@ -19,7 +19,6 @@
 
 #############################################################################
 ##
-
 #C  IsToBeDefinedObj. . . . . . . .  represenation of "to be defined" objects
 ##
 DeclareCategory( "IsToBeDefinedObj", IsObject );

@@ -1303,7 +1303,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 # vector needs a field > 256, so can't be compressed
                 # or vector contains non-ffes or no common characteristic
                 #
-                return true;
+                return fail;
             fi;
             # Switching the object below can change the mutability of v, so we
             # make sure that if v is immutable it stays immutable.
@@ -1315,7 +1315,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             # ConvertToVectorRep should not be used in HPC-GAP
             FORCE_SWITCH_OBJ(v,vc); # horrible hack.
         else
-            return true;
+            return fail;
         fi;
     else
         common := COMMON_FIELD_VECFFE(v);   
@@ -1343,7 +1343,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     #
     if q = fail then
         if common = fail then
-            return true;
+            return fail;
         fi;
         if not IsPrimeInt(common) then
             common := SMALLEST_FIELD_VECFFE(v);
@@ -1355,21 +1355,19 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             CONV_VEC8BIT(v,common);
             return common;
         else
-            return true;
+            return fail;
         fi;
     elif q = 2 then
-        Assert(2, ForAll(v, elm -> elm in GF(2)));
         if common > 2 and common mod 2 = 0 then
             common := SMALLEST_FIELD_VECFFE(v);
         fi;
         if common <> 2 then
             Error("ConvertToVectorRepNC: Vector cannot be written over GF(2)");
         fi;
-        CONV_GF2VEC(v);
+        CONV_GF2VEC(v); # safe to call this even with an invalid argument
         return 2;
     elif q <= 256 then
         if common <> q then 
-            Assert(2, ForAll(v, elm -> elm in GF(q)));
             if IsPlistRep(v) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(v);
             fi;
@@ -1377,10 +1375,11 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
             fi;
         fi;
+        Assert(2, ForAll(v, elm -> elm in GF(q)));
         CONV_VEC8BIT(v,q);
         return q;
     else    
-        return true;
+        return fail;
     fi;
 end);
 
@@ -1563,8 +1562,15 @@ end);
 #F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
 ##
 BindGlobal("DoImmutableMatrix", function(field,matrix,change)
-local sf, rep, ind, ind2, row, i,big,l;
-  if not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
+local sf, rep, ind, ind2, row, i,big,l,nr;
+  if IsMatrixObj(matrix) then
+    # result is a matrix object iff 'matrix' is
+    if field=BaseDomain(matrix) then
+      return Immutable(matrix);
+    else
+      return ImmutableMatrix(field,Unpack(matrix));
+    fi;
+  elif not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
     Is8BitMatrixRep(matrix)) then
     # if empty or not list based, simply return `Immutable'.
     return Immutable(matrix);
@@ -1572,6 +1578,9 @@ local sf, rep, ind, ind2, row, i,big,l;
   if IsPosInt(field) then
     sf:=field;
   elif IsField(field) then
+    sf:=Size(field);
+  elif IsZmodnZObjNonprimeCollection(field) then
+    # slight abuse of ``field'' variable name
     sf:=Size(field);
   else
     # not a field
@@ -1589,10 +1598,17 @@ local sf, rep, ind, ind2, row, i,big,l;
     rep:=IsPlistRep;
   fi;
 
+  # cannot use NrRows consistently, as input might be mixed format
+  if IsList(matrix) then
+    nr:=Length(matrix);
+  else
+    nr:=NrRows(matrix);
+  fi;
+
   # get the indices of the rows that need changing the representation.
   ind:=[]; # rows to convert
   ind2:=[]; # rows to rebuild 
-  for i in [1..NrRows(matrix)] do
+  for i in [1..nr] do
     if not rep(matrix[i]) then
       if big or IsLockedRepresentationVector(matrix[i]) 
         or (IsMutable(matrix[i]) and not change) then
@@ -1623,10 +1639,21 @@ local sf, rep, ind, ind2, row, i,big,l;
   fi;
 
   # rebuild some rows
-  if big then
-    for i in ind2 do
-      matrix[i]:=List(matrix[i],j->j); # plist conversion
-    od;
+  if IsZmodnZObjNonprimeCollection(field) then
+    big:=true;
+  elif big then
+    if sf<>infinity and IsPrimeInt(sf) and sf>MAXSIZE_GF_INTERNAL then
+      if not (IsMatrixObj(matrix) and not IsMutable(matrix)) then
+        if field=sf then field:=Integers mod sf;fi;
+        for i in ind2 do
+          matrix[i]:=List(matrix[i],j->j); # plist conversion
+        od;
+      fi;
+    else
+      for i in ind2 do
+        matrix[i]:=List(matrix[i],j->j); # plist conversion
+      od;
+    fi;
   else
     for i in ind2 do
       row := CopyToVectorRep(matrix[i], sf);
@@ -1648,12 +1675,20 @@ local sf, rep, ind, ind2, row, i,big,l;
   return matrix;
 end);
 
-InstallMethod( ImmutableMatrix,"general,2",[IsObject,IsMatrix],0,
+InstallOtherMethod( ImmutableMatrix,"general,2",
+[IsObject,IsMatrixOrMatrixObj],0,
 function(f,m)
   return DoImmutableMatrix(f,m,false);
 end);
 
-InstallOtherMethod( ImmutableMatrix,"general,3",[IsObject,IsMatrix,IsBool],0,
+InstallOtherMethod( ImmutableMatrix,"List of vectors",
+[IsObject,IsList],0,
+function(f,m)
+  if not ForAll(m,x->IsList(x) or IsVector(x)) then TryNextMethod();fi;
+  return DoImmutableMatrix(f,m,false);
+end);
+
+InstallOtherMethod(ImmutableMatrix,"general,3",[IsObject,IsMatrixOrMatrixObj,IsBool],0,
   DoImmutableMatrix);
 
 InstallOtherMethod( ImmutableMatrix,"field,8bit",[IsField,Is8BitMatrixRep],0,
@@ -1900,6 +1935,17 @@ InstallMethod( DefaultFieldOfMatrix,
     [ IsMatrix and IsFFECollColl and IsGF2MatrixRep ], 0,
 function( mat )
   return GF(2);
+end );
+
+#############################################################################
+##
+#M  DegreeFFE( <ffe-mat> )
+##
+InstallOtherMethod( DegreeFFE,
+    "method for a matrix over GF(2)", true,
+    [ IsMatrix and IsFFECollColl and IsGF2MatrixRep ], 0,
+function( mat )
+  return 1;
 end );
 
 #############################################################################
