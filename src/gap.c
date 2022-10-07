@@ -420,20 +420,6 @@ int realmain( int argc, char * argv[] )
   return SystemErrorCode;
 }
 
-#if !defined(COMPILECYGWINDLL)
-int main ( int argc, char * argv[] )
-{
-  InstallBacktraceHandlers();
-
-#ifdef HPCGAP
-  RunThreadedMain(realmain, argc, argv);
-  return 0;
-#else
-  return realmain(argc, argv);
-#endif
-}
-
-#endif
 
 /****************************************************************************
 **
