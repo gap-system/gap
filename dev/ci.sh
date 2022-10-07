@@ -260,6 +260,7 @@ GAPInput
     $GAPPREFIX/bin/gap $GAPPREFIX/share/gap/tst/testinstall.g
 
     # test integration with pkg-config
+    cd "$SRCDIR"
     make tst/testpkgconfigversion tst/testpkgconfigbuild
     ;;
 
