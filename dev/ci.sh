@@ -258,10 +258,10 @@ GAPInput
     # TODO: should we install the GAP test suite???
     cp -R $SRCDIR/tst $GAPPREFIX/share/gap/
     $GAPPREFIX/bin/gap $GAPPREFIX/share/gap/tst/testinstall.g
-    ;;
 
     # test integration with pkg-config
     make tst/testpkgconfigversion tst/testpkgconfigbuild
+    ;;
 
   testmanuals)
     # Start GAP with -O option to disable obsoletes. The test
