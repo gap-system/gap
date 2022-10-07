@@ -281,10 +281,13 @@ InstallGlobalFunction(ConvertToMatrixRep,
                 if Characteristic(q1) = 0 then
                     return fail;
                 fi;
-	      q1 := Size(q1);
-	  else
-	    return fail; # not a field -- exit
-	  fi;
+                q1 := Size(q1);
+            else
+                return fail; # not a field -- exit
+            fi;
+        fi;
+        if q1 > 256 then
+            return fail;
         fi;
         givenq := true;
         Add(qs,q1);
@@ -401,7 +404,7 @@ InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
         q := arg[2];
     fi;
     if Length(m)=0 then
-    	return ConvertToMatrixRep(m,q);  
+        return ConvertToMatrixRep(m,q);
     fi;
     if not IsInt(q) then 
         q := Size(q);
@@ -415,7 +418,7 @@ InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     for v in m do
         result := ConvertToVectorRepNC(v,q);
         if result <> q then
-            Error("ConvertToMatrixRep: Failed to convert a row");
+            return fail;
         fi;
     od;
     if q = 2 then

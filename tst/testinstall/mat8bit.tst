@@ -1,6 +1,142 @@
 #@local m, z, zm, mz;
 gap> START_TEST("mat8bit.tst");
 
+##
+##  Test ConvertToMatrixRep
+##
+
+# GF(2)
+gap> m := [[1,0,1,1],[0,1,1,1]]*Z(2);; IsPlistRep(m);
+true
+gap> ConvertToMatrixRep( m, GF(2) );
+2
+gap> IsGF2MatrixRep(m);
+true
+gap> m;
+<a 2x4 matrix over GF2>
+gap> Display(m);
+ 1 . 1 1
+ . 1 1 1
+gap> ConvertToMatrixRep( m, GF(7) );
+fail
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(2), 7 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(7)
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(2), 4 );
+4
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(2), 512 );
+fail
+
+# GF(3)
+gap> m := [[1,0,1,1],[0,1,1,1]]*Z(3);; IsPlistRep(m);
+true
+gap> ConvertToMatrixRep( m, GF(3) );
+3
+gap> Is8BitMatrixRep(m);
+true
+gap> m;
+[ [ Z(3), 0*Z(3), Z(3), Z(3) ], [ 0*Z(3), Z(3), Z(3), Z(3) ] ]
+gap> Display(m);
+ 2 . 2 2
+ . 2 2 2
+gap> ConvertToMatrixRep( m, GF(5) );
+fail
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(3), 2 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(2)
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(3), 9 );
+9
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(3), 729 );
+fail
+
+# GF(4)
+gap> m := [[1,0,1,1],[0,1,1,1]]*Z(4);; IsPlistRep(m);
+true
+gap> ConvertToMatrixRep( m, 4 );
+4
+gap> Is8BitMatrixRep(m);
+true
+gap> Display(m);
+z = Z(4)
+ z^1   . z^1 z^1
+   . z^1 z^1 z^1
+gap> ConvertToMatrixRep( m, GF(7) );
+fail
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(4), 7 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(7)
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(4), 16 );
+16
+gap> ConvertToMatrixRep( [[1,0,1,1],[0,1,1,1]]*Z(4), 512 );
+fail
+
+##
+##  Test ConvertToMatrixRepNC
+##
+
+# GF(2)
+gap> m := [[1,0,1,1],[0,1,1,1]]*Z(2);; IsPlistRep(m);
+true
+gap> ConvertToMatrixRepNC( m, GF(2) );
+2
+gap> IsGF2MatrixRep(m);
+true
+gap> m;
+<a 2x4 matrix over GF2>
+gap> Display(m);
+ 1 . 1 1
+ . 1 1 1
+gap> ConvertToMatrixRepNC( m, GF(7) );
+2
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(2), 7 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(7)
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(2), 4 );
+4
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(2), 512 );
+fail
+
+# GF(3)
+gap> m := [[1,0,1,1],[0,1,1,1]]*Z(3);; IsPlistRep(m);
+true
+gap> ConvertToMatrixRepNC( m, GF(3) );
+3
+gap> Is8BitMatrixRep(m);
+true
+gap> m;
+[ [ Z(3), 0*Z(3), Z(3), Z(3) ], [ 0*Z(3), Z(3), Z(3), Z(3) ] ]
+gap> Display(m);
+ 2 . 2 2
+ . 2 2 2
+gap> ConvertToMatrixRepNC( m, GF(5) );
+3
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(3), 2 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(2)
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(3), 9 );
+9
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(3), 729 );
+fail
+
+# GF(4)
+gap> m := [[1,0,1,1],[0,1,1,1]]*Z(4);; IsPlistRep(m);
+true
+gap> ConvertToMatrixRepNC( m, 4 );
+4
+gap> Is8BitMatrixRep(m);
+true
+gap> Display(m);
+z = Z(4)
+ z^1   . z^1 z^1
+   . z^1 z^1 z^1
+gap> ConvertToMatrixRepNC( m, GF(7) );
+4
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(4), 7 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(7)
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(4), 16 );
+16
+gap> ConvertToMatrixRepNC( [[1,0,1,1],[0,1,1,1]]*Z(4), 512 );
+fail
+
+##
+##
+##
+
 # FFE * 8 bit matrix
 gap> m:= [ [ Z(3)^0 ] ];;
 gap> ConvertToMatrixRep( m, 3 );;
