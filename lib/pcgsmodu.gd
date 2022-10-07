@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the operations for polycylic generating systems modulo
+##  This file contains the operations for polycyclic generating systems modulo
 ##  another such system.
 ##
 

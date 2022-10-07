@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This  file  contains  the operations   for  induced polycylic  generating
+##  This  file  contains  the operations   for  induced polycyclic  generating
 ##  systems.
 ##
 

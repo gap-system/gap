@@ -16,7 +16,7 @@
 ##  A quotient system contains all the data necessary for computing a
 ##  quotient group of  finitely presented group.  Typically, the quotient
 ##  group is a p-group, a nilpotent group, a finite soluble group or a
-##  polycylic group.
+##  polycyclic group.
 ##
 ##  Every quotient system contains the finitely presented group, a quotient
 ##  group and lots of auxiliary information.

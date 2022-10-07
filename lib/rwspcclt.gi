@@ -170,7 +170,7 @@ end;
 
 #############################################################################
 InstallMethod( IsConfluent, 
-    "method for finite polycylic rewriting systems",
+    "method for finite polycyclic rewriting systems",
     true,
     [ IsPolycyclicCollector and IsFinite ],
     0,
