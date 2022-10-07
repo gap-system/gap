@@ -261,7 +261,8 @@ GAPInput
 
     # test integration with pkg-config
     cd "$SRCDIR"
-    make tst/testpkgconfigversion tst/testpkgconfigbuild
+    make tst/testpkgconfigversion
+    make tst/testpkgconfigbuild
     ;;
 
   testmanuals)
