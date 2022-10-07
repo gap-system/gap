@@ -1303,7 +1303,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                 # vector needs a field > 256, so can't be compressed
                 # or vector contains non-ffes or no common characteristic
                 #
-                return true;
+                return fail;
             fi;
             # Switching the object below can change the mutability of v, so we
             # make sure that if v is immutable it stays immutable.
@@ -1312,7 +1312,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             fi;
             SWITCH_OBJ(v,vc);
         else
-            return true;
+            return fail;
         fi;
     else
         common := COMMON_FIELD_VECFFE(v);   
@@ -1340,7 +1340,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     #
     if q = fail then
         if common = fail then
-            return true;
+            return fail;
         fi;
         if not IsPrimeInt(common) then
             common := SMALLEST_FIELD_VECFFE(v);
@@ -1352,7 +1352,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             CONV_VEC8BIT(v,common);
             return common;
         else
-            return true;
+            return fail;
         fi;
     elif q = 2 then
         if common > 2 and common mod 2 = 0 then
@@ -1376,7 +1376,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         CONV_VEC8BIT(v,q);
         return q;
     else    
-        return true;
+        return fail;
     fi;
 end);
 
