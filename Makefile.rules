@@ -1262,22 +1262,22 @@ testlibgap: ${LIBGAPTESTS}
 		diff $(top_srcdir)/$(v).expect $(v).out && ) :
 
 # test libgap's pkg-config's libgap version reporting
-PKG_REPORTED_VERSION := $(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --modversion libgap)
-
 tst/testpkgconfigversion: install-libgap
-ifeq ($(PKG_REPORTED_VERSION), $(PACKAGE_VERSION))
-	@echo "pkg-config reports correct version of libgap: "$(PKG_REPORTED_VERSION)
+ifeq ($(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --modversion libgap), $(PACKAGE_VERSION))
+	@echo "pkg-config reports correct version of libgap: "$(PACKAGE_VERSION)
 else
 	@echo "pkg-config does not report version of libgap, or is not installed"
 endif
 
 # test libgap's pkg-config's libgap flags fetching
-PKG_REPORTED_CFLAGS := $(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --cflags libgap | cut -d' ' -f 1)/gap
-PKG_REPORTED_LDFLAGS := $(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --libs libgap)
-v := "tst/testlibgap/basic"
-tst/testpkgconfigbuild: install build/obj/tst/testlibgap/common.c.lo
-	$(QUIET_CC)$(CC) -c $(v).c -o $(v).o $(PKG_REPORTED_CFLAGS)
-	$(QUIET_LINK)$(LINK) $(v).o -o $(v) build/obj/tst/testlibgap/common.c.lo $(PKG_REPORTED_LDFLAGS)
+tst/testpkgconfigbuild: install
+	$(eval PKG_REPORTED_CFLAGS := $(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --cflags libgap | cut -d' ' -f 1)/gap)
+	$(eval PKG_REPORTED_LDFLAGS := $(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --libs libgap))
+	$(eval v := "tst/testlibgap/basic")
+	$(eval com := "tst/testlibgap/common")
+	$(CC) -c $(v).c -o $(v).o $(PKG_REPORTED_CFLAGS)
+	$(CC) -c $(com).c -o $(com).o $(PKG_REPORTED_CFLAGS)
+	$(QUIET_LINK)$(LINK) $(v).o -o $(v) $(com).o $(PKG_REPORTED_LDFLAGS)
 	$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
         diff $(top_srcdir)/$(v).expect $(v).out
 
