@@ -236,6 +236,7 @@ GAPInput
     test -f $GAPPREFIX/include/gap/version.h
     test -f $GAPPREFIX/include/gap/src/compiled.h # for backwards compatibility
     test -f $GAPPREFIX/lib/gap/sysinfo.gap
+    test -f $GAPPREFIX/lib/pkgconfig/libgap.pc
     test -f $GAPPREFIX/share/gap/doc/ref/chap0_mj.html
     test -f $GAPPREFIX/share/gap/grp/basic.gd
     test -f $GAPPREFIX/share/gap/hpcgap/lib/hpc/tasks.g
@@ -258,6 +259,9 @@ GAPInput
     cp -R $SRCDIR/tst $GAPPREFIX/share/gap/
     $GAPPREFIX/bin/gap $GAPPREFIX/share/gap/tst/testinstall.g
     ;;
+
+    # test integration with pkg-config
+    make tst/testpkgconfigversion tst/testpkgconfigbuild
 
   testmanuals)
     # Start GAP with -O option to disable obsoletes. The test
