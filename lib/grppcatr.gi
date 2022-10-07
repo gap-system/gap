@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the methods for attributes of polycylic groups.
+##  This file contains the methods for attributes of polycyclic groups.
 ##
 
 

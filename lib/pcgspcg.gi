@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file   contains the methods  for polycylic  generating systems of pc
+##  This file   contains the methods  for polycyclic  generating systems of pc
 ##  groups.
 ##
 
