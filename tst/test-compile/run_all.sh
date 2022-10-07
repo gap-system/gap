@@ -10,7 +10,7 @@ GAPDIR=${GAPDIR:-../..}
 rm -rf .libs
 
 retvalue=0
-gap="$GAPDIR/bin/gap.sh"
+gap="$GAPDIR/gap"
 gac="$GAPDIR/gac"
 for gfile in *.g; do
     echo "Now testing ${gfile}"

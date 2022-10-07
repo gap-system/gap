@@ -6,7 +6,7 @@ set -e
 # (so for out-of-tree builds, builddir and not srcdir)
 GAPDIR=${GAPDIR:-../..}
 
-gap="$GAPDIR/bin/gap.sh"
+gap="$GAPDIR/gap"
 gac="$GAPDIR/gac"
 for gfile in *.g; do
     echo "Regenerating ${gfile}.out ..."

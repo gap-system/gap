@@ -6,7 +6,7 @@ set -ex
 # (so for out-of-tree builds, builddir and not srcdir)
 GAPDIR=${GAPDIR:-../..}
 
-gap="$GAPDIR/bin/gap.sh"
+gap="$GAPDIR/gap"
 
 echo This script should only be run with a 64-bit GAP
 if command -v parallel >/dev/null 2>&1 ; then
