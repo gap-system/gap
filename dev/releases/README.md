@@ -83,6 +83,13 @@ Before starting the release process, the scripts have the following dependencies
 13. Repeat the final three steps, but with `www` instead of `test`.
 
 
+## Post-release hints
+
+- Update <https://www.wikidata.org/wiki/Q677161>
+- Update <https://en.wikipedia.org/wiki/GAP_(computer_algebra_system)>
+  (and possibly also translations)
+
+
 ## GitHub access token
 <a name="github-access-token"></a>
 
