@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@prefix@/include
 
-Name: @PACKAGE_NAME@
+Name: GAP
 Description: Library containing the kernel of GAP, a computer algebra system
 URL: https://www.gap-system.org
 Version: @PACKAGE_VERSION@
