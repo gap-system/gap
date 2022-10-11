@@ -129,6 +129,10 @@
 #include <setjmp.h>
 #include <string.h>
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 #ifdef GAP_MEM_CHECK
 #include <sys/mman.h>
 #endif
@@ -1885,20 +1889,17 @@ static void SparcStackFuncBags(void)
 }
 #endif
 
-static NOINLINE void GenStackFuncBags(void)
-{
-    Bag *               top;            /* top of stack                    */
-    Bag *               p;              /* loop variable                   */
-    UInt                i;              /* loop variable                   */
 
-#ifdef DEBUG_GASMAN_MARKING
-    DisableMarkBagValidation = 1;
-#endif
+static NOINLINE void ScanRange(void* vpA, void* vpB) {
+    UInt i;
+    Bag* p;
 
-    top = (Bag*)((void*)&top);
-    if ( StackBottomBags < top ) {
+    Bag* pA = (Bag*)vpA;
+    Bag* pB = (Bag*)vpB;
+
+    if ( pA < pB ) {
         for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
-            for (p = (Bag *)((char *)StackBottomBags + i); p < top; p++) {
+            for (p = (Bag *)((char *)pA + i); p < pB; p++) {
                 Bag * pcpy = p;
 #if defined(GAP_MEMORY_CANARY)
                 // Need to mark this pointer as readable for valgrind
@@ -1910,7 +1911,7 @@ static NOINLINE void GenStackFuncBags(void)
     }
     else {
         for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
-            for (p = (Bag *)((char *)StackBottomBags - i); top < p; p--) {
+            for (p = (Bag *)((char *)pA - i); pB < p; p--) {
                 Bag * pcpy = p;
 #if defined(GAP_MEMORY_CANARY)
                 // Need to mark this pointer as readable for valgrind
@@ -1920,6 +1921,26 @@ static NOINLINE void GenStackFuncBags(void)
             }
         }
     }
+}
+
+static NOINLINE void GenStackFuncBags(void)
+{
+    Bag *               top;            /* top of stack                    */
+    Bag *               p;              /* loop variable                   */
+
+#ifdef DEBUG_GASMAN_MARKING
+    DisableMarkBagValidation = 1;
+#endif
+
+    #ifdef EMSCRIPTEN
+    emscripten_scan_stack(ScanRange);
+    emscripten_scan_registers(ScanRange);
+    // The standard scanning may not be required with
+    // emscripten, but it does not do any harm
+    #endif
+
+    top = (Bag*)((void*)&top);
+    ScanRange(StackBottomBags, top);
 
     // mark content of registers, dirty dirty hack: we treat the jmp_buf
     // as a sequence of Bag values. Note that sizeof(jmp_buf) need not
