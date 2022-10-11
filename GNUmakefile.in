@@ -41,20 +41,19 @@ GAP_LIBTOOL_AGE = @GAP_LIBTOOL_AGE@
 GAP_KERNEL_MINOR_VERSION = @gap_kernel_minor_version@
 GAP_KERNEL_MAJOR_VERSION = @gap_kernel_major_version@
 
-# autoconf package metadata
-PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
-PACKAGE_NAME = @PACKAGE_NAME@
-PACKAGE_STRING = @PACKAGE_STRING@
-PACKAGE_TARNAME = @PACKAGE_TARNAME@
-PACKAGE_URL = @PACKAGE_URL@
-PACKAGE_VERSION = @PACKAGE_VERSION@
-
-# autoconf host information
+# autoconf host system information (= system *for* which we are compiling)
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+
+# autoconf build system information (= system *on* which we are compiling)
+build = @build@
+build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 
 # compile and linker flags
 CFLAGS = @CFLAGS@
@@ -110,37 +109,10 @@ SED = @SED@
 SHELL = @SHELL@
 
 # for GNU libtool
-AR = @AR@
-AS = @AS@
-AWK = @AWK@
-LD = @LD@
 LIBTOOL = @LIBTOOL@
-LIPO = @LIPO@
-LN_S = @LN_S@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
-LTLIBOBJS = @LTLIBOBJS@
-MANIFEST_TOOL = @MANIFEST_TOOL@
-NM = @NM@
-NMEDIT = @NMEDIT@
-OBJDUMP = @OBJDUMP@
-OTOOL = @OTOOL@
-OTOOL64 = @OTOOL64@
-RANLIB = @RANLIB@
-STRIP = @STRIP@
 
 # misc
 EXEEXT = @EXEEXT@
-LIBOBJS = @LIBOBJS@
-OBJEXT = @OBJEXT@
-PATH_SEPARATOR = @PATH_SEPARATOR@
-program_transform_name = @program_transform_name@
-target_alias = @target_alias@
-
-build = @build@
-build_alias = @build_alias@
-build_cpu = @build_cpu@
-build_os = @build_os@
-build_vendor = @build_vendor@
 
 # build paths
 abs_builddir = @abs_builddir@
