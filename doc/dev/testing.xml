@@ -76,48 +76,6 @@ It is up to the package authors whether they want to promise something
 similar for their package.
 <P/>
 
-For the manuals in the formats given by the &GAPDoc; package,
-the automatic test extracts examples from the manuals using the function
-<C>ExtractManualExamples</C> from <F>tst/testutil.g</F>, creating test files
-in the subdirectories <F>doc/test/ref</F> and <F>doc/test/tut</F>,
-and then calls the script <F>doc/test/mktestx.sh</F> 
-(see section <Ref Sect="Sect-TestSuite"/>).
-<P/>
-
-The same mechanism may be used for testing individual chapters. 
-To extract manual examples, start &GAP; with <C>-r</C> option 
-from the &GAP; root directory and enter commands
-<Listing>
-Read("tst/testutil.g");
-ExtractManualExamples("tut");
-ExtractManualExamples("ref");
-</Listing>
-This will create test files in the subdirectories <F>doc/test/ref</F> and 
-<F>doc/test/tut</F>. This procedure should be repeated for each new test
-after any changes in examples. Note that examples with randomness involved
-will depend on the state of the random source. They are adjusted to the
-state when &GAP; is just started without packages.
-<P/>
-
-For the manuals in the formats given by <C>doc/gapmacro.tex</C> that may be
-used by some packages, another manual checker tool can be used. The automatic 
-tests can be performed by the scripts <F>doc/test/mktest.sh</F> and 
-<F>doc/test/mkdiff.sh</F>, and a description of the parts of manual files that 
-are actually processed by these tests can be found in the file <F>doc/test/README</F>
-(see also the file <F>gap4r6/doc/gapmacrodoc.pdf</F> included in the tools archive
-supplied with &GAP; in the <F>etc</F> directory).
-<P/>
-
-The directory <F>doc/test</F> is part of the &GAP; distribution,
-in order to make it possible that anybody can apply the tests,
-and is kept under CVS control.
-Its subdirectories are only temporarily and therefore are not distributed.
-<P/>
-
-(An older tool for checking manual examples can be found in the CVS
-repository, it consists of the files <F>doc/test/README.old</F>,
-<F>doc/test/alltests</F>, <F>doc/test/getinput.awk</F>,
-<F>doc/test/parseoutput.awk</F>, and <F>testexample</F>.)
 </Section>
 
 
