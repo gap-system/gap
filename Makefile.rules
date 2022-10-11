@@ -1267,6 +1267,7 @@ ifeq ($(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --modvers
 	@echo "pkg-config reports correct version of libgap: "$(PACKAGE_VERSION)
 else
 	@echo "pkg-config does not report version of libgap, or is not installed"
+	exit 1
 endif
 
 # test libgap's pkg-config's libgap flags fetching
