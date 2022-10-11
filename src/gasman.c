@@ -1890,14 +1890,15 @@ static void SparcStackFuncBags(void)
 #endif
 
 
-static NOINLINE void ScanRange(void* vpA, void* vpB) {
-    UInt i;
-    Bag* p;
+static NOINLINE void ScanRange(void * vpA, void * vpB)
+{
+    UInt  i;
+    Bag * p;
 
-    Bag* pA = (Bag*)vpA;
-    Bag* pB = (Bag*)vpB;
+    Bag * pA = (Bag *)vpA;
+    Bag * pB = (Bag *)vpB;
 
-    if ( pA < pB ) {
+    if (pA < pB) {
         for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
             for (p = (Bag *)((char *)pA + i); p < pB; p++) {
                 Bag * pcpy = p;
@@ -1925,21 +1926,21 @@ static NOINLINE void ScanRange(void* vpA, void* vpB) {
 
 static NOINLINE void GenStackFuncBags(void)
 {
-    Bag *               top;            /* top of stack                    */
-    Bag *               p;              /* loop variable                   */
+    Bag * top; /* top of stack                    */
+    Bag * p;   /* loop variable                   */
 
 #ifdef DEBUG_GASMAN_MARKING
     DisableMarkBagValidation = 1;
 #endif
 
-    #ifdef EMSCRIPTEN
+#ifdef EMSCRIPTEN
     emscripten_scan_stack(ScanRange);
     emscripten_scan_registers(ScanRange);
-    // The standard scanning may not be required with
-    // emscripten, but it does not do any harm
-    #endif
+// The standard scanning may not be required with
+// emscripten, but it does not do any harm
+#endif
 
-    top = (Bag*)((void*)&top);
+    top = (Bag *)((void *)&top);
     ScanRange(StackBottomBags, top);
 
     // mark content of registers, dirty dirty hack: we treat the jmp_buf
