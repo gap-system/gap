@@ -6,7 +6,7 @@ includedir=@prefix@/include
 Name: GAP
 Description: Library containing the kernel of GAP, a computer algebra system
 URL: https://www.gap-system.org
-Version: @PACKAGE_VERSION@
+Version: @GAP_VERSION@
 Requires.private: gmp
 Libs: -L${libdir} -lgap
 Cflags: -I${includedir}
