@@ -40,7 +40,7 @@ jobs:
       gap-build-version: ${{ steps.get-build.outputs.name }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -57,7 +57,7 @@ jobs:
           git fetch --tags --force
 
       - name: "Set up Python"
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
       - name: "Install Python modules"
         run: pip3 install PyGithub python-dateutil
       - name: "Install latex"
@@ -207,14 +207,14 @@ jobs:
       #   artifact would/could already contain the appropriate packages.
 
       - name: "Clone GAP"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ${{ env.GAPDEV_DIR }}
 
       - name: "Copy GAP's release scripts to a safe place"
         run: cp -rp ${GAPDEV_DIR}/dev/releases .
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
       - name: "Install required Python modules"
@@ -239,7 +239,7 @@ jobs:
       # organisation, and perhaps ultimately it could/should be re-integrated
       # with the original sagemath/sage-windows repository.
       - name: "Clone the Windows installer maker scripts"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ChrisJefferson/sage-windows
           ref: master

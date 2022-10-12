@@ -53,7 +53,7 @@ jobs:
           make bootstrap-pkg-minimal
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v1
+        uses: actions/configure-pages@v2
       - name: Build GAP manuals
         run: |
           make html # we are only intersted in the HTML version

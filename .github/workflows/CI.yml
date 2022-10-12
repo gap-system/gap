@@ -152,10 +152,10 @@ jobs:
       TEST_SUITES: ${{ matrix.test-suites }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: "Set up Python 3.7"
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
 
@@ -279,7 +279,7 @@ jobs:
       - name: "Gather coverage data"
         run: ${{ matrix.extra }} dev/ci-gather-coverage.sh
       - name: "Upload coverage data to Codecov"
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
