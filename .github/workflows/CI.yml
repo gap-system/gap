@@ -194,7 +194,7 @@ jobs:
                    if [[ $TEST_SUITES == *testbuildsys* ]] ; then
                        sudo apt-get remove libgmp-dev libreadline-dev zlib1g-dev
                    else
-                       packages+=(libgmp-dev libreadline-dev zlib1g-dev pkg-config expect)
+                       packages+=(libgmp-dev libreadline-dev zlib1g-dev expect)
                    fi
                    if [[ $TEST_SUITES == *testpackages* ]] ; then
                        packages+=(            # For:
@@ -228,6 +228,7 @@ jobs:
                    fi
                    sudo apt-get update
                    sudo apt-get install --no-install-recommends "${packages[@]}"
+                   sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
                    brew install gmp zlib pkg-config
                fi
