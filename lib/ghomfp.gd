@@ -340,7 +340,7 @@ DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 ##  <Description>
 ##  Let <A>hom</A> a homomorphism from a group <A>G</A> to a newly created
 ##  finitely presented group <A>F</A> (in which no calculation yet has taken
-##  place) such that the inverse of <A>hom</A> can be appied to elements of
+##  place) such that the inverse of <A>hom</A> can be applied to elements of
 ##  $F$. This function endows <A>F</A> (or, more
 ##  correctly, its elements family) with information (in the form of an
 ##  <C>FPFaithHom</C>) about <A>G</A> that can be

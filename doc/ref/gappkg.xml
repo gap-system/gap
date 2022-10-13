@@ -1374,7 +1374,7 @@ that the expression list is  only  printed  (or  even  executed)  if  the
 <Section Label="The Banner">
 <Heading>The Banner</Heading>
 
-<!-- TODO: say that the defaul banner is constructed from PackageInfo.g -->
+<!-- TODO: say that the default banner is constructed from PackageInfo.g -->
 
 <Index Subkey="for a GAP package">banner</Index>
 

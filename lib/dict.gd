@@ -524,7 +524,7 @@ BindGlobal("DefaultSparseHashWithIKRepType",
 ##  construct such a table.
 ##  If the argument <A>intkeyfun</A> is given, this function will be used to
 ##  obtain numbers for the keys passed to it.
-##  If also <A>startlength</A> is given, the hash table will be initalized
+##  If also <A>startlength</A> is given, the hash table will be initialized
 ##  at that size.
 ##  </Description>
 ##  </ManSection>

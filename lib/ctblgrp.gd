@@ -136,7 +136,7 @@ DeclareAttribute("DixonRecord",IsGroup,"mutable");
 ##  <Oper Name="DxPreparation" Arg='G,D'/>
 ##
 ##  <Description>
-##  Creates enttries in the dixon record <A>D</A> of the group <A>G</A>
+##  Creates entries in the dixon record <A>D</A> of the group <A>G</A>
 ##  which are representation dependent,
 ##  like functions to identify the class of elements.
 ##  </Description>
@@ -245,7 +245,7 @@ DeclareGlobalFunction("OrbitSplit");
 ##  <Description>
 ##  estimates the number of parts obtained when splitting the character space
 ##  <A>space</A> with matrix number <A>r</A>.
-##  This estimate is obtained using charcter morphisms.
+##  This estimate is obtained using character morphisms.
 ##  </Description>
 ##  </ManSection>
 ##

@@ -105,7 +105,7 @@ function( n )
     local f,   # result (after stripping off other cyclotomic polynomials)
           div, # divisors of 'n'
           d,   # one divisor of 'n'
-          q,   # coefficiens of a quotient that arises in division
+          q,   # coefficients of a quotient that arises in division
           g,   # coefficients of 'd'-th cyclotomic polynomial
           l,   # degree of 'd'-th cycl. pol.
           m,

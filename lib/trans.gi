@@ -189,10 +189,10 @@ function(f)
   return SMALLEST_IMAGE_PT(f);
 end);
 
-InstallMethod(MovedPoints, "for a tranformation",
+InstallMethod(MovedPoints, "for a transformation",
 [IsTransformation], MOVED_PTS_TRANS);
 
-InstallMethod(NrMovedPoints, "for a tranformation",
+InstallMethod(NrMovedPoints, "for a transformation",
 [IsTransformation], NR_MOVED_PTS_TRANS);
 
 InstallMethod(MovedPoints, "for a transformation collection",

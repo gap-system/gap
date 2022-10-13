@@ -641,7 +641,7 @@ a rational function. Depending on its (known in the context or determined)
 properties, they can access the attribute representing the rational function
 in the desired way.
 <P/>
-Consequentially, methods for rational functions are installed for properties
+Consequently, methods for rational functions are installed for properties
 and not for representations.
 <P/>
 When <E>creating</E> new rational functions however they must be created in one

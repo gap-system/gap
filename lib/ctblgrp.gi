@@ -528,7 +528,7 @@ local modularchi,chi,zeta,degree,sum,M,l,s,n,j,polynom,chipolynom,
   chi:=[degree];
   for family in D.primeClasses do
     # we need to compute the polynomial only for prime classes. Powers are
-    # obtained by simpy inserting powers in this polynomial
+    # obtained by simply inserting powers in this polynomial
     j:=family[1];
     l:=Order(D.classreps[j]);
     zeta:=E(l);
@@ -887,7 +887,7 @@ end;
 ##
 #F  SplitTwoSpace(<D>,<raum>) . . . split two-dim space by combinatoric means
 ##
-##  If the room is 2-dimensional,this is ment to be the standard split.
+##  If the room is 2-dimensional, this is meant to be the standard split.
 ##  Otherwise,the two-dim invariant space of raum is to be split
 ##
 SplitTwoSpace := function(D,raum)
@@ -1409,7 +1409,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
 
 	  wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
 		  /(Length(rc)); # We count -mistakening - also the first
-	    # column,that is availiable for free. Its "costs" are ment to
+	    # column,that is available for free. Its "costs" are meant to
 	    # compensate for the splitting process.
 	fi;
       fi;

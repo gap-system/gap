@@ -785,7 +785,7 @@ DeclareOperation( "MatrixOfAction", [ IsBasisOfAlgebraModuleElementSpace,
 ##  it is a linear combination of monomials. This category is used to set
 ##  up some basic functionality and linear algebra for tensor elements,
 ##  wedge elements, symmetric power elements (in order not to have to copy
-##  esentially the same code for all these elements).
+##  essentially the same code for all these elements).
 ##  </Description>
 ##  </ManSection>
 ##

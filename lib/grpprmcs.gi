@@ -506,7 +506,7 @@ InstallGlobalFunction( CasesCSPG, function(G)
             n,m,o,p,  # loop variables
             tab1,       # table of orders of primitive groups
             tab2,       # table of orders of perfect transitive groups
-            base;       # prime occuring in order of outer automorphism
+            base;       # prime occurring in order of outer automorphism
                         # group of some group in tab1
 
     g := Size(G);
@@ -2474,7 +2474,7 @@ InstallGlobalFunction( ActionAbelianCSPG, function(H,n)
         Add(action[i],());
         Add(inverse[i],());
 
-        # determine position of generators occuring in transversal
+        # determine position of generators occurring in transversal
         for j in [1..Length( chainC.orbit )] do
             cpositiongenlist[i][j]:=Position(action[i],chainC.transversal[j]);
         od;

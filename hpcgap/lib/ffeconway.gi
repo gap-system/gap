@@ -465,7 +465,7 @@ end;
 #F FFECONWAY.TryToWriteInSmallerField( <ffe>, <smalldeg> )
 ##
 ## returns an element written over a field of degree <smalldeg>, but equal to <ffe>
-## if possibe, otherwise fail. The returned element may be an internal FFE
+## if possible, otherwise fail. The returned element may be an internal FFE
 ## or a ZmodpZ object.
 ##
 

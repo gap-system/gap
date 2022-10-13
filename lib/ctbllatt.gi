@@ -1314,7 +1314,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        fi;
     else
       Info( InfoCharacterTable, 2,
-            "DnLattice: 2nd power map not availabe\n",
+            "DnLattice: 2nd power map not available\n",
             "#I            cannot test with Indicator" );
       SFIbool := false;
     fi;

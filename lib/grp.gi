@@ -2448,7 +2448,7 @@ InstallMethod( ClosureGroup,
     end );
 
 InstallMethod( ClosureGroup,
-    "for two groups, the bigger conatining the whole family",
+    "for two groups, the bigger containing the whole family",
     IsIdenticalObj,
     [ IsGroup and IsWholeFamily, IsGroup ],
     SUM_FLAGS, # this is better than everything else

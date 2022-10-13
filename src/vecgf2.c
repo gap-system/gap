@@ -1747,7 +1747,7 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
     // get the length of <list>
     lenList = LEN_GF2VEC(list);
 
-    // general code for arbritrary lists, which are ranges
+    // general code for arbitrary lists, which are ranges
     if (!IS_RANGE(poss)) {
 
         // get the length of <positions>

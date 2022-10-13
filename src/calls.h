@@ -436,7 +436,7 @@ void CheckAllHandlers(void);
 **  'NewFunction' creates and returns a new function.  <name> must be  a  GAP
 **  string containing the name of the function.  <narg> must be the number of
 **  arguments, where -1 means a variable number of arguments.  <nams> must be
-**  a GAP list containg the names  of  the  arguments.  <hdlr>  must  be  the
+**  a GAP list containing the names  of the  arguments.  <hdlr>  must be  the
 **  C function (accepting <self> and  the  <narg>  arguments)  that  will  be
 **  called to execute the function.
 **

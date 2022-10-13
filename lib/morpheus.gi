@@ -752,7 +752,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
     fi;
   fi;
 
-  # try to embed into wreath accoding to non-conjugator
+  # try to embed into wreath according to non-conjugator
   if IsPermGroup(g) then
     img:=AutomorphismWreathEmbedding(au,g);
   else
@@ -1400,7 +1400,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     od;
     if Length(pows)>0 then
       offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
-			    i->i[1])); # smallest occuring index
+			    i->i[1])); # smallest occurring index
     fi;
     # test the relators at level tlev and set imgs
     TestRels:=function(tlev)
@@ -2322,7 +2322,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
     od;
     #T replace symmetric group by a suitable wreath product
     wl:=WreathProduct(aup,SymmetricGroup(n));
-    # now embedd all
+    # now embed all
 
     n:=1;
     # first is slightly special

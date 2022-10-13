@@ -1826,7 +1826,7 @@ end );
 ##  otherwise the power presentation.
 ##  Trivial commutators / powers are not printed.
 ##  The generators are named "g<i>".
-##  The returned boolean indicates if there are commutating generators.
+##  The returned boolean indicates if there are commuting generators.
 ##
 InstallGlobalFunction( PrintPcPresentation, function(G, commBool)
     local pcgs, n, F, gens, i, pis, exp, t, h, rel, commPower, j, trivialCommutators;

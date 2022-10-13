@@ -868,7 +868,7 @@ BindGlobal("RPGcdRepresentationModPrime",function(f,g,p)
 
   local   val,     # the minimal valuation of <f> and <g>
       s, sx,    # first line of gcd algorithm
-      t, tx,    # second line of gcd alogrithm
+      t, tx,    # second line of gcd algorithm
       h, hx,    # temp for swapping lines
       q,       # quotient
       n,m,r,c,  # used in quotient

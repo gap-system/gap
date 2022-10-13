@@ -588,7 +588,7 @@ DeclareRepresentation("IsWreathProductElementDefaultRep",
 ##  <Ref Func="ListWreathProductElement"/> returns a list <M>[f_1, \ldots, f_m, h]</M>
 ##  containing the components of <A>x</A> or <K>fail</K> if <A>x</A> cannot be decomposed in the wreath product.
 ##  <P/>
-##  If ommited, the argument <A>testDecomposition</A> defaults to true.
+##  If omitted, the argument <A>testDecomposition</A> defaults to true.
 ##  If <A>testDecomposition</A> is true, <Ref Func="ListWreathProductElement"/> makes additional tests to ensure
 ##  that the computed decomposition of <A>x</A> is correct,
 ##  i.e. it checks that <A>x</A> is an element of the parent wreath product of <A>G</A>:

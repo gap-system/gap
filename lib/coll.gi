@@ -2216,7 +2216,7 @@ InstallMethod( IsSubset,
     [ IsCollection and IsWholeFamily,
       IsCollection ],
     SUM_FLAGS+2, # better than everything else, however we must override the
-                 # follwoing two which are already ranked high.
+                 # following two which are already ranked high.
     ReturnTrue );
 
 

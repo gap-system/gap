@@ -501,7 +501,7 @@ InstallMethod( AsGroupGeneralMappingByImages, "for group homomorphism",
     true, [ IsGroupHomomorphism ], 0,
 function( map )
 local mapi,hom;
-  Range(map); # for surjective action homomorphisms thsi enforces
+  Range(map); # for surjective action homomorphisms this enforces
               # computation of the MappingGeneratorsImages as well
   mapi:=MappingGeneratorsImages(map);
   hom:=GroupHomomorphismByImagesNC(Source(map),Range(map),mapi[1],mapi[2]);

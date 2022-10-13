@@ -223,7 +223,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	  for k in Reversed(rep[blp]) do
 	    fra:=fra/acts[k];
 	  od;
-	  img:=act(pnt,fra); # thats where fr now maps it to
+	  img:=act(pnt,fra); # that's where fr now maps it to
 	  
 	  # find correcting pcgs element
 	  pos:=LookupDictionary(d,img);
@@ -1052,7 +1052,7 @@ end);
 
 InstallMethod( NormalizerOp,"solvable radical", IsIdenticalObj,
   [ IsGroup and CanComputeFittingFree, IsGroup],
-  -1, # deliberate lower ranking to amke sure this method only runs in cases
+  -1, # deliberate lower ranking to make sure this method only runs in cases
   # in which no more specialized method is installed. Once the method has
   # been used more broadly, and performance is better understood, this can
   # be changed to 0

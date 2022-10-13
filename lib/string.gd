@@ -892,7 +892,7 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 ##  <P/>
 ##  The contents of <C>{ }</C> is split by a <C>!</C> into <C>{id!format}</C>,
 ##  where both <C>id</C> and <C>format</C> are optional. If the <C>!</C> is
-##  ommitted, the bracket is treated as <C>{id}</C> with no <C>format</C>.
+##  omitted, the bracket is treated as <C>{id}</C> with no <C>format</C>.
 ##  <P/>
 ##  <C>id</C> is interpreted as follows:
 ##  <List>

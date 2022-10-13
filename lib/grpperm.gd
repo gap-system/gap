@@ -519,7 +519,7 @@ DeclareGlobalFunction( "DiagonalSocleAction" );
 ##  <A>g</A> onto an isomorphic group of smaller degree or <K>fail</K> if no such
 ##  domain is found. 
 ##  <P/>
-##  In constrast to <C>SmallerDegreePermutationRepresentation</C> little effort
+##  In contrast to <C>SmallerDegreePermutationRepresentation</C> little effort
 ##  is spent on fincting completely different actions. The degree obtained
 ##  by <C>ReducedPermdegree</C> therefore in general is not that small, on the
 ##  other hand <C>ReducedPermdegree</C> works fast enough (and returns a

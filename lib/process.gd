@@ -39,7 +39,7 @@
 ##  supports such a concept.
 ##  <P/>
 ##  The first argument <A>dir</A> is a directory object (see&nbsp;<Ref Sect="Directories"/>)
-##  which will be the current directory (in the usual UNIX or MSDOS sense)
+##  which will be the current directory (in the usual UNIX or MS-DOS sense)
 ##  when the program is run.
 ##  This will only matter if the program accesses files (including running
 ##  other programs) via relative path names.

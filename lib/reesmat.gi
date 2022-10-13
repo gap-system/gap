@@ -14,7 +14,7 @@
 # Notes: there are essentially 3 types of semigroups here:
 # 1) the whole family Rees matrix semigroup (notice that the matrix used to
 # define the semigroup may contain rows or columns consisting entirely of 0s
-# so it is not guarenteed that the resulting semigroup is 0-simple)
+# so it is not guaranteed that the resulting semigroup is 0-simple)
 # 2) subsemigroups U of 1), which defined by a generating set and are Rees matrix
 # semigroups, i.e. U=I'xG'xJ' where the whole family if IxGxJ and I', J' subsets
 # of I, J and G' a subsemigroup of G. 

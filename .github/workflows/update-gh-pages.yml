@@ -56,7 +56,7 @@ jobs:
         uses: actions/configure-pages@v1
       - name: Build GAP manuals
         run: |
-          make html # we are only intersted in the HTML version
+          make html # we are only interested in the HTML version
       - name: Bundling GAP manuals for deployment
         run: |
           set -e

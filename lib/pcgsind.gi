@@ -617,7 +617,7 @@ function( pcgs, gens, imgs )
         img[i] := new[2][i] ^ (1/exp mod ros[i]);
     od;
 
-    # make zeros above the diagonale
+    # make zeros above the diagonal
     for i  in [ 1 .. Length(cgs)-1 ]  do
         for j  in [ i+1 .. Length(cgs) ]  do
             exp := ExponentOfPcElement( pcgs, cgs[i], DepthOfPcElement(
@@ -827,7 +827,7 @@ InstallGlobalFunction(NORMALIZE_IGS,function( pcgs, list )
                    mod ros[dep[i]] );
     od;
 
-    # make zeros above the diagonale
+    # make zeros above the diagonal
     for i  in [ 1 .. Length(list) - 1 ]  do
         for j  in [ i+1 .. Length(list) ]  do
             exp := ExponentOfPcElement( pcgs, list[i], dep[j] );
@@ -862,7 +862,7 @@ function( pcgs )
         cgs[i] := pcgs[i] ^ (1/exp mod ros[i]);
     od;
 
-    # make zeros above the diagonale
+    # make zeros above the diagonal
     for i  in [ 1 .. Length(cgs)-1 ]  do
         for j  in [ i+1 .. Length(cgs) ]  do
             exp := ExponentOfPcElement( pa, cgs[i], DepthOfPcElement(

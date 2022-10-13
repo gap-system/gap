@@ -1097,7 +1097,7 @@ function(aob,bob)
 # implicitly assumes, however that the input is in some way ``reduced'' as
 # an SLP.
 local a,b,	# lines of slp
-      aep,bep,  # upto this generator index, entries are known.
+      aep,bep,  # up to this generator index, entries are known.
       ta,tb,    # new indices for old
       tal,tbl,  # up to this index, old and new indices are the same
       la,lb,	# lengths

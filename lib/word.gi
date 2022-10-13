@@ -40,7 +40,7 @@ InstallMethod( \<,
     function( x, y )
     local n;
 
-    # thsi method does not work for assoc words!
+    # this method does not work for assoc words!
     if IsAssocWord(x) and IsAssocWord(y) then
       TryNextMethod();
     fi;

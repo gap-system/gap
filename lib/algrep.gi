@@ -3018,7 +3018,7 @@ BindGlobal( "BasisOfSparseRowSpace",
         else
 
             # If there is a vector starting with the same index as `tt[k]'
-            # occuring "below" `tt[k]' then subtract `tt[k]' the appropriate
+            # occurring "below" `tt[k]' then subtract `tt[k]' the appropriate
             # number of times.
             # First we make the leading coefficient of `tt[k]' equal to 1.
 

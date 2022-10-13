@@ -300,7 +300,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
 static Obj AtomicCompareSwapAList(Obj list, Int index, Obj old, Obj new);
 
 // Given atomic list 'list', assign list[index] the value 'new', if list[index]
-// is currently assigned 'old'. This operation is performed atomicly.
+// is currently assigned 'old'. This operation is performed atomically.
 static Obj FuncCOMPARE_AND_SWAP(Obj self, Obj list, Obj index, Obj old, Obj new)
 {
     Int         len;
@@ -1769,7 +1769,7 @@ static StructGVarFunc GVarFuncs[] = {
 
 };
 
-// Forbid comparision and copying of atomic objects, because they
+// Forbid comparison and copying of atomic objects, because they
 // cannot be done in a thread-safe manner
 static Int AtomicRecordErrorNoCompare(Obj arg1, Obj arg2)
 {
@@ -1895,7 +1895,7 @@ static Int InitKernel (
   IsRecFuncs[ T_TLREC ] = AlwaysYes;
   UnbRecFuncs[ T_TLREC ] = UnbTLRecord;
 
-  // Forbit various operations on atomic lists and records we can't
+  // Forbid various operations on atomic lists and records we can't
   // perform thread-safely.
 
   // Ensure that atomic objects cannot be copied

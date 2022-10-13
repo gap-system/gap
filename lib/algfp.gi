@@ -571,7 +571,7 @@ InstallMethod( \*,"fp algebra el*ring el",IsMagmaRingsRings,
 
 #AH  Embedding can only be defined reasonably if a `One' different from
 #AH  the zero is present
-#AH  (The factor may collaps).
+#AH  (The factor may collapse).
 #T The `One' of the factor may be equal to the `Zero',
 #T so the ``embedding'' can be defined as a mapping from the ring
 #T to the algebra,

@@ -156,7 +156,7 @@ UInt   GetMembufSize(void);
 **  respectively the size of the workspace.  All sizes are measured in KByte.
 **
 **  The message  function  should display   the information  for each   phase
-**  immediatly, i.e.,  by calling 'flush' if the  output device is a file, so
+**  immediately, i.e.,  by calling 'flush' if the  output device is a file, so
 **  that the user has some indication how much time each phase used.
 **
 **  For example {\GAP} displays messages for  full garbage collections in the

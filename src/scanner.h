@@ -330,7 +330,7 @@ EXPORT_INLINE void SyntaxWarning(ScannerState * s, const Char * msg)
 **  If the current symbol  is 'S_THEN' it is  matched  and the next symbol is
 **  read.  Otherwise 'Match'  prints the  current line followed by the  error
 **  message: '^ syntax error, then expected'.  Then 'Match' skips all symbols
-**  until finding either  a symbol  that can begin  a statment,  an 'elif' or
+**  until finding either a symbol  that can begin  a statement,  an 'elif' or
 **  'else' or 'fi' symbol, or a symbol that is  contained in the set <follow>
 **  which is passed to 'ReadIf' and contains all symbols allowing  one of the
 **  calling functions  to resynchronize,  for example 'S_OD' if 'ReadIf'  has

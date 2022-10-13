@@ -1091,7 +1091,7 @@ InstallMethod( PrimitiveRoot,
 
 #############################################################################
 ##
-#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolut value
+#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolute value
 ##
 InstallMethod( EuclideanDegree,
     "for a division ring and a ring element",

@@ -189,7 +189,7 @@ This section is based on <https://lornajane.net/posts/2015/code-reviews-before-y
 
 * Is the code correct?
 * Is the code commented where necessary?
-* Do the continious integration tests pass?
+* Do the continuous integration tests pass?
 * Are there tests if necessary?
 * Does the new code fit in with documented behaviour?
 * Are new features documented if necessary?

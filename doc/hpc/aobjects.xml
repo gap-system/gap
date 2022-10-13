@@ -249,7 +249,7 @@ replacement policy is being changed to being rewritable: Elements can be replace
   <Section Label="Thread-local records">
     <Heading>Thread-local records</Heading>
 
-Thread-local records allow an easy way to have a separate copy of a record for each indvidual thread that is accessed by
+Thread-local records allow an easy way to have a separate copy of a record for each individual thread that is accessed by
 the same name in each thread.
 
 <Example><![CDATA[

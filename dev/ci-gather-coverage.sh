@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Continous integration testing script
+# Continuous integration testing script
 
 # This is currently only used for Travis CI integration, see .travis.yml
 # for details.

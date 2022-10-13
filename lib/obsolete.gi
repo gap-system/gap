@@ -318,7 +318,7 @@
 ##  which specifies the linear action of mat, and another which specifies
 ##  the vector space which mat acts upon.
 ##
-##  In the future, the versions above could be given a differnt meaning,
+##  In the future, the versions above could be given a different meaning,
 ##  where the first argument simply specifies both fields in the case
 ##  when they are the same.
 ##

@@ -511,7 +511,7 @@ function(kbrws,v)
         fi;
 
         #Now we have to check if by adjoining this rule
-        #any of the other active ones become redudant
+        #any of the other active ones become redundant
 
         n:=Length(kbrws!.tzrules); 
         # go descending to avoid having to reindex

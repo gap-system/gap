@@ -220,5 +220,5 @@ gap> Size(g);
 gap> l:=LowLayerSubgroups(g,2);;Length(l);
 73
 
-# thats all, folks
+# that's all, folks
 gap> STOP_TEST( "grplatt.tst" );

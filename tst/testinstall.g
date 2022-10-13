@@ -8,7 +8,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file runs all tests from the directory 'tst/testinstall' of the
-##  GAP distribution. It is recommented to read it after GAP installation.
+##  GAP distribution. It is recommended to read it after GAP installation.
 ##
 ##  The documentation states the following:
 ##

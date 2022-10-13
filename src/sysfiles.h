@@ -151,7 +151,7 @@ Int SyIsEndOfFile(Int fid);
 **
 **  'syStartraw' tries to put the file with the file  identifier  <fid>  into
 **  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
-**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
+**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succeeds it
 **  returns 1, otherwise, e.g., if the <fid> is not a terminal, it returns 0.
 **
 **  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
@@ -166,11 +166,11 @@ void syStopraw(Int fid);
 
 /****************************************************************************
 **
-*F  SyFgets( <line>, <lenght>, <fid> )  . . . . .  get a line from file <fid>
+*F  SyFgets( <line>, <length>, <fid> )  . . . . .  get a line from file <fid>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
 **  'SyFgets' (like 'fgets') reads characters until either  <length>-1  chars
-**  have been read or until a <newline> or an  <eof> character is encoutered.
+**  have been read or until a <newline> or an  <eof> character is encountered.
 **  It retains the '\n' (unlike 'gets'), if any, and appends '\0' to  <line>.
 **  'SyFgets' returns <line> if any char has been read, otherwise '(char*)0'.
 **
@@ -202,7 +202,7 @@ void syStopraw(Int fid);
 **      <ctr>-P redisplay the last input line, another <ctr>-P will redisplay
 **              the line before that, etc.  If the cursor is not in the first
 **              column only the lines starting with the string to the left of
-**              the cursor are taken. The history is limitied to ~8000 chars.
+**              the cursor are taken. The history is limited to ~8000 chars.
 **      <ctr>-N Like <ctr>-P but goes the other way round through the history
 **      <esc>-< goes to the beginning of the history.
 **      <esc>-> goes to the end of the history.

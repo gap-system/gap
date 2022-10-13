@@ -1,6 +1,6 @@
 #############################################################################
 ##
-##  This file ontains tests for vector spaces of Lie matrices.
+##  This file contains tests for vector spaces of Lie matrices.
 ##
 ##  (The test files 'vspcrow.tst' and 'vspcmat.tst' should contain the same
 ##  tests.)

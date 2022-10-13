@@ -456,7 +456,7 @@ local s,i,p,r,x,m,pc;
   m:=DegreeOfUnivariateLaurentPolynomial(f);
   x:=Indeterminate(CoefficientsFamily(FamilyObj(f)),
        IndeterminateNumberOfUnivariateRationalFunction(f));
-  r:=x^2; # just to set initail value to non-squarefree pol
+  r:=x^2; # just to set initial value to non-squarefree pol
   i:=0;
   while DegreeOfUnivariateLaurentPolynomial(Gcd(r,Derivative(r)))>0 do
     if i=0 then

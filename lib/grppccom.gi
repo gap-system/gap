@@ -382,7 +382,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
   N:=ocr.module;
 
   # If  <K>  is no split extension of <N> return the trivial list, as there
-  # are  no  complements.  We  compute  the cocycles only if the extenstion
+  # are  no  complements.  We  compute  the cocycles only if the extension
   # splits.
   zett:=OCOneCocycles( ocr, true );
   if IsBool( zett )  then

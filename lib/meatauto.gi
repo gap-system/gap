@@ -947,7 +947,7 @@ end);
 
 # Take a Fitting element and use it to split M into a direct sum
 # of submodules. Return the submodules.
-# r is the rank of a (which migth be known before
+# r is the rank of a (which might be known before
 BindGlobal("FittingSplitModule",function (a,r,F)
 local n, ro;
 

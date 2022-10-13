@@ -50,7 +50,7 @@ InstallSubsetMaintenance( NiceMonomorphism,
 ##  <Func Name="IsNiceMonomorphism" Arg='nhom'/>
 ##
 ##  <Description>
-##  This filter indicates that a mappping has been installed as the
+##  This filter indicates that a mapping has been installed as the
 ##  <Ref Func="NiceMonomorphism"/> value of an object.
 ##  (Such mappings may need to be handled specially
 ##  because they should not refer to the <Ref Attr="NiceMonomorphism"/> value

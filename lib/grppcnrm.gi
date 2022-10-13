@@ -532,7 +532,7 @@ PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
     local   id,  stb,  data,  pnt,  i,  cnj,  ns,  one,  mats,  sys,  
             sol,  v,  j;
 
-    # The situtation is as follows:
+    # The situation is as follows:
     #
     #	    	S
     #	    	 \
@@ -602,7 +602,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,  
             nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v;
 
-    # The situtation is as follows:
+    # The situation is as follows:
     #
     #	    	S
     #	    	 \
@@ -800,8 +800,8 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
 
     # begin with <g>/<e>[2], in this factorgroup nothing is to be done
     s := e[1] mod e[2];
-    Info( InfoPcNormalizer, 1, "skiping level 1 of ", r );
-    Info( InfoPcNormalizer, 1, "skiping level 2 of ", r );
+    Info( InfoPcNormalizer, 1, "skipping level 1 of ", r );
+    Info( InfoPcNormalizer, 1, "skipping level 2 of ", r );
 
     # start with <g>/<e>[3] because <g>/<e>[2] is abelian
     for i  in [ 3 .. r ]  do
@@ -977,7 +977,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
                 od;
 
                 # Now we know our new <S>, if <j>-1 is still nonzero, compute
-                # the intersection in order to see, if we are finshed.
+                # the intersection in order to see, if we are finished.
 
                 if 0 < j  then
                     si_1 := NormalIntersectionPcgs(

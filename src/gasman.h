@@ -164,7 +164,7 @@ EXPORT_INLINE UInt TNUM_BAG(Bag bag)
 **
 **      if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == (FLAG1 | FLAG2)) ...
 **
-**  Similary, if you wish to test that FLAG1 is set and FLAG2 is not set,
+**  Similarly, if you wish to test that FLAG1 is set and FLAG2 is not set,
 **  use:
 **
 **      if (TEST_BAG_FLAG(obj, FLAG1 | FLAG2 ) == FLAG1) ...
@@ -418,7 +418,7 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 **
 **  It is probably a good idea to define symbolic constants  for all types in
 **  a  system wide   header  file,  e.g.,  'types.h', if   only  to avoid  to
-**  accidently use the same value for two different types.
+**  accidentally use the same value for two different types.
 **
 **  <size> is the size of the new bag in bytes and must be a value  between 0
 **  and $2^{32}-1$ (on 32 bit systems)  resp. $2^{48}-1$ (on 64 bit systems).
