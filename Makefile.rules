@@ -662,7 +662,7 @@ install-libgap: libgap.la libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(LTINSTALL) -s libgap.la $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/pkgconfig
-	$(INSTALL) libgap.pc $(DESTDIR)$(libdir)/pkgconfig
+	$(INSTALL) -m 0644 libgap.pc $(DESTDIR)$(libdir)/pkgconfig
 
 
 .PHONY: install install-bin install-doc install-gaproot install-headers install-libgap
