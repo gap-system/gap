@@ -112,7 +112,7 @@ numerical id is displayed instead.
     <Subsection Label="prefix">
       <Heading>!prefix (id|*) string</Heading>
 
-Prefix the output from the specified thread (or for all newly created threads if <C>*</C> was specified) wiht
+Prefix the output from the specified thread (or for all newly created threads if <C>*</C> was specified) with
 <C>string</C>. The same substitution rules as for the <C>!prompt</C> command apply.
 
     </Subsection>

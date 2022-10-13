@@ -17,7 +17,7 @@
 **  connects as client to a specified socket.
 **
 **  At this level, we provide the two interfaces separately. For each we have
-**  an integer identifer for each open connection, and creation, read and
+**  an integer identifier for each open connection, and creation, read and
 **  write functions, and possibly some sort of probe function.
 **
 */
@@ -231,7 +231,7 @@ static UInt OpenPty(int * parent, int * child)
 **
 *F  StartChildProcess( <dir>, <name>, <args> )
 **  Start a subprocess using ptys. Returns the stream number of the IOStream
-**  that is connected to the new processs
+**  that is connected to the new process
 */
 
 

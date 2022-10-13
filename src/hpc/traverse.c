@@ -149,7 +149,7 @@ static void TraversalRehash(TraversalState * traversal)
 void QueueForTraversal(TraversalState * traversal, Obj obj)
 {
     if (!IS_BAG_REF(obj))
-        return; /* skip ojects that aren't bags */
+        return; /* skip objects that aren't bags */
     if (!traversal->traversalCheck(traversal, obj))
         return;
     if (!SeenDuringTraversal(traversal, obj))

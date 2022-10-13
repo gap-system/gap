@@ -1852,7 +1852,7 @@ Obj ModInt(Obj opL, Obj opR)
 **  'QuoInt' returns the integer part of the two integers <opL> and <opR>.
 **
 **  Note that this routine is not called from 'EvalQuo', the  division of two
-**  integers yields a rational and is therefor performed in 'QuoRat'. This
+**  integers yields a rational and is therefore performed in 'QuoRat'. This
 **  operation is however available through the internal function 'Quo'.
 */
 Obj QuoInt(Obj opL, Obj opR)

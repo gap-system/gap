@@ -24,7 +24,7 @@ Put any other debugging code into the function.
 
 Note that the function object itself will be changed "in place"!
 This means that all places where this function is installed for example
-as a method will be changed simultanously.
+as a method will be changed simultaneously.
 
 BEWARE of debugging functions that have been created within the scope
 of another function possibly with access to the surrounding local 

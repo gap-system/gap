@@ -246,7 +246,7 @@ InstallGlobalFunction( Exec, function( arg )
     if ARCH_IS_WINDOWS() then
         # on Windows, we use the native shell such that behaviour does
         # not depend on whether cygwin is installed or not.
-	# cmd.exe is preferrable to old-style `command.com'
+	# cmd.exe is preferable to old-style `command.com'
         shell := Filename( DirectoriesSystemPrograms(), "cmd.exe" );
         cs := "/C";
     else

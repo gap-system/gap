@@ -1788,7 +1788,7 @@ UInt ResizeBag (
 **  three possible statuses: LIVE, DEAD and  HALFDEAD. The default state of a
 **  bag with its identifier in the link word, is  the tag for DEAD. Live bags
 **  are tagged    with  MARKED_ALIVE(<identifier>)  in the   link   word, and
-**  half-dead bags (ie bags pointed to weakly but not strongly) with the tage
+**  half-dead bags (ie bags pointed to weakly but not strongly) with the tag
 **  MARKED_HALFDEAD(<identifier>).
 **
 **  Note that 'CollectBags' cannot put a random or magic  value into the link
@@ -1861,7 +1861,7 @@ UInt ResizeBag (
 **  allocation   function <alloc-func> (see    "InitBags").   If <alloc-func>
 **  refuses  to extend  the   workspace,  'CollectBags' returns 0 to indicate
 **  failure to 'NewBag'.  In  any case 'CollectBags' will  try to  extend the
-**  workspace so that at least one eigth of the storage is free, that is, one
+**  workspace so that at least one eighth of the storage is free, that is, one
 **  eight of the storage between 'OldBags' and 'EndBags' shall be  free.   If
 **  <alloc-func> refuses this extension of the workspace, 'CollectBags' tries
 **  to get along with  what it  got.   Also 'CollectBags' wants at least  one

@@ -611,7 +611,7 @@ end);
 InstallMethod( ConstantTimeAccessList,
     "for a constant time access list",
     [ IsList and IsConstantTimeAccessList ],
-    SUM_FLAGS, # cant't do better
+    SUM_FLAGS, # can't do better
     Immutable );
 
 

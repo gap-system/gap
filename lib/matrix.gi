@@ -954,7 +954,7 @@ end);
 # 
 #     # If the order is finite then the absolute value of the trace
 #     # is bounded by the dimension of the matrix.
-# #T compute this (approximatively) for arbitrary cyclotomics
+# #T compute this (approximately) for arbitrary cyclotomics
 # #T (by the way: why isn't this function called `AbsRat'?)
 #     if IsInt( trace ) and NrRows( cycmat ) < AbsInt( trace ) then
 #       return infinity;
@@ -1375,7 +1375,7 @@ end);
 ##
 ## Fractions free method, will never introduce denominators
 ##
-## This method is better for cyclotomics, but pivotting is really needed
+## This method is better for cyclotomics, but pivoting is really needed
 ##
 InstallMethod( DeterminantMatDestructive,
     "fraction-free method",
@@ -1592,7 +1592,7 @@ InstallMethod( DeterminantMatDivFree,
             Error("DeterminantMatDivFree: <mat> must be a square matrix");
         fi;
 
-        ## initialze the final sum, the vertex set, initial parity
+        ## initialize the final sum, the vertex set, initial parity
         ## and level indexes
         ##
         zero := ZeroOfBaseDomain( M );
@@ -1651,7 +1651,7 @@ InstallMethod( DeterminantMatDivFree,
             od;
 
             ## set the new current and next level. The new next level
-            ## is intialized to zero
+            ## is initialized to zero
             ##
             temp   := nlevel; nlevel := clevel; clevel := temp;
             for x in [1..n] do
@@ -3237,7 +3237,7 @@ local m;
   return m;
 end);
 
-InstallOtherMethod( TriangulizedMat," matrix objects", [IsMatrixObj],
+InstallOtherMethod( TriangulizedMat, "matrix objects", [IsMatrixObj],
 function ( mat )
 local m;
   m:=MutableCopyMatrix(mat);
@@ -3245,7 +3245,7 @@ local m;
   return m;
 end);
 
-InstallOtherMethod( TriangulizedMat,"list of vectore", [IsList],
+InstallOtherMethod( TriangulizedMat,"list of vectors", [IsList],
 function ( mat )
 local m;
   m:=MutableCopyMatrix(mat);
@@ -3907,7 +3907,7 @@ end );
 ##  GF(<q>^r) for some r are powers of an element ksi in the splitting field,
 ##  which is of order <expo>.
 ##
-##  'SimultaneousEigenspaces'  returns a matrix  of intergers mod <expo>, say
+##  'SimultaneousEigenspaces'  returns a matrix  of integers mod <expo>, say
 ##  (a_{i,j}), such that the  power ksi^a_{i,j} is an  eigenvalue of the i-th
 ##  matrix in <matlist> and the eigenspaces of  the different matrices to the
 ##  eigenvalues ksi^a_{i,j} for fixed j are equal.

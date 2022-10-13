@@ -1102,7 +1102,7 @@ gap> LargestImageOfMovedPoint( f );
       <P/>
 
       If the optional second argument <A>n</A> is not present, then the
-      degree of <A>f</A> is used by defualt. 
+      degree of <A>f</A> is used by default. 
       <Example><![CDATA[
 gap> f := Transformation( [ 10, 3, 7, 10, 1, 5, 9, 2, 6, 10 ] );;
 gap> FlatKernelOfTransformation( f );

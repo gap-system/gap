@@ -2611,7 +2611,7 @@ local cls, len, sz, max, rep, z, t, i, j, k;
       "\" [color=white,arrowhead=none];\n");
   od;
 
-  # subgroup nodes, also acccording to size
+  # subgroup nodes, also according to size
   for i in [1..Length(cls)] do
     for j in [1..len[i]] do
       if len[i]=1 then

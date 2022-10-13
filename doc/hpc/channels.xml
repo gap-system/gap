@@ -317,7 +317,7 @@ gap> InspectChannel(ch);
 [ 2, 3, 5 ]
 ]]></Example>
 
-This function is primarly intended for debugging purposes.
+This function is primarily intended for debugging purposes.
 </Description>
 </ManSection>
   </Section>

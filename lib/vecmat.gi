@@ -1428,7 +1428,7 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
             common := FFECONWAY.WriteOverSmallestCommonField(vc);
             #
             # FFECONWAY.WriteOverSmallestCommonField returns an integer or fail.
-            # When it resturns an integer, it may modify individual entries of vc
+            # When it returns an integer, it may modify individual entries of vc
             #
             if common = fail or common  > 256 then
                 #

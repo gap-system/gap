@@ -66,7 +66,7 @@
 ##  <P/>
 ##  The functions <C>DeclareObsoleteSynonym</C> and
 ##  <C>DeclareObsoleteSynonymAttr</C> take
-##  an optional final paremeter, specifying the info level at which the given
+##  an optional final parameter, specifying the info level at which the given
 ##  obsolete symbol should be reported. It defaults to 2 and 1, respectively.
 ##  <P/>
 ##  The obsolete &GAP; code is collected in two library files,

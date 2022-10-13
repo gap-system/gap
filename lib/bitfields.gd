@@ -25,12 +25,12 @@
 ##  widths. All bitfield values are treated as unsigned. 
 ##  The total of the widths must not exceed 60 bits on 64-bit architecture
 ##  or 28 bits on a 32-bit architecture. For performance 
-##  reasons some checks that one might wish to do are ommitted. In particular, 
+##  reasons some checks that one might wish to do are omitted. In particular, 
 ##  the builder and setter functions do not check if the value[s] passed to them are 
 ##  negative or too large (unless &GAP; is specially compiled for debugging).
 ##  Behaviour when such arguments are passed is undefined.
 ##
-##  You can tell which type of architecture you are running on by acccessing 
+##  You can tell which type of architecture you are running on by accessing 
 ##  <C>GAPInfo.BytesPerVariable</C> which is 8 on 64-bits and 4 on 32. 
 ##
 ##

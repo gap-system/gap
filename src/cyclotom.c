@@ -405,7 +405,7 @@ static Int LtCyc(Obj opL, Obj opR)
             return LT( cfl[i], cfr[i] );
     }
 
-    /* if one cyclotomic has more terms than the other compare it agains 0 */
+    // if one cyclotomic has more terms than the other compare it against 0
     if ( lel < ler )
         return LT( INTOBJ_INT(0), cfr[i] );
     else if ( ler < lel )
@@ -632,7 +632,7 @@ static Obj Cyclotomic(UInt n, UInt m)
     UInt                i, k;           /* loop variables                  */
     UInt                nn;             /* copy of n to factorize          */
     UInt                p;              /* prime factor                    */
-    static UInt         lastN;          /* rember last n, dont recompute:  */
+    static UInt         lastN;          /* remember last n, dont recompute */
     static UInt         phi;            /* Euler phi(n)                    */
     static BOOL         isSqfree;       /* is n squarefree?                */
     static UInt         nrp;            /* number of its prime factors     */
@@ -1102,7 +1102,7 @@ static Obj DiffCyc(Obj opL, Obj opR)
 *F  ProdCycInt( <opL>, <opR> )  . . .  product of a cyclotomic and an integer
 **
 **  'ProdCycInt'    returns the product  of a    cyclotomic and  a integer or
-**  rational.  Which operand is the cyclotomic and  wich the integer does not
+**  rational.  Which operand is the cyclotomic and which the integer does not
 **  matter.
 **
 **  This is a special case, because if the integer is not 0, the product will
@@ -1169,7 +1169,7 @@ static Obj ProdCycInt(Obj opL, Obj opR)
         CHANGED_BAG( hdP );
     }
 
-    /* otherwise multiply every coefficent                                 */
+    // otherwise multiply every coefficient
     else {
         len = SIZE_OBJ(opL);
         hdP = NewBag(T_CYC, len);

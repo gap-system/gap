@@ -133,7 +133,7 @@ DeclareAttribute("DataAboutSimpleGroup",IsGroup,"mutable");
 ##  For an order <M>n</M> this function returns a heuristic bound for a
 ##  small permutation degree of a simple group of that exact order.
 ##  This function
-##  can be used to decide whether it is woth to try the `SmallerDegree'
+##  can be used to decide whether it is worth to try the `SmallerDegree'
 ##  reduction.
 ##  <#/GAPDoc>
 DeclareGlobalFunction("SufficientlySmallDegreeSimpleGroupOrder");

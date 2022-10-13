@@ -1596,7 +1596,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   else
     if Size(Intersection(borel,weyl))>1 then
       # can we fix this?
-      # asume weyl is not too large
+      # assume weyl is not too large
       cs:=Concatenation(List(ConjugacyClassesSubgroups(weyl),AsList));;
       SortBy(cs,x->-Size(x));
       l:=false;

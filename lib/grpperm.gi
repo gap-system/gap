@@ -113,7 +113,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
                 h := h / base[ trns[SmallestMovedPoint(h)^h] ];
             od;
 
-            # if this is linear indepenent, add it to the generators
+            # if this is linear independent, add it to the generators
             if h <> h^0  then
                 Add( inds, g );
                 Add( pows, g );
@@ -145,7 +145,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
 
     od;
 
-    # return the indepenent generators
+    # return the independent generators
     return inds;
 end );
 

@@ -119,7 +119,7 @@ InstallGlobalFunction( Image, function ( arg )
         fi;
         return ImageElm( map, elm );
 
-      # image of a collection of elments <elm> under the mapping <map>
+      # image of a collection of elements <elm> under the mapping <map>
       elif CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) ) then
         if not IsSubset( Source( map ), elm ) then
           ErrorNoReturn( "the collection <elm> must be contained in ",
@@ -157,7 +157,7 @@ end );
 #M  <map>(<elm>)
 #M  <map>(<coll>)
 ##
-##  Method to alow mappings to be used like functions when appropriate
+##  Method to allow mappings to be used like functions when appropriate
 
 InstallMethod(CallFuncList, [IsGeneralMapping, IsList],
         function(map, lst) 
@@ -200,7 +200,7 @@ InstallGlobalFunction( Images, function ( arg )
           fi;
           return ImagesElm( map, elm );
 
-        # image of a collection of elments <elm> under the mapping <map>
+        # image of a collection of elements <elm> under the mapping <map>
         elif CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) ) then
           if not IsSubset( Source( map ), elm ) then
             ErrorNoReturn( "the collection <elm> must be contained in ",
@@ -265,7 +265,7 @@ InstallGlobalFunction( PreImage, function ( arg )
           fi;
           return PreImageElm( map, img );
 
-        # preimage of a collection of elments <img> under <map>
+        # preimage of a collection of elements <img> under <map>
         elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
           if not IsSubset( Range( map ), img ) then
             ErrorNoReturn( "the collection <elm> must be contained in ",

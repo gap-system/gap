@@ -373,7 +373,7 @@ DeclareAttribute( "CanonicalRepresentativeDeterminatorOfExternalSet",
 ##  <Prop Name="CanEasilyDetermineCanonicalRepresentativeExternalSet" Arg='xset'/>
 ##
 ##  <Description>
-##  This property indicates whether an extrenal set knows or has a
+##  This property indicates whether an external set knows or has a
 ##  possibility to determine a canonical representative
 ##  </Description>
 ##  </ManSection>

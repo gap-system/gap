@@ -557,5 +557,5 @@ gap> AssociatedPartition([]);
 gap> AssociatedPartition(Concatenation([7],ListWithIdenticalEntries(99,1)));
 [ 100, 1, 1, 1, 1, 1, 1 ]
 
-# thats it for the combinatorical package  ##################################
+# that's it for the combinatorial package  ##################################
 gap> STOP_TEST( "combinat.tst", 1);

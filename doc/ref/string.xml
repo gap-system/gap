@@ -343,7 +343,7 @@ memory manager the physical memory which is allocated for the string
 number of characters.
 <P/>
 These functions are intended for saving some of &GAP;s memory in certain 
-situations, see the explanations and the example for the analogeous
+situations, see the explanations and the example for the analogous
 functions <Ref Func="EmptyPlist"/> and <Ref Func="ShrinkAllocationPlist"/> 
 for plain lists.
 </Description>

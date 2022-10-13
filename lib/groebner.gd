@@ -139,7 +139,7 @@ DeclareAttribute("MonomialExtrepComparisonFun",IsObject);
 ##  returns either a list of variable indices for which this ordering is
 ##  defined, or <K>true</K> in case it is defined for all variables.
 ##  <P/>
-##  If <A>P</A> is a polynomial, it returns the indices of all variables occuring
+##  If <A>P</A> is a polynomial, it returns the indices of all variables occurring
 ##  in it.
 ##  </Description>
 ##  </ManSection>
@@ -463,7 +463,7 @@ DeclareGlobalFunction("PolynomialReducedRemainder");
 ##  <Ref Oper="GroebnerBasis" Label="for a list and a monomial ordering"/>
 ##  with the only distinction that the first argument has to be a list of
 ##  polynomials and that no test is performed to check whether the ordering
-##  is defined for all occuring variables.
+##  is defined for all occurring variables.
 ##  <P/>
 ##  Note that &GAP; at the moment only includes
 ##  a naïve implementation of Buchberger's algorithm (which is mainly

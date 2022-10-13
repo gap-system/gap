@@ -379,7 +379,7 @@ InstallGlobalFunction( "ImfMatrixGroup", function ( arg )
     # get the Q-class number of the corresponding rational imf class
     qmax := IMFRec.maximalQClasses[dim][q];
 
-    # define an approriate imf record
+    # define an appropriate imf record
     imfM := rec( );
     imfM.isomorphismType := IMFList[dim].isomorphismType[n];
     imfM.elementaryDivisors := ElementaryDivisorsMat( form );
@@ -391,7 +391,7 @@ InstallGlobalFunction( "ImfMatrixGroup", function ( arg )
         imfM.maximalQClass := qmax;
     fi;
 
-    # define some approriate group attributes
+    # define some appropriate group attributes
     SetFilterObj( M, IsImfMatrixGroup );
     SetName( M, name );
     SetSize( M, IMFList[dim].size[n] );
@@ -558,7 +558,7 @@ InstallGlobalFunction( "IsomorphismPermGroupImfGroup", function ( arg )
         List( orbit, vec -> PositionSorted( orbit, vec * g ) ) ) );
     P := Group( perms );
 
-    # define an approriate imf record
+    # define an appropriate imf record
     imfP := rec( );
 
     # define some appropriate group attributes

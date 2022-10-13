@@ -729,7 +729,7 @@ the last release.)
   One sentence ends with the argument P, the following sentence starts with
   the argument word.
   This should be reformulated.
-  (Find all such stuations automatically?)
+  (Find all such situations automatically?)
 -5AK TzSearch:
   Default values for the Tietze parameters `SaveLimit' and
   `searchSimultaneous' are described in this section,

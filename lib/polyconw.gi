@@ -192,7 +192,7 @@ BindGlobal("NrCompatiblePolynomials", function(p, n)
   return (p^n-1)/lcm;
 end);
 
-##  list of all cases wich less than 100*10^9 compatible polynomials, sorted
+##  list of all cases with less than 100*10^9 compatible polynomials, sorted
 ##  w.r.t. this number
 ConwayCandidates := function()
   local cand, p, i;

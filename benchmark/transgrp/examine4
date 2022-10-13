@@ -496,7 +496,7 @@ local mm,sign,z,p,m,l,d,i,s,r,j,k,freedom,f,b,Setze,Close;
       b:=0;
       k:=d;
       for i in [1..l] do
-	# try to find a column which gives a rarely occuring value (thus giving
+	# try to find a column which gives a rarely occurring value (thus giving
 	# lots of consequences)
 	f:=Minimum(List(Collected(List(Factors(r[i]))),i->i[2]));
 	# we want an entry, which sets this freedom level. However all enries
@@ -1271,7 +1271,7 @@ local anz,g,d,no,s,o,
   # genimages by normalizer automs.
 
   if IsSolvableGroup(g) then
-    Info(InfoAli,2,"transfering to PC group");
+    Info(InfoAli,2,"transferring to PC group");
     isopc:=IsomorphismPcGroup(d);
     dag:=Image(isopc);
 
@@ -1308,7 +1308,7 @@ local anz,g,d,no,s,o,
   nt:=NormalSubgroups(g);
   nrnt:=Length(nt);
 
-  # only the ones minimal unter normalizer, map (if nec.) back in PermGroup
+  # only the ones minimal under normalizer, map (if nec.) back in PermGroup
   n:=[];
   while Length(nt)>0 do
     j:=PreImage(ghom,nt[1]);
@@ -1553,7 +1553,7 @@ local anz,g,d,no,s,o,
 	      nt:=Set(maxes,i->Core(j,i));
 
 	      # is F a factor of grp which is suitable for us, than there is
-	      # a maximal subgroup of grp (the correspondig one to a max in grp)
+	      # a maximal subgroup of grp (the corresponding one to a max in grp)
 	      # whose core has index at most the maximal size for F
 	      k:=Filtered([1..Length(nt)],i->Index(j,nt[i])<=Size(gruppe));
 	      if Length(k)<Length(nt) then
@@ -1730,7 +1730,7 @@ fi;
 		  SetGrKrnormalizer(gens,Normalizer(nopa,gens));
 		fi;
 
-		# avoind unnecc. second normalizer computation
+		# avoid unnecc. second normalizer computation
 		# if the next is wrong, the computed normalizers would be
 		# disregarded anyhow
 		if
@@ -2129,7 +2129,7 @@ local b,x,y,sx,sy,w,l,hom1,hom2,p,p1,q,m,r,ce,cx,cy,id,ie,u,v,op,
   u:=Filtered(u,i->IsTransitive(i,dom));
   id:=List(u,TransitiveIdentification);
   if Length(id)<Length(Set(id)) then
-    # multiple occurances cannot be treated
+    # multiple occurrences cannot be treated
     return fail;
   fi;
   SortParallel(id,u);

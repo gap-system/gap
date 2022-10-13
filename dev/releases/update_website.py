@@ -164,7 +164,7 @@ for release in releases:
     with open(f"{pwd}/_data/assets/{version_safe}.json", "wb") as file:
         file.write(json.dumps(asset_data, indent=2).encode("utf-8"))
 
-    # For new-to-me relases create a file in _Releases/ and _data/package-infos/
+    # For new-to-me releases create a file in _Releases/ and _data/package-infos/
     if not known_release:
         # When we find a previously unknown release, we extract the release date
         # from the configure.ac file contained in gap-{version}-core.tar.gz.

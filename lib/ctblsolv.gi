@@ -787,7 +787,7 @@ function( G )
         Add( ind, 0 );
       fi;
     od;
-    # now we evalute ind at the relevant linear characters of C
+    # now we evaluate ind at the relevant linear characters of C
     for t in tr do
       if t[1] = C then
         # C/K is cyclic of order sz
@@ -1976,7 +1976,7 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
           Ee,      # complex root of unity needed for `rep'
           images,  # one list of images
           dim,     # current dimension
-          i, k,    # loop variabes
+          i, k,    # loop variables
           mat;     # one representing matrix
 
     mrep:= [];

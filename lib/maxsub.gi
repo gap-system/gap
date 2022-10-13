@@ -116,7 +116,7 @@ end);
 
 #############################################################################
 ##
-#F MaxsubSifted( pcgs, elm ) . . . sift elm trough modulo pcgs
+#F MaxsubSifted( pcgs, elm ) . . . sift elm through modulo pcgs
 ##
 BindGlobal("MaxsubSifted",function( pcgs, elm )
     local exp, new;

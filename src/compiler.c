@@ -2395,7 +2395,7 @@ static CVar CompPermExpr(Expr expr)
     }
     Emit( "%c = Array2Perm( %c );\n", perm, lprm );
 
-    /* free the termporaries                                               */
+    /* free the temporaries                                               */
     FreeTemp( TEMP_CVAR(lprm) );
     FreeTemp( TEMP_CVAR(lcyc) );
 
@@ -4120,7 +4120,7 @@ static void CompWhile(Stat stat)
         CompStat(READ_STAT(stat, i));
     }
 
-    /* thats it                                                            */
+    /* that's it                                                            */
     Emit( "\n}\n" );
     Emit( "/* od */\n" );
 
@@ -4182,7 +4182,7 @@ static void CompRepeat(Stat stat)
     Emit( "if ( %c ) break;\n", cond );
     if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
 
-    /* thats it                                                            */
+    /* that's it                                                            */
     Emit( "} while ( 1 );\n" );
 }
 

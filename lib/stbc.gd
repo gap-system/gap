@@ -468,7 +468,7 @@ DeclareGlobalFunction( "ElementsStabChain" );
 ##  <Func Name="IteratorStabChain" Arg='S'/>
 ##
 ##  <Description>
-##  returns an iterator for the elments of the group described by the
+##  returns an iterator for the elements of the group described by the
 ##  stabilizer chain <A>S</A>.
 ##
 ##  The elements of the group <A>G</A> are produced by iterating through

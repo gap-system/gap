@@ -829,7 +829,7 @@ function( efam )
 
 end );
 
-# this method is only to get a resonable error message in case the ring does
+# this method is only to get a reasonable error message in case the ring does
 # not know to be a UFD.
 InstallOtherMethod( RationalFunctionsFamily,"not UFD ring", true,
     [ IsObject ],
@@ -1772,7 +1772,7 @@ end);
 #
 #  11-15-04,  WDJ and AH
 
-# n is the number of terms in m. n1 is the number of variable occuring
+# n is the number of terms in m. n1 is the number of variable occurring
 # in each monomial term of m. returns the degrees of each variable in the
 # monomial m.
 BindGlobal("MVFactorDegreeMonomialTerm",function(m)

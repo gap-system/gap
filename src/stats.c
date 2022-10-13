@@ -1258,7 +1258,7 @@ static void PrintIf(Stat stat)
 **  'PrintFor' prints the for-loop <stat>.
 **
 **  Linebreaks are printed after the 'do' and the statements in the body.  If
-**  necesarry it is preferred immediately before the 'in'.
+**  necessary it is preferred immediately before the 'in'.
 */
 static void PrintFor(Stat stat)
 {
@@ -1283,7 +1283,7 @@ static void PrintFor(Stat stat)
 **
 **  'PrintWhile' prints the while-loop <stat>.
 **
-**  Linebreaks are printed after the 'do' and the statments  in the body.  If
+**  Linebreaks are printed after the 'do' and the statements  in the body.  If
 **  necessary one is preferred immediately before the 'do'.
 */
 static void PrintWhile(Stat stat)
@@ -1306,7 +1306,7 @@ static void PrintWhile(Stat stat)
 **
 **  'PrintAtomic' prints the atomic-loop <stat>.
 **
-**  Linebreaks are printed after the 'do' and the statments  in the body.  If
+**  Linebreaks are printed after the 'do' and the statements  in the body.  If
 **  necessary one is preferred immediately before the 'do'.
 */
 #ifdef HPCGAP

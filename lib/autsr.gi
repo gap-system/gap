@@ -700,7 +700,7 @@ end);
 # main automorphism method -- currently still using factor groups, but
 # nevertheless faster..
 
-# option somechar may be a list of characterstic subgroups, or a record with
+# option somechar may be a list of characteristic subgroups, or a record with
 # component subgroups, orbits
 BindGlobal("AutomGrpSR",function(G)
 local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,

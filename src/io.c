@@ -191,7 +191,7 @@ Char PEEK_NEXT_CHAR(TypInputFile * input)
     char c = *input->ptr;
 
     // read next character; this will increment input->ptr and then
-    // possibly read in new line data, and so even might end up reseting
+    // possibly read in new line data, and so even might end up resetting
     // input->ptr to point at the start of the line buffer, which is
     // equal to Input->line+1
     char next = GetNextChar(input);

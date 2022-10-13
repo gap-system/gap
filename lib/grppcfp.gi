@@ -869,7 +869,7 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
         od;
     fi;
 
-    # this is the result - should be G only with setted epimorphism
+    # this is the result - should be G only with set epimorphism
     return epi;
 end );
 

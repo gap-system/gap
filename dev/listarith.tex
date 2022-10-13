@@ -15,7 +15,7 @@ New Functionality}
 When the interpreter evaluates an arithmetic expression it reaches a
 range of functions such as EvalAInv (\verb|exprs.c|), and from there
 (and elsewhere in the kernel) the macros such as AINV and SUM
-(\verb|ariths.h|) are called. These despatch through the kernel jump
+(\verb|ariths.h|) are called. These dispatch through the kernel jump
 tables such as \verb|SumFuncs|. Exceptionally, \verb|EvalSum|, \verb|EvalDiff| and
 \verb|EvalProd| fast-track the case of two small integer arguments and
 small integer result. 
@@ -121,7 +121,7 @@ In \verb|vecffe.c| something very similar is done for
 
 
 
-\section{XTNum extended despatch}
+\section{XTNum extended dispatch}
 
 XTNum is defined in lists.c. Its behaviour is controlled by entries
 in the IsXTNumListFuncs jump table. These are boolean (C style)
@@ -327,7 +327,7 @@ This is implemented
 So, we want to revise the existing kernel functions to implement the
 left, right, ptwise and inner rules, as now specified. We need to
 select an appropriate set of special cases, for which we might, for
-instance require denseness, to haev extra-fast routines. All of these
+instance require denseness, to have extra-fast routines. All of these
 routines are exported from the kernel and installed in the library as
 methods with appropriate requirements. 
 

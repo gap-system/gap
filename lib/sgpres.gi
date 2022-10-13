@@ -247,7 +247,7 @@ end );
 InstallGlobalFunction( AugmentedCosetTableRrs,
     function ( G, table, type, string )
 
-    local   fgens,                  # generators of asscociated free group
+    local   fgens,                  # generators of associated free group
             grels,                  # relators of G
             involutions,            # indices of involutory gens of G
             index,                  # index of the group in the parent group
@@ -2272,7 +2272,7 @@ local t,j;
   return t;
 end);
 
-# New implemention of the Modified Todd-Coxeter (MTC) algorithm, based on
+# New implementation of the Modified Todd-Coxeter (MTC) algorithm, based on
 # Chapter 5  of the "Handbook of Computational Group Theory", by Derek F.
 # Holt (referred # to as "Handbook" from here on). Function names after the
 # NEWTC_ agree with those of sections 5.2, 5.3 of the Handbook.

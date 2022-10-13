@@ -675,7 +675,7 @@ static Obj TypePlistWithKTNum (
     else
       return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
 #else
-    /* whats going on here?                                                */
+    // what's going on here?
     ErrorQuit( "Panic: strange type tnum '%s' ('%d')",
                (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
     return 0;

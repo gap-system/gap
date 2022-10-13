@@ -61,7 +61,7 @@ to be replicated. The following alternative is meant for such objects.
       Arg='description, filters, method'/>
 
 <Description>
-The more general <Ref Func="InstallSerializer"/> allows for arbitarily complex serialization code. It installs <A>method</A> as
+The more general <Ref Func="InstallSerializer"/> allows for arbitrarily complex serialization code. It installs <A>method</A> as
 the method to serialize objects matching <A>filters</A>; <A>description</A> has the same role as for
 <Ref BookName="ref" Func="InstallMethod"/>.
 <P/>

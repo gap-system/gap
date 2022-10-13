@@ -89,7 +89,7 @@ Error, CLONE_OBJ() cannot overwrite public objects
 #@else
 gap> CLONE_OBJ(x, x);
 gap> # TODO: overwriting an immutable object via CLONE_OBJ should probably
-gap> # not be allowed, bu InstallValue relies on it...
+gap> # not be allowed, but InstallValue relies on it...
 #@fi
 
 #

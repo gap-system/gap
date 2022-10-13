@@ -353,7 +353,7 @@ static Obj FuncCrcString(Obj self, Obj str)
 }
 
 // Get OS Kernel version. Used to discover if GAP is running inside
-// 'Windows Subystem for Linux'
+// 'Windows Subsystem for Linux'
 Obj SyGetOsRelease(void)
 {
     Obj            r = NEW_PREC(0);
@@ -843,7 +843,7 @@ Int SyIsEndOfFile (
 **
 **  'syStartraw' tries to put the file with the file  identifier  <fid>  into
 **  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
-**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
+**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succeeds it
 **  returns 1, otherwise, e.g., if the <fid> is not a terminal, it returns 0.
 **
 **  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
@@ -1210,7 +1210,7 @@ void SyFputs (
 {
     UInt                i;
 
-    /* if outputing to the terminal compute the cursor position and length */
+    /* if outputting to the terminal compute the cursor position and length */
     if ( fid == 1 || fid == 3 ) {
         syNrchar = 0;
         for ( i = 0; line[i] != '\0'; i++ ) {
@@ -1569,7 +1569,7 @@ Int SyGetch (
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
 **  'SyFgets' (like 'fgets') reads characters until either  <length>-1  chars
-**  have been read or until a <newline> or an  <eof> character is encoutered.
+**  have been read or until a <newline> or an <eof> character is encountered.
 **  It retains the '\n' (unlike 'gets'), if any, and appends '\0' to  <line>.
 **  'SyFgets' returns <line> if any char has been read, otherwise '(char*)0'.
 **
@@ -1601,7 +1601,7 @@ Int SyGetch (
 **      <ctr>-P redisplay the last input line, another <ctr>-P will redisplay
 **              the line before that, etc.  If the cursor is not in the first
 **              column only the lines starting with the string to the left of
-**              the cursor are taken. The history is limitied to ~8000 chars.
+**              the cursor are taken. The history is limited to ~8000 chars.
 **      <ctr>-N Like <ctr>-P but goes the other way round through the history
 **      <esc>-< goes to the beginning of the history.
 **      <esc>-> goes to the end of the history.
@@ -2947,7 +2947,7 @@ UInt SyExecuteProcess (
 
     /* This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
      * was set to the default or 'ignore'. In these cases (or if SIG_ERR is
-     * returned), just use a null signal hander - the default on most systems
+     * returned), just use a null signal handler - the default on most systems
      * is to do nothing */
     if (func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
       func2 = &NullSignalHandler;

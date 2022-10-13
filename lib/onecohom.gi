@@ -756,7 +756,7 @@ local   i, j;
     fi;
 
     # Now  all  sums, such  that sumMatrices[i][j] is the sum from k = 0
-    # upto j - 1 over matrices[i]^k for j = 1 ... p.
+    # up to j - 1 over matrices[i]^k for j = 1 ... p.
     if not IsBound(ocr.sumMatrices)  then
     	Info(InfoCoh,2,"AddSumMatrices: adding sum matrices");
         ocr.sumMatrices:=[];
@@ -797,7 +797,7 @@ local   i,j;
     fi;
 
     # Now  all  sums, such  that sumMatrices[i][j] is the sum from k = 0
-    # upto j - 1 over matrices[i]^k for j = 1 ... p.
+    # up to j - 1 over matrices[i]^k for j = 1 ... p.
     if not IsBound(ocr.sumMatrices)  then
     	Info(InfoCoh,2,"AddSumMatrices: adding sum matrices");
         ocr.sumMatrices:=[];
@@ -937,7 +937,7 @@ local   mat, i, j, v, vv;
 
     # For j:=generators[i], v:=powers[i], M operations:
     #
-    # If j is a small generator,everthing is as usual.
+    # If j is a small generator,everything is as usual.
     #
     #    if j = n and v>0, then
     #          mat = mat*M[j]^v+sum_{k=0}^{v-1} M[j]^k

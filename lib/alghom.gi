@@ -1380,7 +1380,7 @@ InstallMethod( NaturalHomomorphismByIdeal,
           pos,       # relevant positions
           img,       # image of the homomorphism
           canbas,    # canonical basis of the image
-          Bimgs,     # images of the vactors of `B' under the hom.
+          Bimgs,     # images of the vectors of `B' under the hom.
           nathom;    # the homomorphism, result
 
     # Check that the FLMLORs are finite dimensional.

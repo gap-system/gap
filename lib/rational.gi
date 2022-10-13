@@ -279,7 +279,7 @@ BindGlobal( "ElementNumber_Rationals",
     else
 
       # Compute the maximum of numerator and denominator,
-      # and subtract the number of inner sqares from 'number'.
+      # and subtract the number of inner squares from 'number'.
 
       number:= number - 3;
 

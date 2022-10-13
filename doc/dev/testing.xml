@@ -62,7 +62,7 @@ and <F>tst/testinstall</F>.
 <Section Label="Sect-CheckManualExamples">
 <Heading>Checking examples in the main manuals</Heading>
 
-The reproducability of the output of examples in the main &GAP; manuals
+The reproducibility of the output of examples in the main &GAP; manuals
 (the two manuals in the directories <F>ref</F> and <F>tut</F>)
 is promised in section <Ref BookName="tut" Sect="Starting and Leaving GAP"/>,
 under the condition that all examples of a manual chapter are run

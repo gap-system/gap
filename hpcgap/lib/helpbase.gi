@@ -153,7 +153,7 @@ positions:=[];
 patterns:=[];
 
 # Loop through all spelling patterns to check if there are any matches.
-# Record starting positions and data about matching patters.
+# Record starting positions and data about matching patterns.
 atomic readonly HELP_REGION do
 
 for pattern in TRANSATL do

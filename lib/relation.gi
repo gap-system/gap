@@ -28,7 +28,7 @@
 ##         1. Binary Relations (general)
 ##         2. Binary Relation on points i.e. domain [1..n]
 ##         3. Equivalence Relations
-##         4. Equivalence Classs 
+##         4. Equivalence Class 
 ##
 ##      B. Constructor functions for binary relations (general)
 ##         1. Identity relation 
@@ -70,8 +70,8 @@
 ##          representation)
 ## 
 ##      I. Operations and methods for binary relations on points 
-##         1. ImagesElm (compatibilty with GeneralMapping)
-##         2. PreImagesElm (compatibilty with GeneralMapping)
+##         1. ImagesElm (compatibility with GeneralMapping)
+##         2. PreImagesElm (compatibility with GeneralMapping)
 ##         3. \=, \in, \<
 ##         4. \* for relations, transformations, and permutation
 ##         5. Set operations \+, \-  (union, difference)
@@ -518,7 +518,7 @@ InstallMethod(TransitiveClosureBinaryRelation,
         [IsBinaryRelation], 0,
     function(r)
         local t,        # a list of sets that provides an adjacency list 
-                        #   representation of the graph invloved
+                        #   representation of the graph involved
               el,       # those elements involved in the underlying relation
               i,j,      # index variables
               p,        # 2-tuples that make up the closure 
@@ -1087,7 +1087,7 @@ InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
 #############################################################################
 ##
 ##  Methods that allow binary relations on points to act and work as
-##  IsEndoGeneralMappings but making use of their specialized represenations
+##  IsEndoGeneralMappings but making use of their specialized representations
 ##
 #############################################################################
 
@@ -1673,7 +1673,7 @@ InstallGlobalFunction(EquivalenceRelationByPairs,
         ## Filter out all pairs of the form (a,a).
         ##   If this filtered set is empty return the diagonal
         ##   equivalence 
-        ## Make a mutable copy of pairs so we don't inadvertantly alter
+        ## Make a mutable copy of pairs so we don't inadvertently alter
         ##   pairs 
         ##
         C := List(Filtered(pairs,x->not x[1]=x[2]), y->ShallowCopy(y));
@@ -1807,7 +1807,7 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
         local p,  ## partition  
               f;  ## first partition 
 
-        ## Check if sourcees are equal
+        ## Check if sources are equal
         ##
         if Source(x) <> Source(y)  then
             return false;
@@ -1943,7 +1943,7 @@ InstallMethod( ImagesElm,
 #M  PreImagesElm( <rel>, <elm> )     for equivalence relations with partition
 ##
 InstallMethod( PreImagesElm, 
-        "equivalence relations with parition and element", 
+        "equivalence relations with partition and element", 
         FamRangeEqFamElm,
         [IsEquivalenceRelation and HasEquivalenceRelationPartition, 
          IsObject],0,

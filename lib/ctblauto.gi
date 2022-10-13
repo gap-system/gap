@@ -251,7 +251,7 @@ BindGlobal( "MatAutomorphismsFamily",
         # Find a subgroup $LL$ of $L$ which fixes $S.stabilizer * ss$,
         # i.e., an approximation (subgroup) $LL$ of $Stabilizer( L, p )$.
         # note that $LL$ preserves <prop> since it is a subgroup of $L$.
-        # Compute a better aproximation, for example using base change.
+        # Compute a better approximation, for example using base change.
         # `LL' is a list of generators of $LL$.
         LL:= Filtered( L, l -> p^l = p );
 
@@ -353,7 +353,7 @@ BindGlobal( "MatAutomorphismsFamily",
         # Find a subgroup $LL$ of $L$ which fixes $S.stabilizer * ss$,
         # i.e., an approximation (subgroup) $LL$ of $Stabilizer( L, p )$.
         # Note that $LL$ preserves <prop> since it is a subgroup of $L$.
-        # Compute a better aproximation, for example using base change.
+        # Compute a better approximation, for example using base change.
         LL:= Filtered( L.generators, l -> p^l = p );
 
         # Search the coset $S.stabilizer * ss$ and add if successful.

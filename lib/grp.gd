@@ -3395,7 +3395,7 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##
 ##  <Description>
 ##  The structural series of a finite group <A>G</A> is a descending series
-##  of characteristic subgroups which goes throught the derived series of
+##  of characteristic subgroups which goes through the derived series of
 ##  the solvable radical of $G$, refined into elementary abelian factors, as
 ##  well as the socle and the <A>Pker</A> (kernel of the action on socle
 ##  components) of the radical factor

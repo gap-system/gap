@@ -116,7 +116,7 @@ fi;
 ## 
 #F  IsSquareInt - Check if an integer is a square
 ##
-##  Simple implemenation based on the ideas in Cohen's CCANT, Algorithm 1.7.3.
+##  Simple implementation based on the ideas in Cohen's CCANT, Algorithm 1.7.3.
 ##  Briefly, check if N is a quadratic residue modulo some small prime powers,
 ##  then test if it is equal to the square of its integer square root.
 ##
@@ -1008,7 +1008,7 @@ end);
 ##  calling the optimized BPSW test instead of the current GAP default.
 ##
 ##  The option "RabinMillerTrials" may be passed to force additional
-##  probablistic tests to be run for larger N. The cost can be quite 
+##  probabilistic tests to be run for larger N. The cost can be quite 
 ##  significant for large N.
 ##
 ##############################################################################

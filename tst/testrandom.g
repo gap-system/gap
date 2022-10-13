@@ -77,7 +77,7 @@ end;;
 
 # A special test for collections of size 1
 # Here we can't check different seeds produce different answers
-# We do check that the random source is not used, for efficency.
+# We do check that the random source is not used, for efficiency.
 randomTestForSizeOneCollectionInner := function(filter, global_rs, global_randfunc, randfunc, collection, checkin)
     local i, val, local_rs, intlist1, intlist2;
 

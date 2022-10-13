@@ -60,7 +60,7 @@ ErrorLVars := fail;
 
 # In this method the line hint changes in every PrintTo are balanced, because at the moment
 # PrintTo(ERROR_OUTPUT,...) resets the indentation level every time it is called.
-# If/when this is fixed, the indendation in this function could be simplified
+# If/when this is fixed, the indentation in this function could be simplified
 BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
     local vars, i, argcount, val;
     vars := ContentsLVars(context);

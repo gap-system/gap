@@ -1135,7 +1135,7 @@ end);
 ##  every element of <mset> that we have not yet taken, so the candidates for
 ##  '<perm>[<i>]'  are    exactly the   elements   '<mset>[<l>]' such   that
 ##  '<m>[<l>]' is 'true'.  Some care must be taken to take a  candidate  only
-##  once if it apears more than once in <mset>.
+##  once if it appears more than once in <mset>.
 ##
 ##  'Permutations' only calls 'PermutationsListK' with initial arguments.
 ##
@@ -1476,9 +1476,9 @@ end);
 ##  contributes one  partition  without   going into recursion,    namely the
 ##  'Concatenation(  <part>[[1..<i>-1]], [1,1,...,1]  )'.  Of all  partitions
 ##  returned by 'PartitionsA'  this  is the smallest,  i.e.,  it will be  the
-##  first  one in the result  set.   Therefor it is  put  into the result set
+##  first  one in the result  set.   Therefore it is  put  into the result set
 ##  before anything else is done.  However it  is not immediately padded with
-##  1, this is  the last  thing  'PartitionsA' does befor  returning.  In the
+##  1, this is  the last  thing  'PartitionsA' does before  returning.  In the
 ##  meantime the  list is  used as a   temporary that is passed  to recursive
 ##  invocations.  Note that the fact that each call contributes one partition
 ##  without going into recursion means that  the number of recursive calls to
@@ -1829,7 +1829,7 @@ end);
 ##
 ##  To compute $p(n,k)$ we use $p(m,1) = p(m,m) = 1$, $p(m,l) = 0$ if $m\<l$,
 ##  and the recurrence  $p(m,l) = p(m-1,l-1) + p(m-l,l)$  if $1 \<   l \< m$.
-##  This recurrence can be proved by spliting the number of ways to write $m$
+##  This recurrence can be proved by splitting the number of ways to write $m$
 ##  as a  sum of $l$  summands in two subsets,  those  sums that have  1 as a
 ##  summand and those that do not.  The number of ways  to write $m$ as a sum
 ##  of $l$ summands that have 1 as a  summand is $p(m-1,l-1)$, because we can

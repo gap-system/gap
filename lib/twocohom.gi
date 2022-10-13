@@ -1922,7 +1922,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
                     # action on blocks
                     i:=ActionHomomorphism(nn,Orbit(nn,j,OnSets),OnSets);
                     j:=Size(nn);
-                    # make new group to not cahe anything about old.
+                    # make new group to not cache anything about old.
                     nn:=Group(List(GeneratorsOfGroup(nn),
                       x->ImagesRepresentative(i,x)),());
                     SetSize(nn,j);

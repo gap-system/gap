@@ -558,7 +558,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
     Int                 ndefs;          /* number of defs done so far      */
     Int                 undefined;      /* maximal of undefined entreis    */
     Int                 apply;          /* num of next def to be applied   */
-    Int                 ndefsMax;       /* maximal number of definitons    */
+    Int                 ndefsMax;       /* maximal number of definitions   */
     Int                 coset;          /* coset involved in current def   */
     Int                 gen;            /* gen involved in current def     */
     Int                 lp;             /* left pointer into relator       */

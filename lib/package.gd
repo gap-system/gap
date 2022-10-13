@@ -281,7 +281,7 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  <Item>
 ##    some condition from the (optional) list
 ##    <C>Dependencies.OtherPackagesLoadedInAdvance</C> in the
-##    <F>PackageInfo.g</F> file of the package is not satified.
+##    <F>PackageInfo.g</F> file of the package is not satisfied.
 ##  </Item>
 ##  </List>
 ##  <P/>

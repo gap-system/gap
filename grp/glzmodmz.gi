@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the functionality for constructing clasical groups over
+##  This file contains the functionality for constructing classical groups over
 ##  residue class rings.
 ##
 

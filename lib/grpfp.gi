@@ -1326,7 +1326,7 @@ InstallMethod( TryCosetTableInWholeGroup,"for finitely presented groups",
     true, [ IsSubgroupFpGroup ], 0,
 function( H )
     local   G,          # whole group of <H>
-            fgens,      # generators of the free group F asscociated to G
+            fgens,      # generators of the free group F associated to G
             grels,      # relators of G
             sgens,      # subgroup generators of H
             fsgens,     # preimages of subgroup generators in F
@@ -2298,7 +2298,7 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
           i, j;         # loop variables
 
     # Do nothing if we know already that the iterator is exhausted,
-    # or if we know aleady the next subgroup.
+    # or if we know already the next subgroup.
     if iter!.data.isDone then
       return true;
     elif iter!.data.nextSubgroup <> fail then
@@ -3008,7 +3008,7 @@ j, ok, b,k,tr;
 		  s[k]:=ShallowCopy(t[k]);
 		od;
 	      else
-		# no neeed to copy as this is the last branch.
+		# no need to copy as this is the last branch.
 	        s:=t;
 	      fi;
 	      s[i][j]:=b;
@@ -5591,7 +5591,7 @@ InstallMethod( DirectProductOp,
           geni, genj,    # Generators of the embeddings
           idgens,        # list of identity elements used in for projection
           p1,p2,         # Position indices for embeddings and projections
-          i,j,gi,gj;     # index vaiables
+          i,j,gi,gj;     # index variables
 
     
     ## Check the arguments. Each element of the list must be an FpGroup

@@ -583,7 +583,7 @@ static UInt *** SyFreeBags_(UInt size)
 **
 *f  SyAllocBags( <size>, <need> )
 **
-**  Under MACH virtual memory managment functions are used instead of 'sbrk'.
+**  Under MACH virtual memory management functions are used instead of 'sbrk'.
 */
 #ifdef HAVE_VM_ALLOCATE
 

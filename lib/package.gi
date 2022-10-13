@@ -290,7 +290,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
-      # This function has already been executed in this sesion.
+      # This function has already been executed in this session.
       return;
     fi;
 

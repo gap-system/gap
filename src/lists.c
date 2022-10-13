@@ -1986,7 +1986,7 @@ static Int InitKernel (
 
     // make and install ELM_DEFAULT_LIST operation
     // we install this for all TNUMs, as the default implementation delegates
-    // to other list operations, we can error if approriate
+    // to other list operations, we can error if appropriate
     for (type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++) {
         ElmDefListFuncs[type] = ElmDefListDefault;
     }
@@ -2186,7 +2186,7 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    /* whats that?                                                         */
+    // what's that?
     TYPES_LIST_FAM_RNam = RNamName( "TYPES_LIST_FAM" );
 
     return 0;

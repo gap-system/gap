@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Continous integration testing script
+# Continuous integration testing script
 
 # It can also be run manually, to simulate locally what happens in the
 # CI environment (say, for debugging purposes).

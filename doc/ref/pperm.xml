@@ -396,7 +396,7 @@ gap> JoinOfPartialPerms(f, f^-1);
       The meet of partial permutations <A>f</A> and <A>g</A> is just the meet,
       or infimum,  of <A>f</A> and <A>g</A> under the natural partial
       ordering of partial permutations. In other words, the meet is the
-      greatest partial permuation which is a restriction of both <A>f</A> and
+      greatest partial permutation which is a restriction of both <A>f</A> and
       <A>g</A>. <P/>
       
       Note that unlike the join of partial permutations, the meet always
@@ -465,7 +465,7 @@ gap> EmptyPartialPerm();
       <A>img</A>. The arguments <A>dom</A> and <A>img</A> do not have to have
       equal length.<P/>
 
-      Note that it is not guarenteed in either of these cases that partial
+      Note that it is not guaranteed in either of these cases that partial
       permutations are chosen with a uniform distribution. 
  </Description>
   </ManSection>

@@ -1324,7 +1324,7 @@ InstallMethod( PossibleClassFusions,
     fi;
 
     # Check consistency of fusion and power maps.
-    # (If necessary then compute power maps of `subtbl' that are avaiable
+    # (If necessary then compute power maps of `subtbl' that are available
     # in `tbl'.)
     subtbl_powermap := ComputedPowerMaps( subtbl );
     tbl_powermap    := ComputedPowerMaps( tbl );

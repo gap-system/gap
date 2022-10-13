@@ -51,7 +51,7 @@ or modifying the foundations are outside the scope of this manual.
 <Section Label="Sect-HelloWorld">
 <Heading>"Hello World" example</Heading>
 
-On the &GAP; level, the kernel functionality may be acessed via kernel
+On the &GAP; level, the kernel functionality may be accessed via kernel
 functions. You can recognise such functions because they will be displayed
 as compiled code in the &GAP; session:
 

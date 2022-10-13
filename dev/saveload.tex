@@ -39,7 +39,7 @@ but we should detect when the architectures are incompatible.}
 There are a few possible problem cases:
 
 \begin{description}
-\item{Data  Objects} Here we already implemement a ban on Bags,
+\item{Data  Objects} Here we already implement a ban on Bags,
 so that Copy works safely, but we still have endianness problems. The
 suggested solution is that the kind of a DATAOBJ should supply C
 functions to save it and load it (is there a chicken and egg problem
