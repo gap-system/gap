@@ -10,7 +10,7 @@
 ##
 ##  This  file  implements the  arithmetic  for unknown values,  unknowns for
 ##  short.  Unknowns  are written as `Unknown(<n>)'  where  <n> is an integer
-##  that distingishes  different unknowns.  Every unknown stands for a fixed,
+##  that distinguishes  different unknowns.  Every unknown stands for a fixed,
 ##  well defined, but unknown  scalar value,  i.e., an  unknown  integer,  an
 ##  unknown rational, or an unknown cyclotomic.
 ##

@@ -939,7 +939,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     if (testResult <> 0) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if not opts.suppressStatusMessage then
-        # Do not change the next line - it is needed for testing scrips
+        # Do not change the next line - it is needed for testing scripts
         Print( "#I  Errors detected while testing\n\n" );
       fi;
       if opts.exitGAP then
@@ -983,10 +983,10 @@ InstallGlobalFunction( "TestDirectory", function(arg)
 
   if not opts.suppressStatusMessage then
     if testTotalFailures = 0 then
-      # Do not change the next line - it is needed for testing scrips
+      # Do not change the next line - it is needed for testing scripts
       Print( "#I  No errors detected while testing\n\n" );
     else
-      # Do not change the next line - it is needed for testing scrips
+      # Do not change the next line - it is needed for testing scripts
       Print( "#I  Errors detected while testing\n\n" );
     fi;
   fi;

@@ -270,7 +270,7 @@ DeclareOperationKernel( "{}",
 ##  <A>list</A> no longer has an assigned value with index <A>n</A>.
 ##  Thus <Ref Oper="Unbind" Label="unbind a list entry"/> can be used to
 ##  produce holes in a list.
-##  Note that it is not an error to unbind a nonexistant list element.
+##  Note that it is not an error to unbind a nonexistent list element.
 ##  <A>list</A> must evaluate to a list, or to an object for which a suitable
 ##  method for <C>Unbind\[\]</C> has been installed, otherwise an error is signalled.
 ##  <P/>

@@ -142,7 +142,7 @@ local clT,	# classes T
       cnt,
       brp,bcen,
       centralizers_r, # centralizers of r
-      newcent_r,# new list to buid
+      newcent_r,# new list to build
       centrhom, # projection \rest{centralizer of r}
       localcent_r, # image
       cr,
@@ -1345,7 +1345,7 @@ local cs,	# chief series of G
 	    clF:=ConjugacyClassesSubwreath(F,FM,n,S1,
 		  Action(FM,components[1]),T1,components,emb,proj);
             if clF=fail then
-	      #Error("failer");
+	      #Error("failure");
 	      # weird error happened -- redo
 	      j:=Random(SymmetricGroup(MovedPoints(G)));
 	      FM:=List(GeneratorsOfGroup(G),x->x^j);

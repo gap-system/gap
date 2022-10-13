@@ -826,7 +826,7 @@ static Obj NewVec8Bit(Obj list, UInt q)
     UInt    elts;       // elements per byte
     const UInt1 * settab;     // element setting table
     const UInt1 * convtab;    // FFE -> FELT conversion table
-    UInt    e;          // loop varibale
+    UInt    e;          // loop variable
     UInt1   byte;       // byte under construction
     UInt1 * ptr;        // place to put byte
     Obj     elt;

@@ -2322,7 +2322,7 @@ InstallMethod( DeterminantOfCharacter,
 ##  and this can be computed from the restriction of <char> to this cyclic
 ##  subgroup or, equivalently, by the power maps  of <tbl>.
 ##
-#T > I would like to know if there is a quickier way to compute the
+#T > I would like to know if there is a quicker way to compute the
 #T > characteristic polynomial f=f(G) of a representative G
 #T > of a conjugacy class mentioned
 #T > above, than using Eigenvalues().
@@ -2762,7 +2762,7 @@ InstallMethod( Restricted,
 InstallGlobalFunction( InducedClassFunctionsByFusionMap,
     function( subtbl, tbl, chars, fusion )
     local j, im,          # loop variables
-          centralizers,   # centralizer orders in hte supergroup
+          centralizers,   # centralizer orders in the supergroup
           nccl,           # number of conjugacy classes of the group
           subnccl,        # number of conjugacy classes of the subgroup
           suborder,       # order of the subgroup

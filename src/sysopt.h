@@ -107,14 +107,14 @@ extern UInt SyNrRowsLocked;
 
 /****************************************************************************
 **
-*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
+*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . suppress prompt
 **
 **  'SyQuit' determines whether GAP should print the prompt and  the  banner.
 **
 **  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
 **  It can be changed by the '-q' option to have GAP operate in silent  mode.
 **
-**  It is used by the functions in 'gap.c' to surpress printing the  prompts.
+**  It is used by the functions in 'gap.c' to suppress printing the  prompts.
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -150,8 +150,8 @@ extern Char * SyRestoring;
 **
 *V  SyInitializing                               set to 1 during library init
 **
-**  'SyInitializing' is set to 1 during the library intialization phase of
-**  startup. It supresses some behaviours that may not be possible so early
+**  'SyInitializing' is set to 1 during the library initialization phase of
+**  startup. It suppresses some behaviours that may not be possible so early
 **  such as homogeneity tests in the plist code.
 */
 

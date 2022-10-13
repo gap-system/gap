@@ -64,7 +64,7 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
     for i in [1..Length(T[1])] do
       s:=T[3][i];
 #      if s=fail then
-#        Error("failer");
+#        Error("failure");
 #        s:=Position(D.ids,D.identification(D,T[1][i]));
 #      fi;
 

@@ -215,7 +215,7 @@ EXPORT_INLINE void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)
 **
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc> ) . . . . switch to new lvars
 **
-**  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
+**  'SWITCH_TO_NEW_LVARS'  creates and switches to a new local variables bag,
 **  for  the function    <func>,   with <narg> arguments    and  <nloc> local
 **  variables.  The old local variables bag is return.
 */

@@ -810,7 +810,7 @@ BindKeysToGAPHandler(" ");
 # to include all characters which occur in all members of cand.
 # In the case-insensitive case this matching is done case-insensitively,
 # and we also change the existing letters of the identifier to match
-# identifers.
+# identifiers.
 # When there is no extension or change, these methods return 'fail'.
 BindGlobal("STANDARD_EXTENDERS", rec(
   caseSensitive := function(cand, word)

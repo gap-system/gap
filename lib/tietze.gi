@@ -1303,7 +1303,7 @@ InstallGlobalFunction( TzEliminate, function ( arg )
     fi;
 end );
 
-# eliminate generators by removing first those that ocur rarely, up to
+# eliminate generators by removing first those that occur rarely, up to
 # frequency lim
 BindGlobal("TzEliminateRareOcurrences",function(pres,lim)
 local prepare,gens,rels,sel,cnt,i,alde,freq;
@@ -2725,7 +2725,7 @@ InstallGlobalFunction( TzMostFrequentPairs, function ( T, nmax )
         Error( "second argument must be a positive integer" );
     fi;
 
-    # intialize some local variables.
+    # initialize some local variables.
     tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
@@ -2959,7 +2959,7 @@ InstallGlobalFunction( TzPrintGenerators, function ( arg )
     T := arg[1];
     TzCheckRecord( T );
 
-    # initailize some local variables.
+    # initialize some local variables.
     tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     invs := tietze[TZ_INVERSES];
@@ -3089,7 +3089,7 @@ InstallGlobalFunction( TzPrintOptions, function ( T )
     # check the argument to be a Tietze record.
     TzCheckRecord( T );
 
-    # determine the maximal name length of the option compoents.
+    # determine the maximal name length of the option components.
     len  := 0;
     for nam in RecNames( TzOptions(T) ) do
         if nam in TzOptionNames then
@@ -3139,7 +3139,7 @@ InstallGlobalFunction( TzPrintPairs, function ( arg )
     fi;
     if n = 0 then  n := "infinity";  fi;
 
-    # intialize the local variables.
+    # initialize the local variables.
     tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
 
@@ -3205,7 +3205,7 @@ InstallGlobalFunction( TzPrintRelators, function ( arg )
     T := arg[1];
     TzCheckRecord( T );
 
-    # initailize the local variables.
+    # initialize the local variables.
     tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     rels := tietze[TZ_RELATORS];

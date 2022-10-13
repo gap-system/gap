@@ -1228,7 +1228,7 @@ InstallMethod( PthPowerImages,
 ##  A Cartan subalgebra of the Lie algebra <L> is by definition a nilpotent
 ##  subalgebra equal to its own normalizer in <L>.
 ##
-##  By defintion, an Engel subalgebra of <L> is the generalized eigenspace
+##  By definition, an Engel subalgebra of <L> is the generalized eigenspace
 ##  of a non nilpotent element, corresponding to the eigenvalue 0.
 ##  In a restricted Lie algebra of characteristic p we have that every Cartan
 ##  subalgebra of an Engel subalgebra of <L> is a Cartan subalgebra of <L>.
@@ -3063,7 +3063,7 @@ InstallMethod( RootSystem,
     h:= List([1..Length(C)], j -> x[j]*y[j] );
     
     # Now we construct the root system, and install as many attributes
-    # as possible. The roots are represented als lists [ \alpha(h_1),....
+    # as possible. The roots are represented as lists [ \alpha(h_1),....
     # ,\alpha(h_l)], where the h_i form the `Cartan' part of the canonical
     # generators.
     
@@ -3841,7 +3841,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
 
 # Every element in `todo' has the following format: [ bool, cf, br ],
 # where bool is a boolean; it is true if the br is a Lyndon tree.
-# cf is the coeffient (number) and br is a bracketed expression.
+# cf is the coefficient (number) and br is a bracketed expression.
 # The reason for `tagging' everything is that almost anywhere in the
 # list cancellations may occur. This tagging provides an efficient way
 # of remembering which trees were dealt with before.

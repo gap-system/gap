@@ -1423,14 +1423,14 @@ InstallMethod( IsPSL,
       return false;
     fi;
 
-    # check if G has appropiate size
+    # check if G has appropriate size
     npes := LinearGroupParameters(Size(G)).npePSL;
     if Length(npes) = 0 then return false; fi;
 
     # more than one npe-triple should only
     # occur in the cases |G| in [60, 168, 20160] 
     if   Length(npes) > 1 and not( Size(G) in [60, 168, 20160] ) 
-    then Error("algebraic panic! propably npe does not work"); fi;
+    then Error("algebraic panic! probably npe does not work"); fi;
 
     # set the parameters
     npe := npes[1];
@@ -1502,7 +1502,7 @@ InstallMethod( IsSL,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
-    # check if G has appropiate size
+    # check if G has appropriate size
     npes := LinearGroupParameters(Size(G)).npeSL;
     if Length(npes) = 0 then return false; fi;
 
@@ -1588,7 +1588,7 @@ InstallMethod( IsGL,
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
-    # check if G has appropiate size
+    # check if G has appropriate size
     npes := LinearGroupParameters(Size(G)).npeGL;
     if Length(npes) = 0 then return false; fi;
   

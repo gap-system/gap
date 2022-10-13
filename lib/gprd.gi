@@ -1511,7 +1511,7 @@ InstallMethod( FreeProductOp,
           fpgens,       # fp generators of a base group
           r,            # relations index
           g,            # particular base group either as given or its fp
-                        # repesentation
+                        # representation
           ggens,        # generators of base group g
           i,            # index of generator range
           embeddings,   # monomorphisms of base groups into free product
@@ -1541,7 +1541,7 @@ InstallMethod( FreeProductOp,
     gennum      := Sum(genindlist);
     
     ## Compute the accummalive sums which are the indices into 
-    ## the free group. Add a zero for convienence.
+    ## the free group. Add a zero for convenience.
     ##
     genindlist  := List([1..Length(genindlist)],i->genindlist{[1..i]}); 
     genindlist  := List(genindlist, Sum);

@@ -358,7 +358,7 @@ fi;
 ##  `BestQuoInt' returns the best quotient <q> of the integers  <n> and  <m>.
 ##  This is the quotient such that `<n>-<q>\*<m>' has minimal absolute value.
 ##  If there are two quotients whose remainders have the same absolute value,
-##  then the quotient with the smaller absolute value is choosen.
+##  then the quotient with the smaller absolute value is chosen.
 ##
 InstallGlobalFunction(BestQuoInt,function ( n, m )
     if   0 <= m  and 0 <= n  then
@@ -535,7 +535,7 @@ end);
 ##  the factor $p$ after approximately $2 \sqrt{p} \<= 2 \sqrt^4{n}$ steps.
 ##
 ##  If $Gcd( n, x_j - x_i )$  is not a prime `FactorsRho'  will  call  itself
-##  recursivly with a different value for <inc>, i.e., it  will try to factor
+##  recursively with a different value for <inc>, i.e., it will try to factor
 ##  the gcd using a different sequence $x_{i+1} = (x_i^2 + inc)$ mod $n$.
 ##
 ##  Since the gcd computations are by far the most time consuming part of the
@@ -545,7 +545,7 @@ end);
 ##
 ##  Finally `FactorsRho' accepts an argument <limit>  which is the number  of
 ##  iterations  performed by `FactorsRho' before giving up. The default value
-##  is  8192  which corresponds to a few minutes  while guaranteing that  all
+##  is  8192  which corresponds to a few minutes  while guaranteeing that all
 ##  prime factors less than $10^6$ and most less than $10^9$ are found.
 ##
 ##  Better descriptions of the algorithm and related topics can be found  in:
@@ -1132,7 +1132,7 @@ InstallGlobalFunction(RootInt,function ( arg )
         r := s;  t := r^(k-1);  s := QuoInt( n + (k-1)*r*t, k*t );
     od;
 
-    # and thats the integer part of the root
+    # and that's the integer part of the root
     return r;
 end);
 
@@ -1329,7 +1329,7 @@ InstallMethod( Enumerator,
 
 #############################################################################
 ##
-#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolut value
+#M  EuclideanDegree( Integers, <n> ) . . . . . . . . . . . . . absolute value
 ##
 InstallMethod( EuclideanDegree,
     "for integers",

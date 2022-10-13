@@ -440,7 +440,7 @@ InstallMethod( \+,
 ##  Direct product elements do *not* lie in `IsGeneralizedRowVector',
 ##  since they shall behave as scalars;
 ##  for example we want the sum of a direct product element and a list of
-##  diect product elements to be the list of sums.
+##  direct product elements to be the list of sums.
 ##  (It would also be possible to make them generalized row vectors with
 ##  additive and multiplicative nesting depth zero, but then the nesting
 ##  depths would have to be calculated whenever they are needed.

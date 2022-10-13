@@ -1023,7 +1023,7 @@ static void FindNewReps1(Obj tree, Obj reps)
     /*  find all possibilities for lsubs and rsubs such that
     **  lsubs[1] < lsubs[2] <...<lsubs[n],
     **  rsubs[1] < rsubs[2] <...<rsubs[n],
-    **  and set(lsubs concat rsubs) equals {1,...,k} for a positiv
+    **  and set(lsubs concat rsubs) equals {1,...,k} for a positive
     **  integer k.  For each found lsubs and rsubs 'FindSubs' changes
     **  pos-arguments of the subtrees in llist and rlist accordingly
     **  and  then calls 'FindNewReps' with the changed tree <tree>.
@@ -1126,7 +1126,7 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
     /*  find all possibilities for lsubs and rsubs such that
     **  lsubs[1] < lsubs[2] <...<lsubs[n],
     **  rsubs[1] < rsubs[2] <...<rsubs[n],
-    **  and set(lsubs concat rsubs) equals {1,...,k} for a positiv
+    **  and set(lsubs concat rsubs) equals {1,...,k} for a positive
     **  integer k.  For each found lsubs and rsubs 'FindSubs' changes
     **  pos-arguments of the subtrees in llist and rlist accordingly
     **  and  then calls 'FindNewReps' with the changed tree <tree>.
@@ -1174,7 +1174,7 @@ static void FindNewReps(Obj tree,
     **  If leftof(left(<tree>),  right(<tree>) ) holds we add all trees
     **  <tree'> with left(<tree'>) = left(<tree>), 
     **  right(<tree'>) = right(<tree>) to <reps>,  and <tree'> is the
-    **  least element in its equivalence calss.  Note that for such a 
+    **  least element in its equivalence class.  Note that for such a
     **  tree we have pos(<tree'>) = 1 and num(<tree'>) = j where j is a
     **  positive integer for which
     **  c_( num(left(<tree>),  num(right(<tree>)), j ) does not equal
@@ -1248,7 +1248,7 @@ static void FindNewReps(Obj tree,
     /*  find all possibilities for lsubs and rsubs such that
     **  lsubs[1] < lsubs[2] <...<lsubs[n],
     **  rsubs[1] < rsubs[2] <...<rsubs[n],
-    **  and set(lsubs concat rsubs) equals {1,...,k} for a positiv
+    **  and set(lsubs concat rsubs) equals {1,...,k} for a positive
     **  integer k.  For each found lsubs and rsubs 'FindSubs' changes
     **  pos-arguments of the subtrees in llist and rlist accordingly
     **  and  then calls 'FindNewReps' with the changed tree <tree>.
@@ -1359,7 +1359,7 @@ static Obj    Part(
 **  'FindSubs' finds all possibilities for a and b such that
 **  1) a[1] < a[2] <..< a[ ar ]
 **     b[1] < b[2] <..< b[ br ]
-**  2) set( a concat b ) = {1,..,k} for a positiv integer k.
+**  2) set( a concat b ) = {1,..,k} for a positive integer k.
 **  3) a[1],...,a[ al-1 ] and b[1],..,b[ bl-1 ] remain unchanged.
 **  For each found possibility 'FindSubs' sets the pos-arguments in the
 **  trees of <list1> and <list2> according to the entries of <a> and
@@ -1388,7 +1388,7 @@ static void FindSubs1(Obj tree,
                       Obj a, /*  list to change,  containing the
                              **  pos-arguments of the trees in list1   */
 
-                      Obj b, /*  list to change,  containing tthe
+                      Obj b, /*  list to change,  containing the
                              **  pos-arguments of the trees in list2   */
                       Int al,
                       Int ar,

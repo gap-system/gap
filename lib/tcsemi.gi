@@ -71,7 +71,7 @@ DeclareInfoClass("SemigroupToddCoxeterInfo");
 ##
 ##  The   forward   references --->   are  stored  in  |forwd|,  the backward
 ##  references  <--- are stored in  |bckwd|.   Three pointers point into this
-##  list, 1 to the initial  coset, (this  needn't  be done explicitely  since
+##  list, 1 to the initial  coset, (this  needn't  be done explicitly  since
 ##  coset 1 is always stored at  address 1 in the table),  |d| to the current
 ##  coset which is presently traced  through the relations, and |last| points
 ##  to the end of the list.   The cosets between  |d| and |last| are still to

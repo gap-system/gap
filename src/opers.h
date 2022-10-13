@@ -627,7 +627,7 @@ Obj NewProperty(Obj name, Obj nams, ObjFunc_1ARGS getHdlr, ObjFunc_2ARGS setHdlr
 *F  InstallMethodArgs( <oper>, <func> ) . . . . . . . . . . .  clone function
 **
 **  There is a problem  with uncompleted functions: if  they are  cloned then
-**  only   the orignal and not  the  clone will be  completed.  Therefore the
+**  only  the original and not  the  clone will be  completed.  Therefore the
 **  clone must postpone the real cloning.
 */
 void InstallMethodArgs(Obj oper, Obj func);

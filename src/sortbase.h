@@ -25,7 +25,7 @@
 ** SORT_ASS_LIST_TO_LOCAL(t,i) : Copy list element 'i' to temporary 't'
 ** SORT_ASS_LOCAL_TO_LIST(i,t) : Copy temporary 't' to list element 'i'
 ** SORT_COMP(v,w)             : Compare temporaries v and w
-** SORT_FILTER_CHECKS         : Arbitary code to be called at end of function,
+** SORT_FILTER_CHECKS         : Arbitrary code to be called at end of function,
 **                              to fix filters effected by the sorting.
 **
 **

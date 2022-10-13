@@ -155,7 +155,7 @@ dnl
 dnl Check for properties of the host system and compiler
 dnl
 
-dnl endianess
+dnl endianness
 AC_C_BIGENDIAN
 
 dnl C/C++ attributes with GNU syntax (i.e., `__attribute__(FOO)`)

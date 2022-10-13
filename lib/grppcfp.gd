@@ -68,7 +68,7 @@ DeclareGlobalFunction( "PcGroupFpGroupNC" );
 ##  epimorphism system corresponding to the largest abelian quotient of
 ##  <A>F</A>.
 ##  If <A>hom</A> is a epimorphism from a finitely presented group to a pc
-##  group, it returns the system coresponding to this epimorphism.
+##  group, it returns the system corresponding to this epimorphism.
 ##  No argument checking is performed.
 ##  </Description>
 ##  </ManSection>

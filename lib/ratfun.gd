@@ -1137,7 +1137,7 @@ DeclareGlobalFunction("OnIndeterminates");
 ##  <List>
 ##  <Mark><C>variables</C>:</Mark>
 ##  <Item>
-##     A list of the variables occuring in <A>pol</A>,
+##     A list of the variables occurring in <A>pol</A>,
 ##  </Item>
 ##  <Mark><C>monomials</C>:</Mark>
 ##  <Item>

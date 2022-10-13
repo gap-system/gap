@@ -230,7 +230,7 @@ InstallMethod( IsLessThanOrEqualUnder,
 ##  for an ordering <ord> on the elements of the family of <el1> and <el2>.
 ##  Returns true if $el1\neq el2$i and  `IsLessThanUnder'(<ord>,<el1>,<el2>),
 ##  `IsLessThanUnder'(<ord>,<el2>,<el1>) are both false.
-##  Returns false otherise.
+##  Returns false otherwise.
 ##  Notice that if obj1=obj2 then they are comparable
 ##
 InstallMethod( IsIncomparableUnder,
@@ -247,7 +247,7 @@ InstallMethod( IsIncomparableUnder,
     fi;
     
     # if we know that the ordering is total
-    # then any pair of elements is comprable
+    # then any pair of elements is comparable
     if HasIsTotalOrdering(ord) and IsTotalOrdering(ord) then
       return false;
     fi;
@@ -701,7 +701,7 @@ end);
 ##
 BindGlobal("WeightLexOrderingNC",
 function(fam,alphabet,wt)
-  local wordwt,       # function that given a word returns its weigth
+  local wordwt,       # function that given a word returns its weight
         ltfun,        # the less than function
 				auxalph,
         ord;          # the ordering
@@ -728,7 +728,7 @@ function(fam,alphabet,wt)
 
     # then if the sum of the weights of w1 is less than
     # the sum of the weight of w2 then returns true
-    # so we calculate the weigth of w1 
+    # so we calculate the weight of w1 
     w1wt := wordwt(w1);
     w2wt := wordwt(w2);
     if w1wt<w2wt then
@@ -1163,7 +1163,7 @@ InstallMethod(BasicWreathProductOrdering,
   function(fam,orderofgens)
     local gens,       # the generators of the semigroup or monoid
           n,          # the length of the generators list
-          alphabet;   # the generators in the appropiate order
+          alphabet;   # the generators in the appropriate order
 
     # first find out if fam is a family of free semigroup or monoid
     if IsBound(fam!.freeSemigroup) then

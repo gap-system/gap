@@ -274,7 +274,7 @@ If the first argument of an <Ref Func="Info"/> statement is a sum of
 Info classes, the handler of the first summand is used.
 <P/>
 The file or stream to which <Ref Func="Info"/> statements for individual
-<Ref Func="Info"/> classes print can be overriden with
+<Ref Func="Info"/> classes print can be overridden with
 <Ref Func="SetInfoOutput"/>, retrieved with <Ref Func="InfoOutput"/>
 and reset to the default with <Ref Func="UnbindInfoOutput"/>.
 The initial default for all <Ref Func="Info"/>

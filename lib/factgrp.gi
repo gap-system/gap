@@ -276,7 +276,7 @@ local pool,p,h,ise,emb,i,j;
       SetKernelOfMultiplicativeGeneralMapping(h,N);
       pool.ops[p]:=h;
     elif IsGroup(h) then
-      h:=FactorCosetAction(G,h,N); # will implicitely store
+      h:=FactorCosetAction(G,h,N); # will implicitly store
     fi;
     p:=h;
   fi;
@@ -692,7 +692,7 @@ end);
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
-totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
+totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
   G:=arg[1];
   N:=arg[2];
@@ -781,7 +781,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
     hard:=10000;
   fi;
   totalcnt:=0;
-  interupt:=false;
+  interrupt:=false;
   cnt:=20;
   repeat
     u:=v;
@@ -812,8 +812,8 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 	if KnownNaturalHomomorphismsPool(G,N) and
 	  Minimum(IndexNC(G,v),knowi)<hard 
 	     and 5*totalcnt>Minimum(IndexNC(G,v),knowi,1000) then
-	  # interupt if we're already quite good
-	  interupt:=true;
+	  # interrupt if we're already quite good
+	  interrupt:=true;
 	fi;
 	if ForAny(badcores,x->IsSubset(nu,x)) then
           nu:=u;
@@ -828,7 +828,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 	((not bigperm or
 	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and 
 	(IndexNC(G,nu)>50 or Factorial(IndexNC(G,nu))>=IndexNC(G,N)) and
-	not IsNormal(G,nu)) or IsSubset(u,nu) or interupt;
+	not IsNormal(G,nu)) or IsSubset(u,nu) or interrupt;
 
       Info(InfoFactor,4,"Index ",IndexNC(G,nu));
       u:=nu;
@@ -837,7 +837,7 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
       # und die Gruppe ist nicht zuviel schlechter als der
       # beste bekannte Index. Daf"ur brauchen wir aber wom"oglich mehrfache
       # Erweiterungen.
-      interupt or (((Length(arg)=2 or IndexNC(G,u)<knowi)));
+      interrupt or (((Length(arg)=2 or IndexNC(G,u)<knowi)));
 
     if IndexNC(G,u)<knowi then
 
@@ -896,10 +896,10 @@ totalcnt, interupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
         "index unreasonably large, iterating ",badi);
       cnt:=20;
       totalcnt:=0;
-      interupt:=false;
+      interrupt:=false;
       v:=N; # all new
     fi;
-  until interupt or cnt<=0 or zzz<=goodi;
+  until interrupt or cnt<=0 or zzz<=goodi;
   Info(InfoFactor,1,zzz," vs ",badi);
 
   return GetNaturalHomomorphismsPool(G,N);

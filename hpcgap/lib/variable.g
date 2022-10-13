@@ -13,14 +13,13 @@
 ##  they are declared with `DeclareGlobalVariable' and initialized with
 ##  `InstallValue' resp.~`InstallFlushableValue'.
 ##
-##  For the global functions in the {\GAP} libraray, see `oper.g'.
+##  For the global functions in the {\GAP} library, see `oper.g'.
 ##
 
 
 #############################################################################
 ##
-
-#C  IsToBeDefinedObj. . . . . . . .  represenation of "to be defined" objects
+#C  IsToBeDefinedObj . . . . . . .  representation of "to be defined" objects
 ##
 DeclareCategory( "IsToBeDefinedObj", IsObject );
 

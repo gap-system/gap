@@ -783,7 +783,7 @@ local aug,w,p,pres,f,fam,opt;
   # rewriting.
   aug:=CopiedAugmentedCosetTable(aug);
   pres := PresentationAugmentedCosetTable( aug, "y",0# printlevel
-                    ,true) ;# intialize tracking before the `1or2' routine!
+                    ,true) ;# initialize tracking before the `1or2' routine!
   opt:=TzOptions(pres);
 
   if ValueOption("expandLimit")<>fail then

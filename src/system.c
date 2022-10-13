@@ -331,7 +331,7 @@ static char GAPExecLocation[GAP_PATH_MAX] = "";
 
 static void SetupGAPLocation(const char * argv0)
 {
-    // In the code below, we keep reseting locBuf, as some of the methods we
+    // In the code below, we keep resetting locBuf, as some of the methods we
     // try do not promise to leave the buffer empty on a failed return.
     char locBuf[GAP_PATH_MAX] = "";
     Int4 length = 0;

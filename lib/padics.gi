@@ -172,7 +172,7 @@ MultMatrixPadicNumbersByCoefficientsList := function ( list )
     if n <= 1 then
         return [[one]];
     fi;
-    # prepare a zero-matrix with ones on the main diagonale:
+    # prepare a zero-matrix with ones on the main diagonal:
     mat := [  ];
     for i in [1..2*n-1] do
         mat[i] := [ ];

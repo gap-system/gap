@@ -359,7 +359,7 @@ DeclareGlobalFunction("DotFileLatticeSubgroups");
 ##
 ##  <Description>
 ##  If $N$ is normal in $G$ and $Nsubs$ is a list of subgroups of $N$ up to
-##  conjugacy, this function extends this list to taht of all subgroups of $G$.
+##  conjugacy, this function extends this list to that of all subgroups of $G$.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -441,7 +441,7 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 ##  performance reasons).
 ##  In the example below, the result would be the same with leaving out the
 ##  fourth function, but calculation this way is slightly faster.
-##  If an inital argument <A>act</A> is given, it must be a group
+##  If an initial argument <A>act</A> is given, it must be a group
 ##  containing and normalizing <A>G</A>,
 ##  and representatives for classes under the action of this group are chosen.
 ##  <Example><![CDATA[

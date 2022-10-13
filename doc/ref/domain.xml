@@ -21,7 +21,7 @@ and <Ref Oper="Random" Label="for a list or collection"/>
 are defined for the more
 general situation of collections (see Chapter&nbsp;<Ref Chap="Collections"/>).
 
-<!-- %%  The fundamental suport for domains in &GAP; was designed and implemented by -->
+<!-- %%  The fundamental support for domains in &GAP; was designed and implemented by -->
 <!-- %%  Thomas Breuer. -->
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

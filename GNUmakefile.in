@@ -187,7 +187,7 @@ sysconfdir = @sysconfdir@
 # Note that `vpath' is a GNU make extension. Unlike VPATH, it can be
 # restricted to certain file extensions. This way, we can mix in-tree and
 # out-of-tree builds without accidentally picking up e.g. *.o files from the
-# wrong tree. Wee still have to be careful about build/config.h, though.
+# wrong tree. We still have to be careful about build/config.h, though.
 #
 vpath src/%.h $(srcdir)
 vpath src/%.c $(srcdir)

@@ -73,7 +73,7 @@ can review and merge this update.
 </Item>
 </Enum>
 
-If you are one of website admininstrator(s), then you will also need to
+If you are one of website administrator(s), then you will also need to
 be able to access the web server in St Andrews via <C>ssh</C> to run 
 certain update scripts and copy necessary data. 
 </Section>

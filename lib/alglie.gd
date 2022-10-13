@@ -1192,7 +1192,7 @@ DeclareGlobalFunction( "SimpleLieAlgebra" );
 ##  <P/>
 ##  <C>DescriptionOfNormalizedUEAElement</C> applies successively the rewriting
 ##  rules of the universal enveloping algebra of <M>L</M> such that the final
-##  value descibes the same element as <A>listofpairs</A>, each monomial is
+##  value describes the same element as <A>listofpairs</A>, each monomial is
 ##  normalized, and the monomials are ordered lexicographically.
 ##  This list is the return value.
 ##  </Description>

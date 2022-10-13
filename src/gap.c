@@ -1408,7 +1408,7 @@ StructInitInfo * InitInfoGap ( void )
 
 /****************************************************************************
 **
-*F  InitializeGap() . . . . . . . . . . . . . . . . . . . . . . intialize GAP
+*F  InitializeGap() . . . . . . . . . . . . . . . . . . . . .  initialize GAP
 **
 **  Each module  (builtin  or compiled) exports  a structure  which  contains
 **  information about the name, version, crc, init function, save and restore

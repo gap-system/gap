@@ -915,7 +915,7 @@ BindGlobal( "NextIterator_WeylOrbit", function( it )
 
             if mu = it!.root then
 
-                # we cannot find a sucessor of the root: we are done
+                # we cannot find a successor of the root: we are done
 
                 it!.isDone:= true;
                 nu:= [];
@@ -1287,7 +1287,7 @@ InstallMethod( DecomposeTensorProduct,
 
     for i in [1..Length(ch1[1])] do
 
-       # We loop through all weights of the irrep wih highest weight <w1>.
+       # We loop through all weights of the irrep with highest weight <w1>.
        # We get these by taking the orbits of the dominant ones under the
        # Weyl group.
 
@@ -1653,7 +1653,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
 
 
     # We collect the UEALattice element represented by the data in `lst'.
-    # `lst' represents a UEALattice element in the ususal way, except that
+    # `lst' represents a UEALattice element in the usual way, except that
     # a Cartan element is now not represented by an index, but by a list
     # of two elements: the element of the Cartan subalgebra, and an integer
     # (meaning `h-k', if the list is [h,k]). The ordering
@@ -2084,7 +2084,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     j:= j+2;
                 od;
 
-              # Now we procesed the Cartan elements, we still may have a tail.
+              # Now we processed the Cartan elements, we still may have a tail.
 
                 if j <= Length( todo[1] ) then
                     tail:= todo[1]{[j..Length(todo[1])]};
@@ -3584,7 +3584,7 @@ InstallMethod( HighestWeightModule,
             f:= GB[i];
 
             # `prelcm' will be the leading monomial of `f', represented as
-            # a list of lengt `n', if prelcm[i] = k, then the leading
+            # a list of length `n', if prelcm[i] = k, then the leading
             # monomial contains a factor y_i^k.
             m1a:= f![1][lms[i]];
             prelcm:= ListWithIdenticalEntries( n, 0 );

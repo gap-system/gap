@@ -565,7 +565,7 @@ end;
 InstallMethod( SpecialPcgs, "method for special pcgs", true,
     [ IsSpecialPcgs ],
     # we need to rank this method higher -- otherwise the extra filters in
-    # the follwoing method give it the same rank...
+    # the following method give it the same rank...
     10,IdFunc);
 
 

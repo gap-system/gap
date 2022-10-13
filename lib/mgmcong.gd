@@ -163,7 +163,7 @@ DeclareOperation("MeetMagmaCongruences",
 #############################################################################
 ##
 ##
-##               Auxilliary functions
+##               Auxiliary functions
 ##
 DeclareGlobalFunction("LR2MagmaCongruenceByGeneratingPairsCAT");
 DeclareGlobalFunction("LR2MagmaCongruenceByPartitionNCCAT");

@@ -486,7 +486,7 @@ static Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 **  between a  call   to IsBound and the    access. This, of  course,  causes
 **  possible  confusion  with a WP  object which  does have  a  value of fail
 **  stored in  it. This, however  can be  checked  with a subsequent  call to
-**  IsBound, relying on the fact  that fail can never  dissapear in a garbage
+**  IsBound, relying on the fact  that fail can never  disappear in a garbage
 **  collection.
 */
 static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
@@ -866,7 +866,7 @@ static Int InitKernel (
 #elif defined(USE_JULIA_GC)
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
 #else
-#error Unknown garbage collector implementation, no weak pointer object implemention available
+#error Unknown garbage collector implementation, no weak pointer object implementation available
 #endif
 
     /* typing method                                                       */

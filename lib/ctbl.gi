@@ -4091,7 +4091,7 @@ end );
 
 #############################################################################
 ##
-#F  ClassStructureCharTable(<tbl>,<classes>)  . gener. class mult. coefficent
+#F  ClassStructureCharTable(<tbl>,<classes>) . gener. class mult. coefficient
 ##
 InstallGlobalFunction( ClassStructureCharTable, function( tbl, classes )
     local exp;
@@ -4771,7 +4771,7 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           prin,              # column widths
           nam,               # classnames
           col,               # number of columns already printed
-          acol,              # nuber of columns on next page
+          acol,              # number of columns on next page
           len,               # width of next page
           ncols,             # total number of columns
           linelen,           # line length

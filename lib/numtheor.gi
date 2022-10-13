@@ -445,7 +445,7 @@ BindGlobal( "RootModPrime", function ( n, k, p )
               " <n>*", s, "=", r, "^", k, ", ", s, "^", kk/k, "=1" );
 
         # find a generator $t$ of the subgroup of $kk$-th roots of 1,
-        # i.e., $t^{kk/k} <> 1,  t^{kk} = 1$, therefor $s = (t^l)^k$
+        # i.e., $t^{kk/k} <> 1,  t^{kk} = 1$, therefore $s = (t^l)^k$
         i:=2; t:=PowerModInt(i,(p-1)/kk,p); tt:=PowerModInt(t,kk/k,p);
         while tt=1  do
             i:=i+1; t:=PowerModInt(i,(p-1)/kk,p); tt:=PowerModInt(t,kk/k,p);
@@ -691,7 +691,7 @@ BindGlobal( "RootsModPrime", function ( n, k, p )
               " <n>*", s, "=", r, "^", k, ", ", s, "^", kk/k, "=1" );
 
         # find a generator $t$ of the subgroup of $kk$-th roots of 1,
-        # i.e., $t^{kk/k} <> 1,  t^{kk} = 1$, therefor $s = (t^l)^k$
+        # i.e., $t^{kk/k} <> 1,  t^{kk} = 1$, therefore $s = (t^l)^k$
         i:=2; t:=PowerModInt(i,(p-1)/kk,p); tt:=PowerModInt(t,kk/k,p);
         while tt=1  do
             i:=i+1; t:=PowerModInt(i,(p-1)/kk,p); tt:=PowerModInt(t,kk/k,p);

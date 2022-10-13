@@ -130,7 +130,7 @@ def filter_prs(prs,rel_type):
 
     if rel_type == "minor":
 
-        # For minor release, list PRs backported to the stable-4.X brach since the previous minor release.
+        # For minor release, list PRs backported to the stable-4.X branch since the previous minor release.
         for k,v in sorted(prs.items()):
             if "backport-to-" + minor_branch_version + "-DONE" in v["labels"]:
                 if datetime.fromisoformat(v["closed_at"]) > datetime.fromisoformat(minor_branch_start_date):
@@ -139,7 +139,7 @@ def filter_prs(prs,rel_type):
 
     elif rel_type == "major":
 
-        # For major release, list PRs not backported to the stable-4.X brach.
+        # For major release, list PRs not backported to the stable-4.X branch.
         # After branching stable-4.12 this will have to be changed to stop checking
         # for "backport-to-4.11-DONE" at the date of the branching, and check for
         # "backport-to-4.12-DONE" after that date

@@ -1315,7 +1315,7 @@ Add lines as in the following example:
 <P/>
 <Log><![CDATA[
 if has("syntax")
-  syntax on             " Default to no syntax highlightning 
+  syntax on             " Default to no syntax highlighting 
 endif
 
 " For GAP files
@@ -1324,7 +1324,7 @@ augroup gap
   au!
 autocmd BufRead,BufNewFile *.g,*.gi,*.gd set filetype=gap comments=s:##\ \ ,m:##\ \ ,e:##\ \ b:#
 
-" I'm using the external program `par' for formating comment lines starting
+" I'm using the external program `par' for formatting comment lines starting
 " with `##  '. Include these lines only when you have par installed.
   autocmd BufRead,BufNewFile *.g,*.gi,*.gd set formatprg="par w76p4s0j"
   autocmd BufWritePost,FileWritePost *.g,*.gi,*.gd set formatprg="par w76p0s0j"

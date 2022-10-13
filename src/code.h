@@ -361,7 +361,7 @@ EXPORT_INLINE Int VISITED_STAT(Stat stat)
 *F  SET_VISITED_STAT(<stat>) . . . . . . . . . . mark statement as having run
 **
 **  'SET_VISITED_STAT' marks the statement as having been executed while
-**  profiling wass turned on.
+**  profiling was turned on.
 */
 void SET_VISITED_STAT(Stat stat);
 
@@ -641,7 +641,7 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 **  the coder should only clean up. Otherwise, returns the newly coded
 **  function.
 **
-**  ...only function expressions inbetween...
+**  ...only function expressions in between...
 */
 void CodeBegin(void);
 

@@ -687,7 +687,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
     ptrL = ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
 
-    /* two versions of the loop to avoid multipling by 1 */
+    /* two versions of the loop to avoid multiplying by 1 */
     if (valM == 1)
         for (i = 1; i <= len; i++) {
             valL = VAL_FFE(ptrL[i]);
@@ -757,7 +757,7 @@ static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
     succ = SUCC_FF(fld);
     ptr = ADDR_OBJ(vec);
 
-    /* two versions of the loop to avoid multipling by 0 */
+    /* two versions of the loop to avoid multiplying by 0 */
     if (valM == 0) {
         Obj z;
         z = NEW_FFE(fld, 0);

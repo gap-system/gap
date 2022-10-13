@@ -120,7 +120,7 @@ DeclareGlobalFunction( "DisplayImfReps" );
 ##  minimalNorm              norm of the short vectors associated to G,
 ##  sizesOrbitsShortVectors  a list  of the  sizes  of the  orbits  of  short
 ##                           vectors associated to G,
-##  maximalQClass            Q-class  number  of  coresponding  rational  imf
+##  maximalQClass            Q-class  number  of  corresponding  rational  imf
 ##                           class (only if it is different from q).
 ##
 ##  If a value z > 1 has been specified  for a dimension for which no Z-class

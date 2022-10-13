@@ -3051,7 +3051,7 @@ redistribution since the release of GAP 4.7.8 are:
     infinity
 
   - Introduced new property `IsGeneratorsOfSemigroup` which reflects
-    wheter the list or collection generates a semigroup.
+    whether the list or collection generates a semigroup.
 
 ### Fixed bugs which could lead to incorrect results:
 
@@ -3764,7 +3764,7 @@ This is the first public release of GAP 4.6.
     internal FFEs, Conway FFEs and ZmodpZ objects.
 
   - Replaced `ViewObj` method for fields by `ViewString` method to
-    improve the way how polynomial rings over algebraic extenstions of
+    improve the way how polynomial rings over algebraic extensions of
     fields are displayed.
 
   - Made the info string (optional 2nd argument to
@@ -3951,7 +3951,7 @@ GAP 4.5.4 release:
 
 ### Fixed bugs which could lead to crashes:
 
-  - A crash occuring during garbage collection following a call to
+  - A crash occurring during garbage collection following a call to
     `AClosVec` for a `GF(2)` code. (Reported by Volker Braun)
 
   - A crash when parsing certain syntactically invalid code. (Reported by
@@ -4108,7 +4108,7 @@ GAP 4.5.4 release:
 
   - On Windows, an error occurred if one tried to use the default Windows
     browser as a help viewer (see `SetHelpViewer`). Now the browser
-    opens the top of the correspoding manual chapter. The current fix
+    opens the top of the corresponding manual chapter. The current fix
     is a temporary solution since the problem remains with the
     positioning at the required manual section.
 
@@ -5978,10 +5978,10 @@ discuss until the next update how to improve this feature.
     **recog** which is in preparation. (Reported by Akos Seress and Max
     Neunhöffer)
 
-  - Using `{}` to select elements of a known inhomogenous dense list
-    produced a list that might falsely claim to be known inhomogenous,
+  - Using `{}` to select elements of a known inhomogeneous dense list
+    produced a list that might falsely claim to be known inhomogeneous,
     which could lead to a segfault if the list typing code tried to
-    mark it homogenous, since the code intended to catch such errors
+    mark it homogeneous, since the code intended to catch such errors
     also had a bug. (Reported by Steve Linton)
 
   - The record for the generic iterator construction of subspaces domains
@@ -6097,7 +6097,7 @@ discuss until the next update how to improve this feature.
     order in certain cases.
 
   - Representations computed by `IrreducibleRepresentations` in
-    characteristic 0 erraneously claimed to be faithful.
+    characteristic 0 erroneously claimed to be faithful.
 
   - A primitive representation of degree 574 for PSL(2,41) has been
     missing in the classification on which the GAP library was
@@ -6465,7 +6465,7 @@ been corrected or added in bugfixes and updates for GAP 4.4.
   - A problem when calculating representations of a group in which class
     arrangement in group and character table are not identical.
 
-  - Three missing primitive groups of degree 441 were addded.
+  - Three missing primitive groups of degree 441 were added.
 
 ### Other fixed bugs:
 

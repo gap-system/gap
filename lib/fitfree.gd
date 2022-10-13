@@ -172,7 +172,7 @@ DeclareGlobalFunction("SubgroupByFittingFreeData");
 # Utility function: function(pcgs,gens,ignoredepths)
 # for forming an induced modulo pcgs after correction on the lowest level
 # We will be in the situation that an IGS has been corrected only on the
-# lowest level, i.e. the inly obstacle to being an IGS is on the lowest
+# lowest level, i.e. the only obstacle to being an IGS is on the lowest
 # level. Thus the situation is that of a vector space and we do not need to
 # consider commutators and powers, but simply do a Gaussian elimination.
 DeclareGlobalFunction("TFMakeInducedPcgsModulo");
@@ -214,7 +214,7 @@ DeclareGlobalFunction("FittingFreeElementarySeries");
 ##  <Attr Name="DirectFactorsFittingFreeSocle" Arg='G'/>
 ##
 ##  <Description>
-##  for a finite fitting-free group <A>G</A>, this function retuns a list of
+##  for a finite fitting-free group <A>G</A>, this function returns a list of
 ##  the direct factors of the socle of <A>G</A>. If <A>G</A> is not
 ##  fitting-free then <K>fail</K> is returned.
 ##  </Description>

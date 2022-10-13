@@ -255,7 +255,7 @@ static void RemoveGCRoots(void)
 
 
 /* In order to safely use thread-local memory on the main stack, we have
- * to work around an idiosyncracy in some virtual memory systems. These
+ * to work around an idiosyncrasy in some virtual memory systems. These
  * VM implementations do not allow fully random access within the stack
  * segment, but only quasi-linear access: a page can only be accessed if
  * a nearby page was accessed before. If this pattern is not observed,

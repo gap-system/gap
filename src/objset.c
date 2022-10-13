@@ -191,7 +191,7 @@ Obj NewObjSet(void) {
  *  -------------------------
  *
  *  Determine if there is an excess number of deleted entries in `set` and
- *  compact the set if necessary. The additional paramater `expand` can be
+ *  compact the set if necessary. The additional parameter `expand` can be
  *  set to a non-zero value to reserve space for that many additional entries
  *  that will be inserted right after compaction.
  */
@@ -461,7 +461,7 @@ Obj NewObjMap(void) {
  *  -------------------------
  *
  *  Determine if there is an excess number of deleted entries in `map` and
- *  compact the map if necessary. The additional paramater `expand` can be
+ *  compact the map if necessary. The additional parameter `expand` can be
  *  set to a non-zero value to reserve space for that many additional entries
  *  that will be inserted right after compaction.
  */

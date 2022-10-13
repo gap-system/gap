@@ -399,7 +399,7 @@ void InformProfilingThatThisIsAForkedGAP(void)
         fcloseMaybeCompressed(&profileState);
         fopenMaybeCompressed(filenamecpy, &profileState);
         outputVersionInfo();
-        // Need to flush list of outputed files, as we will start a fresh file
+        // Need to flush list of outputted files, as we will start a fresh file
         OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     }
     HashUnlock(&profileState);

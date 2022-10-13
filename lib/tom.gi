@@ -344,7 +344,7 @@ InstallMethod( TableOfMarks,
           perfect,           # classes of perfect subgroups of <G>
           perfectNew,        # this class of perfect subgroups is new
           perfectZups,       # zuppos blist of perfect subgroups
-          layerb,            # begin of previos layer
+          layerb,            # begin of previous layer
           layere,            # end of previous layer
           H,                 # representative of a class
           Hzups,             # zuppos blist of <H>
@@ -359,7 +359,7 @@ InstallMethod( TableOfMarks,
           reps,              # transversal of <N> in <G>
           h,i,k,l,r,         # loop variables
           tom,               # table of marks (result)
-          marks,             # componets of the table of marks
+          marks,             # components of the table of marks
           subs,              #
           normalizers,       #
           derivedSubgroups,  #

@@ -148,7 +148,7 @@ gap> H := GreensHClassOfElement(S, One(S));;
 gap> IsomorphismPermGroup(H);;
 gap> H := GreensHClassOfElement(S, Transformation([1, 1, 2, 3]));;
 
-# The Semigroups package produces different output so this test is supressed
+# The Semigroups package produces different output so this test is suppressed
 #gap> IsomorphismPermGroup(H);
 #Error, can only create isomorphisms of group H-classes
 

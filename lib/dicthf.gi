@@ -201,7 +201,7 @@ InstallMethod(DenseIntKey,"integers",true,
   [IsObject,IsPosInt],0,
 function(d,i)
   #T this function might cause problems if there are nonpositive integers
-  #T used densly.
+  #T used densely.
   return IdFunc;
 end);
 

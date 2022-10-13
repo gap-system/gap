@@ -151,7 +151,7 @@ positions:=[];
 patterns:=[];
 
 # Loop through all spelling patterns to check if there are any matches.
-# Record starting positions and data about matching patters.
+# Record starting positions and data about matching patterns.
 
 for pattern in TRANSATL do
   # for each pattern we record starting positions and data separately

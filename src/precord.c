@@ -146,7 +146,7 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 **  If <rec>  has not yet  been  copied, it makes a   copy, leaves a  forward
 **  pointer to the copy in  the first entry   of the record, where the  first
 **  record name usually resides,  and copies all the  entries.  If the record
-**  has alread been copied, it returns the value of the forwarding pointer.
+**  has already been copied, it returns the value of the forwarding pointer.
 **
 **  'CopyPRec' is the function in 'CopyObjFuncs' for records.
 **

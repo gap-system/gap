@@ -72,7 +72,7 @@ end;
 #F  RationalIdentificationPermGroup( <D>, <el> )   galois-fix class invariant
 ##
 ##  When trying to use cheap identifications, we cannot use all
-##  identification routines: For exaple galois conjugated elements must be
+##  identification routines: For example galois conjugated elements must be
 ##  multiplied by the *galois conjugate* of the central element!
 ##
 RationalIdentificationPermGroup := function(D,el)
@@ -128,7 +128,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
       fi;
     od;
     if ambiguousStructures<>[] then
-      # Centre multiplikation test
+      # Centre multiplication test
       cem:=[];
       cen:=[];
       for i in [2..Length(D.classes)] do
