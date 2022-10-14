@@ -291,4 +291,27 @@ gap> funcloop(x -> (x in x) and x);
 function ( x ) return x in x and x; end
 gap> funcloop(x -> x in (x and x));
 function ( x ) return x in (x and x); end
+
+# nested sublist extractions
+# a single extraction
+gap> funcloop(x -> [ x ]{[ 1 ]});
+function ( x ) return [ x ]{[ 1 ]}; end
+
+# two extractions
+gap> funcloop(x -> ([ x ]{[ 1 ]}){[ 1 ]});
+function ( x ) return ([ x ]{[ 1 ]}){[ 1 ]}; end
+gap> funcloop(x -> [ [ x ] ]{[ 1 ]}{[ 1 ]});
+function ( x ) return [ [ x ] ]{[ 1 ]}{[ 1 ]}; end
+
+# three extractions
+gap> funcloop(x -> (([ x ]{[ 1 ]}){[ 1 ]}){[ 1 ]});
+function ( x ) return (([ x ]{[ 1 ]}){[ 1 ]}){[ 1 ]}; end
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]});
+function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}; end
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}){[ 1 ]}{[ 1 ]});
+function ( x ) return ([ [ x ] ]{[ 1 ]}){[ 1 ]}{[ 1 ]}; end
+
+# four extractions
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}{[ 1 ]});
+function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}{[ 1 ]}; end
 gap> STOP_TEST("function.tst", 1);
