@@ -524,16 +524,20 @@ InstallMethod( IsSemiEchelonized,
 ##
 InstallOtherMethod( \*, IsIdenticalObj, [ IsRowSpace, IsMatrix ],
     function( V, mat )
+    if IsTrivial( V ) then
+      return V;
+    fi;
     return LeftModuleByGenerators( LeftActingDomain( V ),
-                            List( GeneratorsOfLeftModule( V ),
-                                  v -> v * mat ) );
+               List( GeneratorsOfLeftModule( V ), v -> v * mat ) );
     end );
 
 InstallOtherMethod( \^, IsIdenticalObj, [ IsRowSpace, IsMatrix ],
     function( V, mat )
+    if IsTrivial( V ) then
+      return V;
+    fi;
     return LeftModuleByGenerators( LeftActingDomain( V ),
-                            List( GeneratorsOfLeftModule( V ),
-                                  v -> v * mat ) );
+               List( GeneratorsOfLeftModule( V ), v -> v * mat ) );
     end );
 
 
