@@ -259,7 +259,8 @@ end;
 This operation implements <E>sublist access</E>.
 For any list, the default method is to loop over the entries in the list
 <A>poss</A>, and to delegate to the element access operation.
-(For the somewhat strange variable name,
+(For nested sublist extractions, cf.&nbsp;<Ref Sect="List Elements"/>.
+For the somewhat strange variable name,
 cf.&nbsp;<Ref Sect="Basic Operations for Lists"/>.)
 </Description>
 </ManSection>
