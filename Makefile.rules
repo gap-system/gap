@@ -1263,12 +1263,12 @@ testlibgap: ${LIBGAPTESTS}
 
 # test libgap's pkg-config's libgap version reporting
 testpkgconfigversion: install-libgap
-ifeq ($(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --modversion libgap), $(PACKAGE_VERSION))
-	@echo "pkg-config reports correct version of libgap: "$(PACKAGE_VERSION)
-else
-	@echo "pkg-config does not report version of libgap, or is not installed"
-	exit 1
-endif
+	$(eval PKG_REPORTED_VERSION := $(shell PKG_CONFIG_PATH=$(DESTDIR)$(libdir)/pkgconfig pkg-config --modversion libgap))
+	@echo "pkg-config reports version $(PKG_REPORTED_VERSION)"
+	@if [ $(PKG_REPORTED_VERSION) != $(GAP_VERSION) ] ; then \
+	   echo "reported version does not match GAP_VERSION = $(GAP_VERSION)" ; \
+	   exit 1 ; \
+	fi
 
 # test libgap's pkg-config's libgap flags fetching
 testpkgconfigbuild: install-libgap install-headers
