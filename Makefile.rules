@@ -582,7 +582,6 @@ endef
 export gap_wrapper
 
 install-bin: gap
-	@echo "Warning, 'make install-bin' is incomplete"
 	# install the real GAP executable as $(libdir)/gap/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
 	$(LTINSTALL) -s gap $(DESTDIR)$(libdir)/gap
@@ -610,8 +609,6 @@ install-doc:
 # with a few exceptions: the `doc` dir is installed by `install-doc`, and
 # `install-sysinfo` creates `sysinfo.gap`
 install-gaproot: CITATION
-	@echo "Warning, 'make install-gaproot' is incomplete"
-	# TODO: also install bin/BuildPackage.sh?
 	# create subdirectories
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/pkg
@@ -663,7 +660,6 @@ install-headers: $(FFDATA_H) build/version.h
 	ln -sfn . $(DESTDIR)$(includedir)/gap/src
 
 install-libgap: libgap.la libgap.pc
-	@echo "Warning, 'make install-libgap' is incomplete"
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(LTINSTALL) -s libgap.la $(DESTDIR)$(libdir)
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/pkgconfig
