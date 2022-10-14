@@ -47,6 +47,8 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+# Here we declare the new representation and tell GAP which properties it
+# implies. FListMatrices e.g. are positional objects and so on.
 DeclareRepresentation( "IsFlistMatrixRep",
         IsMatrixObj and IsMatrixOrMatrixObj and IsPositionalObjectRep
     and IsNoImmediateMethodsObject
@@ -54,6 +56,12 @@ DeclareRepresentation( "IsFlistMatrixRep",
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
     [] );
 
+# If we implement our object a a positional object we often have to access its
+# properties in the code. To make that more readable we declare global
+# variables. If you do this too make sure you use variables that are unique and
+# unlikely to be used someplace else, even though that might mean using longer
+# names. Here we prefixed the names with the name of the representation. See
+# also Reference Manual Chapter 79 for more information about Objects.
 
 # Some constants for matrix access:
 # Position in the positional object of the base domain
@@ -64,12 +72,3 @@ BindGlobal( "FLISTREP_NRPOS", 2 );
 BindGlobal( "FLISTREP_NCPOS", 3 );
 # Position in the positional object of the list of entries
 BindGlobal( "FLISTREP_ELSPOS", 4 );
-
-############################################################################
-# Constructors:
-############################################################################
-
-#T Should this be documented?
-#T It seems to be just an auxiliary function for the documented constructors.
-#DeclareGlobalFunction( "MakeFlistVectorType" );
-

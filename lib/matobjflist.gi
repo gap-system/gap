@@ -12,7 +12,17 @@
 #
 # This file is a sample implementation for new style vectors and matrices.
 # It stores matrices as a dense flat list.
-#
+# In order to implement another matrix object you can use this file as a guide
+# on what methods need to be implemented. In general you can take a look at
+# 'matobj.gi'. In that file all methods available for matrix objects are
+# implemented. For most methods, if you do not povide a tailored implementation
+# the generic implementation in 'matobj.gi' is used. Thus, you can take a look
+# at the generic method and decide whether you can provide a significant
+# improvement by writing a custom method for your particular object. However,
+# there are a few methods you must implement for any new matrix object.
+# For the methods you must implement see the Reference Manual 26.13. This list
+# is not complete however e.g. in generic methods an 'unpack' method is often
+# used but none is generically provided. Thus you should implement this method too.
 
 ############################################################################
 ############################################################################
@@ -24,6 +34,8 @@
 ############################################################################
 # Constructors:
 ############################################################################
+
+# This method is to construct a new matrix object 
 
 InstallMethod( NewMatrix,
   "for IsFlistMatrixRep, a ring, an int, and a list",
@@ -49,8 +61,6 @@ InstallMethod( NewMatrix,
         list := list_in;
     fi;
 
-    #e := NewVector(IsPlistVectorRep, basedomain, []);
-    #m := [basedomain,e,rl,m];
     obj := [basedomain,Length(list)/nrcols,nrcols,list];
     filter2 := IsFlistMatrixRep and IsMutable;
     if HasCanEasilyCompareElements(Representative(basedomain)) and
@@ -125,6 +135,9 @@ InstallMethod( DimensionsMat, "for a flist matrix",
 ############################################################################
 # A selection of list operations:
 ############################################################################
+
+# note depending on your particular matrix object implementing these might not
+# make sense.
 
 InstallOtherMethod( \[\], "for an flist matrix and a positive integer",
 #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
@@ -207,6 +220,7 @@ InstallMethod( MutableCopyMat, "for an flist matrix",
     return res;
   end);
 
+# It is important to implement this method as it is used by a lot of generic methods.
 InstallMethod( Unpack, "for an flist matrix",
 [ IsFlistMatrixRep ],
 function( mat )
@@ -256,6 +270,9 @@ InstallMethod( SetMatElm, "for an flist matrix, two positions, and an object",
 # Printing and viewing methods:
 ############################################################################
 
+# Implementing these methods is not mandatory but highly recommended to make
+# working with your new matrix object fun and easy.
+
 InstallMethod( ViewObj, "for an flist matrix", [ IsFlistMatrixRep ],
   function( mat )
     Print("<");
@@ -279,7 +296,7 @@ InstallMethod( Display, "for an flist matrix", [ IsFlistMatrixRep ],
     local i,m;
     Print("<");
     if not IsMutable(mat) then Print("immutable "); fi;
-    Print(Length(mat![FLISTREP_NRPOS]),"x",mat![FLISTREP_NCPOS],"-matrix over ",mat![FLISTREP_BDPOS],":\n");
+    Print(mat![FLISTREP_NRPOS],"x",mat![FLISTREP_NCPOS],"-matrix over ",mat![FLISTREP_BDPOS],":\n");
     if IsFinite(mat![FLISTREP_BDPOS]) then 
       m := Unpack(mat);
       Display(m);
@@ -325,6 +342,18 @@ InstallMethod( String, "for plist matrix", [ IsFlistMatrixRep ],
 # Arithmetical operations:
 ############################################################################
 
+# Depending on your matrix object you might want to provide arithmetic methods
+# that work with other matrix objects. E.g. we should add an addition method
+# that takes a PListMatrixRep as one of the arguments. Then it must be decided
+# what type the result should have. The generic method returns a matrix object
+# with the constructing filter of the left operand. In some cases this must be
+# avoided to avoid errors. E.g. if you implement a diagonal matrix object by
+# storing the diagonal entries in a list your constructor likely thorws an error
+# when provided with a non diagonal matrix. If one would multiply a diagonal
+# matrix with a non-diagonal one the generic method would call your constructor
+# with a non-diagonal matrix causing an error. Thus, you should implement a
+# tailored (or generic) method to handle such a case.
+
 InstallMethod( \+, "for two flist matrices",
   [ IsFlistMatrixRep, IsFlistMatrixRep ],
   function( a, b )
@@ -355,33 +384,129 @@ InstallMethod( \*, "for two flist matrices",
   [ IsFlistMatrixRep, IsFlistMatrixRep ],
   function( a, b )
     # Here we do full checking since it is rather cheap!
-    local i,j,l,ty,v,w;
+    local row,col,l,ty,v,w;
     if not IsMutable(a) and IsMutable(b) then
         ty := TypeObj(b);
     else
         ty := TypeObj(a);
     fi;
-    if not a![RLPOS] = Length(b![FLISTREP_ELSPOS]) then
+    if not a![FLISTREP_NCPOS] = b![FLISTREP_NRPOS] then
         ErrorNoReturn("\\*: Matrices do not fit together");
     fi;
     if not IsIdenticalObj(a![FLISTREP_BDPOS],b![FLISTREP_BDPOS]) then
         ErrorNoReturn("\\*: Matrices not over same base domain");
     fi;
-    l := ListWithIdenticalEntries(Length(a![FLISTREP_ELSPOS]),0);
-    for i in [1..Length(l)] do
-        if b![RLPOS] = 0 then
-            l[i] := b![EMPOS];
+    # l is the resulting list of entries of the product in row-major formit is
+    # constructed by computing the rows one after the other and then setting the
+    # respective entries of l.
+    l := ListWithIdenticalEntries(a![FLISTREP_NRPOS]*b![FLISTREP_NCPOS],0);
+    # each row of the product is computed 
+    for row in [1..a![FLISTREP_NRPOS]] do
+        if b![FLISTREP_NCPOS] = 0 then
+            ErrorNoReturn("Why do you have a matrix with zero columns?? And what do you expect me to do about it?");
         else
-            v := a![FLISTREP_ELSPOS][i];
-            w := ZeroVector(b![RLPOS],b![EMPOS]);
-            for j in [1..a![RLPOS]] do
-                AddRowVector(w,b![FLISTREP_ELSPOS][j],v[j]);
+          # extract the row from the row-major entry list 
+            v := a![FLISTREP_ELSPOS]{[(row-1)*a![FLISTREP_NCPOS]+1..row*a![FLISTREP_NCPOS]]};
+            # the resulting row in the product is w and starts as a list of
+            # zeros in the respective domain
+            w := ListWithIdenticalEntries(b![FLISTREP_NCPOS],Zero(b![FLISTREP_BDPOS]));
+            # here all entries of row in the product are computed
+            # simultaneously. This is done by multipliying the col-th row of b
+            # with the col-th entry of the row-th row of a and then adding the
+            # result to w. This is done for all rows of b. In the end w[i] is
+            # exactly the dot product of v (i.e. the row-th row of a) and the
+            # col-th column of b. 
+            for col in [1..a![RLPOS]] do
+                AddRowVector(w,b![FLISTREP_ELSPOS]{[(col-1)*b![FLISTREP_NCPOS]+1..col*b![FLISTREP_NCPOS]]},v[col]);
             od;
-            l[i] := w;
+            # set the row-th wor of the product to w.
+            l{[(row-1)*b![FLISTREP_NCPOS]+1..row*b![FLISTREP_NCPOS]]} := w;
         fi;
     od;
     if not IsMutable(a) and not IsMutable(b) then
         MakeImmutable(l);
     fi;
-    return Objectify( ty, [a![FLISTREP_BDPOS],a![EMPOS],b![RLPOS],l] );
+    return Objectify( ty, [a![FLISTREP_BDPOS],a![FLISTREP_NRPOS],b![FLISTREP_NCPOS],l] );
+  end );
+
+  InstallMethod( ConstructingFilter, "for an flist matrix",
+  [ IsFlistMatrixRep ],
+  function( mat )
+    return IsFlistMatrixRep;
+  end );
+
+  InstallMethod( \=, "for two flist matrices",
+  [ IsFlistMatrixRep, IsFlistMatrixRep ],
+  function( a, b )
+    return a![FLISTREP_BDPOS] = b![FLISTREP_BDPOS] and a![FLISTREP_NCPOS] = b![FLISTREP_NCPOS] and a![FLISTREP_NRPOS] = b![FLISTREP_NRPOS] and EQ_LIST_LIST_DEFAULT(a![FLISTREP_ELSPOS],b![FLISTREP_ELSPOS]);
+  end );
+
+  InstallMethod( \<, "for two flist matrices",
+  [ IsFlistMatrixRep, IsFlistMatrixRep ],
+  function( a, b )
+    return LT_LIST_LIST_DEFAULT(a![FLISTREP_ELSPOS],b![FLISTREP_ELSPOS]);
+  end );
+
+  # The following methods need not ne implemented for any specific MatrixRep as
+  # default methods for all MatrixObjects exist
+  InstallMethod( AdditiveInverseSameMutability, "for an flist matrix",
+  [ IsFlistMatrixRep ],
+  function( mat )
+    local l;
+    l := List(mat![FLISTREP_ELSPOS],AdditiveInverseSameMutability);
+    if not IsMutable(mat) then
+        MakeImmutable(l);
+    fi;
+    return Objectify( TypeObj(mat), [mat![FLISTREP_BDPOS],mat![FLISTREP_NRPOS],mat![FLISTREP_NCPOS],l] );
+  end );
+
+  InstallMethod( AdditiveInverseImmutable, "for an flist matrix",
+  [ IsFlistMatrixRep ],
+  function( mat )
+    local l,res;
+    l := List(mat![FLISTREP_ELSPOS],AdditiveInverseImmutable);
+    res := Objectify( TypeObj(mat), [mat![FLISTREP_BDPOS],mat![FLISTREP_NRPOS],mat![FLISTREP_NCPOS],l] );
+    MakeImmutable(res);
+    return res;
+  end );
+
+InstallMethod( AdditiveInverseMutable, "for an flist matrix",
+  [ IsFlistMatrixRep ],
+  function( mat )
+    local l,res;
+    l := List(mat![FLISTREP_ELSPOS],AdditiveInverseMutable);
+    res := Objectify( TypeObj(mat), [mat![FLISTREP_BDPOS],mat![FLISTREP_NRPOS],mat![FLISTREP_NCPOS],l] );
+    if not IsMutable(mat) then
+        SetFilterObj(res,IsMutable);
+    fi;
+    return res;
+  end );
+
+  # Further methods one could implement if it offers a significant performance
+  # improvement
+  # ZeroMutable
+  # IsZero
+  # IsOne
+  # OneSameMutability
+  # OneMutable
+  # OneImmutable 
+
+  # This method should be implemented with care as e.g. for permutation
+  # matrices, diagonal matrices or similar inversion can be achieved cheaply.
+  # For sparse matrices on the other hand one must avoid creating large
+  # intermediary objects. In this particular implementation the existing method
+  # from GAP is called.
+
+  InstallMethod( InverseMutable, "for an flist matrix",
+  [ IsFlistMatrixRep ],
+  function( mat )
+    local n;
+    if m![FLISTREP_NCPOS] <> mat![FLISTREP_NRPOS] then
+      return fail;
+    fi;
+    # Make a plain list of lists:
+    n := List(mat![ROWSPOS],x->x![ELSPOS]);
+    n := InverseMutable(n);  # Invert!
+    if n = fail then return fail; fi;
+    return Matrix(n,Length(n),mat);
   end );
