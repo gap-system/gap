@@ -1105,6 +1105,32 @@ static void PrintIsbList(Expr expr)
 */
 static void PrintElmsList(Expr expr)
 {
+    Expr list = READ_EXPR(expr, 0);
+    Pr("%2>", 0, 0);
+    if (TNUM_EXPR(list) == EXPR_ELMS_LIST || TNUM_EXPR(list) == EXPR_ELMS_LIST_LEV) {
+        Pr("(", 0, 0);
+        PrintExpr(list);
+        Pr(")", 0, 0);
+    } else {
+        PrintExpr(list);
+    }
+    Pr("%<{", 0, 0);
+    PrintExpr(READ_EXPR(expr, 1));
+    Pr("%<}", 0, 0);
+}
+
+
+/****************************************************************************
+**
+*F  PrintElmsListLevel(<expr>) . . print a selection of several elements of a list
+**
+**  'PrintElmsListLevel'  prints the list  elements  expression  <expr> of the   form
+**  '<list>{<positions>}'.
+**
+**  Linebreaks are preferred after the '{'.
+*/
+static void PrintElmsListLevel(Expr expr)
+{
     Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<{", 0, 0);
@@ -2242,7 +2268,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_ELM_LIST       , PrintElmList);
     InstallPrintExprFunc( EXPR_ELMS_LIST      , PrintElmsList);
     InstallPrintExprFunc( EXPR_ELM_LIST_LEV   , PrintElmListLevel);
-    InstallPrintExprFunc( EXPR_ELMS_LIST_LEV  , PrintElmsList);
+    InstallPrintExprFunc( EXPR_ELMS_LIST_LEV  , PrintElmsListLevel);
     InstallPrintExprFunc( EXPR_ISB_LIST       , PrintIsbList);
 
     // install executors, evaluators, and printers for matrix elements
