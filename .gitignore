@@ -13,6 +13,7 @@
 /confdefs.h
 /conftest*
 /libtool
+/libgap.pc
 /src/config.h.in
 /src/config.h.in~
 

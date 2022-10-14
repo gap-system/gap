@@ -236,6 +236,7 @@ GAPInput
     test -f $GAPPREFIX/include/gap/version.h
     test -f $GAPPREFIX/include/gap/src/compiled.h # for backwards compatibility
     test -f $GAPPREFIX/lib/gap/sysinfo.gap
+    test -f $GAPPREFIX/lib/pkgconfig/libgap.pc
     test -f $GAPPREFIX/share/gap/doc/ref/chap0_mj.html
     test -f $GAPPREFIX/share/gap/grp/basic.gd
     test -f $GAPPREFIX/share/gap/hpcgap/lib/hpc/tasks.g
@@ -257,6 +258,12 @@ GAPInput
     # TODO: should we install the GAP test suite???
     cp -R $SRCDIR/tst $GAPPREFIX/share/gap/
     $GAPPREFIX/bin/gap $GAPPREFIX/share/gap/tst/testinstall.g
+
+    # test integration with pkg-config
+    cd "$SRCDIR"
+    # make install # might be actually needed for testpkgconfigbuild
+    make testpkgconfigversion
+    make testpkgconfigbuild
     ;;
 
   testmanuals)

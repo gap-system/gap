@@ -1027,6 +1027,7 @@ AC_SUBST([GAP_DEFINES], [$GAP_DEFINES])
 
 AC_CONFIG_FILES([GNUmakefile])
 AC_CONFIG_FILES([CITATION])
+AC_CONFIG_FILES([libgap.pc])
 AC_CONFIG_FILES([doc/make_doc], [chmod +x doc/make_doc])
 AC_CONFIG_FILES([doc/versiondata])
 AC_OUTPUT

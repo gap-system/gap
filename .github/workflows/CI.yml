@@ -162,7 +162,7 @@ jobs:
       - uses: gap-actions/setup-cygwin@v1
         if: ${{ runner.os == 'Windows' }}
         with:
-          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils'
+          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils,pkg-config'
 
       # There are two cygwin installs on github actions (ours,
       # and a preinstalled one which we can't use as not enough packages are installed.
@@ -228,8 +228,9 @@ jobs:
                    fi
                    sudo apt-get update
                    sudo apt-get install --no-install-recommends "${packages[@]}"
+                   sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
-                   brew install gmp zlib
+                   brew install gmp zlib pkg-config
                fi
                python -m pip install gcovr
 
