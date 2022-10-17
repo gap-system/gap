@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.17.0/css/xterm.css">
+  </head>
+  <body>
+    <div id="terminal"></div>
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.17.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-pty@0.9.4/index.js"></script>
+    <script>
+      const xterm = new Terminal();
+      xterm.open(document.getElementById("terminal"));
+
+      const { master, slave } = openpty();
+      xterm.loadAddon(master);
+
+      const worker = new Worker("./example.worker.js");
+      new TtyServer(slave).start(worker);
+    </script>
+
+    <!-- Hack to get around lack of SharedArrayBuffer on github pages -->
+    <script src="coi-serviceworker.js"></script>
+  </body>
+</html>
+

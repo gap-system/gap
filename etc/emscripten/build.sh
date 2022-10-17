@@ -58,7 +58,7 @@ mkdir -p "$AUX_PREFIX"
 )
 
 # There are two problems with building GAP
-# 1) GAP Builds some executables (ffgen and gap-nocomp), which it wants to
+# 1) GAP builds some executables (ffgen and gap-nocomp), which it wants to
 #    execute while building. We get these files from 'native-build'.
 # 2) 'configure' gets confused by some of the LDFLAGS we need, so we have to pass
 #     them in to 'make'
