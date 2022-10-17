@@ -1,4 +1,4 @@
-#@local a,b,enum,F,H,first50,firstfifty,g,gens,iter,rho,i,G
+#@local a,b,enum,F,H,first50,firstfifty,g,gens,iter,rho,S,i,G
 gap> START_TEST("grpfree.tst");
 gap> g:= FreeGroup( "a", "b" );
 <free group on the generators [ a, b ]>
@@ -68,6 +68,10 @@ true
 gap> H / rho;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `FactorSemigroup' on 2 arguments
+gap> S:= Subgroup( F, [ F.1^2 ] );;
+gap> S / [ F.1^10 ];
+Error, currently quotients of a free group are supported only if the group kno\
+ws to contain all generators of its parent group
 
 # FreeGroup
 gap> FreeGroup(fail);

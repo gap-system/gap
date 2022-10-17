@@ -1601,11 +1601,22 @@ end );
 #M  \/( <F>, <rels> ) . . . . . . . . . . for free group and list of relators
 ##
 InstallOtherMethod( \/,
-    "for free groups and relators",
+    "for full free group and relators",
+    IsIdenticalObj,
+    [ IsFreeGroup and IsWholeFamily, IsCollection ],
+    FactorFreeGroupByRelators );
+
+InstallOtherMethod( \/,
+    "for free group and relators",
     IsIdenticalObj,
     [ IsFreeGroup, IsCollection ],
-    0,
-    FactorFreeGroupByRelators );
+    function( G, rels )
+    # If somebody thinks that it is worth the effort to support proper
+    # subgroups of full free groups then this method is the right place
+    # to add code for that.
+    Error( "currently quotients of a free group are supported only if the ",
+           "group knows to contain all generators of its parent group" );
+    end );
 
 InstallOtherMethod( \/,
     "for fp groups and relators",
