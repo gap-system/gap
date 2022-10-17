@@ -313,7 +313,7 @@ end);
 ##
 InstallMethod(PerfGrpConst,"perm grp",true,[IsPermGroup,IsList],0,
 function(filter,l)
-local G,i,j,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
+local G,i,j,g1,g2,gl,e1,e2,free,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
   if Length(l)=0 then
     # special treatment for the trivial group
     G:= GroupByGenerators( [], () );
@@ -332,7 +332,8 @@ local G,i,j,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
     else
       extend:=false;
     fi;
-    gens:=GeneratorsOfGroup(FreeGroup(gl));
+    free:=FreeGroup(gl);
+    gens:= GeneratorsOfGroup(free);
     num:=Length(l[1][2]);
     rels:=CallFuncList(l[1][3],gens{[1..num]});
     subs:=rels[2];
@@ -356,7 +357,7 @@ local G,i,j,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
       od;
 
       # Tietze
-      extend:=PresentationFpGroup(Group(gens)/rels);
+      extend:=PresentationFpGroup(free/rels);
       TzOptions(extend).generatorsLimit:=Length(gens);
       TzOptions(extend).printLevel:=0;
       TzGo(extend);
