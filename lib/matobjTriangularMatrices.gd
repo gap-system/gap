@@ -18,7 +18,7 @@
 
  #############################################################################
  ##
- ##  <#GAPDoc Label="IsFlistMatrixRep">
+ ##  <#GAPDoc Label="IsUnipotentUpperTriangularMatrixRep">
  ##  <ManSection>
  ##  <Filt Name="IsFlistMatrixRep" Arg='obj' Type="representation"/>
  ##
