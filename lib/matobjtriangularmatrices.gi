@@ -90,7 +90,7 @@
 end );
 
  InstallMethod( NewZeroMatrix,
-   "for IsFlistMatrixRep, a ring, and two ints",
+   "for IsUpperTriangularMatrixRep, a ring, and two ints",
    [ IsUpperTriangularMatrixRep, IsRing, IsInt, IsInt ],
    function( filter, basedomain, nr_rows, nr_cols )
      local obj,filter2,list;
@@ -102,7 +102,7 @@ end );
  end );
 
  InstallMethod( NewIdentityMatrix,
-   "for IsFlistMatrixRep, a ring, and an int",
+   "for IsUpperTriangularMatrixRep, a ring, and an int",
    [ IsUpperTriangularMatrixRep, IsRing, IsInt ],
    function( filter, basedomain, dim )
      local mat, one, i;
@@ -128,43 +128,43 @@ end );
  # Implementing these methods is not mandatory but highly recommended to make
  # working with your new matrix object fun and easy.
 
- InstallMethod( ViewObj, "for an flist matrix", [ IsFlistMatrixRep ],
+ InstallMethod( ViewObj, "for an flist matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
      Print("<");
      if not IsMutable(mat) then Print("immutable "); fi;
-     Print(mat![FLISTREP_NRPOS],"x",mat![FLISTREP_NCPOS],"-matrix over ",mat![FLISTREP_BDPOS],">");
+     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],">");
        end );
 
- InstallMethod( PrintObj, "for an flist matrix", [ IsFlistMatrixRep ],
+ InstallMethod( PrintObj, "for an flist matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
-     Print("NewMatrix(IsFlistMatrixRep");
-     if IsFinite(mat![FLISTREP_BDPOS]) and IsField(mat![FLISTREP_BDPOS]) then
-         Print(",GF(",Size(mat![FLISTREP_BDPOS]),"),");
+     Print("NewMatrix(IsUpperTriangularMatrixRep");
+     if IsFinite(mat![UPPERTRIANGULARMATREP_BDPOS]) and IsField(mat![UPPERTRIANGULARMATREP_BDPOS]) then
+         Print(",GF(",Size(mat![UPPERTRIANGULARMATREP_BDPOS]),"),");
              else
-         Print(",",String(mat![FLISTREP_BDPOS]),",");
+         Print(",",String(mat![UPPERTRIANGULARMATREP_BDPOS]),",");
      fi;
-     Print(mat![FLISTREP_NCPOS],",",Unpack(mat),")");
+     Print(mat![UPPERTRIANGULARMATREP_NRPOS],",",Unpack(mat),")");
       end );
 
- InstallMethod( Display, "for an flist matrix", [ IsFlistMatrixRep ],
+ InstallMethod( Display, "for an flist matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
      local i,m;
      Print("<");
      if not IsMutable(mat) then Print("immutable "); fi;
-     Print(mat![FLISTREP_NRPOS],"x",mat![FLISTREP_NCPOS],"-matrix over ",mat![FLISTREP_BDPOS],":\n");
-     if IsFinite(mat![FLISTREP_BDPOS]) then 
+     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],":\n");
+     if IsFinite(mat![UPPERTRIANGULARMATREP_BDPOS]) then 
        m := Unpack(mat);
        Display(m);
      else 
        Print("[");
-       for i in [1..Length(mat![FLISTREP_ELSPOS])] do
-           if i mod mat![FLISTREP_NCPOS] = 1 then
+       for i in [1..Length(mat![UPPERTRIANGULARMATREP_ELSPOS])] do
+           if i mod mat![UPPERTRIANGULARMATREP_NRPOS] = 1 then
                Print("[");
             else
                Print(" ");
            fi;
-           Print(mat![FLISTREP_ELSPOS][i]);
-           if i mod mat![FLISTREP_NCPOS] = 0 then 
+           Print(mat![UPPERTRIANGULARMATREP_ELSPOS][i]);
+           if i mod mat![UPPERTRIANGULARMATREP_NRPOS] = 0 then 
              Print("]\n");
            fi;
        od;
@@ -173,17 +173,17 @@ end );
      Print(">\n");
 end );
 
- InstallMethod( String, "for plist matrix", [ IsFlistMatrixRep ],
+ InstallMethod( String, "for plist matrix", [ IsUpperTriangularMatrixRep ],
    function( m )
      local st;
-     st := "NewMatrix(IsFlistMatrixRep";
+     st := "NewMatrix(IsUpperTriangularMatrixRep";
      Add(st,',');
-     if IsFinite(m![FLISTREP_BDPOS]) and IsField(m![FLISTREP_BDPOS]) then
+     if IsFinite(m![UPPERTRIANGULARMATREP_BDPOS]) and IsField(m![UPPERTRIANGULARMATREP_BDPOS]) then
          Append(st,"GF(");
-         Append(st,String(Size(m![FLISTREP_BDPOS])));
+         Append(st,String(Size(m![UPPERTRIANGULARMATREP_BDPOS])));
          Append(st,"),");
      else
-         Append(st,String(m![FLISTREP_BDPOS]));
+         Append(st,String(m![UPPERTRIANGULARMATREP_BDPOS]));
          Append(st,",");
      fi;
      Append(st,String(NumberColumns(m)));
@@ -198,5 +198,5 @@ end );
 InstallMethod( Unpack, "for an flist matrix",
 [ IsUpperTriangularMatrixRep ],
 function( mat )
-    return List([1..mat![FLISTREP_NRPOS]],row->ShallowCopy(mat![FLISTREP_ELSPOS]{[(row-1)*mat![FLISTREP_NCPOS]+1..row*mat![FLISTREP_NCPOS]]}));
+    return List([1..mat![UPPERTRIANGULARMATREP_NRPOS]],row->ShallowCopy(mat![UPPERTRIANGULARMATREP_ELSPOS]{[(row-1)*mat![UPPERTRIANGULARMATREP_NRPOS]+1..row*mat![UPPERTRIANGULARMATREP_NRPOS]]}));
 end );

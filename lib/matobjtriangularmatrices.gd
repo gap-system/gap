@@ -67,6 +67,6 @@
  # Position in the positional object of the base domain
  BindGlobal( "UPPERTRIANGULARMATREP_BDPOS", 1 );
  # Position in the positional object of the number of rows
- BindGlobal( "UPPERTRIANGULARMATTREP_NRPOS", 2 );
+ BindGlobal( "UPPERTRIANGULARMATREP_NRPOS", 2 );
  # Position in the positional object of the list of entries
  BindGlobal( "UPPERTRIANGULARMATREP_ELSPOS", 3 );
