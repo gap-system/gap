@@ -18,7 +18,7 @@
 
  #############################################################################
  ##
- ##  <#GAPDoc Label="IsUnipotentUpperTriangularMatrixRep">
+ ##  <#GAPDoc Label="IsUpperTriangularMatrixRep">
  ##  <ManSection>
  ##  <Filt Name="IsFlistMatrixRep" Arg='obj' Type="representation"/>
  ##
@@ -49,7 +49,7 @@
  ##
  # Here we declare the new representation and tell GAP which properties it
  # implies. FListMatrices e.g. are positional objects and so on.
- DeclareRepresentation( "IsFlistMatrixRep",
+ DeclareRepresentation( "IsUpperTriangularMatrixRep",
          IsMatrixObj and IsMatrixOrMatrixObj and IsPositionalObjectRep
      and IsNoImmediateMethodsObject
      and HasNumberRows and HasNumberColumns
@@ -65,10 +65,8 @@
 
  # Some constants for matrix access:
  # Position in the positional object of the base domain
- BindGlobal( "FLISTREP_BDPOS", 1 );
+ BindGlobal( "UPPERTRIANGULARMATREP_BDPOS", 1 );
  # Position in the positional object of the number of rows
- BindGlobal( "FLISTREP_NRPOS", 2 );
- # Position in the positional object of the number of columns
- BindGlobal( "FLISTREP_NCPOS", 3 );
+ BindGlobal( "UPPERTRIANGULARMATTREP_NRPOS", 2 );
  # Position in the positional object of the list of entries
- BindGlobal( "FLISTREP_ELSPOS", 4 );
+ BindGlobal( "UPPERTRIANGULARMATREP_ELSPOS", 3 );
