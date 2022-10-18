@@ -16,13 +16,15 @@
 from utils import *
 
 import glob
+import grp
 import gzip
+import json
+import pwd
 import re
 import shutil
 import subprocess
 import sys
 import tarfile
-import json
 
 # Insist on Python >= 3.6 for f-strings and other goodies
 if sys.version_info < (3,6):
@@ -223,7 +225,9 @@ def make_and_record_archive(name, compression, root_dir, base_dir):
 
     filename = f"{name}{ext}"
     notice(f"Creating {filename}")
-    shutil.make_archive(name, compression, root_dir, base_dir)
+    owner = pwd.getpwuid(0).pw_name
+    group = grp.getgrgid(0).gr_name
+    shutil.make_archive(name, compression, root_dir, base_dir, owner = owner, group = group)
     manifest_list.append(filename)
 
 # Create the remaining archives
