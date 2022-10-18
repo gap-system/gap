@@ -48,6 +48,9 @@
      # If applicable then replace a nested list 'list_in' by a flat list 'list'.
      if Length(list_in) > 0 and (IsVectorObj(list_in[1]) or IsList(list_in[1])) then
          list := [];
+         if Length(list_in) <> nrcols then
+             Error( "NewZeroMatrix: Matrix is not square." );
+         fi;
          for rowindex in [1..Length(list_in)] do 
              if Length(list_in[rowindex]) <> nrcols then
                  Error( "NewMatrix: Each row must have nrcols entries." );
@@ -63,6 +66,9 @@
          od;
      else
          list := [];
+         if Length(list_in) <> nrcols*nrcols then
+             Error( "NewZeroMatrix: Matrix is not square." );
+         fi;
          if Length(list_in) mod nrcols <> 0 then 
              Error( "NewMatrix: Length of list must be a multiple of ncols." );
          fi;
@@ -94,8 +100,11 @@ end );
    [ IsUpperTriangularMatrixRep, IsRing, IsInt, IsInt ],
    function( filter, basedomain, nr_rows, nr_cols )
      local obj,filter2,list;
-     list := Zero(basedomain)*[1..nr_rows*nr_cols];
-     obj := [basedomain,nr_rows,nr_cols,list];
+     if nr_rows <> nr_cols then
+         Error( "NewZeroMatrix: Matrix is not square." );
+     fi;
+     list := Zero(basedomain)*[1..nr_cols*(nr_cols+1)/2];
+     obj := [basedomain,nr_cols,list];
      Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
                         filter and IsMutable), obj );
      return obj;
