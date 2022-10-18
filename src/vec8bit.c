@@ -528,10 +528,17 @@ static void RewriteVec8Bit(Obj vec, UInt q)
 
     if (q1 == q)
         return;
-    assert(q > q1);
+
+    if (q < q1) {
+        ErrorMayQuit("Cannot convert a vector compressed over GF(%i) to small field GF(%i)", q1, q);
+    }
+
+    if (((q - 1) % (q1 - 1)) != 0) {
+        ErrorMayQuit("Cannot convert a vector compressed over GF(%i) to GF(%i)", q1, q);
+    }
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over "
+        ErrorMayQuit("Cannot convert a locked vector compressed over "
                      "GF(%i) to GF(%i)",
                      q1, q);
     }
@@ -563,7 +570,6 @@ static void RewriteVec8Bit(Obj vec, UInt q)
     byte = 0;
     i = len - 1;
 
-    assert(((q - 1) % (q1 - 1)) == 0);
     mult = (q - 1) / (q1 - 1);
     while (i >= 0) {
         val = VAL_FFE(convtab1[gettab1[byte1 + 256 * (i % els1)]]);
@@ -609,7 +615,7 @@ void RewriteGF2Vec(Obj vec, UInt q)
     assert(q % 2 == 0);
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over "
+        ErrorMayQuit("Cannot convert a locked vector compressed over "
                      "GF(2) to GF(%i)",
                      q, 0);
     }
@@ -685,9 +691,10 @@ static void ConvVec8Bit(Obj list, UInt q)
 
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
-        if (FIELD_VEC8BIT(list) == q)
+        UInt q1 = FIELD_VEC8BIT(list);
+        if (q1 == q)
             return;
-        else if (FIELD_VEC8BIT(list) < q) {
+        else if (q1 < q && ((q - 1) % (q1 - 1)) == 0) {
             RewriteVec8Bit(list, q);
             return;
         }
@@ -836,14 +843,15 @@ static Obj NewVec8Bit(Obj list, UInt q)
 
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
-        if (FIELD_VEC8BIT(list) == q) {
+        UInt q1 = FIELD_VEC8BIT(list);
+        if (q1 == q) {
             res = CopyVec8Bit(list, 1);
             if (!IS_MUTABLE_OBJ(list))
                 // index 0 is for immutable vectors
                 SetTypeDatObj(res, TypeVec8Bit(q, 0));
             return res;
         }
-        else if (FIELD_VEC8BIT(list) < q) {
+        else if (q1 < q && ((q - 1) % (q1 - 1)) == 0) {
             // rewriting to a larger field
             res = CopyVec8Bit(list, 1);
             RewriteVec8Bit(res, q);
@@ -1003,7 +1011,7 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
         RequireArgument(SELF_NAME, list, "must be an 8bit vector");
     }
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
-        ErrorMayQuit("You cannot convert a locked vector compressed over "
+        ErrorMayQuit("Cannot convert a locked vector compressed over "
                      "GF(%i) to a plain list",
                      FIELD_VEC8BIT(list), 0);
     }
