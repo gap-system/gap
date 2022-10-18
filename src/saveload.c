@@ -77,7 +77,7 @@ static void CloseAfterSave( void )
     }
 
   if (SyWrite(SaveFile, LoadBuffer, LBPointer - LoadBuffer) < 0)
-    ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0, 0);
+    ErrorQuit("Cannot write to file, see 'LastSystemError();'", 0, 0);
   SyFclose(SaveFile);
   SaveFile = -1;
 }
@@ -109,7 +109,7 @@ static void CloseAfterLoad( void )
 static void SAVE_BYTE_BUF(void)
 {
   if (SyWrite(SaveFile, LoadBuffer, LBEnd - LoadBuffer) < 0)
-    ErrorQuit("Cannot write to file, see 'LastSystemError();'\n", 0, 0);
+    ErrorQuit("Cannot write to file, see 'LastSystemError();'", 0, 0);
   LBPointer = LoadBuffer;
   return;
 }

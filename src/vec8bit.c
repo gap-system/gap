@@ -679,9 +679,9 @@ static void ConvVec8Bit(Obj list, UInt q)
     Obj     type;
 
     if (q > 256)
-        ErrorQuit("Field size %d is too much for 8 bits\n", q, 0);
+        ErrorQuit("Field size %d is too much for 8 bits", q, 0);
     if (q == 2)
-        ErrorQuit("GF2 has its own representation\n", 0, 0);
+        ErrorQuit("GF2 has its own representation", 0, 0);
 
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
@@ -830,9 +830,9 @@ static Obj NewVec8Bit(Obj list, UInt q)
 
 
     if (q > 256)
-        ErrorQuit("Field size %d is too much for 8 bits\n", q, 0);
+        ErrorQuit("Field size %d is too much for 8 bits", q, 0);
     if (q == 2)
-        ErrorQuit("GF2 has its own representation\n", 0, 0);
+        ErrorQuit("GF2 has its own representation", 0, 0);
 
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
@@ -4676,11 +4676,11 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
     ll1 = INT_INTOBJ(ll);
     lr1 = INT_INTOBJ(lr);
     if (0 > ll1 || ll1 > LEN_VEC8BIT(vl))
-        ErrorQuit("ProdCoeffs: given length <ll> of left argt (%d)\n is "
+        ErrorQuit("ProdCoeffs: given length <ll> of left argt (%d) is "
                   "negative or longer than the argt (%d)",
                   INT_INTOBJ(ll), LEN_VEC8BIT(vl));
     if (0 > lr1 || lr1 > LEN_VEC8BIT(vr))
-        ErrorQuit("ProdCoeffs: given length <lr> of right argt (%d)\n is "
+        ErrorQuit("ProdCoeffs: given length <lr> of right argt (%d) is "
                   "negative or longer than the argt (%d)",
                   INT_INTOBJ(lr), LEN_VEC8BIT(vr));
     info = GetFieldInfo8Bit(q);
@@ -4879,7 +4879,7 @@ static Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT(Obj self, Obj vr, Obj lr)
 {
     RequireNonnegativeSmallInt(SELF_NAME, lr);
     if (INT_INTOBJ(lr) > LEN_VEC8BIT(vr)) {
-        ErrorQuit("ReduceCoeffs: given length <lr> of right argt (%d)\n is "
+        ErrorQuit("ReduceCoeffs: given length <lr> of right argt (%d) is "
                   "longer than the argt (%d)",
                   INT_INTOBJ(lr), LEN_VEC8BIT(vr));
     }
@@ -4896,7 +4896,7 @@ static Obj FuncREDUCE_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
         return Fail;
     RequireNonnegativeSmallInt(SELF_NAME, ll);
     if (INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
-        ErrorQuit("ReduceCoeffs: given length <ll> of left argt (%d)\n is "
+        ErrorQuit("ReduceCoeffs: given length <ll> of left argt (%d) is "
                   "longer than the argt (%d)",
                   INT_INTOBJ(ll), LEN_VEC8BIT(vl));
     }
@@ -4920,7 +4920,7 @@ static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
         return Fail;
     RequireNonnegativeSmallInt(SELF_NAME, ll);
     if (INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
-        ErrorQuit("QuotRemCoeffs: given length <ll> of left argt (%d)\n is "
+        ErrorQuit("QuotRemCoeffs: given length <ll> of left argt (%d) is "
                   "longer than the argt (%d)",
                   INT_INTOBJ(ll), LEN_VEC8BIT(vl));
     }

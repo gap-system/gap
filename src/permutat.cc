@@ -1093,7 +1093,7 @@ static Obj FuncPermList(Obj self, Obj list)
         return PermList<UInt4>(list);
     }
     else {
-        ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree\n",
+        ErrorMayQuit("PermList: list length %i exceeds maximum permutation degree",
              len, 0);
     }
 }
