@@ -207,5 +207,20 @@ end );
 InstallMethod( Unpack, "for an flist matrix",
 [ IsUpperTriangularMatrixRep ],
 function( mat )
-    return List([1..mat![UPPERTRIANGULARMATREP_NRPOS]],row->ShallowCopy(mat![UPPERTRIANGULARMATREP_ELSPOS]{[(row-1)*mat![UPPERTRIANGULARMATREP_NRPOS]+1..row*mat![UPPERTRIANGULARMATREP_NRPOS]]}));
+    local st, row, rowindex, colindex, zeroEle;
+
+    st := [1..UPPERTRIANGULARMATREP_NRPOS];
+    zeroEle := Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
+    for rowindex in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
+         row := [1..mat![UPPERTRIANGULARMATREP_NRPOS]];
+         for colindex in [1..rowindex-1] do
+		    row[colindex] := zeroEle;
+	     od;
+         for colindex in [rowindex..mat![UPPERTRIANGULARMATREP_NRPOS]] do 
+            row[colindex] := mat![UPPERTRIANGULARMATREP_ELSPOS][(-rowindex*rowindex+rowindex)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(rowindex-1) + colindex];
+         od;
+         st[rowindex] := row;
+    od;
+
+    return st;
 end );
