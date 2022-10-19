@@ -240,7 +240,7 @@ end );
    function( m )
      local l,res;
      l := List(m![UPPERTRIANGULARMATREP_ELSPOS],ShallowCopy);
-     res := Objectify(TypeObj(m),[m![UPPERTRIANGULARMATREP_BDPOS],m![UPPERTRIANGULARMATREP_NRPOS],m![UPPERTRIANGULARMATREP_NRPOS],l]);
+     res := Objectify(TypeObj(m),[m![UPPERTRIANGULARMATREP_BDPOS],m![UPPERTRIANGULARMATREP_NRPOS],l]);
      if not IsMutable(m) then
          SetFilterObj(res,IsMutable);
      fi;
@@ -420,7 +420,7 @@ end );
      else
          ty := TypeObj(a);
      fi;
-     return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],a![UPPERTRIANGULARMATREP_NRPOS],
+     return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],
      SUM_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
 
@@ -433,7 +433,7 @@ end );
     else
          ty := TypeObj(a);
      fi;
-     return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],a![UPPERTRIANGULARMATREP_NRPOS],
+     return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],
      DIFF_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
  #todo
@@ -514,7 +514,7 @@ end );
      if not IsMutable(mat) then
          MakeImmutable(l);
      fi;
-     return Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
+     return Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
   end );
 
    InstallMethod( AdditiveInverseImmutable, "for an IsUpperTriangularMatrixRep matrix",
@@ -522,7 +522,7 @@ end );
    function( mat )
      local l,res;
      l := List(mat![UPPERTRIANGULARMATREP_ELSPOS],AdditiveInverseImmutable);
-     res := Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
+     res := Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
      MakeImmutable(res);
      return res;
   end );
@@ -532,7 +532,7 @@ end );
    function( mat )
      local l,res;
      l := List(mat![UPPERTRIANGULARMATREP_ELSPOS],AdditiveInverseMutable);
-     res := Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
+     res := Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
      if not IsMutable(mat) then
          SetFilterObj(res,IsMutable);
      fi;
