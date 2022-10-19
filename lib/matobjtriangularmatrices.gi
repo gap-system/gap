@@ -585,17 +585,12 @@ end );
 InstallMethod( InverseMutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
-     local det,i,n,ni,row,col;
-     det := One(mat![UPPERTRIANGULARMATREP_BDPOS]);
+     local i,n,ni,row,col;
      for i in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
-        if mat[i,i] = Zero(mat![UPPERTRIANGULARMATREP_BDPOS]) then
+        if mat[i,i] = Zero(mat![UPPERTRIANGULARMATREP_BDPOS]) or not(IsUnit(mat![UPPERTRIANGULARMATREP_BDPOS],mat[i,i])) then
             Error("InverseMUtable: Matrix is not invertible.");
         fi;
-        det := det * mat[i,i];
      od;
-     if not(IsInvertible(det,mat![UPPERTRIANGULARMATREP_BDPOS])) then
-        Error("InverseMUtable: Matrix is not invertible.");
-    fi;
 
    # Make a plain list of lists:
      n := Unpack(mat);
