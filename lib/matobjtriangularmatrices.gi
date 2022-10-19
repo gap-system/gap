@@ -10,19 +10,8 @@
 
  ############################################################################
  #
- # This file is a sample implementation for new style vectors and matrices.
+ # This file is an implementation for UpperTriangularMatrices as MatObjs.
  # It stores matrices as a dense flat list.
- # In order to implement another matrix object you can use this file as a guide
- # on what methods need to be implemented. In general you can take a look at
- # 'matobj.gi'. In that file all methods available for matrix objects are
- # implemented. For most methods, if you do not povide a tailored implementation
- # the generic implementation in 'matobj.gi' is used. Thus, you can take a look
- # at the generic method and decide whether you can provide a significant
- # improvement by writing a custom method for your particular object. However,
- # there are a few methods you must implement for any new matrix object.
- # For the methods you must implement see the Reference Manual 26.13. This list
- # is not complete however e.g. in generic methods an 'unpack' method is often
- # used but none is generically provided. Thus you should implement this method too.
 
  ############################################################################
  ############################################################################
@@ -172,10 +161,14 @@ end );
    [ IsUpperTriangularMatrixRep, IsPosInt ],
    function( mat, row )
    # could this cause problems if some entries in the vector are not bound?
-     local index_start, index_end;
+     local index_start, index_end, vec, i;
      index_start := (row-1)*mat![UPPERTRIANGULARMATREP_NRPOS] + 1;
      index_end := index_start + mat![UPPERTRIANGULARMATREP_NRPOS];
-     return NewVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_ELSPOS]{[index_start..index_end]});
+     vec := NewZeroVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS]);
+     for i in [row..mat![UPPERTRIANGULARMATREP_NRPOS]] do 
+        vec[i] := mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + i];
+     od;
+     return NewVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],List(vec));
   end );
 
  # Commenting out... this results in a weird error I don't understand. Must be
