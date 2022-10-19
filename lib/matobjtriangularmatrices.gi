@@ -49,7 +49,7 @@
      if Length(list_in) > 0 and (IsVectorObj(list_in[1]) or IsList(list_in[1])) then
          list := [];
          if Length(list_in) <> nrcols then
-             Error( "NewZeroMatrix: Matrix is not square." );
+             Error( "NewMatrix: Matrix is not square." );
          fi;
          for rowindex in [1..Length(list_in)] do 
              if Length(list_in[rowindex]) <> nrcols then
