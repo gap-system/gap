@@ -581,16 +581,24 @@ end );
    # intermediary objects. In this particular implementation the existing method
    # from GAP is called.
 
-   InstallMethod( InverseMutable, "for an IsUpperTriangularMatrixRep matrix",
+
+InstallMethod( InverseMutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
-     local n;
-     if mat![UPPERTRIANGULARMATREP_NRPOS] <> mat![UPPERTRIANGULARMATREP_NRPOS] then
-       return fail;
-     fi;
+     local det,i,n,ni,row,col;
+     det := One(mat![UPPERTRIANGULARMATREP_BDPOS]);
+     for i in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
+        if mat[i,i] = Zero(mat![UPPERTRIANGULARMATREP_BDPOS]) then
+            Error("InverseMUtable: Matrix is not invertible.");
+        fi;
+        det := det * mat[i,i];
+     od;
+     if not(IsInvertible(det,mat![UPPERTRIANGULARMATREP_BDPOS])) then
+        Error("InverseMUtable: Matrix is not invertible.");
+    fi;
+
    # Make a plain list of lists:
-     n := List(mat![ROWSPOS],x->x![ELSPOS]);
-     n := InverseMutable(n);  # Invert!
-     if n = fail then return fail; fi;
-     return Matrix(n,Length(n),mat);
+     n := Unpack(mat);
+     ni := n^(-1);
+     return NewMatrix(IsUpperTriangularMatrixRep,mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],ni);
   end );
