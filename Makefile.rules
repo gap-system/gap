@@ -302,7 +302,10 @@ ifneq (,$(findstring cygwin,$(host_os)))
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
-    GAC_LDFLAGS = -bundle -bundle_loader $(SYSINFO_GAP)
+    # HACK: we need to point to the real GAP binary, not a shell script
+    # wrapper. We can remove this hack (and once again use SYSINFO_GAP)
+    # once we get rid of the shell script wrapper
+    GAC_LDFLAGS = -bundle -bundle_loader $(SYSINFO_GAP2)
   else
     GAC_CFLAGS = -fPIC
     GAC_LDFLAGS = -shared
@@ -316,6 +319,7 @@ endif
 
 # paths to gap and gac executable
 SYSINFO_GAP = $(abs_builddir)/gap
+SYSINFO_GAP2 = $(abs_builddir)/gap # HACK for bundle_loader support
 SYSINFO_GAC = $(abs_builddir)/gac
 
 
@@ -639,6 +643,7 @@ install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_LIBS =
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
+install-sysinfo: SYSINFO_GAP2 = $(libdir)/gap/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
 install-sysinfo: GMP_PREFIX =
 install-sysinfo:
