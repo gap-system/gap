@@ -247,7 +247,7 @@ InstallMethod( Unpack, "for an IsUpperTriangularMatrixRep matrix",
 function( mat )
     local st, row, rowindex, colindex, zeroEle;
 
-    st := [1..UPPERTRIANGULARMATREP_NRPOS];
+    st := [1..mat![UPPERTRIANGULARMATREP_NRPOS]];
     zeroEle := Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
     for rowindex in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
          row := [1..mat![UPPERTRIANGULARMATREP_NRPOS]];
@@ -266,14 +266,35 @@ end );
  InstallMethod( ExtractSubMatrix, "for an IsUpperTriangularMatrixRep matrix, and two lists",
    [ IsUpperTriangularMatrixRep, IsList, IsList ],
    function( mat, rows, cols )
-     local row,col,list;
+     local row,col,list,hasTriangularForm;
      list := [];
+     hasTriangularForm := true;
      for row in [1..Length(rows)] do
        for col in [1..Length(cols)] do 
-         list[(row - 1)*Length(cols)+col] := mat![UPPERTRIANGULARMATREP_ELSPOS][(rows[row] - 1)*mat![UPPERTRIANGULARMATREP_NRPOS] + cols[col]];
+            if cols[col] < rows[row] then
+                list[(row - 1)*Length(cols)+col] :=  Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
+            else
+                list[(row - 1)*Length(cols)+col] :=  mat![UPPERTRIANGULARMATREP_ELSPOS][(-rows[row]*rows[row]+rows[row])/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(rows[row]-1) + cols[col]];
+                if (col < row) and (list[(row - 1)*Length(cols)+col] <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
+                    hasTriangularForm := false;
+                fi;
+            fi;
        od;
      od;
-     return Objectify(TypeObj(mat),[mat![UPPERTRIANGULARMATREP_BDPOS],Length(rows),Length(cols),list]);
+     if Length(rows) = Length(cols) and hasTriangularForm then
+        for row in Reversed([1..Length(rows)]) do
+            for col in Reversed([1..Length(cols)]) do 
+                if col < row then
+                    Remove(list,(row - 1)*Length(cols)+col);
+                fi;
+            od;
+        od;
+        return Objectify(TypeObj(mat),[mat![UPPERTRIANGULARMATREP_BDPOS],Length(rows),list]);
+     else
+        # Actually we want IsFListRep but thats not here yet.
+        # return NewMatrix(IsPlistMatrixRep, mat![UPPERTRIANGULARMATREP_BDPOS],Length(rows),Length(cols),list);
+        return NewMatrix(IsPlistMatrixRep, mat![UPPERTRIANGULARMATREP_BDPOS],Length(rows),list);
+     fi;
   end );
 
  InstallMethod( CopySubMatrix, "for two plist matrices and four lists",
@@ -285,7 +306,11 @@ end );
      # an intermediate object:
      for i in [1..Length(srcrows)] do
        for j in [1..Length(srccols)] do
-           n![UPPERTRIANGULARMATREP_ELSPOS][(dstrows[i]-1)*n![UPPERTRIANGULARMATREP_NRPOS]+dstcols[j]] := m![UPPERTRIANGULARMATREP_ELSPOS][(srcrows[i]-1)*m![UPPERTRIANGULARMATREP_NRPOS]+srccols[j]];
+            if srccols[j] < srcrows[i] then
+                SetMatElm(n,dstrows[i],dstcols[j],Zero(m![UPPERTRIANGULARMATREP_BDPOS]));
+            else
+                SetMatElm(n,dstrows[i],dstcols[j], m[srcrows[i],srccols[j]]);
+            fi;
        od;
      od;
  end );
@@ -303,8 +328,10 @@ end );
  InstallMethod( SetMatElm, "for an IsUpperTriangularMatrixRep matrix, two positions, and an object",
    [ IsUpperTriangularMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
    function( mat, row, col, obj )
-    if (col < row) and (obj <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
-        Error("SetMatElm: This is not possible for UpperTriangularMatrices");
+    if (col < row) then
+        if (obj <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
+            Error("SetMatElm: This is not possible for UpperTriangularMatrices");
+        fi;
     else
         if not(obj in mat![UPPERTRIANGULARMATREP_BDPOS]) then
             Error("SetMatElm: obj not contained in base domain");
@@ -448,6 +475,7 @@ end );
      return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],
      DIFF_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
+
  #todo
  InstallMethod( \*, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
@@ -468,7 +496,7 @@ end );
     # l is the resulting list of entries of the product in row-major formit is
      # constructed by computing the rows one after the other and then setting the
      # respective entries of l.
-     l := ListWithIdenticalEntries(a![UPPERTRIANGULARMATREP_NRPOS]*b![UPPERTRIANGULARMATREP_NRPOS],0);
+     l := ListWithIdenticalEntries((a![UPPERTRIANGULARMATREP_NRPOS]*a![UPPERTRIANGULARMATREP_NRPOS]+1)/2,0);
    # each row of the product is computed 
      for row in [1..a![UPPERTRIANGULARMATREP_NRPOS]] do
          if b![UPPERTRIANGULARMATREP_NRPOS] = 0 then
