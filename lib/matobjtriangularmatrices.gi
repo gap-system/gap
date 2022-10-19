@@ -129,25 +129,25 @@ end );
 
 
 # BaseDomain, NrRows, NrCols can be directly obatined from the object
- InstallMethod( BaseDomain, "for a flist matrix",
+ InstallMethod( BaseDomain, "for a IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      return m![UPPERTRIANGULARMATREP_BDPOS];
 end );
 
- InstallMethod( NumberRows, "for a flist matrix",
+ InstallMethod( NumberRows, "for a IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      return m![UPPERTRIANGULARMATREP_NRPOS];
  end );
 
- InstallMethod( NumberColumns, "for a flist matrix",
+ InstallMethod( NumberColumns, "for a IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      return m![UPPERTRIANGULARMATREP_NRPOS];
   end );
 
- InstallMethod( DimensionsMat, "for a flist matrix",
+ InstallMethod( DimensionsMat, "for a IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      return [m![UPPERTRIANGULARMATREP_NRPOS],m![UPPERTRIANGULARMATREP_NRPOS]];
@@ -166,7 +166,7 @@ end );
  # note depending on your particular matrix object implementing these might not
  # make sense.
 
- InstallOtherMethod( \[\], "for an flist matrix and a positive integer",
+ InstallOtherMethod( \[\], "for an IsUpperTriangularMatrixRep matrix and a positive integer",
  #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
  #T we can use 'InstallMethod'.
    [ IsUpperTriangularMatrixRep, IsPosInt ],
@@ -215,7 +215,7 @@ end );
  #    m![UPPERTRIANGULARMATREP_NRPOS] := m![UPPERTRIANGULARMATREP_NRPOS] + n![UPPERTRIANGULARMATREP_NRPOS];
  #  end );
 
- InstallMethod( ShallowCopy, "for an flist matrix",
+ InstallMethod( ShallowCopy, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      local res;
@@ -229,13 +229,13 @@ end );
      return res;
   end );
 
- InstallMethod( PostMakeImmutable, "for an flist matrix",
+ InstallMethod( PostMakeImmutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      MakeImmutable( m![UPPERTRIANGULARMATREP_ELSPOS] );
  end );
 
- InstallMethod( MutableCopyMat, "for an flist matrix",
+ InstallMethod( MutableCopyMat, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( m )
      local l,res;
@@ -249,7 +249,7 @@ end);
 
  # It is important to implement this method as it is used by a lot of generic methods.
 # It is important to implement this method as it is used by a lot of generic methods.
-InstallMethod( Unpack, "for an flist matrix",
+InstallMethod( Unpack, "for an IsUpperTriangularMatrixRep matrix",
 [ IsUpperTriangularMatrixRep ],
 function( mat )
     local st, row, rowindex, colindex, zeroEle;
@@ -270,7 +270,7 @@ function( mat )
     return st;
 end );
 
- InstallMethod( ExtractSubMatrix, "for an flist matrix, and two lists",
+ InstallMethod( ExtractSubMatrix, "for an IsUpperTriangularMatrixRep matrix, and two lists",
    [ IsUpperTriangularMatrixRep, IsList, IsList ],
    function( mat, rows, cols )
      local row,col,list;
@@ -297,16 +297,28 @@ end );
      od;
  end );
 
- InstallMethod( MatElm, "for an flist matrix and two positions",
+ InstallMethod( MatElm, "for an IsUpperTriangularMatrixRep matrix and two positions",
    [ IsUpperTriangularMatrixRep, IsPosInt, IsPosInt ],
    function( mat, row, col )
-     return mat![UPPERTRIANGULARMATREP_ELSPOS][(row-1)*mat![UPPERTRIANGULARMATREP_NRPOS]+col];
+    if col < row then
+        return Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
+    else
+        return mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + col];
+    fi;
  end );
 
- InstallMethod( SetMatElm, "for an flist matrix, two positions, and an object",
+ InstallMethod( SetMatElm, "for an IsUpperTriangularMatrixRep matrix, two positions, and an object",
    [ IsUpperTriangularMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
    function( mat, row, col, obj )
-     mat![UPPERTRIANGULARMATREP_ELSPOS][(row-1)*mat![UPPERTRIANGULARMATREP_NRPOS]+col] := obj;
+    if (col < row) and (obj <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
+        Error("SetMatElm: This is not possible for UpperTriangularMatrices");
+    else
+        if not(obj in mat![UPPERTRIANGULARMATREP_BDPOS]) then
+            Error("SetMatElm: obj not contained in base domain");
+        else
+            mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + col] := obj;
+        fi;
+    fi;
  end );
 
 
@@ -318,14 +330,14 @@ end );
  # Implementing these methods is not mandatory but highly recommended to make
  # working with your new matrix object fun and easy.
 
- InstallMethod( ViewObj, "for an flist matrix", [ IsUpperTriangularMatrixRep ],
+ InstallMethod( ViewObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
      Print("<");
      if not IsMutable(mat) then Print("immutable "); fi;
      Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],">");
        end );
 
- InstallMethod( PrintObj, "for an flist matrix", [ IsUpperTriangularMatrixRep ],
+ InstallMethod( PrintObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
      Print("NewMatrix(IsUpperTriangularMatrixRep");
      if IsFinite(mat![UPPERTRIANGULARMATREP_BDPOS]) and IsField(mat![UPPERTRIANGULARMATREP_BDPOS]) then
@@ -336,7 +348,7 @@ end );
      Print(mat![UPPERTRIANGULARMATREP_NRPOS],",",Unpack(mat),")");
       end );
 
- InstallMethod( Display, "for an flist matrix", [ IsUpperTriangularMatrixRep ],
+ InstallMethod( Display, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
      local i,m;
      Print("<");
@@ -399,7 +411,7 @@ end );
  # with a non-diagonal matrix causing an error. Thus, you should implement a
  # tailored (or generic) method to handle such a case.
 
- InstallMethod( \+, "for two flist matrices",
+ InstallMethod( \+, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      local ty;
@@ -412,7 +424,7 @@ end );
      SUM_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
 
- InstallMethod( \-, "for two flist matrices",
+ InstallMethod( \-, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      local ty;
@@ -425,7 +437,7 @@ end );
      DIFF_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
  #todo
- InstallMethod( \*, "for two flist matrices",
+ InstallMethod( \*, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      # Here we do full checking since it is rather cheap!
@@ -474,19 +486,19 @@ end );
      return Objectify( ty, [a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],b![UPPERTRIANGULARMATREP_NRPOS],l] );
  end );
 
-   InstallMethod( ConstructingFilter, "for an flist matrix",
+   InstallMethod( ConstructingFilter, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
      return IsUpperTriangularMatrixRep;
   end );
 
-   InstallMethod( \=, "for two flist matrices",
+   InstallMethod( \=, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      return a![UPPERTRIANGULARMATREP_BDPOS] = b![UPPERTRIANGULARMATREP_BDPOS] and a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] and a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] and EQ_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS]);
   end );
 
-   InstallMethod( \<, "for two flist matrices",
+   InstallMethod( \<, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      return LT_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS]);
@@ -494,7 +506,7 @@ end );
 
    # The following methods need not ne implemented for any specific MatrixRep as
    # default methods for all MatrixObjects exist
-   InstallMethod( AdditiveInverseSameMutability, "for an flist matrix",
+   InstallMethod( AdditiveInverseSameMutability, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
      local l;
@@ -505,7 +517,7 @@ end );
      return Objectify( TypeObj(mat), [mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS],mat![UPPERTRIANGULARMATREP_NRPOS],l] );
   end );
 
-   InstallMethod( AdditiveInverseImmutable, "for an flist matrix",
+   InstallMethod( AdditiveInverseImmutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
      local l,res;
@@ -515,7 +527,7 @@ end );
      return res;
   end );
 
- InstallMethod( AdditiveInverseMutable, "for an flist matrix",
+ InstallMethod( AdditiveInverseMutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
      local l,res;
@@ -542,7 +554,7 @@ end );
    # intermediary objects. In this particular implementation the existing method
    # from GAP is called.
 
-   InstallMethod( InverseMutable, "for an flist matrix",
+   InstallMethod( InverseMutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
    function( mat )
      local n;
