@@ -38,7 +38,7 @@ rec( NewAorP := function( name, filter, args... ) ... end,
   reqs := [ <Filter "(IsMagmaWithInverses and IsAssociative)">, 
       <Category "IsListOrCollection">, <Category "IsList">, 
       <Category "IsList">, <Category "IsFunction"> ], usetype := false )
-gap> Display(f);
+gap> Print(f, "\n");
 function ( G, D )
     if D = MovedPoints( G ) then
         return op( G );

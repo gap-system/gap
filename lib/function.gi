@@ -62,6 +62,14 @@ end);
 
 InstallMethod(Display, "for a function", [IsFunction and IsInternalRep],
 function(fun)
+    local loc;
+    loc := FilenameFunc(fun);
+    if loc <> fail and loc <> "stream" and loc <> "*stdin*" and loc <> "*errin*" then
+        loc := LocationFunc(fun);
+        if loc <> fail then
+            Print("# ", loc, "\n");
+        fi;
+    fi;
     Print(fun, "\n");
 end);
 

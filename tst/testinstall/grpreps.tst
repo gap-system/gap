@@ -18,4 +18,3 @@ gap> List( res2[2], r -> [ r.field, r.dimension ] );
 
 #
 gap> STOP_TEST( "grpreps.tst" );
-

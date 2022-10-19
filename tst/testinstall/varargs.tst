@@ -75,6 +75,7 @@ Syntax error: ) expected in stream:1
 function(a,b....) end;
                ^
 gap> Display(RETURN_FIRST);
+# src/gap.c:RETURN_FIRST
 function ( first, rest... )
     <<kernel code>> from src/gap.c:RETURN_FIRST
 end
