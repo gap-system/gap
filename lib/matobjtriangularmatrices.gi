@@ -427,6 +427,12 @@ end );
      else
          ty := TypeObj(a);
      fi;
+     if not a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] then
+         ErrorNoReturn("\\+: Matrices do not fit together");
+     fi;
+     if not IsIdenticalObj(a![UPPERTRIANGULARMATREP_BDPOS],b![UPPERTRIANGULARMATREP_BDPOS]) then
+         ErrorNoReturn("\\+: Matrices not over same base domain");
+     fi;
      return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],
      SUM_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
@@ -439,6 +445,12 @@ end );
          ty := TypeObj(b);
     else
          ty := TypeObj(a);
+     fi;
+     if not a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] then
+         ErrorNoReturn("\\-: Matrices do not fit together");
+     fi;
+     if not IsIdenticalObj(a![UPPERTRIANGULARMATREP_BDPOS],b![UPPERTRIANGULARMATREP_BDPOS]) then
+         ErrorNoReturn("\\-: Matrices not over same base domain");
      fi;
      return Objectify(ty,[a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],
      DIFF_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
