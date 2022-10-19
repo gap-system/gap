@@ -156,6 +156,12 @@ with working_directory(tmpdir + "/" + basename):
     notice("Extracting package tarballs")
     with tarfile.open(tmpdir+"/"+all_packages_tarball) as tar:
         tar.extractall(path="pkg")
+    # for some reason pkg sometimes ends up with permission 0700 so
+    # we make sure to fix that here
+    subprocess.run(["chmod", "0755", "pkg"], check=True)
+    # ensure all files are at readable by everyone
+    subprocess.run(["chmod", "-R", "a+r", "."], check=True)
+
     with tarfile.open(tmpdir+"/"+req_packages_tarball) as tar:
         tar.extractall(path=tmpdir+"/"+req_packages)
 
