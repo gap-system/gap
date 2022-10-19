@@ -151,7 +151,9 @@ clean-kext:
 distclean: distclean-kext
 distclean-kext:
 	rm -rf bin gen Makefile
-	(cd doc && ./clean)
+	rm -rf doc/_*.xml
+	rm -rf doc/*.aux doc/*.bbl doc/*.blg doc/*.brf doc/*.idx doc/*.idx
+	rm -rf doc/*.ilg doc/*.ind doc/*.log doc/*.out doc/*.pnr doc/*.toc
 
 # hook into `make doc`
 doc: doc-kext
