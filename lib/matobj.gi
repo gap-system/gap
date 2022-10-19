@@ -84,6 +84,12 @@ InstallMethod( \=,
                                 j -> M1[i,j] = M2[i,j] ) );
     end );
 
+InstallMethod( Unpack,
+    "generic method for matrix objects",
+    [ IsMatrixObj ],
+    function(M)
+      return List([1..NrRows(M)], row -> List([1..NrCols(M)], col -> M[row,col]));
+    end );
 
 InstallMethod( OneOfBaseDomain,
     "generic method for IsVectorObj",
