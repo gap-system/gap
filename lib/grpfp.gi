@@ -1611,6 +1611,12 @@ InstallOtherMethod( \/,
     IsIdenticalObj,
     [ IsFreeGroup, IsCollection ],
     function( G, rels )
+    if not HasIsWholeFamily( G ) and
+       IsSubset( FreeGeneratorsOfWholeGroup( G ), GeneratorsOfGroup( G ) ) then
+      SetIsWholeFamily( G, true );
+      return FactorFreeGroupByRelators( G, rels );
+    fi;
+
     # If somebody thinks that it is worth the effort to support proper
     # subgroups of full free groups then this method is the right place
     # to add code for that.
