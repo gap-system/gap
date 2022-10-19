@@ -490,23 +490,23 @@ DeclareOperation( "AddVector",
 
 #############################################################################
 ##
-#O  MultVector( <vec>, <mul>[, <from>, <to>] )
-#O  MultVectorLeft( <vec>, <mul>[, <from>, <to>] )
-#O  MultVectorRight( <vec>, <mul>[, <from>, <to>] )
+#O  MultVector( <v>, <mul>[, <from>, <to>] )
+#O  MultVectorLeft( <v>, <mul>[, <from>, <to>] )
+#O  MultVectorRight( <v>, <mul>[, <from>, <to>] )
 ##
 ##  <#GAPDoc Label="MatObj_MultVectorLeft">
 ##  <ManSection>
-##  <Oper Name="MultVector" Arg='vec, mul[, from, to]'
+##  <Oper Name="MultVector" Arg='v, mul[, from, to]'
 ##   Label="for a vector object"/>
-##  <Oper Name="MultVectorLeft" Arg='vec, mul[, from, to]'
+##  <Oper Name="MultVectorLeft" Arg='v, mul[, from, to]'
 ##   Label="for a vector object"/>
-##  <Oper Name="MultVectorRight" Arg='vec, mul[, from, to]'
+##  <Oper Name="MultVectorRight" Arg='v, mul[, from, to]'
 ##   Label="for a vector object"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  These operations multiply <A>vec</A> by <A>mul</A> in-place
+##  These operations multiply <A>v</A> by <A>mul</A> in-place
 ##  where <Ref Oper="MultVectorLeft" Label="for a vector object"/>
 ##  multiplies with <A>mul</A> from the left
 ##  and <Ref Oper="MultVectorRight" Label="for a vector object"/>
@@ -523,9 +523,9 @@ DeclareOperation( "AddVector",
 ##  only the index range <C>[<A>from</A>..<A>to</A>]</C> is guaranteed to be
 ##  affected. Other indices <E>may</E> be affected, if it is more convenient
 ##  to do so.
-##  This can be helpful if entries of <A>vec</A> are known to be zero.
-##  <P/>
+##  This can be helpful if entries of <A>v</A> are known to be zero.
 ##  If <A>from</A> is bigger than <A>to</A>, the operation does nothing.
+##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -593,26 +593,26 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 #############################################################################
 ##
 #O  Vector( <filt>, <R>, <list> )
-#O  Vector( <filt>, <R>, <vec> )
+#O  Vector( <filt>, <R>, <v> )
 #O  Vector( <R>, <list> )
-#O  Vector( <R>, <vec> )
-#O  Vector( <list>, <vec> )
-#O  Vector( <vec1>, <vec2> )
+#O  Vector( <R>, <v> )
+#O  Vector( <list>, <v> )
+#O  Vector( <v1>, <v2> )
 ##
 ##  <#GAPDoc Label="Vector">
 ##  <ManSection>
 ##  <Heading>Vector</Heading>
 ##  <Oper Name="Vector" Arg='filt,R,list'
 ##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Vector" Arg='filt,R,vec'
+##  <Oper Name="Vector" Arg='filt,R,v'
 ##   Label="for filter, base domain, and vector object"/>
 ##  <Oper Name="Vector" Arg='R,list'
 ##   Label="for base domain and list"/>
-##  <Oper Name="Vector" Arg='R,vec'
+##  <Oper Name="Vector" Arg='R,v'
 ##   Label="for base domain and vector object"/>
-##  <Oper Name="Vector" Arg='list,vec'
+##  <Oper Name="Vector" Arg='list,v'
 ##   Label="for a list and a vector object"/>
-##  <Oper Name="Vector" Arg='vec1,vec2'
+##  <Oper Name="Vector" Arg='v1,v2'
 ##   Label="for two vector objects"/>
 ##  <Oper Name="Vector" Arg='list'
 ##   Label="for a list"/>
@@ -624,7 +624,7 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  value <A>filt</A>, is defined over the base domain <A>R</A>,
 ##  and has the entries given by the list <A>list</A> or the vector object
-##  <A>vec</A>, respectively.
+##  <A>v</A>, respectively.
 ##  <P/>
 ##  If a semiring <A>R</A> is given as the first argument then
 ##  a vector object is returned whose
@@ -888,16 +888,16 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 
 #############################################################################
 ##
-#O  ExtractSubMatrix( <mat>, <rows>, <cols> )
+#O  ExtractSubMatrix( <M>, <rows>, <cols> )
 ##
 ##  <#GAPDoc Label="ExtractSubMatrix">
 ##  <ManSection>
-##  <Oper Name="ExtractSubMatrix" Arg='mat, rows, cols'/>
+##  <Oper Name="ExtractSubMatrix" Arg='M, rows, cols'/>
 ##
 ##  <Description>
 ##  Creates a fully mutable copy of the submatrix described by the two
 ##  lists, which mean subsets of row and column positions, respectively.
-##  This does <A>mat</A>{<A>rows</A>}{<A>cols</A>} and returns the result.
+##  This does <A>M</A>{<A>rows</A>}{<A>cols</A>} and returns the result.
 ##  It preserves the representation of the matrix.
 ##  </Description>
 ##  </ManSection>
@@ -908,15 +908,15 @@ DeclareOperation( "ExtractSubMatrix", [ IsMatrixOrMatrixObj, IsList, IsList ] );
 
 #############################################################################
 ##
-#O  MutableCopyMatrix( <mat> )
+#O  MutableCopyMatrix( <M> )
 ##
 ##  <#GAPDoc Label="MutableCopyMatrix">
 ##  <ManSection>
-##  <Oper Name="MutableCopyMatrix" Arg='mat' Label="for a matrix object"/>
+##  <Oper Name="MutableCopyMatrix" Arg='M' Label="for a matrix object"/>
 ##
 ##  <Description>
-##  For a matrix object <A>mat</A>, this operation returns a fully mutable
-##  copy of <A>mat</A>, with the same
+##  For a matrix object <A>M</A>, this operation returns a fully mutable
+##  copy of <A>M</A>, with the same
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values,
 ##  </Description>
@@ -955,25 +955,25 @@ DeclareOperation( "CopySubMatrix",
 
 #############################################################################
 ##
-#O  MatElm( <mat>, <row>, <col> )  . . . . . .  select an entry from a matrix
-#O  <mat>[ <row>, <col> ]  . . . . . . . . . .  select an entry from a matrix
+#O  MatElm( <M>, <row>, <col> )  . . . . . .  select an entry from a matrix
+#O  <M>[ <row>, <col> ]  . . . . . . . . . .  select an entry from a matrix
 ##
 ##  <#GAPDoc Label="MatObj_MatElm">
 ##  <ManSection>
-##  <Oper Name="MatElm" Arg='mat, row, col'/>
+##  <Oper Name="MatElm" Arg='M, row, col'/>
 ##
 ##  <Returns>an entry of the matrix object</Returns>
 ##
 ##  <Description>
-##  For a matrix object <A>mat</A>, this operation returns the entry in
+##  For a matrix object <A>M</A>, this operation returns the entry in
 ##  row <A>row</A> and column <A>col</A>.
 ##  <P/>
-##  Also the syntax <A>mat</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]</C>
+##  Also the syntax <A>M</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]</C>
 ##  is supported.
 ##  <P/>
 ##  Note that this is <E>not</E> equivalent to
-##  <A>mat</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]</C>,
-##  which would first try to access <A>mat</A><C>[ </C><A>row</A><C> ]</C>,
+##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]</C>,
+##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
 ##  and this is in general not possible.
 ##  </Description>
 ##  </ManSection>
@@ -985,28 +985,28 @@ DeclareSynonym( "[,]", ELM_MAT );
 
 #############################################################################
 ##
-#O  SetMatElm( <mat>, <row>, <col>, <obj> )  . . . . set an entry in a matrix
-#O  <mat>[ <row>, <col> ]:= <obj>  . . . . . . . . . set an entry in a matrix
+#O  SetMatElm( <M>, <row>, <col>, <obj> )  . . . . set an entry in a matrix
+#O  <M>[ <row>, <col> ]:= <obj>  . . . . . . . . . set an entry in a matrix
 ##
 ##  <#GAPDoc Label="MatObj_SetMatElm">
 ##  <ManSection>
-##  <Oper Name="SetMatElm" Arg='mat, row, col, obj'/>
+##  <Oper Name="SetMatElm" Arg='M, row, col, obj'/>
 ##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For a mutable matrix object <A>mat</A>, this operation assigns the object
+##  For a mutable matrix object <A>M</A>, this operation assigns the object
 ##  <A>obj</A> to the position in row <A>row</A> and column <A>col</A>,
 ##  provided that <A>obj</A> is compatible with the
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value of <A>mat</A>.
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value of <A>M</A>.
 ##  <P/>
 ##  Also the syntax
-##  <A>mat</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]:= </C><A>obj</A>
+##  <A>M</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]:= </C><A>obj</A>
 ##  is supported.
 ##  <P/>
 ##  Note that this is <E>not</E> equivalent to
-##  <A>mat</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]:= </C><A>obj</A>,
-##  which would first try to access <A>mat</A><C>[ </C><A>row</A><C> ]</C>,
+##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]:= </C><A>obj</A>,
+##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
 ##  and this is in general not possible.
 ##  </Description>
 ##  </ManSection>
@@ -1305,19 +1305,19 @@ DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
 
 ############################################################################
 ##
-#O  <mat>[ <pos> ]<vec>
+#O  <M>[ <pos> ]<v>
 ##
 ##  <#GAPDoc Label="RowListMatObj_[]">
 ##  <ManSection>
 ##  <Heading>List Access for a Row List Matrix</Heading>
-##  <Oper Name="\[\]" Arg='mat, pos' Label="for a row list matrix"/>
+##  <Oper Name="\[\]" Arg='M, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##
 ##  <Description>
-##  If <A>mat</A> is a row list matrix and if <A>pos</A> is a
-##  positive integer not larger than the number of rows of <A>mat</A>,
-##  this operation returns the <A>pos</A>-th row of <A>mat</A>.
+##  If <A>M</A> is a row list matrix and if <A>pos</A> is a
+##  positive integer not larger than the number of rows of <A>M</A>,
+##  this operation returns the <A>pos</A>-th row of <A>M</A>.
 ##  <P/>
 ##  It is not specified what happens if <A>pos</A> is larger.
 ##  </Description>
@@ -1329,25 +1329,25 @@ DeclareOperation( "[]", [ IsRowListMatrix, IsPosInt ] );
 
 ############################################################################
 ##
-#O  <mat>[ <pos> ]:= <vec>
+#O  <M>[ <pos> ]:= <v>
 ##
 ##  <#GAPDoc Label="RowListMatObj_[]_ASS">
 ##  <ManSection>
 ##  <Heading>List Assignment for a Row List Matrix</Heading>
-##  <Oper Name="\[\]\:\=" Arg='mat, pos, vec'
+##  <Oper Name="\[\]\:\=" Arg='M, pos, v'
 ##   Label="for a row list matrix and a vector object"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  If <A>mat</A> is a row list matrix, <A>vec</A> is a vector object
-##  that can occur as a row in <A>mat</A>
-##  (that is, <A>vec</A> has the same base domain, the right length,
+##  If <A>M</A> is a row list matrix, <A>v</A> is a vector object
+##  that can occur as a row in <A>M</A>
+##  (that is, <A>v</A> has the same base domain, the right length,
 ##  and the right vector representation),
 ##  and if <A>pos</A> is a positive integer not larger than
-##  the number of rows of <A>mat</A> plus 1,
-##  this operation sets <A>vec</A> as the <A>pos</A>-th row of
-##  <A>mat</A>.
+##  the number of rows of <A>M</A> plus 1,
+##  this operation sets <A>v</A> as the <A>pos</A>-th row of
+##  <A>M</A>.
 ##  <P/>
 ##  In all other situations, it is not specified what happens.
 ##  </Description>
@@ -1359,21 +1359,21 @@ DeclareOperation( "[]:=", [ IsRowListMatrix, IsPosInt, IsVectorObj ] );
 
 #############################################################################
 ##
-#O  <mat>{ <poss> }
+#O  <M>{ <pos> }
 ##
 ##  <#GAPDoc Label="RowListMatObj_{}">
 ##  <ManSection>
 ##  <Heading>Sublist Access for a Row List Matrix</Heading>
-##  <Oper Name="\{\}" Arg='mat, poss' Label="for a row list matrix"/>
+##  <Oper Name="\{\}" Arg='M, poss' Label="for a row list matrix"/>
 ##
 ##  <Returns>a row list matrix</Returns>
 ##
 ##  <Description>
-##  For a row list matrix <A>mat</A> and a list <A>poss</A> of positions,
-##  <A>mat</A><C>{ </C><A>poss</A><C> }</C> returns a new mutable
-##  row list matrix with the same representation as <A>mat</A>,
+##  For a row list matrix <A>M</A> and a list <A>poss</A> of positions,
+##  <A>M</A><C>{ </C><A>poss</A><C> }</C> returns a new mutable
+##  row list matrix with the same representation as <A>M</A>,
 ##  whose rows are identical to the rows at the positions
-##  in the list <A>poss</A> in <A>mat</A>.
+##  in the list <A>poss</A> in <A>M</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1383,22 +1383,22 @@ DeclareOperation( "{}", [IsRowListMatrix,IsList] );
 
 #############################################################################
 ##
-#O  <mat>{ <poss> }:= <mat2>
+#O  <M>{ <poss> }:= <M2>
 ##
 ##  <#GAPDoc Label="RowListMatObj_{}_ASS">
 ##  <ManSection>
 ##  <Heading>Sublist Assignment for a Row List Matrix</Heading>
-##  <Oper Name="\{\}\:\=" Arg='mat, poss, mat2' Label="for row list matrices"/>
+##  <Oper Name="\{\}\:\=" Arg='M, poss, M2' Label="for row list matrices"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For a mutable row list matrix <A>mat</A>, a list <A>poss</A> of
-##  positions, and a row list matrix <A>mat2</A> of the same vector type
+##  For a mutable row list matrix <A>M</A>, a list <A>poss</A> of
+##  positions, and a row list matrix <A>M2</A> of the same vector type
 ##  and with the same base domain,
-##  <A>mat</A><C>{ </C><A>poss</A><C> }:= </C><A>mat2</A> assigns the rows
-##  of <A>mat2</A> to the positions <A>poss</A> in the list of rows of
-##  <A>mat</A>.
+##  <A>M</A><C>{ </C><A>poss</A><C> }:= </C><A>M2</A> assigns the rows
+##  of <A>M2</A> to the positions <A>poss</A> in the list of rows of
+##  <A>M</A>.
 ##  <P/>
 ##  It is not specified what happens if the resulting range of row positions
 ##  is not dense.
@@ -1411,18 +1411,18 @@ DeclareOperation( "{}:=", [IsRowListMatrix,IsList,IsRowListMatrix] );
 
 #############################################################################
 ##
-#O  IsBound\[\]( <mat>, <pos> )
+#O  IsBound\[\]( <M>, <pos> )
 ##
 ##  <#GAPDoc Label="RowListMatObj_IsBound">
 ##  <ManSection>
-##  <Oper Name="IsBound\[\]" Arg='mat, pos' Label="for a row list matrix"/>
+##  <Oper Name="IsBound\[\]" Arg='M, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns><K>true</K> or <K>false</K></Returns>
 ##
 ##  <Description>
-##  For a row list matrix <A>mat</A> and a positive integer <A>pos</A>,
-##  <C>IsBound( </C><A>mat</A><C>[ </C><A>pos</A><C> ] )</C> returns
-##  <K>true</K> if <A>pos</A> is at most the number of rows of <A>mat</A>,
+##  For a row list matrix <A>M</A> and a positive integer <A>pos</A>,
+##  <C>IsBound( </C><A>M</A><C>[ </C><A>pos</A><C> ] )</C> returns
+##  <K>true</K> if <A>pos</A> is at most the number of rows of <A>M</A>,
 ##  and <K>false</K> otherwise.
 ##  </Description>
 ##  </ManSection>
@@ -1433,17 +1433,17 @@ DeclareOperation( "IsBound[]", [ IsRowListMatrix, IsPosInt ] );
 
 #############################################################################
 ##
-#O  Unbind\[\]( <mat>, <pos> )
+#O  Unbind\[\]( <M>, <pos> )
 ##
 ##  <#GAPDoc Label="RowListMatObj_Unbind">
 ##  <ManSection>
-##  <Oper Name="Unbind\[\]" Arg='mat, pos' Label="for a row list matrix"/>
+##  <Oper Name="Unbind\[\]" Arg='M, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns>nothing</Returns>
-##
+##a
 ##  <Description>
-##  For a mutable row list matrix <A>mat</A> with <A>pos</A> rows,
-##  <C>Unbind( </C><A>mat</A><C>[ </C><A>pos</A><C> ] )</C> removes the last
+##  For a mutable row list matrix <A>M</A> with <A>pos</A> rows,
+##  <C>Unbind( </C><A>M</A><C>[ </C><A>pos</A><C> ] )</C> removes the last
 ##  row.
 ##  It is not specified what happens if <A>pos</A> has another value.
 ##  </Description>
@@ -1455,22 +1455,22 @@ DeclareOperation( "Unbind[]", [ IsRowListMatrix, IsPosInt ] );
 
 #############################################################################
 ##
-#O  Add( <mat>, <vec>[, <pos>] )
+#O  Add( <M>, <v>[, <pos>] )
 ##
 ##  <#GAPDoc Label="RowListMatObj_Add">
 ##  <ManSection>
-##  <Oper Name="Add" Arg='mat, vec[, pos]'
+##  <Oper Name="Add" Arg='M, v[, pos]'
 ##   Label="for a row list matrix and a vector object"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For a mutable row list matrix <A>mat</A> and a vector object <A>vec</A>
-##  that is compatible with the rows of <A>mat</A>,
-##  the two argument version adds <A>vec</A> at the end of the list of rows
-##  of <A>mat</A>.
+##  For a mutable row list matrix <A>M</A> and a vector object <A>v</A>
+##  that is compatible with the rows of <A>M</A>,
+##  the two argument version adds <A>v</A> at the end of the list of rows
+##  of <A>M</A>.
 ##  <P/>
-##  If a positive integer <A>pos</A> is given then <A>vec</A> is added in
+##  If a positive integer <A>pos</A> is given then <A>v</A> is added in
 ##  position <A>pos</A>, and all later rows are shifted up by one position.
 ##  </Description>
 ##  </ManSection>
@@ -1482,22 +1482,22 @@ DeclareOperation( "Add", [ IsRowListMatrix, IsVectorObj, IsPosInt ] );
 
 #############################################################################
 ##
-#O  Remove( <mat>[, <pos>] )
+#O  Remove( <M>[, <pos>] )
 ##
 ##  <#GAPDoc Label="RowListMatObj_Remove">
 ##  <ManSection>
-##  <Oper Name="Remove" Arg='mat[, pos]' Label="for a row list matrix"/>
+##  <Oper Name="Remove" Arg='M[, pos]' Label="for a row list matrix"/>
 ##
 ##  <Returns>a vector object if the removed row exists,
 ##   otherwise nothing</Returns>
 ##
 ##  <Description>
-##  For a mutable row list matrix <A>mat</A>,
+##  For a mutable row list matrix <A>M</A>,
 ##  this operation removes the <A>pos</A>-th row and shifts the later rows
 ##  down by one position.
-##  The default for <A>pos</A> is the number of rows of <A>mat</A>.
+##  The default for <A>pos</A> is the number of rows of <A>M</A>.
 ##  <P/>
-##  If the <A>pos</A>-th row existed in <A>mat</A> then it is returned,
+##  If the <A>pos</A>-th row existed in <A>M</A> then it is returned,
 ##  otherwise nothing is returned.
 ##  </Description>
 ##  </ManSection>
@@ -1513,17 +1513,17 @@ DeclareOperation( "Remove", [ IsRowListMatrix, IsPosInt ] );
 ##
 ##  <#GAPDoc Label="RowListMatObj_Append">
 ##  <ManSection>
-##  <Oper Name="Append" Arg='mat1, mat2' Label="for two row list matrices"/>
+##  <Oper Name="Append" Arg='M1, M2' Label="for two row list matrices"/>
 ##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For two row list matrices <A>mat1</A>, <A>mat2</A>
-##  such that <A>mat1</A> is mutable and such that the
+##  For two row list matrices <A>M1</A>, <A>M2</A>
+##  such that <A>M1</A> is mutable and such that the
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values are equal,
-##  this operation appends the rows of <A>mat2</A> to the
-##  rows of <A>mat1</A>.
+##  this operation appends the rows of <A>M2</A> to the
+##  rows of <A>M1</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1533,20 +1533,20 @@ DeclareOperation( "Append", [ IsRowListMatrix, IsRowListMatrix ] );
 
 #############################################################################
 ##
-#O  ShallowCopy( <mat> )
+#O  ShallowCopy( <M> )
 ##
 ##  <#GAPDoc Label="RowListMatObj_ShallowCopy">
 ##  <ManSection>
-##  <Oper Name="ShallowCopy" Arg='mat' Label="for a row list matrix"/>
+##  <Oper Name="ShallowCopy" Arg='M' Label="for a row list matrix"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##
 ##  <Description>
-##  For a row list matrix <A>mat</A>,
+##  For a row list matrix <A>M</A>,
 ##  this operation returns a new mutable matrix with the same
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values as <A>mat</A>,
-##  which shares its rows with <A>mat</A>.
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values as <A>M</A>,
+##  which shares its rows with <A>M</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1555,16 +1555,16 @@ DeclareOperation( "Append", [ IsRowListMatrix, IsRowListMatrix ] );
 
 #############################################################################
 ##
-#O  ListOp( <mat>[ <func> ] )
+#O  ListOp( <M>[ <func> ] )
 ##
 ##  <#GAPDoc Label="RowListMatObj_ListOp">
 ##  <ManSection>
-##  <Oper Name="ListOp" Arg='mat[, func]' Label="for a row list matrix"/>
+##  <Oper Name="ListOp" Arg='M[, func]' Label="for a row list matrix"/>
 ##
 ##  <Returns>a plain list</Returns>
 ##
 ##  <Description>
-##  For a row list matrix <A>mat</A>,
+##  For a row list matrix <A>M</A>,
 ##  the variant with one argument returns the plain list
 ##  (see <Ref Filt="IsPlistRep"/>) of its rows,
 ##  and the variant with two arguments returns the plain list of values
@@ -1752,13 +1752,13 @@ DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 ##
 ##  <#GAPDoc Label="MultMatrixRowRight">
 ##  <ManSection>
-##  <Oper Name="MultMatrixRowRight" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixRowRight" Arg='M,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>M</A> with the scalar 
 ##  <A>elm</A> from the right in-place.
 ##  </Description>
 ##  </ManSection>
@@ -1770,14 +1770,14 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 ##
 ##  <#GAPDoc Label="MultMatrixColumn">
 ##  <ManSection>
-##  <Oper Name="MultMatrixColumnRight" Arg='mat,i,elm'/>
-##  <Oper Name="MultMatrixColumn" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixColumnRight" Arg='M,i,elm'/>
+##  <Oper Name="MultMatrixColumn" Arg='M,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar 
 ##  <A>elm</A> from the right in-place.
 ##  <P/>
 ##  <Ref Oper="MultMatrixColumn"/> is a synonym of <Ref Oper="MultMatrixColumnRight"/>. This was
@@ -1794,13 +1794,13 @@ DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 ##
 ##  <#GAPDoc Label="MultMatrixColumnLeft">
 ##  <ManSection>
-##  <Oper Name="MultMatrixColumnLeft" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixColumnLeft" Arg='M,i,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>mat</A> with the scalar 
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar 
 ##  <A>elm</A> from the left in-place.
 ##  </Description>
 ##  </ManSection>
@@ -1812,14 +1812,14 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 ##
 ##  <#GAPDoc Label="AddMatrixRows">
 ##  <ManSection>
-##  <Oper Name="AddMatrixRowsLeft" Arg='mat,i,j,elm'/>
-##  <Oper Name="AddMatrixRows" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixRowsLeft" Arg='M,i,j,elm'/>
+##  <Oper Name="AddMatrixRows" Arg='M,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th 
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
 ##  <P/>
 ##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>. This was chosen
@@ -1836,13 +1836,13 @@ DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 ##
 ##  <#GAPDoc Label="AddMatrixRowsRight">
 ##  <ManSection>
-##  <Oper Name="AddMatrixRowsRight" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixRowsRight" Arg='M,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th 
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the right.
 ##  </Description>
 ##  </ManSection>
@@ -1854,14 +1854,14 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 ##
 ##  <#GAPDoc Label="AddMatrixColumns">
 ##  <ManSection>
-##  <Oper Name="AddMatrixColumnsRight" Arg='mat,i,j,elm'/>
-##  <Oper Name="AddMatrixColumns" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixColumnsRight" Arg='M,i,j,elm'/>
+##  <Oper Name="AddMatrixColumns" Arg='M,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th 
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
 ##  <P/>
 ##  <Ref Oper="AddMatrixColumns"/> is a synonym of <Ref Oper="AddMatrixColumnsRight"/>. This was
@@ -1878,13 +1878,13 @@ DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 ##
 ##  <#GAPDoc Label="AddMatrixColumnsLeft">
 ##  <ManSection>
-##  <Oper Name="AddMatrixColumnsLeft" Arg='mat,i,j,elm'/>
+##  <Oper Name="AddMatrixColumnsLeft" Arg='M,i,j,elm'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>mat</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th 
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the left.
 ##  </Description>
 ##  </ManSection>
@@ -1896,13 +1896,13 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 ##
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
-##  <Oper Name="SwapMatrixRows" Arg='mat,i,j'/>
+##  <Oper Name="SwapMatrixRows" Arg='M,i,j'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Swaps the <A>i</A>-th row and <A>j</A>-th row of a mutable matrix <A>mat</A>.
+##  Swaps the <A>i</A>-th row and <A>j</A>-th row of a mutable matrix <A>M</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1913,13 +1913,13 @@ DeclareOperation( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, 
 ##
 ##  <#GAPDoc Label="SwapMatrixColumns">
 ##  <ManSection>
-##  <Oper Name="SwapMatrixColumns" Arg='mat,i,j'/>
+##  <Oper Name="SwapMatrixColumns" Arg='M,i,j'/>
 ##  
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Swaps the <A>i</A>-th column and <A>j</A>-th column of a mutable matrix <A>mat</A>.
+##  Swaps the <A>i</A>-th column and <A>j</A>-th column of a mutable matrix <A>M</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
