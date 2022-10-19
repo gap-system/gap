@@ -219,7 +219,7 @@ end );
    [ IsUpperTriangularMatrixRep ],
    function( m )
      local res;
-     res := Objectify(TypeObj(m),[m![UPPERTRIANGULARMATREP_BDPOS],m![UPPERTRIANGULARMATREP_NRPOS],m![UPPERTRIANGULARMATREP_NRPOS],
+     res := Objectify(TypeObj(m),[m![UPPERTRIANGULARMATREP_BDPOS],m![UPPERTRIANGULARMATREP_NRPOS],
                                   ShallowCopy(m![UPPERTRIANGULARMATREP_ELSPOS])]);
      if not IsMutable(m) then
          SetFilterObj(res,IsMutable);
@@ -495,7 +495,7 @@ end );
    InstallMethod( \=, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
-     return a![UPPERTRIANGULARMATREP_BDPOS] = b![UPPERTRIANGULARMATREP_BDPOS] and a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] and a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] and EQ_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS]);
+     return a![UPPERTRIANGULARMATREP_BDPOS] = b![UPPERTRIANGULARMATREP_BDPOS] and a![UPPERTRIANGULARMATREP_NRPOS] = b![UPPERTRIANGULARMATREP_NRPOS] and EQ_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS]);
   end );
 
    InstallMethod( \<, "for two IsUpperTriangularMatrixRep matrices",
