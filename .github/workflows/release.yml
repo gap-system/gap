@@ -85,6 +85,23 @@ jobs:
       - name: "Make archives"
         run: python -u ./dev/releases/make_archives.py
 
+      - name: "Test building GAP from the primary release archive"
+        run: |
+          mkdir -p test-gap-tarball
+          pushd test-gap-tarball
+          tar xvf ../tmp/gap-${{ steps.get-build.outputs.name }}.tar.gz
+          cd gap*
+          # test building GAP
+          ./configure --prefix=/tmp/gapprefix
+          make -j8
+          popd
+
+      - name: "Test 'make install' from the primary release archive"
+        run: |
+          pushd test-gap-tarball/gap*
+          GAPPREFIX=/tmp/gapprefix TEST_SUITES="testmakeinstall" ../../dev/ci.sh
+          popd
+
       # Upload the main GAP .tar.gz file (which includes packages).
       # We only upload this tarball in order to minimise our demand on GitHub's
       # resources, and that is why we also only upload these for the daily cron

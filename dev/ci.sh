@@ -253,10 +253,8 @@ GAPInput
     cd "$SRCDIR/tst/mockpkg"
     testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap"
 
-    # run testsuite for the resulting GAP, via a little HACK
-    # TODO: should we install the GAP test suite???
-    cp -R $SRCDIR/tst $GAPPREFIX/share/gap/
-    $GAPPREFIX/bin/gap $GAPPREFIX/share/gap/tst/testinstall.g
+    # run testsuite for the resulting GAP
+    $GAPPREFIX/bin/gap --quitonbreak -l ";$SRCDIR" $SRCDIR/tst/testinstall.g
     ;;
 
   testmanuals)
