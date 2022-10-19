@@ -67,7 +67,7 @@
      else
          list := [];
          if Length(list_in) <> nrcols*nrcols then
-             Error( "NewZeroMatrix: Matrix is not square." );
+             Error( "NewMatrix: Matrix is not square." );
          fi;
          if Length(list_in) mod nrcols <> 0 then 
              Error( "NewMatrix: Length of list must be a multiple of ncols." );
