@@ -481,7 +481,7 @@ end );
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      # Here we do full checking since it is rather cheap!
-     local row,col,l,ty,v,w;
+     local row,col,l,ty,v,w,sum,i;
      if not IsMutable(a) and IsMutable(b) then
          ty := TypeObj(b);
    else
@@ -496,34 +496,21 @@ end );
     # l is the resulting list of entries of the product in row-major formit is
      # constructed by computing the rows one after the other and then setting the
      # respective entries of l.
-     l := ListWithIdenticalEntries((a![UPPERTRIANGULARMATREP_NRPOS]*a![UPPERTRIANGULARMATREP_NRPOS]+1)/2,0);
+     l := ListWithIdenticalEntries((a![UPPERTRIANGULARMATREP_NRPOS]*(a![UPPERTRIANGULARMATREP_NRPOS]+1))/2,0);
    # each row of the product is computed 
      for row in [1..a![UPPERTRIANGULARMATREP_NRPOS]] do
-         if b![UPPERTRIANGULARMATREP_NRPOS] = 0 then
-             ErrorNoReturn("Why do you have a matrix with zero columns?? And what do you expect me to do about it?");
-          else
-           # extract the row from the row-major entry list 
-             v := a![UPPERTRIANGULARMATREP_ELSPOS]{[(row-1)*a![UPPERTRIANGULARMATREP_NRPOS]+1..row*a![UPPERTRIANGULARMATREP_NRPOS]]};
-          # the resulting row in the product is w and starts as a list of
-             # zeros in the respective domain
-             w := ListWithIdenticalEntries(b![UPPERTRIANGULARMATREP_NRPOS],Zero(b![UPPERTRIANGULARMATREP_BDPOS]));
-           # here all entries of row in the product are computed
-             # simultaneously. This is done by multipliying the col-th row of b
-             # with the col-th entry of the row-th row of a and then adding the
-             # result to w. This is done for all rows of b. In the end w[i] is
-             # exactly the dot product of v (i.e. the row-th row of a) and the
-             # col-th column of b. 
-             for col in [1..a![RLPOS]] do
-                 AddRowVector(w,b![UPPERTRIANGULARMATREP_ELSPOS]{[(col-1)*b![UPPERTRIANGULARMATREP_NRPOS]+1..col*b![UPPERTRIANGULARMATREP_NRPOS]]},v[col]);
-             od;
-           # set the row-th wor of the product to w.
-             l{[(row-1)*b![UPPERTRIANGULARMATREP_NRPOS]+1..row*b![UPPERTRIANGULARMATREP_NRPOS]]} := w;
-         fi;
+        for col in [row..a![UPPERTRIANGULARMATREP_NRPOS]] do
+            sum := Zero(a![UPPERTRIANGULARMATREP_BDPOS]);
+            for i in [row..col] do
+                sum := sum + a[row,i] * b[i,col];
+            od;
+            l[(-row*row+row)/2+a![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + col] := sum;
+        od;
      od;
      if not IsMutable(a) and not IsMutable(b) then
          MakeImmutable(l);
      fi;
-     return Objectify( ty, [a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],b![UPPERTRIANGULARMATREP_NRPOS],l] );
+     return Objectify( ty, [a![UPPERTRIANGULARMATREP_BDPOS],a![UPPERTRIANGULARMATREP_NRPOS],l] );
  end );
 
    InstallMethod( ConstructingFilter, "for an IsUpperTriangularMatrixRep matrix",
