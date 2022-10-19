@@ -350,7 +350,8 @@ end );
 
  InstallMethod( Display, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
-     local i,m;
+     local i,j,m,zeroEle;
+     zeroEle := Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
      Print("<");
      if not IsMutable(mat) then Print("immutable "); fi;
      Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],":\n");
@@ -359,16 +360,22 @@ end );
        Display(m);
      else 
        Print("[");
-       for i in [1..Length(mat![UPPERTRIANGULARMATREP_ELSPOS])] do
-           if i mod mat![UPPERTRIANGULARMATREP_NRPOS] = 1 then
-               Print("[");
-            else
-               Print(" ");
-           fi;
-           Print(mat![UPPERTRIANGULARMATREP_ELSPOS][i]);
-           if i mod mat![UPPERTRIANGULARMATREP_NRPOS] = 0 then 
-             Print("]\n");
-           fi;
+       for i in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
+            for j in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
+                if j = 1 then
+                    Print("[");
+                else
+                    Print(" ");
+                fi;
+                if j < i then
+                    Print(zeroEle);
+                else
+                    Print(mat![UPPERTRIANGULARMATREP_ELSPOS][(-i*i+i)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(i-1) + j]);
+                fi;
+                if j = mat![UPPERTRIANGULARMATREP_NRPOS] then 
+                    Print("]\n");
+                fi;
+            od;
        od;
        Print("]");
      fi;
