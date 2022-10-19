@@ -68,6 +68,8 @@ true
 gap> H / rho;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 2nd choice method found for `FactorSemigroup' on 2 arguments
+gap> S:= Subgroup( F, [ F.1, F.2 ] );;
+gap> S / [ F.1^10 ];;
 gap> S:= Subgroup( F, [ F.1^2 ] );;
 gap> S / [ F.1^10 ];
 Error, currently quotients of a free group are supported only if the group kno\
