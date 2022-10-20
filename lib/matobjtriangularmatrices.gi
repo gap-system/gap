@@ -294,7 +294,7 @@ end );
      IsList, IsList, IsList, IsList ],
    function( m, n, srcrows, dstrows, srccols, dstcols )
      local i,j,zeroEle;
-     zeroEle := Zero(BaseDomain(mat));
+     zeroEle := Zero(BaseDomain(m));
      # This eventually should go into the kernel without creating
      # an intermediate object:
      for i in [1..Length(srcrows)] do
