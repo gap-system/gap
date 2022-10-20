@@ -678,6 +678,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
 
     if ( fid == ARRAY_SIZE(syBuf) ) {
         HashUnlock(&syBuf);
+        ErrorReturnVoid("Too many open files (internal file descriptor limit reached)", 0, 0, "you can 'return;'");
         return (Int)-1;
     }
 

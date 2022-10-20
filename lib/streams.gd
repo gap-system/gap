@@ -649,6 +649,10 @@ DeclareOperation( "InputTextString", [ IsString ] );
 ##  handles windows-style line endings. This means it should <E>not</E> be used for
 ##  binary data. The <Ref BookName="IO" Oper="IO_File" /> function from the <Package>IO</Package>
 ##  package should be used to access binary data.
+##  <P/>
+##  Note: At most 256 files may be open for reading or writing at the same time.
+##  Use <Ref Oper="CloseStream"/> to close the input stream once you have finished
+##  reading from it.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -750,6 +754,10 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##  otherwise received characters are added at the end of the file.
 ##  <C>OutputGzipFile</C> acts identically to <C>OutputTextFile</C>, except it compresses
 ##  the output with gzip.
+##  <P/>
+##  Note: At most 256 files may be open for reading or writing at the same time.
+##  Use <Ref Oper="CloseStream"/> to close the output stream once you have finished
+##  writing to it.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> # use a temporary directory

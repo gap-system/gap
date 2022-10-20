@@ -1,4 +1,4 @@
-#@local dir,fname,file,line,stream,tmpdir,res
+#@local dir,fname,file,line,stream,tmpdir,res,streams,i
 gap> START_TEST("streams.tst");
 
 #
@@ -208,6 +208,14 @@ gap> WriteByte(stream, 300);
 Error, <byte> must an integer between 0 and 255
 gap> SetPrintFormattingStatus(stream, fail);
 Error, Print formatting status must be true or false
+
+# too many open files
+gap> streams := [ ];;
+gap> for i in [ 1 .. 300 ] do
+>    Add( streams, OutputTextFile( fname, false ) );
+> od;;
+Error, Too many open files (internal file descriptor limit reached)
+gap> Perform( streams, CloseStream );
 
 #
 gap> STOP_TEST( "streams.tst", 1);
