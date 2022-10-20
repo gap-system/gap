@@ -50,6 +50,9 @@ InstallMethod( NewVector, "for IsZmodnZVectorRep, a ring, and a list",
       l:=List(l,Int);
     else
       l:=ShallowCopy(l);
+      if ValueOption( "Check" ) <> false and not ForAll( l, IsInt ) then
+        Error( "<l> must be a list of integers or of elements in <basedomain>" );
+      fi;
     fi;
     v := [basedomain,l];
     Objectify(typ,v);

@@ -646,6 +646,9 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  this list.
 ##  <P/>
 ##  It is <E>not</E> guaranteed that the given list of entries is copied.
+##  <P/>
+##  If the global option <C>Check</C> is set to <K>false</K> then
+##  <Ref Oper="Vector"/> need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -679,6 +682,9 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  the <Ref Attr="BaseDomain" Label="for a vector object"/> <A>R</A>,
 ##  and the entries in <A>list</A>.
 ##  The list <A>list</A> is guaranteed not to be changed by this operation.
+##  <P/>
+##  If the global option <C>Check</C> is set to <K>false</K> then
+##  <Ref Oper="NewVector"/> need not perform consistency checks.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewZeroVector"/> returns a mutable vector object
 ##  of length <A>n</A> which has <A>filt</A> and <A>R</A> as
@@ -725,6 +731,9 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <P/>
 ##  The corresponding entries must be in or compatible with <A>R</A>.
 ##  If <A>list</A> already contains vector objects, they are copied.
+##  <P/>
+##  If the global option <C>Check</C> is set to <K>false</K> then
+##  <Ref Oper="NewMatrix"/> need not perform consistency checks.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewZeroMatrix"/> returns a mutable zero matrix
 ##  object with <A>m</A> rows and <A>n</A> columns
@@ -1194,7 +1203,7 @@ DeclareOperation( "CompanionMatrix",
 ##  value <A>filt</A>, is defined over the base domain <A>R</A>,
 ##  and has the entries given by the list <A>list</A> or the matrix object
 ##  <A>M</A>, respectively.
-##  Here <A>list</A> can be either a list of plain list that describe the
+##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
 ##  <P/>
@@ -1222,6 +1231,9 @@ DeclareOperation( "CompanionMatrix",
 ##  of <Ref Oper="ShallowCopy"/>.
 ##  If <A>list</A> is a nested list then it is <E>not</E> guaranteed
 ##  that also the entries of <A>list</A> are copied.
+##  <P/>
+##  If the global option <C>Check</C> is set to <K>false</K> then
+##  <Ref Oper="Matrix"/> need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

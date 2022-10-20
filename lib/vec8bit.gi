@@ -1094,7 +1094,7 @@ InstallMethod( BaseField, "for a compressed 8bit vector",
 InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
   [ Is8BitVectorRep, IsField and IsFinite, IsList ],
   function( filter, f, l )
-    if not Size(f) in [3..256] then
+    if ValueOption( "Check" ) <> false and not Size(f) in [3..256] then
         Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
     fi;
     return CopyToVectorRep(l,Size(f));
@@ -1116,7 +1116,7 @@ InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an int, and a list",
   [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsList ],
   function( filter, f, rl, l )
     local m;
-    if not Size(f) in [3..256] then
+    if ValueOption( "Check" ) <> false and not Size(f) in [3..256] then
         Error("Is8BitMatrixRep only supports base fields with 3 to 256 elements");
     fi;
     m := List(l,ShallowCopy);

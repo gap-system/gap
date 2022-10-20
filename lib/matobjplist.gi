@@ -43,6 +43,9 @@ InstallMethod( NewVector, "for IsPlistVectorRep, a ring, and a list",
   [ IsPlistVectorRep, IsRing, IsList ],
   function( filter, basedomain, l )
     local typ, v;
+    if ValueOption( "Check" ) <> false and not IsSubset( basedomain, l ) then
+      Error( "the elements in <l> must lie in <basedomain>" );
+    fi;
     typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
     v := [basedomain,ShallowCopy(l)];
     Objectify(typ,v);
@@ -63,7 +66,9 @@ InstallMethod( NewMatrix,
   "for IsPlistMatrixRep, a ring, an int, and a list",
   [ IsPlistMatrixRep, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
-    local nd, filterVectors, m, e, filter2, i;
+    local check, nd, filterVectors, m, e, filter2, i;
+
+    check:= ValueOption( "Check" ) <> false;
 
     # If applicable then replace a flat list 'l' by a nested list
     # of lists of length 'rl'.
@@ -84,6 +89,9 @@ InstallMethod( NewMatrix,
             m[i] := ShallowCopy(l[i]);
         else
             m[i] := NewVector( filterVectors, basedomain, l[i] );
+        fi;
+        if check and Length( m[i] ) <> rl then
+          Error( "the rows of <m> must have length <rl>" );
         fi;
     od;
     e := NewVector(filterVectors, basedomain, []);
