@@ -20,11 +20,12 @@
  ##
  ##  <#GAPDoc Label="IsUpperTriangularMatrixRep">
  ##  <ManSection>
- ##  <Filt Name="IsFlistMatrixRep" Arg='obj' Type="representation"/>
+ ##  <Filt Name="IsUpperTriangularMatrixRep" Arg='obj' Type="representation"/>
  ##
  ##  <Description>
- ##  An object <A>obj</A> in <Ref Filt="IsFlistMatrixRep"/> describes
- ##  a matrix object that stores the matrix entries as a flat list. It is 
+ ##  An object <A>obj</A> in <Ref Filt="IsUpperTriangularMatrixRep"/> describes
+ ##  a matrix object that stores the matrix entries as a flat list of an
+ ##  upper triangular matrix, i.e. obj[i,j] = 0 for j < i. It is
  ##  internally represented as a positional object
  ##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 4 entries:
  ##  <Enum>
@@ -48,7 +49,7 @@
  ##  <#/GAPDoc>
  ##
  # Here we declare the new representation and tell GAP which properties it
- # implies. FListMatrices e.g. are positional objects and so on.
+ # implies. IsUpperTriangularMatrixRep e.g. are positional objects and so on.
  DeclareRepresentation( "IsUpperTriangularMatrixRep",
          IsMatrixObj and IsMatrixOrMatrixObj and IsPositionalObjectRep
      and IsNoImmediateMethodsObject

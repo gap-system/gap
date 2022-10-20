@@ -137,24 +137,12 @@ end );
   end );
 
  ############################################################################
- # Representation preserving constructors:
- ############################################################################
-
- # Why are there extra implementations for these in matobjplist.gi?
-
- ############################################################################
  # A selection of list operations:
  ############################################################################
 
- # note depending on your particular matrix object implementing these might not
- # make sense.
-
  InstallOtherMethod( \[\], "for an IsUpperTriangularMatrixRep matrix and a positive integer",
- #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
- #T we can use 'InstallMethod'.
    [ IsUpperTriangularMatrixRep, IsPosInt ],
    function( mat, row )
-   # could this cause problems if some entries in the vector are not bound?
      local index_start, index_end, vec, i;
      vec := NewZeroVector(IsPlistVectorRep,BaseDomain(mat),NrCols(mat));
      for i in [row..NrCols(mat)] do 
@@ -163,43 +151,6 @@ end );
      MakeImmutable(vec);
      return vec;
   end );
-
- # Commenting out... this results in a weird error I don't understand. Must be
- # something weird with filters and stuff.
- #InstallMethod( \[\]\:\=,
- #  "for an flist matrix, a positive integer, and a plist vector",
- #  [ IsUpperTriangularMatrixRep and IsMutable, IsPosInt, IsPlistVectorRep ],
- #  function( mat, row, vec )
- #    local col;
- #    if Length(vec) <> mat![UPPERTRIANGULARMATREP_NRPOS] then 
- #      ErrorNoReturn("The length of the vector must be equal to the number of columns of the matrix.");
- #    fi;
- #    for col in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
- #      mat![UPPERTRIANGULARMATREP_ELSPOS][(row-1)*mat![UPPERTRIANGULARMATREP_NRPOS] + col] := vec[col];
- #    od;
- #  end );
-
- # Could be implemented later
- #InstallMethod( \{\}\:\=, "for an flist matrix, a list, and a plist matrix",
- #  [ IsUpperTriangularMatrixRep and IsMutable, IsList,
- #    IsUpperTriangularMatrixRep ],
- #  function( m, pp, n )
- #    m![UPPERTRIANGULARMATREP_ELSPOS]{pp} := n![UPPERTRIANGULARMATREP_ELSPOS];
- #  end );
-
- # Same as above: weird error
- #InstallMethod( Append, "for two flist matrices",
- #  [ IsUpperTriangularMatrixRep and IsMutable, IsUpperTriangularMatrixRep ],
- #  function( m, n )
- #    if m![UPPERTRIANGULARMATREP_NRPOS] <> n![UPPERTRIANGULARMATREP_NRPOS] then 
- #      ErrorNoReturn("The number of columns must be equal.");
- #    fi;
- #    if m![UPPERTRIANGULARMATREP_BDPOS] <> n![UPPERTRIANGULARMATREP_BDPOS] then 
- #      Error("The base domains must be equal.");
- #    fi;
- #    Append(m![UPPERTRIANGULARMATREP_ELSPOS],n![UPPERTRIANGULARMATREP_ELSPOS]);
- #    m![UPPERTRIANGULARMATREP_NRPOS] := m![UPPERTRIANGULARMATREP_NRPOS] + n![UPPERTRIANGULARMATREP_NRPOS];
- #  end );
 
  InstallMethod( ShallowCopy, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
@@ -210,8 +161,8 @@ end );
      if not IsMutable(m) then
          SetFilterObj(res,IsMutable);
      fi;
-#T 'ShallowCopy' MUST return a mutable object
- #T if such an object exists at all!
+     #T 'ShallowCopy' MUST return a mutable object
+     #T if such an object exists at all!
      return res;
   end );
 
@@ -233,7 +184,6 @@ end );
      return res;
 end);
 
-# It is important to implement this method as it is used by a lot of generic methods.
 InstallMethod( Unpack, "for an IsUpperTriangularMatrixRep matrix",
 [ IsUpperTriangularMatrixRep ],
 function( mat )
@@ -340,15 +290,12 @@ end );
  # Printing and viewing methods:
  ############################################################################
 
- # Implementing these methods is not mandatory but highly recommended to make
- # working with your new matrix object fun and easy.
-
 # not better than the generic interpretation
 # InstallMethod( ViewObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
 #   function( mat )
 #     Print("<");
 #     if not IsMutable(mat) then Print("immutable "); fi;
-#     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],">");
+#     Print(NumberRows(mat),"x",NumberColumns(mat),"-matrix over ",BaseDomain(mat),">");
 #       end );
 
 # not better than the generic interpretation
@@ -418,18 +365,6 @@ end );
 ############################################################################
  # Arithmetical operations:
  ############################################################################
-
- # Depending on your matrix object you might want to provide arithmetic methods
- # that work with other matrix objects. E.g. we should add an addition method
- # that takes a PListMatrixRep as one of the arguments. Then it must be decided
- # what type the result should have. The generic method returns a matrix object
- # with the constructing filter of the left operand. In some cases this must be
- # avoided to avoid errors. E.g. if you implement a diagonal matrix object by
- # storing the diagonal entries in a list your constructor likely thorws an error
- # when provided with a non diagonal matrix. If one would multiply a diagonal
- # matrix with a non-diagonal one the generic method would call your constructor
- # with a non-diagonal matrix causing an error. Thus, you should implement a
- # tailored (or generic) method to handle such a case.
 
  InstallMethod( \+, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
@@ -559,22 +494,6 @@ end );
      fi;
      return res;
  end );
-
-   # Further methods one could implement if it offers a significant performance
-   # improvement
-   # ZeroMutable
-   # IsZero
-   # IsOne
-   # OneSameMutability
-   # OneMutable
-   # OneImmutable 
-
-   # This method should be implemented with care as e.g. for permutation
-   # matrices, diagonal matrices or similar inversion can be achieved cheaply.
-   # For sparse matrices on the other hand one must avoid creating large
-   # intermediary objects. In this particular implementation the existing method
-   # from GAP is called.
-
 
 InstallMethod( InverseMutable, "for an IsUpperTriangularMatrixRep matrix",
    [ IsUpperTriangularMatrixRep ],
