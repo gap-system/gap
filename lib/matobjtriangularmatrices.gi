@@ -160,6 +160,7 @@ end );
      for i in [row..NrCols(mat)] do 
         vec[i] := mat[row,i];
      od;
+     MakeImmutable(vec);
      return vec;
   end );
 
