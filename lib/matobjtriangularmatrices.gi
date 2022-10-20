@@ -233,23 +233,20 @@ end );
      return res;
 end);
 
- # It is important to implement this method as it is used by a lot of generic methods.
 # It is important to implement this method as it is used by a lot of generic methods.
 InstallMethod( Unpack, "for an IsUpperTriangularMatrixRep matrix",
 [ IsUpperTriangularMatrixRep ],
 function( mat )
-    local st, row, rowindex, colindex, zeroEle;
+    local numberRows, st, row, rowindex, colindex, zeroEle, rowStart;
 
-    st := [1..mat![UPPERTRIANGULARMATREP_NRPOS]];
-    zeroEle := Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
-    for rowindex in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
-         row := [1..mat![UPPERTRIANGULARMATREP_NRPOS]];
-         for colindex in [1..rowindex-1] do
-		    row[colindex] := zeroEle;
-	     od;
-         for colindex in [rowindex..mat![UPPERTRIANGULARMATREP_NRPOS]] do 
-            row[colindex] := mat![UPPERTRIANGULARMATREP_ELSPOS][(-rowindex*rowindex+rowindex)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(rowindex-1) + colindex];
-         od;
+    numberRows := NrRows(mat);
+    st := [1..numberRows];
+    zeroEle := Zero(BaseDomain(mat));
+    for rowindex in [1..numberRows] do
+         row := ListWithIdenticalEntries(numberRows, zeroEle);
+         rowStart := (-rowindex*rowindex+rowindex)/2+numberRows*(rowindex-1);
+         # copy all (i.e. step 1) the entries from rowStart+rowindex to rowStart+numberRows in the matrix list to rowindex to numberRows in row
+         CopyListEntries(mat![UPPERTRIANGULARMATREP_ELSPOS], rowStart+rowindex, 1, row, rowindex, 1, numberRows-rowindex+1);
          st[rowindex] := row;
     od;
 
