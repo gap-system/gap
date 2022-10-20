@@ -266,4 +266,15 @@ gap> Group(F.1 ^ 100);
 Group(<1 generator>)
 
 #
+gap> F:= FreeGroup( 2 );;
+gap> F:= Group( GeneratorsOfGroup( F ) );;
+gap> gens:= GeneratorsOfGroup( F );;
+gap> HasIsWholeFamily( F );
+false
+gap> H:= SymmetricGroup( 5 );;
+gap> GroupHomomorphismByImagesNC( F, H, gens, GeneratorsOfGroup( H ) );;
+gap> SetIsWholeFamily( F, true );
+gap> GroupHomomorphismByImagesNC( F, H, gens, GeneratorsOfGroup( H ) );;
+
+#
 gap> STOP_TEST( "grpfree.tst", 1);
