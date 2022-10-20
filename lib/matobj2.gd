@@ -1440,7 +1440,7 @@ DeclareOperation( "IsBound[]", [ IsRowListMatrix, IsPosInt ] );
 ##  <Oper Name="Unbind\[\]" Arg='M, pos' Label="for a row list matrix"/>
 ##
 ##  <Returns>nothing</Returns>
-##a
+##
 ##  <Description>
 ##  For a mutable row list matrix <A>M</A> with <A>pos</A> rows,
 ##  <C>Unbind( </C><A>M</A><C>[ </C><A>pos</A><C> ] )</C> removes the last
