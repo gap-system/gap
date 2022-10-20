@@ -343,77 +343,77 @@ end );
  # Implementing these methods is not mandatory but highly recommended to make
  # working with your new matrix object fun and easy.
 
- InstallMethod( ViewObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
-   function( mat )
-     Print("<");
-     if not IsMutable(mat) then Print("immutable "); fi;
-     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],">");
-       end );
+# not better than the generic interpretation
+# InstallMethod( ViewObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
+#   function( mat )
+#     Print("<");
+#     if not IsMutable(mat) then Print("immutable "); fi;
+#     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],">");
+#       end );
 
- InstallMethod( PrintObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
-   function( mat )
-     Print("NewMatrix(IsUpperTriangularMatrixRep");
-     if IsFinite(mat![UPPERTRIANGULARMATREP_BDPOS]) and IsField(mat![UPPERTRIANGULARMATREP_BDPOS]) then
-         Print(",GF(",Size(mat![UPPERTRIANGULARMATREP_BDPOS]),"),");
-             else
-         Print(",",String(mat![UPPERTRIANGULARMATREP_BDPOS]),",");
-     fi;
-     Print(mat![UPPERTRIANGULARMATREP_NRPOS],",",Unpack(mat),")");
-      end );
+# not better than the generic interpretation
+# InstallMethod( PrintObj, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
+#   function( mat )
+#     Print("NewMatrix(IsUpperTriangularMatrixRep");
+#     if IsFinite(mat![UPPERTRIANGULARMATREP_BDPOS]) and IsField(mat![UPPERTRIANGULARMATREP_BDPOS]) then
+#         Print(",GF(",Size(mat![UPPERTRIANGULARMATREP_BDPOS]),"),");
+#             else
+#         Print(",",String(mat![UPPERTRIANGULARMATREP_BDPOS]),",");
+#     fi;
+#     Print(mat![UPPERTRIANGULARMATREP_NRPOS],",",Unpack(mat),")");
+#      end );
 
  InstallMethod( Display, "for an IsUpperTriangularMatrixRep matrix", [ IsUpperTriangularMatrixRep ],
    function( mat )
-     local i,j,m,zeroEle;
-     zeroEle := Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
+     local i,j,m,numberCols,numberRows,baseDom,zeroEle;
+     numberRows := NrRows(mat);
+     numberCols := NrCols(mat);
+     baseDom := BaseDomain(mat);
+     zeroEle := Zero(baseDom);
      Print("<");
      if not IsMutable(mat) then Print("immutable "); fi;
-     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],":\n");
-     if IsFinite(mat![UPPERTRIANGULARMATREP_BDPOS]) then 
+     Print(numberRows,"x",numberCols,"-matrix over ",baseDom,":\n");
+     if IsFinite(baseDom) then 
        m := Unpack(mat);
        Display(m);
      else 
        Print("[");
-       for i in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
-            for j in [1..mat![UPPERTRIANGULARMATREP_NRPOS]] do
-                if j = 1 then
-                    Print("[");
-                else
-                    Print(" ");
-                fi;
-                if j < i then
-                    Print(zeroEle);
-                else
-                    Print(mat![UPPERTRIANGULARMATREP_ELSPOS][(-i*i+i)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(i-1) + j]);
-                fi;
-                if j = mat![UPPERTRIANGULARMATREP_NRPOS] then 
-                    Print("]\n");
-                fi;
-            od;
+       for i in [1..numberRows] do
+           for j in [1..numberCols] do
+               if j = 1 then
+                   Print("[");
+               else
+                   Print(" ");
+               fi;
+               Print(mat[i,j]);
+           od;
+           Print("]\n");
        od;
        Print("]");
      fi;
      Print(">\n");
 end );
 
- InstallMethod( String, "for plist matrix", [ IsUpperTriangularMatrixRep ],
-   function( m )
-     local st;
-     st := "NewMatrix(IsUpperTriangularMatrixRep";
-     Add(st,',');
-     if IsFinite(m![UPPERTRIANGULARMATREP_BDPOS]) and IsField(m![UPPERTRIANGULARMATREP_BDPOS]) then
-         Append(st,"GF(");
-         Append(st,String(Size(m![UPPERTRIANGULARMATREP_BDPOS])));
-         Append(st,"),");
-     else
-         Append(st,String(m![UPPERTRIANGULARMATREP_BDPOS]));
-         Append(st,",");
-     fi;
-     Append(st,String(NumberColumns(m)));
-     Add(st,',');
-     Append(st,String(Unpack(m)));
-     Add(st,')');
-     return st;
-   end );
+# not better than the generic interpretation
+# InstallMethod( String, "for plist matrix", [ IsUpperTriangularMatrixRep ],
+#   function( m )
+#     local st;
+#     st := "NewMatrix(IsUpperTriangularMatrixRep";
+#     Add(st,',');
+#     if IsFinite(m![UPPERTRIANGULARMATREP_BDPOS]) and IsField(m![UPPERTRIANGULARMATREP_BDPOS]) then
+#         Append(st,"GF(");
+#         Append(st,String(Size(m![UPPERTRIANGULARMATREP_BDPOS])));
+#         Append(st,"),");
+#     else
+#         Append(st,String(m![UPPERTRIANGULARMATREP_BDPOS]));
+#         Append(st,",");
+#     fi;
+#     Append(st,String(NumberColumns(m)));
+#     Add(st,',');
+#     Append(st,String(Unpack(m)));
+#     Add(st,')');
+#     return st;
+#   end );
 
 ############################################################################
  # Arithmetical operations:
