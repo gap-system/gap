@@ -1,3 +1,61 @@
+MatObjTest_CallAndCatchError := function(f, args)
+    local out, res, oldBreakOnError, oldErrorOutput, str;
+
+    str := "";
+    out := OutputTextString(str, true);
+
+    oldBreakOnError := BreakOnError;
+    oldErrorOutput := ERROR_OUTPUT;
+    BreakOnError := false;
+    MakeReadWriteGlobal("ERROR_OUTPUT");
+    ERROR_OUTPUT := out;
+    res := CALL_WITH_CATCH(f, args);
+    BreakOnError := oldBreakOnError;
+    ERROR_OUTPUT := oldErrorOutput;
+    CloseStream(out);
+    MakeReadOnlyGlobal("ERROR_OUTPUT");
+    return [res,str];
+end;
+
+MatObjTest_AppendErrorFail := function(f, args, catch, errors)
+    local errorMsg, arg;
+
+    errorMsg := Concatenation("The function ", NameFunction(f), " failed with Error Message:\n", catch[2], "\n Called with arguments:\n");
+    for arg in args do 
+        Append(errorMsg, Concatenation(String(arg),"\n\n"));
+    od;
+    Add(errors, errorMsg);
+end;
+
+MatObjTest_HandleErrorWrongResult := function(msg, args, breakOnError, ex, errors)
+    local errorMsg, arg;
+
+    if breakOnError then 
+        Error(msg);
+    else 
+        errorMsg := Concatenation(msg, "\n Called with arguments:\n");
+        for arg in args do 
+            Append(errorMsg, Concatenation(String(arg),"\n\n"));
+        od;
+        Add(errors, errorMsg);
+    fi;
+end;
+
+MatObjTest_CallFunc := function(f, args, breakOnError, errors)
+    local catch;
+    if breakOnError then 
+        return CallFuncList(f, args);
+    else
+        catch := MatObjTest_CallAndCatchError(f, args);
+        if catch[1][1] then 
+            return catch[1][2];
+        else 
+            MatObjTest_AppendErrorFail(f, args, catch, errors);
+            return fail;
+        fi;
+    fi;
+end;
+
 MatObjTest_GenerateExample := function(filter, opt)
     local inv, dims, dim, doms, dom, customGen, examples;
     
@@ -54,24 +112,24 @@ MatObjTest_GenerateExample := function(filter, opt)
     if IsBound(opt.sourceOfTruth) then 
         return List(examples, x-> 
             rec(matObj := NewMatrix(filter, x[4], x[3], x[1]),
-            filter := filter;
+            filter := filter,
             baseDomain := x[4],
             nrCols := x[3],
             nrRows := x[2],
             mat := x[1],
             sourceOfTruth := NewMatrix(opt.sourceOfTruth, x[4], x[3], x[1]))
-            )
+            );
         #return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), NewMatrix(opt.sourceOfTruth, x[3], x[2], x[1])]);
     else 
         return List(examples, x-> 
             rec(matObj := NewMatrix(filter, x[4], x[3], x[1]),
-            filter := filter;
+            filter := filter,
             baseDomain := x[4],
             nrCols := x[3],
             nrRows := x[2],
             mat := x[1],
             sourceOfTruth := x[1])
-            )
+        );
         #return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), x[1]]);
     fi;
 end;
@@ -83,7 +141,7 @@ MatObjTest_TestBaseDomain := function(ex, opt, errors)
 
     if domain <> fail then
         if domain <> ex.baseDomain then
-            MatObjTest_AppendErrorWrongResult(ex.filter, "BaseDomain", [ex.matobj], breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult(ex.filter, "BaseDomain", [ex.matobj], opt.breakOnError, errors);
         fi;
     fi;
 end;
@@ -95,7 +153,7 @@ MatObjTest_TestNrRows := function(ex, opt, errors)
 
     if nrRows <> fail then
         if nrRows <> ex.nrRows then
-            MatObjTest_AppendErrorWrongResult(ex.filter, "NrRows", [ex.nrRows], breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult(ex.filter, "NrRows", [ex.nrRows], opt.breakOnError, errors);
         fi;
     fi; 
 end;
@@ -107,14 +165,14 @@ MatObjTest_TestNrCols := function(ex, opt, errors)
 
     if nrCols <> fail then
         if nrCols <> ex.nrCols then
-            MatObjTest_AppendErrorWrongResult(ex.filter, "NrCols", [ex.nrCols], breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult(ex.filter, "NrCols", [ex.nrCols], opt.breakOnError, errors);
         fi;
     fi; 
 end;
 
 
 TestMatrixObj := function(filter, opt)
-    local errors, examples;
+    local errors, examples, ex;
 
     errors := [];
 
@@ -150,7 +208,7 @@ TestMatrixObj := function(filter, opt)
         opt.invertible := true;
         examples := MatObjTest_GenerateExample(filter, opt);
 
-        for ex in examples then
+        for ex in examples do
             #TestInverse(ex);
         od;
 
