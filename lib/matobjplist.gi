@@ -18,108 +18,98 @@
 # Constructors:
 ############################################################################
 
-InstallGlobalFunction( MakePlistVectorType,
-  function( basedomain, filter )
-    local T, filter2;
-    filter2 := filter and IsMutable;
+BindGlobal( "MakeIsPlistVectorRep",
+  function( basedomain, list )
+    local filter, typ;
+    filter := IsPlistVectorRep and IsMutable;
     if HasCanEasilyCompareElements(Representative(basedomain)) and
        CanEasilyCompareElements(Representative(basedomain)) then
-        filter2 := filter2 and CanEasilyCompareElements;
+        filter := filter and CanEasilyCompareElements;
     fi;
-    if IsIdenticalObj(basedomain,Integers) then
-        T := NewType(FamilyObj(basedomain),
-                       filter2 and IsIntVector);
+    if IsIdenticalObj(basedomain, Integers) then
+        filter := filter and IsIntVector;
     elif IsFinite(basedomain) and IsField(basedomain) then
-        T := NewType(FamilyObj(basedomain),
-                       filter2 and IsFFEVector);
-    else
-        T := NewType(FamilyObj(basedomain),
-                       filter2);
+        filter := filter and IsFFEVector;
     fi;
-    return T;
-  end);
-
-InstallMethod( NewVector, "for IsPlistVectorRep, a ring, and a list",
-  [ IsPlistVectorRep, IsRing, IsList ],
-  function( filter, basedomain, l )
-    local typ, v;
-    typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
-    v := [basedomain,ShallowCopy(l)];
-    Objectify(typ,v);
-    return v;
+    typ := NewType(FamilyObj(basedomain), filter);
+    return Objectify(typ, [ basedomain, list ]);
   end );
 
-InstallMethod( NewZeroVector, "for IsPlistVectorRep, a ring, and an int",
-  [ IsPlistVectorRep, IsRing, IsInt ],
-  function( filter, basedomain, l )
-    local typ, v;
-    typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
-    v := [basedomain,Zero(basedomain)*[1..l]];
-    Objectify(typ,v);
-    return v;
+
+InstallMethod( NewVector, "for IsPlistVectorRep, a semiring, and a list",
+  [ IsPlistVectorRep, IsSemiring, IsList ],
+  function( filter, basedomain, list )
+    list := ShallowCopy( list );
+    return MakeIsPlistVectorRep( basedomain, list );
+  end );
+
+InstallMethod( NewZeroVector, "for IsPlistVectorRep, a semiring, and an int",
+  [ IsPlistVectorRep, IsSemiring, IsInt ],
+  function( filter, basedomain, len )
+    local list;
+    list := ListWithIdenticalEntries(len, Zero(basedomain));
+    return MakeIsPlistVectorRep( basedomain, list );
   end );
 
 InstallMethod( NewMatrix,
-  "for IsPlistMatrixRep, a ring, an int, and a list",
-  [ IsPlistMatrixRep, IsRing, IsInt, IsList ],
-  function( filter, basedomain, rl, l )
-    local nd, filterVectors, m, e, filter2, i;
-
+  "for IsPlistMatrixRep, a semiring, an int, and a list",
+  [ IsPlistMatrixRep, IsSemiring, IsInt, IsList ],
+  function( filter, basedomain, ncols, l )
+    local m;
     # If applicable then replace a flat list 'l' by a nested list
-    # of lists of length 'rl'.
-    if Length(l) > 0 and not IsVectorObj(l[1]) then
-      nd := NestingDepthA(l);
-      if nd < 2 or nd mod 2 = 1 then
-        if Length(l) mod rl <> 0 then
-          Error( "NewMatrix: Length of l is not a multiple of rl" );
+    # of lists of length 'ncols'.
+    if Length(l) = 0 then
+      # empty matrix
+      m := [];
+    elif IsVectorObj(l[1]) then
+      # list of vectors
+      # TODO: convert each IsVectorObj to a plist
+      m := List(l, PlainListCopy);
+    else
+      if NestingDepthA(l) mod 2 = 1 then
+        if Length(l) mod ncols <> 0 then
+          Error( "NewMatrix: Length of <l> is not a multiple of <ncols>" );
         fi;
-        l := List([0,rl..Length(l)-rl], i -> l{[i+1..i+rl]});
+        m := List([0,ncols..Length(l)-ncols], i -> l{[i+1..i+ncols]});
+      else
+        m := List(l, ShallowCopy);
       fi;
     fi;
 
-    filterVectors := IsPlistVectorRep;
-    m := 0*[1..Length(l)];
-    for i in [1..Length(l)] do
-        if IsVectorObj(l[i]) and IsPlistVectorRep(l[i]) then
-            m[i] := ShallowCopy(l[i]);
-        else
-            m[i] := NewVector( filterVectors, basedomain, l[i] );
-        fi;
-    od;
-    e := NewVector(filterVectors, basedomain, []);
-    m := [basedomain,e,rl,m];
-    filter2 := IsPlistMatrixRep and IsMutable;
+    # FIXME/TODO: should the following test be always performed
+    # or only at a higher assertion level?
+    Assert(0, ForAll(m, row -> Length(row) = ncols));
+    Assert(0, ForAll(m, row -> ForAll(row, x -> x in basedomain)));
+
+    m := [basedomain, Length(m), ncols, m];
+    filter := IsPlistMatrixRep and IsMutable;
     if HasCanEasilyCompareElements(Representative(basedomain)) and
        CanEasilyCompareElements(Representative(basedomain)) then
-        filter2 := filter2 and CanEasilyCompareElements;
+        filter := filter and CanEasilyCompareElements;
     fi;
     Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
-                       filter2), m );
+                       filter), m );
     return m;
   end );
 
 InstallMethod( NewZeroMatrix,
-  "for IsPlistMatrixRep, a ring, and two ints",
-  [ IsPlistMatrixRep, IsRing, IsInt, IsInt ],
+  "for IsPlistMatrixRep, a semiring, and two ints",
+  [ IsPlistMatrixRep, IsSemiring, IsInt, IsInt ],
   function( filter, basedomain, rows, cols )
-    local m,i,e,filter2;
-    filter2 := IsPlistVectorRep;
-    m := 0*[1..rows];
-    e := NewVector(filter2, basedomain, []);
-    for i in [1..rows] do
-        m[i] := ZeroVector( cols, e );
-    od;
-    m := [basedomain,e,cols,m];
+    local m;
+    m := NullMat(rows, cols, basedomain);
+    m := [basedomain, rows, cols, m];
     Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
                        filter and IsMutable), m );
     return m;
   end );
 
 InstallMethod( NewIdentityMatrix,
-  "for IsPlistMatrixRep, a ring, and an int",
-  [ IsPlistMatrixRep, IsRing, IsInt ],
+  "for IsPlistMatrixRep, a semiring, and an int",
+  [ IsPlistMatrixRep, IsSemiring, IsInt ],
   function( filter, basedomain, dim )
     local mat, one, i;
+    # TODO use ONE_MATRIX_MUTABLE
     mat := NewZeroMatrix(filter, basedomain, dim, dim);
     one := One(basedomain);
     for i in [1..dim] do
@@ -140,28 +130,31 @@ InstallMethod( ViewObj, "for a plist vector", [ IsPlistVectorRep ],
     else
         Print("<");
     fi;
-    Print("plist vector over ",v![BDPOS]," of length ",Length(v![ELSPOS]),">");
+    Print("plist vector over ",BaseDomain(v)," of length ",Length(v![ELSPOS]),">");
   end );
 
 InstallMethod( PrintObj, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
+    local bd;
+    bd := BaseDomain(v);
     Print("NewVector(IsPlistVectorRep");
-    if IsFinite(v![BDPOS]) and IsField(v![BDPOS]) then
-        Print(",GF(",Size(v![BDPOS]),"),",v![ELSPOS],")");
+    if IsFinite(bd) and IsField(bd) then
+        Print(",GF(",Size(bd),"),",v![ELSPOS],")");
     else
-        Print(",",String(v![BDPOS]),",",v![ELSPOS],")");
+        Print(",",String(bd),",",v![ELSPOS],")");
     fi;
   end );
 
 InstallMethod( String, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
-    local st;
+    local bd, st;
+    bd := BaseDomain(v);
     st := "NewVector(IsPlistVectorRep";
-    if IsFinite(v![BDPOS]) and IsField(v![BDPOS]) then
-        Append(st,Concatenation( ",GF(",String(Size(v![BDPOS])),"),",
+    if IsFinite(bd) and IsField(bd) then
+        Append(st,Concatenation( ",GF(",String(Size(bd)),"),",
                                  String(v![ELSPOS]),")" ));
     else
-        Append(st,Concatenation( ",",String(v![BDPOS]),",",
+        Append(st,Concatenation( ",",String(bd),",",
                                  String(v![ELSPOS]),")" ));
     fi;
     return st;
@@ -206,42 +199,20 @@ InstallMethod( Length, "for a plist vector", [ IsPlistVectorRep ],
 InstallMethod( ZeroVector, "for an integer and a plist vector",
   [ IsInt, IsPlistVectorRep ],
   function( l, t )
-    local v;
-    v := Objectify(TypeObj(t),
-                   [t![BDPOS],ListWithIdenticalEntries(l,Zero(t![BDPOS]))]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+    return NewZeroVector(IsPlistVectorRep, t![BDPOS], l);
   end );
 
 InstallMethod( ZeroVector, "for an integer and a plist matrix",
   [ IsInt, IsPlistMatrixRep ],
   function( l, m )
-    local v;
-    v := Objectify(TypeObj(m![EMPOS]),
-                   [m![BDPOS],ListWithIdenticalEntries(l,Zero(m![BDPOS]))]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
-  end );
-
-InstallMethod( Vector, "for a plain list and a plist vector",
-  [ IsList and IsPlistRep, IsPlistVectorRep ],
-  function( l, t )
-    local v;
-    v := Objectify(TypeObj(t),[t![BDPOS],l]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+    return NewZeroVector(IsPlistVectorRep, m![BDPOS], l);
   end );
 
 InstallMethod( Vector, "for a list and a plist vector",
   [ IsList, IsPlistVectorRep ],
   function( l, t )
     local v;
-    v := ShallowCopy(l);
-    if IsGF2VectorRep(l) then
-        PLAIN_GF2VEC(v);
-    elif Is8BitVectorRep(l) then
-        PLAIN_VEC8BIT(v);
-    fi;
+    v := PlainListCopy(l);
     v := Objectify(TypeObj(t),[t![BDPOS],v]);
     if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
     return v;
@@ -348,8 +319,7 @@ InstallMethod( \+, "for two plist vectors",
     else
         ty := TypeObj(a);
     fi;
-    return Objectify(ty,
-                     [a![BDPOS],SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
+    return Objectify(ty, [a![BDPOS],a![ELSPOS]+b![ELSPOS]]);
   end );
 
 InstallMethod( \-, "for two plist vectors",
@@ -361,20 +331,19 @@ InstallMethod( \-, "for two plist vectors",
     else
         ty := TypeObj(a);
     fi;
-    return Objectify(ty,
-                     [a![BDPOS],DIFF_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
+    return Objectify(ty, [a![BDPOS],a![ELSPOS]-b![ELSPOS]]);
   end );
 
 InstallMethod( \=, "for two plist vectors",
   [ IsPlistVectorRep, IsPlistVectorRep ],
   function( a, b )
-    return EQ_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]);
+    return a![ELSPOS] = b![ELSPOS];
   end );
 
 InstallMethod( \<, "for two plist vectors",
   [ IsPlistVectorRep, IsPlistVectorRep ],
   function( a, b )
-    return LT_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]);
+    return a![ELSPOS] < b![ELSPOS];
   end );
 
 InstallMethod( AddRowVector, "for two plist vectors",
@@ -456,39 +425,26 @@ InstallOtherMethod( MultVectorLeft, "for an integer vector, and a small integer"
 InstallMethod( \*, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
   function( v, s )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s)] );
+    return Objectify( TypeObj(v), [v![BDPOS],v![ELSPOS]*s] );
   end );
 
 InstallMethod( \*, "for a scalar and a plist vector",
   [ IsScalar, IsPlistVectorRep ],
   function( s, v )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_SCL_LIST_DEFAULT(s,v![ELSPOS])] );
+    return Objectify( TypeObj(v), [v![BDPOS],s*v![ELSPOS]] );
   end );
 
 InstallMethod( \/, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
   function( v, s )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s^-1)] );
+    return Objectify( TypeObj(v), [v![BDPOS],v![ELSPOS]/s] );
   end );
 
-InstallMethod( AdditiveInverseSameMutability, "for a plist vector",
-  [ IsPlistVectorRep ],
-  function( v )
+InstallMethod(LeftQuotient, "for a scalar and a plist vector",
+  [ IsScalar, IsPlistVectorRep ],
+  function( s, v )
     return Objectify( TypeObj(v),
-       [v![BDPOS],AdditiveInverseSameMutability(v![ELSPOS])] );
-  end );
-
-InstallMethod( AdditiveInverseImmutable, "for a plist vector",
-  [ IsPlistVectorRep ],
-  function( v )
-    local res;
-    res := Objectify( TypeObj(v),
-       [v![BDPOS],AdditiveInverseSameMutability(v![ELSPOS])] );
-    MakeImmutable(res);
-    return res;
+             [v![BDPOS],LeftQuotient(s,v![ELSPOS])] );
   end );
 
 InstallMethod( AdditiveInverseMutable, "for a plist vector",
@@ -498,19 +454,6 @@ InstallMethod( AdditiveInverseMutable, "for a plist vector",
     res := Objectify(TypeObj(v),
                      [v![BDPOS],AdditiveInverseMutable(v![ELSPOS])]);
     if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
-  end );
-
-InstallMethod( ZeroSameMutability, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    return Objectify(TypeObj(v),[v![BDPOS],ZeroSameMutability(v![ELSPOS])]);
-  end );
-
-InstallMethod( ZeroImmutable, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    local res;
-    res := Objectify(TypeObj(v),[v![BDPOS],ZeroImmutable(v![ELSPOS])]);
-    MakeImmutable(res);
     return res;
   end );
 
@@ -533,7 +476,7 @@ InstallMethodWithRandomSource( Randomize,
   [ IsRandomSource, IsPlistVectorRep and IsMutable ],
   function( rs, v )
     local bd,i;
-    bd := v![BDPOS];
+    bd := BaseDomain(v);
     for i in [1..Length(v![ELSPOS])] do
         v![ELSPOS][i] := Random( rs, bd );
     od;
@@ -568,21 +511,14 @@ InstallMethod( BaseDomain, "for a plist matrix",
 InstallMethod( NumberRows, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    return Length(m![ROWSPOS]);
+    return m![NUM_ROWS_POS];
   end );
 
 InstallMethod( NumberColumns, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    return m![RLPOS];
+    return m![NUM_COLS_POS];
   end );
-
-InstallMethod( DimensionsMat, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return [Length(m![ROWSPOS]),m![RLPOS]];
-  end );
-
 
 ############################################################################
 # Representation preserving constructors:
@@ -591,10 +527,9 @@ InstallMethod( DimensionsMat, "for a plist matrix",
 InstallMethod( ZeroMatrix, "for two integers and a plist matrix",
   [ IsInt, IsInt, IsPlistMatrixRep ],
   function( rows,cols,m )
-    local l,t,res;
-    t := m![EMPOS];
-    l := List([1..rows],i->ZeroVector(cols,t));
-    res := Objectify( TypeObj(m), [m![BDPOS],t,cols,l] );
+    local l,res;
+    l := NullMat(rows, cols, m![BDPOS]);
+    res := Objectify( TypeObj(m), [m![BDPOS],rows,cols,l] );
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
     fi;
@@ -603,48 +538,14 @@ InstallMethod( ZeroMatrix, "for two integers and a plist matrix",
 
 InstallMethod( IdentityMatrix, "for an integer and a plist matrix",
   [ IsInt, IsPlistMatrixRep ],
-  function( rows,m )
-    local i,l,o,t,res;
-    t := m![EMPOS];
-    l := List([1..rows],i->ZeroVector(rows,t));
+  function( rows, m )
+    local i,l,o,res;
+    l := List([1..rows],i->ListWithIdenticalEntries(rows, Zero(m![BDPOS])));
     o := One(m![BDPOS]);
     for i in [1..rows] do
-        l[i][i] := o;
+        l[i,i] := o;
     od;
-    res := Objectify( TypeObj(m), [m![BDPOS],t,rows,l] );
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-    return res;
-  end );
-
-InstallMethod( Matrix, "for a list and a plist matrix",
-  [ IsList, IsInt, IsPlistMatrixRep ],
-  function( rows,rowlen,m )
-    local i,l,nrrows,res,t;
-    t := m![EMPOS];
-    if Length(rows) > 0 then
-        if IsVectorObj(rows[1]) and IsPlistVectorRep(rows[1]) then
-            nrrows := Length(rows);
-            l := rows;
-        elif IsList(rows[1]) then
-            nrrows := Length(rows);
-            l := ListWithIdenticalEntries(Length(rows),0);
-            for i in [1..Length(rows)] do
-                l[i] := Vector(rows[i],t);
-            od;
-        else  # a flat initializer:
-            nrrows := Length(rows)/rowlen;
-            l := ListWithIdenticalEntries(nrrows,0);
-            for i in [1..nrrows] do
-                l[i] := Vector(rows{[(i-1)*rowlen+1..i*rowlen]},t);
-            od;
-        fi;
-    else
-        l := [];
-        nrrows := 0;
-    fi;
-    res := Objectify( TypeObj(m), [m![BDPOS],t,rowlen,l] );
+    res := Objectify( TypeObj(m), [m![BDPOS],rows,rows,l] );
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
     fi;
@@ -659,82 +560,92 @@ InstallMethod( Matrix, "for a list and a plist matrix",
 InstallOtherMethod( \[\], "for a plist matrix and a positive integer",
 #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
 #T we can use 'InstallMethod'.
-  [ IsPlistMatrixRep, IsPosInt ],
-  function( m, p )
-    return m![ROWSPOS][p];
+  [ IsRowPlistMatrixRep, IsPosInt ],
+  function( m, i )
+    Info(InfoPerformance, 1, "for best performance avoid m[i]; e.g. use m[i,j] instead of m[i][j]");
+    # TODO: should we cache these row vectors?
+    return MakeIsPlistVectorRep( m![BDPOS], m![ROWSPOS][i] );
   end );
 
 InstallMethod( \[\]\:\=,
   "for a plist matrix, a positive integer, and a plist vector",
-  [ IsPlistMatrixRep and IsMutable, IsPosInt, IsPlistVectorRep ],
-  function( m, p, v )
-    m![ROWSPOS][p] := v;
+  [ IsRowPlistMatrixRep and IsMutable, IsPosInt, IsPlistVectorRep ],
+  function( m, i, v )
+    # TODO: verify that basedomain matches and that Length(v) = NrCols(m) ?
+    m![ROWSPOS][i] := v![ELSPOS];
+    # FIXME: really just assign the content, so that from now on any change to
+    # the vector object <v> will modify the i-th row of <m>??? yes, this
+    # emulates the old way of things, but it's also dangerous, and often leads to
+    # bugs; perhaps we should instead make a copy / copy over the data only?
   end );
 
 InstallMethod( \{\}, "for a plist matrix and a list",
-  [ IsPlistMatrixRep, IsList ],
+  [ IsRowPlistMatrixRep, IsList ],
   function( m, p )
     local l;
     l := m![ROWSPOS]{p};
-    return Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],l]);
+    return Objectify(TypeObj(m),[m![BDPOS],m![NUM_ROWS_POS],m![NUM_COLS_POS],l]);
   end );
 
 InstallMethod( Add, "for a plist matrix and a plist vector",
-  [ IsPlistMatrixRep and IsMutable, IsPlistVectorRep ],
+  [ IsRowPlistMatrixRep and IsMutable, IsPlistVectorRep ],
   function( m, v )
     Add(m![ROWSPOS],v);
   end );
 
 InstallMethod( Add, "for a plist matrix, a plist vector, and a pos. int",
-  [ IsPlistMatrixRep and IsMutable, IsPlistVectorRep, IsPosInt ],
+  [ IsRowPlistMatrixRep and IsMutable, IsPlistVectorRep, IsPosInt ],
   function( m, v, p )
     Add(m![ROWSPOS],v,p);
   end );
 
 InstallMethod( Remove, "for a plist matrix",
-  [ IsPlistMatrixRep and IsMutable ],
+  [ IsRowPlistMatrixRep and IsMutable ],
   m -> Remove( m![ROWSPOS] ) );
 
 InstallMethod( Remove, "for a plist matrix, and a position",
-  [ IsPlistMatrixRep and IsMutable, IsPosInt ],
+  [ IsRowPlistMatrixRep and IsMutable, IsPosInt ],
   function( m, p )
     Remove( m![ROWSPOS],p );
   end );
 #T must return the removed row if it was bound
 
 InstallMethod( IsBound\[\], "for a plist matrix, and a position",
-  [ IsPlistMatrixRep, IsPosInt ],
+  [ IsRowPlistMatrixRep, IsPosInt ],
   function( m, p )
-    return p <= Length(m![ROWSPOS]);
+    # TODO: move this to the generic IsRowListMatrix interface?
+    return p <= NrRows(m);
   end );
 
 InstallMethod( Unbind\[\], "for a plist matrix, and a position",
-  [ IsPlistMatrixRep and IsMutable, IsPosInt ],
+  [ IsRowPlistMatrixRep and IsMutable, IsPosInt ],
   function( m, p )
-    if p <> Length(m![ROWSPOS]) then
+    # TODO: move this to the generic IsRowListMatrix interface?
+    if p <> NrRows(m) then
         ErrorNoReturn("Unbind\\[\\]: Matrices must stay dense, you cannot Unbind here");
     fi;
-    Unbind( m![ROWSPOS][p] );
+    Remove(m);
   end );
 
 InstallMethod( \{\}\:\=, "for a plist matrix, a list, and a plist matrix",
-  [ IsPlistMatrixRep and IsMutable, IsList,
-    IsPlistMatrixRep ],
+  [ IsRowPlistMatrixRep and IsMutable, IsList,
+    IsRowPlistMatrixRep ],
   function( m, pp, n )
+    # TODO: verify that basedomain matches and that Length(v) = NrCols(m) ?
     m![ROWSPOS]{pp} := n![ROWSPOS];
   end );
 
 InstallMethod( Append, "for two plist matrices",
-  [ IsPlistMatrixRep and IsMutable, IsPlistMatrixRep ],
+  [ IsRowPlistMatrixRep and IsMutable, IsRowPlistMatrixRep ],
   function( m, n )
     Append(m![ROWSPOS],n![ROWSPOS]);
   end );
 
 InstallMethod( ShallowCopy, "for a plist matrix",
-  [ IsPlistMatrixRep ],
+  [ IsRowPlistMatrixRep ],
   function( m )
     local res;
-    res := Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],
+    res := Objectify(TypeObj(m),[m![BDPOS],m![NUM_ROWS_POS],m![NUM_COLS_POS],
                                  ShallowCopy(m![ROWSPOS])]);
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
@@ -750,30 +661,12 @@ InstallMethod( PostMakeImmutable, "for a plist matrix",
     MakeImmutable( m![ROWSPOS] );
   end );
 
-InstallMethod( ListOp, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return List(m![ROWSPOS]);
-  end );
-
-InstallMethod( ListOp, "for a plist matrix and a function",
-  [ IsPlistMatrixRep, IsFunction ],
-  function( m, f )
-    return List(m![ROWSPOS],f);
-  end );
-
-InstallMethod( Unpack, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return List(m![ROWSPOS],v->ShallowCopy(v![ELSPOS]));
-  end );
-
 InstallMethod( MutableCopyMat, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     local l,res;
-    l := List(m![ROWSPOS],ShallowCopy);
-    res := Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],l]);
+    l := MutableCopyMat(m![ROWSPOS]);
+    res := Objectify(TypeObj(m),[m![BDPOS],NrRows(m),NrCols(m),l]);
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
     fi;
@@ -784,11 +677,8 @@ InstallMethod( ExtractSubMatrix, "for a plist matrix, and two lists",
   [ IsPlistMatrixRep, IsList, IsList ],
   function( m, p, q )
     local i,l;
-    l := m![ROWSPOS]{p};
-    for i in [1..Length(l)] do
-        l[i] := Objectify(TypeObj(l[i]),[l[i]![BDPOS],l[i]![ELSPOS]{q}]);
-    od;
-    return Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],Length(q),l]);
+    l := m![ROWSPOS]{p}{q};
+    return Objectify(TypeObj(m),[m![BDPOS],Length(p),Length(q),l]);
   end );
 
 InstallMethod( CopySubMatrix, "for two plist matrices and four lists",
@@ -796,11 +686,11 @@ InstallMethod( CopySubMatrix, "for two plist matrices and four lists",
     IsList, IsList, IsList, IsList ],
   function( m, n, srcrows, dstrows, srccols, dstcols )
     local i;
-    # This eventually should go into the kernel without creating
-    # a intermediate objects:
+    # TODO: this eventually should go into the kernel without creating
+    # any intermediate objects:
     for i in [1..Length(srcrows)] do
-        n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} :=
-                  m![ROWSPOS][srcrows[i]]![ELSPOS]{srccols};
+        n![ROWSPOS][dstrows[i]]{dstcols} :=
+                  m![ROWSPOS][srcrows[i]]{srccols};
     od;
   end );
 
@@ -821,13 +711,13 @@ InstallOtherMethod( CopySubMatrix,
 InstallMethod( MatElm, "for a plist matrix and two positions",
   [ IsPlistMatrixRep, IsPosInt, IsPosInt ],
   function( m, row, col )
-    return m![ROWSPOS][row]![ELSPOS][col];
+    return m![ROWSPOS][row,col];
   end );
 
 InstallMethod( SetMatElm, "for a plist matrix, two positions, and an object",
   [ IsPlistMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
   function( m, row, col, ob )
-    m![ROWSPOS][row]![ELSPOS][col] := ob;
+    m![ROWSPOS][row,col] := ob;
   end );
 
 
@@ -839,16 +729,18 @@ InstallMethod( ViewObj, "for a plist matrix", [ IsPlistMatrixRep ],
   function( m )
     Print("<");
     if not IsMutable(m) then Print("immutable "); fi;
-    Print(Length(m![ROWSPOS]),"x",m![RLPOS],"-matrix over ",m![BDPOS],">");
+    Print(NrRows(m),"x",NrCols(m),"-matrix over ",m![BDPOS],">");
   end );
 
 InstallMethod( PrintObj, "for a plist matrix", [ IsPlistMatrixRep ],
   function( m )
+    local bd;
+    bd := BaseDomain(m);
     Print("NewMatrix(IsPlistMatrixRep");
-    if IsFinite(m![BDPOS]) and IsField(m![BDPOS]) then
-        Print(",GF(",Size(m![BDPOS]),"),");
+    if IsFinite(bd) and IsField(bd) then
+        Print(",GF(",Size(bd),"),");
     else
-        Print(",",String(m![BDPOS]),",");
+        Print(",",String(bd),",");
     fi;
     Print(NumberColumns(m),",",Unpack(m),")");
   end );
@@ -858,29 +750,25 @@ InstallMethod( Display, "for a plist matrix", [ IsPlistMatrixRep ],
     local i;
     Print("<");
     if not IsMutable(m) then Print("immutable "); fi;
-    Print(Length(m![ROWSPOS]),"x",m![RLPOS],"-matrix over ",m![BDPOS],":\n");
-    for i in [1..Length(m![ROWSPOS])] do
-        if i = 1 then
-            Print("[");
-        else
-            Print(" ");
-        fi;
-        Print(m![ROWSPOS][i]![ELSPOS],"\n");
+    Print(NrRows(m),"x",NrCols(m),"-matrix over ",m![BDPOS],": [\n");
+    for i in [1..NrRows(m)] do
+        Print(" ",m![ROWSPOS][i],"\n");
     od;
     Print("]>\n");
   end );
 
 InstallMethod( String, "for plist matrix", [ IsPlistMatrixRep ],
   function( m )
-    local st;
+    local bd, st;
+    bd := BaseDomain(m);
     st := "NewMatrix(IsPlistMatrixRep";
     Add(st,',');
-    if IsFinite(m![BDPOS]) and IsField(m![BDPOS]) then
+    if IsFinite(bd) and IsField(bd) then
         Append(st,"GF(");
-        Append(st,String(Size(m![BDPOS])));
+        Append(st,String(Size(bd)));
         Append(st,"),");
     else
-        Append(st,String(m![BDPOS]));
+        Append(st,String(bd));
         Append(st,",");
     fi;
     Append(st,String(NumberColumns(m)));
@@ -898,13 +786,19 @@ InstallMethod( \+, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
     local ty;
+    # TODO: check that dimensions match?
     if not IsMutable(a) and IsMutable(b) then
         ty := TypeObj(b);
     else
         ty := TypeObj(a);
     fi;
-    return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
-                         SUM_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
+    # TODO: why do we blindly copy the number of columns from the first argument?
+    # Either need to verify dimensions match, or, if we want to allow adding
+    # arbitrary matrices, then we must use the maximum of the number of columns
+    # here, no?
+    # TODO: should we check and enforce the the basedomains are identical?
+    return Objectify(ty,[a![BDPOS],a![NUM_ROWS_POS],a![NUM_COLS_POS],
+                         a![ROWSPOS]+b![ROWSPOS]]);
   end );
 
 InstallMethod( \-, "for two plist matrices",
@@ -916,8 +810,8 @@ InstallMethod( \-, "for two plist matrices",
     else
         ty := TypeObj(a);
     fi;
-    return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
-                         DIFF_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
+    return Objectify(ty,[a![BDPOS],a![NUM_ROWS_POS],a![NUM_COLS_POS],
+                         a![ROWSPOS]+b![ROWSPOS]]);
   end );
 
 InstallMethod( \*, "for two plist matrices",
@@ -930,94 +824,40 @@ InstallMethod( \*, "for two plist matrices",
     else
         ty := TypeObj(a);
     fi;
-    if not a![RLPOS] = Length(b![ROWSPOS]) then
+    if NrCols(a) <> NrRows(b) then
         ErrorNoReturn("\\*: Matrices do not fit together");
     fi;
     if not IsIdenticalObj(a![BDPOS],b![BDPOS]) then
         ErrorNoReturn("\\*: Matrices not over same base domain");
     fi;
-    l := ListWithIdenticalEntries(Length(a![ROWSPOS]),0);
-    for i in [1..Length(l)] do
-        if b![RLPOS] = 0 then
-            l[i] := b![EMPOS];
-        else
-            v := a![ROWSPOS][i];
-            w := ZeroVector(b![RLPOS],b![EMPOS]);
-            for j in [1..a![RLPOS]] do
-                AddRowVector(w,b![ROWSPOS][j],v[j]);
-            od;
-            l[i] := w;
-        fi;
-    od;
+    l := a![ROWSPOS]*b![ROWSPOS];
     if not IsMutable(a) and not IsMutable(b) then
         MakeImmutable(l);
     fi;
-    return Objectify( ty, [a![BDPOS],a![EMPOS],b![RLPOS],l] );
+    return Objectify( ty, [a![BDPOS],a![NUM_ROWS_POS],b![NUM_COLS_POS],l] );
   end );
 
 InstallMethod( \=, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
-    return EQ_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS]);
+    return a![ROWSPOS] = b![ROWSPOS];
   end );
 
 InstallMethod( \<, "for two plist matrices",
   [ IsPlistMatrixRep, IsPlistMatrixRep ],
   function( a, b )
-    return LT_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS]);
-  end );
-
-InstallMethod( AdditiveInverseSameMutability, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local l;
-    l := List(m![ROWSPOS],AdditiveInverseSameMutability);
-    if not IsMutable(m) then
-        MakeImmutable(l);
-    fi;
-    return Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-  end );
-
-InstallMethod( AdditiveInverseImmutable, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local l,res;
-    l := List(m![ROWSPOS],AdditiveInverseImmutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-    MakeImmutable(res);
-    return res;
+    return a![ROWSPOS] < b![ROWSPOS];
   end );
 
 InstallMethod( AdditiveInverseMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     local l,res;
-    l := List(m![ROWSPOS],AdditiveInverseMutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
+    l := AdditiveInverseMutable(m![ROWSPOS]);
+    res := Objectify( TypeObj(m), [m![BDPOS],m![NUM_ROWS_POS],m![NUM_COLS_POS],l] );
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
     fi;
-    return res;
-  end );
-
-InstallMethod( ZeroSameMutability, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local l;
-    l := List(m![ROWSPOS],ZeroSameMutability);
-    if not IsMutable(m) then
-        MakeImmutable(l);
-    fi;
-    return Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-  end );
-
-InstallMethod( ZeroImmutable, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local l,res;
-    l := List(m![ROWSPOS],ZeroImmutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-    MakeImmutable(res);
     return res;
   end );
 
@@ -1025,8 +865,8 @@ InstallMethod( ZeroMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     local l,res;
-    l := List(m![ROWSPOS],ZeroMutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
+    l := ZeroMutable(m![ROWSPOS]);
+    res := Objectify( TypeObj(m), [m![BDPOS],m![NUM_ROWS_POS],m![NUM_COLS_POS],l] );
     if not IsMutable(m) then
         SetFilterObj(res,IsMutable);
     fi;
@@ -1036,132 +876,41 @@ InstallMethod( ZeroMutable, "for a plist matrix",
 InstallMethod( IsZero, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    local i;
-    for i in [1..Length(m![ROWSPOS])] do
-        if not IsZero(m![ROWSPOS][i]) then
-            return false;
-        fi;
-    od;
-    return true;
+    return IsZero(m![ROWSPOS]); # TODO: check that this results in "optimal" code
   end );
 
 InstallMethod( IsOne, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    local i,j,n;
-    if Length(m![ROWSPOS]) <> m![RLPOS] then
-        #Error("IsOne: Matrix must be square");
-        return false;
-    fi;
-    n := m![RLPOS];
-    for i in [1..n] do
-        if not IsOne(m![ROWSPOS][i]![ELSPOS][i]) then return false; fi;
-        for j in [1..i-1] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
-        for j in [i+1..n] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
-    od;
-    return true;
-  end );
-
-InstallMethod( OneSameMutability, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local o;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        #Error("OneSameMutability: Matrix is not square");
-        #return;
-        return fail;
-    fi;
-    o := IdentityMatrix(m![RLPOS],m);
-    if not IsMutable(m) then
-        MakeImmutable(o);
-    fi;
-    return o;
+    return IsOne(m![ROWSPOS]); # TODO: check that this results in "optimal" code
   end );
 
 InstallMethod( OneMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
+    if NrCols(m) <> NrRows(m) then
         #Error("OneMutable: Matrix is not square");
         #return;
         return fail;
     fi;
-    return IdentityMatrix(m![RLPOS],m);
+    return NewIdentityMatrix(IsPlistMatrixRep,NrCols(m));
   end );
-
-InstallMethod( OneImmutable, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local o;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        #Error("OneImmutable: Matrix is not square");
-        #return;
-        return fail;
-    fi;
-    o := IdentityMatrix(m![RLPOS],m);
-    MakeImmutable(o);
-    return o;
-  end );
-
-# For the moment we delegate to the fast kernel arithmetic for plain
-# lists of plain lists:
 
 InstallMethod( InverseMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     local n;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        #Error("InverseMutable: Matrix is not square");
-        #return;
+    if NrCols(m) <> NrRows(m) then
         return fail;
     fi;
     # Make a plain list of lists:
-    n := List(m![ROWSPOS],x->x![ELSPOS]);
-    n := InverseMutable(n);  # Invert!
+    n := InverseMutable(m![ROWSPOS]);
     if n = fail then return fail; fi;
-    return Matrix(n,Length(n),m);
-  end );
-
-InstallMethod( InverseImmutable, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local n;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        #Error("InverseMutable: Matrix is not square");
-        #return;
-        return fail;
-    fi;
-    # Make a plain list of lists:
-    n := List(m![ROWSPOS],x->x![ELSPOS]);
-    n := InverseMutable(n);  # Invert!
-    if n = fail then return fail; fi;
-    n := Matrix(n,Length(n),m);
-    MakeImmutable(n);
-    return n;
-  end );
-
-InstallMethod( InverseSameMutability, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local n;
-    if m![RLPOS] <> Length(m![ROWSPOS]) then
-        #Error("InverseMutable: Matrix is not square");
-        #return;
-        return fail;
-    fi;
-    # Make a plain list of lists:
-    n := List(m![ROWSPOS],x->x![ELSPOS]);
-    n := InverseMutable(n);  # Invert!
-    if n = fail then return fail; fi;
-    n := Matrix(n,Length(n),m);
-    if not IsMutable(m) then
-        MakeImmutable(n);
-    fi;
-    return n;
+    # FIXME: if the base domain is not a field, e.g. Integers,
+    # then the inverse we just computed may not be defined over
+    # that base domain. Should we detect this here? Or how else
+    # will we deal with this in general?
+    return NewMatrix(IsPlistMatrixRep, BaseDomain(m), NrCols(m), n);
   end );
 
 InstallMethod( RankMat, "for a plist matrix",
@@ -1188,19 +937,23 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( TransposedMatMutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
-    local i,n,v;
-    n := ListWithIdenticalEntries(m![RLPOS],0);
-    for i in [1..m![RLPOS]] do
-        v := Vector(List(m![ROWSPOS],v->v![ELSPOS][i]),m![EMPOS]);
-        n[i] := v;
-    od;
-    return Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],Length(m![ROWSPOS]),n]);
+    local trans, res;
+    # FIXME/TODO: implement this generic, or optimized for IsPlistMatrixRep?
+    # Right now, we do the latter:
+    trans := TransposedMatMutable(m![ROWSPOS]);
+
+    res := Objectify(TypeObj(m),[m![BDPOS],NrCols(m),NrRows(m),trans]);
+    if not IsMutable(m) then
+        SetFilterObj(res,IsMutable);
+    fi;
+    return res;
   end );
 
 InstallMethod( TransposedMatImmutable, "for a plist matrix",
   [ IsPlistMatrixRep ],
   function( m )
     local n;
+    # TODO: this could be a generic implementation
     n := TransposedMatMutable(m);
     MakeImmutable(n);
     return n;
@@ -1210,36 +963,17 @@ InstallMethod( \*, "for a plist vector and a plist matrix",
   [ IsPlistVectorRep, IsPlistMatrixRep ],
   function( v, m )
     local i,res,s;
-    res := ZeroVector(m![RLPOS],m![EMPOS]);
-    for i in [1..Length(v![ELSPOS])] do
-        s := v![ELSPOS][i];
-        if not IsZero(s) then
-            AddRowVector(res,m![ROWSPOS][i],v![ELSPOS][i]);
-        fi;
-    od;
+    # TODO: should we verify that Length(v) = NrRows(m)?
+    res := ZeroVector(NrCols(m),v);
+    res![ELSPOS] := v![ELSPOS] * m![ROWSPOS];
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
     fi;
     return res;
   end );
 
-#InstallMethod( \^, "for a plist vector and an integer",
-#  [ IsPlistMatrixRep, IsInt ],
-#  function( m, i )
-#    local mi;
-#    if m![RLPOS] <> Length(m![ROWSPOS]) then
-#        #Error("\\^: Matrix must be square");
-#        #return;
-#        return fail;
-#    fi;
-#    if i = 0 then return OneSameMutability(m);
-#    elif i > 0 then return POW_OBJ_INT(m,i);
-#    else
-#        mi := InverseSameMutability(m);
-#        if mi = fail then return fail; fi;
-#        return POW_OBJ_INT( mi, -i );
-#    fi;
-#  end );
+# TODO: what about  \* for a matrix and a vector?
+
 
 InstallMethod( ConstructingFilter, "for a plist vector",
   [ IsPlistVectorRep ],
@@ -1253,24 +987,22 @@ InstallMethod( ConstructingFilter, "for a plist matrix",
     return IsPlistMatrixRep;
   end );
 
-InstallMethod( ChangedBaseDomain, "for a plist vector, and a domain",
-  [ IsPlistVectorRep, IsRing ],
+InstallMethod( ChangedBaseDomain, "for a plist vector, and a semiring",
+  [ IsPlistVectorRep, IsSemiring ],
   function( v, r )
     return NewVector( IsPlistVectorRep, r, v![ELSPOS] );
   end );
 
-InstallMethod( ChangedBaseDomain, "for a plist matrix, and a domain",
-  [ IsPlistMatrixRep, IsRing ],
+InstallMethod( ChangedBaseDomain, "for a plist matrix, and a semiring",
+  [ IsPlistMatrixRep, IsSemiring ],
   function( m, r )
     return NewMatrix(IsPlistMatrixRep, r, NumberColumns(m),
                      List(m![ROWSPOS], x-> x![ELSPOS]));
   end );
 
-InstallMethod( CompatibleVector, "for a plist matrix",
+InstallMethod( CompatibleVectorFilter, "for a plist matrix",
   [ IsPlistMatrixRep ],
-  function( v )
-    return NewZeroVector(IsPlistVectorRep,BaseDomain(v),NumberRows(v));
-  end );
+  M -> IsPlistVectorRep );
 
 InstallMethod( NewCompanionMatrix,
   "for IsPlistMatrixRep, a polynomial and a ring",
@@ -1284,13 +1016,12 @@ InstallMethod( NewCompanionMatrix,
         Error("CompanionMatrix: polynomial is not monic");
         return fail;
     fi;
-    ll := NewMatrix(IsPlistMatrixRep,bd,n,[]);
+    ll := NewZeroMatrix(IsPlistMatrixRep,bd,n,n);
     l := Vector(-l{[1..n]},CompatibleVector(ll));
     for i in [1..n-1] do
-        Add(ll,ZeroMutable(l));
-        ll[i][i+1] := one;
+        ll[i,i+1] := one;
     od;
-    Add(ll,l);
+    ll![ROWSPOS][n] := l; # FIXME: we need a function to copy a vector into a row?
     return ll;
   end );
 

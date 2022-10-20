@@ -1282,7 +1282,7 @@ InstallOtherMethod( ConstructingFilter,
 InstallOtherMethod( BaseDomain,
     "generic method for a matrix that is a plain list",
     [ IsMatrix and IsPlistRep ],
-    mat -> BaseDomain( mat[1] ) );
+    mat -> BaseDomain( Concatenation( mat ) ) );
 
 InstallOtherMethod( OneOfBaseDomain,
     "generic method for a matrix that is a plain list",

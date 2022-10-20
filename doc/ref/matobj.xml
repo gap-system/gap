@@ -173,10 +173,10 @@ for these matrix objects.
 
 <P/>
 
-One implementation of such matrices is given by the
+Two implementation of such matrices is given by the
 <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
-<Ref Filt="IsPlistMatrixRep"/>,
-and any row of these matrices is a vector object in
+<Ref Filt="IsRowPlistMatrixRep"/>,
+and any row of these matrices can be accessed as a vector object in
 <Ref Filt="IsPlistVectorRep"/>.
 Note that these objects do <E>not</E> lie in <Ref Filt="IsList"/>
 (and in particular not in <Ref Filt="IsPlistRep"/>),
@@ -190,8 +190,9 @@ in the last position,
 that is, the vector and matrix objects insist on being dense.
 All rows of a matrix must have the same length and the same base domain.
 
-<#Include Label="IsPlistVectorRep">
-<#Include Label="IsPlistMatrixRep">
+<#Include Label="IsRowPlistMatrixRep">
+<#Include Label="IsPlistVectorRep">  <!-- TODO: this does not really belong here; where else? -->
+<#Include Label="IsPlistMatrixRep">  <!-- TODO: this does not really belong here; where else? -->
 <#Include Label="RowListMatObj_[]">
 <#Include Label="RowListMatObj_[]_ASS">
 <#Include Label="RowListMatObj_{}">

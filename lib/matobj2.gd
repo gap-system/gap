@@ -93,7 +93,7 @@
 ##  (see <Ref Attr="BaseDomain" Label="for a vector object"/>)
 ##  and their dimensions.
 ##  The basic condition is that the entries of vector and matrix objects
-##  must either lie in the base domain or naturally embed in the sense that
+##  must either lie in the base domain or naturally map into it in the sense that
 ##  addition and multiplication automatically work with elements of the
 ##  base domain;
 ##  for example, a matrix object over a polynomial ring may also contain
