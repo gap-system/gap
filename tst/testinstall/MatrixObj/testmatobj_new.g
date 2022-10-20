@@ -137,11 +137,11 @@ end;
 MatObjTest_TestBaseDomain := function(ex, opt, errors)
     local domain;
 
-    domain := MatObjTest_CallFunc(BaseDomain,[ex.matobj], opt.breakOnError, errors);
+    domain := MatObjTest_CallFunc(BaseDomain,[ex.matObj], opt.breakOnError, errors);
 
     if domain <> fail then
         if domain <> ex.baseDomain then
-            MatObjTest_HandleErrorWrongResult(ex.filter, "BaseDomain", [ex.matobj], opt.breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult("BaseDomain", [ex.matObj], opt.breakOnError, ex, errors);
         fi;
     fi;
 end;
@@ -149,11 +149,11 @@ end;
 MatObjTest_TestNrRows := function(ex, opt, errors)
     local nrRows;
 
-    nrRows := MatObjTest_CallFunc(NrRows, [ex.matobj], opt.breakOnError, errors);
+    nrRows := MatObjTest_CallFunc(NrRows, [ex.matObj], opt.breakOnError, errors);
 
     if nrRows <> fail then
         if nrRows <> ex.nrRows then
-            MatObjTest_HandleErrorWrongResult(ex.filter, "NrRows", [ex.nrRows], opt.breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult("NrRows", [ex.matObj], opt.breakOnError, ex, errors);
         fi;
     fi; 
 end;
@@ -161,11 +161,11 @@ end;
 MatObjTest_TestNrCols := function(ex, opt, errors)
     local nrCols;
 
-    nrCols := MatObjTest_CallFunc(NrCols, [ex.matobj], opt.breakOnError, errors);
-
+    nrCols := MatObjTest_CallFunc(NrCols, [ex.matObj], opt.breakOnError, errors);
+    
     if nrCols <> fail then
         if nrCols <> ex.nrCols then
-            MatObjTest_HandleErrorWrongResult(ex.filter, "NrCols", [ex.nrCols], opt.breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult("NrCols", [ex.matObj], opt.breakOnError, ex, errors);
         fi;
     fi; 
 end;
@@ -186,6 +186,10 @@ TestMatrixObj := function(filter, opt)
 
     if not IsBound(opt.forbidInv) then
         opt.forbidInv := false;
+    fi;
+
+    if not IsBound(opt.breakOnError) then
+        opt.breakOnError := false;
     fi;
 
     examples := MatObjTest_GenerateExample(filter, opt);
