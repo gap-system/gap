@@ -1,5 +1,108 @@
 # GAP - history of changes
 
+## GAP 4.12.1 (October 2022)
+
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to keep it to changes which we think might
+affect some users directly.
+
+The new `make install` feature which we first shipped in GAP 4.12.0 has
+received extensive testing by several downstream packagers, who provided
+feedback we used to fix and improve it. If you tried it with 4.12.0 and
+did run into problems, please give it another try.
+
+### Performance improvements
+
+- [#5032](https://github.com/gap-system/gap/pull/5032) Fix performance regression in `AllHomomorphismClasses` and possibly other code searching isomorphisms
+
+### Improved and extended functionality
+
+- [#5047](https://github.com/gap-system/gap/pull/5047) `Display` for a character table optionally shows the degrees of the character fields
+
+### Fixed bugs that could lead to incorrect results
+
+- [#5036](https://github.com/gap-system/gap/pull/5036) Fix `Centre` for pc groups giving wrong results, e.g. `Size(Center(SmallGroup(2^9,261648)))` gave 4 instead of 8
+- [#5067](https://github.com/gap-system/gap/pull/5067) Fix `AbsolutelyIrreducibleModules` for a pc group and a finite prime field
+
+### Fixed bugs that could lead to crashes
+
+- [#5126](https://github.com/gap-system/gap/pull/5126) Fix crashes in `ConvertToVectorRep` and `CopyToVectorRep`
+
+### Fixed bugs that could lead to break loops
+
+- [#5025](https://github.com/gap-system/gap/pull/5025) Fix unexpected error in tab completion for non-record component objects
+- [#5033](https://github.com/gap-system/gap/pull/5033) Fix unexpected error in `ConjugacyClassesSubgroups`
+- [#5041](https://github.com/gap-system/gap/pull/5041) Fix unexpected error in `MinimalGeneratingSet` for solvable non-pc groups
+- [#5057](https://github.com/gap-system/gap/pull/5057) Fix `Orbits` when called with a range as seeds
+
+### Other fixed bugs
+
+- [#5043](https://github.com/gap-system/gap/pull/5043) Fix `SaveOnExitFile` in restored workspaces
+- [#5116](https://github.com/gap-system/gap/pull/5116) Fix printing of GAP functions containing sublist extractions
+
+### Other changes
+
+- [#5079](https://github.com/gap-system/gap/pull/5079) Improve buildsystem by exporting `GMP_PREFIX` in `sysinfo.gap` for package build systems
+
+### Package distribution
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.12.1 distribution contains 154 packages, of which 49 have been
+updated since GAP 4.12.0. The full list of updated packages is given below:
+
+- [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2022.08-03 -> 2022.09-01
+- [**ACE**](https://gap-packages.github.io/ace): 5.5 -> 5.6.1
+- [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.4 -> 2.1.6
+- [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2022.07.10 -> 2022.10.20
+- [**Browse**](https://www.math.rwth-aachen.de/~Browse): 1.8.14 -> 1.8.18
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2022.08-05 -> 2022.10-06
+- [**crypting**](https://gap-packages.github.io/crypting/): 0.10 -> 0.10.3
+- [**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.2.3 -> 2.3.1
+- [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.5 -> 1.0.6
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.5.3 -> 1.6.0
+- [**EDIM**](https://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM): 1.3.5 -> 1.3.6
+- [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2022.08-02 -> 2022.10-01
+- [**ferret**](https://gap-packages.github.io/ferret/): 1.0.8 -> 1.0.9
+- [**FinInG**](https://gap-packages.github.io/FinInG): 1.5 -> 1.5.1
+- [**Forms**](https://gap-packages.github.io/forms): 1.2.8 -> 1.2.9
+- [**Francy**](https://gap-packages.github.io/francy): 1.2.4 -> 1.2.5
+- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2022.08-04 -> 2022.10-01
+- [**GaussForHomalg**](https://homalg-project.github.io/pkg/GaussForHomalg): 2022.08-02 -> 2022.08-03
+- [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2022.05-01 -> 2022.09-01
+- [**genss**](https://gap-packages.github.io/genss): 1.6.7 -> 1.6.8
+- [**GradedModules**](https://homalg-project.github.io/pkg/GradedModules): 2022.08-02 -> 2022.09-02
+- [**GradedRingForHomalg**](https://homalg-project.github.io/pkg/GradedRingForHomalg): 2022.08-02 -> 2022.10-01
+- [**GUAVA**](https://gap-packages.github.io/guava): 3.16 -> 3.17
+- [**homalg**](https://homalg-project.github.io/pkg/homalg): 2022.08-03 -> 2022.08-04
+- [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2022.08-02 -> 2022.10-01
+- [**IO**](https://gap-packages.github.io/io): 4.7.2 -> 4.8.0
+- [**IO_ForHomalg**](https://homalg-project.github.io/pkg/IO_ForHomalg): 2022.08-03 -> 2022.09-01
+- [**json**](https://gap-packages.github.io/json/): 2.1.0 -> 2.1.1
+- [**kbmag**](https://gap-packages.github.io/kbmag): 1.5.9 -> 1.5.10
+- [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2022.08-03 -> 2022.10-03
+- [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2022.08-02 -> 2022.09-01
+- [**MajoranaAlgebras**](https://gap-packages.github.io/MajoranaAlgebras/): 1.4 -> 1.5
+- [**MapClass**](https://gap-packages.github.io/MapClass): 1.4.5 -> 1.4.6
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2022.08-02 -> 2022.10-05
+- [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2022.08-02 -> 2022.10-04
+- [**Modules**](https://homalg-project.github.io/pkg/Modules): 2022.08-03 -> 2022.09-01
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2022.08-03 -> 2022.10-01
+- [**NConvex**](https://homalg-project.github.io/pkg/NConvex): 2020.11-04 -> 2022.09-01
+- [**orb**](https://gap-packages.github.io/orb): 4.8.5 -> 4.9.0
+- [**PackageManager**](https://gap-packages.github.io/PackageManager/): 1.3 -> 1.3.2
+- [**PatternClass**](https://gap-packages.github.io/PatternClass/): 2.4.2 -> 2.4.3
+- [**profiling**](https://gap-packages.github.io/profiling/): 2.5.0 -> 2.5.1
+- [**recog**](https://gap-packages.github.io/recog): 1.3.2 -> 1.4.2
+- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2022.08-03 -> 2022.10-02
+- [**SCO**](https://homalg-project.github.io/pkg/SCO): 2022.08-02 -> 2022.09-01
+- [**singular**](https://gap-packages.github.io/singular/): 2020.12.18 -> 2022.09.23
+- [**SONATA**](https://gap-packages.github.io/sonata/): 2.9.4 -> 2.9.5
+- [**ToolsForHomalg**](https://homalg-project.github.io/pkg/ToolsForHomalg): 2022.08-02 -> 2022.09-08
+- [**utils**](https://gap-packages.github.io/utils): 0.76 -> 0.77
+
+
 ## GAP 4.12.0 (August 2022)
 
 The following gives an overview of the changes compared to the previous
@@ -234,9 +337,8 @@ affect some users directly.
 
 #### Updated packages redistributed with GAP
 
-The GAP 4.12.0 distribution contains 154
-packages, of which 121 have been updated since GAP
-4.11.1. The full list of updated packages is given below:
+The GAP 4.12.0 distribution contains 154 packages, of which 121 have been
+updated since GAP 4.11.1. The full list of updated packages is given below:
 
 - [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2020.10-02 -> 2022.08-03
 - [**ACE**](https://gap-packages.github.io/ace): 5.3 -> 5.5
