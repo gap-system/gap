@@ -156,7 +156,7 @@ end );
    function( mat, row )
    # could this cause problems if some entries in the vector are not bound?
      local index_start, index_end, vec, i;
-     vec := NewZeroVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS]);
+     vec := NewZeroVector(IsPlistVectorRep,BaseDomain(mat),NrCols(mat));
      for i in [row..NrCols(mat)] do 
         vec[i] := mat[row,i];
      od;
