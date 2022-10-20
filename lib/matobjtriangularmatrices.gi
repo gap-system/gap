@@ -474,7 +474,7 @@ end );
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      # Here we do full checking since it is rather cheap!
-     local row,col,l,ty,v,w,i,rowStart;
+     local row,col,l,ty,v,w,i,rowStart,sum;
      if not IsMutable(a) and IsMutable(b) then
          ty := TypeObj(b);
    else
@@ -494,10 +494,11 @@ end );
      for row in [1..a![UPPERTRIANGULARMATREP_NRPOS]] do
         rowStart := (-row*row+row)/2+a![UPPERTRIANGULARMATREP_NRPOS]*(row-1);
         for col in [row..a![UPPERTRIANGULARMATREP_NRPOS]] do
-            l[rowStart + col] := Zero(a![UPPERTRIANGULARMATREP_BDPOS]);
+            sum := Zero(a![UPPERTRIANGULARMATREP_BDPOS]);
             for i in [row..col] do
-                l[rowStart + col] := l[rowStart + col] + a[row,i] * b[i,col];
+                sum := sum + a[row,i] * b[i,col];
             od;
+            l[rowStart + col] := sum;
         od;
      od;
      if not IsMutable(a) and not IsMutable(b) then
