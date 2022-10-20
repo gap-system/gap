@@ -345,12 +345,12 @@ local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
   if IsSubgroupFpGroup(G) then
     if HasIsWholeFamily(G) and IsWholeFamily(G) 
       # total on free generators
-      and Set(FreeGeneratorsOfFpGroup(G))=Set(gens,UnderlyingElement)
+      and Set(FreeGeneratorsOfWholeGroup(G))=Set(gens,UnderlyingElement)
       then
         l:=List(gens,UnderlyingElement);
-        p:=List(l,i->Position(FreeGeneratorsOfFpGroup(G),i));
+        p:=List(l,i->Position(FreeGeneratorsOfWholeGroup(G),i));
         # test for duplicate generators, same images
-        if Length(gens)=Length(FreeGeneratorsOfFpGroup(G)) or
+        if Length(gens)=Length(FreeGeneratorsOfWholeGroup(G)) or
           ForAll([1..Length(gens)],x->imgs[x]=imgs[Position(l,l[x])]) then
           filter := filter and IsFromFpGroupStdGensGeneralMappingByImages;
           hom.genpositions:=p;
