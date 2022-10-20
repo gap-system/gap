@@ -662,7 +662,7 @@ DeclareSynonym( "GeneralizedEigenspaces", GeneralisedEigenspaces );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Eigenvalues", [ IsRing, IsMatrix ] );
+DeclareOperation( "Eigenvalues", [ IsRing, IsMatrixOrMatrixObj ] );
 
 #############################################################################
 ##
