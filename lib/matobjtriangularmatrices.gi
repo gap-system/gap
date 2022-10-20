@@ -256,16 +256,18 @@ end );
  InstallMethod( ExtractSubMatrix, "for an IsUpperTriangularMatrixRep matrix, and two lists",
    [ IsUpperTriangularMatrixRep, IsList, IsList ],
    function( mat, rows, cols )
-     local row,col,list,hasTriangularForm;
+     local row,col,list,hasTriangularForm,zeroEle,ele;
      list := [];
+     zeroEle := Zero(BaseDomain(mat));
      hasTriangularForm := true;
      for row in [1..Length(rows)] do
        for col in [1..Length(cols)] do 
             if cols[col] < rows[row] then
-                list[(row - 1)*Length(cols)+col] :=  Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
+                list[(row - 1)*Length(cols)+col] :=  zeroEle;
             else
-                list[(row - 1)*Length(cols)+col] :=  mat![UPPERTRIANGULARMATREP_ELSPOS][(-rows[row]*rows[row]+rows[row])/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(rows[row]-1) + cols[col]];
-                if (col < row) and (list[(row - 1)*Length(cols)+col] <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
+                ele := mat[row,col];
+                list[(row - 1)*Length(cols)+col] :=  ele;
+                if (col < row) and (ele <> zeroEle) then
                     hasTriangularForm := false;
                 fi;
             fi;
@@ -291,13 +293,14 @@ end );
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep and IsMutable,
      IsList, IsList, IsList, IsList ],
    function( m, n, srcrows, dstrows, srccols, dstcols )
-     local i,j;
+     local i,j,zeroEle;
+     zeroEle := Zero(BaseDomain(mat));
      # This eventually should go into the kernel without creating
      # an intermediate object:
      for i in [1..Length(srcrows)] do
        for j in [1..Length(srccols)] do
             if srccols[j] < srcrows[i] then
-                SetMatElm(n,dstrows[i],dstcols[j],Zero(m![UPPERTRIANGULARMATREP_BDPOS]));
+                SetMatElm(n,dstrows[i],dstcols[j],zeroEle);
             else
                 SetMatElm(n,dstrows[i],dstcols[j], m[srcrows[i],srccols[j]]);
             fi;
@@ -309,7 +312,7 @@ end );
    [ IsUpperTriangularMatrixRep, IsPosInt, IsPosInt ],
    function( mat, row, col )
     if col < row then
-        return Zero(mat![UPPERTRIANGULARMATREP_BDPOS]);
+        return Zero(BaseDomain(mat));
     else
         return mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + col];
     fi;
@@ -319,11 +322,11 @@ end );
    [ IsUpperTriangularMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
    function( mat, row, col, obj )
     if col < row then
-        if (obj <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
+        if (obj <> Zero(BaseDomain(mat))) then
             Error("SetMatElm: This is not possible for UpperTriangularMatrices");
         fi;
     else
-        if not(obj in mat![UPPERTRIANGULARMATREP_BDPOS]) then
+        if not(obj in BaseDomain(mat)) then
             Error("SetMatElm: obj not contained in base domain");
         else
             mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + col] := obj;
