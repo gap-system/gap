@@ -4215,7 +4215,7 @@ InstallMethod( DefaultScalarDomainOfMatrixList,
     "generic: form ring",
     [ IsList ],
     function(l)
-    local B, i,j,k,fg,f;
+    local B, i,j,k,fg,f,char;
     # try to find out the field
     if Length( l ) = 0 or ForAny( l, i -> not IsMatrixOrMatrixObj( i ) ) then
       Error( "<l> must be a nonempty list of matrices or matrix objects" );
@@ -4226,8 +4226,17 @@ InstallMethod( DefaultScalarDomainOfMatrixList,
       fi;
     elif ForAll( l, IsMatrix ) then
       fg:=[l[1][1,1]];
-      if Characteristic(fg)=0 then
+      # This fixes Issue #5134 on GitHub.
+      # See https://github.com/gap-system/gap/issues/5134
+      # The problem is that Characteristic([1.0]) = fail
+      # which is catched by the new else case
+      # Note that DefaultRing should be defined for each element with
+      # a characteristic
+      char := Characteristic(fg);
+      if char=0 then
         f:=DefaultField(fg);
+      elif char = fail then
+        Error("DefaultScalarDomainOfMatrixList: Cannot find a base domain for the list entries.");
       else
         f:=DefaultRing(fg);
       fi;
