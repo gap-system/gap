@@ -1,19 +1,7 @@
 MatObjTest_GenerateExample := function(filter, opt)
-    local randomSource, state, inv, dims, dim, doms, dom, customGen, examples;
+    local inv, dims, dim, doms, dom, customGen, examples;
     
     examples := [];
-
-    if IsBound(opt.randomSource) then 
-        randomSource := opt.randomSource;
-    else 
-        randomSource := GlobalMersenneTwister;
-    fi;
-
-    if IsBound(opt.state) then 
-        state := opt.state;
-    else
-        state := State(GlobalMersenneTwister);
-    fi;
 
     if IsBound(opt.dimensions) then 
         dims := opt.dimensions;
@@ -33,7 +21,7 @@ MatObjTest_GenerateExample := function(filter, opt)
             for dim in dims do 
                 for dom in doms do 
                     if dim[1] = dim[2] then 
-                        Add(examples, [customGen(filter, randomSource, dim[1], dom), dim[2], dom]);
+                        Add(examples, [customGen(filter, opt.randomSource, dim[1], dom), dim[1], dim[2], dom]);
                     fi;
                 od;
             od;
@@ -41,7 +29,7 @@ MatObjTest_GenerateExample := function(filter, opt)
             customGen := opt.useCustomGenerator;
             for dim in dims do 
                 for dom in doms do 
-                    Add(examples, [customGen(filter, randomSource, dim[1], dim[2], dom), dim[2], dom]);
+                    Add(examples, [customGen(filter, opt.randomSource, dim[1], dim[2], dom), dim[1], dim[2], dom]);
                 od;
             od;
         fi; 
@@ -50,25 +38,124 @@ MatObjTest_GenerateExample := function(filter, opt)
             for dim in dims do 
                 for dom in doms do 
                     if dim[1] = dim[2] then 
-                        Add(examples, [RandomInvertibleMat(randomSource, dim[1], dom), dim[2], dom]);
+                        Add(examples, [RandomInvertibleMat(opt.randomSource, dim[1], dom), dim[1], dim[2], dom]);
                     fi;
                 od;
             od;
         else 
             for dim in dims do 
                 for dom in doms do 
-                    Add(examples, [RandomMat(randomSource, dim[1], dim[2], dom), dim[2], dom]);
+                    Add(examples, [RandomMat(opt.randomSource, dim[1], dim[2], dom), dim[1], dim[2], dom]);
                 od;
             od;
         fi;
     fi;
 
     if IsBound(opt.sourceOfTruth) then 
-        return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), NewMatrix(opt.sourceOfTruth, x[3], x[2], x[1])]);
+        return List(examples, x-> 
+            rec(matObj := NewMatrix(filter, x[4], x[3], x[1]),
+            filter := filter;
+            baseDomain := x[4],
+            nrCols := x[3],
+            nrRows := x[2],
+            mat := x[1],
+            sourceOfTruth := NewMatrix(opt.sourceOfTruth, x[4], x[3], x[1]))
+            )
+        #return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), NewMatrix(opt.sourceOfTruth, x[3], x[2], x[1])]);
     else 
-        return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), x[1]]);
+        return List(examples, x-> 
+            rec(matObj := NewMatrix(filter, x[4], x[3], x[1]),
+            filter := filter;
+            baseDomain := x[4],
+            nrCols := x[3],
+            nrRows := x[2],
+            mat := x[1],
+            sourceOfTruth := x[1])
+            )
+        #return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), x[1]]);
     fi;
 end;
 
+MatObjTest_TestBaseDomain := function(ex, opt, errors)
+    local domain;
 
-TestMatrixObj := function()
+    domain := MatObjTest_CallFunc(BaseDomain,[ex.matobj], opt.breakOnError, errors);
+
+    if domain <> fail then
+        if domain <> ex.baseDomain then
+            MatObjTest_AppendErrorWrongResult(ex.filter, "BaseDomain", [ex.matobj], breakOnError, errors);
+        fi;
+    fi;
+end;
+
+MatObjTest_TestNrRows := function(ex, opt, errors)
+    local nrRows;
+
+    nrRows := MatObjTest_CallFunc(NrRows, [ex.matobj], opt.breakOnError, errors);
+
+    if nrRows <> fail then
+        if nrRows <> ex.nrRows then
+            MatObjTest_AppendErrorWrongResult(ex.filter, "NrRows", [ex.nrRows], breakOnError, errors);
+        fi;
+    fi; 
+end;
+
+MatObjTest_TestNrCols := function(ex, opt, errors)
+    local nrCols;
+
+    nrCols := MatObjTest_CallFunc(NrCols, [ex.matobj], opt.breakOnError, errors);
+
+    if nrCols <> fail then
+        if nrCols <> ex.nrCols then
+            MatObjTest_AppendErrorWrongResult(ex.filter, "NrCols", [ex.nrCols], breakOnError, errors);
+        fi;
+    fi; 
+end;
+
+
+TestMatrixObj := function(filter, opt)
+    local errors, examples;
+
+    errors := [];
+
+    if not IsBound(opt.randomSource) then
+        opt.randomSource := GlobalMersenneTwister;
+    fi;
+
+    if not IsBound(opt.state) then 
+        opt.state := State(GlobalMersenneTwister);
+    fi;
+
+    if not IsBound(opt.forbidInv) then
+        opt.forbidInv := false;
+    fi;
+
+    examples := MatObjTest_GenerateExample(filter, opt);
+
+    for ex in examples do
+        MatObjTest_TestBaseDomain(ex, opt, errors);
+    od;
+
+    for ex in examples do
+        MatObjTest_TestNrRows(ex, opt, errors);
+    od; 
+
+    for ex in examples do
+        MatObjTest_TestNrCols(ex, opt, errors);
+    od; 
+
+    #TODO other tests
+
+    if not opt.forbidInv then
+        opt.invertible := true;
+        examples := MatObjTest_GenerateExample(filter, opt);
+
+        for ex in examples then
+            #TestInverse(ex);
+        od;
+
+        #Other tests were you need invertible matrices
+    fi;
+
+    return errors;
+end;
