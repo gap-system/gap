@@ -321,7 +321,7 @@ end );
  InstallMethod( SetMatElm, "for an IsUpperTriangularMatrixRep matrix, two positions, and an object",
    [ IsUpperTriangularMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
    function( mat, row, col, obj )
-    if (col < row) then
+    if col < row then
         if (obj <> Zero(mat![UPPERTRIANGULARMATREP_BDPOS])) then
             Error("SetMatElm: This is not possible for UpperTriangularMatrices");
         fi;
