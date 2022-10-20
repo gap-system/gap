@@ -79,7 +79,7 @@ jobs:
         run: |
           BUILD=`head -1 cnf/GAP-VERSION-FILE | cut -d ' ' -f3`
           echo "steps.get-build.outputs.name = ${BUILD}"
-          echo "::set-output name=name::${BUILD}"
+          echo "name=${BUILD}" >> $GITHUB_OUTPUT
       - name: "Download packages"
         run: dev/ci-download-pkgs.sh
       - name: "Make archives"
@@ -143,7 +143,7 @@ jobs:
             CYGWIN_MATRIX='{"arch":["x86_64","x86"]}'
           fi
           echo "Setting Cygwin matrix: $CYGWIN_MATRIX"
-          echo "::set-output name=matrix::$CYGWIN_MATRIX"
+          echo "matrix=$CYGWIN_MATRIX" >> $GITHUB_OUTPUT
 
   cygwin:
     name: "Create Windows ${{ matrix.arch }} installer"
