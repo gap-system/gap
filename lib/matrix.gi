@@ -2294,7 +2294,7 @@ InstallMethod( GeneralisedEigenspaces,
 ##
 InstallMethod( Eigenvalues,
     "for a matrix",
-    [ IsField, IsMatrix ],
+    [ IsField, IsMatrixOrMatrixObj ],
     function( F, A )
         return List( Filtered( GeneralisedEigenvalues(F,A),
                                eval -> DegreeOfLaurentPolynomial(eval) = 1 ),
