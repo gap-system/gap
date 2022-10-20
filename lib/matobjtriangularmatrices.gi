@@ -469,12 +469,12 @@ end );
      DIFF_LIST_LIST_DEFAULT(a![UPPERTRIANGULARMATREP_ELSPOS],b![UPPERTRIANGULARMATREP_ELSPOS])]);
  end );
 
- #todo
+ #todo: write a kernel function for this (we're currently slower than the traditional lists-of-lists function)
  InstallMethod( \*, "for two IsUpperTriangularMatrixRep matrices",
    [ IsUpperTriangularMatrixRep, IsUpperTriangularMatrixRep ],
    function( a, b )
      # Here we do full checking since it is rather cheap!
-     local row,col,l,ty,v,w,sum,i;
+     local row,col,l,ty,v,w,i,rowStart;
      if not IsMutable(a) and IsMutable(b) then
          ty := TypeObj(b);
    else
@@ -492,12 +492,12 @@ end );
      l := ListWithIdenticalEntries((a![UPPERTRIANGULARMATREP_NRPOS]*(a![UPPERTRIANGULARMATREP_NRPOS]+1))/2,0);
    # each row of the product is computed 
      for row in [1..a![UPPERTRIANGULARMATREP_NRPOS]] do
+        rowStart := (-row*row+row)/2+a![UPPERTRIANGULARMATREP_NRPOS]*(row-1);
         for col in [row..a![UPPERTRIANGULARMATREP_NRPOS]] do
-            sum := Zero(a![UPPERTRIANGULARMATREP_BDPOS]);
+            l[rowStart + col] := Zero(a![UPPERTRIANGULARMATREP_BDPOS]);
             for i in [row..col] do
-                sum := sum + a[row,i] * b[i,col];
+                l[rowStart + col] := l[rowStart + col] + a[row,i] * b[i,col];
             od;
-            l[(-row*row+row)/2+a![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + col] := sum;
         od;
      od;
      if not IsMutable(a) and not IsMutable(b) then
