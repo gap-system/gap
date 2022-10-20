@@ -56,7 +56,7 @@
      and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
      [] );
 
- # If we implement our object a a positional object we often have to access its
+ # If we implement our object as a positional object we often have to access its
  # properties in the code. To make that more readable we declare global
  # variables. If you do this too make sure you use variables that are unique and
  # unlikely to be used someplace else, even though that might mean using longer
@@ -65,8 +65,8 @@
 
  # Some constants for matrix access:
  # Position in the positional object of the base domain
- BindGlobal( "UPPERTRIANGULARMATREP_BDPOS", 1 );
- # Position in the positional object of the number of rows
- BindGlobal( "UPPERTRIANGULARMATREP_NRPOS", 2 );
+ BindConstant( "UPPERTRIANGULARMATREP_BDPOS", 1 );
+ # Position in the positional object of the number of rows and columns
+ BindConstant( "UPPERTRIANGULARMATREP_NRPOS", 2 );
  # Position in the positional object of the list of entries
- BindGlobal( "UPPERTRIANGULARMATREP_ELSPOS", 3 );
+ BindConstant( "UPPERTRIANGULARMATREP_ELSPOS", 3 );

@@ -168,7 +168,8 @@ end );
      for i in [row..mat![UPPERTRIANGULARMATREP_NRPOS]] do 
         vec[i] := mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + i];
      od;
-     return NewVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],List(vec));
+     MakeImmutable(vec);
+     return vec;
   end );
 
  # Commenting out... this results in a weird error I don't understand. Must be
