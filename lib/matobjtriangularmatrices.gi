@@ -136,12 +136,6 @@ end );
      return m![UPPERTRIANGULARMATREP_NRPOS];
   end );
 
- InstallMethod( DimensionsMat, "for a IsUpperTriangularMatrixRep matrix",
-   [ IsUpperTriangularMatrixRep ],
-   function( m )
-     return [m![UPPERTRIANGULARMATREP_NRPOS],m![UPPERTRIANGULARMATREP_NRPOS]];
-end );
-
  ############################################################################
  # Representation preserving constructors:
  ############################################################################
@@ -162,13 +156,11 @@ end );
    function( mat, row )
    # could this cause problems if some entries in the vector are not bound?
      local index_start, index_end, vec, i;
-     index_start := (row-1)*mat![UPPERTRIANGULARMATREP_NRPOS] + 1;
-     index_end := index_start + mat![UPPERTRIANGULARMATREP_NRPOS];
      vec := NewZeroVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],mat![UPPERTRIANGULARMATREP_NRPOS]);
-     for i in [row..mat![UPPERTRIANGULARMATREP_NRPOS]] do 
-        vec[i] := mat![UPPERTRIANGULARMATREP_ELSPOS][(-row*row+row)/2+mat![UPPERTRIANGULARMATREP_NRPOS]*(row-1) + i];
+     for i in [row..NrCols(mat)] do 
+        vec[i] := mat[row,i];
      od;
-     return NewVector(IsPlistVectorRep,mat![UPPERTRIANGULARMATREP_BDPOS],List(vec));
+     return vec;
   end );
 
  # Commenting out... this results in a weird error I don't understand. Must be
