@@ -348,7 +348,7 @@ end );
 #   function( mat )
 #     Print("<");
 #     if not IsMutable(mat) then Print("immutable "); fi;
-#     Print(mat![UPPERTRIANGULARMATREP_NRPOS],"x",mat![UPPERTRIANGULARMATREP_NRPOS],"-matrix over ",mat![UPPERTRIANGULARMATREP_BDPOS],">");
+#     Print(NumberRows(mat),"x",NumberColumns(mat),"-matrix over ",BaseDomain(mat),">");
 #       end );
 
 # not better than the generic interpretation
