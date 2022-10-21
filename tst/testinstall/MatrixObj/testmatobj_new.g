@@ -255,6 +255,10 @@ TestMatrixObj := function(filter, opt)
         MatObjTest_TestSetMatElm(ex, opt, errors);
     od; 
 
+    for ex in examples do
+        MatObjTesT_TestConstructingFilter(ex, opt, errors);
+    od;
+
     #TODO other tests
 
     if not opt.forbidInv then
