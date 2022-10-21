@@ -1419,8 +1419,32 @@ InstallMethod( ViewString,
     ViewStringForMatrixObj );
 
 InstallMethod( DisplayString,
-    [ IsMatrixOrMatrixObj ],
-    ViewStringForMatrixObj );
+[ IsMatrixOrMatrixObj ],
+function(M)
+local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
+    numberRows := NrRows(M);
+    numberCols := NrCols(M);
+    baseDom := BaseDomain(M);
+    zeroEle := Zero(baseDom);
+    outputstring := "<";
+    if not IsMutable(M) then Append(outputstring, "immutable "); fi;
+    outputstring := Concatenation(outputstring,String(numberRows),"x",String(numberCols),"-matrix over ",String(baseDom),":\n");
+    Append(outputstring,"[");
+    for i in [1..numberRows] do
+        for j in [1..numberCols] do
+            if j = 1 then
+                Append(outputstring,"[");
+            else
+                Append(outputstring," ");
+            fi;
+            Append(outputstring,String(M[i,j]));
+            od;
+        Append(outputstring,"]\n");
+    od;
+    Append(outputstring,"]");
+    Append(outputstring, ">\n");
+    return outputstring;
+end);
 
 InstallMethod( String,
     [ IsMatrixObj ],
