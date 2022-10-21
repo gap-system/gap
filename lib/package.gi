@@ -355,7 +355,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # if the two arguments are equal.)
     StableSortParallel( List( GAPInfo.PackagesInfo, r -> r.Version ),
                   GAPInfo.PackagesInfo,
-                  { a, b } -> a <> b and CompareVersionNumbers( a, b ) );
+                  { a, b } -> not CompareVersionNumbers( a, b, "equal" ) and CompareVersionNumbers( a, b ) );
 
     # Turn the lists into records.
     record:= rec();
