@@ -564,7 +564,7 @@ static Expr SyntaxTreeCodeChar(Obj node)
     RequirePlainRec("SyntaxTreeCodeChar", node);
     Obj  chr = ElmRecST(EXPR_CHAR, node, "value");
     Char currchar = CHAR_VALUE(chr);
-    Expr lit = NewStatOrExpr(EXPR_CHAR, sizeof(UChar), 0);
+    Expr lit = NewStatOrExpr(EXPR_CHAR, sizeof(UInt), 0);
     WRITE_EXPR(lit, 0, currchar);
     return lit;
 }
