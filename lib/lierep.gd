@@ -549,7 +549,7 @@ DeclareOperation( "DominantCharacter", [ IsRootSystem, IsList ] );
 ##  with highest weight <M>w_i</M> for <M>i = 1, 2</M>.
 ##  Let <M>W = V_1 \otimes V_2</M>.
 ##  Then in general <M>W</M> is a reducible <A>L</A>-module. Now this function
-##  returns a list of two lists. The first of these is the list of highest
+##  returns a list of two lists. The first of these is the sorted list of highest
 ##  weights of the irreducible modules occurring in the decomposition of
 ##  <M>W</M> as a direct sum of irreducible modules. The second list contains
 ##  the multiplicities of these weights (i.e., the number of copies of
@@ -587,8 +587,8 @@ DeclareOperation( "DecomposeTensorProduct", [ IsLieAlgebra, IsList, IsList ] );
 ##  [ [ [ 1, 1, 0, 0 ], [ 2, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], 
 ##        [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], [ 1, 1, 4, 6, 14, 21 ] ]
 ##  gap> DecomposeTensorProduct( L, [ 1, 0, 0, 0 ], [ 0, 0, 1, 0 ] );
-##  [ [ [ 1, 0, 1, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 1, 0, 0 ], 
-##        [ 2, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 1, 1, 0, 0 ] ], 
+##  [ [ [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ], 
+##        [ 1, 0, 1, 0 ], [ 1, 1, 0, 0 ], [ 2, 0, 0, 0 ] ],
 ##    [ 1, 1, 1, 1, 1, 1, 1 ] ]
 ##  gap> DimensionOfHighestWeightModule( L, [ 1, 2, 3, 4 ] );
 ##  79316832731136
