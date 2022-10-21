@@ -3229,9 +3229,31 @@ rec(
                   list := rec(
                       lvar := 1,
                       type := "EXPR_REF_LVAR" ),
-                  pos := rec(
-                      type := "EXPR_INT",
-                      value := 42 ),
+                  pos := [ rec(
+                          type := "EXPR_INT",
+                          value := 42 ) ],
+                  type := "EXPR_ISB_LIST" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
+  variadic := false )
+true
+gap> testit(x -> IsBound(x[42,43]));
+rec(
+  nams := [ "x" ],
+  narg := 1,
+  nloc := 0,
+  stats := rec(
+      statements := [ rec(
+              obj := rec(
+                  list := rec(
+                      lvar := 1,
+                      type := "EXPR_REF_LVAR" ),
+                  pos := [ rec(
+                          type := "EXPR_INT",
+                          value := 42 ), rec(
+                          type := "EXPR_INT",
+                          value := 43 ) ],
                   type := "EXPR_ISB_LIST" ),
               type := "STAT_RETURN_OBJ" ) ],
       type := "STAT_SEQ_STAT" ),
