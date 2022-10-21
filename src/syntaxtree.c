@@ -184,6 +184,8 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
     int       i;
     UInt1     tnum;
     CompilerT comp;
+    BOOL      didvariadic = 0;
+    Int       offset = 0;
 
     // TODO: GAP_ASSERT tnum range
     tnum = TNUM_EXPR(expr);
@@ -194,25 +196,30 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
         Obj  compiled;
 
         if (comp.args[i].argcomp) {
-            Expr subexpr = READ_EXPR(expr, i);
+            Expr subexpr = READ_EXPR(expr, i + offset);
             compiled = comp.args[i].argcomp(subexpr);
         }
         else {
-            // special case: the last argument may have zero as decompiler,
-            // meaning that all remaining slots of the statement should be
-            // decompiled into a single list
-            const UInt offset = comp.arity - 1;
-            GAP_ASSERT(i == offset);
+            // special case: one argument may have zero as decompiler,
+            // which expresses that this slot is "variadic", and
+            // is decompiled into a single list
+            GAP_ASSERT(!didvariadic);
+            didvariadic = 1;
+            // Avoid warning about used variable when not in debug mode
+            (void)didvariadic;
 
-            // compile the complete rest into one statement
+            // compile the variadic part into a single list
             const UInt nr = SIZE_EXPR(expr) / sizeof(expr);
-            compiled = NEW_PLIST(T_PLIST, nr - offset);
-            for (; i < nr; i++) {
-                Expr subexpr = READ_EXPR(expr, i);
+            const UInt varlength = nr - (comp.arity - 1);
+            compiled = NEW_PLIST(T_PLIST, nr - (comp.arity - 1));
+            for (; offset < varlength; offset++) {
+                Expr subexpr = READ_EXPR(expr, i + offset);
                 // handle 0 to properly deal with EXPR_LIST
                 Obj obj = subexpr ? SyntaxTreeCompiler(subexpr) : 0;
                 PushPlist(compiled, obj);
             }
+            // offset gets set one bigger final time around loop
+            offset--;
         }
 
         AssPRec(result, rnam, compiled);
@@ -242,38 +249,50 @@ static Expr SyntaxTreeDefaultCoder(Obj node)
     UInt slots = comp.arity;
     UInt arity = comp.arity;
 
-    UInt isvararg = comp.arity > 0 && comp.args[comp.arity - 1].argcomp == 0;
-    Obj  vararglist;
+    Int varargloc = -1;
+    for (UInt i = 0; i < comp.arity; ++i) {
+        if (comp.args[i].argcomp == 0) {
+            GAP_ASSERT(varargloc == -1);
+            varargloc = i;
+        }
+    }
 
-    if (isvararg) {
-        arity--;
-        vararglist = ElmRecST(tnum, node, comp.args[arity].argname);
-        slots = arity + LEN_LIST(vararglist);
+    Obj vararglist = 0;
+
+    if (varargloc != -1) {
+        vararglist = ElmRecST(tnum, node, comp.args[varargloc].argname);
+        slots = arity - 1 + LEN_LIST(vararglist);
     }
 
     // reserve space for the statement or expressions
     Expr expr = NewStatOrExpr(tnum, slots * sizeof(Expr), 0);
 
-    UInt i;
+    Int  i;
+    UInt offset = 0;
 
     for (i = 0; i < arity; i++) {
-        Obj subast = ElmRecST(tnum, node, comp.args[i].argname);
-        WRITE_EXPR(expr, i, comp.args[i].argcode(subast));
-    }
-
-    if (isvararg) {
-        for (i = arity; i < slots; i++) {
-            Obj elem = ELM0_LIST(vararglist, i - arity + 1);
-            // Deal with empty entries in list expressions
-            if (elem == 0) {
-                WRITE_EXPR(expr, i, 0);
+        if (i == varargloc) {
+            for (; offset < LEN_LIST(vararglist); offset++) {
+                Obj elem = ELM0_LIST(vararglist, offset + 1);
+                // Deal with empty entries in list expressions
+                if (elem == 0) {
+                    WRITE_EXPR(expr, i + offset, 0);
+                }
+                else if (comp.args[i].isStat) {
+                    WRITE_EXPR(expr, i + offset,
+                               SyntaxTreeDefaultStatCoder(elem));
+                }
+                else {
+                    WRITE_EXPR(expr, i + offset,
+                               SyntaxTreeDefaultExprCoder(elem));
+                }
             }
-            else if (comp.args[arity].isStat) {
-                WRITE_EXPR(expr, i, SyntaxTreeDefaultStatCoder(elem));
-            }
-            else {
-                WRITE_EXPR(expr, i, SyntaxTreeDefaultExprCoder(elem));
-            }
+            // offset gets set one bigger final time around loop
+            offset--;
+        }
+        else {
+            Obj subast = ElmRecST(tnum, node, comp.args[i].argname);
+            WRITE_EXPR(expr, i + offset, comp.args[i].argcode(subast));
         }
     }
 
@@ -729,15 +748,10 @@ static const CompilerT Compilers[] = {
 
     COMPILER_(
         STAT_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
-    COMPILER_(STAT_ASS_MAT,
-              ARG_EXPR_("list"),
-              ARG_EXPR_("row"),
-              ARG_EXPR_("col"),
-              ARG_EXPR_("rhs")),
-    COMPILER_(STAT_ASSS_LIST,
-              ARG_EXPR_("list"),
-              ARG_EXPR_("poss"),
-              ARG_EXPR_("rhss")),
+    COMPILER_(
+        STAT_ASS_MAT, ARG_EXPR_("list"), ARG_EXPR_("row"), ARG_EXPR_("col"), ARG_EXPR_("rhs")),
+    COMPILER_(
+        STAT_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
     COMPILER_(STAT_ASS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("pos"),
@@ -761,8 +775,7 @@ static const CompilerT Compilers[] = {
     COMPILER_(STAT_UNB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(
-        STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
 
     COMPILER_(STAT_ASS_POSOBJ,
               ARG_EXPR_("posobj"),
@@ -784,8 +797,7 @@ static const CompilerT Compilers[] = {
     COMPILER_(
         STAT_UNB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 
-    COMPILER_(
-        STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
+    COMPILER_(STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
     COMPILER_(STAT_ASSERT_2ARGS, ARG_EXPR_("level"), ARG_EXPR_("condition")),
     COMPILER_(STAT_ASSERT_3ARGS,
               ARG_EXPR_("level"),
@@ -866,8 +878,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(EXPR_ELMS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss")),
     COMPILER_(EXPR_ELM_LIST_LEV,
               ARG_EXPR_("lists"),
-              ARG_EXPR_("pos"),
-              ARG_EXPR_("level")),
+              ARGS_EXPR("pos"),
+              ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
     COMPILER_(EXPR_ELMS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
@@ -876,13 +888,11 @@ static const CompilerT Compilers[] = {
     COMPILER_(EXPR_ELM_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(
-        EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ISB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(
-        EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ELM_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ISB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ELM_COMOBJ_NAME,

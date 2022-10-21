@@ -3116,9 +3116,7 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  level := rec(
-                      type := "EXPR_INT",
-                      value := 0 ),
+                  level := 1,
                   lists := rec(
                       list := rec(
                           lvar := 1,
@@ -3129,9 +3127,9 @@ rec(
                                   value := 42 ) ],
                           type := "EXPR_LIST" ),
                       type := "EXPR_ELMS_LIST" ),
-                  pos := rec(
-                      type := "EXPR_INT",
-                      value := 23 ),
+                  pos := [ rec(
+                          type := "EXPR_INT",
+                          value := 23 ) ],
                   type := "EXPR_ELM_LIST_LEV" ),
               type := "STAT_RETURN_OBJ" ) ],
       type := "STAT_SEQ_STAT" ),
@@ -3211,6 +3209,59 @@ rec(
                               value := 22 ) ],
                       type := "EXPR_LIST" ),
                   type := "EXPR_ELMS_LIST_LEV" ),
+              type := "STAT_RETURN_OBJ" ) ],
+      type := "STAT_SEQ_STAT" ),
+  type := "EXPR_FUNC",
+  variadic := false )
+true
+gap> testit( x -> [ [ [ [ 1 ] ] ] ]{[ 1 ]}[1]{[1]}[1]);
+rec(
+  nams := [ "x" ],
+  narg := 1,
+  nloc := 0,
+  stats := rec(
+      statements := [ rec(
+              obj := rec(
+                  level := 2,
+                  lists := rec(
+                      level := 1,
+                      lists := rec(
+                          level := 1,
+                          lists := rec(
+                              list := rec(
+                                  list := [ rec(
+                                          list := [ rec(
+                                                  list := [ rec(
+                                                          list := [ rec(
+                                                                  type := 
+                                                                   "EXPR_INT",
+                                                                  value := 1 
+                                                                 ) ],
+                                                          type := "EXPR_LIST" 
+                                                         ) ],
+                                                  type := "EXPR_LIST" ) ],
+                                          type := "EXPR_LIST" ) ],
+                                  type := "EXPR_LIST" ),
+                              poss := rec(
+                                  list := [ rec(
+                                          type := "EXPR_INT",
+                                          value := 1 ) ],
+                                  type := "EXPR_LIST" ),
+                              type := "EXPR_ELMS_LIST" ),
+                          pos := [ rec(
+                                  type := "EXPR_INT",
+                                  value := 1 ) ],
+                          type := "EXPR_ELM_LIST_LEV" ),
+                      poss := rec(
+                          list := [ rec(
+                                  type := "EXPR_INT",
+                                  value := 1 ) ],
+                          type := "EXPR_LIST" ),
+                      type := "EXPR_ELMS_LIST_LEV" ),
+                  pos := [ rec(
+                          type := "EXPR_INT",
+                          value := 1 ) ],
+                  type := "EXPR_ELM_LIST_LEV" ),
               type := "STAT_RETURN_OBJ" ) ],
       type := "STAT_SEQ_STAT" ),
   type := "EXPR_FUNC",
