@@ -1306,10 +1306,10 @@ InstallMethod( DecomposeTensorProduct,
 
                 nu:= mu[1]-rho;
                 mult:= ch1[2][i]*( (-1)^Length(mu[2]) );
-                p:= Position( wts, nu );
-                if p = fail then
-                    Add( wts, nu );
-                    Add( mlts, mult );
+                p:= PositionSorted( wts, nu );
+                if not IsBound( wts[p] ) or wts[p] <> nu then
+                    Add( wts, nu, p );
+                    Add( mlts, mult, p );
                 else
                     mlts[p]:= mlts[p]+mult;
                     if mlts[p] = 0 then
