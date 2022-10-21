@@ -379,7 +379,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     GAPInfo.PackagesInfoInitialized:= true;
     LogPackageLoadingMessage( PACKAGE_DEBUG,
         "return from InitializePackagesInfoRecords", "GAP" );
-    end );
+end );
 
 
 #############################################################################
