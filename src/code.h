@@ -561,7 +561,14 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 */
 #define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
-#define READ_EXPR(expr, idx) (CONST_ADDR_EXPR(expr)[idx])
+EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx)
+{
+    GAP_ASSERT(!IS_REF_LVAR(expr));
+    GAP_ASSERT(!IS_INTEXPR(expr));
+    GAP_ASSERT(idx >= 0);
+    GAP_ASSERT(idx < SIZE_EXPR(expr) / sizeof(Expr));
+    return CONST_ADDR_EXPR(expr)[idx];
+}
 
 /****************************************************************************
 **
