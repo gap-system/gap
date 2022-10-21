@@ -2861,7 +2861,7 @@ rec(
 true
 
 # EXPR_REC_TILDE
-gap> testit(x -> [~]);
+gap> testit(x -> rec(a := 2, b := ~.a, c := rec(a := ~.b)));
 rec(
   nams := [ "x" ],
   narg := 1,
@@ -2869,9 +2869,28 @@ rec(
   stats := rec(
       statements := [ rec(
               obj := rec(
-                  list := [ rec(
-                          type := "EXPR_TILDE" ) ],
-                  type := "EXPR_LIST_TILDE" ),
+                  keyvalue := [ rec(
+                          key := "a",
+                          value := rec(
+                              type := "EXPR_INT",
+                              value := 2 ) ), rec(
+                          key := "b",
+                          value := rec(
+                              name := "a",
+                              record := rec(
+                                  type := "EXPR_TILDE" ),
+                              type := "EXPR_ELM_REC_NAME" ) ), rec(
+                          key := "c",
+                          value := rec(
+                              keyvalue := [ rec(
+                                      key := "a",
+                                      value := rec(
+                                          name := "b",
+                                          record := rec(
+                                              type := "EXPR_TILDE" ),
+                                          type := "EXPR_ELM_REC_NAME" ) ) ],
+                              type := "EXPR_REC" ) ) ],
+                  type := "EXPR_REC_TILDE" ),
               type := "STAT_RETURN_OBJ" ) ],
       type := "STAT_SEQ_STAT" ),
   type := "EXPR_FUNC",
