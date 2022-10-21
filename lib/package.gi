@@ -1890,6 +1890,9 @@ The level can be changed in a running session using 'SetInfoLevel'."
 InstallGlobalFunction( AutoloadPackages, function()
     local banner, msg, pair, excludedpackages, name, record, neededPackages;
 
+    SetInfoLevel( InfoPackageLoading,
+        UserPreference( "InfoPackageLoadingLevel" ) );
+
     if GAPInfo.CommandLineOptions.L = "" then
       msg:= "entering AutoloadPackages (no workspace)";
     else
@@ -1897,9 +1900,6 @@ InstallGlobalFunction( AutoloadPackages, function()
                            GAPInfo.CommandLineOptions.L, ")" ) ;
     fi;
     LogPackageLoadingMessage( PACKAGE_DEBUG, msg, "GAP" );
-
-    SetInfoLevel( InfoPackageLoading,
-        UserPreference( "InfoPackageLoadingLevel" ) );
 
     GAPInfo.ExcludeFromAutoload:= [];
     GAPInfo.PackagesInfoInitialized:= false;
