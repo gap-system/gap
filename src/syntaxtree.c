@@ -729,10 +729,15 @@ static const CompilerT Compilers[] = {
 
     COMPILER_(
         STAT_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
-    COMPILER_(
-        STAT_ASS_MAT, ARG_EXPR_("list"), ARG_EXPR_("row"), ARG_EXPR_("col"), ARG_EXPR_("rhs")),
-    COMPILER_(
-        STAT_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
+    COMPILER_(STAT_ASS_MAT,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("row"),
+              ARG_EXPR_("col"),
+              ARG_EXPR_("rhs")),
+    COMPILER_(STAT_ASSS_LIST,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("poss"),
+              ARG_EXPR_("rhss")),
     COMPILER_(STAT_ASS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("pos"),
@@ -756,7 +761,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(STAT_UNB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(
+        STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
 
     COMPILER_(STAT_ASS_POSOBJ,
               ARG_EXPR_("posobj"),
@@ -778,7 +784,8 @@ static const CompilerT Compilers[] = {
     COMPILER_(
         STAT_UNB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 
-    COMPILER_(STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
+    COMPILER_(
+        STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
     COMPILER_(STAT_ASSERT_2ARGS, ARG_EXPR_("level"), ARG_EXPR_("condition")),
     COMPILER_(STAT_ASSERT_3ARGS,
               ARG_EXPR_("level"),
@@ -864,16 +871,18 @@ static const CompilerT Compilers[] = {
     COMPILER_(EXPR_ELMS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
-              ARG_EXPR_("level")),
+              ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
     COMPILER_(EXPR_ISB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ELM_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(
+        EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ISB_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+    COMPILER_(
+        EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ELM_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ISB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ELM_COMOBJ_NAME,
