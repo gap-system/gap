@@ -224,6 +224,8 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 
         AssPRec(result, rnam, compiled);
     }
+
+    GAP_ASSERT(i + offset == SIZE_EXPR(expr) / sizeof(expr));
     return result;
 }
 
@@ -853,7 +855,7 @@ static const CompilerT Compilers[] = {
     COMPILER(EXPR_RANGE, SyntaxTreeRangeExpr, SyntaxTreeCodeRangeExpr),
     COMPILER(EXPR_STRING, SyntaxTreeEvalCompiler, SyntaxTreeCodeValue),
     COMPILER(EXPR_REC, SyntaxTreeRecExpr, SyntaxTreeCodeRecExpr),
-    COMPILER_(EXPR_REC_TILDE),
+    COMPILER(EXPR_REC_TILDE, SyntaxTreeRecExpr, SyntaxTreeCodeRecExpr),
 
     COMPILER(
         EXPR_FLOAT_EAGER, SyntaxTreeFloatEager, SyntaxTreeCodeFloatEager),
