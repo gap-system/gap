@@ -872,7 +872,7 @@ static const CompilerT Compilers[] = {
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
               ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
-    COMPILER_(EXPR_ISB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
+    COMPILER_(EXPR_ISB_LIST, ARG_EXPR_("list"), ARGS_EXPR("pos")),
     COMPILER_(EXPR_ELM_REC_NAME,
               ARG_EXPR_("record"),
               ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
