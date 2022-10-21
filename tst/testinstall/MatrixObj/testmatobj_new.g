@@ -170,6 +170,47 @@ MatObjTest_TestNrCols := function(ex, opt, errors)
     fi; 
 end;
 
+MatObjTest_TestMatElm := function(ex, opt, errors)
+    local col, row, elm;
+
+    col := NrCols(ex.matObj);
+    row := NrRows(ex.matObj);
+    elm := MatObjTest_CallFunc(MatElm, [ex.matObj, row, col], opt.breakOnError, errors);
+
+    if elm <> fail then
+        if elm <> ex.sourceOfTruth[col, row] then
+            MatObjTest_HandleErrorWrongResult("MatElm", [ex.matObj, row, col], opt.breakOnError, errors);
+        fi;
+    fi;
+end;
+
+MatObjTest_TestSetMatElm := function(ex, opt, errors)
+    local col, row, elm;
+
+    col := NrCols(ex.matObj);
+    row := NrRows(ex.matObj);
+    elm := Zero(ex.baseDomain);
+    ex.sourceOfTruth[row, col] := elm;
+    ex.mat[row, col] := elm;
+    MatObjTest_CallFunc(SetMatElm, [ex.matObj, row, col, elm], opt.breakOnError, errors);
+
+    if ex.matObj[row, col] <> ex.sourceOfTruth[row, col] then
+        MatObjTest_HandleErrorWrongResult("SetMatElm", [ex.matObj, row, col, elm], opt.breakOnError, errors);
+    fi;
+end;
+
+MatObjTesT_TestConstructingFilter := function(ex, opt, errors)
+    local filter;
+
+    filter := MatObjTest_CallFunc("ConstructingFilter", [ex.matObj], opt.breakOnError, errors);
+
+    if filter <> fail then
+        if filter <> ex.filter then
+            MatObjTest_HandleErrorWrongResult("ConstructingFilter", [ex.matObj], opt.breakOnError, errors);
+        fi;
+    fi;
+end;
+
 
 TestMatrixObj := function(filter, opt)
     local errors, examples, ex;
@@ -204,6 +245,14 @@ TestMatrixObj := function(filter, opt)
 
     for ex in examples do
         MatObjTest_TestNrCols(ex, opt, errors);
+    od; 
+
+    for ex in examples do
+        MatObjTest_TestMatElm(ex, opt, errors);
+    od; 
+
+    for ex in examples do
+        MatObjTest_TestSetMatElm(ex, opt, errors);
     od; 
 
     #TODO other tests
