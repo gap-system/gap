@@ -979,8 +979,8 @@ DeclareOperation( "CopySubMatrix",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperationKernel( "MatElm", [ IsMatrixOrMatrixObj, IS_INT, IS_INT ], ELM_MAT );
-DeclareSynonym( "[,]", ELM_MAT );
+DeclareOperationKernel( "[,]", [ IsMatrixOrMatrixObj, IS_INT, IS_INT ], ELM_MAT );
+DeclareSynonym( "MatElm", ELM_MAT );
 
 
 #############################################################################
@@ -1012,14 +1012,14 @@ DeclareSynonym( "[,]", ELM_MAT );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperationKernel( "SetMatElm", [ IsMatrixOrMatrixObj, IsInt, IsInt, IsObject ],
+DeclareOperationKernel( "[,]:=", [ IsMatrixOrMatrixObj, IsInt, IsInt, IsObject ],
     ASS_MAT );
 #T We want to require also 'IsMutable' for the first argument,
 #T but some package may have installed methods without this requirement.
 #T Note that if we declare the operation twice, once with requirement
 #T 'IsMutable' and once without, each method installation will show
 #T a complaint that it matches more than one declaration.
-DeclareSynonym( "[,]:=", ASS_MAT );
+DeclareSynonym( "SetMatElm", ASS_MAT );
 
 
 #############################################################################

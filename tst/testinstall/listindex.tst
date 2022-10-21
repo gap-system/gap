@@ -337,17 +337,17 @@ gap> l := [,[,4]];
 [ , [ , 4 ] ]
 gap> l[0,1];  # row is out of bounds
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `MatElm' on 3 arguments
+Error, no 1st choice method found for `[,]' on 3 arguments
 gap> l[1,1];  # row is in bounds but missing
 Error, Matrix Element: <mat>[1] must have an assigned value
 gap> l[2,1];  # row is there but entry is missing
 Error, Matrix Element: <mat>[2,1] must have an assigned value
 gap> l[3,1];  # row is out of bounds
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `MatElm' on 3 arguments
+Error, no 1st choice method found for `[,]' on 3 arguments
 gap> l[2,0];  # column is out of bounds
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `MatElm' on 3 arguments
+Error, no 1st choice method found for `[,]' on 3 arguments
 gap> l[2,2];  # OK
 4
 gap> l[2,3];  # column is out of bounds
@@ -358,14 +358,14 @@ gap> l;
 [ , [ , 4 ] ]
 gap> l[0,1] := 3; # error, row out of bounds
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `SetMatElm' on 4 arguments
+Error, no 1st choice method found for `[,]:=' on 4 arguments
 gap> l[1,1] := 3; # error, row is missing
 Error, Matrix Assignment: <mat>[1] must have an assigned value
 gap> l[2,1] := 3; # OK
 3
 gap> l[3,1] := 3; # error, row out of bounds
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `SetMatElm' on 4 arguments
+Error, no 1st choice method found for `[,]:=' on 4 arguments
 gap> l;
 [ , [ 3, 4 ] ]
 gap> l[2,1];
