@@ -6,23 +6,31 @@ MatObjTest_CallAndCatchError := function(f, args)
 
     oldBreakOnError := BreakOnError;
     oldErrorOutput := ERROR_OUTPUT;
-    BreakOnError := false;
     MakeReadWriteGlobal("ERROR_OUTPUT");
     ERROR_OUTPUT := out;
+    BreakOnError := false;
     res := CALL_WITH_CATCH(f, args);
     BreakOnError := oldBreakOnError;
     ERROR_OUTPUT := oldErrorOutput;
-    CloseStream(out);
     MakeReadOnlyGlobal("ERROR_OUTPUT");
+    CloseStream(out);
     return [res,str];
 end;
 
-MatObjTest_AppendErrorFail := function(f, args, catch, errors)
+MatObjTest_AppendErrorFail := function(f, args, catch, errors, ex)
     local errorMsg, arg;
 
     errorMsg := Concatenation("The function ", NameFunction(f), " failed with Error Message:\n", catch[2], "\n Called with arguments:\n");
     for arg in args do 
-        Append(errorMsg, Concatenation(String(arg),"\n\n"));
+        if IsMatrixObj(arg) then 
+            Append(errorMsg, Concatenation( "NewMatrix( ",
+            NameFunction( ex.filter ), ", ",
+            String( ex.baseDomain ), ", ",
+            String( ex.nrCols ), ", ",
+            String( ex.mat ), " )", "\n\n"));
+        else 
+            Append(errorMsg, Concatenation(String(arg), "\n\n"));
+        fi;
     od;
     Add(errors, errorMsg);
 end;
@@ -35,22 +43,37 @@ MatObjTest_HandleErrorWrongResult := function(msg, args, breakOnError, ex, error
     else 
         errorMsg := Concatenation(msg, "\n Called with arguments:\n");
         for arg in args do 
-            Append(errorMsg, Concatenation(String(arg),"\n\n"));
+            if IsMatrixObj(arg) then 
+                Append(errorMsg, Concatenation( "NewMatrix( ",
+                NameFunction( ex.filter ), ", ",
+                String( ex.baseDomain ), ", ",
+                String( ex.nrCols ), ", ",
+                String( ex.mat ), " )", "\n\n"));
+            else 
+                Append(errorMsg, Concatenation(String(arg), "\n\n"));
+            fi;
         od;
         Add(errors, errorMsg);
     fi;
 end;
 
-MatObjTest_CallFunc := function(f, args, breakOnError, errors)
+MatObjTest_CallFunc := function(f, args, breakOnError, errors, ex)
     local catch;
+    #if f = ConstructingFilter then 
+    #    Error();
+    #fi;
     if breakOnError then 
         return CallFuncList(f, args);
     else
         catch := MatObjTest_CallAndCatchError(f, args);
         if catch[1][1] then 
-            return catch[1][2];
+            if IsBound(catch[1][2]) then 
+                return catch[1][2];
+            else 
+                return;
+            fi;
         else 
-            MatObjTest_AppendErrorFail(f, args, catch, errors);
+            MatObjTest_AppendErrorFail(f, args, catch, errors, ex);
             return fail;
         fi;
     fi;
@@ -137,7 +160,7 @@ end;
 MatObjTest_TestBaseDomain := function(ex, opt, errors)
     local domain;
 
-    domain := MatObjTest_CallFunc(BaseDomain,[ex.matObj], opt.breakOnError, errors);
+    domain := MatObjTest_CallFunc(BaseDomain,[ex.matObj], opt.breakOnError, errors, ex);
 
     if domain <> fail then
         if domain <> ex.baseDomain then
@@ -149,7 +172,7 @@ end;
 MatObjTest_TestNrRows := function(ex, opt, errors)
     local nrRows;
 
-    nrRows := MatObjTest_CallFunc(NrRows, [ex.matObj], opt.breakOnError, errors);
+    nrRows := MatObjTest_CallFunc(NrRows, [ex.matObj], opt.breakOnError, errors, ex);
 
     if nrRows <> fail then
         if nrRows <> ex.nrRows then
@@ -161,7 +184,7 @@ end;
 MatObjTest_TestNrCols := function(ex, opt, errors)
     local nrCols;
 
-    nrCols := MatObjTest_CallFunc(NrCols, [ex.matObj], opt.breakOnError, errors);
+    nrCols := MatObjTest_CallFunc(NrCols, [ex.matObj], opt.breakOnError, errors, ex);
     
     if nrCols <> fail then
         if nrCols <> ex.nrCols then
@@ -173,13 +196,13 @@ end;
 MatObjTest_TestMatElm := function(ex, opt, errors)
     local col, row, elm;
 
-    col := NrCols(ex.matObj);
-    row := NrRows(ex.matObj);
-    elm := MatObjTest_CallFunc(MatElm, [ex.matObj, row, col], opt.breakOnError, errors);
+    col := ex.nrCols;
+    row := ex.nrRows;
+    elm := MatObjTest_CallFunc(MatElm, [ex.matObj, row, col], opt.breakOnError, errors, ex);
 
     if elm <> fail then
-        if elm <> ex.sourceOfTruth[col, row] then
-            MatObjTest_HandleErrorWrongResult("MatElm", [ex.matObj, row, col], opt.breakOnError, errors);
+        if elm <> ex.sourceOfTruth[row,col] then
+            MatObjTest_HandleErrorWrongResult("MatElm", [ex.matObj, row, col], opt.breakOnError, ex, errors);
         fi;
     fi;
 end;
@@ -187,26 +210,26 @@ end;
 MatObjTest_TestSetMatElm := function(ex, opt, errors)
     local col, row, elm;
 
-    col := NrCols(ex.matObj);
-    row := NrRows(ex.matObj);
+    col := ex.nrCols;
+    row := ex.nrRows;
     elm := Zero(ex.baseDomain);
     ex.sourceOfTruth[row, col] := elm;
     ex.mat[row, col] := elm;
-    MatObjTest_CallFunc(SetMatElm, [ex.matObj, row, col, elm], opt.breakOnError, errors);
+    MatObjTest_CallFunc(SetMatElm, [ex.matObj, row, col, elm], opt.breakOnError, errors, ex);
 
     if ex.matObj[row, col] <> ex.sourceOfTruth[row, col] then
-        MatObjTest_HandleErrorWrongResult("SetMatElm", [ex.matObj, row, col, elm], opt.breakOnError, errors);
+        MatObjTest_HandleErrorWrongResult("SetMatElm", [ex.matObj, row, col, elm], opt.breakOnError, ex, errors);
     fi;
 end;
 
-MatObjTesT_TestConstructingFilter := function(ex, opt, errors)
+MatObjTest_TestConstructingFilter := function(ex, opt, errors)
     local filter;
-
-    filter := MatObjTest_CallFunc("ConstructingFilter", [ex.matObj], opt.breakOnError, errors);
-
+    #Error("before CallFunc");
+    filter := MatObjTest_CallFunc(ConstructingFilter, [ex.matObj], opt.breakOnError, errors, ex);
+    #Error("made it past CallFunc");
     if filter <> fail then
         if filter <> ex.filter then
-            MatObjTest_HandleErrorWrongResult("ConstructingFilter", [ex.matObj], opt.breakOnError, errors);
+            MatObjTest_HandleErrorWrongResult("ConstructingFilter", [ex.matObj], opt.breakOnError, ex, errors);
         fi;
     fi;
 end;
@@ -256,7 +279,7 @@ TestMatrixObj := function(filter, opt)
     od; 
 
     for ex in examples do
-        MatObjTesT_TestConstructingFilter(ex, opt, errors);
+        MatObjTest_TestConstructingFilter(ex, opt, errors);
     od;
 
     #TODO other tests
