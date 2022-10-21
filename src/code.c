@@ -1663,7 +1663,7 @@ void CodeCharExpr (
     Expr                litr;           /* literal expression, result      */
 
     /* allocate the character expression                                   */
-    litr = NewExpr( EXPR_CHAR, sizeof(UChar) );
+    litr = NewExpr(EXPR_CHAR, sizeof(UChar));
     WRITE_EXPR(litr, 0, chr);
 
     /* push the literal expression                                         */
