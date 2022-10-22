@@ -1432,11 +1432,6 @@ local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
     else
         Append(outputstring, "immutable ");
     fi;
-    if IsMutable(M) then
-        Append(outputstring, "mutable ");
-    else
-        Append(outputstring, "immutable ");
-    fi;
     Append(outputstring,Concatenation(String(numberRows),"x",String(numberCols),"-matrix over ",String(baseDom)," [\n"));
     for i in [1..numberRows] do
         for j in [1..numberCols] do
