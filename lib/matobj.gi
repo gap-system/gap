@@ -1440,7 +1440,11 @@ local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
             else
                 Append(outputstring," ");
             fi;
-            Append(outputstring,String(M[i,j]));
+            if zeroEle = M[i,j] then
+                Append(outputstring,".");
+            else
+                Append(outputstring,String(M[i,j]));
+            fi;
         od;
         Append(outputstring,"]\n");
     od;
