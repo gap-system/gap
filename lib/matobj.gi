@@ -1426,10 +1426,18 @@ local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
     numberCols := NrCols(M);
     baseDom := BaseDomain(M);
     zeroEle := Zero(baseDom);
-    outputstring := "<";
-    if not IsMutable(M) then Append(outputstring, "immutable "); fi;
-    outputstring := Concatenation(outputstring,String(numberRows),"x",String(numberCols),"-matrix over ",String(baseDom),":\n");
-    Append(outputstring,"[");
+    outputstring := "<a ";
+    if IsMutable(M) then
+        Append(outputstring, "mutable ");
+    else
+        Append(outputstring, "immutable ");
+    fi;
+    if IsMutable(M) then
+        Append(outputstring, "mutable ");
+    else
+        Append(outputstring, "immutable ");
+    fi;
+    Append(outputstring,Concatenation(String(numberRows),"x",String(numberCols),"-matrix over ",String(baseDom)," [\n"));
     for i in [1..numberRows] do
         for j in [1..numberCols] do
             if j = 1 then
@@ -1438,11 +1446,11 @@ local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
                 Append(outputstring," ");
             fi;
             Append(outputstring,String(M[i,j]));
-            od;
+        od;
         Append(outputstring,"]\n");
     od;
     Append(outputstring,"]");
-    Append(outputstring, ">\n");
+    Append(outputstring,">\n");
     return outputstring;
 end);
 
