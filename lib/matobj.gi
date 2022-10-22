@@ -1410,7 +1410,7 @@ InstallMethod( String,
              String( Unpack( v ) ), " )" ) );
 
 BindGlobal( "ViewStringForMatrixObj",
-    M -> Concatenation( "<matrix object of dimensions ",
+    M -> Concatenation( "<a matrix object of dimensions ",
              String( NumberRows( M ) ), "x", String( NumberColumns( M ) ),
              " over ", String( BaseDomain( M ) ), ">" ) );
 
@@ -1421,11 +1421,13 @@ InstallMethod( ViewString,
 InstallMethod( DisplayString,
 [ IsMatrixOrMatrixObj ],
 function(M)
-local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
+local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring, MaxRowSize, MaxColumnSize;
     numberRows := NrRows(M);
     numberCols := NrCols(M);
     baseDom := BaseDomain(M);
     zeroEle := Zero(baseDom);
+    MaxRowSize := 60;
+    MaxColumnSize := 60;
     outputstring := "<a ";
     if IsMutable(M) then
         Append(outputstring, "mutable ");
@@ -1433,21 +1435,107 @@ local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring;
         Append(outputstring, "immutable ");
     fi;
     Append(outputstring,Concatenation(String(numberRows),"x",String(numberCols),"-matrix over ",String(baseDom)," [\n"));
-    for i in [1..numberRows] do
-        for j in [1..numberCols] do
-            if j = 1 then
-                Append(outputstring,"[");
-            else
-                Append(outputstring," ");
-            fi;
-            if zeroEle = M[i,j] then
-                Append(outputstring,".");
-            else
-                Append(outputstring,String(M[i,j]));
-            fi;
+    if numberCols > MaxColumnSize then
+        if numberRows > MaxRowSize then
+            for i in [1,2,3] do
+                for j in [1,2,3] do
+                    if j = 1 then
+                        Append(outputstring,"[");
+                    else
+                        Append(outputstring," ");
+                    fi;
+                    if zeroEle = M[i,j] then
+                        Append(outputstring,".");
+                    else
+                        Append(outputstring,String(M[i,j]));
+                    fi;
+                od;
+                Append(outputstring," ... ");
+                for j in [numberCols-2,numberCols-1,numberCols] do
+                    Append(outputstring," ");
+                    if zeroEle = M[i,j] then
+                        Append(outputstring,".");
+                    else
+                        Append(outputstring,String(M[i,j]));
+                    fi;
+                od;
+                Append(outputstring,"]\n");
+            od;
+            Append(outputstring," .......... \n");
+            for i in [numberRows-2,numberRows-1,numberRows] do
+                for j in [1,2,3] do
+                    if j = 1 then
+                        Append(outputstring,"[");
+                    else
+                        Append(outputstring," ");
+                    fi;
+                    if zeroEle = M[i,j] then
+                        Append(outputstring,".");
+                    else
+                        Append(outputstring,String(M[i,j]));
+                    fi;
+                od;
+                Append(outputstring," ... ");
+                for j in [numberCols-2,numberCols-1,numberCols] do
+                    Append(outputstring," ");
+                    if zeroEle = M[i,j] then
+                        Append(outputstring,".");
+                    else
+                        Append(outputstring,String(M[i,j]));
+                    fi;
+                od;
+                Append(outputstring,"]\n");
+            od;
+        fi;
+    elif numberRows > MaxRowSize then
+        for i in [1,2,3] do
+            for j in [1..numberCols] do
+                if j = 1 then
+                    Append(outputstring,"[");
+                else
+                    Append(outputstring," ");
+                fi;
+                if zeroEle = M[i,j] then
+                    Append(outputstring,".");
+                else
+                    Append(outputstring,String(M[i,j]));
+                fi;
+            od;
+            Append(outputstring,"]\n");
         od;
-        Append(outputstring,"]\n");
-    od;
+        Append(outputstring," .......... \n");
+        for i in [numberRows-2,numberRows-1,numberRows] do
+            for j in [1..numberCols] do
+                if j = 1 then
+                    Append(outputstring,"[");
+                else
+                    Append(outputstring," ");
+                fi;
+                if zeroEle = M[i,j] then
+                    Append(outputstring,".");
+                else
+                    Append(outputstring,String(M[i,j]));
+                fi;
+            od;
+            Append(outputstring,"]\n");
+        od;
+    else
+        for i in [1..numberRows] do
+            for j in [1..numberCols] do
+                if j = 1 then
+                    Append(outputstring,"[");
+                else
+                    Append(outputstring," ");
+                fi;
+                if zeroEle = M[i,j] then
+                    Append(outputstring,".");
+                else
+                    Append(outputstring,String(M[i,j]));
+                fi;
+            od;
+            Append(outputstring,"]\n");
+        od;
+    fi;
     Append(outputstring,"]");
     Append(outputstring,">\n");
     return outputstring;
