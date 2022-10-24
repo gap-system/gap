@@ -1055,7 +1055,7 @@ static void PrintElmMat(Expr expr)
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    Pr("%<, %<", 0, 0);
+    Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(expr, 2));
     Pr("%<]", 0, 0);
 }
@@ -1069,7 +1069,7 @@ static void PrintElmListLevel(Expr expr)
     Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
     for (i = 2; i <= narg; i++) {
-        Pr("%<, %<", 0, 0);
+        Pr("%<, %>", 0, 0);
         PrintExpr(READ_EXPR(expr, i));
     }
     Pr("%<]", 0, 0);

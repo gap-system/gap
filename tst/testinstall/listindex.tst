@@ -139,8 +139,8 @@ function( a ) ... end
 gap> Print(foo,"\n");
 function ( a )
     return [ a[2, 3], o[4, 5], function (  )
-          return [ a[6, 7], o[8, 9] ];
-  end ];
+              return [ a[6, 7], o[8, 9] ];
+          end ];
 end
 gap> res := foo(o);
 ELM_MAT [2,3]
@@ -375,6 +375,38 @@ gap> l[2,1] := 2;;
 Error, List Assignment: <list> must be a mutable list
 gap> l;
 [ , [ 3, 4 ] ]
+
+# test indentation
+gap> foo := function( x )
+>    local a, b, c;
+>    a := x[1, 1];
+>    b := x[1, 1];
+>    c := x[1, 1];
+>    return 1;
+> end;;
+gap> Print(foo,"\n");
+function ( x )
+    local a, b, c;
+    a := x[1, 1];
+    b := x[1, 1];
+    c := x[1, 1];
+    return 1;
+end
+gap> foo := function( x )
+>    local a, b, c;
+>    a := x{[ 1 ]}[1, 1];
+>    b := x{[ 1 ]}[1, 1];
+>    c := x{[ 1 ]}[1, 1];
+>    return 1;
+> end;;
+gap> Print(foo,"\n");
+function ( x )
+    local a, b, c;
+    a := x{[ 1 ]}[1, 1];
+    b := x{[ 1 ]}[1, 1];
+    c := x{[ 1 ]}[1, 1];
+    return 1;
+end
 
 # that's all, folks
 gap> STOP_TEST( "listindex.tst", 1);
