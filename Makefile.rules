@@ -658,8 +658,11 @@ install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
-	# Create a symlink to support packages using `#include "src/compiled.h"`
-	ln -sfn . $(DESTDIR)$(includedir)/gap/src
+	# Create fake "src/compiled.h" header which includes the real one; for
+	# compatibility with GAP packages still using `#include "src/compiled.h"`
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/src
+	@echo "#include \"$(includedir)/gap/compiled.h\"" > $(DESTDIR)$(includedir)/gap/src/compiled.h
+	chmod 0644 $(DESTDIR)$(includedir)/gap/src/compiled.h
 
 install-libgap: libgap.la
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
