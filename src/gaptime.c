@@ -28,7 +28,6 @@
 
 #include <errno.h>
 #include <stddef.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -36,8 +35,12 @@
 #include <sys/resource.h>
 #endif
 
-#ifdef __MACH__ // macOS
+#if defined(__MACH__) // macOS
 #include <mach/mach_time.h>
+#elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
+#include <time.h>
+#elif defined(HAVE_GETTIMEOFDAY)
+#include <sys/time.h>
 #endif
 
 
@@ -88,7 +91,7 @@ Int8 SyNanosecondsSinceEpoch(void)
 {
     Int8 res;
 
-#if defined(__MACH__)
+#if defined(__MACH__) // macOS
     static mach_timebase_info_data_t timeinfo;
     if (timeinfo.denom == 0) {
         (void)mach_timebase_info(&timeinfo);
