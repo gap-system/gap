@@ -120,17 +120,17 @@ ifeq ($(HPCGAP),yes)
 endif
 
 # allow overriding ffdata.c with a fixed version for cross compilation
-ifneq ("$(wildcard src/ffdata.c)","")
+ifneq ("$(wildcard $(srcdir)/src/ffdata.c)","")
 SOURCES += src/ffdata.c
 else
 SOURCES += build/ffdata.c
 endif
 
 # allow overriding ffdata.h with a fixed version for cross compilation
-ifneq ("$(wildcard src/ffdata.h)","")
-FFDATA_H := src/ffdata.h
+ifneq ("$(wildcard $(srcdir)/src/ffdata.h)","")
+FFDATA_H := $(srcdir)/src/ffdata.h
 else
-FFDATA_H := build/ffdata.h
+FFDATA_H := $(builddir)/build/ffdata.h
 endif
 
 
@@ -138,23 +138,23 @@ endif
 SOURCES_NOCOMP := $(SOURCES)
 SOURCES_NOCOMP += src/compstat_empty.c
 
-SOURCE_C_OPER1 := build/c_oper1.c
-SOURCE_C_TYPE1 := build/c_type1.c
+SOURCE_C_OPER1 := $(builddir)/build/c_oper1.c
+SOURCE_C_TYPE1 := $(builddir)/build/c_type1.c
 ifeq ($(HPCGAP),yes)
-  ifneq ("$(wildcard src/hpc/c_oper1.c)","")
-  SOURCE_C_OPER1 := src/hpc/c_oper1.c
+  ifneq ("$(wildcard $(srcdir)/src/hpc/c_oper1.c)","")
+  SOURCE_C_OPER1 := $(srcdir)/src/hpc/c_oper1.c
   endif
 
-  ifneq ("$(wildcard src/hpc/c_type1.c)","")
-  SOURCE_C_TYPE1 := src/hpc/c_type1.c
+  ifneq ("$(wildcard $(srcdir)/src/hpc/c_type1.c)","")
+  SOURCE_C_TYPE1 := $(srcdir)/src/hpc/c_type1.c
   endif
 else
-  ifneq ("$(wildcard src/c_oper1.c)","")
-  SOURCE_C_OPER1 := src/c_oper1.c
+  ifneq ("$(wildcard $(srcdir)/src/c_oper1.c)","")
+  SOURCE_C_OPER1 := $(srcdir)/src/c_oper1.c
   endif
 
-  ifneq ("$(wildcard src/c_type1.c)","")
-  SOURCE_C_TYPE1 := src/c_type1.c
+  ifneq ("$(wildcard $(srcdir)/src/c_type1.c)","")
+  SOURCE_C_TYPE1 := $(srcdir)/src/c_type1.c
   endif
 endif
 
@@ -654,7 +654,7 @@ install-sysinfo:
 install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap
-	$(INSTALL) -m 0644 $(builddir)/$(FFDATA_H) $(DESTDIR)$(includedir)/gap
+	$(INSTALL) -m 0644 $(FFDATA_H) $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
