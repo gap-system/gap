@@ -3355,9 +3355,87 @@ local l,N,t,gens,i,c,o,rep,r,sub,gen;
   fi;
 end);
 
+# return function that finds index in list
+BindGlobal("SubgroupPositionIdentifier",function(G,l)
+local quicks,dom,trySplit,tree,idder;
+
+  quicks:=[];
+  Add(quicks,Size);
+  idder:=fail;
+  if IsPermGroup(G) then
+    dom:=MovedPoints(G);
+    Add(quicks,x->Set(List(Orbits(G,dom),Set)));
+  elif IsPcGroup(G) then
+    dom:=FamilyPcgs(G);
+    Add(quicks,
+      y->Minimum(List(GeneratorsOfGroup(y),x->DepthOfPcElement(dom,x))));
+    idder:=CanonicalPcgsWrtFamilyPcgs;
+  fi;
+  Add(quicks,AbelianInvariants);
+
+  trySplit:=function(propnum,pool,poolids)
+  local prop,nv,nlp,nlpi,v,p,j;
+    if propnum>Length(quicks) or Length(pool)<=1 then
+      if idder=fail or Length(pool)=1 then
+        return [fail,fail,pool,poolids];
+      else
+        nlp:=List(pool,idder);
+        nlpi:=ShallowCopy(poolids);
+        SortParallel(nlp,nlpi);
+        return [fail,idder,nlp,nlpi];
+      fi;
+    fi;
+    prop:=quicks[propnum];
+    nv:=[];
+    nlp:=[];
+    nlpi:=[];
+    for j in [1..Length(pool)] do
+      v:=Immutable(prop(pool[j]));
+      p:=Position(nv,v);
+      if p=fail then
+        # new value -- add to lists
+        p:=PositionSorted(nv,v);
+        nv:=Concatenation(nv{[1..p-1]},[v],nv{[p..Length(nv)]});
+        nlp:=Concatenation(nlp{[1..p-1]},[[]],nlp{[p..Length(nlp)]});
+        nlpi:=Concatenation(nlpi{[1..p-1]},[[]],nlpi{[p..Length(nlpi)]});
+      fi;
+      Add(nlp[p],pool[j]);
+      Add(nlpi[p],poolids[j]);
+    od;
+    if Length(nv)=1 then
+#      Print("no improve ",propnum,":",Length(pool),"\n");
+      return trySplit(propnum+1,pool,poolids);
+    else
+#      Print("improve ",propnum,":",Length(pool),"->",List(nlp,Length),"\n");
+      return [prop,nv,
+        List([1..Length(nlp)],x->trySplit(propnum+1,nlp[x],nlpi[x]))];
+    fi;
+  end;
+
+  tree:=trySplit(1,l,[1..Length(l)]);
+  return function(gp)
+  local node,v,p;
+    node:=tree;
+    while node[1]<>fail do
+      v:=Immutable(node[1](gp));
+      p:=Position(node[2],v);
+      node:=node[3][p];
+    od;
+    if node[2]<>fail then
+      v:=node[2](gp);
+      p:=PositionSorted(node[3],v);
+    else
+      p:=Position(node[3],gp);
+    fi;
+    return node[4][p];
+  end;
+end);
+
 BindGlobal("DoMinimalFaithfulPermutationDegree",
 function(G,dorep)
-local c,n,deg,ind,core,i,j,sum;
+local c,n,deg,ind,core,i,j,sum,ma,h,ig,dec,bm,m,sel,ds,ise,cnt,
+  start,cind,nind,sl,idfun,spos,select,bla;
+
   if Size(G)=1 then
     # option allows to calculate actual representation -- maybe access under
     # different name
@@ -3366,36 +3444,130 @@ local c,n,deg,ind,core,i,j,sum;
     else
       return GroupHomomorphismByImages(G,Group(()),[One(G)],[()]);
     fi;
+  elif IsAbelian(G) then
+    c:=IndependentGeneratorsOfAbelianGroup(G);
+    if dorep=false then
+      return Sum(c,Order);
+    else
+      deg:=AbelianGroup(IsPermGroup,List(c,Order));
+      return GroupHomomorphismByImagesNC(G,deg,c,GeneratorsOfGroup(deg));
+    fi;
   fi;
+
   c:=ConjugacyClassesSubgroups(G);
   # sort by reversed order to get core by inclusion test
   c:=ShallowCopy(c); # allow sorting
   SortBy(c,x->-Size(Representative(x))); 
-  n:=Filtered(c,x->Size(x)=1); # normals
-  n:=List(n,Representative); 
+  cind:=[];
+  nind:=[];
+  n:=[];
+  for i in [1..Length(c)] do
+    if Size(c[i])=1 then
+      Add(n,Representative(c[i]));
+      nind[i]:=Length(n);
+      cind[Length(n)]:=i;
+    fi;
+  od;
   c:=List(c,Representative); # reps of classes
 
+  Info(InfoGroup,1, Length( n ), " normals ", Number( n, function ( x )
+            return IsSubset( x, DerivedSubgroup( G ) ); end ), " abelfact" );
 
-  deg:=List(n,x->[IndexNC(G,x),[Position(c,x)]]); # best known degrees for
+  deg:=List([1..Length(n)],x->[IndexNC(G,n[x]),[cind[x]]]); # best known degrees for
     # factors of each of n and how.
 
+  sel:=[];
+  ds:=DerivedSubgroup(G);
+  if not IsPerfectGroup(G) then
+    # handle abelian quotients separately
+    ma:=MaximalAbelianQuotient(G);
+    h:=Image(ma);
+    ig:=IndependentGeneratorsOfAbelianGroup(h);
+    h:=Group(ig);
+    dec:=EpimorphismFromFreeGroup(h);
+    bm:=DiagonalMat(List(ig,Order));
+
+    for i in [2..Length(c)-1] do
+      if IsSubset(c[i],ds) then
+        Add(sel,i);
+        m:=List(bm,ShallowCopy);
+        for j in GeneratorsOfGroup(c[i]) do
+          Add(m,ExponentSums(UnderlyingElement(Factorization(h,
+              ImagesRepresentative(ma,j)))));
+        od;
+        m:=Filtered(DiagonalOfMat(SmithNormalFormIntegerMat(m)),x->x>1);
+        #j:=Position(n,c[i]);
+        j:=nind[i];
+        deg[j]:=[Sum(m),[-j]];
+      fi;
+    od;
+  fi;
+
+  #indexing
+  idfun:=SubgroupPositionIdentifier(G,n);
+  sl:=Set(List(n,Size));
+  start:=List(sl,x->0);
+  for i in [1..Length(n)] do
+    ind:=Position(sl,Size(n[i]));
+    if start[ind]=0 then start[ind]:=i;fi;
+  od;
+
+  cnt:=Int(Length(c)/10);
   # determine minimal degrees by descending through lattice
   for i in [2..Length(c)-1] do # exclude trivial subgroup and whole group
-    ind:=IndexNC(G,c[i]);
+    if i=cnt then
+      #Print(Int(i/Length(c)*100),"% done\n");
+      cnt:=cnt+Int(Length(c)/10);
+    fi;
 
-    if IsNormal(G,c[i]) then # subgroup normal, must be in other case
-      core:=Position(n,c[i]);
+    ind:=IndexNC(G,c[i]);
+    spos:=PositionSorted(sl,Size(c[i]))-1;
+
+
+    if i in sel then
+      # do nothing --already processed
+    elif IsNormal(G,c[i]) then # subgroup normal, must be in other case
+      #core:=Position(n,c[i]);
+      core:=nind[i];
+
+      select:=fail;
+      if Size(c[i])>1 and 10*(Length(n)-start[spos])<core then
+        select:=Filtered([start[spos]..Length(n)],x->IsSubset(c[i],n[x]));
+        AddSet(select,core);
+#Print("|select|=",Length(select),"\n");
+      fi;
+
       for j in [2..core-1] do # Intersect with all prior normals
         sum:=deg[core][1]+deg[j][1];
         if sum<deg[Length(n)][1] then # otherwise too big for new optimal
-          ind:=Position(n,Intersection(n[j],n[core])); # intersect of normals
-          if sum<deg[ind][1] then # intersection is better
-            deg[ind]:=[deg[core][1]+deg[j][1],Union(deg[core][2],deg[j][2])];
+          if select=fail then
+            ise:=Intersection(n[j],n[core]); # intersect of normals
+            #ind:=Position(n,ise);
+            ind:=idfun(ise);
+          elif Length(select)>50 then
+            bla:=Reversed(Filtered(select,x->deg[x][1]<=sum));
+            if ForAny(bla,x->IsSubset(n[j],n[x])) then
+              ind:=fail; # intersection will not help with better degree
+            else
+              # otherwise try the rest
+              ind:=First(Difference(select,bla),x->IsSubset(n[j],n[x]));
+            fi;
+          else
+            ind:=First(select,x->IsSubset(n[j],n[x]));
+          fi;
+          if ind<>fail and sum<deg[ind][1] then # intersection is better
+            deg[ind]:=[sum,Union(deg[core][2],deg[j][2])];
           fi;
         fi;
       od;
     elif ind<deg[Length(n)][1] then # otherwise degree too big for new optimal
-      core:=First([2..Length(n)],x->IsSubset(c[i],n[x])); # position of core
+      # find size *strictly smaller* (since not normal)
+      if Length(n)-start[spos]<10000 then
+        core:=First([start[spos]..Length(n)],x->IsSubset(c[i],n[x])); # position of core
+      else
+        core:=Core(G,c[i]);
+        core:=idfun(core);
+      fi;
       if ind<deg[core][1] then # new smaller degree from subgroups
         deg[core]:=[ind,[i]];
       fi;
@@ -3407,8 +3579,16 @@ local c,n,deg,ind,core,i,j,sum;
     return deg[Length(n)][1]; # smallest degree
   fi;
   # calculate the representation
-  deg:=deg[Length(n)][2]; # the subgroups needed
-  deg:=List(deg,x->FactorCosetAction(G,c[x]));
+  sum:=deg[Length(n)][2]; # the subgroups needed
+  #deg:=List(deg,x->FactorCosetAction(G,c[x]));
+  deg:=[];
+  for i in sum do
+    if i>0 then Add(deg,FactorCosetAction(G,c[i]));
+    else
+      j:=NaturalHomomorphismByNormalSubgroupNC(G,n[-i]);
+      Add(deg,j*MinimalFaithfulPermutationRepresentation(Image(j,G)));
+    fi;
+  od;
 
   sum:=List(GeneratorsOfGroup(G),x->Image(deg[1],x));
   for i in [2..Length(deg)] do

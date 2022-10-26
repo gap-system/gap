@@ -140,10 +140,14 @@ true
 gap> Length(ConjugacyClasses(PSL(2,64)));
 65
 
-# MinimalGeneratingSet
+# MinimalGeneratingSet -- factor 400 speedup
 gap> AllTransitiveGroups(NrMovedPoints,12,
 > x->Length(MinimalGeneratingSet(x)),4);
 [ [3^4:2^3]E(4) ]
+
+# MinimalFaithfulPermutationDegree
+gap>  MinimalFaithfulPermutationDegree(SmallGroup(5^6,33));
+55
 
 #
 gap> STOP_TEST( "permgrp.tst", 1);
