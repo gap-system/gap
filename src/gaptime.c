@@ -54,6 +54,15 @@
 */
 UInt SyTime(void)
 {
+#ifdef EMSCRIPTEN
+    // Emscripten's standard library always returns the same values
+    // for getrusage, which makes some GAP functions enter an
+    // infinite loop, as they use this function to try running
+    // for some period of time. Use NanosecondsSinceEpoch() as
+    // a substitute (it is not perfect, as NanosecondsSinceEpoch()
+    // is walltime, while RUSAGE_SELF is CPU time).
+    return SyNanosecondsSinceEpoch()/1000000000;
+#else
     struct rusage buf;
 
     if (getrusage(RUSAGE_SELF, &buf)) {
@@ -62,6 +71,7 @@ UInt SyTime(void)
                      (Int)strerror(errno), (Int)errno);
     }
     return buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+#endif
 }
 
 
