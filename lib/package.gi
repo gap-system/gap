@@ -236,6 +236,8 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
               " (user preference PackagesToIgnore)" ), "GAP" );
         else
           record.InstallationPath:= Filename( [ pkgdir ], file[2] );
+          # normalize to include trailing "/"
+          record.InstallationPath:= Filename( [ Directory( record.InstallationPath ) ], "" );
           if not IsBound( record.PackageDoc ) then
             record.PackageDoc:= [];
           elif IsRecord( record.PackageDoc ) then
@@ -1746,7 +1748,8 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
     pkgname:= LowercaseString( pkgname );
     NormalizeWhitespace( pkgname );
     if IsBound( GAPInfo.PackagesLoaded.( pkgname ) ) then
-      if GAPInfo.PackagesLoaded.( pkgname )[1] = pkgpath then
+      # compare using `Directory` to expand "~" and add trailing "/"
+      if Directory( GAPInfo.PackagesLoaded.( pkgname )[1] ) = Directory( pkgpath ) then
         return;
       fi;
       Error( "another version of package ", pkgname, " is already loaded" );
