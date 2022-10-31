@@ -403,7 +403,10 @@ before the first prompt is  printed. Filenames ending with <C>.tst</C>
 are processed by <Ref Func="Test" />, all other files by <Ref Oper="Read" />.
 These files and also commands specified via the <C>-c</C> option are processed
 in the order in which they appear on the command line.
-If a file cannot be opened &GAP; will print an error message and will abort.
+If a file cannot be opened or if executing the code in it raises an error,
+then the usual error handling for <Ref Oper="Read" /> respectively
+<Ref Func="Test" /> kicks in. If this enters a break loop, then exiting that
+break loop also exits &GAP;.
 </Item>
 </List>
 <P/>

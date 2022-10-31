@@ -946,36 +946,15 @@ fi;
 ResumeMethodReordering();
 
 BindGlobal( "ProcessInitFiles", function(initFiles)
-    local i, f, status;
+    local i, f;
     for i in [1..Length(initFiles)] do
         f := initFiles[i];
         if IsRecord(f) then
-            status := READ_NORECOVERY(InputTextString(f.command));
+            Read(InputTextString(f.command));
         elif EndsWith(f, ".tst") then
             Test(f);
-            status := true;
         else
-            status := READ_NORECOVERY(f);
-        fi;
-        if status = fail then
-            if IsRecord(f) then
-                PRINT_TO( "*errout*", "Executing command \"", f.command,
-                    "\" has been aborted.\n");
-            else
-                PRINT_TO( "*errout*", "Reading file \"", f,
-                    "\" has been aborted.\n");
-            fi;
-            if i < Length (initFiles) then
-                PRINT_TO( "*errout*",
-                    "The remaining files or commands on the command line will not be read.\n" );
-            fi;
-            break;
-        elif status = false then
-            if IsRecord(f) then
-                PRINT_TO( "*errout*", "Could not execute command \"", f.command, "\".\n" );
-            else
-                PRINT_TO( "*errout*", "Could not read file \"", f, "\".\n" );
-            fi;
+            Read(f);
         fi;
     od;
 end );
