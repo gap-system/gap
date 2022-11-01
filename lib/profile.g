@@ -1068,6 +1068,10 @@ end);
 ##  <#/GAPDoc>
 ##
 START_TEST := function( name )
+    if IsBound( GAPInfo.TestData.START_NAME ) then
+      Info( InfoWarning, 2, "`START_TEST' was already called with name `",
+             GAPInfo.TestData.START_NAME, "'" );
+    fi;
     FlushCaches();
     Reset(GlobalRandomSource);
     Reset(GlobalMersenneTwister);
