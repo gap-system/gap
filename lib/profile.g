@@ -1099,4 +1099,5 @@ STOP_TEST := function( file, args... )
     Unbind( GAPInfo.TestData.AssertionLevel );
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
+    Unbind( GAPInfo.TestData.InfoPerformanceLevel );
 end;
