@@ -1026,14 +1026,14 @@ end);
 
 #############################################################################
 ##
-#F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
-#F  STOP_TEST( <file> )  . . . . . . . . . . . . . . . . . . . stop test file
+#F  START_TEST( <name> )  . . . . . . . . . . . . . . . . . . start test file
+#F  STOP_TEST( <name> )  . . . . . . . . . . . . . . . . . . . stop test file
 ##
 ##  <#GAPDoc Label="StartStopTest">
 ##  <ManSection>
 ##  <Heading>Starting and stopping test</Heading>
-##  <Func Name="START_TEST" Arg='id'/>
-##  <Func Name="STOP_TEST" Arg='file'/>
+##  <Func Name="START_TEST" Arg='name'/>
+##  <Func Name="STOP_TEST" Arg='name'/>
 ##
 ##  <Description>
 ##  <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> may be optionally
@@ -1056,10 +1056,8 @@ end);
 ##  and should be finished with a line
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> STOP_TEST( "filename" );
+##  gap> STOP_TEST( "same identifier string as for START_TEST" );
 ##  ]]></Log>
-##  <P/>
-##  Here the string <C>"filename"</C> should give the name of the test file.
 ##  <P/>
 ##  Note that the functions in <F>tst/testutil.g</F> temporarily replace
 ##  <Ref Func="STOP_TEST"/> before they call <Ref Func="Test"/>.
@@ -1088,13 +1086,20 @@ START_TEST := function( name )
     fi;
 end;
 
-STOP_TEST := function( file, args... )
+STOP_TEST := function( name, args... )
     local time;
 
-    if not IsBound( GAPInfo.TestData.START_TIME ) then
+    if not IsBound( GAPInfo.TestData.START_NAME ) then
       Error( "`STOP_TEST' command without `START_TEST' command for `",
-             file, "'" );
+             name, "'" );
     fi;
+    
+    if GAPInfo.TestData.START_NAME <> name then
+      Info( InfoWarning, 2, "`STOP_TEST' command with name `", name,
+            "' after `START_TEST' ", "command with name `",
+            GAPInfo.TestData.START_NAME, "'" );
+    fi;
+    
     time:= Runtime() - GAPInfo.TestData.START_TIME;
     Print( GAPInfo.TestData.START_NAME, "\n" );
     Print( "msecs: ", time, "\n" );
