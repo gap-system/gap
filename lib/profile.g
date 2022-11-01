@@ -1086,7 +1086,7 @@ START_TEST := function( name )
     fi;
 end;
 
-STOP_TEST := function( name, args... )
+STOP_TEST_QUIET := function( name, args... )
     local time;
 
     if not IsBound( GAPInfo.TestData.START_NAME ) then
@@ -1101,12 +1101,22 @@ STOP_TEST := function( name, args... )
     fi;
     
     time:= Runtime() - GAPInfo.TestData.START_TIME;
-    Print( GAPInfo.TestData.START_NAME, "\n" );
-    Print( "msecs: ", time, "\n" );
     SetAssertionLevel( GAPInfo.TestData.AssertionLevel );
     SetInfoLevel( InfoPerformance, GAPInfo.TestData.InfoPerformanceLevel );
     Unbind( GAPInfo.TestData.AssertionLevel );
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
     Unbind( GAPInfo.TestData.InfoPerformanceLevel );
+    
+    return time;
+end;
+
+STOP_TEST := function( name, args... )
+    local time;
+    
+    time := STOP_TEST_QUIET( name );
+    
+    Print( name, "\n" );
+    Print( "msecs: ", time, "\n" );
+    
 end;

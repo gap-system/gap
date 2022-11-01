@@ -867,7 +867,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   totalGcTime := 0;
   
   STOP_TEST_CPY := STOP_TEST;
-  STOP_TEST := function(arg) end;
+  # wrap STOP_TEST_QUIET to drop the return value so it does not get printed below
+  STOP_TEST := function(arg) CallFuncList( STOP_TEST_QUIET, arg ); end;
   
   if IsString(arg[1]) or IsDirectory(arg[1]) then
     basedirs := [arg[1]];
