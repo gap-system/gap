@@ -1,0 +1,97 @@
+########################################################################
+#
+# The build rules in this file are intended for use by GAP packages that
+# want to build a simple GAP kernel extensions. They are based on the
+# GAP build system, and require GNU make. To use this in your GAP
+# package, `include` this file from your primary Makefile. You must also
+# set several variables beforehand:
+#
+# - GAPPATH must be set to the location of the GAP installation against
+#   which to build your package.
+# - KEXT_NAME should be the name of your kernel extension (without
+#   file extensions like .so or .dll)
+# - KEXT_SOURCES must contain a list of .c or .cc files to be linked
+#   into your kernel extension
+# - optionally, you can set KEXT_CFLAGS, KEXT_CXXFLAGS, KEXT_LDFLAGS
+#
+# The contents of this file are released into the public domain; hence
+# you may edit this file as you wish, bundle and distribute it with your
+# package, etc.
+#
+# If you bundle this file with your package, please try not to edit it,
+# so that we can keep it identical across all GAP packages. Instead, if
+# you find that you must edit it, please submit your changes back to
+# the GAP team, so that a future version of this file can be adjusted
+# to cover your usecase without modifications, thus ensuring you can
+# always easily update to newer version of it.
+#
+########################################################################
+
+# read GAP's build settings
+include $(GAPPATH)/sysinfo.gap
+
+# hack to support GAP <= 4.9
+ifndef GAP_KERNEL_MAJOR_VERSION
+  KEXT_CFLAGS += -I$(GAP_LIB_DIR)/src
+  KEXT_CXXFLAGS += -I$(GAP_LIB_DIR)/src
+endif
+
+# honor used supplied flags
+ALL_CFLAGS := $(KEXT_CFLAGS) $(KEXT_CXXFLAGS) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
+ALL_LDFLAGS := $(KEXT_LDFLAGS) $(LDFLAGS)
+
+# various derived settings
+KEXT_BINARCHDIR = bin/$(GAParch)
+KEXT_SO = $(KEXT_BINARCHDIR)/$(KEXT_NAME).so
+
+# the following settings are provided by sysinfo.gap in GAP >= 4.12;
+# for compatibility with older GAP version (at least 4.9, 4.10, 4.11)
+# we try to "guess" suitable values here
+GAP ?= $(GAPPATH)/gap
+GAC ?= $(GAPPATH)/gac
+GAP_OBJEXT ?= lo
+
+# default target
+all: $(KEXT_SO)
+.PHONY: all
+
+########################################################################
+# Quiet rules.
+#
+# Replace regular output with quiet messages, unless V is set,
+# e.g. "make V=1"
+########################################################################
+ifneq ($(findstring $(MAKEFLAGS),s),s)
+ifndef V
+QUIET_GAC     = @echo "   GAC     $< => $@";>/dev/null # keep the trailing space!
+endif
+endif
+
+# build rule for compiling and linking all object files together into a kernel extension
+$(KEXT_SO): $(KEXT_SOURCES) Makefile
+	$(QUIET_GAC)$(GAC) -d -p "$(ALL_CFLAGS)" -P "$(ALL_LDFLAGS)" $(KEXT_SOURCES) -o $@
+
+clean:
+	rm -rf $(KEXT_BINARCHDIR)
+
+distclean:
+	rm -rf bin Makefile
+	rm -rf doc/_*.xml
+	rm -rf doc/*.aux doc/*.bbl doc/*.blg doc/*.brf doc/*.idx doc/*.idx
+	rm -rf doc/*.ilg doc/*.ind doc/*.log doc/*.out doc/*.pnr doc/*.toc
+
+doc:
+	$(GAP) --quitonbreak -b -q < makedoc.g
+
+# re-run configure if configure, Makefile.in or GAP itself changed
+Makefile: configure Makefile.in $(GAPPATH)/sysinfo.gap
+	./configure "$(GAPPATH)"
+
+.PHONY: check clean distclean doc
+
+########################################################################
+# Makefile debugging trick:
+# call print-VARIABLE to see the runtime value of any variable
+########################################################################
+print-%:
+	@echo '$*=$($*)'

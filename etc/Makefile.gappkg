@@ -17,13 +17,6 @@
 #   KEXT_USE_AUTOCONF to 1 to enable dependency rules that enable
 #   regenerating the configure script etc. when necessary
 #
-# Only GAP >= 4.11 ships with this file. In order to keep your package
-# compatible with older GAP versions, we recommend to bundle a copy of
-# it with your package, but only as a fallback. So, your configure
-# scripts should check if GAP ships with this file, and use it then, and
-# only fall back to your own copy as a last resort. This way, you will
-# benefit from any fixes and improvements made by the GAP team.
-#
 # The contents of this file are released into the public domain; hence
 # you may edit this file as you wish, bundle and distribute it with your
 # package, etc.
