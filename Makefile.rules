@@ -265,7 +265,6 @@ SYSINFO_LDFLAGS += $(LDFLAGS)
 
 # libs
 GAP_LIBS =
-SYSINFO_LIBS =
 
 # Add flags for dependencies
 GAP_LIBS += $(GMP_LIBS)
@@ -277,7 +276,6 @@ GAP_LIBS += $(LIBATOMIC_OPS_LIBS)
 
 # Finally add user provided flags
 GAP_LIBS += $(LIBS)
-SYSINFO_LIBS += $(LIBS)
 
 
 ########################################################################
@@ -638,7 +636,6 @@ install-gaproot: CITATION
 # the following lines adjust variables for the installed sysinfo.gap
 install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
-install-sysinfo: SYSINFO_LIBS =
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAP2 = $(libdir)/gap/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
@@ -901,7 +898,6 @@ GAP_CFLAGS="$(SYSINFO_CFLAGS)"
 GAP_CXXFLAGS="$(SYSINFO_CXXFLAGS)"
 GAP_CPPFLAGS="$(SYSINFO_CPPFLAGS)"
 GAP_LDFLAGS="$(SYSINFO_LDFLAGS)"
-GAP_LIBS="$(SYSINFO_LIBS)"
 
 # Extra flags for use by `gac`
 GAC_CFLAGS="$(GAC_CFLAGS)"
