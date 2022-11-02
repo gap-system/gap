@@ -237,7 +237,9 @@ for the new type of vector or matrix objects.
   <Ref Oper="\[\]" Label="for a vector object and an integer"/>,
 </Item>
 <Item>
-  <Ref Oper="\[\]\:\=" Label="for a vector object and an integer"/>,
+  <Ref Oper="\[\]\:\=" Label="for a vector object and an integer"/>
+  (with consistency checks if the global option <C>check</C> is not set to
+  <K>false</K>),
 </Item>
 <Item>
   <Ref Oper="\&lt;"/> (see <Ref Oper="\&lt;" Label="for two vector objects"/>),
@@ -246,7 +248,9 @@ for the new type of vector or matrix objects.
   <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
 </Item>
 <Item>
-  <Ref Constr="NewVector"/>.
+  <Ref Constr="NewVector"/>
+  (with consistency checks if the global option <C>check</C> is not set to
+  <K>false</K>).
 </Item>
 </List>
 
@@ -268,7 +272,9 @@ for the new type of vector or matrix objects.
   <Ref Oper="MatElm"/>,
 </Item>
 <Item>
-  <Ref Oper="SetMatElm"/>,
+  <Ref Oper="SetMatElm"/>
+  (with consistency checks if the global option <C>check</C> is not set to
+  <K>false</K>),
 </Item>
 <Item>
   <Ref Oper="\&lt;"/> (see <Ref Oper="\&lt;" Label="for two matrix objects"/>),
@@ -280,9 +286,32 @@ for the new type of vector or matrix objects.
   <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/>,
 </Item>
 <Item>
-  <Ref Constr="NewMatrix"/>.
+  <Ref Constr="NewMatrix"/>
+  (with consistency checks if the global option <C>check</C> is not set to
+  <K>false</K>).
 </Item>
 </List>
+
+<P/>
+
+Methods for the constructors <Ref Constr="NewVector"/> and
+<Ref Constr="NewMatrix"/> must check their arguments for consistency
+(do the given filter and base domain fit together,
+are the entries compatible with the given base domain,
+is the number of matrix entries a multiple of the given number of columns)
+except if the global option <C>check</C> is set to <K>false</K>.
+(See Chapter <Ref Chap="Options Stack"/> for information about global
+options.)
+The same holds for methods for operations that modify mutable vector
+or matrix objects,
+such as <Ref Oper="\[\]\:\=" Label="for a vector object and an integer"/>,
+<Ref Oper="SetMatElm"/>, <Ref Oper="CopySubVector"/>,
+<Ref Oper="CopySubMatrix"/>,
+and for those methods of
+<Ref Oper="Vector" Label="for filter, base domain, and list"/> and
+<Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
+that do not delegate to <Ref Constr="NewVector"/> and
+<Ref Constr="NewMatrix"/>, respectively.
 
 </Section>
 

@@ -42,17 +42,21 @@ InstallMethod( CompatibleVectorFilter, "zmodnz",
 InstallMethod( NewVector, "for IsZmodnZVectorRep, a ring, and a list",
   [ IsZmodnZVectorRep, IsRing, IsList ],
   function( filter, basedomain, l )
-    local typ, v;
+    local check, typ, v;
+    check:= ValueOption( "check" ) <> false;
+    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
+        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
+      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    fi;
     typ:=NewType(FamilyObj(basedomain),IsZmodnZVectorRep and IsMutable and
       CanEasilyCompareElements);
     # force list of integers
     if FamilyObj(basedomain)=FamilyObj(l) then
       l:=List(l,Int);
+    elif check and not ForAll( l, IsInt ) then
+      Error( "<l> must be a list of integers or of elements in <basedomain>" );
     else
       l:=ShallowCopy(l);
-      if ValueOption( "Check" ) <> false and not ForAll( l, IsInt ) then
-        Error( "<l> must be a list of integers or of elements in <basedomain>" );
-      fi;
     fi;
     v := [basedomain,l];
     Objectify(typ,v);
@@ -62,7 +66,12 @@ InstallMethod( NewVector, "for IsZmodnZVectorRep, a ring, and a list",
 InstallMethod( NewZeroVector, "for IsZmodnZVectorRep, a ring, and an int",
   [ IsZmodnZVectorRep, IsRing, IsInt ],
   function( filter, basedomain, l )
-    local typ, v;
+    local check, typ, v;
+    check:= ValueOption( "check" ) <> false;
+    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
+        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
+      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    fi;
     typ:=NewType(FamilyObj(basedomain),IsZmodnZVectorRep and IsMutable and
       CanEasilyCompareElements);
     # represent list as integers
@@ -585,6 +594,9 @@ InstallMethod( CopySubVector, "for two zmodnz vectors and two lists",
   [ IsZmodnZVectorRep, IsZmodnZVectorRep and IsMutable, IsList, IsList ],
   function( a,b,pa,pb )
     # The following should eventually go into the kernel:
+    if ValueOption( "check" ) <> false and a![BDPOS] <> b![BDPOS] then
+      Error( "<a> and <b> have different base domains" );
+    fi;
     b![ELSPOS]{pb} := a![ELSPOS]{pa};
   end );
 
@@ -603,7 +615,13 @@ InstallMethod( NewMatrix,
   "for IsZmodnZMatrixRep, a ring, an int, and a list",
   [ IsZmodnZMatrixRep, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
-    local nd, filterVectors, m, e, filter2, i;
+    local check, nd, filterVectors, m, e, filter2, i;
+
+    check:= ValueOption( "check" ) <> false;
+    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
+        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
+      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    fi;
 
     # If applicable then replace a flat list 'l' by a nested list
     # of lists of length 'rl'.
@@ -642,7 +660,14 @@ InstallMethod( NewZeroMatrix,
   "for IsZmodnZMatrixRep, a ring, and two ints",
   [ IsZmodnZMatrixRep, IsRing, IsInt, IsInt ],
   function( filter, basedomain, rows, cols )
-    local m,i,e,filter2;
+    local check, m,i,e,filter2;
+
+    check:= ValueOption( "check" ) <> false;
+    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
+        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
+      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    fi;
+
     filter2 := IsZmodnZVectorRep;
     m := 0*[1..rows];
     e := NewVector(filter2, basedomain, []);
@@ -977,6 +1002,9 @@ InstallMethod( CopySubMatrix, "for two zmodnz matrices and four lists",
     IsList, IsList, IsList, IsList ],
   function( m, n, srcrows, dstrows, srccols, dstcols )
     local i;
+    if ValueOption( "check" ) <> false and m![BDPOS] <> n![BDPOS] then
+      Error( "<m> and <n> have different base domains" );
+    fi;
     # This eventually should go into the kernel without creating
     # a intermediate objects:
     for i in [1..Length(srcrows)] do
@@ -1009,6 +1037,10 @@ InstallMethod( MatElm, "for a zmodnz matrix and two positions",
 InstallMethod( SetMatElm, "for a zmodnz matrix, two positions, and an object",
   [ IsZmodnZMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
   function( m, row, col, ob )
+    if ValueOption( "check" ) <> false and
+       not ( IsInt( ob ) or ob in BaseDomain( m ) ) then
+      Error( "<ob> must be an integer or in the base domain of <m>" );
+    fi;
     m![ROWSPOS][row]![ELSPOS][col] := Int(ob);
   end );
 
