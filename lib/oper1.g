@@ -166,6 +166,7 @@ BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
         if 0 = LEN_LIST(flags)  then
             Error(NAME_FUNC(opr),": constructors must have at least one argument");
         fi;
+        flags[1]:= WITH_IMPS_FLAGS( flags[1] );
         rank := rank - RankFilter( flags[ 1 ] );
     else
         for i  in flags  do

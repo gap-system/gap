@@ -27,3 +27,9 @@ gap> InstallOtherMethod(c,[],{}->[]);
 Error, foobar: constructors must have at least one argument
 gap> c();
 Error, constructors must have at least one argument
+
+#
+gap> DeclareConstructor( "TestConstructor", [ IsMagma ] );
+gap> InstallMethod( TestConstructor, [ IsGroup ], ReturnTrue );
+gap> TestConstructor( IsMagma );
+true
