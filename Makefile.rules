@@ -13,7 +13,7 @@
 ########################################################################
 # Default rule: build gap
 ########################################################################
-all: gap$(EXEEXT) gac libgap.la CITATION doc/versiondata
+all: gap$(EXEEXT) gac libgap.la CITATION doc/versiondata build/gap
 .PHONY: all
 
 # Backwards compatibility: add "default" target as alias for "all"
@@ -638,7 +638,7 @@ install-gaproot: CITATION
 
 
 # the following lines adjust variables for the installed sysinfo.gap
-install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap $(GAP_DEFINES)
+install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_LIBS =
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
@@ -658,11 +658,15 @@ install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
-	# Create fake "src/compiled.h" header which includes the real one; for
-	# compatibility with GAP packages still using `#include "src/compiled.h"`
+	# For compatibility with GAP packages still using `#include "src/compiled.h"`
+	# and similar, also install copies of all headers into a `src` directory
+	# TODO: remove this once no distributed packages needs it anymore
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/src
-	@echo "#include \"$(includedir)/gap/compiled.h\"" > $(DESTDIR)$(includedir)/gap/src/compiled.h
-	chmod 0644 $(DESTDIR)$(includedir)/gap/src/compiled.h
+	$(INSTALL) -m 0644 $(srcdir)/src/*.h $(DESTDIR)$(includedir)/gap/src
+	$(INSTALL) -m 0644 $(FFDATA_H) $(DESTDIR)$(includedir)/gap/src
+	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap/src
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/src/hpc
+	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/src/hpc
 
 install-libgap: libgap.la
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
@@ -1519,6 +1523,9 @@ GNUmakefile: $(srcdir)/GNUmakefile.in config.status
 
 libtool: config.status
 	@$(SHELL) ./config.status $@
+
+build/gap:
+	@mkdir -p $(@D) && ln -sf $(abs_srcdir)/src build/gap
 
 ########################################################################
 # Special .PHONY target: targets depending on it will always be
