@@ -1,4 +1,4 @@
-#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,mockpkgpath,p,n
+#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -418,8 +418,17 @@ false
 gap> IsPackageLoaded("mockpkg", ">=2.0");
 false
 
-#
-gap> mockpkgpath := DirectoriesLibrary("tst/mockpkg")[1];;
+# load mockpkg via a symlink in a directory called `pkg`
+# so we can test ExtendRootDirectories below
+# first create a temporary directory for all of this
+gap> tmp_dir := DirectoryTemporary( );;
+
+# create a subdirectory `<tmp_dir>/pkg`
+gap> Exec( Concatenation( "mkdir -p ", Filename( tmp_dir, "/pkg" ) ) );
+
+# make `<tmp_dir>/pkg/mockpkg` a symlink to `tst/mockpkg`
+gap> Exec( Concatenation( "ln -sfn ", Filename( DirectoriesLibrary("tst/mockpkg"), "" )," ", Filename( tmp_dir, "pkg/mockpkg" ) ) );
+gap> mockpkgpath := Directory( Filename( tmp_dir, "pkg/mockpkg" ) );;
 gap> ValidatePackageInfo(Filename(mockpkgpath, "PackageInfo.g"));
 true
 
@@ -473,9 +482,14 @@ gap> IsPackageLoaded("mockpkg", ">=2.0");
 false
 
 # instruct GAP to load the package, and record all its declarations
+# the help book of mockpkg might already have been loaded in other tests
+# -> we suppress a warning about this
+gap> old_warning_level := InfoLevel( InfoWarning );;
+gap> SetInfoLevel( InfoWarning, 0 );
 gap> PackageVariablesInfo("mockpkg", "0.1");;
 oops, should not print here
 oops, should not print here
+gap> SetInfoLevel( InfoWarning, old_warning_level );
 gap> ShowPackageVariables("mockpkg");
 new global functions:
   mockpkg_GlobalFunction(  )*
@@ -639,6 +653,21 @@ gap> IsPackageLoaded("mockpkg", "=2.0");
 false
 gap> IsPackageLoaded("mockpkg", ">=2.0");
 false
+
+# now add the temporary directory created above as a new root directory
+gap> ExtendRootDirectories( [ Filename( tmp_dir, "" ) ] );
+
+# make sure that the newly discovered installation path matches
+# the path from which mockpkg was loaded above
+gap> Last( GAPInfo.PackagesInfo.mockpkg ).InstallationPath =
+>      GAPInfo.PackagesLoaded.mockpkg[1];
+true
+
+#
+gap> SetPackagePath( "mockpkg", Filename( tmp_dir, "pkg/mockpkg" ) );
+gap> SetPackagePath( "mockpkg", Filename( tmp_dir, "pkg/mockpkg/" ) );
+gap> SetPackagePath( "mockpkg", "/some/other/directory" );
+Error, another version of package mockpkg is already loaded
 
 #
 gap> STOP_TEST( "package.tst", 1);
