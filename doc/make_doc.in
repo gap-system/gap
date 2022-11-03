@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 
 GAP=@abs_top_builddir@/bin/gap.sh
-GAPARGS="-b -m 1g -x 80 -q -r --quitonbreak"
+GAPARGS="-b -m 1g -x 80 -q --quitonbreak"
 if [ "$1" == "nopdf" ]; then
   NOPDF=", \"nopdf\""
 else
