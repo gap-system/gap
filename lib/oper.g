@@ -2122,6 +2122,9 @@ end );
 ## This function recalculates all such ranks and adjusts the method ordering
 ## where needed. If the ordering changes, the relevant caches are flushed.
 ##
+## Besides this, also the flags list stored for the first argument of
+## each constructor method gets updated.
+##
 ## If PRINT_REORDERED_METHODS is true, it prints some diagnostics (this is a
 ## bit too low-level for Info).
 ##
@@ -2136,7 +2139,7 @@ Unbind(RECALCULATE_ALL_METHOD_RANKS);
 PRINT_REORDERED_METHODS := false;
 
 BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
-    local  oper, n, changed, meths, nmethods, i, base, rank, j, req,
+    local  oper, n, changed, meths, nmethods, i, base, rank, flags, j, req,
            req2, k, l, entrysize;
 
     for oper in OPERATIONS do
@@ -2156,6 +2159,15 @@ BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
                 # adjust the base rank by the rank of the argument filters
                 if IS_CONSTRUCTOR(oper) then
                     Assert(2, n > 0);
+                    # Take implications into account for the first argument.
+                    flags:= WITH_IMPS_FLAGS(meths[base+1+1]);
+                    if flags <> meths[base+1+1] then
+                      if IsHPCGAP and not changed then
+                        meths:= SHALLOW_COPY_OBJ(meths);
+                      fi;
+                      changed:= true;
+                      meths[base+1+1]:= flags;
+                    fi;
                     rank := rank - RankFilter(meths[base+1+1]);
                 else
                     for j in [1..n] do
