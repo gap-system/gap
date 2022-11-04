@@ -1734,7 +1734,7 @@ end);
 
 #############################################################################
 ##
-#F  ImmutableVector( <field>, <vector>
+#F  ImmutableVector( <field>, <vector> )
 ##
 InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
@@ -1745,21 +1745,18 @@ function(f,v)
       f := ZmodnZ(f);
     fi;
   fi;
-  if IsVectorObj(v) then
-    # result is a vector object iff 'v' is
-    if f=BaseDomain(v) then
-      return Immutable(v);
-    else
-      return Immutable(Vector(f,Unpack(v)));
-    fi;
-  fi;
+  # 'IsRowVector' implies 'IsList'.
+  # We are not allowed to return a non-list,
+  # thus we are not allowed to call 'Vector'.
+  # Since there is a method for 'IsVectorObj' as the second argument,
+  # we do not deal with proper vector objects here.
   ConvertToVectorRepNC(v,f);
   return Immutable(v);
 end);
 
 InstallOtherMethod( ImmutableVector,"vectorObj,2",[IsObject,IsVectorObj],0,
 function(f,v)
-  return Immutable(v);
+  return MakeImmutable( ChangedBaseDomain( v, f ) );
 end);
 
 InstallOtherMethod( ImmutableVector,"general,3",[IsObject,IsRowVector,IsBool],0,
