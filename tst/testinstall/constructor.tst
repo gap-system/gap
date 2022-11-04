@@ -33,3 +33,7 @@ gap> DeclareConstructor( "TestConstructor", [ IsMagma ] );
 gap> InstallMethod( TestConstructor, [ IsGroup ], ReturnTrue );
 gap> TestConstructor( IsMagma );
 true
+gap> meth:= ApplicableMethod( TestConstructor, [ IsMagma ] );;
+#I  Family predicate cannot be tested
+gap> meth <> fail;
+true
