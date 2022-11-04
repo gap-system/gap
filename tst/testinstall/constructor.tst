@@ -37,3 +37,10 @@ gap> meth:= ApplicableMethod( TestConstructor, [ IsMagma ] );;
 #I  Family predicate cannot be tested
 gap> meth <> fail;
 true
+
+#
+gap> meth:= ApplicableMethod( GeneralLinearGroupCons,
+>               [ IsPermGroup, 2, GF(3) ] );;
+#I  Family predicate cannot be tested
+gap> meth <> fail;
+true
