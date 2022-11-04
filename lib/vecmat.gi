@@ -1738,19 +1738,17 @@ end);
 ##
 InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
-  if IsInt(f) then
-    if IsPrimePowerInt(f) then
-      f := GF(f);
-    else
-      f := ZmodnZ(f);
-    fi;
-  fi;
+  local v2;
+  if not IsInt(f) then f := Size(f); fi;
   # 'IsRowVector' implies 'IsList'.
   # We are not allowed to return a non-list,
   # thus we are not allowed to call 'Vector'.
   # Since there is a method for 'IsVectorObj' as the second argument,
   # we do not deal with proper vector objects here.
-  ConvertToVectorRepNC(v,f);
+  if f <= 256 then
+    v2 := CopyToVectorRep(v,f);
+    if v2 <> fail then v := v2; fi;
+  fi;
   return Immutable(v);
 end);
 
@@ -1761,6 +1759,10 @@ end);
 
 InstallOtherMethod( ImmutableVector,"general,3",[IsObject,IsRowVector,IsBool],0,
 function(f,v,change)
+#TODO: Do we really want to change the representation of 'v'?
+#      The documentation of 'ImmutableVector' allows this.
+#      However, the HPC GAP variant cannot do this,
+#      and calls 'CopyToVectorRep' instead.
   ConvertToVectorRepNC(v,f);
   if change then
     MakeImmutable(v);
