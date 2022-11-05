@@ -302,13 +302,12 @@ ifneq (,$(findstring cygwin,$(host_os)))
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
-    # HACK: we need to point to the real GAP binary, not a shell script
-    # wrapper. We can remove this hack (and once again use SYSINFO_GAP)
-    # once we get rid of the shell script wrapper
-    GAC_LDFLAGS = -bundle -bundle_loader $(SYSINFO_GAP2)
+    GAC_LDFLAGS = -bundle -bundle_loader $(SYSINFO_GAP)
+    GAC_LDFLAGS_FOR_INSTALL = -bundle -L$(libdir) -lgap
   else
     GAC_CFLAGS = -fPIC
-    GAC_LDFLAGS = -shared
+    GAC_LDFLAGS = -shared -fPIC
+    GAC_LDFLAGS_FOR_INSTALL = -shared -fPIC -L$(libdir) -lgap
   endif
 endif
 
@@ -319,7 +318,6 @@ endif
 
 # paths to gap and gac executable
 SYSINFO_GAP = $(abs_builddir)/gap
-SYSINFO_GAP2 = $(abs_builddir)/gap # HACK for bundle_loader support
 SYSINFO_GAC = $(abs_builddir)/gac
 
 
@@ -474,9 +472,13 @@ gap$(EXEEXT): libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/
 
 else
 
-# Linking rule and dependencies for the main gap executable
+# build rule for the main gap executable
 gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/main.c.lo
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/src/main.c.lo $(GAP_LIBS) $(OBJS) -o $@
+
+# build rule for the gap executable used by the `install-bin` target
+build/gap-install: libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/main.c.lo
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/src/main.c.lo $(GAP_LIBS) libgap.la -o $@
 
 endif
 
@@ -579,10 +581,10 @@ exec "$(libdir)/gap/gap" -l "$(libdir)/gap;$(datarootdir)/gap" "$$@"
 endef
 export gap_wrapper
 
-install-bin: gap
+install-bin: build/gap-install
 	# install the real GAP executable as $(libdir)/gap/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
-	$(LTINSTALL) -s gap $(DESTDIR)$(libdir)/gap
+	$(LTINSTALL) -s build/gap-install $(DESTDIR)$(libdir)/gap/gap
 	
 	# install a wrapper shell script invoking the real GAP executable as $(bindir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
@@ -638,8 +640,8 @@ install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DE
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_LIBS =
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
-install-sysinfo: SYSINFO_GAP2 = $(libdir)/gap/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
+install-sysinfo: GAC_LDFLAGS = $(GAC_LDFLAGS_FOR_INSTALL)
 install-sysinfo: GMP_PREFIX =
 install-sysinfo:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
