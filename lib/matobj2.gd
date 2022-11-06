@@ -266,10 +266,9 @@ DeclareAttribute( "CompatibleVectorFilter", IsMatrixOrMatrixObj );
 ##  that contains the <A>list</A><M>[ k ]</M>-th entry of <A>v</A> at
 ##  position <M>k</M>.
 ##  <P/>
-##  It is not specified what happens if <A>i</A> is larger than the length
-##  of <A>v</A>,
-##  or if <A>obj</A> is not in the base domain of <A>v</A>,
-##  or if <A>list</A> contains entries not in the allowed range.
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="\[\]\:\=" Label="for a vector object and an integer"/>
+##  need not perform consistency checks.
 ##  <P/>
 ##  Note that the sublist assignment operation <Ref Oper="\{\}\:\="/>
 ##  is left out here since it tempts the programmer to use constructions like
@@ -646,6 +645,10 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  this list.
 ##  <P/>
 ##  It is <E>not</E> guaranteed that the given list of entries is copied.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
+##  need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -679,6 +682,9 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  the <Ref Attr="BaseDomain" Label="for a vector object"/> <A>R</A>,
 ##  and the entries in <A>list</A>.
 ##  The list <A>list</A> is guaranteed not to be changed by this operation.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="NewVector"/> need not perform consistency checks.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewZeroVector"/> returns a mutable vector object
 ##  of length <A>n</A> which has <A>filt</A> and <A>R</A> as
@@ -725,6 +731,9 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <P/>
 ##  The corresponding entries must be in or compatible with <A>R</A>.
 ##  If <A>list</A> already contains vector objects, they are copied.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="NewMatrix"/> need not perform consistency checks.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewZeroMatrix"/> returns a mutable zero matrix
 ##  object with <A>m</A> rows and <A>n</A> columns
@@ -843,6 +852,9 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  For certain objects like compressed vectors this might be significantly
 ##  more efficient if <A>scols</A> and <A>dcols</A> are ranges
 ##  with increment 1.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="CopySubVector"/> need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -945,6 +957,9 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 ##  For certain objects like compressed vectors this might be
 ##  significantly more efficient if <A>scols</A> and <A>dcols</A> are
 ##  ranges with increment 1.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="CopySubMatrix"/> need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1008,6 +1023,9 @@ DeclareSynonym( "MatElm", ELM_MAT );
 ##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]:= </C><A>obj</A>,
 ##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
 ##  and this is in general not possible.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="SetMatElm"/> need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1194,7 +1212,7 @@ DeclareOperation( "CompanionMatrix",
 ##  value <A>filt</A>, is defined over the base domain <A>R</A>,
 ##  and has the entries given by the list <A>list</A> or the matrix object
 ##  <A>M</A>, respectively.
-##  Here <A>list</A> can be either a list of plain list that describe the
+##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
 ##  <P/>
@@ -1222,6 +1240,10 @@ DeclareOperation( "CompanionMatrix",
 ##  of <Ref Oper="ShallowCopy"/>.
 ##  If <A>list</A> is a nested list then it is <E>not</E> guaranteed
 ##  that also the entries of <A>list</A> are copied.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
+##  need not perform consistency checks.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

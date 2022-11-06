@@ -43,6 +43,9 @@ InstallMethod( NewVector, "for IsPlistVectorRep, a ring, and a list",
   [ IsPlistVectorRep, IsRing, IsList ],
   function( filter, basedomain, l )
     local typ, v;
+    if ValueOption( "check" ) <> false and not IsSubset( basedomain, l ) then
+      Error( "the elements in <l> must lie in <basedomain>" );
+    fi;
     typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
     v := [basedomain,ShallowCopy(l)];
     Objectify(typ,v);
@@ -63,7 +66,9 @@ InstallMethod( NewMatrix,
   "for IsPlistMatrixRep, a ring, an int, and a list",
   [ IsPlistMatrixRep, IsRing, IsInt, IsList ],
   function( filter, basedomain, rl, l )
-    local nd, filterVectors, m, e, filter2, i;
+    local check, nd, filterVectors, m, e, filter2, i;
+
+    check:= ValueOption( "check" ) <> false;
 
     # If applicable then replace a flat list 'l' by a nested list
     # of lists of length 'rl'.
@@ -84,6 +89,9 @@ InstallMethod( NewMatrix,
             m[i] := ShallowCopy(l[i]);
         else
             m[i] := NewVector( filterVectors, basedomain, l[i] );
+        fi;
+        if check and Length( m[i] ) <> rl then
+          Error( "the rows of <m> must have length <rl>" );
         fi;
     od;
     e := NewVector(filterVectors, basedomain, []);
@@ -827,6 +835,13 @@ InstallMethod( MatElm, "for a plist matrix and two positions",
 InstallMethod( SetMatElm, "for a plist matrix, two positions, and an object",
   [ IsPlistMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
   function( m, row, col, ob )
+    if ValueOption( "check" ) <> false then
+      if not ob in BaseDomain( m ) then
+        Error( "<ob> must lie in the base domain of <m>" );
+      elif col > m![RLPOS] then
+        Error( "<col> must be at most <m>![RLPOS]" );
+      fi;
+    fi;
     m![ROWSPOS][row]![ELSPOS][col] := ob;
   end );
 

@@ -180,6 +180,17 @@ end);
 
 # methods to create vector objects
 
+#############################################################################
+##
+#O  Vector( <filt>, <R>, <list> )
+#O  Vector( <filt>, <R>, <vec> )
+#O  Vector( <R>, <list> )
+#O  Vector( <R>, <vec> )
+#O  Vector( <list>, <vec> )
+#O  Vector( <vec1>, <vec2> )
+##
+##  Compute the missing arguments for 'NewVector' and then call it.
+##
 InstallMethod( Vector,
     [ IsOperation, IsSemiring, IsList ],
     NewVector );
@@ -282,6 +293,8 @@ InstallMethod( ZeroVector,
 #M  Matrix( <M1>, <M2> )
 #M  Matrix( <list>, <ncols> )
 #M  Matrix( <list> )
+##
+##  Compute the missing arguments for 'NewMatrix' and then call it.
 ##
 InstallMethod( Matrix,
   [ IsOperation, IsSemiring, IsList, IsInt ],
@@ -389,6 +402,7 @@ InstallMethod( Matrix,
     # perhaps adjust NewMatrix to take an IsMatrixOrMatrixObj?
     return NewMatrix( ConstructingFilter(example), BaseDomain(example), NrCols(mat), Unpack(mat) );
   end );
+
 
 #
 #
