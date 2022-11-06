@@ -476,9 +476,14 @@ else
 gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/main.c.lo
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/src/main.c.lo $(GAP_LIBS) $(OBJS) -o $@
 
+# generate a modified copy of main.c for use by the `gap-install` binary
+build/main.c: src/main.c
+	@echo "#define SYS_DEFAULT_PATHS \"$(libdir)/gap;$(datarootdir)/gap\"" > $@
+	@cat $< >> $@
+
 # build rule for the gap executable used by the `install-bin` target
-build/gap-install: libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/main.c.lo
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/src/main.c.lo $(GAP_LIBS) libgap.la -o $@
+build/gap-install: libgap.la cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/build/main.c.lo
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/build/main.c.lo $(GAP_LIBS) libgap.la -o $@
 
 endif
 
@@ -574,23 +579,14 @@ install: install-bin install-doc install-gaproot install-sysinfo install-headers
 	@echo "| via support@gap-system.org or https://github.com/gap-system/gap/issues   |"
 	@echo "+--------------------------------------------------------------------------+"
 
-# the following is wrapper script which is installed by the install-bin target
-define gap_wrapper
-#!/bin/sh
-exec "$(libdir)/gap/gap" -l "$(libdir)/gap;$(datarootdir)/gap" "$$@"
-endef
-export gap_wrapper
-
 install-bin: build/gap-install
-	# install the real GAP executable as $(libdir)/gap/gap
+	# install a special build of gap with SYS_DEFAULT_PATHS set suitably
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
+	$(LTINSTALL) -s build/gap-install $(DESTDIR)$(bindir)/gap
+	# for backwards compatibility, also install it into $(libdir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
 	$(LTINSTALL) -s build/gap-install $(DESTDIR)$(libdir)/gap/gap
-	
-	# install a wrapper shell script invoking the real GAP executable as $(bindir)/gap
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
-	echo "$$gap_wrapper" > $(DESTDIR)$(bindir)/gap
-	chmod 0755 $(DESTDIR)$(bindir)/gap
-	
+	# install gac
 	sed -e "s;@SYSINFO_GAPROOT@;$(libdir)/gap;" < $(srcdir)/cnf/gac.in > $(DESTDIR)$(bindir)/gac
 	chmod 0755 $(DESTDIR)$(bindir)/gac
 
