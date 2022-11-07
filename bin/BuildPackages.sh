@@ -207,9 +207,11 @@ GAPInput
       echo_run "$MAKE" clean
       echo_run ./configure "$GAPROOT"
     fi
+  fi
+
+  if [[ -f makefile || -f Makefile || -f GNUmakefile ]]
+  then
     echo_run "$MAKE"
-  else
-    notice "No building required for $PKG"
   fi
 }
 
