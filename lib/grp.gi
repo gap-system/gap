@@ -168,11 +168,16 @@ local r,i,j,u,f,q,n,lim,sel,nat,ok,mi;
     od;
     f:=FreeGroup(r);
     ok:=false;
-    if IsPerfectGroup(g) then
+    if not IsSolvableGroup(g) then
       if n=false then
         n:=ShallowCopy(NormalSubgroups(g));
-        # all perfect groups of order <15360 *are* 2-generated
-        lim:=15360;
+        if IsPerfectGroup(g) then
+          # all perfect groups of order <15360 *are* 2-generated
+          lim:=15360;
+        else
+          # all groups of order <8 *are* 2-generated
+          lim:=8;
+        fi;
         n:=Filtered(n,x->IndexNC(g,x)>=lim and Size(x)>1);
         SortBy(n,x->-Size(x));
         mi:=MinimalInclusionsGroups(n);
