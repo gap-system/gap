@@ -61,4 +61,4 @@ f := function() unknownname -> 3; end;;
 gap> f := function() return unknownname -> 3; end;;
 
 #
-gap> STOP_TEST( "unknown.tst", 1);
+gap> STOP_TEST( "unbound.tst", 1);

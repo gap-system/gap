@@ -161,4 +161,4 @@ Error, usage: FreeMonoid( [<wfilt>, ]<rank>[, <name>] )
               FreeMonoid( [<wfilt>, ]infinity[, <name>][, <init>] )
 
 #
-gap> STOP_TEST( "grpfree.tst", 1);
+gap> STOP_TEST( "monofree.tst", 1);

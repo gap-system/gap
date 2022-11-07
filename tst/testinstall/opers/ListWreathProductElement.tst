@@ -240,3 +240,6 @@ gap> x := G.1 * G.5 * G.2 * G.5 ^ ((G.4 * G.5) ^ 2) * G.2;;
 gap> list := ListWreathProductElement(G, x);;
 gap> x = WreathProductElementList(G, list);
 true
+
+#
+gap> STOP_TEST("ListWreathProductElement.tst", 1);
