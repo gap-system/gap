@@ -85,4 +85,4 @@ gap> PSigmaL( 3, 6 );
 Error, usage: SpecialLinearGroup( [<filter>, ]<d>, <R> )
 
 #
-gap> STOP_TEST("classic.tst-PS", 1);
+gap> STOP_TEST("classic-PS.tst", 1);
