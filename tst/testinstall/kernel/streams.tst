@@ -140,15 +140,6 @@ gap> NameFunction(func);
 "func"
 
 #
-gap> READ_NORECOVERY(fail);
-Error, READ_NORECOVERY: <input> must be a string or an input stream (not the v\
-alue 'fail')
-gap> READ_NORECOVERY("/this/path/does/not/exist!");
-false
-gap> READ_NORECOVERY(InputTextString(""));
-true
-
-#
 gap> READ_STREAM_LOOP(fail, fail, fail);
 Error, READ_STREAM_LOOP: <instream> must be an input stream (not the value 'fa\
 il')

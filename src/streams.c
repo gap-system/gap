@@ -817,34 +817,6 @@ static Obj FuncREAD(Obj self, Obj inputObj)
 
 /****************************************************************************
 **
-*F  FuncREAD_NORECOVERY( <self>, <input> ) . . .  . . . read a file or stream
-**
-**  Read the current input and close the input stream. Disable the normal
-**  mechanism which ensures that quitting from a break loop gets you back to
-**  a live prompt. This is initially designed for the files read from the
-**  command line.
-*/
-static Obj FuncREAD_NORECOVERY(Obj self, Obj inputObj)
-{
-    TypInputFile input;
-    if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
-        return False;
-
-    // read the file
-    READ_INNER(&input);
-    if (!CloseInput(&input)) {
-        ErrorQuit("Panic: READ_NORECOVERY cannot close input", 0, 0);
-    }
-    if (STATE(UserHasQuit)) {
-        STATE(UserHasQuit) = FALSE;    // stop recovery here
-        return Fail;
-    }
-    return True;
-}
-
-
-/****************************************************************************
-**
 *F  FuncREAD_STREAM_LOOP( <self>, <instream>, <outstream> ) . . read a stream
 **
 **  Read data from <instream> in a read-eval-view loop and write all output
@@ -1738,7 +1710,6 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_1ARGS(READ, input),
-    GVAR_FUNC_1ARGS(READ_NORECOVERY, input),
     GVAR_FUNC_4ARGS(
         READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
