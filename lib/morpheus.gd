@@ -587,3 +587,32 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 DeclareOperation("IsomorphicSubgroups",[IsGroup,IsGroup]);
 
 DeclareGlobalFunction("PatheticIsomorphism");
+
+############################################################################
+##
+#F RepresentativesOuterAutomorphismGroup(<G>, [,<aut>])
+##
+## <#GAPDoc Label="RepresentativesOuterAutomorphismGroup">
+## <ManSection>
+## <Func Name="RepresentativesOuterAutomorphismGroup" 
+## Arg='G, [,aut [, ordercenter]]'\>
+## 
+## <Description>
+## For a finite group <A>G</A> this function returns a sorted list which
+## contains one representative for each element of the outer automorphism
+## group of <A>G</A>.<P/>
+##
+## This function performs a random search in the automorphism group of <A>G</A>
+## and thus currently is only efficient if the outer automorphism group is very
+## small.<P/>
+##
+## The optional argument <A>aut</A> must be the automorphism group of <A>G</A>.
+## Note that it is not checked whether <A>aut</A> is indeed the automorphism
+## group of <A>G</A>.<P/>
+##
+## The optional argument <A>ordercenter</A> must be the order of the center of
+## <A>G</A>.
+## /Description>
+## </ManSection>
+## <#/GAPDoc>
+DeclareGlobalName("RepresentativesOuterAutomorphismGroup");

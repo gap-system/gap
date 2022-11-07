@@ -3220,3 +3220,41 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   Info(InfoMorph,1,Length(emb)," found -> ",Length(cl)," homs");
   return cl;
 end);
+
+# For a discussion on how to improve this function, see
+# https://github.com/gap-system/gap/pull/4100
+BindGlobal("RepresentativesOuterAutomorphismGroup", 
+function(G, args...)
+  local aut, order_out, out_reps, candidate, rep, i, ordercenter;
+  if Length(args) = 1 then
+    aut := args[1];
+  elif Length(args) = 0 then
+    aut := AutomorphismGroup(G);
+  elif Length(args) = 2 then
+    aut := args[1];
+    ordercenter := args[2];
+  else 
+    ErrorNoReturn("Usage: ",
+    "RepresentativesOuterAutomorphismGroup(G[, aut[, ordercenter]]);");
+  fi;
+  if not IsBound(ordercenter) then 
+    ordercenter := Size(Center(G));
+  fi;
+  if not HasSize(aut) then 
+    Print("#I: RepresentativesOuterAutomorphismGroup: Don't know the order of <aut>. Computing the order", 
+    " might be slow.\n");
+  fi;
+  # We have |Inn(G)| = |G/Z(G)|
+  order_out := Size(aut) / (Size(G) / ordercenter); 
+  out_reps := [ One(aut) ];
+  while Size(out_reps) < order_out do
+    candidate := PseudoRandom(aut);
+    for i in [ 1 .. Length(out_reps) ] do       
+      rep := out_reps[ i ];
+      if not IsInnerAutomorphism(candidate / rep) then 
+        AddSet(out_reps, candidate);
+      fi;
+    od;
+  od;
+  return out_reps;
+end);

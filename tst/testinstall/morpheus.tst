@@ -58,6 +58,18 @@ G (size 6)
 S (1 gens, size 3)
  | C3
 1 (size 1)
+gap> Size(RepresentativesOuterAutomorphismGroup( CyclicGroup(5))) = 4;
+#I: RepresentativesOuterAutomorphismGroup: Don't know the order of <aut>. Comp\
+uting the order might be slow.
+true
+gap> Size(RepresentativesOuterAutomorphismGroup( CyclicGroup(5), AutomorphismGroup(CyclicGroup(5)))) = 4;
+#I: RepresentativesOuterAutomorphismGroup: Don't know the order of <aut>. Comp\
+uting the order might be slow.
+true
+gap> Size(RepresentativesOuterAutomorphismGroup( CyclicGroup(5), AutomorphismGroup(CyclicGroup(5)),5)) = 4;
+#I: RepresentativesOuterAutomorphismGroup: Don't know the order of <aut>. Comp\
+uting the order might be slow.
+true
 
 # that's all, folks
 gap> STOP_TEST( "morpheus.tst", 1);
