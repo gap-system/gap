@@ -1069,9 +1069,15 @@ dnl check for non-standard math functions
 AC_CHECK_FUNCS([exp10])
 
 dnl pthreads
-AS_IF([test "x$enable_hpcgap" = xyes -o "x$with_julia" != xno ],[
+dnl we unconditionally check for these flags (and use them), even though we
+dnl only use pthreads if HPC-GAP is enabled. Als0, if a kernel extension uses
+dnl pthreads, then it may be necessary under certain Linux variants that the
+dnl gap executable is linked with flags like `-pthread`. If it is not, then
+dnl using the kernel extension will lead to a runtime exception.
+dnl See also <https://github.com/gap-system/gap/issues/5192>
+#AS_IF([test "x$enable_hpcgap" = xyes -o "x$with_julia" != xno ],[
   AX_PTHREAD
-  ])
+#  ])
 
 dnl backtraces via execinfo
 AX_EXECINFO
