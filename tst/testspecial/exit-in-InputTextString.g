@@ -1,1 +1,1 @@
-READ_NORECOVERY(InputTextString("Print(QuitGap(0));"));
+Read(InputTextString("Print(QuitGap(0));"));

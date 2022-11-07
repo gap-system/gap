@@ -1,2 +1,2 @@
-READ_NORECOVERY(InputTextString("Print(1 + [()]);"));
+Read(InputTextString("Print(1 + [()]);"));
 quit;
