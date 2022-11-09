@@ -1,5 +1,5 @@
 #@local F,F9,TestReadMatEntry,dim,m,v,w,checkShift,testlens,types,vecs,i,j
-#@local v1,v2
+#@local v1,v2,G
 gap> START_TEST("vecmat.tst");
 
 #
@@ -398,6 +398,27 @@ gap> for types in [[IsGF2VectorRep, GF(2)],
 >        od;
 >      od;
 >    od;
+
+# Check the change of the base domain.
+gap> v:= Vector( IsPlistVectorRep, GF(4), [ 0, 1 ] * Z(2) );;
+gap> ImmutableVector( GF(2), v );
+<immutable plist vector over GF(2) of length 2>
+
+# ImmutableVector is not allowed to return non-lists when called with lists.
+gap> v:= [ 0, 1 ] * Z(5)^0;;
+gap> IsList( v );
+true
+gap> IsList( ImmutableVector( GF(5^6), v ) );
+true
+gap> ConvertToVectorRep( v );;  IsList( v );
+true
+gap> IsList( ImmutableVector( GF(5^6), v ) );
+true
+
+# Check that the vector representations fit in the computation of the
+# nice monomorphism.
+gap> G:= Group([ [ [ Z(5^6)^6944, 0*Z(5) ], [ 0*Z(5), Z(5^2)^20 ] ] ]);;
+gap> Size( G );;
 
 #
 gap> STOP_TEST("vecmat.tst");
