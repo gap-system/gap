@@ -174,7 +174,8 @@ DeclareGlobalFunction("COSolvableFactor");
 ##  Complements are subgroups of <A>G</A> which intersect trivially with
 ##  <A>N</A> and together with <A>N</A> generate <A>G</A>.
 ##  <P/>
-##  At the moment only methods for a solvable <A>N</A> are available.
+##  At the moment methods are available only for the case that <A>N</A> or
+##  <A>G</A><C>/</C><A>N</A> is solvable.
 ##  <Example><![CDATA[
 ##  gap> ComplementClassesRepresentatives(g,Group((1,2)(3,4),(1,3)(2,4)));
 ##  [ Group([ (3,4), (2,4,3) ]) ]
