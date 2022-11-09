@@ -265,20 +265,36 @@ DeclareSynonym( "ConvertToGF2MatrixRep", CONV_GF2MAT);
 ##  <Oper Name="ImmutableMatrix" Arg='field, matrix[, change]'/>
 ##
 ##  <Description>
-##  returns an immutable matrix equal to <A>matrix</A> which is in the optimal
-##  (concerning space and runtime) representation for matrices defined over
-##  <A>field</A>. This means that matrices obtained by several calls of
+##  Let <A>matrix</A> be an object for which either <Ref Filt="IsMatrix"/> or
+##  <Ref Filt="IsMatrixObj"/> returns <K>true</K>.
+##  In the former case, <A>matrix</A> is a list of lists,
+##  and <Ref Oper="ImmutableMatrix"/> returns an immutable object for which
+##  <Ref Filt="IsMatrix"/> returns <K>true</K> (in particular again a list of
+##  lists), which is equal to <A>matrix</A>,
+##  and which is in the optimal (concerning space and runtime) representation
+##  for matrices defined over <A>field</A>,
+##  provided that the entries of <A>matrix</A> lie in <A>field</A>.
+##  In the latter case, <Ref Oper="ImmutableMatrix"/> returns an immutable
+##  object that is equal to the result of
+##  <Ref Oper="ChangedBaseDomain" Label="for a matrix object"/>
+##  when this is called with <A>matrix</A> and <A>field</A>.
+##  <P/>
+##  This means that matrices obtained by several calls of
 ##  <Ref Oper="ImmutableMatrix"/> for the same <A>field</A> are compatible
 ##  for fast arithmetic without need for field conversion.
 ##  <P/>
-##  The input matrix <A>matrix</A> or its rows might change their
-##  representation as a side effect of this function,
-##  however the result of <Ref Oper="ImmutableMatrix"/> is not necessarily
-##  <E>identical</E> to <A>matrix</A> if a conversion is not possible.
+##  If the input matrix <A>matrix</A> is in <Ref Filt="IsMatrix"/>
+##  then it or its rows might change their representation as a side effect
+##  of this function.
+##  However, one cannot rely on this side effect.
+##  Also, if <A>matrix</A> is already immutable and the result of
+##  <Ref Oper="ImmutableMatrix"/> has the same internal representation as
+##  <A>matrix</A>, the result is not necessarily <E>identical</E> to
+##  <A>matrix</A>.
 ##  <P/>
-##  If <A>change</A> is <K>true</K>, the rows of <A>matrix</A>
-##  (or <A>matrix</A> itself) may be changed to become immutable;
-##  otherwise they are copied first.
+##  If <A>change</A> is <K>true</K>, <A>matrix</A> or its rows (if there are
+##  subobjects that represent rows) may be changed to become immutable;
+##  otherwise the rows of <A>matrix</A> are copied first.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -295,16 +311,33 @@ DeclareOperation( "ImmutableMatrix",[IsObject,IsMatrix]);
 ##  <Oper Name="ImmutableVector" Arg='field, vector[, change]'/>
 ##
 ##  <Description>
-##  returns an immutable vector equal to <A>vector</A> which is in the optimal
-##  (concerning space and runtime) representation for vectors defined over
-##  <A>field</A>. This means that vectors obtained by several calls of
+##  Let <A>vector</A> be an object for which <Ref Filt="IsRowVector"/>
+##  or <Ref Filt="IsVectorObj"/> returns <K>true</K>.
+##  In the former case, <A>vector</A> is a list,
+##  and <Ref Oper="ImmutableVector"/> returns an immutable object for which
+##  <Ref Filt="IsRowVector"/> returns <K>true</K> (in particular again a list),
+##  which is equal to <A>vector</A>,
+##  and which is in the optimal (concerning space and runtime) representation
+##  for vectors defined over <A>field</A>,
+##  provided that the entries of <A>vector</A> lie in <A>field</A>.
+##  In the latter case, if <A>vector</A> is not in <Ref Filt="IsRowVector"/>,
+##  <Ref Oper="ImmutableVector"/> returns an immutable object that is equal
+##  to the result of
+##  <Ref Oper="ChangedBaseDomain" Label="for a vector object"/>
+##  when this is called with <A>vector</A> and <A>field</A>.
+##  <P/>
+##  This means that vectors obtained by several calls of
 ##  <Ref Oper="ImmutableVector"/> for the same <A>field</A> are compatible
 ##  for fast arithmetic without need for field conversion.
 ##  <P/>
-##  The input vector <A>vector</A> might change its representation
-##  as a side effect of this function,
-##  however the result of <Ref Oper="ImmutableVector"/> is not necessarily
-##  <E>identical</E> to <A>vector</A> if a conversion is not possible.
+##  If the input vector <A>vector</A> is in <Ref Filt="IsRowVector"/>
+##  then it might change its representation as a side effect
+##  of this function.
+##  However, one cannot rely on this side effect.
+##  Also, if <A>vector</A> is already immutable and the result of
+##  <Ref Oper="ImmutableVector"/> has the same internal representation as
+##  <A>vector</A>, the result is not necessarily <E>identical</E> to
+##  <A>vector</A>.
 ##  <P/>
 ##  If <A>change</A> is <K>true</K>, then <A>vector</A> may be changed to
 ##  become immutable; otherwise it is copied first.

@@ -1735,36 +1735,35 @@ end);
 
 #############################################################################
 ##
-#F  ImmutableVector( <field>, <vector>
+#F  ImmutableVector( <field>, <vector> )
 ##
 InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
-  if IsInt(f) then
-    if IsPrimePowerInt(f) then
-      f := GF(f);
-    else
-      f := ZmodnZ(f);
-    fi;
+  local v2;
+  if not IsInt(f) then f := Size(f); fi;
+  # 'IsRowVector' implies 'IsList'.
+  # We are not allowed to return a non-list,
+  # thus we are not allowed to call 'Vector'.
+  # Since there is a method for 'IsVectorObj' as the second argument,
+  # we do not deal with proper vector objects here.
+  if f <= 256 then
+    v2 := CopyToVectorRep(v,f);
+    if v2 <> fail then v := v2; fi;
   fi;
-  if IsVectorObj(v) then
-    # result is a vector object iff 'v' is
-    if f=BaseDomain(v) then
-      return Immutable(v);
-    else
-      return Immutable(Vector(f,Unpack(v)));
-    fi;
-  fi;
-  ConvertToVectorRepNC(v,f);
   return Immutable(v);
 end);
 
 InstallOtherMethod( ImmutableVector,"vectorObj,2",[IsObject,IsVectorObj],0,
 function(f,v)
-  return Immutable(v);
+  return MakeImmutable( ChangedBaseDomain( v, f ) );
 end);
 
 InstallOtherMethod( ImmutableVector,"general,3",[IsObject,IsRowVector,IsBool],0,
 function(f,v,change)
+#TODO: Do we really want to change the representation of 'v'?
+#      The documentation of 'ImmutableVector' allows this.
+#      However, the HPC GAP variant cannot do this,
+#      and calls 'CopyToVectorRep' instead.
   ConvertToVectorRepNC(v,f);
   if change then
     MakeImmutable(v);
