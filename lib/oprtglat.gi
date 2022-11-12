@@ -135,8 +135,8 @@ function(G,dom,all)
   savemem:=ValueOption("savemem");
   n:=Length(dom);
   if n>20 and ForAll(dom,x->IsSubset(G,x)) 
-    and NrMovedPoints(G)>1000 
-    and NrMovedPoints(G)*1000>Size(G) then
+    and NrMovedPoints(G)>1000 then
+    #and NrMovedPoints(G)*1000>Size(G) then
 
     b:=SmallerDegreePermutationRepresentation(G:cheap);
     if NrMovedPoints(Range(b))<NrMovedPoints(G) then
