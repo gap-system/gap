@@ -1354,7 +1354,7 @@ end);
 
 BindGlobal("RepsPerfSimpSub",function(G,simple)
 local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
-      D,params,might,bo;
+      D,params,might,bo,pls;
   if IsSolvableGroup(G) then
     return [TrivialSubgroup(G)];
   elif Size(SolvableRadical(G))>1 and (IsPermGroup(G) or IsMatrixGroup(G)) then
@@ -1394,7 +1394,8 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
     fi;
     Info(InfoLattice,1,"Searching perfect groups up to size ",Maximum(un));
 
-    if ForAny(un,i->i>10^6) then
+    pls:=Maximum(SizesPerfectGroups());
+    if ForAny(un,i->i>pls) then
       Error("the perfect residuum is too large");
     fi;
 
