@@ -242,7 +242,11 @@ GAPInput
     test -f $GAPPREFIX/share/gap/hpcgap/lib/hpc/tasks.g
     test -f $GAPPREFIX/share/gap/lib/init.g
 
-    # check for references to the build, source or home directories
+    # verify that there are no references to the build, source or home
+    # directories after stripping gap and libgap
+    strip $GAPPREFIX/bin/gap > /dev/null
+    strip $GAPPREFIX/lib/gap/gap > /dev/null
+    strip $GAPPREFIX/lib/libgap.so > /dev/null
     fgrep -r $BUILDDIR $GAPPREFIX && exit 1
     fgrep -r $SRCDIR $GAPPREFIX && exit 1
     fgrep -r $HOME $GAPPREFIX && exit 1
