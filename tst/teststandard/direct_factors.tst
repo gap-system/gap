@@ -29,7 +29,7 @@ gap> G := SmallGroup(64,3);;N:=First(NormalSubgroups(G),N -> Size(N)=4);;
 gap> Center(G);;
 gap> NormalComplement(G, N);
 fail
-gap> n := 0;; for G in AllGroups(16) do for N in NormalSubgroups(G) do C := NormalComplement(G, N); if C<>fail then n := n+1; fi; od; od; n;
+gap> n := 0;; for G in AllSmallGroups(16) do for N in NormalSubgroups(G) do C := NormalComplement(G, N); if C<>fail then n := n+1; fi; od; od; n;
 135
 gap> NormalComplement(D, D);
 Group([  ])
@@ -78,7 +78,7 @@ gap> List(DirectFactorsOfGroup(F/[(x*y)^30,(x*y^7)^11,x*y*x^(-1)*y^(-1)]),IdGrou
 [ [ 4, 1 ], [ 5, 1 ], [ 9, 1 ], [ 11, 1 ] ]
 gap> List(DirectFactorsOfGroup(SmallGroup(256, 56091)), IdGroup);
 [ [ 256, 56091 ] ]
-gap> for G in AllGroups(16) do Print(List(DirectFactorsOfGroup(G), IdGroup),"\n"); od;
+gap> for G in AllSmallGroups(16) do Print(List(DirectFactorsOfGroup(G), IdGroup),"\n"); od;
 [ [ 16, 1 ] ]
 [ [ 4, 1 ], [ 4, 1 ] ]
 [ [ 16, 3 ] ]

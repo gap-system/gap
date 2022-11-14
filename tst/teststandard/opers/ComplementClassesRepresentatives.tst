@@ -1,6 +1,6 @@
 #@local n, G, N
 gap> START_TEST("ComplementClassesRepresentatives.tst");
-gap> n := 0;; for G in AllGroups(60) do for N in NormalSubgroups(G) do if ComplementClassesRepresentatives(G, N)<>fail then n := n+1; fi; od; od; n;
+gap> n := 0;; for G in AllSmallGroups(60) do for N in NormalSubgroups(G) do if ComplementClassesRepresentatives(G, N)<>fail then n := n+1; fi; od; od; n;
 133
 gap> G := SymmetricGroup(4);; N := DerivedSubgroup(AlternatingGroup(4));;
 gap> Set(ComplementClassesRepresentatives(G, N), H -> H^G)=Set([ Group([ (3,4), (2,4,3) ])^G ]);

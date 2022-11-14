@@ -1,5 +1,5 @@
 gap> START_TEST("IsSolvableGroup.tst");
-gap> List(AllGroups(120), IsSolvableGroup);
+gap> List(AllSmallGroups(120), IsSolvableGroup);
 [ true, true, true, true, false, true, true, true, true, true, true, true, 
   true, true, true, true, true, true, true, true, true, true, true, true, 
   true, true, true, true, true, true, true, true, true, false, false, true, 
