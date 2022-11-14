@@ -260,7 +260,7 @@ gap> # TODO: T_PPERM2
 gap> # TODO: T_PPERM4
 gap> CheckRepeatedSerialization("abc"); # T_STRING
 gap> CheckRepeatedSerialization([1,2,3]); # T_PLIST
-#@fi
 
 #
 gap> STOP_TEST("hpc/serialize.tst", 1);
+#@fi
