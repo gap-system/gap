@@ -1,5 +1,5 @@
 gap> START_TEST("NormalHallSubgroups.tst");
-gap> for G in AllGroups(60) do Print(List(NormalHallSubgroups(G), IdGroup), "\n"); od;
+gap> for G in AllSmallGroups(60) do Print(List(NormalHallSubgroups(G), IdGroup), "\n"); od;
 [ [ 1, 1 ], [ 5, 1 ], [ 3, 1 ], [ 15, 1 ], [ 12, 1 ], [ 60, 1 ] ]
 [ [ 1, 1 ], [ 3, 1 ], [ 5, 1 ], [ 15, 1 ], [ 20, 1 ], [ 60, 2 ] ]
 [ [ 1, 1 ], [ 3, 1 ], [ 5, 1 ], [ 15, 1 ], [ 60, 3 ] ]
@@ -15,7 +15,7 @@ gap> for G in AllGroups(60) do Print(List(NormalHallSubgroups(G), IdGroup), "\n"
 [ [ 1, 1 ], [ 3, 1 ], [ 5, 1 ], [ 15, 1 ], [ 60, 12 ] ]
 [ [ 1, 1 ], [ 4, 2 ], [ 3, 1 ], [ 12, 5 ], [ 5, 1 ], [ 20, 5 ], [ 15, 1 ], 
   [ 60, 13 ] ]
-gap> for G in AllGroups(60) do primes := PrimeDivisors(Size(G)); l := []; for pi in IteratorOfCombinations(primes) do N := HallSubgroup(G, pi); if N<>fail and IsGroup(N) and IsNormal(G, N) then AddSet(l, N); fi; od; if l <> NormalHallSubgroups(G) then Print(IdGroup(G), "\n"); fi; od;
+gap> for G in AllSmallGroups(60) do primes := PrimeDivisors(Size(G)); l := []; for pi in IteratorOfCombinations(primes) do N := HallSubgroup(G, pi); if N<>fail and IsGroup(N) and IsNormal(G, N) then AddSet(l, N); fi; od; if l <> NormalHallSubgroups(G) then Print(IdGroup(G), "\n"); fi; od;
 gap> List(AllSmallGroups(168), G -> List(NormalHallSubgroups(G), Size));
 [ [ 1, 7, 21, 56, 168 ], [ 1, 8, 7, 21, 56, 168 ], [ 1, 7, 3, 21, 24, 168 ], 
   [ 1, 3, 7, 21, 56, 168 ], [ 1, 3, 7, 21, 168 ], 
@@ -39,7 +39,7 @@ gap> List(AllSmallGroups(168), G -> List(NormalHallSubgroups(G), Size));
   [ 1, 3, 7, 21, 168 ], [ 1, 8, 7, 56, 21, 168 ], [ 1, 7, 8, 24, 56, 168 ], 
   [ 1, 8, 7, 56, 168 ], [ 1, 3, 7, 56, 21, 168 ], [ 1, 7, 3, 24, 21, 168 ], 
   [ 1, 3, 7, 21, 168 ], [ 1, 8, 3, 24, 7, 56, 21, 168 ] ]
-gap> for G in AllGroups(168) do primes := PrimeDivisors(Size(G)); l := []; for pi in IteratorOfCombinations(primes) do N := HallSubgroup(G, pi); if N<>fail and IsGroup(N) and IsNormal(G, N) then AddSet(l, N); fi; od; if l <> NormalHallSubgroups(G) then Print(IdGroup(G), "\n"); fi; od;
+gap> for G in AllSmallGroups(168) do primes := PrimeDivisors(Size(G)); l := []; for pi in IteratorOfCombinations(primes) do N := HallSubgroup(G, pi); if N<>fail and IsGroup(N) and IsNormal(G, N) then AddSet(l, N); fi; od; if l <> NormalHallSubgroups(G) then Print(IdGroup(G), "\n"); fi; od;
 gap> List(AllPrimitiveGroups(DegreeAction, 8), G -> List(NormalHallSubgroups(G), Size));
 [ [ 1, 56, 8 ], [ 1, 168, 56, 8 ], [ 1, 1344 ], [ 1, 168 ], [ 1, 336 ], 
   [ 1, 20160 ], [ 1, 40320 ] ]
