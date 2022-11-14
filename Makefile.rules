@@ -582,10 +582,10 @@ install: install-bin install-doc install-gaproot install-sysinfo install-headers
 install-bin: build/gap-install install-libgap
 	# install a special build of gap with SYS_DEFAULT_PATHS set suitably
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
-	$(LTINSTALL) -s build/gap-install $(DESTDIR)$(bindir)/gap
+	$(LTINSTALL) build/gap-install $(DESTDIR)$(bindir)/gap
 	# for backwards compatibility, also install it into $(libdir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
-	$(LTINSTALL) -s build/gap-install $(DESTDIR)$(libdir)/gap/gap
+	$(LTINSTALL) build/gap-install $(DESTDIR)$(libdir)/gap/gap
 	# install gac
 	sed -e "s;@SYSINFO_GAPROOT@;$(libdir)/gap;" < $(srcdir)/cnf/gac.in > $(DESTDIR)$(bindir)/gac
 	chmod 0755 $(DESTDIR)$(bindir)/gac
@@ -664,7 +664,7 @@ install-headers: $(FFDATA_H) build/version.h
 
 install-libgap: libgap.la
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
-	$(LTINSTALL) -s libgap.la $(DESTDIR)$(libdir)
+	$(LTINSTALL) libgap.la $(DESTDIR)$(libdir)
 
 
 .PHONY: install install-bin install-doc install-gaproot install-headers install-libgap
