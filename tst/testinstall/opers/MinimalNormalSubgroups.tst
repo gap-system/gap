@@ -69,7 +69,7 @@ gap> G := F/[x^2, y^2, x^(-1)*y^(-1)*x*y, z];;
 gap> IsFinite(G);;
 gap> Size(MinimalNormalSubgroups(G));
 3
-gap> for G in AllGroups(60) do NormalSubgroups(G);; Print(Collected(List(Set(MinimalNormalSubgroups(G)), IdGroup)), "\n"); od;
+gap> for G in AllSmallGroups(60) do NormalSubgroups(G);; Print(Collected(List(Set(MinimalNormalSubgroups(G)), IdGroup)), "\n"); od;
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
@@ -89,7 +89,7 @@ gap> G := SmallGroup(120,34);; List(MinimalNormalSubgroups(G), IdGroup);
 [ [ 60, 5 ] ]
 gap> G := SmallGroup(120,35);; List(MinimalNormalSubgroups(G), IdGroup);
 [ [ 2, 1 ], [ 60, 5 ] ]
-gap> for G in AllGroups(240) do if not IsSolvable(G) then NormalSubgroups(G);; Print(List(MinimalNormalSubgroups(G), IdGroup), "\n"); fi; od;
+gap> for G in AllSmallGroups(240) do if not IsSolvable(G) then NormalSubgroups(G);; Print(List(MinimalNormalSubgroups(G), IdGroup), "\n"); fi; od;
 [ [ 2, 1 ] ]
 [ [ 2, 1 ] ]
 [ [ 2, 1 ], [ 60, 5 ] ]
@@ -98,7 +98,7 @@ gap> for G in AllGroups(240) do if not IsSolvable(G) then NormalSubgroups(G);; P
 [ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ] ]
 [ [ 2, 1 ], [ 60, 5 ] ]
 [ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 60, 5 ] ]
-gap> for G in AllGroups(360) do if not IsSolvable(G) then NormalSubgroups(G);; Print(List(MinimalNormalSubgroups(G), IdGroup), "\n"); fi; od;
+gap> for G in AllSmallGroups(360) do if not IsSolvable(G) then NormalSubgroups(G);; Print(List(MinimalNormalSubgroups(G), IdGroup), "\n"); fi; od;
 [ [ 2, 1 ], [ 3, 1 ] ]
 [ [ 360, 118 ] ]
 [ [ 3, 1 ], [ 60, 5 ] ]

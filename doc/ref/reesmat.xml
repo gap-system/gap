@@ -108,7 +108,7 @@
       whether there are any entries in <A>mat</A> which are equal to <C>0</C>.
       
       <Example><![CDATA[
-gap> G:=Random(AllGroups(Size, 32));;
+gap> G:=Random(AllSmallGroups(Size, 32));;
 gap> mat:=List([1..5], x-> List([1..3], y-> Random(G)));;
 gap> S:=ReesMatrixSemigroup(G, mat);
 <Rees matrix semigroup 3x5 over <pc group of size 32 with 
