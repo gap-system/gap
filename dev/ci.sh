@@ -222,7 +222,7 @@ GAPInput
     # verify `make install DESTDIR=...` produces identical content, just
     # in a different directory
     make install DESTDIR=/tmp/DESTDIR
-    diff -ru $DESTDIR/$GAPPREFIX $GAPPREFIX
+    diff -ru /tmp/DESTDIR/$GAPPREFIX $GAPPREFIX
 
     # change directory to prevent the installed GAP from accidentally picking
     # up files from the GAP source resp. build directory (wherever we are
