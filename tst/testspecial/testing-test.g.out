@@ -1,0 +1,20 @@
+gap> Test("test-1.tst", rec(width := 800));
+########> Diff in test-1.tst:3
+# Input is:
+a:=SymmetricGroup(1 0);;
+# Expected output:
+# But found:
+Syntax error: ) expected in stream:1
+a:=SymmetricGroup(1 0);;
+                    ^
+########
+########> Diff in test-1.tst:4
+# Input is:
+Length(Elements(a)) = Factorial(10);
+# Expected output:
+true
+# But found:
+false
+########
+false
+gap> QUIT;
