@@ -166,23 +166,25 @@ InstallGlobalFunction(ParseTestFile, function(arg)
   return ParseTestInput(str, ignorecomments, fnam);
 end);
 
-InstallGlobalFunction(RunTests, function(arg)
-  local tests, opts, breakOnError, alwaysPrintTracebackOnError, inp, outp,
+InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
+  local opts, breakOnError, alwaysPrintTracebackOnError, inp, outp,
         pos, cmp, times, ttime, nrlines, s, res, fres, t, f, i, gaproot,
-        localbag;
+        localbag, failures, testsize, size;
   # don't enter break loop in case of error during test
-  tests := arg[1];
   opts := rec( breakOnError := false, alwaysPrintTracebackOnError:= false,
                showProgress := "some", localdef := false );
 
   if not IS_OUTPUT_TTY() then
     opts.showProgress := false;
   fi;
-  if Length(arg) > 1 and IsRecord(arg[2]) then
-    for f in RecNames(arg[2]) do
-      opts.(f) := arg[2].(f);
-    od;
-  fi;
+  for f in RecNames(inopts) do
+    opts.(f) := inopts.(f);
+  od;
+
+  # now start the work
+  size := SizeScreen();
+  testsize := [opts.width, size[2]];
+  SizeScreen(testsize);
 
   # we collect outputs and add them to 'tests.cmp'
   # also collect timings and add them to 'tests.times'
@@ -193,9 +195,10 @@ InstallGlobalFunction(RunTests, function(arg)
   times := [];
   tests.cmp := cmp;
   tests.times := times;
+  failures := 0;
 
   if Length(inp) = 0 then
-    return;
+    return 0;
   fi;
 
   breakOnError := BreakOnError;
@@ -239,6 +242,23 @@ InstallGlobalFunction(RunTests, function(arg)
     fi;
     Add(cmp, res);
     Add(times, t);
+      # check for and report differences
+    if opts.compareFunction(opts.transformFunction(tests.outp[i]),
+                            opts.transformFunction(tests.cmp[i])) <> true then
+      if opts.showProgress = "some" then
+        Print("\r                                    \c\r"); # clear the line
+      fi;
+      SizeScreen(size);
+      if not opts.ignoreSTOP_TEST or
+        PositionSublist(tests.inp[i], "STOP_TEST") <> 1 then
+        failures := failures + 1;
+        opts.reportDiff(tests.inp[i], tests.outp[i], tests.cmp[i], fnam, tests.pos[i], tests.times[i]);
+      else
+        # print output of STOP_TEST
+        Print(tests.cmp[i]);
+      fi;
+      SizeScreen(testsize);
+    fi;
   od;
   if opts.showProgress = "some" then
     Print("\r                                    \c\r"); # clear the line
@@ -248,6 +268,8 @@ InstallGlobalFunction(RunTests, function(arg)
   # reset
   BreakOnError := breakOnError;
   AlwaysPrintTracebackOnError:= alwaysPrintTracebackOnError;
+  SizeScreen(size);
+  return failures;
 end);
 
 BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
@@ -564,7 +586,7 @@ BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
 end);
 
 InstallGlobalFunction("Test", function(arg)
-  local fnam, nopts, opts, size, full, pf, failures, lines, ign, new,
+  local fnam, nopts, opts, full, pf, failures, lines, ign, new,
         cT, ok, oldtimes, thr, delta, len, c, i, j, d, localdef, line;
   
   # get arguments and set options
@@ -645,10 +667,6 @@ InstallGlobalFunction("Test", function(arg)
     fi;
   fi;
 
-  # now start the work
-  size := SizeScreen();
-  SizeScreen([opts.width, size[2]]);
-  
   # remember the full input 
   if not opts.isStream then
     full := StringFile(fnam);
@@ -684,28 +702,7 @@ InstallGlobalFunction("Test", function(arg)
   od;
   
   # run the GAP inputs and collect the outputs and the timings
-  RunTests(pf, rec(breakOnError := opts.breakOnError, 
-                   showProgress := opts.showProgress,
-                   localdef     := opts.localdef));
-
-  # reset screen width
-  SizeScreen(size);
-
-  # check for and report differences
-  failures := 0;
-  for i in [1..Length(pf.inp)] do
-    if opts.compareFunction(opts.transformFunction(pf.outp[i]),
-                            opts.transformFunction(pf.cmp[i])) <> true then
-      if not opts.ignoreSTOP_TEST or 
-         PositionSublist(pf.inp[i], "STOP_TEST") <> 1 then
-        failures := failures + 1;
-        opts.reportDiff(pf.inp[i], pf.outp[i], pf.cmp[i], fnam, pf.pos[i], pf.times[i]);
-      else
-        # print output of STOP_TEST
-        Print(pf.cmp[i]);
-      fi;
-    fi;
-  od;
+  failures := RunTests(pf, opts, fnam);
 
   # maybe rewrite the input into a file
   if opts.rewriteToFile = true then
