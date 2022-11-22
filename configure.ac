@@ -521,6 +521,13 @@ dnl
 dnl External dependencies
 dnl
 
+# We support finding dependencies in certain non-standard locations:
+#  Homebrew on macOS: $(brew --prefix) (usually /opt/homebrew or /usr/local)
+#  Fink on macOS: /sw
+#  MacPorts: /opt/local
+HOMEBREW_PREFIX="$(brew --prefix 2>/dev/null || :)"
+DEFAULT_SEARCH_PATH="$HOMEBREW_PREFIX /opt/local /sw"
+
 dnl Find GMP
 AC_ARG_WITH([gmp],
   [AS_HELP_STRING([--with-gmp@<:@=builtin|PREFIX@:>@],
@@ -528,6 +535,7 @@ AC_ARG_WITH([gmp],
     [],[with_gmp=yes])
 
 BUILD_GMP=no
+GMP_SEARCH_PATH="DEFAULTS ${DEFAULT_SEARCH_PATH}"
 GMP_CPPFLAGS=
 GMP_LDFLAGS=
 GMP_LIBS="-lgmp"
@@ -535,37 +543,57 @@ GMP_PREFIX=
 AS_CASE([$with_gmp],
   [builtin],[
     # user explicitly requested to use builtin GMP
-    BUILD_GMP=yes
+    GMP_SEARCH_PATH=""
     AC_MSG_NOTICE([Using bundled GMP])
   ],
   [no],[
     AC_MSG_ERROR([Building without GMP is not supported])
   ],
-  [system],[with_gmp=yes],  dnl supported for backwards compatibility with old build system
+  [system],[
+    dnl supported for backwards compatibility with old build system
+    with_gmp=yes
+  ],
   [yes],[],
   [*],[
-    GMP_PREFIX="${with_gmp}"
-    GMP_CPPFLAGS="-I${with_gmp}/include"
-    GMP_LDFLAGS="-L${with_gmp}/lib"
+    GMP_SEARCH_PATH="$with_gmp"
   ]
 )
 
-AS_IF([test $BUILD_GMP = no],
-  [
-    # try to link against GMP
-    AX_CHECK_LIBRARY([GMP], [gmp.h], [gmp], [__gmpz_init])
-    AS_IF([test $ax_cv_have_GMP = no],[
-        AS_IF([test "x$with_gmp" = "xyes"],[
-          BUILD_GMP=yes
-          AC_MSG_NOTICE([No usable GMP found, switching to included GMP])
-        ],
-        [AC_MSG_ERROR([GMP not found at prefix $with_gmp])]
-        )
-    ])
-  ])
+save_CFLAGS=${CFLAGS}
+save_LIBS=${LIBS}
 
-# Use bundled GMP if requested
-AS_IF([test x$BUILD_GMP = xyes],[
+AC_MSG_CHECKING([for GMP])
+gmp_found=no
+for GMP_PREFIX in ${GMP_SEARCH_PATH} ; do
+  AS_IF([test "$GMP_PREFIX" != "DEFAULTS"],[
+    GMP_CPPFLAGS="-I${GMP_PREFIX}/include"
+    GMP_LDFLAGS="-L${GMP_PREFIX}/lib"
+  ],[
+    GMP_PREFIX=""
+    GMP_CPPFLAGS=""
+    GMP_LDFLAGS=""
+  ])
+  CFLAGS="${GMP_CPPFLAGS} ${save_CFLAGS}"
+  LIBS="${GMP_LDFLAGS} ${GMP_LIBS} ${save_LIBS}"
+  AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM([[#include <gmp.h>]],
+              [[mpz_t a; mpz_init (a);]])],
+    [gmp_found=yes
+     AS_IF([test x"$GMP_PREFIX" != x""],[
+       AC_MSG_RESULT([yes, at prefix ${GMP_PREFIX}])
+     ],[
+       AC_MSG_RESULT([yes, in default search path])
+     ])
+     break],
+  )
+done
+
+CFLAGS=${save_CFLAGS}
+LIBS=${save_LIBS}
+
+# Fall back to bundled GMP if necessary
+AS_IF([test x$gmp_found = xno],[
+  AC_MSG_RESULT([build bundled copy])
   BUILD_GMP=yes
   GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
@@ -587,43 +615,64 @@ AC_ARG_WITH([zlib],
     [],[with_zlib=yes])
 
 BUILD_ZLIB=no
+ZLIB_SEARCH_PATH="DEFAULTS ${DEFAULT_SEARCH_PATH}"
 ZLIB_CPPFLAGS=
 ZLIB_LDFLAGS=
 ZLIB_LIBS="-lz"
 AS_CASE([$with_zlib],
   [builtin],[
     # user explicitly requested to use builtin zlib
-    BUILD_ZLIB=yes
+    ZLIB_SEARCH_PATH=""
     AC_MSG_NOTICE([Using bundled zlib])
   ],
   [no],[
     AC_MSG_ERROR([Building without zlib is not supported])
   ],
-  [system],[with_zlib=yes],  dnl supported for backwards compatibility with old build system
+  [system],[
+    dnl supported for backwards compatibility with old build system
+    with_zlib=yes
+  ],
   [yes],[],
   [*],[
-    ZLIB_CPPFLAGS="-I${with_zlib}/include"
-    ZLIB_LDFLAGS="-L${with_zlib}/lib"
+    ZLIB_SEARCH_PATH="$with_gmp"
   ]
 )
 
+save_CFLAGS=${CFLAGS}
+save_LIBS=${LIBS}
 
-AS_IF([test $BUILD_ZLIB = no],
-  [
-    # try to link against zlib
-    AX_CHECK_LIBRARY([ZLIB], [zlib.h], [z], [inflateEnd])
-    AS_IF([test $ax_cv_have_ZLIB = no],[
-        AS_IF([test "x$with_zlib" = "xyes"],[
-          BUILD_ZLIB=yes
-          AC_MSG_NOTICE([No usable zlib found, switching to included zlib])
-        ],
-        [AC_MSG_ERROR([zlib not found at prefix $with_zlib])]
-        )
-    ])
+AC_MSG_CHECKING([for zlib])
+zlib_found=no
+for ZLIB_PREFIX in ${ZLIB_SEARCH_PATH} ; do
+  AS_IF([test "$ZLIB_PREFIX" != "DEFAULTS"],[
+    ZLIB_CPPFLAGS="-I${ZLIB_PREFIX}/include"
+    ZLIB_LDFLAGS="-L${ZLIB_PREFIX}/lib"
+  ],[
+    ZLIB_PREFIX=""
+    ZLIB_CPPFLAGS=""
+    ZLIB_LDFLAGS=""
   ])
+  CFLAGS="${ZLIB_CPPFLAGS} ${save_CFLAGS}"
+  LIBS="${ZLIB_LDFLAGS} ${ZLIB_LIBS} ${save_LIBS}"
+  AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM([[#include <zlib.h>]],
+              [[z_stream a; inflateEnd(&a);]])],
+    [zlib_found=yes
+     AS_IF([test x"$ZLIB_PREFIX" != x""],[
+       AC_MSG_RESULT([yes, at prefix ${ZLIB_PREFIX}])
+     ],[
+       AC_MSG_RESULT([yes, in default search path])
+     ])
+     break],
+  )
+done
 
-# Use bundled zlib if requested
-AS_IF([test x$BUILD_ZLIB = xyes],[
+CFLAGS=${save_CFLAGS}
+LIBS=${save_LIBS}
+
+# Fall back to bundled zlib if necessary
+AS_IF([test x$zlib_found = xno],[
+  AC_MSG_RESULT([build bundled copy])
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
   ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib/ -Wl,-rpath -Wl,${abs_builddir}/extern/install/zlib/lib/ -lz'
@@ -640,7 +689,24 @@ dnl Find GNU readline
 AC_ARG_WITH([readline],
   [AS_HELP_STRING([--with-readline@<:@=PREFIX@:>@],
     [support fancy command line editing via GNU readline; optionally
-     specify a prefix where it can be found])])
+     specify a prefix where it can be found])],
+    [],[with_readline=check])
+
+READLINE_SEARCH_PATH="DEFAULTS DEFAULTS_EREADLINE $HOMEBREW_PREFIX/opt/readline ${DEFAULT_SEARCH_PATH}"
+READLINE_CPPFLAGS=
+READLINE_LDFLAGS=
+READLINE_LIBS=
+
+AS_CASE([$with_readline],
+  [no],[
+    READLINE_SEARCH_PATH=""
+  ],
+  [check],[],
+  [yes],[],
+  [*],[
+    READLINE_SEARCH_PATH="$with_readline"
+  ]
+)
 
 dnl Now check if we can find GNU readline. We go to some extra efforts to
 dnl ensure it is GNU readline, and not e.g. BSD editline wrappers for
@@ -648,53 +714,60 @@ dnl readline, which do not suffice for GAP.
 dnl
 dnl note that OpenBSD installs modern (v6+) GNU readline into /usr/local under name libereadline
 dnl and its headers into /usr/local/include/ereadline.
-dnl
-AS_IF([test "x$with_readline" != xno],[
- dnl Checking for rl_bind_keyseq rules out very old readline
- dnl ereadline is the name of GNU readline library on OpenBSD
- AS_CASE([x"$with_readline"],dnl set up needed -L flags
-    [xyes|x], [READLINE_LDFLAGS=],
-    [*], [READLINE_LDFLAGS="-L$with_readline/lib"])
- save_LDFLAGS="$LDFLAGS"
- LDFLAGS="$LDFLAGS $READLINE_LDFLAGS"
- save_LIBS="$LIBS"
- AC_SEARCH_LIBS([rl_bind_keyseq], [readline ereadline], [
-   AS_IF([test x$ac_cv_search_rl_bind_keyseq != "xnone required"],
-    [READLINE_LIBS=$ac_cv_search_rl_bind_keyseq], [READLINE_LIBS=])
-   AS_CASE([x"$with_readline"],dnl libereadline is a special case
-    [xyes|x], [
-      AS_IF([test x$ac_cv_search_rl_bind_keyseq = "x-lereadline"], [
-	READLINE_CPPFLAGS="-I/usr/local/include/ereadline"
-	], [
-	READLINE_CPPFLAGS=])
-    ], [*],[
-      AS_IF([test x$ac_cv_search_rl_bind_keyseq = "x-lereadline"], [
-	READLINE_CPPFLAGS="-I$with_readline/include/ereadline"
-	], [
-	READLINE_CPPFLAGS="-I$with_readline/include"])
-      ]
-   )
-  dnl We check that the corresponding header is present
-   save_CPPFLAGS="$CPPFLAGS"
-   CPPFLAGS="$READLINE_CPPFLAGS $CPPFLAGS"
-   AC_CHECK_HEADERS([readline/readline.h], [
-        AC_DEFINE([HAVE_LIBREADLINE], [1], [Define if you have lib(e)readline])
-	], [
-	AS_CASE([x"$with_readline"],
-            [x], [READLINE_CPPFLAGS= READLINE_LDFLAGS= READLINE_LIBS=],
-            [*], [AC_MSG_FAILURE([--with-readline was given, but further tests for readline failed])])
-        ]
-   )
-   CPPFLAGS="$save_CPPFLAGS"
-   break
-   ],[
-   AS_CASE([x"$with_readline"],
-      [x], [READLINE_CPPFLAGS= READLINE_LDFLAGS= READLINE_LIBS=],
-      [*], [AC_MSG_FAILURE([--with-readline was given, but test for readline failed])]
-   )
- ])dnl AC_SEARCH_LIBS([rl_bind_keyseq] ...) ends here
- LDFLAGS="$save_LDFLAGS"
- LIBS="$save_LIBS"
+save_CFLAGS=${CFLAGS}
+save_LIBS=${LIBS}
+
+AC_MSG_CHECKING([for GNU readline])
+readline_found=no
+for READLINE_PREFIX in ${READLINE_SEARCH_PATH} ; do
+  AS_CASE([$READLINE_PREFIX],
+    [DEFAULTS],[
+      READLINE_PREFIX=""
+      READLINE_CPPFLAGS=""
+      READLINE_LDFLAGS=""
+      READLINE_LIBS="-lreadline"
+    ],
+    [DEFAULTS_EREADLINE],[
+      dnl ereadline is the name of GNU readline library on OpenBSD
+      READLINE_PREFIX=""
+      READLINE_CPPFLAGS="-I/usr/local/include/ereadline"
+      READLINE_LDFLAGS=""
+      READLINE_LIBS="-lereadline"
+    ],
+    [*],[
+      READLINE_CPPFLAGS="-I${READLINE_PREFIX}/include"
+      READLINE_LDFLAGS="-L${READLINE_PREFIX}/lib"
+      READLINE_LIBS="-lreadline"
+    ]
+  )
+  CFLAGS="${READLINE_CPPFLAGS} ${save_CFLAGS}"
+  LIBS="${READLINE_LDFLAGS} ${READLINE_LIBS} ${save_LIBS}"
+  AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM([[#include <stdio.h>
+                       #include <readline/readline.h>]],
+              [[rl_bind_keyseq(0,0);]])],
+    [readline_found=yes
+     AS_IF([test x"$READLINE_PREFIX" != x""],[
+       AC_MSG_RESULT([yes, at prefix ${READLINE_PREFIX}])
+     ],[
+       AC_MSG_RESULT([yes, in default search path])
+     ])
+     AC_DEFINE([HAVE_LIBREADLINE], [1], [Define if you have lib(e)readline])
+     break],
+  )
+done
+
+CFLAGS=${save_CFLAGS}
+LIBS=${save_LIBS}
+
+AS_IF([test x$readline_found = xno],[
+  AC_MSG_RESULT([no])
+  AS_IF([test x$with_readline != xcheck],[
+    AC_MSG_FAILURE([--with-readline was given, but further tests for readline failed])
+  ])
+  READLINE_CPPFLAGS=
+  READLINE_LDFLAGS=
+  READLINE_LIBS=
 ])
 
 AC_SUBST([READLINE_CPPFLAGS])

@@ -235,7 +235,7 @@ description of each is also available via
 GMP
 ---
 
-GAP 4 uses the external library GMP (see <https://www.gmplib.org>) for large
+GAP 4 uses the external library GMP (see <https://gmplib.org>) for large
 integer arithmetic, replacing the built-in code used in previous versions
 and achieving a significant speed-up in related computations. There is a
 version of GMP included with the GAP archive you downloaded and this will
@@ -673,31 +673,12 @@ to enter an administrator password).
 
      xcode-select --install
 
-You might want to consider using GNU readline by installing it via:
+If you are using a macOS package manager, we recommend installing a few for
+faster compilation and a better user experience:
 
  * using Homebrew: `brew install gmp readline`
  * using Fink: `fink install gmp readline7`
  * using MacPorts: `port install gmp readline`
- 
-After that you have to compile GAP and tell it where to find your installation of GNU readline
-using the following commands.
-
-For Homebrew, use these commands:
-
-    ./configure --with-gmp=$(brew --prefix) --with-readline=$(brew --prefix)/opt/readline
-    make
-
-For Fink, use these commands:
-
-    ./configure CPPFLAGS=-I/sw/include LDFLAGS=-L/sw/lib
-    make
-
-For MacPorts, use these commands:
-
-    ./configure CPPFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib
-    make
-
-For further information on how to use GNU readline, refer to section 5 above.
 
 Now simply follow the Unix installation instructions to compile and start
 GAP and then it will run in this Terminal window.
