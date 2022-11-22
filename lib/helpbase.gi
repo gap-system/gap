@@ -1013,13 +1013,74 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   return [exact, match];
 end);
 
+if not IsBound( InitialSubstringUTF8String ) then
+  InitialSubstringUTF8String:= "dummy";
+fi;
+if not IsBound( LETTERS ) then
+  LETTERS:= "dummy";
+fi;
+if not IsBound( WidthUTF8String ) then
+  WidthUTF8String:= "dummy";
+fi;
+
+BindGlobal( "InitialSubstringUTF8Text", function( str, cols )
+    local esc, parts, len, res, j, pos, word, w;
+
+    # Collect printable parts up to visible length 'cols',
+    # and all "escape sequences" in 'str'
+    # (sequences starting with ESC and stopping with the first letter
+    # afterwards).
+    esc:= CHAR_INT(27);
+    parts:= [];
+    len:= Length( str );
+    res:= "";
+    j:= 0;
+    while true do
+      pos:= Position( str, esc, j );
+      if pos = fail then
+        pos:= len+1;
+      fi;
+      word:= str{ [ j+1 .. pos-1 ] };
+      w:= WidthUTF8String( word );
+      if w <= cols then
+        Append( res, word );
+        cols:= cols - w;
+      elif cols > 0 then
+        Append( res, InitialSubstringUTF8String( word, cols ) );
+        cols:= 0;
+      fi;
+      if len < pos then
+        break;
+      fi;
+      j:= pos + 1;
+      while j <= len and not str[j] in LETTERS do
+        j:= j+1;
+      od;
+      if j > len then
+        Error( "string end inside escape sequence" );
+      fi;
+      Append( res, str{ [ pos .. j ] } );
+    od;
+    return res;
+end );
+
+if not IsReadOnlyGlobal( "InitialSubstringUTF8String" ) then
+  Unbind( InitialSubstringUTF8String );
+fi;
+if not IsReadOnlyGlobal( "LETTERS" ) then
+  Unbind( LETTERS );
+fi;
+if not IsReadOnlyGlobal( "WidthUTF8String" ) then
+  Unbind( WidthUTF8String );
+fi;
+
 #############################################################################
 ##
 #F  HELP_SHOW_MATCHES( <book>, <topic>, <frombegin> )  . . .  show list of
 #F  matches or single match directly
 ##  
 InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
-  local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
+  local   exact,  match,  x,  lines,  cnt,  i,  str,  n, width, line;
 
   # first get lists of exact and other matches
   x := HELP_GET_MATCHES( books, topic, frombegin );
@@ -1050,16 +1111,18 @@ InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
   # more than one topic found, show overview in pager
   else
     lines := 
-        ["Help: several entries match this topic - type ?2 to get match [2]\n"];
+        ["Help: several entries match this topic - type ?2 to get match [2]"];
     HELP_LAST.TOPICS:=[];
     cnt := 0;
     # show exact matches first
     match := Concatenation(exact, match);
+    width:= SizeScreen()[1];
     for i  in match  do
       cnt := cnt+1;
       topic := Concatenation(i[1].bookname,": ",i[1].entries[i[2]][1]);
       Add(HELP_LAST.TOPICS, i);
-      Add(lines,Concatenation("[",String(cnt),"] ",topic));
+      line:= Concatenation("[",String(cnt),"] ",topic);
+      Add(lines, InitialSubstringUTF8Text(line, width));
     od;
     Pager(rec(lines := lines, formatted := true));
     return true;
