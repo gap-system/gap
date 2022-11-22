@@ -2053,14 +2053,21 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
     fi;
     result := [];
     if early <> fail then
+        i := SHALLOW_COPY_OBJ(NAME_FUNC(oper));
+        APPEND_LIST_INTR( i, ": early method" );
+        CONV_STRING(i);
         m := rec(
             early   := true,
             #famPred := meths[i + 1],
             #argFilt := meths{[i + 2 .. i + nargs + 1]},
             func    := early,
             rank    := infinity,
-            info    := "early method",
-            #location := ["TODO",0],
+            info    := i,
+            # TODO: unfortunately we do not currently track the location where
+            # InstallEarlyMethod was called. But in practice the location of
+            # the function installed as early method is the same, at least in
+            # the GAP library; so just use that for now.
+            location := [ FILENAME_FUNC(early), STARTLINE_FUNC(early) ],
             rankbase := infinity,
             );
         ADD_LIST(result, m);
