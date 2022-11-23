@@ -1756,7 +1756,7 @@ InstallGlobalFunction(ElementsStabChain,function ( S )
            while S.orbit[1] ^ rep <> pnt  do
                 rep := LeftQuotient( S.transversal[pnt/rep], rep );
            od;
-           UniteSet( elms, stb * rep );
+           Append( elms, stb * rep );
 
         od;
 

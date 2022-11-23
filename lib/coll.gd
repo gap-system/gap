@@ -1732,12 +1732,12 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  3
 ##  gap> elms:= AsList( Group( (1,2,3) ) );;
 ##  gap> RandomList( elms );  RandomList( elms );
-##  (1,2,3)
 ##  (1,3,2)
+##  (1,2,3)
 ##  gap> rs:= RandomSource( IsMersenneTwister, 1 );
 ##  <RandomSource in IsMersenneTwister>
 ##  gap> RandomList( rs, elms );
-##  (1,2,3)
+##  (1,3,2)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2286,7 +2286,7 @@ DeclareSynonym( "Set", SSortedList );
 ##  false
 ##  true
 ##  gap> AsList( Group( (1,2,3), (1,2) ) );
-##  [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ]
+##  [ (), (2,3), (1,3,2), (1,3), (1,2,3), (1,2) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

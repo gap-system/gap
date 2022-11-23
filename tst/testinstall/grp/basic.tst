@@ -107,13 +107,13 @@ Alt( [ 2, 4, 17 ] )
 
 #
 gap> AlternatingGroup( IsRegular, 3 );
-Group([ (1,2,3) ])
+Group([ (1,3,2) ])
 gap> AlternatingGroup( IsRegular, 4 );
-Group([ (1,5,7)(2,4,8)(3,6,9)(10,11,12), (1,2,3)(4,7,10)(5,9,11)(6,8,12) ])
+Group([ (1,12,8)(2,10,9)(3,11,7)(4,5,6), (1,3,2)(4,12,9)(5,10,7)(6,11,8) ])
 gap> AlternatingGroup( IsRegular, [2,4,6] );
-Group([ (1,2,3) ])
+Group([ (1,3,2) ])
 gap> AlternatingGroup( IsRegular, [2,4,6,7] );
-Group([ (1,5,7)(2,4,8)(3,6,9)(10,11,12), (1,2,3)(4,7,10)(5,9,11)(6,8,12) ])
+Group([ (1,12,8)(2,10,9)(3,11,7)(4,5,6), (1,3,2)(4,12,9)(5,10,7)(6,11,8) ])
 
 #
 gap> AlternatingGroup(2,3);
@@ -548,9 +548,9 @@ Sym( [ 2, 4, 17 ] )
 
 #
 gap> SymmetricGroup( IsRegular, 3 );
-Group([ (1,4,5)(2,3,6), (1,3)(2,4)(5,6) ])
+Group([ (1,5,4)(2,6,3), (1,6)(2,5)(3,4) ])
 gap> SymmetricGroup( IsRegular, [2,4,6] );
-Group([ (1,4,5)(2,3,6), (1,3)(2,4)(5,6) ])
+Group([ (1,5,4)(2,6,3), (1,6)(2,5)(3,4) ])
 
 #
 gap> SymmetricGroup(2,3);

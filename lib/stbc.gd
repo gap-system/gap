@@ -452,7 +452,7 @@ DeclareGlobalFunction( "OrbitStabChain" );
 ##
 ##  <Description>
 ##  returns a list of all elements of the group described by the stabilizer
-##  chain <A>S</A>.
+##  chain <A>S</A>. The list is duplicate free but may be unsorted.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
