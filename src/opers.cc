@@ -2904,14 +2904,10 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
 
     // We set the location to a description, to make clear the function
     // hasn't been defined yet
-    const char label[] = "the global function \"%s\" is not yet defined";
-
-    // As the '%s' in 'label' will be replaced with 'namobj', there is
-    // no need for an extra character to store the end-of-string null.
-    Obj    filename = NEW_STRING(strlen(label) + GET_LEN_STRING(namobj));
-    char * buf = CSTR_STRING(filename);
-    Int    len = sprintf(buf, label, CONST_CSTR_STRING(namobj));
-    SET_LEN_STRING(filename, len);
+    Obj  filename = MakeString("the global function \"");
+    AppendString(filename, namobj);
+    const char * end = "\" is not yet defined";
+    AppendCStr(filename, end, strlen(end));
 
     Obj body_bag = NewFunctionBody();
     SET_FILENAME_BODY(body_bag, filename);
