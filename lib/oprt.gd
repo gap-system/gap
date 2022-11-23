@@ -1192,7 +1192,7 @@ DeclareGlobalFunction( "ImageElmActionHomomorphism" );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3),(1,2));;
 ##  gap> Action(g,AsList(g),OnRight);
-##  Group([ (1,4,5)(2,3,6), (1,3)(2,4)(5,6) ])
+##  Group([ (1,5,3)(2,6,4), (1,6)(2,5)(3,4) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -2201,21 +2201,22 @@ end);
 ##
 #M  AsList( <G> ) elements of perm group
 ##
-InstallMethod( AsList,"permgp: AsSSortedList", true,
-  [ IsPermGroup ], 0, AsSSortedList );
+InstallMethod( AsList, "permgp: AsSSortedList", [ IsPermGroup ],
+  G -> ElementsStabChain( StabChainMutable(G)) );
 
 #############################################################################
 ##
 #M  AsSSortedList( <G> ) elements of perm group
 ##
-InstallMethod( AsSSortedList,"via stabchain",true, [ IsPermGroup ], 0,
-function( G )
-  return ElementsStabChain( StabChainMutable(G));
-end );
+InstallMethod( AsSSortedList, "via stabchain", [ IsPermGroup ],
+  AsSSortedListNonstored );
 
-InstallMethod( AsSSortedListNonstored,"via stabchain", true, [ IsPermGroup ], 0,
+InstallMethod( AsSSortedListNonstored, "via stabchain", [ IsPermGroup ],
 function( G )
-  return ElementsStabChain( StabChainMutable(G));
+  local list;
+  list := ElementsStabChain( StabChainMutable(G));
+  Sort(list);
+  return list;
 end );
 
 #############################################################################

@@ -94,4 +94,14 @@ gap> Index(sym,b);
 3603600
 gap> Length(ContainedConjugates(sym,a,b));
 5
+
+#
+gap> AsSet(SymmetricGroup(3));
+[ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ]
+gap> AsList(SymmetricGroup(3));
+[ (), (2,3), (1,3), (1,3,2), (1,2,3), (1,2) ]
+gap> List(Iterator(SymmetricGroup(3)));
+[ (), (2,3), (1,3), (1,3,2), (1,2,3), (1,2) ]
+gap> AsList(SymmetricGroup(6)) = List(Iterator(SymmetricGroup(6)));
+true
 gap> STOP_TEST( "grpperm.tst", 1);
