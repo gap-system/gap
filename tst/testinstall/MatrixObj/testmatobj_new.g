@@ -164,20 +164,26 @@ MatObjTest_TestMatElm := function(ex)
     return true;
 end;
 
-# todo change 
-MatObjTest_TestSetMatElm := function(ex, opt, errors)
-    local col, row, elm;
+MatObjTest_TestSetMatElm := function(ex_in)
+    local col, row, elm, mat;
 
-    col := ex.nrCols;
-    row := ex.nrRows;
-    elm := Zero(ex.baseDomain);
+    ex := ShallowCopy(ex_in);
+    mat := ex.matObj;
+    elm := Zero(BaseDomain(mat));
     ex.sourceOfTruth[row, col] := elm;
     ex.mat[row, col] := elm;
-    MatObjTest_CallFunc(SetMatElm, [ex.matObj, row, col, elm], opt.breakOnError, errors, ex);
 
-    if ex.matObj[row, col] <> ex.sourceOfTruth[row, col] then
-        MatObjTest_HandleErrorWrongResult("SetMatElm", [ex.matObj, row, col, elm], opt.breakOnError, ex, errors);
-    fi;
+    for row in [1..NrRows(ex.matObj)] do
+        for col in [1..NrCols(ex.matObj)] do
+            ex.matObj[row,col] := elm;
+            ex.sourceOfTruth[row,col] := elm;
+            if ex.matObj[row,col] <> ex.sourceOfTruth[row,col] then
+                return false;
+            fi; 
+        od;
+    od;
+
+    return true;
 end;
 
 TestMatrixObj := function(filter, optIn)
@@ -209,18 +215,6 @@ TestMatrixObj := function(filter, optIn)
 
     examples := MatObjTest_GenerateExample(filter, opt);
 
-    #for ex in examples do
-    #    MatObjTest_TestBaseDomain(ex, opt, errors);
-    #od;
-
-    #for ex in examples do
-    #    MatObjTest_TestNrRows(ex, opt, errors);
-    #od; 
-
-    #for ex in examples do
-    #    MatObjTest_TestNrCols(ex, opt, errors);
-    #od; 
-
     # here the test function is called on all appropriate examples. Note, if
     # needed the list examples can be regenerated with the desired options at
     # any time. The test function 'MatObjTest_TestMatElm' is called using the
@@ -237,9 +231,12 @@ TestMatrixObj := function(filter, optIn)
         fi;
     od; 
 
-    for ex in examples do
-        MatObjTest_TestSetMatElm(ex, opt, errors);
-    od; 
+    # here belong tests that require the matrix object to be mutable
+    if not IsBound(opt.isImmutable) then
+        if MatObjTest_CallFunc(MatObjTest_TestSetMatElm, [ex], opt.breakOnError, errors, ex) = false then 
+            MatObjTest_HandleErrorWrongResult("SetMatElm", [ex.matObj], opt.breakOnError, ex, errors);
+        fi; 
+    fi;
 
     #TODO other tests
 
