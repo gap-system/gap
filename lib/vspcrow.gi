@@ -701,12 +701,15 @@ InstallOtherMethod( SemiEchelonBasis,
     function( V, gens )
     local heads,   # heads info for the basis
           B,       # the basis, result
+          F,       # base domain
           gensi,   # immutable copy
           flag,
           v;       # loop over vector space generators
 
     flag:=false;
     if ForAll(gens,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
+      # What is meant here:
+      # 'gens' is a list of vector objects that are not nec. lists.
       flag:=true;
     elif not IsMatrix(gens) then
       TryNextMethod();
@@ -730,8 +733,17 @@ InstallOtherMethod( SemiEchelonBasis,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := ImmutableMatrix(LeftActingDomain(V), gens);
-    if flag then gensi:=RowsOfMatrix(gensi);fi;
+    F:= LeftActingDomain( V );
+    if flag then
+      # In the case of proper vector objects,
+      # we want to keep their representation
+      # (since the user had good reason the give us these objects)
+      # but perhaps the base domain must be adjusted.
+      gensi:= Immutable( List( gens, v -> ChangedBaseDomain( v, F ) ) );
+    else
+      # We expect 'gens' to be a list of lists.
+      gensi:= ImmutableMatrix( F, gens );
+    fi;
     SetBasisVectors( B, gensi );
 
     B!.heads:= heads;
@@ -753,8 +765,8 @@ InstallMethod( SemiEchelonBasisNC,
     IsIdenticalObj,
     [ IsGaussianRowSpace, IsMatrix ],
     function( V, gens )
-    local B,  # the basis, result
-          gensi; # immutable copy
+    local B;  # the basis, result
+
     B:= Objectify( NewType( FamilyObj( gens ),
                                 IsFiniteBasisDefault
                             and IsSemiEchelonized
@@ -766,7 +778,6 @@ InstallMethod( SemiEchelonBasisNC,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := ImmutableMatrix(LeftActingDomain(V), gens);
     SetBasisVectors( B, gens );
 
     # Provide the `heads' information.
@@ -781,11 +792,11 @@ InstallOtherMethod( SemiEchelonBasisNC,
     IsIdenticalObj,
     [ IsGaussianRowSpace, IsList ],
     function( V, gens )
-    local B,  # the basis, result
-          gensi; # immutable copy
+    local B;  # the basis, result
 
     # filter for vector objects, not compressed FF vectors
     if not ForAll(gens,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
+      # We expect that the method for `IsMatrix` strikes.
       TryNextMethod();
     fi;
 
@@ -800,7 +811,6 @@ InstallOtherMethod( SemiEchelonBasisNC,
       SetIsRectangularTable( B, true );
     fi;
     SetUnderlyingLeftModule( B, V );
-    gensi := RowsOfMatrix(ImmutableMatrix(LeftActingDomain(V), gens));
     SetBasisVectors( B, gens );
 
     # Provide the `heads' information.
