@@ -1,3 +1,7 @@
+# the option customGenerator is supposed to be a function that expects as
+# arguments a filter, a randomSource, nrRows, nrCols and a domain. It must
+# return a classical GAP matrix. 
+
 MatObjTest_CallAndCatchError := function(f, args)
     local out, res, oldBreakOnError, oldErrorOutput, str;
 
@@ -24,9 +28,9 @@ MatObjTest_AppendErrorFail := function(f, args, catch, errors, ex)
     for arg in args do 
         if IsMatrixObj(arg) then 
             Append(errorMsg, Concatenation( "NewMatrix( ",
-            NameFunction( ex.filter ), ", ",
-            String( ex.baseDomain ), ", ",
-            String( ex.nrCols ), ", ",
+            NameFunction( ConstructingFilter(ex.MatObj) ), ", ",
+            String( BaseDomain(ex.MatObj) ), ", ",
+            String( NumberColumns(ex.MatObj) ), ", ",
             String( ex.mat ), " )", "\n\n"));
         else 
             Append(errorMsg, Concatenation(String(arg), "\n\n"));
@@ -46,9 +50,9 @@ MatObjTest_HandleErrorWrongResult := function(msg, args, breakOnError, ex, error
         for arg in args do 
             if IsMatrixObj(arg) then 
                 Append(errorMsg, Concatenation( "NewMatrix( ",
-                NameFunction( ex.filter ), ", ",
-                String( ex.baseDomain ), ", ",
-                String( ex.nrCols ), ", ",
+                NameFunction( ConstructingFilter(ex.MatObj) ), ", ",
+                String( BaseDomain(ex.MatObj) ), ", ",
+                String( NumberColumns(ex.MatObj) ), ", ",
                 String( ex.mat ), " )", "\n\n"));
             else 
                 Append(errorMsg, Concatenation(String(arg), "\n\n"));
@@ -60,9 +64,7 @@ end;
 
 MatObjTest_CallFunc := function(f, args, breakOnError, errors, ex)
     local catch;
-    #if f = ConstructingFilter then 
-    #    Error();
-    #fi;
+    
     if breakOnError then 
         return CallFuncList(f, args);
     else
@@ -128,93 +130,41 @@ MatObjTest_GenerateExample := function(filter, opt)
     else 
         getSourceOfTruth := x -> x[1];
     fi;
-
-    # if a custom generator was used we do not have to create MatObjs because we
-    # already have them
-    getMatObj := function(filter, ex)
-        if IsMatrixObj(ex[1]) then 
-            return ex[1];
-        else 
-            return NewMatrix(filter, ex[4], ex[3], ex[1]);
-        fi;
-    end;
  
     result := [];
 
     for ex in examples do 
-        Add(result, rec(matObj := getMatObj(filter, ex),
-            filter := filter,
+        Add(result, rec(matObj := NewMatrix(filter, ex[4], ex[3], ex[1]),
+            #filter := filter,
             mat := ex[1],
             sourceOfTruth := getSourceOfTruth(x)));
-        if BaseDomain(Last(result).matObj) <> ex[4] or NumberRows(Last(result).matObj) <> ex[2] or NumberColumns(Last(result).matObj) <> ex[3] then 
-            ErrorNoReturn(Concatenation("Error while generating examples. In a case with NrRows = ", String(ex[2], " NrCols = ", String(ex[3]), " domain = ", String(ex[4]), " NumberRows, NumberColumns or BaseDomain does not work.")));
+        if BaseDomain(Last(result).matObj) <> ex[4] or NumberRows(Last(result).matObj) <> ex[2] or NumberColumns(Last(result).matObj) <> ex[3] or ConstructingFilter(Last(result).matObj) <> filter then 
+            ErrorNoReturn(Concatenation("Error while generating examples. In a case with NrRows = ", String(ex[2], " NrCols = ", String(ex[3]), " domain = ", String(ex[4]), "and filter := ", String(filter), " NumberRows, NumberColumns, BaseDomain or ConstructingFilter does not work.")));
         fi;
     od;
 
     return result;
-
-    #return List(examples, x-> 
-        rec(matObj := NewMatrix(filter, x[4], x[3], x[1]),
-        filter := filter,
-        baseDomain := x[4],
-        nrCols := x[3],
-        nrRows := x[2],
-        mat := x[1],
-        sourceOfTruth := getSourceOfTruth(x)));
-        #return List(examples, x -> [NewMatrix(filter, x[3], x[2], x[1]), NewMatrix(opt.sourceOfTruth, x[3], x[2], x[1])]);
 end;
 
-#MatObjTest_TestBaseDomain := function(ex, opt, errors)
-#    local domain;
-#
-#    domain := MatObjTest_CallFunc(BaseDomain,[ex.matObj], opt.breakOnError, errors, ex);
-
-#    if domain <> fail then
-#        if domain <> ex.baseDomain then
-#            MatObjTest_HandleErrorWrongResult("BaseDomain", [ex.matObj], opt.breakOnError, ex, errors);
-#        fi;
-#    fi;
-#end;
-
-#MatObjTest_TestNrRows := function(ex, opt, errors)
-#    local nrRows;
-
-#    nrRows := MatObjTest_CallFunc(NrRows, [ex.matObj], opt.breakOnError, errors, ex);
-
-#    if nrRows <> fail then
-#        if nrRows <> ex.nrRows then
-#            MatObjTest_HandleErrorWrongResult("NrRows", [ex.matObj], opt.breakOnError, ex, errors);
-#        fi;
-#    fi; 
-#end;
-
-#MatObjTest_TestNrCols := function(ex, opt, errors)
-#    local nrCols;
-
-#    nrCols := MatObjTest_CallFunc(NrCols, [ex.matObj], opt.breakOnError, errors, ex);
-    
-#    if nrCols <> fail then
-#        if nrCols <> ex.nrCols then
-#            MatObjTest_HandleErrorWrongResult("NrCols", [ex.matObj], opt.breakOnError, ex, errors);
-#        fi;
-#    fi; 
-#end;
-
-# MatObjTest_CallFunc ausserhalb der TestCases
-MatObjTest_TestMatElm := function(ex, opt, errors)
+# This is a concrete test function. It gets an example and should test the
+# function it specifies in its identifier. Here the function tests MatElm that
+# is element access.
+MatObjTest_TestMatElm := function(ex)
     local col, row, elm;
 
-    col := ex.nrCols;
-    row := ex.nrRows;
-    elm := MatObjTest_CallFunc(MatElm, [ex.matObj, row, col], opt.breakOnError, errors, ex);
+    for row in [1..NrRows(ex.matobj)] do
+        for col in [1..NrCols(ex.matobj)] do
+            elm := ex.matobj[row, col];
+            if elm <> ex.sourceOfTruth[row,col] then
+                return false;
+            fi; 
+        od;
+    od;
 
-    if elm <> fail then
-        if elm <> ex.sourceOfTruth[row,col] then
-            MatObjTest_HandleErrorWrongResult("MatElm", [ex.matObj, row, col], opt.breakOnError, ex, errors);
-        fi;
-    fi;
+    return true;
 end;
 
+# todo change 
 MatObjTest_TestSetMatElm := function(ex, opt, errors)
     local col, row, elm;
 
@@ -229,19 +179,6 @@ MatObjTest_TestSetMatElm := function(ex, opt, errors)
         MatObjTest_HandleErrorWrongResult("SetMatElm", [ex.matObj, row, col, elm], opt.breakOnError, ex, errors);
     fi;
 end;
-
-MatObjTest_TestConstructingFilter := function(ex, opt, errors)
-    local filter;
-    #Error("before CallFunc");
-    filter := MatObjTest_CallFunc(ConstructingFilter, [ex.matObj], opt.breakOnError, errors, ex);
-    #Error("made it past CallFunc");
-    if filter <> fail then
-        if filter <> ex.filter then
-            MatObjTest_HandleErrorWrongResult("ConstructingFilter", [ex.matObj], opt.breakOnError, ex, errors);
-        fi;
-    fi;
-end;
-
 
 TestMatrixObj := function(filter, optIn)
     local errors, examples, ex;
@@ -266,31 +203,43 @@ TestMatrixObj := function(filter, optIn)
         opt.breakOnError := false;
     fi;
 
+    if not IsBound(opt.isImmutable) then 
+        opt.isImmutable := false;
+    fi;
+
     examples := MatObjTest_GenerateExample(filter, opt);
 
-    for ex in examples do
-        MatObjTest_TestBaseDomain(ex, opt, errors);
-    od;
+    #for ex in examples do
+    #    MatObjTest_TestBaseDomain(ex, opt, errors);
+    #od;
 
-    for ex in examples do
-        MatObjTest_TestNrRows(ex, opt, errors);
-    od; 
+    #for ex in examples do
+    #    MatObjTest_TestNrRows(ex, opt, errors);
+    #od; 
 
-    for ex in examples do
-        MatObjTest_TestNrCols(ex, opt, errors);
-    od; 
+    #for ex in examples do
+    #    MatObjTest_TestNrCols(ex, opt, errors);
+    #od; 
 
+    # here the test function is called on all appropriate examples. Note, if
+    # needed the list examples can be regenerated with the desired options at
+    # any time. The test function 'MatObjTest_TestMatElm' is called using the
+    # wrapper function 'MatObjTest_CallFunc' in order to catch errors and print
+    # appropriate error messages if 'opt.breakOnError' is set to 'true' or add
+    # them to the list 'errors' otherwise. 'MatObjTest_CallFunc' returns
+    # whatever the called function returns. In this case this should be either
+    # 'true' or 'false'. In the latter case the test encountered a wrong result.
+    # In order to provide a corresponding message the function
+    # 'MatObjTest_HandleWrongResult' should be called.
     for ex in examples do
-        MatObjTest_TestMatElm(ex, opt, errors);
+        if MatObjTest_CallFunc(MatObjTest_TestMatElm, [ex], opt.breakOnError, errors, ex) = false then 
+            MatObjTest_HandleErrorWrongResult("MatElm", [ex.matObj], opt.breakOnError, ex, errors);
+        fi;
     od; 
 
     for ex in examples do
         MatObjTest_TestSetMatElm(ex, opt, errors);
     od; 
-
-    for ex in examples do
-        MatObjTest_TestConstructingFilter(ex, opt, errors);
-    od;
 
     #TODO other tests
 
