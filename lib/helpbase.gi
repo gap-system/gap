@@ -1013,6 +1013,27 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   return [exact, match];
 end);
 
+
+#############################################################################
+##
+#F  InitialSubstringUTF8Text( <str>, <cols> )
+##
+##  This is a utility that extends the GAPDoc function
+##  <C>InitialSubstringUTF8String</C>, which deals with strings containing
+##  unicode characters but does not deal with escape sequences, i.e.,
+##  sequences starting with ESC and stopping with the first letter
+##  afterwards).
+##  Note that the text version of GAPDoc manuals contains both
+##  unicde characters and escape sequences.
+##
+##  <Ref Func="InitialSubstringUTF8Text"/> returns a string that is the
+##  longest prefix of the string <A>str</A> that has visible/printed length
+##  at most <A>cols</A> and contains all escape sequences from <C>str</C>.
+##
+
+# The following global variables will be defined via the GAPDoc package.
+# We assign them here (and unbind them later on) in order to avoid syntax
+# warnings.
 if not IsBound( InitialSubstringUTF8String ) then
   InitialSubstringUTF8String:= "dummy";
 fi;
@@ -1026,10 +1047,6 @@ fi;
 BindGlobal( "InitialSubstringUTF8Text", function( str, cols )
     local esc, parts, len, res, j, pos, word, w;
 
-    # Collect printable parts up to visible length 'cols',
-    # and all "escape sequences" in 'str'
-    # (sequences starting with ESC and stopping with the first letter
-    # afterwards).
     esc:= CHAR_INT(27);
     parts:= [];
     len:= Length( str );
@@ -1052,11 +1069,10 @@ BindGlobal( "InitialSubstringUTF8Text", function( str, cols )
       if len < pos then
         break;
       fi;
-      j:= pos + 1;
-      while j <= len and not str[j] in LETTERS do
-        j:= j+1;
-      od;
-      if j > len then
+      # Now pos points at an ESC character; all escape sequences we
+      # support are terminated by a letter, so search for one.
+      j:= PositionProperty( str, c -> c in LETTERS, pos );
+      if j = fail then
         Error( "string end inside escape sequence" );
       fi;
       Append( res, str{ [ pos .. j ] } );
