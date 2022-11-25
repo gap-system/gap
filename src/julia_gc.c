@@ -210,12 +210,12 @@ static jl_datatype_t * datatype_bag;
 static jl_datatype_t * datatype_largebag;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
-static BOOL            is_threaded;
+static BOOL            IsJuliaMultiThreaded;
 static jl_task_t *     RootTaskOfMainThread;
-static size_t          max_pool_obj_size;
+static size_t          MaxPoolObjSize;
 static UInt            YoungRef;
 static int             FullGC;
-static UInt            startTime, totalTime;
+static UInt            StartTime, TotalTime;
 
 
 #if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
@@ -258,7 +258,7 @@ static void * AllocateBagMemory(UInt type, UInt size)
 {
     // HOOK: return `size` bytes memory of TNUM `type`.
     void * result;
-    if (size <= max_pool_obj_size) {
+    if (size <= MaxPoolObjSize) {
         result = (void *)jl_gc_alloc_typed(JuliaTLS, size, datatype_bag);
     }
     else {
@@ -319,6 +319,7 @@ static inline int JMark(void * obj)
     return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
 }
 
+// the following is used by JuliaInterface
 void MarkJuliaObjSafe(void * obj)
 {
     if (!obj)
@@ -335,7 +336,7 @@ void MarkJuliaObjSafe(void * obj)
         YoungRef++;
 }
 
-
+// the following is used by JuliaInterface
 void MarkJuliaObj(void * obj)
 {
     if (!obj)
@@ -667,7 +668,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
 
 UInt TotalGCTime(void)
 {
-    return totalTime;
+    return TotalTime;
 }
 
 static void PreGCHook(int full)
@@ -688,7 +689,7 @@ static void PreGCHook(int full)
     if (STATE(CurrLVars))
         CHANGED_BAG(STATE(CurrLVars));
 
-    startTime = SyTime();
+    StartTime = SyTime();
 
 #ifndef REQUIRE_PRECISE_MARKING
     memset(MarkCache, 0, sizeof(MarkCache));
@@ -701,7 +702,7 @@ static void PreGCHook(int full)
 static void PostGCHook(int full)
 {
     JuliaTLS = SaveTLS;
-    totalTime += SyTime() - startTime;
+    TotalTime += SyTime() - StartTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
       (long) MarkCacheAttempts,
@@ -757,7 +758,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     }
     // These callbacks need to be set before initialization so
     // that we can track objects allocated during `jl_init()`.
-    max_pool_obj_size = jl_gc_max_internal_obj_size();
+    MaxPoolObjSize = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
     jl_init();
 
@@ -766,7 +767,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     SetupGuardPagesSize();
 #endif
 
-    is_threaded = jl_n_threads > 1;
+    IsJuliaMultiThreaded = jl_n_threads > 1;
 
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
@@ -809,7 +810,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     GapStackBottom = stack_bottom;
-    totalTime = 0;
+    TotalTime = 0;
 
     if (!datatype_mptr) {
         GAP_InitJuliaMemoryInterface(0, 0);
@@ -898,7 +899,7 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
-    if (is_threaded)
+    if (IsJuliaMultiThreaded)
         SetJuliaTLS();
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
     SET_PTR_BAG(bag, 0);
