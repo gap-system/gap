@@ -606,14 +606,8 @@ end);
 ##
 #M  IsomorphismFpGroupByChiefSeries( G, str )
 ##
-InstallMethod( IsomorphismFpGroupByChiefSeries,"permgrp",true,
-               [IsPermGroup,IsString], 0,
-function(g,str)
-  return IsomorphismFpGroupByChiefSeriesFactor(g,str,TrivialSubgroup(g));
-end);
-
-InstallMethod( IsomorphismFpGroupByChiefSeries,"pc grp",true,
-               [IsPcGroup,IsString], 0,
+InstallMethod( IsomorphismFpGroupByChiefSeries,"grp",true,
+               [IsGroup,IsString], 0,
 function(g,str)
   return IsomorphismFpGroupByChiefSeriesFactor(g,str,TrivialSubgroup(g));
 end);
