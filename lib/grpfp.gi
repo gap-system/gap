@@ -3989,7 +3989,7 @@ InstallGlobalFunction(IsomorphismPermGroupOrFailFpGroup,
 function(arg)
 local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
   t1, bad, trial, b, bs, r, nl, o, u, rp, eo, rpo, e, e2, sc, j, z,
-  timerFunc;
+  timerFunc,amax,iso,useind;
 
   timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
 
@@ -4101,36 +4101,70 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
     max:=sz*10;
   fi;
 
-  t1:=timerFunc();
-  bad:=[];
-  i:=1; 
-  while Size(H)<sz and i<=Length(comb) do 
-    trial:=comb[i];
-    if not ForAny(bad,i->IsSubset(i,trial)) then
-      Info(InfoFpGroup,1,"Try subgroup ",trial);
-      t:=CosetTableFromGensAndRels(gens,rels,trial:silent:=true,max:=max );
-      if t<>fail then
-	Info(InfoFpGroup,1,"has index ",IndexCosetTab(t));
-	p:=t{[1,3..Length(t)-1]};
-	Unbind(t);
-	for j in [1..Length(p)] do
-	  p[j]:=PermList(p[j]);
-	od;
-	H:= GroupByGenerators( p );
-	# compute stabilizer chain with size info.
-	if Length(trial)=0 then
-	  # regular is faithful
-	  SetSize(H,sz);
-	else
-	  StabChain(H,rec(limit:=sz));
-	fi;
-      else
-	# note that this subset fails a coset enumeration
-        Add(bad,Set(trial));
-      fi;
-    fi;
+  # Do not die on large coset table
+  amax:=max;
+  if max>10^4*sz then
+    max:=10^3*sz;
+  fi;
 
-    i:=i+1;
+  useind:=false;
+  t1:=timerFunc();
+  while max<amax do
+    bad:=[];
+    i:=1; 
+    while Size(H)<sz and i<=Length(comb) do 
+      trial:=comb[i];
+      if not ForAny(bad,i->IsSubset(i,trial)) then
+        Info(InfoFpGroup,1,"Try subgroup ",trial," with ",max);
+        t:=CosetTableFromGensAndRels(gens,rels,trial:silent:=true,max:=max );
+        if t<>fail then
+          Info(InfoFpGroup,1,"has index ",IndexCosetTab(t));
+          p:=t{[1,3..Length(t)-1]};
+          Unbind(t);
+          for j in [1..Length(p)] do
+            p[j]:=PermList(p[j]);
+          od;
+          H:= GroupByGenerators( p );
+          # compute stabilizer chain with size info.
+          if Length(trial)=0 then
+            # regular is faithful
+            SetSize(H,sz);
+          else
+            StabChain(H,rec(limit:=sz));
+          fi;
+
+
+          # try to use induced rep
+          if Size(H)<sz and Size(H)>1 then
+            iso:=IsomorphismFpGroup(SubgroupNC(G,
+              List(trial,x->ElementOfFpGroup(FamilyObj(One(G)),x))
+              ):silent:=true,max:=2*max);
+            H:=Range(iso);
+            t:=IsomorphismPermGroupOrFailFpGroup(H,max);
+            if t<>fail then
+              t:=iso*t;
+              iso:=InducedRepFpGroup(t,Source(iso));
+              H:=Group(List(GeneratorsOfGroup(G),
+                x->ImagesRepresentative(iso,x)));
+              StabChain(H,rec(limit:=sz));
+              if IsAbelian(H) then
+                t:=MinimalFaithfulPermutationRepresentation(H);
+                H:=Group(List(GeneratorsOfGroup(H),
+                  x->ImagesRepresentative(t,x)));
+                StabChain(H,rec(limit:=sz));
+              fi;
+              useind:=true;
+            fi;
+          fi;
+        else
+          # note that this subset fails a coset enumeration
+          Add(bad,Set(trial));
+        fi;
+      fi;
+
+      i:=i+1;
+    od;
+    max:=Minimum(amax,max*10);
   od;
 
   if Size(H)<sz then
@@ -4140,8 +4174,8 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
 
   Info(InfoFpGroup,1,"faithful representation of degree ",NrMovedPoints(H));
 
-  # regular case?
-  if Size(H)=NrMovedPoints(H) then
+  # regular case (unless induced)?
+  if Size(H)=NrMovedPoints(H) and not useind then
     t1:=timerFunc()-t1;
     # try to find a cyclic subgroup that gives a faithful rep.
     b:=fail;
@@ -4198,7 +4232,11 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
 
   fi;
 
-  p:=SmallerDegreePermutationRepresentation(H:cheap);
+  if NrMovedPoints(H)*10>=Size(H) then
+    p:=SmallerDegreePermutationRepresentation(H);
+  else
+    p:=SmallerDegreePermutationRepresentation(H:cheap);
+  fi;
   # tell the family that we can now compare elements
   SetCanEasilyCompareElements(FamilyObj(One(G)),true);
   SetCanEasilySortElements(FamilyObj(One(G)),true);
