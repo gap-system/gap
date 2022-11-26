@@ -139,11 +139,7 @@ jobs:
       - name: "Decide which Cygwin installers to build next"
         id: set-cygwin-matrix
         run: |
-          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            CYGWIN_MATRIX='{"arch":["x86_64"]}'
-          else
-            CYGWIN_MATRIX='{"arch":["x86_64","x86"]}'
-          fi
+          CYGWIN_MATRIX='{"arch":["x86_64"]}'
           echo "Setting Cygwin matrix: $CYGWIN_MATRIX"
           echo "matrix=$CYGWIN_MATRIX" >> $GITHUB_OUTPUT
 
