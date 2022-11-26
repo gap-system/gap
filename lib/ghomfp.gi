@@ -504,7 +504,7 @@ end);
 #M  InducedRepFpGroup(<hom>,<u> )
 ##
 ##  induce <hom> def. on <u> up to the full group
-BindGlobal("InducedRepFpGroup",function(thom,s)
+InstallGlobalFunction(InducedRepFpGroup,function(thom,s)
 local t,w,c,q,chom,tg,hi,u;
   w:=FamilyObj(s)!.wholeGroup;
 

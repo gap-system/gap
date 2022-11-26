@@ -357,3 +357,10 @@ DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("ProcessEpimorphismToNewFpGroup");
+
+#############################################################################
+##
+#M  InducedRepFpGroup(<hom>,<u> )
+##
+##  induce <hom> def. on <u> up to the full group
+DeclareGlobalFunction("InducedRepFpGroup");
