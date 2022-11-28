@@ -104,29 +104,6 @@ static inline int lt_ptr(void * a, void * b)
     return (uintptr_t)a < (uintptr_t)b;
 }
 
-#if 0
-static inline int gt_ptr(void * a, void * b)
-{
-    return (uintptr_t)a > (uintptr_t)b;
-}
-
-static inline void *max_ptr(void *a, void *b)
-{
-    if ((uintptr_t) a > (uintptr_t) b)
-        return a;
-    else
-        return b;
-}
-
-static inline void *min_ptr(void *a, void *b)
-{
-    if ((uintptr_t) a < (uintptr_t) b)
-        return a;
-    else
-        return b;
-}
-#endif
-
 /* align pointer to full word if mis-aligned */
 static inline void * align_ptr(void * p)
 {
