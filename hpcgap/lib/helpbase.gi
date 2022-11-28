@@ -1037,13 +1037,90 @@ atomic readwrite HELP_REGION do
 od; # end atomic
 end);
 
+
+#############################################################################
+##
+#F  InitialSubstringUTF8Text( <str>, <cols> )
+##
+##  This is a utility that extends the GAPDoc function
+##  <C>InitialSubstringUTF8String</C>, which deals with strings containing
+##  unicode characters but does not deal with escape sequences, i.e.,
+##  sequences starting with ESC and stopping with the first letter
+##  afterwards).
+##  Note that the text version of GAPDoc manuals contains both
+##  unicode characters and escape sequences.
+##
+##  <Ref Func="InitialSubstringUTF8Text"/> returns a string that is the
+##  longest prefix of the string <A>str</A> that has visible/printed length
+##  at most <A>cols</A> and contains all escape sequences from <C>str</C>.
+##
+
+# The following global variables will be defined via the GAPDoc package.
+# We assign them here (and unbind them later on) in order to avoid syntax
+# warnings.
+if not IsBound( InitialSubstringUTF8String ) then
+  InitialSubstringUTF8String:= "dummy";
+fi;
+if not IsBound( LETTERS ) then
+  LETTERS:= "dummy";
+fi;
+if not IsBound( WidthUTF8String ) then
+  WidthUTF8String:= "dummy";
+fi;
+
+BindGlobal( "InitialSubstringUTF8Text", function( str, cols )
+    local esc, parts, len, res, j, pos, word, w;
+
+    esc:= CHAR_INT(27);
+    parts:= [];
+    len:= Length( str );
+    res:= "";
+    j:= 0;
+    while true do
+      pos:= Position( str, esc, j );
+      if pos = fail then
+        pos:= len+1;
+      fi;
+      word:= str{ [ j+1 .. pos-1 ] };
+      w:= WidthUTF8String( word );
+      if w <= cols then
+        Append( res, word );
+        cols:= cols - w;
+      elif cols > 0 then
+        Append( res, InitialSubstringUTF8String( word, cols ) );
+        cols:= 0;
+      fi;
+      if len < pos then
+        break;
+      fi;
+      # Now pos points at an ESC character; all escape sequences we
+      # support are terminated by a letter, so search for one.
+      j:= PositionProperty( str, c -> c in LETTERS, pos );
+      if j = fail then
+        Error( "string end inside escape sequence" );
+      fi;
+      Append( res, str{ [ pos .. j ] } );
+    od;
+    return res;
+end );
+
+if not IsReadOnlyGlobal( "InitialSubstringUTF8String" ) then
+  Unbind( InitialSubstringUTF8String );
+fi;
+if not IsReadOnlyGlobal( "LETTERS" ) then
+  Unbind( LETTERS );
+fi;
+if not IsReadOnlyGlobal( "WidthUTF8String" ) then
+  Unbind( WidthUTF8String );
+fi;
+
 #############################################################################
 ##
 #F  HELP_SHOW_MATCHES( <book>, <topic>, <frombegin> )  . . .  show list of
 #F  matches or single match directly
 ##  
 InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
-  local   exact,  match,  x,  lines,  cnt,  i,  str,  n;
+  local   exact,  match,  x,  lines,  cnt,  i,  str,  n, width, line;
 atomic readwrite HELP_REGION do
 
   # first get lists of exact and other matches
@@ -1075,16 +1152,18 @@ atomic readwrite HELP_REGION do
   # more than one topic found, show overview in pager
   else
     lines := 
-        ["Help: several entries match this topic - type ?2 to get match [2]\n"];
+        ["Help: several entries match this topic - type ?2 to get match [2]"];
     HELP_LAST.TOPICS:=[];
     cnt := 0;
     # show exact matches first
     match := Concatenation(exact, match);
+    width:= SizeScreen()[1];
     for i  in match  do
       cnt := cnt+1;
       topic := Concatenation(i[1].bookname,": ",i[1].entries[i[2]][1]);
       Add(HELP_LAST.TOPICS, i);
-      Add(lines,Concatenation("[",String(cnt),"] ",topic));
+      line:= Concatenation("[",String(cnt),"] ",topic);
+      Add(lines, InitialSubstringUTF8Text(line, width));
     od;
     Pager(rec(lines := lines, formatted := true));
     return true;

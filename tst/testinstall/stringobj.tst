@@ -5229,5 +5229,16 @@ gap> Append(s, "xyz");
 gap> [s, IsString(s), IsStringRep(s)];
 [ "strxyz", true, false ]
 
+# 'InitialSubstringUTF8String' vs. 'InitialSubstringUTF8Text'
+gap> s:= Concatenation( "abc", TextAttr.bold, "def", TextAttr.1, "ghi",
+>                       TextAttr.reset );
+"abc\033[1mdef\033[31mghi\033[0m"
+gap> List( [ 4 .. 8 ], i -> InitialSubstringUTF8String( s, i ) );
+[ "abc\033[", "abc\033[1", "abc\033[1m", "abc\033[1md", "abc\033[1mde" ]
+gap> List( [ 4 .. 8 ], i -> InitialSubstringUTF8Text( s, i ) );
+[ "abc\033[1md\033[31m\033[0m", "abc\033[1mde\033[31m\033[0m", 
+  "abc\033[1mdef\033[31m\033[0m", "abc\033[1mdef\033[31mg\033[0m", 
+  "abc\033[1mdef\033[31mgh\033[0m" ]
+
 #
 gap> STOP_TEST( "stringobj.tst", 1);
