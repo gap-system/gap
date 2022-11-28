@@ -205,9 +205,9 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-static jl_datatype_t * datatype_mptr;
-static jl_datatype_t * datatype_bag;
-static jl_datatype_t * datatype_largebag;
+static jl_datatype_t * DatatypeGapObj;
+static jl_datatype_t * DatatypeSmallBag;
+static jl_datatype_t * DatatypeLargeBag;
 static Bag *           GapStackBottom;
 static jl_ptls_t       JuliaTLS, SaveTLS;
 static BOOL            IsJuliaMultiThreaded;
@@ -259,10 +259,10 @@ static void * AllocateBagMemory(UInt type, UInt size)
     // HOOK: return `size` bytes memory of TNUM `type`.
     void * result;
     if (size <= MaxPoolObjSize) {
-        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, datatype_bag);
+        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, DatatypeSmallBag);
     }
     else {
-        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, datatype_largebag);
+        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, DatatypeLargeBag);
     }
     memset(result, 0, size);
     if (TabFreeFuncBags[type])
@@ -403,7 +403,7 @@ void MarkJuliaObj(void * obj)
 static void TryMark(void * p)
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
-    if (p2 && jl_typeis(p2, datatype_mptr)) {
+    if (p2 && jl_typeis(p2, DatatypeGapObj)) {
 #ifndef REQUIRE_PRECISE_MARKING
         // Prepopulate the mark cache with references we know
         // are valid and in current use.
@@ -423,7 +423,7 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
         if (addr && jl_gc_internal_obj_base_ptr(addr) == addr &&
-            jl_typeis(addr, datatype_mptr)) {
+            jl_typeis(addr, DatatypeGapObj)) {
             PtrArrayAdd(arr, addr);
         }
         q -= C_STACK_ALIGN;
@@ -561,7 +561,7 @@ static NOINLINE void TryMarkRange(void * start, void * end)
 
 BOOL IsGapObj(void * p)
 {
-    return jl_typeis(p, datatype_mptr);
+    return jl_typeis(p, DatatypeGapObj);
 }
 
 void CHANGED_BAG(Bag bag)
@@ -724,7 +724,7 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     // the comments on conservative stack scanning for an in-depth
     // explanation.
     void * ty = jl_typeof(header);
-    if (ty != datatype_bag && ty != datatype_largebag)
+    if (ty != DatatypeSmallBag && ty != DatatypeLargeBag)
         return 0;
     if (JMark(header))
         return 1;
@@ -808,17 +808,17 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 // is available.
 #ifdef HAVE_JL_REINIT_FOREIGN_TYPE
     if (jl_boundp(module, jl_symbol("GapObj"))) {
-        datatype_mptr =
+        DatatypeGapObj =
             (jl_datatype_t *)jl_get_global(module, jl_symbol("GapObj"));
-        jl_reinit_foreign_type(datatype_mptr, MPtrMarkFunc, NULL);
+        jl_reinit_foreign_type(DatatypeGapObj, MPtrMarkFunc, NULL);
 
-        datatype_bag =
+        DatatypeSmallBag =
             (jl_datatype_t *)jl_get_global(module, jl_symbol("SmallBag"));
-        jl_reinit_foreign_type(datatype_bag, BagMarkFunc, JFinalizer);
+        jl_reinit_foreign_type(DatatypeSmallBag, BagMarkFunc, JFinalizer);
 
-        datatype_largebag =
+        DatatypeLargeBag =
             (jl_datatype_t *)jl_get_global(module, jl_symbol("LargeBag"));
-        jl_reinit_foreign_type(datatype_largebag, BagMarkFunc, JFinalizer);
+        jl_reinit_foreign_type(DatatypeLargeBag, BagMarkFunc, JFinalizer);
 
         return;
     }
@@ -826,21 +826,21 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 
     // create and store data type for master pointers
     name = jl_symbol("GapObj");
-    datatype_mptr = GAP_DeclareGapObj(name, module, parent);
-    GAP_ASSERT(jl_is_datatype(datatype_mptr));
-    jl_set_const(module, name, (jl_value_t *)datatype_mptr);
+    DatatypeGapObj = GAP_DeclareGapObj(name, module, parent);
+    GAP_ASSERT(jl_is_datatype(DatatypeGapObj));
+    jl_set_const(module, name, (jl_value_t *)DatatypeGapObj);
 
     // create and store data type for small bags
     name = jl_symbol("SmallBag");
-    datatype_bag = GAP_DeclareBag(name, module, jl_any_type, 0);
-    GAP_ASSERT(jl_is_datatype(datatype_bag));
-    jl_set_const(module, name, (jl_value_t *)datatype_bag);
+    DatatypeSmallBag = GAP_DeclareBag(name, module, jl_any_type, 0);
+    GAP_ASSERT(jl_is_datatype(DatatypeSmallBag));
+    jl_set_const(module, name, (jl_value_t *)DatatypeSmallBag);
 
     // create and store data type for large bags
     name = jl_symbol("LargeBag");
-    datatype_largebag = GAP_DeclareBag(name, module, jl_any_type, 1);
-    GAP_ASSERT(jl_is_datatype(datatype_largebag));
-    jl_set_const(module, name, (jl_value_t *)datatype_largebag);
+    DatatypeLargeBag = GAP_DeclareBag(name, module, jl_any_type, 1);
+    GAP_ASSERT(jl_is_datatype(DatatypeLargeBag));
+    jl_set_const(module, name, (jl_value_t *)DatatypeLargeBag);
 }
 
 void InitBags(UInt initial_size, Bag * stack_bottom)
@@ -848,7 +848,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     GapStackBottom = stack_bottom;
     TotalTime = 0;
 
-    if (!datatype_mptr) {
+    if (!DatatypeGapObj) {
         GAP_InitJuliaMemoryInterface(0, 0);
     }
 
@@ -937,7 +937,7 @@ Bag NewBag(UInt type, UInt size)
 
     if (IsJuliaMultiThreaded)
         SetJuliaTLS();
-    bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), datatype_mptr);
+    bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), DatatypeGapObj);
     SET_PTR_BAG(bag, 0);
 
     BagHeader * header = AllocateBagMemory(type, alloc_size);
@@ -1043,18 +1043,18 @@ inline void MarkBag(Bag bag)
     // relies on Julia internals. It is functionally equivalent
     // to:
     //
-    //     if (JMarkTyped(p, datatype_mptr)) YoungRef++;
+    //     if (JMarkTyped(p, DatatypeGapObj)) YoungRef++;
     //
     switch (jl_astaggedvalue(p)->bits.gc) {
     case 0:
-        if (JMarkTyped(p, datatype_mptr))
+        if (JMarkTyped(p, DatatypeGapObj))
             YoungRef++;
         break;
     case 1:
         YoungRef++;
         break;
     case 2:
-        JMarkTyped(p, datatype_mptr);
+        JMarkTyped(p, DatatypeGapObj);
         break;
     case 3:
         break;
