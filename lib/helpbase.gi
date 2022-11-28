@@ -1024,7 +1024,7 @@ end);
 ##  sequences starting with ESC and stopping with the first letter
 ##  afterwards).
 ##  Note that the text version of GAPDoc manuals contains both
-##  unicde characters and escape sequences.
+##  unicode characters and escape sequences.
 ##
 ##  <Ref Func="InitialSubstringUTF8Text"/> returns a string that is the
 ##  longest prefix of the string <A>str</A> that has visible/printed length
