@@ -4,7 +4,7 @@
 ##  applied to matrix spaces.)
 ##
 #@local A,F,b,c,c1,c2,dims,erg,f,i,im,iter,l,lc,m,mb,n,nv,p,subsp
-#@local u,uu,uuu,uuuu,v,w,ww,z
+#@local u,uu,uuu,uuuu,v,w,ww,z,vecs,g
 gap> START_TEST("vspcrow.tst");
 
 #############################################################################
@@ -84,11 +84,20 @@ SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
 [ [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] )
 gap> IsSemiEchelonized( b );
 true
+gap> vecs:= [ Vector( IsPlistVectorRep, GF(2), [ 0, 1 ] * Z(2) ) ];;
+gap> v:= VectorSpace( GF(4), vecs );;
+gap> b:= SemiEchelonBasis( v, vecs );;
+gap> BaseDomain( b[1] );
+GF(2^2)
+gap> b[1] = vecs[1];
+true
 
 #############################################################################
 ##
 ##  4. Methods for row spaces
 ##
+gap> v:= LeftModuleByGenerators( GF(9),
+>     [ [ Z(3), Z(3), Z(3) ], [ Z(3), Z(3), 0*Z(3) ] ] );;
 gap> m:= Z(3)^0 * [ [ 1, 1 ], [ 1, 0 ], [ 0, 0 ] ];
 [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ]
 gap> im:= v * m;;
