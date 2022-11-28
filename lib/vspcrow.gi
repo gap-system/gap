@@ -709,7 +709,7 @@ InstallOtherMethod( SemiEchelonBasis,
     flag:=false;
     if ForAll(gens,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
       # What is meant here:
-      # 'gens' is a list of vector objects that are not nec. lists.
+      # 'gens' is a list of vector objects that are not necessarily lists.
       flag:=true;
     elif not IsMatrix(gens) then
       TryNextMethod();
@@ -737,7 +737,7 @@ InstallOtherMethod( SemiEchelonBasis,
     if flag then
       # In the case of proper vector objects,
       # we want to keep their representation
-      # (since the user had good reason the give us these objects)
+      # (since the user had good reason to give us these objects)
       # but perhaps the base domain must be adjusted.
       gensi:= Immutable( List( gens, v -> ChangedBaseDomain( v, F ) ) );
     else
@@ -796,7 +796,7 @@ InstallOtherMethod( SemiEchelonBasisNC,
 
     # filter for vector objects, not compressed FF vectors
     if not ForAll(gens,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
-      # We expect that the method for `IsMatrix` strikes.
+      # We expect that the method for `IsMatrix` is applicable.
       TryNextMethod();
     fi;
 
