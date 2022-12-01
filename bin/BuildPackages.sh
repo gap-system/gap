@@ -201,10 +201,16 @@ GAPInput
 )
       local CONFIG_ARGS_FLAG_NAME="PACKAGE_CONFIG_ARGS_${PKG_NAME}"
       echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS ${!CONFIG_ARGS_FLAG_NAME}
+      # hack: run `make clean` in case the package was built before with different settings
       echo_run "$MAKE" clean
     else
       echo_run ./configure "$GAPROOT"
+      # hack: run `make clean` in case the package was built before with different settings
       echo_run "$MAKE" clean
+      # hack: in browse and edim, `make clean` removes `Makefile` so run configure
+      # again to ensure we can actually build them (we could restrict this hack to
+      # the two offending packages, but since non-autoconf configure is super cheap,
+      # there seems little reason to bother)
       echo_run ./configure "$GAPROOT"
     fi
     echo_run "$MAKE"
@@ -227,46 +233,8 @@ build_one_package() {
   if [[ -x prerequisites.sh ]]
   then
     ./prerequisites.sh "$GAPROOT"
-  elif [[ -x build-normaliz.sh ]]
-  then
-    # used in NormalizInterface; to be replaced by prerequisites.sh in future
-    # versions
-    ./build-normaliz.sh "$GAPROOT"
   fi
-  case "$PKG" in
-    # All but the last lines should end by '&&', otherwise (for some reason)
-    # some packages that fail to build will not get reported in the logs.
-    atlasrep*)
-      chmod 1777 datagens dataword
-    ;;
-
-    pargap*)
-      echo_run ./configure --with-gap="$GAPROOT" && \
-      echo_run "$MAKE" && \
-      cp bin/pargap.sh "$GAPROOT/bin" && \
-      rm -f ALLPKG
-    ;;
-
-    xgap*)
-      echo_run ./configure --with-gaproot="$GAPROOT" && \
-      echo_run "$MAKE" && \
-      rm -f "$GAPROOT/bin/xgap.sh" && \
-      cp bin/xgap.sh "$GAPROOT/bin"
-    ;;
-
-    simpcomp*)
-      # Old versions of simpcomp were not setting the executable
-      # bit for some files; they also were not copying the bistellar
-      # executable to the right place
-      (chmod a+x configure depcomp install-sh missing || :) && \
-      run_configure_and_make && \
-      mkdir -p bin && test -x bin/bistellar || mv bistellar bin
-    ;;
-
-    *)
-      run_configure_and_make
-    ;;
-  esac
+  run_configure_and_make
   ) &&
   (  # start subshell
   if [[ $GITHUB_ACTIONS = true ]]
