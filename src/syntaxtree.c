@@ -512,8 +512,8 @@ static Expr SyntaxTreeCodeFloatEager(CodeState * cs, Obj node)
     Obj  string = ElmRecST(EXPR_FLOAT_EAGER, node, "string");
     Obj  mark = ElmRecST(EXPR_FLOAT_EAGER, node, "mark");
     Expr fl = NewStatOrExpr(cs, EXPR_FLOAT_EAGER, 3 * sizeof(UInt), 0);
-    WRITE_EXPR(fl, 0, AddValueToBody(value));
-    WRITE_EXPR(fl, 1, AddValueToBody(string));
+    WRITE_EXPR(fl, 0, AddValueToBody(cs, value));
+    WRITE_EXPR(fl, 1, AddValueToBody(cs, string));
     WRITE_EXPR(fl, 2, (UInt)CHAR_VALUE(mark));
     return fl;
 }
@@ -586,7 +586,7 @@ static Expr SyntaxTreeCodeValue(CodeState * cs, Obj node)
     UInt1 tnum = GetTypeTNum(node);
     Obj   value = ElmRecST(tnum, node, "value");
     Expr  expr = NewStatOrExpr(cs, tnum, sizeof(UInt), 0);
-    Int   ix = AddValueToBody(value);
+    Int   ix = AddValueToBody(cs, value);
     WRITE_EXPR(expr, 0, ix);
     return expr;
 }
