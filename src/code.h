@@ -68,6 +68,12 @@ struct CodeState {
 
     // place to store the previous value of STATE(CurrLVars)
     Bag CodeLVars;
+
+    //
+    Obj currFunc;
+
+    //
+    Obj currBody;
 };
 
 typedef struct CodeState CodeState;
@@ -745,7 +751,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine);
 **  function currently being coded, and returns the index at which the value
 **  was inserted. This function must only be called while coding a function.
 */
-Int AddValueToBody(Obj val);
+Int AddValueToBody(CodeState * cs, Obj val);
 
 /****************************************************************************
 **

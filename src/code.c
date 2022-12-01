@@ -235,7 +235,7 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
         stat + ((size + sizeof(Stat) - 1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
-    Obj body = BODY_FUNC(CURR_FUNC());
+    Obj body = cs->currBody;
     UInt bodySize = SIZE_BAG(body);
     if (bodySize == 0)
         bodySize = cs->OffsBody;
@@ -516,18 +516,13 @@ static void PushBinaryOp(CodeState * cs, UInt type)
 }
 
 
-Int AddValueToBody(Obj val)
+Int AddValueToBody(CodeState * cs, Obj val)
 {
-    BodyHeader * header = (BodyHeader *)STATE(PtrBody);
-    Obj values = header->values;
+    Obj values = VALUES_BODY(cs->currBody);
     if (!values) {
         values = NEW_PLIST(T_PLIST, 4);
-        // Recalculate header in case NEW_PLIST caused a GC
-        header = (BodyHeader *)STATE(PtrBody);
-        header->values = values;
-        GAP_ASSERT(STATE(PtrBody) == PTR_BAG(BODY_FUNC(CURR_FUNC())));
-        // This is the bag PtrBody points at
-        CHANGED_BAG(BODY_FUNC(CURR_FUNC()));
+        BODY_HEADER(cs->currBody)->values = values;
+        CHANGED_BAG(cs->currBody);
     }
     return PushPlist(values, val);
 }
@@ -800,6 +795,9 @@ void CodeFuncExprBegin(CodeState * cs,
     /* switch to this function                                             */
     SWITCH_TO_NEW_LVARS(fexp, (narg > 0 ? narg : -narg), nloc);
 
+    cs->currFunc = fexp;
+    cs->currBody = body;
+
     /* allocate the top level statement sequence                           */
     stat1 = NewStat(cs, STAT_SEQ_STAT, 8 * sizeof(Stat));
     assert( stat1 == OFFSET_FIRST_STAT );
@@ -821,7 +819,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
     UInt                i;              /* loop variable                   */
 
     /* get the function expression                                         */
-    fexp = CURR_FUNC();
+    fexp = cs->currFunc;
 
     /* get the body of the function                                        */
     /* push an additional return-void-statement if necessary              */
@@ -867,7 +865,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
     }
 
     // make the body values list (if any) immutable
-    Obj values = ((BodyHeader *)STATE(PtrBody))->values;
+    Obj values = VALUES_BODY(cs->currBody);
     if (values)
         MakeImmutable(values);
 
@@ -880,11 +878,13 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
 
     /* restore the remembered offset                                       */
     PopOffsBody(cs);
+    cs->currFunc = FUNC_LVARS(ENVI_FUNC(fexp));
+    cs->currBody = BODY_FUNC(cs->currFunc);
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
     if (STATE(CurrLVars) != cs->CodeLVars) {
-        len = AddValueToBody(fexp);
+        len = AddValueToBody(cs, fexp);
         expr = NewExpr(cs, EXPR_FUNC, sizeof(Expr));
         WRITE_EXPR(expr, 0, len);
         if (pushExpr) {
@@ -1576,7 +1576,7 @@ void CodeIntExpr(CodeState * cs, Obj val)
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr(cs, EXPR_INTPOS, sizeof(UInt));
-        Int ix = AddValueToBody(val);
+        Int ix = AddValueToBody(cs, val);
         WRITE_EXPR(expr, 0, ix);
     }
 
@@ -1765,7 +1765,7 @@ void CodeStringExpr(CodeState * cs, Obj str)
     GAP_ASSERT(IS_STRING_REP(str));
 
     Expr string = NewExpr(cs, EXPR_STRING, sizeof(UInt));
-    Int ix = AddValueToBody(str);
+    Int ix = AddValueToBody(cs, str);
     WRITE_EXPR(string, 0, ix);
     PushExpr( string );
 }
@@ -1780,7 +1780,7 @@ void CodePragma(CodeState * cs, Obj pragma)
     GAP_ASSERT(IS_STRING_REP(pragma));
 
     Expr pragmaexpr = NewStat(cs, STAT_PRAGMA, sizeof(UInt));
-    Int  ix = AddValueToBody(pragma);
+    Int  ix = AddValueToBody(cs, pragma);
     WRITE_EXPR(pragmaexpr, 0, ix);
     PushStat(pragmaexpr);
 }
@@ -1870,7 +1870,7 @@ Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
     if (!ix)
         ix = getNextFloatExprNumber();
     WRITE_EXPR(fl, 0, ix);
-    WRITE_EXPR(fl, 1, AddValueToBody(str));
+    WRITE_EXPR(fl, 1, AddValueToBody(cs, str));
 
     /* push the expression */
     if (pushExpr) {
@@ -1884,8 +1884,8 @@ static void CodeEagerFloatExpr(CodeState * cs, Obj str, Char mark)
     /* Eager case, do the conversion now */
     Expr fl = NewExpr(cs, EXPR_FLOAT_EAGER, sizeof(UInt) * 3);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
-    WRITE_EXPR(fl, 0, AddValueToBody(v));
-    WRITE_EXPR(fl, 1, AddValueToBody(str));  // store for printing
+    WRITE_EXPR(fl, 0, AddValueToBody(cs, v));
+    WRITE_EXPR(fl, 1, AddValueToBody(cs, str));  // store for printing
     WRITE_EXPR(fl, 2, (UInt)mark);
     PushExpr(fl);
 }
