@@ -302,7 +302,7 @@ ifneq (,$(findstring cygwin,$(host_os)))
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
-    GAC_LDFLAGS = -bundle -bundle_loader $(SYSINFO_GAP)
+    GAC_LDFLAGS = -bundle -flat_namespace -bundle_loader $(SYSINFO_GAP)
     GAC_LDFLAGS_FOR_INSTALL = -bundle -L$(libdir) -lgap
   else
     GAC_CFLAGS = -fPIC
