@@ -1,4 +1,6 @@
 # Initializing GAP...
+gap> LoadPackage("io");
+true
 gap> 1+2+3;
 6
 gap> g:=FreeGroup(2);
