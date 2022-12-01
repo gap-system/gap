@@ -59,6 +59,10 @@ struct CodeState {
     // the offset in the current body. It is only valid while coding
     Stat OffsBody;
 
+    // a linked list of further OffsBody values, used when coding
+    // nested function expressions
+    Obj OffsBodyList;
+
     // the result of the coding, i.e., the function that was coded
     Obj CodeResult;
 

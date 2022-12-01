@@ -22,6 +22,7 @@
 #include "gapstate.h"
 #include "gvars.h"
 #include "hookintrprtr.h"
+#include "integer.h"
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
@@ -44,9 +45,6 @@
 GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 
 struct CodeModuleState {
-    Stat * OffsBodyStack;
-    UInt   OffsBodyCount;
-
     Bag StackStat;
     Int CountStat;
 
@@ -134,14 +132,15 @@ void SET_VISITED_STAT(Stat stat)
 
 static inline void PushOffsBody(CodeState * cs)
 {
-    GAP_ASSERT(CS(OffsBodyCount) < MAX_FUNC_EXPR_NESTING);
-    CS(OffsBodyStack)[CS(OffsBodyCount)++] = cs->OffsBody;
+    cs->OffsBodyList =
+        NewPlistFromArgs(ObjInt_UInt(cs->OffsBody), cs->OffsBodyList);
 }
 
 static inline void PopOffsBody(CodeState * cs)
 {
-    GAP_ASSERT(CS(OffsBodyCount));
-    cs->OffsBody = CS(OffsBodyStack)[--CS(OffsBodyCount)];
+    GAP_ASSERT(cs->OffsBodyList != 0);
+    cs->OffsBody = UInt_ObjInt(ELM_PLIST(cs->OffsBodyList, 1));
+    cs->OffsBodyList = ELM_PLIST(cs->OffsBodyList, 2);
 }
 
 // filename
@@ -640,7 +639,7 @@ Obj CodeEnd(CodeState * cs, UInt error)
         /* the stacks must be empty                                        */
         GAP_ASSERT(CS(CountStat) == 0);
         GAP_ASSERT(CS(CountExpr) == 0);
-        GAP_ASSERT(CS(OffsBodyCount) == 0);
+        GAP_ASSERT(cs->OffsBodyList == 0);
 
         // we must be back to 'STATE(CurrLVars)'
         GAP_ASSERT(STATE(CurrLVars) == cs->CodeLVars);
@@ -655,7 +654,7 @@ Obj CodeEnd(CodeState * cs, UInt error)
         /* empty the stacks                                                */
         CS(CountStat) = 0;
         CS(CountExpr) = 0;
-        CS(OffsBodyCount) = 0;
+        cs->OffsBodyList = 0;
 
         /* go back to the correct frame                                    */
         SWITCH_TO_OLD_LVARS(cs->CodeLVars);
@@ -3207,19 +3206,9 @@ static Int PreSave (
 
 static Int InitModuleState(void)
 {
-    CS(OffsBodyCount) = 0;
-
     // allocate the statements and expressions stacks
     CS(StackStat) = NewKernelBuffer(sizeof(Obj) + 64 * sizeof(Stat));
     CS(StackExpr) = NewKernelBuffer(sizeof(Obj) + 64 * sizeof(Expr));
-
-#ifdef HPCGAP
-    CS(OffsBodyStack) = AllocateMemoryBlock(MAX_FUNC_EXPR_NESTING*sizeof(Stat));
-#else
-    static Stat MainOffsBodyStack[MAX_FUNC_EXPR_NESTING];
-    CS(OffsBodyStack) = MainOffsBodyStack;
-#endif
-
     return 0;
 }
 
