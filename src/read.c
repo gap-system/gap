@@ -1149,7 +1149,7 @@ typedef struct {
 
 /****************************************************************************
 **
-*F  ReadFuncArgList(<follow>, <is_atomic>, <symbol>, <symbolstr>)
+*F  ReadFuncArgList(<follow>, <isAtomic>, <symbol>, <symbolstr>)
 **  . . . . . . . . . .  read a function argument list.
 **
 **  'ReadFuncArgList' reads the argument list of a function. In case of an
@@ -1158,7 +1158,7 @@ typedef struct {
 **  <ArgList> :=    ('readwrite'|'readonly') <Ident>
 **                   {',' ('readwrite'|'readonly') <Ident> } ( '...' )
 **
-**  is_atomic: Is this an atomic function?
+**  isAtomic: Is this an atomic function?
 **  symbol: The end symbol of the arglist (usually S_RPAREN, but S_RBRACE
 **          for lambda functions).
 **  symbolstr: symbol as an ascii string
@@ -1169,7 +1169,7 @@ typedef struct {
 
 static ArgList ReadFuncArgList(ReaderState * rs,
                                TypSymbolSet   follow,
-                               Int            is_atomic,
+                               BOOL           isAtomic,
                                UInt           symbol,
                                const Char *   symbolstr)
 {
@@ -1182,7 +1182,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
     BOOL       isvarg = FALSE; // does function have varargs?
 
 #ifdef HPCGAP
-    if (is_atomic)
+    if (isAtomic)
         locks = NEW_STRING(4);
 #endif
 
@@ -1204,7 +1204,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
         lockqual = LOCK_QUAL_NONE;
 #endif
         if (rs->s.Symbol == S_READWRITE) {
-            if (!is_atomic) {
+            if (!isAtomic) {
                 SyntaxError(&rs->s, "'readwrite' argument of non-atomic function");
             }
 #ifdef HPCGAP
@@ -1215,7 +1215,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
             Match_(rs, S_READWRITE, "readwrite", follow);
         }
         else if (rs->s.Symbol == S_READONLY) {
-            if (!is_atomic) {
+            if (!isAtomic) {
                 SyntaxError(&rs->s, "'readonly' argument of non-atomic function");
             }
 #ifdef HPCGAP
@@ -1231,7 +1231,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
         narg += 1;
         PushPlist(nams, MakeImmString(rs->s.Value));
 #ifdef HPCGAP
-        if (is_atomic) {
+        if (isAtomic) {
             GrowString(locks, narg);
             SET_LEN_STRING(locks, narg);
             CHARS_STRING(locks)[narg - 1] = lockqual;
@@ -1271,7 +1271,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
 
 static void ReadFuncExprBody(ReaderState * rs,
                              TypSymbolSet   follow,
-                             Int            isAbbrev,
+                             BOOL           isAbbrev,
                              Int            nloc,
                              ArgList        args,
                              Int            startLine)
@@ -1285,6 +1285,9 @@ static void ReadFuncExprBody(ReaderState * rs,
     TRY_IF_NO_ERROR {
         IntrFuncExprBegin(&rs->intr, args.isvarg ? -args.narg : args.narg, nloc,
                           args.nams, startLine);
+#ifdef HPCGAP
+        IntrFuncExprSetLocks(&rs->intr, args.locks);
+#endif
     }
 
     if (isAbbrev) {
@@ -1296,10 +1299,6 @@ static void ReadFuncExprBody(ReaderState * rs,
         nr = 1;
     }
     else {
-#ifdef HPCGAP
-        if (rs->s.NrError == 0)
-            SET_LCKS_FUNC(CURR_FUNC(), args.locks);
-#endif
         // <Statements>
         UInt oldLoopNesting = rs->LoopNesting;
         rs->LoopNesting = 0;
@@ -1372,7 +1371,7 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
 static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
 {
     Int     startLine;        // line number of function keyword
-    int     is_atomic = 0;    // is this an atomic function?
+    BOOL    isAtomic = FALSE; // is this an atomic function?
     UInt    nloc = 0;         // number of locals
     ArgList args;
 
@@ -1380,22 +1379,22 @@ static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
     startLine = GetInputLineNumber(rs->s.input);
     if (rs->s.Symbol == S_ATOMIC) {
         Match_(rs, S_ATOMIC, "atomic", follow);
-        is_atomic = 1;
+        isAtomic = TRUE;
     } else if (mode == 'a') {
         // in this case the atomic keyword was matched away by ReadAtomic
         // before we realised we were reading an atomic function
-        is_atomic = 1;
+        isAtomic = TRUE;
     }
     Match_(rs, S_FUNCTION, "function", follow);
     Match_(rs, S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 
-    args = ReadFuncArgList(rs, follow, is_atomic, S_RPAREN, ")");
+    args = ReadFuncArgList(rs, follow, isAtomic, S_RPAREN, ")");
 
     if (rs->s.Symbol == S_LOCAL) {
         nloc = ReadLocals(rs, follow, args.nams);
     }
 
-    ReadFuncExprBody(rs, follow, 0, nloc, args, startLine);
+    ReadFuncExprBody(rs, follow, FALSE, nloc, args, startLine);
 
     /* 'end'                                                               */
     Match_(rs, S_END, "while parsing a function: statement or 'end'", follow);
@@ -1416,12 +1415,12 @@ static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
 {
     Match_(rs, S_LBRACE, "{", follow);
 
-    ArgList args = ReadFuncArgList(rs, follow, 0, S_RBRACE, "}");
+    ArgList args = ReadFuncArgList(rs, follow, FALSE, S_RBRACE, "}");
 
     /* match away the '->'                                                 */
     Match_(rs, S_MAPTO, "->", follow);
 
-    ReadFuncExprBody(rs, follow, 1, 0, args, GetInputLineNumber(rs->s.input));
+    ReadFuncExprBody(rs, follow, TRUE, 0, args, GetInputLineNumber(rs->s.input));
 }
 
 /****************************************************************************
@@ -1451,7 +1450,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
     /* match away the '->'                                                 */
     Match_(rs, S_MAPTO, "->", follow);
 
-    ReadFuncExprBody(rs, follow, 1, 0, args, GetInputLineNumber(rs->s.input));
+    ReadFuncExprBody(rs, follow, TRUE, 0, args, GetInputLineNumber(rs->s.input));
 }
 
 /****************************************************************************

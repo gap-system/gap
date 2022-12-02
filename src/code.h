@@ -731,6 +731,10 @@ void CodeFuncExprBegin(CodeState * cs,
                        UInt        gapnameid,
                        Int         startLine);
 
+#ifdef HPCGAP
+void CodeFuncExprSetLocks(CodeState * cs, Obj locks);
+#endif
+
 Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine);
 
 /****************************************************************************

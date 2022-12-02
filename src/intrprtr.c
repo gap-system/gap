@@ -453,6 +453,20 @@ void IntrFuncExprBegin(
     CodeFuncExprBegin(intr->cs, narg, nloc, nams, intr->gapnameid, startLine);
 }
 
+#ifdef HPCGAP
+void IntrFuncExprSetLocks(IntrState * intr, Obj locks)
+{
+    /* ignore or code                                                      */
+    SKIP_IF_RETURNING();
+    SKIP_IF_IGNORING();
+
+    /* otherwise must be coding                                            */
+    GAP_ASSERT(intr->coding > 0);
+
+    CodeFuncExprSetLocks(intr->cs, locks);
+}
+#endif
+
 void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
 {
     /* ignore or code                                                      */
