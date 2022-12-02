@@ -81,9 +81,9 @@ Obj NewFunctionBody(void)
 **  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
 **  'EXPR_REF_LVAR' or 'EXPR_INT'.
 */
-static Expr * ADDR_EXPR(Expr expr)
+static Expr * ADDR_EXPR(CodeState * cs, Expr expr)
 {
-    return (Expr *)STATE(PtrBody) + expr / sizeof(Expr);
+    return (Expr *)PTR_BAG(cs->currBody) + expr / sizeof(Expr);
 }
 
 /****************************************************************************
@@ -93,37 +93,37 @@ static Expr * ADDR_EXPR(Expr expr)
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-static Stat * ADDR_STAT(Stat stat)
+static Stat * ADDR_STAT(CodeState * cs, Stat stat)
 {
-    return (Stat *)STATE(PtrBody) + stat / sizeof(Stat);
+    return (Stat *)PTR_BAG(cs->currBody) + stat / sizeof(Stat);
 }
 
 void WRITE_EXPR(CodeState * cs, Expr expr, UInt idx, UInt val)
 {
-    GAP_ASSERT(BODY_FUNC(CURR_FUNC()) == cs->currBody);
     GAP_ASSERT(expr / sizeof(Expr) + idx <
                SIZE_BAG(cs->currBody) / sizeof(Expr));
 
-    ADDR_EXPR(expr)[idx] = val;
+    ADDR_EXPR(cs, expr)[idx] = val;
 }
 
 static void WRITE_STAT(CodeState * cs, Stat stat, UInt idx, UInt val)
 {
-    GAP_ASSERT(BODY_FUNC(CURR_FUNC()) == cs->currBody);
     GAP_ASSERT(stat / sizeof(Stat) + idx <
                SIZE_BAG(cs->currBody) / sizeof(Stat));
 
-    ADDR_STAT(stat)[idx] = val;
+    ADDR_STAT(cs, stat)[idx] = val;
 }
 
-static StatHeader * STAT_HEADER(Stat stat)
+static StatHeader * STAT_HEADER(CodeState * cs, Stat stat)
 {
-    return (StatHeader *)ADDR_STAT(stat) - 1;
+    return (StatHeader *)ADDR_STAT(cs, stat) - 1;
 }
 
 void SET_VISITED_STAT(Stat stat)
 {
-    STAT_HEADER(stat)->visited = 1;
+    Stat * addr = (Stat *)STATE(PtrBody) + stat / sizeof(Stat);
+    StatHeader * header = (StatHeader *)addr - 1;
+    header->visited = 1;
 }
 
 
@@ -250,9 +250,10 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
     STATE(PtrBody) = PTR_BAG(body);
 
     /* enter type and size                                                 */
-    STAT_HEADER(stat)->line = line;
-    STAT_HEADER(stat)->size = size;
-    STAT_HEADER(stat)->type = type;
+    StatHeader * header = STAT_HEADER(cs, stat);
+    header->line = line;
+    header->size = size;
+    header->type = type;
     RegisterStatWithHook(stat);
     /* return the new statement                                            */
     return stat;
@@ -858,9 +859,10 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
 
     /* stuff the first statements into the first statement sequence       */
     /* Making sure to preserve the line number and file name              */
-    STAT_HEADER(OFFSET_FIRST_STAT)->line = LINE_STAT(OFFSET_FIRST_STAT);
-    STAT_HEADER(OFFSET_FIRST_STAT)->size = nr*sizeof(Stat);
-    STAT_HEADER(OFFSET_FIRST_STAT)->type = STAT_SEQ_STAT+nr-1;
+    StatHeader * header = STAT_HEADER(cs, OFFSET_FIRST_STAT);
+    header->line = LINE_STAT(OFFSET_FIRST_STAT);
+    header->size = nr*sizeof(Stat);
+    header->type = STAT_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
         stat1 = PopStat();
         WRITE_STAT(cs, OFFSET_FIRST_STAT, nr - i, stat1);
