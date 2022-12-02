@@ -159,8 +159,11 @@ void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr);
 void IntrFuncExprBegin(
     IntrState * intr, Int narg, Int nloc, Obj nams, Int startLine);
 
-void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine);
+#ifdef HPCGAP
+void IntrFuncExprSetLocks(IntrState * intr, Obj locks);
+#endif
 
+void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine);
 
 /****************************************************************************
 **

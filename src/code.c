@@ -805,6 +805,13 @@ void CodeFuncExprBegin(CodeState * cs,
     assert( stat1 == OFFSET_FIRST_STAT );
 }
 
+#ifdef HPCGAP
+void CodeFuncExprSetLocks(CodeState * cs, Obj locks)
+{
+    SET_LCKS_FUNC(cs->currFunc, locks);
+}
+#endif
+
 Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
 {
     Expr                expr;           /* function expression, result     */
