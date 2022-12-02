@@ -284,14 +284,14 @@ static Expr SyntaxTreeDefaultCoder(CodeState * cs, Obj node)
                 Obj elem = ELM0_LIST(vararglist, offset + 1);
                 // Deal with empty entries in list expressions
                 if (elem == 0) {
-                    WRITE_EXPR(expr, i + offset, 0);
+                    WRITE_EXPR(cs, expr, i + offset, 0);
                 }
                 else if (comp.args[i].isStat) {
-                    WRITE_EXPR(expr, i + offset,
+                    WRITE_EXPR(cs, expr, i + offset,
                                SyntaxTreeDefaultStatCoder(cs, elem));
                 }
                 else {
-                    WRITE_EXPR(expr, i + offset,
+                    WRITE_EXPR(cs, expr, i + offset,
                                SyntaxTreeDefaultExprCoder(cs, elem));
                 }
             }
@@ -300,7 +300,8 @@ static Expr SyntaxTreeDefaultCoder(CodeState * cs, Obj node)
         }
         else {
             Obj subast = ElmRecST(tnum, node, comp.args[i].argname);
-            WRITE_EXPR(expr, i + offset, comp.args[i].argcode(cs, subast));
+            WRITE_EXPR(cs, expr, i + offset,
+                       comp.args[i].argcode(cs, subast));
         }
     }
 
@@ -406,13 +407,13 @@ static Expr SyntaxTreeCodeRangeExpr(CodeState * cs, Obj node)
     UInt size = hassecond ? 3 : 2;
     Expr result = NewStatOrExpr(cs, EXPR_RANGE, size * sizeof(Expr), 0);
     WRITE_EXPR(
-        result, 0,
+        cs, result, 0,
         SyntaxTreeDefaultExprCoder(cs, ElmRecST(EXPR_RANGE, node, "first")));
     WRITE_EXPR(
-        result, size - 1,
+        cs, result, size - 1,
         SyntaxTreeDefaultExprCoder(cs, ElmRecST(EXPR_RANGE, node, "last")));
     if (hassecond) {
-        WRITE_EXPR(result, 1,
+        WRITE_EXPR(cs, result, 1,
                    SyntaxTreeDefaultExprCoder(
                        cs, ElmRecST(EXPR_RANGE, node, "second")));
     }
@@ -474,8 +475,8 @@ static Expr SyntaxTreeCodeRecExpr(CodeState * cs, Obj node)
             key = SyntaxTreeDefaultExprCoder(cs, keynode);
         }
         Expr value = SyntaxTreeDefaultExprCoder(cs, valuenode);
-        WRITE_EXPR(record, 2 * i, key);
-        WRITE_EXPR(record, 2 * i + 1, value);
+        WRITE_EXPR(cs, record, 2 * i, key);
+        WRITE_EXPR(cs, record, 2 * i + 1, value);
     }
     return record;
 }
@@ -512,9 +513,9 @@ static Expr SyntaxTreeCodeFloatEager(CodeState * cs, Obj node)
     Obj  string = ElmRecST(EXPR_FLOAT_EAGER, node, "string");
     Obj  mark = ElmRecST(EXPR_FLOAT_EAGER, node, "mark");
     Expr fl = NewStatOrExpr(cs, EXPR_FLOAT_EAGER, 3 * sizeof(UInt), 0);
-    WRITE_EXPR(fl, 0, AddValueToBody(cs, value));
-    WRITE_EXPR(fl, 1, AddValueToBody(cs, string));
-    WRITE_EXPR(fl, 2, (UInt)CHAR_VALUE(mark));
+    WRITE_EXPR(cs, fl, 0, AddValueToBody(cs, value));
+    WRITE_EXPR(cs, fl, 1, AddValueToBody(cs, string));
+    WRITE_EXPR(cs, fl, 2, (UInt)CHAR_VALUE(mark));
     return fl;
 }
 
@@ -565,8 +566,8 @@ static Expr SyntaxTreeCodeIf(CodeState * cs, Obj node)
         Obj  bodynode = ElmRecST(tnum, condbodypair, "body");
         Expr condition = SyntaxTreeDefaultExprCoder(cs, conditionnode);
         Stat body = SyntaxTreeDefaultStatCoder(cs, bodynode);
-        WRITE_EXPR(ifexpr, 2 * i, condition);
-        WRITE_EXPR(ifexpr, 2 * i + 1, body);
+        WRITE_EXPR(cs, ifexpr, 2 * i, condition);
+        WRITE_EXPR(cs, ifexpr, 2 * i + 1, body);
     }
     return ifexpr;
 }
@@ -587,7 +588,7 @@ static Expr SyntaxTreeCodeValue(CodeState * cs, Obj node)
     Obj   value = ElmRecST(tnum, node, "value");
     Expr  expr = NewStatOrExpr(cs, tnum, sizeof(UInt), 0);
     Int   ix = AddValueToBody(cs, value);
-    WRITE_EXPR(expr, 0, ix);
+    WRITE_EXPR(cs, expr, 0, ix);
     return expr;
 }
 
@@ -597,7 +598,7 @@ static Expr SyntaxTreeCodeChar(CodeState * cs, Obj node)
     Obj  chr = ElmRecST(EXPR_CHAR, node, "value");
     Char currchar = CHAR_VALUE(chr);
     Expr lit = NewStatOrExpr(cs, EXPR_CHAR, sizeof(UInt), 0);
-    WRITE_EXPR(lit, 0, currchar);
+    WRITE_EXPR(cs, lit, 0, currchar);
     return lit;
 }
 
