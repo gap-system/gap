@@ -183,7 +183,7 @@ enum {
 Obj NewFunctionBody(void);
 
 
-void WRITE_EXPR(Expr expr, UInt idx, UInt val);
+void WRITE_EXPR(CodeState * cs, Expr expr, UInt idx, UInt val);
 
 
 /****************************************************************************
