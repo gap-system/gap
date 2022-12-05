@@ -64,6 +64,7 @@ local gens,mat,G;
   else
     SetIsFinite(G,true);
     SetSize(G,2);
+    SetNiceMonomorphism(G,DoSparseLinearActionOnFaithfulSubset(G, OnRight, false));
   fi;    
   return G;
 end);
@@ -97,6 +98,7 @@ local gens,mat,G;
   else
     SetIsFinite(G,true);
     SetSize(G,1);
+    SetNiceMonomorphism(G,DoSparseLinearActionOnFaithfulSubset(G, OnRight, false));
   fi;
   return G;
 end);
