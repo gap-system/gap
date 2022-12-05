@@ -52,6 +52,28 @@ gap> ForAll([2,3,5], p -> IsConjugate(G, SylowSubgroup(G,2), SylowSubgroup(H,2))
 true
 
 #
+gap> G:=GL(1,Integers);
+GL(1,Integers)
+gap> Size(G);
+2
+gap> Elements(G);
+[ [ [ -1 ] ], [ [ 1 ] ] ]
+gap> [[-1]] in G;
+true
+gap> [[2]] in G;
+false
+
+#
+gap> G:=GL(2,Integers);
+GL(2,Integers)
+gap> Size(G);
+infinity
+gap> [[2,3],[0,1]] in G;
+false
+gap> [[1,3],[0,1]] in G;
+true
+
+#
 gap> G := GO(3,5);
 GO(0,3,5)
 gap> G = GO(0,3,5);

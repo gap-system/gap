@@ -25,6 +25,28 @@ gap> SL(3,6);
 Error, usage: SpecialLinearGroup( [<filter>, ]<d>, <R> )
 
 #
+gap> G:=SL(1,Integers);
+SL(1,Integers)
+gap> Size(G);
+1
+gap> Elements(G);
+[ [ [ 1 ] ] ]
+gap> [[1]] in G;
+true
+gap> [[-1]] in G;
+false
+
+#
+gap> G:=SL(2,Integers);
+SL(2,Integers)
+gap> Size(G);
+infinity
+gap> [[2,3],[0,1]] in G;
+false
+gap> [[1,3],[0,1]] in G;
+true
+
+#
 gap> G := SO(3,5);
 SO(0,3,5)
 gap> G = SO(0,3,5);
