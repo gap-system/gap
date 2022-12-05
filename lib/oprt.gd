@@ -1917,6 +1917,10 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##
 OrbitsishOperation( "IsPrimitive", OrbitsishReq, false, NewProperty );
 
+InstallTrueMethod( IsPrimitive, IsNaturalSymmetricGroup );
+InstallTrueMethod( IsPrimitive, IsNaturalAlternatingGroup );
+InstallTrueMethod( IsTransitive, IsPrimitive and IsPermGroup );
+
 
 #############################################################################
 ##
@@ -2018,6 +2022,8 @@ OrbitsishOperation( "IsSemiRegular", OrbitsishReq, false, NewProperty );
 ##  <#/GAPDoc>
 ##
 OrbitsishOperation( "IsRegular", OrbitsishReq, false, NewProperty );
+
+InstallTrueMethod( IsRegular, IsTransitive and IsSemiRegular );
 
 
 #############################################################################
