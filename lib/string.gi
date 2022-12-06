@@ -649,7 +649,10 @@ InstallGlobalFunction("EvalString", function( s )
   local a, f, res;
   a := "_EVALSTRINGTMP:=";
   Append(a, s);
-  Add(a, ';');
+  # The code handling syntax error messages breaks if the semicolon is the
+  # last character in the input stream. We thus add a line break just as one
+  # would by pressing the <RETURN> key while in the REPL.
+  Append(a, ";\n");
   Unbind(_EVALSTRINGTMP);
   f := InputTextString(a);
   Read(f);
