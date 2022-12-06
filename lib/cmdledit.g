@@ -445,14 +445,16 @@ fi;
 DeclareUserPreference( rec(
   name:= ["HistoryMaxLines", "SaveAndRestoreHistory"],
   description:= [
-    "HistoryMaxLines is the maximal amount of input lines held in GAP's \
-command line history.",
-    "If SaveAndRestoreHistory is true then GAP saves its command line history \
-before terminating a GAP session, and prepends the stored history when GAP is \
-started. If this is enabled it is suggested to set HistoryMaxLines to some \
-finite value. It is also possible to set HistoryMaxLines to infinity to keep \
-arbitrarily many lines.",
-    "These preferences are ignored if GAP was not compiled with \
+    "<C>HistoryMaxLines</C> is the maximal amount of input lines held in \
+&GAP;'s command line history.",
+    "If <C>SaveAndRestoreHistory</C> is <K>true</K> then &GAP; saves its \
+command line history before terminating a &GAP; session, and prepends the \
+stored history when &GAP; is started. \
+If this is enabled it is suggested to set <C>HistoryMaxLines</C> to some \
+finite value. \
+It is also possible to set <C>HistoryMaxLines</C> to <Ref Var=\"infinity\"/> \
+to keep arbitrarily many lines.",
+    "These preferences are ignored if &GAP; was not compiled with \
 readline support.",
     ],
   default:= [10000, true],
@@ -467,15 +469,18 @@ DeclareUserPreference( rec(
   name := "Autocompleter",
   description := [
                    "Set how names are filtered during tab-autocomplete, \
-this can be: \"default\": case-sensitive matching. \"case-insensitive\": \
-case-insensitive matching, or a record with two components named 'filter' and \
-'completer', which are both functions which take two arguments. \
-'filter' takes a list of names and a partial identifier and returns \
-all the members of 'names' which are a valid extension of the partial \
-identifier. 'completer' takes a list of names and a partial identifier and \
+this can be: \
+<C>\"default\"</C>: case-sensitive matching. \
+<C>\"case-insensitive\"</C>: case-insensitive matching, \
+or a record with two components named <C>filter</C> and \
+<C>completer</C>, which are both functions which take two arguments. \
+<C>filter</C> takes a list of names and a partial identifier and returns \
+all the members of <C>names</C> which are a valid extension of the partial \
+identifier. \
+<C>completer</C> takes a list of names and a partial identifier and \
 returns the partial identifier as extended as possible (it may also change \
 the identifier, for example to correct the case, or spelling mistakes), or \
-returns 'fail' to leave the existing partial identifier."],
+returns <K>fail</K> to leave the existing partial identifier."],
   default := "default",
   ) );
 

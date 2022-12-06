@@ -51,7 +51,11 @@
 ##  a  pager  an  overview  of  all known  user  preferences  together  with
 ##  some  explanation  and  the  current  value.  If  one  or  more  strings
 ##  <A>package1</A>, ... are given then  only the user preferences for these
-##  packages are shown. <P/>
+##  packages are shown.
+##  The <Package>Browse</Package> package provides the function
+##  <Ref Func="BrowseUserPreferences" BookName="browse"/> which gives an
+##  overview of the known user preferenes and also admits editing the
+##  values of the preferences. <P/>
 ##  
 ##  The easiest way to  make use of user preferences is  probably to use the
 ##  function <Ref  Func="WriteGapIniFile"/>, usually without  argument. This
@@ -486,6 +490,34 @@ BindGlobal( "StringUserPreference", function( data, ignorecurrent )
 
 #############################################################################
 ##
+#F  StripMarkupFromUserPreferenceDescription( <str> )
+##
+BindGlobal( "StripMarkupFromUserPreferenceDescription", function( str )
+    local pos, pos2, pos3, pos4;
+
+    str:= ReplacedString( str, "&GAP;", "GAP" );
+    str:= ReplacedString( str, "<C>", "'" );
+    str:= ReplacedString( str, "</C>", "'" );
+    str:= ReplacedString( str, "<K>", "'" );
+    str:= ReplacedString( str, "</K>", "'" );
+    str:= ReplacedString( str, "<M>", "" );
+    str:= ReplacedString( str, "</M>", "" );
+    pos:= PositionSublist( str, "<Ref " );
+    while pos <> fail do
+      pos2:= Position( str, '\"', pos );
+      pos3:= Position( str, '\"', pos2 );
+      pos4:= PositionSublist( str, "/>", pos3 );
+      str:= Concatenation( str{ [ 1 .. pos-1 ] },
+                           "'", str{ [ pos2+1 .. pos3-1 ] }, "'",
+                           str{ [ pos4+2 .. Length( str ) ] } );
+      pos:= PositionSublist( str, "<Ref ", pos );
+    od;
+    return str;
+    end );
+
+
+#############################################################################
+##
 #F  ShowStringUserPreference( <data> )
 ##
 BindGlobal( "ShowStringUserPreference", function( data )
@@ -508,7 +540,8 @@ BindGlobal( "ShowStringUserPreference", function( data )
 
     # Show the formatted description, with indent 4.
     format:= ValueGlobal( "FormatParagraph" );
-    for paragraph in data.description do
+    for paragraph in List( data.description,
+                           StripMarkupFromUserPreferenceDescription ) do
       Append( string, format( paragraph, width, "left", [ "    ", "" ] ) );
     od;
 
@@ -670,6 +703,116 @@ BindGlobal( "ShowUserPreferences", function(arg)
 
     pfun := ValueGlobal("Pager");
     pfun(rec( lines := str, formatted := true));
+    end );
+
+
+#############################################################################
+##
+#F  XMLForUserPreferences( <pkgname> )
+##
+##  Create a string that describes the current list of user preferences
+##  that are declared for the package with name <pkgname>
+##  (or for GAP itself if <pkgname> is the string '"GAP"').
+##
+##  The value for the argument '"GAP"' shall be copied to the file
+##  'doc/ref/user_pref_list.xml', in order to appear in the
+##  GAP Reference Manual.
+##
+BindGlobal( "XMLForUserPreferences", function( pkgname )
+    local stringOfValue, pref, str, done, format, width, name, data, names,
+          default;
+
+    stringOfValue:= function( val )
+      if IsBool( val ) then
+        return Concatenation( "<K>", String( val ), "</K>" );
+      elif IsString( val ) then
+        return Concatenation( "<C>\"", val, "\"</C>" );
+      else
+        return Concatenation( "<C>", String( val ), "</C>" );
+      fi;
+    end;
+
+    pkgname:= LowercaseString( pkgname );
+    pref:= GAPInfo.UserPreferences;
+    str:= "";
+    done:= [];
+    if IsRecord( pref.( pkgname ) ) then
+      format:= ValueGlobal( "FormatParagraph" );
+      width:= ValueGlobal( "WidthUTF8String" );
+      for name in Set( RecNames( pref.( pkgname ) ) ) do
+        if not name in done then
+          data:= First( GAPInfo.DeclarationsOfUserPreferences,
+                        r -> r.package = pkgname and
+                             ( name = r.name or name in r.name ) );
+          if data <> fail then
+            if data.name = name then
+              names:= [ name ];
+            else
+              names:= data.name;
+            fi;
+            UniteSet( done, names );
+
+            Append( str, "<Mark>\n" );
+
+            # Create an index entry for each preference.
+            Append( str, JoinStringsWithSeparator(
+                           List( names, nam -> Concatenation(
+                                                 "<Index Key='", nam, "'>",
+                                                 "<C>", nam, "</C>",
+                                                 "</Index>" ) ), "\n" ) );
+            Append( str, "\n" );
+
+            Append( str, JoinStringsWithSeparator(
+                           List( names, nam -> Concatenation(
+                                                 "<C>", nam, "</C>" ) ),
+                           ",\n" ) );
+            Append( str, "\n</Mark>\n<Item>\n" );
+
+            # Show the description, which may contain GAPDoc markup.
+            Append( str, JoinStringsWithSeparator(
+                           List( data.description,
+                                 para -> format( para, "left", width ) ),
+                           "<P/>\n" ) );
+
+            # Show admissible values if applicable.
+            if IsBound( data.values ) and IsList( data.values ) then
+              Append( str, "\n<P/>\n" );
+              Append( str, "\nAdmissible values:\n" );
+              Append( str, JoinStringsWithSeparator(
+                           List( data.values, stringOfValue ), ",\n" ) );
+              Append( str, ".\n" );
+            fi;
+
+            # Show the default value.
+            Append( str, "\n<P/>\n" );
+            default:= data.default;
+            if IsFunction( default ) then
+              if Length( names ) = 1 then
+                Append( str, "\nThe default is computed at runtime." );
+              else
+                Append( str, "\nThe defaults are computed at runtime." );
+              fi;
+            else
+              if Length( names ) = 1 then
+                Append( str, "\nDefault: " );
+              else
+                Append( str, "\nDefaults: " );
+              fi;
+              Append( str, stringOfValue( default ) );
+              Append( str, "." );
+            fi;
+
+            Append( str, "\n</Item>\n" );
+          fi;
+        fi;
+      od;
+    fi;
+
+    if str <> "" then
+      str:= Concatenation( "<List>\n", str, "</List>\n" );
+    fi;
+
+    return str;
     end );
 
 

@@ -579,7 +579,7 @@ DeclareUserPreference( rec(
   name:= "UseColorsInTerminal",
   description:= [
     "Almost all current terminal emulations support color display, \
-setting this to 'true' implies a default display of most manuals with \
+setting this to <K>true</K> implies a default display of most manuals with \
 color markup. It may influence the display of other things in the future."
     ],
   default:= true,
@@ -589,7 +589,7 @@ color markup. It may influence the display of other things in the future."
 DeclareUserPreference( rec(
   name:= "ViewLength",
   description:= [
-    "A bound for the number of lines printed when 'View'ing some large objects."
+    "A bound for the number of lines printed when <C>View</C>ing some large objects."
     ],
   default:= 3,
   check:= val -> IsInt( val ) and 0 <= val,
@@ -597,15 +597,15 @@ DeclareUserPreference( rec(
 DeclareUserPreference( rec(
   name:= "ReproducibleBehaviour",
   description:= [
-    "This preference disables code in GAP which changes behaviour based on time \
+    "This preference disables code in &GAP; which changes behaviour based on time \
 spent, and therefore can produce different results depending on how much time is \
 taken by other programs running on the same computer. This option may lead to \
 slower or lower-quality results.\
 \n\
-Note that many algorithms in GAP use the global random number generator, which is \
-NOT affected by this option. This only tries to ensure the same version of GAP, \
+Note that many algorithms in &GAP; use the global random number generator, which is \
+NOT affected by this option. This only tries to ensure the same version of &GAP;, \
 with the same package versions loaded, on the same machine, running the same code, \
-in a fresh GAP session, will produce the same results."
+in a fresh &GAP; session, will produce the same results."
     ],
   default:= false,
   values:= [ true, false ],
@@ -659,8 +659,8 @@ end );
 DeclareUserPreference( rec(
   name:= "ReadObsolete",
   description:= [
-    "May be useful to say 'false' here to check if you are using commands \
-which may vanish in a future version of GAP"
+    "May be useful to say <K>false</K> here to check if you are using commands \
+which may vanish in a future version of &GAP;"
     ],
   default:= true,
   values:= [ true, false ],
