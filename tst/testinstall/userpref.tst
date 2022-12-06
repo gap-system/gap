@@ -1,10 +1,8 @@
 #@local comp,file,len,pos
 gap> START_TEST( "userpref.tst" );
 
-# The following session documents what happens currently
-# if one specifies "group actions" that are in fact not actions.
-# (When some of these tests fail then parts of the documentation
-# may have to be changed.)
+# Check whether the documentation of user preferences
+# coincides with their declarations.
 gap> comp:= XMLForUserPreferences( "GAP" );;
 gap> file:= StringFile( Filename( DirectoriesLibrary( "doc" ),
 >                                 "ref/user_pref_list.xml" ) );;

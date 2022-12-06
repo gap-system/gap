@@ -14,6 +14,8 @@ identifier. <C>completer</C> takes a list of names and a partial identifier
 and returns the partial identifier as extended as possible (it may also change
 the identifier, for example to correct the case, or spelling mistakes), or
 returns <K>fail</K> to leave the existing partial identifier.
+<P/>
+This preference is ignored if &GAP; was not compiled with readline support.
 
 <P/>
 
