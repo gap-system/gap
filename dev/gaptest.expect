@@ -50,6 +50,23 @@ expect "gap> "
 send -- "g!.S\t"
 expect "ize"
 send -- ";;\r"
+
+# issue 5241
+expect "gap> "
+# this used to trigger an error
+send -- "g.x.\t"
+# ctrl-u to clear the input given so far
+send -- "\025"
+# just start a new line to verify we are not in a break loop
+send -- "\r"
+expect "gap> "
+# this also used to trigger an error
+send -- "g!.x.\t"
+# ctrl-u to clear the input given so far
+send -- "\025"
+# just start a new line to verify we are not in a break loop
+send -- "\r"
 expect "gap> "
 
 exit
+
