@@ -784,7 +784,7 @@ BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
 ##  <#GAPDoc Label="HexSHA256">
 ##  <ManSection>
 ##  <Func Name="HexSHA256" Arg='string'/>
-##  <Func Name="HexSHA256" Arg='stream'/>
+##  <Func Name="HexSHA256" Arg='stream' Label="for a stream"/>
 ##
 ##  <Description>
 ##  <Index>hash function</Index>

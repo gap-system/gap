@@ -200,9 +200,9 @@ DeclareConstructor( "GeneralOrthogonalGroupCons",
 ##  <#GAPDoc Label="GeneralOrthogonalGroup">
 ##  <ManSection>
 ##  <Func Name="GeneralOrthogonalGroup" Arg='[filt, ][e, ]d, q[, form]'/>
-##  <Func Name="GeneralOrthogonalGroup" Arg='[filt, ]form'/>
+##  <Func Name="GeneralOrthogonalGroup" Arg='[filt, ]form' Label="for a form"/>
 ##  <Func Name="GO" Arg='[filt, ][e, ]d, q[, form]'/>
-##  <Func Name="GO" Arg='[filt, ]form'/>
+##  <Func Name="GO" Arg='[filt, ]form' Label="for a form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the
@@ -321,9 +321,9 @@ DeclareConstructor( "GeneralUnitaryGroupCons",
 ##  <#GAPDoc Label="GeneralUnitaryGroup">
 ##  <ManSection>
 ##  <Func Name="GeneralUnitaryGroup" Arg='[filt, ]d, q[, form]'/>
-##  <Func Name="GeneralUnitaryGroup" Arg='[filt, ]form'/>
+##  <Func Name="GeneralUnitaryGroup" Arg='[filt, ]form' Label="for a form"/>
 ##  <Func Name="GU" Arg='[filt, ]d, q[, form]'/>
-##  <Func Name="GU" Arg='[filt, ]form'/>
+##  <Func Name="GU" Arg='[filt, ]form' Label="for a form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the general unitary group
@@ -508,9 +508,9 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  <#GAPDoc Label="SpecialOrthogonalGroup">
 ##  <ManSection>
 ##  <Func Name="SpecialOrthogonalGroup" Arg='[filt, ][e, ]d, q[, form]'/>
-##  <Func Name="SpecialOrthogonalGroup" Arg='[filt, ]form'/>
+##  <Func Name="SpecialOrthogonalGroup" Arg='[filt, ]form' Label="for a form"/>
 ##  <Func Name="SO" Arg='[filt, ][e, ]d, q[, form]'/>
-##  <Func Name="SO" Arg='[filt, ]form'/>
+##  <Func Name="SO" Arg='[filt, ]form' Label="for a form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the
@@ -620,9 +620,9 @@ DeclareConstructor( "SpecialUnitaryGroupCons",
 ##  <#GAPDoc Label="SpecialUnitaryGroup">
 ##  <ManSection>
 ##  <Func Name="SpecialUnitaryGroup" Arg='[filt, ]d, q[, form]'/>
-##  <Func Name="SpecialUnitaryGroup" Arg='[filt, ]form'/>
+##  <Func Name="SpecialUnitaryGroup" Arg='[filt, ]form' Label="for a form"/>
 ##  <Func Name="SU" Arg='[filt, ]d, q[, form]'/>
-##  <Func Name="SU" Arg='[filt, ]form'/>
+##  <Func Name="SU" Arg='[filt, ]form' Label="for a form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the special unitary group
