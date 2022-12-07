@@ -45,9 +45,10 @@ DeclareUserPreference( rec(
   name:= [ "HelpViewers", "XpdfOptions", "XdviOptions" ],
   description:= [
     "Here you can choose your preferred help viewers. See the help for \
-'SetHelpViewer' for further options.",
-    "Try 'HelpViewers:= [ \"screen\", \"firefox\", \"xpdf\" ];'.",
-    "(For \"screen\" we also suggest to set the 'Pager' entry to \"less\".)"
+<Ref Func=\"SetHelpViewer\"/> for further options.",
+    "Try <C>HelpViewers:= [ \"screen\", \"firefox\", \"xpdf\" ];</C>.",
+    "(For <C>\"screen\"</C> we also suggest to set the <C>Pager</C> entry \
+to <C>\"less\"</C>.)"
     ],
   default:= [ [ "screen" ], "", "" ],
   check:= function( helpviewers, xpdfoptions, xdvioptions )

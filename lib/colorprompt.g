@@ -208,9 +208,9 @@ DeclareUserPreference( rec(
   name:= "UseColorPrompt",
   description:= [
     "In a color capable terminal (almost any terminal application) you can \
-run GAP such that the prompts, the input and output are distinguished \
-by colors. Options are 'true', 'false' or some record as explained in \
-the help section for 'ColorPrompt'." ],
+run &GAP; such that the prompts, the input and output are distinguished \
+by colors. Options are <K>true</K>, <K>false</K> or some record as explained \
+in the help section for <Ref Func=\"ColorPrompt\"/>." ],
   default:= true,
   check:= val -> val in [ true, false ] or IsRecord( val ),
   ) );

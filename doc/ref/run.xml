@@ -536,6 +536,19 @@ which GAP will not recognize.
 
 <#Include Label="UserPreferences">
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Subsection Label="subsect:User Preferences Defined by GAP">
+<Heading>User Preferences Defined by &GAP;</Heading>
+
+Here is the list of those user preferences that are currently declared
+via <Ref Func="DeclareUserPreference"/> for &GAP; itself.
+The preferences that are declared for &GAP; packages belong to the
+documentation of these packages.
+
+<#Include SYSTEM "user_pref_list.xml">
+
+</Subsection>
+
 </Section>
 
 

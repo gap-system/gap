@@ -663,14 +663,17 @@ InstallGlobalFunction(FactorsInt,function ( n )
     od;
 
     # do trial divisions by known primes
+    atomic readonly Primes2 do
     for p  in Primes2  do
         while n mod p = 0  do Add( factors, p );  n := n / p;  od;
         if p^2 > n then break; fi;
         if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
     od;
+    od;
     
     # do trial divisions by known probable primes (and issue warning, if found)
     tmp := [];
+    atomic readonly ProbablePrimes2 do
     for p  in ProbablePrimes2  do
         while n mod p = 0  do 
           AddSet(tmp, p); 
@@ -678,6 +681,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
           n := n / p;  
         od;
         if n = 1  then break; fi;
+    od;
     od;
     if Length(tmp) > 0 then
         Info(InfoPrimeInt, 1 , 
@@ -820,13 +824,16 @@ InstallMethod( PartialFactorization,
     fi;
 
     # do trial divisions by known primes
+    atomic readonly Primes2 do
     for p in Primes2 do
       while n mod p = 0 do Add( factors, p ); n := n / p; od;
       if n = 1 then CheckAndSortFactors(); return factors; fi;
     od;
+    od;
 
     # do trial divisions by known probable primes
     tmp := [];
+    atomic readonly ProbablePrimes2 do
     for p in ProbablePrimes2 do
       while n mod p = 0 do 
         AddSet(tmp, p); 
@@ -834,6 +841,7 @@ InstallMethod( PartialFactorization,
         n := n / p;  
       od;
       if n = 1 then break; fi;
+    od;
     od;
 
     if n = 1 then CheckAndSortFactors(); return factors; fi;
@@ -1749,9 +1757,9 @@ end);
 DeclareUserPreference( rec(
   name:= "MaxBitsIntView",
   description:= [
-    "Maximal bit length of integers to 'view' unabbreviated.  \
-Default is about 30 lines of a 80 character wide terminal.  \
-Set this to '0' to avoid abbreviated ints."
+    "Maximal bit length of integers to <C>View</C> unabbreviated.  \
+Default is about <M>30</M> lines of a <M>80</M> character wide terminal.  \
+Set this to <C>0</C> to avoid abbreviated ints."
     ],
   default:= 8000,
   check:= val -> IsInt( val ) and 0 <= val,

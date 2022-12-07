@@ -1843,7 +1843,7 @@ DeclareUserPreference( rec(
   description:= [
     "A list of names of packages which should be loaded during startup. \
 For backwards compatibility, the default lists most of packages \
-that were autoloaded in GAP 4.4 (add or remove packages as you like)."
+that were autoloaded in &GAP; 4.4 (add or remove packages as you like)."
     ],
   default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga", 
               "irredsol", "laguna", "polenta", "polycyclic", "resclasses", 
@@ -1856,8 +1856,8 @@ that were autoloaded in GAP 4.4 (add or remove packages as you like)."
 DeclareUserPreference( rec(
   name:= "ExcludeFromAutoload",
   description:= [
-    "These packages are not loaded at GAP startup. This doesn't work for \
-packages which are needed by the GAP library, or which are already loaded \
+    "These packages are not loaded at &GAP; startup. This doesn't work for \
+packages which are needed by the &GAP; library, or which are already loaded \
 in a workspace."
     ],
   default:= [],
@@ -1870,7 +1870,7 @@ DeclareUserPreference( rec(
   name:= "PackagesToIgnore",
   description:= [
     "These packages are not regarded as available. This doesn't work for \
-packages which are needed by the GAP library, or which are already loaded \
+packages which are needed by the &GAP; library, or which are already loaded \
 in a workspace."
     ],
   default:= [],
@@ -1883,7 +1883,8 @@ DeclareUserPreference( rec(
   name:= "InfoPackageLoadingLevel",
   description:= [
     "Info messages concerning package loading up to this level are printed.  \
-The level can be changed in a running session using 'SetInfoLevel'."
+The level can be changed in a running session using \
+<Ref Func=\"SetInfoLevel\"/>."
     ],
   default:= PACKAGE_ERROR,
   values:= [ PACKAGE_ERROR, PACKAGE_WARNING, PACKAGE_INFO, PACKAGE_DEBUG ],

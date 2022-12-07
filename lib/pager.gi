@@ -47,14 +47,14 @@
 DeclareUserPreference( rec(
   name:= [ "Pager", "PagerOptions" ],
   description:= [
-  "For displaying help pages on screen and other things GAP has a rudimentary \
+  "For displaying help pages on screen and other things &GAP; has a rudimentary \
 builtin pager. We recommend using a more sophisticated external program.  \
-For example, when you have the program 'less' on your computer we recommend:",
-    " Pager := \"less\";",
-    " PagerOptions := [\"-f\", \"-r\", \"-a\", \"-i\", \"-M\", \"-j2\"];",
-    "If you want to use 'more', we suggest to use the '-f' option.  \
+For example, when you have the program <C>less</C> on your computer we recommend:",
+    " <C>Pager := \"less\";</C>",
+    " <C>PagerOptions := [\"-f\", \"-r\", \"-a\", \"-i\", \"-M\", \"-j2\"];</C>",
+    "If you want to use <C>more</C>, we suggest to use the <C>-f</C> option.  \
 If you want to use the pager defined in your environment then \
-leave the 'Pager' and 'PagerOptions' preferences empty."
+leave the <C>Pager</C> and <C>PagerOptions</C> preferences empty."
     ],
   default:= function()    # copied from GAPInfo.READENVPAGEREDITOR
     local str, sp, pager, options;
