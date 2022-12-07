@@ -214,9 +214,9 @@
 #T - Support also an ``extendible menu'', i. e. a list of choices plus the
 #T   possibility to enter a value not in the list.
 ##
-GAPInfo.DeclarationsOfUserPreferences:= [];
+GAPInfo.DeclarationsOfUserPreferences:= AtomicList([]);
 
-GAPInfo.UserPreferences:= rec();
+GAPInfo.UserPreferences:= AtomicRecord(rec());
 
 BindGlobal( "DeclareUserPreference", function( record )
     local name, package, default, i, up;
@@ -274,6 +274,7 @@ BindGlobal( "DeclareUserPreference", function( record )
     record.package:= package;
     record.omitFromGapIniFile:= IsBound( record.omitFromGapIniFile )
                                 and record.omitFromGapIniFile = true;
+    MakeImmutable( record );
     Add( GAPInfo.DeclarationsOfUserPreferences, record );
 
     # Set the default value, if not yet set.
@@ -286,11 +287,13 @@ BindGlobal( "DeclareUserPreference", function( record )
                String( record.name ) );
       fi;
     else
-      default:= StructuralCopy( record.default );
+      # We need not apply 'StructuralCopy' to the default values
+      # because 'record' is immutable.
+      default:= record.default;
     fi;
     up := GAPInfo.UserPreferences;
     if not IsBound( up.( package ) ) then
-      up.( package ):= rec();
+      up.( package ):= AtomicRecord(rec());
     fi;
     if IsString( record.name ) then
       if not IsBound(up.( package ).( record.name )) then
@@ -328,11 +331,11 @@ BindGlobal( "SetUserPreference", function( arg )
     pref:= GAPInfo.UserPreferences;
     if not IsBound( pref.( package ) ) then
       # We may set a preference now that will become declared later.
-      pref.( package ):= rec();;
+      pref.( package ):= AtomicRecord( rec() );
     fi;
     pref:= pref.( package );
 #T First check whether the desired value is admissible?
-    pref.( name ):= value;
+    pref.( name ):= MakeImmutable(value);
     end );
 
 
