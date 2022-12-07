@@ -28,6 +28,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##
 DeclareRepresentation( "Is8BitVectorRep", 
         IsDataObjectRep and IsVectorObj
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
 

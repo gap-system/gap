@@ -18,6 +18,7 @@
 ##
 DeclareRepresentation( "Is8BitMatrixRep", 
         IsPositionalObjectRep and IsRowListMatrix
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);

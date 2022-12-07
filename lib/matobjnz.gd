@@ -14,12 +14,14 @@
 
 DeclareRepresentation( "IsZmodnZVectorRep",
         IsVectorObj and IsPositionalObjectRep
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
     [] );
 
 DeclareRepresentation( "IsZmodnZMatrixRep",
         IsRowListMatrix and IsPositionalObjectRep
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,

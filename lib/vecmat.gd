@@ -40,6 +40,7 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##
 DeclareRepresentation( "IsGF2VectorRep",
         IsDataObjectRep and IsVectorObj
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
 
@@ -219,6 +220,7 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##
 DeclareRepresentation( "IsGF2MatrixRep",
         IsPositionalObjectRep and IsRowListMatrix
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);

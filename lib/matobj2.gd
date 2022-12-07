@@ -193,6 +193,11 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  <Ref Constr="NewVector"/> or <Ref Constr="NewMatrix"/>, respectively,
 ##  is called with <C>f</C> then a vector object or a matrix object,
 ##  respectively, in the same representation as the argument is produced.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of <A>v</A> or <A>M</A> implies <Ref Filt="IsCopyable"/> then
+##  mutable versions of <A>v</A> or <A>M</A> can be created,
+##  otherwise all vector or matrix objects with this filter are immutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -564,20 +569,24 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 ##  <Returns>a vector object</Returns>
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A> and a nonnegative integer <A>len</A>,
-##  this operation returns a new mutable vector object of length <A>len</A> over <A>R</A>
+##  this operation returns a new vector object of length <A>len</A> over <A>R</A>
 ##  in the representation <A>filt</A> containing only zeros.
 ##  <P/>
 ##  If only <A>R</A> and <A>len</A> are given, then GAP guesses a suitable representation.
 ##  <P/>
 ##  For a vector object <A>v</A> and a nonnegative integer <A>len</A>,
-##  this operation returns a new mutable vector object of length <A>len</A>
+##  this operation returns a new vector object of length <A>len</A>
 ##  in the same representation as <A>v</A> containing only zeros.
 ##  <P/>
 ##  For a matrix object <A>M</A> and a nonnegative integer <A>len</A>,
-##  this operation returns a new mutable zero vector object of length
+##  this operation returns a new zero vector object of length
 ##  <A>len</A> in the representation given by the
 ##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
 ##  of <A>M</A>, provided that such a representation exists.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -644,11 +653,23 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
 ##  this list.
 ##  <P/>
-##  It is <E>not</E> guaranteed that the given list of entries is copied.
+##  The variant <C>Vector( </C><A>v1</A><C>, </C><A>v2</A><C> )</C>
+##  is supported also for the case that <A>v2</A> is a row vector but not
+##  a vector object.
+##  In this situation, the result is a row vector that is equal to
+##  <A>v1</A> and whose internal representation fits to that of <A>v2</A>.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
 ##  need not perform consistency checks.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable if and only if the argument that determines the entries of the
+##  result (<A>list</A>, <A>v</A>, <A>v1</A>) is mutable.
+##  <P/>
+##  In the case of a mutable result, it is <E>not</E> guaranteed that
+##  the given list of entries is copied.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -676,7 +697,7 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>, and a list <A>list</A>
 ##  of elements that belong to <A>R</A>,
-##  <Ref Constr="NewVector"/> returns a mutable vector object which has
+##  <Ref Constr="NewVector"/> returns a vector object which has
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a vector object"/> <A>R</A>,
@@ -686,11 +707,14 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="NewVector"/> need not perform consistency checks.
 ##  <P/>
-##  Similarly, <Ref Constr="NewZeroVector"/> returns a mutable vector object
+##  Similarly, <Ref Constr="NewZeroVector"/> returns a vector object
 ##  of length <A>n</A> which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
 ##  and contains the zero of <A>R</A> in each position.
+##  <P/>
+##  The returned object is mutable if and only if <A>filt</A> implies
+##  <Ref Filt="IsCopyable"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -716,7 +740,7 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
-##  <Ref Constr="NewMatrix"/> returns a mutable matrix object which has
+##  <Ref Constr="NewMatrix"/> returns a matrix object which has
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> <A>R</A>,
@@ -735,19 +759,22 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="NewMatrix"/> need not perform consistency checks.
 ##  <P/>
-##  Similarly, <Ref Constr="NewZeroMatrix"/> returns a mutable zero matrix
+##  Similarly, <Ref Constr="NewZeroMatrix"/> returns a zero matrix
 ##  object with <A>m</A> rows and <A>n</A> columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values.
 ##  <P/>
-##  Similarly, <Ref Constr="NewIdentityMatrix"/> returns a mutable identity
+##  Similarly, <Ref Constr="NewIdentityMatrix"/> returns an identity
 ##  matrix object with <A>n</A> rows and columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
 ##  and contains the identity element of <A>R</A> in the diagonal
 ##  and the zero of <A>R</A> in each off-diagonal position.
+##  <P/>
+##  The returned object is mutable if and only if <A>filt</A> implies
+##  <Ref Filt="IsCopyable"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1059,7 +1086,7 @@ DeclareSynonym( "SetMatElm", ASS_MAT );
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
 ##  For a matrix object <A>M</A> and two nonnegative integers <A>m</A>
-##  and <A>n</A>, this operation returns a new fully mutable matrix object
+##  and <A>n</A>, this operation returns a new matrix object
 ##  with <A>m</A> rows and <A>n</A> columns
 ##  in the same representation and over the same base domain as <A>M</A>
 ##  containing only zeros.
@@ -1072,6 +1099,10 @@ DeclareSynonym( "SetMatElm", ASS_MAT );
 ##  and second argument, they are taken as the values of
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of the result.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1100,7 +1131,7 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
 ##  For a matrix object <A>M</A> and a nonnegative integer <A>n</A>,
-##  this operation returns a new fully mutable identity matrix object
+##  this operation returns a new identity matrix object
 ##  with <A>n</A> rows and columns
 ##  in the same representation and over the same base domain as <A>M</A>.
 ##  <P/>
@@ -1111,6 +1142,10 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  and second argument, they are taken as the values of
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of the result.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1236,14 +1271,19 @@ DeclareOperation( "CompanionMatrix",
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
 ##  the list.
 ##  <P/>
-##  It is guaranteed that the given list <A>list</A> is copied in the sense
-##  of <Ref Oper="ShallowCopy"/>.
-##  If <A>list</A> is a nested list then it is <E>not</E> guaranteed
-##  that also the entries of <A>list</A> are copied.
-##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
 ##  need not perform consistency checks.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable if and only if the argument that determines the entries of the
+##  result (<A>list</A>, <A>M</A>, <A>M1</A>) is mutable.
+##  <P/>
+##  In the case of a mutable result, it is guaranteed that the given list
+##  <A>list</A> is copied in the sense of <Ref Oper="ShallowCopy"/>,
+##  and if <A>list</A> is a nested list then it is <E>not</E> guaranteed
+##  that also the entries of <A>list</A> are copied.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
