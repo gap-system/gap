@@ -1757,9 +1757,9 @@ end);
 DeclareUserPreference( rec(
   name:= "MaxBitsIntView",
   description:= [
-    "Maximal bit length of integers to 'view' unabbreviated.  \
-Default is about 30 lines of a 80 character wide terminal.  \
-Set this to '0' to avoid abbreviated ints."
+    "Maximal bit length of integers to <C>View</C> unabbreviated.  \
+Default is about <M>30</M> lines of a <M>80</M> character wide terminal.  \
+Set this to <C>0</C> to avoid abbreviated ints."
     ],
   default:= 8000,
   check:= val -> IsInt( val ) and 0 <= val,
