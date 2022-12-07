@@ -258,6 +258,34 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 
 #############################################################################
 ##
+#O  AlgebraHomomorphismByFunction( <A>, <B>, <f> ), 
+##
+##  <#GAPDoc Label="AlgebraHomomorphismbyFunction">
+##  <ManSection>
+##  <Oper Name="AlgebraHomomorphismByFunction" Arg="A B f"/>
+##  <Oper Name="AlgebraWithOneHomomorphismByFunction" Arg="A B f"/>
+##  <Description>
+##  These functions construct an algebra homomorphism from the algebra 
+##  <A>A</A> to the algebra <A>B</A> using a one-argument function <A>f</A>. 
+##  They do not check that the function actually defines a homomorphism.
+##  <Example><![CDATA[
+##  gap> A := MatrixAlgebra( Rationals, 2 );;
+##  gap> f := AlgebraHomomorphismByFunction( Rationals, A, q->[[q,0],[0,0]] );
+##  MappingByFunction( Rationals, ( Rationals^[ 2, 2 ] ), function( q ) ... end )
+##  gap> 11^f;
+##  [ [ 11, 0 ], [ 0, 0 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AlgebraHomomorphismByFunction", 
+    [ IsAlgebra, IsAlgebra, IsFunction ] );
+DeclareOperation( "AlgebraWithOneHomomorphismByFunction", 
+    [ IsAlgebraWithOne, IsAlgebraWithOne, IsFunction ] );
+
+#############################################################################
+##
 #O  OperationAlgebraHomomorphism( <A>, <B>[, <opr>] )
 #O  OperationAlgebraHomomorphism( <A>, <V>[, <opr>] )
 ##
