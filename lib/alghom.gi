@@ -206,6 +206,30 @@ end );
 
 #############################################################################
 ##
+#M  AlgebraHomomorphismByFunction( <A>, <B>, <f> )
+#M  AlgebraWithOneHomomorphismByFunction( <A>, <B>, <f> )
+##
+InstallMethod( AlgebraHomomorphismByFunction, 
+    "for two algebras and a function",
+    true, 
+    [ IsAlgebra, IsAlgebra, IsFunction ],
+    function( A, B, f )
+    return Objectify( TypeOfDefaultGeneralMapping( A, B, 
+	IsSPMappingByFunctionRep and IsAlgebraHomomorphism ), rec(fun:=f) );
+    end);
+
+InstallMethod(AlgebraWithOneHomomorphismByFunction, 
+    "for two algebras and a function",
+    true,
+    [ IsAlgebraWithOne, IsAlgebraWithOne, IsFunction ],
+    function( A, B, f )
+    return Objectify( TypeOfDefaultGeneralMapping( A, B, 
+	IsSPMappingByFunctionRep and IsAlgebraWithOneHomomorphism ), 
+        rec(fun:=f) );
+    end);
+
+#############################################################################
+##
 #M  ViewObj( <map> )  . . . . . . . . . . . . . . . . .  for algebra g.m.b.i.
 ##
 InstallMethod( ViewObj, "for an algebra g.m.b.i", true,

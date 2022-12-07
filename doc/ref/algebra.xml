@@ -210,6 +210,7 @@ true
 <#Include Label="AlgebraWithOneGeneralMappingByImages">
 <#Include Label="AlgebraWithOneHomomorphismByImages">
 <#Include Label="AlgebraWithOneHomomorphismByImagesNC">
+<#Include Label="AlgebraHomomorphismbyFunction">
 <#Include Label="NaturalHomomorphismByIdeal_algebras">
 <#Include Label="OperationAlgebraHomomorphism">
 <#Include Label="NiceAlgebraMonomorphism">

@@ -73,6 +73,14 @@ gap> pr := NaturalHomomorphismByIdeal(P, I);;
 gap> IsZero(Image(pr,x));
 false
 
+# an example of an algebra homomorphism by function 
+gap> A := MatrixAlgebra( Rationals, 2 );;
+gap> f := AlgebraHomomorphismByFunction( Rationals, A, q->[[q,0],[0,0]] );
+MappingByFunction( Rationals, ( Rationals^[ 2, 2 ] ), function( q ) ... end )
+gap> 11^f;
+[ [ 11, 0 ], [ 0, 0 ] ]
+
+
 # example for structure constant rings, Martin Brandenburg on stackexchange
 gap> ExampleRing := function(n)
 > local T,O;
