@@ -80,7 +80,6 @@ MappingByFunction( Rationals, ( Rationals^[ 2, 2 ] ), function( q ) ... end )
 gap> 11^f;
 [ [ 11, 0 ], [ 0, 0 ] ]
 
-
 # example for structure constant rings, Martin Brandenburg on stackexchange
 gap> ExampleRing := function(n)
 > local T,O;
