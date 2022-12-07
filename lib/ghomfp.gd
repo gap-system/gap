@@ -251,7 +251,7 @@ DeclareAttribute("IsomorphismSimplifiedFpGroup",IsSubgroupFpGroup);
 ##  <Description>
 ##  For a group <A>G</A> with a known generating set, this attribute returns
 ##  a homomorphism from a free group that maps the free generators to the
-##  groups generators.
+##  generators of <A>G</A>.
 ##  <P/>
 ##  The option <C>names</C> can be used to prescribe a (print) name
 ##  for the free generators.

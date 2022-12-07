@@ -3599,8 +3599,8 @@ DeclareOperation( "NrConjugacyClassesInSupergroup", [ IsGroup, IsGroup ] );
 ##  returns a factorization of <A>elm</A> as word in the generators of the
 ##  group <A>G</A> given in the attribute <Ref Attr="GeneratorsOfGroup"/>.
 ##  The attribute <Ref Attr="EpimorphismFromFreeGroup"/> of <A>G</A>
-##  will contain a map from the group <A>G</A> to the free group
-##  in which the word is expressed.
+##  will contain a map from the free group in which the word is expressed
+##  to the group <A>G</A>.
 ##  The attribute <Ref Attr="MappingGeneratorsImages"/> of this map gives a
 ##  list of generators and corresponding letters.
 ##  <P/>

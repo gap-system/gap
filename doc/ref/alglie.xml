@@ -347,8 +347,8 @@ gap> ExtRepOfObj( q );
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Tensor Products and Exterior and Symmetric Powers">
-<Heading>Tensor Products and Exterior and Symmetric Powers</Heading>
+<Section Label="Tensor Products and Exterior and Symmetric Powers of Algebra Modules">
+<Heading>Tensor Products and Exterior and Symmetric Powers of Algebra Modules</Heading>
 
 <#Include Label="TensorProductOfAlgebraModules">
 <#Include Label="ExteriorPowerOfAlgebraModule">

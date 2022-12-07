@@ -95,7 +95,7 @@ method filter.
 Also, method ranking works differently: instead of the sum of the ranks of the
 types of all arguments, only the rank of the filter given as first argument is
 considered; and for it, the normal ranking order is reversed. This ensures
-that if multiple constructor methods match, the <Q>>most general</Q> method is
+that if multiple constructor methods match, the <Q>most general</Q> method is
 selected.
 
 <Example><![CDATA[
