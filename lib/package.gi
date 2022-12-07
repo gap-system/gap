@@ -1281,7 +1281,7 @@ InstallGlobalFunction( DirectoriesPackageLibrary, function( arg )
       # This package is not known.
       return [];
     fi;
-    tmp:= Concatenation( installationpath, "/", path );
+    tmp:= Filename( Directory( installationpath ), path );
     if IsDirectoryPath( tmp ) = true then
       return [ Directory( tmp ) ];
     fi;
