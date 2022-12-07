@@ -46,6 +46,9 @@
 ##  name is  given the default  <C>"GAP"</C> is  used. If a  user preference
 ##  is  not  known or  not  set  then <Ref  Func="UserPreference"/>  returns
 ##  <K>fail</K>. <P/>
+##
+##  The stored values of user preferences are always immutable,
+##  see Section <Ref Sect="Mutability and Copyability"/>. <P/>
 ##  
 ##  The function <Ref Func="ShowUserPreferences"/> with no argument shows in
 ##  a  pager  an  overview  of  all known  user  preferences  together  with
