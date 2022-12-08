@@ -16,6 +16,31 @@
 ##
 #R  Is8BitMatrixRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
+##  <#GAPDoc Label="Is8BitMatrixRep">
+##  <ManSection>
+##  <Filt Name="Is8BitMatrixRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  An object <A>obj</A> in <Ref Filt="Is8BitMatrixRep"/> describes
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves like the
+##  list of its rows (see <Ref Filt="IsRowListMatrix"/>),
+##  each row being an object in <Ref Filt="Is8BitVectorRep"/>.
+##  <A>obj</A> is internally represented as a positional object
+##  (see <Ref Filt="IsPositionalObjectRep"/>).
+##  If the number of rows is <M>n</M> then this object stores <M>n+1</M>
+##  entries,
+##  <M>n</M> at position <M>1</M> and the <M>i</M>-th row at position
+##  <M>i+1</M>.
+##  The base domain is not stored explicitly in <A>obj</A>.
+##  It is the common base domain of all rows, a finite field with <M>q</M>
+##  elements, for <M>3 \leq q \leq 256</M>.
+##  <P/>
+##  <Ref Filt="Is8BitMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus matrix objects in this representation can be mutable.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 DeclareRepresentation( "Is8BitMatrixRep", 
         IsPositionalObjectRep and IsRowListMatrix
     and IsCopyable

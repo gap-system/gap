@@ -21,7 +21,7 @@
 ##
 ##  <#GAPDoc Label="IsPlistVectorRep">
 ##  <ManSection>
-##  <Filt Name="IsPlistVectorRep" Arg='obj' Type="representation"/>
+##  <Filt Name="IsPlistVectorRep" Arg='obj' Type="Representation"/>
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsPlistVectorRep"/> describes
@@ -40,6 +40,9 @@
 ##    a plain list (see <Ref Filt="IsPlistRep"/> of its entries.
 ##  </Item>
 ##  </Enum>
+##  <P/>
+##  <Ref Filt="IsPlistVectorRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus vector objects in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -56,15 +59,14 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##
 ##  <#GAPDoc Label="IsPlistMatrixRep">
 ##  <ManSection>
-##  <Filt Name="IsPlistMatrixRep" Arg='obj' Type="representation"/>
+##  <Filt Name="IsPlistMatrixRep" Arg='obj' Type="Representation"/>
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> describes
 ##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
-##  a list of its rows, in the sense defined in
-##  Section <Ref Sect="Operations for Row List Matrix Objects"/>.
+##  a list of its rows, in the sense of <Ref Filt="IsRowListMatrix"/>.
 ##  It is internally represented as a positional object
-##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 4 entries:
+##  (see <Ref Filt="IsPositionalObjectRep"/>) that stores 4 entries:
 ##  <Enum>
 ##  <Item>
 ##    its base domain
@@ -82,6 +84,9 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##    each of them being an object in <Ref Filt="IsPlistVectorRep"/>.
 ##  </Item>
 ##  </Enum>
+##  <P/>
+##  <Ref Filt="IsPlistMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus matrix objects in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

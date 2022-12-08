@@ -33,7 +33,7 @@ DeclareCategory( "IsVecOrMatObj", IsCopyable );
 ##
 ##  <#GAPDoc Label="IsVectorObj">
 ##  <ManSection>
-##  <Filt Name="IsVectorObj" Arg='obj' Type="category"/>
+##  <Filt Name="IsVectorObj" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
 ##  The idea behind <E>vector objects</E> is that one wants to deal with
@@ -98,7 +98,7 @@ DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj );
 ##
 ##  <#GAPDoc Label="IsMatrixOrMatrixObj">
 ##  <ManSection>
-##  <Filt Name="IsMatrixOrMatrixObj" Arg='obj' Type="category"/>
+##  <Filt Name="IsMatrixOrMatrixObj" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
 ##  Several functions are defined for objects in <Ref Filt="IsMatrix"/> and
@@ -153,7 +153,7 @@ InstallTrueMethod( IsMatrixOrMatrixObj, IsMatrix );
 ##
 ##  <#GAPDoc Label="IsMatrixObj">
 ##  <ManSection>
-##  <Filt Name="IsMatrixObj" Arg='obj' Type="category"/>
+##  <Filt Name="IsMatrixObj" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
 ##  The idea behind <E>matrix objects</E> is that one wants to deal with
@@ -239,7 +239,7 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##
 ##  <#GAPDoc Label="IsRowListMatrix">
 ##  <ManSection>
-##  <Filt Name="IsRowListMatrix" Arg='obj' Type="category"/>
+##  <Filt Name="IsRowListMatrix" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
 ##  A <E>row list matrix object</E> is a matrix object
