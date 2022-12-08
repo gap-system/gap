@@ -2654,7 +2654,7 @@ static Obj FuncLEN_VEC8BIT(Obj self, Obj list)
 
 /****************************************************************************
 **
-*F  FuncQ_VEC8BIT( <self>, <list> )  . . . . . . . .  length of a vector
+*F  FuncQ_VEC8BIT( <self>, <list> )  . . . . . . . .  TODO
 */
 static Obj FuncQ_VEC8BIT(Obj self, Obj list)
 {
@@ -3243,6 +3243,7 @@ static inline Int LEN_MAT8BIT(Obj mat)
 {
     return INT_INTOBJ(CONST_ADDR_OBJ(mat)[1]);
 }
+
 static inline void SET_LEN_MAT8BIT(Obj mat, Int l)
 {
     GAP_ASSERT(l >= 0);
@@ -3256,12 +3257,25 @@ static inline Obj ELM_MAT8BIT(Obj mat, Int i)
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
     return CONST_ADDR_OBJ(mat)[i + 1];
 }
+
 static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
 {
     GAP_ASSERT(i >= 1);
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
     GAP_ASSERT(IS_LIST(row));
     ADDR_OBJ(mat)[i + 1] = row;
+}
+
+static inline UInt FIELD_MAT8BIT(Obj mat)
+{
+    // TODO assertions
+    return FIELD_VEC8BIT(ELM_MAT8BIT(mat, 1));
+}
+
+static inline UInt NR_COLS_MAT8BIT(Obj mat)
+{
+    // TODO assertions
+    return LEN_VEC8BIT(ELM_MAT8BIT(mat, 1));
 }
 
 /****************************************************************************
@@ -3298,10 +3312,10 @@ static Obj FuncPLAIN_MAT8BIT(Obj self, Obj mat)
 
 /****************************************************************************
 **
-*F  FuncCONV_MAT8BT( <self>, <list> , <q> )
+*F  FuncCONV_MAT8BIT( <self>, <list> , <q> )
 **
 **  The library should have taken care of <list> containing only locked
-** 8 bit vectors, written over the correct field
+**  8 bit vectors, written over the correct field
 */
 
 static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
@@ -3355,9 +3369,10 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     len = LEN_VEC8BIT(vec);
     lenm = LEN_MAT8BIT(mat);
     row1 = ELM_MAT8BIT(mat, 1);
-    GAP_ASSERT(q == FIELD_VEC8BIT(row1));
-    len1 = LEN_VEC8BIT(row1);
+    GAP_ASSERT(q == FIELD_MAT8BIT(mat));
+    len1 = NR_COLS_MAT8BIT(mat);
     res = ZeroVec8Bit(q, len1, IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1));
+    // TODO IS_MUTABLE_OBJ(mat)??
 
     // Finally, we start work
     info = GetFieldInfo8Bit(q);
@@ -3413,7 +3428,7 @@ static Obj FuncPROD_VEC8BIT_MAT8BIT(Obj self, Obj vec, Obj mat)
 
     // Now field mismatches -- consider promoting the vector
     q = FIELD_VEC8BIT(vec);
-    q1 = FIELD_VEC8BIT(ELM_MAT8BIT(mat, 1));
+    q1 = FIELD_MAT8BIT(mat);
     if (q != q1) {
         if (q > q1 || CALL_1ARGS(IsLockedRepresentationVector, vec) == True)
             return TRY_NEXT_METHOD;
@@ -3452,8 +3467,9 @@ static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
     Obj           entry;
     len = LEN_MAT8BIT(mat);
     q = FIELD_VEC8BIT(vec);
+    // FIXME JDM
     row1 = ELM_MAT8BIT(mat, 1);
-    GAP_ASSERT(q == FIELD_VEC8BIT(row1));
+    GAP_ASSERT(q == FIELD_MAT8BIT(mat));
     res = ZeroVec8Bit(q, len, IS_MUTABLE_OBJ(row1) || IS_MUTABLE_OBJ(vec));
     info = GetFieldInfo8Bit(q);
     settab = SETELT_FIELDINFO_8BIT(info);
@@ -3487,15 +3503,10 @@ static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
 static Obj FuncPROD_MAT8BIT_VEC8BIT(Obj self, Obj mat, Obj vec)
 {
     UInt q, q1, q2;
-    Obj  row;
-
-    // Sort out length mismatches
-
-    row = ELM_MAT8BIT(mat, 1);
 
     // Now field mismatches -- consider promoting the vector
     q = FIELD_VEC8BIT(vec);
-    q1 = FIELD_VEC8BIT(row);
+    q1 = FIELD_MAT8BIT(mat);
     if (q != q1) {
         if (q > q1 || CALL_1ARGS(IsLockedRepresentationVector, vec) == True)
             return TRY_NEXT_METHOD;
@@ -3512,7 +3523,6 @@ static Obj FuncPROD_MAT8BIT_VEC8BIT(Obj self, Obj mat, Obj vec)
     // OK, now we can do the work
     return ProdMat8BitVec8Bit(mat, vec);
 }
-
 
 /****************************************************************************
 **
@@ -3531,18 +3541,18 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
     Obj  type;
 
     len = LEN_MAT8BIT(matl);
-    q = FIELD_VEC8BIT(ELM_MAT8BIT(matl, 1));
+    q = FIELD_MAT8BIT(matl);
 
-    GAP_ASSERT(q == FIELD_VEC8BIT(ELM_MAT8BIT(matr, 1)));
-    GAP_ASSERT(LEN_MAT8BIT(matr) == LEN_VEC8BIT(ELM_MAT8BIT(matl, 1)));
+    GAP_ASSERT(q == FIELD_MAT8BIT(matr));
+    GAP_ASSERT(LEN_MAT8BIT(matr) == NR_COLS_MAT8BIT(matl));
 
     prod = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (len + 2));
     SET_LEN_MAT8BIT(prod, len);
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr));
     SET_TYPE_POSOBJ(prod, type);
     locked_type =
-        TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(matl, 1)) ||
-                                 IS_MUTABLE_OBJ(ELM_MAT8BIT(matr, 1)));
+        TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(matl, 1))    // FIXME
+                                 || IS_MUTABLE_OBJ(ELM_MAT8BIT(matr, 1)));
     for (i = 1; i <= len; i++) {
         row = ProdVec8BitMat8Bit(ELM_MAT8BIT(matl, i), matr);
 
@@ -3565,21 +3575,20 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
 static Obj FuncPROD_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 {
     UInt ql, qr;
-    Obj  rowl;
 
-    rowl = ELM_MAT8BIT(matl, 1);
-    ql = FIELD_VEC8BIT(rowl);
-    qr = FIELD_VEC8BIT(ELM_MAT8BIT(matr, 1));
+    ql = FIELD_MAT8BIT(matl);
+    qr = FIELD_MAT8BIT(matr);
 
-    if (ql != qr)
+    if (ql != qr) {
         return TRY_NEXT_METHOD;
+    }
 
-    if (LEN_MAT8BIT(matr) != LEN_VEC8BIT(rowl))
+    if (LEN_MAT8BIT(matr) != NR_COLS_MAT8BIT(matl)) {
         return TRY_NEXT_METHOD;
+    }
 
     return ProdMat8BitMat8Bit(matl, matr);
 }
-
 
 /****************************************************************************
 **
@@ -3610,6 +3619,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
     Obj           xn;
     Obj           type;
 
+    GAP_ASSERT(LEN_MAT8BIT(mat) > 0);
     row = ELM_MAT8BIT(mat, 1);
     q = FIELD_VEC8BIT(row);
     len = LEN_MAT8BIT(mat);
@@ -3933,7 +3943,7 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
         GAP_ASSERT(wr >= wl);
     }
 
-    q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
+    q = FIELD_MAT8BIT(ml);
     sum = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (ls + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
     SET_TYPE_POSOBJ(sum, type);
@@ -3966,12 +3976,12 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
 
 static Obj FuncSUM_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 {
-    UInt q;
-    q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
-    if (q != FIELD_VEC8BIT(ELM_MAT8BIT(mr, 1)))
+    if (FIELD_MAT8BIT(ml) != FIELD_MAT8BIT(mr)) {
         return TRY_NEXT_METHOD;
-    else
+    }
+    else {
         return SumMat8BitMat8Bit(ml, mr);
+    }
 }
 
 /****************************************************************************
@@ -3996,8 +4006,8 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
 
     ll = LEN_MAT8BIT(ml);
     lr = LEN_MAT8BIT(mr);
-    wl = LEN_VEC8BIT(ELM_MAT8BIT(ml, 1));
-    wr = LEN_VEC8BIT(ELM_MAT8BIT(mr, 1));
+    wl = NR_COLS_MAT8BIT(ml);
+    wr = NR_COLS_MAT8BIT(mr);
 
     // We have to track the cases where the result is not rectangular
     if (((ll > lr) && (wr > wl)) || ((lr > ll) && (wl > wr)))
@@ -4012,7 +4022,7 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
         ld = lr;
         GAP_ASSERT(wr >= wl);
     }
-    q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
+    q = FIELD_MAT8BIT(ml);
 
     if (q % 2 == 0)
         return SumMat8BitMat8Bit(ml, mr);
@@ -4053,10 +4063,7 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
 
 static Obj FuncDIFF_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 {
-    UInt q;
-
-    q = FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1));
-    if (q != FIELD_VEC8BIT(ELM_MAT8BIT(mr, 1)))
+    if (FIELD_MAT8BIT(ml) != FIELD_MAT8BIT(mr))
         return TRY_NEXT_METHOD;
     else
         return DiffMat8BitMat8Bit(ml, mr);
@@ -5230,6 +5237,7 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
+    // TODO add Requires
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5402,7 +5410,7 @@ static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
 **
 **  Assumes the matrices are over compatible fields
 */
-
+// TODO review
 static Int Cmp_MAT8BIT_MAT8BIT(Obj ml, Obj mr)
 {
     UInt l1, l2, l, i;
@@ -5433,8 +5441,7 @@ static Obj FuncEQ_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
         return False;
     if (LEN_MAT8BIT(ml) == 0)
         return True;
-    if (FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1)) !=
-        FIELD_VEC8BIT(ELM_MAT8BIT(mr, 1)))
+    if (FIELD_MAT8BIT(ml) != FIELD_MAT8BIT(mr))
         return EqListList(ml, mr) ? True : False;
     return (0 == Cmp_MAT8BIT_MAT8BIT(ml, mr)) ? True : False;
 }
@@ -5450,8 +5457,7 @@ static Obj FuncLT_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
         return (LEN_MAT8BIT(mr) != 0) ? True : False;
     if (LEN_MAT8BIT(mr) == 0)
         return False;
-    if (FIELD_VEC8BIT(ELM_MAT8BIT(ml, 1)) !=
-        FIELD_VEC8BIT(ELM_MAT8BIT(mr, 1)))
+    if (FIELD_MAT8BIT(ml) != FIELD_MAT8BIT(mr))
         return LtListList(ml, mr) ? True : False;
     return (Cmp_MAT8BIT_MAT8BIT(ml, mr) < 0) ? True : False;
 }
@@ -5482,7 +5488,7 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
     // we will give result same type as mat
 
     // we assume here that there is a first row  -- a zero row mat8bit is a
-    // bad thing
+    // bad thing FIXME
     r1 = ELM_MAT8BIT(mat, 1);
 
     l = LEN_MAT8BIT(mat);
@@ -5578,10 +5584,10 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 
     nrowl = LEN_MAT8BIT(matl);
     nrowr = LEN_MAT8BIT(matr);
-    ncoll = LEN_VEC8BIT(ELM_MAT8BIT(matl, 1));
-    ncolr = LEN_VEC8BIT(ELM_MAT8BIT(matr, 1));
-    q = FIELD_VEC8BIT(ELM_MAT8BIT(matl, 1));
-    if (q != FIELD_VEC8BIT(ELM_MAT8BIT(matr, 1)))
+    ncoll = NR_COLS_MAT8BIT(matl);
+    ncolr = NR_COLS_MAT8BIT(matr);
+    q = FIELD_MAT8BIT(matl);
+    if (q != FIELD_MAT8BIT(matr))
         return TRY_NEXT_METHOD;
 
     mutable = IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr);
