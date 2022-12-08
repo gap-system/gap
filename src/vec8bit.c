@@ -52,6 +52,13 @@
 **
 */
 
+#define RequireVec8BitRep(funcname, op)                                      \
+    RequireArgumentCondition(funcname, op, IS_VEC8BIT_REP(op),               \
+                             "must belong to Is8BitVectorRep")
+
+#define RequireMat8BitRep(funcname, op)                                      \
+    RequireArgumentCondition(funcname, op, IS_MAT8BIT_REP(op),               \
+                             "must belong to Is8BitMatrixRep")
 
 /****************************************************************************
 **
@@ -60,8 +67,8 @@
 ** #define IS_VEC8BIT_REP(obj) \
 **  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
 */
-Obj IsVec8bitRep;
-
+Obj        IsVec8bitRep;
+static Obj Is8BitMatrixRep;
 
 /****************************************************************************
 **
@@ -1207,6 +1214,9 @@ static Obj ConvertToVectorRep;    // BH: changed to static
 
 static Obj FuncSUM_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 {
+    GAP_ASSERT(IS_VEC8BIT_REP(vl));
+    GAP_ASSERT(IS_VEC8BIT_REP(vr));
+
     Obj sum;
     if (FIELD_VEC8BIT(vl) != FIELD_VEC8BIT(vr)) {
         UInt ql = FIELD_VEC8BIT(vl), qr = FIELD_VEC8BIT(vr);
@@ -2654,7 +2664,7 @@ static Obj FuncLEN_VEC8BIT(Obj self, Obj list)
 
 /****************************************************************************
 **
-*F  FuncQ_VEC8BIT( <self>, <list> )  . . . . . . . .  TODO
+*F  FuncQ_VEC8BIT( <self>, <list> )  . . . . . . . .  size of the field
 */
 static Obj FuncQ_VEC8BIT(Obj self, Obj list)
 {
@@ -3239,6 +3249,12 @@ static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
 *F  * * * * * * *  special rep for matrices over these fields * * * * * * *
 */
 
+static BOOL IS_MAT8BIT_REP(Obj obj)
+{
+    return TNUM_OBJ(obj) == T_POSOBJ &&
+           True == DoFilter(Is8BitMatrixRep, obj);
+}
+
 static inline Int LEN_MAT8BIT(Obj mat)
 {
     return INT_INTOBJ(CONST_ADDR_OBJ(mat)[1]);
@@ -3268,13 +3284,13 @@ static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
 
 static inline UInt FIELD_MAT8BIT(Obj mat)
 {
-    // TODO assertions
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     return FIELD_VEC8BIT(ELM_MAT8BIT(mat, 1));
 }
 
 static inline UInt NR_COLS_MAT8BIT(Obj mat)
 {
-    // TODO assertions
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     return LEN_VEC8BIT(ELM_MAT8BIT(mat, 1));
 }
 
@@ -3331,6 +3347,7 @@ static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
     GROW_PLIST(list, len + 1);
     for (i = len; i >= 1; i--) {
         tmp = ELM_PLIST(list, i);
+        GAP_ASSERT(IS_VEC8BIT_REP(tmp));
         type = TypeVec8BitLocked(iq, IS_MUTABLE_OBJ(tmp));
         SetTypeDatObj(tmp, type);
         SET_ELM_MAT8BIT(list, i, tmp);
@@ -3365,6 +3382,9 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     const Obj *   ffefelt;
     Obj           x;
 
+    GAP_ASSERT(IS_VEC8BIT_REP(vec));
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
+
     q = FIELD_VEC8BIT(vec);
     len = LEN_VEC8BIT(vec);
     lenm = LEN_MAT8BIT(mat);
@@ -3372,7 +3392,7 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     GAP_ASSERT(q == FIELD_MAT8BIT(mat));
     len1 = NR_COLS_MAT8BIT(mat);
     res = ZeroVec8Bit(q, len1, IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1));
-    // TODO IS_MUTABLE_OBJ(mat)??
+    // TODO(0xn) IS_MUTABLE_OBJ(mat)
 
     // Finally, we start work
     info = GetFieldInfo8Bit(q);
@@ -3424,7 +3444,8 @@ static Obj FuncPROD_VEC8BIT_MAT8BIT(Obj self, Obj vec, Obj mat)
 {
     UInt q, q1, q2;
 
-    // Sort out length mismatches
+    GAP_ASSERT(IS_VEC8BIT_REP(vec));
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
 
     // Now field mismatches -- consider promoting the vector
     q = FIELD_VEC8BIT(vec);
@@ -3465,9 +3486,13 @@ static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
     const UInt1 * feltffe;
     UInt1 *       ptr;
     Obj           entry;
+
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
+    GAP_ASSERT(IS_VEC8BIT_REP(vec));
+
     len = LEN_MAT8BIT(mat);
     q = FIELD_VEC8BIT(vec);
-    // FIXME JDM
+    // TODO(0xn)
     row1 = ELM_MAT8BIT(mat, 1);
     GAP_ASSERT(q == FIELD_MAT8BIT(mat));
     res = ZeroVec8Bit(q, len, IS_MUTABLE_OBJ(row1) || IS_MUTABLE_OBJ(vec));
@@ -3503,6 +3528,9 @@ static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
 static Obj FuncPROD_MAT8BIT_VEC8BIT(Obj self, Obj mat, Obj vec)
 {
     UInt q, q1, q2;
+
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
+    GAP_ASSERT(IS_VEC8BIT_REP(vec));
 
     // Now field mismatches -- consider promoting the vector
     q = FIELD_VEC8BIT(vec);
@@ -3540,6 +3568,9 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
     Obj  locked_type;
     Obj  type;
 
+    GAP_ASSERT(IS_MAT8BIT_REP(matl));
+    GAP_ASSERT(IS_MAT8BIT_REP(matr));
+
     len = LEN_MAT8BIT(matl);
     q = FIELD_MAT8BIT(matl);
 
@@ -3550,9 +3581,9 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
     SET_LEN_MAT8BIT(prod, len);
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr));
     SET_TYPE_POSOBJ(prod, type);
-    locked_type =
-        TypeVec8BitLocked(q, IS_MUTABLE_OBJ(ELM_MAT8BIT(matl, 1))    // FIXME
-                                 || IS_MUTABLE_OBJ(ELM_MAT8BIT(matr, 1)));
+    locked_type = TypeVec8BitLocked(
+        q, IS_MUTABLE_OBJ(ELM_MAT8BIT(matl, 1))    // FIXME(0xn)
+               || IS_MUTABLE_OBJ(ELM_MAT8BIT(matr, 1)));
     for (i = 1; i <= len; i++) {
         row = ProdVec8BitMat8Bit(ELM_MAT8BIT(matl, i), matr);
 
@@ -3574,12 +3605,11 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
 
 static Obj FuncPROD_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 {
-    UInt ql, qr;
 
-    ql = FIELD_MAT8BIT(matl);
-    qr = FIELD_MAT8BIT(matr);
+    GAP_ASSERT(IS_MAT8BIT_REP(matl));
+    GAP_ASSERT(IS_MAT8BIT_REP(matr));
 
-    if (ql != qr) {
+    if (FIELD_MAT8BIT(matl) != FIELD_MAT8BIT(matr)) {
         return TRY_NEXT_METHOD;
     }
 
@@ -3619,7 +3649,9 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
     Obj           xn;
     Obj           type;
 
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     GAP_ASSERT(LEN_MAT8BIT(mat) > 0);
+
     row = ELM_MAT8BIT(mat, 1);
     q = FIELD_VEC8BIT(row);
     len = LEN_MAT8BIT(mat);
@@ -3750,6 +3782,8 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
 
 static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
+
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
         ErrorMayQuit("InverseOp: matrix must be square, not %d by %d",
                      LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
@@ -3766,6 +3800,7 @@ static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
 
 static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
         ErrorMayQuit(
             "InverseSameMutability: matrix must be square, not %d by %d",
@@ -3783,6 +3818,7 @@ static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
 
 static Obj FuncINV_MAT8BIT_IMMUTABLE(Obj self, Obj mat)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     if (LEN_MAT8BIT(mat) != LEN_VEC8BIT(ELM_MAT8BIT(mat, 1))) {
         ErrorMayQuit("Inverse: matrix must be square, not %d by %d",
                      LEN_MAT8BIT(mat), LEN_VEC8BIT(ELM_MAT8BIT(mat, 1)));
@@ -3808,6 +3844,7 @@ static Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj pos, Obj obj)
     UInt p;
     Obj  type;
 
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     p = GetPositiveSmallInt(SELF_NAME, pos);
 
     len = LEN_MAT8BIT(mat);
@@ -3900,6 +3937,7 @@ cantdo:
 */
 static Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(mat));
     UInt r = GetPositiveSmallInt(SELF_NAME, pos);
     if (LEN_MAT8BIT(mat) < r) {
         ErrorMayQuit("row index %d exceeds %d, the number of rows", r,
@@ -3924,6 +3962,10 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
     UInt i;
     Obj  row;
     Obj  type;
+
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
+
     ll = LEN_MAT8BIT(ml);
     lr = LEN_MAT8BIT(mr);
     wl = LEN_VEC8BIT(ELM_MAT8BIT(ml, 1));
@@ -3976,6 +4018,9 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
 
 static Obj FuncSUM_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
+
     if (FIELD_MAT8BIT(ml) != FIELD_MAT8BIT(mr)) {
         return TRY_NEXT_METHOD;
     }
@@ -4003,6 +4048,9 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
     FFV  minusOne;
     Obj  mone;
     UInt ll, lr, wl, wr, ld;
+
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
 
     ll = LEN_MAT8BIT(ml);
     lr = LEN_MAT8BIT(mr);
@@ -4063,6 +4111,9 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
 
 static Obj FuncDIFF_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
+
     if (FIELD_MAT8BIT(ml) != FIELD_MAT8BIT(mr))
         return TRY_NEXT_METHOD;
     else
@@ -4899,6 +4950,7 @@ static void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
 
 static Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT(Obj self, Obj vr, Obj lr)
 {
+    RequireVec8BitRep(SELF_NAME, vr);
     RequireNonnegativeSmallInt(SELF_NAME, lr);
     if (INT_INTOBJ(lr) > LEN_VEC8BIT(vr)) {
         ErrorQuit("ReduceCoeffs: given length <lr> of right argt (%d) is "
@@ -4913,6 +4965,8 @@ static Obj FuncREDUCE_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
 {
     UInt q;
     UInt last;
+
+    RequireVec8BitRep(SELF_NAME, vl);
     q = FIELD_VEC8BIT(vl);
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
@@ -4937,6 +4991,9 @@ static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
     Int  ill, lr;
     Obj  type;
 
+    RequireVec8BitRep(SELF_NAME, vl);
+    RequirePlainList(SELF_NAME, vrshifted);
+
     q = FIELD_VEC8BIT(vl);
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
@@ -4946,6 +5003,7 @@ static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
                   "longer than the argt (%d)",
                   INT_INTOBJ(ll), LEN_VEC8BIT(vl));
     }
+
     ill = INT_INTOBJ(ll);
     rem = CopyVec8Bit(vl, 1);
     info = GetFieldInfo8Bit(q);
@@ -5002,6 +5060,10 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
     UInt1         byte;
     Obj           y;
     Obj           type;
+
+    GAP_ASSERT(IS_PLIST(mat));
+    GAP_ASSERT(LEN_PLIST(mat) > 0);
+    GAP_ASSERT(IS_VEC8BIT_REP(ELM_PLIST(mat, 1)));
 
     nrows = LEN_PLIST(mat);
     ncols = LEN_VEC8BIT(ELM_PLIST(mat, 1));
@@ -5152,6 +5214,10 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
     Obj           y;
     UInt1         x2;
 
+    GAP_ASSERT(IS_PLIST(mat));
+    GAP_ASSERT(LEN_PLIST(mat) > 0);
+    GAP_ASSERT(IS_VEC8BIT_REP(ELM_PLIST(mat, 1)));
+
     nrows = LEN_PLIST(mat);
     row = ELM_PLIST(mat, 1);
     ncols = LEN_VEC8BIT(row);
@@ -5237,7 +5303,9 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
-    // TODO add Requires
+
+    GAP_ASSERT(IS_PLIST(mat));
+
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5274,6 +5342,9 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS(Obj self, Obj mat)
     Obj  row;
     UInt q;
     UInt width;
+
+    GAP_ASSERT(IS_PLIST(mat));
+
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5310,6 +5381,9 @@ static Obj FuncTRIANGULIZE_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
+
+    GAP_ASSERT(IS_PLIST(mat));
+
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5346,6 +5420,9 @@ static Obj FuncRANK_LIST_VEC8BITS(Obj self, Obj mat)
     UInt i, len, width;
     Obj  row;
     UInt q;
+
+    GAP_ASSERT(IS_PLIST(mat));
+
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5382,6 +5459,9 @@ static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
     Obj  row;
     UInt q;
     Obj  det;
+
+    GAP_ASSERT(IS_PLIST(mat));
+
     len = LEN_PLIST(mat);
     if (!len)
         return TRY_NEXT_METHOD;
@@ -5410,11 +5490,14 @@ static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
 **
 **  Assumes the matrices are over compatible fields
 */
-// TODO review
 static Int Cmp_MAT8BIT_MAT8BIT(Obj ml, Obj mr)
 {
     UInt l1, l2, l, i;
     Int  c;
+
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
+
     l1 = LEN_MAT8BIT(ml);
     l2 = LEN_MAT8BIT(mr);
     l = (l1 < l2) ? l1 : l2;
@@ -5437,6 +5520,9 @@ static Int Cmp_MAT8BIT_MAT8BIT(Obj ml, Obj mr)
 
 static Obj FuncEQ_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
+
     if (LEN_MAT8BIT(ml) != LEN_MAT8BIT(mr))
         return False;
     if (LEN_MAT8BIT(ml) == 0)
@@ -5453,6 +5539,9 @@ static Obj FuncEQ_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 
 static Obj FuncLT_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 {
+    GAP_ASSERT(IS_MAT8BIT_REP(ml));
+    GAP_ASSERT(IS_MAT8BIT_REP(mr));
+
     if (LEN_MAT8BIT(ml) == 0)
         return (LEN_MAT8BIT(mr) != 0) ? True : False;
     if (LEN_MAT8BIT(mr) == 0)
@@ -5482,13 +5571,11 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
     const UInt1 *gettab = 0, *settab = 0;
     Obj          type;
 
-    if (TNUM_OBJ(mat) != T_POSOBJ) {
-        ErrorMayQuit("TRANSPOSED_MAT8BIT: Need compressed matrix", 0, 0);
-    }
+    RequireMat8BitRep(SELF_NAME, mat);
     // we will give result same type as mat
 
     // we assume here that there is a first row  -- a zero row mat8bit is a
-    // bad thing FIXME
+    // bad thing FIXME(0xn)
     r1 = ELM_MAT8BIT(mat, 1);
 
     l = LEN_MAT8BIT(mat);
@@ -5581,6 +5668,9 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
     UInt1 *       data;
     const UInt1 * getelt, *setelt, *scalar, *add;
     const UInt1 * datar;
+
+    GAP_ASSERT(IS_MAT8BIT_REP(matl));
+    GAP_ASSERT(IS_MAT8BIT_REP(matr));
 
     nrowl = LEN_MAT8BIT(matl);
     nrowr = LEN_MAT8BIT(matr);
@@ -5679,6 +5769,7 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 */
 static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 {
+    RequireMat8BitRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, row);
     UInt c = GetPositiveSmallInt(SELF_NAME, col);
 
@@ -5705,6 +5796,7 @@ static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 static Obj
 FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
 {
+    RequireMat8BitRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, row);
     UInt c = GetPositiveSmallInt(SELF_NAME, col);
 
@@ -5854,6 +5946,7 @@ static Int InitKernel(StructInitInfo * module)
     ImportFuncFromLibrary("TYPE_MAT8BIT", &TYPE_MAT8BIT);
     InitCopyGVar("TYPES_MAT8BIT", &TYPES_MAT8BIT);
     ImportFuncFromLibrary("Is8BitVectorRep", &IsVec8bitRep);
+    ImportFuncFromLibrary("Is8BitMatrixRep", &Is8BitMatrixRep);
     InitCopyGVar("TYPE_FIELDINFO_8BIT", &TYPE_FIELDINFO_8BIT);
 
     // init filters and functions
