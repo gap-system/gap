@@ -82,6 +82,71 @@ MatObjTest_CallFunc := function(f, args, breakOnError, errors, ex)
     fi;
 end;
 
+# This function requires a filter defining a matrix object and a record of
+# options and generates a list of examples for tests according to the provided 
+# options. 
+# Examples are records with three entries:
+# matObj: The generated matrix object that is to be tested
+# mat: The corresponding calssical GAP matrix (i.e. matrix as list of rows as
+# lists)
+# sourceOfTruth: Either again the classical GAP matrix or another matrix object
+# to test against 
+# MatObjTest_GenerateExample accepts several options as attributes of the opt 
+# record.
+# randomSource: This is set to GlobalMersenneTwister by default. If it is bound
+#   then it must be bound to a valid GAP random source and is passed to
+#    functions generating random matrices which accept a random source.
+# state: If unbound this is set to the current state of the default random
+#   source. This options should only be used if no randomSource is set. Then one
+#   can provide a valid state of the GlobalMersenneTwister and it is set to this
+#   state before examples are generated. This option is intended to make
+#   reproduction of examples easier.
+# dimensions: A list of tuples defining dimensions for matrices. By default this
+#   is set to [[1,1],[2,2],[3,3],[2,5],[5,5],[1,3],[4,1],[6,2]].
+# domains: A list of domains in which matrices should be generated. By default
+#   this is set to [Integers, Rationals, GF(2), GF(5), GF(49)].
+# sourceOfTruth: When performing tests GAP needs some way of telling what
+#   results are correct. That is it needs some kind of way to tell whats true 
+#   and whats not. A source of truth is therefore something telling GAP whats 
+#   true. Here this option can be set to a filter defining a matrix object. Then
+#   together with the matrix objetcs which are to be tested the matrix object
+#   specified as sourceOfTruth is generated as well so the test code can access 
+#   it and comapre results. If this option is unbound then classical GAP 
+#   matrices are used.
+# customGenerator: By default random examples are generated using RandomMat or 
+#   RandomInvertibleMat. However, depending on the matrix object not all 
+#   matrices generated are valid. Consider for example a matrix object type for
+#   diagonal matrices. If necessary one can set this option to a function wich
+#   accepts as arguments a filter, a randomSource, an integer which specifies 
+#   the number of rows, an integer which specifies the number of columns and a 
+#   domain. It must generate a classical GAP matrix from which a valid matrix 
+#   object of the specified filter (which is the filter of the type that is 
+#   tested) can be generated using NewMatrix. The generated matrix must have 
+#   the specified number of rows and columns and its entries must lie in the 
+#   specified domain. A second option is to bound this option to anything. In 
+#   this case the option invertible must be bound to a function accepting as 
+#   arguments a filter, a random source, an integer specifying the number of 
+#   rows and a domain. This function must generate classical GAP matrices which 
+#   are invertible, have the specified number of rows and entries in the 
+#   specified domain. 
+# invertible: By default this option is left unbound. If it is unbound any
+#   random matrices are generated. If it is bound then only invertible matrices
+# are generated. This option changes its behaviour depending on whether
+# customGenerator is bound. If customGenerator is bound then invertible must be
+# set to a function as explained above. If custom generator is unbound and
+# invertible is then matrices are generated using RandomInvertibleMat.
+# Thus there are four cases:
+#   opt.customGenerator and invertible are unbound:
+#       matrices are generated using RandomMat 
+#    opt.customGenerator is unbound but opt.invertible is bound:
+#       matrices are generated using RandomInvertibleMat
+#    opt.customGenerator is bound but opt.invertible is not:
+#       opt.customGenerator is used to generate matrices and therefore must be 
+#       bound to a function accordingly
+#    opt.customGenerator is bound and opt.invertible is bound:
+#       opt.invertible is used to generate matrices and therefore must be bound 
+#       to a function accordingly
+
 MatObjTest_GenerateExample := function(filter, opt)
     local inv, dims, dim, doms, dom, generator, examples, ex, getSourceOfTruth, result;
     
@@ -100,7 +165,7 @@ MatObjTest_GenerateExample := function(filter, opt)
     fi;
 
     # set generator to use provided customGenerators if applicable
-    if IsBound(opt.useCustomGenerator) then 
+    if IsBound(opt.customGenerator) then 
         if IsBound(opt.invertible) then 
             # use a small wrapper to call the generator, note that this will
             # generate invertible nxn matrices where n is the number of rows,
@@ -109,7 +174,7 @@ MatObjTest_GenerateExample := function(filter, opt)
         else 
             # here a wrapper is unnecessary since the customGenerator must have
             # the signature we use below
-            generator := opt.useCustomGenerator;
+            generator := opt.customGenerator;
         fi;
     else 
         if IsBound(opt.invertible) then 
@@ -196,7 +261,7 @@ TestMatrixObj := function(filter, optIn)
     if not IsBound(opt.randomSource) then
         opt.randomSource := GlobalMersenneTwister;
     fi;
-
+    # usage of state makes no sense here. State should be set if bound!
     if not IsBound(opt.state) then 
         opt.state := State(GlobalMersenneTwister);
     fi;
