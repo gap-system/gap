@@ -21,7 +21,7 @@
 ##  the default value a sorted list of positions with non-default values
 ##  and the values for those positions, in the corresponding order
 ##
-##  The lists must be homogenous, and will only tolerate assignment of
+##  The lists must be homogeneous, and will only tolerate assignment of
 ##  elements in the proper family. The user must ensure that mutable elements
 ##  do not change family
 ##

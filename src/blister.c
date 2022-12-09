@@ -766,7 +766,7 @@ static BOOL IsPossBlist(Obj list)
 
 /****************************************************************************
 **
-*F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
+*F  IsHomogBlist( <list> ) . . . . . . . . . . check if <list> is homogeneous
 */
 static BOOL IsHomogBlist(Obj list)
 {

@@ -361,7 +361,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
                                    conclude more */
       if ( ! IS_MUTABLE_OBJ(obj) ) {
                                 /* a one element list is automatically
-                                   homogenous  and ssorted */
+                                   homogeneous  and ssorted */
         if (len == 0 )
           {
             if (IS_CYC(obj))

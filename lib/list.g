@@ -289,8 +289,8 @@ BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM",
 ##  <Func Name="TYPE_LIST_HOM" Arg='family, isMutable, sort, table'/>
 ##
 ##  <Description>
-##  Return the type of a homogenous list whose elements are in <family>, with
-##  additional properties indicated by <isMutable>, <sort> and <table>.
+##  Return the type of a homogeneous list whose elements are in <family>,
+##  with additional properties indicated by <isMutable>, <sort> and <table>.
 ##  </Description>
 ##  </ManSection>
 ##
