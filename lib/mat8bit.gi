@@ -70,16 +70,16 @@ end);
 #M  Length( <mat> )
 ##
 
-InstallOtherMethod( Length, "for a compressed MatFFE",
-        true, [IsList and Is8BitMatrixRep], 0, m->m![1]);
+InstallMethod( Length, "for an 8-bit matrix rep",
+        true, [Is8BitMatrixRep], 0, m->m![1]);
 
 #############################################################################
 ##
 #M  <mat> [ <pos> ]
 ##
 
-InstallOtherMethod( \[\],  "for a compressed MatFFE",
-        [IsList and Is8BitMatrixRep, IsPosInt],
+InstallOtherMethod( \[\],  "for an 8-bit matrix rep and pos. int.",
+        [Is8BitMatrixRep, IsPosInt],
         ELM_MAT8BIT
         );
 
@@ -88,7 +88,7 @@ InstallOtherMethod( \[\],  "for a compressed MatFFE",
 #M  <mat> [ <pos1>, <pos2> ]
 ##
 
-InstallMethod( \[\,\],  "for a compressed MatFFE",
+InstallMethod( \[\,\],  "for an 8-bit matrix rep and 2 pos. int.",
         [Is8BitMatrixRep, IsPosInt, IsPosInt],
         MAT_ELM_MAT8BIT
         );
@@ -101,8 +101,9 @@ InstallMethod( \[\,\],  "for a compressed MatFFE",
 ##  not lie in the appropriate field.
 ##
 
-InstallOtherMethod( \[\]\:\=,  "for a compressed MatFFE",
-        [IsMutable and IsList and Is8BitMatrixRep, IsPosInt, IsObject],
+InstallOtherMethod( \[\]\:\=,
+"for a mutable 8-bit matrix rep, a pos. int. and object",
+        [IsMutable and Is8BitMatrixRep, IsPosInt, IsObject],
         ASS_MAT8BIT
         );
 
@@ -111,7 +112,8 @@ InstallOtherMethod( \[\]\:\=,  "for a compressed MatFFE",
 #M  <mat> [ <pos1>, <pos2> ] := <val>
 ##
 
-InstallMethod( \[\,\]\:\=,  "for a compressed MatFFE",
+InstallMethod( \[\,\]\:\=,
+"for a mutable 8-bit matrix rep, 2 pos. ints., and an object",
         [IsMutable and Is8BitMatrixRep, IsPosInt, IsPosInt, IsObject],
         SET_MAT_ELM_MAT8BIT
         );
@@ -124,8 +126,9 @@ InstallMethod( \[\,\]\:\=,  "for a compressed MatFFE",
 ##  turning into a plain list
 ##
 
-InstallOtherMethod( Unbind\[\], "for a compressed MatFFE",
-        true, [IsMutable and IsList and Is8BitMatrixRep, IsPosInt],
+InstallMethod( Unbind\[\],
+"for a mutable 8-bit matrix rep and pos. int.",
+        true, [IsMutable and Is8BitMatrixRep, IsPosInt],
         0, function(m,p)
     if p = 1 or  p <> m![1] then
         PLAIN_MAT8BIT(m);
@@ -144,18 +147,19 @@ end);
 ##  description is printed
 ##
 
-InstallMethod( ViewObj, "for a compressed MatFFE",
-        true, [Is8BitMatrixRep and IsSmallList], 0,
+InstallMethod( ViewObj, "for an 8-bit matrix rep",
+        true, [Is8BitMatrixRep], 0,
         function( m )
     local r,c;
-    r := m![1];
-    c := LEN_VEC8BIT(m![2]);
+    r := NumberRows(m);
+    c := NumberColumns(m);
     if r*c > 25 or r = 0 or c = 0 then
         Print("< ");
         if not IsMutable(m) then
             Print("im");
         fi;
-        Print("mutable compressed matrix ",r,"x",c," over GF(",Q_VEC8BIT(m![2]),") >");
+        # TODO change this to 8-bit ?
+        Print("mutable compressed matrix ",r,"x",c," over ", BaseDomain(m), " >");
     else
         PrintObj(m);
     fi;
@@ -168,17 +172,18 @@ end);
 ##  Same method as for lists in internal rep.
 ##
 
-InstallMethod( PrintObj, "for a compressed MatFFE",
-        true, [Is8BitMatrixRep and IsSmallList], 0,
+InstallMethod( PrintObj,
+"for an 8-bit matrix rep",
+        true, [Is8BitMatrixRep], 0,
         function( mat )
     local i,l;
     Print("\>\>[ \>\>");
-    l := mat![1];
+    l := NumberRows(mat);
     if l <> 0 then
-        PrintObj(mat![2]);
+        PrintObj(mat[1]);
         for i in [2..l] do
             Print("\<,\< \>\>");
-            PrintObj(mat![i+1]);
+            PrintObj(mat[i]);
         od;
     fi;
     Print(" \<\<\<\<]");
@@ -190,8 +195,8 @@ end);
 ##
 ##
 
-InstallMethod(ShallowCopy, "for a compressed MatFFE",
-        true, [Is8BitMatrixRep and IsSmallList], 0,
+InstallMethod(ShallowCopy, "for an 8-bit matrix rep",
+        true, [Is8BitMatrixRep], 0,
         function(m)
     local c,i,l;
     l := m![1];
@@ -208,9 +213,11 @@ end );
 #M PositionCanonical( <mat> , <vec> )
 ##
 
+# TODO required?
+
 InstallMethod( PositionCanonical,
-    "for 8bit matrices lists, fall back on `Position'",
-    true, # the list may be non-homogeneous.
+    "for 8-bit matrix rep and object",
+    true,
     [ IsList and Is8BitMatrixRep, IsObject ], 0,
     function( list, obj )
     return Position( list, obj, 0 );
@@ -223,9 +230,9 @@ end );
 #M  <mat1> + <mat2>
 ##
 
-InstallMethod( \+, "for two 8 bit matrices in same characteristic",
-        IsIdenticalObj, [IsMatrix and Is8BitMatrixRep,
-                IsMatrix and Is8BitMatrixRep], 0,
+InstallMethod( \+, "for two 8-bit matrices",
+        IsIdenticalObj, [Is8BitMatrixRep,
+                Is8BitMatrixRep], 0,
         SUM_MAT8BIT_MAT8BIT
 );
 
@@ -235,8 +242,8 @@ InstallMethod( \+, "for two 8 bit matrices in same characteristic",
 ##
 
 InstallMethod( \-, "for two 8 bit matrices in same characteristic",
-        IsIdenticalObj, [IsMatrix and Is8BitMatrixRep,
-                IsMatrix and Is8BitMatrixRep], 0,
+        IsIdenticalObj, [Is8BitMatrixRep,
+                Is8BitMatrixRep], 0,
         DIFF_MAT8BIT_MAT8BIT
 );
 
@@ -434,9 +441,9 @@ end);
 #M <vec> * <mat>
 ##
 
-InstallMethod( \*, "8 bit vector * 8 bit matrix", IsElmsColls,
+InstallMethod( \*, "for an 8-bit vector and 8-bit matrix", IsElmsColls,
         [ Is8BitVectorRep and IsRowVector and IsRingElementList,
-          Is8BitMatrixRep and IsMatrix
+          Is8BitMatrixRep
           ], 0,
         PROD_VEC8BIT_MAT8BIT);
 
@@ -446,8 +453,8 @@ InstallMethod( \*, "8 bit vector * 8 bit matrix", IsElmsColls,
 #M <mat> * <vec>
 ##
 
-InstallMethod( \*, "8 bit matrix * 8 bit vector", IsCollsElms,
-        [           Is8BitMatrixRep and IsMatrix,
+InstallMethod( \*, "for 8-bit matrix and 8-bit vector", IsCollsElms,
+        [           Is8BitMatrixRep,
                 Is8BitVectorRep and IsRowVector and IsRingElementList
           ], 0,
         PROD_MAT8BIT_VEC8BIT);
@@ -457,8 +464,8 @@ InstallMethod( \*, "8 bit matrix * 8 bit vector", IsCollsElms,
 #M <mat> * <mat>
 ##
 
-InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
-        [           Is8BitMatrixRep and IsMatrix,
+InstallMethod( \*, "for 8-bit matrices", IsIdenticalObj,
+        [           Is8BitMatrixRep,
                 Is8BitMatrixRep and IsMatrix
           ], 0,
         PROD_MAT8BIT_MAT8BIT);
@@ -471,9 +478,9 @@ InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
 ##  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
 ##
 
-InstallMethod( \*, "internal FFE * 8 bit matrix", IsElmsCollColls,
+InstallMethod( \*, "for an internal FFE and an 8 bit matrix", IsElmsCollColls,
         [           IsFFE and IsInternalRep,
-                Is8BitMatrixRep and IsMatrix
+                Is8BitMatrixRep
           ], 0,
         function(s,m)
     local q,i,l,r,pv;
@@ -492,8 +499,8 @@ InstallMethod( \*, "internal FFE * 8 bit matrix", IsElmsCollColls,
     return r;
 end);
 
-InstallMethod( \*, "FFE * 8 bit matrix", IsElmsCollColls,
-    [ IsFFE, Is8BitMatrixRep and IsMatrix ],
+InstallMethod( \*, "for an FFE and an 8-bit matrix", IsElmsCollColls,
+    [ IsFFE, Is8BitMatrixRep ],
     function( s, m )
     if IsInternalRep( s ) then
       TryNextMethod();
@@ -514,9 +521,9 @@ end);
 ##  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
 ##
 
-InstallMethod( \*, "8 bit matrix * internal FFE", IsCollCollsElms,
+InstallMethod( \*, "for an 8-bit matrix and an internal FFE", IsCollCollsElms,
         [
-                Is8BitMatrixRep and IsMatrix,
+                Is8BitMatrixRep,
                 IsFFE and IsInternalRep
           ], 0,
         function(m,s)
@@ -536,8 +543,8 @@ InstallMethod( \*, "8 bit matrix * internal FFE", IsCollCollsElms,
     return r;
 end);
 
-InstallMethod( \*, "8 bit matrix * FFE", IsCollCollsElms,
-    [ Is8BitMatrixRep and IsMatrix, IsFFE ],
+InstallMethod( \*, "for an 8-bit matrix and an FFE", IsCollCollsElms,
+    [ Is8BitMatrixRep, IsFFE ],
     function( m, s )
     if IsInternalRep( s ) then
       TryNextMethod();
@@ -555,9 +562,8 @@ end);
 #M  Additive Inverse
 ##
 
-InstallMethod(AdditiveInverseMutable, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
+InstallMethod(AdditiveInverseMutable, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep and IsAdditiveElementWithZero],
         0,
         function(mat)
     local neg,i,negv;
@@ -571,9 +577,8 @@ InstallMethod(AdditiveInverseMutable, "8 bit matrix", true,
     return neg;
 end);
 
-InstallMethod(AdditiveInverseImmutable, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
+InstallMethod(AdditiveInverseImmutable, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep and IsAdditiveElementWithZero],
         0,
         function(mat)
     local neg,i,negv;
@@ -587,9 +592,8 @@ InstallMethod(AdditiveInverseImmutable, "8 bit matrix", true,
     return neg;
 end);
 
-InstallMethod(AdditiveInverseSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
+InstallMethod(AdditiveInverseSameMutability, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep and IsAdditiveElementWithZero],
         0,
         function(mat)
     local neg,i,negv;
@@ -613,9 +617,8 @@ end);
 ##
 #M  Zero
 
-InstallMethod( ZeroMutable, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
+InstallMethod( ZeroMutable, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep and IsAdditiveElementWithZero],
         0,
         function(mat)
     local z, i,zv;
@@ -629,9 +632,8 @@ InstallMethod( ZeroMutable, "8 bit matrix", true,
     return z;
 end);
 
-InstallMethod( ZeroImmutable, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
+InstallMethod( ZeroImmutable, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep and IsAdditiveElementWithZero],
         0,
         function(mat)
     local z, i,zv;
@@ -646,9 +648,8 @@ InstallMethod( ZeroImmutable, "8 bit matrix", true,
     return z;
 end);
 
-InstallMethod( ZeroSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
+InstallMethod( ZeroSameMutability, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep and IsAdditiveElementWithZero],
         0,
         function(mat)
     local z, i,zv;
@@ -680,14 +681,9 @@ end);
 #M InverseOp(<mat>)
 ##
 
-InstallMethod( InverseOp, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-        # the following are banalities, but they are required to get the
-        # ranking right
-        and IsOrdinaryMatrix and IsSmallList and
-        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-        ],
-        0,
+InstallMethod( InverseOp, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep],
+        SUM_FLAGS,
         INV_MAT8BIT_MUTABLE);
 
 
@@ -697,14 +693,9 @@ InstallMethod( InverseOp, "8 bit matrix", true,
 #M <mat>^-1
 ##
 
-InstallMethod( InverseSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-        # the following are banalities, but they are required to get the
-        # ranking right
-        and IsOrdinaryMatrix and IsSmallList and
-        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-        ],
-        0,
+InstallMethod( InverseSameMutability, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep],
+        SUM_FLAGS,
         INV_MAT8BIT_SAME_MUTABILITY);
 
 #############################################################################
@@ -712,14 +703,9 @@ InstallMethod( InverseSameMutability, "8 bit matrix", true,
 #M <mat>^0
 ##
 
-InstallMethod( OneSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-        # the following are banalities, but they are required to get the
-        # ranking right
-        and IsOrdinaryMatrix and IsSmallList and
-        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-        ],
-        0,
+InstallMethod( OneSameMutability, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep],
+        SUM_FLAGS,
         function(m)
     local   v,  o,  one,  i,  w;
     v := ZeroOp(m![2]);
@@ -742,14 +728,9 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
     return o;
 end);
 
-InstallMethod( OneMutable, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-        # the following are banalities, but they are required to get the
-        # ranking right
-        and IsOrdinaryMatrix and IsSmallList and
-        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-        ],
-        0,
+InstallMethod( OneMutable, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep],
+        SUM_FLAGS,
         function(m)
     local   v,  o,  one,  i,  w;
     v := ZeroOp(m![2]);
@@ -772,14 +753,9 @@ end);
 #M One(<mat>) -- always immutable
 ##
 
-InstallMethod( One, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-        # the following are banalities, but they are required to get the
-        # ranking right
-        and IsOrdinaryMatrix and IsSmallList and
-        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-        ],
-        0,
+InstallMethod( One, "for an 8-bit matrix", true,
+        [Is8BitMatrixRep],
+        SUM_FLAGS,
         function(m)
     local   o;
     o := OneOp(m);
@@ -793,6 +769,8 @@ InstallMethod( One, "8 bit matrix", true,
 #F  RepresentationsOfMatrix( <mat/vec> )
 ##
 ##
+
+# TODO this function is probably not in the correct file.
 
 InstallGlobalFunction( RepresentationsOfMatrix,
         function( m )
@@ -903,8 +881,8 @@ InstallGlobalFunction( RepresentationsOfMatrix,
 #M  DefaultFieldOfMatrix( <ffe-mat> )
 ##
 InstallMethod( DefaultFieldOfMatrix,
-    "method for a compressed matrix over GF(q)", true,
-    [ IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
+    "for an 8-bit matrix", true,
+    [ IsMatrix and Is8BitMatrixRep ], 0,
 function( mat )
     return GF(Q_VEC8BIT(mat![2]));
 end );
@@ -914,8 +892,8 @@ end );
 #M  <mat> < <mat>
 ##
 
-InstallMethod( \<, "for two compressed 8 bit matrices", IsIdenticalObj,
-        [ IsMatrix and IsFFECollColl and Is8BitMatrixRep, IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
+InstallMethod( \<, "for two 8-bit matrices", IsIdenticalObj,
+        [ Is8BitMatrixRep, Is8BitMatrixRep ], 0,
         LT_MAT8BIT_MAT8BIT);
 
 #############################################################################
@@ -923,8 +901,8 @@ InstallMethod( \<, "for two compressed 8 bit matrices", IsIdenticalObj,
 #M  <mat> = <mat>
 ##
 
-InstallMethod( \=, "for two compressed 8 bit matrices", IsIdenticalObj,
-        [ IsMatrix and IsFFECollColl and Is8BitMatrixRep, IsMatrix and IsFFECollColl and Is8BitMatrixRep ], 0,
+InstallMethod( \=, "for two 8-bit matrices", IsIdenticalObj,
+        [ Is8BitMatrixRep, Is8BitMatrixRep ], 0,
         EQ_MAT8BIT_MAT8BIT);
 
 #############################################################################
@@ -933,14 +911,12 @@ InstallMethod( \=, "for two compressed 8 bit matrices", IsIdenticalObj,
 #M  MutableTransposedMat( <mat> )
 ##
 
-InstallOtherMethod( TransposedMat, "for a compressed 8 bit matrix",
-        true, [IsMatrix and IsFFECollColl and
-        Is8BitMatrixRep ], 0,
+InstallOtherMethod( TransposedMat, "for an 8-bit matrix",
+        true, [Is8BitMatrixRep], 0,
         TRANSPOSED_MAT8BIT);
 
-InstallOtherMethod( MutableTransposedMat, "for a compressed 8 bit matrix",
-        true, [IsMatrix and IsFFECollColl and
-        Is8BitMatrixRep ], 0,
+InstallOtherMethod( MutableTransposedMat, "for an 8-bit matrix",
+        true, [Is8BitMatrixRep], 0,
         TRANSPOSED_MAT8BIT);
 
 
@@ -954,9 +930,9 @@ InstallOtherMethod( MutableTransposedMat, "for a compressed 8 bit matrix",
 # already be in special representation, so don't convert
 #
 
-InstallMethod(SemiEchelonMat, "shortcut method for 8bit matrices",
+InstallMethod(SemiEchelonMat, "for an 8-bit matrix",
         true,
-        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
+        [ IsMatrix and Is8BitMatrixRep ],
         0,
         function( mat )
     local copymat, res;
@@ -967,9 +943,9 @@ InstallMethod(SemiEchelonMat, "shortcut method for 8bit matrices",
     return res;
 end);
 
-InstallMethod(SemiEchelonMatTransformation, "shortcut method for 8bit matrices",
+InstallMethod(SemiEchelonMatTransformation, "for an 8-bit matrix",
         true,
-        [ IsMatrix and Is8BitMatrixRep and IsFFECollColl ],
+        [ IsMatrix and Is8BitMatrixRep ],
         0,
         function( mat )
     local copymat,res,q;
@@ -982,17 +958,22 @@ InstallMethod(SemiEchelonMatTransformation, "shortcut method for 8bit matrices",
     return res;
 end);
 
-InstallMethod(SemiEchelonMatDestructive, "kernel method for plain lists of 8bit vectors",
+# TODO: There's a bunch of argument checking in SEMIECHELON_LIST_VEC8BITS that
+# could be done by method selection.
+InstallMethod(SemiEchelonMatDestructive,
+"for mutable plist-rep matrix of FFEs",
         true,
-        [ IsPlistRep and IsMatrix and IsMutable and IsFFECollColl ],
+        [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
         0,
         SEMIECHELON_LIST_VEC8BITS
         );
 
+# TODO: There's a bunch of argument checking in SEMIECHELON_LIST_VEC8BITS that
+# could be done by method selection.
 InstallMethod(SemiEchelonMatTransformationDestructive,
-        " kernel method for plain lists of 8 bit vectors",
+"for mutable plist-rep matrix of FFEs",
         true,
-        [ IsMatrix and IsFFECollColl and IsPlistRep and IsMutable],
+        [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
         0,
         SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS);
 
@@ -1002,18 +983,18 @@ InstallMethod(SemiEchelonMatTransformationDestructive,
 ##
 #M  TriangulizeMat( <plain list of GF2 vectors> )
 ##
-
+# HERE
 InstallMethod(TriangulizeMat,
-        "kernel method for plain list of GF2 vectors",
+"for mutable plist-rep matrix of FFEs",
         true,
-        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
         0,
         TRIANGULIZE_LIST_VEC8BITS);
 
 InstallMethod(TriangulizeMat,
-        "method for compressed matrices",
+        "for a mutable 8-bit matrix",
         true,
-        [IsMutable and IsMatrix and Is8BitMatrixRep and IsFFECollColl],
+        [IsMutable and IsMatrix and Is8BitMatrixRep],
         0,
         function(m)
     local q,i,imms;
@@ -1043,9 +1024,9 @@ end);
 ##
 
 InstallMethod(DeterminantMatDestructive,
-        "kernel method for plain list of GF2 vectors",
+"for mutable plist-rep matrix of FFEs",
         true,
-        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+        [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
         0,
         DETERMINANT_LIST_VEC8BITS);
 
@@ -1055,9 +1036,9 @@ InstallMethod(DeterminantMatDestructive,
 ##
 
 
-InstallOtherMethod(RankMatDestructive,
-        "kernel method for plain list of GF2 vectors",
-        [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
+InstallMethod(RankMatDestructive,
+"for mutable plist-rep matrix of FFEs",
+        [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
         RANK_LIST_VEC8BITS);
 
 InstallMethod(NestingDepthM, [Is8BitMatrixRep], m->2);
@@ -1065,10 +1046,11 @@ InstallMethod(NestingDepthA, [Is8BitMatrixRep], m->2);
 InstallMethod(NestingDepthM, [Is8BitVectorRep], m->1);
 InstallMethod(NestingDepthA, [Is8BitVectorRep], m->1);
 
-InstallMethod(PostMakeImmutable, [Is8BitMatrixRep],
-        function(m)
-    local i;
-    for i in [2..m![1]] do
-        MakeImmutable(m![i]);
-    od;
+InstallMethod(PostMakeImmutable, "for an 8-bit matrix",
+[Is8BitMatrixRep],
+function(m)
+  local i;
+  for i in [1 .. NumberRows(m)] do
+    MakeImmutable(m[i]);
+  od;
 end);
