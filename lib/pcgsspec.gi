@@ -355,7 +355,7 @@ PcgsSystemWithHallSystem := function( pcgssys )
             size  := next - start;
             base  := pcgssys.pcgs{[start..next-1]};
 
-            # InitializeSystem inhomogenous system  
+            # InitializeSystem inhomogeneous system  
             V := [];
             M := List([1..size], x -> []);
 
@@ -509,7 +509,7 @@ PcgsSystemWithComplementSystem := function( pcgssys )
             size  := next - start;
             base  := pcgssys.pcgs{[start..next-1]};
 
-            # InitializeSystem inhomogenous system  
+            # InitializeSystem inhomogeneous system  
             V := [];
             M := List([1..size], x -> []);
 

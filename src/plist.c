@@ -116,11 +116,11 @@ void             GrowPlist (
 **   T_PLIST                    nothing is known
 **   T_PLIST_NDENSE             known to have a hole
 **   T_PLIST_DENSE              known only not to have a hole
-**   T_PLIST_DENSE_NHOM         known to be dense but not homogenous *  **
+**   T_PLIST_DENSE_NHOM         known to be dense but not homogeneous *  **
 **   T_PLIST_DENSE_NHOM_SSORT   dense, non-hom but strictly sorted
 **   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not to be sorted
 **   T_PLIST_EMPTY              the empty list
-**   T_PLIST_HOM                known to be homogenous *
+**   T_PLIST_HOM                known to be homogeneous *
 **   T_PLIST_HOM_NSORT           etc
 **   T_PLIST_HOM_SSORT           etc
 **   T_PLIST_TAB                known to be a table  *
@@ -169,7 +169,7 @@ void             GrowPlist (
 **     8 is the simpler. It calls KTNumHomPlist, which checks whether we
 **     should really be in T_PLIST_CYC, T_PLIST_FFE or T_PLIST_TAB and if so,
 **     changes the TNUM appropriately and returns the new tnum.  The only
-**     time this is slow is a homogenous list of lists which looks like a
+**     time this is slow is a homogeneous list of lists which looks like a
 **     table until the very last entry which has the wrong length. This
 **     should be rare.
 **
@@ -181,7 +181,7 @@ void             GrowPlist (
 **     the type and the ktnum of the list. This must be done in one function
 **     to avoid an exponential slowdown for deeply nested lists. This
 **     function is mutually recursive with KTNumPlist, which also returns two
-**     pieces of information: the ktnum of the list and, if it is homogenous,
+**     pieces of information: the ktnum of the list and, if it is homogeneous,
 **     the family of the elements.
 **
 **     recursive lists (ie lists which are there own subobjects are detected
@@ -290,7 +290,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         if ( ktnumFirst >= T_PLIST_HOM ||
              ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
 
-          /* entry is a homogenous list, so this might be a table */
+          /* entry is a homogeneous list, so this might be a table */
           isTable = 1;
 
           /* also check for rectangularity, unless this would be expensive */
@@ -2410,7 +2410,7 @@ static Obj FuncASS_PLIST_DEFAULT(Obj self, Obj plist, Obj pos, Obj val)
 *F  MakeImmutablePlistInHom( <plist> )
 **
 **  This is the function for Plists that might have mutable subobjects
-**  which is currently exactly those that are not known to be homogenous
+**  which is currently exactly those that are not known to be homogeneous
 **  (or immutable, but MakeImmutable will have caught that case before we get
 **  here)
 */
@@ -2439,8 +2439,8 @@ static void MakeImmutablePlistInHom(Obj list)
 *F  MakeImmutablePlistNoMutElms( <plist> )
 **
 **  This is the function for Plists that cannot have mutable subobjects
-**  which is currently  those that are  known to be homogenous or known to
-**  be non-homogenous
+**  which is currently  those that are  known to be homogeneous or known to
+**  be non-homogeneous
 **  (or immutable, but MakeImmutable will have caught that case before we get
 **  here)
 */

@@ -1002,7 +1002,7 @@ DeclareCategoryCollections("IsZDFRECollection");
 ##  <Ref Filt="IsMatrix"/> returns <K>true</K> for tables such as 
 ##  <C>[[1,2],[3]]</C>.
 ##  If necessary, <Ref Prop="IsRectangularTable"/> can be used to test whether
-##  an object is a list of homogenous lists of equal lengths manually.
+##  an object is a list of homogeneous lists of equal lengths manually.
 ##  <P/>
 ##  Note that matrices may have different multiplications,
 ##  besides the usual matrix product there is for example the Lie product.

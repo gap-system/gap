@@ -45,7 +45,7 @@ DeclareOperation( "SparseStructureOfList", [IsList]);
 ##  sparse methods should be used.
 ##
 ##  The filter is ranked up so that sparse list methods will beat
-##  competing methods for finite, homogenous, etc. lists, which is
+##  competing methods for finite, homogeneous, etc. lists, which is
 ##  usually right
 ##
 
