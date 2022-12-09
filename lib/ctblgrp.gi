@@ -82,6 +82,7 @@ local D,C,cl,pl;
   D.classes:= ConjugacyClasses( C );
   cl:=ShallowCopy(D.classes);
   D.classreps:=List(cl,Representative);
+  D.centfachom:=[];
   D.klanz:=Length(cl);
   D.classrange:=[1..D.klanz];
   Info(InfoCharacterTable,1,D.klanz," classes");
@@ -1727,7 +1728,23 @@ DoubleCentralizerOrbit := function(D,c1,c2)
   else
     #Info(InfoCharacterTable,3,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
-    l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
+    if IndexNC(D.group,cent)<=10^5 then
+      if not IsBound(D.centfachom[inv]) then
+        e:=ActionHomomorphism(D.group,RightTransversal(D.group,cent),OnRight,
+          "surjective");
+        Image(e);
+        # do not use action later on
+        e:=AsGroupGeneralMappingByImages(e);
+        D.centfachom[inv]:=e;
+      else
+        e:=D.centfachom[inv];
+      fi;
+      s:=Orbits(Image(e,Centralizer(D.classes[c2])),[1..IndexNC(D.group,cent)]);
+      l:=List(s,x->[PreImagesRepresentative(e,
+        RepresentativeAction(Image(e),1,x[1])),Size(cent)*Length(x)]);
+    else
+      l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
+    fi;
     s1:=Size(cent);
     e:=[];
     s:=[];
