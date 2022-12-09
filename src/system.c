@@ -74,7 +74,7 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy);
 ** do not edit the following line. Occurrences of `4.dev' and `today'
 ** will be replaced by string matching by distribution wrapping scripts.
 */
-const Char * SyKernelVersion = "4.dev";
+const Char * SyKernelVersion = "4.10.3pre";
 
 /****************************************************************************
 **

@@ -2,7 +2,7 @@ dnl
 dnl Setup autoconf
 dnl
 AC_PREREQ([2.68])
-AC_INIT([GAP], [4.dev], [support@gap-system.org], [gap], [http://www.gap-system.org/])
+AC_INIT([GAP], [4.10.3pre], [support@gap-system.org], [gap], [http://www.gap-system.org/])
 
 AC_CONFIG_SRCDIR([src/gap.c])
 AC_CONFIG_AUX_DIR([cnf])

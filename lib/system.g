@@ -22,9 +22,9 @@ BIND_GLOBAL( "GAPInfo", rec(
 
 # do not edit the following three lines. Occurences of `4.dev' and `today'
 # will be replaced by string matching by distribution wrapping scripts.
-    Version := MakeImmutable("4.dev"),
+    Version := MakeImmutable("4.10.3pre"),
     Date := MakeImmutable("today"),
-    NeedKernelVersion := MakeImmutable("4.dev"),
+    NeedKernelVersion := MakeImmutable("4.10.3pre"),
 
 # Without the needed packages, GAP does not start.
     Dependencies := MakeImmutable(rec(
