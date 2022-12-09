@@ -3,7 +3,7 @@ dnl Setup autoconf
 dnl
 AC_PREREQ([2.68])
 
-m4_define([gap_version], [4.11.2dev])
+m4_define([gap_version], [4.11.2pre])
 m4_define([gap_releaseday], [29-Feb-2020])
 m4_define([gap_releaseyear], [2020])
 
