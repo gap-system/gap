@@ -14,10 +14,6 @@
 ##  all rows must be the same length and written over the same field
 ##
 
-#############################################################################
-##
-#V  TYPES_MAT8BIT . . . . . . . . prepared types for compressed GF(q) vectors
-##
 ##  A length 2 list of length 257 lists. TYPES_MAT8BIT[1][q] will be the type
 ##  of mutable vectors over GF(q), TYPES_MAT8BIT[2][q] is the type of
 ##  immutable vectors. The 257th position is bound to 1 to stop the lists
@@ -25,7 +21,6 @@
 ##
 ##  It is accessed directly by the kernel, so the format cannot be changed
 ##  without changing the kernel.
-##
 
 if IsHPCGAP then
     BindGlobal("TYPES_MAT8BIT", [ FixedAtomicList(256), FixedAtomicList(256) ]);
@@ -36,13 +31,8 @@ else
     TYPES_MAT8BIT[2][257] := 1;
 fi;
 
-#############################################################################
-##
-#F  TYPE_MAT8BIT( <q>, <mut> ) . .  computes type of compressed GF(q) matrices
-##
 ##  Normally called by the kernel, caches results in TYPES_MAT8BIT,
 ##  which is directly accessed by the kernel
-##
 
 InstallGlobalFunction(TYPE_MAT8BIT,
   function( q, mut)
@@ -64,48 +54,22 @@ InstallGlobalFunction(TYPE_MAT8BIT,
     return TYPES_MAT8BIT[col][q];
 end);
 
-
-#############################################################################
-##
-#M  Length( <mat> )
-##
-
 InstallMethod(Length, "for an 8 - bit matrix rep", [Is8BitMatrixRep],
 m -> m![1]);
-
-#############################################################################
-##
-#M  <mat> [ <pos> ]
-##
 
 InstallOtherMethod(\[\], "for an 8 - bit matrix rep and pos. int.",
 [Is8BitMatrixRep, IsPosInt], ELM_MAT8BIT);
 
-#############################################################################
-##
-#M  <mat> [ <pos1>, <pos2> ]
-##
-
 InstallMethod(\[\,\],  "for an 8-bit matrix rep and 2 pos. int.",
 [Is8BitMatrixRep, IsPosInt, IsPosInt], MAT_ELM_MAT8BIT);
 
-#############################################################################
-##
-#M  <mat> [ <pos> ] := <val>
-##
-##  This may involve turning <mat> into a plain list, if <mat> does
-##  not lie in the appropriate field.
-##
+# This may involve turning <mat> into a plain list, if <mat> does not lie in
+# the appropriate field.
 
 InstallOtherMethod(\[\]\:\=,
 "for a mutable 8-bit matrix rep, a pos. int. and object",
 [IsMutable and Is8BitMatrixRep, IsPosInt, IsObject],
 ASS_MAT8BIT);
-
-#############################################################################
-##
-#M  <mat> [ <pos1>, <pos2> ] := <val>
-##
 
 InstallMethod( \[\,\]\:\=,
 "for a mutable 8-bit matrix rep, 2 pos. ints., and an object",
@@ -113,13 +77,8 @@ InstallMethod( \[\,\]\:\=,
         SET_MAT_ELM_MAT8BIT
         );
 
-#############################################################################
-##
-#M  Unbind( <mat> [ <pos> ] )
-##
-##  Unless the last position is being unbound, this will result in <mat>
-##  turning into a plain list
-##
+# Unless the last position is being unbound, this will result in <mat> turning
+# into a plain list
 
 InstallMethod( Unbind\[\],
 "for a mutable 8-bit matrix rep and pos. int.",
@@ -134,13 +93,8 @@ InstallMethod( Unbind\[\],
     fi;
 end);
 
-#############################################################################
-##
-#M  ViewObj( <mat> )
-##
-##  Up to 25 entries,  GF(q) matrices are viewed in full, over that a
-##  description is printed
-##
+# Up to 25 entries,  GF(q) matrices are viewed in full, over that a description
+# is printed
 
 InstallMethod( ViewObj, "for an 8-bit matrix rep",
          [Is8BitMatrixRep],
@@ -160,13 +114,6 @@ InstallMethod( ViewObj, "for an 8-bit matrix rep",
     fi;
 end);
 
-#############################################################################
-##
-#M  PrintObj( <mat> )
-##
-##  Same method as for lists in internal rep.
-##
-
 InstallMethod( PrintObj,
 "for an 8-bit matrix rep",
         [Is8BitMatrixRep],
@@ -184,12 +131,6 @@ InstallMethod( PrintObj,
     Print(" \<\<\<\<]");
 end);
 
-#############################################################################
-##
-#M  ShallowCopy(<mat>)
-##
-##
-
 InstallMethod(ShallowCopy, "for an 8-bit matrix rep",
         [Is8BitMatrixRep],
         function(m)
@@ -203,11 +144,6 @@ InstallMethod(ShallowCopy, "for an 8-bit matrix rep",
     return c;
 end );
 
-#############################################################################
-##
-#M PositionCanonical( <mat> , <vec> )
-##
-
 # TODO required?
 
 InstallMethod( PositionCanonical,
@@ -217,37 +153,17 @@ InstallMethod( PositionCanonical,
     return Position( list, obj, 0 );
 end );
 
-
-
-#############################################################################
-##
-#M  <mat1> + <mat2>
-##
-
 InstallMethod( \+, "for two 8-bit matrices",
         IsIdenticalObj, [Is8BitMatrixRep,
                 Is8BitMatrixRep], ,
         SUM_MAT8BIT_MAT8BIT
 );
 
-#############################################################################
-##
-#M  <mat1> - <mat2>
-##
-
 InstallMethod( \-, "for two 8 bit matrices in same characteristic",
         IsIdenticalObj, [Is8BitMatrixRep,
                 Is8BitMatrixRep], ,
         DIFF_MAT8BIT_MAT8BIT
 );
-
-
-#############################################################################
-##
-#M  ConvertToMatrixRepNC( <list>, <fieldsize )
-#M  ConvertToMatrixRep( <list>[, <fieldsize> | <field>])
-##
-
 
 InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
@@ -395,7 +311,6 @@ InstallGlobalFunction(ConvertToMatrixRep,
     return q;
 end);
 
-
 InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     local   v, m,  q, result;
     if Length(arg) = 1 then
@@ -430,22 +345,11 @@ InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     return q;
 end);
 
-#############################################################################
-##
-#M <vec> * <mat>
-##
-
 InstallMethod( \*, "for an 8-bit vector and 8-bit matrix", IsElmsColls,
         [ Is8BitVectorRep and IsRowVector and IsRingElementList,
           Is8BitMatrixRep
           ],
         PROD_VEC8BIT_MAT8BIT);
-
-
-#############################################################################
-##
-#M <mat> * <vec>
-##
 
 InstallMethod( \*, "for 8-bit matrix and 8-bit vector", IsCollsElms,
         [           Is8BitMatrixRep,
@@ -453,24 +357,14 @@ InstallMethod( \*, "for 8-bit matrix and 8-bit vector", IsCollsElms,
           ],
         PROD_MAT8BIT_VEC8BIT);
 
-#############################################################################
-##
-#M <mat> * <mat>
-##
-
 InstallMethod( \*, "for 8-bit matrices", IsIdenticalObj,
         [           Is8BitMatrixRep,
                 Is8BitMatrixRep and IsMatrix
           ],
         PROD_MAT8BIT_MAT8BIT);
 
-#############################################################################
-##
-#M  <ffe> * <mat>
-##
-##  If <ffe> lies in the field of <mat> then we return a matrix in
-##  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
-##
+# If <ffe> lies in the field of <mat> then we return a matrix in
+# `Is8BitMatrixRep`, otherwise we delegate to a generic method.
 
 InstallMethod( \*, "for an internal FFE and an 8 bit matrix", IsElmsCollColls,
         [           IsFFE and IsInternalRep,
@@ -506,14 +400,8 @@ InstallMethod( \*, "for an FFE and an 8-bit matrix", IsElmsCollColls,
     return s * m;
 end);
 
-
-#############################################################################
-##
-#M  <mat> * <ffe>
-##
-##  If <ffe> lies in the field of <mat> then we return a matrix in
-##  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
-##
+#  If <ffe> lies in the field of <mat> then we return a matrix in
+#  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
 
 InstallMethod( \*, "for an 8-bit matrix and an internal FFE", IsCollCollsElms,
         [
@@ -549,12 +437,6 @@ InstallMethod( \*, "for an 8-bit matrix and an FFE", IsCollCollsElms,
     fi;
     return m * s;
 end);
-
-
-#############################################################################
-##
-#M  Additive Inverse
-##
 
 InstallMethod(AdditiveInverseMutable, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
@@ -601,12 +483,6 @@ InstallMethod(AdditiveInverseSameMutability, "for an 8-bit matrix",
     fi;
     return neg;
 end);
-
-
-
-#############################################################################
-##
-#M  Zero
 
 InstallMethod( ZeroMutable, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
@@ -665,32 +541,15 @@ InstallMethod( ZeroSameMutability, "for an 8-bit matrix",
     return z;
 end);
 
-#############################################################################
-##
-#M InverseOp(<mat>)
-##
-
 InstallMethod( InverseOp, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         INV_MAT8BIT_MUTABLE);
 
-
-
-#############################################################################
-##
-#M <mat>^-1
-##
-
 InstallMethod( InverseSameMutability, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         INV_MAT8BIT_SAME_MUTABILITY);
-
-#############################################################################
-##
-#M <mat>^0
-##
 
 InstallMethod( OneSameMutability, "for an 8-bit matrix",
         [Is8BitMatrixRep],
@@ -894,30 +753,15 @@ InstallMethod( \=, "for two 8-bit matrices", IsIdenticalObj,
         [ Is8BitMatrixRep, Is8BitMatrixRep ],
         EQ_MAT8BIT_MAT8BIT);
 
-#############################################################################
-##
-#M  TransposedMat( <mat> )
-#M  MutableTransposedMat( <mat> )
-##
-
-InstallOtherMethod( TransposedMat, "for an 8-bit matrix",
-        [Is8BitMatrixRep],
-        TRANSPOSED_MAT8BIT);
+InstallOtherMethod(TransposedMat, "for an 8 - bit matrix",
+[Is8BitMatrixRep], TRANSPOSED_MAT8BIT);
 
 InstallOtherMethod( MutableTransposedMat, "for an 8-bit matrix",
-        [Is8BitMatrixRep],
-        TRANSPOSED_MAT8BIT);
+[Is8BitMatrixRep], TRANSPOSED_MAT8BIT);
 
-
-#############################################################################
-##
-#M  SemiEchelonMat
-##
-#
-# If mat is in the  special representation, then we do
-# have to copy it, but we know that the rows of the result will
-# already be in special representation, so don't convert
-#
+# If mat is in the  special representation, then we do have to copy it, but we
+# know that the rows of the result will already be in special representation,
+# so don't convert
 
 InstallMethod(SemiEchelonMat, "for an 8-bit matrix",
         [ IsMatrix and Is8BitMatrixRep ],
