@@ -70,28 +70,24 @@ end);
 #M  Length( <mat> )
 ##
 
-InstallMethod( Length, "for an 8-bit matrix rep",
-        true, [Is8BitMatrixRep], 0, m->m![1]);
+InstallMethod(Length, "for an 8 - bit matrix rep", [Is8BitMatrixRep],
+m -> m![1]);
 
 #############################################################################
 ##
 #M  <mat> [ <pos> ]
 ##
 
-InstallOtherMethod( \[\],  "for an 8-bit matrix rep and pos. int.",
-        [Is8BitMatrixRep, IsPosInt],
-        ELM_MAT8BIT
-        );
+InstallOtherMethod(\[\], "for an 8 - bit matrix rep and pos. int.",
+[Is8BitMatrixRep, IsPosInt], ELM_MAT8BIT);
 
 #############################################################################
 ##
 #M  <mat> [ <pos1>, <pos2> ]
 ##
 
-InstallMethod( \[\,\],  "for an 8-bit matrix rep and 2 pos. int.",
-        [Is8BitMatrixRep, IsPosInt, IsPosInt],
-        MAT_ELM_MAT8BIT
-        );
+InstallMethod(\[\,\],  "for an 8-bit matrix rep and 2 pos. int.",
+[Is8BitMatrixRep, IsPosInt, IsPosInt], MAT_ELM_MAT8BIT);
 
 #############################################################################
 ##
@@ -101,11 +97,10 @@ InstallMethod( \[\,\],  "for an 8-bit matrix rep and 2 pos. int.",
 ##  not lie in the appropriate field.
 ##
 
-InstallOtherMethod( \[\]\:\=,
+InstallOtherMethod(\[\]\:\=,
 "for a mutable 8-bit matrix rep, a pos. int. and object",
-        [IsMutable and Is8BitMatrixRep, IsPosInt, IsObject],
-        ASS_MAT8BIT
-        );
+[IsMutable and Is8BitMatrixRep, IsPosInt, IsObject],
+ASS_MAT8BIT);
 
 #############################################################################
 ##
@@ -128,8 +123,8 @@ InstallMethod( \[\,\]\:\=,
 
 InstallMethod( Unbind\[\],
 "for a mutable 8-bit matrix rep and pos. int.",
-        true, [IsMutable and Is8BitMatrixRep, IsPosInt],
-        0, function(m,p)
+        [IsMutable and Is8BitMatrixRep, IsPosInt],
+        function(m,p)
     if p = 1 or  p <> m![1] then
         PLAIN_MAT8BIT(m);
         Unbind(m[p]);
@@ -148,7 +143,7 @@ end);
 ##
 
 InstallMethod( ViewObj, "for an 8-bit matrix rep",
-        true, [Is8BitMatrixRep], 0,
+         [Is8BitMatrixRep],
         function( m )
     local r,c;
     r := NumberRows(m);
@@ -174,7 +169,7 @@ end);
 
 InstallMethod( PrintObj,
 "for an 8-bit matrix rep",
-        true, [Is8BitMatrixRep], 0,
+        [Is8BitMatrixRep],
         function( mat )
     local i,l;
     Print("\>\>[ \>\>");
@@ -196,7 +191,7 @@ end);
 ##
 
 InstallMethod(ShallowCopy, "for an 8-bit matrix rep",
-        true, [Is8BitMatrixRep], 0,
+        [Is8BitMatrixRep],
         function(m)
     local c,i,l;
     l := m![1];
@@ -217,8 +212,7 @@ end );
 
 InstallMethod( PositionCanonical,
     "for 8-bit matrix rep and object",
-    true,
-    [ IsList and Is8BitMatrixRep, IsObject ], 0,
+    [ IsList and Is8BitMatrixRep, IsObject ],
     function( list, obj )
     return Position( list, obj, 0 );
 end );
@@ -232,7 +226,7 @@ end );
 
 InstallMethod( \+, "for two 8-bit matrices",
         IsIdenticalObj, [Is8BitMatrixRep,
-                Is8BitMatrixRep], 0,
+                Is8BitMatrixRep], ,
         SUM_MAT8BIT_MAT8BIT
 );
 
@@ -243,7 +237,7 @@ InstallMethod( \+, "for two 8-bit matrices",
 
 InstallMethod( \-, "for two 8 bit matrices in same characteristic",
         IsIdenticalObj, [Is8BitMatrixRep,
-                Is8BitMatrixRep], 0,
+                Is8BitMatrixRep], ,
         DIFF_MAT8BIT_MAT8BIT
 );
 
@@ -444,7 +438,7 @@ end);
 InstallMethod( \*, "for an 8-bit vector and 8-bit matrix", IsElmsColls,
         [ Is8BitVectorRep and IsRowVector and IsRingElementList,
           Is8BitMatrixRep
-          ], 0,
+          ],
         PROD_VEC8BIT_MAT8BIT);
 
 
@@ -456,7 +450,7 @@ InstallMethod( \*, "for an 8-bit vector and 8-bit matrix", IsElmsColls,
 InstallMethod( \*, "for 8-bit matrix and 8-bit vector", IsCollsElms,
         [           Is8BitMatrixRep,
                 Is8BitVectorRep and IsRowVector and IsRingElementList
-          ], 0,
+          ],
         PROD_MAT8BIT_VEC8BIT);
 
 #############################################################################
@@ -467,7 +461,7 @@ InstallMethod( \*, "for 8-bit matrix and 8-bit vector", IsCollsElms,
 InstallMethod( \*, "for 8-bit matrices", IsIdenticalObj,
         [           Is8BitMatrixRep,
                 Is8BitMatrixRep and IsMatrix
-          ], 0,
+          ],
         PROD_MAT8BIT_MAT8BIT);
 
 #############################################################################
@@ -481,7 +475,7 @@ InstallMethod( \*, "for 8-bit matrices", IsIdenticalObj,
 InstallMethod( \*, "for an internal FFE and an 8 bit matrix", IsElmsCollColls,
         [           IsFFE and IsInternalRep,
                 Is8BitMatrixRep
-          ], 0,
+          ],
         function(s,m)
     local q,i,l,r,pv;
     q := Q_VEC8BIT(m![2]);
@@ -525,7 +519,7 @@ InstallMethod( \*, "for an 8-bit matrix and an internal FFE", IsCollCollsElms,
         [
                 Is8BitMatrixRep,
                 IsFFE and IsInternalRep
-          ], 0,
+          ],
         function(m,s)
     local q,i,l,r,pv;
     q := Q_VEC8BIT(m![2]);
@@ -562,9 +556,8 @@ end);
 #M  Additive Inverse
 ##
 
-InstallMethod(AdditiveInverseMutable, "for an 8-bit matrix", true,
+InstallMethod(AdditiveInverseMutable, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
-        0,
         function(mat)
     local neg,i,negv;
     neg := [mat![1]];
@@ -577,9 +570,8 @@ InstallMethod(AdditiveInverseMutable, "for an 8-bit matrix", true,
     return neg;
 end);
 
-InstallMethod(AdditiveInverseImmutable, "for an 8-bit matrix", true,
+InstallMethod(AdditiveInverseImmutable, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
-        0,
         function(mat)
     local neg,i,negv;
     neg := [mat![1]];
@@ -592,9 +584,8 @@ InstallMethod(AdditiveInverseImmutable, "for an 8-bit matrix", true,
     return neg;
 end);
 
-InstallMethod(AdditiveInverseSameMutability, "for an 8-bit matrix", true,
+InstallMethod(AdditiveInverseSameMutability, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
-        0,
         function(mat)
     local neg,i,negv;
     neg := [mat![1]];
@@ -617,9 +608,8 @@ end);
 ##
 #M  Zero
 
-InstallMethod( ZeroMutable, "for an 8-bit matrix", true,
+InstallMethod( ZeroMutable, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
-        0,
         function(mat)
     local z, i,zv;
     z := [mat![1]];
@@ -632,9 +622,9 @@ InstallMethod( ZeroMutable, "for an 8-bit matrix", true,
     return z;
 end);
 
-InstallMethod( ZeroImmutable, "for an 8-bit matrix", true,
+InstallMethod( ZeroImmutable, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
-        0,
+
         function(mat)
     local z, i,zv;
     z := [mat![1]];
@@ -648,9 +638,8 @@ InstallMethod( ZeroImmutable, "for an 8-bit matrix", true,
     return z;
 end);
 
-InstallMethod( ZeroSameMutability, "for an 8-bit matrix", true,
+InstallMethod( ZeroSameMutability, "for an 8-bit matrix",
         [Is8BitMatrixRep and IsAdditiveElementWithZero],
-        0,
         function(mat)
     local z, i,zv;
     z := [mat![1]];
@@ -681,7 +670,7 @@ end);
 #M InverseOp(<mat>)
 ##
 
-InstallMethod( InverseOp, "for an 8-bit matrix", true,
+InstallMethod( InverseOp, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         INV_MAT8BIT_MUTABLE);
@@ -693,7 +682,7 @@ InstallMethod( InverseOp, "for an 8-bit matrix", true,
 #M <mat>^-1
 ##
 
-InstallMethod( InverseSameMutability, "for an 8-bit matrix", true,
+InstallMethod( InverseSameMutability, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         INV_MAT8BIT_SAME_MUTABILITY);
@@ -703,7 +692,7 @@ InstallMethod( InverseSameMutability, "for an 8-bit matrix", true,
 #M <mat>^0
 ##
 
-InstallMethod( OneSameMutability, "for an 8-bit matrix", true,
+InstallMethod( OneSameMutability, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         function(m)
@@ -728,7 +717,7 @@ InstallMethod( OneSameMutability, "for an 8-bit matrix", true,
     return o;
 end);
 
-InstallMethod( OneMutable, "for an 8-bit matrix", true,
+InstallMethod( OneMutable, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         function(m)
@@ -753,7 +742,7 @@ end);
 #M One(<mat>) -- always immutable
 ##
 
-InstallMethod( One, "for an 8-bit matrix", true,
+InstallMethod( One, "for an 8-bit matrix",
         [Is8BitMatrixRep],
         SUM_FLAGS,
         function(m)
@@ -881,8 +870,8 @@ InstallGlobalFunction( RepresentationsOfMatrix,
 #M  DefaultFieldOfMatrix( <ffe-mat> )
 ##
 InstallMethod( DefaultFieldOfMatrix,
-    "for an 8-bit matrix", true,
-    [ IsMatrix and Is8BitMatrixRep ], 0,
+    "for an 8-bit matrix",
+    [ IsMatrix and Is8BitMatrixRep ],
 function( mat )
     return GF(Q_VEC8BIT(mat![2]));
 end );
@@ -893,7 +882,7 @@ end );
 ##
 
 InstallMethod( \<, "for two 8-bit matrices", IsIdenticalObj,
-        [ Is8BitMatrixRep, Is8BitMatrixRep ], 0,
+        [ Is8BitMatrixRep, Is8BitMatrixRep ],
         LT_MAT8BIT_MAT8BIT);
 
 #############################################################################
@@ -902,7 +891,7 @@ InstallMethod( \<, "for two 8-bit matrices", IsIdenticalObj,
 ##
 
 InstallMethod( \=, "for two 8-bit matrices", IsIdenticalObj,
-        [ Is8BitMatrixRep, Is8BitMatrixRep ], 0,
+        [ Is8BitMatrixRep, Is8BitMatrixRep ],
         EQ_MAT8BIT_MAT8BIT);
 
 #############################################################################
@@ -912,11 +901,11 @@ InstallMethod( \=, "for two 8-bit matrices", IsIdenticalObj,
 ##
 
 InstallOtherMethod( TransposedMat, "for an 8-bit matrix",
-        true, [Is8BitMatrixRep], 0,
+        [Is8BitMatrixRep],
         TRANSPOSED_MAT8BIT);
 
 InstallOtherMethod( MutableTransposedMat, "for an 8-bit matrix",
-        true, [Is8BitMatrixRep], 0,
+        [Is8BitMatrixRep],
         TRANSPOSED_MAT8BIT);
 
 
@@ -931,9 +920,7 @@ InstallOtherMethod( MutableTransposedMat, "for an 8-bit matrix",
 #
 
 InstallMethod(SemiEchelonMat, "for an 8-bit matrix",
-        true,
         [ IsMatrix and Is8BitMatrixRep ],
-        0,
         function( mat )
     local copymat, res;
 
@@ -944,9 +931,7 @@ InstallMethod(SemiEchelonMat, "for an 8-bit matrix",
 end);
 
 InstallMethod(SemiEchelonMatTransformation, "for an 8-bit matrix",
-        true,
         [ IsMatrix and Is8BitMatrixRep ],
-        0,
         function( mat )
     local copymat,res,q;
     copymat := List(mat, ShallowCopy);
@@ -962,9 +947,7 @@ end);
 # could be done by method selection.
 InstallMethod(SemiEchelonMatDestructive,
 "for mutable plist-rep matrix of FFEs",
-        true,
         [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
-        0,
         SEMIECHELON_LIST_VEC8BITS
         );
 
@@ -972,9 +955,7 @@ InstallMethod(SemiEchelonMatDestructive,
 # could be done by method selection.
 InstallMethod(SemiEchelonMatTransformationDestructive,
 "for mutable plist-rep matrix of FFEs",
-        true,
         [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
-        0,
         SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS);
 
 
@@ -983,19 +964,14 @@ InstallMethod(SemiEchelonMatTransformationDestructive,
 ##
 #M  TriangulizeMat( <plain list of GF2 vectors> )
 ##
-# HERE
 InstallMethod(TriangulizeMat,
 "for mutable plist-rep matrix of FFEs",
-        true,
         [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
-        0,
         TRIANGULIZE_LIST_VEC8BITS);
 
 InstallMethod(TriangulizeMat,
         "for a mutable 8-bit matrix",
-        true,
         [IsMutable and IsMatrix and Is8BitMatrixRep],
-        0,
         function(m)
     local q,i,imms;
     imms := [];
@@ -1025,9 +1001,7 @@ end);
 
 InstallMethod(DeterminantMatDestructive,
 "for mutable plist-rep matrix of FFEs",
-        true,
         [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
-        0,
         DETERMINANT_LIST_VEC8BITS);
 
 #############################################################################
