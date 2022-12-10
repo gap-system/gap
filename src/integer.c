@@ -935,7 +935,6 @@ Obj IntHexString(Obj str)
         limbs[nd--] = n;
     }
 
-    /*  */
     while ( len ) {
         n = hexstr2int( p, 2*sizeof(UInt) );
         p += 2*sizeof(UInt);

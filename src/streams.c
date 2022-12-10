@@ -1333,8 +1333,8 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
 
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
-    /* read <fid> until we see a newline or eof or we've read at least
-       one byte and more are not immediately available */
+    // read <fid> until we see a newline or eof or we've read at least
+    // one byte and more are not immediately available
     str = NEW_STRING(0);
     len = 0;
     while (1) {
@@ -1365,7 +1365,7 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
 **
 *F  FuncREAD_ALL_FILE( <self>, <fid>, <limit> )  . . . . . . . read remainder
 **
-** more precisely, read until either
+**  more precisely, read until either
 **   (a) we have read at least one byte and no more are available
 **   (b) we have evidence that it will never be possible to read a byte
 **   (c) we have read <limit> bytes (-1 indicates no limit)

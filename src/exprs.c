@@ -1649,9 +1649,9 @@ static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
 */
 
 /****************************************************************************
- **
- *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
- */
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
 static StructGVarFunc GVarFuncs [] = {
 
   GVAR_FUNC_0ARGS(FLUSH_FLOAT_LITERAL_CACHE),

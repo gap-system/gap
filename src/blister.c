@@ -100,8 +100,8 @@
 **  'TypeBlist' is the function in 'TypeObjFuncs' for boolean lists.
 */
 
-/* The following are imported from the GAP level, we have one type for
- * each blist TNUM. */
+// The following are imported from the GAP level, we have one type for
+// each blist TNUM.
 static Obj TYPE_BLIST_MUT;
 static Obj TYPE_BLIST_IMM;
 static Obj TYPE_BLIST_NSORT_MUT;

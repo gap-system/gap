@@ -27,14 +27,14 @@ extern "C" {
 extern Obj InfoDecision;
 
 
-// types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * *
+// types, should go into 'gvars.c' and 'records.c'
 
 typedef UInt    GVar;
 
 typedef UInt    RNam;
 
 
-// checks, should go into 'gap.c'  * * * * * * * * * * * * * * * * * * * *
+// checks, should go into 'gap.c'
 
 #define CHECK_BOUND(obj, name)                                               \
     if (obj == 0)                                                            \
@@ -78,14 +78,14 @@ static inline void CHECK_FUNC(Obj obj)
     if (narg - 1 > LEN_PLIST(args))                                          \
         ErrorMayQuitNrAtLeastArgs(narg - 1, LEN_PLIST(args));
 
-// higher variables, should go into 'vars.c' * * * * * * * * * * * * * * *
+// higher variables, should go into 'vars.c'
 
 #define SWITCH_TO_NEW_FRAME(func, narg, nloc, old)                           \
     (old) = SWITCH_TO_NEW_LVARS((func), (narg), (nloc))
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS_AND_FREE
 
 
-// lists, should go into 'lists.c' * * * * * * * * * * * * * * * * * * * *
+// lists, should go into 'lists.c'
 #define C_LEN_LIST(len,list) \
  len = LENGTH(list);
 

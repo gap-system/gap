@@ -356,12 +356,10 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
       // the result of addset is always dense
       SET_FILT_LIST( set, FN_IS_DENSE );
 
-                                /* if the object we added was not
-                                   mutable then we might be able to
-                                   conclude more */
+      // if the object we added was not mutable then we might be able to
+      // conclude more
       if ( ! IS_MUTABLE_OBJ(obj) ) {
-                                /* a one element list is automatically
-                                   homogeneous  and ssorted */
+        // a one element list is automatically homogeneous and ssorted
         if (len == 0 )
           {
             if (IS_CYC(obj))
@@ -601,8 +599,8 @@ static UInt InterSetInner1( Obj set1, Obj set2, UInt len1, UInt len2)
   return lenr;
 }
 
-/* set1 should be the smaller set. setr should be the one
-   in which to put the results; */
+// set1 should be the smaller set. setr should be the one
+// in which to put the results
 static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
 {
   UInt i1,i2=1,bottom,top,middle,lenr=0,found;

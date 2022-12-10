@@ -857,11 +857,10 @@ static ExecStatus ExecInfo(Stat stat)
         // evaluate the objects to be printed into the list
         for (i = 1; i <= narg; i++) {
 
-            /* These two statements must not be combined into one because of
-               the risk of a garbage collection during the evaluation
-               of arg, which may happen after the pointer to args has been
-               extracted
-            */
+            // These two statements must not be combined into one because of
+            // the risk of a garbage collection during the evaluation
+            // of arg, which may happen after the pointer to args has been
+            // extracted
             arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
             SET_ELM_PLIST(args, i, arg);
             CHANGED_BAG(args);

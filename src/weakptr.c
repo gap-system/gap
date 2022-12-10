@@ -231,13 +231,12 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
   Int i;
   Int len;
 #ifdef USE_BOEHM_GC
-  /* We need to make sure that the list stays live until
-   * after REGISTER_WP(); on architectures that pass
-   * arguments in registers (x86_64, SPARC, etc), the
-   * argument register may be reused. In conjunction with
-   * loop unrolling, the reference to 'list' may then be
-   * destroyed before REGISTER_WP() is called.
-   */
+  // We need to make sure that the list stays live until
+  // after REGISTER_WP(); on architectures that pass
+  // arguments in registers (x86_64, SPARC, etc), the
+  // argument register may be reused. In conjunction with
+  // loop unrolling, the reference to 'list' may then be
+  // destroyed before REGISTER_WP() is called.
   volatile Obj list2 = list;
 #endif
   len = LEN_LIST(list);
@@ -256,9 +255,9 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
 #else
       SET_ELM_WPOBJ(wp, i, ELM0_LIST(list, i));
 #endif
-      CHANGED_BAG(wp);          /* this must be here in case list is
-                                 in fact an object and causes a GC in the
-                                 element access method */
+      // this must be here in case list is in fact an object and causes a GC
+      // in the element access method
+      CHANGED_BAG(wp);
     }
 
   return wp;
@@ -330,10 +329,9 @@ static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
     UInt ipos = GetPositiveSmallInt(SELF_NAME, pos);
 
 #ifdef USE_BOEHM_GC
-  /* Ensure reference remains visible to GC in case val is
-   * stored in a register and the register is reused before
-   * REGISTER_WP() is called.
-   */
+  // Ensure reference remains visible to GC in case val is
+  // stored in a register and the register is reused before
+  // REGISTER_WP() is called.
   volatile Obj val2 = val;
 #endif
   if (LengthWPObj(wp)  < ipos)
@@ -365,9 +363,8 @@ static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
 **  'IsBoundElmWPObj' returns 1 is there is (currently) a live
 **  value at position pos or the WP object wp and  0 otherwise, cleaning up a
 **  dead entry if there is one
-** */
-
-
+**
+*/
 static BOOL IsBoundElmWPObj(Obj wp, UInt ipos)
 {
 #ifdef HPCGAP
@@ -421,9 +418,8 @@ static Obj FuncUnbindElmWPObj(Obj self, Obj wp, Obj pos)
   Int len = LengthWPObj(wp);
   if ( ipos <= len ) {
 #ifdef USE_BOEHM_GC
-    /* Ensure the result is visible on the stack in case a garbage
-     * collection happens after the read.
-     */
+    // Ensure the result is visible on the stack in case a garbage
+    // collection happens after the read.
     volatile Obj tmp = ELM_WPOBJ(wp, ipos);
 #ifdef HPCGAP
     MEMBAR_READ();

@@ -30,9 +30,9 @@ static Obj      objRel;                 // handle of a relator
 static Obj      objNums;                // handle of parallel numbers list
 static Obj      objTable;               // handle of the coset table
 static Obj      objTable2;              // handle of coset factor table
-static Obj      objNext;                /*                                 */
-static Obj      objPrev;                /*                                 */
-static Obj      objFactor;              /*                                 */
+static Obj      objNext;
+static Obj      objPrev;
+static Obj      objFactor;
 static Obj      objTree;                // handle of subgroup gens tree
 
 static Obj      objTree1;               // first tree component
@@ -43,13 +43,13 @@ static Obj      objWordValue;           // handle of word value
 
 static Int      treeType;               // tree type
 static Int      treeWordLength;         // maximal tree word length
-static Int      firstDef;               /*                                 */
-static Int      lastDef;                /*                                 */
-static Int      firstFree;              /*                                 */
-static Int      lastFree;               /*                                 */
+static Int      firstDef;
+static Int      lastDef;
+static Int      firstFree;
+static Int      lastFree;
 
 static Int      minGaps;                // switch for marking mingaps
-static Int      nrdel;                  /*                                 */
+static Int      nrdel;
 
 static Int      dedfst;                 // position of first deduction
 static Int      dedlst;                 // position of last deduction
@@ -102,7 +102,6 @@ static Obj FuncApplyRel(Obj self,
     Int                 tc;             // temporary coset
 
     // check the application list
-    /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 4 ) {
         ErrorQuit("<app> must be a list of length 4 not %d",
@@ -116,7 +115,6 @@ static Obj FuncApplyRel(Obj self,
     rc = INT_INTOBJ( ELM_PLIST( app, 4 ) );
 
     // get and check the relator (well, only a little bit)
-    /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, rel);
 
     // fix right pointer if requested
@@ -370,8 +368,8 @@ static void HandleCoinc (
 */
 static Obj FuncMakeConsequences(Obj self, Obj list)
 {
-    Obj                 hdSubs;         /*                                 */
-    Obj                 objRels;        /*                                 */
+    Obj                 hdSubs;
+    Obj                 objRels;
     Obj *               ptRel;          // pointer to the relator bag
     Obj *               ptNums;         // pointer to this list
     Int                 lp;             // left pointer into relator
@@ -382,7 +380,6 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
     Int                 i;              // loop variable
     Obj                 hdTmp;          // temporary variable
 
-    /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, list);
 
     objTable  = ELM_PLIST( list, 1 );
@@ -552,7 +549,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
 {
     Obj                 objDefs1;       // handle of defs list part 1
     Obj                 objDefs2;       // handle of defs list part 2
-    Obj                 objRels;        /*                                 */
+    Obj                 objRels;
     Obj *               ptRel;          // pointer to the relator bag
     Obj *               ptNums;         // pointer to this list
     Int                 ndefs;          // number of defs done so far
@@ -568,7 +565,6 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
     Int                 tc;             // temporary coset
     Int                 i;              // loop variable
 
-    /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, list);
 
     objTable  = ELM_PLIST( list, 1 );
@@ -666,7 +662,7 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
     Obj *               i;              // and inverse
     UInt                acos;           // actual coset
     UInt                lcos;           // last seen coset
-    UInt                mcos;           /*                                 */
+    UInt                mcos;
     UInt                c1, c2;         // coset temporaries
     Obj                 tmp;            // temporary for swap
     UInt                j, k, nloop;    // loop variables
@@ -1803,7 +1799,7 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
     Obj *               i2;             // and inverse
     UInt                acos;           // actual coset
     UInt                lcos;           // last seen coset
-    UInt                mcos;           /*                                 */
+    UInt                mcos;
     UInt                c1, c2;         // coset temporaries
     Obj                 tmp;            // temporary for swap
     UInt                j, k, nloop;    // loop variables

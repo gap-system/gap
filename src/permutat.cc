@@ -1352,10 +1352,10 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 
     scratch = ADDR_TMP_PERM<T>();
 
-    /* the first deg bytes of TmpPerm hold a bit list of points done
-     * so far. The remaining bytes will form the lengths of nontrivial
-     * cycles (as numbers of type T). As every nontrivial cycle requires
-     * at least 2 points, this is guaranteed to fit. */
+    // the first deg bytes of TmpPerm hold a bit list of points done
+    // so far. The remaining bytes will form the lengths of nontrivial
+    // cycles (as numbers of type T). As every nontrivial cycle requires
+    // at least 2 points, this is guaranteed to fit.
     bytes = ((deg / sizeof(T)) + 1) * sizeof(T); // ensure alignment
     offset = (T *)((UInt)scratch + (bytes));
 

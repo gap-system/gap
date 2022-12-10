@@ -1855,8 +1855,7 @@ static UInt CheckForCommonFloat(const Char * str)
     // skip leading zeros in the exponent
     while (*str == '0')
         str++;
-    /* if there's anything but leading zeros this isn't
-       a one literal */
+    // if there's anything but leading zeros this isn't a one literal
     if (*str == '\0')
         return FLOAT_1_INDEX;
     else

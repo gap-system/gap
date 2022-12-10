@@ -644,12 +644,12 @@ void LoadWorkspace( Char * fname )
   nBags = LoadUInt();
   maxSize = LoadUInt();
 
-  /* Make sure there is enough room, and signal GASMAN that
-     we are starting a restore */
+  // Make sure there is enough room, and signal GASMAN that
+  // we are starting a restore
   StartRestoringBags(nBags, maxSize);
 
-  /* The restoring kernel must have at least as many compiled modules
-     as the saving one. */
+  // The restoring kernel must have at least as many compiled modules
+  // as the saving one.
   LoadCStr(buf,256);
   if (!streq(buf,"Loaded Modules"))
     {

@@ -1048,11 +1048,11 @@ UInt SyIsIntr ( void )
 
 
 /****************************************************************************
- **
- *F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
- **
- **  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
- */
+**
+*F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
+**
+**  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
+*/
 
 #ifdef TIOCGWINSZ
 // signal routine: window size changed

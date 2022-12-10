@@ -491,9 +491,9 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 
     // loop over all relators
     for ( i = 1;  i <= numrels;  i++ ) {
-        /* We assume that ptRels and ptLens are valid at the
-           beginning of this loop (and not rendered invalid by a
-           garbage collection)! */
+        // We assume that ptRels and ptLens are valid at the
+        // beginning of this loop (and not rendered invalid by a
+        // garbage collection)!
         rel = ptRels[i];
         ptRel = ADDR_OBJ(rel);
         leng = INT_INTOBJ(ptLens[i]);

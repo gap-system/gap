@@ -1169,12 +1169,12 @@ void IntrQUIT(IntrState * intr)
 }
 
 /****************************************************************************
- **
- *F  IntrHelp()
- **
- **  'IntrHelp' is the action to interpret a help statement.
- **
- */
+**
+*F  IntrHelp()
+**
+**  'IntrHelp' is the action to interpret a help statement.
+**
+*/
 void IntrHelp(IntrState * intr, Obj topic)
 {
     UInt hgvar;

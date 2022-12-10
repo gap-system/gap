@@ -281,8 +281,8 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 #endif
 
     res = NEW_PREC(4);
-    /* Note this has to be "DYN" since we're not passing a
-       literal but a const char * */
+    // Note this has to be "DYN" since we're not passing a
+    // literal but a const char *
     tmp = MakeImmString(method);
     AssPRec(res, RNamName("Method"), tmp);
     AssPRec(res, RNamName("Monotonic"), monotonic ? True : False);

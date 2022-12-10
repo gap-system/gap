@@ -587,13 +587,6 @@ static void InstallEqObject ( Int verb )
 */
 static Obj FuncEQ(Obj self, Obj opL, Obj opR)
 {
-  /* if both operands are T_MACFLOAT, we use the comparison method in all cases,
-     even if the objects are identical. In this manner, we can have 0./0. != 0./0. as
-     the IEEE754 standard requires.
-    if (TNUM_OBJ(opL) == T_MACFLOAT && TNUM_OBJ(opR) == T_MACFLOAT)
-      return (*EqFuncs[T_MACFLOAT][T_MACFLOAT])(opL,opR) ? True : False;
-  */
-
     return (EQ( opL, opR ) ? True : False);
 }
 

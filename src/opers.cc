@@ -208,7 +208,7 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
         return HASH_FLAGS(flags);
     }
 
-    /* do the real work*/
+    // do the real work */
 #if !defined(SYS_IS_64_BIT) || !defined(WORDS_BIGENDIAN)
 
     // 32 bit case  -- this is the "defining" case, others are adjusted to
@@ -1410,8 +1410,8 @@ static void HandleMethodNotFound(
   r = NEW_PREC(5);
   if (RNamOperation == 0)
     {
-      /* we can't do this in initialization because opers
-         is initialized BEFORE records */
+      // we can't do this in initialization because opers
+      // is initialized BEFORE records
       RNamIsConstructor = RNamName("isConstructor");
       RNamIsVerbose = RNamName("isVerbose");
       RNamOperation = RNamName("Operation");
@@ -1509,12 +1509,13 @@ static inline Obj TYPE_OBJ_FEO(Obj obj)
     }
 }
 
-/* Method Cache -- we remember recently selected methods in a cache.
-   The effectiveness of this cache is vital for GAP's performance */
+// Method Cache -- we remember recently selected methods in a cache.
+// The effectiveness of this cache is vital for GAP's performance
 
 
-/* The next few functions deal with finding and allocating if necessary the cache
-   for a given operation and number of arguments, and some locking in HPC-GAP */
+// The next few functions deal with finding and allocating if necessary the
+// cache for a given operation and number of arguments, and some locking in
+// HPC-GAP
 
 
 #ifdef HPCGAP
@@ -1621,10 +1622,8 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
 
     // Up to CACHE_SIZE methods might be in the cache
     if (prec < CACHE_SIZE) {
-        // This loop runs through those
-        UInt target =
-            cacheEntrySize * prec; /* first place to look and also the place
-                                      we'll put the result */
+        // first place to look and also the place we'll put the result:
+        UInt target = cacheEntrySize * prec;
         for (i = target; i < cacheEntrySize * CACHE_SIZE;
              i += cacheEntrySize) {
             if (cache[i + 1] == INTOBJ_INT(prec)) {
@@ -1643,8 +1642,8 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
 #endif
                     if (i > target) {
 
-                        /* We found the method, but it was further down the
-                           cache than we would like it to be, so move it up */
+                        // We found the method, but it was further down the
+                        // cache than we would like it to be, so move it up
                         Obj buf[cacheEntrySize];
                         memcpy(buf, cache + i,
                                sizeof(Obj) * cacheEntrySize);
@@ -1662,15 +1661,15 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
     return method;
 }
 
-/* Add a method to the cache -- called when a method is selected that is not
-   in the cache */
+// Add a method to the cache -- called when a method is selected that is not
+// in the cache
 static inline void
 CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
 {
     if (prec >= CACHE_SIZE)
         return;
-    /* We insert this method at position <prec> and move
-       the older methods down */
+    // We insert this method at position <prec> and move
+    // the older methods down
     UInt  cacheEntrySize = n + 2;
     Obj * cache = BASE_PTR_PLIST(cacheBag) + prec * cacheEntrySize;
 #ifdef HPCGAP
@@ -1946,8 +1945,8 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
                 CacheMethod(cacheBag, n, prec, ids, method);
         }
 
-        /* If there was no method found, then pass the information needed
-           for the error reporting. This function rarely returns */
+        // If there was no method found, then pass the information needed
+        // for the error reporting. This function rarely returns
         if (method == Fail) {
             Obj arglist;
             switch (n) {
@@ -3392,9 +3391,9 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
     SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
 
-    /* Now we need to convert the 3d matrix of cache hit counts (by
-       precedence, location found and number of arguments) into a three
-       dimensional GAP matrix (tensor) */
+    // Now we need to convert the 3d matrix of cache hit counts (by
+    // precedence, location found and number of arguments) into a three
+    // dimensional GAP matrix (tensor)
     Obj tensor = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
     SET_LEN_PLIST(tensor, CACHE_SIZE);
     for (i = 1; i <= CACHE_SIZE; i++) {
@@ -3416,8 +3415,8 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     SET_ELM_PLIST(list, 12, tensor);
     CHANGED_BAG(list);
 
-    /* and similarly the 2D matrix of cache miss information (by
-       precedence and number of arguments) */
+    // and similarly the 2D matrix of cache miss information (by
+    // precedence and number of arguments)
     Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE + 1);
     SET_LEN_PLIST(mat, CACHE_SIZE + 1);
     for (Int j = 1; j <= CACHE_SIZE + 1; j++) {

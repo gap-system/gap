@@ -66,18 +66,17 @@ UInt SyMsgsFlagBags;
 Int SyGasmanNumbers[2][9];
 
 void SyMsgsBags (
-    UInt                full,
-    UInt                phase,
-    Int                 nr )
+    UInt        full,
+    UInt        phase,
+    Int         nr )
 {
-    Char                cmd [3];        // command string buffer
-    Char                str [32];       // string buffer
-    Char                ch;             // leading character
-    UInt                i;              // loop variable
-    Int                 copynr;         // copy of <nr>
-    UInt                shifted;        /* non-zero if nr > 10^6 and so
-                                           has to be shifted down          */
-    static UInt         tstart = 0;
+    Char        cmd [3];  // command string buffer
+    Char        str [32]; // string buffer
+    Char        ch;       // leading character
+    UInt        i;        // loop variable
+    Int         copynr;   // copy of <nr>
+    UInt        shifted;  // non-zero if nr > 10^6 and so has to be shifted down
+    static UInt tstart = 0;
 
     // remember the numbers
     if (phase > 0)
@@ -378,9 +377,9 @@ static void * SyAnonMMap(size_t size)
     return result;
 }
 
+// This tries to increase the pool size by a factor of 3/2, if this
+// worked, then 0 is returned, otherwise -1.
 static int SyTryToIncreasePool(void)
-/* This tries to increase the pool size by a factor of 3/2, if this
- * worked, then 0 is returned, otherwise -1. */
 {
     void *result;
     size_t size;

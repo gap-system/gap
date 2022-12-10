@@ -310,9 +310,8 @@ static Obj DoWrap6args(
 **  the other slots of a function.
 */
 
-/* Pull this out to avoid repetition, since it gets a little more complex in
-   the presence of partially variadic functions */
-
+// Pull this out to avoid repetition, since it gets a little more complex in
+// the presence of partially variadic functions
 NORETURN static void NargError(Obj func, Int actual)
 {
   Int narg = NARG_FUNC(func);

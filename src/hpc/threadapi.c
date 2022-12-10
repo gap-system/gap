@@ -210,13 +210,13 @@ static void UnlockMonitor(Monitor * monitor)
 }
 
 /****************************************************************************
- **
- *F WaitForMonitor(monitor) . . . . . .. . wait for a monitor to be ready
- **
- ** 'WaitForMonitor' waits for the monitor to be signaled by another
- ** thread. The monitor must be locked upon entry and will be locked
- ** again upon exit.
- */
+**
+*F WaitForMonitor(monitor) . . . . . .. . wait for a monitor to be ready
+**
+** 'WaitForMonitor' waits for the monitor to be signaled by another
+** thread. The monitor must be locked upon entry and will be locked
+** again upon exit.
+*/
 
 static void WaitForMonitor(Monitor * monitor)
 {
@@ -275,21 +275,21 @@ void UnlockMonitors(UInt count, Monitor ** monitors)
 
 
 /****************************************************************************
- **
- *F WaitForAnyMonitor(count, monitors) . . wait for a monitor to be ready
- **
- ** 'WaitForAnyMonitor' waits for any one of the monitors in the list to
- ** be signaled. The function returns when any of them is signaled via
- ** 'SignalMonitor'. The first argument is the number of monitors in the
- ** list, the second argument is an array of monitor pointers.
- **
- ** The list must be sorted by 'MonitorOrder' before passing it to the
- ** function; all monitors must also be locked before calling the function
- ** by calling 'LockMonitors'.
- **
- ** Upon return, all monitors but the one that was signaled will be
- ** unlocked.
- */
+**
+*F WaitForAnyMonitor(count, monitors) . . wait for a monitor to be ready
+**
+** 'WaitForAnyMonitor' waits for any one of the monitors in the list to
+** be signaled. The function returns when any of them is signaled via
+** 'SignalMonitor'. The first argument is the number of monitors in the
+** list, the second argument is an array of monitor pointers.
+**
+** The list must be sorted by 'MonitorOrder' before passing it to the
+** function; all monitors must also be locked before calling the function
+** by calling 'LockMonitors'.
+**
+** Upon return, all monitors but the one that was signaled will be
+** unlocked.
+*/
 
 UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
 {
@@ -334,13 +334,13 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
 }
 
 /****************************************************************************
- **
- *F SignalMonitor(monitor) . . . . . . . . . . send a signal to a monitor
- **
- ** Sends a signal to a monitor that is being waited for by another thread.
- ** The monitor must be locked upon entry and will be locked again upon
- ** exit. If no thread is waiting for the monitor, no operation will occur.
- */
+**
+*F SignalMonitor(monitor) . . . . . . . . . . send a signal to a monitor
+**
+** Sends a signal to a monitor that is being waited for by another thread.
+** The monitor must be locked upon entry and will be locked again upon
+** exit. If no thread is waiting for the monitor, no operation will occur.
+*/
 
 void SignalMonitor(Monitor * monitor)
 {

@@ -156,10 +156,10 @@ static struct ProfileState
   int profiledThread;
 #endif
 
-  /* Have we previously profiled this execution of GAP? We need this because
-  ** code coverage doesn't work more than once, as we use a bit in each Stat
-  ** to mark if we previously executed this statement, which we can't
-  ** clear */
+  // Have we previously profiled this execution of GAP? We need this because
+  // code coverage doesn't work more than once, as we use a bit in each Stat
+  // to mark if we previously executed this statement, which we can't
+  // clear
   UInt profiledPreviously;
 
   Int LongJmpOccurred;

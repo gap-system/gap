@@ -99,9 +99,7 @@ void SySetGapRootPath(const Char * string)
         string = "./";
     }
 
-    /*
-    ** check if we append, prepend or overwrite.
-    */
+    // check if we append, prepend or overwrite.
     if (string[0] == ';') {
         // Count the number of root directories already present.
         n = 0;

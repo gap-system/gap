@@ -482,11 +482,11 @@ static Int printVersion(Char ** argv, void * dummy)
 }
 
 
-/* These are just the options that need kernel processing. Additional options will be
-   recognised and handled in the library */
-
-/* These options must be kept in sync with those in system.g, so the help output
-   is correct */
+// These are just the options that need kernel processing. Additional options
+// will be recognised and handled in the library
+//
+// These options must be kept in sync with those in system.g, so the help
+// output is correct
 static const struct optInfo options[] = {
   { 'C',  "", processCompilerArgs, 0, 4}, // must handle in kernel
   { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, // must handle in kernel
@@ -677,8 +677,8 @@ void InitSystem (
 
     InitSysFiles();
 
-    /* now that the user has had a chance to give -x and -y,
-       we determine the size of the screen ourselves */
+    // now that the user has had a chance to give -x and -y,
+    // we determine the size of the screen ourselves
     getwindowsize();
 
 #ifdef USE_GASMAN

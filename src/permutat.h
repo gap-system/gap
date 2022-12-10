@@ -77,23 +77,23 @@ EXPORT_INLINE const UInt4 * CONST_ADDR_PERM4(Obj perm)
 EXPORT_INLINE Obj STOREDINV_PERM(Obj perm)
 {
     Obj inv = ADDR_OBJ(perm)[0];
-    /* Check inv has the same TNAM as perm
-      This is checked below in SET_STOREDINV_PERM, but could
-      be invalidated if either perm or inv is changed in-place */
+    // Check inv has the same TNAM as perm.
+    // This is checked below in SET_STOREDINV_PERM, but could
+    // be invalidated if either perm or inv is changed in-place
     GAP_ASSERT(!inv || (TNUM_OBJ(perm) == TNUM_OBJ(inv)));
     return inv;
 }
 
-/* SET_STOREDINV_PERM should only be used in neither perm, nor inv has
-   a stored inverse already.  It's OK (although inefficient) if perm and inv
-   are identical */
+// SET_STOREDINV_PERM should only be used in neither perm, nor inv has
+// a stored inverse already.  It's OK (although inefficient) if perm and inv
+// are identical
 EXPORT_INLINE void SET_STOREDINV_PERM(Obj perm, Obj inv)
 {
-    /* check for the possibility that inv is in a different representation to
-       perm. It could be that perm actually acts on < 2^16 points but is in
-       PERM4 representation and some clever code has represented the inverse
-       as PERM2. It could be that someone introduces a new representation
-       altogether */
+    // check for the possibility that inv is in a different representation to
+    // perm. It could be that perm actually acts on < 2^16 points but is in
+    // PERM4 representation and some clever code has represented the inverse
+    // as PERM2. It could be that someone introduces a new representation
+    // altogether
     if (TNUM_OBJ(inv) == TNUM_OBJ(perm)) {
         GAP_ASSERT(STOREDINV_PERM(perm) == 0 && STOREDINV_PERM(inv) == 0);
         ADDR_OBJ(perm)[0] = inv;
@@ -103,9 +103,9 @@ EXPORT_INLINE void SET_STOREDINV_PERM(Obj perm, Obj inv)
     }
 }
 
-/* Clear the stored inverse. This is required if 'perm' changes TNUM.
-   Also clears the stored inverse of the stored inverse (which should be
-   perm). */
+// Clear the stored inverse. This is required if 'perm' changes TNUM.
+// Also clears the stored inverse of the stored inverse (which should be
+// perm).
 EXPORT_INLINE void CLEAR_STOREDINV_PERM(Obj perm)
 {
     Obj inv = ADDR_OBJ(perm)[0];

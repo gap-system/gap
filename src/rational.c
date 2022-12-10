@@ -812,10 +812,10 @@ static Int InitKernel (
     InitBagNamesFromTable( BagNames );
 
     // install the marking function
-    /* MarkTwoSubBags() is faster for Gasman, but MarkAllSubBags() is
-     * more space-efficient for the Boehm GC and does not incur a
-     * speed penalty.
-     */
+    //
+    // MarkTwoSubBags() is faster for Gasman, but MarkAllSubBags() is
+    // more space-efficient for the Boehm GC and does not incur a
+    // speed penalty.
 #ifdef USE_GASMAN
     InitMarkFuncBags( T_RAT, MarkTwoSubBags );
 #else

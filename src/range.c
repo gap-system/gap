@@ -544,8 +544,8 @@ Obj             PosRange (
     Int                 v;              // numerical value of <val>
     Int    istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
@@ -670,7 +670,7 @@ static BOOL IsRange(Obj list)
         isRange = FALSE;
     }
 
-    /* if the first and the second element are equal it is also not a range*/
+    // if the first and the second element are equal it is also not a range
     else if ( ELMW_LIST(list,1) == ELMW_LIST(list,2) ) {
         isRange = FALSE;
     }

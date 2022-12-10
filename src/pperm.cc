@@ -726,8 +726,8 @@ static Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
     return pow;
 }
 
-/* returns the least list <out> such that for all <i> in [1..degree(f)]
- * there exists <j> in <out> and a pos int <k> such that <j^(f^k)=i>. */
+// returns the least list <out> such that for all <i> in [1..degree(f)]
+// there exists <j> in <out> and a pos int <k> such that <j^(f^k)=i>.
 static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);

@@ -2837,13 +2837,12 @@ static UInt DistGF2Vecs(const UInt * ptL, const UInt * ptR, UInt len)
     UInt         sum, m;
     const UInt * end;    // end marker
 
-    /*T this  function will not work if the vectors have more than 2^28
-     * entries */
+    // TODO: this function will not work if the vectors have more than 2^28
+    // entries
 
     end = ptL + ((len + BIPEB - 1) / BIPEB);
     sum = 0;
     // loop over the entries
-    // T possibly unroll this loop
     while (ptL < end) {
         m = *ptL++ ^ *ptR++;    // xor of bits, nr bits therein is difference
         sum += COUNT_TRUES_BLOCK(m);

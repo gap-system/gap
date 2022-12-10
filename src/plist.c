@@ -470,7 +470,7 @@ static Int KTNumHomPlist(Obj list)
     isSSort = HAS_FILT_LIST(list, FN_IS_SSORT );
     isNSort = HAS_FILT_LIST(list, FN_IS_NSORT );
 
-    /* if it's a kernel cyclotomic then we know where we are*/
+    // if it's a kernel cyclotomic then we know where we are
     if (IS_CYC(elm))
       {
         if (lenList == 1 || isSSort)
@@ -1298,9 +1298,8 @@ static Obj ElmsPlist(Obj list, Obj poss)
     return elms;
 }
 
-/* This version for lists which are known to be at least dense
-   and might be better */
-
+// This version for lists which are known to be at least dense
+// and might be better
 static Obj ElmsPlistDense(Obj list, Obj poss)
 {
     Obj                 elms;           // selected sublist, result
@@ -1606,12 +1605,12 @@ void AssPlistFfe   (
         FF ffelm1;
         UInt otherpos;
 
-        /* Here we select an other element to compare the field and
-           possibly characteristic of the assigned value to. This
-           code will never select pos, where the assignment has
-           already been done, unless we are replacing the only entry
-           of a length 1 list, in which case the result will always
-           still be a vecffe, so we are happy */
+        // Here we select an other element to compare the field and
+        // possibly characteristic of the assigned value to. This
+        // code will never select pos, where the assignment has
+        // already been done, unless we are replacing the only entry
+        // of a length 1 list, in which case the result will always
+        // still be a vecffe, so we are happy
 
         if (pos == 1)
           otherpos = len;
@@ -1770,8 +1769,8 @@ void AssPlistEmpty (
 
     // use method selection
     else {
-      /* early in initialization, the type of the empty list may not be
-         available, in which case we must NOT call method selection */
+      // early in initialization, the type of the empty list may not be
+      // available, in which case we must NOT call method selection
       if (TYPE_LIST_EMPTY_MUTABLE != 0)
         AssListObject( list, pos, val );
       else
@@ -2239,8 +2238,8 @@ static Obj PosPlist(Obj list, Obj val, Obj start)
     Int                 i;              // loop variable
     UInt istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
@@ -2272,8 +2271,8 @@ static Obj PosPlistDense(Obj list, Obj val, Obj start)
     Int                 i;              // loop variable
     UInt istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
@@ -2305,8 +2304,8 @@ static Obj PosPlistSort(Obj list, Obj val, Obj start)
     UInt                i, j, k;        // loop variables
     UInt                istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
@@ -3278,8 +3277,8 @@ static Int InitKernel (
     InitMarkFuncBags( T_PLIST_FFE                     , MarkNoSubBags );
     InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE          , MarkNoSubBags );
 
-    /* If T_PLIST_FFE is not the last PLIST type then some more
-       work needs to be done here */
+    // If T_PLIST_FFE is not the last PLIST type then some more
+    // work needs to be done here
 
 #ifdef GAP_ENABLE_SAVELOAD
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {

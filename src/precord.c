@@ -252,9 +252,9 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
 #endif
             SortPRecRNam(rec,0);
         } else {
-            /* We are not allowed to cleanup, so we live with it, we
-             * first try to find rnam in the mess at the end, then
-             * fall back to binary search: */
+            // We are not allowed to cleanup, so we live with it, we
+            // first try to find rnam in the mess at the end, then
+            // fall back to binary search:
             UInt i = high;
             while (i >= 1) {
                 Int rnam2 = GET_RNAM_PREC(rec, i);
@@ -464,18 +464,18 @@ void SortPRecRNam (
         }
     }
     i++;
-    /* Now i points to the last positive (and thus still unsorted)
-     * component and issorted is 1 iff positions i to len are sorted! */
+    // Now i points to the last positive (and thus still unsorted)
+    // component and issorted is 1 iff positions i to len are sorted!
     if (!issorted && len - i + 1 > 1) {
         qsort( ADDR_OBJ(rec)+2*i, len-i+1, 2*sizeof(Obj), &PrecComparer );
     }
-    /* Now i points to the first positive component and the rest is
-     * sorted. */
+    // Now i points to the first positive component and the rest is
+    // sorted.
     save = i;
     if (save == 1 ||
         -GET_RNAM_PREC(rec, save - 1) < GET_RNAM_PREC(rec, save)) {
-        /* Otherwise, nothing has to be done since it is already
-         * sorted, we only have to negate the RNams! */
+        // Otherwise, nothing has to be done since it is already
+        // sorted, we only have to negate the RNams!
         for (j = save;j <= len;j++)
             SET_RNAM_PREC(rec, j, -GET_RNAM_PREC(rec, j));
         return;
@@ -678,8 +678,9 @@ static Int LtPRec(Obj left, Obj right)
         }
 
         // compare the names
-        /* The sense of this comparison is determined by the rule that
-           unbound entries compare less than bound ones                    */
+        //
+        // The sense of this comparison is determined by the rule that
+        // unbound entries compare less than bound ones
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             res = !LT(NAME_RNAM(labs(GET_RNAM_PREC(left, i))),
                       NAME_RNAM(labs(GET_RNAM_PREC(right, i))));

@@ -626,7 +626,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     nloc = NLOC_FUNC(func);
     AssPRec(result, RNamName("nloc"), INTOBJ_INT(nloc));
 
-    /* names of arguments and locals*/
+    // names of arguments and locals
     AssPRec(result, RNamName("nams"), NAMS_FUNC(func));
 
     // switch to this function (so that 'READ_STAT' and 'READ_EXPR' work)

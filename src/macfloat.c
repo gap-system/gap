@@ -648,12 +648,12 @@ static Int InitKernel (
     ModFuncs [ T_MACFLOAT ][ T_MACFLOAT ] = ModMacfloat;
     SumFuncs [ T_INT ][ T_MACFLOAT ] = SumIntMacfloat;
 
-    /* Probably support mixed ops with small ints in the kernel as well
-       on any reasonable system, all small ints should have macfloat equivalents
+    // Probably support mixed ops with small ints in the kernel as well
+    // on any reasonable system, all small ints should have macfloat
+    // equivalents
 
-       Anything else, like mixed ops with rationals, we can leave to the library
-       at least for a while */
-
+    // Anything else, like mixed ops with rationals, we can leave to the
+    // library at least for a while */
 
     return 0;
 }

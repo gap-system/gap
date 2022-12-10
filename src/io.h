@@ -273,15 +273,15 @@ UInt OpenInputLogStream(Obj stream);
 UInt CloseInputLog(void);
 
 /****************************************************************************
- **
- *V  Prompt  . . . . . . . . . . . . . . . . . . . . . . prompt to be printed
- **
- **  'Prompt' holds the string that is to be printed if a  new  line  is read
- **  from the interactive files '*stdin*' or '*errin*'.
- **
- **  It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and changed
- **  to the partial prompt '> ' in 'Read' after the first symbol is read.
- */
+**
+*V  Prompt  . . . . . . . . . . . . . . . . . . . . . . prompt to be printed
+**
+**  'Prompt' holds the string that is to be printed if a  new  line  is read
+**  from the interactive files '*stdin*' or '*errin*'.
+**
+**  It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and changed
+**  to the partial prompt '> ' in 'Read' after the first symbol is read.
+*/
 // TL: extern  const Char *    Prompt;
 
 /****************************************************************************
@@ -291,14 +291,14 @@ UInt CloseInputLog(void);
 void SetPrompt(const char * prompt);
 
 /****************************************************************************
- **
- *V  PrintPromptHook . . . . . . . . . . . . . . function for printing prompt
- *V  EndLineHook . . . . . . . . . . . function called at end of command line
- **
- **  These functions can be set on GAP-level. If they are not bound  the
- **  default is: Instead of 'PrintPromptHook' the 'Prompt' is printed and
- **  instead of 'EndLineHook' nothing is done.
- */
+**
+*V  PrintPromptHook . . . . . . . . . . . . . . function for printing prompt
+*V  EndLineHook . . . . . . . . . . . function called at end of command line
+**
+**  These functions can be set on GAP-level. If they are not bound  the
+**  default is: Instead of 'PrintPromptHook' the 'Prompt' is printed and
+**  instead of 'EndLineHook' nothing is done.
+*/
 // TL: extern Obj  PrintPromptHook;
 extern Obj  EndLineHook;
 

@@ -756,8 +756,8 @@ Obj             DiffListList (
             CHANGED_BAG( listD );
           }
     }
-    /* Now adjust the result TNUM info. There's not so much we
-       can say here with total reliability */
+    // Now adjust the result TNUM info. There's not so much we can say
+    // here with total reliability
 
     if (IS_PLIST( listR ) && IS_PLIST(listL) &&
              HAS_FILT_LIST(listR, FN_IS_DENSE) &&
@@ -921,9 +921,8 @@ Obj             ProdListList (
           }
     }
 
-    /* TODO: This is possible expensive, we may be able to settle for
-     * a cheaper check and call MakeImmutable() instead.
-     */
+    // TODO: This is possible expensive, we may be able to settle for
+    // a cheaper check and call MakeImmutable() instead.
     if (imm && IS_MUTABLE_OBJ(listP))
       CheckedMakeImmutable(listP);
 
@@ -1654,8 +1653,8 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
 
     }
 
-  /* Now we adjust mutability. Couldn't do it earlier, because AddRowVector, etc.
-     needs mutable target vectors */
+  // Now we adjust mutability. Couldn't do it earlier, because AddRowVector,
+  // etc. needs mutable target vectors
   switch (mut)
     {
     case 0:
@@ -2028,7 +2027,8 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * * */
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************

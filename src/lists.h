@@ -767,28 +767,28 @@ Obj TYPES_LIST_FAM(Obj fam);
 */
 
 typedef enum {
-    /** filter number for 'IsSSortedList' */
+    // filter number for 'IsSSortedList'
     FN_IS_SSORT,
 
-    /** filter number for 'IsNSortedList' */
+    // filter number for 'IsNSortedList'
     FN_IS_NSORT,
 
-    /** filter number for 'IsDenseList' */
+    // filter number for 'IsDenseList'
     FN_IS_DENSE,
 
-    /** filter number for 'IsNDenseList' */
+    // filter number for 'IsNDenseList'
     FN_IS_NDENSE,
 
-    /** filter number for 'IsHomogeneousList' */
+    // filter number for 'IsHomogeneousList'
     FN_IS_HOMOG,
 
-    /** filter number for 'IsNonHomogeneousList' */
+    // filter number for 'IsNonHomogeneousList'
     FN_IS_NHOMOG,
 
-    /** filter number for 'IsTable' */
+    // filter number for 'IsTable'
     FN_IS_TABLE,
 
-    /** filter number for 'IsRectangularTable' */
+    // filter number for 'IsRectangularTable'
     FN_IS_RECT,
 
     LAST_FN = FN_IS_RECT

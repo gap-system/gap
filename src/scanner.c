@@ -604,8 +604,7 @@ static Char GetEscapedChar(ScannerState * s)
   else if ( c == '\\' )  result = '\\';
   else if ( c == '\'' )  result = '\'';
   else if ( c == '0'  ) {
-    /* from here we can either read a hex-escape or three digit
-       octal numbers */
+    // from here we can either read a hex-escape or three digit octal numbers
     c = GET_NEXT_CHAR();
     if (c == 'x') {
         result = 16 * CharHexDigit(s);
@@ -621,13 +620,13 @@ static Char GetEscapedChar(ScannerState * s)
     c = GET_NEXT_CHAR();
     result += GetOctalDigits(s, c);
   } else {
-      /* Following discussions on pull-request #612, this warning is currently
-         disabled for backwards compatibility; some code relies on this behaviour
-         and tests break with the warning enabled */
-      /*
+      // Following discussions on pull-request #612, this warning is currently
+      // disabled for backwards compatibility; some code relies on this behaviour
+      // and tests break with the warning enabled
+#if 0
       if (IsAlpha(c))
           SyntaxWarning(s, "Alphabet letter after \\");
-      */
+#endif
       result = c;
   }
   return result;
