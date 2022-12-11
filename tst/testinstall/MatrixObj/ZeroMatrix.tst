@@ -122,7 +122,7 @@ gap> ZeroMatrix(GF(4), 2, 3);
 gap> ZeroMatrix(GF(4), 0, 3);
 Error, Is8BitMatrixRep with zero rows not yet supported
 gap> ZeroMatrix(GF(4), 2, 0);
-< mutable compressed matrix 2x0 over GF(4) >
+< mutable compressed matrix 2x0 over GF(2^2) >
 
 #
 gap> STOP_TEST("ZeroMatrix.tst");

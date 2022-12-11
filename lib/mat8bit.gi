@@ -89,7 +89,7 @@ InstallMethod(Unbind\[\],
 "for a mutable 8-bit matrix rep and pos. int.",
 [IsMutable and Is8BitMatrixRep, IsPosInt],
 function(m, p)
-  if p = 1 or p <> m![1] then
+  if p = 1 or p <> NumberRows(m) then
     PLAIN_MAT8BIT(m);
     Unbind(m[p]);
   else
@@ -98,7 +98,7 @@ function(m, p)
   fi;
 end);
 
-# Up to 25 entries,  GF(q) matrices are viewed in full, over that a description
+# Up to 25 entries, GF(q) matrices are viewed in full, over that a description
 # is printed
 
 InstallMethod(ViewObj, "for an 8 - bit matrix rep", [Is8BitMatrixRep],
@@ -139,17 +139,15 @@ function(mat)
   Print(" \<\<\<\<]");
 end);
 
-# TODO renovate
-
 InstallMethod(ShallowCopy, "for an 8-bit matrix rep", [Is8BitMatrixRep],
 function(m)
   local c, i, l;
-  l := m![1];
+  l := NumberRows(m);
   c := [l];
-  for i in [2 .. l + 1] do
-    c[i] := m![i];
+  for i in [1 .. l] do
+    c[i + 1] := m[i]; # TODO shouldn't this have ShallowCopy?
   od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(m![2]), true), c);
+  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(m[1]), true), c);
   return c;
 end);
 
@@ -344,19 +342,19 @@ InstallMethod(\*, "for 8-bit matrices", IsIdenticalObj,
 InstallMethod(\*, "for an internal FFE and an 8-bit matrix", IsElmsCollColls,
 [IsFFE and IsInternalRep, Is8BitMatrixRep],
 function(s, m)
-  local q, i, l, r, pv;
-  q := Q_VEC8BIT(m![2]);
-  if not s in GF(q) then
+  local l, r, pv, i;
+
+  if not s in BaseDomain(m) then
     TryNextMethod();
   fi;
-  l := m![1];
+  l := NumberRows(m);
   r := [l];
-  for i in [2 .. l + 1] do
-    pv := s * m![i];
+  for i in [1 .. l] do
+    pv := s * m[i];
     SetFilterObj(pv, IsLockedRepresentationVector);
-    r[i] := pv;
+    r[i + 1] := pv;
   od;
-  Objectify(TYPE_MAT8BIT(q, IsMutable(m)), r);
+  Objectify(TYPE_MAT8BIT(Size(BaseDomain(m)), IsMutable(m)), r);
   return r;
 end);
 
@@ -375,83 +373,38 @@ end);
 
 #  If <ffe> lies in the field of <mat> then we return a matrix in
 #  `Is8BitMatrixRep`, otherwise we delegate to a generic method.
-
-InstallMethod(\*, "for an 8-bit matrix and an internal FFE", IsCollCollsElms,
-[Is8BitMatrixRep, IsFFE and IsInternalRep],
-function(m, s)
-  local q, i, l, r, pv;
-  q := Q_VEC8BIT(m![2]);
-  if not s in GF(q) then
-    TryNextMethod();
-  fi;
-  l := m![1];
-  r := [l];
-  for i in [2 .. l + 1] do
-    pv := m![i] * s;
-    SetFilterObj(pv, IsLockedRepresentationVector);
-    r[i] := pv;
-  od;
-  Objectify(TYPE_MAT8BIT(q, IsMutable(m)), r);
-  return r;
-end);
-
 InstallMethod(\*, "for an 8-bit matrix and an FFE", IsCollCollsElms,
-[Is8BitMatrixRep, IsFFE],
-function(m, s)
-  if IsInternalRep(s) then
-    TryNextMethod();
-  fi;
-  s := AsInternalFFE(s);
-  if s = fail then
-    TryNextMethod();
-  fi;
-  return m * s;
-end);
+[Is8BitMatrixRep, IsFFE], {m, s} -> s * m);
 
 InstallMethod(AdditiveInverseMutable, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
 function(mat)
   local neg, i, negv;
-  neg := [mat![1]];
-  for i in [2 .. mat![1] + 1] do
-    negv := AdditiveInverseMutable(mat![i]);
+  neg := [NumberRows(mat)];
+  for i in [1 .. NumberRows(mat)] do
+    negv := AdditiveInverseMutable(mat[i]);
     SetFilterObj(negv, IsLockedRepresentationVector);
-    neg[i] := negv;
+    neg[i + 1] := negv;
   od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), true), neg);
+  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat[1]), true), neg);
   return neg;
 end);
 
+# TODO is the next method required? Doesn't use the representation at all
+
 InstallMethod(AdditiveInverseImmutable, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
-function(mat)
-  local neg, i, negv;
-  neg := [mat![1]];
-  for i in [2 .. mat![1] + 1] do
-    negv := AdditiveInverseImmutable(mat![i]);
-    SetFilterObj(negv, IsLockedRepresentationVector);
-    neg[i] := negv;
-  od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), false), neg);
-  return neg;
-end);
+mat -> MakeImmutable(AdditiveInverseMutable(mat)));
+
+# TODO is the next method required? Doesn't use the representation at all
 
 InstallMethod(AdditiveInverseSameMutability, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
 function(mat)
-  local neg, i, negv;
-  neg := [mat![1]];
-  for i in [2 .. mat![1] + 1] do
-    negv := AdditiveInverseSameMutability(mat![i]);
-    SetFilterObj(negv, IsLockedRepresentationVector);
-    neg[i] := negv;
-  od;
   if IsMutable(mat) then
-    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), true), neg);
-  else
-    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), false), neg);
+    return AdditiveInverseMutable(mat);
   fi;
-  return neg;
+  return AdditiveInverseImmutable(mat);
 end);
 
 InstallMethod(ZeroMutable, "for an 8-bit matrix",
@@ -468,77 +421,28 @@ function(mat)
   return z;
 end);
 
+# TODO is the next method required? Doesn't use the representation at all
+
 InstallMethod(ZeroImmutable, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
-function(mat)
-  local z, i, zv;
-  z := [mat![1]];
-  zv := ZERO_VEC8BIT(mat![2]);
-  SetFilterObj(zv, IsLockedRepresentationVector);
-  MakeImmutable(zv);
-  for i in [2 .. mat![1] + 1] do
-    z[i] := zv;
-  od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), false), z);
-  return z;
-end);
+mat -> MakeImmutable(ZeroMutable(mat)));
+
+# TODO is the next method required? Doesn't use the representation at all
 
 InstallMethod(ZeroSameMutability, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
 function(mat)
-  local z, i, zv;
-  z := [mat![1]];
-  if not IsMutable(mat![2]) then
-    zv := ZERO_VEC8BIT(mat![2]);
-    SetFilterObj(zv, IsLockedRepresentationVector);
-    MakeImmutable(zv);
-    for i in [2 .. mat![1] + 1] do
-      z[i] := zv;
-    od;
-  else
-    for i in [2 .. mat![1] + 1] do
-      zv := ZERO_VEC8BIT(mat![i]);
-      SetFilterObj(zv, IsLockedRepresentationVector);
-      z[i] := zv;
-    od;
+  if IsMutable(mat) then
+    return ZeroMutable(mat);
   fi;
-    if IsMutable(mat) then
-       Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), true), z);
-    else
-        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), false), z);
-    fi;
-    return z;
+  return ZeroImmutable(mat);
 end);
 
-InstallMethod(InverseOp, "for an 8-bit matrix", [Is8BitMatrixRep], SUM_FLAGS,
-INV_MAT8BIT_MUTABLE);
+InstallMethod(InverseMutable, "for an 8-bit matrix", [Is8BitMatrixRep],
+SUM_FLAGS, INV_MAT8BIT_MUTABLE);
 
 InstallMethod(InverseSameMutability, "for an 8-bit matrix", [Is8BitMatrixRep],
 SUM_FLAGS, INV_MAT8BIT_SAME_MUTABILITY);
-
-InstallMethod(OneSameMutability, "for an 8-bit matrix", [Is8BitMatrixRep],
-SUM_FLAGS,
-function(m)
-  local v, o, one, w, i;
-  v := ZeroOp(m![2]);
-  o := [];
-  one := Z(Q_VEC8BIT(v)) ^ 0;
-  for i in [1 .. m![1]] do
-    w := ShallowCopy(v);
-    w[i] := one;
-    Add(o, w);
-  od;
-  if not IsMutable(m![2]) then
-    for i in [1 .. m![1]] do
-      MakeImmutable(o[i]);
-    od;
-  fi;
-  if not IsMutable(m) then
-    MakeImmutable(o);
-  fi;
-  ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
-  return o;
-end);
 
 InstallMethod(OneMutable, "for an 8-bit matrix", [Is8BitMatrixRep], SUM_FLAGS,
 function(m)
@@ -555,15 +459,18 @@ function(m)
   return o;
 end);
 
-# always immutable
+# TODO is the next method required? Doesn't use the representation at all
+InstallMethod(OneImmutable, "for an 8-bit matrix", [Is8BitMatrixRep],
+SUM_FLAGS, m -> MakeImmutable(OneMutable(m)));
 
-InstallMethod(One, "for an 8-bit matrix", [Is8BitMatrixRep], SUM_FLAGS,
+# TODO is the next method required? Doesn't use the representation at all
+InstallMethod(OneSameMutability, "for an 8-bit matrix", [Is8BitMatrixRep],
+SUM_FLAGS,
 function(m)
-  local o;
-  o := OneOp(m);
-  MakeImmutable(o);
-  ConvertToMatrixRepNC(o, Q_VEC8BIT(m![2]));
-  return o;
+  if IsMutable(m) then
+    return OneMutable(m);
+  fi;
+  return OneImmutable(m);
 end);
 
 # TODO this function is probably not in the correct file.
@@ -648,10 +555,7 @@ function(m)
 end);
 
 InstallMethod(DefaultFieldOfMatrix, "for an 8-bit matrix",
-[IsMatrix and Is8BitMatrixRep],
-function(mat)
-  return GF(Q_VEC8BIT(mat![2]));
-end);
+[IsMatrix and Is8BitMatrixRep], BaseDomain);
 
 InstallMethod(\<, "for two 8-bit matrices", IsIdenticalObj,
 [Is8BitMatrixRep, Is8BitMatrixRep], LT_MAT8BIT_MAT8BIT);
@@ -659,7 +563,7 @@ InstallMethod(\<, "for two 8-bit matrices", IsIdenticalObj,
 InstallMethod(\=, "for two 8-bit matrices", IsIdenticalObj,
 [Is8BitMatrixRep, Is8BitMatrixRep], EQ_MAT8BIT_MAT8BIT);
 
-InstallOtherMethod(TransposedMat, "for an 8 - bit matrix",
+InstallOtherMethod(TransposedMat, "for an 8-bit matrix",
 [Is8BitMatrixRep], TRANSPOSED_MAT8BIT);
 
 InstallOtherMethod(MutableTransposedMat, "for an 8-bit matrix",

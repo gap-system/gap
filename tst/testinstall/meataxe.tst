@@ -106,8 +106,8 @@ true
 #
 gap> M4:=InducedGModule(SymmetricGroup(6),G,M);
 rec( IsOverFiniteField := true, dimension := 30, field := GF(7^2), 
-  generators := [ < immutable compressed matrix 30x30 over GF(49) >, 
-      < immutable compressed matrix 30x30 over GF(49) > ], 
+  generators := [ < immutable compressed matrix 30x30 over GF(7^2) >, 
+      < immutable compressed matrix 30x30 over GF(7^2) > ], 
   isMTXModule := true )
 gap> SortedList(List(MTX.CompositionFactors(M4), m -> m.dimension));
 [ 1, 5, 5, 9, 10 ]
@@ -115,8 +115,8 @@ gap> SortedList(List(MTX.CompositionFactors(M4), m -> m.dimension));
 #
 gap> M5:=WedgeGModule(M);
 rec( IsOverFiniteField := true, dimension := 10, field := GF(7^2), 
-  generators := [ < immutable compressed matrix 10x10 over GF(49) >, 
-      < immutable compressed matrix 10x10 over GF(49) > ], 
+  generators := [ < immutable compressed matrix 10x10 over GF(7^2) >, 
+      < immutable compressed matrix 10x10 over GF(7^2) > ], 
   isMTXModule := true )
 gap> SortedList(List(MTX.CompositionFactors(M5), m -> m.dimension));
 [ 4, 6 ]
@@ -124,29 +124,29 @@ gap> cf:=MTX.CollectedFactors(M5);;
 gap> MTX.Distinguish(cf,1);
 gap> MTX.Distinguish(cf,2);
 gap> MTX.BasesSubmodules(M5);
-[ [  ], < immutable compressed matrix 4x10 over GF(49) >, 
-  < immutable compressed matrix 6x10 over GF(49) >, 
-  < immutable compressed matrix 10x10 over GF(49) > ]
+[ [  ], < immutable compressed matrix 4x10 over GF(7^2) >, 
+  < immutable compressed matrix 6x10 over GF(7^2) >, 
+  < immutable compressed matrix 10x10 over GF(7^2) > ]
 gap> MTX.BasesMinimalSubmodules(M5);
-[ < immutable compressed matrix 4x10 over GF(49) >, 
-  < immutable compressed matrix 6x10 over GF(49) > ]
+[ < immutable compressed matrix 4x10 over GF(7^2) >, 
+  < immutable compressed matrix 6x10 over GF(7^2) > ]
 gap> MTX.BasesMaximalSubmodules(M5);
-[ < immutable compressed matrix 6x10 over GF(49) >, 
-  < immutable compressed matrix 4x10 over GF(49) > ]
+[ < immutable compressed matrix 6x10 over GF(7^2) >, 
+  < immutable compressed matrix 4x10 over GF(7^2) > ]
 gap> MTX.BasisRadical(M5);
 [  ]
 gap> MTX.BasisSocle(M5);
-< immutable compressed matrix 10x10 over GF(49) >
+< immutable compressed matrix 10x10 over GF(7^2) >
 gap> subs:=SMTX.MinimalSubGModules(M2,M5);
-[ < immutable compressed matrix 4x10 over GF(49) > ]
+[ < immutable compressed matrix 4x10 over GF(7^2) > ]
 gap> MTX.BasesMinimalSupermodules(M5,subs[1]) = [ IdentityMat(10,Z(7)) ];
 true
 gap> homs:=MTX.Homomorphisms(M2,M5);
-[ < immutable compressed matrix 4x10 over GF(49) > ]
+[ < immutable compressed matrix 4x10 over GF(7^2) > ]
 gap> MTX.Homomorphism(M2,M5,homs[1]);
 [ [ Z(7)^0, 0*Z(7), 0*Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0, 0*Z(7), 0*Z(7) ], 
   [ 0*Z(7), 0*Z(7), Z(7)^0, 0*Z(7) ], [ 0*Z(7), 0*Z(7), 0*Z(7), Z(7)^0 ] 
- ] -> < immutable compressed matrix 4x10 over GF(49) >
+ ] -> < immutable compressed matrix 4x10 over GF(7^2) >
 
 #
 gap> randM := SMTX.RandomIrreducibleSubGModule(M)[2];;
