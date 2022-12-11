@@ -60,10 +60,10 @@ InstallGlobalFunction(TYPE_MAT8BIT,
     return TYPES_MAT8BIT[col][q];
 end);
 
-InstallMethod(Length, "for an 8 - bit matrix rep", [Is8BitMatrixRep],
+InstallMethod(Length, "for an 8-bit matrix rep", [Is8BitMatrixRep],
 m -> m![1]);
 
-InstallOtherMethod(\[\], "for an 8 - bit matrix rep and pos. int.",
+InstallOtherMethod(\[\], "for an 8-bit matrix rep and pos. int.",
 [Is8BitMatrixRep, IsPosInt], ELM_MAT8BIT);
 
 InstallMethod(\[\,\], "for an 8-bit matrix rep and 2 pos. int.",
@@ -327,7 +327,7 @@ function(arg)
   return q;
 end);
 
-InstallMethod(\*, "for an 8 - bit vector and 8 - bit matrix", IsElmsColls,
+InstallMethod(\*, "for an 8-bit vector and 8-bit matrix", IsElmsColls,
 [Is8BitVectorRep and IsRowVector and IsRingElementList, Is8BitMatrixRep],
 PROD_VEC8BIT_MAT8BIT);
 
