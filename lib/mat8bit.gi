@@ -14,13 +14,12 @@
 ##  all rows must be the same length and written over the same field
 ##
 
-##  A length 2 list of length 257 lists. TYPES_MAT8BIT[1][q] will be the type
-##  of mutable vectors over GF(q), TYPES_MAT8BIT[2][q] is the type of
-##  immutable vectors. The 257th position is bound to 1 to stop the lists
-##  shrinking.
-##
-##  It is accessed directly by the kernel, so the format cannot be changed
-##  without changing the kernel.
+# A length 2 list of length 257 lists. TYPES_MAT8BIT[1][q] will be the type of
+# mutable matrices over GF(q), TYPES_MAT8BIT[2][q] is the type of immutable
+# matrices. The 257th position is bound to 1 to stop the lists shrinking.
+#
+# It is accessed directly by the kernel, so the format cannot be changed
+# without changing the kernel.
 
 if IsHPCGAP then
   BindGlobal("TYPES_MAT8BIT", [FixedAtomicList(256), FixedAtomicList(256)]);
@@ -31,8 +30,8 @@ else
   TYPES_MAT8BIT[2][257] := 1;
 fi;
 
-##  Normally called by the kernel, caches results in TYPES_MAT8BIT,
-##  which is directly accessed by the kernel
+# Normally called by the kernel, caches results in TYPES_MAT8BIT, which is
+# directly accessed by the kernel
 
 InstallGlobalFunction(TYPE_MAT8BIT,
   function(q, mut)
