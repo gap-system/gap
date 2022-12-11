@@ -28,27 +28,27 @@
 ##
 ##  <Example><![CDATA[
 ##  gap> EpimorphismSchurCover(SymmetricGroup(15));
-##  [ < immutable compressed matrix 64x64 over GF(9) >, 
-##    < immutable compressed matrix 64x64 over GF(9) > ] -> 
+##  [ < immutable compressed matrix 64x64 over GF(3^2) >, 
+##    < immutable compressed matrix 64x64 over GF(3^2) > ] -> 
 ##  [ (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15), (1,2) ]
 ##  gap> EpimorphismSchurCover(AlternatingGroup(15));
-##  [ < immutable compressed matrix 64x64 over GF(9) >, 
-##    < immutable compressed matrix 64x64 over GF(9) > ] -> 
+##  [ < immutable compressed matrix 64x64 over GF(3^2) >, 
+##    < immutable compressed matrix 64x64 over GF(3^2) > ] -> 
 ##  [ (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15), (13,14,15) ]
 ##  gap> SchurCoverOfSymmetricGroup(12);
 ##  <matrix group of size 958003200 with 2 generators>
 ##  gap> DoubleCoverOfAlternatingGroup(12);
 ##  <matrix group of size 479001600 with 2 generators>
 ##  gap> BasicSpinRepresentationOfSymmetricGroup( 10, 3, -1 );
-##  [ < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) >, 
-##    < immutable compressed matrix 16x16 over GF(9) > ]
+##  [ < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) >, 
+##    < immutable compressed matrix 16x16 over GF(3^2) > ]
 ##  ]]></Example>
 ##
 ##  </Subsection>
