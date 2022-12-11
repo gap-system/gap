@@ -145,9 +145,9 @@ function(m)
   l := NumberRows(m);
   c := [l];
   for i in [1 .. l] do
-    c[i + 1] := m[i]; # TODO shouldn't this have ShallowCopy?
+    c[i + 1] := m[i];  # TODO shouldn't this have ShallowCopy?
   od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(m[1]), true), c);
+  Objectify(TYPE_MAT8BIT(Size(BaseDomain(m)), true), c);
   return c;
 end);
 
@@ -222,7 +222,7 @@ function(arg)
   # If we are already compressed, then our rows are certainly
   # locked, so we will not be able to change representation
   if Is8BitMatrixRep(m) then
-    q := Q_VEC8BIT(m![2]);
+    q := Size(BaseDomain(m));
     if not givenq or q = q1 then
       return q;
     else
@@ -244,7 +244,7 @@ function(arg)
     if IsGF2VectorRep(v) then
       AddSet(qs, 2);
     elif Is8BitVectorRep(v) then
-      AddSet(qs, Q_VEC8BIT(v));
+      AddSet(qs, Size(BaseDomain(v)));
     elif givenq then
       AddSet(qs, ConvertToVectorRepNC(v, q1));
     else
@@ -256,12 +256,12 @@ function(arg)
     # We may know that there is no common field or that we can't win for some
     # other reason
     if Length(lens) > 1 or lens[1] = 0 or fail in qs  or true in qs then
-        return fail;
+      return fail;
     fi;
 
     # or it may be easy
     if Length(qs) = 1 then
-        q := qs[1];
+      q := qs[1];
     else
       # Now work out the common field
       q := LeastCommonPower(qs);
@@ -306,7 +306,7 @@ function(arg)
     q := Size(q);
   fi;
   if Is8BitMatrixRep(m) then
-    return Q_VEC8BIT(m[1]);
+    return Size(BaseDomain(m));
   fi;
   if IsGF2MatrixRep(m) then
     return 2;
@@ -386,7 +386,7 @@ function(mat)
     SetFilterObj(negv, IsLockedRepresentationVector);
     neg[i + 1] := negv;
   od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat[1]), true), neg);
+  Objectify(TYPE_MAT8BIT(Size(BaseDomain(mat)), true), neg);
   return neg;
 end);
 
@@ -411,13 +411,13 @@ InstallMethod(ZeroMutable, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
 function(mat)
   local z, i, zv;
-  z := [mat![1]];
-  for i in [2 .. mat![1] + 1] do
-    zv := ZERO_VEC8BIT(mat![i]);
+  z := [NumberRows(mat)];
+  for i in [1 .. NumberRows(mat)] do
+    zv := ZERO_VEC8BIT(mat[i]);
     SetFilterObj(zv, IsLockedRepresentationVector);
-    z[i] := zv;
+    z[i + 1] := zv;
   od;
-  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), true), z);
+  Objectify(TYPE_MAT8BIT(Size(BaseDomain(mat)), true), z);
   return z;
 end);
 
@@ -447,15 +447,15 @@ SUM_FLAGS, INV_MAT8BIT_SAME_MUTABILITY);
 InstallMethod(OneMutable, "for an 8-bit matrix", [Is8BitMatrixRep], SUM_FLAGS,
 function(m)
   local v, o, one, w, i;
-  v := ZeroOp(m![2]);
+  v := ZeroMutable(m[1]);
   o := [];
-  one := Z(Q_VEC8BIT(v)) ^ 0;
-  for i in [1 .. m![1]] do
+  one := One(BaseDomain(m));
+  for i in [1 .. NumberRows(m)] do
     w := ShallowCopy(v);
     w[i] := one;
     Add(o, w);
   od;
-  ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
+  ConvertToMatrixRepNC(o, Size(BaseDomain(m)));
   return o;
 end);
 
@@ -576,21 +576,19 @@ InstallOtherMethod(MutableTransposedMat, "for an 8-bit matrix",
 InstallMethod(SemiEchelonMat, "for an 8-bit matrix",
 [IsMatrix and Is8BitMatrixRep],
 function(mat)
-  local copymat, res;
-
-  copymat := List(mat, ShallowCopy);
-  res := SemiEchelonMatDestructive(copymat);
-  ConvertToMatrixRepNC(res.vectors, Q_VEC8BIT(mat![2]));
+  local res;
+  res := SemiEchelonMatDestructive(Unpack(mat));
+  ConvertToMatrixRepNC(res.vectors, Size(BaseDomain(mat)));
   return res;
 end);
 
 InstallMethod(SemiEchelonMatTransformation, "for an 8-bit matrix",
 [IsMatrix and Is8BitMatrixRep],
 function(mat)
-  local copymat, res, q;
-  copymat := List(mat, ShallowCopy);
-  res := SemiEchelonMatTransformationDestructive(copymat);
-  q := Q_VEC8BIT(mat![2]);
+  local res, q;
+
+  res := SemiEchelonMatTransformationDestructive(Unpack(mat));
+  q := Size(BaseDomain(mat));
   ConvertToMatrixRepNC(res.vectors, q);
   ConvertToMatrixRepNC(res.coeffs, q);
   ConvertToMatrixRepNC(res.relations, q);
@@ -616,13 +614,12 @@ InstallMethod(TriangulizeMat,
 [IsPlistRep and IsMatrix and IsMutable and IsFFECollColl],
 TRIANGULIZE_LIST_VEC8BITS);
 
-InstallMethod(TriangulizeMat,
-"for a mutable 8-bit matrix",
+InstallMethod(TriangulizeMat, "for a mutable 8-bit matrix",
 [IsMutable and IsMatrix and Is8BitMatrixRep],
 function(m)
   local q, i, imms;
   imms := [];
-  q := Q_VEC8BIT(m![2]);
+  q := Size(BaseDomain(m));
   PLAIN_MAT8BIT(m);
   for i in [1 .. Length(m)] do
     if not IsMutable(m[i]) then

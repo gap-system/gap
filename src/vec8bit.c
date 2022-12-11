@@ -1427,6 +1427,7 @@ static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe)
 
 static Obj FuncZERO_VEC8BIT(Obj self, Obj vec)
 {
+    RequireVec8BitRep(SELF_NAME, vec);
     return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec), 1);
 }
 
@@ -2668,6 +2669,7 @@ static Obj FuncLEN_VEC8BIT(Obj self, Obj list)
 */
 static Obj FuncQ_VEC8BIT(Obj self, Obj list)
 {
+    RequireVec8BitRep(SELF_NAME, list);
     return INTOBJ_INT(FIELD_VEC8BIT(list));
 }
 
