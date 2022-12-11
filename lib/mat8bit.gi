@@ -390,23 +390,6 @@ function(mat)
   return neg;
 end);
 
-# TODO is the next method required? Doesn't use the representation at all
-
-InstallMethod(AdditiveInverseImmutable, "for an 8-bit matrix",
-[Is8BitMatrixRep and IsAdditiveElementWithZero],
-mat -> MakeImmutable(AdditiveInverseMutable(mat)));
-
-# TODO is the next method required? Doesn't use the representation at all
-
-InstallMethod(AdditiveInverseSameMutability, "for an 8-bit matrix",
-[Is8BitMatrixRep and IsAdditiveElementWithZero],
-function(mat)
-  if IsMutable(mat) then
-    return AdditiveInverseMutable(mat);
-  fi;
-  return AdditiveInverseImmutable(mat);
-end);
-
 InstallMethod(ZeroMutable, "for an 8-bit matrix",
 [Is8BitMatrixRep and IsAdditiveElementWithZero],
 function(mat)
@@ -419,23 +402,6 @@ function(mat)
   od;
   Objectify(TYPE_MAT8BIT(Size(BaseDomain(mat)), true), z);
   return z;
-end);
-
-# TODO is the next method required? Doesn't use the representation at all
-
-InstallMethod(ZeroImmutable, "for an 8-bit matrix",
-[Is8BitMatrixRep and IsAdditiveElementWithZero],
-mat -> MakeImmutable(ZeroMutable(mat)));
-
-# TODO is the next method required? Doesn't use the representation at all
-
-InstallMethod(ZeroSameMutability, "for an 8-bit matrix",
-[Is8BitMatrixRep and IsAdditiveElementWithZero],
-function(mat)
-  if IsMutable(mat) then
-    return ZeroMutable(mat);
-  fi;
-  return ZeroImmutable(mat);
 end);
 
 InstallMethod(InverseMutable, "for an 8-bit matrix", [Is8BitMatrixRep],
@@ -457,20 +423,6 @@ function(m)
   od;
   ConvertToMatrixRepNC(o, Size(BaseDomain(m)));
   return o;
-end);
-
-# TODO is the next method required? Doesn't use the representation at all
-InstallMethod(OneImmutable, "for an 8-bit matrix", [Is8BitMatrixRep],
-SUM_FLAGS, m -> MakeImmutable(OneMutable(m)));
-
-# TODO is the next method required? Doesn't use the representation at all
-InstallMethod(OneSameMutability, "for an 8-bit matrix", [Is8BitMatrixRep],
-SUM_FLAGS,
-function(m)
-  if IsMutable(m) then
-    return OneMutable(m);
-  fi;
-  return OneImmutable(m);
 end);
 
 # TODO this function is probably not in the correct file.
