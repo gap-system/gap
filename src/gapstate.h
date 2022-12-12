@@ -41,6 +41,9 @@ typedef struct GAPState {
 #endif
 
     /* From intrprtr.c */
+
+    // 'Tilde' is the object referenced by the operator '~', used in
+    // expressions such as '[ [ 1, 2 ], ~[ 1 ] ]'.
     Obj  Tilde;
 
     // The current assertion level for use in Assert
@@ -50,13 +53,33 @@ typedef struct GAPState {
     Obj CurrNamespace;
 
     /* From vars.c */
-    Bag   CurrLVars;
+
+    // 'CurrLVars' is the bag containing the values of the local variables of
+    // the currently executing interpreted function.
+    //
+    // Assignments to the local variables change this bag. We do not call
+    // 'CHANGED_BAG' for each of such change. Instead we wait until a garbage
+    // collection begins and then call 'CHANGED_BAG' in 'BeginCollectBags'.
+    Bag CurrLVars;
+
+    // 'PtrLVars' is a pointer to the 'CurrLVars' bag. This makes it faster to
+    // access local variables.
+    //
+    // Since a garbage collection may move this bag around, the pointer
+    // 'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
     Obj * PtrLVars;
+
     Bag   LVarsPool[16];
 
     /* From read.c */
     jmp_buf ReadJmpError;
 
+    // 'Prompt' holds the string that is to be printed if a new line is read
+    // from the interactive files '*stdin*' or '*errin*'.
+    //
+    // It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and
+    // changed to the partial prompt '> ' in 'Read' after the first symbol is
+    // read.
     char Prompt[80];
 
     /* From stats.c */
@@ -69,6 +92,8 @@ typedef struct GAPState {
     ExecStatFunc * CurrExecStatFuncs;
 
     /* From code.c */
+
+    // A pointer to the current function body being executed
     void * PtrBody;
 
     /* From opers.c */

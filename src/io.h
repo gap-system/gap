@@ -273,18 +273,6 @@ UInt OpenInputLogStream(Obj stream);
 UInt CloseInputLog(void);
 
 /****************************************************************************
- **
- *V  Prompt  . . . . . . . . . . . . . . . . . . . . . . prompt to be printed
- **
- **  'Prompt' holds the string that is to be printed if a  new  line  is read
- **  from the interactive files '*stdin*' or '*errin*'.
- **
- **  It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and changed
- **  to the partial prompt '> ' in 'Read' after the first symbol is read.
- */
-/* TL: extern  const Char *    Prompt; */
-
-/****************************************************************************
 **
 *F  SetPrompt( <prompt> ) . . . . . . . . . . . . . set the user input prompt
 */

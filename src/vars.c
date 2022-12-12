@@ -45,21 +45,6 @@
 
 #include <stdio.h>
 
-
-/****************************************************************************
-**
-*V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
-**
-**  'CurrLVars'  is the bag containing the  values  of the local variables of
-**  the currently executing interpreted function.
-**
-**  Assignments  to  the local variables change   this bag.  We  do  not call
-**  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
-**  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
-*/
-/* TL: Bag CurrLVars; */
-
-
 /****************************************************************************
 **
 *V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
@@ -70,19 +55,6 @@
 **
 */
 static Bag BottomLVars;
-
-
-/****************************************************************************
-**
-*V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
-**
-**  'PtrLVars' is a pointer to the 'STATE(CurrLVars)' bag.  This  makes it faster to
-**  access local variables.
-**
-**  Since   a   garbage collection may  move   this  bag  around, the pointer
-**  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
-*/
-/* TL: Obj * PtrLVars; */
 
 
 /****************************************************************************
