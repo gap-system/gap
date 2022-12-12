@@ -153,25 +153,3 @@ end);
 BIND_GLOBAL("UncoverageLineByLine", function()
   return DEACTIVATE_PROFILING();
 end);
-
-
-#############################################################################
-##
-##
-##  <#GAPDoc Label="ActivateProfileColour">
-##  <ManSection>
-##  <Func Name="ActivateProfileColour" Arg=""/>
-##
-##  <Description>
-##  Called with argument <K>true</K>,
-##  <Ref Func="ActivateProfileColour"/>
-##  makes GAP colour functions when printing them to show which lines
-##  have been executed while profiling was active via
-##  <Ref Func="ProfileLineByLine" /> at any time during this GAP session.
-##  Passing <K>false</K> disables this behaviour.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-BIND_GLOBAL("ActivateProfileColour",function(b)
-    return ACTIVATE_COLOR_PROFILING(b);
-end);
