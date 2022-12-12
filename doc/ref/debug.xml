@@ -839,7 +839,6 @@ Profiles are transformed into a human-readable form with
 <#Include Label="CoverageLineByLine">
 <#Include Label="UnprofileLineByLine">
 <#Include Label="UncoverageLineByLine">
-<#Include Label="ActivateProfileColour">
 <#Include Label="IsLineByLineProfileActive">
 
 

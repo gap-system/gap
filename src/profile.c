@@ -60,11 +60,7 @@
 **    We also use 1 bit to mark that we have executed this statement, so
 **    we can (if we want to) only output each executed statement once.
 **
-**    We use this information in a few ways:
-**
-**  1) Output a straight list of every executed statement
-**  2) Provide coloured printing (by wrapping PrintStatFuncs and PrintExprFuncs)
-**     which show which parts of an expression have been executed
+**  We use this information to output a straight list of every executed statement.
 **
 **  There are not that many tricky cases here. We have to be careful that
 **  some Expr are integers or local variables, and not touch those.
@@ -83,9 +79,8 @@
 **     we provide -P (profiling) and -c (code coverage) options to the GAP
 **     executable so the user can start before code loading starts
 **
-**  3) Operating at just a line basis can sometimes be too course. We can
-**     see this when we use ActivateProfileColour. However, without some
-**     serious additional overheads, I can't see how to provide this
+**  3) Operating at just a line basis can sometimes be too coarse. However,
+**     without some serious additional overheads, I can't see how to provide this
 **     functionality in output (basically we would have to store
 **     line and character positions for the start and end of every expression).
 **
@@ -135,8 +130,6 @@ static struct ProfileState
   int StreamWasPopened;
   // Are we currently outputting repeats (false=code coverage)
   int OutputRepeats;
-  // Are we colouring output (not related to profiling directly)
-  int ColouringOutput;
 
   // Used to generate 'X' statements, to make sure we correctly
   // attach each function call to the line it was executed on
@@ -800,128 +793,6 @@ static Obj FuncIsLineByLineProfileActive(Obj self)
 
 /****************************************************************************
 **
-** We are now into the functions which deal with colouring printing output.
-** This code basically wraps all the existing print functions and will colour
-** their output either green or red depending on if statements are marked
-** as being executed.
-*/
-
-static Int CurrentColour = 0;
-
-static void setColour(void)
-{
-  if(CurrentColour == 0) {
-    Pr("\x1b[0m", 0, 0);
-  }
-  else if(CurrentColour == 1) {
-    Pr("\x1b[32m", 0, 0);
-  }
-  else if(CurrentColour == 2) {
-    Pr("\x1b[31m", 0, 0);
-  }
-}
-
-static void ProfilePrintStatPassthrough(Stat stat)
-{
-  Int SavedColour = CurrentColour;
-  if(VISITED_STAT(stat)) {
-    CurrentColour = 1;
-  }
-  else {
-    CurrentColour = 2;
-  }
-  setColour();
-  OriginalPrintStatFuncsForHook[TNUM_STAT(stat)](stat);
-  CurrentColour = SavedColour;
-  setColour();
-}
-
-static void ProfilePrintExprPassthrough(Expr stat)
-{
-  Int SavedColour = -1;
-  // There are two cases we must pass through without touching
-  // From TNUM_EXPR
-  if(IS_REF_LVAR(stat)) {
-    OriginalPrintExprFuncsForHook[EXPR_REF_LVAR](stat);
-  } else if(IS_INTEXPR(stat)) {
-    OriginalPrintExprFuncsForHook[EXPR_INT](stat);
-  } else {
-    SavedColour = CurrentColour;
-    if(VISITED_STAT(stat)) {
-      CurrentColour = 1;
-    }
-    else {
-      CurrentColour = 2;
-    }
-    setColour();
-    OriginalPrintExprFuncsForHook[TNUM_STAT(stat)](stat);
-    CurrentColour = SavedColour;
-    setColour();
-  }
-}
-
-static struct PrintHooks profilePrintHooks =
-  {ProfilePrintStatPassthrough, ProfilePrintExprPassthrough};
-
-static Obj activate_colored_output_from_profile(void)
-{
-    HashLock(&profileState);
-
-    if(profileState.ColouringOutput) {
-      HashUnlock(&profileState);
-      return Fail;
-    }
-
-    ActivatePrintHooks(&profilePrintHooks);
-
-    profileState.ColouringOutput = 1;
-    CurrentColour = 0;
-    setColour();
-
-    HashUnlock(&profileState);
-
-    return True;
-}
-
-static Obj deactivate_colored_output_from_profile(void)
-{
-  HashLock(&profileState);
-
-  if(!profileState.ColouringOutput) {
-    HashUnlock(&profileState);
-    return Fail;
-  }
-
-  DeactivatePrintHooks(&profilePrintHooks);
-
-  profileState.ColouringOutput = 0;
-  CurrentColour = 0;
-  setColour();
-
-  HashUnlock(&profileState);
-
-  return True;
-}
-
-static Obj FuncACTIVATE_COLOR_PROFILING(Obj self, Obj arg)
-{
-  if(arg == True)
-  {
-    return activate_colored_output_from_profile();
-  }
-  else if(arg == False)
-  {
-    return deactivate_colored_output_from_profile();
-  }
-  else
-    return Fail;
-}
-
-
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
@@ -939,7 +810,6 @@ static StructGVarFunc GVarFuncs[] = {
                     resolution),
     GVAR_FUNC_0ARGS(DEACTIVATE_PROFILING),
     GVAR_FUNC_0ARGS(IsLineByLineProfileActive),
-    GVAR_FUNC_1ARGS(ACTIVATE_COLOR_PROFILING, arg),
     { 0, 0, 0, 0, 0 }
 };
 
