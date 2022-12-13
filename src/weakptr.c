@@ -172,8 +172,8 @@ static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
 */
 static inline void GROW_WPOBJ(Obj wp, UInt need)
 {
-  UInt                plen;           /* new physical length             */
-  UInt                good;           /* good new physical length        */
+  UInt                plen;           // new physical length
+  UInt                good;           // good new physical length
 
     // if there is already enough space, do nothing
     if (need < SIZE_OBJ(wp)/sizeof(Obj))
@@ -184,10 +184,10 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
 
     // find out how large the object should become at least (we grow by
     // at least 25%, like plain lists)
-    /* find out how large the plain list should become                     */
+    // find out how large the plain list should become
     good = 5 * (SIZE_OBJ(wp)/sizeof(Obj)-1) / 4 + 4;
 
-    /* but maybe we need more                                              */
+    // but maybe we need more
     if ( need < good ) { plen = good; }
     else               { plen = need; }
 
@@ -629,10 +629,10 @@ static void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 
 static Obj CopyObjWPObj(Obj obj, Int mut)
 {
-    Obj                 copy;           /* copy, result                    */
-    Obj                 tmp;            /* temporary variable              */
+    Obj                 copy;           // copy, result
+    Obj                 tmp;            // temporary variable
     Obj                 elm;
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
@@ -640,7 +640,7 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
     // This may get smaller if a GC occurs during copying
     UInt len = LengthWPObj(obj);
 
-    /* make a copy                                                         */
+    // make a copy
     if ( mut ) {
         copy = NewBag( T_WPOBJ, SIZE_OBJ(obj) );
         ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
@@ -650,7 +650,7 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
         // Set length as plist is constructed
     }
 
-    /* leave a forwarding pointer                                          */
+    // leave a forwarding pointer
     PrepareCopy(obj, copy);
 
     // copy the subvalues. Loop goes up so length of PLIST is set correctly
@@ -668,7 +668,7 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
         }
     }
 
-    /* return the copy                                                     */
+    // return the copy
     return copy;
 }
 
@@ -754,10 +754,10 @@ static void MakeImmutableWPObj(Obj obj)
 */
 static void CleanObjWPObj(Obj obj)
 {
-    UInt                i;              /* loop variable                   */
-    Obj                 elm;            /* subobject                       */
+    UInt                i;              // loop variable
+    Obj                 elm;            // subobject
 
-    /* clean the subvalues                                                 */
+    // clean the subvalues
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
         elm = ELM_WPOBJ(obj, i);
         if (elm)
@@ -856,9 +856,9 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking and sweeping methods                            */
+    // install the marking and sweeping methods
 #if defined(USE_BOEHM_GC)
-    /* force atomic allocation of these pointers */
+    // force atomic allocation of these pointers
     InitMarkFuncBags ( T_WPOBJ,          MarkNoSubBags   );
 #elif defined(USE_GASMAN)
     InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
@@ -869,15 +869,15 @@ static Int InitKernel (
 #error Unknown garbage collector implementation, no weak pointer object implementation available
 #endif
 
-    /* typing method                                                       */
+    // typing method
     TypeObjFuncs[ T_WPOBJ ] = TypeWPObj;
     ImportGVarFromLibrary( "TYPE_WPOBJ", &TYPE_WPOBJ );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* saving function                                                     */
+    // saving function
 #ifdef GAP_ENABLE_SAVELOAD
     SaveObjFuncs[ T_WPOBJ ] = SaveWPObj;
     LoadObjFuncs[ T_WPOBJ ] = LoadWPObj;
@@ -889,7 +889,7 @@ static Int InitKernel (
 #ifdef USE_THREADSAFE_COPYING
     SetTraversalMethod(T_WPOBJ, TRAVERSE_BY_FUNCTION, TraverseWPObj, CopyWPObj);
 #else
-    /* copying functions                                                   */
+    // copying functions
     CopyObjFuncs[  T_WPOBJ           ] = CopyObjWPObj;
     CleanObjFuncs[ T_WPOBJ           ] = CleanObjWPObj;
 #endif
@@ -906,7 +906,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 

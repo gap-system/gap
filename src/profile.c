@@ -672,7 +672,7 @@ Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy)
 }
 
 static Obj FuncACTIVATE_PROFILING(Obj self,
-                                  Obj filename, /* filename to write to */
+                                  Obj filename, // filename to write to
                                   Obj coverage,
                                   Obj wallTime,
                                   Obj recordMem,
@@ -839,8 +839,8 @@ static void ProfilePrintStatPassthrough(Stat stat)
 static void ProfilePrintExprPassthrough(Expr stat)
 {
   Int SavedColour = -1;
-  /* There are two cases we must pass through without touching */
-  /* From TNUM_EXPR */
+  // There are two cases we must pass through without touching
+  // From TNUM_EXPR
   if(IS_REF_LVAR(stat)) {
     OriginalPrintExprFuncsForHook[EXPR_REF_LVAR](stat);
   } else if(IS_INTEXPR(stat)) {
@@ -951,7 +951,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);

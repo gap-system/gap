@@ -70,21 +70,21 @@ void SyMsgsBags (
     UInt                phase,
     Int                 nr )
 {
-    Char                cmd [3];        /* command string buffer           */
-    Char                str [32];       /* string buffer                   */
-    Char                ch;             /* leading character               */
-    UInt                i;              /* loop variable                   */
-    Int                 copynr;         /* copy of <nr>                    */
+    Char                cmd [3];        // command string buffer
+    Char                str [32];       // string buffer
+    Char                ch;             // leading character
+    UInt                i;              // loop variable
+    Int                 copynr;         // copy of <nr>
     UInt                shifted;        /* non-zero if nr > 10^6 and so
                                            has to be shifted down          */
     static UInt         tstart = 0;
 
-    /* remember the numbers */
+    // remember the numbers
     if (phase > 0)
       {
         SyGasmanNumbers[full][phase] = nr;
 
-        /* in a full GC clear the partial numbers */
+        // in a full GC clear the partial numbers
         if (full)
           SyGasmanNumbers[0][phase] = 0;
       }
@@ -100,7 +100,7 @@ void SyMsgsBags (
         SyGasmanNumbers[full][8] += x;
       }
 
-    /* convert <nr> into a string with leading blanks                      */
+    // convert <nr> into a string with leading blanks
     copynr = nr;
     ch = '0';  str[7] = '\0';
     shifted = (nr >= ((phase % 2) ? 10000000 : 1000000)) ? 1 : 0;
@@ -130,7 +130,7 @@ void SyMsgsBags (
 
 
 
-    /* ordinary full garbage collection messages                           */
+    // ordinary full garbage collection messages
     if ( 1 <= SyMsgsFlagBags && full ) {
         if ( phase == 0 ) { SyFputs( "#G  FULL ", 3 );                     }
         if ( phase == 1 ) { SyFputs( str, 3 );  SyFputs( "/",         3 ); }
@@ -141,7 +141,7 @@ void SyMsgsBags (
         if ( phase == 6 ) { SyFputs( str, 3 );  SyFputs( shifted ? "mb free\n" : "kb free\n", 3 ); }
     }
 
-    /* ordinary partial garbage collection messages                        */
+    // ordinary partial garbage collection messages
     if ( 2 <= SyMsgsFlagBags && ! full ) {
         if ( phase == 0 ) { SyFputs( "#G  PART ", 3 );                     }
         if ( phase == 1 ) { SyFputs( str, 3 );  SyFputs( "/",         3 ); }
@@ -151,7 +151,7 @@ void SyMsgsBags (
         if ( phase == 5 ) { SyFputs( str, 3 );  SyFputs( "/",         3 ); }
         if ( phase == 6 ) { SyFputs( str, 3 );  SyFputs( shifted ? "mb free\n":"kb free\n", 3 ); }
     }
-    /* package (window) mode full garbage collection messages              */
+    // package (window) mode full garbage collection messages
     if ( phase != 0 ) {
       cmd[0] = '@';
       cmd[1] = ( full ? '0' : ' ' ) + phase;
@@ -180,7 +180,7 @@ void SyMsgsBags (
 **  the workspace beyond 'SyStorMax' or to reduce it below 'SyStorMin'.
 */
 
-static UInt pagesize = 4096;   /* Will be initialised if SyAllocPool > 0 */
+static UInt pagesize = 4096;   // Will be initialised if SyAllocPool > 0
 
 static inline UInt SyRoundUpToPagesize(UInt x)
 {
@@ -300,8 +300,8 @@ int SyTryToIncreasePool(void)
 #define GAP_MMAP_FLAGS MAP_PRIVATE|MAP_ANONYMOUS
 #endif
 
-static void *SyMMapStart = NULL;   /* Start of mmap'ed region for POOL */
-static void *SyMMapEnd;            /* End of mmap'ed region for POOL */
+static void *SyMMapStart = NULL;   // Start of mmap'ed region for POOL
+static void *SyMMapEnd;            // End of mmap'ed region for POOL
 static void *SyMMapAdvised;        /* We have already advised about non-usage
                                       up to here. */
 
@@ -359,7 +359,7 @@ static void * SyAnonMMap(size_t size)
     void *result;
     size = SyRoundUpToPagesize(size);
 #ifdef SYS_IS_64_BIT
-    /* The following is at 16 Terabyte: */
+    // The following is at 16 Terabyte:
     result = mmap((void *) (16L*1024*1024*1024*1024), size,
                   PROT_READ|PROT_WRITE, GAP_MMAP_FLAGS, -1, 0);
     if (result == MAP_FAILED) {
@@ -395,7 +395,7 @@ static int SyTryToIncreasePool(void)
         munmap(result,newchunk);
         return -1;
     }
-    /* We actually got an extension! */
+    // We actually got an extension!
     SyMMapEnd = (void *)((char *)SyMMapEnd + newchunk);
     SyAllocPool += newchunk;
     return 0;
@@ -405,12 +405,12 @@ static int SyTryToIncreasePool(void)
 
 void SyMAdviseFree(void)
 {
-    /* do nothing */
+    // do nothing
 }
 
 static int SyTryToIncreasePool(void)
 {
-    return -1;   /* Refuse */
+    return -1;   // Refuse
 }
 
 #endif // defined(GAP_MEM_CHECK)
@@ -423,18 +423,18 @@ static void SyInitialAllocPool(void)
    pagesize = sysconf(_SC_PAGESIZE);
 #endif
 #endif
-   /* Otherwise we take the default of 4k as pagesize. */
+   // Otherwise we take the default of 4k as pagesize.
 
    do {
-       /* Always round up to pagesize: */
+       // Always round up to pagesize:
        SyAllocPool = SyRoundUpToPagesize(SyAllocPool);
 #ifdef HAVE_MADVISE
-       POOL = SyAnonMMap(SyAllocPool+pagesize);   /* For alignment */
+       POOL = SyAnonMMap(SyAllocPool+pagesize);   // For alignment
 #else
-       POOL = calloc(SyAllocPool+pagesize,1);   /* For alignment */
+       POOL = calloc(SyAllocPool+pagesize,1);   // For alignment
 #endif
        if (POOL != NULL) {
-           /* fprintf(stderr,"Pool size is %lx.\n",SyAllocPool); */
+           // fprintf(stderr,"Pool size is %lx.\n",SyAllocPool);
            break;
        }
        SyAllocPool = SyAllocPool / 2;
@@ -442,11 +442,11 @@ static void SyInitialAllocPool(void)
        if (SyAllocPool < 16*1024*1024) {
            Panic("cannot allocate initial memory");
        }
-   } while (1);   /* Is left by break */
+   } while (1);   // Is left by break
 
-   /* ensure alignment of start address */
+   // ensure alignment of start address
    syWorkspace = (UInt***)(SyRoundUpToPagesize((UInt) POOL));
-   /* Now both syWorkspace and SyAllocPool are aligned to pagesize */
+   // Now both syWorkspace and SyAllocPool are aligned to pagesize
 }
 
 #define INVALID_PTR ((UInt***)-1)
@@ -480,7 +480,7 @@ static Int SyFreeBagsFromPool(Int size)
 }
 
 
-#if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) /* prefer `vm_allocate' over `sbrk' */
+#if defined(HAVE_SBRK) && !defined(HAVE_VM_ALLOCATE) // prefer `vm_allocate' over `sbrk'
 
 static UInt *** SyAllocBagHelper(Int size)
 {
@@ -500,7 +500,7 @@ static UInt *** SyAllocBags_(UInt size)
     GAP_ASSERT(SyAllocPool == 0);
     UInt *** ret = INVALID_PTR;
 
-    /* force alignment on first call                                       */
+    // force alignment on first call
     if (syWorkspace == 0) {
         UInt align = (UInt)sbrk(0) % sizeof(UInt);
         if (align != 0)
@@ -546,7 +546,7 @@ static UInt *** SyFreeBags_(UInt size)
     GAP_ASSERT(SyAllocPool == 0);
     UInt *** ret = INVALID_PTR;
 
-    /* force alignment on first call                                       */
+    // force alignment on first call
     if (syWorkspace == 0) {
         UInt align = (UInt)sbrk(0) % sizeof(UInt);
         if (align != 0)
@@ -594,12 +594,12 @@ static UInt *** SyAllocBags_(UInt size)
     GAP_ASSERT(SyAllocPool == 0);
     UInt *** ret = INVALID_PTR;
 
-    /* check that <size> is divisible by <vm_page_size>                    */
+    // check that <size> is divisible by <vm_page_size>
     if ( size*1024 % vm_page_size != 0 ) {
         Panic("memory block size is not a multiple of vm_page_size");
     }
 
-    /* allocate memory anywhere on first call                              */
+    // allocate memory anywhere on first call
     else if ( 0 < size && syBase == 0 ) {
         GAP_ASSERT(syWorksize == 0);
         if ( vm_allocate(mach_task_self(),&syBase,size*1024,TRUE) == KERN_SUCCESS ) {
@@ -607,7 +607,7 @@ static UInt *** SyAllocBags_(UInt size)
         }
     }
 
-    /* get more memory from system                                         */
+    // get more memory from system
     else {
         vm_address_t adr;
         adr = (vm_address_t)( (char*) syBase + syWorksize*1024 );
@@ -629,17 +629,17 @@ static UInt *** SyFreeBags_(UInt size)
     GAP_ASSERT(SyAllocPool == 0);
     UInt *** ret = INVALID_PTR;
 
-    /* check that <size> is divisible by <vm_page_size>                    */
+    // check that <size> is divisible by <vm_page_size>
     if ( size*1024 % vm_page_size != 0 ) {
         Panic("memory block size is not a multiple of vm_page_size");
     }
 
-    /* check that we don't try to shrink uninitialized memory                */
+    // check that we don't try to shrink uninitialized memory
     else if ( syBase == 0 ) {
         Panic("trying to shrink uninitialized vm memory");
     }
 
-    /* don't shrink memory but mark it as deactivated                      */
+    // don't shrink memory but mark it as deactivated
     else if (syWorksize >= size && syWorksize - size >= SyStorMin) {
         vm_address_t adr;
         adr = (vm_address_t)( (char*) syBase + (syWorksize-size)*1024 );
@@ -665,7 +665,7 @@ void * SyAllocBags(Int size, UInt need)
 
     void * ret = INVALID_PTR;
 
-    /* first check if we would get above SyStorKill, if yes exit! */
+    // first check if we would get above SyStorKill, if yes exit!
     if (SyStorKill != 0 && SyStorKill < syWorksize + size) {
         if (need) {
             Panic("will not extend workspace above -K limit!");

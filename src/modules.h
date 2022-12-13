@@ -51,10 +51,10 @@ EXPORT_INLINE BOOL IS_MODULE_DYNAMIC(UInt type)
 */
 struct init_info {
 
-    /* type of the module: MODULE_BUILTIN, MODULE_STATIC, MODULE_DYNAMIC   */
+    // type of the module: MODULE_BUILTIN, MODULE_STATIC, MODULE_DYNAMIC
     UInt type;
 
-    /* name of the module: filename with ".c" or library filename          */
+    // name of the module: filename with ".c" or library filename
     const Char * name;
 
     // revision_c is obsolete and only kept for backwards compatibility
@@ -63,7 +63,7 @@ struct init_info {
     // revision_h is obsolete and only kept for backwards compatibility
     const Char * revision_h;
 
-    /* version number for MODULE_BUILTIN                                   */
+    // version number for MODULE_BUILTIN
     UInt version;
 
     // CRC value for MODULE_STATIC or MODULE_DYNAMIC, for use with modules
@@ -72,22 +72,22 @@ struct init_info {
     // matches; otherwise, it will fall back to using the original GAP code.
     Int crc;
 
-    /* initialise kernel data structures                                   */
+    // initialise kernel data structures
     Int (*initKernel)(StructInitInfo *);
 
-    /* initialise library data structures                                  */
+    // initialise library data structures
     Int (*initLibrary)(StructInitInfo *);
 
-    /* sanity check                                                        */
+    // sanity check
     Int (*checkInit)(StructInitInfo *);
 
-    /* function to call before saving workspace                            */
+    // function to call before saving workspace
     Int (*preSave)(StructInitInfo *);
 
-    /* function to call after saving workspace                             */
+    // function to call after saving workspace
     Int (*postSave)(StructInitInfo *);
 
-    /* function to call after restoring workspace                          */
+    // function to call after restoring workspace
     Int (*postRestore)(StructInitInfo *);
 
     // number of bytes this module needs for its per-thread module state

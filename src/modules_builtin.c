@@ -42,13 +42,13 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoTraverse,
 #endif
 
-    /* global variables                                                    */
+    // global variables
     InitInfoGVars,
 
-    /* objects                                                             */
+    // objects
     InitInfoObjects,
 
-    /* profiling and interpreter hooking information */
+    // profiling and interpreter hooking information
     InitInfoProfile,
     InitInfoHookIntrprtr,
     InitInfoTracing,
@@ -60,21 +60,21 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoExprs,
     InitInfoStats,
     InitInfoCode,
-    InitInfoVars,       /* must come after InitExpr and InitStats */
+    InitInfoVars,       // must come after InitExpr and InitStats
     InitInfoFuncs,
     InitInfoOpers,
     InitInfoInfo,
     InitInfoIntrprtr,
     InitInfoCompiler,
 
-    /* arithmetic operations                                               */
+    // arithmetic operations
     InitInfoAriths,
 
-    /* record packages                                                     */
+    // record packages
     InitInfoRecords,
     InitInfoPRecord,
 
-    /* internal types                                                      */
+    // internal types
     InitInfoInt,
     InitInfoIntFuncs,
     InitInfoRat,
@@ -86,7 +86,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoBool,
     InitInfoMacfloat,
 
-    /* list packages                                                       */
+    // list packages
     InitInfoLists,
     InitInfoListOper,
     InitInfoListFunc,
@@ -100,7 +100,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoGF2Vec,
     InitInfoVec8bit,
 
-    /* free and presented groups                                           */
+    // free and presented groups
     InitInfoFreeGroupElements,
     InitInfoCosetTable,
     InitInfoTietze,
@@ -110,22 +110,22 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoDeepThought,
     InitInfoDTEvaluation,
 
-    /* algebras                                                            */
+    // algebras
     InitInfoSCTable,
 
-    /* save and load workspace, weak pointers                              */
+    // save and load workspace, weak pointers
     InitInfoWeakPtr,
     InitInfoSaveLoad,
 
-    /* syntax and parser tools */
+    // syntax and parser tools
     InitInfoSyntaxTree,
 
-    /* input and output                                                    */
+    // input and output
     InitInfoStreams,
     InitInfoSysFiles,
     InitInfoIOStream,
 
-    /* main module                                                         */
+    // main module
     InitInfoModules,
     InitInfoGap,
     InitInfoError,
@@ -135,7 +135,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoObjSets,
 
 #ifdef HPCGAP
-    /* threads                                                             */
+    // threads
     InitInfoThreadAPI,
     InitInfoAObjects,
     InitInfoSerialize,

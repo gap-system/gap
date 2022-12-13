@@ -288,7 +288,7 @@ static UInt INIT_PPERM(Obj f)
     dom = NEW_PLIST_IMM(T_PLIST_CYC_SSORT, deg);
     img = NEW_PLIST_IMM(T_PLIST_CYC, deg);
 
-    /* renew the ptr in case of garbage collection */
+    // renew the ptr in case of garbage collection
     ptf = ADDR_PPERM<T>(f);
 
     rank = 0;
@@ -383,7 +383,7 @@ static Obj FuncEmptyPartialPerm(Obj self)
     return EmptyPartialPerm;
 }
 
-/* method for creating a partial perm */
+// method for creating a partial perm
 static Obj FuncDensePartialPermNC(Obj self, Obj img)
 {
     RequireSmallList(SELF_NAME, img);
@@ -435,7 +435,7 @@ static Obj FuncDensePartialPermNC(Obj self, Obj img)
     return f;
 }
 
-/* assumes that dom is a set and that img is duplicatefree */
+// assumes that dom is a set and that img is duplicatefree
 static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
 {
     RequireSmallList(SELF_NAME, dom);
@@ -499,14 +499,14 @@ static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
     return f;
 }
 
-/* the degree of pperm is the maximum point where it is defined */
+// the degree of pperm is the maximum point where it is defined
 static Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(DEG_PPERM(f));
 }
 
-/* the codegree of pperm is the maximum point in its image */
+// the codegree of pperm is the maximum point in its image
 
 static Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
 {
@@ -514,14 +514,14 @@ static Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
     return INTOBJ_INT(CODEG_PPERM(f));
 }
 
-/* the rank is the number of points where it is defined */
+// the rank is the number of points where it is defined
 static Obj FuncRankOfPartialPerm(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(RANK_PPERM(f));
 }
 
-/* domain of a partial perm */
+// domain of a partial perm
 static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -532,7 +532,7 @@ static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
     return DOM_PPERM(f);
 }
 
-/* image list of pperm */
+// image list of pperm
 static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -571,7 +571,7 @@ static Obj FuncIMAGE_PPERM(Obj self, Obj f)
     return out;
 }
 
-/* image set of partial perm */
+// image set of partial perm
 static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -586,7 +586,7 @@ static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
     return IMG_PPERM(f);
 }
 
-/* preimage under a partial perm */
+// preimage under a partial perm
 static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -810,7 +810,7 @@ static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
     return out;
 }
 
-/* the number of components of a partial perm (as a functional digraph) */
+// the number of components of a partial perm (as a functional digraph)
 static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -884,7 +884,7 @@ static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
     return INTOBJ_INT(nr);
 }
 
-/* the components of a partial perm (as a functional digraph) */
+// the components of a partial perm (as a functional digraph)
 static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -1474,7 +1474,7 @@ static Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
     return True;
 }
 
-/* an idempotent partial perm <e> with ker(e)=ker(f) */
+// an idempotent partial perm <e> with ker(e)=ker(f)
 static Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
 {
     RequirePartialPerm(SELF_NAME, f);
@@ -2331,7 +2331,7 @@ static Obj FuncHAS_IMG_PPERM(Obj self, Obj f)
 
 /**************************************************************************/
 
-/* GAP kernel functions */
+// GAP kernel functions
 
 // an idempotent partial perm on the union of the domain and image
 static Obj OnePPerm(Obj f)
@@ -2381,7 +2381,7 @@ static Obj OnePPerm(Obj f)
     return g;
 }
 
-/* equality for partial perms */
+// equality for partial perms
 template <typename TF, typename TG>
 static Int EqPPerm(Obj f, Obj g)
 {
@@ -2417,7 +2417,7 @@ static Int EqPPerm(Obj f, Obj g)
     return 1;
 }
 
-/* less than for partial perms */
+// less than for partial perms
 template <typename TF, typename TG>
 static Int LtPPerm(Obj f, Obj g)
 {
@@ -2449,7 +2449,7 @@ static Int LtPPerm(Obj f, Obj g)
     return 0;
 }
 
-/* product of partial perm and partial perm */
+// product of partial perm and partial perm
 template <typename TF, typename TG>
 static Obj ProdPPerm(Obj f, Obj g)
 {
@@ -3491,7 +3491,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
     res = PLAIN_LIST_COPY(set);
     const UInt len = LEN_PLIST(res);
 
-    /* get the pointer                                                 */
+    // get the pointer
     ptres = CONST_ADDR_OBJ(res) + 1;
     ptresOut = ADDR_OBJ(res) + 1;
     reslen = 0;
@@ -3500,7 +3500,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
         ptf2 = ADDR_PPERM2(f);
         deg = DEG_PPERM2(f);
 
-        /* loop over the entries of the tuple                              */
+        // loop over the entries of the tuple
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3525,7 +3525,7 @@ Obj OnSetsPPerm(Obj set, Obj f)
         ptf4 = ADDR_PPERM4(f);
         deg = DEG_PPERM4(f);
 
-        /* loop over the entries of the tuple                              */
+        // loop over the entries of the tuple
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3588,7 +3588,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
     RESET_FILT_LIST(res, FN_IS_NSORT);
     const UInt len = LEN_PLIST(res);
 
-    /* get the pointer                                                 */
+    // get the pointer
     ptres = CONST_ADDR_OBJ(res) + 1;
     ptresOut = ADDR_OBJ(res) + 1;
     reslen = 0;
@@ -3597,7 +3597,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         ptf2 = ADDR_PPERM2(f);
         deg = DEG_PPERM2(f);
 
-        /* loop over the entries of the tuple                              */
+        // loop over the entries of the tuple
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3622,7 +3622,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
         ptf4 = ADDR_PPERM4(f);
         deg = DEG_PPERM4(f);
 
-        /* loop over the entries of the tuple                              */
+        // loop over the entries of the tuple
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3669,10 +3669,10 @@ static Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
 /****************************************************************************/
 /****************************************************************************/
 
-/* other internal things */
+// other internal things
 
 #ifdef GAP_ENABLE_SAVELOAD
-/* Save and load */
+// Save and load
 static void SavePPerm2(Obj f)
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
@@ -3743,7 +3743,7 @@ static Obj IsPPermFilt;
 
 static Obj FiltIS_PPERM(Obj self, Obj val)
 {
-    /* return 'true' if <val> is a partial perm and 'false' otherwise       */
+    // return 'true' if <val> is a partial perm and 'false' otherwise
     if (TNUM_OBJ(val) == T_PPERM2 || TNUM_OBJ(val) == T_PPERM4) {
         return True;
     }
@@ -3841,7 +3841,7 @@ static Int InitKernel(StructInitInfo * module)
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking function                                        */
+    // install the marking function
     InitMarkFuncBags(T_PPERM2, MarkTwoSubBags);
     InitMarkFuncBags(T_PPERM4, MarkTwoSubBags);
 
@@ -3850,18 +3850,18 @@ static Int InitKernel(StructInitInfo * module)
     MakeBagTypePublic(T_PPERM4);
 #endif
 
-    /* install the type function                                           */
+    // install the type function
     ImportGVarFromLibrary("TYPE_PPERM2", &TYPE_PPERM2);
     ImportGVarFromLibrary("TYPE_PPERM4", &TYPE_PPERM4);
 
     TypeObjFuncs[T_PPERM2] = TypePPerm2;
     TypeObjFuncs[T_PPERM4] = TypePPerm4;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable(GVarFilts);
     InitHdlrFuncsFromTable(GVarFuncs);
 
-/* make the buffer bag                                                 */
+// make the buffer bag
 #ifndef HPCGAP
     InitGlobalBag(&TmpPPerm, "src/pperm.c:TmpPPerm");
 #endif
@@ -3869,14 +3869,14 @@ static Int InitKernel(StructInitInfo * module)
     InitGlobalBag(&EmptyPartialPerm, "src/pperm.c:EmptyPartialPerm");
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* install the saving functions */
+    // install the saving functions
     SaveObjFuncs[T_PPERM2] = SavePPerm2;
     LoadObjFuncs[T_PPERM2] = LoadPPerm2;
     SaveObjFuncs[T_PPERM4] = SavePPerm4;
     LoadObjFuncs[T_PPERM4] = LoadPPerm4;
 #endif
 
-    /* install the comparison methods                                      */
+    // install the comparison methods
     EqFuncs[T_PPERM2][T_PPERM2] = EqPPerm<UInt2, UInt2>;
     EqFuncs[T_PPERM4][T_PPERM4] = EqPPerm<UInt4, UInt4>;
     EqFuncs[T_PPERM4][T_PPERM2] = EqPPerm<UInt4, UInt2>;
@@ -3886,7 +3886,7 @@ static Int InitKernel(StructInitInfo * module)
     LtFuncs[T_PPERM2][T_PPERM4] = LtPPerm<UInt2, UInt4>;
     LtFuncs[T_PPERM4][T_PPERM2] = LtPPerm<UInt4, UInt2>;
 
-    /* install the binary operations */
+    // install the binary operations
     ProdFuncs[T_PPERM2][T_PPERM2] = ProdPPerm<UInt2, UInt2>;
     ProdFuncs[T_PPERM4][T_PPERM2] = ProdPPerm<UInt4, UInt2>;
     ProdFuncs[T_PPERM2][T_PPERM4] = ProdPPerm<UInt2, UInt4>;
@@ -3927,13 +3927,13 @@ static Int InitKernel(StructInitInfo * module)
     LQuoFuncs[T_PPERM4][T_PPERM2] = LQuoPPerm<UInt4, UInt2>;
     LQuoFuncs[T_PPERM4][T_PPERM4] = LQuoPPerm<UInt4, UInt4>;
 
-    /* install the one function for partial perms */
+    // install the one function for partial perms
     OneFuncs[T_PPERM2] = OnePPerm;
     OneFuncs[T_PPERM4] = OnePPerm;
     OneSameMut[T_PPERM2] = OnePPerm;
     OneSameMut[T_PPERM4] = OnePPerm;
 
-    /* install the inverse functions for partial perms */
+    // install the inverse functions for partial perms
     InvFuncs[T_PPERM2] = InvPPerm2;
     InvFuncs[T_PPERM4] = InvPPerm4;
     InvSameMutFuncs[T_PPERM2] = InvPPerm2;
@@ -3947,7 +3947,7 @@ static Int InitKernel(StructInitInfo * module)
  */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
     InitGVarFiltsFromTable(GVarFilts);
 

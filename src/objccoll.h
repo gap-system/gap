@@ -20,9 +20,9 @@
 **  Definitions which are needed by the combinatorial collectors in addition
 **  to those made for single collectors.
 */
-#define SCP_WEIGHTS        SCP_LAST+1   /* weight in a combi collector     */
-#define SCP_CLASS          SCP_LAST+2   /* p-class in a combi collector    */
-#define SCP_AVECTOR2       SCP_LAST+3   /* avector                         */
+#define SCP_WEIGHTS        SCP_LAST+1   // weight in a combi collector
+#define SCP_CLASS          SCP_LAST+2   // p-class in a combi collector
+#define SCP_AVECTOR2       SCP_LAST+3   // avector
 
 /****************************************************************************
 **

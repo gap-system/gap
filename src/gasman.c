@@ -773,8 +773,8 @@ static Int  DisableMarkBagValidation = 0;
 inline void MarkBag(Bag bag)
 {
   if ( IS_BAG_ID(bag)
-       && YoungBags < CONST_PTR_BAG(bag)    /*  points to a young bag */
-       && CONST_PTR_BAG(bag) <= AllocBags   /*    "     " "  "     "  */
+       && YoungBags < CONST_PTR_BAG(bag)    // points to a young bag
+       && CONST_PTR_BAG(bag) <= AllocBags   // "     " "  "     "
        && (IS_MARKED_DEAD(bag) || IS_MARKED_HALFDEAD(bag)) )
     {
         LINK_BAG(bag) = MarkedBags;
@@ -792,9 +792,9 @@ inline void MarkBag(Bag bag)
 void MarkBagWeakly(Bag bag)
 {
   if ( IS_BAG_ID(bag)
-       && YoungBags < CONST_PTR_BAG(bag)    /*  points to a young bag */
-       && CONST_PTR_BAG(bag) <= AllocBags   /*    "     " "  "     "  */
-       && IS_MARKED_DEAD(bag) )             /*  and not marked already */
+       && YoungBags < CONST_PTR_BAG(bag)    // points to a young bag
+       && CONST_PTR_BAG(bag) <= AllocBags   // "     " "  "     "
+       && IS_MARKED_DEAD(bag) )             // and not marked already
     {
       // mark it now as we don't have to recurse
       LINK_BAG(bag) = MARKED_HALFDEAD(bag);
@@ -963,17 +963,17 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   UInt target;
   Bag *newmem;
 /*Bag *ptr; */
-  target = (8*nBags)/7 + (8*maxSize)/7; /* ideal workspace size */
+  target = (8*nBags)/7 + (8*maxSize)/7; // ideal workspace size
   target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
-              /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
+              // make sure that the allocated amount of memory is divisible by 512 * 1024
   if (SizeWorkspace < target)
     {
       newmem  = SyAllocBags(sizeof(Bag)*(target- SizeWorkspace)/1024, 0);
       if (newmem == 0)
         {
-          target = nBags + maxSize; /* absolute requirement */
+          target = nBags + maxSize; // absolute requirement
           target = (target * sizeof (Bag) + (512L*1024L) - 1)/(512L*1024L)*(512L*1024L)/sizeof (Bag);
-               /* make sure that the allocated amount of memory is divisible by 512 * 1024 */
+               // make sure that the allocated amount of memory is divisible by 512 * 1024
           if (SizeWorkspace < target)
             SyAllocBags(sizeof(Bag)*(target- SizeWorkspace)/1024, 1);
         }
@@ -1263,13 +1263,13 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     ClearGlobalBags();
 
-    /* install the allocator and the abort function                        */
+    // install the allocator and the abort function
     ExtraMarkFuncBags = 0;
 
     // install the stack values
     StackBottomBags = stack_bottom;
 
-    /* first get some storage from the operating system                    */
+    // first get some storage from the operating system
     initial_size    = (initial_size + 511) & ~(511);
     MptrBags = SyAllocBags( initial_size, 1 );
     GAP_ASSERT(MptrBags);
@@ -1282,13 +1282,13 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 #else
     UInt initialBagCount = 1024*initial_size/8/sizeof(Bag*);
 #endif
-    /* 1/8th of the storage goes into the masterpointer area               */
+    // 1/8th of the storage goes into the masterpointer area
     FreeMptrBags = MptrBags;
     for (Bag bag = MptrBags; bag + 1 < MptrBags + initialBagCount; bag++) {
         bag->body = bag + 1;
     }
 
-    /* the rest is for bags                                                */
+    // the rest is for bags
     MptrEndBags = MptrBags + initialBagCount;
     // Add a small gap between the end of the master pointers and OldBags
     // This is mainly here to ensure we do not break allowing OldBags and
@@ -1299,11 +1299,11 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 
     AllocSizeBags = 256;
 
-    /* install the marking functions                                       */
+    // install the marking functions
     for (UInt i = 0; i < NUM_TYPES; i++)
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
 
-    /* Set ChangedBags to a proper initial value */
+    // Set ChangedBags to a proper initial value
     ChangedBags = 0;
 
     GAP_ASSERT(SanityCheckGasmanPointers());
@@ -1350,7 +1350,7 @@ Bag NewBag (
     UInt                type,
     UInt                size )
 {
-    Bag                 bag;            /* identifier of the new bag       */
+    Bag                 bag;            // identifier of the new bag
 
 #ifdef GAP_MEM_CHECK
     MaybeMoveBags();
@@ -1362,7 +1362,7 @@ Bag NewBag (
 
     CANARY_DISABLE_VALGRIND();
 
-    /* check that a masterpointer and enough storage are available         */
+    // check that a masterpointer and enough storage are available
     if ( (FreeMptrBags == 0 || SizeAllocationArea < WORDS_BAG(sizeof(BagHeader)+size))
       && CollectBags( size, 0 ) == 0 )
     {
@@ -1372,7 +1372,7 @@ Bag NewBag (
     GAP_ASSERT(type < T_DUMMY);
 
 #ifdef COUNT_BAGS
-    /* update the statistics                                               */
+    // update the statistics
     NrAllBags               += 1;
     InfoBags[type].nrLive   += 1;
     InfoBags[type].nrAll    += 1;
@@ -1381,11 +1381,11 @@ Bag NewBag (
 #endif
     SizeAllBags             += size;
 
-    /* get the identifier of the bag and set 'FreeMptrBags' to the next    */
+    // get the identifier of the bag and set 'FreeMptrBags' to the next
     bag          = FreeMptrBags;
     FreeMptrBags = *(Bag*)bag;
 
-    /* allocate the storage for the bag                                    */
+    // allocate the storage for the bag
     BagHeader * header = (BagHeader *)AllocBags;
     AllocBags = DATA(header) + WORDS_BAG(size);
 
@@ -1394,10 +1394,10 @@ Bag NewBag (
     header->flags = 0;
     header->size = size;
 
-    /* enter link word                                                     */
+    // enter link word
     header->link = bag;
 
-    /* set the masterpointer                                               */
+    // set the masterpointer
     SET_PTR_BAG(bag, DATA(header));
 
     CANARY_ALLOW_ACCESS_BAG(bag);
@@ -1406,7 +1406,7 @@ Bag NewBag (
 
     CANARY_ENABLE_VALGRIND();
 
-    /* return the identifier of the new bag                                */
+    // return the identifier of the new bag
     return bag;
 }
 
@@ -1432,7 +1432,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
         return;
 
 #ifdef COUNT_BAGS
-    /* update the statistics      */
+    // update the statistics
     {
           UInt                size;
 
@@ -1548,7 +1548,7 @@ UInt ResizeBag (
     UInt old_size = header->size;
 
 #ifdef COUNT_BAGS
-    /* update the statistics                                               */
+    // update the statistics
     InfoBags[type].sizeLive += new_size - old_size;
 #endif
 
@@ -1612,7 +1612,7 @@ UInt ResizeBag (
     // if the bag is enlarged ...
     else {
 
-        /* check that enough storage for the new bag is available          */
+        // check that enough storage for the new bag is available
         if ( SizeAllocationArea <  WORDS_BAG(sizeof(BagHeader)+new_size)
               && CollectBags( new_size, 0 ) == 0 ) {
             ReportOutOfMemory(new_size,
@@ -1628,7 +1628,7 @@ UInt ResizeBag (
         header->size =
             sizeof(BagHeader) + (TIGHT_WORDS_BAG(old_size) - 1) * sizeof(Bag);
 
-        /* allocate the storage for the bag                                */
+        // allocate the storage for the bag
         BagHeader * newHeader = (BagHeader *)AllocBags;
         AllocBags = DATA(newHeader) + WORDS_BAG(new_size);
 
@@ -1644,28 +1644,28 @@ UInt ResizeBag (
 
 
         CANARY_DISABLE_VALGRIND();
-        /* if the bag is already on the changed bags list, keep it there   */
+        // if the bag is already on the changed bags list, keep it there
         if ( header->link != bag ) {
              newHeader->link = header->link;
         }
 
-        /* if the bag is old, put it onto the changed bags list            */
+        // if the bag is old, put it onto the changed bags list
         else if (CONST_PTR_BAG(bag) <= YoungBags) {
             newHeader->link = ChangedBags;
             ChangedBags = bag;
         }
 
-        /* if the bag is young, enter the normal link word                 */
+        // if the bag is young, enter the normal link word
         else {
             newHeader->link = bag;
         }
         CANARY_ENABLE_VALGRIND();
 
-        /* set the masterpointer                                           */
+        // set the masterpointer
         Bag * dst = DATA(newHeader);
         SET_PTR_BAG(bag, dst);
 
-        /* copy the contents of the bag                                    */
+        // copy the contents of the bag
         SyMemmove((void *)dst, (void *)DATA(header),
                 sizeof(Obj) * WORDS_BAG(old_size));
     }
@@ -1926,8 +1926,8 @@ static NOINLINE void ScanRange(void * vpA, void * vpB)
 
 static NOINLINE void GenStackFuncBags(void)
 {
-    Bag * top; /* top of stack                    */
-    Bag * p;   /* loop variable                   */
+    Bag * top; // top of stack
+    Bag * p;   // loop variable
 
 #ifdef DEBUG_GASMAN_MARKING
     DisableMarkBagValidation = 1;
@@ -1969,10 +1969,10 @@ static Bag * OldWeakDeadBagMarker = (Bag *)(1001*sizeof(Bag) + 1);
 
 static UInt CollectBags_Mark(UInt FullBags)
 {
-    /* prepare the list of marked bags for the future                      */
+    // prepare the list of marked bags for the future
     MarkedBags = 0;
 
-    /* mark from the static area                                           */
+    // mark from the static area
     for (int i = 0; i < GlobalBags.nr; i++)
         MarkBag( *GlobalBags.addr[i] );
 
@@ -1984,14 +1984,14 @@ static UInt CollectBags_Mark(UInt FullBags)
         (*ExtraMarkFuncBags)();
     }
 
-    /* mark from the stack                                                 */
+    // mark from the stack
     _setjmp(RegsBags);
 #if defined(SPARC)
     SparcStackFuncBags();
 #endif
     GenStackFuncBags();
 
-    /* mark the subbags of the changed old bags                            */
+    // mark the subbags of the changed old bags
     while ( ChangedBags != 0 ) {
         // extract the head from the linked list
         Bag first = ChangedBags;
@@ -2025,7 +2025,7 @@ static UInt CollectBags_Mark(UInt FullBags)
     }
 
 
-    /* tag all marked bags and mark their subbags                          */
+    // tag all marked bags and mark their subbags
     UInt nrLiveBags = 0;
     UInt sizeLiveBags = 0;
     while ( MarkedBags != 0 ) {
@@ -2054,7 +2054,7 @@ static UInt CollectBags_Mark(UInt FullBags)
         sizeLiveBags += SIZE_BAG(first);
     }
 
-    /* information after the mark phase                                    */
+    // information after the mark phase
     NrLiveBags += nrLiveBags;
     SyMsgsBags(FullBags, 1, nrLiveBags);
     SizeLiveBags += sizeLiveBags;
@@ -2065,14 +2065,14 @@ static UInt CollectBags_Mark(UInt FullBags)
 
 static UInt CollectBags_Sweep(UInt FullBags)
 {
-    Bag *               dst;            /* destination in sweeping         */
-    Bag *               src;            /* source in sweeping              */
-    Bag *               end;            /* end of a bag in sweeping        */
-    UInt                nrDeadBags;     /* number of dead new bags         */
-    UInt                nrHalfDeadBags; /* number of half dead new bags    */
-    UInt                sizeDeadBags;   /* total size of dead new bags     */
+    Bag *               dst;            // destination in sweeping
+    Bag *               src;            // source in sweeping
+    Bag *               end;            // end of a bag in sweeping
+    UInt                nrDeadBags;     // number of dead new bags
+    UInt                nrHalfDeadBags; // number of half dead new bags
+    UInt                sizeDeadBags;   // total size of dead new bags
 
-    /* sweep through the young generation                                  */
+    // sweep through the young generation
     nrDeadBags = 0;
     nrHalfDeadBags = 0;
     sizeDeadBags = 0;
@@ -2081,10 +2081,10 @@ static UInt CollectBags_Sweep(UInt FullBags)
     while ( src < AllocBags ) {
         BagHeader * header = (BagHeader *)src;
 
-        /* leftover of a resize of <n> bytes                               */
+        // leftover of a resize of <n> bytes
         if ( header->type == T_DUMMY ) {
 
-            /* advance src                                                 */
+            // advance src
             if (header->flags == 1)
               src++;
             else
@@ -2092,7 +2092,7 @@ static UInt CollectBags_Sweep(UInt FullBags)
 
         }
 
-        /* dead bag                                                        */
+        // dead bag
         else if (GET_MARK_BITS(header->link) == DEAD) {
 #ifdef GAP_MEM_CHECK
             if (CONST_PTR_BAG(UNMARKED_DEAD(header->link)) != DATA(header)) {
@@ -2101,31 +2101,31 @@ static UInt CollectBags_Sweep(UInt FullBags)
 #endif
 
 
-            /* call freeing function                                       */
+            // call freeing function
             if (TabFreeFuncBags[ header->type ] != 0) {
               (*TabFreeFuncBags[ header->type ])( header->link );
             }
 
-            /* update count                                                */
+            // update count
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
 #ifdef COUNT_BAGS
-            /* update the statistics                                       */
+            // update the statistics
             InfoBags[header->type].nrLive -= 1;
             InfoBags[header->type].sizeLive -= header->size;
 #endif
 
-            /* free the identifier                                         */
+            // free the identifier
             *(Bag*)(header->link) = FreeMptrBags;
             FreeMptrBags = header->link;
 
-            /* advance src                                                 */
+            // advance src
             src = DATA(header) + WORDS_BAG( header->size ) ;
 
         }
 
-        /* half-dead bag                                                   */
+        // half-dead bag
         else if (GET_MARK_BITS(header->link) == HALFDEAD) {
 #ifdef GAP_MEM_CHECK
             if (CONST_PTR_BAG(UNMARKED_HALFDEAD(header->link)) != DATA(header)) {
@@ -2133,29 +2133,29 @@ static UInt CollectBags_Sweep(UInt FullBags)
             }
 #endif
 
-            /* update count                                                */
+            // update count
             nrDeadBags += 1;
             sizeDeadBags += header->size;
 
 #ifdef COUNT_BAGS
-            /* update the statistics                                       */
+            // update the statistics
             InfoBags[header->type].nrLive -= 1;
             InfoBags[header->type].sizeLive -= header->size;
 #endif
 
-            /* don't free the identifier                                   */
+            // don't free the identifier
             if (((UInt)UNMARKED_HALFDEAD(header->link)) % 4 != 0)
                 Panic("align error in halfdead bag");
 
             *(Bag**)(UNMARKED_HALFDEAD(header->link)) = NewWeakDeadBagMarker;
             nrHalfDeadBags ++;
 
-            /* advance src                                                 */
+            // advance src
             src = DATA(header) + WORDS_BAG( header->size );
 
         }
 
-        /* live bag                                                        */
+        // live bag
         else if (GET_MARK_BITS(header->link) == ALIVE) {
 #ifdef GAP_MEM_CHECK
             if (CONST_PTR_BAG(UNMARKED_ALIVE(header->link)) != DATA(header)) {
@@ -2175,14 +2175,14 @@ static UInt CollectBags_Sweep(UInt FullBags)
             dstHeader->link = (Bag)UNMARKED_ALIVE(header->link);
             dst = DATA(dstHeader);
 
-            /* copy data area                                */
+            // copy data area
             if (TabSweepFuncBags[header->type] != 0) {
-                /* Call the installed sweeping function */
+                // Call the installed sweeping function
                 (*(TabSweepFuncBags[header->type]))(DATA(header), dst, end - DATA(header));
                 dst += end - DATA(header);
             }
 
-            /* Otherwise do the default thing */
+            // Otherwise do the default thing
             else if ( dst != DATA(header) ) {
                 SyMemmove(dst, DATA(header), (end - DATA(header))*sizeof(Bag));
                 dst += end - DATA(header);
@@ -2193,20 +2193,20 @@ static UInt CollectBags_Sweep(UInt FullBags)
             src = end;
         }
 
-        /* oops                                                            */
+        // oops
         else {
             Panic("Gasman found a bogus header");
         }
 
     }
 
-    /* reset the pointer to the free storage                               */
+    // reset the pointer to the free storage
     AllocBags = YoungBags = dst;
 
-    /* clear the new free area                                             */
+    // clear the new free area
     memset(dst, 0, ((Char *)src)-((Char *)dst));
 
-    /* information after the sweep phase                                   */
+    // information after the sweep phase
     NrDeadBags += nrDeadBags;
     NrHalfDeadBags += nrHalfDeadBags;
     SyMsgsBags(FullBags, 3, (FullBags ? NrDeadBags : nrDeadBags));
@@ -2222,9 +2222,9 @@ static UInt CollectBags_Sweep(UInt FullBags)
 
 static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 {
-    UInt                done;           /* do we have to make a full gc    */
-    Bag                 bag;            /* loop variable                   */
-    UInt                i;              /* loop variable                   */
+    UInt                done;           // do we have to make a full gc
+    Bag                 bag;            // loop variable
+    UInt                i;              // loop variable
 
     // Check if this allocation would even fit into memory
     if (SIZE_MAX - (size_t)(sizeof(BagHeader) + size) < (size_t)AllocBags) {
@@ -2235,10 +2235,10 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
     Bag * stopBags = AllocBags + WORDS_BAG(sizeof(BagHeader)+size);
 
 
-    /* if we only performed a partial garbage collection                   */
+    // if we only performed a partial garbage collection
     if ( ! FullBags ) {
 
-        /* maybe adjust the size of the allocation area                    */
+        // maybe adjust the size of the allocation area
         if ( nrBags < 512
 
              /* The test below should stop AllocSizeBags
@@ -2249,18 +2249,18 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
                && 256 < AllocSizeBags )
             AllocSizeBags -= 256;
 
-        /* if we don't get enough free storage or masterpointers do full gc */
+        // if we don't get enough free storage or masterpointers do full gc
         if ( EndBags < stopBags + WORDS_BAG(1024*AllocSizeBags)
           || SizeMptrsArea <
 
-             /*      nrBags+ 4096 */
+             // nrBags+ 4096
              /*      If this test triggered, but the one below didn't
                      then a full collection would ensue which wouldn't
                      do anything useful. Possibly a version of the
                      above test should be moved into the full collection also
                      but I wasn't sure it always made sense         SL */
 
-             /* change the test to avoid subtracting unsigned integers */
+             // change the test to avoid subtracting unsigned integers
 
              WORDS_BAG(AllocSizeBags*1024)/7 +(NrLiveBags + NrHalfDeadBags)
              ) {
@@ -2272,7 +2272,7 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 
     }
 
-    /* if we already performed a full garbage collection                   */
+    // if we already performed a full garbage collection
     else {
 
       /* Clean up old half-dead bags
@@ -2290,7 +2290,7 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
       }
 
 
-        /* get the storage we absolutely need                              */
+        // get the storage we absolutely need
         if (EndBags < stopBags) {
             size_t bytes = (char *)stopBags - (char *)EndBags;
             // Increment in blocks of 512K
@@ -2303,11 +2303,11 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
             }
         }
 
-        /* if not enough storage is free, fail                             */
+        // if not enough storage is free, fail
         if ( EndBags < stopBags )
             return 2; // signal error
 
-        /* if less than 1/8th is free, get more storage (in 1/2 MBytes)    */
+        // if less than 1/8th is free, get more storage (in 1/2 MBytes)
         while ( ( SpaceBetweenPointers(EndBags, stopBags) <  SpaceBetweenPointers(stopBags, OldBags)/7 ||
                   SpaceBetweenPointers(EndBags, stopBags) < WORDS_BAG(AllocSizeBags) )
              && SyAllocBags(512,0) )
@@ -2317,13 +2317,13 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
         if ( EndBags - stopBags < AllocSizeBags )
         AllocSizeBags = 7*(Endbags - stopBags)/8; */
 
-        /* if less than 1/16th is free, prepare for an interrupt           */
+        // if less than 1/16th is free, prepare for an interrupt
         if (SpaceBetweenPointers(stopBags,MptrEndBags)/15 < SpaceBetweenPointers(EndBags,stopBags) ) {
             /*N 1993/05/16 martin must change 'gap.c'                      */
             ;
         }
 
-        /* if more than 1/8th is free, give back storage (in 1/2 MBytes)   */
+        // if more than 1/8th is free, give back storage (in 1/2 MBytes)
         while (SpaceBetweenPointers(stopBags,MptrEndBags)/7 <= SpaceBetweenPointers(EndBags,stopBags)-WORDS_BAG(512*1024L)
                 && SpaceBetweenPointers(EndBags,stopBags) > WORDS_BAG(AllocSizeBags) + WORDS_BAG(512*1024L)
              && SyFreeBags(512) )
@@ -2334,27 +2334,27 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
 #else
         UInt SpareMasterPointers = SpaceBetweenPointers(EndBags, stopBags)/7;
 #endif
-        /* if we want to increase the masterpointer area                   */
+        // if we want to increase the masterpointer area
         if ( SizeMptrsArea-NrLiveBags < SpareMasterPointers ) {
-            /* this is how many new masterpointers we want                 */
+            // this is how many new masterpointers we want
             i = SpareMasterPointers - (SizeMptrsArea-NrLiveBags);
-            /* move the bags area                                          */
+            // move the bags area
             SyMemmove(OldBags+i, OldBags, SizeAllBagsArea*sizeof(*OldBags));
 
-            /* update the masterpointers                                   */
+            // update the masterpointers
             for (bag = MptrBags; bag < MptrEndBags; bag++) {
                 if (MptrEndBags <= (Bag)bag->body)
                     bag->body = (Bag)bag->body + i;
             }
 
-            /* link the new part of the masterpointer area                 */
+            // link the new part of the masterpointer area
             for (bag = MptrEndBags; bag + 1 < MptrEndBags + i; bag++) {
                 bag->body = bag + 1;
             }
             bag->body = FreeMptrBags;
             FreeMptrBags = MptrEndBags;
 
-            /* update 'MptrEndBags', 'OldBags', 'YoungBags', 'AllocBags', and 'stopBags'  */
+            // update 'MptrEndBags', 'OldBags', 'YoungBags', 'AllocBags', and 'stopBags'
             MptrEndBags += i;
             OldBags   += i;
             YoungBags += i;
@@ -2362,12 +2362,12 @@ static Int CollectBags_Check(UInt size, UInt FullBags, UInt nrBags)
             stopBags  += i;
         }
 
-        /* now we are done                                                 */
+        // now we are done
         done = 1;
 
     }
 
-    /* information after the check phase                                   */
+    // information after the check phase
     SyMsgsBags(FullBags, 5, (EndBags - stopBags) / (1024 / sizeof(Bag)));
     SyMsgsBags(FullBags, 6, SizeWorkspace / (1024 / sizeof(Bag)));
 
@@ -2385,9 +2385,9 @@ UInt CollectBags (
     UInt                size,
     UInt                full )
 {
-    UInt                nrBags;         /* number of new bags              */
-    UInt                done;           /* do we have to make a full gc    */
-    UInt                i;              /* loop variable                   */
+    UInt                nrBags;         // number of new bags
+    UInt                done;           // do we have to make a full gc
+    UInt                i;              // loop variable
 
     UInt startTime = SyTime();
 
@@ -2403,7 +2403,7 @@ UInt CollectBags (
     for (i = 0; i < CollectFuncBags.nrBefore; ++i)
         CollectFuncBags.before[i]();
 
-    /* do we want to make a full garbage collection?                       */
+    // do we want to make a full garbage collection?
     do {
         if (full) {
 
@@ -2457,7 +2457,7 @@ UInt CollectBags (
     CheckMasterPointers();
 #endif
 
-    /* Possibly advise the operating system about unused pages:            */
+    // Possibly advise the operating system about unused pages:
     SyMAdviseFree();
 
     CANARY_ALLOW_ACCESS_ALL_BAGS();

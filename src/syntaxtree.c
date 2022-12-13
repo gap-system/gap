@@ -629,7 +629,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     /* names of arguments and locals*/
     AssPRec(result, RNamName("nams"), NAMS_FUNC(func));
 
-    /* switch to this function (so that 'READ_STAT' and 'READ_EXPR' work) */
+    // switch to this function (so that 'READ_STAT' and 'READ_EXPR' work)
     oldFrame = SWITCH_TO_NEW_LVARS(func, narg, nloc);
     stats = SyntaxTreeCompiler(OFFSET_FIRST_STAT);
     SWITCH_TO_OLD_LVARS(oldFrame);
@@ -831,7 +831,7 @@ static const CompilerT Compilers[] = {
     COMPILER(STAT_PRAGMA, SyntaxTreeCompilePragma, SyntaxTreeCodeValue),
 
 
-    /* Statements */
+    // Statements
     COMPILER_(EXPR_FUNCCALL_0ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
     COMPILER_(EXPR_FUNCCALL_1ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
     COMPILER_(EXPR_FUNCCALL_2ARGS, ARG_EXPR_("funcref"), ARGS_EXPR("args")),
@@ -955,7 +955,7 @@ static StructGVarFunc GVarFuncs[] = { GVAR_FUNC_1ARGS(SYNTAX_TREE, func),
 
 static Int InitKernel(StructInitInfo * module)
 {
-    /* init filters and functions */
+    // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
     InitGlobalBag(&typeStrings, "typeStrings");
@@ -966,7 +966,7 @@ static Int InitKernel(StructInitInfo * module)
 
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     typeStrings = NEW_PLIST(T_PLIST, ARRAY_SIZE(Compilers));

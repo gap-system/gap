@@ -40,38 +40,22 @@ typedef struct GAPState {
     void ** FreeList[MAX_GC_PREFIX_DESC + 2];
 #endif
 
-    /* From intrprtr.c */
-
-    // 'Tilde' is the object referenced by the operator '~', used in
-    // expressions such as '[ [ 1, 2 ], ~[ 1 ] ]'.
+    // From intrprtr.c
     Obj  Tilde;
 
     // The current assertion level for use in Assert
     Int CurrentAssertionLevel;
 
-    /* From gvar.c */
+    // From gvar.c
     Obj CurrNamespace;
 
-    /* From vars.c */
-
-    // 'CurrLVars' is the bag containing the values of the local variables of
-    // the currently executing interpreted function.
-    //
-    // Assignments to the local variables change this bag. We do not call
-    // 'CHANGED_BAG' for each of such change. Instead we wait until a garbage
-    // collection begins and then call 'CHANGED_BAG' in 'BeginCollectBags'.
-    Bag CurrLVars;
-
-    // 'PtrLVars' is a pointer to the 'CurrLVars' bag. This makes it faster to
-    // access local variables.
-    //
-    // Since a garbage collection may move this bag around, the pointer
-    // 'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
+    // From vars.c
+    Bag   CurrLVars;
     Obj * PtrLVars;
 
     Bag   LVarsPool[16];
 
-    /* From read.c */
+    // From read.c
     jmp_buf ReadJmpError;
 
     // 'Prompt' holds the string that is to be printed if a new line is read
@@ -82,7 +66,7 @@ typedef struct GAPState {
     // read.
     char Prompt[80];
 
-    /* From stats.c */
+    // From stats.c
 
     // `ReturnObjStat` is the result of the return-statement that was last
     // executed. It is set in `ExecReturnObj` and used in the handlers that
@@ -91,12 +75,10 @@ typedef struct GAPState {
 
     ExecStatFunc * CurrExecStatFuncs;
 
-    /* From code.c */
-
-    // A pointer to the current function body being executed
+    // From code.c
     void * PtrBody;
 
-    /* From opers.c */
+    // From opers.c
 #ifdef HPCGAP
     Obj   MethodCache;
     Obj * MethodCacheItems;
@@ -131,7 +113,7 @@ typedef struct GAPState {
     // itself but by programs that use GAP as a library to handle errors
     void (*JumpToCatchCallback)(void);
 
-    /* From info.c */
+    // From info.c
     Int ShowUsedInfoClassesActive;
 
     UInt1 StateSlots[STATE_SLOTS_SIZE];
@@ -171,7 +153,7 @@ EXPORT_INLINE void * StateSlotsAtOffset(ModuleStateOffset offset)
     return &STATE(StateSlots)[offset];
 }
 
-/* Access a module's registered state */
+// Access a module's registered state
 #define MODULE_STATE(module) \
     (*(module ## ModuleState *)StateSlotsAtOffset(module ## StateOffset))
 

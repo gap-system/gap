@@ -94,7 +94,7 @@ void SySetGapRootPath(const Char * string)
     Int          i;
     Int          n;
 
-    /* set string to a default value if unset                              */
+    // set string to a default value if unset
     if (string == 0 || *string == 0) {
         string = "./";
     }
@@ -103,23 +103,23 @@ void SySetGapRootPath(const Char * string)
     ** check if we append, prepend or overwrite.
     */
     if (string[0] == ';') {
-        /* Count the number of root directories already present.           */
+        // Count the number of root directories already present.
         n = 0;
         while (SyGapRootPaths[n][0] != '\0')
             n++;
 
-        /* Skip leading semicolon.                                        */
+        // Skip leading semicolon.
         string++;
     }
     else if (string[strlen(string) - 1] == ';') {
-        /* Count the number of directories in 'string'.                    */
+        // Count the number of directories in 'string'.
         n = 0;
         p = string;
         while (*p)
             if (*p++ == ';')
                 n++;
 
-        /* Find last root path.                                            */
+        // Find last root path.
         for (i = 0; i < MAX_GAP_DIRS; i++)
             if (SyGapRootPaths[i][0] == '\0')
                 break;
@@ -129,7 +129,7 @@ void SySetGapRootPath(const Char * string)
         n *= 2;    // for each root <ROOT> we also add <ROOT/hpcgap> as a root
 #endif
 
-        /* Move existing root paths to the back                            */
+        // Move existing root paths to the back
         if (i + n >= MAX_GAP_DIRS)
             return;
         while (i >= 0) {
@@ -141,13 +141,13 @@ void SySetGapRootPath(const Char * string)
         n = 0;
     }
     else {
-        /* Make sure to wipe out all possibly existing root paths          */
+        // Make sure to wipe out all possibly existing root paths
         for (i = 0; i < MAX_GAP_DIRS; i++)
             SyGapRootPaths[i][0] = '\0';
         n = 0;
     }
 
-    /* unpack the argument                                                 */
+    // unpack the argument
     p = string;
     while (*p) {
         if (n >= MAX_GAP_DIRS)
@@ -203,7 +203,7 @@ void SySetGapRootPath(const Char * string)
         if (SyGapRootPaths[i][0] == '~' &&
             userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
             SyMemmove(SyGapRootPaths[i] + userhomelen,
-                      /* don't copy the ~ but the trailing '\0' */
+                      // don't copy the ~ but the trailing '\0'
                       SyGapRootPaths[i] + 1, pathlen);
             memcpy(SyGapRootPaths[i], userhome, userhomelen);
         }

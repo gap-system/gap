@@ -227,16 +227,16 @@ Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
 
 Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
 {
-    Stat                stat;           /* result                          */
+    Stat                stat;           // result
 
-    /* this is where the new statement goes                                */
+    // this is where the new statement goes
     stat = cs->OffsBody + sizeof(StatHeader);
 
-    /* increase the offset                                                 */
+    // increase the offset
     cs->OffsBody =
         stat + ((size + sizeof(Stat) - 1) / sizeof(Stat)) * sizeof(Stat);
 
-    /* make certain that the current body bag is large enough              */
+    // make certain that the current body bag is large enough
     Obj body = cs->currBody;
     UInt bodySize = SIZE_BAG(body);
     if (bodySize == 0)
@@ -249,13 +249,13 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
     // so we must update PtrBody here
     STATE(PtrBody) = PTR_BAG(body);
 
-    /* enter type and size                                                 */
+    // enter type and size
     StatHeader * header = STAT_HEADER(cs, stat);
     header->line = line;
     header->size = size;
     header->type = type;
     RegisterStatWithHook(stat);
-    /* return the new statement                                            */
+    // return the new statement
     return stat;
 }
 
@@ -306,7 +306,7 @@ static inline UInt CapacityStatStack(void)
 void PushStat (
     Stat                stat )
 {
-    /* there must be a stack, it must not be underfull or overfull         */
+    // there must be a stack, it must not be underfull or overfull
     GAP_ASSERT(CS(StackStat) != 0);
     GAP_ASSERT(0 <= CS(CountStat));
     GAP_ASSERT(CS(CountStat) <= CapacityStatStack());
@@ -327,38 +327,38 @@ static Stat PopStat ( void )
 {
     Stat                stat;
 
-    /* there must be a stack, it must not be underfull/empty or overfull   */
+    // there must be a stack, it must not be underfull/empty or overfull
     GAP_ASSERT(CS(StackStat) != 0);
     GAP_ASSERT(1 <= CS(CountStat));
     GAP_ASSERT(CS(CountStat) <= CapacityStatStack());
 
-    /* get the top statement from the stack, and count down                */
+    // get the top statement from the stack, and count down
     CS(CountStat)--;
     Stat * data = (Stat *)PTR_BAG(CS(StackStat)) + 1;
     stat = data[CS(CountStat)];
 
-    /* return the popped statement                                         */
+    // return the popped statement
     return stat;
 }
 
 static Stat PopSeqStat(CodeState * cs, UInt nr)
 {
-    Stat                body;           /* sequence, result                */
-    Stat                stat;           /* single statement                */
-    UInt                i;              /* loop variable                   */
+    Stat                body;           // sequence, result
+    Stat                stat;           // single statement
+    UInt                i;              // loop variable
 
     if (nr == 0 ) {
         body = NewStat(cs, STAT_EMPTY, 0);
     }
-    /* special case for a single statement                                 */
+    // special case for a single statement
     else if ( nr == 1 ) {
         body = PopStat();
     }
 
-    /* general case                                                        */
+    // general case
     else {
 
-        /* allocate the sequence                                           */
+        // allocate the sequence
         if ( 2 <= nr && nr <= 7 ) {
             body = NewStat(cs, STAT_SEQ_STAT + (nr - 1), nr * sizeof(Stat));
         }
@@ -366,14 +366,14 @@ static Stat PopSeqStat(CodeState * cs, UInt nr)
             body = NewStat(cs, STAT_SEQ_STAT, nr * sizeof(Stat));
         }
 
-        /* enter the statements into the sequence                          */
+        // enter the statements into the sequence
         for ( i = nr; 1 <= i; i-- ) {
             stat = PopStat();
             WRITE_STAT(cs, body, i - 1, stat);
         }
     }
 
-    /* return the sequence                                                 */
+    // return the sequence
     return body;
 }
 
@@ -431,13 +431,13 @@ static inline UInt CapacityStackExpr(void)
 
 static void PushExpr(Expr expr)
 {
-    /* there must be a stack, it must not be underfull or overfull         */
+    // there must be a stack, it must not be underfull or overfull
     GAP_ASSERT(CS(StackExpr) != 0);
     GAP_ASSERT(0 <= CS(CountExpr));
     GAP_ASSERT(CS(CountExpr) <= CapacityStackExpr());
     GAP_ASSERT( expr != 0 );
 
-    /* count up and put the expression onto the stack                      */
+    // count up and put the expression onto the stack
     if (CS(CountExpr) == CapacityStackExpr()) {
         ResizeBag(CS(StackExpr), (2 * CS(CountExpr) + 1) * sizeof(Expr));
     }
@@ -451,17 +451,17 @@ static Expr PopExpr(void)
 {
     Expr                expr;
 
-    /* there must be a stack, it must not be underfull/empty or overfull   */
+    // there must be a stack, it must not be underfull/empty or overfull
     GAP_ASSERT(CS(StackExpr) != 0);
     GAP_ASSERT(1 <= CS(CountExpr));
     GAP_ASSERT(CS(CountExpr) <= CapacityStackExpr());
 
-    /* get the top expression from the stack, and count down               */
+    // get the top expression from the stack, and count down
     CS(CountExpr)--;
     Expr * data = (Expr *)PTR_BAG(CS(StackExpr)) + 1;
     expr = data[CS(CountExpr)];
 
-    /* return the popped expression                                        */
+    // return the popped expression
     return expr;
 }
 
@@ -475,17 +475,17 @@ static Expr PopExpr(void)
 */
 static void PushUnaryOp(CodeState * cs, UInt type)
 {
-    Expr                unop;           /* unary operator, result          */
-    Expr                op;             /* operand                         */
+    Expr                unop;           // unary operator, result
+    Expr                op;             // operand
 
-    /* allocate the unary operator                                         */
+    // allocate the unary operator
     unop = NewExpr(cs, type, sizeof(Expr));
 
-    /* enter the operand                                                   */
+    // enter the operand
     op = PopExpr();
     WRITE_EXPR(cs, unop, 0, op);
 
-    /* push the unary operator                                             */
+    // push the unary operator
     PushExpr( unop );
 }
 
@@ -499,22 +499,22 @@ static void PushUnaryOp(CodeState * cs, UInt type)
 */
 static void PushBinaryOp(CodeState * cs, UInt type)
 {
-    Expr                binop;          /* binary operator, result         */
-    Expr                opL;            /* left operand                    */
-    Expr                opR;            /* right operand                   */
+    Expr                binop;          // binary operator, result
+    Expr                opL;            // left operand
+    Expr                opR;            // right operand
 
-    /* allocate the binary operator                                        */
+    // allocate the binary operator
     binop = NewExpr(cs, type, 2 * sizeof(Expr));
 
-    /* enter the right operand                                             */
+    // enter the right operand
     opR = PopExpr();
     WRITE_EXPR(cs, binop, 1, opR);
 
-    /* enter the left operand                                              */
+    // enter the left operand
     opL = PopExpr();
     WRITE_EXPR(cs, binop, 0, opL);
 
-    /* push the binary operator                                            */
+    // push the binary operator
     PushExpr( binop );
 }
 
@@ -556,13 +556,13 @@ void CodeFuncCallOptionsBegin(CodeState * cs)
 
 void CodeFuncCallOptionsBeginElmName(CodeState * cs, UInt rnam)
 {
-    /* push the record name as integer expressions                         */
+    // push the record name as integer expressions
     PushExpr( INTEXPR_INT( rnam ) );
 }
 
 void CodeFuncCallOptionsBeginElmExpr(CodeState * cs)
 {
-  /* The expression is on the stack where we want it */
+  // The expression is on the stack where we want it
 }
 
 void CodeFuncCallOptionsEndElm(CodeState * cs)
@@ -577,16 +577,16 @@ void CodeFuncCallOptionsEndElmEmpty(CodeState * cs)
 
 void CodeFuncCallOptionsEnd(CodeState * cs, UInt nr)
 {
-    Expr                record;         /* record, result                  */
-    Expr                entry;          /* entry                           */
-    Expr                rnam;           /* position of an entry            */
-    UInt                i;              /* loop variable                   */
+    Expr                record;         // record, result
+    Expr                entry;          // entry
+    Expr                rnam;           // position of an entry
+    UInt                i;              // loop variable
 
-    /* allocate the record expression                                      */
+    // allocate the record expression
     record = NewExpr(cs, EXPR_REC, nr * 2 * sizeof(Expr));
 
 
-    /* enter the entries                                                   */
+    // enter the entries
     for ( i = nr; 1 <= i; i-- ) {
         entry = PopExpr();
         rnam  = PopExpr();
@@ -594,7 +594,7 @@ void CodeFuncCallOptionsEnd(CodeState * cs, UInt nr)
         WRITE_EXPR(cs, record, 2 * (i - 1) + 1, entry);
     }
 
-    /* push the record                                                     */
+    // push the record
     PushExpr( record );
 
 }
@@ -621,20 +621,20 @@ void CodeBegin(CodeState * cs)
 {
     memset(cs, 0, sizeof(CodeState));
 
-    /* the stacks must be empty                                            */
+    // the stacks must be empty
     GAP_ASSERT(CS(CountStat) == 0);
     GAP_ASSERT(CS(CountExpr) == 0);
 
-    /* remember the current frame                                          */
+    // remember the current frame
     cs->CodeLVars = STATE(CurrLVars);
 }
 
 Obj CodeEnd(CodeState * cs, UInt error)
 {
-    /* if everything went fine                                             */
+    // if everything went fine
     if ( ! error ) {
 
-        /* the stacks must be empty                                        */
+        // the stacks must be empty
         GAP_ASSERT(CS(CountStat) == 0);
         GAP_ASSERT(CS(CountExpr) == 0);
         GAP_ASSERT(cs->OffsBodyList == 0);
@@ -646,15 +646,15 @@ Obj CodeEnd(CodeState * cs, UInt error)
         return cs->CodeResult;
     }
 
-    /* otherwise clean up the mess                                         */
+    // otherwise clean up the mess
     else {
 
-        /* empty the stacks                                                */
+        // empty the stacks
         CS(CountStat) = 0;
         CS(CountExpr) = 0;
         cs->OffsBodyList = 0;
 
-        /* go back to the correct frame                                    */
+        // go back to the correct frame
         SWITCH_TO_OLD_LVARS(cs->CodeLVars);
 
         return 0;
@@ -684,14 +684,14 @@ void CodeFuncCallBegin(CodeState * cs)
 
 void CodeFuncCallEnd(CodeState * cs, UInt funccall, UInt options, UInt nr)
 {
-    Expr                call;           /* function call, result           */
-    Expr                func;           /* function expression             */
-    Expr                arg;            /* one argument expression         */
-    UInt                i;              /* loop variable                   */
-    Expr                opts = 0;       /* record literal for the options  */
-    Expr                wrapper;        /* wrapper for calls with options  */
+    Expr                call;           // function call, result
+    Expr                func;           // function expression
+    Expr                arg;            // one argument expression
+    UInt                i;              // loop variable
+    Expr                opts = 0;       // record literal for the options
+    Expr                wrapper;        // wrapper for calls with options
 
-    /* allocate the function call                                          */
+    // allocate the function call
     if ( funccall && nr <= 6 ) {
         call = NewExpr(cs, EXPR_FUNCCALL_0ARGS + nr, SIZE_NARG_CALL(nr));
     }
@@ -705,21 +705,21 @@ void CodeFuncCallEnd(CodeState * cs, UInt funccall, UInt options, UInt nr)
         call = NewExpr(cs, STAT_PROCCALL_XARGS, SIZE_NARG_CALL(nr));
     }
 
-    /* get the options record if any */
+    // get the options record if any
     if (options)
       opts = PopExpr();
 
-    /* enter the argument expressions                                      */
+    // enter the argument expressions
     for ( i = nr; 1 <= i; i-- ) {
         arg = PopExpr();
         SET_ARGI_CALL(call, i, arg);
     }
 
-    /* enter the function expression                                       */
+    // enter the function expression
     func = PopExpr();
     SET_FUNC_CALL(call, func);
 
-    /* wrap up the call with the options */
+    // wrap up the call with the options
     if (options)
       {
         wrapper =
@@ -730,7 +730,7 @@ void CodeFuncCallEnd(CodeState * cs, UInt funccall, UInt options, UInt nr)
         call = wrapper;
       }
 
-    /* push the function call                                              */
+    // push the function call
     if ( funccall ) {
         PushExpr( call );
     }
@@ -762,14 +762,14 @@ void CodeFuncExprBegin(CodeState * cs,
                        UInt        gapnameid,
                        Int         startLine)
 {
-    Obj                 fexp;           /* function expression bag         */
-    Bag                 body;           /* function body                   */
-    Stat                stat1;          /* first statement in body         */
+    Obj                 fexp;           // function expression bag
+    Bag                 body;           // function body
+    Stat                stat1;          // first statement in body
 
-    /* remember the current offset                                         */
+    // remember the current offset
     PushOffsBody(cs);
 
-    /* create a function expression                                        */
+    // create a function expression
     fexp = NewBag( T_FUNCTION, sizeof(FuncBag) );
     SET_NARG_FUNC( fexp, narg );
     SET_NLOC_FUNC( fexp, nloc );
@@ -779,29 +779,29 @@ void CodeFuncExprBegin(CodeState * cs,
 #endif
     CHANGED_BAG( fexp );
 
-    /* give it a body                                                      */
+    // give it a body
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
     SET_BODY_FUNC( fexp, body );
     CHANGED_BAG( fexp );
 
-    /* record where we are reading from */
+    // record where we are reading from
     if (gapnameid)
         SET_GAPNAMEID_BODY(body, gapnameid);
     SET_STARTLINE_BODY(body, startLine);
     cs->OffsBody = sizeof(BodyHeader);
 
-    /* give it an environment                                              */
+    // give it an environment
     SET_ENVI_FUNC( fexp, STATE(CurrLVars) );
     CHANGED_BAG( fexp );
     MakeHighVars(STATE(CurrLVars));
 
-    /* switch to this function                                             */
+    // switch to this function
     SWITCH_TO_NEW_LVARS(fexp, (narg > 0 ? narg : -narg), nloc);
 
     cs->currFunc = fexp;
     cs->currBody = body;
 
-    /* allocate the top level statement sequence                           */
+    // allocate the top level statement sequence
     stat1 = NewStat(cs, STAT_SEQ_STAT, 8 * sizeof(Stat));
     assert( stat1 == OFFSET_FIRST_STAT );
 }
@@ -815,18 +815,18 @@ void CodeFuncExprSetLocks(CodeState * cs, Obj locks)
 
 Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
 {
-    Expr                expr;           /* function expression, result     */
-    Stat                stat1;          /* single statement of body        */
-    Obj                 fexp;           /* function expression bag         */
-    UInt                len;            /* length of func. expr. list      */
-    UInt                i;              /* loop variable                   */
+    Expr                expr;           // function expression, result
+    Stat                stat1;          // single statement of body
+    Obj                 fexp;           // function expression bag
+    UInt                len;            // length of func. expr. list
+    UInt                i;              // loop variable
 
-    /* get the function expression                                         */
+    // get the function expression
     fexp = cs->currFunc;
 
-    /* get the body of the function                                        */
-    /* push an additional return-void-statement if necessary              */
-    /* the function interpreters depend on each function ``returning''     */
+    // get the body of the function
+    // push an additional return-void-statement if necessary
+    // the function interpreters depend on each function ``returning''
     if ( nr == 0 ) {
         CodeReturnVoid(cs);
         nr++;
@@ -850,15 +850,15 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
         }
     }
 
-    /* if the body is a long sequence, pack the other statements           */
+    // if the body is a long sequence, pack the other statements
     if ( 7 < nr ) {
         stat1 = PopSeqStat(cs, nr - 6);
         PushStat( stat1 );
         nr = 7;
     }
 
-    /* stuff the first statements into the first statement sequence       */
-    /* Making sure to preserve the line number and file name              */
+    // stuff the first statements into the first statement sequence
+    // Making sure to preserve the line number and file name
     StatHeader * header = STAT_HEADER(cs, OFFSET_FIRST_STAT);
     header->line = LINE_STAT(OFFSET_FIRST_STAT);
     header->size = nr*sizeof(Stat);
@@ -873,20 +873,20 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
     if (values)
         MakeImmutable(values);
 
-    /* make the body smaller                                               */
+    // make the body smaller
     ResizeBag(BODY_FUNC(fexp), cs->OffsBody);
     SET_ENDLINE_BODY(BODY_FUNC(fexp), endLine);
 
-    /* switch back to the previous function                                */
+    // switch back to the previous function
     SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
 
-    /* restore the remembered offset                                       */
+    // restore the remembered offset
     PopOffsBody(cs);
     cs->currFunc = FUNC_LVARS(ENVI_FUNC(fexp));
     cs->currBody = BODY_FUNC(cs->currFunc);
 
-    /* if this was inside another function definition, make the expression */
-    /* and store it in the function expression list of the outer function  */
+    // if this was inside another function definition, make the expression
+    // and store it in the function expression list of the outer function
     if (STATE(CurrLVars) != cs->CodeLVars) {
         len = AddValueToBody(cs, fexp);
         expr = NewExpr(cs, EXPR_FUNC, sizeof(Expr));
@@ -967,7 +967,7 @@ Int CodeIfBeginBody(CodeState * cs)
 
 Int CodeIfEndBody(CodeState * cs, UInt nr)
 {
-    /* collect the statements in a statement sequence if necessary         */
+    // collect the statements in a statement sequence if necessary
     PushStat(PopSeqStat(cs, nr));
 
     // get and check the condition
@@ -981,10 +981,10 @@ Int CodeIfEndBody(CodeState * cs, UInt nr)
 
 void CodeIfEnd(CodeState * cs, UInt nr)
 {
-    Stat                stat;           /* if-statement, result            */
-    Expr                cond;           /* condition of a branch           */
-    UInt                hase;           /* has else branch                 */
-    UInt                i;              /* loop variable                   */
+    Stat                stat;           // if-statement, result
+    Expr                cond;           // condition of a branch
+    UInt                hase;           // has else branch
+    UInt                i;              // loop variable
 
     // if all conditions were false, the if-statement is an empty statement
     if (nr == 0) {
@@ -1004,7 +1004,7 @@ void CodeIfEnd(CodeState * cs, UInt nr)
         return;
     }
 
-    /* allocate the if-statement                                           */
+    // allocate the if-statement
     if      ( nr == 1 ) {
         stat = NewStat(cs, STAT_IF, nr * (sizeof(Expr) + sizeof(Stat)));
     }
@@ -1019,7 +1019,7 @@ void CodeIfEnd(CodeState * cs, UInt nr)
                        nr * (sizeof(Expr) + sizeof(Stat)));
     }
 
-    /* enter the branches                                                  */
+    // enter the branches
     for ( i = nr; 1 <= i; i-- ) {
         Stat body = PopStat();
         cond = PopExpr();
@@ -1027,7 +1027,7 @@ void CodeIfEnd(CodeState * cs, UInt nr)
         WRITE_STAT(cs, stat, 2 * (i - 1) + 1, body);
     }
 
-    /* push the if-statement                                               */
+    // push the if-statement
     PushStat( stat );
 }
 
@@ -1073,18 +1073,18 @@ void CodeForBeginBody(CodeState * cs)
 
 void CodeForEndBody(CodeState * cs, UInt nr)
 {
-    Stat                stat;           /* for-statement, result           */
-    UInt                type;           /* type of for-statement           */
-    Expr                var;            /* variable                        */
-    Expr                list;           /* list                            */
+    Stat                stat;           // for-statement, result
+    UInt                type;           // type of for-statement
+    Expr                var;            // variable
+    Expr                list;           // list
 
-    /* get the list expression                                             */
+    // get the list expression
     list = PopExpr();
 
-    /* get the variable reference                                          */
+    // get the variable reference
     var = PopExpr();
 
-    /* select the type of the for-statement                                */
+    // select the type of the for-statement
     if ( TNUM_EXPR(list) == EXPR_RANGE && SIZE_EXPR(list) == 2*sizeof(Expr)
       && IS_REF_LVAR(var) ) {
         type = STAT_FOR_RANGE;
@@ -1093,16 +1093,16 @@ void CodeForEndBody(CodeState * cs, UInt nr)
         type = STAT_FOR;
     }
 
-    /* allocate the for-statement                                          */
+    // allocate the for-statement
     stat = PopLoopStat(cs, type, 2, nr);
 
-    /* enter the list expression                                           */
+    // enter the list expression
     WRITE_STAT(cs, stat, 1, list);
 
-    /* enter the variable reference                                        */
+    // enter the variable reference
     WRITE_STAT(cs, stat, 0, var);
 
-    /* push the for-statement                                              */
+    // push the for-statement
     PushStat( stat );
 }
 
@@ -1146,25 +1146,25 @@ void CodeAtomicBeginBody(CodeState * cs, UInt nrexprs)
 void CodeAtomicEndBody(CodeState * cs, UInt nrstats)
 {
 #ifdef HPCGAP
-    Stat                stat;           /* atomic-statement, result        */
-    Stat                stat1;          /* single statement of body        */
-    UInt                i;              /* loop variable                   */
+    Stat                stat;           // atomic-statement, result
+    Stat                stat1;          // single statement of body
+    UInt                i;              // loop variable
     UInt nrexprs;
     Expr  e,qual;
 
-    /* collect the statements into a statement sequence   */
+    // collect the statements into a statement sequence
     stat1 = PopSeqStat(cs, nrstats);
 
     nrexprs = INT_INTEXPR(PopExpr());
 
-    /* allocate the atomic-statement                                       */
+    // allocate the atomic-statement
     stat =
         NewStat(cs, STAT_ATOMIC, sizeof(Stat) + nrexprs * 2 * sizeof(Stat));
 
-    /* enter the statement sequence */
+    // enter the statement sequence
     WRITE_STAT(cs, stat, 0, stat1);
 
-    /* enter the expressions                                               */
+    // enter the expressions
     for ( i = 2*nrexprs; 1 <= i; i -= 2 ) {
         e = PopExpr();
         qual = PopExpr();
@@ -1172,7 +1172,7 @@ void CodeAtomicEndBody(CodeState * cs, UInt nrstats)
         WRITE_STAT(cs, stat, i - 1, qual);
     }
 
-    /* push the atomic-statement                                           */
+    // push the atomic-statement
     PushStat( stat );
 #else
     Stat stat = PopSeqStat(cs, nrstats);
@@ -1240,17 +1240,17 @@ void CodeWhileBeginBody(CodeState * cs)
 
 void CodeWhileEndBody(CodeState * cs, UInt nr)
 {
-    Stat                stat;           /* while-statement, result         */
-    Expr                cond;           /* condition                       */
+    Stat                stat;           // while-statement, result
+    Expr                cond;           // condition
 
-    /* allocate the while-statement                                        */
+    // allocate the while-statement
     stat = PopLoopStat(cs, STAT_WHILE, 1, nr);
 
-    /* enter the condition                                                 */
+    // enter the condition
     cond = PopExpr();
     WRITE_STAT(cs, stat, 0, cond);
 
-    /* push the while-statement                                            */
+    // push the while-statement
     PushStat( stat );
 }
 
@@ -1292,32 +1292,32 @@ void CodeRepeatBeginBody(CodeState * cs)
 
 void CodeRepeatEndBody(CodeState * cs, UInt nr)
 {
-    /* leave the number of statements in the body on the expression stack  */
+    // leave the number of statements in the body on the expression stack
     PushExpr( INTEXPR_INT(nr) );
 }
 
 void CodeRepeatEnd(CodeState * cs)
 {
-    Stat                stat;           /* repeat-statement, result        */
-    UInt                nr;             /* number of statements in body    */
-    Expr                cond;           /* condition                       */
-    Expr                tmp;            /* temporary                       */
+    Stat                stat;           // repeat-statement, result
+    UInt                nr;             // number of statements in body
+    Expr                cond;           // condition
+    Expr                tmp;            // temporary
 
-    /* get the condition                                                   */
+    // get the condition
     cond = PopExpr();
 
-    /* get the number of statements in the body                            */
-    /* 'CodeUntil' left this number on the expression stack (hack)         */
+    // get the number of statements in the body
+    // 'CodeUntil' left this number on the expression stack (hack)
     tmp = PopExpr();
     nr = INT_INTEXPR( tmp );
 
-    /* allocate the repeat-statement                                       */
+    // allocate the repeat-statement
     stat = PopLoopStat(cs, STAT_REPEAT, 1, nr);
 
-    /* enter the condition                                                 */
+    // enter the condition
     WRITE_STAT(cs, stat, 0, cond);
 
-    /* push the repeat-statement                                           */
+    // push the repeat-statement
     PushStat( stat );
 }
 
@@ -1331,12 +1331,12 @@ void CodeRepeatEnd(CodeState * cs)
 */
 void CodeBreak(CodeState * cs)
 {
-    Stat                stat;           /* break-statement, result         */
+    Stat                stat;           // break-statement, result
 
-    /* allocate the break-statement                                        */
+    // allocate the break-statement
     stat = NewStat(cs, STAT_BREAK, 0 * sizeof(Expr));
 
-    /* push the break-statement                                            */
+    // push the break-statement
     PushStat( stat );
 }
 
@@ -1349,12 +1349,12 @@ void CodeBreak(CodeState * cs)
 */
 void CodeContinue(CodeState * cs)
 {
-    Stat                stat;           /* continue-statement, result      */
+    Stat                stat;           // continue-statement, result
 
-    /* allocate the continue-statement                                     */
+    // allocate the continue-statement
     stat = NewStat(cs, STAT_CONTINUE, 0 * sizeof(Expr));
 
-    /* push the continue-statement                                         */
+    // push the continue-statement
     PushStat( stat );
 }
 
@@ -1369,17 +1369,17 @@ void CodeContinue(CodeState * cs)
 */
 void CodeReturnObj(CodeState * cs)
 {
-    Stat                stat;           /* return-statement, result        */
-    Expr                expr;           /* expression                      */
+    Stat                stat;           // return-statement, result
+    Expr                expr;           // expression
 
-    /* allocate the return-statement                                       */
+    // allocate the return-statement
     stat = NewStat(cs, STAT_RETURN_OBJ, sizeof(Expr));
 
-    /* enter the expression                                                */
+    // enter the expression
     expr = PopExpr();
     WRITE_STAT(cs, stat, 0, expr);
 
-    /* push the return-statement                                           */
+    // push the return-statement
     PushStat( stat );
 }
 
@@ -1397,24 +1397,24 @@ void CodeReturnObj(CodeState * cs)
 */
 void CodeReturnVoid(CodeState * cs)
 {
-    Stat                stat;           /* return-statement, result        */
+    Stat                stat;           // return-statement, result
 
-    /* allocate the return-statement                                       */
+    // allocate the return-statement
     stat = NewStat(cs, STAT_RETURN_VOID, 0 * sizeof(Expr));
 
-    /* push the return-statement                                           */
+    // push the return-statement
     PushStat( stat );
 }
 
 void CodeReturnVoidWhichIsNotProfiled(CodeState * cs)
 {
-    Stat                stat;           /* return-statement, result        */
+    Stat                stat;           // return-statement, result
 
-    /* allocate the return-statement, without profile information          */
+    // allocate the return-statement, without profile information
 
     stat = NewStatOrExpr(cs, STAT_RETURN_VOID, 0 * sizeof(Expr), 0);
 
-    /* push the return-statement                                           */
+    // push the return-statement
     PushStat( stat );
 }
 
@@ -1569,14 +1569,14 @@ void CodePow(CodeState * cs)
 */
 void CodeIntExpr(CodeState * cs, Obj val)
 {
-    Expr                expr;           /* expression, result              */
+    Expr                expr;           // expression, result
 
-    /* if it is small enough code it immediately                           */
+    // if it is small enough code it immediately
     if ( IS_INTOBJ(val) ) {
         expr = INTEXPR_INT( INT_INTOBJ(val) );
     }
 
-    /* otherwise stuff the value into the values list                      */
+    // otherwise stuff the value into the values list
     else {
         GAP_ASSERT(TNUM_OBJ(val) == T_INTPOS || TNUM_OBJ(val) == T_INTNEG);
         expr = NewExpr(cs, EXPR_INTPOS, sizeof(UInt));
@@ -1584,7 +1584,7 @@ void CodeIntExpr(CodeState * cs, Obj val)
         WRITE_EXPR(cs, expr, 0, ix);
     }
 
-    /* push the expression                                                 */
+    // push the expression
     PushExpr( expr );
 }
 
@@ -1632,13 +1632,13 @@ void CodeFalseExpr(CodeState * cs)
 */
 void CodeCharExpr(CodeState * cs, Char chr)
 {
-    Expr                litr;           /* literal expression, result      */
+    Expr                litr;           // literal expression, result
 
-    /* allocate the character expression                                   */
+    // allocate the character expression
     litr = NewExpr(cs, EXPR_CHAR, sizeof(UInt));
     WRITE_EXPR(cs, litr, 0, chr);
 
-    /* push the literal expression                                         */
+    // push the literal expression
     PushExpr( litr );
 }
 
@@ -1659,39 +1659,39 @@ void CodeCharExpr(CodeState * cs, Char chr)
 */
 void CodePermCycle(CodeState * cs, UInt nrx, UInt nrc)
 {
-    Expr                cycle;          /* cycle, result                   */
-    Expr                entry;          /* entry of cycle                  */
-    UInt                j;              /* loop variable                   */
+    Expr                cycle;          // cycle, result
+    Expr                entry;          // entry of cycle
+    UInt                j;              // loop variable
 
-    /* allocate the new cycle                                              */
+    // allocate the new cycle
     cycle = NewExpr(cs, EXPR_PERM_CYCLE, nrx * sizeof(Expr));
 
-    /* enter the entries                                                   */
+    // enter the entries
     for ( j = nrx; 1 <= j; j-- ) {
         entry = PopExpr();
         WRITE_EXPR(cs, cycle, j - 1, entry);
     }
 
-    /* push the cycle                                                      */
+    // push the cycle
     PushExpr( cycle );
 }
 
 void CodePerm(CodeState * cs, UInt nrc)
 {
-    Expr                perm;           /* permutation, result             */
-    Expr                cycle;          /* cycle of permutation            */
-    UInt                i;              /* loop variable                   */
+    Expr                perm;           // permutation, result
+    Expr                cycle;          // cycle of permutation
+    UInt                i;              // loop variable
 
-    /* allocate the new permutation                                        */
+    // allocate the new permutation
     perm = NewExpr(cs, EXPR_PERM, nrc * sizeof(Expr));
 
-    /* enter the cycles                                                    */
+    // enter the cycles
     for ( i = nrc; 1 <= i; i-- ) {
         cycle = PopExpr();
         WRITE_EXPR(cs, perm, i - 1, cycle);
     }
 
-    /* push the permutation                                                */
+    // push the permutation
     PushExpr( perm );
 
 }
@@ -1710,7 +1710,7 @@ void CodeListExprBegin(CodeState * cs, UInt top)
 
 void CodeListExprBeginElm(CodeState * cs, UInt pos)
 {
-    /* push the literal integer value                                      */
+    // push the literal integer value
     PushExpr( INTEXPR_INT(pos) );
 }
 
@@ -1721,12 +1721,12 @@ void CodeListExprEndElm(CodeState * cs)
 void CodeListExprEnd(
     CodeState * cs, UInt nr, UInt range, UInt top, UInt tilde)
 {
-    Expr                list;           /* list, result                    */
-    Expr                entry;          /* entry                           */
-    Expr                pos;            /* position of an entry            */
-    UInt                i;              /* loop variable                   */
+    Expr                list;           // list, result
+    Expr                entry;          // entry
+    Expr                pos;            // position of an entry
+    UInt                i;              // loop variable
 
-    /* peek at the last position (which is the largest)                    */
+    // peek at the last position (which is the largest)
     if ( nr != 0 ) {
         entry = PopExpr();
         pos   = PopExpr();
@@ -1737,7 +1737,7 @@ void CodeListExprEnd(
         pos = INTEXPR_INT(0);
     }
 
-    /* allocate the list expression                                        */
+    // allocate the list expression
     if ( ! range && ! (top && tilde) ) {
         list = NewExpr(cs, EXPR_LIST, INT_INTEXPR(pos) * sizeof(Expr));
     }
@@ -1748,14 +1748,14 @@ void CodeListExprEnd(
         list = NewExpr(cs, EXPR_RANGE, INT_INTEXPR(pos) * sizeof(Expr));
     }
 
-    /* enter the entries                                                   */
+    // enter the entries
     for ( i = nr; 1 <= i; i-- ) {
         entry = PopExpr();
         pos   = PopExpr();
         WRITE_EXPR(cs, list, INT_INTEXPR(pos) - 1, entry);
     }
 
-    /* push the list                                                       */
+    // push the list
     PushExpr( list );
 }
 
@@ -1819,40 +1819,40 @@ static UInt getNextFloatExprNumber(void)
 
 static UInt CheckForCommonFloat(const Char * str)
 {
-    /* skip leading zeros */
+    // skip leading zeros
     while (*str == '0')
         str++;
-    /* might be zero literal */
+    // might be zero literal
     if (*str == '.') {
-        /* skip point */
+        // skip point
         str++;
-        /* skip more zeroes */
+        // skip more zeroes
         while (*str == '0')
             str++;
-        /* if we've got to end of string we've got zero. */
+        // if we've got to end of string we've got zero.
         if (!IsDigit(*str))
             return FLOAT_0_INDEX;
     }
     if (*str++ != '1')
         return 0;
-    /* might be one literal */
+    // might be one literal
     if (*str++ != '.')
         return 0;
-    /* skip zeros */
+    // skip zeros
     while (*str == '0')
         str++;
     if (*str == '\0')
         return FLOAT_1_INDEX;
     if (IsDigit(*str))
         return 0;
-    /* must now be an exponent character */
+    // must now be an exponent character
     assert(IsAlpha(*str));
-    /* skip it */
+    // skip it
     str++;
     /*skip + and - in exponent */
     if (*str == '+' || *str == '-')
         str++;
-    /* skip leading zeros in the exponent */
+    // skip leading zeros in the exponent
     while (*str == '0')
         str++;
     /* if there's anything but leading zeros this isn't
@@ -1867,7 +1867,7 @@ Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
 {
     UInt ix;
 
-    /* Lazy case, store the string for conversion at run time */
+    // Lazy case, store the string for conversion at run time
     Expr fl = NewExpr(cs, EXPR_FLOAT_LAZY, 2 * sizeof(UInt));
 
     ix = CheckForCommonFloat(CONST_CSTR_STRING(str));
@@ -1876,7 +1876,7 @@ Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
     WRITE_EXPR(cs, fl, 0, ix);
     WRITE_EXPR(cs, fl, 1, AddValueToBody(cs, str));
 
-    /* push the expression */
+    // push the expression
     if (pushExpr) {
         PushExpr(fl);
     }
@@ -1885,7 +1885,7 @@ Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
 
 static void CodeEagerFloatExpr(CodeState * cs, Obj str, Char mark)
 {
-    /* Eager case, do the conversion now */
+    // Eager case, do the conversion now
     Expr fl = NewExpr(cs, EXPR_FLOAT_EAGER, sizeof(UInt) * 3);
     Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
     WRITE_EXPR(cs, fl, 0, AddValueToBody(cs, v));
@@ -1900,7 +1900,7 @@ void CodeFloatExpr(CodeState * cs, Obj s)
 
     const UInt l = GET_LEN_STRING(s);
     UInt l1 = l;
-    Char mark = '\0'; /* initialize to please compilers */
+    Char mark = '\0'; // initialize to please compilers
     if (str[l - 1] == '_') {
         l1 = l - 1;
         mark = '\0';
@@ -1934,7 +1934,7 @@ void CodeRecExprBegin(CodeState * cs, UInt top)
 
 void CodeRecExprBeginElmName(CodeState * cs, UInt rnam)
 {
-    /* push the record name as integer expressions                         */
+    // push the record name as integer expressions
     PushExpr( INTEXPR_INT( rnam ) );
 }
 
@@ -1942,7 +1942,7 @@ void CodeRecExprBeginElmExpr(CodeState * cs)
 {
     Expr                expr;
 
-    /* convert an integer expression to a record name                      */
+    // convert an integer expression to a record name
     expr = PopExpr();
     if ( IS_INTEXPR(expr) ) {
         PushExpr( INTEXPR_INT( RNamIntg( INT_INTEXPR(expr) ) ) );
@@ -1958,12 +1958,12 @@ void CodeRecExprEndElm(CodeState * cs)
 
 void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde)
 {
-    Expr                record;         /* record, result                  */
-    Expr                entry;          /* entry                           */
-    Expr                rnam;           /* position of an entry            */
-    UInt                i;              /* loop variable                   */
+    Expr                record;         // record, result
+    Expr                entry;          // entry
+    Expr                rnam;           // position of an entry
+    UInt                i;              // loop variable
 
-    /* allocate the record expression                                      */
+    // allocate the record expression
     if ( ! (top && tilde) ) {
         record = NewExpr(cs, EXPR_REC, nr * 2 * sizeof(Expr));
     }
@@ -1971,7 +1971,7 @@ void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde)
         record = NewExpr(cs, EXPR_REC_TILDE, nr * 2 * sizeof(Expr));
     }
 
-    /* enter the entries                                                   */
+    // enter the entries
     for ( i = nr; 1 <= i; i-- ) {
         entry = PopExpr();
         rnam  = PopExpr();
@@ -1979,7 +1979,7 @@ void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde)
         WRITE_EXPR(cs, record, 2 * (i - 1) + 1, entry);
     }
 
-    /* push the record                                                     */
+    // push the record
     PushExpr( record );
 }
 
@@ -1998,20 +1998,20 @@ void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde)
 */
 void CodeAssLVar(CodeState * cs, UInt lvar)
 {
-    Stat                ass;            /* assignment, result              */
-    Expr                rhsx;           /* right hand side expression      */
+    Stat                ass;            // assignment, result
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     ass = NewStat(cs, STAT_ASS_LVAR, 2 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, ass, 1, rhsx);
 
-    /* enter the local variable                                            */
+    // enter the local variable
     WRITE_STAT(cs, ass, 0, lvar);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( ass );
 }
 
@@ -2022,15 +2022,15 @@ void CodeAssLVar(CodeState * cs, UInt lvar)
 */
 void CodeUnbLVar(CodeState * cs, UInt lvar)
 {
-    Stat                ass;            /* unbind, result                  */
+    Stat                ass;            // unbind, result
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     ass = NewStat(cs, STAT_UNB_LVAR, sizeof(Stat));
 
-    /* enter the local variable                                            */
+    // enter the local variable
     WRITE_STAT(cs, ass, 0, lvar);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( ass );
 }
 
@@ -2048,12 +2048,12 @@ void CodeUnbLVar(CodeState * cs, UInt lvar)
 */
 void CodeRefLVar(CodeState * cs, UInt lvar)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
-    /* make the reference                                                  */
+    // make the reference
     ref = REF_LVAR_LVAR(lvar);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( ref );
 }
 
@@ -2064,15 +2064,15 @@ void CodeRefLVar(CodeState * cs, UInt lvar)
 */
 void CodeIsbLVar(CodeState * cs, UInt lvar)
 {
-    Expr                ref;            /* isbound, result                 */
+    Expr                ref;            // isbound, result
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     ref = NewExpr(cs, EXPR_ISB_LVAR, sizeof(Expr));
 
-    /* enter the local variable                                            */
+    // enter the local variable
     WRITE_EXPR(cs, ref, 0, lvar);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( ref );
 }
 
@@ -2091,20 +2091,20 @@ void CodeIsbLVar(CodeState * cs, UInt lvar)
 */
 void CodeAssHVar(CodeState * cs, UInt hvar)
 {
-    Stat                ass;            /* assignment, result              */
-    Expr                rhsx;           /* right hand side expression      */
+    Stat                ass;            // assignment, result
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     ass = NewStat(cs, STAT_ASS_HVAR, 2 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, ass, 1, rhsx);
 
-    /* enter the higher variable                                           */
+    // enter the higher variable
     WRITE_STAT(cs, ass, 0, hvar);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( ass );
 }
 
@@ -2115,15 +2115,15 @@ void CodeAssHVar(CodeState * cs, UInt hvar)
 */
 void CodeUnbHVar(CodeState * cs, UInt hvar)
 {
-    Stat                ass;            /* unbind, result                  */
+    Stat                ass;            // unbind, result
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     ass = NewStat(cs, STAT_UNB_HVAR, sizeof(Stat));
 
-    /* enter the higher variable                                           */
+    // enter the higher variable
     WRITE_STAT(cs, ass, 0, hvar);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( ass );
 }
 
@@ -2141,15 +2141,15 @@ void CodeUnbHVar(CodeState * cs, UInt hvar)
 */
 void CodeRefHVar(CodeState * cs, UInt hvar)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
-    /* allocate the reference                                              */
+    // allocate the reference
     ref = NewExpr(cs, EXPR_REF_HVAR, sizeof(Expr));
 
-    /* enter the higher variable                                           */
+    // enter the higher variable
     WRITE_EXPR(cs, ref, 0, hvar);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( ref );
 }
 
@@ -2160,15 +2160,15 @@ void CodeRefHVar(CodeState * cs, UInt hvar)
 */
 void CodeIsbHVar(CodeState * cs, UInt hvar)
 {
-    Expr                ref;            /* isbound, result                 */
+    Expr                ref;            // isbound, result
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     ref = NewExpr(cs, EXPR_ISB_HVAR, sizeof(Expr));
 
-    /* enter the higher variable                                           */
+    // enter the higher variable
     WRITE_EXPR(cs, ref, 0, hvar);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( ref );
 }
 
@@ -2187,20 +2187,20 @@ void CodeIsbHVar(CodeState * cs, UInt hvar)
 */
 void CodeAssGVar(CodeState * cs, UInt gvar)
 {
-    Stat                ass;            /* assignment, result              */
-    Expr                rhsx;           /* right hand side expression      */
+    Stat                ass;            // assignment, result
+    Expr                rhsx;           // right hand side expression
 
-    /*  allocate the assignment                                            */
+    // allocate the assignment
     ass = NewStat(cs, STAT_ASS_GVAR, 2 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, ass, 1, rhsx);
 
-    /* enter the global variable                                           */
+    // enter the global variable
     WRITE_STAT(cs, ass, 0, gvar);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( ass );
 }
 
@@ -2211,15 +2211,15 @@ void CodeAssGVar(CodeState * cs, UInt gvar)
 */
 void CodeUnbGVar(CodeState * cs, UInt gvar)
 {
-    Stat                ass;            /* unbind, result                  */
+    Stat                ass;            // unbind, result
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     ass = NewStat(cs, STAT_UNB_GVAR, sizeof(Stat));
 
-    /* enter the global variable                                           */
+    // enter the global variable
     WRITE_STAT(cs, ass, 0, gvar);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( ass );
 }
 
@@ -2236,15 +2236,15 @@ void CodeUnbGVar(CodeState * cs, UInt gvar)
 */
 void CodeRefGVar(CodeState * cs, UInt gvar)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
-    /* allocate the reference                                              */
+    // allocate the reference
     ref = NewExpr(cs, EXPR_REF_GVAR, sizeof(Expr));
 
-    /* enter the global variable                                           */
+    // enter the global variable
     WRITE_EXPR(cs, ref, 0, gvar);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( ref );
 }
 
@@ -2255,15 +2255,15 @@ void CodeRefGVar(CodeState * cs, UInt gvar)
 */
 void CodeIsbGVar(CodeState * cs, UInt gvar)
 {
-    Expr                ref;            /* isbound, result                 */
+    Expr                ref;            // isbound, result
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     ref = NewExpr(cs, EXPR_ISB_GVAR, sizeof(Expr));
 
-    /* enter the global variable                                           */
+    // enter the global variable
     WRITE_EXPR(cs, ref, 0, gvar);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( ref );
 }
 
@@ -2277,77 +2277,77 @@ void CodeIsbGVar(CodeState * cs, UInt gvar)
 */
 static void CodeAssListUniv(CodeState * cs, Stat ass, Int narg)
 {
-    Expr                list;           /* list expression                 */
-    Expr                pos;            /* position expression             */
-    Expr                rhsx;           /* right hand side expression      */
+    Expr                list;           // list expression
+    Expr                pos;            // position expression
+    Expr                rhsx;           // right hand side expression
     Int i;
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, ass, narg + 1, rhsx);
 
-    /* enter the position expression                                       */
+    // enter the position expression
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
       WRITE_STAT(cs, ass, i, pos);
     }
 
-    /* enter the list expression                                           */
+    // enter the list expression
     list = PopExpr();
     WRITE_STAT(cs, ass, 0, list);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( ass );
 }
 
 void CodeAssList(CodeState * cs, Int narg)
 {
-    Stat                ass;            /* assignment, result              */
+    Stat                ass;            // assignment, result
 
     GAP_ASSERT(narg == 1 || narg == 2);
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     if (narg == 1)
         ass = NewStat(cs, STAT_ASS_LIST, 3 * sizeof(Stat));
-    else /* if (narg == 2) */
+    else // if (narg == 2)
         ass = NewStat(cs, STAT_ASS_MAT, 4 * sizeof(Stat));
 
-    /* let 'CodeAssListUniv' do the rest                                   */
+    // let 'CodeAssListUniv' do the rest
     CodeAssListUniv(cs, ass, narg);
 }
 
 void CodeAsssList(CodeState * cs)
 {
-    Stat                ass;            /* assignment, result              */
+    Stat                ass;            // assignment, result
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     ass = NewStat(cs, STAT_ASSS_LIST, 3 * sizeof(Stat));
 
-    /* let 'CodeAssListUniv' do the rest                                   */
+    // let 'CodeAssListUniv' do the rest
     CodeAssListUniv(cs, ass, 1);
 }
 
 void CodeAssListLevel(CodeState * cs, Int narg, UInt level)
 {
-    Stat                ass;            /* assignment, result              */
+    Stat                ass;            // assignment, result
 
-    /* allocate the assignment and enter the level                         */
+    // allocate the assignment and enter the level
     ass = NewStat(cs, STAT_ASS_LIST_LEV, (narg + 3) * sizeof(Stat));
     WRITE_STAT(cs, ass, narg + 2, level);
 
-    /* let 'CodeAssListUniv' do the rest                                   */
+    // let 'CodeAssListUniv' do the rest
     CodeAssListUniv(cs, ass, narg);
 }
 
 void CodeAsssListLevel(CodeState * cs, UInt level)
 {
-    Stat                ass;            /* assignment, result              */
+    Stat                ass;            // assignment, result
 
-    /* allocate the assignment and enter the level                         */
+    // allocate the assignment and enter the level
     ass = NewStat(cs, STAT_ASSS_LIST_LEV, 4 * sizeof(Stat));
     WRITE_STAT(cs, ass, 3, level);
 
-    /* let 'CodeAssListUniv' do the rest                                   */
+    // let 'CodeAssListUniv' do the rest
     CodeAssListUniv(cs, ass, 1);
 }
 
@@ -2358,25 +2358,25 @@ void CodeAsssListLevel(CodeState * cs, UInt level)
 */
 void CodeUnbList(CodeState * cs, Int narg)
 {
-    Stat                ass;            /* unbind, result                  */
-    Expr                list;           /* list expression                 */
-    Expr                pos;            /* position expression             */
+    Stat                ass;            // unbind, result
+    Expr                list;           // list expression
+    Expr                pos;            // position expression
     Int i;
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     ass = NewStat(cs, STAT_UNB_LIST, (narg + 1) * sizeof(Stat));
 
-    /* enter the position expressions                                       */
+    // enter the position expressions
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
       WRITE_STAT(cs, ass, i, pos);
     }
 
-    /* enter the list expression                                           */
+    // enter the list expression
     list = PopExpr();
     WRITE_STAT(cs, ass, 0, list);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( ass );
 }
 
@@ -2390,73 +2390,73 @@ void CodeUnbList(CodeState * cs, Int narg)
 */
 static void CodeElmListUniv(CodeState * cs, Expr ref, Int narg)
 {
-    Expr                list;           /* list expression                 */
-    Expr                pos;            /* position expression             */
+    Expr                list;           // list expression
+    Expr                pos;            // position expression
     Int                i;
 
-    /* enter the position expression                                       */
+    // enter the position expression
 
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
       WRITE_EXPR(cs, ref, i, pos);
     }
 
-    /* enter the list expression                                           */
+    // enter the list expression
     list = PopExpr();
     WRITE_EXPR(cs, ref, 0, list);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( ref );
 }
 
 void CodeElmList(CodeState * cs, Int narg)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
     GAP_ASSERT(narg == 1 || narg == 2);
 
-    /* allocate the reference                                              */
+    // allocate the reference
     if (narg == 1)
       ref = NewExpr(cs, EXPR_ELM_LIST, 2 * sizeof(Expr));
-    else /* if (narg == 2) */
+    else // if (narg == 2)
       ref = NewExpr(cs, EXPR_ELM_MAT, 3 * sizeof(Expr));
 
-    /* let 'CodeElmListUniv' to the rest                                   */
+    // let 'CodeElmListUniv' to the rest
     CodeElmListUniv(cs, ref, narg);
 }
 
 void CodeElmsList(CodeState * cs)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
-    /* allocate the reference                                              */
+    // allocate the reference
     ref = NewExpr(cs, EXPR_ELMS_LIST, 2 * sizeof(Expr));
 
-    /* let 'CodeElmListUniv' to the rest                                   */
+    // let 'CodeElmListUniv' to the rest
     CodeElmListUniv(cs, ref, 1);
 }
 
 void CodeElmListLevel(CodeState * cs, Int narg, UInt level)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
-    /* allocate the reference and enter the level                          */
+    // allocate the reference and enter the level
     ref = NewExpr(cs, EXPR_ELM_LIST_LEV, (narg + 2) * sizeof(Expr));
     WRITE_EXPR(cs, ref, narg + 1, level);
 
-    /* let 'CodeElmListUniv' do the rest                                   */
+    // let 'CodeElmListUniv' do the rest
     CodeElmListUniv(cs, ref, narg);
 }
 
 void CodeElmsListLevel(CodeState * cs, UInt level)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
 
-    /* allocate the reference and enter the level                          */
+    // allocate the reference and enter the level
     ref = NewExpr(cs, EXPR_ELMS_LIST_LEV, 3 * sizeof(Expr));
     WRITE_EXPR(cs, ref, 2, level);
 
-    /* let 'CodeElmListUniv' do the rest                                   */
+    // let 'CodeElmListUniv' do the rest
     CodeElmListUniv(cs, ref, 1);
 }
 
@@ -2467,25 +2467,25 @@ void CodeElmsListLevel(CodeState * cs, UInt level)
 */
 void CodeIsbList(CodeState * cs, Int narg)
 {
-    Expr                ref;            /* isbound, result                 */
-    Expr                list;           /* list expression                 */
-    Expr                pos;            /* position expression             */
+    Expr                ref;            // isbound, result
+    Expr                list;           // list expression
+    Expr                pos;            // position expression
     Int i;
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     ref = NewExpr(cs, EXPR_ISB_LIST, (narg + 1) * sizeof(Expr));
 
-    /* enter the position expression                                       */
+    // enter the position expression
     for (i = narg; i > 0; i--) {
       pos = PopExpr();
       WRITE_EXPR(cs, ref, i, pos);
     }
 
-    /* enter the list expression                                           */
+    // enter the list expression
     list = PopExpr();
     WRITE_EXPR(cs, ref, 0, list);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( ref );
 }
 
@@ -2497,91 +2497,91 @@ void CodeIsbList(CodeState * cs, Int narg)
 */
 void CodeAssRecName(CodeState * cs, UInt rnam)
 {
-    Stat                stat;           /* assignment, result              */
-    Expr                rec;            /* record expression               */
-    Expr                rhsx;           /* right hand side expression      */
+    Stat                stat;           // assignment, result
+    Expr                rec;            // record expression
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     stat = NewStat(cs, STAT_ASS_REC_NAME, 3 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, stat, 2, rhsx);
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_STAT(cs, stat, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_STAT(cs, stat, 0, rec);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( stat );
 }
 
 void CodeAssRecExpr(CodeState * cs)
 {
-    Stat                stat;           /* assignment, result              */
-    Expr                rec;            /* record expression               */
-    Expr                rnam;           /* name expression                 */
-    Expr                rhsx;           /* right hand side expression      */
+    Stat                stat;           // assignment, result
+    Expr                rec;            // record expression
+    Expr                rnam;           // name expression
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     stat = NewStat(cs, STAT_ASS_REC_EXPR, 3 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, stat, 2, rhsx);
 
-    /* enter the name expression                                           */
+    // enter the name expression
     rnam = PopExpr();
     WRITE_STAT(cs, stat, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_STAT(cs, stat, 0, rec);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( stat );
 }
 
 void CodeUnbRecName(CodeState * cs, UInt rnam)
 {
-    Stat                stat;           /* unbind, result                  */
-    Expr                rec;            /* record expression               */
+    Stat                stat;           // unbind, result
+    Expr                rec;            // record expression
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     stat = NewStat(cs, STAT_UNB_REC_NAME, 2 * sizeof(Stat));
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_STAT(cs, stat, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_STAT(cs, stat, 0, rec);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( stat );
 }
 
 void CodeUnbRecExpr(CodeState * cs)
 {
-    Stat                stat;           /* unbind, result                  */
-    Expr                rec;            /* record expression               */
-    Expr                rnam;           /* name expression                 */
+    Stat                stat;           // unbind, result
+    Expr                rec;            // record expression
+    Expr                rnam;           // name expression
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     stat = NewStat(cs, STAT_UNB_REC_EXPR, 2 * sizeof(Stat));
 
-    /* enter the name expression                                           */
+    // enter the name expression
     rnam = PopExpr();
     WRITE_STAT(cs, stat, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_STAT(cs, stat, 0, rec);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( stat );
 }
 
@@ -2593,41 +2593,41 @@ void CodeUnbRecExpr(CodeState * cs)
 */
 void CodeElmRecName(CodeState * cs, UInt rnam)
 {
-    Expr                expr;           /* reference, result               */
-    Expr                rec;            /* record expression               */
+    Expr                expr;           // reference, result
+    Expr                rec;            // record expression
 
-    /* allocate the reference                                              */
+    // allocate the reference
     expr = NewExpr(cs, EXPR_ELM_REC_NAME, 2 * sizeof(Expr));
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_EXPR(cs, expr, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_EXPR(cs, expr, 0, rec);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( expr );
 }
 
 void CodeElmRecExpr(CodeState * cs)
 {
-    Expr                expr;           /* reference, result               */
-    Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expression               */
+    Expr                expr;           // reference, result
+    Expr                rnam;           // name expression
+    Expr                rec;            // record expression
 
-    /* allocate the reference                                              */
+    // allocate the reference
     expr = NewExpr(cs, EXPR_ELM_REC_EXPR, 2 * sizeof(Expr));
 
-    /* enter the expression                                                */
+    // enter the expression
     rnam = PopExpr();
     WRITE_EXPR(cs, expr, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_EXPR(cs, expr, 0, rec);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( expr );
 }
 
@@ -2638,20 +2638,20 @@ void CodeElmRecExpr(CodeState * cs)
 */
 void CodeIsbRecName(CodeState * cs, UInt rnam)
 {
-    Expr                expr;           /* isbound, result                 */
-    Expr                rec;            /* record expression               */
+    Expr                expr;           // isbound, result
+    Expr                rec;            // record expression
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     expr = NewExpr(cs, EXPR_ISB_REC_NAME, 2 * sizeof(Expr));
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_EXPR(cs, expr, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_EXPR(cs, expr, 0, rec);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( expr );
 }
 
@@ -2662,22 +2662,22 @@ void CodeIsbRecName(CodeState * cs, UInt rnam)
 */
 void CodeIsbRecExpr(CodeState * cs)
 {
-    Expr                expr;           /* reference, result               */
-    Expr                rnam;           /* name expression                 */
-    Expr                rec;            /* record expression               */
+    Expr                expr;           // reference, result
+    Expr                rnam;           // name expression
+    Expr                rec;            // record expression
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     expr = NewExpr(cs, EXPR_ISB_REC_EXPR, 2 * sizeof(Expr));
 
-    /* enter the expression                                                */
+    // enter the expression
     rnam = PopExpr();
     WRITE_EXPR(cs, expr, 1, rnam);
 
-    /* enter the record expression                                         */
+    // enter the record expression
     rec = PopExpr();
     WRITE_EXPR(cs, expr, 0, rec);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( expr );
 }
 
@@ -2688,19 +2688,19 @@ void CodeIsbRecExpr(CodeState * cs)
 */
 void CodeAssPosObj(CodeState * cs)
 {
-    Stat                ass;            /* assignment, result              */
+    Stat                ass;            // assignment, result
     Expr                posobj;         // posobj expression
-    Expr                pos;            /* position expression             */
-    Expr                rhsx;           /* right hand side expression      */
+    Expr                pos;            // position expression
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     ass = NewStat(cs, STAT_ASS_POSOBJ, 3 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, ass, 2, rhsx);
 
-    /* enter the position expression                                       */
+    // enter the position expression
     pos = PopExpr();
     WRITE_STAT(cs, ass, 1, pos);
 
@@ -2708,7 +2708,7 @@ void CodeAssPosObj(CodeState * cs)
     posobj = PopExpr();
     WRITE_STAT(cs, ass, 0, posobj);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( ass );
 }
 
@@ -2720,13 +2720,13 @@ void CodeAssPosObj(CodeState * cs)
 void CodeUnbPosObj(CodeState * cs)
 {
     Expr                posobj;         // posobj expression
-    Expr                pos;            /* position expression             */
-    Stat                ass;            /* unbind, result                  */
+    Expr                pos;            // position expression
+    Stat                ass;            // unbind, result
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     ass = NewStat(cs, STAT_UNB_POSOBJ, 2 * sizeof(Stat));
 
-    /* enter the position expression                                       */
+    // enter the position expression
     pos = PopExpr();
     WRITE_STAT(cs, ass, 1, pos);
 
@@ -2734,7 +2734,7 @@ void CodeUnbPosObj(CodeState * cs)
     posobj = PopExpr();
     WRITE_STAT(cs, ass, 0, posobj);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( ass );
 }
 
@@ -2745,14 +2745,14 @@ void CodeUnbPosObj(CodeState * cs)
 */
 void CodeElmPosObj(CodeState * cs)
 {
-    Expr                ref;            /* reference, result               */
+    Expr                ref;            // reference, result
     Expr                posobj;         // posobj expression
-    Expr                pos;            /* position expression             */
+    Expr                pos;            // position expression
 
-    /* allocate the reference                                              */
+    // allocate the reference
     ref = NewExpr(cs, EXPR_ELM_POSOBJ, 2 * sizeof(Expr));
 
-    /* enter the position expression                                       */
+    // enter the position expression
     pos = PopExpr();
     WRITE_EXPR(cs, ref, 1, pos);
 
@@ -2760,7 +2760,7 @@ void CodeElmPosObj(CodeState * cs)
     posobj = PopExpr();
     WRITE_EXPR(cs, ref, 0, posobj);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( ref );
 }
 
@@ -2771,14 +2771,14 @@ void CodeElmPosObj(CodeState * cs)
 */
 void CodeIsbPosObj(CodeState * cs)
 {
-    Expr                ref;            /* isbound, result                 */
+    Expr                ref;            // isbound, result
     Expr                posobj;         // posobj expression
-    Expr                pos;            /* position expression             */
+    Expr                pos;            // position expression
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     ref = NewExpr(cs, EXPR_ISB_POSOBJ, 2 * sizeof(Expr));
 
-    /* enter the position expression                                       */
+    // enter the position expression
     pos = PopExpr();
     WRITE_EXPR(cs, ref, 1, pos);
 
@@ -2786,7 +2786,7 @@ void CodeIsbPosObj(CodeState * cs)
     posobj = PopExpr();
     WRITE_EXPR(cs, ref, 0, posobj);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( ref );
 }
 
@@ -2798,43 +2798,43 @@ void CodeIsbPosObj(CodeState * cs)
 */
 void CodeAssComObjName(CodeState * cs, UInt rnam)
 {
-    Stat                stat;           /* assignment, result              */
+    Stat                stat;           // assignment, result
     Expr                comobj;         // comobj expression
-    Expr                rhsx;           /* right hand side expression      */
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     stat = NewStat(cs, STAT_ASS_COMOBJ_NAME, 3 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, stat, 2, rhsx);
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_STAT(cs, stat, 1, rnam);
 
     // enter the comobj expression
     comobj = PopExpr();
     WRITE_STAT(cs, stat, 0, comobj);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( stat );
 }
 
 void CodeAssComObjExpr(CodeState * cs)
 {
-    Stat                stat;           /* assignment, result              */
+    Stat                stat;           // assignment, result
     Expr                comobj;         // comobj expression
-    Expr                rnam;           /* name expression                 */
-    Expr                rhsx;           /* right hand side expression      */
+    Expr                rnam;           // name expression
+    Expr                rhsx;           // right hand side expression
 
-    /* allocate the assignment                                             */
+    // allocate the assignment
     stat = NewStat(cs, STAT_ASS_COMOBJ_EXPR, 3 * sizeof(Stat));
 
-    /* enter the right hand side expression                                */
+    // enter the right hand side expression
     rhsx = PopExpr();
     WRITE_STAT(cs, stat, 2, rhsx);
 
-    /* enter the name expression                                           */
+    // enter the name expression
     rnam = PopExpr();
     WRITE_STAT(cs, stat, 1, rnam);
 
@@ -2842,39 +2842,39 @@ void CodeAssComObjExpr(CodeState * cs)
     comobj = PopExpr();
     WRITE_STAT(cs, stat, 0, comobj);
 
-    /* push the assignment                                                 */
+    // push the assignment
     PushStat( stat );
 }
 
 void CodeUnbComObjName(CodeState * cs, UInt rnam)
 {
-    Stat                stat;           /* unbind, result                  */
+    Stat                stat;           // unbind, result
     Expr                comobj;         // comobj expression
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     stat = NewStat(cs, STAT_UNB_COMOBJ_NAME, 2 * sizeof(Stat));
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_STAT(cs, stat, 1, rnam);
 
     // enter the comobj expression
     comobj = PopExpr();
     WRITE_STAT(cs, stat, 0, comobj);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( stat );
 }
 
 void CodeUnbComObjExpr(CodeState * cs)
 {
-    Stat                stat;           /* unbind, result                  */
+    Stat                stat;           // unbind, result
     Expr                comobj;         // comobj expression
-    Expr                rnam;           /* name expression                 */
+    Expr                rnam;           // name expression
 
-    /* allocate the unbind                                                 */
+    // allocate the unbind
     stat = NewStat(cs, STAT_UNB_COMOBJ_EXPR, 2 * sizeof(Stat));
 
-    /* enter the name expression                                           */
+    // enter the name expression
     rnam = PopExpr();
     WRITE_STAT(cs, stat, 1, rnam);
 
@@ -2882,7 +2882,7 @@ void CodeUnbComObjExpr(CodeState * cs)
     comobj = PopExpr();
     WRITE_STAT(cs, stat, 0, comobj);
 
-    /* push the unbind                                                     */
+    // push the unbind
     PushStat( stat );
 }
 
@@ -2894,33 +2894,33 @@ void CodeUnbComObjExpr(CodeState * cs)
 */
 void CodeElmComObjName(CodeState * cs, UInt rnam)
 {
-    Expr                expr;           /* reference, result               */
+    Expr                expr;           // reference, result
     Expr                comobj;         // comobj expression
 
-    /* allocate the reference                                              */
+    // allocate the reference
     expr = NewExpr(cs, EXPR_ELM_COMOBJ_NAME, 2 * sizeof(Expr));
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_EXPR(cs, expr, 1, rnam);
 
     // enter the comobj expression
     comobj = PopExpr();
     WRITE_EXPR(cs, expr, 0, comobj);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( expr );
 }
 
 void CodeElmComObjExpr(CodeState * cs)
 {
-    Expr                expr;           /* reference, result               */
-    Expr                rnam;           /* name expression                 */
+    Expr                expr;           // reference, result
+    Expr                rnam;           // name expression
     Expr                comobj;         // comobj expression
 
-    /* allocate the reference                                              */
+    // allocate the reference
     expr = NewExpr(cs, EXPR_ELM_COMOBJ_EXPR, 2 * sizeof(Expr));
 
-    /* enter the expression                                                */
+    // enter the expression
     rnam = PopExpr();
     WRITE_EXPR(cs, expr, 1, rnam);
 
@@ -2928,7 +2928,7 @@ void CodeElmComObjExpr(CodeState * cs)
     comobj = PopExpr();
     WRITE_EXPR(cs, expr, 0, comobj);
 
-    /* push the reference                                                  */
+    // push the reference
     PushExpr( expr );
 }
 
@@ -2939,20 +2939,20 @@ void CodeElmComObjExpr(CodeState * cs)
 */
 void CodeIsbComObjName(CodeState * cs, UInt rnam)
 {
-    Expr                expr;           /* isbound, result                 */
+    Expr                expr;           // isbound, result
     Expr                comobj;         // comobj expression
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     expr = NewExpr(cs, EXPR_ISB_COMOBJ_NAME, 2 * sizeof(Expr));
 
-    /* enter the name                                                      */
+    // enter the name
     WRITE_EXPR(cs, expr, 1, rnam);
 
     // enter the comobj expression
     comobj = PopExpr();
     WRITE_EXPR(cs, expr, 0, comobj);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( expr );
 }
 
@@ -2962,14 +2962,14 @@ void CodeIsbComObjName(CodeState * cs, UInt rnam)
 */
 void CodeIsbComObjExpr(CodeState * cs)
 {
-    Expr                expr;           /* reference, result               */
-    Expr                rnam;           /* name expression                 */
+    Expr                expr;           // reference, result
+    Expr                rnam;           // name expression
     Expr                comobj;         // comobj expression
 
-    /* allocate the isbound                                                */
+    // allocate the isbound
     expr = NewExpr(cs, EXPR_ISB_COMOBJ_EXPR, 2 * sizeof(Expr));
 
-    /* enter the expression                                                */
+    // enter the expression
     rnam = PopExpr();
     WRITE_EXPR(cs, expr, 1, rnam);
 
@@ -2977,7 +2977,7 @@ void CodeIsbComObjExpr(CodeState * cs)
     comobj = PopExpr();
     WRITE_EXPR(cs, expr, 0, comobj);
 
-    /* push the isbound                                                    */
+    // push the isbound
     PushExpr( expr );
 }
 
@@ -3016,20 +3016,20 @@ void CodeInfoMiddle(CodeState * cs)
 
 void CodeInfoEnd(CodeState * cs, UInt narg)
 {
-    Stat                stat;           /* we build the statement here     */
-    Expr                expr;           /* expression                      */
-    UInt                i;              /* loop variable                   */
+    Stat                stat;           // we build the statement here
+    Expr                expr;           // expression
+    UInt                i;              // loop variable
 
-    /* allocate the new statement                                          */
+    // allocate the new statement
     stat = NewStat(cs, STAT_INFO, SIZE_NARG_INFO(2 + narg));
 
-    /* narg only counts the printable arguments                            */
+    // narg only counts the printable arguments
     for ( i = narg + 2; 0 < i; i-- ) {
         expr = PopExpr();
         SET_ARGI_INFO(stat, i, expr);
     }
 
-    /* push the statement                                                  */
+    // push the statement
     PushStat( stat );
 }
 
@@ -3058,25 +3058,25 @@ void CodeAssertAfterCondition(CodeState * cs)
 
 void CodeAssertEnd2Args(CodeState * cs)
 {
-    Stat                stat;           /* we build the statement here     */
+    Stat                stat;           // we build the statement here
 
     stat = NewStat(cs, STAT_ASSERT_2ARGS, 2 * sizeof(Expr));
 
-    WRITE_STAT(cs, stat, 1, PopExpr()); /* condition */
-    WRITE_STAT(cs, stat, 0, PopExpr()); /* level */
+    WRITE_STAT(cs, stat, 1, PopExpr()); // condition
+    WRITE_STAT(cs, stat, 0, PopExpr()); // level
 
     PushStat( stat );
 }
 
 void CodeAssertEnd3Args(CodeState * cs)
 {
-    Stat                stat;           /* we build the statement here     */
+    Stat                stat;           // we build the statement here
 
     stat = NewStat(cs, STAT_ASSERT_3ARGS, 3 * sizeof(Expr));
 
-    WRITE_STAT(cs, stat, 2, PopExpr()); /* message */
-    WRITE_STAT(cs, stat, 1, PopExpr()); /* condition */
-    WRITE_STAT(cs, stat, 0, PopExpr()); /* level */
+    WRITE_STAT(cs, stat, 2, PopExpr()); // message
+    WRITE_STAT(cs, stat, 1, PopExpr()); // condition
+    WRITE_STAT(cs, stat, 0, PopExpr()); // level
 
     PushStat( stat );
 }
@@ -3098,10 +3098,10 @@ static void SaveBody(Obj body)
 {
   UInt i;
   const UInt *ptr = (const UInt *) CONST_ADDR_OBJ(body);
-  /* Save the new information in the body */
+  // Save the new information in the body
   for (i =0; i < sizeof(BodyHeader)/sizeof(Obj); i++)
     SaveSubObj((Obj)(*ptr++));
-  /* and the rest */
+  // and the rest
   for (; i < (SIZE_OBJ(body)+sizeof(UInt)-1)/sizeof(UInt); i++)
     SaveUInt(*ptr++);
 }
@@ -3155,7 +3155,7 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking functions for function body bags                */
+    // install the marking functions for function body bags
     InitMarkFuncBags( T_BODY, MarkFourSubBags );
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -3164,15 +3164,15 @@ static Int InitKernel (
 #endif
 
 #ifdef HPCGAP
-    /* Allocate function bodies in the public data space */
+    // Allocate function bodies in the public data space
     MakeBagTypePublic(T_BODY);
 #endif
 
-    /* allocate the statements and expressions stacks                      */
+    // allocate the statements and expressions stacks
     InitGlobalBag(&CS(StackStat), "CS(StackStat)");
     InitGlobalBag(&CS(StackExpr), "CS(StackExpr)");
 
-    /* some functions and globals needed for float conversion */
+    // some functions and globals needed for float conversion
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
     return 0;
@@ -3198,11 +3198,11 @@ static Int PostRestore (
 static Int PreSave (
     StructInitInfo *    module )
 {
-  /* Can't save in mid-parsing */
+  // Can't save in mid-parsing
   if (CS(CountExpr) || CS(CountStat))
     return 1;
 
-  /* push the FP cache index out into a GAP Variable */
+  // push the FP cache index out into a GAP Variable
   AssGVar(GVarName("SavedFloatIndex"), INTOBJ_INT(NextFloatExprNumber));
 
   // clean any old data out of the statement and expression stacks,

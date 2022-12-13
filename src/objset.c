@@ -799,7 +799,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg)
       return result;
     default:
       ErrorQuit("OBJ_SET: Too many arguments", 0, 0);
-      return (Obj) 0; /* flow control hint */
+      return (Obj) 0; // flow control hint
   }
 }
 
@@ -918,7 +918,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg)
       return result;
     default:
       ErrorQuit("OBJ_MAP: Too many arguments", 0, 0);
-      return (Obj) 0; /* flow control hint */
+      return (Obj) 0; // flow control hint
   }
 }
 
@@ -1094,20 +1094,20 @@ static Int InitKernel (
   // set the bag type names (for error messages and debugging)
   InitBagNamesFromTable( BagNames );
 
-  /* install kind functions */
+  // install kind functions
   TypeObjFuncs[T_OBJSET          ] = TypeObjSet;
   TypeObjFuncs[T_OBJSET+IMMUTABLE] = TypeObjSet;
   TypeObjFuncs[T_OBJMAP          ] = TypeObjMap;
   TypeObjFuncs[T_OBJMAP+IMMUTABLE] = TypeObjMap;
-  /* install global variables */
+  // install global variables
   InitCopyGVar("TYPE_OBJSET", &TYPE_OBJSET);
   InitCopyGVar("TYPE_OBJMAP", &TYPE_OBJMAP);
-  /* install mark functions */
+  // install mark functions
   InitMarkFuncBags(T_OBJSET          , MarkObjSet);
   InitMarkFuncBags(T_OBJSET+IMMUTABLE, MarkObjSet);
   InitMarkFuncBags(T_OBJMAP          , MarkObjMap);
   InitMarkFuncBags(T_OBJMAP+IMMUTABLE, MarkObjMap);
-  /* install print functions */
+  // install print functions
   PrintObjFuncs[ T_OBJSET           ] = PrintObjSet;
   PrintObjFuncs[ T_OBJSET+IMMUTABLE ] = PrintObjSet;
   PrintObjFuncs[ T_OBJMAP           ] = PrintObjMap;
@@ -1144,7 +1144,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

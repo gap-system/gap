@@ -116,7 +116,7 @@ struct TypOutputFile {
     BOOL format;
     Int  indent;
 
-    /* each hint is a triple (position, value, indent) */
+    // each hint is a triple (position, value, indent)
     Int hints[3 * MAXHINTS + 1];
 };
 
@@ -273,6 +273,18 @@ UInt OpenInputLogStream(Obj stream);
 UInt CloseInputLog(void);
 
 /****************************************************************************
+ **
+ *V  Prompt  . . . . . . . . . . . . . . . . . . . . . . prompt to be printed
+ **
+ **  'Prompt' holds the string that is to be printed if a  new  line  is read
+ **  from the interactive files '*stdin*' or '*errin*'.
+ **
+ **  It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and changed
+ **  to the partial prompt '> ' in 'Read' after the first symbol is read.
+ */
+// TL: extern  const Char *    Prompt;
+
+/****************************************************************************
 **
 *F  SetPrompt( <prompt> ) . . . . . . . . . . . . . set the user input prompt
 */
@@ -287,7 +299,7 @@ void SetPrompt(const char * prompt);
  **  default is: Instead of 'PrintPromptHook' the 'Prompt' is printed and
  **  instead of 'EndLineHook' nothing is done.
  */
-/* TL: extern Obj  PrintPromptHook; */
+// TL: extern Obj  PrintPromptHook;
 extern Obj  EndLineHook;
 
 /****************************************************************************

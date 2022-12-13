@@ -275,7 +275,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename)
     RequireStringRep(SELF_NAME, filename);
 
 #if !defined(HAVE_DLOPEN)
-    /* no dynamic library support                                          */
+    // no dynamic library support
     if (SyDebugLoading) {
         Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0, 0);
     }
@@ -331,7 +331,7 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* try to find the module                                              */
+    // try to find the module
     info = LookupStaticModule(CONST_CSTR_STRING(filename));
     if (info == 0) {
         if (SyDebugLoading) {
@@ -360,7 +360,7 @@ static Obj FuncSHOW_STAT(Obj self)
     Int              k;
     Int              im;
 
-    /* count the number of install modules                                 */
+    // count the number of install modules
     for (k = 0, im = 0; CompInitFuncs[k]; k++) {
         info = (*(CompInitFuncs[k]))();
         if (info == 0) {
@@ -369,7 +369,7 @@ static Obj FuncSHOW_STAT(Obj self)
         im++;
     }
 
-    /* make a list of modules with crc values                              */
+    // make a list of modules with crc values
     modules = NEW_PLIST(T_PLIST, 2 * im);
 
     for (k = 0; CompInitFuncs[k]; k++) {
@@ -381,7 +381,7 @@ static Obj FuncSHOW_STAT(Obj self)
 
         PushPlist(modules, name);
 
-        /* compute the crc value                                           */
+        // compute the crc value
         PushPlist(modules, ObjInt_Int(info->crc));
     }
 
@@ -400,7 +400,7 @@ static Obj FuncLoadedModules(Obj self)
     Obj              str;
     Obj              list;
 
-    /* create a list                                                       */
+    // create a list
     list = NEW_PLIST(T_PLIST, NrModules * 3);
     SET_LEN_PLIST(list, NrModules * 3);
     for (i = 0; i < NrModules; i++) {
@@ -880,7 +880,7 @@ void LoadModules(void)
             READ_GAP_ROOT(buf);
         else {
             StructInitInfo * info = NULL;
-            /* Search for user module static case first */
+            // Search for user module static case first
             if (IS_MODULE_STATIC(type)) {
                 info = LookupStaticModule(buf);
                 if (info == 0) {
@@ -889,7 +889,7 @@ void LoadModules(void)
                 }
             }
             else {
-                /* and dynamic case */
+                // and dynamic case
                 InitInfoFunc init;
 
 #ifdef HAVE_DLOPEN

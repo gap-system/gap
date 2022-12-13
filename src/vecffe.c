@@ -72,21 +72,21 @@ static BOOL IsVecFFE(Obj obj)
 */
 static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
 {
-    Obj                 vecS;           /* handle of the sum               */
-    Obj *               ptrS;           /* pointer into the sum            */
-    FFV                 valS;           /* the value of a sum              */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    FFV                 valR;           /* the value of an element in vecR */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
-    FFV                 valL;           /* the value of elmL               */
+    Obj                 vecS;           // handle of the sum
+    Obj *               ptrS;           // pointer into the sum
+    FFV                 valS;           // the value of a sum
+    const Obj *         ptrR;           // pointer into the right operand
+    FFV                 valR;           // the value of an element in vecR
+    UInt                len;            // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
+    FFV                 valL;           // the value of elmL
 
-    /* get the field and check that elmL and vecR have the same field      */
+    // get the field and check that elmL and vecR have the same field
     fld = FLD_FFE(ELM_PLIST(vecR, 1));
     if (FLD_FFE(elmL) != fld) {
-        /* check the characteristic                                          */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
             return SumSclList(elmL, vecR);
 
@@ -95,15 +95,15 @@ static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
                      0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecR);
     vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecS, len);
 
-    /* to add we need the successor table                                  */
+    // to add we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     valL = VAL_FFE(elmL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
@@ -130,21 +130,21 @@ static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
 */
 static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
 {
-    Obj                 vecS;           /* handle of the sum               */
-    Obj *               ptrS;           /* pointer into the sum            */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
-    FFV                 valR;           /* the value of elmR               */
-    FFV                 valL;           /* the value of an element in vecL */
-    FFV                 valS;           /* the value of a sum              */
+    Obj                 vecS;           // handle of the sum
+    Obj *               ptrS;           // pointer into the sum
+    const Obj *         ptrL;           // pointer into the left operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
+    FFV                 valR;           // the value of elmR
+    FFV                 valL;           // the value of an element in vecL
+    FFV                 valS;           // the value of a sum
 
-    /* get the field and check that vecL and elmR have the same field      */
+    // get the field and check that vecL and elmR have the same field
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(elmR) != fld) {
-        /* check the characteristic                                          */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
             return SumListScl(vecL, elmR);
 
@@ -153,15 +153,15 @@ static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
                      0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecL);
     vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecS, len);
 
-    /* to add we need the successor table                                  */
+    // to add we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     valR = VAL_FFE(elmR);
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrS = ADDR_OBJ(vecS);
@@ -187,20 +187,20 @@ static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
 */
 static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
 {
-    Obj                 vecS;           /* handle of the sum               */
-    Obj *               ptrS;           /* pointer into the sum            */
-    FFV                 valS;           /* one element of sum list         */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    FFV                 valL;           /* one element of left operand     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    FFV                 valR;           /* one element of right operand    */
-    UInt                lenL, lenR, len; /* length                          */
+    Obj                 vecS;           // handle of the sum
+    Obj *               ptrS;           // pointer into the sum
+    FFV                 valS;           // one element of sum list
+    const Obj *         ptrL;           // pointer into the left operand
+    FFV                 valL;           // one element of left operand
+    const Obj *         ptrR;           // pointer into the right operand
+    FFV                 valR;           // one element of right operand
+    UInt                lenL, lenR, len; // length
     UInt                lenmin;
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
 
-    /* check the lengths                                                   */
+    // check the lengths
     lenL = LEN_PLIST(vecL);
     lenR = LEN_PLIST(vecR);
     if (lenR > lenL) {
@@ -211,25 +211,25 @@ static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
         lenmin = lenR;
     }
 
-    /* check the fields                                                    */
+    // check the fields
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return SumListList(vecL, vecR);
 
         ErrorMayQuit("Vector +: vectors have different fields", 0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR),
                          T_PLIST_FFE, len);
     SET_LEN_PLIST(vecS, len);
 
-    /* to add we need the successor table                                  */
+    // to add we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
@@ -263,21 +263,21 @@ static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
 */
 static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
 {
-    Obj                 vecD;           /* handle of the difference        */
-    Obj *               ptrD;           /* pointer into the difference     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
-    FFV                 valR;           /* the value of elmL               */
-    FFV                 valL;           /* the value of an element in vecR */
-    FFV                 valD;           /* the value of a difference       */
+    Obj                 vecD;           // handle of the difference
+    Obj *               ptrD;           // pointer into the difference
+    const Obj *         ptrR;           // pointer into the right operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
+    FFV                 valR;           // the value of elmL
+    FFV                 valL;           // the value of an element in vecR
+    FFV                 valD;           // the value of a difference
 
-    /* check the fields                                                    */
+    // check the fields
     fld = FLD_FFE(ELM_PLIST(vecR, 1));
     if (FLD_FFE(elmL) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
             return DiffSclList(elmL, vecR);
 
@@ -286,15 +286,15 @@ static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
                      0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecR);
     vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecD, len);
 
-    /* to subtract we need the successor table                             */
+    // to subtract we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and subtract                                 */
+    // loop over the elements and subtract
     valL = VAL_FFE(elmL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
@@ -322,21 +322,21 @@ static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
 */
 static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
 {
-    Obj                 vecD;           /* handle of the difference        */
-    Obj *               ptrD;           /* pointer into the difference     */
-    FFV                 valD;           /* the value of a difference       */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    FFV                 valL;           /* the value of an element in vecL */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
-    FFV                 valR;           /* the value of elmR               */
+    Obj                 vecD;           // handle of the difference
+    Obj *               ptrD;           // pointer into the difference
+    FFV                 valD;           // the value of a difference
+    const Obj *         ptrL;           // pointer into the left operand
+    FFV                 valL;           // the value of an element in vecL
+    UInt                len;            // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
+    FFV                 valR;           // the value of elmR
 
-    /* get the field and check that vecL and elmR have the same field      */
+    // get the field and check that vecL and elmR have the same field
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(elmR) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
             return DiffListScl(vecL, elmR);
 
@@ -345,15 +345,15 @@ static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
                      0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecL);
     vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecD, len);
 
-    /* to subtract we need the successor table                             */
+    // to subtract we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and subtract                                 */
+    // loop over the elements and subtract
     valR = VAL_FFE(elmR);
     valR = NEG_FFV(valR, succ);
     ptrL = CONST_ADDR_OBJ(vecL);
@@ -381,20 +381,20 @@ static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
 */
 static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
 {
-    Obj                 vecD;           /* handle of the difference        */
-    Obj *               ptrD;           /* pointer into the difference     */
-    FFV                 valD;           /* one element of difference list  */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    FFV                 valL;           /* one element of left operand     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    FFV                 valR;           /* one element of right operand    */
-    UInt                len, lenL, lenR; /* length                          */
+    Obj                 vecD;           // handle of the difference
+    Obj *               ptrD;           // pointer into the difference
+    FFV                 valD;           // one element of difference list
+    const Obj *         ptrL;           // pointer into the left operand
+    FFV                 valL;           // one element of left operand
+    const Obj *         ptrR;           // pointer into the right operand
+    FFV                 valR;           // one element of right operand
+    UInt                len, lenL, lenR; // length
     UInt                lenmin;
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
 
-    /* check the lengths                                                   */
+    // check the lengths
     lenL = LEN_PLIST(vecL);
     lenR = LEN_PLIST(vecR);
     if (lenR > lenL) {
@@ -405,25 +405,25 @@ static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
         lenmin = lenR;
     }
 
-    /* check the fields                                                    */
+    // check the fields
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return DiffListList(vecL, vecR);
 
         ErrorMayQuit("Vector -: vectors have different fields", 0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR),
                          T_PLIST_FFE, len);
     SET_LEN_PLIST(vecD, len);
 
-    /* to subtract we need the successor table                             */
+    // to subtract we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and subtract                                 */
+    // loop over the elements and subtract
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
@@ -462,21 +462,21 @@ static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
 */
 static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
 {
-    Obj                 vecP;           /* handle of the product           */
-    Obj *               ptrP;           /* pointer into the product        */
-    FFV                 valP;           /* the value of a product          */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    FFV                 valR;           /* the value of an element in vecR */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
-    FFV                 valL;           /* the value of elmL               */
+    Obj                 vecP;           // handle of the product
+    Obj *               ptrP;           // pointer into the product
+    FFV                 valP;           // the value of a product
+    const Obj *         ptrR;           // pointer into the right operand
+    FFV                 valR;           // the value of an element in vecR
+    UInt                len;            // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
+    FFV                 valL;           // the value of elmL
 
-    /* get the field and check that elmL and vecR have the same field      */
+    // get the field and check that elmL and vecR have the same field
     fld = FLD_FFE(ELM_PLIST(vecR, 1));
     if (FLD_FFE(elmL) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmL)))
             return ProdSclList(elmL, vecR);
 
@@ -485,15 +485,15 @@ static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
                      0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecR);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecP, len);
 
-    /* to multiply we need the successor table                             */
+    // to multiply we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and multiply                                 */
+    // loop over the elements and multiply
     valL = VAL_FFE(elmL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrP = ADDR_OBJ(vecP);
@@ -519,21 +519,21 @@ static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
 */
 static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
 {
-    Obj                 vecP;           /* handle of the product           */
-    Obj *               ptrP;           /* pointer into the product        */
-    FFV                 valP;           /* the value of a product          */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    FFV                 valL;           /* the value of an element in vecL */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
-    FFV                 valR;           /* the value of elmR               */
+    Obj                 vecP;           // handle of the product
+    Obj *               ptrP;           // pointer into the product
+    FFV                 valP;           // the value of a product
+    const Obj *         ptrL;           // pointer into the left operand
+    FFV                 valL;           // the value of an element in vecL
+    UInt                len;            // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
+    FFV                 valR;           // the value of elmR
 
-    /* get the field and check that vecL and elmR have the same field      */
+    // get the field and check that vecL and elmR have the same field
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(elmR) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(elmR)))
             return ProdListScl(vecL, elmR);
 
@@ -542,15 +542,15 @@ static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
                      0, 0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecL);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_FFE, len);
     SET_LEN_PLIST(vecP, len);
 
-    /* to multiply we need the successor table                             */
+    // to multiply we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and multiply                                 */
+    // loop over the elements and multiply
     valR = VAL_FFE(elmR);
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrP = ADDR_OBJ(vecP);
@@ -577,36 +577,36 @@ static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
 */
 static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
 {
-    FFV                 valP;           /* one product                     */
-    FFV                 valS;           /* sum of the products             */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    FFV                 valL;           /* one element of left operand     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    FFV                 valR;           /* one element of right operand    */
-    UInt                lenL, lenR, len; /* length                          */
-    UInt                i;              /* loop variable                   */
-    FF                  fld;            /* finite field                    */
-    const FFV *         succ;           /* successor table                 */
+    FFV                 valP;           // one product
+    FFV                 valS;           // sum of the products
+    const Obj *         ptrL;           // pointer into the left operand
+    FFV                 valL;           // one element of left operand
+    const Obj *         ptrR;           // pointer into the right operand
+    FFV                 valR;           // one element of right operand
+    UInt                lenL, lenR, len; // length
+    UInt                i;              // loop variable
+    FF                  fld;            // finite field
+    const FFV *         succ;           // successor table
 
-    /* check the lengths                                                   */
+    // check the lengths
     lenL = LEN_PLIST(vecL);
     lenR = LEN_PLIST(vecR);
     len = (lenL < lenR) ? lenL : lenR;
 
-    /* check the fields                                                    */
+    // check the fields
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return ProdListList(vecL, vecR);
 
         ErrorMayQuit("Vector *: vectors have different fields", 0, 0);
     }
 
-    /* to add we need the successor table                                  */
+    // to add we need the successor table
     succ = SUCC_FF(fld);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     valS = (FFV)0;
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = ADDR_OBJ(vecR);
@@ -650,32 +650,32 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
     if (!IsVecFFE(vecR))
         return TRY_NEXT_METHOD;
 
-    /* check the lengths                                                   */
+    // check the lengths
     CheckSameLength("AddRowVector", "dst", "src", vecL, vecR);
     len = LEN_PLIST(vecL);
 
-    /* check the fields                                                    */
+    // check the fields
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return TRY_NEXT_METHOD;
 
         ErrorMayQuit("AddRowVector: vectors have different fields", 0, 0);
     }
 
-    /* Now check the multiplier field */
+    // Now check the multiplier field
     if (FLD_FFE(mult) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
             ErrorMayQuit("AddRowVector: <multiplier> has different field", 0, 0);
         }
 
-        /* if the multiplier is over a non subfield then redispatch */
+        // if the multiplier is over a non subfield then redispatch
         if ((DEGR_FF(fld) % DegreeFFE(mult)) != 0)
             return TRY_NEXT_METHOD;
 
-        /* otherwise it's a subfield, so promote it */
+        // otherwise it's a subfield, so promote it
         valM = VAL_FFE(mult);
         if (valM != 0)
             valM = 1 + (valM - 1) * (SIZE_FF(fld) - 1) / (SIZE_FF(FLD_FFE(mult)) - 1);
@@ -687,7 +687,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
     ptrL = ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
 
-    /* two versions of the loop to avoid multiplying by 1 */
+    // two versions of the loop to avoid multiplying by 1
     if (valM == 1)
         for (i = 1; i <= len; i++) {
             valL = VAL_FFE(ptrL[i]);
@@ -731,22 +731,22 @@ static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
     if (!IsVecFFE(vec))
         return TRY_NEXT_METHOD;
 
-    /* check the lengths                                                   */
+    // check the lengths
     len = LEN_PLIST(vec);
 
     fld = FLD_FFE(ELM_PLIST(vec, 1));
-    /* Now check the multiplier field */
+    // Now check the multiplier field
     if (FLD_FFE(mult) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) != CHAR_FF(FLD_FFE(mult))) {
             ErrorMayQuit("MultVector: <multiplier> has different field", 0, 0);
         }
 
-        /* if the multiplier is over a non subfield then redispatch */
+        // if the multiplier is over a non subfield then redispatch
         if ((DEGR_FF(fld) % DegreeFFE(mult)) != 0)
             return TRY_NEXT_METHOD;
 
-        /* otherwise it's a subfield, so promote it */
+        // otherwise it's a subfield, so promote it
         valM = VAL_FFE(mult);
         if (valM != 0)
             valM = 1 + (valM - 1) * (SIZE_FF(fld) - 1) / (SIZE_FF(FLD_FFE(mult)) - 1);
@@ -757,7 +757,7 @@ static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
     succ = SUCC_FF(fld);
     ptr = ADDR_OBJ(vec);
 
-    /* two versions of the loop to avoid multiplying by 0 */
+    // two versions of the loop to avoid multiplying by 0
     if (valM == 0) {
         Obj z;
         z = NEW_FFE(fld, 0);
@@ -796,14 +796,14 @@ static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
     if (!IsVecFFE(vecR))
         return TRY_NEXT_METHOD;
 
-    /* check the lengths                                                   */
+    // check the lengths
     CheckSameLength("AddRowVector", "dst", "src", vecL, vecR);
     len = LEN_PLIST(vecL);
 
-    /* check the fields                                                    */
+    // check the fields
     fld = FLD_FFE(ELM_PLIST(vecL, 1));
     if (FLD_FFE(ELM_PLIST(vecR, 1)) != fld) {
-        /* check the characteristic                                        */
+        // check the characteristic
         if (CHAR_FF(fld) == CHAR_FF(FLD_FFE(ELM_PLIST(vecR, 1))))
             return TRY_NEXT_METHOD;
 
@@ -945,7 +945,7 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
-    /* install the arithmetic operation methods                            */
+    // install the arithmetic operation methods
     for (t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++) {
         SumFuncs[  T_FFE ][  t1   ] = SumFFEVecFFE;
         SumFuncs[   t1   ][ T_FFE ] = SumVecFFEFFE;
@@ -978,7 +978,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     return 0;

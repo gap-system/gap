@@ -320,7 +320,7 @@ UInt WaitForAnyMonitor(UInt count, Monitor ** monitors)
         if (monitors[i] == monitor) {
             RemoveWaitList(monitors[i], &nodes[i]);
             result = i;
-            /* keep it locked for further processing by caller */
+            // keep it locked for further processing by caller
         }
         else {
             RemoveWaitList(monitors[i], &nodes[i]);
@@ -383,7 +383,7 @@ static int GetThreadID(const char * funcname, Obj thread)
 
 
 
-/* TODO: register globals */
+// TODO: register globals
 static Obj             FirstKeepAlive;
 static Obj             LastKeepAlive;
 static pthread_mutex_t KeepAliveLock;
@@ -488,7 +488,7 @@ static Obj FuncCreateThread(Obj self, Obj funcargs)
         ErrorMayQuit("CreateThread: <func> expects %d arguments, but got %d", NARG_FUNC(func), n-1);
     templist = NEW_PLIST(T_PLIST, n);
     SET_LEN_PLIST(templist, n);
-    SET_REGION(templist, NULL); /* make it public */
+    SET_REGION(templist, NULL); // make it public
     for (i = 1; i <= n; i++)
         SET_ELM_PLIST(templist, i, ELM_PLIST(funcargs, i));
     thread = RunThread(ThreadedInterpreter, KeepAlive(templist));
@@ -997,7 +997,7 @@ static void WaitChannel(Channel * channel)
 
 static void ExpandChannel(Channel * channel)
 {
-    /* Growth ratio should be less than the golden ratio */
+    // Growth ratio should be less than the golden ratio
     const UInt oldCapacity = channel->capacity;
     const UInt newCapacity = ((oldCapacity * 25 / 16) | 1) + 1;
     GAP_ASSERT(newCapacity > oldCapacity);
@@ -1179,14 +1179,14 @@ static Obj ReceiveAnyChannel(Obj channelList, int with_index)
         if (p >= count)
             p = 0;
     }
-    if (i < count) /* found a channel with data */
+    if (i < count) // found a channel with data
     {
         p = i;
         for (i = 0; i < count; i++)
             if (i != p)
                 UnlockMonitor(monitors[i]);
     }
-    else /* all channels are empty */
+    else // all channels are empty
         for (;;) {
             for (i = 0; i < count; i++)
                 channels[i]->waiting++;
@@ -2246,7 +2246,7 @@ static Obj FuncORDERED_WRITE(Obj self, Obj obj)
 
 static Obj FuncDEFAULT_SIGINT_HANDLER(Obj self)
 {
-    /* do nothing */
+    // do nothing
     return (Obj)0;
 }
 
@@ -2317,7 +2317,7 @@ void InitSignals(void)
     sigaddset(&GAPSignals, SIGWINCH);
 #endif
     pthread_sigmask(SIG_BLOCK, &GAPSignals, NULL);
-    /* Run a timer signal every 10 ms, i.e. 100 times per second */
+    // Run a timer signal every 10 ms, i.e. 100 times per second
     timer.it_interval.tv_sec = 0;
     timer.it_interval.tv_usec = 10000;
     timer.it_value.tv_sec = 0;
@@ -2673,11 +2673,11 @@ static Int InitKernel(StructInitInfo * module)
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
     SetGVar(&MAX_INTERRUPTGVar, INTOBJ_INT(MAX_INTERRUPT));
     MakeReadOnlyGVar(GVarName("MAX_INTERRUPT"));
-    /* define signal handler values */
+    // define signal handler values
     RNAM_SIGINT = RNamName("SIGINT");
     RNAM_SIGCHLD = RNamName("SIGCHLD");
     RNAM_SIGVTALRM = RNamName("SIGVTALRM");
@@ -2685,7 +2685,7 @@ static Int InitLibrary(StructInitInfo * module)
     RNAM_SIGWINCH = RNamName("SIGWINCH");
 #endif
 
-    /* synchronization */
+    // synchronization
     pthread_mutex_init(&KeepAliveLock, NULL);
 
     ExportAsConstantGVar(MAX_THREADS);

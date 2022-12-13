@@ -55,14 +55,14 @@
 */
 static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
 {
-    Obj                 tmp;            /* temporary                       */
-    Obj                 basis;          /* basis  list                     */
-    Obj                 coeffs;         /* coeffs list                     */
-    Int                 dim;            /* dimension                       */
-    Int                 len;            /* length of basis/coeffs lists    */
-    Int                 l;              /* loop variable                   */
+    Obj                 tmp;            // temporary
+    Obj                 basis;          // basis  list
+    Obj                 coeffs;         // coeffs list
+    Int                 dim;            // dimension
+    Int                 len;            // length of basis/coeffs lists
+    Int                 l;              // loop variable
 
-    /* check the table                                                     */
+    // check the table
     RequireSmallList(SELF_NAME, table);
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
@@ -71,10 +71,10 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
             0, 0);
     }
 
-    /* check <i>                                                           */
+    // check <i>
     RequireBoundedInt(SELF_NAME, i, 1, dim);
 
-    /* get and check the relevant row                                      */
+    // get and check the relevant row
     tmp = ELM_LIST( table, INT_INTOBJ(i) );
     if ( ! IS_SMALL_LIST(tmp) || LEN_LIST(tmp) != dim ) {
         ErrorMayQuit(
@@ -82,10 +82,10 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
             INT_INTOBJ(i), dim);
     }
 
-    /* check <j>                                                           */
+    // check <j>
     RequireBoundedInt(SELF_NAME, j, 1, dim);
 
-    /* get and check the basis and coefficients list                       */
+    // get and check the basis and coefficients list
     tmp = ELM_LIST( tmp, INT_INTOBJ(j) );
     if ( ! IS_SMALL_LIST(tmp) || LEN_LIST(tmp) != 2 ) {
         ErrorMayQuit(
@@ -93,21 +93,21 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
             INT_INTOBJ(i), INT_INTOBJ(j));
     }
 
-    /* get and check the basis list                                        */
+    // get and check the basis list
     basis = ELM_LIST( tmp, 1 );
     if ( ! IS_SMALL_LIST(basis) ) {
         ErrorMayQuit("SCTableEntry: <table>[%d][%d][1] must be a basis list",
                      INT_INTOBJ(i), INT_INTOBJ(j));
     }
 
-    /* get and check the coeffs list                                       */
+    // get and check the coeffs list
     coeffs = ELM_LIST( tmp, 2 );
     if ( ! IS_SMALL_LIST(coeffs) ) {
         ErrorMayQuit("SCTableEntry: <table>[%d][%d][2] must be a coeffs list",
                      INT_INTOBJ(i), INT_INTOBJ(j));
     }
 
-    /* check that they have the same length                                */
+    // check that they have the same length
     len = LEN_LIST(basis);
     if ( LEN_LIST(coeffs) != len ) {
         ErrorMayQuit(
@@ -115,16 +115,16 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
             INT_INTOBJ(i), INT_INTOBJ(j));
     }
 
-    /* check <k>                                                           */
+    // check <k>
     RequireBoundedInt(SELF_NAME, k, 1, dim);
 
-    /* look for the (i,j,k) entry                                          */
+    // look for the (i,j,k) entry
     for ( l = 1; l <= len; l++ ) {
         if ( EQ( ELM_LIST( basis, l ), k ) )
             break;
     }
 
-    /* return the coefficient of zero                                      */
+    // return the coefficient of zero
     if ( l <= len ) {
         return ELM_LIST( coeffs, l );
     }
@@ -172,16 +172,16 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
 
 static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
 {
-    Obj                 res;            /* result list                     */
-    Obj                 row;            /* one row of sc table             */
-    Obj                 zero;           /* zero from sc table              */
-    Obj                 ai, aj;         /* elements from list1             */
-    Obj                 bi, bj;         /* elements from list2             */
-    Obj                 c, c1, c2;      /* products of above               */
-    Int                 dim;            /* dimension of vectorspace        */
-    Int                 i, j;           /* loop variables                  */
+    Obj                 res;            // result list
+    Obj                 row;            // one row of sc table
+    Obj                 zero;           // zero from sc table
+    Obj                 ai, aj;         // elements from list1
+    Obj                 bi, bj;         // elements from list2
+    Obj                 c, c1, c2;      // products of above
+    Int                 dim;            // dimension of vectorspace
+    Int                 i, j;           // loop variables
 
-    /* check the arguments a bit                                           */
+    // check the arguments a bit
     RequireSmallList(SELF_NAME, table);
     dim = LEN_LIST(table) - 2;
     if ( dim <= 0 ) {
@@ -201,7 +201,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
             0);
     }
 
-    /* make the result list                                                */
+    // make the result list
     res = NEW_PLIST( T_PLIST, dim );
     SET_LEN_PLIST( res, dim );
     for ( i = 1; i <= dim; i++ ) {
@@ -209,7 +209,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
     }
     CHANGED_BAG( res );
 
-    /* general case                                                        */
+    // general case
     if      ( EQ( ELM_LIST( table, dim+1 ), INTOBJ_INT(0) ) ) {
         for ( i = 1; i <= dim; i++ ) {
             ai = ELM_LIST( list1, i );
@@ -226,7 +226,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
         }
     }
 
-    /* commutative case                                                    */
+    // commutative case
     else if ( EQ( ELM_LIST( table, dim+1 ), INTOBJ_INT(1) ) ) {
         for ( i = 1; i <= dim; i++ ) {
             ai = ELM_LIST( list1, i );
@@ -251,7 +251,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
         }
     }
 
-    /* anticommutative case                                                */
+    // anticommutative case
     else if ( EQ( ELM_LIST( table, dim+1 ), INTOBJ_INT(-1) ) ) {
         for ( i = 1; i <= dim; i++ ) {
             ai = ELM_LIST( list1, i );
@@ -301,7 +301,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -315,7 +315,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

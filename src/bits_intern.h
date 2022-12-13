@@ -35,7 +35,7 @@
 **   known at compile time.
 */
 
-/* constructs a mask that selects bits <from> to <to> inclusive of a UInt */
+// constructs a mask that selects bits <from> to <to> inclusive of a UInt
 static inline UInt MaskForCopyBits(UInt from, UInt to)
 {
     return ((to == BIPEB - 1) ? 0 : ((UInt)1 << (to + 1))) - ((UInt)1 << from);
@@ -76,31 +76,31 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
      * easy
      */
     if (frombit == tobit) {
-        /* if the first and last words are the same word */
+        // if the first and last words are the same word
         if ((frombit + nbits) < BIPEB) {
             CopyInWord(toblock, frombit, frombit + nbits - 1, *fromblock, 0);
             return;
         }
-        /* do we need to start by copying a partial word */
+        // do we need to start by copying a partial word
         if (frombit) {
             CopyInWord(toblock, frombit, BIPEB - 1, *fromblock, 0);
             fromblock++;
             toblock++;
             nbits -= (BIPEB - frombit);
         }
-        /* Now move whole words */
+        // Now move whole words
         if ((wholeblocks = nbits / BIPEB))
             memcpy(toblock, fromblock, sizeof(UInt) * wholeblocks);
         toblock += wholeblocks;
         fromblock += wholeblocks;
         nbits %= BIPEB;
-        /* Finally, we may need to finish with another partial word */
+        // Finally, we may need to finish with another partial word
         if (nbits)
             CopyInWord(toblock, 0, nbits - 1, *fromblock, 0);
         return;
     }
 
-    /* Otherwise the bits are not aligned and we will be shifting */
+    // Otherwise the bits are not aligned and we will be shifting
 
     if (tobit) {
         /* How many bits are we going to put into the first destination word
@@ -109,7 +109,7 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
             tailbits = nbits;
         else
             tailbits = BIPEB - tobit;
-        /* We might be able to get all we need from the first source word */
+        // We might be able to get all we need from the first source word
         if (frombit + tailbits <= BIPEB) {
             CopyInWord(toblock, frombit, frombit + tailbits - 1, *fromblock,
                        (tobit - frombit));
@@ -128,7 +128,7 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
         tobit = 0;
     }
 
-    /* Main loop for long copies fills whole blocks of destination */
+    // Main loop for long copies fills whole blocks of destination
     UInt m1 = MaskForCopyBits(frombit, BIPEB - 1);
     while (nbits >= BIPEB) {
         x = (*fromblock++ & m1) >> frombit;
@@ -137,7 +137,7 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
         nbits -= BIPEB;
     }
 
-    /* Finally we may need to fill up a partial block at destination */
+    // Finally we may need to fill up a partial block at destination
     if (nbits) {
         if (frombit + nbits <= BIPEB) {
             CopyInWord(toblock, frombit, frombit + nbits - 1, *fromblock,

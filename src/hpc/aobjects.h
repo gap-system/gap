@@ -124,7 +124,7 @@ EXPORT_INLINE Obj ATOMIC_SET_ELM_PLIST_ONCE(Obj list, UInt index, Obj value) {
   for (;;) {
     result = contents[index];
     if (result) {
-      MEMBAR_READ(); /* matching memory barrier. */
+      MEMBAR_READ(); // matching memory barrier.
       return result;
     }
     if (COMPARE_AND_SWAP((AtomicUInt *)(contents+index),
@@ -143,7 +143,7 @@ EXPORT_INLINE Obj ATOMIC_ELM_PLIST(Obj list, UInt index) {
   const Obj *contents = CONST_ADDR_OBJ(list);
   Obj result;
   result = contents[index];
-  MEMBAR_READ(); /* matching memory barrier. */
+  MEMBAR_READ(); // matching memory barrier.
   return result;
 #endif
 }

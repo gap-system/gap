@@ -84,13 +84,13 @@ static Int SORT_COMP_CHECK_EQ(SORT_FUNC_ARGS, Obj a, Obj b) {
 
 static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
 {
-  UInt len; /* length of the list              */
-  UInt h;   /* gap width in the shellsort      */
+  UInt len; // length of the list
+  UInt h;   // gap width in the shellsort
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
-  UInt i, k; /* loop variables                  */
+  UInt i, k; // loop variables
 
-  /* sort the list with a shellsort                                      */
+  // sort the list with a shellsort
   len = end - start + 1;
   h = 1;
   while (9 * h + 4 < len) {
@@ -115,7 +115,7 @@ static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
   SORT_FILTER_CHECKS();
 }
 
-/* Swap values at indices a and b */
+// Swap values at indices a and b
 #define SWAP_INDICES PREFIXNAME(Swap)
 static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b) {
   SORT_CREATE_LOCAL(t);
@@ -126,7 +126,7 @@ static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b) {
   SORT_ASS_LOCAL_TO_LIST(a, u);
 }
 
-/* Compare values at indices a and b */
+// Compare values at indices a and b
 #define COMP_INDICES PREFIXNAME(CompIndices)
 static inline int COMP_INDICES(SORT_FUNC_ARGS, Int a, Int b) {
   SORT_CREATE_LOCAL(t);
@@ -136,7 +136,7 @@ static inline int COMP_INDICES(SORT_FUNC_ARGS, Int a, Int b) {
   return SORT_COMP_CHECK_EQ(SORT_ARGS, t, u);
 }
 
-/* Sort 3 indices */
+// Sort 3 indices
 static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c) {
   if (!(COMP_INDICES(SORT_ARGS, b, a))) {
     if (!(COMP_INDICES(SORT_ARGS, c, b)))
@@ -209,9 +209,9 @@ static void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end)
 {
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
-  UInt i, k; /* loop variables                  */
+  UInt i, k; // loop variables
 
-  /* sort the list with insertion sort */
+  // sort the list with insertion sort
   for (i = start + 1; i <= end; i++) {
     SORT_ASS_LIST_TO_LOCAL(v, i);
     k = i;
@@ -233,9 +233,9 @@ static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
 {
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
-  UInt i, k;     /* loop variables                        */
-  Int limit = 8; /* how long do we try to insertion sort? */
-                 /* sort the list with insertion sort */
+  UInt i, k;     // loop variables
+  Int limit = 8; // how long do we try to insertion sort?
+                 // sort the list with insertion sort
   for (i = start + 1; i <= end; i++) {
     SORT_ASS_LIST_TO_LOCAL(v, i);
     k = i;
@@ -282,7 +282,7 @@ static void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth)
     return;
   }
 
-  /* If quicksort seems to be degrading into O(n^2), escape to shellsort */
+  // If quicksort seems to be degrading into O(n^2), escape to shellsort
   if (depth <= 0) {
     PREFIXNAME(Shell)(SORT_ARGS, start, end);
     return;
@@ -362,7 +362,7 @@ void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
   SORT_FILTER_CHECKS();
   Int stepsize = 24;
   Int i;
-  /* begin with splitting into small steps we insertion sort */
+  // begin with splitting into small steps we insertion sort
   for (i = 1; i + stepsize <= len; i += stepsize) {
     PREFIXNAME(Insertion)(SORT_ARGS, i, i + stepsize - 1);
   }

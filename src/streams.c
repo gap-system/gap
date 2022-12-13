@@ -137,7 +137,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
 
     RequireInputStream("READ_ALL_COMMANDS", instream);
 
-    /* try to open the streams */
+    // try to open the streams
     TypInputFile input;
     if (!OpenInputStream(&input, instream, echo == True)) {
         return Fail;
@@ -285,19 +285,19 @@ static void READ_INNER(TypInputFile * input)
       }
     AssGVarWithoutReadOnlyCheck( LastReadValueGVar, 0);
 
-    /* now do the reading                                                  */
+    // now do the reading
     while ( 1 ) {
         Obj evalResult;
         ExecStatus status = ReadEvalCommand(0, input, &evalResult, 0);
         if (STATE(UserHasQuit) || STATE(UserHasQUIT))
             break;
 
-        /* handle return-value or return-void command                      */
+        // handle return-value or return-void command
         if (status == STATUS_RETURN) {
             Pr("'return' must not be used in file read-eval loop\n", 0, 0);
         }
 
-        /* handle quit command or <end-of-file>                            */
+        // handle quit command or <end-of-file>
         else if (status == STATUS_EOF || status == STATUS_ERROR)
           break;
         else if (status == STATUS_QUIT) {
@@ -325,14 +325,14 @@ static void READ_INNER(TypInputFile * input)
 */
 Obj READ_AS_FUNC(TypInputFile * input)
 {
-    /* now do the reading                                                  */
+    // now do the reading
     Obj evalResult;
     ExecStatus status = ReadEvalFile(input, &evalResult);
 
-    /* get the function                                                    */
+    // get the function
     Obj func = (status == STATUS_END) ? evalResult : Fail;
 
-    /* return the function                                                 */
+    // return the function
     return func;
 }
 
@@ -654,7 +654,7 @@ static Obj FuncPrint(Obj self, Obj args)
     volatile Obj        arg;
     volatile UInt       i;
 
-    /* print all the arguments, take care of strings and functions         */
+    // print all the arguments, take care of strings and functions
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
         if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
@@ -678,12 +678,12 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
     volatile Obj        destination;
     volatile UInt       i;
 
-    /* first entry is the file or stream                                   */
+    // first entry is the file or stream
     destination = ELM_LIST(args, 1);
 
     TypOutputFile output;
 
-    /* try to open the output and handle failures                          */
+    // try to open the output and handle failures
     if (file) {
         RequireStringRep(funcname, destination);
         i = OpenOutput(&output, CONST_CSTR_STRING(destination), append);
@@ -706,11 +706,11 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         }
     }
 
-    /* print all the arguments, take care of strings and functions         */
+    // print all the arguments, take care of strings and functions
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
 
-        /* if an error occurs stop printing                                */
+        // if an error occurs stop printing
         GAP_TRY
         {
             if (IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg)) {
@@ -730,7 +730,7 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
         }
     }
 
-    /* close the output file again, and return nothing                     */
+    // close the output file again, and return nothing
     if (!CloseOutput(&output)) {
         ErrorQuit("%s: cannot close output", (Int)funcname, 0);
     }
@@ -932,9 +932,9 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* Copy to avoid garbage collection moving string                      */
+    // Copy to avoid garbage collection moving string
     gap_strlcpy(filenamecpy, CONST_CSTR_STRING(filename), GAP_PATH_MAX);
-    /* try to open the file                                                */
+    // try to open the file
     return READ_GAP_ROOT(filenamecpy) ? True : False;
 }
 
@@ -1007,7 +1007,7 @@ static Obj FuncRemoveFile(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     return SyRemoveFile( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
@@ -1019,7 +1019,7 @@ static Obj FuncCreateDir(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     return SyMkdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
@@ -1031,7 +1031,7 @@ static Obj FuncRemoveDir(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     return SyRmdir( CONST_CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
@@ -1043,7 +1043,7 @@ static Obj FuncIsDir(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     return SyIsDir( CONST_CSTR_STRING(filename) );
 }
 
@@ -1068,24 +1068,24 @@ static Obj FuncLastSystemError(Obj self)
     Obj             err;
     Obj             msg;
 
-    /* constructed an error record                                         */
+    // constructed an error record
     err = NEW_PREC(0);
 
-    /* check if an errors has occurred                                     */
+    // check if an errors has occurred
     if ( SyLastErrorNo != 0 ) {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
         msg = MakeString(SyLastErrorMessage);
         ASS_REC( err, ErrorMessageRNam, msg );
     }
 
-    /* no error has occurred                                               */
+    // no error has occurred
     else {
         ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(0) );
         msg = MakeString("no error");
         ASS_REC( err, ErrorMessageRNam, msg );
     }
 
-    /* return the error record                                             */
+    // return the error record
     return err;
 }
 
@@ -1100,7 +1100,7 @@ static Obj FuncIsExistingFile(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     res = SyIsExistingFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
@@ -1116,7 +1116,7 @@ static Obj FuncIsReadableFile(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     res = SyIsReadableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
@@ -1132,7 +1132,7 @@ static Obj FuncIsWritableFile(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     res = SyIsWritableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
@@ -1148,7 +1148,7 @@ static Obj FuncIsExecutableFile(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     res = SyIsExecutableFile( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
@@ -1164,7 +1164,7 @@ static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     res = SyIsDirectoryPath( CONST_CSTR_STRING(filename) );
     return res == -1 ? False : True;
 }
@@ -1216,7 +1216,7 @@ static Obj FuncCLOSE_FILE(Obj self, Obj fid)
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     Int ret = SyFclose( ifid );
     return ret == -1 ? Fail : True;
 }
@@ -1232,7 +1232,7 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 
     RequireStringRep(SELF_NAME, filename);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     SyClearErrorNo();
     fid = SyFopen(CONST_CSTR_STRING(filename), "r", TRUE);
     if (fid == -1)
@@ -1267,7 +1267,7 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append, Obj comp)
     RequireTrueOrFalse(SELF_NAME, comp);
 
     Int compbool = (comp == True);
-    /* call the system dependent function                                  */
+    // call the system dependent function
     SyClearErrorNo();
     if ( append == True ) {
         fid = SyFopen(CONST_CSTR_STRING(filename), "a", compbool);
@@ -1310,7 +1310,7 @@ static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     Int ret = SyGetch( ifid );
 
     return ret == EOF ? Fail : INTOBJ_INT(ret);
@@ -1353,11 +1353,11 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
         break;
     }
 
-    /* fix the length of <str>                                             */
+    // fix the length of <str>
     len = GET_LEN_STRING(str);
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
-    /* and return                                                          */
+    // and return
     return len == 0 ? Fail : str;
 }
 
@@ -1428,10 +1428,10 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
       SET_LEN_STRING(str, len);
     }
 
-    /* fix the length of <str>                                             */
+    // fix the length of <str>
     len = GET_LEN_STRING(str);
 #ifdef SYS_IS_CYGWIN32
-    /* line end hackery */
+    // line end hackery
     UInt i = 0, j = 0;
     while (i < len) {
         if (CHARS_STRING(str)[i] == '\r') {
@@ -1452,7 +1452,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 #endif
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
-    /* and return                                                          */
+    // and return
     return len == 0 ? Fail : str;
 }
 
@@ -1481,7 +1481,7 @@ static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch)
     Int ifid = GetSmallInt(SELF_NAME, fid);
     Int ich = GetSmallInt(SELF_NAME, ch);
 
-    /* call the system dependent function                                  */
+    // call the system dependent function
     Int ret = SyEchoch( ich, ifid );
     return ret == -1 ? Fail : True;
 }
@@ -1495,7 +1495,7 @@ static Obj FuncWRITE_STRING_FILE_NC(Obj self, Obj fid, Obj str)
     Int             len = 0, l, ret;
     const char      *ptr;
 
-    /* don't check the argument                                            */
+    // don't check the argument
     RequireStringRep(SELF_NAME, str);
 
 
@@ -1566,34 +1566,34 @@ static Obj FuncUNIXSelect(Obj self,
   FD_ZERO(&outfds);
   FD_ZERO(&excfds);
   maxfd = 0;
-  /* Handle input file descriptors: */
+  // Handle input file descriptors:
   for (i = 1;i <= LEN_PLIST(inlist);i++) {
     o = ELM_PLIST(inlist,i);
     if (o != (Obj) 0 && IS_INTOBJ(o)) {
-      j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+      j = INT_INTOBJ(o);  // a UNIX file descriptor
       FD_SET(j,&infds);
       if (j > maxfd) maxfd = j;
     }
   }
-  /* Handle output file descriptors: */
+  // Handle output file descriptors:
   for (i = 1;i <= LEN_PLIST(outlist);i++) {
     o = ELM_PLIST(outlist,i);
     if (o != (Obj) 0 && IS_INTOBJ(o)) {
-      j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+      j = INT_INTOBJ(o);  // a UNIX file descriptor
       FD_SET(j,&outfds);
       if (j > maxfd) maxfd = j;
     }
   }
-  /* Handle exception file descriptors: */
+  // Handle exception file descriptors:
   for (i = 1;i <= LEN_PLIST(exclist);i++) {
     o = ELM_PLIST(exclist,i);
     if (o != (Obj) 0 && IS_INTOBJ(o)) {
-      j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+      j = INT_INTOBJ(o);  // a UNIX file descriptor
       FD_SET(j,&excfds);
       if (j > maxfd) maxfd = j;
     }
   }
-  /* Handle the timeout: */
+  // Handle the timeout:
   if (timeoutsec != (Obj) 0 && IS_INTOBJ(timeoutsec) &&
       timeoutusec != (Obj) 0 && IS_INTOBJ(timeoutusec)) {
     tv.tv_sec = INT_INTOBJ(timeoutsec);
@@ -1604,34 +1604,34 @@ static Obj FuncUNIXSelect(Obj self,
   }
 
   if (n >= 0) {
-    /* Now run through the lists and call functions if ready: */
+    // Now run through the lists and call functions if ready:
 
     for (i = 1;i <= LEN_PLIST(inlist);i++) {
       o = ELM_PLIST(inlist,i);
       if (o != (Obj) 0 && IS_INTOBJ(o)) {
-        j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+        j = INT_INTOBJ(o);  // a UNIX file descriptor
         if (!(FD_ISSET(j,&infds))) {
           SET_ELM_PLIST(inlist,i,Fail);
           CHANGED_BAG(inlist);
         }
       }
     }
-    /* Handle output file descriptors: */
+    // Handle output file descriptors:
     for (i = 1;i <= LEN_PLIST(outlist);i++) {
       o = ELM_PLIST(outlist,i);
       if (o != (Obj) 0 && IS_INTOBJ(o)) {
-        j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+        j = INT_INTOBJ(o);  // a UNIX file descriptor
         if (!(FD_ISSET(j,&outfds))) {
           SET_ELM_PLIST(outlist,i,Fail);
           CHANGED_BAG(outlist);
         }
       }
     }
-    /* Handle exception file descriptors: */
+    // Handle exception file descriptors:
     for (i = 1;i <= LEN_PLIST(exclist);i++) {
       o = ELM_PLIST(exclist,i);
       if (o != (Obj) 0 && IS_INTOBJ(o)) {
-        j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+        j = INT_INTOBJ(o);  // a UNIX file descriptor
         if (!(FD_ISSET(j,&excfds))) {
           SET_ELM_PLIST(exclist,i,Fail);
           CHANGED_BAG(exclist);
@@ -1669,7 +1669,7 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     Int iout = GetSmallInt(SELF_NAME, out);
     RequireSmallList(SELF_NAME, args);
 
-    /* create an argument array                                            */
+    // create an argument array
     for ( i = 1;  i <= LEN_LIST(args);  i++ ) {
         if ( i == 1023 )
             break;
@@ -1682,17 +1682,17 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     for ( i--;  0 < i;  i-- ) {
         ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
     }
-    if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
+    if (SyWindow && out == INTOBJ_INT(1)) // standard output
       syWinPut( INT_INTOBJ(out), "@z","");
 
-    /* execute the process                                                 */
+    // execute the process
     res = SyExecuteProcess( CSTR_STRING(dir),
                             CSTR_STRING(prg),
                             iin,
                             iout,
                             ExecCArgs );
 
-    if (SyWindow && out == INTOBJ_INT(1)) /* standard output */
+    if (SyWindow && out == INTOBJ_INT(1)) // standard output
       syWinPut( INT_INTOBJ(out), "@mAgIc","");
     return res == 255 ? Fail : INTOBJ_INT(res);
 }
@@ -1777,7 +1777,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     ImportFuncFromLibrary( "IsInputStream", &IsInputStream );
@@ -1794,11 +1794,11 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    /* file access test functions                                          */
+    // file access test functions
     ErrorNumberRNam  = RNamName("number");
     ErrorMessageRNam = RNamName("message");
 
-    /* pick up the number of this global */
+    // pick up the number of this global
     LastReadValueGVar = GVarName("LastReadValue");
 
     return 0;
@@ -1812,7 +1812,7 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
 

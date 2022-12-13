@@ -329,7 +329,7 @@ static void SaveBagData (Bag bag )
   SaveUInt1(header->flags);
   SaveUInt(header->size);
 
-  /* dispatch */
+  // dispatch
   (*(SaveObjFuncs[ header->type]))(bag);
 }
 
@@ -339,7 +339,7 @@ static void LoadBagData ( void )
   Bag bag;
   UInt type, flags, size;
 
-  /* Recover the size & type */
+  // Recover the size & type
   type = LoadUInt1();
   flags = LoadUInt1();
   size = LoadUInt();
@@ -347,10 +347,10 @@ static void LoadBagData ( void )
   if (TNAM_TNUM(type) == NULL)
     Panic("Bad type %d, size %d\n", (int)type, (int)size);
 
-  /* Get GASMAN to set up the bag for me */
+  // Get GASMAN to set up the bag for me
   bag = NextBagRestoring( type, flags, size );
 
-  /* dispatch */
+  // dispatch
   (*(LoadObjFuncs[ type ]))(bag);
 }
 
@@ -547,35 +547,35 @@ Obj SaveWorkspace( Obj fname )
 
   if (!IsStringConv(fname))
     ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
-  /* maybe expand fname starting with ~/...   */
+  // maybe expand fname starting with ~/...
   fullname = Call1ArgsInNewReader(userHomeExpand, fname);
 
   if (ModulesPreSave())
     return Fail;
 
-  /* Do a full garbage collection */
+  // Do a full garbage collection
   CollectBags( 0, 1);
 
-  /* Add indices in link words of all bags, for saving inter-bag references */
+  // Add indices in link words of all bags, for saving inter-bag references
   NextSaveIndex = 1;
   CallbackForAllBags( AddSaveIndex );
 
-  /* Now do the work */
+  // Now do the work
   result = Fail;
   if (!OpenForSave( fullname ))
     {
       result = True;
       WriteSaveHeader();
       SaveCStr("Bag data");
-      SortHandlers( 1 ); /* Sort by address to speed up CookieOfHandler */
+      SortHandlers( 1 ); // Sort by address to speed up CookieOfHandler
       CallbackForAllBags( SaveBagData );
       CloseAfterSave();
     }
 
-  /* Finally, reset all the link words */
+  // Finally, reset all the link words
   CallbackForAllBags( RemoveSaveIndex );
 
-  /* Restore situation by calling all post-save methods */
+  // Restore situation by calling all post-save methods
   ModulesPostSave();
 
   return result;
@@ -601,10 +601,10 @@ void LoadWorkspace( Char * fname )
   Char buf[256];
   Obj * glob;
 
-  /* Open saved workspace  */
+  // Open saved workspace
   OpenForLoad( fname );
 
-  /* Check file header */
+  // Check file header
 
   LoadCStr(buf,256);
   if (strncmp (buf, "GAP ", 4) != 0) {
@@ -657,7 +657,7 @@ void LoadWorkspace( Char * fname )
     }
   LoadModules();
 
-  /* Now the kernel variables that point into the workspace */
+  // Now the kernel variables that point into the workspace
   LoadCStr(buf,256);
   if (!streq(buf,"Kernel to WS refs"))
     {
@@ -815,11 +815,11 @@ static Int InitKernel (
     LBPointer = LoadBuffer;
     LBEnd = LoadBuffer;
 
-    /* allow ~/... expansion in SaveWorkspace                              */
+    // allow ~/... expansion in SaveWorkspace
     ImportFuncFromLibrary("UserHomeExpand", &userHomeExpand);
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -833,7 +833,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

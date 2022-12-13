@@ -149,11 +149,11 @@ static void TraversalRehash(TraversalState * traversal)
 void QueueForTraversal(TraversalState * traversal, Obj obj)
 {
     if (!IS_BAG_REF(obj))
-        return; /* skip objects that aren't bags */
+        return; // skip objects that aren't bags
     if (!traversal->traversalCheck(traversal, obj))
         return;
     if (!SeenDuringTraversal(traversal, obj))
-        return; /* don't revisit objects that we've already seen */
+        return; // don't revisit objects that we've already seen
     PushPlist(traversal->list, obj);
 }
 

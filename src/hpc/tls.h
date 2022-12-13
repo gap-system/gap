@@ -84,13 +84,13 @@ typedef struct ThreadLocalStorage
   void *CurrentHashLock;
   int DisableGuards;
 
-  /* From intrprtr.c */
+  // From intrprtr.c
   UInt PeriodicCheckCount;
 
-  /* From read.c */
+  // From read.c
   jmp_buf threadExit;
 
-  /* Profiling */
+  // Profiling
   UInt CountActive;
   UInt LocksAcquired;
   UInt LocksContended;
@@ -177,8 +177,8 @@ static ALWAYS_INLINE ThreadLocalStorage * GetTLS(void)
     // If that test fails, we fall back to the standard implementation
     // of pthread_getspecific().
     asm("movq %%gs:(%1), %0"
-        : "=r"(p)  /* output = %0 */
-        : "r"(offset) /* input = %1 */
+        : "=r"(p)  // output = %0
+        : "r"(offset) // input = %1
         : /* clobber = none */);
     return (ThreadLocalStorage *)p;
 #else
@@ -187,7 +187,7 @@ static ALWAYS_INLINE ThreadLocalStorage * GetTLS(void)
 #else
     return (ThreadLocalStorage *)pthread_getspecific(GetTLSKey());
 #endif
-#endif /* USE_MACOS_PTHREAD_TLS_ASM */
+#endif // USE_MACOS_PTHREAD_TLS_ASM
 #else
     // use stack mask approach
     void * stack;
@@ -198,7 +198,7 @@ static ALWAYS_INLINE ThreadLocalStorage * GetTLS(void)
     stack = dummy;
 #endif
     return (ThreadLocalStorage *)(((uintptr_t)stack) & TLS_MASK);
-#endif /* USE_NATIVE_TLS, USE_PTHREAD_TLS */
+#endif // USE_NATIVE_TLS, USE_PTHREAD_TLS
 }
 
 // Convenience helper for accessing TLS members

@@ -490,7 +490,7 @@ static Obj FuncSTRING_DIGITS_MACFLOAT(Obj self, Obj gapprec, Obj f)
   Char buf[1024];
   Obj str;
   int prec = INT_INTOBJ(gapprec);
-  if (prec > 40) /* too much anyways, and would risk buffer overrun */
+  if (prec > 40) // too much anyways, and would risk buffer overrun
     prec = 40;
   PrintMacfloatToBuf(buf, sizeof(buf), VAL_MACFLOAT(f), prec);
   str = MakeString(buf);
@@ -598,39 +598,39 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking functions for macfloatean values                    */
+    // install the marking functions for macfloatean values
     InitMarkFuncBags( T_MACFLOAT, MarkNoSubBags );
 #ifdef HPCGAP
     MakeBagTypePublic( T_MACFLOAT );
 #endif
 
-    /* init functions */
+    // init functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* install the type function                                           */
+    // install the type function
     ImportGVarFromLibrary( "TYPE_MACFLOAT", &TYPE_MACFLOAT );
     TypeObjFuncs[ T_MACFLOAT ] = TypeMacfloat;
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* install the saving functions                                       */
+    // install the saving functions
     SaveObjFuncs[ T_MACFLOAT ] = SaveMacfloat;
 
-    /* install the loading functions                                       */
+    // install the loading functions
     LoadObjFuncs[ T_MACFLOAT ] = LoadMacfloat;
 #endif
 
-    /* install the printer for macfloatean values                              */
+    // install the printer for macfloatean values
     PrintObjFuncs[ T_MACFLOAT ] = PrintMacfloat;
 
-    /* install the comparison functions                                    */
+    // install the comparison functions
     EqFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = EqMacfloat;
     LtFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = LtMacfloat;
 
-    /* allow method selection to protest against comparisons of float and int */
+    // allow method selection to protest against comparisons of float and int
     for (int t = T_INT; t <= T_CYC; t++)
         EqFuncs[T_MACFLOAT][t] = EqFuncs[t][T_MACFLOAT] = EqObject;
 
-    /* install the unary arithmetic methods                                */
+    // install the unary arithmetic methods
     ZeroSameMutFuncs[T_MACFLOAT] = ZeroMacfloat;
     ZeroMutFuncs[ T_MACFLOAT ] = ZeroMacfloat;
     AInvMutFuncs[ T_MACFLOAT ] = AInvMacfloat;
@@ -638,7 +638,7 @@ static Int InitKernel (
     OneSameMut[T_MACFLOAT] = OneMacfloat;
     InvFuncs [ T_MACFLOAT ] = InvMacfloat;
 
-    /* install binary arithmetic methods */
+    // install binary arithmetic methods
     ProdFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = ProdMacfloat;
     PowFuncs [ T_MACFLOAT ][ T_MACFLOAT ] = PowMacfloat;
     SumFuncs[ T_MACFLOAT ][ T_MACFLOAT ] = SumMacfloat;
@@ -666,7 +666,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init functions */
+    // init functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

@@ -15,17 +15,17 @@
 
 size_t gap_strlcpy(char * dst, const char * src, size_t len)
 {
-    /* Keep a copy of the original src. */
+    // Keep a copy of the original src.
     const char * const orig_src = src;
 
-    /* If a non-empty len was specified, we can actually copy some data. */
+    // If a non-empty len was specified, we can actually copy some data.
     if (len > 0) {
-        /* Copy up to len-1 bytes (reserve one for the terminating zero). */
+        // Copy up to len-1 bytes (reserve one for the terminating zero).
         while (--len > 0) {
             /* Copy from src to dst; if we reach the string end, we are
                done and can simply return the total source string length */
             if ((*dst++ = *src++) == 0) {
-                /* return length of source string without the zero byte */
+                // return length of source string without the zero byte
                 return src - orig_src - 1;
             }
         }
@@ -41,16 +41,16 @@ size_t gap_strlcpy(char * dst, const char * src, size_t len)
     while (*src++)
         ;
 
-    /* return length of source string without the zero byte */
+    // return length of source string without the zero byte
     return src - orig_src - 1;
 }
 
 size_t gap_strlcat(char * dst, const char * src, size_t len)
 {
-    /* Keep a copy of the original dst. */
+    // Keep a copy of the original dst.
     const char * const orig_dst = dst;
 
-    /* Find the end of the dst string, so that we can append after it. */
+    // Find the end of the dst string, so that we can append after it.
     while (*dst != 0 && len > 0) {
         dst++;
         len--;
@@ -59,7 +59,7 @@ size_t gap_strlcat(char * dst, const char * src, size_t len)
     /* We can only append anything if there is free space left in the
        destination buffer. */
     if (len > 0) {
-        /* One byte goes away for the terminating zero. */
+        // One byte goes away for the terminating zero.
         len--;
 
         /* Do the actual work and append from src to dst, until we either
@@ -69,11 +69,11 @@ size_t gap_strlcat(char * dst, const char * src, size_t len)
             len--;
         }
 
-        /* Terminate, terminate, terminate! */
+        // Terminate, terminate, terminate!
         *dst = 0;
     }
 
-    /* Compute the final result. */
+    // Compute the final result.
     return (dst - orig_dst) + strlen(src);
 }
 

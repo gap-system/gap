@@ -52,7 +52,7 @@ static int             evlist, evlistvec;
 **  is an ordered word and stored in <xk>.
 */
 
-/* See below: */
+// See below:
 static Obj Evaluation(Obj vec, Obj xk, Obj power);
 
 static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
@@ -72,7 +72,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
         return;
     }
     copy = ShallowCopyPlist(xk);
-    /* first add <power> to <xk>[ gen> ].                                */
+    // first add <power> to <xk>[ gen> ].
     SET_ELM_PLIST(xk, gen, sum);
     CHANGED_BAG(xk);
     sum = ElmPRec( ELM_PLIST(dtpols, gen), evlist );
@@ -82,7 +82,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
           i <= len;
           i++ )
     {
-        /* evaluate the deep thought monomial <sum>[<i>],        */
+        // evaluate the deep thought monomial <sum>[<i>],
         ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
         if ( ord != INTOBJ_INT(0) )
         {
@@ -235,7 +235,7 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
     }
     len = LEN_PLIST(dtpols);
     help = LEN_PLIST(x);
-    /* convert <x> into a exponent vector                             */
+    // convert <x> into a exponent vector
     xk = NEW_PLIST( T_PLIST, len );
     SET_LEN_PLIST(xk, len );
     j = 1;
@@ -249,9 +249,9 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
             j+=2;
         }
     }
-    /* let Multbound do the work                                       */
+    // let Multbound do the work
     Multbound(xk, y, anf, end, dtpols);
-    /* finally convert the result back into a word                     */
+    // finally convert the result back into a word
     res = NEW_PLIST(T_PLIST, 2*len);
     j = 0;
     for (i=1; i <= len; i++)
@@ -278,7 +278,7 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
 **  evaluating the deep thought polynomials <dtpols>.
 */
 
-/* See below: */
+// See below:
 static Obj Solution(Obj x, Obj y, Obj dtpols);
 
 static Obj Power(Obj x, Obj n, Obj dtpols)
@@ -305,7 +305,7 @@ static Obj Power(Obj x, Obj n, Obj dtpols)
         }
         return res;
     }
-    /* if <n> is a negative integer compute ( <x>^-1 )^(-<n>)           */
+    // if <n> is a negative integer compute ( <x>^-1 )^(-<n>)
     if ( IS_NEG_INT(n) )
     {
         y = NEW_PLIST( T_PLIST, 0);
@@ -314,7 +314,7 @@ static Obj Power(Obj x, Obj n, Obj dtpols)
     res = NEW_PLIST(T_PLIST, 2);
     if ( n == INTOBJ_INT(0) )
         return res;
-    /* now use the russian peasant rule to get the result               */
+    // now use the russian peasant rule to get the result
     while( LtInt(INTOBJ_INT(0), n) )
     {
         len = LEN_PLIST(x);
@@ -406,7 +406,7 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
         SHRINK_PLIST( res, i-1);
         return res;
     }
-    /* convert <x> into an exponent vector                           */
+    // convert <x> into an exponent vector
     xk = NEW_PLIST( T_PLIST, LEN_PLIST(dtpols) );
     SET_LEN_PLIST(xk, LEN_PLIST(dtpols) );
     j = 1;
@@ -739,7 +739,7 @@ static void ReduceWord(Obj x, Obj pcp)
             if  ( !IS_INTOBJ(quo) || INT_INTOBJ(quo) >= INT_INTOBJ(potenz) ||
                   INT_INTOBJ(quo)<0 )
             {
-                /* reduce the exponent of the generator <gen>            */
+                // reduce the exponent of the generator <gen>
                 mod = ModInt( quo, potenz );
                 SET_ELM_PLIST(x, i+1, mod);
                 CHANGED_BAG(x);
@@ -771,7 +771,7 @@ static void ReduceWord(Obj x, Obj pcp)
     }
     SET_LEN_PLIST(x, flag);
     SHRINK_PLIST(x, flag);
-    /* remove all syllables with exponent 0 from <x>.                  */
+    // remove all syllables with exponent 0 from <x>.
     compress(x);
 }
 
@@ -958,7 +958,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -986,7 +986,7 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return PostRestore( module );

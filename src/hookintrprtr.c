@@ -24,13 +24,13 @@
 #include <string.h>
 
 
-/* List of active hooks */
+// List of active hooks
 struct InterpreterHooks * activeHooks[HookCount];
 
-/* Number of active hooks */
+// Number of active hooks
 static Int HookActiveCount;
 
-/* If a print hook is current active */
+// If a print hook is current active
 static Int PrintHookActive;
 
 /****************************************************************************
@@ -117,8 +117,8 @@ static Obj ProfileEvalExprPassthrough(Expr stat)
 
 static Obj ProfileEvalBoolPassthrough(Expr stat)
 {
-    /* There are two cases we must pass through without touching */
-    /* From TNUM_EXPR */
+    // There are two cases we must pass through without touching
+    // From TNUM_EXPR
     if (IS_REF_LVAR(stat)) {
         return OriginalEvalBoolFuncsForHook[EXPR_REF_LVAR](stat);
     }
@@ -239,7 +239,7 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     return 0;

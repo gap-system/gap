@@ -258,7 +258,7 @@ static Obj Dt_add;
 */
 static void UnmarkTree(Obj tree)
 {
-    UInt     i, len; /*  loop variable                     */
+    UInt     i, len; // loop variable
 
     len = DT_LENGTH(tree, 1);
     for (i=1; i <= len; i++ )
@@ -298,8 +298,8 @@ static Obj FuncUnmarkTree(Obj self, Obj tree)
 */
 static UInt Mark(Obj tree, Obj reftree, Int indexx)
 {
-    UInt  i, /*  loop variable                    */
-          m, /*  integer to return                */
+    UInt  i, // loop variable
+          m, // integer to return
           len;
     Obj   refgen;
 
@@ -329,10 +329,10 @@ static UInt Mark(Obj tree, Obj reftree, Int indexx)
         **  only if the previous node (<tree>, i-1) is not an atom. in this
         **  case (<tree>, i) is the left subnode of (<tree>, i-1).          */
         if ( DT_LENGTH(tree, i-1) == 1 )
-            /*   skip the tree rooted at (<tree>, i).                    */
+            // skip the tree rooted at (<tree>, i).
             i = i + DT_LENGTH(tree, i);
         else
-            /*   skip the tree rooted at (<tree>, i-1)                   */
+            // skip the tree rooted at (<tree>, i-1)
             i = i - 1 + DT_LENGTH(tree, i-1);
     }
     return m;
@@ -352,7 +352,7 @@ static UInt Mark(Obj tree, Obj reftree, Int indexx)
 */
 static Int AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2)
 {
-    UInt   k, schranke; /*   loop variable                                             */
+    UInt   k, schranke; // loop variable
     /*  First the two top nodes of tree(<tree1>, index1) and
     **  tree(<tree2>, index2) (that are (<tree1>, index1) and
     **  (<tree2, index2) ) are compared by testing the equality of the 2-nd,
@@ -398,7 +398,7 @@ static Int AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2)
 */
 static Int Equal(Obj tree1, Int index1, Obj tree2, Int index2)
 {
-    UInt   k, schranke; /*  loop variable                                   */
+    UInt   k, schranke; // loop variable
 
     /*  Each node of tree(<tree1>, index1) is compared to the corresponding
     **  node of tree(<tree2>, index2) by testing the equality of the 1-st,
@@ -443,13 +443,13 @@ static Int Equal(Obj tree1, Int index1, Obj tree2, Int index2)
 */
 static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 {
-    UInt    i, /*  loop variable                                          */
+    UInt    i, // loop variable
             len;
     Obj     new,
-            list, /*  list to return                                      */
+            list, // list to return
             refgen;
 
-    /*  initialize <list>                                                 */
+    // initialize <list>
     list = NEW_PLIST(T_PLIST, 0);
     i = index1;
     len = index1 + DT_LENGTH(tree, index1) - 1;
@@ -464,7 +464,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
         if ( AlmostEqual(tree, i, reftree, index2) )
         {
             DT_MARK(tree, i);
-            /*  if <list> is too small grow it appropriately               */
+            // if <list> is too small grow it appropriately
             if ( LEN_PLIST(list) < INT_INTOBJ( DT_POS(tree, i) )  )
             {
                 GROW_PLIST(list, INT_INTOBJ( DT_POS(tree, i) ) );
@@ -477,10 +477,10 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
             {
                 new = NewPlistFromArgs(INTOBJ_INT(i));
                 SET_ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) ),  new);
-                /*  tell gasman that list has changed                      */
+                // tell gasman that list has changed
                 CHANGED_BAG(list);
             }
-            /*  add i to <list>[ pos(tree(<tree>, i)) ]                    */
+            // add i to <list>[ pos(tree(<tree>, i)) ]
             else
             {
                 new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
@@ -496,10 +496,10 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
         **  only if the previous node (<tree>, i-1) is not an atom. In this
         **  case (<tree>, i) is the left subnode of (<tree>, i-1).          */
         if ( DT_LENGTH(tree, i-1) == 1 )
-            /*  skip tree(<tree>, i)                                        */
+            // skip tree(<tree>, i)
             i = i + DT_LENGTH(tree, i);
         else
-            /*  skip tree(<tree>, i-1)                                      */
+            // skip tree(<tree>, i-1)
             i = i - 1 + DT_LENGTH(tree, i-1);
     }
     return  list;
@@ -524,9 +524,9 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 */
 static UInt FindTree(Obj tree, Int indexx)
 {
-    UInt   i; /*     loop variable                                    */
+    UInt   i; // loop variable
 
-    /*  return 0 if (<tree>, indexx) is marked                           */
+    // return 0 if (<tree>, indexx) is marked
     if ( DT_IS_MARKED(tree, indexx) )
         return  0;
     i = indexx;
@@ -534,7 +534,7 @@ static UInt FindTree(Obj tree, Int indexx)
     **  properties described above.                                       */
     while( i < indexx + DT_LENGTH(tree, indexx)  )
     {
-        /*  skip all nodes that are unmarked and rooting non-atoms        */
+        // skip all nodes that are unmarked and rooting non-atoms
         while( !( DT_IS_MARKED(tree, i) )  &&  DT_LENGTH(tree, i) > 1  )
             i++;
         /*  if (<tree>, i) is unmarked we now know that tree(<tree>, i) is
@@ -542,7 +542,7 @@ static UInt FindTree(Obj tree, Int indexx)
         **  desired properties.                                             */
         if ( !( DT_IS_MARKED(tree, i) )  )
             return  i;
-        /*  go to the previous node                                          */
+        // go to the previous node
         i--;
         /*  If the right node of tree(<tree>, i) is marked return i.
         **  Else go to the right node of tree(<tree>, i).                    */
@@ -578,15 +578,15 @@ static UInt FindTree(Obj tree, Int indexx)
 */
 static Obj MakeFormulaVector(Obj tree, Obj pr)
 {
-    UInt  i, /*    denominator of a binomial coefficient              */
-          j, /*    loop variable                                      */
-          u; /*    node index                                         */
-    Obj   rel, /*  stores relations of <pr>                           */
-          vec, /*  stores formula vector to return                    */
-          prod,/*  stores the product of two integers                 */
+    UInt  i, // denominator of a binomial coefficient
+          j, // loop variable
+          u; // node index
+    Obj   rel, // stores relations of <pr>
+          vec, // stores formula vector to return
+          prod,// stores the product of two integers
           gen;
 
-    /*  initialize <vec> and set the first four elements              */
+    // initialize <vec> and set the first four elements
     vec = NewPlistFromArgs(INTOBJ_INT(0), INTOBJ_INT(1),
                            DT_GEN(tree, DT_LEFT(tree, 1)),
                            DT_GEN(tree, DT_RIGHT(tree, 1)));
@@ -634,7 +634,7 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
                                    BinomialInt(ELM_PLIST(rel, j+1),
                                             INTOBJ_INT(i)        )        );
                     SET_ELM_PLIST(vec,  2, prod);
-                    /*  tell gasman that vec has changed                     */
+                    // tell gasman that vec has changed
                     CHANGED_BAG(vec);
                     break;
                 }
@@ -779,7 +779,7 @@ static Int Earlier(Obj tree1, Int index1, Obj tree2, Int index2)
 **  deep thought monomial and stores all these monomials in the list <pols>.
 */
 
-/* See below: */
+// See below:
 static void GetReps(Obj list, Obj reps);
 static void FindNewReps2(Obj tree, Obj reps, Obj pr);
 
@@ -856,7 +856,7 @@ static Obj FuncGetPols(Obj self, Obj list, Obj pr, Obj pols)
 **  pseudorepresentative <list> and adds them to the list <reps>.
 */
 
-/* See below: */
+// See below:
 static void FindNewReps1(Obj tree, Obj reps);
 
 static void GetReps(Obj list, Obj reps)
@@ -939,7 +939,7 @@ static void GetReps(Obj list, Obj reps)
 **  elements in their equivalence class.
 */
 
-/* See below: */
+// See below:
 static void FindSubs1(Obj tree,
                       Int x,
                       Obj list1,
@@ -954,7 +954,7 @@ static void FindSubs1(Obj tree,
 
 static void FindNewReps1(Obj tree, Obj reps)
 {
-    Obj   y,           /*  stores a copy of <tree>                       */
+    Obj   y,           // stores a copy of <tree>
           lsubs,       /*  stores pos(<subtree>) for all subtrees of
                        **  left(<tree>) in a given almost equal class    */
 
@@ -966,10 +966,10 @@ static void FindNewReps1(Obj tree, Obj reps)
 
           rlist;       /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
-    Int   a,           /*  stores a subtree of right((<tree>)            */
-          n,           /*  Length of lsubs                               */
-          m,           /*  Length of rsubs                               */
-          i;           /*  loop variable                                 */
+    Int   a,           // stores a subtree of right((<tree>)
+          n,           // Length of lsubs
+          m,           // Length of rsubs
+          i;           // loop variable
 
     /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
@@ -1002,7 +1002,7 @@ static void FindNewReps1(Obj tree, Obj reps)
     if  ( n == 0 )
     {
         FindNewReps1(tree, reps);
-        /*  unmark all top nodes of the trees stored in rlist          */
+        // unmark all top nodes of the trees stored in rlist
         UnmarkAEClass(tree, rlist);
         return;
     }
@@ -1035,7 +1035,7 @@ static void FindNewReps1(Obj tree, Obj reps)
     UnmarkAEClass(tree, llist);
 }
 
-/* See below: */
+// See below:
 static void FindSubs2(Obj tree,
                       Int x,
                       Obj list1,
@@ -1065,10 +1065,10 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
 
           rlist;       /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
-    Int   a,           /*  stores a subtree of right((<tree>)            */
-          n,           /*  Length of lsubs                               */
-          m,           /*  Length of rsubs                               */
-          i;           /*  loop variable                                 */
+    Int   a,           // stores a subtree of right((<tree>)
+          n,           // Length of lsubs
+          m,           // Length of rsubs
+          i;           // loop variable
 
     /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
@@ -1105,7 +1105,7 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
     if  ( n == 0 )
     {
         FindNewReps2(tree, reps, pr);
-        /*  unmark all top nodes of the trees stored in rlist          */
+        // unmark all top nodes of the trees stored in rlist
         UnmarkAEClass(tree, rlist);
         return;
     }
@@ -1148,7 +1148,7 @@ static void FindNewReps(Obj tree,
                                 **  i > max lies in the center of <G>   */
 )
 {
-    Obj   y,           /*  stores a copy of <tree>                       */
+    Obj   y,           // stores a copy of <tree>
           lsubs,       /*  stores pos(<subtree>) for all subtrees of
                        **  left(<tree>) in a given almost equal class    */
 
@@ -1160,12 +1160,12 @@ static void FindNewReps(Obj tree,
 
           rlist,       /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
-          list1,       /*  stores a sublist of <reps>                    */
-          rel;         /*  stores a commutator relation from <pr>        */
-    Int   a;           /*  stores a subtree of right((<tree>)            */
-    UInt  n,           /*  Length of lsubs                               */
-          m,           /*  Length of rsubs                               */
-          i, lenrel;   /*  loop variable                                 */
+          list1,       // stores a sublist of <reps>
+          rel;         // stores a commutator relation from <pr>
+    Int   a;           // stores a subtree of right((<tree>)
+    UInt  n,           // Length of lsubs
+          m,           // Length of rsubs
+          i, lenrel;   // loop variable
 
     /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
@@ -1184,7 +1184,7 @@ static void FindNewReps(Obj tree,
     {
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
         {
-            /*  get  pr[ num(left(<tree>)) ][ num(right(<tree>)) ]      */
+            // get  pr[ num(left(<tree>)) ][ num(right(<tree>)) ]
             rel = ELM_PLIST( ELM_PLIST(pr, INT_INTOBJ( DT_GEN(tree,
                                                          DT_LEFT(tree, 1)))) ,
                              INT_INTOBJ( DT_GEN(tree, DT_RIGHT(tree, 1) ) )  );
@@ -1227,7 +1227,7 @@ static void FindNewReps(Obj tree,
     if  ( n == 0 )
     {
         FindNewReps(tree, reps, pr, max);
-        /*  unmark all top nodes of the trees stored in rlist          */
+        // unmark all top nodes of the trees stored in rlist
         UnmarkAEClass(tree, rlist);
         return;
     }
@@ -1272,7 +1272,7 @@ static Obj FuncFindNewReps(Obj self, Obj tree, Obj reps, Obj pr, Obj max)
 {
 
 #ifdef TEST_TREE
-    /*  test if <tree> is really a tree                                    */
+    // test if <tree> is really a tree
     TestTree(tree);
 #endif
     if (LEN_PLIST(tree) < 15)
@@ -1376,7 +1376,7 @@ v**  argument.
 */
 
 static void FindSubs1(Obj tree,
-                      Int x,     /*  subtree of <tree>                     */
+                      Int x,     // subtree of <tree>
                       Obj list1, /*  list containing all subtrees of
                                  **  left(<tree>) almost equal to
                                  **  tree(<tree>, x)                       */
@@ -1394,12 +1394,12 @@ static void FindSubs1(Obj tree,
                       Int ar,
                       Int bl,
                       Int br,
-                      Obj reps /*  list of representatives for all trees */
+                      Obj reps // list of representatives for all trees
 )
 {
-   Int    i;  /*  loop variable                                             */
+   Int    i;  // loop variable
 
-   /*  if <al> > <ar> or <bl> > <br> nothing remains to change.             */
+   // if <al> > <ar> or <bl> > <br> nothing remains to change.
    if (  al > ar  ||  bl > br  )
    {
        /*  Set the pos-arguments of the trees in <list1> and <list2>
@@ -1452,7 +1452,7 @@ static void FindSubs1(Obj tree,
 
 
 static void FindSubs2(Obj tree,
-                      Int x,     /*  subtree of <tree>                     */
+                      Int x,     // subtree of <tree>
                       Obj list1, /*  list containing all subtrees of
                                  **  left(<tree>) almost equal to
                                  **  tree(<tree>, x)                       */
@@ -1470,13 +1470,13 @@ static void FindSubs2(Obj tree,
                       Int ar,
                       Int bl,
                       Int br,
-                      Obj reps, /*  list of representatives for all trees */
-                      Obj pr    /*  pc-presentation                       */
+                      Obj reps, // list of representatives for all trees
+                      Obj pr    // pc-presentation
 )
 {
-   Int    i;  /*  loop variable                                             */
+   Int    i;  // loop variable
 
-   /*  if <al> > <ar> or <bl> > <br> nothing remains to change.             */
+   // if <al> > <ar> or <bl> > <br> nothing remains to change.
    if (  al > ar  ||  bl > br  )
    {
        /*  Set the pos-arguments of the trees in <list1> and <list2>
@@ -1529,7 +1529,7 @@ static void FindSubs2(Obj tree,
 
 
 static void FindSubs(Obj tree,
-                     Int x,     /*  subtree of <tree>                     */
+                     Int x,     // subtree of <tree>
                      Obj list1, /*  list containing all subtrees of
                                 **  left(<tree>) almost equal to
                                 **  tree(<tree>, x)                       */
@@ -1547,14 +1547,14 @@ static void FindSubs(Obj tree,
                      Int ar,
                      Int bl,
                      Int br,
-                     Obj reps, /*  list of representatives for all trees */
-                     Obj pr,   /*  pc-presentation                       */
-                     Obj max   /*  needed to call 'FindNewReps'          */
+                     Obj reps, // list of representatives for all trees
+                     Obj pr,   // pc-presentation
+                     Obj max   // needed to call 'FindNewReps'
 )
 {
-   Int    i;  /*  loop variable                                             */
+   Int    i;  // loop variable
 
-   /*  if <al> > <ar> or <bl> > <br> nothing remains to change.             */
+   // if <al> > <ar> or <bl> > <br> nothing remains to change.
    if (  al > ar  ||  bl > br  )
    {
        /*  Set the pos-arguments of the trees in <list1> and <list2>
@@ -1615,7 +1615,7 @@ static void FindSubs(Obj tree,
 */
 static void SetSubs(Obj list, Obj a, Obj tree)
 {
-    UInt   i,j;  /*  loop variables                                         */
+    UInt   i,j;  // loop variables
     UInt   len, len2;
 
     len = LEN_PLIST(list);
@@ -1710,7 +1710,7 @@ static Int InitKernel (
 {
     InitFopyGVar( "Dt_add" , &Dt_add );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -1724,7 +1724,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

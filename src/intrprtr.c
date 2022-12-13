@@ -107,7 +107,7 @@ static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 **  'PopVoidObj' returns the  top element from the values  stack and pops it.
 **  It is an error if the stack is empty but not if the top element is void.
 */
-/* TL: Obj             StackObj; */
+// TL: Obj             StackObj;
 
 static void PushObj(IntrState * intr, Obj val)
 {
@@ -237,27 +237,27 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
 */
 void IntrBegin(IntrState * intr)
 {
-    /* allocate a new values stack                                         */
+    // allocate a new values stack
     intr->StackObj = NEW_PLIST(T_PLIST, 64);
 
-    /* must be in immediate (non-ignoring, non-coding) mode                */
+    // must be in immediate (non-ignoring, non-coding) mode
     GAP_ASSERT(intr->ignoring == 0);
     GAP_ASSERT(intr->coding == 0);
 
-    /* no return-statement was yet interpreted                             */
+    // no return-statement was yet interpreted
     intr->returning = STATUS_END;
 }
 
 ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
 {
-    /* if everything went fine                                             */
+    // if everything went fine
     if ( ! error ) {
 
-        /* must be back in immediate (non-ignoring, non-coding) mode       */
+        // must be back in immediate (non-ignoring, non-coding) mode
         GAP_ASSERT(intr->ignoring == 0);
         GAP_ASSERT(intr->coding == 0);
 
-        /* and the stack must contain the result value (which may be void) */
+        // and the stack must contain the result value (which may be void)
         GAP_ASSERT(LEN_PLIST(intr->StackObj) == 1);
         if (result)
             *result = PopVoidObj(intr);
@@ -265,15 +265,15 @@ ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
         return intr->returning;
     }
 
-    /* otherwise clean up the mess                                         */
+    // otherwise clean up the mess
     else {
 
-        /* clean up the coder too                                          */
+        // clean up the coder too
         if (intr->coding > 0) {
             CodeEnd(intr->cs, 1);
         }
 
-        /* dummy result value (probably ignored)                           */
+        // dummy result value (probably ignored)
         if (result)
             *result = 0;
 
@@ -316,7 +316,7 @@ void IntrAbortCoding(IntrState * intr)
 */
 void IntrFuncCallBegin(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -330,20 +330,20 @@ static Obj PopOptions;
 
 void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
 {
-    Obj                 func;           /* function                        */
-    Obj                 a1;             /* first argument                  */
-    Obj                 a2;             /* second argument                 */
-    Obj                 a3;             /* third argument                  */
-    Obj                 a4;             /* fourth argument                 */
-    Obj                 a5;             /* fifth  argument                 */
-    Obj                 a6;             /* sixth  argument                 */
-    Obj                 args;           /* argument list                   */
-    Obj                 argi;           /* <i>-th argument                 */
-    Obj                 val;            /* return value of function        */
-    Obj                 opts;           /* record of options               */
-    UInt                i;              /* loop variable                   */
+    Obj                 func;           // function
+    Obj                 a1;             // first argument
+    Obj                 a2;             // second argument
+    Obj                 a3;             // third argument
+    Obj                 a4;             // fourth argument
+    Obj                 a5;             // fifth  argument
+    Obj                 a6;             // sixth  argument
+    Obj                 args;           // argument list
+    Obj                 argi;           // <i>-th argument
+    Obj                 val;            // return value of function
+    Obj                 opts;           // record of options
+    UInt                i;              // loop variable
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -357,7 +357,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
         CALL_1ARGS(PushOptions, opts);
     }
 
-    /* get the arguments from the stack                                    */
+    // get the arguments from the stack
     a1 = a2 = a3 = a4 = a5 = a6 = args = 0;
     if ( nr <= 6 ) {
         if ( 6 <= nr ) { a6 = PopObj(intr); }
@@ -375,7 +375,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
         }
     }
 
-    /* get and check the function from the stack                           */
+    // get and check the function from the stack
     func = PopObj(intr);
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
       if ( nr <= 6 ) {
@@ -392,7 +392,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
       }
       val = DoOperation2Args(CallFuncListOper, func, args);
     } else {
-      /* call the function                                                 */
+      // call the function
       if      ( 0 == nr ) { val = CALL_0ARGS( func ); }
       else if ( 1 == nr ) { val = CALL_1ARGS( func, a1 ); }
       else if ( 2 == nr ) { val = CALL_2ARGS( func, a1, a2 ); }
@@ -414,7 +414,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
     if (options)
       CALL_0ARGS(PopOptions);
 
-    /* push the value onto the stack                                       */
+    // push the value onto the stack
     if ( val == 0 )
         PushFunctionVoidReturn(intr);
     else
@@ -440,7 +440,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
 void IntrFuncExprBegin(
     IntrState * intr, Int narg, Int nloc, Obj nams, Int startLine)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -449,18 +449,18 @@ void IntrFuncExprBegin(
     }
     intr->coding++;
 
-    /* code a function expression                                          */
+    // code a function expression
     CodeFuncExprBegin(intr->cs, narg, nloc, nams, intr->gapnameid, startLine);
 }
 
 #ifdef HPCGAP
 void IntrFuncExprSetLocks(IntrState * intr, Obj locks)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
 
     CodeFuncExprSetLocks(intr->cs, locks);
@@ -469,11 +469,11 @@ void IntrFuncExprSetLocks(IntrState * intr, Obj locks)
 
 void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
@@ -523,7 +523,7 @@ void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
 */
 void IntrIfBegin(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
 
     // if IntrIgnoring is positive, increment it, as IntrIgnoring == 1 has a
@@ -544,7 +544,7 @@ void IntrIfBegin(IntrState * intr)
 
 void IntrIfElif(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -555,7 +555,7 @@ void IntrIfElif(IntrState * intr)
 
 void IntrIfElse(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -564,15 +564,15 @@ void IntrIfElse(IntrState * intr)
     }
 
 
-    /* push 'true' (to execute body of else-branch)                        */
+    // push 'true' (to execute body of else-branch)
     PushObj(intr, True);
 }
 
 void IntrIfBeginBody(IntrState * intr)
 {
-    Obj                 cond;           /* value of condition              */
+    Obj                 cond;           // value of condition
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 0) {
         intr->ignoring++;
@@ -584,13 +584,13 @@ void IntrIfBeginBody(IntrState * intr)
     }
 
 
-    /* get and check the condition                                         */
+    // get and check the condition
     cond = PopObj(intr);
     if ( cond != True && cond != False ) {
         RequireArgumentEx(0, cond, "<expr>", "must be 'true' or 'false'");
     }
 
-    /* if the condition is 'false', ignore the body                        */
+    // if the condition is 'false', ignore the body
     if ( cond == False ) {
         intr->ignoring = 1;
     }
@@ -598,12 +598,12 @@ void IntrIfBeginBody(IntrState * intr)
 
 Int IntrIfEndBody(IntrState * intr, UInt nr)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* explicitly check interpreter hooks, as not using SKIP_IF_RETURNING  */
+    // explicitly check interpreter hooks, as not using SKIP_IF_RETURNING
     INTERPRETER_PROFILE_HOOK(intr, 0);
 
-    /* ignore or code                                                      */
+    // ignore or code
     if (intr->returning != STATUS_END) {
         return 0;
     }
@@ -616,12 +616,12 @@ Int IntrIfEndBody(IntrState * intr, UInt nr)
         return 1;
     }
 
-    /* otherwise drop the values for the statements executed in the body   */
+    // otherwise drop the values for the statements executed in the body
     for ( i = nr; 1 <= i; i-- ) {
         PopVoidObj(intr);
     }
 
-    /* one branch of the if-statement was executed, ignore the others      */
+    // one branch of the if-statement was executed, ignore the others
     intr->ignoring = 1;
 
     return 1;
@@ -685,7 +685,7 @@ void IntrIfEnd(IntrState * intr, UInt nr)
 */
 void IntrForBegin(IntrState * intr, Obj stackNams)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -694,50 +694,50 @@ void IntrForBegin(IntrState * intr, Obj stackNams)
 
     intr->coding++;
 
-    /* code a for loop                                                     */
+    // code a for loop
     CodeForBegin(intr->cs);
 }
 
 void IntrForIn(IntrState * intr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeForIn(intr->cs);
 }
 
 void IntrForBeginBody(IntrState * intr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeForBeginBody(intr->cs);
 }
 
 void IntrForEndBody(IntrState * intr, UInt nr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeForEndBody(intr->cs, nr);
 }
 
 void IntrForEnd(IntrState * intr, Obj stackNams)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
@@ -776,7 +776,7 @@ void IntrForEnd(IntrState * intr, Obj stackNams)
 */
 void IntrWhileBegin(IntrState * intr, Obj stackNams)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -785,39 +785,39 @@ void IntrWhileBegin(IntrState * intr, Obj stackNams)
 
     intr->coding++;
 
-    /* code a while loop                                                   */
+    // code a while loop
     CodeWhileBegin(intr->cs);
 }
 
 void IntrWhileBeginBody(IntrState * intr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeWhileBeginBody(intr->cs);
 }
 
 void IntrWhileEndBody(IntrState * intr, UInt nr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeWhileEndBody(intr->cs, nr);
 }
 
 void IntrWhileEnd(IntrState * intr, Obj stackNams)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
@@ -838,22 +838,22 @@ void IntrWhileEnd(IntrState * intr, Obj stackNams)
 */
 void IntrQualifiedExprBegin(IntrState * intr, UInt qual)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeQualifiedExprBegin(intr->cs, qual);
 }
 
 void IntrQualifiedExprEnd(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeQualifiedExprEnd(intr->cs);
 }
@@ -887,7 +887,7 @@ void IntrQualifiedExprEnd(IntrState * intr)
 */
 void IntrAtomicBegin(IntrState * intr, Obj stackNams)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -901,18 +901,18 @@ void IntrAtomicBegin(IntrState * intr, Obj stackNams)
 
 void IntrAtomicBeginBody(IntrState * intr, UInt nrexprs)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeAtomicBeginBody(intr->cs, nrexprs);
 }
 
 void IntrAtomicEndBody(IntrState * intr, Int nrstats)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -923,11 +923,11 @@ void IntrAtomicEndBody(IntrState * intr, Int nrstats)
 
 void IntrAtomicEnd(IntrState * intr, Obj stackNams)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
@@ -966,7 +966,7 @@ void IntrAtomicEnd(IntrState * intr, Obj stackNams)
 */
 void IntrRepeatBegin(IntrState * intr, Obj stackNams)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -975,39 +975,39 @@ void IntrRepeatBegin(IntrState * intr, Obj stackNams)
 
     intr->coding++;
 
-    /* code a repeat loop                                                  */
+    // code a repeat loop
     CodeRepeatBegin(intr->cs);
 }
 
 void IntrRepeatBeginBody(IntrState * intr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeRepeatBeginBody(intr->cs);
 }
 
 void IntrRepeatEndBody(IntrState * intr, UInt nr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeRepeatEndBody(intr->cs, nr);
 }
 
 void IntrRepeatEnd(IntrState * intr, Obj stackNams)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
@@ -1030,11 +1030,11 @@ void IntrRepeatEnd(IntrState * intr, Obj stackNams)
 */
 void IntrBreak(IntrState * intr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeBreak(intr->cs);
 }
@@ -1052,11 +1052,11 @@ void IntrBreak(IntrState * intr)
 */
 void IntrContinue(IntrState * intr)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     GAP_ASSERT(intr->coding > 0);
     CodeContinue(intr->cs);
 }
@@ -1072,9 +1072,9 @@ void IntrContinue(IntrState * intr)
 */
 void IntrReturnObj(IntrState * intr)
 {
-    Obj                 val;            /* return value                    */
+    Obj                 val;            // return value
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1083,7 +1083,7 @@ void IntrReturnObj(IntrState * intr)
     }
 
 
-    /* empty the values stack and push the return value                    */
+    // empty the values stack and push the return value
     val = PopObj(intr);
     SET_LEN_PLIST(intr->StackObj, 0);
     PushObj(intr, val);
@@ -1102,7 +1102,7 @@ void IntrReturnObj(IntrState * intr)
 */
 void IntrReturnVoid(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1111,7 +1111,7 @@ void IntrReturnVoid(IntrState * intr)
     }
 
 
-    /* empty the values stack and push the void value                      */
+    // empty the values stack and push the void value
     SET_LEN_PLIST(intr->StackObj, 0);
     PushVoidObj(intr);
 
@@ -1129,18 +1129,18 @@ void IntrReturnVoid(IntrState * intr)
 */
 void IntrQuit(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* 'quit' is not allowed in functions (by the reader)                  */
+    // 'quit' is not allowed in functions (by the reader)
     GAP_ASSERT(intr->coding == 0);
 
-    /* empty the values stack and push the void value                      */
+    // empty the values stack and push the void value
     SET_LEN_PLIST(intr->StackObj, 0);
     PushVoidObj(intr);
 
-    /* indicate that a quit-statement was interpreted                      */
+    // indicate that a quit-statement was interpreted
     intr->returning = STATUS_QUIT;
 }
 
@@ -1153,18 +1153,18 @@ void IntrQuit(IntrState * intr)
 */
 void IntrQUIT(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* 'QUIT' is not allowed in functions (by the reader)                  */
+    // 'QUIT' is not allowed in functions (by the reader)
     GAP_ASSERT(intr->coding == 0);
 
-    /* empty the values stack and push the void value                      */
+    // empty the values stack and push the void value
     SET_LEN_PLIST(intr->StackObj, 0);
     PushVoidObj(intr);
 
-    /* indicate that a QUIT-statement was interpreted                      */
+    // indicate that a QUIT-statement was interpreted
     intr->returning = STATUS_QQUIT;
 }
 
@@ -1187,7 +1187,7 @@ void IntrHelp(IntrState * intr, Obj topic)
     // '?' is not allowed in functions (by the reader)
     GAP_ASSERT(intr->coding == 0);
 
-    /* FIXME: Hard coded function name */
+    // FIXME: Hard coded function name
     hgvar = GVarName("HELP");
     help = ValGVar(hgvar);
     if (!help) {
@@ -1224,9 +1224,9 @@ void IntrHelp(IntrState * intr, Obj topic)
 */
 void IntrOrL(IntrState * intr)
 {
-    Obj                 opL;            /* value of left operand           */
+    Obj                 opL;            // value of left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 0) {
         intr->ignoring++;
@@ -1238,7 +1238,7 @@ void IntrOrL(IntrState * intr)
     }
 
 
-    /* if the left operand is 'true', ignore the right operand             */
+    // if the left operand is 'true', ignore the right operand
     opL = PopObj(intr);
     PushObj(intr, opL);
     if ( opL == True ) {
@@ -1249,10 +1249,10 @@ void IntrOrL(IntrState * intr)
 
 void IntrOr(IntrState * intr)
 {
-    Obj                 opL;            /* value of left  operand          */
-    Obj                 opR;            /* value of right operand          */
+    Obj                 opL;            // value of left  operand
+    Obj                 opR;            // value of right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 1) {
         intr->ignoring--;
@@ -1264,19 +1264,19 @@ void IntrOr(IntrState * intr)
     }
 
 
-    /* stop ignoring things now                                            */
+    // stop ignoring things now
     intr->ignoring = 0;
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* if the left operand is 'true', this is the result                   */
+    // if the left operand is 'true', this is the result
     if      ( opL == True ) {
         PushObj(intr, opL);
     }
 
-    /* if the left operand is 'false', the result is the right operand     */
+    // if the left operand is 'false', the result is the right operand
     else if ( opL == False  ) {
         if ( opR == True || opR == False  ) {
             PushObj(intr, opR);
@@ -1286,7 +1286,7 @@ void IntrOr(IntrState * intr)
         }
     }
 
-    /* signal an error                                                     */
+    // signal an error
     else {
         RequireArgumentEx(0, opL, "<expr>", "must be 'true' or 'false'");
     }
@@ -1308,9 +1308,9 @@ void IntrOr(IntrState * intr)
 */
 void IntrAndL(IntrState * intr)
 {
-    Obj                 opL;            /* value of left operand           */
+    Obj                 opL;            // value of left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 0) {
         intr->ignoring++;
@@ -1322,7 +1322,7 @@ void IntrAndL(IntrState * intr)
     }
 
 
-    /* if the left operand is 'false', ignore the right operand            */
+    // if the left operand is 'false', ignore the right operand
     opL = PopObj(intr);
     PushObj(intr, opL);
     if ( opL == False ) {
@@ -1333,10 +1333,10 @@ void IntrAndL(IntrState * intr)
 
 void IntrAnd(IntrState * intr)
 {
-    Obj                 opL;            /* value of left  operand          */
-    Obj                 opR;            /* value of right operand          */
+    Obj                 opL;            // value of left  operand
+    Obj                 opR;            // value of right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 1) {
         intr->ignoring--;
@@ -1348,19 +1348,19 @@ void IntrAnd(IntrState * intr)
     }
 
 
-    /* stop ignoring things now                                            */
+    // stop ignoring things now
     intr->ignoring = 0;
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* if the left operand is 'false', this is the result                  */
+    // if the left operand is 'false', this is the result
     if      ( opL == False ) {
         PushObj(intr, opL);
     }
 
-    /* if the left operand is 'true', the result is the right operand      */
+    // if the left operand is 'true', the result is the right operand
     else if ( opL == True  ) {
         if ( opR == False || opR == True  ) {
             PushObj(intr, opR);
@@ -1370,12 +1370,12 @@ void IntrAnd(IntrState * intr)
         }
     }
 
-    /* handle the 'and' of two filters                                    */
+    // handle the 'and' of two filters
     else if (IS_FILTER(opL)) {
         PushObj(intr, NewAndFilter(opL, opR));
     }
 
-    /* signal an error                                                     */
+    // signal an error
     else {
         RequireArgumentEx(0, opL, "<expr>",
                           "must be 'true' or 'false' or a filter");
@@ -1392,10 +1392,10 @@ void IntrAnd(IntrState * intr)
 */
 void IntrNot(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 op;             /* operand                         */
+    Obj                 val;            // value, result
+    Obj                 op;             // operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1404,16 +1404,16 @@ void IntrNot(IntrState * intr)
     }
 
 
-    /* get and check the operand                                           */
+    // get and check the operand
     op = PopObj(intr);
     if ( op != True && op != False ) {
         RequireArgumentEx(0, op, "<expr>", "must be 'true' or 'false'");
     }
 
-    /* negate the operand                                                  */
+    // negate the operand
     val = (op == False ? True : False);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
@@ -1433,25 +1433,25 @@ void IntrNot(IntrState * intr)
 */
 static void StackSwap(IntrState * intr)
 {
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* push the operands in reverse order                                  */
+    // push the operands in reverse order
     PushObj(intr, opR);
     PushObj(intr, opL);
 }
 
 void IntrEq(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1460,20 +1460,20 @@ void IntrEq(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compare them                                                        */
+    // compare them
     val = (EQ( opL, opR ) ? True : False);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrNe(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1482,18 +1482,18 @@ void IntrNe(IntrState * intr)
     }
 
 
-    /* '<left> <> <right>' is 'not <left> = <right>'                       */
+    // '<left> <> <right>' is 'not <left> = <right>'
     IntrEq(intr);
     IntrNot(intr);
 }
 
 void IntrLt(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1502,20 +1502,20 @@ void IntrLt(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compare them                                                        */
+    // compare them
     val = (LT( opL, opR ) ? True : False);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrGe(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1524,14 +1524,14 @@ void IntrGe(IntrState * intr)
     }
 
 
-    /* '<left> >= <right>' is 'not <left> < <right>'                       */
+    // '<left> >= <right>' is 'not <left> < <right>'
     IntrLt(intr);
     IntrNot(intr);
 }
 
 void IntrGt(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1540,14 +1540,14 @@ void IntrGt(IntrState * intr)
     }
 
 
-    /* '<left> > <right>' is '<right> < <left>'                            */
+    // '<left> > <right>' is '<right> < <left>'
     StackSwap(intr);
     IntrLt(intr);
 }
 
 void IntrLe(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1556,7 +1556,7 @@ void IntrLe(IntrState * intr)
     }
 
 
-    /* '<left> <= <right>' is 'not <right> < <left>'                       */
+    // '<left> <= <right>' is 'not <right> < <left>'
     StackSwap(intr);
     IntrLt(intr);
     IntrNot(intr);
@@ -1572,11 +1572,11 @@ void IntrLe(IntrState * intr)
 */
 void IntrIn(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1585,14 +1585,14 @@ void IntrIn(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* perform the test                                                    */
+    // perform the test
     val = (IN( opL, opR ) ? True : False);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
@@ -1613,11 +1613,11 @@ void IntrIn(IntrState * intr)
 */
 void IntrSum(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1626,23 +1626,23 @@ void IntrSum(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compute the sum                                                     */
+    // compute the sum
     val = SUM( opL, opR );
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrAInv(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1651,23 +1651,23 @@ void IntrAInv(IntrState * intr)
     }
 
 
-    /* get the operand                                                     */
+    // get the operand
     opL = PopObj(intr);
 
-    /* compute the additive inverse                                        */
+    // compute the additive inverse
     val = AINV_SAMEMUT(opL);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrDiff(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1676,24 +1676,24 @@ void IntrDiff(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compute the difference                                              */
+    // compute the difference
     val = DIFF( opL, opR );
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrProd(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1702,24 +1702,24 @@ void IntrProd(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compute the product                                                 */
+    // compute the product
     val = PROD( opL, opR );
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrQuo(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1728,24 +1728,24 @@ void IntrQuo(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compute the quotient                                                */
+    // compute the quotient
     val = QUO( opL, opR );
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrMod(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1754,24 +1754,24 @@ void IntrMod(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compute the remainder                                               */
+    // compute the remainder
     val = MOD( opL, opR );
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
 void IntrPow(IntrState * intr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* left operand                    */
-    Obj                 opR;            /* right operand                   */
+    Obj                 val;            // value, result
+    Obj                 opL;            // left operand
+    Obj                 opR;            // right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1780,14 +1780,14 @@ void IntrPow(IntrState * intr)
     }
 
 
-    /* get the operands                                                    */
+    // get the operands
     opR = PopObj(intr);
     opL = PopObj(intr);
 
-    /* compute the power                                                   */
+    // compute the power
     val = POW( opL, opR );
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, val);
 }
 
@@ -1801,7 +1801,7 @@ void IntrPow(IntrState * intr)
 */
 void IntrIntExpr(IntrState * intr, Obj string, Char * str)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -1850,7 +1850,7 @@ static Obj ConvertFloatLiteralEager(Obj str)
 
 void IntrFloatExpr(IntrState * intr, Obj string, Char * str)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (string == 0)
@@ -1873,7 +1873,7 @@ void IntrFloatExpr(IntrState * intr, Obj string, Char * str)
 */
 void IntrIntObjExpr(IntrState * intr, Obj val)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1882,7 +1882,7 @@ void IntrIntObjExpr(IntrState * intr, Obj val)
     }
 
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, val);
 }
 
@@ -1894,7 +1894,7 @@ void IntrIntObjExpr(IntrState * intr, Obj val)
 */
 void IntrTrueExpr(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1903,7 +1903,7 @@ void IntrTrueExpr(IntrState * intr)
     }
 
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, True);
 }
 
@@ -1916,7 +1916,7 @@ void IntrTrueExpr(IntrState * intr)
 */
 void IntrFalseExpr(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1925,7 +1925,7 @@ void IntrFalseExpr(IntrState * intr)
     }
 
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, False);
 }
 
@@ -1939,7 +1939,7 @@ void IntrFalseExpr(IntrState * intr)
 */
 void IntrTildeExpr(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1953,7 +1953,7 @@ void IntrTildeExpr(IntrState * intr)
         ErrorQuit("'~' does not have a value here", 0, 0);
     }
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, STATE(Tilde));
 }
 
@@ -1967,7 +1967,7 @@ void IntrTildeExpr(IntrState * intr)
 */
 void IntrCharExpr(IntrState * intr, Char chr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -1976,7 +1976,7 @@ void IntrCharExpr(IntrState * intr, Char chr)
     }
 
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, ObjsChar[(UChar)chr]);
 }
 
@@ -1994,10 +1994,10 @@ static Obj GetFromStack(Obj cycle, Int j)
 
 void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
 {
-    Obj                 perm;           /* permutation                     */
-    UInt                m;              /* maximal entry in permutation    */
+    Obj                 perm;           // permutation
+    UInt                m;              // maximal entry in permutation
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2006,7 +2006,7 @@ void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
     }
 
 
-    /* get the permutation (allocate for the first cycle)                  */
+    // get the permutation (allocate for the first cycle)
     if ( nrc == 1 ) {
         m = 0;
         perm = NEW_PERM4( 0 );
@@ -2019,7 +2019,7 @@ void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
 
     m = ScanPermCycle(perm, m, (Obj)intr, nrx, GetFromStack);
 
-    /* push the permutation (if necessary, drop permutation first)         */
+    // push the permutation (if necessary, drop permutation first)
     if (nrc != 1) {
         PopObj(intr);
         PopObj(intr);
@@ -2030,10 +2030,10 @@ void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
 
 void IntrPerm(IntrState * intr, UInt nrc)
 {
-    Obj                 perm;           /* permutation, result             */
-    UInt                m;              /* maximal entry in permutation    */
+    Obj                 perm;           // permutation, result
+    UInt                m;              // maximal entry in permutation
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2042,23 +2042,23 @@ void IntrPerm(IntrState * intr, UInt nrc)
     }
 
 
-    /* special case for identity permutation                               */
+    // special case for identity permutation
     if ( nrc == 0 ) {
         perm = NEW_PERM2( 0 );
     }
 
-    /* otherwise                                                           */
+    // otherwise
     else {
 
-        /* get the permutation and its maximal entry                       */
+        // get the permutation and its maximal entry
         m = INT_INTOBJ(PopObj(intr));
         perm = PopObj(intr);
 
-        /* if possible represent the permutation with short entries        */
+        // if possible represent the permutation with short entries
         TrimPerm(perm, m);
     }
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, perm);
 }
 
@@ -2072,10 +2072,10 @@ void IntrPerm(IntrState * intr, UInt nrc)
 */
 void IntrListExprBegin(IntrState * intr, UInt top)
 {
-    Obj                 list;           /* new list                        */
-    Obj                 old;            /* old value of '~'                */
+    Obj                 list;           // new list
+    Obj                 old;            // old value of '~'
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2084,11 +2084,11 @@ void IntrListExprBegin(IntrState * intr, UInt top)
     }
 
 
-    /* allocate the new list                                               */
+    // allocate the new list
     list = NewEmptyPlist();
 
-    /* if this is an outmost list, save it for reference in '~'            */
-    /* (and save the old value of '~' on the values stack)                 */
+    // if this is an outmost list, save it for reference in '~'
+    // (and save the old value of '~' on the values stack)
     if ( top ) {
         old = STATE(Tilde);
         if (old != 0) {
@@ -2100,13 +2100,13 @@ void IntrListExprBegin(IntrState * intr, UInt top)
         STATE(Tilde) = list;
     }
 
-    /* push the list                                                       */
+    // push the list
     PushObj(intr, list);
 }
 
 void IntrListExprBeginElm(IntrState * intr, UInt pos)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2115,18 +2115,18 @@ void IntrListExprBeginElm(IntrState * intr, UInt pos)
     }
 
 
-    /* remember this position on the values stack                          */
+    // remember this position on the values stack
     PushObj(intr, INTOBJ_INT(pos));
 }
 
 void IntrListExprEndElm(IntrState * intr)
 {
-    Obj                 list;           /* list that is currently made     */
-    Obj                 pos;            /* position                        */
-    UInt                p;              /* position, as a C integer        */
-    Obj                 val;            /* value to assign into list       */
+    Obj                 list;           // list that is currently made
+    Obj                 pos;            // position
+    UInt                p;              // position, as a C integer
+    Obj                 val;            // value to assign into list
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2135,34 +2135,34 @@ void IntrListExprEndElm(IntrState * intr)
     }
 
 
-    /* get the value                                                       */
+    // get the value
     val = PopObj(intr);
 
-    /* get the position                                                    */
+    // get the position
     pos = PopObj(intr);
     p = INT_INTOBJ( pos );
 
-    /* get the list                                                        */
+    // get the list
     list = PopObj(intr);
 
-    /* assign the element into the list                                    */
+    // assign the element into the list
     ASS_LIST( list, p, val );
 
-    /* push the list again                                                 */
+    // push the list again
     PushObj(intr, list);
 }
 
 void IntrListExprEnd(
     IntrState * intr, UInt nr, UInt range, UInt top, UInt tilde)
 {
-    Obj                 list;           /* the list, result                */
-    Obj                 old;            /* old value of '~'                */
-    Int                 low;            /* low value of range              */
-    Int                 inc;            /* increment of range              */
-    Int                 high;           /* high value of range             */
-    Obj                 val;            /* temporary value                 */
+    Obj                 list;           // the list, result
+    Obj                 old;            // old value of '~'
+    Int                 low;            // low value of range
+    Int                 inc;            // increment of range
+    Int                 high;           // high value of range
+    Obj                 val;            // temporary value
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2171,7 +2171,7 @@ void IntrListExprEnd(
     }
 
 
-    /* if this was a top level expression, restore the value of '~'        */
+    // if this was a top level expression, restore the value of '~'
     if ( top ) {
         list = PopObj(intr);
         old = PopVoidObj(intr);
@@ -2179,16 +2179,16 @@ void IntrListExprEnd(
         PushObj(intr, list);
     }
 
-    /* if this was a range, convert the list to a range                    */
+    // if this was a range, convert the list to a range
     if ( range ) {
-        /* get the list                                                    */
+        // get the list
         list = PopObj(intr);
 
-        /* get the low value                                               */
+        // get the low value
         val = ELM_LIST( list, 1 );
         low = GetSmallIntEx("Range", val, "<first>");
 
-        /* get the increment                                               */
+        // get the increment
         if ( nr == 3 ) {
             val = ELM_LIST( list, 2 );
             Int v = GetSmallIntEx("Range", val, "<second>");
@@ -2202,7 +2202,7 @@ void IntrListExprEnd(
             inc = 1;
         }
 
-        /* get and check the high value                                    */
+        // get and check the high value
         val = ELM_LIST( list, LEN_LIST(list) );
         Int v = GetSmallIntEx("Range", val, "<last>");
         if ( (v - low) % inc != 0 ) {
@@ -2212,21 +2212,21 @@ void IntrListExprEnd(
         }
         high = v;
 
-        /* if <low> is larger than <high> the range is empty               */
+        // if <low> is larger than <high> the range is empty
         if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
             list = NewEmptyPlist();
         }
 
-        /* if <low> is equal to <high> the range is a singleton list       */
+        // if <low> is equal to <high> the range is a singleton list
         else if ( low == high ) {
             list = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
             SET_LEN_PLIST( list, 1 );
             SET_ELM_PLIST( list, 1, INTOBJ_INT(low) );
         }
 
-        /* else make the range                                             */
+        // else make the range
         else {
-            /* length must be a small integer as well */
+            // length must be a small integer as well
             if ((high-low) / inc >= INT_INTOBJ_MAX) {
                 ErrorQuit("Range: the length of a range must be a small integer",
                            0, 0);
@@ -2235,13 +2235,13 @@ void IntrListExprEnd(
             list = NEW_RANGE((high - low) / inc + 1, low, inc);
         }
 
-        /* push the list again                                             */
+        // push the list again
         PushObj(intr, list);
     }
     else {
-        /* give back unneeded memory */
+        // give back unneeded memory
         list = PopObj(intr);
-        /* Might have transformed into another type of list */
+        // Might have transformed into another type of list
         if (IS_PLIST(list)) {
             SHRINK_PLIST(list, LEN_PLIST(list));
         }
@@ -2256,7 +2256,7 @@ void IntrListExprEnd(
 */
 void IntrStringExpr(IntrState * intr, Obj string)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2265,7 +2265,7 @@ void IntrStringExpr(IntrState * intr, Obj string)
     }
 
 
-    /* push the string, already newly created                              */
+    // push the string, already newly created
     PushObj(intr, string);
 }
 
@@ -2292,10 +2292,10 @@ void IntrPragma(IntrState * intr, Obj pragma)
 */
 void IntrRecExprBegin(IntrState * intr, UInt top)
 {
-    Obj                 record;         /* new record                      */
-    Obj                 old;            /* old value of '~'                */
+    Obj                 record;         // new record
+    Obj                 old;            // old value of '~'
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2304,11 +2304,11 @@ void IntrRecExprBegin(IntrState * intr, UInt top)
     }
 
 
-    /* allocate the new record                                             */
+    // allocate the new record
     record = NEW_PREC( 0 );
 
-    /* if this is an outmost record, save it for reference in '~'          */
-    /* (and save the old value of '~' on the values stack)                 */
+    // if this is an outmost record, save it for reference in '~'
+    // (and save the old value of '~' on the values stack)
     if ( top ) {
         old = STATE(Tilde);
         if (old != 0) {
@@ -2320,13 +2320,13 @@ void IntrRecExprBegin(IntrState * intr, UInt top)
         STATE(Tilde) = record;
     }
 
-    /* push the record                                                     */
+    // push the record
     PushObj(intr, record);
 }
 
 void IntrRecExprBeginElmName(IntrState * intr, UInt rnam)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2335,15 +2335,15 @@ void IntrRecExprBeginElmName(IntrState * intr, UInt rnam)
     }
 
 
-    /* remember the name on the values stack                               */
+    // remember the name on the values stack
     PushObj(intr, (Obj)rnam);
 }
 
 void IntrRecExprBeginElmExpr(IntrState * intr)
 {
-    UInt                rnam;           /* record name                     */
+    UInt                rnam;           // record name
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2352,20 +2352,20 @@ void IntrRecExprBeginElmExpr(IntrState * intr)
     }
 
 
-    /* convert the expression to a record name                             */
+    // convert the expression to a record name
     rnam = RNamObj(PopObj(intr));
 
-    /* remember the name on the values stack                               */
+    // remember the name on the values stack
     PushObj(intr, (Obj)rnam);
 }
 
 void IntrRecExprEndElm(IntrState * intr)
 {
-    Obj                 record;         /* record that is currently made   */
-    UInt                rnam;           /* name of record element          */
-    Obj                 val;            /* value of record element         */
+    Obj                 record;         // record that is currently made
+    UInt                rnam;           // name of record element
+    Obj                 val;            // value of record element
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2374,28 +2374,28 @@ void IntrRecExprEndElm(IntrState * intr)
     }
 
 
-    /* get the value                                                       */
+    // get the value
     val = PopObj(intr);
 
-    /* get the record name                                                 */
+    // get the record name
     rnam = (UInt)PopObj(intr);
 
-    /* get the record                                                      */
+    // get the record
     record = PopObj(intr);
 
-    /* assign the value into the record                                    */
+    // assign the value into the record
     ASS_REC( record, rnam, val );
 
-    /* push the record again                                               */
+    // push the record again
     PushObj(intr, record);
 }
 
 void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde)
 {
-    Obj                 record;         /* record that is currently made   */
-    Obj                 old;            /* old value of '~'                */
+    Obj                 record;         // record that is currently made
+    Obj                 old;            // old value of '~'
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2404,7 +2404,7 @@ void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde)
     }
 
 
-    /* if this was a top level expression, restore the value of '~'        */
+    // if this was a top level expression, restore the value of '~'
     if ( top ) {
         record = PopObj(intr);
         old = PopVoidObj(intr);
@@ -2427,9 +2427,9 @@ void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde)
 */
 void IntrFuncCallOptionsBegin(IntrState * intr)
 {
-    Obj                 record;         /* new record                      */
+    Obj                 record;         // new record
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2438,15 +2438,15 @@ void IntrFuncCallOptionsBegin(IntrState * intr)
     }
 
 
-    /* allocate the new record                                             */
+    // allocate the new record
     record = NEW_PREC( 0 );
-    /* push the record                                                     */
+    // push the record
     PushObj(intr, record);
 }
 
 void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2455,15 +2455,15 @@ void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam)
     }
 
 
-    /* remember the name on the values stack                               */
+    // remember the name on the values stack
     PushObj(intr, (Obj)rnam);
 }
 
 void IntrFuncCallOptionsBeginElmExpr(IntrState * intr)
 {
-    UInt                rnam;           /* record name                     */
+    UInt                rnam;           // record name
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2472,20 +2472,20 @@ void IntrFuncCallOptionsBeginElmExpr(IntrState * intr)
     }
 
 
-    /* convert the expression to a record name                             */
+    // convert the expression to a record name
     rnam = RNamObj(PopObj(intr));
 
-    /* remember the name on the values stack                               */
+    // remember the name on the values stack
     PushObj(intr, (Obj)rnam);
 }
 
 void IntrFuncCallOptionsEndElm(IntrState * intr)
 {
-    Obj                 record;         /* record that is currently made   */
-    UInt                rnam;           /* name of record element          */
-    Obj                 val;            /* value of record element         */
+    Obj                 record;         // record that is currently made
+    UInt                rnam;           // name of record element
+    Obj                 val;            // value of record element
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2494,29 +2494,29 @@ void IntrFuncCallOptionsEndElm(IntrState * intr)
     }
 
 
-    /* get the value                                                       */
+    // get the value
     val = PopObj(intr);
 
-    /* get the record name                                                 */
+    // get the record name
     rnam = (UInt)PopObj(intr);
 
-    /* get the record                                                      */
+    // get the record
     record = PopObj(intr);
 
-    /* assign the value into the record                                    */
+    // assign the value into the record
     ASS_REC( record, rnam, val );
 
-    /* push the record again                                               */
+    // push the record again
     PushObj(intr, record);
 }
 
 void IntrFuncCallOptionsEndElmEmpty(IntrState * intr)
 {
-    Obj                 record;         /* record that is currently made   */
-    UInt                rnam;           /* name of record element          */
-    Obj                 val;            /* value of record element         */
+    Obj                 record;         // record that is currently made
+    UInt                rnam;           // name of record element
+    Obj                 val;            // value of record element
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2525,25 +2525,25 @@ void IntrFuncCallOptionsEndElmEmpty(IntrState * intr)
     }
 
 
-    /* get the value                                                       */
+    // get the value
     val = True;
 
-    /* get the record name                                                 */
+    // get the record name
     rnam = (UInt)PopObj(intr);
 
-    /* get the record                                                      */
+    // get the record
     record = PopObj(intr);
 
-    /* assign the value into the record                                    */
+    // assign the value into the record
     ASS_REC( record, rnam, val );
 
-    /* push the record again                                               */
+    // push the record again
     PushObj(intr, record);
 }
 
 void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2560,15 +2560,15 @@ void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr)
 void IntrAssLVar(IntrState * intr, UInt lvar)
 {
   Obj val;
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeAssLVar(intr->cs, lvar);
 
-    /* Or in the break loop */
+    // Or in the break loop
     else {
         val = PopObj(intr);
         ASS_LVAR(lvar, val);
@@ -2578,15 +2578,15 @@ void IntrAssLVar(IntrState * intr, UInt lvar)
 
 void IntrUnbLVar(IntrState * intr, UInt lvar)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeUnbLVar(intr->cs, lvar);
 
-    /* or in the break loop */
+    // or in the break loop
     else {
         ASS_LVAR(lvar,0);
         PushVoidObj(intr);
@@ -2601,15 +2601,15 @@ void IntrUnbLVar(IntrState * intr, UInt lvar)
 void IntrRefLVar(IntrState * intr, UInt lvar)
 {
   Obj val;
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeRefLVar(intr->cs, lvar);
 
-    /* or in the break loop */
+    // or in the break loop
 
     else {
         val = OBJ_LVAR(lvar);
@@ -2623,15 +2623,15 @@ void IntrRefLVar(IntrState * intr, UInt lvar)
 
 void IntrIsbLVar(IntrState * intr, UInt lvar)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeIsbLVar(intr->cs, lvar);
 
-    /* or debugging */
+    // or debugging
     else {
         PushObj(intr, OBJ_LVAR(lvar) != (Obj)0 ? True : False);
     }
@@ -2645,14 +2645,14 @@ void IntrIsbLVar(IntrState * intr, UInt lvar)
 void IntrAssHVar(IntrState * intr, UInt hvar)
 {
   Obj val;
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeAssHVar(intr->cs, hvar);
-    /* Or in the break loop */
+    // Or in the break loop
     else {
         val = PopObj(intr);
         ASS_HVAR(hvar, val);
@@ -2662,14 +2662,14 @@ void IntrAssHVar(IntrState * intr, UInt hvar)
 
 void IntrUnbHVar(IntrState * intr, UInt hvar)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeUnbHVar(intr->cs, hvar);
-    /* or debugging */
+    // or debugging
     else {
         ASS_HVAR(hvar, 0);
         PushVoidObj(intr);
@@ -2684,14 +2684,14 @@ void IntrUnbHVar(IntrState * intr, UInt hvar)
 void IntrRefHVar(IntrState * intr, UInt hvar)
 {
   Obj val;
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeRefHVar(intr->cs, hvar);
-    /* or debugging */
+    // or debugging
     else {
         val = OBJ_HVAR(hvar);
         while (val == 0) {
@@ -2704,14 +2704,14 @@ void IntrRefHVar(IntrState * intr, UInt hvar)
 
 void IntrIsbHVar(IntrState * intr, UInt hvar)
 {
-    /* ignore                                                              */
+    // ignore
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
-    /* otherwise must be coding                                            */
+    // otherwise must be coding
     if (intr->coding > 0)
         CodeIsbHVar(intr->cs, hvar);
-    /* or debugging */
+    // or debugging
     else
         PushObj(intr, (OBJ_HVAR(hvar) != (Obj)0) ? True : False);
 }
@@ -2724,10 +2724,10 @@ void IntrIsbHVar(IntrState * intr, UInt hvar)
 
 void IntrAssDVar(IntrState * intr, UInt dvar, UInt depth)
 {
-    Obj                 rhs;            /* right hand side                 */
+    Obj                 rhs;            // right hand side
     Obj                 context;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -2737,16 +2737,16 @@ void IntrAssDVar(IntrState * intr, UInt dvar, UInt depth)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
-    /* assign the right hand side                                          */
+    // assign the right hand side
     context = STATE(ErrorLVars);
     while (depth--)
       context = PARENT_LVARS(context);
     ASS_HVAR_WITH_CONTEXT(context, dvar, rhs);
 
-    /* push the right hand side again                                      */
+    // push the right hand side again
     PushObj(intr, rhs);
 }
 
@@ -2754,7 +2754,7 @@ void IntrUnbDVar(IntrState * intr, UInt dvar, UInt depth)
 {
     Obj                 context;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -2763,13 +2763,13 @@ void IntrUnbDVar(IntrState * intr, UInt dvar, UInt depth)
                    dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
-    /* assign the right hand side                                          */
+    // assign the right hand side
     context = STATE(ErrorLVars);
     while (depth--)
       context = PARENT_LVARS(context);
     ASS_HVAR_WITH_CONTEXT(context, dvar, (Obj)0);
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
@@ -2780,10 +2780,10 @@ void IntrUnbDVar(IntrState * intr, UInt dvar, UInt depth)
 */
 void IntrRefDVar(IntrState * intr, UInt dvar, UInt depth)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
     Obj                 context;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -2792,7 +2792,7 @@ void IntrRefDVar(IntrState * intr, UInt dvar, UInt depth)
                    dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
-    /* get and check the value                                             */
+    // get and check the value
     context = STATE(ErrorLVars);
     while (depth--)
       context = PARENT_LVARS(context);
@@ -2802,16 +2802,16 @@ void IntrRefDVar(IntrState * intr, UInt dvar, UInt depth)
                    dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, val);
 }
 
 void IntrIsbDVar(IntrState * intr, UInt dvar, UInt depth)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
     Obj                 context;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
 
@@ -2820,13 +2820,13 @@ void IntrIsbDVar(IntrState * intr, UInt dvar, UInt depth)
                    dvar >> MAX_FUNC_LVARS_BITS, dvar & MAX_FUNC_LVARS_MASK );
     }
 
-    /* get the value                                                       */
+    // get the value
     context = STATE(ErrorLVars);
     while (depth--)
       context = PARENT_LVARS(context);
     val = OBJ_HVAR_WITH_CONTEXT(context, dvar);
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, val != 0 ? True : False);
 }
 
@@ -2837,9 +2837,9 @@ void IntrIsbDVar(IntrState * intr, UInt dvar, UInt depth)
 */
 void IntrAssGVar(IntrState * intr, UInt gvar)
 {
-    Obj                 rhs;            /* right hand side                 */
+    Obj                 rhs;            // right hand side
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2848,19 +2848,19 @@ void IntrAssGVar(IntrState * intr, UInt gvar)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
-    /* assign the right hand side                                          */
+    // assign the right hand side
     AssGVar( gvar, rhs );
 
-    /* push the right hand side again                                      */
+    // push the right hand side again
     PushObj(intr, rhs);
 }
 
 void IntrUnbGVar(IntrState * intr, UInt gvar)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2869,10 +2869,10 @@ void IntrUnbGVar(IntrState * intr, UInt gvar)
     }
 
 
-    /* assign the right hand side                                          */
+    // assign the right hand side
     AssGVar( gvar, (Obj)0 );
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
@@ -2883,9 +2883,9 @@ void IntrUnbGVar(IntrState * intr, UInt gvar)
 */
 void IntrRefGVar(IntrState * intr, UInt gvar)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2894,20 +2894,20 @@ void IntrRefGVar(IntrState * intr, UInt gvar)
     }
 
 
-    /* get and check the value                                             */
+    // get and check the value
     if ( (val = ValAutoGVar( gvar )) == 0 ) {
         ErrorQuit("Variable: '%g' must have a value", (Int)NameGVar(gvar), 0);
     }
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, val);
 }
 
 void IntrIsbGVar(IntrState * intr, UInt gvar)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2916,10 +2916,10 @@ void IntrIsbGVar(IntrState * intr, UInt gvar)
     }
 
 
-    /* get the value                                                       */
+    // get the value
     val = ValAutoGVar( gvar );
 
-    /* push the value                                                      */
+    // push the value
     PushObj(intr, val != 0 ? True : False);
 }
 
@@ -2933,13 +2933,13 @@ void IntrIsbGVar(IntrState * intr, UInt gvar)
 */
 void IntrAssList(IntrState * intr, Int narg)
 {
-    Obj                 list;           /* list                            */
-    Obj                 pos;            /* position                        */
-    Obj                 rhs;            /* right hand side                 */
+    Obj                 list;           // list
+    Obj                 pos;            // position
+    Obj                 rhs;            // right hand side
 
     GAP_ASSERT(narg == 1 || narg == 2);
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2947,17 +2947,17 @@ void IntrAssList(IntrState * intr, Int narg)
         return;
     }
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
     if (narg == 1) {
-      /* get the position                                                  */
+      // get the position
       pos = PopObj(intr);
 
-      /* get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')      */
+      // get the list (checking is done by 'ASS_LIST' or 'ASSB_LIST')
       list = PopObj(intr);
 
-      /* assign to the element of the list                                 */
+      // assign to the element of the list
       if (IS_POS_INTOBJ(pos)) {
         ASS_LIST( list, INT_INTOBJ(pos), rhs );
       }
@@ -2973,18 +2973,18 @@ void IntrAssList(IntrState * intr, Int narg)
         ASS_MAT(list, row, col, rhs);
     }
 
-    /* push the right hand side again                                      */
+    // push the right hand side again
     PushObj(intr, rhs);
 }
 
 
 void IntrAsssList(IntrState * intr)
 {
-    Obj                 list;           /* list                            */
-    Obj                 poss;           /* positions                       */
-    Obj                 rhss;           /* right hand sides                */
+    Obj                 list;           // list
+    Obj                 poss;           // positions
+    Obj                 rhss;           // right hand sides
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -2993,34 +2993,34 @@ void IntrAsssList(IntrState * intr)
     }
 
 
-    /* get the right hand sides                                            */
+    // get the right hand sides
     rhss = PopObj(intr);
     RequireDenseList("List Assignments", rhss);
 
-    /* get and check the positions                                         */
+    // get and check the positions
     poss = PopObj(intr);
     CheckIsPossList("List Assignments", poss);
     RequireSameLength("List Assignments", rhss, poss);
 
-    /* get the list (checking is done by 'ASSS_LIST')                      */
+    // get the list (checking is done by 'ASSS_LIST')
     list = PopObj(intr);
 
-    /* assign to several elements of the list                              */
+    // assign to several elements of the list
     ASSS_LIST( list, poss, rhss );
 
-    /* push the right hand sides again                                     */
+    // push the right hand sides again
     PushObj(intr, rhss);
 }
 
 void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 pos;            /* position, left operand          */
-    Obj                 rhss;           /* right hand sides, right operand */
+    Obj                 lists;          // lists, left operand
+    Obj                 pos;            // position, left operand
+    Obj                 rhss;           // right hand sides, right operand
     Obj ixs;
     Int i;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3028,36 +3028,36 @@ void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
         return;
     }
 
-    /* get right hand sides (checking is done by 'AssListLevel')           */
+    // get right hand sides (checking is done by 'AssListLevel')
     rhss = PopObj(intr);
 
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
-        /* get and check the position                                      */
+        // get and check the position
         pos = PopObj(intr);
         SET_ELM_PLIST(ixs, i, pos);
         CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
+    // get lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'AssListLevel')
     lists = PopObj(intr);
 
-    /* assign the right hand sides to the elements of several lists        */
+    // assign the right hand sides to the elements of several lists
     AssListLevel( lists, ixs, rhss, level );
 
-    /* push the assigned values again                                      */
+    // push the assigned values again
     PushObj(intr, rhss);
 }
 
 void IntrAsssListLevel(IntrState * intr, UInt level)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 poss;           /* position, left operand          */
-    Obj                 rhss;           /* right hand sides, right operand */
+    Obj                 lists;          // lists, left operand
+    Obj                 poss;           // position, left operand
+    Obj                 rhss;           // right hand sides, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3066,32 +3066,32 @@ void IntrAsssListLevel(IntrState * intr, UInt level)
     }
 
 
-    /* get right hand sides (checking is done by 'AsssListLevel')          */
+    // get right hand sides (checking is done by 'AsssListLevel')
     rhss = PopObj(intr);
 
-    /* get and check the positions                                         */
+    // get and check the positions
     poss = PopObj(intr);
     CheckIsPossList("List Assignments", poss);
 
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
+    // get lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'AsssListLevel')
     lists = PopObj(intr);
 
-    /* assign the right hand sides to several elements of several lists    */
+    // assign the right hand sides to several elements of several lists
     AsssListLevel( lists, poss, rhss, level );
 
-    /* push the assigned values again                                      */
+    // push the assigned values again
     PushObj(intr, rhss);
 }
 
 void IntrUnbList(IntrState * intr, Int narg)
 {
-    Obj                 list;           /* list                            */
-    Obj                 pos;            /* position                        */
+    Obj                 list;           // list
+    Obj                 pos;            // position
 
     GAP_ASSERT(narg == 1 || narg == 2);
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3100,13 +3100,13 @@ void IntrUnbList(IntrState * intr, Int narg)
     }
 
     if (narg == 1) {
-      /* get and check the position                                        */
+      // get and check the position
       pos = PopObj(intr);
 
-      /* get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')      */
+      // get the list (checking is done by 'UNB_LIST' or 'UNBB_LIST')
       list = PopObj(intr);
 
-      /* unbind the element                                                */
+      // unbind the element
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
       }
@@ -3122,7 +3122,7 @@ void IntrUnbList(IntrState * intr, Int narg)
         UNB_MAT(list, row, col);
     }
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
@@ -3136,13 +3136,13 @@ void IntrUnbList(IntrState * intr, Int narg)
 */
 void IntrElmList(IntrState * intr, Int narg)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, right operand         */
+    Obj                 elm;            // element, result
+    Obj                 list;           // list, left operand
+    Obj                 pos;            // position, right operand
 
     GAP_ASSERT(narg == 1 || narg == 2);
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3151,13 +3151,13 @@ void IntrElmList(IntrState * intr, Int narg)
     }
 
     if (narg == 1) {
-      /* get the position                                                  */
+      // get the position
       pos = PopObj(intr);
 
-      /* get the list (checking is done by 'ELM_LIST')                     */
+      // get the list (checking is done by 'ELM_LIST')
       list = PopObj(intr);
 
-      /* get the element of the list                                       */
+      // get the element of the list
       if (IS_POS_INTOBJ(pos)) {
         elm = ELM_LIST( list, INT_INTOBJ( pos ) );
       }
@@ -3173,17 +3173,17 @@ void IntrElmList(IntrState * intr, Int narg)
         elm = ELM_MAT(list, row, col);
     }
 
-    /* push the element                                                    */
+    // push the element
     PushObj(intr, elm);
 }
 
 void IntrElmsList(IntrState * intr)
 {
-    Obj                 elms;           /* elements, result                */
-    Obj                 list;           /* list, left operand              */
-    Obj                 poss;           /* positions, right operand        */
+    Obj                 elms;           // elements, result
+    Obj                 list;           // list, left operand
+    Obj                 poss;           // positions, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3192,28 +3192,28 @@ void IntrElmsList(IntrState * intr)
     }
 
 
-    /* get and check the positions                                         */
+    // get and check the positions
     poss = PopObj(intr);
     CheckIsPossList("List Elements", poss);
 
-    /* get the list (checking is done by 'ELMS_LIST')                      */
+    // get the list (checking is done by 'ELMS_LIST')
     list = PopObj(intr);
 
-    /* select several elements from the list                               */
+    // select several elements from the list
     elms = ELMS_LIST( list, poss );
 
-    /* push the elements                                                   */
+    // push the elements
     PushObj(intr, elms);
 }
 
 void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 pos;            /* position, right operand         */
+    Obj                 lists;          // lists, left operand
+    Obj                 pos;            // position, right operand
     Obj ixs;
     Int i;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3221,7 +3221,7 @@ void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
         return;
     }
 
-    /* get the positions */
+    // get the positions
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
         pos = PopObj(intr);
@@ -3230,23 +3230,23 @@ void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
     }
     SET_LEN_PLIST(ixs, narg);
 
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
+    // get lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'ElmListLevel')
     lists = PopObj(intr);
 
-    /* select the elements from several lists (store them in <lists>)      */
+    // select the elements from several lists (store them in <lists>)
     ElmListLevel( lists, ixs, level );
 
-    /* push the elements                                                   */
+    // push the elements
     PushObj(intr, lists);
 }
 
 void IntrElmsListLevel(IntrState * intr, UInt level)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 poss;           /* positions, right operand        */
+    Obj                 lists;          // lists, left operand
+    Obj                 poss;           // positions, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3255,30 +3255,30 @@ void IntrElmsListLevel(IntrState * intr, UInt level)
     }
 
 
-    /* get and check the positions                                         */
+    // get and check the positions
     poss = PopObj(intr);
     CheckIsPossList("List Elements", poss);
 
-    /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'ElmsListLevel')    */
+    // get lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'ElmsListLevel')
     lists = PopObj(intr);
 
-    /* select several elements from several lists (store them in <lists>)  */
+    // select several elements from several lists (store them in <lists>)
     ElmsListLevel( lists, poss, level );
 
-    /* push the elements                                                   */
+    // push the elements
     PushObj(intr, lists);
 }
 
 void IntrIsbList(IntrState * intr, Int narg)
 {
-    Obj                 isb;            /* isbound, result                 */
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, right operand         */
+    Obj                 isb;            // isbound, result
+    Obj                 list;           // list, left operand
+    Obj                 pos;            // position, right operand
 
     GAP_ASSERT(narg == 1 || narg == 2);
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3287,13 +3287,13 @@ void IntrIsbList(IntrState * intr, Int narg)
     }
 
     if (narg == 1) {
-      /* get and check the position                                        */
+      // get and check the position
       pos = PopObj(intr);
 
-      /* get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')      */
+      // get the list (checking is done by 'ISB_LIST' or 'ISBB_LIST')
       list = PopObj(intr);
 
-      /* get the result                                                    */
+      // get the result
       if (IS_POS_INTOBJ(pos)) {
         isb = ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
       }
@@ -3309,7 +3309,7 @@ void IntrIsbList(IntrState * intr, Int narg)
         isb = ISB_MAT(list, row, col) ? True : False;
     }
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, isb);
 }
 
@@ -3321,10 +3321,10 @@ void IntrIsbList(IntrState * intr, Int narg)
 */
 void IntrAssRecName(IntrState * intr, UInt rnam)
 {
-    Obj                 record;         /* record, left operand            */
-    Obj                 rhs;            /* rhs, right operand              */
+    Obj                 record;         // record, left operand
+    Obj                 rhs;            // rhs, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3333,26 +3333,26 @@ void IntrAssRecName(IntrState * intr, UInt rnam)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
-    /* get the record (checking is done by 'ASS_REC')                      */
+    // get the record (checking is done by 'ASS_REC')
     record = PopObj(intr);
 
-    /* assign the right hand side to the element of the record             */
+    // assign the right hand side to the element of the record
     ASS_REC( record, rnam, rhs );
 
-    /* push the assigned value                                             */
+    // push the assigned value
     PushObj(intr, rhs);
 }
 
 void IntrAssRecExpr(IntrState * intr)
 {
-    Obj                 record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    Obj                 rhs;            /* rhs, right operand              */
+    Obj                 record;         // record, left operand
+    UInt                rnam;           // name, left operand
+    Obj                 rhs;            // rhs, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3361,27 +3361,27 @@ void IntrAssRecExpr(IntrState * intr)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a record name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'ASS_REC')                      */
+    // get the record (checking is done by 'ASS_REC')
     record = PopObj(intr);
 
-    /* assign the right hand side to the element of the record             */
+    // assign the right hand side to the element of the record
     ASS_REC( record, rnam, rhs );
 
-    /* push the assigned value                                             */
+    // push the assigned value
     PushObj(intr, rhs);
 }
 
 void IntrUnbRecName(IntrState * intr, UInt rnam)
 {
-    Obj                 record;         /* record, left operand            */
+    Obj                 record;         // record, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3390,22 +3390,22 @@ void IntrUnbRecName(IntrState * intr, UInt rnam)
     }
 
 
-    /* get the record (checking is done by 'UNB_REC')                      */
+    // get the record (checking is done by 'UNB_REC')
     record = PopObj(intr);
 
-    /* assign the right hand side to the element of the record             */
+    // assign the right hand side to the element of the record
     UNB_REC( record, rnam );
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
 void IntrUnbRecExpr(IntrState * intr)
 {
-    Obj                 record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    Obj                 record;         // record, left operand
+    UInt                rnam;           // name, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3414,16 +3414,16 @@ void IntrUnbRecExpr(IntrState * intr)
     }
 
 
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a record name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'UNB_REC')                      */
+    // get the record (checking is done by 'UNB_REC')
     record = PopObj(intr);
 
-    /* assign the right hand side to the element of the record             */
+    // assign the right hand side to the element of the record
     UNB_REC( record, rnam );
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
@@ -3435,10 +3435,10 @@ void IntrUnbRecExpr(IntrState * intr)
 */
 void IntrElmRecName(IntrState * intr, UInt rnam)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 elm;            // element, result
+    Obj                 record;         // the record, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3447,23 +3447,23 @@ void IntrElmRecName(IntrState * intr, UInt rnam)
     }
 
 
-    /* get the record (checking is done by 'ELM_REC')                      */
+    // get the record (checking is done by 'ELM_REC')
     record = PopObj(intr);
 
-    /* select the element of the record                                    */
+    // select the element of the record
     elm = ELM_REC( record, rnam );
 
-    /* push the element                                                    */
+    // push the element
     PushObj(intr, elm);
 }
 
 void IntrElmRecExpr(IntrState * intr)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    Obj                 elm;            // element, result
+    Obj                 record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3472,25 +3472,25 @@ void IntrElmRecExpr(IntrState * intr)
     }
 
 
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a record name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'ELM_REC')                      */
+    // get the record (checking is done by 'ELM_REC')
     record = PopObj(intr);
 
-    /* select the element of the record                                    */
+    // select the element of the record
     elm = ELM_REC( record, rnam );
 
-    /* push the element                                                    */
+    // push the element
     PushObj(intr, elm);
 }
 
 void IntrIsbRecName(IntrState * intr, UInt rnam)
 {
-    Obj                 isb;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
+    Obj                 isb;            // element, result
+    Obj                 record;         // the record, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3499,23 +3499,23 @@ void IntrIsbRecName(IntrState * intr, UInt rnam)
     }
 
 
-    /* get the record (checking is done by 'ISB_REC')                      */
+    // get the record (checking is done by 'ISB_REC')
     record = PopObj(intr);
 
-    /* get the result                                                      */
+    // get the result
     isb = (ISB_REC( record, rnam ) ? True : False);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, isb);
 }
 
 void IntrIsbRecExpr(IntrState * intr)
 {
-    Obj                 isb;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    Obj                 isb;            // element, result
+    Obj                 record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3524,16 +3524,16 @@ void IntrIsbRecExpr(IntrState * intr)
     }
 
 
-    /* get the name and convert it to a record name                        */
+    // get the name and convert it to a record name
     rnam = RNamObj(PopObj(intr));
 
-    /* get the record (checking is done by 'ISB_REC')                      */
+    // get the record (checking is done by 'ISB_REC')
     record = PopObj(intr);
 
-    /* get the result                                                      */
+    // get the result
     isb = (ISB_REC( record, rnam ) ? True : False);
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, isb);
 }
 
@@ -3545,11 +3545,11 @@ void IntrIsbRecExpr(IntrState * intr)
 void IntrAssPosObj(IntrState * intr)
 {
     Obj                 posobj;         // posobj
-    Obj                 pos;            /* position                        */
-    Int                 p;              /* position, as a C integer        */
-    Obj                 rhs;            /* right hand side                 */
+    Obj                 pos;            // position
+    Int                 p;              // position, as a C integer
+    Obj                 rhs;            // right hand side
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3558,10 +3558,10 @@ void IntrAssPosObj(IntrState * intr)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
-    /* get and check the position                                          */
+    // get and check the position
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
@@ -3571,17 +3571,17 @@ void IntrAssPosObj(IntrState * intr)
     // assign to the element of the posobj
     AssPosObj(posobj, p, rhs);
 
-    /* push the right hand side again                                      */
+    // push the right hand side again
     PushObj(intr, rhs);
 }
 
 void IntrUnbPosObj(IntrState * intr)
 {
     Obj                 posobj;         // posobj
-    Obj                 pos;            /* position                        */
-    Int                 p;              /* position, as a C integer        */
+    Obj                 pos;            // position
+    Int                 p;              // position, as a C integer
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3590,17 +3590,17 @@ void IntrUnbPosObj(IntrState * intr)
     }
 
 
-    /* get and check the position                                          */
+    // get and check the position
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
     // get the posobj (checking is done by 'UnbPosObj')
     posobj = PopObj(intr);
 
-    /* unbind the element                                                  */
+    // unbind the element
     UnbPosObj(posobj, p);
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
@@ -3611,12 +3611,12 @@ void IntrUnbPosObj(IntrState * intr)
 */
 void IntrElmPosObj(IntrState * intr)
 {
-    Obj                 elm;            /* element, result                 */
+    Obj                 elm;            // element, result
     Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj                 pos;            // position, right operand
+    Int                 p;              // position, as C integer
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3625,7 +3625,7 @@ void IntrElmPosObj(IntrState * intr)
     }
 
 
-    /* get and check the position                                          */
+    // get and check the position
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
@@ -3635,18 +3635,18 @@ void IntrElmPosObj(IntrState * intr)
     // get the element of the posobj
     elm = ElmPosObj(posobj, p);
 
-    /* push the element                                                    */
+    // push the element
     PushObj(intr, elm);
 }
 
 void IntrIsbPosObj(IntrState * intr)
 {
-    Obj                 isb;            /* isbound, result                 */
+    Obj                 isb;            // isbound, result
     Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj                 pos;            // position, right operand
+    Int                 p;              // position, as C integer
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3655,17 +3655,17 @@ void IntrIsbPosObj(IntrState * intr)
     }
 
 
-    /* get and check the position                                          */
+    // get and check the position
     pos = PopObj(intr);
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     // get the posobj (checking is done by 'IsbPosObj')
     posobj = PopObj(intr);
 
-    /* get the result                                                      */
+    // get the result
     isb = IsbPosObj(posobj, p) ? True : False;
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, isb);
 }
 
@@ -3678,9 +3678,9 @@ void IntrIsbPosObj(IntrState * intr)
 void IntrAssComObjName(IntrState * intr, UInt rnam)
 {
     Obj                 comobj;         // comobj, left operand
-    Obj                 rhs;            /* rhs, right operand              */
+    Obj                 rhs;            // rhs, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3689,7 +3689,7 @@ void IntrAssComObjName(IntrState * intr, UInt rnam)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
     // get the comobj (checking is done by 'AssComObj')
@@ -3698,17 +3698,17 @@ void IntrAssComObjName(IntrState * intr, UInt rnam)
     // assign the right hand side to the element of the comobj
     AssComObj(comobj, rnam, rhs);
 
-    /* push the assigned value                                             */
+    // push the assigned value
     PushObj(intr, rhs);
 }
 
 void IntrAssComObjExpr(IntrState * intr)
 {
     Obj                 comobj;         // comobj, left operand
-    UInt                rnam;           /* name, left operand              */
-    Obj                 rhs;            /* rhs, right operand              */
+    UInt                rnam;           // name, left operand
+    Obj                 rhs;            // rhs, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3717,7 +3717,7 @@ void IntrAssComObjExpr(IntrState * intr)
     }
 
 
-    /* get the right hand side                                             */
+    // get the right hand side
     rhs = PopObj(intr);
 
     // get the name and convert it to a comobj name
@@ -3729,7 +3729,7 @@ void IntrAssComObjExpr(IntrState * intr)
     // assign the right hand side to the element of the comobj
     AssComObj(comobj, rnam, rhs);
 
-    /* push the assigned value                                             */
+    // push the assigned value
     PushObj(intr, rhs);
 }
 
@@ -3737,7 +3737,7 @@ void IntrUnbComObjName(IntrState * intr, UInt rnam)
 {
     Obj                 comobj;         // comobj, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3752,16 +3752,16 @@ void IntrUnbComObjName(IntrState * intr, UInt rnam)
     // unbind the element of the comobj
     UnbComObj(comobj, rnam);
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
 void IntrUnbComObjExpr(IntrState * intr)
 {
     Obj                 comobj;         // comobj, left operand
-    UInt                rnam;           /* name, left operand              */
+    UInt                rnam;           // name, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3779,7 +3779,7 @@ void IntrUnbComObjExpr(IntrState * intr)
     // unbind the element of the comobj
     UnbComObj(comobj, rnam);
 
-    /* push void                                                           */
+    // push void
     PushVoidObj(intr);
 }
 
@@ -3791,10 +3791,10 @@ void IntrUnbComObjExpr(IntrState * intr)
 */
 void IntrElmComObjName(IntrState * intr, UInt rnam)
 {
-    Obj                 elm;            /* element, result                 */
+    Obj                 elm;            // element, result
     Obj                 comobj;         // the comobj, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3808,17 +3808,17 @@ void IntrElmComObjName(IntrState * intr, UInt rnam)
     // select the element of the comobj
     elm = ElmComObj(comobj, rnam);
 
-    /* push the element                                                    */
+    // push the element
     PushObj(intr, elm);
 }
 
 void IntrElmComObjExpr(IntrState * intr)
 {
-    Obj                 elm;            /* element, result                 */
+    Obj                 elm;            // element, result
     Obj                 comobj;         // the comobj, left operand
-    UInt                rnam;           /* the name, right operand         */
+    UInt                rnam;           // the name, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3835,16 +3835,16 @@ void IntrElmComObjExpr(IntrState * intr)
     // select the element of the comobj
     elm = ElmComObj(comobj, rnam);
 
-    /* push the element                                                    */
+    // push the element
     PushObj(intr, elm);
 }
 
 void IntrIsbComObjName(IntrState * intr, UInt rnam)
 {
-    Obj                 isb;            /* element, result                 */
+    Obj                 isb;            // element, result
     Obj                 comobj;         // the comobj, left operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3855,20 +3855,20 @@ void IntrIsbComObjName(IntrState * intr, UInt rnam)
     // get the comobj (checking is done by 'IsbComObj')
     comobj = PopObj(intr);
 
-    /* get the result                                                      */
+    // get the result
     isb = IsbComObj(comobj, rnam) ? True : False;
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, isb);
 }
 
 void IntrIsbComObjExpr(IntrState * intr)
 {
-    Obj                 isb;            /* element, result                 */
+    Obj                 isb;            // element, result
     Obj                 comobj;         // the comobj, left operand
-    UInt                rnam;           /* the name, right operand         */
+    UInt                rnam;           // the name, right operand
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3882,10 +3882,10 @@ void IntrIsbComObjExpr(IntrState * intr)
     // get the comobj (checking is done by 'IsbComObj')
     comobj = PopObj(intr);
 
-    /* get the result                                                      */
+    // get the result
     isb = IsbComObj(comobj, rnam) ? True : False;
 
-    /* push the result                                                     */
+    // push the result
     PushObj(intr, isb);
 }
 
@@ -3897,7 +3897,7 @@ void IntrIsbComObjExpr(IntrState * intr)
 
 void IntrEmpty(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3906,7 +3906,7 @@ void IntrEmpty(IntrState * intr)
     }
 
 
-    /* interpret */
+    // interpret
     PushVoidObj(intr);
 }
 
@@ -3933,7 +3933,7 @@ void IntrEmpty(IntrState * intr)
 
 void IntrInfoBegin(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -3945,12 +3945,12 @@ void IntrInfoBegin(IntrState * intr)
 
 void IntrInfoMiddle(IntrState * intr)
 {
-    Obj selectors;   /* first argument of Info */
-    Obj level;       /* second argument of Info */
+    Obj selectors;   // first argument of Info
+    Obj level;       // second argument of Info
     Obj selected;    /* GAP Boolean answer to whether this message
                         gets printed or not */
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 0) {
         intr->ignoring++;
@@ -3977,9 +3977,9 @@ void IntrInfoMiddle(IntrState * intr)
 
 void IntrInfoEnd(IntrState * intr, UInt narg)
 {
-    Obj args; /* gathers up the arguments to be printed */
+    Obj args; // gathers up the arguments to be printed
 
-    /* ignore or code                                                      */
+    // ignore or code
     INTERPRETER_PROFILE_HOOK(intr, 1);
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
 
@@ -3992,7 +3992,7 @@ void IntrInfoEnd(IntrState * intr, UInt narg)
         return;
     }
 
-    /* print if necessary                                                  */
+    // print if necessary
     if (intr->ignoring > 0)
         intr->ignoring--;
     else {
@@ -4039,7 +4039,7 @@ void IntrInfoEnd(IntrState * intr, UInt narg)
 
 void IntrAssertBegin(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
@@ -4051,7 +4051,7 @@ void IntrAssertBegin(IntrState * intr)
 
 void IntrAssertAfterLevel(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 0) {
         intr->ignoring++;
@@ -4073,7 +4073,7 @@ void IntrAssertAfterCondition(IntrState * intr)
 {
     Obj condition;
 
-    /* ignore or code                                                      */
+    // ignore or code
     SKIP_IF_RETURNING();
     if (intr->ignoring > 0) {
         intr->ignoring++;
@@ -4096,7 +4096,7 @@ void IntrAssertAfterCondition(IntrState * intr)
 
 void IntrAssertEnd2Args(IntrState * intr)
 {
-    /* ignore or code                                                      */
+    // ignore or code
     INTERPRETER_PROFILE_HOOK(intr, 2);
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
     if (intr->ignoring > 2) {
@@ -4122,7 +4122,7 @@ void IntrAssertEnd2Args(IntrState * intr)
 void IntrAssertEnd3Args(IntrState * intr)
 {
     Obj message;
-    /* ignore or code                                                      */
+    // ignore or code
     INTERPRETER_PROFILE_HOOK(intr, 2);
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
     if (intr->ignoring > 2) {
@@ -4167,7 +4167,7 @@ static Int InitKernel (
 {
     InitGlobalBag( &STATE(ErrorLVars), "STATE(ErrorLVars)"         );
 
-    /* Ensure that the value in '~' does not get garbage collected         */
+    // Ensure that the value in '~' does not get garbage collected
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
 
     InitGlobalBag( &VoidReturnMarker, "VoidReturnMarker");

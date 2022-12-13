@@ -95,17 +95,17 @@ static Obj EvalUnknownExpr(Expr expr)
 */
 static Obj EvalUnknownBool(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* evaluate the expression                                             */
+    // evaluate the expression
     val = EVAL_EXPR( expr );
 
-    /* check that the value is either 'true' or 'false'                    */
+    // check that the value is either 'true' or 'false'
     if (val != True && val != False) {
         RequireArgumentEx(0, val, "<expr>", "must be 'true' or 'false'");
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -126,17 +126,17 @@ static Obj EvalUnknownBool(Expr expr)
 */
 static Obj EvalOr(Expr expr)
 {
-    Obj                 opL;            /* evaluated left operand          */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 opL;            // evaluated left operand
+    Expr                tmp;            // temporary expression
 
-    /* evaluate and test the left operand                                  */
+    // evaluate and test the left operand
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_BOOL_EXPR( tmp );
     if ( opL != False ) {
         return True;
     }
 
-    /* evaluate and test the right operand                                 */
+    // evaluate and test the right operand
     tmp = READ_EXPR(expr, 1);
     return EVAL_BOOL_EXPR( tmp );
 }
@@ -158,37 +158,37 @@ static Obj EvalOr(Expr expr)
 */
 static Obj EvalAnd(Expr expr)
 {
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* if the left operand is 'false', this is the result                  */
+    // if the left operand is 'false', this is the result
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     if      ( opL == False ) {
         return opL;
     }
 
-    /* if the left operand is 'true', the result is the right operand      */
+    // if the left operand is 'true', the result is the right operand
     else if ( opL == True  ) {
         tmp = READ_EXPR(expr, 1);
         return EVAL_BOOL_EXPR( tmp );
     }
 
-    /* handle the 'and' of two filters                                    */
+    // handle the 'and' of two filters
     else if (IS_FILTER(opL)) {
         tmp = READ_EXPR(expr, 1);
         opR = EVAL_EXPR( tmp );
         return NewAndFilter(opL, opR);
     }
 
-    /* signal an error                                                     */
+    // signal an error
     else {
         RequireArgumentEx(0, opL, "<expr>",
                           "must be 'true' or 'false' or a filter");
     }
 
-    /* please 'lint'                                                       */
+    // please 'lint'
     return 0;
 }
 
@@ -203,18 +203,18 @@ static Obj EvalAnd(Expr expr)
 */
 static Obj EvalNot(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 op;             /* evaluated operand               */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 op;             // evaluated operand
+    Expr                tmp;            // temporary expression
 
-    /* evaluate the operand to a boolean                                   */
+    // evaluate the operand to a boolean
     tmp = READ_EXPR(expr, 0);
     op = EVAL_BOOL_EXPR( tmp );
 
-    /* compute the negation                                                */
+    // compute the negation
     val = (op == False ? True : False);
 
-    /* return the negated value                                            */
+    // return the negated value
     return val;
 }
 
@@ -232,22 +232,22 @@ static Obj EvalNot(Expr expr)
 */
 static Obj EvalEq(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compare the operands
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (EQ( opL, opR ) ? True : False);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -265,22 +265,22 @@ static Obj EvalEq(Expr expr)
 */
 static Obj EvalNe(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compare the operands
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (EQ( opL, opR ) ? False : True);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -298,22 +298,22 @@ static Obj EvalNe(Expr expr)
 */
 static Obj EvalLt(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compare the operands
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (LT( opL, opR ) ? True : False);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -331,22 +331,22 @@ static Obj EvalLt(Expr expr)
 */
 static Obj EvalGe(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compare the operands
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (LT( opL, opR ) ? False : True);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -364,22 +364,22 @@ static Obj EvalGe(Expr expr)
 */
 static Obj EvalGt(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compare the operands
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (LT( opR, opL ) ? True : False);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -397,22 +397,22 @@ static Obj EvalGt(Expr expr)
 */
 static Obj EvalLe(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* compare the operands                                                */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compare the operands
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (LT( opR, opL ) ? False : True);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -428,24 +428,24 @@ static Obj EvalLe(Expr expr)
 */
 static Obj EvalIn(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* evaluate <opL>                                                      */
+    // evaluate <opL>
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
 
-    /* evaluate <opR>                                                      */
+    // evaluate <opR>
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* perform the test                                                    */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // perform the test
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = (IN( opL, opR ) ? True : False);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -463,27 +463,27 @@ static Obj EvalIn(Expr expr)
 */
 static Obj EvalSum(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* first try to treat the operands as small integers with small result */
+    // first try to treat the operands as small integers with small result
     if ( ! ARE_INTOBJS( opL, opR ) || ! SUM_INTOBJS( val, opL, opR ) ) {
 
-        /* if that doesn't work, dispatch to the addition function         */
-        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+        // if that doesn't work, dispatch to the addition function
+        SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
         val = SUM( opL, opR );
 
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -500,19 +500,19 @@ static Obj EvalSum(Expr expr)
 */
 static Obj EvalAInv(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
 
-    /* compute the additive inverse                                        */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // compute the additive inverse
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = AINV_SAMEMUT(opL);
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -530,27 +530,27 @@ static Obj EvalAInv(Expr expr)
 */
 static Obj EvalDiff(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* first try to treat the operands as small integers with small result */
+    // first try to treat the operands as small integers with small result
     if ( ! ARE_INTOBJS( opL, opR ) || ! DIFF_INTOBJS( val, opL, opR ) ) {
 
-        /* if that doesn't work, dispatch to the subtraction function      */
-        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+        // if that doesn't work, dispatch to the subtraction function
+        SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
         val = DIFF( opL, opR );
 
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -568,27 +568,27 @@ static Obj EvalDiff(Expr expr)
 */
 static Obj EvalProd(Expr expr)
 {
-    Obj                 val;            /* result                          */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* first try to treat the operands as small integers with small result */
+    // first try to treat the operands as small integers with small result
     if ( ! ARE_INTOBJS( opL, opR ) || ! PROD_INTOBJS( val, opL, opR ) ) {
 
-        /* if that doesn't work, dispatch to the multiplication function   */
-        SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+        // if that doesn't work, dispatch to the multiplication function
+        SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
         val = PROD( opL, opR );
 
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -606,22 +606,22 @@ static Obj EvalProd(Expr expr)
 */
 static Obj EvalQuo(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* dispatch to the division function                                   */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // dispatch to the division function
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = QUO( opL, opR );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -639,22 +639,22 @@ static Obj EvalQuo(Expr expr)
 */
 static Obj EvalMod(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* dispatch to the remainder function                                  */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // dispatch to the remainder function
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = MOD( opL, opR );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -672,22 +672,22 @@ static Obj EvalMod(Expr expr)
 */
 static Obj EvalPow(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
-    Obj                 opL;            /* evaluated left  operand         */
-    Obj                 opR;            /* evaluated right operand         */
-    Expr                tmp;            /* temporary expression            */
+    Obj                 val;            // value, result
+    Obj                 opL;            // evaluated left  operand
+    Obj                 opR;            // evaluated right operand
+    Expr                tmp;            // temporary expression
 
-    /* get the operands                                                    */
+    // get the operands
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     tmp = READ_EXPR(expr, 1);
     opR = EVAL_EXPR( tmp );
 
-    /* dispatch to the powering function                                   */
-    SET_BRK_CALL_TO(expr);     /* Note possible call for FuncWhere */
+    // dispatch to the powering function
+    SET_BRK_CALL_TO(expr);     // Note possible call for FuncWhere
     val = POW( opL, opR );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -771,21 +771,21 @@ static Obj GetFromExpr(Obj cycle, Int j)
 
 static Obj EvalPermExpr(Expr expr)
 {
-    Obj                 perm;           /* permutation, result             */
-    UInt                m;              /* maximal entry in permutation    */
-    Expr                cycle;          /* one cycle of permutation        */
-    UInt                i;              /* loop variable                   */
+    Obj                 perm;           // permutation, result
+    UInt                m;              // maximal entry in permutation
+    Expr                cycle;          // one cycle of permutation
+    UInt                i;              // loop variable
 
-    /* special case for identity permutation                               */
+    // special case for identity permutation
     if ( SIZE_EXPR(expr) == 0 ) {
         return IdentityPerm;
     }
 
-    /* allocate the new permutation                                        */
+    // allocate the new permutation
     m = 0;
     perm = NEW_PERM4( 0 );
 
-    /* loop over the cycles                                                */
+    // loop over the cycles
     for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
         cycle = READ_EXPR(expr, i - 1);
 
@@ -797,10 +797,10 @@ static Obj EvalPermExpr(Expr expr)
                           SIZE_EXPR(cycle) / sizeof(Expr), GetFromExpr);
     }
 
-    /* if possible represent the permutation with short entries            */
+    // if possible represent the permutation with short entries
     TrimPerm(perm, m);
 
-    /* return the permutation                                              */
+    // return the permutation
     return perm;
 }
 
@@ -814,11 +814,11 @@ static Obj EvalPermExpr(Expr expr)
 */
 static Obj EvalListExpr(Expr expr)
 {
-    Obj                 list;           /* list value, result              */
-    Obj                 sub;            /* value of a subexpression        */
-    Int                 len;            /* logical length of the list      */
-    Int                 i;              /* loop variable                   */
-    Int                 dense;          /* track whether list is dense     */
+    Obj                 list;           // list value, result
+    Obj                 sub;            // value of a subexpression
+    Int                 len;            // logical length of the list
+    Int                 i;              // loop variable
+    Int                 dense;          // track whether list is dense
 
     // get the length of the list
     len = SIZE_EXPR(expr) / sizeof(Expr);
@@ -880,11 +880,11 @@ static Obj EvalListExpr(Expr expr)
 */
 static Obj EvalListTildeExpr(Expr expr)
 {
-    Obj                 list;           /* list value, result              */
-    Obj                 tilde;          /* old value of tilde              */
-    Obj                 sub;            /* value of a subexpression        */
-    Int                 len;            /* logical length of the list      */
-    Int                 i;              /* loop variable                   */
+    Obj                 list;           // list value, result
+    Obj                 tilde;          // old value of tilde
+    Obj                 sub;            // value of a subexpression
+    Int                 len;            // logical length of the list
+    Int                 i;              // loop variable
 
     // get the length of the list
     len = SIZE_EXPR(expr) / sizeof(Expr);
@@ -928,17 +928,17 @@ static Obj EvalListTildeExpr(Expr expr)
 */
 static Obj EvalRangeExpr(Expr expr)
 {
-    Obj                 range;          /* range, result                   */
-    Obj                 val;            /* subvalue of range               */
-    Int                 low;            /* low (as C integer)              */
-    Int                 inc;            /* increment (as C integer)        */
-    Int                 high;           /* high (as C integer)             */
+    Obj                 range;          // range, result
+    Obj                 val;            // subvalue of range
+    Int                 low;            // low (as C integer)
+    Int                 inc;            // increment (as C integer)
+    Int                 high;           // high (as C integer)
 
-    /* evaluate the low value                                              */
+    // evaluate the low value
     val = EVAL_EXPR(READ_EXPR(expr, 0));
     low = GetSmallIntEx("Range", val, "<first>");
 
-    /* evaluate the second value (if present)                              */
+    // evaluate the second value (if present)
     if ( SIZE_EXPR(expr) == 3*sizeof(Expr) ) {
         val = EVAL_EXPR(READ_EXPR(expr, 1));
         Int ival = GetSmallIntEx("Range", val, "<second>");
@@ -952,7 +952,7 @@ static Obj EvalRangeExpr(Expr expr)
         inc = 1;
     }
 
-    /* evaluate and check the high value                                   */
+    // evaluate and check the high value
     val = EVAL_EXPR(READ_EXPR(expr, SIZE_EXPR(expr) / sizeof(Expr) - 1));
     high = GetSmallIntEx("Range", val, "<last>");
     if ((high - low) % inc != 0) {
@@ -961,21 +961,21 @@ static Obj EvalRangeExpr(Expr expr)
             (Int)(high - low), (Int)inc);
     }
 
-    /* if <low> is larger than <high> the range is empty                   */
+    // if <low> is larger than <high> the range is empty
     if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
         range = NewEmptyPlist();
     }
 
-    /* if <low> is equal to <high> the range is a singleton list           */
+    // if <low> is equal to <high> the range is a singleton list
     else if ( low == high ) {
         range = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
         SET_LEN_PLIST( range, 1 );
         SET_ELM_PLIST( range, 1, INTOBJ_INT(low) );
     }
 
-    /* else make the range                                                 */
+    // else make the range
     else {
-        /* the length must be a small integer as well */
+        // the length must be a small integer as well
         if ((high-low) / inc + 1 > INT_INTOBJ_MAX) {
              ErrorQuit("Range: the length of a range must be a small integer",
                         0, 0);
@@ -983,7 +983,7 @@ static Obj EvalRangeExpr(Expr expr)
         range = NEW_RANGE((high - low) / inc + 1, low, inc);
     }
 
-    /* return the range                                                    */
+    // return the range
     return range;
 }
 
@@ -1015,7 +1015,7 @@ static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
 
 static Obj EvalFloatExprLazy(Expr expr)
 {
-    Obj                 string;         /* string value            */
+    Obj                 string;         // string value
     UInt                 ix;
     Obj cache= 0;
     Obj fl;
@@ -1072,9 +1072,9 @@ static void RecExpr2(Obj rec, Expr expr);
 
 static Obj EvalRecExpr(Expr expr)
 {
-    Obj                 rec;            /* record value, result            */
+    Obj                 rec;            // record value, result
 
-    /* evaluate the record expression                                      */
+    // evaluate the record expression
     rec = RecExpr1( expr );
     RecExpr2( rec, expr );
 
@@ -1099,25 +1099,25 @@ static Obj EvalRecExpr(Expr expr)
 */
 static Obj EvalRecTildeExpr(Expr expr)
 {
-    Obj                 rec;            /* record value, result            */
-    Obj                 tilde;          /* old value of tilde              */
+    Obj                 rec;            // record value, result
+    Obj                 tilde;          // old value of tilde
 
-    /* remember the old value of '~'                                       */
+    // remember the old value of '~'
     tilde = STATE(Tilde);
 
-    /* create the record value                                             */
+    // create the record value
     rec = RecExpr1( expr );
 
-    /* assign the record value to the variable '~'                         */
+    // assign the record value to the variable '~'
     STATE(Tilde) = rec;
 
-    /* evaluate the subexpressions into the record value                   */
+    // evaluate the subexpressions into the record value
     RecExpr2( rec, expr );
 
-    /* restore the old value of '~'                                        */
+    // restore the old value of '~'
     STATE(Tilde) = tilde;
 
-    /* return the record value                                             */
+    // return the record value
     return rec;
 }
 
@@ -1143,34 +1143,34 @@ static Obj EvalRecTildeExpr(Expr expr)
 */
 static Obj RecExpr1(Expr expr)
 {
-    Obj                 rec;            /* record value, result            */
-    Int                 len;            /* number of components            */
+    Obj                 rec;            // record value, result
+    Int                 len;            // number of components
 
-    /* get the number of components                                        */
+    // get the number of components
     len = SIZE_EXPR( expr ) / (2*sizeof(Expr));
 
-    /* allocate the record value                                           */
+    // allocate the record value
     rec = NEW_PREC( len );
 
-    /* return the record                                                   */
+    // return the record
     return rec;
 }
 
 static void RecExpr2(Obj rec, Expr expr)
 {
-    UInt                rnam;           /* name of component               */
-    Obj                 sub;            /* value of subexpression          */
-    Int                 len;            /* number of components            */
-    Expr                tmp;            /* temporary variable              */
-    Int                 i;              /* loop variable                   */
+    UInt                rnam;           // name of component
+    Obj                 sub;            // value of subexpression
+    Int                 len;            // number of components
+    Expr                tmp;            // temporary variable
+    Int                 i;              // loop variable
 
-    /* get the number of components                                        */
+    // get the number of components
     len = SIZE_EXPR( expr ) / (2*sizeof(Expr));
 
-    /* handle the subexpressions                                           */
+    // handle the subexpressions
     for ( i = 1; i <= len; i++ ) {
 
-        /* handle the name                                                 */
+        // handle the name
         tmp = READ_EXPR(expr, 2 * i - 2);
         if ( IS_INTEXPR(tmp) ) {
             rnam = (UInt)INT_INTEXPR(tmp);
@@ -1179,7 +1179,7 @@ static void RecExpr2(Obj rec, Expr expr)
             rnam = RNamObj( EVAL_EXPR(tmp) );
         }
 
-        /* if the subexpression is empty (cannot happen for records)       */
+        // if the subexpression is empty (cannot happen for records)
         tmp = READ_EXPR(expr, 2 * i - 1);
         if ( tmp == 0 ) {
             continue;
@@ -1276,7 +1276,7 @@ static void PrintNot(Expr expr)
     oldPrec = PrintPrecedence;
     PrintPrecedence = 6;
 
-    /* if necessary print the opening parenthesis                          */
+    // if necessary print the opening parenthesis
     if ( oldPrec >= PrintPrecedence ) Pr("%>(%>", 0, 0);
     else Pr("%2>", 0, 0);
 
@@ -1284,7 +1284,7 @@ static void PrintNot(Expr expr)
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<", 0, 0);
 
-    /* if necessary print the closing parenthesis                          */
+    // if necessary print the closing parenthesis
     if ( oldPrec >= PrintPrecedence ) Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
 
@@ -1306,7 +1306,7 @@ static void PrintAInv(Expr expr)
     oldPrec = PrintPrecedence;
     PrintPrecedence = 11;
 
-    /* if necessary print the opening parenthesis                          */
+    // if necessary print the opening parenthesis
     if ( oldPrec >= PrintPrecedence ) Pr("%>(%>", 0, 0);
     else Pr("%2>", 0, 0);
 
@@ -1314,7 +1314,7 @@ static void PrintAInv(Expr expr)
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<", 0, 0);
 
-    /* if necessary print the closing parenthesis                          */
+    // if necessary print the closing parenthesis
     if ( oldPrec >= PrintPrecedence ) Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
 
@@ -1323,13 +1323,13 @@ static void PrintAInv(Expr expr)
 
 static void PrintBinop(Expr expr)
 {
-    UInt                oldPrec;        /* old precedence level           */
-    const Char *        op;             /* operand                         */
-    BOOL                printEqPrec = FALSE; /* Print() at equal precedence */
-    /* remember the current precedence level                              */
+    UInt                oldPrec;        // old precedence level
+    const Char *        op;             // operand
+    BOOL                printEqPrec = FALSE; // Print() at equal precedence
+    // remember the current precedence level
     oldPrec = PrintPrecedence;
 
-    /* select the new precedence level                                    */
+    // select the new precedence level
     switch ( TNUM_EXPR(expr) ) {
     case EXPR_OR:     op = "or";   PrintPrecedence =  2;  break;
     case EXPR_AND:    op = "and";  PrintPrecedence =  4;  break;
@@ -1354,13 +1354,13 @@ static void PrintBinop(Expr expr)
         printEqPrec = TRUE;
     }
 
-    /* if necessary print the opening parenthesis                          */
+    // if necessary print the opening parenthesis
     if (oldPrec > PrintPrecedence ||
         (oldPrec == PrintPrecedence && printEqPrec))
         Pr("%>(%>", 0, 0);
     else Pr("%2>", 0, 0);
 
-    /* print the left operand                                              */
+    // print the left operand
     if ( TNUM_EXPR(expr) == EXPR_POW
          && ((  (IS_INTEXPR(READ_EXPR(expr, 0))
                  && INT_INTEXPR(READ_EXPR(expr, 0)) < 0)
@@ -1374,21 +1374,21 @@ static void PrintBinop(Expr expr)
         PrintExpr(READ_EXPR(expr, 0));
     }
 
-    /* print the operator                                                  */
+    // print the operator
     Pr("%2< %2>%s%> %<",(Int)op, 0);
 
-    /* print the right operand                                             */
+    // print the right operand
     PrintPrecedence++;
     PrintExpr(READ_EXPR(expr, 1));
     PrintPrecedence--;
 
-    /* if necessary print the closing parenthesis                          */
+    // if necessary print the closing parenthesis
     if (oldPrec > PrintPrecedence ||
         (oldPrec == PrintPrecedence && printEqPrec))
         Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
 
-    /* restore the old precedence level                                   */
+    // restore the old precedence level
     PrintPrecedence = oldPrec;
 }
 
@@ -1467,20 +1467,20 @@ static void PrintCharExpr(Expr expr)
 */
 static void PrintPermExpr(Expr expr)
 {
-    Expr                cycle;          /* one cycle of permutation expr.  */
-    UInt                i, j;           /* loop variables                  */
+    Expr                cycle;          // one cycle of permutation expr.
+    UInt                i, j;           // loop variables
 
-    /* if there are no cycles, print the identity permutation              */
+    // if there are no cycles, print the identity permutation
     if ( SIZE_EXPR(expr) == 0 ) {
         Pr("()", 0, 0);
     }
 
-    /* print all cycles                                                    */
+    // print all cycles
     for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
         cycle = READ_EXPR(expr, i - 1);
         Pr("%>(", 0, 0);
 
-        /* print all entries of that cycle                                 */
+        // print all entries of that cycle
         for ( j = 1; j <= SIZE_EXPR(cycle)/sizeof(Expr); j++ ) {
             Pr("%>", 0, 0);
             PrintExpr(READ_EXPR(cycle, j - 1));
@@ -1501,14 +1501,14 @@ static void PrintPermExpr(Expr expr)
 */
 static void PrintListExpr(Expr expr)
 {
-    Int                 len;            /* logical length of <list>        */
-    Expr                elm;            /* one element from <list>         */
-    Int                 i;              /* loop variable                   */
+    Int                 len;            // logical length of <list>
+    Expr                elm;            // one element from <list>
+    Int                 i;              // loop variable
 
-    /* get the logical length of the list                                  */
+    // get the logical length of the list
     len = SIZE_EXPR( expr ) / sizeof(Expr);
 
-    /* loop over the entries                                               */
+    // loop over the entries
     Pr("%2>[ %2>", 0, 0);
     for ( i = 1;  i <= len;  i++ ) {
         elm = READ_EXPR(expr, i - 1);
@@ -1598,24 +1598,24 @@ static void PrintFloatExprEager(Expr expr)
 void            PrintRecExpr1 (
     Expr                expr )
 {
-  Expr                tmp;            /* temporary variable              */
-  UInt                i;              /* loop variable                   */
+  Expr                tmp;            // temporary variable
+  UInt                i;              // loop variable
 
   for ( i = 1; i <= SIZE_EXPR(expr)/(2*sizeof(Expr)); i++ ) {
-        /* print an ordinary record name                                   */
+        // print an ordinary record name
         tmp = READ_EXPR(expr, 2 * i - 2);
         if ( IS_INTEXPR(tmp) ) {
             Pr("%H", (Int)NAME_RNAM(INT_INTEXPR(tmp)), 0);
         }
 
-        /* print an evaluating record name                                 */
+        // print an evaluating record name
         else {
             Pr(" (", 0, 0);
             PrintExpr( tmp );
             Pr(")", 0, 0);
         }
 
-        /* print the component                                             */
+        // print the component
         tmp = READ_EXPR(expr, 2 * i - 1);
         Pr("%< := %>", 0, 0);
         PrintExpr( tmp );
@@ -1667,7 +1667,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                type;           /* loop variable                   */
+    UInt                type;           // loop variable
 
     InitFopyGVar("CONVERT_FLOAT_LITERAL",&CONVERT_FLOAT_LITERAL);
     InitCopyGVar("MAX_FLOAT_LITERAL_CACHE_SIZE",&MAX_FLOAT_LITERAL_CACHE_SIZE);
@@ -1676,23 +1676,23 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
 
-    /* clear the evaluation dispatch table                                 */
+    // clear the evaluation dispatch table
     for ( type = 0; type < 256; type++ ) {
         InstallEvalExprFunc( type , EvalUnknownExpr);
         InstallEvalBoolFunc( type , EvalUnknownBool);
     }
 
-    /* install the evaluators for logical operations                       */
+    // install the evaluators for logical operations
     InstallEvalExprFunc( EXPR_OR             , EvalOr);
     InstallEvalExprFunc( EXPR_AND            , EvalAnd);
     InstallEvalExprFunc( EXPR_NOT            , EvalNot);
 
-    /* the logical operations are guaranteed to return booleans            */
+    // the logical operations are guaranteed to return booleans
     InstallEvalBoolFunc( EXPR_OR             , EvalOr);
     InstallEvalBoolFunc( EXPR_AND            , EvalAnd);
     InstallEvalBoolFunc( EXPR_NOT            , EvalNot);
 
-    /* install the evaluators for comparison operations                    */
+    // install the evaluators for comparison operations
     InstallEvalExprFunc( EXPR_EQ             , EvalEq);
     InstallEvalExprFunc( EXPR_NE             , EvalNe);
     InstallEvalExprFunc( EXPR_LT             , EvalLt);
@@ -1701,7 +1701,7 @@ static Int InitKernel (
     InstallEvalExprFunc( EXPR_LE             , EvalLe);
     InstallEvalExprFunc( EXPR_IN             , EvalIn);
 
-    /* the comparison operations are guaranteed to return booleans         */
+    // the comparison operations are guaranteed to return booleans
     InstallEvalBoolFunc( EXPR_EQ             , EvalEq);
     InstallEvalBoolFunc( EXPR_NE             , EvalNe);
     InstallEvalBoolFunc( EXPR_LT             , EvalLt);
@@ -1710,7 +1710,7 @@ static Int InitKernel (
     InstallEvalBoolFunc( EXPR_LE             , EvalLe);
     InstallEvalBoolFunc( EXPR_IN             , EvalIn);
 
-    /* install the evaluators for binary operations                        */
+    // install the evaluators for binary operations
     InstallEvalExprFunc( EXPR_SUM            , EvalSum);
     InstallEvalExprFunc( EXPR_AINV           , EvalAInv);
     InstallEvalExprFunc( EXPR_DIFF           , EvalDiff);
@@ -1719,7 +1719,7 @@ static Int InitKernel (
     InstallEvalExprFunc( EXPR_MOD            , EvalMod);
     InstallEvalExprFunc( EXPR_POW            , EvalPow);
 
-    /* install the evaluators for literal expressions                      */
+    // install the evaluators for literal expressions
     InstallEvalExprFunc( EXPR_INTPOS       , EvalIntExpr);
     InstallEvalExprFunc( EXPR_TRUE      , EvalTrueExpr);
     InstallEvalExprFunc( EXPR_FALSE     , EvalFalseExpr);
@@ -1729,7 +1729,7 @@ static Int InitKernel (
     InstallEvalExprFunc( EXPR_FLOAT_LAZY  , EvalFloatExprLazy);
     InstallEvalExprFunc( EXPR_FLOAT_EAGER , EvalFloatExprEager);
 
-    /* install the evaluators for list and record expressions              */
+    // install the evaluators for list and record expressions
     InstallEvalExprFunc( EXPR_LIST      , EvalListExpr);
     InstallEvalExprFunc( EXPR_LIST_TILDE, EvalListTildeExpr);
     InstallEvalExprFunc( EXPR_RANGE     , EvalRangeExpr);
@@ -1737,17 +1737,17 @@ static Int InitKernel (
     InstallEvalExprFunc( EXPR_REC       , EvalRecExpr);
     InstallEvalExprFunc( EXPR_REC_TILDE , EvalRecTildeExpr);
 
-    /* clear the tables for the printing dispatching                       */
+    // clear the tables for the printing dispatching
     for ( type = 0; type < 256; type++ ) {
         InstallPrintExprFunc( type , PrintUnknownExpr);
     }
 
-    /* install the printers for logical operations                         */
+    // install the printers for logical operations
     InstallPrintExprFunc( EXPR_OR             , PrintBinop);
     InstallPrintExprFunc( EXPR_AND            , PrintBinop);
     InstallPrintExprFunc( EXPR_NOT            , PrintNot);
 
-    /* install the printers for comparison operations                      */
+    // install the printers for comparison operations
     InstallPrintExprFunc( EXPR_EQ             , PrintBinop);
     InstallPrintExprFunc( EXPR_LT             , PrintBinop);
     InstallPrintExprFunc( EXPR_NE             , PrintBinop);
@@ -1756,7 +1756,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_LE             , PrintBinop);
     InstallPrintExprFunc( EXPR_IN             , PrintBinop);
 
-    /* install the printers for binary operations                          */
+    // install the printers for binary operations
     InstallPrintExprFunc( EXPR_SUM            , PrintBinop);
     InstallPrintExprFunc( EXPR_AINV           , PrintAInv);
     InstallPrintExprFunc( EXPR_DIFF           , PrintBinop);
@@ -1765,7 +1765,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_MOD            , PrintBinop);
     InstallPrintExprFunc( EXPR_POW            , PrintBinop);
 
-    /* install the printers for literal expressions                        */
+    // install the printers for literal expressions
     InstallPrintExprFunc( EXPR_INT        , PrintIntExpr);
     InstallPrintExprFunc( EXPR_INTPOS       , PrintIntExpr);
     InstallPrintExprFunc( EXPR_TRUE      , PrintTrueExpr);
@@ -1776,7 +1776,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_FLOAT_LAZY  , PrintFloatExprLazy);
     InstallPrintExprFunc( EXPR_FLOAT_EAGER , PrintFloatExprEager);
 
-    /* install the printers for list and record expressions                */
+    // install the printers for list and record expressions
     InstallPrintExprFunc( EXPR_LIST      , PrintListExpr);
     InstallPrintExprFunc( EXPR_LIST_TILDE, PrintListExpr);
     InstallPrintExprFunc( EXPR_RANGE     , PrintRangeExpr);
@@ -1790,7 +1790,7 @@ static Int InitKernel (
 
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     FuncFLUSH_FLOAT_LITERAL_CACHE(0);

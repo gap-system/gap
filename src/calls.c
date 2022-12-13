@@ -146,13 +146,13 @@ static inline void SET_STOR_WOUT_PROF(Obj prof, UInt8 n)
 */
 static Obj DoWrap0args(Obj self)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 0 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -164,15 +164,15 @@ static Obj DoWrap0args(Obj self)
 */
 static Obj DoWrap1args(Obj self, Obj arg1)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( args, 1 );
     SET_ELM_PLIST( args, 1, arg1 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -184,16 +184,16 @@ static Obj DoWrap1args(Obj self, Obj arg1)
 */
 static Obj DoWrap2args(Obj self, Obj arg1, Obj arg2)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( args, 2 );
     SET_ELM_PLIST( args, 1, arg1 );
     SET_ELM_PLIST( args, 2, arg2 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -205,17 +205,17 @@ static Obj DoWrap2args(Obj self, Obj arg1, Obj arg2)
 */
 static Obj DoWrap3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 3 );
     SET_LEN_PLIST( args, 3 );
     SET_ELM_PLIST( args, 1, arg1 );
     SET_ELM_PLIST( args, 2, arg2 );
     SET_ELM_PLIST( args, 3, arg3 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -227,10 +227,10 @@ static Obj DoWrap3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 */
 static Obj DoWrap4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 4 );
     SET_LEN_PLIST( args, 4 );
     SET_ELM_PLIST( args, 1, arg1 );
@@ -238,7 +238,7 @@ static Obj DoWrap4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
     SET_ELM_PLIST( args, 3, arg3 );
     SET_ELM_PLIST( args, 4, arg4 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -251,10 +251,10 @@ static Obj DoWrap4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 static Obj
 DoWrap5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 5 );
     SET_LEN_PLIST( args, 5 );
     SET_ELM_PLIST( args, 1, arg1 );
@@ -263,7 +263,7 @@ DoWrap5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
     SET_ELM_PLIST( args, 4, arg4 );
     SET_ELM_PLIST( args, 5, arg5 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -276,10 +276,10 @@ DoWrap5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 static Obj DoWrap6args(
     Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 args;           /* arguments list                  */
+    Obj                 result;         // value of function call, result
+    Obj                 args;           // arguments list
 
-    /* make the arguments list                                             */
+    // make the arguments list
     args = NEW_PLIST( T_PLIST, 6 );
     SET_LEN_PLIST( args, 6 );
     SET_ELM_PLIST( args, 1, arg1 );
@@ -289,7 +289,7 @@ static Obj DoWrap6args(
     SET_ELM_PLIST( args, 5, arg5 );
     SET_ELM_PLIST( args, 6, arg6 );
 
-    /* call the variable number of arguments function                      */
+    // call the variable number of arguments function
     result = CALL_XARGS( self, args );
     return result;
 }
@@ -450,25 +450,25 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     Obj                 arg6 )
 
 {
-    Obj                 result;         /* value of function call, result  */
-    Obj                 prof;           /* profiling bag                   */
-    UInt                timeElse;       /* time    spent elsewhere         */
-    UInt                timeCurr;       /* time    spent in current funcs. */
-    UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */
+    Obj                 result;         // value of function call, result
+    Obj                 prof;           // profiling bag
+    UInt                timeElse;       // time    spent elsewhere
+    UInt                timeCurr;       // time    spent in current funcs.
+    UInt8               storElse;       // storage spent elsewhere
+    UInt8               storCurr;       // storage spent in current funcs.
 
-    /* get the profiling bag                                               */
+    // get the profiling bag
     prof = PROF_FUNC( PROF_FUNC( self ) );
 
-    /* time and storage spent so far while this function what not active   */
+    // time and storage spent so far while this function what not active
     timeElse = SyTime() - TIME_WITH_PROF(prof);
     storElse = SizeAllBags - STOR_WITH_PROF(prof);
 
-    /* time and storage spent so far by all currently suspended functions  */
+    // time and storage spent so far by all currently suspended functions
     timeCurr = SyTime() - TimeDone;
     storCurr = SizeAllBags - StorDone;
 
-    /* call the real function                                              */
+    // call the real function
     switch (n) {
     case  0: result = CALL_0ARGS_PROF( self ); break;
     case  1: result = CALL_1ARGS_PROF( self, arg1 ); break;
@@ -481,14 +481,14 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     default: result = 0; GAP_ASSERT(0);
     }
 
-    /* number of invocation of this function                               */
+    // number of invocation of this function
     SET_COUNT_PROF( prof, COUNT_PROF(prof) + 1 );
 
-    /* time and storage spent in this function and its children            */
+    // time and storage spent in this function and its children
     SET_TIME_WITH_PROF( prof, SyTime() - timeElse );
     SET_STOR_WITH_PROF( prof, SizeAllBags - storElse );
 
-    /* time and storage spent by this invocation of this function          */
+    // time and storage spent by this invocation of this function
     timeCurr = SyTime() - TimeDone - timeCurr;
     SET_TIME_WOUT_PROF( prof, TIME_WOUT_PROF(prof) + timeCurr );
     TimeDone += timeCurr;
@@ -648,7 +648,7 @@ void InitHandlerFunc (
 
     HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
     HandlerFuncs[NHandlerFuncs].cookie = cookie;
-    HandlerSortingStatus = 0; /* no longer sorted by handler or cookie */
+    HandlerSortingStatus = 0; // no longer sorted by handler or cookie
     NHandlerFuncs++;
 }
 
@@ -671,7 +671,7 @@ static void CheckHandlersBag(
         for ( j = 0;  j < 8;  j++ ) {
             hdlr = HDLR_FUNC(bag,j);
 
-            /* zero handlers are used in a few odd places                  */
+            // zero handlers are used in a few odd places
             if ( hdlr != 0 ) {
                 for ( i = 0;  i < NHandlerFuncs;  i++ ) {
                     if ( hdlr == HandlerFuncs[i].hdlr )
@@ -699,7 +699,7 @@ static int IsLessHandlerInfo (
 {
     switch (byWhat) {
         case 1:
-            /* cast to please Irix CC and HPUX CC */
+            // cast to please Irix CC and HPUX CC
             return (UInt)(h1->hdlr) < (UInt)(h2->hdlr);
         case 2:
             return strcmp(h1->cookie, h2->cookie) < 0;
@@ -850,14 +850,14 @@ Obj NewFunctionT (
     Obj                 nams,
     ObjFunc             hdlr )
 {
-    Obj                 func;           /* function, result                */
-    Obj                 prof;           /* profiling bag                   */
+    Obj                 func;           // function, result
+    Obj                 prof;           // profiling bag
 
 
-    /* make the function object                                            */
+    // make the function object
     func = NewBag( type, size );
 
-    /* create a function with a fixed number of arguments                  */
+    // create a function with a fixed number of arguments
     if ( narg >= 0 ) {
         SET_HDLR_FUNC(func, 0, DoFail0args);
         SET_HDLR_FUNC(func, 1, DoFail1args);
@@ -870,7 +870,7 @@ Obj NewFunctionT (
         SET_HDLR_FUNC(func, (narg <= 6 ? narg : 7), hdlr );
     }
 
-    /* create a function with a variable number of arguments               */
+    // create a function with a variable number of arguments
     else {
       SET_HDLR_FUNC(func, 0, (narg >= -1) ? DoWrap0args : DoFail0args);
       SET_HDLR_FUNC(func, 1, (narg >= -2) ? DoWrap1args : DoFail1args);
@@ -882,7 +882,7 @@ Obj NewFunctionT (
       SET_HDLR_FUNC(func, 7, hdlr);
     }
 
-    /* enter the arguments and the names                               */
+    // enter the arguments and the names
     SET_NAME_FUNC(func, name ? ImmutableString(name) : 0);
     SET_NARG_FUNC(func, narg);
     SET_NAMS_FUNC(func, nams);
@@ -892,7 +892,7 @@ Obj NewFunctionT (
 #endif
     CHANGED_BAG(func);
 
-    /* enter the profiling bag                                             */
+    // enter the profiling bag
     prof = NEW_PLIST( T_PLIST, LEN_PROF );
     SET_LEN_PLIST( prof, LEN_PROF );
     SET_COUNT_PROF( prof, 0 );
@@ -903,7 +903,7 @@ Obj NewFunctionT (
     SET_PROF_FUNC(func, prof);
     CHANGED_BAG(func);
 
-    /* return the function bag                                             */
+    // return the function bag
     return func;
 }
 
@@ -917,12 +917,12 @@ Obj NewFunctionT (
 ** to be passed to 'NewFunction' as <nams>.
 */
 Obj ArgStringToList(const Char *nams_c) {
-    Obj                 tmp;            /* argument name as an object      */
-    Obj                 nams_o;         /* nams as an object               */
-    UInt                len;            /* length                          */
-    UInt                i, k, l;        /* loop variables                  */
+    Obj                 tmp;            // argument name as an object
+    Obj                 nams_o;         // nams as an object
+    UInt                len;            // length
+    UInt                i, k, l;        // loop variables
 
-    /* convert the arguments list to an object                             */
+    // convert the arguments list to an object
     len = 0;
     for ( k = 0; nams_c[k] != '\0'; k++ ) {
         if ( (0 == k || nams_c[k-1] == ' ' || nams_c[k-1] == ',')
@@ -988,10 +988,10 @@ static Obj PrintOperation;
 
 static void PrintFunction(Obj func)
 {
-    Int                 narg;           /* number of arguments             */
-    Int                 nloc;           /* number of locals                */
-    UInt                i;              /* loop variable                   */
-    BOOL                isvarg;         /* does function have varargs?     */
+    Int                 narg;           // number of arguments
+    Int                 nloc;           // number of locals
+    UInt                i;              // loop variable
+    BOOL                isvarg;         // does function have varargs?
 
     isvarg = FALSE;
 
@@ -1001,17 +1001,17 @@ static void PrintFunction(Obj func)
     }
 
 #ifdef HPCGAP
-    /* print 'function (' or 'atomic function ('                          */
+    // print 'function (' or 'atomic function ('
     if (LCKS_FUNC(func)) {
       Pr("%5>atomic function%< ( %>", 0, 0);
     } else
       Pr("%5>function%< ( %>", 0, 0);
 #else
-    /* print 'function ('                                                  */
+    // print 'function ('
     Pr("%5>function%< ( %>", 0, 0);
 #endif
 
-    /* print the arguments                                                 */
+    // print the arguments
     narg = NARG_FUNC(func);
     if (narg < 0) {
       isvarg = TRUE;
@@ -1049,7 +1049,7 @@ static void PrintFunction(Obj func)
         PrintKernelFunction(func);
     }
     else {
-        /* print the locals                                                */
+        // print the locals
         nloc = NLOC_FUNC(func);
         if ( nloc >= 1 ) {
             Pr("%>local ", 0, 0);
@@ -1072,7 +1072,7 @@ static void PrintFunction(Obj func)
     }
     Pr("%4<\n", 0, 0);
 
-    /* print 'end'                                                         */
+    // print 'end'
     Pr("end", 0, 0);
 }
 
@@ -1142,15 +1142,15 @@ static Obj CallFuncListWrapOper;
 
 Obj CallFuncList ( Obj func, Obj list )
 {
-    Obj                 result;         /* result                          */
-    Obj                 list2;          /* list of arguments               */
-    Obj                 arg;            /* one argument                    */
-    UInt                i;              /* loop variable                   */
+    Obj                 result;         // result
+    Obj                 list2;          // list of arguments
+    Obj                 arg;            // one argument
+    UInt                i;              // loop variable
 
 
     if (TNUM_OBJ(func) == T_FUNCTION) {
 
-      /* call the function                                                   */
+      // call the function
       if      ( LEN_LIST(list) == 0 ) {
         result = CALL_0ARGS( func );
       }
@@ -1347,7 +1347,7 @@ static Obj FuncCLEAR_PROFILE_FUNC(Obj self, Obj func)
 
     RequireFunction(SELF_NAME, func);
 
-    /* clear profile info                                                  */
+    // clear profile info
     prof = PROF_FUNC(func);
     if ( prof == 0 ) {
         ErrorQuit("<func> has corrupted profile info", 0, 0);
@@ -1379,13 +1379,13 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
 
     RequireFunction(SELF_NAME, func);
 
-    /* uninstall trace handler                                             */
+    // uninstall trace handler
     ChangeDoOperations( func, 0 );
 
-    /* install profiling                                                   */
+    // install profiling
     prof = PROF_FUNC(func);
 
-    /* install new handlers                                                */
+    // install new handlers
     if ( TNUM_OBJ(prof) != T_FUNCTION ) {
         copy = NewBag( TNUM_OBJ(func), SIZE_OBJ(func) );
         SET_HDLR_FUNC(copy,0, HDLR_FUNC(func,0));
@@ -1485,10 +1485,10 @@ static Obj FuncUNPROFILE_FUNC(Obj self, Obj func)
 
     RequireFunction(SELF_NAME, func);
 
-    /* uninstall trace handler                                             */
+    // uninstall trace handler
     ChangeDoOperations( func, 0 );
 
-    /* profiling is active, restore handlers                               */
+    // profiling is active, restore handlers
     prof = PROF_FUNC(func);
     if ( TNUM_OBJ(prof) == T_FUNCTION ) {
         for (Int i = 0; i <= 7; i++)
@@ -1523,7 +1523,7 @@ BOOL IsKernelFunction(Obj func)
 }
 
 
-/* Returns a measure of the size of a GAP function */
+// Returns a measure of the size of a GAP function
 static Obj FuncFUNC_BODY_SIZE(Obj self, Obj func)
 {
     RequireFunction(SELF_NAME, func);
@@ -1713,40 +1713,40 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking functions                                       */
+    // install the marking functions
     InitMarkFuncBags(T_FUNCTION, MarkFunctionSubBags);
 
 #ifdef HPCGAP
-    /* Allocate functions in the public region */
+    // Allocate functions in the public region
     MakeBagTypePublic(T_FUNCTION);
 #endif
 
-    /* install the type functions                                          */
+    // install the type functions
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
     ImportGVarFromLibrary( "TYPE_FUNCTION_WITH_NAME",  &TYPE_FUNCTION_WITH_NAME  );
     ImportGVarFromLibrary( "TYPE_OPERATION_WITH_NAME", &TYPE_OPERATION_WITH_NAME );
     TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrAttrsFromTable( GVarAttrs );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
 #ifdef USE_GASMAN
-    /* and the saving function                                             */
+    // and the saving function
     SaveObjFuncs[ T_FUNCTION ] = SaveFunction;
     LoadObjFuncs[ T_FUNCTION ] = LoadFunction;
 #endif
 
-    /* install the printer                                                 */
+    // install the printer
     InitFopyGVar( "PRINT_OPERATION", &PrintOperation );
     PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
 
 
-    /* initialise all 'Do<Something><N>args' handlers, give the most       */
-    /* common ones short cookies to save space in the saved workspace   */
+    // initialise all 'Do<Something><N>args' handlers, give the most
+    // common ones short cookies to save space in the saved workspace
     InitHandlerFunc( DoFail0args, "f0" );
     InitHandlerFunc( DoFail1args, "f1" );
     InitHandlerFunc( DoFail2args, "f2" );
@@ -1783,7 +1783,7 @@ static Int InitKernel (
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarAttrsFromTable( GVarAttrs );
     InitGVarOpersFromTable( GVarOpers );

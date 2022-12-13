@@ -369,7 +369,7 @@ static Obj EvalFunccallXargs(Expr call)
 **
 */
 
-/* TL: Int RecursionDepth; */
+// TL: Int RecursionDepth;
 UInt RecursionTrapInterval;
 
 void RecursionDepthTrap( void )
@@ -447,7 +447,7 @@ static void LockFuncArgs(Obj func, Int narg, const Obj * args)
 
 static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
 {
-    Bag oldLvars; /* old values bag */
+    Bag oldLvars; // old values bag
     Obj result;
     CHECK_RECURSION_BEFORE
 
@@ -457,20 +457,20 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
         LockFuncArgs(func, narg, arg);
 #endif
 
-    /* switch to a new values bag                                          */
+    // switch to a new values bag
     oldLvars = SWITCH_TO_NEW_LVARS(func, narg, NLOC_FUNC(func));
 
-    /* enter the arguments                                                 */
+    // enter the arguments
     for (Int i = 0; i < narg; i++)
         ASS_LVAR( i+1, arg[i] );
 
-    /* execute the statement sequence                                      */
+    // execute the statement sequence
     result = EXEC_CURR_FUNC();
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
 
-    /* switch back to the old values bag                                   */
+    // switch back to the old values bag
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
@@ -521,14 +521,14 @@ static Obj DoExecFunc6args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj
 
 static Obj DoExecFuncXargs(Obj func, Obj args)
 {
-    Bag  oldLvars; /* old values bag */
-    UInt len;      /* number of arguments */
-    UInt i;        /* loop variable */
+    Bag  oldLvars; // old values bag
+    UInt len;      // number of arguments
+    UInt i;        // loop variable
     Obj  result;
 
     CHECK_RECURSION_BEFORE
 
-    /* check the number of arguments                                       */
+    // check the number of arguments
     len = NARG_FUNC( func );
     if (len != LEN_PLIST(args)) {
         ErrorMayQuitNrArgs(len, LEN_PLIST(args));
@@ -540,21 +540,21 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
         LockFuncArgs(func, len, CONST_ADDR_OBJ(args) + 1);
 #endif
 
-    /* switch to a new values bag                                          */
+    // switch to a new values bag
     oldLvars = SWITCH_TO_NEW_LVARS(func, len, NLOC_FUNC(func));
 
-    /* enter the arguments                                                 */
+    // enter the arguments
     for ( i = 1; i <= len; i++ ) {
         ASS_LVAR( i, ELM_PLIST( args, i ) );
     }
 
-    /* execute the statement sequence                                      */
+    // execute the statement sequence
     result = EXEC_CURR_FUNC();
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
 
-    /* switch back to the old values bag                                   */
+    // switch back to the old values bag
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
@@ -565,9 +565,9 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
 
 static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 {
-    Bag  oldLvars; /* old values bag */
-    UInt named;    /* number of arguments */
-    UInt i;        /* loop variable */
+    Bag  oldLvars; // old values bag
+    UInt named;    // number of arguments
+    UInt i;        // loop variable
     UInt len;
     Obj  result;
 
@@ -576,7 +576,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     named = ((UInt)-NARG_FUNC(func))-1;
     len = LEN_PLIST(args);
 
-    if (named > len) { /* Can happen for > 6 arguments */
+    if (named > len) { // Can happen for > 6 arguments
         ErrorMayQuitNrAtLeastArgs(named, len);
     }
 
@@ -586,10 +586,10 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
         LockFuncArgs(func, len, CONST_ADDR_OBJ(args) + 1);
 #endif
 
-    /* switch to a new values bag                                          */
+    // switch to a new values bag
     oldLvars = SWITCH_TO_NEW_LVARS(func, named + 1, NLOC_FUNC(func));
 
-    /* enter the arguments                                                 */
+    // enter the arguments
     for (i = 1; i <= named; i++) {
       ASS_LVAR(i, ELM_PLIST(args,i));
     }
@@ -599,13 +599,13 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     SET_LEN_PLIST(args, len-named);
     ASS_LVAR(named+1, args);
 
-    /* execute the statement sequence                                      */
+    // execute the statement sequence
     result = EXEC_CURR_FUNC();
 #ifdef HPCGAP
     CLEAR_LOCK_STACK();
 #endif
 
-    /* switch back to the old values bag                                   */
+    // switch back to the old values bag
     SWITCH_TO_OLD_LVARS_AND_FREE( oldLvars );
 
     CHECK_RECURSION_AFTER
@@ -622,8 +622,8 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 Obj             MakeFunction (
     Obj                 fexp )
 {
-    Obj                 func;           /* function, result                */
-    ObjFunc             hdlr;           /* handler                         */
+    Obj                 func;           // function, result
+    ObjFunc             hdlr;           // handler
 
     if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
     else if ( NARG_FUNC(fexp) ==  1 )  hdlr = DoExecFunc1args;
@@ -636,12 +636,12 @@ Obj             MakeFunction (
     else if ( NARG_FUNC(fexp) == -1 )  hdlr = DoExecFunc1args;
     else /* NARG_FUNC(fexp) < -1 */    hdlr = DoPartialUnWrapFunc;
 
-    /* make the function                                                   */
+    // make the function
     func = NewFunction( NAME_FUNC( fexp ),
                         NARG_FUNC( fexp ), NAMS_FUNC( fexp ),
                         hdlr );
 
-    /* install the things an interpreted function needs                    */
+    // install the things an interpreted function needs
     SET_NLOC_FUNC( func, NLOC_FUNC( fexp ) );
     SET_BODY_FUNC( func, BODY_FUNC( fexp ) );
     SET_ENVI_FUNC( func, STATE(CurrLVars) );
@@ -650,7 +650,7 @@ Obj             MakeFunction (
     SET_LCKS_FUNC( func, LCKS_FUNC( fexp ) );
 #endif
 
-    /* return the function                                                 */
+    // return the function
     return func;
 }
 
@@ -663,10 +663,10 @@ Obj             MakeFunction (
 */
 static Obj EvalFuncExpr(Expr expr)
 {
-    /* get the function expression bag                                     */
+    // get the function expression bag
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
 
-    /* and make the function                                               */
+    // and make the function
     return MakeFunction( fexp );
 }
 
@@ -679,7 +679,7 @@ static Obj EvalFuncExpr(Expr expr)
 */
 static void PrintFuncExpr(Expr expr)
 {
-    /* get the function expression bag                                     */
+    // get the function expression bag
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
     PrintObj( fexp );
 }
@@ -717,16 +717,16 @@ static void PrintProccallOpts(Stat call)
 static void            PrintFunccall1 (
     Expr                call )
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* print the expression that should evaluate to a function             */
+    // print the expression that should evaluate to a function
     Pr("%2>", 0, 0);
     PrintExpr( FUNC_CALL(call) );
 
-    /* print the opening parenthesis                                       */
+    // print the opening parenthesis
     Pr("%<( %>", 0, 0);
 
-    /* print the expressions that evaluate to the actual arguments         */
+    // print the expressions that evaluate to the actual arguments
     for ( i = 1; i <= NARG_SIZE_CALL( SIZE_EXPR(call) ); i++ ) {
         PrintExpr( ARGI_CALL(call,i) );
         if ( i != NARG_SIZE_CALL( SIZE_EXPR(call) ) ) {
@@ -739,7 +739,7 @@ static void PrintFunccall(Expr call)
 {
   PrintFunccall1( call );
 
-  /* print the closing parenthesis                                       */
+  // print the closing parenthesis
   Pr(" %2<)", 0, 0);
 }
 
@@ -798,7 +798,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
 
@@ -815,14 +815,14 @@ static Int InitKernel (
 {
     RecursionTrapInterval = 5000;
 
-    /* Register the handler for our exported function                      */
+    // Register the handler for our exported function
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* Import some functions from the library                              */
+    // Import some functions from the library
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 
-    /* use short cookies to save space in saved workspace                  */
+    // use short cookies to save space in saved workspace
     InitHandlerFunc( DoExecFunc0args, "i0");
     InitHandlerFunc( DoExecFunc1args, "i1");
     InitHandlerFunc( DoExecFunc2args, "i2");
@@ -833,7 +833,7 @@ static Int InitKernel (
     InitHandlerFunc( DoExecFuncXargs, "iX");
     InitHandlerFunc( DoPartialUnWrapFunc, "pUW");
 
-    /* install the evaluators and executors                                */
+    // install the evaluators and executors
     InstallExecStatFunc( STAT_PROCCALL_0ARGS , ExecProccall0args);
     InstallExecStatFunc( STAT_PROCCALL_1ARGS , ExecProccall1args);
     InstallExecStatFunc( STAT_PROCCALL_2ARGS , ExecProccall2args);
@@ -855,7 +855,7 @@ static Int InitKernel (
     InstallEvalExprFunc( EXPR_FUNCCALL_OPTS  , EvalFunccallOpts);
     InstallEvalExprFunc( EXPR_FUNC      , EvalFuncExpr);
 
-    /* install the printers                                                */
+    // install the printers
     InstallPrintStatFunc( STAT_PROCCALL_0ARGS , PrintProccall);
     InstallPrintStatFunc( STAT_PROCCALL_1ARGS , PrintProccall);
     InstallPrintStatFunc( STAT_PROCCALL_2ARGS , PrintProccall);

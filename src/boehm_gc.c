@@ -278,9 +278,9 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
 
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
-    UInt i; /* loop variable                   */
+    UInt i; // loop variable
 
-    /* install the marking functions                                       */
+    // install the marking functions
     for (i = 0; i < NUM_TYPES; i++) {
         TabMarkTypeBags[i] = -1;
     }
@@ -332,7 +332,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
          * in the garbage collector: */
         GC_generic_malloc(sizeof(BagHeader) + i * sizeof(Bag), GCMKind[i]);
     }
-#endif /* DISABLE_GC */
+#endif // DISABLE_GC
 }
 
 UInt TotalGCTime(void)
@@ -361,7 +361,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
     if (old_type == new_type)
         return;
 
-    /* change the size-type word                                           */
+    // change the size-type word
     header->type = new_type;
     {
         int   old_gctype, new_gctype;
@@ -389,7 +389,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
 
 Bag NewBag(UInt type, UInt size)
 {
-    Bag  bag; /* identifier of the new bag       */
+    Bag  bag; // identifier of the new bag
     UInt alloc_size;
 
     alloc_size = sizeof(BagHeader) + size;
@@ -444,13 +444,13 @@ Bag NewBag(UInt type, UInt size)
 #else
     bag = malloc(sizeof(struct OpaqueBag));
     BagHeader * header = calloc(1, alloc_size);
-#endif /* DISABLE_GC */
+#endif // DISABLE_GC
 
     header->type = type;
     header->flags = 0;
     header->size = size;
 
-    /* set the masterpointer                                               */
+    // set the masterpointer
     SET_PTR_BAG(bag, DATA(header));
 #ifdef HPCGAP
     switch (DSInfoBags[type]) {
@@ -463,19 +463,19 @@ Bag NewBag(UInt type, UInt size)
     }
 #endif
 
-    /* return the identifier of the new bag                                */
+    // return the identifier of the new bag
     return bag;
 }
 
 UInt ResizeBag(Bag bag, UInt new_size)
 {
-    UInt  type; /* type of the bag                 */
+    UInt  type; // type of the bag
     UInt  flags;
-    UInt  old_size; /* old size of the bag             */
-    Bag * src;      /* source in copying               */
+    UInt  old_size; // old size of the bag
+    Bag * src;      // source in copying
     UInt  alloc_size;
 
-/* check the size                                                      */
+// check the size
 
 #ifdef TREMBLE_HEAP
     CollectBags(0, 0);
@@ -483,13 +483,13 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
     BagHeader * header = BAG_HEADER(bag);
 
-    /* get type and old size of the bag                                    */
+    // get type and old size of the bag
     type = header->type;
     flags = header->flags;
     old_size = header->size;
 
 #ifdef COUNT_BAGS
-    /* update the statistics                                               */
+    // update the statistics
     InfoBags[type].sizeLive += new_size - old_size;
     InfoBags[type].sizeAll += new_size - old_size;
 #endif
@@ -514,13 +514,13 @@ UInt ResizeBag(Bag bag, UInt new_size)
         sizeof(BagHeader) + new_size >= alloc_size * 3 / 4) {
 #else
     if (new_size <= old_size) {
-#endif /* DISABLE_GC */
+#endif // DISABLE_GC
 
-        /* change the size word                                            */
+        // change the size word
         header->size = new_size;
     }
 
-    /* if the bag is enlarged                                              */
+    // if the bag is enlarged
     else {
         alloc_size = sizeof(BagHeader) + new_size;
         if (new_size == 0)

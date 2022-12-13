@@ -26,40 +26,40 @@
 **
 *V  declaration of static variables
 */
-static Obj      objRel;                 /* handle of a relator             */
-static Obj      objNums;                /* handle of parallel numbers list */
-static Obj      objTable;               /* handle of the coset table       */
-static Obj      objTable2;              /* handle of coset factor table    */
+static Obj      objRel;                 // handle of a relator
+static Obj      objNums;                // handle of parallel numbers list
+static Obj      objTable;               // handle of the coset table
+static Obj      objTable2;              // handle of coset factor table
 static Obj      objNext;                /*                                 */
 static Obj      objPrev;                /*                                 */
 static Obj      objFactor;              /*                                 */
-static Obj      objTree;                /* handle of subgroup gens tree    */
+static Obj      objTree;                // handle of subgroup gens tree
 
-static Obj      objTree1;               /* first tree component            */
-static Obj      objTree2;               /* second tree component           */
+static Obj      objTree1;               // first tree component
+static Obj      objTree2;               // second tree component
 
-static Obj      objExponent;            /* handle of subgroup order        */
-static Obj      objWordValue;           /* handle of word value            */
+static Obj      objExponent;            // handle of subgroup order
+static Obj      objWordValue;           // handle of word value
 
-static Int      treeType;               /* tree type                       */
-static Int      treeWordLength;         /* maximal tree word length        */
+static Int      treeType;               // tree type
+static Int      treeWordLength;         // maximal tree word length
 static Int      firstDef;               /*                                 */
 static Int      lastDef;                /*                                 */
 static Int      firstFree;              /*                                 */
 static Int      lastFree;               /*                                 */
 
-static Int      minGaps;                /* switch for marking mingaps      */
+static Int      minGaps;                // switch for marking mingaps
 static Int      nrdel;                  /*                                 */
 
-static Int      dedfst;                 /* position of first deduction     */
-static Int      dedlst;                 /* position of last deduction      */
-static Int      dedgen [40960];         /* deduction list keeping gens     */
-static Int      dedcos [40960];         /* deduction list keeping cosets   */
-static Int      dedSize = 40960;        /* size of deduction list buffers  */
-static Int      dedprint;               /* print flag for warning          */
+static Int      dedfst;                 // position of first deduction
+static Int      dedlst;                 // position of last deduction
+static Int      dedgen [40960];         // deduction list keeping gens
+static Int      dedcos [40960];         // deduction list keeping cosets
+static Int      dedSize = 40960;        // size of deduction list buffers
+static Int      dedprint;               // print flag for warning
 
-static Int      wordList [1024];        /* coset rep word buffer           */
-static Int      wordSize = 1023;        /* maximal no. of coset rep words  */
+static Int      wordList [1024];        // coset rep word buffer
+static Int      wordSize = 1023;        // maximal no. of coset rep words
 
 /* clean out global Obj-type variables  to avoid hogging memory*/
 static void CleanOut( void )
@@ -91,17 +91,17 @@ static void CleanOut( void )
 **  ... more about ApplyRel ...
 */
 static Obj FuncApplyRel(Obj self,
-                        Obj app, /* handle of the application list  */
-                        Obj rel) /* handle of the relator           */
+                        Obj app, // handle of the application list
+                        Obj rel) // handle of the relator
 {
 
-    Int                 lp;             /* left pointer into relator       */
-    Int                 lc;             /* left coset to apply to          */
-    Int                 rp;             /* right pointer into relator      */
-    Int                 rc;             /* right coset to apply to         */
-    Int                 tc;             /* temporary coset                 */
+    Int                 lp;             // left pointer into relator
+    Int                 lc;             // left coset to apply to
+    Int                 rp;             // right pointer into relator
+    Int                 rc;             // right coset to apply to
+    Int                 tc;             // temporary coset
 
-    /* check the application list                                          */
+    // check the application list
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 4 ) {
@@ -109,41 +109,41 @@ static Obj FuncApplyRel(Obj self,
                   (Int)LEN_PLIST(app), 0);
     }
 
-    /* get the four entries                                                */
+    // get the four entries
     lp = INT_INTOBJ( ELM_PLIST( app, 1 ) );
     lc = INT_INTOBJ( ELM_PLIST( app, 2 ) );
     rp = INT_INTOBJ( ELM_PLIST( app, 3 ) );
     rc = INT_INTOBJ( ELM_PLIST( app, 4 ) );
 
-    /* get and check the relator (well, only a little bit)                 */
+    // get and check the relator (well, only a little bit)
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, rel);
 
-    /* fix right pointer if requested                                      */
+    // fix right pointer if requested
     if ( rp == -1 )
         rp = lp + INT_INTOBJ( ELM_PLIST( rel, 1 ) );
 
-    /* scan as long as possible from the right to the left                 */
+    // scan as long as possible from the right to the left
     while ( lp < rp
          && 0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(rel,rp),rc))) )
     {
         rc = tc;  rp = rp - 2;
     }
 
-    /* scan as long as possible from the left to the right                 */
+    // scan as long as possible from the left to the right
     while ( lp < rp
          && 0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(rel,lp),lc))) )
     {
         lc = tc;  lp = lp + 2;
     }
 
-    /* copy the information back into the application list                 */
+    // copy the information back into the application list
     SET_ELM_PLIST( app, 1, INTOBJ_INT( lp ) );
     SET_ELM_PLIST( app, 2, INTOBJ_INT( lc ) );
     SET_ELM_PLIST( app, 3, INTOBJ_INT( rp ) );
     SET_ELM_PLIST( app, 4, INTOBJ_INT( rc ) );
 
-    /* return 'true' if a coincidence or deduction was found               */
+    // return 'true' if a coincidence or deduction was found
     if ( lp == rp+1
          && INT_INTOBJ(ELM_PLIST(ELM_PLIST(rel,lp),lc)) != rc )
     {
@@ -166,16 +166,16 @@ static Obj FuncApplyRel(Obj self,
 */
 static void CompressDeductionList ( void )
 {
-    Obj               * ptTable;          /* pointer to the coset table    */
+    Obj               * ptTable;          // pointer to the coset table
     Int                 i;
     Int                 j;
 
-    /* check if the situation is as assumed                                */
+    // check if the situation is as assumed
     if ( dedlst != dedSize ) {
         ErrorQuit("invalid call of CompressDeductionList", 0, 0);
     }
 
-    /* run through the lists and compress them                             */
+    // run through the lists and compress them
     ptTable = BASE_PTR_PLIST(objTable) - 1;
     j = 0;
     for ( i = dedfst; i < dedlst; i++ ) {
@@ -188,11 +188,11 @@ static void CompressDeductionList ( void )
         }
     }
 
-    /* update the pointers                                                 */
+    // update the pointers
     dedfst = 0;
     dedlst = j;
 
-    /* check if we have at least one free position                         */
+    // check if we have at least one free position
     if ( dedlst == dedSize ) {
         if ( dedprint == 0 ) {
             Pr("#I  WARNING: deductions being discarded\n", 0, 0);
@@ -214,7 +214,7 @@ static void HandleCoinc (
     Int                 cos1,
     Int                 cos2 )
 {
-    Obj *               ptTable;          /* pointer to the coset table    */
+    Obj *               ptTable;          // pointer to the coset table
     Obj *               ptNext;
     Obj *               ptPrev;
     Int                 c1;
@@ -226,52 +226,52 @@ static void HandleCoinc (
     Obj *               gen;
     Obj *               inv;
 
-    /* is this test necessary?                                             */
+    // is this test necessary?
     if ( cos1 == cos2 )  return;
 
-    /* get some pointers                                                   */
+    // get some pointers
     ptTable = BASE_PTR_PLIST(objTable) - 1;
     ptNext = BASE_PTR_PLIST(objNext) - 1;
     ptPrev = BASE_PTR_PLIST(objPrev) - 1;
 
-    /* take the smaller one as new representative                          */
+    // take the smaller one as new representative
     if ( cos2 < cos1 ) { c3 = cos1;  cos1 = cos2;  cos2 = c3;  }
 
-    /* if we are removing an important coset update it                     */
+    // if we are removing an important coset update it
     if ( cos2 == lastDef )
         lastDef  = INT_INTOBJ( ptPrev[lastDef ] );
     if ( cos2 == firstDef )
         firstDef = INT_INTOBJ( ptPrev[firstDef] );
 
-    /* remove <cos2> from the coset list                                   */
+    // remove <cos2> from the coset list
     ptNext[INT_INTOBJ(ptPrev[cos2])] = ptNext[cos2];
     if ( ptNext[cos2] != INTOBJ_INT( 0 ) )
         ptPrev[INT_INTOBJ(ptNext[cos2])] = ptPrev[cos2];
 
-    /* put the first coincidence into the list of coincidences             */
+    // put the first coincidence into the list of coincidences
     firstCoinc        = cos2;
     lastCoinc         = cos2;
     ptNext[lastCoinc] = INTOBJ_INT( 0 );
 
-    /* <cos1> is the representative of <cos2> and its own representative   */
+    // <cos1> is the representative of <cos2> and its own representative
     ptPrev[cos2] = INTOBJ_INT( cos1 );
 
-    /* while there are coincidences to handle                              */
+    // while there are coincidences to handle
     while ( firstCoinc != 0 ) {
 
-        /* replace <firstCoinc> by its representative in the table         */
+        // replace <firstCoinc> by its representative in the table
         cos1 = INT_INTOBJ( ptPrev[firstCoinc] );  cos2 = firstCoinc;
         for ( i = 1; i <= LEN_PLIST(objTable); i++ ) {
             gen = BASE_PTR_PLIST(ptTable[i]) - 1;
-            /* inv = ADDR_OBJ(ptTable[ ((i-1)^1)+1 ] ); */
+            // inv = ADDR_OBJ(ptTable[ ((i-1)^1)+1 ] );
             inv = BASE_PTR_PLIST(ptTable[i + 2 * (i % 2) - 1]) - 1;
 
-            /* replace <cos2> by <cos1> in the column of <gen>^-1          */
+            // replace <cos2> by <cos1> in the column of <gen>^-1
             c2 = INT_INTOBJ( gen[cos2] );
             if ( c2 > 0 ) {
                 c1 = INT_INTOBJ( gen[cos1] );
 
-                /* if the other entry is empty copy it                     */
+                // if the other entry is empty copy it
                 if ( c1 <= 0 )  {
                     gen[cos1] = INTOBJ_INT( c2 );
                     gen[cos2] = INTOBJ_INT( 0 );
@@ -283,7 +283,7 @@ static void HandleCoinc (
                     dedlst++;
                 }
 
-                /* otherwise check for a coincidence                       */
+                // otherwise check for a coincidence
                 else {
                     inv[c2]   = INTOBJ_INT( 0 );
                     gen[cos2] = INTOBJ_INT( 0 );
@@ -296,49 +296,49 @@ static void HandleCoinc (
                         dedlst++;
                     }
 
-                    /* find the representative of <c1>                     */
+                    // find the representative of <c1>
                     while ( c1 != 1
                         && INT_INTOBJ(ptNext[INT_INTOBJ(ptPrev[c1])]) != c1 )
                     {
                         c1 = INT_INTOBJ(ptPrev[c1]);
                     }
 
-                    /* find the representative of <c2>                     */
+                    // find the representative of <c2>
                     while ( c2 != 1
                         && INT_INTOBJ(ptNext[INT_INTOBJ(ptPrev[c2])]) != c2 )
                     {
                         c2 = INT_INTOBJ(ptPrev[c2]);
                     }
 
-                    /* if the representatives differ we got a coincindence */
+                    // if the representatives differ we got a coincindence
                     if ( c1 != c2 ) {
 
-                        /* take the smaller one as new representative      */
+                        // take the smaller one as new representative
                         if ( c2 < c1 ) { c3 = c1;  c1 = c2;  c2 = c3; }
 
-                        /* if we are removing an important coset update it */
+                        // if we are removing an important coset update it
                         if ( c2 == lastDef  )
                             lastDef  = INT_INTOBJ(ptPrev[lastDef ]);
                         if ( c2 == firstDef )
                             firstDef = INT_INTOBJ(ptPrev[firstDef]);
 
-                        /* remove <c2> from the coset list                 */
+                        // remove <c2> from the coset list
                         ptNext[INT_INTOBJ(ptPrev[c2])] = ptNext[c2];
                         if ( ptNext[c2] != INTOBJ_INT( 0 ) )
                             ptPrev[INT_INTOBJ(ptNext[c2])] = ptPrev[c2];
 
-                        /* append <c2> to the coincidence list             */
+                        // append <c2> to the coincidence list
                         ptNext[lastCoinc] = INTOBJ_INT( c2 );
                         lastCoinc         = c2;
                         ptNext[lastCoinc] = INTOBJ_INT( 0 );
 
-                        /* <c1> is the rep of <c2> and its own rep.        */
+                        // <c1> is the rep of <c2> and its own rep.
                         ptPrev[c2] = INTOBJ_INT( c1 );
                     }
                 }
             }
 
-            /* save minimal gap flags                                      */
+            // save minimal gap flags
             else if ( minGaps != 0 && c2 == -1 ) {
                 if ( gen[cos1] <= INTOBJ_INT( 0 ) ) {
                     gen[cos1] = INTOBJ_INT( -1 );
@@ -347,7 +347,7 @@ static void HandleCoinc (
             }
         }
 
-        /* move the replaced coset to the free list                        */
+        // move the replaced coset to the free list
         if ( firstFree == 0 ) {
             firstFree      = firstCoinc;
             lastFree       = firstCoinc;
@@ -372,15 +372,15 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
 {
     Obj                 hdSubs;         /*                                 */
     Obj                 objRels;        /*                                 */
-    Obj *               ptRel;          /* pointer to the relator bag      */
-    Obj *               ptNums;         /* pointer to this list            */
-    Int                 lp;             /* left pointer into relator       */
-    Int                 lc;             /* left coset to apply to          */
-    Int                 rp;             /* right pointer into relator      */
-    Int                 rc;             /* right coset to apply to         */
-    Int                 tc;             /* temporary coset                 */
-    Int                 i;              /* loop variable                   */
-    Obj                 hdTmp;          /* temporary variable              */
+    Obj *               ptRel;          // pointer to the relator bag
+    Obj *               ptNums;         // pointer to this list
+    Int                 lp;             // left pointer into relator
+    Int                 lc;             // left coset to apply to
+    Int                 rp;             // right pointer into relator
+    Int                 rc;             // right coset to apply to
+    Int                 tc;             // temporary coset
+    Int                 i;              // loop variable
+    Obj                 hdTmp;          // temporary variable
 
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, list);
@@ -397,17 +397,17 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
 
     nrdel     = 0;
 
-    /* initialize the deduction queue                                      */
+    // initialize the deduction queue
     dedprint = 0;
     dedfst = 0;
     dedlst = 1;
     dedgen[ 0 ] = INT_INTOBJ( ELM_PLIST( list, 10 ) );
     dedcos[ 0 ] = INT_INTOBJ( ELM_PLIST( list, 11 ) );
 
-    /* while the deduction queue is not empty                              */
+    // while the deduction queue is not empty
     while ( dedfst < dedlst ) {
 
-        /* skip the deduction, if it got irrelevant by a coincidence       */
+        // skip the deduction, if it got irrelevant by a coincidence
         hdTmp = ELM_PLIST( objTable, dedgen[dedfst] );
         hdTmp = ELM_PLIST( hdTmp, dedcos[dedfst] );
         if ( INT_INTOBJ(hdTmp) <= 0 ) {
@@ -415,7 +415,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
             continue;
         }
 
-        /* while there are still subgroup generators apply them            */
+        // while there are still subgroup generators apply them
         hdSubs = ELM_PLIST( list, 5 );
         for ( i = LEN_LIST( hdSubs ); 1 <= i; i-- ) {
           if ( ELM_PLIST( hdSubs, i ) != 0 ) {
@@ -429,17 +429,17 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
             rp = LEN_LIST( objRel ) - 1;
             rc = 1;
 
-            /* scan as long as possible from the right to the left         */
+            // scan as long as possible from the right to the left
             while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) ) {
                 rc = tc;  rp = rp - 2;
             }
 
-            /* scan as long as possible from the left to the right         */
+            // scan as long as possible from the left to the right
             while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) ) {
                 lc = tc;  lp = lp + 2;
             }
 
-            /* if a coincidence or deduction has been found, handle it     */
+            // if a coincidence or deduction has been found, handle it
             if ( lp == rp + 1 ) {
               if ( INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc ) {
                 if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) > 0 ) {
@@ -459,7 +459,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
                 }
               }
 
-              /* remove the completed subgroup generator                   */
+              // remove the completed subgroup generator
               SET_ELM_PLIST( hdSubs, i, 0 );
               if ( i == LEN_PLIST(hdSubs) ) {
                   while ( 0 < i  && ELM_PLIST(hdSubs,i) == 0 )
@@ -469,7 +469,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
               }
             }
 
-            /* if a minimal gap has been found, set a flag                 */
+            // if a minimal gap has been found, set a flag
             else if ( minGaps != 0 && lp == rp - 1 ) {
                 SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( -1 ) );
                 SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( -1 ) );
@@ -477,7 +477,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
           }
         }
 
-        /* apply all relators that start with this generator               */
+        // apply all relators that start with this generator
         objRels = ELM_PLIST( ELM_PLIST( list, 4 ), dedgen[dedfst] );
         for ( i = 1; i <= LEN_LIST( objRels ); i++ ) {
             objNums = ELM_PLIST( ELM_PLIST(objRels,i), 1 );
@@ -490,17 +490,17 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
             rp = lp + INT_INTOBJ( ptRel[1] );
             rc = lc;
 
-            /* scan as long as possible from the right to the left         */
+            // scan as long as possible from the right to the left
             while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) ) {
                 rc = tc;  rp = rp - 2;
             }
 
-            /* scan as long as possible from the left to the right         */
+            // scan as long as possible from the left to the right
             while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) ) {
                 lc = tc;  lp = lp + 2;
             }
 
-            /* if a coincidence or deduction has been found, handle it     */
+            // if a coincidence or deduction has been found, handle it
             if ( lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[lp],lc)) != rc ) {
                 if ( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ) > 0 ) {
                     HandleCoinc( INT_INTOBJ( ELM_PLIST(ptRel[lp],lc) ), rc );
@@ -519,7 +519,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
                 }
             }
 
-            /* if a minimal gap has been found, set a flag                 */
+            // if a minimal gap has been found, set a flag
             else if ( minGaps != 0 && lp == rp - 1 ) {
                 SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( -1 ) );
                 SET_ELM_PLIST( ptRel[rp], rc, INTOBJ_INT( -1 ) );
@@ -534,7 +534,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
     SET_ELM_PLIST( list, 8, INTOBJ_INT( firstDef  ) );
     SET_ELM_PLIST( list, 9, INTOBJ_INT( lastDef   ) );
 
-    /* clean out  */
+    // clean out
     CleanOut();
 
     return INTOBJ_INT( nrdel );
@@ -550,23 +550,23 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
 */
 static Obj FuncMakeConsequencesPres(Obj self, Obj list)
 {
-    Obj                 objDefs1;       /* handle of defs list part 1      */
-    Obj                 objDefs2;       /* handle of defs list part 2      */
+    Obj                 objDefs1;       // handle of defs list part 1
+    Obj                 objDefs2;       // handle of defs list part 2
     Obj                 objRels;        /*                                 */
-    Obj *               ptRel;          /* pointer to the relator bag      */
-    Obj *               ptNums;         /* pointer to this list            */
-    Int                 ndefs;          /* number of defs done so far      */
-    Int                 undefined;      /* maximal of undefined entreis    */
-    Int                 apply;          /* num of next def to be applied   */
-    Int                 ndefsMax;       /* maximal number of definitions   */
-    Int                 coset;          /* coset involved in current def   */
-    Int                 gen;            /* gen involved in current def     */
-    Int                 lp;             /* left pointer into relator       */
-    Int                 lc;             /* left coset to apply to          */
-    Int                 rp;             /* right pointer into relator      */
-    Int                 rc;             /* right coset to apply to         */
-    Int                 tc;             /* temporary coset                 */
-    Int                 i;              /* loop variable                   */
+    Obj *               ptRel;          // pointer to the relator bag
+    Obj *               ptNums;         // pointer to this list
+    Int                 ndefs;          // number of defs done so far
+    Int                 undefined;      // maximal of undefined entreis
+    Int                 apply;          // num of next def to be applied
+    Int                 ndefsMax;       // maximal number of definitions
+    Int                 coset;          // coset involved in current def
+    Int                 gen;            // gen involved in current def
+    Int                 lp;             // left pointer into relator
+    Int                 lc;             // left coset to apply to
+    Int                 rp;             // right pointer into relator
+    Int                 rc;             // right coset to apply to
+    Int                 tc;             // temporary coset
+    Int                 i;              // loop variable
 
     /*T 1996/12/03 fceller this should be replaced by 'PlistConv'          */
     RequirePlainList(0, list);
@@ -578,7 +578,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
     undefined = INT_INTOBJ( ELM_PLIST( list, 4 ) );
     ndefs     = INT_INTOBJ( ELM_PLIST( list, 5 ) );
 
-    /* check the definitions lists                                         */
+    // check the definitions lists
     if ( ! ( IS_PLIST(objDefs1) && IS_PLIST(objDefs2) &&
         LEN_PLIST(objDefs1) == LEN_PLIST(objDefs2) ) ) {
         ErrorQuit("inconsistent definitions lists", 0, 0);
@@ -586,10 +586,10 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
     ndefsMax = LEN_PLIST(objDefs1);
     apply = 1;
 
-    /* while the deduction queue is not worked off                         */
+    // while the deduction queue is not worked off
     while ( apply <= ndefs ) {
 
-        /* apply all relators that start with this generator               */
+        // apply all relators that start with this generator
         coset = INT_INTOBJ( ELM_PLIST( objDefs1, apply ) );
         gen = INT_INTOBJ( ELM_PLIST( objDefs2, apply ) );
         objRels = ELM_PLIST( ELM_PLIST( list, 6 ), gen );
@@ -604,17 +604,17 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
             rp = lp + INT_INTOBJ( ptRel[1] );
             rc = lc;
 
-            /* scan as long as possible from the right to the left         */
+            // scan as long as possible from the right to the left
             while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) ) {
                 rc = tc;  rp = rp - 2;
             }
 
-            /* scan as long as possible from the left to the right         */
+            // scan as long as possible from the left to the right
             while ( lp<rp && 0 < (tc=INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) ) {
                 lc = tc;  lp = lp + 2;
             }
 
-            /* if a deduction has been found, handle it     */
+            // if a deduction has been found, handle it
             if ( lp == rp+1 && INT_INTOBJ(ELM_PLIST(ptRel[rp],rc)) <= 0 ) {
                 SET_ELM_PLIST( ptRel[lp], lc, INTOBJ_INT( rc ) );
                 undefined--;
@@ -637,7 +637,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
         apply++;
     }
 
-    /* clean out  */
+    // clean out
     CleanOut();
 
     return INTOBJ_INT( undefined );
@@ -659,21 +659,21 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
 */
 static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
 {
-    Obj *               ptTable;        /* pointer to table                */
-    UInt                nrgen;          /* number of rows of the table / 2 */
-    Obj *               g;              /* one generator list from table   */
-    Obj *               h;              /* generator list                  */
-    Obj *               i;              /*  and inverse                    */
-    UInt                acos;           /* actual coset                    */
-    UInt                lcos;           /* last seen coset                 */
+    Obj *               ptTable;        // pointer to table
+    UInt                nrgen;          // number of rows of the table / 2
+    Obj *               g;              // one generator list from table
+    Obj *               h;              // generator list
+    Obj *               i;              // and inverse
+    UInt                acos;           // actual coset
+    UInt                lcos;           // last seen coset
     UInt                mcos;           /*                                 */
-    UInt                c1, c2;         /* coset temporaries               */
-    Obj                 tmp;            /* temporary for swap              */
-    UInt                j, k, nloop;    /* loop variables                  */
+    UInt                c1, c2;         // coset temporaries
+    Obj                 tmp;            // temporary for swap
+    UInt                j, k, nloop;    // loop variables
 
     RequirePlainList(0, table);
 
-    /* get the arguments                                                   */
+    // get the arguments
     objTable = table;
     ptTable = BASE_PTR_PLIST(objTable) - 1;
     nrgen    = LEN_PLIST(objTable) / 2;
@@ -686,28 +686,28 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
         }
     }
     if (stan == INTOBJ_INT(1)) {
-       /* use semilenlex standard                                          */
+       // use semilenlex standard
        nloop = nrgen;
     }
     else {
-       /* use lenlex standard                                              */
+       // use lenlex standard
        nloop = nrgen*2;
     }
 
-    /* run over all cosets                                                 */
+    // run over all cosets
     acos = 1;
     lcos = 1;
     while ( acos <= lcos ) {
 
-        /* scan through all columns of acos                                */
+        // scan through all columns of acos
         for ( j = 1;  j <= nloop;  j++ ) {
             k = ( nloop == nrgen ) ? 2*j - 1 : j;
             g = BASE_PTR_PLIST(ptTable[k]) - 1;
 
-            /* if we haven't seen this coset yet                           */
+            // if we haven't seen this coset yet
             if ( lcos+1 < INT_INTOBJ( g[acos] ) ) {
 
-                /* swap rows lcos and g[acos]                              */
+                // swap rows lcos and g[acos]
                 lcos = lcos + 1;
                 mcos = INT_INTOBJ( g[acos] );
                 for ( k = 1;  k <= nrgen;  k++ ) {
@@ -733,7 +733,7 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
 
             }
 
-            /* if this is already the next only bump lcos                  */
+            // if this is already the next only bump lcos
             else if ( lcos < INT_INTOBJ( g[acos] ) ) {
                 lcos = lcos + 1;
             }
@@ -743,13 +743,13 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
         acos = acos + 1;
     }
 
-    /* shrink the table                                                    */
+    // shrink the table
     for ( j = 1; j <= nrgen; j++ ) {
         SET_LEN_PLIST( ptTable[2*j-1], lcos );
         SET_LEN_PLIST( ptTable[2*j  ], lcos );
     }
 
-    /* clean out  */
+    // clean out
     CleanOut();
 
     return 0;
@@ -768,15 +768,15 @@ static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
 */
 static void InitializeCosetFactorWord ( void )
 {
-    Obj *               ptWord;         /* pointer to the word             */
-    Int                 i;              /* integer variable                */
+    Obj *               ptWord;         // pointer to the word
+    Int                 i;              // integer variable
 
-    /* handle the one generator MTC case                                   */
+    // handle the one generator MTC case
     if ( treeType == 1 ) {
         objWordValue = INTOBJ_INT(0);
     }
 
-    /* handle the abelianized case                                         */
+    // handle the abelianized case
     else if ( treeType == 0 ) {
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
         for ( i = 1;  i <= treeWordLength;  i++ ) {
@@ -784,7 +784,7 @@ static void InitializeCosetFactorWord ( void )
         }
     }
 
-    /* handle the general case                                             */
+    // handle the general case
     else {
         wordList[0] = 0;
     }
@@ -808,30 +808,30 @@ static void InitializeCosetFactorWord ( void )
 */
 static Int TreeEntryC ( void )
 {
-    Obj *               ptTree1;        /* ptr to first tree component     */
-    Obj *               ptTree2;        /* ptr to second tree component    */
-    Obj *               ptWord;         /* ptr to given word               */
-    Obj *               ptFac;          /* ptr to old word                 */
-    Obj *               ptNew;          /* ptr to new word                 */
-    Obj                 objNew;         /* handle of new word              */
-    Int                 treesize;       /* tree size                       */
-    Int                 numgens;        /* tree length                     */
-    Int                 leng;           /* word length                     */
-    Int                 sign;           /* sign flag                       */
-    Int                 i, k;           /* integer variables               */
-    Int                 gen;            /* generator value                 */
-    Int                 u, u1, u2;      /* generator values                */
-    Int                 v, v1, v2;      /* generator values                */
-    Int                 t1, t2;         /* generator values                */
-    Int                 uabs, vabs;     /* generator values                */
+    Obj *               ptTree1;        // ptr to first tree component
+    Obj *               ptTree2;        // ptr to second tree component
+    Obj *               ptWord;         // ptr to given word
+    Obj *               ptFac;          // ptr to old word
+    Obj *               ptNew;          // ptr to new word
+    Obj                 objNew;         // handle of new word
+    Int                 treesize;       // tree size
+    Int                 numgens;        // tree length
+    Int                 leng;           // word length
+    Int                 sign;           // sign flag
+    Int                 i, k;           // integer variables
+    Int                 gen;            // generator value
+    Int                 u, u1, u2;      // generator values
+    Int                 v, v1, v2;      // generator values
+    Int                 t1, t2;         // generator values
+    Int                 uabs, vabs;     // generator values
 
-    /*  Get the tree components                                            */
+    // Get the tree components
     ptTree1 = BASE_PTR_PLIST(objTree1) - 1;
     ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
     treesize = LEN_PLIST(objTree1);
     numgens  = INT_INTOBJ( ELM_PLIST( objTree, 3 ) );
 
-    /* handle the abelianized case                                         */
+    // handle the abelianized case
     if ( treeType == 0 )
     {
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
@@ -851,7 +851,7 @@ static Int TreeEntryC ( void )
         sign = 1;
         if ( INT_INTOBJ( ptWord[k] ) < 0 ) {
 
-            /* invert the word                                             */
+            // invert the word
             sign = - 1;
             for ( i = k; i <= leng; i++ ) {
                 ptWord[i] = INTOBJ_INT( - INT_INTOBJ( ptWord[i] ) );
@@ -871,7 +871,7 @@ static Int TreeEntryC ( void )
             }
         }
 
-        /* extend the tree                                                 */
+        // extend the tree
         numgens++;
         if ( treesize < numgens ) {
             treesize = 2 * treesize;
@@ -887,7 +887,7 @@ static Int TreeEntryC ( void )
         SET_ELM_PLIST( objTree1, numgens, objNew );
         CHANGED_BAG(objTree1);
 
-        /* copy the word to the new bag                                    */
+        // copy the word to the new bag
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
         ptNew = BASE_PTR_PLIST(objNew) - 1;
         while ( leng > 0 ) {
@@ -898,25 +898,25 @@ static Int TreeEntryC ( void )
         return sign * numgens;
     }
 
-    /* handle the general case                                             */
+    // handle the general case
 
-    /*  Get the length of the word                                         */
+    // Get the length of the word
     leng = wordList[0];
 
     gen = ( leng == 0 ) ? 0 : wordList[1];
-    u2  = 0; /* just to shut up gcc */
+    u2  = 0; // just to shut up gcc
     for ( i = 2;  i <= leng;  i++ ) {
         u = gen;
         v = wordList[i];
         while ( i ) {
 
-            /*  First handle the trivial cases                             */
+            // First handle the trivial cases
             if ( u == 0 || v == 0 || ( u + v ) == 0 ) {
                 gen = u + v;
                 break;
             }
 
-            /*  Cancel out factors, if possible                            */
+            // Cancel out factors, if possible
             u1 = INT_INTOBJ( ptTree1[ (u > 0) ? u : -u ] );
             if ( u1 != 0 ) {
                 if ( u > 0 ) {
@@ -951,7 +951,7 @@ static Int TreeEntryC ( void )
                 }
             }
 
-            /*  Check if there is already a tree entry [u,v] or [-v,-u]    */
+            // Check if there is already a tree entry [u,v] or [-v,-u]
             if ( u < -v ) {
                 t1 = u;
                 t2 = v;
@@ -971,7 +971,7 @@ static Int TreeEntryC ( void )
                 }
             }
 
-            /*  Extend the tree, if necessary                              */
+            // Extend the tree, if necessary
             if ( k > numgens ) {
                 numgens++;
                 if ( treesize < numgens ) {
@@ -1014,14 +1014,14 @@ static Int TreeEntryC ( void )
 static Int AddCosetFactor2 (
     Int                factor )
 {
-    Obj *               ptFac;          /* pointer to the factor           */
-    Obj *               ptWord;         /* pointer to the word             */
-    Int                 leng;           /* length of the factor            */
-    Obj                 sum;            /* intermediate result             */
-    Int                 i;              /* integer variable                */
+    Obj *               ptFac;          // pointer to the factor
+    Obj *               ptWord;         // pointer to the word
+    Int                 leng;           // length of the factor
+    Obj                 sum;            // intermediate result
+    Int                 i;              // integer variable
     Obj                 tmp;
 
-    /* handle the abelianized case                                         */
+    // handle the abelianized case
     if ( treeType == 0 ) {
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
         if ( factor > 0 ) {
@@ -1057,7 +1057,7 @@ static Int AddCosetFactor2 (
         }
     }
 
-    /* handle the general case                                             */
+    // handle the general case
     else if ( wordList[0] == 0 ) {
         wordList[++wordList[0]] = factor;
     }
@@ -1095,28 +1095,28 @@ static Int AddCosetFactor2 (
 */
 static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 {
-    Obj *               ptApp;          /* pointer to that list            */
-    Obj                 word;           /* handle of resulting word        */
-    Obj *               ptWord;         /* pointer to this word            */
-    Obj *               ptTree;         /* pointer to the tree             */
-    Obj *               ptTree2;        /* ptr to second tree component    */
-    Obj *               ptRel;          /* pointer to the relator bag      */
-    Obj *               ptNums;         /* pointer to this list            */
-    Obj *               ptTabl2;        /* pointer to coset factor table   */
-    Obj                 objRep;         /* handle of temporary factor      */
-    Int                 lp;             /* left pointer into relator       */
-    Int                 lc;             /* left coset to apply to          */
-    Int                 rp;             /* right pointer into relator      */
-    Int                 rc;             /* right coset to apply to         */
-    Int                 rep;            /* temporary factor                */
-    Int                 tc;             /* temporary coset                 */
-    Int                 bound;          /* maximal number of steps         */
-    Int                 last;           /* proper word length              */
-    Int                 size;           /* size of the word bag            */
-    Int                 i;              /* loop variables                  */
+    Obj *               ptApp;          // pointer to that list
+    Obj                 word;           // handle of resulting word
+    Obj *               ptWord;         // pointer to this word
+    Obj *               ptTree;         // pointer to the tree
+    Obj *               ptTree2;        // ptr to second tree component
+    Obj *               ptRel;          // pointer to the relator bag
+    Obj *               ptNums;         // pointer to this list
+    Obj *               ptTabl2;        // pointer to coset factor table
+    Obj                 objRep;         // handle of temporary factor
+    Int                 lp;             // left pointer into relator
+    Int                 lc;             // left coset to apply to
+    Int                 rp;             // right pointer into relator
+    Int                 rc;             // right coset to apply to
+    Int                 rep;            // temporary factor
+    Int                 tc;             // temporary coset
+    Int                 bound;          // maximal number of steps
+    Int                 last;           // proper word length
+    Int                 size;           // size of the word bag
+    Int                 i;              // loop variables
     Int                 tmp;
 
-    /* get and check the application list                                  */
+    // get and check the application list
     RequirePlainList(0, app);
     if ( LEN_PLIST(app) != 9 ) {
         ErrorQuit("<app> must be a list of length 9 not %d",
@@ -1124,38 +1124,38 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
     }
     ptApp = BASE_PTR_PLIST(app) - 1;
 
-    /* get the components of the proper application list                   */
+    // get the components of the proper application list
     lp = INT_INTOBJ( ptApp[1] );
     lc = INT_INTOBJ( ptApp[2] );
     rp = INT_INTOBJ( ptApp[3] );
     rc = INT_INTOBJ( ptApp[4] );
 
-    /* get and check the relator (well, only a little bit)                 */
+    // get and check the relator (well, only a little bit)
     objRel = rel;
     RequirePlainList(0, rel);
 
-    /* fix right pointer if requested                                      */
+    // fix right pointer if requested
     if ( rp == -1 )
         rp = lp + INT_INTOBJ( ELM_PLIST(objRel,1) );
 
-    /* get and check the numbers list parallel to the relator              */
+    // get and check the numbers list parallel to the relator
     objNums = nums;
     RequirePlainList(0, nums);
 
-    /* get and check the corresponding factors list                        */
+    // get and check the corresponding factors list
     objTable2 = ptApp[6];
     RequirePlainList(0, objTable2);
 
-    /* get the tree type                                                   */
+    // get the tree type
     treeType = INT_INTOBJ( ptApp[5] );
 
-    /* handle the one generator MTC case                                   */
+    // handle the one generator MTC case
     if ( treeType == 1 ) {
 
-        /* initialize the resulting exponent by zero                       */
+        // initialize the resulting exponent by zero
         objExponent = INTOBJ_INT( 0 );
 
-        /* scan as long as possible from the left to the right             */
+        // scan as long as possible from the left to the right
         while ( lp < rp + 2 &&
                 0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
         {
@@ -1167,7 +1167,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             lp = lp + 2;
         }
 
-        /* scan as long as possible from the right to the left             */
+        // scan as long as possible from the right to the left
         while ( lp < rp + 2 &&
                 0 < (tc = INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
         {
@@ -1179,20 +1179,20 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             rp = rp - 2;
         }
 
-        /* The functions DiffInt or SumInt may have caused a garbage       */
-        /* collections. So restore the pointer.                            */
+        // The functions DiffInt or SumInt may have caused a garbage
+        // collections. So restore the pointer.
 
-        /* save the resulting exponent                                     */
+        // save the resulting exponent
         SET_ELM_PLIST( app, 9, objExponent );
     }
 
     else {
 
-        /* get and check the corresponding word                            */
+        // get and check the corresponding word
         word = ptApp[7];
         RequirePlainList(0, word);
 
-        /* handle the abelianized case                                     */
+        // handle the abelianized case
         if ( treeType == 0 ) {
             objTree  = ptApp[8];
             objTree1 = ELM_PLIST( objTree, 1 );
@@ -1203,10 +1203,10 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 ErrorQuit("ApplyRel2: illegal word length", 0, 0);
             }
 
-            /* initialize the coset representative word                    */
+            // initialize the coset representative word
             InitializeCosetFactorWord();
 
-            /* scan as long as possible from the left to the right         */
+            // scan as long as possible from the left to the right
             while ( lp < rp + 2 &&
                     0 < (tc=INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,lp),lc))) )
             {
@@ -1223,7 +1223,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 lp = lp + 2;
             }
 
-            /* scan as long as possible from the right to the left         */
+            // scan as long as possible from the right to the left
             while ( lp < rp + 2 &&
                     0 < (tc=INT_INTOBJ(ELM_PLIST(ELM_PLIST(objRel,rp),rc))) )
             {
@@ -1240,11 +1240,11 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 rp = rp - 2;
             }
 
-            /* initialize some local variables                             */
+            // initialize some local variables
             ptWord = BASE_PTR_PLIST(word) - 1;
             ptTree2 = BASE_PTR_PLIST(objTree2) - 1;
 
-            /* copy the result to its destination, if necessary            */
+            // copy the result to its destination, if necessary
             if ( ptWord != ptTree2 ) {
                 if ( LEN_PLIST(word) != treeWordLength ) {
                     ErrorQuit("illegal word length", 0, 0);
@@ -1256,10 +1256,10 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
             }
         }
 
-        /* handle the general case                                         */
+        // handle the general case
         else {
 
-            /* extend the word size, if necessary                          */
+            // extend the word size, if necessary
             bound = ( rp - lp + 3 ) / 2;
             size  = SIZE_OBJ(word)/sizeof(Obj) - 1;
             if ( size < bound ) {
@@ -1268,14 +1268,14 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 CHANGED_BAG(app);
             }
 
-            /* initialize some local variables                             */
+            // initialize some local variables
             ptRel = BASE_PTR_PLIST(objRel) - 1;
             ptNums = BASE_PTR_PLIST(objNums) - 1;
             ptTabl2 = BASE_PTR_PLIST(objTable2) - 1;
             ptWord = BASE_PTR_PLIST(word) - 1;
             last    = 0;
 
-            /* scan as long as possible from the left to the right         */
+            // scan as long as possible from the left to the right
             while ( lp < rp + 2
                   && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[lp],lc))) )
             {
@@ -1293,7 +1293,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 lp = lp + 2;
             }
 
-            /* revert the ordering of the word constructed so far          */
+            // revert the ordering of the word constructed so far
             if ( last > 0 ) {
                 last++;
                 for ( i = last / 2;  i > 0;  i-- ) {
@@ -1304,7 +1304,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 last--;
             }
 
-            /* scan as long as possible from the right to the left         */
+            // scan as long as possible from the right to the left
             while ( lp < rp + 2
                  && 0 < (tc = INT_INTOBJ(ELM_PLIST(ptRel[rp],rc))) )
             {
@@ -1322,18 +1322,18 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                 rp = rp - 2;
             }
 
-            /* save the word length                                        */
+            // save the word length
             SET_LEN_PLIST( word, last );
         }
     }
 
-    /* copy the information back into the application list                 */
+    // copy the information back into the application list
     SET_ELM_PLIST( app, 1, INTOBJ_INT( lp ) );
     SET_ELM_PLIST( app, 2, INTOBJ_INT( lc ) );
     SET_ELM_PLIST( app, 3, INTOBJ_INT( rp ) );
     SET_ELM_PLIST( app, 4, INTOBJ_INT( rc ) );
 
-    /* return true                                                      */
+    // return true
     return True;
 }
 
@@ -1345,29 +1345,29 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 **  'FuncCopyRel' returns a copy  of the given RRS  relator such that the bag
 **  of the copy does not exceed the minimal required size.
 */
-static Obj FuncCopyRel(Obj self, Obj rel) /* the given relator */
+static Obj FuncCopyRel(Obj self, Obj rel) // the given relator
 {
-    Obj *               ptRel;          /* pointer to the given relator    */
-    Obj                 copy;           /* the copy                        */
-    Obj *               ptCopy;         /* pointer to the copy             */
-    Int                 leng;           /* length of the given word        */
+    Obj *               ptRel;          // pointer to the given relator
+    Obj                 copy;           // the copy
+    Obj *               ptCopy;         // pointer to the copy
+    Int                 leng;           // length of the given word
 
     RequirePlainList(0, rel);
     leng = LEN_PLIST(rel);
 
-    /*  Allocate a bag for the copy                                        */
+    // Allocate a bag for the copy
     copy   = NEW_PLIST( T_PLIST, leng );
     SET_LEN_PLIST( copy, leng );
     ptRel = BASE_PTR_PLIST(rel);
     ptCopy = BASE_PTR_PLIST(copy);
 
-    /*  Copy the relator to the new bag                                    */
+    // Copy the relator to the new bag
     while ( leng > 0 ) {
         *ptCopy++ = *ptRel++;
         leng--;
     }
 
-    /*  Return the copy                                                    */
+    // Return the copy
     return copy;
 }
 
@@ -1380,14 +1380,14 @@ static Obj FuncCopyRel(Obj self, Obj rel) /* the given relator */
 **  routines.  It replaces the given relator by its canonical representative.
 **  It does not return anything.
 */
-static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
+static Obj FuncMakeCanonical(Obj self, Obj rel) // the given relator
 {
-    Obj *               ptRel;          /* pointer to the relator          */
-    Obj                 obj1,  obj2;    /* handles 0f relator entries      */
-    Int                 leng, leng1;    /* length of the relator           */
-    Int                 max, min, next; /* relator entries                 */
-    Int                 i, j, k, l;     /* integer variables               */
-    Int                 ii, jj, kk;     /* integer variables               */
+    Obj *               ptRel;          // pointer to the relator
+    Obj                 obj1,  obj2;    // handles 0f relator entries
+    Int                 leng, leng1;    // length of the relator
+    Int                 max, min, next; // relator entries
+    Int                 i, j, k, l;     // integer variables
+    Int                 ii, jj, kk;     // integer variables
 
     RequirePlainList(0, rel);
     leng  = LEN_PLIST(rel);
@@ -1397,7 +1397,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
     ptRel = BASE_PTR_PLIST(rel);
     leng1 = leng - 1;
 
-    /*  cyclically reduce the relator, if necessary                        */
+    // cyclically reduce the relator, if necessary
     i = 0;
     while ( i<leng1 && INT_INTOBJ(ptRel[i]) == -INT_INTOBJ(ptRel[leng1]) ) {
         i++;
@@ -1412,8 +1412,8 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         SET_LEN_PLIST( rel, leng );
     }
 
-    /*  Loop over the relator and find the maximal postitve and negative   */
-    /*  entries                                                            */
+    // Loop over the relator and find the maximal postitve and negative
+    // entries
     max = min = INT_INTOBJ(ptRel[0]);
     i = 0;  j = 0;
     for ( k = 1;  k < leng;  k++ ) {
@@ -1428,7 +1428,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         }
     }
 
-    /*  Find the lexicographically last cyclic permutation of the relator  */
+    // Find the lexicographically last cyclic permutation of the relator
     if ( max < -min ) {
         i = leng;
     }
@@ -1452,7 +1452,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         }
     }
 
-    /*  Find the lexicographically last cyclic permutation of its inverse  */
+    // Find the lexicographically last cyclic permutation of its inverse
     if ( -max < min ) {
         j = leng;
     }
@@ -1476,7 +1476,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         }
     }
 
-    /*  Compare the two words and find the lexicographically last one      */
+    // Compare the two words and find the lexicographically last one
     if ( -min == max ) {
         for ( ii = i, jj = j, l = 0;
               l < leng;
@@ -1492,7 +1492,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         }
     }
 
-    /*  Invert the given relator, if necessary                             */
+    // Invert the given relator, if necessary
     if ( i == leng ) {
         for ( k = 0;  k < leng / 2;  k++ ) {
             next = INT_INTOBJ( ptRel[k] );
@@ -1505,7 +1505,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
         i = leng1 - j;
     }
 
-    /*  Now replace the given relator by the resulting word                */
+    // Now replace the given relator by the resulting word
     if ( i > 0 ) {
         k = INT_INTOBJ( GcdInt( INTOBJ_INT(i), INTOBJ_INT(leng) ) );
         l = leng / k;
@@ -1534,30 +1534,30 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
 */
 static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 {
-    Obj *               ptTree1;        /* pointer to that component       */
-    Obj *               ptTree2;        /* pointer to that component       */
-    Obj *               ptWord;         /* pointer to that word            */
-    Obj                 new;            /* handle of new word              */
-    Obj *               ptNew;          /* pointer to new word             */
-    Obj *               ptFac;          /* pointer to old word             */
-    Int                 treesize;       /* tree size                       */
-    Int                 numgens;        /* tree length                     */
-    Int                 leng;           /* word length                     */
-    Int                 sign;           /* integer variable                */
-    Int                 i, j, k;        /* integer variables               */
-    Int                 gen;            /* generator value                 */
-    Int                 u, u1, u2;      /* generator values                */
-    Int                 v, v1, v2;      /* generator values                */
-    Int                 t1, t2;         /* generator values                */
-    Int                 uabs, vabs;     /* generator values                */
+    Obj *               ptTree1;        // pointer to that component
+    Obj *               ptTree2;        // pointer to that component
+    Obj *               ptWord;         // pointer to that word
+    Obj                 new;            // handle of new word
+    Obj *               ptNew;          // pointer to new word
+    Obj *               ptFac;          // pointer to old word
+    Int                 treesize;       // tree size
+    Int                 numgens;        // tree length
+    Int                 leng;           // word length
+    Int                 sign;           // integer variable
+    Int                 i, j, k;        // integer variables
+    Int                 gen;            // generator value
+    Int                 u, u1, u2;      // generator values
+    Int                 v, v1, v2;      // generator values
+    Int                 t1, t2;         // generator values
+    Int                 uabs, vabs;     // generator values
 
-    /*  Get and check the first argument (tree)                            */
+    // Get and check the first argument (tree)
     objTree = tree;
     if ( ! IS_PLIST(tree) || LEN_PLIST(tree) < 5 ) {
         ErrorQuit("invalid <tree>", 0, 0);
     }
 
-    /*  Get and check the tree components                                  */
+    // Get and check the tree components
     objTree1 = ELM_PLIST(objTree,1);
     if ( ! IS_PLIST(objTree1) ) {
         ErrorQuit("invalid <tree>[1]", 0, 0);
@@ -1573,12 +1573,12 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     treeWordLength = INT_INTOBJ( ELM_PLIST( objTree, 4 ) );
     treeType = INT_INTOBJ( ELM_PLIST( objTree, 5 ) );
 
-    /*  Get the second argument (word)                                     */
+    // Get the second argument (word)
     if ( ! IS_PLIST(word) ) {
         ErrorQuit("invalid <word>", 0, 0);
     }
 
-    /* handle the abelianized case                                         */
+    // handle the abelianized case
     ptWord = BASE_PTR_PLIST(word) - 1;
     if ( treeType == 0 ) {
         if ( LEN_PLIST(word) != treeWordLength ) {
@@ -1601,7 +1601,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
         }
         sign = 1;
 
-        /* invert the word                                                 */
+        // invert the word
         if ( INT_INTOBJ(ptWord[k]) < 0 ) {
             sign = -1;
             for ( i = k; i <= leng; i++ ) {
@@ -1623,7 +1623,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
             }
         }
 
-        /* extend the tree                                                 */
+        // extend the tree
         numgens++;
         if ( treesize < numgens ) {
             treesize = 2 * treesize;
@@ -1638,7 +1638,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
         SET_ELM_PLIST( objTree1, numgens, new );
         CHANGED_BAG(objTree1);
 
-        /* copy the word to the new bag                                    */
+        // copy the word to the new bag
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
         ptNew = BASE_PTR_PLIST(new) - 1;
         while ( leng > 0 ) {
@@ -1649,7 +1649,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
         return INTOBJ_INT( sign * numgens );
     }
 
-    /* handle the general case                                             */
+    // handle the general case
     if ( LEN_PLIST(objTree1) != LEN_PLIST(objTree2) ) {
         ErrorQuit("inconsistent <tree> components", 0, 0);
     }
@@ -1662,7 +1662,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
         }
     }
 
-    /*  Freely reduce the given word                                       */
+    // Freely reduce the given word
     leng = LEN_PLIST(word);
     for ( j = 0, i = 1;  i <= leng;  i++ ) {
         gen = INT_INTOBJ(ptWord[i]);
@@ -1685,19 +1685,19 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
     leng = j;
 
     gen = ( leng == 0 ) ? 0 : INT_INTOBJ( ptWord[1] );
-    u2 = 0; /* just to shut up gcc */
+    u2 = 0; // just to shut up gcc
     for ( i = 2;  i <= leng;  i++ ) {
         u = gen;
         v = INT_INTOBJ( ELM_PLIST(word,i) );
         while ( i ) {
 
-            /*  First handle the trivial cases                             */
+            // First handle the trivial cases
             if ( u == 0 || v == 0 || ( u + v ) == 0 ) {
                 gen = u + v;
                 break;
             }
 
-            /*  Cancel out factors, if possible                            */
+            // Cancel out factors, if possible
             u1 = INT_INTOBJ( ptTree1[ (u > 0) ? u : -u ] );
             if ( u1 != 0 ) {
                 if ( u > 0 ) {
@@ -1732,7 +1732,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
                 }
             }
 
-            /*  Check if there is already a tree entry [u,v] or [-v,-u]    */
+            // Check if there is already a tree entry [u,v] or [-v,-u]
             if ( u < -v ) {
                 t1 = u;
                 t2 = v;
@@ -1752,7 +1752,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
                 }
             }
 
-            /*  Extend the tree, if necessary                              */
+            // Extend the tree, if necessary
             if ( k > numgens ) {
                 numgens++;
                 if ( treesize < numgens ) {
@@ -1793,25 +1793,25 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 */
 static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
 {
-    Obj *               ptTable;        /* pointer to table                */
-    Obj *               ptTabl2;        /* pointer to coset factor table   */
-    UInt                nrgen;          /* number of rows of the table / 2 */
-    Obj *               g;              /* one generator list from table   */
-    Obj *               h;              /* generator list                  */
-    Obj *               i;              /*  and inverse                    */
-    Obj *               h2;             /* corresponding factor lists      */
-    Obj *               i2;             /*  and inverse                    */
-    UInt                acos;           /* actual coset                    */
-    UInt                lcos;           /* last seen coset                 */
+    Obj *               ptTable;        // pointer to table
+    Obj *               ptTabl2;        // pointer to coset factor table
+    UInt                nrgen;          // number of rows of the table / 2
+    Obj *               g;              // one generator list from table
+    Obj *               h;              // generator list
+    Obj *               i;              // and inverse
+    Obj *               h2;             // corresponding factor lists
+    Obj *               i2;             // and inverse
+    UInt                acos;           // actual coset
+    UInt                lcos;           // last seen coset
     UInt                mcos;           /*                                 */
-    UInt                c1, c2;         /* coset temporaries               */
-    Obj                 tmp;            /* temporary for swap              */
-    UInt                j, k, nloop;    /* loop variables                  */
+    UInt                c1, c2;         // coset temporaries
+    Obj                 tmp;            // temporary for swap
+    UInt                j, k, nloop;    // loop variables
 
     RequirePlainList(0, table);
     RequirePlainList(0, table2);
 
-    /* get the arguments                                                   */
+    // get the arguments
     objTable = table;
     ptTable = BASE_PTR_PLIST(objTable) - 1;
     nrgen   = LEN_PLIST(objTable) / 2;
@@ -1826,28 +1826,28 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
     objTable2 = table2;
     ptTabl2 = BASE_PTR_PLIST(objTable2) - 1;
     if (stan == INTOBJ_INT(1)) {
-       /* use semilenlex standard                                          */
+       // use semilenlex standard
        nloop = nrgen;
     }
     else {
-       /* use lenlex standard                                              */
+       // use lenlex standard
        nloop = nrgen*2;
     }
 
-    /* run over all cosets                                                 */
+    // run over all cosets
     acos = 1;
     lcos = 1;
     while ( acos <= lcos ) {
 
-        /* scan through all columns of acos                                */
+        // scan through all columns of acos
         for ( j = 1;  j <= nloop;  j++ ) {
             k = ( nloop == nrgen ) ? 2*j - 1 : j;
             g = BASE_PTR_PLIST(ptTable[k]) - 1;
 
-            /* if we haven't seen this coset yet                           */
+            // if we haven't seen this coset yet
             if ( lcos+1 < INT_INTOBJ( g[acos] ) ) {
 
-                /* swap rows lcos and g[acos]                              */
+                // swap rows lcos and g[acos]
                 lcos = lcos + 1;
                 mcos = INT_INTOBJ( g[acos] );
                 for ( k = 1;  k <= nrgen;  k++ ) {
@@ -1881,7 +1881,7 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
 
             }
 
-            /* if this is already the next only bump lcos                  */
+            // if this is already the next only bump lcos
             else if ( lcos < INT_INTOBJ( g[acos] ) ) {
                 lcos = lcos + 1;
             }
@@ -1891,7 +1891,7 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
         acos = acos + 1;
     }
 
-    /* shrink the tables                                                   */
+    // shrink the tables
     for ( j = 1; j <= nrgen; j++ ) {
         SET_LEN_PLIST( ptTable[2*j-1], lcos );
         SET_LEN_PLIST( ptTable[2*j  ], lcos );
@@ -1910,21 +1910,21 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
 **  'FuncAddAbelianRelator' implements 'AddAbelianRelator(<rels>,<number>)'
 */
 static Obj FuncAddAbelianRelator(Obj self,
-                                 Obj rels, /* relators list */
+                                 Obj rels, // relators list
                                  Obj number)
 {
-    Obj *               ptRels;         /* pointer to relators list        */
-    Obj *               pt1;            /* pointer to a relator            */
-    Obj *               pt2;            /* pointer to another relator      */
+    Obj *               ptRels;         // pointer to relators list
+    Obj *               pt1;            // pointer to a relator
+    Obj *               pt2;            // pointer to another relator
     Obj                 tmp;
-    Int                 numcols;        /* list length of the rel vectors  */
-    Int                 numrows;        /* number of relators              */
-    Int                 i, j;           /* loop variables                  */
+    Int                 numcols;        // list length of the rel vectors
+    Int                 numrows;        // number of relators
+    Int                 i, j;           // loop variables
 
     RequirePlainList(0, rels);
     ptRels = BASE_PTR_PLIST(rels) - 1;
 
-    /* get the length of the given relators list                           */
+    // get the length of the given relators list
     numrows = GetPositiveSmallInt(SELF_NAME, number);
     if ( numrows < 1 || LEN_PLIST(rels) < numrows ) {
         ErrorQuit("inconsistent relator number", 0, 0);
@@ -1935,10 +1935,10 @@ static Obj FuncAddAbelianRelator(Obj self,
     }
     pt2 = BASE_PTR_PLIST(tmp) - 1;
 
-    /* get the length of the exponent vectors (the number of generators)   */
+    // get the length of the exponent vectors (the number of generators)
     numcols = LEN_PLIST(tmp);
 
-    /* remove the last relator if it has length zero                       */
+    // remove the last relator if it has length zero
     for ( i = 1;  i <= numcols;  i++ ) {
         if ( INT_INTOBJ(pt2[i]) ) {
             break;
@@ -1948,14 +1948,14 @@ static Obj FuncAddAbelianRelator(Obj self,
         return INTOBJ_INT(numrows-1);
     }
 
-    /* invert the relator if its first non-zero exponent is negative       */
+    // invert the relator if its first non-zero exponent is negative
     if ( INT_INTOBJ(pt2[i]) < 0 ) {
         for ( j = i;  j <= numcols;  j++ ) {
             pt2[j] = INTOBJ_INT( -INT_INTOBJ( pt2[j] ) );
         }
     }
 
-    /* if the last relator occurs twice, remove one of its occurrences     */
+    // if the last relator occurs twice, remove one of its occurrences
     for ( i = 1;  i < numrows;  i++ ) {
         pt1 = BASE_PTR_PLIST(ptRels[i]) - 1;
         for ( j = 1;  j <= numcols;  j++ ) {
@@ -1977,7 +1977,7 @@ static Obj FuncAddAbelianRelator(Obj self,
     return INTOBJ_INT( numrows );
 }
 
-/* new type functions that use different data structures */
+// new type functions that use different data structures
 
 static UInt ret1, ret2;
 
@@ -1987,7 +1987,7 @@ static UInt RelatorScan(Obj t, UInt di, Obj r)
     UInt  pa=0,pb=0;
     const UInt * rp;
     rp=(const UInt*)CONST_ADDR_OBJ(r);
-    m=rp[1]; /* length is in position 1 */
+    m=rp[1]; // length is in position 1
     i=2;
     p=di;
     while ((p!=0) && (i<=(m+1))){
@@ -2004,7 +2004,7 @@ static UInt RelatorScan(Obj t, UInt di, Obj r)
         return 0;
     }
 
-    /*  backwards scan */
+    // backwards scan
     j=m+1;
     p=di;
     while ((p!=0) && (j>=i)) {
@@ -2050,7 +2050,7 @@ static UInt RelatorScan(Obj t, UInt di, Obj r)
 
 }
 
-/* data object type for the mangled relators */
+// data object type for the mangled relators
 static Obj TYPE_LOWINDEX_DATA;
 
 /****************************************************************************
@@ -2059,10 +2059,10 @@ static Obj TYPE_LOWINDEX_DATA;
 **
 */
 static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
-                                   Obj t,  /* table */
-                                   Obj r,  /* relators */
-                                   Obj s1, /* stack */
-                                   Obj s2) /* stack */
+                                   Obj t,  // table
+                                   Obj r,  // relators
+                                   Obj s1, // stack
+                                   Obj s2) // stack
 {
   UInt ok,i,j,d,e,x,y,l,sd;
   Obj  rx;
@@ -2071,7 +2071,7 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
 
   ok=1;
   j=1;
-  /* we convert stack entries to c-integers to avoid conversion */
+  // we convert stack entries to c-integers to avoid conversion
   sd=LEN_PLIST(s1);
   s1a=(UInt*)ADDR_OBJ(s1);
   s2a=(UInt*)ADDR_OBJ(s2);
@@ -2128,7 +2128,7 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
       i++;
     }
   }
-  /* clean up the mess we made */
+  // clean up the mess we made
   for (i=1;i<=sd;i++) {
     s1a[i]=(Int)INTOBJ_INT(0);
     s2a[i]=(Int)INTOBJ_INT(0);
@@ -2145,10 +2145,10 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
 **
 */
 static Obj FuncLOWINDEX_IS_FIRST(Obj self,
-                                 Obj t,    /* table */
-                                 Obj nobj, /* relators */
-                                 Obj muo,  /* stack */
-                                 Obj nuo)  /* stack */
+                                 Obj t,    // table
+                                 Obj nobj, // relators
+                                 Obj muo,  // stack
+                                 Obj nuo)  // stack
 {
   UInt l,ok,b,g,ga,de,a,n,mm;
   UInt * mu;
@@ -2201,7 +2201,7 @@ static Obj FuncLOWINDEX_IS_FIRST(Obj self,
 *F  FuncLOWINDEX_PREPARE_RELS( <rels> )
 **
 */
-static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) /* rels */
+static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) // rels
 {
    UInt i,j,k,l;
    Obj ri, rel;
@@ -2210,12 +2210,12 @@ static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) /* rels */
    for (i=1;i<=LEN_PLIST(r);i++) {
     ri=ELM_PLIST(r,i);
     for (j=1;j<=LEN_PLIST(ri);j++) {
-      rel=ELM_PLIST(ri,j); /* single relator */
+      rel=ELM_PLIST(ri,j); // single relator
       l=LEN_PLIST(rel);
       rp=(UInt*)ADDR_OBJ(rel);
       for (k=1;k<=l;k++)
-        rp[k]=INT_INTOBJ((Obj)rp[k]); /* convert relator entries to C-integers */
-      /* change type */
+        rp[k]=INT_INTOBJ((Obj)rp[k]); // convert relator entries to C-integers
+      // change type
       RetypeBag(rel,T_DATOBJ);
       SET_TYPE_DATOBJ(rel, TYPE_LOWINDEX_DATA);
     }
@@ -2242,11 +2242,11 @@ static Obj FuncNEW_LOWINDEX_DATA(Obj self, Obj n)
 **
 */
 static Obj FuncTC_QUICK_SCAN(Obj self,
-                             Obj c,      /* table */
-                             Obj o,      /* offset */
-                             Obj a,      /* alpha */
-                             Obj w,      /* word */
-                             Obj result) /* result list */
+                             Obj c,      // table
+                             Obj o,      // offset
+                             Obj a,      // alpha
+                             Obj w,      // word
+                             Obj result) // result list
 {
   Int f,b,ff,bb,r,i,j,alpha,offset;
 
@@ -2256,8 +2256,8 @@ static Obj FuncTC_QUICK_SCAN(Obj self,
   f=alpha;i=1;
   r=LEN_PLIST(w);
 
-  /*  # forward scan */
-  /*  while i<=r and c[w[i]+offset][f]<>0 do */
+  // # forward scan
+  // while i<=r and c[w[i]+offset][f]<>0 do
   while ((i<=r) &&
     ((ff=INT_INTOBJ(ELM_PLIST(ELM_PLIST(c,INT_INTOBJ(ELM_PLIST(w,i))+offset),f)))
         !=0) ) {
@@ -2276,9 +2276,9 @@ static Obj FuncTC_QUICK_SCAN(Obj self,
     return False;
   }
 
-/*  #backward scan */
+// #backward scan
   b=alpha; j=r;
-  /*  while j>=i and c[-w[j]+offset][b]<>0 do */
+  // while j>=i and c[-w[j]+offset][b]<>0 do
   while ((j>=i) &&
     ((bb=INT_INTOBJ(ELM_PLIST(ELM_PLIST(c,-INT_INTOBJ(ELM_PLIST(w,j))+offset),b)))
       !=0) ) {
@@ -2335,13 +2335,13 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     // import type object
     InitCopyGVar("TYPE_LOWINDEX_DATA", &TYPE_LOWINDEX_DATA);
 
-    /* static variables                                                    */
+    // static variables
     InitGlobalBag( &objRel      , "src/costab.c:objRel"       );
     InitGlobalBag( &objNums     , "src/costab.c:objNums"      );
     InitGlobalBag( &objFactor   , "src/costab.c:objFactor"    );
@@ -2366,7 +2366,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

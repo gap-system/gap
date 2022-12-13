@@ -104,7 +104,7 @@ static inline int lt_ptr(void * a, void * b)
     return (uintptr_t)a < (uintptr_t)b;
 }
 
-/* align pointer to full word if mis-aligned */
+// align pointer to full word if mis-aligned
 static inline void * align_ptr(void * p)
 {
     uintptr_t u = (uintptr_t)p;
@@ -853,7 +853,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
         return;
 
 #ifdef COUNT_BAGS
-    /* update the statistics      */
+    // update the statistics
     {
         UInt size;
 
@@ -894,7 +894,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
 
 Bag NewBag(UInt type, UInt size)
 {
-    Bag  bag; /* identifier of the new bag       */
+    Bag  bag; // identifier of the new bag
     UInt alloc_size;
 
     alloc_size = sizeof(BagHeader) + size;

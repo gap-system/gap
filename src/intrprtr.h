@@ -337,7 +337,7 @@ void IntrAtomicEndBody(IntrState * intr, Int nrstats);
 void IntrAtomicEnd(IntrState * intr, Obj stackNams);
 
 #ifdef HPCGAP
-/* TODO: move these constants to a more appropriate location */
+// TODO: move these constants to a more appropriate location
 enum {
     MAX_ATOMIC_OBJS = 256
 };
