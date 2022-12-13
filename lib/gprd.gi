@@ -1160,11 +1160,16 @@ function( G, N )
 end);
 
 InstallMethod( SemidirectProduct,"different representations",true, 
-    [ IsGroup and IsFinite, IsGroupHomomorphism, IsGroup and IsFinite], 
+    [ IsGroup, IsGroupHomomorphism, IsGroup and IsFinite],
     # don't be higher than specific perm/pc methods
-    {} -> 2*(RankFilter(IsGroup) - RankFilter(IsGroup and IsFinite)),
+    {} -> RankFilter(IsGroup) - RankFilter(IsGroup and IsFinite),
 function( G, aut, N )
 local giso,niso,P,gens,a,Go,No,i;
+  # We will compute a faithful perm. or pc representation,
+  # but we cannot assume that the finiteness of 'G' is known in advance.
+  if not IsFinite( G ) then
+    TryNextMethod();
+  fi;
   Go:=G;
   No:=N;
   if IsSolvableGroup(N) and IsSolvableGroup(G) then
