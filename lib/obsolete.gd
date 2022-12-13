@@ -765,3 +765,19 @@ DeclareSynonym( "FirstOp", First );
 ##
 ##  Still used in autpgrp, crisp, sophus (07/2022)
 DeclareObsoleteSynonym( "RadicalGroup", "SolvableRadical" );
+
+
+#############################################################################
+##
+##  Not used in any redistributed package
+DeclareObsoleteSynonym( "ZeroSM", "ZeroSameMutability" );
+DeclareObsoleteSynonym( "AdditiveInverseSM", "AdditiveInverseSameMutability" );
+DeclareObsoleteSynonym( "OneSM", "OneSameMutability" );
+DeclareObsoleteSynonym( "InverseSM", "InverseSameMutability" );
+
+DeclareObsoleteSynonymAttr( "ZeroAttr", "ZeroImmutable" );
+DeclareObsoleteSynonymAttr( "AdditiveInverseAttr", "AdditiveInverseImmutable" );
+DeclareObsoleteSynonymAttr( "OneAttr", "OneImmutable" );
+DeclareObsoleteSynonymAttr( "InverseAttr", "InverseImmutable" );
+
+DeclareObsoleteSynonymAttr( "TransposedMatAttr", "TransposedMatImmutable" );

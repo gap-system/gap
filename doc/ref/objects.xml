@@ -257,11 +257,11 @@ in&nbsp;<Ref Sect="Arithmetic for Lists"/>.
 <P/>
 
 It should be noted that
-<C>0 * <A>obj</A></C> is equivalent to <C>ZeroSM( <A>obj</A> )</C>,
-<C>-<A>obj</A></C> is equivalent to <C>AdditiveInverseSM( <A>obj</A> )</C>,
-<C><A>obj</A>^0</C> is equivalent to <C>OneSM( <A>obj</A>)</C>,
-and <C><A>obj</A>^-1</C> is equivalent to <C>InverseSM( <A>obj</A> )</C>.
-The <Q>SM</Q> stands for <Q>same mutability</Q>, and indicates that the result is
+<C>0 * <A>obj</A></C> is equivalent to <C>ZeroSameMutability( <A>obj</A> )</C>,
+<C>-<A>obj</A></C> is equivalent to <C>AdditiveInverseSameMutability( <A>obj</A> )</C>,
+<C><A>obj</A>^0</C> is equivalent to <C>OneSameMutability( <A>obj</A>)</C>,
+and <C><A>obj</A>^-1</C> is equivalent to <C>InverseSameMutability( <A>obj</A> )</C>.
+The suffix <Q>SameMutability</Q> indicates that the result is
 mutable if and only if the argument is mutable.
 <P/>
 The operations <Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>, <Ref Oper="OneOp"/>, and <Ref Oper="InverseOp"/>

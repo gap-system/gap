@@ -1368,8 +1368,8 @@ an operation that returns a result that is mutable
 (<Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>,
 <Ref Oper="OneOp"/>, <Ref Oper="InverseOp"/>),
 and an operation whose result has the same immutability level as the argument
-(<Ref Oper="ZeroSM"/>, <Ref Oper="AdditiveInverseSM"/>,
-<Ref Oper="OneSM"/>, <Ref Oper="InverseSM"/>).
+(<Ref Oper="ZeroSameMutability"/>, <Ref Oper="AdditiveInverseSameMutability"/>,
+<Ref Oper="OneSameMutability"/>, <Ref Oper="InverseSameMutability"/>).
 The last kind of operations is equivalent to the corresponding infix
 operations <C>0 * <A>list</A></C>, <C>- <A>list</A></C>,
 <C><A>list</A>^0</C>, and <C><A>list</A>^-1</C>.

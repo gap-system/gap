@@ -3031,7 +3031,7 @@ InstallMethod( IsBound\[\],
 #############################################################################
 ##
 #M  ZeroOp( <list> ) . . . . . . . . . . .  for small list in `IsListDefault'
-#M  ZeroSM( <list> ) . . . . . . . . . . .  for small list in `IsListDefault'
+#M  ZeroSameMutability( <list> ) . . . . .  for small list in `IsListDefault'
 ##
 ##  Default methods are installed only for small lists in `IsListDefault'.
 ##  For those lists, `Zero' is defined pointwise.
@@ -3051,7 +3051,7 @@ InstallOtherMethod( ZeroSameMutability,
 #############################################################################
 ##
 #M  AdditiveInverseOp( <list> )  . . . . .  for small list in `IsListDefault'
-#M  AdditiveInverseSM( <list> )  . . . . .  for small list in `IsListDefault'
+#M  AdditiveInverseSameMutability( <list> ) for small list in `IsListDefault'
 ##
 ##  Default methods are installed only for small lists in `IsListDefault'.
 ##  For those lists, `AdditiveInverse' is defined pointwise.
@@ -3302,7 +3302,7 @@ InstallOtherMethod( \-,
 #############################################################################
 ##
 #M  OneOp( <matrix> ) . . . . . . . . . . . . . for matrix in `IsListDefault'
-#M  OneSM( <matrix> ) . . . . . . . . . . . . . for matrix in `IsListDefault'
+#M  OneSameMutability( <matrix> ) . . . . . . . for matrix in `IsListDefault'
 ##
 InstallOtherMethod( OneOp,
     [ IsListDefault ],
@@ -3328,7 +3328,7 @@ InstallOtherMethod( OneSameMutability,
 #############################################################################
 ##
 #M  InverseOp( <matrix> ) . . . . . . . . . . . for matrix in `IsListDefault'
-#M  InverseSM( <matrix> ) . . . . . . . . . . . for matrix in `IsListDefault'
+#M  InverseSameMutability( <matrix> ) . . . . . for matrix in `IsListDefault'
 ##
 ##  The `INV_MAT_DEFAULT' methods are faster for lists of FFEs because they
 ##  use `AddRowVector', etc.

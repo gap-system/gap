@@ -129,23 +129,23 @@ end;;
 CheckMutabilityStatus := function( opname, list )
   local attr, op, val, sm;
 
-  attr:= ValueGlobal( Concatenation( opname, "Attr" ) );
+  attr:= ValueGlobal( Concatenation( opname, "Immutable" ) );
   if ImmutabilityLevel( attr( list ) ) <> infinity then
-    error( opname, "Attr: mutability problem for ", list,
+    error( opname, "Immutable: mutability problem for ", list,
            " (", ImmutabilityLevel( list ), ")\n" );
   fi;
-  op:= ValueGlobal( Concatenation( opname, "Op" ) );
+  op:= ValueGlobal( Concatenation( opname, "Mutable" ) );
   val:= op( list );
   if val <> fail and IsCopyable( val ) and not IsMutable( val ) then
-    error( opname, "Op: mutability problem for ", list,
+    error( opname, "Mutable: mutability problem for ", list,
            " (", ImmutabilityLevel( list ), ")\n" );
   fi;
-  sm:= ValueGlobal( Concatenation( opname, "SM" ) );
+  sm:= ValueGlobal( Concatenation( opname, "SameMutability" ) );
   val:= sm( list );
   if     val <> fail
      and IsCopyable( val )
      and ImmutabilityLevel( sm( list ) ) <> ImmutabilityLevel( list ) then
-    error( opname, "SM: mutability problem for ", list,
+    error( opname, "SameMutability: mutability problem for ", list,
            " (", ImmutabilityLevel( list ), ")\n" );
   fi;
 end;;
@@ -227,8 +227,8 @@ ZeroTest := function( list )
                  Zero( list ),
                  ListWithPrescribedHoles( list, Zero ) );
     CheckMutabilityStatus( "Zero", list );
-    CheckCompressionStatus( "ZeroAttr", list );
-    CheckCompressionStatus( "ZeroSM", list );
+    CheckCompressionStatus( "ZeroImmutable", list );
+    CheckCompressionStatus( "ZeroSameMutability", list );
   fi;
 end;;
 
@@ -246,8 +246,8 @@ AdditiveInverseTest := function( list )
                  AdditiveInverse( list ),
                  ListWithPrescribedHoles( list, AdditiveInverse ) );
     CheckMutabilityStatus( "AdditiveInverse", list );
-    CheckCompressionStatus( "AdditiveInverseAttr", list );
-    CheckCompressionStatus( "AdditiveInverseSM", list );
+    CheckCompressionStatus( "AdditiveInverseImmutable", list );
+    CheckCompressionStatus( "AdditiveInverseSameMutability", list );
   fi;
 end;;
 
@@ -312,8 +312,8 @@ end;;
 OneTest := function( list )
   if IsOrdinaryMatrix( list ) and Length( list ) = Length( list[1] ) then
     CheckMutabilityStatus( "One", list );
-    CheckCompressionStatus( "OneAttr", list );
-    CheckCompressionStatus( "OneSM", list );
+    CheckCompressionStatus( "OneImmutable", list );
+    CheckCompressionStatus( "OneSameMutability", list );
   fi;
 end;;
 
@@ -324,8 +324,8 @@ end;;
 InverseTest := function( list )
   if IsOrdinaryMatrix( list ) and Length( list ) = Length( list[1] ) then
     CheckMutabilityStatus( "Inverse", list );
-    CheckCompressionStatus( "InverseAttr", list );
-    CheckCompressionStatus( "InverseSM", list );
+    CheckCompressionStatus( "InverseImmutable", list );
+    CheckCompressionStatus( "InverseSameMutability", list );
   fi;
 end;;
 
@@ -335,8 +335,8 @@ end;;
 ##
 TransposedMatTest := function( list )
   if IsOrdinaryMatrix( list ) then
-    CheckCompressionStatus( "TransposedMatAttr", list );
-    CheckCompressionStatus( "TransposedMatOp", list );
+    CheckCompressionStatus( "TransposedMatImmutable", list );
+    CheckCompressionStatus( "TransposedMatMutable", list );
   fi;
 end;;
 

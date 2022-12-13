@@ -1009,7 +1009,7 @@ InstallMethod(ZeroOp,
         [ IsCoeffsModConwayPolRep and IsFFE],
         FFECONWAY.Zero);
 
-InstallMethod(ZeroAttr,
+InstallMethod(ZeroImmutable,
         [ IsCoeffsModConwayPolRep and IsFFE],
         FFECONWAY.Zero);
 
@@ -1041,7 +1041,7 @@ InstallMethod(OneOp,
         [ IsCoeffsModConwayPolRep and IsFFE],
         FFECONWAY.One);
 
-InstallMethod(OneAttr,
+InstallMethod(OneImmutable,
         [ IsCoeffsModConwayPolRep and IsFFE],
         FFECONWAY.One);
 

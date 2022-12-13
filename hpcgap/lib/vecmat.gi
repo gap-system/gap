@@ -934,7 +934,7 @@ end );
 
 #############################################################################
 ##
-#M  OneSM( <gf2mat> ) . . . . . . . . . . . . . . . . . . . identity GF2 matrix
+#M  OneSameMutability( <gf2mat> ) . . . . . . . . . . . . identity GF2 matrix
 ##
 InstallMethod( OneSameMutability,
     "for GF2 Matrix",
