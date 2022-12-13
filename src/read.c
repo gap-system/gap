@@ -88,54 +88,40 @@
 
 struct ReaderState {
 
-ScannerState s;
+    ScannerState s;
 
-IntrState intr;
+    IntrState intr;
 
-/****************************************************************************
-**
-*V  StackNams . . . . . . . . . . . . .  stack of local variables names lists
-**
-**  'StackNams' is a stack of local variables  names lists.  A new names list
-**  is pushed onto this stack when the  reader begins to  read a new function
-**  expression  (after  reading the argument   list  and the local  variables
-**  list), and popped again when the reader has finished reading the function
-**  expression (after reading the 'end').
-*/
-Obj  StackNams;
+    // 'StackNams' is a stack of local variables  names lists.  A new names
+    // list is pushed onto this stack when the  reader begins to  read a new
+    // function expression  (after  reading the argument   list  and the local
+    // variables list), and popped again when the reader has finished reading
+    // the function expression (after reading the 'end').
+    Obj StackNams;
 
-/****************************************************************************
-**
-*V  ReadTop . . . . . . . . . . . . . . . . . . . . . .  top level expression
-*V  ReadTilde . . . . . . . . . . . . . . . . . . . . . . . . . .  tilde read
-**
-**  'ReadTop' is 0 if the reader is currently not reading a list or record
-**  expression. 'ReadTop' is 1 if the reader is currently reading an outmost
-**  list or record expression. 'ReadTop' is larger than 1 if the reader is
-**  currently reading a nested list or record expression.
-**
-**  'ReadTilde' is 1 if the reader has read a reference to a '~' symbol
-**  within the current outmost list or record expression.
-*/
-UInt ReadTop;
-UInt ReadTilde;
+    // 'ReadTop' is 0 if the reader is currently not reading a list or record
+    // expression. 'ReadTop' is 1 if the reader is currently reading an
+    // outmost list or record expression. 'ReadTop' is larger than 1 if the
+    // reader is currently reading a nested list or record expression.
+    UInt ReadTop;
 
-/****************************************************************************
-**
-*V  CurrLHSGVar . . . . . . . . . . . .  current left hand side of assignment
-**
-**  'CurrLHSGVar' is the current left hand side of an assignment.  It is used
-**  to prevent undefined global variable  warnings, when reading a  recursive
-**  function.
-*/
-UInt CurrLHSGVar;
+    // 'ReadTilde' is 1 if the reader has read a reference to a '~' symbol
+    // within the current outmost list or record expression.
+    UInt ReadTilde;
 
+    // 'CurrLHSGVar' is the current left hand side of an assignment.  It is
+    // used to prevent undefined global variable  warnings, when reading a
+    // recursive function.
+    UInt CurrLHSGVar;
 
-UInt CurrentGlobalForLoopVariables[100];
-UInt CurrentGlobalForLoopDepth;
+    UInt CurrentGlobalForLoopVariables[100];
+    UInt CurrentGlobalForLoopDepth;
 
-UInt LoopNesting;
-
+    // 'LoopNesting' records how many nested loops are active. It starts out
+    // at 0 and is increment each time we enter a loop, and decrement when we
+    // exit one. It is used to determine whether 'break' and 'continue'
+    // statements are valid.
+    UInt LoopNesting;
 };
 
 typedef struct ReaderState ReaderState;
@@ -2070,8 +2056,6 @@ static void ReadIf(ReaderState * rs, TypSymbolSet follow)
 **                     <Statements>
 **                 'od' ';'
 */
-
-
 static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 {
     volatile UInt       nrs;            /* number of statements in body    */
