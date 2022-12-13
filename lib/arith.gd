@@ -1379,22 +1379,18 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 #############################################################################
 ##
 #A  ZeroImmutable( <obj> )  . .  additive neutral of an element/domain/family
-#A  ZeroAttr( <obj> )            synonym of ZeroImmutable
 #A  Zero( <obj> )                synonym of ZeroImmutable
 #O  ZeroMutable( <obj> )  . . . . . .  mutable additive neutral of an element
 #O  ZeroOp( <obj> )              synonym of ZeroMutable
 #O  ZeroSameMutability( <obj> )  mutability preserving zero (0*<obj>)
-#O  ZeroSM( <obj> )              synonym of ZeroSameMutability
 ##
 ##  <#GAPDoc Label="ZeroImmutable">
 ##  <ManSection>
 ##  <Attr Name="ZeroImmutable" Arg='obj'/>
-##  <Attr Name="ZeroAttr" Arg='obj'/>
 ##  <Attr Name="Zero" Arg='obj'/>
 ##  <Oper Name="ZeroMutable" Arg='obj'/>
 ##  <Oper Name="ZeroOp" Arg='obj'/>
 ##  <Oper Name="ZeroSameMutability" Arg='obj'/>
-##  <Oper Name="ZeroSM" Arg='obj'/>
 ##
 ##  <Description>
 ##  <Ref Attr="ZeroImmutable"/>, <Ref Oper="ZeroMutable"/>,
@@ -1417,9 +1413,7 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 ##  <C>ZeroSameMutability( <A>obj</A> )</C> is equivalent to
 ##  <C>0 * <A>obj</A></C>.
 ##  <P/>
-##  <Ref Attr="ZeroAttr"/> and <Ref Attr="Zero"/> are synonyms of
-##  <Ref Attr="ZeroImmutable"/>.
-##  <Ref Oper="ZeroSM"/> is a synonym of <Ref Oper="ZeroSameMutability"/>.
+##  <Ref Attr="Zero"/> is a synonym of <Ref Attr="ZeroImmutable"/>.
 ##  <Ref Oper="ZeroOp"/> is a synonym of <Ref Oper="ZeroMutable"/>.
 ##  <P/>
 ##  If <A>obj</A> is a domain or a family then <Ref Attr="Zero"/> is defined
@@ -1452,7 +1446,6 @@ DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 DeclareAttribute( "ZeroImmutable", IsAdditiveElementWithZero );
 DeclareAttribute( "ZeroImmutable", IsFamily );
 
-DeclareSynonymAttr( "ZeroAttr", ZeroImmutable );
 DeclareSynonymAttr( "Zero", ZeroImmutable );
 
 DeclareOperationKernel( "ZeroMutable", [ IsAdditiveElementWithZero ],
@@ -1461,7 +1454,6 @@ DeclareSynonym( "ZeroOp", ZeroMutable );
 
 DeclareOperationKernel( "ZeroSameMutability", [ IsAdditiveElementWithZero ],
     ZERO_SAMEMUT );
-DeclareSynonym( "ZeroSM", ZeroSameMutability );
 
 
 #############################################################################
@@ -1474,22 +1466,18 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 #############################################################################
 ##
 #A  AdditiveInverseImmutable( <elm> )  . . . . additive inverse of an element
-#A  AdditiveInverseAttr( <elm> )  . . . .      additive inverse of an element
 #A  AdditiveInverse( <elm> )  . . . .          additive inverse of an element
 #O  AdditiveInverseMutable( <elm> )  . mutable additive inverse of an element
 #O  AdditiveInverseOp( <elm> )       . mutable additive inverse of an element
 #O  AdditiveInverseSameMutability( <elm> )  .  additive inverse of an element
-#O  AdditiveInverseSM( <elm> )              .  additive inverse of an element
 ##
 ##  <#GAPDoc Label="AdditiveInverseImmutable">
 ##  <ManSection>
 ##  <Attr Name="AdditiveInverseImmutable" Arg='elm'/>
-##  <Attr Name="AdditiveInverseAttr" Arg='elm'/>
 ##  <Attr Name="AdditiveInverse" Arg='elm'/>
 ##  <Oper Name="AdditiveInverseMutable" Arg='elm'/>
 ##  <Oper Name="AdditiveInverseOp" Arg='elm'/>
 ##  <Oper Name="AdditiveInverseSameMutability" Arg='elm'/>
-##  <Oper Name="AdditiveInverseSM" Arg='elm'/>
 ##
 ##  <Description>
 ##  <Ref Attr="AdditiveInverseImmutable"/>,
@@ -1513,10 +1501,8 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 ##  <C>AdditiveInverseSameMutability( <A>elm</A> )</C> is equivalent to
 ##  <C>-<A>elm</A></C>.
 ##  <P/>
-##  <Ref Attr="AdditiveInverseAttr"/> and <Ref Attr="AdditiveInverse"/> are
-##  synonyms of <Ref Attr="AdditiveInverseImmutable"/>.
-##  <Ref Oper="AdditiveInverseSM"/> is a synonym of
-##  <Ref Oper="AdditiveInverseSameMutability"/>.
+##  <Ref Attr="AdditiveInverse"/> is a synonym of
+##  <Ref Attr="AdditiveInverseImmutable"/>.
 ##  <Ref Oper="AdditiveInverseOp"/> is a synonym of
 ##  <Ref Oper="AdditiveInverseMutable"/>.
 ##  <P/>
@@ -1532,7 +1518,6 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "AdditiveInverseImmutable", IsAdditiveElementWithInverse );
-DeclareSynonymAttr( "AdditiveInverseAttr", AdditiveInverseImmutable );
 DeclareSynonymAttr( "AdditiveInverse", AdditiveInverseImmutable );
 
 DeclareOperationKernel( "AdditiveInverseMutable",
@@ -1541,7 +1526,6 @@ DeclareSynonym( "AdditiveInverseOp", AdditiveInverseMutable);
 
 DeclareOperationKernel( "AdditiveInverseSameMutability", 
     [ IsAdditiveElementWithInverse ], AINV_SAMEMUT );
-DeclareSynonym( "AdditiveInverseSM", AdditiveInverseSameMutability);
 
 
 #############################################################################
@@ -1562,24 +1546,20 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 #############################################################################
 ##
 #A  OneImmutable( <obj> )  multiplicative neutral of an element/domain/family
-#A  OneAttr( <obj> )
 #A  One( <obj> )
 #A  Identity( <obj> )
 #O  OneMutable( <obj> )  . . . . . . . .  multiplicative neutral of an element
 #O  OneOp( <obj> )  
 #O  OneSameMutability( <obj> )
-#O  OneSM( <obj> )
 ##
 ##  <#GAPDoc Label="OneImmutable">
 ##  <ManSection>
 ##  <Attr Name="OneImmutable" Arg='obj'/>
-##  <Attr Name="OneAttr" Arg='obj'/>
 ##  <Attr Name="One" Arg='obj'/>
 ##  <Attr Name="Identity" Arg='obj'/>
 ##  <Oper Name="OneMutable" Arg='obj'/>
 ##  <Oper Name="OneOp" Arg='obj'/>
 ##  <Oper Name="OneSameMutability" Arg='obj'/>
-##  <Oper Name="OneSM" Arg='obj'/>
 ##
 ##  <Description>
 ##  <Ref Attr="OneImmutable"/>, <Ref Oper="OneMutable"/>,
@@ -1603,9 +1583,8 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 ##  <C>OneSameMutability( <A>obj</A> )</C>
 ##  is equivalent to <C><A>obj</A>^0</C>.
 ##  <P/>
-##  <Ref Attr="OneAttr"/>, <Ref Attr="One"/> and <Ref Attr="Identity"/> are
+##  <Ref Attr="One"/> and <Ref Attr="Identity"/> are
 ##  synonyms of <C>OneImmutable</C>.
-##  <Ref Oper="OneSM"/> is a synonym of <Ref Oper="OneSameMutability"/>.
 ##  <Ref Oper="OneOp"/> is a synonym of <Ref Oper="OneMutable"/>.
 ##  <P/>
 ##  If <A>obj</A> is a domain or a family then <Ref Attr="One"/> is defined
@@ -1644,7 +1623,6 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 DeclareAttribute( "OneImmutable", IsMultiplicativeElementWithOne );
 DeclareAttribute( "OneImmutable", IsFamily );
 
-DeclareSynonymAttr( "OneAttr", OneImmutable );
 DeclareSynonymAttr( "One", OneImmutable );
 DeclareSynonymAttr( "Identity", OneImmutable );
 
@@ -1654,28 +1632,23 @@ DeclareSynonym( "OneOp", OneMutable);
 
 DeclareOperationKernel( "OneSameMutability",
     [ IsMultiplicativeElementWithOne ], ONE_SAMEMUT );
-DeclareSynonym( "OneSM", OneSameMutability);
 
 
 #############################################################################
 ##
 #A  InverseImmutable( <elm> )   . . . .  multiplicative inverse of an element
-#A  InverseAttr( <elm> )
 #A  Inverse( <elm> )
 #O  InverseMutable( <elm> )
 #O  InverseOp( <elm> )
 #O  InverseSameMutability( <elm> )  . .  multiplicative inverse of an element
-#O  InverseSM( <elm> )
 ##
 ##  <#GAPDoc Label="InverseImmutable">
 ##  <ManSection>
 ##  <Attr Name="InverseImmutable" Arg='elm'/>
-##  <Attr Name="InverseAttr" Arg='elm'/>
 ##  <Attr Name="Inverse" Arg='elm'/>
 ##  <Oper Name="InverseMutable" Arg='elm'/>
 ##  <Oper Name="InverseOp" Arg='elm'/>
 ##  <Oper Name="InverseSameMutability" Arg='elm'/>
-##  <Oper Name="InverseSM" Arg='elm'/>
 ##
 ##  <Description>
 ##  <Ref Attr="InverseImmutable"/>, <Ref Oper="InverseMutable"/>, and
@@ -1713,10 +1686,7 @@ DeclareSynonym( "OneSM", OneSameMutability);
 ##  <C>InverseSameMutability( <A>elm</A> )</C> is equivalent to
 ##  <C><A>elm</A>^-1</C>.
 ##  <P/>
-##  <Ref Attr="InverseAttr"/> and <Ref Attr="Inverse"/> are synonyms of
-##  <Ref Attr="InverseImmutable"/>.
-##  <Ref Oper="InverseSM"/> is a synonym of
-##  <Ref Oper="InverseSameMutability"/>.
+##  <Ref Attr="Inverse"/> is a synonym of <Ref Attr="InverseImmutable"/>.
 ##  <Ref Oper="InverseOp"/> is a synonym of <Ref Oper="InverseMutable"/>.
 ##  <P/>
 ##  The default method of <Ref Attr="InverseImmutable"/> calls
@@ -1731,7 +1701,6 @@ DeclareSynonym( "OneSM", OneSameMutability);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "InverseImmutable", IsMultiplicativeElementWithInverse );
-DeclareSynonymAttr( "InverseAttr", InverseImmutable );
 DeclareSynonymAttr( "Inverse", InverseImmutable );
 
 DeclareOperationKernel( "InverseMutable",
@@ -1740,7 +1709,6 @@ DeclareSynonym( "InverseOp", InverseMutable );
 
 DeclareOperationKernel( "InverseSameMutability",
     [ IsMultiplicativeElementWithInverse ], INV_SAMEMUT );
-DeclareSynonym( "InverseSM", InverseSameMutability );
 
 
 #############################################################################

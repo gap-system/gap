@@ -803,7 +803,7 @@ InstallMethod( IsAssociated,
 #############################################################################
 ##
 #M  InverseOp( <mat> )  . . . . . . . . . . . . for ordinary matrix over Z/nZ
-#M  InverseSM( <mat> )  . . . . . . . . . . . . for ordinary matrix over Z/nZ
+#M  InverseSameMutability( <mat> )  . . . . . . for ordinary matrix over Z/nZ
 ##
 ##  For a nonprime integer $n$, the residue class ring $\Z/n\Z$ has zero
 ##  divisors, so the standard algorithm to invert a matrix over $\Z/n\Z$
@@ -830,7 +830,7 @@ InstallMethod( InverseOp,
     return mat;
     end );
 
-InstallMethod( InverseSM,
+InstallMethod( InverseSameMutability,
     "for an ordinary matrix over a ring Z/nZ",
     [ IsMatrix and IsOrdinaryMatrix and IsZmodnZObjNonprimeCollColl ],
     function( mat )

@@ -978,7 +978,6 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 #############################################################################
 ##
 #A  TransposedMatImmutable( <mat> ) . . . . . . . . .  transposed of a matrix
-#A  TransposedMatAttr( <mat> )  . . . . . . . . . . .  transposed of a matrix
 #A  TransposedMat( <mat> )  . . . . . . . . . . . . .  transposed of a matrix
 #O  TransposedMatMutable( <mat> ) . . . . . . . . . .  transposed of a matrix
 #O  TransposedMatOp( <mat> )  . . . . . . . . . . . .  transposed of a matrix
@@ -986,7 +985,6 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 ##  <#GAPDoc Label="TransposedMatImmutable">
 ##  <ManSection>
 ##  <Attr Name="TransposedMatImmutable" Arg='mat'/>
-##  <Attr Name="TransposedMatAttr" Arg='mat'/>
 ##  <Attr Name="TransposedMat" Arg='mat'/>
 ##  <Oper Name="TransposedMatMutable" Arg='mat'/>
 ##  <Oper Name="TransposedMatOp" Arg='mat'/>
@@ -1004,8 +1002,8 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 ##  <Ref Oper="TransposedMatMutable"/> is guaranteed to return a new
 ##  <E>mutable</E> matrix.
 ##  <P/>
-##  <Ref Attr="TransposedMatImmutable"/> and <Ref Attr="TransposedMatAttr"/> 
-##  are synonyms of <Ref Attr="TransposedMat"/>,
+##  <Ref Attr="TransposedMatImmutable"/> is a synonym of
+##  <Ref Attr="TransposedMat"/>,
 ##  and <Ref Oper="TransposedMatOp"/> is a synonym of
 ##  <Ref Oper="TransposedMatMutable"/>,
 ##  in analogy to operations such as <Ref Attr="Zero"/>.
@@ -1014,8 +1012,6 @@ DeclareOperation( "SemiEchelonMatsDestructive", [ IsList ] );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "TransposedMatImmutable", IsMatrixOrMatrixObj );
-
-DeclareSynonymAttr( "TransposedMatAttr", TransposedMatImmutable );
 DeclareSynonymAttr( "TransposedMat", TransposedMatImmutable );
 
 DeclareOperation( "TransposedMatMutable", [ IsMatrixOrMatrixObj ] );

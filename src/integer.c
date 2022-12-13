@@ -169,7 +169,6 @@ static inline void ENSURE_BAG(Bag bag)
 
 /* for fallbacks to library */
 static Obj String;
-static Obj OneAttr;
 static Obj IsIntFilt;
 
 
@@ -2901,7 +2900,6 @@ static Int InitKernel ( StructInitInfo * module )
   ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG", &TYPE_INT_LARGE_NEG );
 
   ImportFuncFromLibrary( "String", &String );
-  ImportFuncFromLibrary( "One", &OneAttr);
 
   /* install the type functions                                          */
   TypeObjFuncs[ T_INT    ] = TypeIntSmall;
